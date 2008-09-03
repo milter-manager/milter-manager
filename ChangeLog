@@ -1,5 +1,7 @@
 2008-09-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* Makefile.am: remove needless command.
+
 	* ./: add milter-client/.
 
 2008-09-01  Kouhei Sutou  <kou@cozmixng.org>

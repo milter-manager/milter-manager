@@ -22,7 +22,6 @@ update-po:
 	  (find milter-client -name '*.c') | \
 	  sort > po/POTFILES.in
 	cd po && $(MAKE) $(AM_MAKEFLAGS) update-po
-	cd doc/reference && $(MAKE) $(AM_MAKEFLAGS) update-po
 
 tag:
 	svn ls $(SF_REPOS)/tags/$(VERSION) > /dev/null 2>&1; 	\
