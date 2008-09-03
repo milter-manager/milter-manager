@@ -1,3 +1,7 @@
+SUBDIRS =		\
+	milter-client	\
+	test
+
 EXTRA_DIST =		\
 	autogen.sh
 
@@ -15,9 +19,7 @@ upload-doc:
 
 update-po:
 	cd $(top_srcdir) && \
-	  (find milter-client -name '*.c'; \
-	   find milter-server -name '*.c'; \
-	   find milter-manager -name '*.c') | \
+	  (find milter-client -name '*.c') | \
 	  sort > po/POTFILES.in
 	cd po && $(MAKE) $(AM_MAKEFLAGS) update-po
 	cd doc/reference && $(MAKE) $(AM_MAKEFLAGS) update-po

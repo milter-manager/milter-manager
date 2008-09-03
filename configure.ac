@@ -95,8 +95,18 @@ AM_PATH_GLIB_2_0($GLIB_REQUIRED,
                  [gobject gthread])
 
 dnl **************************************************************
-dnl for coverage
+dnl for Cutter
 dnl **************************************************************
+m4_ifdef([AC_CHECK_GCUTTER], [
+AC_CHECK_GCUTTER
+],
+[ac_cv_use_cutter="no"])
+
+AM_CONDITIONAL([WITH_CUTTER], [test "$ac_cv_use_cutter" != "no"])
+if test "$ac_cv_use_cutter" != "no"; then
+  AC_DEFINE(WITH_CUTTER, 1, [Define to 1 if you use Cutter])
+fi
+
 m4_ifdef([AC_CHECK_COVERAGE], [AC_CHECK_COVERAGE])
 GENHTML_OPTIONS="--title 'milter manager Code Coverage'"
 
@@ -164,6 +174,10 @@ MILTER_MANAGER_CFLAGS="$GLIB_CFLAGS -DG_DISABLE_DEPRECATED"
 AC_SUBST(MILTER_MANAGER_CFLAGS)
 
 AC_CONFIG_FILES([Makefile
-		 milter-client.pc])
+		 milter-client.pc
+		 milter-client/Makefile
+		 test/Makefile
+		 test/client/Makefile
+		 po/Makefile.in])
 
 AC_OUTPUT
