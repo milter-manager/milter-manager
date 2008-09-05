@@ -1,3 +1,7 @@
+2008-09-05  Kouhei Sutou  <kou@cozmixng.org>
+
+	* data/milter-packet.txt: add a sample milter packet.
+
 2008-09-03  Kouhei Sutou  <kou@cozmixng.org>
 
 	* Makefile.am: remove needless command.
