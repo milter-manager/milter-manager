@@ -20,7 +20,7 @@
 #ifndef __MILTER_CLIENT_H__
 #define __MILTER_CLIENT_H__
 
-#include <milter-client/milter-client-parser.h>
+#include <milter-client/mc-parser.h>
 
 #endif /* __MILTER_CLIENT_H__ */
 

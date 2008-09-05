@@ -8,7 +8,7 @@ AM_CFLAGS = 				\
 	$(COVERAGE_CFLAGS)
 
 milter_client_public_headers =		\
-	milter-client-parser.h
+	mc-parser.h
 
 milter_client_includedir=$(pkgincludedir)/milter-client
 milter_client_include_HEADERS =		\
@@ -18,4 +18,4 @@ lib_LTLIBRARIES =		\
 	libmilter-client.la
 
 libmilter_client_la_SOURCES =	\
-	milter-client-parser.c
+	mc-parser.c
