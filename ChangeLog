@@ -1,3 +1,8 @@
+2008-09-08  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter-client/mc-parser.[ch] (mc_parser_parse),
+	test/client/test-mc-parser.c: add command length error handling.
+
 2008-09-05  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter-client/, test/client/: add.

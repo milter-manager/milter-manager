@@ -24,6 +24,8 @@
 
 G_BEGIN_DECLS
 
+#define MC_PARSER_ERROR           (mc_parser_error_quark())
+
 #define MC_TYPE_PARSER            (mc_parser_get_type ())
 #define MC_PARSER(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), MC_TYPE_PARSER, MCParser))
 #define MC_PARSER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), MC_TYPE_PARSER, MCParserClass))
@@ -48,6 +50,13 @@ struct _MCParserClass
     void (*macro)               (MCParser *parser);
     void (*option_negotiation)  (MCParser *parser);
 };
+
+typedef enum
+{
+    MC_PARSER_ERROR_SHORT_COMMAND_LENGTH
+} MCParserError;
+
+GQuark           mc_parser_error_quark       (void);
 
 GType            mc_parser_get_type          (void) G_GNUC_CONST;
 

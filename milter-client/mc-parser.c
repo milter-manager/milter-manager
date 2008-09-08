@@ -30,6 +30,7 @@
 #include "mc-parser.h"
 
 #define COMMAND_BYTES_LENGTH (4)
+#define OPTION_LENGTH (4)
 
 #define COMMAND_ABORT              'A'     /* Abort */
 #define COMMAND_BODY               'B'     /* Body chunk */
@@ -205,6 +206,12 @@ get_property (GObject    *object,
     }
 }
 
+GQuark
+mc_parser_error_quark (void)
+{
+    return g_quark_from_static_string("mc-parser-error-quark");
+}
+
 MCParser *
 mc_parser_new (void)
 {
@@ -250,6 +257,7 @@ mc_parser_parse (MCParser *parser, const gchar *text, gsize text_len,
     MCParserPrivate *priv;
     gboolean loop = TRUE;
     gboolean success = TRUE;
+    gboolean handled = FALSE;
 
     priv = MC_PARSER_GET_PRIVATE(parser);
     if (priv->state == IN_EOF) {
@@ -265,8 +273,15 @@ mc_parser_parse (MCParser *parser, const gchar *text, gsize text_len,
         switch (priv->state) {
           case IN_START:
             if (priv->buffer->len < COMMAND_BYTES_LENGTH) {
-                /* error = g_error_set(command length is too small); */
-                success = FALSE;
+                if (handled) {
+                    loop = FALSE;
+                } else{
+                    g_set_error(error,
+                                MC_PARSER_ERROR,
+                                MC_PARSER_ERROR_SHORT_COMMAND_LENGTH,
+                                "too short command length");
+                    success = FALSE;
+                }
                 break;
             }
             memcpy(&priv->command_bytes,
@@ -275,6 +290,7 @@ mc_parser_parse (MCParser *parser, const gchar *text, gsize text_len,
             priv->command_bytes = ntohl(priv->command_bytes);
             g_string_erase(priv->buffer, 0, COMMAND_BYTES_LENGTH);
             priv->state = IN_COMMAND_BYTES;
+            handled = TRUE;
             break;
           case IN_COMMAND_BYTES:
             if (priv->buffer->len < priv->command_bytes) {
@@ -282,6 +298,7 @@ mc_parser_parse (MCParser *parser, const gchar *text, gsize text_len,
                 success = FALSE;
                 break;
             }
+            handled = TRUE;
             success = parse_command(parser, error);
             break;
           default:

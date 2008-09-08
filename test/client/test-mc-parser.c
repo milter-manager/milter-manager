@@ -3,8 +3,10 @@
 #define shutdown inet_shutdown
 #include <arpa/inet.h>
 #undef shutdown
+
 #include <milter-client/milter-client.h>
 
+void test_short_parse_text (void);
 void test_parse_option_negotiation (void);
 
 static MCParser *parser;
@@ -74,6 +76,21 @@ parse (void)
 }
 
 void
+test_short_parse_text (void)
+{
+    GError *expected = NULL;
+    GError *actual = NULL;
+
+    cut_assert_false(mc_parser_parse(parser, "", 0, &actual));
+
+    expected = g_error_new(MC_PARSER_ERROR,
+                           MC_PARSER_ERROR_SHORT_COMMAND_LENGTH,
+                           "too short command length");
+    gcut_assert_equal_error(gcut_take_error(expected),
+                            gcut_take_error(actual));
+}
+
+void
 test_parse_option_negotiation (void)
 {
     g_string_append_c(buffer, 'O');
@@ -90,6 +107,6 @@ test_parse_option_negotiation (void)
     g_string_append_c(buffer, '\0');
     g_string_append_c(buffer, 0x7f);
 
-    parse();
+    gcut_assert_error(parse());
     cut_assert_equal_int(1, n_option_negotiations);
 }
