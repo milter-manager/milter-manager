@@ -33,6 +33,16 @@ G_BEGIN_DECLS
 #define MC_IS_PARSER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), MC_TYPE_PARSER))
 #define MC_PARSER_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MC_TYPE_PARSER, MCParserClass))
 
+typedef enum
+{
+    MC_PARSER_ERROR_SHORT_COMMAND_LENGTH
+} MCParserError;
+
+typedef enum
+{
+    MC_CONTEXT_TYPE_CONNECT
+} McContextType;
+
 typedef struct _MCParser         MCParser;
 typedef struct _MCParserClass    MCParserClass;
 
@@ -47,14 +57,11 @@ struct _MCParserClass
 
     void (*abort)               (MCParser *parser);
     void (*connect)             (MCParser *parser);
-    void (*macro)               (MCParser *parser);
+    void (*define_macro)        (MCParser *parser,
+                                 McContextType context,
+                                 GHashTable *macros);
     void (*option_negotiation)  (MCParser *parser);
 };
-
-typedef enum
-{
-    MC_PARSER_ERROR_SHORT_COMMAND_LENGTH
-} MCParserError;
 
 GQuark           mc_parser_error_quark       (void);
 

@@ -28,6 +28,8 @@
 #include <glib.h>
 
 #include "mc-parser.h"
+#include "mc-enum-types.h"
+#include "mc-marshalers.h"
 
 #define COMMAND_BYTES_LENGTH (4)
 #define OPTION_LENGTH (4)
@@ -35,7 +37,7 @@
 #define COMMAND_ABORT              'A'     /* Abort */
 #define COMMAND_BODY               'B'     /* Body chunk */
 #define COMMAND_CONNECT            'C'     /* Connection information */
-#define COMMAND_MACRO              'D'     /* Define macro */
+#define COMMAND_DEFINE_MACRO       'D'     /* Define macro */
 #define COMMAND_BODYEOB            'E'     /* final body chunk (End) */
 #define COMMAND_HELO               'H'     /* HELO/EHLO */
 #define COMMAND_QUIT_NC            'K'     /* QUIT but new connection follows */
@@ -70,7 +72,7 @@ enum
 {
     ABORT,
     CONNECT,
-    MACRO,
+    DEFINE_MACRO,
     OPTION_NEGOTIATION,
     LAST_SIGNAL
 };
@@ -118,14 +120,14 @@ mc_parser_class_init (MCParserClass *klass)
                      g_cclosure_marshal_VOID__VOID,
                      G_TYPE_NONE, 0);
 
-    signals[MACRO] =
-        g_signal_new("macro",
+    signals[DEFINE_MACRO] =
+        g_signal_new("define-macro",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MCParserClass, macro),
+                     G_STRUCT_OFFSET(MCParserClass, define_macro),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__VOID,
-                     G_TYPE_NONE, 0);
+                     _mc_marshal_VOID__ENUM_POINTER,
+                     G_TYPE_NONE, 2, MC_TYPE_CONTEXT_TYPE, G_TYPE_POINTER);
 
     signals[OPTION_NEGOTIATION] =
         g_signal_new("option-negotiation",
@@ -220,6 +222,42 @@ mc_parser_new (void)
                         NULL);
 }
 
+static GHashTable *
+parse_define_macro (const gchar *buffer, gint length, GError **error)
+{
+    GHashTable *macros;
+    const gchar *last;
+
+    macros = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
+
+    last = buffer + length;
+    while (buffer <= last) {
+        const gchar *start, *key, *value;
+
+        start = buffer;
+        while (buffer <= last && *buffer != '\0') {
+            buffer++;
+        }
+        key = start;
+
+        buffer++;
+        start = buffer;
+        while (buffer <= last && *buffer != '\0') {
+            buffer++;
+        }
+        value = start;
+        buffer++;
+
+        if (*key) {
+            g_hash_table_insert(macros,
+                                g_strdup(key),
+                                g_strndup(value, buffer - value - 1));
+        }
+    }
+
+    return macros;
+}
+
 static gboolean
 parse_command (MCParser *parser, GError **error)
 {
@@ -242,6 +280,26 @@ parse_command (MCParser *parser, GError **error)
         priv->state = IN_START;
         g_string_erase(priv->buffer, 0, priv->command_bytes);
         break;
+      case COMMAND_DEFINE_MACRO:
+        {
+            GHashTable *macros;
+            McContextType context;
+
+            if (priv->buffer->str[1] == COMMAND_CONNECT)
+                context = MC_CONTEXT_TYPE_CONNECT;
+            macros = parse_define_macro(priv->buffer->str + 1 + 1,
+                                        priv->command_bytes - 1 - 1,
+                                        error);
+            if (macros) {
+                g_signal_emit(parser, signals[DEFINE_MACRO], 0, context, macros);
+                g_hash_table_unref(macros);
+            } else {
+                success = FALSE;
+            }
+        }
+        priv->state = IN_START;
+        g_string_erase(priv->buffer, 0, priv->command_bytes);
+        break;
       default:
         success = FALSE;
         break;
@@ -257,7 +315,6 @@ mc_parser_parse (MCParser *parser, const gchar *text, gsize text_len,
     MCParserPrivate *priv;
     gboolean loop = TRUE;
     gboolean success = TRUE;
-    gboolean handled = FALSE;
 
     priv = MC_PARSER_GET_PRIVATE(parser);
     if (priv->state == IN_EOF) {
@@ -269,40 +326,29 @@ mc_parser_parse (MCParser *parser, const gchar *text, gsize text_len,
         text_len = strlen(text);
 
     g_string_append_len(priv->buffer, text, text_len);
-    while (loop && success) {
+    while (loop) {
         switch (priv->state) {
           case IN_START:
             if (priv->buffer->len < COMMAND_BYTES_LENGTH) {
-                if (handled) {
-                    loop = FALSE;
-                } else{
-                    g_set_error(error,
-                                MC_PARSER_ERROR,
-                                MC_PARSER_ERROR_SHORT_COMMAND_LENGTH,
-                                "too short command length");
-                    success = FALSE;
-                }
-                break;
+                loop = FALSE;
+            } else {
+                memcpy(&priv->command_bytes,
+                       priv->buffer->str,
+                       COMMAND_BYTES_LENGTH);
+                priv->command_bytes = ntohl(priv->command_bytes);
+                g_string_erase(priv->buffer, 0, COMMAND_BYTES_LENGTH);
+                priv->state = IN_COMMAND_BYTES;
             }
-            memcpy(&priv->command_bytes,
-                   priv->buffer->str,
-                   COMMAND_BYTES_LENGTH);
-            priv->command_bytes = ntohl(priv->command_bytes);
-            g_string_erase(priv->buffer, 0, COMMAND_BYTES_LENGTH);
-            priv->state = IN_COMMAND_BYTES;
-            handled = TRUE;
             break;
           case IN_COMMAND_BYTES:
             if (priv->buffer->len < priv->command_bytes) {
-                /* error = g_error_set(body length is too small); */
-                success = FALSE;
-                break;
+                loop = FALSE;
+            } else {
+                success = parse_command(parser, error);
             }
-            handled = TRUE;
-            success = parse_command(parser, error);
             break;
           default:
-            success = FALSE;
+            loop = FALSE;
             break;
         }
     }
