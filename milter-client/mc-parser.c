@@ -249,13 +249,50 @@ parse_define_macro (const gchar *buffer, gint length, GError **error)
         buffer++;
 
         if (*key) {
+            gchar *normalized_key;
+            gint key_length;
+
+            key_length = value - key - 1;
+            if (key[0] == '{' && key[key_length - 1] == '}')
+                normalized_key = g_strndup(key + 1, key_length - 2);
+            else
+                normalized_key = g_strdup(key);
+
             g_hash_table_insert(macros,
-                                g_strdup(key),
+                                normalized_key,
                                 g_strndup(value, buffer - value - 1));
         }
     }
 
     return macros;
+}
+
+static gboolean
+parse_macro_context (const gchar macro_context, McContextType *context,
+                     GError **error)
+{
+    gboolean success = TRUE;
+
+    switch (macro_context) {
+      case COMMAND_CONNECT:
+        *context = MC_CONTEXT_TYPE_CONNECT;
+        break;
+      case COMMAND_HELO:
+        *context = MC_CONTEXT_TYPE_HELO;
+        break;
+      case COMMAND_MAIL:
+        *context = MC_CONTEXT_TYPE_MAIL;
+        break;
+      default:
+        g_set_error(error,
+                    MC_PARSER_ERROR,
+                    MC_PARSER_ERROR_UNKNOWN_MACRO_CONTEXT,
+                    "unknown macro context: %c", macro_context);
+        success = FALSE;
+        break;
+    }
+
+    return success;
 }
 
 static gboolean
@@ -285,14 +322,17 @@ parse_command (MCParser *parser, GError **error)
             GHashTable *macros;
             McContextType context;
 
-            if (priv->buffer->str[1] == COMMAND_CONNECT)
-                context = MC_CONTEXT_TYPE_CONNECT;
-            macros = parse_define_macro(priv->buffer->str + 1 + 1,
-                                        priv->command_bytes - 1 - 1,
-                                        error);
-            if (macros) {
-                g_signal_emit(parser, signals[DEFINE_MACRO], 0, context, macros);
-                g_hash_table_unref(macros);
+            if (parse_macro_context(priv->buffer->str[1], &context, error)) {
+                macros = parse_define_macro(priv->buffer->str + 1 + 1,
+                                            priv->command_bytes - 1 - 1,
+                                            error);
+                if (macros) {
+                    g_signal_emit(parser, signals[DEFINE_MACRO], 0,
+                                  context, macros);
+                    g_hash_table_unref(macros);
+                } else {
+                    success = FALSE;
+                }
             } else {
                 success = FALSE;
             }

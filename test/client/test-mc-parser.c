@@ -189,7 +189,7 @@ define_macro_test_data_free (DefineMacroTestData *data)
 }
 
 static void
-setup_define_macro_context_packet (void)
+setup_define_macro_connect_packet (void)
 {
     g_string_append(buffer, "C");
     append_macro_definition("j", "debian.cozmixng.org");
@@ -203,11 +203,30 @@ setup_define_macro_context_packet (void)
 
 }
 
+static void
+setup_define_macro_helo_packet (void)
+{
+    g_string_append(buffer, "H");
+    append_macro_definition(NULL, NULL);
+    append_macro_definition(NULL, cut_take_printf("%cDdelian", 0x08));
+}
+
+static void
+setup_define_macro_mail_packet (void)
+{
+    g_string_append(buffer, "M");
+    append_macro_definition("{mail_addr}", "kou@cozmixng.org");
+    append_macro_definition(NULL, NULL);
+    append_macro_definition(NULL, NULL);
+    append_macro_definition(NULL,
+                            cut_take_printf("%cM<kou@cozmixng.org>", 0x14));
+}
+
 void
 data_parse_define_macro (void)
 {
     cut_add_data("connect",
-                 define_macro_test_data_new(setup_define_macro_context_packet,
+                 define_macro_test_data_new(setup_define_macro_connect_packet,
                                             MC_CONTEXT_TYPE_CONNECT,
                                             "j", "debian.cozmixng.org",
                                             "daemon_name", "debian.cozmixng.org",
@@ -216,6 +235,19 @@ data_parse_define_macro (void)
                                             cut_take_printf("4%c%c"
                                                             "192.168.123.123",
                                                             0xc5, 0x0b),
+                                            NULL),
+                 define_macro_test_data_free);
+
+    cut_add_data("HELO",
+                 define_macro_test_data_new(setup_define_macro_helo_packet,
+                                            MC_CONTEXT_TYPE_HELO,
+                                            NULL, NULL),
+                 define_macro_test_data_free);
+
+    cut_add_data("MAIL from",
+                 define_macro_test_data_new(setup_define_macro_mail_packet,
+                                            MC_CONTEXT_TYPE_MAIL,
+                                            "mail_addr", "kou@cozmixng.org",
                                             NULL),
                  define_macro_test_data_free);
 }
