@@ -1,5 +1,7 @@
 2008-09-11  Kouhei Sutou  <kou@cozmixng.org>
 
+	* configure.ac: require Cutter >= 1.0.5.
+
 	* milter-client/mc-parser.[ch], test/client/test-mc-parser.c:
 	support define macro on HELO/MAIL context.
 
