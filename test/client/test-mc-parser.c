@@ -8,7 +8,8 @@
 
 void test_parse_empty_text (void);
 void test_parse_option_negotiation (void);
-void test_parse_define_macro (void);
+void data_parse_define_macro (void);
+void test_parse_define_macro (gconstpointer data);
 
 static MCParser *parser;
 static GString *buffer;
@@ -147,12 +148,49 @@ append_macro_definition(const gchar *name, const gchar *value)
     g_string_append_c(buffer, '\0');
 }
 
-void
-test_parse_define_macro (void)
-{
-    GHashTable *macros;
+typedef void (*setup_packet_func) (void);
 
-    g_string_append(buffer, "D");
+typedef struct _DefineMacroTestData
+{
+    setup_packet_func setup_packet;
+    McContextType context;
+    GHashTable *expected;
+} DefineMacroTestData;
+
+static DefineMacroTestData *define_macro_test_data_new(setup_packet_func setup_packet,
+                                                       McContextType context,
+                                                       const gchar *key,
+                                                       ...) G_GNUC_NULL_TERMINATED;
+static DefineMacroTestData *
+define_macro_test_data_new (setup_packet_func setup_packet,
+                            McContextType context,
+                            const gchar *key,
+                            ...)
+{
+    DefineMacroTestData *data;
+    va_list args;
+
+    data = g_new0(DefineMacroTestData, 1);
+
+    data->setup_packet = setup_packet;
+    data->context = context;
+    va_start(args, key);
+    data->expected = gcut_hash_table_string_string_newv(key, args);
+    va_end(args);
+
+    return data;
+}
+
+static void
+define_macro_test_data_free (DefineMacroTestData *data)
+{
+    g_hash_table_unref(data->expected);
+    g_free(data);
+}
+
+static void
+setup_define_macro_context_packet (void)
+{
     g_string_append(buffer, "C");
     append_macro_definition("j", "debian.cozmixng.org");
     append_macro_definition("daemon_name", "debian.cozmixng.org");
@@ -163,19 +201,36 @@ test_parse_define_macro (void)
                             cut_take_printf("4%c%c192.168.123.123",
                                             0xc5, 0x0b));
 
+}
+
+void
+data_parse_define_macro (void)
+{
+    cut_add_data("connect",
+                 define_macro_test_data_new(setup_define_macro_context_packet,
+                                            MC_CONTEXT_TYPE_CONNECT,
+                                            "j", "debian.cozmixng.org",
+                                            "daemon_name", "debian.cozmixng.org",
+                                            "v", "Postfix 2.5.5",
+                                            "!Cmx.local.net",
+                                            cut_take_printf("4%c%c"
+                                                            "192.168.123.123",
+                                                            0xc5, 0x0b),
+                                            NULL),
+                 define_macro_test_data_free);
+}
+
+void
+test_parse_define_macro (gconstpointer data)
+{
+    const DefineMacroTestData *test_data = data;
+
+    g_string_append(buffer, "D");
+    test_data->setup_packet();
 
     gcut_assert_error(parse());
     cut_assert_equal_int(1, n_define_macros);
-    cut_assert_equal_int(MC_CONTEXT_TYPE_CONNECT, macro_context);
-
-    macros =
-        gcut_hash_table_string_string_new("j", "debian.cozmixng.org",
-                                          "daemon_name", "debian.cozmixng.org",
-                                          "v", "Postfix 2.5.5",
-                                          "!Cmx.local.net",
-                                          cut_take_printf("4%c%c192.168.123.123",
-                                                          0xc5, 0x0b),
-                                          NULL);
-    macros = gcut_take_hash_table(macros);
-    gcut_assert_equal_hash_table_string_string(macros, defined_macros);
+    cut_assert_equal_int(test_data->context, macro_context);
+    gcut_assert_equal_hash_table_string_string(test_data->expected,
+                                               defined_macros);
 }
