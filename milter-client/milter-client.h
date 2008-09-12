@@ -22,6 +22,22 @@
 
 #include <milter-client/mc-parser.h>
 
+#if NETINET || NETINET6 || NETUNIX
+union bigsockaddr
+{
+	struct sockaddr		sa;	/* general version */
+# if NETUNIX
+	struct sockaddr_un	sunix;	/* UNIX family */
+# endif /* NETUNIX */
+# if NETINET
+	struct sockaddr_in	sin;	/* INET family */
+# endif /* NETINET */
+# if NETINET6
+	struct sockaddr_in6	sin6;	/* INET/IPv6 */
+# endif /* NETINET6 */
+};
+#endif
+
 #endif /* __MILTER_CLIENT_H__ */
 
 /*

@@ -1,6 +1,8 @@
 #include <gcutter.h>
 
 #define shutdown inet_shutdown
+#include <sys/socket.h>
+#include <netinet/in.h>
 #include <arpa/inet.h>
 #undef shutdown
 
@@ -10,15 +12,20 @@ void test_parse_empty_text (void);
 void test_parse_option_negotiation (void);
 void data_parse_define_macro (void);
 void test_parse_define_macro (gconstpointer data);
+void test_parse_connect (void);
 
 static MCParser *parser;
 static GString *buffer;
 
 static gint n_option_negotiations;
 static gint n_define_macros;
+static gint n_connects;
 
 static McContextType macro_context;
 static GHashTable *defined_macros;
+static gchar *connect_host_name;
+static struct sockaddr *connect_address;
+static socklen_t connect_address_length;
 
 static void
 cb_option_negotiation (MCParser *parser, gpointer user_data)
@@ -39,6 +46,19 @@ cb_define_macro (MCParser *parser, McContextType context, GHashTable *macros,
 }
 
 static void
+cb_connect (MCParser *parser, const gchar *host_name,
+            const struct sockaddr *address, socklen_t address_length,
+            gpointer user_data)
+{
+    n_connects++;
+
+    connect_host_name = g_strdup(host_name);
+    connect_address = malloc(address_length);
+    memcpy(connect_address, address, address_length);
+    connect_address_length = address_length;
+}
+
+static void
 setup_signals (MCParser *parser)
 {
 #define CONNECT(name)                                                   \
@@ -46,6 +66,7 @@ setup_signals (MCParser *parser)
 
     CONNECT(option_negotiation);
     CONNECT(define_macro);
+    CONNECT(connect);
 
 #undef CONNECT
 }
@@ -58,10 +79,14 @@ setup (void)
 
     n_option_negotiations = 0;
     n_define_macros = 0;
+    n_connects = 0;
 
     buffer = g_string_new(NULL);
 
     defined_macros = NULL;
+    connect_host_name = NULL;
+    connect_address = NULL;
+    connect_address_length = 0;
 }
 
 void
@@ -77,6 +102,12 @@ teardown (void)
 
     if (defined_macros)
         g_hash_table_unref(defined_macros);
+
+    if (connect_host_name)
+        g_free(connect_host_name);
+
+    if (connect_address)
+        g_free(connect_address);
 }
 
 static GError *
@@ -277,4 +308,35 @@ test_parse_define_macro (gconstpointer data)
     cut_assert_equal_int(test_data->context, macro_context);
     gcut_assert_equal_hash_table_string_string(test_data->expected,
                                                defined_macros);
+}
+
+#include <stdio.h>
+void
+test_parse_connect (void)
+{
+    struct sockaddr_in *address;
+    const gchar ip_address[] = "192.168.123.123";
+    gchar port_string[sizeof(uint16_t)];
+    uint16_t port;
+
+    port = htons(50443);
+    memcpy(port_string, &port, sizeof(port));
+
+    g_string_append(buffer, "C");
+    g_string_append(buffer, "mx.local.net");
+    g_string_append_c(buffer, '\0');
+    g_string_append(buffer, "4");
+    g_string_append_len(buffer, port_string, sizeof(port_string));
+    g_string_append(buffer, ip_address);
+    g_string_append_c(buffer, '\0');
+
+    gcut_assert_error(parse());
+    cut_assert_equal_int(1, n_connects);
+    cut_assert_equal_string("mx.local.net", connect_host_name);
+    cut_assert_equal_int(sizeof(struct sockaddr_in), connect_address_length);
+
+    address = (struct sockaddr_in *)connect_address;
+    cut_assert_equal_int(AF_INET, address->sin_family);
+    cut_assert_equal_uint(port, address->sin_port);
+    cut_assert_equal_string(ip_address, inet_ntoa(address->sin_addr));
 }

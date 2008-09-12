@@ -18,11 +18,14 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "config.h"
+#  include "../config.h"
 #endif /* HAVE_CONFIG_H */
 
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/un.h>
 #include <arpa/inet.h>
 
 #include <glib.h>
@@ -50,6 +53,11 @@
 #define COMMAND_DATA               'T'     /* DATA */
 #define COMMAND_UNKNOWN            'U'     /* Any unknown command */
 
+#define FAMILY_UNKNOWN             'U'
+#define FAMILY_UNIX                'L'
+#define FAMILY_INET                '4'
+#define FAMILY_INET6               '6'
+
 
 #define MC_PARSER_GET_PRIVATE(obj)                                      \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj), MC_TYPE_PARSER, MCParserPrivate))
@@ -65,7 +73,8 @@ struct _MCParserPrivate
 typedef enum {
     IN_START,
     IN_COMMAND_BYTES,
-    IN_EOF
+    IN_EOF,
+    IN_ERROR
 } ParseState;
 
 enum
@@ -117,8 +126,8 @@ mc_parser_class_init (MCParserClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MCParserClass, connect),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__VOID,
-                     G_TYPE_NONE, 0);
+                     _mc_marshal_VOID__STRING_POINTER_INT,
+                     G_TYPE_NONE, 3, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_INT);
 
     signals[DEFINE_MACRO] =
         g_signal_new("define-macro",
@@ -302,6 +311,138 @@ parse_macro_context (const gchar macro_context, McContextType *context,
 }
 
 static gboolean
+parse_connect(const gchar *buffer, gint length,
+              gchar **host_name,
+              struct sockaddr **address, socklen_t *address_length,
+              GError **error)
+{
+    gchar family;
+    gint i;
+    uint16_t port;
+    const gchar *parsed_host_name;
+
+    parsed_host_name = buffer;
+    i = 0;
+    while (i < length && buffer[i] != '\0')
+        i++;
+
+    if (i == length) {
+        gchar *terminated_host_name;
+        terminated_host_name = g_strndup(parsed_host_name, i + 1);
+        terminated_host_name[i + 1] = '\0';
+        g_set_error(error,
+                    MC_PARSER_ERROR,
+                    MC_PARSER_ERROR_CONNECT_HOST_NAME_UNTERMINATED,
+                    "host name on connect is unterminated: %s",
+                    terminated_host_name);
+        g_free(terminated_host_name);
+        return FALSE;
+    }
+
+    i++;
+    family = buffer[i];
+    i++;
+    if (family != FAMILY_UNKNOWN) {
+        if (i + sizeof(port) >= length) {
+            g_set_error(error,
+                        MC_PARSER_ERROR,
+                        MC_PARSER_ERROR_CONNECT_PORT_MISSING,
+                        "port number on connect is missing: "
+                        "%s: %d (required: >= %lu)",
+                        parsed_host_name, length, i + sizeof(port));
+            return FALSE;
+        }
+        memcpy(&port, buffer + i, sizeof(port));
+        i += sizeof(port);
+    } else {
+        g_set_error(error,
+                    MC_PARSER_ERROR,
+                    MC_PARSER_ERROR_CONNECT_UNKNOWN_FAMILY,
+                    "unknown family on connect: %s: %c",
+                    parsed_host_name, family);
+        return FALSE;
+    }
+
+    if (buffer[length] != '\0') {
+        g_set_error(error,
+                    MC_PARSER_ERROR,
+                    MC_PARSER_ERROR_CONNECT_SEPARATOR_MISSING,
+                    "NULL separator at the end of connect packet is missing: %s",
+                    parsed_host_name);
+        return FALSE;
+    }
+
+    switch (family) {
+      case FAMILY_INET:
+        {
+            struct sockaddr_in *address_in;
+            struct in_addr ip_address;
+
+            if (inet_aton(buffer + i, &ip_address) == -1) {
+                g_set_error(error,
+                            MC_PARSER_ERROR,
+                            MC_PARSER_ERROR_CONNECT_INVALID_INET_ADDRESS,
+                            "invalid IPv4 address on connect: %s: %s",
+                            parsed_host_name, buffer + i);
+                return FALSE;
+            }
+
+            *address_length = sizeof(struct sockaddr_in);
+            address_in = g_malloc(*address_length);
+            address_in->sin_family = AF_INET;
+            address_in->sin_port = port;
+            address_in->sin_addr = ip_address;
+            *address = (struct sockaddr *)address_in;
+        }
+        break;
+      case FAMILY_INET6:
+        {
+            struct sockaddr_in6 *address_in6;
+            struct in6_addr ipv6_address;
+
+            if (inet_pton(AF_INET6, buffer + i, &ipv6_address) == -1) {
+                g_set_error(error,
+                            MC_PARSER_ERROR,
+                            MC_PARSER_ERROR_CONNECT_INVALID_INET6_ADDRESS,
+                            "invalid IPv6 address on connect: %s: %s",
+                            parsed_host_name, buffer + i);
+                return FALSE;
+            }
+
+            *address_length = sizeof(struct sockaddr_in6);
+            address_in6 = g_malloc(*address_length);
+            address_in6->sin6_family = AF_INET6;
+            address_in6->sin6_port = port;
+            address_in6->sin6_addr = ipv6_address;
+            *address = (struct sockaddr *)address_in6;
+        }
+        break;
+      case FAMILY_UNIX:
+        {
+            struct sockaddr_un *address_un;
+
+            *address_length = sizeof(struct sockaddr_un);
+            address_un = g_malloc(*address_length);
+            address_un->sun_family = AF_UNIX;
+            strcpy(address_un->sun_path, buffer + i);
+            *address = (struct sockaddr *)address_un;
+        }
+        break;
+      default:
+        g_set_error(error,
+                    MC_PARSER_ERROR,
+                    MC_PARSER_ERROR_CONNECT_UNKNOWN_FAMILY,
+                    "unknown family on connect: %s: %c",
+                    parsed_host_name, family);
+        return FALSE;
+        break;
+    }
+
+    *host_name = g_strdup(parsed_host_name);
+    return TRUE;
+}
+
+static gboolean
 parse_command (MCParser *parser, GError **error)
 {
     MCParserPrivate *priv;
@@ -316,7 +457,23 @@ parse_command (MCParser *parser, GError **error)
         g_string_erase(priv->buffer, 0, priv->command_bytes);
         break;
       case COMMAND_CONNECT:
-        g_signal_emit(parser, signals[CONNECT], 0);
+        {
+            gchar *host_name;
+            struct sockaddr *address;
+            socklen_t length;
+
+            if (parse_connect(priv->buffer->str + 1, priv->command_bytes - 1,
+                              &host_name, &address, &length, error)) {
+                g_signal_emit(parser, signals[CONNECT], 0,
+                              host_name, address, length);
+                g_free(host_name);
+                g_free(address);
+                priv->state = IN_START;
+                g_string_erase(priv->buffer, 0, priv->command_bytes);
+            } else {
+                success = FALSE;
+            }
+        }
         break;
       case COMMAND_OPTION_NEGOTIATION:
         g_signal_emit(parser, signals[OPTION_NEGOTIATION], 0);
@@ -336,6 +493,8 @@ parse_command (MCParser *parser, GError **error)
                     g_signal_emit(parser, signals[DEFINE_MACRO], 0,
                                   context, macros);
                     g_hash_table_unref(macros);
+                    priv->state = IN_START;
+                    g_string_erase(priv->buffer, 0, priv->command_bytes);
                 } else {
                     success = FALSE;
                 }
@@ -343,12 +502,14 @@ parse_command (MCParser *parser, GError **error)
                 success = FALSE;
             }
         }
-        priv->state = IN_START;
-        g_string_erase(priv->buffer, 0, priv->command_bytes);
         break;
       default:
         success = FALSE;
         break;
+    }
+
+    if (!success) {
+        priv->state = IN_ERROR;
     }
 
     return success;
@@ -363,6 +524,13 @@ mc_parser_parse (MCParser *parser, const gchar *text, gsize text_len,
     gboolean success = TRUE;
 
     priv = MC_PARSER_GET_PRIVATE(parser);
+    if (priv->state == IN_ERROR) {
+        g_set_error(error,
+                    MC_PARSER_ERROR,
+                    MC_PARSER_ERROR_ALREADY_INVALID,
+                    "input is already invalid");
+        return FALSE;
+    }
     if (priv->state == IN_EOF) {
         /* g_error_set(); */
         return FALSE;

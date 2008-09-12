@@ -85,6 +85,16 @@ if test "x$GCC" = "xyes"; then
 fi
 
 dnl **************************************************************
+dnl Check for headers.
+dnl **************************************************************
+AC_CHECK_HEADER(sys/socket.h,
+                [AC_DEFINE(HAVE_SYS_SOCKET_H, 1,
+                           [Define to 1 if you have <sys/socket.h>.])])
+AC_CHECK_HEADER(sys/un.h,
+                [AC_DEFINE(HAVE_SYS_UN_H, 1,
+                           [Define to 1 if you have <sys/un.h>.])])
+
+dnl **************************************************************
 dnl Check for GLib.
 dnl **************************************************************
 GLIB_REQUIRED=2.12.3

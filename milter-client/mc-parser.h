@@ -20,6 +20,9 @@
 #ifndef __MC_PARSER_H__
 #define __MC_PARSER_H__
 
+#include <sys/types.h>
+#include <sys/socket.h>
+
 #include <glib-object.h>
 
 G_BEGIN_DECLS
@@ -36,7 +39,14 @@ G_BEGIN_DECLS
 typedef enum
 {
     MC_PARSER_ERROR_SHORT_COMMAND_LENGTH,
-    MC_PARSER_ERROR_UNKNOWN_MACRO_CONTEXT
+    MC_PARSER_ERROR_UNKNOWN_MACRO_CONTEXT,
+    MC_PARSER_ERROR_ALREADY_INVALID,
+    MC_PARSER_ERROR_CONNECT_HOST_NAME_UNTERMINATED,
+    MC_PARSER_ERROR_CONNECT_PORT_MISSING,
+    MC_PARSER_ERROR_CONNECT_SEPARATOR_MISSING,
+    MC_PARSER_ERROR_CONNECT_INVALID_INET_ADDRESS,
+    MC_PARSER_ERROR_CONNECT_INVALID_INET6_ADDRESS,
+    MC_PARSER_ERROR_CONNECT_UNKNOWN_FAMILY
 } MCParserError;
 
 typedef enum
@@ -61,7 +71,10 @@ struct _MCParserClass
     GObjectClass parent_class;
 
     void (*abort)               (MCParser *parser);
-    void (*connect)             (MCParser *parser);
+    void (*connect)             (MCParser *parser,
+                                 const gchar *host_name,
+                                 const struct sockaddr *address,
+                                 socklen_t address_length);
     void (*define_macro)        (MCParser *parser,
                                  McContextType context,
                                  GHashTable *macros);

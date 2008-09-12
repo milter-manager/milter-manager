@@ -1,5 +1,8 @@
 2008-09-12  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-client/mc-parser.[ch], test/client/test-mc-parser.c
+	(test_parse_connect): support CONNECT command but too duty!.
+
 	* test/client/test-mc-parser.c: fix wrong test data.
 
 	* milter-client/mc-parser.[ch]: support define macro on header context.
