@@ -43,7 +43,9 @@ typedef enum
 {
     MC_CONTEXT_TYPE_CONNECT,
     MC_CONTEXT_TYPE_HELO,
-    MC_CONTEXT_TYPE_MAIL
+    MC_CONTEXT_TYPE_MAIL,
+    MC_CONTEXT_TYPE_RCPT,
+    MC_CONTEXT_TYPE_HEADER
 } McContextType;
 
 typedef struct _MCParser         MCParser;

@@ -1,3 +1,9 @@
+2008-09-12  Kouhei Sutou  <kou@cozmixng.org>
+
+	* test/client/test-mc-parser.c: fix wrong test data.
+
+	* milter-client/mc-parser.[ch]: support define macro on header context.
+
 2008-09-11  Kouhei Sutou  <kou@cozmixng.org>
 
 	* configure.ac: require Cutter >= 1.0.5.

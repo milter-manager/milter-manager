@@ -195,20 +195,12 @@ setup_define_macro_connect_packet (void)
     append_macro_definition("j", "debian.cozmixng.org");
     append_macro_definition("daemon_name", "debian.cozmixng.org");
     append_macro_definition("v", "Postfix 2.5.5");
-    append_macro_definition(NULL, NULL);
-    append_macro_definition(NULL, NULL);
-    append_macro_definition("!Cmx.local.net",
-                            cut_take_printf("4%c%c192.168.123.123",
-                                            0xc5, 0x0b));
-
 }
 
 static void
 setup_define_macro_helo_packet (void)
 {
     g_string_append(buffer, "H");
-    append_macro_definition(NULL, NULL);
-    append_macro_definition(NULL, cut_take_printf("%cDdelian", 0x08));
 }
 
 static void
@@ -216,10 +208,20 @@ setup_define_macro_mail_packet (void)
 {
     g_string_append(buffer, "M");
     append_macro_definition("{mail_addr}", "kou@cozmixng.org");
-    append_macro_definition(NULL, NULL);
-    append_macro_definition(NULL, NULL);
-    append_macro_definition(NULL,
-                            cut_take_printf("%cM<kou@cozmixng.org>", 0x14));
+}
+
+static void
+setup_define_macro_rcpt_packet (void)
+{
+    g_string_append(buffer, "R");
+    append_macro_definition("{rcpt_addr}", "kou@cozmixng.org");
+}
+
+static void
+setup_define_macro_header_packet (void)
+{
+    g_string_append(buffer, "L");
+    append_macro_definition("i", "69FDD42DF4A");
 }
 
 void
@@ -231,10 +233,6 @@ data_parse_define_macro (void)
                                             "j", "debian.cozmixng.org",
                                             "daemon_name", "debian.cozmixng.org",
                                             "v", "Postfix 2.5.5",
-                                            "!Cmx.local.net",
-                                            cut_take_printf("4%c%c"
-                                                            "192.168.123.123",
-                                                            0xc5, 0x0b),
                                             NULL),
                  define_macro_test_data_free);
 
@@ -248,6 +246,20 @@ data_parse_define_macro (void)
                  define_macro_test_data_new(setup_define_macro_mail_packet,
                                             MC_CONTEXT_TYPE_MAIL,
                                             "mail_addr", "kou@cozmixng.org",
+                                            NULL),
+                 define_macro_test_data_free);
+
+    cut_add_data("RCPT to",
+                 define_macro_test_data_new(setup_define_macro_rcpt_packet,
+                                            MC_CONTEXT_TYPE_RCPT,
+                                            "rcpt_addr", "kou@cozmixng.org",
+                                            NULL),
+                 define_macro_test_data_free);
+
+    cut_add_data("header",
+                 define_macro_test_data_new(setup_define_macro_header_packet,
+                                            MC_CONTEXT_TYPE_HEADER,
+                                            "i", "69FDD42DF4A",
                                             NULL),
                  define_macro_test_data_free);
 }

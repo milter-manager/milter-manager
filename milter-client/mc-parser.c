@@ -283,6 +283,12 @@ parse_macro_context (const gchar macro_context, McContextType *context,
       case COMMAND_MAIL:
         *context = MC_CONTEXT_TYPE_MAIL;
         break;
+      case COMMAND_RCPT:
+        *context = MC_CONTEXT_TYPE_RCPT;
+        break;
+      case COMMAND_HEADER:
+        *context = MC_CONTEXT_TYPE_HEADER;
+        break;
       default:
         g_set_error(error,
                     MC_PARSER_ERROR,
