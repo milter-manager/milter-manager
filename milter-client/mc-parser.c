@@ -79,10 +79,11 @@ typedef enum {
 
 enum
 {
-    ABORT,
-    CONNECT,
-    DEFINE_MACRO,
     OPTION_NEGOTIATION,
+    DEFINE_MACRO,
+    CONNECT,
+    HELO,
+    ABORT,
     LAST_SIGNAL
 };
 
@@ -111,23 +112,14 @@ mc_parser_class_init (MCParserClass *klass)
     gobject_class->set_property = set_property;
     gobject_class->get_property = get_property;
 
-    signals[ABORT] =
-        g_signal_new("abort",
+    signals[OPTION_NEGOTIATION] =
+        g_signal_new("option-negotiation",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MCParserClass, abort),
+                     G_STRUCT_OFFSET(MCParserClass, option_negotiation),
                      NULL, NULL,
                      g_cclosure_marshal_VOID__VOID,
                      G_TYPE_NONE, 0);
-
-    signals[CONNECT] =
-        g_signal_new("connect",
-                     G_TYPE_FROM_CLASS(klass),
-                     G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MCParserClass, connect),
-                     NULL, NULL,
-                     _mc_marshal_VOID__STRING_POINTER_INT,
-                     G_TYPE_NONE, 3, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_INT);
 
     signals[DEFINE_MACRO] =
         g_signal_new("define-macro",
@@ -138,11 +130,29 @@ mc_parser_class_init (MCParserClass *klass)
                      _mc_marshal_VOID__ENUM_POINTER,
                      G_TYPE_NONE, 2, MC_TYPE_CONTEXT_TYPE, G_TYPE_POINTER);
 
-    signals[OPTION_NEGOTIATION] =
-        g_signal_new("option-negotiation",
+    signals[CONNECT] =
+        g_signal_new("connect",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MCParserClass, option_negotiation),
+                     G_STRUCT_OFFSET(MCParserClass, connect),
+                     NULL, NULL,
+                     _mc_marshal_VOID__STRING_POINTER_INT,
+                     G_TYPE_NONE, 3, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_INT);
+
+    signals[HELO] =
+        g_signal_new("helo",
+                     G_TYPE_FROM_CLASS(klass),
+                     G_SIGNAL_RUN_LAST,
+                     G_STRUCT_OFFSET(MCParserClass, helo),
+                     NULL, NULL,
+                     g_cclosure_marshal_VOID__STRING,
+                     G_TYPE_NONE, 1, G_TYPE_STRING);
+
+    signals[ABORT] =
+        g_signal_new("abort",
+                     G_TYPE_FROM_CLASS(klass),
+                     G_SIGNAL_RUN_LAST,
+                     G_STRUCT_OFFSET(MCParserClass, abort),
                      NULL, NULL,
                      g_cclosure_marshal_VOID__VOID,
                      G_TYPE_NONE, 0);
@@ -451,30 +461,6 @@ parse_command (MCParser *parser, GError **error)
     priv = MC_PARSER_GET_PRIVATE(parser);
 
     switch (priv->buffer->str[0]) {
-      case COMMAND_ABORT:
-        g_signal_emit(parser, signals[ABORT], 0);
-        priv->state = IN_START;
-        g_string_erase(priv->buffer, 0, priv->command_bytes);
-        break;
-      case COMMAND_CONNECT:
-        {
-            gchar *host_name;
-            struct sockaddr *address;
-            socklen_t length;
-
-            if (parse_connect(priv->buffer->str + 1, priv->command_bytes - 1,
-                              &host_name, &address, &length, error)) {
-                g_signal_emit(parser, signals[CONNECT], 0,
-                              host_name, address, length);
-                g_free(host_name);
-                g_free(address);
-                priv->state = IN_START;
-                g_string_erase(priv->buffer, 0, priv->command_bytes);
-            } else {
-                success = FALSE;
-            }
-        }
-        break;
       case COMMAND_OPTION_NEGOTIATION:
         g_signal_emit(parser, signals[OPTION_NEGOTIATION], 0);
         priv->state = IN_START;
@@ -502,6 +488,52 @@ parse_command (MCParser *parser, GError **error)
                 success = FALSE;
             }
         }
+        break;
+      case COMMAND_CONNECT:
+        {
+            gchar *host_name;
+            struct sockaddr *address;
+            socklen_t length;
+
+            if (parse_connect(priv->buffer->str + 1, priv->command_bytes - 1,
+                              &host_name, &address, &length, error)) {
+                g_signal_emit(parser, signals[CONNECT], 0,
+                              host_name, address, length);
+                g_free(host_name);
+                g_free(address);
+                priv->state = IN_START;
+                g_string_erase(priv->buffer, 0, priv->command_bytes);
+            } else {
+                success = FALSE;
+            }
+        }
+        break;
+      case COMMAND_HELO:
+        {
+            if (priv->buffer->str[priv->command_bytes] == '\0') {
+                g_signal_emit(parser, signals[HELO], 0, priv->buffer->str + 1);
+                priv->state = IN_START;
+                g_string_erase(priv->buffer, 0, priv->command_bytes);
+            } else {
+                gchar *terminated_fqdn;
+
+                terminated_fqdn = g_strndup(priv->buffer->str + 1,
+                                            priv->command_bytes + 1);
+                terminated_fqdn[priv->command_bytes + 1] = '\0';
+                g_set_error(error,
+                            MC_PARSER_ERROR,
+                            MC_PARSER_ERROR_HELO_MISSING_NULL,
+                            "missing last NULL on HELO: %s",
+                            terminated_fqdn);
+                g_free(terminated_fqdn);
+                success = FALSE;
+            }
+        }
+        break;
+      case COMMAND_ABORT:
+        g_signal_emit(parser, signals[ABORT], 0);
+        priv->state = IN_START;
+        g_string_erase(priv->buffer, 0, priv->command_bytes);
         break;
       default:
         success = FALSE;

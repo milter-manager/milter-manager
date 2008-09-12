@@ -13,6 +13,7 @@ void test_parse_option_negotiation (void);
 void data_parse_define_macro (void);
 void test_parse_define_macro (gconstpointer data);
 void test_parse_connect (void);
+void test_parse_helo (void);
 
 static MCParser *parser;
 static GString *buffer;
@@ -20,12 +21,14 @@ static GString *buffer;
 static gint n_option_negotiations;
 static gint n_define_macros;
 static gint n_connects;
+static gint n_helos;
 
 static McContextType macro_context;
 static GHashTable *defined_macros;
 static gchar *connect_host_name;
 static struct sockaddr *connect_address;
 static socklen_t connect_address_length;
+static gchar *helo_fqdn;
 
 static void
 cb_option_negotiation (MCParser *parser, gpointer user_data)
@@ -59,6 +62,14 @@ cb_connect (MCParser *parser, const gchar *host_name,
 }
 
 static void
+cb_helo (MCParser *parser, const gchar *fqdn)
+{
+    n_helos++;
+
+    helo_fqdn = g_strdup(fqdn);
+}
+
+static void
 setup_signals (MCParser *parser)
 {
 #define CONNECT(name)                                                   \
@@ -67,6 +78,7 @@ setup_signals (MCParser *parser)
     CONNECT(option_negotiation);
     CONNECT(define_macro);
     CONNECT(connect);
+    CONNECT(helo);
 
 #undef CONNECT
 }
@@ -80,13 +92,17 @@ setup (void)
     n_option_negotiations = 0;
     n_define_macros = 0;
     n_connects = 0;
+    n_helos = 0;
 
     buffer = g_string_new(NULL);
 
     defined_macros = NULL;
+
     connect_host_name = NULL;
     connect_address = NULL;
     connect_address_length = 0;
+
+    helo_fqdn = NULL;
 }
 
 void
@@ -108,6 +124,9 @@ teardown (void)
 
     if (connect_address)
         g_free(connect_address);
+
+    if (helo_fqdn)
+        g_free(helo_fqdn);
 }
 
 static GError *
@@ -310,11 +329,11 @@ test_parse_define_macro (gconstpointer data)
                                                defined_macros);
 }
 
-#include <stdio.h>
 void
 test_parse_connect (void)
 {
     struct sockaddr_in *address;
+    const gchar host_name[] = "mx.local.net";
     const gchar ip_address[] = "192.168.123.123";
     gchar port_string[sizeof(uint16_t)];
     uint16_t port;
@@ -323,7 +342,7 @@ test_parse_connect (void)
     memcpy(port_string, &port, sizeof(port));
 
     g_string_append(buffer, "C");
-    g_string_append(buffer, "mx.local.net");
+    g_string_append(buffer, host_name);
     g_string_append_c(buffer, '\0');
     g_string_append(buffer, "4");
     g_string_append_len(buffer, port_string, sizeof(port_string));
@@ -332,11 +351,25 @@ test_parse_connect (void)
 
     gcut_assert_error(parse());
     cut_assert_equal_int(1, n_connects);
-    cut_assert_equal_string("mx.local.net", connect_host_name);
+    cut_assert_equal_string(host_name, connect_host_name);
     cut_assert_equal_int(sizeof(struct sockaddr_in), connect_address_length);
 
     address = (struct sockaddr_in *)connect_address;
     cut_assert_equal_int(AF_INET, address->sin_family);
     cut_assert_equal_uint(port, address->sin_port);
     cut_assert_equal_string(ip_address, inet_ntoa(address->sin_addr));
+}
+
+void
+test_parse_helo (void)
+{
+    const gchar fqdn[] = "delian";
+
+    g_string_append(buffer, "H");
+    g_string_append(buffer, fqdn);
+    g_string_append_c(buffer, '\0');
+
+    gcut_assert_error(parse());
+    cut_assert_equal_int(1, n_helos);
+    cut_assert_equal_string(fqdn, helo_fqdn);
 }

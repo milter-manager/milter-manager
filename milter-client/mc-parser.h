@@ -46,7 +46,8 @@ typedef enum
     MC_PARSER_ERROR_CONNECT_SEPARATOR_MISSING,
     MC_PARSER_ERROR_CONNECT_INVALID_INET_ADDRESS,
     MC_PARSER_ERROR_CONNECT_INVALID_INET6_ADDRESS,
-    MC_PARSER_ERROR_CONNECT_UNKNOWN_FAMILY
+    MC_PARSER_ERROR_CONNECT_UNKNOWN_FAMILY,
+    MC_PARSER_ERROR_HELO_MISSING_NULL
 } MCParserError;
 
 typedef enum
@@ -70,15 +71,17 @@ struct _MCParserClass
 {
     GObjectClass parent_class;
 
-    void (*abort)               (MCParser *parser);
+    void (*option_negotiation)  (MCParser *parser);
+    void (*define_macro)        (MCParser *parser,
+                                 McContextType context,
+                                 GHashTable *macros);
     void (*connect)             (MCParser *parser,
                                  const gchar *host_name,
                                  const struct sockaddr *address,
                                  socklen_t address_length);
-    void (*define_macro)        (MCParser *parser,
-                                 McContextType context,
-                                 GHashTable *macros);
-    void (*option_negotiation)  (MCParser *parser);
+    void (*helo)                (MCParser *parser,
+                                 const gchar *fqdn);
+    void (*abort)               (MCParser *parser);
 };
 
 GQuark           mc_parser_error_quark       (void);
