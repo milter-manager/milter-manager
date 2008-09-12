@@ -83,6 +83,7 @@ enum
     DEFINE_MACRO,
     CONNECT,
     HELO,
+    MAIL,
     ABORT,
     LAST_SIGNAL
 };
@@ -144,6 +145,15 @@ mc_parser_class_init (MCParserClass *klass)
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MCParserClass, helo),
+                     NULL, NULL,
+                     g_cclosure_marshal_VOID__STRING,
+                     G_TYPE_NONE, 1, G_TYPE_STRING);
+
+    signals[MAIL] =
+        g_signal_new("mail",
+                     G_TYPE_FROM_CLASS(klass),
+                     G_SIGNAL_RUN_LAST,
+                     G_STRUCT_OFFSET(MCParserClass, mail),
                      NULL, NULL,
                      g_cclosure_marshal_VOID__STRING,
                      G_TYPE_NONE, 1, G_TYPE_STRING);
@@ -526,6 +536,28 @@ parse_command (MCParser *parser, GError **error)
                             "missing last NULL on HELO: %s",
                             terminated_fqdn);
                 g_free(terminated_fqdn);
+                success = FALSE;
+            }
+        }
+        break;
+      case COMMAND_MAIL:
+        {
+            if (priv->buffer->str[priv->command_bytes] == '\0') {
+                g_signal_emit(parser, signals[MAIL], 0, priv->buffer->str + 1);
+                priv->state = IN_START;
+                g_string_erase(priv->buffer, 0, priv->command_bytes);
+            } else {
+                gchar *terminated_from;
+
+                terminated_from = g_strndup(priv->buffer->str + 1,
+                                            priv->command_bytes + 1);
+                terminated_from[priv->command_bytes + 1] = '\0';
+                g_set_error(error,
+                            MC_PARSER_ERROR,
+                            MC_PARSER_ERROR_MAIL_MISSING_NULL,
+                            "missing the last NULL on MAIL: %s",
+                            terminated_from);
+                g_free(terminated_from);
                 success = FALSE;
             }
         }

@@ -14,6 +14,7 @@ void data_parse_define_macro (void);
 void test_parse_define_macro (gconstpointer data);
 void test_parse_connect (void);
 void test_parse_helo (void);
+void test_parse_mail (void);
 
 static MCParser *parser;
 static GString *buffer;
@@ -22,13 +23,18 @@ static gint n_option_negotiations;
 static gint n_define_macros;
 static gint n_connects;
 static gint n_helos;
+static gint n_mails;
 
 static McContextType macro_context;
 static GHashTable *defined_macros;
+
 static gchar *connect_host_name;
 static struct sockaddr *connect_address;
 static socklen_t connect_address_length;
+
 static gchar *helo_fqdn;
+
+static gchar *mail_from;
 
 static void
 cb_option_negotiation (MCParser *parser, gpointer user_data)
@@ -70,6 +76,14 @@ cb_helo (MCParser *parser, const gchar *fqdn)
 }
 
 static void
+cb_mail (MCParser *parser, const gchar *from)
+{
+    n_mails++;
+
+    mail_from = g_strdup(from);
+}
+
+static void
 setup_signals (MCParser *parser)
 {
 #define CONNECT(name)                                                   \
@@ -79,6 +93,7 @@ setup_signals (MCParser *parser)
     CONNECT(define_macro);
     CONNECT(connect);
     CONNECT(helo);
+    CONNECT(mail);
 
 #undef CONNECT
 }
@@ -93,6 +108,7 @@ setup (void)
     n_define_macros = 0;
     n_connects = 0;
     n_helos = 0;
+    n_mails = 0;
 
     buffer = g_string_new(NULL);
 
@@ -103,6 +119,8 @@ setup (void)
     connect_address_length = 0;
 
     helo_fqdn = NULL;
+
+    mail_from = NULL;
 }
 
 void
@@ -121,12 +139,14 @@ teardown (void)
 
     if (connect_host_name)
         g_free(connect_host_name);
-
     if (connect_address)
         g_free(connect_address);
 
     if (helo_fqdn)
         g_free(helo_fqdn);
+
+    if (mail_from)
+        g_free(mail_from);
 }
 
 static GError *
@@ -372,4 +392,18 @@ test_parse_helo (void)
     gcut_assert_error(parse());
     cut_assert_equal_int(1, n_helos);
     cut_assert_equal_string(fqdn, helo_fqdn);
+}
+
+void
+test_parse_mail (void)
+{
+    const gchar from[] = "<kou@cozmixng.org>";
+
+    g_string_append(buffer, "M");
+    g_string_append(buffer, from);
+    g_string_append_c(buffer, '\0');
+
+    gcut_assert_error(parse());
+    cut_assert_equal_int(1, n_mails);
+    cut_assert_equal_string(from, mail_from);
 }

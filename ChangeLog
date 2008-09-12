@@ -1,6 +1,9 @@
 2008-09-12  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter-client/mc-parser.[ch], test/client/test-mc-parser.c:
+	support MAIL command.
+
+	* milter-client/mc-parser.[ch], test/client/test-mc-parser.c:
 	support HELO command.
 
 	* milter-client/mc-parser.[ch], test/client/test-mc-parser.c:

@@ -47,7 +47,8 @@ typedef enum
     MC_PARSER_ERROR_CONNECT_INVALID_INET_ADDRESS,
     MC_PARSER_ERROR_CONNECT_INVALID_INET6_ADDRESS,
     MC_PARSER_ERROR_CONNECT_UNKNOWN_FAMILY,
-    MC_PARSER_ERROR_HELO_MISSING_NULL
+    MC_PARSER_ERROR_HELO_MISSING_NULL,
+    MC_PARSER_ERROR_MAIL_MISSING_NULL
 } MCParserError;
 
 typedef enum
@@ -81,6 +82,8 @@ struct _MCParserClass
                                  socklen_t address_length);
     void (*helo)                (MCParser *parser,
                                  const gchar *fqdn);
+    void (*mail)                (MCParser *parser,
+                                 const gchar *from);
     void (*abort)               (MCParser *parser);
 };
 
