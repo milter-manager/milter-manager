@@ -15,6 +15,7 @@ void test_parse_define_macro (gconstpointer data);
 void test_parse_connect (void);
 void test_parse_helo (void);
 void test_parse_mail (void);
+void test_parse_rcpt (void);
 
 static MCParser *parser;
 static GString *buffer;
@@ -24,6 +25,7 @@ static gint n_define_macros;
 static gint n_connects;
 static gint n_helos;
 static gint n_mails;
+static gint n_rcpts;
 
 static McContextType macro_context;
 static GHashTable *defined_macros;
@@ -35,6 +37,8 @@ static socklen_t connect_address_length;
 static gchar *helo_fqdn;
 
 static gchar *mail_from;
+
+static gchar *rcpt_to;
 
 static void
 cb_option_negotiation (MCParser *parser, gpointer user_data)
@@ -84,6 +88,14 @@ cb_mail (MCParser *parser, const gchar *from)
 }
 
 static void
+cb_rcpt (MCParser *parser, const gchar *to)
+{
+    n_rcpts++;
+
+    rcpt_to = g_strdup(to);
+}
+
+static void
 setup_signals (MCParser *parser)
 {
 #define CONNECT(name)                                                   \
@@ -94,6 +106,7 @@ setup_signals (MCParser *parser)
     CONNECT(connect);
     CONNECT(helo);
     CONNECT(mail);
+    CONNECT(rcpt);
 
 #undef CONNECT
 }
@@ -109,6 +122,7 @@ setup (void)
     n_connects = 0;
     n_helos = 0;
     n_mails = 0;
+    n_rcpts = 0;
 
     buffer = g_string_new(NULL);
 
@@ -121,6 +135,8 @@ setup (void)
     helo_fqdn = NULL;
 
     mail_from = NULL;
+
+    rcpt_to = NULL;
 }
 
 void
@@ -147,6 +163,9 @@ teardown (void)
 
     if (mail_from)
         g_free(mail_from);
+
+    if (rcpt_to)
+        g_free(rcpt_to);
 }
 
 static GError *
@@ -406,4 +425,18 @@ test_parse_mail (void)
     gcut_assert_error(parse());
     cut_assert_equal_int(1, n_mails);
     cut_assert_equal_string(from, mail_from);
+}
+
+void
+test_parse_rcpt (void)
+{
+    const gchar to[] = "<kou@cozmixng.org>";
+
+    g_string_append(buffer, "R");
+    g_string_append(buffer, to);
+    g_string_append_c(buffer, '\0');
+
+    gcut_assert_error(parse());
+    cut_assert_equal_int(1, n_rcpts);
+    cut_assert_equal_string(to, rcpt_to);
 }

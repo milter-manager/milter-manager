@@ -84,6 +84,7 @@ enum
     CONNECT,
     HELO,
     MAIL,
+    RCPT,
     ABORT,
     LAST_SIGNAL
 };
@@ -154,6 +155,15 @@ mc_parser_class_init (MCParserClass *klass)
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MCParserClass, mail),
+                     NULL, NULL,
+                     g_cclosure_marshal_VOID__STRING,
+                     G_TYPE_NONE, 1, G_TYPE_STRING);
+
+    signals[RCPT] =
+        g_signal_new("rcpt",
+                     G_TYPE_FROM_CLASS(klass),
+                     G_SIGNAL_RUN_LAST,
+                     G_STRUCT_OFFSET(MCParserClass, rcpt),
                      NULL, NULL,
                      g_cclosure_marshal_VOID__STRING,
                      G_TYPE_NONE, 1, G_TYPE_STRING);
@@ -558,6 +568,28 @@ parse_command (MCParser *parser, GError **error)
                             "missing the last NULL on MAIL: %s",
                             terminated_from);
                 g_free(terminated_from);
+                success = FALSE;
+            }
+        }
+        break;
+      case COMMAND_RCPT:
+        {
+            if (priv->buffer->str[priv->command_bytes] == '\0') {
+                g_signal_emit(parser, signals[RCPT], 0, priv->buffer->str + 1);
+                priv->state = IN_START;
+                g_string_erase(priv->buffer, 0, priv->command_bytes);
+            } else {
+                gchar *terminated_to;
+
+                terminated_to = g_strndup(priv->buffer->str + 1,
+                                          priv->command_bytes + 1);
+                terminated_to[priv->command_bytes + 1] = '\0';
+                g_set_error(error,
+                            MC_PARSER_ERROR,
+                            MC_PARSER_ERROR_RCPT_MISSING_NULL,
+                            "missing the last NULL on RCPT: %s",
+                            terminated_to);
+                g_free(terminated_to);
                 success = FALSE;
             }
         }
