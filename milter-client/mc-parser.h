@@ -49,7 +49,8 @@ typedef enum
     MC_PARSER_ERROR_CONNECT_UNKNOWN_FAMILY,
     MC_PARSER_ERROR_HELO_MISSING_NULL,
     MC_PARSER_ERROR_MAIL_MISSING_NULL,
-    MC_PARSER_ERROR_RCPT_MISSING_NULL
+    MC_PARSER_ERROR_RCPT_MISSING_NULL,
+    MC_PARSER_ERROR_HEADER_MISSING_NULL
 } MCParserError;
 
 typedef enum
@@ -87,6 +88,9 @@ struct _MCParserClass
                                  const gchar *from);
     void (*rcpt)                (MCParser *parser,
                                  const gchar *to);
+    void (*header)              (MCParser *parser,
+                                 const gchar *name,
+                                 const gchar *value);
     void (*abort)               (MCParser *parser);
 };
 

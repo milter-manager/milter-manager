@@ -85,6 +85,7 @@ enum
     HELO,
     MAIL,
     RCPT,
+    HEADER,
     ABORT,
     LAST_SIGNAL
 };
@@ -167,6 +168,15 @@ mc_parser_class_init (MCParserClass *klass)
                      NULL, NULL,
                      g_cclosure_marshal_VOID__STRING,
                      G_TYPE_NONE, 1, G_TYPE_STRING);
+
+    signals[HEADER] =
+        g_signal_new("header",
+                     G_TYPE_FROM_CLASS(klass),
+                     G_SIGNAL_RUN_LAST,
+                     G_STRUCT_OFFSET(MCParserClass, header),
+                     NULL, NULL,
+                     _mc_marshal_VOID__STRING_STRING,
+                     G_TYPE_NONE, 2, G_TYPE_STRING, G_TYPE_STRING);
 
     signals[ABORT] =
         g_signal_new("abort",
@@ -473,6 +483,36 @@ parse_connect(const gchar *buffer, gint length,
 }
 
 static gboolean
+parse_header (const gchar *buffer, gint length,
+              gchar **name, gchar **value, GError **error)
+{
+    gint i;
+
+    for (i = 0; i < length && buffer[i] != '\0'; i++) {
+        /* do nothing */
+    }
+    if (i == length) {
+        g_set_error(error,
+                    MC_PARSER_ERROR,
+                    MC_PARSER_ERROR_HEADER_MISSING_NULL,
+                    "name terminate NULL is missing");
+        return FALSE;
+    }
+
+    if (buffer[length] != '\0') {
+        g_set_error(error,
+                    MC_PARSER_ERROR,
+                    MC_PARSER_ERROR_HEADER_MISSING_NULL,
+                    "last NULL is missing");
+        return FALSE;
+    }
+
+    *name = g_strdup(buffer);
+    *value = g_strdup(buffer + i + 1);
+    return TRUE;
+}
+
+static gboolean
 parse_command (MCParser *parser, GError **error)
 {
     MCParserPrivate *priv;
@@ -590,6 +630,20 @@ parse_command (MCParser *parser, GError **error)
                             "missing the last NULL on RCPT: %s",
                             terminated_to);
                 g_free(terminated_to);
+                success = FALSE;
+            }
+        }
+        break;
+      case COMMAND_HEADER:
+        {
+            gchar *name, *value;
+            if (parse_header(priv->buffer->str + 1,
+                             priv->command_bytes - 1,
+                             &name, &value, error)) {
+                g_signal_emit(parser, signals[HEADER], 0, name, value);
+                priv->state = IN_START;
+                g_string_erase(priv->buffer, 0, priv->command_bytes);
+            } else {
                 success = FALSE;
             }
         }

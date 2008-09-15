@@ -16,6 +16,7 @@ void test_parse_connect (void);
 void test_parse_helo (void);
 void test_parse_mail (void);
 void test_parse_rcpt (void);
+void test_parse_header (void);
 
 static MCParser *parser;
 static GString *buffer;
@@ -26,6 +27,7 @@ static gint n_connects;
 static gint n_helos;
 static gint n_mails;
 static gint n_rcpts;
+static gint n_headers;
 
 static McContextType macro_context;
 static GHashTable *defined_macros;
@@ -40,6 +42,9 @@ static gchar *mail_from;
 
 static gchar *rcpt_to;
 
+static gchar *header_name;
+static gchar *header_value;
+
 static void
 cb_option_negotiation (MCParser *parser, gpointer user_data)
 {
@@ -53,6 +58,8 @@ cb_define_macro (MCParser *parser, McContextType context, GHashTable *macros,
     n_define_macros++;
 
     macro_context = context;
+    if (defined_macros)
+        g_hash_table_unref(defined_macros);
     defined_macros = macros;
     if (defined_macros)
         g_hash_table_ref(defined_macros);
@@ -95,6 +102,21 @@ cb_rcpt (MCParser *parser, const gchar *to)
     rcpt_to = g_strdup(to);
 }
 
+
+static void
+cb_header (MCParser *parser, const gchar *name, const gchar *value)
+{
+    n_headers++;
+
+    if (header_name)
+        g_free(header_name);
+    header_name = g_strdup(name);
+
+    if (header_value)
+        g_free(header_value);
+    header_value = g_strdup(value);
+}
+
 static void
 setup_signals (MCParser *parser)
 {
@@ -107,6 +129,7 @@ setup_signals (MCParser *parser)
     CONNECT(helo);
     CONNECT(mail);
     CONNECT(rcpt);
+    CONNECT(header);
 
 #undef CONNECT
 }
@@ -123,6 +146,7 @@ setup (void)
     n_helos = 0;
     n_mails = 0;
     n_rcpts = 0;
+    n_headers = 0;
 
     buffer = g_string_new(NULL);
 
@@ -137,6 +161,9 @@ setup (void)
     mail_from = NULL;
 
     rcpt_to = NULL;
+
+    header_name = NULL;
+    header_value = NULL;
 }
 
 void
@@ -166,6 +193,11 @@ teardown (void)
 
     if (rcpt_to)
         g_free(rcpt_to);
+
+    if (header_name)
+        g_free(header_name);
+    if (header_value)
+        g_free(header_value);
 }
 
 static GError *
@@ -185,6 +217,9 @@ parse (void)
 
     mc_parser_parse(parser, packet, packet_size, &error);
     g_free(packet);
+
+    g_string_free(buffer, TRUE);
+    buffer = g_string_new(NULL);
 
     return error;
 }
@@ -227,7 +262,7 @@ test_parse_option_negotiation (void)
 }
 
 static void
-append_macro_definition(const gchar *name, const gchar *value)
+append_name_and_value(const gchar *name, const gchar *value)
 {
     if (name)
         g_string_append(buffer, name);
@@ -281,9 +316,9 @@ static void
 setup_define_macro_connect_packet (void)
 {
     g_string_append(buffer, "C");
-    append_macro_definition("j", "debian.cozmixng.org");
-    append_macro_definition("daemon_name", "debian.cozmixng.org");
-    append_macro_definition("v", "Postfix 2.5.5");
+    append_name_and_value("j", "debian.cozmixng.org");
+    append_name_and_value("daemon_name", "debian.cozmixng.org");
+    append_name_and_value("v", "Postfix 2.5.5");
 }
 
 static void
@@ -296,21 +331,21 @@ static void
 setup_define_macro_mail_packet (void)
 {
     g_string_append(buffer, "M");
-    append_macro_definition("{mail_addr}", "kou@cozmixng.org");
+    append_name_and_value("{mail_addr}", "kou@cozmixng.org");
 }
 
 static void
 setup_define_macro_rcpt_packet (void)
 {
     g_string_append(buffer, "R");
-    append_macro_definition("{rcpt_addr}", "kou@cozmixng.org");
+    append_name_and_value("{rcpt_addr}", "kou@cozmixng.org");
 }
 
 static void
 setup_define_macro_header_packet (void)
 {
     g_string_append(buffer, "L");
-    append_macro_definition("i", "69FDD42DF4A");
+    append_name_and_value("i", "69FDD42DF4A");
 }
 
 void
@@ -331,14 +366,14 @@ data_parse_define_macro (void)
                                             NULL, NULL),
                  define_macro_test_data_free);
 
-    cut_add_data("MAIL from",
+    cut_add_data("MAIL FROM",
                  define_macro_test_data_new(setup_define_macro_mail_packet,
                                             MC_CONTEXT_TYPE_MAIL,
                                             "mail_addr", "kou@cozmixng.org",
                                             NULL),
                  define_macro_test_data_free);
 
-    cut_add_data("RCPT to",
+    cut_add_data("RCPT TO",
                  define_macro_test_data_new(setup_define_macro_rcpt_packet,
                                             MC_CONTEXT_TYPE_RCPT,
                                             "rcpt_addr", "kou@cozmixng.org",
@@ -439,4 +474,64 @@ test_parse_rcpt (void)
     gcut_assert_error(parse());
     cut_assert_equal_int(1, n_rcpts);
     cut_assert_equal_string(to, rcpt_to);
+}
+
+void
+test_parse_header (void)
+{
+    const gchar from[] = "<kou@cozmixng.org>";
+    const gchar to[] = "<kou@cozmixng.org>";
+    const gchar date[] = "Fri,  5 Sep 2008 09:19:56 +0900 (JST)";
+    const gchar message_id[] = "<1ed5.0003.0000@delian>";
+
+    g_string_append(buffer, "D");
+    g_string_append(buffer, "L");
+    append_name_and_value("i", "69FDD42DF4A");
+    gcut_assert_error(parse());
+
+    g_string_append(buffer, "L");
+    append_name_and_value("From", from);
+    gcut_assert_error(parse());
+    cut_assert_equal_int(1, n_headers);
+    cut_assert_equal_string("From", header_name);
+    cut_assert_equal_string(from, header_value);
+
+
+    g_string_append(buffer, "D");
+    g_string_append(buffer, "L");
+    append_name_and_value("i", "69FDD42DF4A");
+    gcut_assert_error(parse());
+
+    g_string_append(buffer, "L");
+    append_name_and_value("To", to);
+    gcut_assert_error(parse());
+    cut_assert_equal_int(2, n_headers);
+    cut_assert_equal_string("To", header_name);
+    cut_assert_equal_string(to, header_value);
+
+
+    g_string_append(buffer, "D");
+    g_string_append(buffer, "L");
+    append_name_and_value("i", "69FDD42DF4A");
+    gcut_assert_error(parse());
+
+    g_string_append(buffer, "L");
+    append_name_and_value("Date", date);
+    gcut_assert_error(parse());
+    cut_assert_equal_int(3, n_headers);
+    cut_assert_equal_string("Date", header_name);
+    cut_assert_equal_string(date, header_value);
+
+
+    g_string_append(buffer, "D");
+    g_string_append(buffer, "L");
+    append_name_and_value("i", "69FDD42DF4A");
+    gcut_assert_error(parse());
+
+    g_string_append(buffer, "L");
+    append_name_and_value("Message-Id", message_id);
+    gcut_assert_error(parse());
+    cut_assert_equal_int(4, n_headers);
+    cut_assert_equal_string("Message-Id", header_name);
+    cut_assert_equal_string(message_id, header_value);
 }
