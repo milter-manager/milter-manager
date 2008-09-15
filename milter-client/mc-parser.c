@@ -46,7 +46,7 @@
 #define COMMAND_QUIT_NC            'K'     /* QUIT but new connection follows */
 #define COMMAND_HEADER             'L'     /* Header */
 #define COMMAND_MAIL               'M'     /* MAIL from */
-#define COMMAND_EOH                'N'     /* EOH */
+#define COMMAND_END_OF_HEADER      'N'     /* EOH */
 #define COMMAND_OPTION_NEGOTIATION 'O'     /* Option negotiation */
 #define COMMAND_QUIT               'Q'     /* QUIT */
 #define COMMAND_RCPT               'R'     /* RCPT to */
@@ -86,6 +86,7 @@ enum
     MAIL,
     RCPT,
     HEADER,
+    END_OF_HEADER,
     ABORT,
     LAST_SIGNAL
 };
@@ -177,6 +178,15 @@ mc_parser_class_init (MCParserClass *klass)
                      NULL, NULL,
                      _mc_marshal_VOID__STRING_STRING,
                      G_TYPE_NONE, 2, G_TYPE_STRING, G_TYPE_STRING);
+
+    signals[END_OF_HEADER] =
+        g_signal_new("end-of-header",
+                     G_TYPE_FROM_CLASS(klass),
+                     G_SIGNAL_RUN_LAST,
+                     G_STRUCT_OFFSET(MCParserClass, header),
+                     NULL, NULL,
+                     g_cclosure_marshal_VOID__VOID,
+                     G_TYPE_NONE, 0);
 
     signals[ABORT] =
         g_signal_new("abort",
@@ -337,6 +347,9 @@ parse_macro_context (const gchar macro_context, McContextType *context,
         break;
       case COMMAND_HEADER:
         *context = MC_CONTEXT_TYPE_HEADER;
+        break;
+      case COMMAND_END_OF_HEADER:
+        *context = MC_CONTEXT_TYPE_END_OF_HEADER;
         break;
       default:
         g_set_error(error,
@@ -644,6 +657,22 @@ parse_command (MCParser *parser, GError **error)
                 priv->state = IN_START;
                 g_string_erase(priv->buffer, 0, priv->command_bytes);
             } else {
+                success = FALSE;
+            }
+        }
+        break;
+      case COMMAND_END_OF_HEADER:
+        {
+            if (priv->command_bytes == 1) {
+                g_signal_emit(parser, signals[END_OF_HEADER], 0);
+                priv->state = IN_START;
+                g_string_erase(priv->buffer, 0, priv->command_bytes);
+            } else {
+                g_set_error(error,
+                            MC_PARSER_ERROR,
+                            MC_PARSER_ERROR_LONG_COMMAND_LENGTH,
+                            "too long command length on EOH: %d: expected: %d",
+                            priv->command_bytes, 1);
                 success = FALSE;
             }
         }

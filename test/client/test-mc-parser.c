@@ -17,6 +17,7 @@ void test_parse_helo (void);
 void test_parse_mail (void);
 void test_parse_rcpt (void);
 void test_parse_header (void);
+void test_parse_end_of_header (void);
 
 static MCParser *parser;
 static GString *buffer;
@@ -28,6 +29,7 @@ static gint n_helos;
 static gint n_mails;
 static gint n_rcpts;
 static gint n_headers;
+static gint n_end_of_headers;
 
 static McContextType macro_context;
 static GHashTable *defined_macros;
@@ -79,7 +81,7 @@ cb_connect (MCParser *parser, const gchar *host_name,
 }
 
 static void
-cb_helo (MCParser *parser, const gchar *fqdn)
+cb_helo (MCParser *parser, const gchar *fqdn, gpointer user_data)
 {
     n_helos++;
 
@@ -87,7 +89,7 @@ cb_helo (MCParser *parser, const gchar *fqdn)
 }
 
 static void
-cb_mail (MCParser *parser, const gchar *from)
+cb_mail (MCParser *parser, const gchar *from, gpointer user_data)
 {
     n_mails++;
 
@@ -95,7 +97,7 @@ cb_mail (MCParser *parser, const gchar *from)
 }
 
 static void
-cb_rcpt (MCParser *parser, const gchar *to)
+cb_rcpt (MCParser *parser, const gchar *to, gpointer user_data)
 {
     n_rcpts++;
 
@@ -104,7 +106,8 @@ cb_rcpt (MCParser *parser, const gchar *to)
 
 
 static void
-cb_header (MCParser *parser, const gchar *name, const gchar *value)
+cb_header (MCParser *parser, const gchar *name, const gchar *value,
+           gpointer user_data)
 {
     n_headers++;
 
@@ -115,6 +118,12 @@ cb_header (MCParser *parser, const gchar *name, const gchar *value)
     if (header_value)
         g_free(header_value);
     header_value = g_strdup(value);
+}
+
+static void
+cb_end_of_header (MCParser *parser, gpointer user_data)
+{
+    n_end_of_headers++;
 }
 
 static void
@@ -130,6 +139,7 @@ setup_signals (MCParser *parser)
     CONNECT(mail);
     CONNECT(rcpt);
     CONNECT(header);
+    CONNECT(end_of_header);
 
 #undef CONNECT
 }
@@ -147,6 +157,7 @@ setup (void)
     n_mails = 0;
     n_rcpts = 0;
     n_headers = 0;
+    n_end_of_headers = 0;
 
     buffer = g_string_new(NULL);
 
@@ -534,4 +545,17 @@ test_parse_header (void)
     cut_assert_equal_int(4, n_headers);
     cut_assert_equal_string("Message-Id", header_name);
     cut_assert_equal_string(message_id, header_value);
+}
+
+void
+test_parse_end_of_header (void)
+{
+    g_string_append(buffer, "D");
+    g_string_append(buffer, "N");
+    append_name_and_value("i", "69FDD42DF4A");
+    gcut_assert_error(parse());
+
+    g_string_append(buffer, "N");
+    gcut_assert_error(parse());
+    cut_assert_equal_int(1, n_end_of_headers);
 }
