@@ -61,7 +61,8 @@ typedef enum
     MC_CONTEXT_TYPE_MAIL,
     MC_CONTEXT_TYPE_RCPT,
     MC_CONTEXT_TYPE_HEADER,
-    MC_CONTEXT_TYPE_END_OF_HEADER
+    MC_CONTEXT_TYPE_END_OF_HEADER,
+    MC_CONTEXT_TYPE_BODY
 } McContextType;
 
 typedef struct _MCParser         MCParser;
@@ -93,6 +94,10 @@ struct _MCParserClass
     void (*header)              (MCParser *parser,
                                  const gchar *name,
                                  const gchar *value);
+    void (*end_of_header)       (MCParser *parser);
+    void (*body)                (MCParser *parser,
+                                 const gchar *chunk,
+                                 gsize length);
     void (*abort)               (MCParser *parser);
 };
 

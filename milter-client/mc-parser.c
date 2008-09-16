@@ -87,6 +87,7 @@ enum
     RCPT,
     HEADER,
     END_OF_HEADER,
+    BODY,
     ABORT,
     LAST_SIGNAL
 };
@@ -183,10 +184,25 @@ mc_parser_class_init (MCParserClass *klass)
         g_signal_new("end-of-header",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MCParserClass, header),
+                     G_STRUCT_OFFSET(MCParserClass, end_of_header),
                      NULL, NULL,
                      g_cclosure_marshal_VOID__VOID,
                      G_TYPE_NONE, 0);
+
+    signals[BODY] =
+        g_signal_new("body",
+                     G_TYPE_FROM_CLASS(klass),
+                     G_SIGNAL_RUN_LAST,
+                     G_STRUCT_OFFSET(MCParserClass, body),
+                     NULL, NULL,
+#if GLIB_SIZEOF_SIZE_T == 8
+                     _mc_marshal_VOID__STRING_UINT64,
+                     G_TYPE_NONE, 2, G_TYPE_STRING, G_TYPE_UINT64
+#else
+                     _mc_marshal_VOID__STRING_UINT,
+                     G_TYPE_NONE, 2, G_TYPE_STRING, G_TYPE_UINT
+#endif
+            );
 
     signals[ABORT] =
         g_signal_new("abort",
@@ -350,6 +366,9 @@ parse_macro_context (const gchar macro_context, McContextType *context,
         break;
       case COMMAND_END_OF_HEADER:
         *context = MC_CONTEXT_TYPE_END_OF_HEADER;
+        break;
+      case COMMAND_BODY:
+        *context = MC_CONTEXT_TYPE_BODY;
         break;
       default:
         g_set_error(error,
@@ -676,6 +695,12 @@ parse_command (MCParser *parser, GError **error)
                 success = FALSE;
             }
         }
+        break;
+      case COMMAND_BODY:
+        g_signal_emit(parser, signals[BODY], 0,
+                      priv->buffer->str + 1, priv->command_bytes - 1);
+        priv->state = IN_START;
+        g_string_erase(priv->buffer, 0, priv->command_bytes);
         break;
       case COMMAND_ABORT:
         g_signal_emit(parser, signals[ABORT], 0);

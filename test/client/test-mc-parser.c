@@ -18,6 +18,7 @@ void test_parse_mail (void);
 void test_parse_rcpt (void);
 void test_parse_header (void);
 void test_parse_end_of_header (void);
+void test_parse_body (void);
 
 static MCParser *parser;
 static GString *buffer;
@@ -30,6 +31,7 @@ static gint n_mails;
 static gint n_rcpts;
 static gint n_headers;
 static gint n_end_of_headers;
+static gint n_bodies;
 
 static McContextType macro_context;
 static GHashTable *defined_macros;
@@ -46,6 +48,9 @@ static gchar *rcpt_to;
 
 static gchar *header_name;
 static gchar *header_value;
+
+static gchar *body_chunk;
+static gsize body_chunk_length;
 
 static void
 cb_option_negotiation (MCParser *parser, gpointer user_data)
@@ -127,6 +132,17 @@ cb_end_of_header (MCParser *parser, gpointer user_data)
 }
 
 static void
+cb_body (MCParser *parser, const gchar *chunk, gsize length, gpointer user_data)
+{
+    n_bodies++;
+
+    if (body_chunk)
+        g_free(body_chunk);
+    body_chunk = g_strndup(chunk, length);
+    body_chunk_length = length;
+}
+
+static void
 setup_signals (MCParser *parser)
 {
 #define CONNECT(name)                                                   \
@@ -140,6 +156,7 @@ setup_signals (MCParser *parser)
     CONNECT(rcpt);
     CONNECT(header);
     CONNECT(end_of_header);
+    CONNECT(body);
 
 #undef CONNECT
 }
@@ -158,6 +175,7 @@ setup (void)
     n_rcpts = 0;
     n_headers = 0;
     n_end_of_headers = 0;
+    n_bodies = 0;
 
     buffer = g_string_new(NULL);
 
@@ -175,6 +193,8 @@ setup (void)
 
     header_name = NULL;
     header_value = NULL;
+
+    body_chunk = NULL;
 }
 
 void
@@ -209,6 +229,9 @@ teardown (void)
         g_free(header_name);
     if (header_value)
         g_free(header_value);
+
+    if (body_chunk)
+        g_free(body_chunk);
 }
 
 static GError *
@@ -558,4 +581,32 @@ test_parse_end_of_header (void)
     g_string_append(buffer, "N");
     gcut_assert_error(parse());
     cut_assert_equal_int(1, n_end_of_headers);
+}
+
+void
+test_parse_body (void)
+{
+    g_string_append(buffer, "D");
+    g_string_append(buffer, "B");
+    append_name_and_value("i", "69FDD42DF4A");
+    gcut_assert_error(parse());
+
+    g_string_append(buffer, "B");
+    g_string_append(buffer,
+                    "La de da de da 1.\n"
+                    "La de da de da 2.\n"
+                    "La de da de da 3.\n"
+                    "La de da de da 4.");
+    gcut_assert_error(parse());
+    cut_assert_equal_int(1, n_bodies);
+    cut_assert_equal_string("La de da de da 1.\n"
+                            "La de da de da 2.\n"
+                            "La de da de da 3.\n"
+                            "La de da de da 4.",
+                            body_chunk);
+    cut_assert_equal_int(strlen("La de da de da 1.\n"
+                                "La de da de da 2.\n"
+                                "La de da de da 3.\n"
+                                "La de da de da 4."),
+                         body_chunk_length);
 }
