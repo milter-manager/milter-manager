@@ -3,6 +3,7 @@
 #define shutdown inet_shutdown
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <sys/un.h>
 #include <arpa/inet.h>
 #undef shutdown
 
@@ -15,12 +16,16 @@ void test_parse_define_macro (gconstpointer data);
 void test_parse_define_macro_with_unknown_macro_context (void);
 void test_parse_define_macro_without_name_null (void);
 void test_parse_define_macro_without_value_null (void);
-void test_parse_connect (void);
+void test_parse_connect_ipv4 (void);
+void test_parse_connect_ipv6 (void);
+void test_parse_connect_unix (void);
 void test_parse_connect_without_host_name_null (void);
 void test_parse_connect_with_unknown_family (void);
 void test_parse_connect_with_unexpected_family (void);
 void test_parse_connect_with_unexpected_family_and_port (void);
 void test_parse_connect_without_ip_address_null (void);
+void test_parse_connect_with_invalid_ipv4_address (void);
+void test_parse_connect_with_invalid_ipv6_address (void);
 void test_parse_helo (void);
 void test_parse_mail (void);
 void test_parse_rcpt (void);
@@ -547,7 +552,7 @@ test_parse_define_macro_without_value_null (void)
 }
 
 void
-test_parse_connect (void)
+test_parse_connect_ipv4 (void)
 {
     struct sockaddr_in *address;
     const gchar host_name[] = "mx.local.net";
@@ -575,6 +580,72 @@ test_parse_connect (void)
     cut_assert_equal_int(AF_INET, address->sin_family);
     cut_assert_equal_uint(port, address->sin_port);
     cut_assert_equal_string(ip_address, inet_ntoa(address->sin_addr));
+}
+
+void
+test_parse_connect_ipv6 (void)
+{
+    struct sockaddr_in6 *address;
+    const gchar host_name[] = "mx.local.net";
+    const gchar ipv6_address[] = "2001:c90:625:12e8:290:ccff:fee2:80c5";
+    gchar actual_address[4096];
+    gchar port_string[sizeof(uint16_t)];
+    uint16_t port;
+
+    port = htons(50443);
+    memcpy(port_string, &port, sizeof(port));
+
+    g_string_append(buffer, "C");
+    g_string_append(buffer, host_name);
+    g_string_append_c(buffer, '\0');
+    g_string_append(buffer, "6");
+    g_string_append_len(buffer, port_string, sizeof(port_string));
+    g_string_append(buffer, ipv6_address);
+    g_string_append_c(buffer, '\0');
+
+    gcut_assert_error(parse());
+    cut_assert_equal_int(1, n_connects);
+    cut_assert_equal_string(host_name, connect_host_name);
+    cut_assert_equal_int(sizeof(struct sockaddr_in6), connect_address_length);
+
+    address = (struct sockaddr_in6 *)connect_address;
+    cut_assert_equal_int(AF_INET6, address->sin6_family);
+    cut_assert_equal_uint(port, address->sin6_port);
+    cut_assert_equal_string(ipv6_address,
+                            inet_ntop(AF_INET6,
+                                      &(address->sin6_addr),
+                                      actual_address,
+                                      sizeof(actual_address)));
+}
+
+void
+test_parse_connect_unix (void)
+{
+    struct sockaddr_un *address;
+    const gchar host_name[] = "mx.local.net";
+    const gchar path[] = "/tmp/unix.sock";
+    gchar port_string[sizeof(uint16_t)];
+    uint16_t port;
+
+    port = htons(0);
+    memcpy(port_string, &port, sizeof(port));
+
+    g_string_append(buffer, "C");
+    g_string_append(buffer, host_name);
+    g_string_append_c(buffer, '\0');
+    g_string_append(buffer, "L");
+    g_string_append_len(buffer, port_string, sizeof(port_string));
+    g_string_append(buffer, path);
+    g_string_append_c(buffer, '\0');
+
+    gcut_assert_error(parse());
+    cut_assert_equal_int(1, n_connects);
+    cut_assert_equal_string(host_name, connect_host_name);
+    cut_assert_equal_int(sizeof(struct sockaddr_un), connect_address_length);
+
+    address = (struct sockaddr_un *)connect_address;
+    cut_assert_equal_int(AF_UNIX, address->sun_family);
+    cut_assert_equal_string(path, address->sun_path);
 }
 
 void
@@ -677,6 +748,62 @@ test_parse_connect_without_ip_address_null (void)
                                  "on connect command: "
                                  "<mx.local.net>: <4>: <2929>: "
                                  "<192.168.123.123>");
+    actual_error = parse();
+    gcut_assert_equal_error(expected_error, actual_error);
+}
+
+void
+test_parse_connect_with_invalid_ipv4_address (void)
+{
+    const gchar host_name[] = "mx.local.net";
+    const gchar ip_address[] = "192.168.123.12x";
+    gchar port_string[sizeof(guint16)];
+    guint16 port;
+
+    port = htons(2929);
+    memcpy(port_string, &port, sizeof(port));
+
+    g_string_append(buffer, "C");
+    g_string_append(buffer, host_name);
+    g_string_append_c(buffer, '\0');
+    g_string_append(buffer, "4");
+    g_string_append_len(buffer, port_string, sizeof(port));
+    g_string_append(buffer, ip_address);
+    g_string_append_c(buffer, '\0');
+
+    expected_error = g_error_new(MILTER_PARSER_ERROR,
+                                 MILTER_PARSER_ERROR_INVALID_FORMAT,
+                                 "invalid IPv4 address on connect command: "
+                                 "<mx.local.net>: <4>: <2929>: "
+                                 "<192.168.123.12x>");
+    actual_error = parse();
+    gcut_assert_equal_error(expected_error, actual_error);
+}
+
+void
+test_parse_connect_with_invalid_ipv6_address (void)
+{
+    const gchar host_name[] = "mx.local.net";
+    const gchar ipv6_address[] = "2001:c90:625:12e8:290:ccff:fee2:80c5x";
+    gchar port_string[sizeof(guint16)];
+    guint16 port;
+
+    port = htons(2929);
+    memcpy(port_string, &port, sizeof(port));
+
+    g_string_append(buffer, "C");
+    g_string_append(buffer, host_name);
+    g_string_append_c(buffer, '\0');
+    g_string_append(buffer, "6");
+    g_string_append_len(buffer, port_string, sizeof(port));
+    g_string_append(buffer, ipv6_address);
+    g_string_append_c(buffer, '\0');
+
+    expected_error = g_error_new(MILTER_PARSER_ERROR,
+                                 MILTER_PARSER_ERROR_INVALID_FORMAT,
+                                 "invalid IPv6 address on connect command: "
+                                 "<mx.local.net>: <6>: <2929>: "
+                                 "<2001:c90:625:12e8:290:ccff:fee2:80c5x>");
     actual_error = parse();
     gcut_assert_equal_error(expected_error, actual_error);
 }

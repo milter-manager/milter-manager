@@ -490,11 +490,12 @@ parse_inet_address (const gchar *buffer,
     struct sockaddr_in *address_in;
     struct in_addr ip_address;
 
-    if (inet_aton(buffer, &ip_address) == -1) {
+    if (inet_aton(buffer, &ip_address) == 0) {
         g_set_error(error,
                     MILTER_PARSER_ERROR,
                     MILTER_PARSER_ERROR_INVALID_FORMAT,
-                    "invalid IPv4 address on connect: <%s>: <%c>: <%u>: <%s>",
+                    "invalid IPv4 address on connect command: "
+                    "<%s>: <%c>: <%u>: <%s>",
                     host_name, family, ntohs(port), buffer);
         return FALSE;
     }
@@ -518,11 +519,12 @@ parse_inet6_address (const gchar *buffer,
     struct sockaddr_in6 *address_in6;
     struct in6_addr ipv6_address;
 
-    if (inet_pton(AF_INET6, buffer, &ipv6_address) == -1) {
+    if (inet_pton(AF_INET6, buffer, &ipv6_address) == 0) {
         g_set_error(error,
                     MILTER_PARSER_ERROR,
                     MILTER_PARSER_ERROR_INVALID_FORMAT,
-                    "invalid IPv6 address on connect: <%s>: <%c>: <%u>: <%s>",
+                    "invalid IPv6 address on connect command: "
+                    "<%s>: <%c>: <%u>: <%s>",
                     host_name, family, ntohs(port), buffer);
         return FALSE;
     }
