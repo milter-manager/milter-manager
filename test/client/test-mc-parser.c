@@ -19,6 +19,8 @@ void test_parse_rcpt (void);
 void test_parse_header (void);
 void test_parse_end_of_header (void);
 void test_parse_body (void);
+void test_parse_body_end_with_data (void);
+void test_parse_body_end_without_data (void);
 
 static MCParser *parser;
 static GString *buffer;
@@ -32,6 +34,7 @@ static gint n_rcpts;
 static gint n_headers;
 static gint n_end_of_headers;
 static gint n_bodies;
+static gint n_end_of_messages;
 
 static McContextType macro_context;
 static GHashTable *defined_macros;
@@ -143,6 +146,12 @@ cb_body (MCParser *parser, const gchar *chunk, gsize length, gpointer user_data)
 }
 
 static void
+cb_end_of_message (MCParser *parser, gpointer user_data)
+{
+    n_end_of_messages++;
+}
+
+static void
 setup_signals (MCParser *parser)
 {
 #define CONNECT(name)                                                   \
@@ -157,6 +166,7 @@ setup_signals (MCParser *parser)
     CONNECT(header);
     CONNECT(end_of_header);
     CONNECT(body);
+    CONNECT(end_of_message);
 
 #undef CONNECT
 }
@@ -176,6 +186,7 @@ setup (void)
     n_headers = 0;
     n_end_of_headers = 0;
     n_bodies = 0;
+    n_end_of_messages = 0;
 
     buffer = g_string_new(NULL);
 
@@ -609,4 +620,47 @@ test_parse_body (void)
                                 "La de da de da 3.\n"
                                 "La de da de da 4."),
                          body_chunk_length);
+}
+
+void
+test_parse_body_end_with_data (void)
+{
+    g_string_append(buffer, "D");
+    g_string_append(buffer, "E");
+    append_name_and_value("i", "69FDD42DF4A");
+    gcut_assert_error(parse());
+
+    g_string_append(buffer, "E");
+    g_string_append(buffer,
+                    "La de da de da 1.\n"
+                    "La de da de da 2.\n"
+                    "La de da de da 3.\n"
+                    "La de da de da 4.");
+    gcut_assert_error(parse());
+    cut_assert_equal_int(1, n_bodies);
+    cut_assert_equal_string("La de da de da 1.\n"
+                            "La de da de da 2.\n"
+                            "La de da de da 3.\n"
+                            "La de da de da 4.",
+                            body_chunk);
+    cut_assert_equal_int(strlen("La de da de da 1.\n"
+                                "La de da de da 2.\n"
+                                "La de da de da 3.\n"
+                                "La de da de da 4."),
+                         body_chunk_length);
+    cut_assert_equal_int(1, n_end_of_messages);
+}
+
+void
+test_parse_body_end_without_data (void)
+{
+    g_string_append(buffer, "D");
+    g_string_append(buffer, "E");
+    append_name_and_value("i", "69FDD42DF4A");
+    gcut_assert_error(parse());
+
+    g_string_append(buffer, "E");
+    gcut_assert_error(parse());
+    cut_assert_equal_int(0, n_bodies);
+    cut_assert_equal_int(1, n_end_of_messages);
 }

@@ -41,7 +41,7 @@
 #define COMMAND_BODY               'B'     /* Body chunk */
 #define COMMAND_CONNECT            'C'     /* Connection information */
 #define COMMAND_DEFINE_MACRO       'D'     /* Define macro */
-#define COMMAND_BODYEOB            'E'     /* final body chunk (End) */
+#define COMMAND_END_OF_MESSAGE     'E'     /* final body chunk (End) */
 #define COMMAND_HELO               'H'     /* HELO/EHLO */
 #define COMMAND_QUIT_NC            'K'     /* QUIT but new connection follows */
 #define COMMAND_HEADER             'L'     /* Header */
@@ -88,6 +88,7 @@ enum
     HEADER,
     END_OF_HEADER,
     BODY,
+    END_OF_MESSAGE,
     ABORT,
     LAST_SIGNAL
 };
@@ -203,6 +204,15 @@ mc_parser_class_init (MCParserClass *klass)
                      G_TYPE_NONE, 2, G_TYPE_STRING, G_TYPE_UINT
 #endif
             );
+
+    signals[END_OF_MESSAGE] =
+        g_signal_new("end-of-message",
+                     G_TYPE_FROM_CLASS(klass),
+                     G_SIGNAL_RUN_LAST,
+                     G_STRUCT_OFFSET(MCParserClass, end_of_message),
+                     NULL, NULL,
+                     g_cclosure_marshal_VOID__VOID,
+                     G_TYPE_NONE, 0);
 
     signals[ABORT] =
         g_signal_new("abort",
@@ -369,6 +379,9 @@ parse_macro_context (const gchar macro_context, McContextType *context,
         break;
       case COMMAND_BODY:
         *context = MC_CONTEXT_TYPE_BODY;
+        break;
+      case COMMAND_END_OF_MESSAGE:
+        *context = MC_CONTEXT_TYPE_END_OF_MESSAGE;
         break;
       default:
         g_set_error(error,
@@ -699,6 +712,15 @@ parse_command (MCParser *parser, GError **error)
       case COMMAND_BODY:
         g_signal_emit(parser, signals[BODY], 0,
                       priv->buffer->str + 1, priv->command_bytes - 1);
+        priv->state = IN_START;
+        g_string_erase(priv->buffer, 0, priv->command_bytes);
+        break;
+      case COMMAND_END_OF_MESSAGE:
+        if (priv->command_bytes > 1) {
+            g_signal_emit(parser, signals[BODY], 0,
+                          priv->buffer->str + 1, priv->command_bytes - 1);
+        }
+        g_signal_emit(parser, signals[END_OF_MESSAGE], 0);
         priv->state = IN_START;
         g_string_erase(priv->buffer, 0, priv->command_bytes);
         break;
