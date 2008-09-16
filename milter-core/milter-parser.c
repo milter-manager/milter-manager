@@ -853,12 +853,43 @@ milter_parser_parse (MilterParser *parser, const gchar *text, gsize text_len,
     return success;
 }
 
+static void
+set_unexpected_end_error (MilterParserPrivate *priv, gsize required_length,
+                          const gchar *parsing_target, GError **error)
+{
+    GString *message;
+    gint i;
+    gsize needed_length;
+    gboolean have_unprintable_byte = FALSE;
+
+    message = g_string_new("stream is ended unexpectedly: ");
+
+    needed_length = required_length - priv->buffer->len;
+    g_string_append_printf(message,
+                           "need more %" G_GSIZE_FORMAT "byte%s for parsing %s:",
+                           needed_length,
+                           needed_length > 1 ? "s" : "",
+                           parsing_target);
+    for (i = 0; i < priv->buffer->len; i++) {
+        g_string_append_printf(message, " 0x%02x", priv->buffer->str[i]);
+        if (priv->buffer->str[i] < 0x20 || 0x7e < priv->buffer->str[i])
+            have_unprintable_byte = TRUE;
+    }
+    if (!have_unprintable_byte)
+        g_string_append_printf(message, " (%s)", priv->buffer->str);
+    g_set_error(error,
+                MILTER_PARSER_ERROR,
+                MILTER_PARSER_ERROR_UNEXPECTED_END,
+                "%s", message->str);
+    g_string_free(message, TRUE);
+
+    priv->state = IN_ERROR;
+}
+
 gboolean
 milter_parser_end_parse (MilterParser *parser, GError **error)
 {
     MilterParserPrivate *priv;
-    GString *message = NULL;
-    gint i;
 
     priv = MILTER_PARSER_GET_PRIVATE(parser);
 
@@ -868,28 +899,17 @@ milter_parser_end_parse (MilterParser *parser, GError **error)
       case IN_START:
         break;
       case IN_COMMAND_LENGTH:
-        message = g_string_new("stream is ended unexpectedly: ");
-        g_string_append_printf(message,
-                               "need more %" G_GSIZE_FORMAT
-                               "bytes for parsing command length:",
-                               COMMAND_LENGTH_BYTES - priv->buffer->len);
-        for (i = 0; i < priv->buffer->len; i++) {
-            g_string_append_printf(message, " 0x%02x", priv->buffer->str[i]);
-        }
-        g_set_error(error,
-                    MILTER_PARSER_ERROR,
-                    MILTER_PARSER_ERROR_UNEXPECTED_END,
-                    "%s", message->str);
-        priv->state = IN_ERROR;
+        set_unexpected_end_error(priv, COMMAND_LENGTH_BYTES, "command length",
+                                 error);
         break;
       case IN_COMMAND_CONTENT:
+        set_unexpected_end_error(priv, priv->command_length, "command content",
+                                 error);
         break;
       case IN_ERROR:
         break;
     }
 
-    if (message)
-        g_string_free(message, TRUE);
     return priv->state != IN_ERROR;
 }
 

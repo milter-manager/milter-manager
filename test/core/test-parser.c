@@ -27,6 +27,7 @@ void test_parse_unknown (void);
 
 void test_end_parse_immediately (void);
 void test_end_parse_in_command_length_parsing (void);
+void test_end_parse_in_command_content_parsing (void);
 
 static MilterParser *parser;
 static GString *buffer;
@@ -754,6 +755,26 @@ test_end_parse_in_command_length_parsing (void)
                                  "stream is ended unexpectedly: "
                                  "need more 2bytes for parsing "
                                  "command length: 0x00 0x58");
+    gcut_assert_equal_error(expected_error, actual_error);
+}
+
+void
+test_end_parse_in_command_content_parsing (void)
+{
+    guint32 content_size;
+
+    content_size = htonl(4);
+    g_string_append_len(buffer, "\0\0\0\0abc", 7);
+    memcpy(buffer->str, &content_size, sizeof(content_size));
+    cut_assert_true(milter_parser_parse(parser, buffer->str, buffer->len,
+                                        &actual_error));
+    cut_assert_false(milter_parser_end_parse(parser, &actual_error));
+
+    expected_error = g_error_new(MILTER_PARSER_ERROR,
+                                 MILTER_PARSER_ERROR_UNEXPECTED_END,
+                                 "stream is ended unexpectedly: "
+                                 "need more 1byte for parsing "
+                                 "command content: 0x61 0x62 0x63 (abc)");
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
