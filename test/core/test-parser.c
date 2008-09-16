@@ -17,6 +17,8 @@ void test_parse_define_macro_without_name_null (void);
 void test_parse_define_macro_without_value_null (void);
 void test_parse_connect (void);
 void test_parse_connect_without_host_name_null (void);
+void test_parse_connect_with_unknown_family (void);
+void test_parse_connect_with_unexpected_family (void);
 void test_parse_helo (void);
 void test_parse_mail (void);
 void test_parse_rcpt (void);
@@ -585,6 +587,45 @@ test_parse_connect_without_host_name_null (void)
                                  MILTER_PARSER_ERROR_MISSING_NULL,
                                  "host name isn't terminated by NULL "
                                  "on connect command: <mx.local.net>");
+    actual_error = parse();
+    gcut_assert_equal_error(expected_error, actual_error);
+}
+
+void
+test_parse_connect_with_unknown_family (void)
+{
+    const gchar host_name[] = "mx.local.net";
+
+    g_string_append(buffer, "C");
+    g_string_append(buffer, host_name);
+    g_string_append_c(buffer, '\0');
+    g_string_append(buffer, "U");
+
+    expected_error = g_error_new(MILTER_PARSER_ERROR,
+                                 MILTER_PARSER_ERROR_CONNECT_UNKNOWN_FAMILY,
+                                 "unknown family on connect command: "
+                                 "<mx.local.net>: <U>");
+    actual_error = parse();
+    gcut_assert_equal_error(expected_error, actual_error);
+}
+
+void
+test_parse_connect_with_unexpected_family (void)
+{
+    const gchar host_name[] = "mx.local.net";
+
+    g_string_append(buffer, "C");
+    g_string_append(buffer, host_name);
+    g_string_append_c(buffer, '\0');
+    g_string_append(buffer, "X");
+
+    expected_error = g_error_new(MILTER_PARSER_ERROR,
+                                 MILTER_PARSER_ERROR_CONNECT_MISSING_PORT,
+                                 "port number is missing on connect command: "
+                                 "<mx.local.net>: <X>: %" G_GSIZE_FORMAT
+                                 " (required: >= %" G_GSIZE_FORMAT ")",
+                                 strlen(host_name) + 1 + 1,
+                                 strlen(host_name) + 1 + 1 + sizeof(guint16));
     actual_error = parse();
     gcut_assert_equal_error(expected_error, actual_error);
 }
