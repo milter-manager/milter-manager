@@ -20,6 +20,7 @@ void test_parse_connect_without_host_name_null (void);
 void test_parse_connect_with_unknown_family (void);
 void test_parse_connect_with_unexpected_family (void);
 void test_parse_connect_with_unexpected_family_and_port (void);
+void test_parse_connect_without_ip_address_null (void);
 void test_parse_helo (void);
 void test_parse_mail (void);
 void test_parse_rcpt (void);
@@ -603,7 +604,7 @@ test_parse_connect_with_unknown_family (void)
     g_string_append(buffer, "U");
 
     expected_error = g_error_new(MILTER_PARSER_ERROR,
-                                 MILTER_PARSER_ERROR_CONNECT_UNKNOWN_FAMILY,
+                                 MILTER_PARSER_ERROR_UNKNOWN_FAMILY,
                                  "unknown family on connect command: "
                                  "<mx.local.net>: <U>");
     actual_error = parse();
@@ -621,9 +622,9 @@ test_parse_connect_with_unexpected_family (void)
     g_string_append(buffer, "X");
 
     expected_error = g_error_new(MILTER_PARSER_ERROR,
-                                 MILTER_PARSER_ERROR_SHORT_COMMAND_LENGTH,
-                                 "need more 2 bytes for parsing port number "
-                                 "on connect command: <mx.local.net>: <X>");
+                                 MILTER_PARSER_ERROR_UNKNOWN_FAMILY,
+                                 "unknown family on connect command: "
+                                 "<mx.local.net>: <X>");
     actual_error = parse();
     gcut_assert_equal_error(expected_error, actual_error);
 }
@@ -645,9 +646,37 @@ test_parse_connect_with_unexpected_family_and_port (void)
     g_string_append_len(buffer, port_string, sizeof(port));
 
     expected_error = g_error_new(MILTER_PARSER_ERROR,
-                                 MILTER_PARSER_ERROR_CONNECT_UNKNOWN_FAMILY,
+                                 MILTER_PARSER_ERROR_UNKNOWN_FAMILY,
                                  "unknown family on connect command: "
-                                 "<mx.local.net>: <X>: <2929>");
+                                 "<mx.local.net>: <X>");
+    actual_error = parse();
+    gcut_assert_equal_error(expected_error, actual_error);
+}
+
+void
+test_parse_connect_without_ip_address_null (void)
+{
+    const gchar host_name[] = "mx.local.net";
+    const gchar ip_address[] = "192.168.123.123";
+    gchar port_string[sizeof(guint16)];
+    guint16 port;
+
+    port = htons(2929);
+    memcpy(port_string, &port, sizeof(port));
+
+    g_string_append(buffer, "C");
+    g_string_append(buffer, host_name);
+    g_string_append_c(buffer, '\0');
+    g_string_append(buffer, "4");
+    g_string_append_len(buffer, port_string, sizeof(port));
+    g_string_append(buffer, ip_address);
+
+    expected_error = g_error_new(MILTER_PARSER_ERROR,
+                                 MILTER_PARSER_ERROR_MISSING_NULL,
+                                 "address name isn't terminated by NULL "
+                                 "on connect command: "
+                                 "<mx.local.net>: <4>: <2929>: "
+                                 "<192.168.123.123>");
     actual_error = parse();
     gcut_assert_equal_error(expected_error, actual_error);
 }

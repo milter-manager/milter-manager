@@ -482,27 +482,105 @@ parse_define_macro (MilterParser *parser, GError **error)
 }
 
 static gboolean
+parse_inet_address (const gchar *buffer,
+                    struct sockaddr **address, socklen_t *address_length,
+                    const gchar *host_name, gchar family, guint port,
+                    GError **error)
+{
+    struct sockaddr_in *address_in;
+    struct in_addr ip_address;
+
+    if (inet_aton(buffer, &ip_address) == -1) {
+        g_set_error(error,
+                    MILTER_PARSER_ERROR,
+                    MILTER_PARSER_ERROR_INVALID_FORMAT,
+                    "invalid IPv4 address on connect: <%s>: <%c>: <%u>: <%s>",
+                    host_name, family, ntohs(port), buffer);
+        return FALSE;
+    }
+
+    *address_length = sizeof(struct sockaddr_in);
+    address_in = g_malloc(*address_length);
+    address_in->sin_family = AF_INET;
+    address_in->sin_port = port;
+    address_in->sin_addr = ip_address;
+    *address = (struct sockaddr *)address_in;
+
+    return TRUE;
+}
+
+static gboolean
+parse_inet6_address (const gchar *buffer,
+                     struct sockaddr **address, socklen_t *address_length,
+                     const gchar *host_name, gchar family, guint port,
+                     GError **error)
+{
+    struct sockaddr_in6 *address_in6;
+    struct in6_addr ipv6_address;
+
+    if (inet_pton(AF_INET6, buffer, &ipv6_address) == -1) {
+        g_set_error(error,
+                    MILTER_PARSER_ERROR,
+                    MILTER_PARSER_ERROR_INVALID_FORMAT,
+                    "invalid IPv6 address on connect: <%s>: <%c>: <%u>: <%s>",
+                    host_name, family, ntohs(port), buffer);
+        return FALSE;
+    }
+
+    *address_length = sizeof(struct sockaddr_in6);
+    address_in6 = g_malloc(*address_length);
+    address_in6->sin6_family = AF_INET6;
+    address_in6->sin6_port = port;
+    address_in6->sin6_addr = ipv6_address;
+    *address = (struct sockaddr *)address_in6;
+
+    return TRUE;
+}
+
+static gboolean
+parse_unix_address (const gchar *buffer,
+                    struct sockaddr **address, socklen_t *address_length,
+                    const gchar *host_name, gchar family, guint port,
+                    GError **error)
+{
+    struct sockaddr_un *address_un;
+
+    *address_length = sizeof(struct sockaddr_un);
+    address_un = g_malloc(*address_length);
+    address_un->sun_family = AF_UNIX;
+    strcpy(address_un->sun_path, buffer);
+    *address = (struct sockaddr *)address_un;
+
+    return TRUE;
+}
+
+static gboolean
 parse_connect (const gchar *buffer, gint length, gchar **host_name,
                struct sockaddr **address, socklen_t *address_length,
                GError **error)
 {
     gchar family;
-    gint i;
+    gint i, null_character_point;
     uint16_t port;
+    gchar *error_message;
     const gchar *parsed_host_name;
 
-    i = parse_null_terminated_value(buffer, length, error,
+    null_character_point =
+        parse_null_terminated_value(buffer, length, error,
                                     "host name isn't terminated by NULL "
                                     "on connect command");
-    if (i <= 0)
+    if (null_character_point <= 0)
         return FALSE;
 
     parsed_host_name = buffer;
-    i++;
+    i = null_character_point + 1;
 
     family = buffer[i];
     i++;
-    if (family != FAMILY_UNKNOWN) {
+    switch (family) {
+      case FAMILY_INET:
+      case FAMILY_INET6:
+      case FAMILY_UNIX:
         if (i + sizeof(port) > length) {
             gsize needed_bytes;
 
@@ -519,84 +597,46 @@ parse_connect (const gchar *buffer, gint length, gchar **host_name,
         }
         memcpy(&port, buffer + i, sizeof(port));
         i += sizeof(port);
-    } else {
+        break;
+      default:
         g_set_error(error,
                     MILTER_PARSER_ERROR,
-                    MILTER_PARSER_ERROR_CONNECT_UNKNOWN_FAMILY,
+                    MILTER_PARSER_ERROR_UNKNOWN_FAMILY,
                     "unknown family on connect command: <%s>: <%c>",
                     parsed_host_name, family);
         return FALSE;
     }
 
-    if (buffer[length] != '\0') {
-        g_set_error(error,
-                    MILTER_PARSER_ERROR,
-                    MILTER_PARSER_ERROR_CONNECT_SEPARATOR_MISSING,
-                    "NULL separator at the end of connect packet is missing: %s",
-                    parsed_host_name);
+    error_message = g_strdup_printf("address name isn't terminated by NULL "
+                                    "on connect command: <%s>: <%c>: <%u>",
+                                    parsed_host_name, family, ntohs(port));
+    null_character_point =
+        parse_null_terminated_value(buffer + i, length - i, error,
+                                    error_message);
+    g_free(error_message);
+    if (null_character_point <= 0)
         return FALSE;
-    }
 
     switch (family) {
       case FAMILY_INET:
-        {
-            struct sockaddr_in *address_in;
-            struct in_addr ip_address;
-
-            if (inet_aton(buffer + i, &ip_address) == -1) {
-                g_set_error(error,
-                            MILTER_PARSER_ERROR,
-                            MILTER_PARSER_ERROR_CONNECT_INVALID_INET_ADDRESS,
-                            "invalid IPv4 address on connect: %s: %s",
-                            parsed_host_name, buffer + i);
-                return FALSE;
-            }
-
-            *address_length = sizeof(struct sockaddr_in);
-            address_in = g_malloc(*address_length);
-            address_in->sin_family = AF_INET;
-            address_in->sin_port = port;
-            address_in->sin_addr = ip_address;
-            *address = (struct sockaddr *)address_in;
-        }
+        if (!parse_inet_address(buffer + i, address, address_length,
+                                parsed_host_name, family, port, error))
+            return FALSE;
         break;
       case FAMILY_INET6:
-        {
-            struct sockaddr_in6 *address_in6;
-            struct in6_addr ipv6_address;
-
-            if (inet_pton(AF_INET6, buffer + i, &ipv6_address) == -1) {
-                g_set_error(error,
-                            MILTER_PARSER_ERROR,
-                            MILTER_PARSER_ERROR_CONNECT_INVALID_INET6_ADDRESS,
-                            "invalid IPv6 address on connect: %s: %s",
-                            parsed_host_name, buffer + i);
-                return FALSE;
-            }
-
-            *address_length = sizeof(struct sockaddr_in6);
-            address_in6 = g_malloc(*address_length);
-            address_in6->sin6_family = AF_INET6;
-            address_in6->sin6_port = port;
-            address_in6->sin6_addr = ipv6_address;
-            *address = (struct sockaddr *)address_in6;
-        }
+        if (!parse_inet6_address(buffer + i, address, address_length,
+                                 parsed_host_name, family, port, error))
+            return FALSE;
         break;
       case FAMILY_UNIX:
-        {
-            struct sockaddr_un *address_un;
-
-            *address_length = sizeof(struct sockaddr_un);
-            address_un = g_malloc(*address_length);
-            address_un->sun_family = AF_UNIX;
-            strcpy(address_un->sun_path, buffer + i);
-            *address = (struct sockaddr *)address_un;
-        }
+        if (!parse_unix_address(buffer + i, address, address_length,
+                                parsed_host_name, family, port, error))
+            return FALSE;
         break;
       default:
         g_set_error(error,
                     MILTER_PARSER_ERROR,
-                    MILTER_PARSER_ERROR_CONNECT_UNKNOWN_FAMILY,
+                    MILTER_PARSER_ERROR_UNKNOWN_FAMILY,
                     "unknown family on connect command: <%s>: <%c>: <%u>",
                     parsed_host_name, family, ntohs(port));
         return FALSE;
