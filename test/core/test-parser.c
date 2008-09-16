@@ -325,17 +325,8 @@ parse (void)
 void
 test_parse_empty_text (void)
 {
-    GError *expected = NULL;
-    GError *actual = NULL;
-
-    return; /* do nothing for now */
-    cut_assert_false(milter_parser_parse(parser, "", 0, &actual));
-
-    expected = g_error_new(MILTER_PARSER_ERROR,
-                           MILTER_PARSER_ERROR_SHORT_COMMAND_LENGTH,
-                           "too short command length");
-    gcut_assert_equal_error(gcut_take_error(expected),
-                            gcut_take_error(actual));
+    cut_assert_true(milter_parser_parse(parser, "", 0, &actual_error));
+    cut_assert_true(milter_parser_end_parse(parser, &actual_error));
 }
 
 void

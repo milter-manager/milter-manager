@@ -802,13 +802,8 @@ milter_parser_parse (MilterParser *parser, const gchar *text, gsize text_len,
     gboolean success = TRUE;
 
     priv = MILTER_PARSER_GET_PRIVATE(parser);
-    if (priv->state == IN_ERROR) {
-        g_set_error(error,
-                    MILTER_PARSER_ERROR,
-                    MILTER_PARSER_ERROR_ALREADY_INVALID,
-                    "input is already invalid");
-        return FALSE;
-    }
+
+    g_return_val_if_fail(priv->state != MILTER_PARSER_ERROR, FALSE);
 
     if (text_len == 0)
         return TRUE;
