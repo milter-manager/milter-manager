@@ -577,8 +577,6 @@ parse_command (MilterParser *parser, GError **error)
     switch (priv->buffer->str[0]) {
       case COMMAND_OPTION_NEGOTIATION:
         g_signal_emit(parser, signals[OPTION_NEGOTIATION], 0);
-        priv->state = IN_START;
-        g_string_erase(priv->buffer, 0, priv->command_length);
         break;
       case COMMAND_DEFINE_MACRO:
         {
@@ -593,8 +591,6 @@ parse_command (MilterParser *parser, GError **error)
                     g_signal_emit(parser, signals[DEFINE_MACRO], 0,
                                   context, macros);
                     g_hash_table_unref(macros);
-                    priv->state = IN_START;
-                    g_string_erase(priv->buffer, 0, priv->command_length);
                 } else {
                     success = FALSE;
                 }
@@ -615,8 +611,6 @@ parse_command (MilterParser *parser, GError **error)
                               host_name, address, length);
                 g_free(host_name);
                 g_free(address);
-                priv->state = IN_START;
-                g_string_erase(priv->buffer, 0, priv->command_length);
             } else {
                 success = FALSE;
             }
@@ -626,8 +620,6 @@ parse_command (MilterParser *parser, GError **error)
         {
             if (priv->buffer->str[priv->command_length] == '\0') {
                 g_signal_emit(parser, signals[HELO], 0, priv->buffer->str + 1);
-                priv->state = IN_START;
-                g_string_erase(priv->buffer, 0, priv->command_length);
             } else {
                 gchar *terminated_fqdn;
 
@@ -648,8 +640,6 @@ parse_command (MilterParser *parser, GError **error)
         {
             if (priv->buffer->str[priv->command_length] == '\0') {
                 g_signal_emit(parser, signals[MAIL], 0, priv->buffer->str + 1);
-                priv->state = IN_START;
-                g_string_erase(priv->buffer, 0, priv->command_length);
             } else {
                 gchar *terminated_from;
 
@@ -670,8 +660,6 @@ parse_command (MilterParser *parser, GError **error)
         {
             if (priv->buffer->str[priv->command_length] == '\0') {
                 g_signal_emit(parser, signals[RCPT], 0, priv->buffer->str + 1);
-                priv->state = IN_START;
-                g_string_erase(priv->buffer, 0, priv->command_length);
             } else {
                 gchar *terminated_to;
 
@@ -695,8 +683,6 @@ parse_command (MilterParser *parser, GError **error)
                              priv->command_length - 1,
                              &name, &value, error)) {
                 g_signal_emit(parser, signals[HEADER], 0, name, value);
-                priv->state = IN_START;
-                g_string_erase(priv->buffer, 0, priv->command_length);
             } else {
                 success = FALSE;
             }
@@ -706,8 +692,6 @@ parse_command (MilterParser *parser, GError **error)
         {
             if (priv->command_length == 1) {
                 g_signal_emit(parser, signals[END_OF_HEADER], 0);
-                priv->state = IN_START;
-                g_string_erase(priv->buffer, 0, priv->command_length);
             } else {
                 g_set_error(error,
                             MILTER_PARSER_ERROR,
@@ -721,8 +705,6 @@ parse_command (MilterParser *parser, GError **error)
       case COMMAND_BODY:
         g_signal_emit(parser, signals[BODY], 0,
                       priv->buffer->str + 1, priv->command_length - 1);
-        priv->state = IN_START;
-        g_string_erase(priv->buffer, 0, priv->command_length);
         break;
       case COMMAND_END_OF_MESSAGE:
         if (priv->command_length > 1) {
@@ -730,14 +712,10 @@ parse_command (MilterParser *parser, GError **error)
                           priv->buffer->str + 1, priv->command_length - 1);
         }
         g_signal_emit(parser, signals[END_OF_MESSAGE], 0);
-        priv->state = IN_START;
-        g_string_erase(priv->buffer, 0, priv->command_length);
         break;
       case COMMAND_ABORT:
         if (priv->command_length == 1) {
             g_signal_emit(parser, signals[ABORT], 0);
-            priv->state = IN_START;
-            g_string_erase(priv->buffer, 0, priv->command_length);
         } else {
             g_set_error(error,
                         MILTER_PARSER_ERROR,
@@ -750,8 +728,6 @@ parse_command (MilterParser *parser, GError **error)
       case COMMAND_QUIT:
         if (priv->command_length == 1) {
             g_signal_emit(parser, signals[QUIT], 0);
-            priv->state = IN_START;
-            g_string_erase(priv->buffer, 0, priv->command_length);
         } else {
             g_set_error(error,
                         MILTER_PARSER_ERROR,
@@ -764,8 +740,6 @@ parse_command (MilterParser *parser, GError **error)
       case COMMAND_UNKNOWN:
         if (priv->buffer->str[priv->command_length] == '\0') {
             g_signal_emit(parser, signals[UNKNOWN], 0, priv->buffer->str + 1);
-            priv->state = IN_START;
-            g_string_erase(priv->buffer, 0, priv->command_length);
         } else {
             gchar *terminated_command;
 
@@ -782,11 +756,18 @@ parse_command (MilterParser *parser, GError **error)
         }
         break;
       default:
+        g_set_error(error,
+                    MILTER_PARSER_ERROR,
+                    MILTER_PARSER_ERROR_UNKNOWN_COMMAND,
+                    "unknown command is passed: %c", priv->buffer->str[0]);
         success = FALSE;
         break;
     }
 
-    if (!success) {
+    if (success) {
+        priv->state = IN_START;
+        g_string_erase(priv->buffer, 0, priv->command_length);
+    } else {
         priv->state = IN_ERROR;
     }
 
