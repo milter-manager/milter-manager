@@ -25,8 +25,14 @@ void test_parse_abort (void);
 void test_parse_quit (void);
 void test_parse_unknown (void);
 
+void test_end_parse_immediately (void);
+void test_end_parse_in_command_length_parsing (void);
+
 static MilterParser *parser;
 static GString *buffer;
+
+static GError *expected_error;
+static GError *actual_error;
 
 static gint n_option_negotiations;
 static gint n_define_macros;
@@ -211,6 +217,9 @@ setup (void)
     parser = milter_parser_new();
     setup_signals(parser);
 
+    expected_error = NULL;
+    actual_error = NULL;
+
     n_option_negotiations = 0;
     n_define_macros = 0;
     n_connects = 0;
@@ -253,7 +262,6 @@ void
 teardown (void)
 {
     if (parser) {
-        milter_parser_end_parse(parser, NULL);
         g_object_unref(parser);
     }
 
@@ -728,3 +736,24 @@ test_parse_unknown (void)
     cut_assert_equal_int(1, n_unknowns);
     cut_assert_equal_string(command, unknown_command);
 }
+
+void
+test_end_parse_immediately (void)
+{
+    cut_assert_true(milter_parser_end_parse(parser, &actual_error));
+}
+
+void
+test_end_parse_in_command_length_parsing (void)
+{
+    cut_assert_true(milter_parser_parse(parser, "\0X", 2, &actual_error));
+    cut_assert_false(milter_parser_end_parse(parser, &actual_error));
+
+    expected_error = g_error_new(MILTER_PARSER_ERROR,
+                                 MILTER_PARSER_ERROR_UNEXPECTED_END,
+                                 "stream is ended unexpectedly: "
+                                 "need more 2bytes for parsing "
+                                 "command length: 0x00 0x58");
+    gcut_assert_equal_error(expected_error, actual_error);
+}
+

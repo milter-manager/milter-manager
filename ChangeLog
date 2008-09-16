@@ -1,5 +1,8 @@
 2008-09-16  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-core/milter-parser.[ch], test/core/test-parser.c: improve
+	error handling.
+
 	* /: McParser -> MilterParser.
 	* milter-core/: add.
 	* test/: client -> core.
