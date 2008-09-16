@@ -503,13 +503,18 @@ parse_connect (const gchar *buffer, gint length, gchar **host_name,
     family = buffer[i];
     i++;
     if (family != FAMILY_UNKNOWN) {
-        if (i + sizeof(port) >= length) {
+        if (i + sizeof(port) > length) {
+            gsize needed_bytes;
+
+            needed_bytes = i + sizeof(port) - length;
             g_set_error(error,
                         MILTER_PARSER_ERROR,
-                        MILTER_PARSER_ERROR_CONNECT_MISSING_PORT,
-                        "port number is missing on connect command: "
-                        "<%s>: <%c>: %d (required: >= %" G_GSIZE_FORMAT ")",
-                        parsed_host_name, family, length, i + sizeof(port));
+                        MILTER_PARSER_ERROR_SHORT_COMMAND_LENGTH,
+                        "need more %" G_GSIZE_FORMAT " byte%s for parsing "
+                        "port number on connect command: <%s>: <%c>",
+                        needed_bytes,
+                        needed_bytes > 1 ? "s" : "",
+                        parsed_host_name, family);
             return FALSE;
         }
         memcpy(&port, buffer + i, sizeof(port));
@@ -592,8 +597,8 @@ parse_connect (const gchar *buffer, gint length, gchar **host_name,
         g_set_error(error,
                     MILTER_PARSER_ERROR,
                     MILTER_PARSER_ERROR_CONNECT_UNKNOWN_FAMILY,
-                    "unknown family on connect: %s: %c",
-                    parsed_host_name, family);
+                    "unknown family on connect command: <%s>: <%c>: <%u>",
+                    parsed_host_name, family, ntohs(port));
         return FALSE;
         break;
     }

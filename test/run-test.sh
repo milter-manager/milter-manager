@@ -18,7 +18,7 @@ fi
 
 export CUTTER
 
-CUTTER_ARGS="-s $BASE_DIR/client --exclude-directory fixtures"
+CUTTER_ARGS="-s $BASE_DIR/core --exclude-directory fixtures"
 if echo "$@" | grep -- --mode=analyze > /dev/null; then
     :
 else
