@@ -12,6 +12,7 @@ void test_parse_empty_text (void);
 void test_parse_option_negotiation (void);
 void data_parse_define_macro (void);
 void test_parse_define_macro (gconstpointer data);
+void test_parse_define_macro_with_unknown_macro_context (void);
 void test_parse_connect (void);
 void test_parse_helo (void);
 void test_parse_mail (void);
@@ -490,6 +491,19 @@ test_parse_define_macro (gconstpointer data)
     cut_assert_equal_int(test_data->context, macro_context);
     gcut_assert_equal_hash_table_string_string(test_data->expected,
                                                defined_macros);
+}
+
+void
+test_parse_define_macro_with_unknown_macro_context (void)
+{
+    g_string_append(buffer, "D");
+    g_string_append(buffer, "Z");
+
+    expected_error = g_error_new(MILTER_PARSER_ERROR,
+                                 MILTER_PARSER_ERROR_UNKNOWN_MACRO_CONTEXT,
+                                 "unknown macro context: Z");
+    actual_error = parse();
+    gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void

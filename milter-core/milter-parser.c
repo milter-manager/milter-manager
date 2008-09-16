@@ -316,8 +316,51 @@ milter_parser_new (void)
                         NULL);
 }
 
+static gboolean
+parse_macro_context (gchar macro_context, MilterContextType *context,
+                     GError **error)
+{
+    gboolean success = TRUE;
+
+    switch (macro_context) {
+      case COMMAND_CONNECT:
+        *context = MILTER_CONTEXT_TYPE_CONNECT;
+        break;
+      case COMMAND_HELO:
+        *context = MILTER_CONTEXT_TYPE_HELO;
+        break;
+      case COMMAND_MAIL:
+        *context = MILTER_CONTEXT_TYPE_MAIL;
+        break;
+      case COMMAND_RCPT:
+        *context = MILTER_CONTEXT_TYPE_RCPT;
+        break;
+      case COMMAND_HEADER:
+        *context = MILTER_CONTEXT_TYPE_HEADER;
+        break;
+      case COMMAND_END_OF_HEADER:
+        *context = MILTER_CONTEXT_TYPE_END_OF_HEADER;
+        break;
+      case COMMAND_BODY:
+        *context = MILTER_CONTEXT_TYPE_BODY;
+        break;
+      case COMMAND_END_OF_MESSAGE:
+        *context = MILTER_CONTEXT_TYPE_END_OF_MESSAGE;
+        break;
+      default:
+        g_set_error(error,
+                    MILTER_PARSER_ERROR,
+                    MILTER_PARSER_ERROR_UNKNOWN_MACRO_CONTEXT,
+                    "unknown macro context: %c", macro_context);
+        success = FALSE;
+        break;
+    }
+
+    return success;
+}
+
 static GHashTable *
-parse_define_macro (const gchar *buffer, gint length, GError **error)
+parse_macro_definitions (const gchar *buffer, gint length, GError **error)
 {
     GHashTable *macros;
     const gchar *last;
@@ -362,43 +405,26 @@ parse_define_macro (const gchar *buffer, gint length, GError **error)
 }
 
 static gboolean
-parse_macro_context (const gchar macro_context, MilterContextType *context,
-                     GError **error)
+parse_define_macro (MilterParser *parser, GError **error)
 {
+    MilterParserPrivate *priv;
+    GHashTable *macros;
+    MilterContextType context;
     gboolean success = TRUE;
 
-    switch (macro_context) {
-      case COMMAND_CONNECT:
-        *context = MILTER_CONTEXT_TYPE_CONNECT;
-        break;
-      case COMMAND_HELO:
-        *context = MILTER_CONTEXT_TYPE_HELO;
-        break;
-      case COMMAND_MAIL:
-        *context = MILTER_CONTEXT_TYPE_MAIL;
-        break;
-      case COMMAND_RCPT:
-        *context = MILTER_CONTEXT_TYPE_RCPT;
-        break;
-      case COMMAND_HEADER:
-        *context = MILTER_CONTEXT_TYPE_HEADER;
-        break;
-      case COMMAND_END_OF_HEADER:
-        *context = MILTER_CONTEXT_TYPE_END_OF_HEADER;
-        break;
-      case COMMAND_BODY:
-        *context = MILTER_CONTEXT_TYPE_BODY;
-        break;
-      case COMMAND_END_OF_MESSAGE:
-        *context = MILTER_CONTEXT_TYPE_END_OF_MESSAGE;
-        break;
-      default:
-        g_set_error(error,
-                    MILTER_PARSER_ERROR,
-                    MILTER_PARSER_ERROR_UNKNOWN_MACRO_CONTEXT,
-                    "unknown macro context: %c", macro_context);
+    priv = MILTER_PARSER_GET_PRIVATE(parser);
+    if (parse_macro_context(priv->buffer->str[1], &context, error)) {
+        macros = parse_macro_definitions(priv->buffer->str + 1 + 1,
+                                         priv->command_length - 1 - 1,
+                                         error);
+        if (macros) {
+            g_signal_emit(parser, signals[DEFINE_MACRO], 0, context, macros);
+            g_hash_table_unref(macros);
+        } else {
+            success = FALSE;
+        }
+    } else {
         success = FALSE;
-        break;
     }
 
     return success;
@@ -579,25 +605,7 @@ parse_command (MilterParser *parser, GError **error)
         g_signal_emit(parser, signals[OPTION_NEGOTIATION], 0);
         break;
       case COMMAND_DEFINE_MACRO:
-        {
-            GHashTable *macros;
-            MilterContextType context;
-
-            if (parse_macro_context(priv->buffer->str[1], &context, error)) {
-                macros = parse_define_macro(priv->buffer->str + 1 + 1,
-                                            priv->command_length - 1 - 1,
-                                            error);
-                if (macros) {
-                    g_signal_emit(parser, signals[DEFINE_MACRO], 0,
-                                  context, macros);
-                    g_hash_table_unref(macros);
-                } else {
-                    success = FALSE;
-                }
-            } else {
-                success = FALSE;
-            }
-        }
+        success = parse_define_macro(parser, error);
         break;
       case COMMAND_CONNECT:
         {
