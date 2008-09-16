@@ -16,6 +16,7 @@ void test_parse_define_macro_with_unknown_macro_context (void);
 void test_parse_define_macro_without_name_null (void);
 void test_parse_define_macro_without_value_null (void);
 void test_parse_connect (void);
+void test_parse_connect_without_host_name_null (void);
 void test_parse_helo (void);
 void test_parse_mail (void);
 void test_parse_rcpt (void);
@@ -517,8 +518,8 @@ test_parse_define_macro_without_name_null (void)
 
     expected_error = g_error_new(MILTER_PARSER_ERROR,
                                  MILTER_PARSER_ERROR_MISSING_NULL,
-                                 "name terminate NULL is missing "
-                                 "on define macro command");
+                                 "name isn't terminated by NULL "
+                                 "on define macro command: <i>");
     actual_error = parse();
     gcut_assert_equal_error(expected_error, actual_error);
 }
@@ -534,8 +535,9 @@ test_parse_define_macro_without_value_null (void)
 
     expected_error = g_error_new(MILTER_PARSER_ERROR,
                                  MILTER_PARSER_ERROR_MISSING_NULL,
-                                 "value terminate NULL is missing "
-                                 "on define macro command");
+                                 "value isn't terminated by NULL "
+                                 "on define macro command: "
+                                 "<69FDD42DF4A>");
     actual_error = parse();
     gcut_assert_equal_error(expected_error, actual_error);
 }
@@ -569,6 +571,22 @@ test_parse_connect (void)
     cut_assert_equal_int(AF_INET, address->sin_family);
     cut_assert_equal_uint(port, address->sin_port);
     cut_assert_equal_string(ip_address, inet_ntoa(address->sin_addr));
+}
+
+void
+test_parse_connect_without_host_name_null (void)
+{
+    const gchar host_name[] = "mx.local.net";
+
+    g_string_append(buffer, "C");
+    g_string_append(buffer, host_name);
+
+    expected_error = g_error_new(MILTER_PARSER_ERROR,
+                                 MILTER_PARSER_ERROR_MISSING_NULL,
+                                 "host name isn't terminated by NULL "
+                                 "on connect command: <mx.local.net>");
+    actual_error = parse();
+    gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void

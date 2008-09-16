@@ -378,6 +378,25 @@ find_null_character (const gchar *buffer, gint length)
     return -1;
 }
 
+static gint
+parse_null_terminated_value (const gchar *buffer, gint length,
+                             GError **error, const gchar *message)
+{
+    gint null_character_point;
+
+    null_character_point = find_null_character(buffer, length);
+    if (null_character_point <= 0) {
+        gchar *terminated_value;
+
+        terminated_value = g_strndup(buffer, length + 1);
+        terminated_value[length + 1] = '\0';
+        set_missing_null_error(error, "%s: <%s>", message, terminated_value);
+        g_free(terminated_value);
+    }
+
+    return null_character_point;
+}
+
 static GHashTable *
 parse_macro_definitions (const gchar *buffer, gint length, GError **error)
 {
@@ -392,22 +411,22 @@ parse_macro_definitions (const gchar *buffer, gint length, GError **error)
         gint null_character_point;
         const gchar *key, *value;
 
-        null_character_point = find_null_character(buffer + i, length - i);
+        null_character_point =
+            parse_null_terminated_value(buffer + i, length - i, error,
+                                        "name isn't terminated by NULL "
+                                        "on define macro command");
         if (null_character_point <= 0) {
-            set_missing_null_error(error,
-                                   "name terminate NULL is missing "
-                                   "on define macro command");
             success = FALSE;
             break;
         }
         key = buffer + i;
 
         i += null_character_point + 1;
-        null_character_point = find_null_character(buffer + i, length - i);
+        null_character_point =
+            parse_null_terminated_value(buffer + i, length - i, error,
+                                        "value isn't terminated by NULL "
+                                        "on define macro command");
         if (null_character_point <= 0) {
-            set_missing_null_error(error,
-                                   "value terminate NULL is missing "
-                                   "on define macro command");
             success = FALSE;
             break;
         }
@@ -463,35 +482,24 @@ parse_define_macro (MilterParser *parser, GError **error)
 }
 
 static gboolean
-parse_connect(const gchar *buffer, gint length,
-              gchar **host_name,
-              struct sockaddr **address, socklen_t *address_length,
-              GError **error)
+parse_connect (const gchar *buffer, gint length, gchar **host_name,
+               struct sockaddr **address, socklen_t *address_length,
+               GError **error)
 {
     gchar family;
     gint i;
     uint16_t port;
     const gchar *parsed_host_name;
 
-    parsed_host_name = buffer;
-    i = 0;
-    while (i < length && buffer[i] != '\0')
-        i++;
-
-    if (i == length) {
-        gchar *terminated_host_name;
-        terminated_host_name = g_strndup(parsed_host_name, i + 1);
-        terminated_host_name[i + 1] = '\0';
-        g_set_error(error,
-                    MILTER_PARSER_ERROR,
-                    MILTER_PARSER_ERROR_CONNECT_HOST_NAME_UNTERMINATED,
-                    "host name on connect is unterminated: %s",
-                    terminated_host_name);
-        g_free(terminated_host_name);
+    i = parse_null_terminated_value(buffer, length, error,
+                                    "host name isn't terminated by NULL "
+                                    "on connect command");
+    if (i <= 0)
         return FALSE;
-    }
 
+    parsed_host_name = buffer;
     i++;
+
     family = buffer[i];
     i++;
     if (family != FAMILY_UNKNOWN) {
