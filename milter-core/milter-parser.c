@@ -359,31 +359,60 @@ parse_macro_context (gchar macro_context, MilterContextType *context,
     return success;
 }
 
+#define set_missing_null_error(error, message, ...)     \
+    g_set_error(error,                                  \
+                MILTER_PARSER_ERROR,                    \
+                MILTER_PARSER_ERROR_MISSING_NULL,       \
+                message, ## __VA_ARGS__)
+
+static gint
+find_null_character (const gchar *buffer, gint length)
+{
+    gint i;
+
+    for (i = 0; i < length; i++) {
+        if (buffer[i] == '\0')
+            return i;
+    }
+
+    return -1;
+}
+
 static GHashTable *
 parse_macro_definitions (const gchar *buffer, gint length, GError **error)
 {
     GHashTable *macros;
-    const gchar *last;
+    gint i;
+    gboolean success = TRUE;
 
     macros = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
 
-    last = buffer + length;
-    while (buffer <= last) {
-        const gchar *start, *key, *value;
+    i = 0;
+    while (i < length) {
+        gint null_character_point;
+        const gchar *key, *value;
 
-        start = buffer;
-        while (buffer <= last && *buffer != '\0') {
-            buffer++;
+        null_character_point = find_null_character(buffer + i, length - i);
+        if (null_character_point <= 0) {
+            set_missing_null_error(error,
+                                   "name terminate NULL is missing "
+                                   "on define macro command");
+            success = FALSE;
+            break;
         }
-        key = start;
+        key = buffer + i;
 
-        buffer++;
-        start = buffer;
-        while (buffer <= last && *buffer != '\0') {
-            buffer++;
+        i += null_character_point + 1;
+        null_character_point = find_null_character(buffer + i, length - i);
+        if (null_character_point <= 0) {
+            set_missing_null_error(error,
+                                   "value terminate NULL is missing "
+                                   "on define macro command");
+            success = FALSE;
+            break;
         }
-        value = start;
-        buffer++;
+        value = buffer + i;
+        i += null_character_point + 1;
 
         if (*key) {
             gchar *normalized_key;
@@ -395,10 +424,13 @@ parse_macro_definitions (const gchar *buffer, gint length, GError **error)
             else
                 normalized_key = g_strdup(key);
 
-            g_hash_table_insert(macros,
-                                normalized_key,
-                                g_strndup(value, buffer - value - 1));
+            g_hash_table_insert(macros, normalized_key, g_strdup(value));
         }
+    }
+
+    if (!success) {
+        g_hash_table_unref(macros);
+        macros = NULL;
     }
 
     return macros;
@@ -838,8 +870,8 @@ milter_parser_parse (MilterParser *parser, const gchar *text, gsize text_len,
 }
 
 static void
-set_unexpected_end_error (MilterParserPrivate *priv, gsize required_length,
-                          const gchar *parsing_target, GError **error)
+set_unexpected_end_error (GError **error, MilterParserPrivate *priv,
+                          gsize required_length, const gchar *parsing_target)
 {
     GString *message;
     gint i;
@@ -883,12 +915,12 @@ milter_parser_end_parse (MilterParser *parser, GError **error)
       case IN_START:
         break;
       case IN_COMMAND_LENGTH:
-        set_unexpected_end_error(priv, COMMAND_LENGTH_BYTES, "command length",
-                                 error);
+        set_unexpected_end_error(error, priv,
+                                 COMMAND_LENGTH_BYTES, "command length");
         break;
       case IN_COMMAND_CONTENT:
-        set_unexpected_end_error(priv, priv->command_length, "command content",
-                                 error);
+        set_unexpected_end_error(error, priv,
+                                 priv->command_length, "command content");
         break;
       case IN_ERROR:
         break;

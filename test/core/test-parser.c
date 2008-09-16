@@ -13,6 +13,8 @@ void test_parse_option_negotiation (void);
 void data_parse_define_macro (void);
 void test_parse_define_macro (gconstpointer data);
 void test_parse_define_macro_with_unknown_macro_context (void);
+void test_parse_define_macro_without_name_null (void);
+void test_parse_define_macro_without_value_null (void);
 void test_parse_connect (void);
 void test_parse_helo (void);
 void test_parse_mail (void);
@@ -502,6 +504,38 @@ test_parse_define_macro_with_unknown_macro_context (void)
     expected_error = g_error_new(MILTER_PARSER_ERROR,
                                  MILTER_PARSER_ERROR_UNKNOWN_MACRO_CONTEXT,
                                  "unknown macro context: Z");
+    actual_error = parse();
+    gcut_assert_equal_error(expected_error, actual_error);
+}
+
+void
+test_parse_define_macro_without_name_null (void)
+{
+    g_string_append(buffer, "D");
+    g_string_append(buffer, "L");
+    g_string_append(buffer, "i");
+
+    expected_error = g_error_new(MILTER_PARSER_ERROR,
+                                 MILTER_PARSER_ERROR_MISSING_NULL,
+                                 "name terminate NULL is missing "
+                                 "on define macro command");
+    actual_error = parse();
+    gcut_assert_equal_error(expected_error, actual_error);
+}
+
+void
+test_parse_define_macro_without_value_null (void)
+{
+    g_string_append(buffer, "D");
+    g_string_append(buffer, "L");
+    g_string_append(buffer, "i");
+    g_string_append_c(buffer, '\0');
+    g_string_append(buffer, "69FDD42DF4A");
+
+    expected_error = g_error_new(MILTER_PARSER_ERROR,
+                                 MILTER_PARSER_ERROR_MISSING_NULL,
+                                 "value terminate NULL is missing "
+                                 "on define macro command");
     actual_error = parse();
     gcut_assert_equal_error(expected_error, actual_error);
 }
