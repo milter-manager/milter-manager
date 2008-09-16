@@ -1,5 +1,7 @@
 2008-09-16  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/client/test-mc-parser.c: support ABORT command.
+
 	* milter-client/mc-parser.[ch], milter-client/mc-marshalers.list,
 	test/client/test-mc-parser.c: support END OF MESSAGE command.
 
