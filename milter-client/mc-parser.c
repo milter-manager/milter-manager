@@ -91,6 +91,7 @@ enum
     END_OF_MESSAGE,
     ABORT,
     QUIT,
+    UNKNOWN,
     LAST_SIGNAL
 };
 
@@ -232,6 +233,15 @@ mc_parser_class_init (MCParserClass *klass)
                      NULL, NULL,
                      g_cclosure_marshal_VOID__VOID,
                      G_TYPE_NONE, 0);
+
+    signals[UNKNOWN] =
+        g_signal_new("unknown",
+                     G_TYPE_FROM_CLASS(klass),
+                     G_SIGNAL_RUN_LAST,
+                     G_STRUCT_OFFSET(MCParserClass, unknown),
+                     NULL, NULL,
+                     g_cclosure_marshal_VOID__STRING,
+                     G_TYPE_NONE, 1, G_TYPE_STRING);
 
     g_type_class_add_private(gobject_class, sizeof(MCParserPrivate));
 }
@@ -759,6 +769,26 @@ parse_command (MCParser *parser, GError **error)
                         MC_PARSER_ERROR_LONG_COMMAND_LENGTH,
                         "too long command length on QUIT: %d: expected: %d",
                         priv->command_bytes, 1);
+            success = FALSE;
+        }
+        break;
+      case COMMAND_UNKNOWN:
+        if (priv->buffer->str[priv->command_bytes] == '\0') {
+            g_signal_emit(parser, signals[UNKNOWN], 0, priv->buffer->str + 1);
+            priv->state = IN_START;
+            g_string_erase(priv->buffer, 0, priv->command_bytes);
+        } else {
+            gchar *terminated_command;
+
+            terminated_command = g_strndup(priv->buffer->str + 1,
+                                           priv->command_bytes + 1);
+            terminated_command[priv->command_bytes + 1] = '\0';
+            g_set_error(error,
+                        MC_PARSER_ERROR,
+                        MC_PARSER_ERROR_UNKNOWN_MISSING_NULL,
+                        "missing the last NULL on UNKNOWN: %s",
+                        terminated_command);
+            g_free(terminated_command);
             success = FALSE;
         }
         break;

@@ -1,5 +1,8 @@
 2008-09-16  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-client/mc-parser.[ch], test/client/test-mc-parser.c:
+	support UNKNOWN command.
+
 	* milter-client/mc-parser.[ch],	test/client/test-mc-parser.c:
 	support QUIT command.
 

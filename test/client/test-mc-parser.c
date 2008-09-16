@@ -23,6 +23,7 @@ void test_parse_body_end_with_data (void);
 void test_parse_body_end_without_data (void);
 void test_parse_abort (void);
 void test_parse_quit (void);
+void test_parse_unknown (void);
 
 static MCParser *parser;
 static GString *buffer;
@@ -39,6 +40,7 @@ static gint n_bodies;
 static gint n_end_of_messages;
 static gint n_aborts;
 static gint n_quits;
+static gint n_unknowns;
 
 static McContextType macro_context;
 static GHashTable *defined_macros;
@@ -58,6 +60,9 @@ static gchar *header_value;
 
 static gchar *body_chunk;
 static gsize body_chunk_length;
+
+static gchar *unknown_command;
+static gsize unknown_command_length;
 
 static void
 cb_option_negotiation (MCParser *parser, gpointer user_data)
@@ -168,6 +173,16 @@ cb_quit (MCParser *parser, gpointer user_data)
 }
 
 static void
+cb_unknown (MCParser *parser, const gchar *command, gpointer user_data)
+{
+    n_unknowns++;
+
+    if (unknown_command)
+        g_free(unknown_command);
+    unknown_command = g_strdup(command);
+}
+
+static void
 setup_signals (MCParser *parser)
 {
 #define CONNECT(name)                                                   \
@@ -185,6 +200,7 @@ setup_signals (MCParser *parser)
     CONNECT(end_of_message);
     CONNECT(abort);
     CONNECT(quit);
+    CONNECT(unknown);
 
 #undef CONNECT
 }
@@ -207,6 +223,7 @@ setup (void)
     n_end_of_messages = 0;
     n_aborts = 0;
     n_quits = 0;
+    n_unknowns = 0;
 
     buffer = g_string_new(NULL);
 
@@ -226,6 +243,10 @@ setup (void)
     header_value = NULL;
 
     body_chunk = NULL;
+    body_chunk_length = 0;
+
+    unknown_command = NULL;
+    unknown_command_length = 0;
 }
 
 void
@@ -263,6 +284,9 @@ teardown (void)
 
     if (body_chunk)
         g_free(body_chunk);
+
+    if (unknown_command)
+        g_free(unknown_command);
 }
 
 static GError *
@@ -617,57 +641,45 @@ test_parse_end_of_header (void)
 void
 test_parse_body (void)
 {
+    const gchar body[] =
+        "La de da de da 1.\n"
+        "La de da de da 2.\n"
+        "La de da de da 3.\n"
+        "La de da de da 4.";
+
     g_string_append(buffer, "D");
     g_string_append(buffer, "B");
     append_name_and_value("i", "69FDD42DF4A");
     gcut_assert_error(parse());
 
     g_string_append(buffer, "B");
-    g_string_append(buffer,
-                    "La de da de da 1.\n"
-                    "La de da de da 2.\n"
-                    "La de da de da 3.\n"
-                    "La de da de da 4.");
+    g_string_append(buffer, body);
     gcut_assert_error(parse());
     cut_assert_equal_int(1, n_bodies);
-    cut_assert_equal_string("La de da de da 1.\n"
-                            "La de da de da 2.\n"
-                            "La de da de da 3.\n"
-                            "La de da de da 4.",
-                            body_chunk);
-    cut_assert_equal_int(strlen("La de da de da 1.\n"
-                                "La de da de da 2.\n"
-                                "La de da de da 3.\n"
-                                "La de da de da 4."),
-                         body_chunk_length);
+    cut_assert_equal_string(body, body_chunk);
+    cut_assert_equal_uint(strlen(body), body_chunk_length);
 }
 
 void
 test_parse_body_end_with_data (void)
 {
+    const gchar body[] =
+        "La de da de da 1.\n"
+        "La de da de da 2.\n"
+        "La de da de da 3.\n"
+        "La de da de da 4.";
+
     g_string_append(buffer, "D");
     g_string_append(buffer, "E");
     append_name_and_value("i", "69FDD42DF4A");
     gcut_assert_error(parse());
 
     g_string_append(buffer, "E");
-    g_string_append(buffer,
-                    "La de da de da 1.\n"
-                    "La de da de da 2.\n"
-                    "La de da de da 3.\n"
-                    "La de da de da 4.");
+    g_string_append(buffer, body);
     gcut_assert_error(parse());
     cut_assert_equal_int(1, n_bodies);
-    cut_assert_equal_string("La de da de da 1.\n"
-                            "La de da de da 2.\n"
-                            "La de da de da 3.\n"
-                            "La de da de da 4.",
-                            body_chunk);
-    cut_assert_equal_int(strlen("La de da de da 1.\n"
-                                "La de da de da 2.\n"
-                                "La de da de da 3.\n"
-                                "La de da de da 4."),
-                         body_chunk_length);
+    cut_assert_equal_string(body, body_chunk);
+    cut_assert_equal_int(strlen(body), body_chunk_length);
     cut_assert_equal_int(1, n_end_of_messages);
 }
 
@@ -701,4 +713,18 @@ test_parse_quit (void)
     gcut_assert_error(parse());
 
     cut_assert_equal_int(1, n_quits);
+}
+
+void
+test_parse_unknown (void)
+{
+    const gchar command[] = "UNKNOWN COMMAND WITH ARGUMENT";
+
+    g_string_append(buffer, "U");
+    g_string_append(buffer, command);
+    g_string_append_c(buffer, '\0');
+    gcut_assert_error(parse());
+
+    cut_assert_equal_int(1, n_unknowns);
+    cut_assert_equal_string(command, unknown_command);
 }

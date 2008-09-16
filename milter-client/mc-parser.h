@@ -51,7 +51,8 @@ typedef enum
     MC_PARSER_ERROR_HELO_MISSING_NULL,
     MC_PARSER_ERROR_MAIL_MISSING_NULL,
     MC_PARSER_ERROR_RCPT_MISSING_NULL,
-    MC_PARSER_ERROR_HEADER_MISSING_NULL
+    MC_PARSER_ERROR_HEADER_MISSING_NULL,
+    MC_PARSER_ERROR_UNKNOWN_MISSING_NULL
 } MCParserError;
 
 typedef enum
@@ -65,7 +66,8 @@ typedef enum
     MC_CONTEXT_TYPE_BODY,
     MC_CONTEXT_TYPE_END_OF_MESSAGE,
     MC_CONTEXT_TYPE_ABORT,
-    MC_CONTEXT_TYPE_QUIT
+    MC_CONTEXT_TYPE_QUIT,
+    MC_CONTEXT_TYPE_UNKNOWN
 } McContextType;
 
 typedef struct _MCParser         MCParser;
@@ -104,6 +106,8 @@ struct _MCParserClass
     void (*end_of_message)      (MCParser *parser);
     void (*abort)               (MCParser *parser);
     void (*quit)                (MCParser *parser);
+    void (*unknown)             (MCParser *parser,
+                                 const gchar *command);
 };
 
 GQuark           mc_parser_error_quark       (void);
