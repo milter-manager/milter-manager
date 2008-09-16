@@ -90,6 +90,7 @@ enum
     BODY,
     END_OF_MESSAGE,
     ABORT,
+    QUIT,
     LAST_SIGNAL
 };
 
@@ -219,6 +220,15 @@ mc_parser_class_init (MCParserClass *klass)
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MCParserClass, abort),
+                     NULL, NULL,
+                     g_cclosure_marshal_VOID__VOID,
+                     G_TYPE_NONE, 0);
+
+    signals[QUIT] =
+        g_signal_new("quit",
+                     G_TYPE_FROM_CLASS(klass),
+                     G_SIGNAL_RUN_LAST,
+                     G_STRUCT_OFFSET(MCParserClass, quit),
                      NULL, NULL,
                      g_cclosure_marshal_VOID__VOID,
                      G_TYPE_NONE, 0);
@@ -725,9 +735,32 @@ parse_command (MCParser *parser, GError **error)
         g_string_erase(priv->buffer, 0, priv->command_bytes);
         break;
       case COMMAND_ABORT:
-        g_signal_emit(parser, signals[ABORT], 0);
-        priv->state = IN_START;
-        g_string_erase(priv->buffer, 0, priv->command_bytes);
+        if (priv->command_bytes == 1) {
+            g_signal_emit(parser, signals[ABORT], 0);
+            priv->state = IN_START;
+            g_string_erase(priv->buffer, 0, priv->command_bytes);
+        } else {
+            g_set_error(error,
+                        MC_PARSER_ERROR,
+                        MC_PARSER_ERROR_LONG_COMMAND_LENGTH,
+                        "too long command length on ABORT: %d: expected: %d",
+                        priv->command_bytes, 1);
+            success = FALSE;
+        }
+        break;
+      case COMMAND_QUIT:
+        if (priv->command_bytes == 1) {
+            g_signal_emit(parser, signals[QUIT], 0);
+            priv->state = IN_START;
+            g_string_erase(priv->buffer, 0, priv->command_bytes);
+        } else {
+            g_set_error(error,
+                        MC_PARSER_ERROR,
+                        MC_PARSER_ERROR_LONG_COMMAND_LENGTH,
+                        "too long command length on QUIT: %d: expected: %d",
+                        priv->command_bytes, 1);
+            success = FALSE;
+        }
         break;
       default:
         success = FALSE;

@@ -22,6 +22,7 @@ void test_parse_body (void);
 void test_parse_body_end_with_data (void);
 void test_parse_body_end_without_data (void);
 void test_parse_abort (void);
+void test_parse_quit (void);
 
 static MCParser *parser;
 static GString *buffer;
@@ -37,6 +38,7 @@ static gint n_end_of_headers;
 static gint n_bodies;
 static gint n_end_of_messages;
 static gint n_aborts;
+static gint n_quits;
 
 static McContextType macro_context;
 static GHashTable *defined_macros;
@@ -160,6 +162,12 @@ cb_abort (MCParser *parser, gpointer user_data)
 }
 
 static void
+cb_quit (MCParser *parser, gpointer user_data)
+{
+    n_quits++;
+}
+
+static void
 setup_signals (MCParser *parser)
 {
 #define CONNECT(name)                                                   \
@@ -176,6 +184,7 @@ setup_signals (MCParser *parser)
     CONNECT(body);
     CONNECT(end_of_message);
     CONNECT(abort);
+    CONNECT(quit);
 
 #undef CONNECT
 }
@@ -197,6 +206,7 @@ setup (void)
     n_bodies = 0;
     n_end_of_messages = 0;
     n_aborts = 0;
+    n_quits = 0;
 
     buffer = g_string_new(NULL);
 
@@ -682,4 +692,13 @@ test_parse_abort (void)
     gcut_assert_error(parse());
 
     cut_assert_equal_int(1, n_aborts);
+}
+
+void
+test_parse_quit (void)
+{
+    g_string_append(buffer, "Q");
+    gcut_assert_error(parse());
+
+    cut_assert_equal_int(1, n_quits);
 }

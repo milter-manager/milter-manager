@@ -63,7 +63,9 @@ typedef enum
     MC_CONTEXT_TYPE_HEADER,
     MC_CONTEXT_TYPE_END_OF_HEADER,
     MC_CONTEXT_TYPE_BODY,
-    MC_CONTEXT_TYPE_END_OF_MESSAGE
+    MC_CONTEXT_TYPE_END_OF_MESSAGE,
+    MC_CONTEXT_TYPE_ABORT,
+    MC_CONTEXT_TYPE_QUIT
 } McContextType;
 
 typedef struct _MCParser         MCParser;
@@ -101,6 +103,7 @@ struct _MCParserClass
                                  gsize length);
     void (*end_of_message)      (MCParser *parser);
     void (*abort)               (MCParser *parser);
+    void (*quit)                (MCParser *parser);
 };
 
 GQuark           mc_parser_error_quark       (void);
