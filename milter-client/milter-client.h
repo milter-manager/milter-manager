@@ -20,7 +20,7 @@
 #ifndef __MILTER_CLIENT_H__
 #define __MILTER_CLIENT_H__
 
-#include <milter-client/mc-parser.h>
+#include <milter-client/milter-client-handler.h>
 
 #if NETINET || NETINET6 || NETUNIX
 union bigsockaddr

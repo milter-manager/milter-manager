@@ -6,7 +6,7 @@
 #include <arpa/inet.h>
 #undef shutdown
 
-#include <milter-client/milter-client.h>
+#include <milter-core/milter-parser.h>
 
 void test_parse_empty_text (void);
 void test_parse_option_negotiation (void);
@@ -25,7 +25,7 @@ void test_parse_abort (void);
 void test_parse_quit (void);
 void test_parse_unknown (void);
 
-static MCParser *parser;
+static MilterParser *parser;
 static GString *buffer;
 
 static gint n_option_negotiations;
@@ -42,7 +42,7 @@ static gint n_aborts;
 static gint n_quits;
 static gint n_unknowns;
 
-static McContextType macro_context;
+static MilterContextType macro_context;
 static GHashTable *defined_macros;
 
 static gchar *connect_host_name;
@@ -65,13 +65,13 @@ static gchar *unknown_command;
 static gsize unknown_command_length;
 
 static void
-cb_option_negotiation (MCParser *parser, gpointer user_data)
+cb_option_negotiation (MilterParser *parser, gpointer user_data)
 {
     n_option_negotiations++;
 }
 
 static void
-cb_define_macro (MCParser *parser, McContextType context, GHashTable *macros,
+cb_define_macro (MilterParser *parser, MilterContextType context, GHashTable *macros,
                  gpointer user_data)
 {
     n_define_macros++;
@@ -85,7 +85,7 @@ cb_define_macro (MCParser *parser, McContextType context, GHashTable *macros,
 }
 
 static void
-cb_connect (MCParser *parser, const gchar *host_name,
+cb_connect (MilterParser *parser, const gchar *host_name,
             const struct sockaddr *address, socklen_t address_length,
             gpointer user_data)
 {
@@ -98,7 +98,7 @@ cb_connect (MCParser *parser, const gchar *host_name,
 }
 
 static void
-cb_helo (MCParser *parser, const gchar *fqdn, gpointer user_data)
+cb_helo (MilterParser *parser, const gchar *fqdn, gpointer user_data)
 {
     n_helos++;
 
@@ -106,7 +106,7 @@ cb_helo (MCParser *parser, const gchar *fqdn, gpointer user_data)
 }
 
 static void
-cb_mail (MCParser *parser, const gchar *from, gpointer user_data)
+cb_mail (MilterParser *parser, const gchar *from, gpointer user_data)
 {
     n_mails++;
 
@@ -114,7 +114,7 @@ cb_mail (MCParser *parser, const gchar *from, gpointer user_data)
 }
 
 static void
-cb_rcpt (MCParser *parser, const gchar *to, gpointer user_data)
+cb_rcpt (MilterParser *parser, const gchar *to, gpointer user_data)
 {
     n_rcpts++;
 
@@ -123,7 +123,7 @@ cb_rcpt (MCParser *parser, const gchar *to, gpointer user_data)
 
 
 static void
-cb_header (MCParser *parser, const gchar *name, const gchar *value,
+cb_header (MilterParser *parser, const gchar *name, const gchar *value,
            gpointer user_data)
 {
     n_headers++;
@@ -138,13 +138,13 @@ cb_header (MCParser *parser, const gchar *name, const gchar *value,
 }
 
 static void
-cb_end_of_header (MCParser *parser, gpointer user_data)
+cb_end_of_header (MilterParser *parser, gpointer user_data)
 {
     n_end_of_headers++;
 }
 
 static void
-cb_body (MCParser *parser, const gchar *chunk, gsize length, gpointer user_data)
+cb_body (MilterParser *parser, const gchar *chunk, gsize length, gpointer user_data)
 {
     n_bodies++;
 
@@ -155,25 +155,25 @@ cb_body (MCParser *parser, const gchar *chunk, gsize length, gpointer user_data)
 }
 
 static void
-cb_end_of_message (MCParser *parser, gpointer user_data)
+cb_end_of_message (MilterParser *parser, gpointer user_data)
 {
     n_end_of_messages++;
 }
 
 static void
-cb_abort (MCParser *parser, gpointer user_data)
+cb_abort (MilterParser *parser, gpointer user_data)
 {
     n_aborts++;
 }
 
 static void
-cb_quit (MCParser *parser, gpointer user_data)
+cb_quit (MilterParser *parser, gpointer user_data)
 {
     n_quits++;
 }
 
 static void
-cb_unknown (MCParser *parser, const gchar *command, gpointer user_data)
+cb_unknown (MilterParser *parser, const gchar *command, gpointer user_data)
 {
     n_unknowns++;
 
@@ -183,7 +183,7 @@ cb_unknown (MCParser *parser, const gchar *command, gpointer user_data)
 }
 
 static void
-setup_signals (MCParser *parser)
+setup_signals (MilterParser *parser)
 {
 #define CONNECT(name)                                                   \
     g_signal_connect(parser, #name, G_CALLBACK(cb_ ## name), NULL)
@@ -208,7 +208,7 @@ setup_signals (MCParser *parser)
 void
 setup (void)
 {
-    parser = mc_parser_new();
+    parser = milter_parser_new();
     setup_signals(parser);
 
     n_option_negotiations = 0;
@@ -253,7 +253,7 @@ void
 teardown (void)
 {
     if (parser) {
-        mc_parser_end_parse(parser, NULL);
+        milter_parser_end_parse(parser, NULL);
         g_object_unref(parser);
     }
 
@@ -304,7 +304,7 @@ parse (void)
     memcpy(packet, &content_size, sizeof(content_size));
     memcpy(packet + sizeof(content_size), buffer->str, buffer->len);
 
-    mc_parser_parse(parser, packet, packet_size, &error);
+    milter_parser_parse(parser, packet, packet_size, &error);
     g_free(packet);
 
     g_string_free(buffer, TRUE);
@@ -320,10 +320,10 @@ test_parse_empty_text (void)
     GError *actual = NULL;
 
     return; /* do nothing for now */
-    cut_assert_false(mc_parser_parse(parser, "", 0, &actual));
+    cut_assert_false(milter_parser_parse(parser, "", 0, &actual));
 
-    expected = g_error_new(MC_PARSER_ERROR,
-                           MC_PARSER_ERROR_SHORT_COMMAND_LENGTH,
+    expected = g_error_new(MILTER_PARSER_ERROR,
+                           MILTER_PARSER_ERROR_SHORT_COMMAND_LENGTH,
                            "too short command length");
     gcut_assert_equal_error(gcut_take_error(expected),
                             gcut_take_error(actual));
@@ -366,17 +366,17 @@ typedef void (*setup_packet_func) (void);
 typedef struct _DefineMacroTestData
 {
     setup_packet_func setup_packet;
-    McContextType context;
+    MilterContextType context;
     GHashTable *expected;
 } DefineMacroTestData;
 
 static DefineMacroTestData *define_macro_test_data_new(setup_packet_func setup_packet,
-                                                       McContextType context,
+                                                       MilterContextType context,
                                                        const gchar *key,
                                                        ...) G_GNUC_NULL_TERMINATED;
 static DefineMacroTestData *
 define_macro_test_data_new (setup_packet_func setup_packet,
-                            McContextType context,
+                            MilterContextType context,
                             const gchar *key,
                             ...)
 {
@@ -442,7 +442,7 @@ data_parse_define_macro (void)
 {
     cut_add_data("connect",
                  define_macro_test_data_new(setup_define_macro_connect_packet,
-                                            MC_CONTEXT_TYPE_CONNECT,
+                                            MILTER_CONTEXT_TYPE_CONNECT,
                                             "j", "debian.cozmixng.org",
                                             "daemon_name", "debian.cozmixng.org",
                                             "v", "Postfix 2.5.5",
@@ -451,27 +451,27 @@ data_parse_define_macro (void)
 
     cut_add_data("HELO",
                  define_macro_test_data_new(setup_define_macro_helo_packet,
-                                            MC_CONTEXT_TYPE_HELO,
+                                            MILTER_CONTEXT_TYPE_HELO,
                                             NULL, NULL),
                  define_macro_test_data_free);
 
     cut_add_data("MAIL FROM",
                  define_macro_test_data_new(setup_define_macro_mail_packet,
-                                            MC_CONTEXT_TYPE_MAIL,
+                                            MILTER_CONTEXT_TYPE_MAIL,
                                             "mail_addr", "kou@cozmixng.org",
                                             NULL),
                  define_macro_test_data_free);
 
     cut_add_data("RCPT TO",
                  define_macro_test_data_new(setup_define_macro_rcpt_packet,
-                                            MC_CONTEXT_TYPE_RCPT,
+                                            MILTER_CONTEXT_TYPE_RCPT,
                                             "rcpt_addr", "kou@cozmixng.org",
                                             NULL),
                  define_macro_test_data_free);
 
     cut_add_data("header",
                  define_macro_test_data_new(setup_define_macro_header_packet,
-                                            MC_CONTEXT_TYPE_HEADER,
+                                            MILTER_CONTEXT_TYPE_HEADER,
                                             "i", "69FDD42DF4A",
                                             NULL),
                  define_macro_test_data_free);

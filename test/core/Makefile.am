@@ -1,6 +1,6 @@
 if WITH_CUTTER
 noinst_LTLIBRARIES =			\
-	test-mc-parser.la
+	test-parser.la
 endif
 
 INCLUDES =			\
@@ -15,8 +15,8 @@ AM_LDFLAGS =			\
 	-avoid-version		\
 	-no-undefined
 
-LIBS =								\
-	$(top_builddir)/milter-client/libmilter-client.la	\
+LIBS =							\
+	$(top_builddir)/milter-core/libmilter-core.la	\
 	$(GCUTTER_LIBS)
 
-test_mc_parser_la_SOURCES = test-mc-parser.c
+test_parser_la_SOURCES = test-parser.c

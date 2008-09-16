@@ -184,10 +184,12 @@ MILTER_MANAGER_CFLAGS="$GLIB_CFLAGS -DG_DISABLE_DEPRECATED"
 AC_SUBST(MILTER_MANAGER_CFLAGS)
 
 AC_CONFIG_FILES([Makefile
+		 milter-core.pc
+		 milter-core/Makefile
 		 milter-client.pc
 		 milter-client/Makefile
 		 test/Makefile
-		 test/client/Makefile
+		 test/core/Makefile
 		 po/Makefile.in])
 
 AC_OUTPUT

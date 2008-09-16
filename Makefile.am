@@ -1,4 +1,5 @@
 SUBDIRS =		\
+	milter-core	\
 	milter-client	\
 	test
 

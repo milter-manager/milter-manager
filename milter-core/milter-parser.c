@@ -30,9 +30,9 @@
 
 #include <glib.h>
 
-#include "mc-parser.h"
-#include "mc-enum-types.h"
-#include "mc-marshalers.h"
+#include "milter-parser.h"
+#include "milter-enum-types.h"
+#include "milter-marshalers.h"
 
 #define COMMAND_BYTES_LENGTH (4)
 #define OPTION_LENGTH (4)
@@ -59,11 +59,13 @@
 #define FAMILY_INET6               '6'
 
 
-#define MC_PARSER_GET_PRIVATE(obj)                                      \
-    (G_TYPE_INSTANCE_GET_PRIVATE((obj), MC_TYPE_PARSER, MCParserPrivate))
+#define MILTER_PARSER_GET_PRIVATE(obj)                  \
+    (G_TYPE_INSTANCE_GET_PRIVATE((obj),                 \
+                                 MILTER_TYPE_PARSER,    \
+                                 MilterParserPrivate))
 
-typedef struct _MCParserPrivate	MCParserPrivate;
-struct _MCParserPrivate
+typedef struct _MilterParserPrivate	MilterParserPrivate;
+struct _MilterParserPrivate
 {
     gint state;
     GString *buffer;
@@ -97,7 +99,7 @@ enum
 
 static gint signals[LAST_SIGNAL] = {0};
 
-G_DEFINE_TYPE(MCParser, mc_parser, G_TYPE_OBJECT);
+G_DEFINE_TYPE(MilterParser, milter_parser, G_TYPE_OBJECT);
 
 static void dispose        (GObject         *object);
 static void set_property   (GObject         *object,
@@ -110,7 +112,7 @@ static void get_property   (GObject         *object,
                             GParamSpec      *pspec);
 
 static void
-mc_parser_class_init (MCParserClass *klass)
+milter_parser_class_init (MilterParserClass *klass)
 {
     GObjectClass *gobject_class;
 
@@ -124,7 +126,7 @@ mc_parser_class_init (MCParserClass *klass)
         g_signal_new("option-negotiation",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MCParserClass, option_negotiation),
+                     G_STRUCT_OFFSET(MilterParserClass, option_negotiation),
                      NULL, NULL,
                      g_cclosure_marshal_VOID__VOID,
                      G_TYPE_NONE, 0);
@@ -133,25 +135,25 @@ mc_parser_class_init (MCParserClass *klass)
         g_signal_new("define-macro",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MCParserClass, define_macro),
+                     G_STRUCT_OFFSET(MilterParserClass, define_macro),
                      NULL, NULL,
-                     _mc_marshal_VOID__ENUM_POINTER,
-                     G_TYPE_NONE, 2, MC_TYPE_CONTEXT_TYPE, G_TYPE_POINTER);
+                     _milter_marshal_VOID__ENUM_POINTER,
+                     G_TYPE_NONE, 2, MILTER_TYPE_CONTEXT_TYPE, G_TYPE_POINTER);
 
     signals[CONNECT] =
         g_signal_new("connect",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MCParserClass, connect),
+                     G_STRUCT_OFFSET(MilterParserClass, connect),
                      NULL, NULL,
-                     _mc_marshal_VOID__STRING_POINTER_INT,
+                     _milter_marshal_VOID__STRING_POINTER_INT,
                      G_TYPE_NONE, 3, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_INT);
 
     signals[HELO] =
         g_signal_new("helo",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MCParserClass, helo),
+                     G_STRUCT_OFFSET(MilterParserClass, helo),
                      NULL, NULL,
                      g_cclosure_marshal_VOID__STRING,
                      G_TYPE_NONE, 1, G_TYPE_STRING);
@@ -160,7 +162,7 @@ mc_parser_class_init (MCParserClass *klass)
         g_signal_new("mail",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MCParserClass, mail),
+                     G_STRUCT_OFFSET(MilterParserClass, mail),
                      NULL, NULL,
                      g_cclosure_marshal_VOID__STRING,
                      G_TYPE_NONE, 1, G_TYPE_STRING);
@@ -169,7 +171,7 @@ mc_parser_class_init (MCParserClass *klass)
         g_signal_new("rcpt",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MCParserClass, rcpt),
+                     G_STRUCT_OFFSET(MilterParserClass, rcpt),
                      NULL, NULL,
                      g_cclosure_marshal_VOID__STRING,
                      G_TYPE_NONE, 1, G_TYPE_STRING);
@@ -178,16 +180,16 @@ mc_parser_class_init (MCParserClass *klass)
         g_signal_new("header",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MCParserClass, header),
+                     G_STRUCT_OFFSET(MilterParserClass, header),
                      NULL, NULL,
-                     _mc_marshal_VOID__STRING_STRING,
+                     _milter_marshal_VOID__STRING_STRING,
                      G_TYPE_NONE, 2, G_TYPE_STRING, G_TYPE_STRING);
 
     signals[END_OF_HEADER] =
         g_signal_new("end-of-header",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MCParserClass, end_of_header),
+                     G_STRUCT_OFFSET(MilterParserClass, end_of_header),
                      NULL, NULL,
                      g_cclosure_marshal_VOID__VOID,
                      G_TYPE_NONE, 0);
@@ -196,13 +198,13 @@ mc_parser_class_init (MCParserClass *klass)
         g_signal_new("body",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MCParserClass, body),
+                     G_STRUCT_OFFSET(MilterParserClass, body),
                      NULL, NULL,
 #if GLIB_SIZEOF_SIZE_T == 8
-                     _mc_marshal_VOID__STRING_UINT64,
+                     _milter_marshal_VOID__STRING_UINT64,
                      G_TYPE_NONE, 2, G_TYPE_STRING, G_TYPE_UINT64
 #else
-                     _mc_marshal_VOID__STRING_UINT,
+                     _milter_marshal_VOID__STRING_UINT,
                      G_TYPE_NONE, 2, G_TYPE_STRING, G_TYPE_UINT
 #endif
             );
@@ -211,7 +213,7 @@ mc_parser_class_init (MCParserClass *klass)
         g_signal_new("end-of-message",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MCParserClass, end_of_message),
+                     G_STRUCT_OFFSET(MilterParserClass, end_of_message),
                      NULL, NULL,
                      g_cclosure_marshal_VOID__VOID,
                      G_TYPE_NONE, 0);
@@ -220,7 +222,7 @@ mc_parser_class_init (MCParserClass *klass)
         g_signal_new("abort",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MCParserClass, abort),
+                     G_STRUCT_OFFSET(MilterParserClass, abort),
                      NULL, NULL,
                      g_cclosure_marshal_VOID__VOID,
                      G_TYPE_NONE, 0);
@@ -229,7 +231,7 @@ mc_parser_class_init (MCParserClass *klass)
         g_signal_new("quit",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MCParserClass, quit),
+                     G_STRUCT_OFFSET(MilterParserClass, quit),
                      NULL, NULL,
                      g_cclosure_marshal_VOID__VOID,
                      G_TYPE_NONE, 0);
@@ -238,18 +240,18 @@ mc_parser_class_init (MCParserClass *klass)
         g_signal_new("unknown",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MCParserClass, unknown),
+                     G_STRUCT_OFFSET(MilterParserClass, unknown),
                      NULL, NULL,
                      g_cclosure_marshal_VOID__STRING,
                      G_TYPE_NONE, 1, G_TYPE_STRING);
 
-    g_type_class_add_private(gobject_class, sizeof(MCParserPrivate));
+    g_type_class_add_private(gobject_class, sizeof(MilterParserPrivate));
 }
 
 static void
-mc_parser_init (MCParser *parser)
+milter_parser_init (MilterParser *parser)
 {
-    MCParserPrivate *priv = MC_PARSER_GET_PRIVATE(parser);
+    MilterParserPrivate *priv = MILTER_PARSER_GET_PRIVATE(parser);
 
     priv->state = IN_START;
     priv->buffer = g_string_new(NULL);
@@ -258,15 +260,15 @@ mc_parser_init (MCParser *parser)
 static void
 dispose (GObject *object)
 {
-    MCParserPrivate *priv;
+    MilterParserPrivate *priv;
 
-    priv = MC_PARSER_GET_PRIVATE(object);
+    priv = MILTER_PARSER_GET_PRIVATE(object);
     if (priv->buffer) {
         g_string_free(priv->buffer, TRUE);
         priv->buffer = NULL;
     }
 
-    G_OBJECT_CLASS(mc_parser_parent_class)->dispose(object);
+    G_OBJECT_CLASS(milter_parser_parent_class)->dispose(object);
 }
 
 static void
@@ -275,9 +277,9 @@ set_property (GObject      *object,
               const GValue *value,
               GParamSpec   *pspec)
 {
-    MCParserPrivate *priv;
+    MilterParserPrivate *priv;
 
-    priv = MC_PARSER_GET_PRIVATE(object);
+    priv = MILTER_PARSER_GET_PRIVATE(object);
     switch (prop_id) {
 /*       case PROP_RUN_CONTEXT: */
 /*         if (priv->run_context) { */
@@ -300,9 +302,9 @@ get_property (GObject    *object,
               GValue     *value,
               GParamSpec *pspec)
 {
-    MCParserPrivate *priv;
+    MilterParserPrivate *priv;
 
-    priv = MC_PARSER_GET_PRIVATE(object);
+    priv = MILTER_PARSER_GET_PRIVATE(object);
     switch (prop_id) {
 /*       case PROP_RUN_CONTEXT: */
 /*         g_value_set_object(value, priv->run_context); */
@@ -314,15 +316,15 @@ get_property (GObject    *object,
 }
 
 GQuark
-mc_parser_error_quark (void)
+milter_parser_error_quark (void)
 {
-    return g_quark_from_static_string("mc-parser-error-quark");
+    return g_quark_from_static_string("milter-parser-error-quark");
 }
 
-MCParser *
-mc_parser_new (void)
+MilterParser *
+milter_parser_new (void)
 {
-    return g_object_new(MC_TYPE_PARSER,
+    return g_object_new(MILTER_TYPE_PARSER,
                         /* "run-context", run_context, */
                         NULL);
 }
@@ -373,40 +375,40 @@ parse_define_macro (const gchar *buffer, gint length, GError **error)
 }
 
 static gboolean
-parse_macro_context (const gchar macro_context, McContextType *context,
+parse_macro_context (const gchar macro_context, MilterContextType *context,
                      GError **error)
 {
     gboolean success = TRUE;
 
     switch (macro_context) {
       case COMMAND_CONNECT:
-        *context = MC_CONTEXT_TYPE_CONNECT;
+        *context = MILTER_CONTEXT_TYPE_CONNECT;
         break;
       case COMMAND_HELO:
-        *context = MC_CONTEXT_TYPE_HELO;
+        *context = MILTER_CONTEXT_TYPE_HELO;
         break;
       case COMMAND_MAIL:
-        *context = MC_CONTEXT_TYPE_MAIL;
+        *context = MILTER_CONTEXT_TYPE_MAIL;
         break;
       case COMMAND_RCPT:
-        *context = MC_CONTEXT_TYPE_RCPT;
+        *context = MILTER_CONTEXT_TYPE_RCPT;
         break;
       case COMMAND_HEADER:
-        *context = MC_CONTEXT_TYPE_HEADER;
+        *context = MILTER_CONTEXT_TYPE_HEADER;
         break;
       case COMMAND_END_OF_HEADER:
-        *context = MC_CONTEXT_TYPE_END_OF_HEADER;
+        *context = MILTER_CONTEXT_TYPE_END_OF_HEADER;
         break;
       case COMMAND_BODY:
-        *context = MC_CONTEXT_TYPE_BODY;
+        *context = MILTER_CONTEXT_TYPE_BODY;
         break;
       case COMMAND_END_OF_MESSAGE:
-        *context = MC_CONTEXT_TYPE_END_OF_MESSAGE;
+        *context = MILTER_CONTEXT_TYPE_END_OF_MESSAGE;
         break;
       default:
         g_set_error(error,
-                    MC_PARSER_ERROR,
-                    MC_PARSER_ERROR_UNKNOWN_MACRO_CONTEXT,
+                    MILTER_PARSER_ERROR,
+                    MILTER_PARSER_ERROR_UNKNOWN_MACRO_CONTEXT,
                     "unknown macro context: %c", macro_context);
         success = FALSE;
         break;
@@ -436,8 +438,8 @@ parse_connect(const gchar *buffer, gint length,
         terminated_host_name = g_strndup(parsed_host_name, i + 1);
         terminated_host_name[i + 1] = '\0';
         g_set_error(error,
-                    MC_PARSER_ERROR,
-                    MC_PARSER_ERROR_CONNECT_HOST_NAME_UNTERMINATED,
+                    MILTER_PARSER_ERROR,
+                    MILTER_PARSER_ERROR_CONNECT_HOST_NAME_UNTERMINATED,
                     "host name on connect is unterminated: %s",
                     terminated_host_name);
         g_free(terminated_host_name);
@@ -450,8 +452,8 @@ parse_connect(const gchar *buffer, gint length,
     if (family != FAMILY_UNKNOWN) {
         if (i + sizeof(port) >= length) {
             g_set_error(error,
-                        MC_PARSER_ERROR,
-                        MC_PARSER_ERROR_CONNECT_PORT_MISSING,
+                        MILTER_PARSER_ERROR,
+                        MILTER_PARSER_ERROR_CONNECT_PORT_MISSING,
                         "port number on connect is missing: "
                         "%s: %d (required: >= %lu)",
                         parsed_host_name, length, i + sizeof(port));
@@ -461,8 +463,8 @@ parse_connect(const gchar *buffer, gint length,
         i += sizeof(port);
     } else {
         g_set_error(error,
-                    MC_PARSER_ERROR,
-                    MC_PARSER_ERROR_CONNECT_UNKNOWN_FAMILY,
+                    MILTER_PARSER_ERROR,
+                    MILTER_PARSER_ERROR_CONNECT_UNKNOWN_FAMILY,
                     "unknown family on connect: %s: %c",
                     parsed_host_name, family);
         return FALSE;
@@ -470,8 +472,8 @@ parse_connect(const gchar *buffer, gint length,
 
     if (buffer[length] != '\0') {
         g_set_error(error,
-                    MC_PARSER_ERROR,
-                    MC_PARSER_ERROR_CONNECT_SEPARATOR_MISSING,
+                    MILTER_PARSER_ERROR,
+                    MILTER_PARSER_ERROR_CONNECT_SEPARATOR_MISSING,
                     "NULL separator at the end of connect packet is missing: %s",
                     parsed_host_name);
         return FALSE;
@@ -485,8 +487,8 @@ parse_connect(const gchar *buffer, gint length,
 
             if (inet_aton(buffer + i, &ip_address) == -1) {
                 g_set_error(error,
-                            MC_PARSER_ERROR,
-                            MC_PARSER_ERROR_CONNECT_INVALID_INET_ADDRESS,
+                            MILTER_PARSER_ERROR,
+                            MILTER_PARSER_ERROR_CONNECT_INVALID_INET_ADDRESS,
                             "invalid IPv4 address on connect: %s: %s",
                             parsed_host_name, buffer + i);
                 return FALSE;
@@ -507,8 +509,8 @@ parse_connect(const gchar *buffer, gint length,
 
             if (inet_pton(AF_INET6, buffer + i, &ipv6_address) == -1) {
                 g_set_error(error,
-                            MC_PARSER_ERROR,
-                            MC_PARSER_ERROR_CONNECT_INVALID_INET6_ADDRESS,
+                            MILTER_PARSER_ERROR,
+                            MILTER_PARSER_ERROR_CONNECT_INVALID_INET6_ADDRESS,
                             "invalid IPv6 address on connect: %s: %s",
                             parsed_host_name, buffer + i);
                 return FALSE;
@@ -535,8 +537,8 @@ parse_connect(const gchar *buffer, gint length,
         break;
       default:
         g_set_error(error,
-                    MC_PARSER_ERROR,
-                    MC_PARSER_ERROR_CONNECT_UNKNOWN_FAMILY,
+                    MILTER_PARSER_ERROR,
+                    MILTER_PARSER_ERROR_CONNECT_UNKNOWN_FAMILY,
                     "unknown family on connect: %s: %c",
                     parsed_host_name, family);
         return FALSE;
@@ -558,16 +560,16 @@ parse_header (const gchar *buffer, gint length,
     }
     if (i == length) {
         g_set_error(error,
-                    MC_PARSER_ERROR,
-                    MC_PARSER_ERROR_HEADER_MISSING_NULL,
+                    MILTER_PARSER_ERROR,
+                    MILTER_PARSER_ERROR_HEADER_MISSING_NULL,
                     "name terminate NULL is missing");
         return FALSE;
     }
 
     if (buffer[length] != '\0') {
         g_set_error(error,
-                    MC_PARSER_ERROR,
-                    MC_PARSER_ERROR_HEADER_MISSING_NULL,
+                    MILTER_PARSER_ERROR,
+                    MILTER_PARSER_ERROR_HEADER_MISSING_NULL,
                     "last NULL is missing");
         return FALSE;
     }
@@ -578,12 +580,12 @@ parse_header (const gchar *buffer, gint length,
 }
 
 static gboolean
-parse_command (MCParser *parser, GError **error)
+parse_command (MilterParser *parser, GError **error)
 {
-    MCParserPrivate *priv;
+    MilterParserPrivate *priv;
     gboolean success = TRUE;
 
-    priv = MC_PARSER_GET_PRIVATE(parser);
+    priv = MILTER_PARSER_GET_PRIVATE(parser);
 
     switch (priv->buffer->str[0]) {
       case COMMAND_OPTION_NEGOTIATION:
@@ -594,7 +596,7 @@ parse_command (MCParser *parser, GError **error)
       case COMMAND_DEFINE_MACRO:
         {
             GHashTable *macros;
-            McContextType context;
+            MilterContextType context;
 
             if (parse_macro_context(priv->buffer->str[1], &context, error)) {
                 macros = parse_define_macro(priv->buffer->str + 1 + 1,
@@ -646,8 +648,8 @@ parse_command (MCParser *parser, GError **error)
                                             priv->command_bytes + 1);
                 terminated_fqdn[priv->command_bytes + 1] = '\0';
                 g_set_error(error,
-                            MC_PARSER_ERROR,
-                            MC_PARSER_ERROR_HELO_MISSING_NULL,
+                            MILTER_PARSER_ERROR,
+                            MILTER_PARSER_ERROR_HELO_MISSING_NULL,
                             "missing last NULL on HELO: %s",
                             terminated_fqdn);
                 g_free(terminated_fqdn);
@@ -668,8 +670,8 @@ parse_command (MCParser *parser, GError **error)
                                             priv->command_bytes + 1);
                 terminated_from[priv->command_bytes + 1] = '\0';
                 g_set_error(error,
-                            MC_PARSER_ERROR,
-                            MC_PARSER_ERROR_MAIL_MISSING_NULL,
+                            MILTER_PARSER_ERROR,
+                            MILTER_PARSER_ERROR_MAIL_MISSING_NULL,
                             "missing the last NULL on MAIL: %s",
                             terminated_from);
                 g_free(terminated_from);
@@ -690,8 +692,8 @@ parse_command (MCParser *parser, GError **error)
                                           priv->command_bytes + 1);
                 terminated_to[priv->command_bytes + 1] = '\0';
                 g_set_error(error,
-                            MC_PARSER_ERROR,
-                            MC_PARSER_ERROR_RCPT_MISSING_NULL,
+                            MILTER_PARSER_ERROR,
+                            MILTER_PARSER_ERROR_RCPT_MISSING_NULL,
                             "missing the last NULL on RCPT: %s",
                             terminated_to);
                 g_free(terminated_to);
@@ -721,8 +723,8 @@ parse_command (MCParser *parser, GError **error)
                 g_string_erase(priv->buffer, 0, priv->command_bytes);
             } else {
                 g_set_error(error,
-                            MC_PARSER_ERROR,
-                            MC_PARSER_ERROR_LONG_COMMAND_LENGTH,
+                            MILTER_PARSER_ERROR,
+                            MILTER_PARSER_ERROR_LONG_COMMAND_LENGTH,
                             "too long command length on EOH: %d: expected: %d",
                             priv->command_bytes, 1);
                 success = FALSE;
@@ -751,8 +753,8 @@ parse_command (MCParser *parser, GError **error)
             g_string_erase(priv->buffer, 0, priv->command_bytes);
         } else {
             g_set_error(error,
-                        MC_PARSER_ERROR,
-                        MC_PARSER_ERROR_LONG_COMMAND_LENGTH,
+                        MILTER_PARSER_ERROR,
+                        MILTER_PARSER_ERROR_LONG_COMMAND_LENGTH,
                         "too long command length on ABORT: %d: expected: %d",
                         priv->command_bytes, 1);
             success = FALSE;
@@ -765,8 +767,8 @@ parse_command (MCParser *parser, GError **error)
             g_string_erase(priv->buffer, 0, priv->command_bytes);
         } else {
             g_set_error(error,
-                        MC_PARSER_ERROR,
-                        MC_PARSER_ERROR_LONG_COMMAND_LENGTH,
+                        MILTER_PARSER_ERROR,
+                        MILTER_PARSER_ERROR_LONG_COMMAND_LENGTH,
                         "too long command length on QUIT: %d: expected: %d",
                         priv->command_bytes, 1);
             success = FALSE;
@@ -784,8 +786,8 @@ parse_command (MCParser *parser, GError **error)
                                            priv->command_bytes + 1);
             terminated_command[priv->command_bytes + 1] = '\0';
             g_set_error(error,
-                        MC_PARSER_ERROR,
-                        MC_PARSER_ERROR_UNKNOWN_MISSING_NULL,
+                        MILTER_PARSER_ERROR,
+                        MILTER_PARSER_ERROR_UNKNOWN_MISSING_NULL,
                         "missing the last NULL on UNKNOWN: %s",
                         terminated_command);
             g_free(terminated_command);
@@ -805,18 +807,18 @@ parse_command (MCParser *parser, GError **error)
 }
 
 gboolean
-mc_parser_parse (MCParser *parser, const gchar *text, gsize text_len,
+milter_parser_parse (MilterParser *parser, const gchar *text, gsize text_len,
                  GError **error)
 {
-    MCParserPrivate *priv;
+    MilterParserPrivate *priv;
     gboolean loop = TRUE;
     gboolean success = TRUE;
 
-    priv = MC_PARSER_GET_PRIVATE(parser);
+    priv = MILTER_PARSER_GET_PRIVATE(parser);
     if (priv->state == IN_ERROR) {
         g_set_error(error,
-                    MC_PARSER_ERROR,
-                    MC_PARSER_ERROR_ALREADY_INVALID,
+                    MILTER_PARSER_ERROR,
+                    MILTER_PARSER_ERROR_ALREADY_INVALID,
                     "input is already invalid");
         return FALSE;
     }
@@ -860,9 +862,9 @@ mc_parser_parse (MCParser *parser, const gchar *text, gsize text_len,
 }
 
 gboolean
-mc_parser_end_parse (MCParser *parser, GError **error)
+milter_parser_end_parse (MilterParser *parser, GError **error)
 {
-    MCParserPrivate *priv = MC_PARSER_GET_PRIVATE(parser);
+    MilterParserPrivate *priv = MILTER_PARSER_GET_PRIVATE(parser);
 
     if (priv->state == IN_EOF)
         return FALSE;

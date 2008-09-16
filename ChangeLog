@@ -1,5 +1,9 @@
 2008-09-16  Kouhei Sutou  <kou@cozmixng.org>
 
+	* /: McParser -> MilterParser.
+	* milter-core/: add.
+	* test/: client -> core.
+
 	* milter-client/mc-parser.[ch], test/client/test-mc-parser.c:
 	support UNKNOWN command.
 
