@@ -120,14 +120,14 @@ struct _MilterOptionClass
 
 GType              milter_option_get_type          (void) G_GNUC_CONST;
 
-MilterOption      *milter_option_new               (gint              version,
+MilterOption      *milter_option_new               (guint32           version,
                                                     MilterActionFlags action,
                                                     MilterStepFlags   step);
 MilterOption      *milter_option_new_empty         (void);
 
-guint              milter_option_get_version       (MilterOption      *option);
+guint32            milter_option_get_version       (MilterOption      *option);
 void               milter_option_set_version       (MilterOption      *option,
-                                                    guint              version);
+                                                    guint32            version);
 
 MilterActionFlags  milter_option_get_action        (MilterOption      *option);
 void               milter_option_set_action        (MilterOption      *option,

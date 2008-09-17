@@ -1,5 +1,8 @@
 2008-09-17  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-core/milter-option.[ch], test/core/test-milter.c: support
+	properties.
+
 	* milter-core/milter-option.[ch], test/core/test-milter.c: add
 	MilterOption.
 

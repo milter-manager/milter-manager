@@ -125,6 +125,15 @@ set_property (GObject      *object,
 
     priv = MILTER_OPTION_GET_PRIVATE(object);
     switch (prop_id) {
+      case PROP_VERSION:
+        priv->version = g_value_get_uint(value);
+        break;
+      case PROP_ACTION:
+        priv->action = g_value_get_flags(value);
+        break;
+      case PROP_STEP:
+        priv->step = g_value_get_flags(value);
+        break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -141,6 +150,15 @@ get_property (GObject    *object,
 
     priv = MILTER_OPTION_GET_PRIVATE(object);
     switch (prop_id) {
+      case PROP_VERSION:
+        g_value_set_uint(value, priv->version);
+        break;
+      case PROP_ACTION:
+        g_value_set_flags(value, priv->action);
+        break;
+      case PROP_STEP:
+        g_value_set_flags(value, priv->step);
+        break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -148,7 +166,8 @@ get_property (GObject    *object,
 }
 
 MilterOption *
-milter_option_new (gint version, MilterActionFlags action, MilterStepFlags step)
+milter_option_new (guint32 version, MilterActionFlags action,
+                   MilterStepFlags step)
 {
     return g_object_new(MILTER_TYPE_OPTION,
                         "version", version,
@@ -163,7 +182,7 @@ milter_option_new_empty (void)
     return g_object_new(MILTER_TYPE_OPTION, NULL);
 }
 
-guint
+guint32
 milter_option_get_version (MilterOption *option)
 {
     MilterOptionPrivate *priv;
@@ -173,7 +192,7 @@ milter_option_get_version (MilterOption *option)
 }
 
 void
-milter_option_set_version (MilterOption *option, guint version)
+milter_option_set_version (MilterOption *option, guint32 version)
 {
     MilterOptionPrivate *priv;
 

@@ -24,6 +24,7 @@
 #undef shutdown
 
 void test_new (void);
+void test_new_empty (void);
 
 static MilterOption *option;
 
@@ -43,10 +44,27 @@ teardown (void)
 void
 test_new (void)
 {
+    guint32 version;
+    MilterActionFlags action;
+    MilterStepFlags step;
+
+    version = 8;
+    action = MILTER_ACTION_ADD_HEADERS | MILTER_ACTION_CHANGE_BODY;
+    step = MILTER_STEP_NO_MAIL | MILTER_STEP_NO_REPLY_CONNECT;
+
+    option = milter_option_new(version, action, step);
+    cut_assert_equal_uint(version, milter_option_get_version(option));
+    cut_assert_equal_uint(action, milter_option_get_action(option));
+    cut_assert_equal_uint(step, milter_option_get_step(option));
+}
+
+void
+test_new_empty (void)
+{
     option = milter_option_new_empty();
-    cut_assert_equal_int(6, milter_option_get_version(option));
-    cut_assert_equal_int(MILTER_ACTION_NONE, milter_option_get_action(option));
-    cut_assert_equal_int(0, milter_option_get_step(option));
+    cut_assert_equal_uint(6, milter_option_get_version(option));
+    cut_assert_equal_uint(MILTER_ACTION_NONE, milter_option_get_action(option));
+    cut_assert_equal_uint(0, milter_option_get_step(option));
 }
 
 /*
