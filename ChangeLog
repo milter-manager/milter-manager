@@ -1,5 +1,8 @@
 2008-09-17  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/core/test-option.c: add tests for accessors of
+	MilterActionFlags and MilterStepFlags.
+
 	* milter-core/milter-option.[ch], test/core/test-milter.c: support
 	properties.
 

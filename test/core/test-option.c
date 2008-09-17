@@ -21,10 +21,14 @@
 
 #define shutdown inet_shutdown
 #include <milter-core/milter-option.h>
+#include <milter-core/milter-enum-types.h>
 #undef shutdown
 
 void test_new (void);
 void test_new_empty (void);
+void test_version (void);
+void test_action (void);
+void test_step (void);
 
 static MilterOption *option;
 
@@ -65,6 +69,98 @@ test_new_empty (void)
     cut_assert_equal_uint(6, milter_option_get_version(option));
     cut_assert_equal_uint(MILTER_ACTION_NONE, milter_option_get_action(option));
     cut_assert_equal_uint(0, milter_option_get_step(option));
+}
+
+void
+test_version (void)
+{
+    option = milter_option_new_empty();
+
+    cut_assert_equal_uint(6, milter_option_get_version(option));
+    milter_option_set_version(option, 8);
+    cut_assert_equal_uint(8, milter_option_get_version(option));
+}
+
+void
+test_action (void)
+{
+    option = milter_option_new_empty();
+
+    gcut_assert_equal_flags(MILTER_TYPE_ACTION_FLAGS,
+                            MILTER_ACTION_NONE,
+                            milter_option_get_action(option));
+
+    milter_option_set_action(option,
+                             MILTER_ACTION_ADD_RCPT);
+    gcut_assert_equal_flags(MILTER_TYPE_ACTION_FLAGS,
+                            MILTER_ACTION_ADD_RCPT,
+                            milter_option_get_action(option));
+
+    milter_option_add_action(option,
+                             MILTER_ACTION_DELETE_RCPT |
+                             MILTER_ACTION_CHANGE_FROM);
+    gcut_assert_equal_flags(MILTER_TYPE_ACTION_FLAGS,
+                            MILTER_ACTION_ADD_RCPT |
+                            MILTER_ACTION_DELETE_RCPT |
+                            MILTER_ACTION_CHANGE_FROM,
+                            milter_option_get_action(option));
+
+    milter_option_remove_action(option, MILTER_ACTION_CHANGE_FROM);
+    gcut_assert_equal_flags(MILTER_TYPE_ACTION_FLAGS,
+                            MILTER_ACTION_ADD_RCPT |
+                            MILTER_ACTION_DELETE_RCPT,
+                            milter_option_get_action(option));
+
+    milter_option_set_action(option,
+                             MILTER_ACTION_QUARANTINE |
+                             MILTER_ACTION_SET_SYMBOL_LIST);
+    gcut_assert_equal_flags(MILTER_TYPE_ACTION_FLAGS,
+                            MILTER_ACTION_QUARANTINE |
+                            MILTER_ACTION_SET_SYMBOL_LIST,
+                            milter_option_get_action(option));
+}
+
+void
+test_step (void)
+{
+    option = milter_option_new_empty();
+
+    gcut_assert_equal_flags(MILTER_TYPE_STEP_FLAGS,
+                            MILTER_STEP_NONE,
+                            milter_option_get_step(option));
+
+    milter_option_set_step(option,
+                           MILTER_STEP_SKIP |
+                           MILTER_STEP_NO_REPLY_HELO);
+    gcut_assert_equal_flags(MILTER_TYPE_STEP_FLAGS,
+                            MILTER_STEP_SKIP |
+                            MILTER_STEP_NO_REPLY_HELO,
+                            milter_option_get_step(option));
+
+    milter_option_add_step(option,
+                           MILTER_STEP_NO_CONNECT |
+                           MILTER_STEP_NO_HELO);
+    gcut_assert_equal_flags(MILTER_TYPE_STEP_FLAGS,
+                            MILTER_STEP_SKIP |
+                            MILTER_STEP_NO_REPLY_HELO |
+                            MILTER_STEP_NO_CONNECT |
+                            MILTER_STEP_NO_HELO,
+                            milter_option_get_step(option));
+
+    milter_option_remove_step(option, MILTER_STEP_NO_CONNECT);
+    gcut_assert_equal_flags(MILTER_TYPE_STEP_FLAGS,
+                            MILTER_STEP_SKIP |
+                            MILTER_STEP_NO_REPLY_HELO |
+                            MILTER_STEP_NO_HELO,
+                            milter_option_get_step(option));
+
+    milter_option_set_step(option,
+                           MILTER_STEP_NO_REPLY_HELO |
+                           MILTER_STEP_NO_HELO);
+    gcut_assert_equal_flags(MILTER_TYPE_STEP_FLAGS,
+                            MILTER_STEP_NO_REPLY_HELO |
+                            MILTER_STEP_NO_HELO,
+                            milter_option_get_step(option));
 }
 
 /*
