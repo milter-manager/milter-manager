@@ -1,3 +1,7 @@
+2008-09-17  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter-core/milter-parser.c: cleanup.
+
 2008-09-16  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter-core/milter-parser.[ch], test/core/test-parser.c: improve

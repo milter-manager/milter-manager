@@ -482,10 +482,10 @@ parse_define_macro (MilterParser *parser, GError **error)
 }
 
 static gboolean
-parse_inet_address (const gchar *buffer,
-                    struct sockaddr **address, socklen_t *address_length,
-                    const gchar *host_name, gchar family, guint port,
-                    GError **error)
+parse_connect_inet_address (const gchar *buffer,
+                            struct sockaddr **address, socklen_t *address_length,
+                            const gchar *host_name, gchar family, guint port,
+                            GError **error)
 {
     struct sockaddr_in *address_in;
     struct in_addr ip_address;
@@ -511,10 +511,11 @@ parse_inet_address (const gchar *buffer,
 }
 
 static gboolean
-parse_inet6_address (const gchar *buffer,
-                     struct sockaddr **address, socklen_t *address_length,
-                     const gchar *host_name, gchar family, guint port,
-                     GError **error)
+parse_connect_inet6_address (const gchar *buffer,
+                             struct sockaddr **address,
+                             socklen_t *address_length,
+                             const gchar *host_name, gchar family, guint port,
+                             GError **error)
 {
     struct sockaddr_in6 *address_in6;
     struct in6_addr ipv6_address;
@@ -540,10 +541,10 @@ parse_inet6_address (const gchar *buffer,
 }
 
 static gboolean
-parse_unix_address (const gchar *buffer,
-                    struct sockaddr **address, socklen_t *address_length,
-                    const gchar *host_name, gchar family, guint port,
-                    GError **error)
+parse_connect_unix_address (const gchar *buffer,
+                            struct sockaddr **address, socklen_t *address_length,
+                            const gchar *host_name, gchar family, guint port,
+                            GError **error)
 {
     struct sockaddr_un *address_un;
 
@@ -557,9 +558,9 @@ parse_unix_address (const gchar *buffer,
 }
 
 static gboolean
-parse_connect (const gchar *buffer, gint length, gchar **host_name,
-               struct sockaddr **address, socklen_t *address_length,
-               GError **error)
+parse_connect_content (const gchar *buffer, gint length, gchar **host_name,
+                       struct sockaddr **address, socklen_t *address_length,
+                       GError **error)
 {
     gchar family;
     gint i, null_character_point;
@@ -621,18 +622,18 @@ parse_connect (const gchar *buffer, gint length, gchar **host_name,
 
     switch (family) {
       case FAMILY_INET:
-        if (!parse_inet_address(buffer + i, address, address_length,
-                                parsed_host_name, family, port, error))
+        if (!parse_connect_inet_address(buffer + i, address, address_length,
+                                        parsed_host_name, family, port, error))
             return FALSE;
         break;
       case FAMILY_INET6:
-        if (!parse_inet6_address(buffer + i, address, address_length,
-                                 parsed_host_name, family, port, error))
+        if (!parse_connect_inet6_address(buffer + i, address, address_length,
+                                         parsed_host_name, family, port, error))
             return FALSE;
         break;
       case FAMILY_UNIX:
-        if (!parse_unix_address(buffer + i, address, address_length,
-                                parsed_host_name, family, port, error))
+        if (!parse_connect_unix_address(buffer + i, address, address_length,
+                                        parsed_host_name, family, port, error))
             return FALSE;
         break;
       default:
@@ -648,6 +649,28 @@ parse_connect (const gchar *buffer, gint length, gchar **host_name,
     *host_name = g_strdup(parsed_host_name);
     return TRUE;
 }
+
+static gboolean
+parse_connect (MilterParser *parser, GError **error)
+{
+    MilterParserPrivate *priv;
+    gchar *host_name;
+    struct sockaddr *address;
+    socklen_t length;
+
+    priv = MILTER_PARSER_GET_PRIVATE(parser);
+
+    if (parse_connect_content(priv->buffer->str + 1, priv->command_length - 1,
+                              &host_name, &address, &length, error)) {
+        g_signal_emit(parser, signals[CONNECT], 0, host_name, address, length);
+        g_free(host_name);
+        g_free(address);
+        return TRUE;
+    } else {
+        return FALSE;
+    }
+}
+
 
 static gboolean
 parse_header (const gchar *buffer, gint length,
@@ -695,21 +718,7 @@ parse_command (MilterParser *parser, GError **error)
         success = parse_define_macro(parser, error);
         break;
       case COMMAND_CONNECT:
-        {
-            gchar *host_name;
-            struct sockaddr *address;
-            socklen_t length;
-
-            if (parse_connect(priv->buffer->str + 1, priv->command_length - 1,
-                              &host_name, &address, &length, error)) {
-                g_signal_emit(parser, signals[CONNECT], 0,
-                              host_name, address, length);
-                g_free(host_name);
-                g_free(address);
-            } else {
-                success = FALSE;
-            }
-        }
+        success = parse_connect(parser, error);
         break;
       case COMMAND_HELO:
         {
