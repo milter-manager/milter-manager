@@ -31,6 +31,7 @@ void test_parse_helo_without_null (void);
 void test_parse_mail (void);
 void test_parse_mail_without_null (void);
 void test_parse_rcpt (void);
+void test_parse_rcpt_without_null (void);
 void test_parse_header (void);
 void test_parse_end_of_header (void);
 void test_parse_body (void);
@@ -882,6 +883,22 @@ test_parse_rcpt (void)
     gcut_assert_error(parse());
     cut_assert_equal_int(1, n_rcpts);
     cut_assert_equal_string(to, rcpt_to);
+}
+
+void
+test_parse_rcpt_without_null (void)
+{
+    const gchar to[] = "<kou@cozmixng.org>";
+
+    g_string_append(buffer, "R");
+    g_string_append(buffer, to);
+
+    expected_error = g_error_new(MILTER_PARSER_ERROR,
+                                 MILTER_PARSER_ERROR_MISSING_NULL,
+                                 "TO isn't terminated by NULL "
+                                 "on RCPT command: <<kou@cozmixng.org>>");
+    actual_error = parse();
+    gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void

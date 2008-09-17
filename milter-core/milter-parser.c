@@ -696,7 +696,6 @@ static gboolean
 parse_mail (MilterParser *parser, GError **error)
 {
     MilterParserPrivate *priv;
-
     gint null_character_point;
 
     priv = MILTER_PARSER_GET_PRIVATE(parser);
@@ -713,6 +712,27 @@ parse_mail (MilterParser *parser, GError **error)
 
     return TRUE;
 }
+
+static gboolean
+parse_rcpt (MilterParser *parser, GError **error)
+{
+    MilterParserPrivate *priv;
+    gint null_character_point;
+
+    priv = MILTER_PARSER_GET_PRIVATE(parser);
+    null_character_point =
+        parse_null_terminated_value(priv->buffer->str + 1,
+                                    priv->command_length - 1,
+                                    error,
+                                    "TO isn't terminated by NULL "
+                                    "on RCPT command");
+    if (null_character_point <= 0)
+        return FALSE;
+
+    g_signal_emit(parser, signals[RCPT], 0, priv->buffer->str + 1);
+    return TRUE;
+}
+
 
 static gboolean
 parse_header (const gchar *buffer, gint length,
@@ -768,24 +788,7 @@ parse_command (MilterParser *parser, GError **error)
         success = parse_mail(parser, error);
         break;
       case COMMAND_RCPT:
-        {
-            if (priv->buffer->str[priv->command_length] == '\0') {
-                g_signal_emit(parser, signals[RCPT], 0, priv->buffer->str + 1);
-            } else {
-                gchar *terminated_to;
-
-                terminated_to = g_strndup(priv->buffer->str + 1,
-                                          priv->command_length + 1);
-                terminated_to[priv->command_length + 1] = '\0';
-                g_set_error(error,
-                            MILTER_PARSER_ERROR,
-                            MILTER_PARSER_ERROR_RCPT_MISSING_NULL,
-                            "missing the last NULL on RCPT: %s",
-                            terminated_to);
-                g_free(terminated_to);
-                success = FALSE;
-            }
-        }
+        success = parse_rcpt(parser, error);
         break;
       case COMMAND_HEADER:
         {
