@@ -408,6 +408,10 @@ append_inspected_bytes (GString *message, const gchar *buffer, gsize length)
     gsize i;
     gboolean have_unprintable_byte = FALSE;
 
+    if (length == 0)
+        return;
+
+    g_string_append(message, ":");
     for (i = 0; i < length; i++) {
         g_string_append_printf(message, " 0x%02x", buffer[i]);
         if (buffer[i] < 0x20 || 0x7e < buffer[i])
@@ -428,7 +432,7 @@ append_need_more_bytes_for_parsing_message (GString *message,
     needed_length = required_length - length;
     g_string_append_printf(message,
                            "need more %" G_GSIZE_FORMAT " byte%s "
-                           "for parsing %s:",
+                           "for parsing %s",
                            needed_length,
                            needed_length > 1 ? "s" : "",
                            parsing_target);
@@ -444,7 +448,7 @@ append_needless_bytes_were_received_message (GString *message,
     g_return_if_fail(needless_bytes > 0);
     g_string_append_printf(message,
                            "needless %" G_GSIZE_FORMAT " byte%s received "
-                           "on %s:",
+                           "on %s",
                            needless_bytes,
                            needless_bytes > 1 ? "s were" : " was",
                            on_target);

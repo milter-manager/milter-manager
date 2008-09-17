@@ -31,6 +31,12 @@
 
 void test_parse_empty_text (void);
 void test_parse_option_negotiation (void);
+void test_parse_option_negotiation_empty (void);
+void test_parse_option_negotiation_without_version (void);
+void test_parse_option_negotiation_only_version (void);
+void test_parse_option_negotiation_without_action (void);
+void test_parse_option_negotiation_only_version_and_action (void);
+void test_parse_option_negotiation_without_step (void);
 void data_parse_define_macro (void);
 void test_parse_define_macro (gconstpointer data);
 void test_parse_define_macro_with_unknown_macro_context (void);
@@ -434,6 +440,190 @@ test_parse_option_negotiation (void)
     gcut_assert_equal_flags(MILTER_TYPE_STEP_FLAGS,
                             step,
                             milter_option_get_step(option_negotiation_option));
+}
+
+void
+test_parse_option_negotiation_empty (void)
+{
+    g_string_append_c(buffer, 'O');
+
+    expected_error = g_error_new(MILTER_PARSER_ERROR,
+                                 MILTER_PARSER_ERROR_SHORT_COMMAND_LENGTH,
+                                 "need more 4 bytes for parsing version "
+                                 "on option negotiation command");
+    actual_error = parse();
+    gcut_assert_equal_error(expected_error, actual_error);
+}
+
+void
+test_parse_option_negotiation_without_version (void)
+{
+    guint32 version;
+    guint32 version_network_byte_order;
+    gchar version_string[sizeof(guint32)];
+
+    version = 2;
+    version_network_byte_order = htonl(version);
+    memcpy(version_string, &version_network_byte_order, sizeof(guint32));
+
+    g_string_append_c(buffer, 'O');
+    g_string_append_len(buffer, version_string, sizeof(version_string) - 1);
+
+    expected_error = g_error_new(MILTER_PARSER_ERROR,
+                                 MILTER_PARSER_ERROR_SHORT_COMMAND_LENGTH,
+                                 "need more 1 byte for parsing version "
+                                 "on option negotiation command: "
+                                 "0x00 0x00 0x00");
+    actual_error = parse();
+    gcut_assert_equal_error(expected_error, actual_error);
+}
+
+void
+test_parse_option_negotiation_only_version (void)
+{
+    guint32 version;
+    guint32 version_network_byte_order;
+    gchar version_string[sizeof(guint32)];
+
+    version = 2;
+    version_network_byte_order = htonl(version);
+    memcpy(version_string, &version_network_byte_order, sizeof(guint32));
+
+    g_string_append_c(buffer, 'O');
+    g_string_append_len(buffer, version_string, sizeof(version_string));
+
+    expected_error = g_error_new(MILTER_PARSER_ERROR,
+                                 MILTER_PARSER_ERROR_SHORT_COMMAND_LENGTH,
+                                 "need more 4 bytes for parsing action flags "
+                                 "on option negotiation command");
+    actual_error = parse();
+    gcut_assert_equal_error(expected_error, actual_error);
+}
+
+void
+test_parse_option_negotiation_without_action (void)
+{
+    guint32 version;
+    MilterActionFlags action;
+    guint32 version_network_byte_order;
+    guint32 action_network_byte_order;
+    gchar version_string[sizeof(guint32)];
+    gchar action_string[sizeof(guint32)];
+
+    version = 2;
+    action = MILTER_ACTION_ADD_HEADERS |
+        MILTER_ACTION_CHANGE_BODY |
+        MILTER_ACTION_ADD_RCPT |
+        MILTER_ACTION_DELETE_RCPT |
+        MILTER_ACTION_CHANGE_HEADERS |
+        MILTER_ACTION_QUARANTINE |
+        MILTER_ACTION_SET_SYMBOL_LIST;
+
+    version_network_byte_order = htonl(version);
+    action_network_byte_order = htonl(action);
+
+    memcpy(version_string, &version_network_byte_order, sizeof(guint32));
+    memcpy(action_string, &action_network_byte_order, sizeof(guint32));
+
+    g_string_append_c(buffer, 'O');
+    g_string_append_len(buffer, version_string, sizeof(version_string));
+    g_string_append_len(buffer, action_string, sizeof(action_string) - 1);
+
+    expected_error = g_error_new(MILTER_PARSER_ERROR,
+                                 MILTER_PARSER_ERROR_SHORT_COMMAND_LENGTH,
+                                 "need more 1 byte for parsing action flags "
+                                 "on option negotiation command: "
+                                 "0x00 0x00 0x01");
+    actual_error = parse();
+    gcut_assert_equal_error(expected_error, actual_error);
+}
+
+void
+test_parse_option_negotiation_only_version_and_action (void)
+{
+    guint32 version;
+    MilterActionFlags action;
+    guint32 version_network_byte_order;
+    guint32 action_network_byte_order;
+    gchar version_string[sizeof(guint32)];
+    gchar action_string[sizeof(guint32)];
+
+    version = 2;
+    action = MILTER_ACTION_ADD_HEADERS |
+        MILTER_ACTION_CHANGE_BODY |
+        MILTER_ACTION_ADD_RCPT |
+        MILTER_ACTION_DELETE_RCPT |
+        MILTER_ACTION_CHANGE_HEADERS |
+        MILTER_ACTION_QUARANTINE |
+        MILTER_ACTION_SET_SYMBOL_LIST;
+
+    version_network_byte_order = htonl(version);
+    action_network_byte_order = htonl(action);
+
+    memcpy(version_string, &version_network_byte_order, sizeof(guint32));
+    memcpy(action_string, &action_network_byte_order, sizeof(guint32));
+
+    g_string_append_c(buffer, 'O');
+    g_string_append_len(buffer, version_string, sizeof(version_string));
+    g_string_append_len(buffer, action_string, sizeof(action_string));
+
+    expected_error = g_error_new(MILTER_PARSER_ERROR,
+                                 MILTER_PARSER_ERROR_SHORT_COMMAND_LENGTH,
+                                 "need more 4 bytes for parsing step flags "
+                                 "on option negotiation command");
+    actual_error = parse();
+    gcut_assert_equal_error(expected_error, actual_error);
+}
+
+void
+test_parse_option_negotiation_without_step (void)
+{
+    guint32 version;
+    MilterActionFlags action;
+    MilterStepFlags step;
+    guint32 version_network_byte_order;
+    guint32 action_network_byte_order;
+    guint32 step_network_byte_order;
+    gchar version_string[sizeof(guint32)];
+    gchar action_string[sizeof(guint32)];
+    gchar step_string[sizeof(guint32)];
+
+    version = 2;
+    action = MILTER_ACTION_ADD_HEADERS |
+        MILTER_ACTION_CHANGE_BODY |
+        MILTER_ACTION_ADD_RCPT |
+        MILTER_ACTION_DELETE_RCPT |
+        MILTER_ACTION_CHANGE_HEADERS |
+        MILTER_ACTION_QUARANTINE |
+        MILTER_ACTION_SET_SYMBOL_LIST;
+    step = MILTER_STEP_NO_CONNECT |
+        MILTER_STEP_NO_HELO |
+        MILTER_STEP_NO_MAIL |
+        MILTER_STEP_NO_RCPT |
+        MILTER_STEP_NO_BODY |
+        MILTER_STEP_NO_HEADERS |
+        MILTER_STEP_NO_END_OF_HEADER;
+
+    version_network_byte_order = htonl(version);
+    action_network_byte_order = htonl(action);
+    step_network_byte_order = htonl(step);
+
+    memcpy(version_string, &version_network_byte_order, sizeof(guint32));
+    memcpy(action_string, &action_network_byte_order, sizeof(guint32));
+    memcpy(step_string, &step_network_byte_order, sizeof(guint32));
+
+    g_string_append_c(buffer, 'O');
+    g_string_append_len(buffer, version_string, sizeof(version_string));
+    g_string_append_len(buffer, action_string, sizeof(action_string));
+    g_string_append_len(buffer, step_string, sizeof(step_string) - 1);
+
+    expected_error = g_error_new(MILTER_PARSER_ERROR,
+                                 MILTER_PARSER_ERROR_SHORT_COMMAND_LENGTH,
+                                 "need more 1 byte for parsing step flags "
+                                 "on option negotiation command: "
+                                 "0x00 0x00 0x00");
+    actual_error = parse();
+    gcut_assert_equal_error(expected_error, actual_error);
 }
 
 static void
