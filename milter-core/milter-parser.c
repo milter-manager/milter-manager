@@ -1037,8 +1037,8 @@ parse_command (MilterParser *parser, GError **error)
       default:
         g_set_error(error,
                     MILTER_PARSER_ERROR,
-                    MILTER_PARSER_ERROR_UNKNOWN_COMMAND,
-                    "unknown command is passed: %c", priv->buffer->str[0]);
+                    MILTER_PARSER_ERROR_UNEXPECTED_COMMAND,
+                    "unexpected command was received: %c", priv->buffer->str[0]);
         success = FALSE;
         break;
     }

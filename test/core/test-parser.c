@@ -47,6 +47,7 @@ void test_parse_quit (void);
 void test_parse_quit_with_garbage (void);
 void test_parse_unknown (void);
 void test_parse_unknown_without_null (void);
+void test_parse_unexpected_command (void);
 
 void test_end_parse_immediately (void);
 void test_end_parse_in_command_length_parsing (void);
@@ -1203,6 +1204,19 @@ test_parse_unknown_without_null (void)
     actual_error = parse();
     gcut_assert_equal_error(expected_error, actual_error);
 }
+
+void
+test_parse_unexpected_command (void)
+{
+    g_string_append(buffer, "X");
+
+    expected_error = g_error_new(MILTER_PARSER_ERROR,
+                                 MILTER_PARSER_ERROR_UNEXPECTED_COMMAND,
+                                 "unexpected command was received: X");
+    actual_error = parse();
+    gcut_assert_equal_error(expected_error, actual_error);
+}
+
 
 void
 test_end_parse_immediately (void)
