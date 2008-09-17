@@ -660,15 +660,36 @@ parse_connect (MilterParser *parser, GError **error)
 
     priv = MILTER_PARSER_GET_PRIVATE(parser);
 
-    if (parse_connect_content(priv->buffer->str + 1, priv->command_length - 1,
-                              &host_name, &address, &length, error)) {
-        g_signal_emit(parser, signals[CONNECT], 0, host_name, address, length);
-        g_free(host_name);
-        g_free(address);
-        return TRUE;
-    } else {
+    if (!parse_connect_content(priv->buffer->str + 1, priv->command_length - 1,
+                               &host_name, &address, &length, error))
         return FALSE;
-    }
+
+    g_signal_emit(parser, signals[CONNECT], 0, host_name, address, length);
+    g_free(host_name);
+    g_free(address);
+
+    return TRUE;
+}
+
+static gboolean
+parse_helo (MilterParser *parser, GError **error)
+{
+    MilterParserPrivate *priv;
+    gint null_character_point;
+
+    priv = MILTER_PARSER_GET_PRIVATE(parser);
+    null_character_point =
+        parse_null_terminated_value(priv->buffer->str + 1,
+                                    priv->command_length - 1,
+                                    error,
+                                    "FQDN isn't terminated by NULL "
+                                    "on HELO command");
+    if (null_character_point <= 0)
+        return FALSE;
+
+    g_signal_emit(parser, signals[HELO], 0, priv->buffer->str + 1);
+
+    return TRUE;
 }
 
 
@@ -709,7 +730,6 @@ parse_command (MilterParser *parser, GError **error)
     gboolean success = TRUE;
 
     priv = MILTER_PARSER_GET_PRIVATE(parser);
-
     switch (priv->buffer->str[0]) {
       case COMMAND_OPTION_NEGOTIATION:
         g_signal_emit(parser, signals[OPTION_NEGOTIATION], 0);
@@ -721,24 +741,7 @@ parse_command (MilterParser *parser, GError **error)
         success = parse_connect(parser, error);
         break;
       case COMMAND_HELO:
-        {
-            if (priv->buffer->str[priv->command_length] == '\0') {
-                g_signal_emit(parser, signals[HELO], 0, priv->buffer->str + 1);
-            } else {
-                gchar *terminated_fqdn;
-
-                terminated_fqdn = g_strndup(priv->buffer->str + 1,
-                                            priv->command_length + 1);
-                terminated_fqdn[priv->command_length + 1] = '\0';
-                g_set_error(error,
-                            MILTER_PARSER_ERROR,
-                            MILTER_PARSER_ERROR_HELO_MISSING_NULL,
-                            "missing last NULL on HELO: %s",
-                            terminated_fqdn);
-                g_free(terminated_fqdn);
-                success = FALSE;
-            }
-        }
+        success = parse_helo(parser, error);
         break;
       case COMMAND_MAIL:
         {

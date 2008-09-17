@@ -27,6 +27,7 @@ void test_parse_connect_without_ip_address_null (void);
 void test_parse_connect_with_invalid_ipv4_address (void);
 void test_parse_connect_with_invalid_ipv6_address (void);
 void test_parse_helo (void);
+void test_parse_helo_without_null (void);
 void test_parse_mail (void);
 void test_parse_rcpt (void);
 void test_parse_header (void);
@@ -820,6 +821,22 @@ test_parse_helo (void)
     gcut_assert_error(parse());
     cut_assert_equal_int(1, n_helos);
     cut_assert_equal_string(fqdn, helo_fqdn);
+}
+
+void
+test_parse_helo_without_null (void)
+{
+    const gchar fqdn[] = "delian";
+
+    g_string_append(buffer, "H");
+    g_string_append(buffer, fqdn);
+
+    expected_error = g_error_new(MILTER_PARSER_ERROR,
+                                 MILTER_PARSER_ERROR_MISSING_NULL,
+                                 "FQDN isn't terminated by NULL "
+                                 "on HELO command: <delian>");
+    actual_error = parse();
+    gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
