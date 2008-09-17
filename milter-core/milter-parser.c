@@ -735,32 +735,48 @@ parse_rcpt (MilterParser *parser, GError **error)
 
 
 static gboolean
-parse_header (const gchar *buffer, gint length,
-              gchar **name, gchar **value, GError **error)
+parse_header_content (const gchar *buffer, gint length,
+                      const gchar **name, const gchar **value, GError **error)
 {
-    gint i;
+    gint null_character_point;
+    gchar *error_message;
 
-    for (i = 0; i < length && buffer[i] != '\0'; i++) {
-        /* do nothing */
-    }
-    if (i == length) {
-        g_set_error(error,
-                    MILTER_PARSER_ERROR,
-                    MILTER_PARSER_ERROR_HEADER_MISSING_NULL,
-                    "name terminate NULL is missing");
+    null_character_point =
+        parse_null_terminated_value(buffer, length, error,
+                                    "name isn't terminated by NULL "
+                                    "on header command");
+    if (null_character_point <= 0)
         return FALSE;
-    }
+    *name = buffer;
 
-    if (buffer[length] != '\0') {
-        g_set_error(error,
-                    MILTER_PARSER_ERROR,
-                    MILTER_PARSER_ERROR_HEADER_MISSING_NULL,
-                    "last NULL is missing");
+    buffer += (null_character_point + 1);
+    length -= (null_character_point + 1);
+    error_message = g_strdup_printf("value isn't terminated by NULL "
+                                    "on header command: <%s>", *name);
+    null_character_point =
+        parse_null_terminated_value(buffer, length, error, error_message);
+    g_free(error_message);
+    if (null_character_point <= 0)
         return FALSE;
-    }
+    *value = buffer;
 
-    *name = g_strdup(buffer);
-    *value = g_strdup(buffer + i + 1);
+    return TRUE;
+}
+
+static gboolean
+parse_header (MilterParser *parser, GError **error)
+{
+    MilterParserPrivate *priv;
+    const gchar *name = NULL, *value = NULL;
+
+    priv = MILTER_PARSER_GET_PRIVATE(parser);
+    if (!parse_header_content(priv->buffer->str + 1,
+                              priv->command_length - 1,
+                              &name, &value, error))
+        return FALSE;
+
+    g_signal_emit(parser, signals[HEADER], 0, name, value);
+
     return TRUE;
 }
 
@@ -791,16 +807,7 @@ parse_command (MilterParser *parser, GError **error)
         success = parse_rcpt(parser, error);
         break;
       case COMMAND_HEADER:
-        {
-            gchar *name, *value;
-            if (parse_header(priv->buffer->str + 1,
-                             priv->command_length - 1,
-                             &name, &value, error)) {
-                g_signal_emit(parser, signals[HEADER], 0, name, value);
-            } else {
-                success = FALSE;
-            }
-        }
+        success = parse_header(parser, error);
         break;
       case COMMAND_END_OF_HEADER:
         {

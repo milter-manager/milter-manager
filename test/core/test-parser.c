@@ -33,6 +33,8 @@ void test_parse_mail_without_null (void);
 void test_parse_rcpt (void);
 void test_parse_rcpt_without_null (void);
 void test_parse_header (void);
+void test_parse_header_without_name_null (void);
+void test_parse_header_without_value_null (void);
 void test_parse_end_of_header (void);
 void test_parse_body (void);
 void test_parse_body_end_with_data (void);
@@ -959,6 +961,39 @@ test_parse_header (void)
     cut_assert_equal_int(4, n_headers);
     cut_assert_equal_string("Message-Id", header_name);
     cut_assert_equal_string(message_id, header_value);
+}
+
+void
+test_parse_header_without_name_null (void)
+{
+    g_string_append(buffer, "L");
+    g_string_append(buffer, "From");
+
+    expected_error = g_error_new(MILTER_PARSER_ERROR,
+                                 MILTER_PARSER_ERROR_MISSING_NULL,
+                                 "name isn't terminated by NULL "
+                                 "on header command: <From>");
+    actual_error = parse();
+    gcut_assert_equal_error(expected_error, actual_error);
+}
+
+void
+test_parse_header_without_value_null (void)
+{
+    const gchar from[] = "<kou@cozmixng.org>";
+
+    g_string_append(buffer, "L");
+    g_string_append(buffer, "From");
+    g_string_append_c(buffer, '\0');
+    g_string_append(buffer, from);
+
+    expected_error = g_error_new(MILTER_PARSER_ERROR,
+                                 MILTER_PARSER_ERROR_MISSING_NULL,
+                                 "value isn't terminated by NULL "
+                                 "on header command: <From>: "
+                                 "<<kou@cozmixng.org>>");
+    actual_error = parse();
+    gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
