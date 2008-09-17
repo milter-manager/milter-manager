@@ -495,7 +495,7 @@ check_command_length (const gchar *buffer, gint length, gint expected_length,
 }
 
 static gboolean
-parse_option_negotiation (MilterParser *parser, GError **error)
+parse_command_option_negotiation (MilterParser *parser, GError **error)
 {
     MilterParserPrivate *priv;
 
@@ -505,7 +505,8 @@ parse_option_negotiation (MilterParser *parser, GError **error)
 }
 
 static GHashTable *
-parse_macro_definitions (const gchar *buffer, gint length, GError **error)
+parse_command_macro_definitions (const gchar *buffer, gint length,
+                                 GError **error)
 {
     GHashTable *macros;
     gint i;
@@ -563,7 +564,7 @@ parse_macro_definitions (const gchar *buffer, gint length, GError **error)
 }
 
 static gboolean
-parse_define_macro (MilterParser *parser, GError **error)
+parse_command_define_macro (MilterParser *parser, GError **error)
 {
     MilterParserPrivate *priv;
     GHashTable *macros;
@@ -572,9 +573,9 @@ parse_define_macro (MilterParser *parser, GError **error)
 
     priv = MILTER_PARSER_GET_PRIVATE(parser);
     if (parse_macro_context(priv->buffer->str[1], &context, error)) {
-        macros = parse_macro_definitions(priv->buffer->str + 1 + 1,
-                                         priv->command_length - 1 - 1,
-                                         error);
+        macros = parse_command_macro_definitions(priv->buffer->str + 1 + 1,
+                                                 priv->command_length - 1 - 1,
+                                                 error);
         if (macros) {
             g_signal_emit(parser, signals[DEFINE_MACRO], 0, context, macros);
             g_hash_table_unref(macros);
@@ -589,10 +590,12 @@ parse_define_macro (MilterParser *parser, GError **error)
 }
 
 static gboolean
-parse_connect_inet_address (const gchar *buffer,
-                            struct sockaddr **address, socklen_t *address_length,
-                            const gchar *host_name, gchar family, guint port,
-                            GError **error)
+parse_command_connect_inet_address (const gchar *buffer,
+                                    struct sockaddr **address,
+                                    socklen_t *address_length,
+                                    const gchar *host_name,
+                                    gchar family, guint port,
+                                    GError **error)
 {
     struct sockaddr_in *address_in;
     struct in_addr ip_address;
@@ -618,11 +621,12 @@ parse_connect_inet_address (const gchar *buffer,
 }
 
 static gboolean
-parse_connect_inet6_address (const gchar *buffer,
-                             struct sockaddr **address,
-                             socklen_t *address_length,
-                             const gchar *host_name, gchar family, guint port,
-                             GError **error)
+parse_command_connect_inet6_address (const gchar *buffer,
+                                     struct sockaddr **address,
+                                     socklen_t *address_length,
+                                     const gchar *host_name,
+                                     gchar family, guint port,
+                                     GError **error)
 {
     struct sockaddr_in6 *address_in6;
     struct in6_addr ipv6_address;
@@ -648,10 +652,12 @@ parse_connect_inet6_address (const gchar *buffer,
 }
 
 static gboolean
-parse_connect_unix_address (const gchar *buffer,
-                            struct sockaddr **address, socklen_t *address_length,
-                            const gchar *host_name, gchar family, guint port,
-                            GError **error)
+parse_command_connect_unix_address (const gchar *buffer,
+                                    struct sockaddr **address,
+                                    socklen_t *address_length,
+                                    const gchar *host_name,
+                                    gchar family, guint port,
+                                    GError **error)
 {
     struct sockaddr_un *address_un;
 
@@ -665,9 +671,11 @@ parse_connect_unix_address (const gchar *buffer,
 }
 
 static gboolean
-parse_connect_content (const gchar *buffer, gint length, gchar **host_name,
-                       struct sockaddr **address, socklen_t *address_length,
-                       GError **error)
+parse_command_connect_content (const gchar *buffer, gint length,
+                               gchar **host_name,
+                               struct sockaddr **address,
+                               socklen_t *address_length,
+                               GError **error)
 {
     gchar family;
     gint i, null_character_point;
@@ -718,18 +726,24 @@ parse_connect_content (const gchar *buffer, gint length, gchar **host_name,
 
     switch (family) {
       case FAMILY_INET:
-        if (!parse_connect_inet_address(buffer + i, address, address_length,
-                                        parsed_host_name, family, port, error))
+        if (!parse_command_connect_inet_address(buffer + i,
+                                                address, address_length,
+                                                parsed_host_name, family, port,
+                                                error))
             return FALSE;
         break;
       case FAMILY_INET6:
-        if (!parse_connect_inet6_address(buffer + i, address, address_length,
-                                         parsed_host_name, family, port, error))
+        if (!parse_command_connect_inet6_address(buffer + i,
+                                                 address, address_length,
+                                                 parsed_host_name, family, port,
+                                                 error))
             return FALSE;
         break;
       case FAMILY_UNIX:
-        if (!parse_connect_unix_address(buffer + i, address, address_length,
-                                        parsed_host_name, family, port, error))
+        if (!parse_command_connect_unix_address(buffer + i,
+                                                address, address_length,
+                                                parsed_host_name, family, port,
+                                                error))
             return FALSE;
         break;
       default:
@@ -747,7 +761,7 @@ parse_connect_content (const gchar *buffer, gint length, gchar **host_name,
 }
 
 static gboolean
-parse_connect (MilterParser *parser, GError **error)
+parse_command_connect (MilterParser *parser, GError **error)
 {
     MilterParserPrivate *priv;
     gchar *host_name;
@@ -756,8 +770,9 @@ parse_connect (MilterParser *parser, GError **error)
 
     priv = MILTER_PARSER_GET_PRIVATE(parser);
 
-    if (!parse_connect_content(priv->buffer->str + 1, priv->command_length - 1,
-                               &host_name, &address, &length, error))
+    if (!parse_command_connect_content(priv->buffer->str + 1,
+                                       priv->command_length - 1,
+                                       &host_name, &address, &length, error))
         return FALSE;
 
     g_signal_emit(parser, signals[CONNECT], 0, host_name, address, length);
@@ -768,7 +783,7 @@ parse_connect (MilterParser *parser, GError **error)
 }
 
 static gboolean
-parse_helo (MilterParser *parser, GError **error)
+parse_command_helo (MilterParser *parser, GError **error)
 {
     MilterParserPrivate *priv;
     gint null_character_point;
@@ -789,7 +804,7 @@ parse_helo (MilterParser *parser, GError **error)
 }
 
 static gboolean
-parse_mail (MilterParser *parser, GError **error)
+parse_command_mail (MilterParser *parser, GError **error)
 {
     MilterParserPrivate *priv;
     gint null_character_point;
@@ -810,7 +825,7 @@ parse_mail (MilterParser *parser, GError **error)
 }
 
 static gboolean
-parse_rcpt (MilterParser *parser, GError **error)
+parse_command_rcpt (MilterParser *parser, GError **error)
 {
     MilterParserPrivate *priv;
     gint null_character_point;
@@ -831,8 +846,9 @@ parse_rcpt (MilterParser *parser, GError **error)
 
 
 static gboolean
-parse_header_content (const gchar *buffer, gint length,
-                      const gchar **name, const gchar **value, GError **error)
+parse_command_header_content (const gchar *buffer, gint length,
+                              const gchar **name, const gchar **value,
+                              GError **error)
 {
     gint null_character_point;
     gchar *error_message;
@@ -860,15 +876,15 @@ parse_header_content (const gchar *buffer, gint length,
 }
 
 static gboolean
-parse_header (MilterParser *parser, GError **error)
+parse_command_header (MilterParser *parser, GError **error)
 {
     MilterParserPrivate *priv;
     const gchar *name = NULL, *value = NULL;
 
     priv = MILTER_PARSER_GET_PRIVATE(parser);
-    if (!parse_header_content(priv->buffer->str + 1,
-                              priv->command_length - 1,
-                              &name, &value, error))
+    if (!parse_command_header_content(priv->buffer->str + 1,
+                                      priv->command_length - 1,
+                                      &name, &value, error))
         return FALSE;
 
     g_signal_emit(parser, signals[HEADER], 0, name, value);
@@ -877,7 +893,7 @@ parse_header (MilterParser *parser, GError **error)
 }
 
 static gboolean
-parse_end_of_header (MilterParser *parser, GError **error)
+parse_command_end_of_header (MilterParser *parser, GError **error)
 {
     MilterParserPrivate *priv;
 
@@ -893,7 +909,7 @@ parse_end_of_header (MilterParser *parser, GError **error)
 }
 
 static gboolean
-parse_body (MilterParser *parser, GError **error)
+parse_command_body (MilterParser *parser, GError **error)
 {
     MilterParserPrivate *priv;
 
@@ -904,7 +920,7 @@ parse_body (MilterParser *parser, GError **error)
 }
 
 static gboolean
-parse_end_of_message (MilterParser *parser, GError **error)
+parse_command_end_of_message (MilterParser *parser, GError **error)
 {
     MilterParserPrivate *priv;
 
@@ -919,7 +935,7 @@ parse_end_of_message (MilterParser *parser, GError **error)
 }
 
 static gboolean
-parse_abort (MilterParser *parser, GError **error)
+parse_command_abort (MilterParser *parser, GError **error)
 {
     MilterParserPrivate *priv;
 
@@ -935,7 +951,7 @@ parse_abort (MilterParser *parser, GError **error)
 }
 
 static gboolean
-parse_quit (MilterParser *parser, GError **error)
+parse_command_quit (MilterParser *parser, GError **error)
 {
     MilterParserPrivate *priv;
 
@@ -951,7 +967,7 @@ parse_quit (MilterParser *parser, GError **error)
 }
 
 static gboolean
-parse_unknown (MilterParser *parser, GError **error)
+parse_command_unknown (MilterParser *parser, GError **error)
 {
     MilterParserPrivate *priv;
     gint null_character_point;
@@ -967,6 +983,8 @@ parse_unknown (MilterParser *parser, GError **error)
         return FALSE;
 
     g_signal_emit(parser, signals[UNKNOWN], 0, priv->buffer->str + 1);
+
+    return TRUE;
 }
 
 static gboolean
@@ -978,43 +996,43 @@ parse_command (MilterParser *parser, GError **error)
     priv = MILTER_PARSER_GET_PRIVATE(parser);
     switch (priv->buffer->str[0]) {
       case COMMAND_OPTION_NEGOTIATION:
-        success = parse_option_negotiation(parser, error);
+        success = parse_command_option_negotiation(parser, error);
         break;
       case COMMAND_DEFINE_MACRO:
-        success = parse_define_macro(parser, error);
+        success = parse_command_define_macro(parser, error);
         break;
       case COMMAND_CONNECT:
-        success = parse_connect(parser, error);
+        success = parse_command_connect(parser, error);
         break;
       case COMMAND_HELO:
-        success = parse_helo(parser, error);
+        success = parse_command_helo(parser, error);
         break;
       case COMMAND_MAIL:
-        success = parse_mail(parser, error);
+        success = parse_command_mail(parser, error);
         break;
       case COMMAND_RCPT:
-        success = parse_rcpt(parser, error);
+        success = parse_command_rcpt(parser, error);
         break;
       case COMMAND_HEADER:
-        success = parse_header(parser, error);
+        success = parse_command_header(parser, error);
         break;
       case COMMAND_END_OF_HEADER:
-        success = parse_end_of_header(parser, error);
+        success = parse_command_end_of_header(parser, error);
         break;
       case COMMAND_BODY:
-        success = parse_body(parser, error);
+        success = parse_command_body(parser, error);
         break;
       case COMMAND_END_OF_MESSAGE:
-        success = parse_end_of_message(parser, error);
+        success = parse_command_end_of_message(parser, error);
         break;
       case COMMAND_ABORT:
-        success = parse_abort(parser, error);
+        success = parse_command_abort(parser, error);
         break;
       case COMMAND_QUIT:
-        success = parse_quit(parser, error);
+        success = parse_command_quit(parser, error);
         break;
       case COMMAND_UNKNOWN:
-        success = parse_unknown(parser, error);
+        success = parse_command_unknown(parser, error);
         break;
       default:
         g_set_error(error,
