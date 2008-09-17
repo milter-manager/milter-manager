@@ -951,6 +951,25 @@ parse_quit (MilterParser *parser, GError **error)
 }
 
 static gboolean
+parse_unknown (MilterParser *parser, GError **error)
+{
+    MilterParserPrivate *priv;
+    gint null_character_point;
+
+    priv = MILTER_PARSER_GET_PRIVATE(parser);
+    null_character_point =
+        parse_null_terminated_value(priv->buffer->str + 1,
+                                    priv->command_length - 1,
+                                    error,
+                                    "command value isn't terminated by NULL "
+                                    "on unknown command");
+    if (null_character_point <= 0)
+        return FALSE;
+
+    g_signal_emit(parser, signals[UNKNOWN], 0, priv->buffer->str + 1);
+}
+
+static gboolean
 parse_command (MilterParser *parser, GError **error)
 {
     MilterParserPrivate *priv;
@@ -995,22 +1014,7 @@ parse_command (MilterParser *parser, GError **error)
         success = parse_quit(parser, error);
         break;
       case COMMAND_UNKNOWN:
-        if (priv->buffer->str[priv->command_length] == '\0') {
-            g_signal_emit(parser, signals[UNKNOWN], 0, priv->buffer->str + 1);
-        } else {
-            gchar *terminated_command;
-
-            terminated_command = g_strndup(priv->buffer->str + 1,
-                                           priv->command_length + 1);
-            terminated_command[priv->command_length + 1] = '\0';
-            g_set_error(error,
-                        MILTER_PARSER_ERROR,
-                        MILTER_PARSER_ERROR_UNKNOWN_MISSING_NULL,
-                        "missing the last NULL on UNKNOWN: %s",
-                        terminated_command);
-            g_free(terminated_command);
-            success = FALSE;
-        }
+        success = parse_unknown(parser, error);
         break;
       default:
         g_set_error(error,
