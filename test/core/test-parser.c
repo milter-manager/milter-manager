@@ -42,7 +42,9 @@ void test_parse_body (void);
 void test_parse_body_end_with_data (void);
 void test_parse_body_end_without_data (void);
 void test_parse_abort (void);
+void test_parse_abort_with_garbage (void);
 void test_parse_quit (void);
+void test_parse_quit_with_garbage (void);
 void test_parse_unknown (void);
 
 void test_end_parse_immediately (void);
@@ -1134,12 +1136,40 @@ test_parse_abort (void)
 }
 
 void
+test_parse_abort_with_garbage (void)
+{
+    g_string_append(buffer, "A");
+    g_string_append_c(buffer, 0x09);
+
+    expected_error = g_error_new(MILTER_PARSER_ERROR,
+                                 MILTER_PARSER_ERROR_LONG_COMMAND_LENGTH,
+                                 "needless 1 byte was received "
+                                 "on ABORT command: 0x09");
+    actual_error = parse();
+    gcut_assert_equal_error(expected_error, actual_error);
+}
+
+void
 test_parse_quit (void)
 {
     g_string_append(buffer, "Q");
     gcut_assert_error(parse());
 
     cut_assert_equal_int(1, n_quits);
+}
+
+void
+test_parse_quit_with_garbage (void)
+{
+    g_string_append(buffer, "Q");
+    g_string_append(buffer, "XXX");
+
+    expected_error = g_error_new(MILTER_PARSER_ERROR,
+                                 MILTER_PARSER_ERROR_LONG_COMMAND_LENGTH,
+                                 "needless 3 bytes were received "
+                                 "on QUIT command: 0x58 0x58 0x58 (XXX)");
+    actual_error = parse();
+    gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void

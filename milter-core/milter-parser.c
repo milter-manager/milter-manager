@@ -443,10 +443,10 @@ append_needless_bytes_were_received_message (GString *message,
 {
     g_return_if_fail(needless_bytes > 0);
     g_string_append_printf(message,
-                           "needless %" G_GSIZE_FORMAT " byte%s were received "
+                           "needless %" G_GSIZE_FORMAT " byte%s received "
                            "on %s:",
                            needless_bytes,
-                           needless_bytes > 1 ? "s" : "",
+                           needless_bytes > 1 ? "s were" : " was",
                            on_target);
     append_inspected_bytes(message, buffer, needless_bytes);
 }
@@ -492,6 +492,16 @@ check_command_length (const gchar *buffer, gint length, gint expected_length,
     g_string_free(message, TRUE);
 
     return FALSE;
+}
+
+static gboolean
+parse_option_negotiation (MilterParser *parser, GError **error)
+{
+    MilterParserPrivate *priv;
+
+    priv = MILTER_PARSER_GET_PRIVATE(parser);
+    g_signal_emit(parser, signals[OPTION_NEGOTIATION], 0);
+    return TRUE;
 }
 
 static GHashTable *
@@ -873,12 +883,69 @@ parse_end_of_header (MilterParser *parser, GError **error)
 
     priv = MILTER_PARSER_GET_PRIVATE(parser);
     if (!check_command_length(priv->buffer->str + 1,
-                              priv->command_length - 1,
-                              0, EXACT,
+                              priv->command_length - 1, 0, EXACT,
                               error, "END OF HEADER command"))
         return FALSE;
 
     g_signal_emit(parser, signals[END_OF_HEADER], 0);
+
+    return TRUE;
+}
+
+static gboolean
+parse_body (MilterParser *parser, GError **error)
+{
+    MilterParserPrivate *priv;
+
+    priv = MILTER_PARSER_GET_PRIVATE(parser);
+    g_signal_emit(parser, signals[BODY], 0,
+                  priv->buffer->str + 1, priv->command_length - 1);
+    return TRUE;
+}
+
+static gboolean
+parse_end_of_message (MilterParser *parser, GError **error)
+{
+    MilterParserPrivate *priv;
+
+    priv = MILTER_PARSER_GET_PRIVATE(parser);
+    if (priv->command_length > 1) {
+        g_signal_emit(parser, signals[BODY], 0,
+                      priv->buffer->str + 1, priv->command_length - 1);
+    }
+    g_signal_emit(parser, signals[END_OF_MESSAGE], 0);
+
+    return TRUE;
+}
+
+static gboolean
+parse_abort (MilterParser *parser, GError **error)
+{
+    MilterParserPrivate *priv;
+
+    priv = MILTER_PARSER_GET_PRIVATE(parser);
+    if (!check_command_length(priv->buffer->str + 1,
+                              priv->command_length - 1, 0, EXACT,
+                              error, "ABORT command"))
+        return FALSE;
+
+    g_signal_emit(parser, signals[ABORT], 0);
+
+    return TRUE;
+}
+
+static gboolean
+parse_quit (MilterParser *parser, GError **error)
+{
+    MilterParserPrivate *priv;
+
+    priv = MILTER_PARSER_GET_PRIVATE(parser);
+    if (!check_command_length(priv->buffer->str + 1,
+                              priv->command_length - 1, 0, EXACT,
+                              error, "QUIT command"))
+        return FALSE;
+
+    g_signal_emit(parser, signals[QUIT], 0);
 
     return TRUE;
 }
@@ -892,7 +959,7 @@ parse_command (MilterParser *parser, GError **error)
     priv = MILTER_PARSER_GET_PRIVATE(parser);
     switch (priv->buffer->str[0]) {
       case COMMAND_OPTION_NEGOTIATION:
-        g_signal_emit(parser, signals[OPTION_NEGOTIATION], 0);
+        success = parse_option_negotiation(parser, error);
         break;
       case COMMAND_DEFINE_MACRO:
         success = parse_define_macro(parser, error);
@@ -916,39 +983,16 @@ parse_command (MilterParser *parser, GError **error)
         success = parse_end_of_header(parser, error);
         break;
       case COMMAND_BODY:
-        g_signal_emit(parser, signals[BODY], 0,
-                      priv->buffer->str + 1, priv->command_length - 1);
+        success = parse_body(parser, error);
         break;
       case COMMAND_END_OF_MESSAGE:
-        if (priv->command_length > 1) {
-            g_signal_emit(parser, signals[BODY], 0,
-                          priv->buffer->str + 1, priv->command_length - 1);
-        }
-        g_signal_emit(parser, signals[END_OF_MESSAGE], 0);
+        success = parse_end_of_message(parser, error);
         break;
       case COMMAND_ABORT:
-        if (priv->command_length == 1) {
-            g_signal_emit(parser, signals[ABORT], 0);
-        } else {
-            g_set_error(error,
-                        MILTER_PARSER_ERROR,
-                        MILTER_PARSER_ERROR_LONG_COMMAND_LENGTH,
-                        "too long command length on ABORT: %d: expected: %d",
-                        priv->command_length, 1);
-            success = FALSE;
-        }
+        success = parse_abort(parser, error);
         break;
       case COMMAND_QUIT:
-        if (priv->command_length == 1) {
-            g_signal_emit(parser, signals[QUIT], 0);
-        } else {
-            g_set_error(error,
-                        MILTER_PARSER_ERROR,
-                        MILTER_PARSER_ERROR_LONG_COMMAND_LENGTH,
-                        "too long command length on QUIT: %d: expected: %d",
-                        priv->command_length, 1);
-            success = FALSE;
-        }
+        success = parse_quit(parser, error);
         break;
       case COMMAND_UNKNOWN:
         if (priv->buffer->str[priv->command_length] == '\0') {
