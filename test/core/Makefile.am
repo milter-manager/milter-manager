@@ -1,6 +1,7 @@
 if WITH_CUTTER
-noinst_LTLIBRARIES =			\
-	test-parser.la
+noinst_LTLIBRARIES =		\
+	test-parser.la		\
+	test-option.la
 endif
 
 INCLUDES =			\
@@ -20,3 +21,4 @@ LIBS =							\
 	$(GCUTTER_LIBS)
 
 test_parser_la_SOURCES = test-parser.c
+test_option_la_SOURCES = test-option.c

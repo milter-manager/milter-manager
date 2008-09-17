@@ -9,8 +9,9 @@ AM_CFLAGS = 				\
 
 EXTRA_DIST = milter-marshalers.list
 
-milter_core_public_headers =		\
-	milter-parser.h
+milter_core_public_headers =	\
+	milter-parser.h		\
+	milter-option.h
 
 enum_source_prefix = milter-enum-types
 
@@ -44,7 +45,8 @@ lib_LTLIBRARIES =		\
 libmilter_core_la_SOURCES =		\
 	milter-enum-types.c		\
 	milter-marshalers.c		\
-	milter-parser.c
+	milter-parser.c			\
+	milter-option.c
 
 
 $(enum_source_prefix).c: stamp-$(enum_source_prefix)-c $(enum_source_prefix).h

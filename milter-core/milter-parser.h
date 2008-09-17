@@ -25,6 +25,8 @@
 
 #include <glib-object.h>
 
+#include <milter-core/milter-option.h>
+
 G_BEGIN_DECLS
 
 #define MILTER_PARSER_ERROR           (milter_parser_error_quark())
@@ -75,7 +77,8 @@ struct _MilterParserClass
 {
     GObjectClass parent_class;
 
-    void (*option_negotiation)  (MilterParser *parser);
+    void (*option_negotiation)  (MilterParser *parser,
+                                 MilterOption *option);
     void (*define_macro)        (MilterParser *parser,
                                  MilterContextType context,
                                  GHashTable *macros);
