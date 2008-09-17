@@ -23,6 +23,7 @@ void test_parse_connect_without_host_name_null (void);
 void test_parse_connect_with_unknown_family (void);
 void test_parse_connect_with_unexpected_family (void);
 void test_parse_connect_with_unexpected_family_and_port (void);
+void test_parse_connect_with_short_port_size (void);
 void test_parse_connect_without_ip_address_null (void);
 void test_parse_connect_with_invalid_ipv4_address (void);
 void test_parse_connect_with_invalid_ipv6_address (void);
@@ -36,6 +37,7 @@ void test_parse_header (void);
 void test_parse_header_without_name_null (void);
 void test_parse_header_without_value_null (void);
 void test_parse_end_of_header (void);
+void test_parse_end_of_header_with_garbage (void);
 void test_parse_body (void);
 void test_parse_body_end_with_data (void);
 void test_parse_body_end_without_data (void);
@@ -730,6 +732,31 @@ test_parse_connect_with_unexpected_family_and_port (void)
 }
 
 void
+test_parse_connect_with_short_port_size (void)
+{
+    const gchar host_name[] = "mx.local.net";
+    gchar port_string[sizeof(guint16)];
+    guint16 port;
+
+    port = htons(2929);
+    memcpy(port_string, &port, sizeof(port));
+
+    g_string_append(buffer, "C");
+    g_string_append(buffer, host_name);
+    g_string_append_c(buffer, '\0');
+    g_string_append(buffer, "4");
+    g_string_append_len(buffer, port_string, sizeof(port) - 1);
+
+    expected_error = g_error_new(MILTER_PARSER_ERROR,
+                                 MILTER_PARSER_ERROR_SHORT_COMMAND_LENGTH,
+                                 "need more 1 byte for parsing port number "
+                                 "on connect command: 0x%02x",
+                                 port_string[0]);
+    actual_error = parse();
+    gcut_assert_equal_error(expected_error, actual_error);
+}
+
+void
 test_parse_connect_without_ip_address_null (void)
 {
     const gchar host_name[] = "mx.local.net";
@@ -1010,6 +1037,35 @@ test_parse_end_of_header (void)
 }
 
 void
+test_parse_end_of_header_with_garbage (void)
+{
+    GString *message;
+    const gchar garbage[] = "garbage";
+    gsize i, garbage_length;
+
+    g_string_append(buffer, "N");
+    g_string_append(buffer, garbage);
+
+    garbage_length = strlen(garbage);
+    message = g_string_new(NULL);
+    g_string_append_printf(message,
+                           "needless %" G_GSIZE_FORMAT " bytes "
+                           "were received on END OF HEADER command: ",
+                           garbage_length);
+    for (i = 0; i < garbage_length; i++) {
+        g_string_append_printf(message, "0x%02x ", garbage[i]);
+    }
+    g_string_append_printf(message, "(%s)", garbage);
+    expected_error = g_error_new(MILTER_PARSER_ERROR,
+                                 MILTER_PARSER_ERROR_LONG_COMMAND_LENGTH,
+                                 "%s", message->str);
+    g_string_free(message, TRUE);
+
+    actual_error = parse();
+    gcut_assert_equal_error(expected_error, actual_error);
+}
+
+void
 test_parse_body (void)
 {
     const gchar body[] =
@@ -1115,7 +1171,7 @@ test_end_parse_in_command_length_parsing (void)
     expected_error = g_error_new(MILTER_PARSER_ERROR,
                                  MILTER_PARSER_ERROR_UNEXPECTED_END,
                                  "stream is ended unexpectedly: "
-                                 "need more 2bytes for parsing "
+                                 "need more 2 bytes for parsing "
                                  "command length: 0x00 0x58");
     gcut_assert_equal_error(expected_error, actual_error);
 }
@@ -1135,7 +1191,7 @@ test_end_parse_in_command_content_parsing (void)
     expected_error = g_error_new(MILTER_PARSER_ERROR,
                                  MILTER_PARSER_ERROR_UNEXPECTED_END,
                                  "stream is ended unexpectedly: "
-                                 "need more 1byte for parsing "
+                                 "need more 1 byte for parsing "
                                  "command content: 0x61 0x62 0x63 (abc)");
     gcut_assert_equal_error(expected_error, actual_error);
 }

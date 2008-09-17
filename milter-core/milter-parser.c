@@ -73,6 +73,11 @@ struct _MilterParserPrivate
 };
 
 typedef enum {
+    AT_LEAST,
+    EXACT
+} CompareType;
+
+typedef enum {
     IN_START,
     IN_COMMAND_LENGTH,
     IN_COMMAND_CONTENT,
@@ -397,6 +402,98 @@ parse_null_terminated_value (const gchar *buffer, gint length,
     return null_character_point;
 }
 
+static void
+append_inspected_bytes (GString *message, const gchar *buffer, gsize length)
+{
+    gsize i;
+    gboolean have_unprintable_byte = FALSE;
+
+    for (i = 0; i < length; i++) {
+        g_string_append_printf(message, " 0x%02x", buffer[i]);
+        if (buffer[i] < 0x20 || 0x7e < buffer[i])
+            have_unprintable_byte = TRUE;
+    }
+    if (!have_unprintable_byte)
+        g_string_append_printf(message, " (%s)", buffer);
+}
+
+static void
+append_need_more_bytes_for_parsing_message (GString *message,
+                                            const gchar *buffer,
+                                            gsize length, gsize required_length,
+                                            const gchar *parsing_target)
+{
+    gsize needed_length;
+
+    needed_length = required_length - length;
+    g_string_append_printf(message,
+                           "need more %" G_GSIZE_FORMAT " byte%s "
+                           "for parsing %s:",
+                           needed_length,
+                           needed_length > 1 ? "s" : "",
+                           parsing_target);
+    append_inspected_bytes(message, buffer, length);
+}
+
+static void
+append_needless_bytes_were_received_message (GString *message,
+                                             const gchar *buffer,
+                                             gsize needless_bytes,
+                                             const gchar *on_target)
+{
+    g_return_if_fail(needless_bytes > 0);
+    g_string_append_printf(message,
+                           "needless %" G_GSIZE_FORMAT " byte%s were received "
+                           "on %s:",
+                           needless_bytes,
+                           needless_bytes > 1 ? "s" : "",
+                           on_target);
+    append_inspected_bytes(message, buffer, needless_bytes);
+}
+
+static gboolean
+check_command_length (const gchar *buffer, gint length, gint expected_length,
+                      CompareType compare_type,
+                      GError **error, const gchar *target)
+{
+    GString *message;
+
+    switch (compare_type) {
+      case AT_LEAST:
+        if (length >= expected_length)
+            return TRUE;
+        break;
+      case EXACT:
+        if (length == expected_length)
+            return TRUE;
+        break;
+    }
+
+    message = g_string_new(NULL);
+    if (length > expected_length) {
+        append_needless_bytes_were_received_message(message,
+                                                    buffer,
+                                                    length - expected_length,
+                                                    target);
+        g_set_error(error,
+                    MILTER_PARSER_ERROR,
+                    MILTER_PARSER_ERROR_LONG_COMMAND_LENGTH,
+                    "%s", message->str);
+    } else {
+        append_need_more_bytes_for_parsing_message(message,
+                                                   buffer, length,
+                                                   expected_length,
+                                                   target);
+        g_set_error(error,
+                    MILTER_PARSER_ERROR,
+                    MILTER_PARSER_ERROR_SHORT_COMMAND_LENGTH,
+                    "%s", message->str);
+    }
+    g_string_free(message, TRUE);
+
+    return FALSE;
+}
+
 static GHashTable *
 parse_macro_definitions (const gchar *buffer, gint length, GError **error)
 {
@@ -584,20 +681,9 @@ parse_connect_content (const gchar *buffer, gint length, gchar **host_name,
       case FAMILY_INET:
       case FAMILY_INET6:
       case FAMILY_UNIX:
-        if (i + sizeof(port) > length) {
-            gsize needed_bytes;
-
-            needed_bytes = i + sizeof(port) - length;
-            g_set_error(error,
-                        MILTER_PARSER_ERROR,
-                        MILTER_PARSER_ERROR_SHORT_COMMAND_LENGTH,
-                        "need more %" G_GSIZE_FORMAT " byte%s for parsing "
-                        "port number on connect command: <%s>: <%c>",
-                        needed_bytes,
-                        needed_bytes > 1 ? "s" : "",
-                        parsed_host_name, family);
+        if (!check_command_length(buffer + i, length - i, sizeof(port), AT_LEAST,
+                                  error, "port number on connect command"))
             return FALSE;
-        }
         memcpy(&port, buffer + i, sizeof(port));
         i += sizeof(port);
         break;
@@ -781,6 +867,23 @@ parse_header (MilterParser *parser, GError **error)
 }
 
 static gboolean
+parse_end_of_header (MilterParser *parser, GError **error)
+{
+    MilterParserPrivate *priv;
+
+    priv = MILTER_PARSER_GET_PRIVATE(parser);
+    if (!check_command_length(priv->buffer->str + 1,
+                              priv->command_length - 1,
+                              0, EXACT,
+                              error, "END OF HEADER command"))
+        return FALSE;
+
+    g_signal_emit(parser, signals[END_OF_HEADER], 0);
+
+    return TRUE;
+}
+
+static gboolean
 parse_command (MilterParser *parser, GError **error)
 {
     MilterParserPrivate *priv;
@@ -810,18 +913,7 @@ parse_command (MilterParser *parser, GError **error)
         success = parse_header(parser, error);
         break;
       case COMMAND_END_OF_HEADER:
-        {
-            if (priv->command_length == 1) {
-                g_signal_emit(parser, signals[END_OF_HEADER], 0);
-            } else {
-                g_set_error(error,
-                            MILTER_PARSER_ERROR,
-                            MILTER_PARSER_ERROR_LONG_COMMAND_LENGTH,
-                            "too long command length on EOH: %d: expected: %d",
-                            priv->command_length, 1);
-                success = FALSE;
-            }
-        }
+        success = parse_end_of_header(parser, error);
         break;
       case COMMAND_BODY:
         g_signal_emit(parser, signals[BODY], 0,
@@ -955,25 +1047,13 @@ set_unexpected_end_error (GError **error, MilterParserPrivate *priv,
                           gsize required_length, const gchar *parsing_target)
 {
     GString *message;
-    gint i;
-    gsize needed_length;
-    gboolean have_unprintable_byte = FALSE;
 
     message = g_string_new("stream is ended unexpectedly: ");
-
-    needed_length = required_length - priv->buffer->len;
-    g_string_append_printf(message,
-                           "need more %" G_GSIZE_FORMAT "byte%s for parsing %s:",
-                           needed_length,
-                           needed_length > 1 ? "s" : "",
-                           parsing_target);
-    for (i = 0; i < priv->buffer->len; i++) {
-        g_string_append_printf(message, " 0x%02x", priv->buffer->str[i]);
-        if (priv->buffer->str[i] < 0x20 || 0x7e < priv->buffer->str[i])
-            have_unprintable_byte = TRUE;
-    }
-    if (!have_unprintable_byte)
-        g_string_append_printf(message, " (%s)", priv->buffer->str);
+    append_need_more_bytes_for_parsing_message(message,
+                                               priv->buffer->str,
+                                               priv->buffer->len,
+                                               required_length,
+                                               parsing_target);
     g_set_error(error,
                 MILTER_PARSER_ERROR,
                 MILTER_PARSER_ERROR_UNEXPECTED_END,
