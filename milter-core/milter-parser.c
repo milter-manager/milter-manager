@@ -133,8 +133,8 @@ milter_parser_class_init (MilterParserClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterParserClass, option_negotiation),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__VOID,
-                     G_TYPE_NONE, 0);
+                     g_cclosure_marshal_VOID__OBJECT,
+                     G_TYPE_NONE, 1, MILTER_TYPE_OPTION);
 
     signals[DEFINE_MACRO] =
         g_signal_new("define-macro",
@@ -498,9 +498,49 @@ static gboolean
 parse_command_option_negotiation (MilterParser *parser, GError **error)
 {
     MilterParserPrivate *priv;
+    MilterOption *option;
+    gsize i;
+    guint32 version, action, step;
 
     priv = MILTER_PARSER_GET_PRIVATE(parser);
-    g_signal_emit(parser, signals[OPTION_NEGOTIATION], 0);
+
+    i = 1;
+    if (!check_command_length(priv->buffer->str + i,
+                              priv->command_length - i,
+                              sizeof(version), AT_LEAST,
+                              error, "version on option negotiation command"))
+        return FALSE;
+    memcpy(&version, priv->buffer->str + i, sizeof(version));
+    i += sizeof(version);
+
+    if (!check_command_length(priv->buffer->str + i,
+                              priv->command_length - i,
+                              sizeof(action), AT_LEAST,
+                              error,
+                              "action flags on option negotiation command"))
+        return FALSE;
+    memcpy(&action, priv->buffer->str + i, sizeof(action));
+    i += sizeof(action);
+
+    if (!check_command_length(priv->buffer->str + i,
+                              priv->command_length - i,
+                              sizeof(step), AT_LEAST,
+                              error,
+                              "step flags on option negotiation command"))
+        return FALSE;
+    memcpy(&step, priv->buffer->str + i, sizeof(step));
+    i += sizeof(step);
+
+    if (!check_command_length(priv->buffer->str + i,
+                              priv->command_length - i,
+                              0, EXACT, error,
+                              "option negotiation command"))
+        return FALSE;
+
+    option = milter_option_new(ntohl(version), ntohl(action), ntohl(step));
+    g_signal_emit(parser, signals[OPTION_NEGOTIATION], 0, option);
+    g_object_unref(option);
+
     return TRUE;
 }
 

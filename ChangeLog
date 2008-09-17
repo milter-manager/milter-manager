@@ -1,3 +1,8 @@
+2008-09-18  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter-core/milter-parser., test/core/test-milter.c: support
+	OPTION NEGOTIATION.
+
 2008-09-17  Kouhei Sutou  <kou@cozmixng.org>
 
 	* test/core/test-option.c: add tests for accessors of

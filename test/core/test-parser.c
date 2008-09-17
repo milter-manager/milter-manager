@@ -27,6 +27,7 @@
 #undef shutdown
 
 #include <milter-core/milter-parser.h>
+#include <milter-core/milter-enum-types.h>
 
 void test_parse_empty_text (void);
 void test_parse_option_negotiation (void);
@@ -92,6 +93,8 @@ static gint n_aborts;
 static gint n_quits;
 static gint n_unknowns;
 
+static MilterOption *option_negotiation_option;
+
 static MilterContextType macro_context;
 static GHashTable *defined_macros;
 
@@ -115,9 +118,11 @@ static gchar *unknown_command;
 static gsize unknown_command_length;
 
 static void
-cb_option_negotiation (MilterParser *parser, gpointer user_data)
+cb_option_negotiation (MilterParser *parser, MilterOption *option,
+                       gpointer user_data)
 {
     n_option_negotiations++;
+    option_negotiation_option = g_object_ref(option);
 }
 
 static void
@@ -280,6 +285,8 @@ setup (void)
 
     buffer = g_string_new(NULL);
 
+    option_negotiation_option = NULL;
+
     defined_macros = NULL;
 
     connect_host_name = NULL;
@@ -311,6 +318,9 @@ teardown (void)
 
     if (buffer)
         g_string_free(buffer, TRUE);
+
+    if (option_negotiation_option)
+        g_object_unref(option_negotiation_option);
 
     if (defined_macros)
         g_hash_table_unref(defined_macros);
@@ -375,22 +385,55 @@ test_parse_empty_text (void)
 void
 test_parse_option_negotiation (void)
 {
+    guint32 version;
+    MilterActionFlags action;
+    MilterStepFlags step;
+    guint32 version_network_byte_order;
+    guint32 action_network_byte_order;
+    guint32 step_network_byte_order;
+    gchar version_string[sizeof(guint32)];
+    gchar action_string[sizeof(guint32)];
+    gchar step_string[sizeof(guint32)];
+
+    version = 2;
+    action = MILTER_ACTION_ADD_HEADERS |
+        MILTER_ACTION_CHANGE_BODY |
+        MILTER_ACTION_ADD_RCPT |
+        MILTER_ACTION_DELETE_RCPT |
+        MILTER_ACTION_CHANGE_HEADERS |
+        MILTER_ACTION_QUARANTINE |
+        MILTER_ACTION_SET_SYMBOL_LIST;
+    step = MILTER_STEP_NO_CONNECT |
+        MILTER_STEP_NO_HELO |
+        MILTER_STEP_NO_MAIL |
+        MILTER_STEP_NO_RCPT |
+        MILTER_STEP_NO_BODY |
+        MILTER_STEP_NO_HEADERS |
+        MILTER_STEP_NO_END_OF_HEADER;
+
+    version_network_byte_order = htonl(version);
+    action_network_byte_order = htonl(action);
+    step_network_byte_order = htonl(step);
+
+    memcpy(version_string, &version_network_byte_order, sizeof(guint32));
+    memcpy(action_string, &action_network_byte_order, sizeof(guint32));
+    memcpy(step_string, &step_network_byte_order, sizeof(guint32));
+
     g_string_append_c(buffer, 'O');
-    g_string_append_c(buffer, '\0');
-    g_string_append_c(buffer, '\0');
-    g_string_append_c(buffer, '\0');
-    g_string_append_c(buffer, 0x02);
-    g_string_append_c(buffer, '\0');
-    g_string_append_c(buffer, '\0');
-    g_string_append_c(buffer, 0x01);
-    g_string_append_c(buffer, 0x3f);
-    g_string_append_c(buffer, '\0');
-    g_string_append_c(buffer, '\0');
-    g_string_append_c(buffer, '\0');
-    g_string_append_c(buffer, 0x7f);
+    g_string_append_len(buffer, version_string, sizeof(version_string));
+    g_string_append_len(buffer, action_string, sizeof(action_string));
+    g_string_append_len(buffer, step_string, sizeof(step_string));
 
     gcut_assert_error(parse());
     cut_assert_equal_int(1, n_option_negotiations);
+    cut_assert_equal_int(2,
+                         milter_option_get_version(option_negotiation_option));
+    gcut_assert_equal_flags(MILTER_TYPE_ACTION_FLAGS,
+                            action,
+                            milter_option_get_action(option_negotiation_option));
+    gcut_assert_equal_flags(MILTER_TYPE_STEP_FLAGS,
+                            step,
+                            milter_option_get_step(option_negotiation_option));
 }
 
 static void
