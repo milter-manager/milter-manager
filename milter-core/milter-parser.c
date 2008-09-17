@@ -692,6 +692,27 @@ parse_helo (MilterParser *parser, GError **error)
     return TRUE;
 }
 
+static gboolean
+parse_mail (MilterParser *parser, GError **error)
+{
+    MilterParserPrivate *priv;
+
+    gint null_character_point;
+
+    priv = MILTER_PARSER_GET_PRIVATE(parser);
+    null_character_point =
+        parse_null_terminated_value(priv->buffer->str + 1,
+                                    priv->command_length - 1,
+                                    error,
+                                    "FROM isn't terminated by NULL "
+                                    "on MAIL command");
+    if (null_character_point <= 0)
+        return FALSE;
+
+    g_signal_emit(parser, signals[MAIL], 0, priv->buffer->str + 1);
+
+    return TRUE;
+}
 
 static gboolean
 parse_header (const gchar *buffer, gint length,
@@ -744,24 +765,7 @@ parse_command (MilterParser *parser, GError **error)
         success = parse_helo(parser, error);
         break;
       case COMMAND_MAIL:
-        {
-            if (priv->buffer->str[priv->command_length] == '\0') {
-                g_signal_emit(parser, signals[MAIL], 0, priv->buffer->str + 1);
-            } else {
-                gchar *terminated_from;
-
-                terminated_from = g_strndup(priv->buffer->str + 1,
-                                            priv->command_length + 1);
-                terminated_from[priv->command_length + 1] = '\0';
-                g_set_error(error,
-                            MILTER_PARSER_ERROR,
-                            MILTER_PARSER_ERROR_MAIL_MISSING_NULL,
-                            "missing the last NULL on MAIL: %s",
-                            terminated_from);
-                g_free(terminated_from);
-                success = FALSE;
-            }
-        }
+        success = parse_mail(parser, error);
         break;
       case COMMAND_RCPT:
         {

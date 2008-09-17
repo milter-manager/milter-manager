@@ -29,6 +29,7 @@ void test_parse_connect_with_invalid_ipv6_address (void);
 void test_parse_helo (void);
 void test_parse_helo_without_null (void);
 void test_parse_mail (void);
+void test_parse_mail_without_null (void);
 void test_parse_rcpt (void);
 void test_parse_header (void);
 void test_parse_end_of_header (void);
@@ -851,6 +852,22 @@ test_parse_mail (void)
     gcut_assert_error(parse());
     cut_assert_equal_int(1, n_mails);
     cut_assert_equal_string(from, mail_from);
+}
+
+void
+test_parse_mail_without_null (void)
+{
+    const gchar from[] = "<kou@cozmixng.org>";
+
+    g_string_append(buffer, "M");
+    g_string_append(buffer, from);
+
+    expected_error = g_error_new(MILTER_PARSER_ERROR,
+                                 MILTER_PARSER_ERROR_MISSING_NULL,
+                                 "FROM isn't terminated by NULL "
+                                 "on MAIL command: <<kou@cozmixng.org>>");
+    actual_error = parse();
+    gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
