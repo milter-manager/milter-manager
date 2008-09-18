@@ -392,7 +392,7 @@ milter_encoder_encode_body (MilterEncoder *encoder,
     g_string_truncate(priv->buffer, 0);
 
     g_string_append_c(priv->buffer, MILTER_COMMAND_BODY);
-    g_string_append_len(priv->buffer, chunk, length);
+    g_string_append_len(priv->buffer, chunk, size);
     pack(priv->buffer);
 
     *packet = g_memdup(priv->buffer->str, priv->buffer->len);
@@ -410,7 +410,8 @@ milter_encoder_encode_end_of_message (MilterEncoder *encoder,
     g_string_truncate(priv->buffer, 0);
 
     g_string_append_c(priv->buffer, MILTER_COMMAND_END_OF_MESSAGE);
-    g_string_append_len(priv->buffer, chunk, length);
+    if (chunk && size > 0)
+        g_string_append_len(priv->buffer, chunk, size);
     pack(priv->buffer);
 
     *packet = g_memdup(priv->buffer->str, priv->buffer->len);
