@@ -37,6 +37,7 @@ void test_encode_connect_ipv4 (void);
 void test_encode_connect_ipv6 (void);
 void test_encode_connect_unix (void);
 void test_encode_helo (void);
+void test_encode_mail (void);
 
 static MilterEncoder *encoder;
 static GString *expected;
@@ -403,6 +404,21 @@ test_encode_helo (void)
     pack(expected);
 
     milter_encoder_encode_helo(encoder, &actual, &actual_size, fqdn);
+    cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
+}
+
+void
+test_encode_mail (void)
+{
+    const gchar from[] = "<kou@cozmixng.org>";
+    gsize actual_size = 0;
+
+    g_string_append(expected, "M");
+    g_string_append(expected, from);
+    g_string_append_c(expected, '\0');
+    pack(expected);
+
+    milter_encoder_encode_mail(encoder, &actual, &actual_size, from);
     cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
 }
 
