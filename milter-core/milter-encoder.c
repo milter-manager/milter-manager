@@ -209,6 +209,78 @@ milter_encoder_encode_define_macro (MilterEncoder *encoder,
     *packet_size = priv->buffer->len;
 }
 
+void
+milter_encoder_encode_connect (MilterEncoder *encoder,
+                               gchar **packet, gsize *packet_size,
+                               const gchar *host_name,
+                               const struct sockaddr *address,
+                               socklen_t address_size)
+{
+    MilterEncoderPrivate *priv;
+    gchar port_string[sizeof(guint16)];
+
+    priv = MILTER_ENCODER_GET_PRIVATE(encoder);
+    g_string_truncate(priv->buffer, 0);
+
+    g_string_append_c(priv->buffer, MILTER_COMMAND_CONNECT);
+    g_string_append(priv->buffer, host_name);
+    g_string_append_c(priv->buffer, '\0');
+    switch (address->sa_family) {
+      case AF_INET:
+        {
+            const struct sockaddr_in *address_inet;
+            gchar inet_address[INET_ADDRSTRLEN];
+
+            address_inet = (const struct sockaddr_in *)address;
+            memcpy(port_string, &(address_inet->sin_port), sizeof(port_string));
+            inet_ntop(AF_INET, &(address_inet->sin_addr),
+                      inet_address, sizeof(inet_address));
+
+            g_string_append_c(priv->buffer, MILTER_SOCKET_FAMILY_INET);
+            g_string_append_len(priv->buffer, port_string, sizeof(port_string));
+            g_string_append(priv->buffer, inet_address);
+        }
+        break;
+      case AF_INET6:
+        {
+            const struct sockaddr_in6 *address_inet6;
+            gchar inet6_address[INET6_ADDRSTRLEN];
+
+            address_inet6 = (const struct sockaddr_in6 *)address;
+            memcpy(port_string, &(address_inet6->sin6_port),
+                   sizeof(port_string));
+            inet_ntop(AF_INET6, &(address_inet6->sin6_addr),
+                      inet6_address, sizeof(inet6_address));
+
+            g_string_append_c(priv->buffer, MILTER_SOCKET_FAMILY_INET6);
+            g_string_append_len(priv->buffer, port_string, sizeof(port_string));
+            g_string_append(priv->buffer, inet6_address);
+        }
+        break;
+      case AF_UNIX:
+        {
+            const struct sockaddr_un *address_unix;
+
+            address_unix = (const struct sockaddr_un *)address;
+            memset(port_string, '\0', sizeof(port_string));
+
+            g_string_append_c(priv->buffer, MILTER_SOCKET_FAMILY_UNIX);
+            g_string_append_len(priv->buffer, port_string, sizeof(port_string));
+            g_string_append(priv->buffer, address_unix->sun_path);
+        }
+        break;
+      default:
+        *packet = NULL;
+        *packet_size = 0;
+        return;
+    }
+    g_string_append_c(priv->buffer, '\0');
+    pack(priv->buffer);
+
+    *packet = g_memdup(priv->buffer->str, priv->buffer->len);
+    *packet_size = priv->buffer->len;
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */

@@ -33,6 +33,9 @@ void test_encode_option_negotiation (void);
 void test_encode_option_negotiation_null (void);
 void data_encode_define_macro (void);
 void test_encode_define_macro (gconstpointer data);
+void test_encode_connect_ipv4 (void);
+void test_encode_connect_ipv6 (void);
+void test_encode_connect_unix (void);
 
 static MilterEncoder *encoder;
 static GString *expected;
@@ -281,6 +284,109 @@ test_encode_define_macro (gconstpointer data)
     milter_encoder_encode_define_macro(encoder,
                                        &actual, &actual_size,
                                        test_data->context, test_data->expected);
+    cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
+}
+
+void
+test_encode_connect_ipv4 (void)
+{
+    struct sockaddr_in address;
+    const gchar host_name[] = "mx.local.net";
+    const gchar ip_address[] = "192.168.123.123";
+    gchar port_string[sizeof(uint16_t)];
+    uint16_t port;
+    gsize actual_size = 0;
+
+
+    port = htons(50443);
+    memcpy(port_string, &port, sizeof(port));
+
+    g_string_append(expected, "C");
+    g_string_append(expected, host_name);
+    g_string_append_c(expected, '\0');
+    g_string_append(expected, "4");
+    g_string_append_len(expected, port_string, sizeof(port_string));
+    g_string_append(expected, ip_address);
+    g_string_append_c(expected, '\0');
+    pack(expected);
+
+    address.sin_family = AF_INET;
+    address.sin_port = port;
+    inet_aton(ip_address, &(address.sin_addr));
+
+    milter_encoder_encode_connect(encoder,
+                                  &actual, &actual_size,
+                                  host_name,
+                                  (const struct sockaddr *)&address,
+                                  sizeof(address));
+    cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
+}
+
+void
+test_encode_connect_ipv6 (void)
+{
+    struct sockaddr_in6 address;
+    const gchar host_name[] = "mx.local.net";
+    const gchar ipv6_address[] = "2001:c90:625:12e8:290:ccff:fee2:80c5";
+    gchar port_string[sizeof(uint16_t)];
+    uint16_t port;
+    gsize actual_size = 0;
+
+    port = htons(50443);
+    memcpy(port_string, &port, sizeof(port));
+
+    g_string_append(expected, "C");
+    g_string_append(expected, host_name);
+    g_string_append_c(expected, '\0');
+    g_string_append(expected, "6");
+    g_string_append_len(expected, port_string, sizeof(port_string));
+    g_string_append(expected, ipv6_address);
+    g_string_append_c(expected, '\0');
+    pack(expected);
+
+    address.sin6_family = AF_INET6;
+    address.sin6_port = port;
+    inet_pton(AF_INET6, ipv6_address, &(address.sin6_addr));
+
+    milter_encoder_encode_connect(encoder,
+                                  &actual, &actual_size,
+                                  host_name,
+                                  (const struct sockaddr *)&address,
+                                  sizeof(address));
+    cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
+}
+
+void
+test_encode_connect_unix (void)
+{
+    struct sockaddr_un address;
+    const gchar host_name[] = "mx.local.net";
+    const gchar path[] = "/tmp/unix.sock";
+    gchar port_string[sizeof(uint16_t)];
+    uint16_t port;
+    gsize actual_size = 0;
+
+    port = htons(0);
+    memcpy(port_string, &port, sizeof(port));
+
+    g_string_append(expected, "C");
+    g_string_append(expected, host_name);
+    g_string_append_c(expected, '\0');
+    g_string_append(expected, "L");
+    g_string_append_len(expected, port_string, sizeof(port_string));
+    g_string_append(expected, path);
+    g_string_append_c(expected, '\0');
+    pack(expected);
+
+
+    address.sun_family = AF_UNIX;
+    strcpy(address.sun_path, path);
+
+    milter_encoder_encode_connect(encoder,
+                                  &actual, &actual_size,
+                                  host_name,
+                                  (const struct sockaddr *)&address,
+                                  sizeof(address));
     cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
 }
 

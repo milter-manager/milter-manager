@@ -1,5 +1,8 @@
 2008-09-18  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-code/milter-encoder.[ch], test/core/test-encoder.c:
+	support connect.
+
 	* milter-code/, test/: remove MilterContextType.
 	* milter-code/milter-encoder.[ch], test/core/test-encoder.c:
 	support define macro.
