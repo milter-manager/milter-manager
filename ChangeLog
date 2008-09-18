@@ -1,5 +1,9 @@
 2008-09-18  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-code/, test/: remove MilterContextType.
+	* milter-code/milter-encoder.[ch], test/core/test-encoder.c:
+	support define macro.
+
 	* test/core/test-encoder.c: add a test for option is NULL case.
 
 	* milter-code/, test/: use gchar ** and gsize * instead of GString *

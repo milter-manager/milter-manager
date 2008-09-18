@@ -101,7 +101,7 @@ static gint n_unknowns;
 
 static MilterOption *option_negotiation_option;
 
-static MilterContextType macro_context;
+static MilterCommand macro_context;
 static GHashTable *defined_macros;
 
 static gchar *connect_host_name;
@@ -132,7 +132,7 @@ cb_option_negotiation (MilterDecoder *decoder, MilterOption *option,
 }
 
 static void
-cb_define_macro (MilterDecoder *decoder, MilterContextType context, GHashTable *macros,
+cb_define_macro (MilterDecoder *decoder, MilterCommand context, GHashTable *macros,
                  gpointer user_data)
 {
     n_define_macros++;
@@ -635,17 +635,16 @@ typedef void (*setup_packet_func) (void);
 typedef struct _DefineMacroTestData
 {
     setup_packet_func setup_packet;
-    MilterContextType context;
+    MilterCommand context;
     GHashTable *expected;
 } DefineMacroTestData;
 
 static DefineMacroTestData *define_macro_test_data_new(setup_packet_func setup_packet,
-                                                       MilterContextType context,
+                                                       MilterCommand context,
                                                        const gchar *key,
                                                        ...) G_GNUC_NULL_TERMINATED;
 static DefineMacroTestData *
-define_macro_test_data_new (setup_packet_func setup_packet,
-                            MilterContextType context,
+define_macro_test_data_new (setup_packet_func setup_packet, MilterCommand context,
                             const gchar *key,
                             ...)
 {
@@ -711,7 +710,7 @@ data_decode_define_macro (void)
 {
     cut_add_data("connect",
                  define_macro_test_data_new(setup_define_macro_connect_packet,
-                                            MILTER_CONTEXT_TYPE_CONNECT,
+                                            MILTER_COMMAND_CONNECT,
                                             "j", "debian.cozmixng.org",
                                             "daemon_name", "debian.cozmixng.org",
                                             "v", "Postfix 2.5.5",
@@ -720,27 +719,27 @@ data_decode_define_macro (void)
 
     cut_add_data("HELO",
                  define_macro_test_data_new(setup_define_macro_helo_packet,
-                                            MILTER_CONTEXT_TYPE_HELO,
+                                            MILTER_COMMAND_HELO,
                                             NULL, NULL),
                  define_macro_test_data_free);
 
     cut_add_data("MAIL FROM",
                  define_macro_test_data_new(setup_define_macro_mail_packet,
-                                            MILTER_CONTEXT_TYPE_MAIL,
+                                            MILTER_COMMAND_MAIL,
                                             "mail_addr", "kou@cozmixng.org",
                                             NULL),
                  define_macro_test_data_free);
 
     cut_add_data("RCPT TO",
                  define_macro_test_data_new(setup_define_macro_rcpt_packet,
-                                            MILTER_CONTEXT_TYPE_RCPT,
+                                            MILTER_COMMAND_RCPT,
                                             "rcpt_addr", "kou@cozmixng.org",
                                             NULL),
                  define_macro_test_data_free);
 
     cut_add_data("header",
                  define_macro_test_data_new(setup_define_macro_header_packet,
-                                            MILTER_CONTEXT_TYPE_HEADER,
+                                            MILTER_COMMAND_HEADER,
                                             "i", "69FDD42DF4A",
                                             NULL),
                  define_macro_test_data_free);

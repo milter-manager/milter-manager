@@ -149,29 +149,60 @@ milter_encoder_encode_option_negotiation (MilterEncoder *encoder,
                                           MilterOption *option)
 {
     MilterEncoderPrivate *priv;
-    guint32 version, action, step;
-    gchar version_string[sizeof(guint32)];
-    gchar action_string[sizeof(guint32)];
-    gchar step_string[sizeof(guint32)];
-
-    g_return_if_fail (option != NULL);
 
     priv = MILTER_ENCODER_GET_PRIVATE(encoder);
     g_string_truncate(priv->buffer, 0);
 
-    version = ntohl(milter_option_get_version(option));
-    action = ntohl(milter_option_get_action(option));
-    step = ntohl(milter_option_get_step(option));
-
-    memcpy(version_string, &version, sizeof(version));
-    memcpy(action_string, &action, sizeof(action));
-    memcpy(step_string, &step, sizeof(step));
-
     g_string_append_c(priv->buffer, MILTER_COMMAND_OPTION_NEGOTIATION);
-    g_string_append_len(priv->buffer, version_string, sizeof(version));
-    g_string_append_len(priv->buffer, action_string, sizeof(action));
-    g_string_append_len(priv->buffer, step_string, sizeof(step));
+    if (option) {
+        guint32 version, action, step;
+        gchar version_string[sizeof(guint32)];
+        gchar action_string[sizeof(guint32)];
+        gchar step_string[sizeof(guint32)];
 
+        version = ntohl(milter_option_get_version(option));
+        action = ntohl(milter_option_get_action(option));
+        step = ntohl(milter_option_get_step(option));
+
+        memcpy(version_string, &version, sizeof(version));
+        memcpy(action_string, &action, sizeof(action));
+        memcpy(step_string, &step, sizeof(step));
+
+        g_string_append_len(priv->buffer, version_string, sizeof(version));
+        g_string_append_len(priv->buffer, action_string, sizeof(action));
+        g_string_append_len(priv->buffer, step_string, sizeof(step));
+    }
+    pack(priv->buffer);
+
+    *packet = g_memdup(priv->buffer->str, priv->buffer->len);
+    *packet_size = priv->buffer->len;
+}
+
+static void
+encode_each_macro (gpointer key, gpointer value, gpointer user_data)
+{
+    GString *buffer = user_data;
+
+    g_string_append(buffer, key);
+    g_string_append_c(buffer, '\0');
+    g_string_append(buffer, value);
+    g_string_append_c(buffer, '\0');
+}
+
+void
+milter_encoder_encode_define_macro (MilterEncoder *encoder,
+                                    gchar **packet, gsize *packet_size,
+                                    MilterCommand context, GHashTable *macros)
+{
+    MilterEncoderPrivate *priv;
+
+    priv = MILTER_ENCODER_GET_PRIVATE(encoder);
+    g_string_truncate(priv->buffer, 0);
+
+    g_string_append_c(priv->buffer, MILTER_COMMAND_DEFINE_MACRO);
+    g_string_append_c(priv->buffer, context);
+    if (macros)
+        g_hash_table_foreach(macros, encode_each_macro, priv->buffer);
     pack(priv->buffer);
 
     *packet = g_memdup(priv->buffer->str, priv->buffer->len);

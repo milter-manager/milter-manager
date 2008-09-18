@@ -31,6 +31,8 @@
 
 void test_encode_option_negotiation (void);
 void test_encode_option_negotiation_null (void);
+void data_encode_define_macro (void);
+void test_encode_define_macro (gconstpointer data);
 
 static MilterEncoder *encoder;
 static GString *expected;
@@ -132,11 +134,157 @@ test_encode_option_negotiation_null (void)
 {
     gsize actual_size = 0;
 
+    g_string_append_c(expected, 'O');
+    pack(expected);
     milter_encoder_encode_option_negotiation(encoder,
                                              &actual, &actual_size,
                                              NULL);
-    cut_assert_equal_memory(NULL, 0, actual, actual_size);
+    cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
 }
+
+static void
+append_name_and_value(GString *buffer, const gchar *name, const gchar *value)
+{
+    if (name)
+        g_string_append(buffer, name);
+    g_string_append_c(buffer, '\0');
+    if (value)
+        g_string_append(buffer, value);
+    g_string_append_c(buffer, '\0');
+}
+
+typedef void (*setup_packet_func) (void);
+
+typedef struct _DefineMacroTestData
+{
+    setup_packet_func setup_packet;
+    MilterCommand context;
+    GHashTable *expected;
+} DefineMacroTestData;
+
+static DefineMacroTestData *define_macro_test_data_new(setup_packet_func setup_packet,
+                                                       MilterCommand context,
+                                                       const gchar *key,
+                                                       ...) G_GNUC_NULL_TERMINATED;
+static DefineMacroTestData *
+define_macro_test_data_new (setup_packet_func setup_packet,
+                            MilterCommand context, const gchar *key,
+                            ...)
+{
+    DefineMacroTestData *data;
+    va_list args;
+
+    data = g_new0(DefineMacroTestData, 1);
+
+    data->setup_packet = setup_packet;
+    data->context = context;
+    va_start(args, key);
+    data->expected = gcut_hash_table_string_string_newv(key, args);
+    va_end(args);
+
+    return data;
+}
+
+static void
+define_macro_test_data_free (DefineMacroTestData *data)
+{
+    g_hash_table_unref(data->expected);
+    g_free(data);
+}
+
+static void
+setup_define_macro_connect_packet (void)
+{
+    g_string_append(expected, "C");
+    append_name_and_value(expected, "j", "debian.cozmixng.org");
+    append_name_and_value(expected, "daemon_name", "debian.cozmixng.org");
+    append_name_and_value(expected, "v", "Postfix 2.5.5");
+}
+
+static void
+setup_define_macro_helo_packet (void)
+{
+    g_string_append(expected, "H");
+}
+
+static void
+setup_define_macro_mail_packet (void)
+{
+    g_string_append(expected, "M");
+    append_name_and_value(expected, "{mail_addr}", "kou@cozmixng.org");
+}
+
+static void
+setup_define_macro_rcpt_packet (void)
+{
+    g_string_append(expected, "R");
+    append_name_and_value(expected, "{rcpt_addr}", "kou@cozmixng.org");
+}
+
+static void
+setup_define_macro_header_packet (void)
+{
+    g_string_append(expected, "L");
+    append_name_and_value(expected, "i", "69FDD42DF4A");
+}
+
+void
+data_encode_define_macro (void)
+{
+    cut_add_data("connect",
+                 define_macro_test_data_new(setup_define_macro_connect_packet,
+                                            MILTER_COMMAND_CONNECT,
+                                            "j", "debian.cozmixng.org",
+                                            "daemon_name", "debian.cozmixng.org",
+                                            "v", "Postfix 2.5.5",
+                                            NULL),
+                 define_macro_test_data_free);
+
+    cut_add_data("HELO",
+                 define_macro_test_data_new(setup_define_macro_helo_packet,
+                                            MILTER_COMMAND_HELO,
+                                            NULL, NULL),
+                 define_macro_test_data_free);
+
+    cut_add_data("MAIL FROM",
+                 define_macro_test_data_new(setup_define_macro_mail_packet,
+                                            MILTER_COMMAND_MAIL,
+                                            "{mail_addr}", "kou@cozmixng.org",
+                                            NULL),
+                 define_macro_test_data_free);
+
+    cut_add_data("RCPT TO",
+                 define_macro_test_data_new(setup_define_macro_rcpt_packet,
+                                            MILTER_COMMAND_RCPT,
+                                            "{rcpt_addr}", "kou@cozmixng.org",
+                                            NULL),
+                 define_macro_test_data_free);
+
+    cut_add_data("header",
+                 define_macro_test_data_new(setup_define_macro_header_packet,
+                                            MILTER_COMMAND_HEADER,
+                                            "i", "69FDD42DF4A",
+                                            NULL),
+                 define_macro_test_data_free);
+}
+
+void
+test_encode_define_macro (gconstpointer data)
+{
+    const DefineMacroTestData *test_data = data;
+    gsize actual_size = 0;
+
+    g_string_append(expected, "D");
+    test_data->setup_packet();
+    pack(expected);
+
+    milter_encoder_encode_define_macro(encoder,
+                                       &actual, &actual_size,
+                                       test_data->context, test_data->expected);
+    cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
+}
+
+
 
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4

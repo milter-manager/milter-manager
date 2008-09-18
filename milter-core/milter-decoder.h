@@ -66,7 +66,7 @@ struct _MilterDecoderClass
     void (*option_negotiation)  (MilterDecoder *decoder,
                                  MilterOption *option);
     void (*define_macro)        (MilterDecoder *decoder,
-                                 MilterContextType context,
+                                 MilterCommand context,
                                  GHashTable *macros);
     void (*connect)             (MilterDecoder *decoder,
                                  const gchar *host_name,

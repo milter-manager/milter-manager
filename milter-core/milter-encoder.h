@@ -59,11 +59,11 @@ void             milter_encoder_encode_option_negotiation
                                                 gchar            **packet,
                                                 gsize             *packet_size,
                                                 MilterOption      *option);
-void            *milter_encoder_encode_define_macro
+void             milter_encoder_encode_define_macro
                                                (MilterEncoder     *encoder,
                                                 gchar            **packet,
                                                 gsize             *packet_size,
-                                                MilterContextType  context,
+                                                MilterCommand      context,
                                                 GHashTable        *macros);
 void             milter_encoder_encode_connect (MilterEncoder     *encoder,
                                                 gchar            **packet,

@@ -120,7 +120,7 @@ milter_decoder_class_init (MilterDecoderClass *klass)
                      G_STRUCT_OFFSET(MilterDecoderClass, define_macro),
                      NULL, NULL,
                      _milter_marshal_VOID__ENUM_POINTER,
-                     G_TYPE_NONE, 2, MILTER_TYPE_CONTEXT_TYPE, G_TYPE_POINTER);
+                     G_TYPE_NONE, 2, MILTER_TYPE_COMMAND, G_TYPE_POINTER);
 
     signals[CONNECT] =
         g_signal_new("connect",
@@ -298,49 +298,6 @@ milter_decoder_new (void)
                         NULL);
 }
 
-static gboolean
-decode_macro_context (gchar macro_context, MilterContextType *context,
-                     GError **error)
-{
-    gboolean success = TRUE;
-
-    switch (macro_context) {
-      case MILTER_COMMAND_CONNECT:
-        *context = MILTER_CONTEXT_TYPE_CONNECT;
-        break;
-      case MILTER_COMMAND_HELO:
-        *context = MILTER_CONTEXT_TYPE_HELO;
-        break;
-      case MILTER_COMMAND_MAIL:
-        *context = MILTER_CONTEXT_TYPE_MAIL;
-        break;
-      case MILTER_COMMAND_RCPT:
-        *context = MILTER_CONTEXT_TYPE_RCPT;
-        break;
-      case MILTER_COMMAND_HEADER:
-        *context = MILTER_CONTEXT_TYPE_HEADER;
-        break;
-      case MILTER_COMMAND_END_OF_HEADER:
-        *context = MILTER_CONTEXT_TYPE_END_OF_HEADER;
-        break;
-      case MILTER_COMMAND_BODY:
-        *context = MILTER_CONTEXT_TYPE_BODY;
-        break;
-      case MILTER_COMMAND_END_OF_MESSAGE:
-        *context = MILTER_CONTEXT_TYPE_END_OF_MESSAGE;
-        break;
-      default:
-        g_set_error(error,
-                    MILTER_DECODER_ERROR,
-                    MILTER_DECODER_ERROR_UNKNOWN_MACRO_CONTEXT,
-                    "unknown macro context: %c", macro_context);
-        success = FALSE;
-        break;
-    }
-
-    return success;
-}
-
 #define set_missing_null_error(error, message, ...)     \
     g_set_error(error,                                  \
                 MILTER_DECODER_ERROR,                    \
@@ -362,7 +319,7 @@ find_null_character (const gchar *buffer, gint length)
 
 static gint
 decode_null_terminated_value (const gchar *buffer, gint length,
-                             GError **error, const gchar *message)
+                              GError **error, const gchar *message)
 {
     gint null_character_point;
 
@@ -525,9 +482,36 @@ decode_command_option_negotiation (MilterDecoder *decoder, GError **error)
     return TRUE;
 }
 
+static gboolean
+check_macro_context (MilterCommand macro_context, GError **error)
+{
+    gboolean success = TRUE;
+
+    switch (macro_context) {
+      case MILTER_COMMAND_CONNECT:
+      case MILTER_COMMAND_HELO:
+      case MILTER_COMMAND_MAIL:
+      case MILTER_COMMAND_RCPT:
+      case MILTER_COMMAND_HEADER:
+      case MILTER_COMMAND_END_OF_HEADER:
+      case MILTER_COMMAND_BODY:
+      case MILTER_COMMAND_END_OF_MESSAGE:
+        break;
+      default:
+        g_set_error(error,
+                    MILTER_DECODER_ERROR,
+                    MILTER_DECODER_ERROR_UNKNOWN_MACRO_CONTEXT,
+                    "unknown macro context: %c", macro_context);
+        success = FALSE;
+        break;
+    }
+
+    return success;
+}
+
 static GHashTable *
 decode_command_macro_definitions (const gchar *buffer, gint length,
-                                 GError **error)
+                                  GError **error)
 {
     GHashTable *macros;
     gint i;
@@ -542,8 +526,8 @@ decode_command_macro_definitions (const gchar *buffer, gint length,
 
         null_character_point =
             decode_null_terminated_value(buffer + i, length - i, error,
-                                        "name isn't terminated by NULL "
-                                        "on define macro command");
+                                         "name isn't terminated by NULL "
+                                         "on define macro command");
         if (null_character_point <= 0) {
             success = FALSE;
             break;
@@ -553,8 +537,8 @@ decode_command_macro_definitions (const gchar *buffer, gint length,
         i += null_character_point + 1;
         null_character_point =
             decode_null_terminated_value(buffer + i, length - i, error,
-                                        "value isn't terminated by NULL "
-                                        "on define macro command");
+                                         "value isn't terminated by NULL "
+                                         "on define macro command");
         if (null_character_point <= 0) {
             success = FALSE;
             break;
@@ -589,25 +573,31 @@ decode_command_define_macro (MilterDecoder *decoder, GError **error)
 {
     MilterDecoderPrivate *priv;
     GHashTable *macros;
-    MilterContextType context;
-    gboolean success = TRUE;
+    MilterCommand context;
+    gsize i;
 
     priv = MILTER_DECODER_GET_PRIVATE(decoder);
-    if (decode_macro_context(priv->buffer->str[1], &context, error)) {
-        macros = decode_command_macro_definitions(priv->buffer->str + 1 + 1,
-                                                 priv->command_length - 1 - 1,
-                                                 error);
-        if (macros) {
-            g_signal_emit(decoder, signals[DEFINE_MACRO], 0, context, macros);
-            g_hash_table_unref(macros);
-        } else {
-            success = FALSE;
-        }
-    } else {
-        success = FALSE;
-    }
+    i = 1;
+    if (!check_command_length(priv->buffer->str + 1,
+                              priv->buffer->len - 1,
+                              1, AT_LEAST,
+                              error, "macro context on define macro command"))
+        return FALSE;
 
-    return success;
+    if (!check_macro_context(priv->buffer->str[1], error))
+        return FALSE;
+    context = priv->buffer->str[1];
+
+    macros = decode_command_macro_definitions(priv->buffer->str + 1 + 1,
+                                              priv->command_length - 1 - 1,
+                                              error);
+    if (!macros)
+        return FALSE;
+
+    g_signal_emit(decoder, signals[DEFINE_MACRO], 0, context, macros);
+    g_hash_table_unref(macros);
+
+    return TRUE;
 }
 
 static gboolean
