@@ -438,6 +438,24 @@ test_encode_rcpt (void)
     cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
 }
 
+void
+test_encode_header (void)
+{
+    const gchar from[] = "<kou@cozmixng.org>";
+    gsize actual_size = 0;
+
+    g_string_append(expected, "L");
+    g_string_append(expected, "From");
+    g_string_append_c(expected, '\0');
+    g_string_append(expected, from);
+    g_string_append_c(expected, '\0');
+    pack(expected);
+
+    milter_encoder_encode_header(encoder, &actual, &actual_size, "From", from);
+    cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
+}
+
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */

@@ -1,6 +1,9 @@
 2008-09-18  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter-code/milter-encoder.[ch], test/core/test-encoder.c:
+	support HEADER.
+
+	* milter-code/milter-encoder.[ch], test/core/test-encoder.c:
 	support RCPT.
 
 	* milter-code/milter-encoder.[ch], test/core/test-encoder.c:
