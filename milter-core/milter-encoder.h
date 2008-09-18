@@ -100,7 +100,9 @@ void             milter_encoder_encode_body    (MilterEncoder     *encoder,
 void             milter_encoder_encode_end_of_message
                                                (MilterEncoder     *encoder,
                                                 gchar            **packet,
-                                                gsize             *packet_size);
+                                                gsize             *packet_size,
+                                                const gchar       *chunk,
+                                                gsize              size);
 void             milter_encoder_encode_abort   (MilterEncoder     *encoder,
                                                 gchar            **packet,
                                                 gsize             *packet_size);

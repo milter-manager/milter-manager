@@ -41,6 +41,9 @@ void test_encode_mail (void);
 void test_encode_rcpt (void);
 void test_encode_header (void);
 void test_encode_end_of_header (void);
+void test_encode_body (void);
+void test_encode_end_of_message (void);
+void test_encode_end_of_message_with_data (void);
 
 static MilterEncoder *encoder;
 static GString *expected;
@@ -466,6 +469,57 @@ test_encode_end_of_header (void)
     pack(expected);
 
     milter_encoder_encode_end_of_header(encoder, &actual, &actual_size);
+    cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
+}
+
+void
+test_encode_body (void)
+{
+    const gchar body[] =
+        "La de da de da 1.\n"
+        "La de da de da 2.\n"
+        "La de da de da 3.\n"
+        "La de da de da 4.";
+    gsize actual_size = 0;
+
+    g_string_append(expected, "B");
+    g_string_append_len(expected, body, sizeof(body));
+    pack(expected);
+
+    milter_encoder_encode_body(encoder, &actual, &actual_size,
+                               body, sizeof(body));
+    cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
+}
+
+void
+test_encode_end_of_message (void)
+{
+    gsize actual_size = 0;
+
+    g_string_append(expected, "E");
+    pack(expected);
+
+    milter_encoder_encode_end_of_message(encoder, &actual, &actual_size,
+                                         NULL, 0);
+    cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
+}
+
+void
+test_encode_end_of_message_with_data (void)
+{
+    const gchar body[] =
+        "La de da de da 1.\n"
+        "La de da de da 2.\n"
+        "La de da de da 3.\n"
+        "La de da de da 4.";
+    gsize actual_size = 0;
+
+    g_string_append(expected, "E");
+    g_string_append_len(expected, body, sizeof(body));
+    pack(expected);
+
+    milter_encoder_encode_end_of_message(encoder, &actual, &actual_size,
+                                         body, sizeof(body));
     cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
 }
 
