@@ -44,6 +44,9 @@ void test_encode_end_of_header (void);
 void test_encode_body (void);
 void test_encode_end_of_message (void);
 void test_encode_end_of_message_with_data (void);
+void test_encode_abort (void);
+void test_encode_quit (void);
+void test_encode_unknown (void);
 
 static MilterEncoder *encoder;
 static GString *expected;
@@ -523,6 +526,44 @@ test_encode_end_of_message_with_data (void)
     cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
 }
 
+void
+test_encode_abort (void)
+{
+    gsize actual_size = 0;
+
+    g_string_append(expected, "A");
+    pack(expected);
+
+    milter_encoder_encode_abort(encoder, &actual, &actual_size);
+    cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
+}
+
+void
+test_encode_quit (void)
+{
+    gsize actual_size = 0;
+
+    g_string_append(expected, "Q");
+    pack(expected);
+
+    milter_encoder_encode_quit(encoder, &actual, &actual_size);
+    cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
+}
+
+void
+test_encode_unknown (void)
+{
+    const gchar command[] = "UNKNOWN COMMAND";
+    gsize actual_size = 0;
+
+    g_string_append(expected, "U");
+    g_string_append(expected, command);
+    g_string_append_c(expected, '\0');
+    pack(expected);
+
+    milter_encoder_encode_unknown(encoder, &actual, &actual_size, command);
+    cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
+}
 
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
