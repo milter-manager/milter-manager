@@ -39,6 +39,8 @@ void test_encode_connect_unix (void);
 void test_encode_helo (void);
 void test_encode_mail (void);
 void test_encode_rcpt (void);
+void test_encode_header (void);
+void test_encode_end_of_header (void);
 
 static MilterEncoder *encoder;
 static GString *expected;
@@ -452,6 +454,18 @@ test_encode_header (void)
     pack(expected);
 
     milter_encoder_encode_header(encoder, &actual, &actual_size, "From", from);
+    cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
+}
+
+void
+test_encode_end_of_header (void)
+{
+    gsize actual_size = 0;
+
+    g_string_append(expected, "N");
+    pack(expected);
+
+    milter_encoder_encode_end_of_header(encoder, &actual, &actual_size);
     cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
 }
 
