@@ -36,6 +36,7 @@ void test_encode_define_macro (gconstpointer data);
 void test_encode_connect_ipv4 (void);
 void test_encode_connect_ipv6 (void);
 void test_encode_connect_unix (void);
+void test_encode_helo (void);
 
 static MilterEncoder *encoder;
 static GString *expected;
@@ -390,7 +391,20 @@ test_encode_connect_unix (void)
     cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
 }
 
+void
+test_encode_helo (void)
+{
+    const gchar fqdn[] = "delian";
+    gsize actual_size = 0;
 
+    g_string_append(expected, "H");
+    g_string_append(expected, fqdn);
+    g_string_append_c(expected, '\0');
+    pack(expected);
+
+    milter_encoder_encode_helo(encoder, &actual, &actual_size, fqdn);
+    cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
+}
 
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
