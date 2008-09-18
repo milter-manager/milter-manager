@@ -42,7 +42,7 @@
 typedef struct _MilterEncoderPrivate	MilterEncoderPrivate;
 struct _MilterEncoderPrivate
 {
-    gint is_private_data_needed;
+    GString *buffer;
 };
 
 G_DEFINE_TYPE(MilterEncoder, milter_encoder, G_TYPE_OBJECT);
@@ -74,11 +74,23 @@ milter_encoder_class_init (MilterEncoderClass *klass)
 static void
 milter_encoder_init (MilterEncoder *encoder)
 {
+    MilterEncoderPrivate *priv;
+
+    priv = MILTER_ENCODER_GET_PRIVATE(encoder);
+    priv->buffer = g_string_new(NULL);
 }
 
 static void
 dispose (GObject *object)
 {
+    MilterEncoderPrivate *priv;
+
+    priv = MILTER_ENCODER_GET_PRIVATE(object);
+    if (priv->buffer) {
+        g_string_free(priv->buffer, TRUE);
+        priv->buffer = NULL;
+    }
+
     G_OBJECT_CLASS(milter_encoder_parent_class)->dispose(object);
 }
 
@@ -121,29 +133,31 @@ milter_encoder_new (void)
 }
 
 static void
-pack (GString *output, gsize start_position)
+pack (GString *output)
 {
     guint32 content_size;
     gchar content_string[sizeof(guint32)];
 
-    content_size = htonl(output->len - start_position);
+    content_size = htonl(output->len);
     memcpy(content_string, &content_size, sizeof(content_size));
-    g_string_insert_len(output, start_position,
-                        content_string, sizeof(content_size));
+    g_string_prepend_len(output, content_string, sizeof(content_size));
 }
 
 void
 milter_encoder_encode_option_negotiation (MilterEncoder *encoder,
-                                          GString *output,
+                                          gchar **packet, gsize *packet_size,
                                           MilterOption *option)
 {
-    gsize start_position;
+    MilterEncoderPrivate *priv;
     guint32 version, action, step;
     gchar version_string[sizeof(guint32)];
     gchar action_string[sizeof(guint32)];
     gchar step_string[sizeof(guint32)];
 
-    start_position = output->len;
+    g_return_if_fail (option != NULL);
+
+    priv = MILTER_ENCODER_GET_PRIVATE(encoder);
+    g_string_truncate(priv->buffer, 0);
 
     version = ntohl(milter_option_get_version(option));
     action = ntohl(milter_option_get_action(option));
@@ -153,12 +167,15 @@ milter_encoder_encode_option_negotiation (MilterEncoder *encoder,
     memcpy(action_string, &action, sizeof(action));
     memcpy(step_string, &step, sizeof(step));
 
-    g_string_append_c(output, MILTER_COMMAND_OPTION_NEGOTIATION);
-    g_string_append_len(output, version_string, sizeof(version));
-    g_string_append_len(output, action_string, sizeof(action));
-    g_string_append_len(output, step_string, sizeof(step));
+    g_string_append_c(priv->buffer, MILTER_COMMAND_OPTION_NEGOTIATION);
+    g_string_append_len(priv->buffer, version_string, sizeof(version));
+    g_string_append_len(priv->buffer, action_string, sizeof(action));
+    g_string_append_len(priv->buffer, step_string, sizeof(step));
 
-    pack(output, start_position);
+    pack(priv->buffer);
+
+    *packet = g_memdup(priv->buffer->str, priv->buffer->len);
+    *packet_size = priv->buffer->len;
 }
 
 /*

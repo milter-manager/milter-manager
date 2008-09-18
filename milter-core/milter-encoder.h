@@ -50,54 +50,67 @@ struct _MilterEncoderClass
     GObjectClass parent_class;
 };
 
-GType            milter_encoder_get_type          (void) G_GNUC_CONST;
+GType            milter_encoder_get_type       (void) G_GNUC_CONST;
 
-MilterEncoder   *milter_encoder_new               (void);
+MilterEncoder   *milter_encoder_new            (void);
 
 void             milter_encoder_encode_option_negotiation
-                                                  (MilterEncoder     *encoder,
-                                                   GString           *output,
-                                                   MilterOption      *option);
+                                               (MilterEncoder     *encoder,
+                                                gchar            **packet,
+                                                gsize             *packet_size,
+                                                MilterOption      *option);
 void            *milter_encoder_encode_define_macro
-                                                  (MilterEncoder     *encoder,
-                                                   GString           *output,
-                                                   MilterContextType  context,
-                                                   GHashTable        *macros);
-void             milter_encoder_encode_connect    (MilterEncoder     *encoder,
-                                                   GString           *output,
-                                                   const gchar       *host_name,
-                                                   const struct sockaddr *address,
-                                                   socklen_t         address_length);
-void             milter_encoder_encode_helo       (MilterEncoder     *encoder,
-                                                   GString           *output,
-                                                   const gchar       *fqdn);
-void             milter_encoder_encode_mail       (MilterEncoder     *encoder,
-                                                   GString           *output,
-                                                   const gchar       *from);
-void             milter_encoder_encode_rcpt       (MilterEncoder     *encoder,
-                                                   GString           *output,
-                                                   const gchar       *to);
-void             milter_encoder_encode_header     (MilterEncoder     *encoder,
-                                                   GString           *output,
-                                                   const gchar       *name,
-                                                   const gchar       *value);
+                                               (MilterEncoder     *encoder,
+                                                gchar            **packet,
+                                                gsize             *packet_size,
+                                                MilterContextType  context,
+                                                GHashTable        *macros);
+void             milter_encoder_encode_connect (MilterEncoder     *encoder,
+                                                gchar            **packet,
+                                                gsize             *packet_size,
+                                                const gchar       *host_name,
+                                                const struct sockaddr *address,
+                                                socklen_t         address_size);
+void             milter_encoder_encode_helo    (MilterEncoder     *encoder,
+                                                gchar            **packet,
+                                                gsize             *packet_size,
+                                                const gchar       *fqdn);
+void             milter_encoder_encode_mail    (MilterEncoder     *encoder,
+                                                gchar            **packet,
+                                                gsize             *packet_size,
+                                                const gchar       *from);
+void             milter_encoder_encode_rcpt    (MilterEncoder     *encoder,
+                                                gchar            **packet,
+                                                gsize             *packet_size,
+                                                const gchar       *to);
+void             milter_encoder_encode_header  (MilterEncoder     *encoder,
+                                                gchar            **packet,
+                                                gsize             *packet_size,
+                                                const gchar       *name,
+                                                const gchar       *value);
 void             milter_encoder_encode_end_of_header
-                                                  (MilterEncoder     *encoder,
-                                                   GString           *output);
-void             milter_encoder_encode_body       (MilterEncoder     *encoder,
-                                                   GString           *output,
-                                                   const gchar       *chunk,
-                                                   gsize              length);
+                                               (MilterEncoder     *encoder,
+                                                gchar            **packet,
+                                                gsize             *packet_size);
+void             milter_encoder_encode_body    (MilterEncoder     *encoder,
+                                                gchar            **packet,
+                                                gsize             *packet_size,
+                                                const gchar       *chunk,
+                                                gsize              size);
 void             milter_encoder_encode_end_of_message
-                                                  (MilterEncoder     *encoder,
-                                                   GString           *output);
-void             milter_encoder_encode_abort      (MilterEncoder     *encoder,
-                                                   GString           *output);
-void             milter_encoder_encode_quit       (MilterEncoder     *encoder,
-                                                   GString           *output);
-void             milter_encoder_encode_unknown    (MilterEncoder     *encoder,
-                                                   GString           *output,
-                                                   const gchar       *command);
+                                               (MilterEncoder     *encoder,
+                                                gchar            **packet,
+                                                gsize             *packet_size);
+void             milter_encoder_encode_abort   (MilterEncoder     *encoder,
+                                                gchar            **packet,
+                                                gsize             *packet_size);
+void             milter_encoder_encode_quit    (MilterEncoder     *encoder,
+                                                gchar            **packet,
+                                                gsize             *packet_size);
+void             milter_encoder_encode_unknown (MilterEncoder     *encoder,
+                                                gchar            **packet,
+                                                gsize             *packet_size,
+                                                const gchar       *command);
 
 G_END_DECLS
 

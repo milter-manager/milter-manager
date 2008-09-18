@@ -33,7 +33,7 @@ void test_encode_option_negotiation (void);
 
 static MilterEncoder *encoder;
 static GString *expected;
-static GString *actual;
+static gchar *actual;
 
 static GHashTable *macros;
 
@@ -43,7 +43,7 @@ setup (void)
     encoder = milter_encoder_new();
 
     expected = g_string_new(NULL);
-    actual = g_string_new(NULL);
+    actual = NULL;
 
     macros = NULL;
 }
@@ -57,8 +57,9 @@ teardown (void)
 
     if (expected)
         g_string_free(expected, TRUE);
+
     if (actual)
-        g_string_free(actual, TRUE);
+        g_free(actual);
 
     if (macros)
         g_hash_table_unref(macros);
@@ -85,6 +86,7 @@ test_encode_option_negotiation (void)
     gchar version_string[sizeof(guint32)];
     gchar action_string[sizeof(guint32)];
     gchar step_string[sizeof(guint32)];
+    gsize actual_size;
 
     option = milter_option_new(2,
                                MILTER_ACTION_ADD_HEADERS |
@@ -116,11 +118,12 @@ test_encode_option_negotiation (void)
     g_string_append_len(expected, step_string, sizeof(step_string));
     pack(expected);
 
-    milter_encoder_encode_option_negotiation(encoder, actual, option);
+    milter_encoder_encode_option_negotiation(encoder,
+                                             &actual, &actual_size,
+                                             option);
     g_object_unref(option);
 
-    cut_assert_equal_memory(expected->str, expected->len,
-                            actual->str, actual->len);
+    cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
 }
 
 /*

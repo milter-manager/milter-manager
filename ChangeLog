@@ -1,5 +1,8 @@
 2008-09-18  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-code/, test/: use gchar ** and gsize * instead of GString *
+	to receive encoded packet.
+
 	* miter-code/, test/: add MilterEncoder.
 
 	* /: parser -> decoder.
