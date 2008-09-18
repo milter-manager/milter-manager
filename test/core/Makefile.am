@@ -1,6 +1,6 @@
 if WITH_CUTTER
 noinst_LTLIBRARIES =		\
-	test-parser.la		\
+	test-decoder.la		\
 	test-option.la
 endif
 
@@ -20,5 +20,5 @@ LIBS =							\
 	$(top_builddir)/milter-core/libmilter-core.la	\
 	$(GCUTTER_LIBS)
 
-test_parser_la_SOURCES = test-parser.c
+test_decoder_la_SOURCES = test-decoder.c
 test_option_la_SOURCES = test-option.c

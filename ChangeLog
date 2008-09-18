@@ -1,5 +1,7 @@
 2008-09-18  Kouhei Sutou  <kou@cozmixng.org>
 
+	* /: parser -> decoder.
+
 	* milter-core/milter-parser.c, test/core/test-milter.c: improve
 	error handling.
 

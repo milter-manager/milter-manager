@@ -21,7 +21,7 @@
 #  include "../config.h"
 #endif /* HAVE_CONFIG_H */
 
-#include <milter-core/milter-parser.h>
+#include <milter-core/milter-decoder.h>
 #include "milter-client.h"
 
 #define MILTER_CLIENT_HANDLER_GET_PRIVATE(obj)                          \
@@ -32,7 +32,7 @@
 typedef struct _MilterClientHandlerPrivate	MilterClientHandlerPrivate;
 struct _MilterClientHandlerPrivate
 {
-    MilterParser *parser;
+    MilterDecoder *decoder;
 };
 
 enum
@@ -75,7 +75,7 @@ milter_client_handler_init (MilterClientHandler *handler)
     MilterClientHandlerPrivate *priv;
 
     priv = MILTER_CLIENT_HANDLER_GET_PRIVATE(handler);
-    priv->parser = NULL;
+    priv->decoder = NULL;
 }
 
 static void
@@ -84,9 +84,9 @@ dispose (GObject *object)
     MilterClientHandlerPrivate *priv;
 
     priv = MILTER_CLIENT_HANDLER_GET_PRIVATE(object);
-    if (priv->parser) {
-        g_object_unref(priv->parser);
-        priv->parser = NULL;
+    if (priv->decoder) {
+        g_object_unref(priv->decoder);
+        priv->decoder = NULL;
     }
 
     G_OBJECT_CLASS(milter_client_handler_parent_class)->dispose(object);

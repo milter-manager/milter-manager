@@ -26,60 +26,60 @@
 #include <arpa/inet.h>
 #undef shutdown
 
-#include <milter-core/milter-parser.h>
+#include <milter-core/milter-decoder.h>
 #include <milter-core/milter-enum-types.h>
 
-void test_parse_empty_text (void);
-void test_parse_option_negotiation (void);
-void test_parse_option_negotiation_empty (void);
-void test_parse_option_negotiation_without_version (void);
-void test_parse_option_negotiation_only_version (void);
-void test_parse_option_negotiation_without_action (void);
-void test_parse_option_negotiation_only_version_and_action (void);
-void test_parse_option_negotiation_without_step (void);
-void data_parse_define_macro (void);
-void test_parse_define_macro (gconstpointer data);
-void test_parse_define_macro_with_unknown_macro_context (void);
-void test_parse_define_macro_without_name_null (void);
-void test_parse_define_macro_without_value_null (void);
-void test_parse_connect_ipv4 (void);
-void test_parse_connect_ipv6 (void);
-void test_parse_connect_unix (void);
-void test_parse_connect_without_host_name_null (void);
-void test_parse_connect_with_unknown_family (void);
-void test_parse_connect_with_unexpected_family (void);
-void test_parse_connect_with_unexpected_family_and_port (void);
-void test_parse_connect_with_short_port_size (void);
-void test_parse_connect_without_ip_address_null (void);
-void test_parse_connect_with_invalid_ipv4_address (void);
-void test_parse_connect_with_invalid_ipv6_address (void);
-void test_parse_helo (void);
-void test_parse_helo_without_null (void);
-void test_parse_mail (void);
-void test_parse_mail_without_null (void);
-void test_parse_rcpt (void);
-void test_parse_rcpt_without_null (void);
-void test_parse_header (void);
-void test_parse_header_without_name_null (void);
-void test_parse_header_without_value_null (void);
-void test_parse_end_of_header (void);
-void test_parse_end_of_header_with_garbage (void);
-void test_parse_body (void);
-void test_parse_body_end_with_data (void);
-void test_parse_body_end_without_data (void);
-void test_parse_abort (void);
-void test_parse_abort_with_garbage (void);
-void test_parse_quit (void);
-void test_parse_quit_with_garbage (void);
-void test_parse_unknown (void);
-void test_parse_unknown_without_null (void);
-void test_parse_unexpected_command (void);
+void test_decode_empty_text (void);
+void test_decode_option_negotiation (void);
+void test_decode_option_negotiation_empty (void);
+void test_decode_option_negotiation_without_version (void);
+void test_decode_option_negotiation_only_version (void);
+void test_decode_option_negotiation_without_action (void);
+void test_decode_option_negotiation_only_version_and_action (void);
+void test_decode_option_negotiation_without_step (void);
+void data_decode_define_macro (void);
+void test_decode_define_macro (gconstpointer data);
+void test_decode_define_macro_with_unknown_macro_context (void);
+void test_decode_define_macro_without_name_null (void);
+void test_decode_define_macro_without_value_null (void);
+void test_decode_connect_ipv4 (void);
+void test_decode_connect_ipv6 (void);
+void test_decode_connect_unix (void);
+void test_decode_connect_without_host_name_null (void);
+void test_decode_connect_with_unknown_family (void);
+void test_decode_connect_with_unexpected_family (void);
+void test_decode_connect_with_unexpected_family_and_port (void);
+void test_decode_connect_with_short_port_size (void);
+void test_decode_connect_without_ip_address_null (void);
+void test_decode_connect_with_invalid_ipv4_address (void);
+void test_decode_connect_with_invalid_ipv6_address (void);
+void test_decode_helo (void);
+void test_decode_helo_without_null (void);
+void test_decode_mail (void);
+void test_decode_mail_without_null (void);
+void test_decode_rcpt (void);
+void test_decode_rcpt_without_null (void);
+void test_decode_header (void);
+void test_decode_header_without_name_null (void);
+void test_decode_header_without_value_null (void);
+void test_decode_end_of_header (void);
+void test_decode_end_of_header_with_garbage (void);
+void test_decode_body (void);
+void test_decode_body_end_with_data (void);
+void test_decode_body_end_without_data (void);
+void test_decode_abort (void);
+void test_decode_abort_with_garbage (void);
+void test_decode_quit (void);
+void test_decode_quit_with_garbage (void);
+void test_decode_unknown (void);
+void test_decode_unknown_without_null (void);
+void test_decode_unexpected_command (void);
 
-void test_end_parse_immediately (void);
-void test_end_parse_in_command_length_parsing (void);
-void test_end_parse_in_command_content_parsing (void);
+void test_end_decode_immediately (void);
+void test_end_decode_in_command_length_decoding (void);
+void test_end_decode_in_command_content_decoding (void);
 
-static MilterParser *parser;
+static MilterDecoder *decoder;
 static GString *buffer;
 
 static GError *expected_error;
@@ -124,7 +124,7 @@ static gchar *unknown_command;
 static gsize unknown_command_length;
 
 static void
-cb_option_negotiation (MilterParser *parser, MilterOption *option,
+cb_option_negotiation (MilterDecoder *decoder, MilterOption *option,
                        gpointer user_data)
 {
     n_option_negotiations++;
@@ -132,7 +132,7 @@ cb_option_negotiation (MilterParser *parser, MilterOption *option,
 }
 
 static void
-cb_define_macro (MilterParser *parser, MilterContextType context, GHashTable *macros,
+cb_define_macro (MilterDecoder *decoder, MilterContextType context, GHashTable *macros,
                  gpointer user_data)
 {
     n_define_macros++;
@@ -146,7 +146,7 @@ cb_define_macro (MilterParser *parser, MilterContextType context, GHashTable *ma
 }
 
 static void
-cb_connect (MilterParser *parser, const gchar *host_name,
+cb_connect (MilterDecoder *decoder, const gchar *host_name,
             const struct sockaddr *address, socklen_t address_length,
             gpointer user_data)
 {
@@ -159,7 +159,7 @@ cb_connect (MilterParser *parser, const gchar *host_name,
 }
 
 static void
-cb_helo (MilterParser *parser, const gchar *fqdn, gpointer user_data)
+cb_helo (MilterDecoder *decoder, const gchar *fqdn, gpointer user_data)
 {
     n_helos++;
 
@@ -167,7 +167,7 @@ cb_helo (MilterParser *parser, const gchar *fqdn, gpointer user_data)
 }
 
 static void
-cb_mail (MilterParser *parser, const gchar *from, gpointer user_data)
+cb_mail (MilterDecoder *decoder, const gchar *from, gpointer user_data)
 {
     n_mails++;
 
@@ -175,7 +175,7 @@ cb_mail (MilterParser *parser, const gchar *from, gpointer user_data)
 }
 
 static void
-cb_rcpt (MilterParser *parser, const gchar *to, gpointer user_data)
+cb_rcpt (MilterDecoder *decoder, const gchar *to, gpointer user_data)
 {
     n_rcpts++;
 
@@ -184,7 +184,7 @@ cb_rcpt (MilterParser *parser, const gchar *to, gpointer user_data)
 
 
 static void
-cb_header (MilterParser *parser, const gchar *name, const gchar *value,
+cb_header (MilterDecoder *decoder, const gchar *name, const gchar *value,
            gpointer user_data)
 {
     n_headers++;
@@ -199,13 +199,13 @@ cb_header (MilterParser *parser, const gchar *name, const gchar *value,
 }
 
 static void
-cb_end_of_header (MilterParser *parser, gpointer user_data)
+cb_end_of_header (MilterDecoder *decoder, gpointer user_data)
 {
     n_end_of_headers++;
 }
 
 static void
-cb_body (MilterParser *parser, const gchar *chunk, gsize length, gpointer user_data)
+cb_body (MilterDecoder *decoder, const gchar *chunk, gsize length, gpointer user_data)
 {
     n_bodies++;
 
@@ -216,25 +216,25 @@ cb_body (MilterParser *parser, const gchar *chunk, gsize length, gpointer user_d
 }
 
 static void
-cb_end_of_message (MilterParser *parser, gpointer user_data)
+cb_end_of_message (MilterDecoder *decoder, gpointer user_data)
 {
     n_end_of_messages++;
 }
 
 static void
-cb_abort (MilterParser *parser, gpointer user_data)
+cb_abort (MilterDecoder *decoder, gpointer user_data)
 {
     n_aborts++;
 }
 
 static void
-cb_quit (MilterParser *parser, gpointer user_data)
+cb_quit (MilterDecoder *decoder, gpointer user_data)
 {
     n_quits++;
 }
 
 static void
-cb_unknown (MilterParser *parser, const gchar *command, gpointer user_data)
+cb_unknown (MilterDecoder *decoder, const gchar *command, gpointer user_data)
 {
     n_unknowns++;
 
@@ -244,10 +244,10 @@ cb_unknown (MilterParser *parser, const gchar *command, gpointer user_data)
 }
 
 static void
-setup_signals (MilterParser *parser)
+setup_signals (MilterDecoder *decoder)
 {
 #define CONNECT(name)                                                   \
-    g_signal_connect(parser, #name, G_CALLBACK(cb_ ## name), NULL)
+    g_signal_connect(decoder, #name, G_CALLBACK(cb_ ## name), NULL)
 
     CONNECT(option_negotiation);
     CONNECT(define_macro);
@@ -269,8 +269,8 @@ setup_signals (MilterParser *parser)
 void
 setup (void)
 {
-    parser = milter_parser_new();
-    setup_signals(parser);
+    decoder = milter_decoder_new();
+    setup_signals(decoder);
 
     expected_error = NULL;
     actual_error = NULL;
@@ -318,8 +318,8 @@ setup (void)
 void
 teardown (void)
 {
-    if (parser) {
-        g_object_unref(parser);
+    if (decoder) {
+        g_object_unref(decoder);
     }
 
     if (buffer)
@@ -358,7 +358,7 @@ teardown (void)
 }
 
 static GError *
-parse (void)
+decode (void)
 {
     gchar *packet;
     gssize packet_size;
@@ -372,7 +372,7 @@ parse (void)
     memcpy(packet, &content_size, sizeof(content_size));
     memcpy(packet + sizeof(content_size), buffer->str, buffer->len);
 
-    milter_parser_parse(parser, packet, packet_size, &error);
+    milter_decoder_decode(decoder, packet, packet_size, &error);
     g_free(packet);
 
     g_string_free(buffer, TRUE);
@@ -382,14 +382,14 @@ parse (void)
 }
 
 void
-test_parse_empty_text (void)
+test_decode_empty_text (void)
 {
-    cut_assert_true(milter_parser_parse(parser, "", 0, &actual_error));
-    cut_assert_true(milter_parser_end_parse(parser, &actual_error));
+    cut_assert_true(milter_decoder_decode(decoder, "", 0, &actual_error));
+    cut_assert_true(milter_decoder_end_decode(decoder, &actual_error));
 }
 
 void
-test_parse_option_negotiation (void)
+test_decode_option_negotiation (void)
 {
     guint32 version;
     MilterActionFlags action;
@@ -430,7 +430,7 @@ test_parse_option_negotiation (void)
     g_string_append_len(buffer, action_string, sizeof(action_string));
     g_string_append_len(buffer, step_string, sizeof(step_string));
 
-    gcut_assert_error(parse());
+    gcut_assert_error(decode());
     cut_assert_equal_int(1, n_option_negotiations);
     cut_assert_equal_int(2,
                          milter_option_get_version(option_negotiation_option));
@@ -443,20 +443,20 @@ test_parse_option_negotiation (void)
 }
 
 void
-test_parse_option_negotiation_empty (void)
+test_decode_option_negotiation_empty (void)
 {
     g_string_append_c(buffer, 'O');
 
-    expected_error = g_error_new(MILTER_PARSER_ERROR,
-                                 MILTER_PARSER_ERROR_SHORT_COMMAND_LENGTH,
-                                 "need more 4 bytes for parsing version "
+    expected_error = g_error_new(MILTER_DECODER_ERROR,
+                                 MILTER_DECODER_ERROR_SHORT_COMMAND_LENGTH,
+                                 "need more 4 bytes for decoding version "
                                  "on option negotiation command");
-    actual_error = parse();
+    actual_error = decode();
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
-test_parse_option_negotiation_without_version (void)
+test_decode_option_negotiation_without_version (void)
 {
     guint32 version;
     guint32 version_network_byte_order;
@@ -469,17 +469,17 @@ test_parse_option_negotiation_without_version (void)
     g_string_append_c(buffer, 'O');
     g_string_append_len(buffer, version_string, sizeof(version_string) - 1);
 
-    expected_error = g_error_new(MILTER_PARSER_ERROR,
-                                 MILTER_PARSER_ERROR_SHORT_COMMAND_LENGTH,
-                                 "need more 1 byte for parsing version "
+    expected_error = g_error_new(MILTER_DECODER_ERROR,
+                                 MILTER_DECODER_ERROR_SHORT_COMMAND_LENGTH,
+                                 "need more 1 byte for decoding version "
                                  "on option negotiation command: "
                                  "0x00 0x00 0x00");
-    actual_error = parse();
+    actual_error = decode();
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
-test_parse_option_negotiation_only_version (void)
+test_decode_option_negotiation_only_version (void)
 {
     guint32 version;
     guint32 version_network_byte_order;
@@ -492,16 +492,16 @@ test_parse_option_negotiation_only_version (void)
     g_string_append_c(buffer, 'O');
     g_string_append_len(buffer, version_string, sizeof(version_string));
 
-    expected_error = g_error_new(MILTER_PARSER_ERROR,
-                                 MILTER_PARSER_ERROR_SHORT_COMMAND_LENGTH,
-                                 "need more 4 bytes for parsing action flags "
+    expected_error = g_error_new(MILTER_DECODER_ERROR,
+                                 MILTER_DECODER_ERROR_SHORT_COMMAND_LENGTH,
+                                 "need more 4 bytes for decoding action flags "
                                  "on option negotiation command");
-    actual_error = parse();
+    actual_error = decode();
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
-test_parse_option_negotiation_without_action (void)
+test_decode_option_negotiation_without_action (void)
 {
     guint32 version;
     MilterActionFlags action;
@@ -529,17 +529,17 @@ test_parse_option_negotiation_without_action (void)
     g_string_append_len(buffer, version_string, sizeof(version_string));
     g_string_append_len(buffer, action_string, sizeof(action_string) - 1);
 
-    expected_error = g_error_new(MILTER_PARSER_ERROR,
-                                 MILTER_PARSER_ERROR_SHORT_COMMAND_LENGTH,
-                                 "need more 1 byte for parsing action flags "
+    expected_error = g_error_new(MILTER_DECODER_ERROR,
+                                 MILTER_DECODER_ERROR_SHORT_COMMAND_LENGTH,
+                                 "need more 1 byte for decoding action flags "
                                  "on option negotiation command: "
                                  "0x00 0x00 0x01");
-    actual_error = parse();
+    actual_error = decode();
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
-test_parse_option_negotiation_only_version_and_action (void)
+test_decode_option_negotiation_only_version_and_action (void)
 {
     guint32 version;
     MilterActionFlags action;
@@ -567,16 +567,16 @@ test_parse_option_negotiation_only_version_and_action (void)
     g_string_append_len(buffer, version_string, sizeof(version_string));
     g_string_append_len(buffer, action_string, sizeof(action_string));
 
-    expected_error = g_error_new(MILTER_PARSER_ERROR,
-                                 MILTER_PARSER_ERROR_SHORT_COMMAND_LENGTH,
-                                 "need more 4 bytes for parsing step flags "
+    expected_error = g_error_new(MILTER_DECODER_ERROR,
+                                 MILTER_DECODER_ERROR_SHORT_COMMAND_LENGTH,
+                                 "need more 4 bytes for decoding step flags "
                                  "on option negotiation command");
-    actual_error = parse();
+    actual_error = decode();
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
-test_parse_option_negotiation_without_step (void)
+test_decode_option_negotiation_without_step (void)
 {
     guint32 version;
     MilterActionFlags action;
@@ -617,12 +617,12 @@ test_parse_option_negotiation_without_step (void)
     g_string_append_len(buffer, action_string, sizeof(action_string));
     g_string_append_len(buffer, step_string, sizeof(step_string) - 1);
 
-    expected_error = g_error_new(MILTER_PARSER_ERROR,
-                                 MILTER_PARSER_ERROR_SHORT_COMMAND_LENGTH,
-                                 "need more 1 byte for parsing step flags "
+    expected_error = g_error_new(MILTER_DECODER_ERROR,
+                                 MILTER_DECODER_ERROR_SHORT_COMMAND_LENGTH,
+                                 "need more 1 byte for decoding step flags "
                                  "on option negotiation command: "
                                  "0x00 0x00 0x00");
-    actual_error = parse();
+    actual_error = decode();
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
@@ -714,7 +714,7 @@ setup_define_macro_header_packet (void)
 }
 
 void
-data_parse_define_macro (void)
+data_decode_define_macro (void)
 {
     cut_add_data("connect",
                  define_macro_test_data_new(setup_define_macro_connect_packet,
@@ -754,14 +754,14 @@ data_parse_define_macro (void)
 }
 
 void
-test_parse_define_macro (gconstpointer data)
+test_decode_define_macro (gconstpointer data)
 {
     const DefineMacroTestData *test_data = data;
 
     g_string_append(buffer, "D");
     test_data->setup_packet();
 
-    gcut_assert_error(parse());
+    gcut_assert_error(decode());
     cut_assert_equal_int(1, n_define_macros);
     cut_assert_equal_int(test_data->context, macro_context);
     gcut_assert_equal_hash_table_string_string(test_data->expected,
@@ -769,35 +769,35 @@ test_parse_define_macro (gconstpointer data)
 }
 
 void
-test_parse_define_macro_with_unknown_macro_context (void)
+test_decode_define_macro_with_unknown_macro_context (void)
 {
     g_string_append(buffer, "D");
     g_string_append(buffer, "Z");
 
-    expected_error = g_error_new(MILTER_PARSER_ERROR,
-                                 MILTER_PARSER_ERROR_UNKNOWN_MACRO_CONTEXT,
+    expected_error = g_error_new(MILTER_DECODER_ERROR,
+                                 MILTER_DECODER_ERROR_UNKNOWN_MACRO_CONTEXT,
                                  "unknown macro context: Z");
-    actual_error = parse();
+    actual_error = decode();
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
-test_parse_define_macro_without_name_null (void)
+test_decode_define_macro_without_name_null (void)
 {
     g_string_append(buffer, "D");
     g_string_append(buffer, "L");
     g_string_append(buffer, "i");
 
-    expected_error = g_error_new(MILTER_PARSER_ERROR,
-                                 MILTER_PARSER_ERROR_MISSING_NULL,
+    expected_error = g_error_new(MILTER_DECODER_ERROR,
+                                 MILTER_DECODER_ERROR_MISSING_NULL,
                                  "name isn't terminated by NULL "
                                  "on define macro command: <i>");
-    actual_error = parse();
+    actual_error = decode();
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
-test_parse_define_macro_without_value_null (void)
+test_decode_define_macro_without_value_null (void)
 {
     g_string_append(buffer, "D");
     g_string_append(buffer, "L");
@@ -805,17 +805,17 @@ test_parse_define_macro_without_value_null (void)
     g_string_append_c(buffer, '\0');
     g_string_append(buffer, "69FDD42DF4A");
 
-    expected_error = g_error_new(MILTER_PARSER_ERROR,
-                                 MILTER_PARSER_ERROR_MISSING_NULL,
+    expected_error = g_error_new(MILTER_DECODER_ERROR,
+                                 MILTER_DECODER_ERROR_MISSING_NULL,
                                  "value isn't terminated by NULL "
                                  "on define macro command: "
                                  "<69FDD42DF4A>");
-    actual_error = parse();
+    actual_error = decode();
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
-test_parse_connect_ipv4 (void)
+test_decode_connect_ipv4 (void)
 {
     struct sockaddr_in *address;
     const gchar host_name[] = "mx.local.net";
@@ -834,7 +834,7 @@ test_parse_connect_ipv4 (void)
     g_string_append(buffer, ip_address);
     g_string_append_c(buffer, '\0');
 
-    gcut_assert_error(parse());
+    gcut_assert_error(decode());
     cut_assert_equal_int(1, n_connects);
     cut_assert_equal_string(host_name, connect_host_name);
     cut_assert_equal_int(sizeof(struct sockaddr_in), connect_address_length);
@@ -846,7 +846,7 @@ test_parse_connect_ipv4 (void)
 }
 
 void
-test_parse_connect_ipv6 (void)
+test_decode_connect_ipv6 (void)
 {
     struct sockaddr_in6 *address;
     const gchar host_name[] = "mx.local.net";
@@ -866,7 +866,7 @@ test_parse_connect_ipv6 (void)
     g_string_append(buffer, ipv6_address);
     g_string_append_c(buffer, '\0');
 
-    gcut_assert_error(parse());
+    gcut_assert_error(decode());
     cut_assert_equal_int(1, n_connects);
     cut_assert_equal_string(host_name, connect_host_name);
     cut_assert_equal_int(sizeof(struct sockaddr_in6), connect_address_length);
@@ -882,7 +882,7 @@ test_parse_connect_ipv6 (void)
 }
 
 void
-test_parse_connect_unix (void)
+test_decode_connect_unix (void)
 {
     struct sockaddr_un *address;
     const gchar host_name[] = "mx.local.net";
@@ -901,7 +901,7 @@ test_parse_connect_unix (void)
     g_string_append(buffer, path);
     g_string_append_c(buffer, '\0');
 
-    gcut_assert_error(parse());
+    gcut_assert_error(decode());
     cut_assert_equal_int(1, n_connects);
     cut_assert_equal_string(host_name, connect_host_name);
     cut_assert_equal_int(sizeof(struct sockaddr_un), connect_address_length);
@@ -912,23 +912,23 @@ test_parse_connect_unix (void)
 }
 
 void
-test_parse_connect_without_host_name_null (void)
+test_decode_connect_without_host_name_null (void)
 {
     const gchar host_name[] = "mx.local.net";
 
     g_string_append(buffer, "C");
     g_string_append(buffer, host_name);
 
-    expected_error = g_error_new(MILTER_PARSER_ERROR,
-                                 MILTER_PARSER_ERROR_MISSING_NULL,
+    expected_error = g_error_new(MILTER_DECODER_ERROR,
+                                 MILTER_DECODER_ERROR_MISSING_NULL,
                                  "host name isn't terminated by NULL "
                                  "on connect command: <mx.local.net>");
-    actual_error = parse();
+    actual_error = decode();
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
-test_parse_connect_with_unknown_family (void)
+test_decode_connect_with_unknown_family (void)
 {
     const gchar host_name[] = "mx.local.net";
 
@@ -937,16 +937,16 @@ test_parse_connect_with_unknown_family (void)
     g_string_append_c(buffer, '\0');
     g_string_append(buffer, "U");
 
-    expected_error = g_error_new(MILTER_PARSER_ERROR,
-                                 MILTER_PARSER_ERROR_UNKNOWN_FAMILY,
+    expected_error = g_error_new(MILTER_DECODER_ERROR,
+                                 MILTER_DECODER_ERROR_UNKNOWN_FAMILY,
                                  "unknown family on connect command: "
                                  "<mx.local.net>: <U>");
-    actual_error = parse();
+    actual_error = decode();
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
-test_parse_connect_with_unexpected_family (void)
+test_decode_connect_with_unexpected_family (void)
 {
     const gchar host_name[] = "mx.local.net";
 
@@ -955,16 +955,16 @@ test_parse_connect_with_unexpected_family (void)
     g_string_append_c(buffer, '\0');
     g_string_append(buffer, "X");
 
-    expected_error = g_error_new(MILTER_PARSER_ERROR,
-                                 MILTER_PARSER_ERROR_UNKNOWN_FAMILY,
+    expected_error = g_error_new(MILTER_DECODER_ERROR,
+                                 MILTER_DECODER_ERROR_UNKNOWN_FAMILY,
                                  "unknown family on connect command: "
                                  "<mx.local.net>: <X>");
-    actual_error = parse();
+    actual_error = decode();
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
-test_parse_connect_with_unexpected_family_and_port (void)
+test_decode_connect_with_unexpected_family_and_port (void)
 {
     const gchar host_name[] = "mx.local.net";
     gchar port_string[sizeof(guint16)];
@@ -979,16 +979,16 @@ test_parse_connect_with_unexpected_family_and_port (void)
     g_string_append(buffer, "X");
     g_string_append_len(buffer, port_string, sizeof(port));
 
-    expected_error = g_error_new(MILTER_PARSER_ERROR,
-                                 MILTER_PARSER_ERROR_UNKNOWN_FAMILY,
+    expected_error = g_error_new(MILTER_DECODER_ERROR,
+                                 MILTER_DECODER_ERROR_UNKNOWN_FAMILY,
                                  "unknown family on connect command: "
                                  "<mx.local.net>: <X>");
-    actual_error = parse();
+    actual_error = decode();
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
-test_parse_connect_with_short_port_size (void)
+test_decode_connect_with_short_port_size (void)
 {
     const gchar host_name[] = "mx.local.net";
     gchar port_string[sizeof(guint16)];
@@ -1003,17 +1003,17 @@ test_parse_connect_with_short_port_size (void)
     g_string_append(buffer, "4");
     g_string_append_len(buffer, port_string, sizeof(port) - 1);
 
-    expected_error = g_error_new(MILTER_PARSER_ERROR,
-                                 MILTER_PARSER_ERROR_SHORT_COMMAND_LENGTH,
-                                 "need more 1 byte for parsing port number "
+    expected_error = g_error_new(MILTER_DECODER_ERROR,
+                                 MILTER_DECODER_ERROR_SHORT_COMMAND_LENGTH,
+                                 "need more 1 byte for decoding port number "
                                  "on connect command: 0x%02x",
                                  port_string[0]);
-    actual_error = parse();
+    actual_error = decode();
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
-test_parse_connect_without_ip_address_null (void)
+test_decode_connect_without_ip_address_null (void)
 {
     const gchar host_name[] = "mx.local.net";
     const gchar ip_address[] = "192.168.123.123";
@@ -1030,18 +1030,18 @@ test_parse_connect_without_ip_address_null (void)
     g_string_append_len(buffer, port_string, sizeof(port));
     g_string_append(buffer, ip_address);
 
-    expected_error = g_error_new(MILTER_PARSER_ERROR,
-                                 MILTER_PARSER_ERROR_MISSING_NULL,
+    expected_error = g_error_new(MILTER_DECODER_ERROR,
+                                 MILTER_DECODER_ERROR_MISSING_NULL,
                                  "address name isn't terminated by NULL "
                                  "on connect command: "
                                  "<mx.local.net>: <4>: <2929>: "
                                  "<192.168.123.123>");
-    actual_error = parse();
+    actual_error = decode();
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
-test_parse_connect_with_invalid_ipv4_address (void)
+test_decode_connect_with_invalid_ipv4_address (void)
 {
     const gchar host_name[] = "mx.local.net";
     const gchar ip_address[] = "192.168.123.12x";
@@ -1059,17 +1059,17 @@ test_parse_connect_with_invalid_ipv4_address (void)
     g_string_append(buffer, ip_address);
     g_string_append_c(buffer, '\0');
 
-    expected_error = g_error_new(MILTER_PARSER_ERROR,
-                                 MILTER_PARSER_ERROR_INVALID_FORMAT,
+    expected_error = g_error_new(MILTER_DECODER_ERROR,
+                                 MILTER_DECODER_ERROR_INVALID_FORMAT,
                                  "invalid IPv4 address on connect command: "
                                  "<mx.local.net>: <4>: <2929>: "
                                  "<192.168.123.12x>");
-    actual_error = parse();
+    actual_error = decode();
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
-test_parse_connect_with_invalid_ipv6_address (void)
+test_decode_connect_with_invalid_ipv6_address (void)
 {
     const gchar host_name[] = "mx.local.net";
     const gchar ipv6_address[] = "2001:c90:625:12e8:290:ccff:fee2:80c5x";
@@ -1087,17 +1087,17 @@ test_parse_connect_with_invalid_ipv6_address (void)
     g_string_append(buffer, ipv6_address);
     g_string_append_c(buffer, '\0');
 
-    expected_error = g_error_new(MILTER_PARSER_ERROR,
-                                 MILTER_PARSER_ERROR_INVALID_FORMAT,
+    expected_error = g_error_new(MILTER_DECODER_ERROR,
+                                 MILTER_DECODER_ERROR_INVALID_FORMAT,
                                  "invalid IPv6 address on connect command: "
                                  "<mx.local.net>: <6>: <2929>: "
                                  "<2001:c90:625:12e8:290:ccff:fee2:80c5x>");
-    actual_error = parse();
+    actual_error = decode();
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
-test_parse_helo (void)
+test_decode_helo (void)
 {
     const gchar fqdn[] = "delian";
 
@@ -1105,29 +1105,29 @@ test_parse_helo (void)
     g_string_append(buffer, fqdn);
     g_string_append_c(buffer, '\0');
 
-    gcut_assert_error(parse());
+    gcut_assert_error(decode());
     cut_assert_equal_int(1, n_helos);
     cut_assert_equal_string(fqdn, helo_fqdn);
 }
 
 void
-test_parse_helo_without_null (void)
+test_decode_helo_without_null (void)
 {
     const gchar fqdn[] = "delian";
 
     g_string_append(buffer, "H");
     g_string_append(buffer, fqdn);
 
-    expected_error = g_error_new(MILTER_PARSER_ERROR,
-                                 MILTER_PARSER_ERROR_MISSING_NULL,
+    expected_error = g_error_new(MILTER_DECODER_ERROR,
+                                 MILTER_DECODER_ERROR_MISSING_NULL,
                                  "FQDN isn't terminated by NULL "
                                  "on HELO command: <delian>");
-    actual_error = parse();
+    actual_error = decode();
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
-test_parse_mail (void)
+test_decode_mail (void)
 {
     const gchar from[] = "<kou@cozmixng.org>";
 
@@ -1135,29 +1135,29 @@ test_parse_mail (void)
     g_string_append(buffer, from);
     g_string_append_c(buffer, '\0');
 
-    gcut_assert_error(parse());
+    gcut_assert_error(decode());
     cut_assert_equal_int(1, n_mails);
     cut_assert_equal_string(from, mail_from);
 }
 
 void
-test_parse_mail_without_null (void)
+test_decode_mail_without_null (void)
 {
     const gchar from[] = "<kou@cozmixng.org>";
 
     g_string_append(buffer, "M");
     g_string_append(buffer, from);
 
-    expected_error = g_error_new(MILTER_PARSER_ERROR,
-                                 MILTER_PARSER_ERROR_MISSING_NULL,
+    expected_error = g_error_new(MILTER_DECODER_ERROR,
+                                 MILTER_DECODER_ERROR_MISSING_NULL,
                                  "FROM isn't terminated by NULL "
                                  "on MAIL command: <<kou@cozmixng.org>>");
-    actual_error = parse();
+    actual_error = decode();
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
-test_parse_rcpt (void)
+test_decode_rcpt (void)
 {
     const gchar to[] = "<kou@cozmixng.org>";
 
@@ -1165,29 +1165,29 @@ test_parse_rcpt (void)
     g_string_append(buffer, to);
     g_string_append_c(buffer, '\0');
 
-    gcut_assert_error(parse());
+    gcut_assert_error(decode());
     cut_assert_equal_int(1, n_rcpts);
     cut_assert_equal_string(to, rcpt_to);
 }
 
 void
-test_parse_rcpt_without_null (void)
+test_decode_rcpt_without_null (void)
 {
     const gchar to[] = "<kou@cozmixng.org>";
 
     g_string_append(buffer, "R");
     g_string_append(buffer, to);
 
-    expected_error = g_error_new(MILTER_PARSER_ERROR,
-                                 MILTER_PARSER_ERROR_MISSING_NULL,
+    expected_error = g_error_new(MILTER_DECODER_ERROR,
+                                 MILTER_DECODER_ERROR_MISSING_NULL,
                                  "TO isn't terminated by NULL "
                                  "on RCPT command: <<kou@cozmixng.org>>");
-    actual_error = parse();
+    actual_error = decode();
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
-test_parse_header (void)
+test_decode_header (void)
 {
     const gchar from[] = "<kou@cozmixng.org>";
     const gchar to[] = "<kou@cozmixng.org>";
@@ -1197,11 +1197,11 @@ test_parse_header (void)
     g_string_append(buffer, "D");
     g_string_append(buffer, "L");
     append_name_and_value("i", "69FDD42DF4A");
-    gcut_assert_error(parse());
+    gcut_assert_error(decode());
 
     g_string_append(buffer, "L");
     append_name_and_value("From", from);
-    gcut_assert_error(parse());
+    gcut_assert_error(decode());
     cut_assert_equal_int(1, n_headers);
     cut_assert_equal_string("From", header_name);
     cut_assert_equal_string(from, header_value);
@@ -1210,11 +1210,11 @@ test_parse_header (void)
     g_string_append(buffer, "D");
     g_string_append(buffer, "L");
     append_name_and_value("i", "69FDD42DF4A");
-    gcut_assert_error(parse());
+    gcut_assert_error(decode());
 
     g_string_append(buffer, "L");
     append_name_and_value("To", to);
-    gcut_assert_error(parse());
+    gcut_assert_error(decode());
     cut_assert_equal_int(2, n_headers);
     cut_assert_equal_string("To", header_name);
     cut_assert_equal_string(to, header_value);
@@ -1223,11 +1223,11 @@ test_parse_header (void)
     g_string_append(buffer, "D");
     g_string_append(buffer, "L");
     append_name_and_value("i", "69FDD42DF4A");
-    gcut_assert_error(parse());
+    gcut_assert_error(decode());
 
     g_string_append(buffer, "L");
     append_name_and_value("Date", date);
-    gcut_assert_error(parse());
+    gcut_assert_error(decode());
     cut_assert_equal_int(3, n_headers);
     cut_assert_equal_string("Date", header_name);
     cut_assert_equal_string(date, header_value);
@@ -1236,32 +1236,32 @@ test_parse_header (void)
     g_string_append(buffer, "D");
     g_string_append(buffer, "L");
     append_name_and_value("i", "69FDD42DF4A");
-    gcut_assert_error(parse());
+    gcut_assert_error(decode());
 
     g_string_append(buffer, "L");
     append_name_and_value("Message-Id", message_id);
-    gcut_assert_error(parse());
+    gcut_assert_error(decode());
     cut_assert_equal_int(4, n_headers);
     cut_assert_equal_string("Message-Id", header_name);
     cut_assert_equal_string(message_id, header_value);
 }
 
 void
-test_parse_header_without_name_null (void)
+test_decode_header_without_name_null (void)
 {
     g_string_append(buffer, "L");
     g_string_append(buffer, "From");
 
-    expected_error = g_error_new(MILTER_PARSER_ERROR,
-                                 MILTER_PARSER_ERROR_MISSING_NULL,
+    expected_error = g_error_new(MILTER_DECODER_ERROR,
+                                 MILTER_DECODER_ERROR_MISSING_NULL,
                                  "name isn't terminated by NULL "
                                  "on header command: <From>");
-    actual_error = parse();
+    actual_error = decode();
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
-test_parse_header_without_value_null (void)
+test_decode_header_without_value_null (void)
 {
     const gchar from[] = "<kou@cozmixng.org>";
 
@@ -1270,30 +1270,30 @@ test_parse_header_without_value_null (void)
     g_string_append_c(buffer, '\0');
     g_string_append(buffer, from);
 
-    expected_error = g_error_new(MILTER_PARSER_ERROR,
-                                 MILTER_PARSER_ERROR_MISSING_NULL,
+    expected_error = g_error_new(MILTER_DECODER_ERROR,
+                                 MILTER_DECODER_ERROR_MISSING_NULL,
                                  "value isn't terminated by NULL "
                                  "on header command: <From>: "
                                  "<<kou@cozmixng.org>>");
-    actual_error = parse();
+    actual_error = decode();
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
-test_parse_end_of_header (void)
+test_decode_end_of_header (void)
 {
     g_string_append(buffer, "D");
     g_string_append(buffer, "N");
     append_name_and_value("i", "69FDD42DF4A");
-    gcut_assert_error(parse());
+    gcut_assert_error(decode());
 
     g_string_append(buffer, "N");
-    gcut_assert_error(parse());
+    gcut_assert_error(decode());
     cut_assert_equal_int(1, n_end_of_headers);
 }
 
 void
-test_parse_end_of_header_with_garbage (void)
+test_decode_end_of_header_with_garbage (void)
 {
     GString *message;
     const gchar garbage[] = "garbage";
@@ -1312,17 +1312,17 @@ test_parse_end_of_header_with_garbage (void)
         g_string_append_printf(message, "0x%02x ", garbage[i]);
     }
     g_string_append_printf(message, "(%s)", garbage);
-    expected_error = g_error_new(MILTER_PARSER_ERROR,
-                                 MILTER_PARSER_ERROR_LONG_COMMAND_LENGTH,
+    expected_error = g_error_new(MILTER_DECODER_ERROR,
+                                 MILTER_DECODER_ERROR_LONG_COMMAND_LENGTH,
                                  "%s", message->str);
     g_string_free(message, TRUE);
 
-    actual_error = parse();
+    actual_error = decode();
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
-test_parse_body (void)
+test_decode_body (void)
 {
     const gchar body[] =
         "La de da de da 1.\n"
@@ -1333,18 +1333,18 @@ test_parse_body (void)
     g_string_append(buffer, "D");
     g_string_append(buffer, "B");
     append_name_and_value("i", "69FDD42DF4A");
-    gcut_assert_error(parse());
+    gcut_assert_error(decode());
 
     g_string_append(buffer, "B");
     g_string_append(buffer, body);
-    gcut_assert_error(parse());
+    gcut_assert_error(decode());
     cut_assert_equal_int(1, n_bodies);
     cut_assert_equal_string(body, body_chunk);
     cut_assert_equal_uint(strlen(body), body_chunk_length);
 }
 
 void
-test_parse_body_end_with_data (void)
+test_decode_body_end_with_data (void)
 {
     const gchar body[] =
         "La de da de da 1.\n"
@@ -1355,11 +1355,11 @@ test_parse_body_end_with_data (void)
     g_string_append(buffer, "D");
     g_string_append(buffer, "E");
     append_name_and_value("i", "69FDD42DF4A");
-    gcut_assert_error(parse());
+    gcut_assert_error(decode());
 
     g_string_append(buffer, "E");
     g_string_append(buffer, body);
-    gcut_assert_error(parse());
+    gcut_assert_error(decode());
     cut_assert_equal_int(1, n_bodies);
     cut_assert_equal_string(body, body_chunk);
     cut_assert_equal_int(strlen(body), body_chunk_length);
@@ -1367,145 +1367,145 @@ test_parse_body_end_with_data (void)
 }
 
 void
-test_parse_body_end_without_data (void)
+test_decode_body_end_without_data (void)
 {
     g_string_append(buffer, "D");
     g_string_append(buffer, "E");
     append_name_and_value("i", "69FDD42DF4A");
-    gcut_assert_error(parse());
+    gcut_assert_error(decode());
 
     g_string_append(buffer, "E");
-    gcut_assert_error(parse());
+    gcut_assert_error(decode());
     cut_assert_equal_int(0, n_bodies);
     cut_assert_equal_int(1, n_end_of_messages);
 }
 
 void
-test_parse_abort (void)
+test_decode_abort (void)
 {
     g_string_append(buffer, "A");
-    gcut_assert_error(parse());
+    gcut_assert_error(decode());
 
     cut_assert_equal_int(1, n_aborts);
 }
 
 void
-test_parse_abort_with_garbage (void)
+test_decode_abort_with_garbage (void)
 {
     g_string_append(buffer, "A");
     g_string_append_c(buffer, 0x09);
 
-    expected_error = g_error_new(MILTER_PARSER_ERROR,
-                                 MILTER_PARSER_ERROR_LONG_COMMAND_LENGTH,
+    expected_error = g_error_new(MILTER_DECODER_ERROR,
+                                 MILTER_DECODER_ERROR_LONG_COMMAND_LENGTH,
                                  "needless 1 byte was received "
                                  "on ABORT command: 0x09");
-    actual_error = parse();
+    actual_error = decode();
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
-test_parse_quit (void)
+test_decode_quit (void)
 {
     g_string_append(buffer, "Q");
-    gcut_assert_error(parse());
+    gcut_assert_error(decode());
 
     cut_assert_equal_int(1, n_quits);
 }
 
 void
-test_parse_quit_with_garbage (void)
+test_decode_quit_with_garbage (void)
 {
     g_string_append(buffer, "Q");
     g_string_append(buffer, "XXX");
 
-    expected_error = g_error_new(MILTER_PARSER_ERROR,
-                                 MILTER_PARSER_ERROR_LONG_COMMAND_LENGTH,
+    expected_error = g_error_new(MILTER_DECODER_ERROR,
+                                 MILTER_DECODER_ERROR_LONG_COMMAND_LENGTH,
                                  "needless 3 bytes were received "
                                  "on QUIT command: 0x58 0x58 0x58 (XXX)");
-    actual_error = parse();
+    actual_error = decode();
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
-test_parse_unknown (void)
+test_decode_unknown (void)
 {
     const gchar command[] = "UNKNOWN COMMAND WITH ARGUMENT";
 
     g_string_append(buffer, "U");
     g_string_append(buffer, command);
     g_string_append_c(buffer, '\0');
-    gcut_assert_error(parse());
+    gcut_assert_error(decode());
 
     cut_assert_equal_int(1, n_unknowns);
     cut_assert_equal_string(command, unknown_command);
 }
 
 void
-test_parse_unknown_without_null (void)
+test_decode_unknown_without_null (void)
 {
     const gchar command[] = "UNKNOWN COMMAND WITH ARGUMENT";
 
     g_string_append(buffer, "U");
     g_string_append(buffer, command);
 
-    expected_error = g_error_new(MILTER_PARSER_ERROR,
-                                 MILTER_PARSER_ERROR_MISSING_NULL,
+    expected_error = g_error_new(MILTER_DECODER_ERROR,
+                                 MILTER_DECODER_ERROR_MISSING_NULL,
                                  "command value isn't terminated by NULL "
                                  "on unknown command: <%s>",
                                  command);
-    actual_error = parse();
+    actual_error = decode();
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
-test_parse_unexpected_command (void)
+test_decode_unexpected_command (void)
 {
     g_string_append(buffer, "X");
 
-    expected_error = g_error_new(MILTER_PARSER_ERROR,
-                                 MILTER_PARSER_ERROR_UNEXPECTED_COMMAND,
+    expected_error = g_error_new(MILTER_DECODER_ERROR,
+                                 MILTER_DECODER_ERROR_UNEXPECTED_COMMAND,
                                  "unexpected command was received: X");
-    actual_error = parse();
+    actual_error = decode();
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
 
 void
-test_end_parse_immediately (void)
+test_end_decode_immediately (void)
 {
-    cut_assert_true(milter_parser_end_parse(parser, &actual_error));
+    cut_assert_true(milter_decoder_end_decode(decoder, &actual_error));
 }
 
 void
-test_end_parse_in_command_length_parsing (void)
+test_end_decode_in_command_length_decoding (void)
 {
-    cut_assert_true(milter_parser_parse(parser, "\0X", 2, &actual_error));
-    cut_assert_false(milter_parser_end_parse(parser, &actual_error));
+    cut_assert_true(milter_decoder_decode(decoder, "\0X", 2, &actual_error));
+    cut_assert_false(milter_decoder_end_decode(decoder, &actual_error));
 
-    expected_error = g_error_new(MILTER_PARSER_ERROR,
-                                 MILTER_PARSER_ERROR_UNEXPECTED_END,
+    expected_error = g_error_new(MILTER_DECODER_ERROR,
+                                 MILTER_DECODER_ERROR_UNEXPECTED_END,
                                  "stream is ended unexpectedly: "
-                                 "need more 2 bytes for parsing "
+                                 "need more 2 bytes for decoding "
                                  "command length: 0x00 0x58");
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
-test_end_parse_in_command_content_parsing (void)
+test_end_decode_in_command_content_decoding (void)
 {
     guint32 content_size;
 
     content_size = htonl(4);
     g_string_append_len(buffer, "\0\0\0\0abc", 7);
     memcpy(buffer->str, &content_size, sizeof(content_size));
-    cut_assert_true(milter_parser_parse(parser, buffer->str, buffer->len,
+    cut_assert_true(milter_decoder_decode(decoder, buffer->str, buffer->len,
                                         &actual_error));
-    cut_assert_false(milter_parser_end_parse(parser, &actual_error));
+    cut_assert_false(milter_decoder_end_decode(decoder, &actual_error));
 
-    expected_error = g_error_new(MILTER_PARSER_ERROR,
-                                 MILTER_PARSER_ERROR_UNEXPECTED_END,
+    expected_error = g_error_new(MILTER_DECODER_ERROR,
+                                 MILTER_DECODER_ERROR_UNEXPECTED_END,
                                  "stream is ended unexpectedly: "
-                                 "need more 1 byte for parsing "
+                                 "need more 1 byte for decoding "
                                  "command content: 0x61 0x62 0x63 (abc)");
     gcut_assert_equal_error(expected_error, actual_error);
 }
