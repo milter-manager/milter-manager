@@ -25,6 +25,7 @@
 
 #include <glib-object.h>
 
+#include <milter-core/milter-protocol.h>
 #include <milter-core/milter-option.h>
 
 G_BEGIN_DECLS
@@ -47,23 +48,8 @@ typedef enum
     MILTER_DECODER_ERROR_UNEXPECTED_COMMAND,
     MILTER_DECODER_ERROR_MISSING_NULL,
     MILTER_DECODER_ERROR_INVALID_FORMAT,
-    MILTER_DECODER_ERROR_UNKNOWN_FAMILY
+    MILTER_DECODER_ERROR_UNKNOWN_SOCKET_FAMILY
 } MilterDecoderError;
-
-typedef enum
-{
-    MILTER_CONTEXT_TYPE_CONNECT,
-    MILTER_CONTEXT_TYPE_HELO,
-    MILTER_CONTEXT_TYPE_MAIL,
-    MILTER_CONTEXT_TYPE_RCPT,
-    MILTER_CONTEXT_TYPE_HEADER,
-    MILTER_CONTEXT_TYPE_END_OF_HEADER,
-    MILTER_CONTEXT_TYPE_BODY,
-    MILTER_CONTEXT_TYPE_END_OF_MESSAGE,
-    MILTER_CONTEXT_TYPE_ABORT,
-    MILTER_CONTEXT_TYPE_QUIT,
-    MILTER_CONTEXT_TYPE_UNKNOWN
-} MilterContextType;
 
 typedef struct _MilterDecoder         MilterDecoder;
 typedef struct _MilterDecoderClass    MilterDecoderClass;
@@ -110,7 +96,7 @@ GQuark           milter_decoder_error_quark       (void);
 
 GType            milter_decoder_get_type          (void) G_GNUC_CONST;
 
-MilterDecoder    *milter_decoder_new              (void);
+MilterDecoder   *milter_decoder_new               (void);
 
 gboolean         milter_decoder_decode            (MilterDecoder    *decoder,
                                                    const gchar     *text,

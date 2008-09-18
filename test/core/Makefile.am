@@ -1,6 +1,7 @@
 if WITH_CUTTER
 noinst_LTLIBRARIES =		\
 	test-decoder.la		\
+	test-encoder.la		\
 	test-option.la
 endif
 
@@ -21,4 +22,5 @@ LIBS =							\
 	$(GCUTTER_LIBS)
 
 test_decoder_la_SOURCES = test-decoder.c
+test_encoder_la_SOURCES = test-encoder.c
 test_option_la_SOURCES = test-option.c

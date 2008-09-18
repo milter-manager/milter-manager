@@ -34,30 +34,7 @@
 #include "milter-enum-types.h"
 #include "milter-marshalers.h"
 
-#define COMMAND_LENGTH_BYTES (4)
-#define OPTION_BYTES (4)
-
-#define COMMAND_ABORT              'A'     /* Abort */
-#define COMMAND_BODY               'B'     /* Body chunk */
-#define COMMAND_CONNECT            'C'     /* Connection information */
-#define COMMAND_DEFINE_MACRO       'D'     /* Define macro */
-#define COMMAND_END_OF_MESSAGE     'E'     /* final body chunk (End) */
-#define COMMAND_HELO               'H'     /* HELO/EHLO */
-#define COMMAND_QUIT_NC            'K'     /* QUIT but new connection follows */
-#define COMMAND_HEADER             'L'     /* Header */
-#define COMMAND_MAIL               'M'     /* MAIL from */
-#define COMMAND_END_OF_HEADER      'N'     /* EOH */
-#define COMMAND_OPTION_NEGOTIATION 'O'     /* Option negotiation */
-#define COMMAND_QUIT               'Q'     /* QUIT */
-#define COMMAND_RCPT               'R'     /* RCPT to */
-#define COMMAND_DATA               'T'     /* DATA */
-#define COMMAND_UNKNOWN            'U'     /* Any unknown command */
-
-#define FAMILY_UNKNOWN             'U'
-#define FAMILY_UNIX                'L'
-#define FAMILY_INET                '4'
-#define FAMILY_INET6               '6'
-
+#define COMMAND_LENGTH_BYTES (sizeof(guint32))
 
 #define MILTER_DECODER_GET_PRIVATE(obj)                 \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                 \
@@ -328,28 +305,28 @@ decode_macro_context (gchar macro_context, MilterContextType *context,
     gboolean success = TRUE;
 
     switch (macro_context) {
-      case COMMAND_CONNECT:
+      case MILTER_COMMAND_CONNECT:
         *context = MILTER_CONTEXT_TYPE_CONNECT;
         break;
-      case COMMAND_HELO:
+      case MILTER_COMMAND_HELO:
         *context = MILTER_CONTEXT_TYPE_HELO;
         break;
-      case COMMAND_MAIL:
+      case MILTER_COMMAND_MAIL:
         *context = MILTER_CONTEXT_TYPE_MAIL;
         break;
-      case COMMAND_RCPT:
+      case MILTER_COMMAND_RCPT:
         *context = MILTER_CONTEXT_TYPE_RCPT;
         break;
-      case COMMAND_HEADER:
+      case MILTER_COMMAND_HEADER:
         *context = MILTER_CONTEXT_TYPE_HEADER;
         break;
-      case COMMAND_END_OF_HEADER:
+      case MILTER_COMMAND_END_OF_HEADER:
         *context = MILTER_CONTEXT_TYPE_END_OF_HEADER;
         break;
-      case COMMAND_BODY:
+      case MILTER_COMMAND_BODY:
         *context = MILTER_CONTEXT_TYPE_BODY;
         break;
-      case COMMAND_END_OF_MESSAGE:
+      case MILTER_COMMAND_END_OF_MESSAGE:
         *context = MILTER_CONTEXT_TYPE_END_OF_MESSAGE;
         break;
       default:
@@ -740,9 +717,9 @@ decode_command_connect_content (const gchar *buffer, gint length,
     family = buffer[i];
     i++;
     switch (family) {
-      case FAMILY_INET:
-      case FAMILY_INET6:
-      case FAMILY_UNIX:
+      case MILTER_SOCKET_FAMILY_INET:
+      case MILTER_SOCKET_FAMILY_INET6:
+      case MILTER_SOCKET_FAMILY_UNIX:
         if (!check_command_length(buffer + i, length - i, sizeof(port), AT_LEAST,
                                   error, "port number on connect command"))
             return FALSE;
@@ -752,7 +729,7 @@ decode_command_connect_content (const gchar *buffer, gint length,
       default:
         g_set_error(error,
                     MILTER_DECODER_ERROR,
-                    MILTER_DECODER_ERROR_UNKNOWN_FAMILY,
+                    MILTER_DECODER_ERROR_UNKNOWN_SOCKET_FAMILY,
                     "unknown family on connect command: <%s>: <%c>",
                     decoded_host_name, family);
         return FALSE;
@@ -769,31 +746,32 @@ decode_command_connect_content (const gchar *buffer, gint length,
         return FALSE;
 
     switch (family) {
-      case FAMILY_INET:
+      case MILTER_SOCKET_FAMILY_INET:
         if (!decode_command_connect_inet_address(buffer + i,
-                                                address, address_length,
-                                                decoded_host_name, family, port,
-                                                error))
-            return FALSE;
-        break;
-      case FAMILY_INET6:
-        if (!decode_command_connect_inet6_address(buffer + i,
                                                  address, address_length,
                                                  decoded_host_name, family, port,
                                                  error))
             return FALSE;
         break;
-      case FAMILY_UNIX:
+      case MILTER_SOCKET_FAMILY_INET6:
+        if (!decode_command_connect_inet6_address(buffer + i,
+                                                  address, address_length,
+                                                  decoded_host_name,
+                                                  family, port,
+                                                  error))
+            return FALSE;
+        break;
+      case MILTER_SOCKET_FAMILY_UNIX:
         if (!decode_command_connect_unix_address(buffer + i,
-                                                address, address_length,
-                                                decoded_host_name, family, port,
-                                                error))
+                                                 address, address_length,
+                                                 decoded_host_name, family, port,
+                                                 error))
             return FALSE;
         break;
       default:
         g_set_error(error,
                     MILTER_DECODER_ERROR,
-                    MILTER_DECODER_ERROR_UNKNOWN_FAMILY,
+                    MILTER_DECODER_ERROR_UNKNOWN_SOCKET_FAMILY,
                     "unknown family on connect command: <%s>: <%c>: <%u>",
                     decoded_host_name, family, ntohs(port));
         return FALSE;
@@ -1039,43 +1017,43 @@ decode_command (MilterDecoder *decoder, GError **error)
 
     priv = MILTER_DECODER_GET_PRIVATE(decoder);
     switch (priv->buffer->str[0]) {
-      case COMMAND_OPTION_NEGOTIATION:
+      case MILTER_COMMAND_OPTION_NEGOTIATION:
         success = decode_command_option_negotiation(decoder, error);
         break;
-      case COMMAND_DEFINE_MACRO:
+      case MILTER_COMMAND_DEFINE_MACRO:
         success = decode_command_define_macro(decoder, error);
         break;
-      case COMMAND_CONNECT:
+      case MILTER_COMMAND_CONNECT:
         success = decode_command_connect(decoder, error);
         break;
-      case COMMAND_HELO:
+      case MILTER_COMMAND_HELO:
         success = decode_command_helo(decoder, error);
         break;
-      case COMMAND_MAIL:
+      case MILTER_COMMAND_MAIL:
         success = decode_command_mail(decoder, error);
         break;
-      case COMMAND_RCPT:
+      case MILTER_COMMAND_RCPT:
         success = decode_command_rcpt(decoder, error);
         break;
-      case COMMAND_HEADER:
+      case MILTER_COMMAND_HEADER:
         success = decode_command_header(decoder, error);
         break;
-      case COMMAND_END_OF_HEADER:
+      case MILTER_COMMAND_END_OF_HEADER:
         success = decode_command_end_of_header(decoder, error);
         break;
-      case COMMAND_BODY:
+      case MILTER_COMMAND_BODY:
         success = decode_command_body(decoder, error);
         break;
-      case COMMAND_END_OF_MESSAGE:
+      case MILTER_COMMAND_END_OF_MESSAGE:
         success = decode_command_end_of_message(decoder, error);
         break;
-      case COMMAND_ABORT:
+      case MILTER_COMMAND_ABORT:
         success = decode_command_abort(decoder, error);
         break;
-      case COMMAND_QUIT:
+      case MILTER_COMMAND_QUIT:
         success = decode_command_quit(decoder, error);
         break;
-      case COMMAND_UNKNOWN:
+      case MILTER_COMMAND_UNKNOWN:
         success = decode_command_unknown(decoder, error);
         break;
       default:

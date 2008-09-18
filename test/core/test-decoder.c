@@ -360,23 +360,16 @@ teardown (void)
 static GError *
 decode (void)
 {
-    gchar *packet;
-    gssize packet_size;
     guint32 content_size;
+    gchar content_string[sizeof(guint32)];
     GError *error = NULL;
 
-    packet_size = sizeof(content_size) + buffer->len;
-    packet = g_new0(gchar, packet_size);
-
     content_size = htonl(buffer->len);
-    memcpy(packet, &content_size, sizeof(content_size));
-    memcpy(packet + sizeof(content_size), buffer->str, buffer->len);
+    memcpy(content_string, &content_size, sizeof(content_size));
+    g_string_prepend_len(buffer, content_string, sizeof(content_size));
 
-    milter_decoder_decode(decoder, packet, packet_size, &error);
-    g_free(packet);
-
-    g_string_free(buffer, TRUE);
-    buffer = g_string_new(NULL);
+    milter_decoder_decode(decoder, buffer->str, buffer->len, &error);
+    g_string_truncate(buffer, 0);
 
     return error;
 }
@@ -938,7 +931,7 @@ test_decode_connect_with_unknown_family (void)
     g_string_append(buffer, "U");
 
     expected_error = g_error_new(MILTER_DECODER_ERROR,
-                                 MILTER_DECODER_ERROR_UNKNOWN_FAMILY,
+                                 MILTER_DECODER_ERROR_UNKNOWN_SOCKET_FAMILY,
                                  "unknown family on connect command: "
                                  "<mx.local.net>: <U>");
     actual_error = decode();
@@ -956,7 +949,7 @@ test_decode_connect_with_unexpected_family (void)
     g_string_append(buffer, "X");
 
     expected_error = g_error_new(MILTER_DECODER_ERROR,
-                                 MILTER_DECODER_ERROR_UNKNOWN_FAMILY,
+                                 MILTER_DECODER_ERROR_UNKNOWN_SOCKET_FAMILY,
                                  "unknown family on connect command: "
                                  "<mx.local.net>: <X>");
     actual_error = decode();
@@ -980,7 +973,7 @@ test_decode_connect_with_unexpected_family_and_port (void)
     g_string_append_len(buffer, port_string, sizeof(port));
 
     expected_error = g_error_new(MILTER_DECODER_ERROR,
-                                 MILTER_DECODER_ERROR_UNKNOWN_FAMILY,
+                                 MILTER_DECODER_ERROR_UNKNOWN_SOCKET_FAMILY,
                                  "unknown family on connect command: "
                                  "<mx.local.net>: <X>");
     actual_error = decode();
