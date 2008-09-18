@@ -30,6 +30,7 @@
 #include <milter-core/milter-enum-types.h>
 
 void test_encode_option_negotiation (void);
+void test_encode_option_negotiation_null (void);
 
 static MilterEncoder *encoder;
 static GString *expected;
@@ -86,7 +87,7 @@ test_encode_option_negotiation (void)
     gchar version_string[sizeof(guint32)];
     gchar action_string[sizeof(guint32)];
     gchar step_string[sizeof(guint32)];
-    gsize actual_size;
+    gsize actual_size = 0;
 
     option = milter_option_new(2,
                                MILTER_ACTION_ADD_HEADERS |
@@ -124,6 +125,17 @@ test_encode_option_negotiation (void)
     g_object_unref(option);
 
     cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
+}
+
+void
+test_encode_option_negotiation_null (void)
+{
+    gsize actual_size = 0;
+
+    milter_encoder_encode_option_negotiation(encoder,
+                                             &actual, &actual_size,
+                                             NULL);
+    cut_assert_equal_memory(NULL, 0, actual, actual_size);
 }
 
 /*

@@ -1,5 +1,7 @@
 2008-09-18  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/core/test-encoder.c: add a test for option is NULL case.
+
 	* milter-code/, test/: use gchar ** and gsize * instead of GString *
 	to receive encoded packet.
 
