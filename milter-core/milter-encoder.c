@@ -209,6 +209,47 @@ milter_encoder_encode_define_macro (MilterEncoder *encoder,
     *packet_size = priv->buffer->len;
 }
 
+static void
+encode_connect_inet (GString *buffer, const struct sockaddr_in *address)
+{
+    gchar port_string[sizeof(guint16)];
+    gchar inet_address[INET_ADDRSTRLEN];
+
+    memcpy(port_string, &(address->sin_port), sizeof(port_string));
+    inet_ntop(AF_INET, &(address->sin_addr), inet_address, sizeof(inet_address));
+
+    g_string_append_c(buffer, MILTER_SOCKET_FAMILY_INET);
+    g_string_append_len(buffer, port_string, sizeof(port_string));
+    g_string_append(buffer, inet_address);
+}
+
+static void
+encode_connect_inet6 (GString *buffer, const struct sockaddr_in6 *address)
+{
+    gchar port_string[sizeof(guint16)];
+    gchar inet6_address[INET6_ADDRSTRLEN];
+
+    memcpy(port_string, &(address->sin6_port), sizeof(port_string));
+    inet_ntop(AF_INET6, &(address->sin6_addr),
+              inet6_address, sizeof(inet6_address));
+
+    g_string_append_c(buffer, MILTER_SOCKET_FAMILY_INET6);
+    g_string_append_len(buffer, port_string, sizeof(port_string));
+    g_string_append(buffer, inet6_address);
+}
+
+static void
+encode_connect_unix (GString *buffer, const struct sockaddr_un *address)
+{
+    gchar port_string[sizeof(guint16)];
+
+    memset(port_string, '\0', sizeof(port_string));
+
+    g_string_append_c(buffer, MILTER_SOCKET_FAMILY_UNIX);
+    g_string_append_len(buffer, port_string, sizeof(port_string));
+    g_string_append(buffer, address->sun_path);
+}
+
 void
 milter_encoder_encode_connect (MilterEncoder *encoder,
                                gchar **packet, gsize *packet_size,
@@ -217,7 +258,6 @@ milter_encoder_encode_connect (MilterEncoder *encoder,
                                socklen_t address_size)
 {
     MilterEncoderPrivate *priv;
-    gchar port_string[sizeof(guint16)];
 
     priv = MILTER_ENCODER_GET_PRIVATE(encoder);
     g_string_truncate(priv->buffer, 0);
@@ -227,47 +267,13 @@ milter_encoder_encode_connect (MilterEncoder *encoder,
     g_string_append_c(priv->buffer, '\0');
     switch (address->sa_family) {
       case AF_INET:
-        {
-            const struct sockaddr_in *address_inet;
-            gchar inet_address[INET_ADDRSTRLEN];
-
-            address_inet = (const struct sockaddr_in *)address;
-            memcpy(port_string, &(address_inet->sin_port), sizeof(port_string));
-            inet_ntop(AF_INET, &(address_inet->sin_addr),
-                      inet_address, sizeof(inet_address));
-
-            g_string_append_c(priv->buffer, MILTER_SOCKET_FAMILY_INET);
-            g_string_append_len(priv->buffer, port_string, sizeof(port_string));
-            g_string_append(priv->buffer, inet_address);
-        }
+        encode_connect_inet(priv->buffer, (const struct sockaddr_in *)address);
         break;
       case AF_INET6:
-        {
-            const struct sockaddr_in6 *address_inet6;
-            gchar inet6_address[INET6_ADDRSTRLEN];
-
-            address_inet6 = (const struct sockaddr_in6 *)address;
-            memcpy(port_string, &(address_inet6->sin6_port),
-                   sizeof(port_string));
-            inet_ntop(AF_INET6, &(address_inet6->sin6_addr),
-                      inet6_address, sizeof(inet6_address));
-
-            g_string_append_c(priv->buffer, MILTER_SOCKET_FAMILY_INET6);
-            g_string_append_len(priv->buffer, port_string, sizeof(port_string));
-            g_string_append(priv->buffer, inet6_address);
-        }
+        encode_connect_inet6(priv->buffer, (const struct sockaddr_in6 *)address);
         break;
       case AF_UNIX:
-        {
-            const struct sockaddr_un *address_unix;
-
-            address_unix = (const struct sockaddr_un *)address;
-            memset(port_string, '\0', sizeof(port_string));
-
-            g_string_append_c(priv->buffer, MILTER_SOCKET_FAMILY_UNIX);
-            g_string_append_len(priv->buffer, port_string, sizeof(port_string));
-            g_string_append(priv->buffer, address_unix->sun_path);
-        }
+        encode_connect_unix(priv->buffer, (const struct sockaddr_un *)address);
         break;
       default:
         *packet = NULL;
