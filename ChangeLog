@@ -1,5 +1,8 @@
 2008-09-19  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-client/milter-client-context.[ch],
+	test/client/test-client-context.c: support macro on connect hook.
+
 	* test/client/test-client-context.c: add tests for IPv6 and UNIX
 	domain socket case.
 

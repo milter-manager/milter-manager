@@ -96,6 +96,11 @@ gboolean             milter_client_context_feed              (MilterClientContex
                                                               gsize size,
                                                               GError **error);
 
+const gchar         *milter_client_context_get_macro         (MilterClientContext *context,
+                                                              const gchar *name);
+GHashTable          *milter_client_context_get_macros        (MilterClientContext *context);
+
+
 G_END_DECLS
 
 #endif /* __MILTER_CLIENT_CONTEXT_H__ */

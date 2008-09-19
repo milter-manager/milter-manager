@@ -32,6 +32,7 @@ void test_feed_option_negotiation (void);
 void test_feed_connect_ipv4 (void);
 void test_feed_connect_ipv6 (void);
 void test_feed_connect_unix (void);
+void test_feed_connect_with_macro (void);
 void test_feed_helo (void);
 void test_feed_envelope_from (void);
 void test_feed_envelope_receipt (void);
@@ -89,12 +90,24 @@ static gsize body_chunk_size;
 static gchar *unknown_command;
 static gsize unknown_command_size;
 
+static void
+retrieve_context_info (MilterClientContext *context)
+{
+    if (defined_macros)
+        g_hash_table_unref(defined_macros);
+    defined_macros = milter_client_context_get_macros(context);
+    if (defined_macros)
+        g_hash_table_ref(defined_macros);
+}
+
 static MilterClientStatus
 cb_option_negotiation (MilterClientContext *context, MilterOption *option,
                        gpointer user_data)
 {
     n_option_negotiations++;
     option_negotiation_option = g_object_ref(option);
+
+    retrieve_context_info(context);
 
     return MILTER_CLIENT_STATUS_CONTINUE;
 }
@@ -111,6 +124,8 @@ cb_connect (MilterClientContext *context, const gchar *host_name,
     memcpy(connect_address, address, address_size);
     connect_address_size = address_size;
 
+    retrieve_context_info(context);
+
     return MILTER_CLIENT_STATUS_CONTINUE;
 }
 
@@ -120,6 +135,8 @@ cb_helo (MilterClientContext *context, const gchar *fqdn, gpointer user_data)
     n_helos++;
 
     helo_fqdn = g_strdup(fqdn);
+
+    retrieve_context_info(context);
 
     return MILTER_CLIENT_STATUS_CONTINUE;
 }
@@ -132,6 +149,8 @@ cb_envelope_from (MilterClientContext *context, const gchar *from,
 
     envelope_from_address = g_strdup(from);
 
+    retrieve_context_info(context);
+
     return MILTER_CLIENT_STATUS_CONTINUE;
 }
 
@@ -142,6 +161,8 @@ cb_envelope_receipt (MilterClientContext *context, const gchar *to,
     n_envelope_receipts++;
 
     envelope_receipt_address = g_strdup(to);
+
+    retrieve_context_info(context);
 
     return MILTER_CLIENT_STATUS_CONTINUE;
 }
@@ -160,6 +181,8 @@ cb_header (MilterClientContext *context, const gchar *name, const gchar *value,
         g_free(header_value);
     header_value = g_strdup(value);
 
+    retrieve_context_info(context);
+
     return MILTER_CLIENT_STATUS_CONTINUE;
 }
 
@@ -167,6 +190,8 @@ static MilterClientStatus
 cb_end_of_header (MilterClientContext *context, gpointer user_data)
 {
     n_end_of_headers++;
+
+    retrieve_context_info(context);
 
     return MILTER_CLIENT_STATUS_CONTINUE;
 }
@@ -182,6 +207,8 @@ cb_body (MilterClientContext *context, const gchar *chunk, gsize size,
     body_chunk = g_strndup(chunk, size);
     body_chunk_size = size;
 
+    retrieve_context_info(context);
+
     return MILTER_CLIENT_STATUS_CONTINUE;
 }
 
@@ -189,6 +216,8 @@ static MilterClientStatus
 cb_end_of_message (MilterClientContext *context, gpointer user_data)
 {
     n_end_of_messages++;
+
+    retrieve_context_info(context);
 
     return MILTER_CLIENT_STATUS_CONTINUE;
 }
@@ -198,6 +227,8 @@ cb_abort (MilterClientContext *context, gpointer user_data)
 {
     n_aborts++;
 
+    retrieve_context_info(context);
+
     return MILTER_CLIENT_STATUS_CONTINUE;
 }
 
@@ -205,6 +236,8 @@ static MilterClientStatus
 cb_close (MilterClientContext *context, gpointer user_data)
 {
     n_closes++;
+
+    retrieve_context_info(context);
 
     return MILTER_CLIENT_STATUS_CONTINUE;
 }
@@ -218,6 +251,8 @@ cb_unknown (MilterClientContext *context, const gchar *command,
     if (unknown_command)
         g_free(unknown_command);
     unknown_command = g_strdup(command);
+
+    retrieve_context_info(context);
 
     return MILTER_CLIENT_STATUS_CONTINUE;
 }
@@ -393,6 +428,8 @@ test_feed_option_negotiation (void)
     gcut_assert_equal_enum(MILTER_TYPE_STEP_FLAGS,
                            step,
                            milter_option_get_step(negotiated_option));
+
+    gcut_assert_equal_hash_table_string_string(NULL, defined_macros);
 }
 
 void
@@ -484,6 +521,54 @@ test_feed_connect_unix (void)
     connected_address = (struct sockaddr_un *)connect_address;
     cut_assert_equal_int(AF_UNIX, connected_address->sun_family);
     cut_assert_equal_string(path, connected_address->sun_path);
+
+
+    gcut_assert_equal_hash_table_string_string(NULL, defined_macros);
+}
+
+void
+test_feed_connect_with_macro (void)
+{
+    struct sockaddr_in address;
+    struct sockaddr_in *connected_address;
+    const gchar host_name[] = "mx.local.net";
+    const gchar ip_address[] = "192.168.123.123";
+    guint16 port;
+
+    expected_macros =
+        gcut_hash_table_string_string_new("j", "debian.cozmixng.org",
+                                          "daemon_name", "debian.cozmixng.org",
+                                          "v", "Postfix 2.5.5",
+                                          NULL);
+    milter_encoder_encode_define_macro(encoder,
+                                       &packet, &packet_size,
+                                       MILTER_COMMAND_CONNECT,
+                                       expected_macros);
+    gcut_assert_error(feed());
+
+    port = htons(50443);
+    address.sin_family = AF_INET;
+    address.sin_port = port;
+    inet_aton(ip_address, &(address.sin_addr));
+
+    g_free(packet);
+    packet = NULL;
+    milter_encoder_encode_connect(encoder,
+                                  &packet, &packet_size,
+                                  host_name,
+                                  (const struct sockaddr *)&address,
+                                  sizeof(address));
+    gcut_assert_error(feed());
+    cut_assert_equal_int(1, n_connects);
+    cut_assert_equal_string(host_name, connect_host_name);
+    cut_assert_equal_int(sizeof(struct sockaddr_in), connect_address_size);
+
+    connected_address = (struct sockaddr_in *)connect_address;
+    cut_assert_equal_int(AF_INET, connected_address->sin_family);
+    cut_assert_equal_uint(port, connected_address->sin_port);
+    cut_assert_equal_string(ip_address, inet_ntoa(connected_address->sin_addr));
+
+    gcut_assert_equal_hash_table_string_string(expected_macros, defined_macros);
 }
 
 void
