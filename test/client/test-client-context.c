@@ -42,6 +42,7 @@ void test_feed_envelope_receipt_with_macro (void);
 void test_feed_header (void);
 void test_feed_header_with_macro (void);
 void test_feed_end_of_header (void);
+void test_feed_end_of_header_with_macro (void);
 void test_feed_body (void);
 void test_feed_end_of_message (void);
 void test_feed_end_of_message_without_data (void);
@@ -765,6 +766,31 @@ test_feed_end_of_header (void)
     milter_encoder_encode_end_of_header(encoder, &packet, &packet_size);
     gcut_assert_error(feed());
     cut_assert_equal_int(1, n_end_of_headers);
+
+    gcut_assert_equal_hash_table_string_string(NULL, defined_macros);
+}
+
+void
+test_feed_end_of_header_with_macro (void)
+{
+    const gchar id[] = "69FDD42DF4A";
+
+    macro_name = g_strdup("i");
+    expected_macros =
+        gcut_hash_table_string_string_new("i", id, NULL);
+    milter_encoder_encode_define_macro(encoder,
+                                       &packet, &packet_size,
+                                       MILTER_COMMAND_END_OF_HEADER,
+                                       expected_macros);
+    gcut_assert_error(feed());
+    packet_free();
+
+    milter_encoder_encode_end_of_header(encoder, &packet, &packet_size);
+    gcut_assert_error(feed());
+    cut_assert_equal_int(1, n_end_of_headers);
+
+    gcut_assert_equal_hash_table_string_string(expected_macros, defined_macros);
+    cut_assert_equal_string(id, macro_value);
 }
 
 void
