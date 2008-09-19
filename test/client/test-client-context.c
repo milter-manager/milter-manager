@@ -34,6 +34,7 @@ void test_feed_connect_ipv6 (void);
 void test_feed_connect_unix (void);
 void test_feed_connect_with_macro (void);
 void test_feed_helo (void);
+void test_feed_helo_with_macro (void);
 void test_feed_envelope_from (void);
 void test_feed_envelope_receipt (void);
 void test_feed_header (void);
@@ -580,6 +581,28 @@ test_feed_helo (void)
     gcut_assert_error(feed());
     cut_assert_equal_int(1, n_helos);
     cut_assert_equal_string(fqdn, helo_fqdn);
+
+    gcut_assert_equal_hash_table_string_string(NULL, defined_macros);
+}
+
+void
+test_feed_helo_with_macro (void)
+{
+    const gchar fqdn[] = "delian";
+
+    expected_macros = gcut_hash_table_string_string_new(NULL, NULL);
+    milter_encoder_encode_define_macro(encoder,
+                                       &packet, &packet_size,
+                                       MILTER_COMMAND_HELO,
+                                       expected_macros);
+    gcut_assert_error(feed());
+
+    milter_encoder_encode_helo(encoder, &packet, &packet_size, fqdn);
+    gcut_assert_error(feed());
+    cut_assert_equal_int(1, n_helos);
+    cut_assert_equal_string(fqdn, helo_fqdn);
+
+    gcut_assert_equal_hash_table_string_string(expected_macros, defined_macros);
 }
 
 void

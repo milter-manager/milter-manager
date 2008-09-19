@@ -344,11 +344,20 @@ milter_client_context_feed (MilterClientContext *context,
 }
 
 static void
+clear_macros (MilterClientContext *context, MilterCommand macro_context)
+{
+    MilterClientContextPrivate *priv;
+
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    g_hash_table_remove(priv->macros, GINT_TO_POINTER(macro_context));
+}
+
+static void
 update_macro (gpointer key, gpointer value, gpointer user_data)
 {
     GHashTable *macros = user_data;
 
-    g_hash_table_insert(macros, g_strdup(key), g_strdup(value));
+    g_hash_table_replace(macros, g_strdup(key), g_strdup(value));
 }
 
 static void
@@ -356,18 +365,15 @@ set_macros (MilterClientContext *context, MilterCommand macro_context,
             GHashTable *macros)
 {
     MilterClientContextPrivate *priv;
-    GHashTable *current_macros;
+    GHashTable *copied_macros;
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
-    current_macros = g_hash_table_lookup(priv->macros, &macro_context);
-    if (!current_macros) {
-        current_macros = g_hash_table_new_full(g_str_hash, g_str_equal,
-                                               g_free, g_free);
-        g_hash_table_insert(priv->macros,
-                            GINT_TO_POINTER(macro_context),
-                            current_macros);
-    }
-    g_hash_table_foreach(macros, update_macro, current_macros);
+    copied_macros = g_hash_table_new_full(g_str_hash, g_str_equal,
+                                          g_free, g_free);
+    g_hash_table_insert(priv->macros,
+                        GINT_TO_POINTER(macro_context),
+                        copied_macros);
+    g_hash_table_foreach(macros, update_macro, copied_macros);
 }
 
 const gchar *
@@ -439,6 +445,7 @@ cb_decoder_connect (MilterDecoder *decoder, const gchar *host_name,
     priv->macro_context = MILTER_COMMAND_CONNECT;
     g_signal_emit(context, signals[CONNECT], 0,
                   host_name, address, address_length, &status);
+    clear_macros(context, priv->macro_context);
     priv->macro_context = MILTER_COMMAND_UNKNOWN;
 }
 
@@ -446,9 +453,14 @@ static void
 cb_decoder_helo (MilterDecoder *decoder, const gchar *fqdn, gpointer user_data)
 {
     MilterClientContext *context = user_data;
+    MilterClientContextPrivate *priv;
     MilterClientStatus status = MILTER_CLIENT_STATUS_CONTINUE;
 
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    priv->macro_context = MILTER_COMMAND_HELO;
     g_signal_emit(context, signals[HELO], 0, fqdn, &status);
+    clear_macros(context, priv->macro_context);
+    priv->macro_context = MILTER_COMMAND_UNKNOWN;
 }
 
 static void

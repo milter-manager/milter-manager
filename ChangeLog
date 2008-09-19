@@ -1,5 +1,8 @@
 2008-09-19  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-client/milter-client-context.c,
+	test/client/test-client-context.c: support macro on HELO hook.
+
 	* milter-client/milter-client-context.[ch],
 	test/client/test-client-context.c: support macro on connect hook.
 
