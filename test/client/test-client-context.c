@@ -31,6 +31,7 @@
 void test_feed_option_negotiation (void);
 void test_feed_connect_ipv4 (void);
 void test_feed_helo (void);
+void test_feed_envelope_from (void);
 
 static MilterClientContext *context;
 static MilterEncoder *encoder;
@@ -419,6 +420,17 @@ test_feed_helo (void)
     gcut_assert_error(feed());
     cut_assert_equal_int(1, n_helos);
     cut_assert_equal_string(fqdn, helo_fqdn);
+}
+
+void
+test_feed_envelope_from (void)
+{
+    const gchar from[] = "<kou@cozmixng.org>";
+
+    milter_encoder_encode_mail(encoder, &packet, &packet_size, from);
+    gcut_assert_error(feed());
+    cut_assert_equal_int(1, n_envelope_froms);
+    cut_assert_equal_string(from, envelope_from_address);
 }
 
 /*
