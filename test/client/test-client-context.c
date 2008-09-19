@@ -36,6 +36,8 @@ void test_feed_envelope_receipt (void);
 void test_feed_header (void);
 void test_feed_end_of_header (void);
 void test_feed_body (void);
+void test_feed_end_of_message (void);
+void test_feed_end_of_message_without_data (void);
 
 static MilterClientContext *context;
 static MilterEncoder *encoder;
@@ -485,6 +487,33 @@ test_feed_body (void)
     cut_assert_equal_int(sizeof(body), body_chunk_size);
 }
 
+void
+test_feed_end_of_message (void)
+{
+    const gchar body[] =
+        "La de da de da 1.\n"
+        "La de da de da 2.\n"
+        "La de da de da 3.\n"
+        "La de da de da 4.";
+
+    milter_encoder_encode_end_of_message(encoder, &packet, &packet_size,
+                                         body, sizeof(body));
+    gcut_assert_error(feed());
+    cut_assert_equal_int(1, n_bodies);
+    cut_assert_equal_string(body, body_chunk);
+    cut_assert_equal_int(sizeof(body), body_chunk_size);
+    cut_assert_equal_int(1, n_end_of_messages);
+}
+
+void
+test_feed_end_of_message_without_data (void)
+{
+    milter_encoder_encode_end_of_message(encoder, &packet, &packet_size,
+                                         NULL, 0);
+    gcut_assert_error(feed());
+    cut_assert_equal_int(0, n_bodies);
+    cut_assert_equal_int(1, n_end_of_messages);
+}
 
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
