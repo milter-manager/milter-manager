@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef __MILTER_CLIENT_HANDLER_H__
-#define __MILTER_CLIENT_HANDLER_H__
+#ifndef __MILTER_CLIENT_CONTEXT_H__
+#define __MILTER_CLIENT_CONTEXT_H__
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -29,15 +29,15 @@
 
 G_BEGIN_DECLS
 
-#define MILTER_CLIENT_TYPE_HANDLER            (milter_client_handler_get_type())
-#define MILTER_CLIENT_HANDLER(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), MILTER_CLIENT_TYPE_HANDLER, MilterClientHandler))
-#define MILTER_CLIENT_HANDLER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), MILTER_CLIENT_TYPE_HANDLER, MilterClientHandlerClass))
-#define MILTER_CLIENT_IS_HANDLER(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), MILTER_CLIENT_TYPE_HANDLER))
-#define MILTER_CLIENT_IS_HANDLER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), MILTER_CLIENT_TYPE_HANDLER))
-#define MILTER_CLIENT_HANDLER_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MILTER_CLIENT_TYPE_HANDLER, MilterClientHandlerClass))
+#define MILTER_CLIENT_TYPE_CONTEXT            (milter_client_context_get_type())
+#define MILTER_CLIENT_CONTEXT(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), MILTER_CLIENT_TYPE_CONTEXT, MilterClientContext))
+#define MILTER_CLIENT_CONTEXT_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), MILTER_CLIENT_TYPE_CONTEXT, MilterClientContextClass))
+#define MILTER_CLIENT_IS_CONTEXT(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), MILTER_CLIENT_TYPE_CONTEXT))
+#define MILTER_CLIENT_IS_CONTEXT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), MILTER_CLIENT_TYPE_CONTEXT))
+#define MILTER_CLIENT_CONTEXT_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MILTER_CLIENT_TYPE_CONTEXT, MilterClientContextClass))
 
-typedef struct _MilterClientHandler         MilterClientHandler;
-typedef struct _MilterClientHandlerClass    MilterClientHandlerClass;
+typedef struct _MilterClientContext         MilterClientContext;
+typedef struct _MilterClientContextClass    MilterClientContextClass;
 
 typedef enum
 {
@@ -51,54 +51,54 @@ typedef enum
     MILTER_CLIENT_STATUS_ALL_OPTIONS
 } MilterClientStatus;
 
-struct _MilterClientHandler
+struct _MilterClientContext
 {
     GObject object;
 };
 
-struct _MilterClientHandlerClass
+struct _MilterClientContextClass
 {
     GObjectClass parent_class;
 
-    MilterClientStatus (*option_negotiation) (MilterClientHandler *handler,
+    MilterClientStatus (*option_negotiation) (MilterClientContext *context,
                                               MilterOption        *option);
-    MilterClientStatus (*connect)            (MilterClientHandler *handler,
+    MilterClientStatus (*connect)            (MilterClientContext *context,
                                               const gchar         *host_name,
                                               struct sockaddr     *address,
                                               socklen_t            address_length);
-    MilterClientStatus (*helo)               (MilterClientHandler *handler,
+    MilterClientStatus (*helo)               (MilterClientContext *context,
                                               const gchar         *fqdn);
-    MilterClientStatus (*envelope_from)      (MilterClientHandler *handler,
+    MilterClientStatus (*envelope_from)      (MilterClientContext *context,
                                               const gchar         *from);
-    MilterClientStatus (*envelope_receipt)   (MilterClientHandler *handler,
+    MilterClientStatus (*envelope_receipt)   (MilterClientContext *context,
                                               const gchar         *receipt);
-    MilterClientStatus (*data)               (MilterClientHandler *handler);
-    MilterClientStatus (*unknown)            (MilterClientHandler *handler,
+    MilterClientStatus (*data)               (MilterClientContext *context);
+    MilterClientStatus (*unknown)            (MilterClientContext *context,
                                               const gchar         *command);
-    MilterClientStatus (*header)             (MilterClientHandler *handler,
+    MilterClientStatus (*header)             (MilterClientContext *context,
                                               const gchar         *name,
                                               const gchar         *value);
-    MilterClientStatus (*end_of_header)      (MilterClientHandler *handler);
-    MilterClientStatus (*body)               (MilterClientHandler *handler,
+    MilterClientStatus (*end_of_header)      (MilterClientContext *context);
+    MilterClientStatus (*body)               (MilterClientContext *context,
                                               const guchar        *chunk,
                                               gsize                size);
-    MilterClientStatus (*end_of_message)     (MilterClientHandler *handler);
-    MilterClientStatus (*close)              (MilterClientHandler *handler);
-    MilterClientStatus (*abort)              (MilterClientHandler *handler);
+    MilterClientStatus (*end_of_message)     (MilterClientContext *context);
+    MilterClientStatus (*close)              (MilterClientContext *context);
+    MilterClientStatus (*abort)              (MilterClientContext *context);
 };
 
-GType                milter_client_handler_get_type          (void) G_GNUC_CONST;
+GType                milter_client_context_get_type          (void) G_GNUC_CONST;
 
-MilterClientHandler *milter_client_handler_new               (void);
+MilterClientContext *milter_client_context_new               (void);
 
-gboolean             milter_client_handler_feed              (MilterClientHandler *handler,
+gboolean             milter_client_context_feed              (MilterClientContext *context,
                                                               const gchar *chunk,
                                                               gsize size,
                                                               GError **error);
 
 G_END_DECLS
 
-#endif /* __MILTER_CLIENT_HANDLER_H__ */
+#endif /* __MILTER_CLIENT_CONTEXT_H__ */
 
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4

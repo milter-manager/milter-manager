@@ -11,7 +11,7 @@ AM_CFLAGS = 				\
 EXTRA_DIST = milter-client-marshalers.list
 
 milter_client_public_headers =		\
-	milter-client-handler.h
+	milter-client-context.h
 
 enum_source_prefix = milter-client-enum-types
 
@@ -44,7 +44,7 @@ lib_LTLIBRARIES =		\
 libmilter_client_la_SOURCES =		\
 	milter-client-enum-types.c	\
 	$(marshal_sources)		\
-	milter-client-handler.c
+	milter-client-context.c
 
 libmilter_client_la_LIBADD =				\
 	$(top_builddir)/milter-core/libmilter-core.la

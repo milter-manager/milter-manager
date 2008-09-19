@@ -1,6 +1,6 @@
 if WITH_CUTTER
 noinst_LTLIBRARIES =		\
-	test-handler.la
+	test-client-context.la
 endif
 
 INCLUDES =				\
@@ -21,4 +21,4 @@ LIBS =								\
 	$(top_builddir)/milter-client/libmilter-client.la	\
 	$(GCUTTER_LIBS)
 
-test_handler_la_SOURCES = test-handler.c
+test_client_context_la_SOURCES = test-client-context.c

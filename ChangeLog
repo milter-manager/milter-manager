@@ -1,5 +1,8 @@
 2008-09-19  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-client/, test/client/: MilterClientHandler ->
+	MilterClientContext.
+
 	* /: start to implement MilterClientHandler.
 
 2008-09-18  Kouhei Sutou  <kou@cozmixng.org>

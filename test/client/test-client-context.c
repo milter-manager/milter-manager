@@ -30,7 +30,7 @@
 
 void test_feed_connect_ipv4 (void);
 
-static MilterClientHandler *handler;
+static MilterClientContext *context;
 static MilterEncoder *encoder;
 
 static gchar *packet;
@@ -76,7 +76,7 @@ static gchar *unknown_command;
 static gsize unknown_command_length;
 
 static MilterReply
-cb_option_negotiation (MilterClientHandler *handler, MilterOption *option,
+cb_option_negotiation (MilterClientContext *context, MilterOption *option,
                        gpointer user_data)
 {
     n_option_negotiations++;
@@ -86,7 +86,7 @@ cb_option_negotiation (MilterClientHandler *handler, MilterOption *option,
 }
 
 static MilterReply
-cb_connect (MilterClientHandler *handler, const gchar *host_name,
+cb_connect (MilterClientContext *context, const gchar *host_name,
             const struct sockaddr *address, socklen_t address_length,
             gpointer user_data)
 {
@@ -101,7 +101,7 @@ cb_connect (MilterClientHandler *handler, const gchar *host_name,
 }
 
 static MilterReply
-cb_helo (MilterClientHandler *handler, const gchar *fqdn, gpointer user_data)
+cb_helo (MilterClientContext *context, const gchar *fqdn, gpointer user_data)
 {
     n_helos++;
 
@@ -111,7 +111,7 @@ cb_helo (MilterClientHandler *handler, const gchar *fqdn, gpointer user_data)
 }
 
 static MilterReply
-cb_envelope_from (MilterClientHandler *handler, const gchar *from, gpointer user_data)
+cb_envelope_from (MilterClientContext *context, const gchar *from, gpointer user_data)
 {
     n_envelope_froms++;
 
@@ -121,7 +121,7 @@ cb_envelope_from (MilterClientHandler *handler, const gchar *from, gpointer user
 }
 
 static MilterReply
-cb_envelope_receipt (MilterClientHandler *handler, const gchar *to, gpointer user_data)
+cb_envelope_receipt (MilterClientContext *context, const gchar *to, gpointer user_data)
 {
     n_envelope_receipts++;
 
@@ -131,7 +131,7 @@ cb_envelope_receipt (MilterClientHandler *handler, const gchar *to, gpointer use
 }
 
 static MilterReply
-cb_header (MilterClientHandler *handler, const gchar *name, const gchar *value,
+cb_header (MilterClientContext *context, const gchar *name, const gchar *value,
            gpointer user_data)
 {
     n_headers++;
@@ -148,7 +148,7 @@ cb_header (MilterClientHandler *handler, const gchar *name, const gchar *value,
 }
 
 static MilterReply
-cb_end_of_header (MilterClientHandler *handler, gpointer user_data)
+cb_end_of_header (MilterClientContext *context, gpointer user_data)
 {
     n_end_of_headers++;
 
@@ -156,7 +156,7 @@ cb_end_of_header (MilterClientHandler *handler, gpointer user_data)
 }
 
 static MilterReply
-cb_body (MilterClientHandler *handler, const gchar *chunk, gsize length,
+cb_body (MilterClientContext *context, const gchar *chunk, gsize length,
          gpointer user_data)
 {
     n_bodies++;
@@ -170,7 +170,7 @@ cb_body (MilterClientHandler *handler, const gchar *chunk, gsize length,
 }
 
 static MilterReply
-cb_end_of_message (MilterClientHandler *handler, gpointer user_data)
+cb_end_of_message (MilterClientContext *context, gpointer user_data)
 {
     n_end_of_messages++;
 
@@ -178,7 +178,7 @@ cb_end_of_message (MilterClientHandler *handler, gpointer user_data)
 }
 
 static MilterReply
-cb_abort (MilterClientHandler *handler, gpointer user_data)
+cb_abort (MilterClientContext *context, gpointer user_data)
 {
     n_aborts++;
 
@@ -186,7 +186,7 @@ cb_abort (MilterClientHandler *handler, gpointer user_data)
 }
 
 static MilterReply
-cb_close (MilterClientHandler *handler, gpointer user_data)
+cb_close (MilterClientContext *context, gpointer user_data)
 {
     n_closes++;
 
@@ -194,7 +194,7 @@ cb_close (MilterClientHandler *handler, gpointer user_data)
 }
 
 static MilterReply
-cb_unknown (MilterClientHandler *handler, const gchar *command, gpointer user_data)
+cb_unknown (MilterClientContext *context, const gchar *command, gpointer user_data)
 {
     n_unknowns++;
 
@@ -206,10 +206,10 @@ cb_unknown (MilterClientHandler *handler, const gchar *command, gpointer user_da
 }
 
 static void
-setup_signals (MilterClientHandler *handler)
+setup_signals (MilterClientContext *context)
 {
 #define CONNECT(name)                                                   \
-    g_signal_connect(handler, #name, G_CALLBACK(cb_ ## name), NULL)
+    g_signal_connect(context, #name, G_CALLBACK(cb_ ## name), NULL)
 
     CONNECT(option_negotiation);
     CONNECT(connect);
@@ -230,8 +230,8 @@ setup_signals (MilterClientHandler *handler)
 void
 setup (void)
 {
-    handler = milter_client_handler_new();
-    setup_signals(handler);
+    context = milter_client_context_new();
+    setup_signals(context);
 
     encoder = milter_encoder_new();
     packet = NULL;
@@ -280,8 +280,8 @@ setup (void)
 void
 teardown (void)
 {
-    if (handler)
-        g_object_unref(handler);
+    if (context)
+        g_object_unref(context);
 
     if (encoder)
         g_object_unref(encoder);
@@ -326,7 +326,7 @@ feed (void)
 {
     GError *error = NULL;
 
-    milter_client_handler_feed(handler, packet, packet_size, &error);
+    milter_client_context_feed(context, packet, packet_size, &error);
 
     return error;
 }
