@@ -1,6 +1,10 @@
 2008-09-19  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter-client/milter-client-context.c,
+	test/client/test-client-context.c: support macro on envelope-receipt
+	hook.
+
+	* milter-client/milter-client-context.c,
 	test/client/test-client-context.c: support macro on envelope-from
 	hook.
 

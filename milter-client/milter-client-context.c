@@ -21,6 +21,8 @@
 #  include "../config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include <string.h>
+
 #include <milter-core.h>
 #include "milter-client.h"
 #include "milter-client-context.h"
@@ -380,12 +382,21 @@ const gchar *
 milter_client_context_get_macro (MilterClientContext *context, const gchar *name)
 {
     GHashTable *macros;
+    const gchar *value;
 
     macros = milter_client_context_get_macros(context);
     if (!macros)
         return NULL;
 
-    return g_hash_table_lookup(macros, name);
+    value = g_hash_table_lookup(macros, name);
+    if (!value && g_str_has_prefix(name, "{") && g_str_has_suffix(name, "}")) {
+        gchar *unbracket_name;
+
+        unbracket_name = g_strndup(name + 1, strlen(name) - 2);
+        value = g_hash_table_lookup(macros, unbracket_name);
+        g_free(unbracket_name);
+    }
+    return value;
 }
 
 GHashTable *
@@ -481,9 +492,14 @@ static void
 cb_decoder_rcpt (MilterDecoder *decoder, const gchar *to, gpointer user_data)
 {
     MilterClientContext *context = user_data;
+    MilterClientContextPrivate *priv;
     MilterClientStatus status = MILTER_CLIENT_STATUS_CONTINUE;
 
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    priv->macro_context = MILTER_COMMAND_RCPT;
     g_signal_emit(context, signals[ENVELOPE_RECEIPT], 0, to, &status);
+    clear_macros(context, priv->macro_context);
+    priv->macro_context = MILTER_COMMAND_UNKNOWN;
 }
 
 static void

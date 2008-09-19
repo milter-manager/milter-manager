@@ -38,6 +38,7 @@ void test_feed_helo_with_macro (void);
 void test_feed_envelope_from (void);
 void test_feed_envelope_from_with_macro (void);
 void test_feed_envelope_receipt (void);
+void test_feed_envelope_receipt_with_macro (void);
 void test_feed_header (void);
 void test_feed_end_of_header (void);
 void test_feed_body (void);
@@ -684,6 +685,37 @@ test_feed_envelope_receipt (void)
     gcut_assert_error(feed());
     cut_assert_equal_int(1, n_envelope_receipts);
     cut_assert_equal_string(to, envelope_receipt_address);
+
+    gcut_assert_equal_hash_table_string_string(NULL, defined_macros);
+}
+
+void
+test_feed_envelope_receipt_with_macro (void)
+{
+    const gchar to[] = "<kou@cozmixng.org>";
+
+    macro_name = g_strdup("{rcpt_addr}");
+    expected_macros =
+        gcut_hash_table_string_string_new("{rcpt_addr}", "kou@cozmixng.org",
+                                          NULL);
+    milter_encoder_encode_define_macro(encoder,
+                                       &packet, &packet_size,
+                                       MILTER_COMMAND_RCPT,
+                                       expected_macros);
+    gcut_assert_error(feed());
+    packet_free();
+
+    milter_encoder_encode_rcpt(encoder, &packet, &packet_size, to);
+    gcut_assert_error(feed());
+    cut_assert_equal_int(1, n_envelope_receipts);
+    cut_assert_equal_string(to, envelope_receipt_address);
+
+    g_hash_table_unref(expected_macros);
+    expected_macros =
+        gcut_hash_table_string_string_new("rcpt_addr", "kou@cozmixng.org",
+                                          NULL);
+    gcut_assert_equal_hash_table_string_string(expected_macros, defined_macros);
+    cut_assert_equal_string("kou@cozmixng.org", macro_value);
 }
 
 void
