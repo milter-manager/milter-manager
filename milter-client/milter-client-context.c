@@ -216,9 +216,8 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_SIGNAL_RUN_CLEANUP,
                      G_STRUCT_OFFSET(MilterClientContextClass, header),
                      status_accumulator, NULL,
-                     _milter_client_marshal_ENUM__STRING_POINTER_UINT,
-                     MILTER_TYPE_CLIENT_STATUS, 3,
-                     G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_UINT);
+                     _milter_client_marshal_ENUM__STRING_STRING,
+                     MILTER_TYPE_CLIENT_STATUS, 2, G_TYPE_STRING, G_TYPE_STRING);
 
     signals[END_OF_HEADER] =
         g_signal_new("end-of-header",
@@ -428,6 +427,17 @@ cb_decoder_rcpt (MilterDecoder *decoder, const gchar *to, gpointer user_data)
     g_signal_emit(context, signals[ENVELOPE_RECEIPT], 0, to, &status);
 }
 
+static void
+cb_decoder_header (MilterDecoder *decoder,
+                   const gchar *name, const gchar *value,
+                   gpointer user_data)
+{
+    MilterClientContext *context = user_data;
+    MilterClientStatus status = MILTER_CLIENT_STATUS_CONTINUE;
+
+    g_signal_emit(context, signals[HEADER], 0, name, value, &status);
+}
+
 
 static void
 setup_decoder (MilterClientContext *context, MilterDecoder *decoder)
@@ -441,6 +451,7 @@ setup_decoder (MilterClientContext *context, MilterDecoder *decoder)
     CONNECT(helo);
     CONNECT(mail);
     CONNECT(rcpt);
+    CONNECT(header);
 
 #undef CONNECT
 }

@@ -33,6 +33,7 @@ void test_feed_connect_ipv4 (void);
 void test_feed_helo (void);
 void test_feed_envelope_from (void);
 void test_feed_envelope_receipt (void);
+void test_feed_header (void);
 
 static MilterClientContext *context;
 static MilterEncoder *encoder;
@@ -443,6 +444,18 @@ test_feed_envelope_receipt (void)
     gcut_assert_error(feed());
     cut_assert_equal_int(1, n_envelope_receipts);
     cut_assert_equal_string(to, envelope_receipt_address);
+}
+
+void
+test_feed_header (void)
+{
+    const gchar date[] = "Fri,  5 Sep 2008 09:19:56 +0900 (JST)";
+
+    milter_encoder_encode_header(encoder, &packet, &packet_size, "Date", date);
+    gcut_assert_error(feed());
+    cut_assert_equal_int(1, n_headers);
+    cut_assert_equal_string("Date", header_name);
+    cut_assert_equal_string(date, header_value);
 }
 
 /*
