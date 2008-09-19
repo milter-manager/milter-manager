@@ -551,9 +551,14 @@ static void
 cb_decoder_end_of_message (MilterDecoder *decoder, gpointer user_data)
 {
     MilterClientContext *context = user_data;
+    MilterClientContextPrivate *priv;
     MilterClientStatus status = MILTER_CLIENT_STATUS_CONTINUE;
 
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    priv->macro_context = MILTER_COMMAND_END_OF_MESSAGE;
     g_signal_emit(context, signals[END_OF_MESSAGE], 0, &status);
+    clear_macros(context, priv->macro_context);
+    priv->macro_context = MILTER_COMMAND_UNKNOWN;
 }
 
 static void
