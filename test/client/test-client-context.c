@@ -38,6 +38,7 @@ void test_feed_end_of_header (void);
 void test_feed_body (void);
 void test_feed_end_of_message (void);
 void test_feed_end_of_message_without_data (void);
+void test_feed_close (void);
 
 static MilterClientContext *context;
 static MilterEncoder *encoder;
@@ -513,6 +514,14 @@ test_feed_end_of_message_without_data (void)
     gcut_assert_error(feed());
     cut_assert_equal_int(0, n_bodies);
     cut_assert_equal_int(1, n_end_of_messages);
+}
+
+void
+test_feed_close (void)
+{
+    milter_encoder_encode_quit(encoder, &packet, &packet_size);
+    gcut_assert_error(feed());
+    cut_assert_equal_int(1, n_closes);
 }
 
 /*
