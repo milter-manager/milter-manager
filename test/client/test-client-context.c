@@ -36,6 +36,7 @@ void test_feed_connect_with_macro (void);
 void test_feed_helo (void);
 void test_feed_helo_with_macro (void);
 void test_feed_envelope_from (void);
+void test_feed_envelope_from_with_macro (void);
 void test_feed_envelope_receipt (void);
 void test_feed_header (void);
 void test_feed_end_of_header (void);
@@ -72,6 +73,9 @@ static MilterOption *option_negotiation_option;
 static GHashTable *expected_macros;
 static GHashTable *defined_macros;
 
+static gchar *macro_name;
+static gchar *macro_value;
+
 static gchar *connect_host_name;
 static struct sockaddr *connect_address;
 static socklen_t connect_address_size;
@@ -97,6 +101,15 @@ retrieve_context_info (MilterClientContext *context)
     if (defined_macros)
         g_hash_table_unref(defined_macros);
     defined_macros = milter_client_context_get_macros(context);
+    if (macro_name) {
+        const gchar *value;
+
+        if (macro_value)
+            g_free(macro_value);
+        value = milter_client_context_get_macro(context, macro_name);
+        if (value)
+            macro_value = g_strdup(value);
+    }
     if (defined_macros)
         g_hash_table_ref(defined_macros);
 }
@@ -311,6 +324,9 @@ setup (void)
     expected_macros = NULL;
     defined_macros = NULL;
 
+    macro_name = NULL;
+    macro_value = NULL;
+
     connect_host_name = NULL;
     connect_address = NULL;
     connect_address_size = 0;
@@ -331,6 +347,15 @@ setup (void)
     unknown_command_size = 0;
 }
 
+static void
+packet_free (void)
+{
+    if (packet)
+        g_free(packet);
+    packet = NULL;
+    packet_size = 0;
+}
+
 void
 teardown (void)
 {
@@ -340,8 +365,7 @@ teardown (void)
     if (encoder)
         g_object_unref(encoder);
 
-    if (packet)
-        g_free(packet);
+    packet_free();
 
     if (option_negotiation_option)
         g_object_unref(option_negotiation_option);
@@ -350,6 +374,10 @@ teardown (void)
         g_hash_table_unref(expected_macros);
     if (defined_macros)
         g_hash_table_unref(defined_macros);
+    if (macro_name)
+        g_free(macro_name);
+    if (macro_value)
+        g_free(macro_value);
 
     if (connect_host_name)
         g_free(connect_host_name);
@@ -546,14 +574,13 @@ test_feed_connect_with_macro (void)
                                        MILTER_COMMAND_CONNECT,
                                        expected_macros);
     gcut_assert_error(feed());
+    packet_free();
 
     port = htons(50443);
     address.sin_family = AF_INET;
     address.sin_port = port;
     inet_aton(ip_address, &(address.sin_addr));
 
-    g_free(packet);
-    packet = NULL;
     milter_encoder_encode_connect(encoder,
                                   &packet, &packet_size,
                                   host_name,
@@ -596,6 +623,7 @@ test_feed_helo_with_macro (void)
                                        MILTER_COMMAND_HELO,
                                        expected_macros);
     gcut_assert_error(feed());
+    packet_free();
 
     milter_encoder_encode_helo(encoder, &packet, &packet_size, fqdn);
     gcut_assert_error(feed());
@@ -614,6 +642,37 @@ test_feed_envelope_from (void)
     gcut_assert_error(feed());
     cut_assert_equal_int(1, n_envelope_froms);
     cut_assert_equal_string(from, envelope_from_address);
+
+    gcut_assert_equal_hash_table_string_string(expected_macros, defined_macros);
+}
+
+void
+test_feed_envelope_from_with_macro (void)
+{
+    const gchar from[] = "<kou@cozmixng.org>";
+
+    macro_name = g_strdup("mail_addr");
+    expected_macros =
+        gcut_hash_table_string_string_new("{mail_addr}", "kou@cozmixng.org",
+                                          NULL);
+    milter_encoder_encode_define_macro(encoder,
+                                       &packet, &packet_size,
+                                       MILTER_COMMAND_MAIL,
+                                       expected_macros);
+    gcut_assert_error(feed());
+    packet_free();
+
+    milter_encoder_encode_mail(encoder, &packet, &packet_size, from);
+    gcut_assert_error(feed());
+    cut_assert_equal_int(1, n_envelope_froms);
+    cut_assert_equal_string(from, envelope_from_address);
+
+    g_hash_table_unref(expected_macros);
+    expected_macros =
+        gcut_hash_table_string_string_new("mail_addr", "kou@cozmixng.org",
+                                          NULL);
+    gcut_assert_equal_hash_table_string_string(expected_macros, defined_macros);
+    cut_assert_equal_string("kou@cozmixng.org", macro_value);
 }
 
 void
