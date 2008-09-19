@@ -39,8 +39,8 @@ void data_feed_envelope_from (void);
 void test_feed_envelope_from (gconstpointer data);
 void data_feed_envelope_receipt (void);
 void test_feed_envelope_receipt (gconstpointer data);
-void test_feed_header (void);
-void test_feed_header_with_macro (void);
+void data_feed_header (void);
+void test_feed_header (gconstpointer data);
 void test_feed_end_of_header (void);
 void test_feed_end_of_header_with_macro (void);
 void test_feed_body (void);
@@ -747,35 +747,36 @@ test_feed_envelope_receipt (gconstpointer data)
         cut_assert_equal_string(expected_macro_value, macro_value);
 }
 
-void
-test_feed_header (void)
+static void
+feed_header_pre_hook_with_macro (void)
 {
-    const gchar date[] = "Fri,  5 Sep 2008 09:19:56 +0900 (JST)";
-
-    milter_encoder_encode_header(encoder, &packet, &packet_size, "Date", date);
-    gcut_assert_error(feed());
-    cut_assert_equal_int(1, n_headers);
-    cut_assert_equal_string("Date", header_name);
-    cut_assert_equal_string(date, header_value);
-
-    gcut_assert_equal_hash_table_string_string(NULL, defined_macros);
-}
-
-void
-test_feed_header_with_macro (void)
-{
-    const gchar date[] = "Fri,  5 Sep 2008 09:19:56 +0900 (JST)";
-    const gchar id[] = "69FDD42DF4A";
-
     macro_name = g_strdup("i");
+    expected_macro_value = g_strdup("69FDD42DF4A");
     expected_macros =
-        gcut_hash_table_string_string_new("i", id, NULL);
+        gcut_hash_table_string_string_new("i", "69FDD42DF4A", NULL);
     milter_encoder_encode_define_macro(encoder,
                                        &packet, &packet_size,
                                        MILTER_COMMAND_HEADER,
                                        expected_macros);
     gcut_assert_error(feed());
     packet_free();
+}
+
+void
+data_feed_header (void)
+{
+    cut_add_data("without macro", NULL, NULL,
+                 "with macro", feed_header_pre_hook_with_macro, NULL);
+}
+
+void
+test_feed_header (gconstpointer data)
+{
+    const HookFunction pre_hook = data;
+    const gchar date[] = "Fri,  5 Sep 2008 09:19:56 +0900 (JST)";
+
+    if (pre_hook)
+        pre_hook();
 
     milter_encoder_encode_header(encoder, &packet, &packet_size, "Date", date);
     gcut_assert_error(feed());
@@ -784,7 +785,8 @@ test_feed_header_with_macro (void)
     cut_assert_equal_string(date, header_value);
 
     gcut_assert_equal_hash_table_string_string(expected_macros, defined_macros);
-    cut_assert_equal_string(id, macro_value);
+    if (macro_name)
+        cut_assert_equal_string(expected_macro_value, macro_value);
 }
 
 void
