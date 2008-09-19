@@ -40,6 +40,7 @@ void test_feed_envelope_from_with_macro (void);
 void test_feed_envelope_receipt (void);
 void test_feed_envelope_receipt_with_macro (void);
 void test_feed_header (void);
+void test_feed_header_with_macro (void);
 void test_feed_end_of_header (void);
 void test_feed_body (void);
 void test_feed_end_of_message (void);
@@ -728,6 +729,34 @@ test_feed_header (void)
     cut_assert_equal_int(1, n_headers);
     cut_assert_equal_string("Date", header_name);
     cut_assert_equal_string(date, header_value);
+
+    gcut_assert_equal_hash_table_string_string(NULL, defined_macros);
+}
+
+void
+test_feed_header_with_macro (void)
+{
+    const gchar date[] = "Fri,  5 Sep 2008 09:19:56 +0900 (JST)";
+    const gchar id[] = "69FDD42DF4A";
+
+    macro_name = g_strdup("i");
+    expected_macros =
+        gcut_hash_table_string_string_new("i", id, NULL);
+    milter_encoder_encode_define_macro(encoder,
+                                       &packet, &packet_size,
+                                       MILTER_COMMAND_HEADER,
+                                       expected_macros);
+    gcut_assert_error(feed());
+    packet_free();
+
+    milter_encoder_encode_header(encoder, &packet, &packet_size, "Date", date);
+    gcut_assert_error(feed());
+    cut_assert_equal_int(1, n_headers);
+    cut_assert_equal_string("Date", header_name);
+    cut_assert_equal_string(date, header_value);
+
+    gcut_assert_equal_hash_table_string_string(expected_macros, defined_macros);
+    cut_assert_equal_string(id, macro_value);
 }
 
 void

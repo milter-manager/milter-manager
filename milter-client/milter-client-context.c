@@ -508,9 +508,14 @@ cb_decoder_header (MilterDecoder *decoder,
                    gpointer user_data)
 {
     MilterClientContext *context = user_data;
+    MilterClientContextPrivate *priv;
     MilterClientStatus status = MILTER_CLIENT_STATUS_CONTINUE;
 
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    priv->macro_context = MILTER_COMMAND_HEADER;
     g_signal_emit(context, signals[HEADER], 0, name, value, &status);
+    clear_macros(context, priv->macro_context);
+    priv->macro_context = MILTER_COMMAND_UNKNOWN;
 }
 
 static void
