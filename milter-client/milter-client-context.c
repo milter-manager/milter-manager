@@ -393,11 +393,28 @@ cb_decoder_connect (MilterDecoder *decoder, const gchar *host_name,
                   host_name, address, address_length, &status);
 }
 
+
+static void
+cb_decoder_option_negotiation (MilterDecoder *decoder, MilterOption *option,
+                               gpointer user_data)
+{
+    MilterClientContext *context = user_data;
+    MilterClientStatus status = MILTER_CLIENT_STATUS_ALL_OPTIONS;
+
+    g_signal_emit(context, signals[OPTION_NEGOTIATION], 0, option, &status);
+}
+
 static void
 setup_decoder (MilterClientContext *context, MilterDecoder *decoder)
 {
-    g_signal_connect(decoder, "connect",
-                     G_CALLBACK(cb_decoder_connect), context);
+#define CONNECT(name)                                                   \
+    g_signal_connect(decoder, #name, G_CALLBACK(cb_decoder_ ## name),   \
+                     context)
+
+    CONNECT(option_negotiation);
+    CONNECT(connect);
+
+#undef CONNECT
 }
 
 

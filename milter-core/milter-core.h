@@ -20,6 +20,7 @@
 #ifndef __MILTER_CORE_H__
 #define __MILTER_CORE_H__
 
+#include <milter-core/milter-protocol.h>
 #include <milter-core/milter-encoder.h>
 #include <milter-core/milter-decoder.h>
 #include <milter-core/milter-enum-types.h>

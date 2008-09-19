@@ -1,5 +1,7 @@
 2008-09-19  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-client/, test/client/: support option negotiation hook.
+
 	* milter-client/, test/client/: MilterClientHandler ->
 	MilterClientContext.
 

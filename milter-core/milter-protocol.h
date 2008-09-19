@@ -20,6 +20,8 @@
 #ifndef __MILTER_PROTOCOL_H__
 #define __MILTER_PROTOCOL_H__
 
+#include <glib-object.h>
+
 G_BEGIN_DECLS
 
 typedef enum

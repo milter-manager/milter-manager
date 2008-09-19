@@ -28,6 +28,7 @@
 #include <milter-client.h>
 #undef shutdown
 
+void test_feed_option_negotiation (void);
 void test_feed_connect_ipv4 (void);
 
 static MilterClientContext *context;
@@ -75,17 +76,17 @@ static gsize body_chunk_length;
 static gchar *unknown_command;
 static gsize unknown_command_length;
 
-static MilterReply
+static MilterClientStatus
 cb_option_negotiation (MilterClientContext *context, MilterOption *option,
                        gpointer user_data)
 {
     n_option_negotiations++;
     option_negotiation_option = g_object_ref(option);
 
-    return MILTER_REPLY_CONTINUE;
+    return MILTER_CLIENT_STATUS_CONTINUE;
 }
 
-static MilterReply
+static MilterClientStatus
 cb_connect (MilterClientContext *context, const gchar *host_name,
             const struct sockaddr *address, socklen_t address_length,
             gpointer user_data)
@@ -97,40 +98,42 @@ cb_connect (MilterClientContext *context, const gchar *host_name,
     memcpy(connect_address, address, address_length);
     connect_address_length = address_length;
 
-    return MILTER_REPLY_CONTINUE;
+    return MILTER_CLIENT_STATUS_CONTINUE;
 }
 
-static MilterReply
+static MilterClientStatus
 cb_helo (MilterClientContext *context, const gchar *fqdn, gpointer user_data)
 {
     n_helos++;
 
     helo_fqdn = g_strdup(fqdn);
 
-    return MILTER_REPLY_CONTINUE;
+    return MILTER_CLIENT_STATUS_CONTINUE;
 }
 
-static MilterReply
-cb_envelope_from (MilterClientContext *context, const gchar *from, gpointer user_data)
+static MilterClientStatus
+cb_envelope_from (MilterClientContext *context, const gchar *from,
+                  gpointer user_data)
 {
     n_envelope_froms++;
 
     envelope_from_address = g_strdup(from);
 
-    return MILTER_REPLY_CONTINUE;
+    return MILTER_CLIENT_STATUS_CONTINUE;
 }
 
-static MilterReply
-cb_envelope_receipt (MilterClientContext *context, const gchar *to, gpointer user_data)
+static MilterClientStatus
+cb_envelope_receipt (MilterClientContext *context, const gchar *to,
+                     gpointer user_data)
 {
     n_envelope_receipts++;
 
     envelope_receipt_address = g_strdup(to);
 
-    return MILTER_REPLY_CONTINUE;
+    return MILTER_CLIENT_STATUS_CONTINUE;
 }
 
-static MilterReply
+static MilterClientStatus
 cb_header (MilterClientContext *context, const gchar *name, const gchar *value,
            gpointer user_data)
 {
@@ -144,18 +147,18 @@ cb_header (MilterClientContext *context, const gchar *name, const gchar *value,
         g_free(header_value);
     header_value = g_strdup(value);
 
-    return MILTER_REPLY_CONTINUE;
+    return MILTER_CLIENT_STATUS_CONTINUE;
 }
 
-static MilterReply
+static MilterClientStatus
 cb_end_of_header (MilterClientContext *context, gpointer user_data)
 {
     n_end_of_headers++;
 
-    return MILTER_REPLY_CONTINUE;
+    return MILTER_CLIENT_STATUS_CONTINUE;
 }
 
-static MilterReply
+static MilterClientStatus
 cb_body (MilterClientContext *context, const gchar *chunk, gsize length,
          gpointer user_data)
 {
@@ -166,35 +169,36 @@ cb_body (MilterClientContext *context, const gchar *chunk, gsize length,
     body_chunk = g_strndup(chunk, length);
     body_chunk_length = length;
 
-    return MILTER_REPLY_CONTINUE;
+    return MILTER_CLIENT_STATUS_CONTINUE;
 }
 
-static MilterReply
+static MilterClientStatus
 cb_end_of_message (MilterClientContext *context, gpointer user_data)
 {
     n_end_of_messages++;
 
-    return MILTER_REPLY_CONTINUE;
+    return MILTER_CLIENT_STATUS_CONTINUE;
 }
 
-static MilterReply
+static MilterClientStatus
 cb_abort (MilterClientContext *context, gpointer user_data)
 {
     n_aborts++;
 
-    return MILTER_REPLY_CONTINUE;
+    return MILTER_CLIENT_STATUS_CONTINUE;
 }
 
-static MilterReply
+static MilterClientStatus
 cb_close (MilterClientContext *context, gpointer user_data)
 {
     n_closes++;
 
-    return MILTER_REPLY_CONTINUE;
+    return MILTER_CLIENT_STATUS_CONTINUE;
 }
 
-static MilterReply
-cb_unknown (MilterClientContext *context, const gchar *command, gpointer user_data)
+static MilterClientStatus
+cb_unknown (MilterClientContext *context, const gchar *command,
+            gpointer user_data)
 {
     n_unknowns++;
 
@@ -202,7 +206,7 @@ cb_unknown (MilterClientContext *context, const gchar *command, gpointer user_da
         g_free(unknown_command);
     unknown_command = g_strdup(command);
 
-    return MILTER_REPLY_CONTINUE;
+    return MILTER_CLIENT_STATUS_CONTINUE;
 }
 
 static void
@@ -329,6 +333,50 @@ feed (void)
     milter_client_context_feed(context, packet, packet_size, &error);
 
     return error;
+}
+
+void
+test_feed_option_negotiation (void)
+{
+    MilterOption *option;
+    MilterOption *negotiated_option;
+    guint32 version;
+    MilterActionFlags action;
+    MilterStepFlags step;
+
+    version = 2;
+    action = MILTER_ACTION_ADD_HEADERS |
+        MILTER_ACTION_CHANGE_BODY |
+        MILTER_ACTION_ADD_RCPT |
+        MILTER_ACTION_DELETE_RCPT |
+        MILTER_ACTION_CHANGE_HEADERS |
+        MILTER_ACTION_QUARANTINE |
+        MILTER_ACTION_SET_SYMBOL_LIST;
+    step = MILTER_STEP_NO_CONNECT |
+        MILTER_STEP_NO_HELO |
+        MILTER_STEP_NO_MAIL |
+        MILTER_STEP_NO_RCPT |
+        MILTER_STEP_NO_BODY |
+        MILTER_STEP_NO_HEADERS |
+        MILTER_STEP_NO_END_OF_HEADER;
+    option = milter_option_new(2, action, step);
+
+    milter_encoder_encode_option_negotiation(encoder,
+                                             &packet, &packet_size,
+                                             option);
+    g_object_unref(option);
+
+    gcut_assert_error(feed());
+    cut_assert_equal_int(1, n_option_negotiations);
+
+    negotiated_option = option_negotiation_option;
+    cut_assert_equal_int(version, milter_option_get_version(negotiated_option));
+    gcut_assert_equal_enum(MILTER_TYPE_ACTION_FLAGS,
+                           action,
+                           milter_option_get_action(negotiated_option));
+    gcut_assert_equal_enum(MILTER_TYPE_STEP_FLAGS,
+                           step,
+                           milter_option_get_step(negotiated_option));
 }
 
 void
