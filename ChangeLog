@@ -1,5 +1,8 @@
 2008-09-19  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-client/milter-client-context.[ch],
+	test/client/test-client-context.c: support HELO	hook.
+
 	* milter-client/, test/client/: support option negotiation hook.
 
 	* milter-client/, test/client/: MilterClientHandler ->

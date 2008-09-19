@@ -30,6 +30,7 @@
 
 void test_feed_option_negotiation (void);
 void test_feed_connect_ipv4 (void);
+void test_feed_helo (void);
 
 static MilterClientContext *context;
 static MilterEncoder *encoder;
@@ -407,6 +408,17 @@ test_feed_connect_ipv4 (void)
     cut_assert_equal_int(AF_INET, connected_address->sin_family);
     cut_assert_equal_uint(port, connected_address->sin_port);
     cut_assert_equal_string(ip_address, inet_ntoa(connected_address->sin_addr));
+}
+
+void
+test_feed_helo (void)
+{
+    const gchar fqdn[] = "delian";
+
+    milter_encoder_encode_helo(encoder, &packet, &packet_size, fqdn);
+    gcut_assert_error(feed());
+    cut_assert_equal_int(1, n_helos);
+    cut_assert_equal_string(fqdn, helo_fqdn);
 }
 
 /*

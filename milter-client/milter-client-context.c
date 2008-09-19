@@ -159,9 +159,8 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_SIGNAL_RUN_CLEANUP,
                      G_STRUCT_OFFSET(MilterClientContextClass, helo),
                      status_accumulator, NULL,
-                     _milter_client_marshal_ENUM__STRING_POINTER_UINT,
-                     MILTER_TYPE_CLIENT_STATUS, 3,
-                     G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_UINT);
+                     _milter_client_marshal_ENUM__STRING,
+                     MILTER_TYPE_CLIENT_STATUS, 1, G_TYPE_STRING);
 
     signals[ENVELOPE_FROM] =
         g_signal_new("envelope-from",
@@ -381,18 +380,6 @@ status_accumulator (GSignalInvocationHint *hint,
     return status == MILTER_CLIENT_STATUS_CONTINUE;
 }
 
-static void
-cb_decoder_connect (MilterDecoder *decoder, const gchar *host_name,
-                    struct sockaddr *address, socklen_t address_length,
-                    gpointer user_data)
-{
-    MilterClientContext *context = user_data;
-    MilterClientStatus status = MILTER_CLIENT_STATUS_CONTINUE;
-
-    g_signal_emit(context, signals[CONNECT], 0,
-                  host_name, address, address_length, &status);
-}
-
 
 static void
 cb_decoder_option_negotiation (MilterDecoder *decoder, MilterOption *option,
@@ -405,6 +392,28 @@ cb_decoder_option_negotiation (MilterDecoder *decoder, MilterOption *option,
 }
 
 static void
+cb_decoder_connect (MilterDecoder *decoder, const gchar *host_name,
+                    struct sockaddr *address, socklen_t address_length,
+                    gpointer user_data)
+{
+    MilterClientContext *context = user_data;
+    MilterClientStatus status = MILTER_CLIENT_STATUS_CONTINUE;
+
+    g_signal_emit(context, signals[CONNECT], 0,
+                  host_name, address, address_length, &status);
+}
+
+static void
+cb_decoder_helo (MilterDecoder *decoder, const gchar *fqdn, gpointer user_data)
+{
+    MilterClientContext *context = user_data;
+    MilterClientStatus status = MILTER_CLIENT_STATUS_CONTINUE;
+
+    g_signal_emit(context, signals[HELO], 0, fqdn, &status);
+}
+
+
+static void
 setup_decoder (MilterClientContext *context, MilterDecoder *decoder)
 {
 #define CONNECT(name)                                                   \
@@ -413,6 +422,7 @@ setup_decoder (MilterClientContext *context, MilterDecoder *decoder)
 
     CONNECT(option_negotiation);
     CONNECT(connect);
+    CONNECT(helo);
 
 #undef CONNECT
 }
