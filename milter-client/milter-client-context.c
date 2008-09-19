@@ -537,9 +537,14 @@ cb_decoder_body (MilterDecoder *decoder, const gchar *chunk, gsize chunk_size,
                  gpointer user_data)
 {
     MilterClientContext *context = user_data;
+    MilterClientContextPrivate *priv;
     MilterClientStatus status = MILTER_CLIENT_STATUS_CONTINUE;
 
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    priv->macro_context = MILTER_COMMAND_BODY;
     g_signal_emit(context, signals[BODY], 0, chunk, chunk_size, &status);
+    clear_macros(context, priv->macro_context);
+    priv->macro_context = MILTER_COMMAND_UNKNOWN;
 }
 
 static void

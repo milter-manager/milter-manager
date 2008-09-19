@@ -44,6 +44,7 @@ void test_feed_header_with_macro (void);
 void test_feed_end_of_header (void);
 void test_feed_end_of_header_with_macro (void);
 void test_feed_body (void);
+void test_feed_body_with_macro (void);
 void test_feed_end_of_message (void);
 void test_feed_end_of_message_without_data (void);
 void test_feed_close (void);
@@ -808,6 +809,40 @@ test_feed_body (void)
     cut_assert_equal_int(1, n_bodies);
     cut_assert_equal_string(body, body_chunk);
     cut_assert_equal_int(sizeof(body), body_chunk_size);
+
+    gcut_assert_equal_hash_table_string_string(NULL, defined_macros);
+}
+
+void
+test_feed_body_with_macro (void)
+{
+    const gchar body[] =
+        "La de da de da 1.\n"
+        "La de da de da 2.\n"
+        "La de da de da 3.\n"
+        "La de da de da 4.";
+    const gchar id[] = "69FDD42DF4A";
+
+    macro_name = g_strdup("i");
+    expected_macros =
+        gcut_hash_table_string_string_new("i", id, NULL);
+    milter_encoder_encode_define_macro(encoder,
+                                       &packet, &packet_size,
+                                       MILTER_COMMAND_BODY,
+                                       expected_macros);
+    gcut_assert_error(feed());
+    packet_free();
+
+
+    milter_encoder_encode_body(encoder, &packet, &packet_size,
+                               body, sizeof(body));
+    gcut_assert_error(feed());
+    cut_assert_equal_int(1, n_bodies);
+    cut_assert_equal_string(body, body_chunk);
+    cut_assert_equal_int(sizeof(body), body_chunk_size);
+
+    gcut_assert_equal_hash_table_string_string(expected_macros, defined_macros);
+    cut_assert_equal_string(id, macro_value);
 }
 
 void

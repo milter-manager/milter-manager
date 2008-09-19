@@ -1,6 +1,9 @@
 2008-09-19  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter-client/milter-client-context.c,
+	test/client/test-client-context.c: support macro on body hook.
+
+	* milter-client/milter-client-context.c,
 	test/client/test-client-context.c: support macro on end-of-header hook.
 
 	* milter-client/milter-client-context.c,
