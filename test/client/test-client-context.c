@@ -35,6 +35,7 @@ void test_feed_envelope_from (void);
 void test_feed_envelope_receipt (void);
 void test_feed_header (void);
 void test_feed_end_of_header (void);
+void test_feed_body (void);
 
 static MilterClientContext *context;
 static MilterEncoder *encoder;
@@ -64,7 +65,7 @@ static GHashTable *defined_macros;
 
 static gchar *connect_host_name;
 static struct sockaddr *connect_address;
-static socklen_t connect_address_length;
+static socklen_t connect_address_size;
 
 static gchar *helo_fqdn;
 
@@ -76,10 +77,10 @@ static gchar *header_name;
 static gchar *header_value;
 
 static gchar *body_chunk;
-static gsize body_chunk_length;
+static gsize body_chunk_size;
 
 static gchar *unknown_command;
-static gsize unknown_command_length;
+static gsize unknown_command_size;
 
 static MilterClientStatus
 cb_option_negotiation (MilterClientContext *context, MilterOption *option,
@@ -93,15 +94,15 @@ cb_option_negotiation (MilterClientContext *context, MilterOption *option,
 
 static MilterClientStatus
 cb_connect (MilterClientContext *context, const gchar *host_name,
-            const struct sockaddr *address, socklen_t address_length,
+            const struct sockaddr *address, socklen_t address_size,
             gpointer user_data)
 {
     n_connects++;
 
     connect_host_name = g_strdup(host_name);
-    connect_address = malloc(address_length);
-    memcpy(connect_address, address, address_length);
-    connect_address_length = address_length;
+    connect_address = malloc(address_size);
+    memcpy(connect_address, address, address_size);
+    connect_address_size = address_size;
 
     return MILTER_CLIENT_STATUS_CONTINUE;
 }
@@ -164,15 +165,15 @@ cb_end_of_header (MilterClientContext *context, gpointer user_data)
 }
 
 static MilterClientStatus
-cb_body (MilterClientContext *context, const gchar *chunk, gsize length,
+cb_body (MilterClientContext *context, const gchar *chunk, gsize size,
          gpointer user_data)
 {
     n_bodies++;
 
     if (body_chunk)
         g_free(body_chunk);
-    body_chunk = g_strndup(chunk, length);
-    body_chunk_length = length;
+    body_chunk = g_strndup(chunk, size);
+    body_chunk_size = size;
 
     return MILTER_CLIENT_STATUS_CONTINUE;
 }
@@ -268,7 +269,7 @@ setup (void)
 
     connect_host_name = NULL;
     connect_address = NULL;
-    connect_address_length = 0;
+    connect_address_size = 0;
 
     helo_fqdn = NULL;
 
@@ -280,10 +281,10 @@ setup (void)
     header_value = NULL;
 
     body_chunk = NULL;
-    body_chunk_length = 0;
+    body_chunk_size = 0;
 
     unknown_command = NULL;
-    unknown_command_length = 0;
+    unknown_command_size = 0;
 }
 
 void
@@ -406,7 +407,7 @@ test_feed_connect_ipv4 (void)
     gcut_assert_error(feed());
     cut_assert_equal_int(1, n_connects);
     cut_assert_equal_string(host_name, connect_host_name);
-    cut_assert_equal_int(sizeof(struct sockaddr_in), connect_address_length);
+    cut_assert_equal_int(sizeof(struct sockaddr_in), connect_address_size);
 
     connected_address = (struct sockaddr_in *)connect_address;
     cut_assert_equal_int(AF_INET, connected_address->sin_family);
@@ -466,6 +467,24 @@ test_feed_end_of_header (void)
     gcut_assert_error(feed());
     cut_assert_equal_int(1, n_end_of_headers);
 }
+
+void
+test_feed_body (void)
+{
+    const gchar body[] =
+        "La de da de da 1.\n"
+        "La de da de da 2.\n"
+        "La de da de da 3.\n"
+        "La de da de da 4.";
+
+    milter_encoder_encode_body(encoder, &packet, &packet_size,
+                               body, sizeof(body));
+    gcut_assert_error(feed());
+    cut_assert_equal_int(1, n_bodies);
+    cut_assert_equal_string(body, body_chunk);
+    cut_assert_equal_int(sizeof(body), body_chunk_size);
+}
+
 
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4

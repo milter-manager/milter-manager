@@ -2,6 +2,10 @@
 
 	* milter-client/milter-client-context.c,
 	milter-client/milter-client-marshalers.list,
+	test/client/test-client-context.c: support body hook.
+
+	* milter-client/milter-client-context.c,
+	milter-client/milter-client-marshalers.list,
 	test/client/test-client-context.c: support end of header hook.
 
 	* milter-client/milter-client-context.c,
