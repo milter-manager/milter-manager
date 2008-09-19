@@ -41,8 +41,8 @@ void data_feed_envelope_receipt (void);
 void test_feed_envelope_receipt (gconstpointer data);
 void data_feed_header (void);
 void test_feed_header (gconstpointer data);
-void test_feed_end_of_header (void);
-void test_feed_end_of_header_with_macro (void);
+void data_feed_end_of_header (void);
+void test_feed_end_of_header (gconstpointer data);
 void test_feed_body (void);
 void test_feed_body_with_macro (void);
 void test_feed_end_of_message (void);
@@ -789,37 +789,43 @@ test_feed_header (gconstpointer data)
         cut_assert_equal_string(expected_macro_value, macro_value);
 }
 
-void
-test_feed_end_of_header (void)
+static void
+feed_end_of_header_pre_hook_with_macro (void)
 {
-    milter_encoder_encode_end_of_header(encoder, &packet, &packet_size);
-    gcut_assert_error(feed());
-    cut_assert_equal_int(1, n_end_of_headers);
-
-    gcut_assert_equal_hash_table_string_string(NULL, defined_macros);
-}
-
-void
-test_feed_end_of_header_with_macro (void)
-{
-    const gchar id[] = "69FDD42DF4A";
-
     macro_name = g_strdup("i");
+    expected_macro_value = g_strdup("69FDD42DF4A");
     expected_macros =
-        gcut_hash_table_string_string_new("i", id, NULL);
+        gcut_hash_table_string_string_new("i", "69FDD42DF4A", NULL);
     milter_encoder_encode_define_macro(encoder,
                                        &packet, &packet_size,
                                        MILTER_COMMAND_END_OF_HEADER,
                                        expected_macros);
     gcut_assert_error(feed());
     packet_free();
+}
+
+void
+data_feed_end_of_header (void)
+{
+    cut_add_data("without macro", NULL, NULL,
+                 "with macro", feed_end_of_header_pre_hook_with_macro, NULL);
+}
+
+void
+test_feed_end_of_header (gconstpointer data)
+{
+    const HookFunction pre_hook = data;
+
+    if (pre_hook)
+        pre_hook();
 
     milter_encoder_encode_end_of_header(encoder, &packet, &packet_size);
     gcut_assert_error(feed());
     cut_assert_equal_int(1, n_end_of_headers);
 
     gcut_assert_equal_hash_table_string_string(expected_macros, defined_macros);
-    cut_assert_equal_string(id, macro_value);
+    if (macro_name)
+        cut_assert_equal_string(expected_macro_value, macro_value);
 }
 
 void
