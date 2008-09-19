@@ -34,6 +34,7 @@ void test_feed_helo (void);
 void test_feed_envelope_from (void);
 void test_feed_envelope_receipt (void);
 void test_feed_header (void);
+void test_feed_end_of_header (void);
 
 static MilterClientContext *context;
 static MilterEncoder *encoder;
@@ -456,6 +457,14 @@ test_feed_header (void)
     cut_assert_equal_int(1, n_headers);
     cut_assert_equal_string("Date", header_name);
     cut_assert_equal_string(date, header_value);
+}
+
+void
+test_feed_end_of_header (void)
+{
+    milter_encoder_encode_end_of_header(encoder, &packet, &packet_size);
+    gcut_assert_error(feed());
+    cut_assert_equal_int(1, n_end_of_headers);
 }
 
 /*
