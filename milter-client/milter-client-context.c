@@ -271,9 +271,8 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_SIGNAL_RUN_CLEANUP,
                      G_STRUCT_OFFSET(MilterClientContextClass, abort),
                      status_accumulator, NULL,
-                     _milter_client_marshal_ENUM__STRING_POINTER_UINT,
-                     MILTER_TYPE_CLIENT_STATUS, 3,
-                     G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_UINT);
+                     _milter_client_marshal_ENUM__VOID,
+                     MILTER_TYPE_CLIENT_STATUS, 0);
 
     g_type_class_add_private(gobject_class, sizeof(MilterClientContextPrivate));
 }
@@ -471,6 +470,15 @@ cb_decoder_quit (MilterDecoder *decoder, gpointer user_data)
     g_signal_emit(context, signals[CLOSE], 0, &status);
 }
 
+static void
+cb_decoder_abort (MilterDecoder *decoder, gpointer user_data)
+{
+    MilterClientContext *context = user_data;
+    MilterClientStatus status = MILTER_CLIENT_STATUS_CONTINUE;
+
+    g_signal_emit(context, signals[ABORT], 0, &status);
+}
+
 
 static void
 setup_decoder (MilterClientContext *context, MilterDecoder *decoder)
@@ -489,6 +497,7 @@ setup_decoder (MilterClientContext *context, MilterDecoder *decoder)
     CONNECT(body);
     CONNECT(end_of_message);
     CONNECT(quit);
+    CONNECT(abort);
 
 #undef CONNECT
 }
