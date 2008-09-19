@@ -33,8 +33,8 @@ void test_feed_connect_ipv4 (void);
 void test_feed_connect_ipv6 (void);
 void test_feed_connect_unix (void);
 void test_feed_connect_with_macro (void);
-void test_feed_helo (void);
-void test_feed_helo_with_macro (void);
+void data_feed_helo (void);
+void test_feed_helo (gconstpointer data);
 void test_feed_envelope_from (void);
 void test_feed_envelope_from_with_macro (void);
 void test_feed_envelope_receipt (void);
@@ -81,6 +81,7 @@ static GHashTable *defined_macros;
 
 static gchar *macro_name;
 static gchar *macro_value;
+static gchar *expected_macro_value;
 
 static gchar *connect_host_name;
 static struct sockaddr *connect_address;
@@ -332,6 +333,7 @@ setup (void)
 
     macro_name = NULL;
     macro_value = NULL;
+    expected_macro_value = NULL;
 
     connect_host_name = NULL;
     connect_address = NULL;
@@ -384,6 +386,8 @@ teardown (void)
         g_free(macro_name);
     if (macro_value)
         g_free(macro_value);
+    if (expected_macro_value)
+        g_free(expected_macro_value);
 
     if (connect_host_name)
         g_free(connect_host_name);
@@ -410,6 +414,8 @@ teardown (void)
     if (unknown_command)
         g_free(unknown_command);
 }
+
+typedef void (*HookFunction) (void);
 
 static GError *
 feed (void)
@@ -605,24 +611,9 @@ test_feed_connect_with_macro (void)
     gcut_assert_equal_hash_table_string_string(expected_macros, defined_macros);
 }
 
-void
-test_feed_helo (void)
+static void
+feed_helo_pre_hook_with_macro (void)
 {
-    const gchar fqdn[] = "delian";
-
-    milter_encoder_encode_helo(encoder, &packet, &packet_size, fqdn);
-    gcut_assert_error(feed());
-    cut_assert_equal_int(1, n_helos);
-    cut_assert_equal_string(fqdn, helo_fqdn);
-
-    gcut_assert_equal_hash_table_string_string(NULL, defined_macros);
-}
-
-void
-test_feed_helo_with_macro (void)
-{
-    const gchar fqdn[] = "delian";
-
     expected_macros = gcut_hash_table_string_string_new(NULL, NULL);
     milter_encoder_encode_define_macro(encoder,
                                        &packet, &packet_size,
@@ -631,12 +622,33 @@ test_feed_helo_with_macro (void)
     gcut_assert_error(feed());
     packet_free();
 
+    macro_name = g_strdup("nonexistent");
+}
+
+void
+data_feed_helo (void)
+{
+    cut_add_data("without macro", NULL, NULL,
+                 "with macro", feed_helo_pre_hook_with_macro, NULL);
+}
+
+void
+test_feed_helo (gconstpointer data)
+{
+    const HookFunction pre_hook = data;
+    const gchar fqdn[] = "delian";
+
+    if (pre_hook)
+        pre_hook();
+
     milter_encoder_encode_helo(encoder, &packet, &packet_size, fqdn);
     gcut_assert_error(feed());
     cut_assert_equal_int(1, n_helos);
     cut_assert_equal_string(fqdn, helo_fqdn);
 
     gcut_assert_equal_hash_table_string_string(expected_macros, defined_macros);
+    if (macro_name)
+        cut_assert_equal_string(expected_macro_value, macro_value);
 }
 
 void
