@@ -25,17 +25,31 @@
 
 #include <glib-object.h>
 
+#include <milter-core.h>
+
 G_BEGIN_DECLS
 
 #define MILTER_CLIENT_TYPE_HANDLER            (milter_client_handler_get_type())
-#define MILTER_CLIENT_HANDLER(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), MILTER_CLIENT_TYPE_HANDLER, MILTER_CLIENTHandler))
-#define MILTER_CLIENT_HANDLER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), MILTER_CLIENT_TYPE_HANDLER, MILTER_CLIENTHandlerClass))
+#define MILTER_CLIENT_HANDLER(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), MILTER_CLIENT_TYPE_HANDLER, MilterClientHandler))
+#define MILTER_CLIENT_HANDLER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), MILTER_CLIENT_TYPE_HANDLER, MilterClientHandlerClass))
 #define MILTER_CLIENT_IS_HANDLER(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), MILTER_CLIENT_TYPE_HANDLER))
 #define MILTER_CLIENT_IS_HANDLER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), MILTER_CLIENT_TYPE_HANDLER))
-#define MILTER_CLIENT_HANDLER_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MILTER_CLIENT_TYPE_HANDLER, MILTER_CLIENTHandlerClass))
+#define MILTER_CLIENT_HANDLER_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MILTER_CLIENT_TYPE_HANDLER, MilterClientHandlerClass))
 
 typedef struct _MilterClientHandler         MilterClientHandler;
 typedef struct _MilterClientHandlerClass    MilterClientHandlerClass;
+
+typedef enum
+{
+    MILTER_CLIENT_STATUS_CONTINUE,
+    MILTER_CLIENT_STATUS_REJECT,
+    MILTER_CLIENT_STATUS_DISCARD,
+    MILTER_CLIENT_STATUS_ACCEPT,
+    MILTER_CLIENT_STATUS_TEMP_FAILURE,
+    MILTER_CLIENT_STATUS_NO_REPLY,
+    MILTER_CLIENT_STATUS_SKIP,
+    MILTER_CLIENT_STATUS_ALL_OPTIONS
+} MilterClientStatus;
 
 struct _MilterClientHandler
 {
@@ -45,11 +59,42 @@ struct _MilterClientHandler
 struct _MilterClientHandlerClass
 {
     GObjectClass parent_class;
+
+    MilterClientStatus (*option_negotiation) (MilterClientHandler *handler,
+                                              MilterOption        *option);
+    MilterClientStatus (*connect)            (MilterClientHandler *handler,
+                                              const gchar         *host_name,
+                                              struct sockaddr     *address,
+                                              socklen_t            address_length);
+    MilterClientStatus (*helo)               (MilterClientHandler *handler,
+                                              const gchar         *fqdn);
+    MilterClientStatus (*envelope_from)      (MilterClientHandler *handler,
+                                              const gchar         *from);
+    MilterClientStatus (*envelope_receipt)   (MilterClientHandler *handler,
+                                              const gchar         *receipt);
+    MilterClientStatus (*data)               (MilterClientHandler *handler);
+    MilterClientStatus (*unknown)            (MilterClientHandler *handler,
+                                              const gchar         *command);
+    MilterClientStatus (*header)             (MilterClientHandler *handler,
+                                              const gchar         *name,
+                                              const gchar         *value);
+    MilterClientStatus (*end_of_header)      (MilterClientHandler *handler);
+    MilterClientStatus (*body)               (MilterClientHandler *handler,
+                                              const guchar        *chunk,
+                                              gsize                size);
+    MilterClientStatus (*end_of_message)     (MilterClientHandler *handler);
+    MilterClientStatus (*close)              (MilterClientHandler *handler);
+    MilterClientStatus (*abort)              (MilterClientHandler *handler);
 };
 
 GType                milter_client_handler_get_type          (void) G_GNUC_CONST;
 
 MilterClientHandler *milter_client_handler_new               (void);
+
+gboolean             milter_client_handler_feed              (MilterClientHandler *handler,
+                                                              const gchar *chunk,
+                                                              gsize size,
+                                                              GError **error);
 
 G_END_DECLS
 

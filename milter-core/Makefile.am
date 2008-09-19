@@ -38,7 +38,6 @@ BUILT_SOURCES = $(enum_sources) $(marshal_sources)
 milter_core_includedir=$(pkgincludedir)/milter-core
 milter_core_include_HEADERS =		\
 	milter-enum-types.h		\
-	milter-marshalers.h		\
 	$(milter_core_public_headers)
 
 lib_LTLIBRARIES =		\
@@ -46,7 +45,7 @@ lib_LTLIBRARIES =		\
 
 libmilter_core_la_SOURCES =		\
 	milter-enum-types.c		\
-	milter-marshalers.c		\
+	$(marshal_sources)		\
 	milter-decoder.c		\
 	milter-encoder.c		\
 	milter-option.c

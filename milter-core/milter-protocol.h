@@ -50,6 +50,35 @@ typedef enum
     MILTER_SOCKET_FAMILY_INET6 =	'6'
 } MilterSocketFamily;
 
+typedef enum
+{
+    MILTER_REPLY_ADD_RECEIPT =			'+', /* add recipient */
+    MILTER_REPLY_DELETE_RECEIPT	=		'-', /* remove recipient */
+    /* add recipient (incl. ESMTP args) */
+    MILTER_REPLY_ADD_RECEIPT_PARAMETERS =	'2',
+    /* 421: shutdown (internal to MTA) */
+    MILTER_REPLY_SHUTDOWN =			'4',
+    MILTER_REPLY_ACCEPT =			'a', /* accept */
+    MILTER_REPLY_REPLACE_BODY =			'b', /* replace body (chunk) */
+    MILTER_REPLY_CONTINUE =			'c', /* continue */
+    MILTER_REPLY_DISCARD =			'd', /* discard */
+    /* change envelope sender (from) */
+    MILTER_REPLY_CHANGE_FROM =			'e',
+    /* cause a connection failure */
+    MILTER_REPLY_CONNECTION_FAILURE =		'f',
+    MILTER_REPLY_ADD_HEADER =			'h', /* add header */
+    MILTER_REPLY_INSERT_HEADER =		'i', /* insert header */
+    /* set list of symbols (macros) */
+    MILTER_REPLY_SET_SYMBOL_LIST =		'l',
+    MILTER_REPLY_CHANGE_HEADER =		'm', /* change header */
+    MILTER_REPLY_PROGRESS =			'p', /* progress */
+    MILTER_REPLY_QUARANTINE =			'q', /* quarantine */
+    MILTER_REPLY_REJECT =			'r', /* reject */
+    MILTER_REPLY_SKIP =				's', /* skip */
+    MILTER_REPLY_TEMP_FAIL =			't', /* tempfail */
+    MILTER_REPLY_REPLY_CODE =			'y'  /* reply code etc */
+} MilterReply;
+
 G_END_DECLS
 
 #endif /* __MILTER_PROTOCOL_H__ */

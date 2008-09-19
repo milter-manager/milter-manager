@@ -602,11 +602,11 @@ decode_command_define_macro (MilterDecoder *decoder, GError **error)
 
 static gboolean
 decode_command_connect_inet_address (const gchar *buffer,
-                                    struct sockaddr **address,
-                                    socklen_t *address_length,
-                                    const gchar *host_name,
-                                    gchar family, guint port,
-                                    GError **error)
+                                     struct sockaddr **address,
+                                     socklen_t *address_length,
+                                     const gchar *host_name,
+                                     gchar family, guint port,
+                                     GError **error)
 {
     struct sockaddr_in *address_in;
     struct in_addr ip_address;
@@ -1066,8 +1066,8 @@ decode_command (MilterDecoder *decoder, GError **error)
 }
 
 gboolean
-milter_decoder_decode (MilterDecoder *decoder, const gchar *text, gsize text_len,
-                     GError **error)
+milter_decoder_decode (MilterDecoder *decoder, const gchar *chunk, gsize size,
+                       GError **error)
 {
     MilterDecoderPrivate *priv;
     gboolean loop = TRUE;
@@ -1077,10 +1077,10 @@ milter_decoder_decode (MilterDecoder *decoder, const gchar *text, gsize text_len
 
     g_return_val_if_fail(priv->state != MILTER_DECODER_ERROR, FALSE);
 
-    if (text_len == 0)
+    if (size == 0)
         return TRUE;
 
-    g_string_append_len(priv->buffer, text, text_len);
+    g_string_append_len(priv->buffer, chunk, size);
     while (loop) {
         switch (priv->state) {
           case IN_START:

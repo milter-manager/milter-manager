@@ -1,0 +1,24 @@
+if WITH_CUTTER
+noinst_LTLIBRARIES =		\
+	test-handler.la
+endif
+
+INCLUDES =				\
+	-I$(srcdir)			\
+	-I$(srcdir)/lib			\
+	-I$(top_srcdir)			\
+	-I$(top_srcdir)/milter-core	\
+	-I$(top_srcdir)/milter-client
+
+AM_CFLAGS = $(GCUTTER_CFLAGS)
+AM_LDFLAGS =			\
+	-module			\
+	-rpath "`pwd`/.libs"	\
+	-avoid-version		\
+	-no-undefined
+
+LIBS =								\
+	$(top_builddir)/milter-client/libmilter-client.la	\
+	$(GCUTTER_LIBS)
+
+test_handler_la_SOURCES = test-handler.c

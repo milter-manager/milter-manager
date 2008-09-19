@@ -190,6 +190,7 @@ AC_CONFIG_FILES([Makefile
 		 milter-client/Makefile
 		 test/Makefile
 		 test/core/Makefile
+		 test/client/Makefile
 		 po/Makefile.in])
 
 AC_OUTPUT

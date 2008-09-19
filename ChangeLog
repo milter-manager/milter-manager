@@ -1,38 +1,42 @@
+2008-09-19  Kouhei Sutou  <kou@cozmixng.org>
+
+	* /: start to implement MilterClientHandler.
+
 2008-09-18  Kouhei Sutou  <kou@cozmixng.org>
 
-	* milter-code/milter-encoder.[ch], test/core/test-encoder.c:
+	* milter-core/milter-encoder.[ch], test/core/test-encoder.c:
 	support ABORT, QUIT, unknown command.
 
-	* milter-code/milter-encoder.[ch], test/core/test-encoder.c:
+	* milter-core/milter-encoder.[ch], test/core/test-encoder.c:
 	support body and end of message.
 
-	* milter-code/milter-encoder.[ch], test/core/test-encoder.c:
+	* milter-core/milter-encoder.[ch], test/core/test-encoder.c:
 	support end of header.
 
-	* milter-code/milter-encoder.[ch], test/core/test-encoder.c:
+	* milter-core/milter-encoder.[ch], test/core/test-encoder.c:
 	support HEADER.
 
-	* milter-code/milter-encoder.[ch], test/core/test-encoder.c:
+	* milter-core/milter-encoder.[ch], test/core/test-encoder.c:
 	support RCPT.
 
-	* milter-code/milter-encoder.[ch], test/core/test-encoder.c:
+	* milter-core/milter-encoder.[ch], test/core/test-encoder.c:
 	support MAIL.
 
-	* milter-code/milter-encoder.[ch], test/core/test-encoder.c:
+	* milter-core/milter-encoder.[ch], test/core/test-encoder.c:
 	support HELO.
 
 	* milter-core/milter-encoder.c (milter_encoder_encode_connect): cleanup.
 
-	* milter-code/milter-encoder.[ch], test/core/test-encoder.c:
+	* milter-core/milter-encoder.[ch], test/core/test-encoder.c:
 	support connect.
 
-	* milter-code/, test/: remove MilterContextType.
-	* milter-code/milter-encoder.[ch], test/core/test-encoder.c:
+	* milter-core/, test/: remove MilterContextType.
+	* milter-core/milter-encoder.[ch], test/core/test-encoder.c:
 	support define macro.
 
 	* test/core/test-encoder.c: add a test for option is NULL case.
 
-	* milter-code/, test/: use gchar ** and gsize * instead of GString *
+	* milter-core/, test/: use gchar ** and gsize * instead of GString *
 	to receive encoded packet.
 
 	* miter-code/, test/: add MilterEncoder.

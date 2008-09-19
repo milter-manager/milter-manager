@@ -1,5 +1,6 @@
 SUBDIRS =	\
-	core
+	core	\
+	client
 
 if WITH_CUTTER
 TESTS = run-test.sh

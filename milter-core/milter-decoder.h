@@ -98,11 +98,11 @@ GType            milter_decoder_get_type          (void) G_GNUC_CONST;
 
 MilterDecoder   *milter_decoder_new               (void);
 
-gboolean         milter_decoder_decode            (MilterDecoder    *decoder,
-                                                   const gchar     *text,
-                                                   gsize            text_len,
+gboolean         milter_decoder_decode            (MilterDecoder   *decoder,
+                                                   const gchar     *chunk,
+                                                   gsize            size,
                                                    GError         **error);
-gboolean         milter_decoder_end_decode        (MilterDecoder    *decoder,
+gboolean         milter_decoder_end_decode        (MilterDecoder   *decoder,
                                                    GError         **error);
 
 G_END_DECLS
