@@ -130,9 +130,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
     signals[OPTION_NEGOTIATION] =
         g_signal_new("option-negotiation",
                      G_TYPE_FROM_CLASS(klass),
-                     G_SIGNAL_RUN_FIRST |
-                     G_SIGNAL_RUN_LAST |
-                     G_SIGNAL_RUN_CLEANUP,
+                     G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientContextClass,
                                      option_negotiation),
                      status_accumulator, NULL,
@@ -142,9 +140,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
     signals[CONNECT] =
         g_signal_new("connect",
                      G_TYPE_FROM_CLASS(klass),
-                     G_SIGNAL_RUN_FIRST |
-                     G_SIGNAL_RUN_LAST |
-                     G_SIGNAL_RUN_CLEANUP,
+                     G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientContextClass, connect),
                      status_accumulator, NULL,
                      _milter_client_marshal_ENUM__STRING_POINTER_UINT,
@@ -154,9 +150,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
     signals[HELO] =
         g_signal_new("helo",
                      G_TYPE_FROM_CLASS(klass),
-                     G_SIGNAL_RUN_FIRST |
-                     G_SIGNAL_RUN_LAST |
-                     G_SIGNAL_RUN_CLEANUP,
+                     G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientContextClass, helo),
                      status_accumulator, NULL,
                      _milter_client_marshal_ENUM__STRING,
@@ -165,9 +159,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
     signals[ENVELOPE_FROM] =
         g_signal_new("envelope-from",
                      G_TYPE_FROM_CLASS(klass),
-                     G_SIGNAL_RUN_FIRST |
-                     G_SIGNAL_RUN_LAST |
-                     G_SIGNAL_RUN_CLEANUP,
+                     G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientContextClass, envelope_from),
                      status_accumulator, NULL,
                      _milter_client_marshal_ENUM__STRING,
@@ -176,9 +168,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
     signals[ENVELOPE_RECEIPT] =
         g_signal_new("envelope-receipt",
                      G_TYPE_FROM_CLASS(klass),
-                     G_SIGNAL_RUN_FIRST |
-                     G_SIGNAL_RUN_LAST |
-                     G_SIGNAL_RUN_CLEANUP,
+                     G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientContextClass, envelope_receipt),
                      status_accumulator, NULL,
                      _milter_client_marshal_ENUM__STRING,
@@ -187,9 +177,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
     signals[DATA] =
         g_signal_new("data",
                      G_TYPE_FROM_CLASS(klass),
-                     G_SIGNAL_RUN_FIRST |
-                     G_SIGNAL_RUN_LAST |
-                     G_SIGNAL_RUN_CLEANUP,
+                     G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientContextClass, data),
                      status_accumulator, NULL,
                      _milter_client_marshal_ENUM__STRING_POINTER_UINT,
@@ -199,9 +187,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
     signals[UNKNOWN] =
         g_signal_new("unknown",
                      G_TYPE_FROM_CLASS(klass),
-                     G_SIGNAL_RUN_FIRST |
-                     G_SIGNAL_RUN_LAST |
-                     G_SIGNAL_RUN_CLEANUP,
+                     G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientContextClass, unknown),
                      status_accumulator, NULL,
                      _milter_client_marshal_ENUM__STRING_POINTER_UINT,
@@ -211,9 +197,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
     signals[HEADER] =
         g_signal_new("header",
                      G_TYPE_FROM_CLASS(klass),
-                     G_SIGNAL_RUN_FIRST |
-                     G_SIGNAL_RUN_LAST |
-                     G_SIGNAL_RUN_CLEANUP,
+                     G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientContextClass, header),
                      status_accumulator, NULL,
                      _milter_client_marshal_ENUM__STRING_STRING,
@@ -222,9 +206,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
     signals[END_OF_HEADER] =
         g_signal_new("end-of-header",
                      G_TYPE_FROM_CLASS(klass),
-                     G_SIGNAL_RUN_FIRST |
-                     G_SIGNAL_RUN_LAST |
-                     G_SIGNAL_RUN_CLEANUP,
+                     G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientContextClass, end_of_header),
                      status_accumulator, NULL,
                      _milter_client_marshal_ENUM__VOID,
@@ -233,9 +215,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
     signals[BODY] =
         g_signal_new("body",
                      G_TYPE_FROM_CLASS(klass),
-                     G_SIGNAL_RUN_FIRST |
-                     G_SIGNAL_RUN_LAST |
-                     G_SIGNAL_RUN_CLEANUP,
+                     G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientContextClass, body),
                      status_accumulator, NULL,
                      _milter_client_marshal_ENUM__STRING_UINT,
@@ -244,9 +224,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
     signals[END_OF_MESSAGE] =
         g_signal_new("end-of-message",
                      G_TYPE_FROM_CLASS(klass),
-                     G_SIGNAL_RUN_FIRST |
-                     G_SIGNAL_RUN_LAST |
-                     G_SIGNAL_RUN_CLEANUP,
+                     G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientContextClass, end_of_message),
                      status_accumulator, NULL,
                      _milter_client_marshal_ENUM__VOID,
@@ -255,9 +233,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
     signals[CLOSE] =
         g_signal_new("close",
                      G_TYPE_FROM_CLASS(klass),
-                     G_SIGNAL_RUN_FIRST |
-                     G_SIGNAL_RUN_LAST |
-                     G_SIGNAL_RUN_CLEANUP,
+                     G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientContextClass, close),
                      status_accumulator, NULL,
                      _milter_client_marshal_ENUM__VOID,
@@ -266,9 +242,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
     signals[ABORT] =
         g_signal_new("abort",
                      G_TYPE_FROM_CLASS(klass),
-                     G_SIGNAL_RUN_FIRST |
-                     G_SIGNAL_RUN_LAST |
-                     G_SIGNAL_RUN_CLEANUP,
+                     G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientContextClass, abort),
                      status_accumulator, NULL,
                      _milter_client_marshal_ENUM__VOID,

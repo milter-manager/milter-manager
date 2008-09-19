@@ -30,6 +30,8 @@
 
 void test_feed_option_negotiation (void);
 void test_feed_connect_ipv4 (void);
+void test_feed_connect_ipv6 (void);
+void test_feed_connect_unix (void);
 void test_feed_helo (void);
 void test_feed_envelope_from (void);
 void test_feed_envelope_receipt (void);
@@ -65,6 +67,7 @@ static gint n_unknowns;
 
 static MilterOption *option_negotiation_option;
 
+static GHashTable *expected_macros;
 static GHashTable *defined_macros;
 
 static gchar *connect_host_name;
@@ -269,6 +272,7 @@ setup (void)
 
     option_negotiation_option = NULL;
 
+    expected_macros = NULL;
     defined_macros = NULL;
 
     connect_host_name = NULL;
@@ -306,6 +310,8 @@ teardown (void)
     if (option_negotiation_option)
         g_object_unref(option_negotiation_option);
 
+    if (expected_macros)
+        g_hash_table_unref(expected_macros);
     if (defined_macros)
         g_hash_table_unref(defined_macros);
 
@@ -417,6 +423,67 @@ test_feed_connect_ipv4 (void)
     cut_assert_equal_int(AF_INET, connected_address->sin_family);
     cut_assert_equal_uint(port, connected_address->sin_port);
     cut_assert_equal_string(ip_address, inet_ntoa(connected_address->sin_addr));
+}
+
+void
+test_feed_connect_ipv6 (void)
+{
+    struct sockaddr_in6 address;
+    struct sockaddr_in6 *connected_address;
+    const gchar host_name[] = "mx.local.net";
+    const gchar ipv6_address[] = "2001:c90:625:12e8:290:ccff:fee2:80c5";
+    gchar connected_ipv6_address[INET6_ADDRSTRLEN];
+    guint16 port;
+
+    port = htons(50443);
+    address.sin6_family = AF_INET6;
+    address.sin6_port = port;
+    inet_pton(AF_INET6, ipv6_address, &(address.sin6_addr));
+
+    milter_encoder_encode_connect(encoder,
+                                  &packet, &packet_size,
+                                  host_name,
+                                  (const struct sockaddr *)&address,
+                                  sizeof(address));
+    gcut_assert_error(feed());
+    cut_assert_equal_int(1, n_connects);
+    cut_assert_equal_string(host_name, connect_host_name);
+    cut_assert_equal_int(sizeof(struct sockaddr_in6), connect_address_size);
+
+    connected_address = (struct sockaddr_in6 *)connect_address;
+    cut_assert_equal_int(AF_INET6, connected_address->sin6_family);
+    cut_assert_equal_uint(port, connected_address->sin6_port);
+    cut_assert_equal_string(ipv6_address,
+                            inet_ntop(AF_INET6,
+                                      &(connected_address->sin6_addr),
+                                      connected_ipv6_address,
+                                      sizeof(connected_ipv6_address)));
+}
+
+void
+test_feed_connect_unix (void)
+{
+    struct sockaddr_un address;
+    struct sockaddr_un *connected_address;
+    const gchar host_name[] = "mx.local.net";
+    const gchar path[] = "/tmp/unix.sock";
+
+    address.sun_family = AF_UNIX;
+    strcpy(address.sun_path, path);
+
+    milter_encoder_encode_connect(encoder,
+                                  &packet, &packet_size,
+                                  host_name,
+                                  (const struct sockaddr *)&address,
+                                  sizeof(address));
+    gcut_assert_error(feed());
+    cut_assert_equal_int(1, n_connects);
+    cut_assert_equal_string(host_name, connect_host_name);
+    cut_assert_equal_int(sizeof(struct sockaddr_un), connect_address_size);
+
+    connected_address = (struct sockaddr_un *)connect_address;
+    cut_assert_equal_int(AF_UNIX, connected_address->sun_family);
+    cut_assert_equal_string(path, connected_address->sun_path);
 }
 
 void
