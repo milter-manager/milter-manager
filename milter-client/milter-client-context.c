@@ -41,6 +41,8 @@ struct _MilterClientContextPrivate
     MilterEncoder *encoder;
     GHashTable *macros;
     MilterCommand macro_context;
+    gpointer private_data;
+    GDestroyNotify private_data_destroy;
 };
 
 enum
@@ -267,6 +269,8 @@ milter_client_context_init (MilterClientContext *context)
                                          NULL,
                                          (GDestroyNotify)g_hash_table_unref);
     priv->macro_context = MILTER_COMMAND_UNKNOWN;
+    priv->private_data = NULL;
+    priv->private_data_destroy = NULL;
     setup_decoder(context, priv->decoder);
 }
 
@@ -291,6 +295,13 @@ dispose (GObject *object)
         g_hash_table_unref(priv->macros);
         priv->macros = NULL;
     }
+
+    if (priv->private_data) {
+        if (priv->private_data_destroy)
+            priv->private_data_destroy(priv->private_data);
+        priv->private_data = NULL;
+    }
+    priv->private_data_destroy = NULL;
 
     G_OBJECT_CLASS(milter_client_context_parent_class)->dispose(object);
 }
@@ -407,6 +418,30 @@ milter_client_context_get_macros (MilterClientContext *context)
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
     return g_hash_table_lookup(priv->macros,
                                GINT_TO_POINTER(priv->macro_context));
+}
+
+gpointer
+milter_client_context_get_private_data (MilterClientContext *context)
+{
+    MilterClientContextPrivate *priv;
+
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    return priv->private_data;
+}
+
+void
+milter_client_context_set_private_data (MilterClientContext *context,
+                                        gpointer data,
+                                        GDestroyNotify destroy)
+{
+    MilterClientContextPrivate *priv;
+
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    if (priv->private_data && priv->private_data_destroy) {
+        priv->private_data_destroy(priv->private_data);
+    }
+    priv->private_data = data;
+    priv->private_data_destroy = destroy;
 }
 
 static gboolean

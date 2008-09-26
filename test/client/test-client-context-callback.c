@@ -455,7 +455,7 @@ test_feed_option_negotiation (void)
         MILTER_STEP_NO_BODY |
         MILTER_STEP_NO_HEADERS |
         MILTER_STEP_NO_END_OF_HEADER;
-    option = milter_option_new(2, action, step);
+    option = milter_option_new(version, action, step);
 
     milter_encoder_encode_option_negotiation(encoder,
                                              &packet, &packet_size,

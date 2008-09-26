@@ -100,6 +100,11 @@ const gchar         *milter_client_context_get_macro         (MilterClientContex
                                                               const gchar *name);
 GHashTable          *milter_client_context_get_macros        (MilterClientContext *context);
 
+gpointer             milter_client_context_get_private_data  (MilterClientContext *context);
+void                 milter_client_context_set_private_data  (MilterClientContext *context,
+                                                              gpointer data,
+                                                              GDestroyNotify destroy);
+
 
 G_END_DECLS
 
