@@ -1,6 +1,6 @@
 if WITH_CUTTER
-noinst_LTLIBRARIES =		\
-	test-client-context.la
+noinst_LTLIBRARIES =			\
+	test-client-context-callback.la
 endif
 
 INCLUDES =				\
@@ -21,4 +21,4 @@ LIBS =								\
 	$(top_builddir)/milter-client/libmilter-client.la	\
 	$(GCUTTER_LIBS)
 
-test_client_context_la_SOURCES = test-client-context.c
+test_client_context_callback_la_SOURCES = test-client-context-callback.c
