@@ -56,9 +56,6 @@ static MilterEncoder *encoder;
 static gchar *packet;
 static gsize packet_size;
 
-static GError *expected_error;
-static GError *actual_error;
-
 static gint n_option_negotiations;
 static gint n_connects;
 static gint n_helos;
@@ -309,9 +306,6 @@ setup (void)
     encoder = milter_encoder_new();
     packet = NULL;
     packet_size = 0;
-
-    expected_error = NULL;
-    actual_error = NULL;
 
     n_option_negotiations = 0;
     n_connects = 0;

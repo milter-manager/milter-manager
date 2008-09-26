@@ -29,12 +29,19 @@
 
 G_BEGIN_DECLS
 
+#define MILTER_CLIENT_CONTEXT_ERROR           (milter_client_context_error_quark())
+
 #define MILTER_CLIENT_TYPE_CONTEXT            (milter_client_context_get_type())
 #define MILTER_CLIENT_CONTEXT(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), MILTER_CLIENT_TYPE_CONTEXT, MilterClientContext))
 #define MILTER_CLIENT_CONTEXT_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), MILTER_CLIENT_TYPE_CONTEXT, MilterClientContextClass))
 #define MILTER_CLIENT_IS_CONTEXT(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), MILTER_CLIENT_TYPE_CONTEXT))
 #define MILTER_CLIENT_IS_CONTEXT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), MILTER_CLIENT_TYPE_CONTEXT))
 #define MILTER_CLIENT_CONTEXT_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MILTER_CLIENT_TYPE_CONTEXT, MilterClientContextClass))
+
+typedef enum
+{
+    MILTER_CLIENT_CONTEXT_ERROR_INVALID_CODE
+} MilterClientContextError;
 
 typedef struct _MilterClientContext         MilterClientContext;
 typedef struct _MilterClientContextClass    MilterClientContextClass;
@@ -87,6 +94,8 @@ struct _MilterClientContextClass
     MilterClientStatus (*abort)              (MilterClientContext *context);
 };
 
+GQuark               milter_client_context_error_quark       (void);
+
 GType                milter_client_context_get_type          (void) G_GNUC_CONST;
 
 MilterClientContext *milter_client_context_new               (void);
@@ -104,6 +113,12 @@ gpointer             milter_client_context_get_private_data  (MilterClientContex
 void                 milter_client_context_set_private_data  (MilterClientContext *context,
                                                               gpointer data,
                                                               GDestroyNotify destroy);
+
+gboolean             milter_client_context_set_reply         (MilterClientContext *context,
+                                                              guint code,
+                                                              const gchar *extended_code,
+                                                              const gchar *message,
+                                                              GError **error);
 
 
 G_END_DECLS

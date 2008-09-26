@@ -22,6 +22,7 @@
 #endif /* HAVE_CONFIG_H */
 
 #include <string.h>
+#include <stdlib.h>
 
 #include <milter-core.h>
 #include "milter-client.h"
@@ -338,6 +339,12 @@ get_property (GObject    *object,
     }
 }
 
+GQuark
+milter_client_context_error_quark (void)
+{
+    return g_quark_from_static_string("milter-client-context-error-quark");
+}
+
 MilterClientContext *
 milter_client_context_new (void)
 {
@@ -442,6 +449,190 @@ milter_client_context_set_private_data (MilterClientContext *context,
     }
     priv->private_data = data;
     priv->private_data_destroy = destroy;
+}
+
+static gboolean
+extended_code_parse (const gchar *extended_code,
+                     guint *klass, guint *subject, guint *detail,
+                     GError **error)
+{
+    typedef enum {
+        IN_CLASS,
+        IN_SUBJECT,
+        IN_DETAIL
+    } State;
+    gint i, start;
+    State state = IN_CLASS;
+
+    start = 0;
+    for (i = 0; extended_code[i]; i++) {
+        switch (state) {
+          case IN_CLASS:
+            if (extended_code[i] == '.') {
+                if (i - start == 0) {
+                    g_set_error(error,
+                                MILTER_CLIENT_CONTEXT_ERROR,
+                                MILTER_CLIENT_CONTEXT_ERROR_INVALID_CODE,
+                                "class of extended status code is missing: <%s>",
+                                extended_code);
+                    return FALSE;
+                }
+                *klass = atoi(extended_code + start);
+                state = IN_SUBJECT;
+                start = i + 1;
+            } else if (i - start >= 1) {
+                g_set_error(error,
+                            MILTER_CLIENT_CONTEXT_ERROR,
+                            MILTER_CLIENT_CONTEXT_ERROR_INVALID_CODE,
+                            "class of extended status code should be '2', "
+                            "'4' or '5': <%s>", extended_code);
+                return FALSE;
+            } else if (!(extended_code[i] == '2' ||
+                         extended_code[i] == '4' ||
+                         extended_code[i] == '5')) {
+                g_set_error(error,
+                            MILTER_CLIENT_CONTEXT_ERROR,
+                            MILTER_CLIENT_CONTEXT_ERROR_INVALID_CODE,
+                            "class of extended status code should be '2', "
+                            "'4' or '5': <%s>: <%c>",
+                            extended_code, extended_code[i]);
+                return FALSE;
+            }
+            break;
+          case IN_SUBJECT:
+            if (extended_code[i] == '.') {
+                if (i - start == 0) {
+                    g_set_error(error,
+                                MILTER_CLIENT_CONTEXT_ERROR,
+                                MILTER_CLIENT_CONTEXT_ERROR_INVALID_CODE,
+                                "subject of extended status code is missing: "
+                                "<%s>",
+                                extended_code);
+                    return FALSE;
+                }
+                *subject = atoi(extended_code + start);
+                state = IN_DETAIL;
+                start = i + 1;
+            } else if (i - start >= 3) {
+                gchar subject_component[5];
+
+                strncpy(subject_component, extended_code + start, 4);
+                subject_component[4] = '\0';
+                g_set_error(error,
+                            MILTER_CLIENT_CONTEXT_ERROR,
+                            MILTER_CLIENT_CONTEXT_ERROR_INVALID_CODE,
+                            "subject of extended status code should be "
+                            "less than 1000: <%s>: <%s>",
+                            subject_component, extended_code);
+                return FALSE;
+            } else if (!g_ascii_isdigit(extended_code[i])) {
+                g_set_error(error,
+                            MILTER_CLIENT_CONTEXT_ERROR,
+                            MILTER_CLIENT_CONTEXT_ERROR_INVALID_CODE,
+                            "subject of extended status code should be digit: "
+                            "<%s>: <%c>",
+                            extended_code, extended_code[i]);
+                return FALSE;
+            }
+            break;
+          case IN_DETAIL:
+            if (i - start >= 3) {
+                gchar detail_component[5];
+
+                strncpy(detail_component, extended_code + start, 4);
+                detail_component[4] = '\0';
+                g_set_error(error,
+                            MILTER_CLIENT_CONTEXT_ERROR,
+                            MILTER_CLIENT_CONTEXT_ERROR_INVALID_CODE,
+                            "detail of extended status code should be "
+                            "less than 1000: <%s>: <%s>",
+                            detail_component, extended_code);
+                return FALSE;
+            } else if (!g_ascii_isdigit(extended_code[i])) {
+                g_set_error(error,
+                            MILTER_CLIENT_CONTEXT_ERROR,
+                            MILTER_CLIENT_CONTEXT_ERROR_INVALID_CODE,
+                            "detail of extended status code should be digit: "
+                            "<%s>: <%c>",
+                            extended_code, extended_code[i]);
+                return FALSE;
+            }
+            break;
+        }
+    }
+
+    if (state == IN_DETAIL) {
+        if (i - start == 0) {
+            g_set_error(error,
+                        MILTER_CLIENT_CONTEXT_ERROR,
+                        MILTER_CLIENT_CONTEXT_ERROR_INVALID_CODE,
+                        "detail of extended status code is missing: <%s>",
+                        extended_code);
+            return FALSE;
+        }
+        *subject = atoi(extended_code + start);
+        return TRUE;
+    } else {
+        const gchar *component;
+
+        if (state == IN_CLASS) {
+            if (i - start > 0)
+                component = "subject";
+            else
+                component = "class";
+        } else {
+            if (i - start > 0)
+                component = "detail";
+            else
+                component = "subject";
+        }
+        g_set_error(error,
+                    MILTER_CLIENT_CONTEXT_ERROR,
+                    MILTER_CLIENT_CONTEXT_ERROR_INVALID_CODE,
+                    "%s of extended status code is missing: <%s>",
+                    component, extended_code);
+        return FALSE;
+    }
+}
+
+gboolean
+milter_client_context_set_reply (MilterClientContext *context,
+                                 guint code,
+                                 const gchar *extended_code,
+                                 const gchar *message,
+                                 GError **error)
+{
+    MilterClientContextPrivate *priv;
+
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+
+    if (!(400 <= code && code < 600)) {
+        g_set_error(error,
+                    MILTER_CLIENT_CONTEXT_ERROR,
+                    MILTER_CLIENT_CONTEXT_ERROR_INVALID_CODE,
+                    "return code should be 4XX or 5XX: <%u>", code);
+        return FALSE;
+    }
+
+    if (extended_code) {
+        guint klass = 0, subject, detail;
+
+        if (!extended_code_parse(extended_code, &klass, &subject, &detail,
+                                 error))
+            return FALSE;
+
+        if (klass != code / 100) {
+            g_set_error(error,
+                        MILTER_CLIENT_CONTEXT_ERROR,
+                        MILTER_CLIENT_CONTEXT_ERROR_INVALID_CODE,
+                        "extended code should use "
+                        "the same class of status code: <%u>:<%s>",
+                        code, extended_code);
+            return FALSE;
+        }
+    }
+
+    return TRUE;
 }
 
 static gboolean

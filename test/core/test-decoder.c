@@ -325,6 +325,11 @@ teardown (void)
     if (buffer)
         g_string_free(buffer, TRUE);
 
+    if (expected_error)
+        g_error_free(expected_error);
+    if (actual_error)
+        g_error_free(actual_error);
+
     if (option_negotiation_option)
         g_object_unref(option_negotiation_option);
 
