@@ -23,21 +23,45 @@
 #include <milter-client/milter-client-context.h>
 #include <milter-client/milter-client-enum-types.h>
 
-#if NETINET || NETINET6 || NETUNIX
-union bigsockaddr
+G_BEGIN_DECLS
+
+#define MILTER_CLIENT_ERROR           (milter_client_error_quark())
+
+#define MILTER_CLIENT_TYPE            (milter_client_get_type())
+#define MILTER_CLIENT(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), MILTER_CLIENT_TYPE, MilterClient))
+#define MILTER_CLIENT_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), MILTER_CLIENT_TYPE, MilterClientClass))
+#define MILTER_CLIENT_IS(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), MILTER_CLIENT_TYPE))
+#define MILTER_CLIENT_IS_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), MILTER_CLIENT_TYPE))
+#define MILTER_CLIENT_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MILTER_CLIENT_TYPE, MilterClientClass))
+
+typedef enum
 {
-	struct sockaddr		sa;	/* general version */
-# if NETUNIX
-	struct sockaddr_un	sunix;	/* UNIX family */
-# endif /* NETUNIX */
-# if NETINET
-	struct sockaddr_in	sin;	/* INET family */
-# endif /* NETINET */
-# if NETINET6
-	struct sockaddr_in6	sin6;	/* INET/IPv6 */
-# endif /* NETINET6 */
+    MILTER_CLIENT_ERROR_INVALID_CODE
+} MilterClientError;
+
+typedef struct _MilterClient         MilterClient;
+typedef struct _MilterClientClass    MilterClientClass;
+
+struct _MilterClient
+{
+    GObject object;
 };
-#endif
+
+struct _MilterClientClass
+{
+    GObjectClass parent_class;
+};
+
+GQuark               milter_client_error_quark       (void);
+
+GType                milter_client_get_type          (void) G_GNUC_CONST;
+
+MilterClient        *milter_client_new               (void);
+
+gboolean             milter_client_main              (MilterClient *client);
+
+
+G_END_DECLS
 
 #endif /* __MILTER_CLIENT_H__ */
 

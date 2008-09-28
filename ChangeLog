@@ -1,5 +1,9 @@
 2008-09-29  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-client/milter-client.[ch],
+	milter-client/milter-client-context.[ch]: implement experimental
+	server part.
+
 	* test/client/test-client-context-callback.c: fix wrong assertion.
 
 	* milter-core/milter-encoder.[ch], test/core/test-encoder.c:

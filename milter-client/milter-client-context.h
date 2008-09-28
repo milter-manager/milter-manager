@@ -48,6 +48,8 @@ typedef struct _MilterClientContextClass    MilterClientContextClass;
 
 typedef enum
 {
+    MILTER_CLIENT_STATUS_DEFAULT,
+    MILTER_CLIENT_STATUS_NOT_CHANGE,
     MILTER_CLIENT_STATUS_CONTINUE,
     MILTER_CLIENT_STATUS_REJECT,
     MILTER_CLIENT_STATUS_DISCARD,
@@ -120,6 +122,10 @@ gboolean             milter_client_context_set_reply         (MilterClientContex
                                                               const gchar *message,
                                                               GError **error);
 gchar               *milter_client_context_format_reply      (MilterClientContext *context);
+
+void                 milter_client_context_set_writer        (MilterClientContext *context,
+                                                              GIOChannel *output
+                                                              /* should define MilterWriter and use it */);
 
 
 G_END_DECLS

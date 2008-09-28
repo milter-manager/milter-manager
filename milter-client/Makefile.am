@@ -44,6 +44,7 @@ lib_LTLIBRARIES =		\
 libmilter_client_la_SOURCES =		\
 	milter-client-enum-types.c	\
 	$(marshal_sources)		\
+	milter-client.c			\
 	milter-client-context.c
 
 libmilter_client_la_LIBADD =				\

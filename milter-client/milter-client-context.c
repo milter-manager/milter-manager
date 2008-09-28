@@ -47,6 +47,7 @@ struct _MilterClientContextPrivate
     guint reply_code;
     gchar *extended_reply_code;
     gchar *reply_message;
+    GIOChannel *output;
 };
 
 enum
@@ -81,12 +82,12 @@ static void get_property   (GObject         *object,
                             GValue          *value,
                             GParamSpec      *pspec);
 
-static MilterClientStatus cb_option_negotiation (MilterClientContext *context,
-                                                 MilterOption        *option);
 static MilterClientStatus cb_connect            (MilterClientContext *context,
                                                  const gchar         *host_name,
                                                  struct sockaddr     *address,
                                                  socklen_t            address_length);
+static MilterClientStatus cb_option_negotiation (MilterClientContext *context,
+                                                 MilterOption        *option);
 static MilterClientStatus cb_helo               (MilterClientContext *context,
                                                  const gchar         *fqdn);
 static MilterClientStatus cb_envelope_from      (MilterClientContext *context,
@@ -278,6 +279,7 @@ milter_client_context_init (MilterClientContext *context)
     priv->reply_code = 0;
     priv->extended_reply_code = NULL;
     priv->reply_message = NULL;
+    priv->output = NULL;
     setup_decoder(context, priv->decoder);
 }
 
@@ -318,6 +320,11 @@ dispose (GObject *object)
     if (priv->reply_message) {
         g_free(priv->reply_message);
         priv->reply_message = NULL;
+    }
+
+    if (priv->output) {
+        g_io_channel_unref(priv->output);
+        priv->output = NULL;
     }
 
     G_OBJECT_CLASS(milter_client_context_parent_class)->dispose(object);
@@ -744,29 +751,123 @@ milter_client_context_format_reply (MilterClientContext *context)
     return g_string_free(reply, FALSE);
 }
 
+void
+milter_client_context_set_writer (MilterClientContext *context,
+                                  GIOChannel *output)
+{
+    MilterClientContextPrivate *priv;
+
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+
+    if (priv->output)
+        g_io_channel_unref(priv->output);
+
+    priv->output = output;
+    if (priv->output)
+        g_io_channel_ref(priv->output);
+}
+
 static gboolean
 status_accumulator (GSignalInvocationHint *hint,
-                   GValue *return_accumulator,
-                   const GValue *context_return,
-                   gpointer data)
+                    GValue *return_accumulator,
+                    const GValue *context_return,
+                    gpointer data)
 {
     MilterClientStatus status;
 
     status = g_value_get_enum(context_return);
-    g_value_set_enum(return_accumulator, status);
+    if (status != MILTER_CLIENT_STATUS_NOT_CHANGE)
+        g_value_set_enum(return_accumulator, status);
+    status = g_value_get_enum(return_accumulator);
 
-    return status == MILTER_CLIENT_STATUS_CONTINUE;
+    return status == MILTER_CLIENT_STATUS_DEFAULT ||
+        status == MILTER_CLIENT_STATUS_CONTINUE ||
+        status == MILTER_CLIENT_STATUS_ALL_OPTIONS;
 }
 
+static gboolean
+write_packet (MilterClientContext *context,
+              const gchar *packet, gsize packet_size)
+{
+    MilterClientContextPrivate *priv;
+    gsize rest_size, written_size;
+
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+
+    if (!priv->output)
+        return TRUE;
+
+    for (rest_size = packet_size; rest_size > 0; rest_size -= written_size) {
+        GError *error = NULL;
+
+        g_io_channel_write_chars(priv->output,
+                                 packet + (packet_size - rest_size),
+                                 rest_size,
+                                 &written_size,
+                                 &error);
+        if (error) {
+            g_print("error: %s\n", error->message);
+            g_error_free(error);
+            return FALSE;
+        }
+    }
+    g_io_channel_flush(priv->output, NULL);
+
+    return TRUE;
+}
+
+static gboolean
+reply (MilterClientContext *context, MilterClientStatus status)
+{
+    MilterClientContextPrivate *priv;
+    gchar *packet;
+    gsize packet_size;
+
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    switch (status) {
+      case MILTER_CLIENT_STATUS_CONTINUE:
+        milter_encoder_encode_reply_continue(priv->encoder,
+                                             &packet, &packet_size);
+        write_packet(context, packet, packet_size);
+        g_free(packet);
+        break;
+      default:
+        break;
+    }
+
+    return TRUE;
+}
 
 static void
 cb_decoder_option_negotiation (MilterDecoder *decoder, MilterOption *option,
                                gpointer user_data)
 {
     MilterClientContext *context = user_data;
-    MilterClientStatus status = MILTER_CLIENT_STATUS_ALL_OPTIONS;
+    MilterClientStatus status;
+    MilterClientContextPrivate *priv;
+    gchar *packet;
+    gsize packet_size;
 
     g_signal_emit(context, signals[OPTION_NEGOTIATION], 0, option, &status);
+    if (status == MILTER_CLIENT_STATUS_DEFAULT)
+        status = MILTER_CLIENT_STATUS_ALL_OPTIONS;
+
+    switch (status) {
+      case MILTER_CLIENT_STATUS_ALL_OPTIONS:
+        milter_option_set_step(option, 0);
+      case MILTER_CLIENT_STATUS_CONTINUE:
+        priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+        milter_encoder_encode_option_negotiation(priv->encoder,
+                                                 &packet, &packet_size,
+                                                 option);
+        write_packet(context, packet, packet_size);
+        g_free(packet);
+        break;
+      case MILTER_CLIENT_STATUS_REJECT:
+        break;
+      default:
+        break;
+    }
 }
 
 static void
@@ -784,29 +885,37 @@ cb_decoder_connect (MilterDecoder *decoder, const gchar *host_name,
                     gpointer user_data)
 {
     MilterClientContext *context = user_data;
+    MilterClientStatus status;
     MilterClientContextPrivate *priv;
-    MilterClientStatus status = MILTER_CLIENT_STATUS_CONTINUE;
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
     priv->macro_context = MILTER_COMMAND_CONNECT;
     g_signal_emit(context, signals[CONNECT], 0,
                   host_name, address, address_length, &status);
+    if (status == MILTER_CLIENT_STATUS_DEFAULT)
+        status = MILTER_CLIENT_STATUS_CONTINUE;
     clear_macros(context, priv->macro_context);
     priv->macro_context = MILTER_COMMAND_UNKNOWN;
+
+    reply(context, status);
 }
 
 static void
 cb_decoder_helo (MilterDecoder *decoder, const gchar *fqdn, gpointer user_data)
 {
     MilterClientContext *context = user_data;
+    MilterClientStatus status;
     MilterClientContextPrivate *priv;
-    MilterClientStatus status = MILTER_CLIENT_STATUS_CONTINUE;
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
     priv->macro_context = MILTER_COMMAND_HELO;
     g_signal_emit(context, signals[HELO], 0, fqdn, &status);
+    if (status == MILTER_CLIENT_STATUS_DEFAULT)
+        status = MILTER_CLIENT_STATUS_CONTINUE;
     clear_macros(context, priv->macro_context);
     priv->macro_context = MILTER_COMMAND_UNKNOWN;
+
+    reply(context, status);
 }
 
 static void
@@ -814,13 +923,17 @@ cb_decoder_mail (MilterDecoder *decoder, const gchar *from, gpointer user_data)
 {
     MilterClientContext *context = user_data;
     MilterClientContextPrivate *priv;
-    MilterClientStatus status = MILTER_CLIENT_STATUS_CONTINUE;
+    MilterClientStatus status;
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
     priv->macro_context = MILTER_COMMAND_MAIL;
     g_signal_emit(context, signals[ENVELOPE_FROM], 0, from, &status);
+    if (status == MILTER_CLIENT_STATUS_DEFAULT)
+        status = MILTER_CLIENT_STATUS_CONTINUE;
     clear_macros(context, priv->macro_context);
     priv->macro_context = MILTER_COMMAND_UNKNOWN;
+
+    reply(context, status);
 }
 
 static void
@@ -828,13 +941,17 @@ cb_decoder_rcpt (MilterDecoder *decoder, const gchar *to, gpointer user_data)
 {
     MilterClientContext *context = user_data;
     MilterClientContextPrivate *priv;
-    MilterClientStatus status = MILTER_CLIENT_STATUS_CONTINUE;
+    MilterClientStatus status;
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
     priv->macro_context = MILTER_COMMAND_RCPT;
     g_signal_emit(context, signals[ENVELOPE_RECEIPT], 0, to, &status);
+    if (status == MILTER_CLIENT_STATUS_DEFAULT)
+        status = MILTER_CLIENT_STATUS_CONTINUE;
     clear_macros(context, priv->macro_context);
     priv->macro_context = MILTER_COMMAND_UNKNOWN;
+
+    reply(context, status);
 }
 
 static void
@@ -844,13 +961,17 @@ cb_decoder_header (MilterDecoder *decoder,
 {
     MilterClientContext *context = user_data;
     MilterClientContextPrivate *priv;
-    MilterClientStatus status = MILTER_CLIENT_STATUS_CONTINUE;
+    MilterClientStatus status;
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
     priv->macro_context = MILTER_COMMAND_HEADER;
     g_signal_emit(context, signals[HEADER], 0, name, value, &status);
+    if (status == MILTER_CLIENT_STATUS_DEFAULT)
+        status = MILTER_CLIENT_STATUS_CONTINUE;
     clear_macros(context, priv->macro_context);
     priv->macro_context = MILTER_COMMAND_UNKNOWN;
+
+    reply(context, status);
 }
 
 static void
@@ -858,13 +979,17 @@ cb_decoder_end_of_header (MilterDecoder *decoder, gpointer user_data)
 {
     MilterClientContext *context = user_data;
     MilterClientContextPrivate *priv;
-    MilterClientStatus status = MILTER_CLIENT_STATUS_CONTINUE;
+    MilterClientStatus status;
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
     priv->macro_context = MILTER_COMMAND_END_OF_HEADER;
     g_signal_emit(context, signals[END_OF_HEADER], 0, &status);
+    if (status == MILTER_CLIENT_STATUS_DEFAULT)
+        status = MILTER_CLIENT_STATUS_CONTINUE;
     clear_macros(context, priv->macro_context);
     priv->macro_context = MILTER_COMMAND_UNKNOWN;
+
+    reply(context, status);
 }
 
 static void
@@ -873,13 +998,17 @@ cb_decoder_body (MilterDecoder *decoder, const gchar *chunk, gsize chunk_size,
 {
     MilterClientContext *context = user_data;
     MilterClientContextPrivate *priv;
-    MilterClientStatus status = MILTER_CLIENT_STATUS_CONTINUE;
+    MilterClientStatus status;
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
     priv->macro_context = MILTER_COMMAND_BODY;
     g_signal_emit(context, signals[BODY], 0, chunk, chunk_size, &status);
+    if (status == MILTER_CLIENT_STATUS_DEFAULT)
+        status = MILTER_CLIENT_STATUS_CONTINUE;
     clear_macros(context, priv->macro_context);
     priv->macro_context = MILTER_COMMAND_UNKNOWN;
+
+    reply(context, status);
 }
 
 static void
@@ -887,31 +1016,43 @@ cb_decoder_end_of_message (MilterDecoder *decoder, gpointer user_data)
 {
     MilterClientContext *context = user_data;
     MilterClientContextPrivate *priv;
-    MilterClientStatus status = MILTER_CLIENT_STATUS_CONTINUE;
+    MilterClientStatus status;
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
     priv->macro_context = MILTER_COMMAND_END_OF_MESSAGE;
     g_signal_emit(context, signals[END_OF_MESSAGE], 0, &status);
+    if (status == MILTER_CLIENT_STATUS_DEFAULT)
+        status = MILTER_CLIENT_STATUS_CONTINUE;
     clear_macros(context, priv->macro_context);
     priv->macro_context = MILTER_COMMAND_UNKNOWN;
+
+    reply(context, status);
 }
 
 static void
 cb_decoder_quit (MilterDecoder *decoder, gpointer user_data)
 {
     MilterClientContext *context = user_data;
-    MilterClientStatus status = MILTER_CLIENT_STATUS_CONTINUE;
+    MilterClientStatus status;
 
     g_signal_emit(context, signals[CLOSE], 0, &status);
+    if (status == MILTER_CLIENT_STATUS_DEFAULT)
+        status = MILTER_CLIENT_STATUS_CONTINUE;
+
+    reply(context, status);
 }
 
 static void
 cb_decoder_abort (MilterDecoder *decoder, gpointer user_data)
 {
     MilterClientContext *context = user_data;
-    MilterClientStatus status = MILTER_CLIENT_STATUS_CONTINUE;
+    MilterClientStatus status;
 
     g_signal_emit(context, signals[ABORT], 0, &status);
+    if (status == MILTER_CLIENT_STATUS_DEFAULT)
+        status = MILTER_CLIENT_STATUS_CONTINUE;
+
+    reply(context, status);
 }
 
 
@@ -943,7 +1084,7 @@ static MilterClientStatus
 cb_option_negotiation (MilterClientContext *context,
                        MilterOption        *option)
 {
-    return MILTER_CLIENT_STATUS_CONTINUE;
+    return MILTER_CLIENT_STATUS_NOT_CHANGE;
 }
 
 static MilterClientStatus
@@ -952,34 +1093,34 @@ cb_connect (MilterClientContext *context,
             struct sockaddr     *address,
             socklen_t            address_length)
 {
-    return MILTER_CLIENT_STATUS_CONTINUE;
+    return MILTER_CLIENT_STATUS_NOT_CHANGE;
 }
 
 static MilterClientStatus
 cb_helo (MilterClientContext *context,
          const gchar         *fqdn)
 {
-    return MILTER_CLIENT_STATUS_CONTINUE;
+    return MILTER_CLIENT_STATUS_NOT_CHANGE;
 }
 
 static MilterClientStatus
 cb_envelope_from (MilterClientContext *context,
                   const gchar         *from)
 {
-    return MILTER_CLIENT_STATUS_CONTINUE;
+    return MILTER_CLIENT_STATUS_NOT_CHANGE;
 }
 
 static MilterClientStatus
 cb_envelope_receipt (MilterClientContext *context,
                      const gchar         *receipt)
 {
-    return MILTER_CLIENT_STATUS_CONTINUE;
+    return MILTER_CLIENT_STATUS_NOT_CHANGE;
 }
 
 static MilterClientStatus
 cb_data (MilterClientContext *context)
 {
-    return MILTER_CLIENT_STATUS_CONTINUE;
+    return MILTER_CLIENT_STATUS_NOT_CHANGE;
 }
 
 static MilterClientStatus
@@ -987,13 +1128,13 @@ cb_header (MilterClientContext *context,
            const gchar         *name,
            const gchar         *value)
 {
-    return MILTER_CLIENT_STATUS_CONTINUE;
+    return MILTER_CLIENT_STATUS_NOT_CHANGE;
 }
 
 static MilterClientStatus
 cb_end_of_header (MilterClientContext *context)
 {
-    return MILTER_CLIENT_STATUS_CONTINUE;
+    return MILTER_CLIENT_STATUS_NOT_CHANGE;
 }
 
 static MilterClientStatus
@@ -1001,25 +1142,25 @@ cb_body (MilterClientContext *context,
          const guchar        *chunk,
          gsize                size)
 {
-    return MILTER_CLIENT_STATUS_CONTINUE;
+    return MILTER_CLIENT_STATUS_NOT_CHANGE;
 }
 
 static MilterClientStatus
 cb_end_of_message (MilterClientContext *context)
 {
-    return MILTER_CLIENT_STATUS_CONTINUE;
+    return MILTER_CLIENT_STATUS_NOT_CHANGE;
 }
 
 static MilterClientStatus
 cb_close (MilterClientContext *context)
 {
-    return MILTER_CLIENT_STATUS_CONTINUE;
+    return MILTER_CLIENT_STATUS_NOT_CHANGE;
 }
 
 static MilterClientStatus
 cb_abort (MilterClientContext *context)
 {
-    return MILTER_CLIENT_STATUS_CONTINUE;
+    return MILTER_CLIENT_STATUS_NOT_CHANGE;
 }
 
 /*
