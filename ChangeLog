@@ -1,5 +1,8 @@
 2008-09-29  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-core/milter-encoder.[ch], test/core/test-encoder.c:
+	implement continue reply encoder.
+
 	* milter-client/milter-client-context.[ch],
 	test/client/test-client-context-data.c: support reply message.
 

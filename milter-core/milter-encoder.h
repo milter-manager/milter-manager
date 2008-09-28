@@ -114,6 +114,11 @@ void             milter_encoder_encode_unknown (MilterEncoder     *encoder,
                                                 gsize             *packet_size,
                                                 const gchar       *command);
 
+void             milter_encoder_encode_reply_continue
+                                               (MilterEncoder     *encoder,
+                                                gchar            **packet,
+                                                gsize             *packet_size);
+
 G_END_DECLS
 
 #endif /* __MILTER_ENCODER_H__ */

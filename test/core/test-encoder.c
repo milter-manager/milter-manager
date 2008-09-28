@@ -48,6 +48,8 @@ void test_encode_abort (void);
 void test_encode_quit (void);
 void test_encode_unknown (void);
 
+void test_encode_reply_continue (void);
+
 static MilterEncoder *encoder;
 static GString *expected;
 static gchar *actual;
@@ -562,6 +564,18 @@ test_encode_unknown (void)
     pack(expected);
 
     milter_encoder_encode_unknown(encoder, &actual, &actual_size, command);
+    cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
+}
+
+void
+test_encode_reply_continue (void)
+{
+    gsize actual_size = 0;
+
+    g_string_append(expected, "c");
+    pack(expected);
+
+    milter_encoder_encode_reply_continue(encoder, &actual, &actual_size);
     cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
 }
 
