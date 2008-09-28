@@ -461,12 +461,12 @@ test_feed_option_negotiation (void)
 
     negotiated_option = option_negotiation_option;
     cut_assert_equal_int(version, milter_option_get_version(negotiated_option));
-    gcut_assert_equal_enum(MILTER_TYPE_ACTION_FLAGS,
-                           action,
-                           milter_option_get_action(negotiated_option));
-    gcut_assert_equal_enum(MILTER_TYPE_STEP_FLAGS,
-                           step,
-                           milter_option_get_step(negotiated_option));
+    gcut_assert_equal_flags(MILTER_TYPE_ACTION_FLAGS,
+                            action,
+                            milter_option_get_action(negotiated_option));
+    gcut_assert_equal_flags(MILTER_TYPE_STEP_FLAGS,
+                            step,
+                            milter_option_get_step(negotiated_option));
 
     gcut_assert_equal_hash_table_string_string(NULL, defined_macros);
 }
