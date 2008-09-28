@@ -11,6 +11,7 @@
 /intltool-merge.in
 /intltool-update.in
 /libtool
+/log
 /milter-client.pc
 /milter-core.pc
 /stamp-h1
