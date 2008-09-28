@@ -44,6 +44,9 @@ struct _MilterClientContextPrivate
     MilterCommand macro_context;
     gpointer private_data;
     GDestroyNotify private_data_destroy;
+    guint reply_code;
+    gchar *extended_reply_code;
+    gchar *reply_message;
 };
 
 enum
@@ -272,6 +275,9 @@ milter_client_context_init (MilterClientContext *context)
     priv->macro_context = MILTER_COMMAND_UNKNOWN;
     priv->private_data = NULL;
     priv->private_data_destroy = NULL;
+    priv->reply_code = 0;
+    priv->extended_reply_code = NULL;
+    priv->reply_message = NULL;
     setup_decoder(context, priv->decoder);
 }
 
@@ -303,6 +309,16 @@ dispose (GObject *object)
         priv->private_data = NULL;
     }
     priv->private_data_destroy = NULL;
+
+    if (priv->extended_reply_code) {
+        g_free(priv->extended_reply_code);
+        priv->extended_reply_code = NULL;
+    }
+
+    if (priv->reply_message) {
+        g_free(priv->reply_message);
+        priv->reply_message = NULL;
+    }
 
     G_OBJECT_CLASS(milter_client_context_parent_class)->dispose(object);
 }
@@ -678,7 +694,54 @@ milter_client_context_set_reply (MilterClientContext *context,
         }
     }
 
+    priv->reply_code = code;
+    if (priv->extended_reply_code)
+        g_free(priv->extended_reply_code);
+    priv->extended_reply_code = g_strdup(extended_code);
+    if (priv->reply_message)
+        g_free(priv->reply_message);
+    priv->reply_message = g_strdup(message);
+
     return TRUE;
+}
+
+gchar *
+milter_client_context_format_reply (MilterClientContext *context)
+{
+    MilterClientContextPrivate *priv;
+    GString *reply;
+    gchar **messages;
+
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+
+    if (priv->reply_code == 0)
+        return NULL;
+
+    if (priv->reply_message)
+        messages = g_strsplit(priv->reply_message, "\n", -1);
+    else
+        messages = g_strsplit("\n", "\n", -1);
+
+    reply = g_string_new("");
+    for (; *messages; messages++) {
+        gchar *message = *messages;
+        gsize message_size;
+
+        g_string_append_printf(reply, "%3u", priv->reply_code);
+        if (priv->extended_reply_code)
+            g_string_append_printf(reply, " %s", priv->extended_reply_code);
+
+        message_size = strlen(message);
+        if (message_size > 0) {
+            if (message[message_size - 1] == '\r')
+                message[message_size - 1] = '\0';
+            g_string_append_printf(reply, " %s", message);
+        }
+        if (*(messages + 1))
+            g_string_append(reply, "\r\n");
+    }
+
+    return g_string_free(reply, FALSE);
 }
 
 static gboolean

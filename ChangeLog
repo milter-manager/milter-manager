@@ -1,3 +1,8 @@
+2008-09-29  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter-client/milter-client-context.[ch],
+	test/client/test-client-context-data.c: support reply message.
+
 2008-09-26  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter-client/milter-client-context.c: cleanup.

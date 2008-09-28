@@ -119,6 +119,7 @@ gboolean             milter_client_context_set_reply         (MilterClientContex
                                                               const gchar *extended_code,
                                                               const gchar *message,
                                                               GError **error);
+gchar               *milter_client_context_format_reply      (MilterClientContext *context);
 
 
 G_END_DECLS
