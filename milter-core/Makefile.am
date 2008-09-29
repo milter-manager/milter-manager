@@ -13,7 +13,8 @@ milter_core_public_headers =	\
 	milter-protocol.h	\
 	milter-decoder.h	\
 	milter-encoder.h	\
-	milter-option.h
+	milter-option.h		\
+	milter-writer.h
 
 enum_source_prefix = milter-enum-types
 
@@ -51,7 +52,8 @@ libmilter_core_la_SOURCES =		\
 	$(marshal_sources)		\
 	milter-decoder.c		\
 	milter-encoder.c		\
-	milter-option.c
+	milter-option.c			\
+	milter-writer.c
 
 
 $(enum_source_prefix).c: stamp-$(enum_source_prefix)-c $(enum_source_prefix).h

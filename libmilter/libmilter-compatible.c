@@ -269,7 +269,7 @@ cb_body (MilterClientContext *context, const guchar *chunk, gsize size,
     if (!filter_description.xxfi_body)
         return MILTER_CLIENT_STATUS_DEFAULT;
 
-    return filter_description.xxfi_body(smfi_context, chunk, size);
+    return filter_description.xxfi_body(smfi_context, (guchar *)chunk, size);
 }
 
 static MilterClientStatus

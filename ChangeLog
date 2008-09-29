@@ -1,5 +1,8 @@
 2008-09-29  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-core/milter-writer.[ch], test/core/test-writer.c,
+	milter-core/milter-core.h: implement MilterWriter.
+
 	* libmilter/libmilter-compatible.c: bind callbacks.
 
 	* milter-client/milter-client.[ch]: support context setup hook.
