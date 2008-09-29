@@ -77,9 +77,9 @@ struct smfiDesc
     int            xxfi_version; /* version code -- do not change */
     unsigned long  xxfi_flags;   /* flags */
 
-    sfsistat	(*xxfi_connect)  (SMFICTX    *context,
-                                  char       *host_name,
-                                  _SOCK_ADDR *address);
+    sfsistat	(*xxfi_connect)   (SMFICTX     *context,
+                                   char        *host_name,
+                                   _SOCK_ADDR  *address);
     sfsistat	(*xxfi_helo)      (SMFICTX    *context,
                                    char       *fqdn);
     sfsistat	(*xxfi_envfrom)   (SMFICTX    *context,
@@ -104,10 +104,10 @@ struct smfiDesc
                                    unsigned long  flag1,
                                    unsigned long  flag2,
                                    unsigned long  flag3,
-                                   unsigned long *output_flag0,
-                                   unsigned long *output_flag1,
-                                   unsigned long *output_flag2,
-                                   unsigned long *output_flag3);
+                                   unsigned long *flag0_output,
+                                   unsigned long *flag1_output,
+                                   unsigned long *flag2_output,
+                                   unsigned long *flag3_output);
 };
 
 int smfi_opensocket (bool             remove_socket);

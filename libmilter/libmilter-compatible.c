@@ -134,7 +134,26 @@ static MilterClientStatus
 cb_option_negotiation (MilterClientContext *context, MilterOption *option,
                        gpointer user_data)
 {
-    return MILTER_CLIENT_STATUS_DEFAULT;
+    SmfiContext *smfi_context = user_data;
+    MilterClientStatus status;
+    gulong action, step, preserve1 = 0, preserve2 = 0;
+    gulong action_out, step_out, preserve1_out = 0, preserve2_out = 0;
+
+    if (!filter_description.xxfi_negotiate)
+        return MILTER_CLIENT_STATUS_DEFAULT;
+
+    action = action_out = milter_option_get_action(option);
+    step = step_out = milter_option_get_step(option);
+    status = filter_description.xxfi_negotiate(smfi_context,
+                                               action, step,
+                                               preserve1, preserve2,
+                                               &action_out, &step_out,
+                                               &preserve1_out, &preserve2_out);
+    if (status == MILTER_CLIENT_STATUS_CONTINUE) {
+        milter_option_set_action(option, action_out);
+        milter_option_set_step(option, step_out);
+    }
+    return status;
 }
 
 static MilterClientStatus
@@ -144,84 +163,146 @@ cb_connect (MilterClientContext *context, const gchar *host_name,
 {
     SmfiContext *smfi_context = user_data;
 
-    if (filter_description.xxfi_connect)
-        return filter_description.xxfi_connect(smfi_context,
-                                               (gchar *)host_name,
-                                               address);
-    else
+    if (!filter_description.xxfi_connect)
         return MILTER_CLIENT_STATUS_DEFAULT;
+
+    return filter_description.xxfi_connect(smfi_context,
+                                           (gchar *)host_name,
+                                           address);
 }
 
 static MilterClientStatus
-cb_helo (MilterClientContext *context, const gchar *fqdn,
-         gpointer user_data)
+cb_helo (MilterClientContext *context, const gchar *fqdn, gpointer user_data)
 {
-    return MILTER_CLIENT_STATUS_DEFAULT;
+    SmfiContext *smfi_context = user_data;
+
+    if (!filter_description.xxfi_helo)
+        return MILTER_CLIENT_STATUS_DEFAULT;
+
+    return filter_description.xxfi_helo(smfi_context, (gchar *)fqdn);
 }
 
 static MilterClientStatus
 cb_envelope_from (MilterClientContext *context, const gchar *from,
                   gpointer user_data)
 {
-    return MILTER_CLIENT_STATUS_DEFAULT;
+    SmfiContext *smfi_context = user_data;
+    gchar *addresses[2];
+
+    if (!filter_description.xxfi_envfrom)
+        return MILTER_CLIENT_STATUS_DEFAULT;
+
+    addresses[0] = (gchar *)from;
+    addresses[1] = NULL;
+    return filter_description.xxfi_envfrom(smfi_context, addresses);
 }
 
 static MilterClientStatus
 cb_envelope_receipt (MilterClientContext *context, const gchar *receipt,
                      gpointer user_data)
 {
-    return MILTER_CLIENT_STATUS_DEFAULT;
+    SmfiContext *smfi_context = user_data;
+    gchar *addresses[2];
+
+    if (!filter_description.xxfi_envrcpt)
+        return MILTER_CLIENT_STATUS_DEFAULT;
+
+    addresses[0] = (gchar *)receipt;
+    addresses[1] = NULL;
+    return filter_description.xxfi_envrcpt(smfi_context, addresses);
 }
 
 static MilterClientStatus
 cb_data (MilterClientContext *context, gpointer user_data)
 {
-    return MILTER_CLIENT_STATUS_DEFAULT;
+    SmfiContext *smfi_context = user_data;
+
+    if (!filter_description.xxfi_data)
+        return MILTER_CLIENT_STATUS_DEFAULT;
+
+    return filter_description.xxfi_data(smfi_context);
 }
 
 static MilterClientStatus
 cb_unknown (MilterClientContext *context, const gchar *command,
             gpointer user_data)
 {
-    return MILTER_CLIENT_STATUS_DEFAULT;
+    SmfiContext *smfi_context = user_data;
+
+    if (!filter_description.xxfi_unknown)
+        return MILTER_CLIENT_STATUS_DEFAULT;
+
+    return filter_description.xxfi_unknown(smfi_context, command);
 }
 
 static MilterClientStatus
 cb_header (MilterClientContext *context, const gchar *name, const gchar *value,
            gpointer user_data)
 {
-    return MILTER_CLIENT_STATUS_DEFAULT;
+    SmfiContext *smfi_context = user_data;
+
+    if (!filter_description.xxfi_header)
+        return MILTER_CLIENT_STATUS_DEFAULT;
+
+    return filter_description.xxfi_header(smfi_context,
+                                          (gchar *)name,
+                                          (gchar *)value);
 }
 
 static MilterClientStatus
 cb_end_of_header (MilterClientContext *context, gpointer user_data)
 {
-    return MILTER_CLIENT_STATUS_DEFAULT;
+    SmfiContext *smfi_context = user_data;
+
+    if (!filter_description.xxfi_eoh)
+        return MILTER_CLIENT_STATUS_DEFAULT;
+
+    return filter_description.xxfi_eoh(smfi_context);
 }
 
 static MilterClientStatus
 cb_body (MilterClientContext *context, const guchar *chunk, gsize size,
          gpointer user_data)
 {
-    return MILTER_CLIENT_STATUS_DEFAULT;
+    SmfiContext *smfi_context = user_data;
+
+    if (!filter_description.xxfi_body)
+        return MILTER_CLIENT_STATUS_DEFAULT;
+
+    return filter_description.xxfi_body(smfi_context, chunk, size);
 }
 
 static MilterClientStatus
 cb_end_of_message (MilterClientContext *context, gpointer user_data)
 {
-    return MILTER_CLIENT_STATUS_DEFAULT;
+    SmfiContext *smfi_context = user_data;
+
+    if (!filter_description.xxfi_eom)
+        return MILTER_CLIENT_STATUS_DEFAULT;
+
+    return filter_description.xxfi_eom(smfi_context);
 }
 
 static MilterClientStatus
 cb_close (MilterClientContext *context, gpointer user_data)
 {
-    return MILTER_CLIENT_STATUS_DEFAULT;
+    SmfiContext *smfi_context = user_data;
+
+    if (!filter_description.xxfi_close)
+        return MILTER_CLIENT_STATUS_DEFAULT;
+
+    return filter_description.xxfi_close(smfi_context);
 }
 
 static MilterClientStatus
 cb_abort (MilterClientContext *context, gpointer user_data)
 {
-    return MILTER_CLIENT_STATUS_DEFAULT;
+    SmfiContext *smfi_context = user_data;
+
+    if (!filter_description.xxfi_abort)
+        return MILTER_CLIENT_STATUS_DEFAULT;
+
+    return filter_description.xxfi_abort(smfi_context);
 }
 
 static void
