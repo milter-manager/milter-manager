@@ -1,5 +1,9 @@
 2008-09-29  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-core/milter-encoder.[ch]
+	(milter_encoder_encode_reply_reply_code),
+	test/core/test-encoder.c (test_encode_reply_reply_code): add.
+
 	* data/: add actual data.
 
 	* milter-client/milter-client.c,

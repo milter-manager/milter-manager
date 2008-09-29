@@ -49,6 +49,7 @@ void test_encode_quit (void);
 void test_encode_unknown (void);
 
 void test_encode_reply_continue (void);
+void test_encode_reply_reply_code (void);
 
 static MilterEncoder *encoder;
 static GString *expected;
@@ -576,6 +577,22 @@ test_encode_reply_continue (void)
     pack(expected);
 
     milter_encoder_encode_reply_continue(encoder, &actual, &actual_size);
+    cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
+}
+
+void
+test_encode_reply_reply_code (void)
+{
+    gsize actual_size = 0;
+    const gchar code[] = "554 5.7.1 1% 2%% 3%%%";
+
+    g_string_append(expected, "y");
+    g_string_append(expected, "554 5.7.1 1% 2%% 3%%%");
+    g_string_append_c(expected, '\0');
+    pack(expected);
+
+    milter_encoder_encode_reply_reply_code(encoder, &actual, &actual_size,
+                                           code);
     cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
 }
 
