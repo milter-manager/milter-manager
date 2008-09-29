@@ -253,7 +253,6 @@ process_client_channel (MilterClient *client, GIOChannel *channel)
                    watch_func, context);
     while (need_more) {
         g_main_context_iteration(NULL, TRUE);
-        g_print("iterated\n");
     }
     if (priv->context_teardown_func)
         priv->context_teardown_func(context, priv->context_teardown_user_data);

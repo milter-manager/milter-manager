@@ -1,5 +1,7 @@
 2008-09-29  Kouhei Sutou  <kou@cozmixng.org>
 
+	* data/: add actual data.
+
 	* milter-client/milter-client.c,
 	milter-client/milter-client-context.[ch]: use MilterWriter.
 
