@@ -1,5 +1,8 @@
 2008-09-29  Kouhei Sutou  <kou@cozmixng.org>
 
+	* Makefile.am, configure.ac, libmilter.pc.in, libmilter/: add
+	libmilter compatible layer.
+
 	* milter-client/milter-client.[ch],
 	milter-client/milter-client-context.[ch]: implement experimental
 	server part.

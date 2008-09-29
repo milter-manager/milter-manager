@@ -1,6 +1,7 @@
 SUBDIRS =		\
 	milter-core	\
 	milter-client	\
+	libmilter	\
 	test
 
 EXTRA_DIST =		\
