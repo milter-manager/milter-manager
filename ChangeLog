@@ -1,5 +1,8 @@
 2008-09-29  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-client/milter-client.c,
+	milter-client/milter-client-context.[ch]: use MilterWriter.
+
 	* milter-core/milter-writer.[ch], test/core/test-writer.c,
 	milter-core/milter-core.h: implement MilterWriter.
 

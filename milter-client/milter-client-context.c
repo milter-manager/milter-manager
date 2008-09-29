@@ -47,7 +47,7 @@ struct _MilterClientContextPrivate
     guint reply_code;
     gchar *extended_reply_code;
     gchar *reply_message;
-    GIOChannel *output;
+    MilterWriter *writer;
 };
 
 enum
@@ -279,7 +279,7 @@ milter_client_context_init (MilterClientContext *context)
     priv->reply_code = 0;
     priv->extended_reply_code = NULL;
     priv->reply_message = NULL;
-    priv->output = NULL;
+    priv->writer = NULL;
     setup_decoder(context, priv->decoder);
 }
 
@@ -322,9 +322,9 @@ dispose (GObject *object)
         priv->reply_message = NULL;
     }
 
-    if (priv->output) {
-        g_io_channel_unref(priv->output);
-        priv->output = NULL;
+    if (priv->writer) {
+        g_object_unref(priv->writer);
+        priv->writer = NULL;
     }
 
     G_OBJECT_CLASS(milter_client_context_parent_class)->dispose(object);
@@ -753,18 +753,18 @@ milter_client_context_format_reply (MilterClientContext *context)
 
 void
 milter_client_context_set_writer (MilterClientContext *context,
-                                  GIOChannel *output)
+                                  MilterWriter *writer)
 {
     MilterClientContextPrivate *priv;
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
 
-    if (priv->output)
-        g_io_channel_unref(priv->output);
+    if (priv->writer)
+        g_object_unref(priv->writer);
 
-    priv->output = output;
-    if (priv->output)
-        g_io_channel_ref(priv->output);
+    priv->writer = writer;
+    if (priv->writer)
+        g_object_ref(priv->writer);
 }
 
 static gboolean
@@ -785,35 +785,28 @@ status_accumulator (GSignalInvocationHint *hint,
         status == MILTER_CLIENT_STATUS_ALL_OPTIONS;
 }
 
+/* FIXME: should pass GError **error */
 static gboolean
 write_packet (MilterClientContext *context,
               const gchar *packet, gsize packet_size)
 {
     MilterClientContextPrivate *priv;
-    gsize rest_size, written_size;
+    gboolean success;
+    GError *error = NULL;
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
 
-    if (!priv->output)
+    if (!priv->writer)
         return TRUE;
 
-    for (rest_size = packet_size; rest_size > 0; rest_size -= written_size) {
-        GError *error = NULL;
-
-        g_io_channel_write_chars(priv->output,
-                                 packet + (packet_size - rest_size),
-                                 rest_size,
-                                 &written_size,
-                                 &error);
-        if (error) {
-            g_print("error: %s\n", error->message);
-            g_error_free(error);
-            return FALSE;
-        }
+    success = milter_writer_write(priv->writer, packet, packet_size,
+                                  NULL, &error);
+    if (!success) {
+        g_print("error: %s\n", error->message);
+        g_error_free(error);
     }
-    g_io_channel_flush(priv->output, NULL);
 
-    return TRUE;
+    return success;
 }
 
 static gboolean

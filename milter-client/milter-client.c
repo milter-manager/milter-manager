@@ -238,11 +238,13 @@ process_client_channel (MilterClient *client, GIOChannel *channel)
 {
     MilterClientPrivate *priv;
     MilterClientContext *context;
+    MilterWriter *writer;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
+    writer = milter_writer_io_channel_new(channel);
     context = milter_client_context_new();
-    milter_client_context_set_writer(context, channel);
+    milter_client_context_set_writer(context, writer);
     if (priv->context_setup_func)
         priv->context_setup_func(context, priv->context_setup_user_data);
     g_io_add_watch(channel,
@@ -256,6 +258,7 @@ process_client_channel (MilterClient *client, GIOChannel *channel)
     if (priv->context_teardown_func)
         priv->context_teardown_func(context, priv->context_teardown_user_data);
     g_object_unref(context);
+    g_object_unref(writer);
 }
 
 gboolean

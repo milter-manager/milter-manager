@@ -124,8 +124,7 @@ gboolean             milter_client_context_set_reply         (MilterClientContex
 gchar               *milter_client_context_format_reply      (MilterClientContext *context);
 
 void                 milter_client_context_set_writer        (MilterClientContext *context,
-                                                              GIOChannel *output
-                                                              /* should define MilterWriter and use it */);
+                                                              MilterWriter *writer);
 
 
 G_END_DECLS
