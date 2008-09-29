@@ -45,6 +45,10 @@ typedef struct _MilterClientPrivate	MilterClientPrivate;
 struct _MilterClientPrivate
 {
     gint server_fd;
+    MilterClientContextSetupFunc context_setup_func;
+    gpointer context_setup_user_data;
+    MilterClientContextTeardownFunc context_teardown_func;
+    gpointer context_teardown_user_data;
 };
 
 G_DEFINE_TYPE(MilterClient, milter_client, G_TYPE_OBJECT);
@@ -80,6 +84,10 @@ milter_client_init (MilterClient *client)
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
     priv->server_fd = -1;
+    priv->context_setup_func = NULL;
+    priv->context_setup_user_data = NULL;
+    priv->context_teardown_func = NULL;
+    priv->context_teardown_user_data = NULL;
 }
 
 static void
@@ -150,10 +158,8 @@ feed_to_context (MilterClientContext *context, GIOChannel *channel)
         gsize length = 0;
         GError *error = NULL;
 
-        g_print("try read\n");
         status = g_io_channel_read_chars(channel, stream, BUFFER_SIZE,
                                          &length, &error);
-        g_print("read: %ld:<%s>\n", length, stream);
         if (status == G_IO_STATUS_EOF) {
             eof = TRUE;
             need_more = FALSE;
@@ -192,7 +198,6 @@ watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
 
     if (condition & G_IO_IN ||
         condition & G_IO_PRI) {
-        g_print("feed!\n");
         keep_callback = feed_to_context(context, channel);
     }
 
@@ -229,20 +234,27 @@ watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
 }
 
 static void
-process_client_channel (GIOChannel *channel)
+process_client_channel (MilterClient *client, GIOChannel *channel)
 {
+    MilterClientPrivate *priv;
     MilterClientContext *context;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
 
     context = milter_client_context_new();
     milter_client_context_set_writer(context, channel);
+    if (priv->context_setup_func)
+        priv->context_setup_func(context, priv->context_setup_user_data);
     g_io_add_watch(channel,
                    G_IO_IN | G_IO_PRI |
                    G_IO_ERR | G_IO_HUP | G_IO_NVAL,
                    watch_func, context);
     while (need_more) {
-        g_main_context_iteration(NULL, FALSE);
-        sleep(1);
+        g_main_context_iteration(NULL, TRUE);
+        g_print("iterated\n");
     }
+    if (priv->context_teardown_func)
+        priv->context_teardown_func(context, priv->context_teardown_user_data);
     g_object_unref(context);
 }
 
@@ -284,13 +296,38 @@ milter_client_main (MilterClient *client)
                                G_IO_FLAG_IS_WRITEABLE,
                                NULL);
         g_io_channel_set_close_on_unref(client_channel, TRUE);
-        process_client_channel(client_channel);
+        process_client_channel(client, client_channel);
         g_io_channel_unref(client_channel);
+        g_print("done\n");
     }
 
     close(priv->server_fd);
 
     return TRUE;
+}
+
+void
+milter_client_set_context_setup_func (MilterClient *client,
+                                      MilterClientContextSetupFunc setup_func,
+                                      gpointer user_data)
+{
+    MilterClientPrivate *priv;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    priv->context_setup_func = setup_func;
+    priv->context_setup_user_data = user_data;
+}
+
+void
+milter_client_set_context_teardown_func (MilterClient *client,
+                                         MilterClientContextTeardownFunc teardown_func,
+                                         gpointer user_data)
+{
+    MilterClientPrivate *priv;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    priv->context_teardown_func = teardown_func;
+    priv->context_teardown_user_data = user_data;
 }
 
 /*

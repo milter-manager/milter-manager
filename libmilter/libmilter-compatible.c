@@ -23,6 +23,9 @@
 
 #include "libmilter-compatible.h"
 
+static struct smfiDesc filter_description = {0};
+static gchar *connection_spec = NULL;
+
 G_DEFINE_TYPE(SmfiContext, smfi_context, G_TYPE_OBJECT);
 
 static void dispose        (GObject         *object);
@@ -110,18 +113,183 @@ smfi_opensocket (bool remove_socket)
 int
 smfi_register (struct smfiDesc description)
 {
+    if (description.xxfi_version != SMFI_VERSION &&
+        description.xxfi_version != 2 &&
+        description.xxfi_version != 3 &&
+        description.xxfi_version != 4) {
+        return MI_FAILURE;
+    }
+
+    if (filter_description.xxfi_name)
+        g_free(filter_description.xxfi_name);
+    filter_description = description;
+    filter_description.xxfi_name = g_strdup(filter_description.xxfi_name);
+    if (!filter_description.xxfi_name)
+        return MI_FAILURE;
+
     return MI_SUCCESS;
+}
+
+static MilterClientStatus
+cb_option_negotiation (MilterClientContext *context, MilterOption *option,
+                       gpointer user_data)
+{
+    return MILTER_CLIENT_STATUS_DEFAULT;
+}
+
+static MilterClientStatus
+cb_connect (MilterClientContext *context, const gchar *host_name,
+            struct sockaddr *address, socklen_t address_length,
+            gpointer user_data)
+{
+    SmfiContext *smfi_context = user_data;
+
+    if (filter_description.xxfi_connect)
+        return filter_description.xxfi_connect(smfi_context,
+                                               (gchar *)host_name,
+                                               address);
+    else
+        return MILTER_CLIENT_STATUS_DEFAULT;
+}
+
+static MilterClientStatus
+cb_helo (MilterClientContext *context, const gchar *fqdn,
+         gpointer user_data)
+{
+    return MILTER_CLIENT_STATUS_DEFAULT;
+}
+
+static MilterClientStatus
+cb_envelope_from (MilterClientContext *context, const gchar *from,
+                  gpointer user_data)
+{
+    return MILTER_CLIENT_STATUS_DEFAULT;
+}
+
+static MilterClientStatus
+cb_envelope_receipt (MilterClientContext *context, const gchar *receipt,
+                     gpointer user_data)
+{
+    return MILTER_CLIENT_STATUS_DEFAULT;
+}
+
+static MilterClientStatus
+cb_data (MilterClientContext *context, gpointer user_data)
+{
+    return MILTER_CLIENT_STATUS_DEFAULT;
+}
+
+static MilterClientStatus
+cb_unknown (MilterClientContext *context, const gchar *command,
+            gpointer user_data)
+{
+    return MILTER_CLIENT_STATUS_DEFAULT;
+}
+
+static MilterClientStatus
+cb_header (MilterClientContext *context, const gchar *name, const gchar *value,
+           gpointer user_data)
+{
+    return MILTER_CLIENT_STATUS_DEFAULT;
+}
+
+static MilterClientStatus
+cb_end_of_header (MilterClientContext *context, gpointer user_data)
+{
+    return MILTER_CLIENT_STATUS_DEFAULT;
+}
+
+static MilterClientStatus
+cb_body (MilterClientContext *context, const guchar *chunk, gsize size,
+         gpointer user_data)
+{
+    return MILTER_CLIENT_STATUS_DEFAULT;
+}
+
+static MilterClientStatus
+cb_end_of_message (MilterClientContext *context, gpointer user_data)
+{
+    return MILTER_CLIENT_STATUS_DEFAULT;
+}
+
+static MilterClientStatus
+cb_close (MilterClientContext *context, gpointer user_data)
+{
+    return MILTER_CLIENT_STATUS_DEFAULT;
+}
+
+static MilterClientStatus
+cb_abort (MilterClientContext *context, gpointer user_data)
+{
+    return MILTER_CLIENT_STATUS_DEFAULT;
+}
+
+static void
+setup_client_context (MilterClientContext *context, gpointer user_data)
+{
+#define CONNECT(name, smfi_name)                                        \
+    if (filter_description.xxfi_ ## smfi_name)                          \
+        g_signal_connect(context, #name, G_CALLBACK(cb_ ## name),       \
+                         user_data)
+
+    CONNECT(option_negotiation, negotiate);
+    CONNECT(connect, connect);
+    CONNECT(helo, helo);
+    CONNECT(envelope_from, envfrom);
+    CONNECT(envelope_receipt, envrcpt);
+    CONNECT(data, data);
+    CONNECT(unknown, unknown);
+    CONNECT(header, header);
+    CONNECT(end_of_header, eoh);
+    CONNECT(body, body);
+    CONNECT(end_of_message, eom);
+    CONNECT(close, close);
+    CONNECT(abort, abort);
+
+#undef CONNECT
+}
+
+static void
+teardown_client_context (MilterClientContext *context, gpointer user_data)
+{
+#define DISCONNECT(name)                                                \
+    g_signal_handlers_disconnect_by_func(context,                       \
+                                         G_CALLBACK(cb_ ## name),       \
+                                         user_data)
+
+    DISCONNECT(option_negotiation);
+    DISCONNECT(connect);
+    DISCONNECT(helo);
+    DISCONNECT(envelope_from);
+    DISCONNECT(envelope_receipt);
+    DISCONNECT(data);
+    DISCONNECT(unknown);
+    DISCONNECT(header);
+    DISCONNECT(end_of_header);
+    DISCONNECT(body);
+    DISCONNECT(end_of_message);
+    DISCONNECT(close);
+    DISCONNECT(abort);
+
+#undef IDSCONNECT
 }
 
 int
 smfi_main (void)
 {
     MilterClient *client;
+    SmfiContext *smfi_context;
 
     g_type_init();
 
     client = milter_client_new();
+    smfi_context = smfi_context_new();
+    milter_client_set_context_setup_func(client, setup_client_context,
+                                         smfi_context);
+    milter_client_set_context_teardown_func(client, teardown_client_context,
+                                            smfi_context);
     milter_client_main(client);
+    g_object_unref(smfi_context);
     g_object_unref(client);
 
     return MI_SUCCESS;
@@ -146,9 +314,15 @@ smfi_settimeout (int timeout)
 }
 
 int
-smfi_setconn (char *connection_spec)
+smfi_setconn (char *spec)
 {
-    return MI_SUCCESS;
+    if (connection_spec)
+        g_free(connection_spec);
+    connection_spec = g_strdup(spec);
+    if (connection_spec)
+        return MI_SUCCESS;
+    else
+        return MI_FAILURE;
 }
 
 int

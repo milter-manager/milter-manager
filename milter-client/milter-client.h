@@ -39,6 +39,11 @@ typedef enum
     MILTER_CLIENT_ERROR_INVALID_CODE
 } MilterClientError;
 
+typedef void (*MilterClientContextSetupFunc)    (MilterClientContext *context,
+                                                 gpointer user_data);
+typedef void (*MilterClientContextTeardownFunc) (MilterClientContext *context,
+                                                 gpointer user_data);
+
 typedef struct _MilterClient         MilterClient;
 typedef struct _MilterClientClass    MilterClientClass;
 
@@ -59,6 +64,15 @@ GType                milter_client_get_type          (void) G_GNUC_CONST;
 MilterClient        *milter_client_new               (void);
 
 gboolean             milter_client_main              (MilterClient *client);
+
+void                 milter_client_set_context_setup_func
+                                                     (MilterClient *client,
+                                                      MilterClientContextSetupFunc setup_func,
+                                                      gpointer user_data);
+void                 milter_client_set_context_teardown_func
+                                                     (MilterClient *client,
+                                                      MilterClientContextTeardownFunc teardown_func,
+                                                      gpointer user_data);
 
 
 G_END_DECLS

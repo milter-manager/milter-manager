@@ -1,5 +1,11 @@
 2008-09-29  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-client/milter-client.[ch]: support context setup hook.
+
+	* libmilter/mfdef.h: define compatible definitions.
+
+	* libmilter/libmilter-compatible.c: use context setup hook.
+
 	* milter-core/Makefile.am, milter-client/Makefile.am: install
 	main header. (milter-core.h and milter-client.h)
 
