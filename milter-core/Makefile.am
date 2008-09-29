@@ -35,6 +35,9 @@ MAINTAINERCLEANFILES =			\
 
 BUILT_SOURCES = $(enum_sources) $(marshal_sources)
 
+pkginclude_HEADERS =	\
+	milter-core.h
+
 milter_core_includedir=$(pkgincludedir)/milter-core
 milter_core_include_HEADERS =		\
 	milter-enum-types.h		\
