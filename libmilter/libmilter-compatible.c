@@ -397,6 +397,7 @@ smfi_main (void)
     g_type_init();
 
     client = milter_client_new();
+    milter_client_set_connection_spec(client, connection_spec, NULL);
     smfi_context = smfi_context_new();
     milter_client_set_context_setup_func(client, setup_client_context,
                                          smfi_context);

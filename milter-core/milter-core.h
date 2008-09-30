@@ -24,6 +24,7 @@
 #include <milter-core/milter-encoder.h>
 #include <milter-core/milter-decoder.h>
 #include <milter-core/milter-writer.h>
+#include <milter-core/milter-utils.h>
 #include <milter-core/milter-enum-types.h>
 
 #endif /* __MILTER_CORE_H__ */

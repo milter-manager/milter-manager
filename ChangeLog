@@ -1,5 +1,9 @@
 2008-09-30  Kouhei Sutou  <kou@cozmixng.org>
 
+	* libmilter/libmilter-compatible.c,
+	milter-client/milter-client.[ch], milter-core/milter-core.h:
+	support smfi_setconn().
+
 	* milter-core/milter-utils.c, test/core/test-utils.c: fix wrong
 	size set.
 

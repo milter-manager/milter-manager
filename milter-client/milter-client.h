@@ -63,7 +63,12 @@ GType                milter_client_get_type          (void) G_GNUC_CONST;
 
 MilterClient        *milter_client_new               (void);
 
-gboolean             milter_client_main              (MilterClient *client);
+gboolean             milter_client_set_connection_spec
+                                                     (MilterClient  *client,
+                                                      const gchar   *spec,
+                                                      GError       **error);
+
+gboolean             milter_client_main              (MilterClient  *client);
 
 void                 milter_client_set_context_setup_func
                                                      (MilterClient *client,

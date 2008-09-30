@@ -29,6 +29,7 @@
 #include <netinet/ip.h>
 
 #include <unistd.h>
+#include <errno.h>
 
 #include <milter-core.h>
 #include "milter-client.h"
@@ -45,6 +46,8 @@ typedef struct _MilterClientPrivate	MilterClientPrivate;
 struct _MilterClientPrivate
 {
     gint server_fd;
+    struct sockaddr *address;
+    socklen_t address_size;
     MilterClientContextSetupFunc context_setup_func;
     gpointer context_setup_user_data;
     MilterClientContextTeardownFunc context_teardown_func;
@@ -84,6 +87,8 @@ milter_client_init (MilterClient *client)
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
     priv->server_fd = -1;
+    priv->address = NULL;
+    priv->address_size = 0;
     priv->context_setup_func = NULL;
     priv->context_setup_user_data = NULL;
     priv->context_teardown_func = NULL;
@@ -96,6 +101,11 @@ dispose (GObject *object)
     MilterClientPrivate *priv;
 
     priv = MILTER_CLIENT_GET_PRIVATE(object);
+
+    if (priv->address) {
+        g_free(priv->address);
+        priv->address = NULL;
+    }
 
     G_OBJECT_CLASS(milter_client_parent_class)->dispose(object);
 }
@@ -143,6 +153,23 @@ milter_client_new (void)
 {
     return g_object_new(MILTER_CLIENT_TYPE,
                         NULL);
+}
+
+gboolean
+milter_client_set_connection_spec (MilterClient *client, const gchar *spec,
+                                   GError **error)
+{
+    MilterClientPrivate *priv;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    if (priv->address) {
+        g_free(priv->address);
+        priv->address = NULL;
+    }
+    return milter_utils_parse_connection_spec(spec,
+                                              &(priv->address),
+                                              &(priv->address_size),
+                                              error);
 }
 
 #define BUFFER_SIZE 4096
@@ -264,9 +291,6 @@ gboolean
 milter_client_main (MilterClient *client)
 {
     MilterClientPrivate *priv;
-    struct sockaddr_in server_address;
-    struct sockaddr_in client_address;
-    socklen_t client_address_size;
     gboolean reuse_address = TRUE;
     gint client_fd;
 
@@ -275,20 +299,33 @@ milter_client_main (MilterClient *client)
     setsockopt(priv->server_fd, SOL_SOCKET, SO_REUSEADDR,
                &reuse_address, sizeof(reuse_address));
 
-    server_address.sin_family = AF_INET;
-    server_address.sin_addr.s_addr = htonl(INADDR_ANY);
-    server_address.sin_port = htons(9999);
-    bind(priv->server_fd,
-         (struct sockaddr *)&server_address,
-         sizeof(server_address));
+    if (!priv->address)
+        milter_client_set_connection_spec(client, "inet:11111", NULL);
 
-    listen(priv->server_fd, 5);
-    client_address_size = sizeof(client_address);
-    client_fd = accept(priv->server_fd,
-                       (struct sockaddr *)&client_address,
-                       &client_address_size);
+    if (bind(priv->server_fd, priv->address, priv->address_size) == -1) {
+        g_print("failed to bind(): %s\n", strerror(errno));
+        close(priv->server_fd);
+        return FALSE;
+    }
+
+    if (listen(priv->server_fd, 5) == -1) {
+        g_print("failed to listen(): %s\n", strerror(errno));
+        close(priv->server_fd);
+        return FALSE;
+    };
+
     {
+        struct sockaddr *client_address;
+        socklen_t client_address_size;
         GIOChannel *client_channel;
+
+        g_print("start!\n");
+        client_address = g_malloc(priv->address_size);
+        client_address_size = priv->address_size;
+        client_fd = accept(priv->server_fd,
+                           client_address,
+                           &client_address_size);
+        g_print("accept!\n");
 
         client_channel = g_io_channel_unix_new(client_fd);
         g_io_channel_set_encoding(client_channel, NULL, NULL);
@@ -301,6 +338,8 @@ milter_client_main (MilterClient *client)
         process_client_channel(client, client_channel);
         g_io_channel_unref(client_channel);
         g_print("done\n");
+
+        g_free(client_address);
     }
 
     close(priv->server_fd);
