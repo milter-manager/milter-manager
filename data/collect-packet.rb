@@ -23,7 +23,7 @@ File.read(test_list).each_line do |line|
   command = "connect"
   command = $1 if /-c (\w+)/ =~ line
   result = nil
-  IO.popen("sudo tshark -a duration:3 -i any " +
+  IO.popen("sudo tshark -a duration:4 -i any " +
            "-R 'tcp.port == #{port}' -n -T text -V") do |io|
     sleep(1)
     Dir.chdir(File.dirname(test_list)) do
