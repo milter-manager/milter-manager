@@ -1,5 +1,8 @@
 2008-09-30  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-client/milter-client-context.c,
+	milter-core/milter-encoder.[ch]: support accept.
+
 	* milter-client/milter-client-context.[ch],
 	milter-core/milter-encoder.[ch],
 	milter-core/milter-protocol.h: fail temporarily -> temporary failure.
