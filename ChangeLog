@@ -1,3 +1,8 @@
+2008-09-30  Kouhei Sutou  <kou@cozmixng.org>
+
+	* data/collect-packet.rb: add a auto-packet collector.
+	* data/: update log.
+
 2008-09-29  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter-core/milter-encoder.[ch]
