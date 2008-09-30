@@ -824,6 +824,18 @@ reply (MilterClientContext *context, MilterClientStatus status)
         write_packet(context, packet, packet_size);
         g_free(packet);
         break;
+      case MILTER_CLIENT_STATUS_REJECT:
+        {
+            gchar *code;
+
+            code = milter_client_context_format_reply(context);
+            milter_encoder_encode_reply_reply_code(priv->encoder,
+                                                   &packet, &packet_size, code);
+            g_free(code);
+            write_packet(context, packet, packet_size);
+            g_free(packet);
+        }
+        break;
       default:
         break;
     }

@@ -492,6 +492,12 @@ milter_encoder_encode_reply_reply_code (MilterEncoder *encoder,
 {
     MilterEncoderPrivate *priv;
 
+    if (!code) {
+        *packet = NULL;
+        *packet_size = 0;
+        return;
+    }
+
     priv = MILTER_ENCODER_GET_PRIVATE(encoder);
     g_string_truncate(priv->buffer, 0);
 

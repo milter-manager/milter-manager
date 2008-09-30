@@ -1,5 +1,10 @@
 2008-09-30  Kouhei Sutou  <kou@cozmixng.org>
 
+	* libmilter/libmilter-compatible.c,
+	milter-client/milter-client-context.c,
+	milter-client/milter-client.c, milter-core/milter-encoder.c:
+	support reject with text.
+
 	* data/collect-packet.rb: add a auto-packet collector.
 	* data/: update log.
 
