@@ -160,7 +160,7 @@ test_parse_connection_spec_unix (void)
                                        &actual_address, &actual_address_size,
                                        &error);
     gcut_assert_error(error);
-    cut_assert_equal_uint(sizeof(address), actual_address_size);
+    cut_assert_equal_uint(sizeof(*address), actual_address_size);
 
     address = (struct sockaddr_un *)actual_address;
     cut_assert_equal_int(AF_UNIX, address->sun_family);
@@ -204,7 +204,7 @@ test_parse_connection_spec_inet (gconstpointer data)
                                        &actual_address, &actual_address_size,
                                        &error);
     gcut_assert_error(error);
-    cut_assert_equal_uint(sizeof(expected_in), actual_address_size);
+    cut_assert_equal_uint(sizeof(*expected_in), actual_address_size);
 
     expected_in = (struct sockaddr_in *)test_data->expected_address;
     actual_in = (struct sockaddr_in *)actual_address;
@@ -255,7 +255,7 @@ test_parse_connection_spec_inet6 (gconstpointer data)
                                        &actual_address, &actual_address_size,
                                        &error);
     gcut_assert_error(error);
-    cut_assert_equal_uint(sizeof(expected_in6), actual_address_size);
+    cut_assert_equal_uint(sizeof(*expected_in6), actual_address_size);
 
     expected_in6 = (struct sockaddr_in6 *)test_data->expected_address;
     actual_in6 = (struct sockaddr_in6 *)actual_address;

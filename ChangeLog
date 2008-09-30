@@ -1,5 +1,8 @@
 2008-09-30  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-core/milter-utils.c, test/core/test-utils.c: fix wrong
+	size set.
+
 	* milter-core/milter-utils.[ch], test/core/test-utils.c: support
 	inet6:... parsing.
 

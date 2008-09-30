@@ -181,7 +181,7 @@ milter_utils_parse_connection_spec (const gchar      *spec,
         strcpy(address_unix->sun_path, colon + 1);
 
         *address = (struct sockaddr *)address_unix;
-        *address_size = sizeof(address_unix);
+        *address_size = sizeof(*address_unix);
     } else if (g_str_has_prefix(spec, "inet:")) {
         struct sockaddr_in *address_inet;
         struct in_addr ip_address;
@@ -199,7 +199,7 @@ milter_utils_parse_connection_spec (const gchar      *spec,
         address_inet->sin_addr = ip_address;
 
         *address = (struct sockaddr *)address_inet;
-        *address_size = sizeof(address_inet);
+        *address_size = sizeof(*address_inet);
     } else if (g_str_has_prefix(spec, "inet6:")) {
         struct sockaddr_in6 *address_inet6;
         struct in6_addr ipv6_address;
@@ -217,7 +217,7 @@ milter_utils_parse_connection_spec (const gchar      *spec,
         address_inet6->sin6_addr = ipv6_address;
 
         *address = (struct sockaddr *)address_inet6;
-        *address_size = sizeof(address_inet6);
+        *address_size = sizeof(*address_inet6);
     } else {
         gchar *protocol;
 
