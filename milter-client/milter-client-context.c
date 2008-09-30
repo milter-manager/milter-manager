@@ -813,7 +813,7 @@ static gboolean
 reply (MilterClientContext *context, MilterClientStatus status)
 {
     MilterClientContextPrivate *priv;
-    gchar *packet;
+    gchar *packet = NULL;
     gsize packet_size;
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
@@ -821,8 +821,6 @@ reply (MilterClientContext *context, MilterClientStatus status)
       case MILTER_CLIENT_STATUS_CONTINUE:
         milter_encoder_encode_reply_continue(priv->encoder,
                                              &packet, &packet_size);
-        write_packet(context, packet, packet_size);
-        g_free(packet);
         break;
       case MILTER_CLIENT_STATUS_REJECT:
         {
@@ -838,29 +836,26 @@ reply (MilterClientContext *context, MilterClientStatus status)
                 milter_encoder_encode_reply_reject(priv->encoder,
                                                    &packet, &packet_size);
             }
-            write_packet(context, packet, packet_size);
-            g_free(packet);
         }
         break;
       case MILTER_CLIENT_STATUS_TEMPORARY_FAILURE:
         milter_encoder_encode_reply_temporary_failure(priv->encoder,
                                                       &packet, &packet_size);
-        write_packet(context, packet, packet_size);
-        g_free(packet);
         break;
       case MILTER_CLIENT_STATUS_ACCEPT:
         milter_encoder_encode_reply_accept(priv->encoder, &packet, &packet_size);
-        write_packet(context, packet, packet_size);
-        g_free(packet);
         break;
       case MILTER_CLIENT_STATUS_DISCARD:
         milter_encoder_encode_reply_discard(priv->encoder,
                                             &packet, &packet_size);
-        write_packet(context, packet, packet_size);
-        g_free(packet);
         break;
       default:
         break;
+    }
+
+    if (packet) {
+        write_packet(context, packet, packet_size);
+        g_free(packet);
     }
 
     return TRUE;
