@@ -123,7 +123,11 @@ void             milter_encoder_encode_reply_reply_code
                                                 gchar            **packet,
                                                 gsize             *packet_size,
                                                 const gchar       *code);
-void             milter_encoder_encode_reply_fail_temporarily
+void             milter_encoder_encode_reply_temporary_failure
+                                               (MilterEncoder     *encoder,
+                                                gchar            **packet,
+                                                gsize             *packet_size);
+void             milter_encoder_encode_reply_reject
                                                (MilterEncoder     *encoder,
                                                 gchar            **packet,
                                                 gsize             *packet_size);

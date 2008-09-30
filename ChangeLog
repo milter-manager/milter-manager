@@ -2,6 +2,10 @@
 
 	* milter-client/milter-client-context.[ch],
 	milter-core/milter-encoder.[ch],
+	milter-core/milter-protocol.h: fail temporarily -> temporary failure.
+
+	* milter-client/milter-client-context.[ch],
+	milter-core/milter-encoder.[ch],
 	milter-core/milter-protocol.h: support tempfail.
 
 	* libmilter/libmilter-compatible.c,

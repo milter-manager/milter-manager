@@ -829,16 +829,22 @@ reply (MilterClientContext *context, MilterClientStatus status)
             gchar *code;
 
             code = milter_client_context_format_reply(context);
-            milter_encoder_encode_reply_reply_code(priv->encoder,
-                                                   &packet, &packet_size, code);
-            g_free(code);
+            if (code) {
+                milter_encoder_encode_reply_reply_code(priv->encoder,
+                                                       &packet, &packet_size,
+                                                       code);
+                g_free(code);
+            } else {
+                milter_encoder_encode_reply_reject(priv->encoder,
+                                                   &packet, &packet_size);
+            }
             write_packet(context, packet, packet_size);
             g_free(packet);
         }
         break;
-      case MILTER_CLIENT_STATUS_FAIL_TEMPORARILY:
-        milter_encoder_encode_reply_fail_temporarily(priv->encoder,
-                                                     &packet, &packet_size);
+      case MILTER_CLIENT_STATUS_TEMPORARY_FAILURE:
+        milter_encoder_encode_reply_temporary_failure(priv->encoder,
+                                                      &packet, &packet_size);
         write_packet(context, packet, packet_size);
         g_free(packet);
         break;

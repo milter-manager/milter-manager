@@ -511,16 +511,32 @@ milter_encoder_encode_reply_reply_code (MilterEncoder *encoder,
 }
 
 void
-milter_encoder_encode_reply_fail_temporarily (MilterEncoder *encoder,
-                                              gchar **packet,
-                                              gsize *packet_size)
+milter_encoder_encode_reply_temporary_failure (MilterEncoder *encoder,
+                                               gchar **packet,
+                                               gsize *packet_size)
 {
     MilterEncoderPrivate *priv;
 
     priv = MILTER_ENCODER_GET_PRIVATE(encoder);
     g_string_truncate(priv->buffer, 0);
 
-    g_string_append_c(priv->buffer, MILTER_REPLY_FAIL_TEMPORARILY);
+    g_string_append_c(priv->buffer, MILTER_REPLY_TEMPORARY_FAILURE);
+    pack(priv->buffer);
+
+    *packet = g_memdup(priv->buffer->str, priv->buffer->len);
+    *packet_size = priv->buffer->len;
+}
+
+void
+milter_encoder_encode_reply_reject (MilterEncoder *encoder,
+                                    gchar **packet, gsize *packet_size)
+{
+    MilterEncoderPrivate *priv;
+
+    priv = MILTER_ENCODER_GET_PRIVATE(encoder);
+    g_string_truncate(priv->buffer, 0);
+
+    g_string_append_c(priv->buffer, MILTER_REPLY_REJECT);
     pack(priv->buffer);
 
     *packet = g_memdup(priv->buffer->str, priv->buffer->len);
