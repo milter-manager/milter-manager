@@ -853,6 +853,12 @@ reply (MilterClientContext *context, MilterClientStatus status)
         write_packet(context, packet, packet_size);
         g_free(packet);
         break;
+      case MILTER_CLIENT_STATUS_DISCARD:
+        milter_encoder_encode_reply_discard(priv->encoder,
+                                            &packet, &packet_size);
+        write_packet(context, packet, packet_size);
+        g_free(packet);
+        break;
       default:
         break;
     }

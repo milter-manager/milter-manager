@@ -135,6 +135,10 @@ void             milter_encoder_encode_reply_accept
                                                (MilterEncoder     *encoder,
                                                 gchar            **packet,
                                                 gsize             *packet_size);
+void             milter_encoder_encode_reply_discard
+                                               (MilterEncoder     *encoder,
+                                                gchar            **packet,
+                                                gsize             *packet_size);
 
 G_END_DECLS
 

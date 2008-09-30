@@ -1,6 +1,9 @@
 2008-09-30  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter-client/milter-client-context.c,
+	milter-core/milter-encoder.[ch]: support discard.
+
+	* milter-client/milter-client-context.c,
 	milter-core/milter-encoder.[ch]: support accept.
 
 	* milter-client/milter-client-context.[ch],
