@@ -38,6 +38,124 @@ milter_utils_error_quark (void)
     return g_quark_from_static_string("milter-utils-error-quark");
 }
 
+static gboolean
+parse_connection_spec_host (const gchar *spec, const gchar *host,
+                            gpointer address, gint protocol_family,
+                            GError **error)
+{
+    if (host[0] == '[') {
+        gsize host_size;
+        gchar *host_address;
+        gint result, address_family;
+
+        host++;
+        host_size = strlen(host);
+        if (host[host_size - 1] != ']') {
+            g_set_error(error,
+                        MILTER_UTILS_ERROR,
+                        MILTER_UTILS_ERROR_INVALID_FORMAT,
+                        "']' is missing: <%s>: <%s>",
+                        spec, host - 1);
+            return FALSE;
+        }
+        host_address = g_strndup(host, host_size - 1);
+
+        if (protocol_family == PF_INET)
+            address_family = AF_INET;
+        else
+            address_family = AF_INET6;
+        result = inet_pton(address_family, host_address, address);
+        if (result == 0) {
+            g_set_error(error,
+                        MILTER_UTILS_ERROR,
+                        MILTER_UTILS_ERROR_INVALID_FORMAT,
+                        "invalid host address: <%s>: <%s>",
+                        spec, host_address);
+        }
+        g_free(host_address);
+        if (result == 0)
+            return FALSE;
+    } else {
+        struct addrinfo hints;
+        struct addrinfo *results;
+        gint status;
+
+        memset(&hints, 0, sizeof(hints));
+        hints.ai_family = protocol_family;
+        hints.ai_socktype = SOCK_STREAM;
+
+        status = getaddrinfo(host, NULL, &hints, &results);
+        if (status != 0) {
+            g_set_error(error,
+                        MILTER_UTILS_ERROR,
+                        MILTER_UTILS_ERROR_INVALID_FORMAT,
+                        "invalid host address: <%s>: <%s>: <%s>",
+                        spec, host, gai_strerror(status));
+            return FALSE;
+        }
+
+        if (protocol_family == PF_INET) {
+            memcpy(address,
+                   &(((struct sockaddr_in *)(results->ai_addr))->sin_addr),
+                   sizeof(struct in_addr));
+        } else {
+            memcpy(address,
+                   &(((struct sockaddr_in6 *)(results->ai_addr))->sin6_addr),
+                   sizeof(struct in6_addr));
+        }
+        freeaddrinfo(results);
+    }
+
+    return TRUE;
+}
+
+static gboolean
+parse_connection_spec_port_and_host (const gchar *spec, const gchar *port,
+                                     gint *port_number,
+                                     gpointer address, gint protocol_family,
+                                     GError **error)
+{
+    struct in_addr *ip_address;
+    struct in6_addr *ipv6_address;
+    gint i;
+
+    if (protocol_family == PF_INET) {
+        ip_address = address;
+        ip_address->s_addr = INADDR_ANY;
+    } else {
+        ipv6_address = address;
+        *ipv6_address = in6addr_any;
+    }
+
+    for (i = 0; port[i]; i++) {
+        if (port[i] == '@') {
+            if (!parse_connection_spec_host(spec, port + i + 1,
+                                            address, protocol_family, error))
+                return FALSE;
+            break;
+        } else if (!g_ascii_isdigit(port[i])) {
+            g_set_error(error,
+                        MILTER_UTILS_ERROR,
+                        MILTER_UTILS_ERROR_INVALID_FORMAT,
+                        "port number has invalid character: <%s>: <%c>",
+                        spec, port[i]);
+            return FALSE;
+        }
+    }
+
+    *port_number = atoi(port);
+    if (*port_number > 65535) {
+        g_set_error(error,
+                    MILTER_UTILS_ERROR,
+                    MILTER_UTILS_ERROR_INVALID_FORMAT,
+                    "port number should be less than 65536: <%s>: <%d>",
+                    spec, *port_number);
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
 gboolean
 milter_utils_parse_connection_spec (const gchar      *spec,
                                     struct sockaddr **address,
@@ -67,84 +185,13 @@ milter_utils_parse_connection_spec (const gchar      *spec,
     } else if (g_str_has_prefix(spec, "inet:")) {
         struct sockaddr_in *address_inet;
         struct in_addr ip_address;
-        const gchar *port;
-        gint i, port_number;
+        gint port_number;
 
-        port = colon + 1;
-        ip_address.s_addr = INADDR_ANY;
-        for (i = 0; port[i]; i++) {
-            if (port[i] == '@') {
-                const gchar *host;
-
-                host = port + i + 1;
-                if (host[0] == '[') {
-                    gsize host_size;
-                    gchar *host_address;
-                    gint result;
-
-                    host++;
-                    host_size = strlen(host);
-                    if (host[host_size - 1] != ']') {
-                        g_set_error(error,
-                                    MILTER_UTILS_ERROR,
-                                    MILTER_UTILS_ERROR_INVALID_FORMAT,
-                                    "']' is missing: <%s>: <%s>",
-                                    spec, host - 1);
-                        return FALSE;
-                    }
-                    host_address = g_strndup(host, host_size - 1);
-                    result = inet_aton(host_address, &ip_address);
-                    if (result == 0) {
-                        g_set_error(error,
-                                    MILTER_UTILS_ERROR,
-                                    MILTER_UTILS_ERROR_INVALID_FORMAT,
-                                    "invalid host address: <%s>: <%s>",
-                                    spec, host_address);
-                    }
-                    g_free(host_address);
-                    if (result == 0)
-                        return FALSE;
-                } else {
-                    struct addrinfo hints;
-                    struct addrinfo *results;
-                    gint status;
-
-                    memset(&hints, 0, sizeof(hints));
-                    hints.ai_family = PF_INET;
-                    hints.ai_socktype = SOCK_STREAM;
-
-                    status = getaddrinfo(host, NULL, &hints, &results);
-                    if (status != 0) {
-                        g_set_error(error,
-                                    MILTER_UTILS_ERROR,
-                                    MILTER_UTILS_ERROR_INVALID_FORMAT,
-                                    "invalid host address: <%s>: <%s>: <%s>",
-                                    spec, host, gai_strerror(status));
-                        return FALSE;
-                    }
-                    ip_address =
-                        ((struct sockaddr_in *)(results->ai_addr))->sin_addr;
-                    freeaddrinfo(results);
-                }
-                break;
-            } else if (!g_ascii_isdigit(port[i])) {
-                g_set_error(error,
-                            MILTER_UTILS_ERROR,
-                            MILTER_UTILS_ERROR_INVALID_FORMAT,
-                            "port number has invalid character: <%s>: <%c>",
-                            spec, port[i]);
-                return FALSE;
-            }
-        }
-        port_number = atoi(port);
-        if (port_number > 65535) {
-            g_set_error(error,
-                        MILTER_UTILS_ERROR,
-                        MILTER_UTILS_ERROR_INVALID_FORMAT,
-                        "port number should be less than 65536: <%s>: <%d>",
-                        spec, port_number);
+        if (!parse_connection_spec_port_and_host(spec, colon + 1,
+                                                 &port_number,
+                                                 &ip_address, PF_INET,
+                                                 error))
             return FALSE;
-        }
 
         address_inet = g_new(struct sockaddr_in, 1);
         address_inet->sin_family = AF_INET;
@@ -153,7 +200,34 @@ milter_utils_parse_connection_spec (const gchar      *spec,
 
         *address = (struct sockaddr *)address_inet;
         *address_size = sizeof(address_inet);
+    } else if (g_str_has_prefix(spec, "inet6:")) {
+        struct sockaddr_in6 *address_inet6;
+        struct in6_addr ipv6_address;
+        gint port_number;
+
+        if (!parse_connection_spec_port_and_host(spec, colon + 1,
+                                                 &port_number,
+                                                 &ipv6_address, PF_INET6,
+                                                 error))
+            return FALSE;
+
+        address_inet6 = g_new(struct sockaddr_in6, 1);
+        address_inet6->sin6_family = AF_INET6;
+        address_inet6->sin6_port = htons(port_number);
+        address_inet6->sin6_addr = ipv6_address;
+
+        *address = (struct sockaddr *)address_inet6;
+        *address_size = sizeof(address_inet6);
     } else {
+        gchar *protocol;
+
+        protocol = g_strndup(spec, colon - spec);
+        g_set_error(error,
+                    MILTER_UTILS_ERROR,
+                    MILTER_UTILS_ERROR_INVALID_FORMAT,
+                    "protocol must be 'unix', 'inet' or 'inet6': <%s>: <%s>",
+                    spec, protocol);
+        g_free(protocol);
         return FALSE;
     }
 

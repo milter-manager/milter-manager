@@ -24,7 +24,6 @@
 #include <sys/un.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <netdb.h>
 #include <milter-core/milter-utils.h>
 #undef shutdown
 
@@ -155,11 +154,12 @@ void
 test_parse_connection_spec_unix (void)
 {
     struct sockaddr_un *address;
+    GError *error = NULL;
 
     milter_utils_parse_connection_spec("unix:/tmp/xxx.sock",
                                        &actual_address, &actual_address_size,
-                                       &actual_error);
-    gcut_assert_error(actual_error);
+                                       &error);
+    gcut_assert_error(error);
     cut_assert_equal_uint(sizeof(address), actual_address_size);
 
     address = (struct sockaddr_un *)actual_address;
@@ -198,11 +198,12 @@ test_parse_connection_spec_inet (gconstpointer data)
 {
     const TestData *test_data = data;
     struct sockaddr_in *expected_in, *actual_in;
+    GError *error = NULL;
 
     milter_utils_parse_connection_spec(test_data->spec,
                                        &actual_address, &actual_address_size,
-                                       &actual_error);
-    gcut_assert_error(actual_error);
+                                       &error);
+    gcut_assert_error(error);
     cut_assert_equal_uint(sizeof(expected_in), actual_address_size);
 
     expected_in = (struct sockaddr_in *)test_data->expected_address;
@@ -248,11 +249,12 @@ test_parse_connection_spec_inet6 (gconstpointer data)
     struct sockaddr_in6 *expected_in6, *actual_in6;
     gchar expected_address_string[INET6_ADDRSTRLEN];
     gchar actual_address_string[INET6_ADDRSTRLEN];
+    GError *error = NULL;
 
     milter_utils_parse_connection_spec(test_data->spec,
                                        &actual_address, &actual_address_size,
-                                       &actual_error);
-    gcut_assert_error(actual_error);
+                                       &error);
+    gcut_assert_error(error);
     cut_assert_equal_uint(sizeof(expected_in6), actual_address_size);
 
     expected_in6 = (struct sockaddr_in6 *)test_data->expected_address;
