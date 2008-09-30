@@ -1,5 +1,9 @@
 2008-09-30  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-client/milter-client-context.[ch],
+	milter-core/milter-encoder.[ch],
+	milter-core/milter-protocol.h: support tempfail.
+
 	* libmilter/libmilter-compatible.c,
 	milter-client/milter-client-context.c,
 	milter-client/milter-client.c, milter-core/milter-encoder.c:

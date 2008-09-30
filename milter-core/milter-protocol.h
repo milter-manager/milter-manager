@@ -77,7 +77,7 @@ typedef enum
     MILTER_REPLY_QUARANTINE =			'q', /* quarantine */
     MILTER_REPLY_REJECT =			'r', /* reject */
     MILTER_REPLY_SKIP =				's', /* skip */
-    MILTER_REPLY_TEMP_FAIL =			't', /* tempfail */
+    MILTER_REPLY_FAIL_TEMPORARILY =		't', /* tempfail */
     MILTER_REPLY_REPLY_CODE =			'y'  /* reply code etc */
 } MilterReply;
 
