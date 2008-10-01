@@ -200,7 +200,7 @@ write_to_string (MilterWriter *writer, const gchar *chunk, gsize chunk_size,
         return TRUE;
 
     string = priv->data;
-    if (!string) {
+    if (!string && error) {
         g_set_error(error,
                     MILTER_WRITER_ERROR, MILTER_WRITER_ERROR_NO_DATA,
                     "GString is NULL");
@@ -241,7 +241,7 @@ write_to_io_channel (MilterWriter *writer, const gchar *chunk, gsize chunk_size,
     if (chunk_size == 0)
         return TRUE;
 
-    if (!output) {
+    if (!output && error) {
         g_set_error(error,
                     MILTER_WRITER_ERROR, MILTER_WRITER_ERROR_NO_DATA,
                     "GIOChannel is NULL");
@@ -291,7 +291,7 @@ milter_writer_write (MilterWriter *writer, const gchar *chunk, gsize chunk_size,
 
     if (written_size)
         *written_size = 0;
-    if (!priv->write_func) {
+    if (!priv->write_func && error) {
         g_set_error(error,
                     MILTER_WRITER_ERROR, MILTER_WRITER_ERROR_NO_WRITE_FUNC,
                     "write func is missing");
