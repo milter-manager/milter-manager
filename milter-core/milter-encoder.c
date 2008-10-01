@@ -575,10 +575,11 @@ milter_encoder_encode_reply_discard (MilterEncoder *encoder,
     *packet_size = priv->buffer->len;
 }
 
-void
-milter_encoder_encode_reply_add_header (MilterEncoder *encoder,
-                                        gchar **packet, gsize *packet_size,
-                                        const gchar *name, const gchar *value)
+static void
+encode_reply_header (MilterEncoder *encoder,
+                     gchar **packet, gsize *packet_size,
+                     MilterReply reply,
+                     const gchar *name, const gchar *value, guint32 index)
 {
     MilterEncoderPrivate *priv;
 
@@ -591,7 +592,15 @@ milter_encoder_encode_reply_add_header (MilterEncoder *encoder,
     priv = MILTER_ENCODER_GET_PRIVATE(encoder);
     g_string_truncate(priv->buffer, 0);
 
-    g_string_append_c(priv->buffer, MILTER_REPLY_ADD_HEADER);
+    g_string_append_c(priv->buffer, reply);
+    if (reply != MILTER_REPLY_ADD_HEADER) {
+        guint32 normalized_index;
+        gchar encoded_index[sizeof(guint32)];
+
+        normalized_index = htonl(index);
+        memcpy(encoded_index, &normalized_index, sizeof(encoded_index));
+        g_string_append_len(priv->buffer, encoded_index, sizeof(encoded_index));
+    }
     g_string_append(priv->buffer, name);
     g_string_append_c(priv->buffer, '\0');
     if (value)
@@ -604,37 +613,38 @@ milter_encoder_encode_reply_add_header (MilterEncoder *encoder,
 }
 
 void
+milter_encoder_encode_reply_add_header (MilterEncoder *encoder,
+                                        gchar **packet, gsize *packet_size,
+                                        const gchar *name, const gchar *value)
+{
+    encode_reply_header(encoder, packet, packet_size,
+                        MILTER_REPLY_ADD_HEADER,
+                        name, value,
+                        0);
+}
+
+void
+milter_encoder_encode_reply_insert_header (MilterEncoder *encoder,
+                                           gchar **packet, gsize *packet_size,
+                                           guint32 index,
+                                           const gchar *name, const gchar *value)
+{
+    encode_reply_header(encoder, packet, packet_size,
+                        MILTER_REPLY_INSERT_HEADER,
+                        name, value,
+                        index);
+}
+
+void
 milter_encoder_encode_reply_change_header (MilterEncoder *encoder,
                                            gchar **packet, gsize *packet_size,
                                            const gchar *name, guint32 index,
                                            const gchar *value)
 {
-    MilterEncoderPrivate *priv;
-    gchar encoded_index[sizeof(guint32)];
-
-    if (name == NULL || name[0] == '\0') {
-        *packet = NULL;
-        *packet_size = 0;
-        return;
-    }
-
-    priv = MILTER_ENCODER_GET_PRIVATE(encoder);
-    g_string_truncate(priv->buffer, 0);
-
-    index = htonl(index);
-    memcpy(encoded_index, &index, sizeof(encoded_index));
-
-    g_string_append_c(priv->buffer, MILTER_REPLY_CHANGE_HEADER);
-    g_string_append_len(priv->buffer, encoded_index, sizeof(encoded_index));
-    g_string_append(priv->buffer, name);
-    g_string_append_c(priv->buffer, '\0');
-    if (value)
-        g_string_append(priv->buffer, value);
-    g_string_append_c(priv->buffer, '\0');
-    pack(priv->buffer);
-
-    *packet = g_memdup(priv->buffer->str, priv->buffer->len);
-    *packet_size = priv->buffer->len;
+    encode_reply_header(encoder, packet, packet_size,
+                        MILTER_REPLY_CHANGE_HEADER,
+                        name, value,
+                        index);
 }
 
 /*

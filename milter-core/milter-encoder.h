@@ -145,6 +145,13 @@ void             milter_encoder_encode_reply_add_header
                                                 gsize             *packet_size,
                                                 const gchar       *name,
                                                 const gchar       *value);
+void             milter_encoder_encode_reply_insert_header
+                                               (MilterEncoder     *encoder,
+                                                gchar            **packet,
+                                                gsize             *packet_size,
+                                                guint32            index,
+                                                const gchar       *name,
+                                                const gchar       *value);
 void             milter_encoder_encode_reply_change_header
                                                (MilterEncoder     *encoder,
                                                 gchar            **packet,
