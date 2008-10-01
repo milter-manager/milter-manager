@@ -1,3 +1,8 @@
+2008-10-02  Kouhei Sutou  <kou@cozmixng.org>
+
+	* libmilter/libmilter-compatible.c,
+	test/libmilter/test-smfi-context.c: implement smfi_{add,chg,ins}header().
+
 2008-10-01  Kouhei Sutou  <kou@cozmixng.org>
 
 	* libmilter/libmilter-compatible.[ch],

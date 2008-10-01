@@ -512,19 +512,48 @@ smfi_setmlreply (SMFICTX *context,
 int
 smfi_addheader (SMFICTX *context, char *name, char *value)
 {
-    return MI_SUCCESS;
+    SmfiContextPrivate *priv;
+
+    priv = SMFI_CONTEXT_GET_PRIVATE(context);
+    if (!priv->client_context)
+        return MI_FAILURE;
+
+    if (milter_client_context_add_header(priv->client_context, name, value))
+        return MI_SUCCESS;
+    else
+        return MI_FAILURE;
 }
 
 int
 smfi_chgheader (SMFICTX *context, char *name, int index, char *value)
 {
-    return MI_SUCCESS;
+    SmfiContextPrivate *priv;
+
+    priv = SMFI_CONTEXT_GET_PRIVATE(context);
+    if (!priv->client_context)
+        return MI_FAILURE;
+
+    if (milter_client_context_change_header(priv->client_context,
+                                            name, index, value))
+        return MI_SUCCESS;
+    else
+        return MI_FAILURE;
 }
 
 int
 smfi_insheader (SMFICTX *context, int index, char *name, char *value)
 {
-    return MI_SUCCESS;
+    SmfiContextPrivate *priv;
+
+    priv = SMFI_CONTEXT_GET_PRIVATE(context);
+    if (!priv->client_context)
+        return MI_FAILURE;
+
+    if (milter_client_context_insert_header(priv->client_context,
+                                            index, name, value))
+        return MI_SUCCESS;
+    else
+        return MI_FAILURE;
 }
 
 int

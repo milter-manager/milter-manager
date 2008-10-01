@@ -30,6 +30,9 @@
 
 void test_private (void);
 void test_getsymval (void);
+void test_addheader (void);
+void test_chgheader (void);
+void test_insheader (void);
 void test_replacebody (void);
 
 static SmfiContext *context;
@@ -45,6 +48,14 @@ static gsize packet_size;
 
 static gchar *macro_name;
 static gchar *macro_value;
+
+static gboolean add_header;
+static gboolean insert_header;
+static gboolean change_header;
+
+static gchar *header_name;
+static gchar *header_value;
+static gint header_index;
 
 static GString *body;
 static int replace_body_result;
@@ -95,6 +106,15 @@ xxfi_body (SMFICTX *context, unsigned char *data, size_t data_size)
 static sfsistat
 xxfi_eom (SMFICTX *context)
 {
+    if (add_header)
+        smfi_addheader(context, header_name, header_value);
+
+    if (insert_header)
+        smfi_insheader(context, header_index, header_name, header_value);
+
+    if (change_header)
+        smfi_chgheader(context, header_name, header_index, header_value);
+
     if (body)
         replace_body_result = smfi_replacebody(context,
                                                (unsigned char *)body->str,
@@ -174,6 +194,14 @@ setup (void)
 
     packet = NULL;
     packet_size = 0;
+
+    add_header = FALSE;
+    insert_header = FALSE;
+    change_header = FALSE;
+
+    header_name = NULL;
+    header_value = NULL;
+    header_index = 0;
 
     macro_name = NULL;
     macro_value = NULL;
@@ -265,6 +293,92 @@ test_getsymval (void)
                                &packet, &packet_size, "<kou@cozmixng.org>");
     gcut_assert_error(feed());
     cut_assert_equal_string("kou@cozmixng.org", macro_value);
+}
+
+void
+test_addheader (void)
+{
+    add_header = TRUE;
+    cut_assert_equal_memory("", 0, output->str, output->len);
+    header_name = g_strdup("X-Test-Header");
+    header_value = g_strdup("Test Value");
+    milter_encoder_encode_end_of_message(encoder, &packet, &packet_size,
+                                         NULL, 0);
+    gcut_assert_error(feed());
+
+
+    expected_output = g_string_new(NULL);
+
+    packet_free();
+    milter_encoder_encode_reply_add_header(encoder, &packet, &packet_size,
+                                           header_name, header_value);
+    g_string_append_len(expected_output, packet, packet_size);
+
+    packet_free();
+    milter_encoder_encode_reply_continue(encoder, &packet, &packet_size);
+    g_string_append_len(expected_output, packet, packet_size);
+
+    cut_assert_equal_memory(expected_output->str, expected_output->len,
+                            output->str, output->len);
+}
+
+void
+test_insheader (void)
+{
+    insert_header = TRUE;
+    cut_assert_equal_memory("", 0, output->str, output->len);
+    header_name = g_strdup("X-Test-Header");
+    header_value = g_strdup("Test Value");
+    header_index = 2;
+    milter_encoder_encode_end_of_message(encoder, &packet, &packet_size,
+                                         NULL, 0);
+    gcut_assert_error(feed());
+
+
+    expected_output = g_string_new(NULL);
+
+    packet_free();
+    milter_encoder_encode_reply_insert_header(encoder, &packet, &packet_size,
+                                              header_index,
+                                              header_name, header_value);
+    g_string_append_len(expected_output, packet, packet_size);
+
+    packet_free();
+    milter_encoder_encode_reply_continue(encoder, &packet, &packet_size);
+    g_string_append_len(expected_output, packet, packet_size);
+
+    cut_assert_equal_memory(expected_output->str, expected_output->len,
+                            output->str, output->len);
+}
+
+void
+test_chgheader (void)
+{
+    change_header = TRUE;
+    cut_assert_equal_memory("", 0, output->str, output->len);
+    header_name = g_strdup("X-Test-Header");
+    header_value = g_strdup("Test Value");
+    header_index = 2;
+    milter_encoder_encode_end_of_message(encoder, &packet, &packet_size,
+                                         NULL, 0);
+    gcut_assert_error(feed());
+
+
+    expected_output = g_string_new(NULL);
+
+    packet_free();
+    milter_encoder_encode_reply_change_header(encoder, &packet, &packet_size,
+                                              header_name,
+                                              header_index,
+                                              header_value);
+    g_string_append_len(expected_output, packet, packet_size);
+
+    packet_free();
+    milter_encoder_encode_reply_continue(encoder, &packet, &packet_size);
+    g_string_append_len(expected_output, packet, packet_size);
+
+    cut_assert_equal_memory(expected_output->str, expected_output->len,
+                            output->str, output->len);
 }
 
 void
