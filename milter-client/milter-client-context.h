@@ -106,6 +106,22 @@ gboolean             milter_client_context_set_reply         (MilterClientContex
                                                               GError **error);
 gchar               *milter_client_context_format_reply      (MilterClientContext *context);
 
+gboolean             milter_client_context_add_header        (MilterClientContext *context,
+                                                              const gchar *name,
+                                                              const gchar *value);
+gboolean             milter_client_context_insert_header     (MilterClientContext *context,
+                                                              gint         index,
+                                                              const gchar *name,
+                                                              const gchar *value);
+gboolean             milter_client_context_change_header     (MilterClientContext *context,
+                                                              const gchar *name,
+                                                              gint         index,
+                                                              const gchar *value);
+gboolean             milter_client_context_remove_header     (MilterClientContext *context,
+                                                              const gchar *name,
+                                                              gint         index);
+
+
 void                 milter_client_context_set_writer        (MilterClientContext *context,
                                                               MilterWriter *writer);
 

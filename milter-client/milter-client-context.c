@@ -386,6 +386,30 @@ milter_client_context_feed (MilterClientContext *context,
     return milter_decoder_decode(priv->decoder, chunk, size, error);
 }
 
+/* FIXME: should pass GError **error */
+static gboolean
+write_packet (MilterClientContext *context,
+              const gchar *packet, gsize packet_size)
+{
+    MilterClientContextPrivate *priv;
+    gboolean success;
+    GError *error = NULL;
+
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+
+    if (!priv->writer)
+        return TRUE;
+
+    success = milter_writer_write(priv->writer, packet, packet_size,
+                                  NULL, &error);
+    if (!success) {
+        g_print("error: %s\n", error->message);
+        g_error_free(error);
+    }
+
+    return success;
+}
+
 static void
 clear_macros (MilterClientContext *context, MilterCommand macro_context)
 {
@@ -720,7 +744,6 @@ milter_client_context_format_reply (MilterClientContext *context)
     gchar **messages;
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
-
     if (priv->reply_code == 0)
         return NULL;
 
@@ -749,6 +772,27 @@ milter_client_context_format_reply (MilterClientContext *context)
     }
 
     return g_string_free(reply, FALSE);
+}
+
+gboolean
+milter_client_context_add_header (MilterClientContext *context,
+                                  const gchar *name, const gchar *value)
+{
+    MilterClientContextPrivate *priv;
+    gchar *packet = NULL;
+    gsize packet_size;
+    gboolean success;
+
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    milter_encoder_encode_reply_add_header(priv->encoder,
+                                           &packet, &packet_size,
+                                           name, value);
+    if (!packet)
+        return FALSE;
+
+    success = write_packet(context, packet, packet_size);
+    g_free(packet);
+    return success;
 }
 
 void
@@ -783,30 +827,6 @@ status_accumulator (GSignalInvocationHint *hint,
     return status == MILTER_STATUS_DEFAULT ||
         status == MILTER_STATUS_CONTINUE ||
         status == MILTER_STATUS_ALL_OPTIONS;
-}
-
-/* FIXME: should pass GError **error */
-static gboolean
-write_packet (MilterClientContext *context,
-              const gchar *packet, gsize packet_size)
-{
-    MilterClientContextPrivate *priv;
-    gboolean success;
-    GError *error = NULL;
-
-    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
-
-    if (!priv->writer)
-        return TRUE;
-
-    success = milter_writer_write(priv->writer, packet, packet_size,
-                                  NULL, &error);
-    if (!success) {
-        g_print("error: %s\n", error->message);
-        g_error_free(error);
-    }
-
-    return success;
 }
 
 static gboolean

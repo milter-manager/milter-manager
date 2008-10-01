@@ -1,5 +1,9 @@
 2008-10-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-client/milter-client-context.[ch],
+	test/client/test-client-context-header.c: implement
+	milter_client_context_add_header().
+
 	* milter-core/milter-encoder.[ch], test/core/test-encoder.c:
 	implement milter_encoder_encode_reply_add_header().
 
