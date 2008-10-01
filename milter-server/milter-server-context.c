@@ -145,6 +145,13 @@ milter_server_context_new (void)
 }
 
 MilterStatus
+milter_server_option_negotiation (MilterClientContext *context,
+                                  MilterOption        *option)
+{
+    return MILTER_STATUS_REJECT;
+}
+
+MilterStatus
 milter_server_context_helo (MilterServerContext *context,
                             const gchar *fqdn)
 {
