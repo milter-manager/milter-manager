@@ -50,6 +50,9 @@ void test_encode_unknown (void);
 
 void test_encode_reply_continue (void);
 void test_encode_reply_reply_code (void);
+void test_encode_reply_add_header (void);
+void test_encode_reply_add_header_without_name (void);
+void test_encode_reply_add_header_without_name_and_value (void);
 
 static MilterEncoder *encoder;
 static GString *expected;
@@ -594,6 +597,45 @@ test_encode_reply_reply_code (void)
     milter_encoder_encode_reply_reply_code(encoder, &actual, &actual_size,
                                            code);
     cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
+}
+
+void
+test_encode_reply_add_header (void)
+{
+    gsize actual_size = 0;
+    const gchar name[] = "X-Virus-Status";
+    const gchar value[] = "Clean";
+
+    g_string_append(expected, "h");
+    g_string_append(expected, name);
+    g_string_append_c(expected, '\0');
+    g_string_append(expected, value);
+    g_string_append_c(expected, '\0');
+    pack(expected);
+
+    milter_encoder_encode_reply_add_header(encoder, &actual, &actual_size,
+                                           name, value);
+    cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
+}
+
+void
+test_encode_reply_add_header_without_name (void)
+{
+    gsize actual_size = 0;
+
+    milter_encoder_encode_reply_add_header(encoder, &actual, &actual_size,
+                                           NULL, "Clean");
+    cut_assert_equal_memory("", 0, actual, actual_size);
+}
+
+void
+test_encode_reply_add_header_without_name_and_value (void)
+{
+    gsize actual_size = 0;
+
+    milter_encoder_encode_reply_add_header(encoder, &actual, &actual_size,
+                                           NULL, NULL);
+    cut_assert_equal_memory("", 0, actual, actual_size);
 }
 
 /*

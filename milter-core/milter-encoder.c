@@ -575,6 +575,34 @@ milter_encoder_encode_reply_discard (MilterEncoder *encoder,
     *packet_size = priv->buffer->len;
 }
 
+void
+milter_encoder_encode_reply_add_header (MilterEncoder *encoder,
+                                        gchar **packet, gsize *packet_size,
+                                        const gchar *name, const gchar *value)
+{
+    MilterEncoderPrivate *priv;
+
+    if (!name) {
+        *packet = NULL;
+        *packet_size = 0;
+        return;
+    }
+
+    priv = MILTER_ENCODER_GET_PRIVATE(encoder);
+    g_string_truncate(priv->buffer, 0);
+
+    g_string_append_c(priv->buffer, MILTER_REPLY_ADD_HEADER);
+    g_string_append(priv->buffer, name);
+    g_string_append_c(priv->buffer, '\0');
+    g_string_append(priv->buffer, value);
+    g_string_append_c(priv->buffer, '\0');
+    pack(priv->buffer);
+
+    *packet = g_memdup(priv->buffer->str, priv->buffer->len);
+    *packet_size = priv->buffer->len;
+}
+
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */

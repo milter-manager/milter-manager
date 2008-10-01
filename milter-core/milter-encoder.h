@@ -139,6 +139,12 @@ void             milter_encoder_encode_reply_discard
                                                (MilterEncoder     *encoder,
                                                 gchar            **packet,
                                                 gsize             *packet_size);
+void             milter_encoder_encode_reply_add_header
+                                               (MilterEncoder     *encoder,
+                                                gchar            **packet,
+                                                gsize             *packet_size,
+                                                const gchar       *name,
+                                                const gchar       *value);
 
 G_END_DECLS
 
