@@ -50,9 +50,10 @@ void test_encode_unknown (void);
 
 void test_encode_reply_continue (void);
 void test_encode_reply_reply_code (void);
-void test_encode_reply_add_header (void);
-void test_encode_reply_add_header_without_name (void);
-void test_encode_reply_add_header_without_name_and_value (void);
+void data_encode_reply_add_header (void);
+void test_encode_reply_add_header (gconstpointer data);
+void data_encode_reply_change_header (void);
+void test_encode_reply_change_header (gconstpointer data);
 
 static MilterEncoder *encoder;
 static GString *expected;
@@ -599,43 +600,109 @@ test_encode_reply_reply_code (void)
     cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
 }
 
-void
-test_encode_reply_add_header (void)
+typedef struct _HeaderTestData
 {
-    gsize actual_size = 0;
-    const gchar name[] = "X-Virus-Status";
-    const gchar value[] = "Clean";
+    gchar *name;
+    gchar *value;
+    guint32 index;
+} HeaderTestData;
 
-    g_string_append(expected, "h");
-    g_string_append(expected, name);
-    g_string_append_c(expected, '\0');
-    g_string_append(expected, value);
-    g_string_append_c(expected, '\0');
-    pack(expected);
+static HeaderTestData *
+header_test_data_new (const gchar *name, const gchar *value, guint32 index)
+{
+    HeaderTestData *data;
+
+    data = g_new(HeaderTestData, 1);
+    data->name = g_strdup(name);
+    data->value = g_strdup(value);
+    data->index = index;
+
+    return data;
+}
+
+static void
+header_test_data_free (HeaderTestData *data)
+{
+    g_free(data->name);
+    g_free(data->value);
+    g_free(data);
+}
+
+void
+data_encode_reply_add_header (void)
+{
+    cut_add_data("normal",
+                 header_test_data_new("X-Virus-Status", "Clean", 0),
+                 header_test_data_free,
+                 "no name",
+                 header_test_data_new(NULL, "Clean", 0),
+                 header_test_data_free,
+                 "no name - no value",
+                 header_test_data_new(NULL, NULL, 0),
+                 header_test_data_free);
+}
+
+void
+test_encode_reply_add_header (gconstpointer data)
+{
+    const HeaderTestData *test_data = data;
+    gsize actual_size = 0;
+
+    if (test_data->name) {
+        g_string_append(expected, "h");
+        g_string_append(expected, test_data->name);
+        g_string_append_c(expected, '\0');
+        g_string_append(expected, test_data->value);
+        g_string_append_c(expected, '\0');
+        pack(expected);
+    }
 
     milter_encoder_encode_reply_add_header(encoder, &actual, &actual_size,
-                                           name, value);
+                                           test_data->name, test_data->value);
     cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
 }
 
 void
-test_encode_reply_add_header_without_name (void)
+data_encode_reply_change_header (void)
 {
-    gsize actual_size = 0;
-
-    milter_encoder_encode_reply_add_header(encoder, &actual, &actual_size,
-                                           NULL, "Clean");
-    cut_assert_equal_memory("", 0, actual, actual_size);
+    cut_add_data("normal",
+                 header_test_data_new("X-Virus-Status", "Clean", 0),
+                 header_test_data_free,
+                 "no name",
+                 header_test_data_new(NULL, "Clean", 0),
+                 header_test_data_free,
+                 "no name - no value",
+                 header_test_data_new(NULL, NULL, 0),
+                 header_test_data_free);
 }
 
 void
-test_encode_reply_add_header_without_name_and_value (void)
+test_encode_reply_change_header (gconstpointer data)
 {
+    const HeaderTestData *test_data = data;
     gsize actual_size = 0;
 
-    milter_encoder_encode_reply_add_header(encoder, &actual, &actual_size,
-                                           NULL, NULL);
-    cut_assert_equal_memory("", 0, actual, actual_size);
+    if (test_data->name) {
+        guint32 normalized_index;
+        gchar encoded_index[sizeof(guint32)];
+
+        normalized_index = htonl(test_data->index);
+        memcpy(encoded_index, &normalized_index, sizeof(guint32));
+
+        g_string_append(expected, "m");
+        g_string_append_len(expected, encoded_index, sizeof(guint32));
+        g_string_append(expected, test_data->name);
+        g_string_append_c(expected, '\0');
+        g_string_append(expected, test_data->value);
+        g_string_append_c(expected, '\0');
+        pack(expected);
+    }
+
+    milter_encoder_encode_reply_change_header(encoder, &actual, &actual_size,
+                                              test_data->name,
+                                              test_data->index,
+                                              test_data->value);
+    cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
 }
 
 /*
