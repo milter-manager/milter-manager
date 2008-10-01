@@ -326,19 +326,20 @@ cb_abort (MilterClientContext *context, gpointer user_data)
     return filter_description.xxfi_abort(smfi_context);
 }
 
-static void
-setup_client_context (MilterClientContext *context, gpointer user_data)
+void
+smfi_context_attach_to_client_context (SmfiContext *context,
+                                       MilterClientContext *client_context)
 {
-    SmfiContext *smfi_context = user_data;
     SmfiContextPrivate *priv;
 
-    priv = SMFI_CONTEXT_GET_PRIVATE(smfi_context);
-    priv->client_context = g_object_ref(context);
+    priv = SMFI_CONTEXT_GET_PRIVATE(context);
+    priv->client_context = g_object_ref(client_context);
 
-#define CONNECT(name, smfi_name)                                        \
-    if (filter_description.xxfi_ ## smfi_name)                          \
-        g_signal_connect(context, #name, G_CALLBACK(cb_ ## name),       \
-                         user_data)
+#define CONNECT(name, smfi_name)                        \
+    if (filter_description.xxfi_ ## smfi_name)          \
+        g_signal_connect(client_context, #name,         \
+                         G_CALLBACK(cb_ ## name),       \
+                         context)
 
     CONNECT(negotiate, negotiate);
     CONNECT(connect, connect);
@@ -357,18 +358,18 @@ setup_client_context (MilterClientContext *context, gpointer user_data)
 #undef CONNECT
 }
 
-static void
-teardown_client_context (MilterClientContext *context, gpointer user_data)
+void
+smfi_context_detach_from_client_context (SmfiContext *context,
+                                         MilterClientContext *client_context)
 {
-    SmfiContext *smfi_context = user_data;
     SmfiContextPrivate *priv;
 
-    priv = SMFI_CONTEXT_GET_PRIVATE(smfi_context);
+    priv = SMFI_CONTEXT_GET_PRIVATE(context);
 
 #define DISCONNECT(name)                                                \
-    g_signal_handlers_disconnect_by_func(context,                       \
+    g_signal_handlers_disconnect_by_func(client_context,                \
                                          G_CALLBACK(cb_ ## name),       \
-                                         user_data)
+                                         context)
 
     DISCONNECT(negotiate);
     DISCONNECT(connect);
@@ -386,8 +387,22 @@ teardown_client_context (MilterClientContext *context, gpointer user_data)
 
 #undef IDSCONNECT
 
-    g_object_unref(priv->client_context);
-    priv->client_context = NULL;
+    if (priv->client_context) {
+        g_object_unref(priv->client_context);
+        priv->client_context = NULL;
+    }
+}
+
+static void
+setup_client_context (MilterClientContext *context, gpointer user_data)
+{
+    smfi_context_attach_to_client_context(user_data, context);
+}
+
+static void
+teardown_client_context (MilterClientContext *context, gpointer user_data)
+{
+    smfi_context_detach_from_client_context(user_data, context);
 }
 
 int
@@ -458,7 +473,13 @@ smfi_version (unsigned int *major, unsigned int *minor,
 char *
 smfi_getsymval (SMFICTX *context, char *name)
 {
-    return NULL;
+    SmfiContextPrivate *priv;
+
+    priv = SMFI_CONTEXT_GET_PRIVATE(context);
+    if (!priv->client_context)
+        return NULL;
+
+    return (char *)milter_client_context_get_macro(priv->client_context, name);
 }
 
 int

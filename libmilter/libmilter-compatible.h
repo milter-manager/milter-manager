@@ -60,6 +60,13 @@ GType                smfi_context_get_type          (void) G_GNUC_CONST;
 
 SmfiContext         *smfi_context_new               (void);
 
+void                 smfi_context_attach_to_client_context
+                                                    (SmfiContext         *context,
+                                                     MilterClientContext *client_context);
+void                 smfi_context_detach_from_client_context
+                                                    (SmfiContext         *context,
+                                                     MilterClientContext *client_context);
+
 G_END_DECLS
 
 #endif /* __LIBMILTER_COMPATIBLE_H__ */
