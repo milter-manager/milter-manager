@@ -186,6 +186,18 @@ milter_handler_set_writer (MilterHandler *handler,
         g_object_ref(priv->writer);
 }
 
+MilterEncoder *
+milter_handler_get_encoder (MilterHandler *handler)
+{
+    return MILTER_HANDLER_GET_PRIVATE(handler)->encoder;
+}
+
+MilterDecoder *
+milter_handler_get_decoder (MilterHandler *handler)
+{
+    return MILTER_HANDLER_GET_PRIVATE(handler)->decoder;
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */

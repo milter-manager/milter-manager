@@ -57,6 +57,9 @@ GQuark               milter_handler_error_quark       (void);
 
 GType                milter_handler_get_type          (void) G_GNUC_CONST;
 
+MilterEncoder       *milter_handler_get_encoder       (MilterHandler *handler);
+MilterDecoder       *milter_handler_get_decoder       (MilterHandler *handler);
+
 gboolean             milter_handler_feed              (MilterHandler *handler,
                                                        const gchar *chunk,
                                                        gsize size,
