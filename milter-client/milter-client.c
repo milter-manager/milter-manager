@@ -271,7 +271,7 @@ process_client_channel (MilterClient *client, GIOChannel *channel)
 
     writer = milter_writer_io_channel_new(channel);
     context = milter_client_context_new();
-    milter_client_context_set_writer(context, writer);
+    milter_handler_set_writer(MILTER_HANDLER(context), writer);
     if (priv->context_setup_func)
         priv->context_setup_func(context, priv->context_setup_user_data);
     g_io_add_watch(channel,

@@ -45,12 +45,12 @@ typedef struct _MilterClientContextClass    MilterClientContextClass;
 
 struct _MilterClientContext
 {
-    GObject object;
+    MilterHandler object;
 };
 
 struct _MilterClientContextClass
 {
-    GObjectClass parent_class;
+    MilterHandlerClass parent_class;
 
     MilterStatus (*negotiate)          (MilterClientContext *context,
                                         MilterOption        *option);
@@ -120,10 +120,6 @@ gboolean             milter_client_context_change_header     (MilterClientContex
 gboolean             milter_client_context_remove_header     (MilterClientContext *context,
                                                               const gchar *name,
                                                               guint32      index);
-
-
-void                 milter_client_context_set_writer        (MilterClientContext *context,
-                                                              MilterWriter *writer);
 
 
 G_END_DECLS

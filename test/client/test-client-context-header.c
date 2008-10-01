@@ -111,7 +111,7 @@ cb_end_of_message (MilterClientContext *context, gpointer user_data)
 {
     if (add_header) {
         milter_client_context_add_header(context, header_name, header_value);
-        milter_client_context_set_writer(context, NULL);
+        milter_handler_set_writer(MILTER_HANDLER(context), NULL);
     }
 
     if (insert_header) {
@@ -125,12 +125,12 @@ cb_end_of_message (MilterClientContext *context, gpointer user_data)
                                             header_name,
                                             header_index,
                                             header_value);
-        milter_client_context_set_writer(context, NULL);
+        milter_handler_set_writer(MILTER_HANDLER(context), NULL);
     }
 
     if (remove_header) {
         milter_client_context_remove_header(context, header_name, header_index);
-        milter_client_context_set_writer(context, NULL);
+        milter_handler_set_writer(MILTER_HANDLER(context), NULL);
     }
 
     return MILTER_STATUS_CONTINUE;
@@ -183,7 +183,7 @@ setup (void)
     context = milter_client_context_new();
     output = g_string_new(NULL);
     writer = milter_writer_string_new(output);
-    milter_client_context_set_writer(context, writer);
+    milter_handler_set_writer(MILTER_HANDLER(context), writer);
     setup_signals(context);
 
     encoder = milter_encoder_new();
