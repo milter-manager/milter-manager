@@ -4,6 +4,15 @@
 	* milter-core/milter-option.h, milter-client/milter-client-context.h:
 	Do not include <sys/socket.h> here. The header file is only included in
 	milter-core/milter-encoder.h.
+	* milter-core/milter-protocol.h, milter-client/milter-client.h:
+	Move MilterClientStatus in milter-protocol.h and rename
+	MilterClientStatus -> MilterStatus.
+	* milter-client/milter-client.c,
+	milter-server/milter-server-context.[ch],
+	libmilter/libmilter-compatible.c,
+	test/client/test-client-context-data.c,
+	test/client/test-client-context-callback.c: MilterClientStatus ->
+	MilterStatus.
 
 2008-09-30  Kouhei Sutou  <kou@cozmixng.org>
 

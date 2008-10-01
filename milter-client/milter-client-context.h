@@ -43,20 +43,6 @@ typedef enum
 typedef struct _MilterClientContext         MilterClientContext;
 typedef struct _MilterClientContextClass    MilterClientContextClass;
 
-typedef enum
-{
-    MILTER_CLIENT_STATUS_DEFAULT,
-    MILTER_CLIENT_STATUS_NOT_CHANGE,
-    MILTER_CLIENT_STATUS_CONTINUE,
-    MILTER_CLIENT_STATUS_REJECT,
-    MILTER_CLIENT_STATUS_DISCARD,
-    MILTER_CLIENT_STATUS_ACCEPT,
-    MILTER_CLIENT_STATUS_TEMPORARY_FAILURE,
-    MILTER_CLIENT_STATUS_NO_REPLY,
-    MILTER_CLIENT_STATUS_SKIP,
-    MILTER_CLIENT_STATUS_ALL_OPTIONS
-} MilterClientStatus;
-
 struct _MilterClientContext
 {
     GObject object;
@@ -66,31 +52,31 @@ struct _MilterClientContextClass
 {
     GObjectClass parent_class;
 
-    MilterClientStatus (*option_negotiation) (MilterClientContext *context,
-                                              MilterOption        *option);
-    MilterClientStatus (*connect)            (MilterClientContext *context,
-                                              const gchar         *host_name,
-                                              struct sockaddr     *address,
-                                              socklen_t            address_length);
-    MilterClientStatus (*helo)               (MilterClientContext *context,
-                                              const gchar         *fqdn);
-    MilterClientStatus (*envelope_from)      (MilterClientContext *context,
-                                              const gchar         *from);
-    MilterClientStatus (*envelope_receipt)   (MilterClientContext *context,
-                                              const gchar         *receipt);
-    MilterClientStatus (*data)               (MilterClientContext *context);
-    MilterClientStatus (*unknown)            (MilterClientContext *context,
-                                              const gchar         *command);
-    MilterClientStatus (*header)             (MilterClientContext *context,
-                                              const gchar         *name,
-                                              const gchar         *value);
-    MilterClientStatus (*end_of_header)      (MilterClientContext *context);
-    MilterClientStatus (*body)               (MilterClientContext *context,
-                                              const guchar        *chunk,
-                                              gsize                size);
-    MilterClientStatus (*end_of_message)     (MilterClientContext *context);
-    MilterClientStatus (*close)              (MilterClientContext *context);
-    MilterClientStatus (*abort)              (MilterClientContext *context);
+    MilterStatus (*option_negotiation) (MilterClientContext *context,
+                                        MilterOption        *option);
+    MilterStatus (*connect)            (MilterClientContext *context,
+                                        const gchar         *host_name,
+                                        struct sockaddr     *address,
+                                        socklen_t            address_length);
+    MilterStatus (*helo)               (MilterClientContext *context,
+                                        const gchar         *fqdn);
+    MilterStatus (*envelope_from)      (MilterClientContext *context,
+                                        const gchar         *from);
+    MilterStatus (*envelope_receipt)   (MilterClientContext *context,
+                                        const gchar         *receipt);
+    MilterStatus (*data)               (MilterClientContext *context);
+    MilterStatus (*unknown)            (MilterClientContext *context,
+                                        const gchar         *command);
+    MilterStatus (*header)             (MilterClientContext *context,
+                                        const gchar         *name,
+                                        const gchar         *value);
+    MilterStatus (*end_of_header)      (MilterClientContext *context);
+    MilterStatus (*body)               (MilterClientContext *context,
+                                        const guchar        *chunk,
+                                        gsize                size);
+    MilterStatus (*end_of_message)     (MilterClientContext *context);
+    MilterStatus (*close)              (MilterClientContext *context);
+    MilterStatus (*abort)              (MilterClientContext *context);
 };
 
 GQuark               milter_client_context_error_quark       (void);

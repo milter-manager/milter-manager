@@ -118,7 +118,7 @@ retrieve_context_info (MilterClientContext *context)
         g_hash_table_ref(defined_macros);
 }
 
-static MilterClientStatus
+static MilterStatus
 cb_option_negotiation (MilterClientContext *context, MilterOption *option,
                        gpointer user_data)
 {
@@ -127,10 +127,10 @@ cb_option_negotiation (MilterClientContext *context, MilterOption *option,
 
     retrieve_context_info(context);
 
-    return MILTER_CLIENT_STATUS_CONTINUE;
+    return MILTER_STATUS_CONTINUE;
 }
 
-static MilterClientStatus
+static MilterStatus
 cb_connect (MilterClientContext *context, const gchar *host_name,
             const struct sockaddr *address, socklen_t address_size,
             gpointer user_data)
@@ -144,10 +144,10 @@ cb_connect (MilterClientContext *context, const gchar *host_name,
 
     retrieve_context_info(context);
 
-    return MILTER_CLIENT_STATUS_CONTINUE;
+    return MILTER_STATUS_CONTINUE;
 }
 
-static MilterClientStatus
+static MilterStatus
 cb_helo (MilterClientContext *context, const gchar *fqdn, gpointer user_data)
 {
     n_helos++;
@@ -156,10 +156,10 @@ cb_helo (MilterClientContext *context, const gchar *fqdn, gpointer user_data)
 
     retrieve_context_info(context);
 
-    return MILTER_CLIENT_STATUS_CONTINUE;
+    return MILTER_STATUS_CONTINUE;
 }
 
-static MilterClientStatus
+static MilterStatus
 cb_envelope_from (MilterClientContext *context, const gchar *from,
                   gpointer user_data)
 {
@@ -169,10 +169,10 @@ cb_envelope_from (MilterClientContext *context, const gchar *from,
 
     retrieve_context_info(context);
 
-    return MILTER_CLIENT_STATUS_CONTINUE;
+    return MILTER_STATUS_CONTINUE;
 }
 
-static MilterClientStatus
+static MilterStatus
 cb_envelope_receipt (MilterClientContext *context, const gchar *to,
                      gpointer user_data)
 {
@@ -182,10 +182,10 @@ cb_envelope_receipt (MilterClientContext *context, const gchar *to,
 
     retrieve_context_info(context);
 
-    return MILTER_CLIENT_STATUS_CONTINUE;
+    return MILTER_STATUS_CONTINUE;
 }
 
-static MilterClientStatus
+static MilterStatus
 cb_header (MilterClientContext *context, const gchar *name, const gchar *value,
            gpointer user_data)
 {
@@ -201,20 +201,20 @@ cb_header (MilterClientContext *context, const gchar *name, const gchar *value,
 
     retrieve_context_info(context);
 
-    return MILTER_CLIENT_STATUS_CONTINUE;
+    return MILTER_STATUS_CONTINUE;
 }
 
-static MilterClientStatus
+static MilterStatus
 cb_end_of_header (MilterClientContext *context, gpointer user_data)
 {
     n_end_of_headers++;
 
     retrieve_context_info(context);
 
-    return MILTER_CLIENT_STATUS_CONTINUE;
+    return MILTER_STATUS_CONTINUE;
 }
 
-static MilterClientStatus
+static MilterStatus
 cb_body (MilterClientContext *context, const gchar *chunk, gsize size,
          gpointer user_data)
 {
@@ -227,40 +227,40 @@ cb_body (MilterClientContext *context, const gchar *chunk, gsize size,
 
     retrieve_context_info(context);
 
-    return MILTER_CLIENT_STATUS_CONTINUE;
+    return MILTER_STATUS_CONTINUE;
 }
 
-static MilterClientStatus
+static MilterStatus
 cb_end_of_message (MilterClientContext *context, gpointer user_data)
 {
     n_end_of_messages++;
 
     retrieve_context_info(context);
 
-    return MILTER_CLIENT_STATUS_CONTINUE;
+    return MILTER_STATUS_CONTINUE;
 }
 
-static MilterClientStatus
+static MilterStatus
 cb_abort (MilterClientContext *context, gpointer user_data)
 {
     n_aborts++;
 
     retrieve_context_info(context);
 
-    return MILTER_CLIENT_STATUS_CONTINUE;
+    return MILTER_STATUS_CONTINUE;
 }
 
-static MilterClientStatus
+static MilterStatus
 cb_close (MilterClientContext *context, gpointer user_data)
 {
     n_closes++;
 
     retrieve_context_info(context);
 
-    return MILTER_CLIENT_STATUS_CONTINUE;
+    return MILTER_STATUS_CONTINUE;
 }
 
-static MilterClientStatus
+static MilterStatus
 cb_unknown (MilterClientContext *context, const gchar *command,
             gpointer user_data)
 {
@@ -272,7 +272,7 @@ cb_unknown (MilterClientContext *context, const gchar *command,
 
     retrieve_context_info(context);
 
-    return MILTER_CLIENT_STATUS_CONTINUE;
+    return MILTER_STATUS_CONTINUE;
 }
 
 static void

@@ -69,17 +69,17 @@ append_private_data (MilterClientContext *context, const gchar *tag)
                                            NULL);
 }
 
-static MilterClientStatus
+static MilterStatus
 cb_option_negotiation (MilterClientContext *context, MilterOption *option,
                        gpointer user_data)
 {
     n_option_negotiations++;
     append_private_data(context, "option negotiation");
 
-    return MILTER_CLIENT_STATUS_CONTINUE;
+    return MILTER_STATUS_CONTINUE;
 }
 
-static MilterClientStatus
+static MilterStatus
 cb_connect (MilterClientContext *context, const gchar *host_name,
             const struct sockaddr *address, socklen_t address_size,
             gpointer user_data)
@@ -87,102 +87,102 @@ cb_connect (MilterClientContext *context, const gchar *host_name,
     n_connects++;
     append_private_data(context, "connect");
 
-    return MILTER_CLIENT_STATUS_CONTINUE;
+    return MILTER_STATUS_CONTINUE;
 }
 
-static MilterClientStatus
+static MilterStatus
 cb_helo (MilterClientContext *context, const gchar *fqdn, gpointer user_data)
 {
     n_helos++;
     append_private_data(context, "helo");
 
-    return MILTER_CLIENT_STATUS_CONTINUE;
+    return MILTER_STATUS_CONTINUE;
 }
 
-static MilterClientStatus
+static MilterStatus
 cb_envelope_from (MilterClientContext *context, const gchar *from,
                   gpointer user_data)
 {
     n_envelope_froms++;
     append_private_data(context, "envelope from");
 
-    return MILTER_CLIENT_STATUS_CONTINUE;
+    return MILTER_STATUS_CONTINUE;
 }
 
-static MilterClientStatus
+static MilterStatus
 cb_envelope_receipt (MilterClientContext *context, const gchar *to,
                      gpointer user_data)
 {
     n_envelope_receipts++;
     append_private_data(context, "envelope receipt");
 
-    return MILTER_CLIENT_STATUS_CONTINUE;
+    return MILTER_STATUS_CONTINUE;
 }
 
-static MilterClientStatus
+static MilterStatus
 cb_header (MilterClientContext *context, const gchar *name, const gchar *value,
            gpointer user_data)
 {
     n_headers++;
     append_private_data(context, "header");
 
-    return MILTER_CLIENT_STATUS_CONTINUE;
+    return MILTER_STATUS_CONTINUE;
 }
 
-static MilterClientStatus
+static MilterStatus
 cb_end_of_header (MilterClientContext *context, gpointer user_data)
 {
     n_end_of_headers++;
     append_private_data(context, "end of header");
 
-    return MILTER_CLIENT_STATUS_CONTINUE;
+    return MILTER_STATUS_CONTINUE;
 }
 
-static MilterClientStatus
+static MilterStatus
 cb_body (MilterClientContext *context, const gchar *chunk, gsize size,
          gpointer user_data)
 {
     n_bodies++;
     append_private_data(context, "body");
 
-    return MILTER_CLIENT_STATUS_CONTINUE;
+    return MILTER_STATUS_CONTINUE;
 }
 
-static MilterClientStatus
+static MilterStatus
 cb_end_of_message (MilterClientContext *context, gpointer user_data)
 {
     n_end_of_messages++;
     append_private_data(context, "end of message");
 
-    return MILTER_CLIENT_STATUS_CONTINUE;
+    return MILTER_STATUS_CONTINUE;
 }
 
-static MilterClientStatus
+static MilterStatus
 cb_abort (MilterClientContext *context, gpointer user_data)
 {
     n_aborts++;
     append_private_data(context, "abort");
 
-    return MILTER_CLIENT_STATUS_CONTINUE;
+    return MILTER_STATUS_CONTINUE;
 }
 
-static MilterClientStatus
+static MilterStatus
 cb_close (MilterClientContext *context, gpointer user_data)
 {
     n_closes++;
     append_private_data(context, "close");
 
-    return MILTER_CLIENT_STATUS_CONTINUE;
+    return MILTER_STATUS_CONTINUE;
 }
 
-static MilterClientStatus
+static MilterStatus
 cb_unknown (MilterClientContext *context, const gchar *command,
             gpointer user_data)
 {
     n_unknowns++;
     append_private_data(context, "unknown");
 
-    return MILTER_CLIENT_STATUS_CONTINUE;
+    return MILTER_STATUS_CONTINUE;
 }
 
 static void
