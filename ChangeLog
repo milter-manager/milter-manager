@@ -27,6 +27,8 @@
 	* milter-client/milter-client-context.[ch], milter-code/*,
 	libmilter/libmilter-compatible.c, test/core/*, test/client/*:
 	option_negotiation -> negotiate.
+	* test/client/test-client-context-header.c: option_negotiation ->
+	negotiate.
 
 2008-09-30  Kouhei Sutou  <kou@cozmixng.org>
 

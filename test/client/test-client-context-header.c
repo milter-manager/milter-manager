@@ -43,8 +43,8 @@ static gchar *header_name;
 static gchar *header_value;
 
 static MilterStatus
-cb_option_negotiation (MilterClientContext *context, MilterOption *option,
-                       gpointer user_data)
+cb_negotiate (MilterClientContext *context, MilterOption *option,
+              gpointer user_data)
 {
     return MILTER_STATUS_CONTINUE;
 }
@@ -133,7 +133,7 @@ setup_signals (MilterClientContext *context)
 #define CONNECT(name)                                                   \
     g_signal_connect(context, #name, G_CALLBACK(cb_ ## name), NULL)
 
-    CONNECT(option_negotiation);
+    CONNECT(negotiate);
     CONNECT(connect);
     CONNECT(helo);
     CONNECT(envelope_from);

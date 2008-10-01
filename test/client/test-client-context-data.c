@@ -300,7 +300,7 @@ append_expected_private_data (const gchar *tag)
 }
 
 static void
-create_option_negotiate_packet (void)
+create_negotiate_packet (void)
 {
     MilterOption *option;
 
@@ -345,7 +345,7 @@ create_helo_packet (void)
 void
 test_private (void)
 {
-    create_option_negotiate_packet();
+    create_negotiate_packet();
     gcut_assert_equal_list_string(NULL, private_data_list);
     gcut_assert_error(feed());
     cut_assert_equal_int(1, n_negotiates);
