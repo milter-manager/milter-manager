@@ -1,6 +1,9 @@
 2008-10-01  Hiroyuki Ikezoe  <poincare@ikezoe.net>
 
 	* milter-server/*: Added a skelton object for milter server.
+	* milter-core/milter-option.h, milter-client/milter-client-context.h:
+	Do not include <sys/socket.h> here. The header file is only included in
+	milter-core/milter-encoder.h.
 
 2008-09-30  Kouhei Sutou  <kou@cozmixng.org>
 

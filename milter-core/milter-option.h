@@ -20,9 +20,6 @@
 #ifndef __MILTER_OPTION_H__
 #define __MILTER_OPTION_H__
 
-#include <sys/types.h>
-#include <sys/socket.h>
-
 #include <glib-object.h>
 
 G_BEGIN_DECLS

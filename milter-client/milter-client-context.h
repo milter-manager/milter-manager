@@ -20,9 +20,6 @@
 #ifndef __MILTER_CLIENT_CONTEXT_H__
 #define __MILTER_CLIENT_CONTEXT_H__
 
-#include <sys/types.h>
-#include <sys/socket.h>
-
 #include <glib-object.h>
 
 #include <milter-core.h>
