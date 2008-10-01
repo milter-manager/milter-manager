@@ -560,7 +560,17 @@ smfi_progress (SMFICTX *context)
 int
 smfi_replacebody (SMFICTX *context, unsigned char *new_body, int new_body_size)
 {
-    return MI_SUCCESS;
+    SmfiContextPrivate *priv;
+
+    priv = SMFI_CONTEXT_GET_PRIVATE(context);
+    if (!priv->client_context)
+        return MI_FAILURE;
+
+    if (milter_client_context_replace_body(priv->client_context,
+                                           (char *)new_body, new_body_size))
+        return MI_SUCCESS;
+    else
+        return MI_FAILURE;
 }
 
 int

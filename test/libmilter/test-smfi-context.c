@@ -30,16 +30,24 @@
 
 void test_private (void);
 void test_getsymval (void);
+void test_replacebody (void);
 
 static SmfiContext *context;
 static MilterClientContext *client_context;
 static MilterEncoder *encoder;
+
+static MilterWriter *writer;
+static GString *output;
+static GString *expected_output;
 
 static gchar *packet;
 static gsize packet_size;
 
 static gchar *macro_name;
 static gchar *macro_value;
+
+static GString *body;
+static int replace_body_result;
 
 static sfsistat
 xxfi_connect (SMFICTX *context, char *host_name, _SOCK_ADDR *address)
@@ -87,6 +95,10 @@ xxfi_body (SMFICTX *context, unsigned char *data, size_t data_size)
 static sfsistat
 xxfi_eom (SMFICTX *context)
 {
+    if (body)
+        replace_body_result = smfi_replacebody(context,
+                                               (unsigned char *)body->str,
+                                               body->len);
     return SMFIS_CONTINUE;
 }
 
@@ -149,7 +161,13 @@ setup (void)
 {
     context = smfi_context_new();
     smfi_register(smfilter);
+
     client_context = milter_client_context_new();
+    output = g_string_new(NULL);
+    expected_output = NULL;
+    writer = milter_writer_string_new(output);
+    milter_handler_set_writer(MILTER_HANDLER(client_context), writer);
+
     smfi_context_attach_to_client_context(context, client_context);
 
     encoder = milter_encoder_new();
@@ -159,6 +177,9 @@ setup (void)
 
     macro_name = NULL;
     macro_value = NULL;
+
+    body = NULL;
+    replace_body_result = 0;
 }
 
 static void
@@ -181,6 +202,13 @@ teardown (void)
     if (client_context)
         g_object_unref(client_context);
 
+    if (writer)
+        g_object_unref(writer);
+    if (output)
+        g_string_free(output, TRUE);
+    if (expected_output)
+        g_string_free(expected_output, TRUE);
+
     if (encoder)
         g_object_unref(encoder);
 
@@ -190,6 +218,9 @@ teardown (void)
         g_free(macro_name);
     if (macro_value)
         g_free(macro_value);
+
+    if (body)
+        g_string_free(body, TRUE);
 }
 
 static GError *
@@ -234,6 +265,34 @@ test_getsymval (void)
                                &packet, &packet_size, "<kou@cozmixng.org>");
     gcut_assert_error(feed());
     cut_assert_equal_string("kou@cozmixng.org", macro_value);
+}
+
+void
+test_replacebody (void)
+{
+    gsize packed_size;
+
+    body = g_string_new("XXX");
+    replace_body_result = MI_FAILURE;
+    milter_encoder_encode_end_of_message(encoder, &packet, &packet_size,
+                                         NULL, 0);
+    gcut_assert_error(feed());
+    cut_assert_equal_int(MI_SUCCESS, replace_body_result);
+
+
+    expected_output = g_string_new(NULL);
+
+    packet_free();
+    milter_encoder_encode_reply_replace_body(encoder, &packet, &packet_size,
+                                             body->str, body->len, &packed_size);
+    g_string_append_len(expected_output, packet, packet_size);
+
+    packet_free();
+    milter_encoder_encode_reply_continue(encoder, &packet, &packet_size);
+    g_string_append_len(expected_output, packet, packet_size);
+
+    cut_assert_equal_memory(expected_output->str, expected_output->len,
+                            output->str, output->len);
 }
 
 /*
