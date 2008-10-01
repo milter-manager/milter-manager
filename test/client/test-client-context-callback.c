@@ -452,8 +452,8 @@ test_feed_negotiate (void)
     option = milter_option_new(version, action, step);
 
     milter_encoder_encode_negotiate(encoder,
-                                             &packet, &packet_size,
-                                             option);
+                                    &packet, &packet_size,
+                                    option);
     g_object_unref(option);
 
     gcut_assert_error(feed());
