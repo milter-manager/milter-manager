@@ -144,11 +144,11 @@ milter_server_context_new (void)
                         NULL);
 }
 
-MilterClientStatus
+MilterStatus
 milter_server_context_helo (MilterServerContext *context,
                             const gchar *fqdn)
 {
-    return MILTER_CLIENT_STATUS_ACCEPT;
+    return MILTER_STATUS_ACCEPT;
 }
 
 /*

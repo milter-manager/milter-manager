@@ -41,7 +41,8 @@ libmilter_server_la_SOURCES =		\
 	milter-server-enum-types.c	\
 	milter-server-context.c
 
-libmilter_server_la_LIBADD =				\
+libmilter_server_la_LIBADD =					\
+	$(top_builddir)/milter-client/libmilter-client.la	\
 	$(top_builddir)/milter-core/libmilter-core.la
 
 

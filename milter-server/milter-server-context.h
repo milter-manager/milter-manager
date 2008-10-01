@@ -60,7 +60,7 @@ GType                milter_server_context_get_type    (void) G_GNUC_CONST;
 
 MilterServerContext *milter_server_context_new         (void);
 
-MilterClientStatus   milter_server_context_helo        (MilterServerContext *context,
+MilterStatus         milter_server_context_helo        (MilterServerContext *context,
                                                         const gchar *fqdn); 
 
 G_END_DECLS
