@@ -24,6 +24,8 @@
 
 G_BEGIN_DECLS
 
+#define MILTER_CHUNK_SIZE 65535
+
 typedef enum
 {
     MILTER_COMMAND_ABORT =			'A', /* Abort */
@@ -37,7 +39,7 @@ typedef enum
     MILTER_COMMAND_HEADER =			'L', /* Header */
     MILTER_COMMAND_MAIL =			'M', /* MAIL from */
     MILTER_COMMAND_END_OF_HEADER =		'N', /* end of header */
-    MILTER_COMMAND_NEGOTIATE =		'O', /* Option negotiation */
+    MILTER_COMMAND_NEGOTIATE =			'O', /* Option negotiation */
     MILTER_COMMAND_QUIT =			'Q', /* QUIT */
     MILTER_COMMAND_RCPT =			'R', /* RCPT to */
     MILTER_COMMAND_DATA =			'T', /* DATA */

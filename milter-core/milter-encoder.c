@@ -647,6 +647,36 @@ milter_encoder_encode_reply_change_header (MilterEncoder *encoder,
                         index);
 }
 
+void
+milter_encoder_encode_reply_replace_body (MilterEncoder *encoder,
+                                          gchar **packet, gsize *packet_size,
+                                          const gchar *body, gsize body_size,
+                                          gsize *packed_size)
+{
+    MilterEncoderPrivate *priv;
+
+    if (body_size <= 0 || (body == NULL && body_size > 0)) {
+        *packet = NULL;
+        *packet_size = 0;
+        *packed_size = 0;
+        return;
+    }
+
+    priv = MILTER_ENCODER_GET_PRIVATE(encoder);
+    g_string_truncate(priv->buffer, 0);
+
+    g_string_append_c(priv->buffer, MILTER_REPLY_REPLACE_BODY);
+    if (body_size > MILTER_CHUNK_SIZE)
+        *packed_size = MILTER_CHUNK_SIZE;
+    else
+        *packed_size = body_size;
+    g_string_append_len(priv->buffer, body, *packed_size);
+    pack(priv->buffer);
+
+    *packet = g_memdup(priv->buffer->str, priv->buffer->len);
+    *packet_size = priv->buffer->len;
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */

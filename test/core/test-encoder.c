@@ -56,6 +56,8 @@ void data_encode_reply_insert_header (void);
 void test_encode_reply_insert_header (gconstpointer data);
 void data_encode_reply_change_header (void);
 void test_encode_reply_change_header (gconstpointer data);
+void test_encode_reply_replace_body (void);
+void test_encode_reply_replace_body_large (void);
 
 static MilterEncoder *encoder;
 static GString *expected;
@@ -769,6 +771,56 @@ test_encode_reply_change_header (gconstpointer data)
                                               test_data->value);
     cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
 }
+
+void
+test_encode_reply_replace_body (void)
+{
+    const gchar body[] =
+        "La de da de da 1.\n"
+        "La de da de da 2.\n"
+        "La de da de da 3.\n"
+        "La de da de da 4.";
+    gsize written_size = 0;
+    gsize actual_size = 0;
+
+    g_string_append(expected, "b");
+    g_string_append(expected, body);
+    pack(expected);
+
+    milter_encoder_encode_reply_replace_body(encoder, &actual, &actual_size,
+                                             body, sizeof(body) - 1,
+                                             &written_size);
+    cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
+    cut_assert_equal_uint(sizeof(body) - 1, written_size);
+}
+
+void
+test_encode_reply_replace_body_large (void)
+{
+    GString *body;
+    gsize i, body_size;
+    gsize written_size = 0;
+    gsize actual_size = 0;
+
+    body = g_string_new(NULL);
+    for (i = 0; i < MILTER_CHUNK_SIZE + 1; i++) {
+        g_string_append_c(body, 'X');
+    }
+
+    g_string_append(expected, "b");
+    g_string_append_len(expected, body->str, MILTER_CHUNK_SIZE);
+    pack(expected);
+
+    milter_encoder_encode_reply_replace_body(encoder, &actual, &actual_size,
+                                             body->str, body->len,
+                                             &written_size);
+    body_size = body->len;
+    g_string_free(body, TRUE);
+    cut_assert_operator_int(body_size, >, MILTER_CHUNK_SIZE);
+    cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
+    cut_assert_equal_uint(MILTER_CHUNK_SIZE, written_size);
+}
+
 
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4

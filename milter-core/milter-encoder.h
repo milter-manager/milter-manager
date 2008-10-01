@@ -159,6 +159,13 @@ void             milter_encoder_encode_reply_change_header
                                                 const gchar       *name,
                                                 guint32            index,
                                                 const gchar       *value);
+void             milter_encoder_encode_reply_replace_body
+                                               (MilterEncoder     *encoder,
+                                                gchar            **packet,
+                                                gsize             *packet_size,
+                                                const gchar       *body,
+                                                gsize              body_size,
+                                                gsize             *packed_size);
 
 G_END_DECLS
 
