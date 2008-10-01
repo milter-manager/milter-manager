@@ -37,6 +37,7 @@ typedef struct _SmfiContextPrivate	SmfiContextPrivate;
 struct _SmfiContextPrivate
 {
     MilterClientContext *client_context;
+    gpointer private_data;
 };
 
 G_DEFINE_TYPE(SmfiContext, smfi_context, G_TYPE_OBJECT);
@@ -72,6 +73,7 @@ smfi_context_init (SmfiContext *context)
 
     priv = SMFI_CONTEXT_GET_PRIVATE(context);
     priv->client_context = NULL;
+    priv->private_data = NULL;
 }
 
 static void
@@ -549,13 +551,14 @@ smfi_quarantine (SMFICTX *context, char *reason)
 int
 smfi_setpriv (SMFICTX *context, void *data)
 {
+    SMFI_CONTEXT_GET_PRIVATE(context)->private_data = data;
     return MI_SUCCESS;
 }
 
 void *
 smfi_getpriv (SMFICTX *context)
 {
-    return NULL;
+    return SMFI_CONTEXT_GET_PRIVATE(context)->private_data;
 }
 
 int

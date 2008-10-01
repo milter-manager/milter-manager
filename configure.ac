@@ -194,6 +194,7 @@ AC_CONFIG_FILES([Makefile
 		 test/Makefile
 		 test/core/Makefile
 		 test/client/Makefile
+		 test/libmilter/Makefile
 		 po/Makefile.in])
 
 AC_OUTPUT

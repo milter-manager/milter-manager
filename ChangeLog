@@ -1,5 +1,8 @@
 2008-10-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* libmilter/libmilter-compatible.c, test/libmilter/,
+	test/Makefile.am, configure.ac: implement smfi_{get,set}priv().
+
 	* milter-client/milter-client-context.c,
 	test/client/test-client-context-header.c: context -> handler.
 
