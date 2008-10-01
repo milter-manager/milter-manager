@@ -637,6 +637,12 @@ data_encode_reply_add_header (void)
                  "no name",
                  header_test_data_new(NULL, "Clean", 0),
                  header_test_data_free,
+                 "empty name",
+                 header_test_data_new("", "Clean", 0),
+                 header_test_data_free,
+                 "no value",
+                 header_test_data_new("X-Virus-Status", NULL, 0),
+                 header_test_data_free,
                  "no name - no value",
                  header_test_data_new(NULL, NULL, 0),
                  header_test_data_free);
@@ -648,11 +654,12 @@ test_encode_reply_add_header (gconstpointer data)
     const HeaderTestData *test_data = data;
     gsize actual_size = 0;
 
-    if (test_data->name) {
+    if (test_data->name && test_data->name[0] != '\0') {
         g_string_append(expected, "h");
         g_string_append(expected, test_data->name);
         g_string_append_c(expected, '\0');
-        g_string_append(expected, test_data->value);
+        if (test_data->value)
+            g_string_append(expected, test_data->value);
         g_string_append_c(expected, '\0');
         pack(expected);
     }
@@ -671,6 +678,12 @@ data_encode_reply_change_header (void)
                  "no name",
                  header_test_data_new(NULL, "Clean", 0),
                  header_test_data_free,
+                 "empty name",
+                 header_test_data_new("", "Clean", 0),
+                 header_test_data_free,
+                 "no value",
+                 header_test_data_new("X-Virus-Status", NULL, 0),
+                 header_test_data_free,
                  "no name - no value",
                  header_test_data_new(NULL, NULL, 0),
                  header_test_data_free);
@@ -682,7 +695,7 @@ test_encode_reply_change_header (gconstpointer data)
     const HeaderTestData *test_data = data;
     gsize actual_size = 0;
 
-    if (test_data->name) {
+    if (test_data->name && test_data->name[0] != '\0') {
         guint32 normalized_index;
         gchar encoded_index[sizeof(guint32)];
 
@@ -693,7 +706,8 @@ test_encode_reply_change_header (gconstpointer data)
         g_string_append_len(expected, encoded_index, sizeof(guint32));
         g_string_append(expected, test_data->name);
         g_string_append_c(expected, '\0');
-        g_string_append(expected, test_data->value);
+        if (test_data->value)
+            g_string_append(expected, test_data->value);
         g_string_append_c(expected, '\0');
         pack(expected);
     }

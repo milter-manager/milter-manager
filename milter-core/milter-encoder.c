@@ -582,7 +582,7 @@ milter_encoder_encode_reply_add_header (MilterEncoder *encoder,
 {
     MilterEncoderPrivate *priv;
 
-    if (!name) {
+    if (name == NULL || name[0] == '\0') {
         *packet = NULL;
         *packet_size = 0;
         return;
@@ -594,7 +594,8 @@ milter_encoder_encode_reply_add_header (MilterEncoder *encoder,
     g_string_append_c(priv->buffer, MILTER_REPLY_ADD_HEADER);
     g_string_append(priv->buffer, name);
     g_string_append_c(priv->buffer, '\0');
-    g_string_append(priv->buffer, value);
+    if (value)
+        g_string_append(priv->buffer, value);
     g_string_append_c(priv->buffer, '\0');
     pack(priv->buffer);
 
@@ -611,7 +612,7 @@ milter_encoder_encode_reply_change_header (MilterEncoder *encoder,
     MilterEncoderPrivate *priv;
     gchar encoded_index[sizeof(guint32)];
 
-    if (!name) {
+    if (name == NULL || name[0] == '\0') {
         *packet = NULL;
         *packet_size = 0;
         return;
@@ -627,7 +628,8 @@ milter_encoder_encode_reply_change_header (MilterEncoder *encoder,
     g_string_append_len(priv->buffer, encoded_index, sizeof(encoded_index));
     g_string_append(priv->buffer, name);
     g_string_append_c(priv->buffer, '\0');
-    g_string_append(priv->buffer, value);
+    if (value)
+        g_string_append(priv->buffer, value);
     g_string_append_c(priv->buffer, '\0');
     pack(priv->buffer);
 

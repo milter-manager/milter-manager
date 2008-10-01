@@ -1,5 +1,8 @@
 2008-10-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-core/milter-encoder.c, test/core/test-encoder.c: add NULL
+	and empty string check.
+
 	* milter-client/milter-client-context.[ch],
 	test/client/test-client-context-header.c: implement
 	milter_client_context_remove_header().
