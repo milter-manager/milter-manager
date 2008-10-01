@@ -13,6 +13,8 @@
 	test/client/test-client-context-data.c,
 	test/client/test-client-context-callback.c: MilterClientStatus ->
 	MilterStatus.
+	* milter-server/milter-server-context.[ch]: Declare some functions not
+	implemented yet.
 
 2008-09-30  Kouhei Sutou  <kou@cozmixng.org>
 

@@ -60,8 +60,33 @@ GType                milter_server_context_get_type    (void) G_GNUC_CONST;
 
 MilterServerContext *milter_server_context_new         (void);
 
+MilterStatus         milter_server_context_connect     (MilterServerContext *context,
+                                                        const gchar         *host_name,
+                                                        struct sockaddr     *address,
+                                                        socklen_t            address_length);
 MilterStatus         milter_server_context_helo        (MilterServerContext *context,
                                                         const gchar *fqdn); 
+MilterStatus         milter_server_context_envelope_from
+                                                       (MilterServerContext *context,
+                                                        const gchar         *from);
+MilterStatus         milter_server_context_envelope_receipt
+                                                       (MilterServerContext *context,
+                                                        const gchar         *receipt);
+MilterStatus         milter_server_context_data        (MilterServerContext *context);
+MilterStatus         milter_server_context_unknown     (MilterServerContext *context,
+                                                        const gchar         *command);
+MilterStatus         milter_server_context_header      (MilterServerContext *context,
+                                                        const gchar         *name,
+                                                        const gchar         *value);
+MilterStatus         milter_server_context_end_of_header
+                                                       (MilterServerContext *context);
+MilterStatus         milter_server_context_body        (MilterServerContext *context,
+                                                        const guchar        *chunk,
+                                                        gsize                size);
+MilterStatus         milter_server_context_end_of_message
+                                                       (MilterServerContext *context);
+MilterStatus         milter_server_context_close       (MilterServerContext *context);
+MilterStatus         milter_server_context_abort       (MilterServerContext *context);
 
 G_END_DECLS
 

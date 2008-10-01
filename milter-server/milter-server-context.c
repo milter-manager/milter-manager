@@ -151,6 +151,84 @@ milter_server_context_helo (MilterServerContext *context,
     return MILTER_STATUS_ACCEPT;
 }
 
+MilterStatus
+milter_server_context_connect (MilterServerContext *context,
+                               const gchar         *host_name,
+                               struct sockaddr     *address,
+                               socklen_t            address_length)
+{
+    return MILTER_STATUS_REJECT;
+}
+
+MilterStatus
+milter_server_context_envelope_from (MilterServerContext *context,
+                                     const gchar         *from)
+{
+    return MILTER_STATUS_REJECT;
+}
+
+MilterStatus
+milter_server_context_envelope_receipt (MilterServerContext *context,
+                                        const gchar         *receipt)
+{
+    return MILTER_STATUS_REJECT;
+}
+
+MilterStatus
+milter_server_context_data (MilterServerContext *context)
+{
+    return MILTER_STATUS_REJECT;
+}
+
+MilterStatus
+milter_server_context_unknown (MilterServerContext *context,
+                               const gchar         *command)
+{
+    return MILTER_STATUS_REJECT;
+}
+
+MilterStatus
+milter_server_context_header (MilterServerContext *context,
+                              const gchar         *name,
+                              const gchar         *value)
+{
+    return MILTER_STATUS_REJECT;
+}
+
+MilterStatus
+milter_server_context_end_of_header (MilterServerContext *context)
+{
+    return MILTER_STATUS_REJECT;
+}
+
+MilterStatus
+milter_server_context_body (MilterServerContext *context,
+                            const guchar        *chunk,
+                            gsize                size)
+{
+    return MILTER_STATUS_REJECT;
+}
+
+MilterStatus
+milter_server_context_end_of_message (MilterServerContext *context)
+{
+    return MILTER_STATUS_REJECT;
+}
+
+MilterStatus
+milter_server_context_close (MilterServerContext *context)
+{
+    return MILTER_STATUS_REJECT;
+}
+
+
+MilterStatus
+milter_server_context_abort (MilterServerContext *context)
+{
+    return MILTER_STATUS_REJECT;
+}
+
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */
