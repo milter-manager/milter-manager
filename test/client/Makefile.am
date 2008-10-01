@@ -2,7 +2,8 @@ if WITH_CUTTER
 noinst_LTLIBRARIES =			\
 	test-client-context-callback.la	\
 	test-client-context-data.la	\
-	test-client-context-header.la
+	test-client-context-header.la	\
+	test-client-context-body.la
 endif
 
 INCLUDES =				\
@@ -26,3 +27,4 @@ LIBS =								\
 test_client_context_callback_la_SOURCES = test-client-context-callback.c
 test_client_context_data_la_SOURCES = test-client-context-data.c
 test_client_context_header_la_SOURCES = test-client-context-header.c
+test_client_context_body_la_SOURCES = test-client-context-body.c

@@ -811,6 +811,35 @@ milter_client_context_remove_header (MilterClientContext *context,
     return milter_client_context_change_header(context, name, index, NULL);
 }
 
+gboolean
+milter_client_context_replace_body (MilterClientContext *context,
+                                    const gchar *body, gsize body_size)
+{
+    gsize rest_size, packed_size = 0;
+    MilterEncoder *encoder;
+
+    encoder = milter_handler_get_encoder(MILTER_HANDLER(context));
+    for (rest_size = body_size; rest_size > 0; rest_size -= packed_size) {
+        gchar *packet = NULL;
+        gsize packet_size;
+        gsize offset;
+
+        offset = body_size - rest_size;
+        milter_encoder_encode_reply_replace_body(encoder,
+                                                 &packet, &packet_size,
+                                                 body + offset,
+                                                 rest_size,
+                                                 &packed_size);
+        if (packed_size == 0)
+            return FALSE;
+
+        if (!write_packet(context, packet, packet_size))
+            return FALSE;
+    }
+
+    return TRUE;
+}
+
 static gboolean
 status_accumulator (GSignalInvocationHint *hint,
                     GValue *return_accumulator,
