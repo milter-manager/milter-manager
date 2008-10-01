@@ -1,5 +1,8 @@
 2008-10-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-client/milter-client-context.c,
+	test/client/test-client-context-header.c: context -> handler.
+
 	* milter-client/milter-client-context.[ch],
 	test/client/test-client-context-header.c: implement
 	milter_client_context_insert_header().

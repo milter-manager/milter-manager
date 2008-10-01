@@ -736,20 +736,12 @@ milter_client_context_format_reply (MilterClientContext *context)
     return g_string_free(reply, FALSE);
 }
 
-gboolean
-milter_client_context_add_header (MilterClientContext *context,
-                                  const gchar *name, const gchar *value)
+static gboolean
+write_packet (MilterClientContext *context, gchar *packet, gsize packet_size)
 {
-    gchar *packet = NULL;
-    gsize packet_size;
     gboolean success;
     GError *error = NULL;
-    MilterEncoder *encoder;
 
-    encoder = milter_handler_get_encoder(MILTER_HANDLER(context));
-    milter_encoder_encode_reply_add_header(encoder,
-                                           &packet, &packet_size,
-                                           name, value);
     if (!packet)
         return FALSE;
 
@@ -766,25 +758,34 @@ milter_client_context_add_header (MilterClientContext *context,
 }
 
 gboolean
+milter_client_context_add_header (MilterClientContext *context,
+                                  const gchar *name, const gchar *value)
+{
+    gchar *packet = NULL;
+    gsize packet_size;
+    MilterEncoder *encoder;
+
+    encoder = milter_handler_get_encoder(MILTER_HANDLER(context));
+    milter_encoder_encode_reply_add_header(encoder,
+                                           &packet, &packet_size,
+                                           name, value);
+    return write_packet(context, packet, packet_size);
+}
+
+gboolean
 milter_client_context_insert_header (MilterClientContext *context,
                                      guint32 index,
                                      const gchar *name, const gchar *value)
 {
-    MilterClientContextPrivate *priv;
     gchar *packet = NULL;
     gsize packet_size;
-    gboolean success;
+    MilterEncoder *encoder;
 
-    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
-    milter_encoder_encode_reply_insert_header(priv->encoder,
+    encoder = milter_handler_get_encoder(MILTER_HANDLER(context));
+    milter_encoder_encode_reply_insert_header(encoder,
                                               &packet, &packet_size,
                                               index, name, value);
-    if (!packet)
-        return FALSE;
-
-    success = write_packet(context, packet, packet_size);
-    g_free(packet);
-    return success;
+    return write_packet(context, packet, packet_size);
 }
 
 gboolean
@@ -794,26 +795,13 @@ milter_client_context_change_header (MilterClientContext *context,
 {
     gchar *packet = NULL;
     gsize packet_size;
-    gboolean success;
-    GError *error = NULL;
     MilterEncoder *encoder;
 
     encoder = milter_handler_get_encoder(MILTER_HANDLER(context));
     milter_encoder_encode_reply_change_header(encoder,
                                               &packet, &packet_size,
                                               name, index, value);
-    if (!packet)
-        return FALSE;
-
-    success = milter_handler_write_packet(MILTER_HANDLER(context),
-                                          packet, packet_size,
-                                          &error);
-    g_free(packet);
-    if (error) {
-        g_print("error: %s\n", error->message);
-        g_error_free(error);
-    }
-    return success;
+    return write_packet(context, packet, packet_size);
 }
 
 gboolean
@@ -886,14 +874,10 @@ reply (MilterClientContext *context, MilterStatus status)
         break;
     }
 
-    if (packet) {
-        milter_handler_write_packet(MILTER_HANDLER(context),
-                                    packet, packet_size,
-                                    NULL);
-        g_free(packet);
-    }
+    if (!packet)
+        return TRUE;
 
-    return TRUE;
+    return write_packet(context, packet, packet_size);
 }
 
 static void
@@ -919,10 +903,7 @@ cb_decoder_negotiate (MilterDecoder *decoder, MilterOption *option,
         milter_encoder_encode_negotiate(encoder,
                                         &packet, &packet_size,
                                         option);
-        milter_handler_write_packet(MILTER_HANDLER(context),
-                                    packet, packet_size,
-                                    NULL);
-        g_free(packet);
+        write_packet(context, packet, packet_size);
         break;
       case MILTER_STATUS_REJECT:
         break;

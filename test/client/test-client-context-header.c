@@ -117,7 +117,7 @@ cb_end_of_message (MilterClientContext *context, gpointer user_data)
     if (insert_header) {
         milter_client_context_insert_header(context, header_index,
                                             header_name, header_value);
-        milter_client_context_set_writer(context, NULL);
+        milter_handler_set_writer(MILTER_HANDLER(context), NULL);
     }
 
     if (change_header) {
