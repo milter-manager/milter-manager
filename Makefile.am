@@ -1,6 +1,7 @@
 SUBDIRS =		\
 	milter-core	\
 	milter-client	\
+	milter-server	\
 	libmilter	\
 	test
 
