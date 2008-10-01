@@ -30,13 +30,13 @@
 #include <milter-core/milter-enum-types.h>
 
 void test_decode_empty_text (void);
-void test_decode_option_negotiation (void);
-void test_decode_option_negotiation_empty (void);
-void test_decode_option_negotiation_without_version (void);
-void test_decode_option_negotiation_only_version (void);
-void test_decode_option_negotiation_without_action (void);
-void test_decode_option_negotiation_only_version_and_action (void);
-void test_decode_option_negotiation_without_step (void);
+void test_decode_negotiate (void);
+void test_decode_negotiate_empty (void);
+void test_decode_negotiate_without_version (void);
+void test_decode_negotiate_only_version (void);
+void test_decode_negotiate_without_action (void);
+void test_decode_negotiate_only_version_and_action (void);
+void test_decode_negotiate_without_step (void);
 void data_decode_define_macro (void);
 void test_decode_define_macro (gconstpointer data);
 void test_decode_define_macro_with_unknown_macro_context (void);
@@ -85,7 +85,7 @@ static GString *buffer;
 static GError *expected_error;
 static GError *actual_error;
 
-static gint n_option_negotiations;
+static gint n_negotiates;
 static gint n_define_macros;
 static gint n_connects;
 static gint n_helos;
@@ -99,7 +99,7 @@ static gint n_aborts;
 static gint n_quits;
 static gint n_unknowns;
 
-static MilterOption *option_negotiation_option;
+static MilterOption *negotiate_option;
 
 static MilterCommand macro_context;
 static GHashTable *defined_macros;
@@ -124,11 +124,11 @@ static gchar *unknown_command;
 static gsize unknown_command_length;
 
 static void
-cb_option_negotiation (MilterDecoder *decoder, MilterOption *option,
+cb_negotiate (MilterDecoder *decoder, MilterOption *option,
                        gpointer user_data)
 {
-    n_option_negotiations++;
-    option_negotiation_option = g_object_ref(option);
+    n_negotiates++;
+    negotiate_option = g_object_ref(option);
 }
 
 static void
@@ -249,7 +249,7 @@ setup_signals (MilterDecoder *decoder)
 #define CONNECT(name)                                                   \
     g_signal_connect(decoder, #name, G_CALLBACK(cb_ ## name), NULL)
 
-    CONNECT(option_negotiation);
+    CONNECT(negotiate);
     CONNECT(define_macro);
     CONNECT(connect);
     CONNECT(helo);
@@ -275,7 +275,7 @@ setup (void)
     expected_error = NULL;
     actual_error = NULL;
 
-    n_option_negotiations = 0;
+    n_negotiates = 0;
     n_define_macros = 0;
     n_connects = 0;
     n_helos = 0;
@@ -291,7 +291,7 @@ setup (void)
 
     buffer = g_string_new(NULL);
 
-    option_negotiation_option = NULL;
+    negotiate_option = NULL;
 
     defined_macros = NULL;
 
@@ -330,8 +330,8 @@ teardown (void)
     if (actual_error)
         g_error_free(actual_error);
 
-    if (option_negotiation_option)
-        g_object_unref(option_negotiation_option);
+    if (negotiate_option)
+        g_object_unref(negotiate_option);
 
     if (defined_macros)
         g_hash_table_unref(defined_macros);
@@ -387,7 +387,7 @@ test_decode_empty_text (void)
 }
 
 void
-test_decode_option_negotiation (void)
+test_decode_negotiate (void)
 {
     guint32 version;
     MilterActionFlags action;
@@ -429,19 +429,19 @@ test_decode_option_negotiation (void)
     g_string_append_len(buffer, step_string, sizeof(step_string));
 
     gcut_assert_error(decode());
-    cut_assert_equal_int(1, n_option_negotiations);
+    cut_assert_equal_int(1, n_negotiates);
     cut_assert_equal_int(2,
-                         milter_option_get_version(option_negotiation_option));
+                         milter_option_get_version(negotiate_option));
     gcut_assert_equal_flags(MILTER_TYPE_ACTION_FLAGS,
                             action,
-                            milter_option_get_action(option_negotiation_option));
+                            milter_option_get_action(negotiate_option));
     gcut_assert_equal_flags(MILTER_TYPE_STEP_FLAGS,
                             step,
-                            milter_option_get_step(option_negotiation_option));
+                            milter_option_get_step(negotiate_option));
 }
 
 void
-test_decode_option_negotiation_empty (void)
+test_decode_negotiate_empty (void)
 {
     g_string_append_c(buffer, 'O');
 
@@ -454,7 +454,7 @@ test_decode_option_negotiation_empty (void)
 }
 
 void
-test_decode_option_negotiation_without_version (void)
+test_decode_negotiate_without_version (void)
 {
     guint32 version;
     guint32 version_network_byte_order;
@@ -477,7 +477,7 @@ test_decode_option_negotiation_without_version (void)
 }
 
 void
-test_decode_option_negotiation_only_version (void)
+test_decode_negotiate_only_version (void)
 {
     guint32 version;
     guint32 version_network_byte_order;
@@ -499,7 +499,7 @@ test_decode_option_negotiation_only_version (void)
 }
 
 void
-test_decode_option_negotiation_without_action (void)
+test_decode_negotiate_without_action (void)
 {
     guint32 version;
     MilterActionFlags action;
@@ -537,7 +537,7 @@ test_decode_option_negotiation_without_action (void)
 }
 
 void
-test_decode_option_negotiation_only_version_and_action (void)
+test_decode_negotiate_only_version_and_action (void)
 {
     guint32 version;
     MilterActionFlags action;
@@ -574,7 +574,7 @@ test_decode_option_negotiation_only_version_and_action (void)
 }
 
 void
-test_decode_option_negotiation_without_step (void)
+test_decode_negotiate_without_step (void)
 {
     guint32 version;
     MilterActionFlags action;

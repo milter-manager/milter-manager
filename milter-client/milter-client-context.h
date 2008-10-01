@@ -52,7 +52,7 @@ struct _MilterClientContextClass
 {
     GObjectClass parent_class;
 
-    MilterStatus (*option_negotiation) (MilterClientContext *context,
+    MilterStatus (*negotiate)          (MilterClientContext *context,
                                         MilterOption        *option);
     MilterStatus (*connect)            (MilterClientContext *context,
                                         const gchar         *host_name,

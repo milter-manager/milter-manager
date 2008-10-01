@@ -52,7 +52,7 @@ struct _MilterClientContextPrivate
 
 enum
 {
-    OPTION_NEGOTIATION,
+    NEGOTIATE,
     CONNECT,
     HELO,
     ENVELOPE_FROM,
@@ -83,25 +83,25 @@ static void get_property   (GObject         *object,
                             GParamSpec      *pspec);
 
 static MilterStatus cb_connect            (MilterClientContext *context,
-                                                 const gchar         *host_name,
-                                                 struct sockaddr     *address,
-                                                 socklen_t            address_length);
-static MilterStatus cb_option_negotiation (MilterClientContext *context,
-                                                 MilterOption        *option);
+                                           const gchar         *host_name,
+                                           struct sockaddr     *address,
+                                           socklen_t            address_length);
+static MilterStatus cb_negotiate          (MilterClientContext *context,
+                                           MilterOption        *option);
 static MilterStatus cb_helo               (MilterClientContext *context,
-                                                 const gchar         *fqdn);
+                                           const gchar         *fqdn);
 static MilterStatus cb_envelope_from      (MilterClientContext *context,
-                                                 const gchar         *from);
+                                           const gchar         *from);
 static MilterStatus cb_envelope_receipt   (MilterClientContext *context,
-                                                 const gchar         *receipt);
+                                           const gchar         *receipt);
 static MilterStatus cb_data               (MilterClientContext *context);
 static MilterStatus cb_header             (MilterClientContext *context,
-                                                 const gchar         *name,
-                                                 const gchar         *value);
+                                           const gchar         *name,
+                                           const gchar         *value);
 static MilterStatus cb_end_of_header      (MilterClientContext *context);
 static MilterStatus cb_body               (MilterClientContext *context,
-                                                 const guchar        *chunk,
-                                                 gsize                size);
+                                           const guchar        *chunk,
+                                           gsize                size);
 static MilterStatus cb_end_of_message     (MilterClientContext *context);
 static MilterStatus cb_close              (MilterClientContext *context);
 static MilterStatus cb_abort              (MilterClientContext *context);
@@ -125,7 +125,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
     gobject_class->set_property = set_property;
     gobject_class->get_property = get_property;
 
-    klass->option_negotiation = cb_option_negotiation;
+    klass->negotiate = cb_negotiate;
     klass->connect = cb_connect;
     klass->helo = cb_helo;
     klass->envelope_from = cb_envelope_from;
@@ -138,12 +138,12 @@ milter_client_context_class_init (MilterClientContextClass *klass)
     klass->close = cb_close;
     klass->abort = cb_abort;
 
-    signals[OPTION_NEGOTIATION] =
-        g_signal_new("option-negotiation",
+    signals[NEGOTIATE] =
+        g_signal_new("negotiate",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientContextClass,
-                                     option_negotiation),
+                                     negotiate),
                      status_accumulator, NULL,
                      _milter_client_marshal_ENUM__OBJECT,
                      MILTER_TYPE_STATUS, 1, MILTER_TYPE_OPTION);
@@ -862,7 +862,7 @@ reply (MilterClientContext *context, MilterStatus status)
 }
 
 static void
-cb_decoder_option_negotiation (MilterDecoder *decoder, MilterOption *option,
+cb_decoder_negotiate (MilterDecoder *decoder, MilterOption *option,
                                gpointer user_data)
 {
     MilterClientContext *context = user_data;
@@ -871,7 +871,7 @@ cb_decoder_option_negotiation (MilterDecoder *decoder, MilterOption *option,
     gchar *packet;
     gsize packet_size;
 
-    g_signal_emit(context, signals[OPTION_NEGOTIATION], 0, option, &status);
+    g_signal_emit(context, signals[NEGOTIATE], 0, option, &status);
     if (status == MILTER_STATUS_DEFAULT)
         status = MILTER_STATUS_ALL_OPTIONS;
 
@@ -880,9 +880,9 @@ cb_decoder_option_negotiation (MilterDecoder *decoder, MilterOption *option,
         milter_option_set_step(option, 0);
       case MILTER_STATUS_CONTINUE:
         priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
-        milter_encoder_encode_option_negotiation(priv->encoder,
-                                                 &packet, &packet_size,
-                                                 option);
+        milter_encoder_encode_negotiate(priv->encoder,
+                                        &packet, &packet_size,
+                                        option);
         write_packet(context, packet, packet_size);
         g_free(packet);
         break;
@@ -1086,7 +1086,7 @@ setup_decoder (MilterClientContext *context, MilterDecoder *decoder)
     g_signal_connect(decoder, #name, G_CALLBACK(cb_decoder_ ## name),   \
                      context)
 
-    CONNECT(option_negotiation);
+    CONNECT(negotiate);
     CONNECT(define_macro);
     CONNECT(connect);
     CONNECT(helo);
@@ -1104,8 +1104,8 @@ setup_decoder (MilterClientContext *context, MilterDecoder *decoder)
 
 
 static MilterStatus
-cb_option_negotiation (MilterClientContext *context,
-                       MilterOption        *option)
+cb_negotiate (MilterClientContext *context,
+              MilterOption        *option)
 {
     return MILTER_STATUS_NOT_CHANGE;
 }

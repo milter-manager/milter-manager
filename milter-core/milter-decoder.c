@@ -105,10 +105,10 @@ milter_decoder_class_init (MilterDecoderClass *klass)
     gobject_class->get_property = get_property;
 
     signals[OPTION_NEGOTIATION] =
-        g_signal_new("option-negotiation",
+        g_signal_new("negotiate",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MilterDecoderClass, option_negotiation),
+                     G_STRUCT_OFFSET(MilterDecoderClass, negotiate),
                      NULL, NULL,
                      g_cclosure_marshal_VOID__OBJECT,
                      G_TYPE_NONE, 1, MILTER_TYPE_OPTION);
@@ -433,7 +433,7 @@ check_command_length (const gchar *buffer, gint length, gint expected_length,
 }
 
 static gboolean
-decode_command_option_negotiation (MilterDecoder *decoder, GError **error)
+decode_command_negotiate (MilterDecoder *decoder, GError **error)
 {
     MilterDecoderPrivate *priv;
     MilterOption *option;
@@ -1007,8 +1007,8 @@ decode_command (MilterDecoder *decoder, GError **error)
 
     priv = MILTER_DECODER_GET_PRIVATE(decoder);
     switch (priv->buffer->str[0]) {
-      case MILTER_COMMAND_OPTION_NEGOTIATION:
-        success = decode_command_option_negotiation(decoder, error);
+      case MILTER_COMMAND_NEGOTIATE:
+        success = decode_command_negotiate(decoder, error);
         break;
       case MILTER_COMMAND_DEFINE_MACRO:
         success = decode_command_define_macro(decoder, error);

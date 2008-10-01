@@ -15,6 +15,9 @@
 	MilterStatus.
 	* milter-server/milter-server-context.[ch]: Declare some functions not
 	implemented yet.
+	* milter-client/milter-client-context.[ch], milter-code/*,
+	libmilter/libmilter-compatible.c, test/core/*, test/client/*:
+	option_negotiation -> negotiate.
 
 2008-09-30  Kouhei Sutou  <kou@cozmixng.org>
 

@@ -63,7 +63,7 @@ struct _MilterDecoderClass
 {
     GObjectClass parent_class;
 
-    void (*option_negotiation)  (MilterDecoder *decoder,
+    void (*negotiate)           (MilterDecoder *decoder,
                                  MilterOption *option);
     void (*define_macro)        (MilterDecoder *decoder,
                                  MilterCommand context,

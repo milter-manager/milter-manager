@@ -43,7 +43,7 @@ static gsize packet_size;
 static GError *expected_error;
 static GError *actual_error;
 
-static gint n_option_negotiations;
+static gint n_negotiates;
 static gint n_connects;
 static gint n_helos;
 static gint n_envelope_froms;
@@ -70,10 +70,10 @@ append_private_data (MilterClientContext *context, const gchar *tag)
 }
 
 static MilterStatus
-cb_option_negotiation (MilterClientContext *context, MilterOption *option,
+cb_negotiate (MilterClientContext *context, MilterOption *option,
                        gpointer user_data)
 {
-    n_option_negotiations++;
+    n_negotiates++;
     append_private_data(context, "option negotiation");
 
     return MILTER_STATUS_CONTINUE;
@@ -191,7 +191,7 @@ setup_signals (MilterClientContext *context)
 #define CONNECT(name)                                                   \
     g_signal_connect(context, #name, G_CALLBACK(cb_ ## name), NULL)
 
-    CONNECT(option_negotiation);
+    CONNECT(negotiate);
     CONNECT(connect);
     CONNECT(helo);
     CONNECT(envelope_from);
@@ -220,7 +220,7 @@ setup (void)
     expected_error = NULL;
     actual_error = NULL;
 
-    n_option_negotiations = 0;
+    n_negotiates = 0;
     n_connects = 0;
     n_helos = 0;
     n_envelope_froms = 0;
@@ -306,7 +306,7 @@ create_option_negotiate_packet (void)
 
     option = milter_option_new(2, MILTER_ACTION_ADD_HEADERS, MILTER_STEP_NONE);
     packet_free();
-    milter_encoder_encode_option_negotiation(encoder,
+    milter_encoder_encode_negotiate(encoder,
                                              &packet, &packet_size,
                                              option);
     g_object_unref(option);
@@ -348,7 +348,7 @@ test_private (void)
     create_option_negotiate_packet();
     gcut_assert_equal_list_string(NULL, private_data_list);
     gcut_assert_error(feed());
-    cut_assert_equal_int(1, n_option_negotiations);
+    cut_assert_equal_int(1, n_negotiates);
     append_expected_private_data("option negotiation");
     gcut_assert_equal_list_string(expected_private_data_list,
                                   private_data_list);

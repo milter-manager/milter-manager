@@ -54,7 +54,7 @@ GType            milter_encoder_get_type       (void) G_GNUC_CONST;
 
 MilterEncoder   *milter_encoder_new            (void);
 
-void             milter_encoder_encode_option_negotiation
+void             milter_encoder_encode_negotiate
                                                (MilterEncoder     *encoder,
                                                 gchar            **packet,
                                                 gsize             *packet_size,

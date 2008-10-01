@@ -150,8 +150,8 @@ smfi_register (struct smfiDesc description)
 }
 
 static MilterStatus
-cb_option_negotiation (MilterClientContext *context, MilterOption *option,
-                       gpointer user_data)
+cb_negotiate (MilterClientContext *context, MilterOption *option,
+              gpointer user_data)
 {
     SmfiContext *smfi_context = user_data;
     MilterStatus status;
@@ -338,7 +338,7 @@ setup_client_context (MilterClientContext *context, gpointer user_data)
         g_signal_connect(context, #name, G_CALLBACK(cb_ ## name),       \
                          user_data)
 
-    CONNECT(option_negotiation, negotiate);
+    CONNECT(negotiate, negotiate);
     CONNECT(connect, connect);
     CONNECT(helo, helo);
     CONNECT(envelope_from, envfrom);
@@ -368,7 +368,7 @@ teardown_client_context (MilterClientContext *context, gpointer user_data)
                                          G_CALLBACK(cb_ ## name),       \
                                          user_data)
 
-    DISCONNECT(option_negotiation);
+    DISCONNECT(negotiate);
     DISCONNECT(connect);
     DISCONNECT(helo);
     DISCONNECT(envelope_from);

@@ -144,16 +144,16 @@ pack (GString *output)
 }
 
 void
-milter_encoder_encode_option_negotiation (MilterEncoder *encoder,
-                                          gchar **packet, gsize *packet_size,
-                                          MilterOption *option)
+milter_encoder_encode_negotiate (MilterEncoder *encoder,
+                                 gchar **packet, gsize *packet_size,
+                                 MilterOption *option)
 {
     MilterEncoderPrivate *priv;
 
     priv = MILTER_ENCODER_GET_PRIVATE(encoder);
     g_string_truncate(priv->buffer, 0);
 
-    g_string_append_c(priv->buffer, MILTER_COMMAND_OPTION_NEGOTIATION);
+    g_string_append_c(priv->buffer, MILTER_COMMAND_NEGOTIATE);
     if (option) {
         guint32 version, action, step;
         gchar version_string[sizeof(guint32)];

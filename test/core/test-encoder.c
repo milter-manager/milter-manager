@@ -29,8 +29,8 @@
 #include <milter-core/milter-encoder.h>
 #include <milter-core/milter-enum-types.h>
 
-void test_encode_option_negotiation (void);
-void test_encode_option_negotiation_null (void);
+void test_encode_negotiate (void);
+void test_encode_negotiate_null (void);
 void data_encode_define_macro (void);
 void test_encode_define_macro (gconstpointer data);
 void test_encode_connect_ipv4 (void);
@@ -97,7 +97,7 @@ pack (GString *buffer)
 }
 
 void
-test_encode_option_negotiation (void)
+test_encode_negotiate (void)
 {
     MilterOption *option;
     guint32 version_network_byte_order;
@@ -138,7 +138,7 @@ test_encode_option_negotiation (void)
     g_string_append_len(expected, step_string, sizeof(step_string));
     pack(expected);
 
-    milter_encoder_encode_option_negotiation(encoder,
+    milter_encoder_encode_negotiate(encoder,
                                              &actual, &actual_size,
                                              option);
     g_object_unref(option);
@@ -147,13 +147,13 @@ test_encode_option_negotiation (void)
 }
 
 void
-test_encode_option_negotiation_null (void)
+test_encode_negotiate_null (void)
 {
     gsize actual_size = 0;
 
     g_string_append_c(expected, 'O');
     pack(expected);
-    milter_encoder_encode_option_negotiation(encoder,
+    milter_encoder_encode_negotiate(encoder,
                                              &actual, &actual_size,
                                              NULL);
     cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);

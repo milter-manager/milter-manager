@@ -20,9 +20,6 @@
 #ifndef __MILTER_WRITER_H__
 #define __MILTER_WRITER_H__
 
-#include <sys/types.h>
-#include <sys/socket.h>
-
 #include <glib-object.h>
 
 #include <milter-core/milter-protocol.h>

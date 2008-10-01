@@ -28,7 +28,7 @@
 #include <milter-client.h>
 #undef shutdown
 
-void test_feed_option_negotiation (void);
+void test_feed_negotiate (void);
 void test_feed_connect_ipv4 (void);
 void test_feed_connect_ipv6 (void);
 void test_feed_connect_unix (void);
@@ -56,7 +56,7 @@ static MilterEncoder *encoder;
 static gchar *packet;
 static gsize packet_size;
 
-static gint n_option_negotiations;
+static gint n_negotiates;
 static gint n_connects;
 static gint n_helos;
 static gint n_envelope_froms;
@@ -69,7 +69,7 @@ static gint n_aborts;
 static gint n_closes;
 static gint n_unknowns;
 
-static MilterOption *option_negotiation_option;
+static MilterOption *negotiate_option;
 
 static GHashTable *expected_macros;
 static GHashTable *defined_macros;
@@ -119,11 +119,11 @@ retrieve_context_info (MilterClientContext *context)
 }
 
 static MilterStatus
-cb_option_negotiation (MilterClientContext *context, MilterOption *option,
+cb_negotiate (MilterClientContext *context, MilterOption *option,
                        gpointer user_data)
 {
-    n_option_negotiations++;
-    option_negotiation_option = g_object_ref(option);
+    n_negotiates++;
+    negotiate_option = g_object_ref(option);
 
     retrieve_context_info(context);
 
@@ -281,7 +281,7 @@ setup_signals (MilterClientContext *context)
 #define CONNECT(name)                                                   \
     g_signal_connect(context, #name, G_CALLBACK(cb_ ## name), NULL)
 
-    CONNECT(option_negotiation);
+    CONNECT(negotiate);
     CONNECT(connect);
     CONNECT(helo);
     CONNECT(envelope_from);
@@ -307,7 +307,7 @@ setup (void)
     packet = NULL;
     packet_size = 0;
 
-    n_option_negotiations = 0;
+    n_negotiates = 0;
     n_connects = 0;
     n_helos = 0;
     n_envelope_froms = 0;
@@ -320,7 +320,7 @@ setup (void)
     n_closes = 0;
     n_unknowns = 0;
 
-    option_negotiation_option = NULL;
+    negotiate_option = NULL;
 
     expected_macros = NULL;
     defined_macros = NULL;
@@ -371,8 +371,8 @@ teardown (void)
 
     packet_free();
 
-    if (option_negotiation_option)
-        g_object_unref(option_negotiation_option);
+    if (negotiate_option)
+        g_object_unref(negotiate_option);
 
     if (expected_macros)
         g_hash_table_unref(expected_macros);
@@ -426,7 +426,7 @@ feed (void)
 }
 
 void
-test_feed_option_negotiation (void)
+test_feed_negotiate (void)
 {
     MilterOption *option;
     MilterOption *negotiated_option;
@@ -451,15 +451,15 @@ test_feed_option_negotiation (void)
         MILTER_STEP_NO_END_OF_HEADER;
     option = milter_option_new(version, action, step);
 
-    milter_encoder_encode_option_negotiation(encoder,
+    milter_encoder_encode_negotiate(encoder,
                                              &packet, &packet_size,
                                              option);
     g_object_unref(option);
 
     gcut_assert_error(feed());
-    cut_assert_equal_int(1, n_option_negotiations);
+    cut_assert_equal_int(1, n_negotiates);
 
-    negotiated_option = option_negotiation_option;
+    negotiated_option = negotiate_option;
     cut_assert_equal_int(version, milter_option_get_version(negotiated_option));
     gcut_assert_equal_flags(MILTER_TYPE_ACTION_FLAGS,
                             action,
