@@ -36,6 +36,8 @@
 	option_negotiation -> negotiate.
 	* test/client/test-client-context-header.c: option_negotiation ->
 	negotiate.
+	* milter-code/milter-handler.[ch]: Added an abstract object for
+	MilterClientContext and MilterServerContext.
 
 2008-09-30  Kouhei Sutou  <kou@cozmixng.org>
 
