@@ -29,6 +29,7 @@
 #undef shutdown
 
 void test_add_header (void);
+void test_change_header (void);
 
 static MilterClientContext *context;
 static MilterEncoder *encoder;
@@ -39,8 +40,12 @@ static MilterWriter *writer;
 static gchar *packet;
 static gsize packet_size;
 
+static gboolean add_header;
+static gboolean change_header;
+
 static gchar *header_name;
 static gchar *header_value;
+static guint32 header_index;
 
 static MilterStatus
 cb_negotiate (MilterClientContext *context, MilterOption *option,
@@ -100,8 +105,16 @@ cb_body (MilterClientContext *context, const gchar *chunk, gsize size,
 static MilterStatus
 cb_end_of_message (MilterClientContext *context, gpointer user_data)
 {
-    if (header_name) {
+    if (add_header) {
         milter_client_context_add_header(context, header_name, header_value);
+        milter_client_context_set_writer(context, NULL);
+    }
+
+    if (change_header) {
+        milter_client_context_change_header(context,
+                                            header_name,
+                                            header_index,
+                                            header_value);
         milter_client_context_set_writer(context, NULL);
     }
 
@@ -164,6 +177,10 @@ setup (void)
 
     header_name = NULL;
     header_value = NULL;
+    header_index = 0;
+
+    add_header = FALSE;
+    change_header = FALSE;
 }
 
 static void
@@ -213,19 +230,9 @@ feed (void)
 void
 test_add_header (void)
 {
-    GHashTable *macros;
-
-    macros = gcut_hash_table_string_string_new("i", "5023542DE94", NULL);
-    milter_encoder_encode_define_macro(encoder,
-                                       &packet, &packet_size,
-                                       MILTER_COMMAND_END_OF_MESSAGE,
-                                       macros);
-    g_hash_table_unref(macros);
-    gcut_assert_error(feed());
-    packet_free();
-
+    add_header = TRUE;
     cut_assert_equal_memory("", 0, output->str, output->len);
-    header_name = g_strdup("X-TestHeader");
+    header_name = g_strdup("X-Test-Header");
     header_value = g_strdup("Test Value");
     milter_encoder_encode_end_of_message(encoder, &packet, &packet_size,
                                          NULL, 0);
@@ -234,6 +241,27 @@ test_add_header (void)
     packet_free();
     milter_encoder_encode_reply_add_header(encoder, &packet, &packet_size,
                                            header_name, header_value);
+    cut_assert_equal_memory(packet, packet_size,
+                            output->str, output->len);
+}
+
+void
+test_change_header (void)
+{
+    change_header = TRUE;
+    cut_assert_equal_memory("", 0, output->str, output->len);
+    header_name = g_strdup("X-Test-Header");
+    header_value = g_strdup("Test Value");
+    header_index = 2;
+    milter_encoder_encode_end_of_message(encoder, &packet, &packet_size,
+                                         NULL, 0);
+    gcut_assert_error(feed());
+
+    packet_free();
+    milter_encoder_encode_reply_change_header(encoder, &packet, &packet_size,
+                                              header_name,
+                                              header_index,
+                                              header_value);
     cut_assert_equal_memory(packet, packet_size,
                             output->str, output->len);
 }

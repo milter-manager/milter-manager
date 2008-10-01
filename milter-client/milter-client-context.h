@@ -110,16 +110,16 @@ gboolean             milter_client_context_add_header        (MilterClientContex
                                                               const gchar *name,
                                                               const gchar *value);
 gboolean             milter_client_context_insert_header     (MilterClientContext *context,
-                                                              gint         index,
+                                                              guint32      index,
                                                               const gchar *name,
                                                               const gchar *value);
 gboolean             milter_client_context_change_header     (MilterClientContext *context,
                                                               const gchar *name,
-                                                              gint         index,
+                                                              guint32      index,
                                                               const gchar *value);
 gboolean             milter_client_context_remove_header     (MilterClientContext *context,
                                                               const gchar *name,
-                                                              gint         index);
+                                                              guint32      index);
 
 
 void                 milter_client_context_set_writer        (MilterClientContext *context,

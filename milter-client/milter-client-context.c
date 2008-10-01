@@ -795,6 +795,28 @@ milter_client_context_add_header (MilterClientContext *context,
     return success;
 }
 
+gboolean
+milter_client_context_change_header (MilterClientContext *context,
+                                     const gchar *name, guint32 index,
+                                     const gchar *value)
+{
+    MilterClientContextPrivate *priv;
+    gchar *packet = NULL;
+    gsize packet_size;
+    gboolean success;
+
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    milter_encoder_encode_reply_change_header(priv->encoder,
+                                              &packet, &packet_size,
+                                              name, index, value);
+    if (!packet)
+        return FALSE;
+
+    success = write_packet(context, packet, packet_size);
+    g_free(packet);
+    return success;
+}
+
 void
 milter_client_context_set_writer (MilterClientContext *context,
                                   MilterWriter *writer)
