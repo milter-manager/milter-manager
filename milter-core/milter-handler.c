@@ -67,11 +67,11 @@ milter_handler_class_init (MilterHandlerClass *klass)
 }
 
 static void
-milter_handler_init (MilterHandler *context)
+milter_handler_init (MilterHandler *handler)
 {
     MilterHandlerPrivate *priv;
 
-    priv = MILTER_HANDLER_GET_PRIVATE(context);
+    priv = MILTER_HANDLER_GET_PRIVATE(handler);
     priv->decoder = milter_decoder_new();
     priv->encoder = milter_encoder_new();
     priv->writer = NULL;
@@ -141,25 +141,25 @@ milter_handler_error_quark (void)
 }
 
 gboolean
-milter_handler_feed (MilterHandler *context,
-                            const gchar *chunk, gsize size,
-                            GError **error)
+milter_handler_feed (MilterHandler *handler,
+                     const gchar *chunk, gsize size,
+                     GError **error)
 {
     MilterHandlerPrivate *priv;
 
-    priv = MILTER_HANDLER_GET_PRIVATE(context);
+    priv = MILTER_HANDLER_GET_PRIVATE(handler);
     return milter_decoder_decode(priv->decoder, chunk, size, error);
 }
 
 gboolean
-milter_handler_write_packet (MilterHandler *context,
+milter_handler_write_packet (MilterHandler *handler,
                              const gchar *packet, gsize packet_size,
                              GError **error)
 {
     MilterHandlerPrivate *priv;
     gboolean success;
 
-    priv = MILTER_HANDLER_GET_PRIVATE(context);
+    priv = MILTER_HANDLER_GET_PRIVATE(handler);
 
     if (!priv->writer)
         return TRUE;
@@ -168,6 +168,22 @@ milter_handler_write_packet (MilterHandler *context,
                                   NULL, error);
 
     return success;
+}
+
+void
+milter_handler_set_writer (MilterHandler *handler,
+                           MilterWriter *writer)
+{
+    MilterHandlerPrivate *priv;
+
+    priv = MILTER_HANDLER_GET_PRIVATE(handler);
+
+    if (priv->writer)
+        g_object_unref(priv->writer);
+
+    priv->writer = writer;
+    if (priv->writer)
+        g_object_ref(priv->writer);
 }
 
 /*

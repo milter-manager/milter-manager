@@ -50,6 +50,8 @@
 	MilterClientContext and MilterServerContext.
 	* milter-core/milter-writer.c: Set error information only if GError is
 	valid.
+	* milter-core/milter-handler.c: Implement milter_handler_set_writer().
+	* milter-code/milter-code.h: Include milter-handler.h.
 
 2008-09-30  Kouhei Sutou  <kou@cozmixng.org>
 
