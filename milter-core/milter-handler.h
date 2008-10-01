@@ -29,11 +29,11 @@ G_BEGIN_DECLS
 #define MILTER_HANDLER_ERROR           (milter_handler_error_quark())
 
 #define MILTER_TYPE_HANDLER            (milter_handler_get_type())
-#define MILTER_HANDLER(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), MILTER_TYPE_CONTEXT, MilterHandler))
-#define MILTER_HANDLER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), MILTER_TYPE_CONTEXT, MilterHandlerClass))
+#define MILTER_HANDLER(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), MILTER_TYPE_HANDLER, MilterHandler))
+#define MILTER_HANDLER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), MILTER_TYPE_HANDLER, MilterHandlerClass))
 #define MILTER_IS_HANDLER(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), MILTER_TYPE_HANDLER))
 #define MILTER_IS_HANDLER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), MILTER_TYPE_HANDLER))
-#define MILTER_HANDLER_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MILTER_TYPE_CONTEXT, MilterHandlerClass))
+#define MILTER_HANDLER_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MILTER_TYPE_HANDLER, MilterHandlerClass))
 
 typedef enum
 {
