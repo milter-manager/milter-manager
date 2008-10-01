@@ -817,6 +817,13 @@ milter_client_context_change_header (MilterClientContext *context,
     return success;
 }
 
+gboolean
+milter_client_context_remove_header (MilterClientContext *context,
+                                     const gchar *name, guint32 index)
+{
+    return milter_client_context_change_header(context, name, index, NULL);
+}
+
 void
 milter_client_context_set_writer (MilterClientContext *context,
                                   MilterWriter *writer)
