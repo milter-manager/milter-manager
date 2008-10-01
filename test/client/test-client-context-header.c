@@ -29,6 +29,7 @@
 #undef shutdown
 
 void test_add_header (void);
+void test_insert_header (void);
 void test_change_header (void);
 void test_remove_header (void);
 
@@ -42,6 +43,7 @@ static gchar *packet;
 static gsize packet_size;
 
 static gboolean add_header;
+static gboolean insert_header;
 static gboolean change_header;
 static gboolean remove_header;
 
@@ -109,6 +111,12 @@ cb_end_of_message (MilterClientContext *context, gpointer user_data)
 {
     if (add_header) {
         milter_client_context_add_header(context, header_name, header_value);
+        milter_client_context_set_writer(context, NULL);
+    }
+
+    if (insert_header) {
+        milter_client_context_insert_header(context, header_index,
+                                            header_name, header_value);
         milter_client_context_set_writer(context, NULL);
     }
 
@@ -249,6 +257,26 @@ test_add_header (void)
     packet_free();
     milter_encoder_encode_reply_add_header(encoder, &packet, &packet_size,
                                            header_name, header_value);
+    cut_assert_equal_memory(packet, packet_size,
+                            output->str, output->len);
+}
+
+void
+test_insert_header (void)
+{
+    insert_header = TRUE;
+    cut_assert_equal_memory("", 0, output->str, output->len);
+    header_name = g_strdup("X-Test-Header");
+    header_value = g_strdup("Test Value");
+    header_index = 2;
+    milter_encoder_encode_end_of_message(encoder, &packet, &packet_size,
+                                         NULL, 0);
+    gcut_assert_error(feed());
+
+    packet_free();
+    milter_encoder_encode_reply_insert_header(encoder, &packet, &packet_size,
+                                              header_index,
+                                              header_name, header_value);
     cut_assert_equal_memory(packet, packet_size,
                             output->str, output->len);
 }
