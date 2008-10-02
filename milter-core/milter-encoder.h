@@ -159,6 +159,11 @@ void             milter_encoder_encode_reply_change_header
                                                 const gchar       *name,
                                                 guint32            index,
                                                 const gchar       *value);
+void             milter_encoder_encode_reply_add_receipt
+                                               (MilterEncoder     *encoder,
+                                                gchar            **packet,
+                                                gsize             *packet_size,
+                                                const gchar       *receipt);
 void             milter_encoder_encode_reply_replace_body
                                                (MilterEncoder     *encoder,
                                                 gchar            **packet,
