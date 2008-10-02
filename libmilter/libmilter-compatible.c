@@ -614,7 +614,16 @@ smfi_replacebody (SMFICTX *context, unsigned char *new_body, int new_body_size)
 int
 smfi_quarantine (SMFICTX *context, char *reason)
 {
-    return MI_SUCCESS;
+    SmfiContextPrivate *priv;
+
+    priv = SMFI_CONTEXT_GET_PRIVATE(context);
+    if (!priv->client_context)
+        return MI_FAILURE;
+
+    if (milter_client_context_quarantine(priv->client_context, reason))
+        return MI_SUCCESS;
+    else
+        return MI_FAILURE;
 }
 
 int

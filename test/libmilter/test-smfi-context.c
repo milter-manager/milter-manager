@@ -34,6 +34,7 @@ void test_addheader (void);
 void test_chgheader (void);
 void test_insheader (void);
 void test_progress (void);
+void test_quarantine (void);
 void test_replacebody (void);
 
 static SmfiContext *context;
@@ -62,6 +63,8 @@ static gint header_index;
 
 static GString *body;
 static int replace_body_result;
+
+static gchar *quarantine_reason;
 
 static sfsistat
 xxfi_connect (SMFICTX *context, char *host_name, _SOCK_ADDR *address)
@@ -125,6 +128,9 @@ xxfi_eom (SMFICTX *context)
         replace_body_result = smfi_replacebody(context,
                                                (unsigned char *)body->str,
                                                body->len);
+    if (quarantine_reason)
+        smfi_quarantine(context, quarantine_reason);
+
     return SMFIS_CONTINUE;
 }
 
@@ -216,6 +222,8 @@ setup (void)
 
     body = NULL;
     replace_body_result = 0;
+
+    quarantine_reason = NULL;
 }
 
 static void
@@ -257,6 +265,9 @@ teardown (void)
 
     if (body)
         g_string_free(body, TRUE);
+
+    if (quarantine_reason)
+        g_free(quarantine_reason);
 }
 
 static GError *
@@ -403,6 +414,30 @@ test_progress (void)
 
     packet_free();
     milter_encoder_encode_reply_progress(encoder, &packet, &packet_size);
+    g_string_append_len(expected_output, packet, packet_size);
+
+    packet_free();
+    milter_encoder_encode_reply_continue(encoder, &packet, &packet_size);
+    g_string_append_len(expected_output, packet, packet_size);
+
+    cut_assert_equal_memory(expected_output->str, expected_output->len,
+                            output->str, output->len);
+}
+
+void
+test_quarantine (void)
+{
+    quarantine_reason = g_strdup("virus mail!");
+    milter_encoder_encode_end_of_message(encoder, &packet, &packet_size,
+                                         NULL, 0);
+    gcut_assert_error(feed());
+
+
+    expected_output = g_string_new(NULL);
+
+    packet_free();
+    milter_encoder_encode_reply_quarantine(encoder, &packet, &packet_size,
+                                           quarantine_reason);
     g_string_append_len(expected_output, packet, packet_size);
 
     packet_free();
