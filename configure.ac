@@ -188,6 +188,7 @@ AC_CONFIG_FILES([Makefile
 		 milter-core/Makefile
 		 milter-client.pc
 		 milter-client/Makefile
+		 milter-server.pc
 		 milter-server/Makefile
 		 libmilter.pc
 		 libmilter/Makefile

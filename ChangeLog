@@ -1,5 +1,9 @@
 2008-10-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* configure.ac, milter-server.pc.in: add milter-server.pc.in.
+
+	* Makefile.am (pkgconfig_DATA): install *.pc.
+
 	* milter-server/milter-server.h: add empty milter-server.h for now.
 
 	* libmilter/Makefile.am (pkglib_LTLIBRARIES): fix install directory.
