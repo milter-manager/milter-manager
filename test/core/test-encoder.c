@@ -59,7 +59,8 @@ void test_encode_reply_change_header (gconstpointer data);
 void test_encode_reply_replace_body (void);
 void test_encode_reply_replace_body_large (void);
 void test_encode_reply_progress (void);
-void test_encode_reply_quarantine (void);
+void data_encode_reply_quarantine (void);
+void test_encode_reply_quarantine (gconstpointer);
 
 static MilterEncoder *encoder;
 static GString *expected;
@@ -148,9 +149,7 @@ test_encode_negotiate (void)
     g_string_append_len(expected, step_string, sizeof(step_string));
     pack(expected);
 
-    milter_encoder_encode_negotiate(encoder,
-                                             &actual, &actual_size,
-                                             option);
+    milter_encoder_encode_negotiate(encoder, &actual, &actual_size, option);
     g_object_unref(option);
 
     cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
@@ -163,9 +162,7 @@ test_encode_negotiate_null (void)
 
     g_string_append_c(expected, 'O');
     pack(expected);
-    milter_encoder_encode_negotiate(encoder,
-                                             &actual, &actual_size,
-                                             NULL);
+    milter_encoder_encode_negotiate(encoder, &actual, &actual_size, NULL);
     cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
 }
 
@@ -836,21 +833,36 @@ test_encode_reply_progress (void)
 }
 
 void
-test_encode_reply_quarantine (void)
+data_encode_reply_quarantine (void)
 {
-    const gchar reason[] = "virus mail!";
+    cut_add_data("reasonable reason",
+                 g_strdup("virus mail!"),
+                 g_free,
+                 "no reason",
+                 NULL,
+                 NULL,
+                 "empty reason",
+                 g_strdup(""),
+                 g_free);
+}
+
+void
+test_encode_reply_quarantine (gconstpointer data)
+{
+    const gchar *reason = data;
     gsize actual_size = 0;
 
-    g_string_append(expected, "q");
-    g_string_append(expected, reason);
-    g_string_append_c(expected, '\0');
-    pack(expected);
+    if (reason && reason[0] != '\0') {
+        g_string_append(expected, "q");
+        g_string_append(expected, reason);
+        g_string_append_c(expected, '\0');
+        pack(expected);
+    }
 
     milter_encoder_encode_reply_quarantine(encoder, &actual, &actual_size,
                                            reason);
     cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
 }
-
 
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
