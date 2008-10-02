@@ -778,6 +778,60 @@ test_encode_reply_change_header (gconstpointer data)
 
 
 void
+data_encode_reply_change_from (void)
+{
+    cut_add_data("",
+                 g_strsplit("kou@localhost", " ", 2),
+                 g_strfreev,
+                 "from - parameters",
+                 g_strsplit("kou@localhost XXX", " ", 2),
+                 g_strfreev,
+                 "NULL",
+                 NULL,
+                 NULL,
+                 "empty from",
+                 g_strsplit("", " ", 2),
+                 g_strfreev,
+                 "empty from - parameters",
+                 g_strsplit(" XXX", " ", 2),
+                 g_strfreev,
+                 "NULL from - parameters",
+                 g_strsplit("(null) XXX", " ", 2),
+                 g_strfreev);
+}
+
+void
+test_encode_reply_change_from (gconstpointer data)
+{
+    gchar * const *test_data = data;
+    gchar *from = NULL;
+    gchar *parameters = NULL;
+    gsize actual_size = 0;
+
+    if (test_data && test_data[0]) {
+        from = test_data[0];
+        parameters = test_data[1];
+    }
+    if (from && g_str_equal(from, "(null)"))
+        from = NULL;
+
+    if (from && from[0] != '\0') {
+        g_string_append(expected, "e");
+        g_string_append(expected, from);
+        g_string_append_c(expected, '\0');
+        if (parameters) {
+            g_string_append(expected, parameters);
+            g_string_append_c(expected, '\0');
+        }
+        pack(expected);
+    }
+
+    milter_encoder_encode_reply_change_from(encoder, &actual, &actual_size,
+                                            from, parameters);
+    cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
+}
+
+void
 data_encode_reply_add_receipt (void)
 {
     cut_add_data("receipt",

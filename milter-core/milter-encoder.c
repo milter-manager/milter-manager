@@ -648,6 +648,36 @@ milter_encoder_encode_reply_change_header (MilterEncoder *encoder,
 }
 
 void
+milter_encoder_encode_reply_change_from (MilterEncoder *encoder,
+                                         gchar **packet, gsize *packet_size,
+                                         const gchar *from,
+                                         const gchar *parameters)
+{
+    MilterEncoderPrivate *priv;
+
+    if (from == NULL || from[0] == '\0') {
+        *packet = NULL;
+        *packet_size = 0;
+        return;
+    }
+
+    priv = MILTER_ENCODER_GET_PRIVATE(encoder);
+    g_string_truncate(priv->buffer, 0);
+
+    g_string_append_c(priv->buffer, MILTER_REPLY_CHANGE_FROM);
+    g_string_append(priv->buffer, from);
+    g_string_append_c(priv->buffer, '\0');
+    if (parameters) {
+        g_string_append(priv->buffer, parameters);
+        g_string_append_c(priv->buffer, '\0');
+    }
+    pack(priv->buffer);
+
+    *packet = g_memdup(priv->buffer->str, priv->buffer->len);
+    *packet_size = priv->buffer->len;
+}
+
+void
 milter_encoder_encode_reply_add_receipt (MilterEncoder *encoder,
                                          gchar **packet, gsize *packet_size,
                                          const gchar *receipt,

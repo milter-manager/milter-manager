@@ -1,5 +1,8 @@
 2008-10-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-core/milter-encoder.[ch], test/core/test-encoder.c:
+	implement milter_encoder_encode_reply_change_from().
+
 	* libmilter/libmilter-compatible.c,
 	test/libmilter/test-smfi-context.c: implement smfi_addrcpt{,_par}().
 
