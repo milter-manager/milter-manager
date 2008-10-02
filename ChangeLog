@@ -1,5 +1,7 @@
 2008-10-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* *.pc.in: fix include path.
+
 	* configure.ac, milter-server.pc.in: add milter-server.pc.in.
 
 	* Makefile.am (pkgconfig_DATA): install *.pc.

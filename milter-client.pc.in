@@ -2,11 +2,10 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
-pkgincludedir=@pkgincludedir@
+pkgincludedir=${includedir}/@PACKAGE_NAME@
 
 Name: milter client library
 Description: milter API
 Version: @VERSION@
 Requires: milter-core = @VERSION@
-Cflags: -I${pkgincludedir}/milter-client
 Libs: -L${libdir} -lmilter-client

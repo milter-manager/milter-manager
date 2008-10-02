@@ -2,11 +2,11 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
-pkgincludedir=@pkgincludedir@
+pkgincludedir=${includedir}/@PACKAGE_NAME@
 
 Name: milter core library
 Description: common milter features
 Version: @VERSION@
 Requires: gobject-2.0 >= @GLIB_REQUIRED@, gthread-2.0 >= @GLIB_REQUIRED@
-Cflags: -I${pkgincludedir}/milter-core
+Cflags: -I${pkgincludedir}
 Libs: -L${libdir} -lmilter-core

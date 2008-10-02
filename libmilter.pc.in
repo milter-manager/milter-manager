@@ -2,8 +2,8 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
-pkglibdir=@pkglibdir@
-pkgincludedir=@pkgincludedir@
+pkglibdir=${libdir}/@PACKAGE_NAME@
+pkgincludedir=${includedir}/@PACKAGE_NAME@
 
 Name: Sendmail's libmilter compatible API by milter client library
 Description: libmilter API
