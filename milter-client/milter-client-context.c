@@ -840,6 +840,19 @@ milter_client_context_replace_body (MilterClientContext *context,
     return TRUE;
 }
 
+gboolean
+milter_client_context_progress (MilterClientContext *context)
+{
+    MilterEncoder *encoder;
+    gchar *packet = NULL;
+    gsize packet_size;
+
+    encoder = milter_handler_get_encoder(MILTER_HANDLER(context));
+    milter_encoder_encode_reply_progress(encoder, &packet, &packet_size);
+
+    return write_packet(context, packet, packet_size);
+}
+
 static gboolean
 status_accumulator (GSignalInvocationHint *hint,
                     GValue *return_accumulator,

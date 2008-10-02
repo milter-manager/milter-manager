@@ -123,6 +123,7 @@ gboolean             milter_client_context_remove_header     (MilterClientContex
 gboolean             milter_client_context_replace_body      (MilterClientContext *context,
                                                               const gchar *body,
                                                               gsize        body_size);
+gboolean             milter_client_context_progress          (MilterClientContext *context);
 
 
 G_END_DECLS
