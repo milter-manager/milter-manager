@@ -59,6 +59,7 @@ void test_encode_reply_change_header (gconstpointer data);
 void test_encode_reply_replace_body (void);
 void test_encode_reply_replace_body_large (void);
 void test_encode_reply_progress (void);
+void test_encode_reply_quarantine (void);
 
 static MilterEncoder *encoder;
 static GString *expected;
@@ -831,6 +832,22 @@ test_encode_reply_progress (void)
     pack(expected);
 
     milter_encoder_encode_reply_progress(encoder, &actual, &actual_size);
+    cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
+}
+
+void
+test_encode_reply_quarantine (void)
+{
+    const gchar reason[] = "virus mail!";
+    gsize actual_size = 0;
+
+    g_string_append(expected, "q");
+    g_string_append(expected, reason);
+    g_string_append_c(expected, '\0');
+    pack(expected);
+
+    milter_encoder_encode_reply_quarantine(encoder, &actual, &actual_size,
+                                           reason);
     cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
 }
 
