@@ -59,7 +59,7 @@ typedef enum
     MILTER_REPLY_ADD_RECEIPT =			'+', /* add recipient */
     MILTER_REPLY_DELETE_RECEIPT	=		'-', /* remove recipient */
     /* add recipient (incl. ESMTP args) */
-    MILTER_REPLY_ADD_RECEIPT_PARAMETERS =	'2',
+    MILTER_REPLY_ADD_RECEIPT_WITH_PARAMETERS =	'2',
     /* 421: shutdown (internal to MTA) */
     MILTER_REPLY_SHUTDOWN =			'4',
     MILTER_REPLY_ACCEPT =			'a', /* accept */

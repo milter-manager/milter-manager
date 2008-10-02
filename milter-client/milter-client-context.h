@@ -120,6 +120,9 @@ gboolean             milter_client_context_change_header     (MilterClientContex
 gboolean             milter_client_context_remove_header     (MilterClientContext *context,
                                                               const gchar *name,
                                                               guint32      index);
+gboolean             milter_client_context_add_receipt       (MilterClientContext *context,
+                                                              const gchar *receipt,
+                                                              const gchar *parameters);
 gboolean             milter_client_context_replace_body      (MilterClientContext *context,
                                                               const gchar *body,
                                                               gsize        body_size);
