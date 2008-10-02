@@ -33,6 +33,8 @@ void test_getsymval (void);
 void test_addheader (void);
 void test_chgheader (void);
 void test_insheader (void);
+void test_addrcpt (void);
+void test_addrcpt_par (void);
 void test_progress (void);
 void test_quarantine (void);
 void test_replacebody (void);
@@ -60,6 +62,9 @@ static gboolean change_header;
 static gchar *header_name;
 static gchar *header_value;
 static gint header_index;
+
+static gchar *add_receipt;
+static gchar *add_receipt_parameters;
 
 static GString *body;
 static int replace_body_result;
@@ -123,6 +128,13 @@ xxfi_eom (SMFICTX *context)
 
     if (change_header)
         smfi_chgheader(context, header_name, header_index, header_value);
+
+    if (add_receipt) {
+        if (add_receipt_parameters)
+            smfi_addrcpt_par(context, add_receipt, add_receipt_parameters);
+        else
+            smfi_addrcpt(context, add_receipt);
+    }
 
     if (body)
         replace_body_result = smfi_replacebody(context,
@@ -220,6 +232,9 @@ setup (void)
     macro_name = NULL;
     macro_value = NULL;
 
+    add_receipt = NULL;
+    add_receipt_parameters = NULL;
+
     body = NULL;
     replace_body_result = 0;
 
@@ -262,6 +277,11 @@ teardown (void)
         g_free(macro_name);
     if (macro_value)
         g_free(macro_value);
+
+    if (add_receipt)
+        g_free(add_receipt);
+    if (add_receipt_parameters)
+        g_free(add_receipt_parameters);
 
     if (body)
         g_string_free(body, TRUE);
@@ -390,6 +410,55 @@ test_chgheader (void)
                                               header_name,
                                               header_index,
                                               header_value);
+    g_string_append_len(expected_output, packet, packet_size);
+
+    packet_free();
+    milter_encoder_encode_reply_continue(encoder, &packet, &packet_size);
+    g_string_append_len(expected_output, packet, packet_size);
+
+    cut_assert_equal_memory(expected_output->str, expected_output->len,
+                            output->str, output->len);
+}
+
+void
+test_addrcpt (void)
+{
+    add_receipt = g_strdup("kou@localhost");
+    milter_encoder_encode_end_of_message(encoder, &packet, &packet_size,
+                                         NULL, 0);
+    gcut_assert_error(feed());
+
+
+    expected_output = g_string_new(NULL);
+
+    packet_free();
+    milter_encoder_encode_reply_add_receipt(encoder, &packet, &packet_size,
+                                            add_receipt, NULL);
+    g_string_append_len(expected_output, packet, packet_size);
+
+    packet_free();
+    milter_encoder_encode_reply_continue(encoder, &packet, &packet_size);
+    g_string_append_len(expected_output, packet, packet_size);
+
+    cut_assert_equal_memory(expected_output->str, expected_output->len,
+                            output->str, output->len);
+}
+
+void
+test_addrcpt_par (void)
+{
+    add_receipt = g_strdup("kou@localhost");
+    add_receipt_parameters = g_strdup("XXX");
+    milter_encoder_encode_end_of_message(encoder, &packet, &packet_size,
+                                         NULL, 0);
+    gcut_assert_error(feed());
+
+
+    expected_output = g_string_new(NULL);
+
+    packet_free();
+    milter_encoder_encode_reply_add_receipt(encoder, &packet, &packet_size,
+                                            add_receipt, add_receipt_parameters);
     g_string_append_len(expected_output, packet, packet_size);
 
     packet_free();

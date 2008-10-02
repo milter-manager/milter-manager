@@ -565,13 +565,31 @@ smfi_chgfrom (SMFICTX *context, char *mail, char *args)
 int
 smfi_addrcpt (SMFICTX *context, char *receipt)
 {
-    return MI_SUCCESS;
+    SmfiContextPrivate *priv;
+
+    priv = SMFI_CONTEXT_GET_PRIVATE(context);
+    if (!priv->client_context)
+        return MI_FAILURE;
+
+    if (milter_client_context_add_receipt(priv->client_context, receipt, NULL))
+        return MI_SUCCESS;
+    else
+        return MI_FAILURE;
 }
 
 int
 smfi_addrcpt_par (SMFICTX *context, char *receipt, char *args)
 {
-    return MI_SUCCESS;
+    SmfiContextPrivate *priv;
+
+    priv = SMFI_CONTEXT_GET_PRIVATE(context);
+    if (!priv->client_context)
+        return MI_FAILURE;
+
+    if (milter_client_context_add_receipt(priv->client_context, receipt, args))
+        return MI_SUCCESS;
+    else
+        return MI_FAILURE;
 }
 
 int
