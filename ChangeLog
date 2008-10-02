@@ -1,6 +1,9 @@
 2008-10-02  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter-core/milter-encoder.[ch], test/core/test-encoder.c:
+	milter_encoder_encode_reply_add_receipt() support parameters.
+
+	* milter-core/milter-encoder.[ch], test/core/test-encoder.c:
 	implement milter_encoder_encode_reply_add_receipt().
 
 	* libmilter/libmilter-compatible.c,

@@ -650,9 +650,12 @@ milter_encoder_encode_reply_change_header (MilterEncoder *encoder,
 void
 milter_encoder_encode_reply_add_receipt (MilterEncoder *encoder,
                                          gchar **packet, gsize *packet_size,
-                                         const gchar *receipt)
+                                         const gchar *receipt,
+                                         const gchar *parameters)
 {
     MilterEncoderPrivate *priv;
+    MilterReply reply;
+    gboolean have_parameter;
 
     if (receipt == NULL || receipt[0] == '\0') {
         *packet = NULL;
@@ -663,9 +666,18 @@ milter_encoder_encode_reply_add_receipt (MilterEncoder *encoder,
     priv = MILTER_ENCODER_GET_PRIVATE(encoder);
     g_string_truncate(priv->buffer, 0);
 
-    g_string_append_c(priv->buffer, MILTER_REPLY_ADD_RECEIPT);
+    have_parameter = parameters && parameters[0] != '\0';
+    if (have_parameter)
+        reply = MILTER_REPLY_ADD_RECEIPT_WITH_PARAMETERS;
+    else
+        reply = MILTER_REPLY_ADD_RECEIPT;
+    g_string_append_c(priv->buffer, reply);
     g_string_append(priv->buffer, receipt);
     g_string_append_c(priv->buffer, '\0');
+    if (have_parameter) {
+        g_string_append(priv->buffer, parameters);
+        g_string_append_c(priv->buffer, '\0');
+    }
     pack(priv->buffer);
 
     *packet = g_memdup(priv->buffer->str, priv->buffer->len);

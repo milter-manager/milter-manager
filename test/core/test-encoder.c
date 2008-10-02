@@ -57,12 +57,13 @@ void test_encode_reply_insert_header (gconstpointer data);
 void data_encode_reply_change_header (void);
 void test_encode_reply_change_header (gconstpointer data);
 void data_encode_reply_add_receipt (void);
-void test_encode_reply_add_receipt (gconstpointer);
+void test_encode_reply_add_receipt (gconstpointer data);
+void test_encode_reply_add_receipt_with_parameters (void);
 void test_encode_reply_replace_body (void);
 void test_encode_reply_replace_body_large (void);
 void test_encode_reply_progress (void);
 void data_encode_reply_quarantine (void);
-void test_encode_reply_quarantine (gconstpointer);
+void test_encode_reply_quarantine (gconstpointer data);
 
 static MilterEncoder *encoder;
 static GString *expected;
@@ -802,7 +803,26 @@ test_encode_reply_add_receipt (gconstpointer data)
     }
 
     milter_encoder_encode_reply_add_receipt(encoder, &actual, &actual_size,
-                                            receipt);
+                                            receipt, NULL);
+    cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
+}
+
+void
+test_encode_reply_add_receipt_with_parameters (void)
+{
+    const gchar receipt[] = "kou@localhost";
+    const gchar parameters[] = "XXX";
+    gsize actual_size = 0;
+
+    g_string_append(expected, "2");
+    g_string_append(expected, receipt);
+    g_string_append_c(expected, '\0');
+    g_string_append(expected, parameters);
+    g_string_append_c(expected, '\0');
+    pack(expected);
+
+    milter_encoder_encode_reply_add_receipt(encoder, &actual, &actual_size,
+                                            receipt, parameters);
     cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
 }
 

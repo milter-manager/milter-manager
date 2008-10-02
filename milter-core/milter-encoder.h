@@ -163,7 +163,8 @@ void             milter_encoder_encode_reply_add_receipt
                                                (MilterEncoder     *encoder,
                                                 gchar            **packet,
                                                 gsize             *packet_size,
-                                                const gchar       *receipt);
+                                                const gchar       *receipt,
+                                                const gchar       *parameters);
 void             milter_encoder_encode_reply_replace_body
                                                (MilterEncoder     *encoder,
                                                 gchar            **packet,
