@@ -45,14 +45,25 @@ static gboolean need_more = TRUE;
 typedef struct _MilterClientPrivate	MilterClientPrivate;
 struct _MilterClientPrivate
 {
-    gint server_fd;
+    gboolean running;
     struct sockaddr *address;
     socklen_t address_size;
     MilterClientContextSetupFunc context_setup_func;
     gpointer context_setup_user_data;
     MilterClientContextTeardownFunc context_teardown_func;
     gpointer context_teardown_user_data;
+    GList *process_data;
 };
+
+typedef struct _MilterClientProcessData
+{
+    gboolean done;
+    MilterClient *client;
+    MilterClientContext *context;
+    MilterWriter *writer;
+    GIOChannel *channel;
+    guint watch_id;
+} MilterClientProcessData;
 
 G_DEFINE_TYPE(MilterClient, milter_client, G_TYPE_OBJECT);
 
@@ -86,13 +97,30 @@ milter_client_init (MilterClient *client)
     MilterClientPrivate *priv;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
-    priv->server_fd = -1;
+    priv->running = FALSE;
     priv->address = NULL;
     priv->address_size = 0;
     priv->context_setup_func = NULL;
     priv->context_setup_user_data = NULL;
     priv->context_teardown_func = NULL;
     priv->context_teardown_user_data = NULL;
+    priv->process_data = NULL;
+}
+
+static void
+process_data_free (MilterClientProcessData *data)
+{
+    MilterClientPrivate *priv;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(data->client);
+    if (priv->context_teardown_func)
+        priv->context_teardown_func(data->context,
+                                    priv->context_teardown_user_data);
+    g_object_unref(data->context);
+    g_object_unref(data->writer);
+    g_io_channel_unref(data->channel);
+    g_free(data);
+    g_print("free\n");
 }
 
 static void
@@ -105,6 +133,12 @@ dispose (GObject *object)
     if (priv->address) {
         g_free(priv->address);
         priv->address = NULL;
+    }
+
+    if (priv->process_data) {
+        g_list_foreach(priv->process_data, (GFunc)process_data_free, NULL);
+        g_list_free(priv->process_data);
+        priv->process_data = NULL;
     }
 
     G_OBJECT_CLASS(milter_client_parent_class)->dispose(object);
@@ -218,11 +252,14 @@ feed_to_context (MilterClientContext *context, GIOChannel *channel)
 }
 
 static gboolean
-watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
+client_watch_func (GIOChannel *channel, GIOCondition condition, gpointer _data)
 {
-    MilterClientContext *context = data;
+    MilterClientProcessData *data = _data;
+    MilterClientContext *context;
     gboolean keep_callback = TRUE;
 
+    g_print("watch!\n");
+    context = data->context;
     if (condition & G_IO_IN ||
         condition & G_IO_PRI) {
         keep_callback = feed_to_context(context, channel);
@@ -255,9 +292,26 @@ watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
         keep_callback = FALSE;
     }
 
-    if (!keep_callback)
-        need_more = FALSE;
+    if (!keep_callback) {
+        data->done = TRUE;
+        g_print("done\n");
+    }
+
     return keep_callback;
+}
+
+static MilterStatus
+cb_close (MilterClientContext *context, gpointer _data)
+{
+    MilterClientProcessData *data = _data;
+
+    data->done = TRUE;
+    g_print("ID: %d\n", data->watch_id);
+    if (data->watch_id > 0)
+        g_source_remove(data->watch_id);
+    data->watch_id = -1;
+
+    return MILTER_STATUS_CONTINUE;
 }
 
 static void
@@ -266,6 +320,7 @@ process_client_channel (MilterClient *client, GIOChannel *channel)
     MilterClientPrivate *priv;
     MilterClientContext *context;
     MilterWriter *writer;
+    MilterClientProcessData *data;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
@@ -274,17 +329,91 @@ process_client_channel (MilterClient *client, GIOChannel *channel)
     milter_handler_set_writer(MILTER_HANDLER(context), writer);
     if (priv->context_setup_func)
         priv->context_setup_func(context, priv->context_setup_user_data);
-    g_io_add_watch(channel,
-                   G_IO_IN | G_IO_PRI |
-                   G_IO_ERR | G_IO_HUP | G_IO_NVAL,
-                   watch_func, context);
-    while (need_more) {
-        g_main_context_iteration(NULL, TRUE);
+
+    data = g_new(MilterClientProcessData, 1);
+    data->done = FALSE;
+    data->client = client;
+    data->context = context;
+    data->writer = writer;
+    data->channel = channel;
+
+    data->watch_id = g_io_add_watch(channel,
+                                    G_IO_IN | G_IO_PRI |
+                                    G_IO_ERR | G_IO_HUP | G_IO_NVAL,
+                                    client_watch_func, data);
+
+    g_signal_connect(context, "close", G_CALLBACK(cb_close), data);
+
+    priv->process_data = g_list_prepend(priv->process_data, data);
+}
+
+static gboolean
+accept_child (gint server_fd, MilterClient *client)
+{
+    gint client_fd;
+    GIOChannel *client_channel;
+
+    g_print("start!\n");
+    client_fd = accept(server_fd, NULL, NULL);
+    g_print("accept!\n");
+
+    client_channel = g_io_channel_unix_new(client_fd);
+    g_io_channel_set_encoding(client_channel, NULL, NULL);
+    g_io_channel_set_flags(client_channel,
+                           G_IO_FLAG_NONBLOCK |
+                           G_IO_FLAG_IS_READABLE |
+                           G_IO_FLAG_IS_WRITEABLE,
+                           NULL);
+    g_io_channel_set_close_on_unref(client_channel, TRUE);
+    process_client_channel(client, client_channel);
+
+    return TRUE;
+}
+
+static gboolean
+server_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
+{
+    MilterClient *client = data;
+    MilterClientPrivate *priv;
+    gboolean keep_callback = TRUE;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    if (condition & G_IO_IN ||
+        condition & G_IO_PRI) {
+        keep_callback = accept_child(g_io_channel_unix_get_fd(channel),
+                                     client);
     }
-    if (priv->context_teardown_func)
-        priv->context_teardown_func(context, priv->context_teardown_user_data);
-    g_object_unref(context);
-    g_object_unref(writer);
+
+    if (condition & G_IO_ERR ||
+        condition & G_IO_HUP ||
+        condition & G_IO_NVAL) {
+        GArray *messages;
+        gchar *message;
+
+        g_print("server error!\n");
+        messages = g_array_new(TRUE, TRUE, sizeof(gchar *));
+        if (condition & G_IO_ERR) {
+            message = "Error";
+            g_array_append_val(messages, message);
+        }
+        if (condition & G_IO_HUP) {
+            message = "Hung up";
+            g_array_append_val(messages, message);
+        }
+        if (condition & G_IO_NVAL) {
+            message = "Invalid request";
+            g_array_append_val(messages, message);
+        }
+        message = g_strjoinv(" | ", (gchar **)(messages->data));
+        g_print("%s\n", message);
+        g_free(message);
+        g_array_free(messages, TRUE);
+        keep_callback = FALSE;
+    }
+
+    if (!keep_callback)
+        priv->running = FALSE;
+    return keep_callback;
 }
 
 gboolean
@@ -292,57 +421,58 @@ milter_client_main (MilterClient *client)
 {
     MilterClientPrivate *priv;
     gboolean reuse_address = TRUE;
-    gint client_fd;
+    GIOChannel *server_channel;
+    gint server_fd;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
-    priv->server_fd = socket(PF_INET, SOCK_STREAM, 0);
-    setsockopt(priv->server_fd, SOL_SOCKET, SO_REUSEADDR,
+    server_fd = socket(PF_INET, SOCK_STREAM, 0);
+    setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR,
                &reuse_address, sizeof(reuse_address));
 
     if (!priv->address)
         milter_client_set_connection_spec(client, "inet:11111", NULL);
 
-    if (bind(priv->server_fd, priv->address, priv->address_size) == -1) {
+    if (bind(server_fd, priv->address, priv->address_size) == -1) {
         g_print("failed to bind(): %s\n", strerror(errno));
-        close(priv->server_fd);
+        close(server_fd);
         return FALSE;
     }
 
-    if (listen(priv->server_fd, 5) == -1) {
+    if (listen(server_fd, 5) == -1) {
         g_print("failed to listen(): %s\n", strerror(errno));
-        close(priv->server_fd);
+        close(server_fd);
         return FALSE;
     };
 
-    {
-        struct sockaddr *client_address;
-        socklen_t client_address_size;
-        GIOChannel *client_channel;
+    server_channel = g_io_channel_unix_new(server_fd);
+    g_io_channel_set_flags(server_channel, G_IO_FLAG_IS_READABLE, NULL);
+    g_io_channel_set_close_on_unref(server_channel, TRUE);
+    g_io_add_watch(server_channel,
+                   G_IO_IN | G_IO_PRI |
+                   G_IO_ERR | G_IO_HUP | G_IO_NVAL,
+                   server_watch_func, client);
+    priv->running = TRUE;
+    while (priv->running) {
+        GList *node;
 
-        g_print("start!\n");
-        client_address = g_malloc(priv->address_size);
-        client_address_size = priv->address_size;
-        client_fd = accept(priv->server_fd,
-                           client_address,
-                           &client_address_size);
-        g_print("accept!\n");
+        g_print("loop\n");
+        g_main_context_iteration(NULL, TRUE);
+        g_print("loop done\n");
 
-        client_channel = g_io_channel_unix_new(client_fd);
-        g_io_channel_set_encoding(client_channel, NULL, NULL);
-        g_io_channel_set_flags(client_channel,
-                               G_IO_FLAG_NONBLOCK |
-                               G_IO_FLAG_IS_READABLE |
-                               G_IO_FLAG_IS_WRITEABLE,
-                               NULL);
-        g_io_channel_set_close_on_unref(client_channel, TRUE);
-        process_client_channel(client, client_channel);
-        g_io_channel_unref(client_channel);
-        g_print("done\n");
+        for (node = priv->process_data; node; node = g_list_next(node)) {
+            MilterClientProcessData *data = node->data;
 
-        g_free(client_address);
+            if (data->done) {
+                g_print("delete\n");
+                process_data_free(data);
+                node = g_list_delete_link(priv->process_data, node);
+                g_print("%p\n", node);
+                priv->process_data = node;
+            }
+        }
     }
-
-    close(priv->server_fd);
+    g_print("finish\n");
+    g_io_channel_unref(server_channel);
 
     return TRUE;
 }

@@ -1,5 +1,8 @@
 2008-10-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-client/milter-client.c: implement accept loop. It just
+	works but too dirty!!! It should be re-implemented later!!!
+
 	* *.pc.in: fix include path.
 
 	* configure.ac, milter-server.pc.in: add milter-server.pc.in.
