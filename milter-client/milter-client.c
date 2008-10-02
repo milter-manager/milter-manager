@@ -35,8 +35,6 @@
 #include "milter-client.h"
 #include "milter-client-marshalers.h"
 
-static gboolean need_more = TRUE;
-
 #define MILTER_CLIENT_GET_PRIVATE(obj)                  \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                 \
                                  MILTER_CLIENT_TYPE,    \
@@ -223,7 +221,6 @@ feed_to_context (MilterClientContext *context, GIOChannel *channel)
                                          &length, &error);
         if (status == G_IO_STATUS_EOF) {
             eof = TRUE;
-            need_more = FALSE;
         }
 
         if (error) {
