@@ -56,6 +56,8 @@ void data_encode_reply_insert_header (void);
 void test_encode_reply_insert_header (gconstpointer data);
 void data_encode_reply_change_header (void);
 void test_encode_reply_change_header (gconstpointer data);
+void data_encode_reply_change_from (void);
+void test_encode_reply_change_from (gconstpointer data);
 void data_encode_reply_add_receipt (void);
 void test_encode_reply_add_receipt (gconstpointer data);
 void test_encode_reply_add_receipt_with_parameters (void);
@@ -778,48 +780,54 @@ test_encode_reply_change_header (gconstpointer data)
 void
 data_encode_reply_add_receipt (void)
 {
-    cut_add_data("valid",
-                 g_strdup("kou@localhost"),
-                 g_free,
+    cut_add_data("receipt",
+                 g_strsplit("kou@localhost", " ", 2),
+                 g_strfreev,
+                 "receipt - parameters",
+                 g_strsplit("kou@localhost XXX", " ", 2),
+                 g_strfreev,
                  "NULL",
                  NULL,
                  NULL,
-                 "empty",
-                 g_strdup(""),
-                 g_free);
+                 "empty receipt",
+                 g_strsplit("", " ", 2),
+                 g_strfreev,
+                 "empty receipt - parameters",
+                 g_strsplit(" XXX", " ", 2),
+                 g_strfreev,
+                 "NULL receipt - parameters",
+                 g_strsplit("(null) XXX", " ", 2),
+                 g_strfreev);
 }
 
 void
 test_encode_reply_add_receipt (gconstpointer data)
 {
-    const gchar *receipt = data;
+    gchar * const *test_data = data;
+    gchar *receipt = NULL;
+    gchar *parameters = NULL;
     gsize actual_size = 0;
+
+    if (test_data && test_data[0]) {
+        receipt = test_data[0];
+        parameters = test_data[1];
+    }
+    if (receipt && g_str_equal(receipt, "(null)"))
+        receipt = NULL;
 
     if (receipt && receipt[0] != '\0') {
-        g_string_append(expected, "+");
+        if (parameters)
+            g_string_append(expected, "2");
+        else
+            g_string_append(expected, "+");
         g_string_append(expected, receipt);
         g_string_append_c(expected, '\0');
+        if (parameters) {
+            g_string_append(expected, parameters);
+            g_string_append_c(expected, '\0');
+        }
         pack(expected);
     }
-
-    milter_encoder_encode_reply_add_receipt(encoder, &actual, &actual_size,
-                                            receipt, NULL);
-    cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
-}
-
-void
-test_encode_reply_add_receipt_with_parameters (void)
-{
-    const gchar receipt[] = "kou@localhost";
-    const gchar parameters[] = "XXX";
-    gsize actual_size = 0;
-
-    g_string_append(expected, "2");
-    g_string_append(expected, receipt);
-    g_string_append_c(expected, '\0');
-    g_string_append(expected, parameters);
-    g_string_append_c(expected, '\0');
-    pack(expected);
 
     milter_encoder_encode_reply_add_receipt(encoder, &actual, &actual_size,
                                             receipt, parameters);
