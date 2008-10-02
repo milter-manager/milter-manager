@@ -13,8 +13,7 @@ libmilter_include_HEADERS =	\
 	mfapi.h			\
 	mfdef.h
 
-libmilter_libdir=$(pkglibdir)/libmilter
-libmilter_lib_LTLIBRARIES =		\
+pkglib_LTLIBRARIES =		\
 	libmilter.la
 
 libmilter_la_SOURCES =		\
