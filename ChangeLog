@@ -1,5 +1,7 @@
 2008-10-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* configure.ac: _ -> -.
+
 	* libmilter/libmilter-compatible.c,
 	test/libmilter/test-smfi-context.c: implement smfi_delrcpt().
 

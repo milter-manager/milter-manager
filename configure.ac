@@ -9,7 +9,7 @@ m4_define([milter_manager_version_micro], [1])
 m4_define([milter_manager_version],
           [milter_manager_version_major.milter_manager_version_minor.milter_manager_version_micro])
 
-AC_INIT(milter_manager, [milter_manager_version], kou@cozmixng.org)
+AC_INIT(milter-manager, [milter_manager_version], kou@cozmixng.org)
 AC_CONFIG_AUX_DIR([config])
 # AC_CONFIG_MACRO_DIR([m4macros])
 
