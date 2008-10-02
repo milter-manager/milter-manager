@@ -667,7 +667,7 @@ milter_encoder_encode_reply_change_from (MilterEncoder *encoder,
     g_string_append_c(priv->buffer, MILTER_REPLY_CHANGE_FROM);
     g_string_append(priv->buffer, from);
     g_string_append_c(priv->buffer, '\0');
-    if (parameters) {
+    if (parameters && parameters != '\0') {
         g_string_append(priv->buffer, parameters);
         g_string_append_c(priv->buffer, '\0');
     }

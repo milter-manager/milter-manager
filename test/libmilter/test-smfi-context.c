@@ -33,8 +33,11 @@ void test_getsymval (void);
 void test_addheader (void);
 void test_chgheader (void);
 void test_insheader (void);
+void data_cfgfrom (void);
+void test_cfgfrom (gconstpointer data);
 void test_addrcpt (void);
 void test_addrcpt_par (void);
+void test_delrcpt (void);
 void test_progress (void);
 void test_quarantine (void);
 void test_replacebody (void);
@@ -63,8 +66,16 @@ static gchar *header_name;
 static gchar *header_value;
 static gint header_index;
 
+static gboolean do_change_from;
+static gboolean do_add_receipt;
+static gboolean do_add_receipt_with_parameters;
+static gboolean do_delete_receipt;
+
+static gchar *change_from;
+static gchar *change_from_parameters;
 static gchar *add_receipt;
 static gchar *add_receipt_parameters;
+static gchar *delete_receipt;
 
 static GString *body;
 static int replace_body_result;
@@ -129,12 +140,17 @@ xxfi_eom (SMFICTX *context)
     if (change_header)
         smfi_chgheader(context, header_name, header_index, header_value);
 
-    if (add_receipt) {
-        if (add_receipt_parameters)
-            smfi_addrcpt_par(context, add_receipt, add_receipt_parameters);
-        else
-            smfi_addrcpt(context, add_receipt);
-    }
+    if (do_change_from)
+        smfi_chgfrom(context, change_from, change_from_parameters);
+
+    if (do_add_receipt)
+        smfi_addrcpt(context, add_receipt);
+
+    if (do_add_receipt_with_parameters)
+        smfi_addrcpt_par(context, add_receipt, add_receipt_parameters);
+
+    if (do_delete_receipt)
+        smfi_delrcpt(context, delete_receipt);
 
     if (body)
         replace_body_result = smfi_replacebody(context,
@@ -232,8 +248,16 @@ setup (void)
     macro_name = NULL;
     macro_value = NULL;
 
+    do_change_from = FALSE;
+    do_add_receipt = FALSE;
+    do_add_receipt_with_parameters = FALSE;
+    do_delete_receipt = FALSE;
+
+    change_from = NULL;
+    change_from_parameters = NULL;
     add_receipt = NULL;
     add_receipt_parameters = NULL;
+    delete_receipt = NULL;
 
     body = NULL;
     replace_body_result = 0;
@@ -278,10 +302,16 @@ teardown (void)
     if (macro_value)
         g_free(macro_value);
 
+    if (change_from)
+        g_free(change_from);
+    if (change_from_parameters)
+        g_free(change_from_parameters);
     if (add_receipt)
         g_free(add_receipt);
     if (add_receipt_parameters)
         g_free(add_receipt_parameters);
+    if (delete_receipt)
+        g_free(delete_receipt);
 
     if (body)
         g_string_free(body, TRUE);
@@ -421,8 +451,70 @@ test_chgheader (void)
 }
 
 void
+data_cfgfrom (void)
+{
+    cut_add_data("from",
+                 g_strsplit("kou@localhost", " ", 2),
+                 g_strfreev,
+                 "from - parameters",
+                 g_strsplit("kou@localhost XXX", " ", 2),
+                 g_strfreev,
+                 "NULL",
+                 NULL,
+                 NULL,
+                 "empty from - parameters",
+                 g_strsplit("", " ", 2),
+                 g_strfreev,
+                 "empty from - parameters",
+                 g_strsplit(" XXX", " ", 2),
+                 g_strfreev,
+                 "null from - parameters",
+                 g_strsplit("(null) XXX", " ", 2),
+                 g_strfreev);
+}
+
+void
+test_cfgfrom (gconstpointer data)
+{
+    gchar * const *test_data = data;
+
+    do_change_from = TRUE;
+    if (test_data && test_data[0]) {
+        change_from = g_strdup(test_data[0]);
+        change_from_parameters = g_strdup(test_data[1]);
+    }
+    if (change_from && g_str_equal(change_from, "(null)")) {
+        g_free(change_from);
+        change_from = NULL;
+    }
+
+    milter_encoder_encode_end_of_message(encoder, &packet, &packet_size,
+                                         NULL, 0);
+    gcut_assert_error(feed());
+
+    expected_output = g_string_new(NULL);
+
+    if (change_from && change_from[0] != '\0') {
+        packet_free();
+        milter_encoder_encode_reply_change_from(encoder, &packet, &packet_size,
+                                                change_from,
+                                                change_from_parameters);
+        g_string_append_len(expected_output, packet, packet_size);
+    }
+
+    packet_free();
+    milter_encoder_encode_reply_continue(encoder, &packet, &packet_size);
+    g_string_append_len(expected_output, packet, packet_size);
+
+    cut_assert_equal_memory(expected_output->str, expected_output->len,
+                            output->str, output->len);
+}
+
+void
 test_addrcpt (void)
 {
+    do_add_receipt = TRUE;
+
     add_receipt = g_strdup("kou@localhost");
     milter_encoder_encode_end_of_message(encoder, &packet, &packet_size,
                                          NULL, 0);
@@ -447,6 +539,8 @@ test_addrcpt (void)
 void
 test_addrcpt_par (void)
 {
+    do_add_receipt_with_parameters = TRUE;
+
     add_receipt = g_strdup("kou@localhost");
     add_receipt_parameters = g_strdup("XXX");
     milter_encoder_encode_end_of_message(encoder, &packet, &packet_size,
