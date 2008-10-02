@@ -58,6 +58,7 @@ void data_encode_reply_change_header (void);
 void test_encode_reply_change_header (gconstpointer data);
 void test_encode_reply_replace_body (void);
 void test_encode_reply_replace_body_large (void);
+void test_encode_reply_progress (void);
 
 static MilterEncoder *encoder;
 static GString *expected;
@@ -819,6 +820,18 @@ test_encode_reply_replace_body_large (void)
     cut_assert_operator_int(body_size, >, MILTER_CHUNK_SIZE);
     cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
     cut_assert_equal_uint(MILTER_CHUNK_SIZE, written_size);
+}
+
+void
+test_encode_reply_progress (void)
+{
+    gsize actual_size = 0;
+
+    g_string_append(expected, "p");
+    pack(expected);
+
+    milter_encoder_encode_reply_progress(encoder, &actual, &actual_size);
+    cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
 }
 
 

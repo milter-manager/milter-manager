@@ -166,6 +166,10 @@ void             milter_encoder_encode_reply_replace_body
                                                 const gchar       *body,
                                                 gsize              body_size,
                                                 gsize             *packed_size);
+void             milter_encoder_encode_reply_progress
+                                               (MilterEncoder     *encoder,
+                                                gchar            **packet,
+                                                gsize             *packet_size);
 
 G_END_DECLS
 
