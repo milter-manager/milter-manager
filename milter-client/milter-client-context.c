@@ -1181,8 +1181,6 @@ cb_decoder_quit (MilterDecoder *decoder, gpointer user_data)
     g_signal_emit(context, signals[CLOSE], 0, &status);
     if (status == MILTER_STATUS_DEFAULT)
         status = MILTER_STATUS_CONTINUE;
-
-    reply(context, status);
 }
 
 static void
@@ -1194,8 +1192,6 @@ cb_decoder_abort (MilterDecoder *decoder, gpointer user_data)
     g_signal_emit(context, signals[ABORT], 0, &status);
     if (status == MILTER_STATUS_DEFAULT)
         status = MILTER_STATUS_CONTINUE;
-
-    reply(context, status);
 }
 
 
