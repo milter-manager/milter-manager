@@ -2,6 +2,10 @@
 
 	* milter-client/milter-client-context.[ch],
 	test/client/test-client-context-address.c: implement
+	milter_client_context_delete_receipt().
+
+	* milter-client/milter-client-context.[ch],
+	test/client/test-client-context-address.c: implement
 	milter_client_context_change_from().
 
 	* milter-core/milter-encoder.[ch], test/core/test-encoder.c:

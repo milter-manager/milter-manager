@@ -842,6 +842,20 @@ milter_client_context_add_receipt (MilterClientContext *context,
 }
 
 gboolean
+milter_client_context_delete_receipt (MilterClientContext *context,
+                                      const gchar *receipt)
+{
+    MilterEncoder *encoder;
+    gchar *packet = NULL;
+    gsize packet_size;
+
+    encoder = milter_handler_get_encoder(MILTER_HANDLER(context));
+    milter_encoder_encode_reply_delete_receipt(encoder, &packet, &packet_size,
+                                               receipt);
+    return write_packet(context, packet, packet_size);
+}
+
+gboolean
 milter_client_context_replace_body (MilterClientContext *context,
                                     const gchar *body, gsize body_size)
 {

@@ -126,6 +126,8 @@ gboolean             milter_client_context_change_from       (MilterClientContex
 gboolean             milter_client_context_add_receipt       (MilterClientContext *context,
                                                               const gchar *receipt,
                                                               const gchar *parameters);
+gboolean             milter_client_context_delete_receipt    (MilterClientContext *context,
+                                                              const gchar *receipt);
 gboolean             milter_client_context_replace_body      (MilterClientContext *context,
                                                               const gchar *body,
                                                               gsize        body_size);

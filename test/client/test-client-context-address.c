@@ -32,6 +32,8 @@ void data_change_from (void);
 void test_change_from (gconstpointer data);
 void data_add_receipt (void);
 void test_add_receipt (gconstpointer data);
+void data_delete_receipt (void);
+void test_delete_receipt (gconstpointer data);
 
 static MilterClientContext *context;
 static MilterEncoder *encoder;
@@ -259,6 +261,41 @@ test_add_receipt (gconstpointer data)
         milter_encoder_encode_reply_add_receipt(encoder, &packet, &packet_size,
                                                 add_receipt,
                                                 add_receipt_parameters);
+    cut_assert_equal_memory(packet, packet_size,
+                            output->str, output->len);
+}
+
+void
+data_delete_receipt (void)
+{
+    cut_add_data("valid",
+                 g_strdup("kou@localhost"),
+                 g_free,
+                 "NULL",
+                 NULL,
+                 NULL,
+                 "empty",
+                 g_strdup(""),
+                 g_free);
+}
+
+void
+test_delete_receipt (gconstpointer data)
+{
+    const gchar *receipt = data;
+
+    do_delete_receipt = TRUE;
+
+    delete_receipt = g_strdup(receipt);
+    milter_encoder_encode_end_of_message(encoder, &packet, &packet_size,
+                                         NULL, 0);
+    gcut_assert_error(feed());
+
+    packet_free();
+    if (delete_receipt)
+        milter_encoder_encode_reply_delete_receipt(encoder,
+                                                   &packet, &packet_size,
+                                                   delete_receipt);
     cut_assert_equal_memory(packet, packet_size,
                             output->str, output->len);
 }
