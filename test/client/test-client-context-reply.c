@@ -29,6 +29,7 @@
 #undef shutdown
 
 void test_progress (void);
+void test_quarantine (void);
 
 static MilterClientContext *context;
 static MilterEncoder *encoder;
@@ -40,6 +41,8 @@ static gchar *packet;
 static gsize packet_size;
 
 static gboolean send_progress;
+
+static gchar *quarantine_reason;
 
 static MilterStatus
 cb_negotiate (MilterClientContext *context, MilterOption *option,
@@ -104,6 +107,11 @@ cb_body (MilterClientContext *context, const gchar *chunk, gsize size,
 static MilterStatus
 cb_end_of_message (MilterClientContext *context, gpointer user_data)
 {
+    if (quarantine_reason) {
+        milter_client_context_quarantine(context, quarantine_reason);
+        milter_handler_set_writer(MILTER_HANDLER(context), NULL);
+    }
+
     return MILTER_STATUS_CONTINUE;
 }
 
@@ -214,6 +222,21 @@ test_progress (void)
 
     packet_free();
     milter_encoder_encode_reply_progress(encoder, &packet, &packet_size);
+    cut_assert_equal_memory(packet, packet_size,
+                            output->str, output->len);
+}
+
+void
+test_quarantine (void)
+{
+    quarantine_reason = g_strdup("virus mail!");
+    milter_encoder_encode_end_of_message(encoder, &packet, &packet_size,
+                                         NULL, 0);
+    gcut_assert_error(feed());
+
+    packet_free();
+    milter_encoder_encode_reply_quarantine(encoder, &packet, &packet_size,
+                                           quarantine_reason);
     cut_assert_equal_memory(packet, packet_size,
                             output->str, output->len);
 }

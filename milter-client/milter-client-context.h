@@ -124,6 +124,8 @@ gboolean             milter_client_context_replace_body      (MilterClientContex
                                                               const gchar *body,
                                                               gsize        body_size);
 gboolean             milter_client_context_progress          (MilterClientContext *context);
+gboolean             milter_client_context_quarantine        (MilterClientContext *context,
+                                                              const gchar *reason);
 
 
 G_END_DECLS

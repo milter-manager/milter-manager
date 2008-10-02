@@ -853,6 +853,21 @@ milter_client_context_progress (MilterClientContext *context)
     return write_packet(context, packet, packet_size);
 }
 
+gboolean
+milter_client_context_quarantine (MilterClientContext *context,
+                                  const gchar *reason)
+{
+    MilterEncoder *encoder;
+    gchar *packet = NULL;
+    gsize packet_size;
+
+    encoder = milter_handler_get_encoder(MILTER_HANDLER(context));
+    milter_encoder_encode_reply_quarantine(encoder, &packet, &packet_size,
+                                           reason);
+
+    return write_packet(context, packet, packet_size);
+}
+
 static gboolean
 status_accumulator (GSignalInvocationHint *hint,
                     GValue *return_accumulator,
