@@ -583,7 +583,16 @@ smfi_delrcpt (SMFICTX *context, char *receipt)
 int
 smfi_progress (SMFICTX *context)
 {
-    return MI_SUCCESS;
+    SmfiContextPrivate *priv;
+
+    priv = SMFI_CONTEXT_GET_PRIVATE(context);
+    if (!priv->client_context)
+        return MI_FAILURE;
+
+    if (milter_client_context_progress(priv->client_context))
+        return MI_SUCCESS;
+    else
+        return MI_FAILURE;
 }
 
 int

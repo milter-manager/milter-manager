@@ -33,6 +33,7 @@ void test_getsymval (void);
 void test_addheader (void);
 void test_chgheader (void);
 void test_insheader (void);
+void test_progress (void);
 void test_replacebody (void);
 
 static SmfiContext *context;
@@ -45,6 +46,8 @@ static GString *expected_output;
 
 static gchar *packet;
 static gsize packet_size;
+
+static gboolean send_progress;
 
 static gchar *macro_name;
 static gchar *macro_value;
@@ -69,6 +72,9 @@ xxfi_connect (SMFICTX *context, char *host_name, _SOCK_ADDR *address)
 static sfsistat
 xxfi_helo (SMFICTX *context, char *fqdn)
 {
+    if (send_progress)
+        smfi_progress(context);
+
     return SMFIS_CONTINUE;
 }
 
@@ -194,6 +200,8 @@ setup (void)
 
     packet = NULL;
     packet_size = 0;
+
+    send_progress = FALSE;
 
     add_header = FALSE;
     insert_header = FALSE;
@@ -371,6 +379,30 @@ test_chgheader (void)
                                               header_name,
                                               header_index,
                                               header_value);
+    g_string_append_len(expected_output, packet, packet_size);
+
+    packet_free();
+    milter_encoder_encode_reply_continue(encoder, &packet, &packet_size);
+    g_string_append_len(expected_output, packet, packet_size);
+
+    cut_assert_equal_memory(expected_output->str, expected_output->len,
+                            output->str, output->len);
+}
+
+void
+test_progress (void)
+{
+    const gchar fqdn[] = "delian";
+
+    send_progress = TRUE;
+    milter_encoder_encode_helo(encoder, &packet, &packet_size, fqdn);
+    gcut_assert_error(feed());
+
+
+    expected_output = g_string_new(NULL);
+
+    packet_free();
+    milter_encoder_encode_reply_progress(encoder, &packet, &packet_size);
     g_string_append_len(expected_output, packet, packet_size);
 
     packet_free();
