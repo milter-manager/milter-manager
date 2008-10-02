@@ -37,7 +37,8 @@ void data_cfgfrom (void);
 void test_cfgfrom (gconstpointer data);
 void test_addrcpt (void);
 void test_addrcpt_par (void);
-void test_delrcpt (void);
+void data_delrcpt (void);
+void test_delrcpt (gconstpointer data);
 void test_progress (void);
 void test_quarantine (void);
 void test_replacebody (void);
@@ -554,6 +555,49 @@ test_addrcpt_par (void)
     milter_encoder_encode_reply_add_receipt(encoder, &packet, &packet_size,
                                             add_receipt, add_receipt_parameters);
     g_string_append_len(expected_output, packet, packet_size);
+
+    packet_free();
+    milter_encoder_encode_reply_continue(encoder, &packet, &packet_size);
+    g_string_append_len(expected_output, packet, packet_size);
+
+    cut_assert_equal_memory(expected_output->str, expected_output->len,
+                            output->str, output->len);
+}
+
+void
+data_delrcpt (void)
+{
+    cut_add_data("receipt",
+                 g_strdup("kou@localhost"),
+                 g_free,
+                 "NULL",
+                 NULL,
+                 NULL,
+                 "empty",
+                 g_strdup(""),
+                 g_free);
+}
+
+void
+test_delrcpt (gconstpointer data)
+{
+    const gchar *test_data = data;
+
+    do_delete_receipt = TRUE;
+    delete_receipt = g_strdup(test_data);
+    milter_encoder_encode_end_of_message(encoder, &packet, &packet_size,
+                                         NULL, 0);
+    gcut_assert_error(feed());
+
+    expected_output = g_string_new(NULL);
+
+    if (delete_receipt && delete_receipt[0] != '\0') {
+        packet_free();
+        milter_encoder_encode_reply_delete_receipt(encoder,
+                                                   &packet, &packet_size,
+                                                   delete_receipt);
+        g_string_append_len(expected_output, packet, packet_size);
+    }
 
     packet_free();
     milter_encoder_encode_reply_continue(encoder, &packet, &packet_size);

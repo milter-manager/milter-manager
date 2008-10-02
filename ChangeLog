@@ -1,6 +1,9 @@
 2008-10-02  Kouhei Sutou  <kou@cozmixng.org>
 
 	* libmilter/libmilter-compatible.c,
+	test/libmilter/test-smfi-context.c: implement smfi_delrcpt().
+
+	* libmilter/libmilter-compatible.c,
 	test/libmilter/test-smfi-context.c: implement smfi_chgfrom().
 
 	* milter-client/milter-client-context.[ch],
