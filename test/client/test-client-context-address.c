@@ -28,6 +28,8 @@
 #include <milter-client.h>
 #undef shutdown
 
+void data_change_from (void);
+void test_change_from (gconstpointer data);
 void data_add_receipt (void);
 void test_add_receipt (gconstpointer data);
 
@@ -40,6 +42,10 @@ static MilterWriter *writer;
 static gchar *packet;
 static gsize packet_size;
 
+static gboolean do_change_from;
+static gboolean do_add_receipt;
+static gboolean do_delete_receipt;
+
 static gchar *change_from;
 static gchar *change_from_parameters;
 static gchar *add_receipt;
@@ -49,19 +55,19 @@ static gchar *delete_receipt;
 static MilterStatus
 cb_end_of_message (MilterClientContext *context, gpointer user_data)
 {
-    if (change_from) {
+    if (do_change_from) {
         milter_client_context_change_from(context,
                                           change_from, change_from_parameters);
         milter_handler_set_writer(MILTER_HANDLER(context), NULL);
     }
 
-    if (add_receipt) {
+    if (do_add_receipt) {
         milter_client_context_add_receipt(context,
                                           add_receipt, add_receipt_parameters);
         milter_handler_set_writer(MILTER_HANDLER(context), NULL);
     }
 
-    if (delete_receipt) {
+    if (do_delete_receipt) {
         milter_client_context_delete_receipt(context, delete_receipt);
         milter_handler_set_writer(MILTER_HANDLER(context), NULL);
     }
@@ -93,6 +99,10 @@ setup (void)
     encoder = milter_encoder_new();
     packet = NULL;
     packet_size = 0;
+
+    do_change_from = FALSE;
+    do_add_receipt = FALSE;
+    do_delete_receipt = FALSE;
 
     change_from = NULL;
     change_from_parameters = NULL;
@@ -176,6 +186,45 @@ address_test_data_free (AddressTestData *data)
 }
 
 void
+data_change_from (void)
+{
+    cut_add_data("from",
+                 address_test_data_new("kou@localhost", NULL),
+                 address_test_data_free,
+                 "from - parameters",
+                 address_test_data_new("kou@localhost", "XXX"),
+                 address_test_data_free,
+                 "no from",
+                 address_test_data_new(NULL, NULL),
+                 address_test_data_free,
+                 "no from - parameters",
+                 address_test_data_new(NULL, "XXX"),
+                 address_test_data_free);
+}
+
+void
+test_change_from (gconstpointer data)
+{
+    const AddressTestData *test_data = data;
+
+    do_change_from = TRUE;
+
+    change_from = g_strdup(test_data->address);
+    change_from_parameters = g_strdup(test_data->parameters);
+    milter_encoder_encode_end_of_message(encoder, &packet, &packet_size,
+                                         NULL, 0);
+    gcut_assert_error(feed());
+
+    packet_free();
+    if (change_from)
+        milter_encoder_encode_reply_change_from(encoder, &packet, &packet_size,
+                                                change_from,
+                                                change_from_parameters);
+    cut_assert_equal_memory(packet, packet_size,
+                            output->str, output->len);
+}
+
+void
 data_add_receipt (void)
 {
     cut_add_data("receipt",
@@ -197,6 +246,8 @@ test_add_receipt (gconstpointer data)
 {
     const AddressTestData *test_data = data;
 
+    do_add_receipt = TRUE;
+
     add_receipt = g_strdup(test_data->address);
     add_receipt_parameters = g_strdup(test_data->parameters);
     milter_encoder_encode_end_of_message(encoder, &packet, &packet_size,
@@ -208,8 +259,6 @@ test_add_receipt (gconstpointer data)
         milter_encoder_encode_reply_add_receipt(encoder, &packet, &packet_size,
                                                 add_receipt,
                                                 add_receipt_parameters);
-    else
-        milter_encoder_encode_reply_continue(encoder, &packet, &packet_size);
     cut_assert_equal_memory(packet, packet_size,
                             output->str, output->len);
 }

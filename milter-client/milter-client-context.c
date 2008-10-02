@@ -812,6 +812,21 @@ milter_client_context_remove_header (MilterClientContext *context,
 }
 
 gboolean
+milter_client_context_change_from (MilterClientContext *context,
+                                   const gchar *from,
+                                   const gchar *parameters)
+{
+    MilterEncoder *encoder;
+    gchar *packet = NULL;
+    gsize packet_size;
+
+    encoder = milter_handler_get_encoder(MILTER_HANDLER(context));
+    milter_encoder_encode_reply_change_from(encoder, &packet, &packet_size,
+                                            from, parameters);
+    return write_packet(context, packet, packet_size);
+}
+
+gboolean
 milter_client_context_add_receipt (MilterClientContext *context,
                                    const gchar *receipt,
                                    const gchar *parameters)
