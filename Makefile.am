@@ -5,6 +5,13 @@ SUBDIRS =		\
 	libmilter	\
 	test
 
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = 		\
+	milter-core.pc		\
+	milter-client.pc	\
+	milter-server.pc	\
+	libmilter.pc
+
 EXTRA_DIST =		\
 	autogen.sh
 
