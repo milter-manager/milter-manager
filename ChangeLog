@@ -1,6 +1,9 @@
 2008-10-02  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter-core/milter-encoder.[ch], test/core/test-encoder.c:
+	implement milter_encoder_encode_reply_delete_event().
+
+	* milter-core/milter-encoder.[ch], test/core/test-encoder.c:
 	implement milter_encoder_encode_reply_change_from().
 
 	* libmilter/libmilter-compatible.c,

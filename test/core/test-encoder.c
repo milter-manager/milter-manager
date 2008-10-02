@@ -60,7 +60,8 @@ void data_encode_reply_change_from (void);
 void test_encode_reply_change_from (gconstpointer data);
 void data_encode_reply_add_receipt (void);
 void test_encode_reply_add_receipt (gconstpointer data);
-void test_encode_reply_add_receipt_with_parameters (void);
+void data_encode_reply_delete_receipt (void);
+void test_encode_reply_delete_receipt (gconstpointer data);
 void test_encode_reply_replace_body (void);
 void test_encode_reply_replace_body_large (void);
 void test_encode_reply_progress (void);
@@ -885,6 +886,38 @@ test_encode_reply_add_receipt (gconstpointer data)
 
     milter_encoder_encode_reply_add_receipt(encoder, &actual, &actual_size,
                                             receipt, parameters);
+    cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
+}
+
+void
+data_encode_reply_delete_receipt (void)
+{
+    cut_add_data("receipt",
+                 g_strdup("kou@localhost"),
+                 g_free,
+                 "NULL",
+                 NULL,
+                 NULL,
+                 "empty",
+                 g_strdup(""),
+                 g_free);
+}
+
+void
+test_encode_reply_delete_receipt (gconstpointer data)
+{
+    const gchar *receipt = data;
+    gsize actual_size = 0;
+
+    if (receipt && receipt[0] != '\0') {
+        g_string_append(expected, "-");
+        g_string_append(expected, receipt);
+        g_string_append_c(expected, '\0');
+        pack(expected);
+    }
+
+    milter_encoder_encode_reply_delete_receipt(encoder, &actual, &actual_size,
+                                               receipt);
     cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
 }
 
