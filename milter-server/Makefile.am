@@ -27,7 +27,7 @@ MAINTAINERCLEANFILES =			\
 BUILT_SOURCES = $(enum_sources)
 
 pkginclude_HEADERS =	\
-	milter-server-context.h
+	milter-server.h
 
 milter_server_includedir=$(pkgincludedir)/milter-server
 milter_server_include_HEADERS =		\
