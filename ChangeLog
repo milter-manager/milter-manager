@@ -1,5 +1,7 @@
 2008-10-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-core/milter-writer.c: remove needless NULL check.
+
 	* milter-client/milter-client.c: remove needless variable.
 
 	* milter-client/milter-client-context.c: don't reply on close and
