@@ -51,32 +51,6 @@ struct _MilterClientContext
 struct _MilterClientContextClass
 {
     MilterHandlerClass parent_class;
-
-    MilterStatus (*negotiate)          (MilterClientContext *context,
-                                        MilterOption        *option);
-    MilterStatus (*connect)            (MilterClientContext *context,
-                                        const gchar         *host_name,
-                                        struct sockaddr     *address,
-                                        socklen_t            address_length);
-    MilterStatus (*helo)               (MilterClientContext *context,
-                                        const gchar         *fqdn);
-    MilterStatus (*envelope_from)      (MilterClientContext *context,
-                                        const gchar         *from);
-    MilterStatus (*envelope_receipt)   (MilterClientContext *context,
-                                        const gchar         *receipt);
-    MilterStatus (*data)               (MilterClientContext *context);
-    MilterStatus (*unknown)            (MilterClientContext *context,
-                                        const gchar         *command);
-    MilterStatus (*header)             (MilterClientContext *context,
-                                        const gchar         *name,
-                                        const gchar         *value);
-    MilterStatus (*end_of_header)      (MilterClientContext *context);
-    MilterStatus (*body)               (MilterClientContext *context,
-                                        const guchar        *chunk,
-                                        gsize                size);
-    MilterStatus (*end_of_message)     (MilterClientContext *context);
-    MilterStatus (*close)              (MilterClientContext *context);
-    MilterStatus (*abort)              (MilterClientContext *context);
 };
 
 GQuark               milter_client_context_error_quark       (void);
@@ -84,15 +58,6 @@ GQuark               milter_client_context_error_quark       (void);
 GType                milter_client_context_get_type          (void) G_GNUC_CONST;
 
 MilterClientContext *milter_client_context_new               (void);
-
-gboolean             milter_client_context_feed              (MilterClientContext *context,
-                                                              const gchar *chunk,
-                                                              gsize size,
-                                                              GError **error);
-
-const gchar         *milter_client_context_get_macro         (MilterClientContext *context,
-                                                              const gchar *name);
-GHashTable          *milter_client_context_get_macros        (MilterClientContext *context);
 
 gpointer             milter_client_context_get_private_data  (MilterClientContext *context);
 void                 milter_client_context_set_private_data  (MilterClientContext *context,

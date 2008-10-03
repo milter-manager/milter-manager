@@ -1,3 +1,17 @@
+2008-10-03  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter-client/milter-client-context.[ch],
+	milter-core/milter-handler.[ch]:
+	All signals moved into MilterHandler and added "-response" signal.
+	milter_client_context_feed -> milter_handler_feed.
+	milter_client_get_macro(s) -> milter_handler_get_macro(s).
+	Added milter_handler_clear_macros.
+	* milter-client/milter-client.c: Use milter_handler_feed instead of
+	milter_client_context_feed.
+	* libmilter/libmilter-compatible.c: Use milter_handler_get_macro
+	instead of milter_client_context_get_macro.
+	* test/client/*, test/libmilter/*: XXX.
+
 2008-10-03  Kouhei Sutou  <kou@cozmixng.org>
 
 	* Makefile.am, configure.ac, milter-manager/: detect Ruby and add

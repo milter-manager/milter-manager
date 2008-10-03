@@ -51,6 +51,76 @@ struct _MilterHandler
 struct _MilterHandlerClass
 {
     GObjectClass parent_class;
+
+    gboolean     (*reply)              (MilterHandler *handler, 
+                                        MilterStatus   status);
+    MilterStatus (*negotiate)          (MilterHandler *handler,
+                                        MilterOption  *option);
+    MilterStatus (*negotiate_response) (MilterHandler *handler,
+                                        MilterOption  *option,
+                                        MilterStatus   status);
+    MilterStatus (*connect)            (MilterHandler *handler,
+                                        const gchar   *host_name,
+                                        struct sockaddr *address,
+                                        socklen_t      address_length);
+    MilterStatus (*connect_response)   (MilterHandler *handler,
+                                        const gchar   *host_name,
+                                        struct sockaddr *address,
+                                        socklen_t      address_length,
+                                        MilterStatus   status);
+    MilterStatus (*helo)               (MilterHandler *handler,
+                                        const gchar   *fqdn);
+    MilterStatus (*helo_response)      (MilterHandler *handler,
+                                        const gchar   *fqdn,
+                                        MilterStatus   status);
+    MilterStatus (*envelope_from)      (MilterHandler *handler,
+                                        const gchar   *from);
+    MilterStatus (*envelope_from_response)
+                                       (MilterHandler *handler,
+                                        const gchar   *from,
+                                        MilterStatus   status);
+    MilterStatus (*envelope_receipt)   (MilterHandler *handler,
+                                        const gchar   *receipt);
+    MilterStatus (*envelope_receipt_response)
+                                       (MilterHandler *handler,
+                                        const gchar   *receipt,
+                                        MilterStatus   status);
+    MilterStatus (*data)               (MilterHandler *handler);
+    MilterStatus (*data_response)      (MilterHandler *handler,
+                                        MilterStatus   status);
+    MilterStatus (*unknown)            (MilterHandler *handler,
+                                        const gchar   *command);
+    MilterStatus (*unknown_response)   (MilterHandler *handler,
+                                        const gchar   *command,
+                                        MilterStatus   status);
+    MilterStatus (*header)             (MilterHandler *handler,
+                                        const gchar   *name,
+                                        const gchar   *value);
+    MilterStatus (*header_response)    (MilterHandler *handler,
+                                        const gchar   *name,
+                                        const gchar   *value,
+                                        MilterStatus   status);
+    MilterStatus (*end_of_header)      (MilterHandler *handler);
+    MilterStatus (*end_of_header_response)
+                                       (MilterHandler *handler,
+                                        MilterStatus   status);
+    MilterStatus (*body)               (MilterHandler *handler,
+                                        const guchar  *chunk,
+                                        gsize          size);
+    MilterStatus (*body_response)      (MilterHandler *handler,
+                                        const guchar  *chunk,
+                                        gsize          size,
+                                        MilterStatus   status);
+    MilterStatus (*end_of_message)     (MilterHandler *handler);
+    MilterStatus (*end_of_message_response)
+                                       (MilterHandler *handler,
+                                        MilterStatus   status);
+    MilterStatus (*close)              (MilterHandler *handler);
+    MilterStatus (*close_response)     (MilterHandler *handler,
+                                        MilterStatus   status);
+    MilterStatus (*abort)              (MilterHandler *handler);
+    MilterStatus (*abort_response)     (MilterHandler *handler,
+                                        MilterStatus   status);
 };
 
 GQuark               milter_handler_error_quark       (void);
@@ -70,6 +140,13 @@ gboolean             milter_handler_write_packet      (MilterHandler *handler,
                                                        const char *packet,
                                                        gsize packet_size,
                                                        GError **error);
+GHashTable          *milter_handler_get_macros        (MilterHandler *handler);
+const gchar         *milter_handler_get_macro         (MilterHandler *handler,
+                                                       const gchar   *name);
+void                 milter_handler_clear_macros      (MilterHandler *handler,
+                                                       MilterCommand macro_context);
+gboolean             milter_handler_reply             (MilterHandler *handler,
+                                                       MilterStatus   status);
 
 G_END_DECLS
 

@@ -233,7 +233,7 @@ feed_to_context (MilterClientContext *context, GIOChannel *channel)
         if (length <= 0)
             break;
 
-        milter_client_context_feed(context, stream, length, &error);
+        milter_handler_feed(MILTER_HANDLER(context), stream, length, &error);
         if (error) {
             g_print("error: %s\n", error->message);
             error_occurred = TRUE;

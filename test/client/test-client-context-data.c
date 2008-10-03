@@ -286,7 +286,7 @@ feed (void)
 {
     GError *error = NULL;
 
-    milter_client_context_feed(context, packet, packet_size, &error);
+    milter_handler_feed(MILTER_HANDLER(context), packet, packet_size, &error);
 
     return error;
 }

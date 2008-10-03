@@ -102,15 +102,17 @@ static gsize unknown_command_size;
 static void
 retrieve_context_info (MilterClientContext *context)
 {
+    MilterHandler *handler = MILTER_HANDLER(context);
+
     if (defined_macros)
         g_hash_table_unref(defined_macros);
-    defined_macros = milter_client_context_get_macros(context);
+    defined_macros = milter_handler_get_macros(handler);
     if (macro_name) {
         const gchar *value;
 
         if (macro_value)
             g_free(macro_value);
-        value = milter_client_context_get_macro(context, macro_name);
+        value = milter_handler_get_macro(handler, macro_name);
         if (value)
             macro_value = g_strdup(value);
     }
@@ -120,7 +122,7 @@ retrieve_context_info (MilterClientContext *context)
 
 static MilterStatus
 cb_negotiate (MilterClientContext *context, MilterOption *option,
-                       gpointer user_data)
+              gpointer user_data)
 {
     n_negotiates++;
     negotiate_option = g_object_ref(option);
@@ -279,7 +281,7 @@ static void
 setup_signals (MilterClientContext *context)
 {
 #define CONNECT(name)                                                   \
-    g_signal_connect(context, #name, G_CALLBACK(cb_ ## name), NULL)
+    g_signal_connect_after(context, #name, G_CALLBACK(cb_ ## name), NULL)
 
     CONNECT(negotiate);
     CONNECT(connect);
@@ -420,7 +422,7 @@ feed (void)
 {
     GError *error = NULL;
 
-    milter_client_context_feed(context, packet, packet_size, &error);
+    milter_handler_feed(MILTER_HANDLER(context), packet, packet_size, &error);
 
     return error;
 }
