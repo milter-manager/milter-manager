@@ -1,3 +1,8 @@
+2008-10-03  Kouhei Sutou  <kou@cozmixng.org>
+
+	* **/Makefile.am, enum-types.mk, marshal.mk: share enum types and
+	marshalers generation code.
+
 2008-10-02  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter-core/milter-writer.c: remove needless NULL check.

@@ -13,7 +13,9 @@ pkgconfig_DATA = 		\
 	libmilter.pc
 
 EXTRA_DIST =		\
-	autogen.sh
+	autogen.sh	\
+	enum-types.mk	\
+	marshal.mk
 
 upload: upload-doc
 
