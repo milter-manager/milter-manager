@@ -55,6 +55,14 @@ enum
     PROP_DATA
 };
 
+enum
+{
+    READY,
+    LAST_SIGNAL
+};
+
+static gint signals[LAST_SIGNAL] = {0};
+
 G_DEFINE_TYPE(MilterReader, milter_reader, G_TYPE_OBJECT);
 
 static void dispose        (GObject         *object);
@@ -96,6 +104,15 @@ milter_reader_class_init (MilterReaderClass *klass)
                                 "The data of the reader",
                                 G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_DATA, spec);
+
+    signals[READY] =
+        g_signal_new("ready",
+                     G_TYPE_FROM_CLASS(klass),
+                     G_SIGNAL_RUN_LAST,
+                     G_STRUCT_OFFSET(MilterReaderClass, ready),
+                     NULL, NULL,
+                     g_cclosure_marshal_VOID__VOID,
+                     G_TYPE_NONE, 0);
 
     g_type_class_add_private(gobject_class, sizeof(MilterReaderPrivate));
 }

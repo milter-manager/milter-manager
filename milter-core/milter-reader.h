@@ -48,13 +48,13 @@ typedef struct _MilterReaderClass    MilterReaderClass;
 struct _MilterReader
 {
     GObject object;
-
-    void     (*ready)              (MilterReader *reader);
 };
 
 struct _MilterReaderClass
 {
     GObjectClass parent_class;
+
+    void     (*ready)              (MilterReader *reader);
 };
 
 GQuark           milter_reader_error_quark    (void);

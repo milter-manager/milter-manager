@@ -24,6 +24,7 @@
 #include <milter-core/milter-reader.h>
 #undef shutdown
 
+void test_ready_signal (void);
 void test_reader_string (void);
 void test_reader_io_channel (void);
 
@@ -36,6 +37,7 @@ static GIOChannel *write_channel;
 static GError *expected_error;
 static GError *actual_error;
 static gchar *temporary_name;
+static gint n_readies;
 
 void
 setup (void)
@@ -48,6 +50,8 @@ setup (void)
 
     expected_error = NULL;
     actual_error = NULL;
+
+    n_readies = 0;
 }
 
 void
@@ -70,6 +74,24 @@ teardown (void)
         g_error_free(actual_error);
     if (g_file_test(temporary_name, G_FILE_TEST_EXISTS))
         g_unlink(temporary_name);
+}
+
+static void
+cb_ready (MilterReader *reader, gpointer data)
+{
+    n_readies++;
+}
+
+void
+test_ready_signal (void)
+{
+    actual_string = g_string_new("first");
+    reader = milter_reader_string_new(actual_string);
+
+    g_signal_connect(reader, "ready", G_CALLBACK(cb_ready), NULL);
+    g_signal_emit_by_name(reader, "ready");
+
+    cut_assert_equal_int(1, n_readies);
 }
 
 void

@@ -13,6 +13,7 @@
 	* test/client/*, test/libmilter/*: XXX.
 	* milter-core/milter-reader.[ch]: Added.
 	* test/core/test-reader.c: Added GIOChannel test.
+	* milter-core/milter-reader.[ch]: Implement "ready" signal.
 
 2008-10-03  Kouhei Sutou  <kou@cozmixng.org>
 
