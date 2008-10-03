@@ -11,6 +11,7 @@
 	* libmilter/libmilter-compatible.c: Use milter_handler_get_macro
 	instead of milter_client_context_get_macro.
 	* test/client/*, test/libmilter/*: XXX.
+	* milter-core/milter-reader.[ch]: Added.
 
 2008-10-03  Kouhei Sutou  <kou@cozmixng.org>
 

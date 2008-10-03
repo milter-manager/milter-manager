@@ -17,6 +17,7 @@ milter_core_public_headers =	\
 	milter-encoder.h	\
 	milter-handler.h	\
 	milter-option.h		\
+	milter-reader.h		\
 	milter-writer.h		\
 	milter-utils.h
 
@@ -46,6 +47,7 @@ libmilter_core_la_SOURCES =		\
 	milter-encoder.c		\
 	milter-handler.c		\
 	milter-option.c			\
+	milter-reader.c			\
 	milter-writer.c			\
 	milter-utils.c
 
