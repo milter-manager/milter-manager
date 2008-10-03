@@ -1,16 +1,17 @@
 SUBDIRS =		\
 	milter-core	\
 	milter-client	\
-	milter-server	\
 	libmilter	\
+	milter-server	\
+	milter-manager	\
 	test
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = 		\
 	milter-core.pc		\
 	milter-client.pc	\
-	milter-server.pc	\
-	libmilter.pc
+	libmilter.pc		\
+	milter-server.pc
 
 EXTRA_DIST =		\
 	autogen.sh	\

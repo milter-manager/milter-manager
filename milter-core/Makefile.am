@@ -49,6 +49,8 @@ libmilter_core_la_SOURCES =		\
 	milter-writer.c			\
 	milter-utils.c
 
+libmilter_core_la_LIBADD =		\
+	$(GLIB_LIBS)
 
 include $(top_srcdir)/enum-types.mk
 include $(top_srcdir)/marshal.mk

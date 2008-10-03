@@ -105,7 +105,7 @@ AM_PATH_GLIB_2_0($GLIB_REQUIRED,
                  [gobject gthread])
 
 dnl **************************************************************
-dnl for Cutter
+dnl Check for Cutter
 dnl **************************************************************
 m4_ifdef([AC_CHECK_GCUTTER], [
 AC_CHECK_GCUTTER(>= 1.0.5)
@@ -119,6 +119,73 @@ fi
 
 m4_ifdef([AC_CHECK_COVERAGE], [AC_CHECK_COVERAGE])
 GENHTML_OPTIONS="--title 'milter manager Code Coverage'"
+
+dnl **************************************************************
+dnl Check for Ruby
+dnl **************************************************************
+ruby_available="no"
+AC_ARG_WITH([ruby],
+            AS_HELP_STRING([--with-ruby=PATH],
+                           [Ruby interpreter path (default: auto-detect)]),
+            [RUBY="$withval"])
+
+if test "$RUBY" = "no"; then
+  : # ignore
+elif test "$RUBY" = ""; then
+  AC_PATH_PROG(RUBY, ruby, none)
+  if test "$RUBY" != "none"; then
+    ruby_available="yes"
+  fi
+else
+  AC_CHECK_FILE([$RUBY],
+                [ruby_available="yes"],
+                [AC_MSG_WARN([$RUBY is not found. Disable milter manager.])])
+fi
+
+if test "$ruby_available" = "yes"; then
+  rbconfig="$RUBY -rrbconfig -e "
+
+  changequote(<<, >>)
+  for var_name in archdir sitearchdir CFLAGS LIBRUBYARG LIBS libdir; do
+    rbconfig_tmp=`$rbconfig "print Config::CONFIG['$var_name']"`
+    eval "rbconfig_$var_name=\"$rbconfig_tmp\""
+  done
+  changequote([, ])
+
+  RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_archdir "
+  RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_sitearchdir "
+  RUBY_CFLAGS="$RUBY_CFLAGS $rbconfig_CFLAGS "
+  RUBY_LIBS="$rbconfig_LIBRUBYARG $rbconfig_LIBS"
+  RUBY_LDFLAGS="-L$rbconfig_libdir"
+
+  AC_SUBST(RUBY_CFLAGS)
+  AC_SUBST(RUBY_LIBS)
+  AC_SUBST(RUBY_LDFLAGS)
+
+  _SAVE_CFLAGS=$CFLAGS
+  ruby_undef_package_macros="
+#undef PACKAGE_NAME
+#undef PACKAGE_TARNAME
+#undef PACKAGE_STRING
+#undef PACKAGE_VERSION
+"
+  ruby_disable_message="Disable milter manager."
+  CFLAGS="$CFLAGS $RUBY_CFLAGS"
+  AC_CHECK_HEADERS(ruby.h, [],
+                   [ruby_available="no"
+                    AC_MSG_WARN([$ruby_disable_message])],
+                   [$ruby_undef_package_macros])
+  if test "x$ruby_available" = "xyes"; then
+    CFLAGS="$CFLAGS $GLIB_CFLAGS"
+    AC_CHECK_HEADERS(rbglib.h, [],
+		     [ruby_available="no"
+		      AC_MSG_WARN([$ruby_disable_message])],
+		     [$ruby_undef_package_macros])
+  fi
+  CFLAGS=$_SAVE_CFLAGS
+fi
+
+AM_CONDITIONAL([WITH_RUBY], [test "$ruby_available" = "yes"])
 
 dnl **************************************************************
 dnl Configure for maintainer mode.
@@ -188,10 +255,11 @@ AC_CONFIG_FILES([Makefile
 		 milter-core/Makefile
 		 milter-client.pc
 		 milter-client/Makefile
-		 milter-server.pc
-		 milter-server/Makefile
 		 libmilter.pc
 		 libmilter/Makefile
+		 milter-server.pc
+		 milter-server/Makefile
+		 milter-manager/Makefile
 		 test/Makefile
 		 test/core/Makefile
 		 test/client/Makefile

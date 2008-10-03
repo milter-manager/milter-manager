@@ -1,5 +1,8 @@
 2008-10-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* Makefile.am, configure.ac, milter-manager/: detect Ruby and add
+	empty milter manager implementation.
+
 	* milter-server.pc.in: fix path.
 
 	* **/Makefile.am, enum-types.mk, marshal.mk: share enum types and
