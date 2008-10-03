@@ -479,7 +479,7 @@ smfi_getsymval (SMFICTX *context, char *name)
     if (!priv->client_context)
         return NULL;
 
-    return (char *)milter_client_context_get_macro(priv->client_context, name);
+    return (char *)milter_handler_get_macro(MILTER_HANDLER(priv->client_context), name);
 }
 
 int
