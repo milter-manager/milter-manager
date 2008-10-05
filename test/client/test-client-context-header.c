@@ -195,6 +195,7 @@ setup (void)
     header_index = 0;
 
     add_header = FALSE;
+    insert_header = FALSE;
     change_header = FALSE;
     remove_header = FALSE;
 }

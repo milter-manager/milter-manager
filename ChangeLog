@@ -1,3 +1,8 @@
+2008-10-06  Kouhei Sutou  <kou@cozmixng.org>
+
+	* test/client/test-client-context-header.c (setup): initialize
+	variable.
+
 2008-10-03  Hiroyuki Ikezoe  <poincare@ikezoe.net>
 
 	* milter-client/milter-client-context.[ch],
