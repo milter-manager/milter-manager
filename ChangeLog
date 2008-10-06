@@ -1,5 +1,7 @@
 2008-10-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-server/milter-server-context.[ch]: fix typos.
+
 	* milter-manager/: add empty implementation.
 
 	* libmilter/libmilter-compatible.c: fix a typo.
