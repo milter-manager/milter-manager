@@ -1,5 +1,7 @@
 2008-10-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/core/test-reader.c: don't use needless cut_take_string().
+
 	* test/core/test-reader.c (test_reader_string): fix wrong name.
 
 	* milter-server/milter-server-context.[ch]: fix typos.

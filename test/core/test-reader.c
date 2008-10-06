@@ -52,6 +52,8 @@ setup (void)
     actual_error = NULL;
 
     n_readies = 0;
+
+    temporary_name = NULL;
 }
 
 void
@@ -72,8 +74,11 @@ teardown (void)
         g_error_free(expected_error);
     if (actual_error)
         g_error_free(actual_error);
-    if (g_file_test(temporary_name, G_FILE_TEST_EXISTS))
-        g_unlink(temporary_name);
+
+    if (temporary_name) {
+        cut_remove_path(temporary_name);
+        g_free(temporary_name);
+    }
 }
 
 static void
@@ -115,7 +120,7 @@ make_temporary_file (void)
 {
     gint fd;
 
-    temporary_name = (gchar *)cut_take_string(g_strdup("test_readerXXXXXX"));
+    temporary_name = g_strdup("test_readerXXXXXX");
     fd = g_mkstemp(temporary_name);
     if (fd == -1)
         return;
