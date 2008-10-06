@@ -8,10 +8,10 @@ noinst_LTLIBRARIES =		\
 	test-utils.la
 endif
 
-INCLUDES =			\
-	-I$(srcdir)		\
-	-I$(srcdir)/lib		\
-	-I$(top_srcdir)
+INCLUDES =				\
+	-I$(srcdir)			\
+	-I$(top_srcdir)			\
+	-I$(top_srcdir)/test/lib
 
 AM_CFLAGS = $(GCUTTER_CFLAGS)
 AM_LDFLAGS =			\
@@ -22,6 +22,7 @@ AM_LDFLAGS =			\
 
 LIBS =							\
 	$(top_builddir)/milter-core/libmilter-core.la	\
+	$(top_builddir)/test/lib/libmilter-test.la	\
 	$(GCUTTER_LIBS)
 
 test_decoder_la_SOURCES = test-decoder.c

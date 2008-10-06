@@ -1,6 +1,11 @@
 2008-10-06  Kouhei Sutou  <kou@cozmixng.org>
 
-	* test/core/test-reader.c: don't use needless cut_take_string().
+	* test/lib/, configure.ac: add test/lib/.
+
+	* test/core/test-reader.c:
+	- don't use needless cut_take_string().
+	- use temporary directory.
+	- remove needless variables.
 
 	* test/core/test-reader.c (test_reader_string): fix wrong name.
 

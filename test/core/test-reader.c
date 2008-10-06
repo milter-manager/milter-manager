@@ -20,6 +20,7 @@
 #include <gcutter.h>
 #include <glib/gstdio.h>
 
+#include <milter-test-utils.h>
 #define shutdown inet_shutdown
 #include <milter-core/milter-reader.h>
 #undef shutdown
@@ -30,13 +31,12 @@ void test_reader_io_channel (void);
 
 static MilterReader *reader;
 
+static gchar *tmp_dir;
+
 static GString *actual_string;
 static GIOChannel *read_channel;
 static GIOChannel *write_channel;
 
-static GError *expected_error;
-static GError *actual_error;
-static gchar *temporary_name;
 static gint n_readies;
 
 void
@@ -48,12 +48,12 @@ setup (void)
     read_channel = NULL;
     write_channel = NULL;
 
-    expected_error = NULL;
-    actual_error = NULL;
-
     n_readies = 0;
 
-    temporary_name = NULL;
+    tmp_dir = g_build_filename(milter_test_get_base_dir(), "tmp", NULL);
+    cut_remove_path(tmp_dir);
+    g_mkdir_with_parents(tmp_dir, 0700);
+    cut_assert_path_exist(tmp_dir);
 }
 
 void
@@ -70,14 +70,9 @@ teardown (void)
     if (write_channel)
         g_io_channel_unref(write_channel);
 
-    if (expected_error)
-        g_error_free(expected_error);
-    if (actual_error)
-        g_error_free(actual_error);
-
-    if (temporary_name) {
-        cut_remove_path(temporary_name);
-        g_free(temporary_name);
+    if (tmp_dir) {
+        cut_remove_path(tmp_dir);
+        g_free(tmp_dir);
     }
 }
 
@@ -104,32 +99,40 @@ test_reader_string (void)
 {
     gsize read_size;
     gchar *actual_read_string = NULL;
+    GError *error = NULL;
 
     actual_string = g_string_new("first");
     reader = milter_reader_string_new(actual_string);
 
-    milter_reader_read(reader, &actual_read_string, &read_size,
-                       &actual_error);
-    gcut_assert_error(actual_error);
+    milter_reader_read(reader, &actual_read_string, &read_size, &error);
+    gcut_assert_error(error);
     cut_assert_equal_string_with_free("first", actual_read_string);
     cut_assert_equal_uint(strlen("first"), read_size);
 }
 
 static void
-make_temporary_file (void)
+milter_assert_make_channels_helper (void)
 {
-    gint fd;
+    GError *error = NULL;
+    gchar *file_name;
+    const gchar *taken_file_name;
 
-    temporary_name = g_strdup("test_readerXXXXXX");
-    fd = g_mkstemp(temporary_name);
-    if (fd == -1)
-        return;
+    file_name = g_build_filename(tmp_dir, "reader-channel.txt", NULL);
+    taken_file_name = cut_take_string(file_name);
 
-    read_channel = g_io_channel_unix_new(fd);
+    write_channel = g_io_channel_new_file(taken_file_name, "w", &error);
+    gcut_assert_error(error);
+
+    read_channel = g_io_channel_new_file(taken_file_name, "r", &error);
+    gcut_assert_error(error);
     g_io_channel_set_close_on_unref(read_channel, TRUE);
 
-    write_channel = g_io_channel_new_file(temporary_name, "w", NULL);
 }
+
+#define milter_assert_make_channels()           \
+    cut_trace_with_info_expression(             \
+        milter_assert_make_channels_helper(),   \
+        milter_assert_make_channels())
 
 static void
 write_to_io_channel (const gchar *data)
@@ -148,31 +151,27 @@ test_reader_io_channel (void)
 {
     gsize read_size;
     gchar *actual_read_string = NULL;
+    GError *error = NULL;
 
-    make_temporary_file();
-    cut_assert_not_null(read_channel);
-    cut_assert_not_null(write_channel);
+    milter_assert_make_channels();
 
     reader = milter_reader_io_channel_new(read_channel);
 
     write_to_io_channel("first");
-    milter_reader_read(reader, &actual_read_string, &read_size,
-                       &actual_error);
-    gcut_assert_error(actual_error);
+    milter_reader_read(reader, &actual_read_string, &read_size, &error);
+    gcut_assert_error(error);
     cut_assert_equal_string_with_free("first", actual_read_string);
     cut_assert_equal_uint(strlen("first"), read_size);
 
     write_to_io_channel("second");
-    milter_reader_read(reader, &actual_read_string, &read_size,
-                       &actual_error);
-    gcut_assert_error(actual_error);
+    milter_reader_read(reader, &actual_read_string, &read_size, &error);
+    gcut_assert_error(error);
     cut_assert_equal_string("second", actual_read_string);
     cut_assert_equal_uint(strlen("second"), read_size);
 
     write_to_io_channel("third");
-    milter_reader_read(reader, &actual_read_string, &read_size,
-                       &actual_error);
-    gcut_assert_error(actual_error);
+    milter_reader_read(reader, &actual_read_string, &read_size, &error);
+    gcut_assert_error(error);
     cut_assert_equal_string("third", actual_read_string);
     cut_assert_equal_uint(strlen("third"), read_size);
 }

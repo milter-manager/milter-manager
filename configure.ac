@@ -261,6 +261,7 @@ AC_CONFIG_FILES([Makefile
 		 milter-server/Makefile
 		 milter-manager/Makefile
 		 test/Makefile
+		 test/lib/Makefile
 		 test/core/Makefile
 		 test/client/Makefile
 		 test/libmilter/Makefile

@@ -1,4 +1,5 @@
 SUBDIRS =		\
+	lib		\
 	core		\
 	client		\
 	libmilter
