@@ -385,7 +385,7 @@ smfi_context_detach_from_client_context (SmfiContext *context,
     DISCONNECT(close);
     DISCONNECT(abort);
 
-#undef IDSCONNECT
+#undef DISCONNECT
 
     if (priv->client_context) {
         g_object_unref(priv->client_context);

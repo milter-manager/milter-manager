@@ -1,5 +1,7 @@
 2008-10-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* libmilter/libmilter-compatible.c: fix a typo.
+
 	* milter-core/milter-handler.c (cb_decoder_body): add missing
 	return value location.
 
