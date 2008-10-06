@@ -1,3 +1,7 @@
+2008-10-07  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter-server/milter-server.[ch]: option_negotiation -> negotiate.
+
 2008-10-06  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter-core/milter-handler.c: set default class closure

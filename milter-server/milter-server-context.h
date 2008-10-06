@@ -60,7 +60,7 @@ GType                milter_server_context_get_type    (void) G_GNUC_CONST;
 
 MilterServerContext *milter_server_context_new         (void);
 
-MilterStatus         milter_server_context_option_negotiation
+MilterStatus         milter_server_context_negotiate
                                                        (MilterClientContext *context,
                                                         MilterOption        *option);
 MilterStatus         milter_server_context_connect     (MilterServerContext *context,
