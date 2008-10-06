@@ -98,17 +98,16 @@ void
 test_reader_string (void)
 {
     gsize read_size;
-    gchar *expected_string = NULL;
+    gchar *actual_read_string = NULL;
 
     actual_string = g_string_new("first");
     reader = milter_reader_string_new(actual_string);
 
-    milter_reader_read(reader, &expected_string, &read_size,
+    milter_reader_read(reader, &actual_read_string, &read_size,
                        &actual_error);
-    expected_string = (gchar *)cut_take_string(expected_string);
-    cut_assert_equal_string("first", expected_string);
-    cut_assert_equal_uint(sizeof("first") - 1, read_size);
     gcut_assert_error(actual_error);
+    cut_assert_equal_string_with_free("first", actual_read_string);
+    cut_assert_equal_uint(strlen("first"), read_size);
 }
 
 static void
