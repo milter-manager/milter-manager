@@ -278,7 +278,7 @@ milter_reader_io_channel_new (GIOChannel *channel)
 }
 
 gboolean
-milter_reader_read (MilterReader *reader, 
+milter_reader_read (MilterReader *reader,
                     gchar       **read_data,
                     gsize        *read_size,
                     GError      **error)

@@ -206,7 +206,8 @@ milter_client_set_connection_spec (MilterClient *client, const gchar *spec,
 
 #define BUFFER_SIZE 4096
 static gboolean
-feed_to_context (MilterClientContext *context, GIOChannel *channel)
+feed_to_context (MilterClientContext *context, GIOChannel *channel,
+                 MilterClientProcessData *data)
 {
     gboolean error_occurred = FALSE;
 
@@ -221,6 +222,7 @@ feed_to_context (MilterClientContext *context, GIOChannel *channel)
                                          &length, &error);
         if (status == G_IO_STATUS_EOF) {
             eof = TRUE;
+            data->done = TRUE;
         }
 
         if (error) {
@@ -245,7 +247,7 @@ feed_to_context (MilterClientContext *context, GIOChannel *channel)
             break;
     }
 
-    return !error_occurred;
+    return !error_occurred && !data->done;
 }
 
 static gboolean
@@ -255,11 +257,11 @@ client_watch_func (GIOChannel *channel, GIOCondition condition, gpointer _data)
     MilterClientContext *context;
     gboolean keep_callback = TRUE;
 
-    g_print("watch!\n");
+    g_print("watch!: %d\n", condition);
     context = data->context;
     if (condition & G_IO_IN ||
         condition & G_IO_PRI) {
-        keep_callback = feed_to_context(context, channel);
+        keep_callback = feed_to_context(context, channel, data);
     }
 
     if (condition & G_IO_ERR ||
