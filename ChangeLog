@@ -1,5 +1,8 @@
 2008-10-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-core/milter-handler.c (cb_decoder_body): add missing
+	return value location.
+
 	* test/client/test-client-context-header.c (setup): initialize
 	variable.
 

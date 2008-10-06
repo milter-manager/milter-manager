@@ -307,7 +307,8 @@ milter_handler_class_init (MilterHandlerClass *klass)
                      G_STRUCT_OFFSET(MilterHandlerClass, body_response),
                      status_accumulator, NULL,
                      _milter_marshal_ENUM__STRING_UINT_ENUM,
-                     MILTER_TYPE_STATUS, 3, G_TYPE_STRING, G_TYPE_UINT, MILTER_TYPE_STATUS);
+                     MILTER_TYPE_STATUS,
+                     3, G_TYPE_STRING, G_TYPE_UINT, MILTER_TYPE_STATUS);
 
     signals[END_OF_MESSAGE] =
         g_signal_new("end-of-message",
@@ -717,7 +718,8 @@ cb_decoder_body (MilterDecoder *decoder, const gchar *chunk, gsize chunk_size,
     priv = MILTER_HANDLER_GET_PRIVATE(context);
     priv->macro_context = MILTER_COMMAND_BODY;
     g_signal_emit(handler, signals[BODY], 0, chunk, chunk_size, &status);
-    g_signal_emit(handler, signals[BODY_RESPONSE], 0, chunk, chunk_size, status);
+    g_signal_emit(handler, signals[BODY_RESPONSE], 0,
+                  chunk, chunk_size, status, &status);
     milter_handler_clear_macros(MILTER_HANDLER(context), MILTER_COMMAND_BODY);
     priv->macro_context = MILTER_COMMAND_UNKNOWN;
 }
