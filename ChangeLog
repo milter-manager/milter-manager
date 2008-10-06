@@ -1,5 +1,15 @@
 2008-10-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-core/milter-handler.c: set default class closure
+	implementation that just returns MILTER_STATUS_NOT_CHANGE because
+	if class closure is NULL then default status is initialized as
+	MILTER_STATUS_DEFAULT not MILTER_STATUS_NOT_CHANGE. Without them
+	we need to call g_signal_connect_after() not g_signal_connect() or
+	use G_SIGNAL_RUN_FIRST not G_SIGNAL_RUN_LAST.
+
+	* test/client/test-client-context-callback.c: test whether
+	response is called.
+
 	* milter-core/milter-handler.c (cb_decoder_negotiate): emit
 	missing negotiate response.
 

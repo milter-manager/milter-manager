@@ -68,7 +68,7 @@ MilterStatus         milter_server_context_connect     (MilterServerContext *con
                                                         struct sockaddr     *address,
                                                         socklen_t            address_length);
 MilterStatus         milter_server_context_helo        (MilterServerContext *context,
-                                                        const gchar *fqdn); 
+                                                        const gchar *fqdn);
 MilterStatus         milter_server_context_envelope_from
                                                        (MilterServerContext *context,
                                                         const gchar         *from);

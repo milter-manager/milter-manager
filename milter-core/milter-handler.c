@@ -96,6 +96,33 @@ static gboolean    status_accumulator  (GSignalInvocationHint *hint,
 static void        setup_decoder       (MilterHandler *handler,
                                         MilterDecoder *decoder);
 
+static MilterStatus default_negotiate  (MilterHandler *handler,
+                                        MilterOption  *option);
+static MilterStatus default_connect    (MilterHandler *handler,
+                                        const gchar   *host_name,
+                                        struct sockaddr *address,
+                                        socklen_t      address_length);
+static MilterStatus default_helo       (MilterHandler *handler,
+                                        const gchar   *fqdn);
+static MilterStatus default_envelope_from
+                                       (MilterHandler *handler,
+                                        const gchar   *from);
+static MilterStatus default_envelope_receipt
+                                       (MilterHandler *handler,
+                                        const gchar   *receipt);
+static MilterStatus default_data       (MilterHandler *handler);
+static MilterStatus default_header     (MilterHandler *handler,
+                                        const gchar   *name,
+                                        const gchar   *value);
+static MilterStatus default_end_of_header
+                                       (MilterHandler *handler);
+static MilterStatus default_body       (MilterHandler *handler,
+                                        const guchar  *chunk,
+                                        gsize          size);
+static MilterStatus default_end_of_message
+                                       (MilterHandler *handler);
+static MilterStatus default_close      (MilterHandler *handler);
+static MilterStatus default_abort      (MilterHandler *handler);
 
 static void
 milter_handler_class_init (MilterHandlerClass *klass)
@@ -108,25 +135,24 @@ milter_handler_class_init (MilterHandlerClass *klass)
     gobject_class->set_property = set_property;
     gobject_class->get_property = get_property;
 
-    klass->negotiate = NULL;
-    klass->connect = NULL;
-    klass->helo = NULL;
-    klass->envelope_from = NULL;
-    klass->envelope_receipt = NULL;
-    klass->data = NULL;
-    klass->header = NULL;
-    klass->end_of_header = NULL;
-    klass->body = NULL;
-    klass->end_of_message = NULL;
-    klass->close = NULL;
-    klass->abort = NULL;
+    klass->negotiate = default_negotiate;
+    klass->connect = default_connect;
+    klass->helo = default_helo;
+    klass->envelope_from = default_envelope_from;
+    klass->envelope_receipt = default_envelope_receipt;
+    klass->data = default_data;
+    klass->header = default_header;
+    klass->end_of_header = default_end_of_header;
+    klass->body = default_body;
+    klass->end_of_message = default_end_of_message;
+    klass->close = default_close;
+    klass->abort = default_abort;
 
     signals[NEGOTIATE] =
         g_signal_new("negotiate",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MilterHandlerClass,
-                                     negotiate),
+                     G_STRUCT_OFFSET(MilterHandlerClass, negotiate),
                      status_accumulator, NULL,
                      _milter_marshal_ENUM__OBJECT,
                      MILTER_TYPE_STATUS, 1, MILTER_TYPE_OPTION);
@@ -135,8 +161,7 @@ milter_handler_class_init (MilterHandlerClass *klass)
         g_signal_new("negotiate-response",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MilterHandlerClass,
-                                     negotiate_response),
+                     G_STRUCT_OFFSET(MilterHandlerClass, negotiate_response),
                      status_accumulator, NULL,
                      _milter_marshal_ENUM__OBJECT_ENUM,
                      MILTER_TYPE_STATUS, 2, MILTER_TYPE_OPTION, MILTER_TYPE_STATUS);
@@ -464,6 +489,79 @@ status_accumulator (GSignalInvocationHint *hint,
         status == MILTER_STATUS_ALL_OPTIONS;
 }
 
+static MilterStatus
+default_negotiate (MilterHandler *handler, MilterOption *option)
+{
+    return MILTER_STATUS_NOT_CHANGE;
+}
+
+static MilterStatus
+default_connect (MilterHandler *handler, const gchar *host_name,
+                 struct sockaddr *address, socklen_t address_length)
+{
+    return MILTER_STATUS_NOT_CHANGE;
+}
+
+static MilterStatus
+default_helo (MilterHandler *handler, const gchar *fqdn)
+{
+    return MILTER_STATUS_NOT_CHANGE;
+}
+
+static MilterStatus
+default_envelope_from (MilterHandler *handler, const gchar *from)
+{
+    return MILTER_STATUS_NOT_CHANGE;
+}
+
+static MilterStatus
+default_envelope_receipt (MilterHandler *handler, const gchar *receipt)
+{
+    return MILTER_STATUS_NOT_CHANGE;
+}
+
+static MilterStatus
+default_data (MilterHandler *handler)
+{
+    return MILTER_STATUS_NOT_CHANGE;
+}
+
+static MilterStatus
+default_header (MilterHandler *handler, const gchar *name, const gchar *value)
+{
+    return MILTER_STATUS_NOT_CHANGE;
+}
+
+static MilterStatus
+default_end_of_header (MilterHandler *handler)
+{
+    return MILTER_STATUS_NOT_CHANGE;
+}
+
+static MilterStatus
+default_body (MilterHandler *handler, const guchar *chunk, gsize size)
+{
+    return MILTER_STATUS_NOT_CHANGE;
+}
+
+static MilterStatus
+default_end_of_message (MilterHandler *handler)
+{
+    return MILTER_STATUS_NOT_CHANGE;
+}
+
+static MilterStatus
+default_close (MilterHandler *handler)
+{
+    return MILTER_STATUS_NOT_CHANGE;
+}
+
+static MilterStatus
+default_abort (MilterHandler *handler)
+{
+    return MILTER_STATUS_NOT_CHANGE;
+}
+
 GQuark
 milter_handler_error_quark (void)
 {
@@ -598,7 +696,7 @@ cb_decoder_negotiate (MilterDecoder *decoder, MilterOption *option,
                       gpointer user_data)
 {
     MilterHandler *handler = user_data;
-    MilterStatus status;
+    MilterStatus status = MILTER_STATUS_NOT_CHANGE;
 
     g_signal_emit(handler, signals[NEGOTIATE], 0, option, &status);
     g_signal_emit(handler, signals[NEGOTIATE_RESPONSE], 0,
