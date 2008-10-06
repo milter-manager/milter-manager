@@ -17,24 +17,24 @@
  *
  */
 
-#ifndef __MILTER_MANAGER_H__
-#define __MILTER_MANAGER_H__
+#ifdef HAVE_CONFIG_H
+#  include "../config.h"
+#endif /* HAVE_CONFIG_H */
 
-#include <milter-manager/milter-manager-context.h>
-#include <milter-manager/milter-manager-configure.h>
-#include <milter-manager/milter-manager-enum-types.h>
+#include "milter-manager.h"
 
-G_BEGIN_DECLS
+int
+main (int argc, char **argv)
+{
+    {
+        milter_manager_init(&argc, &argv);
+        milter_manager_main();
+        milter_manager_quit();
+    }
 
-void milter_manager_init (int *argc, char ***argv);
-void milter_manager_quit (void);
-void milter_manager_main (void);
-
-
-G_END_DECLS
-
-#endif /* __MILTER_MANAGER_H__ */
+    return 0;
+}
 
 /*
-vi:nowrap:ai:expandtab:sw=4
+vi:ts=4:nowrap:ai:expandtab:sw=4
 */

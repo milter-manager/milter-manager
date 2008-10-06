@@ -23,6 +23,222 @@
 
 #include "milter-manager-context.h"
 
+#define MILTER_MANAGER_CONTEXT_GET_PRIVATE(obj)                         \
+    (G_TYPE_INSTANCE_GET_PRIVATE((obj),                                 \
+                                 MILTER_MANAGER_TYPE_CONTEXT,           \
+                                 MilterManagerContextPrivate))
+
+typedef struct _MilterManagerContextPrivate	MilterManagerContextPrivate;
+struct _MilterManagerContextPrivate
+{
+    gpointer private_data;
+    GDestroyNotify private_data_destroy;
+    guint reply_code;
+    gchar *extended_reply_code;
+    gchar *reply_message;
+};
+
+G_DEFINE_TYPE(MilterManagerContext, milter_manager_context, G_TYPE_OBJECT);
+
+static void dispose        (GObject         *object);
+static void set_property   (GObject         *object,
+                            guint            prop_id,
+                            const GValue    *value,
+                            GParamSpec      *pspec);
+static void get_property   (GObject         *object,
+                            guint            prop_id,
+                            GValue          *value,
+                            GParamSpec      *pspec);
+
+static void
+milter_manager_context_class_init (MilterManagerContextClass *klass)
+{
+    GObjectClass *gobject_class;
+
+    gobject_class = G_OBJECT_CLASS(klass);
+
+    gobject_class->dispose      = dispose;
+    gobject_class->set_property = set_property;
+    gobject_class->get_property = get_property;
+
+    g_type_class_add_private(gobject_class, sizeof(MilterManagerContextPrivate));
+}
+
+static void
+milter_manager_context_init (MilterManagerContext *context)
+{
+    MilterManagerContextPrivate *priv;
+
+    priv = MILTER_MANAGER_CONTEXT_GET_PRIVATE(context);
+    priv->private_data = NULL;
+    priv->private_data_destroy = NULL;
+    priv->reply_code = 0;
+    priv->extended_reply_code = NULL;
+    priv->reply_message = NULL;
+}
+
+static void
+dispose (GObject *object)
+{
+    MilterManagerContextPrivate *priv;
+
+    priv = MILTER_MANAGER_CONTEXT_GET_PRIVATE(object);
+
+    if (priv->private_data) {
+        if (priv->private_data_destroy)
+            priv->private_data_destroy(priv->private_data);
+        priv->private_data = NULL;
+    }
+    priv->private_data_destroy = NULL;
+
+    if (priv->extended_reply_code) {
+        g_free(priv->extended_reply_code);
+        priv->extended_reply_code = NULL;
+    }
+
+    if (priv->reply_message) {
+        g_free(priv->reply_message);
+        priv->reply_message = NULL;
+    }
+
+    G_OBJECT_CLASS(milter_manager_context_parent_class)->dispose(object);
+}
+
+static void
+set_property (GObject      *object,
+              guint         prop_id,
+              const GValue *value,
+              GParamSpec   *pspec)
+{
+    MilterManagerContextPrivate *priv;
+
+    priv = MILTER_MANAGER_CONTEXT_GET_PRIVATE(object);
+    switch (prop_id) {
+      default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+        break;
+    }
+}
+
+static void
+get_property (GObject    *object,
+              guint       prop_id,
+              GValue     *value,
+              GParamSpec *pspec)
+{
+    MilterManagerContextPrivate *priv;
+
+    priv = MILTER_MANAGER_CONTEXT_GET_PRIVATE(object);
+    switch (prop_id) {
+      default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+        break;
+    }
+}
+
+GQuark
+milter_manager_context_error_quark (void)
+{
+    return g_quark_from_static_string("milter-manager-context-error-quark");
+}
+
+MilterManagerContext *
+milter_manager_context_new (void)
+{
+    return g_object_new(MILTER_MANAGER_TYPE_CONTEXT,
+                        NULL);
+}
+
+MilterStatus
+milter_manager_context_option_negotiate (MilterManagerContext *context,
+                                         MilterOption         *option)
+{
+    return MILTER_STATUS_DEFAULT;
+}
+
+MilterStatus
+milter_manager_context_connect (MilterManagerContext *context,
+                                const gchar          *host_name,
+                                struct sockaddr      *address,
+                                socklen_t             address_length)
+{
+    return MILTER_STATUS_DEFAULT;
+}
+
+MilterStatus
+milter_manager_context_helo (MilterManagerContext *context,
+                             const gchar          *fqdn)
+{
+    return MILTER_STATUS_DEFAULT;
+}
+
+MilterStatus
+milter_manager_context_envelope_from (MilterManagerContext *context,
+                                      const gchar          *from)
+{
+    return MILTER_STATUS_DEFAULT;
+}
+
+MilterStatus
+milter_manager_context_envelope_receipt (MilterManagerContext *context,
+                                         const gchar          *receipt)
+{
+    return MILTER_STATUS_DEFAULT;
+}
+
+MilterStatus
+milter_manager_context_data (MilterManagerContext *context)
+{
+    return MILTER_STATUS_DEFAULT;
+}
+
+MilterStatus
+milter_manager_context_unknown (MilterManagerContext *context,
+                                const gchar          *command)
+{
+    return MILTER_STATUS_DEFAULT;
+}
+
+MilterStatus
+milter_manager_context_header (MilterManagerContext *context,
+                               const gchar          *name,
+                               const gchar          *value)
+{
+    return MILTER_STATUS_DEFAULT;
+}
+
+MilterStatus
+milter_manager_context_end_of_header (MilterManagerContext *context)
+{
+    return MILTER_STATUS_DEFAULT;
+}
+
+MilterStatus
+milter_manager_context_body (MilterManagerContext *context,
+                             const guchar         *chunk,
+                             gsize                 size)
+{
+    return MILTER_STATUS_DEFAULT;
+}
+
+MilterStatus
+milter_manager_context_end_of_message (MilterManagerContext *context)
+{
+    return MILTER_STATUS_DEFAULT;
+}
+
+MilterStatus
+milter_manager_context_close (MilterManagerContext *context)
+{
+    return MILTER_STATUS_DEFAULT;
+}
+
+MilterStatus
+milter_manager_context_abort (MilterManagerContext *context)
+{
+    return MILTER_STATUS_DEFAULT;
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */
