@@ -601,6 +601,8 @@ cb_decoder_negotiate (MilterDecoder *decoder, MilterOption *option,
     MilterStatus status;
 
     g_signal_emit(handler, signals[NEGOTIATE], 0, option, &status);
+    g_signal_emit(handler, signals[NEGOTIATE_RESPONSE], 0,
+                  option, status, &status);
 }
 
 static void
@@ -623,8 +625,10 @@ cb_decoder_connect (MilterDecoder *decoder, const gchar *host_name,
 
     priv = MILTER_HANDLER_GET_PRIVATE(handler);
     priv->macro_context = MILTER_COMMAND_CONNECT;
-    g_signal_emit(handler, signals[CONNECT], 0, host_name, address, address_length, &status);
-    g_signal_emit(handler, signals[CONNECT_RESPONSE], 0, host_name, address, address_length, status, &status);
+    g_signal_emit(handler, signals[CONNECT], 0,
+                  host_name, address, address_length, &status);
+    g_signal_emit(handler, signals[CONNECT_RESPONSE], 0,
+                  host_name, address, address_length, status, &status);
     milter_handler_clear_macros(handler, MILTER_COMMAND_CONNECT);
     priv->macro_context = MILTER_COMMAND_UNKNOWN;
 }
@@ -758,6 +762,7 @@ cb_decoder_abort (MilterDecoder *decoder, gpointer user_data)
     g_signal_emit(handler, signals[ABORT], 0, &status);
     g_signal_emit(handler, signals[ABORT_RESPONSE], 0, status, &status);
 }
+
 static void
 setup_decoder (MilterHandler *handler, MilterDecoder *decoder)
 {

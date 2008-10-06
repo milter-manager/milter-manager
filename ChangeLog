@@ -1,5 +1,8 @@
 2008-10-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-core/milter-handler.c (cb_decoder_negotiate): emit
+	missing negotiate response.
+
 	* milter-client/milter-client.c: detect EOF.
 
 	* test/lib/, configure.ac: add test/lib/.
