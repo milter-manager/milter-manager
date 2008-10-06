@@ -147,7 +147,7 @@ void
 test_reader_io_channel (void)
 {
     gsize read_size;
-    gchar *expected_string = NULL;
+    gchar *actual_read_string = NULL;
 
     make_temporary_file();
     cut_assert_not_null(read_channel);
@@ -156,28 +156,25 @@ test_reader_io_channel (void)
     reader = milter_reader_io_channel_new(read_channel);
 
     write_to_io_channel("first");
-    milter_reader_read(reader, &expected_string, &read_size,
+    milter_reader_read(reader, &actual_read_string, &read_size,
                        &actual_error);
-    expected_string = (gchar *)cut_take_string(expected_string);
-    cut_assert_equal_string("first", expected_string);
-    cut_assert_equal_uint(sizeof("first") - 1, read_size);
     gcut_assert_error(actual_error);
+    cut_assert_equal_string_with_free("first", actual_read_string);
+    cut_assert_equal_uint(strlen("first"), read_size);
 
     write_to_io_channel("second");
-    milter_reader_read(reader, &expected_string, &read_size,
+    milter_reader_read(reader, &actual_read_string, &read_size,
                        &actual_error);
-    expected_string = (gchar *)cut_take_string(expected_string);
-    cut_assert_equal_string("second", expected_string);
-    cut_assert_equal_uint(sizeof("second") - 1, read_size);
     gcut_assert_error(actual_error);
+    cut_assert_equal_string("second", actual_read_string);
+    cut_assert_equal_uint(strlen("second"), read_size);
 
     write_to_io_channel("third");
-    milter_reader_read(reader, &expected_string, &read_size,
+    milter_reader_read(reader, &actual_read_string, &read_size,
                        &actual_error);
-    expected_string = (gchar *)cut_take_string(expected_string);
-    cut_assert_equal_string("third", expected_string);
-    cut_assert_equal_uint(sizeof("third") - 1, read_size);
     gcut_assert_error(actual_error);
+    cut_assert_equal_string("third", actual_read_string);
+    cut_assert_equal_uint(strlen("third"), read_size);
 }
 
 /*
