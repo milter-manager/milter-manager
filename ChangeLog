@@ -1,5 +1,7 @@
 2008-10-07  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-child-milter.[ch]: add.
+
 	* milter-*/: move to ...
 	* milter/*: ... here.
 

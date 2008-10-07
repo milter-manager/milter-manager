@@ -34,9 +34,9 @@
 #include <milter/core.h>
 #include "milter-server-context.h"
 
-#define MILTER_SERVER_CONTEXT_GET_PRIVATE(obj)                  \
-    (G_TYPE_INSTANCE_GET_PRIVATE((obj),                 \
-                                 MILTER_SERVER_CONTEXT_TYPE,    \
+#define MILTER_SERVER_CONTEXT_GET_PRIVATE(obj)                       \
+    (G_TYPE_INSTANCE_GET_PRIVATE((obj),                              \
+                                 MILTER_TYPE_SERVER_CONTEXT,         \
                                  MilterServerContextPrivate))
 
 typedef struct _MilterServerContextPrivate	MilterServerContextPrivate;
@@ -140,13 +140,13 @@ milter_server_context_error_quark (void)
 MilterServerContext *
 milter_server_context_new (void)
 {
-    return g_object_new(MILTER_SERVER_CONTEXT_TYPE,
+    return g_object_new(MILTER_TYPE_SERVER_CONTEXT,
                         NULL);
 }
 
 MilterStatus
-milter_server_context_option_negotiation (MilterClientContext *context,
-                                          MilterOption        *option)
+milter_server_context_negotiation (MilterClientContext *context,
+                                   MilterOption        *option)
 {
     return MILTER_STATUS_REJECT;
 }

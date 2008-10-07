@@ -29,7 +29,7 @@ G_BEGIN_DECLS
 
 #define MILTER_SERVER_CONTEXT_ERROR           (milter_server_context_error_quark())
 
-#define MILTER_SERVER_CONTEXT_TYPE            (milter_server_context_get_type())
+#define MILTER_TYPE_SERVER_CONTEXT            (milter_server_context_get_type())
 #define MILTER_SERVER_CONTEXT(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), MILTER_SERVER_CONTEXT_TYPE, MilterServerContext))
 #define MILTER_SERVER_CONTEXT_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), MILTER_SERVER_CONTEXT_TYPE, MilterServerContextClass))
 #define MILTER_SERVER_CONTEXT_IS(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), MILTER_SERVER_CONTEXT_TYPE))
@@ -60,8 +60,7 @@ GType                milter_server_context_get_type    (void) G_GNUC_CONST;
 
 MilterServerContext *milter_server_context_new         (void);
 
-MilterStatus         milter_server_context_option_negotiation
-                                                       (MilterClientContext *context,
+MilterStatus         milter_server_context_negotiation (MilterClientContext *context,
                                                         MilterOption        *option);
 MilterStatus         milter_server_context_connect     (MilterServerContext *context,
                                                         const gchar         *host_name,
