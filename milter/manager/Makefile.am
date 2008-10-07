@@ -12,7 +12,7 @@ BUILT_SOURCES =
 
 milter_manager_public_headers =		\
 	milter-manager-context.h	\
-	milter-manager-configure.h	\
+	milter-manager-configuration.h	\
 	milter-manager-child-milter.h	\
 	milter-manager-ruby.h
 
@@ -39,7 +39,7 @@ milter_manager_SOURCES =		\
 	milter-manager.c		\
 	milter-manager-context.c	\
 	milter-manager-main.c		\
-	milter-manager-configure.c	\
+	milter-manager-configuration.c	\
 	milter-manager-child-milter.c	\
 	milter-manager-ruby.c
 

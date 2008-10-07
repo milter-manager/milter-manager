@@ -24,7 +24,7 @@
 
 G_BEGIN_DECLS
 
-void milter_manager_ruby_init (int argc, char **argv);
+void milter_manager_ruby_init (int *argc, char ***argv);
 void milter_manager_ruby_quit (void);
 
 G_END_DECLS

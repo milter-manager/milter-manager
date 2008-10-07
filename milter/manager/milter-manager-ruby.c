@@ -76,11 +76,11 @@ ruby_init_without_signal_change (void)
 }
 
 void
-milter_manager_ruby_init (int argc, char **argv)
+milter_manager_ruby_init (int *argc, char ***argv)
 {
     ruby_init_without_signal_change();
-    ruby_script(argv[0]);
-    ruby_set_argv(argc, argv);
+    ruby_script((*argv)[0]);
+    ruby_set_argv(*argc, *argv);
     rb_argv0 = rb_gv_get("$PROGRAM_NAME");
 }
 

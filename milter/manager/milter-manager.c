@@ -45,7 +45,7 @@ milter_manager_init (int *argc, char ***argv)
     if (!g_thread_supported())
         g_thread_init(NULL);
 
-    milter_manager_configure_init(*argc, *argv);
+    milter_manager_ruby_init(argc, argv);
 }
 
 void
@@ -54,7 +54,7 @@ milter_manager_quit (void)
     if (!initialized)
         return;
 
-    milter_manager_configure_quit();
+    milter_manager_ruby_quit();
 }
 
 static MilterStatus
