@@ -45,7 +45,7 @@ milter_manager_init (int *argc, char ***argv)
     if (!g_thread_supported())
         g_thread_init(NULL);
 
-    milter_manager_configure_init();
+    milter_manager_configure_init(*argc, *argv);
 }
 
 void

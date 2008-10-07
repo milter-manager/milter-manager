@@ -184,7 +184,7 @@ if test "$ruby_available" = "yes"; then
                    [$ruby_undef_package_macros])
   if test "x$ruby_available" = "xyes"; then
     CFLAGS="$CFLAGS $GLIB_CFLAGS"
-    AC_CHECK_HEADERS(rbglib.h, [],
+    AC_CHECK_HEADERS(rbgobject.h, [],
 		     [ruby_available="no"
 		      AC_MSG_WARN([$ruby_disable_message])],
 		     [$ruby_undef_package_macros])
@@ -255,10 +255,13 @@ SF_REPOS="https://milter-manager.svn.sourceforge.net/svnroot/milter-manager/milt
 AC_SUBST(SF_REPOS)
 
 MILTER_MANAGER_CFLAGS="\$(MILTER_CLIENT_CFLAGS) \$(MILTER_SERVER_CFLAGS)"
+MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS \$(RUBY_CFLAGS)"
 MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS \$(COVERAGE_CFLAGS)"
 MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DG_DISABLE_DEPRECATED"
 AC_SUBST(MILTER_MANAGER_CFLAGS)
 MILTER_MANAGER_LIBS="\$(MILTER_CLIENT_LIBS) \$(MILTER_SERVER_LIBS)"
+MILTER_MANAGER_LIBS="$MILTER_MANAGER_LIBS \$(SERVER_LIBS)"
+MILTER_MANAGER_LIBS="$MILTER_MANAGER_LIBS \$(RUBY_LIBS)"
 AC_SUBST(MILTER_MANAGER_LIBS)
 
 AC_CONFIG_FILES([Makefile

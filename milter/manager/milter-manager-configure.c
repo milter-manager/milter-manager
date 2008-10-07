@@ -22,10 +22,12 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "milter-manager-configure.h"
+#include "milter-manager-ruby.h"
 
 void
-milter_manager_configure_init (void)
+milter_manager_configure_init (int argc, char **argv)
 {
+    milter_manager_ruby_init(argc, argv);
 }
 
 void

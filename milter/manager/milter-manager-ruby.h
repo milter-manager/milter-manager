@@ -17,27 +17,20 @@
  *
  */
 
-#include "milter-manager-ruby-internal.h"
+#ifndef __MILTER_MANAGER_RUBY_H__
+#define __MILTER_MANAGER_RUBY_H__
 
-#ifdef HAVE_CONFIG_H
-#  include "../../config.h"
-#endif /* HAVE_CONFIG_H */
+#include <glib-object.h>
 
-#include "../manager.h"
+G_BEGIN_DECLS
 
-int
-main (int argc, char **argv)
-{
-    {
-        RUBY_INIT_STACK;
-        milter_manager_init(&argc, &argv);
-        milter_manager_main();
-        milter_manager_quit();
-    }
+void milter_manager_ruby_init (int argc, char **argv);
+void milter_manager_ruby_quit (void);
 
-    return 0;
-}
+G_END_DECLS
+
+#endif /* __MILTER_MANAGER_RUBY_H__ */
 
 /*
-vi:ts=4:nowrap:ai:expandtab:sw=4
+vi:nowrap:ai:expandtab:sw=4
 */

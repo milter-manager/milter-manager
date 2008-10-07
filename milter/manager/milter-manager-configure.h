@@ -24,7 +24,7 @@
 
 G_BEGIN_DECLS
 
-void milter_manager_configure_init (void);
+void milter_manager_configure_init (int argc, char **argv);
 void milter_manager_configure_quit (void);
 
 G_END_DECLS

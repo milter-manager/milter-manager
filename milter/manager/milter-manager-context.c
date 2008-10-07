@@ -17,6 +17,8 @@
  *
  */
 
+#include "milter-manager-ruby-internal.h"
+
 #ifdef HAVE_CONFIG_H
 #  include "../../config.h"
 #endif /* HAVE_CONFIG_H */
@@ -153,6 +155,7 @@ MilterStatus
 milter_manager_context_option_negotiate (MilterManagerContext *context,
                                          MilterOption         *option)
 {
+    rb_funcall(Qnil, rb_intern("p"), 1, rb_str_new2("negotiate"));
     return MILTER_STATUS_DEFAULT;
 }
 
@@ -162,6 +165,7 @@ milter_manager_context_connect (MilterManagerContext *context,
                                 struct sockaddr      *address,
                                 socklen_t             address_length)
 {
+    rb_funcall(Qnil, rb_intern("p"), 1, rb_str_new2("connect"));
     return MILTER_STATUS_DEFAULT;
 }
 
@@ -169,6 +173,7 @@ MilterStatus
 milter_manager_context_helo (MilterManagerContext *context,
                              const gchar          *fqdn)
 {
+    rb_funcall(Qnil, rb_intern("p"), 1, rb_str_new2("helo"));
     return MILTER_STATUS_DEFAULT;
 }
 
@@ -176,6 +181,7 @@ MilterStatus
 milter_manager_context_envelope_from (MilterManagerContext *context,
                                       const gchar          *from)
 {
+    rb_funcall(Qnil, rb_intern("p"), 1, rb_str_new2("from"));
     return MILTER_STATUS_DEFAULT;
 }
 
@@ -183,12 +189,14 @@ MilterStatus
 milter_manager_context_envelope_receipt (MilterManagerContext *context,
                                          const gchar          *receipt)
 {
+    rb_funcall(Qnil, rb_intern("p"), 1, rb_str_new2("receipt"));
     return MILTER_STATUS_DEFAULT;
 }
 
 MilterStatus
 milter_manager_context_data (MilterManagerContext *context)
 {
+    rb_funcall(Qnil, rb_intern("p"), 1, rb_str_new2("data"));
     return MILTER_STATUS_DEFAULT;
 }
 
@@ -196,6 +204,7 @@ MilterStatus
 milter_manager_context_unknown (MilterManagerContext *context,
                                 const gchar          *command)
 {
+    rb_funcall(Qnil, rb_intern("p"), 1, rb_str_new2("unknown"));
     return MILTER_STATUS_DEFAULT;
 }
 
@@ -204,12 +213,14 @@ milter_manager_context_header (MilterManagerContext *context,
                                const gchar          *name,
                                const gchar          *value)
 {
+    rb_funcall(Qnil, rb_intern("p"), 1, rb_str_new2("header"));
     return MILTER_STATUS_DEFAULT;
 }
 
 MilterStatus
 milter_manager_context_end_of_header (MilterManagerContext *context)
 {
+    rb_funcall(Qnil, rb_intern("p"), 1, rb_str_new2("end of header"));
     return MILTER_STATUS_DEFAULT;
 }
 
@@ -218,24 +229,28 @@ milter_manager_context_body (MilterManagerContext *context,
                              const guchar         *chunk,
                              gsize                 size)
 {
+    rb_funcall(Qnil, rb_intern("p"), 1, rb_str_new2("body"));
     return MILTER_STATUS_DEFAULT;
 }
 
 MilterStatus
 milter_manager_context_end_of_message (MilterManagerContext *context)
 {
+    rb_funcall(Qnil, rb_intern("p"), 1, rb_str_new2("end of message"));
     return MILTER_STATUS_DEFAULT;
 }
 
 MilterStatus
 milter_manager_context_close (MilterManagerContext *context)
 {
+    rb_funcall(Qnil, rb_intern("p"), 1, rb_str_new2("close"));
     return MILTER_STATUS_DEFAULT;
 }
 
 MilterStatus
 milter_manager_context_abort (MilterManagerContext *context)
 {
+    rb_funcall(Qnil, rb_intern("p"), 1, rb_str_new2("abort"));
     return MILTER_STATUS_DEFAULT;
 }
 

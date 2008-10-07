@@ -13,7 +13,8 @@ BUILT_SOURCES =
 milter_manager_public_headers =		\
 	milter-manager-context.h	\
 	milter-manager-configure.h	\
-	milter-manager-child-milter.h
+	milter-manager-child-milter.h	\
+	milter-manager-ruby.h
 
 enum_source_prefix = milter-manager-enum-types
 enum_sources_h =			\
@@ -34,13 +35,15 @@ milter_manager_SOURCES =		\
 	milter-manager-enum-types.c	\
 	milter-manager-marshalers.c	\
 	milter-manager-marshalers.h	\
+	milter-manager-ruby-internal.h	\
 	milter-manager.c		\
 	milter-manager-context.c	\
 	milter-manager-main.c		\
 	milter-manager-configure.c	\
-	milter-manager-child-milter.c
+	milter-manager-child-milter.c	\
+	milter-manager-ruby.c
 
-milter_manager_LDADD =						\
+milter_manager_LDADD =			\
 	$(MILTER_MANAGER_LIBS)
 
 include $(top_srcdir)/build/enum-types.mk

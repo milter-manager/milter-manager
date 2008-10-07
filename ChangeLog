@@ -1,4 +1,6 @@
 2008-10-07  Kouhei Sutou  <kou@cozmixng.org>
 
+	* configure.ac, milter/: support Ruby embedding.
+
 	* ./: move milter/{core,client,server} and libmilter to
 	milter-toolkit package.
