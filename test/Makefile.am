@@ -1,8 +1,5 @@
 SUBDIRS =		\
-	lib		\
-	core		\
-	client		\
-	libmilter
+	lib
 
 if WITH_CUTTER
 TESTS = run-test.sh

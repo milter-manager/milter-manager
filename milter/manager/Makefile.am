@@ -4,9 +4,7 @@ INCLUDES = 				\
 
 AM_CFLAGS = 				\
 	-DLOCALEDIR=\""$(localedir)"\"	\
-	$(GLIB_CFLAGS)			\
-	$(RUBY_CFLAGS)			\
-	$(COVERAGE_CFLAGS)
+	$(MILTER_MANAGER_CFLAGS)
 
 EXTRA_DIST =
 MAINTAINERCLEANFILES =
@@ -43,9 +41,7 @@ milter_manager_SOURCES =		\
 	milter-manager-child-milter.c
 
 milter_manager_LDADD =						\
-	$(top_builddir)/milter/client/libmilter-client.la	\
-	$(top_builddir)/milter/server/libmilter-server.la	\
-	$(RUBY_LIBS)
+	$(MILTER_MANAGER_LIBS)
 
-include $(top_srcdir)/enum-types.mk
-include $(top_srcdir)/marshal.mk
+include $(top_srcdir)/build/enum-types.mk
+include $(top_srcdir)/build/marshal.mk

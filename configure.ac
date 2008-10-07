@@ -10,10 +10,9 @@ m4_define([milter_manager_version],
           [milter_manager_version_major.milter_manager_version_minor.milter_manager_version_micro])
 
 AC_INIT(milter-manager, [milter_manager_version], kou@cozmixng.org)
-AC_CONFIG_AUX_DIR([config])
-# AC_CONFIG_MACRO_DIR([m4macros])
+AC_CONFIG_AUX_DIR([build])
 
-AC_CONFIG_SRCDIR([milter/core.h])
+AC_CONFIG_SRCDIR([milter/manager.h])
 AM_CONFIG_HEADER([config.h])
 
 AM_INIT_AUTOMAKE($PACKAGE_NAME, $PACKAGE_VERSION)
@@ -103,6 +102,14 @@ AM_PATH_GLIB_2_0($GLIB_REQUIRED,
                  [],
                  [AC_MSG_ERROR([GLib >= $GLIB_REQUIRED required.])],
                  [gobject gthread])
+
+dnl **************************************************************
+dnl Check for milter toolkit.
+dnl **************************************************************
+MILTER_TOOLKIT_REQUIRED=2.12.3
+AC_SUBST(MILTER_TOOLKIT_REQUIRED)
+PKG_CHECK_MODULES(MILTER_CLIENT, milter-client, $MILTER_TOOLKIT_REQUIRED)
+PKG_CHECK_MODULES(MILTER_SERVER, milter-server, $MILTER_TOOLKIT_REQUIRED)
 
 dnl **************************************************************
 dnl Check for Cutter
@@ -238,7 +245,7 @@ if test -n "$SF_USER"; then
 fi
 AC_SUBST(SF_HOST)
 
-SF_HTDOCS_PATH="/home/groups/m/mi/milter_manager/htdocs"
+SF_HTDOCS_PATH="/home/groups/m/mi/milter-manager/htdocs"
 AC_SUBST(SF_HTDOCS_PATH)
 
 SF_HTDOCS="$SF_HOST:$SF_HTDOCS_PATH"
@@ -247,25 +254,18 @@ AC_SUBST(SF_HTDOCS)
 SF_REPOS="https://milter-manager.svn.sourceforge.net/svnroot/milter-manager/milter-manager"
 AC_SUBST(SF_REPOS)
 
-MILTER_MANAGER_CFLAGS="$GLIB_CFLAGS -DG_DISABLE_DEPRECATED"
+MILTER_MANAGER_CFLAGS="\$(MILTER_CLIENT_CFLAGS) \$(MILTER_SERVER_CFLAGS)"
+MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS \$(COVERAGE_CFLAGS)"
+MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DG_DISABLE_DEPRECATED"
 AC_SUBST(MILTER_MANAGER_CFLAGS)
+MILTER_MANAGER_LIBS="\$(MILTER_CLIENT_LIBS) \$(MILTER_SERVER_LIBS)"
+AC_SUBST(MILTER_MANAGER_LIBS)
 
 AC_CONFIG_FILES([Makefile
 		 milter/Makefile
-		 milter-core.pc
-		 milter/core/Makefile
-		 milter-client.pc
-		 milter/client/Makefile
-		 libmilter.pc
-		 libmilter/Makefile
-		 milter-server.pc
-		 milter/server/Makefile
 		 milter/manager/Makefile
 		 test/Makefile
 		 test/lib/Makefile
-		 test/core/Makefile
-		 test/client/Makefile
-		 test/libmilter/Makefile
 		 po/Makefile.in])
 
 AC_OUTPUT

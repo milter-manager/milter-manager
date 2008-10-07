@@ -12,7 +12,6 @@ AM_LDFLAGS =			\
 	-no-undefined
 
 LIBS =							\
-	$(top_builddir)/milter/core/libmilter-core.la	\
 	$(GCUTTER_LIBS)
 
 libmilter_test_la_SOURCES =	\

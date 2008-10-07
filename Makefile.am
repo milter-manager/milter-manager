@@ -1,19 +1,9 @@
 SUBDIRS =		\
 	milter		\
-	libmilter	\
 	test
 
-pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = 		\
-	milter-core.pc		\
-	milter-client.pc	\
-	libmilter.pc		\
-	milter-server.pc
-
 EXTRA_DIST =		\
-	autogen.sh	\
-	enum-types.mk	\
-	marshal.mk
+	autogen.sh
 
 upload: upload-doc
 
@@ -29,7 +19,7 @@ upload-doc:
 
 update-po:
 	cd $(top_srcdir) && \
-	  (find milter-client -name '*.c') | \
+	  (find milter -name '*.c') | \
 	  sort > po/POTFILES.in
 	cd po && $(MAKE) $(AM_MAKEFLAGS) update-po
 
@@ -39,5 +29,5 @@ tag:
 	    echo "$(VERSION) is already tagged";		\
 	    exit 1;						\
 	  fi
-	svn cp -m "released $(VERSION)!!!" $(SF_USER_OPTION) \
+	svn cp -m "released $(VERSION)!!!" $(SF_USER_OPTION)	\
 	  $(SF_REPOS)/trunk $(SF_REPOS)/tags/$(VERSION)
