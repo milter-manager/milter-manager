@@ -20,7 +20,7 @@
 #include <gcutter.h>
 
 #define shutdown inet_shutdown
-#include <milter-core/milter-writer.h>
+#include <milter/core/milter-writer.h>
 #undef shutdown
 
 void test_writer_string (void);

@@ -1,3 +1,8 @@
+2008-10-07  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter-*/: move to ...
+	* milter/*: ... here.
+
 2008-10-07  Hiroyuki Ikezoe  <poincare@ikezoe.net>
 
 	* milter-server/milter-server.[ch]: option_negotiation -> negotiate.

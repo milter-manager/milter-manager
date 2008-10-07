@@ -26,8 +26,8 @@
 #include <arpa/inet.h>
 #undef shutdown
 
-#include <milter-core/milter-decoder.h>
-#include <milter-core/milter-enum-types.h>
+#include <milter/core/milter-decoder.h>
+#include <milter/core/milter-enum-types.h>
 
 void test_decode_empty_text (void);
 void test_decode_negotiate (void);

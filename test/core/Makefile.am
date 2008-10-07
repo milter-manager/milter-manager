@@ -21,7 +21,7 @@ AM_LDFLAGS =			\
 	-no-undefined
 
 LIBS =							\
-	$(top_builddir)/milter-core/libmilter-core.la	\
+	$(top_builddir)/milter/core/libmilter-core.la	\
 	$(top_builddir)/test/lib/libmilter-test.la	\
 	$(GCUTTER_LIBS)
 

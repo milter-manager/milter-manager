@@ -23,7 +23,7 @@ AM_LDFLAGS =			\
 	-no-undefined
 
 LIBS =								\
-	$(top_builddir)/milter-client/libmilter-client.la	\
+	$(top_builddir)/milter/client/libmilter-client.la	\
 	$(GCUTTER_LIBS)
 
 test_client_context_callback_la_SOURCES = test-client-context-callback.c

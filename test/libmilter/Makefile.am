@@ -6,10 +6,7 @@ endif
 INCLUDES =				\
 	-I$(srcdir)			\
 	-I$(srcdir)/lib			\
-	-I$(top_srcdir)			\
-	-I$(top_srcdir)/milter-core	\
-	-I$(top_srcdir)/milter-client	\
-	-I$(top_srcdir)/libmilter
+	-I$(top_srcdir)
 
 AM_CFLAGS = $(GCUTTER_CFLAGS)
 AM_LDFLAGS =			\

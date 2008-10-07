@@ -22,7 +22,7 @@
 
 #include <milter-test-utils.h>
 #define shutdown inet_shutdown
-#include <milter-core/milter-reader.h>
+#include <milter/core/milter-reader.h>
 #undef shutdown
 
 void test_ready_signal (void);

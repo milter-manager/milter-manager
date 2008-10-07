@@ -20,7 +20,7 @@
 #ifndef __LIBMILTER_MFDEF_H__
 #define __LIBMILTER_MFDEF_H__
 
-#include <milter-core.h>
+#include <milter/core.h>
 
 #define SMFIR_ADDRCPT         MILTER_REPLY_ADD_RECEIPT
 #define SMFIR_DELRCPT         MILTER_REPLY_DELETE_RECEIPT

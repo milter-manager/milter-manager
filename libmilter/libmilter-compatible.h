@@ -20,9 +20,7 @@
 #ifndef __LIBMILTER_COMPATIBLE_H__
 #define __LIBMILTER_COMPATIBLE_H__
 
-#include "mfapi.h"
-
-#include <milter-client.h>
+#include <libmilter/mfapi.h>
 
 G_BEGIN_DECLS
 

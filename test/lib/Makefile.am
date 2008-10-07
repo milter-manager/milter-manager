@@ -4,8 +4,7 @@ noinst_LTLIBRARIES =		\
 endif
 
 INCLUDES =				\
-	-I$(top_srcdir)			\
-	-I$(top_srcdir)/milter-core
+	-I$(top_srcdir)
 
 AM_CFLAGS = $(GCUTTER_CFLAGS)
 AM_LDFLAGS =			\
@@ -13,7 +12,7 @@ AM_LDFLAGS =			\
 	-no-undefined
 
 LIBS =							\
-	$(top_builddir)/milter-core/libmilter-core.la	\
+	$(top_builddir)/milter/core/libmilter-core.la	\
 	$(GCUTTER_LIBS)
 
 libmilter_test_la_SOURCES =	\

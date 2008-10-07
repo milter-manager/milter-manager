@@ -1,9 +1,6 @@
 SUBDIRS =		\
-	milter-core	\
-	milter-client	\
+	milter		\
 	libmilter	\
-	milter-server	\
-	milter-manager	\
 	test
 
 pkgconfigdir = $(libdir)/pkgconfig

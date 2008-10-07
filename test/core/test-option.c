@@ -20,8 +20,8 @@
 #include <gcutter.h>
 
 #define shutdown inet_shutdown
-#include <milter-core/milter-option.h>
-#include <milter-core/milter-enum-types.h>
+#include <milter/core/milter-option.h>
+#include <milter/core/milter-enum-types.h>
 #undef shutdown
 
 void test_new (void);

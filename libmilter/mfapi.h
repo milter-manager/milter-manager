@@ -20,7 +20,7 @@
 #ifndef __LIBMILTER_MFAPI_H__
 #define __LIBMILTER_MFAPI_H__
 
-#include <milter-client.h>
+#include <milter/client.h>
 
 G_BEGIN_DECLS
 

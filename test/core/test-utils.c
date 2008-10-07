@@ -24,7 +24,7 @@
 #include <sys/un.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <milter-core/milter-utils.h>
+#include <milter/core/milter-utils.h>
 #undef shutdown
 
 void test_parse_connection_spec_unix (void);

@@ -1,8 +1,6 @@
 INCLUDES = 				\
 	 -I$(top_builddir)		\
-	 -I$(top_srcdir)		\
-	 -I$(top_srcdir)/milter-core	\
-	 -I$(top_srcdir)/milter-client
+	 -I$(top_srcdir)
 
 AM_CFLAGS = 				\
 	$(GLIB_CFLAGS)			\
@@ -20,5 +18,5 @@ libmilter_la_SOURCES =		\
 	libmilter-compatible.c
 
 libmilter_la_LIBADD =						\
-	$(top_builddir)/milter-client/libmilter-client.la
+	$(top_builddir)/milter/client/libmilter-client.la
 

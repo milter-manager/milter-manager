@@ -25,7 +25,7 @@
 #include <sys/un.h>
 #include <arpa/inet.h>
 
-#include <milter-client.h>
+#include <milter/client.h>
 #undef shutdown
 
 void test_progress (void);

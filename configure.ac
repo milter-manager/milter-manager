@@ -13,7 +13,7 @@ AC_INIT(milter-manager, [milter_manager_version], kou@cozmixng.org)
 AC_CONFIG_AUX_DIR([config])
 # AC_CONFIG_MACRO_DIR([m4macros])
 
-AC_CONFIG_SRCDIR([milter-client/milter-client.h])
+AC_CONFIG_SRCDIR([milter/core.h])
 AM_CONFIG_HEADER([config.h])
 
 AM_INIT_AUTOMAKE($PACKAGE_NAME, $PACKAGE_VERSION)
@@ -251,15 +251,16 @@ MILTER_MANAGER_CFLAGS="$GLIB_CFLAGS -DG_DISABLE_DEPRECATED"
 AC_SUBST(MILTER_MANAGER_CFLAGS)
 
 AC_CONFIG_FILES([Makefile
+		 milter/Makefile
 		 milter-core.pc
-		 milter-core/Makefile
+		 milter/core/Makefile
 		 milter-client.pc
-		 milter-client/Makefile
+		 milter/client/Makefile
 		 libmilter.pc
 		 libmilter/Makefile
 		 milter-server.pc
-		 milter-server/Makefile
-		 milter-manager/Makefile
+		 milter/server/Makefile
+		 milter/manager/Makefile
 		 test/Makefile
 		 test/lib/Makefile
 		 test/core/Makefile
