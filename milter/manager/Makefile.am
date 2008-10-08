@@ -6,6 +6,8 @@ AM_CFLAGS = 				\
 	-DLOCALEDIR=\""$(localedir)"\"	\
 	$(MILTER_MANAGER_CFLAGS)
 
+CLEANFILES = *.gcno *.gcda
+
 EXTRA_DIST =
 MAINTAINERCLEANFILES =
 BUILT_SOURCES =
@@ -28,23 +30,31 @@ milter_manager_include_HEADERS =	\
 	milter-manager-enum-types.h	\
 	$(milter_manager_public_headers)
 
-bin_PROGRAMS =		\
-	milter-manager
+lib_LTLIBRARIES =		\
+	libmilter-manager.la
 
-milter_manager_SOURCES =		\
+libmilter_manager_la_SOURCES =		\
 	milter-manager-enum-types.c	\
 	milter-manager-marshalers.c	\
 	milter-manager-marshalers.h	\
 	milter-manager-ruby-internal.h	\
 	milter-manager.c		\
 	milter-manager-context.c	\
-	milter-manager-main.c		\
 	milter-manager-configuration.c	\
 	milter-manager-child-milter.c	\
 	milter-manager-ruby.c
 
-milter_manager_LDADD =			\
+libmilter_manager_la_LIBADD =			\
 	$(MILTER_MANAGER_LIBS)
+
+bin_PROGRAMS =		\
+	milter-manager
+
+milter_manager_SOURCES =		\
+	milter-manager-main.c
+
+milter_manager_LDADD =			\
+	libmilter-manager.la
 
 include $(top_srcdir)/build/enum-types.mk
 include $(top_srcdir)/build/marshal.mk

@@ -22,6 +22,8 @@
 
 #include <glib-object.h>
 
+#include <milter/manager/milter-manager-child-milter.h>
+
 G_BEGIN_DECLS
 
 #define MILTER_MANAGER_TYPE_CONFIGURATION            (milter_manager_configuration_get_type())
@@ -48,6 +50,12 @@ GType         milter_manager_configuration_get_type    (void) G_GNUC_CONST;
 
 MilterManagerConfiguration *
               milter_manager_configuration_new         (void);
+
+void          milter_manager_configuration_add_child_milter
+                                     (MilterManagerConfiguration *configuration,
+                                      MilterManagerChildMilter   *milter);
+const GList  *milter_manager_configuration_get_child_milters
+                                     (MilterManagerConfiguration *configuration);
 
 G_END_DECLS
 

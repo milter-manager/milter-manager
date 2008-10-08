@@ -63,7 +63,7 @@ cb_client_negotiate (MilterClientContext *context, MilterOption *option,
 {
     MilterManagerContext *manager_context = user_data;
 
-    milter_manager_context_option_negotiate(manager_context, option);
+    milter_manager_context_negotiate(manager_context, option);
 
     return MILTER_STATUS_DEFAULT;
 }

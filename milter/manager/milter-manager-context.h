@@ -63,7 +63,7 @@ GType                 milter_manager_context_get_type    (void) G_GNUC_CONST;
 
 MilterManagerContext *milter_manager_context_new         (void);
 
-MilterStatus          milter_manager_context_option_negotiate
+MilterStatus          milter_manager_context_negotiate
                                           (MilterManagerContext *context,
                                            MilterOption         *option);
 MilterStatus          milter_manager_context_connect

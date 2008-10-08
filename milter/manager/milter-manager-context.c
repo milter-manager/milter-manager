@@ -152,8 +152,8 @@ milter_manager_context_new (void)
 }
 
 MilterStatus
-milter_manager_context_option_negotiate (MilterManagerContext *context,
-                                         MilterOption         *option)
+milter_manager_context_negotiate (MilterManagerContext *context,
+                                  MilterOption         *option)
 {
     rb_funcall(Qnil, rb_intern("p"), 1, rb_str_new2("negotiate"));
     return MILTER_STATUS_DEFAULT;

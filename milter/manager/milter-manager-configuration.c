@@ -31,7 +31,7 @@
 typedef struct _MilterManagerConfigurationPrivate MilterManagerConfigurationPrivate;
 struct _MilterManagerConfigurationPrivate
 {
-    gpointer private_data;
+    GList *child_milters;
 };
 
 G_DEFINE_TYPE(MilterManagerConfiguration, milter_manager_configuration,
@@ -68,7 +68,7 @@ milter_manager_configuration_init (MilterManagerConfiguration *configuration)
     MilterManagerConfigurationPrivate *priv;
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
-    priv->private_data = NULL;
+    priv->child_milters = NULL;
 }
 
 static void
@@ -78,8 +78,10 @@ dispose (GObject *object)
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(object);
 
-    if (priv->private_data) {
-        priv->private_data = NULL;
+    if (priv->child_milters) {
+        g_list_foreach(priv->child_milters, (GFunc)g_object_unref, NULL);
+        g_list_free(priv->child_milters);
+        priv->child_milters = NULL;
     }
 
     G_OBJECT_CLASS(milter_manager_configuration_parent_class)->dispose(object);
@@ -122,6 +124,27 @@ milter_manager_configuration_new (void)
 {
     return g_object_new(MILTER_MANAGER_TYPE_CONFIGURATION,
                         NULL);
+}
+
+void
+milter_manager_configuration_add_child_milter (MilterManagerConfiguration *configuration,
+                                               MilterManagerChildMilter   *milter)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+
+    g_object_ref(milter);
+    priv->child_milters = g_list_append(priv->child_milters, milter);
+}
+
+const GList *
+milter_manager_configuration_get_child_milters (MilterManagerConfiguration *configuration)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    return priv->child_milters;
 }
 
 /*
