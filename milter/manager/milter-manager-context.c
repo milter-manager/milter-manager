@@ -145,7 +145,7 @@ milter_manager_context_error_quark (void)
 }
 
 MilterManagerContext *
-milter_manager_context_new (void)
+milter_manager_context_new (MilterManagerConfiguration *configuration)
 {
     return g_object_new(MILTER_MANAGER_TYPE_CONTEXT,
                         NULL);

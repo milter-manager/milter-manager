@@ -22,10 +22,14 @@
 
 #include <glib-object.h>
 
+#include <milter/manager/milter-manager-configuration.h>
+
 G_BEGIN_DECLS
 
 void milter_manager_ruby_init (int *argc, char ***argv);
 void milter_manager_ruby_quit (void);
+
+void milter_manager_ruby_load (MilterManagerConfiguration *configuration);
 
 G_END_DECLS
 

@@ -224,9 +224,12 @@ cb_client_close (MilterClientContext *context, gpointer user_data)
 static void
 context_setup (MilterClientContext *context, gpointer user_data)
 {
+    MilterManagerConfiguration *configuration;
     MilterManagerContext *manager_context;
 
-    manager_context = milter_manager_context_new();
+    configuration = milter_manager_configuration_new();
+    milter_manager_configuration_load(configuration);
+    manager_context = milter_manager_context_new(configuration);
 
 #define CONNECT(name)                                   \
     g_signal_connect(context, #name,                    \

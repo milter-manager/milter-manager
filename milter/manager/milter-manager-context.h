@@ -27,6 +27,7 @@
 
 #include <milter/client.h>
 #include <milter/server.h>
+#include <milter/manager/milter-manager-configuration.h>
 
 G_BEGIN_DECLS
 
@@ -61,7 +62,7 @@ GQuark                milter_manager_context_error_quark (void);
 
 GType                 milter_manager_context_get_type    (void) G_GNUC_CONST;
 
-MilterManagerContext *milter_manager_context_new         (void);
+MilterManagerContext *milter_manager_context_new         (MilterManagerConfiguration *configuration);
 
 MilterStatus          milter_manager_context_negotiate
                                           (MilterManagerContext *context,

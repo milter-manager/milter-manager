@@ -1,4 +1,5 @@
 SUBDIRS =		\
+	binding		\
 	milter		\
 	test
 

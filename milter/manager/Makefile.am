@@ -1,6 +1,7 @@
-INCLUDES = 				\
-	 -I$(top_builddir)		\
-	 -I$(top_srcdir)
+INCLUDES = 					\
+	 -I$(top_builddir)			\
+	 -I$(top_srcdir)			\
+	 -I$(top_srcdir)/binding/ruby/src
 
 AM_CFLAGS = 				\
 	-DLOCALEDIR=\""$(localedir)"\"	\
@@ -44,8 +45,9 @@ libmilter_manager_la_SOURCES =		\
 	milter-manager-child-milter.c	\
 	milter-manager-ruby.c
 
-libmilter_manager_la_LIBADD =			\
-	$(MILTER_MANAGER_LIBS)
+libmilter_manager_la_LIBADD =						\
+	$(MILTER_MANAGER_LIBS)						\
+	$(top_builddir)/binding/ruby/src/libmilter-manager-ruby.la
 
 bin_PROGRAMS =		\
 	milter-manager

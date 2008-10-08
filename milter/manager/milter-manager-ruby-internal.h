@@ -20,7 +20,7 @@
 #ifndef __MILTER_MANAGER_RUBY_INTERNAL_H__
 #define __MILTER_MANAGER_RUBY_INTERNAL_H__
 
-#include <rbgobject.h>
+#include <rb-milter-manager.h>
 
 #undef PACKAGE_NAME
 #undef PACKAGE_TARNAME

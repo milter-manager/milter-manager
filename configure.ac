@@ -265,6 +265,11 @@ MILTER_MANAGER_LIBS="$MILTER_MANAGER_LIBS \$(RUBY_LIBS)"
 AC_SUBST(MILTER_MANAGER_LIBS)
 
 AC_CONFIG_FILES([Makefile
+		 binding/Makefile
+		 binding/ruby/Makefile
+		 binding/ruby/src/Makefile
+		 binding/ruby/lib/Makefile
+		 binding/ruby/lib/milter/Makefile
 		 milter/Makefile
 		 milter/manager/Makefile
 		 test/Makefile

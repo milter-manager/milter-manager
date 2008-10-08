@@ -75,6 +75,17 @@ ruby_init_without_signal_change (void)
 #endif
 }
 
+extern VALUE rb_load_path;
+
+static void
+load_libraries (void)
+{
+    rb_funcall(Qnil, rb_intern("require"), 1, rb_str_new2("glib2"));
+    rb_funcall(Qnil, rb_intern("require"), 1, rb_str_new2("milter"));
+    Init_milter_manager();
+    rb_funcall(Qnil, rb_intern("require"), 1, rb_str_new2("milter/manager"));
+}
+
 void
 milter_manager_ruby_init (int *argc, char ***argv)
 {
@@ -82,6 +93,8 @@ milter_manager_ruby_init (int *argc, char ***argv)
     ruby_script((*argv)[0]);
     ruby_set_argv(*argc, *argv);
     rb_argv0 = rb_gv_get("$PROGRAM_NAME");
+    ruby_init_loadpath();
+    load_libraries();
 }
 
 static void
@@ -98,6 +111,15 @@ void
 milter_manager_ruby_quit (void)
 {
     ruby_cleanup_without_signal_change(0);
+}
+
+void
+milter_manager_ruby_load (MilterManagerConfiguration *configuration)
+{
+    rb_funcall(rb_const_get(rb_mMilterManager, rb_intern("ConfigurationLoader")),
+               rb_intern("load"), 2,
+               Qnil, /*FIXME: GOBJ2RVAL(configuration) */
+               rb_str_new2("/tmp/milter-manager.conf"));
 }
 
 /*
