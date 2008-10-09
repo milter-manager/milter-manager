@@ -18,7 +18,6 @@ AM_LDFLAGS =			\
 
 CLEANFILES = *.gcno *.gcda
 
-moduledir = $(pkglibdir)/module
 module_LTLIBRARIES =		\
 	milter-manager-ruby-controller.la
 

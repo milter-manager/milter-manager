@@ -1,5 +1,7 @@
 2008-10-09  Kouhei Sutou  <kou@cozmixng.org>
 
+	* module/ruby/Makefile.am: remove needless variable.
+
 	* module/ruby/Makefile.am: fix rpath.
 
 	* milter/: add module based controller.
