@@ -1,3 +1,7 @@
+require 'glib2'
+require 'milter'
+require 'milter_manager.so'
+
 module Milter::Manager
   class ConfigurationLoader
     class << self
@@ -11,6 +15,7 @@ module Milter::Manager
     end
 
     def load(file)
+      p file
       instance_eval(File.read(file), file)
     end
   end

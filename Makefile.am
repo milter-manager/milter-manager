@@ -1,6 +1,8 @@
 SUBDIRS =		\
-	binding		\
 	milter		\
+	binding		\
+	module		\
+	src		\
 	test
 
 EXTRA_DIST =		\

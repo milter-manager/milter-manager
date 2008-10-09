@@ -51,9 +51,6 @@ GType         milter_manager_configuration_get_type    (void) G_GNUC_CONST;
 MilterManagerConfiguration *
               milter_manager_configuration_new         (void);
 
-void          milter_manager_configuration_load
-                                     (MilterManagerConfiguration *configuration);
-
 void          milter_manager_configuration_add_child_milter
                                      (MilterManagerConfiguration *configuration,
                                       MilterManagerChildMilter   *milter);

@@ -1,3 +1,10 @@
+2008-10-09  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/: add module based controller.
+	* module/: implement Ruby based controller module.
+	* binding/: build as extension library.
+	* src/: split milter-manger program.
+
 2008-10-08  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/manager/, binding/: support configuration file load

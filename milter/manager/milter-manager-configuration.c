@@ -22,7 +22,6 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "milter-manager-configuration.h"
-#include "milter-manager-ruby.h"
 
 #define MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(obj)                   \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                                 \
@@ -125,12 +124,6 @@ milter_manager_configuration_new (void)
 {
     return g_object_new(MILTER_MANAGER_TYPE_CONFIGURATION,
                         NULL);
-}
-
-void
-milter_manager_configuration_load (MilterManagerConfiguration *configuration)
-{
-    milter_manager_ruby_load(configuration);
 }
 
 void

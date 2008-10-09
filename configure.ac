@@ -101,15 +101,15 @@ AC_SUBST(GLIB_REQUIRED)
 AM_PATH_GLIB_2_0($GLIB_REQUIRED,
                  [],
                  [AC_MSG_ERROR([GLib >= $GLIB_REQUIRED required.])],
-                 [gobject gthread])
+                 [gobject gmodule gthread])
 
 dnl **************************************************************
 dnl Check for milter toolkit.
 dnl **************************************************************
-MILTER_TOOLKIT_REQUIRED=2.12.3
+MILTER_TOOLKIT_REQUIRED=0.0.1
 AC_SUBST(MILTER_TOOLKIT_REQUIRED)
-PKG_CHECK_MODULES(MILTER_CLIENT, milter-client, $MILTER_TOOLKIT_REQUIRED)
-PKG_CHECK_MODULES(MILTER_SERVER, milter-server, $MILTER_TOOLKIT_REQUIRED)
+PKG_CHECK_MODULES(MILTER_CLIENT, milter-client >= $MILTER_TOOLKIT_REQUIRED)
+PKG_CHECK_MODULES(MILTER_SERVER, milter-server >= $MILTER_TOOLKIT_REQUIRED)
 
 dnl **************************************************************
 dnl Check for Cutter
@@ -221,6 +221,16 @@ AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED([GETTEXT_PACKAGE], ["$GETTEXT_PACKAGE"], [Gettext package])
 
 dnl **************************************************************
+dnl Check for path.
+dnl **************************************************************
+
+moduledir='$(pkglibdir)/module'
+AC_SUBST(moduledir)
+
+bindingdir='$(pkglibdir)/binding'
+AC_SUBST(bindingdir)
+
+dnl **************************************************************
 dnl Check for SF.net.
 dnl **************************************************************
 
@@ -258,6 +268,7 @@ MILTER_MANAGER_CFLAGS="\$(MILTER_CLIENT_CFLAGS) \$(MILTER_SERVER_CFLAGS)"
 MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS \$(RUBY_CFLAGS)"
 MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS \$(COVERAGE_CFLAGS)"
 MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DG_DISABLE_DEPRECATED"
+MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DMILTER_MANAGER_CONTROLLER_MODULE_DIR=\\\"\$(moduledir)\\\""
 AC_SUBST(MILTER_MANAGER_CFLAGS)
 MILTER_MANAGER_LIBS="\$(MILTER_CLIENT_LIBS) \$(MILTER_SERVER_LIBS)"
 MILTER_MANAGER_LIBS="$MILTER_MANAGER_LIBS \$(SERVER_LIBS)"
@@ -265,13 +276,16 @@ MILTER_MANAGER_LIBS="$MILTER_MANAGER_LIBS \$(RUBY_LIBS)"
 AC_SUBST(MILTER_MANAGER_LIBS)
 
 AC_CONFIG_FILES([Makefile
+		 milter/Makefile
+		 milter/manager/Makefile
 		 binding/Makefile
 		 binding/ruby/Makefile
 		 binding/ruby/src/Makefile
 		 binding/ruby/lib/Makefile
 		 binding/ruby/lib/milter/Makefile
-		 milter/Makefile
-		 milter/manager/Makefile
+		 module/Makefile
+		 module/ruby/Makefile
+		 src/Makefile
 		 test/Makefile
 		 test/lib/Makefile
 		 po/Makefile.in])

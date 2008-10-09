@@ -17,13 +17,8 @@
  *
  */
 
-#include "milter-manager-ruby-internal.h"
-
-#ifdef HAVE_CONFIG_H
-#  include "../../config.h"
-#endif /* HAVE_CONFIG_H */
-
-#include "../manager.h"
+#include <ruby.h>
+#include <milter/manager.h>
 
 int
 main (int argc, char **argv)

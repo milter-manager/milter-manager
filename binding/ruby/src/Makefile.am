@@ -4,12 +4,18 @@ INCLUDES = 				\
 AM_CFLAGS = 				\
 	$(MILTER_MANAGER_CFLAGS)
 
+AM_LDFLAGS =			\
+	-module			\
+	-rpath $(bindingdir)	\
+	-avoid-version		\
+	-no-undefined
+
 CLEANFILES = *.gcno *.gcda
 
-noinst_LTLIBRARIES =		\
-	libmilter-manager-ruby.la
+binding_LTLIBRARIES =		\
+	milter_manager.la
 
-libmilter_manager_ruby_la_SOURCES =		\
+milter_manager_la_SOURCES =			\
 	rb-milter-manager.h			\
 	rb-milter-manager-private.h		\
 	rb-milter-manager.c			\

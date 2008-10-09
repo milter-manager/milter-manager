@@ -8,6 +8,4 @@
 
 VALUE rb_mMilterManager;
 
-void Init_milter_manager(void);
-
 #endif

@@ -5,6 +5,7 @@
 
 #include "rb-milter-manager.h"
 
+extern void Init_milter_manager (void);
 extern void Init_milter_manager_configuration (void);
 
 #endif

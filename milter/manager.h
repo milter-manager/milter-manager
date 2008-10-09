@@ -22,7 +22,7 @@
 
 #include <milter/manager/milter-manager-context.h>
 #include <milter/manager/milter-manager-configuration.h>
-#include <milter/manager/milter-manager-ruby.h>
+#include <milter/manager/milter-manager-controller.h>
 #include <milter/manager/milter-manager-enum-types.h>
 
 G_BEGIN_DECLS

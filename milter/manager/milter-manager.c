@@ -45,7 +45,7 @@ milter_manager_init (int *argc, char ***argv)
     if (!g_thread_supported())
         g_thread_init(NULL);
 
-    milter_manager_ruby_init(argc, argv);
+    milter_manager_controller_init();
 }
 
 void
@@ -54,7 +54,7 @@ milter_manager_quit (void)
     if (!initialized)
         return;
 
-    milter_manager_ruby_quit();
+    milter_manager_controller_quit();
 }
 
 static MilterStatus
@@ -225,10 +225,14 @@ static void
 context_setup (MilterClientContext *context, gpointer user_data)
 {
     MilterManagerConfiguration *configuration;
+    MilterManagerController *controller;
     MilterManagerContext *manager_context;
 
     configuration = milter_manager_configuration_new();
-    milter_manager_configuration_load(configuration);
+    controller = milter_manager_controller_new("ruby",
+                                               "configuration", configuration,
+                                               NULL);
+    milter_manager_controller_load(controller, configuration);
     manager_context = milter_manager_context_new(configuration);
 
 #define CONNECT(name)                                   \
