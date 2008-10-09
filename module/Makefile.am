@@ -1,2 +1,2 @@
-SUBDIRS =	\
-	ruby
+SUBDIRS =		\
+	controller

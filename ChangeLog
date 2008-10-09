@@ -1,5 +1,10 @@
 2008-10-09  Kouhei Sutou  <kou@cozmixng.org>
 
+	* module/controller/: create.
+
+	* module/ruby/: move to ...
+	* module/controller/ruby/: ... here.
+
 	* configure.ac, module/ruby/milter-manager-ruby-controller.c,
 	binding/ruby/: set Ruby related paths.
 
