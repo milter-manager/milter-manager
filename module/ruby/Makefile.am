@@ -12,7 +12,7 @@ LIBS =					\
 
 AM_LDFLAGS =			\
 	-module			\
-	-rpath "`pwd`/.libs"	\
+	-rpath $(moduledir)	\
 	-avoid-version		\
 	-no-undefined
 
