@@ -153,14 +153,16 @@ if test "$ruby_available" = "yes"; then
   rbconfig="$RUBY -rrbconfig -e "
 
   changequote(<<, >>)
-  for var_name in archdir sitearchdir CFLAGS LIBRUBYARG LIBS libdir; do
+  for var_name in archdir sitearchdir venderarchdir arch \
+      	       	  CFLAGS LIBRUBYARG LIBS libdir; do
     rbconfig_tmp=`$rbconfig "print Config::CONFIG['$var_name']"`
     eval "rbconfig_$var_name=\"$rbconfig_tmp\""
   done
   changequote([, ])
 
-  RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_archdir "
   RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_sitearchdir "
+  RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_venderarchdir "
+  RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_archdir "
   RUBY_CFLAGS="$RUBY_CFLAGS $rbconfig_CFLAGS "
   RUBY_LIBS="$rbconfig_LIBRUBYARG $rbconfig_LIBS"
   RUBY_LDFLAGS="-L$rbconfig_libdir"
@@ -225,10 +227,16 @@ dnl Check for path.
 dnl **************************************************************
 
 moduledir='$(pkglibdir)/module'
+module_controllerdir='$(moduledir)/controller'
 AC_SUBST(moduledir)
+AC_SUBST(module_controllerdir)
 
 bindingdir='$(pkglibdir)/binding'
+binding_extdir='$(bindingdir)/ext'
+binding_libdir='$(bindingdir)/lib'
 AC_SUBST(bindingdir)
+AC_SUBST(binding_extdir)
+AC_SUBST(binding_libdir)
 
 dnl **************************************************************
 dnl Check for SF.net.
@@ -268,7 +276,9 @@ MILTER_MANAGER_CFLAGS="\$(MILTER_CLIENT_CFLAGS) \$(MILTER_SERVER_CFLAGS)"
 MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS \$(RUBY_CFLAGS)"
 MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS \$(COVERAGE_CFLAGS)"
 MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DG_DISABLE_DEPRECATED"
-MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DMILTER_MANAGER_CONTROLLER_MODULE_DIR=\\\"\$(moduledir)\\\""
+MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DCONTROLLER_MODULE_DIR=\\\"\$(module_controllerdir)\\\""
+MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DBINDING_EXT_DIR=\\\"\$(binding_extdir)\\\""
+MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DBINDING_LIB_DIR=\\\"\$(binding_libdir)\\\""
 AC_SUBST(MILTER_MANAGER_CFLAGS)
 MILTER_MANAGER_LIBS="\$(MILTER_CLIENT_LIBS) \$(MILTER_SERVER_LIBS)"
 MILTER_MANAGER_LIBS="$MILTER_MANAGER_LIBS \$(SERVER_LIBS)"

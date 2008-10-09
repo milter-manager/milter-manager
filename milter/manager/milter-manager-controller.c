@@ -39,7 +39,7 @@ _milter_manager_controller_module_dir (void)
     if (dir)
         return dir;
 
-    return MILTER_MANAGER_CONTROLLER_MODULE_DIR;
+    return CONTROLLER_MODULE_DIR;
 }
 
 static MilterManagerModule *

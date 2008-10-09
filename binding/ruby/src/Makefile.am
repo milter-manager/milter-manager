@@ -12,7 +12,7 @@ AM_LDFLAGS =			\
 
 CLEANFILES = *.gcno *.gcda
 
-binding_LTLIBRARIES =		\
+binding_ext_LTLIBRARIES =	\
 	milter_manager.la
 
 milter_manager_la_SOURCES =			\

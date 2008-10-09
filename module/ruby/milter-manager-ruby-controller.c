@@ -244,6 +244,8 @@ init_ruby (void)
     ruby_script(argv[0]);
     ruby_set_argv(argc, argv);
     rb_argv0 = rb_gv_get("$PROGRAM_NAME");
+    ruby_incpush(BINDING_LIB_DIR);
+    ruby_incpush(BINDING_EXT_DIR);
     ruby_init_loadpath();
     load_libraries();
 }
