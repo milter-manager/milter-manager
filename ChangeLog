@@ -1,5 +1,7 @@
 2008-10-09  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager.c: handle SIGINT.
+
 	* module/controller/: create.
 
 	* module/ruby/: move to ...

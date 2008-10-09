@@ -24,9 +24,12 @@
 #include <locale.h>
 #include <glib/gi18n.h>
 
+#include <signal.h>
+
 #include "../manager.h"
 
 static gboolean initialized = FALSE;
+static MilterClient *current_client = NULL;
 
 void
 milter_manager_init (int *argc, char ***argv)
@@ -262,18 +265,30 @@ context_teardown (MilterClientContext *context, gpointer user_data)
 {
 }
 
+static void
+shutdown_client (int signum)
+{
+    if (current_client)
+        milter_client_shutdown(current_client);
+}
+
 void
 milter_manager_main (void)
 {
     MilterClient *client;
+    void (*sigint_handler) (int signum);
 
     client = milter_client_new();
     milter_client_set_connection_spec(client, "inet:9999", NULL);
     milter_client_set_context_setup_func(client, context_setup, NULL);
     milter_client_set_context_teardown_func(client, context_teardown, NULL);
-    milter_client_main(client);
-}
 
+    current_client = client;
+    sigint_handler = signal(SIGINT, shutdown_client);
+    milter_client_main(client);
+    signal(SIGINT, sigint_handler);
+    current_client = NULL;
+}
 
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
