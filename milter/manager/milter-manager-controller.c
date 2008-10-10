@@ -137,22 +137,37 @@ milter_manager_controller_new (const gchar *name,
 }
 
 void
+milter_manager_controller_add_load_path (MilterManagerController *controller,
+                                         const gchar *path)
+{
+    MilterManagerControllerClass *controller_class;
+
+    controller_class = MILTER_MANAGER_CONTROLLER_GET_CLASS(controller);
+    if (controller_class->add_load_path)
+        controller_class->add_load_path(controller, path);
+}
+
+void
 milter_manager_controller_load (MilterManagerController *controller,
                                 const gchar *file_name)
 {
-    if (MILTER_MANAGER_CONTROLLER_GET_CLASS(controller)->load)
-        MILTER_MANAGER_CONTROLLER_GET_CLASS(controller)->load(controller,
-                                                              file_name);
+    MilterManagerControllerClass *controller_class;
+
+    controller_class = MILTER_MANAGER_CONTROLLER_GET_CLASS(controller);
+    if (controller_class->load)
+        controller_class->load(controller, file_name);
 }
 
 MilterStatus
 milter_manager_controller_negotiate (MilterManagerController *controller,
                                      MilterOption         *option)
 {
-    if (MILTER_MANAGER_CONTROLLER_GET_CLASS(controller)->negotiate)
-        MILTER_MANAGER_CONTROLLER_GET_CLASS(controller)->negotiate(controller,
-                                                                   option);
-    return MILTER_STATUS_DEFAULT;
+    MilterManagerControllerClass *controller_class;
+
+    controller_class = MILTER_MANAGER_CONTROLLER_GET_CLASS(controller);
+    if (controller_class->negotiate)
+        return controller_class->negotiate(controller, option);
+    return MILTER_STATUS_REJECT;
 }
 
 MilterStatus
@@ -161,11 +176,12 @@ milter_manager_controller_connect (MilterManagerController *controller,
                                    struct sockaddr      *address,
                                    socklen_t             address_length)
 {
-    if (MILTER_MANAGER_CONTROLLER_GET_CLASS(controller)->connect)
-        MILTER_MANAGER_CONTROLLER_GET_CLASS(controller)->connect(controller,
-                                                        host_name,
-                                                        address,
-                                                        address_length);
+    MilterManagerControllerClass *controller_class;
+
+    controller_class = MILTER_MANAGER_CONTROLLER_GET_CLASS(controller);
+    if (controller_class->connect)
+        controller_class->connect(controller, host_name,
+                                  address, address_length);
     return MILTER_STATUS_DEFAULT;
 }
 
@@ -173,8 +189,11 @@ MilterStatus
 milter_manager_controller_helo (MilterManagerController *controller,
                                 const gchar          *fqdn)
 {
-    if (MILTER_MANAGER_CONTROLLER_GET_CLASS(controller)->helo)
-        MILTER_MANAGER_CONTROLLER_GET_CLASS(controller)->helo(controller, fqdn);
+    MilterManagerControllerClass *controller_class;
+
+    controller_class = MILTER_MANAGER_CONTROLLER_GET_CLASS(controller);
+    if (controller_class->helo)
+        return controller_class->helo(controller, fqdn);
     return MILTER_STATUS_DEFAULT;
 }
 
@@ -182,9 +201,11 @@ MilterStatus
 milter_manager_controller_envelope_from (MilterManagerController *controller,
                                          const gchar          *from)
 {
-    if (MILTER_MANAGER_CONTROLLER_GET_CLASS(controller)->envelope_from)
-        MILTER_MANAGER_CONTROLLER_GET_CLASS(controller)->envelope_from(controller,
-                                                                       from);
+    MilterManagerControllerClass *controller_class;
+
+    controller_class = MILTER_MANAGER_CONTROLLER_GET_CLASS(controller);
+    if (controller_class->envelope_from)
+        return controller_class->envelope_from(controller, from);
     return MILTER_STATUS_DEFAULT;
 }
 
@@ -192,17 +213,22 @@ MilterStatus
 milter_manager_controller_envelope_receipt (MilterManagerController *controller,
                                             const gchar          *receipt)
 {
-    if (MILTER_MANAGER_CONTROLLER_GET_CLASS(controller)->envelope_receipt)
-        MILTER_MANAGER_CONTROLLER_GET_CLASS(controller)->envelope_receipt(controller,
-                                                                          receipt);
+    MilterManagerControllerClass *controller_class;
+
+    controller_class = MILTER_MANAGER_CONTROLLER_GET_CLASS(controller);
+    if (controller_class->envelope_receipt)
+        return controller_class->envelope_receipt(controller, receipt);
     return MILTER_STATUS_DEFAULT;
 }
 
 MilterStatus
 milter_manager_controller_data (MilterManagerController *controller)
 {
-    if (MILTER_MANAGER_CONTROLLER_GET_CLASS(controller)->data)
-        MILTER_MANAGER_CONTROLLER_GET_CLASS(controller)->data(controller);
+    MilterManagerControllerClass *controller_class;
+
+    controller_class = MILTER_MANAGER_CONTROLLER_GET_CLASS(controller);
+    if (controller_class->data)
+        return controller_class->data(controller);
     return MILTER_STATUS_DEFAULT;
 }
 
@@ -210,8 +236,11 @@ MilterStatus
 milter_manager_controller_unknown (MilterManagerController *controller,
                                    const gchar          *command)
 {
-    if (MILTER_MANAGER_CONTROLLER_GET_CLASS(controller)->unknown)
-        MILTER_MANAGER_CONTROLLER_GET_CLASS(controller)->unknown(controller, command);
+    MilterManagerControllerClass *controller_class;
+
+    controller_class = MILTER_MANAGER_CONTROLLER_GET_CLASS(controller);
+    if (controller_class->unknown)
+        return controller_class->unknown(controller, command);
     return MILTER_STATUS_DEFAULT;
 }
 
@@ -220,17 +249,22 @@ milter_manager_controller_header (MilterManagerController *controller,
                                   const gchar          *name,
                                   const gchar          *value)
 {
-    if (MILTER_MANAGER_CONTROLLER_GET_CLASS(controller)->header)
-        MILTER_MANAGER_CONTROLLER_GET_CLASS(controller)->header(controller,
-                                                                name, value);
+    MilterManagerControllerClass *controller_class;
+
+    controller_class = MILTER_MANAGER_CONTROLLER_GET_CLASS(controller);
+    if (controller_class->header)
+        return controller_class->header(controller, name, value);
     return MILTER_STATUS_DEFAULT;
 }
 
 MilterStatus
 milter_manager_controller_end_of_header (MilterManagerController *controller)
 {
-    if (MILTER_MANAGER_CONTROLLER_GET_CLASS(controller)->end_of_header)
-        MILTER_MANAGER_CONTROLLER_GET_CLASS(controller)->end_of_header(controller);
+    MilterManagerControllerClass *controller_class;
+
+    controller_class = MILTER_MANAGER_CONTROLLER_GET_CLASS(controller);
+    if (controller_class->end_of_header)
+        return controller_class->end_of_header(controller);
     return MILTER_STATUS_DEFAULT;
 }
 
@@ -239,33 +273,44 @@ milter_manager_controller_body (MilterManagerController *controller,
                              const guchar         *chunk,
                              gsize                 size)
 {
-    if (MILTER_MANAGER_CONTROLLER_GET_CLASS(controller)->body)
-        MILTER_MANAGER_CONTROLLER_GET_CLASS(controller)->body(controller,
-                                                              chunk, size);
+    MilterManagerControllerClass *controller_class;
+
+    controller_class = MILTER_MANAGER_CONTROLLER_GET_CLASS(controller);
+    if (controller_class->body)
+        return controller_class->body(controller, chunk, size);
     return MILTER_STATUS_DEFAULT;
 }
 
 MilterStatus
 milter_manager_controller_end_of_message (MilterManagerController *controller)
 {
-    if (MILTER_MANAGER_CONTROLLER_GET_CLASS(controller)->end_of_message)
-        MILTER_MANAGER_CONTROLLER_GET_CLASS(controller)->end_of_message(controller);
+    MilterManagerControllerClass *controller_class;
+
+    controller_class = MILTER_MANAGER_CONTROLLER_GET_CLASS(controller);
+    if (controller_class->end_of_message)
+        return controller_class->end_of_message(controller);
     return MILTER_STATUS_DEFAULT;
 }
 
 MilterStatus
 milter_manager_controller_close (MilterManagerController *controller)
 {
-    if (MILTER_MANAGER_CONTROLLER_GET_CLASS(controller)->close)
-        MILTER_MANAGER_CONTROLLER_GET_CLASS(controller)->close(controller);
+    MilterManagerControllerClass *controller_class;
+
+    controller_class = MILTER_MANAGER_CONTROLLER_GET_CLASS(controller);
+    if (controller_class->close)
+        return controller_class->close(controller);
     return MILTER_STATUS_DEFAULT;
 }
 
 MilterStatus
 milter_manager_controller_abort (MilterManagerController *controller)
 {
-    if (MILTER_MANAGER_CONTROLLER_GET_CLASS(controller)->abort)
-        MILTER_MANAGER_CONTROLLER_GET_CLASS(controller)->abort(controller);
+    MilterManagerControllerClass *controller_class;
+
+    controller_class = MILTER_MANAGER_CONTROLLER_GET_CLASS(controller);
+    if (controller_class->abort)
+        return controller_class->abort(controller);
     return MILTER_STATUS_DEFAULT;
 }
 

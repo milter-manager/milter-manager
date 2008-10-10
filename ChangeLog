@@ -1,5 +1,12 @@
 2008-10-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/module/milter-manager-controller.[ch],
+	module/controller/ruby/milter-manager-ruby-controller.c,
+	binding/ruby/lib/milter/manager.rb,
+	milter/manager/milter-manager.c:
+	- search a configure file in load paths.
+	- use status returned by controller.
+
 	* configure.ac, Makefile.am, data/Makefile.am,
 	data/milter-manager.conf: add sample configuration file.
 

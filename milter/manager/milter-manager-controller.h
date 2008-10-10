@@ -42,6 +42,8 @@ struct _MilterManagerControllerClass
 {
     GTypeInterface base_iface;
 
+    void         (*add_load_path)      (MilterManagerController *controller,
+                                        const gchar             *path);
     void         (*load)               (MilterManagerController *controller,
                                         const gchar             *file_name);
     MilterStatus (*negotiate)          (MilterManagerController *controller,
@@ -81,6 +83,9 @@ MilterManagerController *milter_manager_controller_new      (const gchar *name,
                                                              const gchar *first_property,
                                                              ...);
 
+void                  milter_manager_controller_add_load_path
+                                          (MilterManagerController *controller,
+                                           const gchar             *path);
 void                  milter_manager_controller_load
                                           (MilterManagerController *controller,
                                            const gchar             *file_name);

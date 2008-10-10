@@ -70,6 +70,8 @@ static void get_property   (GObject         *object,
                             GValue          *value,
                             GParamSpec      *pspec);
 
+static void         real_add_load_path    (MilterManagerController *controller,
+                                           const gchar             *path);
 static void         real_load             (MilterManagerController *controller,
                                            const gchar             *file_name);
 static MilterStatus real_negotiate        (MilterManagerController *controller,
@@ -130,6 +132,7 @@ init (MilterManagerRubyController *controller)
 static void
 controller_init (MilterManagerControllerClass *controller)
 {
+    controller->add_load_path = real_add_load_path;
     controller->load = real_load;
     controller->negotiate = real_negotiate;
     controller->connect = real_connect;
@@ -414,6 +417,17 @@ get_property (GObject    *object,
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
+}
+
+static void
+real_add_load_path (MilterManagerController *_controller, const gchar *path)
+{
+    MilterManagerRubyController *controller;
+
+    controller = MILTER_MANAGER_RUBY_CONTROLLER(_controller);
+    rb_funcall_protect(rb_mMilterManagerConfigurationLoader,
+                       rb_intern("add_load_path"), 1,
+                       rb_str_new2(path));
 }
 
 static void

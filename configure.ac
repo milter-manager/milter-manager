@@ -239,6 +239,9 @@ AC_SUBST(bindingdir)
 AC_SUBST(binding_extdir)
 AC_SUBST(binding_libdir)
 
+pkgsysconfdir="\$(sysconfdir)/$PACKAGE_NAME"
+AC_SUBST(pkgsysconfdir)
+
 dnl **************************************************************
 dnl Check for SF.net.
 dnl **************************************************************
@@ -280,6 +283,7 @@ MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DG_DISABLE_DEPRECATED"
 MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DCONTROLLER_MODULE_DIR=\\\"\$(module_controllerdir)\\\""
 MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DBINDING_EXT_DIR=\\\"\$(binding_extdir)\\\""
 MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DBINDING_LIB_DIR=\\\"\$(binding_libdir)\\\""
+MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DCONFIG_DIR=\\\"\$(pkgsysconfdir)\\\""
 AC_SUBST(MILTER_MANAGER_CFLAGS)
 MILTER_MANAGER_LIBS="\$(MILTER_CLIENT_LIBS) \$(MILTER_SERVER_LIBS)"
 MILTER_MANAGER_LIBS="$MILTER_MANAGER_LIBS \$(SERVER_LIBS)"
