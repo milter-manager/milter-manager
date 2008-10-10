@@ -1,5 +1,13 @@
 2008-10-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* module/controller/ruby/milter-manager-ruby-controller.c: add
+	experimental server side handling. MilterServerContext should emit
+	negotiate-response signal.
+
+	* data/milter-manager.conf: use spec.
+
+	* binding/ruby/lib/milter/manager.rb: support connection_spec.
+
 	* milter/module/milter-manager-controller.[ch],
 	module/controller/ruby/milter-manager-ruby-controller.c,
 	binding/ruby/lib/milter/manager.rb,

@@ -443,10 +443,52 @@ real_load (MilterManagerController *_controller, const gchar *file_name)
 }
 
 static MilterStatus
-real_negotiate (MilterManagerController *controller, MilterOption *option)
+cb_continue (MilterServerContext *context, gpointer user_data)
 {
-    rb_p(rb_str_new2("negotiate"));
-    return MILTER_STATUS_DEFAULT;
+    gboolean *waiting = user_data;
+    *waiting = FALSE;
+    return MILTER_STATUS_NOT_CHANGE;
+}
+
+static MilterStatus
+cb_negotiate (MilterServerContext *context, MilterOption *option,
+              gpointer user_data)
+{
+    gboolean *waiting = user_data;
+    *waiting = FALSE;
+    return MILTER_STATUS_NOT_CHANGE;
+}
+
+static MilterStatus
+real_negotiate (MilterManagerController *_controller, MilterOption *option)
+{
+    MilterManagerRubyController *controller;
+    const GList *milters;
+
+    controller = MILTER_MANAGER_RUBY_CONTROLLER(_controller);
+    milters = milter_manager_configuration_get_child_milters(controller->configuration);
+    if (milters) {
+        gboolean waiting = TRUE;
+        GError *error = NULL;
+        MilterServerContext *context = milters->data;
+
+        milter_server_context_establish_connection(context, &error);
+        if (error) {
+            g_print("%s\n", error->message);
+            g_error_free(error);
+            return MILTER_STATUS_REJECT;
+        }
+        g_signal_connect(context, "continue", G_CALLBACK(cb_continue), &waiting);
+        g_signal_connect(context, "negotiate",
+                         G_CALLBACK(cb_negotiate), &waiting);
+        milter_server_context_negotiate(context, option);
+        while (waiting)
+            g_main_context_iteration(NULL, TRUE);
+        g_print("XXX\n");
+        return MILTER_STATUS_CONTINUE;
+    }
+
+    return MILTER_STATUS_NOT_CHANGE;
 }
 
 static MilterStatus
@@ -456,42 +498,42 @@ real_connect (MilterManagerController *controller,
               socklen_t                address_length)
 {
      rb_p(rb_str_new2("connect"));
-    return MILTER_STATUS_DEFAULT;
+    return MILTER_STATUS_NOT_CHANGE;
 }
 
 static MilterStatus
 real_helo (MilterManagerController *controller, const gchar *fqdn)
 {
      rb_p(rb_str_new2("helo"));
-    return MILTER_STATUS_DEFAULT;
+    return MILTER_STATUS_NOT_CHANGE;
 }
 
 static MilterStatus
 real_envelope_from (MilterManagerController *controller, const gchar *from)
 {
      rb_p(rb_str_new2("envelope-from"));
-    return MILTER_STATUS_DEFAULT;
+    return MILTER_STATUS_NOT_CHANGE;
 }
 
 static MilterStatus
 real_envelope_receipt (MilterManagerController *controller, const gchar *receipt)
 {
      rb_p(rb_str_new2("envelope-receipt"));
-    return MILTER_STATUS_DEFAULT;
+    return MILTER_STATUS_NOT_CHANGE;
 }
 
 static MilterStatus
 real_data (MilterManagerController *controller)
 {
      rb_p(rb_str_new2("data"));
-    return MILTER_STATUS_DEFAULT;
+    return MILTER_STATUS_NOT_CHANGE;
 }
 
 static MilterStatus
 real_unknown (MilterManagerController *controller, const gchar *command)
 {
      rb_p(rb_str_new2("unknown"));
-    return MILTER_STATUS_DEFAULT;
+    return MILTER_STATUS_NOT_CHANGE;
 }
 
 static MilterStatus
@@ -499,42 +541,42 @@ real_header (MilterManagerController *controller,
              const gchar *name, const gchar *value)
 {
      rb_p(rb_str_new2("header"));
-    return MILTER_STATUS_DEFAULT;
+    return MILTER_STATUS_NOT_CHANGE;
 }
 
 static MilterStatus
 real_end_of_header (MilterManagerController *controller)
 {
      rb_p(rb_str_new2("end-of-header"));
-    return MILTER_STATUS_DEFAULT;
+    return MILTER_STATUS_NOT_CHANGE;
 }
 
 static MilterStatus
 real_body (MilterManagerController *controller, const guchar *chunk, gsize size)
 {
      rb_p(rb_str_new2("body"));
-    return MILTER_STATUS_DEFAULT;
+    return MILTER_STATUS_NOT_CHANGE;
 }
 
 static MilterStatus
 real_end_of_message (MilterManagerController *controller)
 {
      rb_p(rb_str_new2("end-of-body"));
-    return MILTER_STATUS_DEFAULT;
+    return MILTER_STATUS_NOT_CHANGE;
 }
 
 static MilterStatus
 real_close (MilterManagerController *controller)
 {
      rb_p(rb_str_new2("close"));
-    return MILTER_STATUS_DEFAULT;
+    return MILTER_STATUS_NOT_CHANGE;
 }
 
 static MilterStatus
 real_abort (MilterManagerController *controller)
 {
      rb_p(rb_str_new2("abort"));
-    return MILTER_STATUS_DEFAULT;
+    return MILTER_STATUS_NOT_CHANGE;
 }
 
 /*

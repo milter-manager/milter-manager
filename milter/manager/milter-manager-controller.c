@@ -167,7 +167,7 @@ milter_manager_controller_negotiate (MilterManagerController *controller,
     controller_class = MILTER_MANAGER_CONTROLLER_GET_CLASS(controller);
     if (controller_class->negotiate)
         return controller_class->negotiate(controller, option);
-    return MILTER_STATUS_REJECT;
+    return MILTER_STATUS_DEFAULT;
 }
 
 MilterStatus
@@ -270,8 +270,8 @@ milter_manager_controller_end_of_header (MilterManagerController *controller)
 
 MilterStatus
 milter_manager_controller_body (MilterManagerController *controller,
-                             const guchar         *chunk,
-                             gsize                 size)
+                                const guchar         *chunk,
+                                gsize                 size)
 {
     MilterManagerControllerClass *controller_class;
 
