@@ -1,5 +1,8 @@
 2008-10-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* configure.ac, Makefile.am, data/Makefile.am,
+	data/milter-manager.conf: add sample configuration file.
+
 	* binding/ruby/src/: bind some methods for
 	MilterManagerConfiguration and MilterManagerChildMilter.
 

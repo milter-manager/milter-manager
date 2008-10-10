@@ -298,6 +298,7 @@ AC_CONFIG_FILES([Makefile
 		 module/controller/Makefile
 		 module/controller/ruby/Makefile
 		 src/Makefile
+		 data/Makefile
 		 test/Makefile
 		 test/lib/Makefile
 		 po/Makefile.in])
