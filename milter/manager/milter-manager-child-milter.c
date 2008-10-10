@@ -31,7 +31,13 @@
 typedef struct _MilterManagerChildMilterPrivate	MilterManagerChildMilterPrivate;
 struct _MilterManagerChildMilterPrivate
 {
-    gpointer private_data;
+    gchar *name;
+};
+
+enum
+{
+    PROP_0,
+    PROP_NAME
 };
 
 G_DEFINE_TYPE(MilterManagerChildMilter, milter_manager_child_milter,
@@ -51,12 +57,20 @@ static void
 milter_manager_child_milter_class_init (MilterManagerChildMilterClass *klass)
 {
     GObjectClass *gobject_class;
+    GParamSpec *spec;
 
     gobject_class = G_OBJECT_CLASS(klass);
 
     gobject_class->dispose      = dispose;
     gobject_class->set_property = set_property;
     gobject_class->get_property = get_property;
+
+    spec = g_param_spec_string("name",
+                               "Name",
+                               "The name of the child milter",
+                               NULL,
+                               G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_NAME, spec);
 
     g_type_class_add_private(gobject_class,
                              sizeof(MilterManagerChildMilterPrivate));
@@ -68,7 +82,7 @@ milter_manager_child_milter_init (MilterManagerChildMilter *milter)
     MilterManagerChildMilterPrivate *priv;
 
     priv = MILTER_MANAGER_CHILD_MILTER_GET_PRIVATE(milter);
-    priv->private_data = NULL;
+    priv->name = NULL;
 }
 
 static void
@@ -78,8 +92,9 @@ dispose (GObject *object)
 
     priv = MILTER_MANAGER_CHILD_MILTER_GET_PRIVATE(object);
 
-    if (priv->private_data) {
-        priv->private_data = NULL;
+    if (priv->name) {
+        g_free(priv->name);
+        priv->name = NULL;
     }
 
     G_OBJECT_CLASS(milter_manager_child_milter_parent_class)->dispose(object);
@@ -95,6 +110,11 @@ set_property (GObject      *object,
 
     priv = MILTER_MANAGER_CHILD_MILTER_GET_PRIVATE(object);
     switch (prop_id) {
+      case PROP_NAME:
+        if (priv->name)
+            g_free(priv->name);
+        priv->name = g_value_dup_string(value);
+        break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -111,6 +131,9 @@ get_property (GObject    *object,
 
     priv = MILTER_MANAGER_CHILD_MILTER_GET_PRIVATE(object);
     switch (prop_id) {
+      case PROP_NAME:
+        g_value_set_string(value, priv->name);
+        break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -124,9 +147,10 @@ milter_manager_child_milter_error_quark (void)
 }
 
 MilterManagerChildMilter *
-milter_manager_child_milter_new (void)
+milter_manager_child_milter_new (const gchar *name)
 {
     return g_object_new(MILTER_MANAGER_TYPE_CHILD_MILTER,
+                        "name", name,
                         NULL);
 }
 

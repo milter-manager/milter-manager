@@ -60,7 +60,7 @@ GQuark                milter_manager_child_milter_error_quark (void);
 
 GType                 milter_manager_child_milter_get_type    (void) G_GNUC_CONST;
 
-MilterManagerChildMilter *milter_manager_child_milter_new     (void);
+MilterManagerChildMilter *milter_manager_child_milter_new     (const gchar *name);
 
 #endif /* __MILTER_MANAGER_CHILD_MILTER_H__ */
 

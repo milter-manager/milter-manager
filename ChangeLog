@@ -1,5 +1,13 @@
 2008-10-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/src/: bind some methods for
+	MilterManagerConfiguration and MilterManagerChildMilter.
+
+	* binding/ruby/lib/milter/manager.rb: support child milter define
+	API.
+
+	* milter/manager/milter-manager-child-milter.[ch]: accept name.
+
 	* milter/manager/milter-manager.c: show log to stdout.
 
 	* milter/manager/milter-manager-ruby-internal.h: support rb_errinfo().

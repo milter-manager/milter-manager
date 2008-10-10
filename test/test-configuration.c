@@ -63,7 +63,7 @@ test_child_milters (void)
 {
     gcut_assert_equal_child_milters(NULL);
 
-    milter = milter_manager_child_milter_new();
+    milter = milter_manager_child_milter_new("child-milter");
     milter_manager_configuration_add_child_milter(config, milter);
 
     expected_child_milters = g_list_append(NULL, milter);
