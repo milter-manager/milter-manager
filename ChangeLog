@@ -1,8 +1,18 @@
 2008-10-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager.c: show log to stdout.
+
+	* milter/manager/milter-manager-ruby-internal.h: support rb_errinfo().
+
+	* module/controller/ruby/Makefile.am: support milter_logger().
+
+	* module/controller/ruby/milter-manager-ruby-controller.c: guard
+	error on Ruby.
+
 	* milter/manager/milter-manager-context.[ch]: remove.
 	* milter/manager/milter-manager.c: use MiliterManagerController
 	directly.
+
 	* milter/manage/milter-manager-controller.[ch],
 	module/controller/ruby/milter-manager-ruby-controller.c: load()
 	receives file name.

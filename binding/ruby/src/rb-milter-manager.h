@@ -6,6 +6,6 @@
 #include <rb-milter.h>
 #include <milter/manager.h>
 
-VALUE rb_mMilterManager;
+extern VALUE rb_mMilterManager;
 
 #endif

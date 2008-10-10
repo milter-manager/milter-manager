@@ -58,6 +58,8 @@ enum
 static GType milter_manager_type_ruby_controller = 0;
 static GObjectClass *parent_class;
 
+static VALUE rb_mMilterManagerConfigurationLoader = Qnil;
+
 static void dispose        (GObject         *object);
 static void set_property   (GObject         *object,
                             guint            prop_id,
@@ -227,10 +229,77 @@ ruby_init_without_signal_change (void)
 #endif
 }
 
+typedef struct _FuncallArguments
+{
+    VALUE receiver;
+    ID name;
+    int argc;
+    VALUE *argv;
+} FuncallArguments;
+
+static VALUE
+invoke_rb_funcall2 (VALUE data)
+{
+    FuncallArguments *arguments = (FuncallArguments *)data;
+
+    return rb_funcall2(arguments->receiver, arguments->name,
+                       arguments->argc, arguments->argv);
+}
+
+static VALUE
+rb_funcall_protect (VALUE receiver, ID name, guint argc, ...)
+{
+    VALUE *argv;
+    va_list args;
+    VALUE result, error;
+    FuncallArguments arguments_data;
+    int state = 0;
+    guint i;
+
+    argv = ALLOC_N(VALUE, argc);
+    va_start(args, argc);
+    for (i = 0; i < argc; i++) {
+        argv[i] = va_arg(args, VALUE);
+    }
+    arguments_data.receiver = receiver;
+    arguments_data.name = name;
+    arguments_data.argc = argc;
+    arguments_data.argv = argv;
+    result = rb_protect(invoke_rb_funcall2,
+                        (VALUE)&arguments_data,
+                        &state);
+    va_end(args);
+
+    error = rb_errinfo();
+    if (state && !NIL_P(error)) {
+        VALUE message, class_name, backtrace;
+        long i;
+
+        message = rb_funcall(error, rb_intern("message"), 0);
+        class_name = rb_funcall(CLASS_OF(error), rb_intern("to_s"), 0);
+        milter_error("%s (%s)", RVAL2CSTR(message), RVAL2CSTR(class_name));
+        backtrace = rb_funcall(error, rb_intern("backtrace"), 0);
+        for (i = 0; i < RARRAY(backtrace)->len; i++) {
+            milter_error("%s", RVAL2CSTR(RARRAY(backtrace)->ptr[i]));
+        }
+    }
+
+    return result;
+}
+
+
 static void
 load_libraries (void)
 {
-    rb_funcall(Qnil, rb_intern("require"), 1, rb_str_new2("milter/manager"));
+    VALUE milter, milter_manager;
+
+    rb_funcall_protect(Qnil, rb_intern("require"),
+                       1, rb_str_new2("milter/manager"));
+
+    milter = rb_const_get(rb_cObject, rb_intern("Milter"));
+    milter_manager = rb_const_get(milter, rb_intern("Manager"));
+    rb_mMilterManagerConfigurationLoader =
+        rb_const_get(milter_manager, rb_intern("ConfigurationLoader"));
 }
 
 static void
@@ -353,10 +422,10 @@ real_load (MilterManagerController *_controller, const gchar *file_name)
     MilterManagerRubyController *controller;
 
     controller = MILTER_MANAGER_RUBY_CONTROLLER(_controller);
-    rb_funcall(rb_const_get(rb_mMilterManager, rb_intern("ConfigurationLoader")),
-               rb_intern("load"), 2,
-               GOBJ2RVAL(controller->configuration),
-               rb_str_new2(file_name));
+    rb_funcall_protect(rb_mMilterManagerConfigurationLoader,
+                       rb_intern("load"), 2,
+                       GOBJ2RVAL(controller->configuration),
+                       rb_str_new2(file_name));
 }
 
 static MilterStatus

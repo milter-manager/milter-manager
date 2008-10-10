@@ -28,6 +28,10 @@
 #undef PACKAGE_STRING
 #undef PACKAGE_BUGREPORT
 
+#ifndef HAVE_RB_ERRINFO
+#  define rb_errinfo() (ruby_errinfo)
+#endif
+
 #endif /* __MILTER_MANAGER_RUBY_INTERNAL_H__ */
 
 /*

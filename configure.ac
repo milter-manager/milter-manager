@@ -191,6 +191,7 @@ if test "$ruby_available" = "yes"; then
 		      AC_MSG_WARN([$ruby_disable_message])],
 		     [$ruby_undef_package_macros])
   fi
+  AC_CHECK_FUNC("rb_errinfo")
   CFLAGS=$_SAVE_CFLAGS
 fi
 

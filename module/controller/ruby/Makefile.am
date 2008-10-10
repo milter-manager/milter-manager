@@ -3,8 +3,8 @@ INCLUDES = 					\
 	 -I$(top_srcdir)			\
 	 -I$(top_srcdir)/binding/ruby/src
 
-AM_CFLAGS = 				\
-	-DLOCALEDIR=\""$(localedir)"\"	\
+AM_CFLAGS = 								\
+	-DMILTER_LOG_DOMAIN=\""milter-manager-ruby-controller"\"	\
 	$(MILTER_MANAGER_CFLAGS)
 
 LIBS =					\
@@ -12,7 +12,6 @@ LIBS =					\
 
 AM_LDFLAGS =				\
 	-module				\
-	-rpath $(module_controllerdir)	\
 	-avoid-version			\
 	-no-undefined
 
