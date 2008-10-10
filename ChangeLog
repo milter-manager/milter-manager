@@ -1,3 +1,12 @@
+2008-10-10  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/manager/milter-manager-context.[ch]: remove.
+	* milter/manager/milter-manager.c: use MiliterManagerController
+	directly.
+	* milter/manage/milter-manager-controller.[ch],
+	module/controller/ruby/milter-manager-ruby-controller.c: load()
+	receives file name.
+
 2008-10-09  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/manager/milter-manager.c: handle SIGINT.

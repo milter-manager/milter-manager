@@ -64,9 +64,9 @@ static MilterStatus
 cb_client_negotiate (MilterClientContext *context, MilterOption *option,
                      gpointer user_data)
 {
-    MilterManagerContext *manager_context = user_data;
+    MilterManagerController *controller = user_data;
 
-    milter_manager_context_negotiate(manager_context, option);
+    milter_manager_controller_negotiate(controller, option);
 
     return MILTER_STATUS_DEFAULT;
 }
@@ -76,10 +76,10 @@ cb_client_connect (MilterClientContext *context, const gchar *host_name,
                    struct sockaddr *address, socklen_t address_length,
                    gpointer user_data)
 {
-    MilterManagerContext *manager_context = user_data;
+    MilterManagerController *controller = user_data;
 
-    milter_manager_context_connect(manager_context, host_name,
-                                   address, address_length);
+    milter_manager_controller_connect(controller, host_name,
+                                      address, address_length);
 
     return MILTER_STATUS_DEFAULT;
 }
@@ -88,9 +88,9 @@ static MilterStatus
 cb_client_helo (MilterClientContext *context, const gchar *fqdn,
                 gpointer user_data)
 {
-    MilterManagerContext *manager_context = user_data;
+    MilterManagerController *controller = user_data;
 
-    milter_manager_context_helo(manager_context, fqdn);
+    milter_manager_controller_helo(controller, fqdn);
 
     return MILTER_STATUS_DEFAULT;
 }
@@ -99,9 +99,9 @@ static MilterStatus
 cb_client_envelope_from (MilterClientContext *context, const gchar *from,
                          gpointer user_data)
 {
-    MilterManagerContext *manager_context = user_data;
+    MilterManagerController *controller = user_data;
 
-    milter_manager_context_envelope_from(manager_context, from);
+    milter_manager_controller_envelope_from(controller, from);
 
     return MILTER_STATUS_DEFAULT;
 }
@@ -110,9 +110,9 @@ static MilterStatus
 cb_client_envelope_receipt (MilterClientContext *context, const gchar *receipt,
                             gpointer user_data)
 {
-    MilterManagerContext *manager_context = user_data;
+    MilterManagerController *controller = user_data;
 
-    milter_manager_context_envelope_receipt(manager_context, receipt);
+    milter_manager_controller_envelope_receipt(controller, receipt);
 
     return MILTER_STATUS_DEFAULT;
 }
@@ -120,9 +120,9 @@ cb_client_envelope_receipt (MilterClientContext *context, const gchar *receipt,
 static MilterStatus
 cb_client_data (MilterClientContext *context, gpointer user_data)
 {
-    MilterManagerContext *manager_context = user_data;
+    MilterManagerController *controller = user_data;
 
-    milter_manager_context_data(manager_context);
+    milter_manager_controller_data(controller);
 
     return MILTER_STATUS_DEFAULT;
 }
@@ -131,9 +131,9 @@ static MilterStatus
 cb_client_unknown (MilterClientContext *context, const gchar *command,
                    gpointer user_data)
 {
-    MilterManagerContext *manager_context = user_data;
+    MilterManagerController *controller = user_data;
 
-    milter_manager_context_unknown(manager_context, command);
+    milter_manager_controller_unknown(controller, command);
 
     return MILTER_STATUS_DEFAULT;
 }
@@ -143,9 +143,9 @@ cb_client_header (MilterClientContext *context,
                   const gchar *name, const gchar *value,
                   gpointer user_data)
 {
-    MilterManagerContext *manager_context = user_data;
+    MilterManagerController *controller = user_data;
 
-    milter_manager_context_header(manager_context, name, value);
+    milter_manager_controller_header(controller, name, value);
 
     return MILTER_STATUS_DEFAULT;
 }
@@ -153,9 +153,9 @@ cb_client_header (MilterClientContext *context,
 static MilterStatus
 cb_client_end_of_header (MilterClientContext *context, gpointer user_data)
 {
-    MilterManagerContext *manager_context = user_data;
+    MilterManagerController *controller = user_data;
 
-    milter_manager_context_end_of_header(manager_context);
+    milter_manager_controller_end_of_header(controller);
 
     return MILTER_STATUS_DEFAULT;
 }
@@ -164,9 +164,9 @@ static MilterStatus
 cb_client_body (MilterClientContext *context, const guchar *chunk, gsize size,
                 gpointer user_data)
 {
-    MilterManagerContext *manager_context = user_data;
+    MilterManagerController *controller = user_data;
 
-    milter_manager_context_body(manager_context, chunk, size);
+    milter_manager_controller_body(controller, chunk, size);
 
     return MILTER_STATUS_DEFAULT;
 }
@@ -174,9 +174,9 @@ cb_client_body (MilterClientContext *context, const guchar *chunk, gsize size,
 static MilterStatus
 cb_client_end_of_message (MilterClientContext *context, gpointer user_data)
 {
-    MilterManagerContext *manager_context = user_data;
+    MilterManagerController *controller = user_data;
 
-    milter_manager_context_end_of_message(manager_context);
+    milter_manager_controller_end_of_message(controller);
 
     return MILTER_STATUS_DEFAULT;
 }
@@ -184,9 +184,9 @@ cb_client_end_of_message (MilterClientContext *context, gpointer user_data)
 static MilterStatus
 cb_client_abort (MilterClientContext *context, gpointer user_data)
 {
-    MilterManagerContext *manager_context = user_data;
+    MilterManagerController *controller = user_data;
 
-    milter_manager_context_abort(manager_context);
+    milter_manager_controller_abort(controller);
 
     return MILTER_STATUS_DEFAULT;
 }
@@ -194,9 +194,9 @@ cb_client_abort (MilterClientContext *context, gpointer user_data)
 static MilterStatus
 cb_client_close (MilterClientContext *context, gpointer user_data)
 {
-    MilterManagerContext *manager_context = user_data;
+    MilterManagerController *controller = user_data;
 
-    milter_manager_context_close(manager_context);
+    milter_manager_controller_close(controller);
 
 #define DISCONNECT(name)                                                \
     g_signal_handlers_disconnect_by_func(context,                       \
@@ -219,29 +219,18 @@ cb_client_close (MilterClientContext *context, gpointer user_data)
 
 #undef DISCONNECT
 
-    g_object_unref(manager_context);
-
     return MILTER_STATUS_DEFAULT;
 }
 
 static void
 context_setup (MilterClientContext *context, gpointer user_data)
 {
-    MilterManagerConfiguration *configuration;
-    MilterManagerController *controller;
-    MilterManagerContext *manager_context;
-
-    configuration = milter_manager_configuration_new();
-    controller = milter_manager_controller_new("ruby",
-                                               "configuration", configuration,
-                                               NULL);
-    milter_manager_controller_load(controller, configuration);
-    manager_context = milter_manager_context_new(configuration);
+    MilterManagerController *controller = user_data;
 
 #define CONNECT(name)                                   \
     g_signal_connect(context, #name,                    \
                      G_CALLBACK(cb_client_ ## name),    \
-                     manager_context)
+                     controller)
 
     CONNECT(negotiate);
     CONNECT(connect);
@@ -276,11 +265,19 @@ void
 milter_manager_main (void)
 {
     MilterClient *client;
+    MilterManagerConfiguration *configuration;
+    MilterManagerController *controller;
     void (*sigint_handler) (int signum);
+
+    configuration = milter_manager_configuration_new();
+    controller = milter_manager_controller_new("ruby",
+                                               "configuration", configuration,
+                                               NULL);
+    milter_manager_controller_load(controller, "/tmp/milter-manager.conf");
 
     client = milter_client_new();
     milter_client_set_connection_spec(client, "inet:9999", NULL);
-    milter_client_set_context_setup_func(client, context_setup, NULL);
+    milter_client_set_context_setup_func(client, context_setup, controller);
     milter_client_set_context_teardown_func(client, context_teardown, NULL);
 
     current_client = client;

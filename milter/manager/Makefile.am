@@ -19,7 +19,6 @@ MAINTAINERCLEANFILES =
 BUILT_SOURCES =
 
 milter_manager_public_headers =		\
-	milter-manager-context.h	\
 	milter-manager-configuration.h	\
 	milter-manager-child-milter.h	\
 	milter-manager-module.h		\
@@ -46,7 +45,6 @@ libmilter_manager_la_SOURCES =		\
 	milter-manager-marshalers.h	\
 	milter-manager-ruby-internal.h	\
 	milter-manager.c		\
-	milter-manager-context.c	\
 	milter-manager-configuration.c	\
 	milter-manager-child-milter.c	\
 	milter-manager-module.c		\

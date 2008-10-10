@@ -69,7 +69,7 @@ static void get_property   (GObject         *object,
                             GParamSpec      *pspec);
 
 static void         real_load             (MilterManagerController *controller,
-                                           MilterManagerConfiguration *configuration);
+                                           const gchar             *file_name);
 static MilterStatus real_negotiate        (MilterManagerController *controller,
                                            MilterOption            *option);
 static MilterStatus real_connect          (MilterManagerController *controller,
@@ -348,13 +348,15 @@ get_property (GObject    *object,
 }
 
 static void
-real_load (MilterManagerController *controller,
-           MilterManagerConfiguration *configuration)
+real_load (MilterManagerController *_controller, const gchar *file_name)
 {
+    MilterManagerRubyController *controller;
+
+    controller = MILTER_MANAGER_RUBY_CONTROLLER(_controller);
     rb_funcall(rb_const_get(rb_mMilterManager, rb_intern("ConfigurationLoader")),
                rb_intern("load"), 2,
-               GOBJ2RVAL(configuration),
-               rb_str_new2("/tmp/milter-manager.conf"));
+               GOBJ2RVAL(controller->configuration),
+               rb_str_new2(file_name));
 }
 
 static MilterStatus

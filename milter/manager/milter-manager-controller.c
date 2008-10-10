@@ -138,11 +138,11 @@ milter_manager_controller_new (const gchar *name,
 
 void
 milter_manager_controller_load (MilterManagerController *controller,
-                                MilterManagerConfiguration *configuration)
+                                const gchar *file_name)
 {
     if (MILTER_MANAGER_CONTROLLER_GET_CLASS(controller)->load)
         MILTER_MANAGER_CONTROLLER_GET_CLASS(controller)->load(controller,
-                                                              configuration);
+                                                              file_name);
 }
 
 MilterStatus
