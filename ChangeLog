@@ -1,3 +1,8 @@
+2008-10-15  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/manager/milter-manager.c: Connect to "connection-established"
+	instead of MilterClientContextSetupFunc.
+
 2008-10-10  Kouhei Sutou  <kou@cozmixng.org>
 
 	* module/controller/ruby/milter-manager-ruby-controller.c: add

@@ -213,7 +213,7 @@ cb_client_close (MilterClientContext *context, gpointer user_data)
 }
 
 static void
-context_setup (MilterClientContext *context, gpointer user_data)
+setup_context_signals (MilterClientContext *context, gpointer user_data)
 {
     MilterManagerController *controller = user_data;
 
@@ -240,15 +240,18 @@ context_setup (MilterClientContext *context, gpointer user_data)
 }
 
 static void
-context_teardown (MilterClientContext *context, gpointer user_data)
-{
-}
-
-static void
 shutdown_client (int signum)
 {
     if (current_client)
         milter_client_shutdown(current_client);
+}
+
+static void
+cb_connection_established (MilterClient *client, MilterClientContext *context,
+                           gpointer user_data)
+{
+    MilterManagerController *controller = user_data;
+    setup_context_signals(context, controller);
 }
 
 void
@@ -272,8 +275,8 @@ milter_manager_main (void)
 
     client = milter_client_new();
     milter_client_set_connection_spec(client, "inet:9999", NULL);
-    milter_client_set_context_setup_func(client, context_setup, controller);
-    milter_client_set_context_teardown_func(client, context_teardown, NULL);
+    g_signal_connect(client, "connection-established",
+                     G_CALLBACK(cb_connection_established), controller);
 
     current_client = client;
     sigint_handler = signal(SIGINT, shutdown_client);
