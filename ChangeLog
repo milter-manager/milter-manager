@@ -1,5 +1,8 @@
 2008-10-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* module/controller/ruby/milter-manager-ruby-controller.c:
+	negotiate -> negotiate-reply.
+
 	* ./: close -> quit.
 
 2008-10-15  Hiroyuki Ikezoe  <poincare@ikezoe.net>

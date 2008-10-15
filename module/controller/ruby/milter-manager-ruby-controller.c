@@ -451,8 +451,8 @@ cb_continue (MilterServerContext *context, gpointer user_data)
 }
 
 static MilterStatus
-cb_negotiate (MilterServerContext *context, MilterOption *option,
-              gpointer user_data)
+cb_negotiate_reply (MilterServerContext *context, MilterOption *option,
+                    GHashTable *macros, gpointer user_data)
 {
     gboolean *waiting = user_data;
     *waiting = FALSE;
@@ -479,8 +479,8 @@ real_negotiate (MilterManagerController *_controller, MilterOption *option)
             return MILTER_STATUS_REJECT;
         }
         g_signal_connect(context, "continue", G_CALLBACK(cb_continue), &waiting);
-        g_signal_connect(context, "negotiate",
-                         G_CALLBACK(cb_negotiate), &waiting);
+        g_signal_connect(context, "negotiate_reply",
+                         G_CALLBACK(cb_negotiate_reply), &waiting);
         milter_server_context_negotiate(context, option);
         while (waiting)
             g_main_context_iteration(NULL, TRUE);
