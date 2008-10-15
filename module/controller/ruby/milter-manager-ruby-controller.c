@@ -97,7 +97,7 @@ static MilterStatus real_body             (MilterManagerController *controller,
                                            const guchar            *chunk,
                                            gsize                    size);
 static MilterStatus real_end_of_message   (MilterManagerController *controller);
-static MilterStatus real_close            (MilterManagerController *controller);
+static MilterStatus real_quit             (MilterManagerController *controller);
 static MilterStatus real_abort            (MilterManagerController *controller);
 
 
@@ -145,7 +145,7 @@ controller_init (MilterManagerControllerClass *controller)
     controller->end_of_header = real_end_of_header;
     controller->body = real_body;
     controller->end_of_message = real_end_of_message;
-    controller->close = real_close;
+    controller->quit = real_quit;
     controller->abort = real_abort;
 }
 
@@ -566,9 +566,9 @@ real_end_of_message (MilterManagerController *controller)
 }
 
 static MilterStatus
-real_close (MilterManagerController *controller)
+real_quit (MilterManagerController *controller)
 {
-     rb_p(rb_str_new2("close"));
+     rb_p(rb_str_new2("quit"));
     return MILTER_STATUS_NOT_CHANGE;
 }
 

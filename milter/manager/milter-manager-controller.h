@@ -69,14 +69,14 @@ struct _MilterManagerControllerClass
                                         const guchar  *chunk,
                                         gsize          size);
     MilterStatus (*end_of_message)     (MilterManagerController *controller);
-    MilterStatus (*close)              (MilterManagerController *controller);
+    MilterStatus (*quit)               (MilterManagerController *controller);
     MilterStatus (*abort)              (MilterManagerController *controller);
 };
 
 GType                 milter_manager_controller_get_type    (void) G_GNUC_CONST;
 
-void                  milter_manager_controller_init        (void);
-void                  milter_manager_controller_quit        (void);
+void                  _milter_manager_controller_init       (void);
+void                  _milter_manager_controller_quit       (void);
 
 
 MilterManagerController *milter_manager_controller_new      (const gchar *name,
@@ -123,7 +123,7 @@ MilterStatus          milter_manager_controller_body
                                            gsize                 size);
 MilterStatus          milter_manager_controller_end_of_message
                                           (MilterManagerController *controller);
-MilterStatus          milter_manager_controller_close
+MilterStatus          milter_manager_controller_quit
                                           (MilterManagerController *controller);
 MilterStatus          milter_manager_controller_abort
                                           (MilterManagerController *controller);

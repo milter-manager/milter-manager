@@ -234,7 +234,7 @@ milter_manager_child_milter_end_of_message (MilterManagerChildMilter *milter)
 }
 
 MilterStatus
-milter_manager_child_milter_close (MilterManagerChildMilter *milter)
+milter_manager_child_milter_quit (MilterManagerChildMilter *milter)
 {
     return MILTER_STATUS_DEFAULT;
 }

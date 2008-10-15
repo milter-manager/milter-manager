@@ -58,7 +58,7 @@ milter_manager_init (int *argc, char ***argv)
 
     g_signal_connect(milter_logger(), "log", G_CALLBACK(cb_log), NULL);
 
-    milter_manager_controller_init();
+    _milter_manager_controller_init();
 }
 
 void
@@ -67,7 +67,7 @@ milter_manager_quit (void)
     if (!initialized)
         return;
 
-    milter_manager_controller_quit();
+    _milter_manager_controller_quit();
 
     g_signal_handlers_disconnect_by_func(milter_logger(),
                                          G_CALLBACK(cb_log), NULL);
@@ -181,12 +181,12 @@ cb_client_abort (MilterClientContext *context, gpointer user_data)
 }
 
 static MilterStatus
-cb_client_close (MilterClientContext *context, gpointer user_data)
+cb_client_quit (MilterClientContext *context, gpointer user_data)
 {
     MilterManagerController *controller = user_data;
     MilterStatus status;
 
-    status = milter_manager_controller_close(controller);
+    status = milter_manager_controller_quit(controller);
 
 #define DISCONNECT(name)                                                \
     g_signal_handlers_disconnect_by_func(context,                       \
@@ -204,7 +204,7 @@ cb_client_close (MilterClientContext *context, gpointer user_data)
     DISCONNECT(end_of_header);
     DISCONNECT(body);
     DISCONNECT(end_of_message);
-    DISCONNECT(close);
+    DISCONNECT(quit);
     DISCONNECT(abort);
 
 #undef DISCONNECT
@@ -233,7 +233,7 @@ setup_context_signals (MilterClientContext *context, gpointer user_data)
     CONNECT(end_of_header);
     CONNECT(body);
     CONNECT(end_of_message);
-    CONNECT(close);
+    CONNECT(quit);
     CONNECT(abort);
 
 #undef CONNECT

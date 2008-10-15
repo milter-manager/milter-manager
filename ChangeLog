@@ -1,3 +1,7 @@
+2008-10-15  Kouhei Sutou  <kou@cozmixng.org>
+
+	* ./: close -> quit.
+
 2008-10-15  Hiroyuki Ikezoe  <poincare@ikezoe.net>
 
 	* milter/manager/milter-manager.c: Connect to "connection-established"

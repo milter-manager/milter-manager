@@ -67,7 +67,7 @@ milter_manager_controller_load_module (const gchar *name)
 }
 
 void
-milter_manager_controller_init (void)
+_milter_manager_controller_init (void)
 {
 }
 
@@ -91,7 +91,7 @@ milter_manager_controller_unload (void)
 }
 
 void
-milter_manager_controller_quit (void)
+_milter_manager_controller_quit (void)
 {
     milter_manager_controller_unload();
     milter_manager_controller_set_default_module_dir(NULL);
@@ -293,13 +293,13 @@ milter_manager_controller_end_of_message (MilterManagerController *controller)
 }
 
 MilterStatus
-milter_manager_controller_close (MilterManagerController *controller)
+milter_manager_controller_quit (MilterManagerController *controller)
 {
     MilterManagerControllerClass *controller_class;
 
     controller_class = MILTER_MANAGER_CONTROLLER_GET_CLASS(controller);
-    if (controller_class->close)
-        return controller_class->close(controller);
+    if (controller_class->quit)
+        return controller_class->quit(controller);
     return MILTER_STATUS_DEFAULT;
 }
 
