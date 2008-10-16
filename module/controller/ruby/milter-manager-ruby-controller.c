@@ -452,7 +452,7 @@ cb_continue (MilterServerContext *context, gpointer user_data)
 
 static MilterStatus
 cb_negotiate_reply (MilterServerContext *context, MilterOption *option,
-                    GHashTable *macros, gpointer user_data)
+                    GList *macros_requests, gpointer user_data)
 {
     gboolean *waiting = user_data;
     *waiting = FALSE;

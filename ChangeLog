@@ -1,3 +1,8 @@
+2008-10-16  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* module/controller/ruby/milter-manager-ruby-controller.c:
+	"negotiate-reply" signal accompanies with GList not GHashTable.
+
 2008-10-15  Kouhei Sutou  <kou@cozmixng.org>
 
 	* module/controller/ruby/milter-manager-ruby-controller.c:
