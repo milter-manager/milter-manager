@@ -1,6 +1,6 @@
 if WITH_CUTTER
 noinst_LTLIBRARIES =		\
-	libmilter-test.la
+	libmilter-manager-test.la
 endif
 
 INCLUDES =				\
@@ -14,6 +14,6 @@ AM_LDFLAGS =			\
 LIBS =							\
 	$(GCUTTER_LIBS)
 
-libmilter_test_la_SOURCES =	\
-	milter-test-utils.c	\
-	milter-test-utils.h
+libmilter_manager_test_la_SOURCES =	\
+	milter-manager-test-utils.c	\
+	milter-manager-test-utils.h

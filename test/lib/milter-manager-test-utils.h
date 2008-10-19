@@ -17,34 +17,18 @@
  *
  */
 
-#define CUT_HELPER 1
-#include "milter-test-utils.h"
+#ifndef __MILTER_MANAGER_TEST_UTILS_H__
+#define __MILTER_MANAGER_TEST_UTILS_H__
 
-static gchar *base_dir = NULL;
-const gchar *
-milter_test_get_base_dir (void)
-{
-    const gchar *dir;
+#include <gcutter.h>
 
-    if (base_dir)
-        return base_dir;
+G_BEGIN_DECLS
 
-    dir = g_getenv("BASE_DIR");
-    if (!dir)
-        dir = ".";
+const gchar *milter_manager_test_get_base_dir (void);
 
-    if (g_path_is_absolute(dir)) {
-        base_dir = g_strdup(dir);
-    } else {
-        gchar *current_dir;
+G_END_DECLS
 
-        current_dir = g_get_current_dir();
-        base_dir = g_build_filename(current_dir, dir, NULL);
-        g_free(current_dir);
-    }
-
-    return base_dir;
-}
+#endif /* __MILTER_MANAGER_TEST_UTILS_H__ */
 
 /*
 vi:nowrap:ai:expandtab:sw=4

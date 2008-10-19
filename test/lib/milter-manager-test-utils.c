@@ -17,18 +17,33 @@
  *
  */
 
-#ifndef __MILTER_TEST_UTILS_H__
-#define __MILTER_TEST_UTILS_H__
+#include "milter-manager-test-utils.h"
 
-#include <gcutter.h>
+static gchar *base_dir = NULL;
+const gchar *
+milter_manager_test_get_base_dir (void)
+{
+    const gchar *dir;
 
-G_BEGIN_DECLS
+    if (base_dir)
+        return base_dir;
 
-const gchar *milter_test_get_base_dir (void);
+    dir = g_getenv("BASE_DIR");
+    if (!dir)
+        dir = ".";
 
-G_END_DECLS
+    if (g_path_is_absolute(dir)) {
+        base_dir = g_strdup(dir);
+    } else {
+        gchar *current_dir;
 
-#endif /* __MILTER_TEST_UTILS_H__ */
+        current_dir = g_get_current_dir();
+        base_dir = g_build_filename(current_dir, dir, NULL);
+        g_free(current_dir);
+    }
+
+    return base_dir;
+}
 
 /*
 vi:nowrap:ai:expandtab:sw=4
