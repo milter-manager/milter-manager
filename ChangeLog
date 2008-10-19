@@ -1,5 +1,7 @@
 2008-10-20  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/: move to test here.
+
 	* test/lib/: milter-test-utils -> milter-manager-test-utils.
 
 2008-10-16  Hiroyuki Ikezoe  <poincare@ikezoe.net>

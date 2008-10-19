@@ -19,8 +19,8 @@
 
 #include <gcutter.h>
 
-#include "lib/milter-manager-test-utils.h"
 #define shutdown inet_shutdown
+#include <milter-manager-test-utils.h>
 #include <milter/manager/milter-manager-configuration.h>
 #undef shutdown
 

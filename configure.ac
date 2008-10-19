@@ -305,6 +305,7 @@ AC_CONFIG_FILES([Makefile
 		 data/Makefile
 		 test/Makefile
 		 test/lib/Makefile
+		 test/manager/Makefile
 		 po/Makefile.in])
 
 AC_OUTPUT
