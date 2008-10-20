@@ -210,7 +210,7 @@ milter_manager_child_milter_start (MilterManagerChildMilter *milter)
     spawned = g_spawn_async(priv->working_directory,
                             argv,
                             NULL,
-                            G_SPAWN_DO_NOT_REAP_CHILD,
+                            NULL,
                             priv->child_setup,
                             milter,
                             &pid,

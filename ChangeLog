@@ -2,6 +2,9 @@
 
 	* milter/manager/milter-manager-child-milter.[ch]: Added
 	milter_manager_child_milter_start().
+	* milter/manager/milter-manager-child-milter.c: Do not use
+	G_SPAWN_DO_NOT_REAP_CHILD since MilterManagerChildMilter does not care
+	about the child process future.
 
 2008-10-20  Kouhei Sutou  <kou@cozmixng.org>
 
