@@ -62,6 +62,9 @@ GType                 milter_manager_child_milter_get_type    (void) G_GNUC_CONS
 
 MilterManagerChildMilter *milter_manager_child_milter_new     (const gchar *name);
 
+gboolean              milter_manager_child_milter_start       (MilterManagerChildMilter *milter);
+                        
+
 #endif /* __MILTER_MANAGER_CHILD_MILTER_H__ */
 
 /*

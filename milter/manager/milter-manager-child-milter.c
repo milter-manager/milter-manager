@@ -21,6 +21,7 @@
 #  include "../../config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include <sys/wait.h>
 #include "milter-manager-child-milter.h"
 
 #define MILTER_MANAGER_CHILD_MILTER_GET_PRIVATE(obj)                    \
@@ -32,6 +33,10 @@ typedef struct _MilterManagerChildMilterPrivate	MilterManagerChildMilterPrivate;
 struct _MilterManagerChildMilterPrivate
 {
     gchar *name;
+    gchar *working_directory;
+    gchar *command;
+    GSpawnChildSetupFunc child_setup;
+    guint child_watch_id;
 };
 
 enum
@@ -83,6 +88,10 @@ milter_manager_child_milter_init (MilterManagerChildMilter *milter)
 
     priv = MILTER_MANAGER_CHILD_MILTER_GET_PRIVATE(milter);
     priv->name = NULL;
+    priv->working_directory = NULL;
+    priv->command = NULL;
+    priv->child_setup = NULL;
+    priv->child_watch_id = 0;
 }
 
 static void
@@ -95,6 +104,21 @@ dispose (GObject *object)
     if (priv->name) {
         g_free(priv->name);
         priv->name = NULL;
+    }
+
+    if (priv->working_directory) {
+        g_free(priv->working_directory);
+        priv->working_directory = NULL;
+    }
+
+    if (priv->command) {
+        g_free(priv->command);
+        priv->command = NULL;
+    }
+
+    if (priv->child_watch_id > 0) {
+        g_source_remove(priv->child_watch_id);
+        priv->child_watch_id = 0;
     }
 
     G_OBJECT_CLASS(milter_manager_child_milter_parent_class)->dispose(object);
@@ -152,6 +176,56 @@ milter_manager_child_milter_new (const gchar *name)
     return g_object_new(MILTER_MANAGER_TYPE_CHILD_MILTER,
                         "name", name,
                         NULL);
+}
+
+static void
+child_watch_func (GPid pid, gint status, gpointer user_data)
+{
+    MilterManagerChildMilterPrivate *priv;
+
+    priv = MILTER_MANAGER_CHILD_MILTER_GET_PRIVATE(user_data);
+
+    if (WCOREDUMP(status)) {
+        milter_critical("%s produced a core dump", priv->name);
+        /* restart? */
+    } else if (WIFEXITED(status)) {
+        milter_warning("%s exits with status: %d", priv->name, status);
+        /* restart? */
+    }
+}
+
+gboolean
+milter_manager_child_milter_start (MilterManagerChildMilter *milter)
+{
+    GPid pid;
+    GError *error = NULL;
+    gchar **argv;
+    gboolean spawned;
+    MilterManagerChildMilterPrivate *priv;
+
+    priv = MILTER_MANAGER_CHILD_MILTER_GET_PRIVATE(milter);
+
+    /* setresgid(); */
+    /* setresuid(); */
+    spawned = g_spawn_async(priv->working_directory,
+                            argv,
+                            NULL,
+                            G_SPAWN_DO_NOT_REAP_CHILD,
+                            priv->child_setup,
+                            milter,
+                            &pid,
+                            &error);
+    if (error) {
+        milter_error("error: %s", error->message);
+        g_error_free(error);
+    }
+
+    if (spawned) {
+        priv->child_watch_id = 
+            g_child_watch_add(pid, (GChildWatchFunc)child_watch_func, NULL);
+    }
+
+    return spawned;
 }
 
 #if 0

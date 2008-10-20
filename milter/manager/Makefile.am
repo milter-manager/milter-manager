@@ -3,9 +3,10 @@ INCLUDES = 					\
 	 -I$(top_srcdir)			\
 	 -I$(top_srcdir)/binding/ruby/src
 
-AM_CFLAGS = 				\
-	-DLOCALEDIR=\""$(localedir)"\"	\
-	$(MILTER_MANAGER_CFLAGS)	\
+AM_CFLAGS = 						\
+	-DLOCALEDIR=\""$(localedir)"\"			\
+	-DMILTER_LOG_DOMAIN=\""milter-manager"\"	\
+	$(MILTER_MANAGER_CFLAGS)			\
 	$(GLIB_CFLAGS)
 
 LIBS =					\

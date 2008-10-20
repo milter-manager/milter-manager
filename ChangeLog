@@ -1,3 +1,8 @@
+2008-10-21  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/manager/milter-manager-child-milter.[ch]: Added
+	milter_manager_child_milter_start().
+
 2008-10-20  Kouhei Sutou  <kou@cozmixng.org>
 
 	* test/lib/milter-test-server.rb: make customizable.
