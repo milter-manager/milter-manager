@@ -2,15 +2,15 @@
 
 require 'milter'
 require 'socket'
+require 'optparse'
 
 class MilterTestServer
   def initialize
     @encoder = Milter::Encoder.new
     @decoder = Milter::ReplyDecoder.new
     @state = :start
-    @headers = [["From", sender_mail_address],
-                ["To", receiver_mail_address]]
     @socket = nil
+    initialize_options
     setup_decoder
   end
 
@@ -28,23 +28,88 @@ class MilterTestServer
     @socket = nil
   end
 
+  def parse_options(argv)
+    opts = OptionParser.new do |opts|
+      opts.on("--mail=FILE", "Use FILE as sent mail") do |mail|
+        @mail = mail
+      end
+
+      opts.on("--header=NAME,VALUE", Array, "Add header") do |name, value,|
+        @headers << [name, value]
+      end
+
+      opts.on("--content=CONTENT", "Use CONTENT as mail content") do |content|
+        @content = content
+      end
+
+      opts.on("--connect-host-name=NAME",
+              "Use NAME as client host name connected to SMTP server") do |name|
+        @connect_host_name = name
+      end
+
+      opts.on("--connect-address=ADDRESS",
+              "Use ADDRESS as client address " +
+              "connected to SMTP server",
+              "format: inet:9999@mail.example.com, unit:/tmp/milter.sock"
+              ) do |address|
+        @connect_address = address
+      end
+
+      opts.on("--helo-fqdn=FQND",
+              "Use FQDN as HELO SMTP command argument") do |fqdn|
+        @helo_fqdn = fqdn
+      end
+
+      opts.on("--mail-from=FROM",
+              "Use FROM as MAIL SMTP command argument") do |from|
+        @mail_from = from
+      end
+
+      opts.on("--rcpt-to=TO",
+              "Use TO as RCPT SMTP command argument") do |to|
+        @rcpt_to = to
+      end
+
+      opts.on("--[no-]debug", "Output debug information") do |boolean|
+        @debug = boolean
+      end
+    end
+    opts.parse!(argv)
+  end
+
   private
+  def initialize_options
+    @mail = nil
+    @headers = []
+    @content = nil
+    @debug = false
+    @connect_host_name = nil
+    @connect_address = nil
+    @helo_fqdn = nil
+    @mail_from = nil
+    @rcpt_to = nil
+  end
+
   def write(encode_type, *args)
     packet, packed_size = @encoder.send("encode_#{encode_type}", *args)
-    size = packet.size
-    while size > 0
+    p [packet.size, packet]
+    while packet
       written_size = @socket.write(packet)
-      size -= written_size
       packet = packet[written_size, -1]
     end
-    p "#{@state} -> #{encode_type}"
+    info("#{@state} -> #{encode_type}")
     @state = encode_type
+    packed_size
+  end
+
+  def info(*args)
+    p(*args) if @debug
   end
 
   def setup_decoder
     @decoder.class.signals.each do |signal|
       @decoder.signal_connect(signal) do |_, *args|
-        p signal
+        info(signal)
         callback_name = "do_#{signal.gsub(/-/, '_')}"
         send(callback_name, *args) if respond_to?(callback_name, true)
       end
@@ -70,16 +135,24 @@ class MilterTestServer
     when :rcpt
       write(:data)
     when :data, :header
-      header = @headers.pop
+      @sending_headers ||= headers
+      header = @sending_headers.pop
       if header
         write(:header, *header)
       else
         write(:end_of_header)
+        @sending_headers = nil
       end
-    when :end_of_header
-      write(:body, "Hi,\n\nThanks,\n")
-    when :body
-      write(:end_of_message)
+    when :end_of_header, :body
+      @sending_body ||= body
+      if @sending_body.size > 0
+        written_size = write(:body, @sending_body)
+        @sending_body = @sending_body[written_size,
+                                      @sending_body.size - written_size]
+      else
+        write(:end_of_message)
+        @sending_body = nil
+      end
     when :end_of_message
       write(:quit)
     else
@@ -88,23 +161,52 @@ class MilterTestServer
   end
 
   def sender_host_name
-    Socket.gethostname
+    @connect_host_name || Socket.gethostname
   end
 
   def sender_address
+    if @connect_address
+      return Milter::Utils.parse_connection_spec(@connect_address)[1]
+    end
     Socket.sockaddr_in(*@socket.addr.values_at(1, 3))
   end
 
   def sender_fqdn
-    Socket.gethostname
+    @helo_fqdn || Socket.gethostname
   end
 
   def sender_mail_address
+    return @mail_from if @mail_from
+    if @mail and /^From: (.+)$/i =~ File.read(@mail)
+      return $1
+    end
     "kou+sender@cozmixng.org"
   end
 
   def receiver_mail_address
+    return @rcpt_to if @rcpt_to
+    if @mail and /^To: (.+)$/i =~ File.read(@mail)
+      return $1
+    end
     "kou+receiver@cozmixng.org"
+  end
+
+  def headers
+    _headers = []
+    if @mail
+      header_part = File.read(@mail).split(/\r?\n\r?\n/, 2)[0]
+      header_part.gsub(/\n\t+/, " ").split(/\r?\n/).each do |header_line|
+        _headers << header_line.split(/:\s*/, 2)
+      end
+    end
+    _headers.concat(@headers)
+    _headers
+  end
+
+  def body
+    return @content if @content
+    return File.read(@mail).split(/\r?\n\r?\n/, 2)[1] if @mail
+    "Hi,\n\nThanks,\n"
   end
 
   def invalid_state(reply_state)
@@ -115,4 +217,5 @@ class MilterTestServer
 end
 
 server = MilterTestServer.new
+server.parse_options(ARGV)
 server.run
