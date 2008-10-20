@@ -7,6 +7,8 @@
 	about the child process future.
 	* milter/manager/milter-manager-child-milter.c: Added command line
 	options.
+	* test/manager/test-configuration.c: gcut_assert_equal_child_milters
+	-> milter_assert_equal_child_milters.
 
 2008-10-20  Kouhei Sutou  <kou@cozmixng.org>
 
