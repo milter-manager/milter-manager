@@ -3,6 +3,9 @@ noinst_LTLIBRARIES =		\
 	libmilter-manager-test.la
 endif
 
+EXTRA_DISTS =			\
+	milter-test-server.rb
+
 INCLUDES =				\
 	-I$(top_srcdir)
 

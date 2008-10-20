@@ -1,5 +1,8 @@
 2008-10-20  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/lib/milter-test-server.rb: add a milter server implemented
+	by Ruby for testing milter manager.
+
 	* test/manager/: move to test here.
 
 	* test/lib/: milter-test-utils -> milter-manager-test-utils.
