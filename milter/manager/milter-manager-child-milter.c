@@ -35,6 +35,7 @@ struct _MilterManagerChildMilterPrivate
     gchar *name;
     gchar *working_directory;
     gchar *command;
+    gchar *command_options;
     GSpawnChildSetupFunc child_setup;
     guint child_watch_id;
 };
@@ -90,6 +91,7 @@ milter_manager_child_milter_init (MilterManagerChildMilter *milter)
     priv->name = NULL;
     priv->working_directory = NULL;
     priv->command = NULL;
+    priv->command_options = NULL;
     priv->child_setup = NULL;
     priv->child_watch_id = 0;
 }
@@ -114,6 +116,11 @@ dispose (GObject *object)
     if (priv->command) {
         g_free(priv->command);
         priv->command = NULL;
+    }
+
+    if (priv->command_options) {
+        g_free(priv->command_options);
+        priv->command_options = NULL;
     }
 
     if (priv->child_watch_id > 0) {
@@ -199,22 +206,37 @@ milter_manager_child_milter_start (MilterManagerChildMilter *milter)
 {
     GPid pid;
     GError *error = NULL;
+    gint argc;
     gchar **argv;
+    gchar *command_line;
     gboolean spawned;
     MilterManagerChildMilterPrivate *priv;
 
     priv = MILTER_MANAGER_CHILD_MILTER_GET_PRIVATE(milter);
+
+    command_line = g_strdup_printf("%s %s", priv->command, priv->command_options);
+    if (g_shell_parse_argv(command_line,
+                           &argc, &argv,
+                           &error)) {
+        milter_error("error: %s", error->message);
+        g_error_free(error);
+        g_free(command_line);
+        return FALSE;
+    }
+    g_free(command_line);
 
     /* setresgid(); */
     /* setresuid(); */
     spawned = g_spawn_async(priv->working_directory,
                             argv,
                             NULL,
-                            NULL,
+                            0,
                             priv->child_setup,
                             milter,
                             &pid,
                             &error);
+    g_strfreev(argv);
+
     if (error) {
         milter_error("error: %s", error->message);
         g_error_free(error);
