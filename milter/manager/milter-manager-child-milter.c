@@ -253,42 +253,18 @@ set_error_message (GError **error,
     g_string_free(message, TRUE);
 }
 
-gboolean
-milter_manager_child_milter_start (MilterManagerChildMilter *milter,
-                                   GError **error)
+static gboolean
+set_user (const gchar *user_name, GError **error)
 {
-    GPid pid;
-    gint argc;
-    gchar **argv;
-    gchar *command_line;
-    gboolean success;
-    MilterManagerChildMilterPrivate *priv;
-    GError *internal_error = NULL;
     struct passwd *password;
 
-    priv = MILTER_MANAGER_CHILD_MILTER_GET_PRIVATE(milter);
-
-    command_line = g_strdup_printf("%s %s", priv->command, priv->command_options);
-    success = g_shell_parse_argv(command_line,
-                                 &argc, &argv,
-                                 &internal_error);
-    g_free(command_line);
-
-    if (!success) {
-        set_error_message(error,
-                          MILTER_MANAGER_CHILD_MILTER_ERROR_BAD_COMMAND_STRING,
-                          internal_error,
-                          "Command string has invalid character(s).");
-        return FALSE;
-    }
-
-    password = getpwnam(priv->user);
+    password = getpwnam(user_name);
     if (!password) {
         set_error_message(error,
                           MILTER_MANAGER_CHILD_MILTER_ERROR_INVALID_USER_NAME,
                           NULL,
                           "No passwd entry for %s. :%s",
-                          priv->user,
+                          user_name,
                           strerror(errno));
         return FALSE;
     }
@@ -308,6 +284,52 @@ milter_manager_child_milter_start (MilterManagerChildMilter *milter,
                           "MilterManager does not run on privilege mode.");
         return FALSE;
     }
+
+    return TRUE;
+}
+
+gboolean
+milter_manager_child_milter_start (MilterManagerChildMilter *milter,
+                                   GError **error)
+{
+    GPid pid;
+    gint argc;
+    gchar **argv;
+    gchar *command_line;
+    gboolean success;
+    MilterManagerChildMilterPrivate *priv;
+    GError *internal_error = NULL;
+
+    priv = MILTER_MANAGER_CHILD_MILTER_GET_PRIVATE(milter);
+
+    if (!priv->command) {
+        set_error_message(error,
+                          MILTER_MANAGER_CHILD_MILTER_ERROR_BAD_COMMAND_STRING,
+                          NULL,
+                          "No command set yet.");
+        return FALSE;
+    }
+
+    if (priv->command_options) 
+        command_line = g_strdup_printf("%s %s", priv->command, priv->command_options);
+    else 
+        command_line = g_strdup(priv->command);
+
+    success = g_shell_parse_argv(command_line,
+                                 &argc, &argv,
+                                 &internal_error);
+    g_free(command_line);
+
+    if (!success) {
+        set_error_message(error,
+                          MILTER_MANAGER_CHILD_MILTER_ERROR_BAD_COMMAND_STRING,
+                          internal_error,
+                          "Command string has invalid character(s).");
+        return FALSE;
+    }
+
+    if (priv->user && !set_user(priv->user, error))
+        return FALSE;
 
     success = g_spawn_async(priv->working_directory,
                             argv,
