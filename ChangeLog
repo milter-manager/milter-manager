@@ -16,6 +16,8 @@
 	* milter/manager/milter-manager-child-milter.c: Added user and
 	group. Cleanup.
 	* milter/manager/milter-manager-child-milter.[ch]: Set uid and gid.
+	* milter/manager/milter-manager-child-milter.[ch]: Added
+	MILTER_MANAGER_CHILD_MILTER_ERROR_NO_PREVILEGE_MODE.
 
 2008-10-20  Kouhei Sutou  <kou@cozmixng.org>
 

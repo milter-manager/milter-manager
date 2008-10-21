@@ -287,26 +287,25 @@ milter_manager_child_milter_start (MilterManagerChildMilter *milter,
         set_error_message(error,
                           MILTER_MANAGER_CHILD_MILTER_ERROR_INVALID_USER_NAME,
                           NULL,
-                          "Couldn't start new milter process. :%s",
+                          "No passwd entry for %s. :%s",
+                          priv->user,
                           strerror(errno));
         return FALSE;
     }
 
     if (setregid(-1, password->pw_gid) == -1) {
         set_error_message(error,
-                          MILTER_MANAGER_CHILD_MILTER_ERROR_START_FAILURE,
+                          MILTER_MANAGER_CHILD_MILTER_ERROR_NO_PRIVILEGE_MODE,
                           NULL,
-                          "Couldn't start new milter process. :%s",
-                          strerror(errno));
+                          "MilterManager does not run on privilege mode.");
         return FALSE;
     }
 
     if (setreuid(-1, password->pw_uid) == -1) {
         set_error_message(error,
-                          MILTER_MANAGER_CHILD_MILTER_ERROR_START_FAILURE,
+                          MILTER_MANAGER_CHILD_MILTER_ERROR_NO_PRIVILEGE_MODE,
                           NULL,
-                          "Couldn't start new milter process. :%s",
-                          strerror(errno));
+                          "MilterManager does not run on privilege mode.");
         return FALSE;
     }
 
