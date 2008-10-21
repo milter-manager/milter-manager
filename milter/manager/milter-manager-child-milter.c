@@ -202,52 +202,74 @@ child_watch_func (GPid pid, gint status, gpointer user_data)
 }
 
 gboolean
-milter_manager_child_milter_start (MilterManagerChildMilter *milter)
+milter_manager_child_milter_start (MilterManagerChildMilter *milter,
+                                   GError **error)
 {
     GPid pid;
-    GError *error = NULL;
     gint argc;
     gchar **argv;
     gchar *command_line;
-    gboolean spawned;
+    gboolean success;
     MilterManagerChildMilterPrivate *priv;
+    GError *internal_error = NULL;
 
     priv = MILTER_MANAGER_CHILD_MILTER_GET_PRIVATE(milter);
 
     command_line = g_strdup_printf("%s %s", priv->command, priv->command_options);
-    if (g_shell_parse_argv(command_line,
-                           &argc, &argv,
-                           &error)) {
-        milter_error("error: %s", error->message);
-        g_error_free(error);
-        g_free(command_line);
+    success = g_shell_parse_argv(command_line,
+                                 &argc, &argv,
+                                 &internal_error);
+    g_free(command_line);
+
+    if (!success) {
+        GString *message;
+        message = g_string_new("Command string has invalid character(s)..");
+
+        g_string_append_printf(message, 
+                               ": %s", internal_error->message);
+
+        milter_error("error: %s", message->str);
+        g_error_free(internal_error);
+        g_set_error(error,
+                    MILTER_MANAGER_CHILD_MILTER_ERROR,
+                    MILTER_MANAGER_CHILD_MILTER_ERROR_BAD_COMMAND_STRING,
+                    "%s", message->str);
+        g_string_free(message, TRUE);
         return FALSE;
     }
-    g_free(command_line);
 
     /* setresgid(); */
     /* setresuid(); */
-    spawned = g_spawn_async(priv->working_directory,
+    success = g_spawn_async(priv->working_directory,
                             argv,
                             NULL,
                             0,
                             priv->child_setup,
                             milter,
                             &pid,
-                            &error);
+                            &internal_error);
     g_strfreev(argv);
 
-    if (error) {
-        milter_error("error: %s", error->message);
-        g_error_free(error);
-    }
+    if (!success) {
+        GString *message;
+        message = g_string_new("Couldn't start new milter process.");
 
-    if (spawned) {
-        priv->child_watch_id = 
-            g_child_watch_add(pid, (GChildWatchFunc)child_watch_func, NULL);
-    }
+        g_string_append_printf(message, 
+                               ": %s", internal_error->message);
 
-    return spawned;
+        milter_error("error: %s", message->str);
+        g_error_free(internal_error);
+        g_set_error(error,
+                    MILTER_MANAGER_CHILD_MILTER_ERROR,
+                    MILTER_MANAGER_CHILD_MILTER_ERROR_START_FAILURE,
+                    "%s", message->str);
+        g_string_free(message, TRUE);
+        return FALSE;
+    }
+    priv->child_watch_id = 
+        g_child_watch_add(pid, (GChildWatchFunc)child_watch_func, NULL);
+
+    return success;
 }
 
 #if 0

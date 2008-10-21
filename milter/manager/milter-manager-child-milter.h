@@ -40,7 +40,8 @@ G_BEGIN_DECLS
 
 typedef enum
 {
-    MILTER_MANAGER_CHILD_MILTER_ERROR_FIXME
+    MILTER_MANAGER_CHILD_MILTER_ERROR_BAD_COMMAND_STRING,
+    MILTER_MANAGER_CHILD_MILTER_ERROR_START_FAILURE,
 } MilterManagerChildMilterError;
 
 typedef struct _MilterManagerChildMilter         MilterManagerChildMilter;
@@ -62,7 +63,8 @@ GType                 milter_manager_child_milter_get_type    (void) G_GNUC_CONS
 
 MilterManagerChildMilter *milter_manager_child_milter_new     (const gchar *name);
 
-gboolean              milter_manager_child_milter_start       (MilterManagerChildMilter *milter);
+gboolean              milter_manager_child_milter_start       (MilterManagerChildMilter *milter,
+                                                               GError **error);
                         
 
 #endif /* __MILTER_MANAGER_CHILD_MILTER_H__ */
