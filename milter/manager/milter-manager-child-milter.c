@@ -38,8 +38,7 @@ typedef struct _MilterManagerChildMilterPrivate	MilterManagerChildMilterPrivate;
 struct _MilterManagerChildMilterPrivate
 {
     gchar *name;
-    gchar *user;
-    gchar *group;
+    gchar *user_name;
     gchar *working_directory;
     gchar *command;
     gchar *command_options;
@@ -50,7 +49,11 @@ struct _MilterManagerChildMilterPrivate
 enum
 {
     PROP_0,
-    PROP_NAME
+    PROP_NAME,
+    PROP_USER_NAME,
+    PROP_COMMAND,
+    PROP_COMMAND_OPTIONS,
+    PROP_WORKING_DIRECTORY,
 };
 
 G_DEFINE_TYPE(MilterManagerChildMilter, milter_manager_child_milter,
@@ -85,6 +88,34 @@ milter_manager_child_milter_class_init (MilterManagerChildMilterClass *klass)
                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_NAME, spec);
 
+    spec = g_param_spec_string("user-name",
+                               "User name",
+                               "The name of process owner user",
+                               NULL,
+                               G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_USER_NAME, spec);
+
+    spec = g_param_spec_string("command",
+                               "Command",
+                               "The command string of process",
+                               NULL,
+                               G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_COMMAND, spec);
+
+    spec = g_param_spec_string("command-options",
+                               "Command options",
+                               "The command options string of process",
+                               NULL,
+                               G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_COMMAND_OPTIONS, spec);
+
+    spec = g_param_spec_string("working-directory",
+                               "Working directory",
+                               "The working directory name of process",
+                               NULL,
+                               G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_WORKING_DIRECTORY, spec);
+
     g_type_class_add_private(gobject_class,
                              sizeof(MilterManagerChildMilterPrivate));
 }
@@ -96,8 +127,7 @@ milter_manager_child_milter_init (MilterManagerChildMilter *milter)
 
     priv = MILTER_MANAGER_CHILD_MILTER_GET_PRIVATE(milter);
     priv->name = NULL;
-    priv->user = NULL;
-    priv->group = NULL;
+    priv->user_name = NULL;
     priv->working_directory = NULL;
     priv->command = NULL;
     priv->command_options = NULL;
@@ -117,14 +147,9 @@ dispose (GObject *object)
         priv->name = NULL;
     }
 
-    if (priv->user) {
-        g_free(priv->user);
-        priv->user = NULL;
-    }
-
-    if (priv->group) {
-        g_free(priv->group);
-        priv->group = NULL;
+    if (priv->user_name) {
+        g_free(priv->user_name);
+        priv->user_name = NULL;
     }
 
     if (priv->working_directory) {
@@ -165,6 +190,26 @@ set_property (GObject      *object,
             g_free(priv->name);
         priv->name = g_value_dup_string(value);
         break;
+      case PROP_USER_NAME:
+        if (priv->user_name)
+            g_free(priv->user_name);
+        priv->user_name = g_value_dup_string(value);
+        break;
+      case PROP_COMMAND:
+        if (priv->command)
+            g_free(priv->command);
+        priv->command = g_value_dup_string(value);
+        break;
+      case PROP_COMMAND_OPTIONS:
+        if (priv->command_options)
+            g_free(priv->command_options);
+        priv->command_options = g_value_dup_string(value);
+        break;
+      case PROP_WORKING_DIRECTORY:
+        if (priv->working_directory)
+            g_free(priv->working_directory);
+        priv->working_directory = g_value_dup_string(value);
+        break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -183,6 +228,18 @@ get_property (GObject    *object,
     switch (prop_id) {
       case PROP_NAME:
         g_value_set_string(value, priv->name);
+        break;
+      case PROP_USER_NAME:
+        g_value_set_string(value, priv->user_name);
+        break;
+      case PROP_COMMAND:
+        g_value_set_string(value, priv->command);
+        break;
+      case PROP_COMMAND_OPTIONS:
+        g_value_set_string(value, priv->command_options);
+        break;
+      case PROP_WORKING_DIRECTORY:
+        g_value_set_string(value, priv->working_directory);
         break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -328,7 +385,7 @@ milter_manager_child_milter_start (MilterManagerChildMilter *milter,
         return FALSE;
     }
 
-    if (priv->user && !set_user(priv->user, error))
+    if (priv->user_name && !set_user(priv->user_name, error))
         return FALSE;
 
     success = g_spawn_async(priv->working_directory,

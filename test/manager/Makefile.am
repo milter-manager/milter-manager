@@ -1,5 +1,6 @@
 if WITH_CUTTER
 noinst_LTLIBRARIES =			\
+	test-child-milter.la		\
 	test-configuration.la
 endif
 
@@ -23,4 +24,5 @@ LIBS =								\
 	$(top_builddir)/test/lib/libmilter-manager-test.la	\
 	$(GCUTTER_LIBS)
 
+test_child_milter_la_SOURCES = test-child-milter.c
 test_configuration_la_SOURCES = test-configuration.c
