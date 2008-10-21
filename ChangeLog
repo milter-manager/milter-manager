@@ -20,6 +20,10 @@
 	MILTER_MANAGER_CHILD_MILTER_ERROR_NO_PREVILEGE_MODE.
 	* milter/manager/milter-manager-child-milter.c: Check command value.
 	* milter/manager/milter-manager-child-milter.c: Use properties.
+	* milter/manager/milter-manager-configuration.[ch]: Added
+	milter_manager_configuration_is_privilege_mode.
+	* module/controller/ruby/milter-manager-ruby-contoroller.c: Use
+	milter_manager_configuration_is_privilege_mode.
 
 2008-10-20  Kouhei Sutou  <kou@cozmixng.org>
 

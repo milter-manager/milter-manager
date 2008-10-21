@@ -32,6 +32,7 @@ typedef struct _MilterManagerConfigurationPrivate MilterManagerConfigurationPriv
 struct _MilterManagerConfigurationPrivate
 {
     GList *child_milters;
+    gboolean privilege;
 };
 
 G_DEFINE_TYPE(MilterManagerConfiguration, milter_manager_configuration,
@@ -69,6 +70,7 @@ milter_manager_configuration_init (MilterManagerConfiguration *configuration)
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
     priv->child_milters = NULL;
+    priv->privilege = FALSE;
 }
 
 static void
@@ -124,6 +126,12 @@ milter_manager_configuration_new (void)
 {
     return g_object_new(MILTER_MANAGER_TYPE_CONFIGURATION,
                         NULL);
+}
+
+gboolean
+milter_manager_configuration_is_privilege_mode (MilterManagerConfiguration *configuration)
+{
+    return MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration)->privilege;
 }
 
 void

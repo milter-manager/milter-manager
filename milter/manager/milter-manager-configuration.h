@@ -51,6 +51,8 @@ GType         milter_manager_configuration_get_type    (void) G_GNUC_CONST;
 MilterManagerConfiguration *
               milter_manager_configuration_new         (void);
 
+gboolean      milter_manager_configuration_is_privilege_mode
+                                     (MilterManagerConfiguration *configuration);
 void          milter_manager_configuration_add_child_milter
                                      (MilterManagerConfiguration *configuration,
                                       MilterManagerChildMilter   *milter);

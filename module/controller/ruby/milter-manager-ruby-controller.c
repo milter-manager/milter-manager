@@ -477,6 +477,8 @@ real_negotiate (MilterManagerController *_controller, MilterOption *option)
         if (!success) {
             gboolean priviledge;
 
+            priviledge = 
+                milter_manager_configuration_is_privilege_mode(controller->configuration);
             if (!priviledge) {
                 g_error_free(error);
                 /*
