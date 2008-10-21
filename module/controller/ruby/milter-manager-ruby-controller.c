@@ -464,53 +464,52 @@ real_negotiate (MilterManagerController *_controller, MilterOption *option)
 {
     MilterManagerRubyController *controller;
     const GList *milters;
+    gboolean waiting = TRUE;
+    MilterServerContext *context;
+    GError *error = NULL;
 
     controller = MILTER_MANAGER_RUBY_CONTROLLER(_controller);
     milters = milter_manager_configuration_get_child_milters(controller->configuration);
-    if (milters) {
-        gboolean waiting = TRUE;
-        GError *error = NULL;
-        gboolean success;
-        MilterServerContext *context = milters->data;
 
-        success = milter_server_context_establish_connection(context, &error);
-        if (!success) {
-            gboolean priviledge;
-            MilterStatus status;
+    if (!milters)
+        return MILTER_STATUS_NOT_CHANGE;
 
-            status = milter_manager_configuration_get_return_status_if_filter_unavailable(controller->configuration);
+    context = milters->data;
+    if (!milter_server_context_establish_connection(context, &error)) {
+        gboolean priviledge;
+        MilterStatus status;
 
-            priviledge = 
-                milter_manager_configuration_is_privilege_mode(controller->configuration);
-            if (!priviledge || 
+        status = 
+            milter_manager_configuration_get_return_status_if_filter_unavailable(controller->configuration);
+
+        priviledge = 
+            milter_manager_configuration_is_privilege_mode(controller->configuration);
+        if (!priviledge || 
                 error->code != MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE) {
-                milter_error("Error: %s", error->message);
-                g_error_free(error);
-                return status;
-            }
+            milter_error("Error: %s", error->message);
             g_error_free(error);
-
-            milter_manager_child_milter_start(MILTER_MANAGER_CHILD_MILTER(context),
-                                              &error);
-            if (error) {
-                milter_error("Error: %s", error->message);
-                g_error_free(error);
-                return status;
-            }
-            return MILTER_STATUS_PROGRESS;
+            return status;
         }
+        g_error_free(error);
 
-        g_signal_connect(context, "continue", G_CALLBACK(cb_continue), &waiting);
-        g_signal_connect(context, "negotiate_reply",
-                         G_CALLBACK(cb_negotiate_reply), &waiting);
-        milter_server_context_negotiate(context, option);
-        while (waiting)
-            g_main_context_iteration(NULL, TRUE);
-        g_print("XXX\n");
-        return MILTER_STATUS_CONTINUE;
+        milter_manager_child_milter_start(MILTER_MANAGER_CHILD_MILTER(context),
+                                          &error);
+        if (error) {
+            milter_error("Error: %s", error->message);
+            g_error_free(error);
+            return status;
+        }
+        return MILTER_STATUS_PROGRESS;
     }
 
-    return MILTER_STATUS_NOT_CHANGE;
+    g_signal_connect(context, "continue", G_CALLBACK(cb_continue), &waiting);
+    g_signal_connect(context, "negotiate_reply",
+            G_CALLBACK(cb_negotiate_reply), &waiting);
+    milter_server_context_negotiate(context, option);
+    while (waiting)
+        g_main_context_iteration(NULL, TRUE);
+    g_print("XXX\n");
+    return MILTER_STATUS_CONTINUE;
 }
 
 static MilterStatus
