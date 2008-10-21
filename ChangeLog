@@ -1,3 +1,10 @@
+2008-10-21  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/manager/milter-manager-child-milter.c: don't use
+	g_set_error_literal().
+
+	* test/: setup controller's test environment.
+
 2008-10-21  Hiroyuki Ikezoe  <poincare@ikezoe.net>
 
 	* milter/manager/milter-manager-child-milter.[ch]: Added

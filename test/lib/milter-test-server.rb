@@ -2,6 +2,7 @@
 
 require 'milter'
 require 'socket'
+require 'timeout'
 require 'optparse'
 
 class MilterTestServer
@@ -19,9 +20,11 @@ class MilterTestServer
       @socket = socket
 
       write(:negotiate, Milter::Option.new)
-      while packet = @socket.readpartial(4096)
-        @decoder.decode(packet)
-        break if @state == :quit
+      Timeout.timeout(5) do
+        while packet = @socket.readpartial(4096)
+          @decoder.decode(packet)
+          break if @state == :quit
+        end
       end
     end
   ensure

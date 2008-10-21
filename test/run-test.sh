@@ -2,6 +2,7 @@
 
 export BASE_DIR="`dirname $0`"
 top_dir="$BASE_DIR/.."
+top_dir="`cd $top_dir; pwd`"
 
 if test x"$NO_MAKE" != x"yes"; then
     make -C $top_dir/ > /dev/null || exit 1
@@ -27,4 +28,9 @@ fi
 if test x"$USE_GTK" = x"yes"; then
     CUTTER_ARGS="-u gtk $CUTTER_ARGS"
 fi
+
+export MILTER_MANAGER_CONTROLLER_MODULE_DIR=$top_dir/module/controller/ruby/.libs
+export RUBYLIB=$RUBYLIB:$top_dir/binding/ruby/lib:$top_dir/binding/ruby/src/.libs
+export MILTER_MANAGER_CONFIG_DIR=$top_dir/data
+
 $CUTTER_WRAPPER $CUTTER $CUTTER_ARGS "$@" $BASE_DIR

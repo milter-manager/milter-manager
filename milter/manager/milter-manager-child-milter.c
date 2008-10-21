@@ -304,9 +304,9 @@ set_error_message (GError **error,
         g_error_free(sub_error);
     }
 
-    g_set_error_literal(error, 
-                        MILTER_MANAGER_CHILD_MILTER_ERROR,
-                        error_code, message->str);
+    g_set_error(error,
+                MILTER_MANAGER_CHILD_MILTER_ERROR, error_code,
+                "%s", message->str);
     g_string_free(message, TRUE);
 }
 
