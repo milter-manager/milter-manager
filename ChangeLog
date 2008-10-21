@@ -15,6 +15,7 @@
 	milter process if connection fails.
 	* milter/manager/milter-manager-child-milter.c: Added user and
 	group. Cleanup.
+	* milter/manager/milter-manager-child-milter.[ch]: Set uid and gid.
 
 2008-10-20  Kouhei Sutou  <kou@cozmixng.org>
 

@@ -21,7 +21,12 @@
 #  include "../../config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include <sys/types.h>
+#include <unistd.h>
+#include <pwd.h>
 #include <sys/wait.h>
+#include <string.h>
+#include <errno.h>
 #include "milter-manager-child-milter.h"
 
 #define MILTER_MANAGER_CHILD_MILTER_GET_PRIVATE(obj)                    \
@@ -216,23 +221,36 @@ child_watch_func (GPid pid, gint status, gpointer user_data)
 }
 
 static void
-set_error_message_with_sub_error (GError **error,
-                                  gint error_code,
-                                  const gchar *error_message,
-                                  GError *sub_error)
+set_error_message (GError **error,
+                   gint error_code,
+                   GError *sub_error,
+                   const gchar *format,
+                   ...)
 {
-    GString *message = g_string_new(error_message);
+    GString *message;
+    va_list var_args;
 
-    g_string_append_printf(message, 
-                           ": %s", sub_error->message);
+    message = g_string_new(NULL);
 
-    milter_error("error: %s", message->str);
-    g_set_error(error,
-                MILTER_MANAGER_CHILD_MILTER_ERROR,
-                error_code,
-                "%s", message->str);
+    va_start(var_args, format);
+    g_string_append_vprintf(message, format, var_args);
+    va_end(var_args);
+
+    if (sub_error) {
+        g_string_append_printf(message,
+                               ": %s:%d",
+                               g_quark_to_string(sub_error->domain),
+                               sub_error->code);
+        if (sub_error->message)
+            g_string_append_printf(message, ": %s", sub_error->message);
+
+        g_error_free(sub_error);
+    }
+
+    g_set_error_literal(error, 
+                        MILTER_MANAGER_CHILD_MILTER_ERROR,
+                        error_code, message->str);
     g_string_free(message, TRUE);
-    g_error_free(sub_error);
 }
 
 gboolean
@@ -246,6 +264,7 @@ milter_manager_child_milter_start (MilterManagerChildMilter *milter,
     gboolean success;
     MilterManagerChildMilterPrivate *priv;
     GError *internal_error = NULL;
+    struct passwd *password;
 
     priv = MILTER_MANAGER_CHILD_MILTER_GET_PRIVATE(milter);
 
@@ -256,15 +275,41 @@ milter_manager_child_milter_start (MilterManagerChildMilter *milter,
     g_free(command_line);
 
     if (!success) {
-        set_error_message_with_sub_error(error,
-                                         MILTER_MANAGER_CHILD_MILTER_ERROR_BAD_COMMAND_STRING,
-                                         "Command string has invalid character(s).",
-                                         internal_error);
+        set_error_message(error,
+                          MILTER_MANAGER_CHILD_MILTER_ERROR_BAD_COMMAND_STRING,
+                          internal_error,
+                          "Command string has invalid character(s).");
         return FALSE;
     }
 
-    /* setresgid(); */
-    /* setresuid(); */
+    password = getpwnam(priv->user);
+    if (!password) {
+        set_error_message(error,
+                          MILTER_MANAGER_CHILD_MILTER_ERROR_INVALID_USER_NAME,
+                          NULL,
+                          "Couldn't start new milter process. :%s",
+                          strerror(errno));
+        return FALSE;
+    }
+
+    if (setregid(-1, password->pw_gid) == -1) {
+        set_error_message(error,
+                          MILTER_MANAGER_CHILD_MILTER_ERROR_START_FAILURE,
+                          NULL,
+                          "Couldn't start new milter process. :%s",
+                          strerror(errno));
+        return FALSE;
+    }
+
+    if (setreuid(-1, password->pw_uid) == -1) {
+        set_error_message(error,
+                          MILTER_MANAGER_CHILD_MILTER_ERROR_START_FAILURE,
+                          NULL,
+                          "Couldn't start new milter process. :%s",
+                          strerror(errno));
+        return FALSE;
+    }
+
     success = g_spawn_async(priv->working_directory,
                             argv,
                             NULL,
@@ -276,10 +321,10 @@ milter_manager_child_milter_start (MilterManagerChildMilter *milter,
     g_strfreev(argv);
 
     if (!success) {
-        set_error_message_with_sub_error(error,
-                                         MILTER_MANAGER_CHILD_MILTER_ERROR_START_FAILURE,
-                                         "Couldn't start new milter process.",
-                                         internal_error);
+        set_error_message(error,
+                          MILTER_MANAGER_CHILD_MILTER_ERROR_START_FAILURE,
+                          internal_error,
+                          "Couldn't start new milter process.");
         return FALSE;
     }
     priv->child_watch_id = 

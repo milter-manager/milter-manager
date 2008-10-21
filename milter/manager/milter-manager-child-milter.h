@@ -42,6 +42,7 @@ typedef enum
 {
     MILTER_MANAGER_CHILD_MILTER_ERROR_BAD_COMMAND_STRING,
     MILTER_MANAGER_CHILD_MILTER_ERROR_START_FAILURE,
+    MILTER_MANAGER_CHILD_MILTER_ERROR_INVALID_USER_NAME,
 } MilterManagerChildMilterError;
 
 typedef struct _MilterManagerChildMilter         MilterManagerChildMilter;
