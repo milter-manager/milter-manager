@@ -30,6 +30,8 @@
 	milter_manager_configuration_get_return_status_if_filter_unavailable.
 	* milter/manager/milter-manager-configuration.[ch]: Added
 	get_XX_timeout().
+	* milter/manager/milter-manager.c (setup_context_signals): gpointer ->
+	MilterManagerContoroller.
 
 2008-10-20  Kouhei Sutou  <kou@cozmixng.org>
 

@@ -213,10 +213,9 @@ cb_client_quit (MilterClientContext *context, gpointer user_data)
 }
 
 static void
-setup_context_signals (MilterClientContext *context, gpointer user_data)
+setup_context_signals (MilterClientContext *context,
+                       MilterManagerController *controller)
 {
-    MilterManagerController *controller = user_data;
-
 #define CONNECT(name)                                   \
     g_signal_connect(context, #name,                    \
                      G_CALLBACK(cb_client_ ## name),    \
