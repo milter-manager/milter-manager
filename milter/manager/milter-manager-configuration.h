@@ -53,6 +53,8 @@ MilterManagerConfiguration *
 
 gboolean      milter_manager_configuration_is_privilege_mode
                                      (MilterManagerConfiguration *configuration);
+MilterStatus  milter_manager_configuration_get_return_status_if_filter_unavailable
+                                     (MilterManagerConfiguration *configuration);
 void          milter_manager_configuration_add_child_milter
                                      (MilterManagerConfiguration *configuration,
                                       MilterManagerChildMilter   *milter);

@@ -33,6 +33,7 @@ struct _MilterManagerConfigurationPrivate
 {
     GList *child_milters;
     gboolean privilege;
+    MilterStatus return_status;
 };
 
 G_DEFINE_TYPE(MilterManagerConfiguration, milter_manager_configuration,
@@ -71,6 +72,7 @@ milter_manager_configuration_init (MilterManagerConfiguration *configuration)
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
     priv->child_milters = NULL;
     priv->privilege = FALSE;
+    priv->return_status = MILTER_STATUS_CONTINUE;
 }
 
 static void
@@ -153,6 +155,13 @@ milter_manager_configuration_get_child_milters (MilterManagerConfiguration *conf
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
     return priv->child_milters;
+}
+
+MilterStatus
+milter_manager_configuration_get_return_status_if_filter_unavailable
+                                     (MilterManagerConfiguration *configuration)
+{
+    return MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration)->return_status;
 }
 
 /*

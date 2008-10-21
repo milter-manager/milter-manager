@@ -476,6 +476,9 @@ real_negotiate (MilterManagerController *_controller, MilterOption *option)
         success = milter_server_context_establish_connection(context, &error);
         if (!success) {
             gboolean priviledge;
+            MilterStatus status;
+
+            status = milter_manager_configuration_get_return_status_if_filter_unavailable(conttoller->configuration);
 
             priviledge = 
                 milter_manager_configuration_is_privilege_mode(controller->configuration);
@@ -489,13 +492,13 @@ real_negotiate (MilterManagerController *_controller, MilterOption *option)
                 g_signal_emit_by_name(controller, "error", error);
                 g_error_free(error);
                 */
-                return MILTER_STATUS_TEMPORARY_FAILURE;
+                return status;
             }
 
             if (error->code != MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE) {
                 g_print("%s\n", error->message);
                 g_error_free(error);
-                return MILTER_STATUS_REJECT;
+                return status;
             }
             g_error_free(error);
 
@@ -504,7 +507,7 @@ real_negotiate (MilterManagerController *_controller, MilterOption *option)
             if (error) {
                 milter_error("Error: %s", error->message);
                 g_error_free(error);
-                return MILTER_STATUS_TEMPORARY_FAILURE;
+                return status;
             }
             return MILTER_STATUS_PROGRESS;
         }
