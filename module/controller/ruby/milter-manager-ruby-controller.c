@@ -526,85 +526,85 @@ real_connect (MilterManagerController *controller,
               struct sockaddr         *address,
               socklen_t                address_length)
 {
-     rb_p(rb_str_new2("connect"));
+    rb_p(rb_str_new2("connect"));
     return MILTER_STATUS_NOT_CHANGE;
 }
 
 static MilterStatus
 real_helo (MilterManagerController *controller, const gchar *fqdn)
 {
-     rb_p(rb_str_new2("helo"));
+    rb_p(rb_str_new2("helo"));
     return MILTER_STATUS_NOT_CHANGE;
 }
 
 static MilterStatus
 real_envelope_from (MilterManagerController *controller, const gchar *from)
 {
-     rb_p(rb_str_new2("envelope-from"));
+    rb_p(rb_str_new2("envelope-from"));
     return MILTER_STATUS_NOT_CHANGE;
 }
 
 static MilterStatus
 real_envelope_receipt (MilterManagerController *controller, const gchar *receipt)
 {
-     rb_p(rb_str_new2("envelope-receipt"));
+    rb_p(rb_str_new2("envelope-receipt"));
     return MILTER_STATUS_NOT_CHANGE;
 }
 
 static MilterStatus
 real_data (MilterManagerController *controller)
 {
-     rb_p(rb_str_new2("data"));
+    rb_p(rb_str_new2("data"));
     return MILTER_STATUS_NOT_CHANGE;
 }
 
 static MilterStatus
 real_unknown (MilterManagerController *controller, const gchar *command)
 {
-     rb_p(rb_str_new2("unknown"));
+    rb_p(rb_str_new2("unknown"));
     return MILTER_STATUS_NOT_CHANGE;
 }
 
 static MilterStatus
 real_header (MilterManagerController *controller,
-             const gchar *name, const gchar *value)
+        const gchar *name, const gchar *value)
 {
-     rb_p(rb_str_new2("header"));
+    rb_p(rb_str_new2("header"));
     return MILTER_STATUS_NOT_CHANGE;
 }
 
 static MilterStatus
 real_end_of_header (MilterManagerController *controller)
 {
-     rb_p(rb_str_new2("end-of-header"));
+    rb_p(rb_str_new2("end-of-header"));
     return MILTER_STATUS_NOT_CHANGE;
 }
 
 static MilterStatus
 real_body (MilterManagerController *controller, const guchar *chunk, gsize size)
 {
-     rb_p(rb_str_new2("body"));
+    rb_p(rb_str_new2("body"));
     return MILTER_STATUS_NOT_CHANGE;
 }
 
 static MilterStatus
 real_end_of_message (MilterManagerController *controller)
 {
-     rb_p(rb_str_new2("end-of-body"));
+    rb_p(rb_str_new2("end-of-body"));
     return MILTER_STATUS_NOT_CHANGE;
 }
 
 static MilterStatus
 real_quit (MilterManagerController *controller)
 {
-     rb_p(rb_str_new2("quit"));
+    rb_p(rb_str_new2("quit"));
     return MILTER_STATUS_NOT_CHANGE;
 }
 
 static MilterStatus
 real_abort (MilterManagerController *controller)
 {
-     rb_p(rb_str_new2("abort"));
+    rb_p(rb_str_new2("abort"));
     return MILTER_STATUS_NOT_CHANGE;
 }
 
