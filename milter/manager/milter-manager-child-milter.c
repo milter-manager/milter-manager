@@ -33,6 +33,8 @@ typedef struct _MilterManagerChildMilterPrivate	MilterManagerChildMilterPrivate;
 struct _MilterManagerChildMilterPrivate
 {
     gchar *name;
+    gchar *user;
+    gchar *group;
     gchar *working_directory;
     gchar *command;
     gchar *command_options;
@@ -89,6 +91,8 @@ milter_manager_child_milter_init (MilterManagerChildMilter *milter)
 
     priv = MILTER_MANAGER_CHILD_MILTER_GET_PRIVATE(milter);
     priv->name = NULL;
+    priv->user = NULL;
+    priv->group = NULL;
     priv->working_directory = NULL;
     priv->command = NULL;
     priv->command_options = NULL;
@@ -106,6 +110,16 @@ dispose (GObject *object)
     if (priv->name) {
         g_free(priv->name);
         priv->name = NULL;
+    }
+
+    if (priv->user) {
+        g_free(priv->user);
+        priv->user = NULL;
+    }
+
+    if (priv->group) {
+        g_free(priv->group);
+        priv->group = NULL;
     }
 
     if (priv->working_directory) {
@@ -201,6 +215,26 @@ child_watch_func (GPid pid, gint status, gpointer user_data)
     }
 }
 
+static void
+set_error_message_with_sub_error (GError **error,
+                                  gint error_code,
+                                  const gchar *error_message,
+                                  GError *sub_error)
+{
+    GString *message = g_string_new(error_message);
+
+    g_string_append_printf(message, 
+                           ": %s", sub_error->message);
+
+    milter_error("error: %s", message->str);
+    g_set_error(error,
+                MILTER_MANAGER_CHILD_MILTER_ERROR,
+                error_code,
+                "%s", message->str);
+    g_string_free(message, TRUE);
+    g_error_free(sub_error);
+}
+
 gboolean
 milter_manager_child_milter_start (MilterManagerChildMilter *milter,
                                    GError **error)
@@ -222,19 +256,10 @@ milter_manager_child_milter_start (MilterManagerChildMilter *milter,
     g_free(command_line);
 
     if (!success) {
-        GString *message;
-        message = g_string_new("Command string has invalid character(s)..");
-
-        g_string_append_printf(message, 
-                               ": %s", internal_error->message);
-
-        milter_error("error: %s", message->str);
-        g_error_free(internal_error);
-        g_set_error(error,
-                    MILTER_MANAGER_CHILD_MILTER_ERROR,
-                    MILTER_MANAGER_CHILD_MILTER_ERROR_BAD_COMMAND_STRING,
-                    "%s", message->str);
-        g_string_free(message, TRUE);
+        set_error_message_with_sub_error(error,
+                                         MILTER_MANAGER_CHILD_MILTER_ERROR_BAD_COMMAND_STRING,
+                                         "Command string has invalid character(s).",
+                                         internal_error);
         return FALSE;
     }
 
@@ -251,19 +276,10 @@ milter_manager_child_milter_start (MilterManagerChildMilter *milter,
     g_strfreev(argv);
 
     if (!success) {
-        GString *message;
-        message = g_string_new("Couldn't start new milter process.");
-
-        g_string_append_printf(message, 
-                               ": %s", internal_error->message);
-
-        milter_error("error: %s", message->str);
-        g_error_free(internal_error);
-        g_set_error(error,
-                    MILTER_MANAGER_CHILD_MILTER_ERROR,
-                    MILTER_MANAGER_CHILD_MILTER_ERROR_START_FAILURE,
-                    "%s", message->str);
-        g_string_free(message, TRUE);
+        set_error_message_with_sub_error(error,
+                                         MILTER_MANAGER_CHILD_MILTER_ERROR_START_FAILURE,
+                                         "Couldn't start new milter process.",
+                                         internal_error);
         return FALSE;
     }
     priv->child_watch_id = 

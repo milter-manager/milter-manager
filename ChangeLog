@@ -13,6 +13,8 @@
 	milter_manager_child_milter_start() returns GError.
 	* module/controller/ruby/milter-manager-ruby-controller.c: start child
 	milter process if connection fails.
+	* milter/manager/milter-manager-child-milter.c: Added user and
+	group. Cleanup.
 
 2008-10-20  Kouhei Sutou  <kou@cozmixng.org>
 
