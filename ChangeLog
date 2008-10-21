@@ -11,6 +11,8 @@
 	-> milter_assert_equal_child_milters.
 	* milter/manager/milter-manager-child-milter.c:
 	milter_manager_child_milter_start() returns GError.
+	* module/controller/ruby/milter-manager-ruby-controller.c: start child
+	milter process if connection fails.
 
 2008-10-20  Kouhei Sutou  <kou@cozmixng.org>
 

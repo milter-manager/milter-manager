@@ -470,14 +470,43 @@ real_negotiate (MilterManagerController *_controller, MilterOption *option)
     if (milters) {
         gboolean waiting = TRUE;
         GError *error = NULL;
+        gboolean success;
         MilterServerContext *context = milters->data;
 
-        milter_server_context_establish_connection(context, &error);
-        if (error) {
-            g_print("%s\n", error->message);
+        success = milter_server_context_establish_connection(context, &error);
+        if (!success) {
+            gboolean priviledge;
+
+            if (!priviledge) {
+                g_error_free(error);
+                /*
+                error = 
+                    g_error_new(MILTER_MANAGER_CONTROLLER_ERROR,
+                                MILTER_MANAGER_CONTROLLER_ERROR_MILTER_PROCESS_NOT_FOUND,
+                                "%s", message->str);
+                g_signal_emit_by_name(controller, "error", error);
+                g_error_free(error);
+                */
+                return MILTER_STATUS_TEMPORARY_FAILURE;
+            }
+
+            if (error->code != MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE) {
+                g_print("%s\n", error->message);
+                g_error_free(error);
+                return MILTER_STATUS_REJECT;
+            }
             g_error_free(error);
-            return MILTER_STATUS_REJECT;
+
+            milter_manager_child_milter_start(MILTER_MANAGER_CHILD_MILTER(context),
+                                              &error);
+            if (error) {
+                milter_error("Error: %s", error->message);
+                g_error_free(error);
+                return MILTER_STATUS_TEMPORARY_FAILURE;
+            }
+            return MILTER_STATUS_PROGRESS;
         }
+
         g_signal_connect(context, "continue", G_CALLBACK(cb_continue), &waiting);
         g_signal_connect(context, "negotiate_reply",
                          G_CALLBACK(cb_negotiate_reply), &waiting);
