@@ -34,6 +34,10 @@ struct _MilterManagerConfigurationPrivate
     GList *child_milters;
     gboolean privilege;
     MilterStatus return_status;
+    guint connection_timeout;
+    guint sending_timeout;
+    guint reading_timeout;
+    guint end_of_message_timeout;
 };
 
 G_DEFINE_TYPE(MilterManagerConfiguration, milter_manager_configuration,
@@ -73,6 +77,10 @@ milter_manager_configuration_init (MilterManagerConfiguration *configuration)
     priv->child_milters = NULL;
     priv->privilege = FALSE;
     priv->return_status = MILTER_STATUS_CONTINUE;
+    priv->connection_timeout = 300; /* 5 minutes */
+    priv->sending_timeout = 10; /* 10 seconds */
+    priv->reading_timeout = 10; /* 10 seconds */
+    priv->end_of_message_timeout = 300; /* 5 minutes */
 }
 
 static void
@@ -162,6 +170,30 @@ milter_manager_configuration_get_return_status_if_filter_unavailable
                                      (MilterManagerConfiguration *configuration)
 {
     return MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration)->return_status;
+}
+
+guint
+milter_manager_configuration_get_connection_timeout (MilterManagerConfiguration *configuration)
+{
+    return MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration)->connection_timeout;
+}
+
+guint
+milter_manager_configuration_get_sending_timeout (MilterManagerConfiguration *configuration)
+{
+    return MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration)->sending_timeout;
+}
+
+guint
+milter_manager_configuration_get_reading_timeout (MilterManagerConfiguration *configuration)
+{
+    return MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration)->reading_timeout;
+}
+
+guint
+milter_manager_configuration_get_end_of_message_timeout (MilterManagerConfiguration *configuration)
+{
+    return MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration)->end_of_message_timeout;
 }
 
 /*

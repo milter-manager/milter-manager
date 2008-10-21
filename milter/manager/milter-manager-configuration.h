@@ -55,6 +55,14 @@ gboolean      milter_manager_configuration_is_privilege_mode
                                      (MilterManagerConfiguration *configuration);
 MilterStatus  milter_manager_configuration_get_return_status_if_filter_unavailable
                                      (MilterManagerConfiguration *configuration);
+guint         milter_manager_configuration_get_connection_timeout
+                                     (MilterManagerConfiguration *configuration);
+guint         milter_manager_configuration_get_sending_timeout
+                                     (MilterManagerConfiguration *configuration);
+guint         milter_manager_configuration_get_reading_timeout
+                                     (MilterManagerConfiguration *configuration);
+guint         milter_manager_configuration_get_end_of_message_timeout
+                                     (MilterManagerConfiguration *configuration);
 void          milter_manager_configuration_add_child_milter
                                      (MilterManagerConfiguration *configuration,
                                       MilterManagerChildMilter   *milter);
