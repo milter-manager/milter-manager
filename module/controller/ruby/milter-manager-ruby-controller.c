@@ -478,25 +478,13 @@ real_negotiate (MilterManagerController *_controller, MilterOption *option)
             gboolean priviledge;
             MilterStatus status;
 
-            status = milter_manager_configuration_get_return_status_if_filter_unavailable(conttoller->configuration);
+            status = milter_manager_configuration_get_return_status_if_filter_unavailable(controller->configuration);
 
             priviledge = 
                 milter_manager_configuration_is_privilege_mode(controller->configuration);
-            if (!priviledge) {
-                g_error_free(error);
-                /*
-                error = 
-                    g_error_new(MILTER_MANAGER_CONTROLLER_ERROR,
-                                MILTER_MANAGER_CONTROLLER_ERROR_MILTER_PROCESS_NOT_FOUND,
-                                "%s", message->str);
-                g_signal_emit_by_name(controller, "error", error);
-                g_error_free(error);
-                */
-                return status;
-            }
-
-            if (error->code != MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE) {
-                g_print("%s\n", error->message);
+            if (!priviledge || 
+                error->code != MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE) {
+                milter_error("Error: %s", error->message);
                 g_error_free(error);
                 return status;
             }
