@@ -16,7 +16,7 @@ class MilterTestServer
   end
 
   def run
-    TCPSocket.open("localhost", 9999) do |socket|
+    TCPSocket.open(@host, @port) do |socket|
       @socket = socket
 
       write(:negotiate, Milter::Option.new)
@@ -33,6 +33,15 @@ class MilterTestServer
 
   def parse_options(argv)
     opts = OptionParser.new do |opts|
+      opts.on("--host=HOST", "Connect to milter on HOST (#{@host})") do |host|
+        @host = host
+      end
+
+      opts.on("--port=PORT", Integer,
+              "Connect to milter on PORT (#{@port})") do |port|
+        @port = port
+      end
+
       opts.on("--mail=FILE", "Use FILE as sent mail") do |mail|
         @mail = mail
       end
@@ -82,6 +91,8 @@ class MilterTestServer
 
   private
   def initialize_options
+    @host = "localhost"
+    @port = 9999
     @mail = nil
     @headers = []
     @content = nil
@@ -139,7 +150,7 @@ class MilterTestServer
       write(:data)
     when :data, :header
       @sending_headers ||= headers
-      header = @sending_headers.pop
+      header = @sending_headers.shift
       if header
         write(:header, *header)
       else
@@ -198,7 +209,7 @@ class MilterTestServer
     _headers = []
     if @mail
       header_part = File.read(@mail).split(/\r?\n\r?\n/, 2)[0]
-      header_part.gsub(/\n\t+/, " ").split(/\r?\n/).each do |header_line|
+      header_part.gsub(/\n[\t ]+/, " ").split(/\r?\n/).each do |header_line|
         _headers << header_line.split(/:\s*/, 2)
       end
     end

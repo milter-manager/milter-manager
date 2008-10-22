@@ -1,3 +1,7 @@
+2008-10-22  Kouhei Sutou  <kou@cozmixng.org>
+
+	* test/lib/milter-test-client.rb: add.
+
 2008-10-22  Hiroyuki Ikezoe  <poincare@ikezoe.net>
 
 	* milter/manager/milter-manager-child-milter.c: Use
