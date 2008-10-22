@@ -184,7 +184,7 @@ test_negotiate (void)
                                MILTER_STEP_NO_REPLY_CONNECT);
 
     spawn = make_spawn(test_client_path, "--print-status",
-                       "--port", "10025", NULL);
+                       "--timeout", "0.5", "--port", "10025", NULL);
     run_spawn(spawn);
 
     milter_manager_controller_negotiate(controller, option);
@@ -212,7 +212,8 @@ test_connect (void)
     milter_manager_controller_connect(controller, host_name,
                                       address, address_size);
     g_free(address);
-    g_main_context_iteration(NULL, TRUE);
+    while (!client_connected && !client_reaped)
+        g_main_context_iteration(NULL, TRUE);
     cut_assert_true(client_connected);
 }
 
@@ -224,7 +225,8 @@ test_helo (void)
     cut_trace(test_connect());
 
     milter_manager_controller_helo(controller, fqdn);
-    g_main_context_iteration(NULL, TRUE);
+    while (!client_greeted && !client_reaped)
+        g_main_context_iteration(NULL, TRUE);
     cut_assert_true(client_greeted);
 }
 
@@ -236,7 +238,8 @@ test_envelope_from (void)
     cut_trace(test_helo());
 
     milter_manager_controller_envelope_from(controller, from);
-    g_main_context_iteration(NULL, TRUE);
+    while (!client_envelope_from_received && !client_reaped)
+        g_main_context_iteration(NULL, TRUE);
     cut_assert_true(client_envelope_from_received);
 }
 
@@ -248,7 +251,8 @@ test_envelope_receipt (void)
     cut_trace(test_envelope_from());
 
     milter_manager_controller_envelope_receipt(controller, receipt);
-    g_main_context_iteration(NULL, TRUE);
+    while (!client_envelope_receipt_received && !client_reaped)
+        g_main_context_iteration(NULL, TRUE);
     cut_assert_true(client_envelope_receipt_received);
 }
 

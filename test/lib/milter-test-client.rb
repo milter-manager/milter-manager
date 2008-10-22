@@ -24,11 +24,11 @@ class MilterTestClient
     TCPServer.open(@port) do |socket|
       print_status("ready")
 
-      Timeout.timeout(5) do
+      Timeout.timeout(@timeout) do
         @socket = socket.accept
       end
 
-      Timeout.timeout(5) do
+      Timeout.timeout(@timeout) do
         while packet = @socket.readpartial(4096)
           @decoder.decode(packet)
           break if [:quit, :shutdown].include?(@state)
@@ -50,6 +50,11 @@ class MilterTestClient
         @print_status = boolean
       end
 
+      opts.on("--timeout=TIMEOUT", Float,
+              "Use TIMEOUT as timeout value") do |timeout|
+        @timeout = timeout
+      end
+
       opts.on("--[no-]debug", "Output debug information") do |boolean|
         @debug = boolean
       end
@@ -61,6 +66,7 @@ class MilterTestClient
   def initialize_options
     @port = 9999
     @print_ready = false
+    @timeout = 3
     @debug = false
   end
 

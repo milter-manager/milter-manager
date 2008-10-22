@@ -1,5 +1,8 @@
 2008-10-22  Kouhei Sutou  <kou@cozmixng.org>
 
+	* module/controller/ruby/milter-manager-ruby-controller.c,
+	test/manager/test-controller.c: set timeout but problems still exist.
+
 	* test/lib/milter-test-client.rb (MilterTestClient#invalid_state):
 	fix argument.
 
