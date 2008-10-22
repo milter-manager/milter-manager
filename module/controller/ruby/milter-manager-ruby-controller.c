@@ -535,10 +535,20 @@ real_connect (MilterManagerController *_controller,
 }
 
 static MilterStatus
-real_helo (MilterManagerController *controller, const gchar *fqdn)
+real_helo (MilterManagerController *_controller, const gchar *fqdn)
 {
-    rb_p(rb_str_new2("helo"));
-    return MILTER_STATUS_NOT_CHANGE;
+    MilterManagerRubyController *controller;
+    const GList *milters;
+    MilterServerContext *context;
+
+    controller = MILTER_MANAGER_RUBY_CONTROLLER(_controller);
+    milters = milter_manager_configuration_get_child_milters(controller->configuration);
+
+    if (!milters)
+        return MILTER_STATUS_NOT_CHANGE;
+
+    context = milters->data;
+    return milter_server_context_helo(context, fqdn);
 }
 
 static MilterStatus

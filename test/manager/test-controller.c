@@ -28,6 +28,7 @@
 
 void test_negotiate (void);
 void test_connect (void);
+void test_helo (void);
 
 static MilterManagerConfiguration *config;
 static MilterManagerController *controller;
@@ -40,6 +41,7 @@ static gchar *test_client_path;
 static gboolean client_ready;
 static gboolean client_negotiated;
 static gboolean client_connected;
+static gboolean client_greeted;
 static gboolean client_reaped;
 
 
@@ -101,6 +103,8 @@ cb_output_received (GCutSpawn *spawn, const gchar *chunk, gsize size,
         client_negotiated = TRUE;
     } else if (g_str_has_prefix(chunk, "receive: connect")) {
         client_connected = TRUE;
+    } else if (g_str_has_prefix(chunk, "receive: helo")) {
+        client_greeted = TRUE;
     } else {
         GString *string;
 
@@ -199,6 +203,18 @@ test_connect (void)
     g_free(address);
     g_main_context_iteration(NULL, TRUE);
     cut_assert_true(client_connected);
+}
+
+void
+test_helo (void)
+{
+    const gchar fqdn[] = "delian";
+
+    cut_trace(test_connect());
+
+    milter_manager_controller_helo(controller, fqdn);
+    g_main_context_iteration(NULL, TRUE);
+    cut_assert_true(client_greeted);
 }
 
 /*
