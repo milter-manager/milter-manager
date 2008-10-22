@@ -1,6 +1,12 @@
 2008-10-22  Kouhei Sutou  <kou@cozmixng.org>
 
 	* module/controller/ruby/milter-manager-ruby-controller.c,
+	test/manager/test-controller.c: handle envelope-receipt.
+
+	* module/controller/ruby/milter-manager-ruby-controller.c,
+	test/manager/test-controller.c: handle envelope-from.
+
+	* module/controller/ruby/milter-manager-ruby-controller.c,
 	test/manager/test-controller.c: handle helo.
 
 	* module/controller/ruby/milter-manager-ruby-controller.c,

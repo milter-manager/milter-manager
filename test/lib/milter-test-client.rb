@@ -82,7 +82,7 @@ class MilterTestClient
   end
 
   def info(*args)
-    p(*args) if @debug
+    args.each {|arg| $stderr.puts(arg.inspect)} if @debug
   end
 
   def setup_decoder

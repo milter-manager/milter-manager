@@ -29,6 +29,8 @@
 void test_negotiate (void);
 void test_connect (void);
 void test_helo (void);
+void test_envelope_from (void);
+void test_envelope_receipt (void);
 
 static MilterManagerConfiguration *config;
 static MilterManagerController *controller;
@@ -42,6 +44,8 @@ static gboolean client_ready;
 static gboolean client_negotiated;
 static gboolean client_connected;
 static gboolean client_greeted;
+static gboolean client_envelope_from_received;
+static gboolean client_envelope_receipt_received;
 static gboolean client_reaped;
 
 
@@ -74,6 +78,9 @@ setup (void)
     client_ready = FALSE;
     client_negotiated = FALSE;
     client_connected = FALSE;
+    client_greeted = FALSE;
+    client_envelope_from_received = FALSE;
+    client_envelope_receipt_received = FALSE;
     client_reaped = FALSE;
 }
 
@@ -105,6 +112,10 @@ cb_output_received (GCutSpawn *spawn, const gchar *chunk, gsize size,
         client_connected = TRUE;
     } else if (g_str_has_prefix(chunk, "receive: helo")) {
         client_greeted = TRUE;
+    } else if (g_str_has_prefix(chunk, "receive: mail")) {
+        client_envelope_from_received = TRUE;
+    } else if (g_str_has_prefix(chunk, "receive: rcpt")) {
+        client_envelope_receipt_received = TRUE;
     } else {
         GString *string;
 
@@ -215,6 +226,30 @@ test_helo (void)
     milter_manager_controller_helo(controller, fqdn);
     g_main_context_iteration(NULL, TRUE);
     cut_assert_true(client_greeted);
+}
+
+void
+test_envelope_from (void)
+{
+    const gchar from[] = "kou+sender@cozmixng.org";
+
+    cut_trace(test_helo());
+
+    milter_manager_controller_envelope_from(controller, from);
+    g_main_context_iteration(NULL, TRUE);
+    cut_assert_true(client_envelope_from_received);
+}
+
+void
+test_envelope_receipt (void)
+{
+    const gchar receipt[] = "kou+receiver@cozmixng.org";
+
+    cut_trace(test_envelope_from());
+
+    milter_manager_controller_envelope_receipt(controller, receipt);
+    g_main_context_iteration(NULL, TRUE);
+    cut_assert_true(client_envelope_receipt_received);
 }
 
 /*
