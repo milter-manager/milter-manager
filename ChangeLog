@@ -1,5 +1,8 @@
 2008-10-22  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/lib/milter-test-client.rb (MilterTestClient#invalid_state):
+	fix argument.
+
 	* module/controller/ruby/milter-manager-ruby-controller.c,
 	test/manager/test-controller.c: handle envelope-receipt.
 

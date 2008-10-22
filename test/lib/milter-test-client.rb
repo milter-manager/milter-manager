@@ -31,7 +31,7 @@ class MilterTestClient
       Timeout.timeout(5) do
         while packet = @socket.readpartial(4096)
           @decoder.decode(packet)
-          break if @state == :quit
+          break if [:quit, :shutdown].include?(@state)
         end
       end
     end
@@ -177,7 +177,7 @@ class MilterTestClient
   end
 
   def invalid_state(reply_state)
-    write(:reply_shutdown)
+    write(:shutdown, :reply_shutdown)
     raise "should not receive reply for #{reply_state} on #{@state}"
   end
 end
