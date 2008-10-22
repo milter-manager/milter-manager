@@ -552,10 +552,20 @@ real_helo (MilterManagerController *_controller, const gchar *fqdn)
 }
 
 static MilterStatus
-real_envelope_from (MilterManagerController *controller, const gchar *from)
+real_envelope_from (MilterManagerController *_controller, const gchar *from)
 {
-    rb_p(rb_str_new2("envelope-from"));
-    return MILTER_STATUS_NOT_CHANGE;
+    MilterManagerRubyController *controller;
+    const GList *milters;
+    MilterServerContext *context;
+
+    controller = MILTER_MANAGER_RUBY_CONTROLLER(_controller);
+    milters = milter_manager_configuration_get_child_milters(controller->configuration);
+
+    if (!milters)
+        return MILTER_STATUS_NOT_CHANGE;
+
+    context = milters->data;
+    return milter_server_context_envelope_from(context, from);
 }
 
 static MilterStatus
