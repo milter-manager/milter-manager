@@ -17,6 +17,8 @@
  *
  */
 
+#include <string.h>
+
 #include <gcutter.h>
 
 #define shutdown inet_shutdown
@@ -25,6 +27,7 @@
 #undef shutdown
 
 void test_negotiate (void);
+void test_connect (void);
 
 static MilterManagerConfiguration *config;
 static MilterManagerController *controller;
@@ -96,6 +99,8 @@ cb_output_received (GCutSpawn *spawn, const gchar *chunk, gsize size,
         client_ready = TRUE;
     } else if (g_str_has_prefix(chunk, "receive: negotiate")) {
         client_negotiated = TRUE;
+    } else if (g_str_has_prefix(chunk, "receive: connect")) {
+        client_connected = TRUE;
     } else {
         GString *string;
 
@@ -119,9 +124,7 @@ cb_error_received (GCutSpawn *spawn, const gchar *chunk, gsize size,
 static void
 cb_reaped (GCutSpawn *spawn, gint status, gpointer user_data)
 {
-    gboolean *reaped = user_data;
-
-    *reaped = TRUE;
+    client_reaped = TRUE;
 }
 
 static GCutSpawn *
@@ -171,6 +174,31 @@ test_negotiate (void)
 
     milter_manager_controller_negotiate(controller, option);
     cut_assert_true(client_negotiated);
+}
+
+void
+test_connect (void)
+{
+    const gchar host_name[] = "mx.local.net";
+    gint domain;
+    struct sockaddr *address;
+    socklen_t address_size;
+    GError *error = NULL;
+
+    cut_trace(test_negotiate());
+
+    milter_utils_parse_connection_spec("inet:2929@192.168.1.29",
+                                       &domain,
+                                       &address,
+                                       &address_size,
+                                       &error);
+    gcut_assert_error(error);
+
+    milter_manager_controller_connect(controller, host_name,
+                                      address, address_size);
+    g_free(address);
+    g_main_context_iteration(NULL, TRUE);
+    cut_assert_true(client_connected);
 }
 
 /*

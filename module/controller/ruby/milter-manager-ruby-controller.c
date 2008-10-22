@@ -481,12 +481,12 @@ real_negotiate (MilterManagerController *_controller, MilterOption *option)
         gboolean priviledge;
         MilterStatus status;
 
-        status = 
+        status =
             milter_manager_configuration_get_return_status_if_filter_unavailable(controller->configuration);
 
-        priviledge = 
+        priviledge =
             milter_manager_configuration_is_privilege_mode(controller->configuration);
-        if (!priviledge || 
+        if (!priviledge ||
             error->code != MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE) {
             milter_error("Error: %s", error->message);
             g_error_free(error);
@@ -514,13 +514,24 @@ real_negotiate (MilterManagerController *_controller, MilterOption *option)
 }
 
 static MilterStatus
-real_connect (MilterManagerController *controller,
+real_connect (MilterManagerController *_controller,
               const gchar             *host_name,
               struct sockaddr         *address,
               socklen_t                address_length)
 {
-    rb_p(rb_str_new2("connect"));
-    return MILTER_STATUS_NOT_CHANGE;
+    MilterManagerRubyController *controller;
+    const GList *milters;
+    MilterServerContext *context;
+
+    controller = MILTER_MANAGER_RUBY_CONTROLLER(_controller);
+    milters = milter_manager_configuration_get_child_milters(controller->configuration);
+
+    if (!milters)
+        return MILTER_STATUS_NOT_CHANGE;
+
+    context = milters->data;
+    return milter_server_context_connect(context, host_name,
+                                         address, address_length);
 }
 
 static MilterStatus
