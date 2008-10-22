@@ -6,6 +6,10 @@
 
 	* milter/manager/milter-manager-child-milter.c: Use
 	milter_utils_set_error_with_sub_error().
+	* milter/manager/milter-manager.c,
+	milter/manager/milter-manager-controller.[ch],
+	module/controller/ruby/milter-manager-ruby-controller.c: Handle
+	"mta-timeout" signal from MilterClientContext.
 
 2008-10-21  Kouhei Sutou  <kou@cozmixng.org>
 

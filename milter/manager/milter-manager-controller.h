@@ -71,6 +71,7 @@ struct _MilterManagerControllerClass
     MilterStatus (*end_of_message)     (MilterManagerController *controller);
     MilterStatus (*quit)               (MilterManagerController *controller);
     MilterStatus (*abort)              (MilterManagerController *controller);
+    void         (*mta_timeout)        (MilterManagerController *controller);
 };
 
 GType                 milter_manager_controller_get_type    (void) G_GNUC_CONST;
@@ -126,6 +127,8 @@ MilterStatus          milter_manager_controller_end_of_message
 MilterStatus          milter_manager_controller_quit
                                           (MilterManagerController *controller);
 MilterStatus          milter_manager_controller_abort
+                                          (MilterManagerController *controller);
+void                  milter_manager_controller_mta_timeout
                                           (MilterManagerController *controller);
 
 G_END_DECLS

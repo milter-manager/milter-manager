@@ -99,6 +99,7 @@ static MilterStatus real_body             (MilterManagerController *controller,
 static MilterStatus real_end_of_message   (MilterManagerController *controller);
 static MilterStatus real_quit             (MilterManagerController *controller);
 static MilterStatus real_abort            (MilterManagerController *controller);
+static void         real_mta_timeout      (MilterManagerController *controller);
 
 
 static void
@@ -147,6 +148,7 @@ controller_init (MilterManagerControllerClass *controller)
     controller->end_of_message = real_end_of_message;
     controller->quit = real_quit;
     controller->abort = real_abort;
+    controller->mta_timeout = real_mta_timeout;
 }
 
 static void
@@ -598,6 +600,12 @@ real_abort (MilterManagerController *controller)
 {
     rb_p(rb_str_new2("abort"));
     return MILTER_STATUS_NOT_CHANGE;
+}
+
+static void
+real_mta_timeout (MilterManagerController *controller)
+{
+    rb_p(rb_str_new2("mta_timeout"));
 }
 
 /*

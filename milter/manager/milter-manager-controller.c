@@ -314,6 +314,16 @@ milter_manager_controller_abort (MilterManagerController *controller)
     return MILTER_STATUS_DEFAULT;
 }
 
+void
+milter_manager_controller_mta_timeout (MilterManagerController *controller)
+{
+    MilterManagerControllerClass *controller_class;
+
+    controller_class = MILTER_MANAGER_CONTROLLER_GET_CLASS(controller);
+    if (controller_class->mta_timeout)
+        controller_class->mta_timeout(controller);
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */

@@ -180,6 +180,14 @@ cb_client_abort (MilterClientContext *context, gpointer user_data)
     return milter_manager_controller_abort(controller);
 }
 
+static void
+cb_client_mta_timeout (MilterClientContext *context, gpointer user_data)
+{
+    MilterManagerController *controller = user_data;
+
+    milter_manager_controller_mta_timeout(controller);
+}
+
 static MilterStatus
 cb_client_quit (MilterClientContext *context, gpointer user_data)
 {
@@ -206,6 +214,7 @@ cb_client_quit (MilterClientContext *context, gpointer user_data)
     DISCONNECT(end_of_message);
     DISCONNECT(quit);
     DISCONNECT(abort);
+    DISCONNECT(mta_timeout);
 
 #undef DISCONNECT
 
@@ -234,6 +243,7 @@ setup_context_signals (MilterClientContext *context,
     CONNECT(end_of_message);
     CONNECT(quit);
     CONNECT(abort);
+    CONNECT(mta_timeout);
 
 #undef CONNECT
 }
