@@ -1,5 +1,7 @@
 2008-10-22  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/test-child-milter.c (test_start): output nothing.
+
 	* test/manager/test-controller.c, test/lib/milter-test-client.rb,
 	module/controller/ruby/milter-manager-ruby-controller.c,
 	milter/manager/milter-manager.c: write test that uses

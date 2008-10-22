@@ -47,7 +47,7 @@ void
 test_start (void)
 {
     g_object_set(milter,
-                 "command", "/bin/echo",
+                 "command", "/bin/echo -n",
                  NULL);
     milter_manager_child_milter_start(milter, &error);
     gcut_assert_error(error);
