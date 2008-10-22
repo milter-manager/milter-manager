@@ -31,14 +31,6 @@
 static gboolean initialized = FALSE;
 static MilterClient *current_client = NULL;
 
-static void
-cb_log (MilterLogger *logger,
-        const gchar *domain, MilterLogLevelFlags level, const gchar *message,
-        gpointer user_data)
-{
-    g_print("%s", message);
-}
-
 void
 milter_manager_init (int *argc, char ***argv)
 {
@@ -56,8 +48,6 @@ milter_manager_init (int *argc, char ***argv)
     if (!g_thread_supported())
         g_thread_init(NULL);
 
-    g_signal_connect(milter_logger(), "log", G_CALLBACK(cb_log), NULL);
-
     _milter_manager_controller_init();
 }
 
@@ -68,9 +58,6 @@ milter_manager_quit (void)
         return;
 
     _milter_manager_controller_quit();
-
-    g_signal_handlers_disconnect_by_func(milter_logger(),
-                                         G_CALLBACK(cb_log), NULL);
 }
 
 static MilterStatus

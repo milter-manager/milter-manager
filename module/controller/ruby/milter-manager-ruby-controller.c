@@ -510,7 +510,6 @@ real_negotiate (MilterManagerController *_controller, MilterOption *option)
     milter_server_context_negotiate(context, option);
     while (waiting)
         g_main_context_iteration(NULL, TRUE);
-    g_print("XXX\n");
     return MILTER_STATUS_CONTINUE;
 }
 

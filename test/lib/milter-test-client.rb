@@ -22,6 +22,8 @@ class MilterTestClient
 
   def run
     TCPServer.open(@port) do |socket|
+      print_status("ready")
+
       Timeout.timeout(5) do
         @socket = socket.accept
       end
@@ -43,6 +45,11 @@ class MilterTestClient
         @port = port
       end
 
+      opts.on("--[no-]print-status",
+              "Print message on status change") do |boolean|
+        @print_status = boolean
+      end
+
       opts.on("--[no-]debug", "Output debug information") do |boolean|
         @debug = boolean
       end
@@ -53,12 +60,18 @@ class MilterTestClient
   private
   def initialize_options
     @port = 9999
+    @print_ready = false
     @debug = false
+  end
+
+  def print_status(status)
+    return unless @print_status
+    puts status
+    $stdout.flush
   end
 
   def write(next_state, encode_type, *args)
     packet, packed_size = @encoder.send("encode_#{encode_type}", *args)
-    p [packet.size, packet]
     while packet
       written_size = @socket.write(packet)
       packet = packet[written_size, -1]
@@ -74,8 +87,10 @@ class MilterTestClient
 
   def setup_decoder
     @decoder.class.signals.each do |signal|
+      next if signal == "decode-command"
       @decoder.signal_connect(signal) do |_, *args|
         info(signal)
+        print_status("receive: #{signal}")
         callback_name = "do_#{signal.gsub(/-/, '_')}"
         send(callback_name, *args) if respond_to?(callback_name, true)
       end
