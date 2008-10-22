@@ -277,39 +277,6 @@ child_watch_func (GPid pid, gint status, gpointer user_data)
     }
 }
 
-static void
-set_error_message (GError **error,
-                   gint error_code,
-                   GError *sub_error,
-                   const gchar *format,
-                   ...)
-{
-    GString *message;
-    va_list var_args;
-
-    message = g_string_new(NULL);
-
-    va_start(var_args, format);
-    g_string_append_vprintf(message, format, var_args);
-    va_end(var_args);
-
-    if (sub_error) {
-        g_string_append_printf(message,
-                               ": %s:%d",
-                               g_quark_to_string(sub_error->domain),
-                               sub_error->code);
-        if (sub_error->message)
-            g_string_append_printf(message, ": %s", sub_error->message);
-
-        g_error_free(sub_error);
-    }
-
-    g_set_error(error,
-                MILTER_MANAGER_CHILD_MILTER_ERROR, error_code,
-                "%s", message->str);
-    g_string_free(message, TRUE);
-}
-
 static gboolean
 set_user (const gchar *user_name, GError **error)
 {
@@ -317,28 +284,31 @@ set_user (const gchar *user_name, GError **error)
 
     password = getpwnam(user_name);
     if (!password) {
-        set_error_message(error,
-                          MILTER_MANAGER_CHILD_MILTER_ERROR_INVALID_USER_NAME,
-                          NULL,
-                          "No passwd entry for %s. :%s",
-                          user_name,
-                          strerror(errno));
+        milter_utils_set_error_with_sub_error(error,
+                                              MILTER_MANAGER_CHILD_MILTER_ERROR,
+                                              MILTER_MANAGER_CHILD_MILTER_ERROR_INVALID_USER_NAME,
+                                              NULL,
+                                              "No passwd entry for %s. :%s",
+                                              user_name,
+                                              strerror(errno));
         return FALSE;
     }
 
     if (setregid(-1, password->pw_gid) == -1) {
-        set_error_message(error,
-                          MILTER_MANAGER_CHILD_MILTER_ERROR_NO_PRIVILEGE_MODE,
-                          NULL,
-                          "MilterManager does not run on privilege mode.");
+        milter_utils_set_error_with_sub_error(error,
+                                              MILTER_MANAGER_CHILD_MILTER_ERROR,
+                                              MILTER_MANAGER_CHILD_MILTER_ERROR_NO_PRIVILEGE_MODE,
+                                              NULL,
+                                              "MilterManager does not run on privilege mode.");
         return FALSE;
     }
 
     if (setreuid(-1, password->pw_uid) == -1) {
-        set_error_message(error,
-                          MILTER_MANAGER_CHILD_MILTER_ERROR_NO_PRIVILEGE_MODE,
-                          NULL,
-                          "MilterManager does not run on privilege mode.");
+        milter_utils_set_error_with_sub_error(error,
+                                              MILTER_MANAGER_CHILD_MILTER_ERROR,
+                                              MILTER_MANAGER_CHILD_MILTER_ERROR_NO_PRIVILEGE_MODE,
+                                              NULL,
+                                              "MilterManager does not run on privilege mode.");
         return FALSE;
     }
 
@@ -360,10 +330,11 @@ milter_manager_child_milter_start (MilterManagerChildMilter *milter,
     priv = MILTER_MANAGER_CHILD_MILTER_GET_PRIVATE(milter);
 
     if (!priv->command) {
-        set_error_message(error,
-                          MILTER_MANAGER_CHILD_MILTER_ERROR_BAD_COMMAND_STRING,
-                          NULL,
-                          "No command set yet.");
+        milter_utils_set_error_with_sub_error(error,
+                                              MILTER_MANAGER_CHILD_MILTER_ERROR,
+                                              MILTER_MANAGER_CHILD_MILTER_ERROR_BAD_COMMAND_STRING,
+                                              NULL,
+                                              "No command set yet.");
         return FALSE;
     }
 
@@ -378,10 +349,11 @@ milter_manager_child_milter_start (MilterManagerChildMilter *milter,
     g_free(command_line);
 
     if (!success) {
-        set_error_message(error,
-                          MILTER_MANAGER_CHILD_MILTER_ERROR_BAD_COMMAND_STRING,
-                          internal_error,
-                          "Command string has invalid character(s).");
+        milter_utils_set_error_with_sub_error(error,
+                                              MILTER_MANAGER_CHILD_MILTER_ERROR,
+                                              MILTER_MANAGER_CHILD_MILTER_ERROR_BAD_COMMAND_STRING,
+                                              internal_error,
+                                              "Command string has invalid character(s).");
         return FALSE;
     }
 
@@ -399,10 +371,11 @@ milter_manager_child_milter_start (MilterManagerChildMilter *milter,
     g_strfreev(argv);
 
     if (!success) {
-        set_error_message(error,
-                          MILTER_MANAGER_CHILD_MILTER_ERROR_START_FAILURE,
-                          internal_error,
-                          "Couldn't start new milter process.");
+        milter_utils_set_error_with_sub_error(error,
+                                              MILTER_MANAGER_CHILD_MILTER_ERROR,
+                                              MILTER_MANAGER_CHILD_MILTER_ERROR_START_FAILURE,
+                                              internal_error,
+                                              "Couldn't start new milter process.");
         return FALSE;
     }
     priv->child_watch_id = 

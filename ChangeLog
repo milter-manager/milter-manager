@@ -1,3 +1,8 @@
+2008-10-22  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/manager/milter-manager-child-milter.c: Use
+	milter_utils_set_error_with_sub_error().
+
 2008-10-21  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/manager/milter-manager-child-milter.c: don't use
