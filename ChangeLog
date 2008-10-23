@@ -5,6 +5,9 @@
 
 2008-10-23  Kouhei Sutou  <kou@cozmixng.org>
 
+	* module/configuration/ruby/milter-manager-ruby-configuration.c:
+	set methods.
+
 	* milter/manager/, test/manager/:
 	milter_manager_configuration_new() accepts properties.
 

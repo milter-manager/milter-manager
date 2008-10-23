@@ -73,17 +73,19 @@ static void
 class_init (MilterManagerRubyConfigurationClass *klass)
 {
     GObjectClass *gobject_class;
+    MilterManagerConfigurationClass *configuration_class;
 
     parent_class = g_type_class_peek_parent(klass);
 
     gobject_class = G_OBJECT_CLASS(klass);
+    configuration_class = MILTER_MANAGER_CONFIGURATION_CLASS(klass);
 
     gobject_class->dispose      = dispose;
     gobject_class->set_property = set_property;
     gobject_class->get_property = get_property;
 
-    parent_class->add_load_path = real_add_load_path;
-    parent_class->load = real_load;
+    configuration_class->add_load_path = real_add_load_path;
+    configuration_class->load = real_load;
 }
 
 static void
