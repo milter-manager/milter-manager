@@ -24,19 +24,19 @@
 #include <milter/manager/milter-manager-configuration.h>
 #undef shutdown
 
-void test_child_milters (void);
+void test_children (void);
 
 static MilterManagerConfiguration *config;
-static MilterManagerChildMilter *milter;
+static MilterManagerChild *milter;
 
-static GList *expected_child_milters;
+static GList *expected_children;
 
 void
 setup (void)
 {
     config = milter_manager_configuration_new(NULL);
     milter = NULL;
-    expected_child_milters = NULL;
+    expected_children = NULL;
 }
 
 void
@@ -47,29 +47,29 @@ teardown (void)
     if (milter)
         g_object_unref(milter);
 
-    if (expected_child_milters) {
-        g_list_foreach(expected_child_milters, (GFunc)g_object_unref, NULL);
-        g_list_free(expected_child_milters);
+    if (expected_children) {
+        g_list_foreach(expected_children, (GFunc)g_object_unref, NULL);
+        g_list_free(expected_children);
     }
 }
 
-#define milter_assert_equal_child_milters(expected)                     \
+#define milter_assert_equal_children(expected)                     \
     gcut_assert_equal_list_object(                                      \
         expected,                                                       \
-        milter_manager_configuration_get_child_milters(config))
+        milter_manager_configuration_get_children(config))
 
 void
-test_child_milters (void)
+test_children (void)
 {
-    milter_assert_equal_child_milters(NULL);
+    milter_assert_equal_children(NULL);
 
-    milter = milter_manager_child_milter_new("child-milter");
-    milter_manager_configuration_add_child_milter(config, milter);
+    milter = milter_manager_child_new("child-milter");
+    milter_manager_configuration_add_child(config, milter);
 
-    expected_child_milters = g_list_append(NULL, milter);
+    expected_children = g_list_append(NULL, milter);
     g_object_ref(milter);
 
-    milter_assert_equal_child_milters(expected_child_milters);
+    milter_assert_equal_children(expected_children);
 }
 
 /*

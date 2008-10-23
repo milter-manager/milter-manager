@@ -7,7 +7,7 @@
 static VALUE
 add_child_milter (VALUE self, VALUE milter)
 {
-    milter_manager_configuration_add_child_milter(SELF(self), RVAL2GOBJ(milter));
+    milter_manager_configuration_add_child(SELF(self), RVAL2GOBJ(milter));
 
     return self;
 }

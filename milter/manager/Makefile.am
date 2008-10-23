@@ -21,7 +21,7 @@ BUILT_SOURCES =
 
 milter_manager_public_headers =		\
 	milter-manager-configuration.h	\
-	milter-manager-child-milter.h	\
+	milter-manager-child.h		\
 	milter-manager-module.h		\
 	milter-manager-module-impl.h
 
@@ -47,7 +47,7 @@ libmilter_manager_la_SOURCES =		\
 	milter-manager-ruby-internal.h	\
 	milter-manager.c		\
 	milter-manager-configuration.c	\
-	milter-manager-child-milter.c	\
+	milter-manager-child.c		\
 	milter-manager-module.c		\
 	milter-manager-controller.c
 

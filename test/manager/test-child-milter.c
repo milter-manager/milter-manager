@@ -21,13 +21,13 @@
 
 #define shutdown inet_shutdown
 #include <milter-manager-test-utils.h>
-#include <milter/manager/milter-manager-child-milter.h>
+#include <milter/manager/milter-manager-child.h>
 #undef shutdown
 
 void test_start (void);
 void test_exit_error (void);
 
-static MilterManagerChildMilter *milter;
+static MilterManagerChild *milter;
 static GError *actual_error;
 static GError *expected_error;
 static gboolean error_occured;
@@ -43,7 +43,7 @@ cb_error (MilterErrorEmitable *emitable,
 void
 setup (void)
 {
-    milter = milter_manager_child_milter_new("test-milter");
+    milter = milter_manager_child_new("test-milter");
     actual_error = NULL;
     expected_error = NULL;
     error_occured = FALSE;
@@ -67,15 +67,15 @@ test_start (void)
     g_object_set(milter,
                  "command", "/bin/echo -n",
                  NULL);
-    milter_manager_child_milter_start(milter, &error);
+    milter_manager_child_start(milter, &error);
     gcut_assert_error(error);
 }
 
 void
 test_exit_error (void)
 {
-    expected_error = g_error_new(MILTER_MANAGER_CHILD_MILTER_ERROR,
-                                 MILTER_MANAGER_CHILD_MILTER_ERROR_MILTER_EXIT,
+    expected_error = g_error_new(MILTER_MANAGER_CHILD_ERROR,
+                                 MILTER_MANAGER_CHILD_ERROR_MILTER_EXIT,
                                  "test-milter exits with status: %d", 0);
     g_signal_connect(milter, "error", G_CALLBACK(cb_error), NULL);
 

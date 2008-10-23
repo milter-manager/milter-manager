@@ -22,7 +22,7 @@
 
 #include <glib-object.h>
 
-#include <milter/manager/milter-manager-child-milter.h>
+#include <milter/manager/milter-manager-child.h>
 
 G_BEGIN_DECLS
 
@@ -80,12 +80,12 @@ guint         milter_manager_configuration_get_reading_timeout
                                      (MilterManagerConfiguration *configuration);
 guint         milter_manager_configuration_get_end_of_message_timeout
                                      (MilterManagerConfiguration *configuration);
-void          milter_manager_configuration_add_child_milter
+void          milter_manager_configuration_add_child
                                      (MilterManagerConfiguration *configuration,
-                                      MilterManagerChildMilter   *milter);
-const GList  *milter_manager_configuration_get_child_milters
+                                      MilterManagerChild *milter);
+const GList  *milter_manager_configuration_get_children
                                      (MilterManagerConfiguration *configuration);
-GList        *milter_manager_configuration_create_child_milters
+GList        *milter_manager_configuration_create_children
                                      (MilterManagerConfiguration *configuration);
 
 G_END_DECLS

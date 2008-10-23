@@ -12,6 +12,7 @@
 	MilterMacrosRequest in negotiate-reply signal.
 	* milter/manager/milter-manager-controller.c: NULL check barrier for
 	MilterMacrosRequests.
+	* milter/manager/*: MilterManagerChildMilter -> MilterManagerChild.
 
 2008-10-23  Kouhei Sutou  <kou@cozmixng.org>
 

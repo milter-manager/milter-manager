@@ -27,15 +27,15 @@
 #include <sys/wait.h>
 #include <string.h>
 #include <errno.h>
-#include "milter-manager-child-milter.h"
+#include "milter-manager-child.h"
 
-#define MILTER_MANAGER_CHILD_MILTER_GET_PRIVATE(obj)                    \
+#define MILTER_MANAGER_CHILD_GET_PRIVATE(obj)                    \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                                 \
-                                 MILTER_MANAGER_TYPE_CHILD_MILTER,      \
-                                 MilterManagerChildMilterPrivate))
+                                 MILTER_MANAGER_TYPE_CHILD,      \
+                                 MilterManagerChildPrivate))
 
-typedef struct _MilterManagerChildMilterPrivate	MilterManagerChildMilterPrivate;
-struct _MilterManagerChildMilterPrivate
+typedef struct _MilterManagerChildPrivate	MilterManagerChildPrivate;
+struct _MilterManagerChildPrivate
 {
     gchar *name;
     gchar *user_name;
@@ -57,8 +57,8 @@ enum
     PROP_WORKING_DIRECTORY,
 };
 
-MILTER_DEFINE_ERROR_EMITABLE_TYPE(MilterManagerChildMilter,
-                                  milter_manager_child_milter,
+MILTER_DEFINE_ERROR_EMITABLE_TYPE(MilterManagerChild,
+                                  milter_manager_child,
                                   MILTER_TYPE_SERVER_CONTEXT);
 
 static void dispose        (GObject         *object);
@@ -72,7 +72,7 @@ static void get_property   (GObject         *object,
                             GParamSpec      *pspec);
 
 static void
-milter_manager_child_milter_class_init (MilterManagerChildMilterClass *klass)
+milter_manager_child_class_init (MilterManagerChildClass *klass)
 {
     GObjectClass *gobject_class;
     GParamSpec *spec;
@@ -119,15 +119,15 @@ milter_manager_child_milter_class_init (MilterManagerChildMilterClass *klass)
     g_object_class_install_property(gobject_class, PROP_WORKING_DIRECTORY, spec);
 
     g_type_class_add_private(gobject_class,
-                             sizeof(MilterManagerChildMilterPrivate));
+                             sizeof(MilterManagerChildPrivate));
 }
 
 static void
-milter_manager_child_milter_init (MilterManagerChildMilter *milter)
+milter_manager_child_init (MilterManagerChild *milter)
 {
-    MilterManagerChildMilterPrivate *priv;
+    MilterManagerChildPrivate *priv;
 
-    priv = MILTER_MANAGER_CHILD_MILTER_GET_PRIVATE(milter);
+    priv = MILTER_MANAGER_CHILD_GET_PRIVATE(milter);
     priv->name = NULL;
     priv->user_name = NULL;
     priv->working_directory = NULL;
@@ -141,9 +141,9 @@ milter_manager_child_milter_init (MilterManagerChildMilter *milter)
 static void
 dispose (GObject *object)
 {
-    MilterManagerChildMilterPrivate *priv;
+    MilterManagerChildPrivate *priv;
 
-    priv = MILTER_MANAGER_CHILD_MILTER_GET_PRIVATE(object);
+    priv = MILTER_MANAGER_CHILD_GET_PRIVATE(object);
 
     if (priv->name) {
         g_free(priv->name);
@@ -180,7 +180,7 @@ dispose (GObject *object)
         priv->child_watch_id = 0;
     }
 
-    G_OBJECT_CLASS(milter_manager_child_milter_parent_class)->dispose(object);
+    G_OBJECT_CLASS(milter_manager_child_parent_class)->dispose(object);
 }
 
 static void
@@ -189,9 +189,9 @@ set_property (GObject      *object,
               const GValue *value,
               GParamSpec   *pspec)
 {
-    MilterManagerChildMilterPrivate *priv;
+    MilterManagerChildPrivate *priv;
 
-    priv = MILTER_MANAGER_CHILD_MILTER_GET_PRIVATE(object);
+    priv = MILTER_MANAGER_CHILD_GET_PRIVATE(object);
     switch (prop_id) {
       case PROP_NAME:
         if (priv->name)
@@ -230,9 +230,9 @@ get_property (GObject    *object,
               GValue     *value,
               GParamSpec *pspec)
 {
-    MilterManagerChildMilterPrivate *priv;
+    MilterManagerChildPrivate *priv;
 
-    priv = MILTER_MANAGER_CHILD_MILTER_GET_PRIVATE(object);
+    priv = MILTER_MANAGER_CHILD_GET_PRIVATE(object);
     switch (prop_id) {
       case PROP_NAME:
         g_value_set_string(value, priv->name);
@@ -256,15 +256,15 @@ get_property (GObject    *object,
 }
 
 GQuark
-milter_manager_child_milter_error_quark (void)
+milter_manager_child_error_quark (void)
 {
-    return g_quark_from_static_string("milter-manager-child-milter-error-quark");
+    return g_quark_from_static_string("milter-manager-child-error-quark");
 }
 
-MilterManagerChildMilter *
-milter_manager_child_milter_new (const gchar *name)
+MilterManagerChild *
+milter_manager_child_new (const gchar *name)
 {
-    return g_object_new(MILTER_MANAGER_TYPE_CHILD_MILTER,
+    return g_object_new(MILTER_MANAGER_TYPE_CHILD,
                         "name", name,
                         NULL);
 }
@@ -272,15 +272,15 @@ milter_manager_child_milter_new (const gchar *name)
 static void
 child_watch_func (GPid pid, gint status, gpointer user_data)
 {
-    MilterManagerChildMilterPrivate *priv;
+    MilterManagerChildPrivate *priv;
 
-    priv = MILTER_MANAGER_CHILD_MILTER_GET_PRIVATE(user_data);
+    priv = MILTER_MANAGER_CHILD_GET_PRIVATE(user_data);
 
     if (WCOREDUMP(status)) {
         GError *error = NULL;
         g_set_error(&error,
-                    MILTER_MANAGER_CHILD_MILTER_ERROR,
-                    MILTER_MANAGER_CHILD_MILTER_ERROR_MILTER_CORE_DUMP,
+                    MILTER_MANAGER_CHILD_ERROR,
+                    MILTER_MANAGER_CHILD_ERROR_MILTER_CORE_DUMP,
                     "%s produced a core dump", priv->name);
         milter_error("%s", error->message);
         milter_error_emitable_emit_error(MILTER_ERROR_EMITABLE(user_data),
@@ -289,8 +289,8 @@ child_watch_func (GPid pid, gint status, gpointer user_data)
     } else if (WIFEXITED(status)) {
         GError *error = NULL;
         g_set_error(&error,
-                    MILTER_MANAGER_CHILD_MILTER_ERROR,
-                    MILTER_MANAGER_CHILD_MILTER_ERROR_MILTER_EXIT,
+                    MILTER_MANAGER_CHILD_ERROR,
+                    MILTER_MANAGER_CHILD_ERROR_MILTER_EXIT,
                     "%s exits with status: %d", priv->name, status);
         milter_error("%s", error->message);
         milter_error_emitable_emit_error(MILTER_ERROR_EMITABLE(user_data),
@@ -307,8 +307,8 @@ set_user (const gchar *user_name, GError **error)
     password = getpwnam(user_name);
     if (!password) {
         milter_utils_set_error_with_sub_error(error,
-                                              MILTER_MANAGER_CHILD_MILTER_ERROR,
-                                              MILTER_MANAGER_CHILD_MILTER_ERROR_INVALID_USER_NAME,
+                                              MILTER_MANAGER_CHILD_ERROR,
+                                              MILTER_MANAGER_CHILD_ERROR_INVALID_USER_NAME,
                                               NULL,
                                               "No passwd entry for %s. :%s",
                                               user_name,
@@ -318,8 +318,8 @@ set_user (const gchar *user_name, GError **error)
 
     if (setregid(-1, password->pw_gid) == -1) {
         milter_utils_set_error_with_sub_error(error,
-                                              MILTER_MANAGER_CHILD_MILTER_ERROR,
-                                              MILTER_MANAGER_CHILD_MILTER_ERROR_NO_PRIVILEGE_MODE,
+                                              MILTER_MANAGER_CHILD_ERROR,
+                                              MILTER_MANAGER_CHILD_ERROR_NO_PRIVILEGE_MODE,
                                               NULL,
                                               "MilterManager does not run on privilege mode.");
         return FALSE;
@@ -327,8 +327,8 @@ set_user (const gchar *user_name, GError **error)
 
     if (setreuid(-1, password->pw_uid) == -1) {
         milter_utils_set_error_with_sub_error(error,
-                                              MILTER_MANAGER_CHILD_MILTER_ERROR,
-                                              MILTER_MANAGER_CHILD_MILTER_ERROR_NO_PRIVILEGE_MODE,
+                                              MILTER_MANAGER_CHILD_ERROR,
+                                              MILTER_MANAGER_CHILD_ERROR_NO_PRIVILEGE_MODE,
                                               NULL,
                                               "MilterManager does not run on privilege mode.");
         return FALSE;
@@ -338,22 +338,22 @@ set_user (const gchar *user_name, GError **error)
 }
 
 gboolean
-milter_manager_child_milter_start (MilterManagerChildMilter *milter,
+milter_manager_child_start (MilterManagerChild *milter,
                                    GError **error)
 {
     gint argc;
     gchar **argv;
     gchar *command_line;
     gboolean success;
-    MilterManagerChildMilterPrivate *priv;
+    MilterManagerChildPrivate *priv;
     GError *internal_error = NULL;
 
-    priv = MILTER_MANAGER_CHILD_MILTER_GET_PRIVATE(milter);
+    priv = MILTER_MANAGER_CHILD_GET_PRIVATE(milter);
 
     if (!priv->command) {
         milter_utils_set_error_with_sub_error(error,
-                                              MILTER_MANAGER_CHILD_MILTER_ERROR,
-                                              MILTER_MANAGER_CHILD_MILTER_ERROR_BAD_COMMAND_STRING,
+                                              MILTER_MANAGER_CHILD_ERROR,
+                                              MILTER_MANAGER_CHILD_ERROR_BAD_COMMAND_STRING,
                                               NULL,
                                               "No command set yet.");
         return FALSE;
@@ -371,8 +371,8 @@ milter_manager_child_milter_start (MilterManagerChildMilter *milter,
 
     if (!success) {
         milter_utils_set_error_with_sub_error(error,
-                                              MILTER_MANAGER_CHILD_MILTER_ERROR,
-                                              MILTER_MANAGER_CHILD_MILTER_ERROR_BAD_COMMAND_STRING,
+                                              MILTER_MANAGER_CHILD_ERROR,
+                                              MILTER_MANAGER_CHILD_ERROR_BAD_COMMAND_STRING,
                                               internal_error,
                                               "Command string has invalid character(s).");
         return FALSE;
@@ -393,8 +393,8 @@ milter_manager_child_milter_start (MilterManagerChildMilter *milter,
 
     if (!success) {
         milter_utils_set_error_with_sub_error(error,
-                                              MILTER_MANAGER_CHILD_MILTER_ERROR,
-                                              MILTER_MANAGER_CHILD_MILTER_ERROR_START_FAILURE,
+                                              MILTER_MANAGER_CHILD_ERROR,
+                                              MILTER_MANAGER_CHILD_ERROR_START_FAILURE,
                                               internal_error,
                                               "Couldn't start new milter process.");
         return FALSE;
@@ -408,14 +408,14 @@ milter_manager_child_milter_start (MilterManagerChildMilter *milter,
 
 #if 0
 MilterStatus
-milter_manager_child_milter_option_negotiate (MilterManagerChildMilter *milter,
+milter_manager_child_option_negotiate (MilterManagerChild *milter,
                                               MilterOption             *option)
 {
     return MILTER_STATUS_DEFAULT;
 }
 
 MilterStatus
-milter_manager_child_milter_connect (MilterManagerChildMilter *milter,
+milter_manager_child_connect (MilterManagerChild *milter,
                                      const gchar              *host_name,
                                      struct sockaddr          *address,
                                      socklen_t                 address_length)
@@ -424,41 +424,41 @@ milter_manager_child_milter_connect (MilterManagerChildMilter *milter,
 }
 
 MilterStatus
-milter_manager_child_milter_helo (MilterManagerChildMilter *milter,
+milter_manager_child_helo (MilterManagerChild *milter,
                                   const gchar              *fqdn)
 {
     return MILTER_STATUS_DEFAULT;
 }
 
 MilterStatus
-milter_manager_child_milter_envelope_from (MilterManagerChildMilter *milter,
+milter_manager_child_envelope_from (MilterManagerChild *milter,
                                            const gchar              *from)
 {
     return MILTER_STATUS_DEFAULT;
 }
 
 MilterStatus
-milter_manager_child_milter_envelope_receipt (MilterManagerChildMilter *milter,
+milter_manager_child_envelope_receipt (MilterManagerChild *milter,
                                               const gchar              *receipt)
 {
     return MILTER_STATUS_DEFAULT;
 }
 
 MilterStatus
-milter_manager_child_milter_data (MilterManagerChildMilter *milter)
+milter_manager_child_data (MilterManagerChild *milter)
 {
     return MILTER_STATUS_DEFAULT;
 }
 
 MilterStatus
-milter_manager_child_milter_unknown (MilterManagerChildMilter *milter,
+milter_manager_child_unknown (MilterManagerChild *milter,
                                      const gchar              *command)
 {
     return MILTER_STATUS_DEFAULT;
 }
 
 MilterStatus
-milter_manager_child_milter_header (MilterManagerChildMilter *milter,
+milter_manager_child_header (MilterManagerChild *milter,
                                     const gchar              *name,
                                     const gchar              *value)
 {
@@ -466,13 +466,13 @@ milter_manager_child_milter_header (MilterManagerChildMilter *milter,
 }
 
 MilterStatus
-milter_manager_child_milter_end_of_header (MilterManagerChildMilter *milter)
+milter_manager_child_end_of_header (MilterManagerChild *milter)
 {
     return MILTER_STATUS_DEFAULT;
 }
 
 MilterStatus
-milter_manager_child_milter_body (MilterManagerChildMilter *milter,
+milter_manager_child_body (MilterManagerChild *milter,
                                   const guchar             *chunk,
                                   gsize                     size)
 {
@@ -480,19 +480,19 @@ milter_manager_child_milter_body (MilterManagerChildMilter *milter,
 }
 
 MilterStatus
-milter_manager_child_milter_end_of_message (MilterManagerChildMilter *milter)
+milter_manager_child_end_of_message (MilterManagerChild *milter)
 {
     return MILTER_STATUS_DEFAULT;
 }
 
 MilterStatus
-milter_manager_child_milter_quit (MilterManagerChildMilter *milter)
+milter_manager_child_quit (MilterManagerChild *milter)
 {
     return MILTER_STATUS_DEFAULT;
 }
 
 MilterStatus
-milter_manager_child_milter_abort (MilterManagerChildMilter *milter)
+milter_manager_child_abort (MilterManagerChild *milter)
 {
     return MILTER_STATUS_DEFAULT;
 }

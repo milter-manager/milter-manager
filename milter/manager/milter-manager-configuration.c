@@ -253,8 +253,8 @@ milter_manager_configuration_is_privilege_mode (MilterManagerConfiguration *conf
 }
 
 void
-milter_manager_configuration_add_child_milter (MilterManagerConfiguration *configuration,
-                                               MilterManagerChildMilter   *milter)
+milter_manager_configuration_add_child (MilterManagerConfiguration *configuration,
+                                        MilterManagerChild   *milter)
 {
     MilterManagerConfigurationPrivate *priv;
 
@@ -265,7 +265,7 @@ milter_manager_configuration_add_child_milter (MilterManagerConfiguration *confi
 }
 
 const GList *
-milter_manager_configuration_get_child_milters (MilterManagerConfiguration *configuration)
+milter_manager_configuration_get_children (MilterManagerConfiguration *configuration)
 {
     MilterManagerConfigurationPrivate *priv;
 
@@ -274,7 +274,7 @@ milter_manager_configuration_get_child_milters (MilterManagerConfiguration *conf
 }
 
 GList *
-milter_manager_configuration_create_child_milters (MilterManagerConfiguration *configuration)
+milter_manager_configuration_create_children (MilterManagerConfiguration *configuration)
 {
     MilterManagerConfigurationPrivate *priv;
 
