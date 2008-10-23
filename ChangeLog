@@ -1,5 +1,8 @@
 2008-10-23  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-controller.[ch]: follow up the
+	below changes.
+
 	* milter/, module/, test/: ruby controller -> ruby configuration.
 
 	* module/: controller -> configuration.

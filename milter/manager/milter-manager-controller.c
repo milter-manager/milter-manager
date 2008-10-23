@@ -111,7 +111,11 @@ set_property (GObject      *object,
     priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(object);
     switch (prop_id) {
       case PROP_CONFIGURATION:
+        if (priv->configuration)
+            g_object_unref(priv->configuration);
         priv->configuration = g_value_get_object(value);
+        if (priv->configuration)
+            g_object_ref(priv->configuration);
         break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
