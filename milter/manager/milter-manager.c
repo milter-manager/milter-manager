@@ -205,13 +205,19 @@ cb_client_quit (MilterClientContext *context, gpointer user_data)
 
 #undef DISCONNECT
 
+    g_object_unref(controller);
+
     return status;
 }
 
 static void
 setup_context_signals (MilterClientContext *context,
-                       MilterManagerController *controller)
+                       MilterManagerConfiguration *configuration)
 {
+    MilterManagerController *controller;
+
+    controller = milter_manager_controller_new(configuration, context);
+
 #define CONNECT(name)                                   \
     g_signal_connect(context, #name,                    \
                      G_CALLBACK(cb_client_ ## name),    \
@@ -246,8 +252,8 @@ static void
 cb_connection_established (MilterClient *client, MilterClientContext *context,
                            gpointer user_data)
 {
-    MilterManagerController *controller = user_data;
-    setup_context_signals(context, controller);
+    MilterManagerConfiguration *configuration = user_data;
+    setup_context_signals(context, configuration);
 }
 
 void
@@ -255,12 +261,10 @@ milter_manager_main (void)
 {
     MilterClient *client;
     MilterManagerConfiguration *configuration;
-    MilterManagerController *controller;
     void (*sigint_handler) (int signum);
     const gchar *config_dir_env;
 
     configuration = milter_manager_configuration_new(NULL);
-    controller = milter_manager_controller_new(configuration);
     config_dir_env = g_getenv("MILTER_MANAGER_CONFIG_DIR");
     if (config_dir_env)
         milter_manager_configuration_add_load_path(configuration,
@@ -271,13 +275,15 @@ milter_manager_main (void)
     client = milter_client_new();
     milter_client_set_connection_spec(client, "inet:9999", NULL);
     g_signal_connect(client, "connection-established",
-                     G_CALLBACK(cb_connection_established), controller);
+                     G_CALLBACK(cb_connection_established), configuration);
 
     current_client = client;
     sigint_handler = signal(SIGINT, shutdown_client);
     milter_client_main(client);
     signal(SIGINT, sigint_handler);
+
     current_client = NULL;
+    g_object_unref(configuration);
 }
 
 /*

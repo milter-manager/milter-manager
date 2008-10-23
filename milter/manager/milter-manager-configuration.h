@@ -85,6 +85,8 @@ void          milter_manager_configuration_add_child_milter
                                       MilterManagerChildMilter   *milter);
 const GList  *milter_manager_configuration_get_child_milters
                                      (MilterManagerConfiguration *configuration);
+GList        *milter_manager_configuration_create_child_milters
+                                     (MilterManagerConfiguration *configuration);
 
 G_END_DECLS
 

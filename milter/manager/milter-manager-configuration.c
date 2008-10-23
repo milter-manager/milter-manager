@@ -273,6 +273,17 @@ milter_manager_configuration_get_child_milters (MilterManagerConfiguration *conf
     return priv->child_milters;
 }
 
+GList *
+milter_manager_configuration_create_child_milters (MilterManagerConfiguration *configuration)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    /* FIXME */
+    g_list_foreach(priv->child_milters, (GFunc)g_object_ref, NULL);
+    return g_list_copy(priv->child_milters);
+}
+
 MilterStatus
 milter_manager_configuration_get_return_status_if_filter_unavailable
                                      (MilterManagerConfiguration *configuration)

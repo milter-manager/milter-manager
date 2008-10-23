@@ -33,8 +33,11 @@ void test_envelope_from (void);
 void test_envelope_receipt (void);
 
 static MilterManagerConfiguration *config;
+static MilterClientContext *client_context;
 static MilterManagerController *controller;
 static MilterOption *option;
+
+static GError *controller_error;
 
 static GCutSpawn *spawn;
 
@@ -57,46 +60,21 @@ add_load_path (const gchar *path)
     milter_manager_configuration_add_load_path(config, path);
 }
 
-void
-setup (void)
+static void
+cb_error (MilterManagerController *controller, GError *error, gpointer user_data)
 {
-    config = milter_manager_configuration_new(NULL);
-    add_load_path(g_getenv("MILTER_MANAGER_CONFIG_DIR"));
-    milter_manager_configuration_load(config, "milter-manager.conf");
-
-    controller = milter_manager_controller_new(config);
-    option = NULL;
-
-    spawn = NULL;
-
-    test_client_path = g_build_filename(milter_manager_test_get_base_dir(),
-                                        "lib",
-                                        "milter-test-client.rb",
-                                        NULL);
-
-    client_ready = FALSE;
-    client_negotiated = FALSE;
-    client_connected = FALSE;
-    client_greeted = FALSE;
-    client_envelope_from_received = FALSE;
-    client_envelope_receipt_received = FALSE;
-    client_reaped = FALSE;
+    controller_error = g_error_copy(error);
 }
 
-void
-teardown (void)
+static void
+setup_controller_signals (MilterManagerController *controller)
 {
-    if (config)
-        g_object_unref(config);
-    if (controller)
-        g_object_unref(controller);
-    if (option)
-        g_object_unref(option);
+#define CONNECT(name)                                                   \
+    g_signal_connect(controller, #name, G_CALLBACK(cb_ ## name), NULL)
 
-    if (spawn)
-        g_object_unref(spawn);
-    if (test_client_path)
-        g_free(test_client_path);
+    CONNECT(error);
+
+#undef CONNECT
 }
 
 static void
@@ -141,6 +119,34 @@ cb_reaped (GCutSpawn *spawn, gint status, gpointer user_data)
     client_reaped = TRUE;
 }
 
+static void
+setup_spawn_signals (GCutSpawn *spawn)
+{
+#define CONNECT(name)                                                   \
+    g_signal_connect(spawn, #name, G_CALLBACK(cb_ ## name), NULL)
+
+    CONNECT(output_received);
+    CONNECT(error_received);
+    CONNECT(reaped);
+
+#undef CONNECT
+}
+
+static void
+teardown_spawn_signals (GCutSpawn *spawn)
+{
+#define DISCONNECT(name)                                                \
+    g_signal_handlers_disconnect_by_func(spawn,                         \
+                                         G_CALLBACK(cb_ ## name),       \
+                                         NULL)
+
+    DISCONNECT(output_received);
+    DISCONNECT(error_received);
+    DISCONNECT(reaped);
+
+#undef DISCONNECT
+}
+
 static GCutSpawn *
 make_spawn (const gchar *command, ...)
 {
@@ -151,13 +157,60 @@ make_spawn (const gchar *command, ...)
     spawn = gcut_spawn_new_va_list(command, args);
     va_end(args);
 
-    g_signal_connect(spawn, "output-received",
-                     G_CALLBACK(cb_output_received), NULL);
-    g_signal_connect(spawn, "error-received",
-                     G_CALLBACK(cb_error_received), NULL);
-    g_signal_connect(spawn, "reaped", G_CALLBACK(cb_reaped), NULL);
+    setup_spawn_signals(spawn);
 
     return spawn;
+}
+
+void
+setup (void)
+{
+    config = milter_manager_configuration_new(NULL);
+    add_load_path(g_getenv("MILTER_MANAGER_CONFIG_DIR"));
+    milter_manager_configuration_load(config, "milter-manager.conf");
+
+    client_context = milter_client_context_new();
+
+    controller = milter_manager_controller_new(config, client_context);
+    controller_error = NULL;
+    setup_controller_signals(controller);
+
+    option = NULL;
+
+    spawn = NULL;
+
+    test_client_path = g_build_filename(milter_manager_test_get_base_dir(),
+                                        "lib",
+                                        "milter-test-client.rb",
+                                        NULL);
+
+    client_ready = FALSE;
+    client_negotiated = FALSE;
+    client_connected = FALSE;
+    client_greeted = FALSE;
+    client_envelope_from_received = FALSE;
+    client_envelope_receipt_received = FALSE;
+    client_reaped = FALSE;
+}
+
+void
+teardown (void)
+{
+    if (config)
+        g_object_unref(config);
+    if (client_context)
+        g_object_unref(client_context);
+    if (controller)
+        g_object_unref(controller);
+    if (option)
+        g_object_unref(option);
+
+    if (spawn) {
+        teardown_spawn_signals(spawn);
+        g_object_unref(spawn);
+    }
+    if (test_client_path)
+        g_free(test_client_path);
 }
 
 static void
@@ -173,6 +226,69 @@ run_spawn (GCutSpawn *spawn)
     cut_assert_false(client_reaped);
 }
 
+static gboolean
+cb_timeout_waiting (gpointer data)
+{
+    gboolean *waiting = data;
+
+    *waiting = FALSE;
+    return FALSE;
+}
+
+static void
+cb_negotiate_response_waiting (MilterClientContext *context,
+                               MilterOption *options, MilterStatus status,
+                               gpointer data)
+{
+    gboolean *waiting = data;
+
+    *waiting = FALSE;
+}
+
+static void
+cb_response_waiting (MilterClientContext *context, MilterStatus status,
+                     gpointer data)
+{
+    gboolean *waiting = data;
+
+    *waiting = FALSE;
+}
+
+#define wait_response(name)                     \
+    cut_trace_with_info_expression(             \
+        wait_response_helper(name "-response"), \
+        wait_response(name))
+
+static void
+wait_response_helper (const gchar *name)
+{
+    gboolean timeout_waiting = TRUE;
+    gboolean response_waiting = TRUE;
+    guint timeout_waiting_id;
+    guint response_waiting_id;
+
+    if (g_str_equal(name, "negotiate-response"))
+        response_waiting_id =
+            g_signal_connect(client_context, name,
+                             G_CALLBACK(cb_negotiate_response_waiting),
+                             &response_waiting);
+    else
+        response_waiting_id =
+            g_signal_connect(client_context, name,
+                             G_CALLBACK(cb_response_waiting),
+                             &response_waiting);
+    timeout_waiting_id = g_timeout_add_seconds(1, cb_timeout_waiting,
+                                               &timeout_waiting);
+    while (timeout_waiting && response_waiting) {
+        g_main_context_iteration(NULL, TRUE);
+    }
+    g_source_remove(timeout_waiting_id);
+    g_signal_handler_disconnect(client_context, response_waiting_id);
+
+    cut_assert_true(timeout_waiting, "timeout");
+    gcut_assert_error(controller_error);
+}
+
 void
 test_negotiate (void)
 {
@@ -183,10 +299,11 @@ test_negotiate (void)
                                MILTER_STEP_NO_REPLY_CONNECT);
 
     spawn = make_spawn(test_client_path, "--print-status",
-                       "--timeout", "0.5", "--port", "10025", NULL);
+                       "--timeout", "1.0", "--port", "10025", NULL);
     run_spawn(spawn);
 
     milter_manager_controller_negotiate(controller, option);
+    wait_response("negotiate");
     cut_assert_true(client_negotiated);
 }
 
@@ -211,8 +328,7 @@ test_connect (void)
     milter_manager_controller_connect(controller, host_name,
                                       address, address_size);
     g_free(address);
-    while (!client_connected && !client_reaped)
-        g_main_context_iteration(NULL, TRUE);
+    wait_response("connect");
     cut_assert_true(client_connected);
 }
 
@@ -224,8 +340,7 @@ test_helo (void)
     cut_trace(test_connect());
 
     milter_manager_controller_helo(controller, fqdn);
-    while (!client_greeted && !client_reaped)
-        g_main_context_iteration(NULL, TRUE);
+    wait_response("helo");
     cut_assert_true(client_greeted);
 }
 
@@ -237,8 +352,7 @@ test_envelope_from (void)
     cut_trace(test_helo());
 
     milter_manager_controller_envelope_from(controller, from);
-    while (!client_envelope_from_received && !client_reaped)
-        g_main_context_iteration(NULL, TRUE);
+    wait_response("envelope-from");
     cut_assert_true(client_envelope_from_received);
 }
 
@@ -250,8 +364,7 @@ test_envelope_receipt (void)
     cut_trace(test_envelope_from());
 
     milter_manager_controller_envelope_receipt(controller, receipt);
-    while (!client_envelope_receipt_received && !client_reaped)
-        g_main_context_iteration(NULL, TRUE);
+    wait_response("envelope-receipt");
     cut_assert_true(client_envelope_receipt_received);
 }
 

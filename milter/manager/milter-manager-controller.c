@@ -32,16 +32,21 @@ typedef struct _MilterManagerControllerPrivate MilterManagerControllerPrivate;
 struct _MilterManagerControllerPrivate
 {
     MilterManagerConfiguration *configuration;
+    MilterClientContext *client_context;
+    GList *child_milters;
+    MilterManagerControllerState state;
 };
 
 enum
 {
     PROP_0,
-    PROP_CONFIGURATION
+    PROP_CONFIGURATION,
+    PROP_CLIENT_CONTEXT
 };
 
-G_DEFINE_TYPE(MilterManagerController, milter_manager_controller,
-              G_TYPE_OBJECT);
+MILTER_DEFINE_ERROR_EMITABLE_TYPE(MilterManagerController,
+                                  milter_manager_controller,
+                                  G_TYPE_OBJECT)
 
 static void dispose        (GObject         *object);
 static void set_property   (GObject         *object,
@@ -52,6 +57,10 @@ static void get_property   (GObject         *object,
                             guint            prop_id,
                             GValue          *value,
                             GParamSpec      *pspec);
+
+static void teardown_server_context_signals
+                           (MilterManagerController *controller,
+                            MilterServerContext *server_context);
 
 static void
 milter_manager_controller_class_init (MilterManagerControllerClass *klass)
@@ -67,10 +76,17 @@ milter_manager_controller_class_init (MilterManagerControllerClass *klass)
 
     spec = g_param_spec_object("configuration",
                                "Configuration",
-                               "The configuration of the milter manager",
+                               "The configuration of the milter controller",
                                MILTER_MANAGER_TYPE_CONFIGURATION,
                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_CONFIGURATION, spec);
+
+    spec = g_param_spec_object("client-context",
+                               "Client context",
+                               "The client context of the milter controller",
+                               MILTER_TYPE_CLIENT_CONTEXT,
+                               G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_CLIENT_CONTEXT, spec);
 
     g_type_class_add_private(gobject_class,
                              sizeof(MilterManagerControllerPrivate));
@@ -83,18 +99,39 @@ milter_manager_controller_init (MilterManagerController *controller)
 
     priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
     priv->configuration = NULL;
+    priv->client_context = NULL;
+    priv->child_milters = NULL;
+    priv->state = MILTER_SERVER_CONTEXT_STATE_START;
 }
 
 static void
 dispose (GObject *object)
 {
+    MilterManagerController *controller;
     MilterManagerControllerPrivate *priv;
 
+    controller = MILTER_MANAGER_CONTROLLER(object);
     priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(object);
 
     if (priv->configuration) {
         g_object_unref(priv->configuration);
         priv->configuration = NULL;
+    }
+
+    if (priv->client_context) {
+        g_object_unref(priv->client_context);
+        priv->client_context = NULL;
+    }
+
+    if (priv->child_milters) {
+        GList *node;
+        for (node = priv->child_milters; node; node = g_list_next(node)) {
+            MilterServerContext *server_context = node->data;
+            teardown_server_context_signals(controller, server_context);
+            g_object_unref(server_context);
+        }
+        g_list_free(priv->child_milters);
+        priv->child_milters = NULL;
     }
 
     G_OBJECT_CLASS(milter_manager_controller_parent_class)->dispose(object);
@@ -117,6 +154,13 @@ set_property (GObject      *object,
         if (priv->configuration)
             g_object_ref(priv->configuration);
         break;
+      case PROP_CLIENT_CONTEXT:
+        if (priv->client_context)
+            g_object_unref(priv->client_context);
+        priv->client_context = g_value_get_object(value);
+        if (priv->client_context)
+            g_object_ref(priv->client_context);
+        break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -136,6 +180,9 @@ get_property (GObject    *object,
       case PROP_CONFIGURATION:
         g_value_set_object(value, priv->configuration);
         break;
+      case PROP_CLIENT_CONTEXT:
+        g_value_set_object(value, priv->client_context);
+        break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -143,47 +190,452 @@ get_property (GObject    *object,
 }
 
 MilterManagerController *
-milter_manager_controller_new (MilterManagerConfiguration *configuration)
+milter_manager_controller_new (MilterManagerConfiguration *configuration,
+                               MilterClientContext *client_context)
 {
     return g_object_new(MILTER_MANAGER_TYPE_CONTROLLER,
                         "configuration", configuration,
+                        "client-context", client_context,
                         NULL);
 }
 
-static MilterStatus
-cb_continue (MilterServerContext *context, gpointer user_data)
+static const gchar *
+state_to_response_signal_name (MilterManagerControllerState state)
 {
-    gboolean *waiting = user_data;
-    *waiting = FALSE;
-    return MILTER_STATUS_NOT_CHANGE;
+    const gchar *signal_name;
+
+    switch (state) {
+      case MILTER_MANAGER_CONTROLLER_STATE_NEGOTIATE:
+        signal_name = "negotiate-response";
+        break;
+      case MILTER_MANAGER_CONTROLLER_STATE_CONNECT:
+        signal_name = "connect-response";
+        break;
+      case MILTER_MANAGER_CONTROLLER_STATE_HELO:
+        signal_name = "helo-response";
+        break;
+      case MILTER_MANAGER_CONTROLLER_STATE_ENVELOPE_FROM:
+        signal_name = "envelope-from-response";
+        break;
+      case MILTER_MANAGER_CONTROLLER_STATE_ENVELOPE_RECEIPT:
+        signal_name = "envelope-receipt-response";
+        break;
+      case MILTER_MANAGER_CONTROLLER_STATE_DATA:
+        signal_name = "data-response";
+        break;
+      case MILTER_MANAGER_CONTROLLER_STATE_UNKNOWN:
+        signal_name = "unknown-response";
+        break;
+      case MILTER_MANAGER_CONTROLLER_STATE_HEADER:
+        signal_name = "header-response";
+        break;
+      case MILTER_MANAGER_CONTROLLER_STATE_END_OF_HEADER:
+        signal_name = "end-of-header-response";
+        break;
+      case MILTER_MANAGER_CONTROLLER_STATE_BODY:
+        signal_name = "body-response";
+        break;
+      case MILTER_MANAGER_CONTROLLER_STATE_END_OF_MESSAGE:
+        signal_name = "end-of-message-response";
+        break;
+      case MILTER_MANAGER_CONTROLLER_STATE_QUIT:
+        signal_name = "quit-response";
+        break;
+      case MILTER_MANAGER_CONTROLLER_STATE_ABORT:
+        signal_name = "abort-response";
+        break;
+      default:
+        signal_name = "error-invalid-state";
+        break;
+    }
+
+    return signal_name;
 }
 
-static MilterStatus
+static MilterManagerControllerState
+next_state (MilterManagerControllerState state)
+{
+    MilterManagerControllerState next_state;
+
+    switch (state) {
+      case MILTER_MANAGER_CONTROLLER_STATE_NEGOTIATE:
+        next_state = MILTER_MANAGER_CONTROLLER_STATE_NEGOTIATE_REPLIED;
+        break;
+      case MILTER_MANAGER_CONTROLLER_STATE_CONNECT:
+        next_state = MILTER_MANAGER_CONTROLLER_STATE_CONNECT_REPLIED;
+        break;
+      case MILTER_MANAGER_CONTROLLER_STATE_HELO:
+        next_state = MILTER_MANAGER_CONTROLLER_STATE_HELO_REPLIED;
+        break;
+      case MILTER_MANAGER_CONTROLLER_STATE_ENVELOPE_FROM:
+        next_state = MILTER_MANAGER_CONTROLLER_STATE_ENVELOPE_FROM_REPLIED;
+        break;
+      case MILTER_MANAGER_CONTROLLER_STATE_ENVELOPE_RECEIPT:
+        next_state = MILTER_MANAGER_CONTROLLER_STATE_ENVELOPE_RECEIPT_REPLIED;
+        break;
+      case MILTER_MANAGER_CONTROLLER_STATE_DATA:
+        next_state = MILTER_MANAGER_CONTROLLER_STATE_DATA_REPLIED;
+        break;
+      case MILTER_MANAGER_CONTROLLER_STATE_UNKNOWN:
+        next_state = MILTER_MANAGER_CONTROLLER_STATE_UNKNOWN_REPLIED;
+        break;
+      case MILTER_MANAGER_CONTROLLER_STATE_HEADER:
+        next_state = MILTER_MANAGER_CONTROLLER_STATE_HEADER_REPLIED;
+        break;
+      case MILTER_MANAGER_CONTROLLER_STATE_END_OF_HEADER:
+        next_state = MILTER_MANAGER_CONTROLLER_STATE_END_OF_HEADER_REPLIED;
+        break;
+      case MILTER_MANAGER_CONTROLLER_STATE_BODY:
+        next_state = MILTER_MANAGER_CONTROLLER_STATE_BODY_REPLIED;
+        break;
+      case MILTER_MANAGER_CONTROLLER_STATE_END_OF_MESSAGE:
+        next_state = MILTER_MANAGER_CONTROLLER_STATE_END_OF_MESSAGE_REPLIED;
+        break;
+      case MILTER_MANAGER_CONTROLLER_STATE_QUIT:
+        next_state = MILTER_MANAGER_CONTROLLER_STATE_QUIT_REPLIED;
+        break;
+      case MILTER_MANAGER_CONTROLLER_STATE_ABORT:
+        next_state = MILTER_MANAGER_CONTROLLER_STATE_ABORT_REPLIED;
+        break;
+      default:
+        g_print("ERROR! - invalid state: %d|FIXME\n", state);
+        next_state = MILTER_MANAGER_CONTROLLER_STATE_INVALID;
+        break;
+    }
+
+    return next_state;
+}
+
+
+static void
 cb_negotiate_reply (MilterServerContext *context, MilterOption *option,
                     GList *macros_requests, gpointer user_data)
 {
-    gboolean *waiting = user_data;
-    *waiting = FALSE;
-    return MILTER_STATUS_NOT_CHANGE;
+    MilterManagerController *controller = user_data;
+    MilterManagerControllerPrivate *priv;
+
+    priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
+    g_signal_emit_by_name(priv->client_context, "negotiate-response",
+                          0, option, MILTER_STATUS_CONTINUE);
+}
+
+static void
+reply (MilterManagerController *controller, MilterStatus status)
+{
+    MilterManagerControllerPrivate *priv;
+
+    priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
+    if (priv->state == MILTER_MANAGER_CONTROLLER_STATE_NEGOTIATE) {
+        g_signal_emit_by_name(priv->client_context, "negotiate-response",
+                              0, NULL, status);
+    } else {
+        g_signal_emit_by_name(priv->client_context,
+                              state_to_response_signal_name(priv->state),
+                              0, status);
+    }
+    priv->state = next_state(priv->state);
+}
+
+static void
+cb_continue (MilterServerContext *context, gpointer user_data)
+{
+    MilterManagerController *controller = user_data;
+    reply(controller, MILTER_STATUS_CONTINUE);
+}
+
+static void
+cb_reply_code (MilterServerContext *context, const gchar *code,
+               gpointer user_data)
+{
+    /* MilterManagerController *controller = user_data; */
+    /* FIXME */
+}
+
+static void
+cb_temporary_failure (MilterServerContext *context, gpointer user_data)
+{
+    MilterManagerController *controller = user_data;
+    reply(controller, MILTER_STATUS_TEMPORARY_FAILURE);
+}
+
+static void
+cb_reject (MilterServerContext *context, gpointer user_data)
+{
+    MilterManagerController *controller = user_data;
+    reply(controller, MILTER_STATUS_REJECT);
+}
+
+static void
+cb_accept (MilterServerContext *context, gpointer user_data)
+{
+    MilterManagerController *controller = user_data;
+    reply(controller, MILTER_STATUS_ACCEPT);
+}
+
+static void
+cb_discard (MilterServerContext *context, gpointer user_data)
+{
+    MilterManagerController *controller = user_data;
+    reply(controller, MILTER_STATUS_DISCARD);
+}
+
+static void
+cb_add_header (MilterServerContext *context,
+               const gchar *name, const gchar *value,
+               gpointer user_data)
+{
+    MilterManagerController *controller = user_data;
+    MilterManagerControllerPrivate *priv;
+
+    priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
+    milter_client_context_add_header(priv->client_context, name, value);
+}
+
+static void
+cb_insert_header (MilterServerContext *context,
+                  guint32 index, const gchar *name, const gchar *value,
+                  gpointer user_data)
+{
+    MilterManagerController *controller = user_data;
+    MilterManagerControllerPrivate *priv;
+
+    priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
+    milter_client_context_insert_header(priv->client_context,
+                                        index, name, value);
+}
+
+static void
+cb_change_header (MilterServerContext *context,
+                  const gchar *name, guint32 index, const gchar *value,
+                  gpointer user_data)
+{
+    MilterManagerController *controller = user_data;
+    MilterManagerControllerPrivate *priv;
+
+    priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
+    milter_client_context_change_header(priv->client_context,
+                                        name, index, value);
+}
+
+static void
+cb_change_from (MilterServerContext *context,
+                const gchar *from, const gchar *parameters,
+                gpointer user_data)
+{
+    MilterManagerController *controller = user_data;
+    MilterManagerControllerPrivate *priv;
+
+    priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
+    milter_client_context_change_from(priv->client_context, from, parameters);
+}
+
+static void
+cb_add_receipt (MilterServerContext *context,
+                const gchar *receipt, const gchar *parameters,
+                gpointer user_data)
+{
+    MilterManagerController *controller = user_data;
+    MilterManagerControllerPrivate *priv;
+
+    priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
+    milter_client_context_add_receipt(priv->client_context, receipt, parameters);
+}
+
+static void
+cb_delete_receipt (MilterServerContext *context,
+                   const gchar *receipt,
+                   gpointer user_data)
+{
+    MilterManagerController *controller = user_data;
+    MilterManagerControllerPrivate *priv;
+
+    priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
+    milter_client_context_delete_receipt(priv->client_context, receipt);
+}
+
+static void
+cb_replace_body (MilterServerContext *context,
+                 const gchar *chunk, gsize chunk_size,
+                 gpointer user_data)
+{
+    MilterManagerController *controller = user_data;
+    MilterManagerControllerPrivate *priv;
+
+    priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
+    milter_client_context_replace_body(priv->client_context, chunk, chunk_size);
+}
+
+static void
+cb_progress (MilterServerContext *context, gpointer user_data)
+{
+    MilterManagerController *controller = user_data;
+    MilterManagerControllerPrivate *priv;
+
+    priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
+    milter_client_context_progress(priv->client_context);
+}
+
+static void
+cb_quarantine (MilterServerContext *context,
+               const gchar *reason,
+               gpointer user_data)
+{
+    MilterManagerController *controller = user_data;
+    MilterManagerControllerPrivate *priv;
+
+    priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
+    milter_client_context_quarantine(priv->client_context, reason);
+}
+
+static void
+cb_connection_failure (MilterServerContext *context, gpointer user_data)
+{
+    /* FIXME */
+}
+
+static void
+cb_shutdown (MilterServerContext *context, gpointer user_data)
+{
+    /* FIXME */
+}
+
+static void
+cb_skip (MilterServerContext *context, gpointer user_data)
+{
+    MilterManagerController *controller = user_data;
+    reply(controller, MILTER_STATUS_SKIP);
+}
+
+static void
+cb_connection_timeout (MilterServerContext *context, gpointer user_data)
+{
+    milter_error("connection timeout: FIXME");
+}
+
+static void
+cb_sending_timeout (MilterServerContext *context, gpointer user_data)
+{
+    milter_error("sending timeout: FIXME");
+}
+
+static void
+cb_reading_timeout (MilterServerContext *context, gpointer user_data)
+{
+    milter_error("reading timeout: FIXME");
+}
+
+static void
+cb_end_of_message_timeout (MilterServerContext *context, gpointer user_data)
+{
+    milter_error("end_of_message timeout: FIXME");
+}
+
+static void
+cb_error (MilterErrorEmitable *emitable, GError *error, gpointer user_data)
+{
+    MilterManagerController *controller = user_data;
+
+    milter_error("error: FIXME: %s", error->message);
+    milter_error_emitable_emit_error(MILTER_ERROR_EMITABLE(controller),
+                                     error);
+}
+
+static void
+setup_server_context_signals (MilterManagerController *controller,
+                              MilterServerContext *server_context)
+{
+#define CONNECT(name)                                           \
+    g_signal_connect(server_context, #name,                     \
+                     G_CALLBACK(cb_ ## name), controller)
+
+    CONNECT(negotiate_reply);
+    CONNECT(continue);
+    CONNECT(reply_code);
+    CONNECT(temporary_failure);
+    CONNECT(reject);
+    CONNECT(accept);
+    CONNECT(discard);
+    CONNECT(add_header);
+    CONNECT(insert_header);
+    CONNECT(change_header);
+    CONNECT(change_from);
+    CONNECT(add_receipt);
+    CONNECT(delete_receipt);
+    CONNECT(replace_body);
+    CONNECT(progress);
+    CONNECT(quarantine);
+    CONNECT(connection_failure);
+    CONNECT(shutdown);
+    CONNECT(skip);
+
+    CONNECT(connection_timeout);
+    CONNECT(sending_timeout);
+    CONNECT(reading_timeout);
+    CONNECT(end_of_message_timeout);
+
+    CONNECT(error);
+#undef CONNECT
+}
+
+static void
+teardown_server_context_signals (MilterManagerController *controller,
+                                 MilterServerContext *server_context)
+{
+#define DISCONNECT(name)                                                \
+    g_signal_handlers_disconnect_by_func(server_context,                \
+                                         G_CALLBACK(cb_ ## name),       \
+                                         controller)
+
+    DISCONNECT(negotiate_reply);
+    DISCONNECT(continue);
+    DISCONNECT(reply_code);
+    DISCONNECT(temporary_failure);
+    DISCONNECT(reject);
+    DISCONNECT(accept);
+    DISCONNECT(discard);
+    DISCONNECT(add_header);
+    DISCONNECT(insert_header);
+    DISCONNECT(change_header);
+    DISCONNECT(change_from);
+    DISCONNECT(add_receipt);
+    DISCONNECT(delete_receipt);
+    DISCONNECT(replace_body);
+    DISCONNECT(progress);
+    DISCONNECT(quarantine);
+    DISCONNECT(connection_failure);
+    DISCONNECT(shutdown);
+    DISCONNECT(skip);
+
+    DISCONNECT(connection_timeout);
+    DISCONNECT(sending_timeout);
+    DISCONNECT(reading_timeout);
+    DISCONNECT(end_of_message_timeout);
+
+    DISCONNECT(error);
+#undef DISCONNECT
 }
 
 MilterStatus
-milter_manager_controller_negotiate (MilterManagerController *controller, MilterOption *option)
+milter_manager_controller_negotiate (MilterManagerController *controller,
+                                     MilterOption *option)
 {
     MilterManagerControllerPrivate *priv;
-    const GList *milters;
-    gboolean waiting = TRUE;
-    MilterServerContext *context;
+    MilterServerContext *server_context;
+    MilterManagerChildMilter *child_milter;
     GError *error = NULL;
 
     priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
-    milters = milter_manager_configuration_get_child_milters(priv->configuration);
+    priv->state = MILTER_MANAGER_CONTROLLER_STATE_NEGOTIATE;
 
-    if (!milters)
+    priv->child_milters =
+        milter_manager_configuration_create_child_milters(priv->configuration);
+
+    if (!priv->child_milters)
         return MILTER_STATUS_NOT_CHANGE;
 
-    context = milters->data;
-    if (!milter_server_context_establish_connection(context, &error)) {
+    child_milter = priv->child_milters->data;
+    server_context = MILTER_SERVER_CONTEXT(child_milter);
+    if (!milter_server_context_establish_connection(server_context, &error)) {
         gboolean priviledge;
         MilterStatus status;
 
@@ -200,8 +652,7 @@ milter_manager_controller_negotiate (MilterManagerController *controller, Milter
         }
         g_error_free(error);
 
-        milter_manager_child_milter_start(MILTER_MANAGER_CHILD_MILTER(context),
-                                          &error);
+        milter_manager_child_milter_start(child_milter, &error);
         if (error) {
             milter_error("Error: %s", error->message);
             g_error_free(error);
@@ -210,13 +661,10 @@ milter_manager_controller_negotiate (MilterManagerController *controller, Milter
         return MILTER_STATUS_PROGRESS;
     }
 
-    g_signal_connect(context, "continue", G_CALLBACK(cb_continue), &waiting);
-    g_signal_connect(context, "negotiate_reply",
-                     G_CALLBACK(cb_negotiate_reply), &waiting);
-    milter_server_context_negotiate(context, option);
-    while (waiting)
-        g_main_context_iteration(NULL, TRUE);
-    return MILTER_STATUS_CONTINUE;
+    setup_server_context_signals(controller, server_context);
+    milter_server_context_negotiate(server_context, option);
+
+    return MILTER_STATUS_PROGRESS;
 }
 
 MilterStatus
@@ -226,16 +674,14 @@ milter_manager_controller_connect (MilterManagerController *controller,
                                    socklen_t                address_length)
 {
     MilterManagerControllerPrivate *priv;
-    const GList *milters;
     MilterServerContext *context;
 
     priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
-    milters = milter_manager_configuration_get_child_milters(priv->configuration);
+    priv->state = MILTER_MANAGER_CONTROLLER_STATE_CONNECT;
 
-    if (!milters)
+    if (!priv->child_milters)
         return MILTER_STATUS_NOT_CHANGE;
-
-    context = milters->data;
+    context = priv->child_milters->data;
     return milter_server_context_connect(context, host_name,
                                          address, address_length);
 }
@@ -244,16 +690,14 @@ MilterStatus
 milter_manager_controller_helo (MilterManagerController *controller, const gchar *fqdn)
 {
     MilterManagerControllerPrivate *priv;
-    const GList *milters;
     MilterServerContext *context;
 
     priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
-    milters = milter_manager_configuration_get_child_milters(priv->configuration);
+    priv->state = MILTER_MANAGER_CONTROLLER_STATE_HELO;
 
-    if (!milters)
+    if (!priv->child_milters)
         return MILTER_STATUS_NOT_CHANGE;
-
-    context = milters->data;
+    context = priv->child_milters->data;
     return milter_server_context_helo(context, fqdn);
 }
 
@@ -262,16 +706,14 @@ milter_manager_controller_envelope_from (MilterManagerController *controller,
                                          const gchar *from)
 {
     MilterManagerControllerPrivate *priv;
-    const GList *milters;
     MilterServerContext *context;
 
     priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
-    milters = milter_manager_configuration_get_child_milters(priv->configuration);
+    priv->state = MILTER_MANAGER_CONTROLLER_STATE_ENVELOPE_FROM;
 
-    if (!milters)
+    if (!priv->child_milters)
         return MILTER_STATUS_NOT_CHANGE;
-
-    context = milters->data;
+    context = priv->child_milters->data;
     return milter_server_context_envelope_from(context, from);
 }
 
@@ -280,16 +722,14 @@ milter_manager_controller_envelope_receipt (MilterManagerController *controller,
                                             const gchar *receipt)
 {
     MilterManagerControllerPrivate *priv;
-    const GList *milters;
     MilterServerContext *context;
 
     priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
-    milters = milter_manager_configuration_get_child_milters(priv->configuration);
+    priv->state = MILTER_MANAGER_CONTROLLER_STATE_ENVELOPE_RECEIPT;
 
-    if (!milters)
+    if (!priv->child_milters)
         return MILTER_STATUS_NOT_CHANGE;
-
-    context = milters->data;
+    context = priv->child_milters->data;
     return milter_server_context_envelope_receipt(context, receipt);
 }
 

@@ -1,3 +1,14 @@
+2008-10-23  Kouhei Sutou  <kou@cozmixng.org>
+
+	* test/manager/test-controller.c: follow the below changes.
+
+	* milter/manager/milter-manager.c: create controller for each session.
+
+	* milter/manager/milter-manager-configuration.[ch]: add dummy
+	create function.
+
+	* milter/manager/milter-manager-controller.[ch]: accept client context.
+
 2008-10-23  Hiroyuki Ikezoe  <poincare@ikezoe.net>
 
 	* milter/manager/milter-manager-child-milter.[ch]: Emit errors when
