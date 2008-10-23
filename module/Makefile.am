@@ -1,2 +1,2 @@
 SUBDIRS =		\
-	controller
+	configuration

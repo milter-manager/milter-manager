@@ -83,7 +83,7 @@ setup (void)
     client_envelope_receipt_received = FALSE;
     client_reaped = FALSE;
 }
-
+#include <signal.h>
 void
 teardown (void)
 {
@@ -94,8 +94,10 @@ teardown (void)
     if (option)
         g_object_unref(option);
 
+    g_print("AAA\n");
     if (spawn)
         g_object_unref(spawn);
+    g_print("reaped: %d\n", client_reaped);
     if (test_client_path)
         g_free(test_client_path);
 }
