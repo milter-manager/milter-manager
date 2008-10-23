@@ -56,8 +56,9 @@ enum
     PROP_WORKING_DIRECTORY,
 };
 
-G_DEFINE_TYPE(MilterManagerChildMilter, milter_manager_child_milter,
-              MILTER_TYPE_SERVER_CONTEXT);
+MILTER_DEFINE_ERROR_EMITABLE_TYPE(MilterManagerChildMilter,
+                                  milter_manager_child_milter,
+                                  MILTER_TYPE_SERVER_CONTEXT);
 
 static void dispose        (GObject         *object);
 static void set_property   (GObject         *object,
@@ -269,11 +270,25 @@ child_watch_func (GPid pid, gint status, gpointer user_data)
     priv = MILTER_MANAGER_CHILD_MILTER_GET_PRIVATE(user_data);
 
     if (WCOREDUMP(status)) {
-        milter_critical("%s produced a core dump", priv->name);
-        /* restart? */
+        GError *error = NULL;
+        g_set_error(&error,
+                    MILTER_MANAGER_CHILD_MILTER_ERROR,
+                    MILTER_MANAGER_CHILD_MILTER_ERROR_MILTER_CORE_DUMP,
+                    "%s produced a core dump", priv->name);
+        milter_error("%s", error->message);
+        milter_error_emitable_emit_error(MILTER_ERROR_EMITABLE(user_data),
+                                         error);
+        g_error_free(error);
     } else if (WIFEXITED(status)) {
-        milter_warning("%s exits with status: %d", priv->name, status);
-        /* restart? */
+        GError *error = NULL;
+        g_set_error(&error,
+                    MILTER_MANAGER_CHILD_MILTER_ERROR,
+                    MILTER_MANAGER_CHILD_MILTER_ERROR_MILTER_EXIT,
+                    "%s exits with status: %d", priv->name, status);
+        milter_error("%s", error->message);
+        milter_error_emitable_emit_error(MILTER_ERROR_EMITABLE(user_data),
+                                         error);
+        g_error_free(error);
     }
 }
 

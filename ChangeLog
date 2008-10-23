@@ -1,3 +1,8 @@
+2008-10-23  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/manager/milter-manager-child-milter.[ch]: Emit errors when
+	child milter produces a core dump or exits.
+
 2008-10-23  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/manager/, test/manager/:
