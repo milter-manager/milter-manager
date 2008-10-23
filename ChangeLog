@@ -1,3 +1,7 @@
+2008-10-24  Kouhei Sutou  <kou@cozmixng.org>
+
+	* TODO: add: MilterManagerMother
+
 2008-10-24  Hiroyuki Ikezoe  <poincare@ikezoe.net>
 
 	* milter/manager/milter-manager-child-milter.c: Use g_spawn_close_pid.
