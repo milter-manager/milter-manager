@@ -309,12 +309,13 @@ next_state (MilterManagerControllerState state)
 
 static void
 cb_negotiate_reply (MilterServerContext *context, MilterOption *option,
-                    GList *macros_requests, gpointer user_data)
+                    MilterMacrosRequests *macros_requests, gpointer user_data)
 {
     MilterManagerController *controller = user_data;
     MilterManagerControllerPrivate *priv;
 
     priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
+
     g_signal_emit_by_name(priv->client_context, "negotiate-response",
                           0, option, MILTER_STATUS_CONTINUE);
 }
