@@ -4,6 +4,8 @@
 	* test/manager/test-child-milter.c: Exit error test.
 	* milter/manager/milter-manager-controller.c: negotiate_reply signal
 	has a MilterMacrosRequests.
+	* milter/manager/milter-manager-controller.c: Merge
+	MilterMacrosRequest in negotiate-reply signal.
 
 2008-10-23  Kouhei Sutou  <kou@cozmixng.org>
 
