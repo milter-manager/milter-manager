@@ -4,7 +4,7 @@ INCLUDES = 					\
 	 -I$(top_srcdir)/binding/ruby/src
 
 AM_CFLAGS = 								\
-	-DMILTER_LOG_DOMAIN=\""milter-manager-ruby-controller"\"	\
+	-DMILTER_LOG_DOMAIN=\""milter-manager-ruby-configuration"\"	\
 	$(MILTER_MANAGER_CFLAGS)
 
 LIBS =					\
@@ -17,8 +17,8 @@ AM_LDFLAGS =				\
 
 CLEANFILES = *.gcno *.gcda
 
-module_controller_LTLIBRARIES =		\
-	milter-manager-ruby-controller.la
+module_configuration_LTLIBRARIES =		\
+	milter-manager-ruby-configuration.la
 
-milter_manager_ruby_controller_la_SOURCES =	\
-	milter-manager-ruby-controller.c
+milter_manager_ruby_configuration_la_SOURCES =	\
+	milter-manager-ruby-configuration.c

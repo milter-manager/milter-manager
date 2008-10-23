@@ -228,9 +228,9 @@ dnl Check for path.
 dnl **************************************************************
 
 moduledir='$(pkglibdir)/module'
-module_controllerdir='$(moduledir)/controller'
+module_configurationdir='$(moduledir)/configuration'
 AC_SUBST(moduledir)
-AC_SUBST(module_controllerdir)
+AC_SUBST(module_configurationdir)
 
 bindingdir='$(pkglibdir)/binding'
 binding_extdir='$(bindingdir)/ext'
@@ -280,7 +280,7 @@ MILTER_MANAGER_CFLAGS="\$(MILTER_CLIENT_CFLAGS) \$(MILTER_SERVER_CFLAGS)"
 MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS \$(RUBY_CFLAGS)"
 MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS \$(COVERAGE_CFLAGS)"
 MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DG_DISABLE_DEPRECATED"
-MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DCONTROLLER_MODULE_DIR=\\\"\$(module_controllerdir)\\\""
+MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DCONFIGURATION_MODULE_DIR=\\\"\$(module_configurationdir)\\\""
 MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DBINDING_EXT_DIR=\\\"\$(binding_extdir)\\\""
 MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DBINDING_LIB_DIR=\\\"\$(binding_libdir)\\\""
 MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DCONFIG_DIR=\\\"\$(pkgsysconfdir)\\\""

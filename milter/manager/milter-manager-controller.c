@@ -21,307 +21,335 @@
 #  include "../../config.h"
 #endif /* HAVE_CONFIG_H */
 
-#include "milter-manager-module.h"
 #include "milter-manager-controller.h"
 
-static GList *controllers = NULL;
-static gchar *controller_module_dir = NULL;
+#define MILTER_MANAGER_CONTROLLER_GET_PRIVATE(obj)                   \
+    (G_TYPE_INSTANCE_GET_PRIVATE((obj),                              \
+                                 MILTER_MANAGER_TYPE_CONTROLLER,     \
+                                 MilterManagerControllerPrivate))
 
-static const gchar *
-_milter_manager_controller_module_dir (void)
+typedef struct _MilterManagerControllerPrivate MilterManagerControllerPrivate;
+struct _MilterManagerControllerPrivate
 {
-    const gchar *dir;
+    MilterManagerConfiguration *configuration;
+};
 
-    if (controller_module_dir)
-        return controller_module_dir;
-
-    dir = g_getenv("MILTER_MANAGER_CONTROLLER_MODULE_DIR");
-    if (dir)
-        return dir;
-
-    return CONTROLLER_MODULE_DIR;
-}
-
-static MilterManagerModule *
-milter_manager_controller_load_module (const gchar *name)
+enum
 {
-    gchar *module_name;
-    MilterManagerModule *module;
+    PROP_0,
+    PROP_CONFIGURATION
+};
 
-    module_name = g_strdup_printf("milter-manager-%s-controller", name);
-    module = milter_manager_module_find(controllers, module_name);
-    if (!module) {
-        const gchar *module_dir;
+G_DEFINE_TYPE(MilterManagerController, milter_manager_controller,
+              G_TYPE_OBJECT);
 
-        module_dir = _milter_manager_controller_module_dir();
-        module = milter_manager_module_load_module(module_dir, module_name);
-        if (module) {
-            if (g_type_module_use(G_TYPE_MODULE(module))) {
-                controllers = g_list_prepend(controllers, module);
-            }
-        }
-    }
+static void dispose        (GObject         *object);
+static void set_property   (GObject         *object,
+                            guint            prop_id,
+                            const GValue    *value,
+                            GParamSpec      *pspec);
+static void get_property   (GObject         *object,
+                            guint            prop_id,
+                            GValue          *value,
+                            GParamSpec      *pspec);
 
-    g_free(module_name);
-    return module;
-}
-
-void
-_milter_manager_controller_init (void)
+static void
+milter_manager_controller_class_init (MilterManagerControllerClass *klass)
 {
+    GObjectClass *gobject_class;
+    GParamSpec *spec;
+
+    gobject_class = G_OBJECT_CLASS(klass);
+
+    gobject_class->dispose      = dispose;
+    gobject_class->set_property = set_property;
+    gobject_class->get_property = get_property;
+
+    spec = g_param_spec_object("configuration",
+                               "Configuration",
+                               "The configuration of the milter manager",
+                               MILTER_MANAGER_TYPE_CONFIGURATION,
+                               G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_CONFIGURATION, spec);
+
+    g_type_class_add_private(gobject_class,
+                             sizeof(MilterManagerControllerPrivate));
 }
 
 static void
-milter_manager_controller_set_default_module_dir (const gchar *dir)
+milter_manager_controller_init (MilterManagerController *controller)
 {
-    if (controller_module_dir)
-        g_free(controller_module_dir);
-    controller_module_dir = NULL;
+    MilterManagerControllerPrivate *priv;
 
-    if (dir)
-        controller_module_dir = g_strdup(dir);
+    priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
+    priv->configuration = NULL;
 }
 
 static void
-milter_manager_controller_unload (void)
+dispose (GObject *object)
 {
-    g_list_foreach(controllers, (GFunc)milter_manager_module_unload, NULL);
-    g_list_free(controllers);
-    controllers = NULL;
-}
+    MilterManagerControllerPrivate *priv;
 
-void
-_milter_manager_controller_quit (void)
-{
-    milter_manager_controller_unload();
-    milter_manager_controller_set_default_module_dir(NULL);
-}
+    priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(object);
 
-GType
-milter_manager_controller_get_type (void)
-{
-    static GType controller_type = 0;
-
-    if (!controller_type) {
-        const GTypeInfo controller_info = {
-            sizeof(MilterManagerControllerClass), /* class_size */
-            NULL,           	                  /* base_init */
-            NULL,			          /* base_finalize */
-        };
-
-        controller_type = g_type_register_static(G_TYPE_INTERFACE,
-                                                 "MilterManagerController",
-                                                 &controller_info, 0);
+    if (priv->configuration) {
+        g_object_unref(priv->configuration);
+        priv->configuration = NULL;
     }
 
-    return controller_type;
+    G_OBJECT_CLASS(milter_manager_controller_parent_class)->dispose(object);
+}
+
+static void
+set_property (GObject      *object,
+              guint         prop_id,
+              const GValue *value,
+              GParamSpec   *pspec)
+{
+    MilterManagerControllerPrivate *priv;
+
+    priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(object);
+    switch (prop_id) {
+      case PROP_CONFIGURATION:
+        priv->configuration = g_value_get_object(value);
+        break;
+      default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+        break;
+    }
+}
+
+static void
+get_property (GObject    *object,
+              guint       prop_id,
+              GValue     *value,
+              GParamSpec *pspec)
+{
+    MilterManagerControllerPrivate *priv;
+
+    priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(object);
+    switch (prop_id) {
+      case PROP_CONFIGURATION:
+        g_value_set_object(value, priv->configuration);
+        break;
+      default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+        break;
+    }
 }
 
 MilterManagerController *
-milter_manager_controller_new (const gchar *name,
-                               const gchar *first_property, ...)
+milter_manager_controller_new (MilterManagerConfiguration *configuration)
 {
-    MilterManagerModule *module;
-    GObject *controller;
-    va_list var_args;
-
-    module = milter_manager_controller_load_module(name);
-    g_return_val_if_fail(module != NULL, NULL);
-
-    va_start(var_args, first_property);
-    controller = milter_manager_module_instantiate(module,
-                                                   first_property, var_args);
-    va_end(var_args);
-
-    return MILTER_MANAGER_CONTROLLER(controller);
+    return g_object_new(MILTER_MANAGER_TYPE_CONTROLLER,
+                        "configuration", configuration,
+                        NULL);
 }
 
-void
-milter_manager_controller_add_load_path (MilterManagerController *controller,
-                                         const gchar *path)
+static MilterStatus
+cb_continue (MilterServerContext *context, gpointer user_data)
 {
-    MilterManagerControllerClass *controller_class;
-
-    controller_class = MILTER_MANAGER_CONTROLLER_GET_CLASS(controller);
-    if (controller_class->add_load_path)
-        controller_class->add_load_path(controller, path);
+    gboolean *waiting = user_data;
+    *waiting = FALSE;
+    return MILTER_STATUS_NOT_CHANGE;
 }
 
-void
-milter_manager_controller_load (MilterManagerController *controller,
-                                const gchar *file_name)
+static MilterStatus
+cb_negotiate_reply (MilterServerContext *context, MilterOption *option,
+                    GList *macros_requests, gpointer user_data)
 {
-    MilterManagerControllerClass *controller_class;
-
-    controller_class = MILTER_MANAGER_CONTROLLER_GET_CLASS(controller);
-    if (controller_class->load)
-        controller_class->load(controller, file_name);
+    gboolean *waiting = user_data;
+    *waiting = FALSE;
+    return MILTER_STATUS_NOT_CHANGE;
 }
 
 MilterStatus
-milter_manager_controller_negotiate (MilterManagerController *controller,
-                                     MilterOption         *option)
+milter_manager_controller_negotiate (MilterManagerController *controller, MilterOption *option)
 {
-    MilterManagerControllerClass *controller_class;
+    MilterManagerControllerPrivate *priv;
+    const GList *milters;
+    gboolean waiting = TRUE;
+    MilterServerContext *context;
+    GError *error = NULL;
 
-    controller_class = MILTER_MANAGER_CONTROLLER_GET_CLASS(controller);
-    if (controller_class->negotiate)
-        return controller_class->negotiate(controller, option);
-    return MILTER_STATUS_DEFAULT;
+    priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
+    milters = milter_manager_configuration_get_child_milters(priv->configuration);
+
+    if (!milters)
+        return MILTER_STATUS_NOT_CHANGE;
+
+    context = milters->data;
+    if (!milter_server_context_establish_connection(context, &error)) {
+        gboolean priviledge;
+        MilterStatus status;
+
+        status =
+            milter_manager_configuration_get_return_status_if_filter_unavailable(priv->configuration);
+
+        priviledge =
+            milter_manager_configuration_is_privilege_mode(priv->configuration);
+        if (!priviledge ||
+            error->code != MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE) {
+            milter_error("Error: %s", error->message);
+            g_error_free(error);
+            return status;
+        }
+        g_error_free(error);
+
+        milter_manager_child_milter_start(MILTER_MANAGER_CHILD_MILTER(context),
+                                          &error);
+        if (error) {
+            milter_error("Error: %s", error->message);
+            g_error_free(error);
+            return status;
+        }
+        return MILTER_STATUS_PROGRESS;
+    }
+
+    g_signal_connect(context, "continue", G_CALLBACK(cb_continue), &waiting);
+    g_signal_connect(context, "negotiate_reply",
+                     G_CALLBACK(cb_negotiate_reply), &waiting);
+    milter_server_context_negotiate(context, option);
+    while (waiting)
+        g_main_context_iteration(NULL, TRUE);
+    return MILTER_STATUS_CONTINUE;
 }
 
 MilterStatus
 milter_manager_controller_connect (MilterManagerController *controller,
-                                   const gchar          *host_name,
-                                   struct sockaddr      *address,
-                                   socklen_t             address_length)
+                                   const gchar             *host_name,
+                                   struct sockaddr         *address,
+                                   socklen_t                address_length)
 {
-    MilterManagerControllerClass *controller_class;
+    MilterManagerControllerPrivate *priv;
+    const GList *milters;
+    MilterServerContext *context;
 
-    controller_class = MILTER_MANAGER_CONTROLLER_GET_CLASS(controller);
-    if (controller_class->connect)
-        controller_class->connect(controller, host_name,
-                                  address, address_length);
-    return MILTER_STATUS_DEFAULT;
+    priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
+    milters = milter_manager_configuration_get_child_milters(priv->configuration);
+
+    if (!milters)
+        return MILTER_STATUS_NOT_CHANGE;
+
+    context = milters->data;
+    return milter_server_context_connect(context, host_name,
+                                         address, address_length);
 }
 
 MilterStatus
-milter_manager_controller_helo (MilterManagerController *controller,
-                                const gchar          *fqdn)
+milter_manager_controller_helo (MilterManagerController *controller, const gchar *fqdn)
 {
-    MilterManagerControllerClass *controller_class;
+    MilterManagerControllerPrivate *priv;
+    const GList *milters;
+    MilterServerContext *context;
 
-    controller_class = MILTER_MANAGER_CONTROLLER_GET_CLASS(controller);
-    if (controller_class->helo)
-        return controller_class->helo(controller, fqdn);
-    return MILTER_STATUS_DEFAULT;
+    priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
+    milters = milter_manager_configuration_get_child_milters(priv->configuration);
+
+    if (!milters)
+        return MILTER_STATUS_NOT_CHANGE;
+
+    context = milters->data;
+    return milter_server_context_helo(context, fqdn);
 }
 
 MilterStatus
 milter_manager_controller_envelope_from (MilterManagerController *controller,
-                                         const gchar          *from)
+                                         const gchar *from)
 {
-    MilterManagerControllerClass *controller_class;
+    MilterManagerControllerPrivate *priv;
+    const GList *milters;
+    MilterServerContext *context;
 
-    controller_class = MILTER_MANAGER_CONTROLLER_GET_CLASS(controller);
-    if (controller_class->envelope_from)
-        return controller_class->envelope_from(controller, from);
-    return MILTER_STATUS_DEFAULT;
+    priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
+    milters = milter_manager_configuration_get_child_milters(priv->configuration);
+
+    if (!milters)
+        return MILTER_STATUS_NOT_CHANGE;
+
+    context = milters->data;
+    return milter_server_context_envelope_from(context, from);
 }
 
 MilterStatus
 milter_manager_controller_envelope_receipt (MilterManagerController *controller,
-                                            const gchar          *receipt)
+                                            const gchar *receipt)
 {
-    MilterManagerControllerClass *controller_class;
+    MilterManagerControllerPrivate *priv;
+    const GList *milters;
+    MilterServerContext *context;
 
-    controller_class = MILTER_MANAGER_CONTROLLER_GET_CLASS(controller);
-    if (controller_class->envelope_receipt)
-        return controller_class->envelope_receipt(controller, receipt);
-    return MILTER_STATUS_DEFAULT;
+    priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
+    milters = milter_manager_configuration_get_child_milters(priv->configuration);
+
+    if (!milters)
+        return MILTER_STATUS_NOT_CHANGE;
+
+    context = milters->data;
+    return milter_server_context_envelope_receipt(context, receipt);
 }
 
 MilterStatus
 milter_manager_controller_data (MilterManagerController *controller)
 {
-    MilterManagerControllerClass *controller_class;
-
-    controller_class = MILTER_MANAGER_CONTROLLER_GET_CLASS(controller);
-    if (controller_class->data)
-        return controller_class->data(controller);
-    return MILTER_STATUS_DEFAULT;
+    g_print("data");
+    return MILTER_STATUS_NOT_CHANGE;
 }
 
 MilterStatus
-milter_manager_controller_unknown (MilterManagerController *controller,
-                                   const gchar          *command)
+milter_manager_controller_unknown (MilterManagerController *controller, const gchar *command)
 {
-    MilterManagerControllerClass *controller_class;
-
-    controller_class = MILTER_MANAGER_CONTROLLER_GET_CLASS(controller);
-    if (controller_class->unknown)
-        return controller_class->unknown(controller, command);
-    return MILTER_STATUS_DEFAULT;
+    g_print("unknown");
+    return MILTER_STATUS_NOT_CHANGE;
 }
 
 MilterStatus
 milter_manager_controller_header (MilterManagerController *controller,
-                                  const gchar          *name,
-                                  const gchar          *value)
+        const gchar *name, const gchar *value)
 {
-    MilterManagerControllerClass *controller_class;
-
-    controller_class = MILTER_MANAGER_CONTROLLER_GET_CLASS(controller);
-    if (controller_class->header)
-        return controller_class->header(controller, name, value);
-    return MILTER_STATUS_DEFAULT;
+    g_print("header");
+    return MILTER_STATUS_NOT_CHANGE;
 }
 
 MilterStatus
 milter_manager_controller_end_of_header (MilterManagerController *controller)
 {
-    MilterManagerControllerClass *controller_class;
-
-    controller_class = MILTER_MANAGER_CONTROLLER_GET_CLASS(controller);
-    if (controller_class->end_of_header)
-        return controller_class->end_of_header(controller);
-    return MILTER_STATUS_DEFAULT;
+    g_print("end-of-header");
+    return MILTER_STATUS_NOT_CHANGE;
 }
 
 MilterStatus
-milter_manager_controller_body (MilterManagerController *controller,
-                                const guchar         *chunk,
-                                gsize                 size)
+milter_manager_controller_body (MilterManagerController *controller, const guchar *chunk, gsize size)
 {
-    MilterManagerControllerClass *controller_class;
-
-    controller_class = MILTER_MANAGER_CONTROLLER_GET_CLASS(controller);
-    if (controller_class->body)
-        return controller_class->body(controller, chunk, size);
-    return MILTER_STATUS_DEFAULT;
+    g_print("body");
+    return MILTER_STATUS_NOT_CHANGE;
 }
 
 MilterStatus
 milter_manager_controller_end_of_message (MilterManagerController *controller)
 {
-    MilterManagerControllerClass *controller_class;
-
-    controller_class = MILTER_MANAGER_CONTROLLER_GET_CLASS(controller);
-    if (controller_class->end_of_message)
-        return controller_class->end_of_message(controller);
-    return MILTER_STATUS_DEFAULT;
+    g_print("end-of-body");
+    return MILTER_STATUS_NOT_CHANGE;
 }
 
 MilterStatus
 milter_manager_controller_quit (MilterManagerController *controller)
 {
-    MilterManagerControllerClass *controller_class;
-
-    controller_class = MILTER_MANAGER_CONTROLLER_GET_CLASS(controller);
-    if (controller_class->quit)
-        return controller_class->quit(controller);
-    return MILTER_STATUS_DEFAULT;
+    g_print("quit");
+    return MILTER_STATUS_NOT_CHANGE;
 }
 
 MilterStatus
 milter_manager_controller_abort (MilterManagerController *controller)
 {
-    MilterManagerControllerClass *controller_class;
-
-    controller_class = MILTER_MANAGER_CONTROLLER_GET_CLASS(controller);
-    if (controller_class->abort)
-        return controller_class->abort(controller);
-    return MILTER_STATUS_DEFAULT;
+    g_print("abort");
+    return MILTER_STATUS_NOT_CHANGE;
 }
 
 void
 milter_manager_controller_mta_timeout (MilterManagerController *controller)
 {
-    MilterManagerControllerClass *controller_class;
-
-    controller_class = MILTER_MANAGER_CONTROLLER_GET_CLASS(controller);
-    if (controller_class->mta_timeout)
-        controller_class->mta_timeout(controller);
+    g_print("mta_timeout");
 }
 
 /*

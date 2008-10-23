@@ -29,7 +29,7 @@ if test x"$USE_GTK" = x"yes"; then
     CUTTER_ARGS="-u gtk $CUTTER_ARGS"
 fi
 
-export MILTER_MANAGER_CONTROLLER_MODULE_DIR=$top_dir/module/controller/ruby/.libs
+export MILTER_MANAGER_CONFIGURATION_MODULE_DIR=$top_dir/module/configuration/ruby/.libs
 export RUBYLIB=$RUBYLIB:$top_dir/binding/ruby/lib:$top_dir/binding/ruby/src/.libs
 export MILTER_MANAGER_CONFIG_DIR=$top_dir/data
 

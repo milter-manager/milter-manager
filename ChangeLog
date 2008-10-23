@@ -1,5 +1,7 @@
 2008-10-23  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/, module/, test/: ruby controller -> ruby configuration.
+
 	* module/: controller -> configuration.
 
 	* test/lib/milter-test-client.rb: fix timeout timing.

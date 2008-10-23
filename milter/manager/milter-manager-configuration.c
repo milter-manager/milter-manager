@@ -21,6 +21,7 @@
 #  include "../../config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include "milter-manager-module.h"
 #include "milter-manager-configuration.h"
 
 #define MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(obj)                   \
@@ -39,6 +40,9 @@ struct _MilterManagerConfigurationPrivate
     guint reading_timeout;
     guint end_of_message_timeout;
 };
+
+static GList *configurations = NULL;
+static gchar *configuration_module_dir = NULL;
 
 G_DEFINE_TYPE(MilterManagerConfiguration, milter_manager_configuration,
               G_TYPE_OBJECT);
@@ -131,11 +135,122 @@ get_property (GObject    *object,
     }
 }
 
+static const gchar *
+_milter_manager_configuration_module_dir (void)
+{
+    const gchar *dir;
+
+    if (configuration_module_dir)
+        return configuration_module_dir;
+
+    dir = g_getenv("MILTER_MANAGER_CONFIGURATION_MODULE_DIR");
+    if (dir)
+        return dir;
+
+    return CONFIGURATION_MODULE_DIR;
+}
+
+static MilterManagerModule *
+milter_manager_configuration_load_module (const gchar *name)
+{
+    gchar *module_name;
+    MilterManagerModule *module;
+
+    module_name = g_strdup_printf("milter-manager-%s-configuration", name);
+    module = milter_manager_module_find(configurations, module_name);
+    if (!module) {
+        const gchar *module_dir;
+
+        module_dir = _milter_manager_configuration_module_dir();
+        module = milter_manager_module_load_module(module_dir, module_name);
+        if (module) {
+            if (g_type_module_use(G_TYPE_MODULE(module))) {
+                configurations = g_list_prepend(configurations, module);
+            }
+        }
+    }
+
+    g_free(module_name);
+    return module;
+}
+
+void
+_milter_manager_configuration_init (void)
+{
+}
+
+static void
+milter_manager_configuration_set_default_module_dir (const gchar *dir)
+{
+    if (configuration_module_dir)
+        g_free(configuration_module_dir);
+    configuration_module_dir = NULL;
+
+    if (dir)
+        configuration_module_dir = g_strdup(dir);
+}
+
+static void
+milter_manager_configuration_unload (void)
+{
+    g_list_foreach(configurations, (GFunc)milter_manager_module_unload, NULL);
+    g_list_free(configurations);
+    configurations = NULL;
+}
+
+void
+_milter_manager_configuration_quit (void)
+{
+    milter_manager_configuration_unload();
+    milter_manager_configuration_set_default_module_dir(NULL);
+}
+
+MilterManagerConfiguration *
+milter_manager_configuration_new_va_list (const gchar *name,
+                                          const gchar *first_property,
+                                          ...)
+{
+    MilterManagerModule *module;
+    GObject *configuration;
+    va_list var_args;
+
+    module = milter_manager_configuration_load_module(name);
+    g_return_val_if_fail(module != NULL, NULL);
+
+    va_start(var_args, first_property);
+    configuration = milter_manager_module_instantiate(module,
+                                                      first_property, var_args);
+    va_end(var_args);
+
+    return MILTER_MANAGER_CONFIGURATION(configuration);
+}
+
 MilterManagerConfiguration *
 milter_manager_configuration_new (void)
 {
-    return g_object_new(MILTER_MANAGER_TYPE_CONFIGURATION,
-                        NULL);
+    return milter_manager_configuration_new_va_list("ruby", NULL);
+}
+
+void
+milter_manager_configuration_add_load_path (MilterManagerConfiguration *configuration,
+                                            const gchar *path)
+{
+    MilterManagerConfigurationClass *configuration_class;
+
+    configuration_class = MILTER_MANAGER_CONFIGURATION_GET_CLASS(configuration);
+    if (configuration_class->add_load_path)
+        configuration_class->add_load_path(configuration, path);
+}
+
+void
+milter_manager_configuration_load (MilterManagerConfiguration *configuration,
+                                   const gchar *file_name)
+{
+    MilterManagerConfigurationClass *configuration_class;
+
+    configuration_class = MILTER_MANAGER_CONFIGURATION_GET_CLASS(configuration);
+    if (configuration_class->load)
+        configuration_class->load(configuration, file_name);
 }
 
 gboolean

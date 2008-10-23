@@ -54,18 +54,16 @@ add_load_path (const gchar *path)
 {
     if (!path)
         return;
-    milter_manager_controller_add_load_path(controller, path);
+    milter_manager_configuration_add_load_path(config, path);
 }
 
 void
 setup (void)
 {
     config = milter_manager_configuration_new();
-    controller = milter_manager_controller_new("ruby",
-                                               "configuration", config,
-                                               NULL);
+    controller = milter_manager_controller_new(config);
     add_load_path(g_getenv("MILTER_MANAGER_CONFIG_DIR"));
-    milter_manager_controller_load(controller, "milter-manager.conf");
+    milter_manager_configuration_load(config, "milter-manager.conf");
     option = NULL;
 
     spawn = NULL;
@@ -83,7 +81,7 @@ setup (void)
     client_envelope_receipt_received = FALSE;
     client_reaped = FALSE;
 }
-#include <signal.h>
+
 void
 teardown (void)
 {
@@ -94,10 +92,8 @@ teardown (void)
     if (option)
         g_object_unref(option);
 
-    g_print("AAA\n");
     if (spawn)
         g_object_unref(spawn);
-    g_print("reaped: %d\n", client_reaped);
     if (test_client_path)
         g_free(test_client_path);
 }

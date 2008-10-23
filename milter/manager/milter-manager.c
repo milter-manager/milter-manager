@@ -48,7 +48,7 @@ milter_manager_init (int *argc, char ***argv)
     if (!g_thread_supported())
         g_thread_init(NULL);
 
-    _milter_manager_controller_init();
+    _milter_manager_configuration_init();
 }
 
 void
@@ -57,7 +57,7 @@ milter_manager_quit (void)
     if (!initialized)
         return;
 
-    _milter_manager_controller_quit();
+    _milter_manager_configuration_quit();
 }
 
 static MilterStatus
@@ -260,14 +260,12 @@ milter_manager_main (void)
     const gchar *config_dir_env;
 
     configuration = milter_manager_configuration_new();
-    controller = milter_manager_controller_new("ruby",
-                                               "configuration", configuration,
-                                               NULL);
+    controller = milter_manager_controller_new(configuration);
     config_dir_env = g_getenv("MILTER_MANAGER_CONFIG_DIR");
     if (config_dir_env)
-        milter_manager_controller_add_load_path(controller, config_dir_env);
-    milter_manager_controller_add_load_path(controller, CONFIG_DIR);
-    milter_manager_controller_load(controller, "milter-manager.conf");
+        milter_manager_configuration_add_load_path(configuration, config_dir_env);
+    milter_manager_configuration_add_load_path(configuration, CONFIG_DIR);
+    milter_manager_configuration_load(configuration, "milter-manager.conf");
 
     client = milter_client_new();
     milter_client_set_connection_spec(client, "inet:9999", NULL);

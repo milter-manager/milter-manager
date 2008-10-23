@@ -44,12 +44,28 @@ struct _MilterManagerConfiguration
 struct _MilterManagerConfigurationClass
 {
     GObjectClass parent_class;
+
+    void         (*add_load_path) (MilterManagerConfiguration *configuration,
+                                   const gchar                *path);
+    void         (*load)          (MilterManagerConfiguration *configuration,
+                                   const gchar                *file_name);
 };
 
 GType         milter_manager_configuration_get_type    (void) G_GNUC_CONST;
 
+void         _milter_manager_configuration_init        (void);
+void         _milter_manager_configuration_quit        (void);
+
+
 MilterManagerConfiguration *
               milter_manager_configuration_new         (void);
+
+void          milter_manager_configuration_add_load_path
+                                     (MilterManagerConfiguration *configuration,
+                                      const gchar                *path);
+void          milter_manager_configuration_load
+                                     (MilterManagerConfiguration *configuration,
+                                      const gchar                *file_name);
 
 gboolean      milter_manager_configuration_is_privilege_mode
                                      (MilterManagerConfiguration *configuration);

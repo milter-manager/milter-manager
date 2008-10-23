@@ -38,58 +38,21 @@ G_BEGIN_DECLS
 typedef struct _MilterManagerController         MilterManagerController;
 typedef struct _MilterManagerControllerClass    MilterManagerControllerClass;
 
+struct _MilterManagerController
+{
+    GObject object;
+};
+
 struct _MilterManagerControllerClass
 {
-    GTypeInterface base_iface;
-
-    void         (*add_load_path)      (MilterManagerController *controller,
-                                        const gchar             *path);
-    void         (*load)               (MilterManagerController *controller,
-                                        const gchar             *file_name);
-    MilterStatus (*negotiate)          (MilterManagerController *controller,
-                                        MilterOption  *option);
-    MilterStatus (*connect)            (MilterManagerController *controller,
-                                        const gchar   *host_name,
-                                        struct sockaddr *address,
-                                        socklen_t      address_length);
-    MilterStatus (*helo)               (MilterManagerController *controller,
-                                        const gchar   *fqdn);
-    MilterStatus (*envelope_from)      (MilterManagerController *controller,
-                                        const gchar   *from);
-    MilterStatus (*envelope_receipt)   (MilterManagerController *controller,
-                                        const gchar   *receipt);
-    MilterStatus (*data)               (MilterManagerController *controller);
-    MilterStatus (*unknown)            (MilterManagerController *controller,
-                                        const gchar   *command);
-    MilterStatus (*header)             (MilterManagerController *controller,
-                                        const gchar   *name,
-                                        const gchar   *value);
-    MilterStatus (*end_of_header)      (MilterManagerController *controller);
-    MilterStatus (*body)               (MilterManagerController *controller,
-                                        const guchar  *chunk,
-                                        gsize          size);
-    MilterStatus (*end_of_message)     (MilterManagerController *controller);
-    MilterStatus (*quit)               (MilterManagerController *controller);
-    MilterStatus (*abort)              (MilterManagerController *controller);
-    void         (*mta_timeout)        (MilterManagerController *controller);
+    GObjectClass parent_class;
 };
 
 GType                 milter_manager_controller_get_type    (void) G_GNUC_CONST;
 
-void                  _milter_manager_controller_init       (void);
-void                  _milter_manager_controller_quit       (void);
+MilterManagerController *milter_manager_controller_new
+                                          (MilterManagerConfiguration *configuration);
 
-
-MilterManagerController *milter_manager_controller_new      (const gchar *name,
-                                                             const gchar *first_property,
-                                                             ...);
-
-void                  milter_manager_controller_add_load_path
-                                          (MilterManagerController *controller,
-                                           const gchar             *path);
-void                  milter_manager_controller_load
-                                          (MilterManagerController *controller,
-                                           const gchar             *file_name);
 MilterStatus          milter_manager_controller_negotiate
                                           (MilterManagerController *controller,
                                            MilterOption            *option);
