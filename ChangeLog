@@ -6,6 +6,8 @@
 	has a MilterMacrosRequests.
 	* milter/manager/milter-manager-controller.c: Merge
 	MilterMacrosRequest in negotiate-reply signal.
+	* milter/manager/milter-manager-controller.c: NULL check barrier for
+	MilterMacrosRequests.
 
 2008-10-23  Kouhei Sutou  <kou@cozmixng.org>
 

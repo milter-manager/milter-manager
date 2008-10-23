@@ -323,7 +323,8 @@ cb_negotiate_reply (MilterServerContext *context, MilterOption *option,
 
     priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
 
-    milter_macros_requests_merge(priv->macros_requests, macros_requests);
+    if (macros_requests)
+        milter_macros_requests_merge(priv->macros_requests, macros_requests);
 
     g_signal_emit_by_name(priv->client_context, "negotiate-response",
                           0, option, MILTER_STATUS_CONTINUE);
