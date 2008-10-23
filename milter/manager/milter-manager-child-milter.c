@@ -43,6 +43,7 @@ struct _MilterManagerChildMilterPrivate
     gchar *command;
     gchar *command_options;
     GSpawnChildSetupFunc child_setup;
+    GPid pid;
     guint child_watch_id;
 };
 
@@ -133,6 +134,7 @@ milter_manager_child_milter_init (MilterManagerChildMilter *milter)
     priv->command = NULL;
     priv->command_options = NULL;
     priv->child_setup = NULL;
+    priv->pid = -1;
     priv->child_watch_id = 0;
 }
 
@@ -166,6 +168,11 @@ dispose (GObject *object)
     if (priv->command_options) {
         g_free(priv->command_options);
         priv->command_options = NULL;
+    }
+
+    if (priv->pid > 0) {
+        g_spawn_close_pid(priv->pid);
+        priv->pid = -1;
     }
 
     if (priv->child_watch_id > 0) {
@@ -334,7 +341,6 @@ gboolean
 milter_manager_child_milter_start (MilterManagerChildMilter *milter,
                                    GError **error)
 {
-    GPid pid;
     gint argc;
     gchar **argv;
     gchar *command_line;
@@ -378,10 +384,10 @@ milter_manager_child_milter_start (MilterManagerChildMilter *milter,
     success = g_spawn_async(priv->working_directory,
                             argv,
                             NULL,
-                            0,
+                            G_SPAWN_DO_NOT_REAP_CHILD,
                             priv->child_setup,
                             milter,
-                            &pid,
+                            &priv->pid,
                             &internal_error);
     g_strfreev(argv);
 
@@ -393,8 +399,9 @@ milter_manager_child_milter_start (MilterManagerChildMilter *milter,
                                               "Couldn't start new milter process.");
         return FALSE;
     }
+
     priv->child_watch_id =
-        g_child_watch_add(pid, (GChildWatchFunc)child_watch_func, NULL);
+        g_child_watch_add(priv->pid, (GChildWatchFunc)child_watch_func, milter);
 
     return success;
 }

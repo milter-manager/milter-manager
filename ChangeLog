@@ -1,3 +1,7 @@
+2008-10-24  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/manager/milter-manager-child-milter.c: Use g_spawn_close_pid.
+
 2008-10-23  Kouhei Sutou  <kou@cozmixng.org>
 
 	* test/manager/test-controller.c: follow the below changes.
