@@ -28,11 +28,9 @@ class MilterTestClient
         @socket = socket.accept
       end
 
-      Timeout.timeout(@timeout) do
-        while packet = @socket.readpartial(4096)
-          @decoder.decode(packet)
-          break if [:quit, :shutdown].include?(@state)
-        end
+      while packet = read_packet
+        @decoder.decode(packet)
+        break if [:quit, :shutdown].include?(@state)
       end
     end
   ensure
@@ -74,6 +72,14 @@ class MilterTestClient
     return unless @print_status
     puts status
     $stdout.flush
+  end
+
+  def read_packet
+    packet = nil
+    Timeout.timeout(@timeout) do
+      packet = @socket.readpartial(4096)
+    end
+    packet
   end
 
   def write(next_state, encode_type, *args)

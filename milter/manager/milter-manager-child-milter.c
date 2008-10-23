@@ -338,9 +338,9 @@ milter_manager_child_milter_start (MilterManagerChildMilter *milter,
         return FALSE;
     }
 
-    if (priv->command_options) 
+    if (priv->command_options)
         command_line = g_strdup_printf("%s %s", priv->command, priv->command_options);
-    else 
+    else
         command_line = g_strdup(priv->command);
 
     success = g_shell_parse_argv(command_line,
@@ -378,7 +378,7 @@ milter_manager_child_milter_start (MilterManagerChildMilter *milter,
                                               "Couldn't start new milter process.");
         return FALSE;
     }
-    priv->child_watch_id = 
+    priv->child_watch_id =
         g_child_watch_add(pid, (GChildWatchFunc)child_watch_func, NULL);
 
     return success;
