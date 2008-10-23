@@ -34,7 +34,7 @@ static GList *expected_child_milters;
 void
 setup (void)
 {
-    config = milter_manager_configuration_new();
+    config = milter_manager_configuration_new(NULL);
     milter = NULL;
     expected_child_milters = NULL;
 }

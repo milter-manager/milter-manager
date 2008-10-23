@@ -58,7 +58,8 @@ void         _milter_manager_configuration_quit        (void);
 
 
 MilterManagerConfiguration *
-              milter_manager_configuration_new         (void);
+              milter_manager_configuration_new         (const gchar *first_property,
+                                                        ...);
 
 void          milter_manager_configuration_add_load_path
                                      (MilterManagerConfiguration *configuration,

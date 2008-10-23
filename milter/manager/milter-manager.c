@@ -259,11 +259,12 @@ milter_manager_main (void)
     void (*sigint_handler) (int signum);
     const gchar *config_dir_env;
 
-    configuration = milter_manager_configuration_new();
+    configuration = milter_manager_configuration_new(NULL);
     controller = milter_manager_controller_new(configuration);
     config_dir_env = g_getenv("MILTER_MANAGER_CONFIG_DIR");
     if (config_dir_env)
-        milter_manager_configuration_add_load_path(configuration, config_dir_env);
+        milter_manager_configuration_add_load_path(configuration,
+                                                   config_dir_env);
     milter_manager_configuration_add_load_path(configuration, CONFIG_DIR);
     milter_manager_configuration_load(configuration, "milter-manager.conf");
 

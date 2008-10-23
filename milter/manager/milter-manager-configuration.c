@@ -206,15 +206,14 @@ _milter_manager_configuration_quit (void)
 }
 
 MilterManagerConfiguration *
-milter_manager_configuration_new_va_list (const gchar *name,
-                                          const gchar *first_property,
-                                          ...)
+milter_manager_configuration_new (const gchar *first_property,
+                                  ...)
 {
     MilterManagerModule *module;
     GObject *configuration;
     va_list var_args;
 
-    module = milter_manager_configuration_load_module(name);
+    module = milter_manager_configuration_load_module("ruby");
     g_return_val_if_fail(module != NULL, NULL);
 
     va_start(var_args, first_property);
@@ -223,12 +222,6 @@ milter_manager_configuration_new_va_list (const gchar *name,
     va_end(var_args);
 
     return MILTER_MANAGER_CONFIGURATION(configuration);
-}
-
-MilterManagerConfiguration *
-milter_manager_configuration_new (void)
-{
-    return milter_manager_configuration_new_va_list("ruby", NULL);
 }
 
 void

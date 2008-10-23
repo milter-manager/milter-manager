@@ -60,10 +60,11 @@ add_load_path (const gchar *path)
 void
 setup (void)
 {
-    config = milter_manager_configuration_new();
-    controller = milter_manager_controller_new(config);
+    config = milter_manager_configuration_new(NULL);
     add_load_path(g_getenv("MILTER_MANAGER_CONFIG_DIR"));
     milter_manager_configuration_load(config, "milter-manager.conf");
+
+    controller = milter_manager_controller_new(config);
     option = NULL;
 
     spawn = NULL;
