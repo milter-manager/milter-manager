@@ -20,6 +20,7 @@ MAINTAINERCLEANFILES =
 BUILT_SOURCES =
 
 milter_manager_public_headers =		\
+	milter-manager-controller.h	\
 	milter-manager-configuration.h	\
 	milter-manager-child.h		\
 	milter-manager-children.h	\

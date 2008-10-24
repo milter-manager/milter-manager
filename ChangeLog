@@ -1,5 +1,7 @@
 2008-10-24  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/Makefile.am: add missing milter-manager-controller.h.
+
 	* milter/manager/milter-manager-controller.c: child -> children.
 
 	* milter/, bindings/src/, module/configuration/ruby/:
