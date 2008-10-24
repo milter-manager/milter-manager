@@ -31,6 +31,7 @@ void test_connect (void);
 void test_helo (void);
 void test_envelope_from (void);
 void test_envelope_receipt (void);
+void test_data (void);
 
 static MilterManagerConfiguration *config;
 static MilterClientContext *client_context;
@@ -49,6 +50,7 @@ static gboolean client_connected;
 static gboolean client_greeted;
 static gboolean client_envelope_from_received;
 static gboolean client_envelope_receipt_received;
+static gboolean client_data_received;
 static gboolean client_reaped;
 
 
@@ -93,6 +95,8 @@ cb_output_received (GCutSpawn *spawn, const gchar *chunk, gsize size,
         client_envelope_from_received = TRUE;
     } else if (g_str_has_prefix(chunk, "receive: rcpt")) {
         client_envelope_receipt_received = TRUE;
+    } else if (g_str_has_prefix(chunk, "receive: data")) {
+        client_data_received = TRUE;
     } else {
         GString *string;
 
@@ -190,6 +194,7 @@ setup (void)
     client_greeted = FALSE;
     client_envelope_from_received = FALSE;
     client_envelope_receipt_received = FALSE;
+    client_data_received = FALSE;
     client_reaped = FALSE;
 }
 
@@ -366,6 +371,16 @@ test_envelope_receipt (void)
     milter_manager_controller_envelope_receipt(controller, receipt);
     wait_response("envelope-receipt");
     cut_assert_true(client_envelope_receipt_received);
+}
+
+void
+test_data (void)
+{
+    cut_trace(test_envelope_receipt());
+
+    milter_manager_controller_data(controller);
+    wait_response("data");
+    cut_assert_true(client_data_received);
 }
 
 /*

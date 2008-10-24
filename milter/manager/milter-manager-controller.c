@@ -22,6 +22,7 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "milter-manager-controller.h"
+#include "milter-manager-enum-types.h"
 
 #define MILTER_MANAGER_CONTROLLER_GET_PRIVATE(obj)                   \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                              \
@@ -305,7 +306,15 @@ next_state (MilterManagerControllerState state)
         next_state = MILTER_MANAGER_CONTROLLER_STATE_ABORT_REPLIED;
         break;
       default:
-        g_print("ERROR! - invalid state: %d|FIXME\n", state);
+        {
+            gchar *inspected_state;
+
+            inspected_state =
+                milter_utils_inspect_enum(MILTER_TYPE_MANAGER_CONTROLLER_STATE,
+                                          state);
+            g_print("ERROR! - invalid state: %s|FIXME\n", inspected_state);
+            g_free(inspected_state);
+        }
         next_state = MILTER_MANAGER_CONTROLLER_STATE_INVALID;
         break;
     }
@@ -747,8 +756,16 @@ milter_manager_controller_envelope_receipt (MilterManagerController *controller,
 MilterStatus
 milter_manager_controller_data (MilterManagerController *controller)
 {
-    g_print("data");
-    return MILTER_STATUS_NOT_CHANGE;
+    MilterManagerControllerPrivate *priv;
+    MilterServerContext *context;
+
+    priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
+    priv->state = MILTER_MANAGER_CONTROLLER_STATE_DATA;
+
+    if (!priv->children)
+        return MILTER_STATUS_NOT_CHANGE;
+    context = priv->children->data;
+    return milter_server_context_data(context);
 }
 
 MilterStatus
