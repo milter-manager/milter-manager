@@ -32,6 +32,7 @@ void test_helo (void);
 void test_envelope_from (void);
 void test_envelope_receipt (void);
 void test_data (void);
+void test_header (void);
 
 static MilterManagerConfiguration *config;
 static MilterClientContext *client_context;
@@ -51,7 +52,11 @@ static gboolean client_greeted;
 static gboolean client_envelope_from_received;
 static gboolean client_envelope_receipt_received;
 static gboolean client_data_received;
+static gboolean client_header_received;
 static gboolean client_reaped;
+
+static gchar *client_header_name;
+static gchar *client_header_value;
 
 
 static void
@@ -97,6 +102,16 @@ cb_output_received (GCutSpawn *spawn, const gchar *chunk, gsize size,
         client_envelope_receipt_received = TRUE;
     } else if (g_str_has_prefix(chunk, "receive: data")) {
         client_data_received = TRUE;
+    } else if (g_str_has_prefix(chunk, "receive: header")) {
+        gchar **items;
+
+        client_header_received = TRUE;
+        items = g_strsplit_set(chunk, " \n", -1);
+        if (items[0] && items[1] && items[2] && items[3]) {
+            client_header_name = g_strdup(items[2]);
+            client_header_value = g_strdup(items[3]);
+        }
+        g_strfreev(items);
     } else {
         GString *string;
 
@@ -195,7 +210,11 @@ setup (void)
     client_envelope_from_received = FALSE;
     client_envelope_receipt_received = FALSE;
     client_data_received = FALSE;
+    client_header_received = FALSE;
     client_reaped = FALSE;
+
+    client_header_name = NULL;
+    client_header_value = NULL;
 }
 
 void
@@ -216,6 +235,11 @@ teardown (void)
     }
     if (test_client_path)
         g_free(test_client_path);
+
+    if (client_header_name)
+        g_free(client_header_name);
+    if (client_header_value)
+        g_free(client_header_value);
 }
 
 static void
@@ -381,6 +405,21 @@ test_data (void)
     milter_manager_controller_data(controller);
     wait_response("data");
     cut_assert_true(client_data_received);
+}
+
+void
+test_header (void)
+{
+    const gchar name[] = "From";
+    const gchar value[] = "kou+sender@cozmixng.org";
+
+    cut_trace(test_data());
+
+    milter_manager_controller_header(controller, name, value);
+    wait_response("header");
+    cut_assert_true(client_header_received);
+    cut_assert_equal_string(name, client_header_name);
+    cut_assert_equal_string(value, client_header_value);
 }
 
 /*

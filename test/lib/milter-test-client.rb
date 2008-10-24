@@ -102,8 +102,15 @@ class MilterTestClient
       next if signal == "decode-command"
       @decoder.signal_connect(signal) do |_, *args|
         info(signal)
-        print_status("receive: #{signal}")
-        callback_name = "do_#{signal.gsub(/-/, '_')}"
+        status = "receive: #{signal}"
+        normalized_signal = signal.gsub(/-/, '_')
+        additional_info_callback_name = "info_#{normalized_signal}"
+        if respond_to?(additional_info_callback_name, true)
+          additional_info = send(additional_info_callback_name, *args)
+          status << ": #{additional_info}" unless additional_info.to_s.empty?
+        end
+        print_status(status)
+        callback_name = "do_#{normalized_signal}"
         send(callback_name, *args) if respond_to?(callback_name, true)
       end
     end
@@ -122,6 +129,10 @@ class MilterTestClient
     @connect_address = address
 
     write(:connected, :reply_continue)
+  end
+
+  def info_connect(host, address)
+    [host, address.to_s].join(" ")
   end
 
   def do_helo(fqdn)
@@ -156,6 +167,10 @@ class MilterTestClient
     @headers << [name, value]
 
     write(:header, :reply_continue)
+  end
+
+  def info_header(name, value)
+    [name, value].join(" ")
   end
 
   def do_end_of_header
