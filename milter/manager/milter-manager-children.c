@@ -165,6 +165,239 @@ milter_manager_children_foreach (MilterManagerChildren *children,
     g_list_foreach(milters, func, user_data);
 }
 
+gboolean
+milter_manager_children_negotiate (MilterManagerChildren *children,
+                                   MilterOption          *option)
+{
+    GList *child;
+    MilterManagerChildrenPrivate *priv;
+    gboolean success = TRUE;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    for (child = priv->milters; child; child = g_list_next(child)) {
+        success |= milter_server_context_negotiate(MILTER_SERVER_CONTEXT(child),
+                                                   option);
+    }
+
+    return success;
+}
+
+gboolean
+milter_manager_children_connect (MilterManagerChildren *children,
+                                 const gchar           *host_name,
+                                 struct sockaddr       *address,
+                                 socklen_t              address_length)
+{
+    GList *child;
+    MilterManagerChildrenPrivate *priv;
+    gboolean success = TRUE;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    for (child = priv->milters; child; child = g_list_next(child)) {
+        success |= milter_server_context_connect(MILTER_SERVER_CONTEXT(child),
+                                                 host_name,
+                                                 address,
+                                                 address_length);
+    }
+
+    return success;
+}
+
+gboolean
+milter_manager_children_helo (MilterManagerChildren *children,
+                              const gchar           *fqdn)
+{
+    GList *child;
+    MilterManagerChildrenPrivate *priv;
+    gboolean success = TRUE;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    for (child = priv->milters; child; child = g_list_next(child)) {
+        success |= milter_server_context_helo(MILTER_SERVER_CONTEXT(child),
+                                              fqdn);
+    }
+
+    return success;
+}
+
+gboolean
+milter_manager_children_envelope_from (MilterManagerChildren *children,
+                                       const gchar           *from)
+{
+    GList *child;
+    MilterManagerChildrenPrivate *priv;
+    gboolean success = TRUE;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    for (child = priv->milters; child; child = g_list_next(child)) {
+        success |= milter_server_context_envelope_from(MILTER_SERVER_CONTEXT(child),
+                                                       from);
+    }
+
+    return success;
+}
+
+gboolean
+milter_manager_children_envelope_receipt (MilterManagerChildren *children,
+                                          const gchar           *receipt)
+{
+    GList *child;
+    MilterManagerChildrenPrivate *priv;
+    gboolean success = TRUE;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    for (child = priv->milters; child; child = g_list_next(child)) {
+        success |= milter_server_context_envelope_receipt(MILTER_SERVER_CONTEXT(child),
+                                                          receipt);
+    }
+
+    return success;
+}
+
+gboolean
+milter_manager_children_data (MilterManagerChildren *children)
+{
+    GList *child;
+    MilterManagerChildrenPrivate *priv;
+    gboolean success = TRUE;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    for (child = priv->milters; child; child = g_list_next(child)) {
+        success |= milter_server_context_data(MILTER_SERVER_CONTEXT(child));
+    }
+
+    return success;
+}
+
+gboolean
+milter_manager_children_unknown (MilterManagerChildren *children,
+                                 const gchar           *command)
+{
+    GList *child;
+    MilterManagerChildrenPrivate *priv;
+    gboolean success = TRUE;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    for (child = priv->milters; child; child = g_list_next(child)) {
+        success |= milter_server_context_unknown(MILTER_SERVER_CONTEXT(child),
+                                                 command);
+    }
+
+    return success;
+}
+
+gboolean
+milter_manager_children_header (MilterManagerChildren *children,
+                                const gchar           *name,
+                                const gchar           *value)
+{
+    GList *child;
+    MilterManagerChildrenPrivate *priv;
+    gboolean success = TRUE;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    for (child = priv->milters; child; child = g_list_next(child)) {
+        success |= milter_server_context_header(MILTER_SERVER_CONTEXT(child),
+                                                name, value);
+    }
+
+    return success;
+}
+
+gboolean
+milter_manager_children_end_of_header (MilterManagerChildren *children)
+{
+    GList *child;
+    MilterManagerChildrenPrivate *priv;
+    gboolean success = TRUE;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    for (child = priv->milters; child; child = g_list_next(child)) {
+        success |= milter_server_context_end_of_header(MILTER_SERVER_CONTEXT(child));
+    }
+
+    return success;
+}
+
+gboolean
+milter_manager_children_body (MilterManagerChildren *children,
+                              const gchar           *chunk,
+                              gsize                  size)
+{
+    GList *child;
+    MilterManagerChildrenPrivate *priv;
+    gboolean success = TRUE;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    for (child = priv->milters; child; child = g_list_next(child)) {
+        success |= milter_server_context_body(MILTER_SERVER_CONTEXT(child),
+                                              chunk, size);
+    }
+
+    return success;
+}
+
+gboolean
+milter_manager_children_end_of_message (MilterManagerChildren *children,
+                                        const gchar           *chunk,
+                                        gsize                  size)
+{
+    GList *child;
+    MilterManagerChildrenPrivate *priv;
+    gboolean success = TRUE;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    for (child = priv->milters; child; child = g_list_next(child)) {
+        success |= milter_server_context_end_of_message(MILTER_SERVER_CONTEXT(child),
+                                                        chunk, size);
+    }
+
+    return success;
+}
+
+gboolean
+milter_manager_children_quit (MilterManagerChildren *children)
+{
+    GList *child;
+    MilterManagerChildrenPrivate *priv;
+    gboolean success = TRUE;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    for (child = priv->milters; child; child = g_list_next(child)) {
+        success |= milter_server_context_quit(MILTER_SERVER_CONTEXT(child));
+    }
+
+    return success;
+}
+
+gboolean
+milter_manager_children_abort (MilterManagerChildren *children)
+{
+    GList *child;
+    MilterManagerChildrenPrivate *priv;
+    gboolean success = TRUE;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    for (child = priv->milters; child; child = g_list_next(child)) {
+        success |= milter_server_context_abort(MILTER_SERVER_CONTEXT(child));
+    }
+
+    return success;
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */

@@ -66,6 +66,37 @@ GList                 *milter_manager_children_get_children(MilterManagerChildre
 void                   milter_manager_children_foreach     (MilterManagerChildren *children,
                                                             GFunc func,
                                                             gpointer user_data);
+gboolean               milter_manager_children_negotiate   (MilterManagerChildren *children,
+                                                            MilterOption          *option);
+gboolean               milter_manager_children_connect     (MilterManagerChildren *children,
+                                                            const gchar           *host_name,
+                                                            struct sockaddr       *address,
+                                                            socklen_t              address_length);
+gboolean               milter_manager_children_helo        (MilterManagerChildren *children,
+                                                            const gchar           *fqdn);
+gboolean               milter_manager_children_envelope_from
+                                                           (MilterManagerChildren *children,
+                                                            const gchar           *from);
+gboolean               milter_manager_children_envelope_receipt
+                                                           (MilterManagerChildren *children,
+                                                            const gchar           *receipt);
+gboolean               milter_manager_children_data        (MilterManagerChildren *children);
+gboolean               milter_manager_children_unknown     (MilterManagerChildren *children,
+                                                            const gchar           *command);
+gboolean               milter_manager_children_header      (MilterManagerChildren *children,
+                                                            const gchar           *name,
+                                                            const gchar           *value);
+gboolean               milter_manager_children_end_of_header
+                                                           (MilterManagerChildren *children);
+gboolean               milter_manager_children_body        (MilterManagerChildren *children,
+                                                            const gchar           *chunk,
+                                                            gsize                  size);
+gboolean               milter_manager_children_end_of_message
+                                                           (MilterManagerChildren *children,
+                                                            const gchar           *chunk,
+                                                            gsize                  size);
+gboolean               milter_manager_children_quit        (MilterManagerChildren *children);
+gboolean               milter_manager_children_abort       (MilterManagerChildren *children);
 
 #endif /* __MILTER_MANAGER_CHILDREN_H__ */
 
