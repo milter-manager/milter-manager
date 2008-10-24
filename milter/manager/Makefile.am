@@ -7,7 +7,8 @@ AM_CFLAGS = 						\
 	-DLOCALEDIR=\""$(localedir)"\"			\
 	-DMILTER_LOG_DOMAIN=\""milter-manager"\"	\
 	$(MILTER_MANAGER_CFLAGS)			\
-	$(GLIB_CFLAGS)
+	$(GLIB_CFLAGS)					\
+	$(COVERAGE_CFLAGS)
 
 LIBS =					\
 	$(MILTER_MANAGER_LIBS)		\

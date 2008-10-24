@@ -4,6 +4,9 @@ INCLUDES = 				\
 AM_CFLAGS = 				\
 	$(MILTER_MANAGER_CFLAGS)
 
+LIBS =					\
+	$(MILTER_MANAGER_LIBS)
+
 AM_LDFLAGS =			\
 	-module			\
 	-avoid-version		\
