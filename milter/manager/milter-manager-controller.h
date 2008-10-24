@@ -116,8 +116,8 @@ MilterStatus          milter_manager_controller_end_of_header
                                           (MilterManagerController *controller);
 MilterStatus          milter_manager_controller_body
                                           (MilterManagerController *controller,
-                                           const guchar         *chunk,
-                                           gsize                 size);
+                                           const gchar             *chunk,
+                                           gsize                    size);
 MilterStatus          milter_manager_controller_end_of_message
                                           (MilterManagerController *controller);
 MilterStatus          milter_manager_controller_quit

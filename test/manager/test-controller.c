@@ -34,6 +34,7 @@ void test_envelope_receipt (void);
 void test_data (void);
 void test_header (void);
 void test_end_of_header (void);
+void test_body (void);
 
 static MilterManagerConfiguration *config;
 static MilterClientContext *client_context;
@@ -55,10 +56,13 @@ static gboolean client_envelope_receipt_received;
 static gboolean client_data_received;
 static gboolean client_header_received;
 static gboolean client_end_of_header_received;
+static gboolean client_body_received;
 static gboolean client_reaped;
 
 static gchar *client_header_name;
 static gchar *client_header_value;
+
+static gchar *client_body_chunk;
 
 
 static void
@@ -116,6 +120,13 @@ cb_output_received (GCutSpawn *spawn, const gchar *chunk, gsize size,
         g_strfreev(items);
     } else if (g_str_has_prefix(chunk, "receive: end-of-header")) {
         client_end_of_header_received = TRUE;
+    } else if (g_str_has_prefix(chunk, "receive: body")) {
+        gsize receive_body_mark_position;
+
+        client_body_received = TRUE;
+        receive_body_mark_position = strlen("receive: body: ");
+        client_body_chunk = g_strndup(chunk + receive_body_mark_position,
+                                      size - receive_body_mark_position - 1);
     } else {
         GString *string;
 
@@ -215,10 +226,12 @@ setup (void)
     client_envelope_receipt_received = FALSE;
     client_data_received = FALSE;
     client_header_received = FALSE;
+    client_body_received = FALSE;
     client_reaped = FALSE;
 
     client_header_name = NULL;
     client_header_value = NULL;
+    client_body_chunk = NULL;
 }
 
 void
@@ -244,6 +257,9 @@ teardown (void)
         g_free(client_header_name);
     if (client_header_value)
         g_free(client_header_value);
+
+    if (client_body_chunk)
+        g_free(client_body_chunk);
 }
 
 static void
@@ -434,6 +450,19 @@ test_end_of_header (void)
     milter_manager_controller_end_of_header(controller);
     wait_response("end-of-header");
     cut_assert_true(client_end_of_header_received);
+}
+
+void
+test_body (void)
+{
+    const gchar chunk[] = "Hi\n\nThanks,";
+
+    cut_trace(test_end_of_header());
+
+    milter_manager_controller_body(controller, chunk, strlen(chunk));
+    wait_response("body");
+    cut_assert_true(client_body_received);
+    cut_assert_equal_string(chunk, client_body_chunk);
 }
 
 /*

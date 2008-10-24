@@ -1,6 +1,9 @@
 2008-10-24  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/manager/milter-manager-controller.c,
+	test/manager/test-controller.c: support body command.
+
+	* milter/manager/milter-manager-controller.c,
 	test/manager/test-controller.c: support end-of-header command.
 
 	* ./: support coverage.

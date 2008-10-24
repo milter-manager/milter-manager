@@ -187,6 +187,10 @@ class MilterTestClient
     write(:body, :reply_continue)
   end
 
+  def info_body(chunk)
+    chunk
+  end
+
   def do_end_of_message
     unless [:end_of_header, :body].include?(@state)
       invalid_state(:end_of_message)

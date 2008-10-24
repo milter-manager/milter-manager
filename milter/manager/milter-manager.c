@@ -143,7 +143,7 @@ cb_client_end_of_header (MilterClientContext *context, gpointer user_data)
 }
 
 static MilterStatus
-cb_client_body (MilterClientContext *context, const guchar *chunk, gsize size,
+cb_client_body (MilterClientContext *context, const gchar *chunk, gsize size,
                 gpointer user_data)
 {
     MilterManagerController *controller = user_data;
