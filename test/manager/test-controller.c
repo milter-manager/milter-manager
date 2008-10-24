@@ -33,6 +33,7 @@ void test_envelope_from (void);
 void test_envelope_receipt (void);
 void test_data (void);
 void test_header (void);
+void test_end_of_header (void);
 
 static MilterManagerConfiguration *config;
 static MilterClientContext *client_context;
@@ -53,6 +54,7 @@ static gboolean client_envelope_from_received;
 static gboolean client_envelope_receipt_received;
 static gboolean client_data_received;
 static gboolean client_header_received;
+static gboolean client_end_of_header_received;
 static gboolean client_reaped;
 
 static gchar *client_header_name;
@@ -112,6 +114,8 @@ cb_output_received (GCutSpawn *spawn, const gchar *chunk, gsize size,
             client_header_value = g_strdup(items[3]);
         }
         g_strfreev(items);
+    } else if (g_str_has_prefix(chunk, "receive: end-of-header")) {
+        client_end_of_header_received = TRUE;
     } else {
         GString *string;
 
@@ -420,6 +424,16 @@ test_header (void)
     cut_assert_true(client_header_received);
     cut_assert_equal_string(name, client_header_name);
     cut_assert_equal_string(value, client_header_value);
+}
+
+void
+test_end_of_header (void)
+{
+    cut_trace(test_header());
+
+    milter_manager_controller_end_of_header(controller);
+    wait_response("end-of-header");
+    cut_assert_true(client_end_of_header_received);
 }
 
 /*
