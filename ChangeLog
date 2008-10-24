@@ -13,6 +13,7 @@
 	* milter/manager/milter-manager-controller.c: NULL check barrier for
 	MilterMacrosRequests.
 	* milter/manager/*: MilterManagerChildMilter -> MilterManagerChild.
+	* milter/manager/milter-manager-children.[ch]: Added.
 
 2008-10-23  Kouhei Sutou  <kou@cozmixng.org>
 
