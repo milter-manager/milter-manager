@@ -34,6 +34,8 @@
 	uses MilterReplySignals.
 	* milter/manager/milter-manager-children.[ch]: Added server_context
 	methods.
+	* milter/manager/milter-manager-children.c: Emit each reply signals
+	depends on conditions. TODO: bunch each child signals.
 
 2008-10-23  Kouhei Sutou  <kou@cozmixng.org>
 

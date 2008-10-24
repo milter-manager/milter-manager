@@ -22,6 +22,7 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "milter-manager-children.h"
+#include "milter-manager-configuration.h"
 
 #define MILTER_MANAGER_CHILDREN_GET_PRIVATE(obj)                    \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                             \
@@ -32,6 +33,7 @@ typedef struct _MilterManagerChildrenPrivate	MilterManagerChildrenPrivate;
 struct _MilterManagerChildrenPrivate
 {
     GList *milters;
+    MilterMacrosRequests *macros_requests;
 };
 
 enum
@@ -50,6 +52,10 @@ static void get_property   (GObject         *object,
                             guint            prop_id,
                             GValue          *value,
                             GParamSpec      *pspec);
+
+static void teardown_server_context_signals
+                           (MilterManagerChild *child,
+                            gpointer user_data);
 
 static void
 milter_manager_children_class_init (MilterManagerChildrenClass *klass)
@@ -73,6 +79,7 @@ milter_manager_children_init (MilterManagerChildren *milter)
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(milter);
     priv->milters = NULL;
+    priv->macros_requests = NULL;
 }
 
 static void
@@ -83,9 +90,14 @@ dispose (GObject *object)
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(object);
 
     if (priv->milters) {
-        g_list_foreach(priv->milters, (GFunc)g_free, NULL);
+        g_list_foreach(priv->milters, (GFunc)teardown_server_context_signals, object);
         g_list_free(priv->milters);
         priv->milters = NULL;
+    }
+
+    if (priv->macros_requests) {
+        g_object_unref(priv->macros_requests);
+        priv->macros_requests = NULL;
     }
 
     G_OBJECT_CLASS(milter_manager_children_parent_class)->dispose(object);
@@ -165,6 +177,330 @@ milter_manager_children_foreach (MilterManagerChildren *children,
     g_list_foreach(milters, func, user_data);
 }
 
+
+static void
+cb_negotiate_reply (MilterServerContext *context, MilterOption *option,
+                    MilterMacrosRequests *macros_requests, gpointer user_data)
+{
+    MilterManagerChildren *children = user_data;
+    MilterManagerChildrenPrivate *priv;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    if (macros_requests)
+        milter_macros_requests_merge(priv->macros_requests, macros_requests);
+
+    g_signal_emit_by_name(children, "negotiate-reply", option);
+}
+
+static void
+cb_continue (MilterServerContext *context, gpointer user_data)
+{
+    MilterManagerChildren *children = user_data;
+    g_signal_emit_by_name(children, "continue");
+}
+
+static void
+cb_reply_code (MilterServerContext *context, const gchar *code,
+               gpointer user_data)
+{
+    MilterManagerChildren *children = user_data;
+    g_signal_emit_by_name(children, "reply-code", code);
+}
+
+static void
+cb_temporary_failure (MilterServerContext *context, gpointer user_data)
+{
+    MilterManagerChildren *children = user_data;
+    g_signal_emit_by_name(children, "temporary-failure");
+}
+
+static void
+cb_reject (MilterServerContext *context, gpointer user_data)
+{
+    MilterManagerChildren *children = user_data;
+    g_signal_emit_by_name(children, "reject");
+}
+
+static void
+cb_accept (MilterServerContext *context, gpointer user_data)
+{
+    MilterManagerChildren *children = user_data;
+    g_signal_emit_by_name(children, "accept");
+}
+
+static void
+cb_discard (MilterServerContext *context, gpointer user_data)
+{
+    MilterManagerChildren *children = user_data;
+    g_signal_emit_by_name(children, "discard");
+}
+
+static void
+cb_add_header (MilterServerContext *context,
+               const gchar *name, const gchar *value,
+               gpointer user_data)
+{
+    MilterManagerChildren *children = user_data;
+
+    g_signal_emit_by_name(children, "add-header", name, value);
+}
+
+static void
+cb_insert_header (MilterServerContext *context,
+                  guint32 index, const gchar *name, const gchar *value,
+                  gpointer user_data)
+{
+    MilterManagerChildren *children = user_data;
+
+    g_signal_emit_by_name(children, "insert-header", index, name, value);
+}
+
+static void
+cb_change_header (MilterServerContext *context,
+                  const gchar *name, guint32 index, const gchar *value,
+                  gpointer user_data)
+{
+    MilterManagerChildren *children = user_data;
+
+    g_signal_emit_by_name(children, "change-header", name, index, value);
+}
+
+static void
+cb_change_from (MilterServerContext *context,
+                const gchar *from, const gchar *parameters,
+                gpointer user_data)
+{
+    MilterManagerChildren *children = user_data;
+
+    g_signal_emit_by_name(children, "change-from", from, parameters);
+}
+
+static void
+cb_add_receipt (MilterServerContext *context,
+                const gchar *receipt, const gchar *parameters,
+                gpointer user_data)
+{
+    MilterManagerChildren *children = user_data;
+
+    g_signal_emit_by_name(children, "add-receipt", receipt, parameters);
+}
+
+static void
+cb_delete_receipt (MilterServerContext *context,
+                   const gchar *receipt,
+                   gpointer user_data)
+{
+    MilterManagerChildren *children = user_data;
+
+    g_signal_emit_by_name(children, "delete-receipt", receipt);
+}
+
+static void
+cb_replace_body (MilterServerContext *context,
+                 const gchar *chunk, gsize chunk_size,
+                 gpointer user_data)
+{
+    MilterManagerChildren *children = user_data;
+
+    g_signal_emit_by_name(children, "replace-body", chunk, chunk_size);
+}
+
+static void
+cb_progress (MilterServerContext *context, gpointer user_data)
+{
+    MilterManagerChildren *children = user_data;
+
+    g_signal_emit_by_name(children, "progress");
+}
+
+static void
+cb_quarantine (MilterServerContext *context,
+               const gchar *reason,
+               gpointer user_data)
+{
+    MilterManagerChildren *children = user_data;
+
+    g_signal_emit_by_name(children, "quarantine");
+}
+
+static void
+cb_connection_failure (MilterServerContext *context, gpointer user_data)
+{
+    MilterManagerChildren *children = user_data;
+
+    g_signal_emit_by_name(children, "connection-failure");
+}
+
+static void
+cb_shutdown (MilterServerContext *context, gpointer user_data)
+{
+    MilterManagerChildren *children = user_data;
+
+    g_signal_emit_by_name(children, "shutdown");
+}
+
+static void
+cb_skip (MilterServerContext *context, gpointer user_data)
+{
+    MilterManagerChildren *children = user_data;
+
+    g_signal_emit_by_name(children, "skip");
+}
+
+static void
+cb_connection_timeout (MilterServerContext *context, gpointer user_data)
+{
+    milter_error("connection timeout: FIXME");
+}
+
+static void
+cb_sending_timeout (MilterServerContext *context, gpointer user_data)
+{
+    milter_error("sending timeout: FIXME");
+}
+
+static void
+cb_reading_timeout (MilterServerContext *context, gpointer user_data)
+{
+    milter_error("reading timeout: FIXME");
+}
+
+static void
+cb_end_of_message_timeout (MilterServerContext *context, gpointer user_data)
+{
+    milter_error("end_of_message timeout: FIXME");
+}
+
+static void
+cb_error (MilterErrorEmitable *emitable, GError *error, gpointer user_data)
+{
+    MilterManagerChildren *children = user_data;
+
+    milter_error("error: FIXME: %s", error->message);
+    milter_error_emitable_emit_error(MILTER_ERROR_EMITABLE(children),
+                                     error);
+}
+
+static void
+setup_server_context_signals (MilterManagerChildren *children,
+                              MilterServerContext *server_context)
+{
+#define CONNECT(name)                                           \
+    g_signal_connect(server_context, #name,                     \
+                     G_CALLBACK(cb_ ## name), children)
+
+    CONNECT(negotiate_reply);
+    CONNECT(continue);
+    CONNECT(reply_code);
+    CONNECT(temporary_failure);
+    CONNECT(reject);
+    CONNECT(accept);
+    CONNECT(discard);
+    CONNECT(add_header);
+    CONNECT(insert_header);
+    CONNECT(change_header);
+    CONNECT(change_from);
+    CONNECT(add_receipt);
+    CONNECT(delete_receipt);
+    CONNECT(replace_body);
+    CONNECT(progress);
+    CONNECT(quarantine);
+    CONNECT(connection_failure);
+    CONNECT(shutdown);
+    CONNECT(skip);
+
+    CONNECT(connection_timeout);
+    CONNECT(sending_timeout);
+    CONNECT(reading_timeout);
+    CONNECT(end_of_message_timeout);
+
+    CONNECT(error);
+#undef CONNECT
+}
+
+static void
+teardown_server_context_signals (MilterManagerChild *child,
+                                 gpointer user_data)
+{
+    MilterManagerChildren *children = user_data;
+
+#define DISCONNECT(name)                                                \
+    g_signal_handlers_disconnect_by_func(child,                         \
+                                         G_CALLBACK(cb_ ## name),       \
+                                         children)
+
+    DISCONNECT(negotiate_reply);
+    DISCONNECT(continue);
+    DISCONNECT(reply_code);
+    DISCONNECT(temporary_failure);
+    DISCONNECT(reject);
+    DISCONNECT(accept);
+    DISCONNECT(discard);
+    DISCONNECT(add_header);
+    DISCONNECT(insert_header);
+    DISCONNECT(change_header);
+    DISCONNECT(change_from);
+    DISCONNECT(add_receipt);
+    DISCONNECT(delete_receipt);
+    DISCONNECT(replace_body);
+    DISCONNECT(progress);
+    DISCONNECT(quarantine);
+    DISCONNECT(connection_failure);
+    DISCONNECT(shutdown);
+    DISCONNECT(skip);
+
+    DISCONNECT(connection_timeout);
+    DISCONNECT(sending_timeout);
+    DISCONNECT(reading_timeout);
+    DISCONNECT(end_of_message_timeout);
+
+    DISCONNECT(error);
+#undef DISCONNECT
+}
+
+static MilterStatus
+child_negotiate (MilterManagerChild *child, MilterOption *option, 
+                 MilterManagerChildren *children)
+{
+    MilterServerContext *context;
+    GError *error = NULL;
+
+    context = MILTER_SERVER_CONTEXT(child);
+
+    if (!milter_server_context_establish_connection(context, &error)) {
+        MilterStatus status;
+        status = MILTER_STATUS_CONTINUE;
+#if 0
+        gboolean priviledge;
+        status =
+            milter_manager_configuration_get_return_status_if_filter_unavailable(priv->configuration);
+
+        priviledge =
+            milter_manager_configuration_is_privilege_mode(priv->configuration);
+        if (!priviledge ||
+            error->code != MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE) {
+            milter_error("Error: %s", error->message);
+            g_error_free(error);
+            return status;
+        }
+        g_error_free(error);
+#endif
+        milter_manager_child_start(child, &error);
+        if (error) {
+            milter_error("Error: %s", error->message);
+            g_error_free(error);
+            return status;
+        }
+        return MILTER_STATUS_PROGRESS;
+    }
+
+    setup_server_context_signals(children, context);
+    milter_server_context_negotiate(context, option);
+
+    return MILTER_STATUS_PROGRESS;
+}
+
 gboolean
 milter_manager_children_negotiate (MilterManagerChildren *children,
                                    MilterOption          *option)
@@ -176,8 +512,7 @@ milter_manager_children_negotiate (MilterManagerChildren *children,
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     for (child = priv->milters; child; child = g_list_next(child)) {
-        success |= milter_server_context_negotiate(MILTER_SERVER_CONTEXT(child),
-                                                   option);
+        success |= child_negotiate(MILTER_MANAGER_CHILD(child->data), option, children);
     }
 
     return success;
