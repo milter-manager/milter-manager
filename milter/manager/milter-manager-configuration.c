@@ -32,7 +32,7 @@
 typedef struct _MilterManagerConfigurationPrivate MilterManagerConfigurationPrivate;
 struct _MilterManagerConfigurationPrivate
 {
-    GList *child_milters;
+    MilterManagerChildren *children;
     gboolean privilege;
     MilterStatus return_status;
     guint connection_timeout;
@@ -78,7 +78,7 @@ milter_manager_configuration_init (MilterManagerConfiguration *configuration)
     MilterManagerConfigurationPrivate *priv;
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
-    priv->child_milters = NULL;
+    priv->children = milter_manager_children_new();
     priv->privilege = FALSE;
     priv->return_status = MILTER_STATUS_CONTINUE;
     priv->connection_timeout = 300; /* 5 minutes */
@@ -94,10 +94,9 @@ dispose (GObject *object)
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(object);
 
-    if (priv->child_milters) {
-        g_list_foreach(priv->child_milters, (GFunc)g_object_unref, NULL);
-        g_list_free(priv->child_milters);
-        priv->child_milters = NULL;
+    if (priv->children) {
+        g_object_unref(priv->children);
+        priv->children = NULL;
     }
 
     G_OBJECT_CLASS(milter_manager_configuration_parent_class)->dispose(object);
@@ -260,28 +259,27 @@ milter_manager_configuration_add_child (MilterManagerConfiguration *configuratio
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
 
-    g_object_ref(milter);
-    priv->child_milters = g_list_append(priv->child_milters, milter);
+    if (milter)
+        milter_manager_children_add_child(priv->children, milter);
 }
 
-const GList *
+MilterManagerChildren *
 milter_manager_configuration_get_children (MilterManagerConfiguration *configuration)
 {
     MilterManagerConfigurationPrivate *priv;
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
-    return priv->child_milters;
+    return priv->children;
 }
 
-GList *
+MilterManagerChildren *
 milter_manager_configuration_create_children (MilterManagerConfiguration *configuration)
 {
     MilterManagerConfigurationPrivate *priv;
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
-    /* FIXME */
-    g_list_foreach(priv->child_milters, (GFunc)g_object_ref, NULL);
-    return g_list_copy(priv->child_milters);
+
+    return priv->children;
 }
 
 MilterStatus

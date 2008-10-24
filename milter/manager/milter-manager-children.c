@@ -190,7 +190,7 @@ cb_negotiate_reply (MilterServerContext *context, MilterOption *option,
     if (macros_requests)
         milter_macros_requests_merge(priv->macros_requests, macros_requests);
 
-    g_signal_emit_by_name(children, "negotiate-reply", option);
+    g_signal_emit_by_name(children, "negotiate-reply", option, macros_requests);
 }
 
 static void
@@ -378,8 +378,10 @@ cb_error (MilterErrorEmitable *emitable, GError *error, gpointer user_data)
     MilterManagerChildren *children = user_data;
 
     milter_error("error: FIXME: %s", error->message);
+/*
     milter_error_emitable_emit_error(MILTER_ERROR_EMITABLE(children),
                                      error);
+*/
 }
 
 static void
@@ -531,7 +533,7 @@ milter_manager_children_connect (MilterManagerChildren *children,
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     for (child = priv->milters; child; child = g_list_next(child)) {
-        success |= milter_server_context_connect(MILTER_SERVER_CONTEXT(child),
+        success |= milter_server_context_connect(MILTER_SERVER_CONTEXT(child->data),
                                                  host_name,
                                                  address,
                                                  address_length);
@@ -551,7 +553,7 @@ milter_manager_children_helo (MilterManagerChildren *children,
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     for (child = priv->milters; child; child = g_list_next(child)) {
-        success |= milter_server_context_helo(MILTER_SERVER_CONTEXT(child),
+        success |= milter_server_context_helo(MILTER_SERVER_CONTEXT(child->data),
                                               fqdn);
     }
 
@@ -569,7 +571,7 @@ milter_manager_children_envelope_from (MilterManagerChildren *children,
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     for (child = priv->milters; child; child = g_list_next(child)) {
-        success |= milter_server_context_envelope_from(MILTER_SERVER_CONTEXT(child),
+        success |= milter_server_context_envelope_from(MILTER_SERVER_CONTEXT(child->data),
                                                        from);
     }
 
@@ -587,7 +589,7 @@ milter_manager_children_envelope_receipt (MilterManagerChildren *children,
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     for (child = priv->milters; child; child = g_list_next(child)) {
-        success |= milter_server_context_envelope_receipt(MILTER_SERVER_CONTEXT(child),
+        success |= milter_server_context_envelope_receipt(MILTER_SERVER_CONTEXT(child->data),
                                                           receipt);
     }
 
@@ -604,7 +606,7 @@ milter_manager_children_data (MilterManagerChildren *children)
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     for (child = priv->milters; child; child = g_list_next(child)) {
-        success |= milter_server_context_data(MILTER_SERVER_CONTEXT(child));
+        success |= milter_server_context_data(MILTER_SERVER_CONTEXT(child->data));
     }
 
     return success;
@@ -621,7 +623,7 @@ milter_manager_children_unknown (MilterManagerChildren *children,
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     for (child = priv->milters; child; child = g_list_next(child)) {
-        success |= milter_server_context_unknown(MILTER_SERVER_CONTEXT(child),
+        success |= milter_server_context_unknown(MILTER_SERVER_CONTEXT(child->data),
                                                  command);
     }
 
@@ -640,7 +642,7 @@ milter_manager_children_header (MilterManagerChildren *children,
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     for (child = priv->milters; child; child = g_list_next(child)) {
-        success |= milter_server_context_header(MILTER_SERVER_CONTEXT(child),
+        success |= milter_server_context_header(MILTER_SERVER_CONTEXT(child->data),
                                                 name, value);
     }
 
@@ -657,7 +659,7 @@ milter_manager_children_end_of_header (MilterManagerChildren *children)
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     for (child = priv->milters; child; child = g_list_next(child)) {
-        success |= milter_server_context_end_of_header(MILTER_SERVER_CONTEXT(child));
+        success |= milter_server_context_end_of_header(MILTER_SERVER_CONTEXT(child->data));
     }
 
     return success;
@@ -675,7 +677,7 @@ milter_manager_children_body (MilterManagerChildren *children,
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     for (child = priv->milters; child; child = g_list_next(child)) {
-        success |= milter_server_context_body(MILTER_SERVER_CONTEXT(child),
+        success |= milter_server_context_body(MILTER_SERVER_CONTEXT(child->data),
                                               chunk, size);
     }
 
@@ -694,7 +696,7 @@ milter_manager_children_end_of_message (MilterManagerChildren *children,
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     for (child = priv->milters; child; child = g_list_next(child)) {
-        success |= milter_server_context_end_of_message(MILTER_SERVER_CONTEXT(child),
+        success |= milter_server_context_end_of_message(MILTER_SERVER_CONTEXT(child->data),
                                                         chunk, size);
     }
 
@@ -711,7 +713,7 @@ milter_manager_children_quit (MilterManagerChildren *children)
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     for (child = priv->milters; child; child = g_list_next(child)) {
-        success |= milter_server_context_quit(MILTER_SERVER_CONTEXT(child));
+        success |= milter_server_context_quit(MILTER_SERVER_CONTEXT(child->data));
     }
 
     return success;
@@ -727,7 +729,7 @@ milter_manager_children_abort (MilterManagerChildren *children)
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     for (child = priv->milters; child; child = g_list_next(child)) {
-        success |= milter_server_context_abort(MILTER_SERVER_CONTEXT(child));
+        success |= milter_server_context_abort(MILTER_SERVER_CONTEXT(child->data));
     }
 
     return success;

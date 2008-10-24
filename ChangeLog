@@ -36,6 +36,9 @@
 	methods.
 	* milter/manager/milter-manager-children.c: Emit each reply signals
 	depends on conditions. TODO: bunch each child signals.
+	* milter/manager/milter-manager-configuration.[ch],
+	milter/manager/milter-manager-controller.[ch]: Use
+	MilterManagerChildren. test_data() fails yet.
 
 2008-10-23  Kouhei Sutou  <kou@cozmixng.org>
 

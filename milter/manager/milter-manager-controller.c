@@ -34,7 +34,7 @@ struct _MilterManagerControllerPrivate
 {
     MilterManagerConfiguration *configuration;
     MilterClientContext *client_context;
-    GList *children;
+    MilterManagerChildren *children;
     MilterManagerControllerState state;
     MilterMacrosRequests *macros_requests;
 };
@@ -59,10 +59,9 @@ static void get_property   (GObject         *object,
                             guint            prop_id,
                             GValue          *value,
                             GParamSpec      *pspec);
-
-static void teardown_server_context_signals
+static void teardown_children_signals 
                            (MilterManagerController *controller,
-                            MilterServerContext *server_context);
+                            MilterManagerChildren *children);
 
 static void
 milter_manager_controller_class_init (MilterManagerControllerClass *klass)
@@ -127,13 +126,8 @@ dispose (GObject *object)
     }
 
     if (priv->children) {
-        GList *node;
-        for (node = priv->children; node; node = g_list_next(node)) {
-            MilterServerContext *server_context = node->data;
-            teardown_server_context_signals(controller, server_context);
-            g_object_unref(server_context);
-        }
-        g_list_free(priv->children);
+        teardown_children_signals(controller, priv->children);
+        g_object_unref(priv->children);
         priv->children = NULL;
     }
 
@@ -561,11 +555,11 @@ cb_error (MilterErrorEmitable *emitable, GError *error, gpointer user_data)
 }
 
 static void
-setup_server_context_signals (MilterManagerController *controller,
-                              MilterServerContext *server_context)
+setup_children_signals (MilterManagerController *controller,
+                        MilterManagerChildren *children)
 {
 #define CONNECT(name)                                           \
-    g_signal_connect(server_context, #name,                     \
+    g_signal_connect(children, #name,                           \
                      G_CALLBACK(cb_ ## name), controller)
 
     CONNECT(negotiate_reply);
@@ -588,21 +582,24 @@ setup_server_context_signals (MilterManagerController *controller,
     CONNECT(shutdown);
     CONNECT(skip);
 
+/*
     CONNECT(connection_timeout);
     CONNECT(sending_timeout);
     CONNECT(reading_timeout);
     CONNECT(end_of_message_timeout);
 
     CONNECT(error);
+*/
 #undef CONNECT
 }
 
 static void
-teardown_server_context_signals (MilterManagerController *controller,
-                                 MilterServerContext *server_context)
+teardown_children_signals (MilterManagerController *controller,
+                           MilterManagerChildren *children)
 {
+
 #define DISCONNECT(name)                                                \
-    g_signal_handlers_disconnect_by_func(server_context,                \
+    g_signal_handlers_disconnect_by_func(children,                      \
                                          G_CALLBACK(cb_ ## name),       \
                                          controller)
 
@@ -640,9 +637,6 @@ milter_manager_controller_negotiate (MilterManagerController *controller,
                                      MilterOption *option)
 {
     MilterManagerControllerPrivate *priv;
-    MilterServerContext *server_context;
-    MilterManagerChild *child;
-    GError *error = NULL;
 
     priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
     priv->state = MILTER_MANAGER_CONTROLLER_STATE_NEGOTIATE;
@@ -653,38 +647,9 @@ milter_manager_controller_negotiate (MilterManagerController *controller,
     if (!priv->children)
         return MILTER_STATUS_NOT_CHANGE;
 
-    child = priv->children->data;
-    server_context = MILTER_SERVER_CONTEXT(child);
-    if (!milter_server_context_establish_connection(server_context, &error)) {
-        gboolean priviledge;
-        MilterStatus status;
+    setup_children_signals(controller, priv->children);
 
-        status =
-            milter_manager_configuration_get_return_status_if_filter_unavailable(priv->configuration);
-
-        priviledge =
-            milter_manager_configuration_is_privilege_mode(priv->configuration);
-        if (!priviledge ||
-            error->code != MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE) {
-            milter_error("Error: %s", error->message);
-            g_error_free(error);
-            return status;
-        }
-        g_error_free(error);
-
-        milter_manager_child_start(child, &error);
-        if (error) {
-            milter_error("Error: %s", error->message);
-            g_error_free(error);
-            return status;
-        }
-        return MILTER_STATUS_PROGRESS;
-    }
-
-    setup_server_context_signals(controller, server_context);
-    milter_server_context_negotiate(server_context, option);
-
-    return MILTER_STATUS_PROGRESS;
+    return milter_manager_children_negotiate(priv->children, option);
 }
 
 MilterStatus
@@ -694,31 +659,29 @@ milter_manager_controller_connect (MilterManagerController *controller,
                                    socklen_t                address_length)
 {
     MilterManagerControllerPrivate *priv;
-    MilterServerContext *context;
 
     priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
     priv->state = MILTER_MANAGER_CONTROLLER_STATE_CONNECT;
 
     if (!priv->children)
         return MILTER_STATUS_NOT_CHANGE;
-    context = priv->children->data;
-    return milter_server_context_connect(context, host_name,
-                                         address, address_length);
+
+    return milter_manager_children_connect(priv->children, host_name,
+                                           address, address_length);
 }
 
 MilterStatus
 milter_manager_controller_helo (MilterManagerController *controller, const gchar *fqdn)
 {
     MilterManagerControllerPrivate *priv;
-    MilterServerContext *context;
 
     priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
     priv->state = MILTER_MANAGER_CONTROLLER_STATE_HELO;
 
     if (!priv->children)
         return MILTER_STATUS_NOT_CHANGE;
-    context = priv->children->data;
-    return milter_server_context_helo(context, fqdn);
+
+    return milter_manager_children_helo(priv->children, fqdn);
 }
 
 MilterStatus
@@ -726,15 +689,14 @@ milter_manager_controller_envelope_from (MilterManagerController *controller,
                                          const gchar *from)
 {
     MilterManagerControllerPrivate *priv;
-    MilterServerContext *context;
 
     priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
     priv->state = MILTER_MANAGER_CONTROLLER_STATE_ENVELOPE_FROM;
 
     if (!priv->children)
         return MILTER_STATUS_NOT_CHANGE;
-    context = priv->children->data;
-    return milter_server_context_envelope_from(context, from);
+
+    return milter_manager_children_envelope_from(priv->children, from);
 }
 
 MilterStatus
@@ -742,30 +704,28 @@ milter_manager_controller_envelope_receipt (MilterManagerController *controller,
                                             const gchar *receipt)
 {
     MilterManagerControllerPrivate *priv;
-    MilterServerContext *context;
 
     priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
     priv->state = MILTER_MANAGER_CONTROLLER_STATE_ENVELOPE_RECEIPT;
 
     if (!priv->children)
         return MILTER_STATUS_NOT_CHANGE;
-    context = priv->children->data;
-    return milter_server_context_envelope_receipt(context, receipt);
+
+    return milter_manager_children_envelope_receipt(priv->children, receipt);
 }
 
 MilterStatus
 milter_manager_controller_data (MilterManagerController *controller)
 {
     MilterManagerControllerPrivate *priv;
-    MilterServerContext *context;
 
     priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
     priv->state = MILTER_MANAGER_CONTROLLER_STATE_DATA;
 
     if (!priv->children)
         return MILTER_STATUS_NOT_CHANGE;
-    context = priv->children->data;
-    return milter_server_context_data(context);
+
+    return milter_manager_children_data(priv->children);
 }
 
 MilterStatus
