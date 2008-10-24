@@ -1,5 +1,11 @@
 2008-10-24  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager.rb,
+	binding/ruby/src/rb-milter-manager-configuration.c,
+	binding/ruby/src/rb-milter-manager-child.c,
+	binding/ruby/src/rb-milter-manager-private.h,
+	binding/ruby/src/rb-milter-manager.c: child milter -> child.
+
 	* TODO: add: MilterManagerMother
 
 2008-10-24  Hiroyuki Ikezoe  <poincare@ikezoe.net>

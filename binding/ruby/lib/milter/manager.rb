@@ -30,24 +30,24 @@ module Milter::Manager
 
     def initialize(configuration)
       @configuration = configuration
-      @child_milters = []
+      @children = []
     end
 
     def load_configuration(file)
       instance_eval(File.read(file), file)
-      @child_milters.each do |child_milter_config|
-        @configuration.add_child_milter(child_milter_config.create_child_milter)
+      @children.each do |child_config|
+        @configuration.add_child(child_config.create_child)
       end
     end
 
     def define_milter(name, &block)
-      milter = ChildMilterConfiguration.new(name)
-      @child_milters << milter
+      milter = ChildConfiguration.new(name)
+      @children << milter
       milter.configure(&block)
     end
   end
 
-  class ChildMilterConfiguration
+  class ChildConfiguration
     attr_accessor :spec
     def initialize(name)
       @name = name
@@ -58,10 +58,10 @@ module Milter::Manager
       yield(self)
     end
 
-    def create_child_milter
-      milter = ChildMilter.new(@name)
-      milter.connection_spec = @spec
-      milter
+    def create_child
+      child = Child.new(@name)
+      child.connection_spec = @spec
+      child
     end
   end
 end

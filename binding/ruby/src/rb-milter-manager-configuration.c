@@ -5,7 +5,7 @@
 #define SELF(self) (MILTER_MANAGER_CONFIGURATION(RVAL2GOBJ(self)))
 
 static VALUE
-add_child_milter (VALUE self, VALUE milter)
+add_child (VALUE self, VALUE milter)
 {
     milter_manager_configuration_add_child(SELF(self), RVAL2GOBJ(milter));
 
@@ -22,6 +22,5 @@ Init_milter_manager_configuration (void)
 		    "Configuration",
 		    rb_mMilterManager);
 
-    rb_define_method(rb_cMilterManagerConfiguration, "add_child_milter",
-                     add_child_milter, 1);
+    rb_define_method(rb_cMilterManagerConfiguration, "add_child", add_child, 1);
 }
