@@ -146,7 +146,7 @@ milter_manager_children_add_child (MilterManagerChildren *children,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    priv->milters = g_list_prepend(priv->milters, child);
+    priv->milters = g_list_prepend(priv->milters, g_object_ref(child));
 }
 
 GList *
