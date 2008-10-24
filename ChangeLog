@@ -25,6 +25,8 @@
 	MilterMacrosRequests.
 	* milter/manager/*: MilterManagerChildMilter -> MilterManagerChild.
 	* milter/manager/milter-manager-children.[ch]: Added.
+	* milter-manager/milter-manager-children.c: MilterManagerChildren now
+	uses MilterReplySignals.
 
 2008-10-23  Kouhei Sutou  <kou@cozmixng.org>
 

@@ -39,7 +39,7 @@ enum
     PROP_0
 };
 
-G_DEFINE_TYPE(MilterManagerChildren, milter_manager_children, G_TYPE_OBJECT);
+MILTER_DEFINE_REPLY_SIGNALS_TYPE(MilterManagerChildren, milter_manager_children, G_TYPE_OBJECT);
 
 static void dispose        (GObject         *object);
 static void set_property   (GObject         *object,

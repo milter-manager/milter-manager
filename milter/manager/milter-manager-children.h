@@ -23,6 +23,7 @@
 #include <glib-object.h>
 
 #include <milter/manager/milter-manager-child.h>
+#include <milter/core/milter-reply-signals.h>
 
 G_BEGIN_DECLS
 
