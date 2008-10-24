@@ -28,12 +28,12 @@
 
 G_BEGIN_DECLS
 
-#define MILTER_MANAGER_TYPE_CONTROLLER            (milter_manager_controller_get_type())
-#define MILTER_MANAGER_CONTROLLER(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), MILTER_MANAGER_TYPE_CONTROLLER, MilterManagerController))
-#define MILTER_MANAGER_CONTROLLER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), MILTER_MANAGER_TYPE_CONTROLLER, MilterManagerControllerClass))
-#define MILTER_MANAGER_IS_CONTROLLER(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), MILTER_MANAGER_TYPE_CONTROLLER))
-#define MILTER_MANAGER_IS_CONTROLLER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), MILTER_MANAGER_TYPE_CONTROLLER))
-#define MILTER_MANAGER_CONTROLLER_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MILTER_MANAGER_TYPE_CONTROLLER, MilterManagerControllerClass))
+#define MILTER_TYPE_MANAGER_CONTROLLER            (milter_manager_controller_get_type())
+#define MILTER_MANAGER_CONTROLLER(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), MILTER_TYPE_MANAGER_CONTROLLER, MilterManagerController))
+#define MILTER_MANAGER_CONTROLLER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), MILTER_TYPE_MANAGER_CONTROLLER, MilterManagerControllerClass))
+#define MILTER_MANAGER_IS_CONTROLLER(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), MILTER_TYPE_MANAGER_CONTROLLER))
+#define MILTER_MANAGER_IS_CONTROLLER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), MILTER_TYPE_MANAGER_CONTROLLER))
+#define MILTER_MANAGER_CONTROLLER_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MILTER_TYPE_MANAGER_CONTROLLER, MilterManagerControllerClass))
 
 typedef struct _MilterManagerController         MilterManagerController;
 typedef struct _MilterManagerControllerClass    MilterManagerControllerClass;

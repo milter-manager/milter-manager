@@ -18,7 +18,7 @@ Init_milter_manager_configuration (void)
     VALUE rb_cMilterManagerConfiguration;
 
     rb_cMilterManagerConfiguration =
-	G_DEF_CLASS(MILTER_MANAGER_TYPE_CONFIGURATION,
+	G_DEF_CLASS(MILTER_TYPE_MANAGER_CONFIGURATION,
 		    "Configuration",
 		    rb_mMilterManager);
 

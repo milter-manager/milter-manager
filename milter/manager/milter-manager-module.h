@@ -24,12 +24,12 @@
 
 G_BEGIN_DECLS
 
-#define MILTER_MANAGER_TYPE_MODULE            (milter_manager_module_get_type ())
-#define MILTER_MANAGER_MODULE(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), MILTER_MANAGER_TYPE_MODULE, MilterManagerModule))
-#define MILTER_MANAGER_MODULE_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), MILTER_MANAGER_TYPE_MODULE, MilterManagerModuleClass))
-#define MILTER_MANAGER_IS_MODULE(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), MILTER_MANAGER_TYPE_MODULE))
-#define MILTER_MANAGER_IS_MODULE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), MILTER_MANAGER_TYPE_MODULE))
-#define MILTER_MANAGER_MODULE_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MILTER_MANAGER_TYPE_MODULE, MilterManagerModuleClass))
+#define MILTER_TYPE_MANAGER_MODULE            (milter_manager_module_get_type ())
+#define MILTER_MANAGER_MODULE(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), MILTER_TYPE_MANAGER_MODULE, MilterManagerModule))
+#define MILTER_MANAGER_MODULE_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), MILTER_TYPE_MANAGER_MODULE, MilterManagerModuleClass))
+#define MILTER_MANAGER_IS_MODULE(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), MILTER_TYPE_MANAGER_MODULE))
+#define MILTER_MANAGER_IS_MODULE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), MILTER_TYPE_MANAGER_MODULE))
+#define MILTER_MANAGER_MODULE_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MILTER_TYPE_MANAGER_MODULE, MilterManagerModuleClass))
 
 typedef struct _MilterManagerModule MilterManagerModule;
 typedef struct _MilterManagerModuleClass MilterManagerModuleClass;

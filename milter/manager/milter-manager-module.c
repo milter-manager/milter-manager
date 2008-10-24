@@ -31,7 +31,7 @@
 
 #define MILTER_MANAGER_MODULE_GET_PRIVATE(obj)                          \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                                 \
-                                 MILTER_MANAGER_TYPE_MODULE,            \
+                                 MILTER_TYPE_MANAGER_MODULE,            \
                                  MilterManagerModulePrivate))
 
 typedef struct _MilterManagerModulePrivate  MilterManagerModulePrivate;
@@ -301,7 +301,7 @@ milter_manager_module_load_module (const gchar *base_dir, const gchar *name)
         MilterManagerModulePrivate *priv;
         gchar *mod_name;
 
-        module = g_object_new(MILTER_MANAGER_TYPE_MODULE, NULL);
+        module = g_object_new(MILTER_TYPE_MANAGER_MODULE, NULL);
         priv = MILTER_MANAGER_MODULE_GET_PRIVATE(module);
         priv->mod_path = g_strdup(mod_path);
 

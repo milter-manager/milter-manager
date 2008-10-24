@@ -30,8 +30,8 @@
 #include "milter-manager-child.h"
 
 #define MILTER_MANAGER_CHILD_GET_PRIVATE(obj)                    \
-    (G_TYPE_INSTANCE_GET_PRIVATE((obj),                                 \
-                                 MILTER_MANAGER_TYPE_CHILD,      \
+    (G_TYPE_INSTANCE_GET_PRIVATE((obj),                          \
+                                 MILTER_TYPE_MANAGER_CHILD,      \
                                  MilterManagerChildPrivate))
 
 typedef struct _MilterManagerChildPrivate	MilterManagerChildPrivate;
@@ -264,7 +264,7 @@ milter_manager_child_error_quark (void)
 MilterManagerChild *
 milter_manager_child_new (const gchar *name)
 {
-    return g_object_new(MILTER_MANAGER_TYPE_CHILD,
+    return g_object_new(MILTER_TYPE_MANAGER_CHILD,
                         "name", name,
                         NULL);
 }

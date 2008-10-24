@@ -29,12 +29,12 @@
 #include <milter/manager/milter-manager-configuration.h>
 #include <milter/manager/milter-manager-module-impl.h>
 
-#define MILTER_MANAGER_TYPE_RUBY_CONFIGURATION            milter_manager_type_ruby_configuration
-#define MILTER_MANAGER_RUBY_CONFIGURATION(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), MILTER_MANAGER_TYPE_RUBY_CONFIGURATION, MilterManagerRubyConfiguration))
-#define MILTER_MANAGER_RUBY_CONFIGURATION_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), MILTER_MANAGER_TYPE_RUBY_CONFIGURATION, MilterManagerRubyConfigurationClass))
-#define MILTER_MANAGER_IS_RUBY_CONFIGURATION(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), MILTER_MANAGER_TYPE_RUBY_CONFIGURATION))
-#define MILTER_MANAGER_IS_RUBY_CONFIGURATION_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), MILTER_MANAGER_TYPE_RUBY_CONFIGURATION))
-#define MILTER_MANAGER_RUBY_CONFIGURATION_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MILTER_MANAGER_TYPE_RUBY_CONFIGURATION, MilterManagerRubyConfigurationClass))
+#define MILTER_TYPE_MANAGER_RUBY_CONFIGURATION            milter_manager_type_ruby_configuration
+#define MILTER_MANAGER_RUBY_CONFIGURATION(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), MILTER_TYPE_MANAGER_RUBY_CONFIGURATION, MilterManagerRubyConfiguration))
+#define MILTER_MANAGER_RUBY_CONFIGURATION_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), MILTER_TYPE_MANAGER_RUBY_CONFIGURATION, MilterManagerRubyConfigurationClass))
+#define MILTER_MANAGER_IS_RUBY_CONFIGURATION(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), MILTER_TYPE_MANAGER_RUBY_CONFIGURATION))
+#define MILTER_MANAGER_IS_RUBY_CONFIGURATION_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), MILTER_TYPE_MANAGER_RUBY_CONFIGURATION))
+#define MILTER_MANAGER_RUBY_CONFIGURATION_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MILTER_TYPE_MANAGER_RUBY_CONFIGURATION, MilterManagerRubyConfigurationClass))
 
 typedef struct _MilterManagerRubyConfiguration MilterManagerRubyConfiguration;
 typedef struct _MilterManagerRubyConfigurationClass MilterManagerRubyConfigurationClass;
@@ -111,7 +111,7 @@ register_type (GTypeModule *type_module)
 
     milter_manager_type_ruby_configuration =
         g_type_module_register_type(type_module,
-                                    MILTER_MANAGER_TYPE_CONFIGURATION,
+                                    MILTER_TYPE_MANAGER_CONFIGURATION,
                                     "MilterManagerRubyConfiguration",
                                     &info, 0);
 }
@@ -291,7 +291,7 @@ G_MODULE_EXPORT GObject *
 MILTER_MANAGER_MODULE_IMPL_INSTANTIATE (const gchar *first_property,
                                         va_list var_args)
 {
-    return g_object_new_valist(MILTER_MANAGER_TYPE_RUBY_CONFIGURATION,
+    return g_object_new_valist(MILTER_TYPE_MANAGER_RUBY_CONFIGURATION,
                                first_property, var_args);
 }
 

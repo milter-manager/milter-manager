@@ -25,7 +25,7 @@
 
 #define MILTER_MANAGER_CONTROLLER_GET_PRIVATE(obj)                   \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                              \
-                                 MILTER_MANAGER_TYPE_CONTROLLER,     \
+                                 MILTER_TYPE_MANAGER_CONTROLLER,     \
                                  MilterManagerControllerPrivate))
 
 typedef struct _MilterManagerControllerPrivate MilterManagerControllerPrivate;
@@ -78,7 +78,7 @@ milter_manager_controller_class_init (MilterManagerControllerClass *klass)
     spec = g_param_spec_object("configuration",
                                "Configuration",
                                "The configuration of the milter controller",
-                               MILTER_MANAGER_TYPE_CONFIGURATION,
+                               MILTER_TYPE_MANAGER_CONFIGURATION,
                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_CONFIGURATION, spec);
 
@@ -200,7 +200,7 @@ MilterManagerController *
 milter_manager_controller_new (MilterManagerConfiguration *configuration,
                                MilterClientContext *client_context)
 {
-    return g_object_new(MILTER_MANAGER_TYPE_CONTROLLER,
+    return g_object_new(MILTER_TYPE_MANAGER_CONTROLLER,
                         "configuration", configuration,
                         "client-context", client_context,
                         NULL);

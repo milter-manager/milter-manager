@@ -15,7 +15,7 @@ Init_milter_manager_child (void)
     VALUE rb_cMilterManagerChild;
 
     rb_cMilterManagerChild =
-	G_DEF_CLASS(MILTER_MANAGER_TYPE_CHILD, "Child", rb_mMilterManager);
+	G_DEF_CLASS(MILTER_TYPE_MANAGER_CHILD, "Child", rb_mMilterManager);
 
     rb_define_method(rb_cMilterManagerChild, "initialize",
                      initialize, 1);

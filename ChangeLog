@@ -1,5 +1,8 @@
 2008-10-24  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/, bindings/src/, module/configuration/ruby/:
+	MILTER_MANAGER_TYPE_XXX -> MILTER_TYPE_MANAGER_XXX.
+
 	* binding/ruby/lib/milter/manager.rb,
 	binding/ruby/src/rb-milter-manager-configuration.c,
 	binding/ruby/src/rb-milter-manager-child.c,

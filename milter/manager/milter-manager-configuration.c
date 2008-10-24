@@ -26,7 +26,7 @@
 
 #define MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(obj)                   \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                                 \
-                                 MILTER_MANAGER_TYPE_CONFIGURATION,     \
+                                 MILTER_TYPE_MANAGER_CONFIGURATION,     \
                                  MilterManagerConfigurationPrivate))
 
 typedef struct _MilterManagerConfigurationPrivate MilterManagerConfigurationPrivate;

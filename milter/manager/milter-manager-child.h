@@ -31,8 +31,8 @@ G_BEGIN_DECLS
 
 #define MILTER_MANAGER_CHILD_ERROR           (milter_manager_child_error_quark())
 
-#define MILTER_MANAGER_TYPE_CHILD            (milter_manager_child_get_type())
-#define MILTER_MANAGER_CHILD(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), MILTER_MANAGER_TYPE_CHILD, MilterManagerChild))
+#define MILTER_TYPE_MANAGER_CHILD            (milter_manager_child_get_type())
+#define MILTER_MANAGER_CHILD(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), MILTER_TYPE_MANAGER_CHILD, MilterManagerChild))
 #define MILTER_MANAGER_CHILD_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), MILTER_MANAGER_TYPE_CHILD, MilterManagerChildClass))
 #define MILTER_MANAGER_IS_CHILD(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), MILTER_MANAGER_TYPE_CHILD))
 #define MILTER_MANAGER_IS_CHILD_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), MILTER_MANAGER_TYPE_CHILD))
