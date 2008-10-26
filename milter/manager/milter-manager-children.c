@@ -33,13 +33,15 @@ typedef struct _MilterManagerChildrenPrivate	MilterManagerChildrenPrivate;
 struct _MilterManagerChildrenPrivate
 {
     GList *milters;
+    MilterManagerConfiguration *configuration;
     MilterMacrosRequests *macros_requests;
     MilterOption *option;
 };
 
 enum
 {
-    PROP_0
+    PROP_0,
+    PROP_CONFIGURATION
 };
 
 MILTER_DEFINE_REPLY_SIGNALS_TYPE(MilterManagerChildren, milter_manager_children, G_TYPE_OBJECT);
@@ -62,12 +64,20 @@ static void
 milter_manager_children_class_init (MilterManagerChildrenClass *klass)
 {
     GObjectClass *gobject_class;
+    GParamSpec *spec;
 
     gobject_class = G_OBJECT_CLASS(klass);
 
     gobject_class->dispose      = dispose;
     gobject_class->set_property = set_property;
     gobject_class->get_property = get_property;
+
+    spec = g_param_spec_object("configuration",
+                               "Configuration",
+                               "The configuration of the milter controller",
+                               MILTER_TYPE_MANAGER_CONFIGURATION,
+                               G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_CONFIGURATION, spec);
 
     g_type_class_add_private(gobject_class,
                              sizeof(MilterManagerChildrenPrivate));
@@ -79,6 +89,7 @@ milter_manager_children_init (MilterManagerChildren *milter)
     MilterManagerChildrenPrivate *priv;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(milter);
+    priv->configuration = NULL;
     priv->milters = NULL;
     priv->macros_requests = milter_macros_requests_new();
     priv->option = NULL;
@@ -90,6 +101,11 @@ dispose (GObject *object)
     MilterManagerChildrenPrivate *priv;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(object);
+
+    if (priv->configuration) {
+        g_object_unref(priv->configuration);
+        priv->configuration = NULL;
+    }
 
     if (priv->milters) {
         g_list_foreach(priv->milters, (GFunc)teardown_server_context_signals, object);
@@ -120,6 +136,13 @@ set_property (GObject      *object,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(object);
     switch (prop_id) {
+      case PROP_CONFIGURATION:
+        if (priv->configuration)
+            g_object_unref(priv->configuration);
+        priv->configuration = g_value_get_object(value);
+        if (priv->configuration)
+            g_object_ref(priv->configuration);
+        break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -136,6 +159,9 @@ get_property (GObject    *object,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(object);
     switch (prop_id) {
+      case PROP_CONFIGURATION:
+        g_value_set_object(value, priv->configuration);
+        break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;

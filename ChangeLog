@@ -2,6 +2,8 @@
 
 	* milter/manager/milter-manager-children.c: Merge each MilterOption
 	from filter.
+	* milter/manager/milter-manager-children.c: MilterManagerConfigration
+	property.
 
 2008-10-24  Kouhei Sutou  <kou@cozmixng.org>
 
