@@ -36,7 +36,6 @@ struct _MilterManagerControllerPrivate
     MilterClientContext *client_context;
     MilterManagerChildren *children;
     MilterManagerControllerState state;
-    MilterMacrosRequests *macros_requests;
 };
 
 enum
@@ -102,7 +101,6 @@ milter_manager_controller_init (MilterManagerController *controller)
     priv->configuration = NULL;
     priv->client_context = NULL;
     priv->children = NULL;
-    priv->macros_requests = milter_macros_requests_new();
     priv->state = MILTER_SERVER_CONTEXT_STATE_START;
 }
 
@@ -129,11 +127,6 @@ dispose (GObject *object)
         teardown_children_signals(controller, priv->children);
         g_object_unref(priv->children);
         priv->children = NULL;
-    }
-
-    if (priv->macros_requests) {
-        g_object_unref(priv->macros_requests);
-        priv->macros_requests = NULL;
     }
 
     G_OBJECT_CLASS(milter_manager_controller_parent_class)->dispose(object);
@@ -325,9 +318,6 @@ cb_negotiate_reply (MilterServerContext *context, MilterOption *option,
     MilterManagerControllerPrivate *priv;
 
     priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
-
-    if (macros_requests)
-        milter_macros_requests_merge(priv->macros_requests, macros_requests);
 
     g_signal_emit_by_name(priv->client_context, "negotiate-response",
                           0, option, MILTER_STATUS_CONTINUE);

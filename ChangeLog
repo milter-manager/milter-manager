@@ -4,6 +4,8 @@
 	from filter.
 	* milter/manager/milter-manager-children.c: MilterManagerConfigration
 	property.
+	* milter/manager/milter-manager-controller.c: Remove
+	MilterMacrosRequests from private values.
 
 2008-10-24  Kouhei Sutou  <kou@cozmixng.org>
 
