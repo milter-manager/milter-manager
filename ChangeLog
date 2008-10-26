@@ -1,3 +1,8 @@
+2008-10-27  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/manager/milter-manager-children.c: Merge each MilterOption
+	from filter.
+
 2008-10-24  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/manager/milter-manager-controller.c,

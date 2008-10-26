@@ -34,6 +34,7 @@ struct _MilterManagerChildrenPrivate
 {
     GList *milters;
     MilterMacrosRequests *macros_requests;
+    MilterOption *option;
 };
 
 enum
@@ -79,7 +80,8 @@ milter_manager_children_init (MilterManagerChildren *milter)
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(milter);
     priv->milters = NULL;
-    priv->macros_requests = NULL;
+    priv->macros_requests = milter_macros_requests_new();
+    priv->option = NULL;
 }
 
 static void
@@ -98,6 +100,11 @@ dispose (GObject *object)
     if (priv->macros_requests) {
         g_object_unref(priv->macros_requests);
         priv->macros_requests = NULL;
+    }
+
+    if (priv->option) {
+        g_object_unref(priv->option);
+        priv->option = NULL;
     }
 
     G_OBJECT_CLASS(milter_manager_children_parent_class)->dispose(object);
@@ -189,6 +196,11 @@ cb_negotiate_reply (MilterServerContext *context, MilterOption *option,
 
     if (macros_requests)
         milter_macros_requests_merge(priv->macros_requests, macros_requests);
+
+    if (!priv->option)
+        priv->option = milter_option_copy(option);
+    else
+        milter_option_merge(priv->option, option);
 
     g_signal_emit_by_name(children, "negotiate-reply", option, macros_requests);
 }
