@@ -65,7 +65,7 @@ GQuark                milter_manager_child_error_quark (void);
 
 GType                 milter_manager_child_get_type    (void) G_GNUC_CONST;
 
-MilterManagerChild *milter_manager_child_new           (const gchar *name);
+MilterManagerChild   *milter_manager_child_new         (const gchar *name);
 
 gboolean              milter_manager_child_start       (MilterManagerChild *milter,
                                                         GError **error);
