@@ -1,6 +1,7 @@
 if WITH_CUTTER
 noinst_LTLIBRARIES =			\
 	test-child.la			\
+	test-children.la		\
 	test-configuration.la		\
 	test-controller.la
 endif
@@ -26,5 +27,6 @@ LIBS =								\
 	$(GCUTTER_LIBS)
 
 test_child_la_SOURCES		= test-child.c
+test_children_la_SOURCES	= test-children.c
 test_configuration_la_SOURCES	= test-configuration.c
 test_controller_la_SOURCES	= test-controller.c
