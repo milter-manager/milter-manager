@@ -26,6 +26,7 @@ milter_manager_public_headers =		\
 	milter-manager-child.h		\
 	milter-manager-children.h	\
 	milter-manager-objects.h	\
+	milter-manager-spawn.h		\
 	milter-manager-module.h		\
 	milter-manager-module-impl.h
 
@@ -54,7 +55,8 @@ libmilter_manager_la_SOURCES =		\
 	milter-manager-child.c		\
 	milter-manager-children.c	\
 	milter-manager-module.c		\
-	milter-manager-controller.c
+	milter-manager-controller.c	\
+	milter-manager-spawn.c
 
 include $(top_srcdir)/build/enum-types.mk
 include $(top_srcdir)/build/marshal.mk

@@ -75,7 +75,7 @@ MilterManagerChild   *milter_manager_child_new_with_timeout
 
 gboolean              milter_manager_child_start       (MilterManagerChild *milter,
                                                         GError **error);
-                        
+
 
 #endif /* __MILTER_MANAGER_CHILD_H__ */
 
