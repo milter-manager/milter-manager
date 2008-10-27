@@ -33,6 +33,7 @@ void test_writing_timeout (void);
 void test_reading_timeout (void);
 void test_end_of_message_timeout (void);
 void test_user_name (void);
+void test_command (void);
 
 static MilterManagerSpawn *spawn;
 
@@ -134,6 +135,18 @@ test_user_name (void)
     milter_manager_spawn_set_user_name(spawn, user_name);
     cut_assert_equal_string(user_name,
                             milter_manager_spawn_get_user_name(spawn));
+}
+
+void
+test_command (void)
+{
+    const gchar command[] = "/usr/bin/my-milter";
+
+    spawn = milter_manager_spawn_new("child-milter");
+    cut_assert_equal_string(NULL,
+                            milter_manager_spawn_get_command(spawn));
+    milter_manager_spawn_set_command(spawn, command);
+    cut_assert_equal_string(command, milter_manager_spawn_get_command(spawn));
 }
 
 /*

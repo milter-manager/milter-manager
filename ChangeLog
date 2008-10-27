@@ -1,6 +1,9 @@
 2008-10-27  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/manager/milter-manager-spawn.[ch],
+	test/manager/test-spawn.c: add command.
+
+	* milter/manager/milter-manager-spawn.[ch],
 	test/manager/test-spawn.c: add user name.
 
 	* milter/manager/milter-manager-child.c (child_watch_func): cleanup.

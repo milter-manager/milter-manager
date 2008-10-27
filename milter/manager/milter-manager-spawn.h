@@ -79,6 +79,11 @@ void                milter_manager_spawn_set_user_name
                                                    const gchar *user_name);
 const gchar        *milter_manager_spawn_get_user_name
                                                   (MilterManagerSpawn *spawn);
+void                milter_manager_spawn_set_command
+                                                  (MilterManagerSpawn *spawn,
+                                                   const gchar *command);
+const gchar        *milter_manager_spawn_get_command
+                                                  (MilterManagerSpawn *spawn);
 
 G_END_DECLS
 

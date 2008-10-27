@@ -38,6 +38,7 @@ struct _MilterManagerSpawnPrivate
     guint reading_timeout;
     guint end_of_message_timeout;
     gchar *user_name;
+    gchar *command;
 };
 
 enum
@@ -48,7 +49,8 @@ enum
     PROP_WRITING_TIMEOUT,
     PROP_READING_TIMEOUT,
     PROP_END_OF_MESSAGE_TIMEOUT,
-    PROP_USER_NAME
+    PROP_USER_NAME,
+    PROP_COMMAND
 };
 
 MILTER_DEFINE_ERROR_EMITABLE_TYPE(MilterManagerSpawn,
@@ -123,6 +125,13 @@ milter_manager_spawn_class_init (MilterManagerSpawnClass *klass)
                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_USER_NAME, spec);
 
+    spec = g_param_spec_string("command",
+                               "Command",
+                               "The command of the milter spawn",
+                               NULL,
+                               G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_COMMAND, spec);
+
     g_type_class_add_private(gobject_class,
                              sizeof(MilterManagerSpawnPrivate));
 }
@@ -139,6 +148,7 @@ milter_manager_spawn_init (MilterManagerSpawn *spawn)
     priv->reading_timeout = 0;
     priv->end_of_message_timeout = 0;
     priv->user_name = NULL;
+    priv->command = NULL;
 }
 
 static void
@@ -156,6 +166,11 @@ dispose (GObject *object)
     if (priv->user_name) {
         g_free(priv->user_name);
         priv->user_name = NULL;
+    }
+
+    if (priv->command) {
+        g_free(priv->command);
+        priv->command = NULL;
     }
 
     G_OBJECT_CLASS(milter_manager_spawn_parent_class)->dispose(object);
@@ -192,6 +207,9 @@ set_property (GObject      *object,
       case PROP_USER_NAME:
         milter_manager_spawn_set_user_name(spawn, g_value_get_string(value));
         break;
+      case PROP_COMMAND:
+        milter_manager_spawn_set_command(spawn, g_value_get_string(value));
+        break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -225,6 +243,9 @@ get_property (GObject    *object,
         break;
       case PROP_USER_NAME:
         g_value_set_string(value, priv->user_name);
+        break;
+      case PROP_COMMAND:
+        g_value_set_string(value, priv->command);
         break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -337,6 +358,24 @@ const gchar *
 milter_manager_spawn_get_user_name (MilterManagerSpawn *spawn)
 {
     return MILTER_MANAGER_SPAWN_GET_PRIVATE(spawn)->user_name;
+}
+
+void
+milter_manager_spawn_set_command (MilterManagerSpawn *spawn,
+                                  const gchar *command)
+{
+    MilterManagerSpawnPrivate *priv;
+
+    priv = MILTER_MANAGER_SPAWN_GET_PRIVATE(spawn);
+    if (priv->command)
+        g_free(priv->command);
+    priv->command = g_strdup(command);
+}
+
+const gchar *
+milter_manager_spawn_get_command (MilterManagerSpawn *spawn)
+{
+    return MILTER_MANAGER_SPAWN_GET_PRIVATE(spawn)->command;
 }
 
 /*
