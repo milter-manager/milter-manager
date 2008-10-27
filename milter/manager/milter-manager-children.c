@@ -734,8 +734,8 @@ milter_manager_children_end_of_message (MilterManagerChildren *children,
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     for (child = priv->milters; child; child = g_list_next(child)) {
-        success |= milter_server_context_end_of_message(MILTER_SERVER_CONTEXT(child->data),
-                                                        chunk, size);
+        MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
+        success |= milter_server_context_end_of_message(context, chunk, size);
     }
 
     return success;

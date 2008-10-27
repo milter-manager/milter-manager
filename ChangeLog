@@ -1,3 +1,8 @@
+2008-10-27  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/manager/milter-manager-children.c
+	(milter_manager_children_end_of_message): shorten.
+
 2008-10-27  Hiroyuki Ikezoe  <poincare@ikezoe.net>
 
 	* milter/manager/milter-manager-children.c: Merge each MilterOption
