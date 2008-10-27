@@ -32,6 +32,7 @@ void test_connection_timeout (void);
 void test_writing_timeout (void);
 void test_reading_timeout (void);
 void test_end_of_message_timeout (void);
+void test_user_name (void);
 
 static MilterManagerSpawn *spawn;
 
@@ -120,6 +121,19 @@ test_end_of_message_timeout (void)
                                                     new_end_of_message_timeout);
     cut_assert_equal_uint(new_end_of_message_timeout,
                           milter_manager_spawn_get_end_of_message_timeout(spawn));
+}
+
+void
+test_user_name (void)
+{
+    const gchar user_name[] = "milter-user";
+
+    spawn = milter_manager_spawn_new("child-milter");
+    cut_assert_equal_string(NULL,
+                            milter_manager_spawn_get_user_name(spawn));
+    milter_manager_spawn_set_user_name(spawn, user_name);
+    cut_assert_equal_string(user_name,
+                            milter_manager_spawn_get_user_name(spawn));
 }
 
 /*

@@ -74,6 +74,11 @@ void                milter_manager_spawn_set_end_of_message_timeout
                                                    guint end_of_message_timeout);
 guint               milter_manager_spawn_get_end_of_message_timeout
                                                   (MilterManagerSpawn *spawn);
+void                milter_manager_spawn_set_user_name
+                                                  (MilterManagerSpawn *spawn,
+                                                   const gchar *user_name);
+const gchar        *milter_manager_spawn_get_user_name
+                                                  (MilterManagerSpawn *spawn);
 
 G_END_DECLS
 

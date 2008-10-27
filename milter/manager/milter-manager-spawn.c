@@ -37,6 +37,7 @@ struct _MilterManagerSpawnPrivate
     guint writing_timeout;
     guint reading_timeout;
     guint end_of_message_timeout;
+    gchar *user_name;
 };
 
 enum
@@ -46,7 +47,8 @@ enum
     PROP_CONNECTION_TIMEOUT,
     PROP_WRITING_TIMEOUT,
     PROP_READING_TIMEOUT,
-    PROP_END_OF_MESSAGE_TIMEOUT
+    PROP_END_OF_MESSAGE_TIMEOUT,
+    PROP_USER_NAME
 };
 
 MILTER_DEFINE_ERROR_EMITABLE_TYPE(MilterManagerSpawn,
@@ -114,6 +116,13 @@ milter_manager_spawn_class_init (MilterManagerSpawnClass *klass)
     g_object_class_install_property(gobject_class, PROP_END_OF_MESSAGE_TIMEOUT,
                                     spec);
 
+    spec = g_param_spec_string("user-name",
+                               "User name",
+                               "The user name of a spawned milter",
+                               NULL,
+                               G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_USER_NAME, spec);
+
     g_type_class_add_private(gobject_class,
                              sizeof(MilterManagerSpawnPrivate));
 }
@@ -129,6 +138,7 @@ milter_manager_spawn_init (MilterManagerSpawn *spawn)
     priv->writing_timeout = 0;
     priv->reading_timeout = 0;
     priv->end_of_message_timeout = 0;
+    priv->user_name = NULL;
 }
 
 static void
@@ -141,6 +151,11 @@ dispose (GObject *object)
     if (priv->name) {
         g_free(priv->name);
         priv->name = NULL;
+    }
+
+    if (priv->user_name) {
+        g_free(priv->user_name);
+        priv->user_name = NULL;
     }
 
     G_OBJECT_CLASS(milter_manager_spawn_parent_class)->dispose(object);
@@ -174,6 +189,9 @@ set_property (GObject      *object,
       case PROP_END_OF_MESSAGE_TIMEOUT:
         priv->end_of_message_timeout = g_value_get_uint(value);
         break;
+      case PROP_USER_NAME:
+        milter_manager_spawn_set_user_name(spawn, g_value_get_string(value));
+        break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -204,6 +222,9 @@ get_property (GObject    *object,
         break;
       case PROP_END_OF_MESSAGE_TIMEOUT:
         g_value_set_uint(value, priv->end_of_message_timeout);
+        break;
+      case PROP_USER_NAME:
+        g_value_set_string(value, priv->user_name);
         break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -300,6 +321,23 @@ milter_manager_spawn_get_end_of_message_timeout (MilterManagerSpawn *spawn)
     return MILTER_MANAGER_SPAWN_GET_PRIVATE(spawn)->end_of_message_timeout;
 }
 
+void
+milter_manager_spawn_set_user_name (MilterManagerSpawn *spawn,
+                                    const gchar *user_name)
+{
+    MilterManagerSpawnPrivate *priv;
+
+    priv = MILTER_MANAGER_SPAWN_GET_PRIVATE(spawn);
+    if (priv->user_name)
+        g_free(priv->user_name);
+    priv->user_name = g_strdup(user_name);
+}
+
+const gchar *
+milter_manager_spawn_get_user_name (MilterManagerSpawn *spawn)
+{
+    return MILTER_MANAGER_SPAWN_GET_PRIVATE(spawn)->user_name;
+}
 
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
