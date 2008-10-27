@@ -74,7 +74,7 @@ MilterStatus  milter_manager_configuration_get_return_status_if_filter_unavailab
                                      (MilterManagerConfiguration *configuration);
 guint         milter_manager_configuration_get_connection_timeout
                                      (MilterManagerConfiguration *configuration);
-guint         milter_manager_configuration_get_sending_timeout
+guint         milter_manager_configuration_get_writing_timeout
                                      (MilterManagerConfiguration *configuration);
 guint         milter_manager_configuration_get_reading_timeout
                                      (MilterManagerConfiguration *configuration);

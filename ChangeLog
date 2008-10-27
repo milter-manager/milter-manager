@@ -52,6 +52,8 @@
 	* milter/manager/milter-manager-controller.c: Include
 	milter-manager-children.h.
 	* test/manager/test-controller.c: Support for prural children.
+	* milter/manager/milter-manager-configuration.[ch]: sending timeout ->
+	writing timeout.
 
 2008-10-24  Kouhei Sutou  <kou@cozmixng.org>
 
