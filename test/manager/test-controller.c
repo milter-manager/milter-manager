@@ -38,6 +38,7 @@ void test_body (void);
 void data_end_of_message (void);
 void test_end_of_message (gconstpointer data);
 void test_quit (void);
+void test_abort (void);
 
 static MilterManagerConfiguration *config;
 static MilterClientContext *client_context;
@@ -62,6 +63,7 @@ static gboolean client_end_of_header_received;
 static gboolean client_body_received;
 static gboolean client_end_of_message_received;
 static gboolean client_quit_received;
+static gboolean client_abort_received;
 
 static gboolean client_reaped;
 
@@ -146,6 +148,8 @@ cb_output_received (GCutSpawn *spawn, const gchar *chunk, gsize size,
                           size - receive_end_of_message_mark_position - 1);
     } else if (g_str_has_prefix(chunk, "receive: quit")) {
         client_quit_received = TRUE;
+    } else if (g_str_has_prefix(chunk, "receive: abort")) {
+        client_abort_received = TRUE;
     } else {
         GString *string;
 
@@ -532,6 +536,16 @@ test_quit (void)
     milter_manager_controller_quit(controller);
     g_main_context_iteration(NULL, TRUE);
     cut_assert_true(client_quit_received);
+}
+
+void
+test_abort (void)
+{
+    cut_trace(test_end_of_message(NULL));
+
+    milter_manager_controller_abort(controller);
+    g_main_context_iteration(NULL, TRUE);
+    cut_assert_true(client_abort_received);
 }
 
 /*

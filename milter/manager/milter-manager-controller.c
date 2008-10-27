@@ -803,8 +803,15 @@ milter_manager_controller_quit (MilterManagerController *controller)
 MilterStatus
 milter_manager_controller_abort (MilterManagerController *controller)
 {
-    g_print("abort");
-    return MILTER_STATUS_NOT_CHANGE;
+    MilterManagerControllerPrivate *priv;
+
+    priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
+    priv->state = MILTER_MANAGER_CONTROLLER_STATE_ABORT;
+
+    if (!priv->children)
+        return MILTER_STATUS_NOT_CHANGE;
+
+    return milter_manager_children_abort(priv->children);
 }
 
 void
