@@ -789,8 +789,15 @@ milter_manager_controller_end_of_message (MilterManagerController *controller,
 MilterStatus
 milter_manager_controller_quit (MilterManagerController *controller)
 {
-    g_print("quit");
-    return MILTER_STATUS_NOT_CHANGE;
+    MilterManagerControllerPrivate *priv;
+
+    priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
+    priv->state = MILTER_MANAGER_CONTROLLER_STATE_QUIT;
+
+    if (!priv->children)
+        return MILTER_STATUS_NOT_CHANGE;
+
+    return milter_manager_children_quit(priv->children);
 }
 
 MilterStatus

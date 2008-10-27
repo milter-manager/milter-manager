@@ -1,6 +1,9 @@
 2008-10-27  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/manager/milter-manager-controller.c,
+	test/manager/test-controller.c: support quit command.
+
+	* milter/manager/milter-manager-controller.c,
 	test/manager/test-controller.c: support end-of-message command.
 
 	* milter/manager/milter-manager-children.c: end-of-message isn't
