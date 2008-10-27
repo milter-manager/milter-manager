@@ -77,6 +77,8 @@
 	TRUE in the head of run_spawn().
 	* milter/manager/milter-manager-children.c: Emit each reply signals
 	till after all child's signals are received.
+	* milter/manager/milter-manager-childre.c:  Emit "error" signal with
+	correct object.
 
 2008-10-24  Kouhei Sutou  <kou@cozmixng.org>
 

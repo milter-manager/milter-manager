@@ -465,9 +465,14 @@ cb_end_of_message_timeout (MilterServerContext *context, gpointer user_data)
 static void
 cb_error (MilterErrorEmitable *emitable, GError *error, gpointer user_data)
 {
-    milter_error("error: FIXME: %s", error->message);
+    MilterManagerChildrenPrivate *priv;
 
-    milter_error_emitable_emit_error(MILTER_ERROR_EMITABLE(emitable),
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(user_data);
+
+    milter_error("error: FIXME: %s", error->message);
+    g_queue_remove(priv->reply_queue, emitable);
+
+    milter_error_emitable_emit_error(MILTER_ERROR_EMITABLE(user_data),
                                      error);
 }
 
