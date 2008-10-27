@@ -321,6 +321,8 @@ static void
 run_spawn (GCutSpawn *spawn)
 {
     GError *error = NULL;
+    client_ready = FALSE;
+    client_reaped = FALSE;
 
     gcut_spawn_run(spawn, &error);
     gcut_assert_error(error);
@@ -401,7 +403,7 @@ test_negotiate (void)
                                MILTER_ACTION_CHANGE_BODY,
                                MILTER_STEP_NONE);
 
-    make_spawn(test_client_path, "--print-status",
+    make_spawn(test_client_path, "--print-status", "--debug",
                "--timeout", "1.0", "--port", "10025", NULL);
     g_list_foreach(test_milters , 
                    (GFunc)run_spawn, NULL);

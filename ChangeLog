@@ -66,6 +66,8 @@
 	* milter/manager/milter-manager-children.c,
 	milter/manager/milter-manager-controller.c: sending timeout -> writing
 	timeout.
+	* test/manager/test-controller.c: Set client_ready and client_reaped
+	TRUE in the head of run_spawn().
 
 2008-10-24  Kouhei Sutou  <kou@cozmixng.org>
 
