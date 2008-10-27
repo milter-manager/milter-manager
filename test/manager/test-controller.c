@@ -344,8 +344,7 @@ test_negotiate (void)
     option = milter_option_new(2,
                                MILTER_ACTION_ADD_HEADERS |
                                MILTER_ACTION_CHANGE_BODY,
-                               MILTER_STEP_NO_MAIL |
-                               MILTER_STEP_NO_REPLY_CONNECT);
+                               MILTER_STEP_NONE);
 
     spawn = make_spawn(test_client_path, "--print-status",
                        "--timeout", "1.0", "--port", "10025", NULL);

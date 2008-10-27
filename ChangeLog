@@ -1,5 +1,7 @@
 2008-10-27  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/test-controller.c: handle all step.
+
 	* test/lib/milter-test-server.rb
 	(MilterTestServer#sender_address): return Milter::SocketAddress
 	not packed string.
