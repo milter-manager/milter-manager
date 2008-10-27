@@ -255,7 +255,8 @@ cb_negotiate_reply (MilterServerContext *context, MilterOption *option,
     g_queue_remove(priv->reply_queue, context);
 
     if (g_queue_is_empty(priv->reply_queue))
-        g_signal_emit_by_name(children, "negotiate-reply", option, macros_requests);
+        g_signal_emit_by_name(children, "negotiate-reply",
+                              priv->option, priv->macros_requests);
 }
 
 static void
@@ -584,7 +585,13 @@ milter_manager_children_negotiate (MilterManagerChildren *children,
 
     g_queue_clear(priv->reply_queue);
     for (child = priv->milters; child; child = g_list_next(child)) {
-        success |= child_negotiate(MILTER_MANAGER_CHILD(child->data), option, children);
+        MilterStatus status;
+        status = child_negotiate(MILTER_MANAGER_CHILD(child->data), option, children);
+
+        if (status != MILTER_STATUS_PROGRESS &&
+            status != MILTER_STATUS_CONTINUE) {
+            success = FALSE;
+        }
     }
 
     return success;

@@ -26,6 +26,10 @@
 	signal when all children filters returns "negotiate-reply".
 	* milter/manager/milter-manager-controller.c: Connect to "error" signal
 	of MilterManagerChildren.
+	* milter/manager/milter-manager-childrenc.c: Emit "negotiate-reply"
+	with its own (i.e. merged or combined )MilterOption and
+	MilterMacrosRequests. And milter_manager_children_negotiate() returns
+	FALSE if a filter fails on negotiation.
 
 2008-10-24  Kouhei Sutou  <kou@cozmixng.org>
 
