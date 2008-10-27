@@ -238,6 +238,41 @@ milter_manager_children_foreach (MilterManagerChildren *children,
     g_list_foreach(milters, func, user_data);
 }
 
+static const gchar *
+status_to_signal_name (MilterStatus status)
+{
+    const gchar *signal_name;
+
+    switch (status) {
+      case MILTER_STATUS_CONTINUE:
+        signal_name = "continue";
+        break;
+      case MILTER_STATUS_REJECT:
+        signal_name = "reject";
+        break;
+      case MILTER_STATUS_DISCARD:
+        signal_name = "discard";
+        break;
+      case MILTER_STATUS_ACCEPT:
+        signal_name = "accept";
+        break;
+      case MILTER_STATUS_TEMPORARY_FAILURE:
+        signal_name = "temporary-failure";
+        break;
+      case MILTER_STATUS_SKIP:
+        signal_name = "skip";
+        break;
+      case MILTER_STATUS_PROGRESS:
+        signal_name = "progress";
+        break;
+      default:
+        signal_name = "continue";
+        break;
+    }
+
+    return signal_name;
+}
+
 static MilterStatus
 compile_reply_status (MilterManagerChildren *children,
                       MilterStatus status)
@@ -276,18 +311,26 @@ cb_negotiate_reply (MilterServerContext *context, MilterOption *option,
 }
 
 static void
-cb_continue (MilterServerContext *context, gpointer user_data)
+remove_child_from_queue (MilterManagerChildren *children,
+                         MilterServerContext *context)
 {
-    MilterManagerChildren *children = user_data;
     MilterManagerChildrenPrivate *priv;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    compile_reply_status(children, MILTER_STATUS_CONTINUE);
     g_queue_remove(priv->reply_queue, context);
 
     if (g_queue_is_empty(priv->reply_queue))
-        g_signal_emit_by_name(children, "continue");
+        g_signal_emit_by_name(children, status_to_signal_name(priv->reply_status));
+}
+
+static void
+cb_continue (MilterServerContext *context, gpointer user_data)
+{
+    MilterManagerChildren *children = user_data;
+
+    compile_reply_status(children, MILTER_STATUS_CONTINUE);
+    remove_child_from_queue(children, context);
 }
 
 static void
@@ -302,28 +345,42 @@ static void
 cb_temporary_failure (MilterServerContext *context, gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
-    g_signal_emit_by_name(children, "temporary-failure");
+
+    compile_reply_status(children, MILTER_STATUS_TEMPORARY_FAILURE);
+    remove_child_from_queue(children, context);
 }
 
 static void
 cb_reject (MilterServerContext *context, gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
-    g_signal_emit_by_name(children, "reject");
+
+    compile_reply_status(children, MILTER_STATUS_REJECT);
+    remove_child_from_queue(children, context);
 }
 
 static void
 cb_accept (MilterServerContext *context, gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
-    g_signal_emit_by_name(children, "accept");
+    MilterManagerChildrenPrivate *priv;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    teardown_server_context_signals(MILTER_MANAGER_CHILD(context), user_data);
+    priv->milters = g_list_remove(priv->milters, context);
+
+    compile_reply_status(children, MILTER_STATUS_ACCEPT);
+    remove_child_from_queue(children, context);
 }
 
 static void
 cb_discard (MilterServerContext *context, gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
-    g_signal_emit_by_name(children, "discard");
+
+    compile_reply_status(children, MILTER_STATUS_DISCARD);
+    remove_child_from_queue(children, context);
 }
 
 static void
