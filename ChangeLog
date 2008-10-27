@@ -75,6 +75,8 @@
 	timeout.
 	* test/manager/test-controller.c: Set client_ready and client_reaped
 	TRUE in the head of run_spawn().
+	* milter/manager/milter-manager-children.c: Emit each reply signals
+	till after all child's signals are received.
 
 2008-10-24  Kouhei Sutou  <kou@cozmixng.org>
 
