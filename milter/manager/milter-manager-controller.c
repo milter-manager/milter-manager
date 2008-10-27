@@ -518,9 +518,9 @@ cb_connection_timeout (MilterServerContext *context, gpointer user_data)
 }
 
 static void
-cb_sending_timeout (MilterServerContext *context, gpointer user_data)
+cb_writing_timeout (MilterServerContext *context, gpointer user_data)
 {
-    milter_error("sending timeout: FIXME");
+    milter_error("writing timeout: FIXME");
 }
 
 static void
@@ -575,7 +575,7 @@ setup_children_signals (MilterManagerController *controller,
 
 /*
     CONNECT(connection_timeout);
-    CONNECT(sending_timeout);
+    CONNECT(writing_timeout);
     CONNECT(reading_timeout);
     CONNECT(end_of_message_timeout);
 */
@@ -615,7 +615,7 @@ teardown_children_signals (MilterManagerController *controller,
     DISCONNECT(skip);
 
     DISCONNECT(connection_timeout);
-    DISCONNECT(sending_timeout);
+    DISCONNECT(writing_timeout);
     DISCONNECT(reading_timeout);
     DISCONNECT(end_of_message_timeout);
 

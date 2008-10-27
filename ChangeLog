@@ -59,6 +59,9 @@
 	writing timeout.
 	* milter/manager/milter-manager-child.[ch]: Added
 	milter_manager_child_new_with_timeout().
+	* milter/manager/milter-manager-children.c,
+	milter/manager/milter-manager-controller.c: sending timeout -> writing
+	timeout.
 
 2008-10-24  Kouhei Sutou  <kou@cozmixng.org>
 
