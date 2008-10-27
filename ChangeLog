@@ -1,5 +1,8 @@
 2008-10-27  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/lib/milter-test-client.rb: end-of-message signal may
+	receive chunk.
+
 	* test/manager/test-controller.c: handle all step.
 
 	* test/lib/milter-test-server.rb

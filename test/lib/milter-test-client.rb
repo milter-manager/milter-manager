@@ -191,12 +191,16 @@ class MilterTestClient
     chunk
   end
 
-  def do_end_of_message
+  def do_end_of_message(chunk)
     unless [:end_of_header, :body].include?(@state)
       invalid_state(:end_of_message)
     end
 
     write(:end_of_message, :reply_continue)
+  end
+
+  def info_end_of_message(chunk)
+    chunk
   end
 
   def do_abort
