@@ -14,6 +14,8 @@
 	* milter/manager/milter-manager-children.c: Emit "error" signal.
 	* milter/manager/milter-manager-children.c: Emit "error" if the daemon
 	of child filter could not be started.
+	* milter/manager/milter-manager-children.c: Check each command is
+	needed for a child filter before invoking the command.
 
 2008-10-24  Kouhei Sutou  <kou@cozmixng.org>
 
