@@ -1,5 +1,10 @@
 2008-10-27  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/src/rb-milter-manager.c,
+	binding/ruby/src/rb-milter-manager-spawn.c,
+	binding/ruby/src/rb-milter-manager-private.h,
+	binding/ruby/src/Makefile.am: add spawn.
+
 	* milter/manager.h: add spawn.
 
 	* milter/manager/milter-manager-spawn.[ch],

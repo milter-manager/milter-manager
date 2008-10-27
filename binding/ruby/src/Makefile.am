@@ -22,4 +22,5 @@ milter_manager_la_SOURCES =			\
 	rb-milter-manager-private.h		\
 	rb-milter-manager.c			\
 	rb-milter-manager-configuration.c	\
-	rb-milter-manager-child.c
+	rb-milter-manager-child.c		\
+	rb-milter-manager-spawn.c
