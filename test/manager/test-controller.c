@@ -35,6 +35,8 @@ void test_data (void);
 void test_header (void);
 void test_end_of_header (void);
 void test_body (void);
+void data_end_of_message (void);
+void test_end_of_message (gconstpointer data);
 
 static MilterManagerConfiguration *config;
 static MilterClientContext *client_context;
@@ -57,12 +59,14 @@ static gboolean client_data_received;
 static gboolean client_header_received;
 static gboolean client_end_of_header_received;
 static gboolean client_body_received;
+static gboolean client_end_of_message_received;
 static gboolean client_reaped;
 
 static gchar *client_header_name;
 static gchar *client_header_value;
 
 static gchar *client_body_chunk;
+static gchar *client_end_of_message_chunk;
 
 
 static void
@@ -127,6 +131,16 @@ cb_output_received (GCutSpawn *spawn, const gchar *chunk, gsize size,
         receive_body_mark_position = strlen("receive: body: ");
         client_body_chunk = g_strndup(chunk + receive_body_mark_position,
                                       size - receive_body_mark_position - 1);
+    } else if (g_str_has_prefix(chunk, "receive: end-of-message")) {
+        gsize receive_end_of_message_mark_position;
+
+        client_end_of_message_received = TRUE;
+        receive_end_of_message_mark_position =
+            strlen("receive: end-of-message: ");
+        if (receive_end_of_message_mark_position < size)
+            client_end_of_message_chunk =
+                g_strndup(chunk + receive_end_of_message_mark_position,
+                          size - receive_end_of_message_mark_position - 1);
     } else {
         GString *string;
 
@@ -227,11 +241,13 @@ setup (void)
     client_data_received = FALSE;
     client_header_received = FALSE;
     client_body_received = FALSE;
+    client_end_of_message_received = FALSE;
     client_reaped = FALSE;
 
     client_header_name = NULL;
     client_header_value = NULL;
     client_body_chunk = NULL;
+    client_end_of_message_chunk = NULL;
 }
 
 void
@@ -260,6 +276,9 @@ teardown (void)
 
     if (client_body_chunk)
         g_free(client_body_chunk);
+
+    if (client_end_of_message_chunk)
+        g_free(client_end_of_message_chunk);
 }
 
 static void
@@ -462,6 +481,32 @@ test_body (void)
     wait_response("body");
     cut_assert_true(client_body_received);
     cut_assert_equal_string(chunk, client_body_chunk);
+}
+
+void
+data_end_of_message (void)
+{
+    cut_add_data("with chunk", g_strdup("The last text"), g_free,
+                 "no chunk", NULL, NULL);
+}
+
+void
+test_end_of_message (gconstpointer data)
+{
+    const gchar *chunk = data;
+    gsize chunk_size;
+
+    cut_trace(test_body());
+
+    if (chunk)
+        chunk_size = strlen(chunk);
+    else
+        chunk_size = 0;
+
+    milter_manager_controller_end_of_message(controller, chunk, chunk_size);
+    wait_response("end-of-message");
+    cut_assert_true(client_end_of_message_received);
+    cut_assert_equal_string(chunk, client_end_of_message_chunk);
 }
 
 /*

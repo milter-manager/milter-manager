@@ -156,7 +156,7 @@ cb_client_end_of_message (MilterClientContext *context, gpointer user_data)
 {
     MilterManagerController *controller = user_data;
 
-    return milter_manager_controller_end_of_message(controller);
+    return milter_manager_controller_end_of_message(controller, NULL, 0);
 }
 
 static MilterStatus

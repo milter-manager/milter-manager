@@ -578,8 +578,8 @@ setup_children_signals (MilterManagerController *controller,
     CONNECT(reading_timeout);
     CONNECT(end_of_message_timeout);
 */
-    CONNECT(error);
 
+    CONNECT(error);
 #undef CONNECT
 }
 
@@ -770,10 +770,19 @@ milter_manager_controller_body (MilterManagerController *controller,
 }
 
 MilterStatus
-milter_manager_controller_end_of_message (MilterManagerController *controller)
+milter_manager_controller_end_of_message (MilterManagerController *controller,
+                                          const gchar             *chunk,
+                                          gsize                    size)
 {
-    g_print("end-of-body");
-    return MILTER_STATUS_NOT_CHANGE;
+    MilterManagerControllerPrivate *priv;
+
+    priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
+    priv->state = MILTER_MANAGER_CONTROLLER_STATE_END_OF_MESSAGE;
+
+    if (!priv->children)
+        return MILTER_STATUS_NOT_CHANGE;
+
+    return milter_manager_children_end_of_message(priv->children, chunk, size);
 }
 
 MilterStatus
