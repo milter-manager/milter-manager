@@ -1,5 +1,8 @@
 2008-10-27  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.c: end-of-message isn't
+	affected by MILTER_STEP_NO_BODY.
+
 	* test/lib/milter-test-client.rb: end-of-message signal may
 	receive chunk.
 

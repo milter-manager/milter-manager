@@ -751,8 +751,7 @@ milter_manager_children_header (MilterManagerChildren *children,
         if (milter_server_context_is_enable_step(context, MILTER_STEP_NO_HEADERS))
             continue;
 
-        success |= milter_server_context_header(context,
-                                                name, value);
+        success |= milter_server_context_header(context, name, value);
     }
 
     return success;
@@ -816,9 +815,6 @@ milter_manager_children_end_of_message (MilterManagerChildren *children,
 
     for (child = priv->milters; child; child = g_list_next(child)) {
         MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
-
-        if (milter_server_context_is_enable_step(context, MILTER_STEP_NO_BODY))
-            continue;
 
         success |= milter_server_context_end_of_message(context, chunk, size);
     }
