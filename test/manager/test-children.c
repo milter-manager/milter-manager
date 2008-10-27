@@ -26,6 +26,7 @@
 
 void test_foreach (void);
 
+static MilterManagerConfiguration *config;
 static MilterManagerChildren *children;
 static GError *actual_error;
 static GError *expected_error;
@@ -35,7 +36,8 @@ static GList *expected_names;
 void
 setup (void)
 {
-    children = milter_manager_children_new();
+    config = milter_manager_configuration_new(NULL);
+    children = milter_manager_children_new(config);
     actual_names = NULL;
     expected_names = NULL;
     actual_error = NULL;
@@ -45,6 +47,8 @@ setup (void)
 void
 teardown (void)
 {
+    if (config)
+        g_object_unref(config);
     if (children)
         g_object_unref(children);
     if (actual_error)

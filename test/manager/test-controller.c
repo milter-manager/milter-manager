@@ -45,7 +45,7 @@ static MilterOption *option;
 
 static GError *controller_error;
 
-static GCutSpawn *spawn;
+static GList *test_milters;
 
 static gchar *test_client_path;
 
@@ -195,7 +195,14 @@ teardown_spawn_signals (GCutSpawn *spawn)
 #undef DISCONNECT
 }
 
-static GCutSpawn *
+static void
+free_spawn (GCutSpawn *spawn)
+{
+    teardown_spawn_signals(spawn);
+    g_object_unref(spawn);
+}
+
+static void
 make_spawn (const gchar *command, ...)
 {
     GCutSpawn *spawn;
@@ -207,7 +214,7 @@ make_spawn (const gchar *command, ...)
 
     setup_spawn_signals(spawn);
 
-    return spawn;
+    test_milters = g_list_prepend(test_milters, spawn);
 }
 
 void
@@ -225,7 +232,7 @@ setup (void)
 
     option = NULL;
 
-    spawn = NULL;
+    test_milters = NULL;
 
     test_client_path = g_build_filename(milter_manager_test_get_base_dir(),
                                         "lib",
@@ -262,10 +269,12 @@ teardown (void)
     if (option)
         g_object_unref(option);
 
-    if (spawn) {
-        teardown_spawn_signals(spawn);
-        g_object_unref(spawn);
+    if (test_milters) {
+        g_list_foreach(test_milters,
+                       (GFunc)free_spawn, NULL);
+        g_list_free(test_milters);
     }
+
     if (test_client_path)
         g_free(test_client_path);
 
@@ -365,9 +374,10 @@ test_negotiate (void)
                                MILTER_ACTION_CHANGE_BODY,
                                MILTER_STEP_NONE);
 
-    spawn = make_spawn(test_client_path, "--print-status",
-                       "--timeout", "1.0", "--port", "10025", NULL);
-    run_spawn(spawn);
+    make_spawn(test_client_path, "--print-status",
+               "--timeout", "1.0", "--port", "10025", NULL);
+    g_list_foreach(test_milters , 
+                   (GFunc)run_spawn, NULL);
 
     milter_manager_controller_negotiate(controller, option);
     wait_response("negotiate");

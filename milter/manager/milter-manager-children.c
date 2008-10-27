@@ -199,9 +199,11 @@ milter_manager_children_error_quark (void)
 }
 
 MilterManagerChildren *
-milter_manager_children_new (void)
+milter_manager_children_new (MilterManagerConfiguration *configuration)
 {
-    return g_object_new(MILTER_TYPE_MANAGER_CHILDREN, NULL);
+    return g_object_new(MILTER_TYPE_MANAGER_CHILDREN,
+                        "configuration", configuration,
+                        NULL);
 }
 
 void

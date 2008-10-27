@@ -22,6 +22,7 @@
 #define shutdown inet_shutdown
 #include <milter-manager-test-utils.h>
 #include <milter/manager/milter-manager-configuration.h>
+#include <milter/manager/milter-manager-children.h>
 #undef shutdown
 
 void test_children (void);
@@ -37,7 +38,7 @@ setup (void)
 {
     config = milter_manager_configuration_new(NULL);
     milter = NULL;
-    expected_children = milter_manager_children_new();
+    expected_children = milter_manager_children_new(config);
     actual_children = NULL;
 }
 

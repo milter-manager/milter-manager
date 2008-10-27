@@ -25,6 +25,7 @@ milter_manager_public_headers =		\
 	milter-manager-configuration.h	\
 	milter-manager-child.h		\
 	milter-manager-children.h	\
+	milter-manager-objects.h	\
 	milter-manager-module.h		\
 	milter-manager-module-impl.h
 

@@ -22,6 +22,8 @@
 
 #include <glib-object.h>
 
+#include <milter/manager/milter-manager-objects.h>
+#include <milter/manager/milter-manager-configuration.h>
 #include <milter/manager/milter-manager-child.h>
 #include <milter/core/milter-reply-signals.h>
 
@@ -41,7 +43,6 @@ typedef enum
     MILTER_MANAGER_CHILDREN_ERROR_MILTER_EXIT
 } MilterManagerChildrenError;
 
-typedef struct _MilterManagerChildren         MilterManagerChildren;
 typedef struct _MilterManagerChildrenClass    MilterManagerChildrenClass;
 
 struct _MilterManagerChildren
@@ -58,7 +59,7 @@ GQuark                 milter_manager_children_error_quark (void);
 
 GType                  milter_manager_children_get_type    (void) G_GNUC_CONST;
 
-MilterManagerChildren *milter_manager_children_new         (void);
+MilterManagerChildren *milter_manager_children_new         (MilterManagerConfiguration *configuration);
 
 void                   milter_manager_children_add_child   (MilterManagerChildren *children,
                                                             MilterManagerChild    *child);

@@ -40,6 +40,15 @@
 	MilterMacrosRequests. And milter_manager_children_negotiate() returns
 	FALSE if a filter fails on negotiation.
 	* milter/manager.h: Include milter-manager-children.h.
+	* milter/manager/milter-manager-objects.h: Added.
+	* milter/manager/milter-manager-configuration.h: Move typedef of
+	MilterManagerConfiguration into milter-manager-objects.h.
+	* milter/manager/milter-manager-children.[ch]:
+	milter_manager_children_new() now needs a MilterManagerConfiguration
+	object.
+	* milter/manager/milter-manager-controller.c: Include
+	milter-manager-children.h.
+	* test/manager/test-controller.c: Support for prural children.
 
 2008-10-24  Kouhei Sutou  <kou@cozmixng.org>
 

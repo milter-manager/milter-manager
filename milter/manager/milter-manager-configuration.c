@@ -23,6 +23,7 @@
 
 #include "milter-manager-module.h"
 #include "milter-manager-configuration.h"
+#include "milter-manager-children.h"
 
 #define MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(obj)                   \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                                 \
@@ -78,7 +79,7 @@ milter_manager_configuration_init (MilterManagerConfiguration *configuration)
     MilterManagerConfigurationPrivate *priv;
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
-    priv->children = milter_manager_children_new();
+    priv->children = milter_manager_children_new(configuration);
     priv->privilege = FALSE;
     priv->return_status = MILTER_STATUS_CONTINUE;
     priv->connection_timeout = 300; /* 5 minutes */

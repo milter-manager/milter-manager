@@ -22,8 +22,8 @@
 
 #include <glib-object.h>
 
+#include <milter/manager/milter-manager-objects.h>
 #include <milter/manager/milter-manager-child.h>
-#include <milter/manager/milter-manager-children.h>
 
 G_BEGIN_DECLS
 
@@ -34,7 +34,6 @@ G_BEGIN_DECLS
 #define MILTER_MANAGER_IS_CONFIGURATION_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), MILTER_TYPE_MANAGER_CONFIGURATION))
 #define MILTER_MANAGER_CONFIGURATION_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MILTER_TYPE_MANAGER_CONFIGURATION, MilterManagerConfigurationClass))
 
-typedef struct _MilterManagerConfiguration      MilterManagerConfiguration;
 typedef struct _MilterManagerConfigurationClass MilterManagerConfigurationClass;
 
 struct _MilterManagerConfiguration
