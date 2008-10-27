@@ -1,5 +1,7 @@
 2008-10-27  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-child.c (child_watch_func): cleanup.
+
 	* test/manager/test-controller.c: remove debug code.
 
 	* test/manager/test-spawn.c: add tests for timeout.

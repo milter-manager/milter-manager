@@ -294,8 +294,7 @@ teardown (void)
         g_object_unref(option);
 
     if (test_milters) {
-        g_list_foreach(test_milters,
-                       (GFunc)free_spawn, NULL);
+        g_list_foreach(test_milters, (GFunc)free_spawn, NULL);
         g_list_free(test_milters);
     }
 

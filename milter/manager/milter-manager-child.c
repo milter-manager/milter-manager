@@ -313,6 +313,10 @@ child_watch_func (GPid pid, gint status, gpointer user_data)
                                          error);
         g_error_free(error);
     }
+
+    g_spawn_close_pid(priv->pid);
+    priv->pid = -1;
+    priv->child_watch_id = 0;
 }
 
 static gboolean
@@ -354,8 +358,7 @@ set_user (const gchar *user_name, GError **error)
 }
 
 gboolean
-milter_manager_child_start (MilterManagerChild *milter,
-                                   GError **error)
+milter_manager_child_start (MilterManagerChild *milter, GError **error)
 {
     gint argc;
     gchar **argv;
@@ -376,7 +379,8 @@ milter_manager_child_start (MilterManagerChild *milter,
     }
 
     if (priv->command_options)
-        command_line = g_strdup_printf("%s %s", priv->command, priv->command_options);
+        command_line = g_strdup_printf("%s %s",
+                                       priv->command, priv->command_options);
     else
         command_line = g_strdup(priv->command);
 
@@ -425,37 +429,37 @@ milter_manager_child_start (MilterManagerChild *milter,
 #if 0
 MilterStatus
 milter_manager_child_option_negotiate (MilterManagerChild *milter,
-                                              MilterOption             *option)
+                                       MilterOption       *option)
 {
     return MILTER_STATUS_DEFAULT;
 }
 
 MilterStatus
 milter_manager_child_connect (MilterManagerChild *milter,
-                                     const gchar              *host_name,
-                                     struct sockaddr          *address,
-                                     socklen_t                 address_length)
+                              const gchar        *host_name,
+                              struct sockaddr    *address,
+                              socklen_t           address_length)
 {
     return MILTER_STATUS_DEFAULT;
 }
 
 MilterStatus
 milter_manager_child_helo (MilterManagerChild *milter,
-                                  const gchar              *fqdn)
+                           const gchar        *fqdn)
 {
     return MILTER_STATUS_DEFAULT;
 }
 
 MilterStatus
 milter_manager_child_envelope_from (MilterManagerChild *milter,
-                                           const gchar              *from)
+                                    const gchar        *from)
 {
     return MILTER_STATUS_DEFAULT;
 }
 
 MilterStatus
 milter_manager_child_envelope_receipt (MilterManagerChild *milter,
-                                              const gchar              *receipt)
+                                       const gchar        *receipt)
 {
     return MILTER_STATUS_DEFAULT;
 }
@@ -468,15 +472,15 @@ milter_manager_child_data (MilterManagerChild *milter)
 
 MilterStatus
 milter_manager_child_unknown (MilterManagerChild *milter,
-                                     const gchar              *command)
+                              const gchar        *command)
 {
     return MILTER_STATUS_DEFAULT;
 }
 
 MilterStatus
 milter_manager_child_header (MilterManagerChild *milter,
-                                    const gchar              *name,
-                                    const gchar              *value)
+                             const gchar        *name,
+                             const gchar        *value)
 {
     return MILTER_STATUS_DEFAULT;
 }
@@ -489,8 +493,8 @@ milter_manager_child_end_of_header (MilterManagerChild *milter)
 
 MilterStatus
 milter_manager_child_body (MilterManagerChild *milter,
-                                  const guchar             *chunk,
-                                  gsize                     size)
+                           const guchar       *chunk,
+                           gsize               size)
 {
     return MILTER_STATUS_DEFAULT;
 }
