@@ -1,6 +1,10 @@
 2008-10-27  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/manager/milter-manager-controller.c,
+	test/lib/milter-test-client.rb,
+	test/manager/test-controller.c: support unknown command.
+
+	* milter/manager/milter-manager-controller.c,
 	test/manager/test-controller.c: support abort command.
 
 	* milter/manager/milter-manager-controller.c,

@@ -203,6 +203,14 @@ class MilterTestClient
     chunk
   end
 
+  def do_unknown(command)
+    write(:unknown, :reply_reject)
+  end
+
+  def info_unknown(command)
+    command
+  end
+
   def do_abort
     @state = :abort
   end

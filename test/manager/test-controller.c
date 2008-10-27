@@ -39,6 +39,7 @@ void data_end_of_message (void);
 void test_end_of_message (gconstpointer data);
 void test_quit (void);
 void test_abort (void);
+void test_unknown (void);
 
 static MilterManagerConfiguration *config;
 static MilterClientContext *client_context;
@@ -64,6 +65,7 @@ static gboolean client_body_received;
 static gboolean client_end_of_message_received;
 static gboolean client_quit_received;
 static gboolean client_abort_received;
+static gboolean client_unknown_received;
 
 static gboolean client_reaped;
 
@@ -72,6 +74,7 @@ static gchar *client_header_value;
 
 static gchar *client_body_chunk;
 static gchar *client_end_of_message_chunk;
+static gchar *client_unknown_command;
 
 
 static void
@@ -150,6 +153,15 @@ cb_output_received (GCutSpawn *spawn, const gchar *chunk, gsize size,
         client_quit_received = TRUE;
     } else if (g_str_has_prefix(chunk, "receive: abort")) {
         client_abort_received = TRUE;
+    } else if (g_str_has_prefix(chunk, "receive: unknown")) {
+        gsize receive_unknown_mark_position;
+
+        client_unknown_received = TRUE;
+        receive_unknown_mark_position = strlen("receive: unknown: ");
+        if (receive_unknown_mark_position < size)
+            client_unknown_command =
+                g_strndup(chunk + receive_unknown_mark_position,
+                          size - receive_unknown_mark_position - 1);
     } else {
         GString *string;
 
@@ -258,12 +270,15 @@ setup (void)
     client_header_received = FALSE;
     client_body_received = FALSE;
     client_end_of_message_received = FALSE;
+    client_unknown_received = FALSE;
+
     client_reaped = FALSE;
 
     client_header_name = NULL;
     client_header_value = NULL;
     client_body_chunk = NULL;
     client_end_of_message_chunk = NULL;
+    client_unknown_command = NULL;
 }
 
 void
@@ -297,6 +312,9 @@ teardown (void)
 
     if (client_end_of_message_chunk)
         g_free(client_end_of_message_chunk);
+
+    if (client_unknown_command)
+        g_free(client_unknown_command);
 }
 
 static void
@@ -546,6 +564,19 @@ test_abort (void)
     milter_manager_controller_abort(controller);
     g_main_context_iteration(NULL, TRUE);
     cut_assert_true(client_abort_received);
+}
+
+void
+test_unknown (void)
+{
+    const gchar command[] = "UNKNOWN COMMAND";
+
+    cut_trace(test_helo());
+
+    milter_manager_controller_unknown(controller, command);
+    g_main_context_iteration(NULL, TRUE);
+    cut_assert_true(client_unknown_received);
+    cut_assert_equal_string(command, client_unknown_command);
 }
 
 /*

@@ -720,10 +720,18 @@ milter_manager_controller_data (MilterManagerController *controller)
 }
 
 MilterStatus
-milter_manager_controller_unknown (MilterManagerController *controller, const gchar *command)
+milter_manager_controller_unknown (MilterManagerController *controller,
+                                   const gchar *command)
 {
-    g_print("unknown");
-    return MILTER_STATUS_NOT_CHANGE;
+    MilterManagerControllerPrivate *priv;
+
+    priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
+    priv->state = MILTER_MANAGER_CONTROLLER_STATE_UNKNOWN;
+
+    if (!priv->children)
+        return MILTER_STATUS_NOT_CHANGE;
+
+    return milter_manager_children_unknown(priv->children, command);
 }
 
 MilterStatus
