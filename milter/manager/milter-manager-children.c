@@ -525,8 +525,10 @@ child_negotiate (MilterManagerChild *child, MilterOption *option,
     if (!milter_server_context_establish_connection(context, &error)) {
         MilterStatus status;
         status = MILTER_STATUS_CONTINUE;
-#if 0
         gboolean priviledge;
+        MilterManagerChildrenPrivate *priv;
+
+        priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
         status =
             milter_manager_configuration_get_return_status_if_filter_unavailable(priv->configuration);
 
@@ -535,14 +537,18 @@ child_negotiate (MilterManagerChild *child, MilterOption *option,
         if (!priviledge ||
             error->code != MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE) {
             milter_error("Error: %s", error->message);
+            milter_error_emitable_emit_error(MILTER_ERROR_EMITABLE(children),
+                                             error);
             g_error_free(error);
             return status;
         }
         g_error_free(error);
-#endif
+
         milter_manager_child_start(child, &error);
         if (error) {
             milter_error("Error: %s", error->message);
+            milter_error_emitable_emit_error(MILTER_ERROR_EMITABLE(children),
+                                             error);
             g_error_free(error);
             return status;
         }
