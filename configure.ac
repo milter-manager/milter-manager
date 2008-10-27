@@ -297,6 +297,7 @@ AC_CONFIG_FILES([Makefile
 		 binding/ruby/src/Makefile
 		 binding/ruby/lib/Makefile
 		 binding/ruby/lib/milter/Makefile
+		 binding/ruby/test/Makefile
 		 module/Makefile
 		 module/configuration/Makefile
 		 module/configuration/ruby/Makefile

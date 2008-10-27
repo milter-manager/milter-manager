@@ -1,3 +1,4 @@
 SUBDIRS =	\
 	src	\
-	lib
+	lib	\
+	test

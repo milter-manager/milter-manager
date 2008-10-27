@@ -4,8 +4,9 @@ INCLUDES = 				\
 AM_CFLAGS = 				\
 	$(MILTER_MANAGER_CFLAGS)
 
-LIBS =					\
-	$(MILTER_MANAGER_LIBS)
+LIBS =								\
+	$(MILTER_MANAGER_LIBS)					\
+	$(top_builddir)/milter/manager/libmilter-manager.la
 
 AM_LDFLAGS =			\
 	-module			\

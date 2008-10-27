@@ -1,5 +1,7 @@
 2008-10-27  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/test/: add.
+
 	* binding/ruby/src/rb-milter-manager.c,
 	binding/ruby/src/rb-milter-manager-spawn.c,
 	binding/ruby/src/rb-milter-manager-private.h,
