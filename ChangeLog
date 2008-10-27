@@ -20,6 +20,8 @@
 	of child filter could not be started.
 	* milter/manager/milter-manager-children.c: Check each command is
 	needed for a child filter before invoking the command.
+	* milter/manager/milter-manager-children.c: Emit "negotiate-reply"
+	signal when all children filters returns "negotiate-reply".
 
 2008-10-24  Kouhei Sutou  <kou@cozmixng.org>
 

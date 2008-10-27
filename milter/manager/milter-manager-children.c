@@ -33,6 +33,7 @@ typedef struct _MilterManagerChildrenPrivate	MilterManagerChildrenPrivate;
 struct _MilterManagerChildrenPrivate
 {
     GList *milters;
+    GQueue *reply_queue;
     MilterManagerConfiguration *configuration;
     MilterMacrosRequests *macros_requests;
     MilterOption *option;
@@ -107,6 +108,7 @@ milter_manager_children_init (MilterManagerChildren *milter)
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(milter);
     priv->configuration = NULL;
+    priv->reply_queue = g_queue_new();
     priv->milters = NULL;
     priv->macros_requests = milter_macros_requests_new();
     priv->option = NULL;
@@ -118,6 +120,11 @@ dispose (GObject *object)
     MilterManagerChildrenPrivate *priv;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(object);
+
+    if (priv->reply_queue) {
+        g_queue_free(priv->reply_queue);
+        priv->reply_queue = NULL;
+    }
 
     if (priv->configuration) {
         g_object_unref(priv->configuration);
@@ -245,7 +252,10 @@ cb_negotiate_reply (MilterServerContext *context, MilterOption *option,
     else
         milter_option_merge(priv->option, option);
 
-    g_signal_emit_by_name(children, "negotiate-reply", option, macros_requests);
+    g_queue_remove(priv->reply_queue, context);
+
+    if (g_queue_is_empty(priv->reply_queue))
+        g_signal_emit_by_name(children, "negotiate-reply", option, macros_requests);
 }
 
 static void
@@ -517,18 +527,18 @@ static MilterStatus
 child_negotiate (MilterManagerChild *child, MilterOption *option, 
                  MilterManagerChildren *children)
 {
+    MilterManagerChildrenPrivate *priv;
     MilterServerContext *context;
     GError *error = NULL;
 
     context = MILTER_SERVER_CONTEXT(child);
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     if (!milter_server_context_establish_connection(context, &error)) {
         MilterStatus status;
         status = MILTER_STATUS_CONTINUE;
         gboolean priviledge;
-        MilterManagerChildrenPrivate *priv;
 
-        priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
         status =
             milter_manager_configuration_get_return_status_if_filter_unavailable(priv->configuration);
 
@@ -555,6 +565,7 @@ child_negotiate (MilterManagerChild *child, MilterOption *option,
         return MILTER_STATUS_PROGRESS;
     }
 
+    g_queue_push_tail(priv->reply_queue, context);
     setup_server_context_signals(children, context);
     milter_server_context_negotiate(context, option);
 
@@ -571,6 +582,7 @@ milter_manager_children_negotiate (MilterManagerChildren *children,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
+    g_queue_clear(priv->reply_queue);
     for (child = priv->milters; child; child = g_list_next(child)) {
         success |= child_negotiate(MILTER_MANAGER_CHILD(child->data), option, children);
     }
