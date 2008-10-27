@@ -577,9 +577,9 @@ setup_children_signals (MilterManagerController *controller,
     CONNECT(sending_timeout);
     CONNECT(reading_timeout);
     CONNECT(end_of_message_timeout);
-
-    CONNECT(error);
 */
+    CONNECT(error);
+
 #undef CONNECT
 }
 

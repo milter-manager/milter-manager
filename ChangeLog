@@ -24,6 +24,8 @@
 	needed for a child filter before invoking the command.
 	* milter/manager/milter-manager-children.c: Emit "negotiate-reply"
 	signal when all children filters returns "negotiate-reply".
+	* milter/manager/milter-manager-controller.c: Connect to "error" signal
+	of MilterManagerChildren.
 
 2008-10-24  Kouhei Sutou  <kou@cozmixng.org>
 
