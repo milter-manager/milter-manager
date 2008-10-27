@@ -903,12 +903,14 @@ milter_manager_children_body (MilterManagerChildren *children,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
+    init_reply_queue(children);
     for (child = priv->milters; child; child = g_list_next(child)) {
         MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
 
         if (milter_server_context_is_enable_step(context, MILTER_STEP_NO_BODY))
             continue;
 
+        g_queue_push_tail(priv->reply_queue, context);
         success |= milter_server_context_body(context,
                                               chunk, size);
     }

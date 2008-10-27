@@ -4,6 +4,8 @@
 	values since these values depend on filter.
 	* milter/manager-milter-manager-children.c: Emit compiled reply signal
 	when all filters have returned response.
+	* milter/manager-milter-manager-children.c: Also added child to queue in
+	body command.
 
 2008-10-27  Kouhei Sutou  <kou@cozmixng.org>
 
