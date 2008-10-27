@@ -1,3 +1,8 @@
+2008-10-28  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/manager/milter-manager-configuration.[ch]: Remove timeout
+	values since these values depend on filter.
+
 2008-10-27  Kouhei Sutou  <kou@cozmixng.org>
 
 	* binding/ruby/test/: add.
