@@ -23,6 +23,7 @@
 #include <milter/manager/milter-manager-configuration.h>
 #include <milter/manager/milter-manager-controller.h>
 #include <milter/manager/milter-manager-child.h>
+#include <milter/manager/milter-manager-children.h>
 #include <milter/manager/milter-manager-enum-types.h>
 
 G_BEGIN_DECLS

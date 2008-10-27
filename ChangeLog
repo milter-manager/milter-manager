@@ -39,6 +39,7 @@
 	with its own (i.e. merged or combined )MilterOption and
 	MilterMacrosRequests. And milter_manager_children_negotiate() returns
 	FALSE if a filter fails on negotiation.
+	* milter/manager.h: Include milter-manager-children.h.
 
 2008-10-24  Kouhei Sutou  <kou@cozmixng.org>
 
