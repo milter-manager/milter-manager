@@ -44,7 +44,24 @@ enum
     PROP_CONFIGURATION
 };
 
-MILTER_DEFINE_REPLY_SIGNALS_TYPE(MilterManagerChildren, milter_manager_children, G_TYPE_OBJECT);
+static MilterErrorEmitable *emitable_parent;
+static MilterReplySignals *reply_parent;
+
+static void
+reply_init (MilterReplySignals *reply)
+{
+    reply_parent = g_type_interface_peek_parent(reply);
+}
+
+static void
+emitable_init (MilterErrorEmitable *emitable)
+{
+    emitable_parent = g_type_interface_peek_parent(emitable);
+}
+
+G_DEFINE_TYPE_WITH_CODE(MilterManagerChildren, milter_manager_children, G_TYPE_OBJECT,
+    G_IMPLEMENT_INTERFACE(MILTER_TYPE_REPLY_SIGNALS, reply_init)
+    G_IMPLEMENT_INTERFACE(MILTER_TYPE_ERROR_EMITABLE, emitable_init))
 
 static void dispose        (GObject         *object);
 static void set_property   (GObject         *object,
@@ -413,13 +430,10 @@ cb_end_of_message_timeout (MilterServerContext *context, gpointer user_data)
 static void
 cb_error (MilterErrorEmitable *emitable, GError *error, gpointer user_data)
 {
-    /* MilterManagerChildren *children = user_data; */
-
     milter_error("error: FIXME: %s", error->message);
-/*
-    milter_error_emitable_emit_error(MILTER_ERROR_EMITABLE(children),
+
+    milter_error_emitable_emit_error(MILTER_ERROR_EMITABLE(emitable),
                                      error);
-*/
 }
 
 static void

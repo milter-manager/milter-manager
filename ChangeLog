@@ -11,6 +11,7 @@
 	property.
 	* milter/manager/milter-manager-controller.c: Remove
 	MilterMacrosRequests from private values.
+	* milter/manager/milter-manager-children.c: Emit "error" signal.
 
 2008-10-24  Kouhei Sutou  <kou@cozmixng.org>
 
