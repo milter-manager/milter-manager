@@ -182,7 +182,15 @@ class MilterTestServer
     if @connect_address
       return Milter::Utils.parse_connection_spec(@connect_address)[1]
     end
-    Socket.sockaddr_in(*@socket.addr.values_at(1, 3))
+    type, port, host, ip_address = @socket.addr
+    case type
+    when "AF_INET"
+      Milter::SocketAddress::IPv4.new(ip_address, port)
+    when "AF_INET6"
+      Milter::SocketAddress::IPv6.new(ip_address, port)
+    else
+      raise "unknown type: #{type}"
+    end
   end
 
   def sender_fqdn

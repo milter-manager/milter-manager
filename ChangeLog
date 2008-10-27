@@ -1,5 +1,9 @@
 2008-10-27  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/lib/milter-test-server.rb
+	(MilterTestServer#sender_address): return Milter::SocketAddress
+	not packed string.
+
 	* milter/manager/milter-manager-children.c
 	(milter_manager_children_end_of_message): shorten.
 
