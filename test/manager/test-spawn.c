@@ -28,6 +28,10 @@
 
 void test_new (void);
 void test_name (void);
+void test_connection_timeout (void);
+void test_writing_timeout (void);
+void test_reading_timeout (void);
+void test_end_of_message_timeout (void);
 
 static MilterManagerSpawn *spawn;
 
@@ -51,6 +55,10 @@ test_new (void)
 
     spawn = milter_manager_spawn_new(name);
     cut_assert_equal_string(name, milter_manager_spawn_get_name(spawn));
+    cut_assert_equal_uint(0, milter_manager_spawn_get_connection_timeout(spawn));
+    cut_assert_equal_uint(0, milter_manager_spawn_get_writing_timeout(spawn));
+    cut_assert_equal_uint(0, milter_manager_spawn_get_reading_timeout(spawn));
+    cut_assert_equal_uint(0, milter_manager_spawn_get_end_of_message_timeout(spawn));
 }
 
 void
@@ -63,6 +71,55 @@ test_name (void)
     cut_assert_equal_string(name, milter_manager_spawn_get_name(spawn));
     milter_manager_spawn_set_name(spawn, new_name);
     cut_assert_equal_string(new_name, milter_manager_spawn_get_name(spawn));
+}
+
+void
+test_connection_timeout (void)
+{
+    guint new_connection_timeout = 100;
+
+    spawn = milter_manager_spawn_new("child-milter");
+
+    milter_manager_spawn_set_connection_timeout(spawn, new_connection_timeout);
+    cut_assert_equal_uint(new_connection_timeout,
+                          milter_manager_spawn_get_connection_timeout(spawn));
+}
+
+void
+test_writing_timeout (void)
+{
+    guint new_writing_timeout = 100;
+
+    spawn = milter_manager_spawn_new("child-milter");
+
+    milter_manager_spawn_set_writing_timeout(spawn, new_writing_timeout);
+    cut_assert_equal_uint(new_writing_timeout,
+                          milter_manager_spawn_get_writing_timeout(spawn));
+}
+
+void
+test_reading_timeout (void)
+{
+    guint new_reading_timeout = 100;
+
+    spawn = milter_manager_spawn_new("child-milter");
+
+    milter_manager_spawn_set_reading_timeout(spawn, new_reading_timeout);
+    cut_assert_equal_uint(new_reading_timeout,
+                          milter_manager_spawn_get_reading_timeout(spawn));
+}
+
+void
+test_end_of_message_timeout (void)
+{
+    guint new_end_of_message_timeout = 100;
+
+    spawn = milter_manager_spawn_new("child-milter");
+
+    milter_manager_spawn_set_end_of_message_timeout(spawn,
+                                                    new_end_of_message_timeout);
+    cut_assert_equal_uint(new_end_of_message_timeout,
+                          milter_manager_spawn_get_end_of_message_timeout(spawn));
 }
 
 /*

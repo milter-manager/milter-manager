@@ -1,5 +1,7 @@
 2008-10-27  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/test-spawn.c: add tests for timeout.
+
 	* milter/manager/milter-manager-spawn.[ch],
 	test/manager/test-spawn.c: add.
 
