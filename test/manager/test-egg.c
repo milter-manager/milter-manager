@@ -44,6 +44,8 @@ static MilterManagerChild *child;
 static GError *expected_error;
 static GError *actual_error;
 
+static const gchar *milter_log_level;
+
 void
 setup (void)
 {
@@ -52,6 +54,8 @@ setup (void)
 
     expected_error = NULL;
     actual_error = NULL;
+
+    milter_log_level = g_getenv("MILTER_LOG_LEVEL");
 }
 
 void
@@ -66,6 +70,9 @@ teardown (void)
         g_error_free(expected_error);
     if (actual_error)
         g_error_free(actual_error);
+
+    if (milter_log_level)
+        g_setenv("MILTER_LOG_LEVEL", milter_log_level, TRUE);
 }
 
 void
@@ -142,6 +149,7 @@ test_connection_spec_error (void)
                                  "<%s>: <unknown>",
                                  MILTER_UTILS_ERROR_INVALID_FORMAT,
                                  spec);
+    g_setenv("MILTER_LOG_LEVEL", NULL, TRUE);
     milter_manager_egg_set_connection_spec(egg, spec, &actual_error);
     gcut_assert_equal_error(expected_error, actual_error);
 }

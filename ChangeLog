@@ -4,6 +4,7 @@
 	with NULL and the first element should be itself not priv->milters.
 	* data/milter-manager.conf, test/manager/test-controller.c: A new baby
 	was born.
+	* test/manager/test-egg.c: Unset MILTER_LOG_LEVEL.
 
 2008-10-28  Kouhei Sutou  <kou@cozmixng.org>
 
