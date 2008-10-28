@@ -320,6 +320,8 @@ static void
 hatch_egg (GCutEgg *egg)
 {
     GError *error = NULL;
+    client_ready = FALSE;
+    client_reaped = FALSE;
 
     gcut_egg_hatch(egg, &error);
     gcut_assert_error(error);
@@ -402,6 +404,8 @@ test_negotiate (void)
 
     make_egg(test_client_path, "--print-status",
              "--timeout", "1.0", "--port", "10025", NULL);
+    make_egg(test_client_path, "--print-status",
+             "--timeout", "1.0", "--port", "10026", NULL);
     g_list_foreach(test_milters, (GFunc)hatch_egg, NULL);
 
     milter_manager_controller_negotiate(controller, option);
