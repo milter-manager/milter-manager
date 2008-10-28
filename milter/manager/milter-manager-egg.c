@@ -23,6 +23,7 @@
 
 #include "milter-manager-egg.h"
 #include "milter-manager-enum-types.h"
+#include "milter-manager-marshalers.h"
 
 #define MILTER_MANAGER_EGG_GET_PRIVATE(obj)                     \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                         \
@@ -54,6 +55,14 @@ enum
     PROP_USER_NAME,
     PROP_COMMAND
 };
+
+enum
+{
+    HATCHED,
+    LAST_SIGNAL
+};
+
+static gint signals[LAST_SIGNAL] = {0};
 
 MILTER_DEFINE_ERROR_EMITABLE_TYPE(MilterManagerEgg,
                                   milter_manager_egg,
@@ -148,6 +157,17 @@ milter_manager_egg_class_init (MilterManagerEggClass *klass)
                                NULL,
                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_COMMAND, spec);
+
+
+    signals[HATCHED] =
+        g_signal_new("hatched",
+                     G_TYPE_FROM_CLASS(klass),
+                     G_SIGNAL_RUN_LAST,
+                     G_STRUCT_OFFSET(MilterManagerEggClass, hatched),
+                     NULL, NULL,
+                     g_cclosure_marshal_VOID__OBJECT,
+                     G_TYPE_NONE, 1, MILTER_TYPE_MANAGER_CHILD);
+
 
     g_type_class_add_private(gobject_class,
                              sizeof(MilterManagerEggPrivate));
@@ -329,9 +349,11 @@ milter_manager_egg_hatch (MilterManagerEgg *egg)
         MilterServerContext *context;
 
         context = MILTER_SERVER_CONTEXT(child);
-        if (!milter_server_context_set_connection_spec(context,
-                                                       priv->connection_spec,
-                                                       &error)) {
+        if (milter_server_context_set_connection_spec(context,
+                                                      priv->connection_spec,
+                                                      &error)) {
+            g_signal_emit(egg, signals[HATCHED], 0, child);
+        } else {
             milter_error("<%s>: invalid connection spec: %s",
                          priv->name ? priv->name : "(null)",
                          error->message);

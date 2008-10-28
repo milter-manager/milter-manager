@@ -53,6 +53,9 @@ struct _MilterManagerEgg
 struct _MilterManagerEggClass
 {
     GObjectClass parent_class;
+
+    void (*hatched) (MilterManagerEgg   *egg,
+                     MilterManagerChild *child);
 };
 
 GQuark              milter_manager_egg_error_quark (void);

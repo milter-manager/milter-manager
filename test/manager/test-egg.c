@@ -92,13 +92,23 @@ test_new (void)
                           milter_manager_egg_get_end_of_message_timeout(egg));
 }
 
+static void
+cb_hatched (MilterManagerEgg *egg, MilterManagerChild *child, gpointer user_data)
+{
+    gboolean *hatched = user_data;
+
+    *hatched = TRUE;
+}
+
 void
 test_hatch (void)
 {
     const gchar spec[] = "inet:9999@127.0.0.1";
+    gboolean hatched = FALSE;
     GError *error = NULL;
 
     egg = milter_manager_egg_new("child-milter");
+    g_signal_connect(egg, "hatched", G_CALLBACK(cb_hatched), &hatched);
 
     milter_manager_egg_set_connection_spec(egg, spec, &error);
     gcut_assert_error(error);
@@ -107,6 +117,7 @@ test_hatch (void)
     cut_assert_not_null(child);
     cut_assert_equal_string("child-milter",
                             milter_manager_child_get_name(child));
+    cut_assert_true(hatched);
 }
 
 void
