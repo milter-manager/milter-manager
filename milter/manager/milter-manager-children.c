@@ -521,6 +521,24 @@ cb_shutdown (MilterServerContext *context, gpointer user_data)
     g_signal_emit_by_name(children, "shutdown");
 }
 
+static gboolean
+get_all_children_skip_body (MilterManagerChildren *children)
+{
+    MilterManagerChildrenPrivate *priv;
+    GList *milter;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    for (milter = priv->milters; milter; milter = g_list_next(milter)) {
+        MilterServerContext *context = MILTER_SERVER_CONTEXT(milter->data);
+
+        if (!milter_server_context_get_skip_body(context))
+            return FALSE;
+    }
+
+    return TRUE;
+}
+
 static void
 cb_skip (MilterServerContext *context, gpointer user_data)
 {
@@ -533,7 +551,8 @@ cb_skip (MilterServerContext *context, gpointer user_data)
         milter_error("SKIP reply is only allowed in body session");
         return;
     }
-    g_signal_emit_by_name(children, "skip");
+    if (get_all_children_skip_body(children))
+        g_signal_emit_by_name(children, "skip");
 }
 
 static void
