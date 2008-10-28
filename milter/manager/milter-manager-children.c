@@ -617,7 +617,7 @@ static void
 cb_connection_timeout (MilterServerContext *context, gpointer user_data)
 {
     milter_error("connection to %s is timed out.",
-                 "milter_manager_child_get_name(MILTER_MANAGER_CHILD(context))");
+                 milter_manager_child_get_name(MILTER_MANAGER_CHILD(context)));
 
     expire_child(MILTER_MANAGER_CHILDREN(user_data), context);
 }
@@ -626,7 +626,7 @@ static void
 cb_writing_timeout (MilterServerContext *context, gpointer user_data)
 {
     milter_error("writing to %s is timed out.",
-                 "milter_manager_child_get_name(MILTER_MANAGER_CHILD(context))");
+                 milter_manager_child_get_name(MILTER_MANAGER_CHILD(context)));
 
     expire_child(MILTER_MANAGER_CHILDREN(user_data), context);
 }
@@ -635,7 +635,7 @@ static void
 cb_reading_timeout (MilterServerContext *context, gpointer user_data)
 {
     milter_error("reading from %s is timed out.",
-                 "milter_manager_child_get_name(MILTER_MANAGER_CHILD(context))");
+                 milter_manager_child_get_name(MILTER_MANAGER_CHILD(context)));
 
     expire_child(MILTER_MANAGER_CHILDREN(user_data), context);
 }
@@ -644,7 +644,7 @@ static void
 cb_end_of_message_timeout (MilterServerContext *context, gpointer user_data)
 {
     milter_error("The response of end-of-message from %s is timed out.",
-                 "milter_manager_child_get_name(MILTER_MANAGER_CHILD(context))");
+                 milter_manager_child_get_name(MILTER_MANAGER_CHILD(context)));
 
     expire_child(MILTER_MANAGER_CHILDREN(user_data), context);
 }
