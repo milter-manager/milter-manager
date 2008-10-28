@@ -33,7 +33,7 @@
 typedef struct _MilterManagerConfigurationPrivate MilterManagerConfigurationPrivate;
 struct _MilterManagerConfigurationPrivate
 {
-    MilterManagerChildren *children;
+    GList *eggs;
     gboolean privilege;
     MilterStatus return_status;
 };
@@ -75,7 +75,7 @@ milter_manager_configuration_init (MilterManagerConfiguration *configuration)
     MilterManagerConfigurationPrivate *priv;
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
-    priv->children = milter_manager_children_new(configuration);
+    priv->eggs = NULL;
     priv->privilege = FALSE;
     priv->return_status = MILTER_STATUS_CONTINUE;
 }
@@ -87,9 +87,10 @@ dispose (GObject *object)
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(object);
 
-    if (priv->children) {
-        g_object_unref(priv->children);
-        priv->children = NULL;
+    if (priv->eggs) {
+        g_list_foreach(priv->eggs, (GFunc)g_object_unref, NULL);
+        g_list_free(priv->eggs);
+        priv->eggs = NULL;
     }
 
     G_OBJECT_CLASS(milter_manager_configuration_parent_class)->dispose(object);
@@ -245,34 +246,41 @@ milter_manager_configuration_is_privilege_mode (MilterManagerConfiguration *conf
 }
 
 void
-milter_manager_configuration_add_child (MilterManagerConfiguration *configuration,
-                                        MilterManagerChild   *milter)
+milter_manager_configuration_add_egg (MilterManagerConfiguration *configuration,
+                                        MilterManagerEgg         *egg)
 {
     MilterManagerConfigurationPrivate *priv;
 
-    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
-
-    if (milter)
-        milter_manager_children_add_child(priv->children, milter);
-}
-
-MilterManagerChildren *
-milter_manager_configuration_get_children (MilterManagerConfiguration *configuration)
-{
-    MilterManagerConfigurationPrivate *priv;
+    g_return_if_fail(egg != NULL);
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
-    return priv->children;
+
+    g_object_ref(egg);
+    priv->eggs = g_list_append(priv->eggs, egg);
 }
 
 MilterManagerChildren *
 milter_manager_configuration_create_children (MilterManagerConfiguration *configuration)
 {
+    GList *node;
+    MilterManagerChildren *children;
     MilterManagerConfigurationPrivate *priv;
 
+    children = milter_manager_children_new(configuration);
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
 
-    return priv->children;
+    for (node = priv->eggs; node; node = g_list_next(node)) {
+        MilterManagerChild *child;
+        MilterManagerEgg *egg = node->data;
+
+        child = milter_manager_egg_hatch(egg);
+        if (child) {
+            milter_manager_children_add_child(children, child);
+            g_object_unref(child);
+        }
+    }
+
+    return children;
 }
 
 MilterStatus

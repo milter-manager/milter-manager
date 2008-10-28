@@ -24,6 +24,7 @@
 
 #include <milter/manager/milter-manager-objects.h>
 #include <milter/manager/milter-manager-child.h>
+#include <milter/manager/milter-manager-egg.h>
 
 G_BEGIN_DECLS
 
@@ -72,11 +73,9 @@ gboolean      milter_manager_configuration_is_privilege_mode
                                      (MilterManagerConfiguration *configuration);
 MilterStatus  milter_manager_configuration_get_return_status_if_filter_unavailable
                                      (MilterManagerConfiguration *configuration);
-void          milter_manager_configuration_add_child
+void          milter_manager_configuration_add_egg
                                      (MilterManagerConfiguration *configuration,
-                                      MilterManagerChild *milter);
-MilterManagerChildren *milter_manager_configuration_get_children
-                                     (MilterManagerConfiguration *configuration);
+                                      MilterManagerEgg *egg);
 MilterManagerChildren *milter_manager_configuration_create_children
                                      (MilterManagerConfiguration *configuration);
 
