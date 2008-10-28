@@ -112,6 +112,7 @@ milter_manager_children_init (MilterManagerChildren *milter)
     priv->configuration = NULL;
     priv->reply_queue = g_queue_new();
     priv->milters = NULL;
+    priv->quitted_milters = NULL;
     priv->macros_requests = milter_macros_requests_new();
     priv->option = NULL;
     priv->reply_status = MILTER_STATUS_NOT_CHANGE;
@@ -382,7 +383,7 @@ expire_child (MilterManagerChildren *children,
 
     teardown_server_context_signals(MILTER_MANAGER_CHILD(context), children);
     priv->milters = g_list_remove(priv->milters, context);
-    priv->quitted_milters = g_list_prepend(priv->milters, context);
+    priv->quitted_milters = g_list_prepend(priv->quitted_milters, context);
 }
 
 static void

@@ -1,3 +1,8 @@
+2008-10-29  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/manager/milter-manager-children.c: Initialize quitted_milters
+	with NULL and the first element should be itself not priv->milters.
+
 2008-10-28  Kouhei Sutou  <kou@cozmixng.org>
 
 	* binding/ruby/, data/milter-manager.conf: use egg.
