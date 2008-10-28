@@ -23,7 +23,7 @@
 
 #define shutdown inet_shutdown
 #include <milter-manager-test-utils.h>
-#include <milter/manager/milter-manager-spawn.h>
+#include <milter/manager/milter-manager-egg.h>
 #undef shutdown
 
 void test_new (void);
@@ -35,19 +35,19 @@ void test_end_of_message_timeout (void);
 void test_user_name (void);
 void test_command (void);
 
-static MilterManagerSpawn *spawn;
+static MilterManagerEgg *egg;
 
 void
 setup (void)
 {
-    spawn = NULL;
+    egg = NULL;
 }
 
 void
 teardown (void)
 {
-    if (spawn)
-        g_object_unref(spawn);
+    if (egg)
+        g_object_unref(egg);
 }
 
 void
@@ -55,12 +55,12 @@ test_new (void)
 {
     const gchar name[] = "child-milter";
 
-    spawn = milter_manager_spawn_new(name);
-    cut_assert_equal_string(name, milter_manager_spawn_get_name(spawn));
-    cut_assert_equal_uint(0, milter_manager_spawn_get_connection_timeout(spawn));
-    cut_assert_equal_uint(0, milter_manager_spawn_get_writing_timeout(spawn));
-    cut_assert_equal_uint(0, milter_manager_spawn_get_reading_timeout(spawn));
-    cut_assert_equal_uint(0, milter_manager_spawn_get_end_of_message_timeout(spawn));
+    egg = milter_manager_egg_new(name);
+    cut_assert_equal_string(name, milter_manager_egg_get_name(egg));
+    cut_assert_equal_uint(0, milter_manager_egg_get_connection_timeout(egg));
+    cut_assert_equal_uint(0, milter_manager_egg_get_writing_timeout(egg));
+    cut_assert_equal_uint(0, milter_manager_egg_get_reading_timeout(egg));
+    cut_assert_equal_uint(0, milter_manager_egg_get_end_of_message_timeout(egg));
 }
 
 void
@@ -69,10 +69,10 @@ test_name (void)
     const gchar name[] = "child-milter";
     const gchar new_name[] = "new-child-milter";
 
-    spawn = milter_manager_spawn_new(name);
-    cut_assert_equal_string(name, milter_manager_spawn_get_name(spawn));
-    milter_manager_spawn_set_name(spawn, new_name);
-    cut_assert_equal_string(new_name, milter_manager_spawn_get_name(spawn));
+    egg = milter_manager_egg_new(name);
+    cut_assert_equal_string(name, milter_manager_egg_get_name(egg));
+    milter_manager_egg_set_name(egg, new_name);
+    cut_assert_equal_string(new_name, milter_manager_egg_get_name(egg));
 }
 
 void
@@ -80,11 +80,11 @@ test_connection_timeout (void)
 {
     guint new_connection_timeout = 100;
 
-    spawn = milter_manager_spawn_new("child-milter");
+    egg = milter_manager_egg_new("child-milter");
 
-    milter_manager_spawn_set_connection_timeout(spawn, new_connection_timeout);
+    milter_manager_egg_set_connection_timeout(egg, new_connection_timeout);
     cut_assert_equal_uint(new_connection_timeout,
-                          milter_manager_spawn_get_connection_timeout(spawn));
+                          milter_manager_egg_get_connection_timeout(egg));
 }
 
 void
@@ -92,11 +92,11 @@ test_writing_timeout (void)
 {
     guint new_writing_timeout = 100;
 
-    spawn = milter_manager_spawn_new("child-milter");
+    egg = milter_manager_egg_new("child-milter");
 
-    milter_manager_spawn_set_writing_timeout(spawn, new_writing_timeout);
+    milter_manager_egg_set_writing_timeout(egg, new_writing_timeout);
     cut_assert_equal_uint(new_writing_timeout,
-                          milter_manager_spawn_get_writing_timeout(spawn));
+                          milter_manager_egg_get_writing_timeout(egg));
 }
 
 void
@@ -104,11 +104,11 @@ test_reading_timeout (void)
 {
     guint new_reading_timeout = 100;
 
-    spawn = milter_manager_spawn_new("child-milter");
+    egg = milter_manager_egg_new("child-milter");
 
-    milter_manager_spawn_set_reading_timeout(spawn, new_reading_timeout);
+    milter_manager_egg_set_reading_timeout(egg, new_reading_timeout);
     cut_assert_equal_uint(new_reading_timeout,
-                          milter_manager_spawn_get_reading_timeout(spawn));
+                          milter_manager_egg_get_reading_timeout(egg));
 }
 
 void
@@ -116,12 +116,12 @@ test_end_of_message_timeout (void)
 {
     guint new_end_of_message_timeout = 100;
 
-    spawn = milter_manager_spawn_new("child-milter");
+    egg = milter_manager_egg_new("child-milter");
 
-    milter_manager_spawn_set_end_of_message_timeout(spawn,
+    milter_manager_egg_set_end_of_message_timeout(egg,
                                                     new_end_of_message_timeout);
     cut_assert_equal_uint(new_end_of_message_timeout,
-                          milter_manager_spawn_get_end_of_message_timeout(spawn));
+                          milter_manager_egg_get_end_of_message_timeout(egg));
 }
 
 void
@@ -129,12 +129,12 @@ test_user_name (void)
 {
     const gchar user_name[] = "milter-user";
 
-    spawn = milter_manager_spawn_new("child-milter");
+    egg = milter_manager_egg_new("child-milter");
     cut_assert_equal_string(NULL,
-                            milter_manager_spawn_get_user_name(spawn));
-    milter_manager_spawn_set_user_name(spawn, user_name);
+                            milter_manager_egg_get_user_name(egg));
+    milter_manager_egg_set_user_name(egg, user_name);
     cut_assert_equal_string(user_name,
-                            milter_manager_spawn_get_user_name(spawn));
+                            milter_manager_egg_get_user_name(egg));
 }
 
 void
@@ -142,11 +142,11 @@ test_command (void)
 {
     const gchar command[] = "/usr/bin/my-milter";
 
-    spawn = milter_manager_spawn_new("child-milter");
+    egg = milter_manager_egg_new("child-milter");
     cut_assert_equal_string(NULL,
-                            milter_manager_spawn_get_command(spawn));
-    milter_manager_spawn_set_command(spawn, command);
-    cut_assert_equal_string(command, milter_manager_spawn_get_command(spawn));
+                            milter_manager_egg_get_command(egg));
+    milter_manager_egg_set_command(egg, command);
+    cut_assert_equal_string(command, milter_manager_egg_get_command(egg));
 }
 
 /*
