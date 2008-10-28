@@ -40,6 +40,8 @@
 	teardown_server_context_signals.
 	* milter/manager/milter-manager-children.c: Close connection to a
 	filter if timeout is happend.
+	* milter/manager/milter-manager-controller.c: Cleanup unused timeout
+	codes.
 
 2008-10-27  Kouhei Sutou  <kou@cozmixng.org>
 
