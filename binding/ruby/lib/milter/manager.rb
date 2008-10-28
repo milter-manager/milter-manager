@@ -30,38 +30,20 @@ module Milter::Manager
 
     def initialize(configuration)
       @configuration = configuration
-      @children = []
+      @eggs = []
     end
 
     def load_configuration(file)
       instance_eval(File.read(file), file)
-      @children.each do |child_config|
-        @configuration.add_child(child_config.create_child)
+      @eggs.each do |egg|
+        @configuration.add_egg(egg)
       end
     end
 
     def define_milter(name, &block)
-      milter = ChildConfiguration.new(name)
-      @children << milter
-      milter.configure(&block)
-    end
-  end
-
-  class ChildConfiguration
-    attr_accessor :spec
-    def initialize(name)
-      @name = name
-      @spec = nil
-    end
-
-    def configure
-      yield(self)
-    end
-
-    def create_child
-      child = Child.new(@name)
-      child.connection_spec = @spec
-      child
+      egg = Egg.new(name)
+      @eggs << egg
+      yield(egg)
     end
   end
 end
