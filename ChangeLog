@@ -1,5 +1,7 @@
 2008-10-28  Kouhei Sutou  <kou@cozmixng.org>
 
+	* ./: spawn -> egg.
+
 	* binding/ruby/test/test_spawn.rb: add tests for accessors.
 
 2008-10-28  Hiroyuki Ikezoe  <poincare@ikezoe.net>

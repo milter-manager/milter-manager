@@ -1,5 +1,9 @@
 TESTS = run-test.rb
 TESTS_ENVIRONMENT = NO_MAKE=yes
 
+test_files =		\
+	test_egg.rb
+
 EXTRA_DIST =		\
-	run-test.rb
+	run-test.rb	\
+	$(test_files)

@@ -21,16 +21,16 @@
 #  include "../../config.h"
 #endif /* HAVE_CONFIG_H */
 
-#include "milter-manager-spawn.h"
+#include "milter-manager-egg.h"
 #include "milter-manager-enum-types.h"
 
-#define MILTER_MANAGER_SPAWN_GET_PRIVATE(obj)                   \
+#define MILTER_MANAGER_EGG_GET_PRIVATE(obj)                     \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                         \
-                                 MILTER_TYPE_MANAGER_SPAWN,     \
-                                 MilterManagerSpawnPrivate))
+                                 MILTER_TYPE_MANAGER_EGG,       \
+                                 MilterManagerEggPrivate))
 
-typedef struct _MilterManagerSpawnPrivate MilterManagerSpawnPrivate;
-struct _MilterManagerSpawnPrivate
+typedef struct _MilterManagerEggPrivate MilterManagerEggPrivate;
+struct _MilterManagerEggPrivate
 {
     gchar *name;
     guint connection_timeout;
@@ -53,8 +53,8 @@ enum
     PROP_COMMAND
 };
 
-MILTER_DEFINE_ERROR_EMITABLE_TYPE(MilterManagerSpawn,
-                                  milter_manager_spawn,
+MILTER_DEFINE_ERROR_EMITABLE_TYPE(MilterManagerEgg,
+                                  milter_manager_egg,
                                   G_TYPE_OBJECT)
 
 static void dispose        (GObject         *object);
@@ -68,7 +68,7 @@ static void get_property   (GObject         *object,
                             GParamSpec      *pspec);
 
 static void
-milter_manager_spawn_class_init (MilterManagerSpawnClass *klass)
+milter_manager_egg_class_init (MilterManagerEggClass *klass)
 {
     GObjectClass *gobject_class;
     GParamSpec *spec;
@@ -81,14 +81,14 @@ milter_manager_spawn_class_init (MilterManagerSpawnClass *klass)
 
     spec = g_param_spec_string("name",
                                "Name",
-                               "The name of the milter spawn",
+                               "The name of the milter egg",
                                NULL,
                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_NAME, spec);
 
     spec = g_param_spec_uint("connection-timeout",
                              "Connection timeout",
-                             "The connection timeout of the milter spawn",
+                             "The connection timeout of the milter egg",
                              0, G_MAXUINT, 0,
                              G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_CONNECTION_TIMEOUT,
@@ -96,7 +96,7 @@ milter_manager_spawn_class_init (MilterManagerSpawnClass *klass)
 
     spec = g_param_spec_uint("writing-timeout",
                              "Writing timeout",
-                             "The writing timeout of the milter spawn",
+                             "The writing timeout of the milter egg",
                              0, G_MAXUINT, 0,
                              G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_WRITING_TIMEOUT,
@@ -104,7 +104,7 @@ milter_manager_spawn_class_init (MilterManagerSpawnClass *klass)
 
     spec = g_param_spec_uint("reading-timeout",
                              "Reading timeout",
-                             "The reading timeout of the milter spawn",
+                             "The reading timeout of the milter egg",
                              0, G_MAXUINT, 0,
                              G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_READING_TIMEOUT,
@@ -112,7 +112,7 @@ milter_manager_spawn_class_init (MilterManagerSpawnClass *klass)
 
     spec = g_param_spec_uint("end-of-message-timeout",
                              "End of message timeout",
-                             "The end-of-message timeout of the milter spawn",
+                             "The end-of-message timeout of the milter egg",
                              0, G_MAXUINT, 0,
                              G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_END_OF_MESSAGE_TIMEOUT,
@@ -120,28 +120,28 @@ milter_manager_spawn_class_init (MilterManagerSpawnClass *klass)
 
     spec = g_param_spec_string("user-name",
                                "User name",
-                               "The user name of a spawned milter",
+                               "The user name of a egged milter",
                                NULL,
                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_USER_NAME, spec);
 
     spec = g_param_spec_string("command",
                                "Command",
-                               "The command of the milter spawn",
+                               "The command of the milter egg",
                                NULL,
                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_COMMAND, spec);
 
     g_type_class_add_private(gobject_class,
-                             sizeof(MilterManagerSpawnPrivate));
+                             sizeof(MilterManagerEggPrivate));
 }
 
 static void
-milter_manager_spawn_init (MilterManagerSpawn *spawn)
+milter_manager_egg_init (MilterManagerEgg *egg)
 {
-    MilterManagerSpawnPrivate *priv;
+    MilterManagerEggPrivate *priv;
 
-    priv = MILTER_MANAGER_SPAWN_GET_PRIVATE(spawn);
+    priv = MILTER_MANAGER_EGG_GET_PRIVATE(egg);
     priv->name = NULL;
     priv->connection_timeout = 0;
     priv->writing_timeout = 0;
@@ -154,9 +154,9 @@ milter_manager_spawn_init (MilterManagerSpawn *spawn)
 static void
 dispose (GObject *object)
 {
-    MilterManagerSpawnPrivate *priv;
+    MilterManagerEggPrivate *priv;
 
-    priv = MILTER_MANAGER_SPAWN_GET_PRIVATE(object);
+    priv = MILTER_MANAGER_EGG_GET_PRIVATE(object);
 
     if (priv->name) {
         g_free(priv->name);
@@ -173,7 +173,7 @@ dispose (GObject *object)
         priv->command = NULL;
     }
 
-    G_OBJECT_CLASS(milter_manager_spawn_parent_class)->dispose(object);
+    G_OBJECT_CLASS(milter_manager_egg_parent_class)->dispose(object);
 }
 
 static void
@@ -182,15 +182,15 @@ set_property (GObject      *object,
               const GValue *value,
               GParamSpec   *pspec)
 {
-    MilterManagerSpawn *spawn;
-    MilterManagerSpawnPrivate *priv;
+    MilterManagerEgg *egg;
+    MilterManagerEggPrivate *priv;
 
-    spawn = MILTER_MANAGER_SPAWN(object);
-    priv = MILTER_MANAGER_SPAWN_GET_PRIVATE(object);
+    egg = MILTER_MANAGER_EGG(object);
+    priv = MILTER_MANAGER_EGG_GET_PRIVATE(object);
 
     switch (prop_id) {
       case PROP_NAME:
-        milter_manager_spawn_set_name(spawn, g_value_get_string(value));
+        milter_manager_egg_set_name(egg, g_value_get_string(value));
         break;
       case PROP_CONNECTION_TIMEOUT:
         priv->connection_timeout = g_value_get_uint(value);
@@ -205,10 +205,10 @@ set_property (GObject      *object,
         priv->end_of_message_timeout = g_value_get_uint(value);
         break;
       case PROP_USER_NAME:
-        milter_manager_spawn_set_user_name(spawn, g_value_get_string(value));
+        milter_manager_egg_set_user_name(egg, g_value_get_string(value));
         break;
       case PROP_COMMAND:
-        milter_manager_spawn_set_command(spawn, g_value_get_string(value));
+        milter_manager_egg_set_command(egg, g_value_get_string(value));
         break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -222,9 +222,9 @@ get_property (GObject    *object,
               GValue     *value,
               GParamSpec *pspec)
 {
-    MilterManagerSpawnPrivate *priv;
+    MilterManagerEggPrivate *priv;
 
-    priv = MILTER_MANAGER_SPAWN_GET_PRIVATE(object);
+    priv = MILTER_MANAGER_EGG_GET_PRIVATE(object);
     switch (prop_id) {
       case PROP_NAME:
         g_value_set_string(value, priv->name);
@@ -253,129 +253,129 @@ get_property (GObject    *object,
     }
 }
 
-MilterManagerSpawn *
-milter_manager_spawn_new (const gchar *name)
+MilterManagerEgg *
+milter_manager_egg_new (const gchar *name)
 {
-    return g_object_new(MILTER_TYPE_MANAGER_SPAWN,
+    return g_object_new(MILTER_TYPE_MANAGER_EGG,
                         "name", name,
                         NULL);
 }
 
 void
-milter_manager_spawn_set_name (MilterManagerSpawn *spawn, const gchar *name)
+milter_manager_egg_set_name (MilterManagerEgg *egg, const gchar *name)
 {
-    MilterManagerSpawnPrivate *priv;
+    MilterManagerEggPrivate *priv;
 
-    priv = MILTER_MANAGER_SPAWN_GET_PRIVATE(spawn);
+    priv = MILTER_MANAGER_EGG_GET_PRIVATE(egg);
     if (priv->name)
         g_free(priv->name);
     priv->name = g_strdup(name);
 }
 
 const gchar *
-milter_manager_spawn_get_name (MilterManagerSpawn *spawn)
+milter_manager_egg_get_name (MilterManagerEgg *egg)
 {
-    return MILTER_MANAGER_SPAWN_GET_PRIVATE(spawn)->name;
+    return MILTER_MANAGER_EGG_GET_PRIVATE(egg)->name;
 }
 
 void
-milter_manager_spawn_set_connection_timeout (MilterManagerSpawn *spawn,
+milter_manager_egg_set_connection_timeout (MilterManagerEgg *egg,
                                              guint connection_timeout)
 {
-    MilterManagerSpawnPrivate *priv;
+    MilterManagerEggPrivate *priv;
 
-    priv = MILTER_MANAGER_SPAWN_GET_PRIVATE(spawn);
+    priv = MILTER_MANAGER_EGG_GET_PRIVATE(egg);
     priv->connection_timeout = connection_timeout;
 }
 
 guint
-milter_manager_spawn_get_connection_timeout (MilterManagerSpawn *spawn)
+milter_manager_egg_get_connection_timeout (MilterManagerEgg *egg)
 {
-    return MILTER_MANAGER_SPAWN_GET_PRIVATE(spawn)->connection_timeout;
+    return MILTER_MANAGER_EGG_GET_PRIVATE(egg)->connection_timeout;
 }
 
 void
-milter_manager_spawn_set_writing_timeout (MilterManagerSpawn *spawn,
+milter_manager_egg_set_writing_timeout (MilterManagerEgg *egg,
                                           guint writing_timeout)
 {
-    MilterManagerSpawnPrivate *priv;
+    MilterManagerEggPrivate *priv;
 
-    priv = MILTER_MANAGER_SPAWN_GET_PRIVATE(spawn);
+    priv = MILTER_MANAGER_EGG_GET_PRIVATE(egg);
     priv->writing_timeout = writing_timeout;
 }
 
 guint
-milter_manager_spawn_get_writing_timeout (MilterManagerSpawn *spawn)
+milter_manager_egg_get_writing_timeout (MilterManagerEgg *egg)
 {
-    return MILTER_MANAGER_SPAWN_GET_PRIVATE(spawn)->writing_timeout;
+    return MILTER_MANAGER_EGG_GET_PRIVATE(egg)->writing_timeout;
 }
 
 void
-milter_manager_spawn_set_reading_timeout (MilterManagerSpawn *spawn,
+milter_manager_egg_set_reading_timeout (MilterManagerEgg *egg,
                                           guint reading_timeout)
 {
-    MilterManagerSpawnPrivate *priv;
+    MilterManagerEggPrivate *priv;
 
-    priv = MILTER_MANAGER_SPAWN_GET_PRIVATE(spawn);
+    priv = MILTER_MANAGER_EGG_GET_PRIVATE(egg);
     priv->reading_timeout = reading_timeout;
 }
 
 guint
-milter_manager_spawn_get_reading_timeout (MilterManagerSpawn *spawn)
+milter_manager_egg_get_reading_timeout (MilterManagerEgg *egg)
 {
-    return MILTER_MANAGER_SPAWN_GET_PRIVATE(spawn)->reading_timeout;
+    return MILTER_MANAGER_EGG_GET_PRIVATE(egg)->reading_timeout;
 }
 
 void
-milter_manager_spawn_set_end_of_message_timeout (MilterManagerSpawn *spawn,
+milter_manager_egg_set_end_of_message_timeout (MilterManagerEgg *egg,
                                                  guint end_of_message_timeout)
 {
-    MilterManagerSpawnPrivate *priv;
+    MilterManagerEggPrivate *priv;
 
-    priv = MILTER_MANAGER_SPAWN_GET_PRIVATE(spawn);
+    priv = MILTER_MANAGER_EGG_GET_PRIVATE(egg);
     priv->end_of_message_timeout = end_of_message_timeout;
 }
 
 guint
-milter_manager_spawn_get_end_of_message_timeout (MilterManagerSpawn *spawn)
+milter_manager_egg_get_end_of_message_timeout (MilterManagerEgg *egg)
 {
-    return MILTER_MANAGER_SPAWN_GET_PRIVATE(spawn)->end_of_message_timeout;
+    return MILTER_MANAGER_EGG_GET_PRIVATE(egg)->end_of_message_timeout;
 }
 
 void
-milter_manager_spawn_set_user_name (MilterManagerSpawn *spawn,
+milter_manager_egg_set_user_name (MilterManagerEgg *egg,
                                     const gchar *user_name)
 {
-    MilterManagerSpawnPrivate *priv;
+    MilterManagerEggPrivate *priv;
 
-    priv = MILTER_MANAGER_SPAWN_GET_PRIVATE(spawn);
+    priv = MILTER_MANAGER_EGG_GET_PRIVATE(egg);
     if (priv->user_name)
         g_free(priv->user_name);
     priv->user_name = g_strdup(user_name);
 }
 
 const gchar *
-milter_manager_spawn_get_user_name (MilterManagerSpawn *spawn)
+milter_manager_egg_get_user_name (MilterManagerEgg *egg)
 {
-    return MILTER_MANAGER_SPAWN_GET_PRIVATE(spawn)->user_name;
+    return MILTER_MANAGER_EGG_GET_PRIVATE(egg)->user_name;
 }
 
 void
-milter_manager_spawn_set_command (MilterManagerSpawn *spawn,
+milter_manager_egg_set_command (MilterManagerEgg *egg,
                                   const gchar *command)
 {
-    MilterManagerSpawnPrivate *priv;
+    MilterManagerEggPrivate *priv;
 
-    priv = MILTER_MANAGER_SPAWN_GET_PRIVATE(spawn);
+    priv = MILTER_MANAGER_EGG_GET_PRIVATE(egg);
     if (priv->command)
         g_free(priv->command);
     priv->command = g_strdup(command);
 }
 
 const gchar *
-milter_manager_spawn_get_command (MilterManagerSpawn *spawn)
+milter_manager_egg_get_command (MilterManagerEgg *egg)
 {
-    return MILTER_MANAGER_SPAWN_GET_PRIVATE(spawn)->command;
+    return MILTER_MANAGER_EGG_GET_PRIVATE(egg)->command;
 }
 
 /*

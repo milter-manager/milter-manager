@@ -8,6 +8,6 @@
 extern void Init_milter_manager (void);
 extern void Init_milter_manager_configuration (void);
 extern void Init_milter_manager_child (void);
-extern void Init_milter_manager_spawn (void);
+extern void Init_milter_manager_egg (void);
 
 #endif
