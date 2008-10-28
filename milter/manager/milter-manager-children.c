@@ -273,6 +273,22 @@ status_to_signal_name (MilterStatus status)
     return signal_name;
 }
 
+static gboolean
+status_is_critical (MilterStatus status)
+{
+    switch (status) {
+      case MILTER_STATUS_REJECT:
+      case MILTER_STATUS_DISCARD:
+      case MILTER_STATUS_TEMPORARY_FAILURE:
+        return TRUE;
+        break;
+      default:
+        break;
+    }
+
+    return FALSE;
+}
+
 static MilterStatus
 compile_reply_status (MilterManagerChildren *children,
                       MilterStatus status)
@@ -281,7 +297,26 @@ compile_reply_status (MilterManagerChildren *children,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    priv->reply_status = MILTER_STATUS_CONTINUE; /* FIXME */
+    switch (status) {
+      case MILTER_STATUS_REJECT:
+        priv->reply_status = status;
+        break;
+      case MILTER_STATUS_DISCARD:
+        if (priv->reply_status != MILTER_STATUS_REJECT)
+            priv->reply_status = status;
+        break;
+      case MILTER_STATUS_TEMPORARY_FAILURE:
+        if (!status_is_critical(priv->reply_status))
+            priv->reply_status = status;
+        break;
+      case MILTER_STATUS_ACCEPT:
+        if (!status_is_critical(priv->reply_status))
+            priv->reply_status = status;
+        break;
+      default:
+        break;
+    }
+    priv->reply_status = status; /* FIXME */
 
     return priv->reply_status;
 }

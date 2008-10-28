@@ -30,6 +30,10 @@
 	connection-oriented routine, QUIT is the one of it.
 	* milter/manager/milter-manager-children.c: Emit "skip" signal if all
 	children are received "SKIP" reply.
+	* milter/manager/milter-manager-children.c (compile_reply_status):
+	MILTER_STATUS_CONTINUE < MILTER_STATUS_ACCEPT <
+	MILTER_STATUS_TEMPORARY_FAILURE < MILTER_STATUS_DISCARD <
+	MILTER_STATUS_REJECT. 
 
 2008-10-27  Kouhei Sutou  <kou@cozmixng.org>
 
