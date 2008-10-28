@@ -363,10 +363,9 @@ cb_temporary_failure (MilterServerContext *context, gpointer user_data)
     state = milter_server_context_get_state(context);
 
     switch (state) {
-      case MILTER_SERVER_CONTEXT_STATE_START:
-      case MILTER_SERVER_CONTEXT_STATE_NEGOTIATE:
       case MILTER_SERVER_CONTEXT_STATE_CONNECT:
       case MILTER_SERVER_CONTEXT_STATE_HELO:
+      case MILTER_SERVER_CONTEXT_STATE_QUIT:
         expire_child(children, context);
         break;
       default:

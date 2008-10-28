@@ -26,6 +26,8 @@
 	* milter/manager/milter-manager-children.c: milter_error if SKIP reply
 	is received not in BODY. send BODY command if skip reply has not been
 	received yet.
+	* milter/manager/milter-manager-children.c: NEGOTIATE is not a
+	connection-oriented routine, QUIT is the one of it.
 
 2008-10-27  Kouhei Sutou  <kou@cozmixng.org>
 
