@@ -38,6 +38,8 @@
 	"quarantine" reply are only allowed in end of message session.
 	* milter/manager/milter-manager-children.c: Unref MilterChild in
 	teardown_server_context_signals.
+	* milter/manager/milter-manager-children.c: Close connection to a
+	filter if timeout is happend.
 
 2008-10-27  Kouhei Sutou  <kou@cozmixng.org>
 

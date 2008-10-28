@@ -367,9 +367,16 @@ expire_child (MilterManagerChildren *children,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    milter_server_context_quit(context);
     teardown_server_context_signals(MILTER_MANAGER_CHILD(context), children);
     priv->milters = g_list_remove(priv->milters, context);
+}
+
+static void
+quit_child (MilterManagerChildren *children,
+            MilterServerContext *context)
+{
+    milter_server_context_quit(context);
+    expire_child(children, context);
 }
 
 static void
@@ -401,7 +408,7 @@ cb_temporary_failure (MilterServerContext *context, gpointer user_data)
       case MILTER_SERVER_CONTEXT_STATE_CONNECT:
       case MILTER_SERVER_CONTEXT_STATE_HELO:
       case MILTER_SERVER_CONTEXT_STATE_QUIT:
-        expire_child(children, context);
+        quit_child(children, context);
         break;
       default:
         compile_reply_status(children, MILTER_STATUS_TEMPORARY_FAILURE);
@@ -423,7 +430,7 @@ cb_reject (MilterServerContext *context, gpointer user_data)
         compile_reply_status(children, MILTER_STATUS_REJECT);
         break;
       default:
-        expire_child(children, context);
+        quit_child(children, context);
         break;
     }
 
@@ -435,7 +442,7 @@ cb_accept (MilterServerContext *context, gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
 
-    expire_child(children, context);
+    quit_child(children, context);
 
     compile_reply_status(children, MILTER_STATUS_ACCEPT);
     remove_child_from_queue(children, context);
@@ -446,7 +453,7 @@ cb_discard (MilterServerContext *context, gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
 
-    expire_child(children, context);
+    quit_child(children, context);
 
     compile_reply_status(children, MILTER_STATUS_DISCARD);
     remove_child_from_queue(children, context);
@@ -609,25 +616,37 @@ cb_skip (MilterServerContext *context, gpointer user_data)
 static void
 cb_connection_timeout (MilterServerContext *context, gpointer user_data)
 {
-    milter_error("connection timeout: FIXME");
+    milter_error("connection to %s is timed out.",
+                 "milter_manager_child_get_name(MILTER_MANAGER_CHILD(context))");
+
+    expire_child(MILTER_MANAGER_CHILDREN(user_data), context);
 }
 
 static void
 cb_writing_timeout (MilterServerContext *context, gpointer user_data)
 {
-    milter_error("writing timeout: FIXME");
+    milter_error("writing to %s is timed out.",
+                 "milter_manager_child_get_name(MILTER_MANAGER_CHILD(context))");
+
+    expire_child(MILTER_MANAGER_CHILDREN(user_data), context);
 }
 
 static void
 cb_reading_timeout (MilterServerContext *context, gpointer user_data)
 {
-    milter_error("reading timeout: FIXME");
+    milter_error("reading from %s is timed out.",
+                 "milter_manager_child_get_name(MILTER_MANAGER_CHILD(context))");
+
+    expire_child(MILTER_MANAGER_CHILDREN(user_data), context);
 }
 
 static void
 cb_end_of_message_timeout (MilterServerContext *context, gpointer user_data)
 {
-    milter_error("end_of_message timeout: FIXME");
+    milter_error("The response of end-of-message from %s is timed out.",
+                 "milter_manager_child_get_name(MILTER_MANAGER_CHILD(context))");
+
+    expire_child(MILTER_MANAGER_CHILDREN(user_data), context);
 }
 
 static void
