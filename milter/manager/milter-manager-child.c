@@ -189,14 +189,14 @@ set_property (GObject      *object,
               const GValue *value,
               GParamSpec   *pspec)
 {
+    MilterManagerChild *milter;
     MilterManagerChildPrivate *priv;
 
+    milter = MILTER_MANAGER_CHILD(object);
     priv = MILTER_MANAGER_CHILD_GET_PRIVATE(object);
     switch (prop_id) {
       case PROP_NAME:
-        if (priv->name)
-            g_free(priv->name);
-        priv->name = g_value_dup_string(value);
+        milter_manager_child_set_name(milter, g_value_get_string(value));
         break;
       case PROP_USER_NAME:
         if (priv->user_name)
@@ -267,6 +267,13 @@ milter_manager_child_new (const gchar *name)
     return g_object_new(MILTER_TYPE_MANAGER_CHILD,
                         "name", name,
                         NULL);
+}
+
+MilterManagerChild *
+milter_manager_child_new_va_list (const gchar *first_name, va_list args)
+{
+    return MILTER_MANAGER_CHILD(g_object_new_valist(MILTER_TYPE_MANAGER_CHILD,
+                                                    first_name, args));
 }
 
 MilterManagerChild *
@@ -426,6 +433,23 @@ milter_manager_child_start (MilterManagerChild *milter, GError **error)
     return success;
 }
 
+const gchar *
+milter_manager_child_get_name (MilterManagerChild *milter)
+{
+    return MILTER_MANAGER_CHILD_GET_PRIVATE(milter)->name;
+}
+
+void
+milter_manager_child_set_name (MilterManagerChild *milter, const gchar *name)
+{
+    MilterManagerChildPrivate *priv;
+
+    priv = MILTER_MANAGER_CHILD_GET_PRIVATE(milter);
+    if (priv->name)
+        g_free(priv->name);
+    priv->name = g_strdup(name);
+}
+
 #if 0
 MilterStatus
 milter_manager_child_option_negotiate (MilterManagerChild *milter,
@@ -517,6 +541,7 @@ milter_manager_child_abort (MilterManagerChild *milter)
     return MILTER_STATUS_DEFAULT;
 }
 #endif
+
 
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4

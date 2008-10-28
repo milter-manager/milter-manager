@@ -66,6 +66,8 @@ GQuark                milter_manager_child_error_quark (void);
 GType                 milter_manager_child_get_type    (void) G_GNUC_CONST;
 
 MilterManagerChild   *milter_manager_child_new         (const gchar *name);
+MilterManagerChild   *milter_manager_child_new_va_list (const gchar *first_name,
+                                                        va_list      args);
 MilterManagerChild   *milter_manager_child_new_with_timeout
                                                        (const gchar *name,
                                                         guint connection_timeout,
@@ -76,6 +78,10 @@ MilterManagerChild   *milter_manager_child_new_with_timeout
 gboolean              milter_manager_child_start       (MilterManagerChild *milter,
                                                         GError **error);
 
+
+const gchar          *milter_manager_child_get_name    (MilterManagerChild *child);
+void                  milter_manager_child_set_name    (MilterManagerChild *child,
+                                                        const gchar *name);
 
 #endif /* __MILTER_MANAGER_CHILD_H__ */
 

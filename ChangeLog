@@ -1,5 +1,7 @@
 2008-10-28  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-child.[ch]: add child's name accessors.
+
 	* test/manager/test-controller.c: spawn -> egg.
 
 	* ./: spawn -> egg.
