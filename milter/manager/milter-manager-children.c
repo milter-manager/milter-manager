@@ -33,6 +33,7 @@ typedef struct _MilterManagerChildrenPrivate	MilterManagerChildrenPrivate;
 struct _MilterManagerChildrenPrivate
 {
     GList *milters;
+    GList *quitted_milters;
     GQueue *reply_queue;
     MilterManagerConfiguration *configuration;
     MilterMacrosRequests *macros_requests;
@@ -139,6 +140,12 @@ dispose (GObject *object)
         priv->milters = NULL;
     }
 
+    if (priv->quitted_milters) {
+        g_list_foreach(priv->quitted_milters, (GFunc)g_object_unref, NULL);
+        g_list_free(priv->quitted_milters);
+        priv->quitted_milters = NULL;
+    }
+
     if (priv->macros_requests) {
         g_object_unref(priv->macros_requests);
         priv->macros_requests = NULL;
@@ -209,7 +216,7 @@ milter_manager_children_new (MilterManagerConfiguration *configuration)
 }
 
 void
-milter_manager_children_add_child (MilterManagerChildren *children, 
+milter_manager_children_add_child (MilterManagerChildren *children,
                                    MilterManagerChild *child)
 {
     MilterManagerChildrenPrivate *priv;
@@ -220,6 +227,12 @@ milter_manager_children_add_child (MilterManagerChildren *children,
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     priv->milters = g_list_prepend(priv->milters, g_object_ref(child));
+}
+
+guint
+milter_manager_children_length (MilterManagerChildren *children)
+{
+    return g_list_length(MILTER_MANAGER_CHILDREN_GET_PRIVATE(children)->milters);
 }
 
 GList *
@@ -234,7 +247,7 @@ milter_manager_children_foreach (MilterManagerChildren *children,
 {
     GList *milters;
 
-    milters = milter_manager_children_get_children(children);
+    milters = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children)->milters;
     g_list_foreach(milters, func, user_data);
 }
 
@@ -369,6 +382,7 @@ expire_child (MilterManagerChildren *children,
 
     teardown_server_context_signals(MILTER_MANAGER_CHILD(context), children);
     priv->milters = g_list_remove(priv->milters, context);
+    priv->quitted_milters = g_list_prepend(priv->milters, context);
 }
 
 static void
@@ -738,12 +752,10 @@ teardown_server_context_signals (MilterManagerChild *child,
 
     DISCONNECT(error);
 #undef DISCONNECT
-
-    g_object_unref(child);
 }
 
 static MilterStatus
-child_negotiate (MilterManagerChild *child, MilterOption *option, 
+child_negotiate (MilterManagerChild *child, MilterOption *option,
                  MilterManagerChildren *children)
 {
     MilterManagerChildrenPrivate *priv;

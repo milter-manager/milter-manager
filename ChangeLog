@@ -1,5 +1,10 @@
 2008-10-28  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.[ch]:
+	- add milter_manager_children_length().
+	- don't unref child while signal callback. decoder owned by
+	the unrefed child may be processing.
+
 	* milter/manager/milter-manager-child.[ch]: add child's name accessors.
 
 	* test/manager/test-controller.c: spawn -> egg.

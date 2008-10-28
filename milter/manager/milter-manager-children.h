@@ -63,6 +63,7 @@ MilterManagerChildren *milter_manager_children_new         (MilterManagerConfigu
 
 void                   milter_manager_children_add_child   (MilterManagerChildren *children,
                                                             MilterManagerChild    *child);
+guint                  milter_manager_children_length      (MilterManagerChildren *children);
 GList                 *milter_manager_children_get_children(MilterManagerChildren *children);
 void                   milter_manager_children_foreach     (MilterManagerChildren *children,
                                                             GFunc                  func,
