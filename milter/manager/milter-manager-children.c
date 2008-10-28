@@ -719,6 +719,8 @@ teardown_server_context_signals (MilterManagerChild *child,
 
     DISCONNECT(error);
 #undef DISCONNECT
+
+    g_object_unref(child);
 }
 
 static MilterStatus
