@@ -358,8 +358,21 @@ static void
 cb_temporary_failure (MilterServerContext *context, gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
+    MilterServerContextState state;
 
-    compile_reply_status(children, MILTER_STATUS_TEMPORARY_FAILURE);
+    state = milter_server_context_get_state(context);
+
+    switch (state) {
+      case MILTER_SERVER_CONTEXT_STATE_START:
+      case MILTER_SERVER_CONTEXT_STATE_NEGOTIATE:
+      case MILTER_SERVER_CONTEXT_STATE_CONNECT:
+      case MILTER_SERVER_CONTEXT_STATE_HELO:
+        expire_child(children, context);
+        break;
+      default:
+        compile_reply_status(children, MILTER_STATUS_TEMPORARY_FAILURE);
+        break;
+    }
     remove_child_from_queue(children, context);
 }
 

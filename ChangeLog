@@ -17,6 +17,9 @@
 	* milter/manager/milter-manager-children.c: If the status from a
 	filter is "ACCEPT" or "REJECT" or "DISCARD", send "QUIT" command and
 	remove the filter from children list.
+	* milter/manager/milter-manager-children.c (cb_temporary_failure):
+	expire the filter if the state is a connection-oriented routine (i.e.
+	NEGOTIATE or CONNECT or HELO).
 
 2008-10-27  Kouhei Sutou  <kou@cozmixng.org>
 
