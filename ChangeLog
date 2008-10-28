@@ -1,5 +1,7 @@
 2008-10-28  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/test-controller.c: spawn -> egg.
+
 	* ./: spawn -> egg.
 
 	* binding/ruby/test/test_spawn.rb: add tests for accessors.

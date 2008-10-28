@@ -103,7 +103,7 @@ setup_controller_signals (MilterManagerController *controller)
 }
 
 static void
-cb_output_received (GCutSpawn *spawn, const gchar *chunk, gsize size,
+cb_output_received (GCutEgg *egg, const gchar *chunk, gsize size,
                     gpointer user_data)
 {
     if (g_str_has_prefix(chunk, "ready")) {
@@ -172,7 +172,7 @@ cb_output_received (GCutSpawn *spawn, const gchar *chunk, gsize size,
 }
 
 static void
-cb_error_received (GCutSpawn *spawn, const gchar *chunk, gsize size,
+cb_error_received (GCutEgg *egg, const gchar *chunk, gsize size,
                    gpointer user_data)
 {
     GString *string;
@@ -183,16 +183,16 @@ cb_error_received (GCutSpawn *spawn, const gchar *chunk, gsize size,
 }
 
 static void
-cb_reaped (GCutSpawn *spawn, gint status, gpointer user_data)
+cb_reaped (GCutEgg *egg, gint status, gpointer user_data)
 {
     client_reaped = TRUE;
 }
 
 static void
-setup_spawn_signals (GCutSpawn *spawn)
+setup_egg_signals (GCutEgg *egg)
 {
 #define CONNECT(name)                                                   \
-    g_signal_connect(spawn, #name, G_CALLBACK(cb_ ## name), NULL)
+    g_signal_connect(egg, #name, G_CALLBACK(cb_ ## name), NULL)
 
     CONNECT(output_received);
     CONNECT(error_received);
@@ -202,10 +202,10 @@ setup_spawn_signals (GCutSpawn *spawn)
 }
 
 static void
-teardown_spawn_signals (GCutSpawn *spawn)
+teardown_egg_signals (GCutEgg *egg)
 {
 #define DISCONNECT(name)                                                \
-    g_signal_handlers_disconnect_by_func(spawn,                         \
+    g_signal_handlers_disconnect_by_func(egg,                           \
                                          G_CALLBACK(cb_ ## name),       \
                                          NULL)
 
@@ -217,25 +217,25 @@ teardown_spawn_signals (GCutSpawn *spawn)
 }
 
 static void
-free_spawn (GCutSpawn *spawn)
+free_egg (GCutEgg *egg)
 {
-    teardown_spawn_signals(spawn);
-    g_object_unref(spawn);
+    teardown_egg_signals(egg);
+    g_object_unref(egg);
 }
 
 static void
-make_spawn (const gchar *command, ...)
+make_egg (const gchar *command, ...)
 {
-    GCutSpawn *spawn;
+    GCutEgg *egg;
     va_list args;
 
     va_start(args, command);
-    spawn = gcut_spawn_new_va_list(command, args);
+    egg = gcut_egg_new_va_list(command, args);
     va_end(args);
 
-    setup_spawn_signals(spawn);
+    setup_egg_signals(egg);
 
-    test_milters = g_list_prepend(test_milters, spawn);
+    test_milters = g_list_prepend(test_milters, egg);
 }
 
 void
@@ -294,7 +294,7 @@ teardown (void)
         g_object_unref(option);
 
     if (test_milters) {
-        g_list_foreach(test_milters, (GFunc)free_spawn, NULL);
+        g_list_foreach(test_milters, (GFunc)free_egg, NULL);
         g_list_free(test_milters);
     }
 
@@ -317,11 +317,11 @@ teardown (void)
 }
 
 static void
-run_spawn (GCutSpawn *spawn)
+hatch_egg (GCutEgg *egg)
 {
     GError *error = NULL;
 
-    gcut_spawn_run(spawn, &error);
+    gcut_egg_hatch(egg, &error);
     gcut_assert_error(error);
 
     while (!client_ready && !client_reaped)
@@ -400,9 +400,9 @@ test_negotiate (void)
                                MILTER_ACTION_CHANGE_BODY,
                                MILTER_STEP_NONE);
 
-    make_spawn(test_client_path, "--print-status",
-               "--timeout", "1.0", "--port", "10025", NULL);
-    g_list_foreach(test_milters, (GFunc)run_spawn, NULL);
+    make_egg(test_client_path, "--print-status",
+             "--timeout", "1.0", "--port", "10025", NULL);
+    g_list_foreach(test_milters, (GFunc)hatch_egg, NULL);
 
     milter_manager_controller_negotiate(controller, option);
     wait_response("negotiate");
