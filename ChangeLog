@@ -5,6 +5,8 @@
 	* data/milter-manager.conf, test/manager/test-controller.c: A new baby
 	was born.
 	* test/manager/test-egg.c: Unset MILTER_LOG_LEVEL.
+	* milter/manager/milter-manager-children.c: Remove from reply queue if
+	timeout is occured.
 
 2008-10-28  Kouhei Sutou  <kou@cozmixng.org>
 
