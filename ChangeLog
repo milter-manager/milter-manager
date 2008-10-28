@@ -34,6 +34,8 @@
 	MILTER_STATUS_CONTINUE < MILTER_STATUS_ACCEPT <
 	MILTER_STATUS_TEMPORARY_FAILURE < MILTER_STATUS_DISCARD <
 	MILTER_STATUS_REJECT. 
+	* milter/manager/milter-manager-children.c: "progress" and
+	"quarantine" reply are only allowed in end of message session.
 
 2008-10-27  Kouhei Sutou  <kou@cozmixng.org>
 

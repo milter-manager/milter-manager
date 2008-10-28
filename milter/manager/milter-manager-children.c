@@ -526,6 +526,14 @@ static void
 cb_progress (MilterServerContext *context, gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
+    MilterServerContextState state;
+
+    state = milter_server_context_get_state(context);
+
+    if (state != MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) {
+        milter_error("PROGRESS reply is only allowed in end of message session");
+        return;
+    }
 
     g_signal_emit_by_name(children, "progress");
 }
@@ -536,6 +544,14 @@ cb_quarantine (MilterServerContext *context,
                gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
+    MilterServerContextState state;
+
+    state = milter_server_context_get_state(context);
+
+    if (state != MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) {
+        milter_error("QUARANTINE reply is only allowed in end of message session");
+        return;
+    }
 
     g_signal_emit_by_name(children, "quarantine");
 }
