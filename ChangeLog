@@ -11,6 +11,8 @@
 	* test/manager/test-egg.c: Unset MILTER_LOG_LEVEL.
 	* milter/manager/milter-manager-children.c: Remove from reply queue if
 	timeout is occured.
+	* milter/manager/milter-manager-children.c (cb_skip, cb_quarantine):
+	Remove reply queue if state check fails. 
 
 2008-10-28  Kouhei Sutou  <kou@cozmixng.org>
 
