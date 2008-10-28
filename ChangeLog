@@ -14,6 +14,9 @@
 	when all filters have returned response.
 	* milter/manager/milter-manager-children.c: Also added child to queue in
 	body command.
+	* milter/manager/milter-manager-children.c: If the status from a
+	filter is "ACCEPT" or "REJECT" or "DISCARD", send "QUIT" command and
+	remove the filter from children list.
 
 2008-10-27  Kouhei Sutou  <kou@cozmixng.org>
 

@@ -325,6 +325,19 @@ remove_child_from_queue (MilterManagerChildren *children,
 }
 
 static void
+expire_child (MilterManagerChildren *children,
+              MilterServerContext *context)
+{
+    MilterManagerChildrenPrivate *priv;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    milter_server_context_quit(context);
+    teardown_server_context_signals(MILTER_MANAGER_CHILD(context), children);
+    priv->milters = g_list_remove(priv->milters, context);
+}
+
+static void
 cb_continue (MilterServerContext *context, gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
@@ -355,6 +368,8 @@ cb_reject (MilterServerContext *context, gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
 
+    expire_child(children, context);
+
     compile_reply_status(children, MILTER_STATUS_REJECT);
     remove_child_from_queue(children, context);
 }
@@ -363,12 +378,8 @@ static void
 cb_accept (MilterServerContext *context, gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
-    MilterManagerChildrenPrivate *priv;
 
-    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
-
-    teardown_server_context_signals(MILTER_MANAGER_CHILD(context), user_data);
-    priv->milters = g_list_remove(priv->milters, context);
+    expire_child(children, context);
 
     compile_reply_status(children, MILTER_STATUS_ACCEPT);
     remove_child_from_queue(children, context);
@@ -378,6 +389,8 @@ static void
 cb_discard (MilterServerContext *context, gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
+
+    expire_child(children, context);
 
     compile_reply_status(children, MILTER_STATUS_DISCARD);
     remove_child_from_queue(children, context);
