@@ -23,6 +23,9 @@
 	* milter/manager/milter-manager-children.c (cb_reject): expire the
 	filter except ENVELOPE_RECEIPT routine. In the case of
 	ENVELOPE_RECEIPT, reject the receipt and continue the session.
+	* milter/manager/milter-manager-children.c: milter_error if SKIP reply
+	is received not in BODY. send BODY command if skip reply has not been
+	received yet.
 
 2008-10-27  Kouhei Sutou  <kou@cozmixng.org>
 

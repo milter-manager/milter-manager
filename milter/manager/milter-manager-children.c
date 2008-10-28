@@ -526,7 +526,14 @@ static void
 cb_skip (MilterServerContext *context, gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
+    MilterServerContextState state;
 
+    state = milter_server_context_get_state(context);
+
+    if (state != MILTER_SERVER_CONTEXT_STATE_BODY) {
+        milter_error("SKIP reply is only allowed in body session");
+        return;
+    }
     g_signal_emit_by_name(children, "skip");
 }
 
@@ -943,6 +950,9 @@ milter_manager_children_body (MilterManagerChildren *children,
         MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
 
         if (milter_server_context_is_enable_step(context, MILTER_STEP_NO_BODY))
+            continue;
+
+        if (milter_server_context_get_skip_body(context))
             continue;
 
         g_queue_push_tail(priv->reply_queue, context);
