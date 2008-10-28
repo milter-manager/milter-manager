@@ -33,6 +33,7 @@ typedef struct _MilterManagerEggPrivate MilterManagerEggPrivate;
 struct _MilterManagerEggPrivate
 {
     gchar *name;
+    gchar *connection_spec;
     guint connection_timeout;
     guint writing_timeout;
     guint reading_timeout;
@@ -45,6 +46,7 @@ enum
 {
     PROP_0,
     PROP_NAME,
+    PROP_CONNECTION_SPEC,
     PROP_CONNECTION_TIMEOUT,
     PROP_WRITING_TIMEOUT,
     PROP_READING_TIMEOUT,
@@ -86,10 +88,19 @@ milter_manager_egg_class_init (MilterManagerEggClass *klass)
                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_NAME, spec);
 
+    spec = g_param_spec_string("connection-spec",
+                               "Connection spec",
+                               "The connection spec of the milter egg",
+                               NULL,
+                               G_PARAM_READABLE);
+    g_object_class_install_property(gobject_class, PROP_CONNECTION_SPEC, spec);
+
     spec = g_param_spec_uint("connection-timeout",
                              "Connection timeout",
                              "The connection timeout of the milter egg",
-                             0, G_MAXUINT, 0,
+                             0,
+                             G_MAXUINT,
+                             MILTER_SERVER_CONTEXT_DEFAULT_CONNECTION_TIMEOUT,
                              G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_CONNECTION_TIMEOUT,
                                     spec);
@@ -97,7 +108,9 @@ milter_manager_egg_class_init (MilterManagerEggClass *klass)
     spec = g_param_spec_uint("writing-timeout",
                              "Writing timeout",
                              "The writing timeout of the milter egg",
-                             0, G_MAXUINT, 0,
+                             0,
+                             G_MAXUINT,
+                             MILTER_SERVER_CONTEXT_DEFAULT_WRITING_TIMEOUT,
                              G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_WRITING_TIMEOUT,
                                     spec);
@@ -105,7 +118,9 @@ milter_manager_egg_class_init (MilterManagerEggClass *klass)
     spec = g_param_spec_uint("reading-timeout",
                              "Reading timeout",
                              "The reading timeout of the milter egg",
-                             0, G_MAXUINT, 0,
+                             0,
+                             G_MAXUINT,
+                             MILTER_SERVER_CONTEXT_DEFAULT_READING_TIMEOUT,
                              G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_READING_TIMEOUT,
                                     spec);
@@ -113,7 +128,9 @@ milter_manager_egg_class_init (MilterManagerEggClass *klass)
     spec = g_param_spec_uint("end-of-message-timeout",
                              "End of message timeout",
                              "The end-of-message timeout of the milter egg",
-                             0, G_MAXUINT, 0,
+                             0,
+                             G_MAXUINT,
+                             MILTER_SERVER_CONTEXT_DEFAULT_END_OF_MESSAGE_TIMEOUT,
                              G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_END_OF_MESSAGE_TIMEOUT,
                                     spec);
@@ -143,10 +160,12 @@ milter_manager_egg_init (MilterManagerEgg *egg)
 
     priv = MILTER_MANAGER_EGG_GET_PRIVATE(egg);
     priv->name = NULL;
-    priv->connection_timeout = 0;
-    priv->writing_timeout = 0;
-    priv->reading_timeout = 0;
-    priv->end_of_message_timeout = 0;
+    priv->connection_spec = NULL;
+    priv->connection_timeout = MILTER_SERVER_CONTEXT_DEFAULT_CONNECTION_TIMEOUT;
+    priv->writing_timeout = MILTER_SERVER_CONTEXT_DEFAULT_WRITING_TIMEOUT;
+    priv->reading_timeout = MILTER_SERVER_CONTEXT_DEFAULT_READING_TIMEOUT;
+    priv->end_of_message_timeout =
+        MILTER_SERVER_CONTEXT_DEFAULT_END_OF_MESSAGE_TIMEOUT;
     priv->user_name = NULL;
     priv->command = NULL;
 }
@@ -161,6 +180,11 @@ dispose (GObject *object)
     if (priv->name) {
         g_free(priv->name);
         priv->name = NULL;
+    }
+
+    if (priv->connection_spec) {
+        g_free(priv->connection_spec);
+        priv->connection_spec = NULL;
     }
 
     if (priv->user_name) {
@@ -229,6 +253,9 @@ get_property (GObject    *object,
       case PROP_NAME:
         g_value_set_string(value, priv->name);
         break;
+      case PROP_CONNECTION_SPEC:
+        g_value_set_string(value, priv->connection_spec);
+        break;
       case PROP_CONNECTION_TIMEOUT:
         g_value_set_uint(value, priv->connection_timeout);
         break;
@@ -253,12 +280,71 @@ get_property (GObject    *object,
     }
 }
 
+GQuark
+milter_manager_egg_error_quark (void)
+{
+    return g_quark_from_static_string("milter-manager-egg-error-quark");
+}
+
 MilterManagerEgg *
 milter_manager_egg_new (const gchar *name)
 {
     return g_object_new(MILTER_TYPE_MANAGER_EGG,
                         "name", name,
                         NULL);
+}
+
+static MilterManagerChild *
+hatch (const gchar *first_name, ...)
+{
+    MilterManagerChild *child;
+    va_list args;
+
+    va_start(args, first_name);
+    child = milter_manager_child_new_va_list(first_name, args);
+    va_end(args);
+
+    return child;
+}
+
+MilterManagerChild *
+milter_manager_egg_hatch (MilterManagerEgg *egg)
+{
+    MilterManagerChild *child;
+    MilterManagerEggPrivate *priv;
+
+    priv = MILTER_MANAGER_EGG_GET_PRIVATE(egg);
+
+    child = hatch("name", priv->name,
+                  "connection-timeout", priv->connection_timeout,
+                  "writing-timeout", priv->writing_timeout,
+                  "reading-timeout", priv->reading_timeout,
+                  "end-of-message-timeout", priv->end_of_message_timeout,
+                  "user-name", priv->user_name,
+                  "command", priv->command,
+                  NULL);
+
+    if (priv->connection_spec) {
+        GError *error = NULL;
+        MilterServerContext *context;
+
+        context = MILTER_SERVER_CONTEXT(child);
+        if (!milter_server_context_set_connection_spec(context,
+                                                       priv->connection_spec,
+                                                       &error)) {
+            milter_error("<%s>: invalid connection spec: %s",
+                         priv->name ? priv->name : "(null)",
+                         error->message);
+            g_error_free(error);
+        }
+    } else {
+        milter_error("<%s>: must set connection spec",
+                     priv->name ? priv->name : "(null)");
+        g_object_unref(child);
+        child = NULL;
+    }
+
+    return child;
 }
 
 void
@@ -276,6 +362,58 @@ const gchar *
 milter_manager_egg_get_name (MilterManagerEgg *egg)
 {
     return MILTER_MANAGER_EGG_GET_PRIVATE(egg)->name;
+}
+
+gboolean
+milter_manager_egg_set_connection_spec (MilterManagerEgg *egg,
+                                        const gchar *spec, GError **error)
+
+{
+    MilterManagerEggPrivate *priv;
+    GError *spec_error = NULL;
+    gboolean success = TRUE;
+    gint domain;
+    struct sockaddr *address = NULL;
+    socklen_t address_length;
+
+    priv = MILTER_MANAGER_EGG_GET_PRIVATE(egg);
+
+    if (spec)
+        success = milter_utils_parse_connection_spec(spec,
+                                                     &domain,
+                                                     &address,
+                                                     &address_length,
+                                                     &spec_error);
+
+    if (address)
+        g_free(address);
+
+    if (success) {
+        if (priv->connection_spec)
+            g_free(priv->connection_spec);
+        priv->connection_spec = g_strdup(spec);
+    } else {
+        GError *wrapped_error = NULL;
+
+        milter_utils_set_error_with_sub_error(&wrapped_error,
+                                              MILTER_MANAGER_EGG_ERROR,
+                                              MILTER_MANAGER_EGG_ERROR_INVALID,
+                                              spec_error,
+                                              "<%s>: invalid connection spec",
+                                              priv->name ? priv->name : "(null)");
+        milter_error("%s", wrapped_error->message);
+        if (error)
+            *error = g_error_copy(wrapped_error);
+        g_error_free(wrapped_error);
+    }
+
+    return success;
+}
+
+const gchar *
+milter_manager_egg_get_connection_spec (MilterManagerEgg *egg)
+{
+    return MILTER_MANAGER_EGG_GET_PRIVATE(egg)->connection_spec;
 }
 
 void

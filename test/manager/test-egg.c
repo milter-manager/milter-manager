@@ -27,7 +27,10 @@
 #undef shutdown
 
 void test_new (void);
+void test_hatch (void);
 void test_name (void);
+void test_connection_spec (void);
+void test_connection_spec_error (void);
 void test_connection_timeout (void);
 void test_writing_timeout (void);
 void test_reading_timeout (void);
@@ -36,11 +39,19 @@ void test_user_name (void);
 void test_command (void);
 
 static MilterManagerEgg *egg;
+static MilterManagerChild *child;
+
+static GError *expected_error;
+static GError *actual_error;
 
 void
 setup (void)
 {
     egg = NULL;
+    child = NULL;
+
+    expected_error = NULL;
+    actual_error = NULL;
 }
 
 void
@@ -48,6 +59,13 @@ teardown (void)
 {
     if (egg)
         g_object_unref(egg);
+    if (child)
+        g_object_unref(child);
+
+    if (expected_error)
+        g_error_free(expected_error);
+    if (actual_error)
+        g_error_free(actual_error);
 }
 
 void
@@ -57,10 +75,31 @@ test_new (void)
 
     egg = milter_manager_egg_new(name);
     cut_assert_equal_string(name, milter_manager_egg_get_name(egg));
-    cut_assert_equal_uint(0, milter_manager_egg_get_connection_timeout(egg));
-    cut_assert_equal_uint(0, milter_manager_egg_get_writing_timeout(egg));
-    cut_assert_equal_uint(0, milter_manager_egg_get_reading_timeout(egg));
-    cut_assert_equal_uint(0, milter_manager_egg_get_end_of_message_timeout(egg));
+    cut_assert_equal_uint(MILTER_SERVER_CONTEXT_DEFAULT_CONNECTION_TIMEOUT,
+                          milter_manager_egg_get_connection_timeout(egg));
+    cut_assert_equal_uint(MILTER_SERVER_CONTEXT_DEFAULT_WRITING_TIMEOUT,
+                          milter_manager_egg_get_writing_timeout(egg));
+    cut_assert_equal_uint(MILTER_SERVER_CONTEXT_DEFAULT_READING_TIMEOUT,
+                          milter_manager_egg_get_reading_timeout(egg));
+    cut_assert_equal_uint(MILTER_SERVER_CONTEXT_DEFAULT_END_OF_MESSAGE_TIMEOUT,
+                          milter_manager_egg_get_end_of_message_timeout(egg));
+}
+
+void
+test_hatch (void)
+{
+    const gchar spec[] = "inet:9999@127.0.0.1";
+    GError *error = NULL;
+
+    egg = milter_manager_egg_new("child-milter");
+
+    milter_manager_egg_set_connection_spec(egg, spec, &error);
+    gcut_assert_error(error);
+
+    child = milter_manager_egg_hatch(egg);
+    cut_assert_not_null(child);
+    cut_assert_equal_string("child-milter",
+                            milter_manager_child_get_name(child));
 }
 
 void
@@ -73,6 +112,38 @@ test_name (void)
     cut_assert_equal_string(name, milter_manager_egg_get_name(egg));
     milter_manager_egg_set_name(egg, new_name);
     cut_assert_equal_string(new_name, milter_manager_egg_get_name(egg));
+}
+
+void
+test_connection_spec (void)
+{
+    const gchar spec[] = "inet:9999@127.0.0.1";
+    GError *error = NULL;
+
+    egg = milter_manager_egg_new("child-milter");
+
+    milter_manager_egg_set_connection_spec(egg, spec, &error);
+    gcut_assert_error(error);
+    cut_assert_equal_string(spec, milter_manager_egg_get_connection_spec(egg));
+}
+
+void
+test_connection_spec_error (void)
+{
+    const gchar spec[] = "unknown:9999@127.0.0.1";
+
+    egg = milter_manager_egg_new("child-milter");
+
+    expected_error = g_error_new(MILTER_MANAGER_EGG_ERROR,
+                                 MILTER_MANAGER_EGG_ERROR_INVALID,
+                                 "<child-milter>: invalid connection spec: "
+                                 "milter-utils-error-quark:%d: "
+                                 "protocol must be 'unix', 'inet' or 'inet6': "
+                                 "<%s>: <unknown>",
+                                 MILTER_UTILS_ERROR_INVALID_FORMAT,
+                                 spec);
+    milter_manager_egg_set_connection_spec(egg, spec, &actual_error);
+    gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void

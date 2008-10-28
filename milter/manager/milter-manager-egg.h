@@ -24,8 +24,11 @@
 
 #include <milter/client.h>
 #include <milter/server.h>
+#include <milter/manager/milter-manager-child.h>
 
 G_BEGIN_DECLS
+
+#define MILTER_MANAGER_EGG_ERROR           (milter_manager_egg_error_quark())
 
 #define MILTER_TYPE_MANAGER_EGG            (milter_manager_egg_get_type())
 #define MILTER_MANAGER_EGG(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), MILTER_TYPE_MANAGER_EGG, MilterManagerEgg))
@@ -33,6 +36,11 @@ G_BEGIN_DECLS
 #define MILTER_MANAGER_IS_EGG(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), MILTER_TYPE_MANAGER_EGG))
 #define MILTER_MANAGER_IS_EGG_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), MILTER_TYPE_MANAGER_EGG))
 #define MILTER_MANAGER_EGG_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MILTER_TYPE_MANAGER_EGG, MilterManagerEggClass))
+
+typedef enum
+{
+    MILTER_MANAGER_EGG_ERROR_INVALID
+} MilterManagerEggError;
 
 typedef struct _MilterManagerEgg         MilterManagerEgg;
 typedef struct _MilterManagerEggClass    MilterManagerEggClass;
@@ -47,43 +55,53 @@ struct _MilterManagerEggClass
     GObjectClass parent_class;
 };
 
+GQuark              milter_manager_egg_error_quark (void);
+
 GType               milter_manager_egg_get_type (void) G_GNUC_CONST;
 
-MilterManagerEgg *milter_manager_egg_new      (const gchar *name);
+MilterManagerEgg   *milter_manager_egg_new      (const gchar *name);
+
+MilterManagerChild *milter_manager_egg_hatch    (MilterManagerEgg *egg);
 
 void                milter_manager_egg_set_name (MilterManagerEgg *egg,
-                                                   const gchar *name);
+                                                 const gchar *name);
 const gchar        *milter_manager_egg_get_name (MilterManagerEgg *egg);
+gboolean            milter_manager_egg_set_connection_spec
+                                                (MilterManagerEgg *egg,
+                                                 const gchar *connection_spec,
+                                                 GError      **error);
+const gchar        *milter_manager_egg_get_connection_spec
+                                                (MilterManagerEgg *egg);
 void                milter_manager_egg_set_connection_timeout
-                                                  (MilterManagerEgg *egg,
-                                                   guint connection_timeout);
+                                                (MilterManagerEgg *egg,
+                                                 guint connection_timeout);
 guint               milter_manager_egg_get_connection_timeout
-                                                  (MilterManagerEgg *egg);
+                                                (MilterManagerEgg *egg);
 void                milter_manager_egg_set_writing_timeout
-                                                  (MilterManagerEgg *egg,
-                                                   guint writing_timeout);
+                                                (MilterManagerEgg *egg,
+                                                 guint writing_timeout);
 guint               milter_manager_egg_get_writing_timeout
-                                                  (MilterManagerEgg *egg);
+                                                (MilterManagerEgg *egg);
 void                milter_manager_egg_set_reading_timeout
-                                                  (MilterManagerEgg *egg,
-                                                   guint reading_timeout);
+                                                (MilterManagerEgg *egg,
+                                                 guint reading_timeout);
 guint               milter_manager_egg_get_reading_timeout
-                                                  (MilterManagerEgg *egg);
+                                                (MilterManagerEgg *egg);
 void                milter_manager_egg_set_end_of_message_timeout
-                                                  (MilterManagerEgg *egg,
-                                                   guint end_of_message_timeout);
+                                                (MilterManagerEgg *egg,
+                                                 guint end_of_message_timeout);
 guint               milter_manager_egg_get_end_of_message_timeout
-                                                  (MilterManagerEgg *egg);
+                                                (MilterManagerEgg *egg);
 void                milter_manager_egg_set_user_name
-                                                  (MilterManagerEgg *egg,
-                                                   const gchar *user_name);
+                                                (MilterManagerEgg *egg,
+                                                 const gchar *user_name);
 const gchar        *milter_manager_egg_get_user_name
-                                                  (MilterManagerEgg *egg);
+                                                (MilterManagerEgg *egg);
 void                milter_manager_egg_set_command
-                                                  (MilterManagerEgg *egg,
-                                                   const gchar *command);
+                                                (MilterManagerEgg *egg,
+                                                 const gchar *command);
 const gchar        *milter_manager_egg_get_command
-                                                  (MilterManagerEgg *egg);
+                                                (MilterManagerEgg *egg);
 
 G_END_DECLS
 

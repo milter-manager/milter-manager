@@ -1,5 +1,8 @@
 2008-10-28  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-egg.[ch], test/manager/test-egg.c: support
+	connection spec and hatch.
+
 	* milter/manager/milter-manager-children.[ch]:
 	- add milter_manager_children_length().
 	- don't unref child while signal callback. decoder owned by
@@ -40,7 +43,7 @@
 	* milter/manager/milter-manager-children.c (compile_reply_status):
 	MILTER_STATUS_CONTINUE < MILTER_STATUS_ACCEPT <
 	MILTER_STATUS_TEMPORARY_FAILURE < MILTER_STATUS_DISCARD <
-	MILTER_STATUS_REJECT. 
+	MILTER_STATUS_REJECT.
 	* milter/manager/milter-manager-children.c: "progress" and
 	"quarantine" reply are only allowed in end of message session.
 	* milter/manager/milter-manager-children.c: Unref MilterChild in
