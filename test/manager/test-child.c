@@ -31,6 +31,7 @@ static MilterManagerChild *milter;
 static GError *actual_error;
 static GError *expected_error;
 static gboolean error_occured;
+static const gchar *milter_log_level;
 
 static void
 cb_error (MilterErrorEmitable *emitable,
@@ -47,6 +48,8 @@ setup (void)
     actual_error = NULL;
     expected_error = NULL;
     error_occured = FALSE;
+
+    milter_log_level = g_getenv("MILTER_LOG_LEVEL");
 }
 
 void
@@ -58,6 +61,8 @@ teardown (void)
         g_error_free(actual_error);
     if (expected_error)
         g_error_free(expected_error);
+    if (milter_log_level)
+        g_setenv("MILTER_LOG_LEVEL", milter_log_level, TRUE);
 }
 
 void
@@ -79,6 +84,7 @@ test_exit_error (void)
                                  "test-milter exits with status: %d", 0);
     g_signal_connect(milter, "error", G_CALLBACK(cb_error), NULL);
 
+    g_setenv("MILTER_LOG_LEVEL", NULL, TRUE);
     cut_trace(test_start());
     while (!error_occured)
         g_main_context_iteration(NULL, TRUE);

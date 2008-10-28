@@ -42,6 +42,8 @@
 	filter if timeout is happend.
 	* milter/manager/milter-manager-controller.c: Cleanup unused timeout
 	codes.
+	* test/manager/test-child.c: Set MILTER_LOG_LEVEL environment value to
+	suppress milter's log output.
 
 2008-10-27  Kouhei Sutou  <kou@cozmixng.org>
 
