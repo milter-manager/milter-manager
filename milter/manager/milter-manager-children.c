@@ -380,10 +380,19 @@ static void
 cb_reject (MilterServerContext *context, gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
+    MilterServerContextState state;
 
-    expire_child(children, context);
+    state = milter_server_context_get_state(context);
 
-    compile_reply_status(children, MILTER_STATUS_REJECT);
+    switch (state) {
+      case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECEIPT:
+        compile_reply_status(children, MILTER_STATUS_REJECT);
+        break;
+      default:
+        expire_child(children, context);
+        break;
+    }
+
     remove_child_from_queue(children, context);
 }
 

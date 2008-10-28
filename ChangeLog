@@ -20,6 +20,9 @@
 	* milter/manager/milter-manager-children.c (cb_temporary_failure):
 	expire the filter if the state is a connection-oriented routine (i.e.
 	NEGOTIATE or CONNECT or HELO).
+	* milter/manager/milter-manager-children.c (cb_reject): expire the
+	filter except ENVELOPE_RECEIPT routine. In the case of
+	ENVELOPE_RECEIPT, reject the receipt and continue the session.
 
 2008-10-27  Kouhei Sutou  <kou@cozmixng.org>
 
