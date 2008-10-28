@@ -1,3 +1,7 @@
+2008-10-29  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/manager/milter-manager-child.h: MANAGER_TYPE -> TYPE_MANAGER.
+
 2008-10-29  Hiroyuki Ikezoe  <poincare@ikezoe.net>
 
 	* milter/manager/milter-manager-children.c: Initialize quitted_milters
