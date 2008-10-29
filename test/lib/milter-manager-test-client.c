@@ -112,64 +112,6 @@ milter_manager_test_client_init (MilterManagerTestClient *test_client)
     priv->unknown_command = NULL;
 }
 
-static void
-dispose (GObject *object)
-{
-    MilterManagerTestClientPrivate *priv;
-
-    priv = MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(object);
-
-    if (priv->egg) {
-        g_object_unref(priv->egg);
-        priv->egg = NULL;
-    }
-
-    if (priv->test_client_path) {
-        g_free(priv->test_client_path);
-        priv->test_client_path = NULL;
-    }
-
-    if (priv->header_name) {
-        g_free(priv->header_name);
-        priv->header_name = NULL;
-    }
-
-    if (priv->header_value) {
-        g_free(priv->header_value);
-        priv->header_value = NULL;
-    }
-
-    if (priv->body_chunk) {
-        g_free(priv->body_chunk);
-        priv->body_chunk = NULL;
-    }
-
-    if (priv->end_of_message_chunk) {
-        g_free(priv->end_of_message_chunk);
-        priv->end_of_message_chunk = NULL;
-    }
-
-    if (priv->unknown_command) {
-        g_free(priv->unknown_command);
-        priv->unknown_command = NULL;
-    }
-
-    G_OBJECT_CLASS(milter_manager_test_client_parent_class)->dispose(object);
-}
-
-MilterManagerTestClient *
-milter_manager_test_client_new (const guint port)
-{
-    MilterManagerTestClient *client;
-    MilterManagerTestClientPrivate *priv;
-
-    client = g_object_new(MILTER_TYPE_MANAGER_TEST_CLIENT, NULL);
-    priv = MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client);
-    priv->port = port;
-
-    return client;
-}
-
 static gchar *
 receive_additional_info (const gchar *chunk, gsize size, const gchar *prefix)
 {
@@ -290,6 +232,88 @@ setup_egg_signals (GCutEgg *egg, MilterManagerTestClient *client)
 #undef CONNECT
 }
 
+static void
+teardown_egg_signals (GCutEgg *egg, MilterManagerTestClient *client)
+{
+#define DISCONNECT(name)                                                \
+    g_signal_handlers_disconnect_by_func(egg,                           \
+                                         G_CALLBACK(cb_ ## name),       \
+                                         client)
+
+    DISCONNECT(output_received);
+    DISCONNECT(error_received);
+    DISCONNECT(reaped);
+
+#undef DISCONNECT
+}
+
+static void
+egg_free (GCutEgg *egg, MilterManagerTestClient *client)
+{
+    teardown_egg_signals(egg, client);
+    g_object_unref(egg);
+}
+
+static void
+dispose (GObject *object)
+{
+    MilterManagerTestClient *client;
+    MilterManagerTestClientPrivate *priv;
+
+    client = MILTER_MANAGER_TEST_CLIENT(object);
+    priv = MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(object);
+
+    if (priv->egg) {
+        egg_free(priv->egg, client);
+        priv->egg = NULL;
+    }
+
+    if (priv->test_client_path) {
+        g_free(priv->test_client_path);
+        priv->test_client_path = NULL;
+    }
+
+    if (priv->header_name) {
+        g_free(priv->header_name);
+        priv->header_name = NULL;
+    }
+
+    if (priv->header_value) {
+        g_free(priv->header_value);
+        priv->header_value = NULL;
+    }
+
+    if (priv->body_chunk) {
+        g_free(priv->body_chunk);
+        priv->body_chunk = NULL;
+    }
+
+    if (priv->end_of_message_chunk) {
+        g_free(priv->end_of_message_chunk);
+        priv->end_of_message_chunk = NULL;
+    }
+
+    if (priv->unknown_command) {
+        g_free(priv->unknown_command);
+        priv->unknown_command = NULL;
+    }
+
+    G_OBJECT_CLASS(milter_manager_test_client_parent_class)->dispose(object);
+}
+
+MilterManagerTestClient *
+milter_manager_test_client_new (const guint port)
+{
+    MilterManagerTestClient *client;
+    MilterManagerTestClientPrivate *priv;
+
+    client = g_object_new(MILTER_TYPE_MANAGER_TEST_CLIENT, NULL);
+    priv = MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client);
+    priv->port = port;
+
+    return client;
+}
+
 gboolean
 milter_manager_test_client_run (MilterManagerTestClient *client, GError **error)
 {
@@ -299,7 +323,7 @@ milter_manager_test_client_run (MilterManagerTestClient *client, GError **error)
     priv = MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client);
 
     if (priv->egg)
-        g_object_unref(priv->egg);
+        egg_free(priv->egg, client);
 
     if (!priv->test_client_path)
         priv->test_client_path =
@@ -380,6 +404,12 @@ const gchar *
 milter_manager_test_client_get_header_value (MilterManagerTestClient *client)
 {
     return MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client)->header_value;
+}
+
+guint
+milter_manager_test_client_get_n_end_of_header_received (MilterManagerTestClient *client)
+{
+    return MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client)->n_end_of_header_received;
 }
 
 guint

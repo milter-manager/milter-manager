@@ -23,6 +23,7 @@
 
 #define shutdown inet_shutdown
 #include <milter-manager-test-utils.h>
+#include <milter-manager-test-client.h>
 #include <milter/manager/milter-manager-controller.h>
 #undef shutdown
 
@@ -47,36 +48,10 @@ static MilterManagerController *controller;
 static MilterOption *option;
 
 static GError *controller_error;
-
-static GList *test_milters;
-
-static gchar *test_client_path;
-
-static gboolean client_ready;
-static guint client_negotiated;
-static guint client_connected;
-static guint client_greeted;
-static guint client_envelope_from_received;
-static guint client_envelope_receipt_received;
-static guint client_data_received;
-static guint client_header_received;
-static guint client_end_of_header_received;
-static guint client_body_received;
-static guint client_end_of_message_received;
-static guint client_quit_received;
-static guint client_abort_received;
-static guint client_unknown_received;
-
-static gboolean client_reaped;
-
-static gchar *client_header_name;
-static gchar *client_header_value;
-
-static gchar *client_body_chunk;
-static gchar *client_end_of_message_chunk;
-static gchar *client_unknown_command;
-
 static gboolean finished;
+
+static GList *test_clients;
+
 
 static void
 add_load_path (const gchar *path)
@@ -89,6 +64,8 @@ add_load_path (const gchar *path)
 static void
 cb_error (MilterManagerController *controller, GError *error, gpointer user_data)
 {
+    if (controller_error)
+        g_error_free(controller_error);
     controller_error = g_error_copy(error);
 }
 
@@ -110,155 +87,6 @@ setup_controller_signals (MilterManagerController *controller)
 #undef CONNECT
 }
 
-static gchar *
-receive_additional_info (const gchar *chunk, gsize size, const gchar *prefix)
-{
-    gsize info_start_position;
-
-    info_start_position = strlen(prefix);
-    if (info_start_position < size)
-        return g_strndup(chunk + info_start_position,
-                         size - info_start_position - 1);
-    else
-        return NULL;
-}
-
-static void
-cb_output_received (GCutEgg *egg, const gchar *chunk, gsize size,
-                    gpointer user_data)
-{
-    if (g_str_has_prefix(chunk, "ready")) {
-        client_ready++;
-    } else if (g_str_has_prefix(chunk, "receive: negotiate")) {
-        client_negotiated++;
-    } else if (g_str_has_prefix(chunk, "receive: connect")) {
-        client_connected++;
-    } else if (g_str_has_prefix(chunk, "receive: helo")) {
-        client_greeted++;
-    } else if (g_str_has_prefix(chunk, "receive: mail")) {
-        client_envelope_from_received++;
-    } else if (g_str_has_prefix(chunk, "receive: rcpt")) {
-        client_envelope_receipt_received++;
-    } else if (g_str_has_prefix(chunk, "receive: data")) {
-        client_data_received++;
-    } else if (g_str_has_prefix(chunk, "receive: header")) {
-        gchar **items;
-
-        client_header_received++;
-
-        items = g_strsplit_set(chunk, " \n", -1);
-        if (items[0] && items[1] && items[2] && items[3]) {
-            if (client_header_name)
-                g_free(client_header_name);
-            if (client_header_value)
-                g_free(client_header_value);
-            client_header_name = g_strdup(items[2]);
-            client_header_value = g_strdup(items[3]);
-        }
-        g_strfreev(items);
-    } else if (g_str_has_prefix(chunk, "receive: end-of-header")) {
-        client_end_of_header_received++;
-    } else if (g_str_has_prefix(chunk, "receive: body")) {
-        client_body_received++;
-
-        if (client_body_chunk)
-            g_free(client_body_chunk);
-        client_body_chunk =
-            receive_additional_info(chunk, size, "receive: body: ");
-    } else if (g_str_has_prefix(chunk, "receive: end-of-message")) {
-        client_end_of_message_received++;
-
-        if (client_end_of_message_chunk)
-            g_free(client_end_of_message_chunk);
-        client_end_of_message_chunk =
-            receive_additional_info(chunk, size, "receive: end-of-message: ");
-    } else if (g_str_has_prefix(chunk, "receive: quit")) {
-        client_quit_received++;
-    } else if (g_str_has_prefix(chunk, "receive: abort")) {
-        client_abort_received++;
-    } else if (g_str_has_prefix(chunk, "receive: unknown")) {
-        client_unknown_received++;
-
-        if (client_unknown_command)
-            g_free(client_unknown_command);
-        client_unknown_command =
-            receive_additional_info(chunk, size, "receive: unknown: ");
-    } else {
-        GString *string;
-
-        string = g_string_new_len(chunk, size);
-        g_print("[OUTPUT] <%s>\n", string->str);
-        g_string_free(string, TRUE);
-    }
-}
-
-static void
-cb_error_received (GCutEgg *egg, const gchar *chunk, gsize size,
-                   gpointer user_data)
-{
-    GString *string;
-
-    string = g_string_new_len(chunk, size);
-    g_print("[ERROR] <%s>\n", string->str);
-    g_string_free(string, TRUE);
-}
-
-static void
-cb_reaped (GCutEgg *egg, gint status, gpointer user_data)
-{
-    client_reaped = TRUE;
-}
-
-static void
-setup_egg_signals (GCutEgg *egg)
-{
-#define CONNECT(name)                                                   \
-    g_signal_connect(egg, #name, G_CALLBACK(cb_ ## name), NULL)
-
-    CONNECT(output_received);
-    CONNECT(error_received);
-    CONNECT(reaped);
-
-#undef CONNECT
-}
-
-static void
-teardown_egg_signals (GCutEgg *egg)
-{
-#define DISCONNECT(name)                                                \
-    g_signal_handlers_disconnect_by_func(egg,                           \
-                                         G_CALLBACK(cb_ ## name),       \
-                                         NULL)
-
-    DISCONNECT(output_received);
-    DISCONNECT(error_received);
-    DISCONNECT(reaped);
-
-#undef DISCONNECT
-}
-
-static void
-free_egg (GCutEgg *egg)
-{
-    teardown_egg_signals(egg);
-    g_object_unref(egg);
-}
-
-static void
-make_egg (const gchar *command, ...)
-{
-    GCutEgg *egg;
-    va_list args;
-
-    va_start(args, command);
-    egg = gcut_egg_new_va_list(command, args);
-    va_end(args);
-
-    setup_egg_signals(egg);
-
-    test_milters = g_list_prepend(test_milters, egg);
-}
-
 void
 setup (void)
 {
@@ -274,33 +102,7 @@ setup (void)
 
     option = NULL;
 
-    test_milters = NULL;
-
-    test_client_path = g_build_filename(milter_manager_test_get_base_dir(),
-                                        "lib",
-                                        "milter-test-client.rb",
-                                        NULL);
-
-    client_ready = FALSE;
-    client_negotiated = 0;
-    client_connected = 0;
-    client_greeted = 0;
-    client_envelope_from_received = 0;
-    client_envelope_receipt_received = 0;
-    client_data_received = 0;
-    client_header_received = 0;
-    client_body_received = 0;
-    client_end_of_header_received = 0;
-    client_end_of_message_received = 0;
-    client_unknown_received = 0;
-
-    client_reaped = FALSE;
-
-    client_header_name = NULL;
-    client_header_value = NULL;
-    client_body_chunk = NULL;
-    client_end_of_message_chunk = NULL;
-    client_unknown_command = NULL;
+    test_clients = NULL;
 
     finished = FALSE;
 }
@@ -317,42 +119,31 @@ teardown (void)
     if (option)
         g_object_unref(option);
 
-    if (test_milters) {
-        g_list_foreach(test_milters, (GFunc)free_egg, NULL);
-        g_list_free(test_milters);
+    if (test_clients) {
+        g_list_foreach(test_clients, (GFunc)g_object_unref, NULL);
+        g_list_free(test_clients);
     }
-
-    if (test_client_path)
-        g_free(test_client_path);
-
-    if (client_header_name)
-        g_free(client_header_name);
-    if (client_header_value)
-        g_free(client_header_value);
-
-    if (client_body_chunk)
-        g_free(client_body_chunk);
-
-    if (client_end_of_message_chunk)
-        g_free(client_end_of_message_chunk);
-
-    if (client_unknown_command)
-        g_free(client_unknown_command);
 }
 
-static void
-hatch_egg (GCutEgg *egg)
+#define collect_n_received(event)                                       \
+    collect_n_received_helper(                                          \
+        milter_manager_test_client_get_n_ ## event ## _received)
+
+typedef guint (*MilterManagerTestClientGetNReceived) (MilterManagerTestClient *client);
+
+static guint
+collect_n_received_helper (MilterManagerTestClientGetNReceived getter)
 {
-    GError *error = NULL;
-    client_ready = FALSE;
-    client_reaped = FALSE;
+    guint n_received = 0;
+    GList *node;
 
-    gcut_egg_hatch(egg, &error);
-    gcut_assert_error(error);
+    for (node = test_clients; node; node = g_list_next(node)) {
+        MilterManagerTestClient *client = node->data;
 
-    while (!client_ready && !client_reaped)
-        g_main_context_iteration(NULL, TRUE);
-    cut_assert_false(client_reaped);
+        n_received += getter(client);
+    }
+
+    return n_received;
 }
 
 static gboolean
@@ -418,26 +209,42 @@ wait_response_helper (const gchar *name)
     gcut_assert_error(controller_error);
 }
 
-#define wait_reply(actual)                                              \
+#define wait_reply(actual_getter)                                       \
     cut_trace_with_info_expression(                                     \
-        wait_reply_helper(g_list_length(test_milters), &actual),        \
-        wait_reply(actual))
+        wait_reply_helper(                                              \
+            g_list_length(test_clients),                                \
+            milter_manager_test_client_get_n_ ## actual_getter ## _received), \
+        wait_reply(actual_getter))
 
 static void
-wait_reply_helper (guint expected, guint *actual)
+wait_reply_helper (guint expected, MilterManagerTestClientGetNReceived getter)
 {
     gboolean timeout_waiting = TRUE;
     guint timeout_waiting_id;
 
     timeout_waiting_id = g_timeout_add_seconds(1, cb_timeout_waiting,
                                                &timeout_waiting);
-    while (timeout_waiting && expected > *actual) {
+    while (timeout_waiting && expected > collect_n_received_helper(getter)) {
         g_main_context_iteration(NULL, TRUE);
     }
     g_source_remove(timeout_waiting_id);
 
     cut_assert_true(timeout_waiting, "timeout");
-    cut_assert_equal_uint(expected, *actual);
+    cut_assert_equal_uint(expected, collect_n_received_helper(getter));
+}
+
+static void
+start_client (guint port)
+{
+    MilterManagerTestClient *client;
+    GError *error = NULL;
+
+    client = milter_manager_test_client_new(port);
+    test_clients = g_list_append(test_clients, client);
+    if (!milter_manager_test_client_run(client, &error)) {
+        gcut_assert_error(error);
+        cut_fail("couldn't run test client on port <%u>", port);
+    }
 }
 
 #define wait_finished()                    \
@@ -470,15 +277,13 @@ test_negotiate (void)
                                MILTER_ACTION_CHANGE_BODY,
                                MILTER_STEP_NONE);
 
-    make_egg(test_client_path, "--print-status",
-             "--timeout", "1.0", "--port", "10027", NULL);
-    make_egg(test_client_path, "--print-status",
-             "--timeout", "1.0", "--port", "10026", NULL);
-    g_list_foreach(test_milters, (GFunc)hatch_egg, NULL);
+    start_client(10026);
+    start_client(10027);
 
     milter_manager_controller_negotiate(controller, option);
     wait_response("negotiate");
-    cut_assert_equal_uint(g_list_length(test_milters), client_negotiated);
+    cut_assert_equal_uint(g_list_length(test_clients),
+                          collect_n_received(negotiate));
 }
 
 void
@@ -503,7 +308,8 @@ test_connect (void)
                                       address, address_size);
     g_free(address);
     wait_response("connect");
-    cut_assert_equal_uint(g_list_length(test_milters), client_connected);
+    cut_assert_equal_uint(g_list_length(test_clients),
+                          collect_n_received(connect));
 }
 
 void
@@ -515,7 +321,8 @@ test_helo (void)
 
     milter_manager_controller_helo(controller, fqdn);
     wait_response("helo");
-    cut_assert_equal_uint(g_list_length(test_milters), client_greeted);
+    cut_assert_equal_uint(g_list_length(test_clients),
+                          collect_n_received(helo));
 }
 
 void
@@ -527,8 +334,8 @@ test_envelope_from (void)
 
     milter_manager_controller_envelope_from(controller, from);
     wait_response("envelope-from");
-    cut_assert_equal_uint(g_list_length(test_milters),
-                          client_envelope_from_received);
+    cut_assert_equal_uint(g_list_length(test_clients),
+                          collect_n_received(envelope_from));
 }
 
 void
@@ -540,8 +347,8 @@ test_envelope_receipt (void)
 
     milter_manager_controller_envelope_receipt(controller, receipt);
     wait_response("envelope-receipt");
-    cut_assert_equal_uint(g_list_length(test_milters),
-                          client_envelope_receipt_received);
+    cut_assert_equal_uint(g_list_length(test_clients),
+                          collect_n_received(envelope_receipt));
 }
 
 void
@@ -551,13 +358,14 @@ test_data (void)
 
     milter_manager_controller_data(controller);
     wait_response("data");
-    cut_assert_equal_uint(g_list_length(test_milters),
-                          client_data_received);
+    cut_assert_equal_uint(g_list_length(test_clients),
+                          collect_n_received(data));
 }
 
 void
 test_header (void)
 {
+    MilterManagerTestClient *client;
     const gchar name[] = "From";
     const gchar value[] = "kou+sender@cozmixng.org";
 
@@ -565,10 +373,14 @@ test_header (void)
 
     milter_manager_controller_header(controller, name, value);
     wait_response("header");
-    cut_assert_equal_uint(g_list_length(test_milters),
-                          client_header_received);
-    cut_assert_equal_string(name, client_header_name);
-    cut_assert_equal_string(value, client_header_value);
+    cut_assert_equal_uint(g_list_length(test_clients),
+                          collect_n_received(header));
+
+    client = test_clients->data;
+    cut_assert_equal_string(name,
+                            milter_manager_test_client_get_header_name(client));
+    cut_assert_equal_string(value,
+                            milter_manager_test_client_get_header_value(client));
 }
 
 void
@@ -578,22 +390,26 @@ test_end_of_header (void)
 
     milter_manager_controller_end_of_header(controller);
     wait_response("end-of-header");
-    cut_assert_equal_uint(g_list_length(test_milters),
-                          client_end_of_header_received);
+    cut_assert_equal_uint(g_list_length(test_clients),
+                          collect_n_received(end_of_header));
 }
 
 void
 test_body (void)
 {
+    MilterManagerTestClient *client;
     const gchar chunk[] = "Hi\n\nThanks,";
 
     cut_trace(test_end_of_header());
 
     milter_manager_controller_body(controller, chunk, strlen(chunk));
     wait_response("body");
-    cut_assert_equal_uint(g_list_length(test_milters),
-                          client_body_received);
-    cut_assert_equal_string(chunk, client_body_chunk);
+    cut_assert_equal_uint(g_list_length(test_clients),
+                          collect_n_received(body));
+
+    client = test_clients->data;
+    cut_assert_equal_string(chunk,
+                            milter_manager_test_client_get_body_chunk(client));
 }
 
 void
@@ -606,6 +422,7 @@ data_end_of_message (void)
 void
 test_end_of_message (gconstpointer data)
 {
+    MilterManagerTestClient *client;
     const gchar *chunk = data;
     gsize chunk_size;
 
@@ -618,9 +435,12 @@ test_end_of_message (gconstpointer data)
 
     milter_manager_controller_end_of_message(controller, chunk, chunk_size);
     wait_response("end-of-message");
-    cut_assert_equal_uint(g_list_length(test_milters),
-                          client_end_of_message_received);
-    cut_assert_equal_string(chunk, client_end_of_message_chunk);
+    cut_assert_equal_uint(g_list_length(test_clients),
+                          collect_n_received(end_of_message));
+
+    client = test_clients->data;
+    cut_assert_equal_string(chunk,
+                            milter_manager_test_client_get_end_of_message_chunk(client));
 }
 
 void
@@ -631,6 +451,7 @@ test_quit (void)
     milter_manager_controller_quit(controller);
     g_main_context_iteration(NULL, TRUE);
     wait_finished();
+    cut_assert_equal_uint(g_list_length(test_clients), collect_n_received(quit));
 }
 
 void
@@ -639,19 +460,23 @@ test_abort (void)
     cut_trace(test_end_of_message(NULL));
 
     milter_manager_controller_abort(controller);
-    wait_reply(client_abort_received);
+    wait_reply(abort);
 }
 
 void
 test_unknown (void)
 {
+    MilterManagerTestClient *client;
     const gchar command[] = "UNKNOWN COMMAND";
 
     cut_trace(test_helo());
 
     milter_manager_controller_unknown(controller, command);
-    wait_reply(client_unknown_received);
-    cut_assert_equal_string(command, client_unknown_command);
+    wait_reply(unknown);
+
+    client = test_clients->data;
+    cut_assert_equal_string(command,
+                            milter_manager_test_client_get_unknown_command(client));
 }
 
 /*

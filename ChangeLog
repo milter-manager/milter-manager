@@ -1,5 +1,8 @@
 2008-10-29  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/test-controller.c: use MilterManagerTestClient.
+	* test/lib/milter-manager-test-client.[ch]: add missing features.
+
 	* test/lib/milter-manager-test-client.[ch]: add.
 
 	* test/manager/test-children.c: add a test for negotiate. TOO DUTY!!!

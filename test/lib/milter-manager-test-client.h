@@ -76,6 +76,8 @@ const gchar             *milter_manager_test_client_get_header_name
                                               (MilterManagerTestClient *client);
 const gchar             *milter_manager_test_client_get_header_value
                                               (MilterManagerTestClient *client);
+guint                    milter_manager_test_client_get_n_end_of_header_received
+                                              (MilterManagerTestClient *client);
 guint                    milter_manager_test_client_get_n_body_received
                                               (MilterManagerTestClient *client);
 const gchar             *milter_manager_test_client_get_body_chunk
