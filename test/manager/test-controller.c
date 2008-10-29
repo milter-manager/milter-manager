@@ -473,6 +473,7 @@ test_unknown (void)
 
     milter_manager_controller_unknown(controller, command);
     wait_reply(unknown);
+    wait_finished();
 
     client = test_clients->data;
     cut_assert_equal_string(command,

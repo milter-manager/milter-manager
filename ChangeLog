@@ -68,6 +68,8 @@
 	when receiving "finished" signal from MilterManagerChildren.
 	* milter/manager/milter-manager-children.c: Expire a child only if
 	"finished" signal is received or time out error.
+	* test/manager/test-controller.c (test_unknown): Also check "finished"
+	signal is received.
 
 2008-10-28  Kouhei Sutou  <kou@cozmixng.org>
 
