@@ -102,6 +102,19 @@ setup_controller_signals (MilterManagerController *controller)
 #undef CONNECT
 }
 
+static gchar *
+receive_additional_info (const gchar *chunk, gsize size, const gchar *prefix)
+{
+    gsize info_start_position;
+
+    info_start_position = strlen(prefix);
+    if (info_start_position < size)
+        return g_strndup(chunk + info_start_position,
+                         size - info_start_position - 1);
+    else
+        return NULL;
+}
+
 static void
 cb_output_received (GCutEgg *egg, const gchar *chunk, gsize size,
                     gpointer user_data)
@@ -133,35 +146,30 @@ cb_output_received (GCutEgg *egg, const gchar *chunk, gsize size,
     } else if (g_str_has_prefix(chunk, "receive: end-of-header")) {
         client_end_of_header_received++;
     } else if (g_str_has_prefix(chunk, "receive: body")) {
-        gsize receive_body_mark_position;
-
         client_body_received++;
-        receive_body_mark_position = strlen("receive: body: ");
-        client_body_chunk = g_strndup(chunk + receive_body_mark_position,
-                                      size - receive_body_mark_position - 1);
-    } else if (g_str_has_prefix(chunk, "receive: end-of-message")) {
-        gsize receive_end_of_message_mark_position;
 
+        if (client_body_chunk)
+            g_free(client_body_chunk);
+        client_body_chunk =
+            receive_additional_info(chunk, size, "receive: body: ");
+    } else if (g_str_has_prefix(chunk, "receive: end-of-message")) {
         client_end_of_message_received++;
-        receive_end_of_message_mark_position =
-            strlen("receive: end-of-message: ");
-        if (receive_end_of_message_mark_position < size)
-            client_end_of_message_chunk =
-                g_strndup(chunk + receive_end_of_message_mark_position,
-                          size - receive_end_of_message_mark_position - 1);
+
+        if (client_end_of_message_chunk)
+            g_free(client_end_of_message_chunk);
+        client_end_of_message_chunk =
+            receive_additional_info(chunk, size, "receive: end-of-message: ");
     } else if (g_str_has_prefix(chunk, "receive: quit")) {
         client_quit_received++;
     } else if (g_str_has_prefix(chunk, "receive: abort")) {
         client_abort_received++;
     } else if (g_str_has_prefix(chunk, "receive: unknown")) {
-        gsize receive_unknown_mark_position;
-
         client_unknown_received++;
-        receive_unknown_mark_position = strlen("receive: unknown: ");
-        if (receive_unknown_mark_position < size)
-            client_unknown_command =
-                g_strndup(chunk + receive_unknown_mark_position,
-                          size - receive_unknown_mark_position - 1);
+
+        if (client_unknown_command)
+            g_free(client_unknown_command);
+        client_unknown_command =
+            receive_additional_info(chunk, size, "receive: unknown: ");
     } else {
         GString *string;
 
