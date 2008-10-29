@@ -16,6 +16,9 @@
 	timeout is occured.
 	* milter/manager/milter-manager-children.c (cb_skip, cb_quarantine):
 	Remove reply queue if state check fails. 
+	* test/manager/test-controller.c (test_quit, test_abort,
+	test_unknown): Invoke g_main_context_iteration until all pending
+	events were processed.
 
 2008-10-28  Kouhei Sutou  <kou@cozmixng.org>
 

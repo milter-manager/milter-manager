@@ -403,7 +403,7 @@ test_negotiate (void)
                                MILTER_STEP_NONE);
 
     make_egg(test_client_path, "--print-status",
-             "--timeout", "1.0", "--port", "10025", NULL);
+             "--timeout", "1.0", "--port", "10027", NULL);
     make_egg(test_client_path, "--print-status",
              "--timeout", "1.0", "--port", "10026", NULL);
     g_list_foreach(test_milters, (GFunc)hatch_egg, NULL);
@@ -555,6 +555,8 @@ test_quit (void)
 
     milter_manager_controller_quit(controller);
     g_main_context_iteration(NULL, TRUE);
+    while (g_main_context_pending(NULL))
+        g_main_context_iteration(NULL, TRUE);
     cut_assert_true(client_quit_received);
 }
 
@@ -565,6 +567,8 @@ test_abort (void)
 
     milter_manager_controller_abort(controller);
     g_main_context_iteration(NULL, TRUE);
+    while (g_main_context_pending(NULL))
+        g_main_context_iteration(NULL, TRUE);
     cut_assert_true(client_abort_received);
 }
 
@@ -577,6 +581,8 @@ test_unknown (void)
 
     milter_manager_controller_unknown(controller, command);
     g_main_context_iteration(NULL, TRUE);
+    while (g_main_context_pending(NULL))
+        g_main_context_iteration(NULL, TRUE);
     cut_assert_true(client_unknown_received);
     cut_assert_equal_string(command, client_unknown_command);
 }
