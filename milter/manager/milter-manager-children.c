@@ -695,6 +695,7 @@ cb_finished (MilterHandler *handler, gpointer user_data)
 
     g_queue_remove(priv->reply_queue, handler);
     if (g_queue_is_empty(priv->reply_queue)) {
+        g_signal_emit_by_name(children, status_to_signal_name(priv->reply_status));
         milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(user_data));
     }
 }

@@ -1,6 +1,8 @@
 2008-10-30  Hiroyuki Ikezoe  <poincare@ikezoe.net>
 
 	* test/manager/test-controller.c: Revert the last commit.
+	* milter/manager/milter-manager-children.c (cb_finished): Emit reply
+	status if the child is the last one.
 
 2008-10-29  Kouhei Sutou  <kou@cozmixng.org>
 
