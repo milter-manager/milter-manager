@@ -19,28 +19,28 @@ class TestEgg < Test::Unit::TestCase
 
   def test_connection_timeout
     connection_timeout = 29
-    assert_equal(0, @egg.connection_timeout)
+    assert_equal(300, @egg.connection_timeout)
     @egg.connection_timeout = connection_timeout
     assert_equal(connection_timeout, @egg.connection_timeout)
   end
 
   def test_writing_timeout
     writing_timeout = 29
-    assert_equal(0, @egg.writing_timeout)
+    assert_equal(10, @egg.writing_timeout)
     @egg.writing_timeout = writing_timeout
     assert_equal(writing_timeout, @egg.writing_timeout)
   end
 
   def test_reading_timeout
     reading_timeout = 29
-    assert_equal(0, @egg.reading_timeout)
+    assert_equal(10, @egg.reading_timeout)
     @egg.reading_timeout = reading_timeout
     assert_equal(reading_timeout, @egg.reading_timeout)
   end
 
   def test_end_of_message_timeout
     end_of_message_timeout = 29
-    assert_equal(0, @egg.end_of_message_timeout)
+    assert_equal(200, @egg.end_of_message_timeout)
     @egg.end_of_message_timeout = end_of_message_timeout
     assert_equal(end_of_message_timeout, @egg.end_of_message_timeout)
   end

@@ -8,6 +8,7 @@ class TestConfiguration < Test::Unit::TestCase
 
     name = "child-milter"
     egg = Milter::Manager::Egg.new(name)
+    egg.connection_spec = "unix:/tmp/socket"
     @configuration.add_egg(egg)
     assert_equal(1, @configuration.create_children.length)
   end
