@@ -480,7 +480,6 @@ cb_accept (MilterServerContext *context, gpointer user_data)
     quit_child(children, context);
 
     compile_reply_status(children, MILTER_STATUS_ACCEPT);
-    quit_child(children, context);
     remove_child_from_queue(children, context);
 }
 
@@ -492,7 +491,6 @@ cb_discard (MilterServerContext *context, gpointer user_data)
     quit_child(children, context);
 
     compile_reply_status(children, MILTER_STATUS_DISCARD);
-    quit_child(children, context);
     remove_child_from_queue(children, context);
 }
 

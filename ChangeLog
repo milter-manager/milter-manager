@@ -32,6 +32,8 @@
 	* milter/manager/milter-manager-children.c: Added
 	compare_reply_status.
 	* milter/manager/milter-manager-children.c: Handle QUARANTINE reply.
+	* milter/manager/milter-manager-children.c (cb_reject, cb_discard):
+	Remove the second call of quit_child().
 
 2008-10-28  Kouhei Sutou  <kou@cozmixng.org>
 
