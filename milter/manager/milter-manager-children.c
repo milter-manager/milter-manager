@@ -276,6 +276,9 @@ status_to_signal_name (MilterStatus status)
       case MILTER_STATUS_SKIP:
         signal_name = "skip";
         break;
+      case MILTER_STATUS_QUARANTINE:
+        signal_name = "quarantine";
+        break;
       case MILTER_STATUS_PROGRESS:
         signal_name = "progress";
         break;
@@ -296,6 +299,12 @@ compare_reply_status (MilterStatus a, MilterStatus b)
         break;
       case MILTER_STATUS_DISCARD:
         if (b != MILTER_STATUS_REJECT)
+            return 1;
+        return -1;
+        break;
+      case MILTER_STATUS_QUARANTINE:
+        if (b != MILTER_STATUS_REJECT &&
+            b != MILTER_STATUS_DISCARD)
             return 1;
         return -1;
         break;
@@ -365,9 +374,10 @@ cb_negotiate_reply (MilterServerContext *context, MilterOption *option,
 
     g_queue_remove(priv->reply_queue, context);
 
-    if (g_queue_is_empty(priv->reply_queue))
+    if (g_queue_is_empty(priv->reply_queue)) {
         g_signal_emit_by_name(children, "negotiate-reply",
                               priv->option, priv->macros_requests);
+    }
 }
 
 static void
@@ -455,10 +465,6 @@ cb_reject (MilterServerContext *context, gpointer user_data)
         compile_reply_status(children, MILTER_STATUS_REJECT);
         break;
       default:
-        /* FIXME */ 
-        /* If a filter sends "REJECT",
-         * the message should be rejected so all children should be also quited.
-         */
         quit_child(children, context);
         break;
     }
@@ -596,7 +602,9 @@ cb_quarantine (MilterServerContext *context,
         return;
     }
 
-    g_signal_emit_by_name(children, "quarantine");
+    compile_reply_status(children, MILTER_STATUS_QUARANTINE);
+    quit_child(children, context);
+    remove_child_from_queue(children, context);
 }
 
 static void

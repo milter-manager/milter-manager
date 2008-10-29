@@ -31,6 +31,7 @@
 	MILTER_STATUS_TEMPORARY_FAILURE is not a critical status.
 	* milter/manager/milter-manager-children.c: Added
 	compare_reply_status.
+	* milter/manager/milter-manager-children.c: Handle QUARANTINE reply.
 
 2008-10-28  Kouhei Sutou  <kou@cozmixng.org>
 
