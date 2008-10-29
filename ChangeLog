@@ -19,6 +19,8 @@
 	* test/manager/test-controller.c (test_quit, test_abort,
 	test_unknown): Invoke g_main_context_iteration until all pending
 	events were processed.
+	* milter/manager/milter-manager-children.c: If all children sends
+	"SKIP", emit "skip" signal.
 
 2008-10-28  Kouhei Sutou  <kou@cozmixng.org>
 

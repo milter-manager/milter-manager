@@ -328,7 +328,8 @@ compile_reply_status (MilterManagerChildren *children,
             priv->reply_status = status;
         break;
       case MILTER_STATUS_SKIP:
-        if (priv->reply_status == MILTER_STATUS_SKIP)
+        if (priv->reply_status == MILTER_STATUS_SKIP ||
+            priv->reply_status == MILTER_STATUS_NOT_CHANGE)
             priv->reply_status = status;
         break;
       default:
@@ -620,6 +621,8 @@ cb_skip (MilterServerContext *context, gpointer user_data)
         milter_error("SKIP reply is only allowed in body session");
         return;
     }
+
+    compile_reply_status(children, MILTER_STATUS_SKIP);
     remove_child_from_queue(children, context);
 }
 
