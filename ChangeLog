@@ -34,6 +34,8 @@
 	* milter/manager/milter-manager-children.c: Handle QUARANTINE reply.
 	* milter/manager/milter-manager-children.c (cb_reject, cb_discard):
 	Remove the second call of quit_child().
+	* milter/manager/milter-manager-children.c (cb_skip, cb_quarantine):
+	Send "QUIT" command if state check fails.
 
 2008-10-28  Kouhei Sutou  <kou@cozmixng.org>
 
