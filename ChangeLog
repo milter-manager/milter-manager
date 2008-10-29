@@ -54,6 +54,7 @@
 	* milter/manager/milter-manager-children.c: Receive "finished" signal
 	from each child and remove it from reply queue.
 	* emitable -> emittable.
+	* milter_error_emittable_emit_error -> milter_error_emittable_emit.
 
 2008-10-28  Kouhei Sutou  <kou@cozmixng.org>
 

@@ -58,8 +58,8 @@ enum
 };
 
 MILTER_DEFINE_ERROR_EMITTABLE_TYPE(MilterManagerChild,
-                                  milter_manager_child,
-                                  MILTER_TYPE_SERVER_CONTEXT);
+                                   milter_manager_child,
+                                   MILTER_TYPE_SERVER_CONTEXT);
 
 static void dispose        (GObject         *object);
 static void set_property   (GObject         *object,
@@ -306,8 +306,8 @@ child_watch_func (GPid pid, gint status, gpointer user_data)
                     MILTER_MANAGER_CHILD_ERROR_MILTER_CORE_DUMP,
                     "%s produced a core dump", priv->name);
         milter_error("%s", error->message);
-        milter_error_emittable_emit_error(MILTER_ERROR_EMITTABLE(user_data),
-                                         error);
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(user_data),
+                                    error);
         g_error_free(error);
     } else if (WIFEXITED(status)) {
         GError *error = NULL;
@@ -316,8 +316,8 @@ child_watch_func (GPid pid, gint status, gpointer user_data)
                     MILTER_MANAGER_CHILD_ERROR_MILTER_EXIT,
                     "%s exits with status: %d", priv->name, status);
         milter_error("%s", error->message);
-        milter_error_emittable_emit_error(MILTER_ERROR_EMITTABLE(user_data),
-                                          error);
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(user_data),
+                                    error);
         g_error_free(error);
     }
 

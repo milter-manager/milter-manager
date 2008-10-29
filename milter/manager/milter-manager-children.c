@@ -704,8 +704,8 @@ cb_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
 
     milter_error("error: FIXME: %s", error->message);
 
-    milter_error_emittable_emit_error(MILTER_ERROR_EMITTABLE(user_data),
-                                     error);
+    milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(user_data),
+                                error);
 
     expire_child(children, context);
     remove_child_from_queue(children, context);
@@ -826,8 +826,8 @@ child_negotiate (MilterManagerChild *child, MilterOption *option,
         if (!priviledge ||
             error->code != MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE) {
             milter_error("Error: %s", error->message);
-            milter_error_emittable_emit_error(MILTER_ERROR_EMITTABLE(children),
-                                             error);
+            milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
+                                        error);
             g_error_free(error);
             return status;
         }
@@ -836,8 +836,8 @@ child_negotiate (MilterManagerChild *child, MilterOption *option,
         milter_manager_child_start(child, &error);
         if (error) {
             milter_error("Error: %s", error->message);
-            milter_error_emittable_emit_error(MILTER_ERROR_EMITTABLE(children),
-                                             error);
+            milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
+                                        error);
             g_error_free(error);
             return status;
         }

@@ -517,8 +517,8 @@ cb_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
     MilterManagerController *controller = user_data;
 
     milter_error("error: FIXME: %s", error->message);
-    milter_error_emittable_emit_error(MILTER_ERROR_EMITTABLE(controller),
-                                      error);
+    milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(controller),
+                                error);
 }
 
 static void
