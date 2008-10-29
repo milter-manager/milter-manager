@@ -43,6 +43,8 @@
 	is received.
 	* milter/manager/milter-manager-children.c (cb_skip, cb_quarantine):
 	Emit reply signal even if state check fails.
+	* test/manager/test-controller.c: Check the number of received reply.
+	Initialize client_end_of_header_received with 0.
 
 2008-10-28  Kouhei Sutou  <kou@cozmixng.org>
 
