@@ -293,7 +293,6 @@ status_is_critical (MilterStatus status)
     switch (status) {
       case MILTER_STATUS_REJECT:
       case MILTER_STATUS_DISCARD:
-      case MILTER_STATUS_TEMPORARY_FAILURE:
         return TRUE;
         break;
       default:

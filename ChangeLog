@@ -24,9 +24,11 @@
 	* milter/manager/milter-manager-children.c (cb_reject, cb_discard):
 	Send "QUIT" command to a filter.
 	* milter/manager/milter-manager-children.c:
-	MILTER_STATUS_REMPORARY_FAILURE should be very weak because if a
+	MILTER_STATUS_TEMPORARY_FAILURE should be very weak because if a
 	filter sends TEMPORARY FAILURE, drop the filter only. All the other
 	filters should not be affected.
+	* milter/manager/milter-manager-children.c:
+	MILTER_STATUS_TEMPORARY_FAILURE is not a critical status.
 
 2008-10-28  Kouhei Sutou  <kou@cozmixng.org>
 
