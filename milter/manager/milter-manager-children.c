@@ -596,7 +596,7 @@ cb_quarantine (MilterServerContext *context,
         priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
         quit_child(children, context);
-        g_queue_remove(priv->reply_queue, context);
+        remove_child_from_queue(children, context);
         milter_error("QUARANTINE reply is only allowed in end of message session");
         return;
     }
@@ -636,7 +636,7 @@ cb_skip (MilterServerContext *context, gpointer user_data)
         priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
         quit_child(children, context);
-        g_queue_remove(priv->reply_queue, context);
+        remove_child_from_queue(children, context);
         milter_error("SKIP reply is only allowed in body session");
         return;
     }

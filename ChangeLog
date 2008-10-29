@@ -38,6 +38,8 @@
 	Send "QUIT" command if state check fails.
 	* milter/manager/milter-manager-children.c: Expire the child if error
 	is received.
+	* milter/manager/milter-manager-children.c (cb_skip, cb_quarantine):
+	Emit reply signal even if state check fails.
 
 2008-10-28  Kouhei Sutou  <kou@cozmixng.org>
 
