@@ -3,6 +3,9 @@
 	* test/manager/test-controller.c: Revert the last commit.
 	* milter/manager/milter-manager-children.c (cb_finished): Emit reply
 	status if the child is the last one.
+	* milter/manager/milter-manager-children.c (cb_finished): Emit reply
+	status only if the reply status is not MILTER_STATUS_NOT_CHANGE(i.e.
+	reply status has been changed in MilterManagerChildren.)
 
 2008-10-29  Kouhei Sutou  <kou@cozmixng.org>
 
