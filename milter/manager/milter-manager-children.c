@@ -696,6 +696,8 @@ cb_end_of_message_timeout (MilterServerContext *context, gpointer user_data)
 static void
 cb_error (MilterErrorEmitable *emitable, GError *error, gpointer user_data)
 {
+    MilterManagerChildren *children = MILTER_MANAGER_CHILDREN(user_data);
+    MilterServerContext *context = MILTER_SERVER_CONTEXT(emitable);
     MilterManagerChildrenPrivate *priv;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(user_data);
