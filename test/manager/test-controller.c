@@ -137,8 +137,13 @@ cb_output_received (GCutEgg *egg, const gchar *chunk, gsize size,
         gchar **items;
 
         client_header_received++;
+
         items = g_strsplit_set(chunk, " \n", -1);
         if (items[0] && items[1] && items[2] && items[3]) {
+            if (client_header_name)
+                g_free(client_header_name);
+            if (client_header_value)
+                g_free(client_header_value);
             client_header_name = g_strdup(items[2]);
             client_header_value = g_strdup(items[3]);
         }
