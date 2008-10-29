@@ -34,7 +34,7 @@ static gboolean error_occured;
 static const gchar *milter_log_level;
 
 static void
-cb_error (MilterErrorEmitable *emitable,
+cb_error (MilterErrorEmittable *emittable,
           GError *error, gpointer user_data)
 {
     actual_error = g_error_copy(error);

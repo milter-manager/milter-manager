@@ -46,7 +46,7 @@ enum
     PROP_CLIENT_CONTEXT
 };
 
-MILTER_DEFINE_ERROR_EMITABLE_TYPE(MilterManagerController,
+MILTER_DEFINE_ERROR_EMITTABLE_TYPE(MilterManagerController,
                                   milter_manager_controller,
                                   G_TYPE_OBJECT)
 
@@ -512,13 +512,13 @@ cb_skip (MilterServerContext *context, gpointer user_data)
 }
 
 static void
-cb_error (MilterErrorEmitable *emitable, GError *error, gpointer user_data)
+cb_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
 {
     MilterManagerController *controller = user_data;
 
     milter_error("error: FIXME: %s", error->message);
-    milter_error_emitable_emit_error(MILTER_ERROR_EMITABLE(controller),
-                                     error);
+    milter_error_emittable_emit_error(MILTER_ERROR_EMITTABLE(controller),
+                                      error);
 }
 
 static void

@@ -47,7 +47,7 @@ enum
     PROP_CONFIGURATION
 };
 
-static MilterErrorEmitable *emitable_parent;
+static MilterErrorEmittable *emittable_parent;
 static MilterReplySignals *reply_parent;
 
 static void
@@ -57,14 +57,14 @@ reply_init (MilterReplySignals *reply)
 }
 
 static void
-emitable_init (MilterErrorEmitable *emitable)
+emittable_init (MilterErrorEmittable *emittable)
 {
-    emitable_parent = g_type_interface_peek_parent(emitable);
+    emittable_parent = g_type_interface_peek_parent(emittable);
 }
 
 G_DEFINE_TYPE_WITH_CODE(MilterManagerChildren, milter_manager_children, G_TYPE_OBJECT,
     G_IMPLEMENT_INTERFACE(MILTER_TYPE_REPLY_SIGNALS, reply_init)
-    G_IMPLEMENT_INTERFACE(MILTER_TYPE_ERROR_EMITABLE, emitable_init))
+    G_IMPLEMENT_INTERFACE(MILTER_TYPE_ERROR_EMITTABLE, emittable_init))
 
 static void dispose        (GObject         *object);
 static void set_property   (GObject         *object,
@@ -694,17 +694,17 @@ cb_end_of_message_timeout (MilterServerContext *context, gpointer user_data)
 }
 
 static void
-cb_error (MilterErrorEmitable *emitable, GError *error, gpointer user_data)
+cb_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
 {
     MilterManagerChildren *children = MILTER_MANAGER_CHILDREN(user_data);
-    MilterServerContext *context = MILTER_SERVER_CONTEXT(emitable);
+    MilterServerContext *context = MILTER_SERVER_CONTEXT(emittable);
     MilterManagerChildrenPrivate *priv;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(user_data);
 
     milter_error("error: FIXME: %s", error->message);
 
-    milter_error_emitable_emit_error(MILTER_ERROR_EMITABLE(user_data),
+    milter_error_emittable_emit_error(MILTER_ERROR_EMITTABLE(user_data),
                                      error);
 
     expire_child(children, context);
@@ -826,7 +826,7 @@ child_negotiate (MilterManagerChild *child, MilterOption *option,
         if (!priviledge ||
             error->code != MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE) {
             milter_error("Error: %s", error->message);
-            milter_error_emitable_emit_error(MILTER_ERROR_EMITABLE(children),
+            milter_error_emittable_emit_error(MILTER_ERROR_EMITTABLE(children),
                                              error);
             g_error_free(error);
             return status;
@@ -836,7 +836,7 @@ child_negotiate (MilterManagerChild *child, MilterOption *option,
         milter_manager_child_start(child, &error);
         if (error) {
             milter_error("Error: %s", error->message);
-            milter_error_emitable_emit_error(MILTER_ERROR_EMITABLE(children),
+            milter_error_emittable_emit_error(MILTER_ERROR_EMITTABLE(children),
                                              error);
             g_error_free(error);
             return status;
