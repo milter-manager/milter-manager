@@ -1,5 +1,7 @@
 2008-10-29  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/test-children.c: add a test for negotiate. TOO DUTY!!!
+
 	* binding/ruby/test/: follow the recent changes.
 
 	* test/manager/test-controller.c: improve reply waiting.
