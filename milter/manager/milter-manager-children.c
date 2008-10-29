@@ -287,19 +287,49 @@ status_to_signal_name (MilterStatus status)
     return signal_name;
 }
 
-static gboolean
-status_is_critical (MilterStatus status)
+static gint 
+compare_reply_status (MilterStatus a, MilterStatus b)
 {
-    switch (status) {
+    switch (a) {
       case MILTER_STATUS_REJECT:
-      case MILTER_STATUS_DISCARD:
-        return TRUE;
+        return 1;
         break;
+      case MILTER_STATUS_DISCARD:
+        if (b != MILTER_STATUS_REJECT)
+            return 1;
+        return -1;
+        break;
+      case MILTER_STATUS_TEMPORARY_FAILURE:
+        if (b == MILTER_STATUS_NOT_CHANGE)
+            return 1;
+        return -1;
+        break;
+      case MILTER_STATUS_ACCEPT:
+        if (b == MILTER_STATUS_NOT_CHANGE ||
+            b == MILTER_STATUS_TEMPORARY_FAILURE)
+            return 1;
+        return -1;
+        break;
+      case MILTER_STATUS_SKIP:
+        if (b == MILTER_STATUS_NOT_CHANGE ||
+            b == MILTER_STATUS_ACCEPT ||
+            b == MILTER_STATUS_TEMPORARY_FAILURE)
+            return 1;
+        return -1;
+        break;
+      case MILTER_STATUS_CONTINUE:
+        if (b == MILTER_STATUS_NOT_CHANGE ||
+            b == MILTER_STATUS_ACCEPT ||
+            b == MILTER_STATUS_TEMPORARY_FAILURE ||
+            b == MILTER_STATUS_SKIP)
+            return 1;
+        return -1;
       default:
+        return -1;
         break;
     }
 
-    return FALSE;
+    return -1;
 }
 
 static MilterStatus
@@ -310,32 +340,8 @@ compile_reply_status (MilterManagerChildren *children,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    switch (status) {
-      case MILTER_STATUS_REJECT:
+    if (compare_reply_status(priv->reply_status, status) < 0)
         priv->reply_status = status;
-        break;
-      case MILTER_STATUS_DISCARD:
-        if (priv->reply_status != MILTER_STATUS_REJECT)
-            priv->reply_status = status;
-        break;
-      case MILTER_STATUS_TEMPORARY_FAILURE:
-        if (priv->reply_status == MILTER_STATUS_TEMPORARY_FAILURE ||
-            priv->reply_status == MILTER_STATUS_NOT_CHANGE)
-            priv->reply_status = status;
-        break;
-      case MILTER_STATUS_ACCEPT:
-        if (!status_is_critical(priv->reply_status))
-            priv->reply_status = status;
-        break;
-      case MILTER_STATUS_SKIP:
-        if (priv->reply_status == MILTER_STATUS_SKIP ||
-            priv->reply_status == MILTER_STATUS_NOT_CHANGE)
-            priv->reply_status = status;
-        break;
-      default:
-        priv->reply_status = status;
-        break;
-    }
 
     return priv->reply_status;
 }
