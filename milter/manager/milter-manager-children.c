@@ -320,7 +320,8 @@ compile_reply_status (MilterManagerChildren *children,
             priv->reply_status = status;
         break;
       case MILTER_STATUS_TEMPORARY_FAILURE:
-        if (!status_is_critical(priv->reply_status))
+        if (priv->reply_status == MILTER_STATUS_TEMPORARY_FAILURE ||
+            priv->reply_status == MILTER_STATUS_NOT_CHANGE)
             priv->reply_status = status;
         break;
       case MILTER_STATUS_ACCEPT:
@@ -425,13 +426,12 @@ cb_temporary_failure (MilterServerContext *context, gpointer user_data)
     state = milter_server_context_get_state(context);
 
     switch (state) {
-      case MILTER_SERVER_CONTEXT_STATE_CONNECT:
-      case MILTER_SERVER_CONTEXT_STATE_HELO:
-      case MILTER_SERVER_CONTEXT_STATE_QUIT:
-        quit_child(children, context);
+      case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECEIPT:
+        compile_reply_status(children, MILTER_STATUS_TEMPORARY_FAILURE);
         break;
       default:
         compile_reply_status(children, MILTER_STATUS_TEMPORARY_FAILURE);
+        quit_child(children, context);
         break;
     }
     remove_child_from_queue(children, context);
