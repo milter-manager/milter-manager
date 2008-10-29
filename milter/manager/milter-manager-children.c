@@ -701,10 +701,12 @@ cb_error (MilterErrorEmitable *emitable, GError *error, gpointer user_data)
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(user_data);
 
     milter_error("error: FIXME: %s", error->message);
-    g_queue_remove(priv->reply_queue, emitable);
 
     milter_error_emitable_emit_error(MILTER_ERROR_EMITABLE(user_data),
                                      error);
+
+    expire_child(children, context);
+    remove_child_from_queue(children, context);
 }
 
 static void
