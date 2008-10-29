@@ -47,24 +47,13 @@ enum
     PROP_CONFIGURATION
 };
 
-static MilterErrorEmittable *emittable_parent;
-static MilterReplySignals *reply_parent;
-
-static void
-reply_init (MilterReplySignals *reply)
-{
-    reply_parent = g_type_interface_peek_parent(reply);
-}
-
-static void
-emittable_init (MilterErrorEmittable *emittable)
-{
-    emittable_parent = g_type_interface_peek_parent(emittable);
-}
-
+MILTER_IMPLEMENT_ERROR_EMITTABLE(error_emittable_init);
+MILTER_IMPLEMENT_FINISHED_EMITTABLE(finished_emittable_init);
+MILTER_IMPLEMENT_REPLY_SIGNALS(reply_init);
 G_DEFINE_TYPE_WITH_CODE(MilterManagerChildren, milter_manager_children, G_TYPE_OBJECT,
-    G_IMPLEMENT_INTERFACE(MILTER_TYPE_REPLY_SIGNALS, reply_init)
-    G_IMPLEMENT_INTERFACE(MILTER_TYPE_ERROR_EMITTABLE, emittable_init))
+    G_IMPLEMENT_INTERFACE(MILTER_TYPE_ERROR_EMITTABLE, error_emittable_init)
+    G_IMPLEMENT_INTERFACE(MILTER_TYPE_FINISHED_EMITTABLE, finished_emittable_init)
+    G_IMPLEMENT_INTERFACE(MILTER_TYPE_REPLY_SIGNALS, reply_init))
 
 static void dispose        (GObject         *object);
 static void set_property   (GObject         *object,
@@ -714,13 +703,17 @@ cb_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
 static void
 cb_finished (MilterHandler *handler, gpointer user_data)
 {
+    MilterManagerChildren *children = MILTER_MANAGER_CHILDREN(user_data);
     MilterManagerChildrenPrivate *priv;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(user_data);
 
-    g_queue_remove(priv->reply_queue, handler);
+    expire_child(children, MILTER_SERVER_CONTEXT(handler));
 
-    /* emit signal? */
+    g_queue_remove(priv->reply_queue, handler);
+    if (g_queue_is_empty(priv->reply_queue)) {
+        milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(user_data));
+    }
 }
 
 static void

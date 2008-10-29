@@ -57,6 +57,8 @@
 	from each child and remove it from reply queue.
 	* emitable -> emittable.
 	* milter_error_emittable_emit_error -> milter_error_emittable_emit.
+	* milter/manager/milter-manager-childrenc.: Emit "finished" signal if
+	all children have gone away!
 
 2008-10-28  Kouhei Sutou  <kou@cozmixng.org>
 
