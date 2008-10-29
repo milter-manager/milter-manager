@@ -712,6 +712,18 @@ cb_error (MilterErrorEmitable *emitable, GError *error, gpointer user_data)
 }
 
 static void
+cb_finished (MilterHandler *handler, gpointer user_data)
+{
+    MilterManagerChildrenPrivate *priv;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(user_data);
+
+    g_queue_remove(priv->reply_queue, handler);
+
+    /* emit signal? */
+}
+
+static void
 setup_server_context_signals (MilterManagerChildren *children,
                               MilterServerContext *server_context)
 {
@@ -745,6 +757,7 @@ setup_server_context_signals (MilterManagerChildren *children,
     CONNECT(end_of_message_timeout);
 
     CONNECT(error);
+    CONNECT(finished);
 #undef CONNECT
 }
 
@@ -785,6 +798,7 @@ teardown_server_context_signals (MilterManagerChild *child,
     DISCONNECT(end_of_message_timeout);
 
     DISCONNECT(error);
+    DISCONNECT(finished);
 #undef DISCONNECT
 }
 

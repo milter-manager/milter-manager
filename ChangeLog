@@ -51,6 +51,8 @@
 	Emit reply signal even if state check fails.
 	* test/manager/test-controller.c: Check the number of received reply.
 	Initialize client_end_of_header_received with 0.
+	* milter/manager/milter-manager-children.c: Receive "finished" signal
+	from each child and remove it from reply queue.
 
 2008-10-28  Kouhei Sutou  <kou@cozmixng.org>
 
