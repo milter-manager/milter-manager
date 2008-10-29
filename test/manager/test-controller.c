@@ -461,9 +461,6 @@ test_abort (void)
 
     milter_manager_controller_abort(controller);
     wait_reply(abort);
-    milter_manager_controller_quit(controller);
-    g_main_context_iteration(NULL, TRUE);
-    wait_finished();
 }
 
 void
