@@ -76,6 +76,7 @@ static gchar *client_body_chunk;
 static gchar *client_end_of_message_chunk;
 static gchar *client_unknown_command;
 
+static gboolean finished;
 
 static void
 add_load_path (const gchar *path)
@@ -92,12 +93,19 @@ cb_error (MilterManagerController *controller, GError *error, gpointer user_data
 }
 
 static void
+cb_finished (MilterManagerController *controller, gpointer user_data)
+{
+    finished = TRUE;
+}
+
+static void
 setup_controller_signals (MilterManagerController *controller)
 {
 #define CONNECT(name)                                                   \
     g_signal_connect(controller, #name, G_CALLBACK(cb_ ## name), NULL)
 
     CONNECT(error);
+    CONNECT(finished);
 
 #undef CONNECT
 }
@@ -293,6 +301,8 @@ setup (void)
     client_body_chunk = NULL;
     client_end_of_message_chunk = NULL;
     client_unknown_command = NULL;
+
+    finished = FALSE;
 }
 
 void
@@ -428,6 +438,28 @@ wait_reply_helper (guint expected, guint *actual)
 
     cut_assert_true(timeout_waiting, "timeout");
     cut_assert_equal_uint(expected, *actual);
+}
+
+#define wait_finished()                    \
+    cut_trace_with_info_expression(        \
+        wait_finished_helper(),            \
+        wait_finished())
+
+static void
+wait_finished_helper (void)
+{
+    gboolean timeout_waiting = TRUE;
+    guint timeout_waiting_id;
+
+    timeout_waiting_id = g_timeout_add_seconds(1, cb_timeout_waiting,
+                                               &timeout_waiting);
+    while (timeout_waiting && !finished) {
+        g_main_context_iteration(NULL, TRUE);
+    }
+    g_source_remove(timeout_waiting_id);
+
+    cut_assert_true(timeout_waiting, "timeout");
+    cut_assert_true(finished);
 }
 
 void
@@ -598,7 +630,7 @@ test_quit (void)
 
     milter_manager_controller_quit(controller);
     g_main_context_iteration(NULL, TRUE);
-    wait_reply(client_quit_received);
+    wait_finished();
 }
 
 void

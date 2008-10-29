@@ -46,9 +46,11 @@ enum
     PROP_CLIENT_CONTEXT
 };
 
-MILTER_DEFINE_ERROR_EMITTABLE_TYPE(MilterManagerController,
-                                  milter_manager_controller,
-                                  G_TYPE_OBJECT)
+MILTER_IMPLEMENT_ERROR_EMITTABLE(error_emittable_init);
+MILTER_IMPLEMENT_FINISHED_EMITTABLE(finished_emittable_init);
+G_DEFINE_TYPE_WITH_CODE(MilterManagerController, milter_manager_controller, G_TYPE_OBJECT,
+    G_IMPLEMENT_INTERFACE(MILTER_TYPE_ERROR_EMITTABLE, error_emittable_init)
+    G_IMPLEMENT_INTERFACE(MILTER_TYPE_FINISHED_EMITTABLE, finished_emittable_init))
 
 static void dispose        (GObject         *object);
 static void set_property   (GObject         *object,
@@ -522,6 +524,12 @@ cb_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
 }
 
 static void
+cb_finished (MilterFinishedEmittable *emittable, gpointer user_data)
+{
+    milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(user_data));
+}
+
+static void
 setup_children_signals (MilterManagerController *controller,
                         MilterManagerChildren *children)
 {
@@ -550,6 +558,7 @@ setup_children_signals (MilterManagerController *controller,
     CONNECT(skip);
 
     CONNECT(error);
+    CONNECT(finished);
 #undef CONNECT
 }
 
@@ -584,6 +593,7 @@ teardown_children_signals (MilterManagerController *controller,
     DISCONNECT(skip);
 
     DISCONNECT(error);
+    DISCONNECT(finished);
 #undef DISCONNECT
 }
 

@@ -61,6 +61,8 @@
 	* milter_error_emittable_emit_error -> milter_error_emittable_emit.
 	* milter/manager/milter-manager-childrenc.: Emit "finished" signal if
 	all children have gone away!
+	* milter/manager/milter-manager-controller.c: Emit "finished" signal
+	when receiving "finished" signal from MilterManagerChildren.
 
 2008-10-28  Kouhei Sutou  <kou@cozmixng.org>
 
