@@ -21,6 +21,8 @@
 	events were processed.
 	* milter/manager/milter-manager-children.c: If all children sends
 	"SKIP", emit "skip" signal.
+	* milter/manager/milter-manager-children.c (cb_reject, cb_discard):
+	Send "QUIT" command to a filter.
 
 2008-10-28  Kouhei Sutou  <kou@cozmixng.org>
 
