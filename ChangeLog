@@ -1,5 +1,7 @@
 2008-10-29  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/lib/milter-manager-test-client.[ch]: add.
+
 	* test/manager/test-children.c: add a test for negotiate. TOO DUTY!!!
 
 	* binding/ruby/test/: follow the recent changes.

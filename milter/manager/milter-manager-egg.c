@@ -66,7 +66,7 @@ static gint signals[LAST_SIGNAL] = {0};
 
 MILTER_DEFINE_ERROR_EMITTABLE_TYPE(MilterManagerEgg,
                                    milter_manager_egg,
-                                  G_TYPE_OBJECT)
+                                   G_TYPE_OBJECT)
 
 static void dispose        (GObject         *object);
 static void set_property   (GObject         *object,
