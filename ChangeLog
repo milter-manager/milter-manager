@@ -1,5 +1,7 @@
 2008-10-29  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/test-controller.c: improve reply waiting.
+
 	* test/manager/test-controller.c: cleanup.
 
 	* milter/manager/milter-manager-children.c,

@@ -408,6 +408,28 @@ wait_response_helper (const gchar *name)
     gcut_assert_error(controller_error);
 }
 
+#define wait_reply(actual)                                              \
+    cut_trace_with_info_expression(                                     \
+        wait_reply_helper(g_list_length(test_milters), &actual),        \
+        wait_reply(actual))
+
+static void
+wait_reply_helper (guint expected, guint *actual)
+{
+    gboolean timeout_waiting = TRUE;
+    guint timeout_waiting_id;
+
+    timeout_waiting_id = g_timeout_add_seconds(1, cb_timeout_waiting,
+                                               &timeout_waiting);
+    while (timeout_waiting && expected > *actual) {
+        g_main_context_iteration(NULL, TRUE);
+    }
+    g_source_remove(timeout_waiting_id);
+
+    cut_assert_true(timeout_waiting, "timeout");
+    cut_assert_equal_uint(expected, *actual);
+}
+
 void
 test_negotiate (void)
 {
@@ -576,10 +598,7 @@ test_quit (void)
 
     milter_manager_controller_quit(controller);
     g_main_context_iteration(NULL, TRUE);
-    while (g_main_context_pending(NULL))
-        g_main_context_iteration(NULL, TRUE);
-    cut_assert_equal_uint(g_list_length(test_milters),
-                          client_quit_received);
+    wait_reply(client_quit_received);
 }
 
 void
@@ -588,11 +607,7 @@ test_abort (void)
     cut_trace(test_end_of_message(NULL));
 
     milter_manager_controller_abort(controller);
-    g_main_context_iteration(NULL, TRUE);
-    while (g_main_context_pending(NULL))
-        g_main_context_iteration(NULL, TRUE);
-    cut_assert_equal_uint(g_list_length(test_milters),
-                          client_abort_received);
+    wait_reply(client_abort_received);
 }
 
 void
@@ -603,11 +618,7 @@ test_unknown (void)
     cut_trace(test_helo());
 
     milter_manager_controller_unknown(controller, command);
-    g_main_context_iteration(NULL, TRUE);
-    while (g_main_context_pending(NULL))
-        g_main_context_iteration(NULL, TRUE);
-    cut_assert_equal_uint(g_list_length(test_milters),
-                          client_unknown_received);
+    wait_reply(client_unknown_received);
     cut_assert_equal_string(command, client_unknown_command);
 }
 
