@@ -227,7 +227,7 @@ milter_manager_children_add_child (MilterManagerChildren *children,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    priv->milters = g_list_prepend(priv->milters, g_object_ref(child));
+    priv->milters = g_list_append(priv->milters, g_object_ref(child));
 }
 
 guint
@@ -290,7 +290,7 @@ status_to_signal_name (MilterStatus status)
     return signal_name;
 }
 
-static gint 
+static gint
 compare_reply_status (MilterStatus a, MilterStatus b)
 {
     switch (a) {

@@ -75,9 +75,7 @@ each_child (MilterManagerChild *child, gpointer user_data)
 void
 test_foreach (void)
 {
-    expected_names = g_list_prepend(expected_names, g_strdup("1"));
-    expected_names = g_list_prepend(expected_names, g_strdup("2"));
-    expected_names = g_list_prepend(expected_names, g_strdup("3"));
+    expected_names = gcut_list_string_new("1", "2", "3", NULL);
 
     milter_manager_children_add_child(children,
                                       milter_manager_child_new("1"));
@@ -85,7 +83,7 @@ test_foreach (void)
                                       milter_manager_child_new("2"));
     milter_manager_children_add_child(children,
                                       milter_manager_child_new("3"));
-    milter_manager_children_foreach(children, 
+    milter_manager_children_foreach(children,
                                     (GFunc)each_child, NULL);
 
     gcut_assert_equal_list_string(expected_names, actual_names);

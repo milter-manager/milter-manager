@@ -1,5 +1,8 @@
 2008-10-29  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.c,
+	test/manager/test-children.c: append a child not prepend.
+
 	* milter/manager/milter-manager-egg.[ch], test/manager/test-egg.c:
 	add hatched signal.
 
@@ -13,9 +16,9 @@
 	was born.
 	* test/manager/test-egg.c: Unset MILTER_LOG_LEVEL.
 	* milter/manager/milter-manager-children.c: Remove from reply queue if
-	timeout is occured.
+	timeout is occurred.
 	* milter/manager/milter-manager-children.c (cb_skip, cb_quarantine):
-	Remove reply queue if state check fails. 
+	Remove reply queue if state check fails.
 	* test/manager/test-controller.c (test_quit, test_abort,
 	test_unknown): Invoke g_main_context_iteration until all pending
 	events were processed.
