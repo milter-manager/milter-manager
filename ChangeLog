@@ -66,6 +66,8 @@
 	all children have gone away!
 	* milter/manager/milter-manager-controller.c: Emit "finished" signal
 	when receiving "finished" signal from MilterManagerChildren.
+	* milter/manager/milter-manager-children.c: Expire a child only if
+	"finished" signal is received or time out error.
 
 2008-10-28  Kouhei Sutou  <kou@cozmixng.org>
 

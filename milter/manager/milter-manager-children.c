@@ -397,14 +397,6 @@ expire_child (MilterManagerChildren *children,
 }
 
 static void
-quit_child (MilterManagerChildren *children,
-            MilterServerContext *context)
-{
-    milter_server_context_quit(context);
-    expire_child(children, context);
-}
-
-static void
 cb_continue (MilterServerContext *context, gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
@@ -429,16 +421,15 @@ cb_temporary_failure (MilterServerContext *context, gpointer user_data)
 
     state = milter_server_context_get_state(context);
 
+    compile_reply_status(children, MILTER_STATUS_TEMPORARY_FAILURE);
     switch (state) {
       case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECEIPT:
-        compile_reply_status(children, MILTER_STATUS_TEMPORARY_FAILURE);
+        remove_child_from_queue(children, context);
         break;
       default:
-        compile_reply_status(children, MILTER_STATUS_TEMPORARY_FAILURE);
-        quit_child(children, context);
+        milter_server_context_quit(context);
         break;
     }
-    remove_child_from_queue(children, context);
 }
 
 static void
@@ -449,16 +440,15 @@ cb_reject (MilterServerContext *context, gpointer user_data)
 
     state = milter_server_context_get_state(context);
 
+    compile_reply_status(children, MILTER_STATUS_REJECT);
     switch (state) {
       case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECEIPT:
-        compile_reply_status(children, MILTER_STATUS_REJECT);
+        remove_child_from_queue(children, context);
         break;
       default:
-        quit_child(children, context);
+        milter_server_context_quit(context);
         break;
     }
-
-    remove_child_from_queue(children, context);
 }
 
 static void
@@ -466,10 +456,8 @@ cb_accept (MilterServerContext *context, gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
 
-    quit_child(children, context);
-
     compile_reply_status(children, MILTER_STATUS_ACCEPT);
-    remove_child_from_queue(children, context);
+    milter_server_context_quit(context);
 }
 
 static void
@@ -477,10 +465,8 @@ cb_discard (MilterServerContext *context, gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
 
-    quit_child(children, context);
-
     compile_reply_status(children, MILTER_STATUS_DISCARD);
-    remove_child_from_queue(children, context);
+    milter_server_context_quit(context);
 }
 
 static void
@@ -584,15 +570,13 @@ cb_quarantine (MilterServerContext *context,
 
         priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-        quit_child(children, context);
-        remove_child_from_queue(children, context);
+        milter_server_context_quit(context);
         milter_error("QUARANTINE reply is only allowed in end of message session");
         return;
     }
 
     compile_reply_status(children, MILTER_STATUS_QUARANTINE);
-    quit_child(children, context);
-    remove_child_from_queue(children, context);
+    milter_server_context_quit(context);
 }
 
 static void
@@ -624,14 +608,13 @@ cb_skip (MilterServerContext *context, gpointer user_data)
 
         priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-        quit_child(children, context);
-        remove_child_from_queue(children, context);
+        milter_server_context_quit(context);
         milter_error("SKIP reply is only allowed in body session");
         return;
     }
 
     compile_reply_status(children, MILTER_STATUS_SKIP);
-    remove_child_from_queue(children, context);
+    milter_server_context_quit(context);
 }
 
 static void
