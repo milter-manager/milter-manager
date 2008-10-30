@@ -805,7 +805,7 @@ teardown_server_context_signals (MilterManagerChild *child,
 #undef DISCONNECT
 }
 
-#define NEGOTIATE_RETRY_TIMEOUT 3
+#define NEGOTIATE_RETRY_TIMEOUT 1
 
 typedef struct _NegotiateData NegotiateData;
 struct _NegotiateData
@@ -881,6 +881,7 @@ child_negotiate_without_retry (MilterManagerChild *child, MilterOption *option,
         status =
             milter_manager_configuration_get_return_status_if_filter_unavailable(priv->configuration);
 
+        milter_error("Error: %s", error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
                                     error);
         g_error_free(error);
