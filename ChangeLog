@@ -23,6 +23,8 @@
 	and "TEMPORARY FAILURE" and "DISCARD".
 	* milter/manager/milter-manager-children.[ch]: Important status
 	depends on the current MilterServerContextState.
+	* test/manager/test-controller.c: Added a test for returning "ACCEPT"
+	and "DISCARD" from each child respectively.
 
 2008-10-30  Kouhei Sutou  <kou@cozmixng.org>
 

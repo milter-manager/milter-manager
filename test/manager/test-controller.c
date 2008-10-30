@@ -34,6 +34,7 @@ void test_envelope_from (void);
 void test_envelope_receipt (void);
 void test_envelope_receipt_accept (void);
 void test_envelope_receipt_reject (void);
+void test_envelope_receipt_reject_and_discard_simultaneously (void);
 void test_envelope_receipt_reject_and_temporary_failure_and_discard (void);
 void test_envelope_receipt_discard (void);
 void test_envelope_receipt_temporary_failure (void);
@@ -53,6 +54,7 @@ static MilterManagerController *controller;
 static MilterOption *option;
 
 static GArray *arguments1;
+static GArray *arguments2;
 
 static GError *controller_error;
 static gboolean finished;
@@ -111,6 +113,7 @@ setup (void)
     option = NULL;
 
     arguments1 = g_array_new(TRUE, TRUE, sizeof(gchar *));
+    arguments2 = g_array_new(TRUE, TRUE, sizeof(gchar *));
 
     test_clients = NULL;
 
@@ -161,6 +164,9 @@ teardown (void)
 
     if (arguments1)
         arguments_free(arguments1);
+
+    if (arguments2)
+        arguments_free(arguments2);
 
     if (test_clients) {
         g_list_foreach(test_clients, (GFunc)g_object_unref, NULL);
@@ -291,7 +297,7 @@ test_negotiate (void)
                                MILTER_STEP_NONE);
 
     start_client(10026, arguments1);
-    start_client(10027, NULL);
+    start_client(10027, arguments2);
 
     milter_manager_controller_negotiate(controller, option);
     wait_response("negotiate");
@@ -447,6 +453,30 @@ test_envelope_receipt_reject_and_temporary_failure_and_discard (void)
     milter_manager_controller_envelope_receipt(controller, discard_receipt);
     wait_response("envelope-receipt");
     cut_assert_equal_uint(g_list_length(test_clients) * 4,
+                          collect_n_received(envelope_receipt));
+    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
+                           MILTER_STATUS_DISCARD, response_status);
+}
+
+void
+test_envelope_receipt_reject_and_discard_simultaneously (void)
+{
+    const gchar receipt[] = "kou+rejected+discarded@cozmixng.org";
+
+    arguments_append(arguments1,
+                     "--action", "reject",
+                     "--envelope-receipt", receipt,
+                     NULL);
+    arguments_append(arguments2,
+                     "--action", "discard",
+                     "--envelope-receipt", receipt,
+                     NULL);
+
+    cut_trace(test_envelope_receipt());
+
+    milter_manager_controller_envelope_receipt(controller, receipt);
+    wait_response("envelope-receipt");
+    cut_assert_equal_uint(g_list_length(test_clients) * 2,
                           collect_n_received(envelope_receipt));
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
                            MILTER_STATUS_DISCARD, response_status);
