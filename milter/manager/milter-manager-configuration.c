@@ -34,8 +34,14 @@ typedef struct _MilterManagerConfigurationPrivate MilterManagerConfigurationPriv
 struct _MilterManagerConfigurationPrivate
 {
     GList *eggs;
-    gboolean privilege;
+    gboolean privilege_mode;
     MilterStatus return_status;
+};
+
+enum
+{
+    PROP_0,
+    PROP_PRIVILEGE_MODE
 };
 
 static GList *configurations = NULL;
@@ -58,12 +64,20 @@ static void
 milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
 {
     GObjectClass *gobject_class;
+    GParamSpec *spec;
 
     gobject_class = G_OBJECT_CLASS(klass);
 
     gobject_class->dispose      = dispose;
     gobject_class->set_property = set_property;
     gobject_class->get_property = get_property;
+
+    spec = g_param_spec_boolean("privilege-mode",
+                                "Privilege mode",
+                                "Whether MilterManager runs on privilege mode",
+                                FALSE,
+                                G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+    g_object_class_install_property(gobject_class, PROP_PRIVILEGE_MODE, spec);
 
     g_type_class_add_private(gobject_class,
                              sizeof(MilterManagerConfigurationPrivate));
@@ -76,7 +90,7 @@ milter_manager_configuration_init (MilterManagerConfiguration *configuration)
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
     priv->eggs = NULL;
-    priv->privilege = FALSE;
+    priv->privilege_mode = FALSE;
     priv->return_status = MILTER_STATUS_CONTINUE;
 }
 
@@ -106,6 +120,9 @@ set_property (GObject      *object,
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(object);
     switch (prop_id) {
+      case PROP_PRIVILEGE_MODE:
+        priv->privilege_mode = g_value_get_boolean(value);
+        break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -122,6 +139,9 @@ get_property (GObject    *object,
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(object);
     switch (prop_id) {
+      case PROP_PRIVILEGE_MODE:
+        g_value_set_boolean(value, priv->privilege_mode);
+        break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -242,12 +262,12 @@ milter_manager_configuration_load (MilterManagerConfiguration *configuration,
 gboolean
 milter_manager_configuration_is_privilege_mode (MilterManagerConfiguration *configuration)
 {
-    return MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration)->privilege;
+    return MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration)->privilege_mode;
 }
 
 void
 milter_manager_configuration_add_egg (MilterManagerConfiguration *configuration,
-                                        MilterManagerEgg         *egg)
+                                      MilterManagerEgg         *egg)
 {
     MilterManagerConfigurationPrivate *priv;
 
