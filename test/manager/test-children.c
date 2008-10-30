@@ -583,14 +583,14 @@ test_connect_half_pass (void)
 }
 
 
-#define is_important_status(children, next_status)                      \
-    milter_manager_children_is_important_status(children, next_status)
+#define is_important_status(children, state, next_status)                    \
+    milter_manager_children_is_important_status(children, state, next_status)
 
-#define milter_manager_assert_important(children, next_status)          \
-    cut_assert_true(is_important_status(children, next_status))
+#define milter_manager_assert_important(children, state, next_status)        \
+    cut_assert_true(is_important_status(children, state, next_status))
 
-#define milter_manager_assert_not_important(children, next_status)      \
-    cut_assert_false(is_important_status(children, next_status))
+#define milter_manager_assert_not_important(children, state, next_status)    \
+    cut_assert_false(is_important_status(children, state, next_status))
 
 typedef struct _StateTestData
 {
@@ -618,10 +618,6 @@ static void
 prepare_children_state (MilterManagerChildren *children,
                         const StateTestData *data)
 {
-    /*
-    milter_server_context_set_state(MILTER_SERVER_CONTEXT(children),
-                                    data->state);
-    */
     milter_manager_children_set_status(children, data->status);
 }
 
@@ -634,7 +630,11 @@ data_important_status (void)
                         MILTER_STATUS_ ## next_status)
 
     cut_add_data("connect - default - accept",
-                 test_data(CONNECT, DEFAULT, ACCEPT), g_free);
+                 test_data(CONNECT, DEFAULT, ACCEPT), g_free,
+                 "envelope_from - discard - reject",
+                 test_data(ENVELOPE_FROM, DISCARD, REJECT), g_free,
+                 "envelope_receipt - reject - discard",
+                 test_data(ENVELOPE_RECEIPT, REJECT, DISCARD), g_free);
 #undef test_data
 }
 
@@ -644,7 +644,7 @@ test_important_status (gconstpointer data)
     const StateTestData *test_data = data;
 
     prepare_children_state(children, test_data);
-    milter_manager_assert_important(children, test_data->next_status);
+    milter_manager_assert_important(children, test_data->state, test_data->next_status);
 }
 
 void
@@ -656,7 +656,9 @@ data_not_important_status (void)
                         MILTER_STATUS_ ## next_status)
 
     cut_add_data("connect - continue - accept",
-                 test_data(CONNECT, CONTINUE, ACCEPT), g_free);
+                 test_data(CONNECT, CONTINUE, ACCEPT), g_free,
+                 "envelope_receipt - discard - reject",
+                 test_data(ENVELOPE_RECEIPT, DISCARD, REJECT), g_free);
 #undef test_data
 }
 
@@ -666,7 +668,7 @@ test_not_important_status (gconstpointer data)
     const StateTestData *test_data = data;
 
     prepare_children_state(children, test_data);
-    milter_manager_assert_not_important(children, test_data->next_status);
+    milter_manager_assert_not_important(children, test_data->state, test_data->next_status);
 }
 
 /*

@@ -105,6 +105,7 @@ gboolean               milter_manager_children_abort       (MilterManagerChildre
 /* private */
 gboolean               milter_manager_children_is_important_status
                                                            (MilterManagerChildren *children,
+                                                            MilterServerContextState state,
                                                             MilterStatus status);
 void                   milter_manager_children_set_status  (MilterManagerChildren *children,
                                                             MilterStatus status);

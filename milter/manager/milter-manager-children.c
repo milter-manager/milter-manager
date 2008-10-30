@@ -307,13 +307,14 @@ status_to_signal_name (MilterStatus status)
 
 static MilterStatus
 compile_reply_status (MilterManagerChildren *children,
+                      MilterServerContextState state,
                       MilterStatus status)
 {
     MilterManagerChildrenPrivate *priv;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    if (milter_manager_children_is_important_status(children, status))
+    if (milter_manager_children_is_important_status(children, state, status))
         priv->reply_status = status;
 
     return priv->reply_status;
@@ -376,8 +377,11 @@ static void
 cb_continue (MilterServerContext *context, gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
+    MilterServerContextState state;
 
-    compile_reply_status(children, MILTER_STATUS_CONTINUE);
+    state = milter_server_context_get_state(context);
+
+    compile_reply_status(children, state, MILTER_STATUS_CONTINUE);
     remove_child_from_queue(children, context);
 }
 
@@ -397,7 +401,7 @@ cb_temporary_failure (MilterServerContext *context, gpointer user_data)
 
     state = milter_server_context_get_state(context);
 
-    compile_reply_status(children, MILTER_STATUS_TEMPORARY_FAILURE);
+    compile_reply_status(children, state, MILTER_STATUS_TEMPORARY_FAILURE);
     switch (state) {
       case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECEIPT:
         remove_child_from_queue(children, context);
@@ -416,7 +420,7 @@ cb_reject (MilterServerContext *context, gpointer user_data)
 
     state = milter_server_context_get_state(context);
 
-    compile_reply_status(children, MILTER_STATUS_REJECT);
+    compile_reply_status(children, state, MILTER_STATUS_REJECT);
     switch (state) {
       case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECEIPT:
         remove_child_from_queue(children, context);
@@ -431,8 +435,11 @@ static void
 cb_accept (MilterServerContext *context, gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
+    MilterServerContextState state;
 
-    compile_reply_status(children, MILTER_STATUS_ACCEPT);
+    state = milter_server_context_get_state(context);
+
+    compile_reply_status(children, state, MILTER_STATUS_ACCEPT);
     milter_server_context_quit(context);
 }
 
@@ -440,8 +447,11 @@ static void
 cb_discard (MilterServerContext *context, gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
+    MilterServerContextState state;
 
-    compile_reply_status(children, MILTER_STATUS_DISCARD);
+    state = milter_server_context_get_state(context);
+
+    compile_reply_status(children, state, MILTER_STATUS_DISCARD);
     milter_server_context_quit(context);
 }
 
@@ -551,7 +561,7 @@ cb_quarantine (MilterServerContext *context,
         return;
     }
 
-    compile_reply_status(children, MILTER_STATUS_QUARANTINE);
+    compile_reply_status(children, state, MILTER_STATUS_QUARANTINE);
     milter_server_context_quit(context);
 }
 
@@ -589,7 +599,7 @@ cb_skip (MilterServerContext *context, gpointer user_data)
         return;
     }
 
-    compile_reply_status(children, MILTER_STATUS_SKIP);
+    compile_reply_status(children, state, MILTER_STATUS_SKIP);
     milter_server_context_quit(context);
 }
 
@@ -1223,6 +1233,7 @@ milter_manager_children_abort (MilterManagerChildren *children)
 
 gboolean
 milter_manager_children_is_important_status (MilterManagerChildren *children,
+                                             MilterServerContextState state,
                                              MilterStatus status)
 {
     MilterManagerChildrenPrivate *priv;
@@ -1235,12 +1246,14 @@ milter_manager_children_is_important_status (MilterManagerChildren *children,
 
     switch (a) {
       case MILTER_STATUS_REJECT:
-        return FALSE;
+        if (state != MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECEIPT)
+            return FALSE;
+        return (b == MILTER_STATUS_DISCARD);
         break;
       case MILTER_STATUS_DISCARD:
-        if (b != MILTER_STATUS_REJECT)
+        if (state == MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECEIPT)
             return FALSE;
-        return TRUE;
+        return (b == MILTER_STATUS_REJECT);
         break;
       case MILTER_STATUS_QUARANTINE:
         if (b != MILTER_STATUS_REJECT &&
