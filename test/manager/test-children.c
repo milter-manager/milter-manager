@@ -424,7 +424,6 @@ add_child_with_command_and_options (const gchar *name,
         g_object_unref(egg);
         g_object_unref(child);
     }
-
 }
 
 void
@@ -464,13 +463,13 @@ test_retry_negotiate (void)
     cut_take_string(command);
     start_client(10026);
 
-    add_child("milter@10026", "inet:10026@localhost");
     add_child_with_command_and_options("milter@10027",
                                        "inet:10027@localhost",
                                        command,
                                        "--print-status "
-                                       "--timeout=3.0 "
+                                       "--timeout=5.0 "
                                        "--port=10027");
+    add_child("milter@10026", "inet:10026@localhost");
 
     milter_manager_children_negotiate(children, option);
     wait_reply(n_negotiate_reply_emitted);

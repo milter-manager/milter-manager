@@ -335,7 +335,7 @@ milter_manager_test_client_run (MilterManagerTestClient *client, GError **error)
     port_string = g_strdup_printf("%u", priv->port);
     priv->egg = gcut_egg_new(priv->test_client_path,
                              "--print-status",
-                             "--timeout", "1.0",
+                             "--timeout", "4.0",
                              "--port", port_string,
                              NULL);
     g_free(port_string);
