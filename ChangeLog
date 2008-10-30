@@ -10,6 +10,8 @@
 	ENVELOPE_RECEIPT.
 	* test/manager/test-controller.c: Added a test for temporary failure in
 	ENVELOPE_RECEIPT.
+	* test/manager/test-controller.c: Added a test for accepting in
+	ENVELOPE_RECEIPT.
 
 2008-10-30  Kouhei Sutou  <kou@cozmixng.org>
 
