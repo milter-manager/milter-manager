@@ -42,6 +42,8 @@
 	milters if "mta-timeout" signal is received.
 	* module/configuration/ruby/milter-manager-ruby-configuration.c: Use
 	G_DEFINE_DYNAMIC_TYPE.
+	* milter/manager/milter-manager-controller.c: g_signal_emit_by_name()
+	does not need detail GQuark.
 
 2008-10-29  Kouhei Sutou  <kou@cozmixng.org>
 

@@ -52,6 +52,7 @@ static gboolean finished;
 
 static GList *test_clients;
 
+static MilterStatus response_status;
 
 static void
 add_load_path (const gchar *path)
@@ -103,6 +104,8 @@ setup (void)
     option = NULL;
 
     test_clients = NULL;
+
+    response_status = MILTER_STATUS_DEFAULT;
 
     finished = FALSE;
 }
@@ -156,6 +159,7 @@ cb_response_waiting (MilterClientContext *context, MilterStatus status,
     gboolean *waiting = data;
 
     *waiting = FALSE;
+    response_status = status;
 }
 
 #define wait_response(name)                     \
@@ -403,6 +407,8 @@ test_end_of_message (gconstpointer data)
 
     milter_manager_controller_end_of_message(controller, chunk, chunk_size);
     wait_response("end-of-message");
+    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
+                           MILTER_STATUS_CONTINUE, response_status);
     cut_assert_equal_uint(g_list_length(test_clients),
                           collect_n_received(end_of_message));
 

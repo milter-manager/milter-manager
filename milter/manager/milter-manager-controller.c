@@ -323,7 +323,7 @@ cb_negotiate_reply (MilterServerContext *context, MilterOption *option,
     priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
 
     g_signal_emit_by_name(priv->client_context, "negotiate-response",
-                          0, option, MILTER_STATUS_CONTINUE);
+                          option, MILTER_STATUS_CONTINUE);
 }
 
 static void
@@ -334,11 +334,11 @@ reply (MilterManagerController *controller, MilterStatus status)
     priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
     if (priv->state == MILTER_MANAGER_CONTROLLER_STATE_NEGOTIATE) {
         g_signal_emit_by_name(priv->client_context, "negotiate-response",
-                              0, NULL, status);
+                              NULL, status);
     } else {
         g_signal_emit_by_name(priv->client_context,
                               state_to_response_signal_name(priv->state),
-                              0, status);
+                              status);
     }
     priv->state = next_state(priv->state);
 }
