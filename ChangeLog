@@ -19,6 +19,8 @@
 	* test/manager/test-controller.c
 	(test_envelope_receipt_temporary_failure): Also check going on accept
 	further command.
+	* test/manager/test-controller.c: Added a test for returning "ACCEPT"
+	and "TEMPORARY FAILURE" and "DISCARD".
 
 2008-10-30  Kouhei Sutou  <kou@cozmixng.org>
 
