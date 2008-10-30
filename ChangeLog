@@ -2,6 +2,10 @@
 
 	* test/manager/test-controller.c (test_envelope_receipt_reject): Check
 	REJECT status.
+	* test/manager/test-controller.c (test_envelope_receipt_reject): Also
+	check going on accept further command.
+	* test/lib/milter-test-clienr.rb: In ENVELOPE_RECEIPT, REJECT status
+	is just rejecting the current receipt address.
 
 2008-10-30  Kouhei Sutou  <kou@cozmixng.org>
 
