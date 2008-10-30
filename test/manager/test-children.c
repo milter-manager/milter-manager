@@ -367,7 +367,7 @@ wait_reply_helper (guint expected, guint *actual)
     gboolean timeout_waiting = TRUE;
     guint timeout_waiting_id;
 
-    timeout_waiting_id = g_timeout_add_seconds(1, cb_timeout_waiting,
+    timeout_waiting_id = g_timeout_add_seconds(5, cb_timeout_waiting,
                                                &timeout_waiting);
     while (timeout_waiting && expected > *actual) {
         g_main_context_iteration(NULL, TRUE);
@@ -400,6 +400,33 @@ add_child (const gchar *name, const gchar *connection_spec)
     }
 }
 
+static void
+add_child_with_command_and_options (const gchar *name,
+                                    const gchar *connection_spec,
+                                    const gchar *command,
+                                    const gchar *command_options)
+{
+    MilterManagerEgg *egg;
+    GError *error = NULL;
+
+    egg = milter_manager_egg_new(name);
+    if (!milter_manager_egg_set_connection_spec(egg,
+                                                connection_spec,
+                                                &error)) {
+        g_object_unref(egg);
+        gcut_assert_error(error);
+    } else {
+        MilterManagerChild *child;
+        milter_manager_egg_set_command(egg, command);
+        milter_manager_egg_set_command_options(egg, command_options);
+        child = milter_manager_egg_hatch(egg);
+        milter_manager_children_add_child(children, child);
+        g_object_unref(egg);
+        g_object_unref(child);
+    }
+
+}
+
 void
 test_negotiate (void)
 {
@@ -422,15 +449,28 @@ test_negotiate (void)
 void
 test_retry_negotiate (void)
 {
+    gchar *command;
     option = milter_option_new(2,
                                MILTER_ACTION_ADD_HEADERS |
                                MILTER_ACTION_CHANGE_BODY,
                                MILTER_STEP_NONE);
-
+    g_object_set(config,
+                 "privilege-mode", TRUE,
+                 NULL);
+    command = g_build_filename(milter_manager_test_get_base_dir(),
+                               "lib",
+                               "milter-test-client.rb",
+                               NULL);
+    cut_take_string(command);
     start_client(10026);
 
     add_child("milter@10026", "inet:10026@localhost");
-    add_child("milter@10027", "inet:10027@localhost");
+    add_child_with_command_and_options("milter@10027",
+                                       "inet:10027@localhost",
+                                       command,
+                                       "--print-status "
+                                       "--timeout=3.0 "
+                                       "--port=10027");
 
     milter_manager_children_negotiate(children, option);
     wait_reply(n_negotiate_reply_emitted);
