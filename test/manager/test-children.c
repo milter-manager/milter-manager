@@ -473,6 +473,7 @@ test_retry_negotiate (void)
 
     milter_manager_children_negotiate(children, option);
     wait_reply(n_negotiate_reply_emitted);
+    milter_manager_children_quit(children);
 }
 
 /*

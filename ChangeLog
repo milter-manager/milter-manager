@@ -33,6 +33,9 @@
 	milter_manager_child_start().
 	* milter/manager/milter-manager-child.c: stdout and stderr of a milter
 	to /dev/null.
+	* test/manager/test-children.c (test_retry_negotiate): To kill
+	milter-test-client.rb sends "QUIT" command because the process which
+	was run	from MilterManagerChild cannot kill.
 
 2008-10-29  Kouhei Sutou  <kou@cozmixng.org>
 
