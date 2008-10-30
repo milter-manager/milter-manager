@@ -6,6 +6,8 @@
 	check going on accept further command.
 	* test/lib/milter-test-clienr.rb: In ENVELOPE_RECEIPT, REJECT status
 	is just rejecting the current receipt address.
+	* test/manager/test-controller.c: Added a test for discarding in
+	ENVELOPE_RECEIPT.
 
 2008-10-30  Kouhei Sutou  <kou@cozmixng.org>
 

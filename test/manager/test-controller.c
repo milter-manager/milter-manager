@@ -33,6 +33,7 @@ void test_helo (void);
 void test_envelope_from (void);
 void test_envelope_receipt (void);
 void test_envelope_receipt_reject (void);
+void test_envelope_receipt_discard (void);
 void test_data (void);
 void test_header (void);
 void test_end_of_header (void);
@@ -382,6 +383,26 @@ test_envelope_receipt_reject (void)
     wait_response("data");
     cut_assert_equal_uint(g_list_length(test_clients),
                           collect_n_received(data));
+}
+
+void
+test_envelope_receipt_discard (void)
+{
+    const gchar receipt[] = "kou+discarded@cozmixng.org";
+
+    arguments_append(arguments1,
+                     "--action", "discard",
+                     "--envelope-receipt", receipt,
+                     NULL);
+
+    cut_trace(test_envelope_receipt());
+
+    milter_manager_controller_envelope_receipt(controller, receipt);
+    wait_response("envelope-receipt");
+    cut_assert_equal_uint(g_list_length(test_clients) * 2,
+                          collect_n_received(envelope_receipt));
+    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
+                           MILTER_STATUS_DISCARD, response_status);
 }
 
 void
