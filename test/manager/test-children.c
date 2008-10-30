@@ -377,13 +377,31 @@ wait_reply_helper (guint expected, guint *actual)
     cut_assert_equal_uint(expected, *actual);
 }
 
+static void
+add_child (const gchar *name, const gchar *connection_spec)
+{
+    MilterManagerEgg *egg;
+    GError *error = NULL;
+
+    egg = milter_manager_egg_new("milter@10026");
+    if (!milter_manager_egg_set_connection_spec(egg,
+                                                connection_spec,
+                                                &error)) {
+        g_object_unref(egg);
+        gcut_assert_error(error);
+    } else {
+        MilterManagerChild *child;
+
+        child = milter_manager_egg_hatch(egg);
+        milter_manager_children_add_child(children, child);
+        g_object_unref(egg);
+        g_object_unref(child);
+    }
+}
+
 void
 test_negotiate (void)
 {
-    MilterManagerEgg *egg;
-    MilterManagerChild *child;
-    GError *error = NULL;
-
     option = milter_option_new(2,
                                MILTER_ACTION_ADD_HEADERS |
                                MILTER_ACTION_CHANGE_BODY,
@@ -392,19 +410,8 @@ test_negotiate (void)
     start_client(10026);
     start_client(10027);
 
-    egg = milter_manager_egg_new("milter@10026");
-    milter_manager_egg_set_connection_spec(egg, "inet:10026@localhost", &error);
-    child = milter_manager_egg_hatch(egg);
-    milter_manager_children_add_child(children, child);
-    g_object_unref(egg);
-    g_object_unref(child);
-
-    egg = milter_manager_egg_new("milter@10027");
-    milter_manager_egg_set_connection_spec(egg, "inet:10027@localhost", &error);
-    child = milter_manager_egg_hatch(egg);
-    milter_manager_children_add_child(children, child);
-    g_object_unref(egg);
-    g_object_unref(child);
+    add_child("milter@10026", "inet:10026@localhost");
+    add_child("milter@10027", "inet:10027@localhost");
 
     milter_manager_children_negotiate(children, option);
     wait_reply(n_negotiate_reply_emitted);

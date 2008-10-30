@@ -1,5 +1,7 @@
 2008-10-30  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/test-children.c (test_negotiate): cleanup.
+
 	* test/manager/test-children.c: use MilterManagerTestClient.
 
 	* test/lib/milter-manager-test-client.[ch]
