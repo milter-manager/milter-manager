@@ -24,6 +24,8 @@
 	g_main_context_itration and wait "unknown-response".
 	* milter/manager/milter-manager-children.c: Retry negotiation to a
 	milter when restart a milter. TODO: the test is not implemented yet.
+	* milter/manager/milter-manager-egg.[ch]: Added command_options
+	property.
 
 2008-10-29  Kouhei Sutou  <kou@cozmixng.org>
 

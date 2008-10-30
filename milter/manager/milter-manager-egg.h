@@ -105,6 +105,11 @@ void                milter_manager_egg_set_command
                                                  const gchar *command);
 const gchar        *milter_manager_egg_get_command
                                                 (MilterManagerEgg *egg);
+void                milter_manager_egg_set_command_options
+                                                (MilterManagerEgg *egg,
+                                                 const gchar *command_options);
+const gchar        *milter_manager_egg_get_command_options
+                                                (MilterManagerEgg *egg);
 
 G_END_DECLS
 

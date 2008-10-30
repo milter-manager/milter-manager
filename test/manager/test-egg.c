@@ -37,6 +37,7 @@ void test_reading_timeout (void);
 void test_end_of_message_timeout (void);
 void test_user_name (void);
 void test_command (void);
+void test_command_options (void);
 
 static MilterManagerEgg *egg;
 static MilterManagerChild *child;
@@ -237,6 +238,18 @@ test_command (void)
                             milter_manager_egg_get_command(egg));
     milter_manager_egg_set_command(egg, command);
     cut_assert_equal_string(command, milter_manager_egg_get_command(egg));
+}
+
+void
+test_command_options (void)
+{
+    const gchar command_options[] = "--port=10026 --print-status";
+
+    egg = milter_manager_egg_new("child-milter");
+    cut_assert_equal_string(NULL,
+                            milter_manager_egg_get_command_options(egg));
+    milter_manager_egg_set_command_options(egg, command_options);
+    cut_assert_equal_string(command_options, milter_manager_egg_get_command_options(egg));
 }
 
 /*

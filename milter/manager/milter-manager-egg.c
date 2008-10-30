@@ -41,6 +41,7 @@ struct _MilterManagerEggPrivate
     guint end_of_message_timeout;
     gchar *user_name;
     gchar *command;
+    gchar *command_options;
 };
 
 enum
@@ -53,7 +54,8 @@ enum
     PROP_READING_TIMEOUT,
     PROP_END_OF_MESSAGE_TIMEOUT,
     PROP_USER_NAME,
-    PROP_COMMAND
+    PROP_COMMAND,
+    PROP_COMMAND_OPTIONS,
 };
 
 enum
@@ -158,6 +160,13 @@ milter_manager_egg_class_init (MilterManagerEggClass *klass)
                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_COMMAND, spec);
 
+    spec = g_param_spec_string("command-options",
+                               "Command options",
+                               "The command options string of the milter egg",
+                               NULL,
+                               G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_COMMAND_OPTIONS, spec);
+
 
     signals[HATCHED] =
         g_signal_new("hatched",
@@ -188,6 +197,7 @@ milter_manager_egg_init (MilterManagerEgg *egg)
         MILTER_SERVER_CONTEXT_DEFAULT_END_OF_MESSAGE_TIMEOUT;
     priv->user_name = NULL;
     priv->command = NULL;
+    priv->command_options = NULL;
 }
 
 static void
@@ -217,6 +227,10 @@ dispose (GObject *object)
         priv->command = NULL;
     }
 
+    if (priv->command_options) {
+        g_free(priv->command_options);
+        priv->command_options = NULL;
+    }
     G_OBJECT_CLASS(milter_manager_egg_parent_class)->dispose(object);
 }
 
@@ -253,6 +267,11 @@ set_property (GObject      *object,
         break;
       case PROP_COMMAND:
         milter_manager_egg_set_command(egg, g_value_get_string(value));
+        break;
+      case PROP_COMMAND_OPTIONS:
+        if (priv->command_options)
+            g_free(priv->command_options);
+        priv->command_options = g_value_dup_string(value);
         break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -293,6 +312,9 @@ get_property (GObject    *object,
         break;
       case PROP_COMMAND:
         g_value_set_string(value, priv->command);
+        break;
+      case PROP_COMMAND_OPTIONS:
+        g_value_set_string(value, priv->command_options);
         break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -342,6 +364,7 @@ milter_manager_egg_hatch (MilterManagerEgg *egg)
                   "end-of-message-timeout", priv->end_of_message_timeout,
                   "user-name", priv->user_name,
                   "command", priv->command,
+                  "command-options", priv->command_options,
                   NULL);
 
     if (priv->connection_spec) {
@@ -536,6 +559,24 @@ const gchar *
 milter_manager_egg_get_command (MilterManagerEgg *egg)
 {
     return MILTER_MANAGER_EGG_GET_PRIVATE(egg)->command;
+}
+
+void
+milter_manager_egg_set_command_options (MilterManagerEgg *egg,
+                                        const gchar *command_options)
+{
+    MilterManagerEggPrivate *priv;
+
+    priv = MILTER_MANAGER_EGG_GET_PRIVATE(egg);
+    if (priv->command_options)
+        g_free(priv->command_options);
+    priv->command_options = g_strdup(command_options);
+}
+
+const gchar *
+milter_manager_egg_get_command_options (MilterManagerEgg *egg)
+{
+    return MILTER_MANAGER_EGG_GET_PRIVATE(egg)->command_options;
 }
 
 /*
