@@ -155,16 +155,16 @@ class MilterTestClient
     write(:greeted, :reply_continue)
   end
 
-  def do_mail(to)
+  def do_mail(from)
     invalid_state(:mail) if @state != :greeted
-    @mail_to = to
+    @mail_from = from
 
     write(:mailed, :reply_continue)
   end
 
-  def do_rcpt(from)
+  def do_rcpt(to)
     invalid_state(:rcpt) unless [:mailed, :receipted].include?(@state)
-    @receipted_from = from
+    @rcpt_to = to
 
     @receipts.each do |action, receipt|
       if receipt == from
