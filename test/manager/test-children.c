@@ -19,7 +19,13 @@
 
 #include <gcutter.h>
 
+#include <string.h>
+
 #define shutdown inet_shutdown
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
 #include <milter-manager-test-utils.h>
 #include <milter-manager-test-client.h>
 #include <milter/manager/milter-manager-children.h>
@@ -28,6 +34,7 @@
 void test_foreach (void);
 void test_negotiate (void);
 void test_retry_negotiate (void);
+void test_connect (void);
 
 static MilterManagerConfiguration *config;
 static MilterManagerChildren *children;
@@ -474,6 +481,27 @@ test_retry_negotiate (void)
     milter_manager_children_negotiate(children, option);
     wait_reply(n_negotiate_reply_emitted);
     milter_manager_children_quit(children);
+}
+
+void
+test_connect (void)
+{
+    struct sockaddr_in address;
+    const gchar host_name[] = "mx.local.net";
+    const gchar ip_address[] = "192.168.123.123";
+
+    cut_trace(test_negotiate());
+
+    address.sin_family = AF_INET;
+    address.sin_port = g_htons(50443);
+    inet_aton(ip_address, &(address.sin_addr));
+
+    milter_manager_children_connect(children,
+                                    host_name,
+                                    (struct sockaddr *)(&address),
+                                    sizeof(address));
+    wait_reply(n_continue_emitted);
+    cut_assert_equal_uint(1, n_continue_emitted);
 }
 
 /*
