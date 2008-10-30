@@ -318,50 +318,50 @@ milter_manager_children_is_important_status (MilterManagerChildren *children,
 
     switch (a) {
       case MILTER_STATUS_REJECT:
-        return 1;
+        return FALSE;
         break;
       case MILTER_STATUS_DISCARD:
         if (b != MILTER_STATUS_REJECT)
-            return 1;
-        return -1;
+            return FALSE;
+        return TRUE;
         break;
       case MILTER_STATUS_QUARANTINE:
         if (b != MILTER_STATUS_REJECT &&
             b != MILTER_STATUS_DISCARD)
-            return 1;
-        return -1;
+            return FALSE;
+        return TRUE;
         break;
       case MILTER_STATUS_TEMPORARY_FAILURE:
         if (b == MILTER_STATUS_NOT_CHANGE)
-            return 1;
-        return -1;
+            return FALSE;
+        return TRUE;
         break;
       case MILTER_STATUS_ACCEPT:
         if (b == MILTER_STATUS_NOT_CHANGE ||
             b == MILTER_STATUS_TEMPORARY_FAILURE)
-            return 1;
-        return -1;
+            return FALSE;
+        return TRUE;
         break;
       case MILTER_STATUS_SKIP:
         if (b == MILTER_STATUS_NOT_CHANGE ||
             b == MILTER_STATUS_ACCEPT ||
             b == MILTER_STATUS_TEMPORARY_FAILURE)
-            return 1;
-        return -1;
+            return FALSE;
+        return TRUE;
         break;
       case MILTER_STATUS_CONTINUE:
         if (b == MILTER_STATUS_NOT_CHANGE ||
             b == MILTER_STATUS_ACCEPT ||
             b == MILTER_STATUS_TEMPORARY_FAILURE ||
             b == MILTER_STATUS_SKIP)
-            return 1;
-        return -1;
+            return FALSE;
+        return TRUE;
       default:
-        return -1;
+        return TRUE;
         break;
     }
 
-    return -1;
+    return TRUE;
 }
 
 static MilterStatus
@@ -372,7 +372,7 @@ compile_reply_status (MilterManagerChildren *children,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    if (milter_manager_children_is_important_status(children, status) < 0)
+    if (milter_manager_children_is_important_status(children, status))
         priv->reply_status = status;
 
     return priv->reply_status;

@@ -51,6 +51,8 @@
 	does not need detail GQuark.
 	* milter/manager/milter-manager-children.c: Fix typo.
 	* test/manager/test-children.c: added test_connect_half_pass().
+	* milter/manager/milter-manager-children.c
+	(milter_manager_children_is_important_status): Return TRUE or FALSE.
 
 2008-10-29  Kouhei Sutou  <kou@cozmixng.org>
 
