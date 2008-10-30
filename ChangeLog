@@ -36,6 +36,8 @@
 	* test/manager/test-children.c (test_retry_negotiate): To kill
 	milter-test-client.rb sends "QUIT" command because the process which
 	was run	from MilterManagerChild cannot kill.
+	* milter/manager/milter-manager-controller.c: Send QUIT command to
+	milters if "mta-timeout" signal is received.
 
 2008-10-29  Kouhei Sutou  <kou@cozmixng.org>
 

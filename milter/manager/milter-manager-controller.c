@@ -799,7 +799,7 @@ milter_manager_controller_abort (MilterManagerController *controller)
 void
 milter_manager_controller_mta_timeout (MilterManagerController *controller)
 {
-    g_print("mta_timeout");
+    milter_manager_controller_quit(controller);
 }
 
 /*
