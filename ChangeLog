@@ -38,6 +38,8 @@
 	was run	from MilterManagerChild cannot kill.
 	* milter/manager/milter-manager-controller.c: Send QUIT command to
 	milters if "mta-timeout" signal is received.
+	* module/configuration/ruby/milter-manager-ruby-configuration.c: Use
+	G_DEFINE_DYNAMIC_TYPE.
 
 2008-10-29  Kouhei Sutou  <kou@cozmixng.org>
 

@@ -29,7 +29,7 @@
 #include <milter/manager/milter-manager-configuration.h>
 #include <milter/manager/milter-manager-module-impl.h>
 
-#define MILTER_TYPE_MANAGER_RUBY_CONFIGURATION            milter_manager_type_ruby_configuration
+#define MILTER_TYPE_MANAGER_RUBY_CONFIGURATION            (milter_manager_ruby_configuration_get_type())
 #define MILTER_MANAGER_RUBY_CONFIGURATION(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), MILTER_TYPE_MANAGER_RUBY_CONFIGURATION, MilterManagerRubyConfiguration))
 #define MILTER_MANAGER_RUBY_CONFIGURATION_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), MILTER_TYPE_MANAGER_RUBY_CONFIGURATION, MilterManagerRubyConfigurationClass))
 #define MILTER_MANAGER_IS_RUBY_CONFIGURATION(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), MILTER_TYPE_MANAGER_RUBY_CONFIGURATION))
@@ -48,9 +48,6 @@ struct _MilterManagerRubyConfigurationClass
     MilterManagerConfigurationClass parent_class;
 };
 
-static GType milter_manager_type_ruby_configuration = 0;
-static MilterManagerConfigurationClass *parent_class;
-
 static VALUE rb_mMilterManagerConfigurationLoader = Qnil;
 
 static void dispose        (GObject         *object);
@@ -68,14 +65,18 @@ static void         real_add_load_path    (MilterManagerConfiguration *configura
 static void         real_load             (MilterManagerConfiguration *configuration,
                                            const gchar             *file_name);
 
+/* the function should be a static but G_DEFINE_DYNAMIC_TYPE implements it no static function */
+GType milter_manager_ruby_configuration_get_type (void);
+
+G_DEFINE_DYNAMIC_TYPE(MilterManagerRubyConfiguration,
+                      milter_manager_ruby_configuration,
+                      MILTER_TYPE_MANAGER_CONFIGURATION);
 
 static void
-class_init (MilterManagerRubyConfigurationClass *klass)
+milter_manager_ruby_configuration_class_init (MilterManagerRubyConfigurationClass *klass)
 {
     GObjectClass *gobject_class;
     MilterManagerConfigurationClass *configuration_class;
-
-    parent_class = g_type_class_peek_parent(klass);
 
     gobject_class = G_OBJECT_CLASS(klass);
     configuration_class = MILTER_MANAGER_CONFIGURATION_CLASS(klass);
@@ -89,31 +90,13 @@ class_init (MilterManagerRubyConfigurationClass *klass)
 }
 
 static void
-init (MilterManagerRubyConfiguration *configuration)
+milter_manager_ruby_configuration_class_finalize (MilterManagerRubyConfigurationClass *klass)
 {
 }
 
 static void
-register_type (GTypeModule *type_module)
+milter_manager_ruby_configuration_init (MilterManagerRubyConfiguration *configuration)
 {
-    static const GTypeInfo info =
-        {
-            sizeof (MilterManagerRubyConfigurationClass),
-            (GBaseInitFunc) NULL,
-            (GBaseFinalizeFunc) NULL,
-            (GClassInitFunc) class_init,
-            NULL,           /* class_finalize */
-            NULL,           /* class_data */
-            sizeof(MilterManagerRubyConfiguration),
-            0,
-            (GInstanceInitFunc) init,
-        };
-
-    milter_manager_type_ruby_configuration =
-        g_type_module_register_type(type_module,
-                                    MILTER_TYPE_MANAGER_CONFIGURATION,
-                                    "MilterManagerRubyConfiguration",
-                                    &info, 0);
 }
 
 static void
@@ -259,11 +242,11 @@ MILTER_MANAGER_MODULE_IMPL_INIT (GTypeModule *type_module)
 {
     GList *registered_types = NULL;
 
-    register_type(type_module);
-    if (milter_manager_type_ruby_configuration)
+    milter_manager_ruby_configuration_register_type(type_module);
+    if (milter_manager_ruby_configuration_type_id)
         registered_types =
             g_list_prepend(registered_types,
-                           (gchar *)g_type_name(milter_manager_type_ruby_configuration));
+                           (gchar *)g_type_name(milter_manager_ruby_configuration_type_id));
 
     init_ruby();
 
@@ -302,7 +285,7 @@ dispose (GObject *object)
 
     configuration = MILTER_MANAGER_RUBY_CONFIGURATION(object);
 
-    G_OBJECT_CLASS(parent_class)->dispose(object);
+    G_OBJECT_CLASS(milter_manager_ruby_configuration_parent_class)->dispose(object);
 }
 
 static void
