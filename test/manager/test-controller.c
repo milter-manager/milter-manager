@@ -34,6 +34,7 @@ void test_envelope_from (void);
 void test_envelope_receipt (void);
 void test_envelope_receipt_reject (void);
 void test_envelope_receipt_discard (void);
+void test_envelope_receipt_temporary_failure (void);
 void test_data (void);
 void test_header (void);
 void test_end_of_header (void);
@@ -403,6 +404,26 @@ test_envelope_receipt_discard (void)
                           collect_n_received(envelope_receipt));
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
                            MILTER_STATUS_DISCARD, response_status);
+}
+
+void
+test_envelope_receipt_temporary_failure (void)
+{
+    const gchar receipt[] = "kou+temporary_failureed@cozmixng.org";
+
+    arguments_append(arguments1,
+                     "--action", "temporary_failure",
+                     "--envelope-receipt", receipt,
+                     NULL);
+
+    cut_trace(test_envelope_receipt());
+
+    milter_manager_controller_envelope_receipt(controller, receipt);
+    wait_response("envelope-receipt");
+    cut_assert_equal_uint(g_list_length(test_clients) * 2,
+                          collect_n_received(envelope_receipt));
+    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
+                           MILTER_STATUS_CONTINUE, response_status);
 }
 
 void

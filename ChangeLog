@@ -8,6 +8,8 @@
 	is just rejecting the current receipt address.
 	* test/manager/test-controller.c: Added a test for discarding in
 	ENVELOPE_RECEIPT.
+	* test/manager/test-controller.c: Added a test for temporary failure in
+	ENVELOPE_RECEIPT.
 
 2008-10-30  Kouhei Sutou  <kou@cozmixng.org>
 
