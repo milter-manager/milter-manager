@@ -411,7 +411,9 @@ milter_manager_child_start (MilterManagerChild *milter, GError **error)
     success = g_spawn_async(priv->working_directory,
                             argv,
                             NULL,
-                            G_SPAWN_DO_NOT_REAP_CHILD,
+                            G_SPAWN_DO_NOT_REAP_CHILD |
+                            G_SPAWN_STDOUT_TO_DEV_NULL |
+                            G_SPAWN_STDERR_TO_DEV_NULL,
                             priv->child_setup,
                             milter,
                             &priv->pid,
