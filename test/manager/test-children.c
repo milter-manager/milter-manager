@@ -384,7 +384,7 @@ add_child (const gchar *name, const gchar *connection_spec)
     MilterManagerEgg *egg;
     GError *error = NULL;
 
-    egg = milter_manager_egg_new("milter@10026");
+    egg = milter_manager_egg_new(name);
     if (!milter_manager_egg_set_connection_spec(egg,
                                                 connection_spec,
                                                 &error)) {
