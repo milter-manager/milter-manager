@@ -46,6 +46,7 @@
 	G_DEFINE_DYNAMIC_TYPE.
 	* milter/manager/milter-manager-controller.c: g_signal_emit_by_name()
 	does not need detail GQuark.
+	* milter/manager/milter-manager-children.c: Fix typo.
 
 2008-10-29  Kouhei Sutou  <kou@cozmixng.org>
 

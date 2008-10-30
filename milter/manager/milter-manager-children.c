@@ -954,7 +954,7 @@ init_reply_queue (MilterManagerChildren *children)
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     g_queue_clear(priv->reply_queue);
-    priv->reply_status = MILTER_STATUS_CONTINUE;
+    priv->reply_status = MILTER_STATUS_NOT_CHANGE;
 }
 
 gboolean
