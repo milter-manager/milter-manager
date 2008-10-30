@@ -11,6 +11,8 @@ INCLUDES =			\
 
 AM_CFLAGS = $(GCUTTER_CFLAGS)
 AM_LDFLAGS =			\
+	-module			\
+	-rpath "`pwd`/.libs"	\
 	-avoid-version		\
 	-no-undefined
 

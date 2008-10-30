@@ -302,7 +302,7 @@ dispose (GObject *object)
 }
 
 MilterManagerTestClient *
-milter_manager_test_client_new (const guint port)
+milter_manager_test_client_new (guint port)
 {
     MilterManagerTestClient *client;
     MilterManagerTestClientPrivate *priv;
@@ -458,6 +458,56 @@ const gchar *
 milter_manager_test_client_get_unknown_command (MilterManagerTestClient *client)
 {
     return MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client)->unknown_command;
+}
+
+
+static gboolean
+cb_timeout_waiting (gpointer data)
+{
+    gboolean *waiting = data;
+
+    *waiting = FALSE;
+    return FALSE;
+}
+
+void
+milter_manager_test_clients_wait_reply (GList *clients,
+                                        MilterManagerTestClientGetNReceived getter)
+{
+    gboolean timeout_waiting = TRUE;
+    guint timeout_waiting_id;
+    guint n_clients;
+
+    n_clients = g_list_length(clients);
+    timeout_waiting_id = g_timeout_add_seconds(1, cb_timeout_waiting,
+                                               &timeout_waiting);
+    while (timeout_waiting &&
+           n_clients > milter_manager_test_clients_collect_n_received(clients,
+                                                                      getter)) {
+        g_main_context_iteration(NULL, TRUE);
+    }
+    g_source_remove(timeout_waiting_id);
+
+    cut_assert_true(timeout_waiting, "timeout");
+    cut_assert_equal_uint(n_clients,
+                          milter_manager_test_clients_collect_n_received(clients,
+                                                                         getter));
+}
+
+guint
+milter_manager_test_clients_collect_n_received (GList *clients,
+                                                MilterManagerTestClientGetNReceived getter)
+{
+    guint n_received = 0;
+    GList *node;
+
+    for (node = clients; node; node = g_list_next(node)) {
+        MilterManagerTestClient *client = node->data;
+
+        n_received += getter(client);
+    }
+
+    return n_received;
 }
 
 

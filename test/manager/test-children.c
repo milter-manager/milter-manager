@@ -21,6 +21,7 @@
 
 #define shutdown inet_shutdown
 #include <milter-manager-test-utils.h>
+#include <milter-manager-test-client.h>
 #include <milter/manager/milter-manager-children.h>
 #undef shutdown
 
@@ -58,10 +59,7 @@ static guint n_skip_emitted;
 static guint n_error_emitted;
 static guint n_finished_emitted;
 
-static gchar *client_path;
-static GList *clients;
-static gboolean client_reaped;
-static gboolean client_ready;
+static GList *test_clients;
 
 static void
 cb_negotiate_reply (MilterManagerChildren *children,
@@ -234,106 +232,23 @@ setup_signals (MilterManagerChildren *children)
     CONNECT(skip);
 
     CONNECT(error);
-    /* CONNECT(finished); */
+    CONNECT(finished);
 
 #undef CONNECT
 }
 
 static void
-cb_output_received (GCutEgg *egg, const gchar *chunk, gsize size,
-                    gpointer user_data)
+start_client (guint port)
 {
-    if (g_str_has_prefix(chunk, "ready")) {
-        client_ready = TRUE;
-    } else {
-        GString *string;
-
-        string = g_string_new_len(chunk, size);
-        g_print("[OUTPUT] <%s>\n", string->str);
-        g_string_free(string, TRUE);
-    }
-}
-
-static void
-cb_error_received (GCutEgg *egg, const gchar *chunk, gsize size,
-                   gpointer user_data)
-{
-    GString *string;
-
-    string = g_string_new_len(chunk, size);
-    g_print("[ERROR] <%s>\n", string->str);
-    g_string_free(string, TRUE);
-}
-
-static void
-cb_reaped (GCutEgg *egg, gint status, gpointer user_data)
-{
-    client_reaped = TRUE;
-}
-
-static void
-setup_egg_signals (GCutEgg *egg)
-{
-#define CONNECT(name)                                                   \
-    g_signal_connect(egg, #name, G_CALLBACK(cb_ ## name), NULL)
-
-    CONNECT(output_received);
-    CONNECT(error_received);
-    CONNECT(reaped);
-
-#undef CONNECT
-}
-
-static void
-teardown_egg_signals (GCutEgg *egg)
-{
-#define DISCONNECT(name)                                                \
-    g_signal_handlers_disconnect_by_func(egg,                           \
-                                         G_CALLBACK(cb_ ## name),       \
-                                         NULL)
-
-    DISCONNECT(output_received);
-    DISCONNECT(error_received);
-    DISCONNECT(reaped);
-
-#undef DISCONNECT
-}
-
-static void
-free_egg (GCutEgg *egg)
-{
-    teardown_egg_signals(egg);
-    g_object_unref(egg);
-}
-
-static void
-make_egg (const gchar *command, ...)
-{
-    GCutEgg *egg;
-    va_list args;
-
-    va_start(args, command);
-    egg = gcut_egg_new_va_list(command, args);
-    va_end(args);
-
-    setup_egg_signals(egg);
-
-    clients = g_list_prepend(clients, egg);
-}
-
-static void
-hatch_egg (GCutEgg *egg)
-{
+    MilterManagerTestClient *client;
     GError *error = NULL;
-    client_ready = FALSE;
-    client_reaped = FALSE;
 
-    gcut_egg_hatch(egg, &error);
-    gcut_assert_error(error);
-
-    while (!client_ready && !client_reaped)
-        g_main_context_iteration(NULL, TRUE);
-    cut_assert_false(client_reaped);
+    client = milter_manager_test_client_new(port);
+    test_clients = g_list_append(test_clients, client);
+    if (!milter_manager_test_client_run(client, &error)) {
+        gcut_assert_error(error);
+        cut_fail("couldn't run test client on port <%u>", port);
+    }
 }
 
 void
@@ -373,11 +288,7 @@ setup (void)
     n_error_emitted = 0;
     n_finished_emitted = 0;
 
-    client_path = g_build_filename(milter_manager_test_get_base_dir(),
-                                   "lib",
-                                   "milter-test-client.rb",
-                                   NULL);
-    clients = NULL;
+    test_clients = NULL;
 }
 
 void
@@ -401,11 +312,9 @@ teardown (void)
     if (expected_names)
         gcut_list_string_free(expected_names);
 
-    if (client_path)
-        g_free(client_path);
-    if (clients) {
-        g_list_foreach(clients, (GFunc)free_egg, NULL);
-        g_list_free(clients);
+    if (test_clients) {
+        g_list_foreach(test_clients, (GFunc)g_object_unref, NULL);
+        g_list_free(test_clients);
     }
 }
 
@@ -480,11 +389,8 @@ test_negotiate (void)
                                MILTER_ACTION_CHANGE_BODY,
                                MILTER_STEP_NONE);
 
-    make_egg(client_path, "--print-status",
-             "--timeout", "1.0", "--port", "10026", NULL);
-    make_egg(client_path, "--print-status",
-             "--timeout", "1.0", "--port", "10027", NULL);
-    g_list_foreach(clients, (GFunc)hatch_egg, NULL);
+    start_client(10026);
+    start_client(10027);
 
     egg = milter_manager_egg_new("milter@10026");
     milter_manager_egg_set_connection_spec(egg, "inet:10026@localhost", &error);
@@ -504,7 +410,6 @@ test_negotiate (void)
     wait_reply(n_negotiate_reply_emitted);
     cut_assert_equal_uint(1, n_negotiate_reply_emitted);
 }
-
 
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4

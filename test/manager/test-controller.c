@@ -126,25 +126,9 @@ teardown (void)
 }
 
 #define collect_n_received(event)                                       \
-    collect_n_received_helper(                                          \
+    milter_manager_test_clients_collect_n_received(                     \
+        test_clients,                                                   \
         milter_manager_test_client_get_n_ ## event ## _received)
-
-typedef guint (*MilterManagerTestClientGetNReceived) (MilterManagerTestClient *client);
-
-static guint
-collect_n_received_helper (MilterManagerTestClientGetNReceived getter)
-{
-    guint n_received = 0;
-    GList *node;
-
-    for (node = test_clients; node; node = g_list_next(node)) {
-        MilterManagerTestClient *client = node->data;
-
-        n_received += getter(client);
-    }
-
-    return n_received;
-}
 
 static gboolean
 cb_timeout_waiting (gpointer data)
@@ -211,27 +195,11 @@ wait_response_helper (const gchar *name)
 
 #define wait_reply(actual_getter)                                       \
     cut_trace_with_info_expression(                                     \
-        wait_reply_helper(                                              \
-            g_list_length(test_clients),                                \
+        milter_manager_test_clients_wait_reply(                         \
+            test_clients,                                               \
             milter_manager_test_client_get_n_ ## actual_getter ## _received), \
         wait_reply(actual_getter))
 
-static void
-wait_reply_helper (guint expected, MilterManagerTestClientGetNReceived getter)
-{
-    gboolean timeout_waiting = TRUE;
-    guint timeout_waiting_id;
-
-    timeout_waiting_id = g_timeout_add_seconds(1, cb_timeout_waiting,
-                                               &timeout_waiting);
-    while (timeout_waiting && expected > collect_n_received_helper(getter)) {
-        g_main_context_iteration(NULL, TRUE);
-    }
-    g_source_remove(timeout_waiting_id);
-
-    cut_assert_true(timeout_waiting, "timeout");
-    cut_assert_equal_uint(expected, collect_n_received_helper(getter));
-}
 
 static void
 start_client (guint port)

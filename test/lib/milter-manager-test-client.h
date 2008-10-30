@@ -31,13 +31,10 @@ G_BEGIN_DECLS
 #define MILTER_MANAGER_IS_TEST_CLIENT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), MILTER_TYPE_MANAGER_TEST_CLIENT))
 #define MILTER_MANAGER_TEST_CLIENT_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MILTER_TYPE_MANAGER_TEST_CLIENT, MilterManagerTestClientClass))
 
-typedef enum
-{
-    MILTER_MANAGER_TEST_CLIENT_ERROR_INVALID
-} MilterManagerTestClientError;
-
 typedef struct _MilterManagerTestClient         MilterManagerTestClient;
 typedef struct _MilterManagerTestClientClass    MilterManagerTestClientClass;
+
+typedef guint (*MilterManagerTestClientGetNReceived) (MilterManagerTestClient *client);
 
 struct _MilterManagerTestClient
 {
@@ -94,6 +91,15 @@ guint                    milter_manager_test_client_get_n_unknown_received
                                               (MilterManagerTestClient *client);
 const gchar             *milter_manager_test_client_get_unknown_command
                                               (MilterManagerTestClient *client);
+
+
+void                     milter_manager_test_clients_wait_reply
+                                              (GList *clients,
+                                               MilterManagerTestClientGetNReceived getter);
+guint                    milter_manager_test_clients_collect_n_received
+                                              (GList *clients,
+                                               MilterManagerTestClientGetNReceived getter);
+
 
 G_END_DECLS
 

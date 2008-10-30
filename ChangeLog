@@ -1,3 +1,15 @@
+2008-10-30  Kouhei Sutou  <kou@cozmixng.org>
+
+	* test/manager/test-children.c: use MilterManagerTestClient.
+
+	* test/lib/milter-manager-test-client.[ch]
+	(milter_manager_test_clients_wait_reply)
+	(milter_manager_test_clients_collect_n_received): add.
+
+	* test/manager/test-controller.c: use the above functions.
+
+	* test/lib/Makefile.am: make libmilter-manager-test.la shared library.
+
 2008-10-30  Hiroyuki Ikezoe  <poincare@ikezoe.net>
 
 	* test/manager/test-controller.c: Revert the last commit.
