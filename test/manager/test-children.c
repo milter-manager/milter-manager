@@ -27,6 +27,7 @@
 
 void test_foreach (void);
 void test_negotiate (void);
+void test_retry_negotiate (void);
 
 static MilterManagerConfiguration *config;
 static MilterManagerChildren *children;
@@ -416,6 +417,23 @@ test_negotiate (void)
     milter_manager_children_negotiate(children, option);
     wait_reply(n_negotiate_reply_emitted);
     cut_assert_equal_uint(1, n_negotiate_reply_emitted);
+}
+
+void
+test_retry_negotiate (void)
+{
+    option = milter_option_new(2,
+                               MILTER_ACTION_ADD_HEADERS |
+                               MILTER_ACTION_CHANGE_BODY,
+                               MILTER_STEP_NONE);
+
+    start_client(10026);
+
+    add_child("milter@10026", "inet:10026@localhost");
+    add_child("milter@10027", "inet:10027@localhost");
+
+    milter_manager_children_negotiate(children, option);
+    wait_reply(n_negotiate_reply_emitted);
 }
 
 /*

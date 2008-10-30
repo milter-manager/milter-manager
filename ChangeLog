@@ -22,6 +22,8 @@
 	reply status has been changed in MilterManagerChildren.)
 	* test/manager/test-controller.c: Remove needless
 	g_main_context_itration and wait "unknown-response".
+	* milter/manager/milter-manager-children.c: Retry negotiation to a
+	milter when restart a milter. TODO: the test is not implemented yet.
 
 2008-10-29  Kouhei Sutou  <kou@cozmixng.org>
 
