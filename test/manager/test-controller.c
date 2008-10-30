@@ -449,7 +449,6 @@ test_quit (void)
     cut_trace(test_end_of_message(NULL));
 
     milter_manager_controller_quit(controller);
-    g_main_context_iteration(NULL, TRUE);
     wait_finished();
     cut_assert_equal_uint(g_list_length(test_clients), collect_n_received(quit));
 }
@@ -472,7 +471,7 @@ test_unknown (void)
     cut_trace(test_helo());
 
     milter_manager_controller_unknown(controller, command);
-    wait_reply(unknown);
+    wait_response("unknown");
     wait_finished();
 
     client = test_clients->data;

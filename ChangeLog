@@ -6,6 +6,8 @@
 	* milter/manager/milter-manager-children.c (cb_finished): Emit reply
 	status only if the reply status is not MILTER_STATUS_NOT_CHANGE(i.e.
 	reply status has been changed in MilterManagerChildren.)
+	* test/manager/test-controller.c: Remove needless
+	g_main_context_itration and wait "unknown-response".
 
 2008-10-29  Kouhei Sutou  <kou@cozmixng.org>
 
