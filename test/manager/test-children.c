@@ -36,6 +36,7 @@ void test_negotiate (void);
 void test_retry_negotiate (void);
 void test_connect (void);
 void test_connect_pass (void);
+void test_connect_half_pass (void);
 
 static MilterManagerConfiguration *config;
 static MilterManagerChildren *children;
@@ -550,6 +551,32 @@ test_connect_pass (void)
                                     sizeof(address));
     wait_reply(n_accept_emitted);
     cut_assert_equal_uint(1, n_accept_emitted);
+}
+
+
+void
+test_connect_half_pass (void)
+{
+    GList *child_list = NULL;
+    struct sockaddr_in address;
+    const gchar host_name[] = "mx.local.net";
+    const gchar ip_address[] = "192.168.123.123";
+
+    cut_trace(test_negotiate());
+
+    child_list = milter_manager_children_get_children(children);
+    connect_pass_check_signals(child_list->data, NULL);
+
+    address.sin_family = AF_INET;
+    address.sin_port = g_htons(50443);
+    inet_aton(ip_address, &(address.sin_addr));
+
+    milter_manager_children_connect(children,
+                                    host_name,
+                                    (struct sockaddr *)(&address),
+                                    sizeof(address));
+    wait_reply(n_continue_emitted);
+    cut_assert_equal_uint(1, n_continue_emitted);
 }
 
 /*

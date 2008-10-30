@@ -50,6 +50,7 @@
 	* milter/manager/milter-manager-controller.c: g_signal_emit_by_name()
 	does not need detail GQuark.
 	* milter/manager/milter-manager-children.c: Fix typo.
+	* test/manager/test-children.c: added test_connect_half_pass().
 
 2008-10-29  Kouhei Sutou  <kou@cozmixng.org>
 
