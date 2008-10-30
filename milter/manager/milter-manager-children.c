@@ -923,6 +923,7 @@ child_negotiate (MilterManagerChild *child, MilterOption *option,
             return status;
         }
         g_error_free(error);
+        error = NULL;
 
         milter_manager_child_start(child, &error);
         if (error) {

@@ -28,6 +28,9 @@
 	property.
 	* milter/manager/milter-manager-configuration.c: privilege mode is a
 	property.
+	milter/manager/milter-manager-children.c (child_negotiate):
+	Reinitialize error value with NULL before invoking
+	milter_manager_child_start().
 
 2008-10-29  Kouhei Sutou  <kou@cozmixng.org>
 
