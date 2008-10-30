@@ -167,7 +167,7 @@ class MilterTestClient
     @rcpt_to = to
 
     @receipts.each do |action, receipt|
-      if receipt == from
+      if receipt == to
         write(:receipted, "reply_#{action}")
         return
       end
