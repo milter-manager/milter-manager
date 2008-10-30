@@ -68,6 +68,10 @@ GList                 *milter_manager_children_get_children(MilterManagerChildre
 void                   milter_manager_children_foreach     (MilterManagerChildren *children,
                                                             GFunc                  func,
                                                             gpointer               user_data);
+
+gboolean               milter_manager_children_is_important_status
+                                                           (MilterManagerChildren *children,
+                                                            MilterStatus status);
 gboolean               milter_manager_children_negotiate   (MilterManagerChildren *children,
                                                             MilterOption          *option);
 gboolean               milter_manager_children_connect     (MilterManagerChildren *children,

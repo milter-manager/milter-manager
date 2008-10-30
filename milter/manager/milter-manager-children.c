@@ -73,7 +73,7 @@ static void teardown_server_context_signals
 static MilterStatus child_negotiate (MilterManagerChild *child,
                                      MilterOption *option,
                                      MilterManagerChildren *children);
-static MilterStatus child_negotiate_without_retry 
+static MilterStatus child_negotiate_without_retry
                                     (MilterManagerChild *child,
                                      MilterOption *option,
                                      MilterManagerChildren *children);
@@ -304,9 +304,18 @@ status_to_signal_name (MilterStatus status)
     return signal_name;
 }
 
-static gint
-compare_reply_status (MilterStatus a, MilterStatus b)
+gboolean
+milter_manager_children_is_important_status (MilterManagerChildren *children,
+                                             MilterStatus status)
 {
+    MilterManagerChildrenPrivate *priv;
+    MilterStatus a, b;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    a = priv->reply_status;
+    b = status;
+
     switch (a) {
       case MILTER_STATUS_REJECT:
         return 1;
@@ -363,7 +372,7 @@ compile_reply_status (MilterManagerChildren *children,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    if (compare_reply_status(priv->reply_status, status) < 0)
+    if (milter_manager_children_is_important_status(children, status) < 0)
         priv->reply_status = status;
 
     return priv->reply_status;
@@ -721,7 +730,8 @@ cb_finished (MilterHandler *handler, gpointer user_data)
     g_queue_remove(priv->reply_queue, handler);
     if (g_queue_is_empty(priv->reply_queue)) {
         if (priv->reply_status != MILTER_STATUS_NOT_CHANGE)
-            g_signal_emit_by_name(children, status_to_signal_name(priv->reply_status));
+            g_signal_emit_by_name(children,
+                                  status_to_signal_name(priv->reply_status));
         milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(user_data));
     }
 }
