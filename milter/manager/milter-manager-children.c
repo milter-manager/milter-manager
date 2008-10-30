@@ -150,7 +150,8 @@ dispose (GObject *object)
     }
 
     if (priv->milters) {
-        g_list_foreach(priv->milters, (GFunc)teardown_server_context_signals, object);
+        g_list_foreach(priv->milters,
+                       (GFunc)teardown_server_context_signals, object);
         g_list_free(priv->milters);
         priv->milters = NULL;
     }

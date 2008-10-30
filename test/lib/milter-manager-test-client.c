@@ -33,8 +33,8 @@ typedef struct _MilterManagerTestClientPrivate MilterManagerTestClientPrivate;
 struct _MilterManagerTestClientPrivate
 {
     GCutEgg *egg;
-    gchar *test_client_path;
     guint port;
+    GArray *command;
 
     gboolean ready;
     gboolean reaped;
@@ -85,8 +85,8 @@ milter_manager_test_client_init (MilterManagerTestClient *test_client)
     priv = MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(test_client);
 
     priv->egg = NULL;
-    priv->test_client_path = NULL;
     priv->port = 0;
+    priv->command = NULL;
 
     priv->ready = FALSE;
     priv->reaped = FALSE;
@@ -255,6 +255,18 @@ egg_free (GCutEgg *egg, MilterManagerTestClient *client)
 }
 
 static void
+command_free (GArray *command)
+{
+    guint i;
+
+    for (i = 0; i < command->len; i++) {
+        g_free(g_array_index(command, gchar *, i));
+    }
+
+    g_array_free(command, TRUE);
+}
+
+static void
 dispose (GObject *object)
 {
     MilterManagerTestClient *client;
@@ -268,9 +280,9 @@ dispose (GObject *object)
         priv->egg = NULL;
     }
 
-    if (priv->test_client_path) {
-        g_free(priv->test_client_path);
-        priv->test_client_path = NULL;
+    if (priv->command) {
+        command_free(priv->command);
+        priv->command = NULL;
     }
 
     if (priv->header_name) {
@@ -318,27 +330,16 @@ gboolean
 milter_manager_test_client_run (MilterManagerTestClient *client, GError **error)
 {
     MilterManagerTestClientPrivate *priv;
-    gchar *port_string;
 
     priv = MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client);
 
     if (priv->egg)
         egg_free(priv->egg, client);
 
-    if (!priv->test_client_path)
-        priv->test_client_path =
-            g_build_filename(milter_manager_test_get_base_dir(),
-                             "lib",
-                             "milter-test-client.rb",
-                             NULL);
+    if (!priv->command)
+        milter_manager_test_client_set_arguments(client, NULL);
 
-    port_string = g_strdup_printf("%u", priv->port);
-    priv->egg = gcut_egg_new(priv->test_client_path,
-                             "--print-status",
-                             "--timeout", "4.0",
-                             "--port", port_string,
-                             NULL);
-    g_free(port_string);
+    priv->egg = gcut_egg_new_array(priv->command);
 
     setup_egg_signals(priv->egg, client);
     priv->ready = FALSE;
@@ -350,6 +351,49 @@ milter_manager_test_client_run (MilterManagerTestClient *client, GError **error)
         g_main_context_iteration(NULL, TRUE);
 
     return !priv->reaped;
+}
+
+static void
+append_command (GArray *command, const gchar *argument)
+{
+    gchar *dupped_argument;
+
+    dupped_argument = g_strdup(argument);
+    g_array_append_val(command, dupped_argument);
+}
+
+void
+milter_manager_test_client_set_arguments (MilterManagerTestClient *client,
+                                          GArray *arguments)
+{
+    MilterManagerTestClientPrivate *priv;
+    gchar *test_client_path, *port;
+    guint i;
+
+    priv = MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client);
+
+    if (priv->command)
+        command_free(priv->command);
+
+    priv->command = g_array_new(TRUE, TRUE, sizeof(gchar *));
+
+    test_client_path = g_build_filename(milter_manager_test_get_base_dir(),
+                                        "lib",
+                                        "milter-test-client.rb",
+                                        NULL);
+    g_array_append_val(priv->command, test_client_path);
+    append_command(priv->command, "--print-status");
+    append_command(priv->command, "--timeout");
+    append_command(priv->command, "4.0");
+    append_command(priv->command, "--port");
+    port = g_strdup_printf("%u", priv->port);
+    g_array_append_val(priv->command, port);
+
+    if (!arguments)
+        return;
+    for (i = 0; i < arguments->len; i++) {
+        append_command(priv->command, g_array_index(arguments, gchar *, i));
+    }
 }
 
 guint

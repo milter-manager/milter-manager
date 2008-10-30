@@ -56,6 +56,17 @@ class MilterTestClient
       opts.on("--[no-]debug", "Output debug information") do |boolean|
         @debug = boolean
       end
+
+      opts.on("--action=ACTION",
+              "Do ACTION when condition is matched",
+              "(#{@current_action})") do |action|
+        @current_action = action # FIXME: validate
+      end
+
+      opts.on("--envelope-receipt=RECEIPT",
+              "Add RECEIPT targets to be applied ACTION") do |receipt|
+        @receipts << [@current_action, receipt]
+      end
     end
     opts.parse!(argv)
   end
@@ -66,6 +77,8 @@ class MilterTestClient
     @print_ready = false
     @timeout = 3
     @debug = false
+    @current_action = "reject"
+    @receipts = []
   end
 
   def print_status(status)
@@ -150,9 +163,15 @@ class MilterTestClient
   end
 
   def do_rcpt(from)
-    invalid_state(:rcpt) if @state != :mailed
+    invalid_state(:rcpt) unless [:mailed, :receipted].include?(@state)
     @receipted_from = from
 
+    @receipts.each do |action, receipt|
+      if receipt == from
+        write(action, "reply_#{action}")
+        return
+      end
+    end
     write(:receipted, :reply_continue)
   end
 
@@ -220,8 +239,9 @@ class MilterTestClient
   end
 
   def invalid_state(reply_state)
+    state = @state
     write(:shutdown, :reply_shutdown)
-    raise "should not receive reply for #{reply_state} on #{@state}"
+    raise "should not receive reply for #{reply_state} on #{state}"
   end
 end
 

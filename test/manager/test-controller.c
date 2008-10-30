@@ -32,6 +32,7 @@ void test_connect (void);
 void test_helo (void);
 void test_envelope_from (void);
 void test_envelope_receipt (void);
+void test_envelope_receipt_reject (void);
 void test_data (void);
 void test_header (void);
 void test_end_of_header (void);
@@ -46,6 +47,8 @@ static MilterManagerConfiguration *config;
 static MilterClientContext *client_context;
 static MilterManagerController *controller;
 static MilterOption *option;
+
+static GArray *arguments1;
 
 static GError *controller_error;
 static gboolean finished;
@@ -103,11 +106,41 @@ setup (void)
 
     option = NULL;
 
+    arguments1 = g_array_new(TRUE, TRUE, sizeof(gchar *));
+
     test_clients = NULL;
 
     response_status = MILTER_STATUS_DEFAULT;
 
     finished = FALSE;
+}
+
+static void
+arguments_append (GArray *arguments, const gchar *argument, ...)
+{
+    va_list args;
+
+    va_start(args, argument);
+    while (argument) {
+        gchar *dupped_argument;
+
+        dupped_argument = g_strdup(argument);
+        g_array_append_val(arguments, dupped_argument);
+        argument = va_arg(args, gchar *);
+    }
+    va_end(args);
+}
+
+static void
+arguments_free (GArray *arguments)
+{
+    guint i;
+
+    for (i = 0; i < arguments->len; i++) {
+        g_free(g_array_index(arguments, gchar *, i));
+    }
+
+    g_array_free(arguments, TRUE);
 }
 
 void
@@ -121,6 +154,9 @@ teardown (void)
         g_object_unref(controller);
     if (option)
         g_object_unref(option);
+
+    if (arguments1)
+        arguments_free(arguments1);
 
     if (test_clients) {
         g_list_foreach(test_clients, (GFunc)g_object_unref, NULL);
@@ -206,12 +242,13 @@ wait_response_helper (const gchar *name)
 
 
 static void
-start_client (guint port)
+start_client (guint port, GArray *arguments)
 {
     MilterManagerTestClient *client;
     GError *error = NULL;
 
     client = milter_manager_test_client_new(port);
+    milter_manager_test_client_set_arguments(client, arguments);
     test_clients = g_list_append(test_clients, client);
     if (!milter_manager_test_client_run(client, &error)) {
         gcut_assert_error(error);
@@ -249,8 +286,8 @@ test_negotiate (void)
                                MILTER_ACTION_CHANGE_BODY,
                                MILTER_STEP_NONE);
 
-    start_client(10026);
-    start_client(10027);
+    start_client(10026, arguments1);
+    start_client(10027, NULL);
 
     milter_manager_controller_negotiate(controller, option);
     wait_response("negotiate");
@@ -321,6 +358,25 @@ test_envelope_receipt (void)
     wait_response("envelope-receipt");
     cut_assert_equal_uint(g_list_length(test_clients),
                           collect_n_received(envelope_receipt));
+}
+
+void
+test_envelope_receipt_reject (void)
+{
+    const gchar receipt[] = "kou+rejected@cozmixng.org";
+
+    arguments_append(arguments1,
+                     "--action", "reject",
+                     "--envelope-receipt", receipt,
+                     NULL);
+
+    cut_trace(test_envelope_receipt());
+
+    milter_manager_controller_envelope_receipt(controller, receipt);
+    wait_response("envelope-receipt");
+    cut_assert_equal_uint(g_list_length(test_clients) * 2,
+                          collect_n_received(envelope_receipt));
+    cut_fail("FIXME: should check REJECT command is received from a child.");
 }
 
 void

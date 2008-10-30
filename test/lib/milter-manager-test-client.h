@@ -51,6 +51,9 @@ GType                    milter_manager_test_client_get_type (void) G_GNUC_CONST
 MilterManagerTestClient *milter_manager_test_client_new
                                               (guint port);
 
+void                     milter_manager_test_client_set_arguments
+                                              (MilterManagerTestClient *client,
+                                               GArray *arguments);
 gboolean                 milter_manager_test_client_run
                                               (MilterManagerTestClient *client,
                                                GError **error);

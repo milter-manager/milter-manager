@@ -1,5 +1,13 @@
 2008-10-30  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/test-controller.c: add a test for rejected from
+	child. it's not completed. FIXME!!!
+
+	* test/lib/milter-manager-test-client.[ch]
+	(milter_manager_test_client_set_arguments): add.
+
+	* test/lib/milter-test-client.rb: support action.
+
 	* milter/manager/milter-manager-children.c,
 	test/manager/test-children.c: add tests for
 	milter_manager_children_is_important_status(). need more.
