@@ -1,3 +1,8 @@
+2008-10-31  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* test/manager/test-controller.c (test_envelope_receipt_reject): Check
+	REJECT status.
+
 2008-10-30  Kouhei Sutou  <kou@cozmixng.org>
 
 	* test/manager/test-controller.c: add a test for rejected from

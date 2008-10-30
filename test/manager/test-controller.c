@@ -376,7 +376,8 @@ test_envelope_receipt_reject (void)
     wait_response("envelope-receipt");
     cut_assert_equal_uint(g_list_length(test_clients) * 2,
                           collect_n_received(envelope_receipt));
-    cut_fail("FIXME: should check REJECT command is received from a child.");
+    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
+                           MILTER_STATUS_REJECT, response_status);
 }
 
 void
