@@ -12,6 +12,9 @@
 	ENVELOPE_RECEIPT.
 	* test/manager/test-controller.c: Added a test for accepting in
 	ENVELOPE_RECEIPT.
+	* test/manager/test-controller.c
+	(test_envelope_receipt_temporary_failure): Also check going on accept
+	further command.
 
 2008-10-30  Kouhei Sutou  <kou@cozmixng.org>
 

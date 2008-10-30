@@ -383,7 +383,7 @@ test_envelope_receipt_accept (void)
                            MILTER_STATUS_CONTINUE, response_status);
     milter_manager_controller_data(controller);
     wait_response("data");
-    cut_assert_equal_uint(1, /* the child which returns "ACCEPT" must die */
+    cut_assert_equal_uint(g_list_length(test_clients) - 1, /* the child which returns "ACCEPT" must die */
                           collect_n_received(data));
 }
 
@@ -449,6 +449,10 @@ test_envelope_receipt_temporary_failure (void)
                           collect_n_received(envelope_receipt));
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
                            MILTER_STATUS_CONTINUE, response_status);
+    milter_manager_controller_data(controller);
+    wait_response("data");
+    cut_assert_equal_uint(g_list_length(test_clients), /* the child which returns "TEMPORARY_FAILURE" must live */
+                          collect_n_received(data));
 }
 
 void
