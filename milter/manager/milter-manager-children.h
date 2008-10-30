@@ -69,9 +69,6 @@ void                   milter_manager_children_foreach     (MilterManagerChildre
                                                             GFunc                  func,
                                                             gpointer               user_data);
 
-gboolean               milter_manager_children_is_important_status
-                                                           (MilterManagerChildren *children,
-                                                            MilterStatus status);
 gboolean               milter_manager_children_negotiate   (MilterManagerChildren *children,
                                                             MilterOption          *option);
 gboolean               milter_manager_children_connect     (MilterManagerChildren *children,
@@ -103,6 +100,14 @@ gboolean               milter_manager_children_end_of_message
                                                             gsize                  size);
 gboolean               milter_manager_children_quit        (MilterManagerChildren *children);
 gboolean               milter_manager_children_abort       (MilterManagerChildren *children);
+
+
+/* private */
+gboolean               milter_manager_children_is_important_status
+                                                           (MilterManagerChildren *children,
+                                                            MilterStatus status);
+void                   milter_manager_children_set_status  (MilterManagerChildren *children,
+                                                            MilterStatus status);
 
 #endif /* __MILTER_MANAGER_CHILDREN_H__ */
 

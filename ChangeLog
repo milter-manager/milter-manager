@@ -1,5 +1,9 @@
 2008-10-30  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.c,
+	test/manager/test-children.c: add tests for
+	milter_manager_children_is_important_status(). need more.
+
 	* milter/manager/milter-manager-children.[ch]
 	(milter_manager_children_is_important_status): export.
 

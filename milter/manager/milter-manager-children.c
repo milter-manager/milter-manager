@@ -304,66 +304,6 @@ status_to_signal_name (MilterStatus status)
     return signal_name;
 }
 
-gboolean
-milter_manager_children_is_important_status (MilterManagerChildren *children,
-                                             MilterStatus status)
-{
-    MilterManagerChildrenPrivate *priv;
-    MilterStatus a, b;
-
-    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
-
-    a = priv->reply_status;
-    b = status;
-
-    switch (a) {
-      case MILTER_STATUS_REJECT:
-        return FALSE;
-        break;
-      case MILTER_STATUS_DISCARD:
-        if (b != MILTER_STATUS_REJECT)
-            return FALSE;
-        return TRUE;
-        break;
-      case MILTER_STATUS_QUARANTINE:
-        if (b != MILTER_STATUS_REJECT &&
-            b != MILTER_STATUS_DISCARD)
-            return FALSE;
-        return TRUE;
-        break;
-      case MILTER_STATUS_TEMPORARY_FAILURE:
-        if (b == MILTER_STATUS_NOT_CHANGE)
-            return FALSE;
-        return TRUE;
-        break;
-      case MILTER_STATUS_ACCEPT:
-        if (b == MILTER_STATUS_NOT_CHANGE ||
-            b == MILTER_STATUS_TEMPORARY_FAILURE)
-            return FALSE;
-        return TRUE;
-        break;
-      case MILTER_STATUS_SKIP:
-        if (b == MILTER_STATUS_NOT_CHANGE ||
-            b == MILTER_STATUS_ACCEPT ||
-            b == MILTER_STATUS_TEMPORARY_FAILURE)
-            return FALSE;
-        return TRUE;
-        break;
-      case MILTER_STATUS_CONTINUE:
-        if (b == MILTER_STATUS_NOT_CHANGE ||
-            b == MILTER_STATUS_ACCEPT ||
-            b == MILTER_STATUS_TEMPORARY_FAILURE ||
-            b == MILTER_STATUS_SKIP)
-            return FALSE;
-        return TRUE;
-      default:
-        return TRUE;
-        break;
-    }
-
-    return TRUE;
-}
-
 static MilterStatus
 compile_reply_status (MilterManagerChildren *children,
                       MilterStatus status)
@@ -414,7 +354,8 @@ remove_child_from_queue (MilterManagerChildren *children,
     g_queue_remove(priv->reply_queue, context);
 
     if (g_queue_is_empty(priv->reply_queue))
-        g_signal_emit_by_name(children, status_to_signal_name(priv->reply_status));
+        g_signal_emit_by_name(children,
+                              status_to_signal_name(priv->reply_status));
 }
 
 static void
@@ -1276,6 +1217,74 @@ milter_manager_children_abort (MilterManagerChildren *children)
     }
 
     return success;
+}
+
+
+gboolean
+milter_manager_children_is_important_status (MilterManagerChildren *children,
+                                             MilterStatus status)
+{
+    MilterManagerChildrenPrivate *priv;
+    MilterStatus a, b;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    a = priv->reply_status;
+    b = status;
+
+    switch (a) {
+      case MILTER_STATUS_REJECT:
+        return FALSE;
+        break;
+      case MILTER_STATUS_DISCARD:
+        if (b != MILTER_STATUS_REJECT)
+            return FALSE;
+        return TRUE;
+        break;
+      case MILTER_STATUS_QUARANTINE:
+        if (b != MILTER_STATUS_REJECT &&
+            b != MILTER_STATUS_DISCARD)
+            return FALSE;
+        return TRUE;
+        break;
+      case MILTER_STATUS_TEMPORARY_FAILURE:
+        if (b == MILTER_STATUS_NOT_CHANGE)
+            return FALSE;
+        return TRUE;
+        break;
+      case MILTER_STATUS_ACCEPT:
+        if (b == MILTER_STATUS_NOT_CHANGE ||
+            b == MILTER_STATUS_TEMPORARY_FAILURE)
+            return FALSE;
+        return TRUE;
+        break;
+      case MILTER_STATUS_SKIP:
+        if (b == MILTER_STATUS_NOT_CHANGE ||
+            b == MILTER_STATUS_ACCEPT ||
+            b == MILTER_STATUS_TEMPORARY_FAILURE)
+            return FALSE;
+        return TRUE;
+        break;
+      case MILTER_STATUS_CONTINUE:
+        if (b == MILTER_STATUS_NOT_CHANGE ||
+            b == MILTER_STATUS_ACCEPT ||
+            b == MILTER_STATUS_TEMPORARY_FAILURE ||
+            b == MILTER_STATUS_SKIP)
+            return FALSE;
+        return TRUE;
+      default:
+        return TRUE;
+        break;
+    }
+
+    return TRUE;
+}
+
+void
+milter_manager_children_set_status (MilterManagerChildren *children,
+                                    MilterStatus status)
+{
+    MILTER_MANAGER_CHILDREN_GET_PRIVATE(children)->reply_status = status;
 }
 
 /*

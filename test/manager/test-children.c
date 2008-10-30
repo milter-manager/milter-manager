@@ -37,6 +37,10 @@ void test_retry_negotiate (void);
 void test_connect (void);
 void test_connect_pass (void);
 void test_connect_half_pass (void);
+void data_important_status (void);
+void test_important_status (gconstpointer data);
+void data_not_important_status (void);
+void test_not_important_status (gconstpointer data);
 
 static MilterManagerConfiguration *config;
 static MilterManagerChildren *children;
@@ -553,7 +557,6 @@ test_connect_pass (void)
     cut_assert_equal_uint(1, n_accept_emitted);
 }
 
-
 void
 test_connect_half_pass (void)
 {
@@ -577,6 +580,93 @@ test_connect_half_pass (void)
                                     sizeof(address));
     wait_reply(n_continue_emitted);
     cut_assert_equal_uint(1, n_continue_emitted);
+}
+
+
+#define is_important_status(children, next_status)                      \
+    milter_manager_children_is_important_status(children, next_status)
+
+#define milter_manager_assert_important(children, next_status)          \
+    cut_assert_true(is_important_status(children, next_status))
+
+#define milter_manager_assert_not_important(children, next_status)      \
+    cut_assert_false(is_important_status(children, next_status))
+
+typedef struct _StateTestData
+{
+    MilterServerContextState state;
+    MilterStatus status;
+    MilterStatus next_status;
+} StateTestData;
+
+static StateTestData *
+state_test_data_new (MilterServerContextState state,
+                     MilterStatus status, MilterStatus next_status)
+{
+    StateTestData *data;
+
+    data = g_new(StateTestData, 1);
+
+    data->state = state;
+    data->status = status;
+    data->next_status = next_status;
+
+    return data;
+}
+
+static void
+prepare_children_state (MilterManagerChildren *children,
+                        const StateTestData *data)
+{
+    /*
+    milter_server_context_set_state(MILTER_SERVER_CONTEXT(children),
+                                    data->state);
+    */
+    milter_manager_children_set_status(children, data->status);
+}
+
+void
+data_important_status (void)
+{
+#define test_data(state, status, next_status)                   \
+    state_test_data_new(MILTER_SERVER_CONTEXT_STATE_ ## state,  \
+                        MILTER_STATUS_ ## status,               \
+                        MILTER_STATUS_ ## next_status)
+
+    cut_add_data("connect - default - accept",
+                 test_data(CONNECT, DEFAULT, ACCEPT), g_free);
+#undef test_data
+}
+
+void
+test_important_status (gconstpointer data)
+{
+    const StateTestData *test_data = data;
+
+    prepare_children_state(children, test_data);
+    milter_manager_assert_important(children, test_data->next_status);
+}
+
+void
+data_not_important_status (void)
+{
+#define test_data(state, status, next_status)                   \
+    state_test_data_new(MILTER_SERVER_CONTEXT_STATE_ ## state,  \
+                        MILTER_STATUS_ ## status,               \
+                        MILTER_STATUS_ ## next_status)
+
+    cut_add_data("connect - continue - accept",
+                 test_data(CONNECT, CONTINUE, ACCEPT), g_free);
+#undef test_data
+}
+
+void
+test_not_important_status (gconstpointer data)
+{
+    const StateTestData *test_data = data;
+
+    prepare_children_state(children, test_data);
+    milter_manager_assert_not_important(children, test_data->next_status);
 }
 
 /*
