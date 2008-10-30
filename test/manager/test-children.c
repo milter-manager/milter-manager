@@ -35,6 +35,7 @@ void test_foreach (void);
 void test_negotiate (void);
 void test_retry_negotiate (void);
 void test_connect (void);
+void test_connect_pass (void);
 
 static MilterManagerConfiguration *config;
 static MilterManagerChildren *children;
@@ -327,9 +328,11 @@ teardown (void)
 }
 
 static void
-each_child (MilterManagerChild *child, gpointer user_data)
+collect_child_name (gpointer data, gpointer user_data)
 {
+    MilterManagerChild *child = data;
     gchar *name = NULL;
+
     g_object_get(child,
                  "name", &name,
                  NULL);
@@ -348,8 +351,7 @@ test_foreach (void)
                                       milter_manager_child_new("2"));
     milter_manager_children_add_child(children,
                                       milter_manager_child_new("3"));
-    milter_manager_children_foreach(children,
-                                    (GFunc)each_child, NULL);
+    milter_manager_children_foreach(children, collect_child_name, NULL);
 
     gcut_assert_equal_list_string(expected_names, actual_names);
 }
@@ -502,6 +504,52 @@ test_connect (void)
                                     sizeof(address));
     wait_reply(n_continue_emitted);
     cut_assert_equal_uint(1, n_continue_emitted);
+}
+
+static gboolean
+cb_check_connect_pass (MilterServerContext *context,
+                       const gchar *host_name,
+                       const struct sockaddr *address,
+                       socklen_t address_length,
+                       gpointer user_data)
+{
+    return TRUE;
+}
+
+static void
+connect_pass_check_signals (gpointer data, gpointer user_data)
+{
+    MilterManagerChild *child = data;
+
+#define CONNECT(name)                                                   \
+    g_signal_connect(child, #name, G_CALLBACK(cb_ ## name ## _pass), NULL)
+
+    CONNECT(check_connect);
+
+#undef CONNECT
+}
+
+void
+test_connect_pass (void)
+{
+    struct sockaddr_in address;
+    const gchar host_name[] = "mx.local.net";
+    const gchar ip_address[] = "192.168.123.123";
+
+    cut_trace(test_negotiate());
+
+    milter_manager_children_foreach(children, connect_pass_check_signals, NULL);
+
+    address.sin_family = AF_INET;
+    address.sin_port = g_htons(50443);
+    inet_aton(ip_address, &(address.sin_addr));
+
+    milter_manager_children_connect(children,
+                                    host_name,
+                                    (struct sockaddr *)(&address),
+                                    sizeof(address));
+    wait_reply(n_accept_emitted);
+    cut_assert_equal_uint(1, n_accept_emitted);
 }
 
 /*

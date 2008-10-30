@@ -1,5 +1,7 @@
 2008-10-30  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/test-children.c (test_connect_pass): add.
+
 	* test/manager/test-children.c (test_connect): add.
 
 	* test/manager/test-children.c (test_negotiate): cleanup.
