@@ -31,6 +31,10 @@
 	returns "TEMPORARY FAILURE".
 	* test/manager/test-controller.c: Added a test that both children
 	returns "ACCEPT".
+	* milter/manager/milter-manager-children.c: Do not send "QUIT" command
+	to the child which returns "SKIP" status. "SKIP" status means just
+	skip further BODY command, it should be received next other
+	command(i.e. END_OF_MESSAGE by ordinary). The test fails yet.
 
 2008-10-30  Kouhei Sutou  <kou@cozmixng.org>
 

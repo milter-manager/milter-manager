@@ -600,7 +600,7 @@ cb_skip (MilterServerContext *context, gpointer user_data)
     }
 
     compile_reply_status(children, state, MILTER_STATUS_SKIP);
-    milter_server_context_quit(context);
+    remove_child_from_queue(children, context);
 }
 
 static void

@@ -44,8 +44,10 @@ void test_data (void);
 void test_header (void);
 void test_end_of_header (void);
 void test_body (void);
+void test_body_skip (void);
 void data_end_of_message (void);
 void test_end_of_message (gconstpointer data);
+void test_end_of_message_skip (void);
 void test_quit (void);
 void test_abort (void);
 void test_unknown (void);
@@ -642,6 +644,47 @@ test_body (void)
     client = test_clients->data;
     cut_assert_equal_string(chunk,
                             milter_manager_test_client_get_body_chunk(client));
+}
+
+void
+test_body_skip (void)
+{
+    MilterManagerTestClient *client;
+    const gchar chunk[] = "Hi\n\nThanks,";
+    const gchar skip_chunk[] = "Skip it!";
+
+    arguments_append(arguments1,
+                     "--action", "skip",
+                     "--body", skip_chunk,
+                     NULL);
+
+    cut_trace(test_end_of_header());
+
+    milter_manager_controller_body(controller, chunk, strlen(chunk));
+    wait_response("body");
+    cut_assert_equal_uint(g_list_length(test_clients),
+                          collect_n_received(body));
+
+    client = test_clients->data;
+    cut_assert_equal_string(chunk,
+                            milter_manager_test_client_get_body_chunk(client));
+
+    milter_manager_controller_body(controller, skip_chunk, strlen(chunk));
+    wait_response("body");
+    cut_assert_equal_uint(g_list_length(test_clients) * 2,
+                          collect_n_received(body));
+
+    milter_manager_controller_body(controller, chunk, strlen(chunk));
+    wait_response("body");
+    /* The child which send SKIP must not be received further body command */
+    cut_assert_equal_uint(g_list_length(test_clients) * 3 - 1,
+                          collect_n_received(body));
+
+    /* The child which sends SKIP should be received next command. */
+    milter_manager_controller_end_of_message(controller, chunk, strlen(chunk));
+    wait_response("end-of-message");
+    cut_assert_equal_uint(g_list_length(test_clients),
+                          collect_n_received(data));
 }
 
 void
