@@ -394,7 +394,8 @@ test_envelope_recipient_accept (void)
                            MILTER_STATUS_CONTINUE, response_status);
     milter_manager_controller_data(controller);
     wait_response("data");
-    cut_assert_equal_uint(g_list_length(test_clients) - 1, /* the child which returns "ACCEPT" must die */
+    cut_assert_equal_uint(g_list_length(test_clients) - 1,
+                          /* the child which returns "ACCEPT" must die */
                           collect_n_received(data));
 }
 
@@ -778,8 +779,10 @@ void
 test_end_of_message_quarantine (void)
 {
     const gchar chunk[] = "virus!";
+
     arguments_append(arguments1,
                      "--action", "quarantine",
+                     "--quarantine-reason", "MAYBE VIRUS",
                      "--end-of-message", chunk,
                      NULL);
 
@@ -788,7 +791,7 @@ test_end_of_message_quarantine (void)
     milter_manager_controller_end_of_message(controller, chunk, strlen(chunk));
     wait_response("end-of-message");
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
-                           MILTER_STATUS_QUARANTINE, response_status);
+                           MILTER_STATUS_CONTINUE, response_status);
     cut_assert_equal_uint(g_list_length(test_clients),
                           collect_n_received(end_of_message));
 }

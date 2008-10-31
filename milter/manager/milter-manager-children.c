@@ -40,6 +40,7 @@ struct _MilterManagerChildrenPrivate
     MilterMacrosRequests *macros_requests;
     MilterOption *option;
     MilterStatus reply_status;
+    gchar *quarantine_reason;
 };
 
 enum
@@ -115,6 +116,7 @@ milter_manager_children_init (MilterManagerChildren *milter)
     priv->macros_requests = milter_macros_requests_new();
     priv->option = NULL;
     priv->reply_status = MILTER_STATUS_NOT_CHANGE;
+    priv->quarantine_reason = NULL;
 }
 
 static void
@@ -170,6 +172,11 @@ dispose (GObject *object)
     if (priv->option) {
         g_object_unref(priv->option);
         priv->option = NULL;
+    }
+
+    if (priv->quarantine_reason) {
+        g_free(priv->quarantine_reason);
+        priv->quarantine_reason = NULL;
     }
 
     G_OBJECT_CLASS(milter_manager_children_parent_class)->dispose(object);
@@ -561,8 +568,7 @@ cb_quarantine (MilterServerContext *context,
         return;
     }
 
-    compile_reply_status(children, state, MILTER_STATUS_QUARANTINE);
-    milter_server_context_quit(context);
+    g_signal_emit_by_name(children, "quarantine", reason);
 }
 
 static void

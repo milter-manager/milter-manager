@@ -63,6 +63,11 @@ class MilterTestClient
         @current_action = action # FIXME: validate
       end
 
+      opts.on("--quarantine-reason=REASON",
+              "Use REASON for quarantine") do |reason|
+        @quarantine_reason = reason
+      end
+
       opts.on("--envelope-recipient=RECIPIENT",
               "Add RECIPIENT targets to be applied ACTION") do |recipient|
         @recipients << [@current_action, recipient]
@@ -88,6 +93,7 @@ class MilterTestClient
     @timeout = 3
     @debug = false
     @current_action = "reject"
+    @quarantine_reason = nil
     @recipients = []
     @body_chunks = []
     @end_of_message_chunks = []
@@ -108,7 +114,7 @@ class MilterTestClient
   end
 
   def write(next_state, encode_type, *args)
-    packet, packed_size = @encoder.send("encode_#{encode_type}", *args)
+    packet, packed_size = @encoder.send("encode_reply_#{encode_type}", *args)
     while packet
       written_size = @socket.write(packet)
       packet = packet[written_size, -1]
@@ -116,6 +122,15 @@ class MilterTestClient
     info("#{@state} -> #{next_state}")
     @state = next_state
     packed_size
+  end
+
+  def write_action(next_state, action)
+    args = []
+    case action.to_s
+    when "quarantine"
+      args << @quarantine_reason
+    end
+    write(next_state, action, *args)
   end
 
   def info(*args)
@@ -145,7 +160,7 @@ class MilterTestClient
     invalid_state(:negotiate) if @state != :start
     @option = option
 
-    write(:negotiated, :reply_negotiate, option)
+    write(:negotiated, :negotiate, option)
   end
 
   def do_connect(host, address)
@@ -153,7 +168,7 @@ class MilterTestClient
     @connect_host = host
     @connect_address = address
 
-    write(:connected, :reply_continue)
+    write(:connected, :continue)
   end
 
   def info_connect(host, address)
@@ -164,14 +179,14 @@ class MilterTestClient
     invalid_state(:helo) if @state != :connected
     @hello_fqdn = fqdn
 
-    write(:greeted, :reply_continue)
+    write(:greeted, :continue)
   end
 
   def do_mail(from)
     invalid_state(:mail) if @state != :greeted
     @mail_from = from
 
-    write(:mailed, :reply_continue)
+    write(:mailed, :continue)
   end
 
   def do_rcpt(to)
@@ -180,24 +195,24 @@ class MilterTestClient
 
     @recipients.each do |action, recipient|
       if recipient == to
-        write(:recipiented, "reply_#{action}")
+        write_action(:recipiented, action)
         return
       end
     end
-    write(:recipiented, :reply_continue)
+    write(:recipiented, :continue)
   end
 
   def do_data
     invalid_state(:data) if @state != :recipiented
 
-    write(:data, :reply_continue)
+    write(:data, :continue)
   end
 
   def do_header(name, value)
     invalid_state(:header) unless [:data, :header].include?(@state)
     @headers << [name, value]
 
-    write(:header, :reply_continue)
+    write(:header, :continue)
   end
 
   def info_header(name, value)
@@ -207,7 +222,7 @@ class MilterTestClient
   def do_end_of_header
     invalid_state(:end_of_header) unless [:data, :header].include?(@state)
 
-    write(:end_of_header, :reply_continue)
+    write(:end_of_header, :continue)
   end
 
   def do_body(chunk)
@@ -216,12 +231,12 @@ class MilterTestClient
 
     @body_chunks.each do |action, body_chunk|
       if body_chunk == chunk
-        write(:body, "reply_#{action}")
+        write_action(:body, action)
         return
       end
     end
 
-    write(:body, :reply_continue)
+    write(:body, :continue)
   end
 
   def info_body(chunk)
@@ -235,12 +250,12 @@ class MilterTestClient
 
     @end_of_message_chunks.each do |action, end_of_message_chunk|
       if end_of_message_chunk == chunk
-        write_action(:end_of_message, "reply_#{action}", "#{action}")
-        return
+        write_action(:end_of_message, action)
+        return if action != "quarantine"
       end
     end
 
-    write(:end_of_message, :reply_continue)
+    write(:end_of_message, :continue)
   end
 
   def info_end_of_message(chunk)
@@ -248,7 +263,7 @@ class MilterTestClient
   end
 
   def do_unknown(command)
-    write(:unknown, :reply_reject)
+    write(:unknown, :reject)
   end
 
   def info_unknown(command)
@@ -265,7 +280,7 @@ class MilterTestClient
 
   def invalid_state(reply_state)
     state = @state
-    write(:shutdown, :reply_shutdown)
+    write(:shutdown, :shutdown)
     raise "should not receive reply for #{reply_state} on #{state}"
   end
 end
