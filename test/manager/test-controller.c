@@ -38,6 +38,7 @@ void test_envelope_receipt_reject_and_discard_simultaneously (void);
 void test_envelope_receipt_reject_and_temporary_failure_and_discard (void);
 void test_envelope_receipt_discard (void);
 void test_envelope_receipt_temporary_failure (void);
+void test_envelope_receipt_both_temporary_failure (void);
 void test_data (void);
 void test_header (void);
 void test_end_of_header (void);
@@ -523,6 +524,35 @@ test_envelope_receipt_temporary_failure (void)
     milter_manager_controller_data(controller);
     wait_response("data");
     cut_assert_equal_uint(g_list_length(test_clients), /* the child which returns "TEMPORARY_FAILURE" must live */
+                          collect_n_received(data));
+}
+
+void
+test_envelope_receipt_both_temporary_failure (void)
+{
+    const gchar receipt[] = "kou+temporary_failureed@cozmixng.org";
+
+    arguments_append(arguments1,
+                     "--action", "temporary_failure",
+                     "--envelope-receipt", receipt,
+                     NULL);
+    arguments_append(arguments2,
+                     "--action", "temporary_failure",
+                     "--envelope-receipt", receipt,
+                     NULL);
+
+    cut_trace(test_envelope_receipt());
+
+    milter_manager_controller_envelope_receipt(controller, receipt);
+    wait_response("envelope-receipt");
+    cut_assert_equal_uint(g_list_length(test_clients) * 2,
+                          collect_n_received(envelope_receipt));
+    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
+                           MILTER_STATUS_TEMPORARY_FAILURE, response_status);
+    /* The process goes on even if TEMPORARY_FAILURE returns in ENVELOPE_RECEIPT. */
+    milter_manager_controller_data(controller);
+    wait_response("data");
+    cut_assert_equal_uint(g_list_length(test_clients),
                           collect_n_received(data));
 }
 
