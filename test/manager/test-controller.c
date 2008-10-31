@@ -418,7 +418,7 @@ test_envelope_receipt_both_accept (void)
                           collect_n_received(envelope_receipt));
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
                            MILTER_STATUS_ACCEPT, response_status);
-    /* Stop the process if both children returns ACCEPT. */
+    /* Check the process is ended if both children returns ACCEPT. */
     wait_finished();
 }
 
