@@ -124,6 +124,14 @@ class MilterTestServer
     @decoder.class.signals.each do |signal|
       @decoder.signal_connect(signal) do |_, *args|
         info(signal)
+        status = "receive: #{signal}"
+        normalized_signal = signal.gsub(/-/, '_')
+        additional_info_callback_name = "info_#{normalized_signal}"
+        if respond_to?(additional_info_callback_name, true)
+          additional_info = send(additional_info_callback_name, *args)
+          status << ": #{additional_info}" unless additional_info.to_s.empty?
+        end
+        print_status(status)
         callback_name = "do_#{signal.gsub(/-/, '_')}"
         send(callback_name, *args) if respond_to?(callback_name, true)
       end
@@ -172,6 +180,42 @@ class MilterTestServer
     else
       invalid_state(:continue)
     end
+  end
+
+  def info_add_header(name, value)
+    [name, value].join(" ")
+  end
+
+  def info_insert_header(index, name, value)
+    [index, name, value].join(" ")
+  end
+
+  def info_change_header(name, index, value)
+    [name, index, value].join(" ")
+  end
+
+  def info_remove_header(name, index)
+    [name, index].join(" ")
+  end
+
+  def info_change_from(from, parameters)
+    [from, parameters].join(" ")
+  end
+
+  def info_add_recipient(recipient, parameters)
+    [recipient, parameters].join(" ")
+  end
+
+  def info_delete_recipient(recipient)
+    recipient
+  end
+
+  def info_replace_body(chunk)
+    chunk
+  end
+
+  def info_quarantine(reason)
+    reason
   end
 
   def sender_host_name
