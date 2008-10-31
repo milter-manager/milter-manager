@@ -27,6 +27,8 @@
 	and "DISCARD" from each child respectively.
 	* test/manager/test-controller.c: Added a test that both children
 	returns "TEMPORARY FAILURE".
+	* test/manager/test-controller.c: Added a test that both children
+	returns "ACCEPT".
 
 2008-10-30  Kouhei Sutou  <kou@cozmixng.org>
 

@@ -33,6 +33,7 @@ void test_helo (void);
 void test_envelope_from (void);
 void test_envelope_receipt (void);
 void test_envelope_receipt_accept (void);
+void test_envelope_receipt_both_accept (void);
 void test_envelope_receipt_reject (void);
 void test_envelope_receipt_reject_and_discard_simultaneously (void);
 void test_envelope_receipt_reject_and_temporary_failure_and_discard (void);
@@ -393,6 +394,32 @@ test_envelope_receipt_accept (void)
     wait_response("data");
     cut_assert_equal_uint(g_list_length(test_clients) - 1, /* the child which returns "ACCEPT" must die */
                           collect_n_received(data));
+}
+
+void
+test_envelope_receipt_both_accept (void)
+{
+    const gchar receipt[] = "kou+accepted@cozmixng.org";
+
+    arguments_append(arguments1,
+                     "--action", "accept",
+                     "--envelope-receipt", receipt,
+                     NULL);
+    arguments_append(arguments2,
+                     "--action", "accept",
+                     "--envelope-receipt", receipt,
+                     NULL);
+
+    cut_trace(test_envelope_receipt());
+
+    milter_manager_controller_envelope_receipt(controller, receipt);
+    wait_response("envelope-receipt");
+    cut_assert_equal_uint(g_list_length(test_clients) * 2,
+                          collect_n_received(envelope_receipt));
+    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
+                           MILTER_STATUS_ACCEPT, response_status);
+    /* Stop the process if both children returns ACCEPT. */
+    wait_finished();
 }
 
 void
