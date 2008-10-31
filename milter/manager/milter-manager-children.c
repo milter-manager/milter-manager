@@ -298,9 +298,6 @@ status_to_signal_name (MilterStatus status)
       case MILTER_STATUS_SKIP:
         signal_name = "skip";
         break;
-      case MILTER_STATUS_QUARANTINE:
-        signal_name = "quarantine";
-        break;
       case MILTER_STATUS_PROGRESS:
         signal_name = "progress";
         break;
@@ -1260,12 +1257,6 @@ milter_manager_children_is_important_status (MilterManagerChildren *children,
         if (state == MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT)
             return FALSE;
         return (b == MILTER_STATUS_REJECT);
-        break;
-      case MILTER_STATUS_QUARANTINE:
-        if (b != MILTER_STATUS_REJECT &&
-            b != MILTER_STATUS_DISCARD)
-            return FALSE;
-        return TRUE;
         break;
       case MILTER_STATUS_TEMPORARY_FAILURE:
         if (b == MILTER_STATUS_NOT_CHANGE)

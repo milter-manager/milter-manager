@@ -1,5 +1,8 @@
 2008-10-31  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.c,
+	test/manager/test-children.c: remove needless quarantine.
+
 	* test/lib/milter-test-client.rb,
 	milter/manager/milter-manager-children.c,
 	test/manager/test-controller.c: support quarantine.
