@@ -73,7 +73,7 @@ class MilterTestClient
         @body_chunks << [@current_action, body_chunk]
       end
 
-      opts.on("--end-of-message=chunk",
+      opts.on("--end-of-message=CHUNK",
               "Add CHUNK targets to be applied ACTION") do |chunk|
         @end_of_message_chunks << [@current_action, chunk]
       end
