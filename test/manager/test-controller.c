@@ -62,6 +62,7 @@ static GArray *arguments2;
 
 static GError *controller_error;
 static gboolean finished;
+static gchar *quarantine_reason;
 
 static GList *test_clients;
 
@@ -124,6 +125,7 @@ setup (void)
     response_status = MILTER_STATUS_DEFAULT;
 
     finished = FALSE;
+    quarantine_reason = NULL;
 }
 
 static void
@@ -176,6 +178,9 @@ teardown (void)
         g_list_foreach(test_clients, (GFunc)g_object_unref, NULL);
         g_list_free(test_clients);
     }
+
+    if (quarantine_reason)
+        g_free(quarantine_reason);
 }
 
 #define collect_n_received(event)                                       \
@@ -794,6 +799,7 @@ test_end_of_message_quarantine (void)
                            MILTER_STATUS_CONTINUE, response_status);
     cut_assert_equal_uint(g_list_length(test_clients),
                           collect_n_received(end_of_message));
+
 }
 
 void
