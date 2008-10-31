@@ -43,8 +43,8 @@ void test_envelope_recipient_both_temporary_failure (void);
 void test_data (void);
 void test_header (void);
 void test_end_of_header (void);
-void test_body (void);
-void test_body_skip (void);
+void data_body (void);
+void test_body (gconstpointer data);
 void data_end_of_message (void);
 void test_end_of_message (gconstpointer data);
 void test_end_of_message_quarantine (void);
@@ -628,46 +628,64 @@ test_end_of_header (void)
                           collect_n_received(end_of_header));
 }
 
-void
-test_body (void)
+typedef void (*setup_body_test_func) (const gchar *chunk);
+typedef void (*assert_body_test_func) (const gchar *chunk);
+
+typedef struct _BodyTestData
 {
-    MilterManagerTestClient *client;
-    const gchar chunk[] = "Hi\n\nThanks,";
+    setup_body_test_func setup_func;
+    assert_body_test_func assert_func;
+    gchar *chunk;
+} BodyTestData;
 
-    cut_trace(test_end_of_header());
+static BodyTestData *
+body_test_data_new (setup_body_test_func setup_func,
+                    assert_body_test_func assert_func,
+                    const gchar *chunk)
+{
+    BodyTestData *data;
 
-    milter_manager_controller_body(controller, chunk, strlen(chunk));
-    wait_response("body");
-    cut_assert_equal_uint(g_list_length(test_clients),
-                          collect_n_received(body));
+    data = g_new(BodyTestData, 1);
 
-    client = test_clients->data;
-    cut_assert_equal_string(chunk,
-                            milter_manager_test_client_get_body_chunk(client));
+    data->setup_func = setup_func;
+    data->assert_func = assert_func;
+    data->chunk = g_strdup(chunk);
+
+    return data;
 }
 
-void
-test_body_skip (void)
+static void
+free_body_test_data (BodyTestData *data)
 {
-    MilterManagerTestClient *client;
-    const gchar chunk[] = "Hi\n\nThanks,";
-    const gchar skip_chunk[] = "Skip it!";
+    if (data->chunk)
+        g_free(data->chunk);
+    g_free(data);
+}
 
+static void
+setup_skip_body_test (const gchar *skip_chunk)
+{
     arguments_append(arguments1,
                      "--action", "skip",
                      "--body", skip_chunk,
                      NULL);
+}
 
-    cut_trace(test_end_of_header());
+#define milter_manager_assert_body_test(data) \
+    if (data)                                 \
+        cut_trace(assert_body_test((BodyTestData*)data));
 
-    milter_manager_controller_body(controller, chunk, strlen(chunk));
-    wait_response("body");
-    cut_assert_equal_uint(g_list_length(test_clients),
-                          collect_n_received(body));
+static void
+assert_body_test (BodyTestData *data)
+{
+    if (data->assert_func)
+        cut_trace(data->assert_func(data->chunk));
+}
 
-    client = test_clients->data;
-    cut_assert_equal_string(chunk,
-                            milter_manager_test_client_get_body_chunk(client));
+static void
+assert_skip_body_test (const gchar *skip_chunk)
+{
+    const gchar chunk[] = "See you.";
 
     milter_manager_controller_body(controller, skip_chunk, strlen(skip_chunk));
     wait_response("body");
@@ -688,6 +706,42 @@ test_body_skip (void)
 }
 
 void
+data_body (void)
+{
+    cut_add_data("normal", 
+                 body_test_data_new(NULL, NULL, NULL), free_body_test_data,
+                 "skip",
+                 body_test_data_new(setup_skip_body_test,
+                                    assert_skip_body_test,
+                                    "Skip!"),
+                 free_body_test_data);
+}
+
+void
+test_body (gconstpointer data)
+{
+    MilterManagerTestClient *client;
+    const gchar chunk[] = "Hi\n\nThanks,";
+    BodyTestData *test_data = (BodyTestData*)data;
+
+    if (test_data && test_data->setup_func)
+        test_data->setup_func(test_data->chunk);
+
+    cut_trace(test_end_of_header());
+
+    milter_manager_controller_body(controller, chunk, strlen(chunk));
+    wait_response("body");
+    cut_assert_equal_uint(g_list_length(test_clients),
+                          collect_n_received(body));
+
+    client = test_clients->data;
+    cut_assert_equal_string(chunk,
+                            milter_manager_test_client_get_body_chunk(client));
+    
+    milter_manager_assert_body_test(data);
+}
+
+void
 data_end_of_message (void)
 {
     cut_add_data("with chunk", g_strdup("The last text"), g_free,
@@ -701,7 +755,7 @@ test_end_of_message (gconstpointer data)
     const gchar *chunk = data;
     gsize chunk_size;
 
-    cut_trace(test_body());
+    cut_trace(test_body(NULL));
 
     if (chunk)
         chunk_size = strlen(chunk);
@@ -729,7 +783,7 @@ test_end_of_message_quarantine (void)
                      "--end-of-message", chunk,
                      NULL);
 
-    cut_trace(test_body());
+    cut_trace(test_body(NULL));
 
     milter_manager_controller_end_of_message(controller, chunk, strlen(chunk));
     wait_response("end-of-message");
