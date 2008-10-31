@@ -1,5 +1,7 @@
 2008-10-31  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/test-controller.c: cleanup.
+
 	* milter/manager/milter-manager-children.c,
 	test/manager/test-children.c: remove needless quarantine.
 

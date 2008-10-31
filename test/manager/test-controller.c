@@ -188,6 +188,9 @@ teardown (void)
         test_clients,                                                   \
         milter_manager_test_client_get_n_ ## event ## _received)
 
+#define get_received_data(name)                         \
+    milter_manager_test_client_get_ ## name(client)
+
 static gboolean
 cb_timeout_waiting (gpointer data)
 {
@@ -479,7 +482,8 @@ test_envelope_recipient_reject_and_temporary_failure_and_discard (void)
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
                            MILTER_STATUS_REJECT, response_status);
 
-    milter_manager_controller_envelope_recipient(controller, temporary_failure_recipient);
+    milter_manager_controller_envelope_recipient(controller,
+                                                 temporary_failure_recipient);
     wait_response("envelope-recipient");
     cut_assert_equal_uint(g_list_length(test_clients) * 3,
                           collect_n_received(envelope_recipient));
@@ -558,7 +562,8 @@ test_envelope_recipient_temporary_failure (void)
                            MILTER_STATUS_CONTINUE, response_status);
     milter_manager_controller_data(controller);
     wait_response("data");
-    cut_assert_equal_uint(g_list_length(test_clients), /* the child which returns "TEMPORARY_FAILURE" must live */
+    cut_assert_equal_uint(g_list_length(test_clients),
+                          /* the child which returns "TEMPORARY_FAILURE" must live */
                           collect_n_received(data));
 }
 
@@ -617,10 +622,8 @@ test_header (void)
                           collect_n_received(header));
 
     client = test_clients->data;
-    cut_assert_equal_string(name,
-                            milter_manager_test_client_get_header_name(client));
-    cut_assert_equal_string(value,
-                            milter_manager_test_client_get_header_value(client));
+    cut_assert_equal_string(name, get_received_data(header_name));
+    cut_assert_equal_string(value, get_received_data(header_value));
 }
 
 void
@@ -714,7 +717,7 @@ assert_skip_body_test (const gchar *skip_chunk)
 void
 data_body (void)
 {
-    cut_add_data("normal", 
+    cut_add_data("normal",
                  body_test_data_new(NULL, NULL, NULL), free_body_test_data,
                  "skip",
                  body_test_data_new(setup_skip_body_test,
@@ -741,9 +744,8 @@ test_body (gconstpointer data)
                           collect_n_received(body));
 
     client = test_clients->data;
-    cut_assert_equal_string(chunk,
-                            milter_manager_test_client_get_body_chunk(client));
-    
+    cut_assert_equal_string(chunk, get_received_data(body_chunk));
+
     milter_manager_assert_body_test(data);
 }
 
@@ -776,8 +778,7 @@ test_end_of_message (gconstpointer data)
                           collect_n_received(end_of_message));
 
     client = test_clients->data;
-    cut_assert_equal_string(chunk,
-                            milter_manager_test_client_get_end_of_message_chunk(client));
+    cut_assert_equal_string(chunk, get_received_data(end_of_message_chunk));
 }
 
 void
@@ -834,8 +835,7 @@ test_unknown (void)
     wait_finished();
 
     client = test_clients->data;
-    cut_assert_equal_string(command,
-                            milter_manager_test_client_get_unknown_command(client));
+    cut_assert_equal_string(command, get_received_data(unknown_command));
 }
 
 /*
