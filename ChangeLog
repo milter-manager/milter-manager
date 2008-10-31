@@ -47,6 +47,8 @@
 	skip further BODY command, it should be received next other
 	command(i.e. END_OF_MESSAGE by ordinary). The test fails yet.
 	* test/lib/milter-test-server.rb: Added info_XX methods.
+	* milter/manager/milter-manager-children.c,
+	milter/manager/milter-manager-controller.c: Handle reply-code.
 
 2008-10-30  Kouhei Sutou  <kou@cozmixng.org>
 

@@ -390,11 +390,14 @@ cb_continue (MilterServerContext *context, gpointer user_data)
 }
 
 static void
-cb_reply_code (MilterServerContext *context, const gchar *code,
+cb_reply_code (MilterServerContext *context,
+               guint code,
+               const gchar *extended_code,
+               const gchar *message,
                gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
-    g_signal_emit_by_name(children, "reply-code", code);
+    g_signal_emit_by_name(children, "reply-code", code, extended_code, message);
 }
 
 static void

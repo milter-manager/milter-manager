@@ -351,11 +351,19 @@ cb_continue (MilterServerContext *context, gpointer user_data)
 }
 
 static void
-cb_reply_code (MilterServerContext *context, const gchar *code,
+cb_reply_code (MilterServerContext *context,
+               guint code,
+               const gchar *extended_code,
+               const gchar *message,
                gpointer user_data)
 {
-    /* MilterManagerController *controller = user_data; */
-    /* FIXME */
+    MilterManagerController *controller = user_data;
+    MilterManagerControllerPrivate *priv;
+
+    priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
+    milter_client_context_set_reply(priv->client_context,
+                                    code, extended_code, message,
+                                    NULL); /* FIXME! */
 }
 
 static void
