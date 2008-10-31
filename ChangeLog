@@ -1,5 +1,7 @@
 2008-10-31  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/lib/milter-test-client.rb: upcase!
+
 	* ./: receipt -> recipient.
 
 	* test/lib/milter-test-client.rb: fix typos.

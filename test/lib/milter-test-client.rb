@@ -68,7 +68,7 @@ class MilterTestClient
         @recipients << [@current_action, recipient]
       end
 
-      opts.on("--body=chunk",
+      opts.on("--body=CHUNK",
               "Add CHUNK targets to be applied ACTION") do |body_chunk|
         @body_chunks << [@current_action, body_chunk]
       end
