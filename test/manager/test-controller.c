@@ -47,7 +47,7 @@ void test_body (void);
 void test_body_skip (void);
 void data_end_of_message (void);
 void test_end_of_message (gconstpointer data);
-void test_end_of_message_skip (void);
+void test_end_of_message_quarantine (void);
 void test_quit (void);
 void test_abort (void);
 void test_unknown (void);
@@ -669,7 +669,7 @@ test_body_skip (void)
     cut_assert_equal_string(chunk,
                             milter_manager_test_client_get_body_chunk(client));
 
-    milter_manager_controller_body(controller, skip_chunk, strlen(chunk));
+    milter_manager_controller_body(controller, skip_chunk, strlen(skip_chunk));
     wait_response("body");
     cut_assert_equal_uint(g_list_length(test_clients) * 2,
                           collect_n_received(body));
@@ -718,6 +718,25 @@ test_end_of_message (gconstpointer data)
     client = test_clients->data;
     cut_assert_equal_string(chunk,
                             milter_manager_test_client_get_end_of_message_chunk(client));
+}
+
+void
+test_end_of_message_quarantine (void)
+{
+    const gchar chunk[] = "virus!";
+    arguments_append(arguments1,
+                     "--action", "quarantine",
+                     "--end-of-message", chunk,
+                     NULL);
+
+    cut_trace(test_body());
+
+    milter_manager_controller_end_of_message(controller, chunk, strlen(chunk));
+    wait_response("end-of-message");
+    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
+                           MILTER_STATUS_QUARANTINE, response_status);
+    cut_assert_equal_uint(g_list_length(test_clients),
+                          collect_n_received(end_of_message));
 }
 
 void

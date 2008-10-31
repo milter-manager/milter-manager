@@ -67,6 +67,16 @@ class MilterTestClient
               "Add RECIPIENT targets to be applied ACTION") do |recipient|
         @recipients << [@current_action, recipient]
       end
+
+      opts.on("--body=chunk",
+              "Add CHUNK targets to be applied ACTION") do |body_chunk|
+        @body_chunks << [@current_action, body_chunk]
+      end
+
+      opts.on("--end-of-message=chunk",
+              "Add CHUNK targets to be applied ACTION") do |chunk|
+        @end_of_message_chunks << [@current_action, chunk]
+      end
     end
     opts.parse!(argv)
   end
@@ -79,6 +89,8 @@ class MilterTestClient
     @debug = false
     @current_action = "reject"
     @recipients = []
+    @body_chunks = []
+    @end_of_message_chunks = []
   end
 
   def print_status(status)
@@ -200,8 +212,14 @@ class MilterTestClient
 
   def do_body(chunk)
     invalid_state(:body) unless [:end_of_header, :body].include?(@state)
-
     @content << chunk
+
+    @body_chunks.each do |action, body_chunk|
+      if body_chunk == chunk
+        write(:body, "reply_#{action}")
+        return
+      end
+    end
 
     write(:body, :reply_continue)
   end
@@ -213,6 +231,13 @@ class MilterTestClient
   def do_end_of_message(chunk)
     unless [:end_of_header, :body].include?(@state)
       invalid_state(:end_of_message)
+    end
+
+    @end_of_message_chunks.each do |action, end_of_message_chunk|
+      if end_of_message_chunk == chunk
+        write_action(:end_of_message, "reply_#{action}", "#{action}")
+        return
+      end
     end
 
     write(:end_of_message, :reply_continue)
