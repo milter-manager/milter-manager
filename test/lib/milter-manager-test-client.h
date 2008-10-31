@@ -66,7 +66,7 @@ guint                    milter_manager_test_client_get_n_helo_received
                                               (MilterManagerTestClient *client);
 guint                    milter_manager_test_client_get_n_envelope_from_received
                                               (MilterManagerTestClient *client);
-guint                    milter_manager_test_client_get_n_envelope_receipt_received
+guint                    milter_manager_test_client_get_n_envelope_recipient_received
                                               (MilterManagerTestClient *client);
 guint                    milter_manager_test_client_get_n_data_received
                                               (MilterManagerTestClient *client);

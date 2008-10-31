@@ -99,12 +99,12 @@ cb_client_envelope_from (MilterClientContext *context, const gchar *from,
 }
 
 static MilterStatus
-cb_client_envelope_receipt (MilterClientContext *context, const gchar *receipt,
-                            gpointer user_data)
+cb_client_envelope_recipient (MilterClientContext *context,
+                              const gchar *recipient, gpointer user_data)
 {
     MilterManagerController *controller = user_data;
 
-    return milter_manager_controller_envelope_receipt(controller, receipt);
+    return milter_manager_controller_envelope_recipient(controller, recipient);
 }
 
 static MilterStatus
@@ -192,7 +192,7 @@ cb_client_quit (MilterClientContext *context, gpointer user_data)
     DISCONNECT(connect);
     DISCONNECT(helo);
     DISCONNECT(envelope_from);
-    DISCONNECT(envelope_receipt);
+    DISCONNECT(envelope_recipient);
     DISCONNECT(data);
     DISCONNECT(unknown);
     DISCONNECT(header);
@@ -227,7 +227,7 @@ setup_context_signals (MilterClientContext *context,
     CONNECT(connect);
     CONNECT(helo);
     CONNECT(envelope_from);
-    CONNECT(envelope_receipt);
+    CONNECT(envelope_recipient);
     CONNECT(data);
     CONNECT(unknown);
     CONNECT(header);

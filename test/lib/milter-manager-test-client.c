@@ -43,7 +43,7 @@ struct _MilterManagerTestClientPrivate
     guint n_connect_received;
     guint n_helo_received;
     guint n_envelope_from_received;
-    guint n_envelope_receipt_received;
+    guint n_envelope_recipient_received;
     guint n_data_received;
     guint n_header_received;
     guint n_end_of_header_received;
@@ -95,7 +95,7 @@ milter_manager_test_client_init (MilterManagerTestClient *test_client)
     priv->n_connect_received = 0;
     priv->n_helo_received = 0;
     priv->n_envelope_from_received = 0;
-    priv->n_envelope_receipt_received = 0;
+    priv->n_envelope_recipient_received = 0;
     priv->n_data_received = 0;
     priv->n_header_received = 0;
     priv->n_end_of_header_received = 0;
@@ -144,7 +144,7 @@ cb_output_received (GCutEgg *egg, const gchar *chunk, gsize size,
     } else if (g_str_has_prefix(chunk, "receive: mail")) {
         priv->n_envelope_from_received++;
     } else if (g_str_has_prefix(chunk, "receive: rcpt")) {
-        priv->n_envelope_receipt_received++;
+        priv->n_envelope_recipient_received++;
     } else if (g_str_has_prefix(chunk, "receive: data")) {
         priv->n_data_received++;
     } else if (g_str_has_prefix(chunk, "receive: header")) {
@@ -421,9 +421,9 @@ milter_manager_test_client_get_n_envelope_from_received (MilterManagerTestClient
 }
 
 guint
-milter_manager_test_client_get_n_envelope_receipt_received (MilterManagerTestClient *client)
+milter_manager_test_client_get_n_envelope_recipient_received (MilterManagerTestClient *client)
 {
-    return MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client)->n_envelope_receipt_received;
+    return MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client)->n_envelope_recipient_received;
 }
 
 guint

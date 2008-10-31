@@ -60,8 +60,8 @@ typedef enum
     MILTER_MANAGER_CONTROLLER_STATE_HELO_REPLIED,
     MILTER_MANAGER_CONTROLLER_STATE_ENVELOPE_FROM,
     MILTER_MANAGER_CONTROLLER_STATE_ENVELOPE_FROM_REPLIED,
-    MILTER_MANAGER_CONTROLLER_STATE_ENVELOPE_RECEIPT,
-    MILTER_MANAGER_CONTROLLER_STATE_ENVELOPE_RECEIPT_REPLIED,
+    MILTER_MANAGER_CONTROLLER_STATE_ENVELOPE_RECIPIENT,
+    MILTER_MANAGER_CONTROLLER_STATE_ENVELOPE_RECIPIENT_REPLIED,
     MILTER_MANAGER_CONTROLLER_STATE_DATA,
     MILTER_MANAGER_CONTROLLER_STATE_DATA_REPLIED,
     MILTER_MANAGER_CONTROLLER_STATE_UNKNOWN,
@@ -100,9 +100,9 @@ MilterStatus          milter_manager_controller_helo
 MilterStatus          milter_manager_controller_envelope_from
                                           (MilterManagerController *controller,
                                            const gchar          *from);
-MilterStatus          milter_manager_controller_envelope_receipt
+MilterStatus          milter_manager_controller_envelope_recipient
                                           (MilterManagerController *controller,
-                                           const gchar          *receipt);
+                                           const gchar          *recipient);
 MilterStatus          milter_manager_controller_data
                                           (MilterManagerController *controller);
 MilterStatus          milter_manager_controller_unknown

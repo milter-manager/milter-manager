@@ -31,15 +31,15 @@ void test_negotiate (void);
 void test_connect (void);
 void test_helo (void);
 void test_envelope_from (void);
-void test_envelope_receipt (void);
-void test_envelope_receipt_accept (void);
-void test_envelope_receipt_both_accept (void);
-void test_envelope_receipt_reject (void);
-void test_envelope_receipt_reject_and_discard_simultaneously (void);
-void test_envelope_receipt_reject_and_temporary_failure_and_discard (void);
-void test_envelope_receipt_discard (void);
-void test_envelope_receipt_temporary_failure (void);
-void test_envelope_receipt_both_temporary_failure (void);
+void test_envelope_recipient (void);
+void test_envelope_recipient_accept (void);
+void test_envelope_recipient_both_accept (void);
+void test_envelope_recipient_reject (void);
+void test_envelope_recipient_reject_and_discard_simultaneously (void);
+void test_envelope_recipient_reject_and_temporary_failure_and_discard (void);
+void test_envelope_recipient_discard (void);
+void test_envelope_recipient_temporary_failure (void);
+void test_envelope_recipient_both_temporary_failure (void);
 void test_data (void);
 void test_header (void);
 void test_end_of_header (void);
@@ -360,34 +360,34 @@ test_envelope_from (void)
 }
 
 void
-test_envelope_receipt (void)
+test_envelope_recipient (void)
 {
-    const gchar receipt[] = "kou+receiver@cozmixng.org";
+    const gchar recipient[] = "kou+receiver@cozmixng.org";
 
     cut_trace(test_envelope_from());
 
-    milter_manager_controller_envelope_receipt(controller, receipt);
-    wait_response("envelope-receipt");
+    milter_manager_controller_envelope_recipient(controller, recipient);
+    wait_response("envelope-recipient");
     cut_assert_equal_uint(g_list_length(test_clients),
-                          collect_n_received(envelope_receipt));
+                          collect_n_received(envelope_recipient));
 }
 
 void
-test_envelope_receipt_accept (void)
+test_envelope_recipient_accept (void)
 {
-    const gchar receipt[] = "kou+accepted@cozmixng.org";
+    const gchar recipient[] = "kou+accepted@cozmixng.org";
 
     arguments_append(arguments1,
                      "--action", "accept",
-                     "--envelope-receipt", receipt,
+                     "--envelope-recipient", recipient,
                      NULL);
 
-    cut_trace(test_envelope_receipt());
+    cut_trace(test_envelope_recipient());
 
-    milter_manager_controller_envelope_receipt(controller, receipt);
-    wait_response("envelope-receipt");
+    milter_manager_controller_envelope_recipient(controller, recipient);
+    wait_response("envelope-recipient");
     cut_assert_equal_uint(g_list_length(test_clients) * 2,
-                          collect_n_received(envelope_receipt));
+                          collect_n_received(envelope_recipient));
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
                            MILTER_STATUS_CONTINUE, response_status);
     milter_manager_controller_data(controller);
@@ -397,25 +397,25 @@ test_envelope_receipt_accept (void)
 }
 
 void
-test_envelope_receipt_both_accept (void)
+test_envelope_recipient_both_accept (void)
 {
-    const gchar receipt[] = "kou+accepted@cozmixng.org";
+    const gchar recipient[] = "kou+accepted@cozmixng.org";
 
     arguments_append(arguments1,
                      "--action", "accept",
-                     "--envelope-receipt", receipt,
+                     "--envelope-recipient", recipient,
                      NULL);
     arguments_append(arguments2,
                      "--action", "accept",
-                     "--envelope-receipt", receipt,
+                     "--envelope-recipient", recipient,
                      NULL);
 
-    cut_trace(test_envelope_receipt());
+    cut_trace(test_envelope_recipient());
 
-    milter_manager_controller_envelope_receipt(controller, receipt);
-    wait_response("envelope-receipt");
+    milter_manager_controller_envelope_recipient(controller, recipient);
+    wait_response("envelope-recipient");
     cut_assert_equal_uint(g_list_length(test_clients) * 2,
-                          collect_n_received(envelope_receipt));
+                          collect_n_received(envelope_recipient));
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
                            MILTER_STATUS_ACCEPT, response_status);
     /* Check the process is ended if both children returns ACCEPT. */
@@ -423,21 +423,21 @@ test_envelope_receipt_both_accept (void)
 }
 
 void
-test_envelope_receipt_reject (void)
+test_envelope_recipient_reject (void)
 {
-    const gchar receipt[] = "kou+rejected@cozmixng.org";
+    const gchar recipient[] = "kou+rejected@cozmixng.org";
 
     arguments_append(arguments1,
                      "--action", "reject",
-                     "--envelope-receipt", receipt,
+                     "--envelope-recipient", recipient,
                      NULL);
 
-    cut_trace(test_envelope_receipt());
+    cut_trace(test_envelope_recipient());
 
-    milter_manager_controller_envelope_receipt(controller, receipt);
-    wait_response("envelope-receipt");
+    milter_manager_controller_envelope_recipient(controller, recipient);
+    wait_response("envelope-recipient");
     cut_assert_equal_uint(g_list_length(test_clients) * 2,
-                          collect_n_received(envelope_receipt));
+                          collect_n_received(envelope_recipient));
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
                            MILTER_STATUS_REJECT, response_status);
     milter_manager_controller_data(controller);
@@ -447,105 +447,105 @@ test_envelope_receipt_reject (void)
 }
 
 void
-test_envelope_receipt_reject_and_temporary_failure_and_discard (void)
+test_envelope_recipient_reject_and_temporary_failure_and_discard (void)
 {
-    const gchar reject_receipt[] = "kou+rejected@cozmixng.org";
-    const gchar temporary_failure_receipt[] = "kou+temporary_failure@cozmixng.org";
-    const gchar discard_receipt[] = "kou+discarded@cozmixng.org";
+    const gchar reject_recipient[] = "kou+rejected@cozmixng.org";
+    const gchar temporary_failure_recipient[] = "kou+temporary_failure@cozmixng.org";
+    const gchar discard_recipient[] = "kou+discarded@cozmixng.org";
 
     arguments_append(arguments1,
                      "--action", "reject",
-                     "--envelope-receipt", reject_receipt,
+                     "--envelope-recipient", reject_recipient,
                      "--action", "temporary_failure",
-                     "--envelope-receipt", temporary_failure_receipt,
+                     "--envelope-recipient", temporary_failure_recipient,
                      "--action", "discard",
-                     "--envelope-receipt", discard_receipt,
+                     "--envelope-recipient", discard_recipient,
                      NULL);
 
-    cut_trace(test_envelope_receipt());
+    cut_trace(test_envelope_recipient());
 
-    milter_manager_controller_envelope_receipt(controller, reject_receipt);
-    wait_response("envelope-receipt");
+    milter_manager_controller_envelope_recipient(controller, reject_recipient);
+    wait_response("envelope-recipient");
     cut_assert_equal_uint(g_list_length(test_clients) * 2,
-                          collect_n_received(envelope_receipt));
+                          collect_n_received(envelope_recipient));
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
                            MILTER_STATUS_REJECT, response_status);
 
-    milter_manager_controller_envelope_receipt(controller, temporary_failure_receipt);
-    wait_response("envelope-receipt");
+    milter_manager_controller_envelope_recipient(controller, temporary_failure_recipient);
+    wait_response("envelope-recipient");
     cut_assert_equal_uint(g_list_length(test_clients) * 3,
-                          collect_n_received(envelope_receipt));
+                          collect_n_received(envelope_recipient));
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
                            MILTER_STATUS_CONTINUE, response_status);
 
-    milter_manager_controller_envelope_receipt(controller, discard_receipt);
-    wait_response("envelope-receipt");
+    milter_manager_controller_envelope_recipient(controller, discard_recipient);
+    wait_response("envelope-recipient");
     cut_assert_equal_uint(g_list_length(test_clients) * 4,
-                          collect_n_received(envelope_receipt));
+                          collect_n_received(envelope_recipient));
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
                            MILTER_STATUS_DISCARD, response_status);
 }
 
 void
-test_envelope_receipt_reject_and_discard_simultaneously (void)
+test_envelope_recipient_reject_and_discard_simultaneously (void)
 {
-    const gchar receipt[] = "kou+rejected+discarded@cozmixng.org";
+    const gchar recipient[] = "kou+rejected+discarded@cozmixng.org";
 
     arguments_append(arguments1,
                      "--action", "reject",
-                     "--envelope-receipt", receipt,
+                     "--envelope-recipient", recipient,
                      NULL);
     arguments_append(arguments2,
                      "--action", "discard",
-                     "--envelope-receipt", receipt,
+                     "--envelope-recipient", recipient,
                      NULL);
 
-    cut_trace(test_envelope_receipt());
+    cut_trace(test_envelope_recipient());
 
-    milter_manager_controller_envelope_receipt(controller, receipt);
-    wait_response("envelope-receipt");
+    milter_manager_controller_envelope_recipient(controller, recipient);
+    wait_response("envelope-recipient");
     cut_assert_equal_uint(g_list_length(test_clients) * 2,
-                          collect_n_received(envelope_receipt));
+                          collect_n_received(envelope_recipient));
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
                            MILTER_STATUS_DISCARD, response_status);
 }
 
 void
-test_envelope_receipt_discard (void)
+test_envelope_recipient_discard (void)
 {
-    const gchar receipt[] = "kou+discarded@cozmixng.org";
+    const gchar recipient[] = "kou+discarded@cozmixng.org";
 
     arguments_append(arguments1,
                      "--action", "discard",
-                     "--envelope-receipt", receipt,
+                     "--envelope-recipient", recipient,
                      NULL);
 
-    cut_trace(test_envelope_receipt());
+    cut_trace(test_envelope_recipient());
 
-    milter_manager_controller_envelope_receipt(controller, receipt);
-    wait_response("envelope-receipt");
+    milter_manager_controller_envelope_recipient(controller, recipient);
+    wait_response("envelope-recipient");
     cut_assert_equal_uint(g_list_length(test_clients) * 2,
-                          collect_n_received(envelope_receipt));
+                          collect_n_received(envelope_recipient));
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
                            MILTER_STATUS_DISCARD, response_status);
 }
 
 void
-test_envelope_receipt_temporary_failure (void)
+test_envelope_recipient_temporary_failure (void)
 {
-    const gchar receipt[] = "kou+temporary_failureed@cozmixng.org";
+    const gchar recipient[] = "kou+temporary_failureed@cozmixng.org";
 
     arguments_append(arguments1,
                      "--action", "temporary_failure",
-                     "--envelope-receipt", receipt,
+                     "--envelope-recipient", recipient,
                      NULL);
 
-    cut_trace(test_envelope_receipt());
+    cut_trace(test_envelope_recipient());
 
-    milter_manager_controller_envelope_receipt(controller, receipt);
-    wait_response("envelope-receipt");
+    milter_manager_controller_envelope_recipient(controller, recipient);
+    wait_response("envelope-recipient");
     cut_assert_equal_uint(g_list_length(test_clients) * 2,
-                          collect_n_received(envelope_receipt));
+                          collect_n_received(envelope_recipient));
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
                            MILTER_STATUS_CONTINUE, response_status);
     milter_manager_controller_data(controller);
@@ -555,28 +555,28 @@ test_envelope_receipt_temporary_failure (void)
 }
 
 void
-test_envelope_receipt_both_temporary_failure (void)
+test_envelope_recipient_both_temporary_failure (void)
 {
-    const gchar receipt[] = "kou+temporary_failureed@cozmixng.org";
+    const gchar recipient[] = "kou+temporary_failureed@cozmixng.org";
 
     arguments_append(arguments1,
                      "--action", "temporary_failure",
-                     "--envelope-receipt", receipt,
+                     "--envelope-recipient", recipient,
                      NULL);
     arguments_append(arguments2,
                      "--action", "temporary_failure",
-                     "--envelope-receipt", receipt,
+                     "--envelope-recipient", recipient,
                      NULL);
 
-    cut_trace(test_envelope_receipt());
+    cut_trace(test_envelope_recipient());
 
-    milter_manager_controller_envelope_receipt(controller, receipt);
-    wait_response("envelope-receipt");
+    milter_manager_controller_envelope_recipient(controller, recipient);
+    wait_response("envelope-recipient");
     cut_assert_equal_uint(g_list_length(test_clients) * 2,
-                          collect_n_received(envelope_receipt));
+                          collect_n_received(envelope_recipient));
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
                            MILTER_STATUS_TEMPORARY_FAILURE, response_status);
-    /* The process goes on even if TEMPORARY_FAILURE returns in ENVELOPE_RECEIPT. */
+    /* The process goes on even if TEMPORARY_FAILURE returns in ENVELOPE_RECIPIENT. */
     milter_manager_controller_data(controller);
     wait_response("data");
     cut_assert_equal_uint(g_list_length(test_clients),
@@ -586,7 +586,7 @@ test_envelope_receipt_both_temporary_failure (void)
 void
 test_data (void)
 {
-    cut_trace(test_envelope_receipt());
+    cut_trace(test_envelope_recipient());
 
     milter_manager_controller_data(controller);
     wait_response("data");

@@ -62,8 +62,8 @@ static guint n_add_header_emitted;
 static guint n_insert_header_emitted;
 static guint n_change_header_emitted;
 static guint n_change_from_emitted;
-static guint n_add_receipt_emitted;
-static guint n_delete_receipt_emitted;
+static guint n_add_recipient_emitted;
+static guint n_delete_recipient_emitted;
 static guint n_replace_body_emitted;
 static guint n_progress_emitted;
 static guint n_quarantine_emitted;
@@ -153,18 +153,18 @@ cb_change_from (MilterManagerChildren *children,
 }
 
 static void
-cb_add_receipt (MilterManagerChildren *children,
-                const gchar *receipt, const gchar *parameters,
-                gpointer user_data)
+cb_add_recipient (MilterManagerChildren *children,
+                  const gchar *recipient, const gchar *parameters,
+                  gpointer user_data)
 {
-    n_add_receipt_emitted++;
+    n_add_recipient_emitted++;
 }
 
 static void
-cb_delete_receipt (MilterManagerChildren *children, const gchar *receipt,
-                   gpointer user_data)
+cb_delete_recipient (MilterManagerChildren *children, const gchar *recipient,
+                     gpointer user_data)
 {
-    n_delete_receipt_emitted++;
+    n_delete_recipient_emitted++;
 }
 
 static void
@@ -236,8 +236,8 @@ setup_signals (MilterManagerChildren *children)
     CONNECT(insert_header);
     CONNECT(change_header);
     CONNECT(change_from);
-    CONNECT(add_receipt);
-    CONNECT(delete_receipt);
+    CONNECT(add_recipient);
+    CONNECT(delete_recipient);
     CONNECT(replace_body);
     CONNECT(progress);
     CONNECT(quarantine);
@@ -291,8 +291,8 @@ setup (void)
     n_insert_header_emitted = 0;
     n_change_header_emitted = 0;
     n_change_from_emitted = 0;
-    n_add_receipt_emitted = 0;
-    n_delete_receipt_emitted = 0;
+    n_add_recipient_emitted = 0;
+    n_delete_recipient_emitted = 0;
     n_replace_body_emitted = 0;
     n_progress_emitted = 0;
     n_quarantine_emitted = 0;
@@ -635,20 +635,24 @@ data_important_status (void)
                  test_data(ENVELOPE_FROM, TEMPORARY_FAILURE, CONTINUE), g_free,
                  "envelope_from - discard - reject",
                  test_data(ENVELOPE_FROM, DISCARD, REJECT), g_free,
-                 "envelope_receipt - reject - discard",
-                 test_data(ENVELOPE_RECEIPT, REJECT, DISCARD), g_free,
-                 "envelope_receipt - continue - reject",
-                 test_data(ENVELOPE_RECEIPT, CONTINUE, REJECT), g_free,
-                 "envelope_receipt - accept - reject",
-                 test_data(ENVELOPE_RECEIPT, ACCEPT, REJECT), g_free,
-                 "envelope_receipt - temporary_failure - reject",
-                 test_data(ENVELOPE_RECEIPT, TEMPORARY_FAILURE, REJECT), g_free,
-                 "envelope_receipt - temporary_failure - discard",
-                 test_data(ENVELOPE_RECEIPT, TEMPORARY_FAILURE, DISCARD), g_free,
-                 "envelope_receipt - temporary_failure - accept",
-                 test_data(ENVELOPE_RECEIPT, TEMPORARY_FAILURE, ACCEPT), g_free,
-                 "envelope_receipt - default - temporary_failure",
-                 test_data(ENVELOPE_RECEIPT, DEFAULT, TEMPORARY_FAILURE), g_free);
+                 "envelope_recipient - reject - discard",
+                 test_data(ENVELOPE_RECIPIENT, REJECT, DISCARD), g_free,
+                 "envelope_recipient - continue - reject",
+                 test_data(ENVELOPE_RECIPIENT, CONTINUE, REJECT), g_free,
+                 "envelope_recipient - accept - reject",
+                 test_data(ENVELOPE_RECIPIENT, ACCEPT, REJECT), g_free,
+                 "envelope_recipient - temporary_failure - reject",
+                 test_data(ENVELOPE_RECIPIENT, TEMPORARY_FAILURE, REJECT),
+                 g_free,
+                 "envelope_recipient - temporary_failure - discard",
+                 test_data(ENVELOPE_RECIPIENT, TEMPORARY_FAILURE, DISCARD),
+                 g_free,
+                 "envelope_recipient - temporary_failure - accept",
+                 test_data(ENVELOPE_RECIPIENT, TEMPORARY_FAILURE, ACCEPT),
+                 g_free,
+                 "envelope_recipient - default - temporary_failure",
+                 test_data(ENVELOPE_RECIPIENT, DEFAULT, TEMPORARY_FAILURE),
+                 g_free);
 #undef test_data
 }
 
@@ -673,12 +677,14 @@ data_not_important_status (void)
                  test_data(CONNECT, CONTINUE, ACCEPT), g_free,
                  "envelope_from - reject - discard",
                  test_data(ENVELOPE_FROM, REJECT, DISCARD), g_free,
-                 "envelope_receipt - discard - reject",
-                 test_data(ENVELOPE_RECEIPT, DISCARD, REJECT), g_free,
-                 "envelope_receipt - continue - temporary_failure",
-                 test_data(ENVELOPE_RECEIPT, CONTINUE, TEMPORARY_FAILURE), g_free,
-                 "envelope_receipt - accept - temporary_failure",
-                 test_data(ENVELOPE_RECEIPT, ACCEPT, TEMPORARY_FAILURE), g_free);
+                 "envelope_recipient - discard - reject",
+                 test_data(ENVELOPE_RECIPIENT, DISCARD, REJECT), g_free,
+                 "envelope_recipient - continue - temporary_failure",
+                 test_data(ENVELOPE_RECIPIENT, CONTINUE, TEMPORARY_FAILURE),
+                 g_free,
+                 "envelope_recipient - accept - temporary_failure",
+                 test_data(ENVELOPE_RECIPIENT, ACCEPT, TEMPORARY_FAILURE),
+                 g_free);
 #undef test_data
 }
 

@@ -1,5 +1,7 @@
 2008-10-31  Kouhei Sutou  <kou@cozmixng.org>
 
+	* ./: receipt -> recipient.
+
 	* test/lib/milter-test-client.rb: fix typos.
 
 2008-10-31  Hiroyuki Ikezoe  <poincare@ikezoe.net>

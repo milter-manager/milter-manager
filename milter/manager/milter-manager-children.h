@@ -80,9 +80,9 @@ gboolean               milter_manager_children_helo        (MilterManagerChildre
 gboolean               milter_manager_children_envelope_from
                                                            (MilterManagerChildren *children,
                                                             const gchar           *from);
-gboolean               milter_manager_children_envelope_receipt
+gboolean               milter_manager_children_envelope_recipient
                                                            (MilterManagerChildren *children,
-                                                            const gchar           *receipt);
+                                                            const gchar           *recipient);
 gboolean               milter_manager_children_data        (MilterManagerChildren *children);
 gboolean               milter_manager_children_unknown     (MilterManagerChildren *children,
                                                             const gchar           *command);

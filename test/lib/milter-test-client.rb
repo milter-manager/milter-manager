@@ -63,9 +63,9 @@ class MilterTestClient
         @current_action = action # FIXME: validate
       end
 
-      opts.on("--envelope-receipt=RECEIPT",
-              "Add RECEIPT targets to be applied ACTION") do |receipt|
-        @receipts << [@current_action, receipt]
+      opts.on("--envelope-recipient=RECIPIENT",
+              "Add RECIPIENT targets to be applied ACTION") do |recipient|
+        @recipients << [@current_action, recipient]
       end
     end
     opts.parse!(argv)
@@ -78,7 +78,7 @@ class MilterTestClient
     @timeout = 3
     @debug = false
     @current_action = "reject"
-    @receipts = []
+    @recipients = []
   end
 
   def print_status(status)
@@ -163,20 +163,20 @@ class MilterTestClient
   end
 
   def do_rcpt(to)
-    invalid_state(:rcpt) unless [:mailed, :receipted].include?(@state)
+    invalid_state(:rcpt) unless [:mailed, :recipiented].include?(@state)
     @rcpt_to = to
 
-    @receipts.each do |action, receipt|
-      if receipt == to
-        write(:receipted, "reply_#{action}")
+    @recipients.each do |action, recipient|
+      if recipient == to
+        write(:recipiented, "reply_#{action}")
         return
       end
     end
-    write(:receipted, :reply_continue)
+    write(:recipiented, :reply_continue)
   end
 
   def do_data
-    invalid_state(:data) if @state != :receipted
+    invalid_state(:data) if @state != :recipiented
 
     write(:data, :reply_continue)
   end

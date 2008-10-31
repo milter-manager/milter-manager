@@ -403,7 +403,7 @@ cb_temporary_failure (MilterServerContext *context, gpointer user_data)
 
     compile_reply_status(children, state, MILTER_STATUS_TEMPORARY_FAILURE);
     switch (state) {
-      case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECEIPT:
+      case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT:
         remove_child_from_queue(children, context);
         break;
       default:
@@ -422,7 +422,7 @@ cb_reject (MilterServerContext *context, gpointer user_data)
 
     compile_reply_status(children, state, MILTER_STATUS_REJECT);
     switch (state) {
-      case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECEIPT:
+      case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT:
         remove_child_from_queue(children, context);
         break;
       default:
@@ -496,23 +496,23 @@ cb_change_from (MilterServerContext *context,
 }
 
 static void
-cb_add_receipt (MilterServerContext *context,
-                const gchar *receipt, const gchar *parameters,
-                gpointer user_data)
+cb_add_recipient (MilterServerContext *context,
+                  const gchar *recipient, const gchar *parameters,
+                  gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
 
-    g_signal_emit_by_name(children, "add-receipt", receipt, parameters);
+    g_signal_emit_by_name(children, "add-recipient", recipient, parameters);
 }
 
 static void
-cb_delete_receipt (MilterServerContext *context,
-                   const gchar *receipt,
-                   gpointer user_data)
+cb_delete_recipient (MilterServerContext *context,
+                     const gchar *recipient,
+                     gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
 
-    g_signal_emit_by_name(children, "delete-receipt", receipt);
+    g_signal_emit_by_name(children, "delete-recipient", recipient);
 }
 
 static void
@@ -707,8 +707,8 @@ setup_server_context_signals (MilterManagerChildren *children,
     CONNECT(insert_header);
     CONNECT(change_header);
     CONNECT(change_from);
-    CONNECT(add_receipt);
-    CONNECT(delete_receipt);
+    CONNECT(add_recipient);
+    CONNECT(delete_recipient);
     CONNECT(replace_body);
     CONNECT(progress);
     CONNECT(quarantine);
@@ -748,8 +748,8 @@ teardown_server_context_signals (MilterManagerChild *child,
     DISCONNECT(insert_header);
     DISCONNECT(change_header);
     DISCONNECT(change_from);
-    DISCONNECT(add_receipt);
-    DISCONNECT(delete_receipt);
+    DISCONNECT(add_recipient);
+    DISCONNECT(delete_recipient);
     DISCONNECT(replace_body);
     DISCONNECT(progress);
     DISCONNECT(quarantine);
@@ -1022,8 +1022,8 @@ milter_manager_children_envelope_from (MilterManagerChildren *children,
 }
 
 gboolean
-milter_manager_children_envelope_receipt (MilterManagerChildren *children,
-                                          const gchar           *receipt)
+milter_manager_children_envelope_recipient (MilterManagerChildren *children,
+                                            const gchar           *recipient)
 {
     GList *child;
     MilterManagerChildrenPrivate *priv;
@@ -1039,7 +1039,7 @@ milter_manager_children_envelope_receipt (MilterManagerChildren *children,
             continue;
 
         g_queue_push_tail(priv->reply_queue, context);
-        success |= milter_server_context_envelope_receipt(context, receipt);
+        success |= milter_server_context_envelope_recipient(context, recipient);
     }
 
     return success;
@@ -1246,12 +1246,12 @@ milter_manager_children_is_important_status (MilterManagerChildren *children,
 
     switch (a) {
       case MILTER_STATUS_REJECT:
-        if (state != MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECEIPT)
+        if (state != MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT)
             return FALSE;
         return (b == MILTER_STATUS_DISCARD);
         break;
       case MILTER_STATUS_DISCARD:
-        if (state == MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECEIPT)
+        if (state == MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT)
             return FALSE;
         return (b == MILTER_STATUS_REJECT);
         break;

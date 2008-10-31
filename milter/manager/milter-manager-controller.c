@@ -215,8 +215,8 @@ state_to_response_signal_name (MilterManagerControllerState state)
       case MILTER_MANAGER_CONTROLLER_STATE_ENVELOPE_FROM:
         signal_name = "envelope-from-response";
         break;
-      case MILTER_MANAGER_CONTROLLER_STATE_ENVELOPE_RECEIPT:
-        signal_name = "envelope-receipt-response";
+      case MILTER_MANAGER_CONTROLLER_STATE_ENVELOPE_RECIPIENT:
+        signal_name = "envelope-recipient-response";
         break;
       case MILTER_MANAGER_CONTROLLER_STATE_DATA:
         signal_name = "data-response";
@@ -268,8 +268,8 @@ next_state (MilterManagerControllerState state)
       case MILTER_MANAGER_CONTROLLER_STATE_ENVELOPE_FROM:
         next_state = MILTER_MANAGER_CONTROLLER_STATE_ENVELOPE_FROM_REPLIED;
         break;
-      case MILTER_MANAGER_CONTROLLER_STATE_ENVELOPE_RECEIPT:
-        next_state = MILTER_MANAGER_CONTROLLER_STATE_ENVELOPE_RECEIPT_REPLIED;
+      case MILTER_MANAGER_CONTROLLER_STATE_ENVELOPE_RECIPIENT:
+        next_state = MILTER_MANAGER_CONTROLLER_STATE_ENVELOPE_RECIPIENT_REPLIED;
         break;
       case MILTER_MANAGER_CONTROLLER_STATE_DATA:
         next_state = MILTER_MANAGER_CONTROLLER_STATE_DATA_REPLIED;
@@ -437,27 +437,28 @@ cb_change_from (MilterServerContext *context,
 }
 
 static void
-cb_add_receipt (MilterServerContext *context,
-                const gchar *receipt, const gchar *parameters,
-                gpointer user_data)
+cb_add_recipient (MilterServerContext *context,
+                  const gchar *recipient, const gchar *parameters,
+                  gpointer user_data)
 {
     MilterManagerController *controller = user_data;
     MilterManagerControllerPrivate *priv;
 
     priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
-    milter_client_context_add_receipt(priv->client_context, receipt, parameters);
+    milter_client_context_add_recipient(priv->client_context,
+                                        recipient, parameters);
 }
 
 static void
-cb_delete_receipt (MilterServerContext *context,
-                   const gchar *receipt,
-                   gpointer user_data)
+cb_delete_recipient (MilterServerContext *context,
+                     const gchar *recipient,
+                     gpointer user_data)
 {
     MilterManagerController *controller = user_data;
     MilterManagerControllerPrivate *priv;
 
     priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
-    milter_client_context_delete_receipt(priv->client_context, receipt);
+    milter_client_context_delete_recipient(priv->client_context, recipient);
 }
 
 static void
@@ -548,8 +549,8 @@ setup_children_signals (MilterManagerController *controller,
     CONNECT(insert_header);
     CONNECT(change_header);
     CONNECT(change_from);
-    CONNECT(add_receipt);
-    CONNECT(delete_receipt);
+    CONNECT(add_recipient);
+    CONNECT(delete_recipient);
     CONNECT(replace_body);
     CONNECT(progress);
     CONNECT(quarantine);
@@ -583,8 +584,8 @@ teardown_children_signals (MilterManagerController *controller,
     DISCONNECT(insert_header);
     DISCONNECT(change_header);
     DISCONNECT(change_from);
-    DISCONNECT(add_receipt);
-    DISCONNECT(delete_receipt);
+    DISCONNECT(add_recipient);
+    DISCONNECT(delete_recipient);
     DISCONNECT(replace_body);
     DISCONNECT(progress);
     DISCONNECT(quarantine);
@@ -665,18 +666,18 @@ milter_manager_controller_envelope_from (MilterManagerController *controller,
 }
 
 MilterStatus
-milter_manager_controller_envelope_receipt (MilterManagerController *controller,
-                                            const gchar *receipt)
+milter_manager_controller_envelope_recipient (MilterManagerController *controller,
+                                              const gchar *recipient)
 {
     MilterManagerControllerPrivate *priv;
 
     priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
-    priv->state = MILTER_MANAGER_CONTROLLER_STATE_ENVELOPE_RECEIPT;
+    priv->state = MILTER_MANAGER_CONTROLLER_STATE_ENVELOPE_RECIPIENT;
 
     if (!priv->children)
         return MILTER_STATUS_NOT_CHANGE;
 
-    return milter_manager_children_envelope_receipt(priv->children, receipt);
+    return milter_manager_children_envelope_recipient(priv->children, recipient);
 }
 
 MilterStatus
