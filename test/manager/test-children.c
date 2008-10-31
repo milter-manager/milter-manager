@@ -631,10 +631,24 @@ data_important_status (void)
 
     cut_add_data("connect - default - accept",
                  test_data(CONNECT, DEFAULT, ACCEPT), g_free,
+                 "envelope_from - temporary_failure - continue",
+                 test_data(ENVELOPE_FROM, TEMPORARY_FAILURE, CONTINUE), g_free,
                  "envelope_from - discard - reject",
                  test_data(ENVELOPE_FROM, DISCARD, REJECT), g_free,
                  "envelope_receipt - reject - discard",
-                 test_data(ENVELOPE_RECEIPT, REJECT, DISCARD), g_free);
+                 test_data(ENVELOPE_RECEIPT, REJECT, DISCARD), g_free,
+                 "envelope_receipt - continue - reject",
+                 test_data(ENVELOPE_RECEIPT, CONTINUE, REJECT), g_free,
+                 "envelope_receipt - accept - reject",
+                 test_data(ENVELOPE_RECEIPT, ACCEPT, REJECT), g_free,
+                 "envelope_receipt - temporary_failure - reject",
+                 test_data(ENVELOPE_RECEIPT, TEMPORARY_FAILURE, REJECT), g_free,
+                 "envelope_receipt - temporary_failure - discard",
+                 test_data(ENVELOPE_RECEIPT, TEMPORARY_FAILURE, DISCARD), g_free,
+                 "envelope_receipt - temporary_failure - accept",
+                 test_data(ENVELOPE_RECEIPT, TEMPORARY_FAILURE, ACCEPT), g_free,
+                 "envelope_receipt - default - temporary_failure",
+                 test_data(ENVELOPE_RECEIPT, DEFAULT, TEMPORARY_FAILURE), g_free);
 #undef test_data
 }
 
@@ -657,8 +671,14 @@ data_not_important_status (void)
 
     cut_add_data("connect - continue - accept",
                  test_data(CONNECT, CONTINUE, ACCEPT), g_free,
+                 "envelope_from - reject - discard",
+                 test_data(ENVELOPE_FROM, REJECT, DISCARD), g_free,
                  "envelope_receipt - discard - reject",
-                 test_data(ENVELOPE_RECEIPT, DISCARD, REJECT), g_free);
+                 test_data(ENVELOPE_RECEIPT, DISCARD, REJECT), g_free,
+                 "envelope_receipt - continue - temporary_failure",
+                 test_data(ENVELOPE_RECEIPT, CONTINUE, TEMPORARY_FAILURE), g_free,
+                 "envelope_receipt - accept - temporary_failure",
+                 test_data(ENVELOPE_RECEIPT, ACCEPT, TEMPORARY_FAILURE), g_free);
 #undef test_data
 }
 
