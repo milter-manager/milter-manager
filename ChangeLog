@@ -1,5 +1,8 @@
 2008-11-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* data/milter-manager.conf, binding/ruby/lib/milter/manager.rb:
+	support milter filter.
+
 	* binding/ruby/lib/milter/manager.rb, data/milter-manager.conf:
 	improve configuration file format.
 
