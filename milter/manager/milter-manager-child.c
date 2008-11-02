@@ -42,6 +42,7 @@ struct _MilterManagerChildPrivate
     gchar *working_directory;
     gchar *command;
     gchar *command_options;
+    gboolean search_path;
     GSpawnChildSetupFunc child_setup;
     GPid pid;
     guint child_watch_id;
@@ -55,6 +56,7 @@ enum
     PROP_COMMAND,
     PROP_COMMAND_OPTIONS,
     PROP_WORKING_DIRECTORY,
+    PROP_SEARCH_PATH
 };
 
 MILTER_DEFINE_ERROR_EMITTABLE_TYPE(MilterManagerChild,
@@ -118,6 +120,14 @@ milter_manager_child_class_init (MilterManagerChildClass *klass)
                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_WORKING_DIRECTORY, spec);
 
+    spec = g_param_spec_boolean("search-path",
+                                "Whether search in PATH",
+                                "Whether the command of process is "
+                                "searched in PATH or not",
+                                TRUE,
+                                G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_SEARCH_PATH, spec);
+
     g_type_class_add_private(gobject_class,
                              sizeof(MilterManagerChildPrivate));
 }
@@ -133,6 +143,7 @@ milter_manager_child_init (MilterManagerChild *milter)
     priv->working_directory = NULL;
     priv->command = NULL;
     priv->command_options = NULL;
+    priv->search_path = TRUE;
     priv->child_setup = NULL;
     priv->pid = -1;
     priv->child_watch_id = 0;
@@ -218,6 +229,9 @@ set_property (GObject      *object,
             g_free(priv->working_directory);
         priv->working_directory = g_value_dup_string(value);
         break;
+      case PROP_SEARCH_PATH:
+        priv->search_path = g_value_get_boolean(value);
+        break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -248,6 +262,9 @@ get_property (GObject    *object,
         break;
       case PROP_WORKING_DIRECTORY:
         g_value_set_string(value, priv->working_directory);
+        break;
+      case PROP_SEARCH_PATH:
+        g_value_set_boolean(value, priv->search_path);
         break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -333,31 +350,27 @@ set_user (const gchar *user_name, GError **error)
 
     password = getpwnam(user_name);
     if (!password) {
-        milter_utils_set_error_with_sub_error(error,
-                                              MILTER_MANAGER_CHILD_ERROR,
-                                              MILTER_MANAGER_CHILD_ERROR_INVALID_USER_NAME,
-                                              NULL,
-                                              "No passwd entry for %s. :%s",
-                                              user_name,
-                                              strerror(errno));
+        g_set_error(error,
+                    MILTER_MANAGER_CHILD_ERROR,
+                    MILTER_MANAGER_CHILD_ERROR_INVALID_USER_NAME,
+                    "No passwd entry for %s: %s",
+                    user_name, strerror(errno));
         return FALSE;
     }
 
     if (setregid(-1, password->pw_gid) == -1) {
-        milter_utils_set_error_with_sub_error(error,
-                                              MILTER_MANAGER_CHILD_ERROR,
-                                              MILTER_MANAGER_CHILD_ERROR_NO_PRIVILEGE_MODE,
-                                              NULL,
-                                              "MilterManager does not run on privilege mode.");
+        g_set_error(error,
+                    MILTER_MANAGER_CHILD_ERROR,
+                    MILTER_MANAGER_CHILD_ERROR_NO_PRIVILEGE_MODE,
+                    "MilterManager does not run on privilege mode.");
         return FALSE;
     }
 
     if (setreuid(-1, password->pw_uid) == -1) {
-        milter_utils_set_error_with_sub_error(error,
-                                              MILTER_MANAGER_CHILD_ERROR,
-                                              MILTER_MANAGER_CHILD_ERROR_NO_PRIVILEGE_MODE,
-                                              NULL,
-                                              "MilterManager does not run on privilege mode.");
+        g_set_error(error,
+                    MILTER_MANAGER_CHILD_ERROR,
+                    MILTER_MANAGER_CHILD_ERROR_NO_PRIVILEGE_MODE,
+                    "MilterManager does not run on privilege mode.");
         return FALSE;
     }
 
@@ -373,15 +386,15 @@ milter_manager_child_start (MilterManagerChild *milter, GError **error)
     gboolean success;
     MilterManagerChildPrivate *priv;
     GError *internal_error = NULL;
+    GSpawnFlags flags;
 
     priv = MILTER_MANAGER_CHILD_GET_PRIVATE(milter);
 
     if (!priv->command) {
-        milter_utils_set_error_with_sub_error(error,
-                                              MILTER_MANAGER_CHILD_ERROR,
-                                              MILTER_MANAGER_CHILD_ERROR_BAD_COMMAND_STRING,
-                                              NULL,
-                                              "No command set yet.");
+        g_set_error(error,
+                    MILTER_MANAGER_CHILD_ERROR,
+                    MILTER_MANAGER_CHILD_ERROR_BAD_COMMAND_STRING,
+                    "No command set yet.");
         return FALSE;
     }
 
@@ -397,23 +410,27 @@ milter_manager_child_start (MilterManagerChild *milter, GError **error)
     g_free(command_line);
 
     if (!success) {
-        milter_utils_set_error_with_sub_error(error,
-                                              MILTER_MANAGER_CHILD_ERROR,
-                                              MILTER_MANAGER_CHILD_ERROR_BAD_COMMAND_STRING,
-                                              internal_error,
-                                              "Command string has invalid character(s).");
+        milter_utils_set_error_with_sub_error(
+            error,
+            MILTER_MANAGER_CHILD_ERROR,
+            MILTER_MANAGER_CHILD_ERROR_BAD_COMMAND_STRING,
+            internal_error,
+            "Command string has invalid character(s).");
         return FALSE;
     }
 
     if (priv->user_name && !set_user(priv->user_name, error))
         return FALSE;
 
+    flags = G_SPAWN_DO_NOT_REAP_CHILD |
+        G_SPAWN_STDOUT_TO_DEV_NULL |
+        G_SPAWN_STDERR_TO_DEV_NULL;
+    if (priv->search_path)
+        flags |= G_SPAWN_SEARCH_PATH;
     success = g_spawn_async(priv->working_directory,
                             argv,
                             NULL,
-                            G_SPAWN_DO_NOT_REAP_CHILD |
-                            G_SPAWN_STDOUT_TO_DEV_NULL |
-                            G_SPAWN_STDERR_TO_DEV_NULL,
+                            flags,
                             priv->child_setup,
                             milter,
                             &priv->pid,
@@ -421,11 +438,12 @@ milter_manager_child_start (MilterManagerChild *milter, GError **error)
     g_strfreev(argv);
 
     if (!success) {
-        milter_utils_set_error_with_sub_error(error,
-                                              MILTER_MANAGER_CHILD_ERROR,
-                                              MILTER_MANAGER_CHILD_ERROR_START_FAILURE,
-                                              internal_error,
-                                              "Couldn't start new milter process.");
+        milter_utils_set_error_with_sub_error(
+            error,
+            MILTER_MANAGER_CHILD_ERROR,
+            MILTER_MANAGER_CHILD_ERROR_START_FAILURE,
+            internal_error,
+            "Couldn't start new milter process.");
         return FALSE;
     }
 
