@@ -1,5 +1,7 @@
 2008-11-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-child.c: use WEXITSTATUS().
+
 	* milter/manager/milter-manager-child.c: support G_SPAWN_SEARCH_PATH.
 
 	* test/: use configuration file in test/fixtures/configuration/.

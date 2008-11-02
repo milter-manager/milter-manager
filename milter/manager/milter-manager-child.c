@@ -331,7 +331,7 @@ child_watch_func (GPid pid, gint status, gpointer user_data)
         g_set_error(&error,
                     MILTER_MANAGER_CHILD_ERROR,
                     MILTER_MANAGER_CHILD_ERROR_MILTER_EXIT,
-                    "%s exits with status: %d", priv->name, status);
+                    "%s exits with status: %d", priv->name, WEXITSTATUS(status));
         milter_error("%s", error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(user_data),
                                     error);
