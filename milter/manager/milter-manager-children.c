@@ -938,8 +938,9 @@ milter_manager_children_negotiate (MilterManagerChildren *children,
     init_reply_queue(children);
     for (child = priv->milters; child; child = g_list_next(child)) {
         MilterStatus status;
-        status = child_negotiate(MILTER_MANAGER_CHILD(child->data), option, children);
 
+        status = child_negotiate(MILTER_MANAGER_CHILD(child->data),
+                                 option, children);
         if (status != MILTER_STATUS_PROGRESS &&
             status != MILTER_STATUS_CONTINUE) {
             success = FALSE;
