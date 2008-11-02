@@ -305,6 +305,8 @@ AC_CONFIG_FILES([Makefile
 		 data/Makefile
 		 test/Makefile
 		 test/lib/Makefile
+		 test/fixtures/Makefile
+		 test/fixtures/data/Makefile
 		 test/manager/Makefile
 		 po/Makefile.in])
 

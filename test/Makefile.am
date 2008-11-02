@@ -1,5 +1,6 @@
-SUBDIRS =	\
-	lib	\
+SUBDIRS =		\
+	lib		\
+	fixtures	\
 	manager
 
 if WITH_CUTTER
