@@ -875,15 +875,14 @@ child_negotiate (MilterManagerChild *child, MilterOption *option,
 
     if (!milter_server_context_establish_connection(context, &error)) {
         MilterStatus status;
-        status = MILTER_STATUS_CONTINUE;
-        gboolean priviledge;
+        gboolean privilege;
 
         status =
             milter_manager_configuration_get_return_status_if_filter_unavailable(priv->configuration);
 
-        priviledge =
+        privilege =
             milter_manager_configuration_is_privilege_mode(priv->configuration);
-        if (!priviledge ||
+        if (!privilege ||
             error->code != MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE) {
             milter_error("Error: %s", error->message);
             milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
