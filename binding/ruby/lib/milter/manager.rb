@@ -1,4 +1,5 @@
 require 'pathname'
+require 'shellwords'
 
 require 'glib2'
 require 'milter'
@@ -28,22 +29,54 @@ module Milter::Manager
       end
     end
 
+    attr_reader :security
     def initialize(configuration)
       @configuration = configuration
-      @eggs = []
+      @security = SecurityConfiguration.new(configuration)
     end
 
     def load_configuration(file)
       instance_eval(File.read(file), file)
-      @eggs.each do |egg|
-        @configuration.add_egg(egg)
-      end
     end
 
     def define_milter(name, &block)
-      egg = Egg.new(name)
-      @eggs << egg
-      yield(egg)
+      configuration = EggConfiguration.new(@configuration, name)
+      yield(configuration)
+    end
+
+    class SecurityConfiguration
+      def initialize(configuration)
+        @configuration = configuration
+      end
+
+      def privilege_mode?
+        @configuration.privilege_mode?
+      end
+
+      def privilege_mode=(mode)
+        @configuration.privilege_mode = mode
+      end
+    end
+
+    class EggConfiguration
+      def initialize(configuration, name)
+        @configuration = configuration
+        @egg = Egg.new(name)
+        @configuration.add_egg(@egg)
+      end
+
+      def command_options=(options)
+        if options.is_a?(Array)
+          options = options.collect do |option|
+            Shellwords.escape(option)
+          end.join(' ')
+        end
+        @egg.command_options = options
+      end
+
+      def method_missing(name, *args, &block)
+        @egg.send(name, *args, &block)
+      end
     end
   end
 end
