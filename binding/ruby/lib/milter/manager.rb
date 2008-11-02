@@ -36,7 +36,13 @@ module Milter::Manager
     end
 
     def load_configuration(file)
-      instance_eval(File.read(file), file)
+      begin
+        instance_eval(File.read(file), file)
+      rescue Exception => error
+        location = error.backtrace[0].split(/(:\d+):?/, 2)[0, 2].join
+        puts "#{location}: #{error.message}(#{error.class})"
+        # FIXME: log full error
+      end
     end
 
     def define_milter(name, &block)
