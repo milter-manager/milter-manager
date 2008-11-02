@@ -801,7 +801,7 @@ retry_negotiate (gpointer user_data)
 
     child_negotiate_without_retry(data->child, data->option, data->children);
 
-    g_hash_table_remove(priv->retry_negotiate_ids, data->child);
+    g_hash_table_remove(priv->retry_negotiate_ids, data);
 
     return FALSE;
 }
@@ -853,7 +853,7 @@ prepare_retry_negotiate (MilterManagerChild *child,
     timeout_id = g_timeout_add_seconds(NEGOTIATE_RETRY_TIMEOUT,
                                        retry_negotiate, negotiate_data);
     g_hash_table_insert(priv->retry_negotiate_ids,
-                        child, GUINT_TO_POINTER(timeout_id));
+                        negotiate_data, GUINT_TO_POINTER(timeout_id));
 }
 
 static MilterStatus

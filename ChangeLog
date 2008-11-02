@@ -1,5 +1,7 @@
 2008-11-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.c: fix passed data.
+
 	* milter/manager/milter-manager-children.c: fix object lifetime.
 
 	* milter/manager/milter-manager-child.c: use WEXITSTATUS().
