@@ -273,7 +273,7 @@ milter_manager_main (void)
     milter_manager_configuration_load(configuration, "milter-manager.conf");
 
     client = milter_client_new();
-    milter_client_set_connection_spec(client, "inet:9999", NULL);
+    milter_client_set_connection_spec(client, "inet:10025", NULL);
     g_signal_connect(client, "connection-established",
                      G_CALLBACK(cb_connection_established), configuration);
 
