@@ -332,14 +332,9 @@ reply (MilterManagerController *controller, MilterStatus status)
     MilterManagerControllerPrivate *priv;
 
     priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
-    if (priv->state == MILTER_MANAGER_CONTROLLER_STATE_NEGOTIATE) {
-        g_signal_emit_by_name(priv->client_context, "negotiate-response",
-                              NULL, status);
-    } else {
-        g_signal_emit_by_name(priv->client_context,
-                              state_to_response_signal_name(priv->state),
-                              status);
-    }
+    g_signal_emit_by_name(priv->client_context,
+                          state_to_response_signal_name(priv->state),
+                          status);
     priv->state = next_state(priv->state);
 }
 
@@ -623,7 +618,10 @@ milter_manager_controller_negotiate (MilterManagerController *controller,
 
     setup_children_signals(controller, priv->children);
 
-    return milter_manager_children_negotiate(priv->children, option);
+    if (milter_manager_children_negotiate(priv->children, option))
+        return MILTER_STATUS_PROGRESS;
+    else
+        return MILTER_STATUS_NOT_CHANGE; /* FIXME: reject or accept */
 }
 
 MilterStatus
@@ -640,8 +638,11 @@ milter_manager_controller_connect (MilterManagerController *controller,
     if (!priv->children)
         return MILTER_STATUS_NOT_CHANGE;
 
-    return milter_manager_children_connect(priv->children, host_name,
-                                           address, address_length);
+    if (milter_manager_children_connect(priv->children, host_name,
+                                        address, address_length))
+        return MILTER_STATUS_PROGRESS;
+    else
+        return MILTER_STATUS_NOT_CHANGE; /* FIXME: reject or accept */
 }
 
 MilterStatus
@@ -655,7 +656,10 @@ milter_manager_controller_helo (MilterManagerController *controller, const gchar
     if (!priv->children)
         return MILTER_STATUS_NOT_CHANGE;
 
-    return milter_manager_children_helo(priv->children, fqdn);
+    if (milter_manager_children_helo(priv->children, fqdn))
+        return MILTER_STATUS_PROGRESS;
+    else
+        return MILTER_STATUS_NOT_CHANGE; /* FIXME: reject or accept */
 }
 
 MilterStatus
@@ -670,7 +674,10 @@ milter_manager_controller_envelope_from (MilterManagerController *controller,
     if (!priv->children)
         return MILTER_STATUS_NOT_CHANGE;
 
-    return milter_manager_children_envelope_from(priv->children, from);
+    if (milter_manager_children_envelope_from(priv->children, from))
+        return MILTER_STATUS_PROGRESS;
+    else
+        return MILTER_STATUS_NOT_CHANGE; /* FIXME: reject or accept */
 }
 
 MilterStatus
@@ -685,7 +692,10 @@ milter_manager_controller_envelope_recipient (MilterManagerController *controlle
     if (!priv->children)
         return MILTER_STATUS_NOT_CHANGE;
 
-    return milter_manager_children_envelope_recipient(priv->children, recipient);
+    if (milter_manager_children_envelope_recipient(priv->children, recipient))
+        return MILTER_STATUS_PROGRESS;
+    else
+        return MILTER_STATUS_NOT_CHANGE; /* FIXME: reject or accept */
 }
 
 MilterStatus
@@ -699,7 +709,10 @@ milter_manager_controller_data (MilterManagerController *controller)
     if (!priv->children)
         return MILTER_STATUS_NOT_CHANGE;
 
-    return milter_manager_children_data(priv->children);
+    if (milter_manager_children_data(priv->children))
+        return MILTER_STATUS_PROGRESS;
+    else
+        return MILTER_STATUS_NOT_CHANGE; /* FIXME: reject or accept */
 }
 
 MilterStatus
@@ -714,7 +727,10 @@ milter_manager_controller_unknown (MilterManagerController *controller,
     if (!priv->children)
         return MILTER_STATUS_NOT_CHANGE;
 
-    return milter_manager_children_unknown(priv->children, command);
+    if (milter_manager_children_unknown(priv->children, command))
+        return MILTER_STATUS_PROGRESS;
+    else
+        return MILTER_STATUS_NOT_CHANGE; /* FIXME: reject or accept */
 }
 
 MilterStatus
@@ -729,7 +745,10 @@ milter_manager_controller_header (MilterManagerController *controller,
     if (!priv->children)
         return MILTER_STATUS_NOT_CHANGE;
 
-    return milter_manager_children_header(priv->children, name, value);
+    if (milter_manager_children_header(priv->children, name, value))
+        return MILTER_STATUS_PROGRESS;
+    else
+        return MILTER_STATUS_NOT_CHANGE; /* FIXME: reject or accept */
 }
 
 MilterStatus
@@ -743,7 +762,10 @@ milter_manager_controller_end_of_header (MilterManagerController *controller)
     if (!priv->children)
         return MILTER_STATUS_NOT_CHANGE;
 
-    return milter_manager_children_end_of_header(priv->children);
+    if (milter_manager_children_end_of_header(priv->children))
+        return MILTER_STATUS_PROGRESS;
+    else
+        return MILTER_STATUS_NOT_CHANGE; /* FIXME: reject or accept */
 }
 
 MilterStatus
@@ -758,7 +780,10 @@ milter_manager_controller_body (MilterManagerController *controller,
     if (!priv->children)
         return MILTER_STATUS_NOT_CHANGE;
 
-    return milter_manager_children_body(priv->children, chunk, size);
+    if (milter_manager_children_body(priv->children, chunk, size))
+        return MILTER_STATUS_PROGRESS;
+    else
+        return MILTER_STATUS_NOT_CHANGE; /* FIXME: reject or accept */
 }
 
 MilterStatus
@@ -774,7 +799,10 @@ milter_manager_controller_end_of_message (MilterManagerController *controller,
     if (!priv->children)
         return MILTER_STATUS_NOT_CHANGE;
 
-    return milter_manager_children_end_of_message(priv->children, chunk, size);
+    if (milter_manager_children_end_of_message(priv->children, chunk, size))
+        return MILTER_STATUS_PROGRESS;
+    else
+        return MILTER_STATUS_NOT_CHANGE; /* FIXME: reject or accept */
 }
 
 MilterStatus
@@ -788,7 +816,10 @@ milter_manager_controller_quit (MilterManagerController *controller)
     if (!priv->children)
         return MILTER_STATUS_NOT_CHANGE;
 
-    return milter_manager_children_quit(priv->children);
+    if (milter_manager_children_quit(priv->children))
+        return MILTER_STATUS_PROGRESS;
+    else
+        return MILTER_STATUS_NOT_CHANGE; /* FIXME: reject or accept */
 }
 
 MilterStatus
@@ -802,7 +833,10 @@ milter_manager_controller_abort (MilterManagerController *controller)
     if (!priv->children)
         return MILTER_STATUS_NOT_CHANGE;
 
-    return milter_manager_children_abort(priv->children);
+    if (milter_manager_children_abort(priv->children))
+        return MILTER_STATUS_PROGRESS;
+    else
+        return MILTER_STATUS_NOT_CHANGE; /* FIXME: reject or accept */
 }
 
 void

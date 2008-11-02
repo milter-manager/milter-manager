@@ -1,5 +1,8 @@
 2008-11-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-controller.c: fix children write
+	result handling.
+
 	* milter/manager/milter-manager.c (milter_manager_main): change
 	default port number: 9999 -> 10025.
 
