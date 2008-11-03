@@ -637,20 +637,20 @@ test_end_of_header (void)
                           collect_n_received(end_of_header));
 }
 
-typedef void (*setup_body_test_func) (const gchar *chunk);
-typedef void (*assert_body_test_func) (const gchar *chunk);
+typedef void (*setup_body_test_func) (const gchar **chunks);
+typedef void (*assert_body_test_func) (const gchar **chunks);
 
 typedef struct _BodyTestData
 {
     setup_body_test_func setup_func;
     assert_body_test_func assert_func;
-    gchar *chunk;
+    gchar **chunks;
 } BodyTestData;
 
 static BodyTestData *
 body_test_data_new (setup_body_test_func setup_func,
                     assert_body_test_func assert_func,
-                    const gchar *chunk)
+                    const gchar **chunks)
 {
     BodyTestData *data;
 
@@ -658,7 +658,7 @@ body_test_data_new (setup_body_test_func setup_func,
 
     data->setup_func = setup_func;
     data->assert_func = assert_func;
-    data->chunk = g_strdup(chunk);
+    data->chunks = g_strdupv((gchar **)chunks);
 
     return data;
 }
@@ -666,18 +666,36 @@ body_test_data_new (setup_body_test_func setup_func,
 static void
 free_body_test_data (BodyTestData *data)
 {
-    if (data->chunk)
-        g_free(data->chunk);
+    if (data->chunks)
+        g_strfreev(data->chunks);
     g_free(data);
 }
 
 static void
-setup_skip_body_test (const gchar *skip_chunk)
+setup_skip_body_test (const gchar **chunks)
 {
     arguments_append(arguments1,
                      "--action", "skip",
-                     "--body", skip_chunk,
+                     "--body", chunks[0],
                      NULL);
+}
+
+static void
+setup_accept_body_test (const gchar **chunks)
+{
+    if (chunks[0]) {
+        arguments_append(arguments1,
+                         "--action", "accept",
+                         "--body", chunks[0],
+                         NULL);
+    }
+
+    if (chunks[1]) {
+        arguments_append(arguments2,
+                         "--action", "accept",
+                         "--body", chunks[1],
+                         NULL);
+    }
 }
 
 #define milter_manager_assert_body_test(data) \
@@ -688,15 +706,15 @@ static void
 assert_body_test (BodyTestData *data)
 {
     if (data->assert_func)
-        cut_trace(data->assert_func(data->chunk));
+        cut_trace(data->assert_func((const gchar**)data->chunks));
 }
 
 static void
-assert_skip_body_test (const gchar *skip_chunk)
+assert_skip_body_test (const gchar **chunks)
 {
     const gchar chunk[] = "See you.";
 
-    milter_manager_controller_body(controller, skip_chunk, strlen(skip_chunk));
+    milter_manager_controller_body(controller, chunks[0], strlen(chunks[0]));
     wait_response("body");
     cut_assert_equal_uint(g_list_length(test_clients) * 2,
                           collect_n_received(body));
@@ -714,15 +732,41 @@ assert_skip_body_test (const gchar *skip_chunk)
                           collect_n_received(data));
 }
 
+static void
+assert_accept_body_test (const gchar **chunks)
+{
+    milter_manager_controller_body(controller, chunks[0], strlen(chunks[0]));
+    wait_response("body");
+    cut_assert_equal_uint(g_list_length(test_clients) * 2,
+                          collect_n_received(body));
+
+    milter_manager_controller_body(controller, chunks[1], strlen(chunks[1]));
+    wait_response("body");
+    /* The first child must not be received further body command */
+    cut_assert_equal_uint(g_list_length(test_clients) * 3 - 1,
+                          collect_n_received(body));
+    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
+                           MILTER_STATUS_ACCEPT, response_status);
+}
+
 void
 data_body (void)
 {
+    const gchar *skip_chunks[] = {"Skip", NULL};
+    const gchar *accept_chunks[] = {"First line", "Second line", NULL};
+
     cut_add_data("normal",
-                 body_test_data_new(NULL, NULL, NULL), free_body_test_data,
+                 body_test_data_new(NULL, NULL, NULL),
+                 free_body_test_data,
                  "skip",
                  body_test_data_new(setup_skip_body_test,
                                     assert_skip_body_test,
-                                    "Skip!"),
+                                    (const gchar **)&skip_chunks),
+                 free_body_test_data,
+                 "accept",
+                 body_test_data_new(setup_accept_body_test,
+                                    assert_accept_body_test,
+                                    (const gchar **)&accept_chunks),
                  free_body_test_data);
 }
 
@@ -734,7 +778,7 @@ test_body (gconstpointer data)
     BodyTestData *test_data = (BodyTestData*)data;
 
     if (test_data && test_data->setup_func)
-        test_data->setup_func(test_data->chunk);
+        test_data->setup_func((const gchar **)test_data->chunks);
 
     cut_trace(test_end_of_header());
 
