@@ -1,3 +1,7 @@
+2008-11-03  Kouhei Sutou  <kou@cozmixng.org>
+
+	* binding/ruby/lib/milter/manager.rb: fix inverted bug.
+
 2008-11-02  Kouhei Sutou  <kou@cozmixng.org>
 
 	* data/milter-manager.conf: comment out optional configuration.
