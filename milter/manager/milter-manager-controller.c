@@ -354,11 +354,19 @@ cb_reply_code (MilterServerContext *context,
 {
     MilterManagerController *controller = user_data;
     MilterManagerControllerPrivate *priv;
+    GError *error = NULL;
 
     priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
     milter_client_context_set_reply(priv->client_context,
                                     code, extended_code, message,
-                                    NULL); /* FIXME! */
+                                    &error);
+    
+    if (error) {
+        milter_error("%s", error->message);
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(controller),
+                                    error);
+        g_error_free(error);
+    }
 }
 
 static void
