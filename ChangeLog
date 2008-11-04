@@ -5,6 +5,7 @@
 	* test/manager/test-controller.c: Added a test for accepting in body.
 	* test/lib/milter-manager-test-sever.[ch]: Added a new object for MTA
 	substitute. The test fails yet.
+	* test/manager/test-controller.c: Work around for GCutStringIOChannel.
 
 2008-11-03  Kouhei Sutou  <kou@cozmixng.org>
 
