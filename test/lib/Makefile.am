@@ -9,7 +9,10 @@ EXTRA_DISTS =			\
 INCLUDES =			\
 	-I$(top_srcdir)
 
-AM_CFLAGS = $(GCUTTER_CFLAGS)
+AM_CFLAGS = 			\
+	$(GCUTTER_CFLAGS)	\
+	$(MILTER_MANAGER_CFLAGS)
+
 AM_LDFLAGS =			\
 	-module			\
 	-rpath "`pwd`/.libs"	\
@@ -23,4 +26,6 @@ libmilter_manager_test_la_SOURCES =	\
 	milter-manager-test-utils.c	\
 	milter-manager-test-utils.h	\
 	milter-manager-test-client.c	\
-	milter-manager-test-client.h
+	milter-manager-test-client.h	\
+	milter-manager-test-server.c	\
+	milter-manager-test-server.h

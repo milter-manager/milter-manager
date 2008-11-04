@@ -25,6 +25,7 @@
 #include <milter-manager-test-utils.h>
 #include <milter-manager-test-client.h>
 #include <milter/manager/milter-manager-controller.h>
+#include <milter-manager-test-server.h>
 #undef shutdown
 
 void test_negotiate (void);
@@ -55,7 +56,12 @@ void test_unknown (void);
 static MilterManagerConfiguration *config;
 static MilterClientContext *client_context;
 static MilterManagerController *controller;
+static MilterManagerTestServer *server;
 static MilterOption *option;
+
+static GIOChannel *channel;
+static MilterWriter *writer;
+static MilterReader *reader;
 
 static GArray *arguments1;
 static GArray *arguments2;
@@ -109,7 +115,16 @@ setup (void)
     add_load_path(g_getenv("MILTER_MANAGER_CONFIG_DIR"));
     milter_manager_configuration_load(config, "milter-manager.conf");
 
+    channel = gcut_io_channel_string_new(NULL);
+    g_io_channel_set_encoding(channel, NULL, NULL);
+    writer = milter_writer_io_channel_new(channel);
+    reader = milter_reader_io_channel_new(channel);
+
     client_context = milter_client_context_new();
+    milter_handler_set_writer(MILTER_HANDLER(client_context), writer);
+
+    server = milter_manager_test_server_new();
+    milter_handler_set_reader(MILTER_HANDLER(server), reader);
 
     controller = milter_manager_controller_new(config, client_context);
     controller_error = NULL;
@@ -167,6 +182,15 @@ teardown (void)
         g_object_unref(controller);
     if (option)
         g_object_unref(option);
+
+    if (server)
+        g_object_unref(server);
+    if (channel)
+        g_io_channel_unref(channel);
+    if (writer)
+        g_object_unref(writer);
+    if (reader)
+        g_object_unref(reader);
 
     if (arguments1)
         arguments_free(arguments1);
@@ -305,7 +329,8 @@ test_negotiate (void)
 {
     option = milter_option_new(2,
                                MILTER_ACTION_ADD_HEADERS |
-                               MILTER_ACTION_CHANGE_BODY,
+                               MILTER_ACTION_CHANGE_BODY |
+                               MILTER_ACTION_QUARANTINE,
                                MILTER_STEP_NONE);
 
     start_client(10026, arguments1);
@@ -829,10 +854,11 @@ void
 test_end_of_message_quarantine (void)
 {
     const gchar chunk[] = "virus!";
+    const gchar reason[] = "MAYBE VIRUS";
 
     arguments_append(arguments1,
                      "--action", "quarantine",
-                     "--quarantine-reason", "MAYBE VIRUS",
+                     "--quarantine-reason", reason,
                      "--end-of-message", chunk,
                      NULL);
 
@@ -845,6 +871,11 @@ test_end_of_message_quarantine (void)
     cut_assert_equal_uint(g_list_length(test_clients),
                           collect_n_received(end_of_message));
 
+    g_io_channel_seek_position(channel, 0, G_SEEK_SET, NULL);
+    milter_manager_test_server_wait_signal(server);
+
+    cut_assert_equal_string(reason,
+                            milter_manager_test_server_get_quarantine_reason(server));
 }
 
 void
