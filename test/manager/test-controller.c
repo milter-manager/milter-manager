@@ -862,9 +862,7 @@ test_end_of_message_quarantine (void)
     const gchar reason[] = "MAYBE VIRUS";
 
     arguments_append(arguments1,
-                     "--action", "quarantine",
-                     "--quarantine-reason", reason,
-                     "--end-of-message", chunk,
+                     "--quarantine", reason,
                      NULL);
 
     cut_trace(test_body(NULL));
@@ -878,8 +876,9 @@ test_end_of_message_quarantine (void)
 
     cut_trace(milter_manager_test_server_wait_signal(server));
 
-    cut_assert_equal_string(reason,
-                            milter_manager_test_server_get_quarantine_reason(server));
+    cut_assert_equal_string(
+        reason,
+        milter_manager_test_server_get_quarantine_reason(server));
 }
 
 void

@@ -63,9 +63,15 @@ class MilterTestClient
         @current_action = action # FIXME: validate
       end
 
-      opts.on("--quarantine-reason=REASON",
-              "Use REASON for quarantine") do |reason|
+      opts.on("--quarantine=REASON",
+              "Send quarantine with REASON on end-of-message") do |reason|
         @quarantine_reason = reason
+      end
+
+      opts.on("--add-header=NAME:VALUE",
+              "Add a new header whose name is NAME and " +
+              "value is VALUE on end-of-message") do |name_and_value|
+        @add_headers << name_and_value.split(/:/, 2)
       end
 
       opts.on("--envelope-recipient=RECIPIENT",
@@ -94,6 +100,7 @@ class MilterTestClient
     @debug = false
     @current_action = "reject"
     @quarantine_reason = nil
+    @add_headers = []
     @recipients = []
     @body_chunks = []
     @end_of_message_chunks = []
@@ -127,7 +134,7 @@ class MilterTestClient
   def write_action(next_state, action)
     args = []
     case action.to_s
-    when "quarantine"
+    when "quarantine" # NO NEED
       args << @quarantine_reason
     end
     write(next_state, action, *args)
@@ -248,10 +255,15 @@ class MilterTestClient
       invalid_state(:end_of_message)
     end
 
+    write(:end_of_message, :quarantine, @quarantine_reason) if @quarantine_reason
+    @add_headers.each do |name, value|
+      write(:end_of_message, :add_header, name, value)
+    end
+
     @end_of_message_chunks.each do |action, end_of_message_chunk|
       if end_of_message_chunk == chunk
         write_action(:end_of_message, action)
-        return if action != "quarantine"
+        return
       end
     end
 
