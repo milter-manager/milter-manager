@@ -32,6 +32,16 @@
 typedef struct _MilterManagerTestServerPrivate	MilterManagerTestServerPrivate;
 struct _MilterManagerTestServerPrivate
 {
+    guint n_add_headers;
+    guint n_change_headers;
+    guint n_insert_headers;
+    guint n_change_froms;
+    guint n_add_recipients;
+    guint n_delete_recipients;
+    guint n_replace_bodies;
+    guint n_progresses;
+    guint n_quarantines;
+
     gchar *quarantine_reason;
 };
 
@@ -55,6 +65,30 @@ static void get_property   (GObject         *object,
                             guint            prop_id,
                             GValue          *value,
                             GParamSpec      *pspec);
+static void add_header     (MilterReplySignals *reply,
+                            const gchar        *name,
+                            const gchar        *value);
+static void insert_header  (MilterReplySignals *reply,
+                            guint32             index,
+                            const gchar        *name,
+                            const gchar        *value);
+static void change_header  (MilterReplySignals *reply,
+                            const gchar        *name,
+                            guint32             index,
+                            const gchar        *value);
+static void change_from    (MilterReplySignals *reply,
+                            const gchar        *from,
+                            const gchar        *parameters);
+static void add_recipient  (MilterReplySignals *reply,
+                            const gchar        *recipient,
+                            const gchar        *parameters);
+static void delete_recipient
+                           (MilterReplySignals *reply,
+                            const gchar        *recipient);
+static void replace_body   (MilterReplySignals *reply,
+                            const gchar        *body,
+                            gsize               body_size);
+static void progress       (MilterReplySignals *reply);
 static void quarantine     (MilterReplySignals *reply,
                             const gchar        *reason);
 
@@ -78,7 +112,15 @@ reply_init (MilterReplySignalsClass *reply)
 {
     reply_parent = g_type_interface_peek_parent(reply);
 
-    reply->quarantine = quarantine;
+    reply->add_header       = add_header;
+    reply->change_header    = change_header;
+    reply->insert_header    = insert_header;
+    reply->change_from      = change_from;
+    reply->add_recipient    = add_recipient;
+    reply->delete_recipient = delete_recipient;
+    reply->replace_body     = replace_body;
+    reply->progress         = progress;
+    reply->quarantine       = quarantine;
 }
 
 static void
@@ -89,6 +131,15 @@ milter_manager_test_server_init (MilterManagerTestServer *milter)
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(milter);
 
     priv->quarantine_reason = NULL;
+    priv->n_add_headers = 0;
+    priv->n_change_headers = 0;
+    priv->n_insert_headers = 0;
+    priv->n_change_froms = 0;
+    priv->n_add_recipients = 0;
+    priv->n_delete_recipients = 0;
+    priv->n_replace_bodies = 0;
+    priv->n_progresses = 0;
+    priv->n_quarantines = 0;
 }
 
 static void
@@ -146,16 +197,158 @@ milter_manager_test_server_new (void)
 }
 
 static void
+add_header (MilterReplySignals *reply,
+            const gchar        *name,
+            const gchar        *value)
+{
+    MilterManagerTestServerPrivate *priv;
+
+    priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
+    priv->n_add_headers++;
+}
+
+static void
+insert_header (MilterReplySignals *reply,
+               guint32             index,
+               const gchar        *name,
+               const gchar        *value)
+{
+    MilterManagerTestServerPrivate *priv;
+
+    priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
+    priv->n_insert_headers++;
+}
+
+static void
+change_header (MilterReplySignals *reply,
+               const gchar        *name,
+               guint32             index,
+               const gchar        *value)
+{
+    MilterManagerTestServerPrivate *priv;
+
+    priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
+    priv->n_change_headers++;
+}
+
+static void
+change_from (MilterReplySignals *reply,
+             const gchar        *from,
+             const gchar        *parameters)
+{
+    MilterManagerTestServerPrivate *priv;
+
+    priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
+    priv->n_change_froms++;
+}
+
+static void
+add_recipient (MilterReplySignals *reply,
+               const gchar        *recipient,
+               const gchar        *parameters)
+{
+    MilterManagerTestServerPrivate *priv;
+
+    priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
+    priv->n_add_recipients++;
+}
+
+static void
+delete_recipient (MilterReplySignals *reply, const gchar *recipient)
+{
+    MilterManagerTestServerPrivate *priv;
+
+    priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
+    priv->n_delete_recipients++;
+}
+
+static void
+replace_body (MilterReplySignals *reply,
+              const gchar        *body,
+              gsize               body_size)
+{
+    MilterManagerTestServerPrivate *priv;
+
+    priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
+    priv->n_replace_bodies++;
+}
+
+static void
+progress (MilterReplySignals *reply)
+{
+    MilterManagerTestServerPrivate *priv;
+
+    priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
+    priv->n_progresses++;
+}
+
+static void
 quarantine (MilterReplySignals *reply, const gchar *reason)
 {
     MilterManagerTestServerPrivate *priv;
 
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
 
+    priv->n_quarantines++;
+
     if (priv->quarantine_reason)
         g_free(priv->quarantine_reason);
 
     priv->quarantine_reason = g_strdup(reason);
+}
+
+guint
+milter_manager_test_server_get_n_add_headers (MilterManagerTestServer *server)
+{
+    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->n_add_headers;
+}
+
+guint
+milter_manager_test_server_get_n_insert_headers (MilterManagerTestServer *server)
+{
+    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->n_insert_headers;
+}
+
+guint
+milter_manager_test_server_get_n_change_headers (MilterManagerTestServer *server)
+{
+    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->n_change_headers;
+}
+
+guint
+milter_manager_test_server_get_n_change_froms (MilterManagerTestServer *server)
+{
+    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->n_change_froms;
+}
+
+guint
+milter_manager_test_server_get_n_add_recipients (MilterManagerTestServer *server)
+{
+    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->n_add_recipients;
+}
+
+guint
+milter_manager_test_server_get_n_delete_recipients (MilterManagerTestServer *server)
+{
+    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->n_delete_recipients;
+}
+
+guint
+milter_manager_test_server_get_n_replace_bodies (MilterManagerTestServer *server)
+{
+    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->n_replace_bodies;
+}
+
+guint
+milter_manager_test_server_get_n_progresses (MilterManagerTestServer *server)
+{
+    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->n_progresses;
+}
+
+guint
+milter_manager_test_server_get_n_quarantines (MilterManagerTestServer *server)
+{
+    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->n_quarantines;
 }
 
 static gboolean

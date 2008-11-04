@@ -57,10 +57,29 @@ GType                 milter_manager_test_server_get_type    (void) G_GNUC_CONST
 
 MilterManagerTestServer *milter_manager_test_server_new      (void);
 
-const gchar             *milter_manager_test_server_get_quarantine_reason
-                                                             (MilterManagerTestServer *server);
-void                     milter_manager_test_server_wait_signal
-                                                             (MilterManagerTestServer *server);
+guint                 milter_manager_test_server_get_n_add_headers
+                                                            (MilterManagerTestServer *server);
+guint                 milter_manager_test_server_get_n_insert_headers
+                                                            (MilterManagerTestServer *server);
+guint                 milter_manager_test_server_get_n_change_headers 
+                                                            (MilterManagerTestServer *server);
+guint                 milter_manager_test_server_get_n_change_froms 
+                                                            (MilterManagerTestServer *server);
+guint                 milter_manager_test_server_get_n_add_recipients
+                                                            (MilterManagerTestServer *server);
+guint                 milter_manager_test_server_get_n_delete_recipients 
+                                                            (MilterManagerTestServer *server);
+guint                 milter_manager_test_server_get_n_replace_bodies 
+                                                            (MilterManagerTestServer *server);
+guint                 milter_manager_test_server_get_n_progresses 
+                                                            (MilterManagerTestServer *server);
+guint                 milter_manager_test_server_get_n_quarantines 
+                                                            (MilterManagerTestServer *server);
+
+const gchar          *milter_manager_test_server_get_quarantine_reason
+                                                            (MilterManagerTestServer *server);
+void                  milter_manager_test_server_wait_signal
+                                                            (MilterManagerTestServer *server);
 
 #endif /* __MILTER_MANAGER_TEST_SERVER_H__ */
 
