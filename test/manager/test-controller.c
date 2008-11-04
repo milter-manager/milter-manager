@@ -118,6 +118,7 @@ setup (void)
     channel = gcut_io_channel_string_new(NULL);
     g_io_channel_set_encoding(channel, NULL, NULL);
     writer = milter_writer_io_channel_new(channel);
+    reader = NULL;
 
     client_context = milter_client_context_new();
     milter_handler_set_writer(MILTER_HANDLER(client_context), writer);
