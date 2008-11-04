@@ -52,6 +52,7 @@ void test_end_of_message_quarantine (void);
 void test_quit (void);
 void test_abort (void);
 void test_unknown (void);
+void test_add_header (void);
 
 static MilterManagerConfiguration *config;
 static MilterClientContext *client_context;
@@ -913,6 +914,7 @@ test_end_of_message (gconstpointer data)
     else
         chunk_size = 0;
 
+    milter_server_context_end_of_message(MILTER_SERVER_CONTEXT(server), NULL, 0);
     milter_manager_controller_end_of_message(controller, chunk, chunk_size);
     wait_response("end-of-message");
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
@@ -983,6 +985,22 @@ test_unknown (void)
 
     client = test_clients->data;
     cut_assert_equal_string(command, get_received_data(unknown_command));
+}
+
+void
+test_add_header (void)
+{
+    arguments_append(arguments1,
+                     "--add-header", "X-Test-Header:Test Header Value",
+                     NULL);
+
+    cut_trace(test_end_of_message(NULL));
+
+    cut_trace(milter_manager_test_server_wait_signal(server));
+
+    cut_assert_equal_uint(
+        1,
+        milter_manager_test_server_get_n_add_headers(server));
 }
 
 /*
