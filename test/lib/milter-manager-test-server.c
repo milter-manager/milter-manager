@@ -352,7 +352,7 @@ milter_manager_test_server_get_n_quarantines (MilterManagerTestServer *server)
 }
 
 static gboolean
-cb_timeout_waiting (gpointer data)
+cb_waiting (gpointer data)
 {
     gboolean *waiting = data;
 
@@ -370,16 +370,22 @@ void
 milter_manager_test_server_wait_signal (MilterManagerTestServer *server)
 {
     gboolean timeout_waiting = TRUE;
-    guint timeout_waiting_id;
+    gboolean idle_waiting = TRUE;
+    guint timeout_waiting_id, idle_id;
     MilterManagerTestServerPrivate *priv;
 
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server);
 
-    timeout_waiting_id = g_timeout_add_seconds(1, cb_timeout_waiting,
+    idle_id = g_idle_add_full(G_PRIORITY_DEFAULT,
+                              cb_waiting, &idle_waiting, NULL);
+
+    timeout_waiting_id = g_timeout_add_seconds(1, cb_waiting,
                                                &timeout_waiting);
-    while (timeout_waiting && !priv->quarantine_reason) {
-        g_main_context_iteration(NULL, TRUE);
+    while (idle_waiting) {
+        g_main_context_iteration(NULL, FALSE);
     }
+
+    g_source_remove(idle_id);
     g_source_remove(timeout_waiting_id);
 
     cut_assert_true(timeout_waiting, "timeout");

@@ -1,3 +1,8 @@
+2008-11-05  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* test/lib/milter-manager-test-server.c: Use g_idle_add_full with
+	G_PRIORITY_DEFAULT to wait for receiving signals.
+
 2008-11-04  Kouhei Sutou  <kou@cozmixng.org>
 
 	* test/lib/milter-test-client.rb, test/manager/test-controller.c:
