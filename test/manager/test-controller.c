@@ -374,9 +374,6 @@ test_helo (void)
     cut_trace(test_connect());
 
     milter_manager_controller_helo(controller, fqdn);
-    milter_client_context_quarantine(client_context, "helo");
-    g_io_channel_seek_position(channel, 0, G_SEEK_SET, NULL);
-    g_main_context_iteration(NULL, FALSE);
     wait_response("helo");
     cut_assert_equal_uint(g_list_length(test_clients),
                           collect_n_received(helo));
