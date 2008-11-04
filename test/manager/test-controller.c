@@ -117,13 +117,16 @@ setup (void)
 
     channel = gcut_io_channel_string_new(NULL);
     g_io_channel_set_encoding(channel, NULL, NULL);
+    g_io_channel_set_flags(channel, G_IO_FLAG_NONBLOCK, NULL);
+    gcut_string_io_channel_set_pipe_mode(channel, TRUE);
     writer = milter_writer_io_channel_new(channel);
-    reader = NULL;
+    reader = milter_reader_io_channel_new(channel);
 
     client_context = milter_client_context_new();
     milter_handler_set_writer(MILTER_HANDLER(client_context), writer);
 
     server = milter_manager_test_server_new();
+    milter_handler_set_reader(MILTER_HANDLER(server), reader);
 
     controller = milter_manager_controller_new(config, client_context);
     controller_error = NULL;
@@ -873,10 +876,7 @@ test_end_of_message_quarantine (void)
     cut_assert_equal_uint(g_list_length(test_clients),
                           collect_n_received(end_of_message));
 
-    g_io_channel_seek_position(channel, 0, G_SEEK_SET, NULL);
-    reader = milter_reader_io_channel_new(channel);
-    milter_handler_set_reader(MILTER_HANDLER(server), reader);
-    milter_manager_test_server_wait_signal(server);
+    cut_trace(milter_manager_test_server_wait_signal(server));
 
     cut_assert_equal_string(reason,
                             milter_manager_test_server_get_quarantine_reason(server));
