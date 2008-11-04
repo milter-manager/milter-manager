@@ -7,6 +7,8 @@
 	substitute. The test fails yet.
 	* test/manager/test-controller.c: Work around for GCutStringIOChannel.
 	* test/lib/milter-manager-test-server.[ch]: Added get_n_XXs accesors.
+	* test/manager/test-controller.c: Set MilterOption to
+	MilterManagerTestServer explicitly.
 
 2008-11-03  Kouhei Sutou  <kou@cozmixng.org>
 

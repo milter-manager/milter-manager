@@ -334,6 +334,9 @@ test_negotiate (void)
     start_client(10026, arguments1);
     start_client(10027, arguments2);
 
+    /* To set MilterOption in MilterManagerTestServer */
+    milter_server_context_negotiate(MILTER_SERVER_CONTEXT(server), option);
+
     milter_manager_controller_negotiate(controller, option);
     wait_response("negotiate");
     cut_assert_equal_uint(g_list_length(test_clients),
