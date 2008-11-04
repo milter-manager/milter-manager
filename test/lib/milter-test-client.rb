@@ -119,7 +119,7 @@ class MilterTestClient
       written_size = @socket.write(packet)
       packet = packet[written_size, -1]
     end
-    info("#{@state} -> #{next_state}")
+    info("#{@state}(#{encode_type}) -> #{next_state}")
     @state = next_state
     packed_size
   end
