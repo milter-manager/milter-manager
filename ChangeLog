@@ -2,6 +2,8 @@
 
 	* test/lib/milter-manager-test-utils.[ch]: added
 	milter_manager_test_header_compare.
+	* test/lib/milter-test-client.rb: Send progress on end-of-message
+	anyway.
 
 2008-11-05  Kouhei Sutou  <kou@cozmixng.org>
 

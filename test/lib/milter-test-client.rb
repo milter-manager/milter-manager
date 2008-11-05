@@ -297,6 +297,8 @@ class MilterTestClient
       invalid_state(:end_of_message)
     end
 
+    write(:end_of_message, :progress)
+
     write(:end_of_message, :quarantine, @quarantine_reason) if @quarantine_reason
     @add_headers.each do |name, value|
       write(:end_of_message, :add_header, name, value)
