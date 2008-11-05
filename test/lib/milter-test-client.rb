@@ -91,7 +91,7 @@ class MilterTestClient
 
       opts.on("--replace-body=CHUNK",
               "Send 'replace-body' with CHUNK") do |chunk|
-        @replace_body_chunks << [chunk]
+        @replace_body_chunks << chunk
       end
 
       opts.on("--envelope-recipient=RECIPIENT",
