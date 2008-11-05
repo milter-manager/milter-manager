@@ -1,7 +1,7 @@
 [scenario]
 clients=client10026;client10027
-import=connect.txt
-actions=helo;envelope-from;envelope-recipient;data;header-from;end-of-header;body-skip;body;end-of-message
+import=end-of-header.txt
+actions=body-skip;body;end-of-message
 
 [client10026]
 port=10026
@@ -9,57 +9,6 @@ arguments=--action;skip;--body;Skip
 
 [client10027]
 port=10027
-
-[helo]
-command=helo
-
-fqdn=delian
-
-response=helo
-n_received=2
-status=continue
-
-[envelope-from]
-command=mail
-
-from=kou+sender@cozmixng.org
-
-response=envelope-from
-n_received=2
-status=continue
-
-[envelope-recipient]
-command=rcpt
-
-recipient=kou+receiver@cozmixng.org
-
-response=envelope-recipient
-n_received=2
-status=continue
-
-[data]
-command=data
-
-response=data
-n_received=2
-status=continue
-
-[header-from]
-command=header
-
-name=From
-value=kou+sender@cozmixng.org
-
-response=header
-n_received=2
-status=continue
-
-[end-of-header]
-command=end-of-header
-
-response=end-of-header
-n_received=2
-status=continue
 
 [body-skip]
 command=body
@@ -76,7 +25,7 @@ command=body
 chunk=Hi,
 
 response=body
-n_received=3
+n_received=1
 status=continue
 
 [end-of-message]

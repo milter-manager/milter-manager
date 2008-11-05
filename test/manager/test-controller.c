@@ -719,10 +719,8 @@ do_end_of_message (GKeyFile *scenario, const gchar *group)
                                              chunk ? strlen(chunk) : 0);
 
     cut_trace(assert_response(scenario, group));
-    if (chunk) {
-        client = test_clients->data;
-        cut_assert_equal_string(chunk, get_received_data(body_chunk));
-    }
+    client = test_clients->data;
+    cut_assert_equal_string(chunk, get_received_data(body_chunk));
 }
 
 static void
@@ -786,6 +784,9 @@ do_actions (GKeyFile *scenario)
     cut_take_string_array(actions);
     for (i = 0; i < length; i++) {
         cut_trace(do_action(scenario, actions[i]));
+        g_list_foreach(test_clients,
+                       (GFunc)milter_manager_test_client_clear_data,
+                       NULL);
     }
 }
 
@@ -794,7 +795,17 @@ data_scenario (void)
 {
     cut_add_data("negotiate", g_strdup("negotiate.txt"), g_free,
                  "connect", g_strdup("connect.txt"), g_free,
-                 "body-skip", g_strdup("body-skip.txt"), g_free);
+                 "helo", g_strdup("helo.txt"), g_free,
+                 "envelope-from", g_strdup("envelope-from.txt"), g_free,
+                 "envelope-recipient",
+                 g_strdup("envelope-recipient.txt"), g_free,
+                 "data", g_strdup("data.txt"), g_free,
+                 "header - from", g_strdup("header-from.txt"), g_free,
+                 "end-of-header", g_strdup("end-of-header.txt"), g_free,
+                 "body", g_strdup("body.txt"), g_free,
+                 "end-of-message", g_strdup("end-of-message.txt"), g_free);
+
+    cut_add_data("body - skip", g_strdup("body-skip.txt"), g_free);
 }
 
 void
