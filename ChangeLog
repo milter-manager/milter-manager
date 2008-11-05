@@ -21,6 +21,7 @@
 	* test/manager/test-controller.c: Use
 	milter_server_context_set_state() instead of
 	milter_server_context_end_of_message().
+	* test/lib/milter-manager-test-server.c: Accessors.
 
 2008-11-04  Kouhei Sutou  <kou@cozmixng.org>
 

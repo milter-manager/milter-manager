@@ -78,6 +78,15 @@ guint                 milter_manager_test_server_get_n_quarantines
 
 const GList          *milter_manager_test_server_get_headers
                                                             (MilterManagerTestServer *server);
+const GList          *milter_manager_test_server_get_recipients
+                                                            (MilterManagerTestServer *server);
+const gchar          *milter_manager_test_server_get_from   (MilterManagerTestServer *server);
+const gchar          *milter_manager_test_server_get_from_parameters
+                                                            (MilterManagerTestServer *server);
+const gchar          *milter_manager_test_server_get_replace_body
+                                                            (MilterManagerTestServer *server);
+gsize                 milter_manager_test_server_get_replace_body_size
+                                                            (MilterManagerTestServer *server);
 const gchar          *milter_manager_test_server_get_quarantine_reason
                                                             (MilterManagerTestServer *server);
 void                  milter_manager_test_server_wait_signal
