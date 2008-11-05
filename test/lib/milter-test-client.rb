@@ -89,6 +89,11 @@ class MilterTestClient
         @delete_recipients << recipient
       end
 
+      opts.on("--replace-body=CHUNK",
+              "Send 'replace-body' with CHUNK") do |chunk|
+        @replace_body_chunks << [chunk]
+      end
+
       opts.on("--envelope-recipient=RECIPIENT",
               "Add RECIPIENT targets to be applied ACTION") do |recipient|
         @recipients << [@current_action, recipient]
@@ -125,6 +130,7 @@ class MilterTestClient
     @add_recipients = []
     @change_froms = []
     @delete_recipients = []
+    @replace_body_chunks = []
     @senders = []
     @body_chunks = []
     @end_of_message_chunks = []
@@ -314,6 +320,10 @@ class MilterTestClient
 
     @delete_recipients.each do |recipient|
       write(:end_of_message, :delete_recipient, recipient)
+    end
+
+    @replace_body_chunks.each do |chunk|
+      write(:end_of_message, :replace_body, chunk)
     end
 
     @end_of_message_chunks.each do |action, end_of_message_chunk|

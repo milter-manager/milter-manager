@@ -58,6 +58,7 @@ void test_add_header (void);
 void test_change_from (void);
 void test_add_recipient (void);
 void test_delete_recipient (void);
+void test_replace_body (void);
 void test_progress (void);
 
 static GKeyFile *scenario;
@@ -1867,6 +1868,27 @@ test_delete_recipient (void)
         g_list_sort((GList*)milter_manager_test_server_get_delete_recipients(server),
                     (GCompareFunc)strcmp);
     gcut_assert_equal_list_string(expected_list, actual_recipients);
+}
+
+void
+test_replace_body (void)
+{
+    const gchar chunk1[] = "This is the first line from client1.";
+    const gchar chunk2[] = "This is the second line from client1.";
+    const gchar chunk3[] = "This is the third line from client1.";
+
+    arguments_append(arguments1,
+                     "--replace-body", chunk1,
+                     "--replace-body", chunk2,
+                     "--replace-body", chunk3,
+                     NULL);
+
+    cut_trace(test_end_of_message(NULL));
+
+    cut_trace(milter_manager_test_server_wait_signal(server));
+    cut_assert_equal_uint(
+        3,
+        milter_manager_test_server_get_n_replace_bodies(server));
 }
 
 void
