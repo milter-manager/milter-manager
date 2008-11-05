@@ -28,15 +28,21 @@ const gchar *milter_manager_test_get_base_dir (void);
 
 typedef struct _MilterManagerTestHeader
 {
+    guint index;
     gchar *name;
     gchar *value;
 } MilterManagerTestHeader;
 
 MilterManagerTestHeader *milter_manager_test_header_new
-                                                (const gchar *name,
+                                                (guint index,
+                                                 const gchar *name,
                                                  const gchar *value);
 void                     milter_manager_test_header_free
                                                 (MilterManagerTestHeader *header);
+void                     milter_manager_test_header_inspect_without_index
+                                                (GString *string,
+                                                 MilterManagerTestHeader *header,
+                                                 gpointer user_data);
 void                     milter_manager_test_header_inspect
                                                 (GString *string,
                                                  MilterManagerTestHeader *header,
@@ -51,5 +57,5 @@ G_END_DECLS
 #endif /* __MILTER_MANAGER_TEST_UTILS_H__ */
 
 /*
-vi:nowrap:ai:expandtab:sw=4
+vi:ts=4:nowrap:ai:expandtab:sw=4
 */

@@ -263,7 +263,7 @@ add_header (MilterReplySignals *reply,
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
     priv->n_add_headers++;
     priv->add_headers = g_list_append(priv->add_headers,
-                                  milter_manager_test_header_new(name, value));
+                                      milter_manager_test_header_new(0, name, value));
 }
 
 static void

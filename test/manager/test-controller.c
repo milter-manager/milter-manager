@@ -1255,8 +1255,8 @@ test_unknown (void)
 void
 test_add_header (void)
 {
-    MilterManagerTestHeader header1 = {"X-Test-Header1", "Test Header1 Value"};
-    MilterManagerTestHeader header2 = {"X-Test-Header2", "Test Header2 Value"};
+    MilterManagerTestHeader header1 = {0, "X-Test-Header1", "Test Header1 Value"};
+    MilterManagerTestHeader header2 = {0, "X-Test-Header2", "Test Header2 Value"};
     const GList *headers;
     gchar *header_string;
 
@@ -1289,7 +1289,7 @@ test_add_header (void)
     headers = milter_manager_test_server_get_add_headers(server);
     gcut_assert_equal_list(expected_list, headers,
                            (GEqualFunc)milter_manager_test_header_equal,
-                           (GCutInspectFunc)milter_manager_test_header_inspect,
+                           (GCutInspectFunc)milter_manager_test_header_inspect_without_index,
                            NULL);
 }
 

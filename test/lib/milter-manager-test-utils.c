@@ -53,6 +53,18 @@ milter_manager_test_header_inspect (GString *string,
                                     gpointer user_data)
 {
     g_string_append_printf(string,
+                           "<%s[%u] = %s>",
+                           header->name,
+                           header->index,
+                           header->value);
+}
+
+void
+milter_manager_test_header_inspect_without_index (GString *string,
+                                                  MilterManagerTestHeader *header,
+                                                  gpointer user_data)
+{
+    g_string_append_printf(string,
                            "<%s = %s>",
                            header->name, header->value);
 }
@@ -64,17 +76,19 @@ milter_manager_test_header_equal (MilterManagerTestHeader *header_a,
     if (!header_a->name || !header_b->name)
         return FALSE;
 
-    return (!strcmp(header_a->name, header_b->name) &&
+    return (header_a->index == header_b->index && 
+            !strcmp(header_a->name, header_b->name) &&
             !g_strcmp0(header_a->value, header_b->value));
 }
 
 MilterManagerTestHeader *
-milter_manager_test_header_new (const gchar *name, const gchar *value)
+milter_manager_test_header_new (guint index, const gchar *name, const gchar *value)
 {
     MilterManagerTestHeader *header;
     header = g_new0(MilterManagerTestHeader, 1);
     header->name = g_strdup(name);
     header->value = g_strdup(value);
+    header->index = index;
     return header;
 }
 
