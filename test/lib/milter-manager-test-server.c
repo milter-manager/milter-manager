@@ -48,8 +48,7 @@ struct _MilterManagerTestServerPrivate
     GList *insert_headers;
     GList *add_recipients;
     GList *delete_recipients;
-    gchar *body;
-    gsize body_size;
+    GList *replace_bodies;
     gchar *from;
     gchar *from_parameters;
     gchar *quarantine_reason;
@@ -150,8 +149,7 @@ milter_manager_test_server_init (MilterManagerTestServer *milter)
     priv->delete_recipients = NULL;
     priv->from = NULL;
     priv->from_parameters = NULL;
-    priv->body = NULL;
-    priv->body_size = 0;
+    priv->replace_bodies = NULL;
     priv->quarantine_reason = NULL;
 
     priv->n_add_headers = 0;
@@ -216,9 +214,10 @@ dispose (GObject *object)
         priv->from_parameters = NULL;
     }
 
-    if (priv->body) {
-        g_free(priv->body);
-        priv->body = NULL;
+    if (priv->replace_bodies) {
+        g_list_foreach(priv->replace_bodies, (GFunc)g_free, NULL);
+        g_list_free(priv->replace_bodies);
+        priv->replace_bodies = NULL;
     }
 
     if (priv->quarantine_reason) {
@@ -363,11 +362,7 @@ replace_body (MilterReplySignals *reply,
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
     priv->n_replace_bodies++;
 
-    if (priv->body)
-        g_free(priv->body);
-    priv->body = g_strdup(body);
-
-    priv->body_size = body_size;
+    priv->replace_bodies = g_list_append(priv->replace_bodies, g_strdup(body));
 }
 
 static void
@@ -498,16 +493,10 @@ milter_manager_test_server_get_from_parameters (MilterManagerTestServer *server)
     return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->from_parameters;
 }
 
-const gchar *
-milter_manager_test_server_get_replace_body (MilterManagerTestServer *server)
+const GList *
+milter_manager_test_server_get_replace_bodies (MilterManagerTestServer *server)
 {
-    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->body;
-}
-
-gsize
-milter_manager_test_server_get_replace_body_size (MilterManagerTestServer *server)
-{
-    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->body_size;
+    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->replace_bodies;
 }
 
 const gchar *

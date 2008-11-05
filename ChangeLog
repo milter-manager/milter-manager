@@ -8,6 +8,8 @@
 	milter_manager_test_header_compare.
 	* test/lib/milter-test-client.rb: Send progress on end-of-message
 	anyway.
+	* test/lib/milter-manager-test-server.[ch]: Replace body should be a
+	GList.
 
 2008-11-05  Kouhei Sutou  <kou@cozmixng.org>
 

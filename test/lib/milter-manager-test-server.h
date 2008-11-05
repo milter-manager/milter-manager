@@ -89,9 +89,7 @@ const GList          *milter_manager_test_server_get_delete_recipients
 const gchar          *milter_manager_test_server_get_from   (MilterManagerTestServer *server);
 const gchar          *milter_manager_test_server_get_from_parameters
                                                             (MilterManagerTestServer *server);
-const gchar          *milter_manager_test_server_get_replace_body
-                                                            (MilterManagerTestServer *server);
-gsize                 milter_manager_test_server_get_replace_body_size
+const GList          *milter_manager_test_server_get_replace_bodies
                                                             (MilterManagerTestServer *server);
 const gchar          *milter_manager_test_server_get_quarantine_reason
                                                             (MilterManagerTestServer *server);

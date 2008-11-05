@@ -1873,22 +1873,42 @@ test_delete_recipient (void)
 void
 test_replace_body (void)
 {
-    const gchar chunk1[] = "This is the first line from client1.";
-    const gchar chunk2[] = "This is the second line from client1.";
-    const gchar chunk3[] = "This is the third line from client1.";
+    const GList *actual_bodies;
+    const gchar client1_chunk1[] = "This is the first line from client1.";
+    const gchar client1_chunk2[] = "This is the second line from client1.";
+    const gchar client1_chunk3[] = "This is the third line from client1.";
+    const gchar client2_chunk1[] = "This is the first line from client2.";
+    const gchar client2_chunk2[] = "This is the second line from client2.";
+    const gchar client2_chunk3[] = "This is the third line from client2.";
+
+    expected_list = g_list_append(expected_list, &client1_chunk1); 
+    expected_list = g_list_append(expected_list, &client1_chunk2); 
+    expected_list = g_list_append(expected_list, &client1_chunk3); 
+    expected_list = g_list_append(expected_list, &client2_chunk1); 
+    expected_list = g_list_append(expected_list, &client2_chunk2); 
+    expected_list = g_list_append(expected_list, &client2_chunk3); 
 
     arguments_append(arguments1,
-                     "--replace-body", chunk1,
-                     "--replace-body", chunk2,
-                     "--replace-body", chunk3,
+                     "--replace-body", client1_chunk1,
+                     "--replace-body", client1_chunk2,
+                     "--replace-body", client1_chunk3,
+                     NULL);
+
+    arguments_append(arguments2,
+                     "--replace-body", client2_chunk1,
+                     "--replace-body", client2_chunk2,
+                     "--replace-body", client2_chunk3,
                      NULL);
 
     cut_trace(test_end_of_message(NULL));
 
     cut_trace(milter_manager_test_server_wait_signal(server));
     cut_assert_equal_uint(
-        3,
+        6,
         milter_manager_test_server_get_n_replace_bodies(server));
+
+    actual_bodies = milter_manager_test_server_get_replace_bodies(server);
+    gcut_assert_equal_list_string(expected_list, actual_bodies);
 }
 
 void
