@@ -36,8 +36,10 @@
 	* test/lib/milter-test-client.rb: "--envelope-from" option.
 	* test/lib/milter-test-client.rb: "--change-from" option.
 	* test/lib/milter-test-client.rb: "--delete-recipient" option.
-	* test/lib/milter-manager-test-urils.[ch]: MilterManagerTestHeader has
+	* test/lib/milter-manager-test-utils.[ch]: MilterManagerTestHeader has
 	an index.
+	* test/lib/milter-manager-test-utils.[ch]: Added
+	MilterManagerTestValueWithParam.
 
 2008-11-04  Kouhei Sutou  <kou@cozmixng.org>
 

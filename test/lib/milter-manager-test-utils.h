@@ -51,6 +51,29 @@ gboolean                 milter_manager_test_header_equal
                                                 (MilterManagerTestHeader *header_a,
                                                  MilterManagerTestHeader *header_b);
 
+typedef struct _MilterManagerTestValueWithParam
+{
+    gchar *value;
+    gchar *param;
+} MilterManagerTestValueWithParam;
+
+MilterManagerTestValueWithParam *milter_manager_test_value_with_param_new
+                                        (const gchar *value,
+                                         const gchar *param);
+void                     milter_manager_test_value_with_param_free
+                                        (MilterManagerTestValueWithParam *value);
+void                     milter_manager_test_value_with_param_inspect_without_index
+                                        (GString *string,
+                                         MilterManagerTestValueWithParam *value,
+                                         gpointer user_data);
+void                     milter_manager_test_value_with_param_inspect
+                                        (GString *string,
+                                         MilterManagerTestValueWithParam *value,
+                                         gpointer user_data);
+gboolean                 milter_manager_test_value_with_param_equal
+                                        (MilterManagerTestValueWithParam *value_a,
+                                         MilterManagerTestValueWithParam *value_b);
+
 
 G_END_DECLS
 

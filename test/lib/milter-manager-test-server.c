@@ -194,7 +194,8 @@ dispose (GObject *object)
     }
 
     if (priv->add_recipients) {
-        g_list_foreach(priv->add_recipients, (GFunc)g_free, NULL);
+        g_list_foreach(priv->add_recipients,
+                       (GFunc)milter_manager_test_value_with_param_free, NULL);
         g_list_free(priv->add_recipients);
         priv->add_recipients = NULL;
     }
@@ -337,7 +338,9 @@ add_recipient (MilterReplySignals *reply,
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
     priv->n_add_recipients++;
 
-    priv->add_recipients = g_list_append(priv->add_recipients, g_strdup(recipient));
+    priv->add_recipients =
+        g_list_append(priv->add_recipients,
+                      milter_manager_test_value_with_param_new(recipient, parameters));
 }
 
 static void

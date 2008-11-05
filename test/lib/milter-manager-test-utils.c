@@ -101,6 +101,46 @@ milter_manager_test_header_free (MilterManagerTestHeader *header)
     g_free(header);
 }
 
+void
+milter_manager_test_value_with_param_inspect (GString *string,
+                                              MilterManagerTestValueWithParam *value,
+                                              gpointer user_data)
+{
+    g_string_append_printf(string,
+                           "<%s(%s)>",
+                           value->value, value->param);
+}
+
+gboolean
+milter_manager_test_value_with_param_equal (MilterManagerTestValueWithParam *value_a,
+                                            MilterManagerTestValueWithParam *value_b)
+{
+    if (!value_a->value || !value_b->value)
+        return FALSE;
+
+    return (!strcmp(value_a->value, value_b->value) &&
+            !g_strcmp0(value_a->param, value_b->param));
+}
+
+MilterManagerTestValueWithParam *
+milter_manager_test_value_with_param_new (const gchar *value_string, const gchar *param)
+{
+    MilterManagerTestValueWithParam *value;
+    value = g_new0(MilterManagerTestValueWithParam, 1);
+    value->value = g_strdup(value_string);
+    value->param = g_strdup(param);
+    return value;
+}
+
+void
+milter_manager_test_value_with_param_free (MilterManagerTestValueWithParam *value)
+{
+    g_free(value->value);
+    g_free(value->param);
+
+    g_free(value);
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */
