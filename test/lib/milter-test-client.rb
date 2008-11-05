@@ -74,6 +74,11 @@ class MilterTestClient
         @add_headers << name_and_value.split(/:/, 2)
       end
 
+      opts.on("--change-from=FROM",
+              "Change the from adress to FROM") do |from|
+        @change_froms << from
+      end
+
       opts.on("--envelope-recipient=RECIPIENT",
               "Add RECIPIENT targets to be applied ACTION") do |recipient|
         @recipients << [@current_action, recipient]
@@ -107,6 +112,7 @@ class MilterTestClient
     @quarantine_reason = nil
     @add_headers = []
     @recipients = []
+    @change_froms = []
     @senders = []
     @body_chunks = []
     @end_of_message_chunks = []
@@ -270,6 +276,10 @@ class MilterTestClient
     write(:end_of_message, :quarantine, @quarantine_reason) if @quarantine_reason
     @add_headers.each do |name, value|
       write(:end_of_message, :add_header, name, value)
+    end
+
+    @change_froms.each do |from|
+      write(:end_of_message, :change_from, from)
     end
 
     @end_of_message_chunks.each do |action, end_of_message_chunk|
