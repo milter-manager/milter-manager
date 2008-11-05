@@ -1,5 +1,7 @@
 2008-11-05  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/lib/milter-test-client.rb: override.
+
 	* test/lib/milter-test-client.rb: cleanup.
 
 2008-11-05  Hiroyuki Ikezoe  <poincare@ikezoe.net>

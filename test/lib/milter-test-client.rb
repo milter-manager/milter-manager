@@ -199,7 +199,7 @@ class MilterTestClient
     invalid_state(:mail) if @state != :greeted
     @mail_from = from
 
-    @senders.each do |action, sender|
+    @senders.reverse_each do |action, sender|
       if sender == from
         write_action(:mailed, action)
         return
@@ -212,7 +212,7 @@ class MilterTestClient
     invalid_state(:rcpt) unless [:mailed, :recipiented].include?(@state)
     @rcpt_to = to
 
-    @recipients.each do |action, recipient|
+    @recipients.reverse_each do |action, recipient|
       if recipient == to
         write_action(:recipiented, action)
         return
