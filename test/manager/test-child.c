@@ -25,6 +25,7 @@
 #undef shutdown
 
 void test_start (void);
+void test_start_by_user (void);
 void test_exit_error (void);
 
 static MilterManagerChild *milter;
@@ -70,7 +71,21 @@ test_start (void)
 {
     GError *error = NULL;
     g_object_set(milter,
-                 "command", "/bin/echo -n",
+                 "command", "/bin/echo",
+                 "command-options", "-n",
+                 NULL);
+    milter_manager_child_start(milter, &error);
+    gcut_assert_error(error);
+}
+
+void
+test_start_by_user (void)
+{
+    GError *error = NULL;
+    g_object_set(milter,
+                 "command", "/bin/echo",
+                 "command-options", "-n",
+                 "user-name", g_get_user_name(),
                  NULL);
     milter_manager_child_start(milter, &error);
     gcut_assert_error(error);
