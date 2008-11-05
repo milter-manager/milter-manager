@@ -54,9 +54,6 @@ void test_body (gconstpointer data);
 void data_end_of_message (void);
 void test_end_of_message (gconstpointer data);
 void test_end_of_message_quarantine (void);
-void test_quit (void);
-void test_abort (void);
-void test_unknown (void);
 void test_add_header (void);
 void test_change_from (void);
 void test_add_recipient (void);
@@ -513,6 +510,12 @@ response_to_get_n_received (const gchar *response)
         return milter_manager_test_client_get_n_body_received;
     } else if (g_str_equal(response, "end-of-message")) {
         return milter_manager_test_client_get_n_end_of_message_received;
+    } else if (g_str_equal(response, "quit")) {
+        return milter_manager_test_client_get_n_quit_received;
+    } else if (g_str_equal(response, "abort")) {
+        return milter_manager_test_client_get_n_abort_received;
+    } else if (g_str_equal(response, "unknown")) {
+        return milter_manager_test_client_get_n_unknown_received;
     }
 
     return NULL;
@@ -541,7 +544,8 @@ get_string (GKeyFile *scenario, const gchar *group, const gchar *key)
 }
 
 static gint
-get_enum (GKeyFile *scenario, const gchar *group, const gchar *key, GType enum_type)
+get_enum (GKeyFile *scenario, const gchar *group, const gchar *key,
+          GType enum_type)
 {
     GError *error = NULL;
     gint value;
@@ -564,7 +568,17 @@ assert_response (GKeyFile *scenario, const gchar *group)
     response = get_string(scenario, group, "response");
     status = get_enum(scenario, group, "status", MILTER_TYPE_STATUS);
 
-    cut_trace(wait_response_helper(cut_take_printf("%s-response", response)));
+    if (g_str_equal(response, "quit")) {
+        wait_finished();
+    } else if (g_str_equal(response, "abort")) {
+        wait_reply(abort);
+    } else {
+        const gchar *response_signal_name;
+
+        response_signal_name = cut_take_printf("%s-response", response);
+        cut_trace(wait_response_helper(response_signal_name));
+    }
+
     get_n_received = response_to_get_n_received(response);
     cut_assert_not_null(get_n_received, "response: <%s>(%s)", response, group);
     actual_n_received =
@@ -724,6 +738,35 @@ do_end_of_message (GKeyFile *scenario, const gchar *group)
 }
 
 static void
+do_quit (GKeyFile *scenario, const gchar *group)
+{
+    milter_manager_controller_quit(controller);
+    cut_trace(assert_response(scenario, group));
+}
+
+static void
+do_abort (GKeyFile *scenario, const gchar *group)
+{
+    milter_manager_controller_abort(controller);
+    cut_trace(assert_response(scenario, group));
+}
+
+static void
+do_unknown (GKeyFile *scenario, const gchar *group)
+{
+    MilterManagerTestClient *client;
+    const gchar *command;
+
+    command = get_string(scenario, group, "unknown_command");
+
+    milter_manager_controller_unknown(controller, command);
+    cut_trace(assert_response(scenario, group));
+
+    client = test_clients->data;
+    cut_assert_equal_string(command, get_received_data(unknown_command));
+}
+
+static void
 do_action (GKeyFile *scenario, const gchar *group)
 {
     GError *error = NULL;
@@ -764,6 +807,15 @@ do_action (GKeyFile *scenario, const gchar *group)
       case MILTER_COMMAND_END_OF_MESSAGE:
         cut_trace(do_end_of_message(scenario, group));
         break;
+      case MILTER_COMMAND_QUIT:
+        cut_trace(do_quit(scenario, group));
+        break;
+      case MILTER_COMMAND_ABORT:
+        cut_trace(do_abort(scenario, group));
+        break;
+      case MILTER_COMMAND_UNKNOWN:
+        cut_trace(do_unknown(scenario, group));
+        break;
       default:
         cut_error("unknown command: <%c>(<%s>)", command, group);
         break;
@@ -793,17 +845,20 @@ do_actions (GKeyFile *scenario)
 void
 data_scenario (void)
 {
-    cut_add_data("negotiate", g_strdup("negotiate.txt"), g_free,
-                 "connect", g_strdup("connect.txt"), g_free,
-                 "helo", g_strdup("helo.txt"), g_free,
-                 "envelope-from", g_strdup("envelope-from.txt"), g_free,
-                 "envelope-recipient",
-                 g_strdup("envelope-recipient.txt"), g_free,
-                 "data", g_strdup("data.txt"), g_free,
-                 "header - from", g_strdup("header-from.txt"), g_free,
-                 "end-of-header", g_strdup("end-of-header.txt"), g_free,
-                 "body", g_strdup("body.txt"), g_free,
-                 "end-of-message", g_strdup("end-of-message.txt"), g_free);
+    cut_add_data(
+        "negotiate", g_strdup("negotiate.txt"), g_free,
+        "connect", g_strdup("connect.txt"), g_free,
+        "helo", g_strdup("helo.txt"), g_free,
+        "envelope-from", g_strdup("envelope-from.txt"), g_free,
+        "envelope-recipient", g_strdup("envelope-recipient.txt"), g_free,
+        "data", g_strdup("data.txt"), g_free,
+        "header - from", g_strdup("header-from.txt"), g_free,
+        "end-of-header", g_strdup("end-of-header.txt"), g_free,
+        "body", g_strdup("body.txt"), g_free,
+        "end-of-message", g_strdup("end-of-message.txt"), g_free,
+        "quit", g_strdup("quit.txt"), g_free,
+        "abort", g_strdup("abort.txt"), g_free,
+        "unknown", g_strdup("unknown.txt"), g_free);
 
     cut_add_data("body - skip", g_strdup("body-skip.txt"), g_free);
 }
@@ -1658,41 +1713,6 @@ test_end_of_message_quarantine (void)
     cut_assert_equal_string(
         reason,
         milter_manager_test_server_get_quarantine_reason(server));
-}
-
-void
-test_quit (void)
-{
-    cut_trace(test_end_of_message(NULL));
-
-    milter_manager_controller_quit(controller);
-    wait_finished();
-    cut_assert_equal_uint(g_list_length(test_clients), collect_n_received(quit));
-}
-
-void
-test_abort (void)
-{
-    cut_trace(test_end_of_message(NULL));
-
-    milter_manager_controller_abort(controller);
-    wait_reply(abort);
-}
-
-void
-test_unknown (void)
-{
-    MilterManagerTestClient *client;
-    const gchar command[] = "UNKNOWN COMMAND";
-
-    cut_trace(test_helo());
-
-    milter_manager_controller_unknown(controller, command);
-    wait_response("unknown");
-    wait_finished();
-
-    client = test_clients->data;
-    cut_assert_equal_string(command, get_received_data(unknown_command));
 }
 
 void

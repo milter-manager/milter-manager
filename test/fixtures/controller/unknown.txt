@@ -1,0 +1,19 @@
+[scenario]
+clients=client10026;client10027
+import=helo.txt
+actions=unknown
+
+[client10026]
+port=10026
+
+[client10027]
+port=10027
+
+[unknown]
+command=unknown
+
+unknown_command=UNKNWON COMMAND
+
+response=unknown
+n_received=2
+status=reject

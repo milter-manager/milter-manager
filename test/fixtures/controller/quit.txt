@@ -1,0 +1,17 @@
+[scenario]
+clients=client10026;client10027
+import=end-of-message.txt
+actions=quit
+
+[client10026]
+port=10026
+
+[client10027]
+port=10027
+
+[quit]
+command=quit
+
+response=quit
+n_received=2
+status=continue
