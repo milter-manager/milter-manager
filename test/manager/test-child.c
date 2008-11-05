@@ -27,6 +27,7 @@
 #include <locale.h>
 
 void test_start (void);
+void test_start_with_search_path (void);
 void test_start_no_command (void);
 void test_start_by_user (void);
 void test_start_inexistent_command (void);
@@ -81,6 +82,19 @@ test_start (void)
     g_object_set(milter,
                  "command", "/bin/echo",
                  "command-options", "-n",
+                 NULL);
+    milter_manager_child_start(milter, &error);
+    gcut_assert_error(error);
+}
+
+void
+test_start_with_search_path (void)
+{
+    GError *error = NULL;
+    g_object_set(milter,
+                 "command", "echo",
+                 "command-options", "-n",
+                 "search-path", TRUE,
                  NULL);
     milter_manager_child_start(milter, &error);
     gcut_assert_error(error);
