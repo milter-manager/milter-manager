@@ -76,6 +76,8 @@ guint                 milter_manager_test_server_get_n_progresses
 guint                 milter_manager_test_server_get_n_quarantines 
                                                             (MilterManagerTestServer *server);
 
+const GList          *milter_manager_test_server_get_headers
+                                                            (MilterManagerTestServer *server);
 const gchar          *milter_manager_test_server_get_quarantine_reason
                                                             (MilterManagerTestServer *server);
 void                  milter_manager_test_server_wait_signal

@@ -8,6 +8,8 @@
 	header names and values.
 	* test/lib/milter-manager-test-utils.[ch]: Added
 	MilterManagerTestHeader struct.
+	* test/lib/milter-manager-test-server.[ch]: Added
+	milter_manager_test_server_get_headers.
 
 2008-11-04  Kouhei Sutou  <kou@cozmixng.org>
 

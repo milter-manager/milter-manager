@@ -23,6 +23,7 @@
 
 #include <gcutter.h>
 #include "milter-manager-test-server.h"
+#include "milter-manager-test-utils.h"
 
 #define MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(obj)                    \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                          \
@@ -42,6 +43,7 @@ struct _MilterManagerTestServerPrivate
     guint n_progresses;
     guint n_quarantines;
 
+    GList *headers;
     gchar *quarantine_reason;
 };
 
@@ -130,7 +132,9 @@ milter_manager_test_server_init (MilterManagerTestServer *milter)
 
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(milter);
 
+    priv->headers = NULL;
     priv->quarantine_reason = NULL;
+
     priv->n_add_headers = 0;
     priv->n_change_headers = 0;
     priv->n_insert_headers = 0;
@@ -148,6 +152,13 @@ dispose (GObject *object)
     MilterManagerTestServerPrivate *priv;
 
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(object);
+
+    if (priv->headers) {
+        g_list_foreach(priv->headers,
+                       (GFunc)milter_manager_test_header_free, NULL);
+        g_list_free(priv->headers);
+        priv->headers = NULL;
+    }
 
     if (priv->quarantine_reason) {
         g_free(priv->quarantine_reason);
@@ -205,6 +216,8 @@ add_header (MilterReplySignals *reply,
 
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
     priv->n_add_headers++;
+    priv->headers = g_list_append(priv->headers,
+                                  milter_manager_test_header_new(name, value));
 }
 
 static void
@@ -358,6 +371,12 @@ cb_waiting (gpointer data)
 
     *waiting = FALSE;
     return FALSE;
+}
+
+const GList *
+milter_manager_test_server_get_headers (MilterManagerTestServer *server)
+{
+    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->headers;
 }
 
 const gchar *
