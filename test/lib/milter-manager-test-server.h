@@ -76,9 +76,15 @@ guint                 milter_manager_test_server_get_n_progresses
 guint                 milter_manager_test_server_get_n_quarantines 
                                                             (MilterManagerTestServer *server);
 
-const GList          *milter_manager_test_server_get_headers
+const GList          *milter_manager_test_server_get_add_headers
                                                             (MilterManagerTestServer *server);
-const GList          *milter_manager_test_server_get_recipients
+const GList          *milter_manager_test_server_get_change_headers
+                                                            (MilterManagerTestServer *server);
+const GList          *milter_manager_test_server_get_insert_headers
+                                                            (MilterManagerTestServer *server);
+const GList          *milter_manager_test_server_get_add_recipients
+                                                            (MilterManagerTestServer *server);
+const GList          *milter_manager_test_server_get_delete_recipients
                                                             (MilterManagerTestServer *server);
 const gchar          *milter_manager_test_server_get_from   (MilterManagerTestServer *server);
 const gchar          *milter_manager_test_server_get_from_parameters
