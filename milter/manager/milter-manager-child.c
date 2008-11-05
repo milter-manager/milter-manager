@@ -362,7 +362,7 @@ set_user (const gchar *user_name, GError **error)
         g_set_error(error,
                     MILTER_MANAGER_CHILD_ERROR,
                     MILTER_MANAGER_CHILD_ERROR_NO_PRIVILEGE_MODE,
-                    "MilterManager does not run on privilege mode.");
+                    "MilterManager is not running on privilege mode.");
         return FALSE;
     }
 
@@ -370,7 +370,7 @@ set_user (const gchar *user_name, GError **error)
         g_set_error(error,
                     MILTER_MANAGER_CHILD_ERROR,
                     MILTER_MANAGER_CHILD_ERROR_NO_PRIVILEGE_MODE,
-                    "MilterManager does not run on privilege mode.");
+                    "MilterManager is not running on privilege mode.");
         return FALSE;
     }
 
