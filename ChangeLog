@@ -51,6 +51,9 @@
 	* test/lib/milter-manager-test-utils.[ch]: Added
 	MilterManagerTestValueWithParam.
 	* test/lib/milter-test-client.rb: "--add-recipient" option.
+	* milter/manager/milter-manager-children.c
+	(child_negotiate_without_retry): Emit "negotiate-reply" if previous
+	negotiation is established.
 
 2008-11-04  Kouhei Sutou  <kou@cozmixng.org>
 

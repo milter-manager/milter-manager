@@ -878,6 +878,11 @@ child_negotiate_without_retry (MilterManagerChild *child, MilterOption *option,
         milter_error("Error: %s", error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
                                     error);
+
+        if (g_queue_is_empty(priv->reply_queue) && priv->option) {
+            g_signal_emit_by_name(children, "negotiate-reply",
+                                  priv->option, priv->macros_requests);
+        }
         g_error_free(error);
         return status;
     }
