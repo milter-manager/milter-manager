@@ -79,6 +79,11 @@ class MilterTestClient
         @recipients << [@current_action, recipient]
       end
 
+      opts.on("--envelope-from=FROM",
+              "Add FROM targets to be applied ACTION") do |from|
+        @from["#{from}"] = @current_action
+      end
+
       opts.on("--body=CHUNK",
               "Add CHUNK targets to be applied ACTION") do |body_chunk|
         @body_chunks << [@current_action, body_chunk]
@@ -102,6 +107,7 @@ class MilterTestClient
     @quarantine_reason = nil
     @add_headers = []
     @recipients = []
+    @from = {}
     @body_chunks = []
     @end_of_message_chunks = []
   end
@@ -193,6 +199,10 @@ class MilterTestClient
     invalid_state(:mail) if @state != :greeted
     @mail_from = from
 
+    if @from["#{from}"]
+      write_action(:mailed, @from["#{from}"])
+      return
+    end
     write(:mailed, :continue)
   end
 
