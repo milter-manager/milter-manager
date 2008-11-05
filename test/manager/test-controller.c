@@ -854,6 +854,80 @@ assert_body_test (BodyTestData *data)
         cut_trace(data->assert_func(data->test_data));
 }
 
+typedef struct _AllSkipBodyTestData
+{
+    gchar *first_skip_chunk;
+    gchar *second_skip_chunk;
+} AllSkipBodyTestData;
+
+static void
+setup_all_skip_body_test (gpointer test_data)
+{
+    AllSkipBodyTestData *data = test_data;
+
+    arguments_append(arguments1,
+                     "--action", "skip",
+                     "--body", data->first_skip_chunk,
+                     NULL);
+    arguments_append(arguments2,
+                     "--action", "skip",
+                     "--body", data->second_skip_chunk,
+                     NULL);
+}
+
+static void
+assert_all_skip_body_test (gpointer test_data)
+{
+    const gchar chunk[] = "See you.";
+    AllSkipBodyTestData *data = test_data;
+
+    milter_manager_controller_body(controller,
+                                   data->first_skip_chunk,
+                                   strlen(data->first_skip_chunk));
+    wait_response("body");
+    cut_assert_equal_uint(g_list_length(test_clients) * 2,
+                          collect_n_received(body));
+
+    milter_manager_controller_body(controller, chunk, strlen(chunk));
+    wait_response("body");
+    /* The child which send SKIP must not be received further body command */
+    cut_assert_equal_uint(g_list_length(test_clients) * 3 - 1,
+                          collect_n_received(body));
+
+
+    milter_manager_controller_body(controller,
+                                   data->second_skip_chunk,
+                                   strlen(data->second_skip_chunk));
+    wait_response("body");
+    /* The child which send SKIP must not be received further body command */
+    cut_assert_equal_uint(g_list_length(test_clients) * 3 - 1 + 1,
+                          collect_n_received(body));
+    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
+                           MILTER_STATUS_SKIP, response_status);
+}
+
+static void
+free_all_skip_body_test_data (gpointer test_data)
+{
+    AllSkipBodyTestData *data = test_data;
+
+    free(data->first_skip_chunk);
+    free(data->second_skip_chunk);
+}
+
+static gpointer
+all_skip_body_test_data_new (const gchar *first_chunk,
+                             const gchar *second_chunk)
+{
+    AllSkipBodyTestData *data;
+    
+    data = g_new0(AllSkipBodyTestData, 1);
+    data->first_skip_chunk = g_strdup(first_chunk);
+    data->second_skip_chunk = g_strdup(second_chunk);
+
+    return data;
+}
+
 typedef struct _SkipBodyTestData
 {
     gchar *skip_chunk;
@@ -997,6 +1071,12 @@ data_body (void)
                                     assert_skip_body_test,
                                     free_skip_body_test_data,
                                     skip_body_test_data_new("Skip")),
+                 free_body_test_data,
+                 "all skip",
+                 body_test_data_new(setup_all_skip_body_test,
+                                    assert_all_skip_body_test,
+                                    free_all_skip_body_test_data,
+                                    all_skip_body_test_data_new("Skip first", "Skip second")),
                  free_body_test_data,
                  "accept",
                  body_test_data_new(setup_accept_body_test,
