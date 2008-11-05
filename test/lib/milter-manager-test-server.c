@@ -44,6 +44,9 @@ struct _MilterManagerTestServerPrivate
     guint n_quarantines;
 
     GList *headers;
+    GList *recipients;
+    gchar *from;
+    gchar *from_parameters;
     gchar *quarantine_reason;
 };
 
@@ -133,6 +136,9 @@ milter_manager_test_server_init (MilterManagerTestServer *milter)
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(milter);
 
     priv->headers = NULL;
+    priv->recipients = NULL;
+    priv->from = NULL;
+    priv->from_parameters = NULL;
     priv->quarantine_reason = NULL;
 
     priv->n_add_headers = 0;
@@ -158,6 +164,22 @@ dispose (GObject *object)
                        (GFunc)milter_manager_test_header_free, NULL);
         g_list_free(priv->headers);
         priv->headers = NULL;
+    }
+
+    if (priv->recipients) {
+        g_list_foreach(priv->recipients, (GFunc)g_free, NULL);
+        g_list_free(priv->recipients);
+        priv->recipients = NULL;
+    }
+
+    if (priv->from) {
+        g_free(priv->from);
+        priv->from = NULL;
+    }
+
+    if (priv->from_parameters) {
+        g_free(priv->from_parameters);
+        priv->from_parameters = NULL;
     }
 
     if (priv->quarantine_reason) {
@@ -230,6 +252,10 @@ insert_header (MilterReplySignals *reply,
 
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
     priv->n_insert_headers++;
+
+    priv->headers = g_list_insert(priv->headers,
+                                  milter_manager_test_header_new(name, value),
+                                  index);
 }
 
 static void
@@ -253,6 +279,14 @@ change_from (MilterReplySignals *reply,
 
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
     priv->n_change_froms++;
+
+    if (priv->from)
+        g_free(priv->from);
+    priv->from = g_strdup(from);
+
+    if (priv->from_parameters)
+        g_free(priv->from_parameters);
+    priv->from_parameters = g_strdup(parameters);
 }
 
 static void
@@ -264,15 +298,24 @@ add_recipient (MilterReplySignals *reply,
 
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
     priv->n_add_recipients++;
+
+    priv->recipients = g_list_append(priv->recipients, g_strdup(recipient));
 }
 
 static void
 delete_recipient (MilterReplySignals *reply, const gchar *recipient)
 {
     MilterManagerTestServerPrivate *priv;
+    GList *list;
 
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
     priv->n_delete_recipients++;
+
+    list = g_list_find(priv->recipients, recipient);
+    if (list) {
+        g_free(list->data);
+        priv->recipients = g_list_delete_link(priv->recipients, list);
+    }
 }
 
 static void
