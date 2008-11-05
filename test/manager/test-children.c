@@ -25,6 +25,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <errno.h>
 
 #include <milter-manager-test-utils.h>
 #include <milter-manager-test-client.h>
@@ -34,6 +35,7 @@
 void test_foreach (void);
 void test_negotiate (void);
 void test_retry_negotiate (void);
+void test_retry_negotiate_failure (void);
 void test_connect (void);
 void test_connect_pass (void);
 void test_connect_half_pass (void);
@@ -210,6 +212,9 @@ static void
 cb_error (MilterManagerChildren *children, GError *error, gpointer user_data)
 {
     n_error_emitted++;
+    if (actual_error)
+        g_clear_error(&actual_error);
+    actual_error = g_error_copy(error);
 }
 
 static void
@@ -488,6 +493,47 @@ test_retry_negotiate (void)
     milter_manager_children_negotiate(children, option);
     wait_reply(n_negotiate_reply_emitted);
     milter_manager_children_quit(children);
+}
+
+void
+test_retry_negotiate_failure (void)
+{
+    gchar *command;
+    expected_error = g_error_new(MILTER_SERVER_CONTEXT_ERROR,
+                                 MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE,
+                                 "Failed to connect(): "
+                                 "%s",
+                                 g_strerror(ECONNREFUSED));
+    option = milter_option_new(2,
+                               MILTER_ACTION_ADD_HEADERS |
+                               MILTER_ACTION_CHANGE_BODY,
+                               MILTER_STEP_NONE);
+    g_object_set(config,
+                 "privilege-mode", TRUE,
+                 NULL);
+    command = g_build_filename(milter_manager_test_get_base_dir(),
+                               "lib",
+                               "milter-test-client.rb",
+                               NULL);
+    cut_take_string(command);
+    start_client(10026);
+
+    add_child_with_command_and_options("milter@10026",
+                                       "inet:10026@localhost",
+                                       command,
+                                       "--print-status "
+                                       "--timeout=3.0 "
+                                       "--port=10026");
+    add_child_with_command_and_options("milter@10027",
+                                       "inet:10027@localhost",
+                                       "/bin/echo",
+                                       "-n");
+
+    milter_manager_children_negotiate(children, option);
+    wait_reply(n_negotiate_reply_emitted);
+    milter_manager_children_quit(children);
+    cut_assert_equal_uint(1, n_error_emitted);
+    gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
