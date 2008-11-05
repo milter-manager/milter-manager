@@ -35,6 +35,7 @@
 	* test/lib/milter-manager-test-server.c: Accessors.
 	* test/lib/milter-test-client.rb: "--envelope-from" option.
 	* test/lib/milter-test-client.rb: "--change-from" option.
+	* test/lib/milter-test-client.rb: "--delete-recipient" option.
 
 2008-11-04  Kouhei Sutou  <kou@cozmixng.org>
 

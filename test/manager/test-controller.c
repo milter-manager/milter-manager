@@ -55,6 +55,7 @@ void test_abort (void);
 void test_unknown (void);
 void test_add_header (void);
 void test_change_from (void);
+void test_delete_recipient (void);
 
 static GKeyFile *key_file;
 
@@ -76,7 +77,7 @@ static gboolean finished;
 static gchar *quarantine_reason;
 
 static GList *test_clients;
-static GList *expected_headers;
+static GList *expected_list;
 
 static MilterStatus response_status;
 
@@ -155,7 +156,7 @@ setup (void)
 
     finished = FALSE;
     quarantine_reason = NULL;
-    expected_headers = NULL;
+    expected_list = NULL;
 }
 
 static void
@@ -221,8 +222,8 @@ teardown (void)
         g_list_free(test_clients);
     }
 
-    if (expected_headers) {
-        g_list_free(expected_headers);
+    if (expected_list) {
+        g_list_free(expected_list);
     }
 
     if (quarantine_reason)
@@ -1259,11 +1260,11 @@ test_add_header (void)
     const GList *headers;
     gchar *header_string;
 
-    expected_headers =
-        g_list_append(expected_headers,
+    expected_list =
+        g_list_append(expected_list,
                       &header1); 
-    expected_headers =
-        g_list_append(expected_headers,
+    expected_list =
+        g_list_append(expected_list,
                       &header2); 
 
     header_string = g_strdup_printf("%s:%s", header1.name, header1.value);
@@ -1286,7 +1287,7 @@ test_add_header (void)
         milter_manager_test_server_get_n_add_headers(server));
 
     headers = milter_manager_test_server_get_add_headers(server);
-    gcut_assert_equal_list(expected_headers, headers,
+    gcut_assert_equal_list(expected_list, headers,
                            (GEqualFunc)milter_manager_test_header_equal,
                            (GCutInspectFunc)milter_manager_test_header_inspect,
                            NULL);
@@ -1311,6 +1312,50 @@ test_change_from (void)
 
     cut_assert_equal_string(from,
                             milter_manager_test_server_get_from(server));
+}
+
+void
+test_delete_recipient (void)
+{
+    const gchar recipient1[] = "delete1@example.com";
+    const gchar recipient2[] = "delete2@example.com";
+    const gchar recipient3[] = "delete3@example.com";
+    GList *actual_recipients;
+
+    expected_list =
+        g_list_append(expected_list,
+                      &recipient1); 
+    expected_list =
+        g_list_append(expected_list,
+                      &recipient2); 
+    expected_list =
+        g_list_append(expected_list,
+                      &recipient2); 
+    expected_list =
+        g_list_append(expected_list,
+                      &recipient3); 
+    
+    arguments_append(arguments1,
+                     "--delete-recipient", recipient1,
+                     "--delete-recipient", recipient2,
+                     NULL);
+    arguments_append(arguments2,
+                     "--delete-recipient", recipient2,
+                     "--delete-recipient", recipient3,
+                     NULL);
+
+    cut_trace(test_end_of_message(NULL));
+
+    cut_trace(milter_manager_test_server_wait_signal(server));
+
+    cut_assert_equal_uint(
+        4,
+        milter_manager_test_server_get_n_delete_recipients(server));
+
+    actual_recipients = 
+        g_list_sort((GList*)milter_manager_test_server_get_delete_recipients(server),
+                    (GCompareFunc)strcmp);
+    gcut_assert_equal_list_string(expected_list, actual_recipients);
 }
 
 /*

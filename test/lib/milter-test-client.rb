@@ -79,6 +79,11 @@ class MilterTestClient
         @change_froms << from
       end
 
+      opts.on("--delete-recipient=RECIPIENT",
+              "Send 'delete-recipient' with RECIPIENT") do |recipient|
+        @delete_recipients << recipient
+      end
+
       opts.on("--envelope-recipient=RECIPIENT",
               "Add RECIPIENT targets to be applied ACTION") do |recipient|
         @recipients << [@current_action, recipient]
@@ -113,6 +118,7 @@ class MilterTestClient
     @add_headers = []
     @recipients = []
     @change_froms = []
+    @delete_recipients = []
     @senders = []
     @body_chunks = []
     @end_of_message_chunks = []
@@ -280,6 +286,10 @@ class MilterTestClient
 
     @change_froms.each do |from|
       write(:end_of_message, :change_from, from)
+    end
+
+    @delete_recipients.each do |recipient|
+      write(:end_of_message, :delete_recipient, recipient)
     end
 
     @end_of_message_chunks.each do |action, end_of_message_chunk|
