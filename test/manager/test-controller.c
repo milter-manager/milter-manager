@@ -55,6 +55,8 @@ void test_abort (void);
 void test_unknown (void);
 void test_add_header (void);
 
+static GKeyFile *key_file;
+
 static MilterManagerConfiguration *config;
 static MilterClientContext *client_context;
 static MilterManagerController *controller;
@@ -114,6 +116,12 @@ setup_controller_signals (MilterManagerController *controller)
 void
 setup (void)
 {
+    cut_set_fixture_data_dir(milter_manager_test_get_base_dir(),
+                             "fixtures",
+                             "controller",
+                             NULL);
+    key_file = NULL;
+
     config = milter_manager_configuration_new(NULL);
     add_load_path(g_getenv("MILTER_MANAGER_CONFIG_DIR"));
     milter_manager_configuration_load(config, "milter-manager.conf");
@@ -180,6 +188,9 @@ arguments_free (GArray *arguments)
 void
 teardown (void)
 {
+    if (key_file)
+        g_key_file_free(key_file);
+
     if (config)
         g_object_unref(config);
     if (client_context)
@@ -334,14 +345,43 @@ wait_finished_helper (void)
     cut_assert_true(finished);
 }
 
+static MilterOption *
+milter_option_new_from_key_file (GKeyFile *key_file, const gchar *group_name)
+{
+    GError *error = NULL;
+    guint32 version;
+    MilterActionFlags action;
+    MilterStepFlags step;
+
+    version = g_key_file_get_integer(key_file, group_name, "version", &error);
+    gcut_assert_error(error);
+
+    action = gcut_key_file_get_flags(key_file, group_name, "action",
+                                     MILTER_TYPE_ACTION_FLAGS, &error);
+    gcut_assert_error(error);
+
+    step = gcut_key_file_get_flags(key_file, group_name, "step",
+                                   MILTER_TYPE_STEP_FLAGS, &error);
+    gcut_assert_error(error);
+
+    return milter_option_new(version, action, step);
+}
+
 void
 test_negotiate (void)
 {
-    option = milter_option_new(2,
-                               MILTER_ACTION_ADD_HEADERS |
-                               MILTER_ACTION_CHANGE_BODY |
-                               MILTER_ACTION_QUARANTINE,
-                               MILTER_STEP_NONE);
+    GError *error = NULL;
+    gchar *key_file_path;
+
+    key_file = g_key_file_new();
+    key_file_path = cut_build_fixture_data_path("negotiate.txt", NULL);
+    g_key_file_load_from_file(key_file, key_file_path,
+                              G_KEY_FILE_KEEP_COMMENTS,
+                              &error);
+    g_free(key_file_path);
+    gcut_assert_error(error);
+
+    option = milter_option_new_from_key_file(key_file, "negotiate");
 
     start_client(10026, arguments1);
     start_client(10027, arguments2);
@@ -567,11 +607,12 @@ test_envelope_recipient_accept (void)
                           collect_n_received(envelope_recipient));
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
                            MILTER_STATUS_CONTINUE, response_status);
+
     milter_manager_controller_data(controller);
     wait_response("data");
     cut_assert_equal_uint(g_list_length(test_clients) - 1,
-                          /* the child which returns "ACCEPT" must die */
-                          collect_n_received(data));
+                          collect_n_received(data),
+                          "the child which returns 'ACCEPT' must die");
 }
 
 void
@@ -595,8 +636,9 @@ test_envelope_recipient_both_accept (void)
     cut_assert_equal_uint(g_list_length(test_clients) * 2,
                           collect_n_received(envelope_recipient));
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
-                           MILTER_STATUS_ACCEPT, response_status);
-    /* Check the process is ended if both children returns ACCEPT. */
+                           MILTER_STATUS_ACCEPT, response_status,
+                           "Check the process is ended "
+                           "if both children returns ACCEPT.");
     wait_finished();
 }
 
@@ -618,6 +660,7 @@ test_envelope_recipient_reject (void)
                           collect_n_received(envelope_recipient));
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
                            MILTER_STATUS_REJECT, response_status);
+
     milter_manager_controller_data(controller);
     wait_response("data");
     cut_assert_equal_uint(g_list_length(test_clients),
@@ -628,7 +671,8 @@ void
 test_envelope_recipient_reject_and_temporary_failure_and_discard (void)
 {
     const gchar reject_recipient[] = "kou+rejected@cozmixng.org";
-    const gchar temporary_failure_recipient[] = "kou+temporary_failure@cozmixng.org";
+    const gchar temporary_failure_recipient[] =
+        "kou+temporary_failure@cozmixng.org";
     const gchar discard_recipient[] = "kou+discarded@cozmixng.org";
 
     arguments_append(arguments1,
@@ -730,8 +774,9 @@ test_envelope_recipient_temporary_failure (void)
     milter_manager_controller_data(controller);
     wait_response("data");
     cut_assert_equal_uint(g_list_length(test_clients),
-                          /* the child which returns "TEMPORARY_FAILURE" must live */
-                          collect_n_received(data));
+                          collect_n_received(data),
+                          "the child which returns 'TEMPORARY_FAILURE' "
+                          "must live");
 }
 
 void
@@ -755,8 +800,9 @@ test_envelope_recipient_both_temporary_failure (void)
     cut_assert_equal_uint(g_list_length(test_clients) * 2,
                           collect_n_received(envelope_recipient));
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
-                           MILTER_STATUS_TEMPORARY_FAILURE, response_status);
-    /* The process goes on even if TEMPORARY_FAILURE returns in ENVELOPE_RECIPIENT. */
+                           MILTER_STATUS_TEMPORARY_FAILURE, response_status,
+                           "The process goes on even if TEMPORARY_FAILURE "
+                           "returns in ENVELOPE_RECIPIENT.");
     milter_manager_controller_data(controller);
     wait_response("data");
     cut_assert_equal_uint(g_list_length(test_clients),
@@ -1020,7 +1066,7 @@ assert_accept_body_test (gpointer test_data)
 {
     AcceptBodyTestData *data = test_data;
 
-    milter_manager_controller_body(controller, 
+    milter_manager_controller_body(controller,
                                    data->first_chunk,
                                    strlen(data->first_chunk));
     wait_response("body");
@@ -1051,7 +1097,7 @@ static gpointer
 accept_body_test_data_new (const gchar *first_chunk, const gchar *second_chunk)
 {
     AcceptBodyTestData *accept_data;
-    
+
     accept_data = g_new0(AcceptBodyTestData, 1);
     accept_data->first_chunk = g_strdup(first_chunk);
     accept_data->second_chunk = g_strdup(second_chunk);

@@ -1,0 +1,5 @@
+[negotiate]
+
+version=2
+action=add-headers|change-body|quarantine
+step=none

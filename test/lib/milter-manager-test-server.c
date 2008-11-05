@@ -60,8 +60,11 @@ enum
 static MilterReplySignals *reply_parent;
 static void reply_init (MilterReplySignalsClass *reply);
 
-G_DEFINE_TYPE_WITH_CODE(MilterManagerTestServer, milter_manager_test_server, MILTER_TYPE_SERVER_CONTEXT,
-    G_IMPLEMENT_INTERFACE(MILTER_TYPE_REPLY_SIGNALS, reply_init))
+G_DEFINE_TYPE_WITH_CODE(MilterManagerTestServer,
+                        milter_manager_test_server,
+                        MILTER_TYPE_SERVER_CONTEXT,
+                        G_IMPLEMENT_INTERFACE(MILTER_TYPE_REPLY_SIGNALS,
+                                              reply_init))
 
 static void dispose        (GObject         *object);
 static void set_property   (GObject         *object,

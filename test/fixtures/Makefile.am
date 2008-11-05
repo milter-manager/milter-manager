@@ -1,2 +1,3 @@
 SUBDIRS =		\
-	configuration
+	configuration	\
+	controller
