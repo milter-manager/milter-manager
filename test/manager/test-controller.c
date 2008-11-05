@@ -28,6 +28,7 @@
 #include <milter-manager-test-server.h>
 #undef shutdown
 
+void test_scenario (void);
 void test_negotiate (void);
 void test_connect (void);
 void test_helo (void);
@@ -326,6 +327,22 @@ start_client (guint port, GArray *arguments)
     }
 }
 
+static void
+start_client_with_string_list (guint port, gchar **argument_strings)
+{
+    GArray *arguments;
+    gchar **argument;
+
+    arguments = g_array_new(TRUE, TRUE, sizeof(gchar *));
+    if (argument_strings) {
+        for (argument = argument_strings; *argument; argument++) {
+            g_array_append_val(arguments, *argument);
+        }
+    }
+    /* cut_take(arguments, g_array_free); */
+    start_client(port, arguments);
+}
+
 #define wait_finished()                    \
     cut_trace_with_info_expression(        \
         wait_finished_helper(),            \
@@ -368,6 +385,346 @@ milter_option_new_from_key_file (GKeyFile *key_file, const gchar *group_name)
     gcut_assert_error(error);
 
     return milter_option_new(version, action, step);
+}
+
+static void
+load_scenario (const gchar *name)
+{
+    GError *error = NULL;
+    gchar *key_file_path;
+
+    key_file = g_key_file_new();
+    key_file_path = cut_build_fixture_data_path(name, NULL);
+    g_key_file_load_from_file(key_file, key_file_path,
+                              G_KEY_FILE_KEEP_COMMENTS,
+                              &error);
+    g_free(key_file_path);
+    gcut_assert_error(error);
+}
+
+static void
+setup_client (const gchar *name)
+{
+    GError *error = NULL;
+    guint port;
+    gsize length;
+    gchar **arguments = NULL;
+
+    port = g_key_file_get_integer(key_file, name, "port", &error);
+    gcut_assert_error(error);
+    if (g_key_file_has_key(key_file, name, "arguments", &error)) {
+        arguments = g_key_file_get_string_list(key_file, name, "arguments",
+                                               &length, &error);
+    }
+    gcut_assert_error(error);
+
+    cut_take_string_array(arguments);
+    start_client_with_string_list(port, arguments);
+}
+
+static void
+setup_clients (const gchar *group_name)
+{
+    GError *error = NULL;
+    gchar **clients;
+    gsize length, i;
+
+    clients = g_key_file_get_string_list(key_file, group_name, "clients",
+                                         &length, &error);
+    gcut_assert_error(error);
+
+    cut_take_string_array(clients);
+    for (i = 0; i < length; i++) {
+        cut_trace(setup_client(clients[i]));
+    }
+}
+
+static MilterManagerTestClientGetNReceived
+response_to_get_n_received (const gchar *response)
+{
+    if (g_str_equal(response, "negotiate")) {
+        return milter_manager_test_client_get_n_negotiate_received;
+    } else if (g_str_equal(response, "connect")) {
+        return milter_manager_test_client_get_n_connect_received;
+    } else if (g_str_equal(response, "helo")) {
+        return milter_manager_test_client_get_n_helo_received;
+    } else if (g_str_equal(response, "envelope-from")) {
+        return milter_manager_test_client_get_n_envelope_from_received;
+    } else if (g_str_equal(response, "envelope-recipient")) {
+        return milter_manager_test_client_get_n_envelope_recipient_received;
+    } else if (g_str_equal(response, "data")) {
+        return milter_manager_test_client_get_n_data_received;
+    } else if (g_str_equal(response, "header")) {
+        return milter_manager_test_client_get_n_header_received;
+    } else if (g_str_equal(response, "end-of-header")) {
+        return milter_manager_test_client_get_n_end_of_header_received;
+    } else if (g_str_equal(response, "body")) {
+        return milter_manager_test_client_get_n_body_received;
+    } else if (g_str_equal(response, "end-of-message")) {
+        return milter_manager_test_client_get_n_end_of_message_received;
+    }
+
+    return NULL;
+}
+
+static void
+assert_response (const gchar *name)
+{
+    GError *error = NULL;
+    MilterManagerTestClientGetNReceived get_n_received;
+    guint n_received, actual_n_received;
+    gchar *response;
+
+    n_received = g_key_file_get_integer(key_file, name, "n_received", &error);
+    gcut_assert_error(error);
+
+    response = g_key_file_get_string(key_file, name, "response", &error);
+    gcut_assert_error(error, "group: <%s>", name);
+    cut_take_string(response);
+
+    cut_trace(wait_response_helper(cut_take_printf("%s-response", response)));
+    get_n_received = response_to_get_n_received(response);
+    cut_assert_not_null(get_n_received, "response: <%s>(%s)", response, name);
+    actual_n_received =
+        milter_manager_test_clients_collect_n_received(test_clients,
+                                                       get_n_received);
+    cut_assert_equal_uint(n_received, actual_n_received);
+}
+
+static void
+do_negotiate (const gchar *group)
+{
+    option = milter_option_new_from_key_file(key_file, group);
+
+    milter_server_context_negotiate(MILTER_SERVER_CONTEXT(server), option);
+    milter_manager_controller_negotiate(controller, option);
+    cut_trace(assert_response(group));
+}
+
+static void
+do_connect (const gchar *group)
+{
+    GError *error = NULL;
+    gchar *host;
+    gchar *address_spec;
+    gint domain;
+    struct sockaddr *address;
+    socklen_t address_size;
+
+    host = g_key_file_get_string(key_file, group, "host", &error);
+    gcut_assert_error(error);
+    cut_take_string(host);
+
+    address_spec = g_key_file_get_string(key_file, group, "address", &error);
+    gcut_assert_error(error);
+    cut_take_string(address_spec);
+
+    milter_utils_parse_connection_spec(address_spec,
+                                       &domain,
+                                       &address,
+                                       &address_size,
+                                       &error);
+    gcut_assert_error(error);
+
+    milter_manager_controller_connect(controller, host, address, address_size);
+    g_free(address);
+
+    cut_trace(assert_response(group));
+}
+
+static void
+do_helo (const gchar *group)
+{
+    GError *error = NULL;
+    gchar *fqdn;
+
+    fqdn = g_key_file_get_string(key_file, group, "fqdn", &error);
+    gcut_assert_error(error);
+    cut_take_string(fqdn);
+
+    milter_manager_controller_helo(controller, fqdn);
+
+    cut_trace(assert_response(group));
+}
+
+static void
+do_envelope_from (const gchar *group)
+{
+    GError *error = NULL;
+    gchar *from;
+
+    from = g_key_file_get_string(key_file, group, "from", &error);
+    gcut_assert_error(error);
+    cut_take_string(from);
+
+    milter_manager_controller_envelope_from(controller, from);
+
+    cut_trace(assert_response(group));
+}
+
+static void
+do_envelope_recipient (const gchar *group)
+{
+    GError *error = NULL;
+    gchar *recipient;
+
+    recipient = g_key_file_get_string(key_file, group, "recipient", &error);
+    gcut_assert_error(error);
+    cut_take_string(recipient);
+
+    milter_manager_controller_envelope_recipient(controller, recipient);
+
+    cut_trace(assert_response(group));
+}
+
+static void
+do_data (const gchar *group)
+{
+    milter_manager_controller_data(controller);
+
+    cut_trace(assert_response(group));
+}
+
+static void
+do_header (const gchar *group)
+{
+    MilterManagerTestClient *client;
+    GError *error = NULL;
+    gchar *name, *value;
+
+    name = g_key_file_get_string(key_file, group, "name", &error);
+    gcut_assert_error(error);
+    cut_take_string(name);
+
+    value = g_key_file_get_string(key_file, group, "value", &error);
+    gcut_assert_error(error);
+    cut_take_string(value);
+
+    milter_manager_controller_header(controller, name, value);
+
+    cut_trace(assert_response(group));
+
+    client = test_clients->data;
+    cut_assert_equal_string(name, get_received_data(header_name));
+    cut_assert_equal_string(value, get_received_data(header_value));
+}
+
+static void
+do_end_of_header (const gchar *group)
+{
+    milter_manager_controller_end_of_header(controller);
+
+    cut_trace(assert_response(group));
+}
+
+static void
+do_body (const gchar *group)
+{
+    MilterManagerTestClient *client;
+    GError *error = NULL;
+    gchar *chunk;
+
+    chunk = g_key_file_get_string(key_file, group, "chunk", &error);
+    gcut_assert_error(error);
+    cut_take_string(chunk);
+
+    milter_manager_controller_body(controller, chunk, strlen(chunk));
+
+    cut_trace(assert_response(group));
+
+    client = test_clients->next->data;
+    cut_assert_equal_string(chunk, get_received_data(body_chunk));
+}
+
+static void
+do_end_of_message (const gchar *group)
+{
+    GError *error = NULL;
+    gchar *chunk = NULL;
+
+    if (g_key_file_has_key(key_file, group, "chunk", &error))
+        chunk = g_key_file_get_string(key_file, group, "chunk", &error);
+    gcut_assert_error(error);
+    if (chunk)
+        cut_take_string(chunk);
+
+    milter_manager_controller_end_of_message(controller,
+                                             chunk,
+                                             chunk ? strlen(chunk) : 0);
+
+    cut_trace(assert_response(group));
+}
+
+static void
+do_action (const gchar *group)
+{
+    GError *error = NULL;
+    MilterCommand command;
+
+    command = gcut_key_file_get_enum(key_file, group, "command",
+                                     MILTER_TYPE_COMMAND, &error);
+    gcut_assert_error(error, "group: <%s>", group);
+
+    switch (command) {
+      case MILTER_COMMAND_NEGOTIATE:
+        cut_trace(do_negotiate(group));
+        break;
+      case MILTER_COMMAND_CONNECT:
+        cut_trace(do_connect(group));
+        break;
+      case MILTER_COMMAND_HELO:
+        cut_trace(do_helo(group));
+        break;
+      case MILTER_COMMAND_MAIL:
+        cut_trace(do_envelope_from(group));
+        break;
+      case MILTER_COMMAND_RCPT:
+        cut_trace(do_envelope_recipient(group));
+        break;
+      case MILTER_COMMAND_DATA:
+        cut_trace(do_data(group));
+        break;
+      case MILTER_COMMAND_HEADER:
+        cut_trace(do_header(group));
+        break;
+      case MILTER_COMMAND_END_OF_HEADER:
+        cut_trace(do_end_of_header(group));
+        break;
+      case MILTER_COMMAND_BODY:
+        cut_trace(do_body(group));
+        break;
+      case MILTER_COMMAND_END_OF_MESSAGE:
+        cut_trace(do_end_of_message(group));
+        break;
+      default:
+        cut_error("unknown command: <%c>(<%s>)", command, group);
+        break;
+    }
+}
+
+static void
+do_actions (const gchar *group_name)
+{
+    GError *error = NULL;
+    gsize length, i;
+    gchar **actions;
+
+    actions = g_key_file_get_string_list(key_file, group_name, "actions",
+                                         &length, &error);
+    gcut_assert_error(error);
+
+    cut_take_string_array(actions);
+    for (i = 0; i < length; i++) {
+        cut_trace(do_action(actions[i]));
+    }
+}
+
+void
+test_scenario (void)
+{
+    cut_trace(load_scenario("body-skip.txt"));
+    cut_trace(setup_clients("scenario"));
+    cut_trace(do_actions("scenario"));
 }
 
 void
