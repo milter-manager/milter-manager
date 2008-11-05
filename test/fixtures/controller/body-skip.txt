@@ -1,7 +1,7 @@
 [scenario]
 clients=client10026;client10027
-import=negotiate.txt
-actions=connect;helo;envelope-from;envelope-recipient;data;header-from;end-of-header;body-skip;body;end-of-message
+import=connect.txt
+actions=helo;envelope-from;envelope-recipient;data;header-from;end-of-header;body-skip;body;end-of-message
 
 [client10026]
 port=10026
@@ -9,16 +9,6 @@ arguments=--action;skip;--body;Skip
 
 [client10027]
 port=10027
-
-[connect]
-command=connect
-
-host=mx.local.net
-address=inet:2929@192.168.1.29
-
-response=connect
-n_received=2
-status=continue
 
 [helo]
 command=helo

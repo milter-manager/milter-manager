@@ -2,6 +2,10 @@
 
 	* test/manager/test-controller.c,
 	test/fixtures/controller/body-skip.txt,
+	test/fixtures/controller/connect.txt: support nested import.
+
+	* test/manager/test-controller.c,
+	test/fixtures/controller/body-skip.txt,
 	test/fixtures/controller/negotiate.txt: implement import.
 
 	* test/manager/test-controller.c,

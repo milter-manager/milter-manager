@@ -405,7 +405,7 @@ import_scenario (GKeyFile *scenario, const gchar *scenario_name)
     GKeyFile *imported_scenario = NULL;
 
     cut_trace(load_scenario(scenario_name, &imported_scenario));
-    imported_scenarios = g_list_prepend(imported_scenarios, imported_scenario);
+    imported_scenarios = g_list_append(imported_scenarios, imported_scenario);
 }
 
 static void
@@ -793,6 +793,7 @@ void
 data_scenario (void)
 {
     cut_add_data("negotiate", g_strdup("negotiate.txt"), g_free,
+                 "connect", g_strdup("connect.txt"), g_free,
                  "body-skip", g_strdup("body-skip.txt"), g_free);
 }
 
