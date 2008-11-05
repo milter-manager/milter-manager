@@ -55,6 +55,7 @@ void test_abort (void);
 void test_unknown (void);
 void test_add_header (void);
 void test_change_from (void);
+void test_add_recipient (void);
 void test_delete_recipient (void);
 
 static GKeyFile *key_file;
@@ -1312,6 +1313,51 @@ test_change_from (void)
 
     cut_assert_equal_string(from,
                             milter_manager_test_server_get_from(server));
+}
+
+void
+test_add_recipient (void)
+{
+    MilterManagerTestValueWithParam recipient1 = {"add1@example.com", NULL};
+    MilterManagerTestValueWithParam recipient2 = {"add2@example.com", NULL};
+    MilterManagerTestValueWithParam recipient3 = {"add3@example.com", NULL};
+    const GList *actual_recipients;
+
+    expected_list =
+        g_list_append(expected_list,
+                      &recipient1); 
+    expected_list =
+        g_list_append(expected_list,
+                      &recipient2); 
+    expected_list =
+        g_list_append(expected_list,
+                      &recipient2); 
+    expected_list =
+        g_list_append(expected_list,
+                      &recipient3); 
+    
+    arguments_append(arguments1,
+                     "--add-recipient", recipient1.value,
+                     "--add-recipient", recipient2.value,
+                     NULL);
+    arguments_append(arguments2,
+                     "--add-recipient", recipient2.value,
+                     "--add-recipient", recipient3.value,
+                     NULL);
+
+    cut_trace(test_end_of_message(NULL));
+
+    cut_trace(milter_manager_test_server_wait_signal(server));
+
+    cut_assert_equal_uint(
+        4,
+        milter_manager_test_server_get_n_add_recipients(server));
+
+    actual_recipients = milter_manager_test_server_get_add_recipients(server);
+    gcut_assert_equal_list(expected_list, actual_recipients,
+                           (GEqualFunc)milter_manager_test_value_with_param_equal,
+                           (GCutInspectFunc)milter_manager_test_value_with_param_inspect,
+                           NULL);
 }
 
 void

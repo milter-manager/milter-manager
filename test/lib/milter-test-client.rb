@@ -79,6 +79,11 @@ class MilterTestClient
         @change_froms << from
       end
 
+      opts.on("--add-recipient=RECIPIENT",
+              "Send 'add-recipient' with RECIPIENT") do |recipient|
+        @add_recipients << recipient
+      end
+
       opts.on("--delete-recipient=RECIPIENT",
               "Send 'delete-recipient' with RECIPIENT") do |recipient|
         @delete_recipients << recipient
@@ -117,6 +122,7 @@ class MilterTestClient
     @quarantine_reason = nil
     @add_headers = []
     @recipients = []
+    @add_recipients = []
     @change_froms = []
     @delete_recipients = []
     @senders = []
@@ -286,6 +292,10 @@ class MilterTestClient
 
     @change_froms.each do |from|
       write(:end_of_message, :change_from, from)
+    end
+
+    @add_recipients.each do |recipient|
+      write(:end_of_message, :add_recipient, recipient)
     end
 
     @delete_recipients.each do |recipient|
