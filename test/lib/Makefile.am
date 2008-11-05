@@ -9,8 +9,9 @@ EXTRA_DISTS =			\
 INCLUDES =			\
 	-I$(top_srcdir)
 
-AM_CFLAGS = 			\
-	$(GCUTTER_CFLAGS)	\
+AM_CFLAGS = 				\
+	-DCUT_RELATIVE_PATH="\"lib\""	\
+	$(GCUTTER_CFLAGS)		\
 	$(MILTER_MANAGER_CFLAGS)
 
 AM_LDFLAGS =			\

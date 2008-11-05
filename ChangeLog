@@ -1,5 +1,7 @@
 2008-11-05  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/lib/Makefile.am: set CUT_RELATIVE_PATH.
+
 	* test/manager/test-controller.c, test/fixtures/controller/: use
 	GKeyFile to create MilterOption.
 
