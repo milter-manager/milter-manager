@@ -47,10 +47,14 @@ milter_manager_test_get_base_dir (void)
     return base_dir;
 }
 
-gchar *
-milter_manager_test_header_inspect (MilterManagerTestHeader *header)
+void
+milter_manager_test_header_inspect (GString *string,
+                                    MilterManagerTestHeader *header,
+                                    gpointer user_data)
 {
-    return g_strdup_printf("<%s = %s>", header->name, header->value);
+    g_string_append_printf(string,
+                           "<%s = %s>",
+                           header->name, header->value);
 }
 
 gboolean

@@ -37,9 +37,11 @@ MilterManagerTestHeader *milter_manager_test_header_new
                                                  const gchar *value);
 void                     milter_manager_test_header_free
                                                 (MilterManagerTestHeader *header);
-gchar                   *milter_manager_test_header_inspect
-                                                (MilterManagerTestHeader *header);
-gboolean                  milter_manager_test_header_equal
+void                     milter_manager_test_header_inspect
+                                                (GString *string,
+                                                 MilterManagerTestHeader *header,
+                                                 gpointer user_data);
+gboolean                 milter_manager_test_header_equal
                                                 (MilterManagerTestHeader *header_a,
                                                  MilterManagerTestHeader *header_b);
 

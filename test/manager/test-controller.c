@@ -1023,8 +1023,9 @@ test_add_header (void)
 
     headers = milter_manager_test_server_get_headers(server);
     gcut_assert_equal_list(expected_headers, headers,
-                           milter_manager_test_header_equal,
-                           milter_manager_test_header_inspect);
+                           (GEqualFunc)milter_manager_test_header_equal,
+                           (GCutInspectFunc)milter_manager_test_header_inspect,
+                           NULL);
 }
 
 /*
