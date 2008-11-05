@@ -920,7 +920,8 @@ test_end_of_message (gconstpointer data)
     else
         chunk_size = 0;
 
-    milter_server_context_end_of_message(MILTER_SERVER_CONTEXT(server), NULL, 0);
+    milter_server_context_set_state(MILTER_SERVER_CONTEXT(server), 
+                                    MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE);
     milter_manager_controller_end_of_message(controller, chunk, chunk_size);
     wait_response("end-of-message");
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
