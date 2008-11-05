@@ -179,6 +179,20 @@ dispose (GObject *object)
         priv->add_headers = NULL;
     }
 
+    if (priv->change_headers) {
+        g_list_foreach(priv->change_headers,
+                       (GFunc)milter_manager_test_header_free, NULL);
+        g_list_free(priv->change_headers);
+        priv->change_headers = NULL;
+    }
+
+    if (priv->insert_headers) {
+        g_list_foreach(priv->insert_headers,
+                       (GFunc)milter_manager_test_header_free, NULL);
+        g_list_free(priv->insert_headers);
+        priv->insert_headers = NULL;
+    }
+
     if (priv->add_recipients) {
         g_list_foreach(priv->add_recipients, (GFunc)g_free, NULL);
         g_list_free(priv->add_recipients);
@@ -276,6 +290,8 @@ insert_header (MilterReplySignals *reply,
 
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
     priv->n_insert_headers++;
+    priv->insert_headers = g_list_append(priv->insert_headers,
+                                         milter_manager_test_header_new(index, name, value));
 }
 
 static void
@@ -288,6 +304,8 @@ change_header (MilterReplySignals *reply,
 
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
     priv->n_change_headers++;
+    priv->change_headers = g_list_append(priv->change_headers,
+                                         milter_manager_test_header_new(index, name, value));
 }
 
 static void
