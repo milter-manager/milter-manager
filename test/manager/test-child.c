@@ -23,9 +23,11 @@
 #include <milter-manager-test-utils.h>
 #include <milter/manager/milter-manager-child.h>
 #undef shutdown
+#include <string.h>
 
 void test_start (void);
 void test_start_by_user (void);
+void test_start_by_inexistent_user (void);
 void test_exit_error (void);
 
 static MilterManagerChild *milter;
@@ -89,6 +91,23 @@ test_start_by_user (void)
                  NULL);
     milter_manager_child_start(milter, &error);
     gcut_assert_error(error);
+}
+
+void
+test_start_by_inexistent_user (void)
+{
+    const gchar inexistent_user[] = "Who are you?";
+
+    expected_error = g_error_new(MILTER_MANAGER_CHILD_ERROR,
+                                 MILTER_MANAGER_CHILD_ERROR_INVALID_USER_NAME,
+                                 "No passwd entry for %s: %s",
+                                 inexistent_user, strerror(0));
+    g_object_set(milter,
+                 "command", "/bin/echo",
+                 "user-name", inexistent_user,
+                 NULL);
+    milter_manager_child_start(milter, &actual_error);
+    gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
