@@ -54,6 +54,7 @@ void test_quit (void);
 void test_abort (void);
 void test_unknown (void);
 void test_add_header (void);
+void test_change_from (void);
 
 static GKeyFile *key_file;
 
@@ -1289,6 +1290,27 @@ test_add_header (void)
                            (GEqualFunc)milter_manager_test_header_equal,
                            (GCutInspectFunc)milter_manager_test_header_inspect,
                            NULL);
+}
+
+void
+test_change_from (void)
+{
+    const gchar from[] = "change@example.com";
+
+    arguments_append(arguments1,
+                     "--change-from", from,
+                     NULL);
+
+    cut_trace(test_end_of_message(NULL));
+
+    cut_trace(milter_manager_test_server_wait_signal(server));
+
+    cut_assert_equal_uint(
+        1,
+        milter_manager_test_server_get_n_change_froms(server));
+
+    cut_assert_equal_string(from,
+                            milter_manager_test_server_get_from(server));
 }
 
 /*
