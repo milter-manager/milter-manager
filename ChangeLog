@@ -15,6 +15,8 @@
 	* test/lib/milter-manager-test-utils.[ch]: Added
 	milter_manager_test_header_equal.
 	* test/manager/test-controller.c: Check header name and value.
+	* test/manager/test-controller.c: Send different header from
+	test-client respectively.
 
 2008-11-04  Kouhei Sutou  <kou@cozmixng.org>
 

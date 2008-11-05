@@ -209,8 +209,6 @@ teardown (void)
     }
 
     if (expected_headers) {
-        g_list_foreach(expected_headers,
-                       (GFunc)milter_manager_test_header_free, NULL);
         g_list_free(expected_headers);
     }
 
@@ -998,18 +996,26 @@ test_unknown (void)
 void
 test_add_header (void)
 {
-    const gchar name[] = "X-Test-Header";
-    const gchar value[] = "Test Header Value";
+    MilterManagerTestHeader header1 = {"X-Test-Header1", "Test Header1 Value"};
+    MilterManagerTestHeader header2 = {"X-Test-Header2", "Test Header2 Value"};
     const GList *headers;
     gchar *header_string;
 
     expected_headers =
         g_list_append(expected_headers,
-                      milter_manager_test_header_new(name, value));
+                      &header1); 
+    expected_headers =
+        g_list_append(expected_headers,
+                      &header2); 
 
-    header_string = g_strdup_printf("%s:%s", name, value);
+    header_string = g_strdup_printf("%s:%s", header1.name, header1.value);
     cut_take_string(header_string);
     arguments_append(arguments1,
+                     "--add-header", header_string,
+                     NULL);
+    header_string = g_strdup_printf("%s:%s", header2.name, header2.value);
+    cut_take_string(header_string);
+    arguments_append(arguments2,
                      "--add-header", header_string,
                      NULL);
 
@@ -1018,7 +1024,7 @@ test_add_header (void)
     cut_trace(milter_manager_test_server_wait_signal(server));
 
     cut_assert_equal_uint(
-        1,
+        2,
         milter_manager_test_server_get_n_add_headers(server));
 
     headers = milter_manager_test_server_get_headers(server);
