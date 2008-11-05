@@ -1750,7 +1750,9 @@ test_add_header (void)
         2,
         milter_manager_test_server_get_n_add_headers(server));
 
-    headers = milter_manager_test_server_get_add_headers(server);
+    headers =
+        g_list_sort((GList*)milter_manager_test_server_get_add_headers(server),
+                   (GCompareFunc)milter_manager_test_header_compare);
     gcut_assert_equal_list(expected_list, headers,
                            (GEqualFunc)milter_manager_test_header_equal,
                            (GCutInspectFunc)milter_manager_test_header_inspect_without_index,
