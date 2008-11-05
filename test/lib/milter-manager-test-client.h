@@ -64,9 +64,15 @@ guint                    milter_manager_test_client_get_n_connect_received
                                               (MilterManagerTestClient *client);
 guint                    milter_manager_test_client_get_n_helo_received
                                               (MilterManagerTestClient *client);
+const gchar             *milter_manager_test_client_get_helo_fqdn
+                                              (MilterManagerTestClient *client);
 guint                    milter_manager_test_client_get_n_envelope_from_received
                                               (MilterManagerTestClient *client);
+const gchar             *milter_manager_test_client_get_envelope_from
+                                              (MilterManagerTestClient *client);
 guint                    milter_manager_test_client_get_n_envelope_recipient_received
+                                              (MilterManagerTestClient *client);
+const gchar             *milter_manager_test_client_get_envelope_recipient
                                               (MilterManagerTestClient *client);
 guint                    milter_manager_test_client_get_n_data_received
                                               (MilterManagerTestClient *client);

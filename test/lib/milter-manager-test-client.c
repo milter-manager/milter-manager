@@ -53,6 +53,9 @@ struct _MilterManagerTestClientPrivate
     guint n_abort_received;
     guint n_unknown_received;
 
+    gchar *helo_fqdn;
+    gchar *envelope_from;
+    gchar *envelope_recipient;
     gchar *header_name;
     gchar *header_value;
     gchar *body_chunk;
@@ -105,6 +108,9 @@ milter_manager_test_client_init (MilterManagerTestClient *test_client)
     priv->n_abort_received = 0;
     priv->n_unknown_received = 0;
 
+    priv->helo_fqdn = NULL;
+    priv->envelope_from = NULL;
+    priv->envelope_recipient = NULL;
     priv->header_name = NULL;
     priv->header_value = NULL;
     priv->body_chunk = NULL;
@@ -141,10 +147,25 @@ cb_output_received (GCutEgg *egg, const gchar *chunk, gsize size,
         priv->n_connect_received++;
     } else if (g_str_has_prefix(chunk, "receive: helo")) {
         priv->n_helo_received++;
+
+        if (priv->helo_fqdn)
+            g_free(priv->helo_fqdn);
+        priv->helo_fqdn =
+            receive_additional_info(chunk, size, "receive: helo: ");
     } else if (g_str_has_prefix(chunk, "receive: mail")) {
         priv->n_envelope_from_received++;
+
+        if (priv->envelope_from)
+            g_free(priv->envelope_from);
+        priv->envelope_from =
+            receive_additional_info(chunk, size, "receive: mail: ");
     } else if (g_str_has_prefix(chunk, "receive: rcpt")) {
         priv->n_envelope_recipient_received++;
+
+        if (priv->envelope_recipient)
+            g_free(priv->envelope_recipient);
+        priv->envelope_recipient =
+            receive_additional_info(chunk, size, "receive: rcpt: ");
     } else if (g_str_has_prefix(chunk, "receive: data")) {
         priv->n_data_received++;
     } else if (g_str_has_prefix(chunk, "receive: header")) {
@@ -285,6 +306,21 @@ dispose (GObject *object)
         priv->command = NULL;
     }
 
+    if (priv->helo_fqdn) {
+        g_free(priv->helo_fqdn);
+        priv->helo_fqdn = NULL;
+    }
+
+    if (priv->envelope_from) {
+        g_free(priv->envelope_from);
+        priv->envelope_from = NULL;
+    }
+
+    if (priv->envelope_recipient) {
+        g_free(priv->envelope_recipient);
+        priv->envelope_recipient = NULL;
+    }
+
     if (priv->header_name) {
         g_free(priv->header_name);
         priv->header_name = NULL;
@@ -414,16 +450,34 @@ milter_manager_test_client_get_n_helo_received (MilterManagerTestClient *client)
     return MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client)->n_helo_received;
 }
 
+const gchar *
+milter_manager_test_client_get_helo_fqdn (MilterManagerTestClient *client)
+{
+    return MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client)->helo_fqdn;
+}
+
 guint
 milter_manager_test_client_get_n_envelope_from_received (MilterManagerTestClient *client)
 {
     return MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client)->n_envelope_from_received;
 }
 
+const gchar *
+milter_manager_test_client_get_envelope_from (MilterManagerTestClient *client)
+{
+    return MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client)->envelope_from;
+}
+
 guint
 milter_manager_test_client_get_n_envelope_recipient_received (MilterManagerTestClient *client)
 {
     return MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client)->n_envelope_recipient_received;
+}
+
+const gchar *
+milter_manager_test_client_get_envelope_recipient (MilterManagerTestClient *client)
+{
+    return MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client)->envelope_recipient;
 }
 
 guint

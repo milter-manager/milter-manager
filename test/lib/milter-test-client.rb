@@ -213,6 +213,10 @@ class MilterTestClient
     write(:greeted, :continue)
   end
 
+  def info_helo(fqdn)
+    fqdn
+  end
+
   def do_mail(from)
     invalid_state(:mail) if @state != :greeted
     @mail_from = from
@@ -226,6 +230,10 @@ class MilterTestClient
     write(:mailed, :continue)
   end
 
+  def info_mail(from)
+    from
+  end
+
   def do_rcpt(to)
     invalid_state(:rcpt) unless [:mailed, :recipiented].include?(@state)
     @rcpt_to = to
@@ -237,6 +245,10 @@ class MilterTestClient
       end
     end
     write(:recipiented, :continue)
+  end
+
+  def info_rcpt(to)
+    to
   end
 
   def do_data
