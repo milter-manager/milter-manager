@@ -72,6 +72,7 @@ static gboolean finished;
 static gchar *quarantine_reason;
 
 static GList *test_clients;
+static GList *expected_headers;
 
 static MilterStatus response_status;
 
@@ -144,6 +145,7 @@ setup (void)
 
     finished = FALSE;
     quarantine_reason = NULL;
+    expected_headers = NULL;
 }
 
 static void
@@ -204,6 +206,12 @@ teardown (void)
     if (test_clients) {
         g_list_foreach(test_clients, (GFunc)g_object_unref, NULL);
         g_list_free(test_clients);
+    }
+
+    if (expected_headers) {
+        g_list_foreach(expected_headers,
+                       (GFunc)milter_manager_test_header_free, NULL);
+        g_list_free(expected_headers);
     }
 
     if (quarantine_reason)
@@ -990,8 +998,19 @@ test_unknown (void)
 void
 test_add_header (void)
 {
+    const gchar name[] = "X-Test-Header";
+    const gchar value[] = "Test Header Value";
+    const GList *headers;
+    gchar *header_string;
+
+    expected_headers =
+        g_list_append(expected_headers,
+                      milter_manager_test_header_new(name, value));
+
+    header_string = g_strdup_printf("%s:%s", name, value);
+    cut_take_string(header_string);
     arguments_append(arguments1,
-                     "--add-header", "X-Test-Header:Test Header Value",
+                     "--add-header", header_string,
                      NULL);
 
     cut_trace(test_end_of_message(NULL));
@@ -1001,6 +1020,11 @@ test_add_header (void)
     cut_assert_equal_uint(
         1,
         milter_manager_test_server_get_n_add_headers(server));
+
+    headers = milter_manager_test_server_get_headers(server);
+    gcut_assert_equal_list(expected_headers, headers,
+                           milter_manager_test_header_equal,
+                           milter_manager_test_header_inspect);
 }
 
 /*
