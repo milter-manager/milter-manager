@@ -18,6 +18,7 @@ step=none
 
 response=negotiate
 n_received=2
+status=default
 
 [connect]
 command=connect
@@ -27,6 +28,7 @@ address=inet:2929@192.168.1.29
 
 response=connect
 n_received=2
+status=continue
 
 [helo]
 command=helo
@@ -35,6 +37,7 @@ fqdn=delian
 
 response=helo
 n_received=2
+status=continue
 
 [envelope-from]
 command=mail
@@ -52,12 +55,14 @@ recipient=kou+receiver@cozmixng.org
 
 response=envelope-recipient
 n_received=2
+status=continue
 
 [data]
 command=data
 
 response=data
 n_received=2
+status=continue
 
 [header-from]
 command=header
@@ -67,12 +72,14 @@ value=kou+sender@cozmixng.org
 
 response=header
 n_received=2
+status=continue
 
 [end-of-header]
 command=end-of-header
 
 response=end-of-header
 n_received=2
+status=continue
 
 [body-skip]
 command=body
@@ -81,6 +88,7 @@ chunk=Skip
 
 response=body
 n_received=2
+status=continue
 
 [body]
 command=body
@@ -89,9 +97,11 @@ chunk=Hi,
 
 response=body
 n_received=3
+status=continue
 
 [end-of-message]
 command=end-of-message
 
 response=end-of-message
 n_received=2
+status=continue

@@ -467,28 +467,60 @@ response_to_get_n_received (const gchar *response)
     return NULL;
 }
 
-static void
-assert_response (const gchar *name)
+static gint
+get_integer (const gchar *group, const gchar *key)
 {
     GError *error = NULL;
+    gint value;
+
+    value = g_key_file_get_integer(key_file, group, key, &error);
+    gcut_assert_error(error, "group: <%s>", group);
+    return value;
+}
+
+static const gchar *
+get_string (const gchar *group, const gchar *key)
+{
+    GError *error = NULL;
+    gchar *value;
+
+    value = g_key_file_get_string(key_file, group, key, &error);
+    gcut_assert_error(error, "group: <%s>", group);
+    return cut_take_string(value);
+}
+
+static gint
+get_enum (const gchar *group, const gchar *key, GType enum_type)
+{
+    GError *error = NULL;
+    gint value;
+
+    value = gcut_key_file_get_enum(key_file, group, key, enum_type, &error);
+    gcut_assert_error(error, "group: <%s>", group);
+    return value;
+}
+
+
+static void
+assert_response (const gchar *group)
+{
     MilterManagerTestClientGetNReceived get_n_received;
     guint n_received, actual_n_received;
-    gchar *response;
+    const gchar *response;
+    MilterStatus status;
 
-    n_received = g_key_file_get_integer(key_file, name, "n_received", &error);
-    gcut_assert_error(error);
-
-    response = g_key_file_get_string(key_file, name, "response", &error);
-    gcut_assert_error(error, "group: <%s>", name);
-    cut_take_string(response);
+    n_received = get_integer(group, "n_received");
+    response = get_string(group, "response");
+    status = get_enum(group, "status", MILTER_TYPE_STATUS);
 
     cut_trace(wait_response_helper(cut_take_printf("%s-response", response)));
     get_n_received = response_to_get_n_received(response);
-    cut_assert_not_null(get_n_received, "response: <%s>(%s)", response, name);
+    cut_assert_not_null(get_n_received, "response: <%s>(%s)", response, group);
     actual_n_received =
         milter_manager_test_clients_collect_n_received(test_clients,
                                                        get_n_received);
     cut_assert_equal_uint(n_received, actual_n_received);
+    gcut_assert_equal_enum(MILTER_TYPE_STATUS, status, response_status);
 }
 
 static void
@@ -505,19 +537,14 @@ static void
 do_connect (const gchar *group)
 {
     GError *error = NULL;
-    gchar *host;
-    gchar *address_spec;
+    const gchar *host;
+    const gchar *address_spec;
     gint domain;
     struct sockaddr *address;
     socklen_t address_size;
 
-    host = g_key_file_get_string(key_file, group, "host", &error);
-    gcut_assert_error(error);
-    cut_take_string(host);
-
-    address_spec = g_key_file_get_string(key_file, group, "address", &error);
-    gcut_assert_error(error);
-    cut_take_string(address_spec);
+    host = get_string(group, "host");
+    address_spec = get_string(group, "address");
 
     milter_utils_parse_connection_spec(address_spec,
                                        &domain,
@@ -535,46 +562,46 @@ do_connect (const gchar *group)
 static void
 do_helo (const gchar *group)
 {
-    GError *error = NULL;
-    gchar *fqdn;
+    MilterManagerTestClient *client;
+    const gchar *fqdn;
 
-    fqdn = g_key_file_get_string(key_file, group, "fqdn", &error);
-    gcut_assert_error(error);
-    cut_take_string(fqdn);
-
+    fqdn = get_string(group, "fqdn");
     milter_manager_controller_helo(controller, fqdn);
 
     cut_trace(assert_response(group));
+
+    client = test_clients->data;
+    cut_assert_equal_string(fqdn, get_received_data(helo_fqdn));
 }
 
 static void
 do_envelope_from (const gchar *group)
 {
-    GError *error = NULL;
-    gchar *from;
+    MilterManagerTestClient *client;
+    const gchar *from;
 
-    from = g_key_file_get_string(key_file, group, "from", &error);
-    gcut_assert_error(error);
-    cut_take_string(from);
-
+    from = get_string(group, "from");
     milter_manager_controller_envelope_from(controller, from);
 
     cut_trace(assert_response(group));
+
+    client = test_clients->data;
+    cut_assert_equal_string(from, get_received_data(envelope_from));
 }
 
 static void
 do_envelope_recipient (const gchar *group)
 {
-    GError *error = NULL;
-    gchar *recipient;
+    MilterManagerTestClient *client;
+    const gchar *recipient;
 
-    recipient = g_key_file_get_string(key_file, group, "recipient", &error);
-    gcut_assert_error(error);
-    cut_take_string(recipient);
-
+    recipient = get_string(group, "recipient");
     milter_manager_controller_envelope_recipient(controller, recipient);
 
     cut_trace(assert_response(group));
+
+    client = test_clients->data;
+    cut_assert_equal_string(recipient, get_received_data(envelope_recipient));
 }
 
 static void
@@ -589,17 +616,10 @@ static void
 do_header (const gchar *group)
 {
     MilterManagerTestClient *client;
-    GError *error = NULL;
-    gchar *name, *value;
+    const gchar *name, *value;
 
-    name = g_key_file_get_string(key_file, group, "name", &error);
-    gcut_assert_error(error);
-    cut_take_string(name);
-
-    value = g_key_file_get_string(key_file, group, "value", &error);
-    gcut_assert_error(error);
-    cut_take_string(value);
-
+    name = get_string(group, "name");
+    value = get_string(group, "value");
     milter_manager_controller_header(controller, name, value);
 
     cut_trace(assert_response(group));
@@ -621,13 +641,9 @@ static void
 do_body (const gchar *group)
 {
     MilterManagerTestClient *client;
-    GError *error = NULL;
-    gchar *chunk;
+    const gchar *chunk;
 
-    chunk = g_key_file_get_string(key_file, group, "chunk", &error);
-    gcut_assert_error(error);
-    cut_take_string(chunk);
-
+    chunk = get_string(group, "chunk");
     milter_manager_controller_body(controller, chunk, strlen(chunk));
 
     cut_trace(assert_response(group));
@@ -639,20 +655,23 @@ do_body (const gchar *group)
 static void
 do_end_of_message (const gchar *group)
 {
+    MilterManagerTestClient *client;
     GError *error = NULL;
-    gchar *chunk = NULL;
+    const gchar *chunk = NULL;
 
     if (g_key_file_has_key(key_file, group, "chunk", &error))
-        chunk = g_key_file_get_string(key_file, group, "chunk", &error);
+        chunk = get_string(group, "chunk");
     gcut_assert_error(error);
-    if (chunk)
-        cut_take_string(chunk);
 
     milter_manager_controller_end_of_message(controller,
                                              chunk,
                                              chunk ? strlen(chunk) : 0);
 
     cut_trace(assert_response(group));
+    if (chunk) {
+        client = test_clients->data;
+        cut_assert_equal_string(chunk, get_received_data(body_chunk));
+    }
 }
 
 static void
