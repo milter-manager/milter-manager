@@ -23,10 +23,12 @@
 #include <milter-manager-test-utils.h>
 #include <milter/manager/milter-manager-child.h>
 #undef shutdown
-#include <string.h>
+#include <errno.h>
+#include <locale.h>
 
 void test_start (void);
 void test_start_by_user (void);
+void test_start_inexistent_command (void);
 void test_start_by_inexistent_user (void);
 void test_exit_error (void);
 
@@ -35,6 +37,7 @@ static GError *actual_error;
 static GError *expected_error;
 static gboolean error_occured;
 static const gchar *milter_log_level;
+static const gchar *current_locale;
 
 static void
 cb_error (MilterErrorEmittable *emittable,
@@ -53,6 +56,7 @@ setup (void)
     error_occured = FALSE;
 
     milter_log_level = g_getenv("MILTER_LOG_LEVEL");
+    current_locale = setlocale(LC_ALL, "C");
 }
 
 void
@@ -66,6 +70,7 @@ teardown (void)
         g_error_free(expected_error);
     if (milter_log_level)
         g_setenv("MILTER_LOG_LEVEL", milter_log_level, TRUE);
+    setlocale(LC_ALL, current_locale);
 }
 
 void
@@ -79,6 +84,28 @@ test_start (void)
     milter_manager_child_start(milter, &error);
     gcut_assert_error(error);
 }
+
+void
+test_start_inexistent_command (void)
+{
+    const gchar command[] = "bin/oecho";
+
+    expected_error = g_error_new(MILTER_MANAGER_CHILD_ERROR,
+                                 MILTER_MANAGER_CHILD_ERROR_START_FAILURE,
+                                 "Couldn't start new milter process.: "
+                                 "%s:%d: %s \"%s\" (%s)",
+                                 g_quark_to_string(g_spawn_error_quark()),
+                                 G_SPAWN_ERROR_NOENT,
+                                 "Failed to execute child process",
+                                 command,
+                                 g_strerror(ENOENT));
+    g_object_set(milter,
+                 "command", command,
+                 NULL);
+    milter_manager_child_start(milter, &actual_error);
+    gcut_assert_equal_error(expected_error, actual_error);
+}
+
 
 void
 test_start_by_user (void)
@@ -101,7 +128,7 @@ test_start_by_inexistent_user (void)
     expected_error = g_error_new(MILTER_MANAGER_CHILD_ERROR,
                                  MILTER_MANAGER_CHILD_ERROR_INVALID_USER_NAME,
                                  "No passwd entry for %s: %s",
-                                 inexistent_user, strerror(0));
+                                 inexistent_user, g_strerror(0));
     g_object_set(milter,
                  "command", "/bin/echo",
                  "user-name", inexistent_user,
