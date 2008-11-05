@@ -12,6 +12,8 @@
 	milter_manager_test_server_get_headers.
 	* test/lib/milter-manager-test-utils.[ch]: Added
 	milter_manager_test_header_inspect.
+	* test/lib/milter-manager-test-utils.[ch]: Added
+	milter_manager_test_header_equal.
 
 2008-11-04  Kouhei Sutou  <kou@cozmixng.org>
 

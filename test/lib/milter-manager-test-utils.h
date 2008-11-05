@@ -39,6 +39,9 @@ void                     milter_manager_test_header_free
                                                 (MilterManagerTestHeader *header);
 gchar                   *milter_manager_test_header_inspect
                                                 (MilterManagerTestHeader *header);
+gboolean                  milter_manager_test_header_equal
+                                                (MilterManagerTestHeader *header_a,
+                                                 MilterManagerTestHeader *header_b);
 
 
 G_END_DECLS

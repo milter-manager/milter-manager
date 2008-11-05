@@ -19,6 +19,8 @@
 
 #include "milter-manager-test-utils.h"
 
+#include <string.h>
+
 static gchar *base_dir = NULL;
 const gchar *
 milter_manager_test_get_base_dir (void)
@@ -49,6 +51,17 @@ gchar *
 milter_manager_test_header_inspect (MilterManagerTestHeader *header)
 {
     return g_strdup_printf("<%s = %s>", header->name, header->value);
+}
+
+gboolean
+milter_manager_test_header_equal (MilterManagerTestHeader *header_a,
+                                  MilterManagerTestHeader *header_b)
+{
+    if (!header_a->name || !header_b->name)
+        return FALSE;
+
+    return (!strcmp(header_a->name, header_b->name) &&
+            !g_strcmp0(header_a->value, header_b->value));
 }
 
 MilterManagerTestHeader *
