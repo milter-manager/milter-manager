@@ -26,6 +26,19 @@ G_BEGIN_DECLS
 
 const gchar *milter_manager_test_get_base_dir (void);
 
+typedef struct _MilterManagerTestHeader
+{
+    gchar *name;
+    gchar *value;
+} MilterManagerTestHeader;
+
+MilterManagerTestHeader *milter_manager_test_header_new
+                                                (const gchar *name,
+                                                 const gchar *value);
+void                     milter_manager_test_header_free
+                                                (MilterManagerTestHeader *header);
+
+
 G_END_DECLS
 
 #endif /* __MILTER_MANAGER_TEST_UTILS_H__ */

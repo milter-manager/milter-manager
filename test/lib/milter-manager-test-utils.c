@@ -45,6 +45,25 @@ milter_manager_test_get_base_dir (void)
     return base_dir;
 }
 
+MilterManagerTestHeader *
+milter_manager_test_header_new (const gchar *name, const gchar *value)
+{
+    MilterManagerTestHeader *header;
+    header = g_new0(MilterManagerTestHeader, 1);
+    header->name = g_strdup(name);
+    header->value = g_strdup(value);
+    return header;
+}
+
+void
+milter_manager_test_header_free (MilterManagerTestHeader *header)
+{
+    g_free(header->name);
+    g_free(header->value);
+
+    g_free(header);
+}
+
 /*
 vi:nowrap:ai:expandtab:sw=4
 */
