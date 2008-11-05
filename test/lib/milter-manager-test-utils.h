@@ -37,6 +37,8 @@ MilterManagerTestHeader *milter_manager_test_header_new
                                                  const gchar *value);
 void                     milter_manager_test_header_free
                                                 (MilterManagerTestHeader *header);
+gchar                   *milter_manager_test_header_inspect
+                                                (MilterManagerTestHeader *header);
 
 
 G_END_DECLS
