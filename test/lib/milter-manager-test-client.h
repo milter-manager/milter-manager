@@ -101,6 +101,9 @@ guint                    milter_manager_test_client_get_n_unknown_received
 const gchar             *milter_manager_test_client_get_unknown_command
                                               (MilterManagerTestClient *client);
 
+void                     milter_manager_test_client_clear_data
+                                              (MilterManagerTestClient *client);
+
 
 void                     milter_manager_test_clients_wait_reply
                                               (GList *clients,

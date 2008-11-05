@@ -288,23 +288,25 @@ command_free (GArray *command)
 }
 
 static void
-dispose (GObject *object)
+clear_data (MilterManagerTestClient *client)
 {
-    MilterManagerTestClient *client;
     MilterManagerTestClientPrivate *priv;
 
-    client = MILTER_MANAGER_TEST_CLIENT(object);
-    priv = MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(object);
+    priv = MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client);
 
-    if (priv->egg) {
-        egg_free(priv->egg, client);
-        priv->egg = NULL;
-    }
-
-    if (priv->command) {
-        command_free(priv->command);
-        priv->command = NULL;
-    }
+    priv->n_negotiate_received = 0;
+    priv->n_connect_received = 0;
+    priv->n_helo_received = 0;
+    priv->n_envelope_from_received = 0;
+    priv->n_envelope_recipient_received = 0;
+    priv->n_data_received = 0;
+    priv->n_header_received = 0;
+    priv->n_end_of_header_received = 0;
+    priv->n_body_received = 0;
+    priv->n_end_of_message_received = 0;
+    priv->n_quit_received = 0;
+    priv->n_abort_received = 0;
+    priv->n_unknown_received = 0;
 
     if (priv->helo_fqdn) {
         g_free(priv->helo_fqdn);
@@ -345,6 +347,28 @@ dispose (GObject *object)
         g_free(priv->unknown_command);
         priv->unknown_command = NULL;
     }
+}
+
+static void
+dispose (GObject *object)
+{
+    MilterManagerTestClient *client;
+    MilterManagerTestClientPrivate *priv;
+
+    client = MILTER_MANAGER_TEST_CLIENT(object);
+    priv = MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(object);
+
+    if (priv->egg) {
+        egg_free(priv->egg, client);
+        priv->egg = NULL;
+    }
+
+    if (priv->command) {
+        command_free(priv->command);
+        priv->command = NULL;
+    }
+
+    clear_data(client);
 
     G_OBJECT_CLASS(milter_manager_test_client_parent_class)->dispose(object);
 }
@@ -558,6 +582,11 @@ milter_manager_test_client_get_unknown_command (MilterManagerTestClient *client)
     return MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client)->unknown_command;
 }
 
+void
+milter_manager_test_client_clear_data (MilterManagerTestClient *client)
+{
+    clear_data(client);
+}
 
 static gboolean
 cb_timeout_waiting (gpointer data)
