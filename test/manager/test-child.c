@@ -27,6 +27,7 @@
 #include <locale.h>
 
 void test_start (void);
+void test_start_no_command (void);
 void test_start_by_user (void);
 void test_start_inexistent_command (void);
 void test_start_by_inexistent_user (void);
@@ -83,6 +84,16 @@ test_start (void)
                  NULL);
     milter_manager_child_start(milter, &error);
     gcut_assert_error(error);
+}
+
+void
+test_start_no_command (void)
+{
+    expected_error = g_error_new(MILTER_MANAGER_CHILD_ERROR,
+                                 MILTER_MANAGER_CHILD_ERROR_BAD_COMMAND_STRING,
+                                 "No command set yet.");
+    milter_manager_child_start(milter, &actual_error);
+    gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
