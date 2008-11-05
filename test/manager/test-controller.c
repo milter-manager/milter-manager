@@ -58,6 +58,7 @@ void test_add_header (void);
 void test_change_from (void);
 void test_add_recipient (void);
 void test_delete_recipient (void);
+void test_progress (void);
 
 static GKeyFile *scenario;
 static GList *imported_scenarios;
@@ -1864,6 +1865,18 @@ test_delete_recipient (void)
         g_list_sort((GList*)milter_manager_test_server_get_delete_recipients(server),
                     (GCompareFunc)strcmp);
     gcut_assert_equal_list_string(expected_list, actual_recipients);
+}
+
+void
+test_progress (void)
+{
+    cut_trace(test_end_of_message(NULL));
+
+    cut_trace(milter_manager_test_server_wait_signal(server));
+
+    cut_assert_equal_uint(
+        2,
+        milter_manager_test_server_get_n_progresses(server));
 }
 
 /*
