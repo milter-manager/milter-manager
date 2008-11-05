@@ -1,6 +1,7 @@
 [scenario]
 clients=client10026;client10027
-actions=negotiate;connect;helo;envelope-from;envelope-recipient;data;header-from;end-of-header;body-skip;body;end-of-message
+import=negotiate.txt
+actions=connect;helo;envelope-from;envelope-recipient;data;header-from;end-of-header;body-skip;body;end-of-message
 
 [client10026]
 port=10026
@@ -8,17 +9,6 @@ arguments=--action;skip;--body;Skip
 
 [client10027]
 port=10027
-
-[negotiate]
-command=negotiate
-
-version=2
-action=add-headers|change-body|quarantine
-step=none
-
-response=negotiate
-n_received=2
-status=default
 
 [connect]
 command=connect

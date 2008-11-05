@@ -1,5 +1,22 @@
+[scenario]
+clients=client10026;client10027
+actions=negotiate
+
+[client10026]
+port=10026
+
+[client10027]
+port=10027
+
 [negotiate]
+
+[negotiate]
+command=negotiate
 
 version=2
 action=add-headers|change-body|quarantine
 step=none
+
+response=negotiate
+n_received=2
+status=default

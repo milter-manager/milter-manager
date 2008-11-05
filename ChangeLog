@@ -1,6 +1,10 @@
 2008-11-05  Kouhei Sutou  <kou@cozmixng.org>
 
 	* test/manager/test-controller.c,
+	test/fixtures/controller/body-skip.txt,
+	test/fixtures/controller/negotiate.txt: implement import.
+
+	* test/manager/test-controller.c,
 	test/fixtures/controller/body-skip.txt: add status test.
 
 	* test/lib/milter-manager-test-client.[ch],

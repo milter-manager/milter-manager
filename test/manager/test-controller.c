@@ -28,7 +28,10 @@
 #include <milter-manager-test-server.h>
 #undef shutdown
 
-void test_scenario (void);
+#define SCENARIO_GROUP "scenario"
+
+void data_scenario (void);
+void test_scenario (gconstpointer data);
 void test_negotiate (void);
 void test_connect (void);
 void test_helo (void);
@@ -59,7 +62,8 @@ void test_change_from (void);
 void test_add_recipient (void);
 void test_delete_recipient (void);
 
-static GKeyFile *key_file;
+static GKeyFile *scenario;
+static GList *imported_scenarios;
 
 static MilterManagerConfiguration *config;
 static MilterClientContext *client_context;
@@ -124,7 +128,9 @@ setup (void)
                              "fixtures",
                              "controller",
                              NULL);
-    key_file = NULL;
+
+    scenario = NULL;
+    imported_scenarios = NULL;
 
     config = milter_manager_configuration_new(NULL);
     add_load_path(g_getenv("MILTER_MANAGER_CONFIG_DIR"));
@@ -192,8 +198,12 @@ arguments_free (GArray *arguments)
 void
 teardown (void)
 {
-    if (key_file)
-        g_key_file_free(key_file);
+    if (scenario)
+        g_key_file_free(scenario);
+    if (imported_scenarios) {
+        g_list_foreach(imported_scenarios, (GFunc)g_key_file_free, NULL);
+        g_list_free(imported_scenarios);
+    }
 
     if (config)
         g_object_unref(config);
@@ -387,33 +397,74 @@ milter_option_new_from_key_file (GKeyFile *key_file, const gchar *group_name)
     return milter_option_new(version, action, step);
 }
 
-static void
-load_scenario (const gchar *name)
-{
-    GError *error = NULL;
-    gchar *key_file_path;
+static void load_scenario (const gchar *name, GKeyFile **scenario);
 
-    key_file = g_key_file_new();
-    key_file_path = cut_build_fixture_data_path(name, NULL);
-    g_key_file_load_from_file(key_file, key_file_path,
-                              G_KEY_FILE_KEEP_COMMENTS,
-                              &error);
-    g_free(key_file_path);
-    gcut_assert_error(error);
+static void
+import_scenario (GKeyFile *scenario, const gchar *scenario_name)
+{
+    GKeyFile *imported_scenario = NULL;
+
+    cut_trace(load_scenario(scenario_name, &imported_scenario));
+    imported_scenarios = g_list_prepend(imported_scenarios, imported_scenario);
 }
 
 static void
-setup_client (const gchar *name)
+import_scenarios (GKeyFile *scenario)
+{
+    const gchar key[] = "import";
+    GError *error = NULL;
+    gboolean has_key;
+    gchar **scenario_names;
+    gsize length, i;
+
+    has_key = g_key_file_has_key(scenario, SCENARIO_GROUP, key, &error);
+    gcut_assert_error(error);
+    if (!has_key)
+        return;
+
+    scenario_names = g_key_file_get_string_list(scenario,
+                                                SCENARIO_GROUP, key,
+                                                &length, &error);
+    gcut_assert_error(error);
+
+    cut_take_string_array(scenario_names);
+    for (i = 0; i < length; i++) {
+        cut_trace(import_scenario(scenario, scenario_names[i]));
+    }
+}
+
+static void
+load_scenario (const gchar *name, GKeyFile **scenario)
+{
+    GError *error = NULL;
+    gchar *scenario_path;
+
+    *scenario = g_key_file_new();
+    scenario_path = cut_build_fixture_data_path(name, NULL);
+    if (!g_key_file_load_from_file(*scenario, scenario_path,
+                                   G_KEY_FILE_KEEP_COMMENTS,
+                                   &error)) {
+        g_key_file_free(*scenario);
+        *scenario = NULL;
+    }
+    g_free(scenario_path);
+    gcut_assert_error(error);
+
+    cut_trace(import_scenarios(*scenario));
+}
+
+static void
+setup_client (GKeyFile *scenario, const gchar *group)
 {
     GError *error = NULL;
     guint port;
     gsize length;
     gchar **arguments = NULL;
 
-    port = g_key_file_get_integer(key_file, name, "port", &error);
+    port = g_key_file_get_integer(scenario, group, "port", &error);
     gcut_assert_error(error);
-    if (g_key_file_has_key(key_file, name, "arguments", &error)) {
-        arguments = g_key_file_get_string_list(key_file, name, "arguments",
+    if (g_key_file_has_key(scenario, group, "arguments", &error)) {
+        arguments = g_key_file_get_string_list(scenario, group, "arguments",
                                                &length, &error);
     }
     gcut_assert_error(error);
@@ -423,19 +474,19 @@ setup_client (const gchar *name)
 }
 
 static void
-setup_clients (const gchar *group_name)
+setup_clients (GKeyFile *scenario)
 {
     GError *error = NULL;
     gchar **clients;
     gsize length, i;
 
-    clients = g_key_file_get_string_list(key_file, group_name, "clients",
+    clients = g_key_file_get_string_list(scenario, SCENARIO_GROUP, "clients",
                                          &length, &error);
     gcut_assert_error(error);
 
     cut_take_string_array(clients);
     for (i = 0; i < length; i++) {
-        cut_trace(setup_client(clients[i]));
+        cut_trace(setup_client(scenario, clients[i]));
     }
 }
 
@@ -468,50 +519,50 @@ response_to_get_n_received (const gchar *response)
 }
 
 static gint
-get_integer (const gchar *group, const gchar *key)
+get_integer (GKeyFile *scenario, const gchar *group, const gchar *key)
 {
     GError *error = NULL;
     gint value;
 
-    value = g_key_file_get_integer(key_file, group, key, &error);
+    value = g_key_file_get_integer(scenario, group, key, &error);
     gcut_assert_error(error, "group: <%s>", group);
     return value;
 }
 
 static const gchar *
-get_string (const gchar *group, const gchar *key)
+get_string (GKeyFile *scenario, const gchar *group, const gchar *key)
 {
     GError *error = NULL;
     gchar *value;
 
-    value = g_key_file_get_string(key_file, group, key, &error);
+    value = g_key_file_get_string(scenario, group, key, &error);
     gcut_assert_error(error, "group: <%s>", group);
     return cut_take_string(value);
 }
 
 static gint
-get_enum (const gchar *group, const gchar *key, GType enum_type)
+get_enum (GKeyFile *scenario, const gchar *group, const gchar *key, GType enum_type)
 {
     GError *error = NULL;
     gint value;
 
-    value = gcut_key_file_get_enum(key_file, group, key, enum_type, &error);
+    value = gcut_key_file_get_enum(scenario, group, key, enum_type, &error);
     gcut_assert_error(error, "group: <%s>", group);
     return value;
 }
 
 
 static void
-assert_response (const gchar *group)
+assert_response (GKeyFile *scenario, const gchar *group)
 {
     MilterManagerTestClientGetNReceived get_n_received;
     guint n_received, actual_n_received;
     const gchar *response;
     MilterStatus status;
 
-    n_received = get_integer(group, "n_received");
-    response = get_string(group, "response");
-    status = get_enum(group, "status", MILTER_TYPE_STATUS);
+    n_received = get_integer(scenario, group, "n_received");
+    response = get_string(scenario, group, "response");
+    status = get_enum(scenario, group, "status", MILTER_TYPE_STATUS);
 
     cut_trace(wait_response_helper(cut_take_printf("%s-response", response)));
     get_n_received = response_to_get_n_received(response);
@@ -524,17 +575,17 @@ assert_response (const gchar *group)
 }
 
 static void
-do_negotiate (const gchar *group)
+do_negotiate (GKeyFile *scenario, const gchar *group)
 {
-    option = milter_option_new_from_key_file(key_file, group);
+    option = milter_option_new_from_key_file(scenario, group);
 
     milter_server_context_negotiate(MILTER_SERVER_CONTEXT(server), option);
     milter_manager_controller_negotiate(controller, option);
-    cut_trace(assert_response(group));
+    cut_trace(assert_response(scenario, group));
 }
 
 static void
-do_connect (const gchar *group)
+do_connect (GKeyFile *scenario, const gchar *group)
 {
     GError *error = NULL;
     const gchar *host;
@@ -543,8 +594,8 @@ do_connect (const gchar *group)
     struct sockaddr *address;
     socklen_t address_size;
 
-    host = get_string(group, "host");
-    address_spec = get_string(group, "address");
+    host = get_string(scenario, group, "host");
+    address_spec = get_string(scenario, group, "address");
 
     milter_utils_parse_connection_spec(address_spec,
                                        &domain,
@@ -556,73 +607,73 @@ do_connect (const gchar *group)
     milter_manager_controller_connect(controller, host, address, address_size);
     g_free(address);
 
-    cut_trace(assert_response(group));
+    cut_trace(assert_response(scenario, group));
 }
 
 static void
-do_helo (const gchar *group)
+do_helo (GKeyFile *scenario, const gchar *group)
 {
     MilterManagerTestClient *client;
     const gchar *fqdn;
 
-    fqdn = get_string(group, "fqdn");
+    fqdn = get_string(scenario, group, "fqdn");
     milter_manager_controller_helo(controller, fqdn);
 
-    cut_trace(assert_response(group));
+    cut_trace(assert_response(scenario, group));
 
     client = test_clients->data;
     cut_assert_equal_string(fqdn, get_received_data(helo_fqdn));
 }
 
 static void
-do_envelope_from (const gchar *group)
+do_envelope_from (GKeyFile *scenario, const gchar *group)
 {
     MilterManagerTestClient *client;
     const gchar *from;
 
-    from = get_string(group, "from");
+    from = get_string(scenario, group, "from");
     milter_manager_controller_envelope_from(controller, from);
 
-    cut_trace(assert_response(group));
+    cut_trace(assert_response(scenario, group));
 
     client = test_clients->data;
     cut_assert_equal_string(from, get_received_data(envelope_from));
 }
 
 static void
-do_envelope_recipient (const gchar *group)
+do_envelope_recipient (GKeyFile *scenario, const gchar *group)
 {
     MilterManagerTestClient *client;
     const gchar *recipient;
 
-    recipient = get_string(group, "recipient");
+    recipient = get_string(scenario, group, "recipient");
     milter_manager_controller_envelope_recipient(controller, recipient);
 
-    cut_trace(assert_response(group));
+    cut_trace(assert_response(scenario, group));
 
     client = test_clients->data;
     cut_assert_equal_string(recipient, get_received_data(envelope_recipient));
 }
 
 static void
-do_data (const gchar *group)
+do_data (GKeyFile *scenario, const gchar *group)
 {
     milter_manager_controller_data(controller);
 
-    cut_trace(assert_response(group));
+    cut_trace(assert_response(scenario, group));
 }
 
 static void
-do_header (const gchar *group)
+do_header (GKeyFile *scenario, const gchar *group)
 {
     MilterManagerTestClient *client;
     const gchar *name, *value;
 
-    name = get_string(group, "name");
-    value = get_string(group, "value");
+    name = get_string(scenario, group, "name");
+    value = get_string(scenario, group, "value");
     milter_manager_controller_header(controller, name, value);
 
-    cut_trace(assert_response(group));
+    cut_trace(assert_response(scenario, group));
 
     client = test_clients->data;
     cut_assert_equal_string(name, get_received_data(header_name));
@@ -630,44 +681,44 @@ do_header (const gchar *group)
 }
 
 static void
-do_end_of_header (const gchar *group)
+do_end_of_header (GKeyFile *scenario, const gchar *group)
 {
     milter_manager_controller_end_of_header(controller);
 
-    cut_trace(assert_response(group));
+    cut_trace(assert_response(scenario, group));
 }
 
 static void
-do_body (const gchar *group)
+do_body (GKeyFile *scenario, const gchar *group)
 {
     MilterManagerTestClient *client;
     const gchar *chunk;
 
-    chunk = get_string(group, "chunk");
+    chunk = get_string(scenario, group, "chunk");
     milter_manager_controller_body(controller, chunk, strlen(chunk));
 
-    cut_trace(assert_response(group));
+    cut_trace(assert_response(scenario, group));
 
     client = test_clients->next->data;
     cut_assert_equal_string(chunk, get_received_data(body_chunk));
 }
 
 static void
-do_end_of_message (const gchar *group)
+do_end_of_message (GKeyFile *scenario, const gchar *group)
 {
     MilterManagerTestClient *client;
     GError *error = NULL;
     const gchar *chunk = NULL;
 
-    if (g_key_file_has_key(key_file, group, "chunk", &error))
-        chunk = get_string(group, "chunk");
+    if (g_key_file_has_key(scenario, group, "chunk", &error))
+        chunk = get_string(scenario, group, "chunk");
     gcut_assert_error(error);
 
     milter_manager_controller_end_of_message(controller,
                                              chunk,
                                              chunk ? strlen(chunk) : 0);
 
-    cut_trace(assert_response(group));
+    cut_trace(assert_response(scenario, group));
     if (chunk) {
         client = test_clients->data;
         cut_assert_equal_string(chunk, get_received_data(body_chunk));
@@ -675,45 +726,45 @@ do_end_of_message (const gchar *group)
 }
 
 static void
-do_action (const gchar *group)
+do_action (GKeyFile *scenario, const gchar *group)
 {
     GError *error = NULL;
     MilterCommand command;
 
-    command = gcut_key_file_get_enum(key_file, group, "command",
+    command = gcut_key_file_get_enum(scenario, group, "command",
                                      MILTER_TYPE_COMMAND, &error);
     gcut_assert_error(error, "group: <%s>", group);
 
     switch (command) {
       case MILTER_COMMAND_NEGOTIATE:
-        cut_trace(do_negotiate(group));
+        cut_trace(do_negotiate(scenario, group));
         break;
       case MILTER_COMMAND_CONNECT:
-        cut_trace(do_connect(group));
+        cut_trace(do_connect(scenario, group));
         break;
       case MILTER_COMMAND_HELO:
-        cut_trace(do_helo(group));
+        cut_trace(do_helo(scenario, group));
         break;
       case MILTER_COMMAND_MAIL:
-        cut_trace(do_envelope_from(group));
+        cut_trace(do_envelope_from(scenario, group));
         break;
       case MILTER_COMMAND_RCPT:
-        cut_trace(do_envelope_recipient(group));
+        cut_trace(do_envelope_recipient(scenario, group));
         break;
       case MILTER_COMMAND_DATA:
-        cut_trace(do_data(group));
+        cut_trace(do_data(scenario, group));
         break;
       case MILTER_COMMAND_HEADER:
-        cut_trace(do_header(group));
+        cut_trace(do_header(scenario, group));
         break;
       case MILTER_COMMAND_END_OF_HEADER:
-        cut_trace(do_end_of_header(group));
+        cut_trace(do_end_of_header(scenario, group));
         break;
       case MILTER_COMMAND_BODY:
-        cut_trace(do_body(group));
+        cut_trace(do_body(scenario, group));
         break;
       case MILTER_COMMAND_END_OF_MESSAGE:
-        cut_trace(do_end_of_message(group));
+        cut_trace(do_end_of_message(scenario, group));
         break;
       default:
         cut_error("unknown command: <%c>(<%s>)", command, group);
@@ -722,45 +773,48 @@ do_action (const gchar *group)
 }
 
 static void
-do_actions (const gchar *group_name)
+do_actions (GKeyFile *scenario)
 {
     GError *error = NULL;
     gsize length, i;
     gchar **actions;
 
-    actions = g_key_file_get_string_list(key_file, group_name, "actions",
+    actions = g_key_file_get_string_list(scenario, SCENARIO_GROUP, "actions",
                                          &length, &error);
     gcut_assert_error(error);
 
     cut_take_string_array(actions);
     for (i = 0; i < length; i++) {
-        cut_trace(do_action(actions[i]));
+        cut_trace(do_action(scenario, actions[i]));
     }
 }
 
 void
-test_scenario (void)
+data_scenario (void)
 {
-    cut_trace(load_scenario("body-skip.txt"));
-    cut_trace(setup_clients("scenario"));
-    cut_trace(do_actions("scenario"));
+    cut_add_data("negotiate", g_strdup("negotiate.txt"), g_free,
+                 "body-skip", g_strdup("body-skip.txt"), g_free);
+}
+
+void
+test_scenario (gconstpointer data)
+{
+    const gchar *scenario_name = data;
+
+    cut_trace(load_scenario(scenario_name, &scenario));
+    cut_trace(setup_clients(scenario));
+    cut_trace(g_list_foreach(imported_scenarios, (GFunc)do_actions, NULL));
+    cut_trace(do_actions(scenario));
 }
 
 void
 test_negotiate (void)
 {
-    GError *error = NULL;
-    gchar *key_file_path;
-
-    key_file = g_key_file_new();
-    key_file_path = cut_build_fixture_data_path("negotiate.txt", NULL);
-    g_key_file_load_from_file(key_file, key_file_path,
-                              G_KEY_FILE_KEEP_COMMENTS,
-                              &error);
-    g_free(key_file_path);
-    gcut_assert_error(error);
-
-    option = milter_option_new_from_key_file(key_file, "negotiate");
+    option = milter_option_new(2,
+                               MILTER_ACTION_ADD_HEADERS |
+                               MILTER_ACTION_CHANGE_BODY |
+                               MILTER_ACTION_QUARANTINE,
+                               MILTER_STEP_NONE);
 
     start_client(10026, arguments1);
     start_client(10027, arguments2);
