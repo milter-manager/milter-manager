@@ -1,3 +1,8 @@
+2008-11-06  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* test/lib/milter-manager-test-utils.[ch]: added
+	milter_manager_test_header_compare.
+
 2008-11-05  Kouhei Sutou  <kou@cozmixng.org>
 
 	* test/manager/test-controller.c, test/fixtures/controller/: use

@@ -50,6 +50,9 @@ void                     milter_manager_test_header_inspect
 gboolean                 milter_manager_test_header_equal
                                                 (MilterManagerTestHeader *header_a,
                                                  MilterManagerTestHeader *header_b);
+gint                     milter_manager_test_header_compare
+                                                (MilterManagerTestHeader *header_a,
+                                                 MilterManagerTestHeader *header_b);
 
 typedef struct _MilterManagerTestValueWithParam
 {

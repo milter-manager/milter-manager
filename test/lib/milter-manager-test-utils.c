@@ -81,6 +81,19 @@ milter_manager_test_header_equal (MilterManagerTestHeader *header_a,
             !g_strcmp0(header_a->value, header_b->value));
 }
 
+gint
+milter_manager_test_header_compare (MilterManagerTestHeader *header_a,
+                                    MilterManagerTestHeader *header_b)
+{
+    if (header_a->index != header_b->index)
+        return (header_a->index - header_b->index);
+
+    if (g_strcmp0(header_a->name, header_b->name))
+        return g_strcmp0(header_a->name, header_b->name);
+
+    return g_strcmp0(header_a->value, header_b->value);
+}
+
 MilterManagerTestHeader *
 milter_manager_test_header_new (guint index, const gchar *name, const gchar *value)
 {
