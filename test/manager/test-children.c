@@ -43,6 +43,7 @@ void data_important_status (void);
 void test_important_status (gconstpointer data);
 void data_not_important_status (void);
 void test_not_important_status (gconstpointer data);
+void test_reading_timeout (void);
 
 static MilterManagerConfiguration *config;
 static MilterManagerChildren *children;
@@ -52,6 +53,7 @@ static GError *actual_error;
 static GError *expected_error;
 static GList *actual_names;
 static GList *expected_names;
+static gchar *error_message;
 
 static guint n_negotiate_reply_emitted;
 static guint n_continue_emitted;
@@ -74,6 +76,8 @@ static guint n_shutdown_emitted;
 static guint n_skip_emitted;
 static guint n_error_emitted;
 static guint n_finished_emitted;
+
+static guint log_signal_id;
 
 static GList *test_clients;
 
@@ -223,7 +227,6 @@ cb_finished (MilterManagerChildren *children, gpointer user_data)
     n_finished_emitted++;
 }
 
-
 static void
 setup_signals (MilterManagerChildren *children)
 {
@@ -285,6 +288,8 @@ setup (void)
     actual_names = NULL;
     expected_names = NULL;
 
+    error_message = NULL;
+
     n_negotiate_reply_emitted = 0;
     n_continue_emitted = 0;
     n_reply_code_emitted = 0;
@@ -307,6 +312,8 @@ setup (void)
     n_error_emitted = 0;
     n_finished_emitted = 0;
 
+    log_signal_id = 0;
+
     test_clients = NULL;
 }
 
@@ -326,6 +333,9 @@ teardown (void)
     if (expected_error)
         g_error_free(expected_error);
 
+    if (error_message)
+        g_free(error_message);
+
     if (actual_names)
         gcut_list_string_free(actual_names);
     if (expected_names)
@@ -335,6 +345,9 @@ teardown (void)
         g_list_foreach(test_clients, (GFunc)g_object_unref, NULL);
         g_list_free(test_clients);
     }
+
+    if (log_signal_id)
+        g_signal_handler_disconnect(milter_logger(), log_signal_id);
 }
 
 static void
@@ -386,7 +399,7 @@ wait_reply_helper (guint expected, guint *actual)
     gboolean timeout_waiting = TRUE;
     guint timeout_waiting_id;
 
-    timeout_waiting_id = g_timeout_add_seconds(5, cb_timeout_waiting,
+    timeout_waiting_id = g_timeout_add_seconds(3, cb_timeout_waiting,
                                                &timeout_waiting);
     while (timeout_waiting && expected > *actual) {
         g_main_context_iteration(NULL, TRUE);
@@ -756,6 +769,58 @@ test_not_important_status (gconstpointer data)
 
     prepare_children_state(children, test_data);
     milter_manager_assert_not_important(children, test_data->state, test_data->next_status);
+}
+
+static void
+set_timeout (gpointer data, gpointer user_data)
+{
+    milter_server_context_set_connection_timeout(MILTER_SERVER_CONTEXT(data), 0);
+    milter_server_context_set_reading_timeout(MILTER_SERVER_CONTEXT(data), 0);
+    milter_server_context_set_writing_timeout(MILTER_SERVER_CONTEXT(data), 0);
+}
+
+static void
+cb_log (MilterLogger *logger, const gchar *domain,
+        MilterLogLevelFlags level, const gchar *file, 
+        guint line, const gchar *function,
+        GTimeVal *time_value, const gchar *message, gpointer user_data)
+{
+    if (level != MILTER_LOG_LEVEL_ERROR)
+        return;
+
+    if (g_str_equal(domain, "milter-manager")) {
+        error_message = g_strdup(message);
+    }
+}
+
+void
+test_reading_timeout (void)
+{
+    struct sockaddr_in address;
+    const gchar host_name[] = "mx.local.net";
+    const gchar ip_address[] = "192.168.123.123";
+    MilterLogger *logger;
+
+    cut_trace(test_negotiate());
+
+    logger = milter_logger();
+    log_signal_id = g_signal_connect(logger, "log", G_CALLBACK(cb_log), NULL);
+
+    milter_manager_children_foreach(children, set_timeout, NULL);
+
+    address.sin_family = AF_INET;
+    address.sin_port = g_htons(50443);
+    inet_aton(ip_address, &(address.sin_addr));
+
+    milter_manager_children_connect(children,
+                                    host_name,
+                                    (struct sockaddr *)(&address),
+                                    sizeof(address));
+
+    wait_reply(n_continue_emitted);
+
+    cut_assert_equal_string("reading from milter@10027 is timed out.",
+                            error_message);
 }
 
 /*

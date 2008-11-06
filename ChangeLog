@@ -38,6 +38,8 @@
 	milter_manager_child_new_with_timeout.
 	* milter/manager/milter-manager-children.c (cb_finished): Output
 	message to log. 
+	* test/manager/test-children.c: Added reading timeout test. The test
+	sometimes fails maybe.
 
 2008-11-05  Kouhei Sutou  <kou@cozmixng.org>
 
