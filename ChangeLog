@@ -1,5 +1,7 @@
 2008-11-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/lib/milter-test-client.rb: cleanup --reply-code.
+
 	* test/lib/milter-test-client.rb: support more flexible actions in
 	end-of-message.
 

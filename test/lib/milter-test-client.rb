@@ -95,9 +95,8 @@ class MilterTestClient
       end
 
       opts.on("--reply-code=REPLY_CODE",
-              "Send 'reply-code' on end-of-message") do |reply_code|
-        @reply_code = reply_code
-        @current_action = "reject"
+              "Send 'reply-code' with REPLY_CODE") do |reply_code|
+        @current_action = ["reply_code", reply_code]
       end
 
       opts.on("--progress",
@@ -139,7 +138,6 @@ class MilterTestClient
     @recipients = []
     @senders = []
     @body_chunks = []
-    @reply_code = nil
     @end_of_message_chunks = []
   end
 
@@ -169,16 +167,8 @@ class MilterTestClient
   end
 
   def write_action(next_state, action)
-    args = []
-    case action.to_s
-    when "quarantine" # NO NEED
-      args << @quarantine_reason
-    when "reject"
-      if @reply_code
-        args << @reply_code
-        action = "reply_code"
-      end
-    end
+    action, args = action
+    args ||= []
     write(next_state, action, *args)
   end
 
