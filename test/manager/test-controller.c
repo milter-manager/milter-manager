@@ -81,6 +81,12 @@ static GList *expected_list;
 
 static MilterStatus response_status;
 
+void
+startup (void)
+{
+    MILTER_TYPE_CLIENT_CONTEXT_ERROR;
+}
+
 static void
 add_load_path (const gchar *path)
 {
@@ -598,12 +604,42 @@ response_to_get_n_received (const gchar *response)
 }
 
 static void
-assert_response (GKeyFile *scenario, const gchar *group)
+assert_response_error (GKeyFile *scenario, const gchar *group)
+{
+    GError *error = NULL;
+    GError *expected_error = NULL;
+
+    if (g_key_file_has_key(scenario, group, "error_domain", &error)) {
+        GQuark domain;
+        const gchar *domain_name, *type_name, *message;
+        GType type;
+        gint code;
+
+        domain_name = get_string(scenario, group, "error_domain");
+        domain = g_quark_from_string(domain_name);
+
+        type_name = get_string(scenario, group, "error_type");
+        type = g_type_from_name(type_name);
+        cut_assert_operator_uint(0, <, type, "name: <%s>", type_name);
+        code = get_enum(scenario, group, "error_code", type);
+
+        message = get_string(scenario, group, "error_message");
+        expected_error = g_error_new(domain, code, "%s", message);
+        wait_controller_error();
+    }
+    gcut_assert_error(error);
+
+    gcut_assert_equal_error(expected_error, controller_error);
+    if (expected_error && controller_error)
+        cut_return();
+}
+
+static void
+assert_response_common (GKeyFile *scenario, const gchar *group)
 {
     MilterManagerTestClientGetNReceived get_n_received;
     guint n_received, actual_n_received;
     const gchar *response;
-    const GList *replied_codes;
     MilterStatus status;
 
     n_received = get_integer(scenario, group, "n_received");
@@ -629,11 +665,26 @@ assert_response (GKeyFile *scenario, const gchar *group)
     cut_assert_equal_uint(n_received, actual_n_received);
     gcut_assert_equal_enum(MILTER_TYPE_STATUS, status, response_status);
 
+}
+
+static void
+assert_response_reply_code (GKeyFile *scenario, const gchar *group)
+{
+    const GList *replied_codes;
+
     replied_codes = get_string_g_list(scenario, group, "replied_codes");
     cut_trace(milter_manager_test_server_wait_signal(server));
     gcut_assert_equal_list_string(
         replied_codes,
         milter_manager_test_server_get_replied_codes(server));
+}
+
+static void
+assert_response (GKeyFile *scenario, const gchar *group)
+{
+    cut_trace(assert_response_error(scenario, group));
+    cut_trace(assert_response_common(scenario, group));
+    cut_trace(assert_response_reply_code(scenario, group));
 }
 
 static void
@@ -1108,7 +1159,9 @@ data_scenario (void)
                  "delete-recipient", g_strdup("delete-recipient.txt"), g_free,
                  "replace-body", g_strdup("replace-body.txt"), g_free);
 
-    cut_add_data("body - skip", g_strdup("body-skip.txt"), g_free);
+    cut_add_data("body - skip", g_strdup("body-skip.txt"), g_free,
+                 "reply-code - invalid",
+                 g_strdup("reply-code-invalid.txt"), g_free);
 
     cut_add_data("replace-body - separate",
                  g_strdup("replace-body-separate.txt"), g_free);

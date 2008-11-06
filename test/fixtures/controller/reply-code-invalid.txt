@@ -1,0 +1,25 @@
+[scenario]
+clients=client10026;client10027
+import=helo.txt
+actions=envelope-from-reply-code-invalid
+
+[client10026]
+port=10026
+arguments=--reply-code;554 3.7.1 1%% 2%% 3%%;--envelope-from;reject@example.com
+
+[client10027]
+port=10027
+
+[envelope-from-reply-code-invalid]
+command=mail
+
+from=reject@example.com
+
+response=envelope-from
+n_received=2
+status=reject
+
+error_domain=milter-client-context-error-quark
+error_type=MilterClientContextError
+error_code=invalid-code
+error_message=class of extended status code should be '2', '4' or '5': <3.7.1>: <3>
