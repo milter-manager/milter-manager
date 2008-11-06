@@ -53,7 +53,6 @@ void data_body (void);
 void test_body (gconstpointer data);
 void data_end_of_message (void);
 void test_end_of_message (gconstpointer data);
-void test_reply_code (void);
 void test_invalid_reply_code (void);
 void test_progress (void);
 
@@ -604,6 +603,7 @@ assert_response (GKeyFile *scenario, const gchar *group)
     MilterManagerTestClientGetNReceived get_n_received;
     guint n_received, actual_n_received;
     const gchar *response;
+    const GList *replied_codes;
     MilterStatus status;
 
     n_received = get_integer(scenario, group, "n_received");
@@ -628,6 +628,12 @@ assert_response (GKeyFile *scenario, const gchar *group)
                                                        get_n_received);
     cut_assert_equal_uint(n_received, actual_n_received);
     gcut_assert_equal_enum(MILTER_TYPE_STATUS, status, response_status);
+
+    replied_codes = get_string_g_list(scenario, group, "replied_codes");
+    cut_trace(milter_manager_test_server_wait_signal(server));
+    gcut_assert_equal_list_string(
+        replied_codes,
+        milter_manager_test_server_get_replied_codes(server));
 }
 
 static void
@@ -1092,7 +1098,8 @@ data_scenario (void)
         "end-of-message", g_strdup("end-of-message.txt"), g_free,
         "quit", g_strdup("quit.txt"), g_free,
         "abort", g_strdup("abort.txt"), g_free,
-        "unknown", g_strdup("unknown.txt"), g_free);
+        "unknown", g_strdup("unknown.txt"), g_free,
+        "reply-code", g_strdup("reply-code.txt"), g_free);
 
     cut_add_data("quarantine", g_strdup("quarantine.txt"), g_free,
                  "add-header", g_strdup("add-header.txt"), g_free,
@@ -1101,10 +1108,10 @@ data_scenario (void)
                  "delete-recipient", g_strdup("delete-recipient.txt"), g_free,
                  "replace-body", g_strdup("replace-body.txt"), g_free);
 
+    cut_add_data("body - skip", g_strdup("body-skip.txt"), g_free);
+
     cut_add_data("replace-body - separate",
                  g_strdup("replace-body-separate.txt"), g_free);
-
-    cut_add_data("body - skip", g_strdup("body-skip.txt"), g_free);
 }
 
 void
@@ -1938,28 +1945,6 @@ test_end_of_message (gconstpointer data)
 
     client = test_clients->data;
     cut_assert_equal_string(chunk, get_received_data(end_of_message_chunk));
-}
-
-void
-test_reply_code (void)
-{
-    const gchar from[] = "reject@example.com";
-    const gchar reply_code[] = "554 5.7.1 1%% 2%% 3%%";
-    arguments_append(arguments1,
-                     "--reply-code", reply_code,
-                     "--envelope-from", from,
-                     NULL);
-
-    cut_trace(test_helo());
-
-    milter_manager_controller_envelope_from(controller, from);
-    wait_response("envelope-from");
-
-    gcut_assert_equal_enum(MILTER_TYPE_STATUS, MILTER_STATUS_REJECT, response_status);
-    cut_trace(milter_manager_test_server_wait_signal(server));
-
-    cut_assert_equal_string(reply_code,
-                            milter_manager_test_server_get_reply_code(server));
 }
 
 void

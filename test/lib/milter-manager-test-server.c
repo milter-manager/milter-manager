@@ -52,7 +52,7 @@ struct _MilterManagerTestServerPrivate
     GList *replaced_bodies;
     GList *changed_froms;
     gchar *quarantine_reason;
-    gchar *reply_code;
+    GList *replied_codes;
 };
 
 enum
@@ -156,7 +156,7 @@ milter_manager_test_server_init (MilterManagerTestServer *milter)
     priv->changed_froms = NULL;
     priv->replaced_bodies = NULL;
     priv->quarantine_reason = NULL;
-    priv->reply_code = NULL;
+    priv->replied_codes = NULL;
 
     priv->n_add_headers = 0;
     priv->n_change_headers = 0;
@@ -231,9 +231,10 @@ dispose (GObject *object)
         priv->quarantine_reason = NULL;
     }
 
-    if (priv->reply_code) {
-        g_free(priv->reply_code);
-        priv->reply_code = NULL;
+    if (priv->replied_codes) {
+        g_list_foreach(priv->replied_codes, (GFunc)g_free, NULL);
+        g_list_free(priv->replied_codes);
+        priv->replied_codes = NULL;
     }
 
     G_OBJECT_CLASS(milter_manager_test_server_parent_class)->dispose(object);
@@ -410,11 +411,11 @@ reply_code(MilterReplySignals *reply,
 
     priv->n_reply_codes++;
 
-    if (priv->reply_code)
-        g_free(priv->reply_code);
-    priv->reply_code = milter_utils_format_reply_code(code,
-                                                      extended_code,
-                                                      message);
+    priv->replied_codes =
+        g_list_append(priv->replied_codes,
+                      milter_utils_format_reply_code(code,
+                                                     extended_code,
+                                                     message));
 }
 
 guint
@@ -534,10 +535,10 @@ milter_manager_test_server_get_quarantine_reason (MilterManagerTestServer *serve
     return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->quarantine_reason;
 }
 
-const gchar *
-milter_manager_test_server_get_reply_code (MilterManagerTestServer *server)
+const GList *
+milter_manager_test_server_get_replied_codes (MilterManagerTestServer *server)
 {
-    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->reply_code;
+    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->replied_codes;
 }
 
 void

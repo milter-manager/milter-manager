@@ -1,5 +1,11 @@
 2008-11-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/lib/milter-manager-test-server.[ch]: reply_code -> replied_codes.
+
+	* test/manager/test-controller.c,
+	test/fixtures/controller/replay-code.txt: rewrite
+	reply-code test as scenario based test.
+
 	* test/manager/test-controller.c,
 	test/fixtures/controller/replace-body-separate.txt: rewrite
 	replace-body from two clients test as scenario based test.

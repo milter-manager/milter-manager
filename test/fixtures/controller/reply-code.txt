@@ -1,0 +1,21 @@
+[scenario]
+clients=client10026;client10027
+import=helo.txt
+actions=envelope-from-reply-code
+
+[client10026]
+port=10026
+arguments=--reply-code;554 5.7.1 1%% 2%% 3%%;--envelope-from;reject@example.com
+
+[client10027]
+port=10027
+
+[envelope-from-reply-code]
+command=mail
+
+from=reject@example.com
+
+response=envelope-from
+n_received=2
+status=reject
+replied_codes=554 5.7.1 1%% 2%% 3%%
