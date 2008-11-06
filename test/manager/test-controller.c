@@ -348,10 +348,10 @@ start_client (guint port, GArray *arguments)
 }
 
 static void
-start_client_with_string_list (guint port, gchar **argument_strings)
+start_client_with_string_list (guint port, const gchar **argument_strings)
 {
     GArray *arguments;
-    gchar **argument;
+    const gchar **argument;
 
     arguments = g_array_new(TRUE, TRUE, sizeof(gchar *));
     if (argument_strings) {
@@ -429,6 +429,53 @@ milter_option_new_from_key_file (GKeyFile *key_file, const gchar *group_name)
     return milter_option_new(version, action, step);
 }
 
+static gint
+get_integer (GKeyFile *scenario, const gchar *group, const gchar *key)
+{
+    GError *error = NULL;
+    gint value;
+
+    value = g_key_file_get_integer(scenario, group, key, &error);
+    gcut_assert_error(error, "group: <%s>", group);
+    return value;
+}
+
+static const gchar *
+get_string (GKeyFile *scenario, const gchar *group, const gchar *key)
+{
+    GError *error = NULL;
+    gchar *value;
+
+    value = g_key_file_get_string(scenario, group, key, &error);
+    gcut_assert_error(error, "group: <%s>", group);
+    return cut_take_string(value);
+}
+
+static const gchar **
+get_string_list (GKeyFile *scenario, const gchar *group, const gchar *key,
+                 gsize *length)
+{
+    GError *error = NULL;
+    gchar **value;
+
+    value = g_key_file_get_string_list(scenario, group, key, length, &error);
+    gcut_assert_error(error, "group: <%s>", group);
+    return cut_take_string_array(value);
+}
+
+static gint
+get_enum (GKeyFile *scenario, const gchar *group, const gchar *key,
+          GType enum_type)
+{
+    GError *error = NULL;
+    gint value;
+
+    value = gcut_key_file_get_enum(scenario, group, key, enum_type, &error);
+    gcut_assert_error(error, "group: <%s>", group);
+    return value;
+}
+
+
 static void load_scenario (const gchar *name, GKeyFile **scenario);
 
 static void
@@ -446,7 +493,7 @@ import_scenarios (GKeyFile *scenario)
     const gchar key[] = "import";
     GError *error = NULL;
     gboolean has_key;
-    gchar **scenario_names;
+    const gchar **scenario_names;
     gsize length, i;
 
     has_key = g_key_file_has_key(scenario, SCENARIO_GROUP, key, &error);
@@ -454,12 +501,7 @@ import_scenarios (GKeyFile *scenario)
     if (!has_key)
         return;
 
-    scenario_names = g_key_file_get_string_list(scenario,
-                                                SCENARIO_GROUP, key,
-                                                &length, &error);
-    gcut_assert_error(error);
-
-    cut_take_string_array(scenario_names);
+    scenario_names = get_string_list(scenario, SCENARIO_GROUP, key, &length);
     for (i = 0; i < length; i++) {
         cut_trace(import_scenario(scenario, scenario_names[i]));
     }
@@ -491,32 +533,25 @@ setup_client (GKeyFile *scenario, const gchar *group)
     GError *error = NULL;
     guint port;
     gsize length;
-    gchar **arguments = NULL;
+    const gchar **arguments = NULL;
 
     port = g_key_file_get_integer(scenario, group, "port", &error);
     gcut_assert_error(error);
     if (g_key_file_has_key(scenario, group, "arguments", &error)) {
-        arguments = g_key_file_get_string_list(scenario, group, "arguments",
-                                               &length, &error);
+        arguments = get_string_list(scenario, group, "arguments", &length);
     }
     gcut_assert_error(error);
 
-    cut_take_string_array(arguments);
     start_client_with_string_list(port, arguments);
 }
 
 static void
 setup_clients (GKeyFile *scenario)
 {
-    GError *error = NULL;
-    gchar **clients;
+    const gchar **clients;
     gsize length, i;
 
-    clients = g_key_file_get_string_list(scenario, SCENARIO_GROUP, "clients",
-                                         &length, &error);
-    gcut_assert_error(error);
-
-    cut_take_string_array(clients);
+    clients = get_string_list(scenario, SCENARIO_GROUP, "clients", &length);
     for (i = 0; i < length; i++) {
         cut_trace(setup_client(scenario, clients[i]));
     }
@@ -555,41 +590,6 @@ response_to_get_n_received (const gchar *response)
 
     return NULL;
 }
-
-static gint
-get_integer (GKeyFile *scenario, const gchar *group, const gchar *key)
-{
-    GError *error = NULL;
-    gint value;
-
-    value = g_key_file_get_integer(scenario, group, key, &error);
-    gcut_assert_error(error, "group: <%s>", group);
-    return value;
-}
-
-static const gchar *
-get_string (GKeyFile *scenario, const gchar *group, const gchar *key)
-{
-    GError *error = NULL;
-    gchar *value;
-
-    value = g_key_file_get_string(scenario, group, key, &error);
-    gcut_assert_error(error, "group: <%s>", group);
-    return cut_take_string(value);
-}
-
-static gint
-get_enum (GKeyFile *scenario, const gchar *group, const gchar *key,
-          GType enum_type)
-{
-    GError *error = NULL;
-    gint value;
-
-    value = gcut_key_file_get_enum(scenario, group, key, enum_type, &error);
-    gcut_assert_error(error, "group: <%s>", group);
-    return value;
-}
-
 
 static void
 assert_response (GKeyFile *scenario, const gchar *group)
@@ -763,6 +763,8 @@ do_end_of_message (GKeyFile *scenario, const gchar *group)
         chunk = get_string(scenario, group, "chunk");
     gcut_assert_error(error);
 
+    milter_server_context_set_state(MILTER_SERVER_CONTEXT(server),
+                                    MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE);
     milter_manager_controller_end_of_message(controller,
                                              chunk,
                                              chunk ? strlen(chunk) : 0);
@@ -770,6 +772,63 @@ do_end_of_message (GKeyFile *scenario, const gchar *group)
     cut_trace(assert_response(scenario, group));
     client = test_clients->data;
     cut_assert_equal_string(chunk, get_received_data(body_chunk));
+}
+
+static const GList *
+get_expected_added_headers (GKeyFile *scenario, const gchar *group)
+{
+    const gchar key[] = "added_headers";
+    GError *error = NULL;
+    const GList *expected_added_headers = NULL;
+
+    if (g_key_file_has_key(scenario, group, key, &error)) {
+        const gchar **added_header_strings;
+        GList *added_headers = NULL;
+        gsize length;
+
+        added_header_strings = get_string_list(scenario, group, key, &length);
+        for (; *added_header_strings; added_header_strings++) {
+            MilterManagerTestHeader *header;
+            gchar **components;
+
+            components = g_strsplit(*added_header_strings, ":", 3);
+            header = milter_manager_test_header_new(atoi(components[0]),
+                                                    components[1],
+                                                    components[2]);
+            g_strfreev(components);
+            added_headers = g_list_prepend(added_headers, header);
+        }
+        expected_added_headers =
+            gcut_take_list(
+                g_list_sort(added_headers,
+                            (GCompareFunc)milter_manager_test_header_compare),
+                (CutDestroyFunction)milter_manager_test_header_free);
+    }
+    gcut_assert_error(error);
+
+    return expected_added_headers;
+}
+
+static void
+do_end_of_message_add_header (GKeyFile *scenario, const gchar *group)
+{
+    const GList *expected_added_headers = NULL;
+    const GList *actual_added_headers;
+
+    expected_added_headers = get_expected_added_headers(scenario, group);
+    actual_added_headers = milter_manager_test_server_get_add_headers(server);
+    gcut_assert_equal_list(
+        expected_added_headers, actual_added_headers,
+        (GEqualFunc)milter_manager_test_header_equal,
+        (GCutInspectFunc)milter_manager_test_header_inspect_without_index,
+        NULL);
+}
+
+static void
+do_end_of_message_full (GKeyFile *scenario, const gchar *group)
+{
+    cut_trace(do_end_of_message(scenario, group));
+    cut_trace(do_end_of_message_add_header(scenario, group));
 }
 
 static void
@@ -840,7 +899,7 @@ do_action (GKeyFile *scenario, const gchar *group)
         cut_trace(do_body(scenario, group));
         break;
       case MILTER_COMMAND_END_OF_MESSAGE:
-        cut_trace(do_end_of_message(scenario, group));
+        cut_trace(do_end_of_message_full(scenario, group));
         break;
       case MILTER_COMMAND_QUIT:
         cut_trace(do_quit(scenario, group));
@@ -894,6 +953,8 @@ data_scenario (void)
         "quit", g_strdup("quit.txt"), g_free,
         "abort", g_strdup("abort.txt"), g_free,
         "unknown", g_strdup("unknown.txt"), g_free);
+
+    cut_add_data("add-header", g_strdup("add-header.txt"), g_free);
 
     cut_add_data("body - skip", g_strdup("body-skip.txt"), g_free);
 }
@@ -1786,7 +1847,7 @@ test_add_header (void)
 
     headers =
         g_list_sort((GList*)milter_manager_test_server_get_add_headers(server),
-                   (GCompareFunc)milter_manager_test_header_compare);
+                    (GCompareFunc)milter_manager_test_header_compare);
     gcut_assert_equal_list(expected_list, headers,
                            (GEqualFunc)milter_manager_test_header_equal,
                            (GCutInspectFunc)milter_manager_test_header_inspect_without_index,
