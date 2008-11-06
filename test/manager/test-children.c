@@ -79,6 +79,9 @@ static guint n_finished_emitted;
 
 static guint log_signal_id;
 
+static GArray *arguments1;
+static GArray *arguments2;
+
 static GList *test_clients;
 
 static void
@@ -260,12 +263,13 @@ setup_signals (MilterManagerChildren *children)
 }
 
 static void
-start_client (guint port)
+start_client (guint port, GArray *arguments)
 {
     MilterManagerTestClient *client;
     GError *error = NULL;
 
     client = milter_manager_test_client_new(port);
+    milter_manager_test_client_set_arguments(client, arguments);
     test_clients = g_list_append(test_clients, client);
     if (!milter_manager_test_client_run(client, &error)) {
         gcut_assert_error(error);
@@ -314,7 +318,38 @@ setup (void)
 
     log_signal_id = 0;
 
+    arguments1 = g_array_new(TRUE, TRUE, sizeof(gchar *));
+    arguments2 = g_array_new(TRUE, TRUE, sizeof(gchar *));
+
     test_clients = NULL;
+}
+
+static void
+arguments_append (GArray *arguments, const gchar *argument, ...)
+{
+    va_list args;
+
+    va_start(args, argument);
+    while (argument) {
+        gchar *dupped_argument;
+
+        dupped_argument = g_strdup(argument);
+        g_array_append_val(arguments, dupped_argument);
+        argument = va_arg(args, gchar *);
+    }
+    va_end(args);
+}
+
+static void
+arguments_free (GArray *arguments)
+{
+    guint i;
+
+    for (i = 0; i < arguments->len; i++) {
+        g_free(g_array_index(arguments, gchar *, i));
+    }
+
+    g_array_free(arguments, TRUE);
 }
 
 void
@@ -340,6 +375,11 @@ teardown (void)
         gcut_list_string_free(actual_names);
     if (expected_names)
         gcut_list_string_free(expected_names);
+
+    if (arguments1)
+        arguments_free(arguments1);
+    if (arguments2)
+        arguments_free(arguments2);
 
     if (test_clients) {
         g_list_foreach(test_clients, (GFunc)g_object_unref, NULL);
@@ -466,8 +506,8 @@ test_negotiate (void)
                                MILTER_ACTION_CHANGE_BODY,
                                MILTER_STEP_NONE);
 
-    start_client(10026);
-    start_client(10027);
+    start_client(10026, arguments1);
+    start_client(10027, arguments2);
 
     add_child("milter@10026", "inet:10026@localhost");
     add_child("milter@10027", "inet:10027@localhost");
@@ -493,7 +533,7 @@ test_retry_negotiate (void)
                                "milter-test-client.rb",
                                NULL);
     cut_take_string(command);
-    start_client(10026);
+    start_client(10026, arguments1);
 
     add_child_with_command_and_options("milter@10027",
                                        "inet:10027@localhost",
@@ -529,7 +569,7 @@ test_retry_negotiate_failure (void)
                                "milter-test-client.rb",
                                NULL);
     cut_take_string(command);
-    start_client(10026);
+    start_client(10026, arguments1);
 
     add_child_with_command_and_options("milter@10026",
                                        "inet:10026@localhost",
@@ -781,7 +821,7 @@ set_timeout (gpointer data, gpointer user_data)
 
 static void
 cb_log (MilterLogger *logger, const gchar *domain,
-        MilterLogLevelFlags level, const gchar *file, 
+        MilterLogLevelFlags level, const gchar *file,
         guint line, const gchar *function,
         GTimeVal *time_value, const gchar *message, gpointer user_data)
 {
@@ -800,6 +840,11 @@ test_reading_timeout (void)
     const gchar host_name[] = "mx.local.net";
     const gchar ip_address[] = "192.168.123.123";
     MilterLogger *logger;
+
+    arguments_append(arguments2,
+                     "--action", "no_response",
+                     "--connect-host", host_name,
+                     NULL);
 
     cut_trace(test_negotiate());
 

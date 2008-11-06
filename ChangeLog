@@ -1,5 +1,8 @@
 2008-11-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/lib/milter-test-client.rb, test/manager/test-children.c:
+	add no-response action and use it.
+
 	* test/lib/milter-manager-test-utils.[ch]: ValueWithParam -> Pair.
 
 	* test/lib/milter-manager-test-server.[ch]: collect all values.

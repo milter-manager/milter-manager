@@ -65,33 +65,38 @@ class MilterTestClient
 
       opts.on("--quarantine=REASON",
               "Send quarantine with REASON on end-of-message") do |reason|
-        @end_of_message_actions << [:quarantine, reason]
+        @end_of_message_actions << ["quarantine", reason]
       end
 
       opts.on("--add-header=NAME:VALUE",
               "Add a new header whose name is NAME and " +
               "value is VALUE on end-of-message") do |name_and_value|
-        @end_of_message_actions << [:add_header, *name_and_value.split(/:/, 2)]
+        @end_of_message_actions << ["add_header", *name_and_value.split(/:/, 2)]
       end
 
       opts.on("--change-from=FROM",
               "Change the from adress to FROM") do |from|
-        @end_of_message_actions << [:change_from, from]
+        @end_of_message_actions << ["change_from", from]
       end
 
       opts.on("--add-recipient=RECIPIENT",
               "Send 'add-recipient' with RECIPIENT") do |recipient|
-        @end_of_message_actions << [:add_recipient, recipient]
+        @end_of_message_actions << ["add_recipient", recipient]
       end
 
       opts.on("--delete-recipient=RECIPIENT",
               "Send 'delete-recipient' with RECIPIENT") do |recipient|
-        @end_of_message_actions << [:delete_recipient, recipient]
+        @end_of_message_actions << ["delete_recipient", recipient]
       end
 
       opts.on("--replace-body=CHUNK",
               "Send 'replace-body' with CHUNK") do |chunk|
-        @end_of_message_actions << [:replace_body, chunk]
+        @end_of_message_actions << ["replace_body", chunk]
+      end
+
+      opts.on("--progress",
+              "Send 'progress'") do
+        @end_of_message_actions << ["progress"]
       end
 
       opts.on("--reply-code=REPLY_CODE",
@@ -99,9 +104,9 @@ class MilterTestClient
         @current_action = ["reply_code", reply_code]
       end
 
-      opts.on("--progress",
-              "Send 'progress'") do
-        @end_of_message_actions << [:progress]
+      opts.on("--connect-host=HOST",
+              "Add HOST targets to be applied ACTION") do |host|
+        @hosts << [@current_action, host]
       end
 
       opts.on("--envelope-recipient=RECIPIENT",
@@ -135,6 +140,7 @@ class MilterTestClient
     @debug = false
     @current_action = "reject"
     @end_of_message_actions = []
+    @hosts = []
     @recipients = []
     @senders = []
     @body_chunks = []
@@ -156,10 +162,15 @@ class MilterTestClient
   end
 
   def write(next_state, encode_type, *args)
-    packet, packed_size = @encoder.send("encode_reply_#{encode_type}", *args)
-    while packet
-      written_size = @socket.write(packet)
-      packet = packet[written_size, -1]
+    packed_size = nil
+    if encode_type == "no_response"
+      next_state = :quit
+    else
+      packet, packed_size = @encoder.send("encode_reply_#{encode_type}", *args)
+      while packet
+        written_size = @socket.write(packet)
+        packet = packet[written_size, -1]
+      end
     end
     info("#{@state}(#{encode_type}) -> #{next_state}")
     @state = next_state
@@ -206,6 +217,13 @@ class MilterTestClient
     invalid_state(:connect) if @state != :negotiated
     @connect_host = host
     @connect_address = address
+
+    @hosts.reverse_each do |action, _host|
+      if _host == host
+        write_action(:connected, action)
+        return
+      end
+    end
 
     write(:connected, :continue)
   end
