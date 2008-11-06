@@ -54,28 +54,31 @@ gint                     milter_manager_test_header_compare
                                                 (MilterManagerTestHeader *header_a,
                                                  MilterManagerTestHeader *header_b);
 
-typedef struct _MilterManagerTestValueWithParam
+typedef struct _MilterManagerTestPair
 {
+    gchar *name;
     gchar *value;
-    gchar *param;
-} MilterManagerTestValueWithParam;
+} MilterManagerTestPair;
 
-MilterManagerTestValueWithParam *milter_manager_test_value_with_param_new
-                                        (const gchar *value,
-                                         const gchar *param);
-void                     milter_manager_test_value_with_param_free
-                                        (MilterManagerTestValueWithParam *value);
-void                     milter_manager_test_value_with_param_inspect_without_index
+MilterManagerTestPair   *milter_manager_test_pair_new
+                                        (const gchar *name,
+                                         const gchar *value);
+void                     milter_manager_test_pair_free
+                                        (MilterManagerTestPair *pair);
+void                     milter_manager_test_pair_inspect_without_index
                                         (GString *string,
-                                         MilterManagerTestValueWithParam *value,
+                                         MilterManagerTestPair *pair,
                                          gpointer user_data);
-void                     milter_manager_test_value_with_param_inspect
+void                     milter_manager_test_pair_inspect
                                         (GString *string,
-                                         MilterManagerTestValueWithParam *value,
+                                         gconstpointer pair,
                                          gpointer user_data);
-gboolean                 milter_manager_test_value_with_param_equal
-                                        (MilterManagerTestValueWithParam *value_a,
-                                         MilterManagerTestValueWithParam *value_b);
+gboolean                 milter_manager_test_pair_equal
+                                        (gconstpointer pair1,
+                                         gconstpointer pair2);
+gint                     milter_manager_test_pair_compare
+                                        (gconstpointer pair1,
+                                         gconstpointer pair2);
 
 
 G_END_DECLS

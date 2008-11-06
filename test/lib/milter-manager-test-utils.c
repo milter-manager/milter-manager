@@ -76,7 +76,7 @@ milter_manager_test_header_equal (MilterManagerTestHeader *header_a,
     if (!header_a->name || !header_b->name)
         return FALSE;
 
-    return (header_a->index == header_b->index && 
+    return (header_a->index == header_b->index &&
             !strcmp(header_a->name, header_b->name) &&
             !g_strcmp0(header_a->value, header_b->value));
 }
@@ -115,43 +115,71 @@ milter_manager_test_header_free (MilterManagerTestHeader *header)
 }
 
 void
-milter_manager_test_value_with_param_inspect (GString *string,
-                                              MilterManagerTestValueWithParam *value,
-                                              gpointer user_data)
+milter_manager_test_pair_inspect (GString *string,
+                                  gconstpointer data,
+                                  gpointer user_data)
 {
-    g_string_append_printf(string,
-                           "<%s(%s)>",
-                           value->value, value->param);
+    const MilterManagerTestPair *pair = data;
+
+    g_string_append_printf(string, "<%s(%s)>", pair->name, pair->value);
+}
+
+static gboolean
+string_equal (const gchar *string1, const gchar *string2)
+{
+    if (string1 == string2)
+        return TRUE;
+
+    if (string1 == NULL || string2 == NULL)
+        return FALSE;
+
+    return g_strcmp0(string1, string2) == 0;
 }
 
 gboolean
-milter_manager_test_value_with_param_equal (MilterManagerTestValueWithParam *value_a,
-                                            MilterManagerTestValueWithParam *value_b)
+milter_manager_test_pair_equal (gconstpointer data1, gconstpointer data2)
 {
-    if (!value_a->value || !value_b->value)
-        return FALSE;
+    const MilterManagerTestPair *pair1 = data1;
+    const MilterManagerTestPair *pair2 = data2;
 
-    return (!strcmp(value_a->value, value_b->value) &&
-            !g_strcmp0(value_a->param, value_b->param));
+    return string_equal(pair1->name, pair2->name) &&
+        string_equal(pair1->value, pair2->value);
 }
 
-MilterManagerTestValueWithParam *
-milter_manager_test_value_with_param_new (const gchar *value_string, const gchar *param)
+gint
+milter_manager_test_pair_compare (gconstpointer data1, gconstpointer data2)
 {
-    MilterManagerTestValueWithParam *value;
-    value = g_new0(MilterManagerTestValueWithParam, 1);
-    value->value = g_strdup(value_string);
-    value->param = g_strdup(param);
-    return value;
+    const MilterManagerTestPair *pair1 = data1;
+    const
+        MilterManagerTestPair *pair2 = data2;
+    gint compare;
+
+    compare = g_strcmp0(pair1->name, pair2->name);
+    if (compare == 0)
+        return g_strcmp0(pair1->value, pair2->value);
+    else
+        return compare;
+}
+
+MilterManagerTestPair *
+milter_manager_test_pair_new (const gchar *name, const gchar *value)
+{
+    MilterManagerTestPair *pair;
+
+    pair = g_new0(MilterManagerTestPair, 1);
+    pair->name = g_strdup(name);
+    pair->value = g_strdup(value);
+
+    return pair;
 }
 
 void
-milter_manager_test_value_with_param_free (MilterManagerTestValueWithParam *value)
+milter_manager_test_pair_free (MilterManagerTestPair *pair)
 {
-    g_free(value->value);
-    g_free(value->param);
+    g_free(pair->name);
+    g_free(pair->value);
 
-    g_free(value);
+    g_free(pair);
 }
 
 /*

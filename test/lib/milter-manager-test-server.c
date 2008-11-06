@@ -26,7 +26,7 @@
 #include "milter-manager-test-utils.h"
 
 #define MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(obj)                    \
-    (G_TYPE_INSTANCE_GET_PRIVATE((obj),                          \
+    (G_TYPE_INSTANCE_GET_PRIVATE((obj),                                \
                                  MILTER_TYPE_MANAGER_TEST_SERVER,      \
                                  MilterManagerTestServerPrivate))
 
@@ -47,10 +47,10 @@ struct _MilterManagerTestServerPrivate
     GList *add_headers;
     GList *change_headers;
     GList *insert_headers;
-    GList *add_recipients;
+    GList *added_recipients;
     GList *delete_recipients;
     GList *replace_bodies;
-    GHashTable *changed_froms;
+    GList *changed_froms;
     gchar *quarantine_reason;
     gchar *reply_code;
 };
@@ -151,10 +151,9 @@ milter_manager_test_server_init (MilterManagerTestServer *milter)
     priv->add_headers = NULL;
     priv->change_headers = NULL;
     priv->insert_headers = NULL;
-    priv->add_recipients = NULL;
+    priv->added_recipients = NULL;
     priv->delete_recipients = NULL;
-    priv->changed_froms = g_hash_table_new_full(g_str_hash, g_str_equal,
-                                                g_free, g_free);
+    priv->changed_froms = NULL;
     priv->replace_bodies = NULL;
     priv->quarantine_reason = NULL;
     priv->reply_code = NULL;
@@ -199,11 +198,12 @@ dispose (GObject *object)
         priv->insert_headers = NULL;
     }
 
-    if (priv->add_recipients) {
-        g_list_foreach(priv->add_recipients,
-                       (GFunc)milter_manager_test_value_with_param_free, NULL);
-        g_list_free(priv->add_recipients);
-        priv->add_recipients = NULL;
+    if (priv->added_recipients) {
+        g_list_foreach(priv->added_recipients,
+                       (GFunc)milter_manager_test_header_free,
+                       NULL);
+        g_list_free(priv->added_recipients);
+        priv->added_recipients = NULL;
     }
 
     if (priv->delete_recipients) {
@@ -213,7 +213,10 @@ dispose (GObject *object)
     }
 
     if (priv->changed_froms) {
-        g_hash_table_unref(priv->changed_froms);
+        g_list_foreach(priv->changed_froms,
+                       (GFunc)milter_manager_test_header_free,
+                       NULL);
+        g_list_free(priv->changed_froms);
         priv->changed_froms = NULL;
     }
 
@@ -326,8 +329,9 @@ change_from (MilterReplySignals *reply,
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
     priv->n_change_froms++;
 
-    g_hash_table_insert(priv->changed_froms,
-                        g_strdup(from), g_strdup(parameters));
+    priv->changed_froms =
+        g_list_prepend(priv->changed_froms,
+                       milter_manager_test_pair_new(from, parameters));
 }
 
 static void
@@ -340,9 +344,9 @@ add_recipient (MilterReplySignals *reply,
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
     priv->n_add_recipients++;
 
-    priv->add_recipients =
-        g_list_append(priv->add_recipients,
-                      milter_manager_test_value_with_param_new(recipient, parameters));
+    priv->added_recipients =
+        g_list_prepend(priv->added_recipients,
+                       milter_manager_test_pair_new(recipient, parameters));
 }
 
 static void
@@ -498,9 +502,9 @@ milter_manager_test_server_get_insert_headers (MilterManagerTestServer *server)
 }
 
 const GList *
-milter_manager_test_server_get_add_recipients (MilterManagerTestServer *server)
+milter_manager_test_server_get_added_recipients (MilterManagerTestServer *server)
 {
-    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->add_recipients;
+    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->added_recipients;
 }
 
 const GList *
@@ -509,7 +513,7 @@ milter_manager_test_server_get_delete_recipients (MilterManagerTestServer *serve
     return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->delete_recipients;
 }
 
-GHashTable *
+const GList *
 milter_manager_test_server_get_changed_froms (MilterManagerTestServer *server)
 {
     return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->changed_froms;

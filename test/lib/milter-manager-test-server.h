@@ -84,11 +84,11 @@ const GList          *milter_manager_test_server_get_change_headers
                                                             (MilterManagerTestServer *server);
 const GList          *milter_manager_test_server_get_insert_headers
                                                             (MilterManagerTestServer *server);
-const GList          *milter_manager_test_server_get_add_recipients
+const GList          *milter_manager_test_server_get_added_recipients
                                                             (MilterManagerTestServer *server);
 const GList          *milter_manager_test_server_get_delete_recipients
                                                             (MilterManagerTestServer *server);
-GHashTable           *milter_manager_test_server_get_changed_froms
+const GList          *milter_manager_test_server_get_changed_froms
                                                             (MilterManagerTestServer *server);
 const GList          *milter_manager_test_server_get_replace_bodies
                                                             (MilterManagerTestServer *server);

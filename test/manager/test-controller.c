@@ -53,7 +53,6 @@ void data_body (void);
 void test_body (gconstpointer data);
 void data_end_of_message (void);
 void test_end_of_message (gconstpointer data);
-void test_add_recipient (void);
 void test_delete_recipient (void);
 void test_replace_body (void);
 void test_replace_body_from_two_client (void);
@@ -838,45 +837,86 @@ do_end_of_message_add_header (GKeyFile *scenario, const gchar *group)
         NULL);
 }
 
-static void
-do_end_of_message_change_from (GKeyFile *scenario, const gchar *group)
+static const GList *
+get_pair_list (GKeyFile *scenario, const gchar *group, const gchar *key)
 {
-    const gchar key[] = "changed_froms";
-    GHashTable *expected_froms;
+    const GList *sorted_pairs = NULL;
     GError *error = NULL;
 
-    expected_froms = gcut_take_new_hash_table_string_string(NULL, NULL);
     if (g_key_file_has_key(scenario, group, key, &error)) {
-        const gchar **froms;
+        const gchar **pair_strings;
+        GList *pairs = NULL;
         gsize length, i;
 
-        froms = get_string_list(scenario, group, key, &length);
+        pair_strings = get_string_list(scenario, group, key, &length);
         for (i = 0; i < length; i += 2) {
-            gchar *from = NULL;
-            gchar *from_parameters = NULL;
+            MilterManagerTestPair *pair;
+            const gchar *name, *value;
 
-            from = g_strdup(froms[i]);
-            if (froms[i + 1] && froms[i + 1][0] != '\0')
-                from_parameters = g_strdup(froms[i + 1]);
-            else
-                from_parameters = NULL;
-            g_hash_table_insert(expected_froms, from, from_parameters);
+            name = pair_strings[i];
+            value = pair_strings[i + 1];
+            if (value && value[0] == '\0')
+                value = NULL;
+            pair = milter_manager_test_pair_new(name, value);
+            pairs = g_list_prepend(pairs, pair);
         }
+        sorted_pairs =
+            gcut_take_list(
+                g_list_sort(pairs, milter_manager_test_pair_compare),
+                (CutDestroyFunction)milter_manager_test_pair_free);
     }
     gcut_assert_error(error);
 
-    gcut_assert_equal_hash_table_string_string(
-        expected_froms,
-        milter_manager_test_server_get_changed_froms(server));
+    return sorted_pairs;
+}
+
+static const GList *
+sort_const_pair_list (const GList *pairs)
+{
+    return gcut_take_list(g_list_sort(g_list_copy((GList *)pairs),
+                                      milter_manager_test_pair_compare),
+                          NULL);
+}
+
+static void
+do_end_of_message_change_from (GKeyFile *scenario, const gchar *group)
+{
+    const GList *expected_froms;
+    const GList *actual_froms;
+
+    expected_froms = get_pair_list(scenario, group, "changed_froms");
+    actual_froms = milter_manager_test_server_get_changed_froms(server);
+    gcut_assert_equal_list(expected_froms,
+                           sort_const_pair_list(actual_froms),
+                           milter_manager_test_pair_equal,
+                           milter_manager_test_pair_inspect,
+                           NULL);
+}
+
+static void
+do_end_of_message_add_recipient (GKeyFile *scenario, const gchar *group)
+{
+    const GList *expected_recipients;
+    const GList *actual_recipients;
+
+    expected_recipients = get_pair_list(scenario, group, "added_recipients");
+    actual_recipients = milter_manager_test_server_get_added_recipients(server);
+    gcut_assert_equal_list(expected_recipients,
+                           sort_const_pair_list(actual_recipients),
+                           milter_manager_test_pair_equal,
+                           milter_manager_test_pair_inspect,
+                           NULL);
 }
 
 static void
 do_end_of_message_full (GKeyFile *scenario, const gchar *group)
 {
     cut_trace(do_end_of_message(scenario, group));
+    cut_trace(milter_manager_test_server_wait_signal(server));
     cut_trace(do_end_of_message_quarantine(scenario, group));
     cut_trace(do_end_of_message_add_header(scenario, group));
     cut_trace(do_end_of_message_change_from(scenario, group));
+    cut_trace(do_end_of_message_add_recipient(scenario, group));
 }
 
 static void
@@ -1004,7 +1044,8 @@ data_scenario (void)
 
     cut_add_data("quarantine", g_strdup("quarantine.txt"), g_free,
                  "add-header", g_strdup("add-header.txt"), g_free,
-                 "change-from", g_strdup("change-from.txt"), g_free);
+                 "change-from", g_strdup("change-from.txt"), g_free,
+                 "add-recipient", g_strdup("add-recipient.txt"), g_free);
 
     cut_add_data("body - skip", g_strdup("body-skip.txt"), g_free);
 }
@@ -1833,51 +1874,6 @@ test_end_of_message (gconstpointer data)
 
     client = test_clients->data;
     cut_assert_equal_string(chunk, get_received_data(end_of_message_chunk));
-}
-
-void
-test_add_recipient (void)
-{
-    MilterManagerTestValueWithParam recipient1 = {"add1@example.com", NULL};
-    MilterManagerTestValueWithParam recipient2 = {"add2@example.com", NULL};
-    MilterManagerTestValueWithParam recipient3 = {"add3@example.com", NULL};
-    const GList *actual_recipients;
-
-    expected_list =
-        g_list_append(expected_list,
-                      &recipient1); 
-    expected_list =
-        g_list_append(expected_list,
-                      &recipient2); 
-    expected_list =
-        g_list_append(expected_list,
-                      &recipient2); 
-    expected_list =
-        g_list_append(expected_list,
-                      &recipient3); 
-    
-    arguments_append(arguments1,
-                     "--add-recipient", recipient1.value,
-                     "--add-recipient", recipient2.value,
-                     NULL);
-    arguments_append(arguments2,
-                     "--add-recipient", recipient2.value,
-                     "--add-recipient", recipient3.value,
-                     NULL);
-
-    cut_trace(test_end_of_message(NULL));
-
-    cut_trace(milter_manager_test_server_wait_signal(server));
-
-    cut_assert_equal_uint(
-        4,
-        milter_manager_test_server_get_n_add_recipients(server));
-
-    actual_recipients = milter_manager_test_server_get_add_recipients(server);
-    gcut_assert_equal_list(expected_list, actual_recipients,
-                           (GEqualFunc)milter_manager_test_value_with_param_equal,
-                           (GCutInspectFunc)milter_manager_test_value_with_param_inspect,
-                           NULL);
 }
 
 void
