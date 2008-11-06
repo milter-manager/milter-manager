@@ -61,6 +61,7 @@ void test_delete_recipient (void);
 void test_replace_body (void);
 void test_replace_body_from_two_client (void);
 void test_reply_code (void);
+void test_invalid_reply_code (void);
 void test_progress (void);
 
 static GKeyFile *scenario;
@@ -80,6 +81,7 @@ static GArray *arguments1;
 static GArray *arguments2;
 
 static GError *controller_error;
+static GError *expected_error;
 static gboolean finished;
 static gchar *quarantine_reason;
 
@@ -166,6 +168,8 @@ setup (void)
     finished = FALSE;
     quarantine_reason = NULL;
     expected_list = NULL;
+
+    expected_error = NULL;
 }
 
 static void
@@ -241,6 +245,11 @@ teardown (void)
 
     if (quarantine_reason)
         g_free(quarantine_reason);
+
+    if (controller_error)
+        g_error_free(controller_error);
+    if (expected_error)
+        g_error_free(expected_error);
 }
 
 #define collect_n_received(event)                                       \
@@ -374,6 +383,28 @@ wait_finished_helper (void)
 
     cut_assert_true(timeout_waiting, "timeout");
     cut_assert_true(finished);
+}
+
+#define wait_controller_error()                    \
+    cut_trace_with_info_expression(        \
+        wait_controller_error_helper(),            \
+        wait_controller_error())
+
+static void
+wait_controller_error_helper (void)
+{
+    gboolean timeout_waiting = TRUE;
+    guint timeout_waiting_id;
+
+    timeout_waiting_id = g_timeout_add_seconds(1, cb_timeout_waiting,
+                                               &timeout_waiting);
+    while (timeout_waiting && !controller_error) {
+        g_main_context_iteration(NULL, TRUE);
+    }
+    g_source_remove(timeout_waiting_id);
+
+    cut_assert_true(timeout_waiting, "timeout");
+    cut_assert_not_null(controller_error);
 }
 
 static MilterOption *
@@ -1965,6 +1996,28 @@ test_reply_code (void)
 
     cut_assert_equal_string(reply_code,
                             milter_manager_test_server_get_reply_code(server));
+}
+
+void
+test_invalid_reply_code (void)
+{
+    const gchar from[] = "reject@example.com";
+    const gchar reply_code[] = "554 3.7.1 1%% 2%% 3%%";
+
+    expected_error = g_error_new(MILTER_CLIENT_CONTEXT_ERROR,
+                                 MILTER_CLIENT_CONTEXT_ERROR_INVALID_CODE,
+                                 "class of extended status code should be '2', '4' or '5': <3.7.1>: <3>");
+    arguments_append(arguments1,
+                     "--reply-code", reply_code,
+                     "--envelope-from", from,
+                     NULL);
+
+    cut_trace(test_helo());
+
+    milter_manager_controller_envelope_from(controller, from);
+    wait_controller_error();
+
+    gcut_assert_equal_error(expected_error, controller_error);
 }
 
 void
