@@ -50,8 +50,7 @@ struct _MilterManagerTestServerPrivate
     GList *add_recipients;
     GList *delete_recipients;
     GList *replace_bodies;
-    gchar *from;
-    gchar *from_parameters;
+    GHashTable *changed_froms;
     gchar *quarantine_reason;
     gchar *reply_code;
 };
@@ -154,8 +153,8 @@ milter_manager_test_server_init (MilterManagerTestServer *milter)
     priv->insert_headers = NULL;
     priv->add_recipients = NULL;
     priv->delete_recipients = NULL;
-    priv->from = NULL;
-    priv->from_parameters = NULL;
+    priv->changed_froms = g_hash_table_new_full(g_str_hash, g_str_equal,
+                                                g_free, g_free);
     priv->replace_bodies = NULL;
     priv->quarantine_reason = NULL;
     priv->reply_code = NULL;
@@ -213,14 +212,9 @@ dispose (GObject *object)
         priv->delete_recipients = NULL;
     }
 
-    if (priv->from) {
-        g_free(priv->from);
-        priv->from = NULL;
-    }
-
-    if (priv->from_parameters) {
-        g_free(priv->from_parameters);
-        priv->from_parameters = NULL;
+    if (priv->changed_froms) {
+        g_hash_table_unref(priv->changed_froms);
+        priv->changed_froms = NULL;
     }
 
     if (priv->replace_bodies) {
@@ -332,13 +326,8 @@ change_from (MilterReplySignals *reply,
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
     priv->n_change_froms++;
 
-    if (priv->from)
-        g_free(priv->from);
-    priv->from = g_strdup(from);
-
-    if (priv->from_parameters)
-        g_free(priv->from_parameters);
-    priv->from_parameters = g_strdup(parameters);
+    g_hash_table_insert(priv->changed_froms,
+                        g_strdup(from), g_strdup(parameters));
 }
 
 static void
@@ -520,16 +509,10 @@ milter_manager_test_server_get_delete_recipients (MilterManagerTestServer *serve
     return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->delete_recipients;
 }
 
-const gchar *
-milter_manager_test_server_get_from (MilterManagerTestServer *server)
+GHashTable *
+milter_manager_test_server_get_changed_froms (MilterManagerTestServer *server)
 {
-    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->from;
-}
-
-const gchar *
-milter_manager_test_server_get_from_parameters (MilterManagerTestServer *server)
-{
-    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->from_parameters;
+    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->changed_froms;
 }
 
 const GList *

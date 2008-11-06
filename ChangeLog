@@ -1,6 +1,13 @@
 2008-11-06  Kouhei Sutou  <kou@cozmixng.org>
 
 	* test/manager/test-controller.c,
+	test/fixtures/controller/change-from.txt: rewrite change-from test
+	as scenario based test.
+
+	* test/lib/milter-manager-test-server.[ch]: collect change-from
+	data as hash table.
+
+	* test/manager/test-controller.c,
 	test/fixtures/controller/quarantine.txt: add a test for quarantine.
 
 	* test/manager/test-controller.c: remove needless add-header test.
