@@ -1,0 +1,23 @@
+[scenario]
+clients=client10026;client10027
+import=body.txt
+actions=end-of-message-replace-body
+
+omit=Replaced bodies from two milter should be separated respectively. But not implemented yet.
+
+[client10026]
+port=10026
+arguments=--replace-body;This is the first line from client1.;--replace-body;This is the second line from client1.;--replace-body;This is the third line from client1.
+
+[client10027]
+port=10027
+arguments=--replace-body;This is the first line from client2.;--replace-body;This is the second line from client2.;--replace-body;This is the third line from client2.
+
+[end-of-message-replace-body]
+command=end-of-message
+
+response=end-of-message
+n_received=2
+status=continue
+
+replaced_bodies=This is the first line from client1.;This is the second line from client1.;This is the third line from client1.;This is the first line from client2.;This is the second line from client2.;This is the third line from client2.

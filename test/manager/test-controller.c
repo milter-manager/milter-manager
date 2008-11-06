@@ -53,7 +53,6 @@ void data_body (void);
 void test_body (gconstpointer data);
 void data_end_of_message (void);
 void test_end_of_message (gconstpointer data);
-void test_replace_body_from_two_client (void);
 void test_reply_code (void);
 void test_invalid_reply_code (void);
 void test_progress (void);
@@ -1102,6 +1101,9 @@ data_scenario (void)
                  "delete-recipient", g_strdup("delete-recipient.txt"), g_free,
                  "replace-body", g_strdup("replace-body.txt"), g_free);
 
+    cut_add_data("replace-body - separate",
+                 g_strdup("replace-body-separate.txt"), g_free);
+
     cut_add_data("body - skip", g_strdup("body-skip.txt"), g_free);
 }
 
@@ -1109,8 +1111,15 @@ void
 test_scenario (gconstpointer data)
 {
     const gchar *scenario_name = data;
+    const gchar omit_key[] = "omit";
+    GError *error = NULL;
 
     cut_trace(load_scenario(scenario_name, &scenario));
+
+    if (g_key_file_has_key(scenario, SCENARIO_GROUP, omit_key, &error))
+        cut_omit("%s", get_string(scenario, SCENARIO_GROUP, omit_key));
+    gcut_assert_error(error);
+
     cut_trace(setup_clients(scenario));
     cut_trace(g_list_foreach(imported_scenarios, (GFunc)do_actions, NULL));
     cut_trace(do_actions(scenario));
@@ -1929,50 +1938,6 @@ test_end_of_message (gconstpointer data)
 
     client = test_clients->data;
     cut_assert_equal_string(chunk, get_received_data(end_of_message_chunk));
-}
-
-void
-test_replace_body_from_two_client (void)
-{
-    const GList *actual_bodies;
-    const gchar client1_chunk1[] = "This is the first line from client1.";
-    const gchar client1_chunk2[] = "This is the second line from client1.";
-    const gchar client1_chunk3[] = "This is the third line from client1.";
-    const gchar client2_chunk1[] = "This is the first line from client2.";
-    const gchar client2_chunk2[] = "This is the second line from client2.";
-    const gchar client2_chunk3[] = "This is the third line from client2.";
-
-    cut_omit("Replaced bodies from two milter should be separated respectively. "
-             "But not implemented yet.");
-
-    expected_list = g_list_append(expected_list, &client1_chunk1); 
-    expected_list = g_list_append(expected_list, &client1_chunk2); 
-    expected_list = g_list_append(expected_list, &client1_chunk3); 
-    expected_list = g_list_append(expected_list, &client2_chunk1); 
-    expected_list = g_list_append(expected_list, &client2_chunk2); 
-    expected_list = g_list_append(expected_list, &client2_chunk3); 
-
-    arguments_append(arguments1,
-                     "--replace-body", client1_chunk1,
-                     "--replace-body", client1_chunk2,
-                     "--replace-body", client1_chunk3,
-                     NULL);
-
-    arguments_append(arguments2,
-                     "--replace-body", client2_chunk1,
-                     "--replace-body", client2_chunk2,
-                     "--replace-body", client2_chunk3,
-                     NULL);
-
-    cut_trace(test_end_of_message(NULL));
-
-    cut_trace(milter_manager_test_server_wait_signal(server));
-    cut_assert_equal_uint(
-        6,
-        milter_manager_test_server_get_n_replace_bodies(server));
-
-    actual_bodies = milter_manager_test_server_get_replaced_bodies(server);
-    gcut_assert_equal_list_string(expected_list, actual_bodies);
 }
 
 void
