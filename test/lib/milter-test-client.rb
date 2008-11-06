@@ -65,33 +65,33 @@ class MilterTestClient
 
       opts.on("--quarantine=REASON",
               "Send quarantine with REASON on end-of-message") do |reason|
-        @quarantine_reason = reason
+        @end_of_message_actions << [:quarantine, reason]
       end
 
       opts.on("--add-header=NAME:VALUE",
               "Add a new header whose name is NAME and " +
               "value is VALUE on end-of-message") do |name_and_value|
-        @add_headers << name_and_value.split(/:/, 2)
+        @end_of_message_actions << [:add_header, *name_and_value.split(/:/, 2)]
       end
 
       opts.on("--change-from=FROM",
               "Change the from adress to FROM") do |from|
-        @change_froms << from
+        @end_of_message_actions << [:change_from, from]
       end
 
       opts.on("--add-recipient=RECIPIENT",
               "Send 'add-recipient' with RECIPIENT") do |recipient|
-        @add_recipients << recipient
+        @end_of_message_actions << [:add_recipient, recipient]
       end
 
       opts.on("--delete-recipient=RECIPIENT",
               "Send 'delete-recipient' with RECIPIENT") do |recipient|
-        @delete_recipients << recipient
+        @end_of_message_actions << [:delete_recipient, recipient]
       end
 
       opts.on("--replace-body=CHUNK",
               "Send 'replace-body' with CHUNK") do |chunk|
-        @replace_body_chunks << chunk
+        @end_of_message_actions << [:replace_body, chunk]
       end
 
       opts.on("--envelope-recipient=RECIPIENT",
@@ -124,13 +124,8 @@ class MilterTestClient
     @timeout = 3
     @debug = false
     @current_action = "reject"
-    @quarantine_reason = nil
-    @add_headers = []
+    @end_of_message_actions = []
     @recipients = []
-    @add_recipients = []
-    @change_froms = []
-    @delete_recipients = []
-    @replace_body_chunks = []
     @senders = []
     @body_chunks = []
     @end_of_message_chunks = []
@@ -303,27 +298,8 @@ class MilterTestClient
       invalid_state(:end_of_message)
     end
 
-    write(:end_of_message, :progress)
-
-    write(:end_of_message, :quarantine, @quarantine_reason) if @quarantine_reason
-    @add_headers.each do |name, value|
-      write(:end_of_message, :add_header, name, value)
-    end
-
-    @change_froms.each do |from|
-      write(:end_of_message, :change_from, from)
-    end
-
-    @add_recipients.each do |recipient|
-      write(:end_of_message, :add_recipient, recipient)
-    end
-
-    @delete_recipients.each do |recipient|
-      write(:end_of_message, :delete_recipient, recipient)
-    end
-
-    @replace_body_chunks.each do |chunk|
-      write(:end_of_message, :replace_body, chunk)
+    @end_of_message_actions.each do |action, *args|
+      write(:end_of_message_actions, action, *args)
     end
 
     @end_of_message_chunks.each do |action, end_of_message_chunk|
