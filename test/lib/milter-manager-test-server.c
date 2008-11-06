@@ -49,7 +49,7 @@ struct _MilterManagerTestServerPrivate
     GList *insert_headers;
     GList *added_recipients;
     GList *deleted_recipients;
-    GList *replace_bodies;
+    GList *replaced_bodies;
     GList *changed_froms;
     gchar *quarantine_reason;
     gchar *reply_code;
@@ -154,7 +154,7 @@ milter_manager_test_server_init (MilterManagerTestServer *milter)
     priv->added_recipients = NULL;
     priv->deleted_recipients = NULL;
     priv->changed_froms = NULL;
-    priv->replace_bodies = NULL;
+    priv->replaced_bodies = NULL;
     priv->quarantine_reason = NULL;
     priv->reply_code = NULL;
 
@@ -220,10 +220,10 @@ dispose (GObject *object)
         priv->changed_froms = NULL;
     }
 
-    if (priv->replace_bodies) {
-        g_list_foreach(priv->replace_bodies, (GFunc)g_free, NULL);
-        g_list_free(priv->replace_bodies);
-        priv->replace_bodies = NULL;
+    if (priv->replaced_bodies) {
+        g_list_foreach(priv->replaced_bodies, (GFunc)g_free, NULL);
+        g_list_free(priv->replaced_bodies);
+        priv->replaced_bodies = NULL;
     }
 
     if (priv->quarantine_reason) {
@@ -371,7 +371,8 @@ replace_body (MilterReplySignals *reply,
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
     priv->n_replace_bodies++;
 
-    priv->replace_bodies = g_list_append(priv->replace_bodies, g_strdup(body));
+    priv->replaced_bodies = g_list_append(priv->replaced_bodies,
+                                          g_strndup(body, body_size));
 }
 
 static void
@@ -522,9 +523,9 @@ milter_manager_test_server_get_changed_froms (MilterManagerTestServer *server)
 }
 
 const GList *
-milter_manager_test_server_get_replace_bodies (MilterManagerTestServer *server)
+milter_manager_test_server_get_replaced_bodies (MilterManagerTestServer *server)
 {
-    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->replace_bodies;
+    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->replaced_bodies;
 }
 
 const gchar *

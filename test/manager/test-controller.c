@@ -53,7 +53,6 @@ void data_body (void);
 void test_body (gconstpointer data);
 void data_end_of_message (void);
 void test_end_of_message (gconstpointer data);
-void test_replace_body (void);
 void test_replace_body_from_two_client (void);
 void test_reply_code (void);
 void test_invalid_reply_code (void);
@@ -949,6 +948,18 @@ do_end_of_message_delete_recipient (GKeyFile *scenario, const gchar *group)
 }
 
 static void
+do_end_of_message_replace_body (GKeyFile *scenario, const gchar *group)
+{
+    const GList *expected_bodies;
+    const GList *actual_bodies;
+
+    expected_bodies = get_string_g_list(scenario, group, "replaced_bodies");
+    actual_bodies = milter_manager_test_server_get_replaced_bodies(server);
+    gcut_assert_equal_list_string(expected_bodies,
+                                  actual_bodies);
+}
+
+static void
 do_end_of_message_full (GKeyFile *scenario, const gchar *group)
 {
     cut_trace(do_end_of_message(scenario, group));
@@ -958,6 +969,7 @@ do_end_of_message_full (GKeyFile *scenario, const gchar *group)
     cut_trace(do_end_of_message_change_from(scenario, group));
     cut_trace(do_end_of_message_add_recipient(scenario, group));
     cut_trace(do_end_of_message_delete_recipient(scenario, group));
+    cut_trace(do_end_of_message_replace_body(scenario, group));
 }
 
 static void
@@ -1087,7 +1099,8 @@ data_scenario (void)
                  "add-header", g_strdup("add-header.txt"), g_free,
                  "change-from", g_strdup("change-from.txt"), g_free,
                  "add-recipient", g_strdup("add-recipient.txt"), g_free,
-                 "delete-recipient", g_strdup("delete-recipient.txt"), g_free);
+                 "delete-recipient", g_strdup("delete-recipient.txt"), g_free,
+                 "replace-body", g_strdup("replace-body.txt"), g_free);
 
     cut_add_data("body - skip", g_strdup("body-skip.txt"), g_free);
 }
@@ -1919,35 +1932,6 @@ test_end_of_message (gconstpointer data)
 }
 
 void
-test_replace_body (void)
-{
-    const GList *actual_bodies;
-    const gchar client1_chunk1[] = "This is the first line from client1.";
-    const gchar client1_chunk2[] = "This is the second line from client1.";
-    const gchar client1_chunk3[] = "This is the third line from client1.";
-
-    expected_list = g_list_append(expected_list, &client1_chunk1); 
-    expected_list = g_list_append(expected_list, &client1_chunk2); 
-    expected_list = g_list_append(expected_list, &client1_chunk3); 
-
-    arguments_append(arguments1,
-                     "--replace-body", client1_chunk1,
-                     "--replace-body", client1_chunk2,
-                     "--replace-body", client1_chunk3,
-                     NULL);
-
-    cut_trace(test_end_of_message(NULL));
-
-    cut_trace(milter_manager_test_server_wait_signal(server));
-    cut_assert_equal_uint(
-        3,
-        milter_manager_test_server_get_n_replace_bodies(server));
-
-    actual_bodies = milter_manager_test_server_get_replace_bodies(server);
-    gcut_assert_equal_list_string(expected_list, actual_bodies);
-}
-
-void
 test_replace_body_from_two_client (void)
 {
     const GList *actual_bodies;
@@ -1987,7 +1971,7 @@ test_replace_body_from_two_client (void)
         6,
         milter_manager_test_server_get_n_replace_bodies(server));
 
-    actual_bodies = milter_manager_test_server_get_replace_bodies(server);
+    actual_bodies = milter_manager_test_server_get_replaced_bodies(server);
     gcut_assert_equal_list_string(expected_list, actual_bodies);
 }
 
