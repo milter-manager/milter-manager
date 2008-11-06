@@ -53,7 +53,6 @@ void data_body (void);
 void test_body (gconstpointer data);
 void data_end_of_message (void);
 void test_end_of_message (gconstpointer data);
-void test_end_of_message_quarantine (void);
 void test_change_from (void);
 void test_add_recipient (void);
 void test_delete_recipient (void);
@@ -82,7 +81,6 @@ static GArray *arguments2;
 static GError *controller_error;
 static GError *expected_error;
 static gboolean finished;
-static gchar *quarantine_reason;
 
 static GList *test_clients;
 static GList *expected_list;
@@ -165,7 +163,6 @@ setup (void)
     response_status = MILTER_STATUS_DEFAULT;
 
     finished = FALSE;
-    quarantine_reason = NULL;
     expected_list = NULL;
 
     expected_error = NULL;
@@ -241,9 +238,6 @@ teardown (void)
     if (expected_list) {
         g_list_free(expected_list);
     }
-
-    if (quarantine_reason)
-        g_free(quarantine_reason);
 
     if (controller_error)
         g_error_free(controller_error);
@@ -773,6 +767,21 @@ do_end_of_message (GKeyFile *scenario, const gchar *group)
     cut_assert_equal_string(chunk, get_received_data(body_chunk));
 }
 
+static void
+do_end_of_message_quarantine (GKeyFile *scenario, const gchar *group)
+{
+    const gchar key[] = "quarantine_reason";
+    const gchar *expected_reason = NULL;
+    GError *error = NULL;
+
+    if (g_key_file_has_key(scenario, group, key, &error))
+        expected_reason = get_string(scenario, group, key);
+
+    cut_assert_equal_string(
+        expected_reason,
+        milter_manager_test_server_get_quarantine_reason(server));
+}
+
 static const GList *
 get_expected_added_headers (GKeyFile *scenario, const gchar *group)
 {
@@ -834,6 +843,7 @@ static void
 do_end_of_message_full (GKeyFile *scenario, const gchar *group)
 {
     cut_trace(do_end_of_message(scenario, group));
+    cut_trace(do_end_of_message_quarantine(scenario, group));
     cut_trace(do_end_of_message_add_header(scenario, group));
 }
 
@@ -960,7 +970,8 @@ data_scenario (void)
         "abort", g_strdup("abort.txt"), g_free,
         "unknown", g_strdup("unknown.txt"), g_free);
 
-    cut_add_data("add-header", g_strdup("add-header.txt"), g_free);
+    cut_add_data("quarantine", g_strdup("quarantine.txt"), g_free,
+                 "add-header", g_strdup("add-header.txt"), g_free);
 
     cut_add_data("body - skip", g_strdup("body-skip.txt"), g_free);
 }
@@ -1789,32 +1800,6 @@ test_end_of_message (gconstpointer data)
 
     client = test_clients->data;
     cut_assert_equal_string(chunk, get_received_data(end_of_message_chunk));
-}
-
-void
-test_end_of_message_quarantine (void)
-{
-    const gchar chunk[] = "virus!";
-    const gchar reason[] = "MAYBE VIRUS";
-
-    arguments_append(arguments1,
-                     "--quarantine", reason,
-                     NULL);
-
-    cut_trace(test_body(NULL));
-
-    milter_manager_controller_end_of_message(controller, chunk, strlen(chunk));
-    wait_response("end-of-message");
-    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
-                           MILTER_STATUS_CONTINUE, response_status);
-    cut_assert_equal_uint(g_list_length(test_clients),
-                          collect_n_received(end_of_message));
-
-    cut_trace(milter_manager_test_server_wait_signal(server));
-
-    cut_assert_equal_string(
-        reason,
-        milter_manager_test_server_get_quarantine_reason(server));
 }
 
 void

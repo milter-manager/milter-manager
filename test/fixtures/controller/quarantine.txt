@@ -1,0 +1,20 @@
+[scenario]
+clients=client10026;client10027
+import=body.txt
+actions=end-of-message-quarantine
+
+[client10026]
+port=10026
+arguments=--quarantine;MAYBE VIRUS
+
+[client10027]
+port=10027
+
+[end-of-message-quarantine]
+command=end-of-message
+
+response=end-of-message
+n_received=2
+status=continue
+
+quarantine_reason=MAYBE VIRUS
