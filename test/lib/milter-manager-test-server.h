@@ -75,6 +75,8 @@ guint                 milter_manager_test_server_get_n_progresses
                                                             (MilterManagerTestServer *server);
 guint                 milter_manager_test_server_get_n_quarantines 
                                                             (MilterManagerTestServer *server);
+guint                 milter_manager_test_server_get_n_reply_codes 
+                                                            (MilterManagerTestServer *server);
 
 const GList          *milter_manager_test_server_get_add_headers
                                                             (MilterManagerTestServer *server);
@@ -92,6 +94,8 @@ const gchar          *milter_manager_test_server_get_from_parameters
 const GList          *milter_manager_test_server_get_replace_bodies
                                                             (MilterManagerTestServer *server);
 const gchar          *milter_manager_test_server_get_quarantine_reason
+                                                            (MilterManagerTestServer *server);
+const gchar          *milter_manager_test_server_get_reply_code
                                                             (MilterManagerTestServer *server);
 void                  milter_manager_test_server_wait_signal
                                                             (MilterManagerTestServer *server);

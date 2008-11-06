@@ -60,6 +60,7 @@ void test_add_recipient (void);
 void test_delete_recipient (void);
 void test_replace_body (void);
 void test_replace_body_from_two_client (void);
+void test_reply_code (void);
 void test_progress (void);
 
 static GKeyFile *scenario;
@@ -1942,6 +1943,28 @@ test_replace_body_from_two_client (void)
 
     actual_bodies = milter_manager_test_server_get_replace_bodies(server);
     gcut_assert_equal_list_string(expected_list, actual_bodies);
+}
+
+void
+test_reply_code (void)
+{
+    const gchar from[] = "reject@example.com";
+    const gchar reply_code[] = "554 5.7.1 1%% 2%% 3%%";
+    arguments_append(arguments1,
+                     "--reply-code", reply_code,
+                     "--envelope-from", from,
+                     NULL);
+
+    cut_trace(test_helo());
+
+    milter_manager_controller_envelope_from(controller, from);
+    wait_response("envelope-from");
+
+    gcut_assert_equal_enum(MILTER_TYPE_STATUS, MILTER_STATUS_REJECT, response_status);
+    cut_trace(milter_manager_test_server_wait_signal(server));
+
+    cut_assert_equal_string(reply_code,
+                            milter_manager_test_server_get_reply_code(server));
 }
 
 void

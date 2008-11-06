@@ -42,6 +42,7 @@ struct _MilterManagerTestServerPrivate
     guint n_replace_bodies;
     guint n_progresses;
     guint n_quarantines;
+    guint n_reply_codes;
 
     GList *add_headers;
     GList *change_headers;
@@ -52,6 +53,7 @@ struct _MilterManagerTestServerPrivate
     gchar *from;
     gchar *from_parameters;
     gchar *quarantine_reason;
+    gchar *reply_code;
 };
 
 enum
@@ -103,6 +105,10 @@ static void replace_body   (MilterReplySignals *reply,
 static void progress       (MilterReplySignals *reply);
 static void quarantine     (MilterReplySignals *reply,
                             const gchar        *reason);
+static void reply_code     (MilterReplySignals *reply,
+                            guint               code,
+                            const gchar        *extended_code,
+                            const gchar        *message);
 
 static void
 milter_manager_test_server_class_init (MilterManagerTestServerClass *klass)
@@ -133,6 +139,7 @@ reply_init (MilterReplySignalsClass *reply)
     reply->replace_body     = replace_body;
     reply->progress         = progress;
     reply->quarantine       = quarantine;
+    reply->reply_code       = reply_code;
 }
 
 static void
@@ -151,6 +158,7 @@ milter_manager_test_server_init (MilterManagerTestServer *milter)
     priv->from_parameters = NULL;
     priv->replace_bodies = NULL;
     priv->quarantine_reason = NULL;
+    priv->reply_code = NULL;
 
     priv->n_add_headers = 0;
     priv->n_change_headers = 0;
@@ -161,6 +169,7 @@ milter_manager_test_server_init (MilterManagerTestServer *milter)
     priv->n_replace_bodies = 0;
     priv->n_progresses = 0;
     priv->n_quarantines = 0;
+    priv->n_reply_codes = 0;
 }
 
 static void
@@ -223,6 +232,11 @@ dispose (GObject *object)
     if (priv->quarantine_reason) {
         g_free(priv->quarantine_reason);
         priv->quarantine_reason = NULL;
+    }
+
+    if (priv->reply_code) {
+        g_free(priv->reply_code);
+        priv->reply_code = NULL;
     }
 
     G_OBJECT_CLASS(milter_manager_test_server_parent_class)->dispose(object);
@@ -388,6 +402,25 @@ quarantine (MilterReplySignals *reply, const gchar *reason)
     priv->quarantine_reason = g_strdup(reason);
 }
 
+static void
+reply_code(MilterReplySignals *reply,
+           guint               code,
+           const gchar        *extended_code,
+           const gchar        *message)
+{
+    MilterManagerTestServerPrivate *priv;
+
+    priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
+
+    priv->n_reply_codes++;
+
+    if (priv->reply_code)
+        g_free(priv->reply_code);
+    priv->reply_code = milter_utils_format_reply_code(code,
+                                                      extended_code,
+                                                      message);
+}
+
 guint
 milter_manager_test_server_get_n_add_headers (MilterManagerTestServer *server)
 {
@@ -440,6 +473,12 @@ guint
 milter_manager_test_server_get_n_quarantines (MilterManagerTestServer *server)
 {
     return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->n_quarantines;
+}
+
+guint
+milter_manager_test_server_get_n_reply_codes (MilterManagerTestServer *server)
+{
+    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->n_reply_codes;
 }
 
 static gboolean
@@ -503,6 +542,12 @@ const gchar *
 milter_manager_test_server_get_quarantine_reason (MilterManagerTestServer *server)
 {
     return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->quarantine_reason;
+}
+
+const gchar *
+milter_manager_test_server_get_reply_code (MilterManagerTestServer *server)
+{
+    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->reply_code;
 }
 
 void

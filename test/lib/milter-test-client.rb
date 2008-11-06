@@ -94,6 +94,12 @@ class MilterTestClient
         @end_of_message_actions << [:replace_body, chunk]
       end
 
+      opts.on("--reply-code=REPLY_CODE",
+              "Send 'reply-code' on end-of-message") do |reply_code|
+        @reply_code = reply_code
+        @current_action = "reject"
+      end
+
       opts.on("--progress",
               "Send 'progress'") do
         @end_of_message_actions << [:progress]
@@ -133,6 +139,7 @@ class MilterTestClient
     @recipients = []
     @senders = []
     @body_chunks = []
+    @reply_code = nil
     @end_of_message_chunks = []
   end
 
@@ -166,6 +173,9 @@ class MilterTestClient
     case action.to_s
     when "quarantine" # NO NEED
       args << @quarantine_reason
+    when "reject"
+      args << @reply_code if @reply_code
+      action = "reply_code"
     end
     write(next_state, action, *args)
   end

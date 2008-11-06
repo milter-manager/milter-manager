@@ -40,6 +40,9 @@ struct _MilterManagerChildrenPrivate
     MilterMacrosRequests *macros_requests;
     MilterOption *option;
     MilterStatus reply_status;
+    guint reply_code;
+    gchar *reply_extended_code;
+    gchar *reply_message;
     gchar *quarantine_reason;
 };
 
@@ -133,6 +136,10 @@ milter_manager_children_init (MilterManagerChildren *milter)
     priv->option = NULL;
     priv->reply_status = MILTER_STATUS_NOT_CHANGE;
     priv->quarantine_reason = NULL;
+
+    priv->reply_code = 0;
+    priv->reply_extended_code = NULL;
+    priv->reply_message = NULL;
 }
 
 static void
@@ -193,6 +200,15 @@ dispose (GObject *object)
     if (priv->quarantine_reason) {
         g_free(priv->quarantine_reason);
         priv->quarantine_reason = NULL;
+    }
+
+    if (priv->reply_extended_code) {
+        g_free(priv->reply_extended_code);
+        priv->reply_extended_code = NULL;
+    }
+    if (priv->reply_message) {
+        g_free(priv->reply_message);
+        priv->reply_message = NULL;
     }
 
     G_OBJECT_CLASS(milter_manager_children_parent_class)->dispose(object);
@@ -375,9 +391,16 @@ remove_child_from_queue (MilterManagerChildren *children,
 
     g_queue_remove(priv->reply_queue, context);
 
-    if (g_queue_is_empty(priv->reply_queue))
-        g_signal_emit_by_name(children,
-                              status_to_signal_name(priv->reply_status));
+    if (g_queue_is_empty(priv->reply_queue)) {
+        if (priv->reply_code > 0) {
+            g_signal_emit_by_name(children, "reply-code",
+                                  priv->reply_code, priv->reply_extended_code,
+                                  priv->reply_message);
+        } else {
+            g_signal_emit_by_name(children,
+                                  status_to_signal_name(priv->reply_status));
+        }
+    }
 }
 
 static void
@@ -413,7 +436,22 @@ cb_reply_code (MilterServerContext *context,
                gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
-    g_signal_emit_by_name(children, "reply-code", code, extended_code, message);
+    MilterServerContextState state;
+    MilterManagerChildrenPrivate *priv;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    priv->reply_code = code;
+    if (priv->reply_extended_code)
+        g_free(priv->reply_extended_code);
+    priv->reply_extended_code = g_strdup(extended_code);
+    if (priv->reply_message)
+        g_free(priv->reply_message);
+    priv->reply_message = g_strdup(message);
+
+    state = milter_server_context_get_state(context);
+    compile_reply_status(children, state, MILTER_STATUS_REJECT);
+    remove_child_from_queue(children, context);
 }
 
 static void

@@ -366,7 +366,10 @@ cb_reply_code (MilterServerContext *context,
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(controller),
                                     error);
         g_error_free(error);
+        return;
     }
+
+    reply(controller, MILTER_STATUS_REJECT);
 }
 
 static void
