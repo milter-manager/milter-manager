@@ -739,6 +739,8 @@ cb_finished (MilterHandler *handler, gpointer user_data)
 
     expire_child(children, MILTER_SERVER_CONTEXT(handler));
 
+    milter_info("%s exits.", milter_manager_child_get_name(MILTER_MANAGER_CHILD(handler)));
+
     g_queue_remove(priv->reply_queue, handler);
     if (g_queue_is_empty(priv->reply_queue)) {
         if (priv->reply_status != MILTER_STATUS_NOT_CHANGE)

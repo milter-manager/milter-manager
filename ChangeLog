@@ -31,6 +31,8 @@
 	from milter but Sendmail may use them so output message to log.
 	* milter/manager/milter-manager-child.[ch]: Remove
 	milter_manager_child_new_with_timeout.
+	* milter/manager/milter-manager-children.c (cb_finished): Output
+	message to log. 
 
 2008-11-05  Kouhei Sutou  <kou@cozmixng.org>
 
