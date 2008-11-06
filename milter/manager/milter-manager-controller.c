@@ -512,13 +512,13 @@ cb_quarantine (MilterServerContext *context,
 static void
 cb_connection_failure (MilterServerContext *context, gpointer user_data)
 {
-    /* FIXME */
+    milter_info(PACKAGE_STRING "could'nt handle CONNECTION-FAILURE reply yet.");
 }
 
 static void
 cb_shutdown (MilterServerContext *context, gpointer user_data)
 {
-    /* FIXME */
+    milter_info(PACKAGE_STRING "could'nt handle SHUTDOWN reply yet.");
 }
 
 static void
@@ -533,7 +533,7 @@ cb_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
 {
     MilterManagerController *controller = user_data;
 
-    milter_error("error: FIXME: %s", error->message);
+    milter_error("%s", error->message);
     milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(controller),
                                 error);
 }

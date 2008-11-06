@@ -21,6 +21,9 @@
 	MILTER_STATUS_REJECT if "reply-code" is received.
 	* test/lib/milter-test-client.rb: Do not override action if reply-code
 	option is not set.
+	* milter/manager/milter-manager-controller.c(cb_shutdown,
+	cb_connection_failure): SHUTDOWN and CONNECTION_FAILURE are not sent
+	from milter but Sendmail may use them so output message to log.
 
 2008-11-05  Kouhei Sutou  <kou@cozmixng.org>
 
