@@ -174,8 +174,10 @@ class MilterTestClient
     when "quarantine" # NO NEED
       args << @quarantine_reason
     when "reject"
-      args << @reply_code if @reply_code
-      action = "reply_code"
+      if @reply_code
+        args << @reply_code
+        action = "reply_code"
+      end
     end
     write(next_state, action, *args)
   end

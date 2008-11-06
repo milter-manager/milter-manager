@@ -17,6 +17,8 @@
 	* milter/manager/milter-manager-children.c,
 	milter/manager/milter-manager-controller.c: Return
 	MILTER_STATUS_REJECT if "reply-code" is received.
+	* test/lib/milter-test-client.rb: Do not override action if reply-code
+	option is not set.
 
 2008-11-05  Kouhei Sutou  <kou@cozmixng.org>
 
