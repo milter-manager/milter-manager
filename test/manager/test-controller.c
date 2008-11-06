@@ -53,7 +53,6 @@ void data_body (void);
 void test_body (gconstpointer data);
 void data_end_of_message (void);
 void test_end_of_message (gconstpointer data);
-void test_invalid_reply_code (void);
 void test_progress (void);
 
 static GKeyFile *scenario;
@@ -1998,28 +1997,6 @@ test_end_of_message (gconstpointer data)
 
     client = test_clients->data;
     cut_assert_equal_string(chunk, get_received_data(end_of_message_chunk));
-}
-
-void
-test_invalid_reply_code (void)
-{
-    const gchar from[] = "reject@example.com";
-    const gchar reply_code[] = "554 3.7.1 1%% 2%% 3%%";
-
-    expected_error = g_error_new(MILTER_CLIENT_CONTEXT_ERROR,
-                                 MILTER_CLIENT_CONTEXT_ERROR_INVALID_CODE,
-                                 "class of extended status code should be '2', '4' or '5': <3.7.1>: <3>");
-    arguments_append(arguments1,
-                     "--reply-code", reply_code,
-                     "--envelope-from", from,
-                     NULL);
-
-    cut_trace(test_helo());
-
-    milter_manager_controller_envelope_from(controller, from);
-    wait_controller_error();
-
-    gcut_assert_equal_error(expected_error, controller_error);
 }
 
 void
