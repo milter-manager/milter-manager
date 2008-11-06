@@ -40,7 +40,7 @@ static GError *actual_error;
 static GError *expected_error;
 static gboolean error_occured;
 static const gchar *milter_log_level;
-static const gchar *current_locale;
+static gchar *current_locale;
 
 static void
 cb_error (MilterErrorEmittable *emittable,
@@ -59,7 +59,9 @@ setup (void)
     error_occured = FALSE;
 
     milter_log_level = g_getenv("MILTER_LOG_LEVEL");
-    current_locale = setlocale(LC_ALL, "C");
+
+    current_locale = g_strdup(setlocale(LC_ALL, NULL));
+    setlocale(LC_ALL, "C");
 }
 
 void
@@ -73,7 +75,10 @@ teardown (void)
         g_error_free(expected_error);
     if (milter_log_level)
         g_setenv("MILTER_LOG_LEVEL", milter_log_level, TRUE);
+
     setlocale(LC_ALL, current_locale);
+    if (current_locale)
+        g_free(current_locale);
 }
 
 void
