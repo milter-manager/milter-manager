@@ -86,7 +86,7 @@ const GList          *milter_manager_test_server_get_insert_headers
                                                             (MilterManagerTestServer *server);
 const GList          *milter_manager_test_server_get_added_recipients
                                                             (MilterManagerTestServer *server);
-const GList          *milter_manager_test_server_get_delete_recipients
+const GList          *milter_manager_test_server_get_deleted_recipients
                                                             (MilterManagerTestServer *server);
 const GList          *milter_manager_test_server_get_changed_froms
                                                             (MilterManagerTestServer *server);

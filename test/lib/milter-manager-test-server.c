@@ -48,7 +48,7 @@ struct _MilterManagerTestServerPrivate
     GList *change_headers;
     GList *insert_headers;
     GList *added_recipients;
-    GList *delete_recipients;
+    GList *deleted_recipients;
     GList *replace_bodies;
     GList *changed_froms;
     gchar *quarantine_reason;
@@ -152,7 +152,7 @@ milter_manager_test_server_init (MilterManagerTestServer *milter)
     priv->change_headers = NULL;
     priv->insert_headers = NULL;
     priv->added_recipients = NULL;
-    priv->delete_recipients = NULL;
+    priv->deleted_recipients = NULL;
     priv->changed_froms = NULL;
     priv->replace_bodies = NULL;
     priv->quarantine_reason = NULL;
@@ -206,10 +206,10 @@ dispose (GObject *object)
         priv->added_recipients = NULL;
     }
 
-    if (priv->delete_recipients) {
-        g_list_foreach(priv->delete_recipients, (GFunc)g_free, NULL);
-        g_list_free(priv->delete_recipients);
-        priv->delete_recipients = NULL;
+    if (priv->deleted_recipients) {
+        g_list_foreach(priv->deleted_recipients, (GFunc)g_free, NULL);
+        g_list_free(priv->deleted_recipients);
+        priv->deleted_recipients = NULL;
     }
 
     if (priv->changed_froms) {
@@ -356,7 +356,9 @@ delete_recipient (MilterReplySignals *reply, const gchar *recipient)
 
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
     priv->n_delete_recipients++;
-    priv->delete_recipients = g_list_append(priv->delete_recipients, g_strdup(recipient));
+
+    priv->deleted_recipients =
+        g_list_append(priv->deleted_recipients, g_strdup(recipient));
 }
 
 static void
@@ -508,9 +510,9 @@ milter_manager_test_server_get_added_recipients (MilterManagerTestServer *server
 }
 
 const GList *
-milter_manager_test_server_get_delete_recipients (MilterManagerTestServer *server)
+milter_manager_test_server_get_deleted_recipients (MilterManagerTestServer *server)
 {
-    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->delete_recipients;
+    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->deleted_recipients;
 }
 
 const GList *

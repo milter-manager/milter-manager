@@ -53,7 +53,6 @@ void data_body (void);
 void test_body (gconstpointer data);
 void data_end_of_message (void);
 void test_end_of_message (gconstpointer data);
-void test_delete_recipient (void);
 void test_replace_body (void);
 void test_replace_body_from_two_client (void);
 void test_reply_code (void);
@@ -452,6 +451,25 @@ get_string_list (GKeyFile *scenario, const gchar *group, const gchar *key,
     value = g_key_file_get_string_list(scenario, group, key, length, &error);
     gcut_assert_error(error, "group: <%s>", group);
     return cut_take_string_array(value);
+}
+
+static const GList *
+get_string_g_list (GKeyFile *scenario, const gchar *group, const gchar *key)
+{
+    GError *error = NULL;
+    GList *list = NULL;
+    const gchar **strings;
+    gsize length, i;
+
+    if (g_key_file_has_key(scenario, group, key, &error)) {
+        strings = get_string_list(scenario, group, key, &length);
+        for (i = 0; i < length; i++) {
+            list = g_list_append(list, g_strdup(strings[i]));
+        }
+    }
+    gcut_assert_error(error);
+
+    return gcut_take_list(list, g_free);
 }
 
 static gint
@@ -878,6 +896,14 @@ sort_const_pair_list (const GList *pairs)
                           NULL);
 }
 
+static const GList *
+sort_const_string_list (const GList *strings)
+{
+    return gcut_take_list(g_list_sort(g_list_copy((GList *)strings),
+                                      (GCompareFunc)g_utf8_collate),
+                          NULL);
+}
+
 static void
 do_end_of_message_change_from (GKeyFile *scenario, const gchar *group)
 {
@@ -909,6 +935,20 @@ do_end_of_message_add_recipient (GKeyFile *scenario, const gchar *group)
 }
 
 static void
+do_end_of_message_delete_recipient (GKeyFile *scenario, const gchar *group)
+{
+    const GList *expected_recipients;
+    const GList *actual_recipients;
+
+    expected_recipients =
+        get_string_g_list(scenario, group, "deleted_recipients");
+    actual_recipients =
+        milter_manager_test_server_get_deleted_recipients(server);
+    gcut_assert_equal_list_string(sort_const_string_list(expected_recipients),
+                                  sort_const_string_list(actual_recipients));
+}
+
+static void
 do_end_of_message_full (GKeyFile *scenario, const gchar *group)
 {
     cut_trace(do_end_of_message(scenario, group));
@@ -917,6 +957,7 @@ do_end_of_message_full (GKeyFile *scenario, const gchar *group)
     cut_trace(do_end_of_message_add_header(scenario, group));
     cut_trace(do_end_of_message_change_from(scenario, group));
     cut_trace(do_end_of_message_add_recipient(scenario, group));
+    cut_trace(do_end_of_message_delete_recipient(scenario, group));
 }
 
 static void
@@ -1045,7 +1086,8 @@ data_scenario (void)
     cut_add_data("quarantine", g_strdup("quarantine.txt"), g_free,
                  "add-header", g_strdup("add-header.txt"), g_free,
                  "change-from", g_strdup("change-from.txt"), g_free,
-                 "add-recipient", g_strdup("add-recipient.txt"), g_free);
+                 "add-recipient", g_strdup("add-recipient.txt"), g_free,
+                 "delete-recipient", g_strdup("delete-recipient.txt"), g_free);
 
     cut_add_data("body - skip", g_strdup("body-skip.txt"), g_free);
 }
@@ -1874,50 +1916,6 @@ test_end_of_message (gconstpointer data)
 
     client = test_clients->data;
     cut_assert_equal_string(chunk, get_received_data(end_of_message_chunk));
-}
-
-void
-test_delete_recipient (void)
-{
-    const gchar recipient1[] = "delete1@example.com";
-    const gchar recipient2[] = "delete2@example.com";
-    const gchar recipient3[] = "delete3@example.com";
-    GList *actual_recipients;
-
-    expected_list =
-        g_list_append(expected_list,
-                      &recipient1); 
-    expected_list =
-        g_list_append(expected_list,
-                      &recipient2); 
-    expected_list =
-        g_list_append(expected_list,
-                      &recipient2); 
-    expected_list =
-        g_list_append(expected_list,
-                      &recipient3); 
-    
-    arguments_append(arguments1,
-                     "--delete-recipient", recipient1,
-                     "--delete-recipient", recipient2,
-                     NULL);
-    arguments_append(arguments2,
-                     "--delete-recipient", recipient2,
-                     "--delete-recipient", recipient3,
-                     NULL);
-
-    cut_trace(test_end_of_message(NULL));
-
-    cut_trace(milter_manager_test_server_wait_signal(server));
-
-    cut_assert_equal_uint(
-        4,
-        milter_manager_test_server_get_n_delete_recipients(server));
-
-    actual_recipients = 
-        g_list_sort((GList*)milter_manager_test_server_get_delete_recipients(server),
-                    (GCompareFunc)strcmp);
-    gcut_assert_equal_list_string(expected_list, actual_recipients);
 }
 
 void
