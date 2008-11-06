@@ -1914,6 +1914,13 @@ test_replace_body (void)
 void
 test_progress (void)
 {
+    arguments_append(arguments1,
+                     "--progress",
+                     NULL);
+    arguments_append(arguments2,
+                     "--progress",
+                     NULL);
+
     cut_trace(test_end_of_message(NULL));
 
     cut_trace(milter_manager_test_server_wait_signal(server));

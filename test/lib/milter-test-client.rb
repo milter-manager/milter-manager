@@ -94,6 +94,11 @@ class MilterTestClient
         @end_of_message_actions << [:replace_body, chunk]
       end
 
+      opts.on("--progress",
+              "Send 'progress'") do
+        @end_of_message_actions << [:progress]
+      end
+
       opts.on("--envelope-recipient=RECIPIENT",
               "Add RECIPIENT targets to be applied ACTION") do |recipient|
         @recipients << [@current_action, recipient]
