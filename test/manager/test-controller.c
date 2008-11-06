@@ -54,7 +54,6 @@ void test_body (gconstpointer data);
 void data_end_of_message (void);
 void test_end_of_message (gconstpointer data);
 void test_end_of_message_quarantine (void);
-void test_add_header (void);
 void test_change_from (void);
 void test_add_recipient (void);
 void test_delete_recipient (void);
@@ -812,11 +811,18 @@ get_expected_added_headers (GKeyFile *scenario, const gchar *group)
 static void
 do_end_of_message_add_header (GKeyFile *scenario, const gchar *group)
 {
-    const GList *expected_added_headers = NULL;
+    const GList *expected_added_headers;
     const GList *actual_added_headers;
 
     expected_added_headers = get_expected_added_headers(scenario, group);
+
     actual_added_headers = milter_manager_test_server_get_add_headers(server);
+    actual_added_headers =
+        gcut_take_list(
+            g_list_sort(g_list_copy((GList *)actual_added_headers),
+                        (GCompareFunc)milter_manager_test_header_compare),
+            NULL);
+
     gcut_assert_equal_list(
         expected_added_headers, actual_added_headers,
         (GEqualFunc)milter_manager_test_header_equal,
@@ -1809,49 +1815,6 @@ test_end_of_message_quarantine (void)
     cut_assert_equal_string(
         reason,
         milter_manager_test_server_get_quarantine_reason(server));
-}
-
-void
-test_add_header (void)
-{
-    MilterManagerTestHeader header1 = {0, "X-Test-Header1", "Test Header1 Value"};
-    MilterManagerTestHeader header2 = {0, "X-Test-Header2", "Test Header2 Value"};
-    const GList *headers;
-    gchar *header_string;
-
-    expected_list =
-        g_list_append(expected_list,
-                      &header1); 
-    expected_list =
-        g_list_append(expected_list,
-                      &header2); 
-
-    header_string = g_strdup_printf("%s:%s", header1.name, header1.value);
-    cut_take_string(header_string);
-    arguments_append(arguments1,
-                     "--add-header", header_string,
-                     NULL);
-    header_string = g_strdup_printf("%s:%s", header2.name, header2.value);
-    cut_take_string(header_string);
-    arguments_append(arguments2,
-                     "--add-header", header_string,
-                     NULL);
-
-    cut_trace(test_end_of_message(NULL));
-
-    cut_trace(milter_manager_test_server_wait_signal(server));
-
-    cut_assert_equal_uint(
-        2,
-        milter_manager_test_server_get_n_add_headers(server));
-
-    headers =
-        g_list_sort((GList*)milter_manager_test_server_get_add_headers(server),
-                    (GCompareFunc)milter_manager_test_header_compare);
-    gcut_assert_equal_list(expected_list, headers,
-                           (GEqualFunc)milter_manager_test_header_equal,
-                           (GCutInspectFunc)milter_manager_test_header_inspect_without_index,
-                           NULL);
 }
 
 void
