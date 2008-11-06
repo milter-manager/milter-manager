@@ -68,12 +68,6 @@ GType                 milter_manager_child_get_type    (void) G_GNUC_CONST;
 MilterManagerChild   *milter_manager_child_new         (const gchar *name);
 MilterManagerChild   *milter_manager_child_new_va_list (const gchar *first_name,
                                                         va_list      args);
-MilterManagerChild   *milter_manager_child_new_with_timeout
-                                                       (const gchar *name,
-                                                        guint connection_timeout,
-                                                        guint writing_timeout,
-                                                        guint reading_timeout,
-                                                        guint end_of_message_timeout);
 
 gboolean              milter_manager_child_start       (MilterManagerChild *milter,
                                                         GError **error);

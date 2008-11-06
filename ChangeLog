@@ -29,6 +29,8 @@
 	* milter/manager/milter-manager-controller.c(cb_shutdown,
 	cb_connection_failure): SHUTDOWN and CONNECTION_FAILURE are not sent
 	from milter but Sendmail may use them so output message to log.
+	* milter/manager/milter-manager-child.[ch]: Remove
+	milter_manager_child_new_with_timeout.
 
 2008-11-05  Kouhei Sutou  <kou@cozmixng.org>
 

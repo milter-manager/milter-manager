@@ -293,22 +293,6 @@ milter_manager_child_new_va_list (const gchar *first_name, va_list args)
                                                     first_name, args));
 }
 
-MilterManagerChild *
-milter_manager_child_new_with_timeout (const gchar *name,
-                                       guint connection_timeout,
-                                       guint writing_timeout,
-                                       guint reading_timeout,
-                                       guint end_of_message_timeout)
-{
-    return g_object_new(MILTER_TYPE_MANAGER_CHILD,
-                        "name", name,
-                        "connection-timeout", connection_timeout,
-                        "writing-timeout", writing_timeout,
-                        "reading-timeout", reading_timeout,
-                        "end-of-message-timeout", end_of_message_timeout,
-                        NULL);
-}
-
 static void
 child_watch_func (GPid pid, gint status, gpointer user_data)
 {
