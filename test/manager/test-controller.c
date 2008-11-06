@@ -1911,7 +1911,7 @@ test_replace_body_from_two_client (void)
     const gchar client2_chunk2[] = "This is the second line from client2.";
     const gchar client2_chunk3[] = "This is the third line from client2.";
 
-    cut_pend("Replaced bodies from two milter should be separated respectively. "
+    cut_omit("Replaced bodies from two milter should be separated respectively. "
              "But not implemented yet.");
 
     expected_list = g_list_append(expected_list, &client1_chunk1); 
