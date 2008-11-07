@@ -1,0 +1,52 @@
+[scenario]
+clients=client10026;client10027
+import=end-of-header.txt
+actions=body-accept-first;body-accept-second;body;end-of-message
+
+[client10026]
+port=10026
+arguments=--action;accept;--body;Accept first
+
+[client10027]
+port=10027
+arguments=--action;accept;--body;Accept second
+
+[body-accept-first]
+command=body
+
+chunk=Accept first
+
+response=body
+n_received=2
+status=continue
+
+chunks=Accept first;Accept first
+
+[body-accept-second]
+command=body
+
+chunk=Accept second
+
+response=body
+n_received=1
+status=accept
+
+chunks=;Accept second
+
+[body]
+command=body
+
+chunk=Hi,
+
+response=body
+n_received=0
+status=accept
+
+chunks=;;
+
+[end-of-message]
+command=end-of-message
+
+response=end-of-message
+n_received=0
+status=accept
