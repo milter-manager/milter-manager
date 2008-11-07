@@ -162,6 +162,7 @@ class MilterTestClient
   end
 
   def write(next_state, encode_type, *args)
+    encode_type = encode_type.to_s.gsub(/-/, "_")
     packed_size = nil
     if encode_type == "no_response"
       next_state = :quit

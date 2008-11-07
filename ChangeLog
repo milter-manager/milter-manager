@@ -1,5 +1,17 @@
 2008-11-07  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/lib/milter-test-client.rb: more convenient.
+
+	* test/manager/test-controller.c,
+	test/fixtures/controller/envelope-recipient-temporary-failure-all.txt:
+	rewrite envelope-recipient received temporary-failure from all
+	clients test as scenario based test.
+
+	* test/manager/test-controller.c: remove needless test.
+
+	* test/lib/milter-manager-test-client.[ch]: add pair values
+	collect function.
+
 	* test/lib/milter-manager-test-utils.[ch]: cleanup.
 
 	* test/manager/test-controller.c: remove needless test.
