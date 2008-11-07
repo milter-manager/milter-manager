@@ -45,6 +45,8 @@ void data_not_important_status (void);
 void test_not_important_status (gconstpointer data);
 void test_reading_timeout (void);
 void test_connection_timeout (void);
+void test_end_of_message_timeout (void);
+void test_writing_timeout (void);
 
 static MilterManagerConfiguration *config;
 static MilterManagerChildren *children;
@@ -817,6 +819,7 @@ set_timeout (gpointer data, gpointer user_data)
     milter_server_context_set_connection_timeout(MILTER_SERVER_CONTEXT(data), 0);
     milter_server_context_set_reading_timeout(MILTER_SERVER_CONTEXT(data), 0);
     milter_server_context_set_writing_timeout(MILTER_SERVER_CONTEXT(data), 0);
+    milter_server_context_set_end_of_message_timeout(MILTER_SERVER_CONTEXT(data), 0);
 }
 
 static void
@@ -854,6 +857,38 @@ test_connection_timeout (void)
     g_main_context_iteration(NULL, FALSE);
     cut_assert_equal_string("connection to milter@10026 is timed out.",
                             error_message);
+}
+
+void
+test_end_of_message_timeout (void)
+{
+    MilterLogger *logger;
+
+    arguments_append(arguments2,
+                     "--action", "no_response",
+                     "--end-of-message", "end",
+                     NULL);
+
+    cut_trace(test_negotiate());
+
+    logger = milter_logger();
+    log_signal_id = g_signal_connect(logger, "log", G_CALLBACK(cb_log), NULL);
+
+    milter_manager_children_foreach(children, set_timeout, NULL);
+
+    milter_manager_children_end_of_message(children, "end", strlen("end"));
+
+    wait_reply(n_continue_emitted);
+
+    cut_assert_equal_string("The response of end-of-message from "
+                            "milter@10027 is timed out.",
+                            error_message);
+}
+
+void
+test_writing_timeout (void)
+{
+    cut_notify("writing-timeout is never occured on the current implementation.");
 }
 
 void
