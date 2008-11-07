@@ -78,6 +78,10 @@ static void get_property   (GObject         *object,
                             GValue          *value,
                             GParamSpec      *pspec);
 
+static void setup_server_context_signals
+                           (MilterManagerChildren *children,
+                            MilterServerContext *server_context);
+
 static void teardown_server_context_signals
                            (MilterManagerChild *child,
                             gpointer user_data);
@@ -354,6 +358,20 @@ compile_reply_status (MilterManagerChildren *children,
         priv->reply_status = status;
 
     return priv->reply_status;
+}
+
+static void
+cb_ready (MilterServerContext *context, gpointer user_data)
+{
+    NegotiateData *negotiate_data = (NegotiateData*)user_data;
+    MilterManagerChildrenPrivate *priv;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(negotiate_data->children);
+
+    g_queue_push_tail(priv->reply_queue, context);
+    setup_server_context_signals(negotiate_data->children, context);
+    milter_server_context_negotiate(context, negotiate_data->option);
+    negotiate_data_free(negotiate_data);
 }
 
 static void
@@ -720,7 +738,7 @@ cb_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(user_data);
 
-    milter_error("error: FIXME: %s", error->message);
+    milter_error("error: %s", error->message);
 
     milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(user_data),
                                 error);
@@ -939,6 +957,7 @@ child_negotiate (MilterManagerChild *child, MilterOption *option,
 {
     MilterManagerChildrenPrivate *priv;
     MilterServerContext *context;
+    NegotiateData *negotiate_data;
     GError *error = NULL;
 
     context = MILTER_SERVER_CONTEXT(child);
@@ -977,9 +996,8 @@ child_negotiate (MilterManagerChild *child, MilterOption *option,
         return MILTER_STATUS_PROGRESS;
     }
 
-    g_queue_push_tail(priv->reply_queue, context);
-    setup_server_context_signals(children, context);
-    milter_server_context_negotiate(context, option);
+    negotiate_data = negotiate_data_new(children, child, option);
+    g_signal_connect(child, "ready", G_CALLBACK(cb_ready), negotiate_data);
 
     return MILTER_STATUS_PROGRESS;
 }
