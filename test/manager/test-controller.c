@@ -49,8 +49,6 @@ void test_envelope_recipient_both_temporary_failure (void);
 void test_data (void);
 void test_header (void);
 void test_end_of_header (void);
-void data_body (void);
-void test_body (gconstpointer data);
 
 static GKeyFile *scenario;
 static GList *imported_scenarios;
@@ -249,6 +247,11 @@ teardown (void)
 #define get_received_data(name)                         \
     milter_manager_test_client_get_ ## name(client)
 
+#define collect_received_strings(name)                  \
+    milter_manager_test_clients_collect_strings(        \
+        test_clients,                                   \
+        milter_manager_test_client_get_ ## name)
+
 static gboolean
 cb_timeout_waiting (gpointer data)
 {
@@ -278,13 +281,18 @@ cb_response_waiting (MilterClientContext *context, MilterStatus status,
     response_status = status;
 }
 
-#define wait_response(name)                     \
-    cut_trace_with_info_expression(             \
-        wait_response_helper(name "-response"), \
-        wait_response(name))
+#define assert_have_response(name)                              \
+    cut_trace_with_info_expression(                             \
+        assert_have_response_helper(name "-response", FALSE),   \
+        assert_have_response(name))
+
+#define assert_not_have_response(name)                          \
+    cut_trace_with_info_expression(                             \
+        assert_have_response_helper(name "-response", TRUE),    \
+        assert_not_have_response(name))
 
 static void
-wait_response_helper (const gchar *name)
+assert_have_response_helper (const gchar *name, gboolean should_timeout)
 {
     gboolean timeout_waiting = TRUE;
     gboolean response_waiting = TRUE;
@@ -309,7 +317,10 @@ wait_response_helper (const gchar *name)
     g_source_remove(timeout_waiting_id);
     g_signal_handler_disconnect(client_context, response_waiting_id);
 
-    cut_assert_true(timeout_waiting, "timeout");
+    if (should_timeout)
+        cut_assert_false(timeout_waiting, "<%s>", name);
+    else
+        cut_assert_true(timeout_waiting, "<%s>", name);
     gcut_assert_error(controller_error);
 }
 
@@ -345,10 +356,13 @@ start_client_with_string_list (guint port, const gchar **argument_strings)
     arguments = g_array_new(TRUE, TRUE, sizeof(gchar *));
     if (argument_strings) {
         for (argument = argument_strings; *argument; argument++) {
-            g_array_append_val(arguments, *argument);
+            gchar *dupped_argument;
+
+            dupped_argument = g_strdup(*argument);
+            g_array_append_val(arguments, dupped_argument);
         }
     }
-    /* cut_take(arguments, g_array_free); */
+    cut_take(arguments, (CutDestroyFunction)arguments_free);
     start_client(port, arguments);
 }
 
@@ -463,7 +477,10 @@ get_string_g_list (GKeyFile *scenario, const gchar *group, const gchar *key)
     if (g_key_file_has_key(scenario, group, key, &error)) {
         strings = get_string_list(scenario, group, key, &length);
         for (i = 0; i < length; i++) {
-            list = g_list_append(list, g_strdup(strings[i]));
+            if (strings[i] && strings[i][0] == '\0')
+                list = g_list_append(list, NULL);
+            else
+                list = g_list_append(list, g_strdup(strings[i]));
         }
     }
     gcut_assert_error(error);
@@ -650,7 +667,8 @@ assert_response_common (GKeyFile *scenario, const gchar *group)
         const gchar *response_signal_name;
 
         response_signal_name = cut_take_printf("%s-response", response);
-        cut_trace(wait_response_helper(response_signal_name));
+        cut_trace(assert_have_response_helper(response_signal_name,
+                                              n_received == 0));
     }
 
     get_n_received = response_to_get_n_received(response);
@@ -801,7 +819,6 @@ do_end_of_header (GKeyFile *scenario, const gchar *group)
 static void
 do_body (GKeyFile *scenario, const gchar *group)
 {
-    MilterManagerTestClient *client;
     const gchar *chunk;
 
     chunk = get_string(scenario, group, "chunk");
@@ -809,8 +826,9 @@ do_body (GKeyFile *scenario, const gchar *group)
 
     cut_trace(assert_response(scenario, group));
 
-    client = test_clients->next->data;
-    cut_assert_equal_string(chunk, get_received_data(body_chunk));
+    gcut_assert_equal_list_string(get_string_g_list(scenario, group, "chunks"),
+                                  collect_received_strings(body_chunk),
+                                  "<%s>", group);
 }
 
 static void
@@ -1189,6 +1207,7 @@ data_scenario_complex (void)
 {
     cut_add_data("body - skip", g_strdup("body-skip.txt"), g_free,
                  "body - skip all", g_strdup("body-skip-all.txt"), g_free,
+                 "body - accept", g_strdup("body-accept.txt"), g_free,
                  "reply-code - invalid",
                  g_strdup("reply-code-invalid.txt"), g_free);
 }
@@ -1235,7 +1254,7 @@ test_negotiate (void)
     milter_server_context_negotiate(MILTER_SERVER_CONTEXT(server), option);
 
     milter_manager_controller_negotiate(controller, option);
-    wait_response("negotiate");
+    assert_have_response("negotiate");
     cut_assert_equal_uint(g_list_length(test_clients),
                           collect_n_received(negotiate));
 }
@@ -1261,7 +1280,7 @@ test_connect (void)
     milter_manager_controller_connect(controller, host_name,
                                       address, address_size);
     g_free(address);
-    wait_response("connect");
+    assert_have_response("connect");
     cut_assert_equal_uint(g_list_length(test_clients),
                           collect_n_received(connect));
 }
@@ -1274,7 +1293,7 @@ test_helo (void)
     cut_trace(test_connect());
 
     milter_manager_controller_helo(controller, fqdn);
-    wait_response("helo");
+    assert_have_response("helo");
     cut_assert_equal_uint(g_list_length(test_clients),
                           collect_n_received(helo));
 }
@@ -1414,7 +1433,7 @@ test_envelope_from (gconstpointer data)
     cut_trace(test_helo());
 
     milter_manager_controller_envelope_from(controller, from);
-    wait_response("envelope-from");
+    assert_have_response("envelope-from");
     cut_assert_equal_uint(g_list_length(test_clients),
                           collect_n_received(envelope_from));
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
@@ -1429,7 +1448,7 @@ test_envelope_recipient (void)
     cut_trace(test_envelope_from(NULL));
 
     milter_manager_controller_envelope_recipient(controller, recipient);
-    wait_response("envelope-recipient");
+    assert_have_response("envelope-recipient");
     cut_assert_equal_uint(g_list_length(test_clients),
                           collect_n_received(envelope_recipient));
 }
@@ -1447,14 +1466,14 @@ test_envelope_recipient_accept (void)
     cut_trace(test_envelope_recipient());
 
     milter_manager_controller_envelope_recipient(controller, recipient);
-    wait_response("envelope-recipient");
+    assert_have_response("envelope-recipient");
     cut_assert_equal_uint(g_list_length(test_clients) * 2,
                           collect_n_received(envelope_recipient));
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
                            MILTER_STATUS_CONTINUE, response_status);
 
     milter_manager_controller_data(controller);
-    wait_response("data");
+    assert_have_response("data");
     cut_assert_equal_uint(g_list_length(test_clients) - 1,
                           collect_n_received(data),
                           "the child which returns 'ACCEPT' must die");
@@ -1477,7 +1496,7 @@ test_envelope_recipient_both_accept (void)
     cut_trace(test_envelope_recipient());
 
     milter_manager_controller_envelope_recipient(controller, recipient);
-    wait_response("envelope-recipient");
+    assert_have_response("envelope-recipient");
     cut_assert_equal_uint(g_list_length(test_clients) * 2,
                           collect_n_received(envelope_recipient));
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
@@ -1500,14 +1519,14 @@ test_envelope_recipient_reject (void)
     cut_trace(test_envelope_recipient());
 
     milter_manager_controller_envelope_recipient(controller, recipient);
-    wait_response("envelope-recipient");
+    assert_have_response("envelope-recipient");
     cut_assert_equal_uint(g_list_length(test_clients) * 2,
                           collect_n_received(envelope_recipient));
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
                            MILTER_STATUS_REJECT, response_status);
 
     milter_manager_controller_data(controller);
-    wait_response("data");
+    assert_have_response("data");
     cut_assert_equal_uint(g_list_length(test_clients),
                           collect_n_received(data));
 }
@@ -1532,7 +1551,7 @@ test_envelope_recipient_reject_and_temporary_failure_and_discard (void)
     cut_trace(test_envelope_recipient());
 
     milter_manager_controller_envelope_recipient(controller, reject_recipient);
-    wait_response("envelope-recipient");
+    assert_have_response("envelope-recipient");
     cut_assert_equal_uint(g_list_length(test_clients) * 2,
                           collect_n_received(envelope_recipient));
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
@@ -1540,14 +1559,14 @@ test_envelope_recipient_reject_and_temporary_failure_and_discard (void)
 
     milter_manager_controller_envelope_recipient(controller,
                                                  temporary_failure_recipient);
-    wait_response("envelope-recipient");
+    assert_have_response("envelope-recipient");
     cut_assert_equal_uint(g_list_length(test_clients) * 3,
                           collect_n_received(envelope_recipient));
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
                            MILTER_STATUS_CONTINUE, response_status);
 
     milter_manager_controller_envelope_recipient(controller, discard_recipient);
-    wait_response("envelope-recipient");
+    assert_have_response("envelope-recipient");
     cut_assert_equal_uint(g_list_length(test_clients) * 4,
                           collect_n_received(envelope_recipient));
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
@@ -1571,7 +1590,7 @@ test_envelope_recipient_reject_and_discard_simultaneously (void)
     cut_trace(test_envelope_recipient());
 
     milter_manager_controller_envelope_recipient(controller, recipient);
-    wait_response("envelope-recipient");
+    assert_have_response("envelope-recipient");
     cut_assert_equal_uint(g_list_length(test_clients) * 2,
                           collect_n_received(envelope_recipient));
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
@@ -1591,7 +1610,7 @@ test_envelope_recipient_discard (void)
     cut_trace(test_envelope_recipient());
 
     milter_manager_controller_envelope_recipient(controller, recipient);
-    wait_response("envelope-recipient");
+    assert_have_response("envelope-recipient");
     cut_assert_equal_uint(g_list_length(test_clients) * 2,
                           collect_n_received(envelope_recipient));
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
@@ -1611,13 +1630,13 @@ test_envelope_recipient_temporary_failure (void)
     cut_trace(test_envelope_recipient());
 
     milter_manager_controller_envelope_recipient(controller, recipient);
-    wait_response("envelope-recipient");
+    assert_have_response("envelope-recipient");
     cut_assert_equal_uint(g_list_length(test_clients) * 2,
                           collect_n_received(envelope_recipient));
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
                            MILTER_STATUS_CONTINUE, response_status);
     milter_manager_controller_data(controller);
-    wait_response("data");
+    assert_have_response("data");
     cut_assert_equal_uint(g_list_length(test_clients),
                           collect_n_received(data),
                           "the child which returns 'TEMPORARY_FAILURE' "
@@ -1641,7 +1660,7 @@ test_envelope_recipient_both_temporary_failure (void)
     cut_trace(test_envelope_recipient());
 
     milter_manager_controller_envelope_recipient(controller, recipient);
-    wait_response("envelope-recipient");
+    assert_have_response("envelope-recipient");
     cut_assert_equal_uint(g_list_length(test_clients) * 2,
                           collect_n_received(envelope_recipient));
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
@@ -1649,7 +1668,7 @@ test_envelope_recipient_both_temporary_failure (void)
                            "The process goes on even if TEMPORARY_FAILURE "
                            "returns in ENVELOPE_RECIPIENT.");
     milter_manager_controller_data(controller);
-    wait_response("data");
+    assert_have_response("data");
     cut_assert_equal_uint(g_list_length(test_clients),
                           collect_n_received(data));
 }
@@ -1660,7 +1679,7 @@ test_data (void)
     cut_trace(test_envelope_recipient());
 
     milter_manager_controller_data(controller);
-    wait_response("data");
+    assert_have_response("data");
     cut_assert_equal_uint(g_list_length(test_clients),
                           collect_n_received(data));
 }
@@ -1675,7 +1694,7 @@ test_header (void)
     cut_trace(test_data());
 
     milter_manager_controller_header(controller, name, value);
-    wait_response("header");
+    assert_have_response("header");
     cut_assert_equal_uint(g_list_length(test_clients),
                           collect_n_received(header));
 
@@ -1690,163 +1709,9 @@ test_end_of_header (void)
     cut_trace(test_header());
 
     milter_manager_controller_end_of_header(controller);
-    wait_response("end-of-header");
+    assert_have_response("end-of-header");
     cut_assert_equal_uint(g_list_length(test_clients),
                           collect_n_received(end_of_header));
-}
-
-typedef void (*setup_body_test_func) (gpointer test_data);
-typedef void (*assert_body_test_func) (gpointer test_data);
-typedef void (*free_body_test_data_func) (gpointer test_data);
-
-typedef struct _BodyTestData
-{
-    setup_body_test_func setup_func;
-    assert_body_test_func assert_func;
-    free_body_test_data_func free_data_func;
-    gpointer test_data;
-} BodyTestData;
-
-static BodyTestData *
-body_test_data_new (setup_body_test_func setup_func,
-                    assert_body_test_func assert_func,
-                    free_body_test_data_func free_data_func,
-                    gpointer test_data)
-{
-    BodyTestData *data;
-
-    data = g_new(BodyTestData, 1);
-
-    data->setup_func = setup_func;
-    data->assert_func = assert_func;
-    data->free_data_func = free_data_func;
-    data->test_data = test_data;
-
-    return data;
-}
-
-static void
-free_body_test_data (BodyTestData *data)
-{
-    if (data->free_data_func)
-        data->free_data_func(data->test_data);
-
-    free(data);
-}
-
-#define milter_manager_assert_body_test(data) \
-    if (data)                                 \
-        cut_trace(assert_body_test((BodyTestData*)data));
-
-static void
-assert_body_test (BodyTestData *data)
-{
-    if (data->assert_func)
-        cut_trace(data->assert_func(data->test_data));
-}
-
-typedef struct _AcceptBodyTestData
-{
-    gchar *first_chunk;
-    gchar *second_chunk;
-} AcceptBodyTestData;
-
-static void
-setup_accept_body_test (gpointer test_data)
-{
-    AcceptBodyTestData *data = test_data;
-
-    if (data->first_chunk) {
-        arguments_append(arguments1,
-                         "--action", "accept",
-                         "--body", data->first_chunk,
-                         NULL);
-    }
-
-    if (data->second_chunk) {
-        arguments_append(arguments2,
-                         "--action", "accept",
-                         "--body", data->second_chunk,
-                         NULL);
-    }
-}
-
-static void
-assert_accept_body_test (gpointer test_data)
-{
-    AcceptBodyTestData *data = test_data;
-
-    milter_manager_controller_body(controller,
-                                   data->first_chunk,
-                                   strlen(data->first_chunk));
-    wait_response("body");
-    cut_assert_equal_uint(g_list_length(test_clients) * 2,
-                          collect_n_received(body));
-
-    milter_manager_controller_body(controller,
-                                   data->second_chunk,
-                                   strlen(data->second_chunk));
-    wait_response("body");
-    /* The first child must not be received further body command */
-    cut_assert_equal_uint(g_list_length(test_clients) * 3 - 1,
-                          collect_n_received(body));
-    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
-                           MILTER_STATUS_ACCEPT, response_status);
-}
-
-static void
-free_accept_body_test_data (gpointer test_data)
-{
-    AcceptBodyTestData *data = test_data;
-
-    free(data->first_chunk);
-    free(data->second_chunk);
-}
-
-static gpointer
-accept_body_test_data_new (const gchar *first_chunk, const gchar *second_chunk)
-{
-    AcceptBodyTestData *accept_data;
-
-    accept_data = g_new0(AcceptBodyTestData, 1);
-    accept_data->first_chunk = g_strdup(first_chunk);
-    accept_data->second_chunk = g_strdup(second_chunk);
-
-    return accept_data;
-}
-
-void
-data_body (void)
-{
-    cut_add_data("accept",
-                 body_test_data_new(setup_accept_body_test,
-                                    assert_accept_body_test,
-                                    free_accept_body_test_data,
-                                    accept_body_test_data_new("First Line", "Second Line")),
-                 free_body_test_data);
-}
-
-void
-test_body (gconstpointer data)
-{
-    MilterManagerTestClient *client;
-    const gchar chunk[] = "Hi\n\nThanks,";
-    BodyTestData *test_data = (BodyTestData*)data;
-
-    if (test_data && test_data->setup_func)
-        test_data->setup_func(test_data->test_data);
-
-    cut_trace(test_end_of_header());
-
-    milter_manager_controller_body(controller, chunk, strlen(chunk));
-    wait_response("body");
-    cut_assert_equal_uint(g_list_length(test_clients),
-                          collect_n_received(body));
-
-    client = test_clients->data;
-    cut_assert_equal_string(chunk, get_received_data(body_chunk));
-
-    milter_manager_assert_body_test(data);
 }
 
 /*

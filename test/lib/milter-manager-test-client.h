@@ -35,6 +35,7 @@ typedef struct _MilterManagerTestClient         MilterManagerTestClient;
 typedef struct _MilterManagerTestClientClass    MilterManagerTestClientClass;
 
 typedef guint (*MilterManagerTestClientGetNReceived) (MilterManagerTestClient *client);
+typedef const gchar *(*MilterManagerTestClientGetString) (MilterManagerTestClient *client);
 
 struct _MilterManagerTestClient
 {
@@ -111,6 +112,9 @@ void                     milter_manager_test_clients_wait_reply
 guint                    milter_manager_test_clients_collect_n_received
                                               (GList *clients,
                                                MilterManagerTestClientGetNReceived getter);
+const GList             *milter_manager_test_clients_collect_strings
+                                              (GList *clients,
+                                               MilterManagerTestClientGetString getter);
 
 
 G_END_DECLS

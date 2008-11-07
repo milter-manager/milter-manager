@@ -19,6 +19,8 @@ response=body
 n_received=2
 status=continue
 
+chunks=Skip;Skip
+
 [body]
 command=body
 
@@ -27,6 +29,8 @@ chunk=Hi,
 response=body
 n_received=1
 status=continue
+
+chunks=;Hi,
 
 [end-of-message]
 command=end-of-message

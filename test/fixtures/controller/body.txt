@@ -17,3 +17,5 @@ chunk=Hi,
 response=body
 n_received=2
 status=continue
+
+chunks=Hi,;Hi,

@@ -637,6 +637,23 @@ milter_manager_test_clients_collect_n_received (GList *clients,
     return n_received;
 }
 
+const GList *
+milter_manager_test_clients_collect_strings (GList *clients,
+                                             MilterManagerTestClientGetString getter)
+{
+    GList *collected_strings = NULL;
+    GList *node;
+
+    for (node = clients; node; node = g_list_next(node)) {
+        MilterManagerTestClient *client = node->data;
+
+        collected_strings = g_list_append(collected_strings,
+                                          g_strdup(getter(client)));
+    }
+
+    return gcut_take_list(collected_strings, g_free);
+}
+
 
 /*
 vi:nowrap:ai:expandtab:sw=4
