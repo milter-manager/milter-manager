@@ -37,9 +37,6 @@ void test_connect (void);
 void test_helo (void);
 void data_envelope_from (void);
 void test_envelope_from (gconstpointer data);
-void test_envelope_recipient (void);
-void test_envelope_recipient_accept (void);
-void test_envelope_recipient_both_accept (void);
 
 static GKeyFile *scenario;
 static GList *imported_scenarios;
@@ -386,7 +383,7 @@ wait_finished_helper (void)
 }
 
 #define wait_controller_error()                    \
-    cut_trace_with_info_expression(        \
+    cut_trace_with_info_expression(                \
         wait_controller_error_helper(),            \
         wait_controller_error())
 
@@ -1209,6 +1206,10 @@ static void
 data_scenario_complex (void)
 {
     cut_add_data(
+        "envelope-recipient - accept",
+        g_strdup("envelope-recipient-accept.txt"), g_free,
+        "envelope-recipient - accept - all",
+        g_strdup("envelope-recipient-accept-all.txt"), g_free,
         "envelope-recipient - reject",
         g_strdup("envelope-recipient-reject.txt"), g_free,
         "envelope-recipient - reject & temporary-failure & discard",
@@ -1456,72 +1457,6 @@ test_envelope_from (gconstpointer data)
                           collect_n_received(envelope_from));
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
                            expected_status, response_status);
-}
-
-void
-test_envelope_recipient (void)
-{
-    const gchar recipient[] = "kou+receiver@cozmixng.org";
-
-    cut_trace(test_envelope_from(NULL));
-
-    milter_manager_controller_envelope_recipient(controller, recipient);
-    assert_have_response("envelope-recipient");
-    cut_assert_equal_uint(g_list_length(test_clients),
-                          collect_n_received(envelope_recipient));
-}
-
-void
-test_envelope_recipient_accept (void)
-{
-    const gchar recipient[] = "kou+accepted@cozmixng.org";
-
-    arguments_append(arguments1,
-                     "--action", "accept",
-                     "--envelope-recipient", recipient,
-                     NULL);
-
-    cut_trace(test_envelope_recipient());
-
-    milter_manager_controller_envelope_recipient(controller, recipient);
-    assert_have_response("envelope-recipient");
-    cut_assert_equal_uint(g_list_length(test_clients) * 2,
-                          collect_n_received(envelope_recipient));
-    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
-                           MILTER_STATUS_CONTINUE, response_status);
-
-    milter_manager_controller_data(controller);
-    assert_have_response("data");
-    cut_assert_equal_uint(g_list_length(test_clients) - 1,
-                          collect_n_received(data),
-                          "the child which returns 'ACCEPT' must die");
-}
-
-void
-test_envelope_recipient_both_accept (void)
-{
-    const gchar recipient[] = "kou+accepted@cozmixng.org";
-
-    arguments_append(arguments1,
-                     "--action", "accept",
-                     "--envelope-recipient", recipient,
-                     NULL);
-    arguments_append(arguments2,
-                     "--action", "accept",
-                     "--envelope-recipient", recipient,
-                     NULL);
-
-    cut_trace(test_envelope_recipient());
-
-    milter_manager_controller_envelope_recipient(controller, recipient);
-    assert_have_response("envelope-recipient");
-    cut_assert_equal_uint(g_list_length(test_clients) * 2,
-                          collect_n_received(envelope_recipient));
-    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
-                           MILTER_STATUS_ACCEPT, response_status,
-                           "Check the process is ended "
-                           "if both children returns ACCEPT.");
-    wait_finished();
 }
 
 /*
