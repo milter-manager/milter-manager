@@ -19,3 +19,5 @@ response=envelope-from
 n_received=2
 status=reject
 reply_codes=554 5.7.1 1%% 2%% 3%%
+
+froms=reject@example.com;reject@example.com

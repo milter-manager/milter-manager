@@ -783,16 +783,18 @@ do_helo (GKeyFile *scenario, const gchar *group)
 static void
 do_envelope_from (GKeyFile *scenario, const gchar *group)
 {
-    MilterManagerTestClient *client;
     const gchar *from;
+    const GList *expected_froms;
 
     from = get_string(scenario, group, "from");
     milter_manager_controller_envelope_from(controller, from);
 
     cut_trace(assert_response(scenario, group));
 
-    client = test_clients->data;
-    cut_assert_equal_string(from, get_received_data(envelope_from));
+    expected_froms = get_string_g_list(scenario, group, "froms");
+    gcut_assert_equal_list_string(expected_froms,
+                                  collect_received_strings(envelope_from),
+                                  "[%s]", group);
 }
 
 static void
@@ -808,7 +810,8 @@ do_envelope_recipient (GKeyFile *scenario, const gchar *group)
 
     expected_recipients = get_string_g_list(scenario, group, "recipients");
     gcut_assert_equal_list_string(expected_recipients,
-                                  collect_received_strings(envelope_recipient));
+                                  collect_received_strings(envelope_recipient),
+                                  "[%s]", group);
 }
 
 static void
@@ -1206,6 +1209,8 @@ static void
 data_scenario_complex (void)
 {
     cut_add_data(
+        "envelope-from - reject",
+        g_strdup("envelope-from-reject.txt"), g_free,
         "envelope-recipient - accept",
         g_strdup("envelope-recipient-accept.txt"), g_free,
         "envelope-recipient - accept - all",
@@ -1406,11 +1411,7 @@ setup_reject_and_accept_from (const gchar *from)
 void
 data_envelope_from (void)
 {
-    cut_add_data("reject",
-                 from_test_data_new(setup_reject_from,
-                                    MILTER_STATUS_REJECT),
-                 g_free,
-                 "discard",
+    cut_add_data("discard",
                  from_test_data_new(setup_discard_from,
                                     MILTER_STATUS_DISCARD),
                  g_free,
