@@ -1,5 +1,10 @@
 2008-11-07  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/test-controller.c,
+	test/fixtures/controller/envelope-recipient-reject.txt:
+	rewrite envelope-recipient received reject test as scenario based
+	test.
+
 	* test/lib/milter-test-client.rb: more convenient.
 
 	* test/manager/test-controller.c,
