@@ -1,0 +1,37 @@
+[scenario]
+clients=client10026;client10027
+import=end-of-header.txt
+actions=body-skip-first;body-skip-second;end-of-message
+
+[client10026]
+port=10026
+arguments=--action;skip;--body;Skip first
+
+[client10027]
+port=10027
+arguments=--action;skip;--body;Skip second
+
+[body-skip-first]
+command=body
+
+chunk=Skip first
+
+response=body
+n_received=2
+status=continue
+
+[body-skip-second]
+command=body
+
+chunk=Skip second
+
+response=body
+n_received=1
+status=skip
+
+[end-of-message]
+command=end-of-message
+
+response=end-of-message
+n_received=2
+status=continue
