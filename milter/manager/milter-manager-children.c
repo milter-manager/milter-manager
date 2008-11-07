@@ -35,7 +35,7 @@ struct _MilterManagerChildrenPrivate
     GList *milters;
     GList *quitted_milters;
     GQueue *reply_queue;
-    GHashTable *retry_negotiate_ids;
+    GHashTable *try_negotiate_ids;
     MilterManagerConfiguration *configuration;
     MilterMacrosRequests *macros_requests;
     MilterOption *option;
@@ -52,6 +52,10 @@ struct _NegotiateData
     MilterManagerChildren *children;
     MilterManagerChild *child;
     MilterOption *option;
+    guint error_signal_id;
+    guint ready_signal_id;
+    guint connection_timeout_signal_id;
+    gboolean is_retry;
 };
 
 enum
@@ -86,17 +90,24 @@ static void teardown_server_context_signals
                            (MilterManagerChild *child,
                             gpointer user_data);
 
-static MilterStatus child_negotiate (MilterManagerChild *child,
-                                     MilterOption *option,
-                                     MilterManagerChildren *children);
-static MilterStatus child_negotiate_without_retry
-                                    (MilterManagerChild *child,
-                                     MilterOption *option,
-                                     MilterManagerChildren *children);
+static gboolean child_establish_connection 
+                           (MilterManagerChild *child,
+                            MilterOption *option,
+                            MilterManagerChildren *children,
+                            gboolean is_retry);
+static void prepare_retry_establish_connection
+                           (MilterManagerChild *child,
+                            MilterOption *option,
+                            MilterManagerChildren *children,
+                            gboolean is_retry);
+static void remove_queue_in_negotiate
+                           (MilterManagerChildren *children,
+                            MilterManagerChild *child);
 
 static NegotiateData *negotiate_data_new  (MilterManagerChildren *children,
                                            MilterManagerChild *child,
-                                           MilterOption *option);
+                                           MilterOption *option,
+                                           gboolean is_retry);
 static void           negotiate_data_free (NegotiateData *data);
 static void           negotiate_data_hash_key_free (gpointer data);
 
@@ -124,6 +135,19 @@ milter_manager_children_class_init (MilterManagerChildrenClass *klass)
 }
 
 static void
+remove_retry_negotiate_timeout (gpointer data)
+{
+    guint timeout_id;
+
+    if (!data)
+        return;
+
+    timeout_id = GPOINTER_TO_UINT(data);
+
+    g_source_remove(timeout_id);
+}
+
+static void
 milter_manager_children_init (MilterManagerChildren *milter)
 {
     MilterManagerChildrenPrivate *priv;
@@ -131,9 +155,10 @@ milter_manager_children_init (MilterManagerChildren *milter)
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(milter);
     priv->configuration = NULL;
     priv->reply_queue = g_queue_new();
-    priv->retry_negotiate_ids =
+    priv->try_negotiate_ids =
         g_hash_table_new_full(g_direct_hash, g_direct_equal,
-                              negotiate_data_hash_key_free, NULL);
+                              negotiate_data_hash_key_free,
+                              remove_retry_negotiate_timeout);
     priv->milters = NULL;
     priv->quitted_milters = NULL;
     priv->macros_requests = milter_macros_requests_new();
@@ -144,14 +169,6 @@ milter_manager_children_init (MilterManagerChildren *milter)
     priv->reply_code = 0;
     priv->reply_extended_code = NULL;
     priv->reply_message = NULL;
-}
-
-static void
-remove_retry_negotiate (gpointer key, gpointer value, gpointer user_data)
-{
-    guint timeout_id = GPOINTER_TO_UINT(value);
-
-    g_source_remove(timeout_id);
 }
 
 static void
@@ -166,11 +183,9 @@ dispose (GObject *object)
         priv->reply_queue = NULL;
     }
 
-    if (priv->retry_negotiate_ids) {
-        g_hash_table_foreach(priv->retry_negotiate_ids,
-                             (GHFunc)remove_retry_negotiate, NULL);
-        g_hash_table_unref(priv->retry_negotiate_ids);
-        priv->retry_negotiate_ids = NULL;
+    if (priv->try_negotiate_ids) {
+        g_hash_table_unref(priv->try_negotiate_ids);
+        priv->try_negotiate_ids = NULL;
     }
 
     if (priv->configuration) {
@@ -368,10 +383,9 @@ cb_ready (MilterServerContext *context, gpointer user_data)
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(negotiate_data->children);
 
-    g_queue_push_tail(priv->reply_queue, context);
     setup_server_context_signals(negotiate_data->children, context);
     milter_server_context_negotiate(context, negotiate_data->option);
-    negotiate_data_free(negotiate_data);
+    g_hash_table_remove(priv->try_negotiate_ids, negotiate_data);
 }
 
 static void
@@ -391,12 +405,7 @@ cb_negotiate_reply (MilterServerContext *context, MilterOption *option,
     else
         milter_option_merge(priv->option, option);
 
-    g_queue_remove(priv->reply_queue, context);
-
-    if (g_queue_is_empty(priv->reply_queue)) {
-        g_signal_emit_by_name(children, "negotiate-reply",
-                              priv->option, priv->macros_requests);
-    }
+    remove_queue_in_negotiate(children, MILTER_MANAGER_CHILD(context));
 }
 
 static void
@@ -682,18 +691,6 @@ cb_skip (MilterServerContext *context, gpointer user_data)
 }
 
 static void
-cb_connection_timeout (MilterServerContext *context, gpointer user_data)
-{
-    MilterManagerChildren *children = MILTER_MANAGER_CHILDREN(user_data);
-
-    milter_error("connection to %s is timed out.",
-                 milter_manager_child_get_name(MILTER_MANAGER_CHILD(context)));
-
-    expire_child(children, context);
-    remove_child_from_queue(children, context);
-}
-
-static void
 cb_writing_timeout (MilterServerContext *context, gpointer user_data)
 {
     MilterManagerChildren *children = MILTER_MANAGER_CHILDREN(user_data);
@@ -796,7 +793,6 @@ setup_server_context_signals (MilterManagerChildren *children,
     CONNECT(shutdown);
     CONNECT(skip);
 
-    CONNECT(connection_timeout);
     CONNECT(writing_timeout);
     CONNECT(reading_timeout);
     CONNECT(end_of_message_timeout);
@@ -837,7 +833,6 @@ teardown_server_context_signals (MilterManagerChild *child,
     DISCONNECT(shutdown);
     DISCONNECT(skip);
 
-    DISCONNECT(connection_timeout);
     DISCONNECT(writing_timeout);
     DISCONNECT(reading_timeout);
     DISCONNECT(end_of_message_timeout);
@@ -847,27 +842,114 @@ teardown_server_context_signals (MilterManagerChild *child,
 #undef DISCONNECT
 }
 
-#define NEGOTIATE_RETRY_TIMEOUT 1
+#define CONNECTION_RETRY_TIMEOUT 1
 
 static gboolean
-retry_negotiate (gpointer user_data)
+retry_establish_connection (gpointer user_data)
 {
     NegotiateData *data = user_data;
     MilterManagerChildrenPrivate *priv;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(data->children);
 
-    child_negotiate_without_retry(data->child, data->option, data->children);
+    child_establish_connection(data->child,
+                               data->option,
+                               data->children,
+                               TRUE);
 
-    g_hash_table_remove(priv->retry_negotiate_ids, data);
+    g_hash_table_remove(priv->try_negotiate_ids, data);
 
     return FALSE;
+}
+
+static gboolean
+milter_manager_children_start_child (MilterManagerChildren *children,
+                                     MilterManagerChild *child)
+{
+    GError *error = NULL;
+
+    milter_manager_child_start(child, &error);
+    if (error) {
+        milter_error("Error: %s", error->message);
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
+                                    error);
+        g_error_free(error);
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
+static void
+remove_queue_in_negotiate (MilterManagerChildren *children,
+                           MilterManagerChild *child)
+{
+    MilterManagerChildrenPrivate *priv;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+    g_queue_remove(priv->reply_queue, child);
+    if (g_queue_is_empty(priv->reply_queue) && priv->option) {
+        g_signal_emit_by_name(children, "negotiate-reply",
+                              priv->option, priv->macros_requests);
+    }
+}
+
+static void
+clear_try_negotiate_data (NegotiateData *data)
+{
+    MilterManagerChildrenPrivate *priv;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(data->children);
+
+    remove_queue_in_negotiate(data->children, data->child);
+    g_hash_table_remove(priv->try_negotiate_ids, data);
+}
+
+static void
+cb_connection_timeout (MilterServerContext *context, gpointer user_data)
+{
+    NegotiateData *data = user_data;
+
+    milter_error("connection to %s is timed out.",
+                 milter_manager_child_get_name(MILTER_MANAGER_CHILD(context)));
+    clear_try_negotiate_data(data);
+}
+
+static void
+cb_connection_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
+{
+    NegotiateData *data = user_data;
+    MilterManagerChildrenPrivate *priv;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(data->children);
+    milter_info("connection_error: %s", error->message);
+
+    /* ignore MILTER_MANAGER_CHILD_ERROR_MILTER_EXIT */
+    if (error->domain != MILTER_SERVER_CONTEXT_ERROR ||
+        data->is_retry) {
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(data->children),
+                                    error);
+        clear_try_negotiate_data(data);
+        return;
+    }
+
+    if (!milter_manager_children_start_child(data->children, data->child)) {
+        clear_try_negotiate_data(data);
+        return;
+    }
+
+    prepare_retry_establish_connection(data->child,
+                                       data->option,
+                                       data->children, 
+                                       TRUE);
+    g_hash_table_remove(priv->try_negotiate_ids, data);
 }
 
 static NegotiateData *
 negotiate_data_new (MilterManagerChildren *children,
                     MilterManagerChild *child,
-                    MilterOption *option)
+                    MilterOption *option,
+                    gboolean is_retry)
 {
     NegotiateData *negotiate_data;
 
@@ -875,6 +957,19 @@ negotiate_data_new (MilterManagerChildren *children,
     negotiate_data->child = g_object_ref(child);
     negotiate_data->children = g_object_ref(children);
     negotiate_data->option = g_object_ref(option);
+    negotiate_data->is_retry = is_retry;
+    negotiate_data->error_signal_id =
+        g_signal_connect(child, "error",
+                         G_CALLBACK(cb_connection_error),
+                         negotiate_data);
+    negotiate_data->ready_signal_id =
+        g_signal_connect(child, "ready",
+                         G_CALLBACK(cb_ready),
+                         negotiate_data);
+    negotiate_data->connection_timeout_signal_id =
+        g_signal_connect(child, "connection-timeout",
+                         G_CALLBACK(cb_connection_timeout),
+                         negotiate_data);
 
     return negotiate_data;
 }
@@ -882,6 +977,13 @@ negotiate_data_new (MilterManagerChildren *children,
 static void
 negotiate_data_free (NegotiateData *data)
 {
+    if (data->connection_timeout_signal_id > 0)
+        g_signal_handler_disconnect(data->child, data->connection_timeout_signal_id);
+    if (data->error_signal_id > 0)
+        g_signal_handler_disconnect(data->child, data->error_signal_id);
+    if (data->ready_signal_id > 0)
+        g_signal_handler_disconnect(data->child, data->ready_signal_id);
+
     g_object_unref(data->child);
     g_object_unref(data->children);
     g_object_unref(data->option);
@@ -896,9 +998,10 @@ negotiate_data_hash_key_free (gpointer data)
 }
 
 static void
-prepare_retry_negotiate (MilterManagerChild *child,
-                         MilterOption *option,
-                         MilterManagerChildren *children)
+prepare_retry_establish_connection (MilterManagerChild *child,
+                                    MilterOption *option,
+                                    MilterManagerChildren *children,
+                                    gboolean is_retry)
 {
     MilterManagerChildrenPrivate *priv;
     NegotiateData *negotiate_data;
@@ -906,17 +1009,36 @@ prepare_retry_negotiate (MilterManagerChild *child,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    g_queue_push_tail(priv->reply_queue, child);
-    negotiate_data = negotiate_data_new(children, child, option);
-    timeout_id = g_timeout_add_seconds(NEGOTIATE_RETRY_TIMEOUT,
-                                       retry_negotiate, negotiate_data);
-    g_hash_table_insert(priv->retry_negotiate_ids,
+    negotiate_data = negotiate_data_new(children, child, option, is_retry);
+    timeout_id = g_timeout_add_seconds(CONNECTION_RETRY_TIMEOUT,
+                                       retry_establish_connection,
+                                       negotiate_data);
+
+    g_hash_table_insert(priv->try_negotiate_ids,
                         negotiate_data, GUINT_TO_POINTER(timeout_id));
 }
 
-static MilterStatus
-child_negotiate_without_retry (MilterManagerChild *child, MilterOption *option,
-                               MilterManagerChildren *children)
+static void
+prepare_negotiate (MilterManagerChild *child,
+                   MilterOption *option,
+                   MilterManagerChildren *children,
+                   gboolean is_retry)
+{
+    MilterManagerChildrenPrivate *priv;
+    NegotiateData *negotiate_data;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    negotiate_data = negotiate_data_new(children, child, option, is_retry);
+    g_hash_table_insert(priv->try_negotiate_ids,
+                        negotiate_data, NULL);
+}
+
+static gboolean
+child_establish_connection (MilterManagerChild *child,
+                            MilterOption *option,
+                            MilterManagerChildren *children,
+                            gboolean is_retry)
 {
     MilterManagerChildrenPrivate *priv;
     MilterServerContext *context;
@@ -926,80 +1048,25 @@ child_negotiate_without_retry (MilterManagerChild *child, MilterOption *option,
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     if (!milter_server_context_establish_connection(context, &error)) {
-        MilterStatus status;
-        status = MILTER_STATUS_CONTINUE;
-
-        g_queue_remove(priv->reply_queue, context);
-        status =
-            milter_manager_configuration_get_return_status_if_filter_unavailable(priv->configuration);
 
         milter_error("Error: %s", error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
                                     error);
 
-        if (g_queue_is_empty(priv->reply_queue) && priv->option) {
-            g_signal_emit_by_name(children, "negotiate-reply",
-                                  priv->option, priv->macros_requests);
-        }
         g_error_free(error);
-        return status;
+        if (is_retry)
+            return FALSE;
+
+        prepare_retry_establish_connection(child,
+                                           option,
+                                           children, 
+                                           TRUE);
+        return FALSE;
     }
 
-    setup_server_context_signals(children, context);
-    milter_server_context_negotiate(context, option);
+    prepare_negotiate(child, option, children, is_retry);
 
-    return MILTER_STATUS_PROGRESS;
-}
-
-static MilterStatus
-child_negotiate (MilterManagerChild *child, MilterOption *option,
-                 MilterManagerChildren *children)
-{
-    MilterManagerChildrenPrivate *priv;
-    MilterServerContext *context;
-    NegotiateData *negotiate_data;
-    GError *error = NULL;
-
-    context = MILTER_SERVER_CONTEXT(child);
-    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
-
-    if (!milter_server_context_establish_connection(context, &error)) {
-        MilterStatus status;
-        gboolean privilege;
-
-        status =
-            milter_manager_configuration_get_return_status_if_filter_unavailable(priv->configuration);
-
-        privilege =
-            milter_manager_configuration_is_privilege_mode(priv->configuration);
-        if (!privilege ||
-            error->code != MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE) {
-            milter_error("Error: %s", error->message);
-            milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
-                                        error);
-            g_error_free(error);
-            return status;
-        }
-        g_error_free(error);
-        error = NULL;
-
-        milter_manager_child_start(child, &error);
-        if (error) {
-            milter_error("Error: %s", error->message);
-            milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
-                                        error);
-            g_error_free(error);
-            return status;
-        }
-
-        prepare_retry_negotiate(child, option, children);
-        return MILTER_STATUS_PROGRESS;
-    }
-
-    negotiate_data = negotiate_data_new(children, child, option);
-    g_signal_connect(child, "ready", G_CALLBACK(cb_ready), negotiate_data);
-
-    return MILTER_STATUS_PROGRESS;
+    return TRUE;
 }
 
 static void
@@ -1017,21 +1084,36 @@ gboolean
 milter_manager_children_negotiate (MilterManagerChildren *children,
                                    MilterOption          *option)
 {
-    GList *child;
+    GList *node;
     MilterManagerChildrenPrivate *priv;
     gboolean success = TRUE;
+    gboolean privilege;
+    MilterStatus return_status;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    init_reply_queue(children);
-    for (child = priv->milters; child; child = g_list_next(child)) {
-        MilterStatus status;
+    privilege =
+        milter_manager_configuration_is_privilege_mode(priv->configuration);
+    return_status =
+        milter_manager_configuration_get_return_status_if_filter_unavailable(priv->configuration);
 
-        status = child_negotiate(MILTER_MANAGER_CHILD(child->data),
-                                 option, children);
-        if (status != MILTER_STATUS_PROGRESS &&
-            status != MILTER_STATUS_CONTINUE) {
-            success = FALSE;
+    init_reply_queue(children);
+    for (node = priv->milters; node; node = g_list_next(node)) {
+        MilterManagerChild *child = MILTER_MANAGER_CHILD(node->data);
+
+        if (!child_establish_connection(child, option, children, FALSE)) {
+            if (privilege &&
+                milter_manager_children_start_child(children, child)) {
+                prepare_retry_establish_connection(child,
+                                                   option,
+                                                   children, 
+                                                   FALSE);
+                g_queue_push_tail(priv->reply_queue, child);
+            } else {
+                success = FALSE;
+            }
+        } else {
+            g_queue_push_tail(priv->reply_queue, child);
         }
     }
 

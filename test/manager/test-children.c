@@ -44,6 +44,7 @@ void test_important_status (gconstpointer data);
 void data_not_important_status (void);
 void test_not_important_status (gconstpointer data);
 void test_reading_timeout (void);
+void test_connection_timeout (void);
 
 static MilterManagerConfiguration *config;
 static MilterManagerChildren *children;
@@ -552,11 +553,10 @@ void
 test_retry_negotiate_failure (void)
 {
     gchar *command;
-    expected_error = g_error_new(MILTER_SERVER_CONTEXT_ERROR,
-                                 MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE,
-                                 "Failed to connect(): "
-                                 "%s",
-                                 g_strerror(ECONNREFUSED));
+    expected_error = g_error_new(MILTER_MANAGER_CHILD_ERROR,
+                                 MILTER_MANAGER_CHILD_ERROR_MILTER_EXIT,
+                                 "%s exits with status: 0",
+                                 "milter@10027");
     option = milter_option_new(2,
                                MILTER_ACTION_ADD_HEADERS |
                                MILTER_ACTION_CHANGE_BODY,
@@ -831,6 +831,29 @@ cb_log (MilterLogger *logger, const gchar *domain,
     if (g_str_equal(domain, "milter-manager")) {
         error_message = g_strdup(message);
     }
+}
+
+void
+test_connection_timeout (void)
+{
+    MilterLogger *logger;
+
+    logger = milter_logger();
+    log_signal_id = g_signal_connect(logger, "log", G_CALLBACK(cb_log), NULL);
+
+    add_child("milter@10026", "inet:10026@192.168.99.1");
+
+    milter_manager_children_foreach(children, set_timeout, NULL);
+
+    option = milter_option_new(2,
+                               MILTER_ACTION_ADD_HEADERS |
+                               MILTER_ACTION_CHANGE_BODY,
+                               MILTER_STEP_NONE);
+    cut_assert_true(milter_manager_children_negotiate(children, option));
+
+    g_main_context_iteration(NULL, FALSE);
+    cut_assert_equal_string("connection to milter@10026 is timed out.",
+                            error_message);
 }
 
 void

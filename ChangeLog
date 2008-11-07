@@ -44,9 +44,12 @@
 
 2008-11-07  Hiroyuki Ikezoe  <poincare@ikezoe.net>
 
-	* milter/manager/test-children.c: Send "NEGOTIATE" after "ready"
+	* milter/manager/milter-manager-children.c: Send "NEGOTIATE" after "ready"
 	signal from a child is received.
 	test_retry_negotiate_failure() and test_reading_timeout() fail yet.
+	* milter/manager/milter-manager-children.c: Cleanup negotiation code.
+	All tests passes now. Handle "connection-timeout" of
+	MilterServerContext.
 
 2008-11-06  Kouhei Sutou  <kou@cozmixng.org>
 
