@@ -17,3 +17,5 @@ recipient=kou+receiver@cozmixng.org
 response=envelope-recipient
 n_received=2
 status=continue
+
+recipients=kou+receiver@cozmixng.org;kou+receiver@cozmixng.org

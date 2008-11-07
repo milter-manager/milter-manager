@@ -18,3 +18,5 @@ value=kou+sender@cozmixng.org
 response=header
 n_received=2
 status=continue
+
+headers=From;kou+sender@cozmixng.org;From;kou+sender@cozmixng.org

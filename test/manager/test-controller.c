@@ -41,13 +41,6 @@ void test_envelope_recipient (void);
 void test_envelope_recipient_accept (void);
 void test_envelope_recipient_both_accept (void);
 void test_envelope_recipient_reject (void);
-void test_envelope_recipient_reject_and_discard_simultaneously (void);
-void test_envelope_recipient_reject_and_temporary_failure_and_discard (void);
-void test_envelope_recipient_discard (void);
-void test_envelope_recipient_temporary_failure (void);
-void test_envelope_recipient_both_temporary_failure (void);
-void test_data (void);
-void test_header (void);
 
 static GKeyFile *scenario;
 static GList *imported_scenarios;
@@ -251,6 +244,12 @@ teardown (void)
         test_clients,                                   \
         milter_manager_test_client_get_ ## name)
 
+#define collect_received_pairs(name, value)             \
+    milter_manager_test_clients_collect_pairs(          \
+        test_clients,                                   \
+        milter_manager_test_client_get_ ## name,        \
+        milter_manager_test_client_get_ ## value)
+
 static gboolean
 cb_timeout_waiting (gpointer data)
 {
@@ -438,7 +437,7 @@ get_integer (GKeyFile *scenario, const gchar *group, const gchar *key)
     gint value;
 
     value = g_key_file_get_integer(scenario, group, key, &error);
-    gcut_assert_error(error, "group: <%s>", group);
+    gcut_assert_error(error, "[%s]", group);
     return value;
 }
 
@@ -449,7 +448,7 @@ get_string (GKeyFile *scenario, const gchar *group, const gchar *key)
     gchar *value;
 
     value = g_key_file_get_string(scenario, group, key, &error);
-    gcut_assert_error(error, "group: <%s>", group);
+    gcut_assert_error(error, "[%s]", group);
     return cut_take_string(value);
 }
 
@@ -461,7 +460,7 @@ get_string_list (GKeyFile *scenario, const gchar *group, const gchar *key,
     gchar **value;
 
     value = g_key_file_get_string_list(scenario, group, key, length, &error);
-    gcut_assert_error(error, "group: <%s>", group);
+    gcut_assert_error(error, "[%s]", group);
     return cut_take_string_array(value);
 }
 
@@ -495,8 +494,41 @@ get_enum (GKeyFile *scenario, const gchar *group, const gchar *key,
     gint value;
 
     value = gcut_key_file_get_enum(scenario, group, key, enum_type, &error);
-    gcut_assert_error(error, "group: <%s>", group);
+    gcut_assert_error(error, "[%s]", group);
     return value;
+}
+
+static const GList *
+get_pair_list (GKeyFile *scenario, const gchar *group, const gchar *key)
+{
+    const GList *sorted_pairs = NULL;
+    GError *error = NULL;
+
+    if (g_key_file_has_key(scenario, group, key, &error)) {
+        const gchar **pair_strings;
+        GList *pairs = NULL;
+        gsize length, i;
+
+        pair_strings = get_string_list(scenario, group, key, &length);
+        for (i = 0; i < length; i += 2) {
+            MilterManagerTestPair *pair;
+            const gchar *name, *value;
+
+            name = pair_strings[i];
+            value = pair_strings[i + 1];
+            if (value && value[0] == '\0')
+                value = NULL;
+            pair = milter_manager_test_pair_new(name, value);
+            pairs = g_list_prepend(pairs, pair);
+        }
+        sorted_pairs =
+            gcut_take_list(
+                g_list_sort(pairs, milter_manager_test_pair_compare),
+                (CutDestroyFunction)milter_manager_test_pair_free);
+    }
+    gcut_assert_error(error);
+
+    return sorted_pairs;
 }
 
 
@@ -545,8 +577,8 @@ load_scenario (const gchar *name, GKeyFile **scenario)
         g_key_file_free(*scenario);
         *scenario = NULL;
     }
-    g_free(scenario_path);
-    gcut_assert_error(error);
+    cut_take_string(scenario_path);
+    gcut_assert_error(error, "<%s>", scenario_path);
 
     cut_trace(import_scenarios(*scenario));
 }
@@ -675,9 +707,9 @@ assert_response_common (GKeyFile *scenario, const gchar *group)
     actual_n_received =
         milter_manager_test_clients_collect_n_received(test_clients,
                                                        get_n_received);
-    cut_assert_equal_uint(n_received, actual_n_received, "group: <%s>", group);
+    cut_assert_equal_uint(n_received, actual_n_received, "[%s]", group);
     gcut_assert_equal_enum(MILTER_TYPE_STATUS, status, response_status,
-                           "group: <%s>", group);
+                           "[%s]", group);
 
 }
 
@@ -770,16 +802,17 @@ do_envelope_from (GKeyFile *scenario, const gchar *group)
 static void
 do_envelope_recipient (GKeyFile *scenario, const gchar *group)
 {
-    MilterManagerTestClient *client;
     const gchar *recipient;
+    const GList *expected_recipients;
 
     recipient = get_string(scenario, group, "recipient");
     milter_manager_controller_envelope_recipient(controller, recipient);
 
     cut_trace(assert_response(scenario, group));
 
-    client = test_clients->data;
-    cut_assert_equal_string(recipient, get_received_data(envelope_recipient));
+    expected_recipients = get_string_g_list(scenario, group, "recipients");
+    gcut_assert_equal_list_string(expected_recipients,
+                                  collect_received_strings(envelope_recipient));
 }
 
 static void
@@ -793,7 +826,8 @@ do_data (GKeyFile *scenario, const gchar *group)
 static void
 do_header (GKeyFile *scenario, const gchar *group)
 {
-    MilterManagerTestClient *client;
+    const GList *expected_headers;
+    const GList *actual_headers;
     const gchar *name, *value;
 
     name = get_string(scenario, group, "name");
@@ -802,9 +836,13 @@ do_header (GKeyFile *scenario, const gchar *group)
 
     cut_trace(assert_response(scenario, group));
 
-    client = test_clients->data;
-    cut_assert_equal_string(name, get_received_data(header_name));
-    cut_assert_equal_string(value, get_received_data(header_value));
+    expected_headers = get_pair_list(scenario, group, "headers");
+    actual_headers = collect_received_pairs(header_name, header_value);
+    gcut_assert_equal_list(
+        expected_headers, actual_headers,
+        milter_manager_test_pair_equal,
+        (GCutInspectFunc)milter_manager_test_pair_inspect,
+        NULL);
 }
 
 static void
@@ -940,39 +978,6 @@ do_end_of_message_add_header (GKeyFile *scenario, const gchar *group)
         NULL);
 }
 
-static const GList *
-get_pair_list (GKeyFile *scenario, const gchar *group, const gchar *key)
-{
-    const GList *sorted_pairs = NULL;
-    GError *error = NULL;
-
-    if (g_key_file_has_key(scenario, group, key, &error)) {
-        const gchar **pair_strings;
-        GList *pairs = NULL;
-        gsize length, i;
-
-        pair_strings = get_string_list(scenario, group, key, &length);
-        for (i = 0; i < length; i += 2) {
-            MilterManagerTestPair *pair;
-            const gchar *name, *value;
-
-            name = pair_strings[i];
-            value = pair_strings[i + 1];
-            if (value && value[0] == '\0')
-                value = NULL;
-            pair = milter_manager_test_pair_new(name, value);
-            pairs = g_list_prepend(pairs, pair);
-        }
-        sorted_pairs =
-            gcut_take_list(
-                g_list_sort(pairs, milter_manager_test_pair_compare),
-                (CutDestroyFunction)milter_manager_test_pair_free);
-    }
-    gcut_assert_error(error);
-
-    return sorted_pairs;
-}
-
 static void
 do_end_of_message_change_from (GKeyFile *scenario, const gchar *group)
 {
@@ -1097,7 +1102,7 @@ do_action (GKeyFile *scenario, const gchar *group)
 
     command = gcut_key_file_get_enum(scenario, group, "command",
                                      MILTER_TYPE_COMMAND, &error);
-    gcut_assert_error(error, "group: <%s>", group);
+    gcut_assert_error(error, "[%s]", group);
 
     switch (command) {
       case MILTER_COMMAND_NEGOTIATE:
@@ -1204,11 +1209,24 @@ data_scenario_end_of_message_action (void)
 static void
 data_scenario_complex (void)
 {
-    cut_add_data("body - skip", g_strdup("body-skip.txt"), g_free,
-                 "body - skip all", g_strdup("body-skip-all.txt"), g_free,
-                 "body - accept", g_strdup("body-accept.txt"), g_free,
-                 "reply-code - invalid",
-                 g_strdup("reply-code-invalid.txt"), g_free);
+    cut_add_data(
+        "envelope-recipient - reject & temporary-failure & discard",
+        g_strdup("envelope-recipient-reject-and-temporary-failure-and-discard.txt"),
+        g_free,
+        "envelope-recipient - reject & discard - simultaneously",
+        g_strdup("envelope-recipient-reject-and-discard-simultaneously.txt"),
+        g_free,
+        "envelope-recipient - discard",
+        g_strdup("envelope-recipient-discard.txt"), g_free,
+        "envelope-recipient - temporary-failure",
+        g_strdup("envelope-recipient-temporary-failure.txt"), g_free,
+        "envelope-recipient - temporary-failure - all",
+        g_strdup("envelope-recipient-temporary-failure-all.txt"), g_free,
+        "body - skip", g_strdup("body-skip.txt"), g_free,
+        "body - skip all", g_strdup("body-skip-all.txt"), g_free,
+        "body - accept", g_strdup("body-accept.txt"), g_free,
+        "reply-code - invalid",
+        g_strdup("reply-code-invalid.txt"), g_free);
 }
 
 void
@@ -1528,178 +1546,6 @@ test_envelope_recipient_reject (void)
     assert_have_response("data");
     cut_assert_equal_uint(g_list_length(test_clients),
                           collect_n_received(data));
-}
-
-void
-test_envelope_recipient_reject_and_temporary_failure_and_discard (void)
-{
-    const gchar reject_recipient[] = "kou+rejected@cozmixng.org";
-    const gchar temporary_failure_recipient[] =
-        "kou+temporary_failure@cozmixng.org";
-    const gchar discard_recipient[] = "kou+discarded@cozmixng.org";
-
-    arguments_append(arguments1,
-                     "--action", "reject",
-                     "--envelope-recipient", reject_recipient,
-                     "--action", "temporary_failure",
-                     "--envelope-recipient", temporary_failure_recipient,
-                     "--action", "discard",
-                     "--envelope-recipient", discard_recipient,
-                     NULL);
-
-    cut_trace(test_envelope_recipient());
-
-    milter_manager_controller_envelope_recipient(controller, reject_recipient);
-    assert_have_response("envelope-recipient");
-    cut_assert_equal_uint(g_list_length(test_clients) * 2,
-                          collect_n_received(envelope_recipient));
-    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
-                           MILTER_STATUS_REJECT, response_status);
-
-    milter_manager_controller_envelope_recipient(controller,
-                                                 temporary_failure_recipient);
-    assert_have_response("envelope-recipient");
-    cut_assert_equal_uint(g_list_length(test_clients) * 3,
-                          collect_n_received(envelope_recipient));
-    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
-                           MILTER_STATUS_CONTINUE, response_status);
-
-    milter_manager_controller_envelope_recipient(controller, discard_recipient);
-    assert_have_response("envelope-recipient");
-    cut_assert_equal_uint(g_list_length(test_clients) * 4,
-                          collect_n_received(envelope_recipient));
-    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
-                           MILTER_STATUS_DISCARD, response_status);
-}
-
-void
-test_envelope_recipient_reject_and_discard_simultaneously (void)
-{
-    const gchar recipient[] = "kou+rejected+discarded@cozmixng.org";
-
-    arguments_append(arguments1,
-                     "--action", "reject",
-                     "--envelope-recipient", recipient,
-                     NULL);
-    arguments_append(arguments2,
-                     "--action", "discard",
-                     "--envelope-recipient", recipient,
-                     NULL);
-
-    cut_trace(test_envelope_recipient());
-
-    milter_manager_controller_envelope_recipient(controller, recipient);
-    assert_have_response("envelope-recipient");
-    cut_assert_equal_uint(g_list_length(test_clients) * 2,
-                          collect_n_received(envelope_recipient));
-    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
-                           MILTER_STATUS_DISCARD, response_status);
-}
-
-void
-test_envelope_recipient_discard (void)
-{
-    const gchar recipient[] = "kou+discarded@cozmixng.org";
-
-    arguments_append(arguments1,
-                     "--action", "discard",
-                     "--envelope-recipient", recipient,
-                     NULL);
-
-    cut_trace(test_envelope_recipient());
-
-    milter_manager_controller_envelope_recipient(controller, recipient);
-    assert_have_response("envelope-recipient");
-    cut_assert_equal_uint(g_list_length(test_clients) * 2,
-                          collect_n_received(envelope_recipient));
-    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
-                           MILTER_STATUS_DISCARD, response_status);
-}
-
-void
-test_envelope_recipient_temporary_failure (void)
-{
-    const gchar recipient[] = "kou+temporary_failureed@cozmixng.org";
-
-    arguments_append(arguments1,
-                     "--action", "temporary_failure",
-                     "--envelope-recipient", recipient,
-                     NULL);
-
-    cut_trace(test_envelope_recipient());
-
-    milter_manager_controller_envelope_recipient(controller, recipient);
-    assert_have_response("envelope-recipient");
-    cut_assert_equal_uint(g_list_length(test_clients) * 2,
-                          collect_n_received(envelope_recipient));
-    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
-                           MILTER_STATUS_CONTINUE, response_status);
-    milter_manager_controller_data(controller);
-    assert_have_response("data");
-    cut_assert_equal_uint(g_list_length(test_clients),
-                          collect_n_received(data),
-                          "the child which returns 'TEMPORARY_FAILURE' "
-                          "must live");
-}
-
-void
-test_envelope_recipient_both_temporary_failure (void)
-{
-    const gchar recipient[] = "kou+temporary_failureed@cozmixng.org";
-
-    arguments_append(arguments1,
-                     "--action", "temporary_failure",
-                     "--envelope-recipient", recipient,
-                     NULL);
-    arguments_append(arguments2,
-                     "--action", "temporary_failure",
-                     "--envelope-recipient", recipient,
-                     NULL);
-
-    cut_trace(test_envelope_recipient());
-
-    milter_manager_controller_envelope_recipient(controller, recipient);
-    assert_have_response("envelope-recipient");
-    cut_assert_equal_uint(g_list_length(test_clients) * 2,
-                          collect_n_received(envelope_recipient));
-    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
-                           MILTER_STATUS_TEMPORARY_FAILURE, response_status,
-                           "The process goes on even if TEMPORARY_FAILURE "
-                           "returns in ENVELOPE_RECIPIENT.");
-    milter_manager_controller_data(controller);
-    assert_have_response("data");
-    cut_assert_equal_uint(g_list_length(test_clients),
-                          collect_n_received(data));
-}
-
-void
-test_data (void)
-{
-    cut_trace(test_envelope_recipient());
-
-    milter_manager_controller_data(controller);
-    assert_have_response("data");
-    cut_assert_equal_uint(g_list_length(test_clients),
-                          collect_n_received(data));
-}
-
-void
-test_header (void)
-{
-    MilterManagerTestClient *client;
-    const gchar name[] = "From";
-    const gchar value[] = "kou+sender@cozmixng.org";
-
-    cut_trace(test_data());
-
-    milter_manager_controller_header(controller, name, value);
-    assert_have_response("header");
-    cut_assert_equal_uint(g_list_length(test_clients),
-                          collect_n_received(header));
-
-    client = test_clients->data;
-    cut_assert_equal_string(name, get_received_data(header_name));
-    cut_assert_equal_string(value, get_received_data(header_value));
 }
 
 /*
