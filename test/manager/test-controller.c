@@ -48,7 +48,6 @@ void test_envelope_recipient_temporary_failure (void);
 void test_envelope_recipient_both_temporary_failure (void);
 void test_data (void);
 void test_header (void);
-void test_end_of_header (void);
 
 static GKeyFile *scenario;
 static GList *imported_scenarios;
@@ -1701,17 +1700,6 @@ test_header (void)
     client = test_clients->data;
     cut_assert_equal_string(name, get_received_data(header_name));
     cut_assert_equal_string(value, get_received_data(header_value));
-}
-
-void
-test_end_of_header (void)
-{
-    cut_trace(test_header());
-
-    milter_manager_controller_end_of_header(controller);
-    assert_have_response("end-of-header");
-    cut_assert_equal_uint(g_list_length(test_clients),
-                          collect_n_received(end_of_header));
 }
 
 /*
