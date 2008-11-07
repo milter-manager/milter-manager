@@ -44,15 +44,15 @@ struct _MilterManagerTestServerPrivate
     guint n_quarantines;
     guint n_reply_codes;
 
-    GList *add_headers;
-    GList *change_headers;
-    GList *insert_headers;
-    GList *added_recipients;
-    GList *deleted_recipients;
-    GList *replaced_bodies;
-    GList *changed_froms;
-    gchar *quarantine_reason;
-    GList *replied_codes;
+    GList *received_add_headers;
+    GList *received_change_headers;
+    GList *received_insert_headers;
+    GList *received_add_recipients;
+    GList *received_delete_recipients;
+    GList *received_replace_bodies;
+    GList *received_change_froms;
+    GList *received_quarantine_reasons;
+    GList *received_reply_codes;
 };
 
 enum
@@ -148,15 +148,15 @@ milter_manager_test_server_init (MilterManagerTestServer *milter)
 
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(milter);
 
-    priv->add_headers = NULL;
-    priv->change_headers = NULL;
-    priv->insert_headers = NULL;
-    priv->added_recipients = NULL;
-    priv->deleted_recipients = NULL;
-    priv->changed_froms = NULL;
-    priv->replaced_bodies = NULL;
-    priv->quarantine_reason = NULL;
-    priv->replied_codes = NULL;
+    priv->received_add_headers = NULL;
+    priv->received_change_headers = NULL;
+    priv->received_insert_headers = NULL;
+    priv->received_add_recipients = NULL;
+    priv->received_delete_recipients = NULL;
+    priv->received_change_froms = NULL;
+    priv->received_replace_bodies = NULL;
+    priv->received_quarantine_reasons = NULL;
+    priv->received_reply_codes = NULL;
 
     priv->n_add_headers = 0;
     priv->n_change_headers = 0;
@@ -177,64 +177,65 @@ dispose (GObject *object)
 
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(object);
 
-    if (priv->add_headers) {
-        g_list_foreach(priv->add_headers,
+    if (priv->received_add_headers) {
+        g_list_foreach(priv->received_add_headers,
                        (GFunc)milter_manager_test_header_free, NULL);
-        g_list_free(priv->add_headers);
-        priv->add_headers = NULL;
+        g_list_free(priv->received_add_headers);
+        priv->received_add_headers = NULL;
     }
 
-    if (priv->change_headers) {
-        g_list_foreach(priv->change_headers,
+    if (priv->received_change_headers) {
+        g_list_foreach(priv->received_change_headers,
                        (GFunc)milter_manager_test_header_free, NULL);
-        g_list_free(priv->change_headers);
-        priv->change_headers = NULL;
+        g_list_free(priv->received_change_headers);
+        priv->received_change_headers = NULL;
     }
 
-    if (priv->insert_headers) {
-        g_list_foreach(priv->insert_headers,
+    if (priv->received_insert_headers) {
+        g_list_foreach(priv->received_insert_headers,
                        (GFunc)milter_manager_test_header_free, NULL);
-        g_list_free(priv->insert_headers);
-        priv->insert_headers = NULL;
+        g_list_free(priv->received_insert_headers);
+        priv->received_insert_headers = NULL;
     }
 
-    if (priv->added_recipients) {
-        g_list_foreach(priv->added_recipients,
+    if (priv->received_add_recipients) {
+        g_list_foreach(priv->received_add_recipients,
                        (GFunc)milter_manager_test_header_free,
                        NULL);
-        g_list_free(priv->added_recipients);
-        priv->added_recipients = NULL;
+        g_list_free(priv->received_add_recipients);
+        priv->received_add_recipients = NULL;
     }
 
-    if (priv->deleted_recipients) {
-        g_list_foreach(priv->deleted_recipients, (GFunc)g_free, NULL);
-        g_list_free(priv->deleted_recipients);
-        priv->deleted_recipients = NULL;
+    if (priv->received_delete_recipients) {
+        g_list_foreach(priv->received_delete_recipients, (GFunc)g_free, NULL);
+        g_list_free(priv->received_delete_recipients);
+        priv->received_delete_recipients = NULL;
     }
 
-    if (priv->changed_froms) {
-        g_list_foreach(priv->changed_froms,
+    if (priv->received_change_froms) {
+        g_list_foreach(priv->received_change_froms,
                        (GFunc)milter_manager_test_header_free,
                        NULL);
-        g_list_free(priv->changed_froms);
-        priv->changed_froms = NULL;
+        g_list_free(priv->received_change_froms);
+        priv->received_change_froms = NULL;
     }
 
-    if (priv->replaced_bodies) {
-        g_list_foreach(priv->replaced_bodies, (GFunc)g_free, NULL);
-        g_list_free(priv->replaced_bodies);
-        priv->replaced_bodies = NULL;
+    if (priv->received_replace_bodies) {
+        g_list_foreach(priv->received_replace_bodies, (GFunc)g_free, NULL);
+        g_list_free(priv->received_replace_bodies);
+        priv->received_replace_bodies = NULL;
     }
 
-    if (priv->quarantine_reason) {
-        g_free(priv->quarantine_reason);
-        priv->quarantine_reason = NULL;
+    if (priv->received_quarantine_reasons) {
+        g_list_foreach(priv->received_quarantine_reasons, (GFunc)g_free, NULL);
+        g_list_free(priv->received_quarantine_reasons);
+        priv->received_quarantine_reasons = NULL;
     }
 
-    if (priv->replied_codes) {
-        g_list_foreach(priv->replied_codes, (GFunc)g_free, NULL);
-        g_list_free(priv->replied_codes);
-        priv->replied_codes = NULL;
+    if (priv->received_reply_codes) {
+        g_list_foreach(priv->received_reply_codes, (GFunc)g_free, NULL);
+        g_list_free(priv->received_reply_codes);
+        priv->received_reply_codes = NULL;
     }
 
     G_OBJECT_CLASS(milter_manager_test_server_parent_class)->dispose(object);
@@ -288,8 +289,9 @@ add_header (MilterReplySignals *reply,
 
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
     priv->n_add_headers++;
-    priv->add_headers = g_list_append(priv->add_headers,
-                                      milter_manager_test_header_new(0, name, value));
+    priv->received_add_headers =
+        g_list_append(priv->received_add_headers,
+                      milter_manager_test_header_new(0, name, value));
 }
 
 static void
@@ -302,8 +304,9 @@ insert_header (MilterReplySignals *reply,
 
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
     priv->n_insert_headers++;
-    priv->insert_headers = g_list_append(priv->insert_headers,
-                                         milter_manager_test_header_new(index, name, value));
+    priv->received_insert_headers =
+        g_list_append(priv->received_insert_headers,
+                      milter_manager_test_header_new(index, name, value));
 }
 
 static void
@@ -316,8 +319,9 @@ change_header (MilterReplySignals *reply,
 
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
     priv->n_change_headers++;
-    priv->change_headers = g_list_append(priv->change_headers,
-                                         milter_manager_test_header_new(index, name, value));
+    priv->received_change_headers =
+        g_list_append(priv->received_change_headers,
+                      milter_manager_test_header_new(index, name, value));
 }
 
 static void
@@ -330,8 +334,8 @@ change_from (MilterReplySignals *reply,
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
     priv->n_change_froms++;
 
-    priv->changed_froms =
-        g_list_prepend(priv->changed_froms,
+    priv->received_change_froms =
+        g_list_prepend(priv->received_change_froms,
                        milter_manager_test_pair_new(from, parameters));
 }
 
@@ -345,8 +349,8 @@ add_recipient (MilterReplySignals *reply,
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
     priv->n_add_recipients++;
 
-    priv->added_recipients =
-        g_list_prepend(priv->added_recipients,
+    priv->received_add_recipients =
+        g_list_prepend(priv->received_add_recipients,
                        milter_manager_test_pair_new(recipient, parameters));
 }
 
@@ -358,8 +362,8 @@ delete_recipient (MilterReplySignals *reply, const gchar *recipient)
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
     priv->n_delete_recipients++;
 
-    priv->deleted_recipients =
-        g_list_append(priv->deleted_recipients, g_strdup(recipient));
+    priv->received_delete_recipients =
+        g_list_append(priv->received_delete_recipients, g_strdup(recipient));
 }
 
 static void
@@ -372,8 +376,9 @@ replace_body (MilterReplySignals *reply,
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
     priv->n_replace_bodies++;
 
-    priv->replaced_bodies = g_list_append(priv->replaced_bodies,
-                                          g_strndup(body, body_size));
+    priv->received_replace_bodies =
+        g_list_append(priv->received_replace_bodies,
+                      g_strndup(body, body_size));
 }
 
 static void
@@ -386,7 +391,7 @@ progress (MilterReplySignals *reply)
 }
 
 static void
-quarantine (MilterReplySignals *reply, const gchar *reason)
+quarantine (MilterReplySignals *reply, const gchar *reasons)
 {
     MilterManagerTestServerPrivate *priv;
 
@@ -394,9 +399,9 @@ quarantine (MilterReplySignals *reply, const gchar *reason)
 
     priv->n_quarantines++;
 
-    if (priv->quarantine_reason)
-        g_free(priv->quarantine_reason);
-    priv->quarantine_reason = g_strdup(reason);
+    priv->received_quarantine_reasons =
+        g_list_append(priv->received_quarantine_reasons,
+                      g_strdup(reasons));
 }
 
 static void
@@ -411,8 +416,8 @@ reply_code(MilterReplySignals *reply,
 
     priv->n_reply_codes++;
 
-    priv->replied_codes =
-        g_list_append(priv->replied_codes,
+    priv->received_reply_codes =
+        g_list_append(priv->received_reply_codes,
                       milter_utils_format_reply_code(code,
                                                      extended_code,
                                                      message));
@@ -488,57 +493,57 @@ cb_waiting (gpointer data)
 }
 
 const GList *
-milter_manager_test_server_get_add_headers (MilterManagerTestServer *server)
+milter_manager_test_server_get_received_add_headers (MilterManagerTestServer *server)
 {
-    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->add_headers;
+    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->received_add_headers;
 }
 
 const GList *
-milter_manager_test_server_get_change_headers (MilterManagerTestServer *server)
+milter_manager_test_server_get_received_change_headers (MilterManagerTestServer *server)
 {
-    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->change_headers;
+    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->received_change_headers;
 }
 
 const GList *
-milter_manager_test_server_get_insert_headers (MilterManagerTestServer *server)
+milter_manager_test_server_get_received_insert_headers (MilterManagerTestServer *server)
 {
-    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->insert_headers;
+    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->received_insert_headers;
 }
 
 const GList *
-milter_manager_test_server_get_added_recipients (MilterManagerTestServer *server)
+milter_manager_test_server_get_received_add_recipients (MilterManagerTestServer *server)
 {
-    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->added_recipients;
+    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->received_add_recipients;
 }
 
 const GList *
-milter_manager_test_server_get_deleted_recipients (MilterManagerTestServer *server)
+milter_manager_test_server_get_received_delete_recipients (MilterManagerTestServer *server)
 {
-    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->deleted_recipients;
+    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->received_delete_recipients;
 }
 
 const GList *
-milter_manager_test_server_get_changed_froms (MilterManagerTestServer *server)
+milter_manager_test_server_get_received_change_froms (MilterManagerTestServer *server)
 {
-    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->changed_froms;
+    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->received_change_froms;
 }
 
 const GList *
-milter_manager_test_server_get_replaced_bodies (MilterManagerTestServer *server)
+milter_manager_test_server_get_received_replace_bodies (MilterManagerTestServer *server)
 {
-    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->replaced_bodies;
-}
-
-const gchar *
-milter_manager_test_server_get_quarantine_reason (MilterManagerTestServer *server)
-{
-    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->quarantine_reason;
+    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->received_replace_bodies;
 }
 
 const GList *
-milter_manager_test_server_get_replied_codes (MilterManagerTestServer *server)
+milter_manager_test_server_get_received_quarantine_reasons (MilterManagerTestServer *server)
 {
-    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->replied_codes;
+    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->received_quarantine_reasons;
+}
+
+const GList *
+milter_manager_test_server_get_received_reply_codes (MilterManagerTestServer *server)
+{
+    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->received_reply_codes;
 }
 
 void

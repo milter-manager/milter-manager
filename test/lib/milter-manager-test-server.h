@@ -78,23 +78,23 @@ guint                 milter_manager_test_server_get_n_quarantines
 guint                 milter_manager_test_server_get_n_reply_codes
                                                             (MilterManagerTestServer *server);
 
-const GList          *milter_manager_test_server_get_add_headers
+const GList          *milter_manager_test_server_get_received_add_headers
                                                             (MilterManagerTestServer *server);
-const GList          *milter_manager_test_server_get_change_headers
+const GList          *milter_manager_test_server_get_received_change_headers
                                                             (MilterManagerTestServer *server);
-const GList          *milter_manager_test_server_get_insert_headers
+const GList          *milter_manager_test_server_get_received_insert_headers
                                                             (MilterManagerTestServer *server);
-const GList          *milter_manager_test_server_get_added_recipients
+const GList          *milter_manager_test_server_get_received_add_recipients
                                                             (MilterManagerTestServer *server);
-const GList          *milter_manager_test_server_get_deleted_recipients
+const GList          *milter_manager_test_server_get_received_delete_recipients
                                                             (MilterManagerTestServer *server);
-const GList          *milter_manager_test_server_get_changed_froms
+const GList          *milter_manager_test_server_get_received_change_froms
                                                             (MilterManagerTestServer *server);
-const GList          *milter_manager_test_server_get_replaced_bodies
+const GList          *milter_manager_test_server_get_received_replace_bodies
                                                             (MilterManagerTestServer *server);
-const gchar          *milter_manager_test_server_get_quarantine_reason
+const GList          *milter_manager_test_server_get_received_quarantine_reasons
                                                             (MilterManagerTestServer *server);
-const GList          *milter_manager_test_server_get_replied_codes
+const GList          *milter_manager_test_server_get_received_reply_codes
                                                             (MilterManagerTestServer *server);
 void                  milter_manager_test_server_wait_signal
                                                             (MilterManagerTestServer *server);

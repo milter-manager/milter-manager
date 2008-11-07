@@ -17,4 +17,4 @@ response=end-of-message
 n_received=2
 status=continue
 
-replaced_bodies=This is the first line from client1.;This is the second line from client1.;This is the third line from client1.
+replace_bodies=This is the first line from client1.;This is the second line from client1.;This is the third line from client1.

@@ -671,11 +671,11 @@ assert_response_reply_code (GKeyFile *scenario, const gchar *group)
 {
     const GList *replied_codes;
 
-    replied_codes = get_string_g_list(scenario, group, "replied_codes");
+    replied_codes = get_string_g_list(scenario, group, "reply_codes");
     cut_trace(milter_manager_test_server_wait_signal(server));
     gcut_assert_equal_list_string(
         replied_codes,
-        milter_manager_test_server_get_replied_codes(server));
+        milter_manager_test_server_get_received_reply_codes(server));
 }
 
 static void
@@ -837,25 +837,40 @@ do_end_of_message (GKeyFile *scenario, const gchar *group)
     cut_assert_equal_string(chunk, get_received_data(body_chunk));
 }
 
-static void
-do_end_of_message_quarantine (GKeyFile *scenario, const gchar *group)
+static const GList *
+sort_const_pair_list (const GList *pairs)
 {
-    const gchar key[] = "quarantine_reason";
-    const gchar *expected_reason = NULL;
-    GError *error = NULL;
-
-    if (g_key_file_has_key(scenario, group, key, &error))
-        expected_reason = get_string(scenario, group, key);
-
-    cut_assert_equal_string(
-        expected_reason,
-        milter_manager_test_server_get_quarantine_reason(server));
+    return gcut_take_list(g_list_sort(g_list_copy((GList *)pairs),
+                                      milter_manager_test_pair_compare),
+                          NULL);
 }
 
 static const GList *
-get_expected_added_headers (GKeyFile *scenario, const gchar *group)
+sort_const_string_list (const GList *strings)
 {
-    const gchar key[] = "added_headers";
+    return gcut_take_list(g_list_sort(g_list_copy((GList *)strings),
+                                      (GCompareFunc)g_utf8_collate),
+                          NULL);
+}
+
+static void
+do_end_of_message_quarantine (GKeyFile *scenario, const gchar *group)
+{
+    const GList *expected_reasons;
+    const GList *actual_reasons;
+
+    expected_reasons = get_string_g_list(scenario, group, "quarantine_reasons");
+    actual_reasons =
+        milter_manager_test_server_get_received_quarantine_reasons(server);
+
+    gcut_assert_equal_list_string(sort_const_string_list(expected_reasons),
+                                  sort_const_string_list(actual_reasons));
+}
+
+static const GList *
+get_expected_add_headers (GKeyFile *scenario, const gchar *group)
+{
+    const gchar key[] = "add_headers";
     GError *error = NULL;
     const GList *expected_added_headers = NULL;
 
@@ -893,9 +908,10 @@ do_end_of_message_add_header (GKeyFile *scenario, const gchar *group)
     const GList *expected_added_headers;
     const GList *actual_added_headers;
 
-    expected_added_headers = get_expected_added_headers(scenario, group);
+    expected_added_headers = get_expected_add_headers(scenario, group);
 
-    actual_added_headers = milter_manager_test_server_get_add_headers(server);
+    actual_added_headers =
+        milter_manager_test_server_get_received_add_headers(server);
     actual_added_headers =
         gcut_take_list(
             g_list_sort(g_list_copy((GList *)actual_added_headers),
@@ -942,30 +958,14 @@ get_pair_list (GKeyFile *scenario, const gchar *group, const gchar *key)
     return sorted_pairs;
 }
 
-static const GList *
-sort_const_pair_list (const GList *pairs)
-{
-    return gcut_take_list(g_list_sort(g_list_copy((GList *)pairs),
-                                      milter_manager_test_pair_compare),
-                          NULL);
-}
-
-static const GList *
-sort_const_string_list (const GList *strings)
-{
-    return gcut_take_list(g_list_sort(g_list_copy((GList *)strings),
-                                      (GCompareFunc)g_utf8_collate),
-                          NULL);
-}
-
 static void
 do_end_of_message_change_from (GKeyFile *scenario, const gchar *group)
 {
     const GList *expected_froms;
     const GList *actual_froms;
 
-    expected_froms = get_pair_list(scenario, group, "changed_froms");
-    actual_froms = milter_manager_test_server_get_changed_froms(server);
+    expected_froms = get_pair_list(scenario, group, "change_froms");
+    actual_froms = milter_manager_test_server_get_received_change_froms(server);
     gcut_assert_equal_list(expected_froms,
                            sort_const_pair_list(actual_froms),
                            milter_manager_test_pair_equal,
@@ -979,8 +979,9 @@ do_end_of_message_add_recipient (GKeyFile *scenario, const gchar *group)
     const GList *expected_recipients;
     const GList *actual_recipients;
 
-    expected_recipients = get_pair_list(scenario, group, "added_recipients");
-    actual_recipients = milter_manager_test_server_get_added_recipients(server);
+    expected_recipients = get_pair_list(scenario, group, "add_recipients");
+    actual_recipients =
+        milter_manager_test_server_get_received_add_recipients(server);
     gcut_assert_equal_list(expected_recipients,
                            sort_const_pair_list(actual_recipients),
                            milter_manager_test_pair_equal,
@@ -995,9 +996,9 @@ do_end_of_message_delete_recipient (GKeyFile *scenario, const gchar *group)
     const GList *actual_recipients;
 
     expected_recipients =
-        get_string_g_list(scenario, group, "deleted_recipients");
+        get_string_g_list(scenario, group, "delete_recipients");
     actual_recipients =
-        milter_manager_test_server_get_deleted_recipients(server);
+        milter_manager_test_server_get_received_delete_recipients(server);
     gcut_assert_equal_list_string(sort_const_string_list(expected_recipients),
                                   sort_const_string_list(actual_recipients));
 }
@@ -1008,8 +1009,9 @@ do_end_of_message_replace_body (GKeyFile *scenario, const gchar *group)
     const GList *expected_bodies;
     const GList *actual_bodies;
 
-    expected_bodies = get_string_g_list(scenario, group, "replaced_bodies");
-    actual_bodies = milter_manager_test_server_get_replaced_bodies(server);
+    expected_bodies = get_string_g_list(scenario, group, "replace_bodies");
+    actual_bodies =
+        milter_manager_test_server_get_received_replace_bodies(server);
     gcut_assert_equal_list_string(expected_bodies,
                                   actual_bodies);
 }

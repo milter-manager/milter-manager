@@ -17,4 +17,4 @@ response=end-of-message
 n_received=2
 status=continue
 
-quarantine_reason=MAYBE VIRUS
+quarantine_reasons=MAYBE VIRUS

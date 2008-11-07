@@ -18,4 +18,4 @@ response=end-of-message
 n_received=2
 status=continue
 
-added_recipients=add1@example.com;;add2@example.com;;add2@example.com;;add3@example.com
+add_recipients=add1@example.com;;add2@example.com;;add2@example.com;;add3@example.com
