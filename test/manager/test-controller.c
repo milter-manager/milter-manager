@@ -51,8 +51,6 @@ void test_header (void);
 void test_end_of_header (void);
 void data_body (void);
 void test_body (gconstpointer data);
-void data_end_of_message (void);
-void test_end_of_message (gconstpointer data);
 
 static GKeyFile *scenario;
 static GList *imported_scenarios;
@@ -833,7 +831,7 @@ do_end_of_message (GKeyFile *scenario, const gchar *group)
 
     cut_trace(assert_response(scenario, group));
     client = test_clients->data;
-    cut_assert_equal_string(chunk, get_received_data(body_chunk));
+    cut_assert_equal_string(chunk, get_received_data(end_of_message_chunk));
 }
 
 static const GList *
@@ -1163,6 +1161,7 @@ data_scenario (void)
         "end-of-header", g_strdup("end-of-header.txt"), g_free,
         "body", g_strdup("body.txt"), g_free,
         "end-of-message", g_strdup("end-of-message.txt"), g_free,
+        "end-of-message - chunk", g_strdup("end-of-message-chunk.txt"), g_free,
         "quit", g_strdup("quit.txt"), g_free,
         "abort", g_strdup("abort.txt"), g_free,
         "unknown", g_strdup("unknown.txt"), g_free,
@@ -1981,40 +1980,6 @@ test_body (gconstpointer data)
     cut_assert_equal_string(chunk, get_received_data(body_chunk));
 
     milter_manager_assert_body_test(data);
-}
-
-void
-data_end_of_message (void)
-{
-    cut_add_data("with chunk", g_strdup("The last text"), g_free,
-                 "no chunk", NULL, NULL);
-}
-
-void
-test_end_of_message (gconstpointer data)
-{
-    MilterManagerTestClient *client;
-    const gchar *chunk = data;
-    gsize chunk_size;
-
-    cut_trace(test_body(NULL));
-
-    if (chunk)
-        chunk_size = strlen(chunk);
-    else
-        chunk_size = 0;
-
-    milter_server_context_set_state(MILTER_SERVER_CONTEXT(server), 
-                                    MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE);
-    milter_manager_controller_end_of_message(controller, chunk, chunk_size);
-    wait_response("end-of-message");
-    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
-                           MILTER_STATUS_CONTINUE, response_status);
-    cut_assert_equal_uint(g_list_length(test_clients),
-                          collect_n_received(end_of_message));
-
-    client = test_clients->data;
-    cut_assert_equal_string(chunk, get_received_data(end_of_message_chunk));
 }
 
 /*

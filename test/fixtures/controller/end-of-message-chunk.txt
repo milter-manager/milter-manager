@@ -1,0 +1,19 @@
+[scenario]
+clients=client10026;client10027
+import=body.txt
+actions=end-of-message-chunk
+
+[client10026]
+port=10026
+
+[client10027]
+port=10027
+
+[end-of-message-chunk]
+command=end-of-message
+
+chunk=The last text
+
+response=end-of-message
+n_received=2
+status=continue
