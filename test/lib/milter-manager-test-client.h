@@ -115,6 +115,10 @@ guint                    milter_manager_test_clients_collect_n_received
 const GList             *milter_manager_test_clients_collect_strings
                                               (GList *clients,
                                                MilterManagerTestClientGetString getter);
+const GList             *milter_manager_test_clients_collect_pairs
+                                              (GList *clients,
+                                               MilterManagerTestClientGetString name_getter,
+                                               MilterManagerTestClientGetString value_getter);
 
 
 G_END_DECLS

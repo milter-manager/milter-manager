@@ -654,6 +654,26 @@ milter_manager_test_clients_collect_strings (GList *clients,
     return gcut_take_list(collected_strings, g_free);
 }
 
+const GList *
+milter_manager_test_clients_collect_pairs (GList *clients,
+                                           MilterManagerTestClientGetString name_getter,
+                                           MilterManagerTestClientGetString value_getter)
+{
+    GList *collected_pairs = NULL;
+    GList *node;
+
+    for (node = clients; node; node = g_list_next(node)) {
+        MilterManagerTestClient *client = node->data;
+
+        collected_pairs =
+            g_list_append(collected_pairs,
+                          milter_manager_test_pair_new(name_getter(client),
+                                                       value_getter(client)));
+    }
+
+    return gcut_take_list(collected_pairs,
+                          (CutDestroyFunction)milter_manager_test_pair_free);
+}
 
 /*
 vi:nowrap:ai:expandtab:sw=4
