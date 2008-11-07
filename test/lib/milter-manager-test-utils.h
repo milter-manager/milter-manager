@@ -65,10 +65,6 @@ MilterManagerTestPair   *milter_manager_test_pair_new
                                          const gchar *value);
 void                     milter_manager_test_pair_free
                                         (MilterManagerTestPair *pair);
-void                     milter_manager_test_pair_inspect_without_index
-                                        (GString *string,
-                                         MilterManagerTestPair *pair,
-                                         gpointer user_data);
 void                     milter_manager_test_pair_inspect
                                         (GString *string,
                                          gconstpointer pair,

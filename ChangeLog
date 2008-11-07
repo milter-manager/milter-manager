@@ -1,5 +1,7 @@
 2008-11-07  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/lib/milter-manager-test-utils.[ch]: cleanup.
+
 	* test/manager/test-controller.c: remove needless test.
 
 	* test/lib/milter-manager-test-client.[ch]: add string values

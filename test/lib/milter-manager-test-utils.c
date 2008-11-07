@@ -121,7 +121,7 @@ milter_manager_test_pair_inspect (GString *string,
 {
     const MilterManagerTestPair *pair = data;
 
-    g_string_append_printf(string, "<%s(%s)>", pair->name, pair->value);
+    g_string_append_printf(string, "<<%s>=<%s>>", pair->name, pair->value);
 }
 
 static gboolean
