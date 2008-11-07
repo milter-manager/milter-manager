@@ -43,7 +43,6 @@ struct _MilterManagerChildrenPrivate
     guint reply_code;
     gchar *reply_extended_code;
     gchar *reply_message;
-    gchar *quarantine_reason;
 };
 
 typedef struct _NegotiateData NegotiateData;
@@ -164,7 +163,6 @@ milter_manager_children_init (MilterManagerChildren *milter)
     priv->macros_requests = milter_macros_requests_new();
     priv->option = NULL;
     priv->reply_status = MILTER_STATUS_NOT_CHANGE;
-    priv->quarantine_reason = NULL;
 
     priv->reply_code = 0;
     priv->reply_extended_code = NULL;
@@ -214,11 +212,6 @@ dispose (GObject *object)
     if (priv->option) {
         g_object_unref(priv->option);
         priv->option = NULL;
-    }
-
-    if (priv->quarantine_reason) {
-        g_free(priv->quarantine_reason);
-        priv->quarantine_reason = NULL;
     }
 
     if (priv->reply_extended_code) {

@@ -60,6 +60,8 @@
 	* milter/manager/milter-manager-children.c: Cleanup negotiation code.
 	All tests passes now. Handle "connection-timeout" of
 	MilterServerContext.
+	* milter/manager/milter-manager-children.c: Remove unused value
+	(quarantine_readon).
 
 2008-11-06  Kouhei Sutou  <kou@cozmixng.org>
 
