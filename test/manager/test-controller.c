@@ -53,7 +53,6 @@ void data_body (void);
 void test_body (gconstpointer data);
 void data_end_of_message (void);
 void test_end_of_message (gconstpointer data);
-void test_progress (void);
 
 static GKeyFile *scenario;
 static GList *imported_scenarios;
@@ -1017,6 +1016,21 @@ do_end_of_message_replace_body (GKeyFile *scenario, const gchar *group)
 }
 
 static void
+do_end_of_message_progress (GKeyFile *scenario, const gchar *group)
+{
+    const gchar key[] = "n_progresses";
+    GError *error = NULL;
+    guint expected_n_progresses = 0;
+
+    if (g_key_file_has_key(scenario, group, key, &error)) {
+        expected_n_progresses = get_integer(scenario, group, key);
+    }
+    gcut_assert_error(error);
+    cut_assert_equal_uint(expected_n_progresses,
+                          milter_manager_test_server_get_n_progresses(server));
+}
+
+static void
 do_end_of_message_full (GKeyFile *scenario, const gchar *group)
 {
     cut_trace(do_end_of_message(scenario, group));
@@ -1027,6 +1041,7 @@ do_end_of_message_full (GKeyFile *scenario, const gchar *group)
     cut_trace(do_end_of_message_add_recipient(scenario, group));
     cut_trace(do_end_of_message_delete_recipient(scenario, group));
     cut_trace(do_end_of_message_replace_body(scenario, group));
+    cut_trace(do_end_of_message_progress(scenario, group));
 }
 
 static void
@@ -1158,7 +1173,8 @@ data_scenario (void)
                  "change-from", g_strdup("change-from.txt"), g_free,
                  "add-recipient", g_strdup("add-recipient.txt"), g_free,
                  "delete-recipient", g_strdup("delete-recipient.txt"), g_free,
-                 "replace-body", g_strdup("replace-body.txt"), g_free);
+                 "replace-body", g_strdup("replace-body.txt"), g_free,
+                 "progress", g_strdup("progress.txt"), g_free);
 
     cut_add_data("body - skip", g_strdup("body-skip.txt"), g_free,
                  "reply-code - invalid",
@@ -1999,25 +2015,6 @@ test_end_of_message (gconstpointer data)
 
     client = test_clients->data;
     cut_assert_equal_string(chunk, get_received_data(end_of_message_chunk));
-}
-
-void
-test_progress (void)
-{
-    arguments_append(arguments1,
-                     "--progress",
-                     NULL);
-    arguments_append(arguments2,
-                     "--progress",
-                     NULL);
-
-    cut_trace(test_end_of_message(NULL));
-
-    cut_trace(milter_manager_test_server_wait_signal(server));
-
-    cut_assert_equal_uint(
-        2,
-        milter_manager_test_server_get_n_progresses(server));
 }
 
 /*

@@ -1,5 +1,9 @@
 2008-11-07  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/test-controller.c,
+	test/fixtures/controller/progress.txt: rewrite
+	progress test as scenario based test.
+
 	* test/lib/milter-manager-test-server.[ch]: get_XXXed_YYYs ->
 	get_received_XXX_YYYs.
 	* test/manager/test-controller.c, test/fixtures/controller/:
