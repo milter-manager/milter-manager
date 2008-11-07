@@ -89,7 +89,7 @@ static void teardown_server_context_signals
                            (MilterManagerChild *child,
                             gpointer user_data);
 
-static gboolean child_establish_connection 
+static gboolean child_establish_connection
                            (MilterManagerChild *child,
                             MilterOption *option,
                             MilterManagerChildren *children,
@@ -402,6 +402,19 @@ cb_negotiate_reply (MilterServerContext *context, MilterOption *option,
 }
 
 static void
+expire_child (MilterManagerChildren *children,
+              MilterServerContext *context)
+{
+    MilterManagerChildrenPrivate *priv;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    teardown_server_context_signals(MILTER_MANAGER_CHILD(context), children);
+    priv->milters = g_list_remove(priv->milters, context);
+    priv->quitted_milters = g_list_prepend(priv->quitted_milters, context);
+}
+
+static void
 remove_child_from_queue (MilterManagerChildren *children,
                          MilterServerContext *context)
 {
@@ -417,23 +430,31 @@ remove_child_from_queue (MilterManagerChildren *children,
                                   priv->reply_code, priv->reply_extended_code,
                                   priv->reply_message);
         } else {
-            g_signal_emit_by_name(children,
-                                  status_to_signal_name(priv->reply_status));
+            if (priv->reply_status != MILTER_STATUS_NOT_CHANGE)
+                g_signal_emit_by_name(children,
+                                      status_to_signal_name(priv->reply_status));
+        }
+
+        switch (priv->reply_status) {
+          case MILTER_STATUS_REJECT:
+            /* FIXME: children should have the current state. */
+            if (milter_server_context_get_state(context) !=
+                MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT) {
+                milter_manager_children_abort(children);
+                milter_manager_children_quit(children);
+                {
+                    GList *node;
+                    for (node = priv->milters; node; node = g_list_next(node)) {
+                        MilterServerContext *context = node->data;
+                        expire_child(children, context);
+                    }
+                }
+            }
+            break;
+          default:
+            break;
         }
     }
-}
-
-static void
-expire_child (MilterManagerChildren *children,
-              MilterServerContext *context)
-{
-    MilterManagerChildrenPrivate *priv;
-
-    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
-
-    teardown_server_context_signals(MILTER_MANAGER_CHILD(context), children);
-    priv->milters = g_list_remove(priv->milters, context);
-    priv->quitted_milters = g_list_prepend(priv->quitted_milters, context);
 }
 
 static void
@@ -740,22 +761,18 @@ cb_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
 static void
 cb_finished (MilterHandler *handler, gpointer user_data)
 {
-    MilterManagerChildren *children = MILTER_MANAGER_CHILDREN(user_data);
+    MilterManagerChildren *children;
     MilterManagerChildrenPrivate *priv;
 
-    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(user_data);
+    children = MILTER_MANAGER_CHILDREN(user_data);
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     expire_child(children, MILTER_SERVER_CONTEXT(handler));
-
-    milter_info("%s exits.", milter_manager_child_get_name(MILTER_MANAGER_CHILD(handler)));
-
-    g_queue_remove(priv->reply_queue, handler);
-    if (g_queue_is_empty(priv->reply_queue)) {
-        if (priv->reply_status != MILTER_STATUS_NOT_CHANGE)
-            g_signal_emit_by_name(children,
-                                  status_to_signal_name(priv->reply_status));
-        milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(user_data));
-    }
+    milter_info("%s exits.",
+                milter_manager_child_get_name(MILTER_MANAGER_CHILD(handler)));
+    remove_child_from_queue(children, MILTER_SERVER_CONTEXT(handler));
+    if (g_queue_is_empty(priv->reply_queue))
+        milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(children));
 }
 
 static void

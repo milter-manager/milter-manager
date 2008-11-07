@@ -1,5 +1,8 @@
 2008-11-07  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.c: expires all children
+	if children's reply status is reject.
+
 	* test/manager/test-controller.c,
 	test/fixtures/controller/envelope-recipient-accept*.txt:
 	rewrite envelope-recipient received accept test as scenario based
