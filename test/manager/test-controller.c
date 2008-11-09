@@ -1343,15 +1343,6 @@ from_test_data_new (setup_from_test_func setup_func,
 }
 
 static void
-setup_reject_from (const gchar *from)
-{
-    arguments_append(arguments1,
-                     "--action", "reject",
-                     "--envelope-from", from,
-                     NULL);
-}
-
-static void
 setup_discard_from (const gchar *from)
 {
     arguments_append(arguments1,
