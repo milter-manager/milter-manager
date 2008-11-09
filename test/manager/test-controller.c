@@ -1206,15 +1206,22 @@ data_scenario_end_of_message_action (void)
 }
 
 static void
-data_scenario_complex (void)
+data_scenario_envelope_from (void)
+{
+    cut_add_data("envelope-from - reject",
+                 g_strdup("envelope-from-reject.txt"), g_free,
+                 "envelope-from - discard",
+                 g_strdup("envelope-from-discard.txt"), g_free,
+                 "envelope-from - reject & discard",
+                 g_strdup("envelope-from-reject-and-discard.txt"), g_free,
+                 "envelope-from - reject & accept",
+                 g_strdup("envelope-from-reject-and-accept.txt"), g_free);
+}
+
+static void
+data_scenario_envelope_recipient (void)
 {
     cut_add_data(
-        "envelope-from - reject",
-        g_strdup("envelope-from-reject.txt"), g_free,
-        "envelope-from - discard",
-        g_strdup("envelope-from-discard.txt"), g_free,
-        "envelope-from - reject & discard",
-        g_strdup("envelope-from-reject-and-discard.txt"), g_free,
         "envelope-recipient - accept",
         g_strdup("envelope-recipient-accept.txt"), g_free,
         "envelope-recipient - accept - all",
@@ -1232,12 +1239,22 @@ data_scenario_complex (void)
         "envelope-recipient - temporary-failure",
         g_strdup("envelope-recipient-temporary-failure.txt"), g_free,
         "envelope-recipient - temporary-failure - all",
-        g_strdup("envelope-recipient-temporary-failure-all.txt"), g_free,
-        "body - skip", g_strdup("body-skip.txt"), g_free,
-        "body - skip all", g_strdup("body-skip-all.txt"), g_free,
-        "body - accept", g_strdup("body-accept.txt"), g_free,
-        "reply-code - invalid",
-        g_strdup("reply-code-invalid.txt"), g_free);
+        g_strdup("envelope-recipient-temporary-failure-all.txt"), g_free);
+}
+
+static void
+data_scenario_body (void)
+{
+    cut_add_data("body - skip", g_strdup("body-skip.txt"), g_free,
+                 "body - skip all", g_strdup("body-skip-all.txt"), g_free,
+                 "body - accept", g_strdup("body-accept.txt"), g_free);
+}
+
+static void
+data_scenario_reply_code (void)
+{
+    cut_add_data("reply-code - invalid",
+                 g_strdup("reply-code-invalid.txt"), g_free);
 }
 
 void
@@ -1245,7 +1262,10 @@ data_scenario (void)
 {
     data_scenario_basic();
     data_scenario_end_of_message_action();
-    data_scenario_complex();
+    data_scenario_envelope_from();
+    data_scenario_envelope_recipient();
+    data_scenario_body();
+    data_scenario_reply_code();
 }
 
 void
@@ -1368,27 +1388,10 @@ setup_both_accept_from (const gchar *from)
                      NULL);
 }
 
-static void
-setup_reject_and_accept_from (const gchar *from)
-{
-    arguments_append(arguments1,
-                     "--action", "reject",
-                     "--envelope-from", from,
-                     NULL);
-    arguments_append(arguments2,
-                     "--action", "accept",
-                     "--envelope-from", from,
-                     NULL);
-}
-
 void
 data_envelope_from (void)
 {
-    cut_add_data("reject_and_accept",
-                 from_test_data_new(setup_reject_and_accept_from,
-                                    MILTER_STATUS_REJECT),
-                 g_free,
-                 "accept_and_continue",
+    cut_add_data("accept_and_continue",
                  from_test_data_new(setup_accept_and_continue_from,
                                     MILTER_STATUS_CONTINUE),
                  g_free,
