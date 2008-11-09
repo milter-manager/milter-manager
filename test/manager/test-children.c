@@ -933,7 +933,7 @@ test_end_of_message_timeout (void)
                      "--end-of-message", "end",
                      NULL);
 
-    cut_trace(test_negotiate());
+    cut_trace(test_end_of_header());
 
     logger = milter_logger();
     log_signal_id = g_signal_connect(logger, "log", G_CALLBACK(cb_log), NULL);
