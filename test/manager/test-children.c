@@ -39,6 +39,12 @@ void test_retry_negotiate_failure (void);
 void test_connect (void);
 void test_connect_pass (void);
 void test_connect_half_pass (void);
+void test_helo (void);
+void test_envelope_from (void);
+void test_envelope_recipient (void);
+void test_data (void);
+void test_header (void);
+void test_end_of_header (void);
 void data_important_status (void);
 void test_important_status (gconstpointer data);
 void data_not_important_status (void);
@@ -431,9 +437,9 @@ cb_timeout_waiting (gpointer data)
     return FALSE;
 }
 
-#define wait_reply(actual)                      \
+#define wait_reply(expected, actual)            \
     cut_trace_with_info_expression(             \
-        wait_reply_helper(1, &actual),          \
+        wait_reply_helper(expected, &actual),   \
         wait_reply(actual))
 
 static void
@@ -445,7 +451,7 @@ wait_reply_helper (guint expected, guint *actual)
     timeout_waiting_id = g_timeout_add_seconds(3, cb_timeout_waiting,
                                                &timeout_waiting);
     while (timeout_waiting && expected > *actual) {
-        g_main_context_iteration(NULL, TRUE);
+        g_main_context_iteration(NULL, FALSE);
     }
     g_source_remove(timeout_waiting_id);
 
@@ -516,8 +522,7 @@ test_negotiate (void)
     add_child("milter@10027", "inet:10027@localhost");
 
     milter_manager_children_negotiate(children, option);
-    wait_reply(n_negotiate_reply_emitted);
-    cut_assert_equal_uint(1, n_negotiate_reply_emitted);
+    wait_reply(1, n_negotiate_reply_emitted);
 }
 
 void
@@ -547,7 +552,7 @@ test_retry_negotiate (void)
     add_child("milter@10026", "inet:10026@localhost");
 
     milter_manager_children_negotiate(children, option);
-    wait_reply(n_negotiate_reply_emitted);
+    wait_reply(1, n_negotiate_reply_emitted);
     milter_manager_children_quit(children);
 }
 
@@ -585,7 +590,7 @@ test_retry_negotiate_failure (void)
                                        "-n");
 
     milter_manager_children_negotiate(children, option);
-    wait_reply(n_negotiate_reply_emitted);
+    wait_reply(1, n_negotiate_reply_emitted);
     milter_manager_children_quit(children);
     cut_assert_equal_uint(1, n_error_emitted);
     gcut_assert_equal_error(expected_error, actual_error);
@@ -608,8 +613,7 @@ test_connect (void)
                                     host_name,
                                     (struct sockaddr *)(&address),
                                     sizeof(address));
-    wait_reply(n_continue_emitted);
-    cut_assert_equal_uint(1, n_continue_emitted);
+    wait_reply(1, n_continue_emitted);
 }
 
 static gboolean
@@ -654,8 +658,7 @@ test_connect_pass (void)
                                     host_name,
                                     (struct sockaddr *)(&address),
                                     sizeof(address));
-    wait_reply(n_accept_emitted);
-    cut_assert_equal_uint(1, n_accept_emitted);
+    wait_reply(1, n_accept_emitted);
 }
 
 void
@@ -679,10 +682,71 @@ test_connect_half_pass (void)
                                     host_name,
                                     (struct sockaddr *)(&address),
                                     sizeof(address));
-    wait_reply(n_continue_emitted);
-    cut_assert_equal_uint(1, n_continue_emitted);
+    wait_reply(1, n_continue_emitted);
 }
 
+void
+test_helo (void)
+{
+    const gchar fqdn[] = "delian";
+
+    cut_trace(test_connect());
+
+    milter_manager_children_helo(children, fqdn);
+    wait_reply(2, n_continue_emitted);
+}
+
+void
+test_envelope_from (void)
+{
+    const gchar from[] = "example@example.com";
+
+    cut_trace(test_helo());
+
+    milter_manager_children_envelope_from(children, from);
+    wait_reply(3, n_continue_emitted);
+}
+
+void
+test_envelope_recipient (void)
+{
+    const gchar recipient[] = "example@example.com";
+
+    cut_trace(test_envelope_from());
+
+    milter_manager_children_envelope_recipient(children, recipient);
+    wait_reply(4, n_continue_emitted);
+}
+
+void
+test_data (void)
+{
+    cut_trace(test_envelope_recipient());
+
+    milter_manager_children_data(children);
+    wait_reply(5, n_continue_emitted);
+}
+
+void
+test_header (void)
+{
+    const gchar name[] = "X-Test-Header";
+    const gchar value[] = "Test Header Value";
+
+    cut_trace(test_data());
+
+    milter_manager_children_header(children, name, value);
+    wait_reply(6, n_continue_emitted);
+}
+
+void
+test_end_of_header (void)
+{
+    cut_trace(test_header());
+
+    milter_manager_children_end_of_header(children);
+    wait_reply(7, n_continue_emitted);
+}
 
 #define is_important_status(children, state, next_status)                    \
     milter_manager_children_is_important_status(children, state, next_status)
@@ -878,7 +942,7 @@ test_end_of_message_timeout (void)
 
     milter_manager_children_end_of_message(children, "end", strlen("end"));
 
-    wait_reply(n_continue_emitted);
+    wait_reply(8, n_continue_emitted);
 
     cut_assert_equal_string("The response of end-of-message from "
                             "milter@10027 is timed out.",
@@ -920,7 +984,7 @@ test_reading_timeout (void)
                                     (struct sockaddr *)(&address),
                                     sizeof(address));
 
-    wait_reply(n_continue_emitted);
+    wait_reply(1, n_continue_emitted);
 
     cut_assert_equal_string("reading from milter@10027 is timed out.",
                             error_message);
