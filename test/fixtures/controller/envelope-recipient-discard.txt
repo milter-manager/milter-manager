@@ -27,14 +27,14 @@ command=rcpt
 recipient=ok@example.com
 
 response=envelope-recipient
-n_received=1
-status=continue
+n_received=0
+status=discard
 
-recipients=;ok@example.com
+recipients=;;
 
 [data]
 command=data
 
 response=data
-n_received=1
-status=continue
+n_received=0
+status=discard

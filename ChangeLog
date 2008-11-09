@@ -1,5 +1,10 @@
 2008-11-09  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.c,
+	test/fixtures/controller/envelope-recipient-*.txt: discard is
+	important status rather than reject even if it is received on
+	envelope-recipient.
+
 	* test/lib/milter-test-client.rb: add --insert-header,
 	--change-header and --remove-header.
 

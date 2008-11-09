@@ -415,6 +415,23 @@ expire_child (MilterManagerChildren *children,
 }
 
 static void
+expire_all_children (MilterManagerChildren *children)
+{
+    MilterManagerChildrenPrivate *priv;
+    GList *node;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    milter_manager_children_abort(children);
+    milter_manager_children_quit(children);
+
+    for (node = priv->milters; node; node = g_list_next(node)) {
+        MilterServerContext *context = node->data;
+        expire_child(children, context);
+    }
+}
+
+static void
 remove_child_from_queue (MilterManagerChildren *children,
                          MilterServerContext *context)
 {
@@ -440,16 +457,11 @@ remove_child_from_queue (MilterManagerChildren *children,
             /* FIXME: children should have the current state. */
             if (milter_server_context_get_state(context) !=
                 MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT) {
-                milter_manager_children_abort(children);
-                milter_manager_children_quit(children);
-                {
-                    GList *node;
-                    for (node = priv->milters; node; node = g_list_next(node)) {
-                        MilterServerContext *context = node->data;
-                        expire_child(children, context);
-                    }
-                }
+                expire_all_children(children);
             }
+            break;
+          case MILTER_STATUS_DISCARD:
+            expire_all_children(children);
             break;
           default:
             break;
