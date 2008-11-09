@@ -70,8 +70,29 @@ class MilterTestClient
 
       opts.on("--add-header=NAME:VALUE",
               "Add a new header whose name is NAME and " +
-              "value is VALUE on end-of-message") do |name_and_value|
-        @end_of_message_actions << ["add_header", *name_and_value.split(/:/, 2)]
+              "value is VALUE on end-of-message") do |spec|
+        @end_of_message_actions << ["add_header", *spec.split(/:/, 2)]
+      end
+
+      opts.on("--insert-header=INDEX:NAME:VALUE",
+              "Insert a new header whose name is NAME and " +
+              "value is VALUE at INDEX on end-of-message") do |spec|
+        index, name, value = spec.split(/:/, 3)
+        @end_of_message_actions << ["insert_header", Integer(index), name, value]
+      end
+
+      opts.on("--change-header=NAME:INDEX:VALUE",
+              "Change a value of header whose name is NAME and " +
+              "indexed by INDEX to VALUE on end-of-message") do |spec|
+        name, index, value = spec.split(/:/, 3)
+        @end_of_message_actions << ["change_header", name, Integer(index), value]
+      end
+
+      opts.on("--remove-header=NAME:INDEX",
+              "Remove a header whose name is NAME and " +
+              "index by INDEX on end-of-message") do |spec|
+        name, index = spec.split(/:/, 2)
+        @end_of_message_actions << ["remove_header", name, Integer(index)]
       end
 
       opts.on("--change-from=FROM",

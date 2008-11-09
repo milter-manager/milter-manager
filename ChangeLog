@@ -1,5 +1,8 @@
 2008-11-09  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/lib/milter-test-client.rb: add --insert-header,
+	--change-header and --remove-header.
+
 	* test/manager/test-controller.c: remove needless code.
 
 2008-11-07  Kouhei Sutou  <kou@cozmixng.org>
