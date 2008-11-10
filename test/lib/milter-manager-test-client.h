@@ -63,6 +63,10 @@ guint                    milter_manager_test_client_get_n_negotiate_received
                                               (MilterManagerTestClient *client);
 guint                    milter_manager_test_client_get_n_connect_received
                                               (MilterManagerTestClient *client);
+const gchar             *milter_manager_test_client_get_connect_host
+                                              (MilterManagerTestClient *client);
+const gchar             *milter_manager_test_client_get_connect_address
+                                              (MilterManagerTestClient *client);
 guint                    milter_manager_test_client_get_n_helo_received
                                               (MilterManagerTestClient *client);
 const gchar             *milter_manager_test_client_get_helo_fqdn

@@ -53,6 +53,8 @@ struct _MilterManagerTestClientPrivate
     guint n_abort_received;
     guint n_unknown_received;
 
+    gchar *connect_host;
+    gchar *connect_address;
     gchar *helo_fqdn;
     gchar *envelope_from;
     gchar *envelope_recipient;
@@ -108,6 +110,8 @@ milter_manager_test_client_init (MilterManagerTestClient *test_client)
     priv->n_abort_received = 0;
     priv->n_unknown_received = 0;
 
+    priv->connect_host = NULL;
+    priv->connect_address = NULL;
     priv->helo_fqdn = NULL;
     priv->envelope_from = NULL;
     priv->envelope_recipient = NULL;
@@ -144,7 +148,20 @@ cb_output_received (GCutEgg *egg, const gchar *chunk, gsize size,
     } else if (g_str_has_prefix(chunk, "receive: negotiate")) {
         priv->n_negotiate_received++;
     } else if (g_str_has_prefix(chunk, "receive: connect")) {
+        gchar **items;
+
         priv->n_connect_received++;
+
+        items = g_strsplit_set(chunk, " \n", -1);
+        if (items[0] && items[1] && items[2] && items[3]) {
+            if (priv->connect_host)
+                g_free(priv->connect_host);
+            if (priv->connect_address)
+                g_free(priv->connect_address);
+            priv->connect_host = g_strdup(items[2]);
+            priv->connect_address = g_strdup(items[3]);
+        }
+        g_strfreev(items);
     } else if (g_str_has_prefix(chunk, "receive: helo")) {
         priv->n_helo_received++;
 
@@ -308,6 +325,16 @@ clear_data (MilterManagerTestClient *client)
     priv->n_abort_received = 0;
     priv->n_unknown_received = 0;
 
+    if (priv->connect_host) {
+        g_free(priv->connect_host);
+        priv->connect_host = NULL;
+    }
+
+    if (priv->connect_address) {
+        g_free(priv->connect_address);
+        priv->connect_address = NULL;
+    }
+
     if (priv->helo_fqdn) {
         g_free(priv->helo_fqdn);
         priv->helo_fqdn = NULL;
@@ -466,6 +493,18 @@ guint
 milter_manager_test_client_get_n_connect_received (MilterManagerTestClient *client)
 {
     return MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client)->n_connect_received;
+}
+
+const gchar *
+milter_manager_test_client_get_connect_host (MilterManagerTestClient *client)
+{
+    return MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client)->connect_host;
+}
+
+const gchar *
+milter_manager_test_client_get_connect_address (MilterManagerTestClient *client)
+{
+    return MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client)->connect_address;
 }
 
 guint

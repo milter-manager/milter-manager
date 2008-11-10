@@ -18,3 +18,5 @@ address=inet:2929@192.168.1.29
 response=connect
 n_received=2
 status=continue
+
+infos=mx.local.net;inet:2929@192.168.1.29;mx.local.net;inet:2929@192.168.1.29

@@ -707,6 +707,8 @@ do_connect (GKeyFile *scenario, const gchar *group)
     gint domain;
     struct sockaddr *address;
     socklen_t address_size;
+    const GList *expected_connect_infos;
+    const GList *actual_connect_infos;
 
     host = get_string(scenario, group, "host");
     address_spec = get_string(scenario, group, "address");
@@ -723,7 +725,13 @@ do_connect (GKeyFile *scenario, const gchar *group)
 
     cut_trace(assert_response(scenario, group));
 
-    /* FIXME: should check received host and address */
+    expected_connect_infos = get_pair_list(scenario, group, "infos");
+    actual_connect_infos = collect_received_pairs(connect_host, connect_address);
+    gcut_assert_equal_list(
+        expected_connect_infos, actual_connect_infos,
+        milter_manager_test_pair_equal,
+        (GCutInspectFunc)milter_manager_test_pair_inspect,
+        NULL);
 }
 
 static void
