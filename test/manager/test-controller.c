@@ -1215,7 +1215,9 @@ data_scenario_envelope_from (void)
                  "envelope-from - reject & discard",
                  g_strdup("envelope-from-reject-and-discard.txt"), g_free,
                  "envelope-from - reject & accept",
-                 g_strdup("envelope-from-reject-and-accept.txt"), g_free);
+                 g_strdup("envelope-from-reject-and-accept.txt"), g_free,
+                 "envelope-from - accept",
+                 g_strdup("envelope-from-accept.txt"), g_free);
 }
 
 static void
@@ -1367,15 +1369,6 @@ from_test_data_new (setup_from_test_func setup_func,
 }
 
 static void
-setup_accept_and_continue_from (const gchar *from)
-{
-    arguments_append(arguments1,
-                     "--action", "accept",
-                     "--envelope-from", from,
-                     NULL);
-}
-
-static void
 setup_both_accept_from (const gchar *from)
 {
     arguments_append(arguments1,
@@ -1391,11 +1384,7 @@ setup_both_accept_from (const gchar *from)
 void
 data_envelope_from (void)
 {
-    cut_add_data("accept_and_continue",
-                 from_test_data_new(setup_accept_and_continue_from,
-                                    MILTER_STATUS_CONTINUE),
-                 g_free,
-                 "both_accept",
+    cut_add_data("both_accept",
                  from_test_data_new(setup_both_accept_from,
                                     MILTER_STATUS_ACCEPT),
                  g_free,
