@@ -14,6 +14,8 @@
 	 gdboule.
 	* milter/manager/milter-manager-children.c (expire_all_children): copy
 	priv->milters before expiring.
+	* milter/manager/milter-manager-children.[ch]: Added
+	milter_manager_children_set_retry_connect_time.
 
 2008-11-10  Kouhei Sutou  <kou@cozmixng.org>
 

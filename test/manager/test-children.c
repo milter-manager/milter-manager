@@ -448,8 +448,8 @@ wait_reply_helper (guint expected, guint *actual)
     gboolean timeout_waiting = TRUE;
     guint timeout_waiting_id;
 
-    timeout_waiting_id = g_timeout_add_seconds(3, cb_timeout_waiting,
-                                               &timeout_waiting);
+    timeout_waiting_id = g_timeout_add(500, cb_timeout_waiting,
+                                       &timeout_waiting);
     while (timeout_waiting && expected > *actual) {
         g_main_context_iteration(NULL, FALSE);
     }
@@ -547,10 +547,11 @@ test_retry_negotiate (void)
                                        "inet:10027@localhost",
                                        command,
                                        "--print-status "
-                                       "--timeout=5.0 "
+                                       "--timeout=2.0 "
                                        "--port=10027");
     add_child("milter@10026", "inet:10026@localhost");
 
+    milter_manager_children_set_retry_connect_time(children, 0.3);
     milter_manager_children_negotiate(children, option);
     wait_reply(1, n_negotiate_reply_emitted);
     milter_manager_children_quit(children);
@@ -582,12 +583,14 @@ test_retry_negotiate_failure (void)
                                        "inet:10026@localhost",
                                        command,
                                        "--print-status "
-                                       "--timeout=3.0 "
+                                       "--timeout=2.0 "
                                        "--port=10026");
     add_child_with_command_and_options("milter@10027",
                                        "inet:10027@localhost",
                                        "/bin/echo",
                                        "-n");
+
+    milter_manager_children_set_retry_connect_time(children, 0.3);
 
     milter_manager_children_negotiate(children, option);
     wait_reply(1, n_negotiate_reply_emitted);

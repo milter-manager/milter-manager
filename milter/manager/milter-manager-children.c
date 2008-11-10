@@ -43,6 +43,7 @@ struct _MilterManagerChildrenPrivate
     guint reply_code;
     gchar *reply_extended_code;
     gchar *reply_message;
+    gdouble retry_connect_time;
 };
 
 typedef struct _NegotiateData NegotiateData;
@@ -167,6 +168,8 @@ milter_manager_children_init (MilterManagerChildren *milter)
     priv->reply_code = 0;
     priv->reply_extended_code = NULL;
     priv->reply_message = NULL;
+
+    priv->retry_connect_time = 5.0;
 }
 
 static void
@@ -867,8 +870,6 @@ teardown_server_context_signals (MilterManagerChild *child,
 #undef DISCONNECT
 }
 
-#define CONNECTION_RETRY_TIMEOUT 1
-
 static gboolean
 retry_establish_connection (gpointer user_data)
 {
@@ -1035,9 +1036,9 @@ prepare_retry_establish_connection (MilterManagerChild *child,
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     negotiate_data = negotiate_data_new(children, child, option, is_retry);
-    timeout_id = g_timeout_add_seconds(CONNECTION_RETRY_TIMEOUT,
-                                       retry_establish_connection,
-                                       negotiate_data);
+    timeout_id = g_timeout_add(priv->retry_connect_time * 1000,
+                               retry_establish_connection,
+                               negotiate_data);
 
     g_hash_table_insert(priv->try_negotiate_ids,
                         negotiate_data, GUINT_TO_POINTER(timeout_id));
@@ -1495,6 +1496,13 @@ milter_manager_children_set_status (MilterManagerChildren *children,
                                     MilterStatus status)
 {
     MILTER_MANAGER_CHILDREN_GET_PRIVATE(children)->reply_status = status;
+}
+
+void
+milter_manager_children_set_retry_connect_time (MilterManagerChildren *children,
+                                                gdouble time)
+{
+    MILTER_MANAGER_CHILDREN_GET_PRIVATE(children)->retry_connect_time = time;
 }
 
 /*

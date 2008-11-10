@@ -101,6 +101,9 @@ gboolean               milter_manager_children_end_of_message
 gboolean               milter_manager_children_quit        (MilterManagerChildren *children);
 gboolean               milter_manager_children_abort       (MilterManagerChildren *children);
 
+void                   milter_manager_children_set_retry_connect_time
+                                                           (MilterManagerChildren *children,
+                                                            gdouble time);
 
 /* private */
 gboolean               milter_manager_children_is_important_status
