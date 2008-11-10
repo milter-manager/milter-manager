@@ -645,7 +645,7 @@ milter_manager_test_clients_wait_reply (GList *clients,
     guint n_clients;
 
     n_clients = g_list_length(clients);
-    timeout_waiting_id = g_timeout_add(100, cb_timeout_waiting,
+    timeout_waiting_id = g_timeout_add(10, cb_timeout_waiting,
                                        &timeout_waiting);
     while (timeout_waiting &&
            n_clients > milter_manager_test_clients_collect_n_received(clients,

@@ -261,7 +261,7 @@ assert_have_response_helper (const gchar *name, gboolean should_timeout)
             g_signal_connect(client_context, name,
                              G_CALLBACK(cb_response_waiting),
                              &response_waiting);
-    timeout_waiting_id = g_timeout_add(200, cb_timeout_waiting,
+    timeout_waiting_id = g_timeout_add(50, cb_timeout_waiting,
                                        &timeout_waiting);
     while (timeout_waiting && response_waiting) {
         g_main_context_iteration(NULL, TRUE);
@@ -329,7 +329,7 @@ wait_finished_helper (void)
     gboolean timeout_waiting = TRUE;
     guint timeout_waiting_id;
 
-    timeout_waiting_id = g_timeout_add(200, cb_timeout_waiting,
+    timeout_waiting_id = g_timeout_add(50, cb_timeout_waiting,
                                        &timeout_waiting);
     while (timeout_waiting && !finished) {
         g_main_context_iteration(NULL, TRUE);
@@ -351,7 +351,7 @@ wait_controller_error_helper (void)
     gboolean timeout_waiting = TRUE;
     guint timeout_waiting_id;
 
-    timeout_waiting_id = g_timeout_add(200, cb_timeout_waiting,
+    timeout_waiting_id = g_timeout_add(50, cb_timeout_waiting,
                                        &timeout_waiting);
     while (timeout_waiting && !actual_error) {
         g_main_context_iteration(NULL, TRUE);
