@@ -32,9 +32,6 @@
 
 void data_scenario (void);
 void test_scenario (gconstpointer data);
-void test_negotiate (void);
-void test_connect (void);
-void test_helo (void);
 
 static GKeyFile *scenario;
 static GList *imported_scenarios;
@@ -45,19 +42,11 @@ static MilterManagerController *controller;
 static MilterManagerTestServer *server;
 static MilterOption *option;
 
-static GIOChannel *channel;
-static MilterWriter *writer;
-static MilterReader *reader;
-
-static GArray *arguments1;
-static GArray *arguments2;
-
-static GError *controller_error;
+static GError *actual_error;
 static GError *expected_error;
 static gboolean finished;
 
 static GList *test_clients;
-static GList *expected_list;
 
 static MilterStatus response_status;
 
@@ -78,9 +67,9 @@ add_load_path (const gchar *path)
 static void
 cb_error (MilterManagerController *controller, GError *error, gpointer user_data)
 {
-    if (controller_error)
-        g_error_free(controller_error);
-    controller_error = g_error_copy(error);
+    if (actual_error)
+        g_error_free(actual_error);
+    actual_error = g_error_copy(error);
 }
 
 static void
@@ -104,6 +93,10 @@ setup_controller_signals (MilterManagerController *controller)
 void
 setup (void)
 {
+    GIOChannel *channel;
+    MilterWriter *writer;
+    MilterReader *reader;
+
     cut_set_fixture_data_dir(milter_manager_test_get_base_dir(),
                              "fixtures",
                              "controller",
@@ -122,28 +115,27 @@ setup (void)
     gcut_string_io_channel_set_pipe_mode(channel, TRUE);
     writer = milter_writer_io_channel_new(channel);
     reader = milter_reader_io_channel_new(channel);
+    g_io_channel_unref(channel);
 
     client_context = milter_client_context_new();
     milter_handler_set_writer(MILTER_HANDLER(client_context), writer);
+    g_object_unref(writer);
 
     server = milter_manager_test_server_new();
     milter_handler_set_reader(MILTER_HANDLER(server), reader);
+    g_object_unref(reader);
 
     controller = milter_manager_controller_new(config, client_context);
-    controller_error = NULL;
+    actual_error = NULL;
     setup_controller_signals(controller);
 
     option = NULL;
-
-    arguments1 = g_array_new(TRUE, TRUE, sizeof(gchar *));
-    arguments2 = g_array_new(TRUE, TRUE, sizeof(gchar *));
 
     test_clients = NULL;
 
     response_status = MILTER_STATUS_DEFAULT;
 
     finished = FALSE;
-    expected_list = NULL;
 
     expected_error = NULL;
 }
@@ -181,30 +173,14 @@ teardown (void)
 
     if (server)
         g_object_unref(server);
-    if (channel)
-        g_io_channel_unref(channel);
-    if (writer)
-        g_object_unref(writer);
-    if (reader)
-        g_object_unref(reader);
-
-    if (arguments1)
-        arguments_free(arguments1);
-
-    if (arguments2)
-        arguments_free(arguments2);
 
     if (test_clients) {
         g_list_foreach(test_clients, (GFunc)g_object_unref, NULL);
         g_list_free(test_clients);
     }
 
-    if (expected_list) {
-        g_list_free(expected_list);
-    }
-
-    if (controller_error)
-        g_error_free(controller_error);
+    if (actual_error)
+        g_error_free(actual_error);
     if (expected_error)
         g_error_free(expected_error);
 }
@@ -297,7 +273,7 @@ assert_have_response_helper (const gchar *name, gboolean should_timeout)
         cut_assert_false(timeout_waiting, "<%s>", name);
     else
         cut_assert_true(timeout_waiting, "<%s>", name);
-    gcut_assert_error(controller_error);
+    gcut_assert_error(actual_error);
 }
 
 #define wait_reply(actual_getter)                                       \
@@ -377,13 +353,13 @@ wait_controller_error_helper (void)
 
     timeout_waiting_id = g_timeout_add_seconds(1, cb_timeout_waiting,
                                                &timeout_waiting);
-    while (timeout_waiting && !controller_error) {
+    while (timeout_waiting && !actual_error) {
         g_main_context_iteration(NULL, TRUE);
     }
     g_source_remove(timeout_waiting_id);
 
     cut_assert_true(timeout_waiting, "timeout");
-    cut_assert_not_null(controller_error);
+    cut_assert_not_null(actual_error);
 }
 
 static MilterOption *
@@ -629,7 +605,6 @@ static void
 assert_response_error (GKeyFile *scenario, const gchar *group)
 {
     GError *error = NULL;
-    GError *expected_error = NULL;
 
     if (g_key_file_has_key(scenario, group, "error_domain", &error)) {
         GQuark domain;
@@ -651,8 +626,8 @@ assert_response_error (GKeyFile *scenario, const gchar *group)
     }
     gcut_assert_error(error);
 
-    gcut_assert_equal_error(expected_error, controller_error);
-    if (expected_error && controller_error)
+    gcut_assert_equal_error(expected_error, actual_error);
+    if (expected_error && actual_error)
         cut_return();
 }
 
@@ -719,6 +694,8 @@ do_negotiate (GKeyFile *scenario, const gchar *group)
     milter_server_context_negotiate(MILTER_SERVER_CONTEXT(server), option);
     milter_manager_controller_negotiate(controller, option);
     cut_trace(assert_response(scenario, group));
+
+    /* FIXME: should check received option */
 }
 
 static void
@@ -745,6 +722,8 @@ do_connect (GKeyFile *scenario, const gchar *group)
     g_free(address);
 
     cut_trace(assert_response(scenario, group));
+
+    /* FIXME: should check received host and address */
 }
 
 static void
@@ -760,6 +739,8 @@ do_helo (GKeyFile *scenario, const gchar *group)
 
     client = test_clients->data;
     cut_assert_equal_string(fqdn, get_received_data(helo_fqdn));
+
+    /* FIXME: should check all received fqdn */
 }
 
 static void
@@ -1270,66 +1251,6 @@ test_scenario (gconstpointer data)
     cut_trace(setup_clients(scenario));
     cut_trace(g_list_foreach(imported_scenarios, (GFunc)do_actions, NULL));
     cut_trace(do_actions(scenario));
-}
-
-void
-test_negotiate (void)
-{
-    option = milter_option_new(2,
-                               MILTER_ACTION_ADD_HEADERS |
-                               MILTER_ACTION_CHANGE_BODY |
-                               MILTER_ACTION_QUARANTINE,
-                               MILTER_STEP_NONE);
-
-    start_client(10026, arguments1);
-    start_client(10027, arguments2);
-
-    /* To set MilterOption in MilterManagerTestServer */
-    milter_server_context_negotiate(MILTER_SERVER_CONTEXT(server), option);
-
-    milter_manager_controller_negotiate(controller, option);
-    assert_have_response("negotiate");
-    cut_assert_equal_uint(g_list_length(test_clients),
-                          collect_n_received(negotiate));
-}
-
-void
-test_connect (void)
-{
-    const gchar host_name[] = "mx.local.net";
-    gint domain;
-    struct sockaddr *address;
-    socklen_t address_size;
-    GError *error = NULL;
-
-    cut_trace(test_negotiate());
-
-    milter_utils_parse_connection_spec("inet:2929@192.168.1.29",
-                                       &domain,
-                                       &address,
-                                       &address_size,
-                                       &error);
-    gcut_assert_error(error);
-
-    milter_manager_controller_connect(controller, host_name,
-                                      address, address_size);
-    g_free(address);
-    assert_have_response("connect");
-    cut_assert_equal_uint(g_list_length(test_clients),
-                          collect_n_received(connect));
-}
-
-void
-test_helo (void)
-{
-    const gchar fqdn[] = "delian";
-
-    cut_trace(test_connect());
-
-    milter_manager_controller_helo(controller, fqdn);
-    assert_have_response("helo");
-    cut_assert_equal_uint(g_list_length(test_clients),
-                          collect_n_received(helo));
 }
 
 /*
