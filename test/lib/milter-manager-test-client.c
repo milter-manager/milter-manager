@@ -138,6 +138,142 @@ receive_additional_info (const gchar *chunk, gsize size, const gchar *prefix)
 }
 
 static void
+parse_negotiate_info (MilterManagerTestClientPrivate *priv,
+                      const gchar *chunk, gsize size)
+{
+    gchar **items;
+
+    items = g_strsplit_set(chunk, " \n", -1);
+    if (items[0] && items[1] && items[2] && items[3] && items[4]) {
+        guint32 version;
+        MilterActionFlags action;
+        MilterStepFlags step;
+        GError *error = NULL;
+
+        if (priv->negotiate_option) {
+            g_object_unref(priv->negotiate_option);
+            priv->negotiate_option = NULL;
+        }
+
+        version = atoi(items[2]);
+        action = gcut_flags_parse(MILTER_TYPE_ACTION_FLAGS,
+                                  items[3],
+                                  &error);
+        if (!error)
+            step = gcut_flags_parse(MILTER_TYPE_STEP_FLAGS,
+                                    items[4],
+                                    &error);
+        if (error) {
+            gchar *inspected_error;
+
+            inspected_error = gcut_error_inspect(error);
+            g_error_free(error);
+            g_print("failed to parse received negotiated option: %s\n",
+                    inspected_error);
+            g_free(inspected_error);
+        } else {
+            priv->negotiate_option =
+                milter_option_new(version, action, step);
+        }
+    }
+    g_strfreev(items);
+}
+
+static void
+parse_connect_info (MilterManagerTestClientPrivate *priv,
+                    const gchar *chunk, gsize size)
+{
+    gchar **items;
+
+    items = g_strsplit_set(chunk, " \n", -1);
+    if (items[0] && items[1] && items[2] && items[3]) {
+        if (priv->connect_host)
+            g_free(priv->connect_host);
+        if (priv->connect_address)
+            g_free(priv->connect_address);
+        priv->connect_host = g_strdup(items[2]);
+        priv->connect_address = g_strdup(items[3]);
+    }
+    g_strfreev(items);
+}
+
+static void
+parse_helo_info (MilterManagerTestClientPrivate *priv,
+                 const gchar *chunk, gsize size)
+{
+    if (priv->helo_fqdn)
+        g_free(priv->helo_fqdn);
+    priv->helo_fqdn = receive_additional_info(chunk, size, "receive: helo: ");
+}
+
+static void
+parse_envelope_from_info (MilterManagerTestClientPrivate *priv,
+                          const gchar *chunk, gsize size)
+{
+    if (priv->envelope_from)
+        g_free(priv->envelope_from);
+    priv->envelope_from =
+        receive_additional_info(chunk, size, "receive: mail: ");
+}
+
+static void
+parse_envelope_recipient_info (MilterManagerTestClientPrivate *priv,
+                               const gchar *chunk, gsize size)
+{
+    if (priv->envelope_recipient)
+        g_free(priv->envelope_recipient);
+    priv->envelope_recipient =
+        receive_additional_info(chunk, size, "receive: rcpt: ");
+}
+
+static void
+parse_header_info (MilterManagerTestClientPrivate *priv,
+                   const gchar *chunk, gsize size)
+{
+    gchar **items;
+
+    items = g_strsplit_set(chunk, " \n", -1);
+    if (items[0] && items[1] && items[2] && items[3]) {
+        if (priv->header_name)
+                g_free(priv->header_name);
+        if (priv->header_value)
+            g_free(priv->header_value);
+        priv->header_name = g_strdup(items[2]);
+        priv->header_value = g_strdup(items[3]);
+    }
+    g_strfreev(items);
+}
+
+static void
+parse_body_info (MilterManagerTestClientPrivate *priv,
+                 const gchar *chunk, gsize size)
+{
+    if (priv->body_chunk)
+        g_free(priv->body_chunk);
+    priv->body_chunk = receive_additional_info(chunk, size, "receive: body: ");
+}
+
+static void
+parse_end_of_message_info (MilterManagerTestClientPrivate *priv,
+                           const gchar *chunk, gsize size)
+{
+    if (priv->end_of_message_chunk)
+        g_free(priv->end_of_message_chunk);
+    priv->end_of_message_chunk =
+        receive_additional_info(chunk, size, "receive: end-of-message: ");
+}
+
+static void
+parse_unknown_info (MilterManagerTestClientPrivate *priv,
+                    const gchar *chunk, gsize size)
+{
+    if (priv->unknown_command)
+        g_free(priv->unknown_command);
+    priv->unknown_command =
+        receive_additional_info(chunk, size, "receive: unknown: ");
+}
+
+static void
 cb_output_received (GCutEgg *egg, const gchar *chunk, gsize size,
                     gpointer user_data)
 {
@@ -148,124 +284,40 @@ cb_output_received (GCutEgg *egg, const gchar *chunk, gsize size,
     if (g_str_has_prefix(chunk, "ready")) {
         priv->ready = TRUE;
     } else if (g_str_has_prefix(chunk, "receive: negotiate")) {
-        gchar **items;
-
         priv->n_negotiate_received++;
-
-        items = g_strsplit_set(chunk, " \n", -1);
-        if (items[0] && items[1] && items[2] && items[3] && items[4]) {
-            guint32 version;
-            MilterActionFlags action;
-            MilterStepFlags step;
-            GError *error = NULL;
-
-            if (priv->negotiate_option) {
-                g_object_unref(priv->negotiate_option);
-                priv->negotiate_option = NULL;
-            }
-
-            version = atoi(items[2]);
-            action = gcut_flags_parse(MILTER_TYPE_ACTION_FLAGS,
-                                      items[3],
-                                      &error);
-            if (!error)
-                step = gcut_flags_parse(MILTER_TYPE_STEP_FLAGS,
-                                        items[4],
-                                        &error);
-            if (error) {
-                gchar *inspected_error;
-
-                inspected_error = gcut_error_inspect(error);
-                g_error_free(error);
-                g_print("failed to parse received negotiated option: %s\n",
-                        inspected_error);
-                g_free(inspected_error);
-            } else {
-                priv->negotiate_option =
-                    milter_option_new(version, action, step);
-            }
-        }
-        g_strfreev(items);
+        parse_negotiate_info(priv, chunk, size);
     } else if (g_str_has_prefix(chunk, "receive: connect")) {
-        gchar **items;
-
         priv->n_connect_received++;
-
-        items = g_strsplit_set(chunk, " \n", -1);
-        if (items[0] && items[1] && items[2] && items[3]) {
-            if (priv->connect_host)
-                g_free(priv->connect_host);
-            if (priv->connect_address)
-                g_free(priv->connect_address);
-            priv->connect_host = g_strdup(items[2]);
-            priv->connect_address = g_strdup(items[3]);
-        }
-        g_strfreev(items);
+        parse_connect_info(priv, chunk, size);
     } else if (g_str_has_prefix(chunk, "receive: helo")) {
         priv->n_helo_received++;
-
-        if (priv->helo_fqdn)
-            g_free(priv->helo_fqdn);
-        priv->helo_fqdn =
-            receive_additional_info(chunk, size, "receive: helo: ");
+        parse_helo_info(priv, chunk, size);
     } else if (g_str_has_prefix(chunk, "receive: mail")) {
         priv->n_envelope_from_received++;
-
-        if (priv->envelope_from)
-            g_free(priv->envelope_from);
-        priv->envelope_from =
-            receive_additional_info(chunk, size, "receive: mail: ");
+        parse_envelope_from_info(priv, chunk, size);
     } else if (g_str_has_prefix(chunk, "receive: rcpt")) {
         priv->n_envelope_recipient_received++;
-
-        if (priv->envelope_recipient)
-            g_free(priv->envelope_recipient);
-        priv->envelope_recipient =
-            receive_additional_info(chunk, size, "receive: rcpt: ");
+        parse_envelope_recipient_info(priv, chunk, size);
     } else if (g_str_has_prefix(chunk, "receive: data")) {
         priv->n_data_received++;
     } else if (g_str_has_prefix(chunk, "receive: header")) {
-        gchar **items;
-
         priv->n_header_received++;
-
-        items = g_strsplit_set(chunk, " \n", -1);
-        if (items[0] && items[1] && items[2] && items[3]) {
-            if (priv->header_name)
-                g_free(priv->header_name);
-            if (priv->header_value)
-                g_free(priv->header_value);
-            priv->header_name = g_strdup(items[2]);
-            priv->header_value = g_strdup(items[3]);
-        }
-        g_strfreev(items);
+        parse_header_info(priv, chunk, size);
     } else if (g_str_has_prefix(chunk, "receive: end-of-header")) {
         priv->n_end_of_header_received++;
     } else if (g_str_has_prefix(chunk, "receive: body")) {
         priv->n_body_received++;
-
-        if (priv->body_chunk)
-            g_free(priv->body_chunk);
-        priv->body_chunk =
-            receive_additional_info(chunk, size, "receive: body: ");
+        parse_body_info(priv, chunk, size);
     } else if (g_str_has_prefix(chunk, "receive: end-of-message")) {
         priv->n_end_of_message_received++;
-
-        if (priv->end_of_message_chunk)
-            g_free(priv->end_of_message_chunk);
-        priv->end_of_message_chunk =
-            receive_additional_info(chunk, size, "receive: end-of-message: ");
+        parse_end_of_message_info(priv, chunk, size);
     } else if (g_str_has_prefix(chunk, "receive: quit")) {
         priv->n_quit_received++;
     } else if (g_str_has_prefix(chunk, "receive: abort")) {
         priv->n_abort_received++;
     } else if (g_str_has_prefix(chunk, "receive: unknown")) {
         priv->n_unknown_received++;
-
-        if (priv->unknown_command)
-            g_free(priv->unknown_command);
-        priv->unknown_command =
-            receive_additional_info(chunk, size, "receive: unknown: ");
+        parse_unknown_info(priv, chunk, size);
     } else {
         GString *string;
 

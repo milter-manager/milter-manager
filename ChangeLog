@@ -1,5 +1,7 @@
 2008-11-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/lib/milter-manager-test-client.c: cleanup.
+
 	* test/lib/milter-manager-test-client.[ch],
 	test/manager/test-controller.c,
 	test/fixtures/controller/negotiate.txt: checks all received
