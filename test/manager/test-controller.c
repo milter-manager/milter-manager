@@ -485,6 +485,48 @@ get_pair_list (GKeyFile *scenario, const gchar *group, const gchar *key)
     return sorted_pairs;
 }
 
+static const GList *
+get_option_list (GKeyFile *scenario, const gchar *group, const gchar *key)
+{
+    const GList *option_list = NULL;
+    GError *error = NULL;
+
+    if (g_key_file_has_key(scenario, group, key, &error)) {
+        const gchar **option_strings;
+        GList *options = NULL;
+        gsize length, i;
+        GError *error = NULL;
+
+        option_strings = get_string_list(scenario, group, key, &length);
+        for (i = 0; i < length; i += 3) {
+            MilterOption *option;
+            guint32 version;
+            MilterActionFlags action;
+            MilterStepFlags step;
+
+            version = atoi(option_strings[i]);
+            action = gcut_flags_parse(MILTER_TYPE_ACTION_FLAGS,
+                                      option_strings[i + 1],
+                                      &error);
+            if (error)
+                break;
+            step = gcut_flags_parse(MILTER_TYPE_STEP_FLAGS,
+                                    option_strings[i + 2],
+                                    &error);
+            if (error)
+                break;
+            option = milter_option_new(version, action, step);
+            options = g_list_append(options, option);
+        }
+        option_list = gcut_take_list(options,
+                                     (CutDestroyFunction)g_object_unref);
+        gcut_assert_error(error);
+    }
+    gcut_assert_error(error);
+
+    return option_list;
+}
+
 
 static void load_scenario (const gchar *name, GKeyFile **scenario);
 
@@ -695,10 +737,9 @@ do_negotiate (GKeyFile *scenario, const gchar *group)
     milter_manager_controller_negotiate(controller, option);
     cut_trace(assert_response(scenario, group));
 
-    /* FIXME: should check all received option */
-    gcut_assert_equal_object_custom(
-        option,
-        milter_manager_test_client_get_negotiate_option(test_clients->data),
+    gcut_assert_equal_list_object_custom(
+        get_option_list(scenario, group, "options"),
+        milter_manager_test_clients_collect_negotiate_options(test_clients),
         (GEqualFunc)milter_option_equal);
 }
 

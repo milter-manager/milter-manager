@@ -20,3 +20,5 @@ step=none
 response=negotiate
 n_received=2
 status=default
+
+options=2;add-headers|change-body|quarantine;none;2;add-headers|change-body|quarantine;none;

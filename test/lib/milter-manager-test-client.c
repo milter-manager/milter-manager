@@ -764,6 +764,32 @@ milter_manager_test_clients_collect_pairs (GList *clients,
                           (CutDestroyFunction)milter_manager_test_pair_free);
 }
 
+static void
+safe_g_object_unref (void *data)
+{
+    if (data)
+        g_object_unref(data);
+}
+
+const GList *
+milter_manager_test_clients_collect_negotiate_options (GList *clients)
+{
+    GList *collected_options = NULL;
+    GList *node;
+
+    for (node = clients; node; node = g_list_next(node)) {
+        MilterManagerTestClient *client = node->data;
+        MilterOption *option;
+
+        option = milter_manager_test_client_get_negotiate_option(client);
+        if (option)
+            g_object_ref(option);
+        collected_options = g_list_append(collected_options, option);
+    }
+
+    return gcut_take_list(collected_options, safe_g_object_unref);
+}
+
 /*
 vi:nowrap:ai:expandtab:sw=4
 */

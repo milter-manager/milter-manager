@@ -1,6 +1,11 @@
 2008-11-10  Kouhei Sutou  <kou@cozmixng.org>
 
 	* test/lib/milter-manager-test-client.[ch],
+	test/manager/test-controller.c,
+	test/fixtures/controller/negotiate.txt: checks all received
+	negotiate option.
+
+	* test/lib/milter-manager-test-client.[ch],
 	test/lib/milter-test-client.rb, test/manager/test-controller.c:
 	add received negotiate option check.
 

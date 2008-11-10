@@ -129,6 +129,8 @@ const GList             *milter_manager_test_clients_collect_pairs
                                               (GList *clients,
                                                MilterManagerTestClientGetString name_getter,
                                                MilterManagerTestClientGetString value_getter);
+const GList             *milter_manager_test_clients_collect_negotiate_options
+                                              (GList *clients);
 
 
 G_END_DECLS
