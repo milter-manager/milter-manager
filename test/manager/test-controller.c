@@ -731,6 +731,7 @@ do_helo (GKeyFile *scenario, const gchar *group)
 {
     MilterManagerTestClient *client;
     const gchar *fqdn;
+    const GList *expected_fqdns;
 
     fqdn = get_string(scenario, group, "fqdn");
     milter_manager_controller_helo(controller, fqdn);
@@ -740,7 +741,10 @@ do_helo (GKeyFile *scenario, const gchar *group)
     client = test_clients->data;
     cut_assert_equal_string(fqdn, get_received_data(helo_fqdn));
 
-    /* FIXME: should check all received fqdn */
+    expected_fqdns = get_string_g_list(scenario, group, "fqdns");
+    gcut_assert_equal_list_string(expected_fqdns,
+                                  collect_received_strings(helo_fqdn),
+                                  "[%s]", group);
 }
 
 static void

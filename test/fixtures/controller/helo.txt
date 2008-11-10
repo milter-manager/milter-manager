@@ -17,3 +17,5 @@ fqdn=delian
 response=helo
 n_received=2
 status=continue
+
+fqdns=delian;delian;
