@@ -1,5 +1,9 @@
 2008-11-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/lib/milter-manager-test-client.[ch],
+	test/lib/milter-test-client.rb, test/manager/test-controller.c:
+	add received negotiate option check.
+
 	* test/manager/test-controller.c,
 	test/lib/milter-manager-test-client.[ch],
 	test/fixtures/controller/connect.txt: add received connect info check.

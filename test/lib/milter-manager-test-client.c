@@ -53,6 +53,7 @@ struct _MilterManagerTestClientPrivate
     guint n_abort_received;
     guint n_unknown_received;
 
+    MilterOption *negotiate_option;
     gchar *connect_host;
     gchar *connect_address;
     gchar *helo_fqdn;
@@ -110,6 +111,7 @@ milter_manager_test_client_init (MilterManagerTestClient *test_client)
     priv->n_abort_received = 0;
     priv->n_unknown_received = 0;
 
+    priv->negotiate_option = NULL;
     priv->connect_host = NULL;
     priv->connect_address = NULL;
     priv->helo_fqdn = NULL;
@@ -146,7 +148,44 @@ cb_output_received (GCutEgg *egg, const gchar *chunk, gsize size,
     if (g_str_has_prefix(chunk, "ready")) {
         priv->ready = TRUE;
     } else if (g_str_has_prefix(chunk, "receive: negotiate")) {
+        gchar **items;
+
         priv->n_negotiate_received++;
+
+        items = g_strsplit_set(chunk, " \n", -1);
+        if (items[0] && items[1] && items[2] && items[3] && items[4]) {
+            guint32 version;
+            MilterActionFlags action;
+            MilterStepFlags step;
+            GError *error = NULL;
+
+            if (priv->negotiate_option) {
+                g_object_unref(priv->negotiate_option);
+                priv->negotiate_option = NULL;
+            }
+
+            version = atoi(items[2]);
+            action = gcut_flags_parse(MILTER_TYPE_ACTION_FLAGS,
+                                      items[3],
+                                      &error);
+            if (!error)
+                step = gcut_flags_parse(MILTER_TYPE_STEP_FLAGS,
+                                        items[4],
+                                        &error);
+            if (error) {
+                gchar *inspected_error;
+
+                inspected_error = gcut_error_inspect(error);
+                g_error_free(error);
+                g_print("failed to parse received negotiated option: %s\n",
+                        inspected_error);
+                g_free(inspected_error);
+            } else {
+                priv->negotiate_option =
+                    milter_option_new(version, action, step);
+            }
+        }
+        g_strfreev(items);
     } else if (g_str_has_prefix(chunk, "receive: connect")) {
         gchar **items;
 
@@ -325,6 +364,11 @@ clear_data (MilterManagerTestClient *client)
     priv->n_abort_received = 0;
     priv->n_unknown_received = 0;
 
+    if (priv->negotiate_option) {
+        g_object_unref(priv->negotiate_option);
+        priv->negotiate_option = NULL;
+    }
+
     if (priv->connect_host) {
         g_free(priv->connect_host);
         priv->connect_host = NULL;
@@ -487,6 +531,12 @@ guint
 milter_manager_test_client_get_n_negotiate_received (MilterManagerTestClient *client)
 {
     return MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client)->n_negotiate_received;
+}
+
+MilterOption *
+milter_manager_test_client_get_negotiate_option (MilterManagerTestClient *client)
+{
+    return MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client)->negotiate_option;
 }
 
 guint

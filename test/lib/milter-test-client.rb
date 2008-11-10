@@ -228,11 +228,27 @@ class MilterTestClient
     end
   end
 
+  def flags_to_nicks(flags)
+    flags.class.values.collect do |value|
+      if (flags & value).zero?
+        nil
+      else
+        value.nick
+      end
+    end.compact.join("|")
+  end
+
   def do_negotiate(option)
     invalid_state(:negotiate) if @state != :start
     @option = option
 
     write(:negotiated, :negotiate, option)
+  end
+
+  def info_negotiate(option)
+    [option.version.to_s,
+     flags_to_nicks(option.action),
+     flags_to_nicks(option.step)].join(" ")
   end
 
   def do_connect(host, address)

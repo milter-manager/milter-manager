@@ -22,6 +22,10 @@
 
 #include <gcutter.h>
 
+#define shutdown inet_shutdown
+#include <milter/core.h>
+#undef shutdown
+
 G_BEGIN_DECLS
 
 #define MILTER_TYPE_MANAGER_TEST_CLIENT            (milter_manager_test_client_get_type())
@@ -60,6 +64,8 @@ gboolean                 milter_manager_test_client_run
                                                GError **error);
 
 guint                    milter_manager_test_client_get_n_negotiate_received
+                                              (MilterManagerTestClient *client);
+MilterOption            *milter_manager_test_client_get_negotiate_option
                                               (MilterManagerTestClient *client);
 guint                    milter_manager_test_client_get_n_connect_received
                                               (MilterManagerTestClient *client);

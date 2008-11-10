@@ -695,7 +695,11 @@ do_negotiate (GKeyFile *scenario, const gchar *group)
     milter_manager_controller_negotiate(controller, option);
     cut_trace(assert_response(scenario, group));
 
-    /* FIXME: should check received option */
+    /* FIXME: should check all received option */
+    gcut_assert_equal_object_custom(
+        option,
+        milter_manager_test_client_get_negotiate_option(test_clients->data),
+        (GEqualFunc)milter_option_equal);
 }
 
 static void
