@@ -417,12 +417,17 @@ test_foreach (void)
 {
     expected_names = gcut_list_string_new("1", "2", "3", NULL);
 
-    milter_manager_children_add_child(children,
-                                      milter_manager_child_new("1"));
-    milter_manager_children_add_child(children,
-                                      milter_manager_child_new("2"));
-    milter_manager_children_add_child(children,
-                                      milter_manager_child_new("3"));
+#define ADD_CHILD(name) do {                                    \
+        MilterManagerChild *child;                              \
+                                                                \
+        child = milter_manager_child_new(name);                 \
+        milter_manager_children_add_child(children, child);     \
+    } while (0)
+
+    ADD_CHILD("1");
+    ADD_CHILD("2");
+    ADD_CHILD("3");
+
     milter_manager_children_foreach(children, collect_child_name, NULL);
 
     gcut_assert_equal_list_string(expected_names, actual_names);
