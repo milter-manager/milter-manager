@@ -186,7 +186,7 @@ class MilterTestClient
     encode_type = encode_type.to_s.gsub(/-/, "_")
     packed_size = nil
     if encode_type == "no_response"
-      next_state = :quit
+      next_state = :abort
     else
       packet, packed_size = @encoder.send("encode_reply_#{encode_type}", *args)
       while packet
