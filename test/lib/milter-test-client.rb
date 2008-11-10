@@ -57,6 +57,12 @@ class MilterTestClient
         @debug = boolean
       end
 
+      opts.on("--wait-second=SECOND", Integer,
+              "Wait in SECOND after no_response action",
+              "(#{@wait_second})") do |second|
+        @wait_second = second
+      end
+
       opts.on("--action=ACTION",
               "Do ACTION when condition is matched",
               "(#{@current_action})") do |action|
@@ -158,6 +164,7 @@ class MilterTestClient
     @port = 9999
     @print_ready = false
     @timeout = 3
+    @wait_second = 0
     @debug = false
     @current_action = "reject"
     @end_of_message_actions = []
@@ -187,6 +194,7 @@ class MilterTestClient
     packed_size = nil
     if encode_type == "no_response"
       next_state = :abort
+      sleep(@wait_second)
     else
       packet, packed_size = @encoder.send("encode_reply_#{encode_type}", *args)
       while packet

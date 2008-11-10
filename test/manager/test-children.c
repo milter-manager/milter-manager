@@ -451,7 +451,7 @@ wait_reply_helper (guint expected, guint *actual)
     timeout_waiting_id = g_timeout_add(500, cb_timeout_waiting,
                                        &timeout_waiting);
     while (timeout_waiting && expected > *actual) {
-        g_main_context_iteration(NULL, FALSE);
+        g_main_context_iteration(NULL, TRUE);
     }
     g_source_remove(timeout_waiting_id);
 
@@ -934,6 +934,7 @@ test_end_of_message_timeout (void)
     arguments_append(arguments2,
                      "--action", "no_response",
                      "--end-of-message", "end",
+                     "--wait-second", "10",
                      NULL);
 
     cut_trace(test_end_of_header());
@@ -945,7 +946,8 @@ test_end_of_message_timeout (void)
 
     milter_manager_children_end_of_message(children, "end", strlen("end"));
 
-    wait_reply(8, n_continue_emitted);
+    g_main_context_iteration(NULL, TRUE);
+    wait_reply(7, n_continue_emitted);
 
     cut_assert_equal_string("The response of end-of-message from "
                             "milter@10027 is timed out.",
@@ -969,6 +971,7 @@ test_reading_timeout (void)
     arguments_append(arguments2,
                      "--action", "no_response",
                      "--connect-host", host_name,
+                     "--wait-second", "10",
                      NULL);
 
     cut_trace(test_negotiate());
@@ -987,6 +990,7 @@ test_reading_timeout (void)
                                     (struct sockaddr *)(&address),
                                     sizeof(address));
 
+    g_main_context_iteration(NULL, TRUE);
     wait_reply(1, n_continue_emitted);
 
     cut_assert_equal_string("reading from milter@10027 is timed out.",

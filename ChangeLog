@@ -1,5 +1,8 @@
 2008-11-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/test-children.c,
+	test/lib/milter-test-client.rb: fix timeout test. but not good yet...
+
 	* test/lib/milter-manager-test-client.c: cleanup.
 
 	* test/lib/milter-manager-test-client.[ch],
