@@ -471,7 +471,7 @@ milter_manager_test_client_set_arguments (MilterManagerTestClient *client,
     g_array_append_val(priv->command, test_client_path);
     append_command(priv->command, "--print-status");
     append_command(priv->command, "--timeout");
-    append_command(priv->command, "2.0");
+    append_command(priv->command, "0.5");
     append_command(priv->command, "--port");
     port = g_strdup_printf("%u", priv->port);
     g_array_append_val(priv->command, port);
@@ -645,8 +645,8 @@ milter_manager_test_clients_wait_reply (GList *clients,
     guint n_clients;
 
     n_clients = g_list_length(clients);
-    timeout_waiting_id = g_timeout_add_seconds(1, cb_timeout_waiting,
-                                               &timeout_waiting);
+    timeout_waiting_id = g_timeout_add(100, cb_timeout_waiting,
+                                       &timeout_waiting);
     while (timeout_waiting &&
            n_clients > milter_manager_test_clients_collect_n_received(clients,
                                                                       getter)) {
