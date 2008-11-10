@@ -35,8 +35,6 @@ void test_scenario (gconstpointer data);
 void test_negotiate (void);
 void test_connect (void);
 void test_helo (void);
-void data_envelope_from (void);
-void test_envelope_from (gconstpointer data);
 
 static GKeyFile *scenario;
 static GList *imported_scenarios;
@@ -148,22 +146,6 @@ setup (void)
     expected_list = NULL;
 
     expected_error = NULL;
-}
-
-static void
-arguments_append (GArray *arguments, const gchar *argument, ...)
-{
-    va_list args;
-
-    va_start(args, argument);
-    while (argument) {
-        gchar *dupped_argument;
-
-        dupped_argument = g_strdup(argument);
-        g_array_append_val(arguments, dupped_argument);
-        argument = va_arg(args, gchar *);
-    }
-    va_end(args);
 }
 
 static void
@@ -1217,7 +1199,9 @@ data_scenario_envelope_from (void)
                  "envelope-from - reject & accept",
                  g_strdup("envelope-from-reject-and-accept.txt"), g_free,
                  "envelope-from - accept",
-                 g_strdup("envelope-from-accept.txt"), g_free);
+                 g_strdup("envelope-from-accept.txt"), g_free,
+                 "envelope-from - accept all",
+                 g_strdup("envelope-from-accept-all.txt"), g_free);
 }
 
 static void
@@ -1346,75 +1330,6 @@ test_helo (void)
     assert_have_response("helo");
     cut_assert_equal_uint(g_list_length(test_clients),
                           collect_n_received(helo));
-}
-
-typedef void (*setup_from_test_func) (const gchar *from);
-
-typedef struct _FromTestData
-{
-    setup_from_test_func setup_func;
-    MilterStatus expected_status;
-} FromTestData;
-
-static FromTestData *
-from_test_data_new (setup_from_test_func setup_func,
-                    MilterStatus expected_status)
-{
-    FromTestData *test_data;
-    test_data = g_new0(FromTestData, 1);
-    test_data->setup_func = setup_func;
-    test_data->expected_status = expected_status;
-
-    return test_data;
-}
-
-static void
-setup_both_accept_from (const gchar *from)
-{
-    arguments_append(arguments1,
-                     "--action", "accept",
-                     "--envelope-from", from,
-                     NULL);
-    arguments_append(arguments2,
-                     "--action", "accept",
-                     "--envelope-from", from,
-                     NULL);
-}
-
-void
-data_envelope_from (void)
-{
-    cut_add_data("both_accept",
-                 from_test_data_new(setup_both_accept_from,
-                                    MILTER_STATUS_ACCEPT),
-                 g_free,
-                 "continue",
-                 from_test_data_new(NULL,
-                                    MILTER_STATUS_CONTINUE),
-                 g_free);
-}
-
-void
-test_envelope_from (gconstpointer data)
-{
-    const gchar from[] = "kou+sender@cozmixng.org";
-    FromTestData *test_data = (FromTestData*)data;
-    MilterStatus expected_status = MILTER_STATUS_CONTINUE;
-
-    if (test_data) {
-        expected_status = test_data->expected_status;
-        if (test_data->setup_func)
-            test_data->setup_func(from);
-    }
-
-    cut_trace(test_helo());
-
-    milter_manager_controller_envelope_from(controller, from);
-    assert_have_response("envelope-from");
-    cut_assert_equal_uint(g_list_length(test_clients),
-                          collect_n_received(envelope_from));
-    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
-                           expected_status, response_status);
 }
 
 /*

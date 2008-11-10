@@ -1,6 +1,11 @@
 2008-11-10  Kouhei Sutou  <kou@cozmixng.org>
 
 	* test/manager/test-controller.c,
+	test/fixtures/controller/envelope-from-accept-all.txt:
+	rewrite a test for accept from all clients on envelope-from as
+	scenario based test.
+
+	* test/manager/test-controller.c,
 	test/fixtures/controller/envelope-from-accept.txt:
 	rewrite a test for accept on envelope-from as scenario
 	based test.
