@@ -419,16 +419,19 @@ expire_all_children (MilterManagerChildren *children)
 {
     MilterManagerChildrenPrivate *priv;
     GList *node;
+    GList *milters_copy;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     milter_manager_children_abort(children);
     milter_manager_children_quit(children);
 
-    for (node = priv->milters; node; node = g_list_next(node)) {
+    milters_copy = g_list_copy(priv->milters);
+    for (node = milters_copy; node; node = g_list_next(node)) {
         MilterServerContext *context = node->data;
         expire_child(children, context);
     }
+    g_list_free(milters_copy);
 }
 
 static void
