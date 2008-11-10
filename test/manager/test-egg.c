@@ -83,14 +83,14 @@ test_new (void)
 
     egg = milter_manager_egg_new(name);
     cut_assert_equal_string(name, milter_manager_egg_get_name(egg));
-    cut_assert_equal_uint(MILTER_SERVER_CONTEXT_DEFAULT_CONNECTION_TIMEOUT,
-                          milter_manager_egg_get_connection_timeout(egg));
-    cut_assert_equal_uint(MILTER_SERVER_CONTEXT_DEFAULT_WRITING_TIMEOUT,
-                          milter_manager_egg_get_writing_timeout(egg));
-    cut_assert_equal_uint(MILTER_SERVER_CONTEXT_DEFAULT_READING_TIMEOUT,
-                          milter_manager_egg_get_reading_timeout(egg));
-    cut_assert_equal_uint(MILTER_SERVER_CONTEXT_DEFAULT_END_OF_MESSAGE_TIMEOUT,
-                          milter_manager_egg_get_end_of_message_timeout(egg));
+    cut_assert_equal_double(MILTER_SERVER_CONTEXT_DEFAULT_CONNECTION_TIMEOUT, 0.0,
+                            milter_manager_egg_get_connection_timeout(egg));
+    cut_assert_equal_double(MILTER_SERVER_CONTEXT_DEFAULT_WRITING_TIMEOUT, 0.0,
+                            milter_manager_egg_get_writing_timeout(egg));
+    cut_assert_equal_double(MILTER_SERVER_CONTEXT_DEFAULT_READING_TIMEOUT, 0.0,
+                            milter_manager_egg_get_reading_timeout(egg));
+    cut_assert_equal_double(MILTER_SERVER_CONTEXT_DEFAULT_END_OF_MESSAGE_TIMEOUT, 0.0,
+                            milter_manager_egg_get_end_of_message_timeout(egg));
 }
 
 static void
@@ -169,50 +169,50 @@ test_connection_spec_error (void)
 void
 test_connection_timeout (void)
 {
-    guint new_connection_timeout = 100;
+    gdouble new_connection_timeout = 100;
 
     egg = milter_manager_egg_new("child-milter");
 
     milter_manager_egg_set_connection_timeout(egg, new_connection_timeout);
-    cut_assert_equal_uint(new_connection_timeout,
-                          milter_manager_egg_get_connection_timeout(egg));
+    cut_assert_equal_double(new_connection_timeout, 0.0,
+                            milter_manager_egg_get_connection_timeout(egg));
 }
 
 void
 test_writing_timeout (void)
 {
-    guint new_writing_timeout = 100;
+    gdouble new_writing_timeout = 100;
 
     egg = milter_manager_egg_new("child-milter");
 
     milter_manager_egg_set_writing_timeout(egg, new_writing_timeout);
-    cut_assert_equal_uint(new_writing_timeout,
-                          milter_manager_egg_get_writing_timeout(egg));
+    cut_assert_equal_double(new_writing_timeout, 0.0,
+                            milter_manager_egg_get_writing_timeout(egg));
 }
 
 void
 test_reading_timeout (void)
 {
-    guint new_reading_timeout = 100;
+    gdouble new_reading_timeout = 100;
 
     egg = milter_manager_egg_new("child-milter");
 
     milter_manager_egg_set_reading_timeout(egg, new_reading_timeout);
-    cut_assert_equal_uint(new_reading_timeout,
-                          milter_manager_egg_get_reading_timeout(egg));
+    cut_assert_equal_double(new_reading_timeout, 0.0,
+                            milter_manager_egg_get_reading_timeout(egg));
 }
 
 void
 test_end_of_message_timeout (void)
 {
-    guint new_end_of_message_timeout = 100;
+    gdouble new_end_of_message_timeout = 100;
 
     egg = milter_manager_egg_new("child-milter");
 
     milter_manager_egg_set_end_of_message_timeout(egg,
                                                     new_end_of_message_timeout);
-    cut_assert_equal_uint(new_end_of_message_timeout,
-                          milter_manager_egg_get_end_of_message_timeout(egg));
+    cut_assert_equal_double(new_end_of_message_timeout, 0.0, 
+                            milter_manager_egg_get_end_of_message_timeout(egg));
 }
 
 void

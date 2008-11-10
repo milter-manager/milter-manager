@@ -35,10 +35,10 @@ struct _MilterManagerEggPrivate
 {
     gchar *name;
     gchar *connection_spec;
-    guint connection_timeout;
-    guint writing_timeout;
-    guint reading_timeout;
-    guint end_of_message_timeout;
+    gdouble connection_timeout;
+    gdouble writing_timeout;
+    gdouble reading_timeout;
+    gdouble end_of_message_timeout;
     gchar *user_name;
     gchar *command;
     gchar *command_options;
@@ -106,43 +106,43 @@ milter_manager_egg_class_init (MilterManagerEggClass *klass)
                                G_PARAM_READABLE);
     g_object_class_install_property(gobject_class, PROP_CONNECTION_SPEC, spec);
 
-    spec = g_param_spec_uint("connection-timeout",
-                             "Connection timeout",
-                             "The connection timeout of the milter egg",
-                             0,
-                             G_MAXUINT,
-                             MILTER_SERVER_CONTEXT_DEFAULT_CONNECTION_TIMEOUT,
-                             G_PARAM_READWRITE);
+    spec = g_param_spec_double("connection-timeout",
+                               "Connection timeout",
+                               "The connection timeout of the milter egg",
+                               0,
+                               G_MAXDOUBLE,
+                               MILTER_SERVER_CONTEXT_DEFAULT_CONNECTION_TIMEOUT,
+                               G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_CONNECTION_TIMEOUT,
                                     spec);
 
-    spec = g_param_spec_uint("writing-timeout",
-                             "Writing timeout",
-                             "The writing timeout of the milter egg",
-                             0,
-                             G_MAXUINT,
-                             MILTER_SERVER_CONTEXT_DEFAULT_WRITING_TIMEOUT,
-                             G_PARAM_READWRITE);
+    spec = g_param_spec_double("writing-timeout",
+                               "Writing timeout",
+                               "The writing timeout of the milter egg",
+                               0,
+                               G_MAXDOUBLE,
+                               MILTER_SERVER_CONTEXT_DEFAULT_WRITING_TIMEOUT,
+                               G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_WRITING_TIMEOUT,
                                     spec);
 
-    spec = g_param_spec_uint("reading-timeout",
-                             "Reading timeout",
-                             "The reading timeout of the milter egg",
-                             0,
-                             G_MAXUINT,
-                             MILTER_SERVER_CONTEXT_DEFAULT_READING_TIMEOUT,
-                             G_PARAM_READWRITE);
+    spec = g_param_spec_double("reading-timeout",
+                               "Reading timeout",
+                               "The reading timeout of the milter egg",
+                               0,
+                               G_MAXDOUBLE,
+                               MILTER_SERVER_CONTEXT_DEFAULT_READING_TIMEOUT,
+                               G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_READING_TIMEOUT,
                                     spec);
 
-    spec = g_param_spec_uint("end-of-message-timeout",
-                             "End of message timeout",
-                             "The end-of-message timeout of the milter egg",
-                             0,
-                             G_MAXUINT,
-                             MILTER_SERVER_CONTEXT_DEFAULT_END_OF_MESSAGE_TIMEOUT,
-                             G_PARAM_READWRITE);
+    spec = g_param_spec_double("end-of-message-timeout",
+                               "End of message timeout",
+                               "The end-of-message timeout of the milter egg",
+                               0,
+                               G_MAXDOUBLE,
+                               MILTER_SERVER_CONTEXT_DEFAULT_END_OF_MESSAGE_TIMEOUT,
+                               G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_END_OF_MESSAGE_TIMEOUT,
                                     spec);
 
@@ -251,16 +251,16 @@ set_property (GObject      *object,
         milter_manager_egg_set_name(egg, g_value_get_string(value));
         break;
       case PROP_CONNECTION_TIMEOUT:
-        priv->connection_timeout = g_value_get_uint(value);
+        priv->connection_timeout = g_value_get_double(value);
         break;
       case PROP_WRITING_TIMEOUT:
-        priv->writing_timeout = g_value_get_uint(value);
+        priv->writing_timeout = g_value_get_double(value);
         break;
       case PROP_READING_TIMEOUT:
-        priv->reading_timeout = g_value_get_uint(value);
+        priv->reading_timeout = g_value_get_double(value);
         break;
       case PROP_END_OF_MESSAGE_TIMEOUT:
-        priv->end_of_message_timeout = g_value_get_uint(value);
+        priv->end_of_message_timeout = g_value_get_double(value);
         break;
       case PROP_USER_NAME:
         milter_manager_egg_set_user_name(egg, g_value_get_string(value));
@@ -296,16 +296,16 @@ get_property (GObject    *object,
         g_value_set_string(value, priv->connection_spec);
         break;
       case PROP_CONNECTION_TIMEOUT:
-        g_value_set_uint(value, priv->connection_timeout);
+        g_value_set_double(value, priv->connection_timeout);
         break;
       case PROP_WRITING_TIMEOUT:
-        g_value_set_uint(value, priv->writing_timeout);
+        g_value_set_double(value, priv->writing_timeout);
         break;
       case PROP_READING_TIMEOUT:
-        g_value_set_uint(value, priv->reading_timeout);
+        g_value_set_double(value, priv->reading_timeout);
         break;
       case PROP_END_OF_MESSAGE_TIMEOUT:
-        g_value_set_uint(value, priv->end_of_message_timeout);
+        g_value_set_double(value, priv->end_of_message_timeout);
         break;
       case PROP_USER_NAME:
         g_value_set_string(value, priv->user_name);
@@ -463,7 +463,7 @@ milter_manager_egg_get_connection_spec (MilterManagerEgg *egg)
 
 void
 milter_manager_egg_set_connection_timeout (MilterManagerEgg *egg,
-                                             guint connection_timeout)
+                                           gdouble connection_timeout)
 {
     MilterManagerEggPrivate *priv;
 
@@ -471,7 +471,7 @@ milter_manager_egg_set_connection_timeout (MilterManagerEgg *egg,
     priv->connection_timeout = connection_timeout;
 }
 
-guint
+gdouble
 milter_manager_egg_get_connection_timeout (MilterManagerEgg *egg)
 {
     return MILTER_MANAGER_EGG_GET_PRIVATE(egg)->connection_timeout;
@@ -479,7 +479,7 @@ milter_manager_egg_get_connection_timeout (MilterManagerEgg *egg)
 
 void
 milter_manager_egg_set_writing_timeout (MilterManagerEgg *egg,
-                                          guint writing_timeout)
+                                        gdouble writing_timeout)
 {
     MilterManagerEggPrivate *priv;
 
@@ -487,7 +487,7 @@ milter_manager_egg_set_writing_timeout (MilterManagerEgg *egg,
     priv->writing_timeout = writing_timeout;
 }
 
-guint
+gdouble
 milter_manager_egg_get_writing_timeout (MilterManagerEgg *egg)
 {
     return MILTER_MANAGER_EGG_GET_PRIVATE(egg)->writing_timeout;
@@ -495,7 +495,7 @@ milter_manager_egg_get_writing_timeout (MilterManagerEgg *egg)
 
 void
 milter_manager_egg_set_reading_timeout (MilterManagerEgg *egg,
-                                          guint reading_timeout)
+                                        gdouble reading_timeout)
 {
     MilterManagerEggPrivate *priv;
 
@@ -503,7 +503,7 @@ milter_manager_egg_set_reading_timeout (MilterManagerEgg *egg,
     priv->reading_timeout = reading_timeout;
 }
 
-guint
+gdouble
 milter_manager_egg_get_reading_timeout (MilterManagerEgg *egg)
 {
     return MILTER_MANAGER_EGG_GET_PRIVATE(egg)->reading_timeout;
@@ -511,7 +511,7 @@ milter_manager_egg_get_reading_timeout (MilterManagerEgg *egg)
 
 void
 milter_manager_egg_set_end_of_message_timeout (MilterManagerEgg *egg,
-                                                 guint end_of_message_timeout)
+                                               gdouble end_of_message_timeout)
 {
     MilterManagerEggPrivate *priv;
 
@@ -519,7 +519,7 @@ milter_manager_egg_set_end_of_message_timeout (MilterManagerEgg *egg,
     priv->end_of_message_timeout = end_of_message_timeout;
 }
 
-guint
+gdouble
 milter_manager_egg_get_end_of_message_timeout (MilterManagerEgg *egg)
 {
     return MILTER_MANAGER_EGG_GET_PRIVATE(egg)->end_of_message_timeout;
@@ -527,7 +527,7 @@ milter_manager_egg_get_end_of_message_timeout (MilterManagerEgg *egg)
 
 void
 milter_manager_egg_set_user_name (MilterManagerEgg *egg,
-                                    const gchar *user_name)
+                                  const gchar *user_name)
 {
     MilterManagerEggPrivate *priv;
 

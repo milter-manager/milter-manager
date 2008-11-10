@@ -77,23 +77,23 @@ const gchar        *milter_manager_egg_get_connection_spec
                                                 (MilterManagerEgg *egg);
 void                milter_manager_egg_set_connection_timeout
                                                 (MilterManagerEgg *egg,
-                                                 guint connection_timeout);
-guint               milter_manager_egg_get_connection_timeout
+                                                 gdouble connection_timeout);
+gdouble               milter_manager_egg_get_connection_timeout
                                                 (MilterManagerEgg *egg);
 void                milter_manager_egg_set_writing_timeout
                                                 (MilterManagerEgg *egg,
-                                                 guint writing_timeout);
-guint               milter_manager_egg_get_writing_timeout
+                                                 gdouble writing_timeout);
+gdouble               milter_manager_egg_get_writing_timeout
                                                 (MilterManagerEgg *egg);
 void                milter_manager_egg_set_reading_timeout
                                                 (MilterManagerEgg *egg,
-                                                 guint reading_timeout);
-guint               milter_manager_egg_get_reading_timeout
+                                                 gdouble reading_timeout);
+gdouble               milter_manager_egg_get_reading_timeout
                                                 (MilterManagerEgg *egg);
 void                milter_manager_egg_set_end_of_message_timeout
                                                 (MilterManagerEgg *egg,
-                                                 guint end_of_message_timeout);
-guint               milter_manager_egg_get_end_of_message_timeout
+                                                 gdouble end_of_message_timeout);
+gdouble               milter_manager_egg_get_end_of_message_timeout
                                                 (MilterManagerEgg *egg);
 void                milter_manager_egg_set_user_name
                                                 (MilterManagerEgg *egg,

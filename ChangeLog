@@ -4,6 +4,8 @@
 	instead of :quit if no_response option is set since if :quit
 	state is set, TCPServer loop exits before
 	"end_of_message_timeout" signal is emitted.
+	* milter/manager/milter-manager-egg.[ch]: Add timeout values should be
+	 gdboule.
 
 2008-11-10  Kouhei Sutou  <kou@cozmixng.org>
 
