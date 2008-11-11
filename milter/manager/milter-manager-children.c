@@ -197,6 +197,7 @@ dispose (GObject *object)
     if (priv->milters) {
         g_list_foreach(priv->milters,
                        (GFunc)teardown_server_context_signals, object);
+        g_list_foreach(priv->milters, (GFunc)g_object_unref, NULL);
         g_list_free(priv->milters);
         priv->milters = NULL;
     }
@@ -1009,7 +1010,7 @@ negotiate_data_new (MilterManagerChildren *children,
 
     negotiate_data = g_new0(NegotiateData, 1);
     negotiate_data->child = g_object_ref(child);
-    negotiate_data->children = g_object_ref(children);
+    negotiate_data->children = children;
     negotiate_data->option = g_object_ref(option);
     negotiate_data->is_retry = is_retry;
     negotiate_data->error_signal_id =
@@ -1032,14 +1033,14 @@ static void
 negotiate_data_free (NegotiateData *data)
 {
     if (data->connection_timeout_signal_id > 0)
-        g_signal_handler_disconnect(data->child, data->connection_timeout_signal_id);
+        g_signal_handler_disconnect(data->child,
+                                    data->connection_timeout_signal_id);
     if (data->error_signal_id > 0)
         g_signal_handler_disconnect(data->child, data->error_signal_id);
     if (data->ready_signal_id > 0)
         g_signal_handler_disconnect(data->child, data->ready_signal_id);
 
     g_object_unref(data->child);
-    g_object_unref(data->children);
     g_object_unref(data->option);
 
     g_free(data);
@@ -1111,10 +1112,7 @@ child_establish_connection (MilterManagerChild *child,
         if (is_retry)
             return FALSE;
 
-        prepare_retry_establish_connection(child,
-                                           option,
-                                           children, 
-                                           TRUE);
+        prepare_retry_establish_connection(child, option, children, TRUE);
         return FALSE;
     }
 
@@ -1161,9 +1159,7 @@ milter_manager_children_negotiate (MilterManagerChildren *children,
         if (!child_establish_connection(child, option, children, FALSE)) {
             if (privilege &&
                 milter_manager_children_start_child(children, child)) {
-                prepare_retry_establish_connection(child,
-                                                   option,
-                                                   children, 
+                prepare_retry_establish_connection(child, option, children,
                                                    FALSE);
                 g_queue_push_tail(priv->reply_queue, child);
             } else {
