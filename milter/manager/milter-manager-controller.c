@@ -815,8 +815,7 @@ milter_manager_controller_end_of_message (MilterManagerController *controller,
     MilterManagerControllerPrivate *priv;
 
     priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
-    if (priv->state == MILTER_MANAGER_CONTROLLER_STATE_BODY ||
-        priv->state == MILTER_MANAGER_CONTROLLER_STATE_BODY_REPLIED) {
+    if (priv->state == MILTER_MANAGER_CONTROLLER_STATE_BODY_REPLIED) {
         priv->state = MILTER_MANAGER_CONTROLLER_STATE_END_OF_MESSAGE;
     } else {
         priv->sent_end_of_message = TRUE;
