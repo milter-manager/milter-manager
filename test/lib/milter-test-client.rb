@@ -184,7 +184,10 @@ class MilterTestClient
   def read_packet
     packet = nil
     Timeout.timeout(@timeout) do
-      packet = @socket.readpartial(4096)
+      begin
+        packet = @socket.readpartial(4096)
+      rescue EOFError
+      end
     end
     packet
   end

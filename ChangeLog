@@ -1,5 +1,10 @@
 2008-11-11  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/lib/milter-test-client.rb (MilterTestClient#read_packet):
+	ignore EOF error.
+
+	* test/manager/test-controller.c: 50 -> 100.
+
 	* test/manager/test-controller.c: move scenario related codes to ...
 	* test/lib/milter-manager-test-scenario.[ch],
 	test/lib/milter-manager-test-client.[ch]: ... here.
