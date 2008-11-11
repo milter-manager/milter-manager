@@ -13,6 +13,7 @@
 	MilterManagerChildrenState.
 	* milter/manager/milter-manager-children.[ch]: Preserve reply status
 	for each MilterServerContextState.
+	* milter/manager/milter-manager-controller.c: multipule body support.
 
 2008-11-10  Kouhei Sutou  <kou@cozmixng.org>
 

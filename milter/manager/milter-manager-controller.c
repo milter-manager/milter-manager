@@ -37,6 +37,7 @@ struct _MilterManagerControllerPrivate
     MilterClientContext *client_context;
     MilterManagerChildren *children;
     MilterManagerControllerState state;
+    gboolean sent_end_of_message;
 };
 
 enum
@@ -105,6 +106,7 @@ milter_manager_controller_init (MilterManagerController *controller)
     priv->client_context = NULL;
     priv->children = NULL;
     priv->state = MILTER_SERVER_CONTEXT_STATE_START;
+    priv->sent_end_of_message = FALSE;
 }
 
 static void
@@ -251,7 +253,8 @@ state_to_response_signal_name (MilterManagerControllerState state)
 }
 
 static MilterManagerControllerState
-next_state (MilterManagerControllerState state)
+next_state (MilterManagerController *controller,
+            MilterManagerControllerState state)
 {
     MilterManagerControllerState next_state;
 
@@ -284,8 +287,15 @@ next_state (MilterManagerControllerState state)
         next_state = MILTER_MANAGER_CONTROLLER_STATE_END_OF_HEADER_REPLIED;
         break;
       case MILTER_MANAGER_CONTROLLER_STATE_BODY:
-        next_state = MILTER_MANAGER_CONTROLLER_STATE_BODY_REPLIED;
+      {
+        MilterManagerControllerPrivate *priv;
+        priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
+        if (!priv->sent_end_of_message)
+            next_state = MILTER_MANAGER_CONTROLLER_STATE_BODY_REPLIED;
+        else
+            next_state = MILTER_MANAGER_CONTROLLER_STATE_END_OF_MESSAGE;
         break;
+      }
       case MILTER_MANAGER_CONTROLLER_STATE_END_OF_MESSAGE:
         next_state = MILTER_MANAGER_CONTROLLER_STATE_END_OF_MESSAGE_REPLIED;
         break;
@@ -335,7 +345,7 @@ reply (MilterManagerController *controller, MilterStatus status)
     g_signal_emit_by_name(priv->client_context,
                           state_to_response_signal_name(priv->state),
                           status);
-    priv->state = next_state(priv->state);
+    priv->state = next_state(controller, priv->state);
 }
 
 static void
@@ -805,7 +815,12 @@ milter_manager_controller_end_of_message (MilterManagerController *controller,
     MilterManagerControllerPrivate *priv;
 
     priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
-    priv->state = MILTER_MANAGER_CONTROLLER_STATE_END_OF_MESSAGE;
+    if (priv->state == MILTER_MANAGER_CONTROLLER_STATE_BODY ||
+        priv->state == MILTER_MANAGER_CONTROLLER_STATE_BODY_REPLIED) {
+        priv->state = MILTER_MANAGER_CONTROLLER_STATE_END_OF_MESSAGE;
+    } else {
+        priv->sent_end_of_message = TRUE;
+    }
 
     if (!priv->children)
         return MILTER_STATUS_NOT_CHANGE;
