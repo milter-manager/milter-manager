@@ -273,58 +273,127 @@ parse_unknown_info (MilterManagerTestClientPrivate *priv,
         receive_additional_info(chunk, size, "receive: unknown: ");
 }
 
+typedef struct _reponse_data
+{
+    gchar *string;
+    gsize size;
+} ResponseData;
+
+static ResponseData *
+response_data_new (const gchar *string, gsize size)
+{
+    ResponseData *response; 
+
+    response = g_new0(ResponseData, 1);
+    response->string = g_memdup(string, size);
+    response->size = size;
+
+    return response;
+}
+
+static void
+free_response_data (ResponseData *data)
+{
+    g_free(data->string);
+    g_free(data);
+}
+
+static GList *
+split_response (const gchar *response, gsize size)
+{
+    GList *list = NULL;
+
+    while (size > 0) {
+        const gchar *found_point;
+        ResponseData *response_data;
+        gsize length;
+
+        found_point = g_strstr_len(response, size, "receive: ");
+        if (!found_point) {
+            length = size;
+        } else if (found_point != response) {
+            length = found_point - response;
+        } else {
+            found_point = g_strstr_len(response + 1, size - 1, "receive: ");
+            if (found_point)
+                length = found_point - response;
+            else
+                length = size;
+        }
+
+        response_data = response_data_new(response, length);
+        list = g_list_append(list, response_data);
+
+        if (!found_point)
+            break;
+
+        response = found_point;
+        size -= length;
+    }
+
+    return list;
+}
+
 static void
 cb_output_received (GCutEgg *egg, const gchar *chunk, gsize size,
                     gpointer user_data)
 {
     MilterManagerTestClient *client = user_data;
     MilterManagerTestClientPrivate *priv;
+    GList *responses, *node;
 
     priv = MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client);
-    if (g_str_has_prefix(chunk, "ready")) {
-        priv->ready = TRUE;
-    } else if (g_str_has_prefix(chunk, "receive: negotiate")) {
-        priv->n_negotiate_received++;
-        parse_negotiate_info(priv, chunk, size);
-    } else if (g_str_has_prefix(chunk, "receive: connect")) {
-        priv->n_connect_received++;
-        parse_connect_info(priv, chunk, size);
-    } else if (g_str_has_prefix(chunk, "receive: helo")) {
-        priv->n_helo_received++;
-        parse_helo_info(priv, chunk, size);
-    } else if (g_str_has_prefix(chunk, "receive: mail")) {
-        priv->n_envelope_from_received++;
-        parse_envelope_from_info(priv, chunk, size);
-    } else if (g_str_has_prefix(chunk, "receive: rcpt")) {
-        priv->n_envelope_recipient_received++;
-        parse_envelope_recipient_info(priv, chunk, size);
-    } else if (g_str_has_prefix(chunk, "receive: data")) {
-        priv->n_data_received++;
-    } else if (g_str_has_prefix(chunk, "receive: header")) {
-        priv->n_header_received++;
-        parse_header_info(priv, chunk, size);
-    } else if (g_str_has_prefix(chunk, "receive: end-of-header")) {
-        priv->n_end_of_header_received++;
-    } else if (g_str_has_prefix(chunk, "receive: body")) {
-        priv->n_body_received++;
-        parse_body_info(priv, chunk, size);
-    } else if (g_str_has_prefix(chunk, "receive: end-of-message")) {
-        priv->n_end_of_message_received++;
-        parse_end_of_message_info(priv, chunk, size);
-    } else if (g_str_has_prefix(chunk, "receive: quit")) {
-        priv->n_quit_received++;
-    } else if (g_str_has_prefix(chunk, "receive: abort")) {
-        priv->n_abort_received++;
-    } else if (g_str_has_prefix(chunk, "receive: unknown")) {
-        priv->n_unknown_received++;
-        parse_unknown_info(priv, chunk, size);
-    } else {
-        GString *string;
 
-        string = g_string_new_len(chunk, size);
-        g_print("[OUTPUT] <%s>\n", string->str);
-        g_string_free(string, TRUE);
+    responses = split_response(chunk, size);
+    for (node = g_list_first(responses); node; node = g_list_next(node)) {
+        ResponseData *response = (ResponseData*)node->data;
+        if (g_str_has_prefix(response->string, "ready")) {
+            priv->ready = TRUE;
+        } else if (g_str_has_prefix(response->string, "receive: negotiate")) {
+            priv->n_negotiate_received++;
+            parse_negotiate_info(priv, response->string, response->size);
+        } else if (g_str_has_prefix(response->string, "receive: connect")) {
+            priv->n_connect_received++;
+            parse_connect_info(priv, response->string, response->size);
+        } else if (g_str_has_prefix(response->string, "receive: helo")) {
+            priv->n_helo_received++;
+            parse_helo_info(priv, response->string, response->size);
+        } else if (g_str_has_prefix(response->string, "receive: mail")) {
+            priv->n_envelope_from_received++;
+            parse_envelope_from_info(priv, response->string, response->size);
+        } else if (g_str_has_prefix(response->string, "receive: rcpt")) {
+            priv->n_envelope_recipient_received++;
+            parse_envelope_recipient_info(priv, response->string, response->size);
+        } else if (g_str_has_prefix(response->string, "receive: data")) {
+            priv->n_data_received++;
+        } else if (g_str_has_prefix(response->string, "receive: header")) {
+            priv->n_header_received++;
+            parse_header_info(priv, response->string, response->size);
+        } else if (g_str_has_prefix(response->string, "receive: end-of-header")) {
+            priv->n_end_of_header_received++;
+        } else if (g_str_has_prefix(response->string, "receive: body")) {
+            priv->n_body_received++;
+            parse_body_info(priv, response->string, response->size);
+        } else if (g_str_has_prefix(response->string, "receive: end-of-message")) {
+            priv->n_end_of_message_received++;
+            parse_end_of_message_info(priv, response->string, response->size);
+        } else if (g_str_has_prefix(response->string, "receive: quit")) {
+            priv->n_quit_received++;
+        } else if (g_str_has_prefix(response->string, "receive: abort")) {
+            priv->n_abort_received++;
+        } else if (g_str_has_prefix(response->string, "receive: unknown")) {
+            priv->n_unknown_received++;
+            parse_unknown_info(priv, response->string, response->size);
+        } else {
+            GString *string;
+
+            string = g_string_new_len(response->string, size);
+            g_print("[OUTPUT] <%s>\n", string->str);
+            g_string_free(string, TRUE);
+        }
     }
+    g_list_foreach(responses, (GFunc)free_response_data, NULL);
+    g_list_free(responses);
 }
 
 static void
@@ -843,5 +912,5 @@ milter_manager_test_clients_collect_negotiate_options (GList *clients)
 }
 
 /*
-vi:nowrap:ai:expandtab:sw=4
+vi:ts=4:nowrap:ai:expandtab:sw=4
 */
