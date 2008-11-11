@@ -37,7 +37,6 @@
 typedef struct _MilterManagerChildPrivate	MilterManagerChildPrivate;
 struct _MilterManagerChildPrivate
 {
-    gchar *name;
     gchar *user_name;
     gchar *working_directory;
     gchar *command;
@@ -51,7 +50,6 @@ struct _MilterManagerChildPrivate
 enum
 {
     PROP_0,
-    PROP_NAME,
     PROP_USER_NAME,
     PROP_COMMAND,
     PROP_COMMAND_OPTIONS,
@@ -84,13 +82,6 @@ milter_manager_child_class_init (MilterManagerChildClass *klass)
     gobject_class->dispose      = dispose;
     gobject_class->set_property = set_property;
     gobject_class->get_property = get_property;
-
-    spec = g_param_spec_string("name",
-                               "Name",
-                               "The name of the child milter",
-                               NULL,
-                               G_PARAM_READWRITE);
-    g_object_class_install_property(gobject_class, PROP_NAME, spec);
 
     spec = g_param_spec_string("user-name",
                                "User name",
@@ -138,7 +129,6 @@ milter_manager_child_init (MilterManagerChild *milter)
     MilterManagerChildPrivate *priv;
 
     priv = MILTER_MANAGER_CHILD_GET_PRIVATE(milter);
-    priv->name = NULL;
     priv->user_name = NULL;
     priv->working_directory = NULL;
     priv->command = NULL;
@@ -155,11 +145,6 @@ dispose (GObject *object)
     MilterManagerChildPrivate *priv;
 
     priv = MILTER_MANAGER_CHILD_GET_PRIVATE(object);
-
-    if (priv->name) {
-        g_free(priv->name);
-        priv->name = NULL;
-    }
 
     if (priv->user_name) {
         g_free(priv->user_name);
@@ -206,9 +191,6 @@ set_property (GObject      *object,
     milter = MILTER_MANAGER_CHILD(object);
     priv = MILTER_MANAGER_CHILD_GET_PRIVATE(object);
     switch (prop_id) {
-      case PROP_NAME:
-        milter_manager_child_set_name(milter, g_value_get_string(value));
-        break;
       case PROP_USER_NAME:
         if (priv->user_name)
             g_free(priv->user_name);
@@ -248,9 +230,6 @@ get_property (GObject    *object,
 
     priv = MILTER_MANAGER_CHILD_GET_PRIVATE(object);
     switch (prop_id) {
-      case PROP_NAME:
-        g_value_set_string(value, priv->name);
-        break;
       case PROP_USER_NAME:
         g_value_set_string(value, priv->user_name);
         break;
@@ -305,7 +284,8 @@ child_watch_func (GPid pid, gint status, gpointer user_data)
         g_set_error(&error,
                     MILTER_MANAGER_CHILD_ERROR,
                     MILTER_MANAGER_CHILD_ERROR_MILTER_CORE_DUMP,
-                    "%s produced a core dump", priv->name);
+                    "%s produced a core dump", 
+                    milter_server_context_get_name(MILTER_SERVER_CONTEXT(user_data)));
         milter_error("%s", error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(user_data),
                                     error);
@@ -315,7 +295,9 @@ child_watch_func (GPid pid, gint status, gpointer user_data)
         g_set_error(&error,
                     MILTER_MANAGER_CHILD_ERROR,
                     MILTER_MANAGER_CHILD_ERROR_MILTER_EXIT,
-                    "%s exits with status: %d", priv->name, WEXITSTATUS(status));
+                    "%s exits with status: %d", 
+                    milter_server_context_get_name(MILTER_SERVER_CONTEXT(user_data)),
+                    WEXITSTATUS(status));
         milter_error("%s", error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(user_data),
                                     error);
@@ -431,28 +413,12 @@ milter_manager_child_start (MilterManagerChild *milter, GError **error)
         return FALSE;
     }
 
-    milter_info("started %s.", priv->name);
+    milter_info("started %s.",
+                milter_server_context_get_name(MILTER_SERVER_CONTEXT(milter)));
     priv->child_watch_id =
         g_child_watch_add(priv->pid, (GChildWatchFunc)child_watch_func, milter);
 
     return success;
-}
-
-const gchar *
-milter_manager_child_get_name (MilterManagerChild *milter)
-{
-    return MILTER_MANAGER_CHILD_GET_PRIVATE(milter)->name;
-}
-
-void
-milter_manager_child_set_name (MilterManagerChild *milter, const gchar *name)
-{
-    MilterManagerChildPrivate *priv;
-
-    priv = MILTER_MANAGER_CHILD_GET_PRIVATE(milter);
-    if (priv->name)
-        g_free(priv->name);
-    priv->name = g_strdup(name);
 }
 
 /*

@@ -2,6 +2,7 @@
 
 	* test/lib/milter-manager-test-client.c: Support multi-line response
 	from milter-test-client.rb.
+	* milter/manager/milter-manager-child.[ch]: Remove name property.
 
 2008-11-10  Kouhei Sutou  <kou@cozmixng.org>
 

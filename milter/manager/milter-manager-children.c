@@ -728,7 +728,7 @@ cb_writing_timeout (MilterServerContext *context, gpointer user_data)
     MilterManagerChildren *children = MILTER_MANAGER_CHILDREN(user_data);
 
     milter_error("writing to %s is timed out.",
-                 milter_manager_child_get_name(MILTER_MANAGER_CHILD(context)));
+                 milter_server_context_get_name(context));
 
     expire_child(children, context);
     remove_child_from_queue(children, context);
@@ -740,7 +740,7 @@ cb_reading_timeout (MilterServerContext *context, gpointer user_data)
     MilterManagerChildren *children = MILTER_MANAGER_CHILDREN(user_data);
 
     milter_error("reading from %s is timed out.",
-                 milter_manager_child_get_name(MILTER_MANAGER_CHILD(context)));
+                 milter_server_context_get_name(context));
 
     expire_child(children, context);
     remove_child_from_queue(children, context);
@@ -752,7 +752,7 @@ cb_end_of_message_timeout (MilterServerContext *context, gpointer user_data)
     MilterManagerChildren *children = MILTER_MANAGER_CHILDREN(user_data);
 
     milter_error("The response of end-of-message from %s is timed out.",
-                 milter_manager_child_get_name(MILTER_MANAGER_CHILD(context)));
+                 milter_server_context_get_name(context));
 
     expire_child(children, context);
     remove_child_from_queue(children, context);
@@ -781,14 +781,15 @@ cb_finished (MilterHandler *handler, gpointer user_data)
 {
     MilterManagerChildren *children;
     MilterManagerChildrenPrivate *priv;
+    MilterServerContext *context = MILTER_SERVER_CONTEXT(handler);
 
     children = MILTER_MANAGER_CHILDREN(user_data);
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    expire_child(children, MILTER_SERVER_CONTEXT(handler));
+    expire_child(children, context);
     milter_info("%s exits.",
-                milter_manager_child_get_name(MILTER_MANAGER_CHILD(handler)));
-    remove_child_from_queue(children, MILTER_SERVER_CONTEXT(handler));
+                milter_server_context_get_name(context));
+    remove_child_from_queue(children, context);
     if (g_queue_is_empty(priv->reply_queue))
         milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(children));
 }
@@ -937,7 +938,7 @@ cb_connection_timeout (MilterServerContext *context, gpointer user_data)
     NegotiateData *data = user_data;
 
     milter_error("connection to %s is timed out.",
-                 milter_manager_child_get_name(MILTER_MANAGER_CHILD(context)));
+                 milter_server_context_get_name(context));
     clear_try_negotiate_data(data);
 }
 

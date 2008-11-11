@@ -60,14 +60,14 @@ teardown (void)
 static gboolean
 child_equal (gconstpointer a, gconstpointer b)
 {
-    MilterManagerChild *child1, *child2;
+    MilterServerContext *context1, *context2;
 
-    child1 = MILTER_MANAGER_CHILD(a);
-    child2 = MILTER_MANAGER_CHILD(b);
+    context1 = MILTER_SERVER_CONTEXT(a);
+    context2 = MILTER_SERVER_CONTEXT(b);
 
     /* FIXME */
-    return g_str_equal(milter_manager_child_get_name(child1),
-                       milter_manager_child_get_name(child2));
+    return g_str_equal(milter_server_context_get_name(context1),
+                       milter_server_context_get_name(context2));
 }
 
 #define milter_assert_equal_children(expected, actual)             \

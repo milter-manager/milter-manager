@@ -117,7 +117,7 @@ test_hatch (void)
     child = milter_manager_egg_hatch(egg);
     cut_assert_not_null(child);
     cut_assert_equal_string("child-milter",
-                            milter_manager_child_get_name(child));
+                            milter_server_context_get_name(MILTER_SERVER_CONTEXT(child)));
     cut_assert_true(hatched);
 }
 

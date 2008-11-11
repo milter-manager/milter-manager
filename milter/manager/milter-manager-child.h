@@ -73,10 +73,6 @@ gboolean              milter_manager_child_start       (MilterManagerChild *milt
                                                         GError **error);
 
 
-const gchar          *milter_manager_child_get_name    (MilterManagerChild *child);
-void                  milter_manager_child_set_name    (MilterManagerChild *child,
-                                                        const gchar *name);
-
 #endif /* __MILTER_MANAGER_CHILD_H__ */
 
 /*
