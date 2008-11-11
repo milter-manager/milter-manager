@@ -9,8 +9,6 @@ port=10026
 port=10027
 
 [negotiate]
-
-[negotiate]
 command=negotiate
 
 version=2
