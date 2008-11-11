@@ -1,52 +1,30 @@
 [scenario]
 clients=client10026;client10027
 import=end-of-header.txt
-actions=body-accept-first;body-accept-second;body;end-of-message
+actions=body-accept;end-of-message
 
 [client10026]
 port=10026
-arguments=--action;accept;--body;Accept first
+arguments=--action;accept;--body;Accept message
 
 [client10027]
 port=10027
-arguments=--action;accept;--body;Accept second
+arguments=--action;accept;--body;Accept message
 
-[body-accept-first]
+[body-accept]
 command=body
 
-chunk=Accept first
+chunk=Accept message
 
 response=body
 n_received=2
-status=continue
-
-chunks=Accept first;Accept first
-
-[body-accept-second]
-command=body
-
-chunk=Accept second
-
-response=body
-n_received=1
 status=accept
 
-chunks=;Accept second
-
-[body]
-command=body
-
-chunk=Hi,
-
-response=body
-n_received=0
-status=accept
-
-chunks=;;
+chunks=Accept message;Accept message
 
 [end-of-message]
 command=end-of-message
 
 response=end-of-message
-n_received=0
-status=accept
+n_received=2
+status=continue

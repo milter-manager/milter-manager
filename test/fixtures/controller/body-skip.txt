@@ -1,7 +1,7 @@
 [scenario]
 clients=client10026;client10027
 import=end-of-header.txt
-actions=body-skip;body;end-of-message
+actions=body-skip;end-of-message
 
 [client10026]
 port=10026
@@ -20,17 +20,6 @@ n_received=2
 status=continue
 
 chunks=Skip;Skip
-
-[body]
-command=body
-
-chunk=Hi,
-
-response=body
-n_received=1
-status=continue
-
-chunks=;Hi,
 
 [end-of-message]
 command=end-of-message

@@ -1,3 +1,18 @@
+2008-11-12  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* fixtures/controller/body-accept.txt,
+	fixtures/controller/body-skip.txt,
+	fixtures/controller/body-skip-all.txt: "BODY" command now sends
+	conjunct message at once. i.e. "First lineSecond line". So just send a
+	"BODY" command for a while.
+	* milter/manager/milter-manager-children.c: Now "BODY" chunks is sent
+	on "END-OF-MESSAGE" command.  But "ERROR! - invalid state" message
+	output here and threre.
+	* test/manager/test-controller.c: Do not check response in body action
+	since "BODY" command does not send chunks to milter until
+	"END-OF-MESSAGE" command is sent. Also not clear test client data on
+	body command.
+
 2008-11-12  Kouhei Sutou  <kou@cozmixng.org>
 
 	* test/manager/test-children.c,
