@@ -1,3 +1,9 @@
+2008-11-11  Kouhei Sutou  <kou@cozmixng.org>
+
+	* test/manager/test-controller.c: move scenario related codes to ...
+	* test/lib/milter-manager-test-scenario.[ch],
+	test/lib/milter-manager-test-client.[ch]: ... here.
+
 2008-11-11  Hiroyuki Ikezoe  <poincare@ikezoe.net>
 
 	* test/lib/milter-manager-test-client.c: Support multi-line response

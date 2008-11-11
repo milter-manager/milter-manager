@@ -29,4 +29,6 @@ libmilter_manager_test_la_SOURCES =	\
 	milter-manager-test-client.c	\
 	milter-manager-test-client.h	\
 	milter-manager-test-server.c	\
-	milter-manager-test-server.h
+	milter-manager-test-server.h	\
+	milter-manager-test-scenario.c	\
+	milter-manager-test-scenario.h

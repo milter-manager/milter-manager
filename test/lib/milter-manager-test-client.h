@@ -59,6 +59,9 @@ MilterManagerTestClient *milter_manager_test_client_new
 void                     milter_manager_test_client_set_arguments
                                               (MilterManagerTestClient *client,
                                                GArray *arguments);
+void                     milter_manager_test_client_set_argument_strings
+                                              (MilterManagerTestClient *client,
+                                               const gchar **argument_strings);
 gboolean                 milter_manager_test_client_run
                                               (MilterManagerTestClient *client,
                                                GError **error);
@@ -117,20 +120,20 @@ void                     milter_manager_test_client_clear_data
 
 
 void                     milter_manager_test_clients_wait_reply
-                                              (GList *clients,
+                                              (const GList *clients,
                                                MilterManagerTestClientGetNReceived getter);
 guint                    milter_manager_test_clients_collect_n_received
-                                              (GList *clients,
+                                              (const GList *clients,
                                                MilterManagerTestClientGetNReceived getter);
 const GList             *milter_manager_test_clients_collect_strings
-                                              (GList *clients,
+                                              (const GList *clients,
                                                MilterManagerTestClientGetString getter);
 const GList             *milter_manager_test_clients_collect_pairs
-                                              (GList *clients,
+                                              (const GList *clients,
                                                MilterManagerTestClientGetString name_getter,
                                                MilterManagerTestClientGetString value_getter);
 const GList             *milter_manager_test_clients_collect_negotiate_options
-                                              (GList *clients);
+                                              (const GList *clients);
 
 
 G_END_DECLS

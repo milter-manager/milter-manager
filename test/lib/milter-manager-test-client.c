@@ -648,6 +648,23 @@ milter_manager_test_client_set_arguments (MilterManagerTestClient *client,
     }
 }
 
+void
+milter_manager_test_client_set_argument_strings (MilterManagerTestClient *client,
+                                                 const gchar **argument_strings)
+{
+    GArray *arguments;
+    const gchar **argument;
+
+    arguments = g_array_new(TRUE, TRUE, sizeof(gchar *));
+    if (argument_strings) {
+        for (argument = argument_strings; *argument; argument++) {
+            g_array_append_val(arguments, *argument);
+        }
+    }
+    milter_manager_test_client_set_arguments(client, arguments);
+    g_array_free(arguments, TRUE);
+}
+
 guint
 milter_manager_test_client_get_n_negotiate_received (MilterManagerTestClient *client)
 {
@@ -808,14 +825,14 @@ cb_timeout_waiting (gpointer data)
 }
 
 void
-milter_manager_test_clients_wait_reply (GList *clients,
+milter_manager_test_clients_wait_reply (const GList *clients,
                                         MilterManagerTestClientGetNReceived getter)
 {
     gboolean timeout_waiting = TRUE;
     guint timeout_waiting_id;
     guint n_clients;
 
-    n_clients = g_list_length(clients);
+    n_clients = g_list_length((GList *)clients);
     timeout_waiting_id = g_timeout_add(10, cb_timeout_waiting,
                                        &timeout_waiting);
     while (timeout_waiting &&
@@ -832,11 +849,11 @@ milter_manager_test_clients_wait_reply (GList *clients,
 }
 
 guint
-milter_manager_test_clients_collect_n_received (GList *clients,
+milter_manager_test_clients_collect_n_received (const GList *clients,
                                                 MilterManagerTestClientGetNReceived getter)
 {
     guint n_received = 0;
-    GList *node;
+    const GList *node;
 
     for (node = clients; node; node = g_list_next(node)) {
         MilterManagerTestClient *client = node->data;
@@ -848,11 +865,11 @@ milter_manager_test_clients_collect_n_received (GList *clients,
 }
 
 const GList *
-milter_manager_test_clients_collect_strings (GList *clients,
+milter_manager_test_clients_collect_strings (const GList *clients,
                                              MilterManagerTestClientGetString getter)
 {
     GList *collected_strings = NULL;
-    GList *node;
+    const GList *node;
 
     for (node = clients; node; node = g_list_next(node)) {
         MilterManagerTestClient *client = node->data;
@@ -865,12 +882,12 @@ milter_manager_test_clients_collect_strings (GList *clients,
 }
 
 const GList *
-milter_manager_test_clients_collect_pairs (GList *clients,
+milter_manager_test_clients_collect_pairs (const GList *clients,
                                            MilterManagerTestClientGetString name_getter,
                                            MilterManagerTestClientGetString value_getter)
 {
     GList *collected_pairs = NULL;
-    GList *node;
+    const GList *node;
 
     for (node = clients; node; node = g_list_next(node)) {
         MilterManagerTestClient *client = node->data;
@@ -893,10 +910,10 @@ safe_g_object_unref (void *data)
 }
 
 const GList *
-milter_manager_test_clients_collect_negotiate_options (GList *clients)
+milter_manager_test_clients_collect_negotiate_options (const GList *clients)
 {
     GList *collected_options = NULL;
-    GList *node;
+    const GList *node;
 
     for (node = clients; node; node = g_list_next(node)) {
         MilterManagerTestClient *client = node->data;
