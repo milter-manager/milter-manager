@@ -29,10 +29,13 @@
 
 #include <milter-manager-test-utils.h>
 #include <milter-manager-test-client.h>
+#include <milter-manager-test-scenario.h>
 #include <milter/manager/milter-manager-children.h>
 #undef shutdown
 
 void test_foreach (void);
+void data_scenario (void);
+void test_scenario (gconstpointer data);
 void test_negotiate (void);
 void test_retry_negotiate (void);
 void test_retry_negotiate_failure (void);
@@ -53,6 +56,9 @@ void test_reading_timeout (void);
 void test_connection_timeout (void);
 void test_end_of_message_timeout (void);
 void test_writing_timeout (void);
+
+static gchar *scenario_dir;
+static MilterManagerTestScenario *main_scenario;
 
 static MilterManagerConfiguration *config;
 static MilterManagerChildren *children;
@@ -93,12 +99,19 @@ static GArray *arguments2;
 
 static GList *test_clients;
 
+static MilterOption *actual_option;
+
 static void
 cb_negotiate_reply (MilterManagerChildren *children,
                     MilterOption *option, MilterMacrosRequests *macros_requests,
                     gpointer user_data)
 {
     n_negotiate_reply_emitted++;
+
+    if (actual_option)
+        g_object_unref(actual_option);
+    actual_option = g_object_ref(option);
+    /* FIXME: collect macros request */
 }
 
 static void
@@ -289,6 +302,12 @@ start_client (guint port, GArray *arguments)
 void
 setup (void)
 {
+    scenario_dir = g_build_filename(milter_manager_test_get_base_dir(),
+                                    "fixtures",
+                                    "children",
+                                    NULL);
+    main_scenario = NULL;
+
     config = milter_manager_configuration_new(NULL);
     children = milter_manager_children_new(config);
     setup_signals(children);
@@ -331,6 +350,8 @@ setup (void)
     arguments2 = g_array_new(TRUE, TRUE, sizeof(gchar *));
 
     test_clients = NULL;
+
+    actual_option = NULL;
 }
 
 static void
@@ -369,6 +390,9 @@ teardown (void)
     if (children)
         g_object_unref(children);
 
+    if (main_scenario)
+        g_object_unref(main_scenario);
+
     if (option)
         g_object_unref(option);
 
@@ -397,6 +421,9 @@ teardown (void)
 
     if (log_signal_id)
         g_signal_handler_disconnect(milter_logger(), log_signal_id);
+
+    if (actual_option)
+        g_object_unref(actual_option);
 }
 
 static void
@@ -510,6 +537,317 @@ add_child_with_command_and_options (const gchar *name,
         g_object_unref(egg);
         g_object_unref(child);
     }
+}
+
+#define wait_finished()                    \
+    cut_trace_with_info_expression(        \
+        wait_finished_helper(),            \
+        wait_finished())
+
+static void
+wait_finished_helper (void)
+{
+    gboolean timeout_waiting = TRUE;
+    guint timeout_waiting_id;
+    guint n_finished_emitted_before = n_finished_emitted;
+
+    timeout_waiting_id = g_timeout_add(50, cb_timeout_waiting,
+                                       &timeout_waiting);
+    while (timeout_waiting && n_finished_emitted == n_finished_emitted_before) {
+        g_main_context_iteration(NULL, TRUE);
+    }
+    g_source_remove(timeout_waiting_id);
+
+    cut_assert_true(timeout_waiting, "timeout");
+    cut_assert_operator_uint(n_finished_emitted, > , n_finished_emitted_before);
+}
+
+#define wait_children_error()                      \
+    cut_trace_with_info_expression(                \
+        wait_children_error_helper(),              \
+        wait_children_error())
+
+static void
+wait_children_error_helper (void)
+{
+    gboolean timeout_waiting = TRUE;
+    guint timeout_waiting_id;
+
+    timeout_waiting_id = g_timeout_add(50, cb_timeout_waiting,
+                                       &timeout_waiting);
+    while (timeout_waiting && !actual_error) {
+        g_main_context_iteration(NULL, TRUE);
+    }
+    g_source_remove(timeout_waiting_id);
+
+    cut_assert_true(timeout_waiting, "timeout");
+    cut_assert_not_null(actual_error);
+}
+
+#define started_clients                                                 \
+    milter_manager_test_scenario_get_started_clients(main_scenario)
+
+#define has_key(scenario, group, key)                           \
+    milter_manager_test_scenario_has_key(scenario, group, key)
+
+#define get_integer(scenario, group, key)                               \
+    milter_manager_test_scenario_get_integer(scenario, group, key)
+
+#define get_string(scenario, group, key)                                \
+    milter_manager_test_scenario_get_string(scenario, group, key)
+
+#define get_string_list(scenario, group, key, length)                   \
+    milter_manager_test_scenario_get_string_list(scenario, group, key, length)
+
+#define get_string_g_list(scenario, group, key)                         \
+    milter_manager_test_scenario_get_string_g_list(scenario, group, key)
+
+#define get_enum(scenario, group, key, enum_type)                       \
+    milter_manager_test_scenario_get_enum(scenario, group, key, enum_type)
+
+#define get_option_list(scenario, group, key)                           \
+    milter_manager_test_scenario_get_option_list(scenario, group, key)
+
+#define get_header_list(scenario, group, key)                           \
+    milter_manager_test_scenario_get_header_list(scenario, group, key)
+
+#define get_pair_list(scenario, group, key)                             \
+    milter_manager_test_scenario_get_pair_list(scenario, group, key)
+
+static guint
+get_n_emitted (const gchar *response)
+{
+    if (g_str_equal(response, "negotiate-reply")) {
+        return n_negotiate_reply_emitted;
+    } else if (g_str_equal(response, "continue")) {
+        return n_continue_emitted;
+    } else if (g_str_equal(response, "rely-code")) {
+        return n_reply_code_emitted;
+    } else if (g_str_equal(response, "temporary-failure")) {
+        return n_temporary_failure_emitted;
+    } else if (g_str_equal(response, "reject")) {
+        return n_reject_emitted;
+    } else if (g_str_equal(response, "accept")) {
+        return n_accept_emitted;
+    } else if (g_str_equal(response, "discard")) {
+        return n_discard_emitted;
+    } else if (g_str_equal(response, "add-header")) {
+        return n_add_header_emitted;
+    } else if (g_str_equal(response, "insert-header")) {
+        return n_insert_header_emitted;
+    } else if (g_str_equal(response, "change-header")) {
+        return n_change_header_emitted;
+    } else if (g_str_equal(response, "change-from")) {
+        return n_change_from_emitted;
+    } else if (g_str_equal(response, "add-recipient")) {
+        return n_add_recipient_emitted;
+    } else if (g_str_equal(response, "delete-recipient")) {
+        return n_delete_recipient_emitted;
+    } else if (g_str_equal(response, "replace-body")) {
+        return n_replace_body_emitted;
+    } else if (g_str_equal(response, "progress")) {
+        return n_progress_emitted;
+    } else if (g_str_equal(response, "quarantine")) {
+        return n_quarantine_emitted;
+    } else if (g_str_equal(response, "connection-failure")) {
+        return n_connection_failure_emitted;
+    } else if (g_str_equal(response, "shutdown")) {
+        return n_shutdown_emitted;
+    } else if (g_str_equal(response, "skip")) {
+        return n_skip_emitted;
+    } else if (g_str_equal(response, "error")) {
+        return n_error_emitted;
+    } else if (g_str_equal(response, "finished")) {
+        return n_finished_emitted;
+    } else {
+        cut_error("unknown response: <%s>", response);
+    }
+
+    return 0;
+}
+
+static void
+assert_response_error (MilterManagerTestScenario *scenario, const gchar *group)
+{
+    if (has_key(scenario, group, "error_domain")) {
+        GQuark domain;
+        const gchar *domain_name, *type_name, *message;
+        GType type;
+        gint code;
+
+        domain_name = get_string(scenario, group, "error_domain");
+        domain = g_quark_from_string(domain_name);
+
+        type_name = get_string(scenario, group, "error_type");
+        type = g_type_from_name(type_name);
+        cut_assert_operator_uint(0, <, type, "name: <%s>", type_name);
+        code = get_enum(scenario, group, "error_code", type);
+
+        message = get_string(scenario, group, "error_message");
+        expected_error = g_error_new(domain, code, "%s", message);
+        wait_children_error();
+    }
+
+    gcut_assert_equal_error(expected_error, actual_error);
+    if (expected_error && actual_error)
+        cut_return();
+}
+
+static void
+assert_response_common (MilterManagerTestScenario *scenario, const gchar *group)
+{
+    guint n_emitted, actual_n_emitted;
+    const gchar *response;
+
+    n_emitted = get_integer(scenario, group, "n_emitted");
+    response = get_string(scenario, group, "response");
+
+    if (g_str_equal(response, "quit")) {
+        wait_finished();
+/*     } else if (g_str_equal(response, "abort")) { */
+/*         wait_reply(abort); */
+    } else {
+/*
+        const gchar *response_signal_name;
+
+        response_signal_name = cut_take_printf("%s-response", response);
+         cut_trace(assert_have_response_helper(response_signal_name,
+                                               n_emitted == 0));
+*/
+    }
+
+    actual_n_emitted = get_n_emitted(response);
+    cut_assert_equal_uint(n_emitted, actual_n_emitted, "[%s]", group);
+}
+
+static void
+assert_response (MilterManagerTestScenario *scenario, const gchar *group)
+{
+    cut_trace(assert_response_error(scenario, group));
+    cut_trace(assert_response_common(scenario, group));
+    /* cut_trace(assert_response_reply_code(scenario, group)); */
+}
+
+static void
+do_negotiate (MilterManagerTestScenario *scenario, const gchar *group)
+{
+    MilterOption *option;
+
+    option = milter_manager_test_scenario_get_option(scenario, group);
+    gcut_take_object(G_OBJECT(option));
+    milter_manager_children_negotiate(children, option);
+    wait_reply(1, n_negotiate_reply_emitted);
+    cut_trace(assert_response(scenario, group));
+
+    gcut_assert_equal_object_custom(option, actual_option,
+                                    (GEqualFunc)milter_option_equal);
+}
+
+static void
+do_action (MilterManagerTestScenario *scenario, const gchar *group)
+{
+    MilterCommand command;
+
+    command = get_enum(scenario, group, "command", MILTER_TYPE_COMMAND);
+    switch (command) {
+      case MILTER_COMMAND_NEGOTIATE:
+        cut_trace(do_negotiate(scenario, group));
+        break;
+/*
+      case MILTER_COMMAND_CONNECT:
+        cut_trace(do_connect(scenario, group));
+        break;
+      case MILTER_COMMAND_HELO:
+        cut_trace(do_helo(scenario, group));
+        break;
+      case MILTER_COMMAND_MAIL:
+        cut_trace(do_envelope_from(scenario, group));
+        break;
+      case MILTER_COMMAND_RCPT:
+        cut_trace(do_envelope_recipient(scenario, group));
+        break;
+      case MILTER_COMMAND_DATA:
+        cut_trace(do_data(scenario, group));
+        break;
+      case MILTER_COMMAND_HEADER:
+        cut_trace(do_header(scenario, group));
+        break;
+      case MILTER_COMMAND_END_OF_HEADER:
+        cut_trace(do_end_of_header(scenario, group));
+        break;
+      case MILTER_COMMAND_BODY:
+        cut_trace(do_body(scenario, group));
+        break;
+      case MILTER_COMMAND_END_OF_MESSAGE:
+        cut_trace(do_end_of_message_full(scenario, group));
+        break;
+      case MILTER_COMMAND_QUIT:
+        cut_trace(do_quit(scenario, group));
+        break;
+      case MILTER_COMMAND_ABORT:
+        cut_trace(do_abort(scenario, group));
+        break;
+      case MILTER_COMMAND_UNKNOWN:
+        cut_trace(do_unknown(scenario, group));
+        break;
+*/
+      default:
+        cut_error("unknown command: <%c>(<%s>)", command, group);
+        break;
+    }
+}
+
+static void
+do_actions (MilterManagerTestScenario *scenario)
+{
+    const GList *imported_scenarios;
+    gsize length, i;
+    const gchar **actions;
+
+    imported_scenarios =
+        milter_manager_test_scenario_get_imported_scenarios(scenario);
+    g_list_foreach((GList *)imported_scenarios, (GFunc)do_actions, NULL);
+
+    actions = get_string_list(scenario, MILTER_MANAGER_TEST_SCENARIO_GROUP_NAME,
+                              "actions", &length);
+    for (i = 0; i < length; i++) {
+        cut_trace(do_action(scenario, actions[i]));
+        g_list_foreach((GList *)started_clients,
+                       (GFunc)milter_manager_test_client_clear_data,
+                       NULL);
+    }
+}
+
+void
+data_scenario (void)
+{
+    cut_add_data("negotiate", g_strdup("negotiate.txt"), g_free);
+}
+
+void
+test_scenario (gconstpointer data)
+{
+    const gchar *scenario_name = data;
+    const gchar **clients;
+    gsize i, length;
+
+    main_scenario = milter_manager_test_scenario_new();
+    cut_trace(milter_manager_test_scenario_load(main_scenario,
+                                                scenario_dir,
+                                                scenario_name));
+
+    cut_trace(milter_manager_test_scenario_start_clients(main_scenario));
+
+    clients = get_string_list(main_scenario,
+                              MILTER_MANAGER_TEST_SCENARIO_GROUP_NAME,
+                              "clients", &length);
+    for (i = 0; i < length; i++) {
+        guint port;
+        port = get_integer(main_scenario, clients[i], "port");
+        add_child(clients[i], cut_take_printf("inet:%u@localhost", port));
+    }
+
+    cut_trace(do_actions(main_scenario));
 }
 
 void
