@@ -5,6 +5,8 @@
 	* milter/manager/milter-manager-child.[ch]: Remove name property.
 	* milter/manager/milter-manager-children.h: Added
 	MilterManagerChildrenState.
+	* milter/manager/milter-manager-children.[ch]: Preserve reply status
+	for each MilterServerContextState.
 
 2008-11-10  Kouhei Sutou  <kou@cozmixng.org>
 

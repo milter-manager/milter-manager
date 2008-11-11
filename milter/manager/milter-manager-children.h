@@ -129,6 +129,7 @@ gboolean               milter_manager_children_is_important_status
                                                             MilterServerContextState state,
                                                             MilterStatus status);
 void                   milter_manager_children_set_status  (MilterManagerChildren *children,
+                                                            MilterServerContextState state,
                                                             MilterStatus status);
 
 #endif /* __MILTER_MANAGER_CHILDREN_H__ */

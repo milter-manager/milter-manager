@@ -39,7 +39,7 @@ struct _MilterManagerChildrenPrivate
     MilterManagerConfiguration *configuration;
     MilterMacrosRequests *macros_requests;
     MilterOption *option;
-    MilterStatus reply_status;
+    GHashTable *reply_statuses;
     guint reply_code;
     gchar *reply_extended_code;
     gchar *reply_message;
@@ -163,7 +163,7 @@ milter_manager_children_init (MilterManagerChildren *milter)
     priv->quitted_milters = NULL;
     priv->macros_requests = milter_macros_requests_new();
     priv->option = NULL;
-    priv->reply_status = MILTER_STATUS_NOT_CHANGE;
+    priv->reply_statuses = g_hash_table_new(g_direct_hash, g_direct_equal);
 
     priv->reply_code = 0;
     priv->reply_extended_code = NULL;
@@ -215,6 +215,11 @@ dispose (GObject *object)
     if (priv->option) {
         g_object_unref(priv->option);
         priv->option = NULL;
+    }
+
+    if (priv->reply_statuses) {
+        g_hash_table_unref(priv->reply_statuses);
+        priv->reply_statuses = NULL;
     }
 
     if (priv->reply_extended_code) {
@@ -357,6 +362,23 @@ status_to_signal_name (MilterStatus status)
 }
 
 static MilterStatus
+get_reply_status_for_state (MilterManagerChildren *children,
+                            MilterServerContextState state)
+{
+    MilterManagerChildrenPrivate *priv;
+    gpointer value;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    value = g_hash_table_lookup(priv->reply_statuses,
+                                GINT_TO_POINTER(state));
+    if (!value)
+        return MILTER_STATUS_NOT_CHANGE;
+
+    return (MilterStatus)(GPOINTER_TO_INT(value));
+}
+
+static void
 compile_reply_status (MilterManagerChildren *children,
                       MilterServerContextState state,
                       MilterStatus status)
@@ -365,10 +387,11 @@ compile_reply_status (MilterManagerChildren *children,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    if (milter_manager_children_is_important_status(children, state, status))
-        priv->reply_status = status;
-
-    return priv->reply_status;
+    if (milter_manager_children_is_important_status(children, state, status)) {
+        g_hash_table_insert(priv->reply_statuses,
+                            GINT_TO_POINTER(state),
+                            GINT_TO_POINTER(status));
+    }
 }
 
 static void
@@ -442,10 +465,14 @@ remove_child_from_queue (MilterManagerChildren *children,
                          MilterServerContext *context)
 {
     MilterManagerChildrenPrivate *priv;
+    MilterStatus status;
+    MilterServerContextState state;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     g_queue_remove(priv->reply_queue, context);
+    state = milter_server_context_get_state(context);
+    status = get_reply_status_for_state(children, state);
 
     if (g_queue_is_empty(priv->reply_queue)) {
         if (priv->reply_code > 0) {
@@ -453,12 +480,12 @@ remove_child_from_queue (MilterManagerChildren *children,
                                   priv->reply_code, priv->reply_extended_code,
                                   priv->reply_message);
         } else {
-            if (priv->reply_status != MILTER_STATUS_NOT_CHANGE)
+            if (status != MILTER_STATUS_NOT_CHANGE)
                 g_signal_emit_by_name(children,
-                                      status_to_signal_name(priv->reply_status));
+                                      status_to_signal_name(status));
         }
 
-        switch (priv->reply_status) {
+        switch (status) {
           case MILTER_STATUS_REJECT:
             /* FIXME: children should have the current state. */
             if (milter_server_context_get_state(context) !=
@@ -1097,14 +1124,17 @@ child_establish_connection (MilterManagerChild *child,
 }
 
 static void
-init_reply_queue (MilterManagerChildren *children)
+init_reply_queue (MilterManagerChildren *children,
+                  MilterServerContextState state)
 {
     MilterManagerChildrenPrivate *priv;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     g_queue_clear(priv->reply_queue);
-    priv->reply_status = MILTER_STATUS_NOT_CHANGE;
+    g_hash_table_insert(priv->reply_statuses,
+                        GINT_TO_POINTER(state),
+                        GINT_TO_POINTER(MILTER_STATUS_NOT_CHANGE));
 }
 
 gboolean
@@ -1124,7 +1154,7 @@ milter_manager_children_negotiate (MilterManagerChildren *children,
     return_status =
         milter_manager_configuration_get_return_status_if_filter_unavailable(priv->configuration);
 
-    init_reply_queue(children);
+    init_reply_queue(children, MILTER_SERVER_CONTEXT_STATE_NEGOTIATE);
     for (node = priv->milters; node; node = g_list_next(node)) {
         MilterManagerChild *child = MILTER_MANAGER_CHILD(node->data);
 
@@ -1159,7 +1189,7 @@ milter_manager_children_connect (MilterManagerChildren *children,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    init_reply_queue(children);
+    init_reply_queue(children, MILTER_SERVER_CONTEXT_STATE_CONNECT);
     for (child = priv->milters; child; child = g_list_next(child)) {
         MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
 
@@ -1186,8 +1216,7 @@ milter_manager_children_helo (MilterManagerChildren *children,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    init_reply_queue(children);
-
+    init_reply_queue(children, MILTER_SERVER_CONTEXT_STATE_HELO);
     for (child = priv->milters; child; child = g_list_next(child)) {
         MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
 
@@ -1211,7 +1240,7 @@ milter_manager_children_envelope_from (MilterManagerChildren *children,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    init_reply_queue(children);
+    init_reply_queue(children, MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM);
     for (child = priv->milters; child; child = g_list_next(child)) {
         MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
 
@@ -1235,7 +1264,7 @@ milter_manager_children_envelope_recipient (MilterManagerChildren *children,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    init_reply_queue(children);
+    init_reply_queue(children, MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT);
     for (child = priv->milters; child; child = g_list_next(child)) {
         MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
 
@@ -1258,7 +1287,7 @@ milter_manager_children_data (MilterManagerChildren *children)
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    init_reply_queue(children);
+    init_reply_queue(children, MILTER_SERVER_CONTEXT_STATE_DATA);
     for (child = priv->milters; child; child = g_list_next(child)) {
         MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
 
@@ -1282,7 +1311,7 @@ milter_manager_children_unknown (MilterManagerChildren *children,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    init_reply_queue(children);
+    init_reply_queue(children, MILTER_SERVER_CONTEXT_STATE_UNKNOWN);
     for (child = priv->milters; child; child = g_list_next(child)) {
         MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
 
@@ -1308,7 +1337,7 @@ milter_manager_children_header (MilterManagerChildren *children,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    init_reply_queue(children);
+    init_reply_queue(children, MILTER_SERVER_CONTEXT_STATE_HEADER);
     for (child = priv->milters; child; child = g_list_next(child)) {
         MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
 
@@ -1331,7 +1360,7 @@ milter_manager_children_end_of_header (MilterManagerChildren *children)
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    init_reply_queue(children);
+    init_reply_queue(children, MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER);
     for (child = priv->milters; child; child = g_list_next(child)) {
         MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
 
@@ -1356,7 +1385,7 @@ milter_manager_children_body (MilterManagerChildren *children,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    init_reply_queue(children);
+    init_reply_queue(children, MILTER_SERVER_CONTEXT_STATE_BODY);
     for (child = priv->milters; child; child = g_list_next(child)) {
         MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
 
@@ -1385,7 +1414,7 @@ milter_manager_children_end_of_message (MilterManagerChildren *children,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    init_reply_queue(children);
+    init_reply_queue(children, MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE);
     for (child = priv->milters; child; child = g_list_next(child)) {
         MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
 
@@ -1405,7 +1434,7 @@ milter_manager_children_quit (MilterManagerChildren *children)
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    init_reply_queue(children);
+    init_reply_queue(children, MILTER_SERVER_CONTEXT_STATE_QUIT);
     for (child = priv->milters; child; child = g_list_next(child)) {
         MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
         g_queue_push_tail(priv->reply_queue, context);
@@ -1424,7 +1453,7 @@ milter_manager_children_abort (MilterManagerChildren *children)
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    init_reply_queue(children);
+    init_reply_queue(children, MILTER_SERVER_CONTEXT_STATE_ABORT);
     for (child = priv->milters; child; child = g_list_next(child)) {
         MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
         g_queue_push_tail(priv->reply_queue, context);
@@ -1445,7 +1474,7 @@ milter_manager_children_is_important_status (MilterManagerChildren *children,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    a = priv->reply_status;
+    a = get_reply_status_for_state(children, state);
     b = status;
 
     switch (a) {
@@ -1494,9 +1523,16 @@ milter_manager_children_is_important_status (MilterManagerChildren *children,
 
 void
 milter_manager_children_set_status (MilterManagerChildren *children,
+                                    MilterServerContextState state,
                                     MilterStatus status)
 {
-    MILTER_MANAGER_CHILDREN_GET_PRIVATE(children)->reply_status = status;
+    MilterManagerChildrenPrivate *priv;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+    
+    g_hash_table_insert(priv->reply_statuses, 
+                        GINT_TO_POINTER(state),
+                        GINT_TO_POINTER(status));
 }
 
 void

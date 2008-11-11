@@ -791,7 +791,7 @@ static void
 prepare_children_state (MilterManagerChildren *children,
                         const StateTestData *data)
 {
-    milter_manager_children_set_status(children, data->status);
+    milter_manager_children_set_status(children, data->state, data->status);
 }
 
 void
