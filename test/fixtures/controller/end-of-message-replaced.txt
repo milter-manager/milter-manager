@@ -1,0 +1,26 @@
+[scenario]
+clients=client10026;client10027
+import=end-of-header.txt
+actions=body;end-of-message
+
+[client10026]
+port=10026
+arguments=--replace-body;This is the replaced message by client1.
+
+[client10027]
+port=10027
+arguments=--action;reject;--body;This is the replaced message by client1.
+
+[body]
+command=body
+
+chunk=Hi,
+
+[end-of-message]
+command=end-of-message
+
+response=body
+n_received=2
+status=reject
+
+replace_bodies=This is the replaced message by client1.

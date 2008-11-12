@@ -943,6 +943,7 @@ data_scenario_basic (void)
         "end-of-message - discard", g_strdup("end-of-message-discard.txt"), g_free,
         "end-of-message - temporary-failure", g_strdup("end-of-message-temporary-failure.txt"), g_free,
         "end-of-message - accept", g_strdup("end-of-message-accept.txt"), g_free,
+        "end-of-message - replaced", g_strdup("end-of-message-replaced.txt"), g_free,
         "quit", g_strdup("quit.txt"), g_free,
         "abort", g_strdup("abort.txt"), g_free,
         "unknown", g_strdup("unknown.txt"), g_free,
