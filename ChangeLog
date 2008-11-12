@@ -30,8 +30,12 @@
 	reappears in "body accept" test.
 	* milter/manager/milter-manager-children.c (remove_child_from_queue):
 	Do not emit signal while BODY state.
-	* milter/manager/milter\manager-children.c (cb_finished): Output
+	* milter/manager/milter-manager-children.c (cb_finished): Output
 	state to log.
+	* test/fixtures/controller/quit.txt: n_received of quit-response is 1
+	since the first child has been quited in end-of-message state so
+	quit-response is received only from the second child in
+	milter-manager.
 
 2008-11-12  Kouhei Sutou  <kou@cozmixng.org>
 
