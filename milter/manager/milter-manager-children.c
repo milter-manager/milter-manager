@@ -1616,6 +1616,9 @@ send_body_to_child (MilterManagerChildren *children, MilterServerContext *contex
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
+    if (!priv->body_file)
+        return TRUE;
+
     if (milter_server_context_is_enable_step(context, MILTER_STEP_NO_BODY))
         return TRUE;
 
@@ -1623,9 +1626,6 @@ send_body_to_child (MilterManagerChildren *children, MilterServerContext *contex
         return TRUE;
 
     priv->current_state = MILTER_SERVER_CONTEXT_STATE_BODY;
-
-    priv->should_be_sent_body_milters =
-        g_list_remove(priv->should_be_sent_body_milters, context);
 
     g_io_channel_seek_position(priv->body_file, 0, G_SEEK_SET, &error);
 
@@ -1641,6 +1641,9 @@ send_body_to_child (MilterManagerChildren *children, MilterServerContext *contex
                                                   buffer, read_size);
         }
     }
+    priv->should_be_sent_body_milters =
+        g_list_remove(priv->should_be_sent_body_milters, context);
+    g_object_unref(context);
 
     if (error) {
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
@@ -1692,7 +1695,7 @@ milter_manager_children_end_of_message (MilterManagerChildren *children,
             continue;
         g_queue_push_tail(priv->reply_queue, context);
         priv->should_be_sent_body_milters = 
-            g_list_append(priv->should_be_sent_body_milters, context);
+            g_list_append(priv->should_be_sent_body_milters, g_object_ref(context));
     }
 
     send_body_to_child(children, first_child);

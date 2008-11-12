@@ -1,3 +1,8 @@
+2008-11-13  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/manager/milter-manager-children.c (send_body_to_child): NULL
+	check of body_file. Also ref and unref for should_sent_body_milters.
+
 2008-11-12  Kouhei Sutou  <kou@cozmixng.org>
 
 	* test/lib/milter-test-client.rb: support regular expression for
