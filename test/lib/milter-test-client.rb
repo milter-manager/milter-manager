@@ -147,13 +147,23 @@ class MilterTestClient
       end
 
       opts.on("--body=CHUNK",
-              "Add CHUNK targets to be applied ACTION") do |body_chunk|
-        @body_chunks << [@current_action, body_chunk]
+              "Add CHUNK targets to be applied ACTION") do |chunk|
+        @body_chunks << [@current_action, chunk]
+      end
+
+      opts.on("--body-regexp=CHUNK_REGEXP",
+              "Add CHUNK_REGEXP targets to be applied ACTION") do |chunk_regexp|
+        @body_chunks << [@current_action, Regexp.new(chunk_regexp)]
       end
 
       opts.on("--end-of-message=CHUNK",
               "Add CHUNK targets to be applied ACTION") do |chunk|
         @end_of_message_chunks << [@current_action, chunk]
+      end
+
+      opts.on("--end-of-message-regexp=CHUNK_REGEXP",
+              "Add CHUNK_REGEXP targets to be applied ACTION") do |chunk_regexp|
+        @end_of_message_chunks << [@current_action, Regexp.new(chunk_regexp)]
       end
     end
     opts.parse!(argv)
@@ -354,7 +364,7 @@ class MilterTestClient
     @content << chunk
 
     @body_chunks.each do |action, body_chunk|
-      if body_chunk == chunk
+      if body_chunk === chunk
         write_action(:body, action)
         return
       end
@@ -377,7 +387,7 @@ class MilterTestClient
     end
 
     @end_of_message_chunks.each do |action, end_of_message_chunk|
-      if end_of_message_chunk == chunk
+      if end_of_message_chunk === chunk
         write_action(:end_of_message, action)
         return
       end

@@ -1,3 +1,8 @@
+2008-11-12  Kouhei Sutou  <kou@cozmixng.org>
+
+	* test/lib/milter-test-client.rb: support regular expression for
+	chunk specification.
+
 2008-11-12  Hiroyuki Ikezoe  <poincare@ikezoe.net>
 
 	* fixtures/controller/body-accept.txt,
