@@ -577,6 +577,8 @@ cb_continue (MilterServerContext *context, gpointer user_data)
       case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
         send_body_and_end_of_message_to_next_child(children, context);
         break;
+      case MILTER_SERVER_CONTEXT_STATE_BODY:
+        break;
       default:
         remove_child_from_queue(children, context);
         break;
@@ -1547,6 +1549,8 @@ send_body_to_child (MilterManagerChildren *children, MilterServerContext *contex
 
     if (milter_server_context_get_skip_body(context))
         return TRUE;
+
+    priv->state = MILTER_MANAGER_CHILDREN_STATE_BODY;
 
     g_io_channel_seek_position(priv->body_file, 0, G_SEEK_SET, &error);
 
