@@ -512,7 +512,8 @@ remove_child_from_queue (MilterManagerChildren *children,
                                   priv->reply_code, priv->reply_extended_code,
                                   priv->reply_message);
         } else {
-            if (status != MILTER_STATUS_NOT_CHANGE) {
+            if (status != MILTER_STATUS_NOT_CHANGE &&
+                priv->current_state != MILTER_SERVER_CONTEXT_STATE_BODY) {
                 g_signal_emit_by_name(children,
                                       status_to_signal_name(status));
             }
@@ -562,7 +563,6 @@ send_body_and_end_of_message_to_next_child (MilterManagerChildren *children,
         return;
 
     if (g_list_length(priv->should_be_sent_body_milters) == 0) {
-
         if (priv->body_file) {
             priv->current_state = MILTER_SERVER_CONTEXT_STATE_BODY;
             emit_reply_status_of_state(children, MILTER_SERVER_CONTEXT_STATE_BODY);

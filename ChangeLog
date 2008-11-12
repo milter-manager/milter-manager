@@ -28,6 +28,8 @@
 	MilterServerContextState. Also manage body and end-of-message queue
 	with should_be_sent_body_milters list. But invalid state error
 	reappears in "body accept" test.
+	* milter/manager/milter-manager-children.c (remove_child_from_queue):
+	Do not emit signal while BODY state.
 
 2008-11-12  Kouhei Sutou  <kou@cozmixng.org>
 
