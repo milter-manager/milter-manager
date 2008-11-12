@@ -51,6 +51,7 @@ struct _MilterManagerChildrenPrivate
 
     GIOChannel *body_file;
     gchar *body_file_name;
+    gboolean replaced_body;
 };
 
 typedef struct _NegotiateData NegotiateData;
@@ -110,6 +111,10 @@ static void prepare_retry_establish_connection
 static void remove_queue_in_negotiate
                            (MilterManagerChildren *children,
                             MilterManagerChild *child);
+static gboolean write_to_body_file
+                           (MilterManagerChildren *children,
+                            const gchar *chunk,
+                            gsize size);
 static gboolean send_body_to_child
                            (MilterManagerChildren *children,
                             MilterServerContext *context);
@@ -178,6 +183,7 @@ milter_manager_children_init (MilterManagerChildren *milter)
                               
     priv->body_file = NULL;
     priv->body_file_name = NULL;
+    priv->replaced_body = FALSE;
 
     priv->current_state = MILTER_SERVER_CONTEXT_STATE_START;
 
@@ -546,6 +552,46 @@ emit_reply_status_of_state (MilterManagerChildren *children,
     g_signal_emit_by_name(children, status_to_signal_name(status));
 }
 
+static gboolean 
+emit_replace_body_signal (MilterManagerChildren *children)
+{
+    MilterManagerChildrenPrivate *priv;
+    GError *error = NULL;
+    GIOStatus status = G_IO_STATUS_NORMAL;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    g_io_channel_seek_position(priv->body_file, 0, G_SEEK_SET, &error);
+    if (error) {
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
+                error);
+        g_error_free(error);
+
+        return FALSE;
+    }
+
+    while (status == G_IO_STATUS_NORMAL) {
+        gchar buffer[MILTER_CHUNK_SIZE + 1];
+        gsize read_size;
+
+        status = g_io_channel_read_chars(priv->body_file, buffer, MILTER_CHUNK_SIZE,
+                                         &read_size, &error);
+    
+        if (status == G_IO_STATUS_NORMAL)
+            g_signal_emit_by_name(children, "replace-body", buffer, read_size);
+    }
+
+    if (error) {
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
+                error);
+        g_error_free(error);
+
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
 static void
 send_body_and_end_of_message_to_next_child (MilterManagerChildren *children,
                                             MilterServerContext *context)
@@ -567,6 +613,10 @@ send_body_and_end_of_message_to_next_child (MilterManagerChildren *children,
             priv->current_state = MILTER_SERVER_CONTEXT_STATE_BODY;
             emit_reply_status_of_state(children, MILTER_SERVER_CONTEXT_STATE_BODY);
         }
+
+        if (priv->replaced_body)
+            emit_replace_body_signal(children);
+
         emit_reply_status_of_state(children, MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE);
         return;
     }
@@ -777,8 +827,14 @@ cb_replace_body (MilterServerContext *context,
                  gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
+    MilterManagerChildrenPrivate *priv;
 
-    g_signal_emit_by_name(children, "replace-body", chunk, chunk_size);
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    if (!write_to_body_file(children, chunk, chunk_size))
+        return;
+
+    priv->replaced_body = TRUE;
 }
 
 static void
@@ -1548,15 +1604,10 @@ milter_manager_children_body (MilterManagerChildren *children,
                               const gchar           *chunk,
                               gsize                  size)
 {
-    MilterManagerChildrenPrivate *priv;
-    gboolean success = TRUE;
-
-    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
-
     if (!write_to_body_file(children, chunk, size))
         return FALSE;
 
-    return success;
+    return TRUE;
 }
 
 static gboolean 
@@ -1595,6 +1646,15 @@ send_body_to_child (MilterManagerChildren *children, MilterServerContext *contex
         }
     }
 
+    if (error) {
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
+                error);
+        g_error_free(error);
+
+        return FALSE;
+    }
+
+    g_io_channel_seek_position(priv->body_file, 0, G_SEEK_SET, &error);
     if (error) {
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
                 error);

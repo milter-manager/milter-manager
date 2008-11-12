@@ -903,8 +903,8 @@ data_scenario_end_of_message_action (void)
                  "replace-body", g_strdup("replace-body.txt"), g_free,
                  "progress", g_strdup("progress.txt"), g_free);
 
-    cut_add_data("replace-body - separate",
-                 g_strdup("replace-body-separate.txt"), g_free);
+    cut_add_data("replace-body - overwrite",
+                 g_strdup("replace-body-overwrite.txt"), g_free);
 }
 
 static void

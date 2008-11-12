@@ -36,6 +36,9 @@
 	since the first child has been quited in end-of-message state so
 	quit-response is received only from the second child in
 	milter-manager.
+	* milter/manager/milter-manager-children.c: Replace body chunk if
+	"REPLACE-BODY" reply is received and send the replaced body to the
+	child. Changed test name, "replace separate" -> "replace overwrite".
 
 2008-11-12  Kouhei Sutou  <kou@cozmixng.org>
 
