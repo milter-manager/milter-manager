@@ -91,6 +91,7 @@ static guint n_shutdown_emitted;
 static guint n_skip_emitted;
 static guint n_error_emitted;
 static guint n_finished_emitted;
+static guint n_end_of_message_timeout_emitted;
 
 static guint log_signal_id;
 
@@ -344,6 +345,8 @@ setup (void)
     n_error_emitted = 0;
     n_finished_emitted = 0;
 
+    n_end_of_message_timeout_emitted = 0;
+
     log_signal_id = 0;
 
     arguments1 = g_array_new(TRUE, TRUE, sizeof(gchar *));
@@ -551,7 +554,7 @@ wait_finished_helper (void)
     guint timeout_waiting_id;
     guint n_finished_emitted_before = n_finished_emitted;
 
-    timeout_waiting_id = g_timeout_add(50, cb_timeout_waiting,
+    timeout_waiting_id = g_timeout_add(500, cb_timeout_waiting,
                                        &timeout_waiting);
     while (timeout_waiting && n_finished_emitted == n_finished_emitted_before) {
         g_main_context_iteration(NULL, TRUE);
@@ -573,7 +576,7 @@ wait_children_error_helper (void)
     gboolean timeout_waiting = TRUE;
     guint timeout_waiting_id;
 
-    timeout_waiting_id = g_timeout_add(50, cb_timeout_waiting,
+    timeout_waiting_id = g_timeout_add(500, cb_timeout_waiting,
                                        &timeout_waiting);
     while (timeout_waiting && !actual_error) {
         g_main_context_iteration(NULL, TRUE);
@@ -1226,10 +1229,32 @@ test_not_important_status (gconstpointer data)
 static void
 set_timeout (gpointer data, gpointer user_data)
 {
-    milter_server_context_set_connection_timeout(MILTER_SERVER_CONTEXT(data), 0);
-    milter_server_context_set_reading_timeout(MILTER_SERVER_CONTEXT(data), 0);
-    milter_server_context_set_writing_timeout(MILTER_SERVER_CONTEXT(data), 0);
-    milter_server_context_set_end_of_message_timeout(MILTER_SERVER_CONTEXT(data), 0);
+    MilterServerContext *context = MILTER_SERVER_CONTEXT(data);
+
+    milter_server_context_set_connection_timeout(context, 0);
+    milter_server_context_set_reading_timeout(context, 0);
+    milter_server_context_set_writing_timeout(context, 0);
+    milter_server_context_set_end_of_message_timeout(context, 0);
+}
+
+static void
+cb_end_of_message_timeout (MilterServerContext *context, gpointer user_data)
+{
+    n_end_of_message_timeout_emitted++;
+    g_warning("%s", milter_server_context_get_name(context));
+}
+
+static void
+connect_timeout_signal (gpointer data, gpointer user_data)
+{
+    MilterServerContext *context = MILTER_SERVER_CONTEXT(data);
+
+#define CONNECT(name)                                                   \
+    g_signal_connect_after(context, #name, G_CALLBACK(cb_ ## name), NULL)
+
+    CONNECT(end_of_message_timeout);
+
+#undef CONNECT
 }
 
 static void
@@ -1241,9 +1266,8 @@ cb_log (MilterLogger *logger, const gchar *domain,
     if (level != MILTER_LOG_LEVEL_ERROR)
         return;
 
-    if (g_str_equal(domain, "milter-manager")) {
+    if (g_str_equal(domain, "milter-manager"))
         error_message = g_strdup(message);
-    }
 }
 
 void
@@ -1273,6 +1297,7 @@ void
 test_end_of_message_timeout (void)
 {
     MilterLogger *logger;
+    GList *child_list;
 
     arguments_append(arguments2,
                      "--action", "no_response",
@@ -1285,12 +1310,15 @@ test_end_of_message_timeout (void)
     logger = milter_logger();
     log_signal_id = g_signal_connect(logger, "log", G_CALLBACK(cb_log), NULL);
 
-    milter_manager_children_foreach(children, set_timeout, NULL);
+    child_list = milter_manager_children_get_children(children);
+    
+    set_timeout(g_list_next(child_list)->data, NULL);
+    connect_timeout_signal(g_list_next(child_list)->data, NULL);
 
     milter_manager_children_end_of_message(children, "end", strlen("end"));
 
-    g_main_context_iteration(NULL, TRUE);
     wait_reply(7, n_continue_emitted);
+    wait_reply(1, n_end_of_message_timeout_emitted);
 
     cut_assert_equal_string("The response of end-of-message from "
                             "milter@10027 is timed out.",
