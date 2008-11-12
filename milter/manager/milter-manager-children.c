@@ -601,13 +601,6 @@ send_body_and_end_of_message_to_next_child (MilterManagerChildren *children,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    /*
-     * If state is BODY, this function is called from cb_skip,
-     * so another reply in END-OF-MESSAGE will come.
-     */
-    if (milter_server_context_get_state(context) == MILTER_SERVER_CONTEXT_STATE_BODY)
-        return;
-
     if (g_list_length(priv->should_be_sent_body_milters) == 0) {
         if (priv->body_file) {
             priv->current_state = MILTER_SERVER_CONTEXT_STATE_BODY;
@@ -911,14 +904,6 @@ cb_skip (MilterServerContext *context, gpointer user_data)
     }
 
     compile_reply_status(children, state, MILTER_STATUS_SKIP);
-    switch (state) {
-      case MILTER_SERVER_CONTEXT_STATE_BODY:
-        send_body_and_end_of_message_to_next_child(children, context);
-        break;
-      default:
-        remove_child_from_queue(children, context);
-        break;
-    }
 }
 
 static void

@@ -1,29 +1,30 @@
 [scenario]
 clients=client10026;client10027
 import=end-of-header.txt
-actions=body-skip;end-of-message
+actions=body-skip-first;body-skip-second;end-of-message
 
 [client10026]
 port=10026
-arguments=--action;skip;--body;Skip
+arguments=--action;skip;--body-regexp;Skip
 
 [client10027]
 port=10027
 
-[body-skip]
+[body-skip-first]
 command=body
 
 chunk=Skip
+
+[body-skip-second]
+command=body
+
+chunk=Continue
+
+[end-of-message]
+command=end-of-message
 
 response=body
 n_received=2
 status=continue
 
-chunks=Skip;Skip
-
-[end-of-message]
-command=end-of-message
-
-response=end-of-message
-n_received=2
-status=continue
+chunks=SkipContinue;SkipContinue

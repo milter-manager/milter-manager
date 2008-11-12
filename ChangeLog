@@ -39,6 +39,10 @@
 	* milter/manager/milter-manager-children.c: Replace body chunk if
 	"REPLACE-BODY" reply is received and send the replaced body to the
 	child. Changed test name, "replace separate" -> "replace overwrite".
+	* milter/manager/milter-manager-children.c: Cleanup skip process.
+	* test/manager/test-controller.c: Also check chunks in end-of-message.
+	* test/fixtures/controller/body-skip-*.txt: check body response and
+	chunks.
 
 2008-11-12  Kouhei Sutou  <kou@cozmixng.org>
 

@@ -618,6 +618,11 @@ do_end_of_message (MilterManagerTestScenario *scenario, const gchar *group)
                                              chunk ? strlen(chunk) : 0);
 
     cut_trace(assert_response(scenario, group));
+    if (get_string_g_list(scenario, group, "chunks")) {
+        gcut_assert_equal_list_string(get_string_g_list(scenario, group, "chunks"),
+                                      collect_received_strings(body_chunk),
+                                      "<%s>", group);
+    }
     /* FIXME */
 /*
     client = test_clients->data;
