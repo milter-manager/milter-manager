@@ -891,6 +891,7 @@ data_scenario_basic (void)
         "body", g_strdup("body.txt"), g_free,
         "end-of-message", g_strdup("end-of-message.txt"), g_free,
         "end-of-message - chunk", g_strdup("end-of-message-chunk.txt"), g_free,
+        "end-of-message - reject", g_strdup("end-of-message-reject.txt"), g_free,
         "quit", g_strdup("quit.txt"), g_free,
         "abort", g_strdup("abort.txt"), g_free,
         "unknown", g_strdup("unknown.txt"), g_free,

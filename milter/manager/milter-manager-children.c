@@ -51,6 +51,8 @@ struct _MilterManagerChildrenPrivate
 
     GIOChannel *body_file;
     gchar *body_file_name;
+    gchar *end_of_message_chunk;
+    gsize end_of_message_size;
     gboolean replaced_body;
 };
 
@@ -183,6 +185,8 @@ milter_manager_children_init (MilterManagerChildren *milter)
                               
     priv->body_file = NULL;
     priv->body_file_name = NULL;
+    priv->end_of_message_chunk = NULL;
+    priv->end_of_message_size = 0;
     priv->replaced_body = FALSE;
 
     priv->current_state = MILTER_SERVER_CONTEXT_STATE_START;
@@ -260,6 +264,11 @@ dispose (GObject *object)
         g_unlink(priv->body_file_name);
         g_free(priv->body_file_name);
         priv->body_file_name = NULL;
+    }
+
+    if (priv->end_of_message_chunk) {
+        g_free(priv->end_of_message_chunk);
+        priv->end_of_message_chunk = NULL;
     }
 
     if (priv->reply_extended_code) {
@@ -618,7 +627,9 @@ send_body_and_end_of_message_to_next_child (MilterManagerChildren *children,
 
     next_child = MILTER_SERVER_CONTEXT(priv->should_be_sent_body_milters->data);
     send_body_to_child(children, next_child);
-    milter_server_context_end_of_message(next_child, NULL, 0);
+    milter_server_context_end_of_message(next_child,
+                                         priv->end_of_message_chunk,
+                                         priv->end_of_message_size);
 }
 
 static void
@@ -1662,14 +1673,15 @@ milter_manager_children_end_of_message (MilterManagerChildren *children,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    /* Write last chunk */
-    if (!write_to_body_file(children, chunk, size))
-        return FALSE;
-
     child = priv->milters;
 
     if (!child) 
         return TRUE;
+
+    if (priv->end_of_message_chunk)
+        g_free(priv->end_of_message_chunk);
+    priv->end_of_message_chunk = g_strdup(chunk);
+    priv->end_of_message_size = size;
 
     first_child = MILTER_SERVER_CONTEXT(child->data);
 
@@ -1685,7 +1697,9 @@ milter_manager_children_end_of_message (MilterManagerChildren *children,
 
     send_body_to_child(children, first_child);
 
-    return milter_server_context_end_of_message(first_child, NULL, 0);
+    return milter_server_context_end_of_message(first_child,
+                                                priv->end_of_message_chunk,
+                                                priv->end_of_message_size);
 }
 
 gboolean

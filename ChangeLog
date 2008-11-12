@@ -43,6 +43,8 @@
 	* test/manager/test-controller.c: Also check chunks in end-of-message.
 	* test/fixtures/controller/body-skip-*.txt: check body response and
 	chunks.
+	* milter/manager/milter-manager-children.c: Preserve the chunk of
+	END-OF-MESSAGE aside from body chunks.
 
 2008-11-12  Kouhei Sutou  <kou@cozmixng.org>
 
