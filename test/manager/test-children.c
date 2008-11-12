@@ -1241,7 +1241,6 @@ static void
 cb_end_of_message_timeout (MilterServerContext *context, gpointer user_data)
 {
     n_end_of_message_timeout_emitted++;
-    g_warning("%s", milter_server_context_get_name(context));
 }
 
 static void
