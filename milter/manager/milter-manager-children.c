@@ -925,13 +925,19 @@ cb_finished (MilterHandler *handler, gpointer user_data)
     MilterManagerChildren *children;
     MilterManagerChildrenPrivate *priv;
     MilterServerContext *context = MILTER_SERVER_CONTEXT(handler);
+    gchar *state_string;
 
     children = MILTER_MANAGER_CHILDREN(user_data);
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     expire_child(children, context);
-    milter_info("%s exits.",
-                milter_server_context_get_name(context));
+    state_string = milter_utils_inspect_enum(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                                             priv->current_state);
+    milter_info("%s exits on %s.",
+                milter_server_context_get_name(context),
+                state_string);
+    g_free(state_string);
+
     remove_child_from_queue(children, context);
     if (g_queue_is_empty(priv->reply_queue))
         milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(children));
