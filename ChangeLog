@@ -17,6 +17,8 @@
 	since "BODY" command does not send chunks to milter until
 	"END-OF-MESSAGE" command is sent. Also not clear test client data on
 	body command.
+	* milter/manager/milter-manager-children.[ch]: Added
+	milter_manager_children_get_state().
 
 2008-11-12  Kouhei Sutou  <kou@cozmixng.org>
 

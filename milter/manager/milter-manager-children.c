@@ -549,8 +549,12 @@ send_body_and_end_of_message_to_next_child (MilterManagerChildren *children,
     expire_child(children, context);
     milter_server_context_quit(context);
     if (g_list_length(priv->milters) == 0) {
-        if (priv->body_file)
+        if (priv->body_file) {
+            priv->state = MILTER_MANAGER_CHILDREN_STATE_BODY;
             emit_reply_status_of_state(children, MILTER_SERVER_CONTEXT_STATE_BODY);
+        }
+            
+        priv->state = MILTER_MANAGER_CHILDREN_STATE_END_OF_MESSAGE;
         emit_reply_status_of_state(children, MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE);
         return;
     }
@@ -1712,6 +1716,12 @@ milter_manager_children_set_retry_connect_time (MilterManagerChildren *children,
                                                 gdouble time)
 {
     MILTER_MANAGER_CHILDREN_GET_PRIVATE(children)->retry_connect_time = time;
+}
+
+MilterManagerChildrenState
+milter_manager_children_get_state (MilterManagerChildren *children)
+{
+    return MILTER_MANAGER_CHILDREN_GET_PRIVATE(children)->state;
 }
 
 /*
