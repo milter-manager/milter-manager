@@ -1,0 +1,21 @@
+[scenario]
+clients=client10026;client10027
+import=body.txt
+actions=end-of-message-change-header
+
+[client10026]
+port=10026
+arguments=--change-header;X-Test-Header1:2:Test Header1 Value
+
+[client10027]
+port=10027
+arguments=--change-header;X-Test-Header2:1:Test Header2 Value
+
+[end-of-message-change-header]
+command=end-of-message
+
+response=end-of-message
+n_received=2
+status=continue
+
+change_headers=2:X-Test-Header1:Test Header1 Value;1:X-Test-Header2:Test Header2 Value

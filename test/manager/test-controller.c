@@ -684,6 +684,52 @@ do_end_of_message_add_header (MilterManagerTestScenario *scenario, const gchar *
 }
 
 static void
+do_end_of_message_insert_header (MilterManagerTestScenario *scenario, const gchar *group)
+{
+    const GList *expected_inserted_headers;
+    const GList *actual_inserted_headers;
+
+    expected_inserted_headers = get_header_list(scenario, group, "insert_headers");
+
+    actual_inserted_headers =
+        milter_manager_test_server_get_received_insert_headers(server);
+    actual_inserted_headers =
+        gcut_take_list(
+            g_list_sort(g_list_copy((GList *)actual_inserted_headers),
+                        (GCompareFunc)milter_manager_test_header_compare),
+            NULL);
+
+    gcut_assert_equal_list(
+        expected_inserted_headers, actual_inserted_headers,
+        (GEqualFunc)milter_manager_test_header_equal,
+        (GCutInspectFunc)milter_manager_test_header_inspect,
+        NULL);
+}
+
+static void
+do_end_of_message_change_header (MilterManagerTestScenario *scenario, const gchar *group)
+{
+    const GList *expected_changeed_headers;
+    const GList *actual_changeed_headers;
+
+    expected_changeed_headers = get_header_list(scenario, group, "change_headers");
+
+    actual_changeed_headers =
+        milter_manager_test_server_get_received_change_headers(server);
+    actual_changeed_headers =
+        gcut_take_list(
+            g_list_sort(g_list_copy((GList *)actual_changeed_headers),
+                        (GCompareFunc)milter_manager_test_header_compare),
+            NULL);
+
+    gcut_assert_equal_list(
+        expected_changeed_headers, actual_changeed_headers,
+        (GEqualFunc)milter_manager_test_header_equal,
+        (GCutInspectFunc)milter_manager_test_header_inspect,
+        NULL);
+}
+
+static void
 do_end_of_message_change_from (MilterManagerTestScenario *scenario, const gchar *group)
 {
     const GList *expected_froms;
@@ -763,6 +809,8 @@ do_end_of_message_full (MilterManagerTestScenario *scenario, const gchar *group)
     cut_trace(milter_manager_test_server_wait_signal(server));
     cut_trace(do_end_of_message_quarantine(scenario, group));
     cut_trace(do_end_of_message_add_header(scenario, group));
+    cut_trace(do_end_of_message_insert_header(scenario, group));
+    cut_trace(do_end_of_message_change_header(scenario, group));
     cut_trace(do_end_of_message_change_from(scenario, group));
     cut_trace(do_end_of_message_add_recipient(scenario, group));
     cut_trace(do_end_of_message_delete_recipient(scenario, group));
@@ -906,6 +954,8 @@ data_scenario_end_of_message_action (void)
 {
     cut_add_data("quarantine", g_strdup("quarantine.txt"), g_free,
                  "add-header", g_strdup("add-header.txt"), g_free,
+                 "insert-header", g_strdup("insert-header.txt"), g_free,
+                 "change-header", g_strdup("change-header.txt"), g_free,
                  "change-from", g_strdup("change-from.txt"), g_free,
                  "add-recipient", g_strdup("add-recipient.txt"), g_free,
                  "delete-recipient", g_strdup("delete-recipient.txt"), g_free,
