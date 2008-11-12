@@ -23,6 +23,11 @@
 	MILTER_MANAGER_CHILDREN_STATE_BODY before send body.
 	* milter/manager/milter-manager-children.c (cb_continue): Do nothing
 	if body state. Fix invalid state error.
+	* milter/manager/milter-manager-children.[ch]: Now
+	MilterManagerChildren has its state represented by
+	MilterServerContextState. Also manage body and end-of-message queue
+	with should_be_sent_body_milters list. But invalid state error
+	reappears in "body accept" test.
 
 2008-11-12  Kouhei Sutou  <kou@cozmixng.org>
 

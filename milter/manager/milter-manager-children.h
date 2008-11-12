@@ -43,24 +43,6 @@ typedef enum
     MILTER_MANAGER_CHILDREN_ERROR_MILTER_EXIT
 } MilterManagerChildrenError;
 
-typedef enum
-{
-    MILTER_MANAGER_CHILDREN_STATE_START,
-    MILTER_MANAGER_CHILDREN_STATE_NEGOTIATE,
-    MILTER_MANAGER_CHILDREN_STATE_CONNECT,
-    MILTER_MANAGER_CHILDREN_STATE_HELO,
-    MILTER_MANAGER_CHILDREN_STATE_ENVELOPE_FROM,
-    MILTER_MANAGER_CHILDREN_STATE_ENVELOPE_RECIPIENT,
-    MILTER_MANAGER_CHILDREN_STATE_DATA,
-    MILTER_MANAGER_CHILDREN_STATE_UNKNOWN,
-    MILTER_MANAGER_CHILDREN_STATE_HEADER,
-    MILTER_MANAGER_CHILDREN_STATE_END_OF_HEADER,
-    MILTER_MANAGER_CHILDREN_STATE_BODY,
-    MILTER_MANAGER_CHILDREN_STATE_END_OF_MESSAGE,
-    MILTER_MANAGER_CHILDREN_STATE_QUIT,
-    MILTER_MANAGER_CHILDREN_STATE_ABORT,
-} MilterManagerChildrenState;
-
 typedef struct _MilterManagerChildrenClass    MilterManagerChildrenClass;
 
 struct _MilterManagerChildren
@@ -131,8 +113,9 @@ gboolean               milter_manager_children_is_important_status
 void                   milter_manager_children_set_status  (MilterManagerChildren *children,
                                                             MilterServerContextState state,
                                                             MilterStatus status);
-MilterManagerChildrenState
-                       milter_manager_children_get_state   (MilterManagerChildren *children);
+MilterServerContextState
+                       milter_manager_children_get_current_state
+                                                           (MilterManagerChildren *children);
 
 #endif /* __MILTER_MANAGER_CHILDREN_H__ */
 
