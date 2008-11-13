@@ -31,14 +31,13 @@
 #include <milter-manager-test-client.h>
 #include <milter-manager-test-scenario.h>
 #include <milter/manager/milter-manager-children.h>
+#include <milter/manager/milter-manager-enum-types.h>
 #undef shutdown
 
 void test_foreach (void);
 void data_scenario (void);
 void test_scenario (gconstpointer data);
 void test_negotiate (void);
-void test_retry_negotiate (void);
-void test_retry_negotiate_failure (void);
 void test_connect (void);
 void test_connect_pass (void);
 void test_connect_half_pass (void);
@@ -102,6 +101,12 @@ static GArray *arguments2;
 static GList *test_clients;
 
 static MilterOption *actual_option;
+
+void
+startup (void)
+{
+    MILTER_TYPE_MANAGER_CHILD_ERROR;
+}
 
 static void
 cb_negotiate_reply (MilterManagerChildren *children,
@@ -860,7 +865,9 @@ void
 data_scenario (void)
 {
     cut_add_data("negotiate", g_strdup("negotiate.txt"), g_free,
-                 "negotiate - retry", g_strdup("negotiate-retry.txt"), g_free);
+                 "negotiate - retry", g_strdup("negotiate-retry.txt"), g_free,
+                 "negotiate - retry - fail",
+                 g_strdup("negotiate-retry-fail.txt"), g_free);
 }
 
 void
@@ -907,80 +914,6 @@ test_negotiate (void)
 
     milter_manager_children_negotiate(children, option);
     wait_reply(1, n_negotiate_reply_emitted);
-}
-
-void
-test_retry_negotiate (void)
-{
-    gchar *command;
-    option = milter_option_new(2,
-                               MILTER_ACTION_ADD_HEADERS |
-                               MILTER_ACTION_CHANGE_BODY,
-                               MILTER_STEP_NONE);
-    g_object_set(config,
-                 "privilege-mode", TRUE,
-                 NULL);
-    command = g_build_filename(milter_manager_test_get_base_dir(),
-                               "lib",
-                               "milter-test-client.rb",
-                               NULL);
-    cut_take_string(command);
-    start_client(10026, arguments1);
-
-    add_child_with_command_and_options("milter@10027",
-                                       "inet:10027@localhost",
-                                       command,
-                                       "--print-status "
-                                       "--timeout=2.0 "
-                                       "--port=10027");
-    add_child("milter@10026", "inet:10026@localhost");
-
-    milter_manager_children_set_retry_connect_time(children, 0.3);
-    milter_manager_children_negotiate(children, option);
-    wait_reply(1, n_negotiate_reply_emitted);
-    milter_manager_children_quit(children);
-}
-
-void
-test_retry_negotiate_failure (void)
-{
-    gchar *command;
-    expected_error = g_error_new(MILTER_MANAGER_CHILD_ERROR,
-                                 MILTER_MANAGER_CHILD_ERROR_MILTER_EXIT,
-                                 "%s exits with status: 0",
-                                 "milter@10027");
-    option = milter_option_new(2,
-                               MILTER_ACTION_ADD_HEADERS |
-                               MILTER_ACTION_CHANGE_BODY,
-                               MILTER_STEP_NONE);
-    g_object_set(config,
-                 "privilege-mode", TRUE,
-                 NULL);
-    command = g_build_filename(milter_manager_test_get_base_dir(),
-                               "lib",
-                               "milter-test-client.rb",
-                               NULL);
-    cut_take_string(command);
-    start_client(10026, arguments1);
-
-    add_child_with_command_and_options("milter@10026",
-                                       "inet:10026@localhost",
-                                       command,
-                                       "--print-status "
-                                       "--timeout=2.0 "
-                                       "--port=10026");
-    add_child_with_command_and_options("milter@10027",
-                                       "inet:10027@localhost",
-                                       "/bin/echo",
-                                       "-n");
-
-    milter_manager_children_set_retry_connect_time(children, 0.3);
-
-    milter_manager_children_negotiate(children, option);
-    wait_reply(1, n_negotiate_reply_emitted);
-    milter_manager_children_quit(children);
-    cut_assert_equal_uint(1, n_error_emitted);
-    gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void

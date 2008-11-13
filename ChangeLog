@@ -1,5 +1,9 @@
 2008-11-13  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/test-children.c,
+	test/fixtures/children/negotiate-retry-fail.txt: rewrite retry
+	failure on negotiate test as scenario based test.
+
 	* milter/manager/milter-manager-headers.c: remove needless function.
 
 	* test/lib/milter-manager-test-scenario.[ch]: support egg creation.

@@ -39,6 +39,10 @@ class MilterTestClient
 
   def parse_options(argv)
     opts = OptionParser.new do |opts|
+      opts.on("--exit", "Exit immediately") do
+        exit(true)
+      end
+
       opts.on("--port=PORT", Integer, "Listen on PORT (#{@port})") do |port|
         @port = port
       end

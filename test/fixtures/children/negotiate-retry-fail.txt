@@ -1,6 +1,6 @@
 [scenario]
 clients=client10026;client10027
-actions=negotiate-retry
+actions=negotiate-retry-fail
 
 [config]
 privilege_mode=true
@@ -12,8 +12,9 @@ port=10026
 [client10027]
 port=10027
 run=false
+arguments=--exit
 
-[negotiate-retry]
+[negotiate-retry-fail]
 command=negotiate
 
 version=2
@@ -22,3 +23,8 @@ step=none
 
 response=negotiate-reply
 n_emitted=1
+
+error_domain=milter-manager-child-error-quark
+error_type=MilterManagerChildError
+error_code=milter-exit
+error_message=client10027 exits with status: 0
