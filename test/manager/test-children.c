@@ -91,6 +91,7 @@ static guint n_shutdown_emitted;
 static guint n_skip_emitted;
 static guint n_error_emitted;
 static guint n_finished_emitted;
+static guint n_reading_timeout_emitted;
 static guint n_end_of_message_timeout_emitted;
 
 static guint log_signal_id;
@@ -345,6 +346,7 @@ setup (void)
     n_error_emitted = 0;
     n_finished_emitted = 0;
 
+    n_reading_timeout_emitted = 0;
     n_end_of_message_timeout_emitted = 0;
 
     log_signal_id = 0;
@@ -1232,6 +1234,12 @@ set_timeout (gpointer data, gpointer user_data)
 }
 
 static void
+cb_reading_timeout (MilterServerContext *context, gpointer user_data)
+{
+    n_reading_timeout_emitted++;
+}
+
+static void
 cb_end_of_message_timeout (MilterServerContext *context, gpointer user_data)
 {
     n_end_of_message_timeout_emitted++;
@@ -1246,6 +1254,7 @@ connect_timeout_signal (gpointer data, gpointer user_data)
     g_signal_connect_after(context, #name, G_CALLBACK(cb_ ## name), NULL)
 
     CONNECT(end_of_message_timeout);
+    CONNECT(reading_timeout);
 
 #undef CONNECT
 }
@@ -1286,11 +1295,20 @@ test_connection_timeout (void)
                             error_message);
 }
 
+static void
+prepare_timeout_test (void)
+{
+    GList *child_list;
+    child_list = milter_manager_children_get_children(children);
+    
+    set_timeout(g_list_next(child_list)->data, NULL);
+    connect_timeout_signal(g_list_next(child_list)->data, NULL);
+}
+
 void
 test_end_of_message_timeout (void)
 {
     MilterLogger *logger;
-    GList *child_list;
 
     arguments_append(arguments2,
                      "--action", "no_response",
@@ -1303,10 +1321,7 @@ test_end_of_message_timeout (void)
     logger = milter_logger();
     log_signal_id = g_signal_connect(logger, "log", G_CALLBACK(cb_log), NULL);
 
-    child_list = milter_manager_children_get_children(children);
-    
-    set_timeout(g_list_next(child_list)->data, NULL);
-    connect_timeout_signal(g_list_next(child_list)->data, NULL);
+    prepare_timeout_test();
 
     milter_manager_children_end_of_message(children, "end", strlen("end"));
 
@@ -1343,7 +1358,7 @@ test_reading_timeout (void)
     logger = milter_logger();
     log_signal_id = g_signal_connect(logger, "log", G_CALLBACK(cb_log), NULL);
 
-    milter_manager_children_foreach(children, set_timeout, NULL);
+    prepare_timeout_test();
 
     address.sin_family = AF_INET;
     address.sin_port = g_htons(50443);
@@ -1354,8 +1369,8 @@ test_reading_timeout (void)
                                     (struct sockaddr *)(&address),
                                     sizeof(address));
 
-    g_main_context_iteration(NULL, TRUE);
     wait_reply(1, n_continue_emitted);
+    wait_reply(1, n_reading_timeout_emitted);
 
     cut_assert_equal_string("reading from milter@10027 is timed out.",
                             error_message);
