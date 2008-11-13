@@ -12,6 +12,8 @@ port=10027
 [abort]
 command=abort
 
+response[client10026]=quit
+response[client10027]=abort
 response=abort
 n_received=1
 status=continue
