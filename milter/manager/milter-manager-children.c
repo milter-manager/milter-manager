@@ -25,6 +25,7 @@
 
 #include <glib/gstdio.h>
 #include "milter-manager-configuration.h"
+#include "milter-manager-headers.h"
 
 #define MILTER_MANAGER_CHILDREN_GET_PRIVATE(obj)                    \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                             \
@@ -49,6 +50,7 @@ struct _MilterManagerChildrenPrivate
     gchar *reply_message;
     gdouble retry_connect_time;
 
+    MilterManagerHeaders *headers;
     GIOChannel *body_file;
     gchar *body_file_name;
     gchar *end_of_message_chunk;
@@ -183,6 +185,7 @@ milter_manager_children_init (MilterManagerChildren *milter)
     priv->option = NULL;
     priv->reply_statuses = g_hash_table_new(g_direct_hash, g_direct_equal);
                               
+    priv->headers = milter_manager_headers_new();
     priv->body_file = NULL;
     priv->body_file_name = NULL;
     priv->end_of_message_chunk = NULL;
@@ -253,6 +256,11 @@ dispose (GObject *object)
     if (priv->reply_statuses) {
         g_hash_table_unref(priv->reply_statuses);
         priv->reply_statuses = NULL;
+    }
+
+    if (priv->headers) {
+        g_object_unref(priv->headers);
+        priv->headers = NULL;
     }
 
     if (priv->body_file) {
@@ -651,36 +659,13 @@ cb_continue (MilterServerContext *context, gpointer user_data)
       case MILTER_SERVER_CONTEXT_STATE_BODY:
         priv->current_state = state;
         break;
+      case MILTER_SERVER_CONTEXT_STATE_DATA:
+      case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
+      case MILTER_SERVER_CONTEXT_STATE_HEADER:
       default:
         remove_child_from_queue(children, context);
         break;
     }
-}
-
-static void
-cb_reply_code (MilterServerContext *context,
-               guint code,
-               const gchar *extended_code,
-               const gchar *message,
-               gpointer user_data)
-{
-    MilterManagerChildren *children = user_data;
-    MilterServerContextState state;
-    MilterManagerChildrenPrivate *priv;
-
-    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
-
-    priv->reply_code = code;
-    if (priv->reply_extended_code)
-        g_free(priv->reply_extended_code);
-    priv->reply_extended_code = g_strdup(extended_code);
-    if (priv->reply_message)
-        g_free(priv->reply_message);
-    priv->reply_message = g_strdup(message);
-
-    state = milter_server_context_get_state(context);
-    compile_reply_status(children, state, MILTER_STATUS_REJECT);
-    remove_child_from_queue(children, context);
 }
 
 static void
@@ -699,6 +684,10 @@ cb_temporary_failure (MilterServerContext *context, gpointer user_data)
       case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT:
         remove_child_from_queue(children, context);
         break;
+      case MILTER_SERVER_CONTEXT_STATE_DATA:
+      case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
+      case MILTER_SERVER_CONTEXT_STATE_HEADER:
+      case MILTER_SERVER_CONTEXT_STATE_BODY:
       default:
         milter_server_context_quit(context);
         break;
@@ -721,10 +710,37 @@ cb_reject (MilterServerContext *context, gpointer user_data)
       case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT:
         remove_child_from_queue(children, context);
         break;
+      case MILTER_SERVER_CONTEXT_STATE_DATA:
+      case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
+      case MILTER_SERVER_CONTEXT_STATE_HEADER:
+      case MILTER_SERVER_CONTEXT_STATE_BODY:
       default:
         milter_server_context_quit(context);
         break;
     }
+}
+
+static void
+cb_reply_code (MilterServerContext *context,
+               guint code,
+               const gchar *extended_code,
+               const gchar *message,
+               gpointer user_data)
+{
+    MilterManagerChildren *children = user_data;
+    MilterManagerChildrenPrivate *priv;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    priv->reply_code = code;
+    if (priv->reply_extended_code)
+        g_free(priv->reply_extended_code);
+    priv->reply_extended_code = g_strdup(extended_code);
+    if (priv->reply_message)
+        g_free(priv->reply_message);
+    priv->reply_message = g_strdup(message);
+
+    cb_reject(context, user_data);
 }
 
 static void
@@ -740,6 +756,10 @@ cb_accept (MilterServerContext *context, gpointer user_data)
       case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
         send_body_and_end_of_message_to_next_child(children, context);
         break;
+      case MILTER_SERVER_CONTEXT_STATE_DATA:
+      case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
+      case MILTER_SERVER_CONTEXT_STATE_HEADER:
+      case MILTER_SERVER_CONTEXT_STATE_BODY:
       default:
         milter_server_context_quit(context);
         break;
@@ -759,6 +779,10 @@ cb_discard (MilterServerContext *context, gpointer user_data)
       case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
         send_body_and_end_of_message_to_next_child(children, context);
         break;
+      case MILTER_SERVER_CONTEXT_STATE_DATA:
+      case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
+      case MILTER_SERVER_CONTEXT_STATE_HEADER:
+      case MILTER_SERVER_CONTEXT_STATE_BODY:
       default:
         milter_server_context_quit(context);
         break;
@@ -771,7 +795,12 @@ cb_add_header (MilterServerContext *context,
                gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
+    MilterManagerChildrenPrivate *priv;
 
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    milter_manager_headers_add_header(priv->headers,
+                                      name, value);
     g_signal_emit_by_name(children, "add-header", name, value);
 }
 
@@ -781,6 +810,12 @@ cb_insert_header (MilterServerContext *context,
                   gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
+    MilterManagerChildrenPrivate *priv;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    milter_manager_headers_insert_header(priv->headers,
+                                         index, name, value);
 
     g_signal_emit_by_name(children, "insert-header", index, name, value);
 }
@@ -791,6 +826,12 @@ cb_change_header (MilterServerContext *context,
                   gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
+    MilterManagerChildrenPrivate *priv;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    milter_manager_headers_change_header(priv->headers,
+                                         name, index, value);
 
     g_signal_emit_by_name(children, "change-header", name, index, value);
 }
@@ -1506,6 +1547,7 @@ milter_manager_children_header (MilterManagerChildren *children,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
+    milter_manager_headers_add_header(priv->headers, name, value);
     init_reply_queue(children, MILTER_SERVER_CONTEXT_STATE_HEADER);
     for (child = priv->milters; child; child = g_list_next(child)) {
         MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);

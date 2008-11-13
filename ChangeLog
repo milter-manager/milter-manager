@@ -32,6 +32,9 @@
 	reponse[client10026] entry in scenario file. It is only enabled to be
 	used in bort, need to be generalization.
 	* milter/manager/milter-manager-headers.[ch]: Added.
+	* milter/manager/milter-manager-children.c: Manage headers (not
+	completed yet). 
+	(cb_reject_code): Invoke cb_reject() at the end of the function.
 
 2008-11-12  Kouhei Sutou  <kou@cozmixng.org>
 
