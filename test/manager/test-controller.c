@@ -249,12 +249,11 @@ assert_have_response_helper (const gchar *name, gboolean should_timeout)
     gcut_assert_error(actual_error);
 }
 
-#define wait_reply(actual_getter)                                       \
-    cut_trace_with_info_expression(                                     \
-        milter_manager_test_clients_wait_reply(                         \
-            started_clients,                                            \
-            milter_manager_test_client_get_n_ ## actual_getter ## _received), \
-        wait_reply(actual_getter))
+#define wait_reply_from_client(client, actual_getter)   \
+    cut_trace_with_info_expression(                     \
+        milter_manager_test_client_wait_reply(          \
+            client, actual_getter),                     \
+        wait_reply_from_client(client, actual_getter))
 
 
 #define wait_finished()                    \
@@ -344,6 +343,9 @@ response_to_get_n_received (const gchar *response)
 #define get_string(scenario, group, key)                                \
     milter_manager_test_scenario_get_string(scenario, group, key)
 
+#define get_string_with_sub_key(scenario, group, key, sub_key)          \
+    milter_manager_test_scenario_get_string_with_sub_key(scenario, group, key, sub_key)
+
 #define get_string_list(scenario, group, key, length)                   \
     milter_manager_test_scenario_get_string_list(scenario, group, key, length)
 
@@ -398,13 +400,31 @@ assert_response_common (MilterManagerTestScenario *scenario, const gchar *group)
     MilterStatus status;
 
     n_received = get_integer(scenario, group, "n_received");
-    response = get_string(scenario, group, "response");
+    if (g_str_equal(group, "abort")) {
+        const GList *node;
+        for (node = started_clients; node; node = g_list_next(node)) {
+            const gchar *name;
+
+            MilterManagerTestClient *client = node->data;
+            name = milter_manager_test_client_get_name(client);
+
+            response = get_string_with_sub_key(scenario, group, "response", name);
+            if (g_str_equal(response, "none")) {
+                /* FIXME check somthing! */
+            } else {
+                get_n_received = response_to_get_n_received(response);
+                wait_reply_from_client(client, get_n_received);
+            }
+        }
+    } else {
+        response = get_string(scenario, group, "response");
+    }
     status = get_enum(scenario, group, "status", MILTER_TYPE_STATUS);
 
     if (g_str_equal(response, "quit")) {
         wait_finished();
     } else if (g_str_equal(response, "abort")) {
-        wait_reply(abort);
+        /* Do nothing */
     } else {
         const gchar *response_signal_name;
 
