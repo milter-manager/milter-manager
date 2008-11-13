@@ -11,6 +11,11 @@
 
 2008-11-12  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/lib/milter-manager-test-utils.[ch]
+	(milter_manager_test_wait_signal): support timeout check.
+	* test/manager/test-children.c, test/manager/test-controller.c:
+	use milter_manager_test_wait_signal() with timeout check.
+
 	* test/lib/milter-manager-test-server.[ch]
 	(milter_manager_test_server_wait_signal): move to ...
 	* test/lib/milter-manager-test-utils.[ch]

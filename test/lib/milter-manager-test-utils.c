@@ -57,7 +57,7 @@ cb_check_emitted (gpointer data)
 }
 
 void
-milter_manager_test_wait_signal (void)
+milter_manager_test_wait_signal (gboolean should_timeout)
 {
     gboolean timeout_emitted = FALSE;
     gboolean idle_emitted = FALSE;
@@ -74,7 +74,10 @@ milter_manager_test_wait_signal (void)
     g_source_remove(idle_id);
     g_source_remove(timeout_id);
 
-    cut_assert_false(timeout_emitted, "timeout");
+    if (should_timeout)
+        cut_assert_true(timeout_emitted, "should timeout");
+    else
+        cut_assert_false(timeout_emitted, "timeout");
 }
 
 void

@@ -710,13 +710,7 @@ assert_response_common (MilterManagerTestScenario *scenario, const gchar *group)
 /*     } else if (g_str_equal(response, "abort")) { */
 /*         wait_reply(abort); */
     } else {
-/*
-        const gchar *response_signal_name;
-
-        response_signal_name = cut_take_printf("%s-response", response);
-         cut_trace(assert_have_response_helper(response_signal_name,
-                                               n_emitted == 0));
-*/
+        milter_manager_test_wait_signal(n_emitted == 0);
     }
 
     actual_n_emitted = get_n_emitted(response);

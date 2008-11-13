@@ -25,7 +25,7 @@
 G_BEGIN_DECLS
 
 const gchar *milter_manager_test_get_base_dir (void);
-void         milter_manager_test_wait_signal (void);
+void         milter_manager_test_wait_signal (gboolean should_timeout);
 
 typedef struct _MilterManagerTestHeader
 {
