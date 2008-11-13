@@ -6,6 +6,8 @@
 	Remove should_sent_body_milters before NULL check of body_file.
 	* test/manager/test-children.c (test_end_of_message_timeout): wait
 	until end-of-message-timeout signal is received.
+	* test/lib/milter-test-client.rb: info_abort to get abort received
+	status from MilterManagerTestClient.
 
 2008-11-12  Kouhei Sutou  <kou@cozmixng.org>
 
