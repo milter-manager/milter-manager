@@ -847,7 +847,7 @@ milter_manager_test_client_wait_reply (MilterManagerTestClient *client,
 
     timeout_waiting_id = g_timeout_add(100, cb_timeout_waiting,
                                        &timeout_waiting);
-    while (timeout_waiting && getter(client))
+    while (timeout_waiting && !getter(client))
         g_main_context_iteration(NULL, TRUE);
     g_source_remove(timeout_waiting_id);
 
