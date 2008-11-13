@@ -483,15 +483,6 @@ milter_manager_test_server_get_n_reply_codes (MilterManagerTestServer *server)
     return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->n_reply_codes;
 }
 
-static gboolean
-cb_waiting (gpointer data)
-{
-    gboolean *waiting = data;
-
-    *waiting = FALSE;
-    return FALSE;
-}
-
 const GList *
 milter_manager_test_server_get_received_add_headers (MilterManagerTestServer *server)
 {
@@ -544,31 +535,6 @@ const GList *
 milter_manager_test_server_get_received_reply_codes (MilterManagerTestServer *server)
 {
     return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->received_reply_codes;
-}
-
-void
-milter_manager_test_server_wait_signal (MilterManagerTestServer *server)
-{
-    gboolean timeout_waiting = TRUE;
-    gboolean idle_waiting = TRUE;
-    guint timeout_waiting_id, idle_id;
-    MilterManagerTestServerPrivate *priv;
-
-    priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server);
-
-    idle_id = g_idle_add_full(G_PRIORITY_DEFAULT,
-                              cb_waiting, &idle_waiting, NULL);
-
-    timeout_waiting_id = g_timeout_add_seconds(1, cb_waiting,
-                                               &timeout_waiting);
-    while (idle_waiting) {
-        g_main_context_iteration(NULL, FALSE);
-    }
-
-    g_source_remove(idle_id);
-    g_source_remove(timeout_waiting_id);
-
-    cut_assert_true(timeout_waiting, "timeout");
 }
 
 /*

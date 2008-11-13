@@ -96,8 +96,6 @@ const GList          *milter_manager_test_server_get_received_quarantine_reasons
                                                             (MilterManagerTestServer *server);
 const GList          *milter_manager_test_server_get_received_reply_codes
                                                             (MilterManagerTestServer *server);
-void                  milter_manager_test_server_wait_signal
-                                                            (MilterManagerTestServer *server);
 
 #endif /* __MILTER_MANAGER_TEST_SERVER_H__ */
 

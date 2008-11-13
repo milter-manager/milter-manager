@@ -25,6 +25,7 @@
 G_BEGIN_DECLS
 
 const gchar *milter_manager_test_get_base_dir (void);
+void         milter_manager_test_wait_signal (void);
 
 typedef struct _MilterManagerTestHeader
 {

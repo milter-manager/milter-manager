@@ -47,6 +47,36 @@ milter_manager_test_get_base_dir (void)
     return base_dir;
 }
 
+static gboolean
+cb_check_emitted (gpointer data)
+{
+    gboolean *emitted = data;
+
+    *emitted = TRUE;
+    return FALSE;
+}
+
+void
+milter_manager_test_wait_signal (void)
+{
+    gboolean timeout_emitted = FALSE;
+    gboolean idle_emitted = FALSE;
+    guint timeout_id, idle_id;
+
+    idle_id = g_idle_add_full(G_PRIORITY_DEFAULT,
+                              cb_check_emitted, &idle_emitted, NULL);
+
+    timeout_id = g_timeout_add_seconds(1, cb_check_emitted, &timeout_emitted);
+    while (!timeout_emitted && !idle_emitted) {
+        g_main_context_iteration(NULL, TRUE);
+    }
+
+    g_source_remove(idle_id);
+    g_source_remove(timeout_id);
+
+    cut_assert_false(timeout_emitted, "timeout");
+}
+
 void
 milter_manager_test_header_inspect (GString *string,
                                     MilterManagerTestHeader *header,
