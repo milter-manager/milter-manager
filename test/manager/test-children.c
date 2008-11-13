@@ -306,29 +306,9 @@ start_client (guint port, GArray *arguments)
     }
 }
 
-void
-setup (void)
+static void
+clear_n_emitted (void)
 {
-    scenario_dir = g_build_filename(milter_manager_test_get_base_dir(),
-                                    "fixtures",
-                                    "children",
-                                    NULL);
-    main_scenario = NULL;
-
-    config = milter_manager_configuration_new(NULL);
-    children = milter_manager_children_new(config);
-    setup_signals(children);
-
-    option = NULL;
-
-    actual_error = NULL;
-    expected_error = NULL;
-
-    actual_names = NULL;
-    expected_names = NULL;
-
-    error_message = NULL;
-
     n_negotiate_reply_emitted = 0;
     n_continue_emitted = 0;
     n_reply_code_emitted = 0;
@@ -353,6 +333,32 @@ setup (void)
 
     n_reading_timeout_emitted = 0;
     n_end_of_message_timeout_emitted = 0;
+}
+
+void
+setup (void)
+{
+    scenario_dir = g_build_filename(milter_manager_test_get_base_dir(),
+                                    "fixtures",
+                                    "children",
+                                    NULL);
+    main_scenario = NULL;
+
+    config = milter_manager_configuration_new(NULL);
+    children = milter_manager_children_new(config);
+    setup_signals(children);
+
+    option = NULL;
+
+    actual_error = NULL;
+    expected_error = NULL;
+
+    actual_names = NULL;
+    expected_names = NULL;
+
+    error_message = NULL;
+
+    clear_n_emitted();
 
     log_signal_id = 0;
 
@@ -794,6 +800,17 @@ do_connect (MilterManagerTestScenario *scenario, const gchar *group)
 }
 
 static void
+do_helo (MilterManagerTestScenario *scenario, const gchar *group)
+{
+    const gchar *fqdn;
+
+    fqdn = get_string(scenario, group, "fqdn");
+
+    milter_manager_children_helo(children, fqdn);
+    cut_trace(assert_response(scenario, group));
+}
+
+static void
 do_action (MilterManagerTestScenario *scenario, const gchar *group)
 {
     MilterCommand command;
@@ -806,10 +823,10 @@ do_action (MilterManagerTestScenario *scenario, const gchar *group)
       case MILTER_COMMAND_CONNECT:
         cut_trace(do_connect(scenario, group));
         break;
-/*
       case MILTER_COMMAND_HELO:
         cut_trace(do_helo(scenario, group));
         break;
+/*
       case MILTER_COMMAND_MAIL:
         cut_trace(do_envelope_from(scenario, group));
         break;
@@ -862,9 +879,7 @@ do_actions (MilterManagerTestScenario *scenario)
                               "actions", &length);
     for (i = 0; i < length; i++) {
         cut_trace(do_action(scenario, actions[i]));
-        g_list_foreach((GList *)started_clients,
-                       (GFunc)milter_manager_test_client_clear_data,
-                       NULL);
+        clear_n_emitted();
     }
 }
 
@@ -875,7 +890,12 @@ data_scenario (void)
                  "negotiate - retry", g_strdup("negotiate-retry.txt"), g_free,
                  "negotiate - retry - fail",
                  g_strdup("negotiate-retry-fail.txt"), g_free,
-                 "connect", g_strdup("connect.txt"), g_free);
+                 "connect", g_strdup("connect.txt"), g_free,
+                 /* WRITEME */
+                 /* "connect - pass", g_strdup("connect-pass.txt"), g_free */
+                 /* "connect - half pass", g_strdup("connect-half-pass.txt"),
+                    g_free */
+                 "helo", g_strdup("helo.txt"), g_free);
 }
 
 void
