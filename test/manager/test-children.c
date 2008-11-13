@@ -535,26 +535,6 @@ add_child (const gchar *name, const gchar *connection_spec)
     g_object_unref(child);
 }
 
-static void
-add_child_with_command_and_options (const gchar *name,
-                                    const gchar *connection_spec,
-                                    const gchar *command,
-                                    const gchar *command_options)
-{
-    MilterManagerEgg *egg;
-    MilterManagerChild *child;
-
-    egg = egg_new(name, connection_spec);
-    cut_assert_not_null(egg);
-
-    milter_manager_egg_set_command(egg, command);
-    milter_manager_egg_set_command_options(egg, command_options);
-    child = milter_manager_egg_hatch(egg);
-    milter_manager_children_add_child(children, child);
-    g_object_unref(egg);
-    g_object_unref(child);
-}
-
 #define wait_finished()                    \
     cut_trace_with_info_expression(        \
         wait_finished_helper(),            \
@@ -757,6 +737,7 @@ assert_response_common (MilterManagerTestScenario *scenario, const gchar *group)
 /*     } else if (g_str_equal(response, "abort")) { */
 /*         wait_reply(abort); */
     } else {
+        g_usleep(500); /* FIXME */
         milter_manager_test_wait_signal(n_emitted == 0);
     }
 
@@ -787,6 +768,32 @@ do_negotiate (MilterManagerTestScenario *scenario, const gchar *group)
 }
 
 static void
+do_connect (MilterManagerTestScenario *scenario, const gchar *group)
+{
+    GError *error = NULL;
+    const gchar *host;
+    const gchar *address_spec;
+    gint domain;
+    struct sockaddr *address;
+    socklen_t address_size;
+
+    host = get_string(scenario, group, "host");
+    address_spec = get_string(scenario, group, "address");
+
+    milter_utils_parse_connection_spec(address_spec,
+                                       &domain,
+                                       &address,
+                                       &address_size,
+                                       &error);
+    gcut_assert_error(error);
+
+    milter_manager_children_connect(children, host, address, address_size);
+    g_free(address);
+
+    cut_trace(assert_response(scenario, group));
+}
+
+static void
 do_action (MilterManagerTestScenario *scenario, const gchar *group)
 {
     MilterCommand command;
@@ -796,10 +803,10 @@ do_action (MilterManagerTestScenario *scenario, const gchar *group)
       case MILTER_COMMAND_NEGOTIATE:
         cut_trace(do_negotiate(scenario, group));
         break;
-/*
       case MILTER_COMMAND_CONNECT:
         cut_trace(do_connect(scenario, group));
         break;
+/*
       case MILTER_COMMAND_HELO:
         cut_trace(do_helo(scenario, group));
         break;
@@ -867,7 +874,8 @@ data_scenario (void)
     cut_add_data("negotiate", g_strdup("negotiate.txt"), g_free,
                  "negotiate - retry", g_strdup("negotiate-retry.txt"), g_free,
                  "negotiate - retry - fail",
-                 g_strdup("negotiate-retry-fail.txt"), g_free);
+                 g_strdup("negotiate-retry-fail.txt"), g_free,
+                 "connect", g_strdup("connect.txt"), g_free);
 }
 
 void
@@ -1156,7 +1164,9 @@ test_important_status (gconstpointer data)
     const StateTestData *test_data = data;
 
     prepare_children_state(children, test_data);
-    milter_manager_assert_important(children, test_data->state, test_data->next_status);
+    milter_manager_assert_important(children,
+                                    test_data->state,
+                                    test_data->next_status);
 }
 
 void

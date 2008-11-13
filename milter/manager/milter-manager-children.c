@@ -569,7 +569,7 @@ emit_reply_status_of_state (MilterManagerChildren *children,
     g_signal_emit_by_name(children, status_to_signal_name(status));
 }
 
-static gboolean 
+static gboolean
 emit_replace_body_signal (MilterManagerChildren *children)
 {
     MilterManagerChildrenPrivate *priv;

@@ -416,10 +416,6 @@ class MilterTestClient
     @state = :abort
   end
 
-  def info_abort
-
-  end
-
   def do_quit
     @state = :quit
   end
