@@ -10,9 +10,9 @@ port=10026
 port=10027
 
 [envelope-recipient]
-command=fcpt
+command=rcpt
 
-from=receiver@example.com
+recipient=receiver@example.com
 
 response=continue
 n_emitted=1
