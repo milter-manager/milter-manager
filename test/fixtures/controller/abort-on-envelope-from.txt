@@ -1,0 +1,17 @@
+[scenario]
+clients=client10026;client10027
+import=envelope-from.txt
+actions=abort
+
+[client10026]
+port=10026
+
+[client10027]
+port=10027
+
+[abort]
+command=abort
+
+response=abort
+n_received=2
+status=continue

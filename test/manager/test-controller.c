@@ -945,7 +945,8 @@ data_scenario_basic (void)
         "end-of-message - accept", g_strdup("end-of-message-accept.txt"), g_free,
         "end-of-message - replaced", g_strdup("end-of-message-replaced.txt"), g_free,
         "quit", g_strdup("quit.txt"), g_free,
-        "abort", g_strdup("abort-on-end-of-message.txt"), g_free,
+        "abort - on envelope-from", g_strdup("abort-on-envelope-from.txt"), g_free,
+        "abort - on end-of-message", g_strdup("abort-on-end-of-message.txt"), g_free,
         "unknown", g_strdup("unknown.txt"), g_free,
         "reply-code", g_strdup("reply-code.txt"), g_free);
 }
