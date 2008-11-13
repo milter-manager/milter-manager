@@ -1,5 +1,7 @@
 2008-11-13  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-headers.c: remove needless function.
+
 	* test/lib/milter-manager-test-scenario.[ch]: support egg creation.
 
 	* test/lib/milter-manager-test-client.[ch]

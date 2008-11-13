@@ -24,7 +24,7 @@
 #include "milter-manager-headers.h"
 
 #define MILTER_MANAGER_HEADERS_GET_PRIVATE(obj)                   \
-    (G_TYPE_INSTANCE_GET_PRIVATE((obj),                                 \
+    (G_TYPE_INSTANCE_GET_PRIVATE((obj),                           \
                                  MILTER_TYPE_MANAGER_HEADERS,     \
                                  MilterManagerHeadersPrivate))
 
@@ -51,9 +51,6 @@ static void get_property   (GObject         *object,
                             GValue          *value,
                             GParamSpec      *pspec);
 
-static gint                   milter_manager_header_compare
-                                        (gconstpointer header1,
-                                         gconstpointer header2);
 static void                   milter_manager_header_change_value
                                         (MilterManagerHeader *header,
                                          const gchar *new_value);
@@ -260,21 +257,6 @@ milter_manager_header_change_value (MilterManagerHeader *header,
     if (header->value)
         g_free(header->value);
     header->value = g_strdup(new_value);
-}
-
-static gint
-milter_manager_header_compare (gconstpointer data1, gconstpointer data2)
-{
-    const MilterManagerHeader *header1 = data1;
-    const
-        MilterManagerHeader *header2 = data2;
-    gint compare;
-
-    compare = g_strcmp0(header1->name, header2->name);
-    if (compare == 0)
-        return g_strcmp0(header1->value, header2->value);
-    else
-        return compare;
 }
 
 /*
