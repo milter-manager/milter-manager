@@ -150,7 +150,8 @@ load_scenario (MilterManagerTestScenario *scenario,
     priv->key_file = g_key_file_new();
     scenario_path = g_build_filename(base_dir, scenario_name, NULL);
     if (!g_key_file_load_from_file(priv->key_file, scenario_path,
-                                   G_KEY_FILE_KEEP_COMMENTS,
+                                   G_KEY_FILE_KEEP_COMMENTS |
+                                   G_KEY_FILE_KEEP_TRANSLATIONS,
                                    &error)) {
         g_key_file_free(priv->key_file);
         priv->key_file = NULL;
@@ -292,17 +293,17 @@ milter_manager_test_scenario_get_string (MilterManagerTestScenario *scenario,
 }
 
 const gchar *
-milter_manager_test_scenario_get_locale_string (MilterManagerTestScenario *scenario,
-                                                const gchar *group,
-                                                const gchar *key,
-                                                const gchar *locale)
+milter_manager_test_scenario_get_string_with_sub_key (MilterManagerTestScenario *scenario,
+                                                      const gchar *group,
+                                                      const gchar *key,
+                                                      const gchar *sub_key)
 {
     MilterManagerTestScenarioPrivate *priv;
     GError *error = NULL;
     gchar *value;
 
     priv = MILTER_MANAGER_TEST_SCENARIO_GET_PRIVATE(scenario);
-    value = g_key_file_get_locale_string(priv->key_file, group, key, locale, &error);
+    value = g_key_file_get_locale_string(priv->key_file, group, key, sub_key, &error);
     gcut_assert_error(error, "[%s]", group);
     return cut_take_string(value);
 }
