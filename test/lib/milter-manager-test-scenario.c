@@ -291,6 +291,22 @@ milter_manager_test_scenario_get_string (MilterManagerTestScenario *scenario,
     return cut_take_string(value);
 }
 
+const gchar *
+milter_manager_test_scenario_get_locale_string (MilterManagerTestScenario *scenario,
+                                                const gchar *group,
+                                                const gchar *key,
+                                                const gchar *locale)
+{
+    MilterManagerTestScenarioPrivate *priv;
+    GError *error = NULL;
+    gchar *value;
+
+    priv = MILTER_MANAGER_TEST_SCENARIO_GET_PRIVATE(scenario);
+    value = g_key_file_get_locale_string(priv->key_file, group, key, locale, &error);
+    gcut_assert_error(error, "[%s]", group);
+    return cut_take_string(value);
+}
+
 const gchar **
 milter_manager_test_scenario_get_string_list (MilterManagerTestScenario *scenario,
                                               const gchar *group,

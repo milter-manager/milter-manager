@@ -78,6 +78,11 @@ const gchar               *milter_manager_test_scenario_get_string
                                               (MilterManagerTestScenario *scenario,
                                                const gchar *group,
                                                const gchar *key);
+const gchar               *milter_manager_test_scenario_get_locale_string
+                                              (MilterManagerTestScenario *scenario,
+                                               const gchar *group,
+                                               const gchar *key,
+                                               const gchar *locale);
 const gchar              **milter_manager_test_scenario_get_string_list
                                               (MilterManagerTestScenario *scenario,
                                                const gchar *group,
