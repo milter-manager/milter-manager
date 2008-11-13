@@ -291,7 +291,7 @@ start_client (guint port, GArray *arguments)
     MilterManagerTestClient *client;
     GError *error = NULL;
 
-    client = milter_manager_test_client_new(port);
+    client = milter_manager_test_client_new(port, NULL);
     milter_manager_test_client_set_arguments(client, arguments);
     test_clients = g_list_append(test_clients, client);
     if (!milter_manager_test_client_run(client, &error)) {

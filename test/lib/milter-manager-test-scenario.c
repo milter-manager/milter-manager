@@ -202,7 +202,7 @@ start_client (MilterManagerTestScenario *scenario, const gchar *group)
                 scenario, group, "arguments", &length);
     }
 
-    client = milter_manager_test_client_new(port);
+    client = milter_manager_test_client_new(port, group);
     milter_manager_test_client_set_argument_strings(client, arguments);
     priv->started_clients = g_list_append(priv->started_clients, client);
     if (!milter_manager_test_client_run(client, &error)) {

@@ -34,6 +34,7 @@ struct _MilterManagerTestClientPrivate
 {
     GCutEgg *egg;
     guint port;
+    gchar *name;
     GArray *command;
 
     gboolean ready;
@@ -92,6 +93,7 @@ milter_manager_test_client_init (MilterManagerTestClient *test_client)
 
     priv->egg = NULL;
     priv->port = 0;
+    priv->name = NULL;
     priv->command = NULL;
 
     priv->ready = FALSE;
@@ -550,6 +552,11 @@ dispose (GObject *object)
     client = MILTER_MANAGER_TEST_CLIENT(object);
     priv = MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(object);
 
+    if (priv->name) {
+        g_free(priv->name);
+        priv->name = NULL;
+    }
+
     if (priv->egg) {
         egg_free(priv->egg, client);
         priv->egg = NULL;
@@ -566,7 +573,7 @@ dispose (GObject *object)
 }
 
 MilterManagerTestClient *
-milter_manager_test_client_new (guint port)
+milter_manager_test_client_new (guint port, const gchar *name)
 {
     MilterManagerTestClient *client;
     MilterManagerTestClientPrivate *priv;
@@ -574,6 +581,7 @@ milter_manager_test_client_new (guint port)
     client = g_object_new(MILTER_TYPE_MANAGER_TEST_CLIENT, NULL);
     priv = MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client);
     priv->port = port;
+    priv->name = g_strdup(name);
 
     return client;
 }
@@ -833,7 +841,7 @@ milter_manager_test_clients_wait_reply (const GList *clients,
     guint n_clients;
 
     n_clients = g_list_length((GList *)clients);
-    timeout_waiting_id = g_timeout_add(10, cb_timeout_waiting,
+    timeout_waiting_id = g_timeout_add(100, cb_timeout_waiting,
                                        &timeout_waiting);
     while (timeout_waiting &&
            n_clients > milter_manager_test_clients_collect_n_received(clients,
@@ -846,6 +854,23 @@ milter_manager_test_clients_wait_reply (const GList *clients,
     cut_assert_equal_uint(n_clients,
                           milter_manager_test_clients_collect_n_received(clients,
                                                                          getter));
+}
+
+MilterManagerTestClient *
+milter_manager_test_clients_find (const GList *clients, const gchar *name)
+{
+    const GList *node;
+
+    for (node = clients; node; node = g_list_next(node)) {
+        MilterManagerTestClientPrivate *priv;
+
+        priv = MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(node->data);
+
+        if (g_str_equal(priv->name, name))
+            return MILTER_MANAGER_TEST_CLIENT(node->data);
+    }
+
+    return NULL;
 }
 
 guint

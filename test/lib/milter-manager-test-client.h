@@ -54,7 +54,8 @@ struct _MilterManagerTestClientClass
 GType                    milter_manager_test_client_get_type (void) G_GNUC_CONST;
 
 MilterManagerTestClient *milter_manager_test_client_new
-                                              (guint port);
+                                              (guint port,
+                                               const gchar *name);
 
 void                     milter_manager_test_client_set_arguments
                                               (MilterManagerTestClient *client,
@@ -119,6 +120,9 @@ void                     milter_manager_test_client_clear_data
                                               (MilterManagerTestClient *client);
 
 
+MilterManagerTestClient *milter_manager_test_clients_find
+                                              (const GList *clients,
+                                               const gchar *name);
 void                     milter_manager_test_clients_wait_reply
                                               (const GList *clients,
                                                MilterManagerTestClientGetNReceived getter);
