@@ -284,7 +284,7 @@ typedef struct _reponse_data
 static ResponseData *
 response_data_new (const gchar *string, gsize size)
 {
-    ResponseData *response; 
+    ResponseData *response;
 
     response = g_new0(ResponseData, 1);
     response->string = g_memdup(string, size);
@@ -677,6 +677,12 @@ milter_manager_test_client_set_argument_strings (MilterManagerTestClient *client
     }
     milter_manager_test_client_set_arguments(client, arguments);
     g_array_free(arguments, TRUE);
+}
+
+const GArray *
+milter_manager_test_client_get_command (MilterManagerTestClient *client)
+{
+    return MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client)->command;
 }
 
 guint

@@ -496,8 +496,8 @@ wait_reply_helper (guint expected, guint *actual)
     cut_assert_equal_uint(expected, *actual);
 }
 
-static void
-add_child (const gchar *name, const gchar *connection_spec)
+static MilterManagerEgg *
+egg_new (const gchar *name, const gchar *connection_spec)
 {
     MilterManagerEgg *egg;
     GError *error = NULL;
@@ -507,15 +507,27 @@ add_child (const gchar *name, const gchar *connection_spec)
                                                 connection_spec,
                                                 &error)) {
         g_object_unref(egg);
+        egg = NULL;
         gcut_assert_error(error);
-    } else {
-        MilterManagerChild *child;
-
-        child = milter_manager_egg_hatch(egg);
-        milter_manager_children_add_child(children, child);
-        g_object_unref(egg);
-        g_object_unref(child);
     }
+
+    return egg;
+}
+
+
+static void
+add_child (const gchar *name, const gchar *connection_spec)
+{
+    MilterManagerEgg *egg;
+    MilterManagerChild *child;
+
+    egg = egg_new(name, connection_spec);
+    cut_assert_not_null(egg);
+
+    child = milter_manager_egg_hatch(egg);
+    milter_manager_children_add_child(children, child);
+    g_object_unref(egg);
+    g_object_unref(child);
 }
 
 static void
@@ -525,23 +537,17 @@ add_child_with_command_and_options (const gchar *name,
                                     const gchar *command_options)
 {
     MilterManagerEgg *egg;
-    GError *error = NULL;
+    MilterManagerChild *child;
 
-    egg = milter_manager_egg_new(name);
-    if (!milter_manager_egg_set_connection_spec(egg,
-                                                connection_spec,
-                                                &error)) {
-        g_object_unref(egg);
-        gcut_assert_error(error);
-    } else {
-        MilterManagerChild *child;
-        milter_manager_egg_set_command(egg, command);
-        milter_manager_egg_set_command_options(egg, command_options);
-        child = milter_manager_egg_hatch(egg);
-        milter_manager_children_add_child(children, child);
-        g_object_unref(egg);
-        g_object_unref(child);
-    }
+    egg = egg_new(name, connection_spec);
+    cut_assert_not_null(egg);
+
+    milter_manager_egg_set_command(egg, command);
+    milter_manager_egg_set_command_options(egg, command_options);
+    child = milter_manager_egg_hatch(egg);
+    milter_manager_children_add_child(children, child);
+    g_object_unref(egg);
+    g_object_unref(child);
 }
 
 #define wait_finished()                    \
@@ -592,11 +598,20 @@ wait_children_error_helper (void)
 #define started_clients                                                 \
     milter_manager_test_scenario_get_started_clients(main_scenario)
 
+#define has_group(scenario, group)                                \
+    milter_manager_test_scenario_has_group(scenario, group)
+
 #define has_key(scenario, group, key)                           \
     milter_manager_test_scenario_has_key(scenario, group, key)
 
 #define get_integer(scenario, group, key)                               \
     milter_manager_test_scenario_get_integer(scenario, group, key)
+
+#define get_double(scenario, group, key)                                \
+    milter_manager_test_scenario_get_double(scenario, group, key)
+
+#define get_boolean(scenario, group, key)                               \
+    milter_manager_test_scenario_get_boolean(scenario, group, key)
 
 #define get_string(scenario, group, key)                                \
     milter_manager_test_scenario_get_string(scenario, group, key)
@@ -618,6 +633,31 @@ wait_children_error_helper (void)
 
 #define get_pair_list(scenario, group, key)                             \
     milter_manager_test_scenario_get_pair_list(scenario, group, key)
+
+static void
+setup_parameters (MilterManagerTestScenario *scenario,
+                  MilterManagerChildren *children,
+                  MilterManagerConfiguration *config)
+{
+    const gchar group[] = "config";
+    const gchar privilege_mode_key[] = "privilege_mode";
+    const gchar retry_connect_time_key[] = "retry_connect_time";
+
+    if (!has_group(scenario, group))
+        return;
+
+    if (has_key(scenario, group, privilege_mode_key))
+        g_object_set(config,
+                     "privilege-mode", get_boolean(scenario,
+                                                   group,
+                                                   privilege_mode_key),
+                     NULL);
+
+    if (has_key(scenario, group, retry_connect_time_key))
+        milter_manager_children_set_retry_connect_time(
+            children,
+            get_double(scenario, group, retry_connect_time_key));
+}
 
 static guint
 get_n_emitted (const gchar *response)
@@ -724,7 +764,6 @@ assert_response (MilterManagerTestScenario *scenario, const gchar *group)
 {
     cut_trace(assert_response_error(scenario, group));
     cut_trace(assert_response_common(scenario, group));
-    /* cut_trace(assert_response_reply_code(scenario, group)); */
 }
 
 static void
@@ -820,30 +859,33 @@ do_actions (MilterManagerTestScenario *scenario)
 void
 data_scenario (void)
 {
-    cut_add_data("negotiate", g_strdup("negotiate.txt"), g_free);
+    cut_add_data("negotiate", g_strdup("negotiate.txt"), g_free,
+                 "negotiate - retry", g_strdup("negotiate-retry.txt"), g_free);
 }
 
 void
 test_scenario (gconstpointer data)
 {
     const gchar *scenario_name = data;
-    const gchar **clients;
-    gsize i, length;
+    const GList *node;
 
     main_scenario = milter_manager_test_scenario_new();
     cut_trace(milter_manager_test_scenario_load(main_scenario,
                                                 scenario_dir,
                                                 scenario_name));
+    cut_trace(setup_parameters(main_scenario, children, config));
 
     cut_trace(milter_manager_test_scenario_start_clients(main_scenario));
 
-    clients = get_string_list(main_scenario,
-                              MILTER_MANAGER_TEST_SCENARIO_GROUP_NAME,
-                              "clients", &length);
-    for (i = 0; i < length; i++) {
-        guint port;
-        port = get_integer(main_scenario, clients[i], "port");
-        add_child(clients[i], cut_take_printf("inet:%u@localhost", port));
+    for (node = milter_manager_test_scenario_get_eggs(main_scenario);
+         node;
+         node = g_list_next(node)) {
+        MilterManagerEgg *egg = node->data;
+        MilterManagerChild *child;
+
+        child = milter_manager_egg_hatch(egg);
+        milter_manager_children_add_child(children, child);
+        g_object_unref(child);
     }
 
     cut_trace(do_actions(main_scenario));

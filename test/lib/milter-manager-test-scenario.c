@@ -25,6 +25,8 @@
 #include "milter-manager-test-client.h"
 #include "milter-manager-test-scenario.h"
 
+#include <milter/manager/milter-manager-egg.h>
+
 #define MILTER_MANAGER_TEST_SCENARIO_GET_PRIVATE(obj)                   \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                                 \
                                  MILTER_TYPE_MANAGER_TEST_SCENARIO,     \
@@ -36,6 +38,7 @@ struct _MilterManagerTestScenarioPrivate
     GKeyFile *key_file;
     GList *imported_scenarios;
     GList *started_clients;
+    GList *eggs;
 };
 
 G_DEFINE_TYPE(MilterManagerTestScenario,
@@ -67,6 +70,7 @@ milter_manager_test_scenario_init (MilterManagerTestScenario *scenario)
     priv->key_file = NULL;
     priv->imported_scenarios = NULL;
     priv->started_clients = NULL;
+    priv->eggs = NULL;
 }
 
 static void
@@ -93,6 +97,11 @@ dispose (GObject *object)
         g_list_foreach(priv->started_clients, (GFunc)g_object_unref, NULL);
         g_list_free(priv->started_clients);
         priv->started_clients = NULL;
+    }
+
+    if (priv->eggs) {
+        g_list_foreach(priv->eggs, (GFunc)g_object_unref, NULL);
+        priv->eggs = NULL;
     }
 
     G_OBJECT_CLASS(milter_manager_test_scenario_parent_class)->dispose(object);
@@ -186,6 +195,36 @@ milter_manager_test_scenario_get_imported_scenarios (MilterManagerTestScenario *
 }
 
 static void
+add_egg (MilterManagerTestScenarioPrivate *priv,
+         MilterManagerTestClient *client, const gchar *name, guint port)
+{
+    MilterManagerEgg *egg;
+    GError *error = NULL;
+    gchar *connection_spec;
+    const GArray *command_line;
+    gchar *command;
+
+    egg = milter_manager_egg_new(name);
+    priv->eggs = g_list_append(priv->eggs, egg);
+    connection_spec = g_strdup_printf("inet:%u@localhost", port);
+    milter_manager_egg_set_connection_spec(egg, connection_spec, &error);
+    g_free(connection_spec);
+    gcut_assert_error(error);
+
+    command_line = milter_manager_test_client_get_command(client);
+    command = g_array_index(command_line, gchar *, 0);
+    if (command) {
+        gchar *command_options;
+
+        milter_manager_egg_set_command(egg, command);
+        command_options = g_strjoinv(" ", ((gchar **)(command_line->data)) + 1);
+        milter_manager_egg_set_command_options(egg, command_options);
+        g_free(command_options);
+    }
+}
+
+
+static void
 start_client (MilterManagerTestScenario *scenario, const gchar *group)
 {
     MilterManagerTestScenarioPrivate *priv;
@@ -206,6 +245,13 @@ start_client (MilterManagerTestScenario *scenario, const gchar *group)
     client = milter_manager_test_client_new(port, group);
     milter_manager_test_client_set_argument_strings(client, arguments);
     priv->started_clients = g_list_append(priv->started_clients, client);
+
+    add_egg(priv, client, group, port);
+
+    if (milter_manager_test_scenario_has_key(scenario, group, "run") &&
+        !milter_manager_test_scenario_get_boolean(scenario, group, "run"))
+        return;
+
     if (!milter_manager_test_client_run(client, &error)) {
         gcut_assert_error(error);
         cut_fail("couldn't run test client on port <%u>", port);
@@ -231,6 +277,12 @@ milter_manager_test_scenario_get_started_clients (MilterManagerTestScenario *sce
     return MILTER_MANAGER_TEST_SCENARIO_GET_PRIVATE(scenario)->started_clients;
 }
 
+const GList *
+milter_manager_test_scenario_get_eggs (MilterManagerTestScenario *scenario)
+{
+    return MILTER_MANAGER_TEST_SCENARIO_GET_PRIVATE(scenario)->eggs;
+}
+
 gboolean
 milter_manager_test_scenario_has_key (MilterManagerTestScenario *scenario,
                                       const gchar *group,
@@ -244,6 +296,16 @@ milter_manager_test_scenario_has_key (MilterManagerTestScenario *scenario,
     result = g_key_file_has_key(priv->key_file, group, key, &error);
     gcut_assert_error(error, "[%s]:[%s]", group, key);
     return result;
+}
+
+gboolean
+milter_manager_test_scenario_has_group (MilterManagerTestScenario *scenario,
+                                        const gchar *group)
+{
+    MilterManagerTestScenarioPrivate *priv;
+
+    priv = MILTER_MANAGER_TEST_SCENARIO_GET_PRIVATE(scenario);
+    return g_key_file_has_group(priv->key_file, group);
 }
 
 MilterOption *
@@ -274,6 +336,34 @@ milter_manager_test_scenario_get_integer (MilterManagerTestScenario *scenario,
 
     priv = MILTER_MANAGER_TEST_SCENARIO_GET_PRIVATE(scenario);
     value = g_key_file_get_integer(priv->key_file, group, key, &error);
+    gcut_assert_error(error, "[%s]", group);
+    return value;
+}
+
+gdouble
+milter_manager_test_scenario_get_double (MilterManagerTestScenario *scenario,
+                                         const gchar *group, const gchar *key)
+{
+    MilterManagerTestScenarioPrivate *priv;
+    GError *error = NULL;
+    gdouble value;
+
+    priv = MILTER_MANAGER_TEST_SCENARIO_GET_PRIVATE(scenario);
+    value = g_key_file_get_double(priv->key_file, group, key, &error);
+    gcut_assert_error(error, "[%s]", group);
+    return value;
+}
+
+gboolean
+milter_manager_test_scenario_get_boolean (MilterManagerTestScenario *scenario,
+                                          const gchar *group, const gchar *key)
+{
+    MilterManagerTestScenarioPrivate *priv;
+    GError *error = NULL;
+    gboolean value;
+
+    priv = MILTER_MANAGER_TEST_SCENARIO_GET_PRIVATE(scenario);
+    value = g_key_file_get_boolean(priv->key_file, group, key, &error);
     gcut_assert_error(error, "[%s]", group);
     return value;
 }

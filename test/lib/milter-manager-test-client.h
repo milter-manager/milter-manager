@@ -65,6 +65,9 @@ void                     milter_manager_test_client_set_arguments
 void                     milter_manager_test_client_set_argument_strings
                                               (MilterManagerTestClient *client,
                                                const gchar **argument_strings);
+const GArray            *milter_manager_test_client_get_command
+                                              (MilterManagerTestClient *client);
+
 gboolean                 milter_manager_test_client_run
                                               (MilterManagerTestClient *client,
                                                GError **error);

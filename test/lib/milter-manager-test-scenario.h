@@ -62,7 +62,12 @@ void                       milter_manager_test_scenario_start_clients
                                               (MilterManagerTestScenario *scenario);
 const GList               *milter_manager_test_scenario_get_started_clients
                                               (MilterManagerTestScenario *scenario);
+const GList               *milter_manager_test_scenario_get_eggs
+                                              (MilterManagerTestScenario *scenario);
 
+gboolean                   milter_manager_test_scenario_has_group
+                                              (MilterManagerTestScenario *scenario,
+                                               const gchar *group);
 gboolean                   milter_manager_test_scenario_has_key
                                               (MilterManagerTestScenario *scenario,
                                                const gchar *group,
@@ -71,6 +76,14 @@ MilterOption              *milter_manager_test_scenario_get_option
                                               (MilterManagerTestScenario *scenario,
                                                const gchar *group);
 gint                       milter_manager_test_scenario_get_integer
+                                              (MilterManagerTestScenario *scenario,
+                                               const gchar *group,
+                                               const gchar *key);
+gdouble                    milter_manager_test_scenario_get_double
+                                              (MilterManagerTestScenario *scenario,
+                                               const gchar *group,
+                                               const gchar *key);
+gboolean                   milter_manager_test_scenario_get_boolean
                                               (MilterManagerTestScenario *scenario,
                                                const gchar *group,
                                                const gchar *key);
