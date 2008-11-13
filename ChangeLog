@@ -8,6 +8,8 @@
 	until end-of-message-timeout signal is received.
 	* test/lib/milter-test-client.rb: info_abort to get abort received
 	status from MilterManagerTestClient.
+	* test/fixtures/controller/abort.txt ->
+	tetst/fixtures/controller/abort-on-end-of-message.txt: Renamed.
 
 2008-11-12  Kouhei Sutou  <kou@cozmixng.org>
 
