@@ -31,6 +31,7 @@
 	* test/manager/test-controller.c: Proof-of-concept of
 	reponse[client10026] entry in scenario file. It is only enabled to be
 	used in bort, need to be generalization.
+	* milter/manager/milter-manager-headers.[ch]: Added.
 
 2008-11-12  Kouhei Sutou  <kou@cozmixng.org>
 

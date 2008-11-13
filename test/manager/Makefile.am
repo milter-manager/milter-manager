@@ -4,7 +4,8 @@ noinst_LTLIBRARIES =			\
 	test-children.la		\
 	test-configuration.la		\
 	test-controller.la		\
-	test-egg.la
+	test-egg.la			\
+	test-headers.la
 endif
 
 INCLUDES =				\
@@ -32,3 +33,4 @@ test_children_la_SOURCES	= test-children.c
 test_configuration_la_SOURCES	= test-configuration.c
 test_controller_la_SOURCES	= test-controller.c
 test_egg_la_SOURCES		= test-egg.c
+test_headers_la_SOURCES		= test-headers.c
