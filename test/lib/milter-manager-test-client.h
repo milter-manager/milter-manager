@@ -57,6 +57,8 @@ MilterManagerTestClient *milter_manager_test_client_new
                                               (guint port,
                                                const gchar *name);
 
+const gchar             *milter_manager_test_client_get_name
+                                              (MilterManagerTestClient *client);
 void                     milter_manager_test_client_set_arguments
                                               (MilterManagerTestClient *client,
                                                GArray *arguments);

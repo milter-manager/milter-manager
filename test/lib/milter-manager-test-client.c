@@ -586,6 +586,12 @@ milter_manager_test_client_new (guint port, const gchar *name)
     return client;
 }
 
+const gchar *
+milter_manager_test_client_get_name (MilterManagerTestClient *client)
+{
+    return MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client)->name;
+}
+
 gboolean
 milter_manager_test_client_run (MilterManagerTestClient *client, GError **error)
 {
