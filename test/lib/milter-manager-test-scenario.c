@@ -85,11 +85,13 @@ dispose (GObject *object)
 
     if (priv->imported_scenarios) {
         g_list_foreach(priv->imported_scenarios, (GFunc)g_object_unref, NULL);
+        g_list_free(priv->imported_scenarios);
         priv->imported_scenarios = NULL;
     }
 
     if (priv->started_clients) {
         g_list_foreach(priv->started_clients, (GFunc)g_object_unref, NULL);
+        g_list_free(priv->started_clients);
         priv->started_clients = NULL;
     }
 
