@@ -1,6 +1,10 @@
 2008-11-13  Kouhei Sutou  <kou@cozmixng.org>
 
 	* test/manager/test-children.c,
+	test/fixtures/children/envelope-from.txt: rewrite envelope-from
+	test as scenario based test.
+
+	* test/manager/test-children.c,
 	test/fixtures/children/helo.txt: rewrite helo test as
 	scenario based test.
 
