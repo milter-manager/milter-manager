@@ -15,6 +15,9 @@
 	has its name. milter_manager_test_client_new() needs its name. Added
 	milter_manager_test_client_find().
 	* test/lib/milter-manager-test-client.[ch]: Added name getter.
+	* test/lib/milter-manager-test-client.[ch]: Added
+	milter_manager_test_client_wait_reply(). It just waits from a
+	specified client.
 
 2008-11-12  Kouhei Sutou  <kou@cozmixng.org>
 

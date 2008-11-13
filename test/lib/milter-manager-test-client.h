@@ -120,6 +120,9 @@ const gchar             *milter_manager_test_client_get_unknown_command
 
 void                     milter_manager_test_client_clear_data
                                               (MilterManagerTestClient *client);
+void                     milter_manager_test_client_wait_reply
+                                              (MilterManagerTestClient *client,
+                                               MilterManagerTestClientGetNReceived getter);
 
 
 MilterManagerTestClient *milter_manager_test_clients_find
