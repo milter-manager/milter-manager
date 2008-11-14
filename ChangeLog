@@ -2,6 +2,10 @@
 
 	* test/manager/test-children.c,
 	test/fixtures/children/header.txt: rewrite
+	end-of-header test as scenario based test.
+
+	* test/manager/test-children.c,
+	test/fixtures/children/header.txt: rewrite
 	header test as scenario based test.
 
 	* test/manager/test-children.c,

@@ -852,6 +852,13 @@ do_header (MilterManagerTestScenario *scenario, const gchar *group)
 }
 
 static void
+do_end_of_header (MilterManagerTestScenario *scenario, const gchar *group)
+{
+    milter_manager_children_end_of_header(children);
+    cut_trace(assert_response(scenario, group));
+}
+
+static void
 do_action (MilterManagerTestScenario *scenario, const gchar *group)
 {
     MilterCommand command;
@@ -879,10 +886,10 @@ do_action (MilterManagerTestScenario *scenario, const gchar *group)
       case MILTER_COMMAND_HEADER:
         cut_trace(do_header(scenario, group));
         break;
-/*
       case MILTER_COMMAND_END_OF_HEADER:
         cut_trace(do_end_of_header(scenario, group));
         break;
+/*
       case MILTER_COMMAND_BODY:
         cut_trace(do_body(scenario, group));
         break;
@@ -941,7 +948,8 @@ data_scenario (void)
                  "envelope-recipient",
                  g_strdup("envelope-recipient.txt"), g_free,
                  "data", g_strdup("data.txt"), g_free,
-                 "header", g_strdup("header.txt"), g_free);
+                 "header", g_strdup("header.txt"), g_free,
+                 "end-of-header", g_strdup("end-of-header.txt"), g_free);
 }
 
 void
