@@ -195,7 +195,7 @@ milter_manager_children_init (MilterManagerChildren *milter)
     priv->macros_requests = milter_macros_requests_new();
     priv->option = NULL;
     priv->reply_statuses = g_hash_table_new(g_direct_hash, g_direct_equal);
-                              
+
     priv->headers = milter_manager_headers_new();
     priv->body_file = NULL;
     priv->body_file_name = NULL;

@@ -30,6 +30,7 @@
 #include <milter-manager-test-utils.h>
 #include <milter-manager-test-client.h>
 #include <milter-manager-test-scenario.h>
+#include <milter/core/milter-handler.h>
 #include <milter/manager/milter-manager-children.h>
 #include <milter/manager/milter-manager-enum-types.h>
 #undef shutdown
@@ -91,6 +92,7 @@ static guint n_skip_emitted;
 static guint n_error_emitted;
 static guint n_finished_emitted;
 static guint n_reading_timeout_emitted;
+static guint n_writing_timeout_emitted;
 static guint n_end_of_message_timeout_emitted;
 
 static guint log_signal_id;
@@ -332,6 +334,7 @@ clear_n_emitted (void)
     n_finished_emitted = 0;
 
     n_reading_timeout_emitted = 0;
+    n_writing_timeout_emitted = 0;
     n_end_of_message_timeout_emitted = 0;
 }
 
@@ -1299,6 +1302,15 @@ cb_reading_timeout (MilterServerContext *context, gpointer user_data)
 }
 
 static void
+cb_writing_timeout (MilterServerContext *context, gpointer user_data)
+{
+    GIOChannel *channel = user_data;
+
+    gcut_string_io_channel_set_limit(channel, 0);
+    n_writing_timeout_emitted++;
+}
+
+static void
 cb_end_of_message_timeout (MilterServerContext *context, gpointer user_data)
 {
     n_end_of_message_timeout_emitted++;
@@ -1310,10 +1322,12 @@ connect_timeout_signal (gpointer data, gpointer user_data)
     MilterServerContext *context = MILTER_SERVER_CONTEXT(data);
 
 #define CONNECT(name)                                                   \
-    g_signal_connect_after(context, #name, G_CALLBACK(cb_ ## name), NULL)
+    g_signal_connect_after(context, #name, G_CALLBACK(cb_ ## name),     \
+                           user_data)
 
     CONNECT(end_of_message_timeout);
     CONNECT(reading_timeout);
+    CONNECT(writing_timeout);
 
 #undef CONNECT
 }
@@ -1355,13 +1369,13 @@ test_connection_timeout (void)
 }
 
 static void
-prepare_timeout_test (void)
+prepare_timeout_test (gpointer user_data)
 {
     GList *child_list;
     child_list = milter_manager_children_get_children(children);
-    
+
     set_timeout(g_list_next(child_list)->data, NULL);
-    connect_timeout_signal(g_list_next(child_list)->data, NULL);
+    connect_timeout_signal(g_list_next(child_list)->data, user_data);
 }
 
 void
@@ -1380,7 +1394,7 @@ test_end_of_message_timeout (void)
     logger = milter_logger();
     log_signal_id = g_signal_connect(logger, "log", G_CALLBACK(cb_log), NULL);
 
-    prepare_timeout_test();
+    prepare_timeout_test(NULL);
 
     milter_manager_children_end_of_message(children, "end", strlen("end"));
 
@@ -1395,7 +1409,46 @@ test_end_of_message_timeout (void)
 void
 test_writing_timeout (void)
 {
-    cut_notify("writing-timeout is never occured on the current implementation.");
+    struct sockaddr_in address;
+    const gchar host_name[] = "mx.local.net";
+    const gchar ip_address[] = "192.168.123.123";
+    MilterLogger *logger;
+    GIOChannel *channel;
+    MilterWriter *writer;
+    MilterManagerChild *child;
+
+    cut_trace(test_negotiate());
+
+    logger = milter_logger();
+    log_signal_id = g_signal_connect(logger, "log", G_CALLBACK(cb_log), NULL);
+
+    channel = gcut_io_channel_string_new(NULL);
+    g_io_channel_set_encoding(channel, NULL, NULL);
+    g_io_channel_set_buffered(channel, FALSE);
+    g_io_channel_set_flags(channel, 0, NULL);
+    gcut_string_io_channel_set_limit(channel, 1);
+    writer = milter_writer_io_channel_new(channel);
+    g_io_channel_unref(channel);
+    child = milter_manager_children_get_children(children)->next->data;
+    milter_handler_set_writer(MILTER_HANDLER(child), writer);
+    g_object_unref(writer);
+
+    prepare_timeout_test(channel);
+
+    address.sin_family = AF_INET;
+    address.sin_port = g_htons(50443);
+    inet_aton(ip_address, &(address.sin_addr));
+
+    milter_manager_children_connect(children,
+                                    host_name,
+                                    (struct sockaddr *)(&address),
+                                    sizeof(address));
+
+    wait_reply(1, n_writing_timeout_emitted);
+    cut_assert_equal_uint(1, n_continue_emitted);
+
+    cut_assert_equal_string("writing to milter@10027 is timed out.",
+                            error_message);
 }
 
 void
@@ -1417,7 +1470,7 @@ test_reading_timeout (void)
     logger = milter_logger();
     log_signal_id = g_signal_connect(logger, "log", G_CALLBACK(cb_log), NULL);
 
-    prepare_timeout_test();
+    prepare_timeout_test(NULL);
 
     address.sin_family = AF_INET;
     address.sin_port = g_htons(50443);
