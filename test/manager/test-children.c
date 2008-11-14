@@ -833,6 +833,13 @@ do_envelope_recipient (MilterManagerTestScenario *scenario, const gchar *group)
 }
 
 static void
+do_data (MilterManagerTestScenario *scenario, const gchar *group)
+{
+    milter_manager_children_data(children);
+    cut_trace(assert_response(scenario, group));
+}
+
+static void
 do_action (MilterManagerTestScenario *scenario, const gchar *group)
 {
     MilterCommand command;
@@ -854,10 +861,10 @@ do_action (MilterManagerTestScenario *scenario, const gchar *group)
       case MILTER_COMMAND_RCPT:
         cut_trace(do_envelope_recipient(scenario, group));
         break;
-/*
       case MILTER_COMMAND_DATA:
         cut_trace(do_data(scenario, group));
         break;
+/*
       case MILTER_COMMAND_HEADER:
         cut_trace(do_header(scenario, group));
         break;
@@ -920,7 +927,8 @@ data_scenario (void)
                  "helo", g_strdup("helo.txt"), g_free,
                  "envelope-from", g_strdup("envelope-from.txt"), g_free,
                  "envelope-recipient",
-                 g_strdup("envelope-recipient.txt"), g_free);
+                 g_strdup("envelope-recipient.txt"), g_free,
+                 "data", g_strdup("data.txt"), g_free);
 }
 
 void

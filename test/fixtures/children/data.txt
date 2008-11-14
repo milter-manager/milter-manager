@@ -1,0 +1,16 @@
+[scenario]
+clients=client10026;client10027
+import=envelope-recipient.txt
+actions=data
+
+[client10026]
+port=10026
+
+[client10027]
+port=10027
+
+[data]
+command=data
+
+response=continue
+n_emitted=1
