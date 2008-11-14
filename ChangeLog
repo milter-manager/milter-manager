@@ -1,6 +1,10 @@
 2008-11-14  Kouhei Sutou  <kou@cozmixng.org>
 
 	* test/manager/test-children.c,
+	test/fixtures/children/header.txt: rewrite
+	header test as scenario based test.
+
+	* test/manager/test-children.c,
 	test/fixtures/children/data.txt: rewrite
 	data test as scenario based test.
 
