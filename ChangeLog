@@ -35,6 +35,8 @@
 	END_OF_MESSAGE.
 	* milter/manager/milter-manager-children.c: command_queue ->
 	command_waiting_child_queue.
+	* milter/manager/milter-manager-children.c: Commands that from
+	END-OF-HEADER to END-OF-MESSAGE are sent to a child sequentially.
 
 2008-11-13  Kouhei Sutou  <kou@cozmixng.org>
 

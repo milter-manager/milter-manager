@@ -13,5 +13,5 @@ port=10027
 command=end-of-header
 
 response=end-of-header
-n_received=2
+n_received=1
 status=continue
