@@ -1084,7 +1084,19 @@ cb_finished (MilterHandler *handler, gpointer user_data)
                 state_string);
     g_free(state_string);
 
-    remove_child_from_queue(children, context);
+    switch (priv->current_state) {
+      case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
+      case MILTER_SERVER_CONTEXT_STATE_BODY:
+        return;
+        break;
+      case MILTER_SERVER_CONTEXT_STATE_DATA:
+      case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
+      case MILTER_SERVER_CONTEXT_STATE_HEADER:
+      default:
+        remove_child_from_queue(children, context);
+        break;
+    }
+
     if (g_queue_is_empty(priv->reply_queue))
         milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(children));
 }

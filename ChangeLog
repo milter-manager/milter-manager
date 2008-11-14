@@ -16,6 +16,9 @@
 	test/fixtures/controller/body-skip-all.txt: Check chunks on each body.
 	But I am not sure each client is received correct chunks. I would like
 	to write chunks[first-skip-client]=First skip message or something.
+	* milter/manager/milter-manager-children.c (cb_finished): Do not
+	invoke remove_child_from_queue() if current state is BODY and
+	END_OF_MESSAGE.
 
 2008-11-13  Kouhei Sutou  <kou@cozmixng.org>
 
