@@ -614,13 +614,11 @@ do_body (MilterManagerTestScenario *scenario, const gchar *group)
     chunk = get_string(scenario, group, "chunk");
     milter_manager_controller_body(controller, chunk, strlen(chunk));
 
-#if 0
     cut_trace(assert_response(scenario, group));
 
     gcut_assert_equal_list_string(get_string_g_list(scenario, group, "chunks"),
                                   collect_received_strings(body_chunk),
                                   "<%s>", group);
-#endif
 }
 
 static void
@@ -920,7 +918,6 @@ do_action (MilterManagerTestScenario *scenario, const gchar *group)
         break;
     }
 
-    if (command != MILTER_COMMAND_BODY)
     g_list_foreach((GList *)started_clients,
                    (GFunc)milter_manager_test_client_clear_data,
                    NULL);

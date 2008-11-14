@@ -15,7 +15,7 @@ command=body
 chunk=Hi,
 
 response=body
-n_received=2
+n_received=1
 status=continue
 
-chunks=Hi,;Hi,
+chunks=Hi,;;

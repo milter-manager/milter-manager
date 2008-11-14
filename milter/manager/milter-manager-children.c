@@ -37,8 +37,8 @@ struct _MilterManagerChildrenPrivate
 {
     GList *milters;
     GList *quitted_milters;
-    GList *should_be_sent_body_milters;
     GQueue *reply_queue;
+    GList *command_queue; /* storing child milters which is waiting for commands after DATA command */
     GHashTable *try_negotiate_ids;
     MilterManagerConfiguration *configuration;
     MilterMacrosRequests *macros_requests;
@@ -55,6 +55,7 @@ struct _MilterManagerChildrenPrivate
     gchar *body_file_name;
     gchar *end_of_message_chunk;
     gsize end_of_message_size;
+    gboolean sent_end_of_message;
     gboolean replaced_body;
 };
 
@@ -115,6 +116,9 @@ static void prepare_retry_establish_connection
 static void remove_queue_in_negotiate
                            (MilterManagerChildren *children,
                             MilterManagerChild *child);
+static MilterServerContext *get_first_command_queue
+                           (MilterManagerChildren *children,
+                            MilterStepFlags flag);
 static gboolean write_to_body_file
                            (MilterManagerChildren *children,
                             const gchar *chunk,
@@ -174,13 +178,13 @@ milter_manager_children_init (MilterManagerChildren *milter)
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(milter);
     priv->configuration = NULL;
     priv->reply_queue = g_queue_new();
+    priv->command_queue = NULL;
     priv->try_negotiate_ids =
         g_hash_table_new_full(g_direct_hash, g_direct_equal,
                               negotiate_data_hash_key_free,
                               remove_retry_negotiate_timeout);
     priv->milters = NULL;
     priv->quitted_milters = NULL;
-    priv->should_be_sent_body_milters = NULL;
     priv->macros_requests = milter_macros_requests_new();
     priv->option = NULL;
     priv->reply_statuses = g_hash_table_new(g_direct_hash, g_direct_equal);
@@ -190,6 +194,7 @@ milter_manager_children_init (MilterManagerChildren *milter)
     priv->body_file_name = NULL;
     priv->end_of_message_chunk = NULL;
     priv->end_of_message_size = 0;
+    priv->sent_end_of_message = FALSE;
     priv->replaced_body = FALSE;
 
     priv->current_state = MILTER_SERVER_CONTEXT_STATE_START;
@@ -211,6 +216,11 @@ dispose (GObject *object)
     if (priv->reply_queue) {
         g_queue_free(priv->reply_queue);
         priv->reply_queue = NULL;
+    }
+
+    if (priv->command_queue) {
+        g_list_free(priv->command_queue);
+        priv->command_queue = NULL;
     }
 
     if (priv->try_negotiate_ids) {
@@ -235,12 +245,6 @@ dispose (GObject *object)
         g_list_foreach(priv->quitted_milters, (GFunc)g_object_unref, NULL);
         g_list_free(priv->quitted_milters);
         priv->quitted_milters = NULL;
-    }
-
-    if (priv->should_be_sent_body_milters) {
-        g_list_foreach(priv->should_be_sent_body_milters, (GFunc)g_object_unref, NULL);
-        g_list_free(priv->should_be_sent_body_milters);
-        priv->should_be_sent_body_milters = NULL;
     }
 
     if (priv->macros_requests) {
@@ -618,26 +622,45 @@ send_body_and_end_of_message_to_next_child (MilterManagerChildren *children,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    if (g_list_length(priv->should_be_sent_body_milters) == 0) {
-        if (priv->body_file) {
-            priv->current_state = MILTER_SERVER_CONTEXT_STATE_BODY;
-            emit_reply_status_of_state(children, MILTER_SERVER_CONTEXT_STATE_BODY);
-        }
-
+    priv->command_queue = g_list_remove(priv->command_queue, context);
+    next_child = get_first_command_queue(children, 0);
+    if (!next_child) {
         if (priv->replaced_body)
             emit_replace_body_signal(children);
 
         emit_reply_status_of_state(children, MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE);
         return;
     }
-
     milter_server_context_quit(context);
 
-    next_child = MILTER_SERVER_CONTEXT(priv->should_be_sent_body_milters->data);
     send_body_to_child(children, next_child);
     milter_server_context_end_of_message(next_child,
                                          priv->end_of_message_chunk,
                                          priv->end_of_message_size);
+}
+
+static void
+send_body_to_next_child (MilterManagerChildren *children,
+                         MilterServerContext *context)
+{
+    MilterManagerChildrenPrivate *priv;
+    MilterServerContext *next_child;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    milter_server_context_quit(context);
+
+    priv->command_queue = g_list_remove(priv->command_queue, context);
+    next_child = get_first_command_queue(children, MILTER_STEP_NO_BODY);
+    if (!next_child) {
+        if (priv->body_file) {
+            priv->current_state = MILTER_SERVER_CONTEXT_STATE_BODY;
+            emit_reply_status_of_state(children, MILTER_SERVER_CONTEXT_STATE_BODY);
+        }
+        return;
+    }
+
+    send_body_to_child(children, next_child);
 }
 
 static void
@@ -654,10 +677,12 @@ cb_continue (MilterServerContext *context, gpointer user_data)
     compile_reply_status(children, state, MILTER_STATUS_CONTINUE);
     switch (state) {
       case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
+        priv->sent_end_of_message = TRUE;
         send_body_and_end_of_message_to_next_child(children, context);
         break;
       case MILTER_SERVER_CONTEXT_STATE_BODY:
-        priv->current_state = state;
+        if (!priv->sent_end_of_message)
+            g_signal_emit_by_name(children, "continue");
         break;
       case MILTER_SERVER_CONTEXT_STATE_DATA:
       case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
@@ -678,12 +703,16 @@ cb_temporary_failure (MilterServerContext *context, gpointer user_data)
 
     compile_reply_status(children, state, MILTER_STATUS_TEMPORARY_FAILURE);
     switch (state) {
-      case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
-        send_body_and_end_of_message_to_next_child(children, context);
-        break;
       case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT:
         remove_child_from_queue(children, context);
         break;
+      case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
+      {
+        MilterManagerChildrenPrivate *priv;
+
+        priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+        priv->sent_end_of_message = TRUE;
+      }
       case MILTER_SERVER_CONTEXT_STATE_DATA:
       case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
       case MILTER_SERVER_CONTEXT_STATE_HEADER:
@@ -704,11 +733,12 @@ cb_reject (MilterServerContext *context, gpointer user_data)
 
     compile_reply_status(children, state, MILTER_STATUS_REJECT);
     switch (state) {
-      case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
-        send_body_and_end_of_message_to_next_child(children, context);
-        break;
       case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT:
         remove_child_from_queue(children, context);
+        break;
+      case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
+        g_signal_emit_by_name(children, "reject");
+        expire_all_children(children);
         break;
       case MILTER_SERVER_CONTEXT_STATE_DATA:
       case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
@@ -754,12 +784,20 @@ cb_accept (MilterServerContext *context, gpointer user_data)
     compile_reply_status(children, state, MILTER_STATUS_ACCEPT);
     switch (state) {
       case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
+      {
+        MilterManagerChildrenPrivate *priv;
+
+        priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+        priv->sent_end_of_message = TRUE;
         send_body_and_end_of_message_to_next_child(children, context);
+      }
+        break;
+      case MILTER_SERVER_CONTEXT_STATE_BODY:
+        send_body_to_next_child(children, context);
         break;
       case MILTER_SERVER_CONTEXT_STATE_DATA:
       case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
       case MILTER_SERVER_CONTEXT_STATE_HEADER:
-      case MILTER_SERVER_CONTEXT_STATE_BODY:
       default:
         milter_server_context_quit(context);
         break;
@@ -777,7 +815,8 @@ cb_discard (MilterServerContext *context, gpointer user_data)
     compile_reply_status(children, state, MILTER_STATUS_DISCARD);
     switch (state) {
       case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
-        send_body_and_end_of_message_to_next_child(children, context);
+        g_signal_emit_by_name(children, "discard");
+        expire_all_children(children);
         break;
       case MILTER_SERVER_CONTEXT_STATE_DATA:
       case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
@@ -956,6 +995,20 @@ cb_skip (MilterServerContext *context, gpointer user_data)
     }
 
     compile_reply_status(children, state, MILTER_STATUS_SKIP);
+
+    switch (state) {
+      case MILTER_SERVER_CONTEXT_STATE_BODY:
+      {
+        MilterManagerChildrenPrivate *priv;
+
+        priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+        if (!priv->sent_end_of_message)
+            g_signal_emit_by_name(children, "continue");
+        break;
+      }
+      default:
+        break;
+    }
 }
 
 static void
@@ -1335,6 +1388,41 @@ child_establish_connection (MilterManagerChild *child,
 }
 
 static void
+init_command_queue (MilterManagerChildren *children)
+{
+    MilterManagerChildrenPrivate *priv;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    if (priv->command_queue)
+        return;
+
+    priv->command_queue = g_list_copy(priv->milters);
+}
+
+static MilterServerContext *
+get_first_command_queue (MilterManagerChildren *children, MilterStepFlags step)
+{
+    MilterManagerChildrenPrivate *priv;
+    GList *node;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+    if (!priv->command_queue)
+        return NULL;
+
+    if (step == 0)
+        return MILTER_SERVER_CONTEXT(priv->command_queue->data);
+
+    for (node = priv->command_queue; node; node = g_list_next(node)) {
+        MilterServerContext *context = node->data;
+
+        if (!milter_server_context_is_enable_step(context, step))
+            return context;
+    }
+    return NULL;
+}
+
+static void
 init_reply_queue (MilterManagerChildren *children,
                   MilterServerContextState state)
 {
@@ -1642,10 +1730,18 @@ milter_manager_children_body (MilterManagerChildren *children,
                               const gchar           *chunk,
                               gsize                  size)
 {
+    MilterServerContext *context;
+
+    init_command_queue(children);
+
     if (!write_to_body_file(children, chunk, size))
         return FALSE;
 
-    return TRUE;
+    context = get_first_command_queue(children, MILTER_STEP_NO_BODY);
+    if (!context)
+        return TRUE;
+
+    return milter_server_context_body(context, chunk, size);
 }
 
 static gboolean 
@@ -1666,13 +1762,8 @@ send_body_to_child (MilterManagerChildren *children, MilterServerContext *contex
 
     priv->current_state = MILTER_SERVER_CONTEXT_STATE_BODY;
 
-    priv->should_be_sent_body_milters =
-        g_list_remove(priv->should_be_sent_body_milters, context);
-
-    if (!priv->body_file) {
-        g_object_unref(context);
+    if (!priv->body_file)
         return TRUE;
-    }
 
     g_io_channel_seek_position(priv->body_file, 0, G_SEEK_SET, &error);
 
@@ -1688,7 +1779,6 @@ send_body_to_child (MilterManagerChildren *children, MilterServerContext *contex
                                                   buffer, read_size);
         }
     }
-    g_object_unref(context);
 
     if (error) {
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
@@ -1726,24 +1816,18 @@ milter_manager_children_end_of_message (MilterManagerChildren *children,
     if (!child) 
         return TRUE;
 
+    init_command_queue(children);
+
     if (priv->end_of_message_chunk)
         g_free(priv->end_of_message_chunk);
     priv->end_of_message_chunk = g_strdup(chunk);
     priv->end_of_message_size = size;
+    if (priv->body_file)
+        g_io_channel_seek_position(priv->body_file, 0, G_SEEK_SET, NULL);
 
-    first_child = MILTER_SERVER_CONTEXT(child->data);
-
-    init_reply_queue(children, MILTER_SERVER_CONTEXT_STATE_BODY);
-    for (child = priv->milters; child; child = g_list_next(child)) {
-        MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
-        if (milter_server_context_is_enable_step(context, MILTER_STEP_NO_BODY))
-            continue;
-        g_queue_push_tail(priv->reply_queue, context);
-        priv->should_be_sent_body_milters = 
-            g_list_append(priv->should_be_sent_body_milters, g_object_ref(context));
-    }
-
-    send_body_to_child(children, first_child);
+    first_child = get_first_command_queue(children, 0);
+    if (!first_child)
+        return TRUE;
 
     return milter_server_context_end_of_message(first_child,
                                                 priv->end_of_message_chunk,

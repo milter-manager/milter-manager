@@ -16,16 +16,28 @@ command=body
 
 chunk=First skip message
 
+response=body
+n_received=1
+status=continue
+
+chunks=First skip message;;
+
 [body-skip-second]
 command=body
 
 chunk=Second skip message
 
+response=body
+n_received=1
+status=continue
+
+chunks=Second skip message;;
+
 [end-of-message]
 command=end-of-message
 
-response=body
+response=end-of-message
 n_received=2
-status=skip
+status=continue
 
-chunks=First skip messageSecond skip message;First skip messageSecond skip message
+chunks=;First skip messageSecond skip message

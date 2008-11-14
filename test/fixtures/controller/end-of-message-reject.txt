@@ -15,5 +15,5 @@ command=end-of-message
 chunk=Reject
 
 response=end-of-message
-n_received=2
+n_received=1
 status=reject

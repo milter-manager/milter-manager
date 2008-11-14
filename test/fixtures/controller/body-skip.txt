@@ -15,16 +15,28 @@ command=body
 
 chunk=Skip
 
+response=body
+n_received=1
+status=continue
+
+chunks=Skip;;
+
 [body-skip-second]
 command=body
 
 chunk=Continue
 
+response=body
+n_received=1
+status=continue
+
+chunks=Continue;;
+
 [end-of-message]
 command=end-of-message
 
-response=body
+response=end-of-message
 n_received=2
 status=continue
 
-chunks=SkipContinue;SkipContinue
+chunks=;SkipContinue

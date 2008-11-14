@@ -16,11 +16,17 @@ command=body
 
 chunk=Hi,
 
+response=body
+n_received=1
+status=continue
+
+chunks=Hi,;;
+
 [end-of-message]
 command=end-of-message
 
-response=body
+response=end-of-message
 n_received=2
-status=reject
+status=continue
 
 replace_bodies=This is the replaced message by client1.

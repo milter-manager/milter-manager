@@ -1,3 +1,22 @@
+2008-11-14  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/manager/milter-manager-children.c: Send "BODY" imediately if
+	the target child is the first one.
+	* test/manager/test-controller.c (do_body): Check response and chunks.
+	* test/fixtures/controller/end-of-message-discard.txt,
+	test/fixtures/controller/end-of-message-reject.txt,
+	test/fixtures/controller/end-of-message-temporary-failure.txt:
+	n_received is 1 on end-of-message response because no more process for
+	the message if a child returns "REJECT", "DISCARD" or
+	"TEMPORARY-FAILURE".
+	* test/fixtures/controller/body.txt,
+	test/fixtures/controller/body-accept.txt: Check chunk on each body
+	command.
+	* test/fixtures/controller/body-skip.txt,
+	test/fixtures/controller/body-skip-all.txt: Check chunks on each body.
+	But I am not sure each client is received correct chunks. I would like
+	to write chunks[first-skip-client]=First skip message or something.
+
 2008-11-13  Kouhei Sutou  <kou@cozmixng.org>
 
 	* test/manager/test-children.c,
