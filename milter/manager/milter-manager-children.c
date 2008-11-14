@@ -38,7 +38,7 @@ struct _MilterManagerChildrenPrivate
     GList *milters;
     GList *quitted_milters;
     GQueue *reply_queue;
-    GList *command_queue; /* storing child milters which is waiting for commands after DATA command */
+    GList *command_waiting_child_queue; /* storing child milters which is waiting for commands after DATA command */
     GHashTable *try_negotiate_ids;
     MilterManagerConfiguration *configuration;
     MilterMacrosRequests *macros_requests;
@@ -116,7 +116,7 @@ static void prepare_retry_establish_connection
 static void remove_queue_in_negotiate
                            (MilterManagerChildren *children,
                             MilterManagerChild *child);
-static MilterServerContext *get_first_command_queue
+static MilterServerContext *get_first_command_waiting_child_queue
                            (MilterManagerChildren *children,
                             MilterStepFlags flag);
 static gboolean write_to_body_file
@@ -178,7 +178,7 @@ milter_manager_children_init (MilterManagerChildren *milter)
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(milter);
     priv->configuration = NULL;
     priv->reply_queue = g_queue_new();
-    priv->command_queue = NULL;
+    priv->command_waiting_child_queue = NULL;
     priv->try_negotiate_ids =
         g_hash_table_new_full(g_direct_hash, g_direct_equal,
                               negotiate_data_hash_key_free,
@@ -218,9 +218,9 @@ dispose (GObject *object)
         priv->reply_queue = NULL;
     }
 
-    if (priv->command_queue) {
-        g_list_free(priv->command_queue);
-        priv->command_queue = NULL;
+    if (priv->command_waiting_child_queue) {
+        g_list_free(priv->command_waiting_child_queue);
+        priv->command_waiting_child_queue = NULL;
     }
 
     if (priv->try_negotiate_ids) {
@@ -622,8 +622,8 @@ send_body_and_end_of_message_to_next_child (MilterManagerChildren *children,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    priv->command_queue = g_list_remove(priv->command_queue, context);
-    next_child = get_first_command_queue(children, 0);
+    priv->command_waiting_child_queue = g_list_remove(priv->command_waiting_child_queue, context);
+    next_child = get_first_command_waiting_child_queue(children, 0);
     if (!next_child) {
         if (priv->replaced_body)
             emit_replace_body_signal(children);
@@ -650,8 +650,8 @@ send_body_to_next_child (MilterManagerChildren *children,
 
     milter_server_context_quit(context);
 
-    priv->command_queue = g_list_remove(priv->command_queue, context);
-    next_child = get_first_command_queue(children, MILTER_STEP_NO_BODY);
+    priv->command_waiting_child_queue = g_list_remove(priv->command_waiting_child_queue, context);
+    next_child = get_first_command_waiting_child_queue(children, MILTER_STEP_NO_BODY);
     if (!next_child) {
         if (priv->body_file) {
             priv->current_state = MILTER_SERVER_CONTEXT_STATE_BODY;
@@ -1400,32 +1400,32 @@ child_establish_connection (MilterManagerChild *child,
 }
 
 static void
-init_command_queue (MilterManagerChildren *children)
+init_command_waiting_child_queue (MilterManagerChildren *children)
 {
     MilterManagerChildrenPrivate *priv;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    if (priv->command_queue)
+    if (priv->command_waiting_child_queue)
         return;
 
-    priv->command_queue = g_list_copy(priv->milters);
+    priv->command_waiting_child_queue = g_list_copy(priv->milters);
 }
 
 static MilterServerContext *
-get_first_command_queue (MilterManagerChildren *children, MilterStepFlags step)
+get_first_command_waiting_child_queue (MilterManagerChildren *children, MilterStepFlags step)
 {
     MilterManagerChildrenPrivate *priv;
     GList *node;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
-    if (!priv->command_queue)
+    if (!priv->command_waiting_child_queue)
         return NULL;
 
     if (step == 0)
-        return MILTER_SERVER_CONTEXT(priv->command_queue->data);
+        return MILTER_SERVER_CONTEXT(priv->command_waiting_child_queue->data);
 
-    for (node = priv->command_queue; node; node = g_list_next(node)) {
+    for (node = priv->command_waiting_child_queue; node; node = g_list_next(node)) {
         MilterServerContext *context = node->data;
 
         if (!milter_server_context_is_enable_step(context, step))
@@ -1744,12 +1744,12 @@ milter_manager_children_body (MilterManagerChildren *children,
 {
     MilterServerContext *context;
 
-    init_command_queue(children);
+    init_command_waiting_child_queue(children);
 
     if (!write_to_body_file(children, chunk, size))
         return FALSE;
 
-    context = get_first_command_queue(children, MILTER_STEP_NO_BODY);
+    context = get_first_command_waiting_child_queue(children, MILTER_STEP_NO_BODY);
     if (!context)
         return TRUE;
 
@@ -1828,7 +1828,7 @@ milter_manager_children_end_of_message (MilterManagerChildren *children,
     if (!child) 
         return TRUE;
 
-    init_command_queue(children);
+    init_command_waiting_child_queue(children);
 
     if (priv->end_of_message_chunk)
         g_free(priv->end_of_message_chunk);
@@ -1837,7 +1837,7 @@ milter_manager_children_end_of_message (MilterManagerChildren *children,
     if (priv->body_file)
         g_io_channel_seek_position(priv->body_file, 0, G_SEEK_SET, NULL);
 
-    first_child = get_first_command_queue(children, 0);
+    first_child = get_first_command_waiting_child_queue(children, 0);
     if (!first_child)
         return TRUE;
 

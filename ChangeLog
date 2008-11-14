@@ -19,6 +19,8 @@
 	* milter/manager/milter-manager-children.c (cb_finished): Do not
 	invoke remove_child_from_queue() if current state is BODY and
 	END_OF_MESSAGE.
+	* milter/manager/milter-manager-children.c: command_queue ->
+	command_waiting_child_queue.
 
 2008-11-13  Kouhei Sutou  <kou@cozmixng.org>
 
