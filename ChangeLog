@@ -1,3 +1,8 @@
+2008-11-17  Kouhei Sutou  <kou@cozmixng.org>
+
+	* test/manager/test-children.c (test_writing_timeout): wait
+	continue signal.
+
 2008-11-17  Hiroyuki Ikezoe  <poincare@ikezoe.net>
 
 	* milter/manager/milter-manager-children.c (cb_temporary-failure):

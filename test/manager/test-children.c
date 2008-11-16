@@ -1458,7 +1458,7 @@ test_writing_timeout (void)
                                     sizeof(address));
 
     wait_reply(1, n_writing_timeout_emitted);
-    cut_assert_equal_uint(1, n_continue_emitted);
+    wait_reply(1, n_continue_emitted);
 
     cut_assert_equal_string("writing to milter@10027 is timed out.",
                             error_message);
