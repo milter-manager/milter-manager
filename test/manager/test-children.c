@@ -732,6 +732,15 @@ assert_response_error (MilterManagerTestScenario *scenario, const gchar *group)
         cut_return();
 }
 
+static gboolean
+cb_timeout_emitted (gpointer data)
+{
+    gboolean *emitted = data;
+
+    *emitted = TRUE;
+    return FALSE;
+}
+
 static void
 assert_response_common (MilterManagerTestScenario *scenario, const gchar *group)
 {
@@ -746,12 +755,19 @@ assert_response_common (MilterManagerTestScenario *scenario, const gchar *group)
 /*     } else if (g_str_equal(response, "abort")) { */
 /*         wait_reply(abort); */
     } else {
-        g_usleep(500); /* FIXME */
-        milter_manager_test_wait_signal(n_emitted == 0);
+        gboolean timeout_emitted = FALSE;
+        guint timeout_id;
+
+        timeout_id = g_timeout_add(100, cb_timeout_emitted, &timeout_emitted);
+        while (!timeout_emitted && n_emitted > get_n_emitted(response))
+            g_main_context_iteration(NULL, TRUE);
+        g_source_remove(timeout_id);
+        cut_assert_false(timeout_emitted);
     }
 
     actual_n_emitted = get_n_emitted(response);
-    cut_assert_equal_uint(n_emitted, actual_n_emitted, "[%s]", group);
+    cut_assert_equal_uint(n_emitted, actual_n_emitted,
+                          "[%s](%s)", group, response);
 }
 
 static void

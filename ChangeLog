@@ -1,5 +1,8 @@
 2008-11-16  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/test-children.c (assert_response_common): wait
+	until signal emitted.
+
 	* test/manager/test-controller.c (assert_response_common): wait
 	received end-of-message output.
 
