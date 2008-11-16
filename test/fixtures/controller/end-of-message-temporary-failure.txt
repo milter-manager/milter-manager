@@ -16,4 +16,4 @@ chunk=Fail
 
 response=end-of-message
 n_received=1
-status=continue
+status=temporary-failure

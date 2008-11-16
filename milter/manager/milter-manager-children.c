@@ -742,12 +742,9 @@ cb_temporary_failure (MilterServerContext *context, gpointer user_data)
         remove_child_from_queue(children, context);
         break;
       case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
-      {
-        MilterManagerChildrenPrivate *priv;
-
-        priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
-        priv->sent_end_of_message = TRUE;
-      }
+        g_signal_emit_by_name(children, "temporary-failure");
+        expire_all_children(children);
+        break;
       case MILTER_SERVER_CONTEXT_STATE_DATA:
       case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
       case MILTER_SERVER_CONTEXT_STATE_HEADER:
