@@ -855,6 +855,34 @@ cb_discard (MilterServerContext *context, gpointer user_data)
 }
 
 static void
+cb_skip (MilterServerContext *context, gpointer user_data)
+{
+    MilterManagerChildren *children = user_data;
+    MilterServerContextState state;
+    MilterManagerChildrenPrivate *priv;
+
+    state = milter_server_context_get_state(context);
+
+    if (state != MILTER_SERVER_CONTEXT_STATE_BODY) {
+        MilterManagerChildrenPrivate *priv;
+
+        priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+        milter_server_context_quit(context);
+        milter_error("SKIP reply is only allowed in body session");
+        return;
+    }
+
+    compile_reply_status(children, state, MILTER_STATUS_SKIP);
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+    if (!priv->sent_end_of_message)
+        g_signal_emit_by_name(children, "continue");
+    else 
+        send_next_command(children, context, state);
+}
+
+static void
 cb_add_header (MilterServerContext *context,
                const gchar *name, const gchar *value,
                gpointer user_data)
@@ -1000,43 +1028,6 @@ cb_shutdown (MilterServerContext *context, gpointer user_data)
     MilterManagerChildren *children = user_data;
 
     g_signal_emit_by_name(children, "shutdown");
-}
-
-static void
-cb_skip (MilterServerContext *context, gpointer user_data)
-{
-    MilterManagerChildren *children = user_data;
-    MilterServerContextState state;
-
-    state = milter_server_context_get_state(context);
-
-    if (state != MILTER_SERVER_CONTEXT_STATE_BODY) {
-        MilterManagerChildrenPrivate *priv;
-
-        priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
-
-        milter_server_context_quit(context);
-        milter_error("SKIP reply is only allowed in body session");
-        return;
-    }
-
-    compile_reply_status(children, state, MILTER_STATUS_SKIP);
-
-    switch (state) {
-      case MILTER_SERVER_CONTEXT_STATE_BODY:
-      {
-        MilterManagerChildrenPrivate *priv;
-
-        priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
-        if (!priv->sent_end_of_message)
-            g_signal_emit_by_name(children, "continue");
-        else 
-            send_next_command(children, context, state);
-        break;
-      }
-      default:
-        break;
-    }
 }
 
 static void
