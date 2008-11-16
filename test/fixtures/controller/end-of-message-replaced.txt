@@ -9,7 +9,6 @@ arguments=--replace-body;This is the replaced message by client1.
 
 [client10027]
 port=10027
-arguments=--action;reject;--body;This is the replaced message by client1.
 
 [body]
 command=body
@@ -28,5 +27,7 @@ command=end-of-message
 response=end-of-message
 n_received=2
 status=continue
+
+chunks=;This is the replaced message by client1.
 
 replace_bodies=This is the replaced message by client1.

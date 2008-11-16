@@ -9,6 +9,9 @@
 	* milter/manager/milter-manager-children.c
 	(test_end_of_message_timeout): Set end-of-message timeout zero only
 	for the first client.
+	* test/fixtures/controller/end-of-message-replaced-body: The second
+	client does not reject on BODY and check replaced body chunks on
+	END-OF-MESSAGE.
 
 2008-11-16  Kouhei Sutou  <kou@cozmixng.org>
 
