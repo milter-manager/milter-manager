@@ -1030,6 +1030,8 @@ cb_skip (MilterServerContext *context, gpointer user_data)
         priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
         if (!priv->sent_end_of_message)
             g_signal_emit_by_name(children, "continue");
+        else 
+            send_next_command(children, context, state);
         break;
       }
       default:

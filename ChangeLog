@@ -2,6 +2,8 @@
 
 	* milter/manager/milter-manager-children.c (cb_temporary-failure):
 	Emit "temporay-failure" signal while processing END-OF-MESSAGE.
+	* milter/manager/milter-manager-children.c (cb_skip): Send a next
+	command if END-OF-MESSAGE has been already sent.
 
 2008-11-16  Kouhei Sutou  <kou@cozmixng.org>
 
