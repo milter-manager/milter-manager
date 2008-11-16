@@ -1385,13 +1385,10 @@ test_connection_timeout (void)
 }
 
 static void
-prepare_timeout_test (gpointer user_data)
+prepare_timeout_test (gpointer child, GIOChannel *channel)
 {
-    GList *child_list;
-    child_list = milter_manager_children_get_children(children);
-
-    set_timeout(g_list_next(child_list)->data, NULL);
-    connect_timeout_signal(g_list_next(child_list)->data, user_data);
+    set_timeout(child, NULL);
+    connect_timeout_signal(child, channel);
 }
 
 void
@@ -1399,7 +1396,7 @@ test_end_of_message_timeout (void)
 {
     MilterLogger *logger;
 
-    arguments_append(arguments2,
+    arguments_append(arguments1,
                      "--action", "no_response",
                      "--end-of-message", "end",
                      "--wait-second", "10",
@@ -1410,7 +1407,7 @@ test_end_of_message_timeout (void)
     logger = milter_logger();
     log_signal_id = g_signal_connect(logger, "log", G_CALLBACK(cb_log), NULL);
 
-    prepare_timeout_test(NULL);
+    prepare_timeout_test(milter_manager_children_get_children(children)->data, NULL);
 
     milter_manager_children_end_of_message(children, "end", strlen("end"));
 
@@ -1418,7 +1415,7 @@ test_end_of_message_timeout (void)
     wait_reply(1, n_end_of_message_timeout_emitted);
 
     cut_assert_equal_string("The response of end-of-message from "
-                            "milter@10027 is timed out.",
+                            "milter@10026 is timed out.",
                             error_message);
 }
 
@@ -1449,7 +1446,7 @@ test_writing_timeout (void)
     milter_handler_set_writer(MILTER_HANDLER(child), writer);
     g_object_unref(writer);
 
-    prepare_timeout_test(channel);
+    prepare_timeout_test(child, channel);
 
     address.sin_family = AF_INET;
     address.sin_port = g_htons(50443);
@@ -1486,7 +1483,8 @@ test_reading_timeout (void)
     logger = milter_logger();
     log_signal_id = g_signal_connect(logger, "log", G_CALLBACK(cb_log), NULL);
 
-    prepare_timeout_test(NULL);
+    prepare_timeout_test(milter_manager_children_get_children(children)->next->data,
+                         NULL);
 
     address.sin_family = AF_INET;
     address.sin_port = g_htons(50443);

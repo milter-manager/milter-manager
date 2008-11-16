@@ -6,6 +6,9 @@
 	command if END-OF-MESSAGE has been already sent.
 	* milter/manager/milter-manager-children.c (cb_skip): Cleanup. Move to
 	the next of cb_accept().
+	* milter/manager/milter-manager-children.c
+	(test_end_of_message_timeout): Set end-of-message timeout zero only
+	for the first client.
 
 2008-11-16  Kouhei Sutou  <kou@cozmixng.org>
 
