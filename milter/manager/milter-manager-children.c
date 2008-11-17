@@ -696,6 +696,47 @@ send_command_to_child (MilterManagerChildren *children,
 }
 
 static void
+emit_signals_on_end_of_message (MilterManagerChildren *children)
+{
+    MilterManagerChildrenPrivate *priv;
+    const GList *header_list, *node;
+    MilterManagerHeaders *processing_headers;
+    gint i;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+    if (priv->replaced_body)
+        emit_replace_body_signal(children);
+
+    processing_headers = milter_manager_headers_copy(priv->original_headers);
+    header_list = milter_manager_headers_get_list(priv->headers);
+
+    /* FIXME thes following process admits of improvement. */
+    for (node = header_list, i = 0;
+         node;
+         node = g_list_next(node), i++) {
+        MilterManagerHeader *header = node->data;
+        MilterManagerHeader *found_header;
+
+        if (milter_manager_headers_find(processing_headers, header)) {
+            milter_manager_headers_remove(processing_headers, header);
+            continue;
+        }
+
+        found_header = milter_manager_headers_lookup_by_name(processing_headers, header->name);
+        if (found_header) {
+            gint index;
+            g_signal_emit_by_name(children, "change-header",
+                                  header->name, index, header->value);
+            continue;
+        }
+        g_signal_emit_by_name(children, "insert-header",
+                              i, header->name, header->value);
+    }
+
+    g_object_unref(processing_headers);
+}
+
+static void
 send_first_command_to_next_child (MilterManagerChildren *children,
                                   MilterServerContext *context,
                                   MilterServerContextState current_state)
@@ -712,12 +753,9 @@ send_first_command_to_next_child (MilterManagerChildren *children,
 
     next_child = get_first_command_waiting_child_queue(children, first_command);
     if (!next_child) {
-        if (current_state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) {
-            if (priv->replaced_body)
-                emit_replace_body_signal(children);
+        if (current_state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
+            emit_signals_on_end_of_message(children);
 
-            /* FIXME Send XX-headers signal */ 
-        }
         emit_reply_status_of_state(children, current_state);
         return;
     }

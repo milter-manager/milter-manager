@@ -299,16 +299,19 @@ milter_manager_headers_change_header (MilterManagerHeaders *headers,
     for (node = priv->header_list; node; node = g_list_next(node)) {
         MilterManagerHeader *header = node->data;
 
-        if (string_equal(header->name, name))
-            found_count++;
+        if (!string_equal(header->name, name))
+            continue;
+
+        found_count++;
 
         if (found_count == index) {
             milter_manager_header_change_value(header, value);
             return TRUE;
         }
     }
+    milter_manager_headers_add_header(headers, name, value);
 
-    return FALSE;
+    return TRUE;
 }
 
 guint

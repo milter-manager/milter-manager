@@ -344,6 +344,9 @@ test_change_header (void)
     expected_list = g_list_append(expected_list, 
                                   milter_manager_header_new("Test header",
                                                             "Replaced header value"));
+    expected_list = g_list_append(expected_list, 
+                                  milter_manager_header_new("Test header",
+                                                            "Added header value"));
 
     cut_assert_true(milter_manager_headers_add_header(headers,
                                                       "Test header",
@@ -361,6 +364,10 @@ test_change_header (void)
                                                          "Test header",
                                                          3,
                                                          "Replaced header value"));
+    cut_assert_true(milter_manager_headers_change_header(headers,
+                                                         "Test header",
+                                                         4,
+                                                         "Added header value"));
     gcut_assert_equal_list(
             expected_list,
             milter_manager_headers_get_list(headers),
