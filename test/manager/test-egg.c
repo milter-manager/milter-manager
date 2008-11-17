@@ -159,7 +159,7 @@ test_connection_spec_error (void)
                                  "milter-utils-error-quark:%d: "
                                  "protocol must be 'unix', 'inet' or 'inet6': "
                                  "<%s>: <unknown>",
-                                 MILTER_UTILS_ERROR_INVALID_FORMAT,
+                                 MILTER_CONNECTION_ERROR_INVALID_FORMAT,
                                  spec);
     g_setenv("MILTER_LOG_LEVEL", NULL, TRUE);
     milter_manager_egg_set_connection_spec(egg, spec, &actual_error);
