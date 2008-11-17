@@ -28,6 +28,7 @@
 
 void test_length (void);
 void test_get_nth_header (void);
+void test_lookup_by_name (void);
 void test_copy (void);
 void test_add_header (void);
 void test_insert_header (void);
@@ -110,6 +111,31 @@ test_get_nth_header (void)
     expected_list = g_list_append(expected_list, expected_header);
     actual_header = milter_manager_headers_get_nth_header(headers, 3);
     milter_manager_assert_equal_header(expected_header, actual_header);
+}
+
+void
+test_lookup_by_name (void)
+{
+    MilterManagerHeader *actual_header;
+
+    cut_assert_true(milter_manager_headers_add_header(headers,
+                                                      "First header",
+                                                      "First header value"));
+    cut_assert_true(milter_manager_headers_add_header(headers,
+                                                      "Second header",
+                                                      "Second header value"));
+    cut_assert_true(milter_manager_headers_add_header(headers,
+                                                      "Third header",
+                                                      "Third header value"));
+
+    actual_header = milter_manager_headers_lookup_by_name(headers, "First header");
+    cut_assert_equal_string("First header value", actual_header->value);
+
+    actual_header = milter_manager_headers_lookup_by_name(headers, "Second header");
+    cut_assert_equal_string("Second header value", actual_header->value);
+
+    actual_header = milter_manager_headers_lookup_by_name(headers, "Third header");
+    cut_assert_equal_string("Third header value", actual_header->value);
 }
 
 void

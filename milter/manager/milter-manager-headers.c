@@ -160,6 +160,42 @@ milter_manager_headers_get_list (MilterManagerHeaders *headers)
     return MILTER_MANAGER_HEADERS_GET_PRIVATE(headers)->header_list;
 }
 
+static gboolean
+string_equal (const gchar *string1, const gchar *string2)
+{
+    if (string1 == string2)
+        return TRUE;
+
+    if (string1 == NULL || string2 == NULL)
+        return FALSE;
+
+    return g_strcmp0(string1, string2) == 0;
+}
+
+static gint
+milter_manager_header_name_compare (MilterManagerHeader *header1,
+                                    const gchar *name)
+{
+    return g_strcmp0(header1->name, name);
+}
+
+MilterManagerHeader *
+milter_manager_headers_lookup_by_name (MilterManagerHeaders *headers,
+                                       const gchar *name)
+{
+    MilterManagerHeadersPrivate *priv;
+    GList *found_node;
+
+    priv = MILTER_MANAGER_HEADERS_GET_PRIVATE(headers);
+
+    found_node = g_list_find_custom(priv->header_list,
+                                    name,
+                                    (GCompareFunc)milter_manager_header_name_compare);
+    if (!found_node)
+        return NULL;
+    return (MilterManagerHeader*)found_node->data;
+}
+
 MilterManagerHeader *
 milter_manager_headers_get_nth_header (MilterManagerHeaders *headers,
                                        guint index)
@@ -208,18 +244,6 @@ milter_manager_headers_insert_header (MilterManagerHeaders *headers,
                                       position);
 
     return TRUE;
-}
-
-static gboolean
-string_equal (const gchar *string1, const gchar *string2)
-{
-    if (string1 == string2)
-        return TRUE;
-
-    if (string1 == NULL || string2 == NULL)
-        return FALSE;
-
-    return g_strcmp0(string1, string2) == 0;
 }
 
 gboolean
