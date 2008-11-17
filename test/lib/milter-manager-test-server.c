@@ -180,7 +180,7 @@ dispose (GObject *object)
 
     if (priv->received_add_recipients) {
         g_list_foreach(priv->received_add_recipients,
-                       (GFunc)milter_manager_test_header_free,
+                       (GFunc)milter_manager_test_pair_free,
                        NULL);
         g_list_free(priv->received_add_recipients);
         priv->received_add_recipients = NULL;
@@ -194,7 +194,7 @@ dispose (GObject *object)
 
     if (priv->received_change_froms) {
         g_list_foreach(priv->received_change_froms,
-                       (GFunc)milter_manager_test_header_free,
+                       (GFunc)milter_manager_test_pair_free,
                        NULL);
         g_list_free(priv->received_change_froms);
         priv->received_change_froms = NULL;
