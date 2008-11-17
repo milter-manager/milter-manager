@@ -1,3 +1,11 @@
+2008-11-18  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/manager/milter-manager-children.c
+	(get_first_command_waiting_child_queue): Emit "continue" signal if the
+	first child in waiting queue does not need the command because if
+	there is no response (i.e. continue or so), MTA does not send a next
+	command.
+
 2008-11-17  Kouhei Sutou  <kou@cozmixng.org>
 
 	* binding/ruby/lib/milter/manager.rb, data/milter-manager.conf:

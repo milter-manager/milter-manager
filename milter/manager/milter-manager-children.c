@@ -1592,24 +1592,23 @@ get_first_command_waiting_child_queue (MilterManagerChildren *children,
                                        MilterCommand command)
 {
     MilterManagerChildrenPrivate *priv;
-    GList *node;
+    MilterServerContext *first_child;
+    MilterStepFlags step;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
     if (!priv->command_waiting_child_queue)
         return NULL;
 
+    first_child = MILTER_SERVER_CONTEXT(g_list_first(priv->command_waiting_child_queue)->data);
     if (command == -1)
-        return MILTER_SERVER_CONTEXT(priv->command_waiting_child_queue->data);
+        return first_child;
 
-    for (node = priv->command_waiting_child_queue; node; node = g_list_next(node)) {
-        MilterServerContext *context = node->data;
-        MilterStepFlags step;
+    step = command_to_no_step_flag(command);
+    if (!milter_server_context_is_enable_step(first_child, step))
+        return first_child;
 
-        step = command_to_no_step_flag(command);
+    g_signal_emit_by_name(children, "continue");
 
-        if (!milter_server_context_is_enable_step(context, step))
-            return context;
-    }
     return NULL;
 }
 
