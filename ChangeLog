@@ -29,6 +29,10 @@
 	* milter/manager/milter-manager-headers.c
 	(milter_manager_headers_get_nth_header): THe index begins from 1 not
 	0.
+	* test/lib/milter-manager-test-scenario.c
+	(milter_manager_test_scenario_get_pair_list): Set name NULL.
+	* test/manager/test-leader.c (do_header): Sort header list before
+	assert check.
 
 2008-11-16  Kouhei Sutou  <kou@cozmixng.org>
 

@@ -598,7 +598,9 @@ do_header (MilterManagerTestScenario *scenario, const gchar *group)
     cut_trace(assert_response(scenario, group));
 
     expected_headers = get_pair_list(scenario, group, "headers");
-    actual_headers = collect_received_pairs(header_name, header_value);
+    actual_headers = 
+        g_list_sort((GList*)collect_received_pairs(header_name, header_value),
+                     milter_manager_test_pair_compare);
     gcut_assert_equal_list(
         expected_headers, actual_headers,
         milter_manager_test_pair_equal,

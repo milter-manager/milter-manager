@@ -497,6 +497,8 @@ milter_manager_test_scenario_get_pair_list (MilterManagerTestScenario *scenario,
             const gchar *name, *value;
 
             name = pair_strings[i];
+            if (name && name[0] == '\0')
+                name = NULL;
             value = pair_strings[i + 1];
             if (value && value[0] == '\0')
                 value = NULL;
