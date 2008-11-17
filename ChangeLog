@@ -55,6 +55,8 @@
 	milter_manager_headers_lookup_by_name().
 	* milter/manager/milter-manager-headers.[ch]: Added
 	milter_manager_headers_find().
+	* milter/manager/milter-manager-headers.[ch]: Added
+	milter_manager_headers_remove().
 
 2008-11-16  Kouhei Sutou  <kou@cozmixng.org>
 

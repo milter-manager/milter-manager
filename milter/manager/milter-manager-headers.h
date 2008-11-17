@@ -91,7 +91,8 @@ MilterManagerHeader  *milter_manager_headers_find        (MilterManagerHeaders *
 MilterManagerHeader  *milter_manager_headers_lookup_by_name
                                                          (MilterManagerHeaders *headers,
                                                           const gchar *name);
-                                                                
+gboolean              milter_manager_headers_remove      (MilterManagerHeaders *headers,
+                                                          MilterManagerHeader *header);
 
 G_END_DECLS
 

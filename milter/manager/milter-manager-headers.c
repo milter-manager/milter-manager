@@ -234,6 +234,25 @@ milter_manager_headers_get_nth_header (MilterManagerHeaders *headers,
 }
 
 gboolean
+milter_manager_headers_remove (MilterManagerHeaders *headers,
+                               MilterManagerHeader *header)
+{
+    MilterManagerHeadersPrivate *priv;
+    MilterManagerHeader *found_header;
+
+    priv = MILTER_MANAGER_HEADERS_GET_PRIVATE(headers);
+
+    found_header = milter_manager_headers_find(headers, header);
+    if (!found_header)
+        return FALSE;
+
+    priv->header_list = g_list_remove(priv->header_list, found_header);
+    milter_manager_header_free(found_header);
+
+    return TRUE;
+}
+
+gboolean
 milter_manager_headers_add_header(MilterManagerHeaders *headers,
                                   const gchar *name,
                                   const gchar *value)

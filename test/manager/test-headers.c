@@ -31,6 +31,7 @@ void test_get_nth_header (void);
 void test_find (void);
 void test_lookup_by_name (void);
 void test_copy (void);
+void test_remove (void);
 void test_add_header (void);
 void test_insert_header (void);
 void test_change_header (void);
@@ -212,6 +213,53 @@ test_copy (void)
             milter_manager_header_equal,
             (GCutInspectFunc)milter_manager_header_inspect,
             NULL);
+}
+
+void
+test_remove (void)
+{
+    MilterManagerHeader *header;
+
+    expected_list = g_list_append(expected_list, 
+                                  milter_manager_header_new("Second header",
+                                                            "Second header value"));
+    expected_list = g_list_append(expected_list, 
+                                  milter_manager_header_new("Third header",
+                                                            "Third header value"));
+
+    cut_assert_true(milter_manager_headers_add_header(headers,
+                                                      "First header",
+                                                      "First header value"));
+    cut_assert_true(milter_manager_headers_add_header(headers,
+                                                      "Second header",
+                                                      "Second header value"));
+    cut_assert_true(milter_manager_headers_add_header(headers,
+                                                      "Third header",
+                                                      "Third header value"));
+
+    header = milter_manager_header_new("First header", "First header value");
+    expected_list = g_list_append(expected_list, header);
+    cut_assert_true(milter_manager_headers_remove(headers, header));
+
+    cut_assert_false(milter_manager_headers_remove(headers, header));
+
+    header = milter_manager_header_new("First header", "First header values");
+    expected_list = g_list_append(expected_list, header);
+    cut_assert_false(milter_manager_headers_remove(headers, header));
+
+    header = milter_manager_header_new("Second header", "Second header value");
+    expected_list = g_list_append(expected_list, header);
+    cut_assert_true(milter_manager_headers_remove(headers, header));
+
+    header = milter_manager_header_new("Third header", "Third header value");
+    expected_list = g_list_append(expected_list, header);
+    cut_assert_true(milter_manager_headers_remove(headers, header));
+
+    cut_assert_equal_uint(0, milter_manager_headers_length(headers));
+
+    header = milter_manager_header_new("Third header", "Third header value");
+    expected_list = g_list_append(expected_list, header);
+    cut_assert_false(milter_manager_headers_remove(headers, header));
 }
 
 void
