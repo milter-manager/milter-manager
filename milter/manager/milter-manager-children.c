@@ -635,6 +635,9 @@ static MilterStepFlags
 command_to_no_step_flag (MilterCommand command)
 {
     switch (command) {
+      case MILTER_COMMAND_DATA:
+        return MILTER_STEP_NO_DATA;
+        break;
       case MILTER_COMMAND_HEADER:
         return MILTER_STEP_NO_HEADERS;
         break;
@@ -658,6 +661,9 @@ send_command_to_child (MilterManagerChildren *children,
                        MilterCommand command)
 {
     switch (command) {
+      case MILTER_COMMAND_DATA:
+        milter_server_context_data(child);
+        break;
       case MILTER_COMMAND_HEADER:
         send_next_header_to_child(children, child);
         break;
@@ -724,6 +730,10 @@ cb_continue (MilterServerContext *context, gpointer user_data)
 
     compile_reply_status(children, state, MILTER_STATUS_CONTINUE);
     switch (state) {
+      case MILTER_SERVER_CONTEXT_STATE_DATA:
+      case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
+        send_next_command(children, context, state);
+        break;
       case MILTER_SERVER_CONTEXT_STATE_HEADER:
         if (!priv->sent_end_of_message) {
             g_signal_emit_by_name(children, "continue");
@@ -735,9 +745,6 @@ cb_continue (MilterServerContext *context, gpointer user_data)
         } else {
             send_next_command(children, context, state);
         }
-        break;
-      case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
-        send_next_command(children, context, state);
         break;
       case MILTER_SERVER_CONTEXT_STATE_BODY:
         priv->sent_body_count--;
@@ -751,7 +758,6 @@ cb_continue (MilterServerContext *context, gpointer user_data)
       case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
         send_first_command_to_next_child(children, context, state);
         break;
-      case MILTER_SERVER_CONTEXT_STATE_DATA:
       default:
         remove_child_from_queue(children, context);
         break;
@@ -1134,13 +1140,13 @@ cb_finished (MilterHandler *handler, gpointer user_data)
     g_free(state_string);
 
     switch (priv->current_state) {
+      case MILTER_SERVER_CONTEXT_STATE_DATA:
       case MILTER_SERVER_CONTEXT_STATE_HEADER:
       case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
       case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
       case MILTER_SERVER_CONTEXT_STATE_BODY:
         return;
         break;
-      case MILTER_SERVER_CONTEXT_STATE_DATA:
       default:
         remove_child_from_queue(children, context);
         break;
@@ -1452,6 +1458,9 @@ static MilterCommand
 state_to_command (MilterServerContextState state)
 {
     switch (state) {
+      case MILTER_SERVER_CONTEXT_STATE_DATA:
+        return MILTER_COMMAND_DATA;
+        break;
       case MILTER_SERVER_CONTEXT_STATE_HEADER:
         return MILTER_COMMAND_HEADER;
         break;
@@ -1711,24 +1720,21 @@ milter_manager_children_envelope_recipient (MilterManagerChildren *children,
 gboolean
 milter_manager_children_data (MilterManagerChildren *children)
 {
-    GList *child;
+    MilterServerContext *first_child;
     MilterManagerChildrenPrivate *priv;
-    gboolean success = TRUE;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    init_reply_queue(children, MILTER_SERVER_CONTEXT_STATE_DATA);
-    for (child = priv->milters; child; child = g_list_next(child)) {
-        MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
+    priv->current_state = MILTER_SERVER_CONTEXT_STATE_DATA;
+    priv->processing_header_index = 0;
+    init_command_waiting_child_queue(children, MILTER_COMMAND_DATA);
 
-        if (milter_server_context_is_enable_step(context, MILTER_STEP_NO_DATA))
-            continue;
+    first_child = get_first_command_waiting_child_queue(children,
+                                                        MILTER_COMMAND_DATA);
+    if (!first_child)
+        return TRUE;
 
-        g_queue_push_tail(priv->reply_queue, context);
-        success |= milter_server_context_data(context);
-    }
-
-    return success;
+    return milter_server_context_data(first_child);
 }
 
 gboolean

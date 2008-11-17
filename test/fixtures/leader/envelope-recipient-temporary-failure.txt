@@ -36,5 +36,5 @@ recipients=ok@example.com;ok@example.com
 command=data
 
 response=data
-n_received=2
+n_received=1
 status=continue

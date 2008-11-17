@@ -38,6 +38,8 @@
 	assert check.
 	* milter/manager/milter-manager-children.c: HEADER command is sent to
 	a child sequential to END-OF-MESSAGE command.
+	* milter/manager/milter-manager-children.c: DATA command is sent to
+	a child sequential to END-OF-MESSAGE command.
 
 2008-11-16  Kouhei Sutou  <kou@cozmixng.org>
 
