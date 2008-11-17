@@ -35,13 +35,15 @@ struct _MilterManagerConfigurationPrivate
 {
     GList *eggs;
     gboolean privilege_mode;
+    gchar *control_connection_spec;
     MilterStatus return_status;
 };
 
 enum
 {
     PROP_0,
-    PROP_PRIVILEGE_MODE
+    PROP_PRIVILEGE_MODE,
+    PROP_CONTROL_CONNECTION_SPEC
 };
 
 static GList *configurations = NULL;
@@ -79,6 +81,15 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
                                 G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
     g_object_class_install_property(gobject_class, PROP_PRIVILEGE_MODE, spec);
 
+    spec = g_param_spec_string("control-connection-spec",
+                               "Control connection spec",
+                               "The control connection spec "
+                               "of the milter-manager",
+                               NULL,
+                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+    g_object_class_install_property(gobject_class, PROP_CONTROL_CONNECTION_SPEC,
+                                    spec);
+
     g_type_class_add_private(gobject_class,
                              sizeof(MilterManagerConfigurationPrivate));
 }
@@ -91,6 +102,7 @@ milter_manager_configuration_init (MilterManagerConfiguration *configuration)
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
     priv->eggs = NULL;
     priv->privilege_mode = FALSE;
+    priv->control_connection_spec = NULL;
     priv->return_status = MILTER_STATUS_CONTINUE;
 }
 
@@ -105,6 +117,11 @@ dispose (GObject *object)
         g_list_foreach(priv->eggs, (GFunc)g_object_unref, NULL);
         g_list_free(priv->eggs);
         priv->eggs = NULL;
+    }
+
+    if (priv->control_connection_spec) {
+        g_free(priv->control_connection_spec);
+        priv->control_connection_spec = NULL;
     }
 
     G_OBJECT_CLASS(milter_manager_configuration_parent_class)->dispose(object);
@@ -122,6 +139,11 @@ set_property (GObject      *object,
     switch (prop_id) {
       case PROP_PRIVILEGE_MODE:
         priv->privilege_mode = g_value_get_boolean(value);
+        break;
+      case PROP_CONTROL_CONNECTION_SPEC:
+        if (priv->control_connection_spec)
+            g_free(priv->control_connection_spec);
+        priv->control_connection_spec = g_value_dup_string(value);
         break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -141,6 +163,9 @@ get_property (GObject    *object,
     switch (prop_id) {
       case PROP_PRIVILEGE_MODE:
         g_value_set_boolean(value, priv->privilege_mode);
+        break;
+      case PROP_CONTROL_CONNECTION_SPEC:
+        g_value_set_string(value, priv->control_connection_spec);
         break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -263,6 +288,12 @@ gboolean
 milter_manager_configuration_is_privilege_mode (MilterManagerConfiguration *configuration)
 {
     return MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration)->privilege_mode;
+}
+
+const gchar *
+milter_manager_configuration_get_control_connection_spec (MilterManagerConfiguration *configuration)
+{
+    return MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration)->control_connection_spec;
 }
 
 void

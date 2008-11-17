@@ -31,7 +31,8 @@ milter_manager_public_headers =			\
 	milter-manager-module.h			\
 	milter-manager-module-impl.h		\
 	milter-manager-control-decoder.h	\
-	milter-manager-control-protocol.h
+	milter-manager-control-protocol.h	\
+	milter-manager-controller.h
 
 enum_source_prefix = milter-manager-enum-types
 enum_sources_h =			\
@@ -48,20 +49,21 @@ milter_manager_include_HEADERS =	\
 lib_LTLIBRARIES =		\
 	libmilter-manager.la
 
-libmilter_manager_la_SOURCES =		\
-	milter-manager-enum-types.c	\
-	milter-manager-marshalers.c	\
-	milter-manager-marshalers.h	\
-	milter-manager-ruby-internal.h	\
-	milter-manager.c		\
-	milter-manager-configuration.c	\
-	milter-manager-child.c		\
-	milter-manager-children.c	\
-	milter-manager-module.c		\
-	milter-manager-leader.c		\
-	milter-manager-egg.c		\
-	milter-manager-headers.c	\
-	milter-manager-control-decoder.c
+libmilter_manager_la_SOURCES =			\
+	milter-manager-enum-types.c		\
+	milter-manager-marshalers.c		\
+	milter-manager-marshalers.h		\
+	milter-manager-ruby-internal.h		\
+	milter-manager.c			\
+	milter-manager-configuration.c		\
+	milter-manager-child.c			\
+	milter-manager-children.c		\
+	milter-manager-module.c			\
+	milter-manager-leader.c			\
+	milter-manager-egg.c			\
+	milter-manager-headers.c		\
+	milter-manager-control-decoder.c	\
+	milter-manager-controller.c
 
 include $(top_srcdir)/build/enum-types.mk
 include $(top_srcdir)/build/marshal.mk

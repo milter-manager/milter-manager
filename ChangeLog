@@ -1,5 +1,16 @@
 2008-11-17  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager.rb, data/milter-manager.conf:
+	support control connection.
+
+	* milter/manager/milter-manager.c: accept control
+	connection. (only accept)
+
+	* milter/manager/milter-manager-controller.[ch]: add.
+
+	* milter/manager/milter-manager-configuration.[ch]: add control
+	connection spec configuration.
+
 	* test/manager/test-leader.c (do_connect),
 	test/manager/test-children.c (do_connect),
 	test/manager/test-egg.c (test_connection_spec_error),

@@ -25,6 +25,7 @@
 #include <glib/gi18n.h>
 
 #include <signal.h>
+#include <errno.h>
 
 #include "../manager.h"
 
@@ -256,6 +257,130 @@ cb_connection_established (MilterClient *client, MilterClientContext *context,
     setup_context_signals(context, configuration);
 }
 
+static gboolean
+cb_free_controller (gpointer data)
+{
+    MilterManagerController *controller = data;
+
+    g_object_unref(controller);
+    return FALSE;
+}
+
+static void
+cb_control_reader_finished (MilterReader *reader, gpointer data)
+{
+    MilterManagerController *controller = data;
+
+    g_idle_add(cb_free_controller, controller);
+}
+
+static void
+process_control_connection(MilterManagerConfiguration *configuration,
+                           GIOChannel *agent_channel)
+{
+    MilterManagerController *controller;
+    MilterWriter *writer;
+    MilterReader *reader;
+
+    controller = milter_manager_controller_new(configuration);
+
+    writer = milter_writer_io_channel_new(agent_channel);
+    milter_handler_set_writer(MILTER_HANDLER(controller), writer);
+    g_object_unref(writer);
+
+    reader = milter_reader_io_channel_new(agent_channel);
+    milter_handler_set_reader(MILTER_HANDLER(controller), reader);
+    g_object_unref(reader);
+
+    g_signal_connect(reader, "finished",
+                     G_CALLBACK(cb_control_reader_finished), controller);
+}
+
+static gboolean
+accept_control_connection (gint control_fd,
+                           MilterManagerConfiguration *configuration)
+{
+    gint agent_fd;
+    GIOChannel *agent_channel;
+
+    milter_info("start accepting...: %d", control_fd);
+    agent_fd = accept(control_fd, NULL, NULL);
+    if (agent_fd == -1) {
+        milter_error("failed to accept(): %s", g_strerror(errno));
+        return TRUE;
+    }
+
+    milter_info("accepted!: %d", agent_fd);
+    agent_channel = g_io_channel_unix_new(agent_fd);
+    g_io_channel_set_encoding(agent_channel, NULL, NULL);
+    g_io_channel_set_flags(agent_channel, G_IO_FLAG_NONBLOCK, NULL);
+    g_io_channel_set_close_on_unref(agent_channel, TRUE);
+    process_control_connection(configuration, agent_channel);
+    g_io_channel_unref(agent_channel);
+
+    return TRUE;
+}
+
+static gboolean
+control_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
+{
+    MilterManagerConfiguration *configuration = data;
+    gboolean keep_callback = TRUE;
+
+    if (condition & G_IO_IN ||
+        condition & G_IO_PRI) {
+        guint fd;
+
+        fd = g_io_channel_unix_get_fd(channel);
+        keep_callback = accept_control_connection(fd, configuration);
+    }
+
+    if (condition & G_IO_ERR ||
+        condition & G_IO_HUP ||
+        condition & G_IO_NVAL) {
+        gchar *message;
+
+        message = milter_utils_inspect_io_condition_error(condition);
+        milter_error("%s", message);
+        g_free(message);
+        keep_callback = FALSE;
+    }
+
+    return keep_callback;
+}
+
+
+static guint
+setup_control_connection (MilterManagerConfiguration *configuration)
+{
+    const gchar *spec;
+    GIOChannel *channel;
+    GError *error = NULL;
+    guint watch_id = 0;
+
+    spec = milter_manager_configuration_get_control_connection_spec(configuration);
+    if (!spec) {
+        milter_info("control connection spec is missing. "
+                    "control connection is disabled");
+        return 0;
+    }
+
+    channel = milter_connection_listen(spec, 5, &error);
+    if (!channel) {
+        milter_error("failed to listen control connection: <%s>:<%s>",
+                     spec, error->message);
+        g_error_free(error);
+        return 0;
+    }
+
+    watch_id = g_io_add_watch(channel,
+                              G_IO_IN | G_IO_PRI |
+                              G_IO_ERR | G_IO_HUP | G_IO_NVAL,
+                              control_watch_func, configuration);
+
+    return watch_id;
+}
+
 void
 milter_manager_main (void)
 {
@@ -263,6 +388,7 @@ milter_manager_main (void)
     MilterManagerConfiguration *configuration;
     void (*sigint_handler) (int signum);
     const gchar *config_dir_env;
+    guint control_connection_watch_id = 0;
 
     configuration = milter_manager_configuration_new(NULL);
     config_dir_env = g_getenv("MILTER_MANAGER_CONFIG_DIR");
@@ -271,6 +397,9 @@ milter_manager_main (void)
                                                    config_dir_env);
     milter_manager_configuration_add_load_path(configuration, CONFIG_DIR);
     milter_manager_configuration_load(configuration, "milter-manager.conf");
+
+    /* FIXME */
+    control_connection_watch_id = setup_control_connection(configuration);
 
     client = milter_client_new();
     milter_client_set_connection_spec(client, "inet:10025", NULL);

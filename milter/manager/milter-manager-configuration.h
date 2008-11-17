@@ -71,6 +71,10 @@ void          milter_manager_configuration_load
 
 gboolean      milter_manager_configuration_is_privilege_mode
                                      (MilterManagerConfiguration *configuration);
+const gchar  *milter_manager_configuration_get_control_connection_spec
+                                     (MilterManagerConfiguration *configuration);
+
+/* what about milter_manager_configuration_get_fallback_status()? */
 MilterStatus  milter_manager_configuration_get_return_status_if_filter_unavailable
                                      (MilterManagerConfiguration *configuration);
 void          milter_manager_configuration_add_egg
