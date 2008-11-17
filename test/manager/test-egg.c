@@ -156,7 +156,7 @@ test_connection_spec_error (void)
     expected_error = g_error_new(MILTER_MANAGER_EGG_ERROR,
                                  MILTER_MANAGER_EGG_ERROR_INVALID,
                                  "<child-milter>: invalid connection spec: "
-                                 "milter-utils-error-quark:%d: "
+                                 "milter-connection-error-quark:%d: "
                                  "protocol must be 'unix', 'inet' or 'inet6': "
                                  "<%s>: <unknown>",
                                  MILTER_CONNECTION_ERROR_INVALID_FORMAT,
