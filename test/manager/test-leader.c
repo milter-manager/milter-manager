@@ -595,6 +595,8 @@ do_header (MilterManagerTestScenario *scenario, const gchar *group)
     value = get_string(scenario, group, "value");
     milter_manager_leader_header(leader, name, value);
 
+    milter_manager_test_server_add_header(server, name, value);
+
     cut_trace(assert_response(scenario, group));
 
     expected_headers = get_pair_list(scenario, group, "headers");

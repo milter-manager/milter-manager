@@ -737,6 +737,7 @@ emit_signals_on_end_of_message (MilterManagerChildren *children)
         } else {
             g_signal_emit_by_name(children, "change-header",
                                   header->name, index, header->value);
+            milter_manager_headers_remove(processing_headers, found_header);
         }
     }
 

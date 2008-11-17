@@ -499,6 +499,19 @@ milter_manager_test_server_get_received_reply_codes (MilterManagerTestServer *se
     return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->received_reply_codes;
 }
 
+void
+milter_manager_test_server_add_header (MilterManagerTestServer *server,
+                                       const gchar *name,
+                                       const gchar *value)
+{
+
+    MilterManagerTestServerPrivate *priv;
+
+    priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server);
+
+    milter_manager_headers_add_header(priv->headers, name, value);
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */

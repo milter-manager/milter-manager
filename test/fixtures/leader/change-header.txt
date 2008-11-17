@@ -1,15 +1,45 @@
 [scenario]
 clients=client10026;client10027
-import=body.txt
-actions=end-of-message-change-header
+import=data.txt
+actions=header;end-of-header;body;end-of-message-change-header
 
 [client10026]
 port=10026
-arguments=--add-header;X-Test-Header1:2:Test Header1 Value
+arguments=--add-header;X-Test-Header1:Test-Header-Value2;
 
 [client10027]
 port=10027
 arguments=--change-header;X-Test-Header1:1:Replaced Value
+
+[header]
+command=header
+
+name=X-Test-Header1
+value=Test-Header1-Value1
+
+response=header
+n_received=1
+status=continue
+
+headers=X-Test-Header1;Test-Header1-Value1;;
+
+[end-of-header]
+command=end-of-header
+
+response=end-of-header
+n_received=1
+status=continue
+
+[body]
+command=body
+
+chunk=Hi,
+
+response=body
+n_received=1
+status=continue
+
+chunks=Hi,;;
 
 [end-of-message-change-header]
 command=end-of-message
@@ -18,7 +48,7 @@ response=end-of-message
 n_received=2
 status=continue
 
-headers=X-Test-Header1:Replaced Value
+headers=X-Test-Header1:Replaced Value;X-Test-Header1:Test-Header-Value2
 
 chunks=;Hi,;
 end_of_message_chunks=;;

@@ -70,6 +70,14 @@
 	* test/lib/milater-manager-test-scenario.c: Use MilterManagerHeader
 	instead of MilterManagerTestHeader.
 	* test/lib/milter-manager-test-server.[ch]: Use MilterManagerHeader.
+	* milter/manager/milter-manager-children.c
+	(emit_signals_on_end_of_message): Remove found header from processing
+	list if change-header is emitted.
+	* test/lib/milter-manager-test-server.[ch]: Added
+	milter_manager_test_server_add_header() to a header on "HEADER"
+	command.
+	* test/manager/test-leader.c (do_header): Invoke
+	milter_manager_test_server_add_header() expicitly.
 
 2008-11-16  Kouhei Sutou  <kou@cozmixng.org>
 

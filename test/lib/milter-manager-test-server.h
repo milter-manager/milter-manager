@@ -58,6 +58,10 @@ GType                 milter_manager_test_server_get_type    (void) G_GNUC_CONST
 
 MilterManagerTestServer *milter_manager_test_server_new      (void);
 
+void                  milter_manager_test_server_add_header (MilterManagerTestServer *server,
+                                                             const gchar *name,
+                                                             const gchar *value);
+
 guint                 milter_manager_test_server_get_n_add_headers
                                                             (MilterManagerTestServer *server);
 guint                 milter_manager_test_server_get_n_insert_headers
