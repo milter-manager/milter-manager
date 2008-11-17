@@ -78,6 +78,8 @@
 	command.
 	* test/manager/test-leader.c (do_header): Invoke
 	milter_manager_test_server_add_header() expicitly.
+	* test/lib/milter-manager-test-utis.[ch]: Remove
+	MilterManagerTestHeader.
 
 2008-11-16  Kouhei Sutou  <kou@cozmixng.org>
 

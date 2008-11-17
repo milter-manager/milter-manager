@@ -589,7 +589,7 @@ milter_manager_test_scenario_get_header_list (MilterManagerTestScenario *scenari
         }
     }
 
-    return gcut_take_list(headers, (CutDestroyFunction)milter_manager_test_header_free);
+    return gcut_take_list(headers, (CutDestroyFunction)milter_manager_header_free);
 }
 
 /*
