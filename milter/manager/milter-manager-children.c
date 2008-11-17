@@ -51,6 +51,7 @@ struct _MilterManagerChildrenPrivate
     gchar *reply_message;
     gdouble retry_connect_time;
 
+    MilterManagerHeaders *original_headers;
     MilterManagerHeaders *headers;
     gint processing_header_index;
     GIOChannel *body_file;
@@ -200,6 +201,7 @@ milter_manager_children_init (MilterManagerChildren *milter)
     priv->option = NULL;
     priv->reply_statuses = g_hash_table_new(g_direct_hash, g_direct_equal);
 
+    priv->original_headers = NULL;
     priv->headers = milter_manager_headers_new();
     priv->processing_header_index = 0;
     priv->body_file = NULL;
@@ -278,6 +280,11 @@ dispose (GObject *object)
     if (priv->reply_statuses) {
         g_hash_table_unref(priv->reply_statuses);
         priv->reply_statuses = NULL;
+    }
+
+    if (priv->original_headers) {
+        g_object_unref(priv->original_headers);
+        priv->original_headers = NULL;
     }
 
     if (priv->headers) {
@@ -705,9 +712,11 @@ send_first_command_to_next_child (MilterManagerChildren *children,
 
     next_child = get_first_command_waiting_child_queue(children, first_command);
     if (!next_child) {
-        if (current_state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE &&
-            priv->replaced_body) {
-            emit_replace_body_signal(children);
+        if (current_state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) {
+            if (priv->replaced_body)
+                emit_replace_body_signal(children);
+
+            /* FIXME Send XX-headers signal */ 
         }
         emit_reply_status_of_state(children, current_state);
         return;
@@ -1817,6 +1826,8 @@ milter_manager_children_end_of_header (MilterManagerChildren *children)
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     priv->current_state = MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER;
+    if (!priv->original_headers)
+        priv->original_headers = milter_manager_headers_copy(priv->headers);
     priv->processing_header_index = 0;
     init_command_waiting_child_queue(children, MILTER_COMMAND_END_OF_HEADER);
 

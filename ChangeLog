@@ -42,6 +42,9 @@
 	a child sequential to END-OF-MESSAGE command.
 	* milter/manager/milter-manager-headers.[ch]: Added
 	milter_manager_headers_copy().
+	* milter/manager/milter-manager-children.c: Preserve orignal header
+	list. TODO: Emit appropiriate xx-header signals when all children
+	completed the process.
 
 2008-11-16  Kouhei Sutou  <kou@cozmixng.org>
 
