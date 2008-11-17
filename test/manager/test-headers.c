@@ -26,6 +26,7 @@
 #include <milter/manager/milter-manager-headers.h>
 #undef shutdown
 
+void test_length (void);
 void test_add_header (void);
 void test_insert_header (void);
 void test_change_header (void);
@@ -49,6 +50,21 @@ teardown (void)
         g_list_foreach(expected_list, (GFunc)milter_manager_header_free, NULL);
         g_list_free(expected_list);
     }
+}
+
+void
+test_length (void)
+{
+    cut_assert_true(milter_manager_headers_add_header(headers,
+                                                      "First header",
+                                                      "First header value"));
+    cut_assert_true(milter_manager_headers_add_header(headers,
+                                                      "Second header",
+                                                      "Second header value"));
+    cut_assert_true(milter_manager_headers_add_header(headers,
+                                                      "Third header",
+                                                      "Third header value"));
+    cut_assert_equal_uint(3, milter_manager_headers_length(headers));
 }
 
 void

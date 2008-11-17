@@ -209,6 +209,15 @@ milter_manager_headers_change_header (MilterManagerHeaders *headers,
     return FALSE;
 }
 
+guint
+milter_manager_headers_length (MilterManagerHeaders *headers)
+{
+    MilterManagerHeadersPrivate *priv;
+
+    priv = MILTER_MANAGER_HEADERS_GET_PRIVATE(headers);
+    return g_list_length(priv->header_list);
+}
+
 MilterManagerHeader *
 milter_manager_header_new (const gchar *name, const gchar *value)
 {

@@ -17,6 +17,8 @@
 	* test/fixtures/controller/end-of-message-replaced-body: The second
 	client does not reject on BODY and check replaced body chunks on
 	END-OF-MESSAGE.
+	* milter/manager/milter-manager-headers.[ch]: Added
+	milter_manager_headers_length().
 
 2008-11-16  Kouhei Sutou  <kou@cozmixng.org>
 

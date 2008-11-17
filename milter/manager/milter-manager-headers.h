@@ -81,6 +81,8 @@ gboolean              milter_manager_headers_change_header
                                                           const gchar *name,
                                                           guint index,
                                                           const gchar *value);
+guint                 milter_manager_headers_length      (MilterManagerHeaders *headers);
+                                                                
 
 G_END_DECLS
 
