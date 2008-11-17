@@ -1,5 +1,11 @@
 2008-11-17  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager.h,
+	milter/manager/milter-manager-control-decoder.[ch],
+	milter/manager/milter-manager-control-protocol.h,
+	test/manager/test-control-decoder.c: add milter manager control
+	protocol decoder.
+
 	* test/manager/test-leader.c (do_end_of_message),
 	test/fixtures/leader/: checked received chunks.
 

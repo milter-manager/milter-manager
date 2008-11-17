@@ -17,28 +17,26 @@
  *
  */
 
-#ifndef __MILTER_MANAGER_H__
-#define __MILTER_MANAGER_H__
+#ifndef __MILTER_MANAGER_CONTROL_PROTOCOL_H__
+#define __MILTER_MANAGER_CONTROL_PROTOCOL_H__
 
-#include <milter/manager/milter-manager-configuration.h>
-#include <milter/manager/milter-manager-leader.h>
-#include <milter/manager/milter-manager-child.h>
-#include <milter/manager/milter-manager-children.h>
-#include <milter/manager/milter-manager-egg.h>
-#include <milter/manager/milter-manager-control-decoder.h>
-#include <milter/manager/milter-manager-enum-types.h>
+#include <glib-object.h>
 
 G_BEGIN_DECLS
 
-void milter_manager_init (int *argc, char ***argv);
-void milter_manager_quit (void);
-void milter_manager_main (void);
-
+typedef enum
+{
+    MILTER_MANAGER_CONTROL_PROTOCOL_COMMAND_IMPORT_CONFIGURATION = 'I',
+    MILTER_MANAGER_CONTROL_PROTOCOL_COMMAND_RELOAD_CONFIGURATION = 'R',
+    MILTER_MANAGER_CONTROL_PROTOCOL_COMMAND_GET_CONFIGURATION = 'G',
+    MILTER_MANAGER_CONTROL_PROTOCOL_COMMAND_STOP_CHILD = 's',
+    MILTER_MANAGER_CONTROL_PROTOCOL_COMMAND_GET_CHILDREN_INFO = 'g'
+} MilterManagerControlProtocolCommand;
 
 G_END_DECLS
 
-#endif /* __MILTER_MANAGER_H__ */
+#endif /* __MILTER_MANAGER_CONTROL_PROTOCOL_H__ */
 
 /*
-vi:nowrap:ai:expandtab:sw=4
+vi:ts=4:nowrap:ai:expandtab:sw=4
 */

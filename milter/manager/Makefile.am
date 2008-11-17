@@ -20,16 +20,18 @@ EXTRA_DIST =
 MAINTAINERCLEANFILES =
 BUILT_SOURCES =
 
-milter_manager_public_headers =		\
-	milter-manager-leader.h		\
-	milter-manager-configuration.h	\
-	milter-manager-child.h		\
-	milter-manager-children.h	\
-	milter-manager-objects.h	\
-	milter-manager-egg.h		\
-	milter-manager-headers.h	\
-	milter-manager-module.h		\
-	milter-manager-module-impl.h
+milter_manager_public_headers =			\
+	milter-manager-leader.h			\
+	milter-manager-configuration.h		\
+	milter-manager-child.h			\
+	milter-manager-children.h		\
+	milter-manager-objects.h		\
+	milter-manager-egg.h			\
+	milter-manager-headers.h		\
+	milter-manager-module.h			\
+	milter-manager-module-impl.h		\
+	milter-manager-control-decoder.h	\
+	milter-manager-control-protocol.h
 
 enum_source_prefix = milter-manager-enum-types
 enum_sources_h =			\
@@ -58,7 +60,8 @@ libmilter_manager_la_SOURCES =		\
 	milter-manager-module.c		\
 	milter-manager-leader.c		\
 	milter-manager-egg.c		\
-	milter-manager-headers.c
+	milter-manager-headers.c	\
+	milter-manager-control-decoder.c
 
 include $(top_srcdir)/build/enum-types.mk
 include $(top_srcdir)/build/marshal.mk
