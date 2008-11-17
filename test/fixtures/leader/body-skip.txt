@@ -40,3 +40,4 @@ n_received=2
 status=continue
 
 chunks=;SkipContinue
+end_of_message_chunks=;;

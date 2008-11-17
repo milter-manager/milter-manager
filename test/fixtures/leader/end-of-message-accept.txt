@@ -17,3 +17,6 @@ chunk=Accept
 response=end-of-message
 n_received=2
 status=continue
+
+chunks=;Hi,;
+end_of_message_chunks=Accept;Accept;

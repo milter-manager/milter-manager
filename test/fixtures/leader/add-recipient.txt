@@ -19,3 +19,6 @@ n_received=2
 status=continue
 
 add_recipients=add1@example.com;;add2@example.com;;add2@example.com;;add3@example.com
+
+chunks=;Hi,;
+end_of_message_chunks=;;

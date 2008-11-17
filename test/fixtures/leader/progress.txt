@@ -19,3 +19,6 @@ n_received=2
 status=continue
 
 n_progresses=2
+
+chunks=;Hi,;
+end_of_message_chunks=;;

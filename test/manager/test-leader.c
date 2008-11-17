@@ -642,20 +642,17 @@ do_end_of_message (MilterManagerTestScenario *scenario, const gchar *group)
     milter_server_context_set_state(MILTER_SERVER_CONTEXT(server),
                                     MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE);
     milter_manager_leader_end_of_message(leader,
-                                             chunk,
-                                             chunk ? strlen(chunk) : 0);
+                                         chunk,
+                                         chunk ? strlen(chunk) : 0);
 
     cut_trace(assert_response(scenario, group));
-    if (has_key(scenario, group, "chunks")) {
-        gcut_assert_equal_list_string(get_string_g_list(scenario, group, "chunks"),
-                                      collect_received_strings(body_chunk),
-                                      "<%s>", group);
-    }
-    /* FIXME */
-/*
-    client = test_clients->data;
-    cut_assert_equal_string(chunk, get_received_data(end_of_message_chunk));
-*/
+
+    gcut_assert_equal_list_string(
+        get_string_g_list(scenario, group, "chunks"),
+        collect_received_strings(body_chunk));
+    gcut_assert_equal_list_string(
+        get_string_g_list(scenario, group, "end_of_message_chunks"),
+        collect_received_strings(end_of_message_chunk));
 }
 
 static const GList *

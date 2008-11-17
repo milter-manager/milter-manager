@@ -19,3 +19,6 @@ n_received=2
 status=continue
 
 change_headers=2:X-Test-Header1:Test Header1 Value;1:X-Test-Header2:Test Header2 Value
+
+chunks=;Hi,;
+end_of_message_chunks=;;

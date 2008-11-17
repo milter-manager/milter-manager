@@ -17,3 +17,6 @@ chunk=The last text
 response=end-of-message
 n_received=2
 status=continue
+
+chunks=;Hi,;
+end_of_message_chunks=The last text;The last text;

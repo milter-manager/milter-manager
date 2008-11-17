@@ -19,3 +19,6 @@ n_received=2
 status=continue
 
 delete_recipients=delete1@example.com;delete2@example.com;delete2@example.com;delete3@example.com
+
+chunks=;Hi,;
+end_of_message_chunks=;;
