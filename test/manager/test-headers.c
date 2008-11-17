@@ -28,6 +28,7 @@
 
 void test_length (void);
 void test_get_nth_header (void);
+void test_find (void);
 void test_lookup_by_name (void);
 void test_copy (void);
 void test_add_header (void);
@@ -111,6 +112,47 @@ test_get_nth_header (void)
     expected_list = g_list_append(expected_list, expected_header);
     actual_header = milter_manager_headers_get_nth_header(headers, 3);
     milter_manager_assert_equal_header(expected_header, actual_header);
+}
+
+void
+test_find (void)
+{
+    MilterManagerHeader *found_header, *expected_header;
+
+    cut_assert_true(milter_manager_headers_add_header(headers,
+                                                      "First header",
+                                                      "First header value"));
+    cut_assert_true(milter_manager_headers_add_header(headers,
+                                                      "Second header",
+                                                      "Second header value"));
+    cut_assert_true(milter_manager_headers_add_header(headers,
+                                                      "Third header",
+                                                      "Third header value"));
+
+    expected_header = milter_manager_header_new("First header", "First header value");
+    expected_list = g_list_append(expected_list, expected_header);
+    found_header = milter_manager_headers_find(headers, expected_header);
+    milter_manager_assert_equal_header(expected_header, found_header);
+
+    expected_header = milter_manager_header_new("Second header", "Second header value");
+    expected_list = g_list_append(expected_list, expected_header);
+    found_header = milter_manager_headers_find(headers, expected_header);
+    milter_manager_assert_equal_header(expected_header, found_header);
+
+    expected_header = milter_manager_header_new("Third header", "Third header value");
+    expected_list = g_list_append(expected_list, expected_header);
+    found_header = milter_manager_headers_find(headers, expected_header);
+    milter_manager_assert_equal_header(expected_header, found_header);
+
+    expected_header = milter_manager_header_new("First header", "First header values");
+    expected_list = g_list_append(expected_list, expected_header);
+    found_header = milter_manager_headers_find(headers, expected_header);
+    cut_assert_null(found_header);
+
+    expected_header = milter_manager_header_new("Second header name", "Second header value");
+    expected_list = g_list_append(expected_list, expected_header);
+    found_header = milter_manager_headers_find(headers, expected_header);
+    cut_assert_null(found_header);
 }
 
 void

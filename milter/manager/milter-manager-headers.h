@@ -86,6 +86,8 @@ guint                 milter_manager_headers_length      (MilterManagerHeaders *
 MilterManagerHeader  *milter_manager_headers_get_nth_header
                                                          (MilterManagerHeaders *headers,
                                                           guint index);
+MilterManagerHeader  *milter_manager_headers_find        (MilterManagerHeaders *headers,
+                                                          MilterManagerHeader *header);
 MilterManagerHeader  *milter_manager_headers_lookup_by_name
                                                          (MilterManagerHeaders *headers,
                                                           const gchar *name);

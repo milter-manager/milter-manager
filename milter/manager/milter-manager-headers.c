@@ -51,9 +51,12 @@ static void get_property   (GObject         *object,
                             GValue          *value,
                             GParamSpec      *pspec);
 
-static void                   milter_manager_header_change_value
-                                        (MilterManagerHeader *header,
-                                         const gchar *new_value);
+static gint milter_manager_header_compare
+                           (MilterManagerHeader *header_a,
+                            MilterManagerHeader *header_b);
+static void milter_manager_header_change_value
+                           (MilterManagerHeader *header,
+                            const gchar *new_value);
 
 static void
 milter_manager_headers_class_init (MilterManagerHeadersClass *klass)
@@ -170,6 +173,22 @@ string_equal (const gchar *string1, const gchar *string2)
         return FALSE;
 
     return g_strcmp0(string1, string2) == 0;
+}
+
+MilterManagerHeader *
+milter_manager_headers_find (MilterManagerHeaders *headers,
+                             MilterManagerHeader *header)
+{
+    MilterManagerHeadersPrivate *priv;
+    GList *found_node;
+
+    priv = MILTER_MANAGER_HEADERS_GET_PRIVATE(headers);
+    found_node = g_list_find_custom(priv->header_list,
+                                    header,
+                                    (GCompareFunc)milter_manager_header_compare);
+    if (!found_node)
+        return NULL;
+    return (MilterManagerHeader*)found_node->data;
 }
 
 static gint
@@ -311,6 +330,16 @@ milter_manager_header_inspect (GString *string,
     const MilterManagerHeader *header = data;
 
     g_string_append_printf(string, "<<%s>=<%s>>", header->name, header->value);
+}
+
+static gint
+milter_manager_header_compare (MilterManagerHeader *header_a,
+                               MilterManagerHeader *header_b)
+{
+    if (g_strcmp0(header_a->name, header_b->name))
+        return g_strcmp0(header_a->name, header_b->name);
+
+    return g_strcmp0(header_a->value, header_b->value);
 }
 
 gboolean
