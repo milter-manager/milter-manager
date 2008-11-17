@@ -30,6 +30,7 @@ void test_length (void);
 void test_get_nth_header (void);
 void test_find (void);
 void test_lookup_by_name (void);
+void test_index_in_same_header_name (void);
 void test_copy (void);
 void test_remove (void);
 void test_add_header (void);
@@ -182,6 +183,45 @@ test_lookup_by_name (void)
 }
 
 void
+test_index_in_same_header_name (void)
+{
+    MilterManagerHeader *header;
+
+    cut_assert_true(milter_manager_headers_add_header(headers,
+                                                      "Test header",
+                                                      "First test header value"));
+    cut_assert_true(milter_manager_headers_add_header(headers,
+                                                      "Test header",
+                                                      "Second test header value"));
+    cut_assert_true(milter_manager_headers_add_header(headers,
+                                                      "Unique header",
+                                                      "Unique header value"));
+    cut_assert_true(milter_manager_headers_add_header(headers,
+                                                      "Test header",
+                                                      "Third test header value"));
+
+    header = milter_manager_header_new("Test header", "First test header value");
+    expected_list = g_list_append(expected_list, header);
+    cut_assert_equal_int(1, milter_manager_headers_index_in_same_header_name(headers, header));
+
+    header = milter_manager_header_new("Test header", "Second test header value");
+    expected_list = g_list_append(expected_list, header);
+    cut_assert_equal_int(2, milter_manager_headers_index_in_same_header_name(headers, header));
+
+    header = milter_manager_header_new("Test header", "Third test header value");
+    expected_list = g_list_append(expected_list, header);
+    cut_assert_equal_int(3, milter_manager_headers_index_in_same_header_name(headers, header));
+
+    header = milter_manager_header_new("Test header", "Inexistent");
+    expected_list = g_list_append(expected_list, header);
+    cut_assert_equal_int(-1, milter_manager_headers_index_in_same_header_name(headers, header));
+
+    header = milter_manager_header_new("Inexistent header", "Inexistent");
+    expected_list = g_list_append(expected_list, header);
+    cut_assert_equal_int(-1, milter_manager_headers_index_in_same_header_name(headers, header));
+}
+
+void
 test_copy (void)
 {
     MilterManagerHeaders *copied_headers;
@@ -219,13 +259,6 @@ void
 test_remove (void)
 {
     MilterManagerHeader *header;
-
-    expected_list = g_list_append(expected_list, 
-                                  milter_manager_header_new("Second header",
-                                                            "Second header value"));
-    expected_list = g_list_append(expected_list, 
-                                  milter_manager_header_new("Third header",
-                                                            "Third header value"));
 
     cut_assert_true(milter_manager_headers_add_header(headers,
                                                       "First header",

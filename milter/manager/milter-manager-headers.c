@@ -233,6 +233,30 @@ milter_manager_headers_get_nth_header (MilterManagerHeaders *headers,
     return (MilterManagerHeader*)nth_data;
 }
 
+gint
+milter_manager_headers_index_in_same_header_name (MilterManagerHeaders *headers,
+                                                  MilterManagerHeader *target)
+{
+    MilterManagerHeadersPrivate *priv;
+    GList *node;
+    guint found_count = 0;
+
+    priv = MILTER_MANAGER_HEADERS_GET_PRIVATE(headers);
+
+    for (node = priv->header_list; node; node = g_list_next(node)) {
+        MilterManagerHeader *header = node->data;
+
+        if (!string_equal(header->name, target->name))
+            continue;
+
+        found_count++;
+
+        if (string_equal(header->value, target->value))
+            return found_count;
+    }
+    return -1;
+}
+
 gboolean
 milter_manager_headers_remove (MilterManagerHeaders *headers,
                                MilterManagerHeader *header)

@@ -61,6 +61,8 @@
 	(milter_manager_headers_change_header): Added a new header if the
 	index is greater then the number of headers which has the targert
 	name.
+	* milter/manager/milter-manager-headers.[ch]: Added
+	milter_manager_headers_index_in_same_header_name().
 
 2008-11-16  Kouhei Sutou  <kou@cozmixng.org>
 
