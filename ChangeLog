@@ -33,6 +33,8 @@
 	(milter_manager_test_scenario_get_pair_list): Set name NULL.
 	* test/manager/test-leader.c (do_header): Sort header list before
 	assert check.
+	* milter/manager/milter-manager-children.c: HEADER command is sent to
+	a child sequential to END-OF-MESSAGE command.
 
 2008-11-16  Kouhei Sutou  <kou@cozmixng.org>
 
