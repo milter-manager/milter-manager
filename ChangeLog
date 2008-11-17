@@ -19,6 +19,8 @@
 	END-OF-MESSAGE.
 	* milter/manager/milter-manager-headers.[ch]: Added
 	milter_manager_headers_length().
+	* milter/manager/milter-manager-headers.[ch]: Added
+	milter_manager_headers_get_nth_header().
 
 2008-11-16  Kouhei Sutou  <kou@cozmixng.org>
 

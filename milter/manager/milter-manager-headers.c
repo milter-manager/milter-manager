@@ -138,6 +138,21 @@ milter_manager_headers_get_list (MilterManagerHeaders *headers)
     return MILTER_MANAGER_HEADERS_GET_PRIVATE(headers)->header_list;
 }
 
+MilterManagerHeader *
+milter_manager_headers_get_nth_header (MilterManagerHeaders *headers,
+                                       guint index)
+{
+    MilterManagerHeadersPrivate *priv;
+    gpointer nth_data;
+
+    priv = MILTER_MANAGER_HEADERS_GET_PRIVATE(headers);
+    nth_data = g_list_nth_data(priv->header_list, index);
+    if (!nth_data)
+        return NULL;
+
+    return (MilterManagerHeader*)nth_data;
+}
+
 gboolean
 milter_manager_headers_add_header(MilterManagerHeaders *headers,
                                   const gchar *name,

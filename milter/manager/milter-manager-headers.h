@@ -82,6 +82,9 @@ gboolean              milter_manager_headers_change_header
                                                           guint index,
                                                           const gchar *value);
 guint                 milter_manager_headers_length      (MilterManagerHeaders *headers);
+MilterManagerHeader  *milter_manager_headers_get_nth_header
+                                                         (MilterManagerHeaders *headers,
+                                                          guint index);
                                                                 
 
 G_END_DECLS
