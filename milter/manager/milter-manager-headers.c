@@ -145,8 +145,11 @@ milter_manager_headers_get_nth_header (MilterManagerHeaders *headers,
     MilterManagerHeadersPrivate *priv;
     gpointer nth_data;
 
+    if (index < 1)
+        return NULL;
+
     priv = MILTER_MANAGER_HEADERS_GET_PRIVATE(headers);
-    nth_data = g_list_nth_data(priv->header_list, index);
+    nth_data = g_list_nth_data(priv->header_list, index - 1);
     if (!nth_data)
         return NULL;
 

@@ -97,17 +97,17 @@ test_get_nth_header (void)
 
     expected_header = milter_manager_header_new("First header", "First header value");
     expected_list = g_list_append(expected_list, expected_header);
-    actual_header = milter_manager_headers_get_nth_header(headers, 0);
+    actual_header = milter_manager_headers_get_nth_header(headers, 1);
     milter_manager_assert_equal_header(expected_header, actual_header);
 
     expected_header = milter_manager_header_new("Second header", "Second header value");
     expected_list = g_list_append(expected_list, expected_header);
-    actual_header = milter_manager_headers_get_nth_header(headers, 1);
+    actual_header = milter_manager_headers_get_nth_header(headers, 2);
     milter_manager_assert_equal_header(expected_header, actual_header);
 
     expected_header = milter_manager_header_new("Third header", "Third header value");
     expected_list = g_list_append(expected_list, expected_header);
-    actual_header = milter_manager_headers_get_nth_header(headers, 2);
+    actual_header = milter_manager_headers_get_nth_header(headers, 3);
     milter_manager_assert_equal_header(expected_header, actual_header);
 }
 
