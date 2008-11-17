@@ -18,7 +18,7 @@ response=end-of-message
 n_received=2
 status=continue
 
-insert_headers=2:X-Test-Header1:Test Header1 Value;1:X-Test-Header2:Test Header2 Value
+headers=X-Test-Header2:Test Header2 Value;X-Test-Header1:Test Header1 Value
 
 chunks=;Hi,;
 end_of_message_chunks=;;

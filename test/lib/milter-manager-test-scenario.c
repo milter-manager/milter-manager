@@ -26,6 +26,7 @@
 #include "milter-manager-test-scenario.h"
 
 #include <milter/manager/milter-manager-egg.h>
+#include <milter/manager/milter-manager-headers.h>
 
 #define MILTER_MANAGER_TEST_SCENARIO_GET_PRIVATE(obj)                   \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                                 \
@@ -566,36 +567,29 @@ milter_manager_test_scenario_get_header_list (MilterManagerTestScenario *scenari
                                               const gchar *key)
 {
     MilterManagerTestScenarioPrivate *priv;
-    const GList *header_list = NULL;
+    GList *headers = NULL;
 
     priv = MILTER_MANAGER_TEST_SCENARIO_GET_PRIVATE(scenario);
     if (milter_manager_test_scenario_has_key(scenario, group, key)) {
         const gchar **header_strings;
-        GList *headers = NULL;
         gsize length;
 
         header_strings =
             milter_manager_test_scenario_get_string_list(scenario,
                                                          group, key, &length);
         for (; *header_strings; header_strings++) {
-            MilterManagerTestHeader *header;
+            MilterManagerHeader *header;
             gchar **components;
 
-            components = g_strsplit(*header_strings, ":", 3);
-            header = milter_manager_test_header_new(atoi(components[0]),
-                                                    components[1],
-                                                    components[2]);
+            components = g_strsplit(*header_strings, ":", 2);
+            header = milter_manager_header_new(components[0],
+                                               components[1]);
             g_strfreev(components);
-            headers = g_list_prepend(headers, header);
+            headers = g_list_append(headers, header);
         }
-        header_list =
-            gcut_take_list(
-                g_list_sort(headers,
-                            (GCompareFunc)milter_manager_test_header_compare),
-                (CutDestroyFunction)milter_manager_test_header_free);
     }
 
-    return header_list;
+    return gcut_take_list(headers, (CutDestroyFunction)milter_manager_test_header_free);
 }
 
 /*

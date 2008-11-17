@@ -63,6 +63,13 @@
 	name.
 	* milter/manager/milter-manager-headers.[ch]: Added
 	milter_manager_headers_index_in_same_header_name().
+	* milter/manager/milter/manager-children.c: Emit "add-header",
+	"insert-header" and "change-header" before the last "end-of-message"
+	signal.
+	* test/manager/test-leaders.c: Unified "xx-header" signal tests.
+	* test/lib/milater-manager-test-scenario.c: Use MilterManagerHeader
+	instead of MilterManagerTestHeader.
+	* test/lib/milter-manager-test-server.[ch]: Use MilterManagerHeader.
 
 2008-11-16  Kouhei Sutou  <kou@cozmixng.org>
 

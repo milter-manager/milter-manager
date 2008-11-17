@@ -716,6 +716,7 @@ emit_signals_on_end_of_message (MilterManagerChildren *children)
          node = g_list_next(node), i++) {
         MilterManagerHeader *header = node->data;
         MilterManagerHeader *found_header;
+        gint index;
 
         if (milter_manager_headers_find(processing_headers, header)) {
             milter_manager_headers_remove(processing_headers, header);
@@ -723,14 +724,20 @@ emit_signals_on_end_of_message (MilterManagerChildren *children)
         }
 
         found_header = milter_manager_headers_lookup_by_name(processing_headers, header->name);
-        if (found_header) {
-            gint index;
-            g_signal_emit_by_name(children, "change-header",
-                                  header->name, index, header->value);
+        if (!found_header) {
+            g_signal_emit_by_name(children, "insert-header",
+                                  i, header->name, header->value);
             continue;
         }
-        g_signal_emit_by_name(children, "insert-header",
-                              i, header->name, header->value);
+        index = milter_manager_headers_index_in_same_header_name(priv->original_headers,
+                                                                 found_header);
+        if (index == -1) {
+            g_signal_emit_by_name(children, "add-header",
+                                  header->name, header->value);
+        } else {
+            g_signal_emit_by_name(children, "change-header",
+                                  header->name, index, header->value);
+        }
     }
 
     g_object_unref(processing_headers);
@@ -977,7 +984,6 @@ cb_add_header (MilterServerContext *context,
 
     milter_manager_headers_add_header(priv->headers,
                                       name, value);
-    g_signal_emit_by_name(children, "add-header", name, value);
 }
 
 static void
@@ -992,8 +998,6 @@ cb_insert_header (MilterServerContext *context,
 
     milter_manager_headers_insert_header(priv->headers,
                                          index, name, value);
-
-    g_signal_emit_by_name(children, "insert-header", index, name, value);
 }
 
 static void
@@ -1008,8 +1012,6 @@ cb_change_header (MilterServerContext *context,
 
     milter_manager_headers_change_header(priv->headers,
                                          name, index, value);
-
-    g_signal_emit_by_name(children, "change-header", name, index, value);
 }
 
 static void
