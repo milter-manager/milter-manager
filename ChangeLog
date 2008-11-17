@@ -1,5 +1,7 @@
 2008-11-17  Kouhei Sutou  <kou@cozmixng.org>
 
+	* ./: controller -> leader.
+
 	* test/manager/test-children.c (test_writing_timeout): wait
 	continue signal.
 

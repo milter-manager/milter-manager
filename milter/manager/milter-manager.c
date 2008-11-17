@@ -64,9 +64,9 @@ static MilterStatus
 cb_client_negotiate (MilterClientContext *context, MilterOption *option,
                      gpointer user_data)
 {
-    MilterManagerController *controller = user_data;
+    MilterManagerLeader *leader = user_data;
 
-    return milter_manager_controller_negotiate(controller, option);
+    return milter_manager_leader_negotiate(leader, option);
 }
 
 static MilterStatus
@@ -74,54 +74,54 @@ cb_client_connect (MilterClientContext *context, const gchar *host_name,
                    struct sockaddr *address, socklen_t address_length,
                    gpointer user_data)
 {
-    MilterManagerController *controller = user_data;
+    MilterManagerLeader *leader = user_data;
 
-    return milter_manager_controller_connect(controller, host_name,
-                                             address, address_length);
+    return milter_manager_leader_connect(leader, host_name,
+                                         address, address_length);
 }
 
 static MilterStatus
 cb_client_helo (MilterClientContext *context, const gchar *fqdn,
                 gpointer user_data)
 {
-    MilterManagerController *controller = user_data;
+    MilterManagerLeader *leader = user_data;
 
-    return milter_manager_controller_helo(controller, fqdn);
+    return milter_manager_leader_helo(leader, fqdn);
 }
 
 static MilterStatus
 cb_client_envelope_from (MilterClientContext *context, const gchar *from,
                          gpointer user_data)
 {
-    MilterManagerController *controller = user_data;
+    MilterManagerLeader *leader = user_data;
 
-    return milter_manager_controller_envelope_from(controller, from);
+    return milter_manager_leader_envelope_from(leader, from);
 }
 
 static MilterStatus
 cb_client_envelope_recipient (MilterClientContext *context,
                               const gchar *recipient, gpointer user_data)
 {
-    MilterManagerController *controller = user_data;
+    MilterManagerLeader *leader = user_data;
 
-    return milter_manager_controller_envelope_recipient(controller, recipient);
+    return milter_manager_leader_envelope_recipient(leader, recipient);
 }
 
 static MilterStatus
 cb_client_data (MilterClientContext *context, gpointer user_data)
 {
-    MilterManagerController *controller = user_data;
+    MilterManagerLeader *leader = user_data;
 
-    return milter_manager_controller_data(controller);
+    return milter_manager_leader_data(leader);
 }
 
 static MilterStatus
 cb_client_unknown (MilterClientContext *context, const gchar *command,
                    gpointer user_data)
 {
-    MilterManagerController *controller = user_data;
+    MilterManagerLeader *leader = user_data;
 
-    return milter_manager_controller_unknown(controller, command);
+    return milter_manager_leader_unknown(leader, command);
 }
 
 static MilterStatus
@@ -129,59 +129,59 @@ cb_client_header (MilterClientContext *context,
                   const gchar *name, const gchar *value,
                   gpointer user_data)
 {
-    MilterManagerController *controller = user_data;
+    MilterManagerLeader *leader = user_data;
 
-    return milter_manager_controller_header(controller, name, value);
+    return milter_manager_leader_header(leader, name, value);
 }
 
 static MilterStatus
 cb_client_end_of_header (MilterClientContext *context, gpointer user_data)
 {
-    MilterManagerController *controller = user_data;
+    MilterManagerLeader *leader = user_data;
 
-    return milter_manager_controller_end_of_header(controller);
+    return milter_manager_leader_end_of_header(leader);
 }
 
 static MilterStatus
 cb_client_body (MilterClientContext *context, const gchar *chunk, gsize size,
                 gpointer user_data)
 {
-    MilterManagerController *controller = user_data;
+    MilterManagerLeader *leader = user_data;
 
-    return milter_manager_controller_body(controller, chunk, size);
+    return milter_manager_leader_body(leader, chunk, size);
 }
 
 static MilterStatus
 cb_client_end_of_message (MilterClientContext *context, gpointer user_data)
 {
-    MilterManagerController *controller = user_data;
+    MilterManagerLeader *leader = user_data;
 
-    return milter_manager_controller_end_of_message(controller, NULL, 0);
+    return milter_manager_leader_end_of_message(leader, NULL, 0);
 }
 
 static MilterStatus
 cb_client_abort (MilterClientContext *context, gpointer user_data)
 {
-    MilterManagerController *controller = user_data;
+    MilterManagerLeader *leader = user_data;
 
-    return milter_manager_controller_abort(controller);
+    return milter_manager_leader_abort(leader);
 }
 
 static void
 cb_client_mta_timeout (MilterClientContext *context, gpointer user_data)
 {
-    MilterManagerController *controller = user_data;
+    MilterManagerLeader *leader = user_data;
 
-    milter_manager_controller_mta_timeout(controller);
+    milter_manager_leader_mta_timeout(leader);
 }
 
 static MilterStatus
 cb_client_quit (MilterClientContext *context, gpointer user_data)
 {
-    MilterManagerController *controller = user_data;
+    MilterManagerLeader *leader = user_data;
     MilterStatus status;
 
-    status = milter_manager_controller_quit(controller);
+    status = milter_manager_leader_quit(leader);
 
 #define DISCONNECT(name)                                                \
     g_signal_handlers_disconnect_by_func(context,                       \
@@ -205,7 +205,7 @@ cb_client_quit (MilterClientContext *context, gpointer user_data)
 
 #undef DISCONNECT
 
-    g_object_unref(controller);
+    g_object_unref(leader);
 
     return status;
 }
@@ -214,14 +214,14 @@ static void
 setup_context_signals (MilterClientContext *context,
                        MilterManagerConfiguration *configuration)
 {
-    MilterManagerController *controller;
+    MilterManagerLeader *leader;
 
-    controller = milter_manager_controller_new(configuration, context);
+    leader = milter_manager_leader_new(configuration, context);
 
 #define CONNECT(name)                                   \
     g_signal_connect(context, #name,                    \
                      G_CALLBACK(cb_client_ ## name),    \
-                     controller)
+                     leader)
 
     CONNECT(negotiate);
     CONNECT(connect);

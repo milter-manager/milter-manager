@@ -24,7 +24,7 @@
 #define shutdown inet_shutdown
 #include <milter-manager-test-utils.h>
 #include <milter-manager-test-client.h>
-#include <milter/manager/milter-manager-controller.h>
+#include <milter/manager/milter-manager-leader.h>
 #include <milter-manager-test-server.h>
 #include <milter-manager-test-scenario.h>
 #undef shutdown
@@ -37,7 +37,7 @@ static MilterManagerTestScenario *main_scenario;
 
 static MilterManagerConfiguration *config;
 static MilterClientContext *client_context;
-static MilterManagerController *controller;
+static MilterManagerLeader *leader;
 static MilterManagerTestServer *server;
 
 static GError *actual_error;
@@ -61,7 +61,7 @@ add_load_path (const gchar *path)
 }
 
 static void
-cb_error (MilterManagerController *controller, GError *error, gpointer user_data)
+cb_error (MilterManagerLeader *leader, GError *error, gpointer user_data)
 {
     if (actual_error)
         g_error_free(actual_error);
@@ -69,16 +69,16 @@ cb_error (MilterManagerController *controller, GError *error, gpointer user_data
 }
 
 static void
-cb_finished (MilterManagerController *controller, gpointer user_data)
+cb_finished (MilterManagerLeader *leader, gpointer user_data)
 {
     finished = TRUE;
 }
 
 static void
-setup_controller_signals (MilterManagerController *controller)
+setup_leader_signals (MilterManagerLeader *leader)
 {
 #define CONNECT(name)                                                   \
-    g_signal_connect(controller, #name, G_CALLBACK(cb_ ## name), NULL)
+    g_signal_connect(leader, #name, G_CALLBACK(cb_ ## name), NULL)
 
     CONNECT(error);
     CONNECT(finished);
@@ -95,7 +95,7 @@ setup (void)
 
     scenario_dir = g_build_filename(milter_manager_test_get_base_dir(),
                                     "fixtures",
-                                    "controller",
+                                    "leader",
                                     NULL);
 
     main_scenario = NULL;
@@ -120,9 +120,9 @@ setup (void)
     milter_handler_set_reader(MILTER_HANDLER(server), reader);
     g_object_unref(reader);
 
-    controller = milter_manager_controller_new(config, client_context);
+    leader = milter_manager_leader_new(config, client_context);
     actual_error = NULL;
-    setup_controller_signals(controller);
+    setup_leader_signals(leader);
 
     response_status = MILTER_STATUS_DEFAULT;
 
@@ -138,8 +138,8 @@ teardown (void)
         g_object_unref(config);
     if (client_context)
         g_object_unref(client_context);
-    if (controller)
-        g_object_unref(controller);
+    if (leader)
+        g_object_unref(leader);
 
     if (server)
         g_object_unref(server);
@@ -278,13 +278,13 @@ wait_finished_helper (void)
     cut_assert_true(finished);
 }
 
-#define wait_controller_error()                    \
+#define wait_leader_error()                    \
     cut_trace_with_info_expression(                \
-        wait_controller_error_helper(),            \
-        wait_controller_error())
+        wait_leader_error_helper(),            \
+        wait_leader_error())
 
 static void
-wait_controller_error_helper (void)
+wait_leader_error_helper (void)
 {
     gboolean timeout_waiting = TRUE;
     guint timeout_waiting_id;
@@ -383,7 +383,7 @@ assert_response_error (MilterManagerTestScenario *scenario, const gchar *group)
 
         message = get_string(scenario, group, "error_message");
         expected_error = g_error_new(domain, code, "%s", message);
-        wait_controller_error();
+        wait_leader_error();
     }
 
     gcut_assert_equal_error(expected_error, actual_error);
@@ -480,7 +480,7 @@ do_negotiate (MilterManagerTestScenario *scenario, const gchar *group)
     option = milter_manager_test_scenario_get_option(scenario, group);
     gcut_take_object(G_OBJECT(option));
     milter_server_context_negotiate(MILTER_SERVER_CONTEXT(server), option);
-    milter_manager_controller_negotiate(controller, option);
+    milter_manager_leader_negotiate(leader, option);
     cut_trace(assert_response(scenario, group));
 
     gcut_assert_equal_list_object_custom(
@@ -511,7 +511,7 @@ do_connect (MilterManagerTestScenario *scenario, const gchar *group)
                                        &error);
     gcut_assert_error(error);
 
-    milter_manager_controller_connect(controller, host, address, address_size);
+    milter_manager_leader_connect(leader, host, address, address_size);
     g_free(address);
 
     cut_trace(assert_response(scenario, group));
@@ -532,7 +532,7 @@ do_helo (MilterManagerTestScenario *scenario, const gchar *group)
     const GList *expected_fqdns;
 
     fqdn = get_string(scenario, group, "fqdn");
-    milter_manager_controller_helo(controller, fqdn);
+    milter_manager_leader_helo(leader, fqdn);
 
     cut_trace(assert_response(scenario, group));
 
@@ -549,7 +549,7 @@ do_envelope_from (MilterManagerTestScenario *scenario, const gchar *group)
     const GList *expected_froms;
 
     from = get_string(scenario, group, "from");
-    milter_manager_controller_envelope_from(controller, from);
+    milter_manager_leader_envelope_from(leader, from);
 
     cut_trace(assert_response(scenario, group));
 
@@ -566,7 +566,7 @@ do_envelope_recipient (MilterManagerTestScenario *scenario, const gchar *group)
     const GList *expected_recipients;
 
     recipient = get_string(scenario, group, "recipient");
-    milter_manager_controller_envelope_recipient(controller, recipient);
+    milter_manager_leader_envelope_recipient(leader, recipient);
 
     cut_trace(assert_response(scenario, group));
 
@@ -579,7 +579,7 @@ do_envelope_recipient (MilterManagerTestScenario *scenario, const gchar *group)
 static void
 do_data (MilterManagerTestScenario *scenario, const gchar *group)
 {
-    milter_manager_controller_data(controller);
+    milter_manager_leader_data(leader);
 
     cut_trace(assert_response(scenario, group));
 }
@@ -593,7 +593,7 @@ do_header (MilterManagerTestScenario *scenario, const gchar *group)
 
     name = get_string(scenario, group, "name");
     value = get_string(scenario, group, "value");
-    milter_manager_controller_header(controller, name, value);
+    milter_manager_leader_header(leader, name, value);
 
     cut_trace(assert_response(scenario, group));
 
@@ -609,7 +609,7 @@ do_header (MilterManagerTestScenario *scenario, const gchar *group)
 static void
 do_end_of_header (MilterManagerTestScenario *scenario, const gchar *group)
 {
-    milter_manager_controller_end_of_header(controller);
+    milter_manager_leader_end_of_header(leader);
 
     cut_trace(assert_response(scenario, group));
 }
@@ -620,7 +620,7 @@ do_body (MilterManagerTestScenario *scenario, const gchar *group)
     const gchar *chunk;
 
     chunk = get_string(scenario, group, "chunk");
-    milter_manager_controller_body(controller, chunk, strlen(chunk));
+    milter_manager_leader_body(leader, chunk, strlen(chunk));
 
     cut_trace(assert_response(scenario, group));
 
@@ -639,7 +639,7 @@ do_end_of_message (MilterManagerTestScenario *scenario, const gchar *group)
 
     milter_server_context_set_state(MILTER_SERVER_CONTEXT(server),
                                     MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE);
-    milter_manager_controller_end_of_message(controller,
+    milter_manager_leader_end_of_message(leader,
                                              chunk,
                                              chunk ? strlen(chunk) : 0);
 
@@ -847,14 +847,14 @@ do_end_of_message_full (MilterManagerTestScenario *scenario, const gchar *group)
 static void
 do_quit (MilterManagerTestScenario *scenario, const gchar *group)
 {
-    milter_manager_controller_quit(controller);
+    milter_manager_leader_quit(leader);
     cut_trace(assert_response(scenario, group));
 }
 
 static void
 do_abort (MilterManagerTestScenario *scenario, const gchar *group)
 {
-    milter_manager_controller_abort(controller);
+    milter_manager_leader_abort(leader);
     cut_trace(assert_response(scenario, group));
 }
 
@@ -865,7 +865,7 @@ do_unknown (MilterManagerTestScenario *scenario, const gchar *group)
 
     command = get_string(scenario, group, "unknown_command");
 
-    milter_manager_controller_unknown(controller, command);
+    milter_manager_leader_unknown(leader, command);
     cut_trace(assert_response(scenario, group));
 
     /* FIXME */

@@ -3,7 +3,7 @@ noinst_LTLIBRARIES =			\
 	test-child.la			\
 	test-children.la		\
 	test-configuration.la		\
-	test-controller.la		\
+	test-leader.la			\
 	test-egg.la			\
 	test-headers.la
 endif
@@ -31,6 +31,6 @@ LIBS =								\
 test_child_la_SOURCES		= test-child.c
 test_children_la_SOURCES	= test-children.c
 test_configuration_la_SOURCES	= test-configuration.c
-test_controller_la_SOURCES	= test-controller.c
+test_leader_la_SOURCES		= test-leader.c
 test_egg_la_SOURCES		= test-egg.c
 test_headers_la_SOURCES		= test-headers.c
