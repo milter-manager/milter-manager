@@ -868,11 +868,9 @@ do_unknown (MilterManagerTestScenario *scenario, const gchar *group)
     milter_manager_leader_unknown(leader, command);
     cut_trace(assert_response(scenario, group));
 
-    /* FIXME */
-/*
-    client = test_clients->data;
-    cut_assert_equal_string(command, get_received_data(unknown_command));
-*/
+    gcut_assert_equal_list_string(get_string_g_list(scenario, group,
+                                                    "unknown_commands"),
+                                  collect_received_strings(unknown_command));
 }
 
 static void
