@@ -686,71 +686,22 @@ do_end_of_message_quarantine (MilterManagerTestScenario *scenario, const gchar *
 }
 
 static void
-do_end_of_message_add_header (MilterManagerTestScenario *scenario, const gchar *group)
+do_end_of_message_header (MilterManagerTestScenario *scenario, const gchar *group)
 {
-    const GList *expected_added_headers;
-    const GList *actual_added_headers;
+    const GList *expected_headers;
+    const GList *actual_header_list;
+    MilterManagerHeaders *actual_headers;
 
-    expected_added_headers = get_header_list(scenario, group, "add_headers");
+    expected_headers = get_header_list(scenario, group, "headers");
 
-    actual_added_headers =
-        milter_manager_test_server_get_received_add_headers(server);
-    actual_added_headers =
-        gcut_take_list(
-            g_list_sort(g_list_copy((GList *)actual_added_headers),
-                        (GCompareFunc)milter_manager_test_header_compare),
-            NULL);
+    actual_headers = milter_manager_test_server_get_headers(server);
+    cut_assert(actual_headers);
+    actual_header_list = milter_manager_headers_get_list(actual_headers);
 
     gcut_assert_equal_list(
-        expected_added_headers, actual_added_headers,
-        (GEqualFunc)milter_manager_test_header_equal,
-        (GCutInspectFunc)milter_manager_test_header_inspect_without_index,
-        NULL);
-}
-
-static void
-do_end_of_message_insert_header (MilterManagerTestScenario *scenario, const gchar *group)
-{
-    const GList *expected_inserted_headers;
-    const GList *actual_inserted_headers;
-
-    expected_inserted_headers = get_header_list(scenario, group, "insert_headers");
-
-    actual_inserted_headers =
-        milter_manager_test_server_get_received_insert_headers(server);
-    actual_inserted_headers =
-        gcut_take_list(
-            g_list_sort(g_list_copy((GList *)actual_inserted_headers),
-                        (GCompareFunc)milter_manager_test_header_compare),
-            NULL);
-
-    gcut_assert_equal_list(
-        expected_inserted_headers, actual_inserted_headers,
-        (GEqualFunc)milter_manager_test_header_equal,
-        (GCutInspectFunc)milter_manager_test_header_inspect,
-        NULL);
-}
-
-static void
-do_end_of_message_change_header (MilterManagerTestScenario *scenario, const gchar *group)
-{
-    const GList *expected_changeed_headers;
-    const GList *actual_changeed_headers;
-
-    expected_changeed_headers = get_header_list(scenario, group, "change_headers");
-
-    actual_changeed_headers =
-        milter_manager_test_server_get_received_change_headers(server);
-    actual_changeed_headers =
-        gcut_take_list(
-            g_list_sort(g_list_copy((GList *)actual_changeed_headers),
-                        (GCompareFunc)milter_manager_test_header_compare),
-            NULL);
-
-    gcut_assert_equal_list(
-        expected_changeed_headers, actual_changeed_headers,
-        (GEqualFunc)milter_manager_test_header_equal,
-        (GCutInspectFunc)milter_manager_test_header_inspect,
+        expected_headers, actual_header_list,
+        (GEqualFunc)milter_manager_header_equal,
+        (GCutInspectFunc)milter_manager_header_inspect,
         NULL);
 }
 
@@ -833,9 +784,7 @@ do_end_of_message_full (MilterManagerTestScenario *scenario, const gchar *group)
     cut_trace(do_end_of_message(scenario, group));
     cut_trace(milter_manager_test_wait_signal(FALSE));
     cut_trace(do_end_of_message_quarantine(scenario, group));
-    cut_trace(do_end_of_message_add_header(scenario, group));
-    cut_trace(do_end_of_message_insert_header(scenario, group));
-    cut_trace(do_end_of_message_change_header(scenario, group));
+    cut_trace(do_end_of_message_header(scenario, group));
     cut_trace(do_end_of_message_change_from(scenario, group));
     cut_trace(do_end_of_message_add_recipient(scenario, group));
     cut_trace(do_end_of_message_delete_recipient(scenario, group));
@@ -957,6 +906,7 @@ data_scenario_basic (void)
         "envelope-recipient", g_strdup("envelope-recipient.txt"), g_free,
         "data", g_strdup("data.txt"), g_free,
         "header - from", g_strdup("header-from.txt"), g_free,
+        "header - from-and-mailer", g_strdup("header-from-and-mailer.txt"), g_free,
         "end-of-header", g_strdup("end-of-header.txt"), g_free,
         "body", g_strdup("body.txt"), g_free,
         "end-of-message", g_strdup("end-of-message.txt"), g_free,
