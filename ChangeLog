@@ -1,5 +1,9 @@
 2008-11-17  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-egg.c
+	(milter_manager_egg_set_connection_spec): follow the recent
+	milter-toolkit changes.
+
 	* milter/manager.h,
 	milter/manager/milter-manager-control-decoder.[ch],
 	milter/manager/milter-manager-control-protocol.h,

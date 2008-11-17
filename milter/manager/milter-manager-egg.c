@@ -424,11 +424,11 @@ milter_manager_egg_set_connection_spec (MilterManagerEgg *egg,
     priv = MILTER_MANAGER_EGG_GET_PRIVATE(egg);
 
     if (spec)
-        success = milter_utils_parse_connection_spec(spec,
-                                                     &domain,
-                                                     &address,
-                                                     &address_length,
-                                                     &spec_error);
+        success = milter_connection_parse_spec(spec,
+                                               &domain,
+                                               &address,
+                                               &address_length,
+                                               &spec_error);
 
     if (address)
         g_free(address);
