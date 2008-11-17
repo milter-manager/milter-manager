@@ -66,6 +66,7 @@ struct _MilterManagerHeadersClass
 GType                 milter_manager_headers_get_type    (void) G_GNUC_CONST;
 
 MilterManagerHeaders *milter_manager_headers_new         (void);
+MilterManagerHeaders *milter_manager_headers_copy        (MilterManagerHeaders *headers);
 const GList          *milter_manager_headers_get_list    (MilterManagerHeaders *headers);
 
 gboolean              milter_manager_headers_add_header  (MilterManagerHeaders *headers,

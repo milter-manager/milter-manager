@@ -54,6 +54,7 @@ static void get_property   (GObject         *object,
 static void                   milter_manager_header_change_value
                                         (MilterManagerHeader *header,
                                          const gchar *new_value);
+
 static void
 milter_manager_headers_class_init (MilterManagerHeadersClass *klass)
 {
@@ -130,6 +131,27 @@ MilterManagerHeaders *
 milter_manager_headers_new (void)
 {
     return g_object_new(MILTER_TYPE_MANAGER_HEADERS, NULL);
+}
+
+MilterManagerHeaders *
+milter_manager_headers_copy (MilterManagerHeaders *headers)
+{
+    MilterManagerHeaders *copied_headers;
+    GList *node;
+    MilterManagerHeadersPrivate *priv;
+
+    priv = MILTER_MANAGER_HEADERS_GET_PRIVATE(headers);
+
+    copied_headers = milter_manager_headers_new();
+    for (node = priv->header_list; node; node = g_list_next(node)) {
+        MilterManagerHeader *header = node->data;
+
+        milter_manager_headers_add_header(copied_headers,
+                                          header->name,
+                                          header->value);
+    }
+
+    return copied_headers;
 }
 
 const GList *

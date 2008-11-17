@@ -40,6 +40,8 @@
 	a child sequential to END-OF-MESSAGE command.
 	* milter/manager/milter-manager-children.c: DATA command is sent to
 	a child sequential to END-OF-MESSAGE command.
+	* milter/manager/milter-manager-headers.[ch]: Added
+	milter_manager_headers_copy().
 
 2008-11-16  Kouhei Sutou  <kou@cozmixng.org>
 

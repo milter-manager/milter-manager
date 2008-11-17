@@ -28,6 +28,7 @@
 
 void test_length (void);
 void test_get_nth_header (void);
+void test_copy (void);
 void test_add_header (void);
 void test_insert_header (void);
 void test_change_header (void);
@@ -109,6 +110,40 @@ test_get_nth_header (void)
     expected_list = g_list_append(expected_list, expected_header);
     actual_header = milter_manager_headers_get_nth_header(headers, 3);
     milter_manager_assert_equal_header(expected_header, actual_header);
+}
+
+void
+test_copy (void)
+{
+    MilterManagerHeaders *copied_headers;
+
+    expected_list = g_list_append(expected_list, 
+                                  milter_manager_header_new("First header",
+                                                            "First header value"));
+    expected_list = g_list_append(expected_list, 
+                                  milter_manager_header_new("Second header",
+                                                            "Second header value"));
+    expected_list = g_list_append(expected_list, 
+                                  milter_manager_header_new("Third header",
+                                                            "Third header value"));
+
+    cut_assert_true(milter_manager_headers_add_header(headers,
+                                                      "First header",
+                                                      "First header value"));
+    cut_assert_true(milter_manager_headers_add_header(headers,
+                                                      "Second header",
+                                                      "Second header value"));
+    cut_assert_true(milter_manager_headers_add_header(headers,
+                                                      "Third header",
+                                                      "Third header value"));
+    copied_headers = milter_manager_headers_copy(headers);
+    gcut_take_object(G_OBJECT(copied_headers));
+    gcut_assert_equal_list(
+            milter_manager_headers_get_list(headers),
+            milter_manager_headers_get_list(copied_headers),
+            milter_manager_header_equal,
+            (GCutInspectFunc)milter_manager_header_inspect,
+            NULL);
 }
 
 void
