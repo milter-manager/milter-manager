@@ -1,6 +1,7 @@
 2008-11-17  Kouhei Sutou  <kou@cozmixng.org>
 
-	* test/manager/test-children.c (do_connect),
+	* test/manager/test-leader.c (do_connect),
+	test/manager/test-children.c (do_connect),
 	test/manager/test-egg.c (test_connection_spec_error),
 	milter/manager/milter-manager-egg.c
 	(milter_manager_egg_set_connection_spec): follow the recent

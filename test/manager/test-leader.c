@@ -504,11 +504,9 @@ do_connect (MilterManagerTestScenario *scenario, const gchar *group)
     host = get_string(scenario, group, "host");
     address_spec = get_string(scenario, group, "address");
 
-    milter_utils_parse_connection_spec(address_spec,
-                                       &domain,
-                                       &address,
-                                       &address_size,
-                                       &error);
+    milter_connection_parse_spec(address_spec,
+                                 &domain, &address, &address_size,
+                                 &error);
     gcut_assert_error(error);
 
     milter_manager_leader_connect(leader, host, address, address_size);
