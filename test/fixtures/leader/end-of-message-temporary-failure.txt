@@ -20,3 +20,4 @@ status=temporary-failure
 
 chunks=;;
 end_of_message_chunks=Fail;;
+headers=From:kou+sender@cozmixng.org

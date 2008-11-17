@@ -22,3 +22,4 @@ add_recipients=add1@example.com;;add2@example.com;;add2@example.com;;add3@exampl
 
 chunks=;Hi,;
 end_of_message_chunks=;;
+headers=From:kou+sender@cozmixng.org

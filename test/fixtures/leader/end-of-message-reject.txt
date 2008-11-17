@@ -20,3 +20,4 @@ status=reject
 
 chunks=;;
 end_of_message_chunks=Reject;;
+headers=From:kou+sender@cozmixng.org

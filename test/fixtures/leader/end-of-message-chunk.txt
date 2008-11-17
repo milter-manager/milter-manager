@@ -20,3 +20,4 @@ status=continue
 
 chunks=;Hi,;
 end_of_message_chunks=The last text;The last text;
+headers=From:kou+sender@cozmixng.org

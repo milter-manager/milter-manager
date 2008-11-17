@@ -22,3 +22,4 @@ replace_bodies=This is the first line from client2.This is the second line from 
 
 chunks=;This is the first line from client1.This is the second line from client1.This is the third line from client1.;
 end_of_message_chunks=;;
+headers=From:kou+sender@cozmixng.org
