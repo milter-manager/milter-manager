@@ -25,6 +25,8 @@
 	"n_recieved = 0" exists.
 	* milter/manager/milter-manager-children.[ch]: Emit error even if all milters send
 	MILTER_STEP_NO_XX flag and the command is sent.
+	* milter/manager/milter-manager-children.c: Check the command can be
+	sent before sending the command.
 
 2008-11-17  Kouhei Sutou  <kou@cozmixng.org>
 
