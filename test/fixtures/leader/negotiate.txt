@@ -17,6 +17,6 @@ step=no-connect|no-helo|no-mail|no-rcpt|no-body|no-headers|no-end-of-header
 
 response=negotiate
 n_received=2
-status=default
+status=continue
 
 options=2;add-headers|change-body|quarantine;no-connect|no-helo|no-mail|no-rcpt|no-body|no-headers|no-end-of-header;2;add-headers|change-body|quarantine;no-connect|no-helo|no-mail|no-rcpt|no-body|no-headers|no-end-of-header;

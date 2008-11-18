@@ -44,6 +44,20 @@ static GError *actual_error;
 static GError *expected_error;
 static gboolean finished;
 
+static gint n_negotiate_responses;
+static gint n_connect_responses;
+static gint n_helo_responses;
+static gint n_envelope_from_responses;
+static gint n_envelope_recipient_responses;
+static gint n_data_responses;
+static gint n_header_responses;
+static gint n_end_of_header_responses;
+static gint n_body_responses;
+static gint n_end_of_message_responses;
+static gint n_abort_responses;
+static gint n_quit_responses;
+static gint n_unknown_responses;
+
 static MilterStatus response_status;
 
 void
@@ -86,6 +100,162 @@ setup_leader_signals (MilterManagerLeader *leader)
 #undef CONNECT
 }
 
+static MilterStatus
+cb_negotiate_response (MilterClientContext *context, MilterOption *option,
+                       MilterStatus status, gpointer user_data)
+{
+    n_negotiate_responses++;
+
+    response_status = status;
+    return status;
+}
+
+static MilterStatus
+cb_connect_response (MilterClientContext *context,
+                     MilterStatus status, gpointer user_data)
+{
+    n_connect_responses++;
+
+    response_status = status;
+    return status;
+}
+
+static MilterStatus
+cb_helo_response (MilterClientContext *context,
+                  MilterStatus status, gpointer user_data)
+{
+    n_helo_responses++;
+
+    response_status = status;
+    return status;
+}
+
+static MilterStatus
+cb_envelope_from_response (MilterClientContext *context,
+                           MilterStatus status, gpointer user_data)
+{
+    n_envelope_from_responses++;
+
+    response_status = status;
+    return status;
+}
+
+static MilterStatus
+cb_envelope_recipient_response (MilterClientContext *context,
+                                MilterStatus status, gpointer user_data)
+{
+    n_envelope_recipient_responses++;
+
+    response_status = status;
+    return status;
+}
+
+static MilterStatus
+cb_data_response (MilterClientContext *context,
+                  MilterStatus status, gpointer user_data)
+{
+    n_data_responses++;
+
+    response_status = status;
+    return status;
+}
+
+static MilterStatus
+cb_header_response (MilterClientContext *context,
+                    MilterStatus status, gpointer user_data)
+{
+    n_header_responses++;
+
+    response_status = status;
+    return status;
+}
+
+static MilterStatus
+cb_end_of_header_response (MilterClientContext *context,
+                           MilterStatus status, gpointer user_data)
+{
+    n_end_of_header_responses++;
+
+    response_status = status;
+    return status;
+}
+
+static MilterStatus
+cb_body_response (MilterClientContext *context,
+                  MilterStatus status, gpointer user_data)
+{
+    n_body_responses++;
+
+    response_status = status;
+    return status;
+}
+
+static MilterStatus
+cb_end_of_message_response (MilterClientContext *context,
+                            MilterStatus status, gpointer user_data)
+{
+    n_end_of_message_responses++;
+
+    response_status = status;
+    return status;
+}
+
+static MilterStatus
+cb_abort_response (MilterClientContext *context,
+                   MilterStatus status, gpointer user_data)
+{
+    n_abort_responses++;
+
+    response_status = status;
+    return status;
+}
+
+static MilterStatus
+cb_quit_response (MilterClientContext *context,
+                  MilterStatus status, gpointer user_data)
+{
+    n_quit_responses++;
+
+    response_status = status;
+    return status;
+}
+
+static MilterStatus
+cb_unknown_response (MilterClientContext *context,
+                     MilterStatus status, gpointer user_data)
+{
+    n_unknown_responses++;
+
+    response_status = status;
+    return status;
+}
+
+static void
+setup_client_context_signals (MilterClientContext *context)
+{
+#define CONNECT(name) do                                                \
+{                                                                       \
+    g_signal_connect(context, #name "_response",                        \
+                         G_CALLBACK(cb_ ## name ## _response), NULL);   \
+} while (0)
+
+    CONNECT(negotiate);
+    CONNECT(connect);
+    CONNECT(helo);
+    CONNECT(envelope_from);
+    CONNECT(envelope_recipient);
+    CONNECT(data);
+    CONNECT(header);
+    CONNECT(end_of_header);
+    CONNECT(body);
+    CONNECT(end_of_message);
+    CONNECT(abort);
+    CONNECT(quit);
+    CONNECT(unknown);
+
+#undef CONNECT
+}
+
 void
 setup (void)
 {
@@ -123,10 +293,25 @@ setup (void)
     leader = milter_manager_leader_new(config, client_context);
     actual_error = NULL;
     setup_leader_signals(leader);
+    setup_client_context_signals(client_context);
 
     response_status = MILTER_STATUS_DEFAULT;
 
     finished = FALSE;
+
+    n_negotiate_responses = 0;
+    n_connect_responses = 0;
+    n_helo_responses = 0;
+    n_envelope_from_responses = 0;
+    n_envelope_recipient_responses = 0;
+    n_header_responses = 0;
+    n_end_of_header_responses = 0;
+    n_data_responses = 0;
+    n_body_responses = 0;
+    n_end_of_message_responses = 0;
+    n_abort_responses = 0;
+    n_quit_responses = 0;
+    n_unknown_responses = 0;
 
     expected_error = NULL;
 }
@@ -186,24 +371,38 @@ cb_timeout_waiting (gpointer data)
     return FALSE;
 }
 
-static void
-cb_negotiate_response_waiting (MilterClientContext *context,
-                               MilterOption *options, MilterStatus status,
-                               gpointer data)
+static guint
+get_response_count (const gchar *response)
 {
-    gboolean *waiting = data;
+    if (g_str_equal(response, "negotiate-response")) {
+        return n_negotiate_responses;
+    } else if (g_str_equal(response, "connect-response")) {
+        return n_connect_responses;
+    } else if (g_str_equal(response, "helo-response")) {
+        return n_helo_responses;
+    } else if (g_str_equal(response, "envelope-from-response")) {
+        return n_envelope_from_responses;
+    } else if (g_str_equal(response, "envelope-recipient-response")) {
+        return n_envelope_recipient_responses;
+    } else if (g_str_equal(response, "data-response")) {
+        return n_data_responses;
+    } else if (g_str_equal(response, "header-response")) {
+        return n_header_responses;
+    } else if (g_str_equal(response, "end-of-header-response")) {
+        return n_end_of_header_responses;
+    } else if (g_str_equal(response, "body-response")) {
+        return n_body_responses;
+    } else if (g_str_equal(response, "end-of-message-response")) {
+        return n_end_of_message_responses;
+    } else if (g_str_equal(response, "quit-response")) {
+        return n_quit_responses;
+    } else if (g_str_equal(response, "abort-response")) {
+        return n_abort_responses;
+    } else if (g_str_equal(response, "unknown-response")) {
+        return n_unknown_responses;
+    }
 
-    *waiting = FALSE;
-}
-
-static void
-cb_response_waiting (MilterClientContext *context, MilterStatus status,
-                     gpointer data)
-{
-    gboolean *waiting = data;
-
-    *waiting = FALSE;
-    response_status = status;
+    return 0;
 }
 
 #define assert_have_response(name)                              \
@@ -220,27 +419,15 @@ static void
 assert_have_response_helper (const gchar *name, gboolean should_timeout)
 {
     gboolean timeout_waiting = TRUE;
-    gboolean response_waiting = TRUE;
     guint timeout_waiting_id;
-    guint response_waiting_id;
 
-    if (g_str_equal(name, "negotiate-response"))
-        response_waiting_id =
-            g_signal_connect(client_context, name,
-                             G_CALLBACK(cb_negotiate_response_waiting),
-                             &response_waiting);
-    else
-        response_waiting_id =
-            g_signal_connect(client_context, name,
-                             G_CALLBACK(cb_response_waiting),
-                             &response_waiting);
     timeout_waiting_id = g_timeout_add(100, cb_timeout_waiting,
                                        &timeout_waiting);
-    while (timeout_waiting && response_waiting) {
+    while (timeout_waiting &&
+           get_response_count(name) == 0) {
         g_main_context_iteration(NULL, TRUE);
     }
     g_source_remove(timeout_waiting_id);
-    g_signal_handler_disconnect(client_context, response_waiting_id);
 
     if (should_timeout)
         cut_assert_false(timeout_waiting, "<%s>", name);
@@ -340,6 +527,9 @@ response_to_get_n_received (const gchar *response)
 #define get_integer(scenario, group, key)                               \
     milter_manager_test_scenario_get_integer(scenario, group, key)
 
+#define get_boolean(scenario, group, key)                               \
+    milter_manager_test_scenario_get_boolean(scenario, group, key)
+
 #define get_string(scenario, group, key)                                \
     milter_manager_test_scenario_get_string(scenario, group, key)
 
@@ -427,10 +617,13 @@ assert_response_common (MilterManagerTestScenario *scenario, const gchar *group)
         /* Do nothing */
     } else {
         const gchar *response_signal_name;
+        gboolean no_command_received = FALSE;
 
+        if (has_key(scenario, group, "no_command_received"))
+            no_command_received = get_boolean(scenario, group, "no_command_received");
         response_signal_name = cut_take_printf("%s-response", response);
         cut_trace(assert_have_response_helper(response_signal_name,
-                                              n_received == 0));
+                                              no_command_received));
     }
 
     get_n_received = response_to_get_n_received(response);
@@ -564,6 +757,7 @@ do_envelope_recipient (MilterManagerTestScenario *scenario, const gchar *group)
     const GList *expected_recipients;
 
     recipient = get_string(scenario, group, "recipient");
+    n_envelope_recipient_responses = 0;
     milter_manager_leader_envelope_recipient(leader, recipient);
 
     cut_trace(assert_response(scenario, group));
@@ -591,6 +785,7 @@ do_header (MilterManagerTestScenario *scenario, const gchar *group)
 
     name = get_string(scenario, group, "name");
     value = get_string(scenario, group, "value");
+    n_header_responses = 0;
     milter_manager_leader_header(leader, name, value);
 
     milter_manager_test_server_add_header(server, name, value);
@@ -622,6 +817,7 @@ do_body (MilterManagerTestScenario *scenario, const gchar *group)
     const gchar *chunk;
 
     chunk = get_string(scenario, group, "chunk");
+    n_body_responses = 0;
     milter_manager_leader_body(leader, chunk, strlen(chunk));
 
     cut_trace(assert_response(scenario, group));
@@ -909,6 +1105,7 @@ data_scenario_basic (void)
         "header - from-and-mailer", g_strdup("header-from-and-mailer.txt"), g_free,
         "end-of-header", g_strdup("end-of-header.txt"), g_free,
         "body", g_strdup("body.txt"), g_free,
+        "end-of-message - no body flag", g_strdup("no-body-flag.txt"), g_free,
         "end-of-message", g_strdup("end-of-message.txt"), g_free,
         "end-of-message - chunk", g_strdup("end-of-message-chunk.txt"), g_free,
         "end-of-message - reject", g_strdup("end-of-message-reject.txt"), g_free,

@@ -29,6 +29,7 @@ recipient=recipient@example.com
 
 response=envelope-recipient
 n_received=0
+no_command_received=true
 status=reject
 
 recipients=;;

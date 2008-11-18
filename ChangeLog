@@ -15,6 +15,14 @@
 	"--negotiate-flags".
 	* test/fixtures/leader/negotiate.txt: Set various steps of negotiate
 	option.
+	* milter/manager/milter-manager-children.c (state_to_command): Set
+	server context state before emit "continue" signal.
+	* test/manager/test-leader.c: Connect "xx-response" signal before
+	sending each command. Also add "no_command_received" option in
+	scenario file.
+	* test/fixtures/leader/no-body-flag.txt: Added.
+	* test/fixtures/leader/*.txt: Added "no_command_received" option if
+	"n_recieved = 0" exists.
 
 2008-11-17  Kouhei Sutou  <kou@cozmixng.org>
 

@@ -29,6 +29,7 @@ recipient=ok@example.com
 
 response=envelope-recipient
 n_received=0
+no_command_received=true
 status=discard
 
 recipients=;;
@@ -38,4 +39,5 @@ command=data
 
 response=data
 n_received=0
+no_command_received=true
 status=discard

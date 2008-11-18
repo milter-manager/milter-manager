@@ -1504,6 +1504,45 @@ child_establish_connection (MilterManagerChild *child,
     return TRUE;
 }
 
+static MilterServerContextState
+command_to_state (MilterCommand command)
+{
+    switch (command) {
+      case MILTER_COMMAND_CONNECT:
+        return MILTER_SERVER_CONTEXT_STATE_CONNECT;
+        break;
+      case MILTER_COMMAND_HELO:
+        return MILTER_SERVER_CONTEXT_STATE_HELO;
+        break;
+      case MILTER_COMMAND_MAIL:
+        return MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM;
+        break;
+      case MILTER_COMMAND_RCPT:
+        return MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT;
+        break;
+      case MILTER_COMMAND_DATA:
+        return MILTER_SERVER_CONTEXT_STATE_DATA;
+        break;
+      case MILTER_COMMAND_HEADER:
+        return MILTER_SERVER_CONTEXT_STATE_HEADER;
+        break;
+      case MILTER_COMMAND_END_OF_HEADER:
+        return MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER;
+        break;
+      case MILTER_COMMAND_BODY:
+        return MILTER_SERVER_CONTEXT_STATE_BODY;
+        break;
+      case MILTER_COMMAND_END_OF_MESSAGE:
+        return MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE;
+        break;
+      default:
+        return MILTER_SERVER_CONTEXT_STATE_START;
+        break;
+    }
+
+    return MILTER_SERVER_CONTEXT_STATE_START;
+}
+
 static MilterCommand
 state_to_command (MilterServerContextState state)
 {
@@ -1607,7 +1646,9 @@ get_first_command_waiting_child_queue (MilterManagerChildren *children,
     if (!milter_server_context_is_enable_step(first_child, step))
         return first_child;
 
-    g_signal_emit_by_name(children, "continue");
+    milter_server_context_set_state(first_child,
+                                    command_to_state(command));
+    g_signal_emit_by_name(first_child, "continue");
 
     return NULL;
 }
@@ -1944,12 +1985,11 @@ milter_manager_children_body (MilterManagerChildren *children,
     if (!write_to_body_file(children, chunk, size))
         return FALSE;
 
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+    priv->sent_body_count++;
     context = get_first_command_waiting_child_queue(children, MILTER_COMMAND_BODY);
     if (!context)
         return TRUE;
-
-    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
-    priv->sent_body_count++;
 
     return milter_server_context_body(context, chunk, size);
 }
