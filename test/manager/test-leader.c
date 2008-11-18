@@ -418,7 +418,7 @@ get_response_count (const gchar *response)
         assert_not_have_response(name))
 
 static void
-assert_have_response_helper (const gchar *name, gboolean should_timeout)
+assert_have_response_helper (const gchar *name)
 {
     gboolean timeout_waiting = TRUE;
     guint timeout_waiting_id;
@@ -431,10 +431,7 @@ assert_have_response_helper (const gchar *name, gboolean should_timeout)
     }
     g_source_remove(timeout_waiting_id);
 
-    if (should_timeout)
-        cut_assert_false(timeout_waiting, "<%s>", name);
-    else
-        cut_assert_true(timeout_waiting, "<%s>", name);
+    cut_assert_true(timeout_waiting, "<%s>", name);
     gcut_assert_error(actual_error);
 }
 
@@ -619,13 +616,9 @@ assert_response_common (MilterManagerTestScenario *scenario, const gchar *group)
         /* Do nothing */
     } else {
         const gchar *response_signal_name;
-        gboolean no_command_received = FALSE;
 
-        if (has_key(scenario, group, "no_command_received"))
-            no_command_received = get_boolean(scenario, group, "no_command_received");
         response_signal_name = cut_take_printf("%s-response", response);
-        cut_trace(assert_have_response_helper(response_signal_name,
-                                              no_command_received));
+        cut_trace(assert_have_response_helper(response_signal_name));
     }
 
     get_n_received = response_to_get_n_received(response);

@@ -32,6 +32,9 @@
 	* test/fixtures/leader/*.txt: Check
 	MILTER_MANAGER_CHILDREN_ERROR_NO_ALIVE_MILTER error.
 	Hmm, "no_command_received" option is not used any more..
+	* test/manager/test-leader.c (assert_response_common): Remove
+	"no_command_received".
+	(assert_have_response_helper): Remove should_timeout argument.
 
 2008-11-17  Kouhei Sutou  <kou@cozmixng.org>
 
