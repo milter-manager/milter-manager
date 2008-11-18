@@ -40,12 +40,12 @@ typedef struct _MilterManagerControllerClass    MilterManagerControllerClass;
 
 struct _MilterManagerController
 {
-    MilterHandler object;
+    MilterAgent object;
 };
 
 struct _MilterManagerControllerClass
 {
-    MilterHandlerClass parent_class;
+    MilterAgentClass parent_class;
 };
 
 GType                 milter_manager_controller_get_type    (void) G_GNUC_CONST;

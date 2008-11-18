@@ -1171,11 +1171,11 @@ cb_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
 }
 
 static void
-cb_finished (MilterHandler *handler, gpointer user_data)
+cb_finished (MilterAgent *agent, gpointer user_data)
 {
     MilterManagerChildren *children;
     MilterManagerChildrenPrivate *priv;
-    MilterServerContext *context = MILTER_SERVER_CONTEXT(handler);
+    MilterServerContext *context = MILTER_SERVER_CONTEXT(agent);
     gchar *state_string;
 
     children = MILTER_MANAGER_CHILDREN(user_data);

@@ -285,11 +285,11 @@ process_control_connection(MilterManagerConfiguration *configuration,
     controller = milter_manager_controller_new(configuration);
 
     writer = milter_writer_io_channel_new(agent_channel);
-    milter_handler_set_writer(MILTER_HANDLER(controller), writer);
+    milter_agent_set_writer(MILTER_AGENT(controller), writer);
     g_object_unref(writer);
 
     reader = milter_reader_io_channel_new(agent_channel);
-    milter_handler_set_reader(MILTER_HANDLER(controller), reader);
+    milter_agent_set_reader(MILTER_AGENT(controller), reader);
     g_object_unref(reader);
 
     g_signal_connect(reader, "finished",

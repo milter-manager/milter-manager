@@ -43,7 +43,7 @@ enum
 };
 
 G_DEFINE_TYPE(MilterManagerController, milter_manager_controller,
-              MILTER_TYPE_HANDLER)
+              MILTER_TYPE_AGENT)
 
 static void dispose        (GObject         *object);
 static void set_property   (GObject         *object,
@@ -55,23 +55,23 @@ static void get_property   (GObject         *object,
                             GValue          *value,
                             GParamSpec      *pspec);
 
-static MilterDecoder *decoder_new    (MilterHandler *handler);
+static MilterDecoder *decoder_new    (MilterAgent *agent);
 
 static void
 milter_manager_controller_class_init (MilterManagerControllerClass *klass)
 {
     GObjectClass *gobject_class;
-    MilterHandlerClass *handler_class;
+    MilterAgentClass *agent_class;
     GParamSpec *spec;
 
     gobject_class = G_OBJECT_CLASS(klass);
-    handler_class = MILTER_HANDLER_CLASS(klass);
+    agent_class = MILTER_AGENT_CLASS(klass);
 
     gobject_class->dispose      = dispose;
     gobject_class->set_property = set_property;
     gobject_class->get_property = get_property;
 
-    handler_class->decoder_new   = decoder_new;
+    agent_class->decoder_new   = decoder_new;
 
     spec = g_param_spec_object("configuration",
                                "Configuration",
@@ -95,7 +95,7 @@ cb_decoder_import_configuration (MilterDecoder *decoder,
 }
 
 static MilterDecoder *
-decoder_new (MilterHandler *handler)
+decoder_new (MilterAgent *agent)
 {
     MilterDecoder *decoder;
 
@@ -103,7 +103,7 @@ decoder_new (MilterHandler *handler)
 
 #define CONNECT(name)                                                   \
     g_signal_connect(decoder, #name, G_CALLBACK(cb_decoder_ ## name),   \
-                     handler)
+                     agent)
 
     CONNECT(import_configuration);
 

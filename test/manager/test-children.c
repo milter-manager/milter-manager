@@ -1441,7 +1441,7 @@ test_writing_timeout (void)
     writer = milter_writer_io_channel_new(channel);
     g_io_channel_unref(channel);
     child = milter_manager_children_get_children(children)->next->data;
-    milter_handler_set_writer(MILTER_HANDLER(child), writer);
+    milter_agent_set_writer(MILTER_AGENT(child), writer);
     g_object_unref(writer);
 
     prepare_timeout_test(child, channel);
