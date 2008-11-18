@@ -1586,7 +1586,9 @@ state_to_command (MilterServerContextState state)
 }
 
 static MilterCommand
-get_next_command (MilterManagerChildren *children, MilterServerContextState state)
+get_next_command (MilterManagerChildren *children, 
+                  MilterServerContext *context,
+                  MilterServerContextState state)
 {
     MilterManagerChildrenPrivate *priv;
     GList *node;
@@ -1599,7 +1601,20 @@ get_next_command (MilterManagerChildren *children, MilterServerContextState stat
     node = g_list_find(priv->command_queue, GINT_TO_POINTER(current_command));
     if (!node || !g_list_next(node))
         return -1;
-    return GPOINTER_TO_INT(g_list_next(node)->data);
+
+
+    for (node = g_list_next(node); node; node = g_list_next(node)) {
+        MilterCommand next_command;
+        MilterStepFlags step;
+
+        next_command = GPOINTER_TO_INT(node->data);
+        step = command_to_no_step_flag(next_command);
+
+        if (!milter_server_context_is_enable_step(context, step))
+            return next_command;
+    }
+
+    return MILTER_COMMAND_END_OF_MESSAGE;
 }
 
 static gboolean
@@ -1612,7 +1627,7 @@ send_next_command (MilterManagerChildren *children,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    next_command = get_next_command(children, current_state);
+    next_command = get_next_command(children, context, current_state);
     if (next_command == -1) {
         g_signal_emit_by_name(children, "continue");
         return FALSE;

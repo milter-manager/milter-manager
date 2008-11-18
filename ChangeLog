@@ -35,6 +35,8 @@
 	* test/manager/test-leader.c (assert_response_common): Remove
 	"no_command_received".
 	(assert_have_response_helper): Remove should_timeout argument.
+	* milter/manager/milter-manager-children.c (get_next_command): Skip
+	command which is set to STEP_NO_XX on negotiation.
 
 2008-11-17  Kouhei Sutou  <kou@cozmixng.org>
 

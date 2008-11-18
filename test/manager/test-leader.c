@@ -1102,6 +1102,7 @@ data_scenario_basic (void)
         "body", g_strdup("body.txt"), g_free,
         "body - no body flag on both client", g_strdup("no-body-flag-on-both-client.txt"), g_free,
         "end-of-message - no body flag", g_strdup("no-body-flag.txt"), g_free,
+        "end-of-message - no body flag on second client", g_strdup("no-body-flag-on-second-client.txt"), g_free,
         "end-of-message", g_strdup("end-of-message.txt"), g_free,
         "end-of-message - chunk", g_strdup("end-of-message-chunk.txt"), g_free,
         "end-of-message - reject", g_strdup("end-of-message-reject.txt"), g_free,
