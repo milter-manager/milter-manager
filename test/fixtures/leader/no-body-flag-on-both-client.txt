@@ -16,12 +16,6 @@ command=body
 
 chunk=Hi,
 
-response=body
-n_received=0
-status=continue
-
-chunks=;;
-
 error_domain=milter-manager-children-error-quark
 error_type=MilterManagerChildrenError
 error_code=no-demand-command
