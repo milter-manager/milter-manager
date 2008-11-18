@@ -1,7 +1,7 @@
 [scenario]
 clients=client10026;client10027
 import=envelope-from.txt
-actions=envelope-recipient-accept;envelope-recipient-ok;data
+actions=envelope-recipient-accept;envelope-recipient-ok
 
 [client10026]
 port=10026
@@ -27,17 +27,7 @@ command=rcpt
 
 recipient=ok@example.com
 
-response=envelope-recipient
-n_received=0
-no_command_received=true
-status=accept
-
-recipients=;;
-
-[data]
-command=data
-
-response=data
-n_received=0
-no_command_received=true
-status=accept
+error_domain=milter-manager-children-error-quark
+error_type=MilterManagerChildrenError
+error_code=no-alive-milter
+error_message=All milters are no longer alive.

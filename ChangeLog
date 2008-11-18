@@ -27,6 +27,11 @@
 	MILTER_STEP_NO_XX flag and the command is sent.
 	* milter/manager/milter-manager-children.c: Check the command can be
 	sent before sending the command.
+	* milter/manager/milter-manager-children.[ch]: Emit error if all
+	milters are already dead.
+	* test/fixtures/leader/*.txt: Check
+	MILTER_MANAGER_CHILDREN_ERROR_NO_ALIVE_MILTER error.
+	Hmm, "no_command_received" option is not used any more..
 
 2008-11-17  Kouhei Sutou  <kou@cozmixng.org>
 

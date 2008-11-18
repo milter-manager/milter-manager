@@ -27,9 +27,7 @@ command=rcpt
 
 recipient=recipient@example.com
 
-response=envelope-recipient
-n_received=0
-no_command_received=true
-status=reject
-
-recipients=;;
+error_domain=milter-manager-children-error-quark
+error_type=MilterManagerChildrenError
+error_code=no-alive-milter
+error_message=All milters are no longer alive.
