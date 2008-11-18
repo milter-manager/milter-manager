@@ -40,7 +40,8 @@ G_BEGIN_DECLS
 
 typedef enum
 {
-    MILTER_MANAGER_CHILDREN_ERROR_MILTER_EXIT
+    MILTER_MANAGER_CHILDREN_ERROR_MILTER_EXIT,
+    MILTER_MANAGER_CHILDREN_ERROR_NO_DEMAND_COMMAND
 } MilterManagerChildrenError;
 
 typedef struct _MilterManagerChildrenClass    MilterManagerChildrenClass;

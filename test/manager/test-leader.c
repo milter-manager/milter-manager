@@ -25,6 +25,7 @@
 #include <milter-manager-test-utils.h>
 #include <milter-manager-test-client.h>
 #include <milter/manager/milter-manager-leader.h>
+#include <milter/manager/milter-manager-enum-types.h>
 #include <milter-manager-test-server.h>
 #include <milter-manager-test-scenario.h>
 #undef shutdown
@@ -64,6 +65,7 @@ void
 startup (void)
 {
     MILTER_TYPE_CLIENT_CONTEXT_ERROR;
+    MILTER_TYPE_MANAGER_CHILDREN_ERROR;
 }
 
 static void
@@ -1105,6 +1107,7 @@ data_scenario_basic (void)
         "header - from-and-mailer", g_strdup("header-from-and-mailer.txt"), g_free,
         "end-of-header", g_strdup("end-of-header.txt"), g_free,
         "body", g_strdup("body.txt"), g_free,
+        "body - no body flag on both client", g_strdup("no-body-flag-on-both-client.txt"), g_free,
         "end-of-message - no body flag", g_strdup("no-body-flag.txt"), g_free,
         "end-of-message", g_strdup("end-of-message.txt"), g_free,
         "end-of-message - chunk", g_strdup("end-of-message-chunk.txt"), g_free,

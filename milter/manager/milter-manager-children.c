@@ -1706,6 +1706,27 @@ milter_manager_children_negotiate (MilterManagerChildren *children,
     return success;
 }
 
+static gboolean
+milter_manager_children_is_demanding_command (MilterManagerChildren *children,
+                                            MilterCommand command)
+{
+    GList *child;
+    MilterManagerChildrenPrivate *priv;
+    MilterStepFlags step;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    step = command_to_no_step_flag(command);
+
+    for (child = priv->milters; child; child = g_list_next(child)) {
+        MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
+
+        if (!milter_server_context_is_enable_step(context, step))
+            return TRUE;
+    }
+    return FALSE;
+}
+
 gboolean
 milter_manager_children_connect (MilterManagerChildren *children,
                                  const gchar           *host_name,
@@ -1980,6 +2001,24 @@ milter_manager_children_body (MilterManagerChildren *children,
     MilterServerContext *context;
     MilterManagerChildrenPrivate *priv;
 
+    if (!milter_manager_children_is_demanding_command(children, MILTER_COMMAND_BODY)) {
+        GError *error = NULL;
+        gchar *command_string;
+
+        command_string = milter_utils_inspect_enum(MILTER_TYPE_COMMAND,
+                                                   MILTER_COMMAND_BODY);
+        g_set_error(&error,
+                    MILTER_MANAGER_CHILDREN_ERROR,
+                    MILTER_MANAGER_CHILDREN_ERROR_NO_DEMAND_COMMAND,
+                    "No milter demands %s.", command_string);
+        milter_error("%s", error->message);
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
+                                    error);
+        g_free(command_string);
+        g_error_free(error);
+        return FALSE;
+    }
+        
     init_command_waiting_child_queue(children, MILTER_COMMAND_BODY);
 
     if (!write_to_body_file(children, chunk, size))
