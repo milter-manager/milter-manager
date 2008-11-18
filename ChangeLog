@@ -1,5 +1,9 @@
 2008-11-18  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/
+	- mail -> envelope-from.
+	- rcpt -> envelope-recipient.
+
 	* milter/manager/milter-manager-children.c,
 	test/manager/test-children.c, test/manager/test-leader.c:
 	- MAIL -> ENVELOPE_FROM.

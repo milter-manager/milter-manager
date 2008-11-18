@@ -11,7 +11,7 @@ arguments=--action;reject;--envelope-recipient;reject@example.com
 port=10027
 
 [envelope-recipient-reject]
-command=rcpt
+command=envelope-recipient
 
 recipient=reject@example.com
 
@@ -22,7 +22,7 @@ status=reject
 recipients=reject@example.com;reject@example.com
 
 [envelope-recipient-ok]
-command=rcpt
+command=envelope-recipient
 
 recipient=ok@example.com
 

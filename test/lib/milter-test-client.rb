@@ -11,8 +11,8 @@ class MilterTestClient
     @decoder = Milter::CommandDecoder.new
     @state = :start
     @helo_fqdn = nil
-    @mail_from = nil
-    @rcpt_to = nil
+    @envelope_from = nil
+    @envelope_recipient = nil
     @headers = []
     @content = ""
     @socket = nil
@@ -313,42 +313,43 @@ class MilterTestClient
     fqdn
   end
 
-  def do_mail(from)
-    invalid_state(:mail) if @state != :greeted
-    @mail_from = from
+  def do_envelope_from(from)
+    invalid_state(:envelope_from) if @state != :greeted
+    @envelope_from = from
 
     @senders.reverse_each do |action, sender|
       if sender == from
-        write_action(:mailed, action)
+        write_action(:envelope_from_received, action)
         return
       end
     end
-    write(:mailed, :continue)
+    write(:envelope_from_received, :continue)
   end
 
-  def info_mail(from)
+  def info_envelope_from(from)
     from
   end
 
-  def do_rcpt(to)
-    invalid_state(:rcpt) unless [:mailed, :recipiented].include?(@state)
-    @rcpt_to = to
+  def do_envelope_recipient(to)
+    valid_states = [:envelope_from_received, :envelope_recipient_received]
+    invalid_state(:envelope_recipient) unless valid_states.include?(@state)
+    @envelope_recipient = to
 
     @recipients.reverse_each do |action, recipient|
       if recipient == to
-        write_action(:recipiented, action)
+        write_action(:envelope_recipient_received, action)
         return
       end
     end
-    write(:recipiented, :continue)
+    write(:envelope_recipient_received, :continue)
   end
 
-  def info_rcpt(to)
+  def info_envelope_recipient(to)
     to
   end
 
   def do_data
-    invalid_state(:data) if @state != :recipiented
+    invalid_state(:data) if @state != :envelope_recipient_received
 
     write(:data, :continue)
   end

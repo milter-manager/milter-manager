@@ -10,7 +10,7 @@ port=10026
 port=10027
 
 [envelope-recipient]
-command=rcpt
+command=envelope-recipient
 
 recipient=kou+receiver@cozmixng.org
 

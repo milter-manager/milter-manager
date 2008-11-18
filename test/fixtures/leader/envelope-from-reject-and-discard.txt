@@ -12,7 +12,7 @@ port=10027
 arguments=--action;discard;--envelope-from;reject+discard@example.com
 
 [envelope-from-reject-and-discard]
-command=mail
+command=envelope-from
 
 from=reject+discard@example.com
 
@@ -23,7 +23,7 @@ status=reject
 froms=reject+discard@example.com;reject+discard@example.com
 
 [envelope-recipient]
-command=rcpt
+command=envelope-recipient
 
 recipient=recipient@example.com
 

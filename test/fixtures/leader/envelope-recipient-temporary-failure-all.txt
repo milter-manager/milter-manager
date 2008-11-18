@@ -12,7 +12,7 @@ port=10027
 arguments=--action;temporary-failure;--envelope-recipient;temporary-failure@example.com
 
 [envelope-recipient-temporary-failure-all]
-command=rcpt
+command=envelope-recipient
 
 recipient=temporary-failure@example.com
 
@@ -23,7 +23,7 @@ status=temporary-failure
 recipients=temporary-failure@example.com;temporary-failure@example.com
 
 [envelope-recipient-ok]
-command=rcpt
+command=envelope-recipient
 
 recipient=ok@example.com
 

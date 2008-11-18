@@ -11,7 +11,7 @@ arguments=--reply-code;554 5.7.1 1%% 2%% 3%%;--envelope-from;reject@example.com
 port=10027
 
 [envelope-from-reply-code]
-command=mail
+command=envelope-from
 
 from=reject@example.com
 

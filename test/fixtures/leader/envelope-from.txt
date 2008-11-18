@@ -10,7 +10,7 @@ port=10026
 port=10027
 
 [envelope-from]
-command=mail
+command=envelope-from
 
 from=kou+sender@cozmixng.org
 

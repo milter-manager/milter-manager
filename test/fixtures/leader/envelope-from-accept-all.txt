@@ -12,7 +12,7 @@ port=10027
 arguments=--action;accept;--envelope-from;accept@example.com
 
 [envelope-from-accept-all]
-command=mail
+command=envelope-from
 
 from=accept@example.com
 
@@ -23,7 +23,7 @@ status=accept
 froms=accept@example.com;accept@example.com
 
 [envelope-recipient]
-command=rcpt
+command=envelope-recipient
 
 recipient=recipient@example.com
 

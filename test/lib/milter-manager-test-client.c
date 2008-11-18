@@ -215,7 +215,7 @@ parse_envelope_from_info (MilterManagerTestClientPrivate *priv,
     if (priv->envelope_from)
         g_free(priv->envelope_from);
     priv->envelope_from =
-        receive_additional_info(chunk, size, "receive: mail: ");
+        receive_additional_info(chunk, size, "receive: envelope-from: ");
 }
 
 static void
@@ -225,7 +225,7 @@ parse_envelope_recipient_info (MilterManagerTestClientPrivate *priv,
     if (priv->envelope_recipient)
         g_free(priv->envelope_recipient);
     priv->envelope_recipient =
-        receive_additional_info(chunk, size, "receive: rcpt: ");
+        receive_additional_info(chunk, size, "receive: envelope-recipient: ");
 }
 
 static void
@@ -360,23 +360,28 @@ cb_output_received (GCutEgg *egg, const gchar *chunk, gsize size,
         } else if (g_str_has_prefix(response->string, "receive: helo")) {
             priv->n_helo_received++;
             parse_helo_info(priv, response->string, response->size);
-        } else if (g_str_has_prefix(response->string, "receive: mail")) {
+        } else if (g_str_has_prefix(response->string,
+                                    "receive: envelope-from")) {
             priv->n_envelope_from_received++;
             parse_envelope_from_info(priv, response->string, response->size);
-        } else if (g_str_has_prefix(response->string, "receive: rcpt")) {
+        } else if (g_str_has_prefix(response->string,
+                                    "receive: envelope-recipient")) {
             priv->n_envelope_recipient_received++;
-            parse_envelope_recipient_info(priv, response->string, response->size);
+            parse_envelope_recipient_info(priv,
+                                          response->string, response->size);
         } else if (g_str_has_prefix(response->string, "receive: data")) {
             priv->n_data_received++;
         } else if (g_str_has_prefix(response->string, "receive: header")) {
             priv->n_header_received++;
             parse_header_info(priv, response->string, response->size);
-        } else if (g_str_has_prefix(response->string, "receive: end-of-header")) {
+        } else if (g_str_has_prefix(response->string,
+                                    "receive: end-of-header")) {
             priv->n_end_of_header_received++;
         } else if (g_str_has_prefix(response->string, "receive: body")) {
             priv->n_body_received++;
             parse_body_info(priv, response->string, response->size);
-        } else if (g_str_has_prefix(response->string, "receive: end-of-message")) {
+        } else if (g_str_has_prefix(response->string,
+                                    "receive: end-of-message")) {
             priv->n_end_of_message_received++;
             parse_end_of_message_info(priv, response->string, response->size);
         } else if (g_str_has_prefix(response->string, "receive: quit")) {

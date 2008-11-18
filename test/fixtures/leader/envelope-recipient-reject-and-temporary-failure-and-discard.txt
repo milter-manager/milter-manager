@@ -11,7 +11,7 @@ arguments=--action;reject;--envelope-recipient;reject@example.com;--action;tempo
 port=10027
 
 [envelope-recipient-reject]
-command=rcpt
+command=envelope-recipient
 
 recipient=reject@example.com
 
@@ -22,7 +22,7 @@ status=reject
 recipients=reject@example.com;reject@example.com
 
 [envelope-recipient-temporary-failure]
-command=rcpt
+command=envelope-recipient
 
 recipient=temporary-failure@example.com
 
@@ -33,7 +33,7 @@ status=continue
 recipients=temporary-failure@example.com;temporary-failure@example.com
 
 [envelope-recipient-discard]
-command=rcpt
+command=envelope-recipient
 
 recipient=discard@example.com
 
@@ -44,7 +44,7 @@ status=discard
 recipients=discard@example.com;discard@example.com
 
 [envelope-recipient-ok]
-command=rcpt
+command=envelope-recipient
 
 recipient=ok@example.com
 
