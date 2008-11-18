@@ -13,10 +13,10 @@ command=negotiate
 
 version=2
 action=add-headers|change-body|quarantine
-step=none
+step=no-connect|no-helo|no-mail|no-rcpt|no-body|no-headers|no-end-of-header
 
 response=negotiate
 n_received=2
 status=default
 
-options=2;add-headers|change-body|quarantine;none;2;add-headers|change-body|quarantine;none;
+options=2;add-headers|change-body|quarantine;no-connect|no-helo|no-mail|no-rcpt|no-body|no-headers|no-end-of-header;2;add-headers|change-body|quarantine;no-connect|no-helo|no-mail|no-rcpt|no-body|no-headers|no-end-of-header;
