@@ -5,6 +5,10 @@
 	first child in waiting queue does not need the command because if
 	there is no response (i.e. continue or so), MTA does not send a next
 	command.
+	* test/lib/milter-test-client.rb: Added "--negotiate-flags" option.
+	Return the option which has modified in milter-test-client.rb. Also
+	the step of the return option is always the value which is set with
+	"--negotiate-flags".
 
 2008-11-17  Kouhei Sutou  <kou@cozmixng.org>
 

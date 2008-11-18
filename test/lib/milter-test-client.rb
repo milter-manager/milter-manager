@@ -73,6 +73,11 @@ class MilterTestClient
         @current_action = action # FIXME: validate
       end
 
+      opts.on("--negotiate-flags=FLAG1|FLAG2|..",
+              "Add step flags of negotiate option") do |flag|
+        @negotiate_flags += flag.split(/\|/)
+      end
+
       opts.on("--quarantine=REASON",
               "Send quarantine with REASON on end-of-message") do |reason|
         @end_of_message_actions << ["quarantine", reason]
@@ -187,6 +192,7 @@ class MilterTestClient
     @senders = []
     @body_chunks = []
     @end_of_message_chunks = []
+    @negotiate_flags = ["none"]
   end
 
   def print_status(status)
@@ -266,8 +272,9 @@ class MilterTestClient
   def do_negotiate(option)
     invalid_state(:negotiate) if @state != :start
     @option = option
+    @option.step = @negotiate_flags
 
-    write(:negotiated, :negotiate, option)
+    write(:negotiated, :negotiate, @option)
   end
 
   def info_negotiate(option)
