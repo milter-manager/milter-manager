@@ -1028,10 +1028,10 @@ do_action (MilterManagerTestScenario *scenario, const gchar *group)
       case MILTER_COMMAND_HELO:
         cut_trace(do_helo(scenario, group));
         break;
-      case MILTER_COMMAND_MAIL:
+      case MILTER_COMMAND_ENVELOPE_FROM:
         cut_trace(do_envelope_from(scenario, group));
         break;
-      case MILTER_COMMAND_RCPT:
+      case MILTER_COMMAND_ENVELOPE_RECIPIENT:
         cut_trace(do_envelope_recipient(scenario, group));
         break;
       case MILTER_COMMAND_DATA:
@@ -1089,32 +1089,56 @@ do_actions (MilterManagerTestScenario *scenario)
 static void
 data_scenario_basic (void)
 {
-    cut_add_data(
-        "negotiate", g_strdup("negotiate.txt"), g_free,
-        "connect", g_strdup("connect.txt"), g_free,
-        "helo", g_strdup("helo.txt"), g_free,
-        "envelope-from", g_strdup("envelope-from.txt"), g_free,
-        "envelope-recipient", g_strdup("envelope-recipient.txt"), g_free,
-        "data", g_strdup("data.txt"), g_free,
-        "header - from", g_strdup("header-from.txt"), g_free,
-        "header - from-and-mailer", g_strdup("header-from-and-mailer.txt"), g_free,
-        "end-of-header", g_strdup("end-of-header.txt"), g_free,
-        "body", g_strdup("body.txt"), g_free,
-        "body - no body flag on both client", g_strdup("no-body-flag-on-both-client.txt"), g_free,
-        "end-of-message - no body flag", g_strdup("no-body-flag.txt"), g_free,
-        "end-of-message - no body flag on second client", g_strdup("no-body-flag-on-second-client.txt"), g_free,
-        "end-of-message", g_strdup("end-of-message.txt"), g_free,
-        "end-of-message - chunk", g_strdup("end-of-message-chunk.txt"), g_free,
-        "end-of-message - reject", g_strdup("end-of-message-reject.txt"), g_free,
-        "end-of-message - discard", g_strdup("end-of-message-discard.txt"), g_free,
-        "end-of-message - temporary-failure", g_strdup("end-of-message-temporary-failure.txt"), g_free,
-        "end-of-message - accept", g_strdup("end-of-message-accept.txt"), g_free,
-        "end-of-message - replaced", g_strdup("end-of-message-replaced.txt"), g_free,
-        "quit", g_strdup("quit.txt"), g_free,
-        "abort - on envelope-from", g_strdup("abort-on-envelope-from.txt"), g_free,
-        "abort - on end-of-message", g_strdup("abort-on-end-of-message.txt"), g_free,
-        "unknown", g_strdup("unknown.txt"), g_free,
-        "reply-code", g_strdup("reply-code.txt"), g_free);
+    cut_add_data("negotiate",
+                 g_strdup("negotiate.txt"), g_free,
+                 "connect",
+                 g_strdup("connect.txt"), g_free,
+                 "helo",
+                 g_strdup("helo.txt"), g_free,
+                 "envelope-from",
+                 g_strdup("envelope-from.txt"), g_free,
+                 "envelope-recipient",
+                 g_strdup("envelope-recipient.txt"), g_free,
+                 "data",
+                 g_strdup("data.txt"), g_free,
+                 "header - from",
+                 g_strdup("header-from.txt"), g_free,
+                 "header - from-and-mailer",
+                 g_strdup("header-from-and-mailer.txt"), g_free,
+                 "end-of-header",
+                 g_strdup("end-of-header.txt"), g_free,
+                 "body",
+                 g_strdup("body.txt"), g_free,
+                 "body - no body flag on both client",
+                 g_strdup("no-body-flag-on-both-client.txt"), g_free,
+                 "end-of-message - no body flag",
+                 g_strdup("no-body-flag.txt"), g_free,
+                 "end-of-message - no body flag on second client",
+                 g_strdup("no-body-flag-on-second-client.txt"), g_free,
+                 "end-of-message",
+                 g_strdup("end-of-message.txt"), g_free,
+                 "end-of-message - chunk",
+                 g_strdup("end-of-message-chunk.txt"), g_free,
+                 "end-of-message - reject",
+                 g_strdup("end-of-message-reject.txt"), g_free,
+                 "end-of-message - discard",
+                 g_strdup("end-of-message-discard.txt"), g_free,
+                 "end-of-message - temporary-failure",
+                 g_strdup("end-of-message-temporary-failure.txt"), g_free,
+                 "end-of-message - accept",
+                 g_strdup("end-of-message-accept.txt"), g_free,
+                 "end-of-message - replaced",
+                 g_strdup("end-of-message-replaced.txt"), g_free,
+                 "quit",
+                 g_strdup("quit.txt"), g_free,
+                 "abort - on envelope-from",
+                 g_strdup("abort-on-envelope-from.txt"), g_free,
+                 "abort - on end-of-message",
+                 g_strdup("abort-on-end-of-message.txt"), g_free,
+                 "unknown",
+                 g_strdup("unknown.txt"), g_free,
+                 "reply-code",
+                 g_strdup("reply-code.txt"), g_free);
 }
 
 static void

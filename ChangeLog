@@ -1,5 +1,10 @@
 2008-11-18  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.c,
+	test/manager/test-children.c, test/manager/test-leader.c:
+	- MAIL -> ENVELOPE_FROM.
+	- RCPT -> ENVELOPE_RECIPIENT.
+
 	* test/lib/milter-test-client.rb: use Milter::ReplyEncoder not
 	Milter::Encoder.
 

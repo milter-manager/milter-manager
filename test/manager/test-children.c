@@ -891,10 +891,10 @@ do_action (MilterManagerTestScenario *scenario, const gchar *group)
       case MILTER_COMMAND_HELO:
         cut_trace(do_helo(scenario, group));
         break;
-      case MILTER_COMMAND_MAIL:
+      case MILTER_COMMAND_ENVELOPE_FROM:
         cut_trace(do_envelope_from(scenario, group));
         break;
-      case MILTER_COMMAND_RCPT:
+      case MILTER_COMMAND_ENVELOPE_RECIPIENT:
         cut_trace(do_envelope_recipient(scenario, group));
         break;
       case MILTER_COMMAND_DATA:

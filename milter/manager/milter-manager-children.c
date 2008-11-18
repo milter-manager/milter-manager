@@ -648,11 +648,11 @@ command_to_no_step_flag (MilterCommand command)
       case MILTER_COMMAND_HELO:
         return MILTER_STEP_NO_HELO;
         break;
-      case MILTER_COMMAND_MAIL:
-        return MILTER_STEP_NO_MAIL;
+      case MILTER_COMMAND_ENVELOPE_FROM:
+        return MILTER_STEP_NO_ENVELOPE_FROM;
         break;
-      case MILTER_COMMAND_RCPT:
-        return MILTER_STEP_NO_RCPT;
+      case MILTER_COMMAND_ENVELOPE_RECIPIENT:
+        return MILTER_STEP_NO_ENVELOPE_RECIPIENT;
         break;
       case MILTER_COMMAND_DATA:
         return MILTER_STEP_NO_DATA;
@@ -1529,10 +1529,10 @@ command_to_state (MilterCommand command)
       case MILTER_COMMAND_HELO:
         return MILTER_SERVER_CONTEXT_STATE_HELO;
         break;
-      case MILTER_COMMAND_MAIL:
+      case MILTER_COMMAND_ENVELOPE_FROM:
         return MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM;
         break;
-      case MILTER_COMMAND_RCPT:
+      case MILTER_COMMAND_ENVELOPE_RECIPIENT:
         return MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT;
         break;
       case MILTER_COMMAND_DATA:
@@ -1874,7 +1874,7 @@ milter_manager_children_envelope_from (MilterManagerChildren *children,
         return FALSE;
 
     if (!milter_manager_children_is_demanding_command(children,
-                                                      MILTER_COMMAND_MAIL)) {
+                                                      MILTER_COMMAND_ENVELOPE_FROM)) {
         return FALSE;
     }
 
@@ -1884,7 +1884,8 @@ milter_manager_children_envelope_from (MilterManagerChildren *children,
     for (child = priv->milters; child; child = g_list_next(child)) {
         MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
 
-        if (milter_server_context_is_enable_step(context, MILTER_STEP_NO_MAIL))
+        if (milter_server_context_is_enable_step(context,
+                                                 MILTER_STEP_NO_ENVELOPE_FROM))
             continue;
 
         g_queue_push_tail(priv->reply_queue, context);
@@ -1905,8 +1906,7 @@ milter_manager_children_envelope_recipient (MilterManagerChildren *children,
     if (!milter_manager_children_check_alive(children))
         return FALSE;
 
-    if (!milter_manager_children_is_demanding_command(children,
-                                                      MILTER_COMMAND_RCPT)) {
+    if (!milter_manager_children_is_demanding_command(children, MILTER_COMMAND_ENVELOPE_RECIPIENT)) {
         return FALSE;
     }
 
@@ -1916,7 +1916,7 @@ milter_manager_children_envelope_recipient (MilterManagerChildren *children,
     for (child = priv->milters; child; child = g_list_next(child)) {
         MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
 
-        if (milter_server_context_is_enable_step(context, MILTER_STEP_NO_RCPT))
+        if (milter_server_context_is_enable_step(context, MILTER_STEP_NO_ENVELOPE_RECIPIENT))
             continue;
 
         g_queue_push_tail(priv->reply_queue, context);
