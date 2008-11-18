@@ -20,7 +20,7 @@ AM_CFLAGS = 				\
 
 AM_LDFLAGS =			\
 	-module			\
-		-rpath "`pwd`/.libs"	\
+	-rpath "`pwd`/.libs"	\
 	-avoid-version		\
 	-no-undefined
 
