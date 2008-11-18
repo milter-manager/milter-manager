@@ -1602,7 +1602,6 @@ get_next_command (MilterManagerChildren *children,
     if (!node || !g_list_next(node))
         return -1;
 
-
     for (node = g_list_next(node); node; node = g_list_next(node)) {
         MilterCommand next_command;
         MilterStepFlags step;
