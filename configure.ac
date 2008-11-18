@@ -302,6 +302,7 @@ AC_CONFIG_FILES([Makefile
 		 module/configuration/Makefile
 		 module/configuration/ruby/Makefile
 		 src/Makefile
+                 tools/Makefile
 		 data/Makefile
 		 test/Makefile
 		 test/lib/Makefile

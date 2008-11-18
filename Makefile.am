@@ -3,6 +3,7 @@ SUBDIRS =		\
 	binding		\
 	module		\
 	src		\
+	tools		\
 	data		\
 	test
 

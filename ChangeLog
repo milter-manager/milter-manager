@@ -1,3 +1,7 @@
+2008-11-19  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/tools/milter-manager-test-milter.c: Added.
+
 2008-11-18  Kouhei Sutou  <kou@cozmixng.org>
 
 	* test/
