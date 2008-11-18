@@ -1,5 +1,8 @@
 2008-11-18  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/lib/milter-test-client.rb: use Milter::ReplyEncoder not
+	Milter::Encoder.
+
 	* ./: handler -> agent.
 
 2008-11-18  Hiroyuki Ikezoe  <poincare@ikezoe.net>

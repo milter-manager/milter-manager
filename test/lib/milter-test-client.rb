@@ -7,7 +7,7 @@ require 'optparse'
 
 class MilterTestClient
   def initialize
-    @encoder = Milter::Encoder.new
+    @encoder = Milter::ReplyEncoder.new
     @decoder = Milter::CommandDecoder.new
     @state = :start
     @helo_fqdn = nil
@@ -219,7 +219,7 @@ class MilterTestClient
       next_state = :abort
       sleep(@wait_second)
     else
-      packet, packed_size = @encoder.send("encode_reply_#{encode_type}", *args)
+      packet, packed_size = @encoder.send("encode_#{encode_type}", *args)
       while packet
         written_size = @socket.write(packet)
         packet = packet[written_size, -1]
