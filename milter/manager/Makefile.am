@@ -31,6 +31,7 @@ milter_manager_public_headers =			\
 	milter-manager-module.h			\
 	milter-manager-module-impl.h		\
 	milter-manager-control-decoder.h	\
+	milter-manager-control-encoder.h	\
 	milter-manager-control-protocol.h	\
 	milter-manager-controller.h
 
@@ -63,6 +64,7 @@ libmilter_manager_la_SOURCES =			\
 	milter-manager-egg.c			\
 	milter-manager-headers.c		\
 	milter-manager-control-decoder.c	\
+	milter-manager-control-encoder.c	\
 	milter-manager-controller.c
 
 include $(top_srcdir)/build/enum-types.mk

@@ -1,5 +1,8 @@
 2008-11-19  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-control-encoder.[ch],
+	test/manager/test-control-encoder.c: add.
+
 	* milter/manager/milter-manager-control-decoder.h: cleanup includes.
 
 	* test/manager/test-children.c: cleanup includes.
