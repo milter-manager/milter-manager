@@ -1,5 +1,8 @@
 2008-11-19  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/test-control-reply-decoder.c: add a test for
+	unknown reply is received.
+
 	* milter/manager/milter-manager-control-reply-decoder.[ch],
 	test/manager/test-control-reply-decoder.c: support configuration.
 

@@ -17,10 +17,7 @@
  *
  */
 
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <sys/un.h>
-#include <arpa/inet.h>
+#include <string.h>
 
 #include <milter/manager/milter-manager-control-reply-decoder.h>
 
@@ -30,6 +27,7 @@ void test_decode_success (void);
 void test_decode_failure (void);
 void test_decode_error (void);
 void test_decode_configuration (void);
+void test_decode_unknown (void);
 
 static MilterDecoder *decoder;
 static GString *buffer;
@@ -211,6 +209,21 @@ test_decode_configuration (void)
     cut_assert_equal_int(1, n_configuration_received);
     cut_assert_equal_memory(configuration, strlen(configuration),
                             actual_configuration, actual_configuration_size);
+}
+
+void
+test_decode_unknown (void)
+{
+    gchar unknown_command = 'X';
+
+    g_string_append_c(buffer, unknown_command);
+
+    expected_error = g_error_new(
+        MILTER_MANAGER_CONTROL_REPLY_DECODER_ERROR,
+        MILTER_MANAGER_CONTROL_REPLY_DECODER_ERROR_UNEXPECTED_REPLY,
+        "unexpected reply was received: %c", unknown_command);
+    actual_error = decode();
+    gcut_assert_equal_error(expected_error, actual_error);
 }
 
 /*
