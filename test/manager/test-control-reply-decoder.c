@@ -29,6 +29,7 @@
 void test_decode_success (void);
 void test_decode_failure (void);
 void test_decode_error (void);
+void test_decode_configuration (void);
 
 static MilterDecoder *decoder;
 static GString *buffer;
@@ -39,9 +40,12 @@ static GError *actual_error;
 static gint n_success_received;
 static gint n_failure_received;
 static gint n_error_received;
+static gint n_configuration_received;
 
-static gchar *failure_message;
-static gchar *error_message;
+static gchar *actual_failure_message;
+static gchar *actual_error_message;
+static gchar *actual_configuration;
+static gsize actual_configuration_size;
 
 static void
 cb_success (MilterManagerControlReplyDecoder *decoder, gpointer user_data)
@@ -55,9 +59,9 @@ cb_failure (MilterManagerControlReplyDecoder *decoder,
 {
     n_failure_received++;
 
-    if (failure_message)
-        g_free(failure_message);
-    failure_message = g_strdup(message);
+    if (actual_failure_message)
+        g_free(actual_failure_message);
+    actual_failure_message = g_strdup(message);
 }
 
 static void
@@ -66,9 +70,22 @@ cb_error (MilterManagerControlReplyDecoder *decoder,
 {
     n_error_received++;
 
-    if (error_message)
-        g_free(error_message);
-    error_message = g_strdup(message);
+    if (actual_error_message)
+        g_free(actual_error_message);
+    actual_error_message = g_strdup(message);
+}
+
+static void
+cb_configuration (MilterManagerControlReplyDecoder *decoder,
+                  const gchar *configuration, gsize configuration_size,
+                  gpointer user_data)
+{
+    n_configuration_received++;
+
+    if (actual_configuration)
+        g_free(actual_configuration);
+    actual_configuration = g_memdup(configuration, configuration_size);
+    actual_configuration_size = configuration_size;
 }
 
 static void
@@ -80,6 +97,7 @@ setup_signals (MilterDecoder *decoder)
     CONNECT(success);
     CONNECT(failure);
     CONNECT(error);
+    CONNECT(configuration);
 
 #undef CONNECT
 }
@@ -96,11 +114,13 @@ setup (void)
     n_success_received = 0;
     n_failure_received = 0;
     n_error_received = 0;
+    n_configuration_received = 0;
 
     buffer = g_string_new(NULL);
 
-    failure_message = NULL;
-    error_message = NULL;
+    actual_failure_message = NULL;
+    actual_error_message = NULL;
+    actual_configuration = NULL;
 }
 
 void
@@ -117,10 +137,12 @@ teardown (void)
     if (actual_error)
         g_error_free(actual_error);
 
-    if (failure_message)
-        g_free(failure_message);
-    if (error_message)
-        g_free(error_message);
+    if (actual_failure_message)
+        g_free(actual_failure_message);
+    if (actual_error_message)
+        g_free(actual_error_message);
+    if (actual_configuration)
+        g_free(actual_configuration);
 }
 
 static GError *
@@ -159,7 +181,7 @@ test_decode_failure (void)
 
     gcut_assert_error(decode());
     cut_assert_equal_int(1, n_failure_received);
-    cut_assert_equal_string(message, failure_message);
+    cut_assert_equal_string(message, actual_failure_message);
 }
 
 void
@@ -172,7 +194,23 @@ test_decode_error (void)
 
     gcut_assert_error(decode());
     cut_assert_equal_int(1, n_error_received);
-    cut_assert_equal_string(message, error_message);
+    cut_assert_equal_string(message, actual_error_message);
+}
+
+void
+test_decode_configuration (void)
+{
+    const gchar configuration[] =
+        "security.privilege_mode = true\n"
+        "# comment\n";
+
+    g_string_append_c(buffer, 'c');
+    g_string_append(buffer, configuration);
+
+    gcut_assert_error(decode());
+    cut_assert_equal_int(1, n_configuration_received);
+    cut_assert_equal_memory(configuration, strlen(configuration),
+                            actual_configuration, actual_configuration_size);
 }
 
 /*
