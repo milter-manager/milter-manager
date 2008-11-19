@@ -161,20 +161,20 @@ decode_command (MilterDecoder *decoder, gchar command, GError **error)
     gboolean success = TRUE;
 
     switch (command) {
-      case MILTER_MANAGER_CONTROL_PROTOCOL_COMMAND_IMPORT_CONFIGURATION:
+      case MILTER_MANAGER_CONTROL_COMMAND_IMPORT_CONFIGURATION:
         success = decode_command_import_configuration(decoder, error);
         break;
 /*
-      case MILTER_MANAGER_CONTROL_PROTOCOL_COMMAND_RELOAD_CONFIGURATION:
+      case MILTER_MANAGER_CONTROL_COMMAND_RELOAD_CONFIGURATION:
         success = decode_command_reload_configuration(decoder, error);
         break;
-      case MILTER_MANAGER_CONTROL_PROTOCOL_COMMAND_GET_CONFIGURATION:
+      case MILTER_MANAGER_CONTROL_COMMAND_GET_CONFIGURATION:
         success = decode_command_get_configuration(decoder, error);
         break;
-      case MILTER_MANAGER_CONTROL_PROTOCOL_COMMAND_STOP_CHILD:
+      case MILTER_MANAGER_CONTROL_COMMAND_STOP_CHILD:
         success = decode_command_stop_child(decoder, error);
         break;
-      case MILTER_MANAGER_CONTROL_PROTOCOL_COMMAND_GET_CHILDREN_INFO:
+      case MILTER_MANAGER_CONTROL_COMMAND_GET_CHILDREN_INFO:
         success = decode_command_get_children_info(decoder, error);
         break;
 */

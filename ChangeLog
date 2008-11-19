@@ -1,5 +1,11 @@
 2008-11-19  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-control-command-decoder.c,
+	milter/manager/milter-manager-control-command-encoder.c,
+	milter/manager/milter-manager-control-protocol.h:
+	- MILTER_MANAGER_CONTROL_PROTOCOL_COMMAND_XXX ->
+	  MILTER_MANAGER_CONTROL_COMMAND_XXX
+
 	* milter/manager/, test/:
 	control-{decoder,encoder} -> control-command-{decoder,encoder}.
 
