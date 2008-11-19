@@ -148,6 +148,26 @@ decode_reply_success (MilterDecoder *decoder, GError **error)
 }
 
 static gboolean
+decode_reply_failure (MilterDecoder *decoder, GError **error)
+{
+    const gchar *buffer;
+
+    buffer = milter_decoder_get_buffer(decoder);
+    g_signal_emit(decoder, signals[FAILURE], 0, buffer + 1);
+    return TRUE;
+}
+
+static gboolean
+decode_reply_error (MilterDecoder *decoder, GError **error)
+{
+    const gchar *buffer;
+
+    buffer = milter_decoder_get_buffer(decoder);
+    g_signal_emit(decoder, signals[ERROR], 0, buffer + 1);
+    return TRUE;
+}
+
+static gboolean
 decode_command (MilterDecoder *decoder, gchar command, GError **error)
 {
     gboolean success = TRUE;
@@ -156,14 +176,14 @@ decode_command (MilterDecoder *decoder, gchar command, GError **error)
       case MILTER_MANAGER_CONTROL_REPLY_SUCCESS:
         success = decode_reply_success(decoder, error);
         break;
-/*
       case MILTER_MANAGER_CONTROL_REPLY_FAILURE:
         success = decode_reply_failure(decoder, error);
         break;
       case MILTER_MANAGER_CONTROL_REPLY_ERROR:
         success = decode_reply_error(decoder, error);
         break;
-      case MILTER_MANAGER_CONTROL_REPLY_CONFIGURATION:
+ /*
+     case MILTER_MANAGER_CONTROL_REPLY_CONFIGURATION:
         success = decode_reply_configuration(decoder, error);
         break;
 */

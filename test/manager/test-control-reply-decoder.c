@@ -27,6 +27,8 @@
 #include <gcutter.h>
 
 void test_decode_success (void);
+void test_decode_failure (void);
+void test_decode_error (void);
 
 static MilterDecoder *decoder;
 static GString *buffer;
@@ -35,11 +37,38 @@ static GError *expected_error;
 static GError *actual_error;
 
 static gint n_success_received;
+static gint n_failure_received;
+static gint n_error_received;
+
+static gchar *failure_message;
+static gchar *error_message;
 
 static void
 cb_success (MilterManagerControlReplyDecoder *decoder, gpointer user_data)
 {
     n_success_received++;
+}
+
+static void
+cb_failure (MilterManagerControlReplyDecoder *decoder,
+            const gchar *message, gpointer user_data)
+{
+    n_failure_received++;
+
+    if (failure_message)
+        g_free(failure_message);
+    failure_message = g_strdup(message);
+}
+
+static void
+cb_error (MilterManagerControlReplyDecoder *decoder,
+          const gchar *message, gpointer user_data)
+{
+    n_error_received++;
+
+    if (error_message)
+        g_free(error_message);
+    error_message = g_strdup(message);
 }
 
 static void
@@ -49,6 +78,8 @@ setup_signals (MilterDecoder *decoder)
     g_signal_connect(decoder, #name, G_CALLBACK(cb_ ## name), NULL)
 
     CONNECT(success);
+    CONNECT(failure);
+    CONNECT(error);
 
 #undef CONNECT
 }
@@ -63,8 +94,13 @@ setup (void)
     actual_error = NULL;
 
     n_success_received = 0;
+    n_failure_received = 0;
+    n_error_received = 0;
 
     buffer = g_string_new(NULL);
+
+    failure_message = NULL;
+    error_message = NULL;
 }
 
 void
@@ -80,6 +116,11 @@ teardown (void)
         g_error_free(expected_error);
     if (actual_error)
         g_error_free(actual_error);
+
+    if (failure_message)
+        g_free(failure_message);
+    if (error_message)
+        g_free(error_message);
 }
 
 static GError *
@@ -106,6 +147,32 @@ test_decode_success (void)
 
     gcut_assert_error(decode());
     cut_assert_equal_int(1, n_success_received);
+}
+
+void
+test_decode_failure (void)
+{
+    const gchar message[] = "Failure!";
+
+    g_string_append_c(buffer, 'f');
+    g_string_append(buffer, message);
+
+    gcut_assert_error(decode());
+    cut_assert_equal_int(1, n_failure_received);
+    cut_assert_equal_string(message, failure_message);
+}
+
+void
+test_decode_error (void)
+{
+    const gchar message[] = "Error!";
+
+    g_string_append_c(buffer, 'e');
+    g_string_append(buffer, message);
+
+    gcut_assert_error(decode());
+    cut_assert_equal_int(1, n_error_received);
+    cut_assert_equal_string(message, error_message);
 }
 
 /*
