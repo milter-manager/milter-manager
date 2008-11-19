@@ -56,6 +56,25 @@ void             milter_manager_control_reply_encoder_encode_success
                                              gchar        **packet,
                                              gsize         *packet_size);
 
+void             milter_manager_control_reply_encoder_encode_failure
+                                            (MilterManagerControlReplyEncoder *encoder,
+                                             gchar        **packet,
+                                             gsize         *packet_size,
+                                             const gchar   *message);
+
+void             milter_manager_control_reply_encoder_encode_error
+                                            (MilterManagerControlReplyEncoder *encoder,
+                                             gchar        **packet,
+                                             gsize         *packet_size,
+                                             const gchar   *message);
+
+void             milter_manager_control_reply_encoder_encode_configuration
+                                            (MilterManagerControlReplyEncoder *encoder,
+                                             gchar        **packet,
+                                             gsize         *packet_size,
+                                             const gchar   *configuration,
+                                             gsize          configuration_size);
+
 G_END_DECLS
 
 #endif /* __MILTER_MANAGER_CONTROL_REPLY_ENCODER_H__ */

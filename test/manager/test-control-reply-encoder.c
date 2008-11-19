@@ -24,6 +24,9 @@
 #include <gcutter.h>
 
 void test_encode_success (void);
+void test_encode_failure (void);
+void test_encode_error (void);
+void test_encode_configuration (void);
 
 static MilterManagerControlReplyEncoder *encoder;
 static GString *expected;
@@ -75,6 +78,60 @@ test_encode_success (void)
     pack(expected);
     milter_manager_control_reply_encoder_encode_success(encoder,
                                                         &actual, &actual_size);
+
+    cut_assert_equal_memory(expected->str, expected->len,
+                            actual, actual_size);
+}
+
+void
+test_encode_failure (void)
+{
+    const gchar message[] = "Failure!";
+
+    g_string_append_c(expected, 'f');
+    g_string_append(expected, message);
+
+    pack(expected);
+    milter_manager_control_reply_encoder_encode_failure(encoder,
+                                                        &actual, &actual_size,
+                                                        message);
+
+    cut_assert_equal_memory(expected->str, expected->len,
+                            actual, actual_size);
+}
+
+void
+test_encode_error (void)
+{
+    const gchar message[] = "Error!";
+
+    g_string_append_c(expected, 'e');
+    g_string_append(expected, message);
+
+    pack(expected);
+    milter_manager_control_reply_encoder_encode_error(encoder,
+                                                      &actual, &actual_size,
+                                                      message);
+
+    cut_assert_equal_memory(expected->str, expected->len,
+                            actual, actual_size);
+}
+
+void
+test_encode_configuration (void)
+{
+    const gchar configuration[] =
+        "security.privilege_mode = true\n"
+        "# comment\n";
+
+    g_string_append_c(expected, 'c');
+    g_string_append(expected, configuration);
+
+    pack(expected);
+    milter_manager_control_reply_encoder_encode_configuration(
+        encoder,
+        &actual, &actual_size,
+        configuration, strlen(configuration));
 
     cut_assert_equal_memory(expected->str, expected->len,
                             actual, actual_size);

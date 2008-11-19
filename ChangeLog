@@ -1,6 +1,10 @@
 2008-11-19  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/manager/milter-manager-control-reply-encoder.[ch],
+	test/manager/test-control-reply-encoder.c: support failure, error
+	and configuration.
+
+	* milter/manager/milter-manager-control-reply-encoder.[ch],
 	test/manager/test-control-reply-encoder.c: add
 	MilterManagerControlReplyEncoder.
 

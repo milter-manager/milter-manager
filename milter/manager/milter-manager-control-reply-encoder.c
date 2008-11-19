@@ -71,6 +71,59 @@ milter_manager_control_reply_encoder_encode_success (MilterManagerControlReplyEn
     milter_encoder_pack(_encoder, packet, packet_size);
 }
 
+void
+milter_manager_control_reply_encoder_encode_failure (MilterManagerControlReplyEncoder *encoder,
+                                                     gchar **packet,
+                                                     gsize *packet_size,
+                                                     const gchar *message)
+{
+    MilterEncoder *_encoder;
+    GString *buffer;
+
+    _encoder = MILTER_ENCODER(encoder);
+    buffer = milter_encoder_get_buffer(_encoder);
+
+    g_string_append_c(buffer, MILTER_MANAGER_CONTROL_REPLY_FAILURE);
+    g_string_append(buffer, message);
+    milter_encoder_pack(_encoder, packet, packet_size);
+}
+
+
+void
+milter_manager_control_reply_encoder_encode_error (MilterManagerControlReplyEncoder *encoder,
+                                                   gchar **packet,
+                                                   gsize *packet_size,
+                                                   const gchar *message)
+{
+    MilterEncoder *_encoder;
+    GString *buffer;
+
+    _encoder = MILTER_ENCODER(encoder);
+    buffer = milter_encoder_get_buffer(_encoder);
+
+    g_string_append_c(buffer, MILTER_MANAGER_CONTROL_REPLY_ERROR);
+    g_string_append(buffer, message);
+    milter_encoder_pack(_encoder, packet, packet_size);
+}
+
+
+void
+milter_manager_control_reply_encoder_encode_configuration (
+    MilterManagerControlReplyEncoder *encoder,
+    gchar **packet, gsize *packet_size,
+    const gchar *configuration, gsize configuration_size)
+{
+    MilterEncoder *_encoder;
+    GString *buffer;
+
+    _encoder = MILTER_ENCODER(encoder);
+    buffer = milter_encoder_get_buffer(_encoder);
+
+    g_string_append_c(buffer, MILTER_MANAGER_CONTROL_REPLY_CONFIGURATION);
+    g_string_append_len(buffer, configuration, configuration_size);
+    milter_encoder_pack(_encoder, packet, packet_size);
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */
