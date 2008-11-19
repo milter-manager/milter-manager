@@ -24,6 +24,7 @@
 #include "milter-manager-controller.h"
 #include "milter-manager-enum-types.h"
 #include "milter-manager-control-command-decoder.h"
+#include "milter-manager-control-reply-encoder.h"
 
 #define MILTER_MANAGER_CONTROLLER_GET_PRIVATE(obj)                   \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                              \
@@ -56,6 +57,7 @@ static void get_property   (GObject         *object,
                             GParamSpec      *pspec);
 
 static MilterDecoder *decoder_new    (MilterAgent *agent);
+static MilterEncoder *encoder_new    (MilterAgent *agent);
 
 static void
 milter_manager_controller_class_init (MilterManagerControllerClass *klass)
@@ -72,6 +74,7 @@ milter_manager_controller_class_init (MilterManagerControllerClass *klass)
     gobject_class->get_property = get_property;
 
     agent_class->decoder_new   = decoder_new;
+    agent_class->encoder_new   = encoder_new;
 
     spec = g_param_spec_object("configuration",
                                "Configuration",
@@ -85,13 +88,13 @@ milter_manager_controller_class_init (MilterManagerControllerClass *klass)
 }
 
 static void
-cb_decoder_import_configuration (MilterManagerControlCommandDecoder *decoder,
-                                 const gchar *configuration, gsize size,
-                                 gpointer user_data)
+cb_decoder_set_configuration (MilterManagerControlCommandDecoder *decoder,
+                              const gchar *configuration, gsize size,
+                              gpointer user_data)
 {
     /* MilterManagerController *controller = user_data; */
 
-    g_print("import\n");
+    g_print("set configuration\n");
 }
 
 static MilterDecoder *
@@ -105,11 +108,17 @@ decoder_new (MilterAgent *agent)
     g_signal_connect(decoder, #name, G_CALLBACK(cb_decoder_ ## name),   \
                      agent)
 
-    CONNECT(import_configuration);
+    CONNECT(set_configuration);
 
 #undef CONNECT
 
     return decoder;
+}
+
+static MilterEncoder *
+encoder_new (MilterAgent *agent)
+{
+    return milter_manager_control_reply_encoder_new();
 }
 
 static void

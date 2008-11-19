@@ -1,5 +1,8 @@
 2008-11-19  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-controller.c: follow the recent
+	changes.
+
 	* binding/ruby/src/rb-milter-manager-control-decoder.c,
 	binding/ruby/src/rb-milter-manager-private.h,
 	binding/ruby/src/rb-milter-manager.c,
