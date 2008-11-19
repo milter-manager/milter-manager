@@ -22,8 +22,7 @@
 
 #include <glib-object.h>
 
-#include <milter/client.h>
-#include <milter/server.h>
+#include <milter/core.h>
 #include <milter/manager/milter-manager-control-protocol.h>
 
 G_BEGIN_DECLS
