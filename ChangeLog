@@ -1,5 +1,9 @@
 2008-11-19  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-control-reply-decoder.[ch],
+	test/manager/test-control-reply-decoder.c: add
+	MilterManagerControlReplyDecoder.
+
 	* milter/manager/milter-manager-control-command-decoder.c,
 	milter/manager/milter-manager-control-command-encoder.c,
 	milter/manager/milter-manager-control-protocol.h:

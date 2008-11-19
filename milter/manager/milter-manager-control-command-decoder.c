@@ -132,7 +132,7 @@ dispose (GObject *object)
 GQuark
 milter_manager_control_command_decoder_error_quark (void)
 {
-    return g_quark_from_static_string("milter-manager-control-decoder-error-quark");
+    return g_quark_from_static_string("milter-manager-control-reply-decoder-error-quark");
 }
 
 MilterDecoder *
