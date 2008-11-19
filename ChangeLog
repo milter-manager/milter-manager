@@ -1,3 +1,7 @@
+2008-11-19  Kouhei Sutou  <kou@cozmixng.org>
+
+	* test/manager/test-children.c: cleanup includes.
+
 2008-11-19  Hiroyuki Ikezoe  <poincare@ikezoe.net>
 
 	* milter/tools/milter-manager-test-milter.c: Added.

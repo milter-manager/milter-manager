@@ -17,11 +17,8 @@
  *
  */
 
-#include <gcutter.h>
-
 #include <string.h>
 
-#define shutdown inet_shutdown
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -30,10 +27,10 @@
 #include <milter-manager-test-utils.h>
 #include <milter-manager-test-client.h>
 #include <milter-manager-test-scenario.h>
-#include <milter/core/milter-handler.h>
 #include <milter/manager/milter-manager-children.h>
 #include <milter/manager/milter-manager-enum-types.h>
-#undef shutdown
+
+#include <gcutter.h>
 
 void test_foreach (void);
 void data_scenario (void);
