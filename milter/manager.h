@@ -28,6 +28,7 @@
 #include <milter/manager/milter-manager-control-command-decoder.h>
 #include <milter/manager/milter-manager-control-reply-decoder.h>
 #include <milter/manager/milter-manager-control-command-encoder.h>
+#include <milter/manager/milter-manager-control-reply-encoder.h>
 #include <milter/manager/milter-manager-controller.h>
 #include <milter/manager/milter-manager-enum-types.h>
 

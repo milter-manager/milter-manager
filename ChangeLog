@@ -1,5 +1,11 @@
 2008-11-19  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/src/rb-milter-manager-control-reply-encoder.c,
+	binding/ruby/src/rb-milter-manager-private.h,
+	binding/ruby/src/rb-milter-manager.c,
+	binding/ruby/test/test-control-reply-encoder.rb: add
+	Milter::Manager::ControlReplyEncoder.
+
 	* binding/ruby/src/rb-milter-manager-control-command-encoder.c,
 	binding/ruby/src/rb-milter-manager-private.h,
 	binding/ruby/src/rb-milter-manager.c,
