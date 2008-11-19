@@ -10,5 +10,6 @@ extern void Init_milter_manager_configuration (void);
 extern void Init_milter_manager_child (void);
 extern void Init_milter_manager_egg (void);
 extern void Init_milter_manager_children (void);
+extern void Init_milter_manager_control_command_encoder (void);
 
 #endif

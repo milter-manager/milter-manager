@@ -12,4 +12,5 @@ Init_milter_manager (void)
     Init_milter_manager_child();
     Init_milter_manager_egg();
     Init_milter_manager_children();
+    Init_milter_manager_control_command_encoder();
 }

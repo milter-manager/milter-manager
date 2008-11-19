@@ -1,5 +1,12 @@
 2008-11-19  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/src/rb-milter-manager-control-command-encoder.c,
+	binding/ruby/src/rb-milter-manager-private.h,
+	binding/ruby/src/rb-milter-manager.c,
+	binding/ruby/test/test-control-command-encoder.rb,
+	binding/ruby/test/milter-manager-encoder-test-utils.rb: add
+	Milter::Manager::ControlCommandEncoder.
+
 	* milter/manager/milter-manager-control-reply-{en,de}coder.[ch],
 	test/manager/test-control-command-{en,de}coder.c: import -> set.
 

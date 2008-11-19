@@ -18,11 +18,12 @@ CLEANFILES = *.gcno *.gcda
 binding_ext_LTLIBRARIES =	\
 	milter_manager.la
 
-milter_manager_la_SOURCES =			\
-	rb-milter-manager.h			\
-	rb-milter-manager-private.h		\
-	rb-milter-manager.c			\
-	rb-milter-manager-configuration.c	\
-	rb-milter-manager-child.c		\
-	rb-milter-manager-egg.c			\
-	rb-milter-manager-children.c
+milter_manager_la_SOURCES =				\
+	rb-milter-manager.h				\
+	rb-milter-manager-private.h			\
+	rb-milter-manager.c				\
+	rb-milter-manager-configuration.c		\
+	rb-milter-manager-child.c			\
+	rb-milter-manager-egg.c				\
+	rb-milter-manager-children.c			\
+	rb-milter-manager-control-command-encoder.c
