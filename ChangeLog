@@ -1,5 +1,8 @@
 2008-11-19  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/, test/:
+	control-{decoder,encoder} -> control-command-{decoder,encoder}.
+
 	* milter/manager/milter-manager-control-encoder.[ch],
 	test/manager/test-control-encoder.c: add.
 

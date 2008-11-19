@@ -6,8 +6,8 @@ noinst_LTLIBRARIES =			\
 	test-leader.la			\
 	test-egg.la			\
 	test-headers.la			\
-	test-control-decoder.la		\
-	test-control-encoder.la
+	test-control-command-decoder.la	\
+	test-control-command-encoder.la
 endif
 
 INCLUDES =				\
@@ -36,5 +36,5 @@ test_configuration_la_SOURCES		= test-configuration.c
 test_leader_la_SOURCES			= test-leader.c
 test_egg_la_SOURCES			= test-egg.c
 test_headers_la_SOURCES			= test-headers.c
-test_control_decoder_la_SOURCES		= test-control-decoder.c
-test_control_encoder_la_SOURCES		= test-control-encoder.c
+test_control_command_decoder_la_SOURCES	= test-control-command-decoder.c
+test_control_command_encoder_la_SOURCES	= test-control-command-encoder.c

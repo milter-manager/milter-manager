@@ -19,13 +19,13 @@
 
 #include <string.h>
 
-#include <milter/manager/milter-manager-control-encoder.h>
+#include <milter/manager/milter-manager-control-command-encoder.h>
 
 #include <gcutter.h>
 
 void test_encode_import_configuration (void);
 
-static MilterManagerControlEncoder *encoder;
+static MilterManagerControlCommandEncoder *encoder;
 static GString *expected;
 static gchar *actual;
 static gsize actual_size;
@@ -35,8 +35,8 @@ setup (void)
 {
     MilterEncoder *_encoder;
 
-    _encoder = milter_manager_control_encoder_new();
-    encoder = MILTER_MANAGER_CONTROL_ENCODER(_encoder);
+    _encoder = milter_manager_control_command_encoder_new();
+    encoder = MILTER_MANAGER_CONTROL_COMMAND_ENCODER(_encoder);
 
     expected = g_string_new(NULL);
     actual = NULL;
@@ -78,7 +78,7 @@ test_encode_import_configuration (void)
     g_string_append(expected, configuration);
 
     pack(expected);
-    milter_manager_control_encoder_encode_import_configuration(
+    milter_manager_control_command_encoder_encode_import_configuration(
         encoder,
         &actual, &actual_size,
         configuration, strlen(configuration));

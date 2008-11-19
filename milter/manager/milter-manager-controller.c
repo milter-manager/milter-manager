@@ -23,7 +23,7 @@
 
 #include "milter-manager-controller.h"
 #include "milter-manager-enum-types.h"
-#include "milter-manager-control-decoder.h"
+#include "milter-manager-control-command-decoder.h"
 
 #define MILTER_MANAGER_CONTROLLER_GET_PRIVATE(obj)                   \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                              \
@@ -85,7 +85,7 @@ milter_manager_controller_class_init (MilterManagerControllerClass *klass)
 }
 
 static void
-cb_decoder_import_configuration (MilterDecoder *decoder,
+cb_decoder_import_configuration (MilterManagerControlCommandDecoder *decoder,
                                  const gchar *configuration, gsize size,
                                  gpointer user_data)
 {
@@ -99,7 +99,7 @@ decoder_new (MilterAgent *agent)
 {
     MilterDecoder *decoder;
 
-    decoder = milter_manager_control_decoder_new();
+    decoder = milter_manager_control_command_decoder_new();
 
 #define CONNECT(name)                                                   \
     g_signal_connect(decoder, #name, G_CALLBACK(cb_decoder_ ## name),   \

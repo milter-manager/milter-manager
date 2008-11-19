@@ -21,16 +21,16 @@
 #  include "../../config.h"
 #endif /* HAVE_CONFIG_H */
 
-#include "milter-manager-control-encoder.h"
+#include "milter-manager-control-command-encoder.h"
 
-G_DEFINE_TYPE(MilterManagerControlEncoder,
-              milter_manager_control_encoder,
+G_DEFINE_TYPE(MilterManagerControlCommandEncoder,
+              milter_manager_control_command_encoder,
               MILTER_TYPE_ENCODER);
 
 static void dispose        (GObject         *object);
 
 static void
-milter_manager_control_encoder_class_init (MilterManagerControlEncoderClass *klass)
+milter_manager_control_command_encoder_class_init (MilterManagerControlCommandEncoderClass *klass)
 {
     GObjectClass *gobject_class;
 
@@ -40,25 +40,25 @@ milter_manager_control_encoder_class_init (MilterManagerControlEncoderClass *kla
 }
 
 static void
-milter_manager_control_encoder_init (MilterManagerControlEncoder *encoder)
+milter_manager_control_command_encoder_init (MilterManagerControlCommandEncoder *encoder)
 {
 }
 
 static void
 dispose (GObject *object)
 {
-    G_OBJECT_CLASS(milter_manager_control_encoder_parent_class)->dispose(object);
+    G_OBJECT_CLASS(milter_manager_control_command_encoder_parent_class)->dispose(object);
 }
 
 MilterEncoder *
-milter_manager_control_encoder_new (void)
+milter_manager_control_command_encoder_new (void)
 {
-    return g_object_new(MILTER_TYPE_MANAGER_CONTROL_ENCODER, NULL);
+    return g_object_new(MILTER_TYPE_MANAGER_CONTROL_COMMAND_ENCODER, NULL);
 }
 
 void
-milter_manager_control_encoder_encode_import_configuration (
-    MilterManagerControlEncoder *encoder,
+milter_manager_control_command_encoder_encode_import_configuration (
+    MilterManagerControlCommandEncoder *encoder,
     gchar **packet, gsize *packet_size,
     const gchar *configuration, gsize configuration_size)
 {

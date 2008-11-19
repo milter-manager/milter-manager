@@ -25,8 +25,8 @@
 #include <milter/manager/milter-manager-child.h>
 #include <milter/manager/milter-manager-children.h>
 #include <milter/manager/milter-manager-egg.h>
-#include <milter/manager/milter-manager-control-decoder.h>
-#include <milter/manager/milter-manager-control-encoder.h>
+#include <milter/manager/milter-manager-control-command-decoder.h>
+#include <milter/manager/milter-manager-control-command-encoder.h>
 #include <milter/manager/milter-manager-controller.h>
 #include <milter/manager/milter-manager-enum-types.h>
 

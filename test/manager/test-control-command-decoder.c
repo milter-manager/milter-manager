@@ -17,16 +17,14 @@
  *
  */
 
-#include <gcutter.h>
-
-#define shutdown inet_shutdown
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <sys/un.h>
 #include <arpa/inet.h>
-#undef shutdown
 
-#include <milter/manager/milter-manager-control-decoder.h>
+#include <milter/manager/milter-manager-control-command-decoder.h>
+
+#include <gcutter.h>
 
 void test_decode_import_configuration (void);
 
@@ -42,8 +40,9 @@ static gchar *actual_configuration;
 static gsize actual_configuration_size;
 
 static void
-cb_import_configuration (MilterDecoder *decoder, const gchar *configuration,
-                         gsize size, gpointer user_data)
+cb_import_configuration (MilterManagerControlCommandDecoder *decoder,
+                         const gchar *configuration, gsize size,
+                         gpointer user_data)
 {
     n_import_configuration_received++;
     actual_configuration = g_memdup(configuration, size);
@@ -64,7 +63,7 @@ setup_signals (MilterDecoder *decoder)
 void
 setup (void)
 {
-    decoder = milter_manager_control_decoder_new();
+    decoder = milter_manager_control_command_decoder_new();
     setup_signals(decoder);
 
     expected_error = NULL;

@@ -21,7 +21,7 @@
 #  include "../../config.h"
 #endif /* HAVE_CONFIG_H */
 
-#include "milter-manager-control-decoder.h"
+#include "milter-manager-control-command-decoder.h"
 #include "milter-manager-enum-types.h"
 #include "milter-manager-marshalers.h"
 
@@ -37,7 +37,9 @@ enum
 
 static gint signals[LAST_SIGNAL] = {0};
 
-G_DEFINE_TYPE(MilterManagerControlDecoder, milter_manager_control_decoder, MILTER_TYPE_DECODER);
+G_DEFINE_TYPE(MilterManagerControlCommandDecoder,
+              milter_manager_control_command_decoder,
+              MILTER_TYPE_DECODER);
 
 static void dispose        (GObject         *object);
 
@@ -46,7 +48,7 @@ static gboolean decode_command  (MilterDecoder *decoder,
                                  GError       **error);
 
 static void
-milter_manager_control_decoder_class_init (MilterManagerControlDecoderClass *klass)
+milter_manager_control_command_decoder_class_init (MilterManagerControlCommandDecoderClass *klass)
 {
     GObjectClass *gobject_class;
     MilterDecoderClass *decoder_class;
@@ -62,7 +64,7 @@ milter_manager_control_decoder_class_init (MilterManagerControlDecoderClass *kla
         g_signal_new("import-configuration",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MilterManagerControlDecoderClass,
+                     G_STRUCT_OFFSET(MilterManagerControlCommandDecoderClass,
                                      import_configuration),
                      NULL, NULL,
 #if GLIB_SIZEOF_SIZE_T == 8
@@ -78,7 +80,7 @@ milter_manager_control_decoder_class_init (MilterManagerControlDecoderClass *kla
         g_signal_new("reload-configuration",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MilterManagerControlDecoderClass,
+                     G_STRUCT_OFFSET(MilterManagerControlCommandDecoderClass,
                                      reload_configuration),
                      NULL, NULL,
                      g_cclosure_marshal_VOID__VOID,
@@ -88,7 +90,7 @@ milter_manager_control_decoder_class_init (MilterManagerControlDecoderClass *kla
         g_signal_new("get-configuration",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MilterManagerControlDecoderClass,
+                     G_STRUCT_OFFSET(MilterManagerControlCommandDecoderClass,
                                      get_configuration),
                      NULL, NULL,
                      g_cclosure_marshal_VOID__VOID,
@@ -98,7 +100,7 @@ milter_manager_control_decoder_class_init (MilterManagerControlDecoderClass *kla
         g_signal_new("stop-child",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MilterManagerControlDecoderClass,
+                     G_STRUCT_OFFSET(MilterManagerControlCommandDecoderClass,
                                      stop_child),
                      NULL, NULL,
                      g_cclosure_marshal_VOID__STRING,
@@ -108,7 +110,7 @@ milter_manager_control_decoder_class_init (MilterManagerControlDecoderClass *kla
         g_signal_new("get-children-info",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MilterManagerControlDecoderClass,
+                     G_STRUCT_OFFSET(MilterManagerControlCommandDecoderClass,
                                      get_children_info),
                      NULL, NULL,
                      g_cclosure_marshal_VOID__VOID,
@@ -117,26 +119,26 @@ milter_manager_control_decoder_class_init (MilterManagerControlDecoderClass *kla
 }
 
 static void
-milter_manager_control_decoder_init (MilterManagerControlDecoder *decoder)
+milter_manager_control_command_decoder_init (MilterManagerControlCommandDecoder *decoder)
 {
 }
 
 static void
 dispose (GObject *object)
 {
-    G_OBJECT_CLASS(milter_manager_control_decoder_parent_class)->dispose(object);
+    G_OBJECT_CLASS(milter_manager_control_command_decoder_parent_class)->dispose(object);
 }
 
 GQuark
-milter_manager_control_decoder_error_quark (void)
+milter_manager_control_command_decoder_error_quark (void)
 {
     return g_quark_from_static_string("milter-manager-control-decoder-error-quark");
 }
 
 MilterDecoder *
-milter_manager_control_decoder_new (void)
+milter_manager_control_command_decoder_new (void)
 {
-    return g_object_new(MILTER_TYPE_MANAGER_CONTROL_DECODER,
+    return g_object_new(MILTER_TYPE_MANAGER_CONTROL_COMMAND_DECODER,
                         NULL);
 }
 
@@ -178,8 +180,8 @@ decode_command (MilterDecoder *decoder, gchar command, GError **error)
 */
       default:
         g_set_error(error,
-                    MILTER_MANAGER_CONTROL_DECODER_ERROR,
-                    MILTER_MANAGER_CONTROL_DECODER_ERROR_UNEXPECTED_COMMAND,
+                    MILTER_MANAGER_CONTROL_COMMAND_DECODER_ERROR,
+                    MILTER_MANAGER_CONTROL_COMMAND_DECODER_ERROR_UNEXPECTED_COMMAND,
                     "unexpected command was received: %c", command);
         success = FALSE;
         break;
