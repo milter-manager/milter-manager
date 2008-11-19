@@ -53,11 +53,11 @@ struct _MilterManagerControlCommandDecoderClass
 {
     MilterDecoderClass parent_class;
 
-    void (*import_configuration) (MilterManagerControlCommandDecoder *decoder,
+    void (*set_configuration)    (MilterManagerControlCommandDecoder *decoder,
                                   const gchar *configuration,
                                   gsize size);
-    void (*reload_configuration) (MilterManagerControlCommandDecoder *decoder);
     void (*get_configuration)    (MilterManagerControlCommandDecoder *decoder);
+    void (*reload)               (MilterManagerControlCommandDecoder *decoder);
     void (*stop_child)           (MilterManagerControlCommandDecoder *decoder,
                                   const gchar *name);
     void (*get_children_info)    (MilterManagerControlCommandDecoder *decoder);

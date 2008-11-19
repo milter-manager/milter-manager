@@ -57,7 +57,7 @@ milter_manager_control_command_encoder_new (void)
 }
 
 void
-milter_manager_control_command_encoder_encode_import_configuration (
+milter_manager_control_command_encoder_encode_set_configuration (
     MilterManagerControlCommandEncoder *encoder,
     gchar **packet, gsize *packet_size,
     const gchar *configuration, gsize configuration_size)
@@ -68,7 +68,7 @@ milter_manager_control_command_encoder_encode_import_configuration (
     _encoder = MILTER_ENCODER(encoder);
     buffer = milter_encoder_get_buffer(_encoder);
 
-    g_string_append_c(buffer, MILTER_MANAGER_CONTROL_COMMAND_IMPORT_CONFIGURATION);
+    g_string_append_c(buffer, MILTER_MANAGER_CONTROL_COMMAND_SET_CONFIGURATION);
     g_string_append_len(buffer, configuration, configuration_size);
     milter_encoder_pack(_encoder, packet, packet_size);
 }

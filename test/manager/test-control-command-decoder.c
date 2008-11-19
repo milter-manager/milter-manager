@@ -26,7 +26,7 @@
 
 #include <gcutter.h>
 
-void test_decode_import_configuration (void);
+void test_decode_set_configuration (void);
 
 static MilterDecoder *decoder;
 static GString *buffer;
@@ -34,17 +34,17 @@ static GString *buffer;
 static GError *expected_error;
 static GError *actual_error;
 
-static gint n_import_configuration_received;
+static gint n_set_configuration_received;
 
 static gchar *actual_configuration;
 static gsize actual_configuration_size;
 
 static void
-cb_import_configuration (MilterManagerControlCommandDecoder *decoder,
-                         const gchar *configuration, gsize size,
-                         gpointer user_data)
+cb_set_configuration (MilterManagerControlCommandDecoder *decoder,
+                      const gchar *configuration, gsize size,
+                      gpointer user_data)
 {
-    n_import_configuration_received++;
+    n_set_configuration_received++;
     actual_configuration = g_memdup(configuration, size);
     actual_configuration_size = size;
 }
@@ -55,7 +55,7 @@ setup_signals (MilterDecoder *decoder)
 #define CONNECT(name)                                                   \
     g_signal_connect(decoder, #name, G_CALLBACK(cb_ ## name), NULL)
 
-    CONNECT(import_configuration);
+    CONNECT(set_configuration);
 
 #undef CONNECT
 }
@@ -69,7 +69,7 @@ setup (void)
     expected_error = NULL;
     actual_error = NULL;
 
-    n_import_configuration_received = 0;
+    n_set_configuration_received = 0;
 
     buffer = g_string_new(NULL);
 
@@ -114,17 +114,17 @@ decode (void)
 }
 
 void
-test_decode_import_configuration (void)
+test_decode_set_configuration (void)
 {
     const gchar configuration[] =
         "security.privilege_mode = true\n"
         "# comment\n";
 
-    g_string_append_c(buffer, 'I');
+    g_string_append_c(buffer, 'S');
     g_string_append(buffer, configuration);
 
     gcut_assert_error(decode());
-    cut_assert_equal_int(1, n_import_configuration_received);
+    cut_assert_equal_int(1, n_set_configuration_received);
     cut_assert_equal_memory(configuration, sizeof(configuration) - 1,
                             actual_configuration, actual_configuration_size);
 }

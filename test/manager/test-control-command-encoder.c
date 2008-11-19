@@ -23,7 +23,7 @@
 
 #include <gcutter.h>
 
-void test_encode_import_configuration (void);
+void test_encode_set_configuration (void);
 
 static MilterManagerControlCommandEncoder *encoder;
 static GString *expected;
@@ -68,17 +68,17 @@ pack (GString *buffer)
 }
 
 void
-test_encode_import_configuration (void)
+test_encode_set_configuration (void)
 {
     const gchar configuration[] =
         "security.privilege_mode = true\n"
         "# comment\n";
 
-    g_string_append_c(expected, 'I');
+    g_string_append_c(expected, 'S');
     g_string_append(expected, configuration);
 
     pack(expected);
-    milter_manager_control_command_encoder_encode_import_configuration(
+    milter_manager_control_command_encoder_encode_set_configuration(
         encoder,
         &actual, &actual_size,
         configuration, strlen(configuration));

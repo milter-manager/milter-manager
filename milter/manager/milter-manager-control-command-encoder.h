@@ -51,7 +51,7 @@ GType            milter_manager_control_command_encoder_get_type       (void) G_
 
 MilterEncoder   *milter_manager_control_command_encoder_new            (void);
 
-void             milter_manager_control_command_encoder_encode_import_configuration
+void             milter_manager_control_command_encoder_encode_set_configuration
                                             (MilterManagerControlCommandEncoder *encoder,
                                              gchar        **packet,
                                              gsize         *packet_size,

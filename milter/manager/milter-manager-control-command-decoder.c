@@ -27,9 +27,9 @@
 
 enum
 {
-    IMPORT_CONFIGURATION,
-    RELOAD_CONFIGURATION,
+    SET_CONFIGURATION,
     GET_CONFIGURATION,
+    RELOAD,
     STOP_CHILD,
     GET_CHILDREN_INFO,
     LAST_SIGNAL
@@ -60,12 +60,12 @@ milter_manager_control_command_decoder_class_init (MilterManagerControlCommandDe
 
     decoder_class->decode_command = decode_command;
 
-    signals[IMPORT_CONFIGURATION] =
-        g_signal_new("import-configuration",
+    signals[SET_CONFIGURATION] =
+        g_signal_new("set-configuration",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterManagerControlCommandDecoderClass,
-                                     import_configuration),
+                                     set_configuration),
                      NULL, NULL,
 #if GLIB_SIZEOF_SIZE_T == 8
                      _milter_manager_marshal_VOID__STRING_UINT64,
@@ -76,22 +76,22 @@ milter_manager_control_command_decoder_class_init (MilterManagerControlCommandDe
 #endif
             );
 
-    signals[RELOAD_CONFIGURATION] =
-        g_signal_new("reload-configuration",
-                     G_TYPE_FROM_CLASS(klass),
-                     G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MilterManagerControlCommandDecoderClass,
-                                     reload_configuration),
-                     NULL, NULL,
-                     g_cclosure_marshal_VOID__VOID,
-                     G_TYPE_NONE, 0);
-
     signals[GET_CONFIGURATION] =
         g_signal_new("get-configuration",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterManagerControlCommandDecoderClass,
                                      get_configuration),
+                     NULL, NULL,
+                     g_cclosure_marshal_VOID__VOID,
+                     G_TYPE_NONE, 0);
+
+    signals[RELOAD] =
+        g_signal_new("reload",
+                     G_TYPE_FROM_CLASS(klass),
+                     G_SIGNAL_RUN_LAST,
+                     G_STRUCT_OFFSET(MilterManagerControlCommandDecoderClass,
+                                     reload),
                      NULL, NULL,
                      g_cclosure_marshal_VOID__VOID,
                      G_TYPE_NONE, 0);
@@ -143,14 +143,14 @@ milter_manager_control_command_decoder_new (void)
 }
 
 static gboolean
-decode_command_import_configuration (MilterDecoder *decoder, GError **error)
+decode_command_set_configuration (MilterDecoder *decoder, GError **error)
 {
     const gchar *buffer;
     gint32 command_length;
 
     command_length = milter_decoder_get_command_length(decoder);
     buffer = milter_decoder_get_buffer(decoder);
-    g_signal_emit(decoder, signals[IMPORT_CONFIGURATION], 0,
+    g_signal_emit(decoder, signals[SET_CONFIGURATION], 0,
                   buffer + 1, command_length - 1);
     return TRUE;
 }
@@ -161,15 +161,15 @@ decode_command (MilterDecoder *decoder, gchar command, GError **error)
     gboolean success = TRUE;
 
     switch (command) {
-      case MILTER_MANAGER_CONTROL_COMMAND_IMPORT_CONFIGURATION:
-        success = decode_command_import_configuration(decoder, error);
+      case MILTER_MANAGER_CONTROL_COMMAND_SET_CONFIGURATION:
+        success = decode_command_set_configuration(decoder, error);
         break;
 /*
-      case MILTER_MANAGER_CONTROL_COMMAND_RELOAD_CONFIGURATION:
-        success = decode_command_reload_configuration(decoder, error);
-        break;
       case MILTER_MANAGER_CONTROL_COMMAND_GET_CONFIGURATION:
         success = decode_command_get_configuration(decoder, error);
+        break;
+      case MILTER_MANAGER_CONTROL_COMMAND_RELOAD:
+        success = decode_command_reload(decoder, error);
         break;
       case MILTER_MANAGER_CONTROL_COMMAND_STOP_CHILD:
         success = decode_command_stop_child(decoder, error);
