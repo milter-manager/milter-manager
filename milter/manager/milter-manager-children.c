@@ -25,7 +25,6 @@
 
 #include <glib/gstdio.h>
 #include "milter-manager-configuration.h"
-#include "milter-manager-headers.h"
 
 #define MILTER_MANAGER_CHILDREN_GET_PRIVATE(obj)                    \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                             \
@@ -51,8 +50,8 @@ struct _MilterManagerChildrenPrivate
     gchar *reply_message;
     gdouble retry_connect_time;
 
-    MilterManagerHeaders *original_headers;
-    MilterManagerHeaders *headers;
+    MilterHeaders *original_headers;
+    MilterHeaders *headers;
     gint processing_header_index;
     GIOChannel *body_file;
     gchar *body_file_name;
@@ -202,7 +201,7 @@ milter_manager_children_init (MilterManagerChildren *milter)
     priv->reply_statuses = g_hash_table_new(g_direct_hash, g_direct_equal);
 
     priv->original_headers = NULL;
-    priv->headers = milter_manager_headers_new();
+    priv->headers = milter_headers_new();
     priv->processing_header_index = 0;
     priv->body_file = NULL;
     priv->body_file_name = NULL;
@@ -715,36 +714,36 @@ emit_signals_on_end_of_message (MilterManagerChildren *children)
 {
     MilterManagerChildrenPrivate *priv;
     const GList *header_list, *node;
-    MilterManagerHeaders *processing_headers;
+    MilterHeaders *processing_headers;
     gint i;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
     if (priv->replaced_body)
         emit_replace_body_signal(children);
 
-    processing_headers = milter_manager_headers_copy(priv->original_headers);
-    header_list = milter_manager_headers_get_list(priv->headers);
+    processing_headers = milter_headers_copy(priv->original_headers);
+    header_list = milter_headers_get_list(priv->headers);
 
     /* FIXME thes following process admits of improvement. */
     for (node = header_list, i = 0;
          node;
          node = g_list_next(node), i++) {
-        MilterManagerHeader *header = node->data;
-        MilterManagerHeader *found_header;
+        MilterHeader *header = node->data;
+        MilterHeader *found_header;
         gint index;
 
-        if (milter_manager_headers_find(processing_headers, header)) {
-            milter_manager_headers_remove(processing_headers, header);
+        if (milter_headers_find(processing_headers, header)) {
+            milter_headers_remove(processing_headers, header);
             continue;
         }
 
-        found_header = milter_manager_headers_lookup_by_name(processing_headers, header->name);
+        found_header = milter_headers_lookup_by_name(processing_headers, header->name);
         if (!found_header) {
             g_signal_emit_by_name(children, "insert-header",
                                   i, header->name, header->value);
             continue;
         }
-        index = milter_manager_headers_index_in_same_header_name(priv->original_headers,
+        index = milter_headers_index_in_same_header_name(priv->original_headers,
                                                                  found_header);
         if (index == -1) {
             g_signal_emit_by_name(children, "add-header",
@@ -752,7 +751,7 @@ emit_signals_on_end_of_message (MilterManagerChildren *children)
         } else {
             g_signal_emit_by_name(children, "change-header",
                                   header->name, index, header->value);
-            milter_manager_headers_remove(processing_headers, found_header);
+            milter_headers_remove(processing_headers, found_header);
         }
     }
 
@@ -810,7 +809,7 @@ cb_continue (MilterServerContext *context, gpointer user_data)
             return;
         }
         if (priv->processing_header_index <
-            milter_manager_headers_length(priv->headers)) {
+            milter_headers_length(priv->headers)) {
             send_next_header_to_child(children, context);
         } else {
             send_next_command(children, context, state);
@@ -998,7 +997,7 @@ cb_add_header (MilterServerContext *context,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    milter_manager_headers_add_header(priv->headers,
+    milter_headers_add_header(priv->headers,
                                       name, value);
 }
 
@@ -1012,7 +1011,7 @@ cb_insert_header (MilterServerContext *context,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    milter_manager_headers_insert_header(priv->headers,
+    milter_headers_insert_header(priv->headers,
                                          index, name, value);
 }
 
@@ -1026,7 +1025,7 @@ cb_change_header (MilterServerContext *context,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    milter_manager_headers_change_header(priv->headers,
+    milter_headers_change_header(priv->headers,
                                          name, index, value);
 }
 
@@ -1991,7 +1990,7 @@ static gboolean
 send_next_header_to_child (MilterManagerChildren *children, MilterServerContext *context)
 {
     MilterManagerChildrenPrivate *priv;
-    MilterManagerHeader *header;
+    MilterHeader *header;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
@@ -2001,7 +2000,7 @@ send_next_header_to_child (MilterManagerChildren *children, MilterServerContext 
     priv->current_state = MILTER_SERVER_CONTEXT_STATE_HEADER;
 
     priv->processing_header_index++;
-    header = milter_manager_headers_get_nth_header(priv->headers,
+    header = milter_headers_get_nth_header(priv->headers,
                                                    priv->processing_header_index);
     if (!header)
         return FALSE;
@@ -2030,7 +2029,7 @@ milter_manager_children_header (MilterManagerChildren *children,
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     priv->current_state = MILTER_SERVER_CONTEXT_STATE_HEADER;
-    milter_manager_headers_add_header(priv->headers, name, value);
+    milter_headers_add_header(priv->headers, name, value);
     init_command_waiting_child_queue(children, MILTER_COMMAND_HEADER);
 
     first_child = get_first_command_waiting_child_queue(children,
@@ -2059,7 +2058,7 @@ milter_manager_children_end_of_header (MilterManagerChildren *children)
 
     priv->current_state = MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER;
     if (!priv->original_headers)
-        priv->original_headers = milter_manager_headers_copy(priv->headers);
+        priv->original_headers = milter_headers_copy(priv->headers);
     priv->processing_header_index = 0;
     init_command_waiting_child_queue(children, MILTER_COMMAND_END_OF_HEADER);
 

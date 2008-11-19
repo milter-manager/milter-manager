@@ -27,7 +27,6 @@
 #include <glib-object.h>
 
 #include <milter/server.h>
-#include "milter/manager/milter-manager-headers.h"
 #undef shutdown
 
 G_BEGIN_DECLS
@@ -83,7 +82,7 @@ guint                 milter_manager_test_server_get_n_quarantines
 guint                 milter_manager_test_server_get_n_reply_codes
                                                             (MilterManagerTestServer *server);
 
-MilterManagerHeaders *milter_manager_test_server_get_headers
+MilterHeaders        *milter_manager_test_server_get_headers
                                                             (MilterManagerTestServer *server);
 const GList          *milter_manager_test_server_get_received_add_recipients
                                                             (MilterManagerTestServer *server);

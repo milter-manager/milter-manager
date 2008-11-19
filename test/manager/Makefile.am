@@ -5,7 +5,6 @@ noinst_LTLIBRARIES =			\
 	test-configuration.la		\
 	test-leader.la			\
 	test-egg.la			\
-	test-headers.la			\
 	test-control-command-decoder.la	\
 	test-control-reply-decoder.la	\
 	test-control-command-encoder.la	\
@@ -37,7 +36,6 @@ test_children_la_SOURCES		= test-children.c
 test_configuration_la_SOURCES		= test-configuration.c
 test_leader_la_SOURCES			= test-leader.c
 test_egg_la_SOURCES			= test-egg.c
-test_headers_la_SOURCES			= test-headers.c
 test_control_command_decoder_la_SOURCES	= test-control-command-decoder.c
 test_control_reply_decoder_la_SOURCES	= test-control-reply-decoder.c
 test_control_command_encoder_la_SOURCES	= test-control-command-encoder.c

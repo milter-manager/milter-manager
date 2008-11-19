@@ -40,6 +40,11 @@
 2008-11-19  Hiroyuki Ikezoe  <poincare@ikezoe.net>
 
 	* milter/tools/milter-manager-test-milter.c: Added.
+	* milter/manager/milter-manager-headers.[ch]: Removed.
+	* milter/manager/milter-manager-children.c,
+	test/manager/test-leader.c, test/lib/milter-manager-test-server.[ch],
+	test/lib/milter-manager-test-scenario.c: Use MilterHeaders instead
+	of MilterManagerHeaders.
 
 2008-11-18  Kouhei Sutou  <kou@cozmixng.org>
 

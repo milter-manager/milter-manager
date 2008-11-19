@@ -26,7 +26,6 @@
 #include "milter-manager-test-scenario.h"
 
 #include <milter/manager/milter-manager-egg.h>
-#include <milter/manager/milter-manager-headers.h>
 
 #define MILTER_MANAGER_TEST_SCENARIO_GET_PRIVATE(obj)                   \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                                 \
@@ -578,18 +577,17 @@ milter_manager_test_scenario_get_header_list (MilterManagerTestScenario *scenari
             milter_manager_test_scenario_get_string_list(scenario,
                                                          group, key, &length);
         for (; *header_strings; header_strings++) {
-            MilterManagerHeader *header;
+            MilterHeader *header;
             gchar **components;
 
             components = g_strsplit(*header_strings, ":", 2);
-            header = milter_manager_header_new(components[0],
-                                               components[1]);
+            header = milter_header_new(components[0], components[1]);
             g_strfreev(components);
             headers = g_list_append(headers, header);
         }
     }
 
-    return gcut_take_list(headers, (CutDestroyFunction)milter_manager_header_free);
+    return gcut_take_list(headers, (CutDestroyFunction)milter_header_free);
 }
 
 /*

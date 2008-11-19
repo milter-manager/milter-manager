@@ -881,18 +881,18 @@ do_end_of_message_header (MilterManagerTestScenario *scenario, const gchar *grou
 {
     const GList *expected_headers;
     const GList *actual_header_list;
-    MilterManagerHeaders *actual_headers;
+    MilterHeaders *actual_headers;
 
     expected_headers = get_header_list(scenario, group, "headers");
 
     actual_headers = milter_manager_test_server_get_headers(server);
     cut_assert(actual_headers);
-    actual_header_list = milter_manager_headers_get_list(actual_headers);
+    actual_header_list = milter_headers_get_list(actual_headers);
 
     gcut_assert_equal_list(
         expected_headers, actual_header_list,
-        (GEqualFunc)milter_manager_header_equal,
-        (GCutInspectFunc)milter_manager_header_inspect,
+        (GEqualFunc)milter_header_equal,
+        (GCutInspectFunc)milter_header_inspect,
         NULL);
 }
 

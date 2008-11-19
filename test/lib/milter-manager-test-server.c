@@ -44,7 +44,7 @@ struct _MilterManagerTestServerPrivate
     guint n_quarantines;
     guint n_reply_codes;
 
-    MilterManagerHeaders *headers;
+    MilterHeaders *headers;
     GList *received_add_recipients;
     GList *received_delete_recipients;
     GList *received_replace_bodies;
@@ -146,7 +146,7 @@ milter_manager_test_server_init (MilterManagerTestServer *milter)
 
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(milter);
 
-    priv->headers = milter_manager_headers_new();
+    priv->headers = milter_headers_new();
     priv->received_add_recipients = NULL;
     priv->received_delete_recipients = NULL;
     priv->received_change_froms = NULL;
@@ -269,7 +269,7 @@ add_header (MilterReplySignals *reply,
 
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
     priv->n_add_headers++;
-    milter_manager_headers_add_header(priv->headers, name, value);
+    milter_headers_add_header(priv->headers, name, value);
 }
 
 static void
@@ -282,7 +282,7 @@ insert_header (MilterReplySignals *reply,
 
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
     priv->n_insert_headers++;
-    milter_manager_headers_insert_header(priv->headers, index, name, value);
+    milter_headers_insert_header(priv->headers, index, name, value);
 }
 
 static void
@@ -295,7 +295,7 @@ change_header (MilterReplySignals *reply,
 
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
     priv->n_change_headers++;
-    milter_manager_headers_change_header(priv->headers, name, index,value);
+    milter_headers_change_header(priv->headers, name, index,value);
 }
 
 static void
@@ -457,7 +457,7 @@ milter_manager_test_server_get_n_reply_codes (MilterManagerTestServer *server)
     return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->n_reply_codes;
 }
 
-MilterManagerHeaders *
+MilterHeaders *
 milter_manager_test_server_get_headers (MilterManagerTestServer *server)
 {
     return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->headers;
@@ -509,7 +509,7 @@ milter_manager_test_server_add_header (MilterManagerTestServer *server,
 
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server);
 
-    milter_manager_headers_add_header(priv->headers, name, value);
+    milter_headers_add_header(priv->headers, name, value);
 }
 
 /*

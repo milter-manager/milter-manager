@@ -27,7 +27,6 @@ milter_manager_public_headers =				\
 	milter-manager-children.h			\
 	milter-manager-objects.h			\
 	milter-manager-egg.h				\
-	milter-manager-headers.h			\
 	milter-manager-module.h				\
 	milter-manager-module-impl.h			\
 	milter-manager-control-command-decoder.h	\
@@ -64,7 +63,6 @@ libmilter_manager_la_SOURCES =				\
 	milter-manager-module.c				\
 	milter-manager-leader.c				\
 	milter-manager-egg.c				\
-	milter-manager-headers.c			\
 	milter-manager-control-command-decoder.c	\
 	milter-manager-control-reply-decoder.c		\
 	milter-manager-control-command-encoder.c	\
