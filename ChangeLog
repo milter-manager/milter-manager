@@ -1,3 +1,9 @@
+2008-11-21  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/manager/milter-manager-children.c: Emit "delete-header".
+	* milter/manager/milter-manager-leader.c: Handle "delete-header"
+	signal.
+
 2008-11-20  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/manager/milter-manager-control-command-encoder.c,

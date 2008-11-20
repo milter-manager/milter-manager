@@ -449,6 +449,18 @@ cb_change_header (MilterServerContext *context,
 }
 
 static void
+cb_delete_header (MilterServerContext *context,
+                  const gchar *name, guint32 index,
+                  gpointer user_data)
+{
+    MilterManagerLeader *leader = user_data;
+    MilterManagerLeaderPrivate *priv;
+
+    priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
+    milter_client_context_delete_header(priv->client_context, name, index);
+}
+
+static void
 cb_change_from (MilterServerContext *context,
                 const gchar *from, const gchar *parameters,
                 gpointer user_data)
@@ -572,6 +584,7 @@ setup_children_signals (MilterManagerLeader *leader,
     CONNECT(add_header);
     CONNECT(insert_header);
     CONNECT(change_header);
+    CONNECT(delete_header);
     CONNECT(change_from);
     CONNECT(add_recipient);
     CONNECT(delete_recipient);
@@ -607,6 +620,7 @@ teardown_children_signals (MilterManagerLeader *leader,
     DISCONNECT(add_header);
     DISCONNECT(insert_header);
     DISCONNECT(change_header);
+    DISCONNECT(delete_header);
     DISCONNECT(change_from);
     DISCONNECT(add_recipient);
     DISCONNECT(delete_recipient);

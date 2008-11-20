@@ -1150,6 +1150,7 @@ data_scenario_end_of_message_action (void)
                  "add-header", g_strdup("add-header.txt"), g_free,
                  "insert-header", g_strdup("insert-header.txt"), g_free,
                  "change-header", g_strdup("change-header.txt"), g_free,
+                 "delete-header", g_strdup("delete-header.txt"), g_free,
                  "change-from", g_strdup("change-from.txt"), g_free,
                  "add-recipient", g_strdup("add-recipient.txt"), g_free,
                  "delete-recipient", g_strdup("delete-recipient.txt"), g_free,

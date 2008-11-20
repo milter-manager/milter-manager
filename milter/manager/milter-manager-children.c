@@ -744,7 +744,7 @@ emit_signals_on_end_of_message (MilterManagerChildren *children)
             continue;
         }
         index = milter_headers_index_in_same_header_name(priv->original_headers,
-                                                                 found_header);
+                                                         found_header);
         if (index == -1) {
             g_signal_emit_by_name(children, "add-header",
                                   header->name, header->value);
@@ -752,6 +752,20 @@ emit_signals_on_end_of_message (MilterManagerChildren *children)
             g_signal_emit_by_name(children, "change-header",
                                   header->name, index, header->value);
             milter_headers_remove(processing_headers, found_header);
+        }
+    }
+
+    if (milter_headers_length(processing_headers) > 0) {
+        header_list = milter_headers_get_list(processing_headers);
+
+        for (node = header_list; node; node = g_list_next(node)) {
+            MilterHeader *header = node->data;
+            gint index;
+
+            index = milter_headers_index_in_same_header_name(priv->original_headers,
+                                                             header);
+            g_signal_emit_by_name(children, "delete-header",
+                                  header->name, index);
         }
     }
 
@@ -1038,8 +1052,9 @@ cb_delete_header (MilterServerContext *context,
     MilterManagerChildrenPrivate *priv;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
-
-    milter_headers_delete_header(priv->headers, name, index);
+g_warning("%s, %d", name, index);
+    if (milter_headers_delete_header(priv->headers, name, index))
+        g_warning("hoge");
 }
 
 static void
