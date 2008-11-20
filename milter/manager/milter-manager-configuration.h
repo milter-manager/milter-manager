@@ -71,16 +71,28 @@ void          milter_manager_configuration_load
 
 gboolean      milter_manager_configuration_is_privilege_mode
                                      (MilterManagerConfiguration *configuration);
+void          milter_manager_configuration_set_privilege_mode
+                                     (MilterManagerConfiguration *configuration,
+                                      gboolean                    mode);
 const gchar  *milter_manager_configuration_get_control_connection_spec
                                      (MilterManagerConfiguration *configuration);
+void          milter_manager_configuration_set_control_connection_spec
+                                     (MilterManagerConfiguration *configuration,
+                                      const gchar                *spec);
 
 /* what about milter_manager_configuration_get_fallback_status()? */
 MilterStatus  milter_manager_configuration_get_return_status_if_filter_unavailable
                                      (MilterManagerConfiguration *configuration);
+void          milter_manager_configuration_set_return_status_if_filter_unavailable
+                                     (MilterManagerConfiguration *configuration,
+                                      MilterStatus                status);
 void          milter_manager_configuration_add_egg
                                      (MilterManagerConfiguration *configuration,
                                       MilterManagerEgg *egg);
 MilterManagerChildren *milter_manager_configuration_create_children
+                                     (MilterManagerConfiguration *configuration);
+
+void          milter_manager_configuration_clear
                                      (MilterManagerConfiguration *configuration);
 
 G_END_DECLS

@@ -43,7 +43,8 @@ enum
 {
     PROP_0,
     PROP_PRIVILEGE_MODE,
-    PROP_CONTROL_CONNECTION_SPEC
+    PROP_CONTROL_CONNECTION_SPEC,
+    PROP_RETURN_STATUS,
 };
 
 static GList *configurations = NULL;
@@ -90,6 +91,14 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
     g_object_class_install_property(gobject_class, PROP_CONTROL_CONNECTION_SPEC,
                                     spec);
 
+    spec = g_param_spec_enum("return-status",
+                             "Return status",
+                             "The return status of the milter-manager",
+                             MILTER_TYPE_STATUS,
+                             MILTER_STATUS_CONTINUE,
+                             G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+    g_object_class_install_property(gobject_class, PROP_RETURN_STATUS, spec);
+
     g_type_class_add_private(gobject_class,
                              sizeof(MilterManagerConfigurationPrivate));
 }
@@ -101,28 +110,15 @@ milter_manager_configuration_init (MilterManagerConfiguration *configuration)
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
     priv->eggs = NULL;
-    priv->privilege_mode = FALSE;
     priv->control_connection_spec = NULL;
-    priv->return_status = MILTER_STATUS_CONTINUE;
+
+    milter_manager_configuration_clear(configuration);
 }
 
 static void
 dispose (GObject *object)
 {
-    MilterManagerConfigurationPrivate *priv;
-
-    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(object);
-
-    if (priv->eggs) {
-        g_list_foreach(priv->eggs, (GFunc)g_object_unref, NULL);
-        g_list_free(priv->eggs);
-        priv->eggs = NULL;
-    }
-
-    if (priv->control_connection_spec) {
-        g_free(priv->control_connection_spec);
-        priv->control_connection_spec = NULL;
-    }
+    milter_manager_configuration_clear(MILTER_MANAGER_CONFIGURATION(object));
 
     G_OBJECT_CLASS(milter_manager_configuration_parent_class)->dispose(object);
 }
@@ -133,17 +129,21 @@ set_property (GObject      *object,
               const GValue *value,
               GParamSpec   *pspec)
 {
-    MilterManagerConfigurationPrivate *priv;
+    MilterManagerConfiguration *config;
 
-    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(object);
+    config = MILTER_MANAGER_CONFIGURATION(object);
     switch (prop_id) {
       case PROP_PRIVILEGE_MODE:
-        priv->privilege_mode = g_value_get_boolean(value);
+        milter_manager_configuration_set_privilege_mode(
+            config, g_value_get_boolean(value));
         break;
       case PROP_CONTROL_CONNECTION_SPEC:
-        if (priv->control_connection_spec)
-            g_free(priv->control_connection_spec);
-        priv->control_connection_spec = g_value_dup_string(value);
+        milter_manager_configuration_set_control_connection_spec(
+            config, g_value_get_string(value));
+        break;
+      case PROP_RETURN_STATUS:
+        milter_manager_configuration_set_return_status_if_filter_unavailable(
+            config, g_value_get_enum(value));
         break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -166,6 +166,9 @@ get_property (GObject    *object,
         break;
       case PROP_CONTROL_CONNECTION_SPEC:
         g_value_set_string(value, priv->control_connection_spec);
+        break;
+      case PROP_RETURN_STATUS:
+        g_value_set_enum(value, priv->return_status);
         break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -290,10 +293,32 @@ milter_manager_configuration_is_privilege_mode (MilterManagerConfiguration *conf
     return MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration)->privilege_mode;
 }
 
+void
+milter_manager_configuration_set_privilege_mode (MilterManagerConfiguration *configuration,
+                                                 gboolean mode)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    priv->privilege_mode = mode;
+}
+
 const gchar *
 milter_manager_configuration_get_control_connection_spec (MilterManagerConfiguration *configuration)
 {
     return MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration)->control_connection_spec;
+}
+
+void
+milter_manager_configuration_set_control_connection_spec (MilterManagerConfiguration *configuration,
+                                                          const gchar *spec)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    if (priv->control_connection_spec)
+        g_free(priv->control_connection_spec);
+    priv->control_connection_spec = g_strdup(spec);
 }
 
 void
@@ -339,6 +364,39 @@ milter_manager_configuration_get_return_status_if_filter_unavailable
                                      (MilterManagerConfiguration *configuration)
 {
     return MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration)->return_status;
+}
+
+void
+milter_manager_configuration_set_return_status_if_filter_unavailable
+                                     (MilterManagerConfiguration *configuration,
+                                      MilterStatus status)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    priv->return_status = status;
+}
+
+void
+milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+
+    if (priv->eggs) {
+        g_list_foreach(priv->eggs, (GFunc)g_object_unref, NULL);
+        g_list_free(priv->eggs);
+        priv->eggs = NULL;
+    }
+
+    if (priv->control_connection_spec) {
+        g_free(priv->control_connection_spec);
+        priv->control_connection_spec = NULL;
+    }
+
+    priv->privilege_mode = FALSE;
+    priv->return_status = MILTER_STATUS_CONTINUE;
 }
 
 /*

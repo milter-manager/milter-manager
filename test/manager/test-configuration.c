@@ -17,15 +17,19 @@
  *
  */
 
-#include <gcutter.h>
 
-#define shutdown inet_shutdown
-#include <milter-manager-test-utils.h>
 #include <milter/manager/milter-manager-configuration.h>
 #include <milter/manager/milter-manager-children.h>
-#undef shutdown
+
+#include <milter-manager-test-utils.h>
+
+#include <gcutter.h>
 
 void test_children (void);
+void test_privilege_mode (void);
+void test_control_connection_spec (void);
+void test_return_status (void);
+void test_clear (void);
 
 static MilterManagerConfiguration *config;
 static MilterManagerEgg *egg;
@@ -93,6 +97,91 @@ test_children (void)
 
     actual_children = milter_manager_configuration_create_children(config);
     milter_assert_equal_children(expected_children, actual_children);
+}
+
+void
+test_privilege_mode (void)
+{
+    cut_assert_false(milter_manager_configuration_is_privilege_mode(config));
+    milter_manager_configuration_set_privilege_mode(config, TRUE);
+    cut_assert_true(milter_manager_configuration_is_privilege_mode(config));
+}
+
+void
+test_control_connection_spec (void)
+{
+    const gchar spec[] = "inet:2929@localhost";
+    const gchar *actual_spec;
+
+    actual_spec =
+        milter_manager_configuration_get_control_connection_spec(config);
+    cut_assert_equal_string(NULL, actual_spec);
+
+    milter_manager_configuration_set_control_connection_spec(config, spec);
+
+    actual_spec =
+        milter_manager_configuration_get_control_connection_spec(config);
+    cut_assert_equal_string(spec, actual_spec);
+}
+
+void
+test_return_status (void)
+{
+    MilterStatus actual_status;
+
+    actual_status = milter_manager_configuration_get_return_status_if_filter_unavailable(config);
+    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
+                           MILTER_STATUS_CONTINUE, actual_status);
+
+    milter_manager_configuration_set_return_status_if_filter_unavailable(config, MILTER_STATUS_REJECT);
+
+    actual_status = milter_manager_configuration_get_return_status_if_filter_unavailable(config);
+    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
+                           MILTER_STATUS_REJECT, actual_status);
+}
+
+static void
+milter_assert_default_configuration_helper (MilterManagerConfiguration *config)
+{
+    const gchar *spec;
+    MilterStatus status;
+
+    cut_assert_false(milter_manager_configuration_is_privilege_mode(config));
+
+    spec = milter_manager_configuration_get_control_connection_spec(config);
+    cut_assert_equal_string(NULL, spec);
+
+    status = milter_manager_configuration_get_return_status_if_filter_unavailable(config);
+    gcut_assert_equal_enum(MILTER_TYPE_STATUS, MILTER_STATUS_CONTINUE, status);
+
+    if (expected_children)
+        g_object_unref(expected_children);
+    expected_children = milter_manager_children_new(config);
+    if (actual_children)
+        g_object_unref(actual_children);
+    actual_children = milter_manager_configuration_create_children(config);
+    milter_assert_equal_children(expected_children, actual_children);
+    g_object_unref(actual_children);
+    actual_children = NULL;
+}
+
+#define milter_assert_default_configuration(config)             \
+    cut_trace_with_info_expression(                             \
+        milter_assert_default_configuration_helper(config),     \
+        milter_assert_default_configuration(config))
+
+void
+test_clear (void)
+{
+    milter_assert_default_configuration(config);
+
+    test_privilege_mode();
+    test_control_connection_spec();
+    test_return_status();
+    test_children();
+
+    milter_manager_configuration_clear(config);
+    milter_assert_default_configuration(config);
 }
 
 /*
