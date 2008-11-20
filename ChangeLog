@@ -1,5 +1,8 @@
 2008-11-20  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-control-command-encoder.c,
+	test/manager/test-control-command-encoder.c: support reload encode.
+
 	* test/manager/test-controller.c: check reply.
 
 	* test/manager/test-controller.c: cleanup.

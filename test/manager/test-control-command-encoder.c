@@ -24,6 +24,7 @@
 #include <gcutter.h>
 
 void test_encode_set_configuration (void);
+void test_encode_reload (void);
 
 static MilterManagerControlCommandEncoder *encoder;
 static GString *expected;
@@ -83,6 +84,18 @@ test_encode_set_configuration (void)
         &actual, &actual_size,
         configuration, strlen(configuration));
 
+    cut_assert_equal_memory(expected->str, expected->len,
+                            actual, actual_size);
+}
+
+void
+test_encode_reload (void)
+{
+    g_string_append_c(expected, 'R');
+
+    pack(expected);
+    milter_manager_control_command_encoder_encode_reload(encoder,
+                                                         &actual, &actual_size);
     cut_assert_equal_memory(expected->str, expected->len,
                             actual, actual_size);
 }
