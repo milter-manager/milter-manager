@@ -1052,9 +1052,8 @@ cb_delete_header (MilterServerContext *context,
     MilterManagerChildrenPrivate *priv;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
-g_warning("%s, %d", name, index);
-    if (milter_headers_delete_header(priv->headers, name, index))
-        g_warning("hoge");
+
+    milter_headers_delete_header(priv->headers, name, index);
 }
 
 static void
