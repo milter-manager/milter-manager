@@ -2,6 +2,7 @@
 
 	* milter/manager/milter-manager-children.c: Handle "delete-header"
 	signal.
+	* test/lib/milter-test-client.rb: Added "--delete-header" option.
 
 2008-11-20  Kouhei Sutou  <kou@cozmixng.org>
 

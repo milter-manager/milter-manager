@@ -103,6 +103,13 @@ class MilterTestClient
         @end_of_message_actions << ["change_header", name, Integer(index), value]
       end
 
+      opts.on("--delete-header=NAME:INDEX",
+              "Delete a header whose name is NAME and " +
+              "indexed by INDEX on end-of-message") do |spec|
+        name, index, value = spec.split(/:/, 2)
+        @end_of_message_actions << ["delete_header", name, Integer(index)]
+      end
+
       opts.on("--remove-header=NAME:INDEX",
               "Remove a header whose name is NAME and " +
               "index by INDEX on end-of-message") do |spec|
