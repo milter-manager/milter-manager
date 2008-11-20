@@ -33,6 +33,7 @@
 typedef struct _MilterManagerConfigurationPrivate MilterManagerConfigurationPrivate;
 struct _MilterManagerConfigurationPrivate
 {
+    GList *load_paths;
     GList *eggs;
     gboolean privilege_mode;
     gchar *control_connection_spec;
@@ -109,6 +110,7 @@ milter_manager_configuration_init (MilterManagerConfiguration *configuration)
     MilterManagerConfigurationPrivate *priv;
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    priv->load_paths = NULL;
     priv->eggs = NULL;
     priv->control_connection_spec = NULL;
 
@@ -118,7 +120,18 @@ milter_manager_configuration_init (MilterManagerConfiguration *configuration)
 static void
 dispose (GObject *object)
 {
-    milter_manager_configuration_clear(MILTER_MANAGER_CONFIGURATION(object));
+    MilterManagerConfiguration *configuration;
+    MilterManagerConfigurationPrivate *priv;
+
+    configuration = MILTER_MANAGER_CONFIGURATION(object);
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    if (priv->load_paths) {
+        g_list_foreach(priv->load_paths, (GFunc)g_free, NULL);
+        g_list_free(priv->load_paths);
+        priv->load_paths = NULL;
+    }
+
+    milter_manager_configuration_clear(configuration);
 
     G_OBJECT_CLASS(milter_manager_configuration_parent_class)->dispose(object);
 }
@@ -246,6 +259,12 @@ _milter_manager_configuration_quit (void)
     milter_manager_configuration_set_default_module_dir(NULL);
 }
 
+GQuark
+milter_manager_configuration_error_quark (void)
+{
+    return g_quark_from_static_string("milter-manager-configuration-error-quark");
+}
+
 MilterManagerConfiguration *
 milter_manager_configuration_new (const gchar *first_property,
                                   ...)
@@ -269,22 +288,109 @@ void
 milter_manager_configuration_add_load_path (MilterManagerConfiguration *configuration,
                                             const gchar *path)
 {
-    MilterManagerConfigurationClass *configuration_class;
+    MilterManagerConfigurationPrivate *priv;
 
-    configuration_class = MILTER_MANAGER_CONFIGURATION_GET_CLASS(configuration);
-    if (configuration_class->add_load_path)
-        configuration_class->add_load_path(configuration, path);
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    priv->load_paths = g_list_append(priv->load_paths, g_strdup(path));
 }
 
-void
+gboolean
 milter_manager_configuration_load (MilterManagerConfiguration *configuration,
-                                   const gchar *file_name)
+                                   const gchar *file_name, GError **error)
 {
     MilterManagerConfigurationClass *configuration_class;
 
     configuration_class = MILTER_MANAGER_CONFIGURATION_GET_CLASS(configuration);
-    if (configuration_class->load)
-        configuration_class->load(configuration, file_name);
+    if (configuration_class->load) {
+        MilterManagerConfigurationPrivate *priv;
+        gchar *full_path = NULL;
+        GList *node;
+
+        priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+        for (node = priv->load_paths; node; node = g_list_next(node)) {
+            const gchar *dir = node->data;
+
+            full_path = g_build_filename(dir, file_name, NULL);
+            if (g_file_test(full_path, G_FILE_TEST_IS_REGULAR)) {
+                break;
+            } else {
+                g_free(full_path);
+                full_path = NULL;
+            }
+        }
+
+        if (full_path) {
+            return configuration_class->load(configuration, full_path, error);
+        } else {
+            GString *inspected_load_paths;
+
+            inspected_load_paths = g_string_new("[");
+            for (node = priv->load_paths; node; node = g_list_next(node)) {
+                const gchar *dir = node->data;
+
+                g_string_append_printf(inspected_load_paths, "\"%s\"", dir);
+                if (g_list_next(node))
+                    g_string_append(inspected_load_paths, ", ");
+            }
+            g_string_append(inspected_load_paths, "]");
+            g_set_error(error,
+                        MILTER_MANAGER_CONFIGURATION_ERROR,
+                        MILTER_MANAGER_CONFIGURATION_ERROR_NOT_EXIST,
+                        "path %s doesn't exist in load path (%s)",
+                        file_name, inspected_load_paths->str);
+            g_string_free(inspected_load_paths, TRUE);
+            return FALSE;
+        }
+    } else {
+        g_set_error(error,
+                    MILTER_MANAGER_CONFIGURATION_ERROR,
+                    MILTER_MANAGER_CONFIGURATION_ERROR_NOT_IMPLEMENTED,
+                    "load isn't implemented");
+        return FALSE;
+    }
+}
+
+gboolean
+milter_manager_configuration_load_if_exist (MilterManagerConfiguration *configuration,
+                                            const gchar *file_name,
+                                            GError **error)
+{
+    GError *local_error = NULL;
+
+    if (milter_manager_configuration_load(configuration, file_name,
+                                          &local_error))
+        return TRUE;
+
+    if (local_error->code == MILTER_MANAGER_CONFIGURATION_ERROR_NOT_EXIST) {
+        g_error_free(local_error);
+        return TRUE;
+    }
+
+    g_propagate_error(error, local_error);
+    return FALSE;
+}
+
+void
+milter_manager_configuration_reload (MilterManagerConfiguration *configuration)
+{
+    GError *error = NULL;
+
+    milter_manager_configuration_clear(configuration);
+    if (!milter_manager_configuration_load(configuration, CONFIG_FILE_NAME,
+                                           &error)) {
+        milter_error("failed to load config file: <%s>: %s",
+                     CONFIG_FILE_NAME, error->message);
+        g_error_free(error);
+        return;
+    }
+
+    if (!milter_manager_configuration_load_if_exist(configuration,
+                                                    CUSTOM_CONFIG_FILE_NAME,
+                                                    &error)) {
+        milter_error("failed to load custom config file: <%s>: %s",
+                     CUSTOM_CONFIG_FILE_NAME, error->message);
+        g_error_free(error);
+    }
 }
 
 gboolean

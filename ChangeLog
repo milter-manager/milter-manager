@@ -1,5 +1,13 @@
 2008-11-20  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter/manager/milter-manager-configuration.[ch],
+	module/configuration/ruby/milter-manager-ruby-configuration.c:
+	load path is managed in parent configuration class.
+
+	* binding/ruby/lib/milter/manager.rb,
+	milter/manager/milter-manager.c, test/manager/test-leader.c:
+	follow the above changes.
+
 	* milter/manager/milter-manager-configuration.[ch],
 	test/manager/test-configuration.c: add
 	milter_manager_configuration_clear().

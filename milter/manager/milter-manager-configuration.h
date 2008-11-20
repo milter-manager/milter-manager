@@ -28,12 +28,21 @@
 
 G_BEGIN_DECLS
 
+#define MILTER_MANAGER_CONFIGURATION_ERROR           (milter_manager_configuration_error_quark())
+
 #define MILTER_TYPE_MANAGER_CONFIGURATION            (milter_manager_configuration_get_type())
 #define MILTER_MANAGER_CONFIGURATION(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), MILTER_TYPE_MANAGER_CONFIGURATION, MilterManagerConfiguration))
 #define MILTER_MANAGER_CONFIGURATION_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), MILTER_TYPE_MANAGER_CONFIGURATION, MilterManagerConfigurationClass))
 #define MILTER_MANAGER_IS_CONFIGURATION(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), MILTER_TYPE_MANAGER_CONFIGURATION))
 #define MILTER_MANAGER_IS_CONFIGURATION_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), MILTER_TYPE_MANAGER_CONFIGURATION))
 #define MILTER_MANAGER_CONFIGURATION_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MILTER_TYPE_MANAGER_CONFIGURATION, MilterManagerConfigurationClass))
+
+typedef enum
+{
+    MILTER_MANAGER_CONFIGURATION_ERROR_NOT_IMPLEMENTED,
+    MILTER_MANAGER_CONFIGURATION_ERROR_NOT_EXIST,
+    MILTER_MANAGER_CONFIGURATION_ERROR_UNKNOWN
+} MilterManagerConfigurationError;
 
 typedef struct _MilterManagerConfigurationClass MilterManagerConfigurationClass;
 
@@ -46,12 +55,12 @@ struct _MilterManagerConfigurationClass
 {
     GObjectClass parent_class;
 
-    void         (*add_load_path) (MilterManagerConfiguration *configuration,
-                                   const gchar                *path);
-    void         (*load)          (MilterManagerConfiguration *configuration,
-                                   const gchar                *file_name);
+    gboolean     (*load)          (MilterManagerConfiguration *configuration,
+                                   const gchar                *file_name,
+                                   GError                    **error);
 };
 
+GQuark        milter_manager_configuration_error_quark (void);
 GType         milter_manager_configuration_get_type    (void) G_GNUC_CONST;
 
 void         _milter_manager_configuration_init        (void);
@@ -65,9 +74,16 @@ MilterManagerConfiguration *
 void          milter_manager_configuration_add_load_path
                                      (MilterManagerConfiguration *configuration,
                                       const gchar                *path);
-void          milter_manager_configuration_load
+gboolean      milter_manager_configuration_load
                                      (MilterManagerConfiguration *configuration,
-                                      const gchar                *file_name);
+                                      const gchar                *file_name,
+                                      GError                    **error);
+gboolean      milter_manager_configuration_load_if_exist
+                                     (MilterManagerConfiguration *configuration,
+                                      const gchar                *file_name,
+                                      GError                    **error);
+void          milter_manager_configuration_reload
+                                     (MilterManagerConfiguration *configuration);
 
 gboolean      milter_manager_configuration_is_privilege_mode
                                      (MilterManagerConfiguration *configuration);

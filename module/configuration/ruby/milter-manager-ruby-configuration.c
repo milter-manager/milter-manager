@@ -60,10 +60,9 @@ static void get_property   (GObject         *object,
                             GValue          *value,
                             GParamSpec      *pspec);
 
-static void         real_add_load_path    (MilterManagerConfiguration *configuration,
-                                           const gchar             *path);
-static void         real_load             (MilterManagerConfiguration *configuration,
-                                           const gchar             *file_name);
+static gboolean real_load  (MilterManagerConfiguration *configuration,
+                            const gchar                *file_name,
+                            GError                    **error);
 
 /* the function should be a static but G_DEFINE_DYNAMIC_TYPE implements it no static function */
 GType milter_manager_ruby_configuration_get_type (void);
@@ -85,7 +84,6 @@ milter_manager_ruby_configuration_class_init (MilterManagerRubyConfigurationClas
     gobject_class->set_property = set_property;
     gobject_class->get_property = get_property;
 
-    configuration_class->add_load_path = real_add_load_path;
     configuration_class->load = real_load;
 }
 
@@ -165,7 +163,7 @@ invoke_rb_funcall2 (VALUE data)
 }
 
 static VALUE
-rb_funcall_protect (VALUE receiver, ID name, guint argc, ...)
+rb_funcall_protect (GError **g_error, VALUE receiver, ID name, guint argc, ...)
 {
     VALUE *argv;
     va_list args;
@@ -190,16 +188,25 @@ rb_funcall_protect (VALUE receiver, ID name, guint argc, ...)
 
     error = rb_errinfo();
     if (state && !NIL_P(error)) {
+        GString *error_message;
         VALUE message, class_name, backtrace;
         long i;
 
+        error_message = g_string_new(NULL);
         message = rb_funcall(error, rb_intern("message"), 0);
         class_name = rb_funcall(CLASS_OF(error), rb_intern("to_s"), 0);
-        milter_error("%s (%s)", RVAL2CSTR(message), RVAL2CSTR(class_name));
+        g_string_append_printf(error_message, "%s (%s)\n",
+                               RVAL2CSTR(message), RVAL2CSTR(class_name));
         backtrace = rb_funcall(error, rb_intern("backtrace"), 0);
         for (i = 0; i < RARRAY(backtrace)->len; i++) {
-            milter_error("%s", RVAL2CSTR(RARRAY(backtrace)->ptr[i]));
+            g_string_append_printf(error_message, "%s\n",
+                                   RVAL2CSTR(RARRAY(backtrace)->ptr[i]));
         }
+        g_set_error(g_error,
+                    MILTER_MANAGER_CONFIGURATION_ERROR,
+                    MILTER_MANAGER_CONFIGURATION_ERROR_UNKNOWN,
+                    "unknown error is occurred: <%s>", error_message->str);
+        g_string_free(error_message, TRUE);
     }
 
     return result;
@@ -210,9 +217,16 @@ static void
 load_libraries (void)
 {
     VALUE milter, milter_manager;
+    GError *error = NULL;
 
-    rb_funcall_protect(Qnil, rb_intern("require"),
+    rb_funcall_protect(&error,
+                       Qnil, rb_intern("require"),
                        1, rb_str_new2("milter/manager"));
+
+    if (error) {
+        milter_error("%s", error->message);
+        g_error_free(error);
+    }
 
     milter = rb_const_get(rb_cObject, rb_intern("Milter"));
     milter_manager = rb_const_get(milter, rb_intern("Manager"));
@@ -320,27 +334,31 @@ get_property (GObject    *object,
     }
 }
 
-static void
-real_add_load_path (MilterManagerConfiguration *_configuration, const gchar *path)
+static gboolean
+real_load (MilterManagerConfiguration *_configuration, const gchar *file_name,
+           GError **error)
 {
     MilterManagerRubyConfiguration *configuration;
+    GError *local_error = NULL;
+    gboolean success;
 
     configuration = MILTER_MANAGER_RUBY_CONFIGURATION(_configuration);
-    rb_funcall_protect(rb_mMilterManagerConfigurationLoader,
-                       rb_intern("add_load_path"), 1,
-                       rb_str_new2(path));
-}
-
-static void
-real_load (MilterManagerConfiguration *_configuration, const gchar *file_name)
-{
-    MilterManagerRubyConfiguration *configuration;
-
-    configuration = MILTER_MANAGER_RUBY_CONFIGURATION(_configuration);
-    rb_funcall_protect(rb_mMilterManagerConfigurationLoader,
+    rb_funcall_protect(&local_error,
+                       rb_mMilterManagerConfigurationLoader,
                        rb_intern("load"), 2,
                        GOBJ2RVAL(configuration),
                        rb_str_new2(file_name));
+
+    if (local_error) {
+        success = FALSE;
+        if (!error)
+            milter_error("%s", local_error->message);
+        g_propagate_error(error, local_error);
+    } else {
+        success = TRUE;
+    }
+
+    return success;
 }
 
 /*

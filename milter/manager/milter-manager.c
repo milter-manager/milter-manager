@@ -396,7 +396,7 @@ milter_manager_main (void)
         milter_manager_configuration_add_load_path(configuration,
                                                    config_dir_env);
     milter_manager_configuration_add_load_path(configuration, CONFIG_DIR);
-    milter_manager_configuration_load(configuration, "milter-manager.conf");
+    milter_manager_configuration_reload(configuration);
 
     /* FIXME */
     control_connection_watch_id = setup_control_connection(configuration);

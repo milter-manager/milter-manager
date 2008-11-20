@@ -264,6 +264,7 @@ setup (void)
     GIOChannel *channel;
     MilterWriter *writer;
     MilterReader *reader;
+    GError *error = NULL;
 
     scenario_dir = g_build_filename(milter_manager_test_get_base_dir(),
                                     "fixtures",
@@ -274,7 +275,8 @@ setup (void)
 
     config = milter_manager_configuration_new(NULL);
     add_load_path(g_getenv("MILTER_MANAGER_CONFIG_DIR"));
-    milter_manager_configuration_load(config, "milter-manager.conf");
+    milter_manager_configuration_load(config, "milter-manager.conf", &error);
+    gcut_assert_error(error);
 
     channel = gcut_io_channel_string_new(NULL);
     g_io_channel_set_encoding(channel, NULL, NULL);
