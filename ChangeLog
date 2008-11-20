@@ -6,6 +6,9 @@
 
 2008-11-20  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-controller.c,
+	test/manager/test-controller.c: implement set-configuration command.
+
 	* milter/manager/milter/manager/milter-manager-configuration.[ch],
 	test/manager/test-configuration.c: add
 	milter_manager_configuration_save_custom().

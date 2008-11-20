@@ -92,9 +92,46 @@ cb_decoder_set_configuration (MilterManagerControlCommandDecoder *decoder,
                               const gchar *configuration, gsize size,
                               gpointer user_data)
 {
-    /* MilterManagerController *controller = user_data; */
+    MilterManagerController *controller = user_data;
+    MilterManagerControllerPrivate *priv;
+    GError *error = NULL;
+    MilterAgent *agent;
+    MilterEncoder *_encoder;
+    MilterManagerControlReplyEncoder *encoder;
+    gchar *packet;
+    gsize packet_size;
 
-    g_print("set configuration\n");
+    priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
+
+    agent = MILTER_AGENT(controller);
+    _encoder = milter_agent_get_encoder(agent);
+    encoder = MILTER_MANAGER_CONTROL_REPLY_ENCODER(_encoder);
+    if (milter_manager_configuration_save_custom(priv->configuration,
+                                                 configuration, size,
+                                                 &error)) {
+        milter_manager_control_reply_encoder_encode_success(encoder,
+                                                            &packet,
+                                                            &packet_size);
+        if (!milter_agent_write_packet(agent, packet, packet_size, &error)) {
+            milter_error("failed to write control reply success packet: <%s>",
+                         error->message);
+            g_error_free(error);
+        }
+    } else {
+        milter_error("failed to save custom configuration filet: <%s>",
+                     error->message);
+        g_error_free(error);
+        error = NULL;
+        milter_manager_control_reply_encoder_encode_error(encoder,
+                                                          &packet,
+                                                          &packet_size,
+                                                          error->message);
+        if (!milter_agent_write_packet(agent, packet, packet_size, &error)) {
+            milter_error("failed to write control reply error packet: <%s>",
+                         error->message);
+            g_error_free(error);
+        }
+    }
 }
 
 static MilterDecoder *
