@@ -41,7 +41,8 @@ typedef enum
 {
     MILTER_MANAGER_CONFIGURATION_ERROR_NOT_IMPLEMENTED,
     MILTER_MANAGER_CONFIGURATION_ERROR_NOT_EXIST,
-    MILTER_MANAGER_CONFIGURATION_ERROR_UNKNOWN
+    MILTER_MANAGER_CONFIGURATION_ERROR_UNKNOWN,
+    MILTER_MANAGER_CONFIGURATION_ERROR_SAVE
 } MilterManagerConfigurationError;
 
 typedef struct _MilterManagerConfigurationClass MilterManagerConfigurationClass;
@@ -84,6 +85,12 @@ gboolean      milter_manager_configuration_load_if_exist
                                       GError                    **error);
 void          milter_manager_configuration_reload
                                      (MilterManagerConfiguration *configuration);
+
+gboolean      milter_manager_configuration_save_custom
+                                     (MilterManagerConfiguration *configuration,
+                                      const gchar                *content,
+                                      gssize                      size,
+                                      GError                    **error);
 
 gboolean      milter_manager_configuration_is_privilege_mode
                                      (MilterManagerConfiguration *configuration);

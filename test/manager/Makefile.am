@@ -16,8 +16,9 @@ INCLUDES =				\
 	-I$(top_srcdir)/test/lib	\
 	-I$(top_srcdir)
 
-AM_CFLAGS = 				\
-	$(MILTER_MANAGER_CFLAGS)	\
+AM_CFLAGS =								\
+	-DCUSTOM_CONFIG_FILE_NAME="\"$(CUSTOM_CONFIG_FILE_NAME)\""	\
+	$(MILTER_MANAGER_CFLAGS)					\
 	$(GCUTTER_CFLAGS)
 
 AM_LDFLAGS =			\

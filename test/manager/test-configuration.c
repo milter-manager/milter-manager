@@ -30,12 +30,15 @@ void test_privilege_mode (void);
 void test_control_connection_spec (void);
 void test_return_status (void);
 void test_clear (void);
+void test_save_custom (void);
 
 static MilterManagerConfiguration *config;
 static MilterManagerEgg *egg;
 
 static MilterManagerChildren *expected_children;
 static MilterManagerChildren *actual_children;
+
+static gchar *tmp_dir;
 
 void
 setup (void)
@@ -45,6 +48,12 @@ setup (void)
 
     expected_children = milter_manager_children_new(config);
     actual_children = NULL;
+
+    tmp_dir = g_build_filename(milter_manager_test_get_base_dir(),
+                               "tmp",
+                               NULL);
+    if (g_mkdir_with_parents(tmp_dir, 0700) == -1)
+        cut_assert_errno();
 }
 
 void
@@ -59,6 +68,11 @@ teardown (void)
         g_object_unref(expected_children);
     if (actual_children)
         g_object_unref(actual_children);
+
+    if (tmp_dir) {
+        cut_remove_path(tmp_dir, NULL);
+        g_free(tmp_dir);
+    }
 }
 
 static gboolean
@@ -182,6 +196,25 @@ test_clear (void)
 
     milter_manager_configuration_clear(config);
     milter_assert_default_configuration(config);
+}
+
+void
+test_save_custom (void)
+{
+    GError *error = NULL;
+    gchar *custom_config_path;
+
+    custom_config_path = g_build_filename(tmp_dir,
+                                          CUSTOM_CONFIG_FILE_NAME,
+                                          NULL);
+    cut_take_string(custom_config_path);
+
+    milter_manager_configuration_add_load_path(config, tmp_dir);
+
+    cut_assert_path_not_exist(custom_config_path);
+    milter_manager_configuration_save_custom(config, "XXX", -1, &error);
+    gcut_assert_error(error);
+    cut_assert_path_exist(custom_config_path);
 }
 
 /*

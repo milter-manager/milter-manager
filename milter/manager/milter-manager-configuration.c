@@ -394,6 +394,54 @@ milter_manager_configuration_reload (MilterManagerConfiguration *configuration)
 }
 
 gboolean
+milter_manager_configuration_save_custom (MilterManagerConfiguration *configuration,
+                                          const gchar                *content,
+                                          gssize                      size,
+                                          GError                    **error)
+{
+    MilterManagerConfigurationPrivate *priv;
+    GError *local_error = NULL;
+    GList *node;
+    gboolean success = FALSE;
+    GString *inspected_tried_paths;
+
+    inspected_tried_paths = g_string_new("[");
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    for (node = priv->load_paths; node; node = g_list_next(node)) {
+        const gchar *dir = node->data;
+        gchar *full_path;
+
+        full_path = g_build_filename(dir, CUSTOM_CONFIG_FILE_NAME, NULL);
+        g_string_append_printf(inspected_tried_paths, "\"%s\"", full_path);
+        if (g_file_set_contents(full_path, content, size, &local_error)) {
+            success = TRUE;
+        } else {
+            g_string_append_printf(inspected_tried_paths, "[%s]",
+                                   local_error->message);
+            g_error_free(local_error);
+            local_error = NULL;
+            if (g_list_next(node))
+                g_string_append(inspected_tried_paths, ", ");
+        }
+        g_free(full_path);
+        if (success)
+            break;
+    }
+    g_string_append(inspected_tried_paths, "]");
+
+    if (!success) {
+        g_set_error(error,
+                    MILTER_MANAGER_CONFIGURATION_ERROR,
+                    MILTER_MANAGER_CONFIGURATION_ERROR_SAVE,
+                    "can't find writable custom config file in %s",
+                    inspected_tried_paths->str);
+        g_string_free(inspected_tried_paths, TRUE);
+    }
+
+    return success;
+}
+
+gboolean
 milter_manager_configuration_is_privilege_mode (MilterManagerConfiguration *configuration)
 {
     return MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration)->privilege_mode;
