@@ -77,6 +77,7 @@ static guint n_discard_emitted;
 static guint n_add_header_emitted;
 static guint n_insert_header_emitted;
 static guint n_change_header_emitted;
+static guint n_delete_header_emitted;
 static guint n_change_from_emitted;
 static guint n_add_recipient_emitted;
 static guint n_delete_recipient_emitted;
@@ -182,6 +183,14 @@ cb_change_header (MilterManagerChildren *children,
 }
 
 static void
+cb_delete_header (MilterManagerChildren *children,
+                  const gchar *name, guint32 index, const gchar *value,
+                  gpointer user_data)
+{
+    n_delete_header_emitted++;
+}
+
+static void
 cb_change_from (MilterManagerChildren *children,
                 const gchar *from, const gchar *parameters,
                 gpointer user_data)
@@ -274,6 +283,7 @@ setup_signals (MilterManagerChildren *children)
     CONNECT(add_header);
     CONNECT(insert_header);
     CONNECT(change_header);
+    CONNECT(delete_header);
     CONNECT(change_from);
     CONNECT(add_recipient);
     CONNECT(delete_recipient);
@@ -318,6 +328,7 @@ clear_n_emitted (void)
     n_add_header_emitted = 0;
     n_insert_header_emitted = 0;
     n_change_header_emitted = 0;
+    n_delete_header_emitted = 0;
     n_change_from_emitted = 0;
     n_add_recipient_emitted = 0;
     n_delete_recipient_emitted = 0;
@@ -673,6 +684,8 @@ get_n_emitted (const gchar *response)
         return n_insert_header_emitted;
     } else if (g_str_equal(response, "change-header")) {
         return n_change_header_emitted;
+    } else if (g_str_equal(response, "delete-header")) {
+        return n_delete_header_emitted;
     } else if (g_str_equal(response, "change-from")) {
         return n_change_from_emitted;
     } else if (g_str_equal(response, "add-recipient")) {

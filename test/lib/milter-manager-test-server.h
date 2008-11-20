@@ -67,6 +67,8 @@ guint                 milter_manager_test_server_get_n_insert_headers
                                                             (MilterManagerTestServer *server);
 guint                 milter_manager_test_server_get_n_change_headers
                                                             (MilterManagerTestServer *server);
+guint                 milter_manager_test_server_get_n_delete_headers
+                                                            (MilterManagerTestServer *server);
 guint                 milter_manager_test_server_get_n_change_froms
                                                             (MilterManagerTestServer *server);
 guint                 milter_manager_test_server_get_n_add_recipients

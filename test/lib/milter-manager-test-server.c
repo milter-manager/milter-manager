@@ -35,6 +35,7 @@ struct _MilterManagerTestServerPrivate
 {
     guint n_add_headers;
     guint n_change_headers;
+    guint n_delete_headers;
     guint n_insert_headers;
     guint n_change_froms;
     guint n_add_recipients;
@@ -87,6 +88,9 @@ static void change_header  (MilterReplySignals *reply,
                             const gchar        *name,
                             guint32             index,
                             const gchar        *value);
+static void delete_header  (MilterReplySignals *reply,
+                            const gchar        *name,
+                            guint32             index);
 static void change_from    (MilterReplySignals *reply,
                             const gchar        *from,
                             const gchar        *parameters);
@@ -129,6 +133,7 @@ reply_init (MilterReplySignalsClass *reply)
 
     reply->add_header       = add_header;
     reply->change_header    = change_header;
+    reply->delete_header    = delete_header;
     reply->insert_header    = insert_header;
     reply->change_from      = change_from;
     reply->add_recipient    = add_recipient;
@@ -156,6 +161,7 @@ milter_manager_test_server_init (MilterManagerTestServer *milter)
 
     priv->n_add_headers = 0;
     priv->n_change_headers = 0;
+    priv->n_delete_headers = 0;
     priv->n_insert_headers = 0;
     priv->n_change_froms = 0;
     priv->n_add_recipients = 0;
@@ -295,7 +301,19 @@ change_header (MilterReplySignals *reply,
 
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
     priv->n_change_headers++;
-    milter_headers_change_header(priv->headers, name, index,value);
+    milter_headers_change_header(priv->headers, name, index, value);
+}
+
+static void
+delete_header (MilterReplySignals *reply,
+               const gchar        *name,
+               guint32             index)
+{
+    MilterManagerTestServerPrivate *priv;
+
+    priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
+    priv->n_delete_headers++;
+    milter_headers_delete_header(priv->headers, name, index);
 }
 
 static void
@@ -413,6 +431,12 @@ guint
 milter_manager_test_server_get_n_change_headers (MilterManagerTestServer *server)
 {
     return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->n_change_headers;
+}
+
+guint
+milter_manager_test_server_get_n_delete_headers (MilterManagerTestServer *server)
+{
+    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->n_delete_headers;
 }
 
 guint
