@@ -57,7 +57,7 @@ setup_input_io (void)
     GIOChannel *channel;
     MilterReader *input_reader;
 
-    channel = gcut_io_channel_string_new(NULL);
+    channel = gcut_string_io_channel_new(NULL);
     g_io_channel_set_encoding(channel, NULL, NULL);
     gcut_string_io_channel_set_pipe_mode(channel, TRUE);
 
@@ -75,7 +75,7 @@ setup_output_io (void)
 {
     MilterWriter *output_writer;
 
-    output_channel = gcut_io_channel_string_new(NULL);
+    output_channel = gcut_string_io_channel_new(NULL);
     g_io_channel_set_encoding(output_channel, NULL, NULL);
     gcut_string_io_channel_set_pipe_mode(output_channel, TRUE);
     output = gcut_string_io_channel_get_string(output_channel);

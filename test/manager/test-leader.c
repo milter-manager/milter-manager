@@ -278,7 +278,7 @@ setup (void)
     milter_manager_configuration_load(config, "milter-manager.conf", &error);
     gcut_assert_error(error);
 
-    channel = gcut_io_channel_string_new(NULL);
+    channel = gcut_string_io_channel_new(NULL);
     g_io_channel_set_encoding(channel, NULL, NULL);
     g_io_channel_set_flags(channel, G_IO_FLAG_NONBLOCK, NULL);
     gcut_string_io_channel_set_pipe_mode(channel, TRUE);

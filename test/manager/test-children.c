@@ -1443,7 +1443,7 @@ test_writing_timeout (void)
     logger = milter_logger();
     log_signal_id = g_signal_connect(logger, "log", G_CALLBACK(cb_log), NULL);
 
-    channel = gcut_io_channel_string_new(NULL);
+    channel = gcut_string_io_channel_new(NULL);
     g_io_channel_set_encoding(channel, NULL, NULL);
     g_io_channel_set_buffered(channel, FALSE);
     g_io_channel_set_flags(channel, 0, NULL);
