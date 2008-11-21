@@ -57,6 +57,10 @@ void             milter_manager_control_command_encoder_encode_set_configuration
                                              gsize         *packet_size,
                                              const gchar   *configuration,
                                              gsize          configuration_size);
+void             milter_manager_control_command_encoder_encode_reload
+                                            (MilterManagerControlCommandEncoder *encoder,
+                                             gchar        **packet,
+                                             gsize         *packet_size);
 
 G_END_DECLS
 
