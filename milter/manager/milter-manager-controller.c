@@ -134,6 +134,35 @@ cb_decoder_set_configuration (MilterManagerControlCommandDecoder *decoder,
     }
 }
 
+static void
+cb_decoder_reload (MilterManagerControlCommandDecoder *decoder,
+                   gpointer user_data)
+{
+    MilterManagerController *controller = user_data;
+    MilterManagerControllerPrivate *priv;
+    GError *error = NULL;
+    MilterAgent *agent;
+    MilterEncoder *_encoder;
+    MilterManagerControlReplyEncoder *encoder;
+    gchar *packet;
+    gsize packet_size;
+
+    priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
+    milter_manager_configuration_reload(priv->configuration);
+
+    agent = MILTER_AGENT(controller);
+    _encoder = milter_agent_get_encoder(agent);
+    encoder = MILTER_MANAGER_CONTROL_REPLY_ENCODER(_encoder);
+    milter_manager_control_reply_encoder_encode_success(encoder,
+                                                        &packet,
+                                                        &packet_size);
+    if (!milter_agent_write_packet(agent, packet, packet_size, &error)) {
+        milter_error("failed to write control reply success packet: <%s>",
+                     error->message);
+        g_error_free(error);
+    }
+}
+
 static MilterDecoder *
 decoder_new (MilterAgent *agent)
 {
@@ -146,6 +175,7 @@ decoder_new (MilterAgent *agent)
                      agent)
 
     CONNECT(set_configuration);
+    CONNECT(reload);
 
 #undef CONNECT
 

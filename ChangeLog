@@ -1,3 +1,8 @@
+2008-11-21  Kouhei Sutou  <kou@cozmixng.org>
+
+	* test/manager/test-controller.c,
+	milter/manager/milter-manager-control-command-decoder.c: support reload.
+
 2008-11-21  Hiroyuki Ikezoe  <poincare@ikezoe.net>
 
 	* milter/manager/milter-manager-children.c: Emit "delete-header".

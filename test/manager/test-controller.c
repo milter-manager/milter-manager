@@ -30,6 +30,7 @@
 #include <gcutter.h>
 
 void test_set_configuration (void);
+void test_reload (void);
 
 static MilterManagerConfiguration *config;
 static MilterManagerController *controller;
@@ -96,6 +97,7 @@ setup_io (void)
 void
 setup (void)
 {
+    const gchar *config_dir;
     MilterEncoder *encoder;
 
     config = milter_manager_configuration_new(NULL);
@@ -120,6 +122,10 @@ setup (void)
     if (g_mkdir_with_parents(tmp_dir, 0700) == -1)
         cut_assert_errno();
     milter_manager_configuration_add_load_path(config, tmp_dir);
+
+    config_dir = g_getenv("MILTER_MANAGER_CONFIG_DIR");
+    if (config_dir)
+        milter_manager_configuration_add_load_path(config, config_dir);
 
     custom_config_path = g_build_filename(tmp_dir,
                                           CUSTOM_CONFIG_FILE_NAME,
@@ -198,6 +204,32 @@ test_set_configuration (void)
     pump_all_events();
 
     cut_assert_path_exist(custom_config_path);
+
+    g_free(packet);
+    milter_manager_control_reply_encoder_encode_success(reply_encoder,
+                                                        &packet, &packet_size);
+    output = gcut_string_io_channel_get_string(output_channel);
+    cut_assert_equal_memory(packet, packet_size,
+                            output->str, output->len);
+}
+
+void
+test_reload (void)
+{
+    GError *error = NULL;
+
+    cut_assert_false(milter_manager_configuration_is_privilege_mode(config));
+    g_file_set_contents(custom_config_path,
+                        "security.privilege_mode = true", -1,
+                        &error);
+    gcut_assert_error(error);
+
+    milter_manager_control_command_encoder_encode_reload(command_encoder,
+                                                         &packet, &packet_size);
+    milter_writer_write(writer, packet, packet_size, NULL, &error);
+    gcut_assert_error(error);
+    pump_all_events();
+    cut_assert_true(milter_manager_configuration_is_privilege_mode(config));
 
     g_free(packet);
     milter_manager_control_reply_encoder_encode_success(reply_encoder,
