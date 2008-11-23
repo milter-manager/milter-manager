@@ -12,18 +12,24 @@ if test -z "$CUTTER"; then
     CUTTER="`make -s -C $BASE_DIR echo-cutter`"
 fi
 
+CUTTER_ARGS=
 CUTTER_WRAPPER=
 if test x"$CUTTER_DEBUG" = x"yes"; then
     CUTTER_WRAPPER="$top_dir/libtool --mode=execute gdb --args"
+    CUTTER_ARGS="--keep-opening-modules"
+elif test x"$CUTTER_CHECK_LEAK" = x"yes"; then
+    CUTTER_WRAPPER="$top_dir/libtool --mode=execute valgrind "
+    CUTTER_WRAPPER="$CUTTER_WRAPPER --leak-check=full --show-reachable=yes -v"
+    CUTTER_ARGS="--keep-opening-modules"
 fi
 
 export CUTTER
 
-CUTTER_ARGS="-s $BASE_DIR --exclude-directory fixtures"
+CUTTER_ARGS="$CUTTER_ARGS -s $BASE_DIR --exclude-directory fixtures"
 if echo "$@" | grep -- --mode=analyze > /dev/null; then
     :
 else
-    CUTTER_ARGS="$CUTTER_ARGS"
+    CUTTER_ARGS="$CUTTER_ARGS --stream=xml --stream-log-directory $top_dir/log"
 fi
 if test x"$USE_GTK" = x"yes"; then
     CUTTER_ARGS="-u gtk $CUTTER_ARGS"
