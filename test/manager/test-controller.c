@@ -40,7 +40,6 @@ static GError *actual_error;
 
 static MilterWriter *writer;
 static GIOChannel *output_channel;
-static GString *output;
 
 static MilterManagerControlCommandEncoder *command_encoder;
 static MilterManagerControlReplyEncoder *reply_encoder;
@@ -64,9 +63,9 @@ setup_input_io (void)
     input_reader = milter_reader_io_channel_new(channel);
     milter_agent_set_reader(MILTER_AGENT(controller), input_reader);
     g_object_unref(input_reader);
+    g_io_channel_unref(channel);
 
     writer = milter_writer_io_channel_new(channel);
-
     g_io_channel_unref(channel);
 }
 
@@ -78,13 +77,10 @@ setup_output_io (void)
     output_channel = gcut_string_io_channel_new(NULL);
     g_io_channel_set_encoding(output_channel, NULL, NULL);
     gcut_string_io_channel_set_pipe_mode(output_channel, TRUE);
-    output = gcut_string_io_channel_get_string(output_channel);
 
     output_writer = milter_writer_io_channel_new(output_channel);
     milter_agent_set_writer(MILTER_AGENT(controller), output_writer);
     g_object_unref(output_writer);
-
-    g_io_channel_unref(output_channel);
 }
 
 static void
@@ -191,6 +187,7 @@ void
 test_set_configuration (void)
 {
     const gchar configuration[] = "XXX";
+    GString *output;
     GError *error = NULL;
 
     cut_assert_path_not_exist(custom_config_path);
@@ -216,6 +213,7 @@ test_set_configuration (void)
 void
 test_reload (void)
 {
+    GString *output;
     GError *error = NULL;
 
     cut_assert_false(milter_manager_configuration_is_privilege_mode(config));
