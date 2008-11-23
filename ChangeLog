@@ -1,3 +1,8 @@
+2008-11-23  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/manager/milter-manager-configuration.c
+	(milter_manager_configuration_load): fix a memory leak.
+
 2008-11-21  Kouhei Sutou  <kou@cozmixng.org>
 
 	* test/: gcut_io_channel_string_new() -> gcut_string_io_channel_new().

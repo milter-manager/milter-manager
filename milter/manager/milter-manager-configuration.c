@@ -320,7 +320,11 @@ milter_manager_configuration_load (MilterManagerConfiguration *configuration,
         }
 
         if (full_path) {
-            return configuration_class->load(configuration, full_path, error);
+            gboolean success;
+
+            success = configuration_class->load(configuration, full_path, error);
+            g_free(full_path);
+            return success;
         } else {
             GString *inspected_load_paths;
 
