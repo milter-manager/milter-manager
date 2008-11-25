@@ -1,3 +1,7 @@
+2008-11-25  Kouhei Sutou  <kou@cozmixng.org>
+
+	* ui/www/milter-manager-admin/: add an admin interface skeleton.
+
 2008-11-23  Kouhei Sutou  <kou@cozmixng.org>
 
 	* test/manager/test-controller.c: fix memory management.
