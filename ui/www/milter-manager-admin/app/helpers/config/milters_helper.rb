@@ -1,2 +1,0 @@
-module Config::MiltersHelper
-end
