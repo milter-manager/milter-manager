@@ -1,0 +1,19 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  name: MyString
+  command: MyString
+  target_hosts: MyText
+  target_addresses: MyText
+  target_senders: MyText
+  target_recipients: MyText
+  target_headers: MyText
+
+two:
+  name: MyString
+  command: MyString
+  target_hosts: MyText
+  target_addresses: MyText
+  target_senders: MyText
+  target_recipients: MyText
+  target_headers: MyText
