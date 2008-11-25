@@ -1,0 +1,13 @@
+<% form_for(@milter, :url => config_milters_path) do |form| %>
+  <%= form.error_messages %>
+
+  <table>
+    <tr>
+      <th><%= form.label("name") %></th>
+      <td><%= form.text_field("name") %></td>
+    </tr>
+    <tr>
+      <td rowspawn="2"><%= form.submit("save") %></td>
+    </tr>
+  </table>
+<% end %>

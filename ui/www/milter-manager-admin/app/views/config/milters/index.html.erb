@@ -1,0 +1,11 @@
+<table class="list">
+<% @milters.each do |milter| -%>
+  <tr>
+    <td><%= link_to(h(milter.name), config_milter_path(milter)) %></td>
+  </tr>
+<% end -%>
+</table>
+
+<ul class="actions">
+  <li><%= link_to("create", new_config_milter_path) %></li>
+</ul>

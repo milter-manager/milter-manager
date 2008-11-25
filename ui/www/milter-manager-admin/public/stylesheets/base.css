@@ -1,0 +1,20 @@
+div.body
+{
+  position: relative;
+}
+
+div.flash-box-container
+{
+  position: relative;
+}
+
+div.flash-box
+{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: #fcfffc;
+  border: 1px solid #cdc;
+  border-width: 1px 0;
+}
