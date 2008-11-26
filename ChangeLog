@@ -1,3 +1,8 @@
+2008-11-26  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/manager/milter-manager-children.c: Invoke milter_statistics
+	on both at first and last of child life.
+
 2008-11-25  Kouhei Sutou  <kou@cozmixng.org>
 
 	* ui/www/milter-manager-admin/: move to new path.
