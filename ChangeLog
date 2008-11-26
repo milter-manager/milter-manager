@@ -1,5 +1,7 @@
 2008-11-26  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/test/Makefile.am: add missing files.
+
 	* binding/ruby/test/test-control-{reply,command}-encoder.rb:
 	follow the below change.
 
