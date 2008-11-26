@@ -805,7 +805,7 @@ milter_manager_leader_end_of_header (MilterManagerLeader *leader)
 
 MilterStatus
 milter_manager_leader_body (MilterManagerLeader *leader,
-                                const gchar *chunk, gsize size)
+                            const gchar *chunk, gsize size)
 {
     MilterManagerLeaderPrivate *priv;
 
@@ -821,15 +821,39 @@ milter_manager_leader_body (MilterManagerLeader *leader,
         return MILTER_STATUS_NOT_CHANGE; /* FIXME: reject or accept */
 }
 
+static gboolean
+is_replied_state (MilterManagerLeaderState state)
+{
+    switch (state) {
+      case MILTER_MANAGER_LEADER_STATE_NEGOTIATE:
+      case MILTER_MANAGER_LEADER_STATE_CONNECT:
+      case MILTER_MANAGER_LEADER_STATE_HELO:
+      case MILTER_MANAGER_LEADER_STATE_ENVELOPE_FROM:
+      case MILTER_MANAGER_LEADER_STATE_ENVELOPE_RECIPIENT:
+      case MILTER_MANAGER_LEADER_STATE_DATA:
+      case MILTER_MANAGER_LEADER_STATE_UNKNOWN:
+      case MILTER_MANAGER_LEADER_STATE_HEADER:
+      case MILTER_MANAGER_LEADER_STATE_END_OF_HEADER:
+      case MILTER_MANAGER_LEADER_STATE_BODY:
+      case MILTER_MANAGER_LEADER_STATE_END_OF_MESSAGE:
+      case MILTER_MANAGER_LEADER_STATE_QUIT:
+      case MILTER_MANAGER_LEADER_STATE_ABORT:
+        return FALSE;
+      default:
+        return TRUE;
+        break;
+    }
+}
+
 MilterStatus
 milter_manager_leader_end_of_message (MilterManagerLeader *leader,
-                                          const gchar             *chunk,
-                                          gsize                    size)
+                                      const gchar             *chunk,
+                                      gsize                    size)
 {
     MilterManagerLeaderPrivate *priv;
 
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
-    if (priv->state == MILTER_MANAGER_LEADER_STATE_BODY_REPLIED) {
+    if (is_replied_state(priv->state)) {
         priv->state = MILTER_MANAGER_LEADER_STATE_END_OF_MESSAGE;
     } else {
         priv->sent_end_of_message = TRUE;

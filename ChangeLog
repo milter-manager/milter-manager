@@ -10,6 +10,9 @@
 	* milter/manager/milter-manager-children.c: copy header to
 	original_headers in "end-of-message" instead of "end-of-header"
 	because some milter set MILTER_STEP_NO_END_OF_HEADER flag.
+	* milter/manager/milter-manager-leader.c
+	(milter_manager_leader_end_of_message):  Set new state to
+	END_OF_MESSAGE if the current_state is XX_REPLIED.
 
 2008-11-25  Kouhei Sutou  <kou@cozmixng.org>
 
