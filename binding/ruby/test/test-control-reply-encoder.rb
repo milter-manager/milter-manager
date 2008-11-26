@@ -6,24 +6,24 @@ class TestControlReplyEncoder < Test::Unit::TestCase
   end
 
   def test_success
-    assert_equal(packet("s"), @encoder.encode_success)
+    assert_equal(packet("success"), @encoder.encode_success)
   end
 
   def test_failure
     message = "Failure!"
-    assert_equal(packet("f", message),
+    assert_equal(packet("failure", message),
                  @encoder.encode_failure(message))
   end
 
   def test_error
     message = "Error!"
-    assert_equal(packet("e", message),
+    assert_equal(packet("error", message),
                  @encoder.encode_error(message))
   end
 
   def test_configuration
     configuration = ["security.privilege_mode = true", "# comment"].join("\n")
-    assert_equal(packet("c", configuration),
+    assert_equal(packet("configuration", configuration),
                  @encoder.encode_configuration(configuration))
   end
 end

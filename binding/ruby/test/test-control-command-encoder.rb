@@ -7,7 +7,7 @@ class TestControlCommandEncoder < Test::Unit::TestCase
 
   def test_set_configuration
     configuration = "XXX"
-    assert_equal(packet("S", configuration),
+    assert_equal(packet("set-configuration", configuration),
                  @encoder.encode_set_configuration(configuration))
   end
 end
