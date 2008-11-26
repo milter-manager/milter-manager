@@ -2091,8 +2091,6 @@ milter_manager_children_end_of_header (MilterManagerChildren *children)
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     priv->current_state = MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER;
-    if (!priv->original_headers)
-        priv->original_headers = milter_headers_copy(priv->headers);
     priv->processing_header_index = 0;
     init_command_waiting_child_queue(children, MILTER_COMMAND_END_OF_HEADER);
 
@@ -2257,6 +2255,9 @@ milter_manager_children_end_of_message (MilterManagerChildren *children,
         return FALSE;
 
     init_command_waiting_child_queue(children, MILTER_COMMAND_END_OF_MESSAGE);
+
+    if (!priv->original_headers)
+        priv->original_headers = milter_headers_copy(priv->headers);
 
     if (priv->end_of_message_chunk)
         g_free(priv->end_of_message_chunk);
