@@ -257,6 +257,12 @@ cb_connection_established (MilterClient *client, MilterClientContext *context,
     setup_context_signals(context, configuration);
 }
 
+static void
+cb_error (MilterAgent *agent, GError *error, gpointer user_data)
+{
+    g_print("%s\n", error->message);
+}
+
 static gboolean
 cb_free_controller (gpointer data)
 {

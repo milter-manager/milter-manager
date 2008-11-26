@@ -5,6 +5,8 @@
 	* milter/manager/milter-manager.c (milter_manager_main): Output error
 	message if milter_client_main() fails.
 	* milter/manager/milter-manager.c: Fail if invalid spec is specified.
+	* milter/manager/milter-manager.c: Output error message on "error"
+	signal of MilterClient.
 
 2008-11-25  Kouhei Sutou  <kou@cozmixng.org>
 
