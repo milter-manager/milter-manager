@@ -44,5 +44,5 @@ G_END_DECLS
 #endif /* __MILTER_MANAGER_H__ */
 
 /*
-vi:nowrap:ai:expandtab:sw=4
+vi:ts=4:nowrap:ai:expandtab:sw=4
 */
