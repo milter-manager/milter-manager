@@ -389,6 +389,7 @@ milter_manager_main (void)
     void (*sigint_handler) (int signum);
     const gchar *config_dir_env;
     guint control_connection_watch_id = 0;
+    GError *error = NULL;
 
     configuration = milter_manager_configuration_new(NULL);
     config_dir_env = g_getenv("MILTER_MANAGER_CONFIG_DIR");
@@ -402,13 +403,14 @@ milter_manager_main (void)
     control_connection_watch_id = setup_control_connection(configuration);
 
     client = milter_client_new();
-    milter_client_set_connection_spec(client, "inet:10025", NULL);
+    milter_client_set_connection_spec(client, "inet:10025", &error);
     g_signal_connect(client, "connection-established",
                      G_CALLBACK(cb_connection_established), configuration);
 
     current_client = client;
     sigint_handler = signal(SIGINT, shutdown_client);
-    milter_client_main(client);
+    if (!milter_client_main(client))
+        g_print("Failed to start milter-manager process.\n");
     signal(SIGINT, sigint_handler);
 
     current_client = NULL;

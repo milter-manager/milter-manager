@@ -2,6 +2,8 @@
 
 	* milter/manager/milter-manager-children.c: Invoke milter_statistics
 	on both at first and last of child life.
+	* milter/manager/milter-manager.c (milter_manager_main): Output error
+	message if milter_client_main() fails.
 
 2008-11-25  Kouhei Sutou  <kou@cozmixng.org>
 
