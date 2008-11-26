@@ -15,6 +15,8 @@
 	END_OF_MESSAGE if the current_state is XX_REPLIED.
 	* milter/manager/milter-manager-children.c: Initialize
 	process_header_index with 0 in "end-of-message" command.
+	* milter/manager/milter-manager-children.c: Do not store some command
+	in command_queue.
 
 2008-11-25  Kouhei Sutou  <kou@cozmixng.org>
 

@@ -1677,10 +1677,8 @@ init_command_waiting_child_queue (MilterManagerChildren *children, MilterCommand
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    if (command != MILTER_COMMAND_BODY ||
-        !g_list_find(priv->command_queue, GINT_TO_POINTER(MILTER_COMMAND_BODY))) {
+    if (!g_list_find(priv->command_queue, GINT_TO_POINTER(command)))
         priv->command_queue = g_list_append(priv->command_queue, GINT_TO_POINTER(command));
-    }
 
     if (priv->command_waiting_child_queue)
         return;
