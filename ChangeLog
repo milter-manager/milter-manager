@@ -13,6 +13,8 @@
 	* milter/manager/milter-manager-leader.c
 	(milter_manager_leader_end_of_message):  Set new state to
 	END_OF_MESSAGE if the current_state is XX_REPLIED.
+	* milter/manager/milter-manager-children.c: Initialize
+	process_header_index with 0 in "end-of-message" command.
 
 2008-11-25  Kouhei Sutou  <kou@cozmixng.org>
 
