@@ -27,6 +27,9 @@
 #include <gcutter.h>
 
 void test_decode_set_configuration (void);
+void test_decode_get_configuration (void);
+void test_decode_reload (void);
+void test_decode_get_status (void);
 void test_decode_unknown (void);
 
 static MilterDecoder *decoder;
@@ -36,6 +39,9 @@ static GError *expected_error;
 static GError *actual_error;
 
 static gint n_set_configuration_received;
+static gint n_get_configuration_received;
+static gint n_reload_received;
+static gint n_get_status_received;
 
 static gchar *actual_configuration;
 static gsize actual_configuration_size;
@@ -51,12 +57,34 @@ cb_set_configuration (MilterManagerControlCommandDecoder *decoder,
 }
 
 static void
+cb_get_configuration (MilterManagerControlCommandDecoder *decoder,
+                      gpointer user_data)
+{
+    n_get_configuration_received++;
+}
+
+static void
+cb_reload (MilterManagerControlCommandDecoder *decoder, gpointer user_data)
+{
+    n_reload_received++;
+}
+
+static void
+cb_get_status (MilterManagerControlCommandDecoder *decoder, gpointer user_data)
+{
+    n_get_status_received++;
+}
+
+static void
 setup_signals (MilterDecoder *decoder)
 {
 #define CONNECT(name)                                                   \
     g_signal_connect(decoder, #name, G_CALLBACK(cb_ ## name), NULL)
 
     CONNECT(set_configuration);
+    CONNECT(get_configuration);
+    CONNECT(reload);
+    CONNECT(get_status);
 
 #undef CONNECT
 }
@@ -71,6 +99,9 @@ setup (void)
     actual_error = NULL;
 
     n_set_configuration_received = 0;
+    n_get_configuration_received = 0;
+    n_reload_received = 0;
+    n_get_status_received = 0;
 
     buffer = g_string_new(NULL);
 
@@ -81,9 +112,8 @@ setup (void)
 void
 teardown (void)
 {
-    if (decoder) {
+    if (decoder)
         g_object_unref(decoder);
-    }
 
     if (buffer)
         g_string_free(buffer, TRUE);
@@ -129,6 +159,36 @@ test_decode_set_configuration (void)
     cut_assert_equal_int(1, n_set_configuration_received);
     cut_assert_equal_memory(configuration, sizeof(configuration) - 1,
                             actual_configuration, actual_configuration_size);
+}
+
+void
+test_decode_get_configuration (void)
+{
+    g_string_append(buffer, "get-configuration");
+    g_string_append_c(buffer, '\0');
+
+    gcut_assert_error(decode());
+    cut_assert_equal_int(1, n_get_configuration_received);
+}
+
+void
+test_decode_reload (void)
+{
+    g_string_append(buffer, "reload");
+    g_string_append_c(buffer, '\0');
+
+    gcut_assert_error(decode());
+    cut_assert_equal_int(1, n_reload_received);
+}
+
+void
+test_decode_get_status (void)
+{
+    g_string_append(buffer, "get-status");
+    g_string_append_c(buffer, '\0');
+
+    gcut_assert_error(decode());
+    cut_assert_equal_int(1, n_get_status_received);
 }
 
 void

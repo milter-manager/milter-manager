@@ -60,7 +60,7 @@ struct _MilterManagerControlCommandDecoderClass
     void (*reload)               (MilterManagerControlCommandDecoder *decoder);
     void (*stop_child)           (MilterManagerControlCommandDecoder *decoder,
                                   const gchar *name);
-    void (*get_children_info)    (MilterManagerControlCommandDecoder *decoder);
+    void (*get_status)           (MilterManagerControlCommandDecoder *decoder);
 };
 
 GQuark         milter_manager_control_command_decoder_error_quark (void);

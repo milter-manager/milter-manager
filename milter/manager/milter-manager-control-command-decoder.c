@@ -31,7 +31,7 @@ enum
     GET_CONFIGURATION,
     RELOAD,
     STOP_CHILD,
-    GET_CHILDREN_INFO,
+    GET_STATUS,
     LAST_SIGNAL
 };
 
@@ -105,12 +105,12 @@ milter_manager_control_command_decoder_class_init (MilterManagerControlCommandDe
                      g_cclosure_marshal_VOID__STRING,
                      G_TYPE_NONE, 1, G_TYPE_STRING);
 
-    signals[GET_CHILDREN_INFO] =
-        g_signal_new("get-children-info",
+    signals[GET_STATUS] =
+        g_signal_new("get-status",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterManagerControlCommandDecoderClass,
-                                     get_children_info),
+                                     get_status),
                      NULL, NULL,
                      g_cclosure_marshal_VOID__VOID,
                      G_TYPE_NONE, 0);
@@ -155,7 +155,14 @@ decode_get_configuration (MilterDecoder *decoder,
                           const gchar *content, gint length,
                           GError **error)
 {
-    /* FIXME */
+    if (!milter_decoder_check_command_length(
+            content, length, 0,
+            MILTER_DECODER_COMPARE_EXACT, error,
+            "get-configuration command"))
+        return FALSE;
+
+    g_signal_emit(decoder, signals[GET_CONFIGURATION], 0, content, length);
+
     return TRUE;
 }
 
@@ -171,6 +178,22 @@ decode_reload (MilterDecoder *decoder,
         return FALSE;
 
     g_signal_emit(decoder, signals[RELOAD], 0);
+
+    return TRUE;
+}
+
+static gboolean
+decode_get_status (MilterDecoder *decoder,
+                   const gchar *content, gint length,
+                   GError **error)
+{
+    if (!milter_decoder_check_command_length(
+            content, length, 0,
+            MILTER_DECODER_COMPARE_EXACT, error,
+            "get status command"))
+        return FALSE;
+
+    g_signal_emit(decoder, signals[GET_STATUS], 0);
 
     return TRUE;
 }
@@ -209,9 +232,9 @@ decode (MilterDecoder *decoder, GError **error)
 /*
     } else if (g_str_equal(buffer, MILTER_MANAGER_CONTROL_COMMAND_STOP_CHILD)) {
         success = decode_stop_child(decoder, content, content_length, error);
+*/
     } else if (g_str_equal(buffer, MILTER_MANAGER_CONTROL_COMMAND_GET_STATUS)) {
         success = decode_get_status(decoder, content, content_length, error);
-*/
     } else {
         g_set_error(error,
                     MILTER_MANAGER_CONTROL_COMMAND_DECODER_ERROR,

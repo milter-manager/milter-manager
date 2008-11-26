@@ -1,5 +1,9 @@
 2008-11-26  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-control-command-decoder.c
+	(decode_get_status),
+	test/manager/test-control-command-decoder.c: implement.
+
 	* milter/manager/milter-manager-control-command-encoder.c
 	(milter_manager_control_command_encoder_encode_get_status),
 	test/manager/test-control-command-encoder.c
