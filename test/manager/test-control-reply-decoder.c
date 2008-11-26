@@ -163,7 +163,8 @@ decode (void)
 void
 test_decode_success (void)
 {
-    g_string_append_c(buffer, 's');
+    g_string_append(buffer, "success");
+    g_string_append_c(buffer, '\0');
 
     gcut_assert_error(decode());
     cut_assert_equal_int(1, n_success_received);
@@ -174,7 +175,8 @@ test_decode_failure (void)
 {
     const gchar message[] = "Failure!";
 
-    g_string_append_c(buffer, 'f');
+    g_string_append(buffer, "failure");
+    g_string_append_c(buffer, '\0');
     g_string_append(buffer, message);
 
     gcut_assert_error(decode());
@@ -187,7 +189,8 @@ test_decode_error (void)
 {
     const gchar message[] = "Error!";
 
-    g_string_append_c(buffer, 'e');
+    g_string_append(buffer, "error");
+    g_string_append_c(buffer, '\0');
     g_string_append(buffer, message);
 
     gcut_assert_error(decode());
@@ -202,7 +205,8 @@ test_decode_configuration (void)
         "security.privilege_mode = true\n"
         "# comment\n";
 
-    g_string_append_c(buffer, 'c');
+    g_string_append(buffer, "configuration");
+    g_string_append_c(buffer, '\0');
     g_string_append(buffer, configuration);
 
     gcut_assert_error(decode());
@@ -214,14 +218,15 @@ test_decode_configuration (void)
 void
 test_decode_unknown (void)
 {
-    gchar unknown_command = 'X';
+    gchar unknown_command[] = "unknown";
 
-    g_string_append_c(buffer, unknown_command);
+    g_string_append(buffer, unknown_command);
+    g_string_append_c(buffer, '\0');
 
     expected_error = g_error_new(
         MILTER_MANAGER_CONTROL_REPLY_DECODER_ERROR,
         MILTER_MANAGER_CONTROL_REPLY_DECODER_ERROR_UNEXPECTED_REPLY,
-        "unexpected reply was received: %c", unknown_command);
+        "unexpected reply was received: <%s>", unknown_command);
     actual_error = decode();
     gcut_assert_equal_error(expected_error, actual_error);
 }

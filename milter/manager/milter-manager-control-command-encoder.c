@@ -68,7 +68,8 @@ milter_manager_control_command_encoder_encode_set_configuration (
     _encoder = MILTER_ENCODER(encoder);
     buffer = milter_encoder_get_buffer(_encoder);
 
-    g_string_append_c(buffer, MILTER_MANAGER_CONTROL_COMMAND_SET_CONFIGURATION);
+    g_string_append(buffer, MILTER_MANAGER_CONTROL_COMMAND_SET_CONFIGURATION);
+    g_string_append_c(buffer, '\0');
     g_string_append_len(buffer, configuration, configuration_size);
     milter_encoder_pack(_encoder, packet, packet_size);
 }
@@ -84,7 +85,8 @@ milter_manager_control_command_encoder_encode_reload (MilterManagerControlComman
     _encoder = MILTER_ENCODER(encoder);
     buffer = milter_encoder_get_buffer(_encoder);
 
-    g_string_append_c(buffer, MILTER_MANAGER_CONTROL_COMMAND_RELOAD);
+    g_string_append(buffer, MILTER_MANAGER_CONTROL_COMMAND_RELOAD);
+    g_string_append_c(buffer, '\0');
     milter_encoder_pack(_encoder, packet, packet_size);
 }
 

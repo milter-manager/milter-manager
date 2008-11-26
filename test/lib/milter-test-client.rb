@@ -249,7 +249,7 @@ class MilterTestClient
 
   def setup_decoder
     @decoder.class.signals.each do |signal|
-      next if signal == "decode-command"
+      next if signal == "decode"
       @decoder.signal_connect(signal) do |_, *args|
         info(signal)
         status = "receive: #{signal}"

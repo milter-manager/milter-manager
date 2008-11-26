@@ -1,3 +1,12 @@
+2008-11-26  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/manager/milter-manager-control-command-encoder.c,
+	milter/manager/milter-manager-control-command-decoder.c,
+	milter/manager/milter-manager-control-reply-encoder.c,
+	milter/manager/milter-manager-control-reply-decoder.c,
+	milter/manager/milter-manager-control-protocol.h,
+	test/milter/manager/test-control-*.c: use long command name.
+
 2008-11-26  Hiroyuki Ikezoe  <poincare@ikezoe.net>
 
 	* milter/manager/milter-manager-children.c: Invoke milter_statistics
@@ -21,6 +30,7 @@
 	processing_header_index with 0 before sending "end-of-message" to next
 	child.
 	
+>>>>>>> .r1480
 2008-11-25  Kouhei Sutou  <kou@cozmixng.org>
 
 	* ui/www/milter-manager-admin/: move to new path.

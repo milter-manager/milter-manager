@@ -73,7 +73,8 @@ pack (GString *buffer)
 void
 test_encode_success (void)
 {
-    g_string_append_c(expected, 's');
+    g_string_append(expected, "success");
+    g_string_append_c(expected, '\0');
 
     pack(expected);
     milter_manager_control_reply_encoder_encode_success(encoder,
@@ -88,7 +89,8 @@ test_encode_failure (void)
 {
     const gchar message[] = "Failure!";
 
-    g_string_append_c(expected, 'f');
+    g_string_append(expected, "failure");
+    g_string_append_c(expected, '\0');
     g_string_append(expected, message);
 
     pack(expected);
@@ -105,7 +107,8 @@ test_encode_error (void)
 {
     const gchar message[] = "Error!";
 
-    g_string_append_c(expected, 'e');
+    g_string_append(expected, "error");
+    g_string_append_c(expected, '\0');
     g_string_append(expected, message);
 
     pack(expected);
@@ -124,7 +127,8 @@ test_encode_configuration (void)
         "security.privilege_mode = true\n"
         "# comment\n";
 
-    g_string_append_c(expected, 'c');
+    g_string_append(expected, "configuration");
+    g_string_append_c(expected, '\0');
     g_string_append(expected, configuration);
 
     pack(expected);

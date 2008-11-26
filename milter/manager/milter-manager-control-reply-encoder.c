@@ -67,7 +67,8 @@ milter_manager_control_reply_encoder_encode_success (MilterManagerControlReplyEn
     _encoder = MILTER_ENCODER(encoder);
     buffer = milter_encoder_get_buffer(_encoder);
 
-    g_string_append_c(buffer, MILTER_MANAGER_CONTROL_REPLY_SUCCESS);
+    g_string_append(buffer, MILTER_MANAGER_CONTROL_REPLY_SUCCESS);
+    g_string_append_c(buffer, '\0');
     milter_encoder_pack(_encoder, packet, packet_size);
 }
 
@@ -83,7 +84,8 @@ milter_manager_control_reply_encoder_encode_failure (MilterManagerControlReplyEn
     _encoder = MILTER_ENCODER(encoder);
     buffer = milter_encoder_get_buffer(_encoder);
 
-    g_string_append_c(buffer, MILTER_MANAGER_CONTROL_REPLY_FAILURE);
+    g_string_append(buffer, MILTER_MANAGER_CONTROL_REPLY_FAILURE);
+    g_string_append_c(buffer, '\0');
     g_string_append(buffer, message);
     milter_encoder_pack(_encoder, packet, packet_size);
 }
@@ -101,7 +103,8 @@ milter_manager_control_reply_encoder_encode_error (MilterManagerControlReplyEnco
     _encoder = MILTER_ENCODER(encoder);
     buffer = milter_encoder_get_buffer(_encoder);
 
-    g_string_append_c(buffer, MILTER_MANAGER_CONTROL_REPLY_ERROR);
+    g_string_append(buffer, MILTER_MANAGER_CONTROL_REPLY_ERROR);
+    g_string_append_c(buffer, '\0');
     g_string_append(buffer, message);
     milter_encoder_pack(_encoder, packet, packet_size);
 }
@@ -119,7 +122,8 @@ milter_manager_control_reply_encoder_encode_configuration (
     _encoder = MILTER_ENCODER(encoder);
     buffer = milter_encoder_get_buffer(_encoder);
 
-    g_string_append_c(buffer, MILTER_MANAGER_CONTROL_REPLY_CONFIGURATION);
+    g_string_append(buffer, MILTER_MANAGER_CONTROL_REPLY_CONFIGURATION);
+    g_string_append_c(buffer, '\0');
     g_string_append_len(buffer, configuration, configuration_size);
     milter_encoder_pack(_encoder, packet, packet_size);
 }

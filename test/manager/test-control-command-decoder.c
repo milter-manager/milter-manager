@@ -27,6 +27,7 @@
 #include <gcutter.h>
 
 void test_decode_set_configuration (void);
+void test_decode_unknown (void);
 
 static MilterDecoder *decoder;
 static GString *buffer;
@@ -120,13 +121,30 @@ test_decode_set_configuration (void)
         "security.privilege_mode = true\n"
         "# comment\n";
 
-    g_string_append_c(buffer, 'S');
+    g_string_append(buffer, "set-configuration");
+    g_string_append_c(buffer, '\0');
     g_string_append(buffer, configuration);
 
     gcut_assert_error(decode());
     cut_assert_equal_int(1, n_set_configuration_received);
     cut_assert_equal_memory(configuration, sizeof(configuration) - 1,
                             actual_configuration, actual_configuration_size);
+}
+
+void
+test_decode_unknown (void)
+{
+    gchar unknown_command[] = "unknown";
+
+    g_string_append(buffer, unknown_command);
+    g_string_append_c(buffer, '\0');
+
+    expected_error = g_error_new(
+        MILTER_MANAGER_CONTROL_COMMAND_DECODER_ERROR,
+        MILTER_MANAGER_CONTROL_COMMAND_DECODER_ERROR_UNEXPECTED_COMMAND,
+        "unexpected command was received: <%s>", unknown_command);
+    actual_error = decode();
+    gcut_assert_equal_error(expected_error, actual_error);
 }
 
 /*

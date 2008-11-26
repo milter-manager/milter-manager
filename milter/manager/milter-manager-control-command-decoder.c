@@ -43,9 +43,8 @@ G_DEFINE_TYPE(MilterManagerControlCommandDecoder,
 
 static void dispose        (GObject         *object);
 
-static gboolean decode_command  (MilterDecoder *decoder,
-                                 gchar          command,
-                                 GError       **error);
+static gboolean decode     (MilterDecoder *decoder,
+                            GError       **error);
 
 static void
 milter_manager_control_command_decoder_class_init (MilterManagerControlCommandDecoderClass *klass)
@@ -58,7 +57,7 @@ milter_manager_control_command_decoder_class_init (MilterManagerControlCommandDe
 
     gobject_class->dispose      = dispose;
 
-    decoder_class->decode_command = decode_command;
+    decoder_class->decode = decode;
 
     signals[SET_CONFIGURATION] =
         g_signal_new("set-configuration",
@@ -143,35 +142,30 @@ milter_manager_control_command_decoder_new (void)
 }
 
 static gboolean
-decode_command_set_configuration (MilterDecoder *decoder, GError **error)
+decode_set_configuration (MilterDecoder *decoder,
+                          const gchar *content, gint length,
+                          GError **error)
 {
-    const gchar *buffer;
-    gint32 command_length;
-
-    command_length = milter_decoder_get_command_length(decoder);
-    buffer = milter_decoder_get_buffer(decoder);
-    g_signal_emit(decoder, signals[SET_CONFIGURATION], 0,
-                  buffer + 1, command_length - 1);
+    g_signal_emit(decoder, signals[SET_CONFIGURATION], 0, content, length);
     return TRUE;
 }
 
 static gboolean
-decode_command_get_configuration (MilterDecoder *decoder, GError **error)
+decode_get_configuration (MilterDecoder *decoder,
+                          const gchar *content, gint length,
+                          GError **error)
 {
     /* FIXME */
     return TRUE;
 }
 
 static gboolean
-decode_command_reload (MilterDecoder *decoder, GError **error)
+decode_reload (MilterDecoder *decoder,
+               const gchar *content, gint length,
+               GError **error)
 {
-    const gchar *buffer;
-    gint32 command_length;
-
-    buffer = milter_decoder_get_buffer(decoder);
-    command_length = milter_decoder_get_command_length(decoder);
     if (!milter_decoder_check_command_length(
-            buffer + 1, command_length - 1, 0,
+            content, length, 0,
             MILTER_DECODER_COMPARE_EXACT, error,
             "reload command"))
         return FALSE;
@@ -182,35 +176,48 @@ decode_command_reload (MilterDecoder *decoder, GError **error)
 }
 
 static gboolean
-decode_command (MilterDecoder *decoder, gchar command, GError **error)
+decode (MilterDecoder *decoder, GError **error)
 {
     gboolean success = TRUE;
+    gint null_character_point;
+    const gchar *buffer;
+    gint32 length;
+    const gchar *content;
+    gint32 content_length;
 
-    switch (command) {
-      case MILTER_MANAGER_CONTROL_COMMAND_SET_CONFIGURATION:
-        success = decode_command_set_configuration(decoder, error);
-        break;
-      case MILTER_MANAGER_CONTROL_COMMAND_GET_CONFIGURATION:
-        success = decode_command_get_configuration(decoder, error);
-        break;
-      case MILTER_MANAGER_CONTROL_COMMAND_RELOAD:
-        success = decode_command_reload(decoder, error);
-        break;
+    buffer = milter_decoder_get_buffer(decoder);
+    length = milter_decoder_get_command_length(decoder);
+    null_character_point =
+        milter_decoder_decode_null_terminated_value(
+            buffer, length, error,
+            "control command isn't terminated by NULL");
+    if (null_character_point <= 0)
+        return FALSE;
+
+    content = buffer + null_character_point + 1;
+    content_length = length - null_character_point - 1;
+
+    if (g_str_equal(buffer, MILTER_MANAGER_CONTROL_COMMAND_SET_CONFIGURATION)) {
+        success = decode_set_configuration(decoder, content, content_length,
+                                           error);
+    } else if (g_str_equal(buffer,
+                           MILTER_MANAGER_CONTROL_COMMAND_GET_CONFIGURATION)) {
+        success = decode_get_configuration(decoder, content, content_length,
+                                           error);
+    } else if (g_str_equal(buffer, MILTER_MANAGER_CONTROL_COMMAND_RELOAD)) {
+        success = decode_reload(decoder, content, content_length, error);
 /*
-      case MILTER_MANAGER_CONTROL_COMMAND_STOP_CHILD:
-        success = decode_command_stop_child(decoder, error);
-        break;
-      case MILTER_MANAGER_CONTROL_COMMAND_GET_CHILDREN_INFO:
-        success = decode_command_get_children_info(decoder, error);
-        break;
+    } else if (g_str_equal(buffer, MILTER_MANAGER_CONTROL_COMMAND_STOP_CHILD)) {
+        success = decode_stop_child(decoder, content, content_length, error);
+    } else if (g_str_equal(buffer, MILTER_MANAGER_CONTROL_COMMAND_GET_STATUS)) {
+        success = decode_get_status(decoder, content, content_length, error);
 */
-      default:
+    } else {
         g_set_error(error,
                     MILTER_MANAGER_CONTROL_COMMAND_DECODER_ERROR,
                     MILTER_MANAGER_CONTROL_COMMAND_DECODER_ERROR_UNEXPECTED_COMMAND,
-                    "unexpected command was received: %c", command);
+                    "unexpected command was received: <%s>", buffer);
         success = FALSE;
-        break;
     }
 
     return success;

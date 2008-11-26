@@ -75,7 +75,8 @@ test_encode_set_configuration (void)
         "security.privilege_mode = true\n"
         "# comment\n";
 
-    g_string_append_c(expected, 'S');
+    g_string_append(expected, "set-configuration");
+    g_string_append_c(expected, '\0');
     g_string_append(expected, configuration);
 
     pack(expected);
@@ -91,7 +92,8 @@ test_encode_set_configuration (void)
 void
 test_encode_reload (void)
 {
-    g_string_append_c(expected, 'R');
+    g_string_append(expected, "reload");
+    g_string_append_c(expected, '\0');
 
     pack(expected);
     milter_manager_control_command_encoder_encode_reload(encoder,
