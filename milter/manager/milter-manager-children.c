@@ -701,6 +701,7 @@ send_command_to_child (MilterManagerChildren *children,
         MilterManagerChildrenPrivate *priv;
         priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
+        priv->processing_header_index = 0;
         milter_server_context_end_of_message(child,
                                              priv->end_of_message_chunk,
                                              priv->end_of_message_size);
@@ -2032,7 +2033,7 @@ send_next_header_to_child (MilterManagerChildren *children, MilterServerContext 
 
     priv->processing_header_index++;
     header = milter_headers_get_nth_header(priv->headers,
-                                                   priv->processing_header_index);
+                                           priv->processing_header_index);
     if (!header)
         return FALSE;
 
