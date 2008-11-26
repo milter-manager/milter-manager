@@ -73,6 +73,10 @@ void                   milter_manager_children_foreach     (MilterManagerChildre
 
 gboolean               milter_manager_children_negotiate   (MilterManagerChildren *children,
                                                             MilterOption          *option);
+gboolean               milter_manager_children_define_macro 
+                                                           (MilterManagerChildren *children,
+                                                            MilterCommand          command,
+                                                            GHashTable            *macro);
 gboolean               milter_manager_children_connect     (MilterManagerChildren *children,
                                                             const gchar           *host_name,
                                                             struct sockaddr       *address,

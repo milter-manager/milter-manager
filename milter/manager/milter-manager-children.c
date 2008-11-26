@@ -1767,6 +1767,26 @@ milter_manager_children_negotiate (MilterManagerChildren *children,
     return success;
 }
 
+gboolean
+milter_manager_children_define_macro (MilterManagerChildren *children,
+                                      MilterCommand command,
+                                      GHashTable *macros)
+{
+    GList *child;
+    MilterManagerChildrenPrivate *priv;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    for (child = priv->milters; child; child = g_list_next(child)) {
+        MilterProtocolAgent *agent = MILTER_PROTOCOL_AGENT(child->data);
+
+        milter_protocol_agent_set_macros_hash_table(agent,
+                                                    command,
+                                                    macros);
+    }
+    return TRUE;
+}
+
 static gboolean
 milter_manager_children_check_alive (MilterManagerChildren *children)
 {

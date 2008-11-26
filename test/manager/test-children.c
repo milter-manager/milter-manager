@@ -37,6 +37,7 @@ void data_scenario (void);
 void test_scenario (gconstpointer data);
 void test_negotiate (void);
 void test_connect (void);
+void test_connect_with_macro (void);
 void test_connect_pass (void);
 void test_connect_half_pass (void);
 void test_helo (void);
@@ -66,6 +67,8 @@ static GError *expected_error;
 static GList *actual_names;
 static GList *expected_names;
 static gchar *error_message;
+static GHashTable *expected_macros;
+static GHashTable *defined_macros;
 
 static guint n_negotiate_reply_emitted;
 static guint n_continue_emitted;
@@ -367,6 +370,9 @@ setup (void)
     actual_names = NULL;
     expected_names = NULL;
 
+    expected_macros = NULL;
+    defined_macros = NULL;
+
     error_message = NULL;
 
     clear_n_emitted();
@@ -435,6 +441,10 @@ teardown (void)
         gcut_list_string_free(actual_names);
     if (expected_names)
         gcut_list_string_free(expected_names);
+    if (expected_macros)
+        g_hash_table_unref(expected_macros);
+    if (defined_macros)
+        g_hash_table_unref(defined_macros);
 
     if (arguments1)
         arguments_free(arguments1);
@@ -1023,6 +1033,40 @@ test_negotiate (void)
 
     milter_manager_children_negotiate(children, option);
     wait_reply(1, n_negotiate_reply_emitted);
+}
+
+void
+test_connect_with_macro (void)
+{
+    struct sockaddr_in address;
+    const gchar host_name[] = "mx.local.net";
+    const gchar ip_address[] = "192.168.123.123";
+
+    cut_trace(test_negotiate());
+
+    address.sin_family = AF_INET;
+    address.sin_port = g_htons(50443);
+    inet_aton(ip_address, &(address.sin_addr));
+
+    expected_macros =
+        gcut_hash_table_string_string_new("j", "debian.cozmixng.org",
+                                          "daemon_name", "debian.cozmixng.org",
+                                          "v", "Postfix 2.5.5",
+                                          NULL);
+    milter_manager_children_define_macro(children,
+                                         MILTER_COMMAND_CONNECT,
+                                         expected_macros);
+
+    milter_manager_children_connect(children,
+                                    host_name,
+                                    (struct sockaddr *)(&address),
+                                    sizeof(address));
+    wait_reply(1, n_continue_emitted);
+
+    /*
+     * FIXME! I have no idea how to get actual defined macros.
+    gcut_assert_equal_hash_table_string_string(expected_macros, defined_macros);
+    */
 }
 
 void

@@ -1,3 +1,8 @@
+2008-11-27  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/manager/milter-manager-children.[ch]: Added
+	milter_manager_children_define_macro().
+
 2008-11-26  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/manager/milter-manager-control-command-decoder.c
