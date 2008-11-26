@@ -25,6 +25,7 @@
 
 void test_encode_set_configuration (void);
 void test_encode_reload (void);
+void test_encode_get_status (void);
 
 static MilterManagerControlCommandEncoder *encoder;
 static GString *expected;
@@ -98,6 +99,20 @@ test_encode_reload (void)
     pack(expected);
     milter_manager_control_command_encoder_encode_reload(encoder,
                                                          &actual, &actual_size);
+    cut_assert_equal_memory(expected->str, expected->len,
+                            actual, actual_size);
+}
+
+void
+test_encode_get_status (void)
+{
+    g_string_append(expected, "get-status");
+    g_string_append_c(expected, '\0');
+
+    pack(expected);
+    milter_manager_control_command_encoder_encode_get_status(encoder,
+                                                             &actual,
+                                                             &actual_size);
     cut_assert_equal_memory(expected->str, expected->len,
                             actual, actual_size);
 }

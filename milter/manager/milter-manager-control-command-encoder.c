@@ -90,6 +90,22 @@ milter_manager_control_command_encoder_encode_reload (MilterManagerControlComman
     milter_encoder_pack(_encoder, packet, packet_size);
 }
 
+void
+milter_manager_control_command_encoder_encode_get_status (MilterManagerControlCommandEncoder *encoder,
+                                                          gchar **packet,
+                                                          gsize *packet_size)
+{
+    MilterEncoder *_encoder;
+    GString *buffer;
+
+    _encoder = MILTER_ENCODER(encoder);
+    buffer = milter_encoder_get_buffer(_encoder);
+
+    g_string_append(buffer, MILTER_MANAGER_CONTROL_COMMAND_GET_STATUS);
+    g_string_append_c(buffer, '\0');
+    milter_encoder_pack(_encoder, packet, packet_size);
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */
