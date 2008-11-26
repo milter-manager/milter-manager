@@ -403,7 +403,16 @@ milter_manager_main (void)
     control_connection_watch_id = setup_control_connection(configuration);
 
     client = milter_client_new();
-    milter_client_set_connection_spec(client, "inet:10025", &error);
+    g_signal_connect(client, "error",
+                     G_CALLBACK(cb_error), NULL);
+
+    if (!milter_client_set_connection_spec(client, "inet:10025", &error)) {
+        g_object_unref(client);
+        g_object_unref(configuration);
+        g_print("%s\n", error->message);
+        return;
+    }
+
     g_signal_connect(client, "connection-established",
                      G_CALLBACK(cb_connection_established), configuration);
 
