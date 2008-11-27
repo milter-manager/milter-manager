@@ -28,6 +28,8 @@
 	* test/manager/test-leader.c: Check macro on "connect".
 	* test/fixtures/leader/connect-with-macro.txt: Remove braces from
 	macro name.
+	* milter/manager/milter-manager-configuration.[ch]: Added
+	manager_connection_spec.
 
 2008-11-26  Kouhei Sutou  <kou@cozmixng.org>
 

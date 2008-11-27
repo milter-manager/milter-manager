@@ -28,6 +28,7 @@
 void test_children (void);
 void test_privilege_mode (void);
 void test_control_connection_spec (void);
+void test_manager_connection_spec (void);
 void test_return_status (void);
 void test_clear (void);
 void test_save_custom (void);
@@ -135,6 +136,23 @@ test_control_connection_spec (void)
 
     actual_spec =
         milter_manager_configuration_get_control_connection_spec(config);
+    cut_assert_equal_string(spec, actual_spec);
+}
+
+void
+test_manager_connection_spec (void)
+{
+    const gchar spec[] = "inet:2929@localhost";
+    const gchar *actual_spec;
+
+    actual_spec =
+        milter_manager_configuration_get_manager_connection_spec(config);
+    cut_assert_equal_string(NULL, actual_spec);
+
+    milter_manager_configuration_set_manager_connection_spec(config, spec);
+
+    actual_spec =
+        milter_manager_configuration_get_manager_connection_spec(config);
     cut_assert_equal_string(spec, actual_spec);
 }
 

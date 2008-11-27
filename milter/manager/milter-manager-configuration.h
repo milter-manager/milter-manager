@@ -103,6 +103,12 @@ void          milter_manager_configuration_set_control_connection_spec
                                      (MilterManagerConfiguration *configuration,
                                       const gchar                *spec);
 
+const gchar  *milter_manager_configuration_get_manager_connection_spec
+                                     (MilterManagerConfiguration *configuration);
+void          milter_manager_configuration_set_manager_connection_spec
+                                     (MilterManagerConfiguration *configuration,
+                                      const gchar                *spec);
+
 /* what about milter_manager_configuration_get_fallback_status()? */
 MilterStatus  milter_manager_configuration_get_return_status_if_filter_unavailable
                                      (MilterManagerConfiguration *configuration);
