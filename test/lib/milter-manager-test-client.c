@@ -21,6 +21,7 @@
 
 #include <gcutter.h>
 
+#include "milter-test-utils.h"
 #include "milter-manager-test-utils.h"
 #include "milter-manager-test-client.h"
 
@@ -693,7 +694,7 @@ milter_manager_test_client_set_arguments (MilterManagerTestClient *client,
 
     priv->command = g_array_new(TRUE, TRUE, sizeof(gchar *));
 
-    test_client_path = g_build_filename(milter_manager_test_get_base_dir(),
+    test_client_path = g_build_filename(milter_test_get_base_dir(),
                                         "lib",
                                         "milter-test-client.rb",
                                         NULL);

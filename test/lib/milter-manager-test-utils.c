@@ -23,32 +23,6 @@
 
 #include "milter-manager-test-utils.h"
 
-static gchar *base_dir = NULL;
-const gchar *
-milter_manager_test_get_base_dir (void)
-{
-    const gchar *dir;
-
-    if (base_dir)
-        return base_dir;
-
-    dir = g_getenv("BASE_DIR");
-    if (!dir)
-        dir = ".";
-
-    if (g_path_is_absolute(dir)) {
-        base_dir = g_strdup(dir);
-    } else {
-        gchar *current_dir;
-
-        current_dir = g_get_current_dir();
-        base_dir = g_build_filename(current_dir, dir, NULL);
-        g_free(current_dir);
-    }
-
-    return base_dir;
-}
-
 static gboolean
 cb_check_emitted (gpointer data)
 {

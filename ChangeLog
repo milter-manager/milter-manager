@@ -9,6 +9,10 @@
 	milter_manager_test_get_base_dir().
 	* test/manager/Makefile.am: addded libmilter_test_utils.la to LIBS.
 	* test/manager/test-manager.c: Added.
+	* test/lib/milter-manager-test-utils.[ch]: Remove
+	milter_manager_test_get_base_dir().
+	* test/lib/milter-manager-test-client.c: Use
+	milter_test_get_base_dir().
 
 2008-11-27  Kouhei Sutou  <kou@cozmixng.org>
 
