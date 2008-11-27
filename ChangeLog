@@ -21,6 +21,8 @@
 	milter_manager_test_clients_collect_macros.
 	* test/lib/milter-manager-test-client.c: Unref macro hash table in
 	dispose() not clear_data().
+	* test/lib/milter-manager-test-client.c: Macro list data should be a
+	MilterManagerTestPair.
 
 2008-11-26  Kouhei Sutou  <kou@cozmixng.org>
 

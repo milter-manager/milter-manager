@@ -1056,9 +1056,8 @@ static void
 append_macro_data (gpointer key, gpointer value, gpointer user_data)
 {
     GList **list = user_data;
-
-    *list = g_list_append(*list, key);
-    *list = g_list_append(*list, value);
+    *list = g_list_append(*list,
+                          milter_manager_test_pair_new(key, value));
 }
 
 const GList *
@@ -1085,7 +1084,8 @@ milter_manager_test_clients_collect_macros (const GList *clients,
         collected_macros = g_list_concat(collected_macros, list);
     }
 
-    return gcut_take_list(collected_macros, safe_g_object_unref);
+    return gcut_take_list(collected_macros,
+                          (CutDestroyFunction)milter_manager_test_pair_free);
 }
 
 /*
