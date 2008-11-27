@@ -2,6 +2,8 @@
 
 	* milter/manager/milter-manager-children.[ch]: Added
 	milter_manager_children_define_macro().
+	* milter/manager/milter-manager-leader.[ch]: Added
+	milter_manager_leader_define_macro().
 
 2008-11-26  Kouhei Sutou  <kou@cozmixng.org>
 

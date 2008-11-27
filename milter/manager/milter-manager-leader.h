@@ -128,6 +128,10 @@ MilterStatus          milter_manager_leader_abort
                                           (MilterManagerLeader *leader);
 void                  milter_manager_leader_mta_timeout
                                           (MilterManagerLeader *leader);
+void                  milter_manager_leader_define_macro
+                                          (MilterManagerLeader *leader,
+                                           MilterCommand command,
+                                           GHashTable *macros);
 
 G_END_DECLS
 

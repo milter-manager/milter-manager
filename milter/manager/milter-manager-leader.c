@@ -903,6 +903,22 @@ milter_manager_leader_abort (MilterManagerLeader *leader)
 }
 
 void
+milter_manager_leader_define_macro (MilterManagerLeader *leader,
+                                    MilterCommand command,
+                                    GHashTable *macros)
+{
+    MilterManagerLeaderPrivate *priv;
+
+    priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
+
+    if (!priv->children)
+        return;
+
+    milter_manager_children_define_macro(priv->children,
+                                         command, macros);
+}
+
+void
 milter_manager_leader_mta_timeout (MilterManagerLeader *leader)
 {
     milter_manager_leader_quit(leader);
