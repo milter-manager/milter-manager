@@ -24,6 +24,7 @@
 #include <locale.h>
 #include <glib/gi18n.h>
 
+#include <stdlib.h>
 #include <signal.h>
 #include <errno.h>
 
@@ -31,10 +32,56 @@
 
 static gboolean initialized = FALSE;
 static MilterClient *current_client = NULL;
+static gchar *spec = NULL;
+
+static gboolean
+print_version (const gchar *option_name, const gchar *value,
+               gpointer data, GError **error)
+{
+    g_print("%s\n", VERSION);
+    exit(EXIT_SUCCESS);
+    return TRUE;
+}
+
+static gboolean
+parse_spec_arg (const gchar *option_name,
+                const gchar *value,
+                gpointer data,
+                GError **error)
+{
+    GError *spec_error = NULL;
+    gboolean success;
+
+    success = milter_connection_parse_spec(value, NULL, NULL, NULL, &spec_error);
+    if (success) {
+        spec = g_strdup(value);
+    } else {
+        g_set_error(error,
+                    G_OPTION_ERROR,
+                    G_OPTION_ERROR_BAD_VALUE,
+                    _("%s"), spec_error->message);
+        g_error_free(spec_error);
+    }
+
+    return success;
+}
+
+static const GOptionEntry option_entries[] =
+{
+    {"spec", 's', 0, G_OPTION_ARG_CALLBACK, parse_spec_arg,
+     N_("The address of the desired communication socket."), "PROTOCOL:ADDRESS"},
+    {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, print_version,
+     N_("Show version"), NULL},
+    {NULL}
+};
 
 void
 milter_manager_init (int *argc, char ***argv)
 {
+    GOptionContext *option_context;
+    GOptionGroup *main_group;
+    GError *error = NULL;
+
     if (initialized)
         return;
 
@@ -48,6 +95,17 @@ milter_manager_init (int *argc, char ***argv)
     g_type_init();
     if (!g_thread_supported())
         g_thread_init(NULL);
+
+    option_context = g_option_context_new(NULL);
+    g_option_context_add_main_entries(option_context, option_entries, NULL);
+    main_group = g_option_context_get_main_group(option_context);
+
+    if (!g_option_context_parse(option_context, argc, argv, &error)) {
+        g_print("%s\n", error->message);
+        g_error_free(error);
+        g_option_context_free(option_context);
+        exit(EXIT_FAILURE);
+    }
 
     _milter_manager_configuration_init();
 }
