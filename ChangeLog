@@ -38,6 +38,8 @@
 	manager_connection_spec.
 	* bindings/ruby/lib/milter/manager.rb: Added manager.connection_spec
 	settings.
+	* milter/manager/milter-manager.c: Use manager.connection_spec value
+	in milter-manager.conf.
 
 2008-11-26  Kouhei Sutou  <kou@cozmixng.org>
 

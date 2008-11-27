@@ -406,6 +406,7 @@ milter_manager_main (void)
     void (*sigint_handler) (int signum);
     const gchar *config_dir_env;
     guint control_connection_watch_id = 0;
+    const gchar *spec;
     GError *error = NULL;
 
     configuration = milter_manager_configuration_new(NULL);
@@ -423,7 +424,11 @@ milter_manager_main (void)
     g_signal_connect(client, "error",
                      G_CALLBACK(cb_error), NULL);
 
-    if (!milter_client_set_connection_spec(client, "inet:10025", &error)) {
+    spec = milter_manager_configuration_get_manager_connection_spec(configuration);
+    if (!spec)
+        spec = "inet:10025";
+
+    if (!milter_client_set_connection_spec(client, spec, &error)) {
         g_object_unref(client);
         g_object_unref(configuration);
         g_print("%s\n", error->message);
