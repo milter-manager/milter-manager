@@ -75,6 +75,13 @@ void             milter_manager_control_reply_encoder_encode_configuration
                                              const gchar   *configuration,
                                              gsize          configuration_size);
 
+void             milter_manager_control_reply_encoder_encode_status
+                                            (MilterManagerControlReplyEncoder *encoder,
+                                             gchar        **packet,
+                                             gsize         *packet_size,
+                                             const gchar   *status,
+                                             gsize          status_size);
+
 G_END_DECLS
 
 #endif /* __MILTER_MANAGER_CONTROL_REPLY_ENCODER_H__ */

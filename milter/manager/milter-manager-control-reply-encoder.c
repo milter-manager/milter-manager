@@ -128,6 +128,24 @@ milter_manager_control_reply_encoder_encode_configuration (
     milter_encoder_pack(_encoder, packet, packet_size);
 }
 
+void
+milter_manager_control_reply_encoder_encode_status (
+    MilterManagerControlReplyEncoder *encoder,
+    gchar **packet, gsize *packet_size,
+    const gchar *status, gsize status_size)
+{
+    MilterEncoder *_encoder;
+    GString *buffer;
+
+    _encoder = MILTER_ENCODER(encoder);
+    buffer = milter_encoder_get_buffer(_encoder);
+
+    g_string_append(buffer, MILTER_MANAGER_CONTROL_REPLY_STATUS);
+    g_string_append_c(buffer, '\0');
+    g_string_append_len(buffer, status, status_size);
+    milter_encoder_pack(_encoder, packet, packet_size);
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */

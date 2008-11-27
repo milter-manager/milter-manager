@@ -27,6 +27,7 @@ void test_encode_success (void);
 void test_encode_failure (void);
 void test_encode_error (void);
 void test_encode_configuration (void);
+void test_encode_status (void);
 
 static MilterManagerControlReplyEncoder *encoder;
 static GString *expected;
@@ -136,6 +137,36 @@ test_encode_configuration (void)
         encoder,
         &actual, &actual_size,
         configuration, strlen(configuration));
+
+    cut_assert_equal_memory(expected->str, expected->len,
+                            actual, actual_size);
+}
+
+void
+test_encode_status (void)
+{
+    const gchar status[] =
+        "<status>\n"
+        "  <milters>\n"
+        "    <milter>\n"
+        "      <name>milter@10029</name>\n"
+        "      <spec>inet:10029@localhost</spec>\n"
+        "    </milter>\n"
+        "    <milter>\n"
+        "      <name>milter@10129</name>\n"
+        "      <spec>inet6:10129@::1</spec>\n"
+        "    </milter>\n"
+        "  </milters>\n"
+        "</status>";
+
+    g_string_append(expected, "status");
+    g_string_append_c(expected, '\0');
+    g_string_append(expected, status);
+
+    pack(expected);
+    milter_manager_control_reply_encoder_encode_status(encoder,
+                                                       &actual, &actual_size,
+                                                       status, strlen(status));
 
     cut_assert_equal_memory(expected->str, expected->len,
                             actual, actual_size);
