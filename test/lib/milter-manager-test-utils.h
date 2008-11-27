@@ -49,6 +49,14 @@ gint                     milter_manager_test_pair_compare
                                         (gconstpointer pair1,
                                          gconstpointer pair2);
 
+void                     milter_manager_test_defined_macros_inspect
+                                        (GString *string,
+                                         gconstpointer defined_macros,
+                                         gpointer user_data);
+gboolean                 milter_manager_test_defined_macros_equal
+                                        (gconstpointer pair1,
+                                         gconstpointer pair2);
+
 
 G_END_DECLS
 

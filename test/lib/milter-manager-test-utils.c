@@ -17,9 +17,11 @@
  *
  */
 
-#include "milter-manager-test-utils.h"
-
 #include <string.h>
+
+#include <milter/core.h>
+
+#include "milter-manager-test-utils.h"
 
 static gchar *base_dir = NULL;
 const gchar *
@@ -147,6 +149,49 @@ milter_manager_test_pair_free (MilterManagerTestPair *pair)
 
     g_free(pair);
 }
+
+static void
+macro_context_inspect (GString *string,
+                       gconstpointer macro_context,
+                       gpointer user_data)
+{
+    gchar *inspected_macro_context;
+
+    inspected_macro_context = gcut_enum_inspect(MILTER_TYPE_COMMAND,
+                                                GPOINTER_TO_INT(macro_context));
+    g_string_append_printf(string, "<%s>", inspected_macro_context);
+    g_free(inspected_macro_context);
+}
+
+void
+milter_manager_test_defined_macros_inspect (GString *string,
+                                            gconstpointer defined_macros,
+                                            gpointer user_data)
+{
+    GHashTable *_defined_macros = (GHashTable *)defined_macros;
+    gchar *inspected_defined_macros;
+
+    inspected_defined_macros =
+        gcut_hash_table_inspect(_defined_macros,
+                                macro_context_inspect,
+                                (GCutInspectFunc)gcut_hash_table_string_string_inspect,
+                                NULL);
+    g_string_append(string, inspected_defined_macros);
+    g_free(inspected_defined_macros);
+}
+
+gboolean
+milter_manager_test_defined_macros_equal (gconstpointer defined_macros1,
+                                          gconstpointer defined_macros2)
+{
+    GHashTable *_defined_macros1 = (GHashTable *)defined_macros1;
+    GHashTable *_defined_macros2 = (GHashTable *)defined_macros2;
+
+    return gcut_hash_table_equal(_defined_macros1,
+                                 _defined_macros2,
+                                 (GEqualFunc)gcut_hash_table_string_equal);
+}
+
 
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4

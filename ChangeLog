@@ -1,3 +1,9 @@
+2008-11-27  Kouhei Sutou  <kou@cozmixng.org>
+
+	* test/lib/milter-manager-test-utils.[ch]
+	(milter_manager_test_defined_macros_inspect,
+	milter_manager_test_defined_macros_equal): add.
+
 2008-11-27  Hiroyuki Ikezoe  <poincare@ikezoe.net>
 
 	* milter/manager/milter-manager-children.[ch]: Added
@@ -54,7 +60,7 @@
 	* milter/manager/milter-manager-children.c: Also initialize
 	processing_header_index with 0 before sending "end-of-message" to next
 	child.
-	
+
 2008-11-25  Kouhei Sutou  <kou@cozmixng.org>
 
 	* ui/www/milter-manager-admin/: move to new path.
