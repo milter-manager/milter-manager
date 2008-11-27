@@ -1,5 +1,6 @@
 if WITH_CUTTER
 noinst_LTLIBRARIES =			\
+	test-manager.la			\
 	test-child.la			\
 	test-children.la		\
 	test-configuration.la		\
@@ -31,8 +32,10 @@ AM_LDFLAGS =			\
 LIBS =								\
 	$(top_builddir)/milter/manager/libmilter-manager.la	\
 	$(top_builddir)/test/lib/libmilter-manager-test.la	\
+	$(top_builddir)/test/lib/libmilter-test.la		\
 	$(GCUTTER_LIBS)
 
+test_manager_la_SOURCES			= test-manager.c
 test_child_la_SOURCES			= test-child.c
 test_children_la_SOURCES		= test-children.c
 test_configuration_la_SOURCES		= test-configuration.c

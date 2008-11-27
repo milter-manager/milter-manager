@@ -7,6 +7,8 @@
 	test/manager/test-controller.c, test/manager/test-leader.c: Use
 	milter_test_get_base_dir() instead of
 	milter_manager_test_get_base_dir().
+	* test/manager/Makefile.am: addded libmilter_test_utils.la to LIBS.
+	* test/manager/test-manager.c: Added.
 
 2008-11-27  Kouhei Sutou  <kou@cozmixng.org>
 
