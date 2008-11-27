@@ -78,7 +78,7 @@ MilterOption            *milter_manager_test_client_get_negotiate_option
                                               (MilterManagerTestClient *client);
 guint                    milter_manager_test_client_get_n_define_macro_received
                                               (MilterManagerTestClient *client);
-GHashTable              *milter_manager_test_client_get_macros
+const GHashTable        *milter_manager_test_client_get_macros
                                               (MilterManagerTestClient *client);
 guint                    milter_manager_test_client_get_n_connect_received
                                               (MilterManagerTestClient *client);
@@ -150,7 +150,9 @@ const GList             *milter_manager_test_clients_collect_pairs
                                                MilterManagerTestClientGetString value_getter);
 const GList             *milter_manager_test_clients_collect_negotiate_options
                                               (const GList *clients);
-
+const GList             *milter_manager_test_clients_collect_macros
+                                              (const GList *clients,
+                                               MilterCommand command);
 
 G_END_DECLS
 

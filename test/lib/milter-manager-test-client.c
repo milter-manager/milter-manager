@@ -546,11 +546,6 @@ clear_data (MilterManagerTestClient *client)
         priv->negotiate_option = NULL;
     }
 
-    if (priv->macros) {
-        g_hash_table_unref(priv->macros);
-        priv->macros = NULL;
-    }
-
     if (priv->connect_host) {
         g_free(priv->connect_host);
         priv->connect_host = NULL;
@@ -624,6 +619,11 @@ dispose (GObject *object)
     if (priv->command) {
         command_free(priv->command);
         priv->command = NULL;
+    }
+
+    if (priv->macros) {
+        g_hash_table_unref(priv->macros);
+        priv->macros = NULL;
     }
 
     clear_data(client);
@@ -762,7 +762,7 @@ milter_manager_test_client_get_n_define_macro_received (MilterManagerTestClient 
     return MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client)->n_define_macro_received;
 }
 
-GHashTable *
+const GHashTable *
 milter_manager_test_client_get_macros (MilterManagerTestClient *client)
 {
     return MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client)->macros;
@@ -1050,6 +1050,42 @@ milter_manager_test_clients_collect_negotiate_options (const GList *clients)
     }
 
     return gcut_take_list(collected_options, safe_g_object_unref);
+}
+
+static void
+append_macro_data (gpointer key, gpointer value, gpointer user_data)
+{
+    GList **list = user_data;
+
+    *list = g_list_append(*list, key);
+    *list = g_list_append(*list, value);
+}
+
+const GList *
+milter_manager_test_clients_collect_macros (const GList *clients,
+                                            MilterCommand command)
+{
+    GList *collected_macros = NULL;
+    const GList *node;
+
+    for (node = clients; node; node = g_list_next(node)) {
+        MilterManagerTestClient *client = node->data;
+        GHashTable *macros;
+        GHashTable *context_macro;
+        GList *list = NULL;
+
+        macros = (GHashTable*)milter_manager_test_client_get_macros(client);
+        context_macro = g_hash_table_lookup(macros, 
+                                            GUINT_TO_POINTER(command));
+        if (!context_macro)
+            continue;
+
+        g_hash_table_foreach(context_macro,
+                             (GHFunc)append_macro_data, &list);
+        collected_macros = g_list_concat(collected_macros, list);
+    }
+
+    return gcut_take_list(collected_macros, safe_g_object_unref);
 }
 
 /*
