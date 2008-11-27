@@ -5,7 +5,8 @@ SUBDIRS =		\
 	client		\
 	libmilter	\
 	server		\
-	manager
+	manager		\
+	tool
 
 if WITH_CUTTER
 TESTS = run-test.sh
