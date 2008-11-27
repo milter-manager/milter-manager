@@ -1,5 +1,10 @@
 2008-11-27  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: add entries:
+	- write unit test for libmilter.
+	- add --disable-milter-manager configure option.
+	- add --disable-ruby configure option.
+
 	* binding/ruby/src/manager/Makefile.am,
 	milter/manager/Makefile.am, module/configuration/ruby/Makefile.am:
 	fix include path.
