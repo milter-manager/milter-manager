@@ -6,6 +6,8 @@
 	milter_manager_leader_define_macro().
 	* test/lib/milter-manager-test-client.[ch]: Added
 	getter of define-macro.
+	* milter/manager/milter-manager.c: Handle "define-macro" signal from
+	MilterClientContext.
 
 2008-11-26  Kouhei Sutou  <kou@cozmixng.org>
 

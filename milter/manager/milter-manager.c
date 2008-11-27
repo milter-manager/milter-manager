@@ -169,6 +169,15 @@ cb_client_abort (MilterClientContext *context, gpointer user_data)
 }
 
 static void
+cb_client_define_macro (MilterClientContext *context, MilterCommand command,
+                        GHashTable *macros, gpointer user_data)
+{
+    MilterManagerLeader *leader = user_data;
+
+    milter_manager_leader_define_macro(leader, command, macros);
+}
+
+static void
 cb_client_mta_timeout (MilterClientContext *context, gpointer user_data)
 {
     MilterManagerLeader *leader = user_data;
@@ -202,6 +211,7 @@ cb_client_quit (MilterClientContext *context, gpointer user_data)
     DISCONNECT(end_of_message);
     DISCONNECT(quit);
     DISCONNECT(abort);
+    DISCONNECT(define_macro);
     DISCONNECT(mta_timeout);
 
 #undef DISCONNECT
@@ -237,6 +247,7 @@ setup_context_signals (MilterClientContext *context,
     CONNECT(end_of_message);
     CONNECT(quit);
     CONNECT(abort);
+    CONNECT(define_macro);
     CONNECT(mta_timeout);
 
 #undef CONNECT
@@ -260,7 +271,7 @@ cb_connection_established (MilterClient *client, MilterClientContext *context,
 static void
 cb_error (MilterAgent *agent, GError *error, gpointer user_data)
 {
-    g_print("%s\n", error->message);
+    g_print("MilterManager error: %s\n", error->message);
 }
 
 static gboolean
