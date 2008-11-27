@@ -76,6 +76,10 @@ guint                    milter_manager_test_client_get_n_negotiate_received
                                               (MilterManagerTestClient *client);
 MilterOption            *milter_manager_test_client_get_negotiate_option
                                               (MilterManagerTestClient *client);
+guint                    milter_manager_test_client_get_n_define_macro_received
+                                              (MilterManagerTestClient *client);
+GHashTable              *milter_manager_test_client_get_define_macro
+                                              (MilterManagerTestClient *client);
 guint                    milter_manager_test_client_get_n_connect_received
                                               (MilterManagerTestClient *client);
 const gchar             *milter_manager_test_client_get_connect_host
@@ -153,5 +157,5 @@ G_END_DECLS
 #endif /* __MILTER_MANAGER_TEST_CLIENT_H__ */
 
 /*
-vi:nowrap:ai:expandtab:sw=4
+vi:ts=4:nowrap:ai:expandtab:sw=4
 */

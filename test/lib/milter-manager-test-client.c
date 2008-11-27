@@ -41,6 +41,7 @@ struct _MilterManagerTestClientPrivate
     gboolean reaped;
 
     guint n_negotiate_received;
+    guint n_define_macro_received;
     guint n_connect_received;
     guint n_helo_received;
     guint n_envelope_from_received;
@@ -55,6 +56,7 @@ struct _MilterManagerTestClientPrivate
     guint n_unknown_received;
 
     MilterOption *negotiate_option;
+    GHashTable *define_macros;
     gchar *connect_host;
     gchar *connect_address;
     gchar *helo_fqdn;
@@ -100,6 +102,7 @@ milter_manager_test_client_init (MilterManagerTestClient *test_client)
     priv->reaped = FALSE;
 
     priv->n_negotiate_received = 0;
+    priv->n_define_macro_received = 0;
     priv->n_connect_received = 0;
     priv->n_helo_received = 0;
     priv->n_envelope_from_received = 0;
@@ -114,6 +117,7 @@ milter_manager_test_client_init (MilterManagerTestClient *test_client)
     priv->n_unknown_received = 0;
 
     priv->negotiate_option = NULL;
+    priv->define_macros = NULL;
     priv->connect_host = NULL;
     priv->connect_address = NULL;
     priv->helo_fqdn = NULL;
@@ -179,6 +183,13 @@ parse_negotiate_info (MilterManagerTestClientPrivate *priv,
         }
     }
     g_strfreev(items);
+}
+
+static void
+parse_define_macro_info (MilterManagerTestClientPrivate *priv,
+                         const gchar *chunk, gsize size)
+{
+
 }
 
 static void
@@ -354,6 +365,9 @@ cb_output_received (GCutEgg *egg, const gchar *chunk, gsize size,
         } else if (g_str_has_prefix(response->string, "receive: negotiate")) {
             priv->n_negotiate_received++;
             parse_negotiate_info(priv, response->string, response->size);
+        } else if (g_str_has_prefix(response->string, "receive: define-macro")) {
+            priv->n_define_macro_received++;
+            parse_define_macro_info(priv, response->string, response->size);
         } else if (g_str_has_prefix(response->string, "receive: connect")) {
             priv->n_connect_received++;
             parse_connect_info(priv, response->string, response->size);
@@ -479,6 +493,7 @@ clear_data (MilterManagerTestClient *client)
     priv = MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client);
 
     priv->n_negotiate_received = 0;
+    priv->n_define_macro_received = 0;
     priv->n_connect_received = 0;
     priv->n_helo_received = 0;
     priv->n_envelope_from_received = 0;
@@ -495,6 +510,11 @@ clear_data (MilterManagerTestClient *client)
     if (priv->negotiate_option) {
         g_object_unref(priv->negotiate_option);
         priv->negotiate_option = NULL;
+    }
+
+    if (priv->define_macros) {
+        g_hash_table_unref(priv->define_macros);
+        priv->define_macros = NULL;
     }
 
     if (priv->connect_host) {
@@ -700,6 +720,18 @@ MilterOption *
 milter_manager_test_client_get_negotiate_option (MilterManagerTestClient *client)
 {
     return MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client)->negotiate_option;
+}
+
+guint
+milter_manager_test_client_get_n_define_macro_received (MilterManagerTestClient *client)
+{
+    return MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client)->n_define_macro_received;
+}
+
+GHashTable *
+milter_manager_test_client_get_define_macro (MilterManagerTestClient *client)
+{
+    return MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client)->define_macros;
 }
 
 guint
