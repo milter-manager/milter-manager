@@ -190,7 +190,7 @@ decode_get_status (MilterDecoder *decoder,
     if (!milter_decoder_check_command_length(
             content, length, 0,
             MILTER_DECODER_COMPARE_EXACT, error,
-            "get status command"))
+            "get-status command"))
         return FALSE;
 
     g_signal_emit(decoder, signals[GET_STATUS], 0);
