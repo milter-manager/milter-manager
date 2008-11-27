@@ -36,6 +36,8 @@
 	macro name.
 	* milter/manager/milter-manager-configuration.[ch]: Added
 	manager_connection_spec.
+	* bindings/ruby/lib/milter/manager.rb: Added manager.connection_spec
+	settings.
 
 2008-11-26  Kouhei Sutou  <kou@cozmixng.org>
 

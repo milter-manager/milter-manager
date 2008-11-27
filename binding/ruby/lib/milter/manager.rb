@@ -13,11 +13,12 @@ module Milter::Manager
       end
     end
 
-    attr_reader :security, :control
+    attr_reader :security, :control, :manager
     def initialize(configuration)
       @configuration = configuration
       @security = SecurityConfiguration.new(configuration)
       @control = ControlConfiguration.new(configuration)
+      @manager = ManagerConfiguration.new(configuration)
     end
 
     def load_configuration(file)
@@ -58,6 +59,17 @@ module Milter::Manager
       def connection_spec=(spec)
         Milter::Connection.parse_spec(spec)
         @configuration.control_connection_spec = spec
+      end
+    end
+
+    class ManagerConfiguration
+      def initialize(configuration)
+        @configuration = configuration
+      end
+
+      def connection_spec=(spec)
+        Milter::Connection.parse_spec(spec)
+        @configuration.manager_connection_spec = spec
       end
     end
 
