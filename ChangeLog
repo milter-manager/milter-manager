@@ -1,5 +1,9 @@
 2008-11-27  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/src/manager/Makefile.am,
+	milter/manager/Makefile.am, module/configuration/ruby/Makefile.am:
+	fix include path.
+
 	* ./: merge milter-toolkit and milter-manager.
 
 	* milter/manager/milter-manager-control-protocol.h,

@@ -1,6 +1,7 @@
 INCLUDES =						\
 	 -I$(top_builddir)				\
 	 -I$(top_srcdir)				\
+	 -I$(top_srcdir)/binding/ruby/src/toolkit	\
 	 -I$(top_srcdir)/binding/ruby/src/manager
 
 AM_CFLAGS = 						\
