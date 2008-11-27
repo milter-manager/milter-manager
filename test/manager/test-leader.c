@@ -366,6 +366,10 @@ teardown (void)
         milter_manager_test_client_get_ ## name,        \
         milter_manager_test_client_get_ ## value)
 
+#define collect_received_macros(command)                \
+    milter_manager_test_clients_collect_macros(         \
+        started_clients, command)
+
 static gboolean
 cb_timeout_waiting (gpointer data)
 {
@@ -555,6 +559,33 @@ response_to_get_n_received (const gchar *response)
 #define get_pair_list(scenario, group, key)                             \
     milter_manager_test_scenario_get_pair_list(scenario, group, key)
 
+#define get_pair_list_without_sort(scenario, group, key)                         \
+    milter_manager_test_scenario_get_pair_list_without_sort(scenario, group, key)
+
+static const GHashTable *
+get_hash_table (MilterManagerTestScenario *scenario,
+                const gchar *group,
+                const gchar *key)
+{
+    const GList *pair_list, *node;
+    GHashTable *hash_table;
+
+    hash_table = g_hash_table_new_full(g_str_hash, g_str_equal,
+                                       g_free, g_free);
+
+    pair_list = get_pair_list(scenario, group, key);
+
+    for (node = pair_list; node; node = g_list_next(node)) {
+        MilterManagerTestPair *pair = node->data;
+
+        g_hash_table_insert(hash_table,
+                            g_strdup(pair->name),
+                            g_strdup(pair->value));
+    }
+
+    return gcut_take_hash_table(hash_table);
+}
+
 static void
 assert_response_error (MilterManagerTestScenario *scenario, const gchar *group)
 {
@@ -690,6 +721,9 @@ do_connect (MilterManagerTestScenario *scenario, const gchar *group)
     socklen_t address_size;
     const GList *expected_connect_infos;
     const GList *actual_connect_infos;
+    const GHashTable *macros;
+    const GList *expected_macros;
+    const GList *actual_macros;
 
     host = get_string(scenario, group, "host");
     address_spec = get_string(scenario, group, "address");
@@ -699,6 +733,9 @@ do_connect (MilterManagerTestScenario *scenario, const gchar *group)
                                  &error);
     gcut_assert_error(error);
 
+    macros = get_hash_table(scenario, group, "macro");
+    if (macros)
+        milter_manager_leader_define_macro(leader, MILTER_COMMAND_CONNECT, (GHashTable*)macros);
     milter_manager_leader_connect(leader, host, address, address_size);
     g_free(address);
 
@@ -711,6 +748,16 @@ do_connect (MilterManagerTestScenario *scenario, const gchar *group)
         milter_manager_test_pair_equal,
         (GCutInspectFunc)milter_manager_test_pair_inspect,
         NULL);
+
+    expected_macros = get_pair_list_without_sort(scenario, group, "macros");
+    if (expected_macros) {
+        actual_macros = collect_received_macros(MILTER_COMMAND_CONNECT);
+        gcut_assert_equal_list(
+            expected_macros, actual_macros,
+            milter_manager_test_pair_equal,
+            (GCutInspectFunc)milter_manager_test_pair_inspect,
+            NULL);
+    }
 }
 
 static void
@@ -1095,6 +1142,8 @@ data_scenario_basic (void)
                  g_strdup("negotiate.txt"), g_free,
                  "connect",
                  g_strdup("connect.txt"), g_free,
+                 "connect-with-macro",
+                 g_strdup("connect-with-macro.txt"), g_free,
                  "helo",
                  g_strdup("helo.txt"), g_free,
                  "envelope-from",

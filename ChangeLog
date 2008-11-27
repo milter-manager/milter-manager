@@ -25,6 +25,9 @@
 	MilterManagerTestPair.
 	* test/lib/milter-manager-test-scenario.[ch]: Added
 	milter_manager_test_scenario_get_pair_list_without_sort().
+	* test/manager/test-leader.c: Check macro on "connect".
+	* test/fixtures/leader/connect-with-macro.txt: Remove braces from
+	macro name.
 
 2008-11-26  Kouhei Sutou  <kou@cozmixng.org>
 

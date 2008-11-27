@@ -21,4 +21,4 @@ n_received=2
 status=continue
 
 infos=mx.local.net;inet:2929@192.168.1.29;mx.local.net;inet:2929@192.168.1.29
-macros={daemon_name};Postfix;j;postfix;{daemon_name};Postfix;j;postfix;
+macros=daemon_name;Postfix;j;postfix;daemon_name;Postfix;j;postfix
