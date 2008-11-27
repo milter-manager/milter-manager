@@ -1,5 +1,6 @@
 SUBDIRS =		\
 	milter		\
+	libmilter	\
 	binding		\
 	module		\
 	src		\

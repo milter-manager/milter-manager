@@ -1,6 +1,7 @@
 2008-11-28  Hiroyuki Ikezoe  <poincare@ikezoe.net>
 
 	* milter/Makefile.am: added core, client and server to SUBDIRS.
+	* Makefile.am: Added libmilter to SUBDIRS.
 
 2008-11-27  Kouhei Sutou  <kou@cozmixng.org>
 
