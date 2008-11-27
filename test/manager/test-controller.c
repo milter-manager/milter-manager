@@ -19,6 +19,7 @@
 
 #include <string.h>
 
+#include <milter-test-utils.h>
 #include <milter-manager-test-utils.h>
 #include <milter-manager-test-client.h>
 #include <milter-manager-test-scenario.h>
@@ -112,7 +113,7 @@ setup (void)
     packet = NULL;
     packet_size = 0;
 
-    tmp_dir = g_build_filename(milter_manager_test_get_base_dir(),
+    tmp_dir = g_build_filename(milter_test_get_base_dir(),
                                "tmp",
                                NULL);
     if (g_mkdir_with_parents(tmp_dir, 0700) == -1)

@@ -21,6 +21,7 @@
 #include <milter/manager/milter-manager-configuration.h>
 #include <milter/manager/milter-manager-children.h>
 
+#include <milter-test-utils.h>
 #include <milter-manager-test-utils.h>
 
 #include <gcutter.h>
@@ -50,7 +51,7 @@ setup (void)
     expected_children = milter_manager_children_new(config);
     actual_children = NULL;
 
-    tmp_dir = g_build_filename(milter_manager_test_get_base_dir(),
+    tmp_dir = g_build_filename(milter_test_get_base_dir(),
                                "tmp",
                                NULL);
     cut_remove_path(tmp_dir, NULL);

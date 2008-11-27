@@ -24,6 +24,7 @@
 #include <arpa/inet.h>
 #include <errno.h>
 
+#include <milter-test-utils.h>
 #include <milter-manager-test-utils.h>
 #include <milter-manager-test-client.h>
 #include <milter-manager-test-scenario.h>
@@ -351,7 +352,7 @@ clear_n_emitted (void)
 void
 setup (void)
 {
-    scenario_dir = g_build_filename(milter_manager_test_get_base_dir(),
+    scenario_dir = g_build_filename(milter_test_get_base_dir(),
                                     "fixtures",
                                     "children",
                                     NULL);

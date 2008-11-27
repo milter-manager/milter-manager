@@ -22,6 +22,7 @@
 #include <gcutter.h>
 
 #define shutdown inet_shutdown
+#include <milter-test-utils.h>
 #include <milter-manager-test-utils.h>
 #include <milter-manager-test-client.h>
 #include <milter/manager/milter-manager-leader.h>
@@ -266,7 +267,7 @@ setup (void)
     MilterReader *reader;
     GError *error = NULL;
 
-    scenario_dir = g_build_filename(milter_manager_test_get_base_dir(),
+    scenario_dir = g_build_filename(milter_test_get_base_dir(),
                                     "fixtures",
                                     "leader",
                                     NULL);
