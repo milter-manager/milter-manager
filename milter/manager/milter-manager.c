@@ -38,7 +38,7 @@ static gboolean
 print_version (const gchar *option_name, const gchar *value,
                gpointer data, GError **error)
 {
-    g_print("%s\n", VERSION);
+    g_print("%s %s\n", PACKAGE, VERSION);
     exit(EXIT_SUCCESS);
     return TRUE;
 }
