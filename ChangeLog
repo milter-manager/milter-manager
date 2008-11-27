@@ -2,6 +2,7 @@
 
 	* milter/Makefile.am: added core, client and server to SUBDIRS.
 	* Makefile.am: Added libmilter to SUBDIRS.
+	* binding/ruby/test/run-test.rb: Fix load path.
 
 2008-11-27  Kouhei Sutou  <kou@cozmixng.org>
 

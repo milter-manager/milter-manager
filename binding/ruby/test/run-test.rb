@@ -13,10 +13,11 @@ if ENV["NO_MAKE"] != "make" and system("which make > /dev/null")
   system("cd #{top.to_s.dump} && make > /dev/null") or exit(1)
 end
 
-$LOAD_PATH.unshift((top + "src" + ".libs").to_s)
+$LOAD_PATH.unshift((top + "src" + "toolkit" + ".libs").to_s)
+$LOAD_PATH.unshift((top + "src" + "manager" + ".libs").to_s)
 $LOAD_PATH.unshift((top + "lib").to_s)
 
-$LOAD_PATH.unshift(base.to_s)
+$LOAD_PATH.unshift((base + "manager").to_s)
 require 'milter-manager-test-utils'
 
 require 'milter/manager'
