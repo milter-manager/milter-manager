@@ -49,6 +49,8 @@ static gchar **recipients = NULL;
 static gchar **body_chunks = NULL;
 static MilterHeaders *option_headers = NULL;
 
+#define PROGRAM_NAME "milter-test-server"
+
 typedef struct Message
 {
     MilterHeaders *headers;
@@ -572,7 +574,7 @@ print_version (const gchar *option_name,
                gpointer data,
                GError **error)
 {
-    g_printf("%s\n", VERSION);
+    g_printf("%s %s\n", PROGRAM_NAME, VERSION);
     exit(EXIT_SUCCESS);
     return TRUE;
 }
@@ -1120,7 +1122,7 @@ setup_default_macros (MilterServerContext *context)
     gchar *recipients_address;
 
     milter_protocol_agent_set_macros(agent, MILTER_COMMAND_CONNECT,
-                                     "{daemon_name}", "milter-test-server",
+                                     "{daemon_name}", PROGRAM_NAME,
                                      "{if_name}", "localhost",
                                      "{if_addr}", "127.0.0.1",
                                      "j", "milter-test-server",
@@ -1160,7 +1162,7 @@ static void
 setup_context (MilterServerContext *context, ProcessData *process_data)
 {
     setup_default_macros(context);
-    milter_server_context_set_name(context, "milter-test-server");
+    milter_server_context_set_name(context, PROGRAM_NAME);
 
     g_signal_connect(context, "ready", G_CALLBACK(cb_ready), process_data);
     g_signal_connect(context, "error", G_CALLBACK(cb_connection_error), process_data);
