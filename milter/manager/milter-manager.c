@@ -32,7 +32,7 @@
 
 static gboolean initialized = FALSE;
 static MilterClient *current_client = NULL;
-static gchar *spec = NULL;
+static gchar *option_spec = NULL;
 
 static gboolean
 print_version (const gchar *option_name, const gchar *value,
@@ -54,7 +54,7 @@ parse_spec_arg (const gchar *option_name,
 
     success = milter_connection_parse_spec(value, NULL, NULL, NULL, &spec_error);
     if (success) {
-        spec = g_strdup(value);
+        option_spec = g_strdup(value);
     } else {
         g_set_error(error,
                     G_OPTION_ERROR,
@@ -456,6 +456,21 @@ setup_control_connection (MilterManagerConfiguration *configuration)
     return watch_id;
 }
 
+static const gchar *
+get_manager_connection_spec (MilterManagerConfiguration *configuration)
+{
+    const gchar *spec;
+
+    if (option_spec)
+        return option_spec;
+
+    spec = milter_manager_configuration_get_manager_connection_spec(configuration);
+    if (!spec)
+        spec = "inet:10025";
+
+    return spec;
+}
+
 void
 milter_manager_main (void)
 {
@@ -482,10 +497,7 @@ milter_manager_main (void)
     g_signal_connect(client, "error",
                      G_CALLBACK(cb_error), NULL);
 
-    spec = milter_manager_configuration_get_manager_connection_spec(configuration);
-    if (!spec)
-        spec = "inet:10025";
-
+    spec = get_manager_connection_spec(configuration);
     if (!milter_client_set_connection_spec(client, spec, &error)) {
         g_object_unref(client);
         g_object_unref(configuration);

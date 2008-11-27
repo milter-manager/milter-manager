@@ -41,6 +41,8 @@
 	* milter/manager/milter-manager.c: Use manager.connection_spec value
 	in milter-manager.conf.
 	* milter/manager/milter-manager.c: Added --spec option.
+	* milter/manager/milter-manager.c: spec from option is prior to the
+	one in configuration.
 
 2008-11-26  Kouhei Sutou  <kou@cozmixng.org>
 
