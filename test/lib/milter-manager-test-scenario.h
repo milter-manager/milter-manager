@@ -119,6 +119,10 @@ const GList               *milter_manager_test_scenario_get_pair_list
                                               (MilterManagerTestScenario *scenario,
                                                const gchar *group,
                                                const gchar *key);
+const GList               *milter_manager_test_scenario_get_pair_list_without_sort
+                                              (MilterManagerTestScenario *scenario,
+                                               const gchar *group,
+                                               const gchar *key);
 const GList               *milter_manager_test_scenario_get_option_list
                                               (MilterManagerTestScenario *scenario,
                                                const gchar *group,

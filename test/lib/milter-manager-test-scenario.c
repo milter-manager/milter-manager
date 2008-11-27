@@ -480,13 +480,24 @@ milter_manager_test_scenario_get_pair_list (MilterManagerTestScenario *scenario,
                                             const gchar *group,
                                             const gchar *key)
 {
+    const GList *pairs;
+    
+    pairs = milter_manager_test_scenario_get_pair_list_without_sort(scenario, group, key);
+
+    return g_list_sort((GList*)pairs, milter_manager_test_pair_compare);
+}
+
+const GList *
+milter_manager_test_scenario_get_pair_list_without_sort (MilterManagerTestScenario *scenario,
+                                                         const gchar *group,
+                                                         const gchar *key)
+{
     MilterManagerTestScenarioPrivate *priv;
-    const GList *sorted_pairs = NULL;
+    GList *pairs = NULL;
 
     priv = MILTER_MANAGER_TEST_SCENARIO_GET_PRIVATE(scenario);
     if (milter_manager_test_scenario_has_key(scenario, group, key)) {
         const gchar **pair_strings;
-        GList *pairs = NULL;
         gsize length, i;
 
         pair_strings =
@@ -503,15 +514,12 @@ milter_manager_test_scenario_get_pair_list (MilterManagerTestScenario *scenario,
             if (value && value[0] == '\0')
                 value = NULL;
             pair = milter_manager_test_pair_new(name, value);
-            pairs = g_list_prepend(pairs, pair);
+            pairs = g_list_append(pairs, pair);
         }
-        sorted_pairs =
-            gcut_take_list(
-                g_list_sort(pairs, milter_manager_test_pair_compare),
-                (CutDestroyFunction)milter_manager_test_pair_free);
     }
 
-    return sorted_pairs;
+    return gcut_take_list(pairs,
+                          (CutDestroyFunction)milter_manager_test_pair_free);
 }
 
 const GList *
