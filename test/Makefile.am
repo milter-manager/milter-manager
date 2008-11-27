@@ -1,6 +1,10 @@
 SUBDIRS =		\
 	lib		\
 	fixtures	\
+	core		\
+	client		\
+	libmilter	\
+	server		\
 	manager
 
 if WITH_CUTTER

@@ -104,14 +104,6 @@ AM_PATH_GLIB_2_0($GLIB_REQUIRED,
                  [gobject gmodule gthread])
 
 dnl **************************************************************
-dnl Check for milter toolkit.
-dnl **************************************************************
-MILTER_TOOLKIT_REQUIRED=0.0.1
-AC_SUBST(MILTER_TOOLKIT_REQUIRED)
-PKG_CHECK_MODULES(MILTER_CLIENT, milter-client >= $MILTER_TOOLKIT_REQUIRED)
-PKG_CHECK_MODULES(MILTER_SERVER, milter-server >= $MILTER_TOOLKIT_REQUIRED)
-
-dnl **************************************************************
 dnl Check for Cutter
 dnl **************************************************************
 m4_ifdef([AC_CHECK_GCUTTER], [
@@ -281,41 +273,69 @@ AC_SUBST(SF_HTDOCS)
 SF_REPOS="https://milter-manager.svn.sourceforge.net/svnroot/milter-manager/milter-manager"
 AC_SUBST(SF_REPOS)
 
-MILTER_MANAGER_CFLAGS="\$(MILTER_CLIENT_CFLAGS) \$(MILTER_SERVER_CFLAGS)"
-MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS \$(RUBY_CFLAGS)"
-MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DG_DISABLE_DEPRECATED"
+MILTER_TOOLKIT_CFLAGS="\$(GLIB_CFLAGS) -DG_DISABLE_DEPRECATED"
+MILTER_RUBY_CFLAGS="\$(MILTER_TOOLKIT_CFLAGS) \$(RUBY_CFLAGS)"
+MILTER_MANAGER_CFLAGS="\$(MILTER_RUBY_CFLAGS)"
 MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DCONFIGURATION_MODULE_DIR=\\\"\$(module_configurationdir)\\\""
 MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DBINDING_EXT_DIR=\\\"\$(binding_extdir)\\\""
 MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DBINDING_LIB_DIR=\\\"\$(binding_libdir)\\\""
 MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DCONFIG_DIR=\\\"\$(pkgsysconfdir)\\\""
 MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DCONFIG_FILE_NAME=\\\"\$(CONFIG_FILE_NAME)\\\""
 MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DCUSTOM_CONFIG_FILE_NAME=\\\"\$(CUSTOM_CONFIG_FILE_NAME)\\\""
+AC_SUBST(MILTER_TOOLKIT_CFLAGS)
+AC_SUBST(MILTER_RUBY_CFLAGS)
 AC_SUBST(MILTER_MANAGER_CFLAGS)
-MILTER_MANAGER_LIBS="\$(MILTER_CLIENT_LIBS) \$(MILTER_SERVER_LIBS)"
-MILTER_MANAGER_LIBS="$MILTER_MANAGER_LIBS \$(SERVER_LIBS)"
-MILTER_MANAGER_LIBS="$MILTER_MANAGER_LIBS \$(RUBY_LIBS)"
+
+MILTER_TOOLKIT_LIBS="\$(GLIB_LIBS)"
+MILTER_RUBY_LIBS="\$(MILTER_TOOLKIT_LIBS) \$(RUBY_LIBS)"
+MILTER_MANAGER_LIBS="\$(MILTER_RUBY_LIBS)"
+AC_SUBST(MILTER_TOOLKIT_LIBS)
+AC_SUBST(MILTER_RUBY_LIBS)
 AC_SUBST(MILTER_MANAGER_LIBS)
 
 AC_CONFIG_FILES([Makefile
+		 milter-core.pc
+		 milter-client.pc
+		 libmilter.pc
+		 milter-server.pc
+		 milter-manager.pc
 		 milter/Makefile
+		 milter/core/Makefile
+		 milter/core/milter-version.h
+		 milter/client/Makefile
+		 libmilter/Makefile
+		 milter/server/Makefile
 		 milter/manager/Makefile
 		 binding/Makefile
 		 binding/ruby/Makefile
 		 binding/ruby/src/Makefile
+		 binding/ruby/src/toolkit/Makefile
+		 binding/ruby/src/manager/Makefile
 		 binding/ruby/lib/Makefile
 		 binding/ruby/lib/milter/Makefile
 		 binding/ruby/test/Makefile
+		 binding/ruby/test/toolkit/Makefile
+		 binding/ruby/test/manager/Makefile
 		 module/Makefile
 		 module/configuration/Makefile
 		 module/configuration/ruby/Makefile
 		 src/Makefile
 		 data/Makefile
+		 data/packet/Makefile
+		 tool/Makefile
 		 test/Makefile
 		 test/lib/Makefile
 		 test/fixtures/Makefile
 		 test/fixtures/configuration/Makefile
 		 test/fixtures/leader/Makefile
+		 test/core/Makefile
+		 test/client/Makefile
+		 test/libmilter/Makefile
+		 test/server/Makefile
+		 test/tool/Makefile
+		 test/tool/fixtures/Makefile
 		 test/manager/Makefile
-		 po/Makefile.in])
+		 po/Makefile.in
+		 build/Makefile])
 
 AC_OUTPUT

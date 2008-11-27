@@ -1,0 +1,14 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+bindir=@bindir@
+libdir=@libdir@
+includedir=@includedir@
+pkgincludedir=${includedir}/@PACKAGE_NAME@
+milter-test-server=${bindir}/milter-test-server
+
+Name: milter server library
+Description: milter server API
+Version: @VERSION@
+Requires: milter-core = @VERSION@
+Cflags: -I${pkgincludedir}
+Libs: -L${libdir} -lmilter-server

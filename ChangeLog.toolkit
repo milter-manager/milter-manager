@@ -1,0 +1,1828 @@
+2008-11-27  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/core/milter-decoder.c: Accept 0 length header value string.
+	* test/tool/test-server,c, test/tool/fixtures/parse-test.mail: Added 0
+	length header value test.
+	* milter/client/milter-client-context.[ch]: Added "define-macro"
+	signal since MilterServerContext can not receive any macros!
+	* tool/milter-test-server.c: Multiline header value support.
+	* tool/milter-test-server.c: Merge request macro symbol with default
+	macro.
+	* milter-server.pc.in: added milter-test-server entry.
+
+2008-11-26  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/core/milter-decoder.c: remove command from decode signal.
+	* milter/core/milter-command-decoder.c,
+	milter/core/milter-reply-decoder.c: follow the above change.
+
+2008-11-26  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* test/tool/test-server.c: Added replace-body test.
+	* test/tool/test-server.c: Added reply-code test.
+	* test/tool/test-server.c: Added default macros test.
+	* tool/milter-test-server.c: Send "abort" and "quit" instead of "quit"
+	only.
+	* tool/milter-test-server.c: Send "quit" only after end-of-message state.
+	* tool/milter-test-server.c: Exit if "finished" signal is received.
+	* tool/milter-test-server.c: Fix no sending "connect" command.
+	* milter/core/milter-connection.c: Output spec string to error
+	message.
+	* milter/core/milter-option.[ch] (milter_option_merge): Merge
+	MilterStepFlags should be intersect for NO_XX falgs.
+
+2008-11-25  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* test/tool/test-server.c: Check exit status.
+	* tool/milter-test-server.c: exit status is failure only if some error
+	occurs.
+	* tool/milter-test-server.c: --output-message option.
+	* tool/milter-test-server.c: Print reply status with single-quoted.
+	* test/tool/test-server.c: Check reply status.
+	* test/tool/test-server.c (result_test_data_new): Need a hash table
+	in which stored MilterCommand and MilterStatus.
+	* test/tool/test-server.c: Added no step flags tests.
+	* test/tool/test-server.c: Added option test.
+	* test/tool/test-server.c: Added --recipients option test.
+	* test/core/test-header.c, test/lib/milter-assertions.[ch]:
+	Move milter_assert_equal_header().
+	* test/tool/test-server.c: Added --headers option test.
+	* test/tool/test-server.c: Added --body option test.
+	* test/core/test-headers.c: Include milter-test-utils.h.
+	* tool/milter-test-server.c: Remove the redundant CRLF and the last
+	line's CRLF from body string.
+	* test/tool/test-server.c: Added --mail-file option test.
+	* tool/milter-test-server.c: Output status any way.
+	* test/tool/test-server.c: reply_status stores MilterReply not
+	MilterStatus.
+	* test/tool/test-server.c: TestData has EndOfMessageActionFunc field.
+	* test/tool/test-server.c: Added --output-message option test.
+	* test/tool/test-server.c: change-from test.
+	* tool/milter-test-server.c: Change header value of "From" header.
+	* tool/milter-test-server.c: Append default "From" and "To" headers.
+	* test/tool/test-server.c: Added add-recipient and delete-deripient
+	tests.
+	* tool/milter-test-server.c: Fix duplicate inserted headers.
+	* test/tool/test-server.c: Added insert-header and change-header
+	tests.
+	* test/tool/test-server.c: Added add-header and delete-header tests.
+
+2008-11-23  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/core/milter-reader.c, milter/core/milter-writer.c,
+	milter/core/milter-agent.c: cleanup.
+
+2008-11-21  Kouhei Sutou  <kou@cozmixng.org>
+
+	* test/tool/test-server.c (setup_server_command): use
+	milter_test_get_base_dir().
+
+	* test/: gcut_io_channel_string_new() -> gcut_string_io_channel_new().
+
+	* milter/core/milter-decoder.[ch],
+	milter/core/milter-{command,reply}-decoder.[ch],
+	test/core/test-command-decoder.c,
+	test/server/-test-server-context-signals.c: cleanup decoder error.
+
+2008-11-21  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* tool/milter-test-server.c: Change golobal headers value name.
+	headers->option_headers.
+	* tool/milter-test-server.c: Use g_printf instead of g_print. And
+	convert message body.
+	* milter/core/milter-headers.[ch]: milter_header_compare is a public
+	function.
+	* tool/milter-test-server.c: Print headers with colored diff.
+	* tool/milter-test-server.c: Check MilterStepFlags.
+	* tool/milter-test-server.c: Do not send "connect" command if a milter
+	requests NO_CONNECT.
+	* test/tool/test-server.c: Added.
+
+2008-11-20  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* tool/milter-test-server.c: Remove a head space from "From:" and
+	"To:".
+	* tool/milter-test-server.c: Print quarantine reason.
+	* tool/milter-test-server.c: Initialize quarantine_reason with NULL
+	and free it at last.
+	* milter/server/milter-server-context.c
+	(cb_decoder_temporary_failure): "temporary-failure" is received on
+	"connect" command.
+	* tool/milter-test-server.c: Print result status even if failed.
+	* tool/milter-test-server.c: Set MILTER_LOG_LEVEL all if verbose
+	option is specified.
+	* tool/milter-test-server.c: Set default macros on "connect" command.
+	But I do not know "j" macro means.
+	* tool/milter-test-server.c: Fix arguments of "reply-code" signal.
+	* tool/milter-test-server.c: Send "quit" if "reply-code" signal is
+	received.
+	* tool/milter-test-server.c: "From" and "To" headers are included in
+	MilterHeaders.
+	* tool/milter-test-server.c: Handle header value on second line.
+	* tool/milter-test-server.c: Do not print message if error occurs.
+	* tool/milter-test-server.c: Set "To" header values to rcpt_addr macro
+	value.
+	* tool/milter-test-server.c (cb_add_recipient): Modify header's "To"
+	value.
+	* tool/milter-test-server.c: Delete recipient from header.
+	* milter/core/milter-reply-decoder.c
+	(decode_header_content_with_index): Do not set *value to buffer if
+	header value is NULL.
+	* milter/core/milter-headers.c (milter_headers_change_header): Remove
+	the header if header value is NULL.
+	* milter/server/milter-server-context.c (cb_decoder_change_header):
+	Change log message if header value is NULL. 
+	* milter/core/milter-headers.[ch]: added
+	milter_headers_delete_header.
+	* milter/core/milter-reply-encoder.[ch]: Added
+	milter_reply_encoder_encode_delete_header().
+	* milter/core/milter-reply-signals.[ch]: Added "delete-header" signal.
+	* milter/client/milter-client-context.[ch]:
+	milter_client_context_remove_header ->
+	milter_client_context_delete_header. Use
+	milter_reply_encoder_encode_delete_header().
+	* milter/server/milter-server-context.c: Use "delete-header" signal.
+	* milter/core/milter-reply-decoder.c: Emit "delete-header" signal.
+
+2008-11-19  Kouhei Sutou  <kou@cozmixng.org>
+
+	* test/server/test-server-context.c
+	(test_establish_connection_failure): follow the recent error
+	message change.
+
+2008-11-19  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/server/milter-server-context.c: Output spec string if
+	connection error occurs.
+	* src/milter-test-server.c: Added some command line options.
+	* src/milter-test-server.c: Non-blocking connection.
+	* src/ -> tool/: Renamed.
+	* tool/milter-test-client.c: Use GOption.
+	* milter/core/milter-core-connection.[ch]: Added
+	milter_connection_generate_spec_from_address().
+	* test/core/test-connection.c: Use g_new0() instead of g_new() since
+	sun_path in sockaddr_un is not initialized with 0.
+	* tool/milter-test-server.c: END-OF-MESSAGE should be always sent.
+	* tool/milter-test-server.c: Added some command line options, but
+	headers options does not work.
+	* milter/core/milter-headers.[ch]: A new friend from milter-manager.
+	* milter/core.h: Include milter-headers.h.
+	* tool/milter-test-server.c: Handle headers option.
+	* tool/milter-test-server.c: Cleanup.
+	* tool/milter-test-server.c: Print modified message.
+	* tool/milter-test-server.c: Print status.
+	* tool/milter-test-server.c: Handle recipients which is sent from a
+	target milter.
+	* tool/milter-test-server.c: Added --mail-file option.
+	* tool/milter-test-server.c: Do not use GRegex.
+	* tool/milter-test-server.c: Output replaced body if replaced it.
+
+2008-11-18  Kouhei Sutou  <kou@cozmixng.org>
+
+	* test/server/test-server-context-check-signals.c: remove a needless
+	variable.
+
+	* ./:
+	- mail -> envelope_from.
+	- rcpt -> envelope_recipient.
+
+	* ./:
+	- MAIL -> ENVELOPE_FROM.
+	- RCPT -> ENVELOPE_RECIPIENT.
+
+2008-11-18  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* test/client/test-client-context-callbacks.c: Initialize n_datas and
+	n_data_responses with 0.
+
+2008-11-18  Kouhei Sutou  <kou@cozmixng.org>
+
+	* ./: split MilterEncoder to MilterCommandEncoder and
+	MilterReplyEncoder.
+
+	* milter/core/milter-agent.[ch],
+	milter/core/milter-protocol-agent.c: make encoder customizable.
+
+	* TODO: remove an entry: clear macro context on XXX-response.
+	* milter/client/milter-client-context.c: clear macro context on
+	XXX-response.
+
+	* ./: split macro related features of MilterAgent to
+	MilterProtocolAgent.
+
+	* ./: handler -> agent.
+
+2008-11-17  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/core/milter-handler.h (MILTER_HANDLER_ERROR): remove
+	needless value.
+
+	* milter/client/milter-client.c: fix typos.
+
+	* test/client/test-client.c (test_bind_failure): move to ...
+	* test/core/test-connection.c: ... here.
+
+	* TODO: add an entry: write unit test for libmilter.
+
+	* milter/core/milter-connection.c, test/core/test-connection.c:
+	add spec content check.
+
+	* milter/core/milter-utils.[ch], test/core/test-utils.c: move
+	connection spec parsing related code to ...
+	milter/core/milter-connection.[ch], test/core/test-connection.c:
+	... here.
+
+	* milter/core/milter-connection.[ch]: add
+	milter_connection_listen().
+
+	* milter/client/milter-client.c:
+	- use milter_connection_listen().
+	- move error related code to milter-connection.[ch].
+
+	* milter/client/milter-client.c (milter_client_main): remove
+	needless code.
+
+2008-11-16  Kouhei Sutou  <kou@cozmixng.org>
+
+	* test/client/test-client-context-callback.c,
+	test/core/test-writer.c,
+	test/server/test-server-context-signals.c: follow
+	GCutStringIOChannel changes.
+
+2008-11-14  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/server/milter-server-context.c: fix indent.
+
+2008-11-12  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/server/milter-server-context.c (write_packet): Set next state
+	anyway except END-OF-MESSAGE.
+
+2008-11-11  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/server/milter-server-context.c: Ouput
+	MilterServerContextState to log when decoding "CONTINUE" reply.
+	* milter/server/milter-server-context.c: Ouput
+	MilterServerContextState to log when decoding "ACCEPT" reply.
+	* milter/server/milter-server-context.[ch]: Now MilterServerContext
+	has a name property.
+	* milter/server/milter-server-context.c: Output context name to log.
+	* milter/server/milter-server-context.c: Do not set to
+	MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE while "BODY" response is
+	not received.
+	* milter/server/milter-server-context.c: Do not set state on QUIT
+	command. This is a workaround.
+	* milter/server/milter-server-context.c: Change state after signal
+	emitted.
+
+2008-11-10  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/core/milter-option.[ch], test/core/test-option.c,
+	test/lib/milter-assertions.c: add milter_option_equal().
+
+2008-11-10  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/client/milter-client.c: Use milter_utils_inspect_io_error().
+	* milter/server/milter-server-context.[ch]: Be all timeout values
+	gdouble.
+	* milter/core/milter-utils.[ch]: Added milter_utils_timeout_add().
+
+2008-11-07  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/server/milter-server-context.c (write_packet): quit
+	state doesn't wait response.
+
+	* milter/core/milter-utils.h
+	(MILTER_IMPLEMENT_FINISHED_EMITTABLE_WITH_CODE): add.
+
+	* milter/core/milter-finished-emittable.h: fix cast macros for
+	interface.
+
+2008-11-07  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/server/milter-server-context.h: Added "ready" signal.
+	* milter/server/milter-server-context.c: Non-blocking connect().
+	Emit "ready" signal when connect() is established.
+	* milter/server/milter-server-context.c: Use
+	milter_utils_inspect_io_error().
+
+2008-11-06  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/core/milter-utils.[ch]: Added
+	milter_utils_format_reply_code().
+	* milter/client/milter-client-context.c
+	(milter_client_context_format_reply_code): Use
+	milter_utils_format_reply_code.
+	* milter/core/milter-logger.[ch]: "log" signal accompanies with
+	filename, line number, function name, and time value.
+
+2008-11-02  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/client.h, milter/client/milter-client.c
+	(milter_client_main): add error checks.
+
+	* libmilter/libmilter-compatible.c (smfi_main): check
+	milter_client_main() return value.
+
+	* libmilter/libmilter-compatible.c (smfi_main): use milter_init()
+	and milter_quit().
+
+	* milter/core/milter-utils.c (milter_utils_parse_connection_spec),
+	test/core/test-utils.c (test_parse_connection_spec_null): add NULL check.
+
+2008-10-31  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/core/milter-reply-decoder.c,
+	milter/server/milter-server-context.c: cleanup.
+
+	* test/server/test-server-context-check-signals.c: cleanup.
+
+	* milter/server/milter-server-context.[ch],
+	test/server/test-server-context-check-signals.c:
+	add check-end-of-message.
+
+2008-10-31  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/core/milter-reply-signals.[ch],
+	milter/core/milter-reply-decoder.c,
+	milter/server/milter-server-context.c: "reply-code" signal need guint,
+	gchar* and gchar*.
+
+2008-10-31  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/core/milter-protocol.h: remove needless quarantine.
+
+	* ./: receipt -> recipient.
+
+2008-10-30  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/server/milter-server-context.[ch],
+	test/server/test-server-context.c: add
+	milter_server_context_set_state().
+
+	* milter/core/milter-reader.c, milter/test/core/test-reader.c:
+	read all available data in a watch time.
+
+2008-10-30  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* test/server/test-server-context-command.c: Added a test for sending
+	abort and quit command continuously.
+	* test/client/test-client-context-callback.c: Remove inexistent values
+	in "*-response" signals.
+
+2008-10-29  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/server/milter-server-context.c,
+	test/server/test-server-context-check-signals.c: pass the milter
+	if any check-* returns TRUE.
+
+	* milter/server/milter-server-context.c: use macros.
+
+2008-10-29  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* test/server/test-server-context-check-signals.c: Also check that
+	"accept" signals is received.
+	* milter/server/milter-server-context.c: Remove
+	milter_server_context_get_skip_body().
+	* milter/server/milter-server-context.c: Revert the previous commit.
+	get_skip_body() is used in milter_manager_children_body().
+	* milter/core/milter-reader.[ch], milter/core/milter-handler.[ch]:
+	Emit "finished" signal.
+	* emitable -> emittable.c
+	* milter/core/milter-finished-emittable.[ch]: Added.
+	* milter_error_emittable_emit_error -> milter_error_emittable_emit.
+	* milter/core/milter-utils.h: Added MILTER_IMPLEMENT_ERROR_EMITTABLE
+	and MILTER_IMPLEMENT_REPLY_SIGNALS macro.
+	* milter/core/milter-utils.h: MILTER_IMPLEMENT_ERROR_EMITTABLE and
+	MILTER_IMPLEMENT_REPLY_SIGNALS need base_init function name.
+	* milter/core/milter-utils.h: Added
+	MILTER_IMPLEMENT_FINISHED_EMITTABLE and
+	MILTER_DEFINE_FINISHED_EMITTABLE_TYPE.
+	* milter/core/milter-reader.[ch], milter/core/milter-handler.[ch]: Use
+	MilterFinishedEmittable.
+	* milter/core/milter-reader.c: MilterReader is not an abstract object.
+	* milter/core/milter-finished-emittable.c: "finished" signal has no
+	extra argument.
+	* milter/server/milter-server-context.c: abort command should not use
+	timeout since quit command is sent soon after.
+
+2008-10-28  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/server/milter-server-context.c: more uint!
+
+	* milter/server/milter-server-context.[ch]: define default timeout
+	values.
+
+2008-10-28  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/server/milter-server-context.[ch]: Added "before-*" signals.
+	* milter/server/milter-server-context.[ch]: Fix typo. Also added
+	default handler of "before-" signals.
+	* milter/server/milter-server-context.c: Default handler of
+	"before-*" signals are not needed since both G_SIGNAL_RUN_FIRST and
+	*G_SIGNAL_RUN_LAST* are needed for invoking callback function of
+	signal so default handler always overrides callback's return value.
+	* milter/server/milter-server-context.c: Revert the previous commit.
+	To connect "before-*" signals, use g_signal_connect_after instead of
+	g_signal_connect.
+	* milter/server/milter-server-context.[ch]: "before-*" -> "check-*".
+	* milter/server/milter-server-context.c: Emit "check-*" signals before
+	writing each command and emit "accept" signal if the check passes.
+	* test/server/test-server-check-signals.c: New file from
+	test-server-signals.c.
+	milter/core/milter-protocol.h: Added MILTER_STATUS_QUARANTINE.
+	* milter/server/milter-server-context.[ch]: Added
+	milter_server_get_skip_body(). If skip reply is received, set
+	skip_body TRUE.
+	* milter/server/milter-server-context.c: Set current state before
+	emitting "accepct" signal.
+	* milter/server/milter-server-context.[ch]: Added
+	"check-end-of-header" signal.
+	* milter/server/milter-server-context.c: "accept" signal does not
+	receive MilterStatus.
+
+2008-10-27  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/core/milter-command-decoder.[ch],
+	milter/client/milter-client-context.c,
+	test/core/test-command-decoder.c: end-of-message signal is emitted
+	with body chunk.
+
+	* milter/server/milter-server-context.c:
+	use milter_utils_inspect_object().
+
+	* milter/core/milter-utils.[ch], test/core/test-utils.c: add
+	milter_utils_inspect_object().
+
+	* milter/server/milter-server-context.c
+	(milter_server_context_negotiate): use milter_utils_inspect_flags().
+
+	* milter/core/milter-utils.[ch], test/core/test-utils.c: add
+	milter_utils_inspect_flags().
+
+2008-10-27  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/core/milter-option.[ch]: Added milter_option_copy.
+	* milter/core/milter-option.[ch]: Added milter_option_combine.
+	* milter/server/milter-context.c: Hold MilterOption in negotiate
+	command and combine it and another option from a fliter.
+	* milter/core/milter-option.[ch]: Added milter_option_merge.
+	* milter/server/milter-server-context.[ch]: Added
+	milter_server_context_is_enable_step.
+	* milter/server/milter-server-context.[ch]: sending timeout -> writing
+	timeout.
+	* milter/server/milter-server-context.c: Use inspected enum string for
+	error message.
+
+2008-10-24  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/client/milter-client-context.[ch]: guchar -> gchar.
+
+2008-10-24  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/core/milter-decoder.[ch]: "netogiate-reply" signals has
+	MilterMacrosRequests.
+	* milter/core/milter-reply-signals.[ch]: Added an interface for
+	emitting signals of replying from filter.
+	* milter/core/milter-utils.h: Added MILTER_DEFINE_REPLY_SIGNALS_TYPE
+	macro.
+	* milter/core/milter-reply-decoder.[ch]: MilterReplyDecoder now uses
+	MilterReplySignsls.
+	* milter/core.h: Include milter-reply-signals.h.
+	* milter/server/milter-server-context.[ch]: MilterServerContext now
+	uses MilterReplySignals.
+
+2008-10-24  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/server/milter-server-context.c: support data command.
+
+	* milter/server/milter-server-context.c,
+	test/server/test-server-context-signals.c: improve invalid state
+	error message.
+
+	* milter/core/milter-utils.[ch], test/core/test-utils.c: add
+	milter_utils_inspect_enum().
+
+2008-10-23  Kouhei Sutou  <kou@cozmixng.org>
+
+	* TODO: add: emitable -> emittable?
+
+	* milter/core/milter-handler.c (cb_reader_error): fix a typo.
+
+	* milter/client/milter-client-context.[ch]: remove needless
+	response arguments.
+
+	* TODO: add:
+	sending_timeout/reading_timeout ->
+	sending_timeout/receiveing_timeout or
+	writing_timeout/reading_timeout
+
+	* test/core/test-logger.c: usec is optional.
+
+	* milter/core/milter-logger.c: log time.
+
+	* milter/core/milter-handler.[ch],
+	milter/client/milter-client-context.c,
+	milter/server/milter-server-context.c: remove setup_decoder().
+
+2008-10-23  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/server/milter-server-context.c: All timeout values are
+	property.
+	* milter/client/milter-client-context.c: Emit write error.
+	* test/client/test-client.c: Added listen failure test.
+	* test/client/test-client.c: Removed listen failure test. The test
+	does not cause listen error, actually bind error was occurred. We need
+	the file descriptor which binded to a port in MilterClient.
+	* milter/client/milter-client-context.c: Use milter_info on each
+	reply.
+	* milter/handler/milter-handler.[ch]: MilterDecoder is set by
+	(decoder_new) function.
+	* milter/server/milter-server-context.c,
+	milter/client/milter-client-context.c: Use decoder_new function.
+	* libmilter/libmilter-compatible.c: Implemet smfi_setmlreply(). I need
+	milter_client_set_reply_va_list().
+	* milter/handler/milter-handler.[ch]: Added
+	milter_handler_set_macros_requests() and get_macros_requests().
+	* milter/server/milter-server-context.c: Use MilterHandler's
+	MilterMacrosRequests.
+	* libmilter/libmilter-compatible.c: Implement smfi_setsymlist().
+	* milter/server/milter-server-context.c: Fix typo.
+	MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER -> END_OF_MESSAGE.
+	* milter/client/milter-client-context.[ch]: Added
+	milter_client_context_negotiate_reply().
+	* milter/client/milter-client-context.c: Plug a leak.
+
+2008-10-22  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/core/milter-command-decoder.c: zero clear.
+
+	* milter/core/milter-command-decoder.[ch]: type of socklen_t -> uint.
+
+	* test/core/test-reader.c (test_io_error): write.
+
+	* test/client/test-client.c (test_bind_failure): use g_strerror().
+	(setup): initialize as NULL.
+
+2008-10-22  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/server/milter-server-context.c: Emit "sending-timeout" signal
+	if writing packet is timed out.
+	* test/server/test-server-context-command.c: Fix crash: Remove
+	source id of timed_out_after.
+	* test/server/test-server-context-command.c: Break out of while loop
+	if timed_out_after is TRUE.
+	* milter/server/milter-server-context.c (write_packet): Return FALSE
+	if "reading-timeout" signals is not received yet.
+	* milter/server-milter-server-context.c: Set "reading-timeout" only if
+	the state is not DEFINE_MACRO since each command state follows after
+	DEFINE_MACRO.
+	* milter/core/milter-error-emitable.[ch]: Added an interface for
+	emitting error signal.
+	* milter/client.h, milter/client/milter-client.c: Use
+	MilterErrorEmitable.
+	* milter/core.h: Include milter-error-emitable.h.
+	* milter/server/milter-server-context.[ch]: Use MilterErrorEmitable.
+	* milter/client/milter-client.c: Use milter_error() instead of
+	milter_info() for error.
+	* milter/server/milter-server-context.[ch]: Emit BUSY error if
+	previous command has been processing in milter.
+	* milter/core/milter-utils.h: Added MILTER_DEFINE_ERROR_EMITABLE_TYPE
+	macro.
+	* milter/client/milter-client.c,
+	milter/server/milter-server-context.c: Use
+	MILTER_DEFINE_ERROR_EMITABLE_TYPE.
+	* milter/core/milter-reader.[ch]: Use MilterErrorEmitable.
+	* milter/core/milter-utils.[ch]: Added
+	milter_utils_set_error_with_sub_error().
+	* milter/core/milter-reader.c: Use
+	milter_utils_set_error_with_sub_error().
+	* milter/core/milter-utils.c: Use g_set_error() instead of
+	g_set_error_literal().
+	* test/server/test-server-context-signals.c: Use
+	gcut_string_io_channel_set_limit(). The test passes!
+	* test/server/test-server-context-signals.c:
+	gcut_string_io_channel_set_limit ->
+	gcut_string_io_channel_set_buffer_limit.
+	* milter/server/milter-server-context.[ch]: Emit I/O error.
+	* milter/server/milter-server-context.[ch]: Emit Decode error.
+	* milter/server/milter-server-context.c: Include io channel error in
+	MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE.
+	* milter/core/milter-handler.[ch]: MilterHandler now has a
+	MilterDecoder. Added milter_handler_get_decoder() to use this decoder
+	from both MilterServerContext and MilterClientContext.
+	* milter/server/milter-server-context.c: Use MilterHandler's decoder
+	object.
+	* milter/client/milter-client-context.c: Use MilterHandler's decoder
+	object.
+	* milter/core/milter-handler.[ch]: Now MilterHandler has a
+	MilterReader. Added milter_handler_set_reader().
+	* milter/server/milter-server-context.c: Use
+	milter_handler_set_reader().
+	* milter/client/milter-client.c,
+	milter/client/milter-client-context.[ch]: Use
+	milter_handler_set_reader().
+	* milter/client/milter-client-context.[ch]: Added "mta-timeout"
+	signal.
+	* milter/client.h, milter/client/milter-client.c: Added
+	milter_client_set_timeout.
+	* libmilter/libmilter-compatible.c: Call milter_client_set_timeout.
+	* milter/core/milter-handler.c: MilterHandler should have
+	MilterErrorEmitable interface.
+	* milter/server/milter-server-context.c: Emit write error.
+
+2008-10-21  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/server/milter-server-context.[ch]: add timeout signal.
+
+	* test/server/test-server-context-command.c: sure. add time out check.
+
+	* TODO: update.
+	- remove: MILTER_STATUS_PROGRESS.
+	- add: clear macro context on XXX-response.
+
+2008-10-21  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/core/milter-protocol.h: Added MILTER_STATUS_PROGRESS.
+	* milter/client/milter-client-context.c: Do not emit "-response"
+	signals if the return value of its original signal is
+	MILTER_STATUS_PROGRESS.
+	* milter/core/milter-logger.h: Added MILTER_LOG_LEVEL_STATISTICS.
+	* milter/server/milter-server-context.[ch]: Added set_XX_timeout().
+	* milter/server/milter-server-context.c: Implement timeout mechanism.
+	* test/server/test-server-command.c: Added timeout test.
+
+2008-10-20  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/core/milter-utils.c: zero clear.
+
+	* test/core/test-reply-decoder.c: use %s.
+
+	* milter/server/milter-server-context.c: use G_GSIZE_FORMAT.
+
+	* test/core/test-reply-decoder.c: fix test value.
+
+	* milter/core/milter-encoder.c
+	(milter_encoder_encode_reply_negotiate): make macros_requests optional.
+
+	* milter/core/milter-encoder.[ch]: reorder.
+
+	* src/core/milter-encoder.[ch], test/: split a large body chunk to
+	small body chunks.
+
+2008-10-20  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* src/milter-test-server.c: NULL check barrier for
+	MilterMacrosRequests.
+	* milter/core/milter-writer.c (write_to_io_channel):
+	g_main_context_iteration() is not needed for any more. 
+	* milter/core/milter-utils.[ch]: milter_utils_parse_connection_spec
+	returns domain too.
+	* milter/client/milter-client.c,
+	milter/server/milter-server-context.c: Use domain value from
+	milter_utils_parse_connection_spec for socket().
+	* src/milter-test-server.c: Sending command depending on negotiate
+	option.
+	* test/server/test-server-context-signals.c: Check
+	MilterOption value.
+	* milter/core/milter-encoder.c: Macro request symbols string should be
+	NULL-terminated string.
+	* milter/client/milter-client.c: Fix a message.
+	* milter/server/milter-server-context.c: Output message on each
+	command with milter_info().
+	* milter/core/milter-reply-decode.c: Output message with milter_info.
+	* milter/server/milter-server-context.c: Output MilterOption value in
+	"negotiate" signal.
+	* milter/server/milter-server-context.c: Output messages on receiving
+	reply.
+	* src/milter-test-server.c: Send all MilterStepFlags.
+	* src/milter-test-server.c: Send DATA command before HEADERS.
+	* src/milter-test-server.c: Remove milter_info().
+	* milter/server/milter-server-context.c: 64-bit support.
+	* milter/core/milter-reader.c: Use milter_error() instead of
+	milter_info() if something goes wrong.
+	* milter/core/milter-protocol.h: Added MILTER_STATUS_PROGRESS.
+	* milter/client/milter-client-context.c: Use g_signal_emit() instead
+	of g_signal_emit_by_name().
+
+2008-10-17  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/client/milter-client-context.[ch],
+	milter/core/milter-marshalers.list: response signal don't return
+	needless status.
+
+	* TODO: add.
+
+	* test/lib/milter-test-utils.[ch]: remove pipe channels related codes.
+
+	* test/server/test-server-context-signals.c: use GCutIOChannelString.
+
+	* test/client/test-client-context-reply.c: use GCutIOChannelString.
+
+	* test/client/test-client-context-body.c: use GCutIOChannelString.
+
+	* test/client/test-client-context-address.c: use GCutIOChannelString.
+
+	* test/client/test-client-context-header.c: use GCutIOChannelString.
+
+	* test/core/test-writer.c: use GCutIOChannelString.
+
+	* test/core/test-reader.c: use GCutIOChannelString.
+
+	* test/core/test-command-decoder.c
+	(test_decode_define_macro_without_macro_context): add.
+	(test_decode_data_with_garbage): add.
+	(test_decode_negotiate_with_garbage): add.
+
+	* milter/core/milter-decoder.c (MilterDecoderCompareType): add
+	prefix.
+	* milter/core/: follow the above change.
+
+	* milter/core/milter-decoder.h, milter/core/milter-encoder.c,
+	milter/core/milter-reply-decoder.c: move to command <-> macro
+	stage conversion to ...
+	* milter/core/milter-utils.[ch]: ... here.
+
+	* test/core/test-utils.c: add tests for the above changes.
+
+	* test/core/test-macros-requests.c: fix tests for merge.
+
+	* milter/core/milter-macros-requests.c: use g_direct_hash() not
+	g_int_hash().
+	* test/core/test-encoder.c, test/lib/milter-test-utils.c,
+	milter/core/milter-encoder.c: follow the above change.
+
+	* milter/server/milter-server-context.c: send all available macros
+	if macro requested was sent.
+
+	* milter/core/milter-reply-decoder.c,
+	test/core/test-reply-decoder.c, test/lib/milter-test-utils.c: fix
+	broken commit.
+
+	* test/core/test-encoder.c (test_encode_reply_negotiate): stage ->
+	command.
+
+	* milter/server/milter-server-context.c (write_macro): add NULL check.
+
+	* test/lib/milter-assertions.[ch]
+	(milter_assert_equal_macros_requests): add.
+
+	* test/core/test-macros-requests.c, test/lib/: abstract.
+
+	* milter/core/milter-macros-requests.[ch]
+	(milter_macros_requests_foreach): add.
+
+	* milter/core/milter-encoder.[ch],
+	milter/core/milter-macros-requests.c: fix the below changes.
+
+	* milter/core/, test/core/: request -> requests.
+
+	* test/server/test-server-context-command.c: add tests for status.
+
+	* test/lib/milter-test-utils.[ch]: move
+	milter_test_inspect_io_condition_error() to ...
+	* milter/core/milter-utils.[ch]: ... here.
+
+	* test/core/test-utils.c, milter/core/milter-reader.c,
+	test/lib/milter-test-client.c: follow the above change.
+
+	* milter/server/milter-server-context.[ch],
+	test/server/test-server-context-command.c: support DATA.
+
+	* test/server/test-server-context-command.c: use GCutIOChannelString.
+
+2008-10-17  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/core/milter-macros-request.c: Added
+	milter_macros_request_merge().
+	* test/lib/milter-assertions.[ch]: Added
+	milter_assert_equal_list_string_with_sort().
+	* test/core/test-macros-request.c: Added merge tests. But
+	test_merge_fail() causes GLib crash!
+	* test/lib/milter-assertions.c: Do not use gcut_take_list for sorted
+	list.
+	* milter/core/milter-handler.c (milter_handler_set_macro): Set
+	hashtable into priv->macros hash table.
+	* milter/server/milter-server-context.c: Preserve MilterMacrosRequest
+	list in "negotiate-reply" to use to sort out macros from MTA.
+	* test/server/test-server-command.c: Added with macro test.
+	* milter/core.h: Include <milter-macros-requests.h>
+	* milter/core/milter-marshalers.list: Added VOID:OBJECT,OBJECT.
+	* milter/server/milter-server-context.[ch]: Use MilterMacrosRequests.
+	* test/core/test-reply-decoder.c: Use MilterMacrosRequests.
+	* test/core/test-encoder.c: Use MilterMacrosRequests.
+	* src/milter-test-server.c: Use milter_macros_requests_foreach().
+
+2008-10-16  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/core/milter-reply-decoder.c,
+	test/core/test-reply-decoder.c: cleanup.
+
+	* data/collect-packet.rb: fix index bug.
+
+	* milter/client/milter-client-context.c,
+	test/client/test-client-context-callback.c: support DATA reply.
+
+	* test/client/test-client-context-data.c,
+	test/client/test-client-context-reply.c: add DATA handlers.
+
+	* milter/client/milter-client-context.c,
+	test/client/test-client-context-callback.c: support DATA.
+
+	* milter/core/milter-encoder.[ch], test/core/test-encoder.c:
+	support DATA.
+
+	* milter/core/milter-command-decoder.[ch],
+	test/core/test-command-decoder.c: support DATA.
+
+	* test/core/test-reply-decoder.c, test/lib/milter-test-utils.h:
+	require Cutter 1.0.6.
+
+	* milter/core/milter-decoder.c,
+	milter/core/milter-command-decoder.c,
+	test/core/test-command-decoder.c: accept NULL value on define macro.
+
+2008-10-16  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/core/milter-symsbols.[ch]: Renamed from milter-core.[ch].
+	* milter/core/milter-symbols.[ch]: MilterCommand -> MilterMacroStage.
+	* milter/core/milter-macros-request.[ch]: Renamed from
+	milter-symbols.[ch].
+	* milter/core/milter-encoder.[ch]: Added
+	milter_encoder_encode_reply_macros_request. But this function should
+	be integrated in milter_encoder_encoder_reply_negotiate.
+	* milter/core/milter-reply-decoder.c: Decode "negotiate-reply". test
+	fails yet.
+	* milter/core/milter-encoder.c: Use htonl instead of ntohl.
+	* milter/core/milter-reply-decoder.c: Consider NULL length.
+	* milter/core/milter-reply-decoder.c,
+	milter/server/milter-server-context.[ch], src/milter-test-server.c:
+	"negotiate-reply" signal accompanies with MilterMacrosRequst list
+	(GList) not GHashTable.
+	* milter/core/milter-encoder.[ch]:
+	milter_encoder_encode_reply_macros_request ->
+	milter_encoder_encode_reply_negotiate.
+	* milter/core/milter-handler.[ch]: Added milter_handler_set_macro().
+	milter_handler_set_macros -> milter_handler_set_macros_hash_table.
+	New milter_handler_set_macro expects variable length arguments.
+	* test/core/test-reader.c: Run test_reader_huge_data always. The test
+	takes only a half second on my machine.
+	* *: Use g_htonl, g_htons and so on.
+	* milter/core/milter-handler.h, milter/core/milter-macros-request.h:
+	Use G_GNUC_NULL_TERMINATED.
+	* test/core/test-reply-decoder.c: Added a test for no macros request
+	negotiation.
+	* milter/core/milter-macros-request.c: stage is not MilterCommand.
+	* milter/core/milter-reply-decoder.c: Get stage value from correct
+	point.
+	* milter/server/milter-server-context.c: Output current state in error
+	message.
+	* test/lib/milter-test-utils.c: Added G_IO_FLAG_NONBLOCK to write
+	channel. No effect yet.
+	* src/milter-test-server.c: Set macros.
+
+2008-10-15  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/server/milter-server-context.[ch], src/milter-test-server.c,
+	test/server/test-server-context-signals.c: add simple state validation.
+
+	* src/milter-test-client.c, src/milter-test-server.c: fix index bug.
+
+	* ./: close -> quit.
+
+	* milter/server/milter-server-context.[ch],
+	src/milter-test-server.c,
+	test/server/test-server-context-command.c: close -> quit.
+
+	* src/milter-test-server.c: work now!
+
+	* test/server/test-server-context.c: use strerror().
+
+	* src/milter-test-client.c, src/milter-test-server.c: add.
+
+	* milter/core/milter-main.[ch]: add.
+
+	* libmilter/libmilter-compatible.c: rework.
+
+	* test/lib/milter-test-server.c, test/lib/milter-test-client.c,
+	test/lib/milter-test-utils.[ch]: abstract.
+
+	* milter/core/milter-logger.[ch], test/core/test-logger.c: refer
+	MILTER_LOG_LEVEL environment variable for logging.
+
+	* milter/core/milter-logger.[ch]: v -> va_list.
+
+	* test/core/test-command-decoder.c (define_macro_test_data_new),
+	test/core/test-encoder.c (define_macro_test_data_new): follow
+	the Cutter 1.0.5 API.
+
+2008-10-15  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/client/milter-client.c,
+	milter/client/milter-client-context.[ch]: Use MilterReader.c
+	* milter/client/milter-client.c: Emit "connection-established" signal
+	after appending process data to its own list.
+	* milter/client/milter-client.c: Return if accept() fails.
+	* milter/client/milter-client.c: g_source_remove against server watch
+	function. All tests pass!
+	* milter/client/milter-client.c: Unref client io channel.
+	* milter/client/milter-client.c: Use milter_info.
+	* milter/client.h: Cleanup needless typedefed functions.
+	* milter/core/milter-decoder.[ch],
+	milter/core/milter-command-decoder.[ch]: MilterDecoder now has
+	"negotiate" signal since MilterReplyDecoder also uses the signal.
+	* milter/server/milter-server-context.[ch],
+	milter/core/milter-reply-decoder.c: MilterServerContext emits
+	"negotiate" signal.
+	* milter/client/milter-client.[ch]: Emit "error" signal.
+	* test/core/test-reader.c (test_reader_huge_data): Omit this test
+	randomly and reduce test data size.
+	* milter/server/milter-server-context.[ch]: MilterServerContext
+	signals do not need MilterStatus.
+	* milter/server/milter-server-context.[ch]: FAIL -> FAILURE.
+	* milter/core/milter-reply-decoder.[ch],
+	milter/server/milter-server-context.[ch]: Remove "set-symbol-list"
+	signal. SET_SYMBOL_LIST reply is encoded in NEGOTIATE packet.
+	* src/milter-test-server.c: Remove "set-symbol-list" signal handling.
+	* milter/core/milter-command-decoder.c,
+	milter/core/milter-decoder.[ch]: decode_macro_command_define_macro ->
+	milter_decoder_decode_macros.
+	* milter/core/milter-decoder.[ch],
+	milter/core/milter-command-decoder.[ch]: Emit "negotiate" signal from
+	MilterCommandDecoder.
+	* milter/core/milter-reply-decoder.[ch],
+	milter/server/milter-server-context.[ch]: Emit "negotiate-reply"
+	signal.
+	* milter/core/milter-decoder.[ch],
+	milter/core/milter-command-decoder.c,
+	milter/core/milter-reply-decoder.c: milter_decoder_decode_negotiate
+	returns processed length.
+	* milter/core/milter-decoder.[ch],
+	milter/core/milter-command-decoder.c: Move
+	milter_decoder_decode_macros into MilterCommandDecoder since macro
+	packet in reply is different from the command defined macros.
+	* src/milter-test-server.c: Connect "negotiate" signal instead of
+	"negotiate-reply".
+	* milter/core/milter-macro.[ch]: Added for macros in
+	"negotiate-reply".
+	* milter/core/milter-macro.[ch]: Added milter_macro_get_context and
+	milter_macro_get_macros.
+
+2008-10-14  Kouhei Sutou  <kou@cozmixng.org>
+
+	* test/lib/milter-assertions.[ch]: add.
+	* test/client/test-client.c: add a test for negotiation but not
+	work yet!!!
+
+	* test/lib/milter-test-utils.h: use MilterTestServer.
+
+	* test/client/test-client.c: add a client test with test server.
+
+	* milter/client/milter-client.c (milter_client_class_init): fix a typo.
+
+	* test/core/test-utils.c (sockaddr_un_new): remove unused function.
+
+	* test/lib/milter-test-server.[ch]: add. maybe broken.
+	* test/lib/milter-test-client.c: fix memory leaks.
+
+	* test/lib/milter-test-client.[ch]: make MilterTestClient GObject.
+	* test/server/test-server-context.c: follow the above change.
+
+	* test/lib/milter-test-client.[ch]: add.
+	* test/server/test-server-context.c: use MilterTestClient.
+	* test/: follow the above changes. (require Cutter 1.0.5.)
+
+	* test/server/test-server-context.c (read_data): remove unused variable.
+	* test/server/test-server-context.c: fix inverted client and
+	server names.
+
+	* test/lib/milter-test-utils.h: Cutter 1.0.5 doesn't include <string.h>.
+
+2008-10-14  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/server/milter-server-context.c: Unref read and writer io
+	channels.
+	* milter/server/milter-server-context.c: Plugged memory leak. Now
+	test_helo in test-server-context works fine.
+	* test/lib/test-milter-utils.[ch]: Added
+	milter_test_write_data_to_io_channel().
+	* test/core/test-reader.c: Use milter_test_write_data_to_io_channel.
+	* test/core/test-writer.c: Use milter_writer_io_channel_new instead of
+	milter_writer_string_new.c
+	* test/lib/milter-test-utils.[ch]: Added milter_test_wait_for_io().
+	The function just invoke g_main_context_iteration until the function
+	which is registered by g_idle_add_full with G_PRIORITY_LOW is called.
+	* test/lib/milter-test-utils.[ch]: Added
+	milter_test_read_data_from_io_channel(). The function may be blocked. Need
+	timeout handling.
+	* test/core/test-writer.c: Use milter_test_read_data_from_io_channel.
+	* test/libmilter/test-smfi-context.c: Use milter_writer_io_channel_new
+	instead of milter_writer_string_new.
+	* test/libmilter/test-smfi-context.c: Fix memory leak.
+	* test/libmilter/test-smfi-context.c: Unref write_channel soon after
+	milter_writer_new_io_channel().
+	* test/client/test-client-context-address.c,
+	test/client/test-client-context-header.c,
+	test/client/test-client-context-reply.c: Use
+	milter_writer_io_channel_new instead of milter_writer_string_new.
+	* milter/core/milter-writer.c: Invoke g_main_context_iteration() in
+	write_to_io_channel for huge packet support for reading from the same
+	thread.(Actually for MilterWriter test)
+	* test/lib/milter-test-utils.c
+	(milter_test_write_data_to_io_channel): ahead data pointer
+	written_bytes.
+	* test/server/test-server-context.c: Use
+	milter_test_write_data_to_io_channel.
+	* test/client/test-client-context-body.c: Use
+	milter_writer_io_channel_new instead of milter_writer_string_new.
+	* milter/core/milter-writer.[ch]: Remove milter_writer_string_new().
+	* milter/client.h, milter/client/milter-client.c: MILTER_CLIENT_TYPE
+	-> MILTER_TYPE_CLIENT. Added "connection-established" signal.
+	* test/client/test-client.c: Added.
+	* test/lib/milter-test-client.c: Ahead data pointer and fix some typo.
+	This bug derived from my code.
+	* milter/client.h, milter/client/milter-client.c: Remove
+	milter_client_set_context_setup, milter_client_set_teardown_func.
+	* libmilter/libmilter-compatible.c: Connect to
+	"connection-established" signal.
+	* milter/core/milter-writer.c: Cleanup.
+	* milter/client/milter-client.c: Use milter_info().
+	* milter/client/milter-client.c: milter_handler_set_writer() counts up
+	MilterWriter reference count so it is unnecessary to keep MilterWrite
+	in MilterClient.
+
+2008-10-11  Kouhei Sutou  <kou@cozmixng.org>
+
+	* test/run-test.sh: fix base directory.
+
+	* milter/client/milter-client.c: remove needless header.
+
+2008-10-10  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/client/milter-client-context.[ch]:
+	MILTER_CLIENT_TYPE_CONTEXT -> MILTER_TYPE_CLIENT_CONTEXT.
+
+	* milter/server/milter-server-context.h: fix parent class.
+
+	* milter/client/milter-client-context.c (negotiate_response):
+	support reject on negotiate.
+
+2008-10-10  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* test/core/test-reader.c: Use cut_take_memory().
+	* milter/core/milter-reply-decoder.h,
+	milter/server/milter-server-context.[ch]: "insert-header" and
+	"change-header" index should be a guint32.
+	* test/core/test-reply-decoder.c: "INSERT HEADER" and "CHANGE HEADER"
+	tests.
+	* test/server/test-server-context.c,
+	test/server/test-server-context-command.c: All tests except
+	test_establish_connection() moved into test-server-context-comman.c.
+	setup a test server.
+	* milter/server/milter-server-context.c: Close client_fd in dispose().
+	* milter/core/milter-reader.c: Use milter_info instead of g_print.
+	* test/server/milter-server-context.c: Added a test for exchange
+	packet between server and client.
+	* test/server/milter-server-context.c: Set reply_received FALSE before
+	writing reply data.
+	* milter/core/milter-protocol.h, milter/core/milter-handler.[ch],
+	milter/client/milter-client-context.[ch]: Remove MilterProtocol
+	object. milter_handler_feed() -> milter_client_context_feed().
+	* milter/core/milter-client.c: Use milter_client_context_feed.
+	* milter/client/milter-client-marshalers.list: Removed.
+	* milter/core/milter-handler.h: Remove milter_handler_get_decoder and
+	milter_handler_reply.
+	* milter/server/milter-server-context.[ch]: Now MilterServerContext is
+	a child of MilterHandler.
+	* milter/server/milter-server-context.[ch]:
+	milter_server_context_set_spec is separated from
+	milter_server_context_establish_connection.
+	* milter/server/milter-server-context.c: Set macros.
+	* milter/core/milter-protocol.h, libmilter/mfapi.h: Added
+	MilterMacroStage.
+	* milter/core/milter-reply-decoder.[ch],
+	milter/server/milter-server-context.[ch]: Added "set-symbol-list"
+	signal. But decoder is not implemented yet.
+	* test/core/test-reply-decoder.c, test/server/test-server-context.c::
+	Use guint32 for header index.
+	* milter/server/milter-server-context.[ch]:
+	milter_server_context_set_spec ->
+	milter_server_context_set_connection_spec.
+	* milter/core/milter-reply-decoder.c: Decode "SET SYMBOL LIST" reply.
+
+2008-10-09  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/client.h, milter/client/milter-client.c
+	(milter_client_shutdown): add.
+
+	* milter/core/milter-marshalers.list: add missing marshaler.
+
+2008-10-09  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/core/milter-reader.c: Use milter_info instead of g_print.
+	* test/server/test-server-signals.c: Check values accompanied with
+	signal.
+	* milter/core/milter-decoder.[ch],
+	milter/code/milter-command-decoder.c: decode_command_header_conent ->
+	milter_decoder_decode_command_header_content.
+	* milter/core/milter-reply-decoder.c: Use
+	milter_decoder_decode_command_header_content and emit "add-header"
+	signal with decoded parameters. Also fix indent.
+	* milter/core/milter-reply-decoder.c: Emit all signals anyway.
+	Handle MILTER_REPLY_ADD_RECEIPT_WITH_PARAMETERS reply.
+	* milter/core/milter-decoder.c (milter_decoder_decode_header_content):
+	Remove "command" word from error message since the function is used by
+	MilterReplyDecoder too.
+	* test/core/test-reply-decoder.c: Added non null terminated string on
+	"add-header" test.
+	* milter/core/milter-reply-decoder.c: Decode "CHANGE FROM" and "ADD
+	RECEIPT WITH PARAMETERS".
+	* milter/core/milter-reply-decode.c (decode_two_string): Return TRUE
+	if the second string does not exist because "CHANGE FROM" reply may
+	not have parameters as the second string.
+	* milter/core/milter-encoder.[ch]: Added "CONNECTION FAILURE",
+	"SHUTDOWN" and "SKIP" encoder.
+	* test/core/test-encoder.c: Added "CONNECTION FAILURE", "SHUTDOWN" and
+	"SKIP" tests.
+	* milter/core/milter-reply-decoder.c,
+	milter/server/milter-server-context.c:: "replace-body" signal does not
+	need packed_size.
+	* milter/server/milter-server-context.c: Remove
+	_milter_marshalers_server_XX. 
+	* milter/core/milter-reply-decoder.c: Emit "replace-body" signal with
+	approptiate value.
+	* milter/server/milter-server-context.[ch]: Added
+	milter_server_context_establish_connection(). The test still fails
+	since test server is not avairable yet.
+	* milter/server/milter-server-context.[ch]: MilterReader and
+	MilterWriter are now property. milter_server_context_set_reader() is
+	now an internal funciton of MilterServerContext. To set MilterReader from
+	outside use g_object_set().
+	* milter/server/milter-server-context.[ch]:
+	milter_server_context_set_writer is an internal function too.
+	* test/core/milter-reader.c: Added test for huge size packet. This
+	test ommits for a while.
+	* milter/code/milter-reply-decoder.c: Decode "INSERT HEADER" and
+	"CHANGE HEADER".
+
+2008-10-08  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/server/milter-server-context.c,
+	milter/server/milter-server-marshalers.list: add missing marshaler.
+
+	* milter/core/milter-logger.[ch], test/core/test-logger.c: add
+	MilterLogger.
+
+	* milter/core/milter-marshalers.list: add missing types.
+
+	* milter/core/milter-reader.[ch], test/core/test-reader.c:
+	read -> flow.
+
+2008-10-08  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/core/milter-reader.c: The first argument of "read" signal
+	should be a pointer since read data is binary.
+	* milter/core/milter-reply-decoder.[ch]: Added. TODO: MilterDecoder ->
+	MilterCommandDecoder.
+	* milter/core/milter-reply-decoder.[ch]: Now
+	milter_reply_decoder_new() returns MilterDecoder object not
+	MilterReplyDecoder.
+	* milter/core/milter-command-decoder.[ch]: Added new object.
+	* milter/core/milter-decoder.[ch]: Now MilterDecoder is an abstract
+	object which is a parent of MilterCommandDecoder and
+	MilterReplyDecoder. Most codes moved into milter-command-decoder.c.
+	* milter/core/milter-handler.c: Use milter_command_decoder_new instead
+	of milter_decoder_new.
+	* milter/core/milter-command-decoder.c: Fix compiler warnings.
+	* milter/core/milter-handler.c: Include "milter-command-decoder.h"
+	* milter/server/milter-server-context.[ch]: Now all methods return
+	gboolean value. Fix some typos.
+	* milter/core/milter-reply-decoder.c: Emit all signals but some signal
+	does not accompany with appropriate parameters yet. Fix some typos.
+	* milter/core/milter-reply-decoder.c: Emit "reply-code", "delete-receipt",
+	"quarantine" signals with appropriate parameter.
+	* milter/core/milter-reply-decoder.[ch]: Emit "connection-failure",
+	"shutdown" and "skip" signals.
+	* test/core/test-decoder.c, test/core/test-command-decoder.c: All
+	tests related to MilterCommandDecoder in test-decoder.c moved into
+	test-command-decoder.c. TODO: test-decoder.c should create a test
+	object which is a child of MilterDecoder.
+	* test/lib/milter-test-utils.[ch]: Added
+	milter_assert_make_channels().
+	* test/core/test-reader.c: Use milter_assert_make_channels.
+	* milter/core.h: Include <milter-reader.h>.
+	* milter/server/milter-server-context.[ch]; Implement
+	milter_server_context_helo().
+	* milter/server/milter-server-context.[ch]: Implement all methods
+	except "connect" and "negotiate".
+	* milter/server/milter-server-context.[ch]:
+	milter_server_context_negotiation -> milter_server_context_negotiate.
+	* test/server/test-server-context.c: Added "connect" and "negotiate"
+	test.
+	* test/server/test-server-context.c: Fix typo. mail -> rcpt.
+	* milter/core.h: Include "milter-command-decoder.h" and
+	"milter-reply-decoder.h".
+	* milter/server/milter-server-context.[ch]: Emit signals depending on
+	MilterReplyDecoder signals. "-response" signals are not emitted yet,
+	and tests is not avairable yet since MilterReader is not used yet.
+	* milter/server/milter-server-context.[ch]: Added
+	milter_server_set_reader().
+	* milter/server/milter-server-connect.c: Connect and disconnect
+	MilterReader signal in milter_server_context_set_reader(). Invoke
+	milter_decoder_decode() when "flow" signal is received.
+	* test/server/test-server-context-signals.c: Added. 6 tests fail since
+	MilterDecoder does not decode these reply yet.
+
+2008-10-07  Kouhei Sutou  <kou@cozmixng.org>
+
+	* test/core/test-reader.c: use non-block.
+
+	* milter/core/milter-version.h.in: add.
+	* configure.ac, milter/core.h, milter/core/Makefile.am: follow the
+	above change.
+
+	* configure.ac, Makefile.am, build/Makefile.am: support po/ and build/.
+
+	* config/: move to ...
+	* build/: ... here.
+
+	* enum-types.mk, marshal.mk: move to ...
+	* build/: ... here.
+	* libmilter/Makefile.am, milter/*/Makefile.am: follow the above
+	change.
+
+	* ./: milter-manager package -> milter-toolkit package.
+
+	* milter/manager/milter-manager-child-milter.[ch]: add.
+
+	* milter-*/: move to ...
+	* milter/*: ... here.
+
+2008-10-07  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter-server/milter-server.[ch]: option_negotiation -> negotiate.
+	* milter/core/milter-protocol.[ch]: Added MilterProtocol interface
+	which has all signals related to MilterProtocol. 
+	* milter/core/milter-handler.c,
+	milter/client/milter-client-context.c:: Use MilterProtocol interface.
+	* test/client/test-client-data-context.c: Add signals belong to
+	MilterProtocol not MilterClientContext.
+	* milter/core/milter-reader.[ch]: Remove milter_reader_read().
+	MilterReader is now watching GIOChannel by itself.
+	* milter/core/milter-reader.c: Call g_io_channel_ref() in
+	set_property().
+	* milter/core/milter-reader.c: (set_property): NULL check barrier.
+	(read_from_channel): break if G_IO_STATUS_NORMAL to avoid blocking.
+	* test/core/test-reader.c: Wait for data has been written.
+	* milter/core/milter-reader.c: Remove "ready" signal.
+	* milter/core/milter-reader.c: Remove milter_reader_string_new().
+	* milter/core/milter-reader.c: Set io_channel even if io_channel is
+	NULL.
+
+2008-10-06  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter-core/milter-handler.c: set default class closure
+	implementation that just returns MILTER_STATUS_NOT_CHANGE because
+	if class closure is NULL then default status is initialized as
+	MILTER_STATUS_DEFAULT not MILTER_STATUS_NOT_CHANGE. Without them
+	we need to call g_signal_connect_after() not g_signal_connect() or
+	use G_SIGNAL_RUN_FIRST not G_SIGNAL_RUN_LAST.
+
+	* test/client/test-client-context-callback.c: test whether
+	response is called.
+
+	* milter-core/milter-handler.c (cb_decoder_negotiate): emit
+	missing negotiate response.
+
+	* milter-client/milter-client.c: detect EOF.
+
+	* test/lib/, configure.ac: add test/lib/.
+
+	* test/core/test-reader.c:
+	- don't use needless cut_take_string().
+	- use temporary directory.
+	- remove needless variables.
+
+	* test/core/test-reader.c (test_reader_string): fix wrong name.
+
+	* milter-server/milter-server-context.[ch]: fix typos.
+
+	* milter-manager/: add empty implementation.
+
+	* libmilter/libmilter-compatible.c: fix a typo.
+
+	* milter-core/milter-handler.c (cb_decoder_body): add missing
+	return value location.
+
+	* test/client/test-client-context-header.c (setup): initialize
+	variable.
+
+2008-10-03  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter-client/milter-client-context.[ch],
+	milter-core/milter-handler.[ch]:
+	All signals moved into MilterHandler and added "-response" signal.
+	milter_client_context_feed -> milter_handler_feed.
+	milter_client_get_macro(s) -> milter_handler_get_macro(s).
+	Added milter_handler_clear_macros.
+	* milter-client/milter-client.c: Use milter_handler_feed instead of
+	milter_client_context_feed.
+	* libmilter/libmilter-compatible.c: Use milter_handler_get_macro
+	instead of milter_client_context_get_macro.
+	* test/client/*, test/libmilter/*: XXX.
+	* milter-core/milter-reader.[ch]: Added.
+	* test/core/test-reader.c: Added GIOChannel test.
+	* milter-core/milter-reader.[ch]: Implement "ready" signal.
+
+2008-10-03  Kouhei Sutou  <kou@cozmixng.org>
+
+	* Makefile.am, configure.ac, milter-manager/: detect Ruby and add
+	empty milter manager implementation.
+
+	* milter-server.pc.in: fix path.
+
+	* **/Makefile.am, enum-types.mk, marshal.mk: share enum types and
+	marshalers generation code.
+
+2008-10-02  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter-core/milter-writer.c: remove needless NULL check.
+
+	* milter-client/milter-client.c: remove needless variable.
+
+	* milter-client/milter-client-context.c: don't reply on close and
+	abort because connection is already closed on the time.
+
+	* milter-client/milter-client.c: implement accept loop. It just
+	works but too dirty!!! It should be re-implemented later!!!
+
+	* *.pc.in: fix include path.
+
+	* configure.ac, milter-server.pc.in: add milter-server.pc.in.
+
+	* Makefile.am (pkgconfig_DATA): install *.pc.
+
+	* milter-server/milter-server.h: add empty milter-server.h for now.
+
+	* libmilter/Makefile.am (pkglib_LTLIBRARIES): fix install directory.
+
+	* configure.ac: _ -> -.
+
+	* libmilter/libmilter-compatible.c,
+	test/libmilter/test-smfi-context.c: implement smfi_delrcpt().
+
+	* libmilter/libmilter-compatible.c,
+	test/libmilter/test-smfi-context.c: implement smfi_chgfrom().
+
+	* milter-client/milter-client-context.[ch],
+	test/client/test-client-context-address.c: implement
+	milter_client_context_delete_receipt().
+
+	* milter-client/milter-client-context.[ch],
+	test/client/test-client-context-address.c: implement
+	milter_client_context_change_from().
+
+	* milter-core/milter-encoder.[ch], test/core/test-encoder.c:
+	implement milter_encoder_encode_reply_delete_event().
+
+	* milter-core/milter-encoder.[ch], test/core/test-encoder.c:
+	implement milter_encoder_encode_reply_change_from().
+
+	* libmilter/libmilter-compatible.c,
+	test/libmilter/test-smfi-context.c: implement smfi_addrcpt{,_par}().
+
+	* milter-client/milter-client-context.[ch],
+	test/client/test-client-context-address.c: implement
+	milter_client_context_add_receipt().
+
+	* milter-core/milter-encoder.[ch], test/core/test-encoder.c:
+	milter_encoder_encode_reply_add_receipt() support parameters.
+
+	* milter-core/milter-encoder.[ch], test/core/test-encoder.c:
+	implement milter_encoder_encode_reply_add_receipt().
+
+	* libmilter/libmilter-compatible.c,
+	test/libmilter/test-smfi-context.c: implement smfi_progress().
+
+	* milter-client/milter-client-context.[ch],
+	test/client/test-client-context-reply.c: implement
+	milter_client_context_quarantine().
+
+	* milter-core/milter-encoder.[ch], test/core/test-encoder.c:
+	implement milter_encoder_encode_reply_quarantine().
+
+	* libmilter/libmilter-compatible.c,
+	test/libmilter/test-smfi-context.c: implement smfi_progress().
+
+	* milter-client/milter-client-context.[ch],
+	test/client/Makefile.am,
+	test/client/test-client-context-reply.c: implement
+	milter_client_context_progress().
+
+	* milter-core/milter-encoder.[ch], test/core/test-encoder.c:
+	implement milter_encoder_encode_reply_progress().
+
+	* libmilter/libmilter-compatible.c,
+	test/libmilter/test-smfi-context.c: implement smfi_{add,chg,ins}header().
+
+2008-10-01  Kouhei Sutou  <kou@cozmixng.org>
+
+	* libmilter/libmilter-compatible.[ch],
+	test/libmilter/test-smfi-context.c: implement smfi_replacebody().
+
+	* milter-client/milter-client-context.[ch],
+	test/client/test-client-context-body.c: implement
+	milter_client_context_replace_body().
+
+	* milter-core/milter-protocol.h, milter-core/milter-encoder.[ch],
+	test/core/test-encoder.c: implement
+	milter_encoder_encode_reply_replace_body().
+
+	* libmilter/libmilter-compatible.[ch],
+	test/libmilter/test-smfi-context.c: implement smfi_getsymval().
+
+	* libmilter/libmilter-compatible.c, test/libmilter/,
+	test/Makefile.am, configure.ac: implement smfi_{get,set}priv().
+
+	* milter-client/milter-client-context.c,
+	test/client/test-client-context-header.c: context -> handler.
+
+	* milter-client/milter-client-context.[ch],
+	test/client/test-client-context-header.c: implement
+	milter_client_context_insert_header().
+
+	* milter-core/milter-encoder.[ch], test/core/test-encoder.c:
+	implement milter_encoder_encode_reply_insert_header().
+
+	* milter-client/milter-client-context.c,
+	test/client/test-client-context-header.c: implement
+	milter_client_context_remove_header().
+
+	* milter-core/milter-encoder.c, test/core/test-encoder.c: add NULL
+	and empty string check.
+
+	* milter-client/milter-client-context.[ch],
+	test/client/test-client-context-header.c: implement
+	milter_client_context_change_header().
+
+	* test/core/test-encoder.[ch], test/core/test-encoder.c: implement
+	milter_encoder_encode_reply_change_header().
+
+	* milter-client/milter-client-context.[ch],
+	test/client/test-client-context-header.c: implement
+	milter_client_context_add_header().
+
+	* milter-core/milter-encoder.[ch], test/core/test-encoder.c:
+	implement milter_encoder_encode_reply_add_header().
+
+2008-10-01  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter-server/*: Added a skelton object for milter server.
+	* milter-core/milter-option.h, milter-client/milter-client-context.h:
+	Do not include <sys/socket.h> here. The header file is only included in
+	milter-core/milter-encoder.h.
+	* milter-core/milter-protocol.h, milter-client/milter-client.h:
+	Move MilterClientStatus in milter-protocol.h and rename
+	MilterClientStatus -> MilterStatus.
+	* milter-client/milter-client.c,
+	milter-server/milter-server-context.[ch],
+	libmilter/libmilter-compatible.c,
+	test/client/test-client-context-data.c,
+	test/client/test-client-context-callback.c: MilterClientStatus ->
+	MilterStatus.
+	* milter-server/milter-server-context.[ch]: Declare some functions not
+	implemented yet.
+	* milter-client/milter-client-context.[ch], milter-code/*,
+	libmilter/libmilter-compatible.c, test/core/*, test/client/*:
+	option_negotiation -> negotiate.
+	* test/client/test-client-context-header.c: option_negotiation ->
+	negotiate.
+	* milter-core/milter-handler.[ch]: Added an abstract object for
+	MilterClientContext and MilterServerContext.
+	* milter-core/milter-writer.c: Set error information only if GError is
+	valid.
+	* milter-core/milter-handler.c: Implement milter_handler_set_writer().
+	* milter-core/milter-core.h: Include milter-handler.h.
+	* milter-core/milter-handler.[ch]: Added
+	milter_handler_get_decoder/encoder.
+	* milter-client/milter-client-context.[ch]: MilterClientContext is now
+	a child of MilterHandler. TODO: Remove MilterDecoder in
+	MilterClientPrivate.
+
+2008-09-30  Kouhei Sutou  <kou@cozmixng.org>
+
+	* libmilter/libmilter-compatible.c,
+	milter-client/milter-client.[ch], milter-core/milter-core.h:
+	support smfi_setconn().
+
+	* milter-core/milter-utils.c, test/core/test-utils.c: fix wrong
+	size set.
+
+	* milter-core/milter-utils.[ch], test/core/test-utils.c: support
+	inet6:... parsing.
+
+	* milter-core/milter-utils.[ch], test/core/test-utils.c: support
+	inet:... parsing.
+
+	* milter-core/milter-utils.[ch], test/core/test-utils.c: add
+	connection spec parser.
+
+	* milter-client/milter-client-context.c: cleanup.
+
+	* milter-client/milter-client-context.c,
+	milter-core/milter-encoder.[ch]: support discard.
+
+	* milter-client/milter-client-context.c,
+	milter-core/milter-encoder.[ch]: support accept.
+
+	* milter-client/milter-client-context.[ch],
+	milter-core/milter-encoder.[ch],
+	milter-core/milter-protocol.h: fail temporarily -> temporary failure.
+
+	* milter-client/milter-client-context.[ch],
+	milter-core/milter-encoder.[ch],
+	milter-core/milter-protocol.h: support tempfail.
+
+	* libmilter/libmilter-compatible.c,
+	milter-client/milter-client-context.c,
+	milter-client/milter-client.c, milter-core/milter-encoder.c:
+	support reject with text.
+
+	* data/collect-packet.rb: add a auto-packet collector.
+	* data/: update log.
+
+2008-09-29  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter-core/milter-encoder.[ch]
+	(milter_encoder_encode_reply_reply_code),
+	test/core/test-encoder.c (test_encode_reply_reply_code): add.
+
+	* data/: add actual data.
+
+	* milter-client/milter-client.c,
+	milter-client/milter-client-context.[ch]: use MilterWriter.
+
+	* milter-core/milter-writer.[ch], test/core/test-writer.c,
+	milter-core/milter-core.h: implement MilterWriter.
+
+	* libmilter/libmilter-compatible.c: bind callbacks.
+
+	* milter-client/milter-client.[ch]: support context setup hook.
+
+	* libmilter/mfdef.h: define compatible definitions.
+
+	* libmilter/libmilter-compatible.c: use context setup hook.
+
+	* milter-core/Makefile.am, milter-client/Makefile.am: install
+	main header. (milter-core.h and milter-client.h)
+
+	* Makefile.am, configure.ac, libmilter.pc.in, libmilter/: add
+	libmilter compatible layer.
+
+	* milter-client/milter-client.[ch],
+	milter-client/milter-client-context.[ch]: implement experimental
+	server part.
+
+	* test/client/test-client-context-callback.c: fix wrong assertion.
+
+	* milter-core/milter-encoder.[ch], test/core/test-encoder.c:
+	implement continue reply encoder.
+
+	* milter-client/milter-client-context.[ch],
+	test/client/test-client-context-data.c: support reply message.
+
+2008-09-26  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter-client/milter-client-context.c: cleanup.
+
+	* milter-client/milter-client-context.[ch],
+	test/client/test-client-context-data.c: add tests for parse error.
+
+	* milter-client/milter-client-context.[ch],
+	test/client/test-client-context-data.c: add partial extended code
+	parser.
+
+	* milter-client/milter-client-context.[ch],
+	test/client/test-client-context-data.c: add private data accessors.
+
+	* test/client/Makefile.am, test/client/test-client-context.c:
+	test-client-context.c -> test-client-context-callback.c
+
+2008-09-19  Kouhei Sutou  <kou@cozmixng.org>
+
+	* test/client/test-client-context.c: use data-driven-test.
+
+	* milter-client/milter-client-context.c,
+	test/client/test-client-context.c: support macro on end-of-message hook.
+
+	* milter-client/milter-client-context.c,
+	test/client/test-client-context.c: support macro on body hook.
+
+	* milter-client/milter-client-context.c,
+	test/client/test-client-context.c: support macro on end-of-header hook.
+
+	* milter-client/milter-client-context.c,
+	test/client/test-client-context.c: support macro on header hook.
+
+	* milter-client/milter-client-context.c,
+	test/client/test-client-context.c: support macro on envelope-receipt
+	hook.
+
+	* milter-client/milter-client-context.c,
+	test/client/test-client-context.c: support macro on envelope-from
+	hook.
+
+	* milter-client/milter-client-context.c,
+	test/client/test-client-context.c: support macro on HELO hook.
+
+	* milter-client/milter-client-context.[ch],
+	test/client/test-client-context.c: support macro on connect hook.
+
+	* test/client/test-client-context.c: add tests for IPv6 and UNIX
+	domain socket case.
+
+	* milter-client/milter-client-context.c,
+	test/client/test-client-context.c: support abort hook.
+
+	* milter-client/milter-client-context.c,
+	test/client/test-client-context.c: support close hook.
+
+	* milter-client/milter-client-context.c,
+	test/client/test-client-context.c: support end of message hook.
+
+	* milter-client/milter-client-context.c,
+	milter-client/milter-client-marshalers.list,
+	test/client/test-client-context.c: support body hook.
+
+	* milter-client/milter-client-context.c,
+	milter-client/milter-client-marshalers.list,
+	test/client/test-client-context.c: support end of header hook.
+
+	* milter-client/milter-client-context.c,
+	milter-client/milter-client-marshalers.list,
+	test/client/test-client-context.c: support header hook.
+
+	* milter-client/milter-client-context.c,
+	test/client/test-client-context.c: support envelope-receipt hook.
+
+	* milter-client/milter-client-context.c,
+	test/client/test-client-context.c: support envelope-from hook.
+
+	* milter-client/milter-client-context.[ch],
+	test/client/test-client-context.c: support HELO hook.
+
+	* milter-client/, test/client/: support option negotiation hook.
+
+	* milter-client/, test/client/: MilterClientHandler ->
+	MilterClientContext.
+
+	* /: start to implement MilterClientHandler.
+
+2008-09-18  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter-core/milter-encoder.[ch], test/core/test-encoder.c:
+	support ABORT, QUIT, unknown command.
+
+	* milter-core/milter-encoder.[ch], test/core/test-encoder.c:
+	support body and end of message.
+
+	* milter-core/milter-encoder.[ch], test/core/test-encoder.c:
+	support end of header.
+
+	* milter-core/milter-encoder.[ch], test/core/test-encoder.c:
+	support HEADER.
+
+	* milter-core/milter-encoder.[ch], test/core/test-encoder.c:
+	support RCPT.
+
+	* milter-core/milter-encoder.[ch], test/core/test-encoder.c:
+	support MAIL.
+
+	* milter-core/milter-encoder.[ch], test/core/test-encoder.c:
+	support HELO.
+
+	* milter-core/milter-encoder.c (milter_encoder_encode_connect): cleanup.
+
+	* milter-core/milter-encoder.[ch], test/core/test-encoder.c:
+	support connect.
+
+	* milter-core/, test/: remove MilterContextType.
+	* milter-core/milter-encoder.[ch], test/core/test-encoder.c:
+	support define macro.
+
+	* test/core/test-encoder.c: add a test for option is NULL case.
+
+	* milter-core/, test/: use gchar ** and gsize * instead of GString *
+	to receive encoded packet.
+
+	* miter-code/, test/: add MilterEncoder.
+
+	* /: parser -> decoder.
+
+	* milter-core/milter-parser.c, test/core/test-milter.c: improve
+	error handling.
+
+	* milter-core/milter-parser.c, test/core/test-milter.c: support
+	OPTION NEGOTIATION.
+
+2008-09-17  Kouhei Sutou  <kou@cozmixng.org>
+
+	* test/core/test-option.c: add tests for accessors of
+	MilterActionFlags and MilterStepFlags.
+
+	* milter-core/milter-option.[ch], test/core/test-milter.c: support
+	properties.
+
+	* milter-core/milter-option.[ch], test/core/test-milter.c: add
+	MilterOption.
+
+	* milter-core/milter-parser.[ch], test/core/test-parser.c: improve
+	error handling.
+
+	* milter-core/milter-parser.c: cleanup.
+
+2008-09-16  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter-core/milter-parser.[ch], test/core/test-parser.c: improve
+	error handling.
+
+	* /: McParser -> MilterParser.
+	* milter-core/: add.
+	* test/: client -> core.
+
+	* milter-client/mc-parser.[ch], test/client/test-mc-parser.c:
+	support UNKNOWN command.
+
+	* milter-client/mc-parser.[ch],	test/client/test-mc-parser.c:
+	support QUIT command.
+
+	* test/client/test-mc-parser.c: support ABORT command.
+
+	* milter-client/mc-parser.[ch], milter-client/mc-marshalers.list,
+	test/client/test-mc-parser.c: support END OF MESSAGE command.
+
+	* milter-client/mc-parser.[ch], milter-client/mc-marshalers.list,
+	test/client/test-mc-parser.c: support BODY command.
+
+	* milter-client/mc-parser.[ch], milter-client/mc-marshalers.list,
+	test/client/test-mc-parser.c: support END OF HEADER command.
+
+	* milter-client/mc-parser.[ch], milter-client/mc-marshalers.list,
+	test/client/test-mc-parser.c: support HEADER command.
+
+2008-09-12  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter-client/mc-parser.[ch], test/client/test-mc-parser.c:
+	support RCPT command.
+
+	* milter-client/mc-parser.[ch], test/client/test-mc-parser.c:
+	support MAIL command.
+
+	* milter-client/mc-parser.[ch], test/client/test-mc-parser.c:
+	support HELO command.
+
+	* milter-client/mc-parser.[ch], test/client/test-mc-parser.c:
+	support CONNECT command but too duty!.
+
+	* test/client/test-mc-parser.c: fix wrong test data.
+
+	* milter-client/mc-parser.[ch]: support define macro on header context.
+
+2008-09-11  Kouhei Sutou  <kou@cozmixng.org>
+
+	* configure.ac: require Cutter >= 1.0.5.
+
+	* milter-client/mc-parser.[ch], test/client/test-mc-parser.c:
+	support define macro on HELO/MAIL context.
+
+	* test/client/test-mc-parser.c (test_parse_define_macro): use data
+	driven test style.
+
+2008-09-10  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter-client/mc-parser.[ch], test/client/test-mc-parser.c:
+	partially implement define macro command.
+
+	* milter-client/: add enum-types and marshalers.
+
+2008-09-08  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter-client/mc-parser.[ch] (mc_parser_parse),
+	test/client/test-mc-parser.c: add command length error handling.
+
+2008-09-05  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter-client/, test/client/: add.
+
+	* data/milter-packet.txt: add a sample milter packet.
+
+2008-09-03  Kouhei Sutou  <kou@cozmixng.org>
+
+	* Makefile.am: remove needless command.
+
+	* ./: add milter-client/.
+
+2008-09-01  Kouhei Sutou  <kou@cozmixng.org>
+
+	* ./: start.
+

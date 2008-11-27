@@ -1,7 +1,6 @@
 require 'pathname'
 require 'shellwords'
 
-require 'glib2'
 require 'milter'
 require 'milter_manager.so'
 

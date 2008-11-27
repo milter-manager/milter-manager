@@ -6,8 +6,9 @@ SUBDIRS =		\
 	data		\
 	test
 
-EXTRA_DIST =		\
-	autogen.sh
+EXTRA_DIST =					\
+	autogen.sh				\
+	ChangeLog.toolkit
 
 upload: upload-doc
 

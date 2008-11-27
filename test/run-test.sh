@@ -36,7 +36,8 @@ if test x"$USE_GTK" = x"yes"; then
 fi
 
 export MILTER_MANAGER_CONFIGURATION_MODULE_DIR=$top_dir/module/configuration/ruby/.libs
-export RUBYLIB=$RUBYLIB:$top_dir/binding/ruby/lib:$top_dir/binding/ruby/src/.libs
+ruby_dir=$top_dir/binding/ruby
+export RUBYLIB=$RUBYLIB:$ruby_dir/lib:$ruby_dir/src/toolkit/.libs:$ruby_dir/src/manager/.libs
 export MILTER_MANAGER_CONFIG_DIR=$top_dir/test/fixtures/configuration
 
 $CUTTER_WRAPPER $CUTTER $CUTTER_ARGS "$@" $BASE_DIR

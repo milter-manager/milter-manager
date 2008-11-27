@@ -1,7 +1,7 @@
-INCLUDES = 					\
-	 -I$(top_builddir)			\
-	 -I$(top_srcdir)			\
-	 -I$(top_srcdir)/binding/ruby/src
+INCLUDES =						\
+	-I$(top_builddir)				\
+	-I$(top_srcdir)					\
+	-I$(top_srcdir)/binding/ruby/src/manager
 
 AM_CFLAGS = 								\
 	-DMILTER_LOG_DOMAIN=\""milter-manager-ruby-configuration"\"	\

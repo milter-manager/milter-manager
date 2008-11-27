@@ -1,18 +1,18 @@
-INCLUDES = 					\
-	 -I$(top_builddir)			\
-	 -I$(top_srcdir)			\
-	 -I$(top_srcdir)/binding/ruby/src
+INCLUDES =						\
+	 -I$(top_builddir)				\
+	 -I$(top_srcdir)				\
+	 -I$(top_srcdir)/binding/ruby/src/manager
 
 AM_CFLAGS = 						\
 	-DLOCALEDIR=\""$(localedir)"\"			\
 	-DMILTER_LOG_DOMAIN=\""milter-manager"\"	\
 	$(MILTER_MANAGER_CFLAGS)			\
-	$(GLIB_CFLAGS)					\
 	$(COVERAGE_CFLAGS)
 
-LIBS =					\
-	$(MILTER_MANAGER_LIBS)		\
-	$(GLIB_LIBS)
+LIBS =								\
+	$(top_builddir)/milter/client/libmilter-client.la	\
+	$(top_builddir)/milter/server/libmilter-server.la	\
+	$(MILTER_MANAGER_LIBS)
 
 CLEANFILES = *.gcno *.gcda
 

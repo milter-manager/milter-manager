@@ -1,0 +1,13 @@
+/*.la
+/*.lo
+/.deps
+/.libs
+/Makefile
+/Makefile.in
+/milter-enum-types.c
+/milter-enum-types.h
+/milter-marshalers.c
+/milter-marshalers.h
+/milter-version.h
+/stamp-milter-enum-types-c
+/stamp-milter-enum-types-h

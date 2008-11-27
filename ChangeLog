@@ -1,5 +1,7 @@
 2008-11-27  Kouhei Sutou  <kou@cozmixng.org>
 
+	* ./: merge milter-toolkit and milter-manager.
+
 	* milter/manager/milter-manager-control-protocol.h,
 	milter/manager/milter-manager-control-reply-encoder.[ch],
 	test/manager/test-control-reply-encoder.c: implement status reply encode.
