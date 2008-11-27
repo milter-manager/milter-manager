@@ -1,4 +1,7 @@
 SUBDIRS =	\
+	core	\
+	client	\
+	server	\
 	manager
 
 milter_includedir=$(pkgincludedir)/milter
