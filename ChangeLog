@@ -1,5 +1,11 @@
 2008-11-27  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/test-children.c: still FIXME...
+
+	* test/lib/milter-manager-test-client.[ch]:
+	- add milter_manager_test_clients_collect_all_macros().
+	- clear defined macros in each clear_data()!
+
 	* test/lib/milter-manager-test-client.[ch],
 	test/lib/milter-test-client.rb: support define-macro.
 

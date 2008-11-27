@@ -67,8 +67,7 @@ static GError *expected_error;
 static GList *actual_names;
 static GList *expected_names;
 static gchar *error_message;
-static GHashTable *expected_macros;
-static GHashTable *defined_macros;
+static GList *expected_macros_list;
 
 static guint n_negotiate_reply_emitted;
 static guint n_continue_emitted;
@@ -370,8 +369,7 @@ setup (void)
     actual_names = NULL;
     expected_names = NULL;
 
-    expected_macros = NULL;
-    defined_macros = NULL;
+    expected_macros_list = NULL;
 
     error_message = NULL;
 
@@ -441,10 +439,11 @@ teardown (void)
         gcut_list_string_free(actual_names);
     if (expected_names)
         gcut_list_string_free(expected_names);
-    if (expected_macros)
-        g_hash_table_unref(expected_macros);
-    if (defined_macros)
-        g_hash_table_unref(defined_macros);
+
+    if (expected_macros_list) {
+        g_list_foreach(expected_macros_list, (GFunc)g_hash_table_unref, NULL);
+        g_list_free(expected_macros_list);
+    }
 
     if (arguments1)
         arguments_free(arguments1);
@@ -1041,6 +1040,8 @@ test_connect_with_macro (void)
     struct sockaddr_in address;
     const gchar host_name[] = "mx.local.net";
     const gchar ip_address[] = "192.168.123.123";
+    GHashTable *connect_macros;
+    GHashTable *expected_macros;
 
     cut_trace(test_negotiate());
 
@@ -1048,14 +1049,26 @@ test_connect_with_macro (void)
     address.sin_port = g_htons(50443);
     inet_aton(ip_address, &(address.sin_addr));
 
-    expected_macros =
+    connect_macros =
         gcut_hash_table_string_string_new("j", "debian.cozmixng.org",
                                           "daemon_name", "debian.cozmixng.org",
                                           "v", "Postfix 2.5.5",
                                           NULL);
     milter_manager_children_define_macro(children,
                                          MILTER_COMMAND_CONNECT,
-                                         expected_macros);
+                                         connect_macros);
+
+    expected_macros = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+                                            NULL,
+                                            (GDestroyNotify)g_hash_table_unref);
+    g_hash_table_insert(expected_macros,
+                        GUINT_TO_POINTER(MILTER_COMMAND_CONNECT),
+                        connect_macros);
+    expected_macros_list = g_list_append(expected_macros_list, expected_macros);
+    expected_macros_list = g_list_append(expected_macros_list, expected_macros);
+    expected_macros_list = g_list_append(expected_macros_list, expected_macros);
+    g_list_foreach(expected_macros_list, (GFunc)g_hash_table_ref, NULL);
+    g_hash_table_unref(expected_macros);
 
     milter_manager_children_connect(children,
                                     host_name,
@@ -1064,8 +1077,12 @@ test_connect_with_macro (void)
     wait_reply(1, n_continue_emitted);
 
     /*
-     * FIXME! I have no idea how to get actual defined macros.
-    gcut_assert_equal_hash_table_string_string(expected_macros, defined_macros);
+      FIXME
+    gcut_assert_equal_list(expected_macros_list,
+                           milter_manager_test_clients_collect_all_macros(test_clients),
+                           milter_manager_test_defined_macros_equal,
+                           milter_manager_test_defined_macros_inspect,
+                           NULL);
     */
 }
 

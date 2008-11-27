@@ -153,6 +153,8 @@ const GList             *milter_manager_test_clients_collect_negotiate_options
 const GList             *milter_manager_test_clients_collect_macros
                                               (const GList *clients,
                                                MilterCommand command);
+const GList             *milter_manager_test_clients_collect_all_macros
+                                              (const GList *clients);
 
 G_END_DECLS
 

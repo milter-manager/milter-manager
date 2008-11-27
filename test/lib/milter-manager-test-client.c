@@ -101,25 +101,8 @@ milter_manager_test_client_init (MilterManagerTestClient *test_client)
     priv->ready = FALSE;
     priv->reaped = FALSE;
 
-    priv->n_negotiate_received = 0;
-    priv->n_define_macro_received = 0;
-    priv->n_connect_received = 0;
-    priv->n_helo_received = 0;
-    priv->n_envelope_from_received = 0;
-    priv->n_envelope_recipient_received = 0;
-    priv->n_data_received = 0;
-    priv->n_header_received = 0;
-    priv->n_end_of_header_received = 0;
-    priv->n_body_received = 0;
-    priv->n_end_of_message_received = 0;
-    priv->n_quit_received = 0;
-    priv->n_abort_received = 0;
-    priv->n_unknown_received = 0;
-
     priv->negotiate_option = NULL;
-    priv->macros = g_hash_table_new_full(g_direct_hash, g_direct_equal,
-                                         NULL,
-                                         (GDestroyNotify)g_hash_table_unref);
+    priv->macros = NULL;
     priv->connect_host = NULL;
     priv->connect_address = NULL;
     priv->helo_fqdn = NULL;
@@ -130,6 +113,8 @@ milter_manager_test_client_init (MilterManagerTestClient *test_client)
     priv->body_chunk = NULL;
     priv->end_of_message_chunk = NULL;
     priv->unknown_command = NULL;
+
+    milter_manager_test_client_clear_data(test_client);
 }
 
 static gchar *
@@ -519,8 +504,8 @@ command_free (GArray *command)
     g_array_free(command, TRUE);
 }
 
-static void
-clear_data (MilterManagerTestClient *client)
+void
+milter_manager_test_client_clear_data (MilterManagerTestClient *client)
 {
     MilterManagerTestClientPrivate *priv;
 
@@ -545,6 +530,12 @@ clear_data (MilterManagerTestClient *client)
         g_object_unref(priv->negotiate_option);
         priv->negotiate_option = NULL;
     }
+
+    if (priv->macros)
+        g_hash_table_unref(priv->macros);
+    priv->macros = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+                                         NULL,
+                                         (GDestroyNotify)g_hash_table_unref);
 
     if (priv->connect_host) {
         g_free(priv->connect_host);
@@ -621,12 +612,12 @@ dispose (GObject *object)
         priv->command = NULL;
     }
 
+    milter_manager_test_client_clear_data(client);
+
     if (priv->macros) {
         g_hash_table_unref(priv->macros);
         priv->macros = NULL;
     }
-
-    clear_data(client);
 
     G_OBJECT_CLASS(milter_manager_test_client_parent_class)->dispose(object);
 }
@@ -900,12 +891,6 @@ milter_manager_test_client_get_unknown_command (MilterManagerTestClient *client)
     return MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client)->unknown_command;
 }
 
-void
-milter_manager_test_client_clear_data (MilterManagerTestClient *client)
-{
-    clear_data(client);
-}
-
 static gboolean
 cb_timeout_waiting (gpointer data)
 {
@@ -1074,7 +1059,7 @@ milter_manager_test_clients_collect_macros (const GList *clients,
         GList *list = NULL;
 
         macros = (GHashTable*)milter_manager_test_client_get_macros(client);
-        context_macro = g_hash_table_lookup(macros, 
+        context_macro = g_hash_table_lookup(macros,
                                             GUINT_TO_POINTER(command));
         if (!context_macro)
             continue;
@@ -1086,6 +1071,25 @@ milter_manager_test_clients_collect_macros (const GList *clients,
 
     return gcut_take_list(collected_macros,
                           (CutDestroyFunction)milter_manager_test_pair_free);
+}
+
+const GList *
+milter_manager_test_clients_collect_all_macros (const GList *clients)
+{
+    GList *collected_macros = NULL;
+    const GList *node;
+
+    for (node = clients; node; node = g_list_next(node)) {
+        MilterManagerTestClient *client = node->data;
+        GHashTable *macros;
+
+        macros = (GHashTable *)milter_manager_test_client_get_macros(client);
+        g_hash_table_ref(macros);
+        collected_macros = g_list_append(collected_macros, macros);
+    }
+
+    return gcut_take_list(collected_macros,
+                          (CutDestroyFunction)g_hash_table_unref);
 }
 
 /*
