@@ -53,6 +53,7 @@ setup (void)
     tmp_dir = g_build_filename(milter_manager_test_get_base_dir(),
                                "tmp",
                                NULL);
+    cut_remove_path(tmp_dir, NULL);
     if (g_mkdir_with_parents(tmp_dir, 0700) == -1)
         cut_assert_errno();
 }
