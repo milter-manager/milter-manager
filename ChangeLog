@@ -1,5 +1,8 @@
 2008-11-27  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/lib/milter-manager-test-client.[ch],
+	test/lib/milter-test-client.rb: support define-macro.
+
 	* test/lib/milter-manager-test-utils.[ch]
 	(milter_manager_test_defined_macros_inspect,
 	milter_manager_test_defined_macros_equal): add.

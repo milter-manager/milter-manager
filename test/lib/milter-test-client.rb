@@ -309,6 +309,11 @@ class MilterTestClient
     [host, address.to_s].join(" ")
   end
 
+  def info_define_macro(macro_context, macros)
+    serialized_macros = macros.collect {|name, value| "#{name}: #{value}"}
+    [macro_context.nick, *serialized_macros].join("\n")
+  end
+
   def do_helo(fqdn)
     invalid_state(:helo) if @state != :connected
     @hello_fqdn = fqdn

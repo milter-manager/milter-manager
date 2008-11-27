@@ -56,7 +56,7 @@ struct _MilterManagerTestClientPrivate
     guint n_unknown_received;
 
     MilterOption *negotiate_option;
-    GHashTable *define_macros;
+    GHashTable *macros;
     gchar *connect_host;
     gchar *connect_address;
     gchar *helo_fqdn;
@@ -117,7 +117,9 @@ milter_manager_test_client_init (MilterManagerTestClient *test_client)
     priv->n_unknown_received = 0;
 
     priv->negotiate_option = NULL;
-    priv->define_macros = NULL;
+    priv->macros = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+                                         NULL,
+                                         (GDestroyNotify)g_hash_table_unref);
     priv->connect_host = NULL;
     priv->connect_address = NULL;
     priv->helo_fqdn = NULL;
@@ -189,7 +191,39 @@ static void
 parse_define_macro_info (MilterManagerTestClientPrivate *priv,
                          const gchar *chunk, gsize size)
 {
+    gchar *info;
+    gchar **items;
+    MilterCommand context;
+    GError *error = NULL;
 
+    info = receive_additional_info(chunk, size, "receive: define-macro: ");
+    if (!info)
+        return;
+
+    items = g_strsplit_set(info, "\n", -1);
+    if (items[0])
+        context = gcut_enum_parse(MILTER_TYPE_COMMAND, items[0], &error);
+
+    if (items[0] && !error) {
+        gchar **macro;
+        GHashTable *macros;
+
+        macros = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
+        for (macro = items + 1; *macro; macro++) {
+            gchar **name_and_value;
+
+            name_and_value = g_strsplit(*macro, ": ", 2);
+            g_hash_table_insert(macros,
+                                g_strdup(name_and_value[0]),
+                                g_strdup(name_and_value[1]));
+            g_strfreev(name_and_value);
+        }
+        g_hash_table_insert(priv->macros, GUINT_TO_POINTER(context), macros);
+    }
+    g_strfreev(items);
+    g_free(info);
+
+    gcut_assert_error(error);
 }
 
 static void
@@ -512,9 +546,9 @@ clear_data (MilterManagerTestClient *client)
         priv->negotiate_option = NULL;
     }
 
-    if (priv->define_macros) {
-        g_hash_table_unref(priv->define_macros);
-        priv->define_macros = NULL;
+    if (priv->macros) {
+        g_hash_table_unref(priv->macros);
+        priv->macros = NULL;
     }
 
     if (priv->connect_host) {
@@ -729,9 +763,9 @@ milter_manager_test_client_get_n_define_macro_received (MilterManagerTestClient 
 }
 
 GHashTable *
-milter_manager_test_client_get_define_macro (MilterManagerTestClient *client)
+milter_manager_test_client_get_macros (MilterManagerTestClient *client)
 {
-    return MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client)->define_macros;
+    return MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client)->macros;
 }
 
 guint
