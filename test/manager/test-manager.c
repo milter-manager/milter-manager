@@ -341,6 +341,8 @@ data_scenario (void)
 {
     cut_add_data("normal",
                  g_strdup("normal.txt"), g_free);
+    cut_add_data("reject on envelope-from",
+                 g_strdup("reject-on-envelope-from.txt"), g_free);
 }
 
 void

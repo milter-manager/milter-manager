@@ -1,0 +1,10 @@
+[scenario]
+clients=client10026;client10027
+expected=The message was 'reject'.\n\n
+
+[client10026]
+port=10026
+arguments=--action;reject;--envelope-from;<kou+send@cozmixng.org>
+
+[client10027]
+port=10027
