@@ -24,6 +24,8 @@
 	milter-test-server.
 	* test/manager/test-manager.c: g_strfreev() expects NULL teminated
 	array.
+	* test/manager/test-manager.c: Starting milter-test-server after
+	milter-manager is ready.
 
 2008-11-27  Kouhei Sutou  <kou@cozmixng.org>
 

@@ -214,15 +214,59 @@ wait_for_reaping (EggData *data)
 #define manager_egg manager_data->egg
 #define server_egg server_data->egg
 
+static gboolean
+cb_timeout_waiting (gpointer data)
+{
+    gboolean *waiting = data;
+
+    *waiting = FALSE;
+    return FALSE;
+}
+
+static void
+wait_for_manager_ready (const gchar *spec)
+{
+    gboolean timeout_waiting = TRUE;
+    guint timeout_waiting_id;
+    gint sock_fd;
+    gint domain;
+    struct sockaddr *address;
+    socklen_t address_size;
+
+    if (!milter_connection_parse_spec(spec,
+                                      &domain,
+                                      &address,
+                                      &address_size,
+                                      NULL)) {
+        cut_error("Error");
+    }
+
+    sock_fd = socket(domain, SOCK_STREAM, 0);
+
+    timeout_waiting_id = g_timeout_add(500, cb_timeout_waiting,
+                                       &timeout_waiting);
+    while (timeout_waiting &&
+           connect(sock_fd, address, address_size) ==0) {
+        g_main_context_iteration(NULL, TRUE);
+    }
+
+    g_source_remove(timeout_waiting_id);
+    close(sock_fd);
+    cut_assert_true(timeout_waiting, "Error");
+}
+
 void
 test_run (void)
 {
-    setup_egg(manager_data, "-s", "inet:19999@localhost", NULL);
-    setup_egg(server_data, "-s", "inet:19999@localhost", NULL);
+    const gchar spec[] = "inet:19999@localhost";
+    setup_egg(manager_data, "-s", spec, NULL);
+    setup_egg(server_data, "-s", spec, NULL);
+
     gcut_egg_hatch(manager_egg, &error);
+    wait_for_manager_ready(spec);
     gcut_egg_hatch(server_egg, &error);
 
-    wait_for_reaping(server_data);
+    /* wait_for_reaping(server_data); */
 }
 
 #define has_key(scenario, group, key)                                     \
