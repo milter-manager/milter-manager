@@ -20,6 +20,8 @@
 	* test/lib/milter-manager-test-client.c: Use
 	milter_test_get_base_dir().
 	* milter/manager/milter-manager.c: Show program name.
+	* test/manager/test-manager.c: Added scenario framework. Also run
+	milter-test-server.
 
 2008-11-27  Kouhei Sutou  <kou@cozmixng.org>
 
