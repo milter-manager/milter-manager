@@ -261,20 +261,32 @@ wait_for_manager_ready (const gchar *spec)
 #define wait_for_manager_reaping()  \
     wait_for_reaping(manager_data)
 
-void
-test_run (void)
+static void
+start_manager (void)
 {
     const gchar spec[] = "inet:19999@localhost";
     setup_egg(manager_data, "-s", spec, NULL);
-    setup_egg(server_data, "-s", spec, "-v", NULL);
-
     gcut_egg_set_env(manager_egg,
                      "MILTER_MANAGER_CONFIG_DIR", scenario_dir,
                      NULL);
     gcut_egg_hatch(manager_egg, &error);
     wait_for_manager_ready(spec);
-    gcut_egg_hatch(server_egg, &error);
+}
 
+static void
+start_server (void)
+{
+    const gchar spec[] = "inet:19999@localhost";
+    setup_egg(server_data, "-s", spec, NULL);
+
+    gcut_egg_hatch(server_egg, &error);
+}
+
+void
+test_run (void)
+{
+    start_manager();
+    start_server();
     wait_for_server_reaping();
 }
 
@@ -317,23 +329,18 @@ test_run (void)
 static void
 do_actions (MilterManagerTestScenario *scenario)
 {
-    const GList *imported_scenarios;
-    gsize length, i;
-    const gchar **actions;
+    const gchar *expected;
 
-    imported_scenarios =
-        milter_manager_test_scenario_get_imported_scenarios(scenario);
-    g_list_foreach((GList *)imported_scenarios, (GFunc)do_actions, NULL);
-
-    actions = get_string_list(scenario, MILTER_MANAGER_TEST_SCENARIO_GROUP_NAME,
-                              "actions", &length);
-    for (i = 0; i < length; i++) {
-    }
+    wait_for_server_reaping();
+    expected = get_string(scenario, "scenario", "expected");
+    cut_assert_equal_string(expected, server_data->output_string->str);
 }
 
 void
 data_scenario (void)
 {
+    cut_add_data("normal",
+                 g_strdup("normal.txt"), g_free);
 }
 
 void
@@ -354,7 +361,12 @@ test_scenario (gconstpointer data)
                                   omit_key));
 
     cut_trace(milter_manager_test_scenario_start_clients(main_scenario));
+
+    start_manager();
+    start_server();
+
     cut_trace(do_actions(main_scenario));
+    wait_for_server_reaping();
 }
 
 /*
