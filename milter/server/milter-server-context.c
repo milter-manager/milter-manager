@@ -1950,7 +1950,7 @@ milter_server_context_establish_connection (MilterServerContext *context,
     g_io_channel_unref(channel);
 
     priv->timeout_id = milter_utils_timeout_add(priv->connection_timeout,
-                                             cb_connection_timeout, context);
+                                                cb_connection_timeout, context);
 
     if (connect(priv->client_fd, priv->address, priv->address_size) == -1 &&
         errno != EINPROGRESS) {
