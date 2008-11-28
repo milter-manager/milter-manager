@@ -117,6 +117,13 @@ set_macro (gpointer key, gpointer value, gpointer user_data)
 }
 
 static void
+send_recipient (MilterServerContext *context)
+{
+    milter_server_context_envelope_recipient(context, *recipients);
+    recipients++;
+}
+
+static void
 cb_continue (MilterServerContext *context, gpointer user_data)
 {
     ProcessData *data = user_data;
@@ -154,15 +161,13 @@ cb_continue (MilterServerContext *context, gpointer user_data)
         }
       case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM:
         if (!(step & MILTER_STEP_NO_ENVELOPE_RECIPIENT)) {
-            milter_server_context_envelope_recipient(context, *recipients);
-            recipients++;
+            send_recipient(context);
             break;
         }
       case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT:
         if (!(step & MILTER_STEP_NO_ENVELOPE_RECIPIENT) &&
             *recipients) {
-            milter_server_context_envelope_recipient(context, *recipients);
-            recipients++;
+            send_recipient(context);
             break;
         }
         if (!(step & MILTER_STEP_NO_DATA)) {
@@ -258,20 +263,40 @@ static void
 cb_temporary_failure (MilterServerContext *context, gpointer user_data)
 {
     ProcessData *data = user_data;
+    MilterServerContextState state;
 
-    send_abort(context, data);
-    data->success = FALSE;
-    data->status = MILTER_STATUS_TEMPORARY_FAILURE;
+    state = milter_server_context_get_state(context);
+
+    switch (state) {
+      case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT:
+        cb_continue(context, user_data);
+        break;
+      default:
+        send_abort(context, data);
+        data->success = FALSE;
+        data->status = MILTER_STATUS_TEMPORARY_FAILURE;
+        break;
+    }
 }
 
 static void
 cb_reject (MilterServerContext *context, gpointer user_data)
 {
     ProcessData *data = user_data;
+    MilterServerContextState state;
 
-    send_abort(context, data);
-    data->success = FALSE;
-    data->status = MILTER_STATUS_REJECT;
+    state = milter_server_context_get_state(context);
+
+    switch (state) {
+      case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT:
+        cb_continue(context, user_data);
+        break;
+      default:
+        send_abort(context, data);
+        data->success = FALSE;
+        data->status = MILTER_STATUS_REJECT;
+        break;
+    }
 }
 
 static void

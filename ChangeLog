@@ -38,6 +38,8 @@
 	not response on negotiation, send "reject".
 	* test/manager/test-manager.c: wait for server reaping.
 	* test/manager/test-manager.c: Added a scenario.
+	* tool/milter-test-server.c: If "reject" is received on
+	envelope-recipient, continure processing.
 
 2008-11-27  Kouhei Sutou  <kou@cozmixng.org>
 
