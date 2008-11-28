@@ -31,6 +31,8 @@
 	MILTER_MANAGER_CHILDREN_ERROR_NO_NEGOTIATION_RESPONSE.
 	Also do not invoke milter_manager_child_start() if no privilege mode.
 	* test/manager/test-children.c: Added test_no_negotiation.
+	* milter/manager/milter-manager-leader.c (cb_error): if all milters do
+	not response on negotiation, send "reject".
 
 2008-11-27  Kouhei Sutou  <kou@cozmixng.org>
 

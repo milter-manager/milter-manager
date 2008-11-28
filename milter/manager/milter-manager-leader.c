@@ -558,6 +558,10 @@ cb_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
     milter_error("%s", error->message);
     milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(leader),
                                 error);
+
+    /* If all milters do not response on negotiation, send "reject" */
+    if (error->code == MILTER_MANAGER_CHILDREN_ERROR_NO_NEGOTIATION_RESPONSE)
+        reply(leader, MILTER_STATUS_REJECT);
 }
 
 static void
