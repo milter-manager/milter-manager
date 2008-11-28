@@ -246,8 +246,8 @@ wait_for_manager_ready (const gchar *spec)
     timeout_waiting_id = g_timeout_add(500, cb_timeout_waiting,
                                        &timeout_waiting);
     while (timeout_waiting &&
-           connect(sock_fd, address, address_size) ==0) {
-        g_main_context_iteration(NULL, TRUE);
+           connect(sock_fd, address, address_size) != 0) {
+        g_main_context_iteration(NULL, FALSE);
     }
 
     g_source_remove(timeout_waiting_id);
@@ -255,18 +255,27 @@ wait_for_manager_ready (const gchar *spec)
     cut_assert_true(timeout_waiting, "Error");
 }
 
+#define wait_for_server_reaping()   \
+    wait_for_reaping(server_data)
+
+#define wait_for_manager_reaping()  \
+    wait_for_reaping(manager_data)
+
 void
 test_run (void)
 {
     const gchar spec[] = "inet:19999@localhost";
     setup_egg(manager_data, "-s", spec, NULL);
-    setup_egg(server_data, "-s", spec, NULL);
+    setup_egg(server_data, "-s", spec, "-v", NULL);
 
+    gcut_egg_set_env(manager_egg,
+                     "MILTER_MANAGER_CONFIG_DIR", scenario_dir,
+                     NULL);
     gcut_egg_hatch(manager_egg, &error);
     wait_for_manager_ready(spec);
     gcut_egg_hatch(server_egg, &error);
 
-    /* wait_for_reaping(server_data); */
+    wait_for_server_reaping();
 }
 
 #define has_key(scenario, group, key)                                     \

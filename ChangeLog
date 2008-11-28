@@ -33,6 +33,7 @@
 	* test/manager/test-children.c: Added test_no_negotiation.
 	* milter/manager/milter-manager-leader.c (cb_error): if all milters do
 	not response on negotiation, send "reject".
+	* test/manager/test-manager.c: wait for server reaping.
 
 2008-11-27  Kouhei Sutou  <kou@cozmixng.org>
 
