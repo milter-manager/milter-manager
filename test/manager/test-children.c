@@ -37,6 +37,7 @@ void test_foreach (void);
 void data_scenario (void);
 void test_scenario (gconstpointer data);
 void test_negotiate (void);
+void test_no_negotiation (void);
 void test_connect (void);
 void test_connect_with_macro (void);
 void test_connect_pass (void);
@@ -93,6 +94,7 @@ static guint n_skip_emitted;
 static guint n_error_emitted;
 static guint n_finished_emitted;
 static guint n_reading_timeout_emitted;
+static guint n_connection_timeout_emitted;
 static guint n_writing_timeout_emitted;
 static guint n_end_of_message_timeout_emitted;
 
@@ -345,6 +347,7 @@ clear_n_emitted (void)
     n_finished_emitted = 0;
 
     n_reading_timeout_emitted = 0;
+    n_connection_timeout_emitted = 0;
     n_writing_timeout_emitted = 0;
     n_end_of_message_timeout_emitted = 0;
 }
@@ -1382,6 +1385,12 @@ set_timeout (gpointer data, gpointer user_data)
 }
 
 static void
+cb_connection_timeout (MilterServerContext *context, gpointer user_data)
+{
+    n_connection_timeout_emitted++;
+}
+
+static void
 cb_reading_timeout (MilterServerContext *context, gpointer user_data)
 {
     n_reading_timeout_emitted++;
@@ -1411,6 +1420,7 @@ connect_timeout_signal (gpointer data, gpointer user_data)
     g_signal_connect_after(context, #name, G_CALLBACK(cb_ ## name),     \
                            user_data)
 
+    CONNECT(connection_timeout);
     CONNECT(end_of_message_timeout);
     CONNECT(reading_timeout);
     CONNECT(writing_timeout);
@@ -1432,25 +1442,24 @@ cb_log (MilterLogger *logger, const gchar *domain,
 }
 
 void
-test_connection_timeout (void)
+test_no_negotiation (void)
 {
     MilterLogger *logger;
 
     logger = milter_logger();
     log_signal_id = g_signal_connect(logger, "log", G_CALLBACK(cb_log), NULL);
 
-    add_child("milter@10026", "inet:10026@192.168.99.1");
-
-    milter_manager_children_foreach(children, set_timeout, NULL);
-
     option = milter_option_new(2,
                                MILTER_ACTION_ADD_HEADERS |
                                MILTER_ACTION_CHANGE_BODY,
                                MILTER_STEP_NONE);
-    cut_assert_true(milter_manager_children_negotiate(children, option));
 
+    add_child("milter@10026", "inet:10026@localhost");
+    add_child("milter@10027", "inet:10027@localhost");
+
+    cut_assert_true(milter_manager_children_negotiate(children, option));
     g_main_context_iteration(NULL, FALSE);
-    cut_assert_equal_string("connection to milter@10026 is timed out.",
+    cut_assert_equal_string("There is no negotiation response from milters.",
                             error_message);
 }
 
@@ -1459,6 +1468,28 @@ prepare_timeout_test (gpointer child, GIOChannel *channel)
 {
     set_timeout(child, NULL);
     connect_timeout_signal(child, channel);
+}
+
+void
+test_connection_timeout (void)
+{
+    MilterLogger *logger;
+
+    logger = milter_logger();
+    log_signal_id = g_signal_connect(logger, "log", G_CALLBACK(cb_log), NULL);
+
+    /* FIXME This case does not cause connection timeout! */
+    add_child("milter@10026", "inet:10026@192.168.99.1");
+
+    prepare_timeout_test(milter_manager_children_get_children(children)->data, NULL);
+
+    option = milter_option_new(2,
+                               MILTER_ACTION_ADD_HEADERS |
+                               MILTER_ACTION_CHANGE_BODY,
+                               MILTER_STEP_NONE);
+    cut_assert_true(milter_manager_children_negotiate(children, option));
+    
+    wait_reply(1, n_connection_timeout_emitted);
 }
 
 void
