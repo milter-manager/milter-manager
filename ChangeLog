@@ -22,6 +22,8 @@
 	* milter/manager/milter-manager.c: Show program name.
 	* test/manager/test-manager.c: Added scenario framework. Also run
 	milter-test-server.
+	* test/manager/test-manager.c: g_strfreev() expects NULL teminated
+	array.
 
 2008-11-27  Kouhei Sutou  <kou@cozmixng.org>
 

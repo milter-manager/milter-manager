@@ -183,8 +183,9 @@ setup_egg (EggData *data, const gchar *first_arg, ...)
     }
     va_end(var_args);
 
-    argv = g_new0(gchar*, argc);
+    argv = g_new0(gchar*, argc + 1);
     argv[0] = g_strdup(data->command_path);
+    argv[argc] = NULL;
     for (node = strings, i = 1; node; node = g_list_next(node), i++) {
         argv[i] = node->data;
     }
@@ -216,8 +217,8 @@ wait_for_reaping (EggData *data)
 void
 test_run (void)
 {
-    setup_egg(manager_data, "-s inet:19999@localhost", NULL);
-    setup_egg(server_data, "-s inet:19999@localhost", NULL);
+    setup_egg(manager_data, "-s", "inet:19999@localhost", NULL);
+    setup_egg(server_data, "-s", "inet:19999@localhost", NULL);
     gcut_egg_hatch(manager_egg, &error);
     gcut_egg_hatch(server_egg, &error);
 
