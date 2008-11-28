@@ -25,9 +25,13 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
+#include <signal.h>
+
 #include <gcutter.h>
 #include "milter-test-utils.h"
 #include "milter-manager-test-utils.h"
+
+void test_run (void);
 
 static GCutEgg *manager;
 static GArray *command;
