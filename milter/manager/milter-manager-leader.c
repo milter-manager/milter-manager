@@ -638,7 +638,7 @@ teardown_children_signals (MilterManagerLeader *leader,
 
 MilterStatus
 milter_manager_leader_negotiate (MilterManagerLeader *leader,
-                                     MilterOption *option)
+                                 MilterOption *option)
 {
     MilterManagerLeaderPrivate *priv;
 
@@ -661,9 +661,9 @@ milter_manager_leader_negotiate (MilterManagerLeader *leader,
 
 MilterStatus
 milter_manager_leader_connect (MilterManagerLeader *leader,
-                                   const gchar             *host_name,
-                                   struct sockaddr         *address,
-                                   socklen_t                address_length)
+                               const gchar         *host_name,
+                               struct sockaddr     *address,
+                               socklen_t            address_length)
 {
     MilterManagerLeaderPrivate *priv;
 
@@ -699,7 +699,7 @@ milter_manager_leader_helo (MilterManagerLeader *leader, const gchar *fqdn)
 
 MilterStatus
 milter_manager_leader_envelope_from (MilterManagerLeader *leader,
-                                         const gchar *from)
+                                     const gchar *from)
 {
     MilterManagerLeaderPrivate *priv;
 
@@ -717,7 +717,7 @@ milter_manager_leader_envelope_from (MilterManagerLeader *leader,
 
 MilterStatus
 milter_manager_leader_envelope_recipient (MilterManagerLeader *leader,
-                                              const gchar *recipient)
+                                          const gchar *recipient)
 {
     MilterManagerLeaderPrivate *priv;
 
@@ -752,7 +752,7 @@ milter_manager_leader_data (MilterManagerLeader *leader)
 
 MilterStatus
 milter_manager_leader_unknown (MilterManagerLeader *leader,
-                                   const gchar *command)
+                               const gchar *command)
 {
     MilterManagerLeaderPrivate *priv;
 
@@ -770,7 +770,7 @@ milter_manager_leader_unknown (MilterManagerLeader *leader,
 
 MilterStatus
 milter_manager_leader_header (MilterManagerLeader *leader,
-                                  const gchar *name, const gchar *value)
+                              const gchar *name, const gchar *value)
 {
     MilterManagerLeaderPrivate *priv;
 
@@ -847,8 +847,8 @@ is_replied_state (MilterManagerLeaderState state)
 
 MilterStatus
 milter_manager_leader_end_of_message (MilterManagerLeader *leader,
-                                      const gchar             *chunk,
-                                      gsize                    size)
+                                      const gchar         *chunk,
+                                      gsize                size)
 {
     MilterManagerLeaderPrivate *priv;
 
