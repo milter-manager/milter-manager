@@ -8,5 +8,6 @@
 void Init_milter_core (void);
 void Init_milter_client (void);
 void Init_milter_server (void);
+void Init_milter_toolkit (void);
 
 #endif

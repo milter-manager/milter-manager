@@ -1,5 +1,8 @@
 2008-11-28  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/src/toolkit/rb-milter-private.h: add missing
+	declaration.
+
 	* test/manager/test-manager.c: add missing <signal.h>.
 
 	* binding/ruby/src/toolkit/rb-milter-socket-address.c: plug a warning.
