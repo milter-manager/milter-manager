@@ -1375,9 +1375,21 @@ remove_queue_in_negotiate (MilterManagerChildren *children,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
     g_queue_remove(priv->reply_queue, child);
-    if (g_queue_is_empty(priv->reply_queue) && priv->option) {
-        g_signal_emit_by_name(children, "negotiate-reply",
-                              priv->option, priv->macros_requests);
+    if (g_queue_is_empty(priv->reply_queue)) {
+        if (priv->option) {
+            g_signal_emit_by_name(children, "negotiate-reply",
+                                  priv->option, priv->macros_requests);
+        } else {
+            GError *error = NULL;
+            g_set_error(&error,
+                        MILTER_MANAGER_CHILDREN_ERROR,
+                        MILTER_MANAGER_CHILDREN_ERROR_NO_NEGOTIATION_RESPONSE,
+                        "There is no negotiation response from milters.");
+            milter_error("%s", error->message);
+            milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
+                                        error);
+            g_error_free(error);
+        }
     }
 }
 
@@ -1407,6 +1419,7 @@ cb_connection_error (MilterErrorEmittable *emittable, GError *error, gpointer us
 {
     NegotiateData *data = user_data;
     MilterManagerChildrenPrivate *priv;
+    gboolean privilege;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(data->children);
     milter_info("connection_error: %s", error->message);
@@ -1416,6 +1429,13 @@ cb_connection_error (MilterErrorEmittable *emittable, GError *error, gpointer us
         data->is_retry) {
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(data->children),
                                     error);
+        clear_try_negotiate_data(data);
+        return;
+    }
+
+    privilege =
+        milter_manager_configuration_is_privilege_mode(priv->configuration);
+    if (!privilege) {
         clear_try_negotiate_data(data);
         return;
     }

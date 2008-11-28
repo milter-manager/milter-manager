@@ -26,6 +26,10 @@
 	array.
 	* test/manager/test-manager.c: Starting milter-test-server after
 	milter-manager is ready.
+	* milter/manager/milter-manager-children.[ch]: If all milters do not
+	response on negotiation, emit
+	MILTER_MANAGER_CHILDREN_ERROR_NO_NEGOTIATION_RESPONSE.
+	Also do not invoke milter_manager_child_start() if no privilege mode.
 
 2008-11-27  Kouhei Sutou  <kou@cozmixng.org>
 
