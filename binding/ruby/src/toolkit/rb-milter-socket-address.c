@@ -7,7 +7,7 @@
 #include <arpa/inet.h>
 #include <sys/un.h>
 
-#include "rb-milter-private.h"
+#include "rb-milter-core-private.h"
 
 static ID id_equal;
 
