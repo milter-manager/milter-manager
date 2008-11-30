@@ -1,6 +1,8 @@
 2008-12-01  Hiroyuki Ikezoe  <poincare@ikezoe.net>
 
 	* test/manager/test-manager.c: Add reject on evenelope-recipient test.
+	* milter/manager/milter-manager-leader.c (milter_manager_leader_body):
+	Increment sent_body_count just before milter_server_context_body().
 
 2008-11-28  Kouhei Sutou  <kou@cozmixng.org>
 

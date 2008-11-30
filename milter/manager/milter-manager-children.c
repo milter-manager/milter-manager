@@ -1000,7 +1000,7 @@ cb_skip (MilterServerContext *context, gpointer user_data)
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
     if (!priv->sent_end_of_message)
         g_signal_emit_by_name(children, "continue");
-    else 
+    else
         send_next_command(children, context, state);
 }
 
@@ -2211,11 +2211,11 @@ milter_manager_children_body (MilterManagerChildren *children,
         return FALSE;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
-    priv->sent_body_count++;
     context = get_first_command_waiting_child_queue(children, MILTER_COMMAND_BODY);
     if (!context)
         return TRUE;
 
+    priv->sent_body_count++;
     return milter_server_context_body(context, chunk, size);
 }
 
