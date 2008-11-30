@@ -1,0 +1,10 @@
+[scenario]
+clients=client10026;client10027
+expected=The message was 'not-change'.\n\n
+
+[client10026]
+port=10026
+arguments=--action;reject;--envelope-recipient;<kou+receive@cozmixng.org>
+
+[client10027]
+port=10027

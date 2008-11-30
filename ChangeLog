@@ -1,3 +1,7 @@
+2008-12-01  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* test/manager/test-manager.c: Add reject on evenelope-recipient test.
+
 2008-11-28  Kouhei Sutou  <kou@cozmixng.org>
 
 	* binding/ruby/src/toolkit/rb-milter-private.h: add missing
