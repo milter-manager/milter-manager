@@ -1193,7 +1193,9 @@ cb_decoder_negotiate_reply (MilterDecoder *decoder,
         gchar *inspected_option;
 
         inspected_option = milter_utils_inspect_object(G_OBJECT(option));
-        milter_info("received NEGOTIATE REPLY: %s", inspected_option);
+        milter_info("%s received NEGOTIATE REPLY: %s",
+                    milter_server_context_get_name(context),
+                    inspected_option);
         g_free(inspected_option);
     }
     if (priv->option)
@@ -1294,8 +1296,9 @@ cb_decoder_reply_code (MilterReplyDecoder *decoder,
 
     disable_timeout(priv);
 
-    milter_info("received REPLY_CODE: "
-                "<%d %s %s>", code, extended_code, message);
+    milter_info("%s received REPLY_CODE: <%d %s %s>",
+                milter_server_context_get_name(context),
+                code, extended_code, message);
 
     state = priv->state;
 
@@ -1327,7 +1330,8 @@ cb_decoder_temporary_failure (MilterReplyDecoder *decoder, gpointer user_data)
 
     disable_timeout(priv);
 
-    milter_info("received TEMPORARY_FAILURE");
+    milter_info("%s received TEMPORARY_FAILURE",
+                milter_server_context_get_name(context));
 
     g_signal_emit_by_name(context, "temporary-failure");
 
@@ -1350,7 +1354,8 @@ cb_decoder_reject (MilterReplyDecoder *decoder, gpointer user_data)
 
     disable_timeout(priv);
 
-    milter_info("received REJECT");
+    milter_info("%s received REJECT",
+                milter_server_context_get_name(context));
 
     g_signal_emit_by_name(context, "reject");
 
@@ -1403,7 +1408,8 @@ cb_decoder_discard (MilterReplyDecoder *decoder, gpointer user_data)
 
     disable_timeout(priv);
 
-    milter_info("received DISCARD");
+    milter_info("%s received DISCARD",
+                milter_server_context_get_name(context));
 
     g_signal_emit_by_name(context, "discard");
 
@@ -1428,8 +1434,9 @@ cb_decoder_add_header (MilterReplyDecoder *decoder,
 
     disable_timeout(priv);
 
-    milter_info("received ADD_HEADER: "
-                "<%s>=<%s>", name, value);
+    milter_info("%s received ADD_HEADER: <%s>=<%s>",
+                milter_server_context_get_name(context),
+                name, value);
 
     if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
         g_signal_emit_by_name(context, "add-header", name, value);
@@ -1451,8 +1458,9 @@ cb_decoder_insert_header (MilterReplyDecoder *decoder,
 
     disable_timeout(priv);
 
-    milter_info("received INSERT_HEADER: "
-                "[%u] <%s>=<%s>", index, name, value);
+    milter_info("%s received INSERT_HEADER: [%u] <%s>=<%s>",
+                milter_server_context_get_name(context),
+                index, name, value);
 
     if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
         g_signal_emit_by_name(context, "insert-header", index, name, value);
@@ -1474,8 +1482,9 @@ cb_decoder_change_header (MilterReplyDecoder *decoder,
 
     disable_timeout(priv);
 
-    milter_info("received CHANGE_HEADER: "
-                "<%s>[%u]=<%s>", name, index, value);
+    milter_info("%s received CHANGE_HEADER: <%s>[%u]=<%s>",
+                milter_server_context_get_name(context),
+                name, index, value);
 
     if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
         g_signal_emit_by_name(context, "change-header", name, index, value);
@@ -1496,8 +1505,9 @@ cb_decoder_delete_header (MilterReplyDecoder *decoder,
 
     disable_timeout(priv);
 
-    milter_info("received DELETE_HEADER: "
-                "<%s>[%u]", name, index);
+    milter_info("%s received DELETE_HEADER: <%s>[%u]",
+                milter_server_context_get_name(context),
+                name, index);
 
     if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
         g_signal_emit_by_name(context, "delete-header", name, index);
@@ -1518,8 +1528,9 @@ cb_decoder_change_from (MilterReplyDecoder *decoder,
 
     disable_timeout(priv);
 
-    milter_info("received CHANGE_FROM: "
-                "<%s>=<%s>", from, parameters);
+    milter_info("%s received CHANGE_FROM: <%s>=<%s>",
+                milter_server_context_get_name(context),
+                from, parameters);
 
     if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
         g_signal_emit_by_name(context, "change-from", from, parameters);
@@ -1540,8 +1551,9 @@ cb_decoder_add_recipient (MilterReplyDecoder *decoder,
 
     disable_timeout(priv);
 
-    milter_info("received ADD_RECIPIENT: "
-                "<%s>=<%s>", recipient, parameters);
+    milter_info("%s received ADD_RECIPIENT: <%s>=<%s>",
+                milter_server_context_get_name(context),
+                recipient, parameters);
 
     if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
         g_signal_emit_by_name(context, "add-recipient", recipient, parameters);
@@ -1554,14 +1566,16 @@ cb_decoder_delete_recipient (MilterReplyDecoder *decoder,
                              const gchar *recipient,
                              gpointer user_data)
 {
+    MilterServerContext *context = user_data;
     MilterServerContextPrivate *priv;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(user_data);
 
     disable_timeout(priv);
 
-    milter_info("received DELETE_RECIPIENT: "
-                "<%s>", recipient);
+    milter_info("%s received DELETE_RECIPIENT: <%s>",
+                milter_server_context_get_name(context),
+                recipient);
 
     g_signal_emit_by_name(user_data, "delete-recipient",recipient);
 }
@@ -1579,8 +1593,9 @@ cb_decoder_replace_body (MilterReplyDecoder *decoder,
 
     disable_timeout(priv);
 
-    milter_info("received REPLACE_BODY: "
-                "body_size = %" G_GSIZE_FORMAT, body_size);
+    milter_info("%s received REPLACE_BODY: body_size = %" G_GSIZE_FORMAT,
+                milter_server_context_get_name(context),
+                body_size);
 
     if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
         g_signal_emit_by_name(context, "replace-body", body, body_size);
@@ -1591,13 +1606,15 @@ cb_decoder_replace_body (MilterReplyDecoder *decoder,
 static void
 cb_decoder_progress (MilterReplyDecoder *decoder, gpointer user_data)
 {
+    MilterServerContext *context = user_data;
     MilterServerContextPrivate *priv;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(user_data);
 
     disable_timeout(priv);
 
-    milter_info("received PROGRESS");
+    milter_info("%s received PROGRESS",
+                milter_server_context_get_name(context));
 
     g_signal_emit_by_name(user_data, "progress");
 }
@@ -1607,13 +1624,16 @@ cb_decoder_quarantine (MilterReplyDecoder *decoder,
                        const gchar *reason,
                        gpointer user_data)
 {
+    MilterServerContext *context = user_data;
     MilterServerContextPrivate *priv;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(user_data);
 
     disable_timeout(priv);
 
-    milter_info("received QUARANTINE: <%s>", reason);
+    milter_info("%s received QUARANTINE: <%s>",
+                milter_server_context_get_name(context),
+                reason);
 
     g_signal_emit_by_name(user_data, "quarantine", reason);
 }
@@ -1621,13 +1641,15 @@ cb_decoder_quarantine (MilterReplyDecoder *decoder,
 static void
 cb_decoder_connection_failure (MilterReplyDecoder *decoder, gpointer user_data)
 {
+    MilterServerContext *context = user_data;
     MilterServerContextPrivate *priv;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(user_data);
 
     disable_timeout(priv);
 
-    milter_info("received CONNECTION_FAILURE");
+    milter_info("%s received CONNECTION_FAILURE",
+                milter_server_context_get_name(context));
 
     g_signal_emit_by_name(user_data, "connection-failure");
 }
@@ -1635,13 +1657,15 @@ cb_decoder_connection_failure (MilterReplyDecoder *decoder, gpointer user_data)
 static void
 cb_decoder_shutdown (MilterReplyDecoder *decoder, gpointer user_data)
 {
+    MilterServerContext *context = user_data;
     MilterServerContextPrivate *priv;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(user_data);
 
     disable_timeout(priv);
 
-    milter_info("received SHUTDOWN");
+    milter_info("%s received SHUTDOWN",
+                milter_server_context_get_name(context));
 
     g_signal_emit_by_name(user_data, "shutdown");
 }
@@ -1656,7 +1680,8 @@ cb_decoder_skip (MilterReplyDecoder *decoder, gpointer user_data)
 
     disable_timeout(priv);
 
-    milter_info("received SKIP");
+    milter_info("%s received SKIP",
+                milter_server_context_get_name(context));
 
     if (priv->state == MILTER_SERVER_CONTEXT_STATE_BODY) {
         g_signal_emit_by_name(context, "skip");
