@@ -324,7 +324,7 @@ test_flags_from_string (gconstpointer _data)
     GType type;
 
     input = gcut_data_get_string(data, "/input");
-    type = gcut_data_get_gtype(data, "/type");
+    type = gcut_data_get_type(data, "/type");
     gcut_assert_equal_flags(type,
                             gcut_data_get_flags(data, "/expected"),
                             milter_utils_flags_from_string(type, input));
@@ -355,7 +355,7 @@ test_enum_from_string (gconstpointer _data)
     GType type;
 
     input = gcut_data_get_string(data, "/input");
-    type = gcut_data_get_gtype(data, "/type");
+    type = gcut_data_get_type(data, "/type");
     gcut_assert_equal_enum(type,
                            gcut_data_get_enum(data, "/expected"),
                            milter_utils_enum_from_string(type, input));

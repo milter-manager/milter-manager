@@ -1,5 +1,7 @@
 2008-12-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/core/test-utils.c: gtype -> type.
+
 	* TODO: remove an entry: merge marshal.list.
 
 	* milter/manager/: use milter/core/milter-marshalers.h.
