@@ -16,6 +16,6 @@ unknown_command=UNKNWON COMMAND
 
 response=unknown
 n_received=2
-status=reject
+status=continue
 
 unknown_commands=UNKNWON COMMAND;UNKNWON COMMAND

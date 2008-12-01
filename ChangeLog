@@ -6,6 +6,7 @@
 	"envelope-recipient".
 	* milter/server/milter-server-command.c (cb_decoder_continue): Send
 	"continue" even if UNKNOWN state.
+	* test/lib/milter-test-client.rb: Return continue on "unknown" state.
 
 2008-12-01  Kouhei Sutou  <kou@cozmixng.org>
 

@@ -425,7 +425,7 @@ class MilterTestClient
   end
 
   def do_unknown(command)
-    write(:unknown, :reject)
+    write(:unknown, :continue)
   end
 
   def info_unknown(command)
