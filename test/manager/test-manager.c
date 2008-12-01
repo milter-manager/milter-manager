@@ -36,7 +36,6 @@
 #include "milter-manager-test-utils.h"
 #include "milter-manager-test-scenario.h"
 
-void test_run (void);
 void test_version (void);
 void test_invalid_spec (void);
 
@@ -315,13 +314,6 @@ test_invalid_spec (void)
 }
 
 void
-test_run (void)
-{
-    start_manager();
-    start_server();
-    wait_for_server_reaping();
-}
-
 #define has_key(scenario, group, key)                                     \
     milter_manager_test_scenario_has_key(scenario, group, key)
 
