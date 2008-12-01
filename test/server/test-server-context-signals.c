@@ -914,8 +914,8 @@ test_busy_error (void)
 {
     gchar *inspected_state;
     inspected_state =
-        milter_utils_inspect_enum(MILTER_TYPE_SERVER_CONTEXT_STATE,
-                                  MILTER_SERVER_CONTEXT_STATE_HELO);
+        milter_utils_get_enum_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                                   MILTER_SERVER_CONTEXT_STATE_HELO);
     cut_take_string(inspected_state);
     expected_error = g_error_new(MILTER_SERVER_CONTEXT_ERROR,
                                  MILTER_SERVER_CONTEXT_ERROR_BUSY,
