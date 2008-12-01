@@ -27,6 +27,7 @@
 #include <glib.h>
 
 #include "milter-logger.h"
+#include "milter-utils.h"
 #include "milter-marshalers.h"
 #include "milter-enum-types.h"
 
@@ -79,31 +80,8 @@ dispose (GObject *object)
 MilterLogLevelFlags
 milter_log_level_flags_from_string (const gchar *level_name)
 {
-    gchar **names, **name;
-    GFlagsClass *flags_class;
-    MilterLogLevelFlags level = 0;
-
-    if (!level_name)
-        return 0;
-
-    names = g_strsplit(level_name, "|", 0);
-    flags_class = g_type_class_ref(MILTER_TYPE_LOG_LEVEL_FLAGS);
-    for (name = names; *name; name++) {
-        if (g_str_equal(*name, "all")) {
-            level |= MILTER_LOG_LEVEL_ALL;
-            break;
-        } else {
-            GFlagsValue *value;
-
-            value = g_flags_get_value_by_nick(flags_class, *name);
-            if (value)
-                level |= value->value;
-        }
-    }
-    g_type_class_unref(flags_class);
-    g_strfreev(names);
-
-    return level;
+    return milter_utils_flags_from_string(MILTER_TYPE_LOG_LEVEL_FLAGS,
+                                          level_name);
 }
 
 static void
