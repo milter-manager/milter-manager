@@ -74,16 +74,23 @@ static void get_property   (GObject         *object,
                             GValue          *value,
                             GParamSpec      *pspec);
 
+static gchar *get_default_connection_spec
+                           (MilterClient    *client);
+
 static void
 milter_client_class_init (MilterClientClass *klass)
 {
     GObjectClass *gobject_class;
+    MilterClientClass *client_class = NULL;
 
     gobject_class = G_OBJECT_CLASS(klass);
+    client_class = MILTER_CLIENT_CLASS(klass);
 
     gobject_class->dispose      = dispose;
     gobject_class->set_property = set_property;
     gobject_class->get_property = get_property;
+
+    client_class->get_default_connection_spec = get_default_connection_spec;
 
     signals[CONNECTION_ESTABLISHED] =
         g_signal_new("connection-established",
@@ -182,6 +189,24 @@ milter_client_new (void)
                         NULL);
 }
 
+static gchar *
+get_default_connection_spec (MilterClient *client)
+{
+    return g_strdup("inet:10025");
+}
+
+gchar *
+milter_client_get_default_connection_spec (MilterClient *client)
+{
+    MilterClientClass *klass;
+
+    klass = MILTER_CLIENT_GET_CLASS(client);
+    if (klass->get_default_connection_spec)
+        return klass->get_default_connection_spec(client);
+    else
+        return NULL;
+}
+
 gboolean
 milter_client_set_connection_spec (MilterClient *client, const gchar *spec,
                                    GError **error)
@@ -194,6 +219,10 @@ milter_client_set_connection_spec (MilterClient *client, const gchar *spec,
         g_free(priv->connection_spec);
         priv->connection_spec = NULL;
     }
+
+    if (!spec)
+        return TRUE;
+
     success = milter_connection_parse_spec(spec, NULL, NULL, NULL, error);
     if (success)
         priv->connection_spec = g_strdup(spec);
@@ -329,8 +358,14 @@ milter_client_main (MilterClient *client)
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
-    if (!priv->connection_spec)
-        milter_client_set_connection_spec(client, "inet:10025", NULL);
+    if (!priv->connection_spec) {
+        gchar *default_connection_spec;
+
+        default_connection_spec =
+            milter_client_get_default_connection_spec(client);
+        milter_client_set_connection_spec(client, default_connection_spec, NULL);
+        g_free(default_connection_spec);
+    }
 
     server_channel = milter_connection_listen(priv->connection_spec, 5, &error);
     if (!server_channel) {

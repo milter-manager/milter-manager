@@ -44,14 +44,18 @@ struct _MilterClient
 struct _MilterClientClass
 {
     GObjectClass parent_class;
-    void (*connection_established)      (MilterClient *client,
-                                         MilterClientContext *context);
+
+    void   (*connection_established)      (MilterClient *client,
+                                           MilterClientContext *context);
+    gchar *(*get_default_connection_spec) (MilterClient *client);
 };
 
 GType                milter_client_get_type          (void) G_GNUC_CONST;
 
 MilterClient        *milter_client_new               (void);
 
+gchar               *milter_client_get_default_connection_spec
+                                                     (MilterClient  *client);
 gboolean             milter_client_set_connection_spec
                                                      (MilterClient  *client,
                                                       const gchar   *spec,

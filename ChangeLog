@@ -1,5 +1,8 @@
 2008-12-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client.h, milter/client/milter-client.c: make connection
+	spec customizable.
+
 	* milter/manager/milter-manager-controller.c: connect to
 	get-status command.
 
