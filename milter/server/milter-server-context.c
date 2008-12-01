@@ -621,8 +621,8 @@ write_packet (MilterServerContext *context, gchar *packet, gsize packet_size,
         GError *error = NULL;
 
         inspected_state =
-            milter_utils_inspect_enum(MILTER_TYPE_SERVER_CONTEXT_STATE,
-                                      priv->state);
+            milter_utils_get_enum_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                                       priv->state);
         g_set_error(&error,
                     MILTER_SERVER_CONTEXT_ERROR,
                     MILTER_SERVER_CONTEXT_ERROR_BUSY,
@@ -694,8 +694,8 @@ pass_state (MilterServerContext *context, MilterServerContextState state)
     gchar *inspected_state;
     MilterServerContextPrivate *priv;
 
-    inspected_state = milter_utils_inspect_enum(MILTER_TYPE_SERVER_CONTEXT_STATE,
-                                                state);
+    inspected_state = milter_utils_get_enum_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                                                 state);
     milter_info("pass state: %s", inspected_state);
     g_free(inspected_state);
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
@@ -1249,10 +1249,11 @@ cb_decoder_continue (MilterReplyDecoder *decoder, gpointer user_data)
 
     disable_timeout(priv);
 
-    state_string = milter_utils_inspect_enum(MILTER_TYPE_SERVER_CONTEXT_STATE,
-                                             priv->state);
-    milter_info("%s received CONTINUE on %s state",
-                milter_server_context_get_name(context), state_string);
+    state_string = milter_utils_get_enum_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                                              priv->state);
+    milter_info("%s received CONTINUE on %s.",
+                milter_server_context_get_name(context),
+                state_string);
     g_free(state_string);
 
     switch (priv->state) {
@@ -1381,9 +1382,9 @@ cb_decoder_accept (MilterReplyDecoder *decoder, gpointer user_data)
     disable_timeout(priv);
 
     state = priv->state;
-    state_string = milter_utils_inspect_enum(MILTER_TYPE_SERVER_CONTEXT_STATE,
-                                             state);
-    milter_info("%s received ACCEPT on %s state",
+    state_string = milter_utils_get_enum_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                                              state);
+    milter_info("%s received ACCEPT on %s,",
                 milter_server_context_get_name(context), state_string);
     g_free(state_string);
 
