@@ -25,6 +25,7 @@
 
 #include <glib/gstdio.h>
 #include "milter-manager-configuration.h"
+#include "milter/core.h"
 
 #define MILTER_MANAGER_CHILDREN_GET_PRIVATE(obj)                    \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                             \
@@ -1206,8 +1207,8 @@ cb_finished (MilterAgent *agent, gpointer user_data)
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     expire_child(children, context);
-    state_string = milter_utils_inspect_enum(MILTER_TYPE_SERVER_CONTEXT_STATE,
-                                             priv->current_state);
+    state_string = milter_utils_get_enum_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                                              priv->current_state);
     child_name = milter_server_context_get_name(context);
 
     milter_info("%s exits on %s.", child_name, state_string);
