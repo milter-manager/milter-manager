@@ -1,0 +1,11 @@
+[scenario]
+clients=client10026
+expected=The message was 'not-change'.\n\n
+
+[client10026]
+port=10026
+arguments=--action;skip;--body-regexp;Message
+
+[client10027]
+port=10027
+arguments=--action;skip;--body-regexp;Message

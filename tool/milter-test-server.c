@@ -483,9 +483,10 @@ cb_shutdown (MilterServerContext *context, gpointer user_data)
 static void
 cb_skip (MilterServerContext *context, gpointer user_data)
 {
-    ProcessData *data = user_data;
+    while (*body_chunks) 
+        body_chunks++;
 
-    send_abort(context, data);
+    cb_continue(context, user_data);
 }
 
 static void

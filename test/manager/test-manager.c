@@ -345,6 +345,8 @@ data_scenario (void)
                  g_strdup("reject-on-envelope-from.txt"), g_free);
     cut_add_data("reject on envelope-recipient",
                  g_strdup("reject-on-envelope-recipient.txt"), g_free);
+    cut_add_data("skip on body",
+                 g_strdup("skip-on-body.txt"), g_free);
 }
 
 void

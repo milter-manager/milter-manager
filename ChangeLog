@@ -15,6 +15,11 @@
 	* milter/manager/milter-manager-leader.c (milter_manager_leader_body):
 	If the first child had already returned "skip" reply, just send
 	"continue" to MTA without sending "body" command to the first child.
+	* tool/milter-test-server.c (cb_skip): If "skip" is received, send
+	next command to milter-manger. But actually milter-manager does never
+	receive "skip" reply because milter-manager should receive all body
+	chunks for other children even if the first child returns "skip". This
+	behaviour makes performance worse.
 
 2008-11-28  Kouhei Sutou  <kou@cozmixng.org>
 
