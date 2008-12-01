@@ -31,6 +31,7 @@ void test_start_with_search_path (void);
 void test_start_no_command (void);
 void test_start_bad_command_string (void);
 void test_start_by_user (void);
+void test_start_no_privilege_mode (void);
 void test_start_inexistent_command (void);
 void test_start_by_inexistent_user (void);
 void test_exit_error (void);
@@ -168,6 +169,21 @@ test_start_by_user (void)
                  NULL);
     milter_manager_child_start(milter, &error);
     gcut_assert_error(error);
+}
+
+void
+test_start_no_privilege_mode (void)
+{
+    expected_error = g_error_new(MILTER_MANAGER_CHILD_ERROR,
+                                 MILTER_MANAGER_CHILD_ERROR_NO_PRIVILEGE_MODE,
+                                 "MilterManager is not running on privilege mode.");
+    g_object_set(milter,
+                 "command", "/bin/echo",
+                 "command-options", "-n",
+                 "user-name", "root",
+                 NULL);
+    milter_manager_child_start(milter, &actual_error);
+    gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
