@@ -1,5 +1,8 @@
 2008-12-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-configuration.[ch]: use other
+	logic for custom configuration file loading.
+
 	* binding/ruby/test/: unify utility modules.
 
 	* milter/manager/milter-manager-controller.[ch],

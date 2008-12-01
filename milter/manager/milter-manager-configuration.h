@@ -59,6 +59,9 @@ struct _MilterManagerConfigurationClass
     gboolean     (*load)          (MilterManagerConfiguration *configuration,
                                    const gchar                *file_name,
                                    GError                    **error);
+    gboolean     (*load_custom)   (MilterManagerConfiguration *configuration,
+                                   const gchar                *file_name,
+                                   GError                    **error);
 };
 
 GQuark        milter_manager_configuration_error_quark (void);
@@ -82,6 +85,14 @@ gboolean      milter_manager_configuration_load
                                       const gchar                *file_name,
                                       GError                    **error);
 gboolean      milter_manager_configuration_load_if_exist
+                                     (MilterManagerConfiguration *configuration,
+                                      const gchar                *file_name,
+                                      GError                    **error);
+gboolean      milter_manager_configuration_load_custom
+                                     (MilterManagerConfiguration *configuration,
+                                      const gchar                *file_name,
+                                      GError                    **error);
+gboolean      milter_manager_configuration_load_custom_if_exist
                                      (MilterManagerConfiguration *configuration,
                                       const gchar                *file_name,
                                       GError                    **error);

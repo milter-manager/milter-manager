@@ -322,6 +322,50 @@ milter_manager_configuration_clear_load_paths (MilterManagerConfiguration *confi
     }
 }
 
+static gchar *
+find_file (MilterManagerConfiguration *configuration,
+           const gchar *file_name, GError **error)
+{
+    MilterManagerConfigurationPrivate *priv;
+    gchar *full_path = NULL;
+    GList *node;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    for (node = priv->load_paths; node; node = g_list_next(node)) {
+        const gchar *dir = node->data;
+
+        full_path = g_build_filename(dir, file_name, NULL);
+        if (g_file_test(full_path, G_FILE_TEST_IS_REGULAR)) {
+            break;
+        } else {
+            g_free(full_path);
+            full_path = NULL;
+        }
+    }
+
+    if (!full_path) {
+        GString *inspected_load_paths;
+
+        inspected_load_paths = g_string_new("[");
+        for (node = priv->load_paths; node; node = g_list_next(node)) {
+            const gchar *dir = node->data;
+
+            g_string_append_printf(inspected_load_paths, "\"%s\"", dir);
+            if (g_list_next(node))
+                g_string_append(inspected_load_paths, ", ");
+        }
+        g_string_append(inspected_load_paths, "]");
+        g_set_error(error,
+                    MILTER_MANAGER_CONFIGURATION_ERROR,
+                    MILTER_MANAGER_CONFIGURATION_ERROR_NOT_EXIST,
+                    "path %s doesn't exist in load path (%s)",
+                    file_name, inspected_load_paths->str);
+        g_string_free(inspected_load_paths, TRUE);
+    }
+
+    return full_path;
+}
+
 gboolean
 milter_manager_configuration_load (MilterManagerConfiguration *configuration,
                                    const gchar *file_name, GError **error)
@@ -330,54 +374,50 @@ milter_manager_configuration_load (MilterManagerConfiguration *configuration,
 
     configuration_class = MILTER_MANAGER_CONFIGURATION_GET_CLASS(configuration);
     if (configuration_class->load) {
-        MilterManagerConfigurationPrivate *priv;
-        gchar *full_path = NULL;
-        GList *node;
+        gboolean success;
+        gchar *full_path;
 
-        priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
-        for (node = priv->load_paths; node; node = g_list_next(node)) {
-            const gchar *dir = node->data;
-
-            full_path = g_build_filename(dir, file_name, NULL);
-            if (g_file_test(full_path, G_FILE_TEST_IS_REGULAR)) {
-                break;
-            } else {
-                g_free(full_path);
-                full_path = NULL;
-            }
-        }
-
-        if (full_path) {
-            gboolean success;
-
-            success = configuration_class->load(configuration, full_path, error);
-            g_free(full_path);
-            return success;
-        } else {
-            GString *inspected_load_paths;
-
-            inspected_load_paths = g_string_new("[");
-            for (node = priv->load_paths; node; node = g_list_next(node)) {
-                const gchar *dir = node->data;
-
-                g_string_append_printf(inspected_load_paths, "\"%s\"", dir);
-                if (g_list_next(node))
-                    g_string_append(inspected_load_paths, ", ");
-            }
-            g_string_append(inspected_load_paths, "]");
-            g_set_error(error,
-                        MILTER_MANAGER_CONFIGURATION_ERROR,
-                        MILTER_MANAGER_CONFIGURATION_ERROR_NOT_EXIST,
-                        "path %s doesn't exist in load path (%s)",
-                        file_name, inspected_load_paths->str);
-            g_string_free(inspected_load_paths, TRUE);
+        full_path = find_file(configuration, file_name, error);
+        if (!full_path)
             return FALSE;
-        }
+
+        success = configuration_class->load(configuration, full_path, error);
+        g_free(full_path);
+        return success;
     } else {
         g_set_error(error,
                     MILTER_MANAGER_CONFIGURATION_ERROR,
                     MILTER_MANAGER_CONFIGURATION_ERROR_NOT_IMPLEMENTED,
                     "load isn't implemented");
+        return FALSE;
+    }
+}
+
+gboolean
+milter_manager_configuration_load_custom (MilterManagerConfiguration *configuration,
+                                          const gchar *file_name, GError **error)
+{
+    MilterManagerConfigurationClass *configuration_class;
+
+    configuration_class = MILTER_MANAGER_CONFIGURATION_GET_CLASS(configuration);
+    if (configuration_class->load_custom) {
+        gboolean success;
+        gchar *full_path;
+
+        full_path = find_file(configuration, file_name, error);
+        if (!full_path)
+            return FALSE;
+
+        success = configuration_class->load_custom(configuration,
+                                                   full_path,
+                                                   error);
+        g_free(full_path);
+        return success;
+    } else {
+        g_set_error(error,
+                    MILTER_MANAGER_CONFIGURATION_ERROR,
+                    MILTER_MANAGER_CONFIGURATION_ERROR_NOT_IMPLEMENTED,
+                    "load_custom isn't implemented");
         return FALSE;
     }
 }
@@ -391,6 +431,26 @@ milter_manager_configuration_load_if_exist (MilterManagerConfiguration *configur
 
     if (milter_manager_configuration_load(configuration, file_name,
                                           &local_error))
+        return TRUE;
+
+    if (local_error->code == MILTER_MANAGER_CONFIGURATION_ERROR_NOT_EXIST) {
+        g_error_free(local_error);
+        return TRUE;
+    }
+
+    g_propagate_error(error, local_error);
+    return FALSE;
+}
+
+gboolean
+milter_manager_configuration_load_custom_if_exist (MilterManagerConfiguration *configuration,
+                                                   const gchar *file_name,
+                                                   GError **error)
+{
+    GError *local_error = NULL;
+
+    if (milter_manager_configuration_load_custom(configuration, file_name,
+                                                 &local_error))
         return TRUE;
 
     if (local_error->code == MILTER_MANAGER_CONFIGURATION_ERROR_NOT_EXIST) {
@@ -416,9 +476,8 @@ milter_manager_configuration_reload (MilterManagerConfiguration *configuration)
         return;
     }
 
-    if (!milter_manager_configuration_load_if_exist(configuration,
-                                                    CUSTOM_CONFIG_FILE_NAME,
-                                                    &error)) {
+    if (!milter_manager_configuration_load_custom_if_exist(
+            configuration, CUSTOM_CONFIG_FILE_NAME, &error)) {
         milter_error("failed to load custom config file: <%s>: %s",
                      CUSTOM_CONFIG_FILE_NAME, error->message);
         g_error_free(error);
