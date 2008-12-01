@@ -1,5 +1,8 @@
 2008-12-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-controller.c: connect to
+	get-status command.
+
 	* test/core/test-utils.c: gtype -> type.
 
 	* TODO: remove an entry: merge marshal.list.

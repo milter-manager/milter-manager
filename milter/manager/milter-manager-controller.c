@@ -21,6 +21,8 @@
 #  include "../../config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include <string.h>
+
 #include "milter-manager-controller.h"
 #include "milter-manager-enum-types.h"
 #include "milter-manager-control-command-decoder.h"
@@ -163,6 +165,47 @@ cb_decoder_reload (MilterManagerControlCommandDecoder *decoder,
     }
 }
 
+static void
+collect_status (MilterManagerController *controller, GString *status)
+{
+    g_string_append(status, "FIXME");
+}
+
+static void
+cb_decoder_get_status (MilterManagerControlCommandDecoder *decoder,
+                       gpointer user_data)
+{
+    MilterManagerController *controller = user_data;
+    MilterManagerControllerPrivate *priv;
+    GString *status;
+    GError *error = NULL;
+    MilterAgent *agent;
+    MilterEncoder *_encoder;
+    MilterManagerControlReplyEncoder *encoder;
+    gchar *packet;
+    gsize packet_size;
+
+    priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
+    milter_manager_configuration_reload(priv->configuration);
+
+    status = g_string_new(NULL);
+    collect_status(controller, status);
+    agent = MILTER_AGENT(controller);
+    _encoder = milter_agent_get_encoder(agent);
+    encoder = MILTER_MANAGER_CONTROL_REPLY_ENCODER(_encoder);
+    milter_manager_control_reply_encoder_encode_status(encoder,
+                                                       &packet,
+                                                       &packet_size,
+                                                       status->str,
+                                                       status->len);
+    g_string_free(status, TRUE);
+    if (!milter_agent_write_packet(agent, packet, packet_size, &error)) {
+        milter_error("failed to write control reply status packet: <%s>",
+                     error->message);
+        g_error_free(error);
+    }
+}
+
 static MilterDecoder *
 decoder_new (MilterAgent *agent)
 {
@@ -176,6 +219,7 @@ decoder_new (MilterAgent *agent)
 
     CONNECT(set_configuration);
     CONNECT(reload);
+    CONNECT(get_status);
 
 #undef CONNECT
 
