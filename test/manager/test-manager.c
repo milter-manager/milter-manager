@@ -17,6 +17,10 @@
  *
  */
 
+#ifdef HAVE_CONFIG_H
+#  include "../../config.h"
+#endif /* HAVE_CONFIG_H */
+
 #include <errno.h>
 
 #include <sys/socket.h>
@@ -34,6 +38,7 @@
 
 void test_run (void);
 void test_version (void);
+void test_invalid_spec (void);
 
 void data_scenario (void);
 void test_scenario (gconstpointer data);
@@ -292,7 +297,20 @@ test_version (void)
 
     wait_for_manager_reaping();
 
-    cut_assert_equal_string("milter-manager 0.0.1\n",
+    cut_assert_equal_string("milter-manager " VERSION "\n",
+                            manager_data->output_string->str);
+}
+
+void
+test_invalid_spec (void)
+{
+    setup_egg(manager_data, "-s", "XXXX@localhost", NULL);
+    gcut_egg_hatch(manager_egg, &error);
+    gcut_assert_error(error);
+
+    wait_for_manager_reaping();
+
+    cut_assert_equal_string("spec doesn't have colon: <XXXX@localhost>\n",
                             manager_data->output_string->str);
 }
 
