@@ -699,6 +699,8 @@ do_negotiate (MilterManagerTestScenario *scenario, const gchar *group)
 {
     MilterOption *option;
 
+    milter_server_context_set_state(MILTER_SERVER_CONTEXT(server),
+                                    MILTER_SERVER_CONTEXT_STATE_NEGOTIATE);
     option = milter_manager_test_scenario_get_option(scenario, group);
     gcut_take_object(G_OBJECT(option));
     milter_server_context_negotiate(MILTER_SERVER_CONTEXT(server), option);
@@ -726,6 +728,8 @@ do_connect (MilterManagerTestScenario *scenario, const gchar *group)
     const GList *expected_macros;
     const GList *actual_macros;
 
+    milter_server_context_set_state(MILTER_SERVER_CONTEXT(server),
+                                    MILTER_SERVER_CONTEXT_STATE_CONNECT);
     host = get_string(scenario, group, "host");
     address_spec = get_string(scenario, group, "address");
 
@@ -767,6 +771,8 @@ do_helo (MilterManagerTestScenario *scenario, const gchar *group)
     const gchar *fqdn;
     const GList *expected_fqdns;
 
+    milter_server_context_set_state(MILTER_SERVER_CONTEXT(server),
+                                    MILTER_SERVER_CONTEXT_STATE_HELO);
     fqdn = get_string(scenario, group, "fqdn");
     milter_manager_leader_helo(leader, fqdn);
 
@@ -784,6 +790,8 @@ do_envelope_from (MilterManagerTestScenario *scenario, const gchar *group)
     const gchar *from;
     const GList *expected_froms;
 
+    milter_server_context_set_state(MILTER_SERVER_CONTEXT(server),
+                                    MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM);
     from = get_string(scenario, group, "from");
     milter_manager_leader_envelope_from(leader, from);
 
@@ -801,6 +809,8 @@ do_envelope_recipient (MilterManagerTestScenario *scenario, const gchar *group)
     const gchar *recipient;
     const GList *expected_recipients;
 
+    milter_server_context_set_state(MILTER_SERVER_CONTEXT(server),
+                                    MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT);
     recipient = get_string(scenario, group, "recipient");
     n_envelope_recipient_responses = 0;
     milter_manager_leader_envelope_recipient(leader, recipient);
@@ -816,6 +826,8 @@ do_envelope_recipient (MilterManagerTestScenario *scenario, const gchar *group)
 static void
 do_data (MilterManagerTestScenario *scenario, const gchar *group)
 {
+    milter_server_context_set_state(MILTER_SERVER_CONTEXT(server),
+                                    MILTER_SERVER_CONTEXT_STATE_DATA);
     milter_manager_leader_data(leader);
 
     cut_trace(assert_response(scenario, group));
@@ -828,6 +840,8 @@ do_header (MilterManagerTestScenario *scenario, const gchar *group)
     const GList *actual_headers;
     const gchar *name, *value;
 
+    milter_server_context_set_state(MILTER_SERVER_CONTEXT(server),
+                                    MILTER_SERVER_CONTEXT_STATE_HEADER);
     name = get_string(scenario, group, "name");
     value = get_string(scenario, group, "value");
     n_header_responses = 0;
@@ -851,6 +865,8 @@ do_header (MilterManagerTestScenario *scenario, const gchar *group)
 static void
 do_end_of_header (MilterManagerTestScenario *scenario, const gchar *group)
 {
+    milter_server_context_set_state(MILTER_SERVER_CONTEXT(server),
+                                    MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER);
     milter_manager_leader_end_of_header(leader);
 
     cut_trace(assert_response(scenario, group));
@@ -861,6 +877,8 @@ do_body (MilterManagerTestScenario *scenario, const gchar *group)
 {
     const gchar *chunk;
 
+    milter_server_context_set_state(MILTER_SERVER_CONTEXT(server),
+                                    MILTER_SERVER_CONTEXT_STATE_BODY);
     chunk = get_string(scenario, group, "chunk");
     n_body_responses = 0;
     milter_manager_leader_body(leader, chunk, strlen(chunk));
@@ -877,11 +895,11 @@ do_end_of_message (MilterManagerTestScenario *scenario, const gchar *group)
 {
     const gchar *chunk = NULL;
 
+    milter_server_context_set_state(MILTER_SERVER_CONTEXT(server),
+                                    MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE);
     if (has_key(scenario, group, "chunk"))
         chunk = get_string(scenario, group, "chunk");
 
-    milter_server_context_set_state(MILTER_SERVER_CONTEXT(server),
-                                    MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE);
     milter_manager_leader_end_of_message(leader,
                                          chunk,
                                          chunk ? strlen(chunk) : 0);
