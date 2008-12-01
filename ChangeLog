@@ -53,6 +53,8 @@
 	* milter/core/milter-utils.[ch]: Added milter_utils_get_enum_name().
 	* milter/server/milter-server-context.c: Use
 	milter_utils_get_enum_name to reduce log size.
+	* milter/manager/milter-manager-leader.c (cb_error): Do nothing if
+	error domain is not MILTER_MANAGER_CHILDREN_ERROR.
 
 2008-11-28  Kouhei Sutou  <kou@cozmixng.org>
 
