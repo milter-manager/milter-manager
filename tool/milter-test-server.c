@@ -239,27 +239,6 @@ cb_negotiate_reply (MilterServerContext *context, MilterOption *option,
 }
 
 static void
-cb_reply_code (MilterServerContext *context,
-               guint code,
-               const gchar *extended_code,
-               const gchar *message,
-               gpointer user_data)
-{
-    ProcessData *data = user_data;
-
-    data->reply_code = code;
-    if (data->reply_extended_code)
-        g_free(data->reply_extended_code);
-    data->reply_extended_code = g_strdup(extended_code);
-    if (data->reply_message)
-        g_free(data->reply_message);
-    data->reply_message = g_strdup(message);
-
-    send_abort(context, data);
-    data->status = MILTER_STATUS_REJECT;
-}
-
-static void
 cb_temporary_failure (MilterServerContext *context, gpointer user_data)
 {
     ProcessData *data = user_data;
@@ -297,6 +276,26 @@ cb_reject (MilterServerContext *context, gpointer user_data)
         data->status = MILTER_STATUS_REJECT;
         break;
     }
+}
+
+static void
+cb_reply_code (MilterServerContext *context,
+               guint code,
+               const gchar *extended_code,
+               const gchar *message,
+               gpointer user_data)
+{
+    ProcessData *data = user_data;
+
+    data->reply_code = code;
+    if (data->reply_extended_code)
+        g_free(data->reply_extended_code);
+    data->reply_extended_code = g_strdup(extended_code);
+    if (data->reply_message)
+        g_free(data->reply_message);
+    data->reply_message = g_strdup(message);
+
+    cb_reject(context, user_data);
 }
 
 static void
