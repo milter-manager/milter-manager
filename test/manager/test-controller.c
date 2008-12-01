@@ -33,7 +33,7 @@
 void test_set_configuration (void);
 void test_reload (void);
 
-static MilterManagerConfiguration *config;
+static MilterManager *manager;
 static MilterManagerController *controller;
 
 static GError *expected_error;
@@ -94,11 +94,14 @@ setup_io (void)
 void
 setup (void)
 {
+    MilterManagerConfiguration *config;
     const gchar *config_dir;
     MilterEncoder *encoder;
 
-    config = milter_manager_configuration_new(NULL);
-    controller = milter_manager_controller_new(config);
+    manager = milter_manager_new();
+    config = milter_manager_get_configuration(manager);
+    milter_manager_configuration_clear_load_paths(config);
+    controller = milter_manager_controller_new(manager);
 
     setup_io();
 
@@ -132,8 +135,8 @@ setup (void)
 void
 teardown (void)
 {
-    if (config)
-        g_object_unref(config);
+    if (manager)
+        g_object_unref(manager);
     if (controller)
         g_object_unref(controller);
 
@@ -214,9 +217,11 @@ test_set_configuration (void)
 void
 test_reload (void)
 {
+    MilterManagerConfiguration *config;
     GString *output;
     GError *error = NULL;
 
+    config = milter_manager_get_configuration(manager);
     cut_assert_false(milter_manager_configuration_is_privilege_mode(config));
     g_file_set_contents(custom_config_path,
                         "security.privilege_mode = true", -1,

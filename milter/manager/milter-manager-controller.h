@@ -24,7 +24,7 @@
 
 #include <milter/client.h>
 #include <milter/server.h>
-#include <milter/manager/milter-manager-configuration.h>
+#include <milter/manager/milter-manager.h>
 
 G_BEGIN_DECLS
 
@@ -51,7 +51,7 @@ struct _MilterManagerControllerClass
 GType                 milter_manager_controller_get_type    (void) G_GNUC_CONST;
 
 MilterManagerController *milter_manager_controller_new
-                                          (MilterManagerConfiguration *configuration);
+                                          (MilterManager *manager);
 
 G_END_DECLS
 

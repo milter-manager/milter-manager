@@ -1,5 +1,10 @@
 2008-12-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-controller.[ch],
+	milter/manager/milter-manager-main.c,
+	test/manager/test-controller.c: MilterManagerController has
+	MilterManager not MilterManagerConfiguration.
+
 	* milter/manager/milter-manager-configuration.[ch]
 	(milter_manager_configuration_clear_load_paths): add.
 
