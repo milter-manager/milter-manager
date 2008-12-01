@@ -1220,7 +1220,6 @@ static void
 cb_decoder_continue (MilterReplyDecoder *decoder, gpointer user_data)
 {
     MilterServerContext *context = user_data;
-    MilterServerContextState state;
     MilterServerContextPrivate *priv;
     gchar *state_string;
 
@@ -1228,15 +1227,13 @@ cb_decoder_continue (MilterReplyDecoder *decoder, gpointer user_data)
 
     disable_timeout(priv);
 
-    state = MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->state;
-
     state_string = milter_utils_inspect_enum(MILTER_TYPE_SERVER_CONTEXT_STATE,
-                                             state);
+                                             priv->state);
     milter_info("%s received CONTINUE on %s state",
                 milter_server_context_get_name(context), state_string);
     g_free(state_string);
 
-    switch (state) {
+    switch (priv->state) {
       case MILTER_SERVER_CONTEXT_STATE_BODY:
       case MILTER_SERVER_CONTEXT_STATE_CONNECT:
       case MILTER_SERVER_CONTEXT_STATE_HELO:
@@ -1249,11 +1246,11 @@ cb_decoder_continue (MilterReplyDecoder *decoder, gpointer user_data)
         g_signal_emit_by_name(context, "continue");
         break;
       default:
-        invalid_state(context, state);
+        invalid_state(context, priv->state);
         break;
     }
 
-    switch (state) {
+    switch (priv->state) {
       case MILTER_SERVER_CONTEXT_STATE_BODY:
         decrement_process_body_count(context);
         break;
@@ -1280,7 +1277,7 @@ cb_decoder_reply_code (MilterReplyDecoder *decoder,
     milter_info("received REPLY_CODE: "
                 "<%d %s %s>", code, extended_code, message);
 
-    state = MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->state;
+    state = priv->state;
 
     switch (state) {
       case MILTER_SERVER_CONTEXT_STATE_CONNECT: /* more? */
@@ -1304,7 +1301,6 @@ static void
 cb_decoder_temporary_failure (MilterReplyDecoder *decoder, gpointer user_data)
 {
     MilterServerContext *context = user_data;
-    MilterServerContextState state;
     MilterServerContextPrivate *priv;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
@@ -1313,15 +1309,9 @@ cb_decoder_temporary_failure (MilterReplyDecoder *decoder, gpointer user_data)
 
     milter_info("received TEMPORARY_FAILURE");
 
-    state = MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->state;
+    g_signal_emit_by_name(context, "temporary-failure");
 
-    switch (state) {
-      default:
-        g_signal_emit_by_name(context, "temporary-failure");
-        break;
-    }
-
-    switch (state) {
+    switch (priv->state) {
       case MILTER_SERVER_CONTEXT_STATE_BODY:
         clear_process_body_count(context);
         break;
@@ -1334,7 +1324,6 @@ static void
 cb_decoder_reject (MilterReplyDecoder *decoder, gpointer user_data)
 {
     MilterServerContext *context = user_data;
-    MilterServerContextState state;
     MilterServerContextPrivate *priv;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
@@ -1343,11 +1332,9 @@ cb_decoder_reject (MilterReplyDecoder *decoder, gpointer user_data)
 
     milter_info("received REJECT");
 
-    state = MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->state;
-
     g_signal_emit_by_name(context, "reject");
 
-    switch (state) {
+    switch (priv->state) {
       case MILTER_SERVER_CONTEXT_STATE_BODY:
         clear_process_body_count(context);
         break;
@@ -1368,7 +1355,7 @@ cb_decoder_accept (MilterReplyDecoder *decoder, gpointer user_data)
 
     disable_timeout(priv);
 
-    state = MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->state;
+    state = priv->state;
     state_string = milter_utils_inspect_enum(MILTER_TYPE_SERVER_CONTEXT_STATE,
                                              state);
     milter_info("%s received ACCEPT on %s state",
@@ -1390,20 +1377,17 @@ static void
 cb_decoder_discard (MilterReplyDecoder *decoder, gpointer user_data)
 {
     MilterServerContext *context = user_data;
-    MilterServerContextState state;
     MilterServerContextPrivate *priv;
 
-    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(user_data);
 
     disable_timeout(priv);
 
     milter_info("received DISCARD");
 
-    state = MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->state;
-
     g_signal_emit_by_name(context, "discard");
 
-    switch (state) {
+    switch (priv->state) {
       case MILTER_SERVER_CONTEXT_STATE_BODY:
         clear_process_body_count(context);
         break;
@@ -1418,22 +1402,19 @@ cb_decoder_add_header (MilterReplyDecoder *decoder,
                        gpointer user_data)
 {
     MilterServerContext *context = user_data;
-    MilterServerContextState state;
     MilterServerContextPrivate *priv;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
 
     disable_timeout(priv);
 
-    state = MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->state;
-
     milter_info("received ADD_HEADER: "
                 "<%s>=<%s>", name, value);
 
-    if (state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
+    if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
         g_signal_emit_by_name(context, "add-header", name, value);
     else
-        invalid_state(context, state);
+        invalid_state(context, priv->state);
 }
 
 static void
@@ -1444,7 +1425,6 @@ cb_decoder_insert_header (MilterReplyDecoder *decoder,
                           gpointer user_data)
 {
     MilterServerContext *context = user_data;
-    MilterServerContextState state;
     MilterServerContextPrivate *priv;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
@@ -1454,12 +1434,10 @@ cb_decoder_insert_header (MilterReplyDecoder *decoder,
     milter_info("received INSERT_HEADER: "
                 "[%u] <%s>=<%s>", index, name, value);
 
-    state = MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->state;
-
-    if (state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
+    if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
         g_signal_emit_by_name(context, "insert-header", index, name, value);
     else
-        invalid_state(context, state);
+        invalid_state(context, priv->state);
 }
 
 static void
@@ -1470,7 +1448,6 @@ cb_decoder_change_header (MilterReplyDecoder *decoder,
                           gpointer user_data)
 {
     MilterServerContext *context = user_data;
-    MilterServerContextState state;
     MilterServerContextPrivate *priv;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
@@ -1480,12 +1457,10 @@ cb_decoder_change_header (MilterReplyDecoder *decoder,
     milter_info("received CHANGE_HEADER: "
                 "<%s>[%u]=<%s>", name, index, value);
 
-    state = MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->state;
-
-    if (state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
+    if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
         g_signal_emit_by_name(context, "change-header", name, index, value);
     else
-        invalid_state(context, state);
+        invalid_state(context, priv->state);
 }
 
 static void
@@ -1495,7 +1470,6 @@ cb_decoder_delete_header (MilterReplyDecoder *decoder,
                           gpointer user_data)
 {
     MilterServerContext *context = user_data;
-    MilterServerContextState state;
     MilterServerContextPrivate *priv;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
@@ -1505,12 +1479,10 @@ cb_decoder_delete_header (MilterReplyDecoder *decoder,
     milter_info("received DELETE_HEADER: "
                 "<%s>[%u]", name, index);
 
-    state = MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->state;
-
-    if (state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
+    if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
         g_signal_emit_by_name(context, "delete-header", name, index);
     else
-        invalid_state(context, state);
+        invalid_state(context, priv->state);
 }
 
 static void
@@ -1520,7 +1492,6 @@ cb_decoder_change_from (MilterReplyDecoder *decoder,
                         gpointer user_data)
 {
     MilterServerContext *context = user_data;
-    MilterServerContextState state;
     MilterServerContextPrivate *priv;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
@@ -1530,12 +1501,10 @@ cb_decoder_change_from (MilterReplyDecoder *decoder,
     milter_info("received CHANGE_FROM: "
                 "<%s>=<%s>", from, parameters);
 
-    state = MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->state;
-
-    if (state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
+    if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
         g_signal_emit_by_name(context, "change-from", from, parameters);
     else
-        invalid_state(context, state);
+        invalid_state(context, priv->state);
 }
 
 static void
@@ -1545,7 +1514,6 @@ cb_decoder_add_recipient (MilterReplyDecoder *decoder,
                           gpointer user_data)
 {
     MilterServerContext *context = user_data;
-    MilterServerContextState state;
     MilterServerContextPrivate *priv;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
@@ -1555,12 +1523,10 @@ cb_decoder_add_recipient (MilterReplyDecoder *decoder,
     milter_info("received ADD_RECIPIENT: "
                 "<%s>=<%s>", recipient, parameters);
 
-    state = MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->state;
-
-    if (state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
+    if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
         g_signal_emit_by_name(context, "add-recipient", recipient, parameters);
     else
-        invalid_state(context, state);
+        invalid_state(context, priv->state);
 }
 
 static void
@@ -1568,17 +1534,16 @@ cb_decoder_delete_recipient (MilterReplyDecoder *decoder,
                              const gchar *recipient,
                              gpointer user_data)
 {
-    MilterServerContext *context = user_data;
     MilterServerContextPrivate *priv;
 
-    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(user_data);
 
     disable_timeout(priv);
 
     milter_info("received DELETE_RECIPIENT: "
                 "<%s>", recipient);
 
-    g_signal_emit_by_name(context, "delete-recipient",recipient);
+    g_signal_emit_by_name(user_data, "delete-recipient",recipient);
 }
 
 static void
@@ -1588,7 +1553,6 @@ cb_decoder_replace_body (MilterReplyDecoder *decoder,
                          gpointer user_data)
 {
     MilterServerContext *context = user_data;
-    MilterServerContextState state;
     MilterServerContextPrivate *priv;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
@@ -1597,27 +1561,25 @@ cb_decoder_replace_body (MilterReplyDecoder *decoder,
 
     milter_info("received REPLACE_BODY: "
                 "body_size = %" G_GSIZE_FORMAT, body_size);
-    state = MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->state;
 
-    if (state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
+    if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
         g_signal_emit_by_name(context, "replace-body", body, body_size);
     else
-        invalid_state(context, state);
+        invalid_state(context, priv->state);
 }
 
 static void
 cb_decoder_progress (MilterReplyDecoder *decoder, gpointer user_data)
 {
-    MilterServerContext *context = user_data;
     MilterServerContextPrivate *priv;
 
-    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(user_data);
 
     disable_timeout(priv);
 
     milter_info("received PROGRESS");
 
-    g_signal_emit_by_name(context, "progress");
+    g_signal_emit_by_name(user_data, "progress");
 }
 
 static void
@@ -1625,53 +1587,49 @@ cb_decoder_quarantine (MilterReplyDecoder *decoder,
                        const gchar *reason,
                        gpointer user_data)
 {
-    MilterServerContext *context = user_data;
     MilterServerContextPrivate *priv;
 
-    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(user_data);
 
     disable_timeout(priv);
 
     milter_info("received QUARANTINE: <%s>", reason);
 
-    g_signal_emit_by_name(context, "quarantine", reason);
+    g_signal_emit_by_name(user_data, "quarantine", reason);
 }
 
 static void
 cb_decoder_connection_failure (MilterReplyDecoder *decoder, gpointer user_data)
 {
-    MilterServerContext *context = user_data;
     MilterServerContextPrivate *priv;
 
-    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(user_data);
 
     disable_timeout(priv);
 
     milter_info("received CONNECTION_FAILURE");
 
-    g_signal_emit_by_name(context, "connection-failure");
+    g_signal_emit_by_name(user_data, "connection-failure");
 }
 
 static void
 cb_decoder_shutdown (MilterReplyDecoder *decoder, gpointer user_data)
 {
-    MilterServerContext *context = user_data;
     MilterServerContextPrivate *priv;
 
-    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(user_data);
 
     disable_timeout(priv);
 
     milter_info("received SHUTDOWN");
 
-    g_signal_emit_by_name(context, "shutdown");
+    g_signal_emit_by_name(user_data, "shutdown");
 }
 
 static void
 cb_decoder_skip (MilterReplyDecoder *decoder, gpointer user_data)
 {
     MilterServerContext *context = user_data;
-    MilterServerContextState state;
     MilterServerContextPrivate *priv;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
@@ -1680,14 +1638,12 @@ cb_decoder_skip (MilterReplyDecoder *decoder, gpointer user_data)
 
     milter_info("received SKIP");
 
-    state = MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->state;
-
-    if (state == MILTER_SERVER_CONTEXT_STATE_BODY) {
+    if (priv->state == MILTER_SERVER_CONTEXT_STATE_BODY) {
         g_signal_emit_by_name(context, "skip");
         clear_process_body_count(context);
         priv->skip_body = TRUE;
     } else {
-        invalid_state(context, state);
+        invalid_state(context, priv->state);
     }
 }
 

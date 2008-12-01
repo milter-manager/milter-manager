@@ -41,6 +41,8 @@
 	"temporary-failure".
 	* milter/manager/milter-manager-children.c: Cleanup. Remove needless
 	value.
+	* milter/server/milter-server-context.c: Cleanup, remove needless
+	value.
 
 2008-11-28  Kouhei Sutou  <kou@cozmixng.org>
 
