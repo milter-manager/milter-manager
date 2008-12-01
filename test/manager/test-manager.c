@@ -33,6 +33,7 @@
 #include "milter-manager-test-scenario.h"
 
 void test_run (void);
+void test_version (void);
 
 void data_scenario (void);
 void test_scenario (gconstpointer data);
@@ -280,6 +281,19 @@ start_server (void)
     setup_egg(server_data, "-s", spec, NULL);
 
     gcut_egg_hatch(server_egg, &error);
+}
+
+void
+test_version (void)
+{
+    setup_egg(manager_data, "--version", NULL);
+    gcut_egg_hatch(manager_egg, &error);
+    gcut_assert_error(error);
+
+    wait_for_manager_reaping();
+
+    cut_assert_equal_string("milter-manager 0.0.1\n",
+                            manager_data->output_string->str);
 }
 
 void
