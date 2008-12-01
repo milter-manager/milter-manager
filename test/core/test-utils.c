@@ -17,12 +17,11 @@
  *
  */
 
-#include <gcutter.h>
-
-#define shutdown inet_shutdown
+#include <milter/core/milter-logger.h>
 #include <milter/core/milter-utils.h>
 #include <milter/core/milter-enum-types.h>
-#undef shutdown
+
+#include <gcutter.h>
 
 void data_inspect_io_condition_error (void);
 void test_inspect_io_condition_error (gconstpointer data);
@@ -33,6 +32,8 @@ void data_command_to_macro_stage (void);
 void test_command_to_macro_stage (gconstpointer data);
 void data_macro_stage_to_command (void);
 void test_macro_stage_to_command (gconstpointer data);
+void data_flags_from_string (void);
+void test_flags_from_string (gconstpointer _data);
 
 static GIOCondition io_condition;
 static const gchar *expected_inspected_io_condition;
@@ -292,6 +293,41 @@ test_macro_stage_to_command (gconstpointer data)
     gcut_assert_equal_enum(MILTER_TYPE_COMMAND,
                            test_data->command,
                            command);
+}
+
+void
+data_flags_from_string (void)
+{
+#define ADD(label, input, expected)                                     \
+    gcut_add_datum(label,                                               \
+                   "/input", G_TYPE_STRING, input,                      \
+                   "/type", G_TYPE_GTYPE, MILTER_TYPE_LOG_LEVEL_FLAGS,  \
+                   "/expected", MILTER_TYPE_LOG_LEVEL_FLAGS, expected,  \
+                   NULL)
+
+    ADD("one", "error", MILTER_LOG_LEVEL_ERROR);
+    ADD("none", "", 0);
+    ADD("multi", "error|info", MILTER_LOG_LEVEL_ERROR | MILTER_LOG_LEVEL_INFO);
+    ADD("multi", "all", MILTER_LOG_LEVEL_ALL);
+    ADD("multi", "error|all|info", MILTER_LOG_LEVEL_ALL);
+
+#undef ADD
+}
+
+void
+test_flags_from_string (gconstpointer _data)
+{
+    const GCutData *data = _data;
+    const gchar *input;
+    guint flags;
+    GType type;
+
+    input = gcut_data_get_string(data, "/input");
+    type = gcut_data_get_gtype(data, "/type");
+    flags = milter_utils_flags_from_string(type, input);
+    gcut_assert_equal_flags(type,
+                            gcut_data_get_flags(data, "/expected"),
+                            flags);
 }
 
 /*

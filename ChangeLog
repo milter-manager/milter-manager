@@ -1,3 +1,8 @@
+2008-12-01  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/core/milter-utils.[ch], test/core/test-utils.c: add
+	milter_utils_flags_from_string().
+
 2008-12-01  Hiroyuki Ikezoe  <poincare@ikezoe.net>
 
 	* test/manager/test-manager.c: Add reject on evenelope-recipient test.

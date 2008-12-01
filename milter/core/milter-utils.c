@@ -325,6 +325,37 @@ milter_utils_timeout_add (gdouble interval,
                          function, data);
 }
 
+guint
+milter_utils_flags_from_string (GType        flags_type,
+                                const gchar *flags_string)
+{
+    gchar **names, **name;
+    GFlagsClass *flags_class;
+    guint flags = 0;
+
+    if (!flags_string)
+        return 0;
+
+    names = g_strsplit(flags_string, "|", 0);
+    flags_class = g_type_class_ref(flags_type);
+    for (name = names; *name; name++) {
+        if (g_str_equal(*name, "all")) {
+            flags |= flags_class->mask;
+            break;
+        } else {
+            GFlagsValue *value;
+
+            value = g_flags_get_value_by_nick(flags_class, *name);
+            if (value)
+                flags |= value->value;
+        }
+    }
+    g_type_class_unref(flags_class);
+    g_strfreev(names);
+
+    return flags;
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */
