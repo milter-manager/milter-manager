@@ -31,6 +31,8 @@
 	behaviour makes performance worse.
 	* milter/server/milter-server-context.c (cb_decoder_skip): Check
 	current state is body.
+	* milter/manager/milter-manager-children.c (cb_skip): state check is
+	done in MilterServerContext.
 
 2008-11-28  Kouhei Sutou  <kou@cozmixng.org>
 

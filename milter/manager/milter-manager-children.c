@@ -985,16 +985,6 @@ cb_skip (MilterServerContext *context, gpointer user_data)
 
     state = milter_server_context_get_state(context);
 
-    if (state != MILTER_SERVER_CONTEXT_STATE_BODY) {
-        MilterManagerChildrenPrivate *priv;
-
-        priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
-
-        milter_server_context_quit(context);
-        milter_error("SKIP reply is only allowed in body session");
-        return;
-    }
-
     compile_reply_status(children, state, MILTER_STATUS_SKIP);
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
