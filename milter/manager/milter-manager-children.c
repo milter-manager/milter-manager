@@ -1054,9 +1054,7 @@ cb_change_from (MilterServerContext *context,
                 const gchar *from, const gchar *parameters,
                 gpointer user_data)
 {
-    MilterManagerChildren *children = user_data;
-
-    g_signal_emit_by_name(children, "change-from", from, parameters);
+    g_signal_emit_by_name(user_data, "change-from", from, parameters);
 }
 
 static void
@@ -1064,9 +1062,7 @@ cb_add_recipient (MilterServerContext *context,
                   const gchar *recipient, const gchar *parameters,
                   gpointer user_data)
 {
-    MilterManagerChildren *children = user_data;
-
-    g_signal_emit_by_name(children, "add-recipient", recipient, parameters);
+    g_signal_emit_by_name(user_data, "add-recipient", recipient, parameters);
 }
 
 static void
@@ -1074,9 +1070,7 @@ cb_delete_recipient (MilterServerContext *context,
                      const gchar *recipient,
                      gpointer user_data)
 {
-    MilterManagerChildren *children = user_data;
-
-    g_signal_emit_by_name(children, "delete-recipient", recipient);
+    g_signal_emit_by_name(user_data, "delete-recipient", recipient);
 }
 
 static void
@@ -1098,7 +1092,6 @@ cb_replace_body (MilterServerContext *context,
 static void
 cb_progress (MilterServerContext *context, gpointer user_data)
 {
-    MilterManagerChildren *children = user_data;
     MilterServerContextState state;
 
     state = milter_server_context_get_state(context);
@@ -1108,7 +1101,7 @@ cb_progress (MilterServerContext *context, gpointer user_data)
         return;
     }
 
-    g_signal_emit_by_name(children, "progress");
+    g_signal_emit_by_name(user_data, "progress");
 }
 
 static void
@@ -1137,17 +1130,13 @@ cb_quarantine (MilterServerContext *context,
 static void
 cb_connection_failure (MilterServerContext *context, gpointer user_data)
 {
-    MilterManagerChildren *children = user_data;
-
-    g_signal_emit_by_name(children, "connection-failure");
+    g_signal_emit_by_name(user_data, "connection-failure");
 }
 
 static void
 cb_shutdown (MilterServerContext *context, gpointer user_data)
 {
-    MilterManagerChildren *children = user_data;
-
-    g_signal_emit_by_name(children, "shutdown");
+    g_signal_emit_by_name(user_data, "shutdown");
 }
 
 static void
