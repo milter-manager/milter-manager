@@ -21,9 +21,10 @@
 #  include "../../config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include <milter/core/milter-marshalers.h>
+
 #include "milter-manager-control-reply-decoder.h"
 #include "milter-manager-enum-types.h"
-#include "milter-manager-marshalers.h"
 
 enum
 {
@@ -96,10 +97,10 @@ milter_manager_control_reply_decoder_class_init (MilterManagerControlReplyDecode
                                      configuration),
                      NULL, NULL,
  #if GLIB_SIZEOF_SIZE_T == 8
-                     _milter_manager_marshal_VOID__STRING_UINT64,
+                     _milter_marshal_VOID__STRING_UINT64,
                      G_TYPE_NONE, 2, G_TYPE_STRING, G_TYPE_UINT64
 #else
-                     _milter_manager_marshal_VOID__STRING_UINT,
+                     _milter_marshal_VOID__STRING_UINT,
                      G_TYPE_NONE, 2, G_TYPE_STRING, G_TYPE_UINT
 #endif
             );

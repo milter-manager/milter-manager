@@ -1,5 +1,9 @@
 2008-12-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: remove an entry: merge marshal.list.
+
+	* milter/manager/: use milter/core/milter-marshalers.h.
+
 	* TODO: remove an entry: improve log format.
 
 	* milter/core/milter-logger.[ch]: support colorized logging.

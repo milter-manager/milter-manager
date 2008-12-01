@@ -23,7 +23,6 @@
 
 #include "milter-manager-egg.h"
 #include "milter-manager-enum-types.h"
-#include "milter-manager-marshalers.h"
 
 #define MILTER_MANAGER_EGG_GET_PRIVATE(obj)                     \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                         \

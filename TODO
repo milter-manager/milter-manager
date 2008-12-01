@@ -1,4 +1,3 @@
 * write unit test for libmilter.
 * add --disable-milter-manager configure option.
 * add --disable-ruby configure option.
-* merge marshal.list.
