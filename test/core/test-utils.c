@@ -34,6 +34,8 @@ void data_macro_stage_to_command (void);
 void test_macro_stage_to_command (gconstpointer data);
 void data_flags_from_string (void);
 void test_flags_from_string (gconstpointer _data);
+void data_enum_from_string (void);
+void test_enum_from_string (gconstpointer _data);
 
 static GIOCondition io_condition;
 static const gchar *expected_inspected_io_condition;
@@ -308,8 +310,8 @@ data_flags_from_string (void)
     ADD("one", "error", MILTER_LOG_LEVEL_ERROR);
     ADD("none", "", 0);
     ADD("multi", "error|info", MILTER_LOG_LEVEL_ERROR | MILTER_LOG_LEVEL_INFO);
-    ADD("multi", "all", MILTER_LOG_LEVEL_ALL);
-    ADD("multi", "error|all|info", MILTER_LOG_LEVEL_ALL);
+    ADD("all", "all", MILTER_LOG_LEVEL_ALL);
+    ADD("multi - all", "error|all|info", MILTER_LOG_LEVEL_ALL);
 
 #undef ADD
 }
@@ -319,15 +321,44 @@ test_flags_from_string (gconstpointer _data)
 {
     const GCutData *data = _data;
     const gchar *input;
-    guint flags;
     GType type;
 
     input = gcut_data_get_string(data, "/input");
     type = gcut_data_get_gtype(data, "/type");
-    flags = milter_utils_flags_from_string(type, input);
     gcut_assert_equal_flags(type,
                             gcut_data_get_flags(data, "/expected"),
-                            flags);
+                            milter_utils_flags_from_string(type, input));
+}
+
+void
+data_enum_from_string (void)
+{
+#define ADD(label, input, expected)                                     \
+    gcut_add_datum(label,                                               \
+                   "/input", G_TYPE_STRING, input,                      \
+                   "/type", G_TYPE_GTYPE, MILTER_TYPE_LOG_COLORIZE,     \
+                   "/expected", MILTER_TYPE_LOG_COLORIZE, expected,     \
+                   NULL)
+
+    ADD("one", "console", MILTER_LOG_COLORIZE_CONSOLE);
+    ADD("none", "", 0);
+    ADD("invalid", "unknown", 0);
+
+#undef ADD
+}
+
+void
+test_enum_from_string (gconstpointer _data)
+{
+    const GCutData *data = _data;
+    const gchar *input;
+    GType type;
+
+    input = gcut_data_get_string(data, "/input");
+    type = gcut_data_get_gtype(data, "/type");
+    gcut_assert_equal_enum(type,
+                           gcut_data_get_enum(data, "/expected"),
+                           milter_utils_enum_from_string(type, input));
 }
 
 /*

@@ -1,5 +1,8 @@
 2008-12-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-utils.[ch], test/core/test-utils.c: add
+	milter_utils_enum_from_string().
+
 	* milter/core/milter-logger.[ch]: make logged tag customizable.
 
 	* milter/core/milter-logger.c

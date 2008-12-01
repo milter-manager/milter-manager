@@ -356,6 +356,26 @@ milter_utils_flags_from_string (GType        flags_type,
     return flags;
 }
 
+gint
+milter_utils_enum_from_string (GType        enum_type,
+                               const gchar *enum_string)
+{
+    GEnumClass *enum_class;
+    GEnumValue *enum_value;
+    gint value = 0;
+
+    if (!enum_string)
+        return 0;
+
+    enum_class = g_type_class_ref(enum_type);
+    enum_value = g_enum_get_value_by_nick(enum_class, enum_string);
+    if (enum_value)
+        value = enum_value->value;
+    g_type_class_unref(enum_class);
+
+    return value;
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */

@@ -105,6 +105,9 @@ guint            milter_utils_timeout_add    (gdouble interval,
 guint            milter_utils_flags_from_string
                                              (GType        flags_type,
                                               const gchar *flags_string);
+gint             milter_utils_enum_from_string
+                                             (GType        enum_type,
+                                              const gchar *enum_string);
 
 G_END_DECLS
 
