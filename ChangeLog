@@ -1,5 +1,9 @@
 2008-12-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: remove an entry: improve log format.
+
+	* milter/core/milter-logger.[ch]: support colorized logging.
+
 	* milter/core/milter-utils.[ch], test/core/test-utils.c: add
 	milter_utils_enum_from_string().
 

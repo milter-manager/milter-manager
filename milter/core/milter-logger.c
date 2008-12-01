@@ -23,6 +23,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include <glib.h>
 
@@ -82,6 +83,98 @@ milter_log_level_flags_from_string (const gchar *level_name)
 {
     return milter_utils_flags_from_string(MILTER_TYPE_LOG_LEVEL_FLAGS,
                                           level_name);
+}
+
+#define BLACK_COLOR "\033[01;30m"
+#define RED_COLOR "\033[01;31m"
+#define RED_BACK_COLOR "\033[41m"
+#define GREEN_COLOR "\033[01;32m"
+#define GREEN_BACK_COLOR "\033[01;42m"
+#define YELLOW_COLOR "\033[01;33m"
+#define YELLOW_BACK_COLOR "\033[01;43m"
+#define BLUE_COLOR "\033[01;34m"
+#define BLUE_BACK_COLOR "\033[01;44m"
+#define MAGENTA_COLOR "\033[01;35m"
+#define MAGENTA_BACK_COLOR "\033[01;45m"
+#define CYAN_COLOR "\033[01;36m"
+#define CYAN_BACK_COLOR "\033[01;46m"
+#define WHITE_COLOR "\033[01;37m"
+#define WHITE_BACK_COLOR "\033[01;47m"
+#define NORMAL_COLOR "\033[00m"
+
+static void
+log_message_colorize_console (GString *log,
+                              MilterLogLevelFlags level,
+                              const gchar *message)
+{
+    const gchar *color = NULL;
+
+    switch (level) {
+      case MILTER_LOG_LEVEL_ERROR:
+        color = WHITE_COLOR RED_BACK_COLOR;
+        break;
+      case MILTER_LOG_LEVEL_CRITICAL:
+        color = YELLOW_COLOR RED_BACK_COLOR;
+        break;
+      case MILTER_LOG_LEVEL_WARNING:
+        color = WHITE_COLOR YELLOW_BACK_COLOR;
+        break;
+      case MILTER_LOG_LEVEL_MESSAGE:
+        color = WHITE_COLOR GREEN_BACK_COLOR;
+        break;
+      case MILTER_LOG_LEVEL_INFO:
+        color = WHITE_COLOR CYAN_BACK_COLOR;
+        break;
+      case MILTER_LOG_LEVEL_DEBUG:
+        color = WHITE_COLOR BLUE_BACK_COLOR;
+        break;
+      case MILTER_LOG_LEVEL_STATISTICS:
+        color = BLUE_COLOR WHITE_BACK_COLOR;
+        break;
+      default:
+        color = NULL;
+        break;
+    }
+
+    if (color)
+        g_string_append_printf(log, "%s%s%s", color, message, NORMAL_COLOR);
+    else
+        g_string_append(log, message);
+}
+
+static void
+log_message (GString *log, MilterLogLevelFlags level, const gchar *message)
+{
+    const gchar *colorize_type;
+    MilterLogColorize colorize = MILTER_LOG_COLORIZE_DEFAULT;
+
+    colorize_type = g_getenv("MILTER_LOG_COLORIZE");
+    if (colorize_type)
+        colorize = milter_utils_enum_from_string(MILTER_TYPE_LOG_COLORIZE,
+                                                 colorize_type);
+
+    if (colorize == MILTER_LOG_COLORIZE_DEFAULT) {
+        const gchar *term;
+
+        term = g_getenv("TERM");
+        if (isatty(STDOUT_FILENO) &&
+            term && (g_str_has_suffix(term, "term") ||
+                     g_str_has_suffix(term, "term-color") ||
+                     g_str_equal(term, "screen"))) {
+            colorize = MILTER_LOG_COLORIZE_CONSOLE;
+        } else {
+            colorize = MILTER_LOG_COLORIZE_NONE;
+        }
+    }
+
+    switch (colorize) {
+      case MILTER_LOG_COLORIZE_CONSOLE:
+        log_message_colorize_console(log, level, message);
+        break;
+      default:
+        g_string_append(log, message);
+        break;
+    }
 }
 
 static void
@@ -147,7 +240,7 @@ cb_log (MilterLogger *logger, const gchar *domain,
             g_string_append(log, ": ");
     }
 
-    g_string_append(log, message);
+    log_message(log, level, message);
     g_string_append(log, "\n");
     g_print("%s", log->str);
     g_string_free(log, TRUE);

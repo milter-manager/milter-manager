@@ -91,6 +91,13 @@ typedef enum
                              MILTER_LOG_ITEM_LOCATION | \
                              MILTER_LOG_ITEM_TIME)
 
+typedef enum
+{
+    MILTER_LOG_COLORIZE_DEFAULT,
+    MILTER_LOG_COLORIZE_NONE,
+    MILTER_LOG_COLORIZE_CONSOLE
+} MilterLogColorize;
+
 typedef struct _MilterLogger         MilterLogger;
 typedef struct _MilterLoggerClass    MilterLoggerClass;
 
