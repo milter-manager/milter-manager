@@ -313,7 +313,6 @@ test_invalid_spec (void)
                             manager_data->output_string->str);
 }
 
-void
 #define has_key(scenario, group, key)                                     \
     milter_manager_test_scenario_has_key(scenario, group, key)
 
