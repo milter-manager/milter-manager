@@ -1,5 +1,7 @@
 2008-12-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/test/: unify utility modules.
+
 	* milter/manager/milter-manager-controller.[ch],
 	milter/manager/milter-manager-main.c,
 	test/manager/test-controller.c: MilterManagerController has

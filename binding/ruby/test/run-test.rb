@@ -17,9 +17,7 @@ $LOAD_PATH.unshift((top + "src" + "toolkit" + ".libs").to_s)
 $LOAD_PATH.unshift((top + "src" + "manager" + ".libs").to_s)
 $LOAD_PATH.unshift((top + "lib").to_s)
 
-$LOAD_PATH.unshift((base + "manager").to_s)
-$LOAD_PATH.unshift((base + "toolkit").to_s)
-require 'milter-manager-test-utils'
+$LOAD_PATH.unshift(base.to_s)
 require 'milter-test-utils'
 
 require 'milter/manager'

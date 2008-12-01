@@ -1,5 +1,5 @@
 class TestControlReplyEncoder < Test::Unit::TestCase
-  include MilterManagerEncoderTestUtils
+  include MilterEncoderTestUtils
 
   def setup
     @encoder = Milter::Manager::ControlReplyEncoder.new
