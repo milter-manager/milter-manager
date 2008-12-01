@@ -718,7 +718,9 @@ milter_server_context_negotiate (MilterServerContext *context,
         gchar *inspected_option;
 
         inspected_option = milter_utils_inspect_object(G_OBJECT(option));
-        milter_info("sending NEGOTIATE: %s", inspected_option);
+        milter_info("%s is sending NEGOTIATE: %s",
+                    milter_server_context_get_name(context),
+                    inspected_option);
         g_free(inspected_option);
     }
 
@@ -743,7 +745,9 @@ milter_server_context_helo (MilterServerContext *context,
     MilterEncoder *encoder;
     gboolean pass;
 
-    milter_info("sending HELO: <%s>", fqdn);
+    milter_info("%s is sending HELO: <%s>",
+                milter_server_context_get_name(context),
+                fqdn);
 
     g_signal_emit(context, signals[CHECK_HELO],0, fqdn, &pass);
     if (pass) {
@@ -859,7 +863,9 @@ milter_server_context_connect (MilterServerContext *context,
     MilterEncoder *encoder;
     gboolean pass = FALSE;
 
-    milter_info("sending CONNECT: host_name=<%s>", host_name);
+    milter_info("%s is sending CONNECT: host_name=<%s>",
+                milter_server_context_get_name(context),
+                host_name);
 
     g_signal_emit(context, signals[CHECK_CONNECT], 0,
                   host_name, address, address_length, &pass);
@@ -888,7 +894,9 @@ milter_server_context_envelope_from (MilterServerContext *context,
     MilterEncoder *encoder;
     gboolean pass;
 
-    milter_info("sending MAIL: <%s>", from);
+    milter_info("%s is sending MAIL: <%s>",
+                milter_server_context_get_name(context),
+                from);
 
     g_signal_emit(context, signals[CHECK_ENVELOPE_FROM], 0, from, &pass);
     if (pass) {
@@ -916,7 +924,9 @@ milter_server_context_envelope_recipient (MilterServerContext *context,
     MilterCommandEncoder *command_encoder;
     gboolean pass;
 
-    milter_info("sending RCPT: <%s>", recipient);
+    milter_info("%s is sending RCPT: <%s>",
+                milter_server_context_get_name(context),
+                recipient);
 
     g_signal_emit(context, signals[CHECK_ENVELOPE_RECIPIENT], 0,
                   recipient, &pass);
@@ -944,7 +954,8 @@ milter_server_context_data (MilterServerContext *context)
     gsize packet_size;
     MilterEncoder *encoder;
 
-    milter_info("sending DATA");
+    milter_info("%s is sending DATA",
+                milter_server_context_get_name(context));
 
     write_macro(context, MILTER_COMMAND_DATA);
 
@@ -964,7 +975,9 @@ milter_server_context_unknown (MilterServerContext *context,
     gsize packet_size;
     MilterEncoder *encoder;
 
-    milter_info("sending UNKNOWN: <%s>", command);
+    milter_info("%s is sending UNKNOWN: <%s>",
+                milter_server_context_get_name(context),
+                command);
 
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     milter_command_encoder_encode_unknown(MILTER_COMMAND_ENCODER(encoder),
@@ -984,7 +997,9 @@ milter_server_context_header (MilterServerContext *context,
     MilterEncoder *encoder;
     gboolean pass;
 
-    milter_info("sending HEADER: <%s>=<%s>", name, value);
+    milter_info("%s is sending HEADER: <%s>=<%s>",
+                milter_server_context_get_name(context),
+                name, value);
 
     g_signal_emit(context, signals[CHECK_HEADER], 0, name, value, &pass);
     if (pass) {
@@ -1010,7 +1025,8 @@ milter_server_context_end_of_header (MilterServerContext *context)
     MilterEncoder *encoder;
     gboolean pass;
 
-    milter_info("sending END_OF_HEADER");
+    milter_info("%s is sending END_OF_HEADER",
+                milter_server_context_get_name(context));
 
     g_signal_emit(context, signals[CHECK_END_OF_HEADER], 0, &pass);
     if (pass) {
@@ -1039,7 +1055,9 @@ milter_server_context_body (MilterServerContext *context,
     MilterCommandEncoder *command_encoder;
     gboolean pass;
 
-    milter_info("sending BODY: body_size=%" G_GSIZE_FORMAT, size);
+    milter_info("%s is sending BODY: body_size=%" G_GSIZE_FORMAT,
+                milter_server_context_get_name(context),
+                size);
 
     g_signal_emit(context, signals[CHECK_BODY], 0, chunk, size, &pass);
     if (pass) {
@@ -1108,7 +1126,8 @@ milter_server_context_quit (MilterServerContext *context)
     gsize packet_size;
     MilterEncoder *encoder;
 
-    milter_info("sending QUIT");
+    milter_info("%s is sending QUIT",
+                milter_server_context_get_name(context));
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     milter_command_encoder_encode_quit(MILTER_COMMAND_ENCODER(encoder),
                                        &packet, &packet_size);
@@ -1125,7 +1144,8 @@ milter_server_context_abort (MilterServerContext *context)
     gsize packet_size;
     MilterEncoder *encoder;
 
-    milter_info("sending ABORT");
+    milter_info("%s is sending ABORT",
+                milter_server_context_get_name(context));
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     milter_command_encoder_encode_abort(MILTER_COMMAND_ENCODER(encoder),
                                         &packet, &packet_size);
