@@ -263,6 +263,7 @@ MilterManagerTestServer *
 milter_manager_test_server_new (void)
 {
     return  g_object_new(MILTER_TYPE_MANAGER_TEST_SERVER,
+                         "name", "MilterManagerTestServer",
                          NULL);
 }
 
