@@ -1,5 +1,7 @@
 2008-12-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-logger.[ch]: make logged tag customizable.
+
 	* milter/core/milter-logger.c
 	(milter_log_level_flags_from_string): use
 	milter_utils_flags_from_string().

@@ -92,15 +92,26 @@ cb_log (MilterLogger *logger, const gchar *domain,
 {
     const gchar *target_level_flags;
     MilterLogLevelFlags target_level;
+    const gchar *target_item_flags;
+    MilterLogItemFlags target_item = MILTER_LOG_ITEM_DEFAULT;
+    GString *log;
 
     target_level_flags = g_getenv("MILTER_LOG_LEVEL");
     target_level = milter_log_level_flags_from_string(target_level_flags);
-    if (level & target_level) {
-        GString *log;
-        GFlagsClass *flags_class;
-        gchar *time_string;
+    if (!(level & target_level))
+        return;
 
-        log = g_string_new(NULL);
+    log = g_string_new(NULL);
+
+    target_item_flags = g_getenv("MILTER_LOG_ITEM");
+    if (target_item_flags)
+        target_item = milter_utils_flags_from_string(MILTER_TYPE_LOG_ITEM_FLAGS,
+                                                     target_item_flags);
+    if (target_item == MILTER_LOG_ITEM_DEFAULT)
+        target_item = MILTER_LOG_ITEM_TIME;
+
+    if (target_item & MILTER_LOG_ITEM_LEVEL) {
+        GFlagsClass *flags_class;
 
         flags_class = g_type_class_ref(MILTER_TYPE_LOG_LEVEL_FLAGS);
         if (flags_class) {
@@ -114,20 +125,32 @@ cb_log (MilterLogger *logger, const gchar *domain,
             }
             g_type_class_unref(flags_class);
         }
-
-        if (domain)
-            g_string_append_printf(log, "[%s]", domain);
-        time_string = g_time_val_to_iso8601(time_value);
-        g_string_append_printf(log, " [%s]", time_string);
-        g_free(time_string);
-        g_string_append(log, " ");
-        if (file)
-            g_string_append_printf(log, "%s:%d: %s(): ", file, line, function);
-        g_string_append(log, message);
-        g_string_append(log, "\n");
-        g_print("%s", log->str);
-        g_string_free(log, TRUE);
     }
+
+    if (domain && (target_item & MILTER_LOG_ITEM_DOMAIN))
+        g_string_append_printf(log, "[%s]", domain);
+
+    if (target_item & MILTER_LOG_ITEM_TIME) {
+        gchar *time_string;
+
+        time_string = g_time_val_to_iso8601(time_value);
+        g_string_append_printf(log, "[%s]", time_string);
+        g_free(time_string);
+    }
+
+    if (file && (target_item & MILTER_LOG_ITEM_LOCATION)) {
+        if (log->len > 0)
+            g_string_append(log, " ");
+        g_string_append_printf(log, "%s:%d: %s(): ", file, line, function);
+    } else {
+        if (log->len > 0)
+            g_string_append(log, ": ");
+    }
+
+    g_string_append(log, message);
+    g_string_append(log, "\n");
+    g_print("%s", log->str);
+    g_string_free(log, TRUE);
 }
 
 MilterLogger *

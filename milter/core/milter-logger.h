@@ -66,7 +66,7 @@ typedef enum
     MILTER_LOG_LEVEL_MESSAGE    = 1 << 3,
     MILTER_LOG_LEVEL_INFO       = 1 << 4,
     MILTER_LOG_LEVEL_DEBUG      = 1 << 5,
-    MILTER_LOG_LEVEL_STATISTICS = 1 << 6 
+    MILTER_LOG_LEVEL_STATISTICS = 1 << 6
 } MilterLogLevelFlags;
 
 #define MILTER_LOG_LEVEL_ALL (MILTER_LOG_LEVEL_ERROR |          \
@@ -76,6 +76,20 @@ typedef enum
                               MILTER_LOG_LEVEL_INFO |           \
                               MILTER_LOG_LEVEL_DEBUG |          \
                               MILTER_LOG_LEVEL_STATISTICS)
+
+typedef enum
+{
+    MILTER_LOG_ITEM_DEFAULT     = 0,
+    MILTER_LOG_ITEM_DOMAIN      = 1 << 0,
+    MILTER_LOG_ITEM_LEVEL       = 1 << 1,
+    MILTER_LOG_ITEM_LOCATION    = 1 << 2,
+    MILTER_LOG_ITEM_TIME        = 1 << 3
+} MilterLogItemFlags;
+
+#define MILTER_LOG_ITEM_ALL (MILTER_LOG_ITEM_DOMAIN |   \
+                             MILTER_LOG_ITEM_LEVEL |    \
+                             MILTER_LOG_ITEM_LOCATION | \
+                             MILTER_LOG_ITEM_TIME)
 
 typedef struct _MilterLogger         MilterLogger;
 typedef struct _MilterLoggerClass    MilterLoggerClass;
