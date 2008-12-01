@@ -50,6 +50,7 @@ void test_quarantine (void);
 void test_connection_failure (void);
 void test_shutdown (void);
 void test_skip (void);
+void test_skip_in_invalid_state (void);
 void test_reading_timeout (void);
 void test_writing_timeout (void);
 void test_invalid_state_error (void);
@@ -796,10 +797,30 @@ test_shutdown (void)
 void
 test_skip (void)
 {
+    milter_server_context_set_state(context,
+                                    MILTER_SERVER_CONTEXT_STATE_BODY);
+
     milter_reply_encoder_encode_skip(encoder, &packet, &packet_size);
     write_data(packet, packet_size);
     cut_assert_equal_int(1, n_skips);
     cut_assert_true(milter_server_context_get_skip_body(context));
+}
+
+void
+test_skip_in_invalid_state (void)
+{
+    expected_error = g_error_new(MILTER_SERVER_CONTEXT_ERROR,
+                                 MILTER_SERVER_CONTEXT_ERROR_INVALID_STATE,
+                                 "Invalid state: "
+                                 "#<MilterServerContextState: "
+                                 "start(MILTER_SERVER_CONTEXT_STATE_START:%d)>",
+                                 MILTER_SERVER_CONTEXT_STATE_START);
+    milter_reply_encoder_encode_skip(encoder, &packet, &packet_size);
+    write_data(packet, packet_size);
+    cut_assert_equal_int(0, n_skips);
+
+    cut_assert_false(milter_server_context_get_skip_body(context));
+    gcut_assert_equal_error(expected_error, actual_error);
 }
 
 static gboolean

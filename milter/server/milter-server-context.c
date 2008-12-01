@@ -1682,15 +1682,13 @@ cb_decoder_skip (MilterReplyDecoder *decoder, gpointer user_data)
 
     state = MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->state;
 
-    g_signal_emit_by_name(context, "skip");
-
-    switch (state) {
-      case MILTER_SERVER_CONTEXT_STATE_BODY:
+    if (state == MILTER_SERVER_CONTEXT_STATE_BODY) {
+        g_signal_emit_by_name(context, "skip");
         clear_process_body_count(context);
-      default:
-        break;
+        priv->skip_body = TRUE;
+    } else {
+        invalid_state(context, state);
     }
-    priv->skip_body = TRUE;
 }
 
 static MilterDecoder *

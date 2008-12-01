@@ -22,6 +22,8 @@
 	receive "skip" reply because milter-manager should receive all body
 	chunks for other children even if the first child returns "skip". This
 	behaviour makes performance worse.
+	* milter/server/milter-server-context.c (cb_decoder_skip): Check
+	current state is body.
 
 2008-11-28  Kouhei Sutou  <kou@cozmixng.org>
 
