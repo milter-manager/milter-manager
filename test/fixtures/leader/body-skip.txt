@@ -27,10 +27,10 @@ command=body
 chunk=Continue
 
 response=body
-n_received=1
+n_received=0
 status=continue
 
-chunks=Continue;;
+chunks=;;
 
 [end-of-message]
 command=end-of-message

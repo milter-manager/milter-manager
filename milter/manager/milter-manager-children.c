@@ -2196,7 +2196,7 @@ milter_manager_children_body (MilterManagerChildren *children,
                               const gchar           *chunk,
                               gsize                  size)
 {
-    MilterServerContext *context;
+    MilterServerContext *first_child;
     MilterManagerChildrenPrivate *priv;
 
     if (!milter_manager_children_check_alive(children))
@@ -2211,12 +2211,17 @@ milter_manager_children_body (MilterManagerChildren *children,
         return FALSE;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
-    context = get_first_command_waiting_child_queue(children, MILTER_COMMAND_BODY);
-    if (!context)
+    first_child = get_first_command_waiting_child_queue(children, MILTER_COMMAND_BODY);
+    if (!first_child)
         return TRUE;
 
+    if (milter_server_context_get_skip_body(first_child)) {
+        g_signal_emit_by_name(first_child, "continue");
+        return TRUE;
+    }
+
     priv->sent_body_count++;
-    return milter_server_context_body(context, chunk, size);
+    return milter_server_context_body(first_child, chunk, size);
 }
 
 static gboolean 

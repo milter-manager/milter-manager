@@ -3,6 +3,9 @@
 	* test/manager/test-manager.c: Add reject on evenelope-recipient test.
 	* milter/manager/milter-manager-leader.c (milter_manager_leader_body):
 	Increment sent_body_count just before milter_server_context_body().
+	* milter/manager/milter-manager-leader.c (milter_manager_leader_body):
+	If the first child had already returned "skip" reply, just send
+	"continue" to MTA without sending "body" command to the first child.
 
 2008-11-28  Kouhei Sutou  <kou@cozmixng.org>
 

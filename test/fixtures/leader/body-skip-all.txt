@@ -28,10 +28,10 @@ command=body
 chunk=Second skip message
 
 response=body
-n_received=1
+n_received=0
 status=continue
 
-chunks=Second skip message;;
+chunks=;;
 
 [end-of-message]
 command=end-of-message
