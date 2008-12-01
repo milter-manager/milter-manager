@@ -28,95 +28,159 @@
 #include <signal.h>
 #include <errno.h>
 
-#include "../manager.h"
+#include "milter-manager.h"
+#include "milter-manager-leader.h"
 
-static gboolean initialized = FALSE;
-static MilterClient *current_client = NULL;
-static gchar *option_spec = NULL;
+#define MILTER_MANAGER_GET_PRIVATE(obj)                 \
+    (G_TYPE_INSTANCE_GET_PRIVATE((obj),                 \
+                                 MILTER_TYPE_MANAGER,   \
+                                 MilterManagerPrivate))
 
-static gboolean
-print_version (const gchar *option_name, const gchar *value,
-               gpointer data, GError **error)
+typedef struct _MilterManagerPrivate MilterManagerPrivate;
+struct _MilterManagerPrivate
 {
-    g_print("%s %s\n", PACKAGE, VERSION);
-    exit(EXIT_SUCCESS);
-    return TRUE;
-}
-
-static gboolean
-parse_spec_arg (const gchar *option_name,
-                const gchar *value,
-                gpointer data,
-                GError **error)
-{
-    GError *spec_error = NULL;
-    gboolean success;
-
-    success = milter_connection_parse_spec(value, NULL, NULL, NULL, &spec_error);
-    if (success) {
-        option_spec = g_strdup(value);
-    } else {
-        g_set_error(error,
-                    G_OPTION_ERROR,
-                    G_OPTION_ERROR_BAD_VALUE,
-                    _("%s"), spec_error->message);
-        g_error_free(spec_error);
-    }
-
-    return success;
-}
-
-static const GOptionEntry option_entries[] =
-{
-    {"spec", 's', 0, G_OPTION_ARG_CALLBACK, parse_spec_arg,
-     N_("The address of the desired communication socket."), "PROTOCOL:ADDRESS"},
-    {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, print_version,
-     N_("Show version"), NULL},
-    {NULL}
+    MilterManagerConfiguration *configuration;
+    GList *leaders;
 };
 
-void
-milter_manager_init (int *argc, char ***argv)
+enum
 {
-    GOptionContext *option_context;
-    GOptionGroup *main_group;
-    GError *error = NULL;
+    PROP_0,
+    PROP_CONFIGURATION
+};
 
-    if (initialized)
-        return;
+G_DEFINE_TYPE(MilterManager, milter_manager, MILTER_TYPE_CLIENT)
 
-    initialized = TRUE;
+static void dispose        (GObject         *object);
+static void set_property   (GObject         *object,
+                            guint            prop_id,
+                            const GValue    *value,
+                            GParamSpec      *pspec);
+static void get_property   (GObject         *object,
+                            guint            prop_id,
+                            GValue          *value,
+                            GParamSpec      *pspec);
 
-    setlocale(LC_ALL, "");
-    bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR);
-    bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
-    textdomain(GETTEXT_PACKAGE);
+static void   connection_established      (MilterClient *client,
+                                           MilterClientContext *context);
+static gchar *get_default_connection_spec (MilterClient *client);
 
-    g_type_init();
-    if (!g_thread_supported())
-        g_thread_init(NULL);
+static void
+milter_manager_class_init (MilterManagerClass *klass)
+{
+    GObjectClass *gobject_class;
+    MilterClientClass *client_class;
+    GParamSpec *spec;
 
-    option_context = g_option_context_new(NULL);
-    g_option_context_add_main_entries(option_context, option_entries, NULL);
-    main_group = g_option_context_get_main_group(option_context);
+    gobject_class = G_OBJECT_CLASS(klass);
+    client_class = MILTER_CLIENT_CLASS(klass);
 
-    if (!g_option_context_parse(option_context, argc, argv, &error)) {
-        g_print("%s\n", error->message);
-        g_error_free(error);
-        g_option_context_free(option_context);
-        exit(EXIT_FAILURE);
-    }
+    gobject_class->dispose      = dispose;
+    gobject_class->set_property = set_property;
+    gobject_class->get_property = get_property;
 
-    _milter_manager_configuration_init();
+    client_class->connection_established      = connection_established;
+    client_class->get_default_connection_spec = get_default_connection_spec;
+
+    spec = g_param_spec_object("configuration",
+                               "Configuration",
+                               "The configuration of the milter controller",
+                               MILTER_TYPE_MANAGER_CONFIGURATION,
+                               G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_CONFIGURATION, spec);
+
+    g_type_class_add_private(gobject_class,
+                             sizeof(MilterManagerPrivate));
 }
 
-void
-milter_manager_quit (void)
+static void
+milter_manager_init (MilterManager *manager)
 {
-    if (!initialized)
-        return;
+    MilterManagerPrivate *priv;
+    const gchar *config_dir_env;
 
-    _milter_manager_configuration_quit();
+    priv = MILTER_MANAGER_GET_PRIVATE(manager);
+
+    priv->configuration = milter_manager_configuration_new(NULL);
+    config_dir_env = g_getenv("MILTER_MANAGER_CONFIG_DIR");
+    if (config_dir_env)
+        milter_manager_configuration_add_load_path(priv->configuration,
+                                                   config_dir_env);
+    milter_manager_configuration_add_load_path(priv->configuration, CONFIG_DIR);
+    milter_manager_configuration_reload(priv->configuration);
+
+    priv->leaders = NULL;
+}
+
+static void
+dispose (GObject *object)
+{
+    MilterManager *manager;
+    MilterManagerPrivate *priv;
+
+    manager = MILTER_MANAGER(object);
+    priv = MILTER_MANAGER_GET_PRIVATE(manager);
+
+    if (priv->configuration) {
+        g_object_unref(priv->configuration);
+        priv->configuration = NULL;
+    }
+
+    if (priv->leaders) {
+        g_list_foreach(priv->leaders, (GFunc)g_object_unref, NULL);
+        g_list_free(priv->leaders);
+        priv->leaders = NULL;
+    }
+
+    G_OBJECT_CLASS(milter_manager_parent_class)->dispose(object);
+}
+
+static void
+set_property (GObject      *object,
+              guint         prop_id,
+              const GValue *value,
+              GParamSpec   *pspec)
+{
+    MilterManagerPrivate *priv;
+
+    priv = MILTER_MANAGER_GET_PRIVATE(object);
+    switch (prop_id) {
+      case PROP_CONFIGURATION:
+        if (priv->configuration)
+            g_object_unref(priv->configuration);
+        priv->configuration = g_value_get_object(value);
+        if (priv->configuration)
+            g_object_ref(priv->configuration);
+        break;
+      default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+        break;
+    }
+}
+
+static void
+get_property (GObject    *object,
+              guint       prop_id,
+              GValue     *value,
+              GParamSpec *pspec)
+{
+    MilterManagerPrivate *priv;
+
+    priv = MILTER_MANAGER_GET_PRIVATE(object);
+    switch (prop_id) {
+      case PROP_CONFIGURATION:
+        g_value_set_object(value, priv->configuration);
+        break;
+      default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+        break;
+    }
+}
+
+MilterManager *
+milter_manager_new (void)
+{
+    return g_object_new(MILTER_TYPE_MANAGER, NULL);
 }
 
 static MilterStatus
@@ -312,210 +376,43 @@ setup_context_signals (MilterClientContext *context,
 }
 
 static void
-shutdown_client (int signum)
+connection_established (MilterClient *client, MilterClientContext *context)
 {
-    if (current_client)
-        milter_client_shutdown(current_client);
-}
+    MilterManagerPrivate *priv;
+    MilterManagerConfiguration *configuration;
 
-static void
-cb_connection_established (MilterClient *client, MilterClientContext *context,
-                           gpointer user_data)
-{
-    MilterManagerConfiguration *configuration = user_data;
+    priv = MILTER_MANAGER_GET_PRIVATE(client);
+    configuration = priv->configuration;
     setup_context_signals(context, configuration);
 }
 
-static void
-cb_error (MilterAgent *agent, GError *error, gpointer user_data)
+static gchar *
+get_default_connection_spec (MilterClient *client)
 {
-    g_print("MilterManager error: %s\n", error->message);
-}
-
-static gboolean
-cb_free_controller (gpointer data)
-{
-    MilterManagerController *controller = data;
-
-    g_object_unref(controller);
-    return FALSE;
-}
-
-static void
-cb_control_reader_finished (MilterReader *reader, gpointer data)
-{
-    MilterManagerController *controller = data;
-
-    g_idle_add(cb_free_controller, controller);
-}
-
-static void
-process_control_connection(MilterManagerConfiguration *configuration,
-                           GIOChannel *agent_channel)
-{
-    MilterManagerController *controller;
-    MilterWriter *writer;
-    MilterReader *reader;
-
-    controller = milter_manager_controller_new(configuration);
-
-    writer = milter_writer_io_channel_new(agent_channel);
-    milter_agent_set_writer(MILTER_AGENT(controller), writer);
-    g_object_unref(writer);
-
-    reader = milter_reader_io_channel_new(agent_channel);
-    milter_agent_set_reader(MILTER_AGENT(controller), reader);
-    g_object_unref(reader);
-
-    g_signal_connect(reader, "finished",
-                     G_CALLBACK(cb_control_reader_finished), controller);
-}
-
-static gboolean
-accept_control_connection (gint control_fd,
-                           MilterManagerConfiguration *configuration)
-{
-    gint agent_fd;
-    GIOChannel *agent_channel;
-
-    milter_info("start accepting...: %d", control_fd);
-    agent_fd = accept(control_fd, NULL, NULL);
-    if (agent_fd == -1) {
-        milter_error("failed to accept(): %s", g_strerror(errno));
-        return TRUE;
-    }
-
-    milter_info("accepted!: %d", agent_fd);
-    agent_channel = g_io_channel_unix_new(agent_fd);
-    g_io_channel_set_encoding(agent_channel, NULL, NULL);
-    g_io_channel_set_flags(agent_channel, G_IO_FLAG_NONBLOCK, NULL);
-    g_io_channel_set_close_on_unref(agent_channel, TRUE);
-    process_control_connection(configuration, agent_channel);
-    g_io_channel_unref(agent_channel);
-
-    return TRUE;
-}
-
-static gboolean
-control_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
-{
-    MilterManagerConfiguration *configuration = data;
-    gboolean keep_callback = TRUE;
-
-    if (condition & G_IO_IN ||
-        condition & G_IO_PRI) {
-        guint fd;
-
-        fd = g_io_channel_unix_get_fd(channel);
-        keep_callback = accept_control_connection(fd, configuration);
-    }
-
-    if (condition & G_IO_ERR ||
-        condition & G_IO_HUP ||
-        condition & G_IO_NVAL) {
-        gchar *message;
-
-        message = milter_utils_inspect_io_condition_error(condition);
-        milter_error("%s", message);
-        g_free(message);
-        keep_callback = FALSE;
-    }
-
-    return keep_callback;
-}
-
-
-static guint
-setup_control_connection (MilterManagerConfiguration *configuration)
-{
-    const gchar *spec;
-    GIOChannel *channel;
-    GError *error = NULL;
-    guint watch_id = 0;
-
-    spec = milter_manager_configuration_get_control_connection_spec(configuration);
-    if (!spec) {
-        milter_info("control connection spec is missing. "
-                    "control connection is disabled");
-        return 0;
-    }
-
-    channel = milter_connection_listen(spec, 5, &error);
-    if (!channel) {
-        milter_error("failed to listen control connection: <%s>:<%s>",
-                     spec, error->message);
-        g_error_free(error);
-        return 0;
-    }
-
-    watch_id = g_io_add_watch(channel,
-                              G_IO_IN | G_IO_PRI |
-                              G_IO_ERR | G_IO_HUP | G_IO_NVAL,
-                              control_watch_func, configuration);
-
-    return watch_id;
-}
-
-static const gchar *
-get_manager_connection_spec (MilterManagerConfiguration *configuration)
-{
-    const gchar *spec;
-
-    if (option_spec)
-        return option_spec;
-
-    spec = milter_manager_configuration_get_manager_connection_spec(configuration);
-    if (!spec)
-        spec = "inet:10025";
-
-    return spec;
-}
-
-void
-milter_manager_main (void)
-{
-    MilterClient *client;
+    MilterManager *manager;
+    MilterManagerPrivate *priv;
     MilterManagerConfiguration *configuration;
-    void (*sigint_handler) (int signum);
-    const gchar *config_dir_env;
-    guint control_connection_watch_id = 0;
     const gchar *spec;
-    GError *error = NULL;
 
-    configuration = milter_manager_configuration_new(NULL);
-    config_dir_env = g_getenv("MILTER_MANAGER_CONFIG_DIR");
-    if (config_dir_env)
-        milter_manager_configuration_add_load_path(configuration,
-                                                   config_dir_env);
-    milter_manager_configuration_add_load_path(configuration, CONFIG_DIR);
-    milter_manager_configuration_reload(configuration);
+    manager = MILTER_MANAGER(client);
+    priv = MILTER_MANAGER_GET_PRIVATE(manager);
+    configuration = priv->configuration;
+    spec =
+        milter_manager_configuration_get_manager_connection_spec(configuration);
+    if (spec) {
+        return g_strdup(spec);
+    } else {
+        MilterClientClass *klass;
 
-    /* FIXME */
-    control_connection_watch_id = setup_control_connection(configuration);
-
-    client = milter_client_new();
-    g_signal_connect(client, "error",
-                     G_CALLBACK(cb_error), NULL);
-
-    spec = get_manager_connection_spec(configuration);
-    if (!milter_client_set_connection_spec(client, spec, &error)) {
-        g_object_unref(client);
-        g_object_unref(configuration);
-        g_print("%s\n", error->message);
-        return;
+        klass = MILTER_CLIENT_CLASS(milter_manager_parent_class);
+        return klass->get_default_connection_spec(MILTER_CLIENT(manager));
     }
+}
 
-    g_signal_connect(client, "connection-established",
-                     G_CALLBACK(cb_connection_established), configuration);
-
-    current_client = client;
-    sigint_handler = signal(SIGINT, shutdown_client);
-    if (!milter_client_main(client))
-        g_print("Failed to start milter-manager process.\n");
-    signal(SIGINT, sigint_handler);
-
-    current_client = NULL;
-    g_object_unref(configuration);
+MilterManagerConfiguration *
+milter_manager_get_configuration (MilterManager *manager)
+{
+    return MILTER_MANAGER_GET_PRIVATE(manager)->configuration;
 }
 
 /*

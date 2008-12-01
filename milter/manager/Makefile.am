@@ -35,7 +35,8 @@ milter_manager_public_headers =				\
 	milter-manager-control-command-encoder.h	\
 	milter-manager-control-reply-encoder.h		\
 	milter-manager-control-protocol.h		\
-	milter-manager-controller.h
+	milter-manager-controller.h			\
+	milter-manager.h
 
 enum_source_prefix = milter-manager-enum-types
 enum_sources_h =			\
@@ -53,6 +54,7 @@ libmilter_manager_la_SOURCES =				\
 	milter-manager-enum-types.c			\
 	milter-manager-ruby-internal.h			\
 	milter-manager.c				\
+	milter-manager-main.c				\
 	milter-manager-configuration.c			\
 	milter-manager-child.c				\
 	milter-manager-children.c			\
