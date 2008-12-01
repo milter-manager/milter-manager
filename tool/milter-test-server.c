@@ -295,7 +295,10 @@ cb_reply_code (MilterServerContext *context,
         g_free(data->reply_message);
     data->reply_message = g_strdup(message);
 
-    cb_reject(context, user_data);
+    if (code >= 400 && code < 500)
+        cb_temporary_failure(context, user_data);
+    else
+        cb_reject(context, user_data);
 }
 
 static void

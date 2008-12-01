@@ -1,3 +1,8 @@
+2008-12-02  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* tool/milter-test-server.c (cb_reply_code): Reply status depends on
+	reply code.
+
 2008-12-01  Kouhei Sutou  <kou@cozmixng.org>
 
 	* module/configuration/ruby/milter-manager-ruby-configuration.c,
