@@ -1,5 +1,7 @@
 2008-12-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/test/: MilterManagerEncoderTestUtils is needed.
+
 	* milter/manager/milter-manager-configuration.[ch]: use other
 	logic for custom configuration file loading.
 
