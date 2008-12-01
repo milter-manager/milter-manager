@@ -652,6 +652,16 @@ data_result (void)
                                       NULL,
                                       NULL),
                  result_test_data_free,
+                 "no unknown",
+                 result_test_data_new(MILTER_ACTION_NONE,
+                                      MILTER_STEP_NO_UNKNOWN,
+                                      MILTER_STATUS_NOT_CHANGE,
+                                      NULL,
+                                      create_expected_command_receives(MILTER_COMMAND_UNKNOWN, 0,
+                                                                       NULL),
+                                      NULL,
+                                      NULL),
+                 result_test_data_free,
                  "no header",
                  result_test_data_new(MILTER_ACTION_NONE,
                                       MILTER_STEP_NO_HEADERS,
@@ -842,6 +852,9 @@ get_n_command_received (MilterCommand command)
         break;
       case MILTER_COMMAND_ENVELOPE_RECIPIENT:
         return n_envelope_recipients;
+        break;
+      case MILTER_COMMAND_UNKNOWN:
+        return n_unknowns;
         break;
       case MILTER_COMMAND_DATA:
         return n_datas;

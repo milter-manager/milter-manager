@@ -2,6 +2,10 @@
 
 	* tool/milter-test-server.c (cb_reply_code): Reply status depends on
 	reply code.
+	* tool/milter-test-server.c: Send "unknown" command after
+	"envelope-recipient".
+	* milter/server/milter-server-command.c (cb_decoder_continue): Send
+	"continue" even if UNKNOWN state.
 
 2008-12-01  Kouhei Sutou  <kou@cozmixng.org>
 
