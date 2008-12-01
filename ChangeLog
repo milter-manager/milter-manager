@@ -1,5 +1,13 @@
 2008-12-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* module/configuration/ruby/milter-manager-ruby-configuration.c,
+	binding/ruby/lib/milter/manager.rb,
+	binding/ruby/test/manager/test-custom-xml-loader.rb: start custom
+	configuration file loading support.
+
+	* binding/ruby/test/milter-test-utils.rb,
+	binding/ruby/test/run-test.rb: use RR.
+
 	* binding/ruby/test/: MilterManagerEncoderTestUtils is needed.
 
 	* milter/manager/milter-manager-configuration.[ch]: use other

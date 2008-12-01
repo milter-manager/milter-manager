@@ -1,14 +1,34 @@
 require 'pathname'
 require 'shellwords'
 
+require "rexml/document"
+require "rexml/streamlistener"
+
 require 'milter'
 require 'milter_manager.so'
 
 module Milter::Manager
   class ConfigurationLoader
+    class Error < StandardError
+    end
+
+    class InvalidValue < Error
+      def initialize(target, available_values, actual_value)
+        @target = target
+        @available_values = available_values
+        @actual_value = actual_value
+        super("#{@target} should be one of #{@available_values.inspect} " +
+              "but was #{@actual_value.inspect}")
+      end
+    end
+
     class << self
       def load(configuration, file)
         new(configuration).load_configuration(file)
+      end
+
+      def load_custom(configuration, file)
+        new(configuration).load_custom_configuration(file)
       end
     end
 
@@ -30,10 +50,137 @@ module Milter::Manager
       end
     end
 
+    def load_custom_configuration(file)
+      first_line = File.open(file) {|config| config.gets}
+      case first_line
+      when /\A\s*</m
+        XMLConfigurationLoader.new(self).load(file)
+#       when /\A#\s*-\*-\s*yaml\s*-\*-/i
+#         YAMLConfigurationLoader.new(self).load(file)
+      else
+        load_configuration(file)
+      end
+    end
+
     def define_milter(name, &block)
       egg_configuration = EggConfiguration.new(name)
       yield(egg_configuration)
       egg_configuration.apply(@configuration)
+    end
+
+    class XMLConfigurationLoader
+      def initialize(configuration)
+        @configuration = configuration
+      end
+
+      def load(file)
+        listener = Listener.new(@configuration)
+        File.open(file) do |input|
+          REXML::Document.parse_stream(input, listener)
+        end
+      end
+
+      class Listener
+        include REXML::StreamListener
+
+        def initialize(configuration)
+          @configuration = configuration
+          @ns_stack = [{"xml" => :xml}]
+          @tag_stack = [["", :root]]
+          @text_stack = ['']
+          @state_stack = [:root]
+        end
+
+        def tag_start(name, attributes)
+          @text_stack.push('')
+
+          ns = @ns_stack.last.dup
+          attrs = {}
+          attributes.each do |n, v|
+            if /\Axmlns(?:\z|:)/ =~ n
+              ns[$POSTMATCH] = v
+            else
+              attrs[n] = v
+            end
+          end
+          @ns_stack.push(ns)
+
+          prefix, local = split_name(name)
+          uri = _ns(ns, prefix)
+          @tag_stack.push([uri, local])
+
+          @state_stack.push(next_state(@state_stack.last, uri, local))
+        end
+
+        def tag_end(name)
+          state = @state_stack.pop
+          text = @text_stack.pop
+          uri, local = @tag_stack.pop
+          no_action_states = [:root, :configuration, :security,
+                              :control, :manager]
+          unless no_action_states.include?(state)
+            local = normalize_local(local)
+            @configuration.send(@state_stack.last).send("#{local}=", text)
+          end
+          @ns_stack.pop
+        end
+
+        def text(data)
+          @text_stack.last << data
+        end
+
+        private
+        def _ns(ns, prefix)
+          ns.fetch(prefix, "")
+        end
+
+        NAME_SPLIT = /^(?:([\w:][-\w\d.]*):)?([\w:][-\w\d.]*)/
+        def split_name(name)
+          name =~ NAME_SPLIT
+          [$1 || '', $2]
+        end
+
+        def next_state(current_state, uri, local)
+          local = normalize_local(local)
+          case current_state
+          when :root
+            if local != "configuration"
+              raise "root element must be <configuration>"
+            end
+            :configuration
+          when :configuration
+            case local
+            when "security"
+              :security
+            when "control"
+              :control
+            when "manager"
+              :manager
+            else
+              raise "unexpected element: #{current_path}"
+            end
+          when :security, :control, :manager
+            if @configuration.send(current_state).respond_to?("#{local}=")
+              local
+            else
+              raise "unexpected element: #{current_path}"
+            end
+          else
+            raise "unexpected element: #{current_path}"
+          end
+        end
+
+        def current_path
+          locals = @tag_stack.collect do |uri, local|
+            local
+          end
+          ["", *locals].join("/")
+        end
+
+        def normalize_local(local)
+          local.gsub(/-/, "_")
+        end
+      end
     end
 
     class SecurityConfiguration
@@ -46,6 +193,14 @@ module Milter::Manager
       end
 
       def privilege_mode=(mode)
+        mode = false if mode == "false"
+        mode = true if mode == "true"
+        available_values = [true, false]
+        unless available_values.include?(mode)
+          raise InvalidValue.new("security.privilege_mode",
+                                 available_values,
+                                 mode)
+        end
         @configuration.privilege_mode = mode
       end
     end

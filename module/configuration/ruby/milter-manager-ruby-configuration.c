@@ -60,9 +60,12 @@ static void get_property   (GObject         *object,
                             GValue          *value,
                             GParamSpec      *pspec);
 
-static gboolean real_load  (MilterManagerConfiguration *configuration,
-                            const gchar                *file_name,
-                            GError                    **error);
+static gboolean real_load         (MilterManagerConfiguration *configuration,
+                                   const gchar                *file_name,
+                                   GError                    **error);
+static gboolean real_load_custom  (MilterManagerConfiguration *configuration,
+                                   const gchar                *file_name,
+                                   GError                    **error);
 
 /* the function should be a static but G_DEFINE_DYNAMIC_TYPE implements it no static function */
 GType milter_manager_ruby_configuration_get_type (void);
@@ -85,6 +88,7 @@ milter_manager_ruby_configuration_class_init (MilterManagerRubyConfigurationClas
     gobject_class->get_property = get_property;
 
     configuration_class->load = real_load;
+    configuration_class->load_custom = real_load_custom;
 }
 
 static void
@@ -335,8 +339,8 @@ get_property (GObject    *object,
 }
 
 static gboolean
-real_load (MilterManagerConfiguration *_configuration, const gchar *file_name,
-           GError **error)
+load (MilterManagerConfiguration *_configuration, ID method_name,
+      const gchar *file_name, GError **error)
 {
     MilterManagerRubyConfiguration *configuration;
     GError *local_error = NULL;
@@ -359,6 +363,20 @@ real_load (MilterManagerConfiguration *_configuration, const gchar *file_name,
     }
 
     return success;
+}
+
+static gboolean
+real_load (MilterManagerConfiguration *_configuration, const gchar *file_name,
+           GError **error)
+{
+    return load(_configuration, rb_intern("load"), file_name, error);
+}
+
+static gboolean
+real_load_custom (MilterManagerConfiguration *_configuration,
+                  const gchar *file_name, GError **error)
+{
+    return load(_configuration, rb_intern("load_custom"), file_name, error);
 }
 
 /*
