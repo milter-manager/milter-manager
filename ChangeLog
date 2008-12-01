@@ -33,6 +33,8 @@
 	current state is body.
 	* milter/manager/milter-manager-children.c (cb_skip): state check is
 	done in MilterServerContext.
+	* milter/manager/milter-manager-leader.c (cb_error): Reply
+	"temporary-failure".
 
 2008-11-28  Kouhei Sutou  <kou@cozmixng.org>
 
