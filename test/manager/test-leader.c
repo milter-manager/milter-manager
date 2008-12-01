@@ -430,7 +430,7 @@ assert_have_response_helper (const gchar *name)
     gboolean timeout_waiting = TRUE;
     guint timeout_waiting_id;
 
-    timeout_waiting_id = g_timeout_add(100, cb_timeout_waiting,
+    timeout_waiting_id = g_timeout_add(200, cb_timeout_waiting,
                                        &timeout_waiting);
     while (timeout_waiting &&
            get_response_count(name) == 0) {
