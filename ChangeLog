@@ -1,5 +1,8 @@
 2008-12-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-configuration.[ch]
+	(milter_manager_configuration_clear_load_paths): add.
+
 	* milter/manager/: make MilterManager.
 
 	* milter/client.h, milter/client/milter-client.c: make connection

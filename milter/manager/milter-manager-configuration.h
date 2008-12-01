@@ -75,6 +75,8 @@ MilterManagerConfiguration *
 void          milter_manager_configuration_add_load_path
                                      (MilterManagerConfiguration *configuration,
                                       const gchar                *path);
+void          milter_manager_configuration_clear_load_paths
+                                     (MilterManagerConfiguration *configuration);
 gboolean      milter_manager_configuration_load
                                      (MilterManagerConfiguration *configuration,
                                       const gchar                *file_name,

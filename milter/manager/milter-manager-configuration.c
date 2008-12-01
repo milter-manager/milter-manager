@@ -137,12 +137,8 @@ dispose (GObject *object)
 
     configuration = MILTER_MANAGER_CONFIGURATION(object);
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
-    if (priv->load_paths) {
-        g_list_foreach(priv->load_paths, (GFunc)g_free, NULL);
-        g_list_free(priv->load_paths);
-        priv->load_paths = NULL;
-    }
 
+    milter_manager_configuration_clear_load_paths(configuration);
     milter_manager_configuration_clear(configuration);
 
     G_OBJECT_CLASS(milter_manager_configuration_parent_class)->dispose(object);
@@ -311,6 +307,19 @@ milter_manager_configuration_add_load_path (MilterManagerConfiguration *configur
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
     priv->load_paths = g_list_append(priv->load_paths, g_strdup(path));
+}
+
+void
+milter_manager_configuration_clear_load_paths (MilterManagerConfiguration *configuration)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    if (priv->load_paths) {
+        g_list_foreach(priv->load_paths, (GFunc)g_free, NULL);
+        g_list_free(priv->load_paths);
+        priv->load_paths = NULL;
+    }
 }
 
 gboolean
