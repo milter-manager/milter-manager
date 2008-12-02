@@ -10,7 +10,8 @@ noinst_LTLIBRARIES =			\
 	test-control-reply-decoder.la	\
 	test-control-command-encoder.la	\
 	test-control-reply-encoder.la	\
-	test-controller.la
+	test-controller.la		\
+	test-manager-logger.la
 endif
 
 INCLUDES =				\
@@ -46,3 +47,4 @@ test_control_reply_decoder_la_SOURCES	= test-control-reply-decoder.c
 test_control_command_encoder_la_SOURCES	= test-control-command-encoder.c
 test_control_reply_encoder_la_SOURCES	= test-control-reply-encoder.c
 test_controller_la_SOURCES		= test-controller.c
+test_manager_logger_la_SOURCES		= test-manager-logger.c
