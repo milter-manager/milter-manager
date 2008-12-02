@@ -111,7 +111,7 @@ milter_manager_init (MilterManager *manager)
     milter_manager_configuration_reload(priv->configuration);
 
     priv->leaders = NULL;
-    priv->logger = milter_syslog_logger_new();
+    priv->logger = milter_syslog_logger_new("milter-manager");
 }
 
 static void

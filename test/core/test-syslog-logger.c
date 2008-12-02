@@ -48,7 +48,7 @@ setup_syslog (void)
 void
 setup (void)
 {
-    logger = milter_syslog_logger_new();
+    logger = milter_syslog_logger_new(MILTER_LOG_DOMAIN);
     actual = NULL;
 
     error = NULL;
@@ -89,7 +89,7 @@ test_info (void)
     milter_info("This is informative message.");
     cut_trace(collect_log_message());
 
-    cut_assert_match(".* milter-syslog\\[\\d+\\]: "
+    cut_assert_match(".* " MILTER_LOG_DOMAIN "\\[\\d+\\]: "
                      "\\[.+\\]"
                      "This is informative message.$",
                      actual);

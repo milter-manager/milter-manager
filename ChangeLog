@@ -30,6 +30,8 @@
 	* milter/manager/milter-manger.c: Use MilterManagerLogger.
 	* milter/manager/milter-manager-logger.[ch] ->
 	milter/core/milter-system-logger.[ch]: Moved.
+	* milter/core/milter-system-logger.[ch]: milter_system_logger_new()
+	needs identity for log.
 
 2008-12-01  Kouhei Sutou  <kou@cozmixng.org>
 

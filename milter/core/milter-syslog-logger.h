@@ -46,9 +46,9 @@ struct _MilterSyslogLoggerClass
     GObjectClass parent_class;
 };
 
-GType                milter_syslog_logger_get_type    (void) G_GNUC_CONST;
+GType               milter_syslog_logger_get_type (void) G_GNUC_CONST;
 
-MilterSyslogLogger *milter_syslog_logger_new         (void);
+MilterSyslogLogger *milter_syslog_logger_new      (const gchar *identity);
 
 
 G_END_DECLS

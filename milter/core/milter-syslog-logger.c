@@ -34,14 +34,20 @@ typedef struct _MilterSyslogLoggerPrivate MilterSyslogLoggerPrivate;
 struct _MilterSyslogLoggerPrivate
 {
     MilterLogger *logger;
+    gchar *identity;
 };
 
 enum
 {
-    PROP_0
+    PROP_0,
+    PROP_IDENTITY
 };
 
 G_DEFINE_TYPE(MilterSyslogLogger, milter_syslog_logger, G_TYPE_OBJECT)
+
+static GObject *constructor  (GType                  type,
+                              guint                  n_props,
+                              GObjectConstructParam *props);
 
 static void dispose        (GObject         *object);
 static void set_property   (GObject         *object,
@@ -58,12 +64,21 @@ static void
 milter_syslog_logger_class_init (MilterSyslogLoggerClass *klass)
 {
     GObjectClass *gobject_class;
+    GParamSpec *spec;
 
     gobject_class = G_OBJECT_CLASS(klass);
 
+    gobject_class->constructor  = constructor;
     gobject_class->dispose      = dispose;
     gobject_class->set_property = set_property;
     gobject_class->get_property = get_property;
+
+    spec = g_param_spec_string("identity",
+                               NULL,
+                               NULL,
+                               NULL,
+                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+    g_object_class_install_property(gobject_class, PROP_IDENTITY, spec);
 
     g_type_class_add_private(gobject_class,
                              sizeof(MilterSyslogLoggerPrivate));
@@ -111,9 +126,9 @@ cb_log (MilterLogger *logger, const gchar *domain,
 }
 
 static void
-setup_logger (MilterLogger *logger)
+setup_logger (MilterLogger *logger, const gchar *identity)
 {
-    openlog(PACKAGE_NAME, LOG_PID, LOG_MAIL);
+    openlog(identity, LOG_PID, LOG_MAIL);
     g_object_ref(logger);
     g_signal_connect(logger, "log", G_CALLBACK(cb_log), NULL);
 }
@@ -127,6 +142,23 @@ teardown_logger (MilterLogger *logger)
     closelog();
 }
 
+static GObject *
+constructor (GType type, guint n_props, GObjectConstructParam *props)
+{
+    GObject *object;
+    GObjectClass *klass;
+    MilterSyslogLoggerPrivate *priv;
+
+    klass = G_OBJECT_CLASS(milter_syslog_logger_parent_class);
+    object = klass->constructor(type, n_props, props);
+
+    priv = MILTER_SYSLOG_LOGGER_GET_PRIVATE(object);
+    priv->logger = milter_logger();
+    setup_logger(priv->logger, priv->identity);
+
+    return object;
+}
+
 static void
 milter_syslog_logger_init (MilterSyslogLogger *logger)
 {
@@ -134,8 +166,7 @@ milter_syslog_logger_init (MilterSyslogLogger *logger)
 
     priv = MILTER_SYSLOG_LOGGER_GET_PRIVATE(logger);
 
-    priv->logger = milter_logger();
-    setup_logger(priv->logger);
+    priv->identity = NULL;
 }
 
 static void
@@ -144,6 +175,11 @@ dispose (GObject *object)
     MilterSyslogLoggerPrivate *priv;
 
     priv = MILTER_SYSLOG_LOGGER_GET_PRIVATE(object);
+
+    if (priv->identity) {
+        g_free(priv->identity);
+        priv->identity = NULL;
+    }
 
     if (priv->logger) {
         teardown_logger(priv->logger);
@@ -163,6 +199,11 @@ set_property (GObject      *object,
 
     priv = MILTER_SYSLOG_LOGGER_GET_PRIVATE(object);
     switch (prop_id) {
+      case PROP_IDENTITY:
+        if (priv->identity)
+            g_free(priv->identity);
+        priv->identity = g_strdup(g_value_get_string(value));
+        break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -179,6 +220,9 @@ get_property (GObject    *object,
 
     priv = MILTER_SYSLOG_LOGGER_GET_PRIVATE(object);
     switch (prop_id) {
+      case PROP_IDENTITY:
+        g_value_set_string(value, priv->identity);
+        break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -186,9 +230,11 @@ get_property (GObject    *object,
 }
 
 MilterSyslogLogger *
-milter_syslog_logger_new (void)
+milter_syslog_logger_new (const gchar *identity)
 {
-    return g_object_new(MILTER_TYPE_SYSLOG_LOGGER, NULL);
+    return g_object_new(MILTER_TYPE_SYSLOG_LOGGER,
+                        "identity", identity,
+                        NULL);
 }
 
 /*
