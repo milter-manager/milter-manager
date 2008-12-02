@@ -299,7 +299,7 @@ cb_end_of_message (MilterCommandDecoder *decoder, const gchar *chunk, gsize size
 static void
 cb_abort (MilterCommandDecoder *decoder, TestData *test_data)
 {
-    send_reply(MILTER_COMMAND_ABORT, test_data);
+    n_aborts++;
 }
 
 static void

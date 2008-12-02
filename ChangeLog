@@ -33,6 +33,7 @@
 	* milter/core/milter-system-logger.[ch]: milter_system_logger_new()
 	needs identity for log.
 	* tool/milter-test-server.c: Use MilterSyslogLogger.
+	* test/tool/test-server.c: Do not reply in abort session.
 
 2008-12-01  Kouhei Sutou  <kou@cozmixng.org>
 
