@@ -1,6 +1,6 @@
 [scenario]
 clients=client10026;client10027
-expected=The message was 'not-change'.\n\n
+expected=The message was 'not-change'.
 
 [client10026]
 port=10026

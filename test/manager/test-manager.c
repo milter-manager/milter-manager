@@ -354,10 +354,14 @@ static void
 do_actions (MilterManagerTestScenario *scenario)
 {
     const gchar *expected;
+    gchar **lines;
 
     wait_for_server_reaping();
     expected = get_string(scenario, "scenario", "expected");
-    cut_assert_equal_string(expected, server_data->output_string->str);
+    lines = g_strsplit(server_data->output_string->str, "\n", 2);
+    cut_take_string_array(lines);
+    cut_assert_equal_string(expected, lines[0]);
+    cut_assert_match("^Finished in [\\d.]+sec.\\s*$", lines[1]);
 }
 
 void

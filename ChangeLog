@@ -1,5 +1,8 @@
 2008-12-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/fixtures/manager/, test/manager/test-manager.c,
+	tool/milter-test-server.c: support "Finished in XXXsec.".
+
 	* test/lib/milter-test-client.rb (MilterTestClient#valid_state):
 	fix wrong condition.
 

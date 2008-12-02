@@ -1151,7 +1151,7 @@ print_result (ProcessData *data)
     if (output_message)
         print_message(data->message);
 
-    g_print("finished in %gsec.\n", g_timer_elapsed(data->timer, NULL));
+    g_print("Finished in %gsec.\n", g_timer_elapsed(data->timer, NULL));
 }
 
 static void
