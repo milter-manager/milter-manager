@@ -15,4 +15,5 @@ milter_manager_SOURCES =		\
 	milter-manager.c
 
 milter_manager_LDADD =						\
+	$(top_builddir)/milter/core/libmilter-core.la		\
 	$(top_builddir)/milter/manager/libmilter-manager.la

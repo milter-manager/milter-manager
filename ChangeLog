@@ -1,5 +1,7 @@
 2008-12-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/Makefile.am: add a missing dependency.
+
 	* **/Makefile.am: cleanup.
 
 	* test/fixtures/manager/, test/manager/test-manager.c,
