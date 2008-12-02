@@ -27,9 +27,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-/* #include <glib/gi18n.h> */
-#define _
-#define N_
+#include <glib/gi18n.h>
 
 #include <glib/gprintf.h>
 
