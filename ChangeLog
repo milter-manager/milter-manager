@@ -53,6 +53,8 @@
 	command if current state is DATA, HEADER and END_OF_HEADER.
 	* tool/milter-test-server.c (cb_reply_code): Continue session if
 	"reply-code" is received.
+	* milter/server/milter-server-context.c: Send "continue" only if
+	process_body_count is zero on body state.
 
 2008-12-01  Kouhei Sutou  <kou@cozmixng.org>
 

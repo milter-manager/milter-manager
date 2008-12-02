@@ -1082,9 +1082,8 @@ milter_server_context_body (MilterServerContext *context,
 
         chunk += packed_size;
         size -= packed_size;
+        MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->process_body_count++;
     }
-
-    MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->process_body_count++;
 
     return TRUE;
 }
@@ -1258,6 +1257,9 @@ cb_decoder_continue (MilterReplyDecoder *decoder, gpointer user_data)
 
     switch (priv->state) {
       case MILTER_SERVER_CONTEXT_STATE_BODY:
+        decrement_process_body_count(context);
+        if (priv->process_body_count != 0)
+            return;
       case MILTER_SERVER_CONTEXT_STATE_CONNECT:
       case MILTER_SERVER_CONTEXT_STATE_HELO:
       case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM:
@@ -1271,14 +1273,6 @@ cb_decoder_continue (MilterReplyDecoder *decoder, gpointer user_data)
         break;
       default:
         invalid_state(context, priv->state);
-        break;
-    }
-
-    switch (priv->state) {
-      case MILTER_SERVER_CONTEXT_STATE_BODY:
-        decrement_process_body_count(context);
-        break;
-      default:
         break;
     }
 }
