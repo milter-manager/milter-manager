@@ -61,6 +61,7 @@ typedef struct Message
 
 typedef struct _ProcessData
 {
+    GTimer *timer;
     gboolean success;
     gboolean finished;
     guint reply_code;
@@ -510,6 +511,7 @@ cb_finished (MilterFinishedEmittable *emittable, gpointer user_data)
     ProcessData *data = user_data;
 
     data->finished = TRUE;
+    g_timer_stop(data->timer);
 }
 
 static void
@@ -587,6 +589,7 @@ cb_ready (MilterServerContext *context, gpointer user_data)
 {
     ProcessData *data = user_data;
     setup(context, data);
+    g_timer_start(data->timer);
     negotiate(context);
 }
 
@@ -880,6 +883,7 @@ free_message (Message *message)
 static void
 init_process_data (ProcessData *data)
 {
+    data->timer = g_timer_new();
     data->success = TRUE;
     data->finished = FALSE;
     data->status = MILTER_STATUS_NOT_CHANGE;
@@ -895,6 +899,8 @@ init_process_data (ProcessData *data)
 static void
 free_process_data (ProcessData *data)
 {
+    if (data->timer)
+        g_timer_destroy(data->timer);
     if (data->option)
         g_object_unref(data->option);
     if (data->reply_extended_code)
@@ -1062,7 +1068,7 @@ get_message_charset (Message *message)
 
     header = milter_headers_lookup_by_name(message->headers,
                                            "Content-Type");
-    if (!header) 
+    if (!header)
         return NULL;
 
     return get_charset(header->value);
@@ -1125,7 +1131,7 @@ print_status (ProcessData *data)
     enum_class = g_type_class_ref(MILTER_TYPE_STATUS);
     value = g_enum_get_value(enum_class, data->status);
     g_type_class_unref(enum_class);
-    g_printf("The message was '%s'.\n\n", value->value_nick);
+    g_printf("The message was '%s'.\n", value->value_nick);
 }
 
 static void
@@ -1138,12 +1144,14 @@ print_result (ProcessData *data)
 
     print_status(data);
     if (data->quarantine_reason) {
-        g_printf("The message was quarantined.: %s\n", 
+        g_printf("The message was quarantined.: %s\n",
                  data->quarantine_reason);
     }
 
     if (output_message)
         print_message(data->message);
+
+    g_print("finished in %gsec.\n", g_timer_elapsed(data->timer, NULL));
 }
 
 static void

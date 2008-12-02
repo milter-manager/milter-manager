@@ -1,5 +1,7 @@
 2008-12-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-test-server.c: report processed time.
+
 	* tool/milter-test-server.c: use <glib/gi18n.h>.
 
 	* test/lib/milter-test-client.rb: cleanup.
