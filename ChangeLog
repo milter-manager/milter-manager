@@ -27,6 +27,7 @@
 	* test/lib/milter-test-client.rb: unknown state is not invalid.
 	* test/manager/test-manager.c: Ensure closing milter-manager.
 	* milter/manager/milter-manager-logger.[ch]: Added.
+	* milter/manager/milter-manger.c: Use MilterManagerLogger.
 
 2008-12-01  Kouhei Sutou  <kou@cozmixng.org>
 

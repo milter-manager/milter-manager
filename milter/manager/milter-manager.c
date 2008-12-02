@@ -30,6 +30,7 @@
 
 #include "milter-manager.h"
 #include "milter-manager-leader.h"
+#include "milter-manager-logger.h"
 
 #define MILTER_MANAGER_GET_PRIVATE(obj)                 \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                 \
@@ -40,6 +41,7 @@ typedef struct _MilterManagerPrivate MilterManagerPrivate;
 struct _MilterManagerPrivate
 {
     MilterManagerConfiguration *configuration;
+    MilterManagerLogger *logger;
     GList *leaders;
 };
 
@@ -110,16 +112,15 @@ milter_manager_init (MilterManager *manager)
     milter_manager_configuration_reload(priv->configuration);
 
     priv->leaders = NULL;
+    priv->logger = milter_manager_logger_new();
 }
 
 static void
 dispose (GObject *object)
 {
-    MilterManager *manager;
     MilterManagerPrivate *priv;
 
-    manager = MILTER_MANAGER(object);
-    priv = MILTER_MANAGER_GET_PRIVATE(manager);
+    priv = MILTER_MANAGER_GET_PRIVATE(object);
 
     if (priv->configuration) {
         g_object_unref(priv->configuration);
@@ -130,6 +131,11 @@ dispose (GObject *object)
         g_list_foreach(priv->leaders, (GFunc)g_object_unref, NULL);
         g_list_free(priv->leaders);
         priv->leaders = NULL;
+    }
+
+    if (priv->logger) {
+        g_object_unref(priv->logger);
+        priv->logger = NULL;
     }
 
     G_OBJECT_CLASS(milter_manager_parent_class)->dispose(object);
