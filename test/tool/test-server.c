@@ -109,7 +109,7 @@ cut_startup (void)
 {
     fixtures_path = g_build_filename(milter_test_get_base_dir(),
                                      "tool",
-                                     "fixtures", 
+                                     "fixtures",
                                      NULL);
 }
 
@@ -156,7 +156,7 @@ static void
 cb_define_macro (MilterDecoder *decoder, MilterCommand context,
                  GHashTable *macros, gpointer user_data)
 {
-    g_hash_table_replace(actual_defined_macros, 
+    g_hash_table_replace(actual_defined_macros,
                          GINT_TO_POINTER(context),
                          g_hash_table_ref(macros));
 
@@ -417,7 +417,7 @@ teardown (void)
     if (actual_envelope_from)
         g_free(actual_envelope_from);
     if (actual_recipients) {
-        g_list_foreach(actual_recipients, (GFunc)g_free, NULL); 
+        g_list_foreach(actual_recipients, (GFunc)g_free, NULL);
         g_list_free(actual_recipients);
     }
     if (actual_headers)
@@ -534,7 +534,7 @@ result_test_data_new (MilterActionFlags actions,
     test_data->expected_status = status;
     if (replies)
         test_data->replies = replies;
-    else 
+    else
         test_data->replies = g_hash_table_new(g_direct_hash, g_direct_equal);
     test_data->expected_command_receives = expected_command_receives;
     test_data->macros_requests = macros_requests;
@@ -887,7 +887,7 @@ assert_each_command_received (gpointer key, gpointer value, gpointer user_data)
     cut_assert_equal_int(n_expected, n_actual,
                          "%s should be received %d times but %d times received",
                          gcut_enum_inspect(MILTER_TYPE_COMMAND, command),
-                         n_expected, n_actual); 
+                         n_expected, n_actual);
 }
 
 static void
@@ -1051,15 +1051,24 @@ option_test_assert_mail_file (void)
 static void
 option_test_assert_output_message (void)
 {
-    cut_assert_equal_string("The message was 'not-change'.\n\n"
-                            NORMAL_COLOR "  From: <kou+send@cozmixng.org>" NORMAL_COLOR "\n"
-                            NORMAL_COLOR "  To: <kou+receive@cozmixng.org>" NORMAL_COLOR "\n"
-                            "---------------------------------------\n"
-                            "La de da de da 1.\n"
-                            "La de da de da 2.\n"
-                            "La de da de da 3.\n"
-                            "La de da de da 4.\n",
-                            output_string->str);
+    const gchar *normalized_output;
+
+    normalized_output = cut_take_replace(output_string->str,
+                                        "Finished in [\\d.]+sec.",
+                                        "Finished in XXXsec.");
+    cut_assert_equal_string(
+        "The message was 'not-change'.\n"
+        "\n"
+        NORMAL_COLOR "  From: <kou+send@cozmixng.org>" NORMAL_COLOR "\n"
+        NORMAL_COLOR "  To: <kou+receive@cozmixng.org>" NORMAL_COLOR "\n"
+        "---------------------------------------\n"
+        "La de da de da 1.\n"
+        "La de da de da 2.\n"
+        "La de da de da 3.\n"
+        "La de da de da 4.\n"
+        "\n"
+        "Finished in XXXsec.\n",
+        normalized_output);
 }
 
 void

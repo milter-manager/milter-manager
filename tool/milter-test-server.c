@@ -1149,8 +1149,11 @@ print_result (ProcessData *data)
                  data->quarantine_reason);
     }
 
-    if (output_message)
+    if (output_message) {
+        g_print("\n");
         print_message(data->message);
+        g_print("\n");
+    }
 
     g_print("Finished in %gsec.\n", g_timer_elapsed(data->timer, NULL));
 }
