@@ -13,6 +13,7 @@
 	* test/lib/milter-test-client.rb: Return continue on "unknown" state.
 	* milter/client/milter-client-context.c: Handle "unknown".
 	* test/lib/milter-test-client.rb: unknown state is not invalid.
+	* test/manager/test-manager.c: Ensure closing milter-manager.
 
 2008-12-01  Kouhei Sutou  <kou@cozmixng.org>
 

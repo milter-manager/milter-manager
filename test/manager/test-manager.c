@@ -96,12 +96,29 @@ egg_data_new (BuildPathFunc path_func)
     return data;
 }
 
+#define manager_egg manager_data->egg
+#define server_egg server_data->egg
+
+#define wait_for_server_reaping()   \
+    wait_for_reaping(server_data)
+
+#define wait_for_manager_reaping()  \
+    wait_for_reaping(manager_data)
+
+static void
+wait_for_reaping (EggData *data)
+{
+    while (!data->reaped)
+        g_main_context_iteration(NULL, TRUE);
+}
+
 static void
 egg_data_free (EggData *data)
 {
     if (data->egg) {
         if (!data->reaped && gcut_egg_get_pid(data->egg) > 0)
             gcut_egg_kill(data->egg, SIGINT);
+        wait_for_manager_reaping();
         g_object_unref(data->egg);
     }
 
@@ -209,16 +226,6 @@ setup_egg (EggData *data, const gchar *first_arg, ...)
 #undef CONNECT
 }
 
-static void
-wait_for_reaping (EggData *data)
-{
-    while (!data->reaped)
-        g_main_context_iteration(NULL, TRUE);
-}
-
-#define manager_egg manager_data->egg
-#define server_egg server_data->egg
-
 static gboolean
 cb_timeout_waiting (gpointer data)
 {
@@ -259,12 +266,6 @@ wait_for_manager_ready (const gchar *spec)
     close(sock_fd);
     cut_assert_true(timeout_waiting, "Error");
 }
-
-#define wait_for_server_reaping()   \
-    wait_for_reaping(server_data)
-
-#define wait_for_manager_reaping()  \
-    wait_for_reaping(manager_data)
 
 static void
 start_manager (void)
