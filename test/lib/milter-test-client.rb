@@ -277,7 +277,7 @@ class MilterTestClient
   end
 
   def valid_state?(current_state)
-    return false if @state == :unknown
+    return true if @state == :unknown
 
     case current_state
     when :negotiate

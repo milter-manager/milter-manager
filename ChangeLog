@@ -1,5 +1,8 @@
 2008-12-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/lib/milter-test-client.rb (MilterTestClient#valid_state):
+	fix wrong condition.
+
 	* tool/milter-test-server.c: report processed time.
 
 	* tool/milter-test-server.c: use <glib/gi18n.h>.
