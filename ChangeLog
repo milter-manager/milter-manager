@@ -32,6 +32,7 @@
 	milter/core/milter-system-logger.[ch]: Moved.
 	* milter/core/milter-system-logger.[ch]: milter_system_logger_new()
 	needs identity for log.
+	* tool/milter-test-server.c: Use MilterSyslogLogger.
 
 2008-12-01  Kouhei Sutou  <kou@cozmixng.org>
 
