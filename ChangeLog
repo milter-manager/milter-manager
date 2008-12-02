@@ -44,6 +44,8 @@
 	* test/tool/test-server.c: Do not reply in abort session.
 	* milter/manager/milter-manager-children.c (cb_accept): Send next
 	command if current state is DATA, HEADER and END_OF_HEADER.
+	* tool/milter-test-server.c (cb_reply_code): Continue session if
+	"reply-code" is received.
 
 2008-12-01  Kouhei Sutou  <kou@cozmixng.org>
 
