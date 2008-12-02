@@ -276,34 +276,38 @@ class MilterTestClient
     end.compact.join("|")
   end
 
-  def is_invalid_state(current_state)
+  def valid_state?(current_state)
     return false if @state == :unknown
+
     case current_state
     when :negotiate
-      false if @state != :start
+      @state == :start
     when :connect
-      false if @state != :negotiate
+      @state == :negotiate
     when :helo
-      false if @state != :connected
+      @state == :connected
     when :envelope_from
-      false if @state != :greeted
+      @state == :greeted
     when :envelope_recipient
-      false unless [:envelope_from_received, :envelope_recipient_received].include?(@state)
+      [:envelope_from_received, :envelope_recipient_received].include?(@state)
     when :data
-      false if @state != :envelope_recipient_received
+      @state == :envelope_recipient_received
     when :header
-      false unless [:data, :header].include?(@state)
+      [:data, :header].include?(@state)
     when :end_of_header
-      false unless [:data, :header].include?(@state)
+      [:data, :header].include?(@state)
     when :body
-      false unless [:end_of_header, :body].include?(@state)
+      [:end_of_header, :body].include?(@state)
     when :end_of_message
-      false unless [:end_of_header, :body].include?(@state)
+      [:end_of_header, :body].include?(@state)
+    else
+      info("unknown state: #{@state}")
+      false
     end
   end
 
   def do_negotiate(option)
-    invalid_state(:negotiate) if is_invalid_state(:negotiate)
+    invalid_state(:negotiate) unless valid_state?(:negotiate)
     @option = option
     @option.step = @negotiate_flags
 
@@ -341,7 +345,7 @@ class MilterTestClient
   end
 
   def do_helo(fqdn)
-    invalid_state(:helo) if is_invalid_state(:helo)
+    invalid_state(:helo) unless valid_state?(:helo)
     @hello_fqdn = fqdn
 
     write(:greeted, :continue)
@@ -352,7 +356,7 @@ class MilterTestClient
   end
 
   def do_envelope_from(from)
-    invalid_state(:envelope_from) if is_invalid_state(:envelope_from)
+    invalid_state(:envelope_from) unless valid_state?(:envelope_from)
     @envelope_from = from
 
     @senders.reverse_each do |action, sender|
@@ -369,7 +373,7 @@ class MilterTestClient
   end
 
   def do_envelope_recipient(to)
-    invalid_state(:envelope_recipient) if is_invalid_state(:envelope_recipient)
+    invalid_state(:envelope_recipient) unless valid_state?(:envelope_recipient)
     @envelope_recipient = to
 
     @recipients.reverse_each do |action, recipient|
@@ -386,13 +390,13 @@ class MilterTestClient
   end
 
   def do_data
-    invalid_state(:data) if is_invalid_state(:data)
+    invalid_state(:data) unless valid_state?(:data)
 
     write(:data, :continue)
   end
 
   def do_header(name, value)
-    invalid_state(:header) if is_invalid_state(:header)
+    invalid_state(:header) unless valid_state?(:header)
     @headers << [name, value]
 
     write(:header, :continue)
@@ -403,13 +407,13 @@ class MilterTestClient
   end
 
   def do_end_of_header
-    invalid_state(:end_of_header) if is_invalid_state(:end_of_header)
+    invalid_state(:end_of_header) unless valid_state?(:end_of_header)
 
     write(:end_of_header, :continue)
   end
 
   def do_body(chunk)
-    invalid_state(:body) if is_invalid_state(:body)
+    invalid_state(:body) unless valid_state?(:body)
     @content << chunk
 
     @body_chunks.each do |action, body_chunk|
@@ -427,7 +431,7 @@ class MilterTestClient
   end
 
   def do_end_of_message(chunk)
-    invalid_state(:end_of_message) if is_invalid_state(:end_of_message)
+    invalid_state(:end_of_message) unless valid_state?(:end_of_message)
     @end_of_message_actions.each do |action, *args|
       write(:end_of_message_actions, action, *args)
     end
