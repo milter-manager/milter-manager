@@ -11,8 +11,6 @@ AM_CFLAGS = 						\
 	$(COVERAGE_CFLAGS)
 
 LIBS =								\
-	$(top_builddir)/milter/client/libmilter-client.la	\
-	$(top_builddir)/milter/server/libmilter-server.la	\
 	$(MILTER_MANAGER_LIBS)
 
 CLEANFILES = *.gcno *.gcda
@@ -66,5 +64,9 @@ libmilter_manager_la_SOURCES =				\
 	milter-manager-control-command-encoder.c	\
 	milter-manager-control-reply-encoder.c		\
 	milter-manager-controller.c
+
+libmilter_manager_la_LIBADD =					\
+	$(top_builddir)/milter/client/libmilter-client.la	\
+	$(top_builddir)/milter/server/libmilter-server.la
 
 include $(top_srcdir)/build/enum-types.mk

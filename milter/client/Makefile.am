@@ -2,10 +2,10 @@ INCLUDES = 				\
 	 -I$(top_builddir)		\
 	 -I$(top_srcdir)
 
-AM_CFLAGS = 				\
-	-DLOCALEDIR=\""$(localedir)"\"	\
+AM_CFLAGS =					\
+	-DLOCALEDIR=\""$(localedir)"\"		\
 	-DMILTER_LOG_DOMAIN=\""milter-client"\"	\
-	$(GLIB_CFLAGS)			\
+	$(GLIB_CFLAGS)				\
 	$(COVERAGE_CFLAGS)
 
 EXTRA_DIST =

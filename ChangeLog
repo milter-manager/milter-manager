@@ -1,5 +1,7 @@
 2008-12-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* **/Makefile.am: cleanup.
+
 	* test/fixtures/manager/, test/manager/test-manager.c,
 	tool/milter-test-server.c: support "Finished in XXXsec.".
 
