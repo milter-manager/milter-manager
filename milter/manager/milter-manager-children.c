@@ -938,15 +938,13 @@ cb_accept (MilterServerContext *context, gpointer user_data)
 
     compile_reply_status(children, state, MILTER_STATUS_ACCEPT);
     switch (state) {
+      case MILTER_SERVER_CONTEXT_STATE_DATA:
+      case MILTER_SERVER_CONTEXT_STATE_HEADER:
+      case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
       case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
-        send_first_command_to_next_child(children, context, state);
-        break;
       case MILTER_SERVER_CONTEXT_STATE_BODY:
         send_first_command_to_next_child(children, context, state);
         break;
-      case MILTER_SERVER_CONTEXT_STATE_DATA:
-      case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
-      case MILTER_SERVER_CONTEXT_STATE_HEADER:
       default:
         milter_server_context_quit(context);
         break;
