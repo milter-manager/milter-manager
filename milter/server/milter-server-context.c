@@ -1159,19 +1159,19 @@ invalid_state (MilterServerContext *context,
                MilterServerContextState state)
 {
     GError *error = NULL;
-    gchar *inspected_state;
+    gchar *state_name;
 
-    inspected_state = milter_utils_inspect_enum(MILTER_TYPE_SERVER_CONTEXT_STATE,
-                                                state);
+    state_name = milter_utils_get_enum_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                                            state);
     g_set_error(&error,
                 MILTER_SERVER_CONTEXT_ERROR,
                 MILTER_SERVER_CONTEXT_ERROR_INVALID_STATE,
-                "Invalid state: %s", inspected_state);
+                "Invalid state: %s", state_name);
     milter_error("%s", error->message);
     milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(context),
                                 error);
     g_error_free(error);
-    g_free(inspected_state);
+    g_free(state_name);
 }
 
 static void

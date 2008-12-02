@@ -1,5 +1,8 @@
 2008-12-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/server/milter-server-context.c,
+	test/server/test-server-context-signals.c: improve log message.
+
 	* tool/milter-test-server.c: improve output format.
 
 	* test/tool/test-server.c: follow the recent output format changes.

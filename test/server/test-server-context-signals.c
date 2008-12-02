@@ -812,9 +812,7 @@ test_skip_in_invalid_state (void)
     expected_error = g_error_new(MILTER_SERVER_CONTEXT_ERROR,
                                  MILTER_SERVER_CONTEXT_ERROR_INVALID_STATE,
                                  "Invalid state: "
-                                 "#<MilterServerContextState: "
-                                 "start(MILTER_SERVER_CONTEXT_STATE_START:%d)>",
-                                 MILTER_SERVER_CONTEXT_STATE_START);
+                                 "MILTER_SERVER_CONTEXT_STATE_START");
     milter_reply_encoder_encode_skip(encoder, &packet, &packet_size);
     write_data(packet, packet_size);
     cut_assert_equal_int(0, n_skips);
@@ -898,9 +896,7 @@ test_invalid_state_error (void)
     expected_error = g_error_new(MILTER_SERVER_CONTEXT_ERROR,
                                  MILTER_SERVER_CONTEXT_ERROR_INVALID_STATE,
                                  "Invalid state: "
-                                 "#<MilterServerContextState: "
-                                 "start(MILTER_SERVER_CONTEXT_STATE_START:%d)>",
-                                 MILTER_SERVER_CONTEXT_STATE_START);
+                                 "MILTER_SERVER_CONTEXT_STATE_START");
     milter_reply_encoder_encode_change_from(encoder,
                                             &packet, &packet_size,
                                             from, NULL);
