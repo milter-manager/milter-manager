@@ -1953,21 +1953,23 @@ milter_server_context_establish_connection (MilterServerContext *context,
     priv->timeout_id = milter_utils_timeout_add(priv->connection_timeout,
                                                 cb_connection_timeout, context);
 
-    if (connect(priv->client_fd, priv->address, priv->address_size) == -1 &&
-        errno != EINPROGRESS) {
+    if (connect(priv->client_fd, priv->address, priv->address_size) == -1) {
+        if (errno == EINPROGRESS)
+            return TRUE;
+
         close_client_fd(priv);
         disable_timeout(priv);
         g_set_error(error,
                     MILTER_SERVER_CONTEXT_ERROR,
                     MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE,
-                    "Failed to connect to %s: %s", 
+                    "Failed to connect to %s: %s",
                     priv->spec, g_strerror(errno));
         milter_error("Failed to connect to %s: %s",
                      priv->spec, g_strerror(errno));
         return FALSE;
     }
 
-    return (errno == EINPROGRESS);
+    return TRUE;
 }
 
 void

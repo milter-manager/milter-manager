@@ -1,5 +1,9 @@
 2008-12-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/server/milter-server-context.c
+	(milter_server_context_establish_connection): don't use
+	uninitialized errno.
+
 	* milter/server/milter-server-context.c,
 	test/server/test-server-context-signals.c: improve log message.
 
