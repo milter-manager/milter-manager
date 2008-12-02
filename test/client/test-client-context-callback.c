@@ -40,6 +40,7 @@ void test_feed_envelope_from (gconstpointer data);
 void data_feed_envelope_recipient (void);
 void test_feed_envelope_recipient (gconstpointer data);
 void test_feed_data (void);
+void test_feed_unknown (void);
 void data_feed_header (void);
 void test_feed_header (gconstpointer data);
 void data_feed_end_of_header (void);
@@ -1017,6 +1018,16 @@ test_feed_envelope_recipient (gconstpointer data)
     gcut_assert_equal_hash_table_string_string(expected_macros, defined_macros);
     if (macro_name)
         cut_assert_equal_string(expected_macro_value, macro_value);
+}
+
+void
+test_feed_unknown (void)
+{
+    milter_command_encoder_encode_unknown(encoder, &packet, &packet_size, "!");
+    gcut_assert_error(feed());
+    cut_assert_equal_int(1, n_unknowns);
+    cut_assert_equal_int(1, n_unknown_responses);
+    cut_assert_equal_string("!", unknown_command);
 }
 
 void

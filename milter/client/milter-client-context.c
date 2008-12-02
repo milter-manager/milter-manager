@@ -118,6 +118,8 @@ static MilterStatus default_envelope_from
 static MilterStatus default_envelope_recipient
                                        (MilterClientContext *context,
                                         const gchar   *recipient);
+static MilterStatus default_unknown    (MilterClientContext *context,
+                                        const gchar   *command);
 static MilterStatus default_data       (MilterClientContext *context);
 static MilterStatus default_header     (MilterClientContext *context,
                                         const gchar   *name,
@@ -143,6 +145,8 @@ static void         envelope_from_response
                                         MilterStatus         status);
 static void         envelope_recipient_response
                                        (MilterClientContext *context,
+                                        MilterStatus         status);
+static void         unknown_response   (MilterClientContext *context,
                                         MilterStatus         status);
 static void         data_response      (MilterClientContext *context,
                                         MilterStatus         status);
@@ -182,6 +186,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
     klass->helo = default_helo;
     klass->envelope_from = default_envelope_from;
     klass->envelope_recipient = default_envelope_recipient;
+    klass->unknown = default_unknown;
     klass->data = default_data;
     klass->header = default_header;
     klass->end_of_header = default_end_of_header;
@@ -195,6 +200,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
     klass->helo_response = helo_response;
     klass->envelope_from_response = envelope_from_response;
     klass->envelope_recipient_response = envelope_recipient_response;
+    klass->unknown_response = unknown_response;
     klass->data_response = data_response;
     klass->header_response = header_response;
     klass->end_of_header_response = end_of_header_response;
@@ -323,9 +329,8 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientContextClass, unknown),
                      status_accumulator, NULL,
-                     _milter_marshal_ENUM__STRING_POINTER_UINT,
-                     MILTER_TYPE_STATUS, 3,
-                     G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_UINT);
+                     _milter_marshal_ENUM__STRING,
+                     MILTER_TYPE_STATUS, 1, G_TYPE_STRING);
 
     signals[UNKNOWN_RESPONSE] =
         g_signal_new("unknown-response",
@@ -1139,6 +1144,10 @@ reply (MilterClientContext *context, MilterStatus status)
         milter_reply_encoder_encode_discard(reply_encoder,
                                             &packet, &packet_size);
         break;
+      case MILTER_STATUS_SKIP:
+        milter_reply_encoder_encode_skip(reply_encoder,
+                                         &packet, &packet_size);
+        break;
       default:
         break;
     }
@@ -1176,6 +1185,12 @@ default_envelope_from (MilterClientContext *context, const gchar *from)
 
 static MilterStatus
 default_envelope_recipient (MilterClientContext *context, const gchar *recipient)
+{
+    return MILTER_STATUS_NOT_CHANGE;
+}
+
+static MilterStatus
+default_unknown (MilterClientContext *context, const gchar *command)
 {
     return MILTER_STATUS_NOT_CHANGE;
 }
@@ -1312,6 +1327,15 @@ envelope_recipient_response (MilterClientContext *context, MilterStatus status)
 
     reply(MILTER_CLIENT_CONTEXT(context), status);
     reset_macro_context(context, MILTER_COMMAND_ENVELOPE_RECIPIENT);
+}
+
+static void
+unknown_response (MilterClientContext *context, MilterStatus status)
+{
+    if (status == MILTER_STATUS_DEFAULT)
+        status = MILTER_STATUS_CONTINUE;
+
+    reply(MILTER_CLIENT_CONTEXT(context), status);
 }
 
 static void
@@ -1465,6 +1489,20 @@ cb_decoder_envelope_recipient (MilterDecoder *decoder,
 }
 
 static void
+cb_decoder_unknown (MilterDecoder *decoder,
+                    const gchar *command, gpointer user_data)
+{
+    MilterClientContext *context = user_data;
+    MilterStatus status;
+
+    disable_timeout(context);
+    g_signal_emit(context, signals[UNKNOWN], 0, command, &status);
+    if (status == MILTER_STATUS_PROGRESS)
+        return;
+    g_signal_emit(context, signals[UNKNOWN_RESPONSE], 0, status);
+}
+
+static void
 cb_decoder_data (MilterDecoder *decoder, gpointer user_data)
 {
     MilterClientContext *context = user_data;
@@ -1587,6 +1625,7 @@ decoder_new (MilterAgent *agent)
     CONNECT(helo);
     CONNECT(envelope_from);
     CONNECT(envelope_recipient);
+    CONNECT(unknown);
     CONNECT(data);
     CONNECT(header);
     CONNECT(end_of_header);
