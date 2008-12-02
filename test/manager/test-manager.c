@@ -378,6 +378,8 @@ test_scenario (gconstpointer data)
     const gchar *scenario_name = data;
     const gchar omit_key[] = "omit";
 
+    start_manager();
+
     main_scenario = milter_manager_test_scenario_new();
     cut_trace(milter_manager_test_scenario_load(main_scenario,
                                                 scenario_dir,
@@ -391,7 +393,6 @@ test_scenario (gconstpointer data)
 
     cut_trace(milter_manager_test_scenario_start_clients(main_scenario));
 
-    start_manager();
     start_server();
 
     cut_trace(do_actions(main_scenario));
