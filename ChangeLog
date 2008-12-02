@@ -1,3 +1,9 @@
+2008-12-03  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/manager/milter-manager-children.c:
+	get_first_command_waiting_child_queue ->
+	get_first_child_in_command_waiting_child_queue.
+
 2008-12-02  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/core/milter-utils.[ch], test/core/test-utils.c: add XML

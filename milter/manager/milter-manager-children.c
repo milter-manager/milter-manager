@@ -120,7 +120,7 @@ static void prepare_retry_establish_connection
 static void remove_queue_in_negotiate
                            (MilterManagerChildren *children,
                             MilterManagerChild *child);
-static MilterServerContext *get_first_command_waiting_child_queue
+static MilterServerContext *get_first_child_in_command_waiting_child_queue
                            (MilterManagerChildren *children,
                             MilterCommand command);
 static gboolean write_to_body_file
@@ -791,7 +791,7 @@ send_first_command_to_next_child (MilterManagerChildren *children,
     priv->command_waiting_child_queue = g_list_remove(priv->command_waiting_child_queue, context);
     first_command = GPOINTER_TO_INT(g_list_first(priv->command_queue)->data);
 
-    next_child = get_first_command_waiting_child_queue(children, first_command);
+    next_child = get_first_child_in_command_waiting_child_queue(children, first_command);
     if (!next_child) {
         if (current_state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
             emit_signals_on_end_of_message(children);
@@ -1686,12 +1686,13 @@ init_command_waiting_child_queue (MilterManagerChildren *children, MilterCommand
 }
 
 static MilterServerContext *
-get_first_command_waiting_child_queue (MilterManagerChildren *children,
-                                       MilterCommand command)
+get_first_child_in_command_waiting_child_queue (MilterManagerChildren *children,
+                                                MilterCommand command)
 {
     MilterManagerChildrenPrivate *priv;
     MilterServerContext *first_child;
     MilterStepFlags step;
+    MilterCommand next_command;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
     if (!priv->command_waiting_child_queue)
@@ -1705,6 +1706,10 @@ get_first_command_waiting_child_queue (MilterManagerChildren *children,
     if (!milter_server_context_is_enable_step(first_child, step))
         return first_child;
 
+    /*
+     * If the first child is not needed the command, 
+     * send dummy "continue" to shift next state.
+     */
     milter_server_context_set_state(first_child,
                                     command_to_state(command));
     g_signal_emit_by_name(first_child, "continue");
@@ -1995,7 +2000,7 @@ milter_manager_children_data (MilterManagerChildren *children)
     priv->current_state = MILTER_SERVER_CONTEXT_STATE_DATA;
     init_command_waiting_child_queue(children, MILTER_COMMAND_DATA);
 
-    first_child = get_first_command_waiting_child_queue(children,
+    first_child = get_first_child_in_command_waiting_child_queue(children,
                                                         MILTER_COMMAND_DATA);
     if (!first_child)
         return TRUE;
@@ -2082,7 +2087,7 @@ milter_manager_children_header (MilterManagerChildren *children,
     milter_headers_add_header(priv->headers, name, value);
     init_command_waiting_child_queue(children, MILTER_COMMAND_HEADER);
 
-    first_child = get_first_command_waiting_child_queue(children,
+    first_child = get_first_child_in_command_waiting_child_queue(children,
                                                         MILTER_COMMAND_HEADER);
     if (!first_child)
         return TRUE;
@@ -2109,7 +2114,7 @@ milter_manager_children_end_of_header (MilterManagerChildren *children)
     priv->current_state = MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER;
     init_command_waiting_child_queue(children, MILTER_COMMAND_END_OF_HEADER);
 
-    first_child = get_first_command_waiting_child_queue(children,
+    first_child = get_first_child_in_command_waiting_child_queue(children,
                                                         MILTER_COMMAND_END_OF_HEADER);
     if (!first_child)
         return TRUE;
@@ -2189,7 +2194,7 @@ milter_manager_children_body (MilterManagerChildren *children,
         return FALSE;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
-    first_child = get_first_command_waiting_child_queue(children, MILTER_COMMAND_BODY);
+    first_child = get_first_child_in_command_waiting_child_queue(children, MILTER_COMMAND_BODY);
     if (!first_child)
         return TRUE;
 
@@ -2287,7 +2292,7 @@ milter_manager_children_end_of_message (MilterManagerChildren *children,
     if (priv->body_file)
         g_io_channel_seek_position(priv->body_file, 0, G_SEEK_SET, NULL);
 
-    first_child = get_first_command_waiting_child_queue(children, 
+    first_child = get_first_child_in_command_waiting_child_queue(children, 
                                                         MILTER_COMMAND_END_OF_MESSAGE);
     if (!first_child)
         return TRUE;
