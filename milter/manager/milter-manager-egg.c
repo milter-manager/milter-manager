@@ -578,6 +578,46 @@ milter_manager_egg_get_command_options (MilterManagerEgg *egg)
     return MILTER_MANAGER_EGG_GET_PRIVATE(egg)->command_options;
 }
 
+gchar *
+milter_manager_egg_to_xml (MilterManagerEgg *egg)
+{
+    GString *string;
+
+    string = g_string_new(NULL);
+    milter_manager_egg_to_xml_string(egg, string, 0);
+    return g_string_free(string, FALSE);
+}
+
+void
+milter_manager_egg_to_xml_string (MilterManagerEgg *egg,
+                                  GString *string, guint indent)
+{
+    MilterManagerEggPrivate *priv;
+
+    priv = MILTER_MANAGER_EGG_GET_PRIVATE(egg);
+
+    milter_utils_append_indent(string, indent);
+    g_string_append(string, "<milter>\n");
+
+    if (priv->name)
+        milter_utils_xml_append_text_element(string,
+                                             "name", priv->name,
+                                             indent + 2);
+    if (priv->connection_spec)
+        milter_utils_xml_append_text_element(string,
+                                             "connection-spec",
+                                             priv->connection_spec,
+                                             indent + 2);
+
+    if (priv->command)
+        milter_utils_xml_append_text_element(string,
+                                             "command", priv->command,
+                                             indent + 2);
+
+    milter_utils_append_indent(string, indent);
+    g_string_append(string, "</milter>\n");
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */

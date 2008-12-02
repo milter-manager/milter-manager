@@ -21,6 +21,12 @@
 #  include "../../config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
+#include <glib/gstdio.h>
+
 #include "milter-manager-module.h"
 #include "milter-manager-configuration.h"
 #include "milter-manager-children.h"
@@ -665,6 +671,59 @@ milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
 
     priv->privilege_mode = FALSE;
     priv->return_status = MILTER_STATUS_CONTINUE;
+}
+
+gchar *
+milter_manager_configuration_to_xml (MilterManagerConfiguration *configuration)
+{
+    GString *string;
+
+    string = g_string_new(NULL);
+    milter_manager_configuration_to_xml_string(configuration, string, 0);
+    return g_string_free(string, FALSE);
+}
+
+void
+milter_manager_configuration_to_xml_string (MilterManagerConfiguration *configuration,
+                                            GString *string, guint indent)
+{
+    MilterManagerConfigurationPrivate *priv;
+    gchar *full_path;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+
+    milter_utils_append_indent(string, indent);
+    g_string_append(string, "<configuration>\n");
+
+    full_path = find_file(configuration, CUSTOM_CONFIG_FILE_NAME, NULL);
+    if (full_path) {
+        struct stat status;
+        if (g_stat(full_path, &status) == 0) {
+            gchar *content;
+
+            content = g_strdup_printf("%ld", status.st_mtime);
+            milter_utils_xml_append_text_element(string,
+                                                 "last-modified", content,
+                                                 -1);
+        }
+        g_free(full_path);
+    }
+
+    if (priv->eggs) {
+        GList *node;
+
+        milter_utils_append_indent(string, indent + 2);
+        g_string_append(string, "<milters>\n");
+        for (node = priv->eggs; node; node = g_list_next(node)) {
+            MilterManagerEgg *egg = node->data;
+            milter_manager_egg_to_xml_string(egg, string, indent + 2 + 2);
+        }
+        milter_utils_append_indent(string, indent + 2);
+        g_string_append(string, "</milters>\n");
+    }
+
+    milter_utils_append_indent(string, indent);
+    g_string_append(string, "</configuration>\n");
 }
 
 /*

@@ -1,5 +1,13 @@
 2008-12-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-utils.[ch], test/core/test-utils.c: add XML
+	generation related functions.
+
+	* milter/manager/milter-manager-egg.[ch],
+	milter/manager/milter-manager-configuration.[ch],
+	test/manager/test-configuration.c,
+	test/manager/test-egg.c: add XML generation functions.
+
 	* milter/server/milter-server-context.c
 	(milter_server_context_establish_connection): don't use
 	uninitialized errno.

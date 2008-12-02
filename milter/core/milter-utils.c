@@ -400,6 +400,28 @@ milter_utils_enum_from_string (GType        enum_type,
     return value;
 }
 
+void
+milter_utils_append_indent (GString *string, guint size)
+{
+    while (size > 0) {
+        g_string_append_c(string, ' ');
+        size--;
+    }
+}
+
+void
+milter_utils_xml_append_text_element (GString *string,
+                                      const gchar *name, const gchar *content,
+                                      guint indent)
+{
+    gchar *escaped_content;
+
+    milter_utils_append_indent(string, indent);
+    escaped_content = g_markup_escape_text(content, -1);
+    g_string_append_printf(string, "<%s>%s</%s>\n", name, escaped_content, name);
+    g_free(escaped_content);
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */

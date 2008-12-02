@@ -361,6 +361,18 @@ test_enum_from_string (gconstpointer _data)
                            milter_utils_enum_from_string(type, input));
 }
 
+void
+test_append_index (void)
+{
+    "FIXME: WRITEME";
+}
+
+void
+test_xml_append_text_element (void)
+{
+    "FIXME: WRITEME";
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */

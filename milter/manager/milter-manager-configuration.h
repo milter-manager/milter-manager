@@ -137,6 +137,13 @@ MilterManagerChildren *milter_manager_configuration_create_children
 void          milter_manager_configuration_clear
                                      (MilterManagerConfiguration *configuration);
 
+gchar        *milter_manager_configuration_to_xml
+                                     (MilterManagerConfiguration *configuration);
+void          milter_manager_configuration_to_xml_string
+                                     (MilterManagerConfiguration *configuration,
+                                      GString *string,
+                                      guint indent);
+
 G_END_DECLS
 
 #endif /* __MILTER_MANAGER_CONFIGURATION_H__ */

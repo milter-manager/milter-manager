@@ -33,12 +33,15 @@ void test_manager_connection_spec (void);
 void test_return_status (void);
 void test_clear (void);
 void test_save_custom (void);
+void test_to_xml (void);
 
 static MilterManagerConfiguration *config;
 static MilterManagerEgg *egg;
 
 static MilterManagerChildren *expected_children;
 static MilterManagerChildren *actual_children;
+
+static gchar *actual_xml;
 
 static gchar *tmp_dir;
 
@@ -50,6 +53,8 @@ setup (void)
 
     expected_children = milter_manager_children_new(config);
     actual_children = NULL;
+
+    actual_xml = NULL;
 
     tmp_dir = g_build_filename(milter_test_get_base_dir(),
                                "tmp",
@@ -71,6 +76,9 @@ teardown (void)
         g_object_unref(expected_children);
     if (actual_children)
         g_object_unref(actual_children);
+
+    if (actual_xml)
+        g_free(actual_xml);
 
     if (tmp_dir) {
         cut_remove_path(tmp_dir, NULL);
@@ -235,6 +243,33 @@ test_save_custom (void)
     milter_manager_configuration_save_custom(config, "XXX", -1, &error);
     gcut_assert_error(error);
     cut_assert_path_exist(custom_config_path);
+}
+
+void
+test_to_xml (void)
+{
+    GError *error = NULL;
+
+    egg = milter_manager_egg_new("milter@10025");
+    milter_manager_egg_set_connection_spec(egg, "inet:10025", &error);
+    gcut_assert_error(error);
+
+    milter_manager_egg_set_command(egg, "test-milter");
+
+    milter_manager_configuration_add_egg(config, egg);
+
+    actual_xml = milter_manager_configuration_to_xml(config);
+    cut_assert_equal_string(
+        "<configuration>\n"
+        "  <milters>\n"
+        "    <milter>\n"
+        "      <name>milter@10025</name>\n"
+        "      <connection-spec>inet:10025</connection-spec>\n"
+        "      <command>test-milter</command>\n"
+        "    </milter>\n"
+        "  </milters>\n"
+        "</configuration>\n",
+        actual_xml);
 }
 
 /*

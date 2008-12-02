@@ -111,6 +111,14 @@ gint             milter_utils_enum_from_string
                                              (GType        enum_type,
                                               const gchar *enum_string);
 
+void             milter_utils_append_indent  (GString *string,
+                                              guint    size);
+void             milter_utils_xml_append_text_element
+                                             (GString *string,
+                                              const gchar *name,
+                                              const gchar *content,
+                                              guint indent);
+
 G_END_DECLS
 
 #endif /* __MILTER_UTILS_H__ */

@@ -38,6 +38,7 @@ void test_end_of_message_timeout (void);
 void test_user_name (void);
 void test_command (void);
 void test_command_options (void);
+void test_to_xml (void);
 
 static MilterManagerEgg *egg;
 static MilterManagerChild *child;
@@ -250,6 +251,12 @@ test_command_options (void)
                             milter_manager_egg_get_command_options(egg));
     milter_manager_egg_set_command_options(egg, command_options);
     cut_assert_equal_string(command_options, milter_manager_egg_get_command_options(egg));
+}
+
+void
+test_to_xml (void)
+{
+    "FIXME: WRITEME";
 }
 
 /*

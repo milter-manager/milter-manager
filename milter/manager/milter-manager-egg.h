@@ -111,6 +111,12 @@ void                milter_manager_egg_set_command_options
 const gchar        *milter_manager_egg_get_command_options
                                                 (MilterManagerEgg *egg);
 
+gchar              *milter_manager_egg_to_xml   (MilterManagerEgg *egg);
+void                milter_manager_egg_to_xml_string
+                                                (MilterManagerEgg *egg,
+                                                 GString *string,
+                                                 guint indent);
+
 G_END_DECLS
 
 #endif /* __MILTER_MANAGER_EGG_H__ */
