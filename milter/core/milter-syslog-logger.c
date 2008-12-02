@@ -23,15 +23,15 @@
 
 #include <syslog.h>
 
-#include "milter-manager-logger.h"
+#include "milter-syslog-logger.h"
 
-#define MILTER_MANAGER_LOGGER_GET_PRIVATE(obj)                 \
+#define MILTER_SYSLOG_LOGGER_GET_PRIVATE(obj)                 \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                           \
-                                 MILTER_TYPE_MANAGER_LOGGER,   \
-                                 MilterManagerLoggerPrivate))
+                                 MILTER_TYPE_SYSLOG_LOGGER,   \
+                                 MilterSyslogLoggerPrivate))
 
-typedef struct _MilterManagerLoggerPrivate MilterManagerLoggerPrivate;
-struct _MilterManagerLoggerPrivate
+typedef struct _MilterSyslogLoggerPrivate MilterSyslogLoggerPrivate;
+struct _MilterSyslogLoggerPrivate
 {
     MilterLogger *logger;
 };
@@ -41,7 +41,7 @@ enum
     PROP_0
 };
 
-G_DEFINE_TYPE(MilterManagerLogger, milter_manager_logger, G_TYPE_OBJECT)
+G_DEFINE_TYPE(MilterSyslogLogger, milter_syslog_logger, G_TYPE_OBJECT)
 
 static void dispose        (GObject         *object);
 static void set_property   (GObject         *object,
@@ -55,7 +55,7 @@ static void get_property   (GObject         *object,
 
 
 static void
-milter_manager_logger_class_init (MilterManagerLoggerClass *klass)
+milter_syslog_logger_class_init (MilterSyslogLoggerClass *klass)
 {
     GObjectClass *gobject_class;
 
@@ -66,7 +66,7 @@ milter_manager_logger_class_init (MilterManagerLoggerClass *klass)
     gobject_class->get_property = get_property;
 
     g_type_class_add_private(gobject_class,
-                             sizeof(MilterManagerLoggerPrivate));
+                             sizeof(MilterSyslogLoggerPrivate));
 }
 
 static gint
@@ -128,11 +128,11 @@ teardown_logger (MilterLogger *logger)
 }
 
 static void
-milter_manager_logger_init (MilterManagerLogger *logger)
+milter_syslog_logger_init (MilterSyslogLogger *logger)
 {
-    MilterManagerLoggerPrivate *priv;
+    MilterSyslogLoggerPrivate *priv;
 
-    priv = MILTER_MANAGER_LOGGER_GET_PRIVATE(logger);
+    priv = MILTER_SYSLOG_LOGGER_GET_PRIVATE(logger);
 
     priv->logger = milter_logger();
     setup_logger(priv->logger);
@@ -141,16 +141,16 @@ milter_manager_logger_init (MilterManagerLogger *logger)
 static void
 dispose (GObject *object)
 {
-    MilterManagerLoggerPrivate *priv;
+    MilterSyslogLoggerPrivate *priv;
 
-    priv = MILTER_MANAGER_LOGGER_GET_PRIVATE(object);
+    priv = MILTER_SYSLOG_LOGGER_GET_PRIVATE(object);
 
     if (priv->logger) {
         teardown_logger(priv->logger);
         priv->logger = NULL;
     }
 
-    G_OBJECT_CLASS(milter_manager_logger_parent_class)->dispose(object);
+    G_OBJECT_CLASS(milter_syslog_logger_parent_class)->dispose(object);
 }
 
 static void
@@ -159,9 +159,9 @@ set_property (GObject      *object,
               const GValue *value,
               GParamSpec   *pspec)
 {
-    MilterManagerLoggerPrivate *priv;
+    MilterSyslogLoggerPrivate *priv;
 
-    priv = MILTER_MANAGER_LOGGER_GET_PRIVATE(object);
+    priv = MILTER_SYSLOG_LOGGER_GET_PRIVATE(object);
     switch (prop_id) {
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -175,9 +175,9 @@ get_property (GObject    *object,
               GValue     *value,
               GParamSpec *pspec)
 {
-    MilterManagerLoggerPrivate *priv;
+    MilterSyslogLoggerPrivate *priv;
 
-    priv = MILTER_MANAGER_LOGGER_GET_PRIVATE(object);
+    priv = MILTER_SYSLOG_LOGGER_GET_PRIVATE(object);
     switch (prop_id) {
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -185,10 +185,10 @@ get_property (GObject    *object,
     }
 }
 
-MilterManagerLogger *
-milter_manager_logger_new (void)
+MilterSyslogLogger *
+milter_syslog_logger_new (void)
 {
-    return g_object_new(MILTER_TYPE_MANAGER_LOGGER, NULL);
+    return g_object_new(MILTER_TYPE_SYSLOG_LOGGER, NULL);
 }
 
 /*

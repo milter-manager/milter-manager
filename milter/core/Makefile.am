@@ -31,6 +31,7 @@ milter_core_public_headers =		\
 	milter-writer.h			\
 	milter-headers.h		\
 	milter-logger.h			\
+	milter-syslog-logger.h		\
 	milter-reply-signals.h		\
 	milter-utils.h			\
 	milter-connection.h
@@ -72,6 +73,7 @@ libmilter_core_la_SOURCES =		\
 	milter-writer.c			\
 	milter-headers.c		\
 	milter-logger.c			\
+	milter-syslog-logger.c		\
 	milter-reply-signals.c		\
 	milter-utils.c			\
 	milter-connection.c

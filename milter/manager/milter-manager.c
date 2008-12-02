@@ -30,7 +30,6 @@
 
 #include "milter-manager.h"
 #include "milter-manager-leader.h"
-#include "milter-manager-logger.h"
 
 #define MILTER_MANAGER_GET_PRIVATE(obj)                 \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                 \
@@ -41,7 +40,7 @@ typedef struct _MilterManagerPrivate MilterManagerPrivate;
 struct _MilterManagerPrivate
 {
     MilterManagerConfiguration *configuration;
-    MilterManagerLogger *logger;
+    MilterSyslogLogger *logger;
     GList *leaders;
 };
 
@@ -112,7 +111,7 @@ milter_manager_init (MilterManager *manager)
     milter_manager_configuration_reload(priv->configuration);
 
     priv->leaders = NULL;
-    priv->logger = milter_manager_logger_new();
+    priv->logger = milter_syslog_logger_new();
 }
 
 static void

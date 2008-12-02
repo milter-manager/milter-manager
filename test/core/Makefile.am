@@ -14,6 +14,7 @@ noinst_LTLIBRARIES =			\
 	test-writer.la			\
 	test-utils.la			\
 	test-logger.la			\
+	test-syslog-logger.la		\
 	test-connection.la		\
 	test-headers.la
 endif
@@ -51,3 +52,4 @@ test_utils_la_SOURCES = test-utils.c
 test_logger_la_SOURCES = test-logger.c
 test_connection_la_SOURCES = test-connection.c
 test_headers_la_SOURCES = test-headers.c
+test_syslog_logger_la_SOURCES = test-syslog-logger.c

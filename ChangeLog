@@ -28,6 +28,8 @@
 	* test/manager/test-manager.c: Ensure closing milter-manager.
 	* milter/manager/milter-manager-logger.[ch]: Added.
 	* milter/manager/milter-manger.c: Use MilterManagerLogger.
+	* milter/manager/milter-manager-logger.[ch] ->
+	milter/core/milter-system-logger.[ch]: Moved.
 
 2008-12-01  Kouhei Sutou  <kou@cozmixng.org>
 

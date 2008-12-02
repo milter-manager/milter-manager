@@ -19,20 +19,20 @@
 
 #include <string.h>
 
-#include <milter/manager/milter-manager-logger.h>
+#include <milter/core/milter-syslog-logger.h>
 
 #include <gcutter.h>
 #include <glib/gstdio.h>
 
 void test_info (void);
 
-static MilterManagerLogger *logger;
+static MilterSyslogLogger *logger;
 static GIOChannel *syslog;
 static GError *error;
 static gchar *actual;
 static gsize first_log_file_size;
 
-#define MILTER_LOG_DOMAIN "MilterManagerTestManagerLogger"
+#define MILTER_LOG_DOMAIN "MilterSyslogTestSyslogLogger"
 #define SYSLOG_NAME "/var/log/syslog"
 
 static void
@@ -48,7 +48,7 @@ setup_syslog (void)
 void
 setup (void)
 {
-    logger = milter_manager_logger_new();
+    logger = milter_syslog_logger_new();
     actual = NULL;
 
     error = NULL;
@@ -89,7 +89,7 @@ test_info (void)
     milter_info("This is informative message.");
     cut_trace(collect_log_message());
 
-    cut_assert_match(".* milter-manager\\[\\d+\\]: "
+    cut_assert_match(".* milter-syslog\\[\\d+\\]: "
                      "\\[.+\\]"
                      "This is informative message.$",
                      actual);
