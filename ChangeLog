@@ -3,6 +3,10 @@
 	* milter/manager/milter-manager-children.c:
 	get_first_command_waiting_child_queue ->
 	get_first_child_in_command_waiting_child_queue.
+	* milter/manager/milter-manager-children.c: Cleanup.
+	Do not emit "continue" signal of MilterServerContext when "accept"
+	reply is received by the child after the second child.
+	* test/fixtures/manager/skip-on-body.txt: Start client2007 too.
 
 2008-12-02  Kouhei Sutou  <kou@cozmixng.org>
 

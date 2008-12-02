@@ -1,5 +1,5 @@
 [scenario]
-clients=client10026
+clients=client10026;client10027
 expected=The message was 'not-change'.
 
 [client10026]
