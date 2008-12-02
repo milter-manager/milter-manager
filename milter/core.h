@@ -38,6 +38,7 @@
 #include <milter/core/milter-macros-requests.h>
 #include <milter/core/milter-headers.h>
 #include <milter/core/milter-logger.h>
+#include <milter/core/milter-syslog-logger.h>
 #include <milter/core/milter-error-emittable.h>
 #include <milter/core/milter-finished-emittable.h>
 #include <milter/core/milter-reply-signals.h>
