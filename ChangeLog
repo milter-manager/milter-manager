@@ -1,5 +1,8 @@
 2008-12-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* module/configuration/ruby/milter-manager-ruby-configuration.c:
+	fix wrong method name bug.
+
 	* milter/manager/milter-manager-configuration.c
 	(milter_manager_configuration_to_xml_string): fix wrong value bug.
 

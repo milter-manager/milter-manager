@@ -349,7 +349,7 @@ load (MilterManagerConfiguration *_configuration, ID method_name,
     configuration = MILTER_MANAGER_RUBY_CONFIGURATION(_configuration);
     rb_funcall_protect(&local_error,
                        rb_mMilterManagerConfigurationLoader,
-                       rb_intern("load"), 2,
+                       method_name, 2,
                        GOBJ2RVAL(configuration),
                        rb_str_new2(file_name));
 
