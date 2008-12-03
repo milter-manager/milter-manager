@@ -79,6 +79,7 @@
 	body chunk.
 	* test/tool/fixtures/large.mail: Added 64kbytes over size mail. The
 	test does not check its output yet.
+	* tool/milter-test-client.c: Use MilterSyslogLogger.
 
 2008-12-02  Kouhei Sutou  <kou@cozmixng.org>
 
