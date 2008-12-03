@@ -1,5 +1,6 @@
 require 'pathname'
 require 'shellwords'
+require "English"
 
 require "rexml/document"
 require "rexml/streamlistener"
@@ -89,6 +90,7 @@ module Milter::Manager
           @tag_stack = [["", :root]]
           @text_stack = ['']
           @state_stack = [:root]
+          @egg = nil
         end
 
         def tag_start(name, attributes)
@@ -117,8 +119,43 @@ module Milter::Manager
           text = @text_stack.pop
           uri, local = @tag_stack.pop
           no_action_states = [:root, :configuration, :security,
-                              :control, :manager]
-          unless no_action_states.include?(state)
+                              :control, :manager, :milters]
+          case state
+          when *no_action_states
+            # do nothing
+          when :milter
+            @configuration.define_milter(@egg_config["name"]) do |milter|
+              milter.target_hosts.concat(@egg_config["target_hosts"] || [])
+              milter.target_addresses.concat(@egg_config["target_addresses"] || [])
+              milter.target_senders.concat(@egg_config["target_senders"] || [])
+              milter.target_recipients.concat(@egg_config["target_recipients"] || [])
+              (@egg_config["target_headers"] || []).each do |name, value|
+                milter.add_target_header(name, value)
+              end
+            end
+            @egg_config = nil
+          when "milter_target_header_name"
+            @egg_target_header_name = text
+          when "milter_target_header_value"
+            @egg_target_header_value = text
+          when :milter_target_header
+            if @egg_target_header_name.nil?
+              raise "#{current_path}/name is missing"
+            end
+            if @egg_target_header_value.nil?
+              raise "#{current_path}/value is missing"
+            end
+            @egg_config["target_headers"] ||= {}
+            @egg_config["target_headers"][@egg_target_header_name] = @egg_target_header_value
+            @egg_target_header_name = nil
+            @egg_target_header_value = nil
+          when "milter_name"
+            @egg_config["name"] = text
+          when /milter_target_/
+            key = "target_#{$POSTMATCH.pluralize}"
+            @egg_config[key] ||= []
+            @egg_config[key] << text
+          else
             local = normalize_local(local)
             @configuration.send(@state_stack.last).send("#{local}=", text)
           end
@@ -156,12 +193,40 @@ module Milter::Manager
               :control
             when "manager"
               :manager
+            when "milters"
+              :milters
             else
               raise "unexpected element: #{current_path}"
             end
           when :security, :control, :manager
             if @configuration.send(current_state).respond_to?("#{local}=")
               local
+            else
+              raise "unexpected element: #{current_path}"
+            end
+          when :milter
+            available_locals = ["name", "target_host", "target_address",
+                                "target_sender", "target_recipient"]
+            case local
+            when "target_header"
+              @egg_target_header_name = nil
+              @egg_target_header_value = nil
+              :milter_target_header
+            when *available_locals
+              "milter_#{local}"
+            else
+              raise "unexpected element: #{current_path}"
+            end
+          when :milter_target_header
+            if ["name", "value"].include?(local)
+              "milter_target_header_#{name}"
+            else
+              raise "unexpected element: #{current_path}"
+            end
+          when :milters
+            if local == "milter"
+              @egg_config = {}
+              :milter
             else
               raise "unexpected element: #{current_path}"
             end
