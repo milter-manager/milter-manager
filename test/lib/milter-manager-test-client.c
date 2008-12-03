@@ -382,8 +382,10 @@ cb_output_received (GCutEgg *egg, const gchar *chunk, gsize size,
 
     g_string_append_len(priv->output_received, chunk, size);
     output_channel = gcut_egg_get_output(egg);
-    if (g_io_channel_get_buffer_condition(output_channel) == G_IO_IN)
+    if (chunk[size - 1] != '\n' ||
+        g_io_channel_get_buffer_condition(output_channel) == G_IO_IN) {
         return;
+    }
 
     responses = split_response(priv->output_received->str,
                                priv->output_received->len);
