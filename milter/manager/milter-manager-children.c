@@ -2144,6 +2144,14 @@ open_body_file (MilterManagerChildren *children)
         return FALSE;
     }
 
+    g_io_channel_set_encoding(priv->body_file, NULL, &error);
+    if (error) {
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
+                                    error);
+        g_error_free(error);
+        return FALSE;
+    }
+
     return TRUE;
 }
 

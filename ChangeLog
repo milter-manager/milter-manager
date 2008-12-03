@@ -3,6 +3,8 @@
 	* test/manager/test-manager.c (wait_for_manager_ready): Check errno
 	after invoking socket().
 	* test/manager/test-manager.c: Send unknown command by default.
+	* milter/manager/milter-manager-children.c: Set io channel encoding
+	NULL to handle binary data correctly.
 
 2008-12-03  Kouhei Sutou  <kou@cozmixng.org>
 
