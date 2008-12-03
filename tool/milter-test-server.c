@@ -27,7 +27,10 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <glib/gstdio.h>
 #include <glib/gi18n.h>
+#include <fcntl.h>
 
 #include <glib/gprintf.h>
 
@@ -892,24 +895,42 @@ parse_mail_file_arg (const gchar *option_name,
     gchar *contents = NULL;
     gsize length;
     GError *internal_error = NULL;
+    GIOChannel *io_channel;
 
-    if (!g_file_test(value, G_FILE_TEST_EXISTS)) {
-        g_set_error(error,
+    if (g_str_equal(value, "-")) {
+        io_channel = g_io_channel_unix_new(STDIN_FILENO);
+    } else {
+        if (!g_file_test(value, G_FILE_TEST_EXISTS)) {
+            g_set_error(error,
                     G_OPTION_ERROR,
                     G_OPTION_ERROR_BAD_VALUE,
                     _("%s does not exist."), value);
-        return FALSE;
+            return FALSE;
+        }
+        io_channel = g_io_channel_new_file(value, "r", &internal_error);
+        if (!io_channel) {
+            g_set_error(error,
+                        G_OPTION_ERROR,
+                        G_OPTION_ERROR_FAILED,
+                        _("Loading from %s failed.: %s"),
+                        value, internal_error->message);
+            g_error_free(internal_error);
+            return FALSE;
+        }
     }
 
-    if (!g_file_get_contents(value, &contents, &length, &internal_error)) {
+    g_io_channel_set_encoding(io_channel, NULL, NULL);
+    if (g_io_channel_read_to_end(io_channel, &contents, &length, &internal_error) != G_IO_STATUS_NORMAL) {
         g_set_error(error,
                     G_OPTION_ERROR,
                     G_OPTION_ERROR_FAILED,
                     _("Loading from %s failed.: %s"),
                     value, internal_error->message);
         g_error_free(internal_error);
+        g_io_channel_unref(io_channel);
         return FALSE;
     }
+    g_io_channel_unref(io_channel);
 
     if (!parse_mail_contents(contents, &internal_error)) {
         g_set_error(error,

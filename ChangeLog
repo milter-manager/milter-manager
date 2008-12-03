@@ -95,6 +95,7 @@
 	* tool/milter-test-client.c: Use MilterSyslogLogger.
 	* tool/milter-test-client.c: Use MilterSyslogLogger only if verborse
 	mode.
+	* tool/milter-test-server.c: Support mail data from stdin.
 
 2008-12-02  Kouhei Sutou  <kou@cozmixng.org>
 
