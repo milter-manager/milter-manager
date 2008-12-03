@@ -1181,6 +1181,8 @@ data_scenario_basic (void)
                  g_strdup("end-of-header.txt"), g_free,
                  "body",
                  g_strdup("body.txt"), g_free,
+                 "body - larger than milter_chunk_size",
+                 g_strdup("body-larger-than-milter-chunk-size.txt"), g_free,
                  "body - no body flag on both client",
                  g_strdup("no-body-flag-on-both-client.txt"), g_free,
                  "end-of-message - no body flag",
