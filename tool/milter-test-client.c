@@ -142,6 +142,13 @@ cb_envelope_recipient (MilterDecoder *decoder, const gchar *to,
     return MILTER_STATUS_CONTINUE;
 }
 
+static MilterStatus
+cb_data (MilterDecoder *decoder, gpointer user_data)
+{
+    g_print("data\n");
+
+    return MILTER_STATUS_CONTINUE;
+}
 
 static MilterStatus
 cb_header (MilterDecoder *decoder, const gchar *name, const gchar *value,
@@ -216,6 +223,7 @@ setup_context_signals (MilterClientContext *context)
     CONNECT(helo);
     CONNECT(envelope_from);
     CONNECT(envelope_recipient);
+    CONNECT(data);
     CONNECT(header);
     CONNECT(end_of_header);
     CONNECT(body);
