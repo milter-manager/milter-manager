@@ -78,6 +78,180 @@ static const GOptionEntry option_entries[] =
     {NULL}
 };
 
+static MilterStatus
+cb_negotiate (MilterDecoder *decoder, MilterOption *option, gpointer user_data)
+{
+    MilterActionFlags action;
+    MilterStepFlags step;
+    gchar *action_names;
+    gchar *step_names;
+
+    action = milter_option_get_action(option);
+    step = milter_option_get_step(option);
+
+    action_names = milter_utils_get_flags_names(MILTER_TYPE_ACTION_FLAGS,
+                                                action);
+    step_names = milter_utils_get_flags_names(MILTER_TYPE_STEP_FLAGS, step);
+
+    g_print("negotiate: version=<%u>, action=<%s>, step=<%s>\n",
+            milter_option_get_version(option), action_names, step_names);
+
+    g_free(action_names);
+    g_free(step_names);
+
+    return MILTER_STATUS_ALL_OPTIONS;
+}
+
+static MilterStatus
+cb_connect (MilterDecoder *decoder, const gchar *host_name,
+            const struct sockaddr *address, socklen_t address_length,
+            gpointer user_data)
+{
+    gchar *spec;
+
+    spec = milter_connection_address_to_spec(address);
+    g_print("connect: host=<%s>, address=<%s>\n", host_name, spec);
+    g_free(spec);
+
+    return MILTER_STATUS_CONTINUE;
+}
+
+static MilterStatus
+cb_helo (MilterDecoder *decoder, const gchar *fqdn, gpointer user_data)
+{
+    g_print("helo: <%s>\n", fqdn);
+
+    return MILTER_STATUS_CONTINUE;
+}
+
+static MilterStatus
+cb_envelope_from (MilterDecoder *decoder, const gchar *from, gpointer user_data)
+{
+    g_print("envelope-from: <%s>\n", from);
+
+    return MILTER_STATUS_CONTINUE;
+}
+
+static MilterStatus
+cb_envelope_recipient (MilterDecoder *decoder, const gchar *to,
+                       gpointer user_data)
+{
+    g_print("envelope-recipient: <%s>\n", to);
+
+    return MILTER_STATUS_CONTINUE;
+}
+
+
+static MilterStatus
+cb_header (MilterDecoder *decoder, const gchar *name, const gchar *value,
+           gpointer user_data)
+{
+    g_print("header: <%s: %s>\n", name, value);
+
+    return MILTER_STATUS_CONTINUE;
+}
+
+static MilterStatus
+cb_end_of_header (MilterDecoder *decoder, gpointer user_data)
+{
+    g_print("end-of-header\n");
+
+    return MILTER_STATUS_CONTINUE;
+}
+
+static MilterStatus
+cb_body (MilterDecoder *decoder, const gchar *chunk, gsize length,
+         gpointer user_data)
+{
+    GString *null_terminated_chunk;
+
+    null_terminated_chunk = g_string_new_len(chunk, length);
+    g_print("body: <%s>\n", null_terminated_chunk->str);
+    g_string_free(null_terminated_chunk, TRUE);
+
+    return MILTER_STATUS_CONTINUE;
+}
+
+static MilterStatus
+cb_end_of_message (MilterDecoder *decoder, gpointer user_data)
+{
+    g_print("end-of-message\n");
+
+    return MILTER_STATUS_CONTINUE;
+}
+
+static MilterStatus
+cb_abort (MilterDecoder *decoder, gpointer user_data)
+{
+    g_print("abort\n");
+
+    return MILTER_STATUS_CONTINUE;
+}
+
+static MilterStatus
+cb_quit (MilterDecoder *decoder, gpointer user_data)
+{
+    g_print("quit\n");
+
+    return MILTER_STATUS_CONTINUE;
+}
+
+static MilterStatus
+cb_unknown (MilterDecoder *decoder, const gchar *command, gpointer user_data)
+{
+    g_print("unknown: <%s>\n", command);
+
+    return MILTER_STATUS_CONTINUE;
+}
+
+static void
+setup_context_signals (MilterClientContext *context)
+{
+#define CONNECT(name)                                                   \
+    g_signal_connect(context, #name, G_CALLBACK(cb_ ## name), NULL)
+
+    CONNECT(negotiate);
+    CONNECT(connect);
+    CONNECT(helo);
+    CONNECT(envelope_from);
+    CONNECT(envelope_recipient);
+    CONNECT(header);
+    CONNECT(end_of_header);
+    CONNECT(body);
+    CONNECT(end_of_message);
+    CONNECT(abort);
+    CONNECT(quit);
+    CONNECT(unknown);
+
+#undef CONNECT
+}
+
+static void
+cb_connection_established (MilterClient *client, MilterClientContext *context,
+                           gpointer user_data)
+{
+    setup_context_signals(context);
+}
+
+static void
+cb_error (MilterErrorEmittable *emittable, GError *error,
+          gpointer user_data)
+{
+    g_print("ERROR: %s", error->message);
+}
+
+static void
+setup_client_signals (MilterClient *client)
+{
+#define CONNECT(name)                                                   \
+    g_signal_connect(client, #name, G_CALLBACK(cb_ ## name), NULL)
+
+    CONNECT(connection_established);
+    CONNECT(error);
+
+#undef CONNECT
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -86,6 +260,8 @@ main (int argc, char *argv[])
     GError *error = NULL;
     GOptionContext *option_context;
     GOptionGroup *main_group;
+
+    milter_init();
 
     option_context = g_option_context_new(NULL);
     g_option_context_add_main_entries(option_context, option_entries, NULL);
@@ -98,11 +274,10 @@ main (int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    milter_init();
-
     client = milter_client_new();
     success = milter_client_set_connection_spec(client, spec, &error);
     if (success) {
+        setup_client_signals(client);
         success = milter_client_main(client);
     } else {
         g_print("%s\n", error->message);

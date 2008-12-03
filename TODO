@@ -6,5 +6,5 @@
   * support --connect-address=SPEC
   * support --macro=CONTEXT:NAME:VALUE
 * tool/milter-test-client:
-  * support outputting received information.
+  * support outputting reply information.
   * support customizing reply by command line option.

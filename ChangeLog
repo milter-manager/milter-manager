@@ -1,5 +1,11 @@
 2008-12-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-test-client.c: support received information output.
+
+	* TODO: update an entry:
+	  - delete: support outputting received information.
+	  - add: support outputting reply information.
+
 	* milter/core/milter-utils.[ch], test/core/test-utils.c: add
 	milter_utils_get_flags_names().
 
