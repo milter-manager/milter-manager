@@ -1,5 +1,7 @@
 2008-12-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-test-client.c: use <glib/gi18n.h>.
+
 	* TODO: add an entry:
 	- milter-test-server:
 	  - support --connect-host=HOST
