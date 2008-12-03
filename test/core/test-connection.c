@@ -35,8 +35,8 @@ void data_parse_connection_spec_inet (void);
 void test_parse_connection_spec_inet (gconstpointer data);
 void data_parse_connection_spec_inet6 (void);
 void test_parse_connection_spec_inet6 (gconstpointer data);
-void data_generate_connection_spec (void);
-void test_generate_connection_spec (gconstpointer data);
+void data_address_to_spec (void);
+void test_address_to_spec (gconstpointer data);
 void test_bind_failure (void);
 
 static struct sockaddr *actual_address;
@@ -353,7 +353,7 @@ test_parse_connection_spec_inet6 (gconstpointer data)
 }
 
 void
-data_generate_connection_spec (void)
+data_address_to_spec (void)
 {
     cut_add_data("inet6",
                  test_data_new("inet6:9999@::1",
@@ -388,13 +388,13 @@ data_generate_connection_spec (void)
 }
 
 void
-test_generate_connection_spec (gconstpointer data)
+test_address_to_spec (gconstpointer data)
 {
     const TestData *test_data = data;
     gchar *actual_address_string;
 
-    actual_address_string = 
-        milter_connection_generate_spec_from_address(test_data->expected_address);
+    actual_address_string =
+        milter_connection_address_to_spec(test_data->expected_address);
     cut_take_string(actual_address_string);
 
     cut_assert_equal_string(test_data->spec, actual_address_string);

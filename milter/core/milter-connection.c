@@ -41,7 +41,7 @@ milter_connection_error_quark (void)
 }
 
 gchar *
-milter_connection_generate_spec_from_address (struct sockaddr *address)
+milter_connection_address_to_spec (const struct sockaddr *address)
 {
     gchar *spec = NULL;
 
@@ -49,39 +49,39 @@ milter_connection_generate_spec_from_address (struct sockaddr *address)
         return NULL;
 
     switch (address->sa_family) {
-      case AF_UNIX:
-      {
-        struct sockaddr_un *address_unix = (struct sockaddr_un*)address;
+    case AF_UNIX:
+    {
+        struct sockaddr_un *address_unix = (struct sockaddr_un *)address;
         spec = g_strdup_printf("unix:%s", address_unix->sun_path);
         break;
-      }
-      case AF_INET:
-      {
-        struct sockaddr_in *address_inet = (struct sockaddr_in*)address;
+    }
+    case AF_INET:
+    {
+        struct sockaddr_in *address_inet = (struct sockaddr_in *)address;
         gchar ip_address_string[INET_ADDRSTRLEN];
 
         if (inet_ntop(AF_INET, &address_inet->sin_addr,
-                      (char*)ip_address_string, INET_ADDRSTRLEN)) {
+                      (gchar *)ip_address_string, INET_ADDRSTRLEN)) {
             spec = g_strdup_printf("inet:%d@%s",
                                    g_ntohs(address_inet->sin_port),
                                    ip_address_string);
         }
         break;
-      }
-      case AF_INET6:
-      {
-        struct sockaddr_in6 *address_inet6 = (struct sockaddr_in6*)address;
+    }
+    case AF_INET6:
+    {
+        struct sockaddr_in6 *address_inet6 = (struct sockaddr_in6 *)address;
         gchar ip_address_string[INET6_ADDRSTRLEN];
 
         if (inet_ntop(AF_INET6, &address_inet6->sin6_addr,
-                      (char*)ip_address_string, INET6_ADDRSTRLEN)) {
+                      (gchar *)ip_address_string, INET6_ADDRSTRLEN)) {
             spec = g_strdup_printf("inet6:%d@%s",
                                    g_ntohs(address_inet6->sin6_port),
                                    ip_address_string);
         }
         break;
-      }
-      default:
+    }
+    default:
         break;
     }
 
