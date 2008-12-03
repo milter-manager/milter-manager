@@ -59,6 +59,7 @@ struct _MilterManagerChildrenPrivate
     gchar *end_of_message_chunk;
     gsize end_of_message_size;
     gboolean sent_end_of_message;
+    guint sent_body_count;
     gboolean replaced_body;
 };
 
@@ -207,6 +208,7 @@ milter_manager_children_init (MilterManagerChildren *milter)
     priv->end_of_message_chunk = NULL;
     priv->end_of_message_size = 0;
     priv->sent_end_of_message = FALSE;
+    priv->sent_body_count = 0;
     priv->replaced_body = FALSE;
 
     priv->current_state = MILTER_SERVER_CONTEXT_STATE_START;
@@ -858,11 +860,13 @@ cb_continue (MilterServerContext *context, gpointer user_data)
         }
         break;
       case MILTER_SERVER_CONTEXT_STATE_BODY:
+        priv->sent_body_count--;
         if (!priv->sent_end_of_message) {
             g_signal_emit_by_name(children, "continue");
             return;
         }
-        send_next_command(children, context, state);
+        if (priv->sent_body_count == 0)
+            send_next_command(children, context, state);
         break;
       case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
         send_first_command_to_next_child(children, context, state);
@@ -2199,6 +2203,7 @@ milter_manager_children_body (MilterManagerChildren *children,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
     priv->current_state = MILTER_SERVER_CONTEXT_STATE_BODY;
+    priv->sent_body_count++;
 
     if (!milter_server_context_is_enable_step(first_child, MILTER_STEP_NO_BODY) && 
         !milter_server_context_get_skip_body(first_child)) {
@@ -2235,6 +2240,7 @@ send_body_to_child (MilterManagerChildren *children, MilterServerContext *contex
     if (!priv->body_file)
         return TRUE;
 
+    priv->sent_body_count = 0;
     g_io_channel_seek_position(priv->body_file, 0, G_SEEK_SET, &error);
 
     while (status == G_IO_STATUS_NORMAL && success) {
@@ -2247,6 +2253,8 @@ send_body_to_child (MilterManagerChildren *children, MilterServerContext *contex
         if (status == G_IO_STATUS_NORMAL) {
             success &= milter_server_context_body(context,
                                                   buffer, read_size);
+            if (success)
+                priv->sent_body_count++;
         }
     }
 

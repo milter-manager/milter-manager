@@ -37,6 +37,8 @@
 	* milter/manager/milter-manager-leader.c,
 	milter/server/milter-server-context.c: Support chain continuous
 	"body" command.
+	* milter/manager/milter-manager-children.c: Revert removal counting
+	sending body cout.
 
 2008-12-02  Kouhei Sutou  <kou@cozmixng.org>
 
