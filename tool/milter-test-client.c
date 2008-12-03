@@ -275,7 +275,8 @@ main (int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    logger = milter_syslog_logger_new("milter-test-client");
+    if (verbose)
+        logger = milter_syslog_logger_new("milter-test-client");
     client = milter_client_new();
     success = milter_client_set_connection_spec(client, spec, &error);
     if (success) {
@@ -286,7 +287,8 @@ main (int argc, char *argv[])
         g_error_free(error);
     }
     g_object_unref(client);
-    g_object_unref(logger);
+    if (logger)
+        g_object_unref(logger);
 
     milter_quit();
 
