@@ -343,8 +343,8 @@ module Milter::Manager
         @egg.signal_connect("hatched") do |_, child|
           if !@target_hosts.empty? or !@target_addresses.empty?
             child.signal_connect("check-connect") do |_, host, address|
-              !@target_hosts.all? {|_host| _host === host} and
-                !@target_addresses.all? {|_address| _address === address}
+              !(@target_hosts.all? {|_host| _host === host} and
+                @target_addresses.all? {|_address| _address === address})
             end
           end
 

@@ -1,3 +1,7 @@
+2008-12-04  Kouhei Sutou  <kou@cozmixng.org>
+
+	* binding/ruby/lib/milter/manager.rb: fix a wrong condition bug.
+
 2008-12-04  Hiroyuki Ikezoe  <poincare@ikezoe.net>
 
 	* test/manager/test-manager.c (wait_for_manager_ready): Check errno
