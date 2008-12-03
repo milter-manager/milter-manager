@@ -235,7 +235,7 @@ pkgsysconfdir="\$(sysconfdir)/$PACKAGE_NAME"
 AC_SUBST(pkgsysconfdir)
 
 CONFIG_FILE_NAME="milter-manager.conf"
-CUSTOM_CONFIG_FILE_NAME="milter-manger.custom.conf"
+CUSTOM_CONFIG_FILE_NAME="milter-manager.custom.conf"
 AC_SUBST(CONFIG_FILE_NAME)
 AC_SUBST(CUSTOM_CONFIG_FILE_NAME)
 

@@ -1,5 +1,7 @@
 2008-12-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* configure.ac: fix a typo.
+
 	* binding/ruby/lib/milter/manager.rb: support
 	/configuration/milters/milter parsing partially. Need TEST!!!
 
