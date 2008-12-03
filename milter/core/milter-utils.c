@@ -167,7 +167,7 @@ milter_utils_get_flags_names (GType flags_type, guint flags)
         for (i = 0; i < flags_class->n_values; i++) {
             GFlagsValue *value = flags_class->values + i;
             if (value->value & flags) {
-                if (i > 0)
+                if (names->len > 0)
                     g_string_append(names, "|");
                 g_string_append(names, value->value_nick);
             }

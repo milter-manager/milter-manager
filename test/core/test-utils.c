@@ -377,7 +377,8 @@ data_flags_names (void)
 
     ADD("one", MILTER_LOG_LEVEL_ERROR, "error");
     ADD("none", 0, "");
-    ADD("multi", MILTER_LOG_LEVEL_ERROR | MILTER_LOG_LEVEL_INFO, "error|info");
+    ADD("multi", MILTER_LOG_LEVEL_CRITICAL | MILTER_LOG_LEVEL_INFO,
+        "critical|info");
     ADD("all", MILTER_LOG_LEVEL_ALL,
         "error|critical|warning|message|info|debug|statistics");
     ADD("unknown", MILTER_LOG_LEVEL_STATISTICS << 1,

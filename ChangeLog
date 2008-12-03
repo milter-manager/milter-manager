@@ -1,5 +1,9 @@
 2008-12-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-utils.c, test/core/test-utils.c:
+	milter_utils_get_flags_names() works for the first flags data
+	correctly.
+
 	* tool/milter-test-client.c: support received information output.
 
 	* TODO: update an entry:
