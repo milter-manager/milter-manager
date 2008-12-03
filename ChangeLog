@@ -1,5 +1,7 @@
 2008-12-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-test-server.c: add --unknown command.
+
 	* tool/milter-test-server.c: use sendmail compatible options.
 
 	* tool/milter-test-server.c, test/tool/test-server.c, TODO:

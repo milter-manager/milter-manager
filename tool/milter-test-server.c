@@ -51,6 +51,7 @@ static gchar *helo_host = NULL;
 static gchar *envelope_from = NULL;
 static gchar **recipients = NULL;
 static gchar **body_chunks = NULL;
+static gchar *unknown_command = NULL;
 static MilterHeaders *option_headers = NULL;
 static MilterSyslogLogger *logger = NULL;
 
@@ -199,7 +200,8 @@ cb_continue (MilterServerContext *context, gpointer user_data)
             break;
         }
         if (!(step & MILTER_STEP_NO_UNKNOWN)) {
-            milter_server_context_unknown(context, "!");
+            if (unknown_command)
+                milter_server_context_unknown(context, unknown_command);
             break;
         }
       case MILTER_SERVER_CONTEXT_STATE_UNKNOWN:
@@ -970,6 +972,8 @@ static const GOptionEntry option_entries[] =
     {"body", 'b', 0, G_OPTION_ARG_STRING_ARRAY, &body_chunks,
      N_("Add a body chunk. To add n body chunks, use --body option n times."),
      "CHUNK"},
+    {"unknown", 0, 0, G_OPTION_ARG_STRING, &unknown_command,
+     N_("Set an unknown command."), "COMMAND"},
     {"mail-file", 'm', 0, G_OPTION_ARG_CALLBACK, parse_mail_file_arg,
      N_("Set mail file name"), "FILENAME"},
     {"output-message", 0,
