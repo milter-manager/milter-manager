@@ -698,6 +698,7 @@ extract_path_from_mail_address (const gchar *mail_address, GError **error)
             return NULL;
         }
     } else {
+        GString *extracted_path;
         const gchar *end_of_path;
 
         path = mail_address;
@@ -707,7 +708,10 @@ extract_path_from_mail_address (const gchar *mail_address, GError **error)
         while (end_of_path[0] && end_of_path[0] != ' ')
             end_of_path++;
         /* FIXME: should check any garbages after end_of_path. */
-        return g_strndup(path, end_of_path - path);
+        extracted_path = g_string_new("<");
+        g_string_append_len(extracted_path, path, end_of_path - path);
+        g_string_append(extracted_path, ">");
+        return g_string_free(extracted_path, FALSE);
     }
 }
 

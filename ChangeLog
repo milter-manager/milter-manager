@@ -1,5 +1,8 @@
 2008-12-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-test-server.c, test/tool/test-server.c,
+	test/tool/fixtures/parse-test.mail: add missing angles to path.
+
 	* TODO: add: support extracting multiple {reverse,forward}-paths
 	from envelope-from and envelope-recipient address in --mail-file.
 

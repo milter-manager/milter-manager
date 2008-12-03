@@ -1009,8 +1009,7 @@ option_test_assert_mail_file (void)
     MilterHeader expected_header4 = {"Content-Type", "text/plain; charset=\"us-ascii\""};
     MilterHeader expected_header5 = {"X-Source", ""};
     MilterHeader expected_header6 = {"To", "Test Sender <test-to@example.com>"};
-    MilterHeader expected_header7 = {"From",
-                                     "Test Receiver <test-from@example.com>"};
+    MilterHeader expected_header7 = {"From", "test-from@example.com"};
     MilterHeader expected_header8 = {"List-Archive",
                                      "\n <http://sourceforge.net/mailarchive/forum.php?forum_name=milter-manager-commit>"};
     MilterHeader expected_header9 = {"Subject", "This is a test mail"};
