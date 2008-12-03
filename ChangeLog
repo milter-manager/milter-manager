@@ -1,5 +1,11 @@
 2008-12-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: add an entry:
+	- milter-test-server:
+	  - support --connect-host=HOST
+	  - support --connect-address=SPEC
+	  - support --macro=CONTEXT:NAME:VALUE
+
 	* tool/milter-test-server.c: cleanup options.
 	* test/tool/test-server.c: follow the above change.
 
