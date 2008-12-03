@@ -50,6 +50,14 @@ static MilterSyslogLogger *logger = NULL;
 
 #define PROGRAM_NAME "milter-test-server"
 
+#define MILTER_TEST_SERVER_ERROR                                \
+    (g_quark_from_static_string("milter-test-server-error-quark"))
+
+typedef enum
+{
+    MILTER_TEST_SERVER_ERROR_INVALID_HEADER
+} MilterTestServerError;
+
 typedef struct Message
 {
     MilterHeaders *headers;
@@ -720,8 +728,7 @@ parse_mail_contents (const gchar *contents, GError **error)
 {
     gchar **lines, **first_lines;
     GList *recipient_list = NULL;
-    gboolean end_headers = FALSE;
-    GString *body_string = g_string_new(NULL);
+    GString *body_string;
 
     lines = g_strsplit(contents, "\n", -1);
     first_lines = lines;
@@ -730,21 +737,28 @@ parse_mail_contents (const gchar *contents, GError **error)
     if (g_str_has_prefix(*lines, "From"))
         lines++;
 
-    while (*lines) {
-        if (end_headers) {
-            g_string_append_printf(body_string, "%s\r\n", *lines);
-            lines++;
-            continue;
-        }
+    for (; *lines; lines++) {
         if (is_header(*lines)) {
             parse_header(*lines, &recipient_list);
         } else if (g_ascii_isspace(*lines[0])) {
             append_header_value(*lines);
+        } else if (*lines[0] == '\0') {
+            lines++;
+            break;
         } else {
-            end_headers = TRUE;
-            g_string_append_printf(body_string, "%s\r\n", *lines);
+            g_set_error(error,
+                        MILTER_TEST_SERVER_ERROR,
+                        MILTER_TEST_SERVER_ERROR_INVALID_HEADER,
+                        "invalid header: <%s>",
+                        *lines);
+            g_strfreev(first_lines);
+            return FALSE;
         }
-        lines++;
+    }
+
+    body_string = g_string_new(NULL);
+    for (; *lines; lines++) {
+        g_string_append_printf(body_string, "%s\r\n", *lines);
     }
 
     if (recipient_list) {

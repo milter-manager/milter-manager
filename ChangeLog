@@ -1,5 +1,8 @@
 2008-12-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-test-server.c, test/tool/fixtures/parse-test.mail:
+	fix header and body separation parsing.
+
 	* TODO: update an entry: fix envelope-from and envelope-recipient
 	address extracting in --mail-file.
 
