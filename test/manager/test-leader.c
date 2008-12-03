@@ -34,6 +34,9 @@
 void data_scenario (void);
 void test_scenario (gconstpointer data);
 
+void data_large_body (void);
+void test_large_body (gconstpointer data);
+
 static gchar *scenario_dir;
 static MilterManagerTestScenario *main_scenario;
 
@@ -1319,6 +1322,33 @@ test_scenario (gconstpointer data)
 
     cut_trace(milter_manager_test_scenario_start_clients(main_scenario));
     cut_trace(do_actions(main_scenario));
+}
+
+/* over 512 kbytes data causes hang up..? */
+#define LARGE_DATA_SIZE 512 * 1024
+void
+data_large_body (void)
+{
+    gchar *chunk = g_new(gchar, LARGE_DATA_SIZE);
+    memset(chunk, 'B', LARGE_DATA_SIZE);
+    cut_add_data("large body", chunk, g_free);
+}
+
+void
+test_large_body (gconstpointer data)
+{
+    const gchar *chunk = data;
+
+    cut_trace(test_scenario("end-of-header.txt"));
+
+    milter_server_context_set_state(MILTER_SERVER_CONTEXT(server),
+                                    MILTER_SERVER_CONTEXT_STATE_BODY);
+    milter_manager_leader_body(leader, chunk, LARGE_DATA_SIZE);
+
+    /*
+    cut_assert_equal_memory(chunk, LARGE_DATA_SIZE,
+                            collect_received_strings(body_chunk), LARGE_DATA_SIZE);
+    */
 }
 
 /*

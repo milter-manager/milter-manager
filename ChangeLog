@@ -5,6 +5,8 @@
 	* test/manager/test-manager.c: Send unknown command by default.
 	* milter/manager/milter-manager-children.c: Set io channel encoding
 	NULL to handle binary data correctly.
+	* test/manager/test-leader.c: Added large body packet test. But
+	received data is not checked yet. 
 
 2008-12-03  Kouhei Sutou  <kou@cozmixng.org>
 
