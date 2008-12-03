@@ -36,6 +36,10 @@ void data_flags_from_string (void);
 void test_flags_from_string (gconstpointer _data);
 void data_enum_from_string (void);
 void test_enum_from_string (gconstpointer _data);
+void data_flags_names (void);
+void test_flags_names (gconstpointer _data);
+void test_append_index (void);
+void test_xml_append_text_element (void);
 
 static GIOCondition io_condition;
 static const gchar *expected_inspected_io_condition;
@@ -359,6 +363,40 @@ test_enum_from_string (gconstpointer _data)
     gcut_assert_equal_enum(type,
                            gcut_data_get_enum(data, "/expected"),
                            milter_utils_enum_from_string(type, input));
+}
+
+void
+data_flags_names (void)
+{
+#define ADD(label, input, expected)                                     \
+    gcut_add_datum(label,                                               \
+                   "/input", MILTER_TYPE_LOG_LEVEL_FLAGS, input,        \
+                   "/type", G_TYPE_GTYPE, MILTER_TYPE_LOG_LEVEL_FLAGS,  \
+                   "/expected", G_TYPE_STRING, expected,                \
+                   NULL)
+
+    ADD("one", MILTER_LOG_LEVEL_ERROR, "error");
+    ADD("none", 0, "");
+    ADD("multi", MILTER_LOG_LEVEL_ERROR | MILTER_LOG_LEVEL_INFO, "error|info");
+    ADD("all", MILTER_LOG_LEVEL_ALL,
+        "error|critical|warning|message|info|debug|statistics");
+    ADD("unknown", MILTER_LOG_LEVEL_STATISTICS << 1,
+        "(unknown flags: MilterLogLevelFlags:0x80)");
+
+#undef ADD
+}
+
+void
+test_flags_names (gconstpointer _data)
+{
+    const GCutData *data = _data;
+    MilterLogLevelFlags input;
+    GType type;
+
+    input = gcut_data_get_flags(data, "/input");
+    type = gcut_data_get_type(data, "/type");
+    cut_assert_equal_string_with_free(gcut_data_get_string(data, "/expected"),
+                                      milter_utils_get_flags_names(type, input));
 }
 
 void

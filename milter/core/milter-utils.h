@@ -82,6 +82,8 @@ gchar    *milter_utils_get_enum_name         (GType enum_type,
                                               gint  enum_value);
 gchar    *milter_utils_inspect_flags         (GType flags_type,
                                               guint flags);
+gchar    *milter_utils_get_flags_names       (GType flags_type,
+                                              guint flags);
 gchar    *milter_utils_inspect_object        (GObject *object);
 gchar    *milter_utils_format_reply_code     (guint reply_code,
                                               const gchar *extended_code,

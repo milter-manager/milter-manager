@@ -151,6 +151,44 @@ milter_utils_inspect_flags (GType flags_type, guint flags)
 }
 
 gchar *
+milter_utils_get_flags_names (GType flags_type, guint flags)
+{
+    GFlagsClass *flags_class;
+    GString *names;
+
+    flags_class = g_type_class_ref(flags_type);
+    if (!flags_class)
+        return g_strdup_printf("unknown flags type: %s(%" G_GSIZE_FORMAT ")",
+                               g_type_name(flags_type), flags_type);
+
+    names = g_string_new(NULL);
+    if (flags & flags_class->mask) {
+        guint i;
+        for (i = 0; i < flags_class->n_values; i++) {
+            GFlagsValue *value = flags_class->values + i;
+            if (value->value & flags) {
+                if (i > 0)
+                    g_string_append(names, "|");
+                g_string_append(names, value->value_nick);
+            }
+        }
+    }
+
+    if (flags & ~(flags_class->mask)) {
+        if (names->len > 0)
+            g_string_append(names, " ");
+        g_string_append_printf(names,
+                               "(unknown flags: %s:0x%x)",
+                               g_type_name(flags_type),
+                               flags & ~(flags_class->mask));
+    }
+
+    g_type_class_unref(flags_class);
+
+    return g_string_free(names, FALSE);
+}
+
+gchar *
 milter_utils_inspect_object (GObject *object)
 {
     GString *string;
