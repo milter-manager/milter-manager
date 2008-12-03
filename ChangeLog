@@ -1,5 +1,12 @@
 2008-12-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: add: support extracting multiple {reverse,forward}-paths
+	from envelope-from and envelope-recipient address in --mail-file.
+
+	* tool/milter-test-server.c, test/tool/test-server.c,
+	test/tool/fixtures/parse-test.mail: support path extraction from
+	mail address.
+
 	* tool/milter-test-server.c: add a missing space.
 
 	* tool/milter-test-server.c, test/tool/fixtures/parse-test.mail:

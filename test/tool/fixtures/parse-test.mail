@@ -4,8 +4,8 @@ Date: Wed, 5 Nov 2008 11:41:54 -0200
 Message-ID: <168f979z.5435357@xxx>
 Content-Type: text/plain; charset="us-ascii"
 X-Source: 
-To: <test-to@example.com>
-From: <test-from@example.com>
+To: Test Sender <test-to@example.com>
+From: Test Receiver <test-from@example.com>
 List-Archive:
  <http://sourceforge.net/mailarchive/forum.php?forum_name=milter-manager-commit>
 Subject: This is a test mail

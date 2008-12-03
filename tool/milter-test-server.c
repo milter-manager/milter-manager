@@ -55,7 +55,8 @@ static MilterSyslogLogger *logger = NULL;
 
 typedef enum
 {
-    MILTER_TEST_SERVER_ERROR_INVALID_HEADER
+    MILTER_TEST_SERVER_ERROR_INVALID_HEADER,
+    MILTER_TEST_SERVER_ERROR_INVALID_MAIL_ADDRESS
 } MilterTestServerError;
 
 typedef struct Message
@@ -677,15 +678,62 @@ set_envelope_from (const gchar *from)
     return TRUE;
 }
 
+static gchar *
+extract_path_from_mail_address (const gchar *mail_address, GError **error)
+{
+    const gchar *path;
+
+    path = strstr(mail_address, "<");
+    if (path) {
+        const gchar *end_of_path;
+
+        end_of_path = strstr(path, ">");
+        if (end_of_path) {
+            return g_strndup(path, end_of_path + 1 - path);
+        } else {
+            g_set_error(error,
+                        MILTER_TEST_SERVER_ERROR,
+                        MILTER_TEST_SERVER_ERROR_INVALID_MAIL_ADDRESS,
+                        "invalid mail address: <%s>", mail_address);
+            return NULL;
+        }
+    } else {
+        const gchar *end_of_path;
+
+        path = mail_address;
+        while (path[0] && path[0] == ' ')
+            path++;
+        end_of_path = path;
+        while (end_of_path[0] && end_of_path[0] != ' ')
+            end_of_path++;
+        /* FIXME: should check any garbages after end_of_path. */
+        return g_strndup(path, end_of_path - path);
+    }
+}
+
 static gboolean
-parse_header (const gchar *line, GList **recipient_list)
+parse_header (const gchar *line, GList **recipient_list, GError **error)
 {
     gchar **strings;
 
-    if (g_str_has_prefix(line, "From: "))
-        set_envelope_from(line + 6);
-    else if (g_str_has_prefix(line, "To: "))
-        *recipient_list = g_list_append(*recipient_list, (gchar*)line + 4);
+    if (g_str_has_prefix(line, "From: ")) {
+        gchar *reverse_path;
+
+        reverse_path = extract_path_from_mail_address(line + strlen("From :"),
+                                                      error);
+        if (!reverse_path)
+            return FALSE;
+        set_envelope_from(reverse_path);
+        g_free(reverse_path);
+    } else if (g_str_has_prefix(line, "To: ")) {
+        gchar *forward_path;
+
+        forward_path = extract_path_from_mail_address(line + strlen("To: "),
+                                                      error);
+        if (!forward_path)
+            return FALSE;
+        *recipient_list = g_list_append(*recipient_list, forward_path);
+    }
 
     strings = g_strsplit(line, ":", 2);
     milter_headers_add_header(option_headers, strings[0], g_strchug(strings[1]));
@@ -742,7 +790,10 @@ parse_mail_contents (const gchar *contents, GError **error)
             lines++;
             break;
         } else if (is_header(*lines)) {
-            parse_header(*lines, &recipient_list);
+            if (!parse_header(*lines, &recipient_list, error)) {
+                g_strfreev(first_lines);
+                return FALSE;
+            }
         } else if (g_ascii_isspace(*lines[0])) {
             append_header_value(*lines);
         } else {
@@ -763,11 +814,12 @@ parse_mail_contents (const gchar *contents, GError **error)
 
     if (recipient_list) {
         gint i, length;
-        length = g_list_length(recipient_list);
+        GList *node;
 
-        recipients = g_new0(gchar*, length + 1);
-        for (i = 0; i < length; i++) {
-            recipients[i] = g_strdup(g_list_nth_data(recipient_list, i));
+        length = g_list_length(recipient_list);
+        recipients = g_new0(gchar *, length + 1);
+        for (i = 0, node = recipient_list; node; i++, node = g_list_next(node)) {
+            recipients[i] = node->data;
         }
         recipients[length] = NULL;
         g_list_free(recipient_list);
