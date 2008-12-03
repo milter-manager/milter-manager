@@ -1089,15 +1089,15 @@ data_option (void)
                                       option_test_assert_from),
                  option_test_data_free,
                  "recipients",
-                 option_test_data_new("--recipients=recipient1@example.com "
-                                      "--recipients=recipient2@example.com "
-                                      "--recipients=recipient3@example.com",
+                 option_test_data_new("--recipient=recipient1@example.com "
+                                      "--recipient=recipient2@example.com "
+                                      "--recipient=recipient3@example.com",
                                       option_test_assert_recipients),
                  option_test_data_free,
                  "headers",
-                 option_test_data_new("--headers=X-TestHeader1:TestHeader1Value "
-                                      "--headers=X-TestHeader2:TestHeader2Value "
-                                      "--headers=X-TestHeader3:TestHeader3Value",
+                 option_test_data_new("--header=X-TestHeader1:TestHeader1Value "
+                                      "--header=X-TestHeader2:TestHeader2Value "
+                                      "--header=X-TestHeader3:TestHeader3Value",
                                       option_test_assert_headers),
                  option_test_data_free,
                  "body",
@@ -1134,7 +1134,8 @@ test_option (gconstpointer data)
     cut_assert_equal_int(EXIT_SUCCESS, exit_status);
 
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
-                           actual_status, option_test_data->test_data->expected_status);
+                           option_test_data->test_data->expected_status,
+                           actual_status);
 
     option_test_data->assert_func();
 }
@@ -1178,7 +1179,7 @@ change_from_function (void)
 {
     packet_free();
 
-    milter_reply_encoder_encode_change_from(encoder, &packet, &packet_size, 
+    milter_reply_encoder_encode_change_from(encoder, &packet, &packet_size,
                                             "changed-from@example.com", NULL);
 
     write_data(packet, packet_size);
@@ -1218,7 +1219,7 @@ delete_recipient_function (void)
 {
     packet_free();
 
-    milter_reply_encoder_encode_delete_recipient(encoder, &packet, &packet_size, 
+    milter_reply_encoder_encode_delete_recipient(encoder, &packet, &packet_size,
                                                  "kou+receive@cozmixng.org");
 
     write_data(packet, packet_size);
@@ -1272,7 +1273,7 @@ change_header_function (void)
 {
     packet_free();
 
-    milter_reply_encoder_encode_change_header(encoder, &packet, &packet_size, 
+    milter_reply_encoder_encode_change_header(encoder, &packet, &packet_size,
                                               "To", 1, "changed-to@example.com");
 
     write_data(packet, packet_size);
@@ -1292,7 +1293,7 @@ delete_header_function (void)
 {
     packet_free();
 
-    milter_reply_encoder_encode_delete_header(encoder, &packet, &packet_size, 
+    milter_reply_encoder_encode_delete_header(encoder, &packet, &packet_size,
                                               "To", 1);
 
     write_data(packet, packet_size);
@@ -1313,8 +1314,10 @@ replace_body_function (void)
 
     packet_free();
 
-    milter_reply_encoder_encode_replace_body(encoder, &packet, &packet_size, 
-                                             replace_string, strlen(replace_string), &packed_size);
+    milter_reply_encoder_encode_replace_body(encoder, &packet, &packet_size,
+                                             replace_string,
+                                             strlen(replace_string),
+                                             &packed_size);
 
     write_data(packet, packet_size);
 }
@@ -1409,7 +1412,7 @@ macro_test_data_new (GHashTable *expected_macros_table,
                                                 NULL,
                                                 macros_requests,
                                                 NULL);
-    test_data->expected_macros_table = expected_macros_table;                                                    
+    test_data->expected_macros_table = expected_macros_table;
     test_data->assert_func = assert_func;
 
     return test_data;
@@ -1502,7 +1505,7 @@ create_expected_connect_macros_table (void)
     connect_macros = g_hash_table_lookup(expected_macros_table,
                                          GINT_TO_POINTER(MILTER_COMMAND_CONNECT));
 
-    g_hash_table_insert(connect_macros, 
+    g_hash_table_insert(connect_macros,
                         g_strdup("macro_name"),
                         g_strdup("{macro_name}"));
 
@@ -1588,8 +1591,8 @@ test_macro (gconstpointer data)
     cut_assert_equal_int(EXIT_SUCCESS, exit_status);
 
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
-                           actual_status, 
-                           macro_test_data->test_data->expected_status);
+                           macro_test_data->test_data->expected_status,
+                           actual_status);
 
     macro_test_data->assert_func(macro_test_data->expected_macros_table);
 }
