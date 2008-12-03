@@ -254,6 +254,7 @@ wait_for_manager_ready (const gchar *spec)
     }
 
     sock_fd = socket(domain, SOCK_STREAM, 0);
+    cut_assert_errno();
 
     timeout_waiting_id = g_timeout_add(500, cb_timeout_waiting,
                                        &timeout_waiting);
