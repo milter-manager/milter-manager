@@ -1,5 +1,7 @@
 2008-12-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-test-server.c: add a missing space.
+
 	* tool/milter-test-server.c, test/tool/fixtures/parse-test.mail:
 	fix the last line of body handling.
 

@@ -733,8 +733,8 @@ parse_mail_contents (const gchar *contents, GError **error)
     lines = g_strsplit(contents, "\n", -1);
     first_lines = lines;
 
-    /* OK. this is the first line. ignore it. */
-    if (g_str_has_prefix(*lines, "From"))
+    /* Ignore mbox separation 'From ' mark. */
+    if (g_str_has_prefix(*lines, "From "))
         lines++;
 
     for (; *lines; lines++) {
