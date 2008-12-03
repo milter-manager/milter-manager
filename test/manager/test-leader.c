@@ -1171,6 +1171,8 @@ data_scenario_basic (void)
                  g_strdup("envelope-recipient.txt"), g_free,
                  "data",
                  g_strdup("data.txt"), g_free,
+                 "data - no data flag on second client",
+                 g_strdup("no-data-second-client.txt"), g_free,
                  "header - from",
                  g_strdup("header-from.txt"), g_free,
                  "header - from-and-mailer",

@@ -9,6 +9,9 @@
 	* test/fixtures/manager/skip-on-body.txt: Start client2007 too.
 	* milter/manager/milter-manager-children.c: Counting senting body is
 	not needed because the process is done in MilterServerContext.
+	* milter/manager/milter-manager-children.c
+	(send_first_command_to_next_child): The first command should be a
+	command that is needed for target child.
 
 2008-12-02  Kouhei Sutou  <kou@cozmixng.org>
 

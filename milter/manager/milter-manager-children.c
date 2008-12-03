@@ -774,6 +774,26 @@ emit_signals_on_end_of_message (MilterManagerChildren *children)
     g_object_unref(processing_headers);
 }
 
+static MilterCommand
+fetch_first_command_for_child_in_queue (MilterServerContext *child,
+                                        GList **queue)
+{
+    GList *node;
+
+    for (node = *queue; node; node = g_list_next(node)) {
+        MilterCommand next_command;
+        MilterStepFlags step;
+
+        next_command = GPOINTER_TO_INT(node->data);
+        step = command_to_no_step_flag(next_command);
+
+        if (!milter_server_context_is_enable_step(child, step))
+            return next_command;
+    }
+
+    return MILTER_COMMAND_END_OF_MESSAGE;
+}
+
 static void
 send_first_command_to_next_child (MilterManagerChildren *children,
                                   MilterServerContext *context,
@@ -787,8 +807,8 @@ send_first_command_to_next_child (MilterManagerChildren *children,
 
     priv->sent_end_of_message = TRUE;
     priv->processing_header_index = 0;
-    priv->command_waiting_child_queue = g_list_remove(priv->command_waiting_child_queue, context);
-    first_command = GPOINTER_TO_INT(g_list_first(priv->command_queue)->data);
+    priv->command_waiting_child_queue = 
+        g_list_remove(priv->command_waiting_child_queue, context);
 
     next_child = get_first_child_in_command_waiting_child_queue(children);
     if (!next_child) {
@@ -800,6 +820,8 @@ send_first_command_to_next_child (MilterManagerChildren *children,
     }
     milter_server_context_quit(context);
 
+    first_command = fetch_first_command_for_child_in_queue(next_child, 
+                                                           &priv->command_queue);
     send_command_to_child(children, next_child, first_command);
 }
 
@@ -938,8 +960,8 @@ cb_accept (MilterServerContext *context, gpointer user_data)
       case MILTER_SERVER_CONTEXT_STATE_DATA:
       case MILTER_SERVER_CONTEXT_STATE_HEADER:
       case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
-      case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
       case MILTER_SERVER_CONTEXT_STATE_BODY:
+      case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
         send_first_command_to_next_child(children, context, state);
         break;
       default:
@@ -963,8 +985,8 @@ cb_discard (MilterServerContext *context, gpointer user_data)
         expire_all_children(children);
         break;
       case MILTER_SERVER_CONTEXT_STATE_DATA:
-      case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
       case MILTER_SERVER_CONTEXT_STATE_HEADER:
+      case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
       case MILTER_SERVER_CONTEXT_STATE_BODY:
       default:
         milter_server_context_quit(context);
@@ -1001,7 +1023,7 @@ cb_add_header (MilterServerContext *context,
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     milter_headers_add_header(priv->headers,
-                                      name, value);
+                              name, value);
 }
 
 static void
@@ -1015,7 +1037,7 @@ cb_insert_header (MilterServerContext *context,
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     milter_headers_insert_header(priv->headers,
-                                         index, name, value);
+                                 index, name, value);
 }
 
 static void
@@ -1631,18 +1653,8 @@ get_next_command (MilterManagerChildren *children,
     if (!node || !g_list_next(node))
         return -1;
 
-    for (node = g_list_next(node); node; node = g_list_next(node)) {
-        MilterCommand next_command;
-        MilterStepFlags step;
-
-        next_command = GPOINTER_TO_INT(node->data);
-        step = command_to_no_step_flag(next_command);
-
-        if (!milter_server_context_is_enable_step(context, step))
-            return next_command;
-    }
-
-    return MILTER_COMMAND_END_OF_MESSAGE;
+    node = g_list_next(node);
+    return fetch_first_command_for_child_in_queue(context, &node);
 }
 
 static gboolean
