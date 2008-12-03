@@ -125,11 +125,12 @@ module Milter::Manager
             # do nothing
           when :milter
             @configuration.define_milter(@egg_config["name"]) do |milter|
-              milter.target_hosts.concat(@egg_config["target_hosts"] || [])
-              milter.target_addresses.concat(@egg_config["target_addresses"] || [])
-              milter.target_senders.concat(@egg_config["target_senders"] || [])
-              milter.target_recipients.concat(@egg_config["target_recipients"] || [])
-              (@egg_config["target_headers"] || []).each do |name, value|
+              milter.connection_spec = @egg_config["connection_spec"]
+              milter.target_hosts.concat(@egg_config["target_host"] || [])
+              milter.target_addresses.concat(@egg_config["target_address"] || [])
+              milter.target_senders.concat(@egg_config["target_sender"] || [])
+              milter.target_recipients.concat(@egg_config["target_recipient"] || [])
+              (@egg_config["target_header"] || []).each do |name, value|
                 milter.add_target_header(name, value)
               end
             end
@@ -145,16 +146,16 @@ module Milter::Manager
             if @egg_target_header_value.nil?
               raise "#{current_path}/value is missing"
             end
-            @egg_config["target_headers"] ||= {}
-            @egg_config["target_headers"][@egg_target_header_name] = @egg_target_header_value
+            @egg_config["target_header"] ||= {}
+            @egg_config["target_header"][@egg_target_header_name] = @egg_target_header_value
             @egg_target_header_name = nil
             @egg_target_header_value = nil
-          when "milter_name"
-            @egg_config["name"] = text
-          when /milter_target_/
-            key = "target_#{$POSTMATCH.pluralize}"
+          when /\Amilter_target_/
+            key = "target_#{$POSTMATCH}"
             @egg_config[key] ||= []
             @egg_config[key] << text
+          when /\Amilter_/
+            @egg_config[$POSTMATCH] = text
           else
             local = normalize_local(local)
             @configuration.send(@state_stack.last).send("#{local}=", text)
@@ -205,7 +206,8 @@ module Milter::Manager
               raise "unexpected element: #{current_path}"
             end
           when :milter
-            available_locals = ["name", "target_host", "target_address",
+            available_locals = ["name", "connection_spec",
+                                "target_host", "target_address",
                                 "target_sender", "target_recipient"]
             case local
             when "target_header"
