@@ -1,9 +1,14 @@
 2008-12-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: add an entry:
+	- tool/milter-test-client:
+	  - support outputting received information.
+	  - support customizing reply by command line option.
+
 	* tool/milter-test-client.c: use <glib/gi18n.h>.
 
 	* TODO: add an entry:
-	- milter-test-server:
+	- tool/milter-test-server:
 	  - support --connect-host=HOST
 	  - support --connect-address=SPEC
 	  - support --macro=CONTEXT:NAME:VALUE

@@ -1,7 +1,10 @@
 * write unit test for libmilter.
 * add --disable-milter-manager configure option.
 * add --disable-ruby configure option.
-* milter-test-server:
+* tool/milter-test-server:
   * support --connect-host=HOST
   * support --connect-address=SPEC
   * support --macro=CONTEXT:NAME:VALUE
+* tool/milter-test-client:
+  * support outputting received information.
+  * support customizing reply by command line option.
