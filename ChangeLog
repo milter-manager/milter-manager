@@ -7,6 +7,8 @@
 	Do not emit "continue" signal of MilterServerContext when "accept"
 	reply is received by the child after the second child.
 	* test/fixtures/manager/skip-on-body.txt: Start client2007 too.
+	* milter/manager/milter-manager-children.c: Counting senting body is
+	not needed because the process is done in MilterServerContext.
 
 2008-12-02  Kouhei Sutou  <kou@cozmixng.org>
 
