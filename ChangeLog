@@ -16,6 +16,11 @@
 	* milter/manager/milter-manager-children.c
 	(send_first_command_to_next_child): The first command should be a
 	command that is needed for target child.
+	* milter/manager/milter-manager-children.c: Send "continue" if the
+	next command is not received yet.
+	* milter/manager/milter-manager-leader.c,
+	milter/server/milter-server-context.c: Support chain continuous
+	"body" command.
 
 2008-12-02  Kouhei Sutou  <kou@cozmixng.org>
 

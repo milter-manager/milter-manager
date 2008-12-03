@@ -233,6 +233,7 @@ state_to_response_signal_name (MilterManagerLeaderState state)
         signal_name = "end-of-header-response";
         break;
       case MILTER_MANAGER_LEADER_STATE_BODY:
+      case MILTER_MANAGER_LEADER_STATE_BODY_REPLIED:
         signal_name = "body-response";
         break;
       case MILTER_MANAGER_LEADER_STATE_END_OF_MESSAGE:
@@ -287,6 +288,7 @@ next_state (MilterManagerLeader *leader,
         next_state = MILTER_MANAGER_LEADER_STATE_END_OF_HEADER_REPLIED;
         break;
       case MILTER_MANAGER_LEADER_STATE_BODY:
+      case MILTER_MANAGER_LEADER_STATE_BODY_REPLIED:
       {
         MilterManagerLeaderPrivate *priv;
         priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);

@@ -791,7 +791,7 @@ fetch_first_command_for_child_in_queue (MilterServerContext *child,
             return next_command;
     }
 
-    return MILTER_COMMAND_END_OF_MESSAGE;
+    return -1;
 }
 
 static void
@@ -822,7 +822,10 @@ send_first_command_to_next_child (MilterManagerChildren *children,
 
     first_command = fetch_first_command_for_child_in_queue(next_child, 
                                                            &priv->command_queue);
-    send_command_to_child(children, next_child, first_command);
+    if (first_command == -1) 
+        g_signal_emit_by_name(children, "continue");
+    else
+        send_command_to_child(children, next_child, first_command);
 }
 
 static void

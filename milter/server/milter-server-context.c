@@ -91,6 +91,7 @@ struct _MilterServerContextPrivate
     gboolean skip_body;
 
     gchar *name;
+    GList *body_response_queue;
     guint process_body_count;
     gboolean sent_end_of_message;
 };
@@ -372,6 +373,7 @@ milter_server_context_init (MilterServerContext *context)
 
     priv->option = NULL;
     priv->name = NULL;
+    priv->body_response_queue = NULL;
     priv->process_body_count = 0;
     priv->sent_end_of_message = FALSE;
 
@@ -437,6 +439,10 @@ dispose (GObject *object)
         priv->name = NULL;
     }
 
+    if (priv->body_response_queue) {
+        g_list_free(priv->body_response_queue);
+        priv->body_response_queue = NULL;
+    }
     G_OBJECT_CLASS(milter_server_context_parent_class)->dispose(object);
 
     close_client_fd(priv);
@@ -1044,6 +1050,31 @@ milter_server_context_end_of_header (MilterServerContext *context)
                         MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER);
 }
 
+static void
+append_body_response_queue (MilterServerContext *context)
+{
+    MilterServerContextPrivate *priv;
+
+    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+    priv->body_response_queue = g_list_append(priv->body_response_queue, 
+                                              GUINT_TO_POINTER(0));
+}
+
+static void
+increment_process_body_count (MilterServerContext *context)
+{
+    MilterServerContextPrivate *priv;
+    GList *last_node;
+    guint process_body_count;
+
+    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+
+    last_node = g_list_last(priv->body_response_queue);
+    process_body_count = GPOINTER_TO_UINT(last_node->data);
+    process_body_count++;
+    last_node->data = GUINT_TO_POINTER(process_body_count);
+}
+
 gboolean
 milter_server_context_body (MilterServerContext *context,
                             const gchar         *chunk,
@@ -1069,6 +1100,8 @@ milter_server_context_body (MilterServerContext *context,
 
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     command_encoder = MILTER_COMMAND_ENCODER(encoder);
+    append_body_response_queue(context);
+
     while (size > 0) {
         gsize packed_size;
 
@@ -1082,7 +1115,7 @@ milter_server_context_body (MilterServerContext *context,
 
         chunk += packed_size;
         size -= packed_size;
-        MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->process_body_count++;
+        increment_process_body_count(context);
     }
 
     return TRUE;
@@ -1218,7 +1251,8 @@ clear_process_body_count (MilterServerContext *context)
     MilterServerContextPrivate *priv;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
-    priv->process_body_count = 0;
+    g_list_free(priv->body_response_queue);
+    priv->body_response_queue = NULL;
 
     if (priv->sent_end_of_message)
         priv->state = MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE;
@@ -1228,13 +1262,29 @@ static void
 decrement_process_body_count (MilterServerContext *context)
 {
     MilterServerContextPrivate *priv;
+    GList *first_node;
+    guint process_body_count;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
-    priv->process_body_count--;
+    if (!priv->body_response_queue) {
+        milter_error("%s does not wait for response on body anymore.",
+                     milter_server_context_get_name(context));
+        return;
+    }
 
-    if (priv->process_body_count == 0 &&
-        priv->sent_end_of_message)
-        priv->state = MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE;
+    first_node = g_list_first(priv->body_response_queue);
+    process_body_count = GPOINTER_TO_UINT(first_node->data);
+    process_body_count--;
+
+    if (process_body_count == 0) {
+        priv->body_response_queue =
+            g_list_delete_link(priv->body_response_queue, first_node);
+        g_signal_emit_by_name(context, "continue");
+        if (priv->sent_end_of_message)
+            priv->state = MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE;
+    } else {
+        first_node->data = GUINT_TO_POINTER(process_body_count);
+    }
 }
 
 static void
@@ -1258,8 +1308,7 @@ cb_decoder_continue (MilterReplyDecoder *decoder, gpointer user_data)
     switch (priv->state) {
       case MILTER_SERVER_CONTEXT_STATE_BODY:
         decrement_process_body_count(context);
-        if (priv->process_body_count != 0)
-            return;
+        break;
       case MILTER_SERVER_CONTEXT_STATE_CONNECT:
       case MILTER_SERVER_CONTEXT_STATE_HELO:
       case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM:
