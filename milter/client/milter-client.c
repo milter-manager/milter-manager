@@ -296,7 +296,7 @@ accept_client (gint server_fd, MilterClient *client)
         return TRUE;
     }
 
-    spec = milter_connection_generate_spec_from_address(&address);
+    spec = milter_connection_address_to_spec(&address);
     milter_info("accepted from %s.", spec);
     g_free(spec);
 
