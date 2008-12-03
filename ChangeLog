@@ -50,6 +50,7 @@
 	* test/manager/test-manager.c,
 	test/fixture/leader/body-larger-than-milter-chunk-size.txt: Added a
 	larger body test. But separated secondary chunk is not checked yet.
+	* test/lib/milter-manager-test-client.c: > 4096 bytes packet support.
 
 2008-12-02  Kouhei Sutou  <kou@cozmixng.org>
 
