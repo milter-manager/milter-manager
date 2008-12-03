@@ -139,6 +139,39 @@ cb_decoder_set_configuration (MilterManagerControlCommandDecoder *decoder,
 }
 
 static void
+cb_decoder_get_configuration (MilterManagerControlCommandDecoder *decoder,
+                              gpointer user_data)
+{
+    MilterManagerController *controller = user_data;
+    MilterManagerControllerPrivate *priv;
+    MilterManagerConfiguration *config;
+    GError *error = NULL;
+    MilterAgent *agent;
+    MilterEncoder *_encoder;
+    MilterManagerControlReplyEncoder *encoder;
+    gchar *packet;
+    gsize packet_size;
+    gchar *config_xml;
+
+    priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
+    config = milter_manager_get_configuration(priv->manager);
+
+    agent = MILTER_AGENT(controller);
+    _encoder = milter_agent_get_encoder(agent);
+    encoder = MILTER_MANAGER_CONTROL_REPLY_ENCODER(_encoder);
+    config_xml = milter_manager_configuration_to_xml(config);
+    milter_manager_control_reply_encoder_encode_configuration(
+        encoder, &packet, &packet_size,
+        config_xml, strlen(config_xml));
+    g_free(config_xml);
+    if (!milter_agent_write_packet(agent, packet, packet_size, &error)) {
+        milter_error("failed to write control reply configuration packet: <%s>",
+                     error->message);
+        g_error_free(error);
+    }
+}
+
+static void
 cb_decoder_reload (MilterManagerControlCommandDecoder *decoder,
                    gpointer user_data)
 {
@@ -221,6 +254,7 @@ decoder_new (MilterAgent *agent)
                      agent)
 
     CONNECT(set_configuration);
+    CONNECT(get_configuration);
     CONNECT(reload);
     CONNECT(get_status);
 

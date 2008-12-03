@@ -1,3 +1,7 @@
+2008-12-03  Kouhei Sutou  <kou@cozmixng.org>
+
+	* tool/milter-test-server.c: use milter_init() not g_type_init().
+
 2008-12-03  Hiroyuki Ikezoe  <poincare@ikezoe.net>
 
 	* milter/manager/milter-manager-children.c:

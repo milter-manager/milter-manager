@@ -1242,8 +1242,8 @@ main (int argc, char *argv[])
     GOptionGroup *main_group;
     ProcessData process_data;
 
-    g_type_init(); /* for MilterHeaders object */
-    
+    milter_init();
+
     option_context = g_option_context_new(NULL);
     g_option_context_add_main_entries(option_context, option_entries, NULL);
     main_group = g_option_context_get_main_group(option_context);
@@ -1263,7 +1263,6 @@ main (int argc, char *argv[])
         g_setenv("MILTER_LOG_LEVEL", "all", FALSE);
 
     logger = milter_syslog_logger_new("milter-test-server");
-    milter_init();
 
     context = milter_server_context_new();
     init_process_data(&process_data);
