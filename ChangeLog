@@ -1,5 +1,7 @@
 2008-12-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* data/milter-manager.conf: add sample configurations.
+
 	* tool/milter-test-client.c (cb_data): add missing DATA logging.
 
 	* binding/ruby/lib/milter/manager.rb: fix a wrong condition bug.
