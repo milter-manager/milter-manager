@@ -577,13 +577,15 @@ negotiate (MilterServerContext *context)
 {
     MilterOption *option;
 
-    option = milter_option_new(2,
+    option = milter_option_new(6,
                                MILTER_ACTION_ADD_HEADERS |
                                MILTER_ACTION_CHANGE_BODY |
                                MILTER_ACTION_ADD_ENVELOPE_RECIPIENT |
                                MILTER_ACTION_DELETE_ENVELOPE_RECIPIENT |
                                MILTER_ACTION_CHANGE_HEADERS |
                                MILTER_ACTION_QUARANTINE |
+                               MILTER_ACTION_CHANGE_ENVELOPE_FROM |
+                               MILTER_ACTION_ADD_ENVELOPE_RECIPIENT_WITH_PARAMETERS |
                                MILTER_ACTION_SET_SYMBOL_LIST,
                                MILTER_STEP_NO_CONNECT |
                                MILTER_STEP_NO_HELO |
