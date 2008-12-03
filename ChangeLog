@@ -2,6 +2,7 @@
 
 	* test/manager/test-manager.c (wait_for_manager_ready): Check errno
 	after invoking socket().
+	* test/manager/test-manager.c: Send unknown command by default.
 
 2008-12-03  Kouhei Sutou  <kou@cozmixng.org>
 

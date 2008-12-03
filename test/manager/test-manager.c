@@ -284,7 +284,7 @@ static void
 start_server (void)
 {
     const gchar spec[] = "inet:19999@localhost";
-    setup_egg(server_data, "-s", spec, NULL);
+    setup_egg(server_data, "--unknown='!'", "-s", spec, NULL);
 
     gcut_egg_hatch(server_egg, &error);
 }
