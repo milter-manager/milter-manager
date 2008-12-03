@@ -41,6 +41,9 @@
 static gboolean verbose = FALSE;
 static gboolean output_message = FALSE;
 static gchar *spec = NULL;
+static gchar *connect_host = NULL;
+static struct sockaddr *connect_address = NULL;
+static socklen_t connect_address_length = 0;
 static gchar *helo_host = NULL;
 static gchar *envelope_from = NULL;
 static gchar **recipients = NULL;
@@ -144,18 +147,31 @@ cb_continue (MilterServerContext *context, gpointer user_data)
     switch (milter_server_context_get_state(context)) {
       case MILTER_SERVER_CONTEXT_STATE_NEGOTIATE:
         if (!(step & MILTER_STEP_NO_CONNECT)) {
-            struct sockaddr_in address;
-            const gchar host_name[] = "mx.local.net";
-            const gchar ip_address[] = "192.168.123.123";
-            uint16_t port = 50443;
+            const gchar *host_name;
 
-            address.sin_family = AF_INET;
-            address.sin_port = g_htons(port);
-            inet_aton(ip_address, &(address.sin_addr));
-            milter_server_context_connect(context,
-                                          host_name,
-                                          (struct sockaddr *)(&address),
-                                          sizeof(address));
+            if (connect_host)
+                host_name = connect_host;
+            else
+                host_name = "mx.local.net";
+
+            if (connect_address) {
+                milter_server_context_connect(context,
+                                              host_name,
+                                              connect_address,
+                                              connect_address_length);
+            } else {
+                struct sockaddr_in address;
+                const gchar ip_address[] = "192.168.123.123";
+                uint16_t port = 50443;
+
+                address.sin_family = AF_INET;
+                address.sin_port = g_htons(port);
+                inet_aton(ip_address, &(address.sin_addr));
+                milter_server_context_connect(context,
+                                              host_name,
+                                              (struct sockaddr *)(&address),
+                                              sizeof(address));
+            }
             break;
         }
       case MILTER_SERVER_CONTEXT_STATE_CONNECT:
@@ -644,6 +660,31 @@ parse_spec_arg (const gchar *option_name,
 }
 
 static gboolean
+parse_connect_address_arg (const gchar *option_name,
+                           const gchar *value,
+                           gpointer data,
+                           GError **error)
+{
+    GError *spec_error = NULL;
+    gboolean success;
+
+    success = milter_connection_parse_spec(value,
+                                           NULL,
+                                           &connect_address,
+                                           &connect_address_length,
+                                           &spec_error);
+    if (!success) {
+        g_set_error(error,
+                    G_OPTION_ERROR,
+                    G_OPTION_ERROR_BAD_VALUE,
+                    "%s", spec_error->message);
+        g_error_free(spec_error);
+    }
+
+    return success;
+}
+
+static gboolean
 parse_header_arg (const gchar *option_name,
                   const gchar *value,
                   gpointer data,
@@ -887,10 +928,16 @@ static const GOptionEntry option_entries[] =
 {
     {"spec", 's', 0, G_OPTION_ARG_CALLBACK, parse_spec_arg,
      N_("The address of the desired communication socket."), "PROTOCOL:ADDRESS"},
-    {"from", 'f', 0, G_OPTION_ARG_STRING, &envelope_from,
-     N_("Set a sender address"), "FROM"},
+    {"connect-host", 0, 0, G_OPTION_ARG_STRING, &connect_host,
+     N_("Set a host name for connect"), "HOST"},
+    {"connect-address", 0, 0, G_OPTION_ARG_CALLBACK, parse_connect_address_arg,
+     N_("Set an address for connect. "
+        "(SPEC is one of the 'unix:/PATH/TO/SOCKET', 'inet:PORT@ADDRESS' "
+        "or 'inet6:PORT@ADDRESS')"), "SPEC"},
     {"helo-host", 0, 0, G_OPTION_ARG_STRING, &helo_host,
      N_("Set a host name for HELO/EHELO command"), "HOST"},
+    {"from", 'f', 0, G_OPTION_ARG_STRING, &envelope_from,
+     N_("Set a sender address"), "FROM"},
     {"recipient", 'r', 0, G_OPTION_ARG_STRING_ARRAY, &recipients,
      N_("Add a recipient. To add n recipients, use --recipient option n times."),
      "RECIPIENT"},

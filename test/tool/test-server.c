@@ -85,6 +85,8 @@ static gint n_quits;
 static gint n_unknowns;
 
 static GHashTable *actual_defined_macros;
+static gchar *actual_connect_host;
+static gchar *actual_connect_address;
 static gchar *actual_helo_host;
 static gchar *actual_envelope_from;
 static GList *actual_recipients;
@@ -217,6 +219,8 @@ cb_connect (MilterCommandDecoder *decoder, const gchar *host_name,
     send_reply(MILTER_COMMAND_CONNECT, test_data);
 
     n_connects++;
+    actual_connect_host = g_strdup(host_name);
+    actual_connect_address = milter_connection_address_to_spec(address);
 }
 
 static void
@@ -381,7 +385,10 @@ setup (void)
     reaped = FALSE;
     output_string = g_string_new(NULL);
     error_string = g_string_new(NULL);
+
     actual_status = MILTER_STATUS_DEFAULT;
+    actual_connect_host = NULL;
+    actual_connect_address = NULL;
     actual_helo_host = NULL;
     actual_envelope_from = NULL;
     actual_recipients = NULL;
@@ -412,6 +419,11 @@ teardown (void)
         g_string_free(error_string, TRUE);
     if (error)
         g_error_free(error);
+
+    if (actual_connect_host)
+        g_free(actual_connect_host);
+    if (actual_connect_address)
+        g_free(actual_connect_address);
     if (actual_helo_host)
         g_free(actual_helo_host);
     if (actual_envelope_from)
@@ -957,6 +969,28 @@ option_test_data_free (OptionTestData *option_test_data)
 }
 
 static void
+option_test_assert_connect_host (void)
+{
+    cut_assert_equal_string("test-host", actual_connect_host);
+    cut_assert_equal_string("inet:50443@192.168.123.123",
+                            actual_connect_address);
+}
+
+static void
+option_test_assert_connect_address (void)
+{
+    cut_assert_equal_string("mx.local.net", actual_connect_host);
+    cut_assert_equal_string("inet:12345@192.168.1.1", actual_connect_address);
+}
+
+static void
+option_test_assert_connect (void)
+{
+    cut_assert_equal_string("test-host", actual_connect_host);
+    cut_assert_equal_string("inet:12345@192.168.1.1", actual_connect_address);
+}
+
+static void
 option_test_assert_helo_host (void)
 {
     cut_assert_equal_string("test-host", actual_helo_host);
@@ -1091,7 +1125,20 @@ get_mail_option (const gchar *file_name)
 void
 data_option (void)
 {
-    cut_add_data("helo-host",
+    cut_add_data("connect-host",
+                 option_test_data_new("--connect-host=test-host",
+                                      option_test_assert_connect_host),
+                 option_test_data_free,
+                 "connect-address",
+                 option_test_data_new("--connect-address=inet:12345@192.168.1.1",
+                                      option_test_assert_connect_address),
+                 option_test_data_free,
+                 "connect",
+                 option_test_data_new("--connect-host=test-host "
+                                      "--connect-address=inet:12345@192.168.1.1",
+                                      option_test_assert_connect),
+                 option_test_data_free,
+                 "helo-host",
                  option_test_data_new("--helo-host=test-host",
                                       option_test_assert_helo_host),
                  option_test_data_free,
