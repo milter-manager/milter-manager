@@ -199,9 +199,8 @@ cb_continue (MilterServerContext *context, gpointer user_data)
             send_recipient(context);
             break;
         }
-        if (!(step & MILTER_STEP_NO_UNKNOWN)) {
-            if (unknown_command)
-                milter_server_context_unknown(context, unknown_command);
+        if (!(step & MILTER_STEP_NO_UNKNOWN) && unknown_command) {
+            milter_server_context_unknown(context, unknown_command);
             break;
         }
       case MILTER_SERVER_CONTEXT_STATE_UNKNOWN:
