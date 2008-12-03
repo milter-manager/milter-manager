@@ -1,5 +1,8 @@
 2008-12-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: add an entry: milter_manager_egg_to_xml_string() support
+	target_XXX serialize.
+
 	* binding/ruby/lib/milter/manager.rb: support
 	/configuration/milters/milter/connection_spec parsing
 	partially. Need TEST!!!

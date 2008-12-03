@@ -8,3 +8,5 @@
 * tool/milter-test-client:
   * support outputting reply information.
   * support customizing reply by command line option.
+* milter_manager_egg_to_xml_string() support target_XXX serialize but how?
+  The information is treated in the Ruby world not C.
