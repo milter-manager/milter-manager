@@ -1,5 +1,11 @@
 2008-12-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-connection.[ch]:
+	milter_connection_generate_spec_from_address() ->
+	milter_connection_address_to_spec().
+	* milter/client/milter-client.c, test/core/test-connection.c:
+	follow the above change.
+
 	* TODO: add an entry:
 	- tool/milter-test-client:
 	  - support outputting received information.
