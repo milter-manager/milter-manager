@@ -1,5 +1,8 @@
 2008-12-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-configuration.c
+	(milter_manager_configuration_to_xml_string): fix wrong value bug.
+
 	* tool/milter-test-server.c: add --unknown command.
 
 	* tool/milter-test-server.c: use sendmail compatible options.

@@ -704,7 +704,7 @@ milter_manager_configuration_to_xml_string (MilterManagerConfiguration *configur
             content = g_strdup_printf("%ld", status.st_mtime);
             milter_utils_xml_append_text_element(string,
                                                  "last-modified", content,
-                                                 -1);
+                                                 indent + 2);
         }
         g_free(full_path);
     }
