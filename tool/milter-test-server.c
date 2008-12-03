@@ -738,13 +738,13 @@ parse_mail_contents (const gchar *contents, GError **error)
         lines++;
 
     for (; *lines; lines++) {
-        if (is_header(*lines)) {
+        if (*lines[0] == '\0') {
+            lines++;
+            break;
+        } else if (is_header(*lines)) {
             parse_header(*lines, &recipient_list);
         } else if (g_ascii_isspace(*lines[0])) {
             append_header_value(*lines);
-        } else if (*lines[0] == '\0') {
-            lines++;
-            break;
         } else {
             g_set_error(error,
                         MILTER_TEST_SERVER_ERROR,
@@ -774,7 +774,7 @@ parse_mail_contents (const gchar *contents, GError **error)
     }
 
     if (body_string->len > 0) {
-        g_string_truncate(body_string, body_string->len - 4);
+        g_string_truncate(body_string, body_string->len - strlen("\r\n"));
         body_chunks = g_new0(gchar*, 2);
         body_chunks[0] = g_strdup(body_string->str);
         body_chunks[1] = NULL;

@@ -1042,7 +1042,7 @@ option_test_assert_mail_file (void)
     milter_assert_equal_header(&expected_header10,
                                milter_headers_get_nth_header(actual_headers, 10));
 
-    cut_assert_equal_string("Message body\r\nMessage body\r\nMessage body",
+    cut_assert_equal_string("Message body\r\nMessage body\r\nMessage body\r\n",
                             actual_body_string->str);
 }
 
