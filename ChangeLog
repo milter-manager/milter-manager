@@ -77,6 +77,8 @@
 	* test/lib/milter-manager-test-client.c: > 4096 bytes packet support.
 	* test/lib/milter-manager-test-client.c: Workaround for > 4096 bytes
 	body chunk.
+	* test/tool/fixtures/large.mail: Added 64kbytes over size mail. The
+	test does not check its output yet.
 
 2008-12-02  Kouhei Sutou  <kou@cozmixng.org>
 

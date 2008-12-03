@@ -1071,15 +1071,26 @@ option_test_assert_output_message (void)
         normalized_output);
 }
 
+static void
+option_test_assert_large_mail (void)
+{
+    /* Nothing here yet. */
+}
+
+static const gchar *
+get_mail_option (const gchar *file_name)
+{
+    gchar *mail_option, *file_path;
+
+    file_path = g_build_filename(fixtures_path, file_name, NULL);
+    cut_take_string(file_path);
+    mail_option = g_strdup_printf("--mail-file=%s", file_path);
+    return cut_take_string(mail_option);
+}
+
 void
 data_option (void)
 {
-    gchar *mail_option, *mail_file;
-
-    mail_file = g_build_filename(fixtures_path,
-                                 "parse-test.mail", NULL);
-    mail_option = g_strdup_printf("--mail-file=%s", mail_file);
-
     cut_add_data("helo-host",
                  option_test_data_new("--helo-host=test-host",
                                       option_test_assert_helo_host),
@@ -1106,17 +1117,18 @@ data_option (void)
                                       "--body=chunk3",
                                       option_test_assert_body),
                  option_test_data_free,
-                 "mail-file",
-                 option_test_data_new(mail_option,
-                                      option_test_assert_mail_file),
-                 option_test_data_free,
                  "output-message",
                  option_test_data_new("--output-message",
                                       option_test_assert_output_message),
+                 option_test_data_free,
+                 "mail-file",
+                 option_test_data_new(get_mail_option("parse-test.mail"),
+                                      option_test_assert_mail_file),
+                 option_test_data_free,
+                 "large-file",
+                 option_test_data_new(get_mail_option("large.mail"),
+                                      option_test_assert_large_mail),
                  option_test_data_free);
-
-    g_free(mail_file);
-    g_free(mail_option);
 }
 
 void
