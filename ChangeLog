@@ -1,5 +1,7 @@
 2008-12-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client.c (process_client_channel): add FIXMEs.
+
 	* tool/milter-test-client.c: handle SIGINT for terminating myself.
 
 	* milter/core/milter-main.c (milter_init): initialize thread.
