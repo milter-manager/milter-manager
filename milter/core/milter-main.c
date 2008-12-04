@@ -29,6 +29,9 @@ void
 milter_init (void)
 {
     g_type_init();
+
+    if (!g_thread_supported())
+        g_thread_init(NULL);
 }
 
 void

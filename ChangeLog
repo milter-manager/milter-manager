@@ -1,5 +1,10 @@
 2008-12-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-main.c (milter_init): initialize thread.
+
+	* milter/client/milter-client.c (milter_client_main): use another
+	main loop in a thread for accepting connection.
+
 	* TODO: remove an entry: milter_manager_egg_to_xml_string()
 	support target_XXX serialize.
 

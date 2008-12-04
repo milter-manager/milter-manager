@@ -48,7 +48,8 @@ static gint signals[LAST_SIGNAL] = {0};
 typedef struct _MilterClientPrivate	MilterClientPrivate;
 struct _MilterClientPrivate
 {
-    gboolean running;
+    GMainLoop *accept_loop;
+    GMainLoop *main_loop;
     guint server_watch_id;
     gchar *connection_spec;
     GList *process_data;
@@ -57,7 +58,7 @@ struct _MilterClientPrivate
 
 typedef struct _MilterClientProcessData
 {
-    gboolean done;
+    MilterClientPrivate *priv;
     MilterClient *client;
     MilterClientContext *context;
 } MilterClientProcessData;
@@ -108,9 +109,15 @@ static void
 milter_client_init (MilterClient *client)
 {
     MilterClientPrivate *priv;
+    GMainContext *main_context;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
-    priv->running = FALSE;
+
+    main_context = g_main_context_new();
+    priv->accept_loop = g_main_loop_new(main_context, FALSE);
+    g_main_context_unref(main_context);
+    priv->main_loop = g_main_loop_new(NULL, FALSE);
+
     priv->server_watch_id = 0;
     priv->connection_spec = NULL;
     priv->process_data = NULL;
@@ -130,6 +137,16 @@ dispose (GObject *object)
     MilterClientPrivate *priv;
 
     priv = MILTER_CLIENT_GET_PRIVATE(object);
+
+    if (priv->accept_loop) {
+        g_main_loop_unref(priv->accept_loop);
+        priv->accept_loop = NULL;
+    }
+
+    if (priv->main_loop) {
+        g_main_loop_unref(priv->main_loop);
+        priv->main_loop = NULL;
+    }
 
     if (priv->server_watch_id > 0) {
         g_source_remove(priv->server_watch_id);
@@ -230,12 +247,30 @@ milter_client_set_connection_spec (MilterClient *client, const gchar *spec,
     return success;
 }
 
+static gboolean
+cb_idle_free_data (gpointer _data)
+{
+    MilterClientProcessData *data = _data;
+
+    milter_info("removing a MilterClientContext");
+    milter_statistics("End of session in (%p)", data->context);
+    data->priv->process_data = g_list_remove(data->priv->process_data, data);
+    process_data_free(data);
+    milter_info("removed a MilterClientContext");
+
+    return FALSE;
+}
+
 static void
 cb_finished (MilterClientContext *context, gpointer _data)
 {
     MilterClientProcessData *data = _data;
+    GSource *source;
 
-    data->done = TRUE;
+    source = g_idle_source_new();
+    g_source_set_callback(source, cb_idle_free_data, data, NULL);
+    g_source_attach(source, g_main_loop_get_context(data->priv->accept_loop));
+    g_source_unref(source);
 }
 
 static void
@@ -259,7 +294,7 @@ process_client_channel (MilterClient *client, GIOChannel *channel)
     milter_client_context_set_mta_timeout(context, priv->timeout);
 
     data = g_new(MilterClientProcessData, 1);
-    data->done = FALSE;
+    data->priv = priv;
     data->client = client;
     data->context = context;
 
@@ -345,8 +380,21 @@ server_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
     }
 
     if (!keep_callback)
-        priv->running = FALSE;
+        milter_client_shutdown(client);
     return keep_callback;
+}
+
+static gpointer
+server_accept_thread (gpointer data)
+{
+    MilterClient *client = data;
+    MilterClientPrivate *priv;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+
+    g_main_loop_run(priv->accept_loop);
+
+    return NULL;
 }
 
 gboolean
@@ -355,6 +403,8 @@ milter_client_main (MilterClient *client)
     MilterClientPrivate *priv;
     GError *error = NULL;
     GIOChannel *server_channel;
+    GSource *watch_source;
+    GThread *thread;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
@@ -374,29 +424,20 @@ milter_client_main (MilterClient *client)
         return FALSE;
     }
 
-    priv->server_watch_id = g_io_add_watch(server_channel,
-                                           G_IO_IN | G_IO_PRI |
-                                           G_IO_ERR | G_IO_HUP | G_IO_NVAL,
-                                           server_watch_func, client);
-    priv->running = TRUE;
-    while (priv->running) {
-        GList *node;
+    watch_source = g_io_create_watch(server_channel,
+                                     G_IO_IN | G_IO_PRI |
+                                     G_IO_ERR | G_IO_HUP | G_IO_NVAL);
+    g_source_set_callback(watch_source, (GSourceFunc)server_watch_func,
+                          client, NULL);
+    priv->server_watch_id =
+        g_source_attach(watch_source,
+                        g_main_loop_get_context(priv->main_loop));
+    g_source_unref(watch_source);
 
-        g_main_context_iteration(NULL, TRUE);
+    thread = g_thread_create(server_accept_thread, client, TRUE, NULL);
+    g_main_loop_run(priv->main_loop);
+    g_thread_join(thread);
 
-        for (node = priv->process_data; node; node = g_list_next(node)) {
-            MilterClientProcessData *data = node->data;
-
-            if (data->done) {
-                milter_info("removing a MilterClientContext");
-                milter_statistics("End of session in (%p)", data->context);
-                process_data_free(data);
-                node = g_list_delete_link(priv->process_data, node);
-                milter_info("removed a MilterClientContext");
-                priv->process_data = node;
-            }
-        }
-    }
     g_io_channel_unref(server_channel);
 
     return TRUE;
@@ -405,7 +446,11 @@ milter_client_main (MilterClient *client)
 void
 milter_client_shutdown (MilterClient *client)
 {
-    MILTER_CLIENT_GET_PRIVATE(client)->running = FALSE;
+    MilterClientPrivate *priv;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    g_main_loop_quit(priv->accept_loop);
+    g_main_loop_quit(priv->main_loop);
 }
 
 void
