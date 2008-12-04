@@ -487,7 +487,7 @@ cb_ready (MilterServerContext *context, gpointer user_data)
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(negotiate_data->children);
 
-    milter_statistics("Start negotiating to %s",
+    milter_statistics("Start filter process of %s",
                       milter_server_context_get_name(context));
     setup_server_context_signals(negotiate_data->children, context);
     milter_server_context_negotiate(context, negotiate_data->option);

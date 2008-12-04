@@ -37,6 +37,8 @@
 	* milter/client/milter-client.c: Added milter_statistics.
 	* milter/client/milter-client.c: Output MilterClientContext address in
 	milter_statistics.
+	* milter/manager/milter-manager-children.c: Change message of start
+	process.
 
 2008-12-03  Kouhei Sutou  <kou@cozmixng.org>
 
