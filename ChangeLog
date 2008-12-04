@@ -1,5 +1,7 @@
 2008-12-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager.rb: add target information to XML.
+
 	* binding/ruby/src/manager/rb-milter-manager-egg.c,
 	binding/ruby/test/manager/test-egg.rb: support XML customize.
 

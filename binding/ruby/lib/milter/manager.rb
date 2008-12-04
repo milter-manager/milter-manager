@@ -1,5 +1,6 @@
 require 'pathname'
 require 'shellwords'
+require 'erb'
 require "English"
 
 require "rexml/document"
@@ -325,6 +326,7 @@ module Milter::Manager
 
       def apply(configuration)
         setup_check_callback
+        setup_to_xml_callback
         configuration.add_egg(@egg)
       end
 
@@ -366,6 +368,27 @@ module Milter::Manager
                 _name === name and _value === value
               end
             end
+          end
+        end
+      end
+
+      def setup_to_xml_callback
+        return unless need_check?
+
+        @egg.signal_connect("to-xml") do |_, xml, indent|
+          [["target_host", @target_hosts],
+           ["target_address", @target_addresses],
+           ["target_sender", @target_senders],
+           ["target_recipient", @target_recipients]].each do |tag, values|
+            (values || []).each do |value|
+              xml << " " * indent + "<#{tag}>#{ERB::Util.h(value)}</#{tag}>"
+            end
+          end
+          (@target_headers || []).each do |name, value|
+            xml << " " * indent + "<target_header>\n"
+            xml << " " * (indent + 2) + "<name>#{ERB::Util.h(name)}</name>"
+            xml << " " * (indent + 2) + "<value>#{ERB::Util.h(value)}</value>"
+            xml << " " * indent + "</target_header>\n"
           end
         end
       end
