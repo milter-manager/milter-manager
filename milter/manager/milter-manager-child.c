@@ -279,13 +279,14 @@ child_watch_func (GPid pid, gint status, gpointer user_data)
 
     priv = MILTER_MANAGER_CHILD_GET_PRIVATE(user_data);
 
-    if (WCOREDUMP(status)) {
+    if (WIFSIGNALED(status)) {
         GError *error = NULL;
         g_set_error(&error,
                     MILTER_MANAGER_CHILD_ERROR,
-                    MILTER_MANAGER_CHILD_ERROR_MILTER_CORE_DUMP,
-                    "%s produced a core dump", 
-                    milter_server_context_get_name(MILTER_SERVER_CONTEXT(user_data)));
+                    MILTER_MANAGER_CHILD_ERROR_MILTER_TERMINATED_BY_SIGNAL,
+                    "%s terminated by signal(%d)", 
+                    milter_server_context_get_name(MILTER_SERVER_CONTEXT(user_data)),
+                    WTERMSIG(status));
         milter_error("%s", error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(user_data),
                                     error);
@@ -420,6 +421,13 @@ milter_manager_child_start (MilterManagerChild *milter, GError **error)
 
     return success;
 }
+
+GPid
+milter_manager_child_get_pid (MilterManagerChild *milter)
+{
+    return MILTER_MANAGER_CHILD_GET_PRIVATE(milter)->pid;
+}
+
 
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4

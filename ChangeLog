@@ -24,6 +24,9 @@
 	* test/manager/test-manager.c: Added check controller port test.
 	* test/manager/test-manager.c (wait_for_manager_ready): Check errno
 	after exiting timeout loop to inspect timeout cause.
+	* milter/manager/milter-manager-child.[ch]: Added
+	milter_manager_child_get_pid() for test. Also do not use WCOREDUMP
+	since the macro is unable to use on SunOS, AIX etc.
 
 2008-12-03  Kouhei Sutou  <kou@cozmixng.org>
 

@@ -35,6 +35,7 @@ void test_start_no_privilege_mode (void);
 void test_start_inexistent_command (void);
 void test_start_by_inexistent_user (void);
 void test_exit_error (void);
+void test_terminate_with_sigint (void);
 
 static MilterManagerChild *milter;
 static GError *actual_error;
@@ -213,6 +214,35 @@ test_exit_error (void)
 
     g_setenv("MILTER_LOG_LEVEL", NULL, TRUE);
     cut_trace(test_start());
+    while (!error_occured)
+        g_main_context_iteration(NULL, TRUE);
+
+    gcut_assert_equal_error(expected_error, actual_error);
+}
+
+void
+test_terminate_with_sigint (void)
+{
+    GError *error = NULL;
+    GPid pid;
+    expected_error = g_error_new(MILTER_MANAGER_CHILD_ERROR,
+                                 MILTER_MANAGER_CHILD_ERROR_MILTER_TERMINATED_BY_SIGNAL,
+                                 "test-milter terminated by signal(%d)", SIGINT);
+
+    g_signal_connect(milter, "error", G_CALLBACK(cb_error), NULL);
+    g_setenv("MILTER_LOG_LEVEL", NULL, TRUE);
+    g_object_set(milter,
+                 "command", "/usr/bin/yes",
+                 "user-name", g_get_user_name(),
+                 NULL);
+    milter_manager_child_start(milter, &error);
+    gcut_assert_error(error);
+
+    pid = milter_manager_child_get_pid(milter);
+    cut_assert(pid > 0);
+    kill(pid, SIGINT);
+    cut_assert_errno();
+
     while (!error_occured)
         g_main_context_iteration(NULL, TRUE);
 

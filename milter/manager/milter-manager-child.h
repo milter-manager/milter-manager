@@ -44,7 +44,7 @@ typedef enum
     MILTER_MANAGER_CHILD_ERROR_START_FAILURE,
     MILTER_MANAGER_CHILD_ERROR_INVALID_USER_NAME,
     MILTER_MANAGER_CHILD_ERROR_NO_PRIVILEGE_MODE,
-    MILTER_MANAGER_CHILD_ERROR_MILTER_CORE_DUMP,
+    MILTER_MANAGER_CHILD_ERROR_MILTER_TERMINATED_BY_SIGNAL,
     MILTER_MANAGER_CHILD_ERROR_MILTER_EXIT
 } MilterManagerChildError;
 
@@ -71,7 +71,7 @@ MilterManagerChild   *milter_manager_child_new_va_list (const gchar *first_name,
 
 gboolean              milter_manager_child_start       (MilterManagerChild *milter,
                                                         GError **error);
-
+GPid                  milter_manager_child_get_pid     (MilterManagerChild *milter);
 
 #endif /* __MILTER_MANAGER_CHILD_H__ */
 
