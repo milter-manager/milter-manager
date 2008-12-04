@@ -1,5 +1,8 @@
 2008-12-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-egg.[ch], test/manager/test-egg.c:
+	support XML customize.
+
 	* data/milter-manager.conf: add sample configurations.
 
 	* tool/milter-test-client.c (cb_data): add missing DATA logging.

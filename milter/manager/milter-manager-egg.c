@@ -23,6 +23,7 @@
 
 #include "milter-manager-egg.h"
 #include "milter-manager-enum-types.h"
+#include <milter/core/milter-marshalers.h>
 
 #define MILTER_MANAGER_EGG_GET_PRIVATE(obj)                     \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                         \
@@ -60,6 +61,7 @@ enum
 enum
 {
     HATCHED,
+    TO_XML,
     LAST_SIGNAL
 };
 
@@ -175,6 +177,15 @@ milter_manager_egg_class_init (MilterManagerEggClass *klass)
                      NULL, NULL,
                      g_cclosure_marshal_VOID__OBJECT,
                      G_TYPE_NONE, 1, MILTER_TYPE_MANAGER_CHILD);
+
+    signals[TO_XML] =
+        g_signal_new("to-xml",
+                     G_TYPE_FROM_CLASS(klass),
+                     G_SIGNAL_RUN_LAST,
+                     G_STRUCT_OFFSET(MilterManagerEggClass, to_xml),
+                     NULL, NULL,
+                     _milter_marshal_VOID__POINTER_UINT,
+                     G_TYPE_NONE, 2, G_TYPE_POINTER, G_TYPE_UINT);
 
 
     g_type_class_add_private(gobject_class,
@@ -613,6 +624,8 @@ milter_manager_egg_to_xml_string (MilterManagerEgg *egg,
         milter_utils_xml_append_text_element(string,
                                              "command", priv->command,
                                              indent + 2);
+
+    g_signal_emit(egg, signals[TO_XML], 0, string, indent + 2);
 
     milter_utils_append_indent(string, indent);
     g_string_append(string, "</milter>\n");

@@ -56,6 +56,9 @@ struct _MilterManagerEggClass
 
     void (*hatched) (MilterManagerEgg   *egg,
                      MilterManagerChild *child);
+    void (*to_xml)  (MilterManagerEgg   *egg,
+                     GString            *xml,
+                     guint               indent);
 };
 
 GQuark              milter_manager_egg_error_quark (void);

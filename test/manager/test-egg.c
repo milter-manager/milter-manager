@@ -46,6 +46,9 @@ static MilterManagerChild *child;
 static GError *expected_error;
 static GError *actual_error;
 
+static gchar *actual_xml;
+
+
 static const gchar *milter_log_level;
 
 void
@@ -56,6 +59,8 @@ setup (void)
 
     expected_error = NULL;
     actual_error = NULL;
+
+    actual_xml = NULL;
 
     milter_log_level = g_getenv("MILTER_LOG_LEVEL");
 }
@@ -72,6 +77,9 @@ teardown (void)
         g_error_free(expected_error);
     if (actual_error)
         g_error_free(actual_error);
+
+    if (actual_xml)
+        g_free(actual_xml);
 
     if (milter_log_level)
         g_setenv("MILTER_LOG_LEVEL", milter_log_level, TRUE);
@@ -253,10 +261,32 @@ test_command_options (void)
     cut_assert_equal_string(command_options, milter_manager_egg_get_command_options(egg));
 }
 
+static void
+cb_to_xml (MilterManagerEgg *egg, GString *xml, guint indent, gpointer user_data)
+{
+    milter_utils_append_indent(xml, indent);
+    g_string_append_printf(xml, "<additional-field>VALUE</additional-field>\n");
+}
+
 void
 test_to_xml (void)
 {
-    "FIXME: WRITEME";
+    egg = milter_manager_egg_new("child-milter");
+
+    actual_xml = milter_manager_egg_to_xml(egg);
+    cut_assert_equal_string("<milter>\n"
+                            "  <name>child-milter</name>\n"
+                            "</milter>\n",
+                            actual_xml);
+
+    g_signal_connect(egg, "to-xml", G_CALLBACK(cb_to_xml), NULL);
+    g_free(actual_xml);
+    actual_xml = milter_manager_egg_to_xml(egg);
+    cut_assert_equal_string("<milter>\n"
+                            "  <name>child-milter</name>\n"
+                            "  <additional-field>VALUE</additional-field>\n"
+                            "</milter>\n",
+                            actual_xml);
 }
 
 /*
