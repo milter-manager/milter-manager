@@ -2,6 +2,8 @@
 
 	* milter/client/milter-client.c, milter/manager/milter-manager.c:
 	"Start session.." and "End of session.." moved to MilterManager.
+	* milter/core/milter-syslog-logger.c: Do not output time value in
+	syslog.
 
 2008-12-04  Kouhei Sutou  <kou@cozmixng.org>
 

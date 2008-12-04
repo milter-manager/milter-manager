@@ -90,7 +90,6 @@ test_info (void)
     cut_trace(collect_log_message());
 
     cut_assert_match(".* " MILTER_LOG_DOMAIN "\\[\\d+\\]: "
-                     "\\[.+\\]"
                      "This is informative message.$",
                      actual);
 
