@@ -18,6 +18,7 @@
  */
 
 #include <gcutter.h>
+#include <unistd.h>
 
 #define shutdown inet_shutdown
 #include <milter-test-utils.h>
@@ -34,6 +35,7 @@ void test_message (void);
 void test_warning (void);
 void test_debug (void);
 void test_info (void);
+void test_console_output (void);
 
 static const gchar *logged_domain;
 static MilterLogLevelFlags logged_level;
@@ -41,6 +43,8 @@ static const gchar *logged_message;
 static const gchar *logged_file;
 static guint logged_line;
 static const gchar *logged_function;
+static GString *stdout_string;
+static gboolean end_of_log;
 
 static void
 cb_log (MilterLogger *logger,
@@ -66,6 +70,9 @@ setup (void)
     logged_level = 0;
     logged_message = NULL;
 
+    stdout_string = g_string_new(NULL);
+    end_of_log = FALSE;
+
     g_signal_connect(milter_logger(), "log", G_CALLBACK(cb_log), NULL);
 }
 
@@ -74,6 +81,7 @@ teardown (void)
 {
     g_signal_handlers_disconnect_by_func(milter_logger(),
                                          G_CALLBACK(cb_log), NULL);
+    g_string_free(stdout_string, TRUE);
 }
 
 #define milter_assert_equal_log_level(flags, name)                      \
@@ -153,6 +161,36 @@ test_info (void)
 
     milter_info("info"); line = __LINE__;
     milter_assert_equal_log(MILTER_LOG_LEVEL_INFO, "info");
+}
+
+static void
+print_handler (const gchar *string)
+{
+    if (g_strrstr(string, "end-of-log"))
+        end_of_log = TRUE;
+    g_string_append(stdout_string, string);
+}
+
+void
+test_console_output (void)
+{
+    GPrintFunc original_func;
+    const gchar *log_level;
+
+    log_level = g_getenv("MILTER_LOG_LEVEL");
+
+    original_func = g_set_print_handler(print_handler);
+
+    g_setenv("MILTER_LOG_LEVEL", "info", TRUE);
+    milter_info("info");
+    milter_info("end-of-log");
+    g_setenv("MILTER_LOG_LEVEL", log_level, TRUE);
+
+    while (!end_of_log)
+        g_main_context_iteration(NULL, FALSE);
+    g_set_print_handler(original_func);
+
+    cut_assert_match("info", stdout_string->str);
 }
 
 /*
