@@ -65,6 +65,8 @@ static void get_property   (GObject         *object,
 static void   connection_established      (MilterClient *client,
                                            MilterClientContext *context);
 static gchar *get_default_connection_spec (MilterClient *client);
+static void    cb_finished                (MilterFinishedEmittable *emittable,
+                                           gpointer user_data);
 
 static void
 milter_manager_class_init (MilterManagerClass *klass)
@@ -345,7 +347,8 @@ teardown_client_context_signals (MilterClientContext *context, gpointer user_dat
     DISCONNECT(mta_timeout);
 
 #undef DISCONNECT
-
+    g_signal_handlers_disconnect_by_func(user_data,
+                                         G_CALLBACK(cb_finished), context);
 }
 
 static void
@@ -353,6 +356,7 @@ cb_finished (MilterFinishedEmittable *emittable, gpointer user_data)
 {
     teardown_client_context_signals(MILTER_CLIENT_CONTEXT(user_data), emittable);
     g_object_unref(emittable);
+    milter_statistics("End of session in (%p)", user_data);
 }
 
 static void
@@ -398,6 +402,8 @@ connection_established (MilterClient *client, MilterClientContext *context)
     priv = MILTER_MANAGER_GET_PRIVATE(client);
     configuration = priv->configuration;
     setup_context_signals(context, configuration);
+
+    milter_statistics("Start session in (%p)", context);
 }
 
 static gchar *

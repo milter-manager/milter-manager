@@ -1,3 +1,8 @@
+2008-12-05  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/client/milter-client.c, milter/manager/milter-manager.c:
+	"Start session.." and "End of session.." moved to MilterManager.
+
 2008-12-04  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/client/milter-client.c (process_client_channel): add FIXMEs.

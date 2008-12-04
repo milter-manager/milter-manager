@@ -253,7 +253,6 @@ cb_idle_free_data (gpointer _data)
     MilterClientProcessData *data = _data;
 
     milter_info("removing a MilterClientContext");
-    milter_statistics("End of session in (%p)", data->context);
     /* FIXME: should use mutex */
     data->priv->process_data = g_list_remove(data->priv->process_data, data);
     process_data_free(data);
@@ -307,8 +306,6 @@ process_client_channel (MilterClient *client, GIOChannel *channel)
     /* FIXME: should this be done in the accept thread? or
      * main thread by using g_idle_add? */
     g_signal_emit(client, signals[CONNECTION_ESTABLISHED], 0, context);
-
-    milter_statistics("Start session in (%p)", context);
 }
 
 static gboolean
