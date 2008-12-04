@@ -17,14 +17,15 @@
  *
  */
 
-#include <gcutter.h>
-
-#define shutdown inet_shutdown
-#include <milter-manager-test-utils.h>
-#include <milter/manager/milter-manager-child.h>
-#undef shutdown
 #include <errno.h>
 #include <locale.h>
+#include <signal.h>
+
+#include <milter/manager/milter-manager-child.h>
+
+#include <milter-manager-test-utils.h>
+
+#include <gcutter.h>
 
 void test_start (void);
 void test_start_with_search_path (void);
