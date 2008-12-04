@@ -45,6 +45,8 @@
 	cb_quit(). But the message ("End of filter..") is after ("End of
 	session..") since MilterClient receives "finished" signal in
 	MilterAgent. Fix it!
+	* milter/manager/milter-manager.c: Fix the order of finished process
+	in log. But "Invalid file descriptor." comes from somewhere.
 
 2008-12-03  Kouhei Sutou  <kou@cozmixng.org>
 

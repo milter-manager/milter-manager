@@ -352,7 +352,7 @@ static void
 cb_finished (MilterFinishedEmittable *emittable, gpointer user_data)
 {
     teardown_client_context_signals(MILTER_CLIENT_CONTEXT(user_data), emittable);
-    g_object_unref(user_data);
+    g_object_unref(emittable);
 }
 
 static void
