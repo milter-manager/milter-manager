@@ -1325,7 +1325,7 @@ test_scenario (gconstpointer data)
 }
 
 /* over 512 kbytes data causes hang up..? */
-#define LARGE_DATA_SIZE 512 * 1024
+#define LARGE_DATA_SIZE 112 * 1024
 void
 data_large_body (void)
 {
