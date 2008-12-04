@@ -39,6 +39,12 @@
 	milter_statistics.
 	* milter/manager/milter-manager-children.c: Change message of start
 	process.
+	* milter/manager/milter-manager.c, milter/client/milter-client.c: To
+	ensure that the last child outputs "End of filter process.." to log
+	MilterManager should not unref the MilterManagerLeader object in
+	cb_quit(). But the message ("End of filter..") is after ("End of
+	session..") since MilterClient receives "finished" signal in
+	MilterAgent. Fix it!
 
 2008-12-03  Kouhei Sutou  <kou@cozmixng.org>
 

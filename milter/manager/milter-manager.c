@@ -316,10 +316,13 @@ static MilterStatus
 cb_client_quit (MilterClientContext *context, gpointer user_data)
 {
     MilterManagerLeader *leader = user_data;
-    MilterStatus status;
 
-    status = milter_manager_leader_quit(leader);
+    return milter_manager_leader_quit(leader);
+}
 
+static void
+teardown_client_context_signals (MilterClientContext *context, gpointer user_data)
+{
 #define DISCONNECT(name)                                                \
     g_signal_handlers_disconnect_by_func(context,                       \
                                          G_CALLBACK(cb_client_ ## name), \
@@ -343,9 +346,13 @@ cb_client_quit (MilterClientContext *context, gpointer user_data)
 
 #undef DISCONNECT
 
-    g_object_unref(leader);
+}
 
-    return status;
+static void
+cb_finished (MilterFinishedEmittable *emittable, gpointer user_data)
+{
+    teardown_client_context_signals(MILTER_CLIENT_CONTEXT(user_data), emittable);
+    g_object_unref(user_data);
 }
 
 static void
@@ -378,6 +385,8 @@ setup_context_signals (MilterClientContext *context,
     CONNECT(mta_timeout);
 
 #undef CONNECT
+    g_signal_connect(leader, "finished",
+                     G_CALLBACK(cb_finished), context);
 }
 
 static void

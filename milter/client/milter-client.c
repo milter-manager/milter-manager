@@ -230,14 +230,12 @@ milter_client_set_connection_spec (MilterClient *client, const gchar *spec,
     return success;
 }
 
-static MilterStatus
-cb_quit (MilterClientContext *context, gpointer _data)
+static void
+cb_finished (MilterClientContext *context, gpointer _data)
 {
     MilterClientProcessData *data = _data;
 
     data->done = TRUE;
-
-    return MILTER_STATUS_CONTINUE;
 }
 
 static void
@@ -265,7 +263,7 @@ process_client_channel (MilterClient *client, GIOChannel *channel)
     data->client = client;
     data->context = context;
 
-    g_signal_connect(context, "quit", G_CALLBACK(cb_quit), data);
+    g_signal_connect(context, "finished", G_CALLBACK(cb_finished), data);
 
     priv->process_data = g_list_prepend(priv->process_data, data);
 
