@@ -58,4 +58,22 @@ class TestEgg < Test::Unit::TestCase
     @egg.command = command
     assert_equal(command, @egg.command)
   end
+
+  priority :must
+  def test_to_xml
+    assert_equal(["<milter>",
+                  "  <name>#{@name}</name>",
+                  "</milter>"].join("\n") + "\n",
+                 @egg.to_xml)
+
+    @egg.signal_connect("to-xml") do |_, xml, indent|
+      xml << " " * indent
+      xml << "<additional-info>INFO</additional-info>\n"
+    end
+    assert_equal(["<milter>",
+                  "  <name>#{@name}</name>",
+                  "  <additional-info>INFO</additional-info>",
+                  "</milter>"].join("\n") + "\n",
+                 @egg.to_xml)
+  end
 end

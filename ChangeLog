@@ -1,5 +1,8 @@
 2008-12-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/src/manager/rb-milter-manager-egg.c,
+	binding/ruby/test/manager/test-egg.rb: support XML customize.
+
 	* milter/manager/milter-manager-egg.[ch], test/manager/test-egg.c:
 	support XML customize.
 
@@ -17,7 +20,7 @@
 	* milter/manager/milter-manager-children.c: Set io channel encoding
 	NULL to handle binary data correctly.
 	* test/manager/test-leader.c: Added large body packet test. But
-	received data is not checked yet. 
+	received data is not checked yet.
 	* test/manager/test-manager.c: Added check controller port test.
 	* test/manager/test-manager.c (wait_for_manager_ready): Check errno
 	after exiting timeout loop to inspect timeout cause.
