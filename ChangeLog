@@ -35,6 +35,8 @@
 	up.. I am not satisfied the size.
 	* test/core/test-logger.c: console output test.
 	* milter/client/milter-client.c: Added milter_statistics.
+	* milter/client/milter-client.c: Output MilterClientContext address in
+	milter_statistics.
 
 2008-12-03  Kouhei Sutou  <kou@cozmixng.org>
 

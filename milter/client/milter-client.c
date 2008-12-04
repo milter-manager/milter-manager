@@ -270,6 +270,8 @@ process_client_channel (MilterClient *client, GIOChannel *channel)
     priv->process_data = g_list_prepend(priv->process_data, data);
 
     g_signal_emit(client, signals[CONNECTION_ESTABLISHED], 0, context);
+
+    milter_statistics("Start session in (%p)", context);
 }
 
 static gboolean
@@ -306,8 +308,6 @@ accept_client (gint server_fd, MilterClient *client)
     g_io_channel_set_close_on_unref(client_channel, TRUE);
     process_client_channel(client, client_channel);
     g_io_channel_unref(client_channel);
-
-    milter_statistics("Start session");
 
     return TRUE;
 }
@@ -391,11 +391,11 @@ milter_client_main (MilterClient *client)
 
             if (data->done) {
                 milter_info("removing a MilterClientContext");
+                milter_statistics("End of session in (%p)", data->context);
                 process_data_free(data);
                 node = g_list_delete_link(priv->process_data, node);
                 milter_info("removed a MilterClientContext");
                 priv->process_data = node;
-                milter_statistics("End of session");
             }
         }
     }
