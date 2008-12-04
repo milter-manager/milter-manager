@@ -38,6 +38,7 @@
 
 void test_version (void);
 void test_invalid_spec (void);
+void test_check_controller_port (void);
 
 void data_scenario (void);
 void test_scenario (gconstpointer data);
@@ -403,6 +404,13 @@ test_scenario (gconstpointer data)
 
     cut_trace(do_actions(main_scenario));
     wait_for_server_reaping();
+}
+
+void
+test_check_controller_port (void)
+{
+    cut_trace(test_scenario("normal.txt"));
+    wait_for_manager_ready("inet:2929@localhost");
 }
 
 /*
