@@ -19,6 +19,8 @@
 	* test/manager/test-leader.c: Added large body packet test. But
 	received data is not checked yet. 
 	* test/manager/test-manager.c: Added check controller port test.
+	* test/manager/test-manager.c (wait_for_manager_ready): Check errno
+	after exiting timeout loop to inspect timeout cause.
 
 2008-12-03  Kouhei Sutou  <kou@cozmixng.org>
 

@@ -266,6 +266,9 @@ wait_for_manager_ready (const gchar *spec)
 
     g_source_remove(timeout_waiting_id);
     close(sock_fd);
+    if (timeout_waiting)
+        errno = 0;
+    cut_assert_errno();
     cut_assert_true(timeout_waiting, "Error");
 }
 
