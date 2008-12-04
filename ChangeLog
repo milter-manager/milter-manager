@@ -34,6 +34,7 @@
 	* test/manager/test-leader.c: Reduce large body size to avoid hang
 	up.. I am not satisfied the size.
 	* test/core/test-logger.c: console output test.
+	* milter/client/milter-client.c: Added milter_statistics.
 
 2008-12-03  Kouhei Sutou  <kou@cozmixng.org>
 

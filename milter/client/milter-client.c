@@ -307,6 +307,8 @@ accept_client (gint server_fd, MilterClient *client)
     process_client_channel(client, client_channel);
     g_io_channel_unref(client_channel);
 
+    milter_statistics("Start session");
+
     return TRUE;
 }
 
@@ -393,6 +395,7 @@ milter_client_main (MilterClient *client)
                 node = g_list_delete_link(priv->process_data, node);
                 milter_info("removed a MilterClientContext");
                 priv->process_data = node;
+                milter_statistics("End of session");
             }
         }
     }
