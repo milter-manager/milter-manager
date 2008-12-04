@@ -191,7 +191,7 @@ get_property (GObject    *object,
 
 MilterManagerLeader *
 milter_manager_leader_new (MilterManagerConfiguration *configuration,
-                               MilterClientContext *client_context)
+                           MilterClientContext *client_context)
 {
     return g_object_new(MILTER_TYPE_MANAGER_LEADER,
                         "configuration", configuration,
