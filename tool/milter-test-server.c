@@ -144,7 +144,7 @@ cb_continue (MilterServerContext *context, gpointer user_data)
 {
     ProcessData *data = user_data;
     MilterStepFlags step = MILTER_STEP_NONE;
-    
+
     if (data->option)
         step = milter_option_get_step(data->option);
 
@@ -516,7 +516,7 @@ cb_shutdown (MilterServerContext *context, gpointer user_data)
 static void
 cb_skip (MilterServerContext *context, gpointer user_data)
 {
-    while (*body_chunks) 
+    while (*body_chunks)
         body_chunks++;
 
     cb_continue(context, user_data);

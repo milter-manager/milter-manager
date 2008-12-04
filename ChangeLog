@@ -1,5 +1,7 @@
 2008-12-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-test-client.c: handle SIGINT for terminating myself.
+
 	* milter/core/milter-main.c (milter_init): initialize thread.
 
 	* milter/client/milter-client.c (milter_client_main): use another

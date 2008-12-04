@@ -26,6 +26,7 @@
 #endif /* HAVE_CONFIG_H */
 
 #include <stdlib.h>
+#include <signal.h>
 #include <glib/gi18n.h>
 
 #include <milter/client.h>
@@ -33,6 +34,7 @@
 static gchar *spec = NULL;
 static gboolean verbose = FALSE;
 static MilterSyslogLogger *logger = NULL;
+static MilterClient *client = NULL;
 
 static gboolean
 print_version (const gchar *option_name,
@@ -261,11 +263,17 @@ setup_client_signals (MilterClient *client)
 #undef CONNECT
 }
 
+static void
+shutdown_client (int signum)
+{
+    if (client)
+        milter_client_shutdown(client);
+}
+
 int
 main (int argc, char *argv[])
 {
     gboolean success = TRUE;
-    MilterClient *client;
     GError *error = NULL;
     GOptionContext *option_context;
     GOptionGroup *main_group;
@@ -288,8 +296,12 @@ main (int argc, char *argv[])
     client = milter_client_new();
     success = milter_client_set_connection_spec(client, spec, &error);
     if (success) {
+        void (*sigint_handler) (int signum);
+
         setup_client_signals(client);
+        sigint_handler = signal(SIGINT, shutdown_client);
         success = milter_client_main(client);
+        signal(SIGINT, sigint_handler);
     } else {
         g_print("%s\n", error->message);
         g_error_free(error);
