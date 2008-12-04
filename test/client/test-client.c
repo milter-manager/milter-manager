@@ -46,6 +46,7 @@ static gint n_connects;
 static gint n_helos;
 static gint n_envelope_froms;
 static gint n_envelope_recipients;
+static gint n_datas;
 static gint n_headers;
 static gint n_end_of_headers;
 static gint n_bodies;
@@ -133,6 +134,11 @@ cb_envelope_recipient (MilterDecoder *decoder, const gchar *to,
     envelope_recipient_to = g_strdup(to);
 }
 
+static void
+cb_data (MilterDecoder *decoder, gpointer user_data)
+{
+    n_datas++;
+}
 
 static void
 cb_header (MilterDecoder *decoder, const gchar *name, const gchar *value,
@@ -206,6 +212,7 @@ setup_context_signals (MilterClientContext *context)
     CONNECT(helo);
     CONNECT(envelope_from);
     CONNECT(envelope_recipient);
+    CONNECT(data);
     CONNECT(header);
     CONNECT(end_of_header);
     CONNECT(body);
@@ -267,6 +274,7 @@ setup (void)
     n_helos = 0;
     n_envelope_froms = 0;
     n_envelope_recipients = 0;
+    n_datas = 0;
     n_headers = 0;
     n_end_of_headers = 0;
     n_bodies = 0;

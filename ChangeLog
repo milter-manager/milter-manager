@@ -1,5 +1,9 @@
 2008-12-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/client/test-client.c,
+	test/client/test-client-context-header.c: add missing data signal
+	handling.
+
 	* test/manager/test-child.c: add a missing header.
 
 	* binding/ruby/lib/milter/manager.rb: add target information to XML.

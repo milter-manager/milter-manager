@@ -87,6 +87,12 @@ cb_envelope_recipient (MilterClientContext *context, const gchar *to,
 }
 
 static MilterStatus
+cb_data (MilterClientContext *context, gpointer user_data)
+{
+    return MILTER_STATUS_CONTINUE;
+}
+
+static MilterStatus
 cb_header (MilterClientContext *context, const gchar *name, const gchar *value,
            gpointer user_data)
 {
@@ -166,6 +172,7 @@ setup_signals (MilterClientContext *context)
     CONNECT(helo);
     CONNECT(envelope_from);
     CONNECT(envelope_recipient);
+    CONNECT(data);
     CONNECT(header);
     CONNECT(end_of_header);
     CONNECT(body);
