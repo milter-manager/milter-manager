@@ -1,5 +1,8 @@
 2008-12-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: remove an entry: milter_manager_egg_to_xml_string()
+	support target_XXX serialize.
+
 	* test/client/test-client.c,
 	test/client/test-client-context-header.c: add missing data signal
 	handling.
