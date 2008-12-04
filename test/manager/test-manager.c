@@ -228,18 +228,18 @@ setup_egg (EggData *data, const gchar *first_arg, ...)
 }
 
 static gboolean
-cb_timeout_waiting (gpointer data)
+cb_timeout_emitted (gpointer data)
 {
-    gboolean *waiting = data;
+    gboolean *timeout_emitted = data;
 
-    *waiting = FALSE;
+    *timeout_emitted = TRUE;
     return FALSE;
 }
 
 static void
 wait_for_manager_ready (const gchar *spec)
 {
-    gboolean timeout_waiting = TRUE;
+    gboolean timeout_emitted = FALSE;
     guint timeout_waiting_id;
     gint sock_fd;
     gint domain;
@@ -257,19 +257,19 @@ wait_for_manager_ready (const gchar *spec)
     sock_fd = socket(domain, SOCK_STREAM, 0);
     cut_assert_errno();
 
-    timeout_waiting_id = g_timeout_add(500, cb_timeout_waiting,
-                                       &timeout_waiting);
-    while (timeout_waiting &&
+    timeout_waiting_id = g_timeout_add(500, cb_timeout_emitted,
+                                       &timeout_emitted);
+    while (!timeout_emitted &&
            connect(sock_fd, address, address_size) != 0) {
-        g_main_context_iteration(NULL, FALSE);
+        g_main_context_iteration(NULL, TRUE);
+        if (!timeout_emitted)
+            errno = 0;
     }
 
     g_source_remove(timeout_waiting_id);
     close(sock_fd);
-    if (timeout_waiting)
-        errno = 0;
     cut_assert_errno();
-    cut_assert_true(timeout_waiting, "Error");
+    cut_assert_false(timeout_emitted);
 }
 
 static void

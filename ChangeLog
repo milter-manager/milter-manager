@@ -1,3 +1,8 @@
+2008-12-05  Kouhei Sutou  <kou@cozmixng.org>
+
+	* test/manager/test-manager.c (wait_for_manager_ready):
+	timeout_waiting -> timeout_emitted.
+
 2008-12-05  Hiroyuki Ikezoe  <poincare@ikezoe.net>
 
 	* milter/client/milter-client.c, milter/manager/milter-manager.c:
