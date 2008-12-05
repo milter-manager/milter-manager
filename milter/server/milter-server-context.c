@@ -1997,18 +1997,20 @@ milter_server_context_establish_connection (MilterServerContext *context,
                                                 cb_connection_timeout, context);
 
     if (connect(priv->client_fd, priv->address, priv->address_size) == -1) {
+        GError *local_error = NULL;
+
         if (errno == EINPROGRESS)
             return TRUE;
 
         close_client_fd(priv);
         disable_timeout(priv);
-        g_set_error(error,
-                    MILTER_SERVER_CONTEXT_ERROR,
-                    MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE,
-                    "Failed to connect to %s: %s",
-                    priv->spec, g_strerror(errno));
-        milter_error("Failed to connect to %s: %s",
-                     priv->spec, g_strerror(errno));
+        local_error = g_error_new(MILTER_SERVER_CONTEXT_ERROR,
+                                  MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE,
+                                  "Failed to connect to %s: %s",
+                                  priv->spec, g_strerror(errno));
+        milter_error("%s", local_error->message);
+        g_propagate_error(error, local_error);
+
         return FALSE;
     }
 

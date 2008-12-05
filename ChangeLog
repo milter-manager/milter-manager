@@ -1,5 +1,9 @@
 2008-12-05  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/server/milter-server-context.c
+	(milter_server_context_establish_connection): reduce duplicated
+	error message generation.
+
 	* milter/server/milter-server-context.c (connect_watch_func): fix
 	an error message.
 
