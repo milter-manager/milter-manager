@@ -487,8 +487,9 @@ cb_ready (MilterServerContext *context, gpointer user_data)
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(negotiate_data->children);
 
-    milter_statistics("Start filter process of %s",
-                      milter_server_context_get_name(context));
+    milter_statistics("Start filter process of %s(%p)",
+                      milter_server_context_get_name(context),
+                      context);
     setup_server_context_signals(negotiate_data->children, context);
     milter_server_context_negotiate(context, negotiate_data->option);
     g_hash_table_remove(priv->try_negotiate_ids, negotiate_data);
@@ -1236,7 +1237,7 @@ cb_finished (MilterAgent *agent, gpointer user_data)
     child_name = milter_server_context_get_name(context);
 
     milter_info("%s exits on %s.", child_name, state_string);
-    milter_statistics("End of filter process of %s", child_name);
+    milter_statistics("End of filter process of %s(%p)", child_name, context);
             
     g_free(state_string);
 

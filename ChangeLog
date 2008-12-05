@@ -22,6 +22,8 @@
 	non-blocking I/O.
 	* milter/core/milter-syslog-logger.c: output time value only if log
 	level is MILTER_LOG_LEVEL_STATISTICS.
+	* milter/manager/milter-manager-children.c: Output pointer address of
+	child to milter_statistics to identify each child.
 
 2008-12-04  Kouhei Sutou  <kou@cozmixng.org>
 
