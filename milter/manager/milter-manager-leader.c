@@ -344,9 +344,14 @@ reply (MilterManagerLeader *leader, MilterStatus status)
     MilterManagerLeaderPrivate *priv;
 
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
-    g_signal_emit_by_name(priv->client_context,
-                          state_to_response_signal_name(priv->state),
-                          status);
+    if (priv->state == MILTER_MANAGER_LEADER_STATE_NEGOTIATE) {
+        g_signal_emit_by_name(priv->client_context, "negotiate-response",
+                              NULL, status);
+    } else {
+        g_signal_emit_by_name(priv->client_context,
+                              state_to_response_signal_name(priv->state),
+                              status);
+    }
     priv->state = next_state(leader, priv->state);
 }
 

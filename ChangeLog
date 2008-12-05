@@ -1,5 +1,7 @@
 2008-12-05  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-leader.c: fix wrong reply handling.
+
 	* test/manager/test-manager.c (wait_for_manager_ready):
 	timeout_waiting -> timeout_emitted.
 
