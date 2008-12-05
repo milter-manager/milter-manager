@@ -1,5 +1,7 @@
 2008-12-05  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-test-server.c (cb_error): finished on error.
+
 	* milter/server/milter-server-context.c
 	(milter_server_context_establish_connection): reduce duplicated
 	error message generation.
