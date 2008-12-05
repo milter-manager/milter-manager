@@ -25,6 +25,7 @@
 #include <glib/gstdio.h>
 
 void test_info (void);
+void test_statistics (void);
 
 static MilterSyslogLogger *logger;
 static GIOChannel *syslog;
@@ -91,6 +92,19 @@ test_info (void)
 
     cut_assert_match(".* " MILTER_LOG_DOMAIN "\\[\\d+\\]: "
                      "This is informative message.$",
+                     actual);
+
+}
+
+void
+test_statistics (void)
+{
+    milter_statistics("This is statistics message.");
+    cut_trace(collect_log_message());
+
+    cut_assert_match(".* " MILTER_LOG_DOMAIN "\\[\\d+\\]: "
+                     "\\[.+\\]"
+                     "This is statistics message.$",
                      actual);
 
 }

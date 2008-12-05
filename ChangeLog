@@ -11,6 +11,8 @@
 	syslog.
 	* test/manager/test-manager.c (wair_for_manager_ready): Use
 	non-blocking I/O.
+	* milter/core/milter-syslog-logger.c: output time value only if log
+	level is MILTER_LOG_LEVEL_STATISTICS.
 
 2008-12-04  Kouhei Sutou  <kou@cozmixng.org>
 

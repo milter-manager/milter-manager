@@ -108,10 +108,24 @@ cb_log (MilterLogger *logger, const gchar *domain,
         const gchar *function, GTimeVal *time_value, const gchar *message,
         gpointer user_data)
 {
+    GString *log;
     gint syslog_level;
 
+    log = g_string_new(NULL);
+
+    if (level & MILTER_LOG_LEVEL_STATISTICS) {
+        gchar *time_string;
+        time_string = g_time_val_to_iso8601(time_value);
+        g_string_append_printf(log, "[%s]", time_string);
+        g_free(time_string);
+    }
+
+    g_string_append(log, message);
+
     syslog_level = milter_log_level_to_syslog_level(level); 
-    syslog(syslog_level, "%s", message);
+    syslog(syslog_level, "%s", log->str);
+
+    g_string_free(log, TRUE);
 }
 
 static void
