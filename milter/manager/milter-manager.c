@@ -100,18 +100,10 @@ static void
 milter_manager_init (MilterManager *manager)
 {
     MilterManagerPrivate *priv;
-    const gchar *config_dir_env;
 
     priv = MILTER_MANAGER_GET_PRIVATE(manager);
 
-    priv->configuration = milter_manager_configuration_new(NULL);
-    config_dir_env = g_getenv("MILTER_MANAGER_CONFIG_DIR");
-    if (config_dir_env)
-        milter_manager_configuration_add_load_path(priv->configuration,
-                                                   config_dir_env);
-    milter_manager_configuration_add_load_path(priv->configuration, CONFIG_DIR);
-    milter_manager_configuration_reload(priv->configuration);
-
+    priv->configuration = NULL;
     priv->leaders = NULL;
     priv->logger = milter_syslog_logger_new("milter-manager");
 }
@@ -185,9 +177,11 @@ get_property (GObject    *object,
 }
 
 MilterManager *
-milter_manager_new (void)
+milter_manager_new (MilterManagerConfiguration *configuration)
 {
-    return g_object_new(MILTER_TYPE_MANAGER, NULL);
+    return g_object_new(MILTER_TYPE_MANAGER,
+                        "configuration", configuration,
+                        NULL);
 }
 
 static MilterStatus

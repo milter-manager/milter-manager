@@ -33,6 +33,7 @@
 static gboolean initialized = FALSE;
 static MilterClient *current_client = NULL;
 static gchar *option_spec = NULL;
+static gchar *config_dir = NULL;
 
 static gboolean
 print_version (const gchar *option_name, const gchar *value,
@@ -70,6 +71,9 @@ static const GOptionEntry option_entries[] =
 {
     {"spec", 's', 0, G_OPTION_ARG_CALLBACK, parse_spec_arg,
      N_("The address of the desired communication socket."), "PROTOCOL:ADDRESS"},
+    {"config-dir", 0, 0, G_OPTION_ARG_STRING, &config_dir,
+     N_("The configuration directory that has configuration file."),
+     "DIRECTORY"},
     {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, print_version,
      N_("Show version"), NULL},
     {NULL}
@@ -262,11 +266,18 @@ milter_manager_main (void)
 {
     MilterClient *client;
     MilterManager *manager;
+    MilterManagerConfiguration *config;
     void (*sigint_handler) (int signum);
     guint control_connection_watch_id = 0;
     GError *error = NULL;
 
-    manager = milter_manager_new();
+    config = milter_manager_configuration_new(NULL);
+    if (config_dir)
+        milter_manager_configuration_prepend_load_path(config, config_dir);
+    milter_manager_configuration_reload(config);
+    manager = milter_manager_new(config);
+    g_object_unref(config);
+
     client = MILTER_CLIENT(manager);
 
     /* FIXME */

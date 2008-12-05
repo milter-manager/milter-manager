@@ -46,7 +46,7 @@ void test_scenario (gconstpointer data);
 static gchar *scenario_dir;
 static MilterManagerTestScenario *main_scenario;
 
-typedef struct _EggData 
+typedef struct _EggData
 {
     GCutEgg *egg;
     gchar *command_path;
@@ -97,6 +97,15 @@ egg_data_new (BuildPathFunc path_func)
     return data;
 }
 
+static gboolean
+cb_timeout_emitted (gpointer data)
+{
+    gboolean *timeout_emitted = data;
+
+    *timeout_emitted = TRUE;
+    return FALSE;
+}
+
 #define manager_egg manager_data->egg
 #define server_egg server_data->egg
 
@@ -109,8 +118,15 @@ egg_data_new (BuildPathFunc path_func)
 static void
 wait_for_reaping (EggData *data)
 {
-    while (!data->reaped)
+    gboolean timeout_emitted = FALSE;
+    guint timeout_id;
+
+    timeout_id = g_timeout_add(500, cb_timeout_emitted, &timeout_emitted);
+    while (!timeout_emitted && !data->reaped)
         g_main_context_iteration(NULL, TRUE);
+    g_source_remove(timeout_id);
+
+    cut_assert_false(timeout_emitted);
 }
 
 static void
@@ -228,15 +244,6 @@ setup_egg (EggData *data, const gchar *first_arg, ...)
 }
 
 static gboolean
-cb_timeout_emitted (gpointer data)
-{
-    gboolean *timeout_emitted = data;
-
-    *timeout_emitted = TRUE;
-    return FALSE;
-}
-
-static gboolean
 connect_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
 {
     gboolean *ready = data;
@@ -257,13 +264,14 @@ wait_for_manager_ready (const gchar *spec)
     struct sockaddr *address;
     socklen_t address_size;
     GIOChannel *channel;
+    GError *error = NULL;
 
     if (!milter_connection_parse_spec(spec,
                                       &domain,
                                       &address,
                                       &address_size,
-                                      NULL)) {
-        cut_error("Error");
+                                      &error)) {
+        gcut_assert_error(error);
     }
 
     sock_fd = socket(domain, SOCK_STREAM, 0);
@@ -279,7 +287,6 @@ wait_for_manager_ready (const gchar *spec)
     timeout_waiting_id = g_timeout_add(500, cb_timeout_emitted,
                                        &timeout_emitted);
     while (!timeout_emitted && !manager_ready) {
-        connect(sock_fd, address, address_size);
         g_main_context_iteration(NULL, TRUE);
     }
 
@@ -287,6 +294,7 @@ wait_for_manager_ready (const gchar *spec)
     g_source_remove(connect_watch_id);
 
     close(sock_fd);
+    cut_assert_true(manager_ready);
     cut_assert_false(timeout_emitted);
 }
 
@@ -294,12 +302,13 @@ static void
 start_manager (void)
 {
     const gchar spec[] = "inet:19999@localhost";
-    setup_egg(manager_data, "-s", spec, NULL);
-    gcut_egg_set_env(manager_egg,
-                     "MILTER_MANAGER_CONFIG_DIR", scenario_dir,
-                     NULL);
+
+    setup_egg(manager_data, "-s", spec, "--config-dir", scenario_dir, NULL);
     gcut_egg_hatch(manager_egg, &error);
     wait_for_manager_ready(spec);
+
+    cut_assert_equal_string("", manager_data->output_string->str);
+    cut_assert_equal_string("", manager_data->error_string->str);
 }
 
 static void
@@ -380,6 +389,8 @@ do_actions (MilterManagerTestScenario *scenario)
     gchar **lines;
 
     wait_for_server_reaping();
+    cut_assert_equal_string("", server_data->error_string->str);
+
     expected = get_string(scenario, "scenario", "expected");
     lines = g_strsplit(server_data->output_string->str, "\n", 2);
     cut_take_string_array(lines);
