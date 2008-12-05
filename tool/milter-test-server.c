@@ -528,7 +528,6 @@ cb_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
     ProcessData *data = user_data;
 
     data->error = g_error_copy(error);
-    data->finished = TRUE;
 
     send_abort(MILTER_SERVER_CONTEXT(emittable), data);
 }

@@ -10,8 +10,6 @@
 	test/manager/test-configuration.c, test/manager/test-controller.c:
 	add_load_path -> append_load_path and prepend_load_path.
 
-	* tool/milter-test-server.c (cb_error): finished on error.
-
 	* milter/server/milter-server-context.c
 	(milter_server_context_establish_connection): reduce duplicated
 	error message generation.
