@@ -1,5 +1,7 @@
 2008-12-05  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/server/test-server-context.c: follow the recent change.
+
 	* milter/manager/milter-manager.[ch],
 	milter/manager/milter-manager-main.c, test/manager/test-manager.c:
 	manager doesn't create configuration.

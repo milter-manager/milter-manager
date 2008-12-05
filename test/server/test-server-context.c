@@ -246,7 +246,7 @@ test_establish_connection_failure (void)
 
     expected_error = g_error_new(MILTER_SERVER_CONTEXT_ERROR,
                                  MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE,
-                                 "Failed to connect to %s: Error | Hung up",
+                                 "Connection error on %s: Error | Hung up",
                                  spec);
     milter_server_context_establish_connection(context, &actual_error);
 
