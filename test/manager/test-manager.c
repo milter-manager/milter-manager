@@ -236,15 +236,27 @@ cb_timeout_emitted (gpointer data)
     return FALSE;
 }
 
+static gboolean
+connect_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
+{
+    gboolean *ready = data;
+
+    *ready = TRUE;
+    return FALSE;
+}
+
 static void
 wait_for_manager_ready (const gchar *spec)
 {
     gboolean timeout_emitted = FALSE;
+    gboolean manager_ready = FALSE;
     guint timeout_waiting_id;
+    guint connect_watch_id;
     gint sock_fd;
     gint domain;
     struct sockaddr *address;
     socklen_t address_size;
+    GIOChannel *channel;
 
     if (!milter_connection_parse_spec(spec,
                                       &domain,
@@ -256,19 +268,27 @@ wait_for_manager_ready (const gchar *spec)
 
     sock_fd = socket(domain, SOCK_STREAM, 0);
     cut_assert_errno();
+    channel = g_io_channel_unix_new(sock_fd);
+    g_io_channel_set_flags(channel, G_IO_FLAG_NONBLOCK, NULL);
+
+    connect_watch_id = g_io_add_watch(channel,
+                                      G_IO_OUT,
+                                      connect_watch_func, &manager_ready);
+    g_io_channel_unref(channel);
 
     timeout_waiting_id = g_timeout_add(500, cb_timeout_emitted,
                                        &timeout_emitted);
-    while (!timeout_emitted &&
-           connect(sock_fd, address, address_size) != 0) {
+    while (timeout_emitted && !manager_ready) {
+        connect(sock_fd, address, address_size);
         g_main_context_iteration(NULL, TRUE);
         if (!timeout_emitted)
             errno = 0;
     }
 
     g_source_remove(timeout_waiting_id);
+    g_source_remove(connect_watch_id);
+
     close(sock_fd);
-    cut_assert_errno();
     cut_assert_false(timeout_emitted);
 }
 

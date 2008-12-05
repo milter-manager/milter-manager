@@ -9,6 +9,8 @@
 	"Start session.." and "End of session.." moved to MilterManager.
 	* milter/core/milter-syslog-logger.c: Do not output time value in
 	syslog.
+	* test/manager/test-manager.c (wair_for_manager_ready): Use
+	non-blocking I/O.
 
 2008-12-04  Kouhei Sutou  <kou@cozmixng.org>
 
