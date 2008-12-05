@@ -278,11 +278,9 @@ wait_for_manager_ready (const gchar *spec)
 
     timeout_waiting_id = g_timeout_add(500, cb_timeout_emitted,
                                        &timeout_emitted);
-    while (timeout_emitted && !manager_ready) {
+    while (!timeout_emitted && !manager_ready) {
         connect(sock_fd, address, address_size);
         g_main_context_iteration(NULL, TRUE);
-        if (!timeout_emitted)
-            errno = 0;
     }
 
     g_source_remove(timeout_waiting_id);
