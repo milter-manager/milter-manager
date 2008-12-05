@@ -95,12 +95,11 @@ void
 setup (void)
 {
     MilterManagerConfiguration *config;
-    const gchar *config_dir;
     MilterEncoder *encoder;
 
-    manager = milter_manager_new();
-    config = milter_manager_get_configuration(manager);
-    milter_manager_configuration_clear_load_paths(config);
+    config = milter_manager_configuration_new(NULL);
+    manager = milter_manager_new(config);
+    g_object_unref(config);
     controller = milter_manager_controller_new(manager);
 
     setup_io();
@@ -121,11 +120,7 @@ setup (void)
                                NULL);
     if (g_mkdir_with_parents(tmp_dir, 0700) == -1)
         cut_assert_errno();
-    milter_manager_configuration_add_load_path(config, tmp_dir);
-
-    config_dir = g_getenv("MILTER_MANAGER_CONFIG_DIR");
-    if (config_dir)
-        milter_manager_configuration_add_load_path(config, config_dir);
+    milter_manager_configuration_prepend_load_path(config, tmp_dir);
 
     custom_config_path = g_build_filename(tmp_dir,
                                           CUSTOM_CONFIG_FILE_NAME,

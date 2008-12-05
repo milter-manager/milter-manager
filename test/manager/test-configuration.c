@@ -237,7 +237,7 @@ test_save_custom (void)
                                           NULL);
     cut_take_string(custom_config_path);
 
-    milter_manager_configuration_add_load_path(config, tmp_dir);
+    milter_manager_configuration_prepend_load_path(config, tmp_dir);
 
     cut_assert_path_not_exist(custom_config_path);
     milter_manager_configuration_save_custom(config, "XXX", -1, &error);

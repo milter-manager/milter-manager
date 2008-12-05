@@ -125,12 +125,19 @@ static void
 milter_manager_configuration_init (MilterManagerConfiguration *configuration)
 {
     MilterManagerConfigurationPrivate *priv;
+    const gchar *config_dir_env;
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
     priv->load_paths = NULL;
     priv->eggs = NULL;
     priv->control_connection_spec = NULL;
     priv->manager_connection_spec = NULL;
+
+    config_dir_env = g_getenv("MILTER_MANAGER_CONFIG_DIR");
+    if (config_dir_env)
+        priv->load_paths = g_list_append(priv->load_paths,
+                                         g_strdup(config_dir_env));
+    priv->load_paths = g_list_append(priv->load_paths, g_strdup(CONFIG_DIR));
 
     milter_manager_configuration_clear(configuration);
 }
@@ -306,13 +313,23 @@ milter_manager_configuration_new (const gchar *first_property,
 }
 
 void
-milter_manager_configuration_add_load_path (MilterManagerConfiguration *configuration,
-                                            const gchar *path)
+milter_manager_configuration_append_load_path (MilterManagerConfiguration *configuration,
+                                               const gchar *path)
 {
     MilterManagerConfigurationPrivate *priv;
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
     priv->load_paths = g_list_append(priv->load_paths, g_strdup(path));
+}
+
+void
+milter_manager_configuration_prepend_load_path (MilterManagerConfiguration *configuration,
+                                                const gchar *path)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    priv->load_paths = g_list_prepend(priv->load_paths, g_strdup(path));
 }
 
 void

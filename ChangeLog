@@ -1,5 +1,9 @@
 2008-12-05  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-configuration.[ch],
+	test/manager/test-configuration.c, test/manager/test-controller.c:
+	add_load_path -> append_load_path and prepend_load_path.
+
 	* tool/milter-test-server.c (cb_error): finished on error.
 
 	* milter/server/milter-server-context.c

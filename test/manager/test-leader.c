@@ -73,14 +73,6 @@ startup (void)
 }
 
 static void
-add_load_path (const gchar *path)
-{
-    if (!path)
-        return;
-    milter_manager_configuration_add_load_path(config, path);
-}
-
-static void
 cb_error (MilterManagerLeader *leader, GError *error, gpointer user_data)
 {
     if (actual_error)
@@ -278,7 +270,6 @@ setup (void)
     main_scenario = NULL;
 
     config = milter_manager_configuration_new(NULL);
-    add_load_path(g_getenv("MILTER_MANAGER_CONFIG_DIR"));
     milter_manager_configuration_load(config, "milter-manager.conf", &error);
     gcut_assert_error(error);
 
