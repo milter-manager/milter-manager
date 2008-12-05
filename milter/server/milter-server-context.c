@@ -1934,7 +1934,7 @@ connect_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
         g_set_error(&error,
                     MILTER_SERVER_CONTEXT_ERROR,
                     MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE,
-                    "Failed to connect to %s: %s", priv->spec, message);
+                    "Connection error on %s: %s", priv->spec, message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(context),
                                     error);
         milter_error("error!: %s", message);
