@@ -1,6 +1,7 @@
 require 'pathname'
 require 'shellwords'
 require 'erb'
+require 'yaml'
 require "English"
 
 require "rexml/document"
@@ -381,13 +382,16 @@ module Milter::Manager
            ["target_sender", @target_senders],
            ["target_recipient", @target_recipients]].each do |tag, values|
             (values || []).each do |value|
-              xml << " " * indent + "<#{tag}>#{ERB::Util.h(value)}</#{tag}>"
+              value = value.to_yaml
+              xml << " " * indent + "<#{tag}>#{ERB::Util.h(value)}</#{tag}>\n"
             end
           end
           (@target_headers || []).each do |name, value|
+            name = name.to_yaml
+            value = value.to_yaml
             xml << " " * indent + "<target_header>\n"
-            xml << " " * (indent + 2) + "<name>#{ERB::Util.h(name)}</name>"
-            xml << " " * (indent + 2) + "<value>#{ERB::Util.h(value)}</value>"
+            xml << " " * (indent + 2) + "<name>#{ERB::Util.h(name)}</name>\n"
+            xml << " " * (indent + 2) + "<value>#{ERB::Util.h(value)}</value>\n"
             xml << " " * indent + "</target_header>\n"
           end
         end

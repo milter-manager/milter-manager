@@ -1,3 +1,13 @@
+2008-12-08  Kouhei Sutou  <kou@cozmixng.org>
+
+	* binding/ruby/src/manager/rb-milter-manager-configuration.c: bind
+	milter_manager_configuration_to_xml_string().
+
+	* binding/ruby/test/manager/test-configuration-loader.rb: add.
+
+	* binding/ruby/lib/milter/manager.rb: encode additional
+	information value as YAML to keep Ruby object.
+
 2008-12-05  Kouhei Sutou  <kou@cozmixng.org>
 
 	* test/server/test-server-context.c: follow the recent change.

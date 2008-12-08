@@ -59,7 +59,6 @@ class TestEgg < Test::Unit::TestCase
     assert_equal(command, @egg.command)
   end
 
-  priority :must
   def test_to_xml
     assert_equal(["<milter>",
                   "  <name>#{@name}</name>",
