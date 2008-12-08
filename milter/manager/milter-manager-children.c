@@ -1175,6 +1175,7 @@ cb_writing_timeout (MilterServerContext *context, gpointer user_data)
 
     expire_child(children, context);
     remove_child_from_queue(children, context);
+    milter_statistics("End of filter process of %s(%p)", child_name, context);
 }
 
 static void
@@ -1187,6 +1188,7 @@ cb_reading_timeout (MilterServerContext *context, gpointer user_data)
 
     expire_child(children, context);
     remove_child_from_queue(children, context);
+    milter_statistics("End of filter process of %s(%p)", child_name, context);
 }
 
 static void
@@ -1199,6 +1201,7 @@ cb_end_of_message_timeout (MilterServerContext *context, gpointer user_data)
 
     expire_child(children, context);
     remove_child_from_queue(children, context);
+    milter_statistics("End of filter process of %s(%p)", child_name, context);
 }
 
 static void
@@ -1217,6 +1220,7 @@ cb_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
 
     expire_child(children, context);
     remove_child_from_queue(children, context);
+    milter_statistics("End of filter process of %s(%p)", child_name, context);
 }
 
 static void

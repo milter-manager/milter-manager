@@ -1,3 +1,8 @@
+2008-12-08  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/manager/milter-manager-children.c: Output "End of filter
+	process ..." to log if time-out or error are occured.
+
 2008-12-08  Kouhei Sutou  <kou@cozmixng.org>
 
 	* binding/ruby/src/manager/rb-milter-manager-configuration.c: bind
