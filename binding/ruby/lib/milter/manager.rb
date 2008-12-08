@@ -35,12 +35,23 @@ module Milter::Manager
       end
     end
 
-    attr_reader :security, :control, :manager
+    attr_reader :security, :control, :manager, :applicable_conditions
     def initialize(configuration)
       @configuration = configuration
       @security = SecurityConfiguration.new(configuration)
       @control = ControlConfiguration.new(configuration)
       @manager = ManagerConfiguration.new(configuration)
+      @applicable_conditions = {}
+
+      @configuration.signal_connect("to-xml") do |_, xml, indent|
+        unless @applicable_conditions.empty?
+          xml << " " * indent + "<applicable-conditions>\n"
+          @applicable_conditions.each do |name, condition|
+            xml << condition.to_xml(indent + 2)
+          end
+          xml << " " * indent + "</applicable-conditions>\n"
+        end
+      end
     end
 
     def load_configuration(file)
@@ -69,6 +80,12 @@ module Milter::Manager
       egg_configuration = EggConfiguration.new(name)
       yield(egg_configuration)
       egg_configuration.apply(@configuration)
+    end
+
+    def define_applicable_condition(name)
+      condition = ApplicableCondition.new(name)
+      yield(condition)
+      @applicable_conditions[name] = condition
     end
 
     class XMLConfigurationLoader
@@ -301,6 +318,7 @@ module Milter::Manager
       attr_reader :target_senders, :target_recipients
       def initialize(name)
         @egg = Egg.new(name)
+        @applicable_conditions = []
         @target_hosts = []
         @target_addresses = []
         @target_senders = []
@@ -395,6 +413,88 @@ module Milter::Manager
             xml << " " * indent + "</target_header>\n"
           end
         end
+      end
+    end
+
+    class ApplicableCondition
+      attr_accessor :description
+      def initialize(name)
+        @name = name
+        @description = nil
+        @connect_checkers = []
+        @envelope_from_checkers = []
+        @envelope_recipient_checkers = []
+        @header_checkers = []
+      end
+
+      def define_connect_checker(&block)
+        @connect_checkers << block
+      end
+
+      def define_envelope_from_checker(&block)
+        @envelope_from_checkers << block
+      end
+
+      def define_envelope_recipient_checker(&block)
+        @envelope_recipient_checkers << block
+      end
+
+      def define_header_checker(&block)
+        @header_checkers << block
+      end
+
+      def have_checker?
+        [@connect_checkers,
+         @envelope_from_checkers,
+         @envelope_recipient_checkers,
+         @header_checkers].any? do |checkers|
+          not checkers.empty?
+        end
+      end
+
+      def apply(child)
+        unless @connect_checkers.empty?
+          child.signal_connect("check-connect") do |_child, host, address|
+            @connect_checkers.all? do |checker|
+              checker.call(_child, host, address)
+            end
+          end
+        end
+
+        unless @envelope_from_checkers.empty?
+          child.signal_connect("check-envelope-from") do |_child, from|
+            @envelope_from_checkers.all? do |checker|
+              checker.call(_child, from)
+            end
+          end
+        end
+
+        unless @envelope_recipient_checkers.empty?
+          child.signal_connect("check-envelope-recipient") do |_child, recipient|
+            @envelope_recipient_checkers.all? do |checker|
+              checker.call(_child, recipient)
+            end
+          end
+        end
+
+        unless @header_checkers.empty?
+          child.signal_connect("check-header") do |_child, name, value|
+            @header_checkers.all? do |checker|
+              checker.call(_child, name, value)
+            end
+          end
+        end
+      end
+
+      def to_xml(indent=nil)
+        indent ||= 0
+        xml = ""
+        xml << " " * indent + "<applicable-condition>\n"
+        xml << " " * (indent + 2) + "<name>#{ERB::Util.h(@name)}</name>\n"
+        xml << " " * (indent + 2) +
+          "<description>#{ERB::Util.h(@description)}</description>\n"
+        xml << " " * indent + "</applicable-condition>\n"
+        xml
       end
     end
   end

@@ -12,6 +12,7 @@ class TestConfiguration < Test::Unit::TestCase
     @configuration.add_egg(egg)
     assert_equal(1, @configuration.create_children.length)
   end
+
   def test_to_xml
     assert_equal(["<configuration>",
                   "</configuration>"].join("\n") + "\n",

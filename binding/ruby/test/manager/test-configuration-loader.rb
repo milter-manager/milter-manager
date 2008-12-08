@@ -40,4 +40,35 @@ EOX
 </configuration>
 EOX
   end
+
+
+  def test_applicable_conditions
+    @loader.define_applicable_condition("S25R") do |condition|
+      condition.description = "Selective SMTP Rejection."
+      condition.define_connect_checker do |child, host, address|
+        case host
+        when "unknown",
+          /\A[^.]*\d[^\d.]+\d/,
+          /\A[^.]*\d{5}/,
+          /\A(?:[^.]+\.)?\d[^.]*\.[^.]+\..+\.[a-z]/i,
+          /\A[^.]*\d\.[^.]*\d-\d/,
+          /\A[^.]*\d\.[^.]*\d\.[^.]+\..+\./,
+          /\A(?:dhcp|dialup|ppp|[achrsvx]?dsl)[^.]*\d/i
+          false
+        else
+          true
+        end
+      end
+    end
+
+    assert_equal(["<configuration>",
+                  "  <applicable-conditions>",
+                  "    <applicable-condition>",
+                  "      <name>S25R</name>",
+                  "      <description>Selective SMTP Rejection.</description>",
+                  "    </applicable-condition>",
+                  "  </applicable-conditions>",
+                  "</configuration>"].join("\n") + "\n",
+                 @configuration.to_xml)
+  end
 end

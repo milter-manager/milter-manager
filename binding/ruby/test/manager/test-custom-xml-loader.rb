@@ -3,6 +3,7 @@ class TestCustomXMLLoader < Test::Unit::TestCase
 
   def setup
     @configuration = Object.new
+    mock(@configuration).signal_connect("to-xml")
     @loader = Milter::Manager::ConfigurationLoader.new(@configuration)
   end
 
