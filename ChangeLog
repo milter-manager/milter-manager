@@ -1,5 +1,7 @@
 2008-12-08  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: add an entry: add default applicable conditions.
+
 	* binding/ruby/src/manager/,
 	binding/ruby/test/manager/test-configuration.rb:
 	Milter::Manager::Configuration supports to-xml signal.

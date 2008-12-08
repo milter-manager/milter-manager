@@ -8,3 +8,7 @@
 * tool/milter-test-client:
   * support outputting reply information.
   * support customizing reply by command line option.
+* add default applicable conditions:
+  ideas:
+    * S25R
+    * remote network (local network may not be a spammer)
