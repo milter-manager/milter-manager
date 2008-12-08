@@ -30,6 +30,7 @@
 #include "milter-manager-module.h"
 #include "milter-manager-configuration.h"
 #include "milter-manager-children.h"
+#include <milter/core/milter-marshalers.h>
 
 #define MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(obj)                   \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                                 \
@@ -55,6 +56,14 @@ enum
     PROP_MANAGER_CONNECTION_SPEC,
     PROP_RETURN_STATUS,
 };
+
+enum
+{
+    TO_XML,
+    LAST_SIGNAL
+};
+
+static gint signals[LAST_SIGNAL] = {0};
 
 static GList *configurations = NULL;
 static gchar *configuration_module_dir = NULL;
@@ -116,6 +125,15 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
                              MILTER_STATUS_CONTINUE,
                              G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
     g_object_class_install_property(gobject_class, PROP_RETURN_STATUS, spec);
+
+    signals[TO_XML] =
+        g_signal_new("to-xml",
+                     G_TYPE_FROM_CLASS(klass),
+                     G_SIGNAL_RUN_LAST,
+                     G_STRUCT_OFFSET(MilterManagerConfigurationClass, to_xml),
+                     NULL, NULL,
+                     _milter_marshal_VOID__POINTER_UINT,
+                     G_TYPE_NONE, 2, G_TYPE_POINTER, G_TYPE_UINT);
 
     g_type_class_add_private(gobject_class,
                              sizeof(MilterManagerConfigurationPrivate));
@@ -738,6 +756,8 @@ milter_manager_configuration_to_xml_string (MilterManagerConfiguration *configur
         milter_utils_append_indent(string, indent + 2);
         g_string_append(string, "</milters>\n");
     }
+
+    g_signal_emit(configuration, signals[TO_XML], 0, string, indent + 2);
 
     milter_utils_append_indent(string, indent);
     g_string_append(string, "</configuration>\n");

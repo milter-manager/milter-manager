@@ -62,6 +62,9 @@ struct _MilterManagerConfigurationClass
     gboolean     (*load_custom)   (MilterManagerConfiguration *configuration,
                                    const gchar                *file_name,
                                    GError                    **error);
+    void         (*to_xml)        (MilterManagerConfiguration *configuration,
+                                   GString                    *xml,
+                                   guint                       indent);
 };
 
 GQuark        milter_manager_configuration_error_quark (void);

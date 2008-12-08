@@ -245,6 +245,14 @@ test_save_custom (void)
     cut_assert_path_exist(custom_config_path);
 }
 
+static void
+cb_to_xml (MilterManagerConfiguration *configuration,
+           GString *xml, guint indent, gpointer user_data)
+{
+    milter_utils_append_indent(xml, indent);
+    g_string_append_printf(xml, "<additional-field>VALUE</additional-field>\n");
+}
+
 void
 test_to_xml (void)
 {
@@ -268,6 +276,22 @@ test_to_xml (void)
         "      <command>test-milter</command>\n"
         "    </milter>\n"
         "  </milters>\n"
+        "</configuration>\n",
+        actual_xml);
+
+    g_signal_connect(config, "to-xml", G_CALLBACK(cb_to_xml), NULL);
+    g_free(actual_xml);
+    actual_xml = milter_manager_configuration_to_xml(config);
+    cut_assert_equal_string(
+        "<configuration>\n"
+        "  <milters>\n"
+        "    <milter>\n"
+        "      <name>milter@10025</name>\n"
+        "      <connection-spec>inet:10025</connection-spec>\n"
+        "      <command>test-milter</command>\n"
+        "    </milter>\n"
+        "  </milters>\n"
+        "  <additional-field>VALUE</additional-field>\n"
         "</configuration>\n",
         actual_xml);
 }
