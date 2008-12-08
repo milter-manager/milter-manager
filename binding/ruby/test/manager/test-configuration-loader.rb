@@ -10,33 +10,48 @@ class TestConfigurationLoader < Test::Unit::TestCase
 </configuration>
 EOX
 
+    @loader.define_applicable_condition("remote-network") do |condition|
+      condition.description = "Check only remote network"
+
+      condition.define_connect_checker do |child, host, address|
+        host == "localhost"
+      end
+
+      condition.define_envelope_from_checker do |child, from|
+        from =~ /@my-domain1.example.com\z/
+      end
+
+      condition.define_envelope_recipient_checker do |child, recipient|
+        recipient =~ /@my-domain2.example.com\z/
+      end
+
+      condition.define_header_checker do |child, name, value|
+        name == "X-Internal" and value =~ /\A(yes|true)\z/i
+      end
+    end
+
     @loader.define_milter("child-milter") do |milter|
       milter.connection_spec = "unix:/tmp/socket"
-      milter.target_hosts << "external.com"
-      milter.target_senders << /@external1.example.com\z/
-      milter.target_recipients << /@external2.example.com\z/
-      milter.add_target_header("X-External", /\A(yes|true)\z/i)
+      milter.add_applicable_condition("remote-network")
     end
+
     assert_equal(<<-EOX, @configuration.to_xml)
 <configuration>
   <milters>
     <milter>
       <name>child-milter</name>
       <connection-spec>unix:/tmp/socket</connection-spec>
-      <target_host>--- external.com
-</target_host>
-      <target_sender>--- !ruby/regexp /@external1.example.com\\z/
-</target_sender>
-      <target_recipient>--- !ruby/regexp /@external2.example.com\\z/
-</target_recipient>
-      <target_header>
-        <name>--- X-External
-</name>
-        <value>--- !ruby/regexp /\\A(yes|true)\\z/i
-</value>
-      </target_header>
+      <applicable-conditions>
+        <applicable-condition>remote-network</applicable-condition>
+      </applicable-conditions>
     </milter>
   </milters>
+  <applicable-conditions>
+    <applicable-condition>
+      <name>remote-network</name>
+      <description>Check only remote network</description>
+    </applicable-condition>
+  </applicable-conditions>
 </configuration>
 EOX
   end

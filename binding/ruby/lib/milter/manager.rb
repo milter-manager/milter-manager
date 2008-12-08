@@ -35,7 +35,8 @@ module Milter::Manager
       end
     end
 
-    attr_reader :security, :control, :manager, :applicable_conditions
+    attr_reader :security, :control, :manager
+    attr_reader :configuration, :applicable_conditions
     def initialize(configuration)
       @configuration = configuration
       @security = SecurityConfiguration.new(configuration)
@@ -77,9 +78,9 @@ module Milter::Manager
     end
 
     def define_milter(name, &block)
-      egg_configuration = EggConfiguration.new(name)
+      egg_configuration = EggConfiguration.new(name, self)
       yield(egg_configuration)
-      egg_configuration.apply(@configuration)
+      egg_configuration.apply
     end
 
     def define_applicable_condition(name)
@@ -314,20 +315,18 @@ module Milter::Manager
     end
 
     class EggConfiguration
-      attr_reader :target_hosts, :target_addresses
-      attr_reader :target_senders, :target_recipients
-      def initialize(name)
+      def initialize(name, loader)
         @egg = Egg.new(name)
+        @loader = loader
         @applicable_conditions = []
-        @target_hosts = []
-        @target_addresses = []
-        @target_senders = []
-        @target_recipients = []
-        @target_headers = []
       end
 
-      def add_target_header(name, value)
-        @target_headers << [name, value]
+      def add_applicable_condition(name)
+        condition = @loader.applicable_conditions[name]
+        if condition.nil?
+          raise InvalidValue, "applicable condition '#{name}' isn't defined"
+        end
+        @applicable_conditions << condition
       end
 
       def command_options=(options)
@@ -343,81 +342,45 @@ module Milter::Manager
         @egg.send(name, *args, &block)
       end
 
-      def apply(configuration)
+      def apply
         setup_check_callback
         setup_to_xml_callback
-        configuration.add_egg(@egg)
+        @loader.configuration.add_egg(@egg)
       end
 
       private
-      def need_check?
-        not (@target_hosts.empty? and
-             @target_addresses.empty? and
-             @target_senders.empty? and
-             @target_recipients.empty? and
-             @target_headers.empty?)
-      end
-
       def setup_check_callback
-        return unless need_check?
+        if @applicable_conditions.all? {|condition| !condition.have_checker?}
+          return
+        end
 
         @egg.signal_connect("hatched") do |_, child|
-          if !@target_hosts.empty? or !@target_addresses.empty?
-            child.signal_connect("check-connect") do |_, host, address|
-              !(@target_hosts.all? {|_host| _host === host} and
-                @target_addresses.all? {|_address| _address === address})
-            end
-          end
-
-          if !@target_senders.empty?
-            child.signal_connect("check-envelope-from") do |_, from|
-              !@target_senders.all? {|_sender| _sender === from}
-            end
-          end
-
-          if !@target_recipients.empty?
-            child.signal_connect("check-envelope-recipient") do |_, recipient|
-              !@target_recipients.all? {|_recipient| _recipient === recipient}
-            end
-          end
-
-          if !@target_headers.empty?
-            child.signal_connect("check-header") do |_, name, value|
-              !@target_headers.all? do |_name, _value|
-                _name === name and _value === value
-              end
+          @applicable_conditions.each do |condition|
+            if condition.have_checker?
+              condition.apply(child)
             end
           end
         end
       end
 
       def setup_to_xml_callback
-        return unless need_check?
+        return if @applicable_conditions.empty?
 
         @egg.signal_connect("to-xml") do |_, xml, indent|
-          [["target_host", @target_hosts],
-           ["target_address", @target_addresses],
-           ["target_sender", @target_senders],
-           ["target_recipient", @target_recipients]].each do |tag, values|
-            (values || []).each do |value|
-              value = value.to_yaml
-              xml << " " * indent + "<#{tag}>#{ERB::Util.h(value)}</#{tag}>\n"
-            end
-          end
-          (@target_headers || []).each do |name, value|
-            name = name.to_yaml
-            value = value.to_yaml
-            xml << " " * indent + "<target_header>\n"
-            xml << " " * (indent + 2) + "<name>#{ERB::Util.h(name)}</name>\n"
-            xml << " " * (indent + 2) + "<value>#{ERB::Util.h(value)}</value>\n"
-            xml << " " * indent + "</target_header>\n"
+          @applicable_conditions.each do |condition|
+            xml << " " * indent + "<applicable-conditions>\n"
+            condition_tag = "<applicable-condition>"
+            condition_tag << ERB::Util.h(condition.name)
+            condition_tag << "</applicable-condition>\n"
+            xml << " " * (indent + 2) + condition_tag
+            xml << " " * indent + "</applicable-conditions>\n"
           end
         end
       end
     end
 
     class ApplicableCondition
-      attr_accessor :description
+      attr_accessor :name, :description
       def initialize(name)
         @name = name
         @description = nil
