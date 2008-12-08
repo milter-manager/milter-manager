@@ -50,6 +50,9 @@ Init_milter_manager_configuration (void)
 		    "Configuration",
 		    rb_mMilterManager);
 
+    G_DEF_SIGNAL_FUNC(rb_cMilterManagerConfiguration,
+                      "to-xml", rb_milter_manager_gstring_handle_to_xml_signal);
+
     rb_define_method(rb_cMilterManagerConfiguration, "add_egg", add_egg, 1);
     rb_define_method(rb_cMilterManagerConfiguration,
 		     "create_children", create_children, 0);

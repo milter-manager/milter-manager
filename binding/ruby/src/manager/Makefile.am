@@ -25,6 +25,7 @@ noinst_HEADERS =				\
 
 milter_manager_la_SOURCES =				\
 	rb-milter-manager.c				\
+	rb-milter-manager-gstring.c			\
 	rb-milter-manager-configuration.c		\
 	rb-milter-manager-child.c			\
 	rb-milter-manager-egg.c				\
