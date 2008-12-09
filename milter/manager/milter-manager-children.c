@@ -553,14 +553,15 @@ remove_child_from_queue (MilterManagerChildren *children,
                          MilterServerContext *context)
 {
     MilterManagerChildrenPrivate *priv;
-    MilterStatus status;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     g_queue_remove(priv->reply_queue, context);
-    status = get_reply_status_for_state(children, priv->current_state);
 
     if (g_queue_is_empty(priv->reply_queue)) {
+        MilterStatus status;
+        status = get_reply_status_for_state(children, priv->current_state);
+
         if (priv->reply_code > 0) {
             g_signal_emit_by_name(children, "reply-code",
                                   priv->reply_code, priv->reply_extended_code,
