@@ -54,3 +54,9 @@
        * 80_000 mails/hour (22.22 mails/sec)
        * CPU: Intel Xeon 64-bit 3.2 GHz x 2
        * Memory: 2GB
+    * HDE Anti-Spam for Gateway (2008/12)
+      http://www.hde.co.jp/has/require/
+      * 5_000 mails/hour (1.39 mails/sec)
+      * CPU: Intel Pentium Xeon 2GHz
+      * Memory: 2GB
+
