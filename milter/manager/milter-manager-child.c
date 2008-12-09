@@ -382,7 +382,8 @@ milter_manager_child_start (MilterManagerChild *milter, GError **error)
             MILTER_MANAGER_CHILD_ERROR,
             MILTER_MANAGER_CHILD_ERROR_BAD_COMMAND_STRING,
             internal_error,
-            "Command string has invalid character(s).");
+            "Command string(%s) has invalid character(s).",
+            command_line);
         return FALSE;
     }
 
@@ -410,7 +411,8 @@ milter_manager_child_start (MilterManagerChild *milter, GError **error)
             MILTER_MANAGER_CHILD_ERROR,
             MILTER_MANAGER_CHILD_ERROR_START_FAILURE,
             internal_error,
-            "Couldn't start new milter process.");
+            "Couldn't start new %s process.",
+            milter_server_context_get_name(MILTER_SERVER_CONTEXT(milter)));
         return FALSE;
     }
 
