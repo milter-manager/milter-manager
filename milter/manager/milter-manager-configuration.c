@@ -363,6 +363,12 @@ milter_manager_configuration_clear_load_paths (MilterManagerConfiguration *confi
     }
 }
 
+const GList *
+milter_manager_configuration_get_load_paths (MilterManagerConfiguration *configuration)
+{
+    return MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration)->load_paths;
+}
+
 static gchar *
 find_file (MilterManagerConfiguration *configuration,
            const gchar *file_name, GError **error)

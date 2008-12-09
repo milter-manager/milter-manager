@@ -1,5 +1,9 @@
 2008-12-09  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-configuration.[ch],
+	test/manager/test-configuration.c: add
+	milter_manager_configuration_get_load_paths().
+
 	* TODO: add an entry for performance.
 
 	* TODO: add graph types:

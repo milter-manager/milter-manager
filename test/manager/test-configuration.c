@@ -32,6 +32,7 @@ void test_control_connection_spec (void);
 void test_manager_connection_spec (void);
 void test_return_status (void);
 void test_clear (void);
+void test_load_paths (void);
 void test_save_custom (void);
 void test_to_xml (void);
 
@@ -40,6 +41,8 @@ static MilterManagerEgg *egg;
 
 static MilterManagerChildren *expected_children;
 static MilterManagerChildren *actual_children;
+
+static GList *expected_load_paths;
 
 static gchar *actual_xml;
 
@@ -53,6 +56,8 @@ setup (void)
 
     expected_children = milter_manager_children_new(config);
     actual_children = NULL;
+
+    expected_load_paths = NULL;
 
     actual_xml = NULL;
 
@@ -76,6 +81,11 @@ teardown (void)
         g_object_unref(expected_children);
     if (actual_children)
         g_object_unref(actual_children);
+
+    if (expected_load_paths) {
+        g_list_foreach(expected_load_paths, (GFunc)g_free, NULL);
+        g_list_free(expected_load_paths);
+    }
 
     if (actual_xml)
         g_free(actual_xml);
@@ -224,6 +234,42 @@ test_clear (void)
 
     milter_manager_configuration_clear(config);
     milter_assert_default_configuration(config);
+}
+
+void
+test_load_paths (void)
+{
+    const gchar *config_dir;
+
+    config_dir = g_getenv("MILTER_MANAGER_CONFIG_DIR");
+    if (config_dir)
+        expected_load_paths = g_list_append(expected_load_paths,
+                                            g_strdup(config_dir));
+    expected_load_paths = g_list_append(expected_load_paths,
+                                        g_strdup(CONFIG_DIR));
+    gcut_assert_equal_list_string(
+        expected_load_paths,
+        milter_manager_configuration_get_load_paths(config));
+
+    expected_load_paths = g_list_append(expected_load_paths,
+                                        g_strdup("append/XXX"));
+    milter_manager_configuration_append_load_path(config, "append/XXX");
+    gcut_assert_equal_list_string(
+        expected_load_paths,
+        milter_manager_configuration_get_load_paths(config));
+
+    expected_load_paths = g_list_prepend(expected_load_paths,
+                                         g_strdup("prepend/XXX"));
+    milter_manager_configuration_prepend_load_path(config, "prepend/XXX");
+    gcut_assert_equal_list_string(
+        expected_load_paths,
+        milter_manager_configuration_get_load_paths(config));
+
+
+    milter_manager_configuration_clear_load_paths(config);
+    gcut_assert_equal_list_string(
+        NULL,
+        milter_manager_configuration_get_load_paths(config));
 }
 
 void
