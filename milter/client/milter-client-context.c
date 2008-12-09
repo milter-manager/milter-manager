@@ -1155,9 +1155,6 @@ reply (MilterClientContext *context, MilterStatus status)
     if (!packet)
         return TRUE;
 
-    milter_statistics("Reply %s to MTA.",
-                       milter_utils_get_enum_name(MILTER_TYPE_STATUS, status));
-
     return write_packet(context, packet, packet_size);
 }
 
@@ -1290,6 +1287,8 @@ negotiate_response (MilterClientContext *context,
       default:
         break;
     }
+    milter_statistics("Reply %s to MTA on negotiate.",
+                       milter_utils_get_enum_name(MILTER_TYPE_STATUS, status));
 }
 
 static void
@@ -1310,6 +1309,8 @@ helo_response (MilterClientContext *context, MilterStatus status)
 
     reply(context, status);
     reset_macro_context(context, MILTER_COMMAND_HELO);
+    milter_statistics("Reply %s to MTA on helo.",
+                       milter_utils_get_enum_name(MILTER_TYPE_STATUS, status));
 }
 
 static void
@@ -1320,6 +1321,8 @@ envelope_from_response (MilterClientContext *context, MilterStatus status)
 
     reply(context, status);
     reset_macro_context(context, MILTER_COMMAND_ENVELOPE_FROM);
+    milter_statistics("Reply %s to MTA on evenlope-from.",
+                       milter_utils_get_enum_name(MILTER_TYPE_STATUS, status));
 }
 
 static void
@@ -1330,6 +1333,8 @@ envelope_recipient_response (MilterClientContext *context, MilterStatus status)
 
     reply(context, status);
     reset_macro_context(context, MILTER_COMMAND_ENVELOPE_RECIPIENT);
+    milter_statistics("Reply %s to MTA on evenlope-recipient.",
+                       milter_utils_get_enum_name(MILTER_TYPE_STATUS, status));
 }
 
 static void
@@ -1339,6 +1344,8 @@ unknown_response (MilterClientContext *context, MilterStatus status)
         status = MILTER_STATUS_CONTINUE;
 
     reply(context, status);
+    milter_statistics("Reply %s to MTA on unknown",
+                       milter_utils_get_enum_name(MILTER_TYPE_STATUS, status));
 }
 
 static void
@@ -1348,6 +1355,8 @@ data_response (MilterClientContext *context, MilterStatus status)
         status = MILTER_STATUS_CONTINUE;
 
     reply(context, status);
+    milter_statistics("Reply %s to MTA on data",
+                       milter_utils_get_enum_name(MILTER_TYPE_STATUS, status));
 }
 
 static void
@@ -1358,6 +1367,8 @@ header_response (MilterClientContext *context, MilterStatus status)
 
     reply(context, status);
     reset_macro_context(context, MILTER_COMMAND_HEADER);
+    milter_statistics("Reply %s to MTA on header",
+                       milter_utils_get_enum_name(MILTER_TYPE_STATUS, status));
 }
 
 static void
@@ -1368,6 +1379,8 @@ end_of_header_response (MilterClientContext *context, MilterStatus status)
 
     reply(context, status);
     reset_macro_context(context, MILTER_COMMAND_END_OF_HEADER);
+    milter_statistics("Reply %s to MTA on end-of-header",
+                       milter_utils_get_enum_name(MILTER_TYPE_STATUS, status));
 }
 
 static void
@@ -1378,6 +1391,8 @@ body_response (MilterClientContext *context, MilterStatus status)
 
     reply(context, status);
     reset_macro_context(context, MILTER_COMMAND_BODY);
+    milter_statistics("Reply %s to MTA on body",
+                       milter_utils_get_enum_name(MILTER_TYPE_STATUS, status));
 }
 
 static void
@@ -1388,6 +1403,8 @@ end_of_message_response (MilterClientContext *context, MilterStatus status)
 
     reply(context, status);
     reset_macro_context(context, MILTER_COMMAND_END_OF_MESSAGE);
+    milter_statistics("Reply %s to MTA on end-of-message",
+                       milter_utils_get_enum_name(MILTER_TYPE_STATUS, status));
 }
 
 static void

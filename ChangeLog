@@ -17,6 +17,8 @@
 	second, 12hour for minute, 24 hour for hour.
 	* tool/milter-log-tool.rb: Added MilterGraphTimeSpan class.
 	* milter/client/milter-client-context.c: Remove needless cast.
+	* milter/client/milter-client-context.c: Output statistics log on each
+	response.
 
 2008-12-08  Kouhei Sutou  <kou@cozmixng.org>
 
