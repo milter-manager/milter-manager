@@ -702,7 +702,7 @@ pass_state (MilterServerContext *context, MilterServerContextState state)
 
     inspected_state = milter_utils_get_enum_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
                                                  state);
-    milter_info("pass state: %s", inspected_state);
+    milter_debug("pass state: %s", inspected_state);
     milter_statistics("Pass filter process of %s(%p) on %s",
                       milter_server_context_get_name(context),
                       context,
@@ -728,9 +728,9 @@ milter_server_context_negotiate (MilterServerContext *context,
         gchar *inspected_option;
 
         inspected_option = milter_utils_inspect_object(G_OBJECT(option));
-        milter_info("%s is sending NEGOTIATE: %s",
-                    milter_server_context_get_name(context),
-                    inspected_option);
+        milter_debug("%s is sending NEGOTIATE: %s",
+                     milter_server_context_get_name(context),
+                     inspected_option);
         g_free(inspected_option);
     }
 
@@ -755,9 +755,9 @@ milter_server_context_helo (MilterServerContext *context,
     MilterEncoder *encoder;
     gboolean pass;
 
-    milter_info("%s is sending HELO: <%s>",
-                milter_server_context_get_name(context),
-                fqdn);
+    milter_debug("%s is sending HELO: <%s>",
+                 milter_server_context_get_name(context),
+                 fqdn);
 
     g_signal_emit(context, signals[CHECK_HELO],0, fqdn, &pass);
     if (pass) {
@@ -873,9 +873,9 @@ milter_server_context_connect (MilterServerContext *context,
     MilterEncoder *encoder;
     gboolean pass = FALSE;
 
-    milter_info("%s is sending CONNECT: host_name=<%s>",
-                milter_server_context_get_name(context),
-                host_name);
+    milter_debug("%s is sending CONNECT: host_name=<%s>",
+                 milter_server_context_get_name(context),
+                 host_name);
 
     g_signal_emit(context, signals[CHECK_CONNECT], 0,
                   host_name, address, address_length, &pass);
@@ -904,9 +904,9 @@ milter_server_context_envelope_from (MilterServerContext *context,
     MilterEncoder *encoder;
     gboolean pass;
 
-    milter_info("%s is sending MAIL: <%s>",
-                milter_server_context_get_name(context),
-                from);
+    milter_debug("%s is sending MAIL: <%s>",
+                 milter_server_context_get_name(context),
+                 from);
 
     g_signal_emit(context, signals[CHECK_ENVELOPE_FROM], 0, from, &pass);
     if (pass) {
@@ -934,9 +934,9 @@ milter_server_context_envelope_recipient (MilterServerContext *context,
     MilterCommandEncoder *command_encoder;
     gboolean pass;
 
-    milter_info("%s is sending RCPT: <%s>",
-                milter_server_context_get_name(context),
-                recipient);
+    milter_debug("%s is sending RCPT: <%s>",
+                 milter_server_context_get_name(context),
+                 recipient);
 
     g_signal_emit(context, signals[CHECK_ENVELOPE_RECIPIENT], 0,
                   recipient, &pass);
@@ -964,8 +964,8 @@ milter_server_context_data (MilterServerContext *context)
     gsize packet_size;
     MilterEncoder *encoder;
 
-    milter_info("%s is sending DATA",
-                milter_server_context_get_name(context));
+    milter_debug("%s is sending DATA",
+                 milter_server_context_get_name(context));
 
     write_macro(context, MILTER_COMMAND_DATA);
 
@@ -985,9 +985,9 @@ milter_server_context_unknown (MilterServerContext *context,
     gsize packet_size;
     MilterEncoder *encoder;
 
-    milter_info("%s is sending UNKNOWN: <%s>",
-                milter_server_context_get_name(context),
-                command);
+    milter_debug("%s is sending UNKNOWN: <%s>",
+                 milter_server_context_get_name(context),
+                 command);
 
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     milter_command_encoder_encode_unknown(MILTER_COMMAND_ENCODER(encoder),
@@ -1007,9 +1007,9 @@ milter_server_context_header (MilterServerContext *context,
     MilterEncoder *encoder;
     gboolean pass;
 
-    milter_info("%s is sending HEADER: <%s>=<%s>",
-                milter_server_context_get_name(context),
-                name, value);
+    milter_debug("%s is sending HEADER: <%s>=<%s>",
+                 milter_server_context_get_name(context),
+                 name, value);
 
     g_signal_emit(context, signals[CHECK_HEADER], 0, name, value, &pass);
     if (pass) {
@@ -1035,8 +1035,8 @@ milter_server_context_end_of_header (MilterServerContext *context)
     MilterEncoder *encoder;
     gboolean pass;
 
-    milter_info("%s is sending END_OF_HEADER",
-                milter_server_context_get_name(context));
+    milter_debug("%s is sending END_OF_HEADER",
+                 milter_server_context_get_name(context));
 
     g_signal_emit(context, signals[CHECK_END_OF_HEADER], 0, &pass);
     if (pass) {
@@ -1090,9 +1090,9 @@ milter_server_context_body (MilterServerContext *context,
     MilterCommandEncoder *command_encoder;
     gboolean pass;
 
-    milter_info("%s is sending BODY: body_size=%" G_GSIZE_FORMAT,
-                milter_server_context_get_name(context),
-                size);
+    milter_debug("%s is sending BODY: body_size=%" G_GSIZE_FORMAT,
+                 milter_server_context_get_name(context),
+                 size);
 
     g_signal_emit(context, signals[CHECK_BODY], 0, chunk, size, &pass);
     if (pass) {
@@ -1135,8 +1135,8 @@ milter_server_context_end_of_message (MilterServerContext *context,
     MilterEncoder *encoder;
     gboolean pass;
 
-    milter_info("%s is sending END_OF_MESSAGE.",
-                milter_server_context_get_name(context));
+    milter_debug("%s is sending END_OF_MESSAGE.",
+                 milter_server_context_get_name(context));
 
     g_signal_emit(context, signals[CHECK_END_OF_MESSAGE],0, chunk, size, &pass);
     if (pass) {
@@ -1162,8 +1162,8 @@ milter_server_context_quit (MilterServerContext *context)
     gsize packet_size;
     MilterEncoder *encoder;
 
-    milter_info("%s is sending QUIT",
-                milter_server_context_get_name(context));
+    milter_debug("%s is sending QUIT",
+                 milter_server_context_get_name(context));
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     milter_command_encoder_encode_quit(MILTER_COMMAND_ENCODER(encoder),
                                        &packet, &packet_size);
@@ -1180,8 +1180,8 @@ milter_server_context_abort (MilterServerContext *context)
     gsize packet_size;
     MilterEncoder *encoder;
 
-    milter_info("%s is sending ABORT",
-                milter_server_context_get_name(context));
+    milter_debug("%s is sending ABORT",
+                 milter_server_context_get_name(context));
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     milter_command_encoder_encode_abort(MILTER_COMMAND_ENCODER(encoder),
                                         &packet, &packet_size);
@@ -1229,9 +1229,9 @@ cb_decoder_negotiate_reply (MilterDecoder *decoder,
         gchar *inspected_option;
 
         inspected_option = milter_utils_inspect_object(G_OBJECT(option));
-        milter_info("%s received NEGOTIATE REPLY: %s",
-                    milter_server_context_get_name(context),
-                    inspected_option);
+        milter_debug("%s received NEGOTIATE REPLY: %s",
+                     milter_server_context_get_name(context),
+                     inspected_option);
         g_free(inspected_option);
     }
     if (priv->option)
@@ -1304,9 +1304,9 @@ cb_decoder_continue (MilterReplyDecoder *decoder, gpointer user_data)
 
     state_string = milter_utils_get_enum_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
                                               priv->state);
-    milter_info("%s received CONTINUE on %s.",
-                milter_server_context_get_name(context),
-                state_string);
+    milter_debug("%s received CONTINUE on %s.",
+                 milter_server_context_get_name(context),
+                 state_string);
     g_free(state_string);
 
     switch (priv->state) {
@@ -1345,9 +1345,9 @@ cb_decoder_reply_code (MilterReplyDecoder *decoder,
 
     disable_timeout(priv);
 
-    milter_info("%s received REPLY_CODE: <%d %s %s>",
-                milter_server_context_get_name(context),
-                code, extended_code, message);
+    milter_debug("%s received REPLY_CODE: <%d %s %s>",
+                 milter_server_context_get_name(context),
+                 code, extended_code, message);
 
     state = priv->state;
 
@@ -1379,8 +1379,8 @@ cb_decoder_temporary_failure (MilterReplyDecoder *decoder, gpointer user_data)
 
     disable_timeout(priv);
 
-    milter_info("%s received TEMPORARY_FAILURE",
-                milter_server_context_get_name(context));
+    milter_debug("%s received TEMPORARY_FAILURE",
+                 milter_server_context_get_name(context));
 
     g_signal_emit_by_name(context, "temporary-failure");
 
@@ -1403,8 +1403,8 @@ cb_decoder_reject (MilterReplyDecoder *decoder, gpointer user_data)
 
     disable_timeout(priv);
 
-    milter_info("%s received REJECT",
-                milter_server_context_get_name(context));
+    milter_debug("%s received REJECT",
+                 milter_server_context_get_name(context));
 
     g_signal_emit_by_name(context, "reject");
 
@@ -1432,8 +1432,8 @@ cb_decoder_accept (MilterReplyDecoder *decoder, gpointer user_data)
     state = priv->state;
     state_string = milter_utils_get_enum_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
                                               state);
-    milter_info("%s received ACCEPT on %s,",
-                milter_server_context_get_name(context), state_string);
+    milter_debug("%s received ACCEPT on %s,",
+                 milter_server_context_get_name(context), state_string);
     g_free(state_string);
 
     g_signal_emit_by_name(context, "accept");
@@ -1457,8 +1457,8 @@ cb_decoder_discard (MilterReplyDecoder *decoder, gpointer user_data)
 
     disable_timeout(priv);
 
-    milter_info("%s received DISCARD",
-                milter_server_context_get_name(context));
+    milter_debug("%s received DISCARD",
+                 milter_server_context_get_name(context));
 
     g_signal_emit_by_name(context, "discard");
 
@@ -1483,8 +1483,8 @@ cb_decoder_add_header (MilterReplyDecoder *decoder,
 
     disable_timeout(priv);
 
-    milter_info("%s received ADD_HEADER: <%s>=<%s>",
-                milter_server_context_get_name(context),
+    milter_debug("%s received ADD_HEADER: <%s>=<%s>",
+                 milter_server_context_get_name(context),
                 name, value);
 
     if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
@@ -1507,9 +1507,9 @@ cb_decoder_insert_header (MilterReplyDecoder *decoder,
 
     disable_timeout(priv);
 
-    milter_info("%s received INSERT_HEADER: [%u] <%s>=<%s>",
-                milter_server_context_get_name(context),
-                index, name, value);
+    milter_debug("%s received INSERT_HEADER: [%u] <%s>=<%s>",
+                 milter_server_context_get_name(context),
+                 index, name, value);
 
     if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
         g_signal_emit_by_name(context, "insert-header", index, name, value);
@@ -1531,9 +1531,9 @@ cb_decoder_change_header (MilterReplyDecoder *decoder,
 
     disable_timeout(priv);
 
-    milter_info("%s received CHANGE_HEADER: <%s>[%u]=<%s>",
-                milter_server_context_get_name(context),
-                name, index, value);
+    milter_debug("%s received CHANGE_HEADER: <%s>[%u]=<%s>",
+                 milter_server_context_get_name(context),
+                 name, index, value);
 
     if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
         g_signal_emit_by_name(context, "change-header", name, index, value);
@@ -1554,8 +1554,8 @@ cb_decoder_delete_header (MilterReplyDecoder *decoder,
 
     disable_timeout(priv);
 
-    milter_info("%s received DELETE_HEADER: <%s>[%u]",
-                milter_server_context_get_name(context),
+    milter_debug("%s received DELETE_HEADER: <%s>[%u]",
+                 milter_server_context_get_name(context),
                 name, index);
 
     if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
@@ -1577,9 +1577,9 @@ cb_decoder_change_from (MilterReplyDecoder *decoder,
 
     disable_timeout(priv);
 
-    milter_info("%s received CHANGE_FROM: <%s>=<%s>",
-                milter_server_context_get_name(context),
-                from, parameters);
+    milter_debug("%s received CHANGE_FROM: <%s>=<%s>",
+                 milter_server_context_get_name(context),
+                 from, parameters);
 
     if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
         g_signal_emit_by_name(context, "change-from", from, parameters);
@@ -1600,9 +1600,9 @@ cb_decoder_add_recipient (MilterReplyDecoder *decoder,
 
     disable_timeout(priv);
 
-    milter_info("%s received ADD_RECIPIENT: <%s>=<%s>",
-                milter_server_context_get_name(context),
-                recipient, parameters);
+    milter_debug("%s received ADD_RECIPIENT: <%s>=<%s>",
+                 milter_server_context_get_name(context),
+                 recipient, parameters);
 
     if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
         g_signal_emit_by_name(context, "add-recipient", recipient, parameters);
@@ -1622,9 +1622,9 @@ cb_decoder_delete_recipient (MilterReplyDecoder *decoder,
 
     disable_timeout(priv);
 
-    milter_info("%s received DELETE_RECIPIENT: <%s>",
-                milter_server_context_get_name(context),
-                recipient);
+    milter_debug("%s received DELETE_RECIPIENT: <%s>",
+                 milter_server_context_get_name(context),
+                 recipient);
 
     g_signal_emit_by_name(user_data, "delete-recipient",recipient);
 }
@@ -1642,9 +1642,9 @@ cb_decoder_replace_body (MilterReplyDecoder *decoder,
 
     disable_timeout(priv);
 
-    milter_info("%s received REPLACE_BODY: body_size = %" G_GSIZE_FORMAT,
-                milter_server_context_get_name(context),
-                body_size);
+    milter_debug("%s received REPLACE_BODY: body_size = %" G_GSIZE_FORMAT,
+                 milter_server_context_get_name(context),
+                 body_size);
 
     if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
         g_signal_emit_by_name(context, "replace-body", body, body_size);
@@ -1662,8 +1662,8 @@ cb_decoder_progress (MilterReplyDecoder *decoder, gpointer user_data)
 
     disable_timeout(priv);
 
-    milter_info("%s received PROGRESS",
-                milter_server_context_get_name(context));
+    milter_debug("%s received PROGRESS",
+                 milter_server_context_get_name(context));
 
     g_signal_emit_by_name(user_data, "progress");
 }
@@ -1680,9 +1680,9 @@ cb_decoder_quarantine (MilterReplyDecoder *decoder,
 
     disable_timeout(priv);
 
-    milter_info("%s received QUARANTINE: <%s>",
-                milter_server_context_get_name(context),
-                reason);
+    milter_debug("%s received QUARANTINE: <%s>",
+                 milter_server_context_get_name(context),
+                 reason);
 
     g_signal_emit_by_name(user_data, "quarantine", reason);
 }
@@ -1697,8 +1697,8 @@ cb_decoder_connection_failure (MilterReplyDecoder *decoder, gpointer user_data)
 
     disable_timeout(priv);
 
-    milter_info("%s received CONNECTION_FAILURE",
-                milter_server_context_get_name(context));
+    milter_debug("%s received CONNECTION_FAILURE",
+                 milter_server_context_get_name(context));
 
     g_signal_emit_by_name(user_data, "connection-failure");
 }
@@ -1713,8 +1713,8 @@ cb_decoder_shutdown (MilterReplyDecoder *decoder, gpointer user_data)
 
     disable_timeout(priv);
 
-    milter_info("%s received SHUTDOWN",
-                milter_server_context_get_name(context));
+    milter_debug("%s received SHUTDOWN",
+                 milter_server_context_get_name(context));
 
     g_signal_emit_by_name(user_data, "shutdown");
 }
@@ -1729,8 +1729,8 @@ cb_decoder_skip (MilterReplyDecoder *decoder, gpointer user_data)
 
     disable_timeout(priv);
 
-    milter_info("%s received SKIP",
-                milter_server_context_get_name(context));
+    milter_debug("%s received SKIP",
+                 milter_server_context_get_name(context));
 
     if (priv->state == MILTER_SERVER_CONTEXT_STATE_BODY) {
         g_signal_emit_by_name(context, "skip");

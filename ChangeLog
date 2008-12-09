@@ -25,6 +25,8 @@
 	* tool/milter-log-tool.rb: 0 padding from last data.
 	* milter/server/milter-server-context.c: Output statistics log on
 	pass_state.
+	* milter/server/milter-server-context.c: Use milter_debug instead of
+	milter_info.
 
 2008-12-08  Kouhei Sutou  <kou@cozmixng.org>
 
