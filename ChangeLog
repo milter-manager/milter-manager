@@ -3,6 +3,7 @@
 	* tool/milter-log-tool.rb: swap child and client sessions.
 	* tool/milter-log-tool.rb: Do not output graph if RRD file does not
 	exist.
+	* tool/milter-log-tool.rb: Count correct normal mails.
 
 2008-12-09  Kouhei Sutou  <kou@cozmixng.org>
 

@@ -23,10 +23,12 @@ class MilterMail
 end
 
 class MilterRRDData
-  attr_accessor :client_counting, :child_counting, :reject_mail_counting
-  def initialize(client_counting, child_counting, reject_mail_counting)
+  attr_accessor :client_counting, :child_counting,
+                :mail_counting, :reject_mail_counting
+  def initialize(client_counting, child_counting, mail_counting, reject_mail_counting)
     @client_counting = client_counting
     @child_counting = child_counting
+    @mail_counting = mail_counting
     @reject_mail_counting = reject_mail_counting
   end
 
@@ -104,6 +106,7 @@ class MilterLogTool
     @child_sessions = nil
     @client_sessions = nil
     @reject_mails = nil
+    @mails = nil
     @update_db = false
     @now
   end
@@ -184,6 +187,11 @@ class MilterLogTool
       collect_mails("milter-manager\\[.+\\]: \\[(.+)\\]Reply (MILTER_STATUS_REJECT) to MTA on (.+)$")
   end
 
+  def collect_mail
+    @mails =
+      collect_mails("milter-manager\\[.+\\]: \\[(.+)\\]Reply (MILTER_STATUS_CONTINUE) to MTA on (end-of-message)$")
+  end
+
   def count_sessions(sessions, time_span, last_update_time)
     counting = Hash::new
     sessions.each do |session|
@@ -238,8 +246,9 @@ class MilterLogTool
   def collect_data(time_span, last_update_time)
     child_counting = count_sessions(@child_sessions, time_span, last_update_time)
     client_counting = count_sessions(@client_sessions, time_span, last_update_time)
+    mail_counting = count_mails(@mails, time_span, last_update_time)
     reject_mail_counting = count_mails(@reject_mails, time_span, last_update_time)
-    MilterRRDData.new(client_counting, child_counting, reject_mail_counting)
+    MilterRRDData.new(client_counting, child_counting, mail_counting, reject_mail_counting)
   end
 
   def create_time_span_rrd(time_span, start_time)
@@ -250,6 +259,7 @@ class MilterLogTool
         "--step", step,
         "DS:client_sessions:GAUGE:#{step}:0:U",
         "DS:child_sessions:GAUGE:#{step}:0:U",
+        "DS:mails:GAUGE:#{step}:0:U",
         "DS:reject_mails:GAUGE:#{step}:0:U",
         "RRA:MAX:0.5:1:#{rows}",
         "RRA:AVERAGE:0.5:1:#{rows}")
@@ -269,10 +279,11 @@ class MilterLogTool
     start_time.to_i.step(end_time, time_span.step) do |time|
       child_count = data.child_counting[time] ? data.child_counting[time] : 0
       client_count = data.client_counting[time] ? data.client_counting[time] : 0
+      mail_count = data.mail_counting[time] ? data.mail_counting[time] : 0
       reject_mail_count = data.reject_mail_counting[time] ? data.reject_mail_counting[time] : 0
       p("update #{Time.at(time)}  #{child_count}:#{client_count}:#{reject_mail_count}")
       RRD.update("#{rrd_name(time_span)}",
-                 "#{time}:#{client_count}:#{child_count}:#{reject_mail_count}")
+                 "#{time}:#{client_count}:#{child_count}:#{mail_count}:#{reject_mail_count}")
     end
   end
 
@@ -281,6 +292,7 @@ class MilterLogTool
     collect_client_session
     collect_child_session
     collect_reject_mail
+    collect_mail
     update_db(MilterGraphTimeSpan.new("second"))
     update_db(MilterGraphTimeSpan.new("minute"))
     update_db(MilterGraphTimeSpan.new("hour"))
@@ -309,9 +321,9 @@ class MilterLogTool
     return unless File.exist?(rrd_file)
     RRD.graph("#{@rrd_directory}/mail.#{time_span.name}.png",
               "--title", "per #{time_span.name}",
-              "DEF:client=#{rrd_file}:client_sessions:MAX",
+              "DEF:all=#{rrd_file}:mails:MAX",
               "DEF:reject=#{rrd_file}:reject_mails:MAX",
-              "LINE1:client#0000ff:The number of mails",
+              "LINE1:all#0000ff:The number of mails",
               "LINE2:reject#ff0000:The number of rejected mails",
               "--step", time_span.step,
               "--start", start_time,
