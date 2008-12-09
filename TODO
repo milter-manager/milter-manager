@@ -14,3 +14,7 @@
     * remote network (local network may not be a spammer)
     * detected as spam (X-Spam-Flag:, X-Bogosity:)
     * detected as virus (X-Virus-Status:)
+* graphs:
+  * current working child milters.
+  * # of all mails and rejected mails.
+  * ...

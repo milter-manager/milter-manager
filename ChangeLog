@@ -1,5 +1,9 @@
 2008-12-09  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: add graph types:
+	- current working child milters.
+	- # of all mails and rejected mails.
+
 	* test/core/test-utils.c (test_append_index)
 	(test_xml_append_text_element): write missing tests.
 
