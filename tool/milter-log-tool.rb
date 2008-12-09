@@ -135,7 +135,7 @@ class MilterLogTool
     counting = Hash::new
     sessions.each do |session|
       next if session.end_time == nil
-      start_time =time_span. adjust_time(session.start_time)
+      start_time =time_span.adjust_time(session.start_time)
       end_time = time_span.adjust_time(session.end_time)
 
       # ignore sessions which has been already registerd due to RRD.update fails on past time stamp
