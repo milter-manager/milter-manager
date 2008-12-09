@@ -194,13 +194,16 @@ class MilterLogTool
     update_db("hour")
   end
 
-  def output_graph(target, width = 1000 , height = 250)
+  def output_graph(target, start_time = "-1d", end_time = "now", width = 1000 , height = 250)
     RRD.graph("#{@rrd_directory}/#{target}.png",
               "--title", "per #{target}",
               "DEF:client=#{rrd_name(target)}:client_sessions:MAX",
               "DEF:child=#{rrd_name(target)}:child_sessions:MAX",
               "LINE1:child#00ff00:The number of milter",
               "LINE2:client#ff0000:The number of SMTP session",
+              "--step", target_time_step(target),
+              "--start", start_time,
+              "--end", end_time,
               "--width","#{width}",
               "--height", "#{height}")
   end
