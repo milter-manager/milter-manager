@@ -4,6 +4,7 @@
 	* tool/milter-log-tool.rb: Do not output graph if RRD file does not
 	exist.
 	* tool/milter-log-tool.rb: Count correct normal mails.
+	* tool/milter-log-tool.rb: Collect all status data for normal mails.
 
 2008-12-09  Kouhei Sutou  <kou@cozmixng.org>
 

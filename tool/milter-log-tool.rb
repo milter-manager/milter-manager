@@ -189,7 +189,7 @@ class MilterLogTool
 
   def collect_mail
     @mails =
-      collect_mails("milter-manager\\[.+\\]: \\[(.+)\\]Reply (MILTER_STATUS_CONTINUE) to MTA on (end-of-message)$")
+      collect_mails("milter-manager\\[.+\\]: \\[(.+)\\]Reply (.+) to MTA on (end-of-message)$")
   end
 
   def count_sessions(sessions, time_span, last_update_time)
