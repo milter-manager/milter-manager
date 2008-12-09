@@ -1307,11 +1307,10 @@ static void
 teardown_server_context_signals (MilterManagerChild *child,
                                  gpointer user_data)
 {
-    MilterManagerChildren *children = user_data;
 #define DISCONNECT(name)                                                \
     g_signal_handlers_disconnect_by_func(child,                         \
                                          G_CALLBACK(cb_ ## name),       \
-                                         children)
+                                         user_data)
 
     DISCONNECT(negotiate_reply);
     DISCONNECT(continue);
