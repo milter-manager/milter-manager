@@ -17,4 +17,5 @@
 * graphs:
   * current working child milters.
   * # of all mails and rejected mails.
+  * child milters alive and dead.
   * ...
