@@ -1155,6 +1155,9 @@ reply (MilterClientContext *context, MilterStatus status)
     if (!packet)
         return TRUE;
 
+    milter_statistics("Reply %s to MTA.",
+                       milter_utils_get_enum_name(MILTER_TYPE_STATUS, status));
+
     return write_packet(context, packet, packet_size);
 }
 
@@ -1315,7 +1318,7 @@ envelope_from_response (MilterClientContext *context, MilterStatus status)
     if (status == MILTER_STATUS_DEFAULT)
         status = MILTER_STATUS_CONTINUE;
 
-    reply(MILTER_CLIENT_CONTEXT(context), status);
+    reply(context, status);
     reset_macro_context(context, MILTER_COMMAND_ENVELOPE_FROM);
 }
 
@@ -1325,7 +1328,7 @@ envelope_recipient_response (MilterClientContext *context, MilterStatus status)
     if (status == MILTER_STATUS_DEFAULT)
         status = MILTER_STATUS_CONTINUE;
 
-    reply(MILTER_CLIENT_CONTEXT(context), status);
+    reply(context, status);
     reset_macro_context(context, MILTER_COMMAND_ENVELOPE_RECIPIENT);
 }
 
@@ -1335,7 +1338,7 @@ unknown_response (MilterClientContext *context, MilterStatus status)
     if (status == MILTER_STATUS_DEFAULT)
         status = MILTER_STATUS_CONTINUE;
 
-    reply(MILTER_CLIENT_CONTEXT(context), status);
+    reply(context, status);
 }
 
 static void
@@ -1344,7 +1347,7 @@ data_response (MilterClientContext *context, MilterStatus status)
     if (status == MILTER_STATUS_DEFAULT)
         status = MILTER_STATUS_CONTINUE;
 
-    reply(MILTER_CLIENT_CONTEXT(context), status);
+    reply(context, status);
 }
 
 static void
@@ -1353,7 +1356,7 @@ header_response (MilterClientContext *context, MilterStatus status)
     if (status == MILTER_STATUS_DEFAULT)
         status = MILTER_STATUS_CONTINUE;
 
-    reply(MILTER_CLIENT_CONTEXT(context), status);
+    reply(context, status);
     reset_macro_context(context, MILTER_COMMAND_HEADER);
 }
 
@@ -1363,7 +1366,7 @@ end_of_header_response (MilterClientContext *context, MilterStatus status)
     if (status == MILTER_STATUS_DEFAULT)
         status = MILTER_STATUS_CONTINUE;
 
-    reply(MILTER_CLIENT_CONTEXT(context), status);
+    reply(context, status);
     reset_macro_context(context, MILTER_COMMAND_END_OF_HEADER);
 }
 
@@ -1373,7 +1376,7 @@ body_response (MilterClientContext *context, MilterStatus status)
     if (status == MILTER_STATUS_DEFAULT)
         status = MILTER_STATUS_CONTINUE;
 
-    reply(MILTER_CLIENT_CONTEXT(context), status);
+    reply(context, status);
     reset_macro_context(context, MILTER_COMMAND_BODY);
 }
 
@@ -1383,7 +1386,7 @@ end_of_message_response (MilterClientContext *context, MilterStatus status)
     if (status == MILTER_STATUS_DEFAULT)
         status = MILTER_STATUS_CONTINUE;
 
-    reply(MILTER_CLIENT_CONTEXT(context), status);
+    reply(context, status);
     reset_macro_context(context, MILTER_COMMAND_END_OF_MESSAGE);
 }
 
