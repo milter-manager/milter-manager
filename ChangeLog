@@ -1,6 +1,8 @@
 2008-12-10  Hiroyuki Ikezoe  <poincare@ikezoe.net>
 
 	* tool/milter-log-tool.rb: swap child and client sessions.
+	* tool/milter-log-tool.rb: Do not output graph if RRD file does not
+	exist.
 
 2008-12-09  Kouhei Sutou  <kou@cozmixng.org>
 

@@ -288,10 +288,12 @@ class MilterLogTool
 
   def output_session_graph(time_span, start_time = nil, end_time = "now", width = 1000 , height = 250)
     start_time = time_span.default_start_time unless start_time
+    rrd_file = rrd_name(time_span)
+    return unless File.exist?(rrd_file)
     RRD.graph("#{@rrd_directory}/session.#{time_span.name}.png",
               "--title", "per #{time_span.name}",
-              "DEF:client=#{rrd_name(time_span)}:client_sessions:MAX",
-              "DEF:child=#{rrd_name(time_span)}:child_sessions:MAX",
+              "DEF:client=#{rrd_file}:client_sessions:MAX",
+              "DEF:child=#{rrd_file}:child_sessions:MAX",
               "LINE1:client#0000ff:The number of SMTP session",
               "LINE2:child#00ff00:The number of milter",
               "--step", time_span.step,
@@ -303,10 +305,12 @@ class MilterLogTool
 
   def output_mail_graph(time_span, start_time = nil, end_time = "now", width = 1000 , height = 250)
     start_time = time_span.default_start_time unless start_time
+    rrd_file = rrd_name(time_span)
+    return unless File.exist?(rrd_file)
     RRD.graph("#{@rrd_directory}/mail.#{time_span.name}.png",
               "--title", "per #{time_span.name}",
-              "DEF:client=#{rrd_name(time_span)}:client_sessions:MAX",
-              "DEF:reject=#{rrd_name(time_span)}:reject_mails:MAX",
+              "DEF:client=#{rrd_file}:client_sessions:MAX",
+              "DEF:reject=#{rrd_file}:reject_mails:MAX",
               "LINE1:client#0000ff:The number of mails",
               "LINE2:reject#ff0000:The number of rejected mails",
               "--step", time_span.step,
