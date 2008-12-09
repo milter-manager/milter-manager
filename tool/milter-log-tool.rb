@@ -262,7 +262,7 @@ class MilterLogTool
     return if data.empty?
 
     end_time = data.last_time
-    start_time = data.first_time
+    start_time = last_update_time ? last_update_time + time_span.step: data.first_time
 
     create_time_span_rrd(time_span, start_time) unless File.exist?(rrd_name(time_span))
 

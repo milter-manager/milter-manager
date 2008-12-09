@@ -22,6 +22,7 @@
 	* tool/milter-log-tool.rb: Added rejected mails. Please remove old rrd
 	file.
 	* tool/milter-log-tool.rb: Separate graph.
+	* tool/milter-log-tool.rb: 0 padding from last data.
 
 2008-12-08  Kouhei Sutou  <kou@cozmixng.org>
 
