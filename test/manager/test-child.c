@@ -124,7 +124,7 @@ test_start_bad_command_string (void)
 {
     expected_error = g_error_new(MILTER_MANAGER_CHILD_ERROR,
                                  MILTER_MANAGER_CHILD_ERROR_BAD_COMMAND_STRING,
-                                 "Command string has invalid character(s).: "
+                                 "Command string(/bin/echo \"-n) has invalid character(s).: "
                                  "%s:%d: %s (%s)",
                                  g_quark_to_string(g_shell_error_quark()),
                                  G_SHELL_ERROR_BAD_QUOTING,
@@ -145,7 +145,7 @@ test_start_inexistent_command (void)
 
     expected_error = g_error_new(MILTER_MANAGER_CHILD_ERROR,
                                  MILTER_MANAGER_CHILD_ERROR_START_FAILURE,
-                                 "Couldn't start new milter process.: "
+                                 "Couldn't start new test-milter process.: "
                                  "%s:%d: %s \"%s\" (%s)",
                                  g_quark_to_string(g_spawn_error_quark()),
                                  G_SPAWN_ERROR_NOENT,

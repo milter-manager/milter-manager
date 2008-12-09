@@ -382,8 +382,8 @@ milter_manager_child_start (MilterManagerChild *milter, GError **error)
             MILTER_MANAGER_CHILD_ERROR,
             MILTER_MANAGER_CHILD_ERROR_BAD_COMMAND_STRING,
             internal_error,
-            "Command string(%s) has invalid character(s).",
-            command_line);
+            "Command string(%s %s) has invalid character(s).",
+            priv->command, priv->command_options);
         return FALSE;
     }
 
