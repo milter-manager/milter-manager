@@ -48,4 +48,21 @@ class TestConfiguration < Test::Unit::TestCase
                   "</configuration>"].join("\n") + "\n",
                  @configuration.to_xml)
   end
+
+  def test_load_paths
+    @configuration.clear_load_paths
+    assert_equal([], @configuration.load_paths)
+
+    @configuration.append_load_path("XXX")
+    assert_equal(["XXX"], @configuration.load_paths)
+
+    @configuration.prepend_load_path("prepend")
+    assert_equal(["prepend", "XXX"], @configuration.load_paths)
+
+    @configuration.append_load_path("append")
+    assert_equal(["prepend", "XXX", "append"], @configuration.load_paths)
+
+    @configuration.clear_load_paths
+    assert_equal([], @configuration.load_paths)
+  end
 end

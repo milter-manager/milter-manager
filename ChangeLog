@@ -1,5 +1,9 @@
 2008-12-09  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/src/manager/rb-milter-manager-configuration.c,
+	binding/ruby/test/manager/test-configuration.rb: bind load path
+	related functions.
+
 	* milter/manager/milter-manager-configuration.[ch],
 	test/manager/test-configuration.c: add
 	milter_manager_configuration_get_load_paths().
