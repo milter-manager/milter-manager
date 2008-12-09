@@ -13,6 +13,7 @@
 	* tool/milter-log-tool.rb: Added start_time and end_time for graph.
 	* tool/milter-log-tool.rb: Default start time of graph are 1hour for
 	second, 12hour for minute, 24 hour for hour.
+	* tool/milter-log-tool.rb: Added MilterGraphTimeSpan class.
 
 2008-12-08  Kouhei Sutou  <kou@cozmixng.org>
 
