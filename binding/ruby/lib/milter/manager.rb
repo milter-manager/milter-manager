@@ -25,13 +25,32 @@ module Milter::Manager
       end
     end
 
+    class NonexistentPath < Error
+      def initialize(path)
+        @path = path
+        super("#{@path} doesn't exist.")
+      end
+    end
+
     class << self
       def load(configuration, file)
-        new(configuration).load_configuration(file)
+        guard do
+          new(configuration).load_configuration(file)
+        end
       end
 
       def load_custom(configuration, file)
-        new(configuration).load_custom_configuration(file)
+        guard do
+          new(configuration).load_custom_configuration(file)
+        end
+      end
+
+      def guard
+        yield
+      rescue Exception => error
+        location = error.backtrace[0].split(/(:\d+):?/, 2)[0, 2].join
+        puts "#{location}: #{error.message}(#{error.class})"
+        # FIXME: log full error
       end
     end
 
@@ -56,13 +75,7 @@ module Milter::Manager
     end
 
     def load_configuration(file)
-      begin
-        instance_eval(File.read(file), file)
-      rescue Exception => error
-        location = error.backtrace[0].split(/(:\d+):?/, 2)[0, 2].join
-        puts "#{location}: #{error.message}(#{error.class})"
-        # FIXME: log full error
-      end
+      instance_eval(File.read(file), file)
     end
 
     def load_custom_configuration(file)
@@ -77,6 +90,34 @@ module Milter::Manager
       end
     end
 
+    def load(path)
+      resolve_path(path).each do |full_path|
+        if File.directory?(full_path)
+          Dir.open(full_path) do |dir|
+            dir.each do |sub_path|
+              next if sub_path == "." or sub_path == ".."
+              full_sub_path = File.join(full_path, sub_path)
+              next if File.directory?(full_sub_path)
+              load_configuration(full_sub_path)
+            end
+          end
+        elsif File.exist?(full_path)
+          load_configuration(full_path)
+        else
+          Dir.glob(full_path).each do |_path|
+            next if File.directory?(_path)
+            load_configuration(_path)
+          end
+        end
+      end
+    end
+
+    def load_if_exist(path)
+      load(path)
+    rescue NonexistentPath
+      # ignore. log this?
+    end
+
     def define_milter(name, &block)
       egg_configuration = EggConfiguration.new(name, self)
       yield(egg_configuration)
@@ -87,6 +128,23 @@ module Milter::Manager
       condition = ApplicableCondition.new(name)
       yield(condition)
       @applicable_conditions[name] = condition
+    end
+
+    private
+    def resolve_path(path)
+      return [path] if Pathname(path).absolute?
+      resolved_paths = @configuration.load_paths.collect do |load_path|
+        full_path = File.join(load_path, path)
+        if File.directory?(full_path)
+          return [full_path]
+        elsif File.exist?(full_path)
+          return [full_path]
+        else
+          Dir.glob(full_path)
+        end
+      end.flatten.compact
+      raise NonexistentPath.new(path) if resolved_paths.empty?
+      resolved_paths
     end
 
     class XMLConfigurationLoader

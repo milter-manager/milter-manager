@@ -1,5 +1,9 @@
 2008-12-09  Kouhei Sutou  <kou@cozmixng.org>
 
+	* data/milter-manager.conf, data/applicable-conditions/,
+	binding/ruby/lib/milter/manager.rb: support applicable condition
+	definition in other files.
+
 	* binding/ruby/src/manager/rb-milter-manager-configuration.c,
 	binding/ruby/test/manager/test-configuration.rb: bind load path
 	related functions.
