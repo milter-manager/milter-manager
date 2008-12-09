@@ -169,13 +169,13 @@ class MilterLogTool
     mails
   end
 
-  def collect_client_session
-    @client_sessions = 
+  def collect_child_session
+    @child_sessions = 
       collect_session("milter-manager\\[.+\\]: \\[(.+)\\](Start|End).* filter process of (.*)\\((.+)\\)$")
   end
 
-  def collect_child_session
-    @child_sessions = 
+  def collect_client_session
+    @client_sessions = 
       collect_session("milter-manager\\[.+\\]: \\[(.+)\\](Start|End).* session in (.*)\\((.+)\\)$")
   end
 
@@ -248,8 +248,8 @@ class MilterLogTool
     RRD.create("#{rrd_name(time_span)}",
         "--start", (start_time - 1).to_i.to_s,
         "--step", step,
-        "DS:child_sessions:GAUGE:#{step}:0:U",
         "DS:client_sessions:GAUGE:#{step}:0:U",
+        "DS:child_sessions:GAUGE:#{step}:0:U",
         "DS:reject_mails:GAUGE:#{step}:0:U",
         "RRA:MAX:0.5:1:#{rows}",
         "RRA:AVERAGE:0.5:1:#{rows}")

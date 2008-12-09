@@ -1,3 +1,7 @@
+2008-12-10  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* tool/milter-log-tool.rb: swap child and client sessions.
+
 2008-12-09  Kouhei Sutou  <kou@cozmixng.org>
 
 	* data/milter-manager.conf, data/applicable-conditions/,
