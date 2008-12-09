@@ -128,7 +128,7 @@ decode_reply_continue (MilterDecoder *decoder, GError **error)
     const gchar *buffer;
     gint32 command_length;
 
-    milter_info("decoding CONTINUE");
+    milter_debug("decoding CONTINUE");
 
     command_length = milter_decoder_get_command_length(decoder);
     buffer = milter_decoder_get_buffer(decoder);
@@ -169,7 +169,7 @@ decode_reply_reply_code (MilterDecoder *decoder, GError **error)
     gchar *message;
     guint reply_code;
 
-    milter_info("decoding REPLY_CODE");
+    milter_debug("decoding REPLY_CODE");
 
     command_length = milter_decoder_get_command_length(decoder);
     buffer = milter_decoder_get_buffer(decoder);
@@ -240,7 +240,7 @@ decode_reply_temporary_failure (MilterDecoder *decoder, GError **error)
     const gchar *buffer;
     gint32 command_length;
 
-    milter_info("decoding TEMPORARY_FAILURE");
+    milter_debug("decoding TEMPORARY_FAILURE");
 
     command_length = milter_decoder_get_command_length(decoder);
     buffer = milter_decoder_get_buffer(decoder);
@@ -262,7 +262,7 @@ decode_reply_reject (MilterDecoder *decoder, GError **error)
     const gchar *buffer;
     gint32 command_length;
 
-    milter_info("decoding REJECT");    
+    milter_debug("decoding REJECT");    
 
     command_length = milter_decoder_get_command_length(decoder);
     buffer = milter_decoder_get_buffer(decoder);
@@ -284,7 +284,7 @@ decode_reply_accept (MilterDecoder *decoder, GError **error)
     const gchar *buffer;
     gint32 command_length;
 
-    milter_info("decoding ACCEPT");    
+    milter_debug("decoding ACCEPT");    
 
     command_length = milter_decoder_get_command_length(decoder);
     buffer = milter_decoder_get_buffer(decoder);
@@ -306,7 +306,7 @@ decode_reply_discard (MilterDecoder *decoder, GError **error)
     const gchar *buffer;
     gint32 command_length;
 
-    milter_info("decoding DISCARD");
+    milter_debug("decoding DISCARD");
 
     command_length = milter_decoder_get_command_length(decoder);
     buffer = milter_decoder_get_buffer(decoder);
@@ -330,7 +330,7 @@ decode_reply_add_header (MilterDecoder *decoder, GError **error)
     gint32 command_length;
     gboolean decoded;
 
-    milter_info("decoding ADD_HEADER");
+    milter_debug("decoding ADD_HEADER");
 
     command_length = milter_decoder_get_command_length(decoder);
     buffer = milter_decoder_get_buffer(decoder);
@@ -406,7 +406,7 @@ decode_reply_insert_header (MilterDecoder *decoder, GError **error)
     gint32 command_length;
     gboolean decoded;
 
-    milter_info("decoding INSERT_HEADER");
+    milter_debug("decoding INSERT_HEADER");
 
     command_length = milter_decoder_get_command_length(decoder);
     buffer = milter_decoder_get_buffer(decoder);
@@ -430,7 +430,7 @@ decode_reply_change_header (MilterDecoder *decoder, GError **error)
     gint32 command_length;
     gboolean decoded;
 
-    milter_info("decoding CHANGE_HEADER");
+    milter_debug("decoding CHANGE_HEADER");
 
     command_length = milter_decoder_get_command_length(decoder);
     buffer = milter_decoder_get_buffer(decoder);
@@ -501,7 +501,7 @@ decode_reply_change_from (MilterDecoder *decoder, GError **error)
     gint32 command_length;
     gboolean decoded;
 
-    milter_info("decoding CHANGE_FROM");
+    milter_debug("decoding CHANGE_FROM");
 
     command_length = milter_decoder_get_command_length(decoder);
     buffer = milter_decoder_get_buffer(decoder);
@@ -527,7 +527,7 @@ decode_reply_add_recipient (MilterDecoder *decoder, GError **error)
     const gchar *buffer;
     gint32 command_length;
 
-    milter_info("decoding ADD_RECIPIENT");
+    milter_debug("decoding ADD_RECIPIENT");
 
     command_length = milter_decoder_get_command_length(decoder);
     buffer = milter_decoder_get_buffer(decoder);
@@ -550,7 +550,7 @@ decode_reply_add_recipient_with_parameters (MilterDecoder *decoder, GError **err
     gint32 command_length;
     gboolean decoded;
 
-    milter_info("decoding ADD_RECIPIENT_WITH_PARAMETERS");
+    milter_debug("decoding ADD_RECIPIENT_WITH_PARAMETERS");
 
     command_length = milter_decoder_get_command_length(decoder);
     buffer = milter_decoder_get_buffer(decoder);
@@ -576,7 +576,7 @@ decode_reply_delete_recipient (MilterDecoder *decoder, GError **error)
     const gchar *buffer;
     gint32 command_length;
 
-    milter_info("decoding DELETE_RECIPIENT");
+    milter_debug("decoding DELETE_RECIPIENT");
 
     command_length = milter_decoder_get_command_length(decoder);
     buffer = milter_decoder_get_buffer(decoder);
@@ -599,7 +599,7 @@ decode_reply_replace_body (MilterDecoder *decoder, GError **error)
     const gchar *buffer;
     gint32 command_length;
 
-    milter_info("decoding REPLACE_BODY");
+    milter_debug("decoding REPLACE_BODY");
 
     command_length = milter_decoder_get_command_length(decoder);
     buffer = milter_decoder_get_buffer(decoder);
@@ -616,7 +616,7 @@ decode_reply_progress (MilterDecoder *decoder, GError **error)
     const gchar *buffer;
     gint32 command_length;
 
-    milter_info("decoding PROGRESS");
+    milter_debug("decoding PROGRESS");
 
     command_length = milter_decoder_get_command_length(decoder);
     buffer = milter_decoder_get_buffer(decoder);
@@ -639,7 +639,7 @@ decode_reply_quarantine (MilterDecoder *decoder, GError **error)
     const gchar *buffer;
     gint32 command_length;
 
-    milter_info("decoding QUARANTINE");
+    milter_debug("decoding QUARANTINE");
 
     command_length = milter_decoder_get_command_length(decoder);
     buffer = milter_decoder_get_buffer(decoder);
@@ -662,7 +662,7 @@ decode_reply_connection_failure (MilterDecoder *decoder, GError **error)
     const gchar *buffer;
     gint32 command_length;
 
-    milter_info("decoding CONNECTION_FAILURE");
+    milter_debug("decoding CONNECTION_FAILURE");
 
     command_length = milter_decoder_get_command_length(decoder);
     buffer = milter_decoder_get_buffer(decoder);
@@ -684,7 +684,7 @@ decode_reply_shutdown (MilterDecoder *decoder, GError **error)
     const gchar *buffer;
     gint32 command_length;
 
-    milter_info("decoding SHUTDOWN");
+    milter_debug("decoding SHUTDOWN");
 
     command_length = milter_decoder_get_command_length(decoder);
     buffer = milter_decoder_get_buffer(decoder);
@@ -706,7 +706,7 @@ decode_reply_skip (MilterDecoder *decoder, GError **error)
     const gchar *buffer;
     gint32 command_length;
 
-    milter_info("decoding SKIP");
+    milter_debug("decoding SKIP");
 
     command_length = milter_decoder_get_command_length(decoder);
     buffer = milter_decoder_get_buffer(decoder);
@@ -798,7 +798,7 @@ decode_reply_negotiate (MilterDecoder *decoder, GError **error)
     gint processed_length;
     MilterMacrosRequests *macros_requests = NULL;
 
-    milter_info("decoding NEGOTIATE");
+    milter_debug("decoding NEGOTIATE");
 
     command_length = milter_decoder_get_command_length(decoder);
     buffer = milter_decoder_get_buffer(decoder);

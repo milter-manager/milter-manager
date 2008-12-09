@@ -172,7 +172,7 @@ channel_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
 
     if (condition & G_IO_IN ||
         condition & G_IO_PRI) {
-        milter_info("reading from io channel...");
+        milter_debug("reading from io channel...");
         keep_callback = read_from_channel(reader, channel);
     }
 
@@ -198,7 +198,7 @@ channel_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
     if (!keep_callback) {
         MilterReaderPrivate *priv;
 
-        milter_info("done.");
+        milter_debug("done.");
         priv = MILTER_READER_GET_PRIVATE(reader);
         priv->channel_watch_id = 0;
         milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(reader));

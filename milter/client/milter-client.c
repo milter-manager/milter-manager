@@ -252,11 +252,11 @@ cb_idle_free_data (gpointer _data)
 {
     MilterClientProcessData *data = _data;
 
-    milter_info("removing a MilterClientContext");
+    milter_debug("removing a MilterClientContext");
     /* FIXME: should use mutex */
     data->priv->process_data = g_list_remove(data->priv->process_data, data);
     process_data_free(data);
-    milter_info("removed a MilterClientContext");
+    milter_debug("removed a MilterClientContext");
 
     return FALSE;
 }
@@ -317,7 +317,7 @@ accept_client (gint server_fd, MilterClient *client)
     gchar *spec;
     socklen_t address_size;
 
-    milter_info("start accepting...");
+    milter_debug("start accepting...");
     client_fd = accept(server_fd, (struct sockaddr *)(&address), &address_size);
     if (client_fd == -1) {
         GError *error = NULL;
@@ -333,7 +333,7 @@ accept_client (gint server_fd, MilterClient *client)
     }
 
     spec = milter_connection_address_to_spec(&address);
-    milter_info("accepted from %s.", spec);
+    milter_debug("accepted from %s.", spec);
     g_free(spec);
 
     client_channel = g_io_channel_unix_new(client_fd);

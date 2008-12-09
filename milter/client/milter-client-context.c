@@ -899,11 +899,11 @@ milter_client_context_negotiate_reply (MilterClientContext *context,
     gsize packet_size;
     MilterEncoder *encoder;
 
-    milter_info("sending NEGOTIATE: "
-                "version = %d, action = %04X, step = %06X",
-                milter_option_get_version(option),
-                milter_option_get_action(option),
-                milter_option_get_step(option));
+    milter_debug("sending NEGOTIATE: "
+                 "version = %d, action = %04X, step = %06X",
+                 milter_option_get_version(option),
+                 milter_option_get_action(option),
+                 milter_option_get_step(option));
 
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     milter_reply_encoder_encode_negotiate(MILTER_REPLY_ENCODER(encoder),
@@ -920,7 +920,7 @@ milter_client_context_add_header (MilterClientContext *context,
     gsize packet_size;
     MilterEncoder *encoder;
 
-    milter_info("sending ADD HEADER: <%s>=<%s>", name, value);
+    milter_debug("sending ADD HEADER: <%s>=<%s>", name, value);
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     milter_reply_encoder_encode_add_header(MILTER_REPLY_ENCODER(encoder),
                                            &packet, &packet_size,
@@ -937,7 +937,7 @@ milter_client_context_insert_header (MilterClientContext *context,
     gsize packet_size;
     MilterEncoder *encoder;
 
-    milter_info("sending INSERT_HEADER: [%u] <%s>=<%s>", index, name, value);
+    milter_debug("sending INSERT_HEADER: [%u] <%s>=<%s>", index, name, value);
 
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     milter_reply_encoder_encode_insert_header(MILTER_REPLY_ENCODER(encoder),
@@ -955,7 +955,7 @@ milter_client_context_change_header (MilterClientContext *context,
     gsize packet_size;
     MilterEncoder *encoder;
 
-    milter_info("sending CHANGE_HEADER: <%s>[%u]=<%s>", name, index, value);
+    milter_debug("sending CHANGE_HEADER: <%s>[%u]=<%s>", name, index, value);
 
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     milter_reply_encoder_encode_change_header(MILTER_REPLY_ENCODER(encoder),
@@ -972,7 +972,7 @@ milter_client_context_delete_header (MilterClientContext *context,
     gsize packet_size;
     MilterEncoder *encoder;
 
-    milter_info("sending DELETE_HEADER(CHANGE_HEADER): <%s>[%u]", name, index);
+    milter_debug("sending DELETE_HEADER(CHANGE_HEADER): <%s>[%u]", name, index);
 
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     milter_reply_encoder_encode_delete_header(MILTER_REPLY_ENCODER(encoder),
@@ -990,7 +990,7 @@ milter_client_context_change_from (MilterClientContext *context,
     gchar *packet = NULL;
     gsize packet_size;
 
-    milter_info("sending CHANGE_FROM: <%s>=<%s>", from, parameters);
+    milter_debug("sending CHANGE_FROM: <%s>=<%s>", from, parameters);
 
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     milter_reply_encoder_encode_change_from(MILTER_REPLY_ENCODER(encoder),
@@ -1008,7 +1008,7 @@ milter_client_context_add_recipient (MilterClientContext *context,
     gchar *packet = NULL;
     gsize packet_size;
 
-    milter_info("sending ADD_RECIPIENT: <%s>=<%s>", recipient, parameters);
+    milter_debug("sending ADD_RECIPIENT: <%s>=<%s>", recipient, parameters);
 
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     milter_reply_encoder_encode_add_recipient(MILTER_REPLY_ENCODER(encoder),
@@ -1025,7 +1025,7 @@ milter_client_context_delete_recipient (MilterClientContext *context,
     gchar *packet = NULL;
     gsize packet_size;
 
-    milter_info("sending DELETE_RECIPIENT: <%s>", recipient);
+    milter_debug("sending DELETE_RECIPIENT: <%s>", recipient);
 
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     milter_reply_encoder_encode_delete_recipient(MILTER_REPLY_ENCODER(encoder),
@@ -1042,7 +1042,7 @@ milter_client_context_replace_body (MilterClientContext *context,
     MilterEncoder *encoder;
     MilterReplyEncoder *reply_encoder;
 
-    milter_info("sending REPLACE_BODY: body_size = %" G_GSIZE_FORMAT, body_size);
+    milter_debug("sending REPLACE_BODY: body_size = %" G_GSIZE_FORMAT, body_size);
 
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     reply_encoder = MILTER_REPLY_ENCODER(encoder);
@@ -1074,7 +1074,7 @@ milter_client_context_progress (MilterClientContext *context)
     gchar *packet = NULL;
     gsize packet_size;
 
-    milter_info("sending PROGRESS");
+    milter_debug("sending PROGRESS");
 
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     milter_reply_encoder_encode_progress(MILTER_REPLY_ENCODER(encoder),
@@ -1091,7 +1091,7 @@ milter_client_context_quarantine (MilterClientContext *context,
     gchar *packet = NULL;
     gsize packet_size;
 
-    milter_info("sending QUARANTINE: <%s>", reason);
+    milter_debug("sending QUARANTINE: <%s>", reason);
 
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     milter_reply_encoder_encode_quarantine(MILTER_REPLY_ENCODER(encoder),
