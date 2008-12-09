@@ -35,6 +35,8 @@
 	milter/manager/milter-manager-children.c,
 	milter/manager/milter-manager-main.c: Use milter_debug instead of
 	milter_info.
+	* milter/core/milter-syslog-logger.c: MILTER_LOG_LEVEL_STATISTICS is
+	corresponding to LOG_INFO.
 
 2008-12-08  Kouhei Sutou  <kou@cozmixng.org>
 
