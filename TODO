@@ -20,3 +20,37 @@
   * child milters alive and dead.
   * # of checks in ruby configuration.
   * ...
+
+* performance:
+  * at least:
+    * 50_000 mails/day (0.58 mails/sec)
+      * 500 users
+      * a user receives 100 mails/day
+    * CPU: ???
+    * Memory: ???
+    * child milters:
+      * milter-greylist
+      * clamav-milter
+      * spamass-milter
+      * sid-milter
+      * dkim-milter
+      * dnsbl-milter
+
+  * FYI:
+    * BBSec Sentrion MP 4/8(2008/11)
+      http://www.bbsec.co.jp/products/Sentrion_MP_48.html
+      * 1_500_000 mails/day (17.36 mails/sec)
+      * CPU: Quad Core Intel Xeon E5472,12M Cache,3.0GHz x 2 1600MHz FSB
+      * Memory: 8GB
+
+    * Sohpos Email Appliance (2008/11)
+      http://sophos.com/sophos/docs/eng/factshts/sophos-email-appliances-dsus.pdf
+      http://www.sophos.co.jp/sophos/docs/jpn/factshts/sophos-email-appliances-dsjp.pdf
+     * ES1000:
+       * 20_000 mails/hour (5.56 mails/sec)
+       * CPU: Intel Celeron D 2.93GHz
+       * Memory: 1GB
+     * ES4000:
+       * 80_000 mails/hour (22.22 mails/sec)
+       * CPU: Intel Xeon 64-bit 3.2 GHz x 2
+       * Memory: 2GB

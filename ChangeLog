@@ -1,5 +1,7 @@
 2008-12-09  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: add an entry for performance.
+
 	* TODO: add graph types:
 	- current working child milters.
 	- # of all mails and rejected mails.
