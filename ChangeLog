@@ -19,6 +19,8 @@
 	* milter/client/milter-client-context.c: Remove needless cast.
 	* milter/client/milter-client-context.c: Output statistics log on each
 	response.
+	* tool/milter-log-tool.rb: Added rejected mails. Please remove old rrd
+	file.
 
 2008-12-08  Kouhei Sutou  <kou@cozmixng.org>
 
