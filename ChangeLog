@@ -1,3 +1,8 @@
+2008-12-09  Kouhei Sutou  <kou@cozmixng.org>
+
+	* test/core/test-utils.c (test_append_index)
+	(test_xml_append_text_element): write missing tests.
+
 2008-12-09  Hiroyuki Ikezoe  <poincare@ikezoe.net>
 
 	* tool/milter-log-tool.rb: Script to output graph.

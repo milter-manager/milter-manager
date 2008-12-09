@@ -53,6 +53,8 @@ static gchar *actual_inspected_flags;
 static gchar *expected_inspected_object;
 static gchar *actual_inspected_object;
 
+static GString *actual_string;
+
 void
 setup (void)
 {
@@ -67,6 +69,8 @@ setup (void)
 
     expected_inspected_object = NULL;
     actual_inspected_object = NULL;
+
+    actual_string = g_string_new(NULL);
 }
 
 void
@@ -86,6 +90,9 @@ teardown (void)
         g_free(expected_inspected_object);
     if (actual_inspected_object)
         g_free(actual_inspected_object);
+
+    if (actual_string)
+        g_string_free(actual_string, TRUE);
 }
 
 static void
@@ -403,13 +410,16 @@ test_flags_names (gconstpointer _data)
 void
 test_append_index (void)
 {
-    "FIXME: WRITEME";
+    milter_utils_append_indent(actual_string, 3);
+    cut_assert_equal_string("   ", actual_string->str);
 }
 
 void
 test_xml_append_text_element (void)
 {
-    "FIXME: WRITEME";
+    milter_utils_xml_append_text_element(actual_string, "NAME", "CONTENT<>", 2);
+    cut_assert_equal_string("  <NAME>CONTENT&lt;&gt;</NAME>\n",
+                            actual_string->str);
 }
 
 /*
