@@ -414,8 +414,8 @@ milter_manager_child_start (MilterManagerChild *milter, GError **error)
         return FALSE;
     }
 
-    milter_info("started %s.",
-                milter_server_context_get_name(MILTER_SERVER_CONTEXT(milter)));
+    milter_debug("started %s.",
+                 milter_server_context_get_name(MILTER_SERVER_CONTEXT(milter)));
     priv->child_watch_id =
         g_child_watch_add(priv->pid, (GChildWatchFunc)child_watch_func, milter);
 

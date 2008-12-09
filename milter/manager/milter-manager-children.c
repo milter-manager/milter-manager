@@ -1243,7 +1243,7 @@ cb_finished (MilterAgent *agent, gpointer user_data)
                                               priv->current_state);
     child_name = milter_server_context_get_name(context);
 
-    milter_info("%s exits on %s.", child_name, state_string);
+    milter_debug("%s exits on %s.", child_name, state_string);
     milter_statistics("End of filter process of %s(%p)", child_name, context);
             
     g_free(state_string);
@@ -1434,7 +1434,7 @@ cb_connection_error (MilterErrorEmittable *emittable, GError *error, gpointer us
     gboolean privilege;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(data->children);
-    milter_info("connection_error: %s", error->message);
+    milter_debug("connection_error: %s", error->message);
 
     /* ignore MILTER_MANAGER_CHILD_ERROR_MILTER_EXIT */
     if (error->domain != MILTER_SERVER_CONTEXT_ERROR ||

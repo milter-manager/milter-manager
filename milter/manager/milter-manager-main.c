@@ -180,14 +180,14 @@ accept_control_connection (gint control_fd, MilterManager *manager)
     gint agent_fd;
     GIOChannel *agent_channel;
 
-    milter_info("start accepting...: %d", control_fd);
+    milter_debug("start accepting...: %d", control_fd);
     agent_fd = accept(control_fd, NULL, NULL);
     if (agent_fd == -1) {
         milter_error("failed to accept(): %s", g_strerror(errno));
         return TRUE;
     }
 
-    milter_info("accepted!: %d", agent_fd);
+    milter_debug("accepted!: %d", agent_fd);
     agent_channel = g_io_channel_unix_new(agent_fd);
     g_io_channel_set_encoding(agent_channel, NULL, NULL);
     g_io_channel_set_flags(agent_channel, G_IO_FLAG_NONBLOCK, NULL);
@@ -239,8 +239,8 @@ setup_control_connection (MilterManager *manager)
     config = milter_manager_get_configuration(manager);
     spec = milter_manager_configuration_get_control_connection_spec(config);
     if (!spec) {
-        milter_info("control connection spec is missing. "
-                    "control connection is disabled");
+        milter_debug("control connection spec is missing. "
+                     "control connection is disabled");
         return 0;
     }
 

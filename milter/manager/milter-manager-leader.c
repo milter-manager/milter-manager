@@ -541,13 +541,13 @@ cb_quarantine (MilterServerContext *context,
 static void
 cb_connection_failure (MilterServerContext *context, gpointer user_data)
 {
-    milter_info(PACKAGE_STRING "could'nt handle CONNECTION-FAILURE reply yet.");
+    milter_debug(PACKAGE_STRING "could'nt handle CONNECTION-FAILURE reply yet.");
 }
 
 static void
 cb_shutdown (MilterServerContext *context, gpointer user_data)
 {
-    milter_info(PACKAGE_STRING "could'nt handle SHUTDOWN reply yet.");
+    milter_debug(PACKAGE_STRING "could'nt handle SHUTDOWN reply yet.");
 }
 
 static void
