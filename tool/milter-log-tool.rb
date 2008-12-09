@@ -68,6 +68,17 @@ class MilterLogTool
     end
   end
 
+  def target_default_start_time(target)
+    case target
+    when "second"
+      "-1h" # 1hour
+    when "minute"
+      "-12h" # 12hours
+    when "hour"
+      "-1d" # 1day
+    end
+  end
+
   def adjust_time_for_target(time, target)
     case target
     when "second"
@@ -194,7 +205,8 @@ class MilterLogTool
     update_db("hour")
   end
 
-  def output_graph(target, start_time = "-1d", end_time = "now", width = 1000 , height = 250)
+  def output_graph(target, start_time = nil, end_time = "now", width = 1000 , height = 250)
+    start_time = target_default_start_time(target) unless start_time
     RRD.graph("#{@rrd_directory}/#{target}.png",
               "--title", "per #{target}",
               "DEF:client=#{rrd_name(target)}:client_sessions:MAX",
