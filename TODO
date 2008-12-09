@@ -16,7 +16,6 @@
     * detected as virus (X-Virus-Status:)
 * graphs:
   * current working child milters.
-  * # of all mails and rejected mails.
   * child milters alive and dead.
   * # of checks in ruby configuration.
   * ...
