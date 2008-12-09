@@ -286,16 +286,14 @@ class MilterLogTool
     update_db(MilterGraphTimeSpan.new("hour"))
   end
 
-  def output_graph(time_span, start_time = nil, end_time = "now", width = 1000 , height = 250)
+  def output_session_graph(time_span, start_time = nil, end_time = "now", width = 1000 , height = 250)
     start_time = time_span.default_start_time unless start_time
-    RRD.graph("#{@rrd_directory}/#{time_span.name}.png",
+    RRD.graph("#{@rrd_directory}/session.#{time_span.name}.png",
               "--title", "per #{time_span.name}",
               "DEF:client=#{rrd_name(time_span)}:client_sessions:MAX",
               "DEF:child=#{rrd_name(time_span)}:child_sessions:MAX",
-              "DEF:reject=#{rrd_name(time_span)}:reject_mails:MAX",
-              "LINE1:child#00ff00:The number of milter",
-              "LINE2:client#0000ff:The number of SMTP session",
-              "LINE3:reject#ff0000:The number of rejected mails",
+              "LINE1:client#0000ff:The number of SMTP session",
+              "LINE2:child#00ff00:The number of milter",
               "--step", time_span.step,
               "--start", start_time,
               "--end", end_time,
@@ -303,10 +301,30 @@ class MilterLogTool
               "--height", "#{height}")
   end
 
+  def output_mail_graph(time_span, start_time = nil, end_time = "now", width = 1000 , height = 250)
+    start_time = time_span.default_start_time unless start_time
+    RRD.graph("#{@rrd_directory}/mail.#{time_span.name}.png",
+              "--title", "per #{time_span.name}",
+              "DEF:client=#{rrd_name(time_span)}:client_sessions:MAX",
+              "DEF:reject=#{rrd_name(time_span)}:reject_mails:MAX",
+              "LINE1:client#0000ff:The number of mails",
+              "LINE2:reject#ff0000:The number of rejected mails",
+              "--step", time_span.step,
+              "--start", start_time,
+              "--end", end_time,
+              "--width","#{width}",
+              "--height", "#{height}")
+  end
+
+  def output_graph(time_span)
+    output_session_graph(MilterGraphTimeSpan.new(time_span))
+    output_mail_graph(MilterGraphTimeSpan.new(time_span))
+  end
+
   def output_all_graph
-    output_graph(MilterGraphTimeSpan.new("second"))
-    output_graph(MilterGraphTimeSpan.new("minute"))
-    output_graph(MilterGraphTimeSpan.new("hour"))
+    output_graph("second")
+    output_graph("minute")
+    output_graph("hour")
   end
 end
 

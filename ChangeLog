@@ -21,6 +21,7 @@
 	response.
 	* tool/milter-log-tool.rb: Added rejected mails. Please remove old rrd
 	file.
+	* tool/milter-log-tool.rb: Separate graph.
 
 2008-12-08  Kouhei Sutou  <kou@cozmixng.org>
 
