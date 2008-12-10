@@ -34,6 +34,7 @@
 	* tool/milter-log-tool.rb: Added MilterRRDCount class.
 	* milter/server/milter-server-context.c: Remove needless
 	"check-end-of-header" signal.
+	* tool/milter-log-tool.rb: Collect passed filter data.
 
 2008-12-09  Kouhei Sutou  <kou@cozmixng.org>
 
