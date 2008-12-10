@@ -322,7 +322,8 @@ class MilterLogTool
               "--start", start_time,
               "--end", end_time,
               "--width","#{width}",
-              "--height", "#{height}")
+              "--height", "#{height}",
+              "COMMENT:Last update\\: #{@now.localtime.rfc2822.gsub!(/:/,'\\:')}\\r")
   end
 
   def output_mail_graph(time_span, start_time = nil, end_time = "now", width = 1000 , height = 250)
@@ -341,7 +342,8 @@ class MilterLogTool
               "--start", start_time,
               "--end", end_time,
               "--width","#{width}",
-              "--height", "#{height}")
+              "--height", "#{height}",
+              "COMMENT:Last update\\: #{@now.localtime.rfc2822.gsub!(/:/,'\\:')}\\r")
   end
 
   def output_graph(time_span)

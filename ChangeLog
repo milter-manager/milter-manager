@@ -15,6 +15,7 @@
 	* tool/milter-log-tool.rb: Use LINE instead of LINE1 or LINE2. LINE#
 	represents its width.
 	* tool/milter-log-tool.rb: Absent data should be "U" instead of 0. 
+	* tool/milter-log-tool.rb: Output last update time into graph.
 
 2008-12-09  Kouhei Sutou  <kou@cozmixng.org>
 
