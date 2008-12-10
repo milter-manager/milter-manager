@@ -323,6 +323,7 @@ class MilterLogTool
               "--end", end_time,
               "--width","#{width}",
               "--height", "#{height}",
+              "--alt-y-grid",
               "COMMENT:Last update\\: #{@now.localtime.rfc2822.gsub!(/:/,'\\:')}\\r")
   end
 
@@ -343,6 +344,7 @@ class MilterLogTool
               "--end", end_time,
               "--width","#{width}",
               "--height", "#{height}",
+              "--alt-y-grid",
               "COMMENT:Last update\\: #{@now.localtime.rfc2822.gsub!(/:/,'\\:')}\\r")
   end
 
