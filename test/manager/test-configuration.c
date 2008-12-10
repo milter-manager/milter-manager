@@ -30,7 +30,7 @@ void test_children (void);
 void test_privilege_mode (void);
 void test_control_connection_spec (void);
 void test_manager_connection_spec (void);
-void test_return_status (void);
+void test_fallback_status (void);
 void test_clear (void);
 void test_load_paths (void);
 void test_save_custom (void);
@@ -177,17 +177,17 @@ test_manager_connection_spec (void)
 }
 
 void
-test_return_status (void)
+test_fallback_status (void)
 {
     MilterStatus actual_status;
 
-    actual_status = milter_manager_configuration_get_return_status_if_filter_unavailable(config);
+    actual_status = milter_manager_configuration_get_fallback_status(config);
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
                            MILTER_STATUS_CONTINUE, actual_status);
 
-    milter_manager_configuration_set_return_status_if_filter_unavailable(config, MILTER_STATUS_REJECT);
+    milter_manager_configuration_set_fallback_status(config, MILTER_STATUS_REJECT);
 
-    actual_status = milter_manager_configuration_get_return_status_if_filter_unavailable(config);
+    actual_status = milter_manager_configuration_get_fallback_status(config);
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
                            MILTER_STATUS_REJECT, actual_status);
 }
@@ -203,7 +203,7 @@ milter_assert_default_configuration_helper (MilterManagerConfiguration *config)
     spec = milter_manager_configuration_get_control_connection_spec(config);
     cut_assert_equal_string(NULL, spec);
 
-    status = milter_manager_configuration_get_return_status_if_filter_unavailable(config);
+    status = milter_manager_configuration_get_fallback_status(config);
     gcut_assert_equal_enum(MILTER_TYPE_STATUS, MILTER_STATUS_CONTINUE, status);
 
     if (expected_children)
@@ -229,7 +229,7 @@ test_clear (void)
 
     test_privilege_mode();
     test_control_connection_spec();
-    test_return_status();
+    test_fallback_status();
     test_children();
 
     milter_manager_configuration_clear(config);
