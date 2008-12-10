@@ -1,5 +1,8 @@
 2008-12-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-egg.[ch], test/manager/test-egg.c:
+	support applicable condition.
+
 	* milter/manager/milter-manager-applicable-condition.[ch],
 	test/manager/test-applicable-condition.c: add.
 

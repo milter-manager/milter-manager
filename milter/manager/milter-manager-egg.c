@@ -42,6 +42,7 @@ struct _MilterManagerEggPrivate
     gchar *user_name;
     gchar *command;
     gchar *command_options;
+    GList *applicable_conditions;
 };
 
 enum
@@ -208,14 +209,17 @@ milter_manager_egg_init (MilterManagerEgg *egg)
     priv->user_name = NULL;
     priv->command = NULL;
     priv->command_options = NULL;
+    priv->applicable_conditions = NULL;
 }
 
 static void
 dispose (GObject *object)
 {
+    MilterManagerEgg *egg;
     MilterManagerEggPrivate *priv;
 
-    priv = MILTER_MANAGER_EGG_GET_PRIVATE(object);
+    egg = MILTER_MANAGER_EGG(object);
+    priv = MILTER_MANAGER_EGG_GET_PRIVATE(egg);
 
     if (priv->name) {
         g_free(priv->name);
@@ -241,6 +245,9 @@ dispose (GObject *object)
         g_free(priv->command_options);
         priv->command_options = NULL;
     }
+
+    milter_manager_egg_clear_applicable_conditions(egg);
+
     G_OBJECT_CLASS(milter_manager_egg_parent_class)->dispose(object);
 }
 
@@ -589,6 +596,38 @@ milter_manager_egg_get_command_options (MilterManagerEgg *egg)
     return MILTER_MANAGER_EGG_GET_PRIVATE(egg)->command_options;
 }
 
+void
+milter_manager_egg_add_applicable_condition (MilterManagerEgg *egg,
+                                             MilterManagerApplicableCondition *condition)
+{
+    MilterManagerEggPrivate *priv;
+
+    priv = MILTER_MANAGER_EGG_GET_PRIVATE(egg);
+
+    g_object_ref(condition);
+    priv->applicable_conditions =
+        g_list_append(priv->applicable_conditions, condition);
+}
+
+const GList *
+milter_manager_egg_get_applicable_conditions (MilterManagerEgg *egg)
+{
+    return MILTER_MANAGER_EGG_GET_PRIVATE(egg)->applicable_conditions;
+}
+
+void
+milter_manager_egg_clear_applicable_conditions (MilterManagerEgg *egg)
+{
+    MilterManagerEggPrivate *priv;
+
+    priv = MILTER_MANAGER_EGG_GET_PRIVATE(egg);
+    if (priv->applicable_conditions) {
+        g_list_foreach(priv->applicable_conditions, (GFunc)g_object_unref, NULL);
+        g_list_free(priv->applicable_conditions);
+        priv->applicable_conditions = NULL;
+    }
+}
+
 gchar *
 milter_manager_egg_to_xml (MilterManagerEgg *egg)
 {
@@ -624,6 +663,25 @@ milter_manager_egg_to_xml_string (MilterManagerEgg *egg,
         milter_utils_xml_append_text_element(string,
                                              "command", priv->command,
                                              indent + 2);
+
+    if (priv->applicable_conditions) {
+        GList *node = priv->applicable_conditions;
+
+        milter_utils_append_indent(string, indent + 2);
+        g_string_append(string, "<applicable-conditions>\n");
+        for (; node; node = g_list_next(node)) {
+            MilterManagerApplicableCondition *condition = node->data;
+            const gchar *name;
+
+            name = milter_manager_applicable_condition_get_name(condition);
+            milter_utils_xml_append_text_element(string,
+                                                 "applicable-condition",
+                                                 name,
+                                                 indent + 4);
+        }
+        milter_utils_append_indent(string, indent + 2);
+        g_string_append(string, "</applicable-conditions>\n");
+    }
 
     g_signal_emit(egg, signals[TO_XML], 0, string, indent + 2);
 

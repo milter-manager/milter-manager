@@ -38,6 +38,7 @@ void test_end_of_message_timeout (void);
 void test_user_name (void);
 void test_command (void);
 void test_command_options (void);
+void test_applicable_condition (void);
 void test_to_xml (void);
 
 static MilterManagerEgg *egg;
@@ -45,6 +46,8 @@ static MilterManagerChild *child;
 
 static GError *expected_error;
 static GError *actual_error;
+
+static GList *expected_applicable_conditions;
 
 static gchar *actual_xml;
 
@@ -59,6 +62,8 @@ setup (void)
 
     expected_error = NULL;
     actual_error = NULL;
+
+    expected_applicable_conditions = NULL;
 
     actual_xml = NULL;
 
@@ -77,6 +82,12 @@ teardown (void)
         g_error_free(expected_error);
     if (actual_error)
         g_error_free(actual_error);
+
+    if (expected_applicable_conditions) {
+        g_list_foreach(expected_applicable_conditions,
+                       (GFunc)g_object_unref, NULL);
+        g_list_free(expected_applicable_conditions);
+    }
 
     if (actual_xml)
         g_free(actual_xml);
@@ -259,6 +270,61 @@ test_command_options (void)
                             milter_manager_egg_get_command_options(egg));
     milter_manager_egg_set_command_options(egg, command_options);
     cut_assert_equal_string(command_options, milter_manager_egg_get_command_options(egg));
+}
+
+static gboolean
+applicable_condition_equal (gconstpointer a, gconstpointer b)
+{
+    MilterManagerApplicableCondition *condition1, *condition2;
+    const gchar *name1, *name2;
+    const gchar *desc1, *desc2;
+
+    condition1 = MILTER_MANAGER_APPLICABLE_CONDITION(a);
+    condition2 = MILTER_MANAGER_APPLICABLE_CONDITION(b);
+
+    name1 = milter_manager_applicable_condition_get_name(condition1);
+    name2 = milter_manager_applicable_condition_get_name(condition2);
+    if (name1 != name2) {
+        if (name1 == NULL || name2 == NULL)
+            return FALSE;
+        if (!g_str_equal(name1, name2))
+            return FALSE;
+    }
+
+    desc1 = milter_manager_applicable_condition_get_description(condition1);
+    desc2 = milter_manager_applicable_condition_get_description(condition2);
+    if (desc1 == desc2)
+        return TRUE;
+    if (desc1 == NULL || desc2 == NULL)
+        return FALSE;
+    return g_str_equal(desc1, desc2);
+}
+
+void
+test_applicable_condition (void)
+{
+    MilterManagerApplicableCondition *condition;
+
+    egg = milter_manager_egg_new("child-milter");
+    gcut_assert_equal_list_object_custom(
+        NULL,
+        milter_manager_egg_get_applicable_conditions(egg),
+        applicable_condition_equal);
+
+    condition = milter_manager_applicable_condition_new("S25R");
+    expected_applicable_conditions =
+        g_list_append(expected_applicable_conditions, condition);
+    milter_manager_egg_add_applicable_condition(egg, condition);
+    gcut_assert_equal_list_object_custom(
+        expected_applicable_conditions,
+        milter_manager_egg_get_applicable_conditions(egg),
+        applicable_condition_equal);
+
+    milter_manager_egg_clear_applicable_conditions(egg);
+    gcut_assert_equal_list_object_custom(
+        NULL,
+        milter_manager_egg_get_applicable_conditions(egg),
+        applicable_condition_equal);
 }
 
 static void
