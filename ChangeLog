@@ -1,3 +1,8 @@
+2008-12-11  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* tool/milter-log-tool.rb: Create state distinct RRD for passed
+	filter.
+
 2008-12-10  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/manager/milter-manager-applicable-condition.[ch],

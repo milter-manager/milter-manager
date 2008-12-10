@@ -31,9 +31,18 @@ class MilterChildPassData
   end
 end
 
-class MilterRRDCount < Hash
-  def [](time)
-    super(time) ? super(time) : "U"
+class MilterStateCount < Hash
+  def initialize
+    self["connect"] = Hash.new("U")
+    self["helo"] = Hash.new("U")
+    self["envelope-from"] = Hash.new("U")
+    self["envelope-recipient"] = Hash.new("U")
+    self["header"] = Hash.new("U")
+    self["body"] = Hash.new("U")
+    self["end-of-message"] = Hash.new("U")
+  end
+  def [](state)
+    super(state) ? super(state) : Hash.new("U")
   end
 end
 
@@ -77,10 +86,6 @@ class MilterRRDMailData < MilterRRDData
 end
 
 class MilterRRDChildPassData < MilterRRDData
-  attr_accessor :connect, :helo,
-                :envelope_from, :envelope_recipient,
-                :header, :body,
-                :end_of_message
   def initialize(child, filter_counting)
     super(child)
     @filter_counting = filter_counting
@@ -177,6 +182,10 @@ class MilterLogTool
     "#{@rrd_directory}/milter-log.#{time_span.name}.rrd"
   end
 
+  def state_rrd_name(time_span)
+    "#{@rrd_directory}/milter-log.state.#{time_span.name}.rrd"
+  end
+
   def collect_session(regex)
     sessions = []
     @log.each do |line|
@@ -254,7 +263,7 @@ class MilterLogTool
   end
 
   def count_sessions(sessions, time_span, last_update_time)
-    counting = MilterRRDCount::new
+    counting = Hash.new("U")
     sessions.each do |session|
       next if session.end_time == nil
       start_time =time_span.adjust_time(session.start_time)
@@ -284,7 +293,7 @@ class MilterLogTool
   end
 
   def count_mails(mails, time_span, last_update_time)
-    counting = MilterRRDCount::new
+    counting = Hash.new("U")
     mails.each do |mail|
       time =time_span.adjust_time(mail.time)
 
@@ -307,7 +316,7 @@ class MilterLogTool
   end
 
   def count_pass_filters(pass_filters, time_span, last_update_time)
-    counting = Hash::new
+    counting = MilterStateCount.new()
     pass_filters.each do |pass_filter|
       time =time_span.adjust_time(pass_filter.time)
 
@@ -322,7 +331,6 @@ class MilterLogTool
       time = time.to_i
       state = pass_filter.state
 
-      counting[state] = MilterRRDCount::new unless counting[state]
       count = counting[state][time]
       count = 0 if count == "U"
       count += 1
@@ -349,6 +357,24 @@ class MilterLogTool
     MilterRRDChildPassData.new(child_counting, pass_counting)
   end
 
+  def create_state_distinct_rrd(time_span, start_time)
+    step = time_span.step
+    rows = time_span.rows
+    RRD.create("#{rrd_name(time_span, "state")}",
+        "--start", (start_time - 1).to_i.to_s,
+        "--step", step,
+        "DS:all:GAUGE:#{step}:0:U",
+        "DS:connect:GAUGE:#{step}:0:U",
+        "DS:helo:GAUGE:#{step}:0:U",
+        "DS:envelope-from:GAUGE:#{step}:0:U",
+        "DS:envelope-recipient:GAUGE:#{step}:0:U",
+        "DS:header:GAUGE:#{step}:0:U",
+        "DS:body:GAUGE:#{step}:0:U",
+        "DS:end-of-message:GAUGE:#{step}:0:U",
+        "RRA:MAX:0.5:1:#{rows}",
+        "RRA:AVERAGE:0.5:1:#{rows}")
+  end
+
   def create_time_span_rrd(time_span, start_time)
     step = time_span.step
     rows = time_span.rows
@@ -363,6 +389,27 @@ class MilterLogTool
         "RRA:AVERAGE:0.5:1:#{rows}")
   end
 
+  def update_state_db(time_span)
+    last_update_time = RRD.last("#{state_rrd_name(time_span)}") if File.exist?(state_rrd_name(time_span))
+
+    data = collect_pass_filter_data(time_span, last_update_time)
+    return if data.empty?
+
+    end_time = data.last_time
+    start_time = last_update_time ? last_update_time + time_span.step : data.first_time
+
+    create_state_distinct_rrd(time_span, start_time) unless File.exist?(state_rrd_name(time_span))
+    start_time.to_i.step(end_time, time_span.step) do |time|
+      RRD.update("#{state_rrd_name(time_span)}",
+                 "#{time}" +
+                 ":#{data.amount[time]}" +
+                 ":#{data["connect"][time]}:#{data["helo"][time]}" +
+                 ":#{data["envelope-from"][time]}:#{data["envelope-recipient"][time]}" +
+                 ":#{data["header"][time]}:#{data["body"][time]}" +
+                 ":#{data["end-of-message"][time]}")
+    end
+  end
+
   def update_db(time_span)
     last_update_time = RRD.last("#{rrd_name(time_span)}") if File.exist?(rrd_name(time_span))
 
@@ -375,7 +422,6 @@ class MilterLogTool
     create_time_span_rrd(time_span, start_time) unless File.exist?(rrd_name(time_span))
 
     mail_data = collect_mail_data(time_span, last_update_time)
-    pass_data = collect_pass_filter_data(time_span, last_update_time)
 
     start_time.to_i.step(end_time, time_span.step) do |time|
       client_count = session_data.amount[time]
@@ -390,7 +436,7 @@ class MilterLogTool
          next
       end
 
-      p("update #{Time.at(time)}  #{child_count}:#{client_count}:#{reject_mail_count}")
+      p("update #{Time.at(time)}  #{client_count}:#{child_count}:#{mail_count}:#{reject_mail_count}")
       RRD.update("#{rrd_name(time_span)}",
                  "#{time}:#{client_count}:#{child_count}:#{mail_count}:#{reject_mail_count}")
     end
@@ -406,6 +452,10 @@ class MilterLogTool
     update_db(MilterGraphTimeSpan.new("second"))
     update_db(MilterGraphTimeSpan.new("minute"))
     update_db(MilterGraphTimeSpan.new("hour"))
+
+    update_state_db(MilterGraphTimeSpan.new("second"))
+    update_state_db(MilterGraphTimeSpan.new("minute"))
+    update_state_db(MilterGraphTimeSpan.new("hour"))
   end
 
   def output_session_graph(time_span, start_time = nil, end_time = "now", width = 1000 , height = 250)
