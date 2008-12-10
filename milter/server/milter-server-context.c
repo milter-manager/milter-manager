@@ -42,7 +42,6 @@ enum
     CHECK_ENVELOPE_FROM,
     CHECK_ENVELOPE_RECIPIENT,
     CHECK_HEADER,
-    CHECK_END_OF_HEADER,
     CHECK_BODY,
     CHECK_END_OF_MESSAGE,
 
@@ -137,7 +136,6 @@ static gboolean check_envelope_recipient
 static gboolean check_header         (MilterServerContext *context,
                                       const gchar   *name,
                                       const gchar   *value);
-static gboolean check_end_of_header  (MilterServerContext *context);
 static gboolean check_body           (MilterServerContext *context,
                                       const gchar   *chunk,
                                       gsize          size);
@@ -167,7 +165,6 @@ milter_server_context_class_init (MilterServerContextClass *klass)
     klass->check_envelope_from    = check_envelope_from;
     klass->check_envelope_recipient = check_envelope_recipient;
     klass->check_header           = check_header;
-    klass->check_end_of_header    = check_end_of_header;
     klass->check_body             = check_body;
 
     signals[READY] =
@@ -227,16 +224,6 @@ milter_server_context_class_init (MilterServerContextClass *klass)
                      check_accumulator, NULL,
                      _milter_marshal_BOOLEAN__STRING_STRING,
                      G_TYPE_BOOLEAN, 2, G_TYPE_STRING, G_TYPE_STRING);
-
-    signals[CHECK_END_OF_HEADER] =
-        g_signal_new("check-end-of-header",
-                     G_TYPE_FROM_CLASS(klass),
-                     G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MilterServerContextClass,
-                                     check_end_of_header),
-                     check_accumulator, NULL,
-                     _milter_marshal_BOOLEAN__VOID,
-                     G_TYPE_BOOLEAN, 0);
 
     signals[CHECK_BODY] =
         g_signal_new("check-body",
@@ -568,12 +555,6 @@ static gboolean
 check_header (MilterServerContext *context,
               const gchar   *name,
               const gchar   *value)
-{
-    return FALSE;
-}
-
-static gboolean
-check_end_of_header (MilterServerContext *context)
 {
     return FALSE;
 }
@@ -1033,16 +1014,9 @@ milter_server_context_end_of_header (MilterServerContext *context)
     gchar *packet = NULL;
     gsize packet_size;
     MilterEncoder *encoder;
-    gboolean pass;
 
     milter_debug("%s is sending END_OF_HEADER",
                  milter_server_context_get_name(context));
-
-    g_signal_emit(context, signals[CHECK_END_OF_HEADER], 0, &pass);
-    if (pass) {
-        pass_state(context, MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER);
-        return TRUE;
-    }
 
     write_macro(context, MILTER_COMMAND_END_OF_HEADER);
 

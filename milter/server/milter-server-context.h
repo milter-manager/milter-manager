@@ -97,7 +97,6 @@ struct _MilterServerContextClass
     gboolean (*check_header)       (MilterServerContext *context,
                                     const gchar *name,
                                     const gchar *value);
-    gboolean (*check_end_of_header)(MilterServerContext *context);
     gboolean (*check_body)         (MilterServerContext *context,
                                     const gchar *chunk,
                                     gsize size);

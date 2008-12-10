@@ -36,7 +36,6 @@ void test_check_helo (void);
 void test_check_envelope_from (void);
 void test_check_envelope_recipient (void);
 void test_check_header (void);
-void test_check_end_of_header (void);
 void test_check_body (void);
 void data_check_end_of_message (void);
 void test_check_end_of_message (gconstpointer data);
@@ -67,7 +66,6 @@ static guint n_check_helo;
 static guint n_check_envelope_from;
 static guint n_check_envelope_recipient;
 static guint n_check_header;
-static guint n_check_end_of_header;
 static guint n_check_body;
 static guint n_check_end_of_message;
 
@@ -133,13 +131,6 @@ cb_check_header (MilterServerContext *context,
 }
 
 static gboolean
-cb_check_end_of_header (MilterServerContext *context)
-{
-    n_check_end_of_header++;
-    return TRUE;
-}
-
-static gboolean
 cb_check_body (MilterServerContext *context, const gchar *chunk, gsize size,
                gpointer user_data)
 {
@@ -173,7 +164,6 @@ setup_signals (MilterServerContext *context)
     CONNECT(check_envelope_from);
     CONNECT(check_envelope_recipient);
     CONNECT(check_header);
-    CONNECT(check_end_of_header);
     CONNECT(check_body);
     CONNECT(check_end_of_message);
 
@@ -214,7 +204,6 @@ setup (void)
     n_check_envelope_from = 0;
     n_check_envelope_recipient = 0;
     n_check_header = 0;
-    n_check_end_of_header = 0;
     n_check_body = 0;
     n_check_end_of_message = 0;
 }
@@ -333,14 +322,6 @@ test_check_header (void)
     cut_assert_equal_string(name, actual_header_name);
     cut_assert_equal_string(value, actual_header_value);
 
-    cut_assert_equal_uint(1, n_accept);
-}
-
-void
-test_check_end_of_header (void)
-{
-    cut_assert_true(milter_server_context_end_of_header(context));
-    cut_assert_equal_uint(1, n_check_end_of_header);
     cut_assert_equal_uint(1, n_accept);
 }
 
