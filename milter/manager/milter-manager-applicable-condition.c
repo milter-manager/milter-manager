@@ -89,7 +89,7 @@ milter_manager_applicable_condition_class_init (MilterManagerApplicableCondition
                                "Description",
                                "The description of the applicable condition",
                                NULL,
-                               G_PARAM_READABLE);
+                               G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_DESCRIPTION, spec);
 
     signals[ATTACH_TO] =
