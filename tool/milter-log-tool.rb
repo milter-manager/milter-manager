@@ -311,7 +311,7 @@ class MilterLogTool
     rrd_file = rrd_name(time_span)
     return unless File.exist?(rrd_file)
     RRD.graph("#{@rrd_directory}/session.#{time_span.name}.png",
-              "--title", "per #{time_span.name}",
+              "--title", "milter-manager condition per #{time_span.name}",
               "DEF:client=#{rrd_file}:client_sessions:MAX",
               "DEF:child=#{rrd_file}:child_sessions:MAX",
               "CDEF:n_client=client,UN,0,client,IF",
@@ -331,7 +331,7 @@ class MilterLogTool
     rrd_file = rrd_name(time_span)
     return unless File.exist?(rrd_file)
     RRD.graph("#{@rrd_directory}/mail.#{time_span.name}.png",
-              "--title", "per #{time_span.name}",
+              "--title", "Processed mails per #{time_span.name}",
               "DEF:all=#{rrd_file}:mails:MAX",
               "DEF:reject=#{rrd_file}:reject_mails:MAX",
               "CDEF:n_all=all,UN,0,all,IF",
