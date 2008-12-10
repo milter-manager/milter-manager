@@ -11,6 +11,7 @@
 	its signal callback function.
 	* milter/manager/milter-manager-children.c: Emit "finished" signal in
 	expire_child.
+	* tool/milter-log-tool.rb: mail graph is a bar graph.
 
 2008-12-09  Kouhei Sutou  <kou@cozmixng.org>
 
