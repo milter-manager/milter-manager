@@ -7,6 +7,10 @@
 	* tool/milter-log-tool.rb: Collect all status data for normal mails.
 	* milter/manager/milter-manager-children.c: Invoke milter_statistics
 	for end of filter process in expire_child to ensure output it.
+	* milter/manager/milter-manager.c: Do not unref MilterManagerLeader in
+	its signal callback function.
+	* milter/manager/milter-manager-children.c: Emit "finished" signal in
+	expire_child.
 
 2008-12-09  Kouhei Sutou  <kou@cozmixng.org>
 

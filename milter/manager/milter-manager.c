@@ -345,12 +345,19 @@ teardown_client_context_signals (MilterClientContext *context, gpointer user_dat
                                          G_CALLBACK(cb_finished), context);
 }
 
+static gboolean
+cb_idle (gpointer data)
+{
+    g_object_unref(data);
+    return FALSE;
+}
+
 static void
 cb_finished (MilterFinishedEmittable *emittable, gpointer user_data)
 {
     teardown_client_context_signals(MILTER_CLIENT_CONTEXT(user_data), emittable);
-    g_object_unref(emittable);
     milter_statistics("End of session in (%p)", user_data);
+    g_idle_add(cb_idle, emittable);
 }
 
 static void

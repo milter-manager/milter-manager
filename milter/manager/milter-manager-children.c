@@ -530,6 +530,9 @@ expire_child (MilterManagerChildren *children,
     teardown_server_context_signals(MILTER_MANAGER_CHILD(context), children);
     priv->milters = g_list_remove(priv->milters, context);
     priv->quitted_milters = g_list_prepend(priv->quitted_milters, context);
+
+    if (!priv->milters)
+        milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(children));
 }
 
 static void
@@ -1257,9 +1260,6 @@ cb_finished (MilterAgent *agent, gpointer user_data)
         remove_child_from_queue(children, context);
         break;
     }
-
-    if (g_queue_is_empty(priv->reply_queue))
-        milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(children));
 }
 
 static void
