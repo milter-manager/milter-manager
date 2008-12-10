@@ -31,6 +31,12 @@ class MilterChildPassData
   end
 end
 
+class MilterRRDCount < Hash
+  def [](time)
+    super(time) ? super(time) : "U"
+  end
+end
+
 class MilterRRDData
   attr_accessor :amount
   def initialize(amount)
@@ -68,6 +74,9 @@ class MilterRRDMailData < MilterRRDData
     super(mail_counting)
     @reject_mail_counting = reject_mail_counting
   end
+end
+
+class MilterRRDChildPassData < MilterRRDData
 end
 
 class MilterGraphTimeSpan
@@ -233,7 +242,7 @@ class MilterLogTool
   end
 
   def count_sessions(sessions, time_span, last_update_time)
-    counting = Hash::new
+    counting = MilterRRDCount::new
     sessions.each do |session|
       next if session.end_time == nil
       start_time =time_span.adjust_time(session.start_time)
@@ -253,8 +262,8 @@ class MilterLogTool
       end_time = end_time.to_i
 
       start_time.step(end_time, time_span.step) do |time|
-        count = counting[time] ? counting[time] : 0
-        count += 1
+        count = counting[time]
+        count = 1 if count == "U"
         counting[time] = count
       end
     end
@@ -262,7 +271,7 @@ class MilterLogTool
   end
 
   def count_mails(mails, time_span, last_update_time)
-    counting = Hash::new
+    counting = MilterRRDCount::new
     mails.each do |mail|
       time =time_span.adjust_time(mail.time)
 
@@ -322,10 +331,10 @@ class MilterLogTool
     create_time_span_rrd(time_span, start_time) unless File.exist?(rrd_name(time_span))
 
     start_time.to_i.step(end_time, time_span.step) do |time|
-      client_count = session_data.amount[time] ? session_data.amount[time] : "U"
-      child_count = session_data.child_counting[time] ? session_data.child_counting[time] : "U"
-      mail_count = mail_data.amount[time] ? mail_data.amount[time] : "U"
-      reject_mail_count = mail_data.reject_mail_counting[time] ? mail_data.reject_mail_counting[time] : "U"
+      client_count = session_data.amount[time]
+      child_count = session_data.child_counting[time]
+      mail_count = mail_data.amount[time]
+      reject_mail_count = mail_data.reject_mail_counting[time]
 
       if child_count == "U" and 
          client_count == "U" and

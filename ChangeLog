@@ -24,6 +24,7 @@
 	* tool/milter-log-tool.rb: Absent data should be "U" instead of 0. 
 	* tool/milter-log-tool.rb: Output last update time into graph.
 	* tool/milter-log-tool.rb: Separate session and mail data class.
+	* tool/milter-log-tool.rb: Added MilterRRDCount class.
 
 2008-12-09  Kouhei Sutou  <kou@cozmixng.org>
 
