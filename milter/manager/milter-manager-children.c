@@ -1740,14 +1740,14 @@ milter_manager_children_negotiate (MilterManagerChildren *children,
     MilterManagerChildrenPrivate *priv;
     gboolean success = TRUE;
     gboolean privilege;
-    MilterStatus return_status;
+    MilterStatus fallback_status;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     privilege =
         milter_manager_configuration_is_privilege_mode(priv->configuration);
-    return_status =
-        milter_manager_configuration_get_return_status_if_filter_unavailable(priv->configuration);
+    fallback_status =
+        milter_manager_configuration_get_fallback_status(priv->configuration);
 
     init_reply_queue(children, MILTER_SERVER_CONTEXT_STATE_NEGOTIATE);
     for (node = priv->milters; node; node = g_list_next(node)) {

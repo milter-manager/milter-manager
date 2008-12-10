@@ -130,10 +130,9 @@ void          milter_manager_configuration_set_manager_connection_spec
                                      (MilterManagerConfiguration *configuration,
                                       const gchar                *spec);
 
-/* what about milter_manager_configuration_get_fallback_status()? */
-MilterStatus  milter_manager_configuration_get_return_status_if_filter_unavailable
+MilterStatus  milter_manager_configuration_get_fallback_status
                                      (MilterManagerConfiguration *configuration);
-void          milter_manager_configuration_set_return_status_if_filter_unavailable
+void          milter_manager_configuration_set_fallback_status
                                      (MilterManagerConfiguration *configuration,
                                       MilterStatus                status);
 void          milter_manager_configuration_add_egg

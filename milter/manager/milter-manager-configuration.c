@@ -45,7 +45,7 @@ struct _MilterManagerConfigurationPrivate
     gboolean privilege_mode;
     gchar *control_connection_spec;
     gchar *manager_connection_spec;
-    MilterStatus return_status;
+    MilterStatus fallback_status;
 };
 
 enum
@@ -54,7 +54,7 @@ enum
     PROP_PRIVILEGE_MODE,
     PROP_CONTROL_CONNECTION_SPEC,
     PROP_MANAGER_CONNECTION_SPEC,
-    PROP_RETURN_STATUS,
+    PROP_FALLBACK_STATUS,
 };
 
 enum
@@ -118,13 +118,13 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
     g_object_class_install_property(gobject_class, PROP_MANAGER_CONNECTION_SPEC,
                                     spec);
 
-    spec = g_param_spec_enum("return-status",
-                             "Return status",
-                             "The return status of the milter-manager",
+    spec = g_param_spec_enum("fallback-status",
+                             "Fallback status",
+                             "The fallback status of the milter-manager",
                              MILTER_TYPE_STATUS,
                              MILTER_STATUS_CONTINUE,
                              G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
-    g_object_class_install_property(gobject_class, PROP_RETURN_STATUS, spec);
+    g_object_class_install_property(gobject_class, PROP_FALLBACK_STATUS, spec);
 
     signals[TO_XML] =
         g_signal_new("to-xml",
@@ -197,8 +197,8 @@ set_property (GObject      *object,
         milter_manager_configuration_set_manager_connection_spec(
             config, g_value_get_string(value));
         break;
-      case PROP_RETURN_STATUS:
-        milter_manager_configuration_set_return_status_if_filter_unavailable(
+      case PROP_FALLBACK_STATUS:
+        milter_manager_configuration_set_fallback_status(
             config, g_value_get_enum(value));
         break;
       default:
@@ -226,8 +226,8 @@ get_property (GObject    *object,
       case PROP_MANAGER_CONNECTION_SPEC:
         g_value_set_string(value, priv->manager_connection_spec);
         break;
-      case PROP_RETURN_STATUS:
-        g_value_set_enum(value, priv->return_status);
+      case PROP_FALLBACK_STATUS:
+        g_value_set_enum(value, priv->fallback_status);
         break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -670,21 +670,21 @@ milter_manager_configuration_create_children (MilterManagerConfiguration *config
 }
 
 MilterStatus
-milter_manager_configuration_get_return_status_if_filter_unavailable
+milter_manager_configuration_get_fallback_status
                                      (MilterManagerConfiguration *configuration)
 {
-    return MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration)->return_status;
+    return MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration)->fallback_status;
 }
 
 void
-milter_manager_configuration_set_return_status_if_filter_unavailable
+milter_manager_configuration_set_fallback_status
                                      (MilterManagerConfiguration *configuration,
                                       MilterStatus status)
 {
     MilterManagerConfigurationPrivate *priv;
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
-    priv->return_status = status;
+    priv->fallback_status = status;
 }
 
 void
@@ -711,7 +711,7 @@ milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
     }
 
     priv->privilege_mode = FALSE;
-    priv->return_status = MILTER_STATUS_CONTINUE;
+    priv->fallback_status = MILTER_STATUS_CONTINUE;
 }
 
 gchar *
