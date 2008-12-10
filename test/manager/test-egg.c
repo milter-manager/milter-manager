@@ -42,6 +42,7 @@ void test_to_xml (void);
 
 static MilterManagerEgg *egg;
 static MilterManagerChild *child;
+static MilterManagerApplicableCondition *condition;
 
 static GError *expected_error;
 static GError *actual_error;
@@ -58,6 +59,7 @@ setup (void)
 {
     egg = NULL;
     child = NULL;
+    condition = NULL;
 
     expected_error = NULL;
     actual_error = NULL;
@@ -76,6 +78,8 @@ teardown (void)
         g_object_unref(egg);
     if (child)
         g_object_unref(child);
+    if (condition)
+        g_object_unref(condition);
 
     if (expected_error)
         g_error_free(expected_error);
@@ -120,11 +124,21 @@ cb_hatched (MilterManagerEgg *egg, MilterManagerChild *child, gpointer user_data
     *hatched = TRUE;
 }
 
+static void
+cb_attach_to (MilterManagerApplicableCondition *condition,
+              MilterManagerChild *child, gpointer user_data)
+{
+    gboolean *attached_to = user_data;
+
+    *attached_to = TRUE;
+}
+
 void
 test_hatch (void)
 {
     const gchar spec[] = "inet:9999@127.0.0.1";
     gboolean hatched = FALSE;
+    gboolean attached_to = FALSE;
     GError *error = NULL;
 
     egg = milter_manager_egg_new("child-milter");
@@ -133,11 +147,17 @@ test_hatch (void)
     milter_manager_egg_set_connection_spec(egg, spec, &error);
     gcut_assert_error(error);
 
+    condition = milter_manager_applicable_condition_new("S25R");
+    g_signal_connect(condition, "attach-to",
+                     G_CALLBACK(cb_attach_to), &attached_to);
+    milter_manager_egg_add_applicable_condition(egg, condition);
+
     child = milter_manager_egg_hatch(egg);
     cut_assert_not_null(child);
     cut_assert_equal_string("child-milter",
                             milter_server_context_get_name(MILTER_SERVER_CONTEXT(child)));
     cut_assert_true(hatched);
+    cut_assert_true(attached_to);
 }
 
 void

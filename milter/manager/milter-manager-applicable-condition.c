@@ -229,6 +229,13 @@ milter_manager_applicable_condition_get_description (MilterManagerApplicableCond
     return MILTER_MANAGER_APPLICABLE_CONDITION_GET_PRIVATE(condition)->description;
 }
 
+void
+milter_manager_applicable_condition_attach_to (MilterManagerApplicableCondition *condition,
+                                               MilterManagerChild               *child)
+{
+    g_signal_emit(condition, signals[ATTACH_TO], 0, child);
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */

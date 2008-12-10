@@ -392,7 +392,13 @@ milter_manager_egg_hatch (MilterManagerEgg *egg)
         if (milter_server_context_set_connection_spec(context,
                                                       priv->connection_spec,
                                                       &error)) {
+            GList *node = priv->applicable_conditions;
+
             g_signal_emit(egg, signals[HATCHED], 0, child);
+            for (; node; node = g_list_next(node)) {
+                MilterManagerApplicableCondition *condition = node->data;
+                milter_manager_applicable_condition_attach_to(condition, child);
+            }
         } else {
             milter_error("<%s>: invalid connection spec: %s",
                          priv->name ? priv->name : "(null)",
