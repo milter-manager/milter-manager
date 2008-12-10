@@ -263,7 +263,8 @@ class MilterLogTool
 
       start_time.step(end_time, time_span.step) do |time|
         count = counting[time]
-        count = 1 if count == "U"
+        count = 0 if count == "U"
+        count += 1
         counting[time] = count
       end
     end
