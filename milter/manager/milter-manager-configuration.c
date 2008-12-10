@@ -793,6 +793,36 @@ milter_manager_configuration_to_xml_string (MilterManagerConfiguration *configur
         g_free(full_path);
     }
 
+    if (priv->applicable_conditions) {
+        GList *node = priv->applicable_conditions;
+
+        milter_utils_append_indent(string, indent + 2);
+        g_string_append(string, "<applicable-conditions>\n");
+        for (; node; node = g_list_next(node)) {
+            MilterManagerApplicableCondition *condition = node->data;
+            const gchar *name, *description;
+
+            milter_utils_append_indent(string, indent + 4);
+            g_string_append(string, "<applicable-condition>\n");
+
+            name = milter_manager_applicable_condition_get_name(condition);
+            milter_utils_xml_append_text_element(string,
+                                                 "name", name,
+                                                 indent + 6);
+            description =
+                milter_manager_applicable_condition_get_description(condition);
+            if (description)
+                milter_utils_xml_append_text_element(string,
+                                                     "description", description,
+                                                     indent + 6);
+
+            milter_utils_append_indent(string, indent + 4);
+            g_string_append(string, "</applicable-condition>\n");
+        }
+        milter_utils_append_indent(string, indent + 2);
+        g_string_append(string, "</applicable-conditions>\n");
+    }
+
     if (priv->eggs) {
         GList *node;
 

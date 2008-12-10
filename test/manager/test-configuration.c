@@ -35,10 +35,12 @@ void test_applicable_condition (void);
 void test_clear (void);
 void test_load_paths (void);
 void test_save_custom (void);
-void test_to_xml (void);
+void test_to_xml_full (void);
+void test_to_xml_signal (void);
 
 static MilterManagerConfiguration *config;
 static MilterManagerEgg *egg;
+static MilterManagerApplicableCondition *condition;
 
 static MilterManagerChildren *expected_children;
 static MilterManagerChildren *actual_children;
@@ -56,6 +58,7 @@ setup (void)
 {
     config = milter_manager_configuration_new(NULL);
     egg = NULL;
+    condition = NULL;
 
     expected_children = milter_manager_children_new(config);
     actual_children = NULL;
@@ -81,6 +84,8 @@ teardown (void)
         g_object_unref(config);
     if (egg)
         g_object_unref(egg);
+    if (condition)
+        g_object_unref(condition);
 
     if (expected_children)
         g_object_unref(expected_children);
@@ -328,6 +333,45 @@ test_save_custom (void)
     cut_assert_path_exist(custom_config_path);
 }
 
+void
+test_to_xml_full (void)
+{
+    GError *error = NULL;
+
+    egg = milter_manager_egg_new("milter@10025");
+    milter_manager_egg_set_connection_spec(egg, "inet:10025", &error);
+    gcut_assert_error(error);
+
+    milter_manager_egg_set_command(egg, "test-milter");
+
+    milter_manager_configuration_add_egg(config, egg);
+
+
+    condition = milter_manager_applicable_condition_new("S25R");
+    milter_manager_applicable_condition_set_description(
+        condition, "Selective SMTP Rejection");
+    milter_manager_configuration_add_applicable_condition(config, condition);
+
+    actual_xml = milter_manager_configuration_to_xml(config);
+    cut_assert_equal_string(
+        "<configuration>\n"
+        "  <applicable-conditions>\n"
+        "    <applicable-condition>\n"
+        "      <name>S25R</name>\n"
+        "      <description>Selective SMTP Rejection</description>\n"
+        "    </applicable-condition>\n"
+        "  </applicable-conditions>\n"
+        "  <milters>\n"
+        "    <milter>\n"
+        "      <name>milter@10025</name>\n"
+        "      <connection-spec>inet:10025</connection-spec>\n"
+        "      <command>test-milter</command>\n"
+        "    </milter>\n"
+        "  </milters>\n"
+        "</configuration>\n",
+        actual_xml);
+}
+
 static void
 cb_to_xml (MilterManagerConfiguration *configuration,
            GString *xml, guint indent, gpointer user_data)
@@ -337,7 +381,7 @@ cb_to_xml (MilterManagerConfiguration *configuration,
 }
 
 void
-test_to_xml (void)
+test_to_xml_signal (void)
 {
     GError *error = NULL;
 

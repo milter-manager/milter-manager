@@ -1,5 +1,8 @@
 2008-12-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-configuration.c,
+	test/manager/test-configuration.c: add applicable condition to XML.
+
 	* binding/ruby/src/manager/rb-milter-manager-egg.c,
 	binding/ruby/test/manager/test-egg.rb: bind
 	egg's applicable condition.
