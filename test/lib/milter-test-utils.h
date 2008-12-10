@@ -52,6 +52,10 @@ gboolean       milter_test_equal_symbols_table
 gchar         *milter_test_inspect_symbols_table
                                            (GHashTable *table);
 
+gboolean       milter_test_equal_manager_applicable_condition
+                                           (gconstpointer condition1,
+                                            gconstpointer condition2);
+
 
 G_END_DECLS
 

@@ -46,6 +46,7 @@ struct _MilterManagerConfigurationPrivate
     gchar *control_connection_spec;
     gchar *manager_connection_spec;
     MilterStatus fallback_status;
+    GList *applicable_conditions;
 };
 
 enum
@@ -156,6 +157,8 @@ milter_manager_configuration_init (MilterManagerConfiguration *configuration)
         priv->load_paths = g_list_append(priv->load_paths,
                                          g_strdup(config_dir_env));
     priv->load_paths = g_list_append(priv->load_paths, g_strdup(CONFIG_DIR));
+
+    priv->applicable_conditions = NULL;
 
     milter_manager_configuration_clear(configuration);
 }
@@ -688,6 +691,44 @@ milter_manager_configuration_set_fallback_status
 }
 
 void
+milter_manager_configuration_add_applicable_condition (MilterManagerConfiguration *configuration,
+                                                       MilterManagerApplicableCondition *condition)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    g_return_if_fail(condition != NULL);
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+
+    g_object_ref(condition);
+    priv->applicable_conditions =
+        g_list_append(priv->applicable_conditions, condition);
+}
+
+const GList *
+milter_manager_configuration_get_applicable_conditions (MilterManagerConfiguration *configuration)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    return priv->applicable_conditions;
+}
+
+void
+milter_manager_configuration_clear_applicable_conditions (MilterManagerConfiguration *configuration)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+
+    if (priv->applicable_conditions) {
+        g_list_foreach(priv->applicable_conditions, (GFunc)g_object_unref, NULL);
+        g_list_free(priv->applicable_conditions);
+        priv->applicable_conditions = NULL;
+    }
+}
+
+void
 milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
 {
     MilterManagerConfigurationPrivate *priv;
@@ -712,6 +753,8 @@ milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
 
     priv->privilege_mode = FALSE;
     priv->fallback_status = MILTER_STATUS_CONTINUE;
+
+    milter_manager_configuration_clear_applicable_conditions(configuration);
 }
 
 gchar *

@@ -140,6 +140,13 @@ void          milter_manager_configuration_add_egg
                                       MilterManagerEgg *egg);
 MilterManagerChildren *milter_manager_configuration_create_children
                                      (MilterManagerConfiguration *configuration);
+void          milter_manager_configuration_add_applicable_condition
+                                     (MilterManagerConfiguration *configuration,
+                                      MilterManagerApplicableCondition *condition);
+const GList  *milter_manager_configuration_get_applicable_conditions
+                                     (MilterManagerConfiguration *configuration);
+void          milter_manager_configuration_clear_applicable_conditions
+                                     (MilterManagerConfiguration *configuration);
 
 void          milter_manager_configuration_clear
                                      (MilterManagerConfiguration *configuration);

@@ -118,9 +118,9 @@ const gchar        *milter_manager_egg_get_command_options
 void                milter_manager_egg_add_applicable_condition
                                                 (MilterManagerEgg *egg,
                                                  MilterManagerApplicableCondition *condition);
-const GList         *milter_manager_egg_get_applicable_conditions
+const GList        *milter_manager_egg_get_applicable_conditions
                                                 (MilterManagerEgg *egg);
-void                 milter_manager_egg_clear_applicable_conditions
+void                milter_manager_egg_clear_applicable_conditions
                                                 (MilterManagerEgg *egg);
 
 gchar              *milter_manager_egg_to_xml   (MilterManagerEgg *egg);

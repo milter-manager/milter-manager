@@ -1,5 +1,9 @@
 2008-12-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-configuration.[ch],
+	test/lib/milter-test-utils.[ch],
+	test/manager/test-configuration.c: support applicable condition.
+
 	* binding/ruby/test/toolkit/test-server-context.rb:
 	check-end-of-header is removed.
 

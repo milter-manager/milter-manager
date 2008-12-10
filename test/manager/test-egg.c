@@ -19,12 +19,11 @@
 
 #include <string.h>
 
-#include <gcutter.h>
-
-#define shutdown inet_shutdown
+#include <milter-test-utils.h>
 #include <milter-manager-test-utils.h>
 #include <milter/manager/milter-manager-egg.h>
-#undef shutdown
+
+#include <gcutter.h>
 
 void test_new (void);
 void test_hatch (void);
@@ -272,34 +271,6 @@ test_command_options (void)
     cut_assert_equal_string(command_options, milter_manager_egg_get_command_options(egg));
 }
 
-static gboolean
-applicable_condition_equal (gconstpointer a, gconstpointer b)
-{
-    MilterManagerApplicableCondition *condition1, *condition2;
-    const gchar *name1, *name2;
-    const gchar *desc1, *desc2;
-
-    condition1 = MILTER_MANAGER_APPLICABLE_CONDITION(a);
-    condition2 = MILTER_MANAGER_APPLICABLE_CONDITION(b);
-
-    name1 = milter_manager_applicable_condition_get_name(condition1);
-    name2 = milter_manager_applicable_condition_get_name(condition2);
-    if (name1 != name2) {
-        if (name1 == NULL || name2 == NULL)
-            return FALSE;
-        if (!g_str_equal(name1, name2))
-            return FALSE;
-    }
-
-    desc1 = milter_manager_applicable_condition_get_description(condition1);
-    desc2 = milter_manager_applicable_condition_get_description(condition2);
-    if (desc1 == desc2)
-        return TRUE;
-    if (desc1 == NULL || desc2 == NULL)
-        return FALSE;
-    return g_str_equal(desc1, desc2);
-}
-
 void
 test_applicable_condition (void)
 {
@@ -309,7 +280,7 @@ test_applicable_condition (void)
     gcut_assert_equal_list_object_custom(
         NULL,
         milter_manager_egg_get_applicable_conditions(egg),
-        applicable_condition_equal);
+        milter_test_equal_manager_applicable_condition);
 
     condition = milter_manager_applicable_condition_new("S25R");
     expected_applicable_conditions =
@@ -318,13 +289,13 @@ test_applicable_condition (void)
     gcut_assert_equal_list_object_custom(
         expected_applicable_conditions,
         milter_manager_egg_get_applicable_conditions(egg),
-        applicable_condition_equal);
+        milter_test_equal_manager_applicable_condition);
 
     milter_manager_egg_clear_applicable_conditions(egg);
     gcut_assert_equal_list_object_custom(
         NULL,
         milter_manager_egg_get_applicable_conditions(egg),
-        applicable_condition_equal);
+        milter_test_equal_manager_applicable_condition);
 }
 
 static void
