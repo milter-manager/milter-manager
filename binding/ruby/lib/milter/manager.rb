@@ -359,7 +359,9 @@ module Milter::Manager
       def add_applicable_condition(name)
         condition = @loader.applicable_conditions[name]
         if condition.nil?
-          raise InvalidValue, "applicable condition '#{name}' isn't defined"
+          raise InvalidValue.new("applicable condition",
+                                 @loader.applicable_conditions.keys,
+                                 name)
         end
         @applicable_conditions << condition
       end
