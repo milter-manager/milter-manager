@@ -277,10 +277,18 @@ class MilterLogTool
     create_time_span_rrd(time_span, start_time) unless File.exist?(rrd_name(time_span))
 
     start_time.to_i.step(end_time, time_span.step) do |time|
-      child_count = data.child_counting[time] ? data.child_counting[time] : 0
-      client_count = data.client_counting[time] ? data.client_counting[time] : 0
-      mail_count = data.mail_counting[time] ? data.mail_counting[time] : 0
-      reject_mail_count = data.reject_mail_counting[time] ? data.reject_mail_counting[time] : 0
+      child_count = data.child_counting[time] ? data.child_counting[time] : "U"
+      client_count = data.client_counting[time] ? data.client_counting[time] : "U"
+      mail_count = data.mail_counting[time] ? data.mail_counting[time] : "U"
+      reject_mail_count = data.reject_mail_counting[time] ? data.reject_mail_counting[time] : "U"
+
+      if child_count == "U" and 
+         client_count == "U" and
+         mail_count == "U" and
+         reject_mail_count == "U"
+         next
+      end
+
       p("update #{Time.at(time)}  #{child_count}:#{client_count}:#{reject_mail_count}")
       RRD.update("#{rrd_name(time_span)}",
                  "#{time}:#{client_count}:#{child_count}:#{mail_count}:#{reject_mail_count}")
@@ -306,8 +314,10 @@ class MilterLogTool
               "--title", "per #{time_span.name}",
               "DEF:client=#{rrd_file}:client_sessions:MAX",
               "DEF:child=#{rrd_file}:child_sessions:MAX",
-              "LINE:client#0000ff:The number of SMTP session",
-              "LINE:child#00ff00:The number of milter",
+              "CDEF:n_client=client,UN,0,client,IF",
+              "CDEF:n_child=child,UN,0,child,IF",
+              "LINE:n_client#0000ff:The number of SMTP session",
+              "LINE:n_child#00ff00:The number of milter",
               "--step", time_span.step,
               "--start", start_time,
               "--end", end_time,
@@ -323,8 +333,10 @@ class MilterLogTool
               "--title", "per #{time_span.name}",
               "DEF:all=#{rrd_file}:mails:MAX",
               "DEF:reject=#{rrd_file}:reject_mails:MAX",
-              "AREA:all#0000ff:The number of mails",
-              "AREA:reject#ff0000:The number of rejected mails",
+              "CDEF:n_all=all,UN,0,all,IF",
+              "CDEF:n_reject=reject,UN,0,reject,IF",
+              "AREA:n_all#0000ff:The number of mails",
+              "AREA:n_reject#ff0000:The number of rejected mails",
               "--step", time_span.step,
               "--start", start_time,
               "--end", end_time,

@@ -14,6 +14,7 @@
 	* tool/milter-log-tool.rb: mail graph is a bar graph.
 	* tool/milter-log-tool.rb: Use LINE instead of LINE1 or LINE2. LINE#
 	represents its width.
+	* tool/milter-log-tool.rb: Absent data should be "U" instead of 0. 
 
 2008-12-09  Kouhei Sutou  <kou@cozmixng.org>
 
