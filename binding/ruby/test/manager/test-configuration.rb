@@ -13,6 +13,19 @@ class TestConfiguration < Test::Unit::TestCase
     assert_equal(1, @configuration.create_children.length)
   end
 
+  def test_applicable_condition
+    assert_equal([], @configuration.applicable_conditions)
+
+    name = "S25R"
+    condition = Milter::Manager::ApplicableCondition.new(name)
+    @configuration.add_applicable_condition(condition)
+    assert_equal([name],
+                 @configuration.applicable_conditions.collect {|cond| cond.name})
+
+    @configuration.clear_applicable_conditions
+    assert_equal([], @configuration.applicable_conditions)
+  end
+
   def test_to_xml
     assert_equal(["<configuration>",
                   "</configuration>"].join("\n") + "\n",

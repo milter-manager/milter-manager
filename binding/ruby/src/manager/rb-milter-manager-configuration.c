@@ -13,6 +13,30 @@ add_egg (VALUE self, VALUE egg)
 }
 
 static VALUE
+add_applicable_condition (VALUE self, VALUE condition)
+{
+    milter_manager_configuration_add_applicable_condition(SELF(self),
+							  RVAL2GOBJ(condition));
+    return self;
+}
+
+static VALUE
+get_applicable_conditions (VALUE self)
+{
+    const GList *conditions;
+
+    conditions = milter_manager_configuration_get_applicable_conditions(SELF(self));
+    return GLIST2ARY((GList *)conditions);
+}
+
+static VALUE
+clear_applicable_conditions (VALUE self)
+{
+    milter_manager_configuration_clear_applicable_conditions(SELF(self));
+    return Qnil;
+}
+
+static VALUE
 append_load_path (VALUE self, VALUE path)
 {
     milter_manager_configuration_append_load_path(SELF(self), RVAL2CSTR(path));
@@ -83,6 +107,14 @@ Init_milter_manager_configuration (void)
                       "to-xml", rb_milter_manager_gstring_handle_to_xml_signal);
 
     rb_define_method(rb_cMilterManagerConfiguration, "add_egg", add_egg, 1);
+    rb_define_method(rb_cMilterManagerConfiguration,
+		     "add_applicable_condition", add_applicable_condition, 1);
+    rb_define_method(rb_cMilterManagerConfiguration,
+		     "applicable_conditions", get_applicable_conditions, 0);
+    rb_define_method(rb_cMilterManagerConfiguration,
+		     "clear_applicable_conditions",
+		     clear_applicable_conditions, 0);
+
     rb_define_method(rb_cMilterManagerConfiguration,
 		     "prepend_load_path", prepend_load_path, 1);
     rb_define_method(rb_cMilterManagerConfiguration,
