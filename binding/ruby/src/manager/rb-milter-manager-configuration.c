@@ -17,7 +17,7 @@ add_applicable_condition (VALUE self, VALUE condition)
 {
     milter_manager_configuration_add_applicable_condition(SELF(self),
 							  RVAL2GOBJ(condition));
-    return self;
+    return Qnil;
 }
 
 static VALUE

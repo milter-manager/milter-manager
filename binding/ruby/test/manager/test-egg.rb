@@ -59,6 +59,18 @@ class TestEgg < Test::Unit::TestCase
     assert_equal(command, @egg.command)
   end
 
+  def test_applicable_condition
+    assert_equal([], @egg.applicable_conditions)
+
+    name = "S25R"
+    condition = Milter::Manager::ApplicableCondition.new(name)
+    @egg.add_applicable_condition(condition)
+    assert_equal([name], @egg.applicable_conditions.collect {|cond| cond.name})
+
+    @egg.clear_applicable_conditions
+    assert_equal([], @egg.applicable_conditions)
+  end
+
   def test_to_xml
     assert_equal(["<milter>",
                   "  <name>#{@name}</name>",

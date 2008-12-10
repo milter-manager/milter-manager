@@ -1,5 +1,9 @@
 2008-12-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/src/manager/rb-milter-manager-egg.c,
+	binding/ruby/test/manager/test-egg.rb: bind
+	egg's applicable condition.
+
 	* binding/ruby/src/manager/rb-milter-manager-configuration.c,
 	binding/ruby/test/manager/test-configuration.rb: bind
 	configuration's applicable condition.
