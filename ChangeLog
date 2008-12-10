@@ -1,5 +1,8 @@
 2008-12-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-applicable-condition.[ch],
+	test/manager/test-applicable-condition.c: add.
+
 	* milter/manager/milter-manager-children.c,
 	milter/manager/milter-manager-configuration.[ch],
 	test/manager/test-configuration.c:

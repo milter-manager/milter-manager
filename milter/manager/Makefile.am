@@ -34,6 +34,7 @@ milter_manager_public_headers =				\
 	milter-manager-control-reply-encoder.h		\
 	milter-manager-control-protocol.h		\
 	milter-manager-controller.h			\
+	milter-manager-applicable-condition.h		\
 	milter-manager.h
 
 enum_source_prefix = milter-manager-enum-types
@@ -63,7 +64,8 @@ libmilter_manager_la_SOURCES =				\
 	milter-manager-control-reply-decoder.c		\
 	milter-manager-control-command-encoder.c	\
 	milter-manager-control-reply-encoder.c		\
-	milter-manager-controller.c
+	milter-manager-controller.c			\
+	milter-manager-applicable-condition.c
 
 libmilter_manager_la_LIBADD =					\
 	$(top_builddir)/milter/client/libmilter-client.la	\
