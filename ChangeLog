@@ -2,6 +2,11 @@
 
 	* tool/milter-log-tool.rb: Create state distinct RRD for passed
 	filter.
+	* milter/manager/milter-manager-children.c: Reply "continue" even if
+	the rest milters does not demand the command on connect, helo,
+	envelope-from, envelope-recipient, header and body state because when
+	a milter which demands the command passes the command on "check-XX"
+	signal, the rest milter should go on session.
 
 2008-12-10  Kouhei Sutou  <kou@cozmixng.org>
 

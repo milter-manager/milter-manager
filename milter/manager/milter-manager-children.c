@@ -1819,8 +1819,6 @@ milter_manager_children_is_demanding_command (MilterManagerChildren *children,
     GList *child;
     MilterManagerChildrenPrivate *priv;
     MilterStepFlags step;
-    GError *error = NULL;
-    gchar *command_string;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
@@ -1832,18 +1830,6 @@ milter_manager_children_is_demanding_command (MilterManagerChildren *children,
         if (!milter_server_context_is_enable_step(context, step))
             return TRUE;
     }
-
-    command_string = milter_utils_inspect_enum(MILTER_TYPE_COMMAND,
-                                               command);
-    g_set_error(&error,
-                MILTER_MANAGER_CHILDREN_ERROR,
-                MILTER_MANAGER_CHILDREN_ERROR_NO_DEMAND_COMMAND,
-                "No milter demands %s.", command_string);
-    milter_error("%s", error->message);
-    milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
-                                error);
-    g_free(command_string);
-    g_error_free(error);
 
     return FALSE;
 }
@@ -1863,7 +1849,8 @@ milter_manager_children_connect (MilterManagerChildren *children,
 
     if (!milter_manager_children_is_demanding_command(children,
                                                       MILTER_COMMAND_CONNECT)) {
-        return FALSE;
+        g_signal_emit_by_name(children, "continue");
+        return TRUE;
     }
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
@@ -1898,7 +1885,8 @@ milter_manager_children_helo (MilterManagerChildren *children,
 
     if (!milter_manager_children_is_demanding_command(children,
                                                       MILTER_COMMAND_HELO)) {
-        return FALSE;
+        g_signal_emit_by_name(children, "continue");
+        return TRUE;
     }
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
@@ -1930,7 +1918,8 @@ milter_manager_children_envelope_from (MilterManagerChildren *children,
 
     if (!milter_manager_children_is_demanding_command(children,
                                                       MILTER_COMMAND_ENVELOPE_FROM)) {
-        return FALSE;
+        g_signal_emit_by_name(children, "continue");
+        return TRUE;
     }
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
@@ -1962,7 +1951,8 @@ milter_manager_children_envelope_recipient (MilterManagerChildren *children,
         return FALSE;
 
     if (!milter_manager_children_is_demanding_command(children, MILTER_COMMAND_ENVELOPE_RECIPIENT)) {
-        return FALSE;
+        g_signal_emit_by_name(children, "continue");
+        return TRUE;
     }
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
@@ -2006,6 +1996,26 @@ send_command_to_first_waiting_child (MilterManagerChildren *children,
     return TRUE;
 }
 
+static void
+emit_no_demand_command_error (MilterManagerChildren *children,
+                              MilterCommand command)
+{
+    gchar *command_string;
+    GError *error = NULL;
+
+    command_string = milter_utils_inspect_enum(MILTER_TYPE_COMMAND,
+                                               command);
+    g_set_error(&error,
+                MILTER_MANAGER_CHILDREN_ERROR,
+                MILTER_MANAGER_CHILDREN_ERROR_NO_DEMAND_COMMAND,
+                "No milter demands %s.", command_string);
+    milter_error("%s", error->message);
+    milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
+                                error);
+    g_free(command_string);
+    g_error_free(error);
+}
+
 gboolean
 milter_manager_children_data (MilterManagerChildren *children)
 {
@@ -2016,6 +2026,7 @@ milter_manager_children_data (MilterManagerChildren *children)
 
     if (!milter_manager_children_is_demanding_command(children,
                                                       MILTER_COMMAND_DATA)) {
+        emit_no_demand_command_error(children, MILTER_COMMAND_UNKNOWN);
         return FALSE;
     }
 
@@ -2040,6 +2051,7 @@ milter_manager_children_unknown (MilterManagerChildren *children,
 
     if (!milter_manager_children_is_demanding_command(children,
                                                       MILTER_COMMAND_UNKNOWN)) {
+        emit_no_demand_command_error(children, MILTER_COMMAND_UNKNOWN);
         return FALSE;
     }
 
@@ -2096,7 +2108,8 @@ milter_manager_children_header (MilterManagerChildren *children,
 
     if (!milter_manager_children_is_demanding_command(children,
                                                       MILTER_COMMAND_HEADER)) {
-        return FALSE;
+        g_signal_emit_by_name(children, "continue");
+        return TRUE;
     }
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
@@ -2118,6 +2131,7 @@ milter_manager_children_end_of_header (MilterManagerChildren *children)
 
     if (!milter_manager_children_is_demanding_command(children,
                                                       MILTER_COMMAND_END_OF_HEADER)) {
+        emit_no_demand_command_error(children, MILTER_COMMAND_UNKNOWN);
         return FALSE;
     }
 
@@ -2201,8 +2215,10 @@ milter_manager_children_body (MilterManagerChildren *children,
     if (!milter_manager_children_check_alive(children))
         return FALSE;
 
-    if (!milter_manager_children_is_demanding_command(children, MILTER_COMMAND_BODY))
-        return FALSE;
+    if (!milter_manager_children_is_demanding_command(children, MILTER_COMMAND_BODY)) {
+        g_signal_emit_by_name(children, "continue");
+        return TRUE;
+    }
         
     init_command_waiting_child_queue(children, MILTER_COMMAND_BODY);
 
