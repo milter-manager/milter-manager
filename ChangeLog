@@ -1,5 +1,10 @@
 2008-12-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/test/toolkit/test-server-context.rb:
+	check-end-of-header is removed.
+
+	* binding/ruby/test/toolkit/run-test.rb: remove.
+
 	* binding/ruby/src/manager/rb-milter-manager-applicable-condition.c,
 	binding/ruby/src/manager/rb-milter-manager.c,
 	binding/ruby/src/manager/rb-milter-manager-private.h,

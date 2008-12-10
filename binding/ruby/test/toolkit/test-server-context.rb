@@ -167,29 +167,6 @@ class TestServerContext < Test::Unit::TestCase
     end
   end
 
-  def test_check_end_of_header_pass
-    assert_check_pass do
-      called = false
-      @context.signal_connect("check-end-of-header") do
-        called = true
-        true
-      end
-
-      @context.end_of_header
-      assert_true(called)
-    end
-  end
-
-  def test_check_end_of_header_not_pass
-    assert_check_not_pass do
-      @context.signal_connect("check-end-of-header") do
-        false
-      end
-
-      @context.end_of_header
-    end
-  end
-
   def test_check_body_pass
     assert_check_pass do
       received_chunk = nil
