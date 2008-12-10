@@ -22,30 +22,51 @@ class MilterMail
   end
 end
 
+class MilterChildPassData
+  attr_accessor :name, :status, :time
+  def initialize(name, status, time)
+    @name = name
+    @status = status
+    @time = time
+  end
+end
+
 class MilterRRDData
-  attr_accessor :client_counting, :child_counting,
-                :mail_counting, :reject_mail_counting
-  def initialize(client_counting, child_counting, mail_counting, reject_mail_counting)
-    @client_counting = client_counting
-    @child_counting = child_counting
-    @mail_counting = mail_counting
-    @reject_mail_counting = reject_mail_counting
+  attr_accessor :amount
+  def initialize(amount)
+    @amount = amount
   end
 
   def empty?
-    @client_counting.length == 0
+    @amount.length == 0
   end
 
   def last_time
-    if @client_counting.length > 0
-      @client_counting.sort { |a, b| a[0] <=> b[0] }.last[0] + 1
+    if @amount.length > 0
+      @amount.sort { |a, b| a[0] <=> b[0] }.last[0] + 1
     end
   end
 
   def first_time
-    if @client_counting.length > 0
-      @client_counting.sort { |a, b| a[0] <=> b[0] }.first[0]
+    if @amount.length > 0
+      @amount.sort { |a, b| a[0] <=> b[0] }.first[0]
     end
+  end
+end
+
+class MilterRRDSessionData < MilterRRDData
+  attr_accessor :child_counting
+  def initialize(client_counting, child_counting)
+    super(client_counting)
+    @child_counting = child_counting
+  end
+end
+
+class MilterRRDMailData < MilterRRDData
+  attr_accessor :reject_mail_counting
+  def initialize(mail_counting, reject_mail_counting)
+    super(mail_counting)
+    @reject_mail_counting = reject_mail_counting
   end
 end
 
@@ -107,6 +128,7 @@ class MilterLogTool
     @client_sessions = nil
     @reject_mails = nil
     @mails = nil
+    @pass_filters = nil
     @update_db = false
     @now
   end
@@ -172,6 +194,19 @@ class MilterLogTool
     mails
   end
 
+  def collect_pass_filters(regex)
+    filters = []
+    @log.each do |line|
+      if Regexp.new(regex).match(line)
+        time = Time.parse($1)
+        name = $2
+        status = $3
+        filters << MilterChildPassData.new(name, status, time)
+      end
+    end
+    filters
+  end
+
   def collect_child_session
     @child_sessions = 
       collect_session("milter-manager\\[.+\\]: \\[(.+)\\](Start|End).* filter process of (.*)\\((.+)\\)$")
@@ -190,6 +225,11 @@ class MilterLogTool
   def collect_mail
     @mails =
       collect_mails("milter-manager\\[.+\\]: \\[(.+)\\]Reply (.+) to MTA on (end-of-message)$")
+  end
+
+  def collect_pass_filter
+    @pass_filters =
+      collect_mails("milter-manager\\[.+\\]: \\[(.+)\\]Pass filter process of (.+)\\(.+\\) on (.+)$")
   end
 
   def count_sessions(sessions, time_span, last_update_time)
@@ -243,12 +283,16 @@ class MilterLogTool
     counting
   end
 
-  def collect_data(time_span, last_update_time)
+  def collect_session_data(time_span, last_update_time)
     child_counting = count_sessions(@child_sessions, time_span, last_update_time)
     client_counting = count_sessions(@client_sessions, time_span, last_update_time)
+    MilterRRDSessionData.new(client_counting, child_counting)
+  end
+
+  def collect_mail_data(time_span, last_update_time)
     mail_counting = count_mails(@mails, time_span, last_update_time)
     reject_mail_counting = count_mails(@reject_mails, time_span, last_update_time)
-    MilterRRDData.new(client_counting, child_counting, mail_counting, reject_mail_counting)
+    MilterRRDMailData.new(mail_counting, reject_mail_counting)
   end
 
   def create_time_span_rrd(time_span, start_time)
@@ -268,19 +312,20 @@ class MilterLogTool
   def update_db(time_span)
     last_update_time = RRD.last("#{rrd_name(time_span)}") if File.exist?(rrd_name(time_span))
 
-    data = collect_data(time_span, last_update_time)
-    return if data.empty?
+    session_data = collect_session_data(time_span, last_update_time)
+    return if session_data.empty?
+    end_time = session_data.last_time
+    start_time = last_update_time ? last_update_time + time_span.step: session_data.first_time
 
-    end_time = data.last_time
-    start_time = last_update_time ? last_update_time + time_span.step: data.first_time
+    mail_data = collect_mail_data(time_span, last_update_time)
 
     create_time_span_rrd(time_span, start_time) unless File.exist?(rrd_name(time_span))
 
     start_time.to_i.step(end_time, time_span.step) do |time|
-      child_count = data.child_counting[time] ? data.child_counting[time] : "U"
-      client_count = data.client_counting[time] ? data.client_counting[time] : "U"
-      mail_count = data.mail_counting[time] ? data.mail_counting[time] : "U"
-      reject_mail_count = data.reject_mail_counting[time] ? data.reject_mail_counting[time] : "U"
+      client_count = session_data.amount[time] ? session_data.amount[time] : "U"
+      child_count = session_data.child_counting[time] ? session_data.child_counting[time] : "U"
+      mail_count = mail_data.amount[time] ? mail_data.amount[time] : "U"
+      reject_mail_count = mail_data.reject_mail_counting[time] ? mail_data.reject_mail_counting[time] : "U"
 
       if child_count == "U" and 
          client_count == "U" and
@@ -301,6 +346,7 @@ class MilterLogTool
     collect_child_session
     collect_reject_mail
     collect_mail
+    collect_pass_filter
     update_db(MilterGraphTimeSpan.new("second"))
     update_db(MilterGraphTimeSpan.new("minute"))
     update_db(MilterGraphTimeSpan.new("hour"))
