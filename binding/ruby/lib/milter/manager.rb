@@ -197,41 +197,21 @@ module Milter::Manager
           text = @text_stack.pop
           uri, local = @tag_stack.pop
           no_action_states = [:root, :configuration, :security,
-                              :control, :manager, :milters]
+                              :control, :manager, :milters,
+                              :milter_applicable_conditions]
           case state
           when *no_action_states
             # do nothing
           when :milter
             @configuration.define_milter(@egg_config["name"]) do |milter|
               milter.connection_spec = @egg_config["connection_spec"]
-              milter.target_hosts.concat(@egg_config["target_host"] || [])
-              milter.target_addresses.concat(@egg_config["target_address"] || [])
-              milter.target_senders.concat(@egg_config["target_sender"] || [])
-              milter.target_recipients.concat(@egg_config["target_recipient"] || [])
-              (@egg_config["target_header"] || []).each do |name, value|
-                milter.add_target_header(name, value)
+              (@egg_config["applicable_conditions"] || []).each do |condition|
+                milter.add_applicable_condition(condition)
               end
             end
             @egg_config = nil
-          when "milter_target_header_name"
-            @egg_target_header_name = text
-          when "milter_target_header_value"
-            @egg_target_header_value = text
-          when :milter_target_header
-            if @egg_target_header_name.nil?
-              raise "#{current_path}/name is missing"
-            end
-            if @egg_target_header_value.nil?
-              raise "#{current_path}/value is missing"
-            end
-            @egg_config["target_header"] ||= {}
-            @egg_config["target_header"][@egg_target_header_name] = @egg_target_header_value
-            @egg_target_header_name = nil
-            @egg_target_header_value = nil
-          when /\Amilter_target_/
-            key = "target_#{$POSTMATCH}"
-            @egg_config[key] ||= []
-            @egg_config[key] << text
+          when "milter_applicable_condition"
+            @egg_config["applicable_conditions"] << text
           when /\Amilter_/
             @egg_config[$POSTMATCH] = text
           else
@@ -284,22 +264,19 @@ module Milter::Manager
               raise "unexpected element: #{current_path}"
             end
           when :milter
-            available_locals = ["name", "connection_spec",
-                                "target_host", "target_address",
-                                "target_sender", "target_recipient"]
+            available_locals = ["name", "connection_spec"]
             case local
-            when "target_header"
-              @egg_target_header_name = nil
-              @egg_target_header_value = nil
-              :milter_target_header
+            when "applicable_conditions"
+              @egg_config["applicable_conditions"] = []
+              :milter_applicable_conditions
             when *available_locals
               "milter_#{local}"
             else
               raise "unexpected element: #{current_path}"
             end
-          when :milter_target_header
-            if ["name", "value"].include?(local)
-              "milter_target_header_#{name}"
+          when :milter_applicable_conditions
+            if local == "applicable_condition"
+              "milter_#{local}"
             else
               raise "unexpected element: #{current_path}"
             end
