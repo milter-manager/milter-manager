@@ -8,7 +8,8 @@ test_files =					\
 	test-control-command-encoder.rb		\
 	test-control-command-decoder.rb		\
 	test-control-reply-encoder.rb		\
-	test-control-reply-decoder.rb
+	test-control-reply-decoder.rb		\
+	test-appliable-condition.rb
 
 EXTRA_DIST =		\
 	$(utils_files)	\

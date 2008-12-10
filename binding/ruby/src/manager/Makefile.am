@@ -32,4 +32,5 @@ milter_manager_la_SOURCES =				\
 	rb-milter-manager-children.c			\
 	rb-milter-manager-control-command-encoder.c	\
 	rb-milter-manager-control-reply-encoder.c	\
-	rb-milter-manager-control-decoder.c
+	rb-milter-manager-control-decoder.c		\
+	rb-milter-manager-applicable-condition.c
