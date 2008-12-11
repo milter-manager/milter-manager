@@ -46,6 +46,19 @@ class MilterStateCount < Hash
   end
 end
 
+class MilterMailStatusCount < Hash
+  def initialize
+    self["normal"] = Hash.new("U")
+    self["reject"] = Hash.new("U")
+    self["discard"] = Hash.new("U")
+    self["temporary-failure"] = Hash.new("U")
+    self["quarantine"] = Hash.new("U")
+  end
+  def [](state)
+    super(state) ? super(state) : Hash.new("U")
+  end
+end
+
 class MilterRRDData
   attr_accessor :amount
   def initialize(amount)
@@ -77,11 +90,13 @@ class MilterRRDSessionData < MilterRRDData
   end
 end
 
-class MilterRRDMailData < MilterRRDData
-  attr_accessor :reject_mail_counting
-  def initialize(mail_counting, reject_mail_counting)
-    super(mail_counting)
-    @reject_mail_counting = reject_mail_counting
+class MilterRRDMailData
+  def initialize(mail_counting)
+    @mail_counting = mail_counting
+  end
+
+  def [](state)
+    @mail_counting[state]
   end
 end
 
@@ -186,6 +201,10 @@ class MilterLogTool
     "#{@rrd_directory}/milter-log.state.#{time_span.name}.rrd"
   end
 
+  def mail_status_rrd_name(time_span)
+    "#{@rrd_directory}/milter-log.mail.#{time_span.name}.rrd"
+  end
+
   def collect_session(regex)
     sessions = []
     @log.each do |line|
@@ -218,6 +237,7 @@ class MilterLogTool
         status = $2
         state = $3
         next if state == "envelope-recipient"
+        next if status == "continue" and state != "end-of-message"
         mails << MilterMail.new(status, time)
       end
     end
@@ -247,14 +267,9 @@ class MilterLogTool
       collect_session("milter-manager\\[.+\\]: \\[(.+)\\](Start|End).* session in (.*)\\((.+)\\)$")
   end
 
-  def collect_reject_mail
-    @reject_mails =
-      collect_mails("milter-manager\\[.+\\]: \\[(.+)\\]Reply (MILTER_STATUS_REJECT) to MTA on (.+)$")
-  end
-
   def collect_mail
     @mails =
-      collect_mails("milter-manager\\[.+\\]: \\[(.+)\\]Reply (.+) to MTA on (end-of-message)$")
+      collect_mails("milter-manager\\[.+\\]: \\[(.+)\\]Reply (.+) to MTA on (.+)$")
   end
 
   def collect_pass_filter
@@ -293,7 +308,7 @@ class MilterLogTool
   end
 
   def count_mails(mails, time_span, last_update_time)
-    counting = Hash.new("U")
+    counting = MilterMailStatusCount.new()
     mails.each do |mail|
       time =time_span.adjust_time(mail.time)
 
@@ -306,8 +321,9 @@ class MilterLogTool
       next if time >= time_span.adjust_time(@now)
 
       time = time.to_i
+      status = mail.status
 
-      count = counting[time]
+      count = counting[status][time]
       count = 0 if count == "U"
       count += 1
       counting[time] = count
@@ -347,8 +363,7 @@ class MilterLogTool
 
   def collect_mail_data(time_span, last_update_time)
     mail_counting = count_mails(@mails, time_span, last_update_time)
-    reject_mail_counting = count_mails(@reject_mails, time_span, last_update_time)
-    MilterRRDMailData.new(mail_counting, reject_mail_counting)
+    MilterRRDMailData.new(mail_counting)
   end
 
   def collect_pass_filter_data(time_span, last_update_time)
@@ -360,7 +375,7 @@ class MilterLogTool
   def create_state_distinct_rrd(time_span, start_time)
     step = time_span.step
     rows = time_span.rows
-    RRD.create("#{rrd_name(time_span, "state")}",
+    RRD.create("#{state_rrd_name(time_span)}",
         "--start", (start_time - 1).to_i.to_s,
         "--step", step,
         "DS:all:GAUGE:#{step}:0:U",
@@ -375,7 +390,22 @@ class MilterLogTool
         "RRA:AVERAGE:0.5:1:#{rows}")
   end
 
-  def create_time_span_rrd(time_span, start_time)
+  def create_mail_status_rrd(time_span, start_time)
+    step = time_span.step
+    rows = time_span.rows
+    RRD.create("#{mail_status_rrd_name(time_span)}",
+        "--start", (start_time - 1).to_i.to_s,
+        "--step", step,
+        "DS:normal:GAUGE:#{step}:0:U",
+        "DS:reject:GAUGE:#{step}:0:U",
+        "DS:discard:GAUGE:#{step}:0:U",
+        "DS:temporary-failure:GAUGE:#{step}:0:U",
+        "DS:quarantine:GAUGE:#{step}:0:U",
+        "RRA:MAX:0.5:1:#{rows}",
+        "RRA:AVERAGE:0.5:1:#{rows}")
+  end
+
+  def create_session_rrd(time_span, start_time)
     step = time_span.step
     rows = time_span.rows
     RRD.create("#{rrd_name(time_span)}",
@@ -383,8 +413,6 @@ class MilterLogTool
         "--step", step,
         "DS:client_sessions:GAUGE:#{step}:0:U",
         "DS:child_sessions:GAUGE:#{step}:0:U",
-        "DS:mails:GAUGE:#{step}:0:U",
-        "DS:reject_mails:GAUGE:#{step}:0:U",
         "RRA:MAX:0.5:1:#{rows}",
         "RRA:AVERAGE:0.5:1:#{rows}")
   end
@@ -410,8 +438,9 @@ class MilterLogTool
     end
   end
 
-  def update_db(time_span)
-    last_update_time = RRD.last("#{rrd_name(time_span)}") if File.exist?(rrd_name(time_span))
+  def update_mail_status_db(time_span)
+    rrd = mail_status_rrd_name(time_span)
+    last_update_time = RRD.last("#{rrd}") if File.exist?(rrd)
 
     session_data = collect_session_data(time_span, last_update_time)
     return if session_data.empty?
@@ -419,39 +448,73 @@ class MilterLogTool
     end_time = session_data.last_time
     start_time = last_update_time ? last_update_time + time_span.step: session_data.first_time
 
-    create_time_span_rrd(time_span, start_time) unless File.exist?(rrd_name(time_span))
+    create_mail_status_rrd(time_span, start_time) unless File.exist?(rrd)
 
-    mail_data = collect_mail_data(time_span, last_update_time)
+    data = collect_mail_data(time_span, last_update_time)
+
+    start_time.to_i.step(end_time, time_span.step) do |time|
+      normal = data["normal"][time]
+      reject = data["reject"][time]
+      discard = data["discard"][time]
+      temporary_failure = data["temporary-failure"][time]
+      quarantine = data["quarantine"][time]
+
+      if normal == "U" and
+         reject == "U" and
+         discard == "U" and
+         temporary_failure == "U" and
+         quarantine == "U"
+         next
+      end
+
+      p("update #{Time.at(time)} #{normal}:#{reject}")
+      RRD.update("#{rrd}",
+                 "#{time}:#{normal}:#{reject}:#{discard}:#{temporary_failure}:#{quarantine}")
+    end
+  end
+
+  def update_db(time_span)
+    rrd = rrd_name(time_span)
+    last_update_time = RRD.last("#{rrd}") if File.exist?(rrd)
+
+    session_data = collect_session_data(time_span, last_update_time)
+    return if session_data.empty?
+
+    end_time = session_data.last_time
+    start_time = last_update_time ? last_update_time + time_span.step: session_data.first_time
+
+    create_session_rrd(time_span, start_time) unless File.exist?(rrd)
 
     start_time.to_i.step(end_time, time_span.step) do |time|
       client_count = session_data.amount[time]
       child_count = session_data.child_counting[time]
-      mail_count = mail_data.amount[time]
-      reject_mail_count = mail_data.reject_mail_counting[time]
 
       if child_count == "U" and 
          client_count == "U" and
-         mail_count == "U" and
-         reject_mail_count == "U"
          next
       end
 
-      p("update #{Time.at(time)}  #{client_count}:#{child_count}:#{mail_count}:#{reject_mail_count}")
+      p("update #{rrd} with #{Time.at(time)}  #{client_count}:#{child_count}")
       RRD.update("#{rrd_name(time_span)}",
-                 "#{time}:#{client_count}:#{child_count}:#{mail_count}:#{reject_mail_count}")
+                 "#{time}:#{client_count}:#{child_count}")
     end
   end
 
   def update
     @now = Time.now.utc
+
     collect_client_session
     collect_child_session
-    collect_reject_mail
     collect_mail
     collect_pass_filter
+
     update_db(MilterGraphTimeSpan.new("second"))
     update_db(MilterGraphTimeSpan.new("minute"))
     update_db(MilterGraphTimeSpan.new("hour"))
+
+    update_mail_status_db(MilterGraphTimeSpan.new("second"))
+    update_mail_status_db(MilterGraphTimeSpan.new("minute"))
+    update_mail_status_db(MilterGraphTimeSpan.new("hour"))
 
     update_state_db(MilterGraphTimeSpan.new("second"))
     update_state_db(MilterGraphTimeSpan.new("minute"))
@@ -481,12 +544,12 @@ class MilterLogTool
 
   def output_mail_graph(time_span, start_time = nil, end_time = "now", width = 1000 , height = 250)
     start_time = time_span.default_start_time unless start_time
-    rrd_file = rrd_name(time_span)
+    rrd_file = mail_status_rrd_name(time_span)
     return unless File.exist?(rrd_file)
     RRD.graph("#{@rrd_directory}/mail.#{time_span.name}.png",
               "--title", "Processed mails per #{time_span.name}",
-              "DEF:normal=#{rrd_file}:mails:MAX",
-              "DEF:reject=#{rrd_file}:reject_mails:MAX",
+              "DEF:normal=#{rrd_file}:normal:MAX",
+              "DEF:reject=#{rrd_file}:reject:MAX",
               "CDEF:n_normal=normal,UN,0,normal,IF",
               "CDEF:n_reject=reject,UN,0,reject,IF",
               "AREA:n_reject#ff0000:Rejected mails",
