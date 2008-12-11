@@ -4,16 +4,6 @@ require 'RRD'
 require 'time'
 require 'optparse'
 
-class MilterSession
-  attr_accessor :id, :name, :start_time, :end_time
-  def initialize(id, name)
-    @id = id
-    @name = name
-    @start_time = nil
-    @end_time = nil
-  end
-end
-
 class MilterRRDCount < Hash
   def [](key)
     super(key) ? super(key) : store(key, Hash.new("U"))
@@ -159,6 +149,147 @@ class MilterRRD
 end
 
 class MilterSessionRRD < MilterRRD
+  class MilterSession
+    attr_accessor :id, :name, :start_time, :end_time
+    def initialize(id, name)
+      @id = id
+      @name = name
+      @start_time = nil
+      @end_time = nil
+    end
+  end
+
+  def rrd_name(time_span)
+    "#{@rrd_directory}/milter-log.#{time_span.name}.rrd"
+  end
+
+  def collect_session(regex)
+    sessions = []
+    @log.each do |line|
+      if Regexp.new(regex).match(line)
+        time = Time.parse($1)
+        name = $3
+        id = $4
+        if $2 == "Start"
+          session = MilterSession.new(id, name)
+          session.start_time = time
+          sessions << session
+        else
+          sessions.reverse_each do |session|
+            if session.id == id
+              session.end_time = time
+              break
+            end
+          end
+        end
+      end
+    end
+    sessions
+  end
+
+  def collect
+    @child_sessions = 
+      collect_session("milter-manager\\[.+\\]: \\[(.+)\\](Start|End).* filter process of (.*)\\((.+)\\)$")
+    @client_sessions = 
+      collect_session("milter-manager\\[.+\\]: \\[(.+)\\](Start|End).* session in (.*)\\((.+)\\)$")
+  end
+
+  def count_sessions(sessions, time_span, last_update_time)
+    counting = Hash.new("U")
+    sessions.each do |session|
+      next if session.end_time == nil
+      start_time =time_span.adjust_time(session.start_time)
+      end_time = time_span.adjust_time(session.end_time)
+
+      # ignore sessions which has been already registerd due to RRD.update fails on past time stamp
+      if last_update_time
+        next if end_time <= last_update_time
+        next if start_time <= last_update_time
+      end
+
+      # ignore recent sessions due to RRD.update fails on past time stamp
+      next if end_time >= time_span.adjust_time(@update_time)
+      next if start_time >= time_span.adjust_time(@update_time)
+
+      start_time = start_time.to_i
+      end_time = end_time.to_i
+
+      start_time.step(end_time, time_span.step) do |time|
+        count = counting[time]
+        count = 0 if count == "U"
+        count += 1
+        counting[time] = count
+      end
+    end
+    counting
+  end
+
+  def collect_session_data(time_span, last_update_time)
+    counting = MilterRRDCount.new()
+    counting["child"] = count_sessions(@child_sessions, time_span, last_update_time)
+    counting["session"] = count_sessions(@client_sessions, time_span, last_update_time)
+    MilterRRDData.new(counting)
+  end
+
+  def create_rrd(time_span, start_time)
+    step = time_span.step
+    rows = time_span.rows
+    RRD.create("#{rrd_name(time_span)}",
+        "--start", (start_time - 1).to_i.to_s,
+        "--step", step,
+        "DS:smtp:GAUGE:#{step}:0:U",
+        "DS:child:GAUGE:#{step}:0:U",
+        "RRA:MAX:0.5:1:#{rows}",
+        "RRA:AVERAGE:0.5:1:#{rows}")
+  end
+
+  def update_db(time_span)
+    rrd = rrd_name(time_span)
+    last_update_time = RRD.last("#{rrd}") if File.exist?(rrd)
+
+    data = collect_session_data(time_span, last_update_time)
+    return if data.empty?
+
+    end_time = data.last_time
+    start_time = last_update_time ? last_update_time + time_span.step: data.first_time
+
+    create_rrd(time_span, start_time) unless File.exist?(rrd)
+
+    start_time.to_i.step(end_time, time_span.step) do |time|
+      client_count = data["session"][time]
+      child_count = data["child"][time]
+
+      if child_count == "U" and 
+         client_count == "U" and
+         next
+      end
+
+      p("update #{rrd} with #{Time.at(time)}  #{client_count}:#{child_count}")
+      RRD.update("#{rrd_name(time_span)}",
+                 "#{time}:#{client_count}:#{child_count}")
+    end
+  end
+
+  def output_graph(time_span, start_time = nil, end_time = "now", width = 1000 , height = 250)
+    start_time = time_span.default_start_time unless start_time
+    rrd_file = rrd_name(time_span)
+    return unless File.exist?(rrd_file)
+    RRD.graph("#{@rrd_directory}/session.#{time_span.name}.png",
+              "--title", "milter-manager condition per #{time_span.name}",
+              "DEF:smtp=#{rrd_file}:smtp:MAX",
+              "DEF:child=#{rrd_file}:child:MAX",
+              "CDEF:n_smtp=smtp,UN,0,smtp,IF",
+              "CDEF:n_child=child,UN,0,child,IF",
+              "LINE:n_smtp#0000ff:The number of SMTP session",
+              "LINE:n_child#00ff00:The number of milter",
+              "--step", time_span.step,
+              "--start", start_time,
+              "--end", end_time,
+              "--width","#{width}",
+              "--height", "#{height}",
+              "--alt-y-grid",
+              "COMMENT:Last update\\: #{@update_time.localtime.rfc2822.gsub!(/:/,'\\:')}\\r")
+  end
 end
 
 class MilterMailStatusRRD < MilterRRD
@@ -318,7 +449,7 @@ class MilterPassChildRRD < MilterRRD
     end_time = data.last_time
     start_time = last_update_time ? last_update_time + time_span.step : data.first_time
 
-    create_state_distinct_rrd(time_span, start_time) unless File.exist?(rrd_name(time_span))
+    create_rrd(time_span, start_time) unless File.exist?(rrd_name(time_span))
     start_time.to_i.step(end_time, time_span.step) do |time|
       RRD.update("#{rrd_name(time_span)}",
                  "#{time}" +
@@ -373,9 +504,8 @@ end
 class MilterLogTool
   def initialize
     @log = nil
-    @child_sessions = nil
-    @client_sessions = nil
     @update_db = false
+    @sessions = nil
     @mail_status = nil
     @pass_child = nil
   end
@@ -398,161 +528,21 @@ class MilterLogTool
     end
     opts.parse!(argv)
   end
-
-  def rrd_name(time_span)
-    "#{@rrd_directory}/milter-log.#{time_span.name}.rrd"
-  end
-
-  def collect_session(regex)
-    sessions = []
-    @log.each do |line|
-      if Regexp.new(regex).match(line)
-        time = Time.parse($1)
-        name = $3
-        id = $4
-        if $2 == "Start"
-          session = MilterSession.new(id, name)
-          session.start_time = time
-          sessions << session
-        else
-          sessions.reverse_each do |session|
-            if session.id == id
-              session.end_time = time
-              break
-            end
-          end
-        end
-      end
-    end
-    sessions
-  end
-
-  def collect_child_session
-    @child_sessions = 
-      collect_session("milter-manager\\[.+\\]: \\[(.+)\\](Start|End).* filter process of (.*)\\((.+)\\)$")
-  end
-
-  def collect_client_session
-    @client_sessions = 
-      collect_session("milter-manager\\[.+\\]: \\[(.+)\\](Start|End).* session in (.*)\\((.+)\\)$")
-  end
-
-  def count_sessions(sessions, time_span, last_update_time)
-    counting = Hash.new("U")
-    sessions.each do |session|
-      next if session.end_time == nil
-      start_time =time_span.adjust_time(session.start_time)
-      end_time = time_span.adjust_time(session.end_time)
-
-      # ignore sessions which has been already registerd due to RRD.update fails on past time stamp
-      if last_update_time
-        next if end_time <= last_update_time
-        next if start_time <= last_update_time
-      end
-
-      # ignore recent sessions due to RRD.update fails on past time stamp
-      next if end_time >= time_span.adjust_time(@now)
-      next if start_time >= time_span.adjust_time(@now)
-
-      start_time = start_time.to_i
-      end_time = end_time.to_i
-
-      start_time.step(end_time, time_span.step) do |time|
-        count = counting[time]
-        count = 0 if count == "U"
-        count += 1
-        counting[time] = count
-      end
-    end
-    counting
-  end
-
-  def collect_session_data(time_span, last_update_time)
-    counting = MilterRRDCount.new()
-    counting["child"] = count_sessions(@child_sessions, time_span, last_update_time)
-    counting["session"] = count_sessions(@client_sessions, time_span, last_update_time)
-    MilterRRDData.new(counting)
-  end
-
-  def create_session_rrd(time_span, start_time)
-    step = time_span.step
-    rows = time_span.rows
-    RRD.create("#{rrd_name(time_span)}",
-        "--start", (start_time - 1).to_i.to_s,
-        "--step", step,
-        "DS:client_sessions:GAUGE:#{step}:0:U",
-        "DS:child_sessions:GAUGE:#{step}:0:U",
-        "RRA:MAX:0.5:1:#{rows}",
-        "RRA:AVERAGE:0.5:1:#{rows}")
-  end
-
-  def update_db(time_span)
-    rrd = rrd_name(time_span)
-    last_update_time = RRD.last("#{rrd}") if File.exist?(rrd)
-
-    data = collect_session_data(time_span, last_update_time)
-    return if data.empty?
-
-    end_time = data.last_time
-    start_time = last_update_time ? last_update_time + time_span.step: data.first_time
-
-    create_session_rrd(time_span, start_time) unless File.exist?(rrd)
-
-    start_time.to_i.step(end_time, time_span.step) do |time|
-      client_count = data["session"][time]
-      child_count = data["child"][time]
-
-      if child_count == "U" and 
-         client_count == "U" and
-         next
-      end
-
-      p("update #{rrd} with #{Time.at(time)}  #{client_count}:#{child_count}")
-      RRD.update("#{rrd_name(time_span)}",
-                 "#{time}:#{client_count}:#{child_count}")
-    end
-  end
-
   def update
     @now = Time.now.utc
 
-    collect_client_session
-    collect_child_session
+    @sessions = MilterSessionRRD.new(@rrd_directory, @log, @now)
+    @sessions.update
 
     @mail_status = MilterMailStatusRRD.new(@rrd_directory, @log, @now)
     @mail_status.update
     
     @pass_child = MilterPassChildRRD.new(@rrd_directory, @log, @now)
     @pass_child.update
-    
-    update_db(MilterGraphTimeSpan.new("second"))
-    update_db(MilterGraphTimeSpan.new("minute"))
-    update_db(MilterGraphTimeSpan.new("hour"))
-  end
-
-  def output_session_graph(time_span, start_time = nil, end_time = "now", width = 1000 , height = 250)
-    start_time = time_span.default_start_time unless start_time
-    rrd_file = rrd_name(time_span)
-    return unless File.exist?(rrd_file)
-    RRD.graph("#{@rrd_directory}/session.#{time_span.name}.png",
-              "--title", "milter-manager condition per #{time_span.name}",
-              "DEF:client=#{rrd_file}:client_sessions:MAX",
-              "DEF:child=#{rrd_file}:child_sessions:MAX",
-              "CDEF:n_client=client,UN,0,client,IF",
-              "CDEF:n_child=child,UN,0,child,IF",
-              "LINE:n_client#0000ff:The number of SMTP session",
-              "LINE:n_child#00ff00:The number of milter",
-              "--step", time_span.step,
-              "--start", start_time,
-              "--end", end_time,
-              "--width","#{width}",
-              "--height", "#{height}",
-              "--alt-y-grid",
-              "COMMENT:Last update\\: #{@now.localtime.rfc2822.gsub!(/:/,'\\:')}\\r")
   end
 
   def output_graph(time_span)
-    output_session_graph(MilterGraphTimeSpan.new(time_span))
+    @sessions.output_graph(MilterGraphTimeSpan.new(time_span))
     @mail_status.output_graph(MilterGraphTimeSpan.new(time_span))
     @pass_child.output_graph(MilterGraphTimeSpan.new(time_span))
   end
