@@ -3,6 +3,8 @@ clients=client10026;client10027
 import=end-of-header.txt
 actions=body
 
+omit=Is this check needed?
+
 [client10026]
 port=10026
 arguments=--negotiate-flags;no-body

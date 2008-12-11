@@ -1,5 +1,8 @@
 2008-12-11  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/fixtures/leader/no-body-flag-on-both-client.txt: omit this
+	scenario.
+
 	* test/manager/test-leader.c: use 'emitted' not 'waiting'.
 
 	* test/manager/test-manager.c: ensure killing hatched process.
