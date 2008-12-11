@@ -202,8 +202,10 @@ class MilterRRD
     start_time = time_span.default_start_time unless start_time
     rrd_file = rrd_name(time_span)
     return unless File.exist?(rrd_file)
+    last_update_time = RRD.last(rrd_file)
+
     RRD.graph("#{graph_name(time_span)}",
-              "--title", "#{@title}",
+              "--title", "#{@title} - #{last_update_time.strftime("%a %b %d %H:%M:%S %Z %Y")}",
               "--vertical-label", "#{@vertical_label}/#{time_span.short_name}",
               "--step", time_span.step,
               "--start", start_time,
@@ -211,7 +213,6 @@ class MilterRRD
               "--width","#{width}",
               "--height", "#{height}",
               "--alt-y-grid",
-              "COMMENT:Last update\\: #{@update_time.localtime.rfc2822.gsub!(/:/,'\\:')}\\r",
               *(@items.map{|item| "DEF:#{item}=#{rrd_file}:#{item}:MAX"} +
                 @items.map{|item| "CDEF:n_#{item}=#{item},UN,0,#{item},IF"} +
                 args))

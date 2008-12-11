@@ -8,6 +8,7 @@
 	* tool/milter-log-tool.rb: Cleanup output_graph.
 	* tool/milter-log-tool.rb: Added --no-update-db option.
 	* tool/milter-log-tool.rb: Show vertical label in graph.
+	* tool/milter-log-tool.rb: Show update time in title label.
 
 2008-12-11  Kouhei Sutou  <kou@cozmixng.org>
 
