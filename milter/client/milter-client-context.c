@@ -1412,8 +1412,7 @@ end_of_message_response (MilterClientContext *context, MilterStatus status)
 static void
 quit_response (MilterClientContext *context, MilterStatus status)
 {
-    if (status == MILTER_STATUS_DEFAULT)
-        status = MILTER_STATUS_CONTINUE;
+    milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(context));
 }
 
 static void

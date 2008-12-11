@@ -1,5 +1,7 @@
 2008-12-11  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client-context.c (quit_response): emit finished.
+
 	* binding/ruby/lib/milter/manager.rb: all? -> any?.
 
 	* data/applicable-conditions/disable.conf: add.
