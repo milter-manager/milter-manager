@@ -330,18 +330,21 @@ class MilterMailStatusRRD < MilterRRD
     start_time = last_update_time ? last_update_time + time_span.step: data.first_time
 
     create_rrd(time_span, start_time,
-               "normal", "reject",
-               "discard", "temporary-failure",
+               "normal", "accept",
+               "reject", "discard",
+               "temporary-failure",
                "quarantine") unless File.exist?(rrd)
 
     start_time.to_i.step(end_time, time_span.step) do |time|
       normal = data["normal"][time]
+      accept = data["accept"][time]
       reject = data["reject"][time]
       discard = data["discard"][time]
       temporary_failure = data["temporary-failure"][time]
       quarantine = data["quarantine"][time]
 
       if normal == "U" and
+         accept == "U" and
          reject == "U" and
          discard == "U" and
          temporary_failure == "U" and
@@ -351,7 +354,7 @@ class MilterMailStatusRRD < MilterRRD
 
       p("update #{rrd} with #{Time.at(time)} #{normal}:#{reject}")
       RRD.update("#{rrd}",
-                 "#{time}:#{normal}:#{reject}:#{discard}:#{temporary_failure}:#{quarantine}")
+                 "#{time}:#{normal}:#{accept}:#{reject}:#{discard}:#{temporary_failure}:#{quarantine}")
     end
   end
 
@@ -362,10 +365,13 @@ class MilterMailStatusRRD < MilterRRD
     RRD.graph("#{@rrd_directory}/mail.#{time_span.name}.png",
               "--title", "Processed mails per #{time_span.name}",
               "DEF:normal=#{rrd_file}:normal:MAX",
+              "DEF:accept=#{rrd_file}:accept:MAX",
               "DEF:reject=#{rrd_file}:reject:MAX",
               "CDEF:n_normal=normal,UN,0,normal,IF",
               "CDEF:n_reject=reject,UN,0,reject,IF",
+              "CDEF:n_accept=accept,UN,0,accept,IF",
               "AREA:n_reject#ff0000:Reject mails",
+              "STACK:n_accept#00ff00:Accept mails",
               "STACK:n_normal#0000ff:Normal mails",
               "--step", time_span.step,
               "--start", start_time,
