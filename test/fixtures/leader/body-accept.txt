@@ -17,7 +17,7 @@ command=body
 chunk=Accept message
 
 response=body
-n_received=1
+n_received=2
 status=accept
 
 chunks=Accept message;Accept message

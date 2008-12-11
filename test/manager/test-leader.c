@@ -652,12 +652,8 @@ assert_response_common (MilterManagerTestScenario *scenario, const gchar *group)
     get_n_received = response_to_get_n_received(response);
     cut_assert_not_null(get_n_received, "response: <%s>(%s)", response, group);
 
-    /* workaround */
-    if (g_str_equal(response, "end-of-message") &&
-        status == MILTER_STATUS_CONTINUE &&
-        n_received == 2) {
+    if (n_received >= g_list_length((GList *)started_clients))
         milter_manager_test_clients_wait_reply(started_clients, get_n_received);
-    }
 
     actual_n_received =
         milter_manager_test_clients_collect_n_received(started_clients,
