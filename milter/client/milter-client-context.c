@@ -1299,6 +1299,8 @@ connect_response (MilterClientContext *context, MilterStatus status)
 
     reply(context, status);
     reset_macro_context(context, MILTER_COMMAND_CONNECT);
+    milter_statistics("Reply %s to MTA on connect.",
+                       milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status));
 }
 
 static void
