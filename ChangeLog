@@ -57,6 +57,7 @@
 	* tool/milter-log-tool.rb: MilterMailStatusLog#count moved to
 	MilterRRD#count.
 	* tool/milter-log-tool.rb: MilterMailStatusLog -> MilterMailStatusRRD.
+	* tool/milter-log-tool.rb: Added MilterPassChildRDD class.
 
 2008-12-10  Kouhei Sutou  <kou@cozmixng.org>
 
