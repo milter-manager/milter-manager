@@ -25,7 +25,7 @@ end
 
 class MilterRRDCount < Hash
   def [](key)
-    super(key) ? super(key) : Hash.new("U")
+    super(key) ? super(key) : store(key, Hash.new("U"))
   end
 end
 
@@ -35,6 +35,7 @@ class MilterRRDData
   end
 
   def empty?
+    return true unless @countings
     @countings.each_value do |counting|
       return false unless counting.empty?
     end
@@ -121,7 +122,28 @@ class MilterGraphTimeSpan
   end
 end
 
-class MilterMailStatusLog
+class MilterRRD
+  def initialize(rrd_directory, log, update_time)
+    @rrd_directory = rrd_directory
+    @log = log
+    @update_time = update_time
+    @data = nil
+  end
+
+  def collect_data(time_span, last_update_time)
+    counting = count(time_span, last_update_time)
+    MilterRRDData.new(counting)
+  end
+
+  def update
+    collect
+    update_db(MilterGraphTimeSpan.new("second"))
+    update_db(MilterGraphTimeSpan.new("minute"))
+    update_db(MilterGraphTimeSpan.new("hour"))
+  end
+end
+
+class MilterMailStatusLog < MilterRRD
   class MilterMail
     attr_accessor :status, :time
     def initialize(status, time)
@@ -130,18 +152,12 @@ class MilterMailStatusLog
     end
   end
 
-  def initialize(rrd_directory, log, update_time)
-    @rrd_directory = rrd_directory
-    @log = log
-    @update_time = update_time
-  end
-
   def rrd_name(time_span)
     "#{@rrd_directory}/milter-log.mail.#{time_span.name}.rrd"
   end
 
   def collect
-    @mails = []
+    @data = []
     @log.each do |line|
       if /milter-manager\[.+\]: \[(.+)\]Reply (.+) to MTA on (.+)$/ =~ line
         time = Time.parse($1)
@@ -150,15 +166,15 @@ class MilterMailStatusLog
         next if state == "envelope-recipient"
         next if status == "continue" and state != "end-of-message"
         status = "normal" if status == "continue"
-        @mails << MilterMail.new(status, time)
+        @data << MilterMail.new(status, time)
       end
     end
   end
 
   def count(time_span, last_update_time)
     counting = MilterRRDCount.new()
-    @mails.each do |mail|
-      time =time_span.adjust_time(mail.time)
+    @data.each do |datum|
+      time =time_span.adjust_time(datum.time)
 
       # ignore sessions which has been already registerd due to RRD.update fails on past time stamp
       if last_update_time
@@ -169,7 +185,7 @@ class MilterMailStatusLog
       next if time >= time_span.adjust_time(@update_time)
 
       time = time.to_i
-      status = mail.status
+      status = datum.status
 
       count = counting[status][time]
       count = 0 if count == "U"
@@ -177,11 +193,6 @@ class MilterMailStatusLog
       counting[status][time] = count
     end
     counting
-  end
-
-  def collect_data(time_span, last_update_time)
-    mail_counting = count(time_span, last_update_time)
-    MilterRRDData.new(mail_counting)
   end
 
   def create_rrd(time_span, start_time)
@@ -197,13 +208,6 @@ class MilterMailStatusLog
         "DS:quarantine:GAUGE:#{step}:0:U",
         "RRA:MAX:0.5:1:#{rows}",
         "RRA:AVERAGE:0.5:1:#{rows}")
-  end
-
-  def update
-    collect
-    update_db(MilterGraphTimeSpan.new("second"))
-    update_db(MilterGraphTimeSpan.new("minute"))
-    update_db(MilterGraphTimeSpan.new("hour"))
   end
 
   def update_db(time_span)
