@@ -26,6 +26,29 @@ class TestConfiguration < Test::Unit::TestCase
     assert_equal([], @configuration.applicable_conditions)
   end
 
+  def test_find_applicable_condition
+    s25r = Milter::Manager::ApplicableCondition.new("S25R")
+    remote_network = Milter::Manager::ApplicableCondition.new("Remote Network")
+    @configuration.add_applicable_condition(s25r)
+    @configuration.add_applicable_condition(remote_network)
+
+    assert_equal(s25r, @configuration.find_applicable_condition("S25R"))
+    assert_nil(@configuration.find_applicable_condition("nonexistent"))
+  end
+
+  def test_remove_applicable_condition
+    s25r = Milter::Manager::ApplicableCondition.new("S25R")
+    remote_network = Milter::Manager::ApplicableCondition.new("Remote Network")
+    @configuration.add_applicable_condition(s25r)
+    @configuration.add_applicable_condition(remote_network)
+
+    assert_equal([s25r, remote_network], @configuration.applicable_conditions)
+    @configuration.remove_applicable_condition("S25R")
+    assert_equal([remote_network], @configuration.applicable_conditions)
+    @configuration.remove_applicable_condition(remote_network)
+    assert_equal([], @configuration.applicable_conditions)
+  end
+
   def test_to_xml
     assert_equal(["<configuration>",
                   "</configuration>"].join("\n") + "\n",

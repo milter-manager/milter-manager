@@ -21,12 +21,43 @@ add_applicable_condition (VALUE self, VALUE condition)
 }
 
 static VALUE
+find_applicable_condition (VALUE self, VALUE name)
+{
+    MilterManagerApplicableCondition *condition;
+
+    condition =
+	milter_manager_configuration_find_applicable_condition(SELF(self),
+							       RVAL2CSTR(name));
+    return GOBJ2RVAL(condition);
+}
+
+static VALUE
 get_applicable_conditions (VALUE self)
 {
     const GList *conditions;
 
     conditions = milter_manager_configuration_get_applicable_conditions(SELF(self));
     return GLIST2ARY((GList *)conditions);
+}
+
+static VALUE
+remove_applicable_condition (VALUE self, VALUE name_or_condition)
+{
+    if (RVAL2CBOOL(rb_obj_is_kind_of(name_or_condition, rb_cString))) {
+	const gchar *name;
+
+	name = RVAL2CSTR(name_or_condition);
+	milter_manager_configuration_remove_applicable_condition_by_name(SELF(self),
+									 name);
+    } else {
+	MilterManagerApplicableCondition *condition;
+
+	condition = RVAL2GOBJ(name_or_condition);
+	milter_manager_configuration_remove_applicable_condition(SELF(self),
+								 condition);
+    }
+
+    return Qnil;
 }
 
 static VALUE
@@ -110,7 +141,12 @@ Init_milter_manager_configuration (void)
     rb_define_method(rb_cMilterManagerConfiguration,
 		     "add_applicable_condition", add_applicable_condition, 1);
     rb_define_method(rb_cMilterManagerConfiguration,
+		     "find_applicable_condition", find_applicable_condition, 1);
+    rb_define_method(rb_cMilterManagerConfiguration,
 		     "applicable_conditions", get_applicable_conditions, 0);
+    rb_define_method(rb_cMilterManagerConfiguration,
+		     "remove_applicable_condition",
+		     remove_applicable_condition, 1);
     rb_define_method(rb_cMilterManagerConfiguration,
 		     "clear_applicable_conditions",
 		     clear_applicable_conditions, 0);

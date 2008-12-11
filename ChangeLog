@@ -1,5 +1,8 @@
 2008-12-11  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/src/manager/rb-milter-manager-configuration.c,
+	binding/ruby/test/manager/test-configuration.rb: bind find and remove.
+
 	* milter/manager/milter-manager-configuration.[ch],
 	test/manager/test-configuration.c: add
 	milter_manager_configuration_find_applicable_condition().
