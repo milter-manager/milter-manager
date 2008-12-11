@@ -431,7 +431,7 @@ module Milter::Manager
         @condition.signal_connect("attach-to") do |_, child|
           unless @connect_checkers.empty?
             child.signal_connect("check-connect") do |_child, host, address|
-              @connect_checkers.all? do |checker|
+              @connect_checkers.any? do |checker|
                 checker.call(_child, host, address)
               end
             end
@@ -439,7 +439,7 @@ module Milter::Manager
 
           unless @envelope_from_checkers.empty?
             child.signal_connect("check-envelope-from") do |_child, from|
-              @envelope_from_checkers.all? do |checker|
+              @envelope_from_checkers.any? do |checker|
                 checker.call(_child, from)
               end
             end
@@ -447,7 +447,7 @@ module Milter::Manager
 
           unless @envelope_recipient_checkers.empty?
             child.signal_connect("check-envelope-recipient") do |_child, recipient|
-              @envelope_recipient_checkers.all? do |checker|
+              @envelope_recipient_checkers.any? do |checker|
                 checker.call(_child, recipient)
               end
             end
@@ -455,7 +455,7 @@ module Milter::Manager
 
           unless @header_checkers.empty?
             child.signal_connect("check-header") do |_child, name, value|
-              @header_checkers.all? do |checker|
+              @header_checkers.any? do |checker|
                 checker.call(_child, name, value)
               end
             end
