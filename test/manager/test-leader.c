@@ -366,11 +366,11 @@ teardown (void)
         started_clients, command)
 
 static gboolean
-cb_timeout_waiting (gpointer data)
+cb_timeout_emitted (gpointer data)
 {
-    gboolean *waiting = data;
+    gboolean *emitted = data;
 
-    *waiting = FALSE;
+    *emitted = TRUE;
     return FALSE;
 }
 
@@ -421,18 +421,18 @@ get_response_count (const gchar *response)
 static void
 assert_have_response_helper (const gchar *name)
 {
-    gboolean timeout_waiting = TRUE;
-    guint timeout_waiting_id;
+    gboolean timeout_emitted = FALSE;
+    guint timeout_emitted_id;
 
-    timeout_waiting_id = g_timeout_add(200, cb_timeout_waiting,
-                                       &timeout_waiting);
-    while (timeout_waiting &&
+    timeout_emitted_id = g_timeout_add(200, cb_timeout_emitted,
+                                       &timeout_emitted);
+    while (!timeout_emitted &&
            get_response_count(name) == 0) {
         g_main_context_iteration(NULL, TRUE);
     }
-    g_source_remove(timeout_waiting_id);
+    g_source_remove(timeout_emitted_id);
 
-    cut_assert_true(timeout_waiting, "<%s>", name);
+    cut_assert_false(timeout_emitted, "<%s>", name);
     gcut_assert_error(actual_error);
 }
 
@@ -451,39 +451,39 @@ assert_have_response_helper (const gchar *name)
 static void
 wait_finished_helper (void)
 {
-    gboolean timeout_waiting = TRUE;
-    guint timeout_waiting_id;
+    gboolean timeout_emitted = FALSE;
+    guint timeout_emitted_id;
 
-    timeout_waiting_id = g_timeout_add(100, cb_timeout_waiting,
-                                       &timeout_waiting);
-    while (timeout_waiting && !finished) {
+    timeout_emitted_id = g_timeout_add(100, cb_timeout_emitted,
+                                       &timeout_emitted);
+    while (!timeout_emitted && !finished) {
         g_main_context_iteration(NULL, TRUE);
     }
-    g_source_remove(timeout_waiting_id);
+    g_source_remove(timeout_emitted_id);
 
-    cut_assert_true(timeout_waiting, "timeout");
+    cut_assert_false(timeout_emitted);
     cut_assert_true(finished);
 }
 
 #define wait_leader_error()                    \
-    cut_trace_with_info_expression(                \
+    cut_trace_with_info_expression(            \
         wait_leader_error_helper(),            \
         wait_leader_error())
 
 static void
 wait_leader_error_helper (void)
 {
-    gboolean timeout_waiting = TRUE;
-    guint timeout_waiting_id;
+    gboolean timeout_emitted = FALSE;
+    guint timeout_emitted_id;
 
-    timeout_waiting_id = g_timeout_add(100, cb_timeout_waiting,
-                                       &timeout_waiting);
-    while (timeout_waiting && !actual_error) {
+    timeout_emitted_id = g_timeout_add(100, cb_timeout_emitted,
+                                       &timeout_emitted);
+    while (!timeout_emitted && !actual_error) {
         g_main_context_iteration(NULL, TRUE);
     }
-    g_source_remove(timeout_waiting_id);
+    g_source_remove(timeout_emitted_id);
 
-    cut_assert_true(timeout_waiting, "timeout");
+    cut_assert_false(timeout_emitted);
     cut_assert_not_null(actual_error);
 }
 
