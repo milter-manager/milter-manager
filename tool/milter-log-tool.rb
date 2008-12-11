@@ -130,6 +130,30 @@ class MilterRRD
     @data = nil
   end
 
+  def count(time_span, last_update_time)
+    counting = MilterRRDCount.new()
+    @data.each do |datum|
+      time =time_span.adjust_time(datum.time)
+
+      # ignore sessions which has been already registerd due to RRD.update fails on past time stamp
+      if last_update_time
+        next if time <= last_update_time
+      end
+
+      # ignore recent sessions due to RRD.update fails on past time stamp
+      next if time >= time_span.adjust_time(@update_time)
+
+      time = time.to_i
+      key = datum.key
+
+      count = counting[key][time]
+      count = 0 if count == "U"
+      count += 1
+      counting[key][time] = count
+    end
+    counting
+  end
+
   def collect_data(time_span, last_update_time)
     counting = count(time_span, last_update_time)
     MilterRRDData.new(counting)
@@ -145,8 +169,9 @@ end
 
 class MilterMailStatusLog < MilterRRD
   class MilterMail
-    attr_accessor :status, :time
+    attr_accessor :status, :time, :key
     def initialize(status, time)
+      @key = status
       @status = status
       @time = time
     end
@@ -169,30 +194,6 @@ class MilterMailStatusLog < MilterRRD
         @data << MilterMail.new(status, time)
       end
     end
-  end
-
-  def count(time_span, last_update_time)
-    counting = MilterRRDCount.new()
-    @data.each do |datum|
-      time =time_span.adjust_time(datum.time)
-
-      # ignore sessions which has been already registerd due to RRD.update fails on past time stamp
-      if last_update_time
-        next if time <= last_update_time
-      end
-
-      # ignore recent sessions due to RRD.update fails on past time stamp
-      next if time >= time_span.adjust_time(@update_time)
-
-      time = time.to_i
-      status = datum.status
-
-      count = counting[status][time]
-      count = 0 if count == "U"
-      count += 1
-      counting[status][time] = count
-    end
-    counting
   end
 
   def create_rrd(time_span, start_time)

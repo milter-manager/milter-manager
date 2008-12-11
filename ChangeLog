@@ -54,6 +54,8 @@
 	* tool/milter-log-tool.rb: Cleanup MilterRRDCount class.
 	* tool/milter-log-tool.rb: Added MilterRRD class. Also fix
 	MilterRRDCount accessor method.
+	* tool/milter-log-tool.rb: MilterMailStatusLog#count moved to
+	MilterRRD#count.
 
 2008-12-10  Kouhei Sutou  <kou@cozmixng.org>
 
