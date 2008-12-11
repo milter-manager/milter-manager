@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'RRD'
+require 'fileutils'
 require 'time'
 require 'optparse'
 
