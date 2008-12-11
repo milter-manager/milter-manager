@@ -67,6 +67,8 @@
 	* tool/milter-log-tool.rb: Added MilterSessionRRD class.
 	* tool/milter-log-tool.rb: cleanup create_rdd.
 	* tool/milter-log-tool.rb: Added accept mail count.
+	* tool/milter-log-tool.rb: Define @items for status, state or
+	whatever.
 
 2008-12-10  Kouhei Sutou  <kou@cozmixng.org>
 

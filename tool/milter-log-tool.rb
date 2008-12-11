@@ -170,6 +170,11 @@ class MilterSessionRRD < MilterRRD
     end
   end
 
+  def initialize(rrd_directory, log, update_time)
+    super(rrd_directory, log, update_time)
+    @items = ["smtp", "child"]
+  end
+
   def rrd_name(time_span)
     "#{@rrd_directory}/milter-log.#{time_span.name}.rrd"
   end
@@ -252,7 +257,7 @@ class MilterSessionRRD < MilterRRD
     end_time = data.last_time
     start_time = last_update_time ? last_update_time + time_span.step: data.first_time
 
-    create_rrd(time_span, start_time, "smtp", "child") unless File.exist?(rrd)
+    create_rrd(time_span, start_time, *@items) unless File.exist?(rrd)
 
     start_time.to_i.step(end_time, time_span.step) do |time|
       client_count = data["session"][time]
@@ -301,6 +306,14 @@ class MilterMailStatusRRD < MilterRRD
     end
   end
 
+  def initialize(rrd_directory, log, update_time)
+    super(rrd_directory, log, update_time)
+    @items = ["normal", "accept",
+              "reject", "discard",
+              "temporary-failure",
+              "quarantine"]
+  end
+
   def rrd_name(time_span)
     "#{@rrd_directory}/milter-log.mail.#{time_span.name}.rrd"
   end
@@ -329,11 +342,7 @@ class MilterMailStatusRRD < MilterRRD
     end_time = data.last_time + time_span.step 
     start_time = last_update_time ? last_update_time + time_span.step: data.first_time
 
-    create_rrd(time_span, start_time,
-               "normal", "accept",
-               "reject", "discard",
-               "temporary-failure",
-               "quarantine") unless File.exist?(rrd)
+    create_rrd(time_span, start_time, *@items) unless File.exist?(rrd)
 
     start_time.to_i.step(end_time, time_span.step) do |time|
       normal = data["normal"][time]
@@ -394,6 +403,18 @@ class MilterPassChildRRD < MilterRRD
     end
   end
 
+  def initialize(rrd_directory, log, update_time)
+    super(rrd_directory, log, update_time)
+    @items = ["all",
+              "connect",
+              "helo",
+              "envelope-from",
+              "envelope-recipient",
+              "header",
+              "body",
+              "end-of-message"]
+  end
+
   def rrd_name(time_span)
     "#{@rrd_directory}/milter-log.state.#{time_span.name}.rrd"
   end
@@ -424,15 +445,7 @@ class MilterPassChildRRD < MilterRRD
     end_time = data.last_time
     start_time = last_update_time ? last_update_time + time_span.step : data.first_time
 
-    create_rrd(time_span, start_time,
-               "all",
-               "connect",
-               "helo",
-               "envelope-from",
-               "envelope-recipient",
-               "header",
-               "body",
-               "end-of-message") unless File.exist?(rrd_name(time_span))
+    create_rrd(time_span, start_time, *@items) unless File.exist?(rrd_name(time_span))
     start_time.to_i.step(end_time, time_span.step) do |time|
       RRD.update("#{rrd_name(time_span)}",
                  "#{time}" +
