@@ -32,6 +32,8 @@
 	* tool/milter-log-tool.rb: "continue" on end-of-message mail is a
 	normal mail not all mails so need to stack its bar on rejected mail.
 	* tool/milter-log-tool.rb: Separate mail status RRD file.
+	* milter/client/milter-client-context.c: Use nick name for reply to
+	MTA.
 
 2008-12-10  Kouhei Sutou  <kou@cozmixng.org>
 
