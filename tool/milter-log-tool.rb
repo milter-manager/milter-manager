@@ -83,9 +83,9 @@ class MilterGraphTimeSpan
   def default_start_time
     case @name
     when "second"
-      "-1h" # 1hour
+      "-3h" # 1hour
     when "minute"
-      "-12h" # 12hours
+      "-24h" # 12hours
     when "hour"
       "-7d" # 1day
     end
@@ -348,9 +348,12 @@ class MilterMailStatusRRD < MilterRRD
 
   def output_graph(time_span, start_time = nil, end_time = "now", width = 1000 , height = 250)
     super(time_span, start_time, end_time, width, height,
-          "AREA:n_reject#ff0000:Reject mails",
+          "AREA:n_normal#0000ff:Normal mails",
           "STACK:n_accept#00ff00:Accept mails",
-          "STACK:n_normal#0000ff:Normal mails")
+          "STACK:n_reject#ff0000:Reject mails",
+          "STACK:n_discard#ffd400:Discard mails",
+          "STACK:n_temporary-failure#888888:Temporary failure mails",
+          "STACK:n_quarantine#a52a2a:Quarantine mails")
   end
 end
 
@@ -405,14 +408,14 @@ class MilterPassChildRRD < MilterRRD
 
   def output_graph(time_span, start_time = nil, end_time = "now", width = 1000, height = 250)
     super(time_span, start_time, end_time, width, height,
-          "AREA:n_all#0000ff:The number of milters",
-          "AREA:n_connect#ff0000:Passed on connect",
-          "STACK:n_helo#dd2200:Passed on helo",
-          "STACK:n_envelope-from#bb4400:Passed on envelope-from",
-          "STACK:n_envelope-recipient#996600:Passed on envelope-recipient",
-          "STACK:n_header#778800:Passed on header",
-          "STACK:n_body#55aa00:Passed on body",
-          "STACK:n_end-of-message#33cc00:Passed on end-of-message")
+          "AREA:n_all#00ff00:The number of milters",
+          "AREA:n_connect#0000ff:Passed on connect",
+          "STACK:n_helo#0022dd:Passed on helo",
+          "STACK:n_envelope-from#0044bb:Passed on envelope-from",
+          "STACK:n_envelope-recipient#006699:Passed on envelope-recipient",
+          "STACK:n_header#008877:Passed on header",
+          "STACK:n_body#00aa55:Passed on body",
+          "STACK:n_end-of-message#00cc33:Passed on end-of-message")
   end
 end
 
@@ -443,6 +446,7 @@ class MilterLogTool
     end
     opts.parse!(argv)
   end
+
   def update
     @now = Time.now.utc
 
