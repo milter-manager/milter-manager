@@ -104,6 +104,30 @@ milter_utils_get_enum_name (GType enum_type, gint enum_value)
 }
 
 gchar *
+milter_utils_get_enum_nick_name (GType enum_type, gint enum_value)
+{
+    GEnumClass *enum_class;
+    GEnumValue *value;
+    gchar *name;
+
+    enum_class = g_type_class_ref(enum_type);
+    if (!enum_class)
+        return g_strdup_printf("unknown enum type: %s(%" G_GSIZE_FORMAT ")",
+                               g_type_name(enum_type), enum_type);
+
+    value = g_enum_get_value(enum_class, enum_value);
+    if (value)
+        name = g_strdup(value->value_nick);
+    else
+        name = g_strdup_printf("#<%s: %d>",
+                               g_type_name(enum_type), enum_value);
+
+    g_type_class_unref(enum_class);
+
+    return name;
+}
+
+gchar *
 milter_utils_inspect_flags (GType flags_type, guint flags)
 {
     GFlagsClass *flags_class;

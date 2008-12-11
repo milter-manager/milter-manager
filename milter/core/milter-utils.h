@@ -80,6 +80,8 @@ gchar    *milter_utils_inspect_enum          (GType enum_type,
                                               gint  enum_value);
 gchar    *milter_utils_get_enum_name         (GType enum_type,
                                               gint  enum_value);
+gchar    *milter_utils_get_enum_nick_name    (GType enum_type,
+                                              gint  enum_value);
 gchar    *milter_utils_inspect_flags         (GType flags_type,
                                               guint flags);
 gchar    *milter_utils_get_flags_names       (GType flags_type,

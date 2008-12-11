@@ -681,8 +681,8 @@ pass_state (MilterServerContext *context, MilterServerContextState state)
     gchar *inspected_state;
     MilterServerContextPrivate *priv;
 
-    inspected_state = milter_utils_get_enum_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
-                                                 state);
+    inspected_state = milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                                                      state);
     milter_debug("pass state: %s", inspected_state);
     milter_statistics("Pass filter process of %s(%p) on %s",
                       milter_server_context_get_name(context),
