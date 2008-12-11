@@ -146,6 +146,17 @@ class MilterRRD
     update_db(MilterGraphTimeSpan.new("minute"))
     update_db(MilterGraphTimeSpan.new("hour"))
   end
+
+  def create_rrd(time_span, start_time, *args)
+    step = time_span.step
+    rows = time_span.rows
+    RRD.create("#{rrd_name(time_span)}",
+        "--start", (start_time - 1).to_i.to_s,
+        "--step", step,
+        "RRA:MAX:0.5:1:#{rows}",
+        "RRA:AVERAGE:0.5:1:#{rows}",
+        *args.map{|arg| "DS:#{arg}:GAUGE:#{step}:0:U"})
+  end
 end
 
 class MilterSessionRRD < MilterRRD
@@ -231,18 +242,6 @@ class MilterSessionRRD < MilterRRD
     MilterRRDData.new(counting)
   end
 
-  def create_rrd(time_span, start_time)
-    step = time_span.step
-    rows = time_span.rows
-    RRD.create("#{rrd_name(time_span)}",
-        "--start", (start_time - 1).to_i.to_s,
-        "--step", step,
-        "DS:smtp:GAUGE:#{step}:0:U",
-        "DS:child:GAUGE:#{step}:0:U",
-        "RRA:MAX:0.5:1:#{rows}",
-        "RRA:AVERAGE:0.5:1:#{rows}")
-  end
-
   def update_db(time_span)
     rrd = rrd_name(time_span)
     last_update_time = RRD.last("#{rrd}") if File.exist?(rrd)
@@ -253,7 +252,7 @@ class MilterSessionRRD < MilterRRD
     end_time = data.last_time
     start_time = last_update_time ? last_update_time + time_span.step: data.first_time
 
-    create_rrd(time_span, start_time) unless File.exist?(rrd)
+    create_rrd(time_span, start_time, "smtp", "child") unless File.exist?(rrd)
 
     start_time.to_i.step(end_time, time_span.step) do |time|
       client_count = data["session"][time]
@@ -320,21 +319,6 @@ class MilterMailStatusRRD < MilterRRD
     end
   end
 
-  def create_rrd(time_span, start_time)
-    step = time_span.step
-    rows = time_span.rows
-    RRD.create("#{rrd_name(time_span)}",
-        "--start", (start_time - 1).to_i.to_s,
-        "--step", step,
-        "DS:normal:GAUGE:#{step}:0:U",
-        "DS:reject:GAUGE:#{step}:0:U",
-        "DS:discard:GAUGE:#{step}:0:U",
-        "DS:temporary-failure:GAUGE:#{step}:0:U",
-        "DS:quarantine:GAUGE:#{step}:0:U",
-        "RRA:MAX:0.5:1:#{rows}",
-        "RRA:AVERAGE:0.5:1:#{rows}")
-  end
-
   def update_db(time_span)
     rrd = rrd_name(time_span)
     last_update_time = RRD.last("#{rrd}") if File.exist?(rrd)
@@ -345,7 +329,10 @@ class MilterMailStatusRRD < MilterRRD
     end_time = data.last_time + time_span.step 
     start_time = last_update_time ? last_update_time + time_span.step: data.first_time
 
-    create_rrd(time_span, start_time) unless File.exist?(rrd)
+    create_rrd(time_span, start_time,
+               "normal", "reject",
+               "discard", "temporary-failure",
+               "quarantine") unless File.exist?(rrd)
 
     start_time.to_i.step(end_time, time_span.step) do |time|
       normal = data["normal"][time]
@@ -422,24 +409,6 @@ class MilterPassChildRRD < MilterRRD
     MilterRRDData.new(pass_counting)
   end
 
-  def create_rrd(time_span, start_time)
-    step = time_span.step
-    rows = time_span.rows
-    RRD.create("#{rrd_name(time_span)}",
-        "--start", (start_time - 1).to_i.to_s,
-        "--step", step,
-        "DS:all:GAUGE:#{step}:0:U",
-        "DS:connect:GAUGE:#{step}:0:U",
-        "DS:helo:GAUGE:#{step}:0:U",
-        "DS:envelope-from:GAUGE:#{step}:0:U",
-        "DS:envelope-recipient:GAUGE:#{step}:0:U",
-        "DS:header:GAUGE:#{step}:0:U",
-        "DS:body:GAUGE:#{step}:0:U",
-        "DS:end-of-message:GAUGE:#{step}:0:U",
-        "RRA:MAX:0.5:1:#{rows}",
-        "RRA:AVERAGE:0.5:1:#{rows}")
-  end
-
   def update_db(time_span)
     last_update_time = RRD.last("#{rrd_name(time_span)}") if File.exist?(rrd_name(time_span))
 
@@ -449,7 +418,15 @@ class MilterPassChildRRD < MilterRRD
     end_time = data.last_time
     start_time = last_update_time ? last_update_time + time_span.step : data.first_time
 
-    create_rrd(time_span, start_time) unless File.exist?(rrd_name(time_span))
+    create_rrd(time_span, start_time,
+               "all",
+               "connect",
+               "helo",
+               "envelope-from",
+               "envelope-recipient",
+               "header",
+               "body",
+               "end-of-message") unless File.exist?(rrd_name(time_span))
     start_time.to_i.step(end_time, time_span.step) do |time|
       RRD.update("#{rrd_name(time_span)}",
                  "#{time}" +
