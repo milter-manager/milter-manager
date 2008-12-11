@@ -145,6 +145,12 @@ void          milter_manager_configuration_add_applicable_condition
                                       MilterManagerApplicableCondition *condition);
 const GList  *milter_manager_configuration_get_applicable_conditions
                                      (MilterManagerConfiguration *configuration);
+void          milter_manager_configuration_remove_applicable_condition
+                                     (MilterManagerConfiguration *configuration,
+                                      MilterManagerApplicableCondition *condition);
+void          milter_manager_configuration_remove_applicable_condition_by_name
+                                     (MilterManagerConfiguration *configuration,
+                                      const gchar *name);
 void          milter_manager_configuration_clear_applicable_conditions
                                      (MilterManagerConfiguration *configuration);
 

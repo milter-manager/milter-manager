@@ -715,6 +715,40 @@ milter_manager_configuration_get_applicable_conditions (MilterManagerConfigurati
 }
 
 void
+milter_manager_configuration_remove_applicable_condition (MilterManagerConfiguration *configuration,
+                                                          MilterManagerApplicableCondition *condition)
+{
+    const gchar *name;
+
+    name = milter_manager_applicable_condition_get_name(condition);
+    milter_manager_configuration_remove_applicable_condition_by_name(configuration,
+                                                                     name);
+}
+
+void
+milter_manager_configuration_remove_applicable_condition_by_name (MilterManagerConfiguration *configuration,
+                                                                  const gchar *name)
+{
+    MilterManagerConfigurationPrivate *priv;
+    GList *node;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+
+    for (node = priv->applicable_conditions; node; node = g_list_next(node)) {
+        MilterManagerApplicableCondition *condition = node->data;
+        const gchar *condition_name;
+
+        condition_name = milter_manager_applicable_condition_get_name(condition);
+        if (g_str_equal(name, condition_name)) {
+            priv->applicable_conditions =
+                g_list_delete_link(priv->applicable_conditions, node);
+            g_object_unref(condition);
+            break;
+        }
+    }
+}
+
+void
 milter_manager_configuration_clear_applicable_conditions (MilterManagerConfiguration *configuration)
 {
     MilterManagerConfigurationPrivate *priv;

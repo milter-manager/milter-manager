@@ -32,6 +32,7 @@ void test_control_connection_spec (void);
 void test_manager_connection_spec (void);
 void test_fallback_status (void);
 void test_applicable_condition (void);
+void test_remove_applicable_condition (void);
 void test_clear (void);
 void test_load_paths (void);
 void test_save_custom (void);
@@ -97,11 +98,8 @@ teardown (void)
         g_list_free(expected_load_paths);
     }
 
-    if (expected_applicable_conditions) {
-        g_list_foreach(expected_applicable_conditions,
-                       (GFunc)g_object_unref, NULL);
+    if (expected_applicable_conditions)
         g_list_free(expected_applicable_conditions);
-    }
 
     if (actual_xml)
         g_free(actual_xml);
@@ -236,8 +234,6 @@ milter_assert_default_configuration_helper (MilterManagerConfiguration *config)
 void
 test_applicable_condition (void)
 {
-    MilterManagerApplicableCondition *condition;
-
     gcut_assert_equal_list_object_custom(
         NULL,
         milter_manager_configuration_get_applicable_conditions(config),
@@ -253,6 +249,45 @@ test_applicable_condition (void)
         milter_test_equal_manager_applicable_condition);
 
     milter_manager_configuration_clear_applicable_conditions(config);
+    gcut_assert_equal_list_object_custom(
+        NULL,
+        milter_manager_configuration_get_applicable_conditions(config),
+        milter_test_equal_manager_applicable_condition);
+}
+
+void
+test_remove_applicable_condition (void)
+{
+    MilterManagerApplicableCondition *s25r, *remote_network;
+
+    s25r = milter_manager_applicable_condition_new("S25R");
+    remote_network = milter_manager_applicable_condition_new("Remote Network");
+    milter_manager_configuration_add_applicable_condition(config, s25r);
+    milter_manager_configuration_add_applicable_condition(config,
+                                                          remote_network);
+    gcut_take_object(G_OBJECT(s25r));
+    gcut_take_object(G_OBJECT(remote_network));
+
+    expected_applicable_conditions =
+        g_list_append(expected_applicable_conditions, s25r);
+    expected_applicable_conditions =
+        g_list_append(expected_applicable_conditions, remote_network);
+    gcut_assert_equal_list_object_custom(
+        expected_applicable_conditions,
+        milter_manager_configuration_get_applicable_conditions(config),
+        milter_test_equal_manager_applicable_condition);
+
+    milter_manager_configuration_remove_applicable_condition_by_name(config,
+                                                                     "S25R");
+    g_list_free(expected_applicable_conditions);
+    expected_applicable_conditions = g_list_append(NULL, remote_network);
+    gcut_assert_equal_list_object_custom(
+        expected_applicable_conditions,
+        milter_manager_configuration_get_applicable_conditions(config),
+        milter_test_equal_manager_applicable_condition);
+
+    milter_manager_configuration_remove_applicable_condition(config,
+                                                             remote_network);
     gcut_assert_equal_list_object_custom(
         NULL,
         milter_manager_configuration_get_applicable_conditions(config),
