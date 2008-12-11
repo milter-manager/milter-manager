@@ -38,6 +38,7 @@
 	* tool/milter-log-tool.rb: Separate mail status RRD file.
 	* milter/client/milter-client-context.c: Use nick name for reply to
 	MTA.
+	* tool/milter-log-tool.rb: Added MilterMailStatusLog class.
 
 2008-12-10  Kouhei Sutou  <kou@cozmixng.org>
 
