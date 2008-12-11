@@ -705,6 +705,27 @@ milter_manager_configuration_add_applicable_condition (MilterManagerConfiguratio
         g_list_append(priv->applicable_conditions, condition);
 }
 
+MilterManagerApplicableCondition *
+milter_manager_configuration_find_applicable_condition (MilterManagerConfiguration *configuration,
+                                                        const gchar *name)
+{
+    MilterManagerConfigurationPrivate *priv;
+    GList *node;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+
+    for (node = priv->applicable_conditions; node; node = g_list_next(node)) {
+        MilterManagerApplicableCondition *condition = node->data;
+        const gchar *condition_name;
+
+        condition_name = milter_manager_applicable_condition_get_name(condition);
+        if (g_str_equal(name, condition_name))
+            return condition;
+    }
+
+    return NULL;
+}
+
 const GList *
 milter_manager_configuration_get_applicable_conditions (MilterManagerConfiguration *configuration)
 {

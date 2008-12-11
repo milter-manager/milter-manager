@@ -32,6 +32,7 @@ void test_control_connection_spec (void);
 void test_manager_connection_spec (void);
 void test_fallback_status (void);
 void test_applicable_condition (void);
+void test_find_applicable_condition (void);
 void test_remove_applicable_condition (void);
 void test_clear (void);
 void test_load_paths (void);
@@ -253,6 +254,28 @@ test_applicable_condition (void)
         NULL,
         milter_manager_configuration_get_applicable_conditions(config),
         milter_test_equal_manager_applicable_condition);
+}
+
+void
+test_find_applicable_condition (void)
+{
+    MilterManagerApplicableCondition *s25r, *remote_network;
+
+    s25r = milter_manager_applicable_condition_new("S25R");
+    remote_network = milter_manager_applicable_condition_new("Remote Network");
+    milter_manager_configuration_add_applicable_condition(config, s25r);
+    milter_manager_configuration_add_applicable_condition(config,
+                                                          remote_network);
+    gcut_take_object(G_OBJECT(s25r));
+    gcut_take_object(G_OBJECT(remote_network));
+
+    gcut_assert_equal_object(
+        s25r,
+        milter_manager_configuration_find_applicable_condition(config, "S25R"));
+    gcut_assert_equal_object(
+        NULL,
+        milter_manager_configuration_find_applicable_condition(config,
+                                                               "nonexistent"));
 }
 
 void
