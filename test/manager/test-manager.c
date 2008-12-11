@@ -110,13 +110,13 @@ cb_timeout_emitted (gpointer data)
 #define server_egg server_data->egg
 
 #define wait_for_server_reaping()               \
-    cut_trace(wait_for_reaping(server_data))
+    cut_trace(wait_for_reaping(server_data, TRUE))
 
 #define wait_for_manager_reaping()              \
-    cut_trace(wait_for_reaping(manager_data))
+    cut_trace(wait_for_reaping(manager_data, TRUE))
 
 static void
-wait_for_reaping (EggData *data)
+wait_for_reaping (EggData *data, gboolean must)
 {
     gboolean timeout_emitted = FALSE;
     guint timeout_id;
@@ -126,7 +126,8 @@ wait_for_reaping (EggData *data)
         g_main_context_iteration(NULL, TRUE);
     g_source_remove(timeout_id);
 
-    cut_assert_false(timeout_emitted);
+    if (must)
+        cut_assert_false(timeout_emitted);
 }
 
 static void
@@ -135,7 +136,7 @@ egg_data_free (EggData *data)
     if (data->egg) {
         if (!data->reaped && gcut_egg_get_pid(data->egg) > 0)
             gcut_egg_kill(data->egg, SIGINT);
-        wait_for_manager_reaping();
+        wait_for_reaping(manager_data, FALSE);
         g_object_unref(data->egg);
     }
 

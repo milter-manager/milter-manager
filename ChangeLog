@@ -1,5 +1,7 @@
 2008-12-11  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/test-manager.c: ensure killing hatched process.
+
 	* test/manager/test-manager.c: add connect() check.
 
 	* milter/manager/milter-manager-configuration.[ch],
