@@ -109,11 +109,11 @@ cb_timeout_emitted (gpointer data)
 #define manager_egg manager_data->egg
 #define server_egg server_data->egg
 
-#define wait_for_server_reaping()   \
-    wait_for_reaping(server_data)
+#define wait_for_server_reaping()               \
+    cut_trace(wait_for_reaping(server_data))
 
-#define wait_for_manager_reaping()  \
-    wait_for_reaping(manager_data)
+#define wait_for_manager_reaping()              \
+    cut_trace(wait_for_reaping(manager_data))
 
 static void
 wait_for_reaping (EggData *data)
@@ -264,14 +264,16 @@ wait_for_manager_ready (const gchar *spec)
     struct sockaddr *address;
     socklen_t address_size;
     GIOChannel *channel;
+    gint errno_keep;
     GError *error = NULL;
 
-    milter_connection_parse_spec(spec,
-                                 &domain,
-                                 &address,
-                                 &address_size,
-                                 &error);
-    gcut_assert_error(error);
+    if (!milter_connection_parse_spec(spec,
+                                      &domain,
+                                      &address,
+                                      &address_size,
+                                      &error)) {
+        gcut_assert_error(error);
+    }
 
     sock_fd = socket(domain, SOCK_STREAM, 0);
     cut_assert_errno();
@@ -289,12 +291,23 @@ wait_for_manager_ready (const gchar *spec)
         g_main_context_iteration(NULL, TRUE);
     }
 
+    errno = 0;
+    while (!timeout_emitted && connect(sock_fd, address, address_size) == -1) {
+        g_main_context_iteration(NULL, FALSE);
+        errno = 0;
+    }
+    errno_keep = errno;
+
     g_source_remove(timeout_waiting_id);
     g_source_remove(connect_watch_id);
 
     close(sock_fd);
+
     cut_assert_true(manager_ready);
     cut_assert_false(timeout_emitted);
+
+    errno = errno_keep;
+    cut_assert_errno();
 }
 
 static void
@@ -304,8 +317,7 @@ start_manager (void)
 
     setup_egg(manager_data, "-s", spec, "--config-dir", scenario_dir, NULL);
     gcut_egg_hatch(manager_egg, &error);
-    gcut_assert_error(error);
-    wait_for_manager_ready(spec);
+    cut_trace(wait_for_manager_ready(spec));
 
     cut_assert_equal_string("", manager_data->output_string->str);
     cut_assert_equal_string("", manager_data->error_string->str);
@@ -394,6 +406,7 @@ do_actions (MilterManagerTestScenario *scenario)
     expected = get_string(scenario, "scenario", "expected");
     lines = g_strsplit(server_data->output_string->str, "\n", 2);
     cut_take_string_array(lines);
+    /* g_print("%s", server_data->output_string->str); */
     cut_assert_equal_string(expected, lines[0]);
     cut_assert_match("^Finished in [\\d.]+sec.\\s*$", lines[1]);
 }
@@ -442,7 +455,7 @@ void
 test_check_controller_port (void)
 {
     cut_trace(test_scenario("normal.txt"));
-    wait_for_manager_ready("inet:2929@localhost");
+    cut_trace(wait_for_manager_ready("inet:2929@localhost"));
 }
 
 /*
