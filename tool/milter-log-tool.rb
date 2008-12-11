@@ -167,7 +167,7 @@ class MilterRRD
   end
 end
 
-class MilterMailStatusLog < MilterRRD
+class MilterMailStatusRRD < MilterRRD
   class MilterMail
     attr_accessor :status, :time, :key
     def initialize(status, time)
@@ -507,7 +507,7 @@ class MilterLogTool
     collect_child_session
     collect_pass_filter
 
-    @mail_status = MilterMailStatusLog.new(@rrd_directory, @log, @now)
+    @mail_status = MilterMailStatusRRD.new(@rrd_directory, @log, @now)
     @mail_status.update
     
     update_db(MilterGraphTimeSpan.new("second"))
