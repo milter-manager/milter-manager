@@ -266,38 +266,11 @@ class MilterSessionRRD < MilterRRD
     counting
   end
 
-  def collect_session_data(time_span, last_update_time)
+  def collect_data(time_span, last_update_time)
     counting = MilterRRDCount.new()
+    counting["smtp"] = count_sessions(@client_sessions, time_span, last_update_time)
     counting["child"] = count_sessions(@child_sessions, time_span, last_update_time)
-    counting["session"] = count_sessions(@client_sessions, time_span, last_update_time)
     MilterRRDData.new(counting)
-  end
-
-  def update_db(time_span)
-    rrd = rrd_name(time_span)
-    last_update_time = RRD.last("#{rrd}") if File.exist?(rrd)
-
-    data = collect_session_data(time_span, last_update_time)
-    return if data.empty?
-
-    end_time = data.last_time
-    start_time = last_update_time ? last_update_time + time_span.step: data.first_time
-
-    create_rrd(time_span, start_time, *@items) unless File.exist?(rrd)
-
-    start_time.to_i.step(end_time, time_span.step) do |time|
-      client_count = data["session"][time]
-      child_count = data["child"][time]
-
-      if child_count == "U" and 
-         client_count == "U" and
-         next
-      end
-
-      p("update #{rrd} with #{Time.at(time)}  #{client_count}:#{child_count}")
-      RRD.update("#{rrd_name(time_span)}",
-                 "#{time}:#{client_count}:#{child_count}")
-    end
   end
 
   def output_graph(time_span, start_time = nil, end_time = "now", width = 1000 , height = 250)
