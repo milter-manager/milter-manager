@@ -36,44 +36,43 @@ class MilterRRDCount < Hash
 end
 
 class MilterRRDData
-  attr_accessor :amount
-  def initialize(amount)
-    @amount = amount
+  def initialize(countings)
+    @countings = countings
   end
 
   def empty?
-    @amount.length == 0
+    @countings.each_value do |counting|
+      return false unless counting.empty?
+    end
+    true
   end
 
   def last_time
-    if @amount.length > 0
-      @amount.sort { |a, b| a[0] <=> b[0] }.last[0] + 1
+    last_time = 0
+    @countings.each_value do |counting|
+      next if counting.empty?
+      last_one = counting.sort { |a, b| a[0] <=> b[0] }.last[0]
+      last_time = last_time > last_one ? last_time : last_one
     end
+    last_time
   end
 
   def first_time
-    if @amount.length > 0
-      @amount.sort { |a, b| a[0] <=> b[0] }.first[0]
+    first_time = 0
+    @countings.each_value do |counting|
+      next if counting.empty?
+      first_one = counting.sort { |a, b| a[0] <=> b[0] }.first[0]
+      first_time = first_time > first_one ? first_time : first_one
     end
-  end
-end
-
-class MilterRRDSessionData < MilterRRDData
-  attr_accessor :child_counting
-  def initialize(client_counting, child_counting)
-    super(client_counting)
-    @child_counting = child_counting
-  end
-end
-
-class MilterRRDChildPassData < MilterRRDData
-  def initialize(child, filter_counting)
-    super(child)
-    @filter_counting = filter_counting
+    first_time
   end
 
-  def [](state)
-    @filter_counting[state]
+  def [](key)
+    @countings[key]
+  end
+
+  def []=(key, value)
+    @countings[key] = value
   end
 end
 
@@ -137,43 +136,6 @@ class MilterMailStatusLog
     end
   end
 
-  class MilterRRDMailData
-    def initialize(mail_counting)
-      @mail_counting = mail_counting
-    end
-
-  def empty?
-    @mail_counting.each_value do |counting|
-      false unless counting.empty?
-    end
-    true
-  end
-
-  def last_time
-    last_time = 0
-    @mail_counting.each_value do |counting|
-      next if counting.empty?
-      last_one = counting.sort { |a, b| a[0] <=> b[0] }.last[0]
-      last_time = last_time > last_one ? last_time : last_one
-    end
-    last_time
-  end
-
-  def first_time
-    first_time = 0
-    @mail_counting.each_value do |counting|
-      next if counting.empty?
-      first_one = counting.sort { |a, b| a[0] <=> b[0] }.first[0]
-      first_time = first_time > first_one ? first_time : first_one
-    end
-    first_time
-  end
-
-    def [](status)
-      @mail_counting[status]
-    end
-  end
-
   def initialize(rrd_directory, log, update_time)
     @rrd_directory = rrd_directory
     @log = log
@@ -225,7 +187,7 @@ class MilterMailStatusLog
 
   def collect_data(time_span, last_update_time)
     mail_counting = count(time_span, last_update_time)
-    MilterRRDMailData.new(mail_counting)
+    MilterRRDData.new(mail_counting)
   end
 
   def create_rrd(time_span, start_time)
@@ -453,15 +415,16 @@ class MilterLogTool
   end
 
   def collect_session_data(time_span, last_update_time)
-    child_counting = count_sessions(@child_sessions, time_span, last_update_time)
-    client_counting = count_sessions(@client_sessions, time_span, last_update_time)
-    MilterRRDSessionData.new(client_counting, child_counting)
+    counting = MilterRRDCount.new("session", "child")
+    counting["child"] = count_sessions(@child_sessions, time_span, last_update_time)
+    counting["session"] = count_sessions(@client_sessions, time_span, last_update_time)
+    MilterRRDData.new(counting)
   end
 
   def collect_pass_filter_data(time_span, last_update_time)
-    child_counting = count_sessions(@child_sessions, time_span, last_update_time)
     pass_counting = count_pass_filters(@pass_filters, time_span, last_update_time)
-    MilterRRDChildPassData.new(child_counting, pass_counting)
+    pass_counting["all"] = count_sessions(@child_sessions, time_span, last_update_time)
+    MilterRRDData.new(pass_counting)
   end
 
   def create_state_distinct_rrd(time_span, start_time)
@@ -507,7 +470,7 @@ class MilterLogTool
     start_time.to_i.step(end_time, time_span.step) do |time|
       RRD.update("#{state_rrd_name(time_span)}",
                  "#{time}" +
-                 ":#{data.amount[time]}" +
+                 ":#{data["all"][time]}" +
                  ":#{data["connect"][time]}:#{data["helo"][time]}" +
                  ":#{data["envelope-from"][time]}:#{data["envelope-recipient"][time]}" +
                  ":#{data["header"][time]}:#{data["body"][time]}" +
@@ -519,17 +482,17 @@ class MilterLogTool
     rrd = rrd_name(time_span)
     last_update_time = RRD.last("#{rrd}") if File.exist?(rrd)
 
-    session_data = collect_session_data(time_span, last_update_time)
-    return if session_data.empty?
+    data = collect_session_data(time_span, last_update_time)
+    return if data.empty?
 
-    end_time = session_data.last_time
-    start_time = last_update_time ? last_update_time + time_span.step: session_data.first_time
+    end_time = data.last_time
+    start_time = last_update_time ? last_update_time + time_span.step: data.first_time
 
     create_session_rrd(time_span, start_time) unless File.exist?(rrd)
 
     start_time.to_i.step(end_time, time_span.step) do |time|
-      client_count = session_data.amount[time]
-      child_count = session_data.child_counting[time]
+      client_count = data["session"][time]
+      child_count = data["child"][time]
 
       if child_count == "U" and 
          client_count == "U" and

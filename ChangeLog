@@ -50,6 +50,7 @@
 	MTA.
 	* tool/milter-log-tool.rb: Added MilterMailStatusLog class.
 	* tool/milter-log-tool.rb: Added MilterRRDCount class.
+	* tool/milter-log-tool.rb: Create new MilterRRDData class.
 
 2008-12-10  Kouhei Sutou  <kou@cozmixng.org>
 
