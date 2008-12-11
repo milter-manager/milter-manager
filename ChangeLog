@@ -69,6 +69,7 @@
 	* tool/milter-log-tool.rb: Added accept mail count.
 	* tool/milter-log-tool.rb: Define @items for status, state or
 	whatever.
+	* tool/milter-log-tool.rb: Cleanup update_db.
 
 2008-12-10  Kouhei Sutou  <kou@cozmixng.org>
 

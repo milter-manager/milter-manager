@@ -140,6 +140,32 @@ class MilterRRD
     MilterRRDData.new(counting)
   end
 
+  def update_db(time_span)
+    rrd = rrd_name(time_span)
+    last_update_time = RRD.last("#{rrd}") if File.exist?(rrd)
+
+    data = collect_data(time_span, last_update_time)
+    return if data.empty?
+
+    end_time = data.last_time
+    start_time = last_update_time ? last_update_time + time_span.step: data.first_time
+
+    create_rrd(time_span, start_time, *@items) unless File.exist?(rrd)
+
+    start_time.to_i.step(end_time, time_span.step) do |time|
+      counts = []
+      @items.each do |item|
+        counts << data[item][time]
+      end
+
+      next if counts.uniq.length == 1 and counts.uniq.include?("U")
+
+      p("update #{rrd} with #{Time.at(time)}  #{counts.join(':')}")
+      RRD.update("#{rrd_name(time_span)}",
+                 "#{time}:#{counts.join(':')}")
+    end
+  end
+
   def update
     collect
     update_db(MilterGraphTimeSpan.new("second"))
@@ -332,41 +358,6 @@ class MilterMailStatusRRD < MilterRRD
     end
   end
 
-  def update_db(time_span)
-    rrd = rrd_name(time_span)
-    last_update_time = RRD.last("#{rrd}") if File.exist?(rrd)
-
-    data = collect_data(time_span, last_update_time)
-    return if data.empty?
-
-    end_time = data.last_time + time_span.step 
-    start_time = last_update_time ? last_update_time + time_span.step: data.first_time
-
-    create_rrd(time_span, start_time, *@items) unless File.exist?(rrd)
-
-    start_time.to_i.step(end_time, time_span.step) do |time|
-      normal = data["normal"][time]
-      accept = data["accept"][time]
-      reject = data["reject"][time]
-      discard = data["discard"][time]
-      temporary_failure = data["temporary-failure"][time]
-      quarantine = data["quarantine"][time]
-
-      if normal == "U" and
-         accept == "U" and
-         reject == "U" and
-         discard == "U" and
-         temporary_failure == "U" and
-         quarantine == "U"
-         next
-      end
-
-      p("update #{rrd} with #{Time.at(time)} #{normal}:#{reject}")
-      RRD.update("#{rrd}",
-                 "#{time}:#{normal}:#{accept}:#{reject}:#{discard}:#{temporary_failure}:#{quarantine}")
-    end
-  end
-
   def output_graph(time_span, start_time = nil, end_time = "now", width = 1000 , height = 250)
     start_time = time_span.default_start_time unless start_time
     rrd_file = rrd_name(time_span)
@@ -434,27 +425,6 @@ class MilterPassChildRRD < MilterRRD
     pass_counting = count(time_span, last_update_time)
 #    pass_counting["all"] = count_sessions(@child_sessions, time_span, last_update_time)
     MilterRRDData.new(pass_counting)
-  end
-
-  def update_db(time_span)
-    last_update_time = RRD.last("#{rrd_name(time_span)}") if File.exist?(rrd_name(time_span))
-
-    data = collect_data(time_span, last_update_time)
-    return if data.empty?
-
-    end_time = data.last_time
-    start_time = last_update_time ? last_update_time + time_span.step : data.first_time
-
-    create_rrd(time_span, start_time, *@items) unless File.exist?(rrd_name(time_span))
-    start_time.to_i.step(end_time, time_span.step) do |time|
-      RRD.update("#{rrd_name(time_span)}",
-                 "#{time}" +
-                 ":#{data["all"][time]}" +
-                 ":#{data["connect"][time]}:#{data["helo"][time]}" +
-                 ":#{data["envelope-from"][time]}:#{data["envelope-recipient"][time]}" +
-                 ":#{data["header"][time]}:#{data["body"][time]}" +
-                 ":#{data["end-of-message"][time]}")
-    end
   end
 
   def output_graph(time_span, start_time = nil, end_time = "now", width = 1000, height = 250)
