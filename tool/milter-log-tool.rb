@@ -109,6 +109,8 @@ class MilterRRD
     @log = log
     @update_time = update_time
     @data = []
+    @items = nil
+    @title = nil
   end
 
   def count(time_span, last_update_time)
@@ -183,6 +185,24 @@ class MilterRRD
         "RRA:AVERAGE:0.5:1:#{rows}",
         *args.map{|arg| "DS:#{arg}:GAUGE:#{step}:0:U"})
   end
+
+  def output_graph(time_span, start_time = nil, end_time = "now", width = 1000 , height = 250, *args)
+    start_time = time_span.default_start_time unless start_time
+    rrd_file = rrd_name(time_span)
+    return unless File.exist?(rrd_file)
+    RRD.graph("#{graph_name(time_span)}",
+              "--title", "#{@title} per #{time_span.name}",
+              "--step", time_span.step,
+              "--start", start_time,
+              "--end", end_time,
+              "--width","#{width}",
+              "--height", "#{height}",
+              "--alt-y-grid",
+              "COMMENT:Last update\\: #{@update_time.localtime.rfc2822.gsub!(/:/,'\\:')}\\r",
+              *(@items.map{|item| "DEF:#{item}=#{rrd_file}:#{item}:MAX"} +
+                @items.map{|item| "CDEF:n_#{item}=#{item},UN,0,#{item},IF"} +
+                args))
+  end
 end
 
 class MilterSessionRRD < MilterRRD
@@ -199,10 +219,15 @@ class MilterSessionRRD < MilterRRD
   def initialize(rrd_directory, log, update_time)
     super(rrd_directory, log, update_time)
     @items = ["smtp", "child"]
+    @title = 'milter-manager condition'
   end
 
   def rrd_name(time_span)
     "#{@rrd_directory}/milter-log.#{time_span.name}.rrd"
+  end
+
+  def graph_name(time_span)
+    "#{@rrd_directory}/session.#{time_span.name}.png"
   end
 
   def collect_session(regex)
@@ -274,24 +299,9 @@ class MilterSessionRRD < MilterRRD
   end
 
   def output_graph(time_span, start_time = nil, end_time = "now", width = 1000 , height = 250)
-    start_time = time_span.default_start_time unless start_time
-    rrd_file = rrd_name(time_span)
-    return unless File.exist?(rrd_file)
-    RRD.graph("#{@rrd_directory}/session.#{time_span.name}.png",
-              "--title", "milter-manager condition per #{time_span.name}",
-              "DEF:smtp=#{rrd_file}:smtp:MAX",
-              "DEF:child=#{rrd_file}:child:MAX",
-              "CDEF:n_smtp=smtp,UN,0,smtp,IF",
-              "CDEF:n_child=child,UN,0,child,IF",
-              "LINE:n_smtp#0000ff:The number of SMTP session",
-              "LINE:n_child#00ff00:The number of milter",
-              "--step", time_span.step,
-              "--start", start_time,
-              "--end", end_time,
-              "--width","#{width}",
-              "--height", "#{height}",
-              "--alt-y-grid",
-              "COMMENT:Last update\\: #{@update_time.localtime.rfc2822.gsub!(/:/,'\\:')}\\r")
+    super(time_span, start_time, end_time, width, height,
+          "LINE:n_smtp#0000ff:The number of SMTP session",
+          "LINE:n_child#00ff00:The number of milter")
   end
 end
 
@@ -311,10 +321,15 @@ class MilterMailStatusRRD < MilterRRD
               "reject", "discard",
               "temporary-failure",
               "quarantine"]
+    @title = 'Processed mails'
   end
 
   def rrd_name(time_span)
     "#{@rrd_directory}/milter-log.mail.#{time_span.name}.rrd"
+  end
+
+  def graph_name(time_span)
+    "#{@rrd_directory}/mail.#{time_span.name}.png"
   end
 
   def collect
@@ -332,27 +347,10 @@ class MilterMailStatusRRD < MilterRRD
   end
 
   def output_graph(time_span, start_time = nil, end_time = "now", width = 1000 , height = 250)
-    start_time = time_span.default_start_time unless start_time
-    rrd_file = rrd_name(time_span)
-    return unless File.exist?(rrd_file)
-    RRD.graph("#{@rrd_directory}/mail.#{time_span.name}.png",
-              "--title", "Processed mails per #{time_span.name}",
-              "DEF:normal=#{rrd_file}:normal:MAX",
-              "DEF:accept=#{rrd_file}:accept:MAX",
-              "DEF:reject=#{rrd_file}:reject:MAX",
-              "CDEF:n_normal=normal,UN,0,normal,IF",
-              "CDEF:n_reject=reject,UN,0,reject,IF",
-              "CDEF:n_accept=accept,UN,0,accept,IF",
-              "AREA:n_reject#ff0000:Reject mails",
-              "STACK:n_accept#00ff00:Accept mails",
-              "STACK:n_normal#0000ff:Normal mails",
-              "--step", time_span.step,
-              "--start", start_time,
-              "--end", end_time,
-              "--width","#{width}",
-              "--height", "#{height}",
-              "--alt-y-grid",
-              "COMMENT:Last update\\: #{@update_time.localtime.rfc2822.gsub!(/:/,'\\:')}\\r")
+    super(time_span, start_time, end_time, width, height,
+          "AREA:n_reject#ff0000:Reject mails",
+          "STACK:n_accept#00ff00:Accept mails",
+          "STACK:n_normal#0000ff:Normal mails")
   end
 end
 
@@ -369,6 +367,7 @@ class MilterPassChildRRD < MilterRRD
 
   def initialize(rrd_directory, log, update_time)
     super(rrd_directory, log, update_time)
+    @title = 'Pass child milters'
     @items = ["all",
               "connect",
               "helo",
@@ -381,6 +380,10 @@ class MilterPassChildRRD < MilterRRD
 
   def rrd_name(time_span)
     "#{@rrd_directory}/milter-log.state.#{time_span.name}.rrd"
+  end
+
+  def graph_name(time_span)
+    "#{@rrd_directory}/pass-child.#{time_span.name}.png"
   end
 
   def collect
@@ -401,42 +404,15 @@ class MilterPassChildRRD < MilterRRD
   end
 
   def output_graph(time_span, start_time = nil, end_time = "now", width = 1000, height = 250)
-    start_time = time_span.default_start_time unless start_time
-    rrd_file = rrd_name(time_span)
-    return unless File.exist?(rrd_file)
-    RRD.graph("#{@rrd_directory}/pass-child.#{time_span.name}.png",
-              "--title", "Processed mails per #{time_span.name}",
-              "DEF:all=#{rrd_file}:all:MAX",
-              "DEF:connect=#{rrd_file}:connect:MAX",
-              "DEF:helo=#{rrd_file}:helo:MAX",
-              "DEF:envelope-from=#{rrd_file}:envelope-from:MAX",
-              "DEF:envelope-recipient=#{rrd_file}:envelope-recipient:MAX",
-              "DEF:header=#{rrd_file}:header:MAX",
-              "DEF:body=#{rrd_file}:body:MAX",
-              "DEF:end-of-message=#{rrd_file}:end-of-message:MAX",
-              "CDEF:n_all=all,UN,0,all,IF",
-              "CDEF:n_connect=connect,UN,0,connect,IF",
-              "CDEF:n_helo=helo,UN,0,helo,IF",
-              "CDEF:n_envelope-from=envelope-from,UN,0,envelope-from,IF",
-              "CDEF:n_envelope-recipient=envelope-recipient,UN,0,envelope-recipient,IF",
-              "CDEF:n_header=header,UN,0,header,IF",
-              "CDEF:n_body=body,UN,0,body,IF",
-              "CDEF:n_end-of-message=end-of-message,UN,0,end-of-message,IF",
-              "AREA:n_all#0000ff:The number of milters",
-              "AREA:n_connect#ff0000:Passed on connect ",
-              "STACK:n_helo#dd2200:Passed on helo ",
-              "STACK:n_envelope-from#bb4400:Passed on envelope-from ",
-              "STACK:n_envelope-recipient#996600:Passed on envelope-recipient ",
-              "STACK:n_header#778800:Passed on header ",
-              "STACK:n_body#55aa00:Passed on body ",
-              "STACK:n_end-of-message#33cc00:Passed on end-of-message ",
-              "--step", time_span.step,
-              "--start", start_time,
-              "--end", end_time,
-              "--width","#{width}",
-              "--height", "#{height}",
-              "--alt-y-grid",
-              "COMMENT:Last update\\: #{@update_time.localtime.rfc2822.gsub!(/:/,'\\:')}\\r")
+    super(time_span, start_time, end_time, width, height,
+          "AREA:n_all#0000ff:The number of milters",
+          "AREA:n_connect#ff0000:Passed on connect",
+          "STACK:n_helo#dd2200:Passed on helo",
+          "STACK:n_envelope-from#bb4400:Passed on envelope-from",
+          "STACK:n_envelope-recipient#996600:Passed on envelope-recipient",
+          "STACK:n_header#778800:Passed on header",
+          "STACK:n_body#55aa00:Passed on body",
+          "STACK:n_end-of-message#33cc00:Passed on end-of-message")
   end
 end
 
