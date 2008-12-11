@@ -37,6 +37,12 @@ EOX
 
     assert_equal(<<-EOX, @configuration.to_xml)
 <configuration>
+  <applicable-conditions>
+    <applicable-condition>
+      <name>remote-network</name>
+      <description>Check only remote network</description>
+    </applicable-condition>
+  </applicable-conditions>
   <milters>
     <milter>
       <name>child-milter</name>
@@ -46,12 +52,6 @@ EOX
       </applicable-conditions>
     </milter>
   </milters>
-  <applicable-conditions>
-    <applicable-condition>
-      <name>remote-network</name>
-      <description>Check only remote network</description>
-    </applicable-condition>
-  </applicable-conditions>
 </configuration>
 EOX
   end

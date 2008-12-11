@@ -54,24 +54,12 @@ module Milter::Manager
       end
     end
 
-    attr_reader :security, :control, :manager
-    attr_reader :configuration, :applicable_conditions
+    attr_reader :security, :control, :manager, :configuration
     def initialize(configuration)
       @configuration = configuration
       @security = SecurityConfiguration.new(configuration)
       @control = ControlConfiguration.new(configuration)
       @manager = ManagerConfiguration.new(configuration)
-      @applicable_conditions = {}
-
-      @configuration.signal_connect("to-xml") do |_, xml, indent|
-        unless @applicable_conditions.empty?
-          xml << " " * indent + "<applicable-conditions>\n"
-          @applicable_conditions.each do |name, condition|
-            xml << condition.to_xml(indent + 2)
-          end
-          xml << " " * indent + "</applicable-conditions>\n"
-        end
-      end
     end
 
     def load_configuration(file)
@@ -125,9 +113,9 @@ module Milter::Manager
     end
 
     def define_applicable_condition(name)
-      condition = ApplicableCondition.new(name)
-      yield(condition)
-      @applicable_conditions[name] = condition
+      condition_configuration = ApplicableConditionConfiguration.new(name, self)
+      yield(condition_configuration)
+      condition_configuration.apply
     end
 
     private
@@ -353,17 +341,17 @@ module Milter::Manager
       def initialize(name, loader)
         @egg = Egg.new(name)
         @loader = loader
-        @applicable_conditions = []
       end
 
       def add_applicable_condition(name)
-        condition = @loader.applicable_conditions[name]
+        condition = @loader.configuration.find_applicable_condition(name)
         if condition.nil?
+          configurations = @loader.configuration.applicable_conditions
           raise InvalidValue.new("applicable condition",
-                                 @loader.applicable_conditions.keys,
+                                 configuration.keys,
                                  name)
         end
-        @applicable_conditions << condition
+        @egg.add_applicable_condition(condition)
       end
 
       def command_options=(options)
@@ -380,51 +368,23 @@ module Milter::Manager
       end
 
       def apply
-        setup_check_callback
-        setup_to_xml_callback
         @loader.configuration.add_egg(@egg)
-      end
-
-      private
-      def setup_check_callback
-        if @applicable_conditions.all? {|condition| !condition.have_checker?}
-          return
-        end
-
-        @egg.signal_connect("hatched") do |_, child|
-          @applicable_conditions.each do |condition|
-            if condition.have_checker?
-              condition.apply(child)
-            end
-          end
-        end
-      end
-
-      def setup_to_xml_callback
-        return if @applicable_conditions.empty?
-
-        @egg.signal_connect("to-xml") do |_, xml, indent|
-          @applicable_conditions.each do |condition|
-            xml << " " * indent + "<applicable-conditions>\n"
-            condition_tag = "<applicable-condition>"
-            condition_tag << ERB::Util.h(condition.name)
-            condition_tag << "</applicable-condition>\n"
-            xml << " " * (indent + 2) + condition_tag
-            xml << " " * indent + "</applicable-conditions>\n"
-          end
-        end
       end
     end
 
-    class ApplicableCondition
-      attr_accessor :name, :description
-      def initialize(name)
-        @name = name
-        @description = nil
+    class ApplicableConditionConfiguration
+      def initialize(name, loader)
+        @condition = Milter::Manager::ApplicableCondition.new(name)
+        @loader = loader
         @connect_checkers = []
         @envelope_from_checkers = []
         @envelope_recipient_checkers = []
         @header_checkers = []
+
+        exist_condition = @loader.configuration.find_applicable_condition(name)
+        if exist_condition
+          @condition.description = exist_condition.description
+        end
       end
 
       def define_connect_checker(&block)
@@ -452,49 +412,55 @@ module Milter::Manager
         end
       end
 
-      def apply(child)
-        unless @connect_checkers.empty?
-          child.signal_connect("check-connect") do |_child, host, address|
-            @connect_checkers.all? do |checker|
-              checker.call(_child, host, address)
-            end
-          end
-        end
-
-        unless @envelope_from_checkers.empty?
-          child.signal_connect("check-envelope-from") do |_child, from|
-            @envelope_from_checkers.all? do |checker|
-              checker.call(_child, from)
-            end
-          end
-        end
-
-        unless @envelope_recipient_checkers.empty?
-          child.signal_connect("check-envelope-recipient") do |_child, recipient|
-            @envelope_recipient_checkers.all? do |checker|
-              checker.call(_child, recipient)
-            end
-          end
-        end
-
-        unless @header_checkers.empty?
-          child.signal_connect("check-header") do |_child, name, value|
-            @header_checkers.all? do |checker|
-              checker.call(_child, name, value)
-            end
-          end
-        end
+      def method_missing(name, *args, &block)
+        @condition.send(name, *args, &block)
       end
 
-      def to_xml(indent=nil)
-        indent ||= 0
-        xml = ""
-        xml << " " * indent + "<applicable-condition>\n"
-        xml << " " * (indent + 2) + "<name>#{ERB::Util.h(@name)}</name>\n"
-        xml << " " * (indent + 2) +
-          "<description>#{ERB::Util.h(@description)}</description>\n"
-        xml << " " * indent + "</applicable-condition>\n"
-        xml
+      def apply
+        @loader.configuration.remove_applicable_condition(@condition.name)
+
+        setup_checker
+
+        @loader.configuration.add_applicable_condition(@condition)
+      end
+
+      private
+      def setup_checker
+        return unless have_checker?
+
+        @condition.signal_connect("attach-to") do |_, child|
+          unless @connect_checkers.empty?
+            child.signal_connect("check-connect") do |_child, host, address|
+              @connect_checkers.all? do |checker|
+                checker.call(_child, host, address)
+              end
+            end
+          end
+
+          unless @envelope_from_checkers.empty?
+            child.signal_connect("check-envelope-from") do |_child, from|
+              @envelope_from_checkers.all? do |checker|
+                checker.call(_child, from)
+              end
+            end
+          end
+
+          unless @envelope_recipient_checkers.empty?
+            child.signal_connect("check-envelope-recipient") do |_child, recipient|
+              @envelope_recipient_checkers.all? do |checker|
+                checker.call(_child, recipient)
+              end
+            end
+          end
+
+          unless @header_checkers.empty?
+            child.signal_connect("check-header") do |_child, name, value|
+              @header_checkers.all? do |checker|
+                checker.call(_child, name, value)
+              end
+            end
+          end
+        end
       end
     end
   end

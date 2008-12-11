@@ -1,5 +1,12 @@
 2008-12-11  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager.rb: use
+	MilterManagerApplicableCondition.
+
+	* binding/ruby/test/manager/test-configuration-loader.rb,
+	binding/ruby/test/manager/test-custom-xml-loader.rb: follow the
+	recent changes.
+
 	* binding/ruby/src/manager/rb-milter-manager-configuration.c,
 	binding/ruby/test/manager/test-configuration.rb: bind find and remove.
 

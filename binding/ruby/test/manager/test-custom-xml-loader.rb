@@ -39,6 +39,12 @@ EOC
 
     assert_equal(<<-EOX, @configuration.to_xml)
 <configuration>
+  <applicable-conditions>
+    <applicable-condition>
+      <name>S25R</name>
+      <description>Selective SMTP Rejection</description>
+    </applicable-condition>
+  </applicable-conditions>
   <milters>
     <milter>
       <name>milter@10026</name>
@@ -48,12 +54,6 @@ EOC
       </applicable-conditions>
     </milter>
   </milters>
-  <applicable-conditions>
-    <applicable-condition>
-      <name>S25R</name>
-      <description>Selective SMTP Rejection</description>
-    </applicable-condition>
-  </applicable-conditions>
 </configuration>
 EOX
   end
