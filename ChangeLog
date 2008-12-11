@@ -19,6 +19,8 @@
 	* milter/core/milter-utils.[ch]: Added
 	milter_utils_get_enum_nick_name.
 	* milter/server/milter-server-context.c: Use nick name for pass state.
+	* tool/milter-log-tool.rb: "continue" on end-of-message mail is a
+	normal mail not all mails so need to stack its bar on rejected mail.
 
 2008-12-10  Kouhei Sutou  <kou@cozmixng.org>
 
