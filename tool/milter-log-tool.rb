@@ -143,11 +143,10 @@ class MilterMailStatusLog
     end
 
   def empty?
-    @mail_counting["normal"].empty? and
-    @mail_counting["reject"].empty? and
-    @mail_counting["discard"].empty? and
-    @mail_counting["temporary-failure"].empty? and
-    @mail_counting["quarantine"].empty?
+    @mail_counting.each_value do |counting|
+      false unless counting.empty?
+    end
+    true
   end
 
   def last_time
