@@ -24,14 +24,8 @@ class MilterChildPassData
 end
 
 class MilterRRDCount < Hash
-  def initialize(*args)
-    args.each do |arg|
-      self[arg] = Hash.new("U")
-    end
-  end
-
-  def [](state)
-    super(state) ? super(state) : Hash.new("U")
+  def [](key)
+    super(key) ? super(key) : Hash.new("U")
   end
 end
 
@@ -162,7 +156,7 @@ class MilterMailStatusLog
   end
 
   def count(time_span, last_update_time)
-    counting = MilterRRDCount.new("normal", "reject", "discard", "temporary-failure", "quarantine")
+    counting = MilterRRDCount.new()
     @mails.each do |mail|
       time =time_span.adjust_time(mail.time)
 
@@ -387,11 +381,7 @@ class MilterLogTool
   end
 
   def count_pass_filters(pass_filters, time_span, last_update_time)
-    counting = MilterRRDCount.new("connect", "helo",
-                                  "envelope-from",
-                                  "envelope-recipient",
-                                  "header",
-                                  "body", "end-of-message")
+    counting = MilterRRDCount.new()
     pass_filters.each do |pass_filter|
       time =time_span.adjust_time(pass_filter.time)
 
@@ -415,7 +405,7 @@ class MilterLogTool
   end
 
   def collect_session_data(time_span, last_update_time)
-    counting = MilterRRDCount.new("session", "child")
+    counting = MilterRRDCount.new()
     counting["child"] = count_sessions(@child_sessions, time_span, last_update_time)
     counting["session"] = count_sessions(@client_sessions, time_span, last_update_time)
     MilterRRDData.new(counting)
