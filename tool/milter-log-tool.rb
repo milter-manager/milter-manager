@@ -422,7 +422,7 @@ end
 class MilterLogTool
   def initialize
     @log = nil
-    @update_db = false
+    @update_db = true
     @sessions = nil
     @mail_status = nil
     @pass_child = nil
@@ -439,7 +439,7 @@ class MilterLogTool
         Dir.mkdir(@rrd_directory) unless File.exist?(@rrd_directory)
       end
 
-      opts.on("--update-db",
+      opts.on("--[no-]update-db",
               "Update RRD database with log file") do |boolean|
         @update_db = boolean
       end
@@ -475,7 +475,7 @@ end
 
 milter_log_tool = MilterLogTool.new
 milter_log_tool.parse_options(ARGV)
-milter_log_tool.update
+milter_log_tool.update unless @update_rb
 milter_log_tool.output_all_graph
 
 # vi:ts=2:nowrap:ai:expandtab:sw=2
