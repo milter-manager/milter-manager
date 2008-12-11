@@ -69,6 +69,17 @@ class MilterGraphTimeSpan
     end
   end
 
+  def short_name
+    case @name
+    when "second"
+      "sec"
+    when "minute"
+      "min"
+    when "hour"
+      "hour"
+    end
+  end
+
   def rows
     case @name
     when "second"
@@ -111,6 +122,7 @@ class MilterRRD
     @data = []
     @items = nil
     @title = nil
+    @vertical_label = nil
   end
 
   def count(time_span, last_update_time)
@@ -191,7 +203,8 @@ class MilterRRD
     rrd_file = rrd_name(time_span)
     return unless File.exist?(rrd_file)
     RRD.graph("#{graph_name(time_span)}",
-              "--title", "#{@title} per #{time_span.name}",
+              "--title", "#{@title}",
+              "--vertical-label", "#{@vertical_label}/#{time_span.short_name}",
               "--step", time_span.step,
               "--start", start_time,
               "--end", end_time,
@@ -218,8 +231,9 @@ class MilterSessionRRD < MilterRRD
 
   def initialize(rrd_directory, log, update_time)
     super(rrd_directory, log, update_time)
-    @items = ["smtp", "child"]
     @title = 'milter-manager condition'
+    @vertical_label = "sessions"
+    @items = ["smtp", "child"]
   end
 
   def rrd_name(time_span)
@@ -317,11 +331,12 @@ class MilterMailStatusRRD < MilterRRD
 
   def initialize(rrd_directory, log, update_time)
     super(rrd_directory, log, update_time)
+    @vertical_label = "mails"
+    @title = 'Processed mails'
     @items = ["normal", "accept",
               "reject", "discard",
               "temporary-failure",
               "quarantine"]
-    @title = 'Processed mails'
   end
 
   def rrd_name(time_span)
@@ -371,6 +386,7 @@ class MilterPassChildRRD < MilterRRD
   def initialize(rrd_directory, log, update_time)
     super(rrd_directory, log, update_time)
     @title = 'Pass child milters'
+    @vertical_label = "milters"
     @items = ["all",
               "connect",
               "helo",
