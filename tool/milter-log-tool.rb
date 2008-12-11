@@ -23,16 +23,13 @@ class MilterChildPassData
   end
 end
 
-class MilterStateCount < Hash
-  def initialize
-    self["connect"] = Hash.new("U")
-    self["helo"] = Hash.new("U")
-    self["envelope-from"] = Hash.new("U")
-    self["envelope-recipient"] = Hash.new("U")
-    self["header"] = Hash.new("U")
-    self["body"] = Hash.new("U")
-    self["end-of-message"] = Hash.new("U")
+class MilterRRDCount < Hash
+  def initialize(*args)
+    args.each do |arg|
+      self[arg] = Hash.new("U")
+    end
   end
+
   def [](state)
     super(state) ? super(state) : Hash.new("U")
   end
@@ -140,20 +137,6 @@ class MilterMailStatusLog
     end
   end
 
-  class MilterMailStatusCount < Hash
-    def initialize
-      self["normal"] = Hash.new("U")
-      self["reject"] = Hash.new("U")
-      self["discard"] = Hash.new("U")
-      self["temporary-failure"] = Hash.new("U")
-      self["quarantine"] = Hash.new("U")
-    end
-
-    def [](status)
-      super(status) ? super(status) : Hash.new("U")
-    end
-  end
-
   class MilterRRDMailData
     def initialize(mail_counting)
       @mail_counting = mail_counting
@@ -202,7 +185,7 @@ class MilterMailStatusLog
     "#{@rrd_directory}/milter-log.mail.#{time_span.name}.rrd"
   end
 
-  def collect_mail
+  def collect
     @mails = []
     @log.each do |line|
       if /milter-manager\[.+\]: \[(.+)\]Reply (.+) to MTA on (.+)$/ =~ line
@@ -218,7 +201,7 @@ class MilterMailStatusLog
   end
 
   def count(time_span, last_update_time)
-    counting = MilterMailStatusCount.new()
+    counting = MilterRRDCount.new("normal", "reject", "discard", "temporary-failure", "quarantine")
     @mails.each do |mail|
       time =time_span.adjust_time(mail.time)
 
@@ -241,7 +224,7 @@ class MilterMailStatusLog
     counting
   end
 
-  def collect_mail_data(time_span, last_update_time)
+  def collect_data(time_span, last_update_time)
     mail_counting = count(time_span, last_update_time)
     MilterRRDMailData.new(mail_counting)
   end
@@ -262,7 +245,7 @@ class MilterMailStatusLog
   end
 
   def update
-    collect_mail
+    collect
     update_db(MilterGraphTimeSpan.new("second"))
     update_db(MilterGraphTimeSpan.new("minute"))
     update_db(MilterGraphTimeSpan.new("hour"))
@@ -272,7 +255,7 @@ class MilterMailStatusLog
     rrd = rrd_name(time_span)
     last_update_time = RRD.last("#{rrd}") if File.exist?(rrd)
 
-    data = collect_mail_data(time_span, last_update_time)
+    data = collect_data(time_span, last_update_time)
     return if data.empty?
 
     end_time = data.last_time + time_span.step 
@@ -295,7 +278,7 @@ class MilterMailStatusLog
          next
       end
 
-      p("update #{Time.at(time)} #{normal}:#{reject}")
+      p("update #{rrd} with #{Time.at(time)} #{normal}:#{reject}")
       RRD.update("#{rrd}",
                  "#{time}:#{normal}:#{reject}:#{discard}:#{temporary_failure}:#{quarantine}")
     end
@@ -311,7 +294,7 @@ class MilterMailStatusLog
               "DEF:reject=#{rrd_file}:reject:MAX",
               "CDEF:n_normal=normal,UN,0,normal,IF",
               "CDEF:n_reject=reject,UN,0,reject,IF",
-              "AREA:n_reject#ff0000:Rejected mails",
+              "AREA:n_reject#ff0000:Reject mails",
               "STACK:n_normal#0000ff:Normal mails",
               "--step", time_span.step,
               "--start", start_time,
@@ -443,7 +426,11 @@ class MilterLogTool
   end
 
   def count_pass_filters(pass_filters, time_span, last_update_time)
-    counting = MilterStateCount.new()
+    counting = MilterRRDCount.new("connect", "helo",
+                                  "envelope-from",
+                                  "envelope-recipient",
+                                  "header",
+                                  "body", "end-of-message")
     pass_filters.each do |pass_filter|
       time =time_span.adjust_time(pass_filter.time)
 
