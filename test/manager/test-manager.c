@@ -267,13 +267,12 @@ wait_for_manager_ready (const gchar *spec)
     gint errno_keep;
     GError *error = NULL;
 
-    if (!milter_connection_parse_spec(spec,
-                                      &domain,
-                                      &address,
-                                      &address_size,
-                                      &error)) {
-        gcut_assert_error(error);
-    }
+    milter_connection_parse_spec(spec,
+                                 &domain,
+                                 &address,
+                                 &address_size,
+                                 &error);
+    gcut_assert_error(error);
 
     sock_fd = socket(domain, SOCK_STREAM, 0);
     cut_assert_errno();
@@ -317,6 +316,7 @@ start_manager (void)
 
     setup_egg(manager_data, "-s", spec, "--config-dir", scenario_dir, NULL);
     gcut_egg_hatch(manager_egg, &error);
+    gcut_assert_error(error);
     cut_trace(wait_for_manager_ready(spec));
 
     cut_assert_equal_string("", manager_data->output_string->str);
