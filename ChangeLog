@@ -7,6 +7,7 @@
 	envelope-from, envelope-recipient, header and body state because when
 	a milter which demands the command passes the command on "check-XX"
 	signal, the rest milter should go on session.
+	* tool/milter-log-tool.rb: Output filter pass graph.
 
 2008-12-10  Kouhei Sutou  <kou@cozmixng.org>
 

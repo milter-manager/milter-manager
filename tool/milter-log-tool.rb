@@ -500,9 +500,49 @@ class MilterLogTool
               "COMMENT:Last update\\: #{@now.localtime.rfc2822.gsub!(/:/,'\\:')}\\r")
   end
 
+  def output_pass_filter_graph(time_span, start_time = nil, end_time = "now", width = 1000, height = 250)
+    start_time = time_span.default_start_time unless start_time
+    rrd_file = state_rrd_name(time_span)
+    return unless File.exist?(rrd_file)
+    RRD.graph("#{@rrd_directory}/pass-filter.#{time_span.name}.png",
+              "--title", "Processed mails per #{time_span.name}",
+              "DEF:all=#{rrd_file}:all:MAX",
+              "DEF:connect=#{rrd_file}:connect:MAX",
+              "DEF:helo=#{rrd_file}:helo:MAX",
+              "DEF:envelope-from=#{rrd_file}:envelope-from:MAX",
+              "DEF:envelope-recipient=#{rrd_file}:envelope-recipient:MAX",
+              "DEF:header=#{rrd_file}:header:MAX",
+              "DEF:body=#{rrd_file}:body:MAX",
+              "DEF:end-of-message=#{rrd_file}:end-of-message:MAX",
+              "CDEF:n_all=all,UN,0,all,IF",
+              "CDEF:n_connect=connect,UN,0,connect,IF",
+              "CDEF:n_helo=helo,UN,0,helo,IF",
+              "CDEF:n_envelope-from=envelope-from,UN,0,envelope-from,IF",
+              "CDEF:n_envelope-recipient=envelope-recipient,UN,0,envelope-recipient,IF",
+              "CDEF:n_header=header,UN,0,header,IF",
+              "CDEF:n_body=body,UN,0,body,IF",
+              "CDEF:n_end-of-message=end-of-message,UN,0,end-of-message,IF",
+              "AREA:n_all#0000ff:The number of milters",
+              "AREA:n_connect#ff0000:Passed on connect ",
+              "STACK:n_helo#dd2200:Passed on helo ",
+              "STACK:n_envelope-from#bb4400:Passed on envelope-from ",
+              "STACK:n_envelope-recipient#996600:Passed on envelope-recipient ",
+              "STACK:n_header#778800:Passed on header ",
+              "STACK:n_body#55aa00:Passed on body ",
+              "STACK:n_end-of-message#33cc00:Passed on end-of-message ",
+              "--step", time_span.step,
+              "--start", start_time,
+              "--end", end_time,
+              "--width","#{width}",
+              "--height", "#{height}",
+              "--alt-y-grid",
+              "COMMENT:Last update\\: #{@now.localtime.rfc2822.gsub!(/:/,'\\:')}\\r")
+  end
+
   def output_graph(time_span)
     output_session_graph(MilterGraphTimeSpan.new(time_span))
     output_mail_graph(MilterGraphTimeSpan.new(time_span))
+    output_pass_filter_graph(MilterGraphTimeSpan.new(time_span))
   end
 
   def output_all_graph
