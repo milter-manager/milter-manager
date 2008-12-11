@@ -216,6 +216,11 @@ class MilterRRD
                 @items.map{|item| "CDEF:n_#{item}=#{item},UN,0,#{item},IF"} +
                 args))
   end
+
+  private
+  def build_path(*paths)
+    File.join(*([@rrd_directory, *paths].compact))
+  end
 end
 
 class MilterSessionRRD < MilterRRD
@@ -237,11 +242,11 @@ class MilterSessionRRD < MilterRRD
   end
 
   def rrd_name(time_span)
-    "#{@rrd_directory}/milter-log.#{time_span.name}.rrd"
+    build_path("milter-log.#{time_span.name}.rrd")
   end
 
   def graph_name(time_span)
-    "#{@rrd_directory}/session.#{time_span.name}.png"
+    build_path("session.#{time_span.name}.png")
   end
 
   def collect_session(regex)
@@ -269,9 +274,9 @@ class MilterSessionRRD < MilterRRD
   end
 
   def collect
-    @child_sessions = 
+    @child_sessions =
       collect_session("milter-manager\\[.+\\]: \\[(.+)\\](Start|End).* filter process of (.*)\\((.+)\\)$")
-    @client_sessions = 
+    @client_sessions =
       collect_session("milter-manager\\[.+\\]: \\[(.+)\\](Start|End).* session in (.*)\\((.+)\\)$")
   end
 
@@ -340,11 +345,11 @@ class MilterMailStatusRRD < MilterRRD
   end
 
   def rrd_name(time_span)
-    "#{@rrd_directory}/milter-log.mail.#{time_span.name}.rrd"
+    build_path("milter-log.mail.#{time_span.name}.rrd")
   end
 
   def graph_name(time_span)
-    "#{@rrd_directory}/mail.#{time_span.name}.png"
+    build_path("mail.#{time_span.name}.png")
   end
 
   def collect
@@ -398,11 +403,11 @@ class MilterPassChildRRD < MilterRRD
   end
 
   def rrd_name(time_span)
-    "#{@rrd_directory}/milter-log.state.#{time_span.name}.rrd"
+    build_path("milter-log.state.#{time_span.name}.rrd")
   end
 
   def graph_name(time_span)
-    "#{@rrd_directory}/pass-child.#{time_span.name}.png"
+    build_path("pass-child.#{time_span.name}.png")
   end
 
   def collect
@@ -452,7 +457,7 @@ class MilterLogTool
 
       opts.on("--rrd-directory=DIRECTORY") do |directory|
         @rrd_directory = directory
-        Dir.mkdir(@rrd_directory) unless File.exist?(@rrd_directory)
+        FileUtils.mkdir_p(@rrd_directory) unless File.exist?(@rrd_directory)
       end
 
       opts.on("--[no-]update-db",

@@ -1,3 +1,8 @@
+2008-12-12  Kouhei Sutou  <kou@cozmixng.org>
+
+	* tool/milter-log-tool.rb: use current directory as default output
+	directory.
+
 2008-12-12  Hiroyuki Ikezoe  <poincare@ikezoe.net>
 
 	* tool/milter-log-tool.rb: Cleanup output_graph.
