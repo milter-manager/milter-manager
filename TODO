@@ -16,7 +16,6 @@
     * detected as virus (X-Virus-Status:)
 * graphs:
   * child milters alive and dead.
-  * # of checks in ruby configuration.
   * ...
 
 * performance:
