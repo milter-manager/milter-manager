@@ -370,12 +370,12 @@ class MilterMailStatusRRD < MilterRRD
 
   def output_graph(time_span, start_time = nil, end_time = "now", width = 1000 , height = 250)
     super(time_span, start_time, end_time, width, height,
-          "AREA:n_normal#0000ff:Normal mails",
-          "STACK:n_accept#00ff00:Accept mails",
-          "STACK:n_reject#ff0000:Reject mails",
-          "STACK:n_discard#ffd400:Discard mails",
-          "STACK:n_temporary-failure#888888:Temporary failure mails",
-          "STACK:n_quarantine#a52a2a:Quarantine mails")
+          "AREA:n_normal#0000ff:Normal",
+          "STACK:n_accept#00ff00:Accept",
+          "STACK:n_reject#ff0000:Reject",
+          "STACK:n_discard#ffd400:Discard",
+          "STACK:n_temporary-failure#888888:Temporary failure",
+          "STACK:n_quarantine#a52a2a:Quarantine")
   end
 end
 
@@ -432,13 +432,13 @@ class MilterPassChildRRD < MilterRRD
   def output_graph(time_span, start_time = nil, end_time = "now", width = 1000, height = 250)
     super(time_span, start_time, end_time, width, height,
           "AREA:n_all#00ff00:The number of milters",
-          "AREA:n_connect#0000ff:Passed on connect",
-          "STACK:n_helo#0022dd:Passed on helo",
-          "STACK:n_envelope-from#0044bb:Passed on envelope-from",
-          "STACK:n_envelope-recipient#006699:Passed on envelope-recipient",
-          "STACK:n_header#008877:Passed on header",
-          "STACK:n_body#00aa55:Passed on body",
-          "STACK:n_end-of-message#00cc33:Passed on end-of-message")
+          "AREA:n_connect#0000ff:connect",
+          "STACK:n_helo#0022dd:helo",
+          "STACK:n_envelope-from#0044bb:envelope-from",
+          "STACK:n_envelope-recipient#006699:envelope-recipient",
+          "STACK:n_header#008877:header",
+          "STACK:n_body#00aa55:body",
+          "STACK:n_end-of-message#00cc33:end-of-message")
   end
 end
 
