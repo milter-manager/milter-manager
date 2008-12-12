@@ -731,6 +731,9 @@ milter_manager_configuration_create_children (MilterManagerConfiguration *config
         MilterManagerChild *child;
         MilterManagerEgg *egg = node->data;
 
+        if (!milter_manager_egg_is_enabled(egg))
+            continue;
+
         child = milter_manager_egg_hatch(egg);
         if (child) {
             milter_manager_children_add_child(children, child);

@@ -45,6 +45,7 @@ void test_to_xml_signal (void);
 
 static MilterManagerConfiguration *config;
 static MilterManagerEgg *egg;
+static MilterManagerEgg *another_egg;
 static MilterManagerApplicableCondition *condition;
 
 static MilterManagerChildren *expected_children;
@@ -64,6 +65,7 @@ setup (void)
 {
     config = milter_manager_configuration_new(NULL);
     egg = NULL;
+    another_egg = NULL;
     condition = NULL;
 
     expected_children = milter_manager_children_new(config);
@@ -91,6 +93,8 @@ teardown (void)
         g_object_unref(config);
     if (egg)
         g_object_unref(egg);
+    if (another_egg)
+        g_object_unref(another_egg);
     if (condition)
         g_object_unref(condition);
 
@@ -126,7 +130,6 @@ child_equal (gconstpointer a, gconstpointer b)
     context1 = MILTER_SERVER_CONTEXT(a);
     context2 = MILTER_SERVER_CONTEXT(b);
 
-    /* FIXME */
     return g_str_equal(milter_server_context_get_name(context1),
                        milter_server_context_get_name(context2));
 }
@@ -147,7 +150,14 @@ test_children (void)
     milter_manager_egg_set_connection_spec(egg, "inet:2929@localhost", &error);
     gcut_assert_error(error);
 
+    another_egg = milter_manager_egg_new("brother-milter");
+    milter_manager_egg_set_connection_spec(another_egg,
+                                           "inet:29292@localhost", &error);
+    gcut_assert_error(error);
+    milter_manager_egg_set_enabled(another_egg, FALSE);
+
     milter_manager_configuration_add_egg(config, egg);
+    milter_manager_configuration_add_egg(config, another_egg);
 
     child = milter_manager_egg_hatch(egg);
     milter_manager_children_add_child(expected_children, child);

@@ -1,5 +1,8 @@
 2008-12-12  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-configuration.c,
+	test/manager/test-configuration.c: use egg's enabled.
+
 	* milter/manager/milter-manager-egg.c
 	(milter_manager_egg_to_xml_string): use
 	milter_utils_xml_append_boolean_element().
