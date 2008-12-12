@@ -1,5 +1,9 @@
 2008-12-12  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-egg.[ch],
+	test/manager/test-egg.c, test/manager/test-configuration.c: add
+	enabled to egg.
+
 	* TODO: add an entry:
 	fix FIXME in data/applicable-conditions/remote-network.conf.
 

@@ -78,6 +78,11 @@ void                milter_manager_egg_set_description
                                                  const gchar *description);
 const gchar        *milter_manager_egg_get_description
                                                 (MilterManagerEgg *egg);
+void                milter_manager_egg_set_enabled
+                                                (MilterManagerEgg *egg,
+                                                 gboolean          enabled);
+gboolean            milter_manager_egg_is_enabled
+                                                (MilterManagerEgg *egg);
 gboolean            milter_manager_egg_set_connection_spec
                                                 (MilterManagerEgg *egg,
                                                  const gchar *connection_spec,

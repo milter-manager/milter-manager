@@ -35,6 +35,7 @@ struct _MilterManagerEggPrivate
 {
     gchar *name;
     gchar *description;
+    gboolean enabled;
     gchar *connection_spec;
     gdouble connection_timeout;
     gdouble writing_timeout;
@@ -51,6 +52,7 @@ enum
     PROP_0,
     PROP_NAME,
     PROP_DESCRIPTION,
+    PROP_ENABLED,
     PROP_CONNECTION_SPEC,
     PROP_CONNECTION_TIMEOUT,
     PROP_WRITING_TIMEOUT,
@@ -109,6 +111,13 @@ milter_manager_egg_class_init (MilterManagerEggClass *klass)
                                NULL,
                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_DESCRIPTION, spec);
+
+    spec = g_param_spec_boolean("enabled",
+                                "Enabled",
+                                "Whether the milter egg is enabled or not",
+                                TRUE,
+                                G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_ENABLED, spec);
 
     spec = g_param_spec_string("connection-spec",
                                "Connection spec",
@@ -210,6 +219,7 @@ milter_manager_egg_init (MilterManagerEgg *egg)
     priv = MILTER_MANAGER_EGG_GET_PRIVATE(egg);
     priv->name = NULL;
     priv->description = NULL;
+    priv->enabled = TRUE;
     priv->connection_spec = NULL;
     priv->connection_timeout = MILTER_SERVER_CONTEXT_DEFAULT_CONNECTION_TIMEOUT;
     priv->writing_timeout = MILTER_SERVER_CONTEXT_DEFAULT_WRITING_TIMEOUT;
@@ -285,6 +295,9 @@ set_property (GObject      *object,
       case PROP_DESCRIPTION:
         milter_manager_egg_set_description(egg, g_value_get_string(value));
         break;
+      case PROP_ENABLED:
+        milter_manager_egg_set_enabled(egg, g_value_get_boolean(value));
+        break;
       case PROP_CONNECTION_TIMEOUT:
         priv->connection_timeout = g_value_get_double(value);
         break;
@@ -329,6 +342,9 @@ get_property (GObject    *object,
         break;
       case PROP_DESCRIPTION:
         g_value_set_string(value, priv->description);
+        break;
+      case PROP_ENABLED:
+        g_value_set_boolean(value, priv->enabled);
         break;
       case PROP_CONNECTION_SPEC:
         g_value_set_string(value, priv->connection_spec);
@@ -469,6 +485,18 @@ const gchar *
 milter_manager_egg_get_description (MilterManagerEgg *egg)
 {
     return MILTER_MANAGER_EGG_GET_PRIVATE(egg)->description;
+}
+
+void
+milter_manager_egg_set_enabled (MilterManagerEgg *egg, gboolean enabled)
+{
+    MILTER_MANAGER_EGG_GET_PRIVATE(egg)->enabled = enabled;
+}
+
+gboolean
+milter_manager_egg_is_enabled (MilterManagerEgg *egg)
+{
+    return MILTER_MANAGER_EGG_GET_PRIVATE(egg)->enabled;
 }
 
 gboolean
@@ -705,6 +733,9 @@ milter_manager_egg_merge (MilterManagerEgg *egg,
     if (description)
         milter_manager_egg_set_description(egg, description);
 
+    milter_manager_egg_set_enabled(egg,
+                                   milter_manager_egg_is_enabled(other_egg));
+
     user_name = milter_manager_egg_get_user_name(other_egg);
     if (user_name)
         milter_manager_egg_set_user_name(egg, user_name);
@@ -757,6 +788,10 @@ milter_manager_egg_to_xml_string (MilterManagerEgg *egg,
         milter_utils_xml_append_text_element(string,
                                              "description", priv->description,
                                              indent + 2);
+    milter_utils_xml_append_text_element(string,
+                                         "enabled",
+                                         priv->enabled ? "true" : "false",
+                                         indent + 2);
     if (priv->connection_spec)
         milter_utils_xml_append_text_element(string,
                                              "connection-spec",
