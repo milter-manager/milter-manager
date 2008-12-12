@@ -57,4 +57,4 @@
       * 5_000 mails/hour (1.39 mails/sec)
       * CPU: Intel Pentium Xeon 2GHz
       * Memory: 2GB
-
+* don't handle log event in Ruby/GLib.
