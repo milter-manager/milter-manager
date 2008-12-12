@@ -640,6 +640,7 @@ milter_manager_egg_merge (MilterManagerEgg *egg,
                           GError           **error)
 {
     const gchar *connection_spec;
+    const gchar *user_name;
     const gchar *command;
     const GList *node;
 
@@ -659,6 +660,10 @@ milter_manager_egg_merge (MilterManagerEgg *egg,
     MERGE_TIMEOUT(end_of_message);
 
 #undef MERGE_TIMEOUT
+
+    user_name = milter_manager_egg_get_user_name(other_egg);
+    if (user_name)
+        milter_manager_egg_set_user_name(egg, user_name);
 
     command = milter_manager_egg_get_command(other_egg);
     if (command) {

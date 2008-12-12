@@ -334,6 +334,7 @@ test_merge (void)
     milter_manager_egg_set_writing_timeout(egg, 2.929);
     milter_manager_egg_set_reading_timeout(egg, 2.92929);
     milter_manager_egg_set_end_of_message_timeout(egg, 29.29);
+    milter_manager_egg_set_user_name(egg, "milter-user");
     milter_manager_egg_set_command(egg, "milter-test-client");
     milter_manager_egg_set_command_options(egg, "-s inet:2929@localhost");
     milter_manager_egg_set_connection_spec(egg, "inet:2929@localhost", &error);
@@ -368,6 +369,8 @@ test_merge (void)
     cut_assert_equal_double(29.29,
                             milter_manager_egg_get_end_of_message_timeout(merged_egg),
                             0.0001);
+    cut_assert_equal_string("milter-user",
+                            milter_manager_egg_get_user_name(merged_egg));
     cut_assert_equal_string("milter-test-client",
                             milter_manager_egg_get_command(merged_egg));
     cut_assert_equal_string("-s inet:2929@localhost",

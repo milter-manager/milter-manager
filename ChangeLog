@@ -1,5 +1,8 @@
 2008-12-12  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-egg.c, test/manager/test-egg.c:
+	merge missing user name.
+
 	* binding/ruby/src/manager/rb-milter-manager-applicable-condition.c,
 	binding/ruby/test/manager/test-applicable-condition.rb: bind
 	merge of applicable condition.
