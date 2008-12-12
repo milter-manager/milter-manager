@@ -86,4 +86,48 @@ EOX
                   "</configuration>"].join("\n") + "\n",
                  @configuration.to_xml)
   end
+
+  def test_define_milter_again
+    @loader.define_milter("milter1") do |milter|
+      milter.description = "description"
+    end
+    assert_equal([["milter1", "description"]],
+                 @configuration.eggs.collect {|egg| [egg.name, egg.description]})
+
+    @loader.define_milter("milter1") do |milter|
+    end
+    assert_equal([["milter1", "description"]],
+                 @configuration.eggs.collect {|egg| [egg.name, egg.description]})
+
+    @loader.define_milter("milter1") do |milter|
+      milter.description = "new description"
+    end
+    assert_equal([["milter1", "new description"]],
+                 @configuration.eggs.collect {|egg| [egg.name, egg.description]})
+  end
+
+  def test_define_applicable_condition_again
+    @loader.define_applicable_condition("S25R") do |condition|
+      condition.description = "Selective SMTP Rejection."
+    end
+    assert_equal([["S25R", "Selective SMTP Rejection."]],
+                 @configuration.applicable_conditions.collect do |condition|
+                   [condition.name, condition.description]
+                 end)
+
+    @loader.define_applicable_condition("S25R") do |condition|
+    end
+    assert_equal([["S25R", "Selective SMTP Rejection."]],
+                 @configuration.applicable_conditions.collect do |condition|
+                   [condition.name, condition.description]
+                 end)
+
+    @loader.define_applicable_condition("S25R") do |condition|
+      condition.description += " (useful)"
+    end
+    assert_equal([["S25R", "Selective SMTP Rejection. (useful)"]],
+                 @configuration.applicable_conditions.collect do |condition|
+                   [condition.name, condition.description]
+                 end)
+  end
 end

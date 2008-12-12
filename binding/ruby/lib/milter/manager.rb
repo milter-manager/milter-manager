@@ -341,6 +341,9 @@ module Milter::Manager
       def initialize(name, loader)
         @egg = Egg.new(name)
         @loader = loader
+
+        exist_egg = @loader.configuration.find_egg(name)
+        @egg.merge(exist_egg) if exist_egg
       end
 
       def add_applicable_condition(name)
@@ -368,6 +371,7 @@ module Milter::Manager
       end
 
       def apply
+        @loader.configuration.remove_egg(@egg.name)
         @loader.configuration.add_egg(@egg)
       end
     end
@@ -382,9 +386,7 @@ module Milter::Manager
         @header_checkers = []
 
         exist_condition = @loader.configuration.find_applicable_condition(name)
-        if exist_condition
-          @condition.description = exist_condition.description
-        end
+        @condition.merge(exist_condition) if exist_condition
       end
 
       def define_connect_checker(&block)
@@ -418,9 +420,7 @@ module Milter::Manager
 
       def apply
         @loader.configuration.remove_applicable_condition(@condition.name)
-
         setup_checker
-
         @loader.configuration.add_applicable_condition(@condition)
       end
 
