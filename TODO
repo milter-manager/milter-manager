@@ -58,3 +58,4 @@
       * CPU: Intel Pentium Xeon 2GHz
       * Memory: 2GB
 * don't handle log event in Ruby/GLib.
+* fix FIXME in data/applicable-conditions/remote-network.conf

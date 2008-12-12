@@ -1,5 +1,10 @@
 2008-12-12  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: add an entry:
+	fix FIXME in data/applicable-conditions/remote-network.conf.
+
+	* data/applicable-conditions/remote-network.conf: add FIXME.
+
 	* TODO: add an entry: don't handle log event in Ruby/GLib.
 
 	* binding/ruby/lib/milter/manager.rb,
