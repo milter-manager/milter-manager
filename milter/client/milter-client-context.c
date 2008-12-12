@@ -1093,6 +1093,9 @@ milter_client_context_quarantine (MilterClientContext *context,
 
     milter_debug("sending QUARANTINE: <%s>", reason);
 
+    /* quarantine allows only on end-of-message. */
+    milter_statistics("Reply quarantine to MTA on end-of-message.");
+
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     milter_reply_encoder_encode_quarantine(MILTER_REPLY_ENCODER(encoder),
                                            &packet, &packet_size,

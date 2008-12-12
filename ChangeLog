@@ -29,6 +29,8 @@
 	* tool/milter-log-tool.rb: Show vertical label in graph.
 	* tool/milter-log-tool.rb: Show update time in title label.
 	* tool/milter-log-tool.rb: Show milter number on pass child graph.
+	* milter/client/milter-client-context.c: Output quarantine statistics
+	log.
 
 2008-12-11  Kouhei Sutou  <kou@cozmixng.org>
 
