@@ -11,6 +11,33 @@ class TestConfiguration < Test::Unit::TestCase
     egg.connection_spec = "unix:/tmp/socket"
     @configuration.add_egg(egg)
     assert_equal(1, @configuration.create_children.length)
+
+    @configuration.clear_eggs
+    assert_equal([], @configuration.eggs)
+    assert_equal(0, @configuration.create_children.length)
+  end
+
+  def test_find_egg
+    egg1 = Milter::Manager::Egg.new("milter1")
+    egg2 = Milter::Manager::Egg.new("milter2")
+    @configuration.add_egg(egg1)
+    @configuration.add_egg(egg2)
+
+    assert_equal(egg1, @configuration.find_egg("milter1"))
+    assert_nil(@configuration.find_egg("nonexistent"))
+  end
+
+  def test_remove_egg
+    egg1 = Milter::Manager::Egg.new("milter1")
+    egg2 = Milter::Manager::Egg.new("milter2")
+    @configuration.add_egg(egg1)
+    @configuration.add_egg(egg2)
+
+    assert_equal([egg1, egg2], @configuration.eggs)
+    @configuration.remove_egg("milter1")
+    assert_equal([egg2], @configuration.eggs)
+    @configuration.remove_egg(egg2)
+    assert_equal([], @configuration.eggs)
   end
 
   def test_applicable_condition

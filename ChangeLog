@@ -1,5 +1,9 @@
 2008-12-12  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/src/manager/rb-milter-manager-configuration.c,
+	binding/ruby/test/manager/test-configuration.rb: bind
+	egg related functions.
+
 	* test/lib/milter-manager-test-utils.[ch],
 	test/lib/milter-test-utils.[ch],
 	test/manager/test-configuration.c,

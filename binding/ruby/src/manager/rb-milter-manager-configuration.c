@@ -13,6 +13,49 @@ add_egg (VALUE self, VALUE egg)
 }
 
 static VALUE
+find_egg (VALUE self, VALUE name)
+{
+    MilterManagerEgg *egg;
+
+    egg = milter_manager_configuration_find_egg(SELF(self), RVAL2CSTR(name));
+    return GOBJ2RVAL(egg);
+}
+
+static VALUE
+get_eggs (VALUE self)
+{
+    const GList *eggs;
+
+    eggs = milter_manager_configuration_get_eggs(SELF(self));
+    return GLIST2ARY((GList *)eggs);
+}
+
+static VALUE
+remove_egg (VALUE self, VALUE name_or_egg)
+{
+    if (RVAL2CBOOL(rb_obj_is_kind_of(name_or_egg, rb_cString))) {
+	const gchar *name;
+
+	name = RVAL2CSTR(name_or_egg);
+	milter_manager_configuration_remove_egg_by_name(SELF(self), name);
+    } else {
+	MilterManagerEgg *egg;
+
+	egg = RVAL2GOBJ(name_or_egg);
+	milter_manager_configuration_remove_egg(SELF(self), egg);
+    }
+
+    return Qnil;
+}
+
+static VALUE
+clear_eggs (VALUE self)
+{
+    milter_manager_configuration_clear_eggs(SELF(self));
+    return Qnil;
+}
+
+static VALUE
 add_applicable_condition (VALUE self, VALUE condition)
 {
     milter_manager_configuration_add_applicable_condition(SELF(self),
@@ -138,6 +181,13 @@ Init_milter_manager_configuration (void)
                       "to-xml", rb_milter_manager_gstring_handle_to_xml_signal);
 
     rb_define_method(rb_cMilterManagerConfiguration, "add_egg", add_egg, 1);
+    rb_define_method(rb_cMilterManagerConfiguration, "find_egg", find_egg, 1);
+    rb_define_method(rb_cMilterManagerConfiguration, "eggs", get_eggs, 0);
+    rb_define_method(rb_cMilterManagerConfiguration,
+		     "remove_egg", remove_egg, 1);
+    rb_define_method(rb_cMilterManagerConfiguration,
+		     "clear_eggs", clear_eggs, 0);
+
     rb_define_method(rb_cMilterManagerConfiguration,
 		     "add_applicable_condition", add_applicable_condition, 1);
     rb_define_method(rb_cMilterManagerConfiguration,
