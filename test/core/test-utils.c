@@ -40,6 +40,7 @@ void data_flags_names (void);
 void test_flags_names (gconstpointer _data);
 void test_append_index (void);
 void test_xml_append_text_element (void);
+void test_xml_append_boolean_element (void);
 
 static GIOCondition io_condition;
 static const gchar *expected_inspected_io_condition;
@@ -420,6 +421,17 @@ test_xml_append_text_element (void)
     milter_utils_xml_append_text_element(actual_string, "NAME", "CONTENT<>", 2);
     cut_assert_equal_string("  <NAME>CONTENT&lt;&gt;</NAME>\n",
                             actual_string->str);
+}
+
+void
+test_xml_append_boolean_element (void)
+{
+    milter_utils_xml_append_boolean_element(actual_string, "NAME", TRUE, 2);
+    cut_assert_equal_string("  <NAME>true</NAME>\n", actual_string->str);
+
+    g_string_truncate(actual_string, 0);
+    milter_utils_xml_append_boolean_element(actual_string, "NAME", FALSE, 2);
+    cut_assert_equal_string("  <NAME>false</NAME>\n", actual_string->str);
 }
 
 /*

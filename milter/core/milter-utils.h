@@ -122,6 +122,11 @@ void             milter_utils_xml_append_text_element
                                               const gchar *name,
                                               const gchar *content,
                                               guint indent);
+void             milter_utils_xml_append_boolean_element
+                                             (GString *string,
+                                              const gchar *name,
+                                              gboolean boolean,
+                                              guint indent);
 
 G_END_DECLS
 

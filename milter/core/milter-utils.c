@@ -484,6 +484,17 @@ milter_utils_xml_append_text_element (GString *string,
     g_free(escaped_content);
 }
 
+void
+milter_utils_xml_append_boolean_element (GString *string,
+                                         const gchar *name,
+                                         gboolean boolean,
+                                         guint indent)
+{
+    milter_utils_xml_append_text_element(string,
+                                         name, boolean ? "true" : "false",
+                                         indent);
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */

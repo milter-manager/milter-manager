@@ -1,5 +1,8 @@
 2008-12-12  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-utils.[ch], test/core/test-utils.c:
+	add milter_utils_xml_append_boolean_element().
+
 	* milter/manager/milter-manager-egg.[ch],
 	test/manager/test-egg.c, test/manager/test-configuration.c: add
 	enabled to egg.
