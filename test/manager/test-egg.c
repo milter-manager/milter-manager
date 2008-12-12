@@ -300,7 +300,7 @@ test_applicable_condition (void)
     gcut_assert_equal_list_object_custom(
         NULL,
         milter_manager_egg_get_applicable_conditions(egg),
-        milter_test_equal_manager_applicable_condition);
+        milter_manager_test_applicable_condition_equal);
 
     condition = milter_manager_applicable_condition_new("S25R");
     expected_applicable_conditions =
@@ -309,13 +309,13 @@ test_applicable_condition (void)
     gcut_assert_equal_list_object_custom(
         expected_applicable_conditions,
         milter_manager_egg_get_applicable_conditions(egg),
-        milter_test_equal_manager_applicable_condition);
+        milter_manager_test_applicable_condition_equal);
 
     milter_manager_egg_clear_applicable_conditions(egg);
     gcut_assert_equal_list_object_custom(
         NULL,
         milter_manager_egg_get_applicable_conditions(egg),
-        milter_test_equal_manager_applicable_condition);
+        milter_manager_test_applicable_condition_equal);
 }
 
 static void

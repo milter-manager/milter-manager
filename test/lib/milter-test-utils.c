@@ -19,8 +19,6 @@
 
 #include <unistd.h>
 
-#include <milter/manager.h>
-
 #include "milter-test-utils.h"
 
 #include <gcutter.h>
@@ -217,35 +215,6 @@ milter_test_inspect_symbols_table (GHashTable *table)
                                    inspect_symbols_table_key,
                                    inspect_symbols_table_value,
                                    NULL);
-}
-
-gboolean
-milter_test_equal_manager_applicable_condition (gconstpointer _condition1,
-                                                gconstpointer _condition2)
-{
-    MilterManagerApplicableCondition *condition1, *condition2;
-    const gchar *name1, *name2;
-    const gchar *desc1, *desc2;
-
-    condition1 = MILTER_MANAGER_APPLICABLE_CONDITION(_condition1);
-    condition2 = MILTER_MANAGER_APPLICABLE_CONDITION(_condition2);
-
-    name1 = milter_manager_applicable_condition_get_name(condition1);
-    name2 = milter_manager_applicable_condition_get_name(condition2);
-    if (name1 != name2) {
-        if (name1 == NULL || name2 == NULL)
-            return FALSE;
-        if (!g_str_equal(name1, name2))
-            return FALSE;
-    }
-
-    desc1 = milter_manager_applicable_condition_get_description(condition1);
-    desc2 = milter_manager_applicable_condition_get_description(condition2);
-    if (desc1 == desc2)
-        return TRUE;
-    if (desc1 == NULL || desc2 == NULL)
-        return FALSE;
-    return g_str_equal(desc1, desc2);
 }
 
 /*

@@ -329,7 +329,7 @@ test_applicable_condition (void)
     gcut_assert_equal_list_object_custom(
         NULL,
         milter_manager_configuration_get_applicable_conditions(config),
-        milter_test_equal_manager_applicable_condition);
+        milter_manager_test_applicable_condition_equal);
 
     condition = milter_manager_applicable_condition_new("S25R");
     expected_applicable_conditions =
@@ -338,13 +338,13 @@ test_applicable_condition (void)
     gcut_assert_equal_list_object_custom(
         expected_applicable_conditions,
         milter_manager_configuration_get_applicable_conditions(config),
-        milter_test_equal_manager_applicable_condition);
+        milter_manager_test_applicable_condition_equal);
 
     milter_manager_configuration_clear_applicable_conditions(config);
     gcut_assert_equal_list_object_custom(
         NULL,
         milter_manager_configuration_get_applicable_conditions(config),
-        milter_test_equal_manager_applicable_condition);
+        milter_manager_test_applicable_condition_equal);
 }
 
 void
@@ -389,7 +389,7 @@ test_remove_applicable_condition (void)
     gcut_assert_equal_list_object_custom(
         expected_applicable_conditions,
         milter_manager_configuration_get_applicable_conditions(config),
-        milter_test_equal_manager_applicable_condition);
+        milter_manager_test_applicable_condition_equal);
 
     milter_manager_configuration_remove_applicable_condition_by_name(config,
                                                                      "S25R");
@@ -398,14 +398,14 @@ test_remove_applicable_condition (void)
     gcut_assert_equal_list_object_custom(
         expected_applicable_conditions,
         milter_manager_configuration_get_applicable_conditions(config),
-        milter_test_equal_manager_applicable_condition);
+        milter_manager_test_applicable_condition_equal);
 
     milter_manager_configuration_remove_applicable_condition(config,
                                                              remote_network);
     gcut_assert_equal_list_object_custom(
         NULL,
         milter_manager_configuration_get_applicable_conditions(config),
-        milter_test_equal_manager_applicable_condition);
+        milter_manager_test_applicable_condition_equal);
 }
 
 #define milter_assert_default_configuration(config)             \
