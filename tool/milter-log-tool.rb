@@ -431,14 +431,14 @@ class MilterPassChildRRD < MilterRRD
 
   def output_graph(time_span, start_time = nil, end_time = "now", width = 1000, height = 250)
     super(time_span, start_time, end_time, width, height,
-          "AREA:n_all#00ff00:The number of milters",
+          "LINE:n_all#000000:The number of milters",
           "AREA:n_connect#0000ff:connect",
-          "STACK:n_helo#0022dd:helo",
-          "STACK:n_envelope-from#0044bb:envelope-from",
-          "STACK:n_envelope-recipient#006699:envelope-recipient",
-          "STACK:n_header#008877:header",
-          "STACK:n_body#00aa55:body",
-          "STACK:n_end-of-message#00cc33:end-of-message")
+          "STACK:n_helo#ff00ff:helo",
+          "STACK:n_envelope-from#00ffff:envelope-from",
+          "STACK:n_envelope-recipient#ffff00:envelope-recipient",
+          "STACK:n_header#a52a2a:header",
+          "STACK:n_body#ff0000:body",
+          "STACK:n_end-of-message#00ff00:end-of-message")
   end
 end
 
