@@ -16,7 +16,7 @@
     * detected as virus (X-Virus-Status:)
 * graphs:
   * child milters alive and dead.
-    (This can not be drawed by rrdtool since rrdtool db does not handle variable items)
+    (This can not be drawn by rrdtool since rrdtool db does not handle variable items)
   * ...
 
 * performance:
