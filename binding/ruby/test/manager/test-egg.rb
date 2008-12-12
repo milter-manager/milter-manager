@@ -23,6 +23,12 @@ class TestEgg < Test::Unit::TestCase
     assert_equal("Description", @egg.description)
   end
 
+  def test_enabled
+    assert_true(@egg.enabled?)
+    @egg.enabled = false
+    assert_false(@egg.enabled?)
+  end
+
   def test_connection_timeout
     connection_timeout = 29
     assert_equal(300, @egg.connection_timeout)
@@ -110,6 +116,7 @@ class TestEgg < Test::Unit::TestCase
   def test_to_xml
     assert_equal(["<milter>",
                   "  <name>#{@name}</name>",
+                  "  <enabled>true</enabled>",
                   "</milter>"].join("\n") + "\n",
                  @egg.to_xml)
 
@@ -119,6 +126,7 @@ class TestEgg < Test::Unit::TestCase
     end
     assert_equal(["<milter>",
                   "  <name>#{@name}</name>",
+                  "  <enabled>true</enabled>",
                   "  <additional-info>INFO</additional-info>",
                   "</milter>"].join("\n") + "\n",
                  @egg.to_xml)

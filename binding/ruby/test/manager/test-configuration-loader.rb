@@ -46,6 +46,7 @@ EOX
   <milters>
     <milter>
       <name>child-milter</name>
+      <enabled>true</enabled>
       <connection-spec>unix:/tmp/socket</connection-spec>
       <applicable-conditions>
         <applicable-condition>remote-network</applicable-condition>

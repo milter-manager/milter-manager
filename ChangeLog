@@ -1,5 +1,7 @@
 2008-12-12  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/test/manager/: follow the recent changes.
+
 	* data/applicable-conditions/disable.conf: remove needless file.
 
 	* milter/manager/milter-manager-configuration.c,
