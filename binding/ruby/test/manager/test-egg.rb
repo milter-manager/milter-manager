@@ -17,6 +17,12 @@ class TestEgg < Test::Unit::TestCase
     assert_equal(new_name, @egg.name)
   end
 
+  def test_description
+    assert_nil(@egg.description)
+    @egg.description = "Description"
+    assert_equal("Description", @egg.description)
+  end
+
   def test_connection_timeout
     connection_timeout = 29
     assert_equal(300, @egg.connection_timeout)
@@ -72,6 +78,7 @@ class TestEgg < Test::Unit::TestCase
   end
 
   def test_merge
+    @egg.description = "Description"
     @egg.connection_timeout = 292.9
     @egg.writing_timeout = 2.9
     @egg.reading_timeout = 2.929
@@ -87,6 +94,8 @@ class TestEgg < Test::Unit::TestCase
 
     merged_egg = Milter::Manager::Egg.new("merged")
     merged_egg.merge(@egg)
+    assert_equal("merged", merged_egg.name)
+    assert_equal("Description", merged_egg.description)
     assert_in_delta(292.9, merged_egg.connection_timeout, 0.01)
     assert_in_delta(2.9, merged_egg.writing_timeout, 0.01)
     assert_in_delta(2.929, merged_egg.reading_timeout, 0.0001)
