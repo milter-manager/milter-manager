@@ -49,7 +49,7 @@ module Milter::Manager
         yield
       rescue Exception => error
         location = error.backtrace[0].split(/(:\d+):?/, 2)[0, 2].join
-        puts "#{location}: #{error.message}(#{error.class})"
+        puts "#{location}: #{error.message} (#{error.class})"
         # FIXME: log full error
       end
     end
@@ -63,7 +63,19 @@ module Milter::Manager
     end
 
     def load_configuration(file)
-      instance_eval(File.read(file), file)
+      begin
+        instance_eval(File.read(file), file)
+      rescue InvalidValue
+        backtrace = $!.backtrace.collect do |info|
+          if /\A#{Regexp.escape(file)}:/ =~ info
+            info
+          else
+            nil
+          end
+        end.compact
+        puts "#{backtrace[0]}: #{$!.message}"
+        puts backtrace[1..-1]
+      end
     end
 
     def load_custom_configuration(file)
@@ -143,7 +155,15 @@ module Milter::Manager
       def load(file)
         listener = Listener.new(@configuration)
         File.open(file) do |input|
-          REXML::Document.parse_stream(input, listener)
+          parser = REXML::Parsers::StreamParser.new(input, listener)
+          begin
+            parser.parse
+          rescue InvalidValue
+            source = parser.source
+            info = "#{file}:#{source.line}:#{source.position}"
+            info << ":#{source.current_line}: #{$!.message}"
+            puts info
+          end
         end
       end
 
@@ -356,11 +376,12 @@ module Milter::Manager
       end
 
       def add_applicable_condition(name)
-        condition = @loader.configuration.find_applicable_condition(name)
+        configuration = @loader.configuration
+        condition = configuration.find_applicable_condition(name)
         if condition.nil?
-          configurations = @loader.configuration.applicable_conditions
+          conditions = configuration.applicable_conditions
           raise InvalidValue.new("applicable condition",
-                                 configuration.keys,
+                                 conditions.collect {|cond| cond.name},
                                  name)
         end
         @egg.add_applicable_condition(condition)
