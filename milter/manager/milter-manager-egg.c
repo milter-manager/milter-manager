@@ -34,6 +34,7 @@ typedef struct _MilterManagerEggPrivate MilterManagerEggPrivate;
 struct _MilterManagerEggPrivate
 {
     gchar *name;
+    gchar *description;
     gchar *connection_spec;
     gdouble connection_timeout;
     gdouble writing_timeout;
@@ -49,6 +50,7 @@ enum
 {
     PROP_0,
     PROP_NAME,
+    PROP_DESCRIPTION,
     PROP_CONNECTION_SPEC,
     PROP_CONNECTION_TIMEOUT,
     PROP_WRITING_TIMEOUT,
@@ -100,6 +102,13 @@ milter_manager_egg_class_init (MilterManagerEggClass *klass)
                                NULL,
                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_NAME, spec);
+
+    spec = g_param_spec_string("description",
+                               "Description",
+                               "The description of the milter egg",
+                               NULL,
+                               G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_DESCRIPTION, spec);
 
     spec = g_param_spec_string("connection-spec",
                                "Connection spec",
@@ -200,6 +209,7 @@ milter_manager_egg_init (MilterManagerEgg *egg)
 
     priv = MILTER_MANAGER_EGG_GET_PRIVATE(egg);
     priv->name = NULL;
+    priv->description = NULL;
     priv->connection_spec = NULL;
     priv->connection_timeout = MILTER_SERVER_CONTEXT_DEFAULT_CONNECTION_TIMEOUT;
     priv->writing_timeout = MILTER_SERVER_CONTEXT_DEFAULT_WRITING_TIMEOUT;
@@ -224,6 +234,11 @@ dispose (GObject *object)
     if (priv->name) {
         g_free(priv->name);
         priv->name = NULL;
+    }
+
+    if (priv->description) {
+        g_free(priv->description);
+        priv->description = NULL;
     }
 
     if (priv->connection_spec) {
@@ -267,6 +282,9 @@ set_property (GObject      *object,
       case PROP_NAME:
         milter_manager_egg_set_name(egg, g_value_get_string(value));
         break;
+      case PROP_DESCRIPTION:
+        milter_manager_egg_set_description(egg, g_value_get_string(value));
+        break;
       case PROP_CONNECTION_TIMEOUT:
         priv->connection_timeout = g_value_get_double(value);
         break;
@@ -308,6 +326,9 @@ get_property (GObject    *object,
     switch (prop_id) {
       case PROP_NAME:
         g_value_set_string(value, priv->name);
+        break;
+      case PROP_DESCRIPTION:
+        g_value_set_string(value, priv->description);
         break;
       case PROP_CONNECTION_SPEC:
         g_value_set_string(value, priv->connection_spec);
@@ -430,6 +451,24 @@ const gchar *
 milter_manager_egg_get_name (MilterManagerEgg *egg)
 {
     return MILTER_MANAGER_EGG_GET_PRIVATE(egg)->name;
+}
+
+void
+milter_manager_egg_set_description (MilterManagerEgg *egg,
+                                    const gchar *description)
+{
+    MilterManagerEggPrivate *priv;
+
+    priv = MILTER_MANAGER_EGG_GET_PRIVATE(egg);
+    if (priv->description)
+        g_free(priv->description);
+    priv->description = g_strdup(description);
+}
+
+const gchar *
+milter_manager_egg_get_description (MilterManagerEgg *egg)
+{
+    return MILTER_MANAGER_EGG_GET_PRIVATE(egg)->description;
 }
 
 gboolean
@@ -640,6 +679,7 @@ milter_manager_egg_merge (MilterManagerEgg *egg,
                           GError           **error)
 {
     const gchar *connection_spec;
+    const gchar *description;
     const gchar *user_name;
     const gchar *command;
     const GList *node;
@@ -660,6 +700,10 @@ milter_manager_egg_merge (MilterManagerEgg *egg,
     MERGE_TIMEOUT(end_of_message);
 
 #undef MERGE_TIMEOUT
+
+    description = milter_manager_egg_get_description(other_egg);
+    if (description)
+        milter_manager_egg_set_description(egg, description);
 
     user_name = milter_manager_egg_get_user_name(other_egg);
     if (user_name)
@@ -708,6 +752,10 @@ milter_manager_egg_to_xml_string (MilterManagerEgg *egg,
     if (priv->name)
         milter_utils_xml_append_text_element(string,
                                              "name", priv->name,
+                                             indent + 2);
+    if (priv->description)
+        milter_utils_xml_append_text_element(string,
+                                             "description", priv->description,
                                              indent + 2);
     if (priv->connection_spec)
         milter_utils_xml_append_text_element(string,

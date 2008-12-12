@@ -1,5 +1,8 @@
 2008-12-12  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-egg.[ch], test/manager/test-egg.c:
+	add description to egg.
+
 	* binding/ruby/src/manager/rb-milter-manager-egg.c,
 	binding/ruby/test/manager/test-egg.rb: bind merge or egg.
 

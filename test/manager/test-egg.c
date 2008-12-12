@@ -28,6 +28,7 @@
 void test_new (void);
 void test_hatch (void);
 void test_name (void);
+void test_description (void);
 void test_connection_spec (void);
 void test_connection_spec_error (void);
 void test_connection_timeout (void);
@@ -175,6 +176,18 @@ test_name (void)
     cut_assert_equal_string(name, milter_manager_egg_get_name(egg));
     milter_manager_egg_set_name(egg, new_name);
     cut_assert_equal_string(new_name, milter_manager_egg_get_name(egg));
+}
+
+void
+test_description (void)
+{
+    egg = milter_manager_egg_new("child-milter");
+
+    cut_assert_equal_string(NULL,
+                            milter_manager_egg_get_description(egg));
+    milter_manager_egg_set_description(egg, "Description");
+    cut_assert_equal_string("Description",
+                            milter_manager_egg_get_description(egg));
 }
 
 void
@@ -330,6 +343,7 @@ test_merge (void)
     GError *error = NULL;
 
     egg = milter_manager_egg_new("milter");
+    milter_manager_egg_set_description(egg, "Description");
     milter_manager_egg_set_connection_timeout(egg, 2.9);
     milter_manager_egg_set_writing_timeout(egg, 2.929);
     milter_manager_egg_set_reading_timeout(egg, 2.92929);
@@ -357,6 +371,8 @@ test_merge (void)
 
     cut_assert_equal_string("merged-milter",
                             milter_manager_egg_get_name(merged_egg));
+    cut_assert_equal_string("Description",
+                            milter_manager_egg_get_description(merged_egg));
     cut_assert_equal_double(2.9,
                             milter_manager_egg_get_connection_timeout(merged_egg),
                             0.01);

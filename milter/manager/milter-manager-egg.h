@@ -73,6 +73,11 @@ MilterManagerChild *milter_manager_egg_hatch    (MilterManagerEgg *egg);
 void                milter_manager_egg_set_name (MilterManagerEgg *egg,
                                                  const gchar *name);
 const gchar        *milter_manager_egg_get_name (MilterManagerEgg *egg);
+void                milter_manager_egg_set_description
+                                                (MilterManagerEgg *egg,
+                                                 const gchar *description);
+const gchar        *milter_manager_egg_get_description
+                                                (MilterManagerEgg *egg);
 gboolean            milter_manager_egg_set_connection_spec
                                                 (MilterManagerEgg *egg,
                                                  const gchar *connection_spec,
