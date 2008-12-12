@@ -123,6 +123,10 @@ const GList        *milter_manager_egg_get_applicable_conditions
 void                milter_manager_egg_clear_applicable_conditions
                                                 (MilterManagerEgg *egg);
 
+gboolean            milter_manager_egg_merge    (MilterManagerEgg *egg,
+                                                 MilterManagerEgg *other_egg,
+                                                 GError           **error);
+
 gchar              *milter_manager_egg_to_xml   (MilterManagerEgg *egg);
 void                milter_manager_egg_to_xml_string
                                                 (MilterManagerEgg *egg,

@@ -37,10 +37,12 @@ void test_end_of_message_timeout (void);
 void test_user_name (void);
 void test_command (void);
 void test_command_options (void);
+void test_merge (void);
 void test_applicable_condition (void);
 void test_to_xml (void);
 
 static MilterManagerEgg *egg;
+static MilterManagerEgg *merged_egg;
 static MilterManagerChild *child;
 static MilterManagerApplicableCondition *condition;
 
@@ -58,6 +60,7 @@ void
 setup (void)
 {
     egg = NULL;
+    merged_egg = NULL;
     child = NULL;
     condition = NULL;
 
@@ -76,6 +79,8 @@ teardown (void)
 {
     if (egg)
         g_object_unref(egg);
+    if (merged_egg)
+        g_object_unref(merged_egg);
     if (child)
         g_object_unref(child);
     if (condition)
@@ -315,6 +320,64 @@ test_applicable_condition (void)
     gcut_assert_equal_list_object_custom(
         NULL,
         milter_manager_egg_get_applicable_conditions(egg),
+        milter_manager_test_applicable_condition_equal);
+}
+
+void
+test_merge (void)
+{
+    MilterManagerApplicableCondition *s25r, *remote_network;
+    GError *error = NULL;
+
+    egg = milter_manager_egg_new("milter");
+    milter_manager_egg_set_connection_timeout(egg, 2.9);
+    milter_manager_egg_set_writing_timeout(egg, 2.929);
+    milter_manager_egg_set_reading_timeout(egg, 2.92929);
+    milter_manager_egg_set_end_of_message_timeout(egg, 29.29);
+    milter_manager_egg_set_command(egg, "milter-test-client");
+    milter_manager_egg_set_command_options(egg, "-s inet:2929@localhost");
+    milter_manager_egg_set_connection_spec(egg, "inet:2929@localhost", &error);
+    gcut_assert_error(error);
+
+    s25r = milter_manager_applicable_condition_new("S25R");
+    remote_network = milter_manager_applicable_condition_new("remote-network");
+    milter_manager_egg_add_applicable_condition(egg, s25r);
+    milter_manager_egg_add_applicable_condition(egg, remote_network);
+
+    expected_applicable_conditions =
+        g_list_append(expected_applicable_conditions, s25r);
+    expected_applicable_conditions =
+        g_list_append(expected_applicable_conditions, remote_network);
+
+
+    merged_egg = milter_manager_egg_new("merged-milter");
+    milter_manager_egg_merge(merged_egg, egg, &error);
+    gcut_assert_error(error);
+
+    cut_assert_equal_string("merged-milter",
+                            milter_manager_egg_get_name(merged_egg));
+    cut_assert_equal_double(2.9,
+                            milter_manager_egg_get_connection_timeout(merged_egg),
+                            0.01);
+    cut_assert_equal_double(2.929,
+                            milter_manager_egg_get_writing_timeout(merged_egg),
+                            0.0001);
+    cut_assert_equal_double(2.92929,
+                            milter_manager_egg_get_reading_timeout(merged_egg),
+                            0.000001);
+    cut_assert_equal_double(29.29,
+                            milter_manager_egg_get_end_of_message_timeout(merged_egg),
+                            0.0001);
+    cut_assert_equal_string("milter-test-client",
+                            milter_manager_egg_get_command(merged_egg));
+    cut_assert_equal_string("-s inet:2929@localhost",
+                            milter_manager_egg_get_command_options(merged_egg));
+    cut_assert_equal_string("inet:2929@localhost",
+                            milter_manager_egg_get_connection_spec(merged_egg));
+
+    gcut_assert_equal_list_object_custom(
+        expected_applicable_conditions,
+        milter_manager_egg_get_applicable_conditions(merged_egg),
         milter_manager_test_applicable_condition_equal);
 }
 

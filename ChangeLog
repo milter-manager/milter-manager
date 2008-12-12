@@ -1,5 +1,8 @@
 2008-12-12  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-egg.[ch], test/manager/test-egg.c:
+	implement merge.
+
 	* milter/manager/milter-manager-applicable-condition.[ch],
 	test/manager/test-applicable-condition.c: implement merge.
 

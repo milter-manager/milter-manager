@@ -634,6 +634,51 @@ milter_manager_egg_clear_applicable_conditions (MilterManagerEgg *egg)
     }
 }
 
+gboolean
+milter_manager_egg_merge (MilterManagerEgg *egg,
+                          MilterManagerEgg *other_egg,
+                          GError           **error)
+{
+    const gchar *connection_spec;
+    const gchar *command;
+    const GList *node;
+
+    connection_spec = milter_manager_egg_get_connection_spec(other_egg);
+    if (connection_spec &&
+        !milter_manager_egg_set_connection_spec(egg, connection_spec, error))
+        return FALSE;
+
+#define MERGE_TIMEOUT(name)                                     \
+    milter_manager_egg_set_ ## name ## _timeout(                \
+        egg,                                                    \
+        milter_manager_egg_get_ ## name ## _timeout(other_egg))
+
+    MERGE_TIMEOUT(connection);
+    MERGE_TIMEOUT(writing);
+    MERGE_TIMEOUT(reading);
+    MERGE_TIMEOUT(end_of_message);
+
+#undef MERGE_TIMEOUT
+
+    command = milter_manager_egg_get_command(other_egg);
+    if (command) {
+        const gchar *command_options;
+
+        milter_manager_egg_set_command(egg, command);
+        command_options = milter_manager_egg_get_command_options(other_egg);
+        milter_manager_egg_set_command_options(egg, command_options);
+    }
+
+    milter_manager_egg_clear_applicable_conditions(egg);
+    node = milter_manager_egg_get_applicable_conditions(other_egg);
+    for (; node; node = g_list_next(node)) {
+        MilterManagerApplicableCondition *condition = node->data;
+        milter_manager_egg_add_applicable_condition(egg, condition);
+    }
+
+    return TRUE;
+}
+
 gchar *
 milter_manager_egg_to_xml (MilterManagerEgg *egg)
 {
