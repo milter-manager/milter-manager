@@ -23,4 +23,13 @@ class TestApplicableCondition < Test::Unit::TestCase
     @condition.description = description
     assert_equal(description, @condition.description)
   end
+
+  def test_merge
+    merged_condition = Milter::Manager::ApplicableCondition.new("merged")
+    @condition.description = "Selective SMTP Rejection"
+
+    assert_nil(merged_condition.description)
+    merged_condition.merge(@condition)
+    assert_equal("Selective SMTP Rejection", merged_condition.description)
+  end
 end
