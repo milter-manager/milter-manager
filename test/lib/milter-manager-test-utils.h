@@ -56,6 +56,9 @@ gboolean                 milter_manager_test_defined_macros_equal
                                         (gconstpointer pair1,
                                          gconstpointer pair2);
 
+gboolean                 milter_manager_test_egg_equal
+                                        (gconstpointer egg1,
+                                         gconstpointer egg2);
 
 G_END_DECLS
 

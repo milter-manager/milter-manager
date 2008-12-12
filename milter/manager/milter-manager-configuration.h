@@ -138,6 +138,20 @@ void          milter_manager_configuration_set_fallback_status
 void          milter_manager_configuration_add_egg
                                      (MilterManagerConfiguration *configuration,
                                       MilterManagerEgg *egg);
+MilterManagerEgg *
+              milter_manager_configuration_find_egg
+                                     (MilterManagerConfiguration *configuration,
+                                      const gchar *name);
+const GList  *milter_manager_configuration_get_eggs
+                                     (MilterManagerConfiguration *configuration);
+void          milter_manager_configuration_remove_egg
+                                     (MilterManagerConfiguration *configuration,
+                                      MilterManagerEgg *egg);
+void          milter_manager_configuration_remove_egg_by_name
+                                     (MilterManagerConfiguration *configuration,
+                                      const gchar *name);
+void          milter_manager_configuration_clear_eggs
+                                     (MilterManagerConfiguration *configuration);
 MilterManagerChildren *milter_manager_configuration_create_children
                                      (MilterManagerConfiguration *configuration);
 void          milter_manager_configuration_add_applicable_condition

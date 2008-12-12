@@ -19,7 +19,7 @@
 
 #include <string.h>
 
-#include <milter/core.h>
+#include <milter/manager.h>
 
 #include "milter-manager-test-utils.h"
 
@@ -166,6 +166,23 @@ milter_manager_test_defined_macros_equal (gconstpointer defined_macros1,
                                  (GEqualFunc)gcut_hash_table_string_equal);
 }
 
+gboolean
+milter_manager_test_egg_equal (gconstpointer _egg1,
+                               gconstpointer _egg2)
+{
+    MilterManagerEgg *egg1, *egg2;
+
+    if (_egg1 == _egg2)
+        return TRUE;
+
+    if (_egg1 == NULL || _egg2 == NULL)
+        return FALSE;
+
+    egg1 = MILTER_MANAGER_EGG(_egg1);
+    egg2 = MILTER_MANAGER_EGG(_egg2);
+    return g_str_equal(milter_manager_egg_get_name(egg1),
+                       milter_manager_egg_get_name(egg2));
+}
 
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4

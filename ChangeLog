@@ -1,5 +1,10 @@
 2008-12-12  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-configuration.[ch],
+	test/lib/milter-manager-test-utils.[ch],
+	test/manager/test-configuration.c: add egg operation functions
+	into configuration.
+
 	* tool/milter-log-tool.rb: use current directory as default output
 	directory.
 

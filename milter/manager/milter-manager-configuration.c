@@ -42,11 +42,11 @@ struct _MilterManagerConfigurationPrivate
 {
     GList *load_paths;
     GList *eggs;
+    GList *applicable_conditions;
     gboolean privilege_mode;
     gchar *control_connection_spec;
     gchar *manager_connection_spec;
     MilterStatus fallback_status;
-    GList *applicable_conditions;
 };
 
 enum
@@ -149,6 +149,7 @@ milter_manager_configuration_init (MilterManagerConfiguration *configuration)
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
     priv->load_paths = NULL;
     priv->eggs = NULL;
+    priv->applicable_conditions = NULL;
     priv->control_connection_spec = NULL;
     priv->manager_connection_spec = NULL;
 
@@ -158,7 +159,6 @@ milter_manager_configuration_init (MilterManagerConfiguration *configuration)
                                          g_strdup(config_dir_env));
     priv->load_paths = g_list_append(priv->load_paths, g_strdup(CONFIG_DIR));
 
-    priv->applicable_conditions = NULL;
 
     milter_manager_configuration_clear(configuration);
 }
@@ -648,6 +648,75 @@ milter_manager_configuration_add_egg (MilterManagerConfiguration *configuration,
     priv->eggs = g_list_append(priv->eggs, egg);
 }
 
+MilterManagerEgg *
+milter_manager_configuration_find_egg (MilterManagerConfiguration *configuration,
+                                       const gchar *name)
+{
+    MilterManagerConfigurationPrivate *priv;
+    GList *node;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+
+    for (node = priv->eggs; node; node = g_list_next(node)) {
+        MilterManagerEgg *egg = node->data;
+
+        if (g_str_equal(name, milter_manager_egg_get_name(egg)))
+            return egg;
+    }
+
+    return NULL;
+}
+
+const GList *
+milter_manager_configuration_get_eggs (MilterManagerConfiguration *configuration)
+{
+    return MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration)->eggs;
+}
+
+void
+milter_manager_configuration_remove_egg (MilterManagerConfiguration *configuration,
+                                         MilterManagerEgg *egg)
+{
+    const gchar *name;
+
+    name = milter_manager_egg_get_name(egg);
+    milter_manager_configuration_remove_egg_by_name(configuration, name);
+}
+
+void
+milter_manager_configuration_remove_egg_by_name (MilterManagerConfiguration *configuration,
+                                                 const gchar *name)
+{
+    MilterManagerConfigurationPrivate *priv;
+    GList *node;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+
+    for (node = priv->eggs; node; node = g_list_next(node)) {
+        MilterManagerEgg *egg = node->data;
+
+        if (g_str_equal(name, milter_manager_egg_get_name(egg))) {
+            priv->eggs = g_list_delete_link(priv->eggs, node);
+            g_object_unref(egg);
+            break;
+        }
+    }
+}
+
+void
+milter_manager_configuration_clear_eggs (MilterManagerConfiguration *configuration)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+
+    if (priv->eggs) {
+        g_list_foreach(priv->eggs, (GFunc)g_object_unref, NULL);
+        g_list_free(priv->eggs);
+        priv->eggs = NULL;
+    }
+}
+
 MilterManagerChildren *
 milter_manager_configuration_create_children (MilterManagerConfiguration *configuration)
 {
@@ -790,11 +859,8 @@ milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
 
-    if (priv->eggs) {
-        g_list_foreach(priv->eggs, (GFunc)g_object_unref, NULL);
-        g_list_free(priv->eggs);
-        priv->eggs = NULL;
-    }
+    milter_manager_configuration_clear_eggs(configuration);
+    milter_manager_configuration_clear_applicable_conditions(configuration);
 
     if (priv->control_connection_spec) {
         g_free(priv->control_connection_spec);
@@ -808,8 +874,6 @@ milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
 
     priv->privilege_mode = FALSE;
     priv->fallback_status = MILTER_STATUS_CONTINUE;
-
-    milter_manager_configuration_clear_applicable_conditions(configuration);
 }
 
 gchar *

@@ -31,6 +31,9 @@ void test_privilege_mode (void);
 void test_control_connection_spec (void);
 void test_manager_connection_spec (void);
 void test_fallback_status (void);
+void test_egg (void);
+void test_find_egg (void);
+void test_remove_egg (void);
 void test_applicable_condition (void);
 void test_find_applicable_condition (void);
 void test_remove_applicable_condition (void);
@@ -49,6 +52,7 @@ static MilterManagerChildren *actual_children;
 
 static GList *expected_load_paths;
 
+static GList *expected_eggs;
 static GList *expected_applicable_conditions;
 
 static gchar *actual_xml;
@@ -67,6 +71,7 @@ setup (void)
 
     expected_load_paths = NULL;
 
+    expected_eggs = NULL;
     expected_applicable_conditions = NULL;
 
     actual_xml = NULL;
@@ -99,6 +104,8 @@ teardown (void)
         g_list_free(expected_load_paths);
     }
 
+    if (expected_eggs)
+        g_list_free(expected_eggs);
     if (expected_applicable_conditions)
         g_list_free(expected_applicable_conditions);
 
@@ -230,6 +237,90 @@ milter_assert_default_configuration_helper (MilterManagerConfiguration *config)
     milter_assert_equal_children(expected_children, actual_children);
     g_object_unref(actual_children);
     actual_children = NULL;
+}
+
+void
+test_egg (void)
+{
+    GError *error = NULL;
+
+    gcut_assert_equal_list_object_custom(
+        NULL,
+        milter_manager_configuration_get_eggs(config),
+        milter_manager_test_egg_equal);
+
+    egg = milter_manager_egg_new("child-milter");
+    milter_manager_egg_set_connection_spec(egg, "inet:2929@localhost", &error);
+    gcut_assert_error(error);
+
+    milter_manager_configuration_add_egg(config, egg);
+    expected_eggs = g_list_append(expected_eggs, egg);
+    gcut_assert_equal_list_object_custom(
+        expected_eggs,
+        milter_manager_configuration_get_eggs(config),
+        milter_manager_test_egg_equal);
+
+    milter_manager_configuration_clear_eggs(config);
+    gcut_assert_equal_list_object_custom(
+        NULL,
+        milter_manager_configuration_get_eggs(config),
+        milter_manager_test_egg_equal);
+}
+
+void
+test_find_egg (void)
+{
+    MilterManagerEgg *egg1, *egg2;
+
+    egg1 = milter_manager_egg_new("milter1");
+    egg2 = milter_manager_egg_new("milter2");
+    milter_manager_configuration_add_egg(config, egg1);
+    milter_manager_configuration_add_egg(config, egg2);
+
+    gcut_take_object(G_OBJECT(egg1));
+    gcut_take_object(G_OBJECT(egg2));
+
+    gcut_assert_equal_object(
+        egg1,
+        milter_manager_configuration_find_egg(config, "milter1"));
+    gcut_assert_equal_object(
+        NULL,
+        milter_manager_configuration_find_egg(config, "nonexistent"));
+}
+
+void
+test_remove_egg (void)
+{
+    MilterManagerEgg *egg1, *egg2;
+
+    egg1 = milter_manager_egg_new("milter1");
+    egg2 = milter_manager_egg_new("milter2");
+    milter_manager_configuration_add_egg(config, egg1);
+    milter_manager_configuration_add_egg(config, egg2);
+
+    gcut_take_object(G_OBJECT(egg1));
+    gcut_take_object(G_OBJECT(egg2));
+
+    expected_eggs = g_list_append(expected_eggs, egg1);
+    expected_eggs = g_list_append(expected_eggs, egg2);
+    gcut_assert_equal_list_object_custom(
+        expected_eggs,
+        milter_manager_configuration_get_eggs(config),
+        milter_manager_test_egg_equal);
+
+    milter_manager_configuration_remove_egg_by_name(config, "milter1");
+    g_list_free(expected_applicable_conditions);
+    expected_eggs = g_list_append(NULL, egg2);
+    gcut_assert_equal_list_object_custom(
+        expected_eggs,
+        milter_manager_configuration_get_eggs(config),
+        milter_manager_test_egg_equal);
+
+    milter_manager_configuration_remove_egg(config, egg2);
+    gcut_assert_equal_list_object_custom(
+        NULL,
+        milter_manager_configuration_get_eggs(config),
+        milter_manager_test_egg_equal);
 }
 
 void
