@@ -71,6 +71,33 @@ class TestEgg < Test::Unit::TestCase
     assert_equal([], @egg.applicable_conditions)
   end
 
+  def test_merge
+    @egg.connection_timeout = 292.9
+    @egg.writing_timeout = 2.9
+    @egg.reading_timeout = 2.929
+    @egg.end_of_message_timeout = 29.29
+    @egg.user_name = "milter-user"
+    @egg.command = "/usr/bin/milter-test-client"
+    @egg.command_options = "-s inet:2929@localhost"
+    @egg.connection_spec = "inet:2929@localhost"
+    s25r = Milter::Manager::ApplicableCondition.new("S25R")
+    disable = Milter::Manager::ApplicableCondition.new("Disable")
+    @egg.add_applicable_condition(s25r)
+    @egg.add_applicable_condition(disable)
+
+    merged_egg = Milter::Manager::Egg.new("merged")
+    merged_egg.merge(@egg)
+    assert_in_delta(292.9, merged_egg.connection_timeout, 0.01)
+    assert_in_delta(2.9, merged_egg.writing_timeout, 0.01)
+    assert_in_delta(2.929, merged_egg.reading_timeout, 0.0001)
+    assert_in_delta(29.29, merged_egg.end_of_message_timeout, 0.001)
+    assert_equal("milter-user", merged_egg.user_name)
+    assert_equal("/usr/bin/milter-test-client", merged_egg.command)
+    assert_equal("-s inet:2929@localhost", merged_egg.command_options)
+    assert_equal("inet:2929@localhost", merged_egg.connection_spec)
+    assert_equal([s25r, disable], merged_egg.applicable_conditions)
+  end
+
   def test_to_xml
     assert_equal(["<milter>",
                   "  <name>#{@name}</name>",

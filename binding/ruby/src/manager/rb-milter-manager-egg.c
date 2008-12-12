@@ -25,6 +25,17 @@ set_connection_spec (VALUE self, VALUE spec)
 }
 
 static VALUE
+merge (VALUE self, VALUE other)
+{
+    GError *error = NULL;
+
+    if (!milter_manager_egg_merge(SELF(self), SELF(other), &error))
+	RAISE_GERROR(error);
+
+    return Qnil;
+}
+
+static VALUE
 add_applicable_condition (VALUE self, VALUE condition)
 {
     milter_manager_egg_add_applicable_condition(SELF(self),
@@ -92,6 +103,7 @@ Init_milter_manager_egg (void)
 
     rb_define_method(rb_cMilterManagerEgg, "set_connection_spec",
 		     set_connection_spec, 1);
+    rb_define_method(rb_cMilterManagerEgg, "merge", merge, 1);
     rb_define_method(rb_cMilterManagerEgg, "to_xml", to_xml, -1);
 
     G_DEF_SETTERS(rb_cMilterManagerEgg);
