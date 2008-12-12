@@ -394,8 +394,7 @@ class MilterPassChildRRD < MilterRRD
     super(rrd_directory, log, update_time)
     @title = 'Pass child milters'
     @vertical_label = "milters"
-    @items = ["all",
-              "connect",
+    @items = ["connect",
               "helo",
               "envelope-from",
               "envelope-recipient",
@@ -425,20 +424,21 @@ class MilterPassChildRRD < MilterRRD
 
   def collect_data(time_span, last_update_time)
     pass_counting = count(time_span, last_update_time)
-#    pass_counting["all"] = count_sessions(@child_sessions, time_span, last_update_time)
     MilterRRDData.new(pass_counting)
   end
 
   def output_graph(time_span, start_time = nil, end_time = "now", width = 1000, height = 250)
     super(time_span, start_time, end_time, width, height,
-          "LINE:n_all#000000:The number of milters",
           "AREA:n_connect#0000ff:connect",
           "STACK:n_helo#ff00ff:helo",
           "STACK:n_envelope-from#00ffff:envelope-from",
           "STACK:n_envelope-recipient#ffff00:envelope-recipient",
           "STACK:n_header#a52a2a:header",
           "STACK:n_body#ff0000:body",
-          "STACK:n_end-of-message#00ff00:end-of-message")
+          "STACK:n_end-of-message#00ff00:end-of-message",
+          "DEF:child=#{build_path("milter-log.#{time_span.name}.rrd")}:child:MAX",
+          "CDEF:n_milters=child,UN,0,child,IF,10,/",
+          "LINE:n_milters#000000:The number of 10 milters")
   end
 end
 

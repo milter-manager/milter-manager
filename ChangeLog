@@ -25,6 +25,7 @@
 	* tool/milter-log-tool.rb: Added --no-update-db option.
 	* tool/milter-log-tool.rb: Show vertical label in graph.
 	* tool/milter-log-tool.rb: Show update time in title label.
+	* tool/milter-log-tool.rb: Show milter number on pass child graph.
 
 2008-12-11  Kouhei Sutou  <kou@cozmixng.org>
 
