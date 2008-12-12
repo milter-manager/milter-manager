@@ -230,6 +230,17 @@ milter_manager_applicable_condition_get_description (MilterManagerApplicableCond
 }
 
 void
+milter_manager_applicable_condition_merge (MilterManagerApplicableCondition *condition,
+                                           MilterManagerApplicableCondition *other_condition)
+{
+    const gchar *description;
+
+    description = milter_manager_applicable_condition_get_description(other_condition);
+    if (description)
+        milter_manager_applicable_condition_set_description(condition, description);
+}
+
+void
 milter_manager_applicable_condition_attach_to (MilterManagerApplicableCondition *condition,
                                                MilterManagerChild               *child)
 {

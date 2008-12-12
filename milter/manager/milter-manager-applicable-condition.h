@@ -67,6 +67,9 @@ void         milter_manager_applicable_condition_set_description
                                     const gchar *description);
 const gchar *milter_manager_applicable_condition_get_description
                                    (MilterManagerApplicableCondition *condition);
+void         milter_manager_applicable_condition_merge
+                                   (MilterManagerApplicableCondition *condition,
+                                    MilterManagerApplicableCondition *other_condition);
 
 void         milter_manager_applicable_condition_attach_to
                                    (MilterManagerApplicableCondition *condition,

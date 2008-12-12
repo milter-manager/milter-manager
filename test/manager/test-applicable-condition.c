@@ -28,13 +28,16 @@
 void test_new (void);
 void test_name (void);
 void test_description (void);
+void test_merge (void);
 
 static MilterManagerApplicableCondition *condition;
+static MilterManagerApplicableCondition *merged_condition;
 
 void
 setup (void)
 {
     condition = NULL;
+    merged_condition = NULL;
 }
 
 void
@@ -42,6 +45,8 @@ teardown (void)
 {
     if (condition)
         g_object_unref(condition);
+    if (merged_condition)
+        g_object_unref(merged_condition);
 }
 
 void
@@ -89,6 +94,41 @@ test_description (void)
         milter_manager_applicable_condition_get_description(condition));
 }
 
+void
+test_merge (void)
+{
+    condition = milter_manager_applicable_condition_new("S25R");
+    merged_condition = milter_manager_applicable_condition_new("Merged");
+
+    cut_assert_equal_string(
+        NULL,
+        milter_manager_applicable_condition_get_description(merged_condition));
+    milter_manager_applicable_condition_merge(merged_condition,
+                                              condition);
+    cut_assert_equal_string(
+        "Merged",
+        milter_manager_applicable_condition_get_name(merged_condition));
+    cut_assert_equal_string(
+        NULL,
+        milter_manager_applicable_condition_get_description(merged_condition));
+
+    milter_manager_applicable_condition_set_description(
+        condition, "Selective SMTP Rejection");
+    milter_manager_applicable_condition_merge(merged_condition,
+                                              condition);
+    cut_assert_equal_string(
+        "Selective SMTP Rejection",
+        milter_manager_applicable_condition_get_description(merged_condition));
+
+    milter_manager_applicable_condition_set_description(merged_condition,
+                                                        "Description");
+    milter_manager_applicable_condition_set_description(condition, NULL);
+    milter_manager_applicable_condition_merge(merged_condition,
+                                              condition);
+    cut_assert_equal_string(
+        "Description",
+        milter_manager_applicable_condition_get_description(merged_condition));
+}
 
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4

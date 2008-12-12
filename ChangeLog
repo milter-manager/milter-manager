@@ -1,5 +1,8 @@
 2008-12-12  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-applicable-condition.[ch],
+	test/manager/test-applicable-condition.c: implement merge.
+
 	* binding/ruby/src/manager/rb-milter-manager-configuration.c,
 	binding/ruby/test/manager/test-configuration.rb: bind
 	egg related functions.
