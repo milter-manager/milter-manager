@@ -15,7 +15,6 @@
     * detected as spam (X-Spam-Flag:, X-Bogosity:)
     * detected as virus (X-Virus-Status:)
 * graphs:
-  * current working child milters.
   * child milters alive and dead.
   * # of checks in ruby configuration.
   * ...
