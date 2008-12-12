@@ -1,5 +1,9 @@
 2008-12-12  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager.rb,
+	binding/ruby/test/manager/test-custom-xml-loader.rb: support XML
+	serialized enabled parsing.
+
 	* binding/ruby/test/manager/: follow the recent changes.
 
 	* data/applicable-conditions/disable.conf: remove needless file.

@@ -196,10 +196,18 @@ module Milter::Manager
               (@egg_config["applicable_conditions"] || []).each do |condition|
                 milter.add_applicable_condition(condition)
               end
+              if @egg_config.has_key?("enabled")
+                milter.enabled = @egg_config["enabled"]
+              end
+              if @egg_config.has_key?("description")
+                milter.description = @egg_config["description"]
+              end
             end
             @egg_config = nil
           when "milter_applicable_condition"
             @egg_config["applicable_conditions"] << text
+          when "milter_enabled"
+            @egg_config["enabled"] = text == "true"
           when /\Amilter_/
             @egg_config[$POSTMATCH] = text
           else
@@ -252,7 +260,8 @@ module Milter::Manager
               raise "unexpected element: #{current_path}"
             end
           when :milter
-            available_locals = ["name", "connection_spec"]
+            available_locals = ["name", "description",
+                                "enabled", "connection_spec"]
             case local
             when "applicable_conditions"
               @egg_config["applicable_conditions"] = []

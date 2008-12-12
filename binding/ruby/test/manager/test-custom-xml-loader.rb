@@ -28,6 +28,7 @@ EOC
   <milters>
     <milter>
       <name>milter@10026</name>
+      <enabled>false</enabled>
       <connection-spec>inet:10026@localhost</connection-spec>
       <applicable-conditions>
         <applicable-condition>S25R</applicable-condition>
@@ -48,7 +49,7 @@ EOC
   <milters>
     <milter>
       <name>milter@10026</name>
-      <enabled>true</enabled>
+      <enabled>false</enabled>
       <connection-spec>inet:10026@localhost</connection-spec>
       <applicable-conditions>
         <applicable-condition>S25R</applicable-condition>
