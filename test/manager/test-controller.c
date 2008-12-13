@@ -189,7 +189,6 @@ test_set_configuration (void)
     GString *output;
     GError *error = NULL;
 
-    return;
     cut_assert_path_not_exist(custom_config_path);
 
     milter_manager_control_command_encoder_encode_set_configuration(
@@ -217,7 +216,6 @@ test_reload (void)
     GString *output;
     GError *error = NULL;
 
-    return;
     config = milter_manager_get_configuration(manager);
     cut_assert_false(milter_manager_configuration_is_privilege_mode(config));
     g_file_set_contents(custom_config_path,
