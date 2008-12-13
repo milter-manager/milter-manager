@@ -1,5 +1,8 @@
 2008-12-13  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/test-controller.c (setup_input_io): fix too many
+	unreference bug.
+
 	* data/applicable-conditions/Makefile.am (conditions_DATA): remove
 	nonexistent entry.
 
