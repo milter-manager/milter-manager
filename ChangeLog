@@ -1,3 +1,8 @@
+2008-12-13  Kouhei Sutou  <kou@cozmixng.org>
+
+	* data/applicable-conditions/Makefile.am (conditions_DATA): remove
+	nonexistent entry.
+
 2008-12-12  Kouhei Sutou  <kou@cozmixng.org>
 
 	* binding/ruby/lib/milter/manager.rb: improve error handling.
