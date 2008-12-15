@@ -1,5 +1,7 @@
 2008-12-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: add: milter-manager can be ran as normal user.
+
 	* binding/ruby/src/toolkit/rb-milter-socket-address.c: use
 	rb_f_sprintf() instead of rb_str_format().
 

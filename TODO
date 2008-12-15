@@ -65,3 +65,6 @@
   * start command must be /etc/init.d/xxx
     * if /etc/init.d/xxx exists, the milter is enabled by default?
   * the default values must be guessed by running distribution.
+* milter-manager can be ran as normal user if milter-manager process is
+  invoked as root user. just only control connection handler and child
+  milter process invoker can be ran as root user.
