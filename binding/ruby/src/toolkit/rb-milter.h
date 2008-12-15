@@ -22,5 +22,15 @@ VALUE rb_cMilterSocketAddressUnix;
 
 VALUE rb_milter_cstr2rval_size_free(gchar *string, gsize size);
 
+#ifndef RSTRING_PTR
+#  define RSTRING_PTR(s) (RSTRING(s)->ptr)
+#  define RSTRING_LEN(s) (RSTRING(s)->len)
+#endif
+
+#ifndef RARRAY_PTR
+#  define RARRAY_PTR(s) (RARRAY(s)->ptr)
+#  define RARRAY_LEN(s) (RARRAY(s)->len)
+#endif
+
 
 #endif

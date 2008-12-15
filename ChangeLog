@@ -1,3 +1,9 @@
+2008-12-15  Kouhei Sutou  <kou@cozmixng.org>
+
+	* binding/ruby/src/toolkit/rb-milter-core-private.h: move to
+	backward compatibility macros to ...
+	* binding/ruby/src/toolkit/rb-milter.h: ... here.
+
 2008-12-15  Hiroyuki Ikezoe  <poincare@ikezoe.net>
 
 	* module/configuration/ruby/milter-manager-ruby-configuration.c: Do
@@ -14,7 +20,7 @@
 	* milter/core/milter-utils.c: Do not use g_string_vprintf too.
 	* milter/manager/milter-manager-children.c: Do not use g_queue_init.
 	* bindings/ruby/src/toolkit/rb-milter-core-private.h: Workaround for
-	agey Ruby-Gnome2.
+	agey Ruby-GNOME2.
 
 2008-12-13  Kouhei Sutou  <kou@cozmixng.org>
 
