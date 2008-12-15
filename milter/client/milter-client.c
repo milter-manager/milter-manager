@@ -272,7 +272,6 @@ cb_finished (MilterClientContext *context, gpointer _data)
     GSource *source;
 
     source = g_idle_source_new();
-    g_warning("%p", data);
     g_source_set_callback(source, cb_idle_free_data, data, NULL);
     g_source_attach(source, g_main_loop_get_context(data->priv->accept_loop));
     g_source_unref(source);
