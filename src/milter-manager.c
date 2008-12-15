@@ -20,6 +20,13 @@
 #include <ruby.h>
 #include <milter/manager.h>
 
+#ifndef RUBY_INIT_STACK
+#  define RUBY_INIT_STACK                       \
+    VALUE variable_in_this_stack_frame;         \
+    extern Init_stack (VALUE *address);         \
+    Init_stack(&variable_in_this_stack_frame)
+#endif
+
 int
 main (int argc, char **argv)
 {
