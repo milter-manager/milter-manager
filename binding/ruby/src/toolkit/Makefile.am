@@ -25,6 +25,7 @@ noinst_HEADERS =				\
 	rb-milter-client-private.h		\
 	rb-milter-server-private.h		\
 	rb-milter-private.h			\
+	rb-milter-compat.h			\
 	rb-milter.h
 
 milter_toolkit_la_SOURCES =			\
@@ -44,4 +45,5 @@ milter_toolkit_la_SOURCES =			\
 	rb-milter-client-context.c		\
 	rb-milter-server-context.c		\
 	rb-milter-server.c			\
+	rb-milter-compat.c			\
 	rb-milter.c

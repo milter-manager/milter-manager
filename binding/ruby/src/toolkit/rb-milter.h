@@ -8,6 +8,8 @@
 #include <milter/client.h>
 #include <milter/server.h>
 
+#include <rb-milter-compat.h>
+
 VALUE rb_mMilter;
 VALUE rb_mMilterCore;
 VALUE rb_mMilterClient;
@@ -21,16 +23,5 @@ VALUE rb_cMilterSocketAddressUnix;
     (rb_milter_cstr2rval_size_free(string, size))
 
 VALUE rb_milter_cstr2rval_size_free(gchar *string, gsize size);
-
-#ifndef RSTRING_PTR
-#  define RSTRING_PTR(s) (RSTRING(s)->ptr)
-#  define RSTRING_LEN(s) (RSTRING(s)->len)
-#endif
-
-#ifndef RARRAY_PTR
-#  define RARRAY_PTR(s) (RARRAY(s)->ptr)
-#  define RARRAY_LEN(s) (RARRAY(s)->len)
-#endif
-
 
 #endif
