@@ -59,3 +59,9 @@
       * Memory: 2GB
 * don't handle log event in Ruby/GLib.
 * fix FIXME in data/applicable-conditions/remote-network.conf
+  * add local network option?
+* add default milter configurations to data/milters/*.conf.
+  * configurated milters must be disabled by default
+  * start command must be /etc/init.d/xxx
+    * if /etc/init.d/xxx exists, the milter is enabled by default?
+  * the default values must be guessed by running distribution.
