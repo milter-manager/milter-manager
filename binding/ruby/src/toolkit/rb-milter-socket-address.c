@@ -58,14 +58,17 @@ ipv4_equal (VALUE self, VALUE other)
 static VALUE
 ipv4_to_s (VALUE self)
 {
-    VALUE argv[2];
+    VALUE argv[3];
 
-    argv[0] = rb_iv_get(self, "@port");
-    argv[1] = rb_iv_get(self, "@host");
-    if (NIL_P(argv[1]))
-        return rb_str_format(1, argv, rb_str_new2("inet:%d"));
-    else
-        return rb_str_format(2, argv, rb_str_new2("inet:%d@%s"));
+    argv[1] = rb_iv_get(self, "@port");
+    argv[2] = rb_iv_get(self, "@host");
+    if (NIL_P(argv[2])) {
+	argv[0] = rb_str_new2("inet:%d");
+        return rb_f_sprintf(2, argv);
+    } else {
+	argv[0] = rb_str_new2("inet:%d@%s");
+        return rb_f_sprintf(3, argv);
+    }
 }
 
 static VALUE
@@ -115,14 +118,17 @@ ipv6_equal (VALUE self, VALUE other)
 static VALUE
 ipv6_to_s (VALUE self)
 {
-    VALUE argv[2];
+    VALUE argv[3];
 
-    argv[0] = rb_iv_get(self, "@port");
-    argv[1] = rb_iv_get(self, "@host");
-    if (NIL_P(argv[1]))
-        return rb_str_format(1, argv, rb_str_new2("inet6:%d"));
-    else
-        return rb_str_format(2, argv, rb_str_new2("inet6:%d@%s"));
+    argv[1] = rb_iv_get(self, "@port");
+    argv[2] = rb_iv_get(self, "@host");
+    if (NIL_P(argv[2])) {
+	argv[0] = rb_str_new2("inet6:%d");
+        return rb_f_sprintf(2, argv);
+    } else {
+	argv[0] = rb_str_new2("inet6:%d@%s");
+        return rb_f_sprintf(3, argv);
+    }
 }
 
 static VALUE
@@ -168,10 +174,11 @@ unix_equal (VALUE self, VALUE other)
 static VALUE
 unix_to_s (VALUE self)
 {
-    VALUE argv[1];
+    VALUE argv[2];
 
-    argv[0] = rb_iv_get(self, "@path");
-    return rb_str_format(1, argv, rb_str_new2("unix:%s"));
+    argv[0] = rb_str_new2("unix:%s");
+    argv[1] = rb_iv_get(self, "@path");
+    return rb_f_sprintf(2, argv);
 }
 
 void
