@@ -1,5 +1,7 @@
 2008-12-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* configure.ac: intltool >= 0.35.0.
+
 	* milter/core/milter-reply-decoder.c (decode_reply_reply_code):
 	initialize variable by NULL.
 
