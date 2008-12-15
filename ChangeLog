@@ -11,6 +11,7 @@
 	instead of g_timeout_add_seconds.
 	* milter/core/milter-utils.c: Use g_string_vprintf instead of
 	g_string_append_vprintf.
+	* milter/core/milter-utils.c: Do not use g_string_vprintf too.
 
 2008-12-13  Kouhei Sutou  <kou@cozmixng.org>
 

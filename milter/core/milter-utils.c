@@ -22,6 +22,7 @@
 #endif /* HAVE_CONFIG_H */
 
 #include <string.h>
+#include <glib/gprintf.h>
 
 #include "milter-utils.h"
 
@@ -338,11 +339,17 @@ milter_utils_set_error_with_sub_error (GError **error,
 {
     GString *message;
     va_list var_args;
+    gchar *buf;
+    gint len;
 
     message = g_string_new(NULL);
 
     va_start(var_args, format);
-    g_string_vprintf(message, format, var_args);
+    len = g_vasprintf(&buf, format, var_args);
+    if (len >= 0) {
+        g_string_append_len(message, buf, len);
+        g_free(buf);
+    }
     va_end(var_args);
 
     if (sub_error) {
