@@ -1718,6 +1718,15 @@ get_first_child_in_command_waiting_child_queue (MilterManagerChildren *children)
 }
 
 static void
+queue_clear (GQueue *queue)
+{
+    g_return_if_fail(queue != NULL);
+
+    g_list_free(queue->head);
+    g_queue_init(queue);
+}
+
+static void
 init_reply_queue (MilterManagerChildren *children,
                   MilterServerContextState state)
 {
@@ -1725,7 +1734,7 @@ init_reply_queue (MilterManagerChildren *children,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    g_queue_clear(priv->reply_queue);
+    queue_clear(priv->reply_queue);
     priv->current_state = state;
     g_hash_table_insert(priv->reply_statuses,
                         GINT_TO_POINTER(state),

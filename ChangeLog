@@ -5,6 +5,8 @@
 	* milter/core/milter-utils.[ch]: Added milter_utils_strcmp0.
 	* milter/core/milter-header.c: Use milter_utils_strcmp0 instead of
 	g_strcmp0.
+	* milter/manager/milter-manager-children.c: Do not use
+	g_queue_clear().
 
 2008-12-13  Kouhei Sutou  <kou@cozmixng.org>
 
