@@ -29,6 +29,6 @@
 
 VALUE rb_milter_compat_glist2array_string (GList *list);
 VALUE rb_milter_compat_gobject2ruby_object_with_unref (gpointer instance);
-VALUE rb_milter_compat_inspect (VALUE object);
+const gchar *rb_milter_compat_inspect (VALUE object);
 
 #endif

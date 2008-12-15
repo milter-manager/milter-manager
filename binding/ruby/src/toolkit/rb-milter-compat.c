@@ -25,11 +25,11 @@ rb_milter_compat_gobject2ruby_object_with_unref (gpointer instance)
     return ruby_object;
 }
 
-VALUE
+const gchar *
 rb_milter_compat_inspect (VALUE object)
 {
     VALUE inspected;
 
-    inspected = rb_funcall(object, rb_inspect("inspect"), 0);
+    inspected = rb_funcall(object, rb_intern("inspect"), 0);
     return RVAL2CSTR(inspected);
 }
