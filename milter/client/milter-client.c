@@ -77,6 +77,8 @@ static void get_property   (GObject         *object,
 
 static gchar *get_default_connection_spec
                            (MilterClient    *client);
+static void   cb_finished  (MilterClientContext *context,
+                            gpointer _data);
 
 static void
 milter_client_class_init (MilterClientClass *klass)
@@ -127,6 +129,8 @@ milter_client_init (MilterClient *client)
 static void
 process_data_free (MilterClientProcessData *data)
 {
+    g_signal_handlers_disconnect_by_func(data->context,
+                                         G_CALLBACK(cb_finished), data);
     g_object_unref(data->context);
     g_free(data);
 }
@@ -268,6 +272,7 @@ cb_finished (MilterClientContext *context, gpointer _data)
     GSource *source;
 
     source = g_idle_source_new();
+    g_warning("%p", data);
     g_source_set_callback(source, cb_idle_free_data, data, NULL);
     g_source_attach(source, g_main_loop_get_context(data->priv->accept_loop));
     g_source_unref(source);

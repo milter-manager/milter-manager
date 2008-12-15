@@ -48,6 +48,8 @@
 	* milter/manager/milter-manager-children.c: Do not use g_queue_init.
 	* bindings/ruby/src/toolkit/rb-milter-core-private.h: Workaround for
 	agey Ruby-GNOME2.
+	* milter/client/milter-client.c: Fixed a crash. This is a side effect
+	of Rev.1841. That change caused emitting of "finished" signal twice.
 
 2008-12-13  Kouhei Sutou  <kou@cozmixng.org>
 
