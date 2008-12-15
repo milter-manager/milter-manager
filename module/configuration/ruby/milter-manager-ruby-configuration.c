@@ -67,12 +67,14 @@ static gboolean real_load_custom  (MilterManagerConfiguration *configuration,
                                    const gchar                *file_name,
                                    GError                    **error);
 
-/* the function should be a static but G_DEFINE_DYNAMIC_TYPE implements it no static function */
-GType milter_manager_ruby_configuration_get_type (void);
+static gpointer milter_manager_ruby_configuration_parent_class = NULL;
+static GType    milter_manager_ruby_configuration_type_id = 0;
 
-G_DEFINE_DYNAMIC_TYPE(MilterManagerRubyConfiguration,
-                      milter_manager_ruby_configuration,
-                      MILTER_TYPE_MANAGER_CONFIGURATION);
+static GType
+milter_manager_ruby_configuration_get_type (void)
+{
+    return milter_manager_ruby_configuration_type_id;
+}
 
 static void
 milter_manager_ruby_configuration_class_init (MilterManagerRubyConfigurationClass *klass)
@@ -99,6 +101,39 @@ milter_manager_ruby_configuration_class_finalize (MilterManagerRubyConfiguration
 static void
 milter_manager_ruby_configuration_init (MilterManagerRubyConfiguration *configuration)
 {
+}
+
+static void
+milter_manager_ruby_configuration_class_intern_init (gpointer klass)
+{
+    milter_manager_ruby_configuration_parent_class = g_type_class_peek_parent(klass);
+    milter_manager_ruby_configuration_class_init((MilterManagerRubyConfigurationClass*)klass);
+}
+
+static void
+milter_manager_ruby_configuration_register_type (GTypeModule *type_module)
+{
+    GType g_define_type_id;
+    const GTypeInfo g_define_type_info = {
+        sizeof (MilterManagerRubyConfigurationClass),
+        (GBaseInitFunc) NULL,
+        (GBaseFinalizeFunc) NULL,
+        (GClassInitFunc) milter_manager_ruby_configuration_class_intern_init,
+        (GClassFinalizeFunc) milter_manager_ruby_configuration_class_finalize,
+        NULL,   /* class_data */
+        sizeof (MilterManagerRubyConfiguration),
+        0,      /* n_preallocs */
+        (GInstanceInitFunc) milter_manager_ruby_configuration_init,
+        NULL    /* value_table */
+    };
+    
+    milter_manager_ruby_configuration_type_id =
+        g_type_module_register_type(type_module,
+                                    MILTER_TYPE_MANAGER_CONFIGURATION,
+                                    "MilterManagerRubyConfiguration",
+                                    &g_define_type_info,
+                                    (GTypeFlags) 0);
+    g_define_type_id = milter_manager_ruby_configuration_type_id;
 }
 
 static void
