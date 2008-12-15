@@ -1,5 +1,8 @@
 2008-12-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/src/toolkit/rb-milter-compat.[ch]: add fallback
+	RBG_INSPECT.
+
 	* binding/ruby/src/toolkit/rb-milter-compat.[ch]: add.
 
 	* src/milter-manager.c: define fallback RUBY_INIT_STACK.
