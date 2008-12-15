@@ -867,9 +867,9 @@ write_packet (MilterClientContext *context, gchar *packet, gsize packet_size)
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
 
-    priv->timeout_id = g_timeout_add_seconds(priv->mta_timeout,
-                                             cb_mta_timeout,
-                                             context);
+    priv->timeout_id = milter_utils_timeout_add(priv->mta_timeout,
+                                                cb_mta_timeout,
+                                                context);
     success = milter_agent_write_packet(MILTER_AGENT(context),
                                         packet, packet_size,
                                         &agent_error);

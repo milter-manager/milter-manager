@@ -7,6 +7,8 @@
 	g_strcmp0.
 	* milter/manager/milter-manager-children.c: Do not use
 	g_queue_clear().
+	* milter/client/milter-client-context.c: Use milter_utils_timeout_add
+	instead of g_timeout_add_seconds.
 
 2008-12-13  Kouhei Sutou  <kou@cozmixng.org>
 
