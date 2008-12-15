@@ -166,7 +166,7 @@ decode_reply_reply_code (MilterDecoder *decoder, GError **error)
     gint32 command_length;
     gchar *reply_code_str;
     gchar *extended_code;
-    gchar *message;
+    gchar *message = NULL;
     guint reply_code;
 
     milter_debug("decoding REPLY_CODE");

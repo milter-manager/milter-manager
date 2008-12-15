@@ -1,5 +1,8 @@
 2008-12-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-reply-decoder.c (decode_reply_reply_code):
+	initialize variable by NULL.
+
 	* binding/ruby/src/toolkit/rb-milter-core-private.h: move to
 	backward compatibility macros to ...
 	* binding/ruby/src/toolkit/rb-milter.h: ... here.
