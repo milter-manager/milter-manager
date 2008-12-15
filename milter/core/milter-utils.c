@@ -342,7 +342,7 @@ milter_utils_set_error_with_sub_error (GError **error,
     message = g_string_new(NULL);
 
     va_start(var_args, format);
-    g_string_append_vprintf(message, format, var_args);
+    g_string_vprintf(message, format, var_args);
     va_end(var_args);
 
     if (sub_error) {

@@ -9,6 +9,8 @@
 	g_queue_clear().
 	* milter/client/milter-client-context.c: Use milter_utils_timeout_add
 	instead of g_timeout_add_seconds.
+	* milter/core/milter-utils.c: Use g_string_vprintf instead of
+	g_string_append_vprintf.
 
 2008-12-13  Kouhei Sutou  <kou@cozmixng.org>
 
