@@ -495,6 +495,17 @@ milter_utils_xml_append_boolean_element (GString *string,
                                          indent);
 }
 
+gint
+milter_utils_strcmp0 (const char *str1,
+                      const char *str2)
+{
+    if (!str1)
+        return -(str1 != str2);
+    if (!str2)
+        return str1 != str2;
+    return strcmp(str1, str2);
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */

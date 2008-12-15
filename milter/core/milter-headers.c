@@ -22,6 +22,7 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "milter-headers.h"
+#include "milter-utils.h"
 
 #define MILTER_HEADERS_GET_PRIVATE(obj)                   \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                   \
@@ -169,7 +170,7 @@ string_equal (const gchar *string1, const gchar *string2)
     if (string1 == NULL || string2 == NULL)
         return FALSE;
 
-    return g_strcmp0(string1, string2) == 0;
+    return milter_utils_strcmp0(string1, string2) == 0;
 }
 
 MilterHeader *
@@ -192,7 +193,7 @@ static gint
 milter_header_name_compare (MilterHeader *header1,
                             const gchar *name)
 {
-    return g_strcmp0(header1->name, name);
+    return milter_utils_strcmp0(header1->name, name);
 }
 
 MilterHeader *
@@ -413,10 +414,10 @@ gint
 milter_header_compare (MilterHeader *header_a,
                        MilterHeader *header_b)
 {
-    if (g_strcmp0(header_a->name, header_b->name))
-        return g_strcmp0(header_a->name, header_b->name);
+    if (milter_utils_strcmp0(header_a->name, header_b->name))
+        return milter_utils_strcmp0(header_a->name, header_b->name);
 
-    return g_strcmp0(header_a->value, header_b->value);
+    return milter_utils_strcmp0(header_a->value, header_b->value);
 }
 
 gboolean

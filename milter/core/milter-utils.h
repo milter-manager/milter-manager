@@ -127,6 +127,8 @@ void             milter_utils_xml_append_boolean_element
                                               const gchar *name,
                                               gboolean boolean,
                                               guint indent);
+gint             milter_utils_strcmp0        (const gchar *str1,
+                                              const gchar *str2);
 
 G_END_DECLS
 
