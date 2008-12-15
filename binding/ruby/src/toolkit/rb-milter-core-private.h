@@ -32,6 +32,17 @@ void Init_milter_decoder (void);
 #define RVAL2MACROS(hash)   (rb_milter__rval2macros(hash))
 #define MACROS2RVAL(macros) (rb_milter__macros2rval(macros))
 
+/* Workaround for past Ruby-Gnome2 */
+#ifndef RSTRING_PTR
+#  define RSTRING_PTR(s) (RSTRING(s)->ptr)
+#  define RSTRING_LEN(s) (RSTRING(s)->len)
+#endif
+
+#ifndef RARRAY_PTR
+#  define RARRAY_PTR(s) (RARRAY(s)->ptr)
+#  define RARRAY_LEN(s) (RARRAY(s)->len)
+#endif
+
 GHashTable *rb_milter__rval2macros(VALUE rb_macros);
 VALUE       rb_milter__macros2rval(GHashTable *macros);
 

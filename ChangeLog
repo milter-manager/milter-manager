@@ -12,7 +12,9 @@
 	* milter/core/milter-utils.c: Use g_string_vprintf instead of
 	g_string_append_vprintf.
 	* milter/core/milter-utils.c: Do not use g_string_vprintf too.
-	* milter/manager-milter-manager-children.c: Do not use g_queue_init.
+	* milter/manager/milter-manager-children.c: Do not use g_queue_init.
+	* bindings/ruby/src/toolkit/rb-milter-core-private.h: Workaround for
+	agey Ruby-Gnome2.
 
 2008-12-13  Kouhei Sutou  <kou@cozmixng.org>
 
