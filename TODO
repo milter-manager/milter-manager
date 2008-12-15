@@ -11,6 +11,7 @@
 * add default applicable conditions:
   ideas:
     * S25R
+    * DNSBL: http://spam-champuru.livedoor.com/dnsbl/
     * remote network (local network may not be a spammer)
     * detected as spam (X-Spam-Flag:, X-Bogosity:)
     * detected as virus (X-Virus-Status:)

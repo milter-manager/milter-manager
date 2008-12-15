@@ -1,5 +1,7 @@
 2008-12-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: add an applicable condition idea: DNSBL.
+
 	* TODO: add: milter-manager can be ran as normal user.
 
 	* binding/ruby/src/toolkit/rb-milter-socket-address.c: use
