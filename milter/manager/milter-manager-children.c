@@ -1718,12 +1718,21 @@ get_first_child_in_command_waiting_child_queue (MilterManagerChildren *children)
 }
 
 static void
+queue_init (GQueue *queue)
+{
+    g_return_if_fail(queue != NULL);
+
+    queue->head = queue->tail = NULL;
+    queue->length = 0;
+}
+
+static void
 queue_clear (GQueue *queue)
 {
     g_return_if_fail(queue != NULL);
 
     g_list_free(queue->head);
-    g_queue_init(queue);
+    queue_init(queue);
 }
 
 static void
