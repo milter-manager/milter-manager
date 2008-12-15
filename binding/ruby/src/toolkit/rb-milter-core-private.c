@@ -30,8 +30,7 @@ rb_milter__rval2macros (VALUE rb_macros)
     GHashTable *macros;
 
     macros = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
-    rb_block_call(rb_macros, rb_intern("each"), 0, NULL,
-                  rval2macro, (VALUE)macros);
+    rb_iterate(rb_each, rb_macros, rval2macro, (VALUE)macros);
     return macros;
 }
 
