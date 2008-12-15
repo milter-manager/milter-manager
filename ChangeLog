@@ -1,5 +1,8 @@
 2008-12-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/src/toolkit/rb-milter-compat.[ch]: add fallback
+	RVAL2CSTR_ACCEPT_NIL.
+
 	* binding/ruby/src/toolkit/rb-milter-core-private.c
 	(rb_milter__rval2macros): use rb_iterate() and rb_each() instead
 	of rb_block_call().

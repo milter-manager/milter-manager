@@ -33,3 +33,12 @@ rb_milter_compat_inspect (VALUE object)
     inspected = rb_funcall(object, rb_intern("inspect"), 0);
     return RVAL2CSTR(inspected);
 }
+
+const gchar *
+rb_milter_compat_ruby_object2string_accept_nil (VALUE string)
+{
+    if (NIL_P(string))
+        return NULL;
+
+    return RVAL2CSTR(string);
+}
