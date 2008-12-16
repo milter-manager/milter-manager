@@ -341,6 +341,9 @@ AC_CONFIG_FILES([Makefile
 		 test/tool/fixtures/Makefile
 		 test/manager/Makefile
 		 po/Makefile.in
+		 doc/Makefile
+		 doc/reference/Makefile
+		 doc/reference/version.xml
 		 build/Makefile])
 
 AC_OUTPUT

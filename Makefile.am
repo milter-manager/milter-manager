@@ -6,11 +6,16 @@ SUBDIRS =		\
 	src		\
 	tool		\
 	data		\
-	test
+	test		\
+	doc
 
 EXTRA_DIST =					\
 	autogen.sh				\
-	ChangeLog.toolkit
+	ChangeLog.toolkit			\
+	README					\
+	README.ja				\
+	INTRODUCTION				\
+	INTRODUCTION.ja
 
 upload: upload-doc
 

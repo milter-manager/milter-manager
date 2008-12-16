@@ -1,5 +1,9 @@
 2008-12-16  Kouhei Sutou  <kou@cozmixng.org>
 
+	* gtk-doc.make, doc/reference/: add.
+
+	* README, INTRODUCTION: just add.
+
 	* TODO: add: write man for milter-manager, milter-test-client,
 	milter-test-server and milter-log-tool.
 

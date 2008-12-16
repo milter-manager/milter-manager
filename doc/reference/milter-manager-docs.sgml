@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+<!ENTITY version SYSTEM "version.xml">
+]>
+<book xmlns:xi="http://www.w3.org/2003/XInclude" id="index" lang="en">
+  <bookinfo>
+    <title>milter-manager Reference Manual</title>
+    <releaseinfo>for milter-manager &version;</releaseinfo>
+  </bookinfo>
+
+  <part id="start">
+    <title>Getting start</title>
+    <!--xi:include href="news.xml"/-->
+    <xi:include href="readme.xml"/>
+    <xi:include href="introduction.xml"/>
+    <!--xi:include href="tutorial.xml"/-->
+  </part>
+
+  <!--part id="reference">
+    <title>Reference</title>
+    <chapter id="milter-client">
+      <title>milter-client</title>
+      <xi:include href="xml/client.xml"/>
+    </chapter>
+    <chapter id="libmilter">
+      <title>libmilter</title>
+      <xi:include href="xml/mfapi.xml"/>
+    </chapter>
+  </part-->
+
+  <index id="index-all">
+    <title>Index of all symbols</title>
+  </index>
+  <index id="index-deprecated" role="deprecated">
+    <title>Index of deprecated symbols</title>
+  </index>
+  <!--index id="index-1-0-0" role="1.0.0">
+    <title>Index of new symbols in 1.0.0</title>
+  </index-->
+</book>
