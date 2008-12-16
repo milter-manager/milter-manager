@@ -50,10 +50,10 @@ CentOS 5.2、Ubuntu 8.04 TLSで動作することを想定しています。そ
 == 入手方法
 
 tar.gz:
-((<URL:http://sourceforge.net/project/showfiles.php?group_id=208375>))
+((<URL:http://sourceforge.net/project/showfiles.php?group_id=236233>))
 
 Subversion:
-  % svn co https://cutter.svn.sourceforge.net/svnroot/cutter/cutter/trunk cutter
+  % svn co https://milter-manager.svn.sourceforge.net/svnroot/milter-manager/milter-manager/trunk milter-manager
 
 == インストール
 

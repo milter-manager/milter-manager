@@ -1,5 +1,8 @@
 2008-12-16  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: add: write man for milter-manager, milter-test-client,
+	milter-test-server and milter-log-tool.
+
 	* INTRODUCTION.ja: extract from README.ja.
 
 	* README.ja: fill.

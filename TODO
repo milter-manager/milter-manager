@@ -69,3 +69,6 @@
 * milter-manager can be ran as normal user if milter-manager process is
   invoked as root user. just only control connection handler and child
   milter process invoker can be ran as root user.
+* write man for milter-manager, milter-test-client,
+  milter-test-server and milter-log-tool.
+
