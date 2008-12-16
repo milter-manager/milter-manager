@@ -2,6 +2,7 @@
 
 	* tool/ruby: Added.
 	* tool/ruby/milter-rrd.rb: Serapare from milter-log-tool.rb.
+	* tool/milter-log-tool.rb -> tool/milter-log-tool: Renamed.
 
 2008-12-15  Kouhei Sutou  <kou@cozmixng.org>
 

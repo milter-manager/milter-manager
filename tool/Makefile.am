@@ -27,3 +27,6 @@ milter_test_server_CFLAGS =				\
 	$(AM_CFLAGS)					\
 	-DMILTER_LOG_DOMAIN=\""milter-test-server"\"
 
+bin_SCRIPTS =			\
+	milter-log-tool
+
