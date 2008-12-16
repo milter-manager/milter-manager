@@ -212,7 +212,8 @@ module Milter::Manager
             # do nothing
           when :milter
             @configuration.define_milter(@egg_config["name"]) do |milter|
-              milter.connection_spec = @egg_config["connection_spec"]
+              spec = @egg_config["connection_spec"] || ""
+              milter.connection_spec = spec unless spec.empty?
               (@egg_config["applicable_conditions"] || []).each do |condition|
                 milter.add_applicable_condition(condition)
               end
@@ -350,7 +351,7 @@ module Milter::Manager
       end
 
       def connection_spec=(spec)
-        Milter::Connection.parse_spec(spec)
+        Milter::Connection.parse_spec(spec) unless spec.nil?
         @configuration.control_connection_spec = spec
       end
     end
@@ -361,7 +362,7 @@ module Milter::Manager
       end
 
       def connection_spec=(spec)
-        Milter::Connection.parse_spec(spec)
+        Milter::Connection.parse_spec(spec) unless spec.nil?
         @configuration.manager_connection_spec = spec
       end
     end

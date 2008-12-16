@@ -1,5 +1,10 @@
 2008-12-16  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager.rb: add nil check.
+
+	* binding/ruby/test/manager/test-configuration.rb: add tests for
+	connection_spec accessors.
+
 	* gtk-doc.make, doc/reference/: add.
 
 	* README, INTRODUCTION: just add.
