@@ -324,6 +324,7 @@ AC_CONFIG_FILES([Makefile
 		 data/applicable-conditions/Makefile
 		 data/packet/Makefile
 		 tool/Makefile
+		 tool/ruby/Makefile
 		 test/Makefile
 		 test/lib/Makefile
 		 test/fixtures/Makefile
