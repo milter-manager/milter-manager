@@ -231,6 +231,9 @@ AC_SUBST(bindingdir)
 AC_SUBST(binding_extdir)
 AC_SUBST(binding_libdir)
 
+tool_libdir='$(pkglibdir)/tool'
+AC_SUBST(tool_libdir)
+
 pkgsysconfdir="\$(sysconfdir)/$PACKAGE_NAME"
 AC_SUBST(pkgsysconfdir)
 

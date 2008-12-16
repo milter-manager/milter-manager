@@ -1,6 +1,7 @@
 2008-12-16  Hiroyuki Ikezoe  <poincare@ikezoe.net>
 
 	* tool/ruby: Added.
+	* tool/ruby/milter-rrd.rb: Serapare from milter-log-tool.rb.
 
 2008-12-15  Kouhei Sutou  <kou@cozmixng.org>
 
