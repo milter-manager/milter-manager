@@ -96,9 +96,7 @@ milter_manager_init (int *argc, char ***argv)
     bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
     textdomain(GETTEXT_PACKAGE);
 
-    g_type_init();
-    if (!g_thread_supported())
-        g_thread_init(NULL);
+    milter_init();
 
     option_context = g_option_context_new(NULL);
     g_option_context_add_main_entries(option_context, option_entries, NULL);
@@ -259,7 +257,6 @@ setup_control_connection (MilterManager *manager)
 
     return watch_id;
 }
-
 
 void
 milter_manager_main (void)

@@ -1,3 +1,7 @@
+2008-12-18  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/manager/milter-manager-main.c: Use milter_init.
+
 2008-12-17  Kouhei Sutou  <kou@cozmixng.org>
 
 	* doc/reference/, milter/client.h: add documentation for
