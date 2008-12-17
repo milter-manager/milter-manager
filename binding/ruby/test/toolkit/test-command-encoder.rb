@@ -13,7 +13,8 @@ class TestCommandEncoder < Test::Unit::TestCase
 
   def test_define_macro
     assert_equal(packet("D", "C" + "XXX\0YYY\0"),
-                 @encoder.encode_define_macro(:connect, {"XXX" => "YYY"}))
+                 @encoder.encode_define_macro(Milter::Command::CONNECT,
+                                              {"XXX" => "YYY"}))
   end
 
   def test_connect

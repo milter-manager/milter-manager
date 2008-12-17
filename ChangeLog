@@ -1,5 +1,9 @@
 2008-12-17  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/test/toolkit/test-command-encoder.rb
+	(TestCommandEncoder#test_define_macro): don't use convenience enum
+	specification supported since Ruby/GLib2 0.17.0.
+
 	* binding/ruby/test/run-test.rb,
 	binding/ruby/test/milter-test-utils.rb: remove RR depended codes.
 
