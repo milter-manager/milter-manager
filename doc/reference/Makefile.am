@@ -20,16 +20,13 @@ HFILE_GLOB =					\
 	$(top_srcdir)/milter/*.h		\
 	$(top_srcdir)/milter/*/*.h		\
 	$(top_srcdir)/libmilter/*.h
-CFILE_GLOB=
+CFILE_GLOB=					\
+	$(top_srcdir)/milter/*/*.c		\
+	$(top_srcdir)/libmilter/*.c
 
 # Headers to ignore
 IGNORE_HFILES=					\
-	milter-enum-types.h			\
-	milter-marshalers.h			\
-	milter-module-impl.h			\
-	milter-module.h				\
-	milter-assertions.h			\
-	config.h
+	milter-marshalers.h
 
 INCLUDES =					\
 	-I$(top_srcdir)/libmilter		\

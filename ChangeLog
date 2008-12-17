@@ -1,5 +1,8 @@
 2008-12-17  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/reference/, milter/client.h: add documentation for
+	milter/client.h.
+
 	* TODO: add: make libmilter.so ABI compatible.
 
 	* binding/ruby/test/toolkit/test-command-encoder.rb

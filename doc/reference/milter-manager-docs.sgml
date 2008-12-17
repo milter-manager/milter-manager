@@ -22,6 +22,10 @@
       <title>milter-core</title>
       <xi:include href="xml/core.xml"/>
     </chapter>
+    <chapter id="milter-client">
+      <title>milter-client</title>
+      <xi:include href="xml/client.xml"/>
+    </chapter>
     <!--chapter id="libmilter">
       <title>libmilter</title>
       <xi:include href="xml/mfapi.xml"/>
