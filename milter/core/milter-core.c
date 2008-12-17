@@ -21,9 +21,7 @@
 #  include "../../config.h"
 #endif /* HAVE_CONFIG_H */
 
-#include <glib.h>
-
-#include "milter-main.h"
+#include <milter/core.h>
 
 void
 milter_init (void)

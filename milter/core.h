@@ -20,8 +20,9 @@
 #ifndef __MILTER_CORE_H__
 #define __MILTER_CORE_H__
 
+#include <glib.h>
+
 #include <milter/core/milter-version.h>
-#include <milter/core/milter-main.h>
 #include <milter/core/milter-protocol.h>
 #include <milter/core/milter-encoder.h>
 #include <milter/core/milter-command-encoder.h>
@@ -43,6 +44,54 @@
 #include <milter/core/milter-finished-emittable.h>
 #include <milter/core/milter-reply-signals.h>
 #include <milter/core/milter-enum-types.h>
+
+G_BEGIN_DECLS
+
+/**
+ * SECTION: core
+ * @title: Core
+ * @short_description: The core library to be used by
+ *                     milter-manager libraries.
+ *
+ * The milter-core library includes common features that are
+ * used by the milter-client, milter-server and
+ * milter-manager libraries.
+ *
+ * Applications and libraries that use the milter-core
+ * library need to call milter_init() at the beginning and
+ * milter_quit() at the end:
+ *
+ * |[
+ * #include <milter/core.h>
+ *
+ * int
+ * main (int argc, char **argv)
+ * {
+ *     milter_init();
+ *     main_codes_that_use_the_milter_core_library();
+ *     milter_quit();
+ *
+ *     return 0;
+ * }
+ * ]|
+ */
+
+/**
+ * milter_init:
+ *
+ * Call this function before using any other the milter-core
+ * library functions.
+ */
+void milter_init (void);
+
+/**
+ * milter_quit:
+ *
+ * Call this function after the milter-core library use.
+ */
+void milter_quit (void);
+
+G_END_DECLS
 
 #endif /* __MILTER_CORE_H__ */
 

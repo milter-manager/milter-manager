@@ -16,17 +16,17 @@
     <!--xi:include href="tutorial.xml"/-->
   </part>
 
-  <!--part id="reference">
+  <part id="reference">
     <title>Reference</title>
-    <chapter id="milter-client">
-      <title>milter-client</title>
-      <xi:include href="xml/client.xml"/>
+    <chapter id="milter-core">
+      <title>milter-core</title>
+      <xi:include href="xml/core.xml"/>
     </chapter>
-    <chapter id="libmilter">
+    <!--chapter id="libmilter">
       <title>libmilter</title>
       <xi:include href="xml/mfapi.xml"/>
-    </chapter>
-  </part-->
+    </chapter-->
+  </part>
 
   <index id="index-all">
     <title>Index of all symbols</title>

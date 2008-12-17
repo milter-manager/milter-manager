@@ -20,7 +20,7 @@ HFILE_GLOB =					\
 	$(top_srcdir)/milter/*.h		\
 	$(top_srcdir)/milter/*/*.h		\
 	$(top_srcdir)/libmilter/*.h
-#CFILE_GLOB=$(top_srcdir)/cutter/*.c
+CFILE_GLOB=
 
 # Headers to ignore
 IGNORE_HFILES=					\

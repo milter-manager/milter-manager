@@ -14,7 +14,6 @@ BUILT_SOURCES =
 
 milter_core_public_headers =		\
 	milter-protocol.h  		\
-	milter-main.h	  		\
 	milter-decoder.h    		\
 	milter-command-decoder.h	\
 	milter-reply-decoder.h		\
@@ -56,7 +55,7 @@ libmilter_core_la_SOURCES =		\
 	milter-enum-types.c		\
 	milter-marshalers.c		\
 	milter-marshalers.h		\
-	milter-main.c			\
+	milter-core.c			\
 	milter-decoder.c		\
 	milter-command-decoder.c	\
 	milter-reply-decoder.c		\

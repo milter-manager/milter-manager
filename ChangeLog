@@ -1,3 +1,12 @@
+2008-12-17  Kouhei Sutou  <kou@cozmixng.org>
+
+	* doc/reference/milter-manager-docs.sgml: add milter/core.h.
+
+	* milter/core.h: add document.
+
+	* milter/core/milter-main.h: move to ...
+	* milter/core.h: ... here.
+
 2008-12-17  Hiroyuki Ikezoe  <poincare@ikezoe.net>
 
 	* tool/milter-performance-check: Added.
