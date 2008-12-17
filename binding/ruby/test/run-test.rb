@@ -2,10 +2,6 @@
 
 require 'pathname'
 
-require 'rubygems'
-gem 'rr'
-require 'rr'
-
 base = Pathname.new(__FILE__).dirname.expand_path
 top = (base + "..").expand_path
 test_unit_dir = top + "test-unit" + "lib"
