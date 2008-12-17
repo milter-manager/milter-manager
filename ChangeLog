@@ -1,5 +1,10 @@
 2008-12-17  Kouhei Sutou  <kou@cozmixng.org>
 
+	* README.ja: describe license information.
+
+	* TODO: add:
+	mention GPL license in src/*.c, tool/*.
+
 	* doc/reference/milter-manager-docs.sgml: add milter/core.h.
 
 	* milter/core.h: add document.

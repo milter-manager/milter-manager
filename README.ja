@@ -12,8 +12,26 @@ milter-manager
 
 == ライセンス
 
-  * GPL3（admin/以外）
-  * AGPL3（admin/以下）
+以下の規則に従います。
+
+  * コマンド: GPL3
+  * ドキュメント: GFDL
+  * Webインターフェイス: AGPL3
+  * ライブラリ: LGPL3
+
+具体的には以下の通りです。
+
+  * コマンド: GPL3
+    * src/以下
+    * tool/直下
+  * ドキュメント: GFDL
+    * README/README.ja
+    * INTRODUCTION/INTRODUCTION.ja
+    * doc/以下
+  * Webインターフェイス: AGPL3
+    * admin/以下
+  * ライブラリ: LGPL3
+    * 上記以外
 
 == milter-manager
 
