@@ -1,5 +1,7 @@
 2008-12-17  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: add: make libmilter.so ABI compatible.
+
 	* binding/ruby/test/toolkit/test-command-encoder.rb
 	(TestCommandEncoder#test_define_macro): don't use convenience enum
 	specification supported since Ruby/GLib2 0.17.0.
