@@ -1,0 +1,83 @@
+#!/usr/bin/env ruby
+
+require 'pathname'
+require 'time'
+require 'optparse'
+require 'net/smtp'
+
+class MilterPerformanceTool
+  def initialize
+    @smtp_server = nil
+    @smtp_port = 25
+    @helo_domain = "localhost"
+    @from = "from@example.com"
+    @recipients = []
+    @mail_src = "body"
+    @num_mails = 100
+  end
+
+  def parse_options(argv)
+    opts = OptionParser.new do |opts|
+      opts.on("--smtp_server=HOSTNAME") do |smtp_server|
+        @smtp_server = smtp_server
+      end
+
+      opts.on("--smtp-port=PORT") do |smtp_port|
+        @smtp_port = smtp_port
+      end
+
+      opts.on("--helo-domain=FQDN") do |helo_domain|
+        @helo_domain = helo_domain
+      end
+
+      opts.on("--from=FROM") do |from|
+        @from = from
+      end
+
+      opts.on("--recipient=RECIPIENT") do |recipient|
+        @recipients.unshift(recipient)
+      end
+
+      opts.on("--mail-number=INTEGER") do |number|
+        @num_mails = number.to_i
+      end
+    end
+    opts.parse!(argv)
+    @recipients = ["to@example.com"] unless @recipients.length > 0
+  end
+
+  def start_smtp
+    start_time = Time.now
+    begin
+      Net::SMTP.start(@helo_domain, @port) {|smtp|
+        smtp.send_mail(@mail_src, @from, *@recipients)
+      }
+    rescue Net::ProtoFatalError
+      puts "SMTP error: #{$!}"
+    end
+    Time.now - start_time
+  end
+
+  def start
+    @elapsed_time = 0
+    threads = []
+    @num_mails.times {
+      threads.push(Thread.start {
+        @elapsed_time += start_smtp
+      })
+    }
+    threads.each {|thread| thread.join}
+  end
+
+  def stop
+    puts "Processed #{@num_mails} in #{@elapsed_time} sec."
+    puts "Average #{@num_mails / @elapsed_time} mails/sec."
+  end
+end
+
+performance_tool = MilterPerformanceTool.new
+performance_tool.parse_options(ARGV)
+performance_tool.start
+performance_tool.stop
+
+# vi:ts=2:nowrap:ai:expandtab:sw=2

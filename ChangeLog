@@ -1,3 +1,7 @@
+2008-12-17  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* tool/milter-performance-check: Added.
+
 2008-12-17  Kouhei Sutou  <kou@cozmixng.org>
 
 	* TODO: add:
