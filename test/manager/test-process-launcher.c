@@ -31,8 +31,6 @@
 #include <gcutter.h>
 
 void test_launch (void);
-void test_launch_bad_command_string (void);
-void test_launch_inexistent_command (void);
 void test_launch_no_privilege_mode (void);
 void test_launch_error (gconstpointer data);
 void data_launch_error (void);
