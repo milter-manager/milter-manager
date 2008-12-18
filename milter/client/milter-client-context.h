@@ -195,9 +195,14 @@ G_BEGIN_DECLS
  * 
  * #undef CONNECT
  * }
- *  * ]|
+ * ]|
  */
 
+/**
+ * MILTER_CLIENT_CONTEXT_ERROR:
+ *
+ * Used to get the #GError quark for #MilterClientContext errors.
+ */
 #define MILTER_CLIENT_CONTEXT_ERROR           (milter_client_context_error_quark())
 
 #define MILTER_TYPE_CLIENT_CONTEXT            (milter_client_context_get_type())
@@ -207,6 +212,17 @@ G_BEGIN_DECLS
 #define MILTER_IS_CLIENT_CONTEXT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), MILTER_TYPE_CLIENT_CONTEXT))
 #define MILTER_CLIENT_CONTEXT_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MILTER_TYPE_CLIENT_CONTEXT, MilterClientContextClass))
 
+/**
+ * MilterClientContextError:
+ * @MILTER_CLIENT_CONTEXT_ERROR_INVALID_CODE: Indicates a
+ * status code specified by
+ * milter_client_context_set_reply() is invalid.
+ * @MILTER_CLIENT_CONTEXT_ERROR_IO_ERROR: Indicates an IO
+ * error causing on writing/reading milter protocol data.
+ *
+ * These identify the variable errors that can occur while
+ * calling %MilterClientContext functions.
+ */
 typedef enum
 {
     MILTER_CLIENT_CONTEXT_ERROR_INVALID_CODE,
@@ -291,24 +307,107 @@ GQuark               milter_client_context_error_quark       (void);
 
 GType                milter_client_context_get_type          (void) G_GNUC_CONST;
 
+/**
+ * milter_client_context_new:
+ *
+ * Creates a new context object. Normally, context object is
+ * created by %MilterClient and passed by
+ * #MilterClient::connection-established signal.
+ *
+ * Returns: a new %MilterClientContext object.
+ */
 MilterClientContext *milter_client_context_new               (void);
 
+/**
+ * milter_client_context_feed:
+ * @context: a %MilterClientContext.
+ * @chunk: the string to be fed to @context.
+ * @error: return location for an error, or %NULL.
+ *
+ * Feeds a chunk to the @context. You can use it for testing
+ * or debugging.
+ *
+ * Returns: %TRUE on success.
+ */
 gboolean             milter_client_context_feed              (MilterClientContext *context,
                                                               const gchar *chunk,
                                                               gsize size,
                                                               GError **error);
+
+/**
+ * milter_client_context_get_private_data:
+ * @context: a %MilterClientContext.
+ *
+ * Gets the private data of the @context.
+ *
+ * Returns: the private data set by
+ * milter_client_context_set_private_data() or %NULL.
+ */
 gpointer             milter_client_context_get_private_data  (MilterClientContext *context);
+
+/**
+ * milter_client_context_set_private_data:
+ * @context: a %MilterClientContext.
+ * @data: the private data.
+ * @destroy: the destroy function for @data or %NULL.
+ *
+ * Sets the private data of the @context. @data is
+ * destroyed by @destroy when @data is unset. @data is unset
+ * when new private data is set or @context is @destroyed.
+ */
 void                 milter_client_context_set_private_data  (MilterClientContext *context,
                                                               gpointer data,
                                                               GDestroyNotify destroy);
 
+/**
+ * milter_client_context_set_reply:
+ * @context: a %MilterClientContext.
+ * @code: the three-digit SMTP error reply
+ * code. (RFC 2821) Only 4xx and 5xx are accepted.
+ * @extended_code: the extended reply code (RFC 1893/2034),
+ * or %NULL.
+ * @message: the text part of the SMTP reply, or %NULL.
+ * @error: return location for an error, or %NULL.
+ *
+ * Sets the error reply code. Set error reply code with 4xx
+ * @code is used on %MILTER_REPLY_TEMPORARY_FAILURE. Set
+ * error reply reply code with 5xx @code is used on
+ * %MILTER_REPLY_REJECT. See also <link
+ * linked="https://www.milter.org/developers/api/smfi_setreply">smfi_setreply()
+ * on milter.org</link>.
+ *
+ * Returns: %TRUE on success.
+ */
 gboolean             milter_client_context_set_reply         (MilterClientContext *context,
                                                               guint code,
                                                               const gchar *extended_code,
                                                               const gchar *message,
                                                               GError **error);
+
+/**
+ * milter_client_context_format_reply:
+ * @context: a %MilterClientContext.
+ *
+ * Formats the current error reply code specified by
+ * milter_client_context_set_reply(). If error reply code
+ * isn't set, this function returns %NULL.
+ *
+ * Returns: formatted reply code, or %NULL.
+ */
 gchar               *milter_client_context_format_reply      (MilterClientContext *context);
 
+/**
+ * milter_client_context_negotiate_reply:
+ * @context: a %MilterClientContext.
+ * @option: the negotiate option.
+ * @macros_requests: the macro requests.
+ *
+ * Formats the current error reply code specified by
+ * milter_client_context_set_reply(). If error reply code
+ * isn't set, this function returns %NULL.
+ *
+ * Returns: formatted reply code, or %NULL.
+ */
 gboolean             milter_client_context_negotiate_reply   (MilterClientContext *context,
                                                               MilterOption         *option,
                                                               MilterMacrosRequests *macros_requests);
