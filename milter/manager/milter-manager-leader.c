@@ -675,6 +675,9 @@ milter_manager_leader_negotiate (MilterManagerLeader *leader,
         return MILTER_STATUS_NOT_CHANGE;
 
     setup_children_signals(leader, priv->children);
+    milter_manager_children_set_launcher_channel(priv->children,
+                                                 priv->launcher_read_channel,
+                                                 priv->launcher_write_channel);
 
     if (milter_manager_children_negotiate(priv->children, option,
                                           macros_requests))
