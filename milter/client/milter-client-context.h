@@ -376,7 +376,7 @@ void                 milter_client_context_set_private_data  (MilterClientContex
  * error reply reply code with 5xx @code is used on
  * %MILTER_REPLY_REJECT. See also <link
  * linked="https://www.milter.org/developers/api/smfi_setreply">smfi_setreply()
- * on milter.org</link>.
+ * </link> on milter.org.
  *
  * Returns: %TRUE on success.
  */
@@ -398,34 +398,236 @@ gboolean             milter_client_context_set_reply         (MilterClientContex
  */
 gchar               *milter_client_context_format_reply      (MilterClientContext *context);
 
+/**
+ * milter_client_context_add_header:
+ * @context: a %MilterClientContext.
+ * @name: the header name.
+ * @value: the header value.
+ *
+ * Adds a header to the current message's header lists. This
+ * function can be called in
+ * #MilterClientContext::end-of-message signal.  See also
+ * <link
+ * linked="https://www.milter.org/developers/api/smfi_addheader">smfi_addheader()
+ * </link> on milter.org.
+ *
+ * FIXME: write about MILTER_ACTION_ADD_HEADERS.
+ *
+ * Returns: %TRUE on success.
+ */
 gboolean             milter_client_context_add_header        (MilterClientContext *context,
                                                               const gchar *name,
                                                               const gchar *value);
+
+/**
+ * milter_client_context_insert_header:
+ * @context: a %MilterClientContext.
+ * @index: the index to be inserted.
+ * @name: the header name.
+ * @value: the header value.
+ *
+ * Inserts a header into the current message's header lists
+ * at @index. This function can be called in
+ * #MilterClientContext::end-of-message signal.  See also
+ * <link
+ * linked="https://www.milter.org/developers/api/smfi_insheader">smfi_insheader()
+ * </link> on milter.org.
+ *
+ * FIXME: write about MILTER_ACTION_ADD_HEADERS.
+ *
+ * Returns: %TRUE on success.
+ */
 gboolean             milter_client_context_insert_header     (MilterClientContext *context,
                                                               guint32      index,
                                                               const gchar *name,
                                                               const gchar *value);
+
+/**
+ * milter_client_context_change_header:
+ * @context: a %MilterClientContext.
+ * @name: the header name.
+ * @index: the index of headers that all of them are named
+ * @name. (1-based) FIXME: should change 0-based?
+ * @value: the header value. Use %NULL to delete the target
+ * header.
+ *
+ * Changes a header that is located at @index in headers
+ * that all of them are named @name. If @value is %NULL, the
+ * header is deleted. This function can be
+ * called in #MilterClientContext::end-of-message signal.
+ * See also <link
+ * linked="https://www.milter.org/developers/api/smfi_chgheader">smfi_chgheader()
+ * on milter.org</link>.
+ *
+ * FIXME: write about MILTER_ACTION_CHANGE_HEADERS.
+ *
+ * Returns: %TRUE on success.
+ */
 gboolean             milter_client_context_change_header     (MilterClientContext *context,
                                                               const gchar *name,
                                                               guint32      index,
                                                               const gchar *value);
+
+/**
+ * milter_client_context_delete_header:
+ * @context: a %MilterClientContext.
+ * @name: the header name.
+ * @index: the index of headers that all of them are named
+ * @name. (1-based) FIXME: should change 0-based?
+ *
+ * Deletes a header that is located at @index in headers
+ * that all of them are named @name. This function can be
+ * called in #MilterClientContext::end-of-message signal.
+ * This function works same as
+ * milter_client_context_change_header() with %NULL as
+ * @value.
+ *
+ * FIXME: write about MILTER_ACTION_CHANGE_HEADERS.
+ *
+ * Returns: %TRUE on success.
+ */
 gboolean             milter_client_context_delete_header     (MilterClientContext *context,
                                                               const gchar *name,
                                                               guint32      index);
+
+/**
+ * milter_client_context_change_from:
+ * @context: a %MilterClientContext.
+ * @from: the new envelope from address.
+ * @parameters: the ESMTP's 'MAIL FROM' parameter. It can be
+ * %NULL.
+ *
+ * Changes the envelope from address of the current message.
+ * ESMTP's 'MAIL FROM' parameter can be set by
+ * @parameters. @parameters may be %NULL. This function can be
+ * called in #MilterClientContext::end-of-message signal.
+ * See also <link
+ * linked="https://www.milter.org/developers/api/smfi_chgfrom">smfi_chgfrom()
+ * </link> on milter.org.
+ *
+ * FIXME: write about MILTER_ACTION_CHANGE_FROM.
+ *
+ * Returns: %TRUE on success.
+ */
 gboolean             milter_client_context_change_from       (MilterClientContext *context,
                                                               const gchar *from,
                                                               const gchar *parameters);
+
+/**
+ * milter_client_context_add_recipient:
+ * @context: a %MilterClientContext.
+ * @recipient: the new envelope recipient address.
+ * @parameters: the ESMTP's 'RCPT TO' parameter. It can be
+ * %NULL.
+ *
+ * Adds a new envelope recipient address to the current
+ * message.  ESMTP's 'RCPT TO' parameter can be set by
+ * @parameters. @parameters may be %NULL. This function can
+ * be called in #MilterClientContext::end-of-message
+ * signal. See also <link
+ * linked="https://www.milter.org/developers/api/smfi_addrcpt">smfi_addrcpt()
+ * </link> and <link
+ * linked="https://www.milter.org/developers/api/smfi_addrcpt_par">smfi_addrcpt_par()
+ * </link> on milter.org.
+ *
+ * FIXME: write about MILTER_ACTION_ADD_RECIPIENT and
+ * MILTER_ACTION_ADD_ENVELOPE_RECIPIENT_WITH_PARAMETERS.
+ *
+ * Returns: %TRUE on success.
+ */
 gboolean             milter_client_context_add_recipient     (MilterClientContext *context,
                                                               const gchar *recipient,
                                                               const gchar *parameters);
+
+/**
+ * milter_client_context_delete_recipient:
+ * @context: a %MilterClientContext.
+ * @recipient: the envelope recipient address to be removed.
+ *
+ * Removes a envelope recipient that named @recipient. This
+ * function can be called in
+ * #MilterClientContext::end-of-message signal. See also
+ * <link
+ * linked="https://www.milter.org/developers/api/smfi_delrcpt">smfi_delrcpt()
+ * </link> on milter.org.
+ *
+ * FIXME: write about MILTER_ACTION_DELETE_RECIPIENT.
+ *
+ * Returns: %TRUE on success.
+ */
 gboolean             milter_client_context_delete_recipient  (MilterClientContext *context,
                                                               const gchar *recipient);
+
+
+/**
+ * milter_client_context_replace_body:
+ * @context: a %MilterClientContext.
+ * @body: the new body.
+ * @body_size: the size of @body.
+ *
+ * Replaces the body of the current message with @body. This
+ * function can be called in
+ * #MilterClientContext::end-of-message signal. See also
+ * <link
+ * linked="https://www.milter.org/developers/api/smfi_replacebody">smfi_replacebody()
+ * </link> on milter.org.
+ *
+ * FIXME: write about MILTER_ACTION_CHANGE_BODY.
+ *
+ * Returns: %TRUE on success.
+ */
 gboolean             milter_client_context_replace_body      (MilterClientContext *context,
                                                               const gchar *body,
                                                               gsize        body_size);
+
+/**
+ * milter_client_context_progress:
+ * @context: a %MilterClientContext.
+ *
+ * Notifies the MTA that this milter is still in
+ * progress. This function can be called in
+ * #MilterClientContext::end-of-message signal. See also
+ * <link
+ * linked="https://www.milter.org/developers/api/smfi_progress">smfi_progress()
+ * </link> on milter.org.
+ *
+ * Returns: %TRUE on success.
+ */
 gboolean             milter_client_context_progress          (MilterClientContext *context);
+
+/**
+ * milter_client_context_quarantine:
+ * @context: a %MilterClientContext.
+ * @reason: the reason why the current message is quarantined.
+ *
+ * Quarantines the current message with @reason. This
+ * function can be called in
+ * #MilterClientContext::end-of-message signal. See also
+ * <link
+ * linked="https://www.milter.org/developers/api/smfi_quarantine">smfi_quarantine()
+ * </link> on milter.org.
+ *
+ * FIXME: write about MILTER_ACTION_QUARANTINE.
+ *
+ * Returns: %TRUE on success.
+ */
 gboolean             milter_client_context_quarantine        (MilterClientContext *context,
                                                               const gchar *reason);
+
+/**
+ * milter_client_context_set_mta_timeout:
+ * @context: a %MilterClientContext.
+ * @timeout: the timeout by seconds. (default 7210 seconds)
+ *
+ * Sets the timeout by seconds. If MTA doesn't responses in
+ * @timeout seconds, #MilterClientContext::mta-timeout
+ * signal is emitted. See also
+ * <link
+ * linked="https://www.milter.org/developers/api/smfi_settimeout">smfi_settimeout()
+ * </link> on milter.org.
+ *
+ * Returns: %TRUE on success.
+ */
 void                 milter_client_context_set_mta_timeout   (MilterClientContext *context,
                                                               guint timeout);
 
