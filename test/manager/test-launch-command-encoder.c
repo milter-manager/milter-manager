@@ -19,13 +19,13 @@
 
 #include <string.h>
 
-#include <milter/manager/milter-manager-umbilical-command-encoder.h>
+#include <milter/manager/milter-manager-launch-command-encoder.h>
 
 #include <gcutter.h>
 
-void test_encode_spawn_child (void);
+void test_encode_launch (void);
 
-static MilterManagerUmbilicalCommandEncoder *encoder;
+static MilterManagerLaunchCommandEncoder *encoder;
 static GString *expected;
 static gchar *actual;
 static gsize actual_size;
@@ -35,8 +35,8 @@ setup (void)
 {
     MilterEncoder *_encoder;
 
-    _encoder = milter_manager_umbilical_command_encoder_new();
-    encoder = MILTER_MANAGER_UMBILICAL_COMMAND_ENCODER(_encoder);
+    _encoder = milter_manager_launch_command_encoder_new();
+    encoder = MILTER_MANAGER_LAUNCH_COMMAND_ENCODER(_encoder);
 
     expected = g_string_new(NULL);
     actual = NULL;
@@ -68,19 +68,19 @@ pack (GString *buffer)
 }
 
 void
-test_encode_spawn_child (void)
+test_encode_launch (void)
 {
     const gchar command_line[] = "/bin/echo -n";
     const gchar user_name[] = "echo_user";
 
-    g_string_append(expected, "spawn-child");
+    g_string_append(expected, "launch");
     g_string_append_c(expected, '\0');
     g_string_append(expected, command_line);
     g_string_append_c(expected, '\0');
     g_string_append(expected, user_name);
 
     pack(expected);
-    milter_manager_umbilical_command_encoder_encode_spawn_child(
+    milter_manager_launch_command_encoder_encode_launch(
         encoder,
         &actual, &actual_size,
         command_line, user_name);

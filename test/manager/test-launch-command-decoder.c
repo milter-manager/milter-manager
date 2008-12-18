@@ -22,11 +22,11 @@
 #include <sys/un.h>
 #include <arpa/inet.h>
 
-#include <milter/manager/milter-manager-umbilical-command-decoder.h>
+#include <milter/manager/milter-manager-launch-command-decoder.h>
 
 #include <gcutter.h>
 
-void test_decode_spawn_child (void);
+void test_decode_launch (void);
 void test_decode_unknown (void);
 
 static MilterDecoder *decoder;
@@ -35,18 +35,18 @@ static GString *buffer;
 static GError *expected_error;
 static GError *actual_error;
 
-static gint n_spawn_child_received;
+static gint n_launch_received;
 
 static gchar *actual_command_line;
 static gchar *actual_user_name;
 
 static void
-cb_spawn_child (MilterManagerUmbilicalCommandDecoder *decoder,
-                const gchar *command_line,
-                const gchar *user_name,
-                gpointer user_data)
+cb_launch (MilterManagerLaunchCommandDecoder *decoder,
+           const gchar *command_line,
+           const gchar *user_name,
+           gpointer user_data)
 {
-    n_spawn_child_received++;
+    n_launch_received++;
     actual_command_line = g_strdup(command_line);
     actual_user_name = g_strdup(user_name);
 }
@@ -57,7 +57,7 @@ setup_signals (MilterDecoder *decoder)
 #define CONNECT(name)                                                   \
     g_signal_connect(decoder, #name, G_CALLBACK(cb_ ## name), NULL)
 
-    CONNECT(spawn_child);
+    CONNECT(launch);
 
 #undef CONNECT
 }
@@ -65,13 +65,13 @@ setup_signals (MilterDecoder *decoder)
 void
 setup (void)
 {
-    decoder = milter_manager_umbilical_command_decoder_new();
+    decoder = milter_manager_launch_command_decoder_new();
     setup_signals(decoder);
 
     expected_error = NULL;
     actual_error = NULL;
 
-    n_spawn_child_received = 0;
+    n_launch_received = 0;
 
     buffer = g_string_new(NULL);
 
@@ -117,19 +117,19 @@ decode (void)
 }
 
 void
-test_decode_spawn_child (void)
+test_decode_launch (void)
 {
     const gchar command_line[] = "/bin/echo -n";
     const gchar user_name[] = "echo_user";
 
-    g_string_append(buffer, "spawn-child");
+    g_string_append(buffer, "launch");
     g_string_append_c(buffer, '\0');
     g_string_append(buffer, command_line);
     g_string_append_c(buffer, '\0');
     g_string_append(buffer, user_name);
 
     gcut_assert_error(decode());
-    cut_assert_equal_int(1, n_spawn_child_received);
+    cut_assert_equal_int(1, n_launch_received);
     cut_assert_equal_string(command_line, actual_command_line);
     cut_assert_equal_string(user_name, actual_user_name);
 }

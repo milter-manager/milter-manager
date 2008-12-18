@@ -21,16 +21,16 @@
 #  include "../../config.h"
 #endif /* HAVE_CONFIG_H */
 
-#include "milter-manager-umbilical-command-encoder.h"
+#include "milter-manager-launch-command-encoder.h"
 
-G_DEFINE_TYPE(MilterManagerUmbilicalCommandEncoder,
-              milter_manager_umbilical_command_encoder,
+G_DEFINE_TYPE(MilterManagerLaunchCommandEncoder,
+              milter_manager_launch_command_encoder,
               MILTER_TYPE_ENCODER);
 
 static void dispose        (GObject         *object);
 
 static void
-milter_manager_umbilical_command_encoder_class_init (MilterManagerUmbilicalCommandEncoderClass *klass)
+milter_manager_launch_command_encoder_class_init (MilterManagerLaunchCommandEncoderClass *klass)
 {
     GObjectClass *gobject_class;
 
@@ -40,25 +40,25 @@ milter_manager_umbilical_command_encoder_class_init (MilterManagerUmbilicalComma
 }
 
 static void
-milter_manager_umbilical_command_encoder_init (MilterManagerUmbilicalCommandEncoder *encoder)
+milter_manager_launch_command_encoder_init (MilterManagerLaunchCommandEncoder *encoder)
 {
 }
 
 static void
 dispose (GObject *object)
 {
-    G_OBJECT_CLASS(milter_manager_umbilical_command_encoder_parent_class)->dispose(object);
+    G_OBJECT_CLASS(milter_manager_launch_command_encoder_parent_class)->dispose(object);
 }
 
 MilterEncoder *
-milter_manager_umbilical_command_encoder_new (void)
+milter_manager_launch_command_encoder_new (void)
 {
-    return g_object_new(MILTER_TYPE_MANAGER_UMBILICAL_COMMAND_ENCODER, NULL);
+    return g_object_new(MILTER_TYPE_MANAGER_LAUNCH_COMMAND_ENCODER, NULL);
 }
 
 void
-milter_manager_umbilical_command_encoder_encode_spawn_child (
-    MilterManagerUmbilicalCommandEncoder *encoder,
+milter_manager_launch_command_encoder_encode_launch (
+    MilterManagerLaunchCommandEncoder *encoder,
     gchar **packet, gsize *packet_size,
     const gchar *command_line,
     const gchar *user_name)
@@ -69,7 +69,7 @@ milter_manager_umbilical_command_encoder_encode_spawn_child (
     _encoder = MILTER_ENCODER(encoder);
     buffer = milter_encoder_get_buffer(_encoder);
 
-    g_string_append(buffer, MILTER_MANAGER_UMBILICAL_COMMAND_SPAWN_CHILD);
+    g_string_append(buffer, MILTER_MANAGER_LAUNCH_COMMAND_LAUNCH);
     g_string_append_c(buffer, '\0');
     g_string_append(buffer, command_line);
     g_string_append_c(buffer, '\0');

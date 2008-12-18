@@ -12,6 +12,7 @@
 	* milter/manager/milter-manager-umbilical-protocol.h,
 	milter/manager/milter-manager-umbilical-command-encoder.[ch],
 	milter/manager/milter-manager-umbilical-command-decoder.[ch]: Added.
+	* milter/manager/*: Umbilical -> Launch.
 
 2008-12-17  Kouhei Sutou  <kou@cozmixng.org>
 
