@@ -82,7 +82,8 @@ static const GOptionEntry option_entries[] =
 };
 
 static MilterStatus
-cb_negotiate (MilterDecoder *decoder, MilterOption *option, gpointer user_data)
+cb_negotiate (MilterClientContext *context, MilterOption *option,
+              gpointer user_data)
 {
     MilterActionFlags action;
     MilterStepFlags step;
@@ -106,7 +107,7 @@ cb_negotiate (MilterDecoder *decoder, MilterOption *option, gpointer user_data)
 }
 
 static MilterStatus
-cb_connect (MilterDecoder *decoder, const gchar *host_name,
+cb_connect (MilterClientContext *context, const gchar *host_name,
             const struct sockaddr *address, socklen_t address_length,
             gpointer user_data)
 {
@@ -120,7 +121,7 @@ cb_connect (MilterDecoder *decoder, const gchar *host_name,
 }
 
 static MilterStatus
-cb_helo (MilterDecoder *decoder, const gchar *fqdn, gpointer user_data)
+cb_helo (MilterClientContext *context, const gchar *fqdn, gpointer user_data)
 {
     g_print("helo: <%s>\n", fqdn);
 
@@ -128,7 +129,8 @@ cb_helo (MilterDecoder *decoder, const gchar *fqdn, gpointer user_data)
 }
 
 static MilterStatus
-cb_envelope_from (MilterDecoder *decoder, const gchar *from, gpointer user_data)
+cb_envelope_from (MilterClientContext *context, const gchar *from,
+                  gpointer user_data)
 {
     g_print("envelope-from: <%s>\n", from);
 
@@ -136,7 +138,7 @@ cb_envelope_from (MilterDecoder *decoder, const gchar *from, gpointer user_data)
 }
 
 static MilterStatus
-cb_envelope_recipient (MilterDecoder *decoder, const gchar *to,
+cb_envelope_recipient (MilterClientContext *context, const gchar *to,
                        gpointer user_data)
 {
     g_print("envelope-recipient: <%s>\n", to);
@@ -145,7 +147,7 @@ cb_envelope_recipient (MilterDecoder *decoder, const gchar *to,
 }
 
 static MilterStatus
-cb_data (MilterDecoder *decoder, gpointer user_data)
+cb_data (MilterClientContext *context, gpointer user_data)
 {
     g_print("data\n");
 
@@ -153,7 +155,7 @@ cb_data (MilterDecoder *decoder, gpointer user_data)
 }
 
 static MilterStatus
-cb_header (MilterDecoder *decoder, const gchar *name, const gchar *value,
+cb_header (MilterClientContext *context, const gchar *name, const gchar *value,
            gpointer user_data)
 {
     g_print("header: <%s: %s>\n", name, value);
@@ -162,7 +164,7 @@ cb_header (MilterDecoder *decoder, const gchar *name, const gchar *value,
 }
 
 static MilterStatus
-cb_end_of_header (MilterDecoder *decoder, gpointer user_data)
+cb_end_of_header (MilterClientContext *context, gpointer user_data)
 {
     g_print("end-of-header\n");
 
@@ -170,7 +172,7 @@ cb_end_of_header (MilterDecoder *decoder, gpointer user_data)
 }
 
 static MilterStatus
-cb_body (MilterDecoder *decoder, const gchar *chunk, gsize length,
+cb_body (MilterClientContext *context, const gchar *chunk, gsize length,
          gpointer user_data)
 {
     GString *null_terminated_chunk;
@@ -183,7 +185,7 @@ cb_body (MilterDecoder *decoder, const gchar *chunk, gsize length,
 }
 
 static MilterStatus
-cb_end_of_message (MilterDecoder *decoder, gpointer user_data)
+cb_end_of_message (MilterClientContext *context, gpointer user_data)
 {
     g_print("end-of-message\n");
 
@@ -191,7 +193,7 @@ cb_end_of_message (MilterDecoder *decoder, gpointer user_data)
 }
 
 static MilterStatus
-cb_abort (MilterDecoder *decoder, gpointer user_data)
+cb_abort (MilterClientContext *context, gpointer user_data)
 {
     g_print("abort\n");
 
@@ -199,7 +201,7 @@ cb_abort (MilterDecoder *decoder, gpointer user_data)
 }
 
 static MilterStatus
-cb_quit (MilterDecoder *decoder, gpointer user_data)
+cb_quit (MilterClientContext *context, gpointer user_data)
 {
     g_print("quit\n");
 
@@ -207,7 +209,8 @@ cb_quit (MilterDecoder *decoder, gpointer user_data)
 }
 
 static MilterStatus
-cb_unknown (MilterDecoder *decoder, const gchar *command, gpointer user_data)
+cb_unknown (MilterClientContext *context, const gchar *command,
+            gpointer user_data)
 {
     g_print("unknown: <%s>\n", command);
 
