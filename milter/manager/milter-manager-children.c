@@ -61,6 +61,8 @@ struct _MilterManagerChildrenPrivate
     gboolean sent_end_of_message;
     guint sent_body_count;
     gboolean replaced_body;
+    MilterWriter *launcher_writer;
+    MilterReader *launcher_reader;
 };
 
 typedef struct _NegotiateData NegotiateData;
@@ -218,6 +220,8 @@ milter_manager_children_init (MilterManagerChildren *milter)
     priv->reply_message = NULL;
 
     priv->retry_connect_time = 5.0;
+    priv->launcher_reader = NULL;
+    priv->launcher_writer = NULL;
 }
 
 static void
@@ -315,6 +319,8 @@ dispose (GObject *object)
         g_free(priv->reply_message);
         priv->reply_message = NULL;
     }
+
+    milter_manager_children_set_launcher_channel(MILTER_MANAGER_CHILDREN(object), NULL, NULL);
 
     G_OBJECT_CLASS(milter_manager_children_parent_class)->dispose(object);
 }
@@ -2476,6 +2482,43 @@ MilterServerContextState
 milter_manager_children_get_current_state (MilterManagerChildren *children)
 {
     return MILTER_MANAGER_CHILDREN_GET_PRIVATE(children)->current_state;
+}
+
+static void
+cb_launcher_reader_flow (MilterReader *reader,
+                         const gchar *data, gsize data_size,
+                         gpointer user_data)
+{
+}
+
+void
+milter_manager_children_set_launcher_channel (MilterManagerChildren *children,
+                                              GIOChannel *read_channel,
+                                              GIOChannel *write_channel)
+{
+    MilterManagerChildrenPrivate *priv;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    if (priv->launcher_writer) {
+        g_object_unref(priv->launcher_writer);
+        priv->launcher_writer = NULL;
+    }
+    if (write_channel)
+        priv->launcher_writer = milter_writer_io_channel_new(write_channel);
+
+    if (priv->launcher_reader) {
+        g_signal_handlers_disconnect_by_func(priv->launcher_reader,
+                                             G_CALLBACK(cb_launcher_reader_flow), children);
+        g_object_unref(priv->launcher_reader);
+        priv->launcher_reader = NULL;
+    }
+
+    if (read_channel) {
+        priv->launcher_reader = milter_reader_io_channel_new(read_channel);
+        g_signal_connect(priv->launcher_reader, "flow",
+                         G_CALLBACK(cb_launcher_reader_flow), children);
+    }
 }
 
 /*

@@ -1,3 +1,8 @@
+2008-12-19  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/manager/milter-manager-children.[ch]: Added
+	milter_manager_children_set_launcher_channel.
+
 2008-12-18  Kouhei Sutou  <kou@cozmixng.org>
 
 	* TODO: add:

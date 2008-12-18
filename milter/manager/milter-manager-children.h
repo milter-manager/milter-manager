@@ -124,6 +124,10 @@ void                   milter_manager_children_set_status  (MilterManagerChildre
 MilterServerContextState
                        milter_manager_children_get_current_state
                                                            (MilterManagerChildren *children);
+void                   milter_manager_children_set_launcher_channel
+                                                           (MilterManagerChildren *children,
+                                                            GIOChannel *read_channel,
+                                                            GIOChannel *write_channel);
 
 #endif /* __MILTER_MANAGER_CHILDREN_H__ */
 
