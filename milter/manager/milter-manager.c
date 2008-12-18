@@ -109,6 +109,9 @@ milter_manager_init (MilterManager *manager)
     priv->configuration = NULL;
     priv->leaders = NULL;
     priv->logger = milter_syslog_logger_new("milter-manager");
+
+    priv->launcher_read_channel = NULL;
+    priv->launcher_write_channel = NULL;
 }
 
 static void
@@ -133,6 +136,7 @@ dispose (GObject *object)
         g_object_unref(priv->logger);
         priv->logger = NULL;
     }
+    milter_manager_set_launcher_channel(MILTER_MANAGER(object), NULL, NULL);
 
     G_OBJECT_CLASS(milter_manager_parent_class)->dispose(object);
 }
