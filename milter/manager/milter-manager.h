@@ -56,6 +56,10 @@ MilterManager        *milter_manager_new         (MilterManagerConfiguration *co
 MilterManagerConfiguration *milter_manager_get_configuration (MilterManager *manager);
 
 gboolean              milter_manager_reload      (MilterManager *manager);
+void                  milter_manager_set_launcher_channel
+                                                 (MilterManager *manager,
+                                                  GIOChannel *read_channel,
+                                                  GIOChannel *write_channel);
 
 G_END_DECLS
 

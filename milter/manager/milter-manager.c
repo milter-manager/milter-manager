@@ -42,6 +42,9 @@ struct _MilterManagerPrivate
     MilterManagerConfiguration *configuration;
     MilterSyslogLogger *logger;
     GList *leaders;
+
+    GIOChannel *launcher_read_channel;
+    GIOChannel *launcher_write_channel;
 };
 
 enum
@@ -434,6 +437,28 @@ MilterManagerConfiguration *
 milter_manager_get_configuration (MilterManager *manager)
 {
     return MILTER_MANAGER_GET_PRIVATE(manager)->configuration;
+}
+
+void
+milter_manager_set_launcher_channel (MilterManager *manager,
+                                     GIOChannel *read_channel,
+                                     GIOChannel *write_channel)
+{
+    MilterManagerPrivate *priv;
+
+    priv = MILTER_MANAGER_GET_PRIVATE(manager);
+
+    if (priv->launcher_write_channel)
+        g_io_channel_unref(priv->launcher_write_channel);
+    priv->launcher_write_channel = write_channel;
+    if (priv->launcher_write_channel)
+        g_io_channel_ref(priv->launcher_write_channel);
+
+    if (priv->launcher_read_channel)
+        g_io_channel_unref(priv->launcher_read_channel);
+    priv->launcher_read_channel = read_channel;
+    if (priv->launcher_read_channel)
+        g_io_channel_ref(priv->launcher_read_channel);
 }
 
 /*

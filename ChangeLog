@@ -25,6 +25,8 @@
 	* test/lib/milter-test-utils.[ch]: milter_test_pump_all_events.
 	* test/manager/test-controller.c: Use milter_test_pump_all_events.
 	* milter/manager/milter-process-launcher.[ch]: Added.
+	* milter/manager/milter-manager.[ch]: Added
+	milter_manager_set_launcher_channel.
 
 2008-12-17  Kouhei Sutou  <kou@cozmixng.org>
 
