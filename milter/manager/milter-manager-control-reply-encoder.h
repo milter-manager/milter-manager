@@ -24,6 +24,7 @@
 
 #include <milter/core.h>
 #include <milter/manager/milter-manager-control-protocol.h>
+#include <milter/manager/milter-manager-reply-encoder.h>
 
 G_BEGIN_DECLS
 
@@ -39,12 +40,12 @@ typedef struct _MilterManagerControlReplyEncoderClass    MilterManagerControlRep
 
 struct _MilterManagerControlReplyEncoder
 {
-    MilterEncoder object;
+    MilterReplyEncoder object;
 };
 
 struct _MilterManagerControlReplyEncoderClass
 {
-    MilterEncoderClass parent_class;
+    MilterReplyEncoderClass parent_class;
 };
 
 GType            milter_manager_control_reply_encoder_get_type       (void) G_GNUC_CONST;
