@@ -27,6 +27,8 @@
 	* milter/manager/milter-process-launcher.[ch]: Added.
 	* milter/manager/milter-manager.[ch]: Added
 	milter_manager_set_launcher_channel.
+	* milter/manager/milter-manager-leader.[ch]: Added
+	milter_manager_leader_set_launcher_channel.
 
 2008-12-17  Kouhei Sutou  <kou@cozmixng.org>
 

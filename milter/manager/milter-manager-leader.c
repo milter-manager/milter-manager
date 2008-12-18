@@ -38,6 +38,8 @@ struct _MilterManagerLeaderPrivate
     MilterManagerChildren *children;
     MilterManagerLeaderState state;
     gboolean sent_end_of_message;
+    GIOChannel *launcher_read_channel;
+    GIOChannel *launcher_write_channel;
 };
 
 enum
@@ -107,6 +109,8 @@ milter_manager_leader_init (MilterManagerLeader *leader)
     priv->children = NULL;
     priv->state = MILTER_SERVER_CONTEXT_STATE_START;
     priv->sent_end_of_message = FALSE;
+    priv->launcher_read_channel = NULL;
+    priv->launcher_write_channel = NULL;
 }
 
 static void
@@ -133,6 +137,7 @@ dispose (GObject *object)
         g_object_unref(priv->children);
         priv->children = NULL;
     }
+    milter_manager_leader_set_launcher_channel(leader, NULL, NULL);
 
     G_OBJECT_CLASS(milter_manager_leader_parent_class)->dispose(object);
 }
@@ -938,6 +943,28 @@ void
 milter_manager_leader_mta_timeout (MilterManagerLeader *leader)
 {
     milter_manager_leader_quit(leader);
+}
+
+void
+milter_manager_leader_set_launcher_channel (MilterManagerLeader *leader,
+                                            GIOChannel *read_channel,
+                                            GIOChannel *write_channel)
+{
+    MilterManagerLeaderPrivate *priv;
+
+    priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
+
+    if (priv->launcher_write_channel)
+        g_io_channel_unref(priv->launcher_write_channel);
+    priv->launcher_write_channel = write_channel;
+    if (priv->launcher_write_channel)
+        g_io_channel_ref(priv->launcher_write_channel);
+
+    if (priv->launcher_read_channel)
+        g_io_channel_unref(priv->launcher_read_channel);
+    priv->launcher_read_channel = read_channel;
+    if (priv->launcher_read_channel)
+        g_io_channel_ref(priv->launcher_read_channel);
 }
 
 /*

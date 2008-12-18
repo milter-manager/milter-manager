@@ -85,6 +85,10 @@ GType                 milter_manager_leader_get_type    (void) G_GNUC_CONST;
 MilterManagerLeader  *milter_manager_leader_new
                                           (MilterManagerConfiguration *configuration,
                                            MilterClientContext        *client_context);
+void                  milter_manager_leader_set_launcher_channel
+                                          (MilterManagerLeader *leader,
+                                           GIOChannel *read_channel,
+                                           GIOChannel *write_channel);
 
 MilterStatus          milter_manager_leader_negotiate
                                           (MilterManagerLeader *leader,
