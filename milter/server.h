@@ -20,6 +20,7 @@
 #ifndef __MILTER_SERVER_H__
 #define __MILTER_SERVER_H__
 
+#include <milter/core.h>
 #include <milter/server/milter-server-context.h>
 #include <milter/server/milter-server-enum-types.h>
 

@@ -100,6 +100,7 @@ setup_leader_signals (MilterManagerLeader *leader)
 
 static MilterStatus
 cb_negotiate_response (MilterClientContext *context, MilterOption *option,
+                       MilterMacrosRequests *macros_requests,
                        MilterStatus status, gpointer user_data)
 {
     n_negotiate_responses++;
@@ -694,7 +695,7 @@ do_negotiate (MilterManagerTestScenario *scenario, const gchar *group)
     option = milter_manager_test_scenario_get_option(scenario, group);
     gcut_take_object(G_OBJECT(option));
     milter_server_context_negotiate(MILTER_SERVER_CONTEXT(server), option);
-    milter_manager_leader_negotiate(leader, option);
+    milter_manager_leader_negotiate(leader, option, NULL);
     cut_trace(assert_response(scenario, group));
 
     gcut_assert_equal_list_object_custom(

@@ -66,9 +66,11 @@ void                  milter_macros_requests_set_symbols_string_array
 GList                *milter_macros_requests_get_symbols
                                                       (MilterMacrosRequests *requests,
                                                        MilterCommand         command);
-void                 milter_macros_requests_merge     (MilterMacrosRequests *dest,
+GHashTable           *milter_macros_requests_get_all_symbols
+                                                      (MilterMacrosRequests *requests);
+void                  milter_macros_requests_merge    (MilterMacrosRequests *dest,
                                                        MilterMacrosRequests *src);
-void                 milter_macros_requests_foreach   (MilterMacrosRequests *requests,
+void                  milter_macros_requests_foreach  (MilterMacrosRequests *requests,
                                                        GHFunc                func,
                                                        gpointer              user_data);
 

@@ -242,9 +242,11 @@ struct _MilterClientContextClass
     MilterProtocolAgentClass parent_class;
 
     MilterStatus (*negotiate)          (MilterClientContext *context,
-                                        MilterOption  *option);
+                                        MilterOption  *option,
+                                        MilterMacrosRequests *macros_requests);
     void         (*negotiate_response) (MilterClientContext *context,
                                         MilterOption  *option,
+                                        MilterMacrosRequests *macros_requests,
                                         MilterStatus   status);
     void         (*define_macro)       (MilterClientContext *context,
                                         MilterCommand command,
@@ -396,21 +398,6 @@ gboolean             milter_client_context_set_reply         (MilterClientContex
  */
 gchar               *milter_client_context_format_reply      (MilterClientContext *context);
 
-/**
- * milter_client_context_negotiate_reply:
- * @context: a %MilterClientContext.
- * @option: the negotiate option.
- * @macros_requests: the macro requests.
- *
- * Formats the current error reply code specified by
- * milter_client_context_set_reply(). If error reply code
- * isn't set, this function returns %NULL.
- *
- * Returns: formatted reply code, or %NULL.
- */
-gboolean             milter_client_context_negotiate_reply   (MilterClientContext *context,
-                                                              MilterOption         *option,
-                                                              MilterMacrosRequests *macros_requests);
 gboolean             milter_client_context_add_header        (MilterClientContext *context,
                                                               const gchar *name,
                                                               const gchar *value);

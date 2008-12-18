@@ -807,12 +807,11 @@ do_negotiate (MilterManagerTestScenario *scenario, const gchar *group)
 
     option = milter_manager_test_scenario_get_option(scenario, group);
     gcut_take_object(G_OBJECT(option));
-    milter_manager_children_negotiate(children, option);
+    milter_manager_children_negotiate(children, option, NULL);
     wait_reply(1, n_negotiate_reply_emitted);
     cut_trace(assert_response(scenario, group));
 
-    gcut_assert_equal_object_custom(option, actual_option,
-                                    (GEqualFunc)milter_option_equal);
+    milter_assert_equal_option(option, actual_option);
 }
 
 static void
@@ -1034,7 +1033,7 @@ test_negotiate (void)
     add_child("milter@10026", "inet:10026@localhost");
     add_child("milter@10027", "inet:10027@localhost");
 
-    milter_manager_children_negotiate(children, option);
+    milter_manager_children_negotiate(children, option, NULL);
     wait_reply(1, n_negotiate_reply_emitted);
 }
 
@@ -1457,7 +1456,7 @@ test_no_negotiation (void)
     add_child("milter@10026", "inet:10026@localhost");
     add_child("milter@10027", "inet:10027@localhost");
 
-    cut_assert_true(milter_manager_children_negotiate(children, option));
+    cut_assert_true(milter_manager_children_negotiate(children, option, NULL));
     g_main_context_iteration(NULL, FALSE);
     cut_assert_equal_string("There is no negotiation response from milters.",
                             error_message);
@@ -1487,7 +1486,7 @@ test_connection_timeout (void)
                                MILTER_ACTION_ADD_HEADERS |
                                MILTER_ACTION_CHANGE_BODY,
                                MILTER_STEP_NONE);
-    cut_assert_true(milter_manager_children_negotiate(children, option));
+    cut_assert_true(milter_manager_children_negotiate(children, option, NULL));
     
     wait_reply(1, n_connection_timeout_emitted);
 }

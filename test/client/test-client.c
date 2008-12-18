@@ -66,6 +66,9 @@ static gchar *packet;
 static MilterOption *option;
 static MilterOption *negotiate_option;
 
+static MilterMacrosRequests *macros_requests;
+static MilterMacrosRequests *negotiate_macros_requests;
+
 static gchar *connect_host_name;
 static struct sockaddr *connect_address;
 static socklen_t connect_address_length;
@@ -90,10 +93,12 @@ static GError *actual_error;
 static GError *expected_error;
 
 static void
-cb_negotiate (MilterDecoder *decoder, MilterOption *option, gpointer user_data)
+cb_negotiate (MilterDecoder *decoder, MilterOption *option,
+              MilterMacrosRequests *macros_requests, gpointer user_data)
 {
     n_negotiates++;
     negotiate_option = g_object_ref(option);
+    negotiate_macros_requests = g_object_ref(macros_requests);
 }
 
 static void
@@ -265,6 +270,9 @@ setup (void)
     option = NULL;
     negotiate_option = NULL;
 
+    macros_requests = NULL;
+    negotiate_macros_requests = NULL;
+
     idle_id = 0;
     idle_shutdown_id = 0;
     shutdown_count = 10;
@@ -282,8 +290,6 @@ setup (void)
     n_aborts = 0;
     n_quits = 0;
     n_unknowns = 0;
-
-    negotiate_option = NULL;
 
     connect_host_name = NULL;
     connect_address = NULL;
@@ -333,6 +339,11 @@ teardown (void)
         g_object_unref(option);
     if (negotiate_option)
         g_object_unref(negotiate_option);
+
+    if (macros_requests)
+        g_object_unref(macros_requests);
+    if (negotiate_macros_requests)
+        g_object_unref(negotiate_macros_requests);
 
     if (connect_host_name)
         g_free(connect_host_name);
@@ -437,6 +448,10 @@ test_negotiate (void)
         cut_assert_errno();
 
     milter_assert_equal_option(option, negotiate_option);
+
+    macros_requests = milter_macros_requests_new();
+    milter_assert_equal_macros_requests(macros_requests,
+                                        negotiate_macros_requests);
 }
 
 static gboolean

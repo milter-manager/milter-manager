@@ -49,7 +49,7 @@ G_BEGIN_DECLS
 
 /**
  * SECTION: core
- * @title: Core
+ * @title: Core library
  * @short_description: The core library to be used by
  *                     milter-manager libraries.
  *

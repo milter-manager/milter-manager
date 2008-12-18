@@ -51,15 +51,17 @@ static MilterMacrosRequests *macros_requests;
 static MilterOption *option;
 
 static MilterStatus
-cb_negotiate (MilterClientContext *context, MilterOption *option,
-              gpointer user_data)
+cb_negotiate (MilterClientContext *context, MilterOption *_option,
+              MilterMacrosRequests *_macros_requests, gpointer user_data)
 {
-    if (macros_requests) {
-        milter_client_context_negotiate_reply(context,
-                                              option,
-                                              macros_requests);
-        milter_agent_set_writer(MILTER_AGENT(context), NULL);
+    if (option) {
+        milter_option_set_version(_option, milter_option_get_version(option));
+        milter_option_set_action(_option, milter_option_get_action(option));
+        milter_option_set_step(_option, milter_option_get_step(option));
     }
+
+    if (macros_requests)
+        milter_macros_requests_merge(_macros_requests, macros_requests);
 
     return MILTER_STATUS_CONTINUE;
 }

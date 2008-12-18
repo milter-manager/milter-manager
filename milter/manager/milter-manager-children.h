@@ -73,7 +73,8 @@ void                   milter_manager_children_foreach     (MilterManagerChildre
                                                             gpointer               user_data);
 
 gboolean               milter_manager_children_negotiate   (MilterManagerChildren *children,
-                                                            MilterOption          *option);
+                                                            MilterOption          *option,
+                                                            MilterMacrosRequests  *macros_requests);
 gboolean               milter_manager_children_define_macro 
                                                            (MilterManagerChildren *children,
                                                             MilterCommand          command,

@@ -53,7 +53,7 @@ static guint32 header_index;
 
 static MilterStatus
 cb_negotiate (MilterClientContext *context, MilterOption *option,
-              gpointer user_data)
+              MilterMacrosRequests *macros_requests, gpointer user_data)
 {
     return MILTER_STATUS_CONTINUE;
 }

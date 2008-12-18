@@ -193,11 +193,11 @@ milter_manager_new (MilterManagerConfiguration *configuration)
 
 static MilterStatus
 cb_client_negotiate (MilterClientContext *context, MilterOption *option,
-                     gpointer user_data)
+                     MilterMacrosRequests *macros_requests, gpointer user_data)
 {
     MilterManagerLeader *leader = user_data;
 
-    return milter_manager_leader_negotiate(leader, option);
+    return milter_manager_leader_negotiate(leader, option, macros_requests);
 }
 
 static MilterStatus

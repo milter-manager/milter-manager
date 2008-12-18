@@ -1752,7 +1752,8 @@ init_reply_queue (MilterManagerChildren *children,
 
 gboolean
 milter_manager_children_negotiate (MilterManagerChildren *children,
-                                   MilterOption          *option)
+                                   MilterOption          *option,
+                                   MilterMacrosRequests  *macros_requests)
 {
     GList *node;
     MilterManagerChildrenPrivate *priv;

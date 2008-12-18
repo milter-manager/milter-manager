@@ -340,7 +340,7 @@ cb_negotiate_reply (MilterServerContext *context, MilterOption *option,
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
 
     g_signal_emit_by_name(priv->client_context, "negotiate-response",
-                          option, MILTER_STATUS_CONTINUE);
+                          option, macros_requests, MILTER_STATUS_CONTINUE);
 }
 
 static void
@@ -350,8 +350,9 @@ reply (MilterManagerLeader *leader, MilterStatus status)
 
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
     if (priv->state == MILTER_MANAGER_LEADER_STATE_NEGOTIATE) {
+        /* FIXME: should pass option and macros requests. */
         g_signal_emit_by_name(priv->client_context, "negotiate-response",
-                              NULL, status);
+                              NULL, NULL, status);
     } else {
         g_signal_emit_by_name(priv->client_context,
                               state_to_response_signal_name(priv->state),
@@ -659,7 +660,8 @@ teardown_children_signals (MilterManagerLeader *leader,
 
 MilterStatus
 milter_manager_leader_negotiate (MilterManagerLeader *leader,
-                                 MilterOption *option)
+                                 MilterOption *option,
+                                 MilterMacrosRequests *macros_requests)
 {
     MilterManagerLeaderPrivate *priv;
 
@@ -674,7 +676,8 @@ milter_manager_leader_negotiate (MilterManagerLeader *leader,
 
     setup_children_signals(leader, priv->children);
 
-    if (milter_manager_children_negotiate(priv->children, option))
+    if (milter_manager_children_negotiate(priv->children, option,
+                                          macros_requests))
         return MILTER_STATUS_PROGRESS;
     else
         return MILTER_STATUS_NOT_CHANGE; /* FIXME: reject or accept */

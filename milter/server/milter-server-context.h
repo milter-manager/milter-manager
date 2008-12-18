@@ -22,8 +22,8 @@
 
 #include <glib-object.h>
 
-#include <milter/server/milter-server-enum-types.h>
 #include <milter/core.h>
+#include <milter/server/milter-server-enum-types.h>
 
 G_BEGIN_DECLS
 

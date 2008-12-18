@@ -70,7 +70,7 @@ append_private_data (MilterClientContext *context, const gchar *tag)
 
 static MilterStatus
 cb_negotiate (MilterClientContext *context, MilterOption *option,
-              gpointer user_data)
+              MilterMacrosRequests *macros_requests, gpointer user_data)
 {
     n_negotiates++;
     append_private_data(context, "option negotiation");

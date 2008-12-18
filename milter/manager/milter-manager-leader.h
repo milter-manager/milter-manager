@@ -92,7 +92,8 @@ void                  milter_manager_leader_set_launcher_channel
 
 MilterStatus          milter_manager_leader_negotiate
                                           (MilterManagerLeader *leader,
-                                           MilterOption            *option);
+                                           MilterOption        *option,
+                                           MilterMacrosRequests *macros_requests);
 MilterStatus          milter_manager_leader_connect
                                           (MilterManagerLeader *leader,
                                            const gchar          *host_name,

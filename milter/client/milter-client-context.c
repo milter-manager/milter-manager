@@ -105,7 +105,8 @@ static MilterDecoder *decoder_new    (MilterAgent *agent);
 static MilterEncoder *encoder_new    (MilterAgent *agent);
 
 static MilterStatus default_negotiate  (MilterClientContext *context,
-                                        MilterOption  *option);
+                                        MilterOption  *option,
+                                        MilterMacrosRequests *macros_requests);
 static MilterStatus default_connect    (MilterClientContext *context,
                                         const gchar   *host_name,
                                         struct sockaddr *address,
@@ -135,6 +136,7 @@ static MilterStatus default_quit       (MilterClientContext *context);
 static MilterStatus default_abort      (MilterClientContext *context);
 static void         negotiate_response (MilterClientContext *context,
                                         MilterOption        *option,
+                                        MilterMacrosRequests *macros_requests,
                                         MilterStatus        status);
 static void         connect_response   (MilterClientContext *context,
                                         MilterStatus         status);
@@ -215,8 +217,9 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientContextClass, negotiate),
                      status_accumulator, NULL,
-                     _milter_marshal_ENUM__OBJECT,
-                     MILTER_TYPE_STATUS, 1, MILTER_TYPE_OPTION);
+                     _milter_marshal_ENUM__OBJECT_OBJECT,
+                     MILTER_TYPE_STATUS, 2,
+                     MILTER_TYPE_OPTION, MILTER_TYPE_MACROS_REQUESTS);
 
     signals[NEGOTIATE_RESPONSE] =
         g_signal_new("negotiate-response",
@@ -225,8 +228,10 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_STRUCT_OFFSET(MilterClientContextClass,
                                      negotiate_response),
                      NULL, NULL,
-                     _milter_marshal_VOID__OBJECT_ENUM,
-                     G_TYPE_NONE, 2, MILTER_TYPE_OPTION, MILTER_TYPE_STATUS);
+                     _milter_marshal_VOID__OBJECT_OBJECT_ENUM,
+                     G_TYPE_NONE, 3,
+                     MILTER_TYPE_OPTION, MILTER_TYPE_MACROS_REQUESTS,
+                     MILTER_TYPE_STATUS);
 
     signals[CONNECT] =
         g_signal_new("connect",
@@ -891,28 +896,6 @@ write_packet (MilterClientContext *context, gchar *packet, gsize packet_size)
 }
 
 gboolean
-milter_client_context_negotiate_reply (MilterClientContext *context,
-                                       MilterOption         *option,
-                                       MilterMacrosRequests *macros_requests)
-{
-    gchar *packet = NULL;
-    gsize packet_size;
-    MilterEncoder *encoder;
-
-    milter_debug("sending NEGOTIATE: "
-                 "version = %d, action = %04X, step = %06X",
-                 milter_option_get_version(option),
-                 milter_option_get_action(option),
-                 milter_option_get_step(option));
-
-    encoder = milter_agent_get_encoder(MILTER_AGENT(context));
-    milter_reply_encoder_encode_negotiate(MILTER_REPLY_ENCODER(encoder),
-                                          &packet, &packet_size,
-                                          option, macros_requests);
-    return write_packet(context, packet, packet_size);
-}
-
-gboolean
 milter_client_context_add_header (MilterClientContext *context,
                                   const gchar *name, const gchar *value)
 {
@@ -1162,7 +1145,8 @@ reply (MilterClientContext *context, MilterStatus status)
 }
 
 static MilterStatus
-default_negotiate (MilterClientContext *context, MilterOption *option)
+default_negotiate (MilterClientContext *context, MilterOption *option,
+                   MilterMacrosRequests *macros_requests)
 {
     return MILTER_STATUS_NOT_CHANGE;
 }
@@ -1261,7 +1245,8 @@ reset_macro_context (MilterClientContext *context, MilterCommand macro_context)
 
 static void
 negotiate_response (MilterClientContext *context,
-                    MilterOption *option, MilterStatus status)
+                    MilterOption *option, MilterMacrosRequests *macros_requests,
+                    MilterStatus status)
 {
     gchar *packet;
     gsize packet_size;
@@ -1274,11 +1259,16 @@ negotiate_response (MilterClientContext *context,
       case MILTER_STATUS_ALL_OPTIONS:
         milter_option_set_step(option, 0);
       case MILTER_STATUS_CONTINUE:
+        milter_debug("sending NEGOTIATE: "
+                     "version = %d, action = %04X, step = %06X",
+                     milter_option_get_version(option),
+                     milter_option_get_action(option),
+                     milter_option_get_step(option));
         encoder = milter_agent_get_encoder(MILTER_AGENT(context));
 
         milter_reply_encoder_encode_negotiate(MILTER_REPLY_ENCODER(encoder),
                                               &packet, &packet_size,
-                                              option, NULL);
+                                              option, macros_requests);
         write_packet(MILTER_CLIENT_CONTEXT(context), packet, packet_size);
         break;
       case MILTER_STATUS_REJECT:
@@ -1431,12 +1421,16 @@ cb_decoder_negotiate (MilterDecoder *decoder, MilterOption *option,
 {
     MilterStatus status = MILTER_STATUS_NOT_CHANGE;
     MilterClientContext *context = MILTER_CLIENT_CONTEXT(user_data);
+    MilterMacrosRequests *macros_requests;
 
     disable_timeout(context);
-    g_signal_emit(context, signals[NEGOTIATE], 0, option, &status);
-    if (status == MILTER_STATUS_PROGRESS)
-        return;
-    g_signal_emit(context, signals[NEGOTIATE_RESPONSE], 0,  option, status);
+    macros_requests = milter_macros_requests_new();
+    g_signal_emit(context, signals[NEGOTIATE], 0,
+                  option, macros_requests, &status);
+    if (status != MILTER_STATUS_PROGRESS)
+        g_signal_emit(context, signals[NEGOTIATE_RESPONSE], 0,
+                      option, macros_requests, status);
+    g_object_unref(macros_requests);
 }
 
 static void

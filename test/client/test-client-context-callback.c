@@ -24,6 +24,7 @@
 #include <errno.h>
 
 #include <milter/client.h>
+#include <milter-assertions.h>
 
 #include <gcutter.h>
 
@@ -94,6 +95,7 @@ static gint n_unknown_responses;
 static gint n_errors;
 
 static MilterOption *negotiate_option;
+static MilterMacrosRequests *negotiate_macros_requests;
 
 static GHashTable *expected_macros;
 static GHashTable *defined_macros;
@@ -154,10 +156,11 @@ retrieve_context_info (MilterClientContext *context)
 
 static MilterStatus
 cb_negotiate (MilterClientContext *context, MilterOption *option,
-              gpointer user_data)
+              MilterMacrosRequests *macros_requests, gpointer user_data)
 {
     n_negotiates++;
     negotiate_option = g_object_ref(option);
+    negotiate_macros_requests = g_object_ref(macros_requests);
 
     retrieve_context_info(context);
 
@@ -513,6 +516,7 @@ setup (void)
     n_define_macros = 0;
 
     negotiate_option = NULL;
+    negotiate_macros_requests = NULL;
 
     expected_macros = NULL;
     defined_macros = NULL;
@@ -582,6 +586,8 @@ teardown (void)
 
     if (negotiate_option)
         g_object_unref(negotiate_option);
+    if (negotiate_macros_requests)
+        g_object_unref(negotiate_macros_requests);
 
     if (expected_macros)
         g_hash_table_unref(expected_macros);
@@ -643,7 +649,7 @@ void
 test_feed_negotiate (void)
 {
     MilterOption *option;
-    MilterOption *negotiated_option;
+    MilterMacrosRequests *macros_requests;
     guint32 version;
     MilterActionFlags action;
     MilterStepFlags step;
@@ -664,24 +670,22 @@ test_feed_negotiate (void)
         MILTER_STEP_NO_HEADERS |
         MILTER_STEP_NO_END_OF_HEADER;
     option = milter_option_new(version, action, step);
+    gcut_take_object(G_OBJECT(option));
 
     milter_command_encoder_encode_negotiate(encoder,
                                             &packet, &packet_size,
                                             option);
-    g_object_unref(option);
 
     gcut_assert_error(feed());
     cut_assert_equal_int(1, n_negotiates);
     cut_assert_equal_int(1, n_negotiate_responses);
 
-    negotiated_option = negotiate_option;
-    cut_assert_equal_int(version, milter_option_get_version(negotiated_option));
-    gcut_assert_equal_flags(MILTER_TYPE_ACTION_FLAGS,
-                            action,
-                            milter_option_get_action(negotiated_option));
-    gcut_assert_equal_flags(MILTER_TYPE_STEP_FLAGS,
-                            step,
-                            milter_option_get_step(negotiated_option));
+    milter_assert_equal_option(option, negotiate_option);
+
+    macros_requests = milter_macros_requests_new();
+    gcut_take_object(G_OBJECT(macros_requests));
+    milter_assert_equal_macros_requests(macros_requests,
+                                        negotiate_macros_requests);
 
     gcut_assert_equal_hash_table_string_string(NULL, defined_macros);
 }
@@ -690,7 +694,7 @@ void
 test_feed_negotiate_progress (void)
 {
     MilterOption *option;
-    MilterOption *negotiated_option;
+    MilterMacrosRequests *macros_requests;
     guint32 version;
     MilterActionFlags action;
     MilterStepFlags step;
@@ -711,11 +715,11 @@ test_feed_negotiate_progress (void)
         MILTER_STEP_NO_HEADERS |
         MILTER_STEP_NO_END_OF_HEADER;
     option = milter_option_new(version, action, step);
+    gcut_take_object(G_OBJECT(option));
 
     milter_command_encoder_encode_negotiate(encoder,
                                             &packet, &packet_size,
                                             option);
-    g_object_unref(option);
 
     g_signal_connect(context, "negotiate",
                      G_CALLBACK(cb_negotiate_progress), NULL);
@@ -723,14 +727,13 @@ test_feed_negotiate_progress (void)
     cut_assert_equal_int(1, n_negotiate_progresss);
     cut_assert_equal_int(0, n_negotiate_responses);
 
-    negotiated_option = negotiate_option;
-    cut_assert_equal_int(version, milter_option_get_version(negotiated_option));
-    gcut_assert_equal_flags(MILTER_TYPE_ACTION_FLAGS,
-                            action,
-                            milter_option_get_action(negotiated_option));
-    gcut_assert_equal_flags(MILTER_TYPE_STEP_FLAGS,
-                            step,
-                            milter_option_get_step(negotiated_option));
+
+    milter_assert_equal_option(option, negotiate_option);
+
+    macros_requests = milter_macros_requests_new();
+    gcut_take_object(G_OBJECT(macros_requests));
+    milter_assert_equal_macros_requests(macros_requests,
+                                        negotiate_macros_requests);
 
     gcut_assert_equal_hash_table_string_string(NULL, defined_macros);
 }
