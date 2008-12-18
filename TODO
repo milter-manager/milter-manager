@@ -1,4 +1,5 @@
 * umbilical protocol
+* use chroot
 * write unit test for libmilter.
 * add --disable-milter-manager configure option.
 * add --disable-ruby configure option.
