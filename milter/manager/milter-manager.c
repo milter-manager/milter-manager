@@ -369,11 +369,14 @@ cb_finished (MilterFinishedEmittable *emittable, gpointer user_data)
 
 static void
 setup_context_signals (MilterClientContext *context,
-                       MilterManagerConfiguration *configuration)
+                       MilterManager *manager)
 {
     MilterManagerLeader *leader;
+    MilterManagerPrivate *priv;
 
-    leader = milter_manager_leader_new(configuration, context);
+    priv = MILTER_MANAGER_GET_PRIVATE(manager);
+
+    leader = milter_manager_leader_new(priv->configuration, context);
 
 #define CONNECT(name)                                   \
     g_signal_connect(context, #name,                    \
@@ -399,17 +402,15 @@ setup_context_signals (MilterClientContext *context,
 #undef CONNECT
     g_signal_connect(leader, "finished",
                      G_CALLBACK(cb_finished), context);
+    milter_manager_leader_set_launcher_channel(leader,
+                                               priv->launcher_read_channel,
+                                               priv->launcher_write_channel);
 }
 
 static void
 connection_established (MilterClient *client, MilterClientContext *context)
 {
-    MilterManagerPrivate *priv;
-    MilterManagerConfiguration *configuration;
-
-    priv = MILTER_MANAGER_GET_PRIVATE(client);
-    configuration = priv->configuration;
-    setup_context_signals(context, configuration);
+    setup_context_signals(context, MILTER_MANAGER(client));
 
     milter_statistics("Start session in (%p)", context);
 }

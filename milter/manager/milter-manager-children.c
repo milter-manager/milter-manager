@@ -26,6 +26,7 @@
 #include <glib/gstdio.h>
 #include "milter-manager-configuration.h"
 #include "milter/core.h"
+#include "milter-manager-launch-command-encoder.h"
 
 #define MILTER_MANAGER_CHILDREN_GET_PRIVATE(obj)                    \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                             \
@@ -499,6 +500,20 @@ cb_ready (MilterServerContext *context, gpointer user_data)
     setup_server_context_signals(negotiate_data->children, context);
     milter_server_context_negotiate(context, negotiate_data->option);
     g_hash_table_remove(priv->try_negotiate_ids, negotiate_data);
+
+    if (priv->launcher_writer) {
+        MilterManagerLaunchCommandEncoder *encoder;
+        gchar *packet;
+        gsize packet_size;
+
+        encoder = MILTER_MANAGER_LAUNCH_COMMAND_ENCODER(milter_manager_launch_command_encoder_new());
+
+        milter_manager_launch_command_encoder_encode_launch(
+            encoder,
+            &packet, &packet_size,
+            "/bin/echo", g_get_user_name());
+        milter_writer_write(priv->launcher_writer, packet, packet_size, NULL, NULL);
+    }
 }
 
 static void
@@ -2489,6 +2504,7 @@ cb_launcher_reader_flow (MilterReader *reader,
                          const gchar *data, gsize data_size,
                          gpointer user_data)
 {
+    g_warning("hoge");
 }
 
 void

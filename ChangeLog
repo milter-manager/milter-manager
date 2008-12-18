@@ -2,6 +2,10 @@
 
 	* milter/manager/milter-manager-children.[ch]: Added
 	milter_manager_children_set_launcher_channel.
+	* milter/manager/milter-manager.c: Invoke
+	milter_manager_leader_set_launcher_channel.
+	* milter/manager/milter-manager-leader.c: Invoke
+	milter_manager_leader_set_launcher_channel.
 
 2008-12-18  Kouhei Sutou  <kou@cozmixng.org>
 
