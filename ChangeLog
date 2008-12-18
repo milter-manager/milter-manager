@@ -1,6 +1,11 @@
 2008-12-18  Hiroyuki Ikezoe  <poincare@ikezoe.net>
 
 	* milter/manager/milter-manager-main.c: Use milter_init.
+	* milter/manager/milter-manager-reply-protocol.h,
+	milter/manager/milter-manager-reply-encoder.[ch],
+	milter/manager/milter-manager-reply-decoder.[ch]: Added new objects
+	for reply of "success", "failure", "error". MilterControlReply* should
+	be use them.
 
 2008-12-17  Kouhei Sutou  <kou@cozmixng.org>
 

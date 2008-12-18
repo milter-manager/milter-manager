@@ -10,6 +10,8 @@ noinst_LTLIBRARIES =			\
 	test-control-reply-decoder.la	\
 	test-control-command-encoder.la	\
 	test-control-reply-encoder.la	\
+	test-reply-encoder.la		\
+	test-reply-decoder.la		\
 	test-controller.la		\
 	test-applicable-condition.la
 endif
@@ -46,5 +48,7 @@ test_control_command_decoder_la_SOURCES	= test-control-command-decoder.c
 test_control_reply_decoder_la_SOURCES	= test-control-reply-decoder.c
 test_control_command_encoder_la_SOURCES	= test-control-command-encoder.c
 test_control_reply_encoder_la_SOURCES	= test-control-reply-encoder.c
+test_reply_encoder_la_SOURCES		= test-reply-encoder.c
+test_reply_decoder_la_SOURCES		= test-reply-decoder.c
 test_controller_la_SOURCES		= test-controller.c
 test_applicable_condition_la_SOURCES	= test-applicable-condition.c
