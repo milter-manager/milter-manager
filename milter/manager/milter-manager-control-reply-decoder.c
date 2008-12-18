@@ -28,9 +28,6 @@
 
 enum
 {
-    SUCCESS,
-    FAILURE,
-    ERROR,
     CONFIGURATION,
     LAST_SIGNAL
 };
@@ -39,7 +36,7 @@ static gint signals[LAST_SIGNAL] = {0};
 
 G_DEFINE_TYPE(MilterManagerControlReplyDecoder,
               milter_manager_control_reply_decoder,
-              MILTER_TYPE_DECODER);
+              MILTER_TYPE_MANAGER_REPLY_DECODER);
 
 static void dispose        (GObject         *object);
 
@@ -58,36 +55,6 @@ milter_manager_control_reply_decoder_class_init (MilterManagerControlReplyDecode
     gobject_class->dispose      = dispose;
 
     decoder_class->decode = decode;
-
-    signals[SUCCESS] =
-        g_signal_new("success",
-                     G_TYPE_FROM_CLASS(klass),
-                     G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MilterManagerControlReplyDecoderClass,
-                                     success),
-                     NULL, NULL,
-                     g_cclosure_marshal_VOID__VOID,
-                     G_TYPE_NONE, 0);
-
-    signals[FAILURE] =
-        g_signal_new("failure",
-                     G_TYPE_FROM_CLASS(klass),
-                     G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MilterManagerControlReplyDecoderClass,
-                                     failure),
-                     NULL, NULL,
-                     g_cclosure_marshal_VOID__STRING,
-                     G_TYPE_NONE, 1, G_TYPE_STRING);
-
-    signals[ERROR] =
-        g_signal_new("error",
-                     G_TYPE_FROM_CLASS(klass),
-                     G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MilterManagerControlReplyDecoderClass,
-                                     error),
-                     NULL, NULL,
-                     g_cclosure_marshal_VOID__STRING,
-                     G_TYPE_NONE, 1, G_TYPE_STRING);
 
     signals[CONFIGURATION] =
         g_signal_new("configuration",
@@ -131,38 +98,6 @@ milter_manager_control_reply_decoder_new (void)
 }
 
 static gboolean
-decode_success (MilterDecoder *decoder,
-                const gchar *content, gint32 length,
-                GError **error)
-{
-    if (!milter_decoder_check_command_length(
-            content, length, 0,
-            MILTER_DECODER_COMPARE_EXACT, error, "SUCCESS reply"))
-        return FALSE;
-
-    g_signal_emit(decoder, signals[SUCCESS], 0);
-    return TRUE;
-}
-
-static gboolean
-decode_failure (MilterDecoder *decoder,
-                const gchar *content, gint32 length,
-                GError **error)
-{
-    g_signal_emit(decoder, signals[FAILURE], 0, content);
-    return TRUE;
-}
-
-static gboolean
-decode_error (MilterDecoder *decoder,
-              const gchar *content, gint32 length,
-              GError **error)
-{
-    g_signal_emit(decoder, signals[ERROR], 0, content);
-    return TRUE;
-}
-
-static gboolean
 decode_configuration (MilterDecoder *decoder,
                       const gchar *content, gint32 length,
                       GError **error)
@@ -190,15 +125,14 @@ decode (MilterDecoder *decoder, GError **error)
     if (null_character_point <= 0)
         return FALSE;
 
+    if (MILTER_DECODER_CLASS(milter_manager_control_reply_decoder_parent_class)->decode(decoder, error))
+        return TRUE;
+
+    g_clear_error(error);
+
     content = buffer + null_character_point + 1;
     content_length = length - null_character_point - 1;
-    if (g_str_equal(buffer, MILTER_MANAGER_CONTROL_REPLY_SUCCESS)) {
-        success = decode_success(decoder, content, content_length, error);
-    } else if (g_str_equal(buffer, MILTER_MANAGER_CONTROL_REPLY_FAILURE)) {
-        success = decode_failure(decoder, content, content_length, error);
-    } else if (g_str_equal(buffer, MILTER_MANAGER_CONTROL_REPLY_ERROR)) {
-        success = decode_error(decoder, content, content_length, error);
-    } else if (g_str_equal(buffer, MILTER_MANAGER_CONTROL_REPLY_CONFIGURATION)) {
+    if (g_str_equal(buffer, MILTER_MANAGER_CONTROL_REPLY_CONFIGURATION)) {
         success = decode_configuration(decoder, content, content_length, error);
     } else {
         g_set_error(error,

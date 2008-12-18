@@ -24,6 +24,7 @@
 
 #include <milter/core.h>
 #include <milter/manager/milter-manager-control-protocol.h>
+#include <milter/manager/milter-manager-reply-decoder.h>
 
 G_BEGIN_DECLS
 
@@ -46,18 +47,13 @@ typedef struct _MilterManagerControlReplyDecoderClass    MilterManagerControlRep
 
 struct _MilterManagerControlReplyDecoder
 {
-    MilterDecoder object;
+    MilterManagerReplyDecoder object;
 };
 
 struct _MilterManagerControlReplyDecoderClass
 {
-    MilterDecoderClass parent_class;
+    MilterManagerReplyDecoderClass parent_class;
 
-    void (*success)              (MilterManagerControlReplyDecoder *decoder);
-    void (*failure)              (MilterManagerControlReplyDecoder *decoder,
-                                  const gchar *message);
-    void (*error)                (MilterManagerControlReplyDecoder *decoder,
-                                  const gchar *message);
     void (*configuration)        (MilterManagerControlReplyDecoder *decoder,
                                   const gchar *configuration,
                                   gsize configuration_size);

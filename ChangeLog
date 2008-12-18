@@ -6,6 +6,9 @@
 	milter/manager/milter-manager-reply-decoder.[ch]: Added new objects
 	for reply of "success", "failure", "error". MilterControlReply* should
 	be use them.
+	* milter/manager/milter-manager-control-reply-encoder.[ch],
+	milter/manager/milter-manager-control-reply-decoder.[ch]: Now these
+	object is a child of MilterManagerReplyXX.
 
 2008-12-17  Kouhei Sutou  <kou@cozmixng.org>
 
