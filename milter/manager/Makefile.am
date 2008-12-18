@@ -37,6 +37,9 @@ milter_manager_public_headers =				\
 	milter-manager-reply-decoder.h			\
 	milter-manager-reply-encoder.h			\
 	milter-manager-controller.h			\
+	milter-manager-umbilical-protocol.h		\
+	milter-manager-umbilical-command-encoder.h	\
+	milter-manager-umbilical-command-decoder.h	\
 	milter-manager-applicable-condition.h		\
 	milter-manager.h
 
@@ -70,6 +73,8 @@ libmilter_manager_la_SOURCES =				\
 	milter-manager-controller.c			\
 	milter-manager-reply-decoder.c			\
 	milter-manager-reply-encoder.c			\
+	milter-manager-umbilical-command-encoder.c	\
+	milter-manager-umbilical-command-decoder.c	\
 	milter-manager-applicable-condition.c
 
 libmilter_manager_la_LIBADD =					\

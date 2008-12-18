@@ -1,18 +1,20 @@
 if WITH_CUTTER
-noinst_LTLIBRARIES =			\
-	test-manager.la			\
-	test-child.la			\
-	test-children.la		\
-	test-configuration.la		\
-	test-leader.la			\
-	test-egg.la			\
-	test-control-command-decoder.la	\
-	test-control-reply-decoder.la	\
-	test-control-command-encoder.la	\
-	test-control-reply-encoder.la	\
-	test-reply-encoder.la		\
-	test-reply-decoder.la		\
-	test-controller.la		\
+noinst_LTLIBRARIES =				\
+	test-manager.la				\
+	test-child.la				\
+	test-children.la			\
+	test-configuration.la			\
+	test-leader.la				\
+	test-egg.la				\
+	test-control-command-decoder.la		\
+	test-control-reply-decoder.la		\
+	test-control-command-encoder.la		\
+	test-control-reply-encoder.la		\
+	test-reply-encoder.la			\
+	test-reply-decoder.la			\
+	test-umbilical-command-encoder.la	\
+	test-umbilical-command-decoder.la	\
+	test-controller.la			\
 	test-applicable-condition.la
 endif
 
@@ -52,3 +54,5 @@ test_reply_encoder_la_SOURCES		= test-reply-encoder.c
 test_reply_decoder_la_SOURCES		= test-reply-decoder.c
 test_controller_la_SOURCES		= test-controller.c
 test_applicable_condition_la_SOURCES	= test-applicable-condition.c
+test_umbilical_command_encoder_la_SOURCES = test-umbilical-command-encoder.c
+test_umbilical_command_decoder_la_SOURCES = test-umbilical-command-decoder.c
