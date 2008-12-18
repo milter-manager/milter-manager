@@ -51,7 +51,7 @@ gboolean       milter_test_equal_symbols_table
                                             GHashTable *table2);
 gchar         *milter_test_inspect_symbols_table
                                            (GHashTable *table);
-
+void           milter_test_pump_all_events (void);
 
 G_END_DECLS
 

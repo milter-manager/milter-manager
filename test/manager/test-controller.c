@@ -162,26 +162,6 @@ teardown (void)
         g_free(custom_config_path);
 }
 
-static gboolean
-cb_idle_check (gpointer data)
-{
-    gboolean *idle_emitted = data;
-
-    *idle_emitted = TRUE;
-    return FALSE;
-}
-
-static void
-pump_all_events (void)
-{
-    gboolean idle_emitted = FALSE;
-
-    g_idle_add(cb_idle_check, &idle_emitted);
-    while (!idle_emitted) {
-        g_main_context_iteration(NULL, TRUE);
-    }
-}
-
 void
 test_set_configuration (void)
 {
@@ -197,7 +177,7 @@ test_set_configuration (void)
         configuration, strlen(configuration));
     milter_writer_write(writer, packet, packet_size, NULL, &error);
     gcut_assert_error(error);
-    pump_all_events();
+    milter_test_pump_all_events();
 
     cut_assert_path_exist(custom_config_path);
 
@@ -227,7 +207,7 @@ test_reload (void)
                                                          &packet, &packet_size);
     milter_writer_write(writer, packet, packet_size, NULL, &error);
     gcut_assert_error(error);
-    pump_all_events();
+    milter_test_pump_all_events();
     cut_assert_true(milter_manager_configuration_is_privilege_mode(config));
 
     g_free(packet);

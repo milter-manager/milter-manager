@@ -217,6 +217,26 @@ milter_test_inspect_symbols_table (GHashTable *table)
                                    NULL);
 }
 
+static gboolean
+cb_idle_check (gpointer data)
+{
+    gboolean *idle_emitted = data;
+
+    *idle_emitted = TRUE;
+    return FALSE;
+}
+
+void
+milter_test_pump_all_events (void)
+{
+    gboolean idle_emitted = FALSE;
+
+    g_idle_add(cb_idle_check, &idle_emitted);
+    while (!idle_emitted) {
+        g_main_context_iteration(NULL, TRUE);
+    }
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */
