@@ -78,3 +78,6 @@
 * mention GPL license in src/*.c, tool/*.
 * make libmilter.so ABI compatible.
 * milter-manager supports macros requests.
+* milter-client-context should close reader and writer and emit finished signal
+  on timeout.
+* milter-client-context: mta-timeout -> timeout.

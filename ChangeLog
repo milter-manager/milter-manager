@@ -1,5 +1,10 @@
 2008-12-18  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: add:
+	- milter-client-context should close reader and writer and emit
+	finished signal on timeout.
+	- milter-client-context: mta-timeout -> timeout.
+
 	* TODO: add: milter-manager supports macros requests.
 
 	* milter/client/milter-client-context.[ch]: pass
