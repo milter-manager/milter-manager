@@ -1,5 +1,7 @@
 2008-12-18  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: add: milter-manager supports macros requests.
+
 	* milter/client/milter-client-context.[ch]: pass
 	MilterMacrosRequets to negotiate and negotiate-response signal to
 	accept customizing macros requests.

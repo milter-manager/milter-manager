@@ -77,3 +77,4 @@
   command options (<- needed?)
 * mention GPL license in src/*.c, tool/*.
 * make libmilter.so ABI compatible.
+* milter-manager supports macros requests.
