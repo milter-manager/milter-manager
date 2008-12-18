@@ -110,6 +110,7 @@ sgml-build.stamp: tmpl.stamp $(HFILE_GLOB) $(CFILE_GLOB) $(MAIN_SGML_FILE) $(DOC
 	  --expand-content-files="$(expand_content_files)"	\
 	  --main-sgml-file=$(MAIN_SGML_FILE)			\
 	  $(MKDB_OPTIONS)
+	$(EXPAND_RD2_SNIPPET) xml
 	touch sgml-build.stamp
 
 sgml.stamp: sgml-build.stamp

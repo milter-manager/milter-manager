@@ -40,16 +40,18 @@ G_BEGIN_DECLS
  * accepts n-connections from MTA and each connection is
  * processed by %MilterClientContext.
  *
- * </para><refsect2><title>Usage overview</title><para>
+ * <rd>
+ * == Usage overview
+ *
  * You need to set connection spec and connect
  * #MilterClient::connection-established signal before
  * entering mail loop.
  *
  * Connection spec is a entry point of %MilterClient for
  * MTA.  It has 'PROTOCOL:INFORMATION' format. For IPv4
- * socket, 'inet:PORT' or 'inet:PORT@HOST' are valid
+ * socket, 'inet:PORT' or 'inet:PORT&commat;HOST' are valid
  * formats. For IPv6 socket, 'inet6:PORT' or
- * 'inet6:PORT@HOST' are valid formats. For UNIX domain
+ * 'inet6:PORT&commat;HOST' are valid formats. For UNIX domain
  * socket, 'unix:PATH' is a valid format.
  *
  * %MilterClient emits #MilterClient::connection-established
@@ -104,9 +106,9 @@ G_BEGIN_DECLS
  *     return success ? EXIT_SUCCESS : EXIT_FAILURE;
  * }
  * ]|
- * </para></refsect2><para>
  *
- * </para><refsect2><title>Processing model</title><para>
+ * == Processing model
+ *
  * The libmilter provided by Sendmail uses a thread for each
  * connection model. But the milter-client library doesn't
  * use it. The milter-client library uses two threads. One
@@ -125,7 +127,7 @@ G_BEGIN_DECLS
  * library's model. Because the libmilter's model creates a
  * thread but the milter-client library just allocate
  * %MilterClientContext.
- * </para></refsect2><para>
+ * </rd>
  */
 
 

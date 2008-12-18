@@ -26,13 +26,185 @@
 
 G_BEGIN_DECLS
 
+/**
+ * SECTION: milter-client-context
+ * @title: MilterClientContext
+ * @short_description: Process milter protocol.
+ *
+ * The %MilterClientContext processes one milter protocol
+ * session. It means %MilterClientContext instance is
+ * created for each milter protocol session.
+ *
+ * To process each milter protocol command, you need to
+ * connect signals of
+ * %MilterClientContext. %MilterClientContext has signals
+ * that correspond to milter protocol events:
+ *
+ * <rd>
+ * : ((<xxfi_negotiate|URL:https://www.milter.org/developers/api/xxfi_negotiate>))
+ *    #MilterClientContext::negotiate
+ * : ((<xxfi_connect|URL:https://www.milter.org/developers/api/xxfi_connect>))
+ *    #MilterClientContext::connect
+ * : ((<xxfi_helo|URL:https://www.milter.org/developers/api/xxfi_helo>))
+ *    #MilterClientContext::helo
+ * : ((<xxfi_envfrom|URL:https://www.milter.org/developers/api/xxfi_envfrom>))
+ *    #MilterClientContext::envelope-from
+ * : ((<xxfi_envrcpt|URL:https://www.milter.org/developers/api/xxfi_envrcpt>))
+ *    #MilterClientContext::envelope-recipient
+ * : ((<xxfi_data|URL:https://www.milter.org/developers/api/xxfi_data>))
+ *    #MilterClientContext::data
+ * : ((<xxfi_unknown|URL:https://www.milter.org/developers/api/xxfi_unknown>))
+ *    #MilterClientContext::unknown
+ * : ((<xxfi_header|URL:https://www.milter.org/developers/api/xxfi_header>))
+ *    #MilterClientContext::header
+ * : ((<xxfi_eoh|URL:https://www.milter.org/developers/api/xxfi_eoh>))
+ *    #MilterClientContext::end-of-header
+ * : ((<xxfi_body|URL:https://www.milter.org/developers/api/xxfi_body>))
+ *    #MilterClientContext::body
+ * : ((<xxfi_eom|URL:https://www.milter.org/developers/api/xxfi_eom>))
+ *    #MilterClientContext::end-of-message
+ * : ((<xxfi_abort|URL:https://www.milter.org/developers/api/xxfi_abort>))
+ *    #MilterClientContext::abort
+ * : ((<xxfi_close|URL:https://www.milter.org/developers/api/xxfi_close>))
+ *    #MilterClientContext::quit
+ * </rd>
+ *
+ * Here is an example to connect signals. It connects all
+ * signals and each connected signal handler prints its
+ * event name:
+ *
+ * |[
+ * static MilterStatus
+ * cb_negotiate (MilterClientContext *context, MilterOption *option,
+ *               gpointer user_data)
+ * {
+ *     g_print("negotiate\n");
+ *     return MILTER_STATUS_ALL_OPTIONS;
+ * }
+ * 
+ * static MilterStatus
+ * cb_connect (MilterClientContext *context, const gchar *host_name,
+ *             const struct sockaddr *address, socklen_t address_length,
+ *             gpointer user_data)
+ * {
+ *     g_print("connect\n");
+ *     return MILTER_STATUS_CONTINUE;
+ * }
+ * 
+ * static MilterStatus
+ * cb_helo (MilterClientContext *context, const gchar *fqdn, gpointer user_data)
+ * {
+ *     g_print("helo\n");
+ *     return MILTER_STATUS_CONTINUE;
+ * }
+ * 
+ * static MilterStatus
+ * cb_envelope_from (MilterClientContext *context, const gchar *from,
+ *                   gpointer user_data)
+ * {
+ *     g_print("envelope-from\n");
+ *     return MILTER_STATUS_CONTINUE;
+ * }
+ * 
+ * static MilterStatus
+ * cb_envelope_recipient (MilterClientContext *context, const gchar *to,
+ *                        gpointer user_data)
+ * {
+ *     g_print("envelope-recipient\n");
+ *     return MILTER_STATUS_CONTINUE;
+ * }
+ * 
+ * static MilterStatus
+ * cb_data (MilterClientContext *context, gpointer user_data)
+ * {
+ *     g_print("data\n");
+ *     return MILTER_STATUS_CONTINUE;
+ * }
+ * 
+ * static MilterStatus
+ * cb_header (MilterClientContext *context, const gchar *name, const gchar *value,
+ *            gpointer user_data)
+ * {
+ *     g_print("header\n");
+ *     return MILTER_STATUS_CONTINUE;
+ * }
+ * 
+ * static MilterStatus
+ * cb_end_of_header (MilterClientContext *context, gpointer user_data)
+ * {
+ *     g_print("end-of-header\n");
+ *     return MILTER_STATUS_CONTINUE;
+ * }
+ * 
+ * static MilterStatus
+ * cb_body (MilterClientContext *context, const gchar *chunk, gsize length,
+ *          gpointer user_data)
+ * {
+ *     g_print("body\n");
+ *     return MILTER_STATUS_CONTINUE;
+ * }
+ * 
+ * static MilterStatus
+ * cb_end_of_message (MilterClientContext *context, gpointer user_data)
+ * {
+ *     g_print("end-of-message\n");
+ *     return MILTER_STATUS_CONTINUE;
+ * }
+ * 
+ * static MilterStatus
+ * cb_abort (MilterClientContext *context, gpointer user_data)
+ * {
+ *     g_print("abort\n");
+ *     return MILTER_STATUS_CONTINUE;
+ * }
+ * 
+ * static MilterStatus
+ * cb_quit (MilterClientContext *context, gpointer user_data)
+ * {
+ *     g_print("quit\n");
+ *     return MILTER_STATUS_CONTINUE;
+ * }
+ * 
+ * static MilterStatus
+ * cb_unknown (MilterClientContext *context, const gchar *command,
+ *             gpointer user_data)
+ * {
+ *     g_print("unknown\n");
+ *     return MILTER_STATUS_CONTINUE;
+ * }
+ * 
+ * static void
+ * setup_context_signals (MilterClientContext *context)
+ * {
+ * #define CONNECT(name)                                                   \
+ *     g_signal_connect(context, #name, G_CALLBACK(cb_ ## name), NULL)
+ * 
+ *     CONNECT(negotiate);
+ *     CONNECT(connect);
+ *     CONNECT(helo);
+ *     CONNECT(envelope_from);
+ *     CONNECT(envelope_recipient);
+ *     CONNECT(data);
+ *     CONNECT(header);
+ *     CONNECT(end_of_header);
+ *     CONNECT(body);
+ *     CONNECT(end_of_message);
+ *     CONNECT(abort);
+ *     CONNECT(quit);
+ *     CONNECT(unknown);
+ * 
+ * #undef CONNECT
+ * }
+ *  * ]|
+ */
+
 #define MILTER_CLIENT_CONTEXT_ERROR           (milter_client_context_error_quark())
 
 #define MILTER_TYPE_CLIENT_CONTEXT            (milter_client_context_get_type())
 #define MILTER_CLIENT_CONTEXT(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), MILTER_TYPE_CLIENT_CONTEXT, MilterClientContext))
 #define MILTER_CLIENT_CONTEXT_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), MILTER_TYPE_CLIENT_CONTEXT, MilterClientContextClass))
-#define MILTER_CLIENT_IS_CONTEXT(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), MILTER_TYPE_CLIENT_CONTEXT))
-#define MILTER_CLIENT_IS_CONTEXT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), MILTER_TYPE_CLIENT_CONTEXT))
+#define MILTER_IS_CLIENT_CONTEXT(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), MILTER_TYPE_CLIENT_CONTEXT))
+#define MILTER_IS_CLIENT_CONTEXT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), MILTER_TYPE_CLIENT_CONTEXT))
 #define MILTER_CLIENT_CONTEXT_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MILTER_TYPE_CLIENT_CONTEXT, MilterClientContextClass))
 
 typedef enum

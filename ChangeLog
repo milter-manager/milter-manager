@@ -1,5 +1,7 @@
 2008-12-18  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client-context.h: add document.
+
 	* tool/milter-test-client.c: MilterDecoder -> MilterClientContext.
 
 2008-12-18  Hiroyuki Ikezoe  <poincare@ikezoe.net>

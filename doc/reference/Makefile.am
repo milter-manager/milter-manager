@@ -92,6 +92,7 @@ update-po: Makefile sgml.stamp
 	    $(srcdir)/xml/*.xml;		\
 	done
 
+EXPAND_RD2_SNIPPET = $(top_srcdir)/misc/expand-rd2-snippet.rb
 RD2REFENTRY_LIB = $(top_srcdir)/misc/rd2refentry-lib.rb
 RD2 = rd2 -r $(RD2REFENTRY_LIB)
 RD2_JA = $(RD2) --po=$(srcdir)/ja.po

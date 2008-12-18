@@ -25,6 +25,7 @@
     <chapter id="milter-client">
       <title>milter-client</title>
       <xi:include href="xml/client.xml"/>
+      <xi:include href="xml/milter-client-context.xml"/>
     </chapter>
     <!--chapter id="libmilter">
       <title>libmilter</title>
