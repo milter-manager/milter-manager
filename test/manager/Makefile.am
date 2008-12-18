@@ -12,10 +12,11 @@ noinst_LTLIBRARIES =				\
 	test-control-reply-encoder.la		\
 	test-reply-encoder.la			\
 	test-reply-decoder.la			\
-	test-launch-command-encoder.la	\
-	test-launch-command-decoder.la	\
+	test-launch-command-encoder.la		\
+	test-launch-command-decoder.la		\
 	test-controller.la			\
-	test-applicable-condition.la
+	test-applicable-condition.la		\
+	test-process-launcher.la
 endif
 
 INCLUDES =				\
@@ -56,3 +57,4 @@ test_controller_la_SOURCES		= test-controller.c
 test_applicable_condition_la_SOURCES	= test-applicable-condition.c
 test_launch_command_encoder_la_SOURCES	= test-launch-command-encoder.c
 test_launch_command_decoder_la_SOURCES	= test-launch-command-decoder.c
+test_process_launcher_la_SOURCES	= test-process-launcher.c

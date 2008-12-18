@@ -41,6 +41,7 @@ milter_manager_public_headers =				\
 	milter-manager-launch-command-encoder.h		\
 	milter-manager-launch-command-decoder.h		\
 	milter-manager-applicable-condition.h		\
+	milter-manager-process-launcher.h		\
 	milter-manager.h
 
 enum_source_prefix = milter-manager-enum-types
@@ -75,7 +76,8 @@ libmilter_manager_la_SOURCES =				\
 	milter-manager-reply-encoder.c			\
 	milter-manager-launch-command-encoder.c		\
 	milter-manager-launch-command-decoder.c		\
-	milter-manager-applicable-condition.c
+	milter-manager-applicable-condition.c		\
+	milter-manager-process-launcher.c
 
 libmilter_manager_la_LIBADD =					\
 	$(top_builddir)/milter/client/libmilter-client.la	\

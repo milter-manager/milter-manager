@@ -21,6 +21,7 @@
 	* milter/manager/*: Umbilical -> Launch.
 	* test/lib/milter-test-utils.[ch]: milter_test_pump_all_events.
 	* test/manager/test-controller.c: Use milter_test_pump_all_events.
+	* milter/manager/milter-process-launcher.[ch]: Added.
 
 2008-12-17  Kouhei Sutou  <kou@cozmixng.org>
 
