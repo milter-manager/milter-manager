@@ -50,6 +50,21 @@ static gsize packet_size;
 
 static gchar *current_locale;
 
+void
+cut_startup (void)
+{
+    current_locale = g_strdup(setlocale(LC_ALL, NULL));
+    setlocale(LC_ALL, "C");
+}
+
+void
+cut_shutdown (void)
+{
+    setlocale(LC_ALL, current_locale);
+    if (current_locale)
+        g_free(current_locale);
+}
+
 static void
 setup_input_io (void)
 {
@@ -108,9 +123,6 @@ setup (void)
     reply_encoder = MILTER_MANAGER_REPLY_ENCODER(encoder);
 
     expected_error_message = NULL;
-
-    current_locale = g_strdup(setlocale(LC_ALL, NULL));
-    setlocale(LC_ALL, "C");
 }
 
 void
@@ -136,10 +148,6 @@ teardown (void)
 
     if (expected_error_message)
         g_free(expected_error_message);
-
-    setlocale(LC_ALL, current_locale);
-    if (current_locale)
-        g_free(current_locale);
 }
 
 void
@@ -226,7 +234,7 @@ data_launch_error (void)
     ADD("nonexistent command",
         "/bin/oecho",
         g_get_user_name(),
-        cut_take_printf("Couldn't start new /bin/oecho process.: "
+        cut_take_printf("Couldn't start new process: </bin/oecho>: "
                         "%s:%d: %s \"%s\" (%s)",
                         g_quark_to_string(g_spawn_error_quark()),
                         G_SPAWN_ERROR_NOENT,

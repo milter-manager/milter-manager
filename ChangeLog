@@ -1,5 +1,8 @@
 2008-12-19  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/test-process-launcher.c: fix local dependent test
+	failures.
+
 	* milter/manager/milter-manager-process-launcher.c,
 	test/manager/test-process-launcher.c: cleanup.
 
