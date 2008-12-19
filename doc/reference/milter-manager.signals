@@ -1,0 +1,735 @@
+<SIGNAL>
+<NAME>MilterClient::connection-established</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterClient *milterclient
+MilterClientContext *arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterReplySignals::accept</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterReplySignals *milterreplysignals
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterReplySignals::add-header</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterReplySignals *milterreplysignals
+gchar *arg1
+gchar *arg2
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterReplySignals::add-recipient</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterReplySignals *milterreplysignals
+gchar *arg1
+gchar *arg2
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterReplySignals::change-from</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterReplySignals *milterreplysignals
+gchar *arg1
+gchar *arg2
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterReplySignals::change-header</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterReplySignals *milterreplysignals
+gchar *arg1
+guint  arg2
+gchar *arg3
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterReplySignals::connection-failure</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterReplySignals *milterreplysignals
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterReplySignals::continue</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterReplySignals *milterreplysignals
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterReplySignals::delete-header</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterReplySignals *milterreplysignals
+gchar *arg1
+guint  arg2
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterReplySignals::delete-recipient</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterReplySignals *milterreplysignals
+gchar *arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterReplySignals::discard</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterReplySignals *milterreplysignals
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterReplySignals::insert-header</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterReplySignals *milterreplysignals
+guint  arg1
+gchar *arg2
+gchar *arg3
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterReplySignals::negotiate-reply</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterReplySignals *milterreplysignals
+MilterOption *arg1
+MilterMacrosRequests *arg2
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterReplySignals::progress</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterReplySignals *milterreplysignals
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterReplySignals::quarantine</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterReplySignals *milterreplysignals
+gchar *arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterReplySignals::reject</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterReplySignals *milterreplysignals
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterReplySignals::replace-body</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterReplySignals *milterreplysignals
+gchar *arg1
+guint64  arg2
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterReplySignals::reply-code</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterReplySignals *milterreplysignals
+guint  arg1
+gchar *arg2
+gchar *arg3
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterReplySignals::shutdown</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterReplySignals *milterreplysignals
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterReplySignals::skip</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterReplySignals *milterreplysignals
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterReplySignals::temporary-failure</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterReplySignals *milterreplysignals
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterLogger::log</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterLogger *milterlogger
+gchar *arg1
+MilterLogLevelFlags  arg2
+gchar *arg3
+guint  arg4
+gchar *arg5
+gpointer  arg6
+gchar *arg7
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterReader::flow</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterReader *milterreader
+gpointer  arg1
+guint  arg2
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterErrorEmittable::error</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterErrorEmittable *miltererroremittable
+gpointer  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterCommandDecoder::abort</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterCommandDecoder *miltercommanddecoder
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterCommandDecoder::body</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterCommandDecoder *miltercommanddecoder
+gchar *arg1
+guint64  arg2
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterCommandDecoder::connect</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterCommandDecoder *miltercommanddecoder
+gchar *arg1
+gpointer  arg2
+guint  arg3
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterCommandDecoder::data</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterCommandDecoder *miltercommanddecoder
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterCommandDecoder::define-macro</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterCommandDecoder *miltercommanddecoder
+MilterCommand  arg1
+gpointer  arg2
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterCommandDecoder::end-of-header</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterCommandDecoder *miltercommanddecoder
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterCommandDecoder::end-of-message</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterCommandDecoder *miltercommanddecoder
+gchar *arg1
+guint64  arg2
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterCommandDecoder::envelope-from</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterCommandDecoder *miltercommanddecoder
+gchar *arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterCommandDecoder::envelope-recipient</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterCommandDecoder *miltercommanddecoder
+gchar *arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterCommandDecoder::header</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterCommandDecoder *miltercommanddecoder
+gchar *arg1
+gchar *arg2
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterCommandDecoder::helo</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterCommandDecoder *miltercommanddecoder
+gchar *arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterCommandDecoder::negotiate</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterCommandDecoder *miltercommanddecoder
+MilterOption *arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterCommandDecoder::quit</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterCommandDecoder *miltercommanddecoder
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterCommandDecoder::unknown</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterCommandDecoder *miltercommanddecoder
+gchar *arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterDecoder::decode</NAME>
+<RETURNS>gboolean</RETURNS>
+<FLAGS>l</FLAGS>
+MilterDecoder *milterdecoder
+gpointer  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterFinishedEmittable::finished</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterFinishedEmittable *milterfinishedemittable
+</SIGNAL>
+
+
+<SIGNAL>
+<NAME>MilterClientContext::abort</NAME>
+<RETURNS>MilterStatus</RETURNS>
+<FLAGS>l</FLAGS>
+MilterClientContext *context
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterClientContext::abort-response</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterClientContext *context
+MilterStatus  status
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterClientContext::body</NAME>
+<RETURNS>MilterStatus</RETURNS>
+<FLAGS>l</FLAGS>
+MilterClientContext *context
+gchar *chunk
+guint  size
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterClientContext::body-response</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterClientContext *context
+MilterStatus  status
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterClientContext::connect</NAME>
+<RETURNS>MilterStatus</RETURNS>
+<FLAGS>l</FLAGS>
+MilterClientContext *context
+gchar *host_name
+struct sockaddr *address
+socklen_t  address_size
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterClientContext::connect-response</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterClientContext *context
+MilterStatus  status
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterClientContext::data</NAME>
+<RETURNS>MilterStatus</RETURNS>
+<FLAGS>l</FLAGS>
+MilterClientContext *context
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterClientContext::data-response</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterClientContext *context
+MilterStatus  status
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterClientContext::define-macro</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterClientContext *context
+MilterCommand  command
+GHashTable *macros
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterClientContext::end-of-header</NAME>
+<RETURNS>MilterStatus</RETURNS>
+<FLAGS>l</FLAGS>
+MilterClientContext *context
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterClientContext::end-of-header-response</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterClientContext *context
+MilterStatus  status
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterClientContext::end-of-message</NAME>
+<RETURNS>MilterStatus</RETURNS>
+<FLAGS>l</FLAGS>
+MilterClientContext *context
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterClientContext::end-of-message-response</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterClientContext *context
+MilterStatus  status
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterClientContext::envelope-from</NAME>
+<RETURNS>MilterStatus</RETURNS>
+<FLAGS>l</FLAGS>
+MilterClientContext *context
+gchar *from
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterClientContext::envelope-from-response</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterClientContext *context
+MilterStatus  status
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterClientContext::envelope-recipient</NAME>
+<RETURNS>MilterStatus</RETURNS>
+<FLAGS>l</FLAGS>
+MilterClientContext *context
+gchar *recipient
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterClientContext::envelope-recipient-response</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterClientContext *context
+MilterStatus  status
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterClientContext::header</NAME>
+<RETURNS>MilterStatus</RETURNS>
+<FLAGS>l</FLAGS>
+MilterClientContext *context
+gchar *name
+gchar *value
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterClientContext::header-response</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterClientContext *context
+MilterStatus  status
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterClientContext::helo</NAME>
+<RETURNS>MilterStatus</RETURNS>
+<FLAGS>l</FLAGS>
+MilterClientContext *context
+gchar *fqdn
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterClientContext::helo-response</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterClientContext *context
+MilterStatus  status
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterClientContext::negotiate</NAME>
+<RETURNS>MilterStatus</RETURNS>
+<FLAGS>l</FLAGS>
+MilterClientContext *context
+MilterOption *option
+MilterMacrosRequests *macros_requests
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterClientContext::negotiate-response</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterClientContext *context
+MilterOption *option
+MilterMacrosRequests *macros_requests
+MilterStatus  status
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterClientContext::quit</NAME>
+<RETURNS>MilterStatus</RETURNS>
+<FLAGS>l</FLAGS>
+MilterClientContext *context
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterClientContext::quit-response</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterClientContext *context
+MilterStatus  status
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterClientContext::timeout</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterClientContext *context
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterClientContext::unknown</NAME>
+<RETURNS>MilterStatus</RETURNS>
+<FLAGS>l</FLAGS>
+MilterClientContext *context
+gchar *command
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterClientContext::unknown-response</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterClientContext *context
+MilterStatus  status
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterServerContext::check-body</NAME>
+<RETURNS>gboolean</RETURNS>
+<FLAGS>l</FLAGS>
+MilterServerContext *milterservercontext
+gchar *arg1
+guint64  arg2
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterServerContext::check-connect</NAME>
+<RETURNS>gboolean</RETURNS>
+<FLAGS>l</FLAGS>
+MilterServerContext *milterservercontext
+gchar *arg1
+gpointer  arg2
+guint  arg3
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterServerContext::check-end-of-message</NAME>
+<RETURNS>gboolean</RETURNS>
+<FLAGS>l</FLAGS>
+MilterServerContext *milterservercontext
+gchar *arg1
+guint64  arg2
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterServerContext::check-envelope-from</NAME>
+<RETURNS>gboolean</RETURNS>
+<FLAGS>l</FLAGS>
+MilterServerContext *milterservercontext
+gchar *arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterServerContext::check-envelope-recipient</NAME>
+<RETURNS>gboolean</RETURNS>
+<FLAGS>l</FLAGS>
+MilterServerContext *milterservercontext
+gchar *arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterServerContext::check-header</NAME>
+<RETURNS>gboolean</RETURNS>
+<FLAGS>l</FLAGS>
+MilterServerContext *milterservercontext
+gchar *arg1
+gchar *arg2
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterServerContext::check-helo</NAME>
+<RETURNS>gboolean</RETURNS>
+<FLAGS>l</FLAGS>
+MilterServerContext *milterservercontext
+gchar *arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterServerContext::connection-timeout</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterServerContext *milterservercontext
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterServerContext::end-of-message-timeout</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterServerContext *milterservercontext
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterServerContext::reading-timeout</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterServerContext *milterservercontext
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterServerContext::ready</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterServerContext *milterservercontext
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterServerContext::writing-timeout</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterServerContext *milterservercontext
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterManagerEgg::hatched</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterManagerEgg *miltermanageregg
+MilterManagerChild *arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterManagerEgg::to-xml</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterManagerEgg *miltermanageregg
+gpointer  arg1
+guint  arg2
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterManagerControlCommandDecoder::get-configuration</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterManagerControlCommandDecoder *miltermanagercontrolcommanddecoder
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterManagerControlCommandDecoder::get-status</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterManagerControlCommandDecoder *miltermanagercontrolcommanddecoder
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterManagerControlCommandDecoder::reload</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterManagerControlCommandDecoder *miltermanagercontrolcommanddecoder
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterManagerControlCommandDecoder::set-configuration</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterManagerControlCommandDecoder *miltermanagercontrolcommanddecoder
+gchar *arg1
+guint64  arg2
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterManagerControlCommandDecoder::stop-child</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterManagerControlCommandDecoder *miltermanagercontrolcommanddecoder
+gchar *arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterManagerControlReplyDecoder::configuration</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterManagerControlReplyDecoder *miltermanagercontrolreplydecoder
+gchar *arg1
+guint64  arg2
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterManagerConfiguration::to-xml</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterManagerConfiguration *miltermanagerconfiguration
+gpointer  arg1
+guint  arg2
+</SIGNAL>
+
+<SIGNAL>
+<NAME>MilterManagerApplicableCondition::attach-to</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+MilterManagerApplicableCondition *miltermanagerapplicablecondition
+MilterManagerChild *arg1
+</SIGNAL>
+

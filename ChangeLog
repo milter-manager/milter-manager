@@ -1,5 +1,7 @@
 2008-12-19  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/reference/milter-manager.signals: add argument names.
+
 	* milter/client/miter-client-context.[ch]: mta_timeout -> timeout.
 	* milter/client/, milter/manager/,
 	test/client/test-client-context-callback.c: follow the above change.
