@@ -27,13 +27,18 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <errno.h>
+#include <sys/types.h>
+#include <pwd.h>
+#include <unistd.h>
 
 #include "../manager.h"
+#include "milter-manager-process-launcher.h"
 
 static gboolean initialized = FALSE;
 static MilterClient *current_client = NULL;
 static gchar *option_spec = NULL;
 static gchar *config_dir = NULL;
+static pid_t launcher_pid = -1;
 
 static gboolean
 print_version (const gchar *option_name, const gchar *value,
@@ -258,6 +263,148 @@ setup_control_connection (MilterManager *manager)
     return watch_id;
 }
 
+typedef enum {
+    READ_PIPE,
+    WRITE_PIPE
+} PipeMode;
+
+static void
+close_pipe (int *pipe, PipeMode mode)
+{
+    if (pipe[mode] == -1)
+        return;
+    close(pipe[mode]);
+    pipe[mode] = -1;
+}
+
+static GIOChannel *
+create_io_channel (int pipe, GIOFlags flag)
+{
+    GIOChannel *channel;
+
+    channel = g_io_channel_unix_new(pipe);
+    g_io_channel_set_encoding(channel, NULL, NULL);
+    g_io_channel_set_flags(channel, flag, NULL);
+    g_io_channel_set_close_on_unref(channel, TRUE);
+
+    return channel;
+}
+
+static GIOChannel *
+create_read_io_channel (int pipe)
+{
+    return create_io_channel(pipe, G_IO_FLAG_IS_READABLE | G_IO_FLAG_NONBLOCK);
+}
+
+static GIOChannel *
+create_write_io_channel (int pipe)
+{
+    return create_io_channel(pipe, G_IO_FLAG_IS_WRITEABLE);
+}
+
+static pid_t
+prepare_pipes (MilterManager *manager,
+               GIOChannel **read_channel,
+               GIOChannel **write_channel)
+{
+    int fork_errno = 0;
+    int launcher_command_pipe[2];
+    int launcher_reply_pipe[2];
+    pid_t pid;
+
+    if (pipe(launcher_command_pipe) < 0 ||
+        pipe(launcher_reply_pipe) < 0) {
+        return -1;
+    }
+
+    pid = fork();
+    if (pid == -1)
+        fork_errno = errno;
+
+    if (pid == 0) {
+        close_pipe(launcher_command_pipe, WRITE_PIPE);
+        close_pipe(launcher_reply_pipe, READ_PIPE);
+
+        *write_channel = create_write_io_channel(launcher_reply_pipe[WRITE_PIPE]);
+        *read_channel = create_read_io_channel(launcher_command_pipe[READ_PIPE]);
+    } else {
+        close_pipe(launcher_command_pipe, READ_PIPE);
+        close_pipe(launcher_reply_pipe, WRITE_PIPE);
+
+        *write_channel = create_write_io_channel(launcher_command_pipe[WRITE_PIPE]);
+        *read_channel = create_read_io_channel(launcher_reply_pipe[READ_PIPE]);
+    }
+
+    errno = fork_errno;
+    return pid;
+}
+
+static void
+start_process_launcher (MilterManager *manager,
+                        GIOChannel *read_channel, GIOChannel *write_channel)
+{
+    MilterManagerProcessLauncher *launcher;
+    MilterReader *reader;
+    MilterWriter *writer;
+    MilterManagerConfiguration *configuration;
+
+    reader = milter_reader_io_channel_new(read_channel);
+    g_io_channel_unref(read_channel);
+
+    writer = milter_writer_io_channel_new(write_channel);
+
+    configuration = milter_manager_get_configuration(manager);
+    launcher = milter_manager_process_launcher_new(configuration);
+    milter_agent_set_reader(MILTER_AGENT(launcher), reader);
+    milter_agent_set_writer(MILTER_AGENT(launcher), writer);
+    g_object_unref(reader);
+    g_object_unref(writer);
+}
+
+static pid_t
+fork_launcher_process (MilterManager *manager)
+{
+    pid_t pid;
+    GIOChannel *read_channel = NULL, *write_channel = NULL;
+
+    pid = prepare_pipes(manager, &read_channel, &write_channel);
+    if (pid == -1)
+        return -1;
+
+    if (pid == 0) {
+        start_process_launcher(manager, read_channel, write_channel);
+    } else {
+        milter_manager_set_launcher_channel(manager,
+                                            read_channel,
+                                            write_channel);
+    }
+
+    return pid;
+}
+
+static gboolean
+switch_user (MilterManager *manager)
+{
+    MilterManagerConfiguration *configuration;
+    const gchar *effective_user;
+    struct passwd *password;
+
+    configuration = milter_manager_get_configuration(manager);
+
+    effective_user = milter_manager_configuration_get_effective_user(configuration);
+    if (!effective_user)
+        effective_user = "nobody";
+
+    password = getpwnam(effective_user);
+    if (!password)
+        return FALSE;
+
+    if (setuid(password->pw_uid) == -1)
+        return FALSE;
+
+    return TRUE;
+}
+
 void
 milter_manager_main (void)
 {
@@ -267,7 +414,8 @@ milter_manager_main (void)
     void (*sigint_handler) (int signum);
     guint control_connection_watch_id = 0;
     GError *error = NULL;
-
+    pid_t pid = -1;
+        
     config = milter_manager_configuration_new(NULL);
     if (config_dir)
         milter_manager_configuration_prepend_load_path(config, config_dir);
@@ -284,8 +432,30 @@ milter_manager_main (void)
                      G_CALLBACK(cb_error), NULL);
 
     if (!milter_client_set_connection_spec(client, option_spec, &error)) {
-        g_object_unref(client);
+        g_object_unref(manager);
         g_print("%s\n", error->message);
+        return;
+    }
+
+    if (milter_manager_configuration_is_privilege_mode(config)) {
+        pid = fork_launcher_process(manager);
+        if (pid == -1) {
+            g_object_unref(manager);
+            g_print("%s\n", g_strerror(errno));
+            return;
+        }
+        if (pid == 0) {
+            while (TRUE) {
+                g_main_context_iteration(NULL, FALSE);
+            }
+        } else {
+            launcher_pid = pid;
+        }
+    }
+
+    if (geteuid() == 0 && !switch_user(manager)) {
+        g_object_unref(manager);
+        g_print("Could not change effective user\n");
         return;
     }
 
@@ -296,7 +466,9 @@ milter_manager_main (void)
     signal(SIGINT, sigint_handler);
 
     current_client = NULL;
-    g_object_unref(client);
+    g_object_unref(manager);
+    if (launcher_pid > 0)
+        kill(launcher_pid, SIGKILL);
 }
 
 /*

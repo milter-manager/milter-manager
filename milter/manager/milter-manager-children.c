@@ -220,7 +220,7 @@ milter_manager_children_init (MilterManagerChildren *milter)
     priv->reply_extended_code = NULL;
     priv->reply_message = NULL;
 
-    priv->retry_connect_time = 5.0;
+    priv->retry_connect_time = 20.0;
     priv->launcher_reader = NULL;
     priv->launcher_writer = NULL;
 }
@@ -500,20 +500,6 @@ cb_ready (MilterServerContext *context, gpointer user_data)
     setup_server_context_signals(negotiate_data->children, context);
     milter_server_context_negotiate(context, negotiate_data->option);
     g_hash_table_remove(priv->try_negotiate_ids, negotiate_data);
-
-    if (priv->launcher_writer) {
-        MilterManagerLaunchCommandEncoder *encoder;
-        gchar *packet;
-        gsize packet_size;
-
-        encoder = MILTER_MANAGER_LAUNCH_COMMAND_ENCODER(milter_manager_launch_command_encoder_new());
-
-        milter_manager_launch_command_encoder_encode_launch(
-            encoder,
-            &packet, &packet_size,
-            "/bin/echo", g_get_user_name());
-        milter_writer_write(priv->launcher_writer, packet, packet_size, NULL, NULL);
-    }
 }
 
 static void
@@ -1383,8 +1369,34 @@ milter_manager_children_start_child (MilterManagerChildren *children,
                                      MilterManagerChild *child)
 {
     GError *error = NULL;
+    MilterManagerLaunchCommandEncoder *encoder;
+    gchar *packet = NULL;
+    gsize packet_size;
+    gchar *command;
+    gchar *user_name;
+    MilterManagerChildrenPrivate *priv;
 
-    milter_manager_child_start(child, &error);
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    if (!priv->launcher_writer)
+        return FALSE;
+
+    command = milter_manager_child_get_command_line_string(child);
+    user_name = milter_manager_child_get_user_name(child);
+
+    if (!command || !user_name)
+        return FALSE;
+
+    encoder = MILTER_MANAGER_LAUNCH_COMMAND_ENCODER(milter_manager_launch_command_encoder_new());
+
+    milter_manager_launch_command_encoder_encode_launch(encoder,
+                                                        &packet, &packet_size,
+                                                        command,
+                                                        g_get_user_name());
+    milter_writer_write(priv->launcher_writer, packet, packet_size, NULL, &error);
+    g_free(packet);
+    g_object_unref(encoder);
+
     if (error) {
         milter_error("Error: %s", error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
@@ -2504,7 +2516,7 @@ cb_launcher_reader_flow (MilterReader *reader,
                          const gchar *data, gsize data_size,
                          gpointer user_data)
 {
-    g_warning("hoge");
+    
 }
 
 void

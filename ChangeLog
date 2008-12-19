@@ -27,6 +27,11 @@
 	milter_manager_configuration_get_effective_user and
 	set_effective_user.
 	* bindings/ruby/lib/milter/manager.rb: Added effective_user= method.
+	* milter/manager/milter-manager-children.c: Use
+	MilterManagerLaunchProtcol to start a new milter.
+	* milter/manager/milter-manager-main.c: Fork and create a
+	MilterManagerProcessLauncher in child process. Also change effective
+	user if milter-manager is run by root user.
 
 2008-12-18  Kouhei Sutou  <kou@cozmixng.org>
 
