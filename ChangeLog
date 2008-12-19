@@ -26,6 +26,7 @@
 	* milter/manager/milter-manager-configuration.[ch]: Added
 	milter_manager_configuration_get_effective_user and
 	set_effective_user.
+	* bindings/ruby/lib/milter/manager.rb: Added effective_user= method.
 
 2008-12-18  Kouhei Sutou  <kou@cozmixng.org>
 

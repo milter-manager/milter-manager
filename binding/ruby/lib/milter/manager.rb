@@ -343,6 +343,10 @@ module Milter::Manager
         end
         @configuration.privilege_mode = mode
       end
+
+      def effective_user=(user_name)
+        @configuration.effective_user = user_name
+      end
     end
 
     class ControlConfiguration
