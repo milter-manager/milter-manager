@@ -38,6 +38,13 @@ base_init (gpointer g_class)
 
     if (initialized) return;
 
+    /**
+     * MilterFinishedEmittable::finished:
+     * @emittable: the object that received the signal.
+     *
+     * This signal is emitted on @emittable's work is
+     * finished.
+     */
     signals[FINISHED] =
         g_signal_new("finished",
                      G_TYPE_FROM_CLASS(g_class),

@@ -42,6 +42,12 @@ struct _MilterFinishedEmittableClass
 
 GType    milter_finished_emittable_get_type          (void) G_GNUC_CONST;
 
+/**
+ * milter_finished_emittable_emit:
+ * @emittable: a %MilterFinishedEmittable.
+ *
+ * Emits #MilterFinishedEmittable::finished signal.
+ */
 void     milter_finished_emittable_emit              (MilterFinishedEmittable *emittable);
 
 G_END_DECLS

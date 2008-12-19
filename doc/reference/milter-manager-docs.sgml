@@ -21,6 +21,7 @@
     <chapter id="milter-core">
       <title>milter-core</title>
       <xi:include href="xml/core.xml"/>
+      <xi:include href="xml/milter-finished-emittable.xml"/>
     </chapter>
     <chapter id="milter-client">
       <title>milter-client</title>

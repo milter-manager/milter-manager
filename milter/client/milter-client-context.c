@@ -317,19 +317,19 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      * : %MILTER_STATUS_REJECT
      *    Rejects the current connection.
      *
-     *    #MilterClientContext::finished will be emitted.
+     *    #MilterFinishedEmittable::finished will be emitted.
      *
      * : %MILTER_STATUS_ACCEPT
      *    Accepts the current connection without further
      *    more processing.
      *
-     *    #MilterClientContext::finished will be emitted.
+     *    #MilterFinishedEmittable::finished will be emitted.
      *
      * : %MILTER_STATUS_TEMPORARY_FAILURE
      *    Rejects the current connection with a temporary
      *    failure. (i.e. 4xx status code in SMTP)
      *
-     *    #MilterClientContext::finished will be emitted.
+     *    #MilterFinishedEmittable::finished will be emitted.
      *
      * : %MILTER_STATUS_NO_REPLY
      *    Doesn't send a reply back to MTA. The milter
@@ -412,19 +412,19 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      * : %MILTER_STATUS_REJECT
      *    Rejects the current connection.
      *
-     *    #MilterClientContext::finished will be emitted.
+     *    #MilterFinishedEmittable::finished will be emitted.
      *
      * : %MILTER_STATUS_ACCEPT
      *    Accepts the current connection without further
      *    more processing.
      *
-     *    #MilterClientContext::finished will be emitted.
+     *    #MilterFinishedEmittable::finished will be emitted.
      *
      * : %MILTER_STATUS_TEMPORARY_FAILURE
      *    Rejects the current connection with a temporary
      *    failure. (i.e. 4xx status code in SMTP)
      *
-     *    #MilterClientContext::finished will be emitted.
+     *    #MilterFinishedEmittable::finished will be emitted.
      *
      * : %MILTER_STATUS_NO_REPLY
      *    Doesn't send a reply back to MTA. The milter
@@ -1341,7 +1341,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      * and #MilterClientContext::end-of-message, should be
      * freed in this signal. But any resources allocated for
      * the connection should not be freed in this signal. It
-     * should be freed in #MilterClientContext::finished.
+     * should be freed in #MilterFinishedEmittable::finished.
      *
      * All available response statues are the followings:
      *
@@ -1439,9 +1439,9 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      * command within milter_client_context_get_timeout()
      * seconds. If #MilterClientContext::timeout is emitted,
      * the current connection is aborted and
-     * #MilterClientContext::finished are emitted.
+     * #MilterFinishedEmittable::finished are emitted.
      * #MilterClientContext::abort may be emitted before
-     * #MilterClientContext::finished if the milter
+     * #MilterFinishedEmittable::finished if the milter
      * is processing a message.
      */
     signals[TIMEOUT] =

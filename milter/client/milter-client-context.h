@@ -66,7 +66,7 @@ G_BEGIN_DECLS
  * : ((<xxfi_abort|URL:https://www.milter.org/developers/api/xxfi_abort>))
  *    #MilterClientContext::abort
  * : ((<xxfi_close|URL:https://www.milter.org/developers/api/xxfi_close>))
- *    #MilterClientContext::quit
+ *    #MilterFinishedEmittable::finished
  * </rd>
  *
  * Here is an example to connect signals. It connects all
@@ -295,9 +295,6 @@ struct _MilterClientContextClass
     MilterStatus (*end_of_message)     (MilterClientContext *context);
     void         (*end_of_message_response)
                                        (MilterClientContext *context,
-                                        MilterStatus         status);
-    MilterStatus (*quit)               (MilterClientContext *context);
-    void         (*quit_response)      (MilterClientContext *context,
                                         MilterStatus         status);
     MilterStatus (*abort)              (MilterClientContext *context);
     void         (*abort_response)     (MilterClientContext *context,
