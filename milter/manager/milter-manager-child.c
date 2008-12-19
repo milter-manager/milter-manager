@@ -344,6 +344,32 @@ set_user (const gchar *user_name, GError **error)
     return TRUE;
 }
 
+gchar *
+milter_manager_child_get_command_line_string (MilterManagerChild *milter)
+{
+    MilterManagerChildPrivate *priv;
+    gchar *command_line;
+
+    priv = MILTER_MANAGER_CHILD_GET_PRIVATE(milter);
+
+    if (!priv->command)
+        return NULL;
+
+    if (priv->command_options)
+        command_line = g_strdup_printf("%s %s",
+                                       priv->command, priv->command_options);
+    else
+        command_line = g_strdup(priv->command);
+
+    return command_line;
+}
+
+gchar *
+milter_manager_child_get_user_name (MilterManagerChild *milter)
+{
+    return MILTER_MANAGER_CHILD_GET_PRIVATE(milter)->user_name;
+}
+
 gboolean
 milter_manager_child_start (MilterManagerChild *milter, GError **error)
 {
@@ -357,19 +383,14 @@ milter_manager_child_start (MilterManagerChild *milter, GError **error)
 
     priv = MILTER_MANAGER_CHILD_GET_PRIVATE(milter);
 
-    if (!priv->command) {
+    command_line = milter_manager_child_get_command_line_string(milter);
+    if (!command_line) {
         g_set_error(error,
                     MILTER_MANAGER_CHILD_ERROR,
                     MILTER_MANAGER_CHILD_ERROR_BAD_COMMAND_STRING,
                     "No command set yet.");
         return FALSE;
     }
-
-    if (priv->command_options)
-        command_line = g_strdup_printf("%s %s",
-                                       priv->command, priv->command_options);
-    else
-        command_line = g_strdup(priv->command);
 
     success = g_shell_parse_argv(command_line,
                                  &argc, &argv,

@@ -27,6 +27,8 @@
 
 #include <gcutter.h>
 
+void test_get_command_line_string (void);
+void test_get_user_name (void);
 void test_start (void);
 void test_start_with_search_path (void);
 void test_start_no_command (void);
@@ -82,6 +84,32 @@ teardown (void)
     setlocale(LC_ALL, current_locale);
     if (current_locale)
         g_free(current_locale);
+}
+
+void
+test_get_command_line_string (void)
+{
+    const gchar command[] = "/bin/echo";
+    const gchar command_options[] = "-n";
+
+    g_object_set(milter,
+                 "command", command,
+                 "command-options", command_options,
+                 NULL);
+    cut_assert_equal_string("/bin/echo -n",
+                            milter_manager_child_get_command_line_string(milter));
+}
+
+void
+test_get_user_name (void)
+{
+    const gchar user_name[] = "Tom";
+
+    g_object_set(milter,
+                 "user-name", user_name,
+                 NULL);
+    cut_assert_equal_string("Tom",
+                            milter_manager_child_get_user_name(milter));
 }
 
 void
