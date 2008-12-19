@@ -81,3 +81,20 @@
 * milter-client-context should close reader and writer and emit finished signal
   on timeout.
 * milter-client-context: mta-timeout -> timeout.
+* support MAIL FROM/RCPT TO additional info parsing.
+  (MilterClientContext::envelope-from, MilterClientContext::envelope-recipient)
+  cited from ESMTP (RFC 1869) 6.1.:
+       esmtp-cmd        ::= inner-esmtp-cmd [SP esmtp-parameters] CR LF
+       esmtp-parameters ::= esmtp-parameter *(SP esmtp-parameter)
+       esmtp-parameter  ::= esmtp-keyword ["=" esmtp-value]
+       esmtp-keyword    ::= (ALPHA / DIGIT) *(ALPHA / DIGIT / "-")
+
+			    ; syntax and values depend on esmtp-keyword
+       esmtp-value      ::= 1*<any CHAR excluding "=", SP, and all
+			       control characters (US ASCII 0-31
+			       inclusive)>
+			    ; The following commands are extended to
+
+			    ; accept extended parameters.
+       inner-esmtp-cmd  ::= ("MAIL FROM:" reverse-path)   /
+			    ("RCPT TO:" forward-path)

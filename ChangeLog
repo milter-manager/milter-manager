@@ -1,5 +1,7 @@
 2008-12-19  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: add: support MAIL FROM/RCPT TO additional info parsing.
+
 	* doc/reference/milter-manager.signals: add argument names.
 
 	* milter/client/miter-client-context.[ch]: mta_timeout -> timeout.
