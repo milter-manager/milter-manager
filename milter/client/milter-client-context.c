@@ -60,7 +60,7 @@ enum
     ABORT_RESPONSE,
     DEFINE_MACRO,
 
-    MTA_TIMEOUT,
+    TIMEOUT,
     LAST_SIGNAL
 };
 
@@ -84,7 +84,7 @@ struct _MilterClientContextPrivate
     guint reply_code;
     gchar *extended_reply_code;
     gchar *reply_message;
-    guint mta_timeout;
+    guint timeout;
     guint timeout_id;
 };
 
@@ -465,11 +465,11 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      _milter_marshal_VOID__ENUM_POINTER,
                      G_TYPE_NONE, 2, MILTER_TYPE_COMMAND, G_TYPE_POINTER);
 
-    signals[MTA_TIMEOUT] =
-        g_signal_new("mta-timeout",
+    signals[TIMEOUT] =
+        g_signal_new("timeout",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MilterClientContextClass, mta_timeout),
+                     G_STRUCT_OFFSET(MilterClientContextClass, timeout),
                      NULL, NULL,
                      g_cclosure_marshal_VOID__VOID,
                      G_TYPE_NONE, 0);
@@ -488,7 +488,7 @@ milter_client_context_init (MilterClientContext *context)
     priv->reply_code = 0;
     priv->extended_reply_code = NULL;
     priv->reply_message = NULL;
-    priv->mta_timeout = 7210;
+    priv->timeout = 7210;
     priv->timeout_id = 0;
 }
 
@@ -853,9 +853,9 @@ milter_client_context_format_reply (MilterClientContext *context)
 }
 
 static gboolean
-cb_mta_timeout (gpointer data)
+cb_timeout (gpointer data)
 {
-    g_signal_emit(data, signals[MTA_TIMEOUT], 0);
+    g_signal_emit(data, signals[TIMEOUT], 0);
 
     return FALSE;
 }
@@ -872,8 +872,8 @@ write_packet (MilterClientContext *context, gchar *packet, gsize packet_size)
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
 
-    priv->timeout_id = milter_utils_timeout_add(priv->mta_timeout,
-                                                cb_mta_timeout,
+    priv->timeout_id = milter_utils_timeout_add(priv->timeout,
+                                                cb_timeout,
                                                 context);
     success = milter_agent_write_packet(MILTER_AGENT(context),
                                         packet, packet_size,
@@ -1693,10 +1693,10 @@ milter_client_context_feed (MilterClientContext *context,
 }
 
 void
-milter_client_context_set_mta_timeout (MilterClientContext *context,
-                                       guint timeout)
+milter_client_context_set_timeout (MilterClientContext *context,
+                                   guint timeout)
 {
-    MILTER_CLIENT_CONTEXT_GET_PRIVATE(context)->mta_timeout = timeout;
+    MILTER_CLIENT_CONTEXT_GET_PRIVATE(context)->timeout = timeout;
 }
 
 /*

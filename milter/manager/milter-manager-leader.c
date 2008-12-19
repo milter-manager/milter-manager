@@ -946,7 +946,7 @@ milter_manager_leader_define_macro (MilterManagerLeader *leader,
 }
 
 void
-milter_manager_leader_mta_timeout (MilterManagerLeader *leader)
+milter_manager_leader_timeout (MilterManagerLeader *leader)
 {
     milter_manager_leader_quit(leader);
 }

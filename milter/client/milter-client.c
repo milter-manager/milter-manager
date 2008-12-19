@@ -295,7 +295,7 @@ process_client_channel (MilterClient *client, GIOChannel *channel)
     reader = milter_reader_io_channel_new(channel);
     milter_agent_set_reader(MILTER_AGENT(context), reader);
     g_object_unref(reader);
-    milter_client_context_set_mta_timeout(context, priv->timeout);
+    milter_client_context_set_timeout(context, priv->timeout);
 
     data = g_new(MilterClientProcessData, 1);
     data->priv = priv;

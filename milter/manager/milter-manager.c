@@ -308,11 +308,11 @@ cb_client_define_macro (MilterClientContext *context, MilterCommand command,
 }
 
 static void
-cb_client_mta_timeout (MilterClientContext *context, gpointer user_data)
+cb_client_timeout (MilterClientContext *context, gpointer user_data)
 {
     MilterManagerLeader *leader = user_data;
 
-    milter_manager_leader_mta_timeout(leader);
+    milter_manager_leader_timeout(leader);
 }
 
 static MilterStatus
@@ -345,7 +345,7 @@ teardown_client_context_signals (MilterClientContext *context, gpointer user_dat
     DISCONNECT(quit);
     DISCONNECT(abort);
     DISCONNECT(define_macro);
-    DISCONNECT(mta_timeout);
+    DISCONNECT(timeout);
 
 #undef DISCONNECT
     g_signal_handlers_disconnect_by_func(user_data,
@@ -397,7 +397,7 @@ setup_context_signals (MilterClientContext *context,
     CONNECT(quit);
     CONNECT(abort);
     CONNECT(define_macro);
-    CONNECT(mta_timeout);
+    CONNECT(timeout);
 
 #undef CONNECT
     g_signal_connect(leader, "finished",

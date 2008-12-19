@@ -1,5 +1,9 @@
 2008-12-19  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/miter-client-context.[ch]: mta_timeout -> timeout.
+	* milter/client/, milter/manager/,
+	test/client/test-client-context-callback.c: follow the above change.
+
 	* test/manager/test-process-launcher.c: fix local dependent test
 	failures.
 

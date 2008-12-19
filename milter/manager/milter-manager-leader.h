@@ -131,7 +131,7 @@ MilterStatus          milter_manager_leader_quit
                                           (MilterManagerLeader *leader);
 MilterStatus          milter_manager_leader_abort
                                           (MilterManagerLeader *leader);
-void                  milter_manager_leader_mta_timeout
+void                  milter_manager_leader_timeout
                                           (MilterManagerLeader *leader);
 void                  milter_manager_leader_define_macro
                                           (MilterManagerLeader *leader,

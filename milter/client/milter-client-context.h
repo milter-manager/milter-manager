@@ -302,7 +302,7 @@ struct _MilterClientContextClass
     MilterStatus (*abort)              (MilterClientContext *context);
     void         (*abort_response)     (MilterClientContext *context,
                                         MilterStatus         status);
-    void         (*mta_timeout)        (MilterClientContext *context);
+    void         (*timeout)            (MilterClientContext *context);
 };
 
 GQuark               milter_client_context_error_quark       (void);
@@ -324,6 +324,7 @@ MilterClientContext *milter_client_context_new               (void);
  * milter_client_context_feed:
  * @context: a %MilterClientContext.
  * @chunk: the string to be fed to @context.
+ * @size: the size of @chunk.
  * @error: return location for an error, or %NULL.
  *
  * Feeds a chunk to the @context. You can use it for testing
@@ -615,12 +616,12 @@ gboolean             milter_client_context_quarantine        (MilterClientContex
                                                               const gchar *reason);
 
 /**
- * milter_client_context_set_mta_timeout:
+ * milter_client_context_set_timeout:
  * @context: a %MilterClientContext.
  * @timeout: the timeout by seconds. (default 7210 seconds)
  *
  * Sets the timeout by seconds. If MTA doesn't responses in
- * @timeout seconds, #MilterClientContext::mta-timeout
+ * @timeout seconds, #MilterClientContext::timeout
  * signal is emitted. See also
  * <link
  * linked="https://www.milter.org/developers/api/smfi_settimeout">smfi_settimeout()
@@ -628,7 +629,7 @@ gboolean             milter_client_context_quarantine        (MilterClientContex
  *
  * Returns: %TRUE on success.
  */
-void                 milter_client_context_set_mta_timeout   (MilterClientContext *context,
+void                 milter_client_context_set_timeout       (MilterClientContext *context,
                                                               guint timeout);
 
 G_END_DECLS

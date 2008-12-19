@@ -125,9 +125,7 @@ static gsize body_chunk_test_data_size;
 static gchar *unknown_command;
 static gsize unknown_command_size;
 
-static gboolean timed_out_before;
-static gboolean timed_out_after;
-static guint timeout_id;
+static GList *timeout_ids;
 
 static GError *actual_error;
 static GError *expected_error;
@@ -546,9 +544,7 @@ setup (void)
     unknown_command = NULL;
     unknown_command_size = 0;
 
-    timed_out_before = FALSE;
-    timed_out_after = FALSE;
-    timeout_id = 0;
+    timeout_ids = NULL;
 
     actual_error = NULL;
     expected_error = NULL;
@@ -566,8 +562,14 @@ packet_free (void)
 void
 teardown (void)
 {
-    if (timeout_id > 0)
-        g_source_remove(timeout_id);
+    if (timeout_ids) {
+        GList *node;
+        for (node = timeout_ids; node; node = g_list_next(node)) {
+            guint timeout_id = GPOINTER_TO_UINT(node->data);
+            g_source_remove(timeout_id);
+        }
+        g_list_free(timeout_ids);
+    }
 
     if (context)
         g_object_unref(context);
@@ -1293,21 +1295,25 @@ cb_timeout_detect (gpointer data)
 void
 test_mta_timeout (void)
 {
-    gboolean timed_out_mta = FALSE;
+    gboolean timed_out_before = FALSE;
+    gboolean timed_out = FALSE;
+    gboolean timed_out_after = FALSE;
+    guint timeout_id;
 
-    milter_client_context_set_mta_timeout(context, 1);
+    milter_client_context_set_timeout(context, 1);
 
-    g_signal_connect(context, "mta-timeout",
-                     G_CALLBACK(cb_timeout), &timed_out_mta);
-    g_timeout_add(500, cb_timeout_detect, &timed_out_before);
+    g_signal_connect(context, "timeout", G_CALLBACK(cb_timeout), &timed_out);
+    timeout_id = g_timeout_add(500, cb_timeout_detect, &timed_out_before);
+    timeout_ids = g_list_append(timeout_ids, GUINT_TO_POINTER(timeout_id));
     timeout_id = g_timeout_add(2000, cb_timeout_detect, &timed_out_after);
+    timeout_ids = g_list_append(timeout_ids, GUINT_TO_POINTER(timeout_id));
 
     milter_client_context_progress(context);
 
-    while (!timed_out_mta && !timed_out_after)
+    while (!timed_out && !timed_out_after)
         g_main_context_iteration(NULL, TRUE);
     cut_assert_true(timed_out_before);
-    cut_assert_true(timed_out_mta);
+    cut_assert_true(timed_out);
     cut_assert_false(timed_out_after);
 }
 
