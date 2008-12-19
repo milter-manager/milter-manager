@@ -32,6 +32,8 @@
 	* milter/manager/milter-manager-main.c: Fork and create a
 	MilterManagerProcessLauncher in child process. Also change effective
 	user if milter-manager is run by root user.
+	* milter/manager/milter-manager-main.c: Kill child process if switch
+	user fails.
 
 2008-12-18  Kouhei Sutou  <kou@cozmixng.org>
 

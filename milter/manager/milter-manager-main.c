@@ -456,6 +456,8 @@ milter_manager_main (void)
     if (geteuid() == 0 && !switch_user(manager)) {
         g_object_unref(manager);
         g_print("Could not change effective user\n");
+        if (launcher_pid > 0)
+            kill(launcher_pid, SIGKILL);
         return;
     }
 
