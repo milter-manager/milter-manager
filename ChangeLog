@@ -23,6 +23,9 @@
 	* milter/manager/milter-manager-child.[ch]: Added
 	milter_manager_child_get_user_name and
 	milter_manager_child_get_command_line_string.
+	* milter/manager/milter-manager-configuration.[ch]: Added
+	milter_manager_configuration_get_effective_user and
+	set_effective_user.
 
 2008-12-18  Kouhei Sutou  <kou@cozmixng.org>
 

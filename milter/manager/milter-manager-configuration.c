@@ -47,6 +47,7 @@ struct _MilterManagerConfigurationPrivate
     gchar *control_connection_spec;
     gchar *manager_connection_spec;
     MilterStatus fallback_status;
+    gchar *effective_user;
 };
 
 enum
@@ -56,6 +57,7 @@ enum
     PROP_CONTROL_CONNECTION_SPEC,
     PROP_MANAGER_CONNECTION_SPEC,
     PROP_FALLBACK_STATUS,
+    PROP_EFFECTIVE_USER
 };
 
 enum
@@ -127,6 +129,14 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
                              G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
     g_object_class_install_property(gobject_class, PROP_FALLBACK_STATUS, spec);
 
+    spec = g_param_spec_string("effective-user",
+                               "Effective user name",
+                               "The effective user name "
+                               "of the milter-manager",
+                               NULL,
+                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+    g_object_class_install_property(gobject_class, PROP_EFFECTIVE_USER,
+                                    spec);
     signals[TO_XML] =
         g_signal_new("to-xml",
                      G_TYPE_FROM_CLASS(klass),
@@ -152,6 +162,7 @@ milter_manager_configuration_init (MilterManagerConfiguration *configuration)
     priv->applicable_conditions = NULL;
     priv->control_connection_spec = NULL;
     priv->manager_connection_spec = NULL;
+    priv->effective_user = NULL;
 
     config_dir_env = g_getenv("MILTER_MANAGER_CONFIG_DIR");
     if (config_dir_env)
@@ -204,6 +215,10 @@ set_property (GObject      *object,
         milter_manager_configuration_set_fallback_status(
             config, g_value_get_enum(value));
         break;
+      case PROP_EFFECTIVE_USER:
+        milter_manager_configuration_set_effective_user(
+            config, g_value_get_string(value));
+        break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -231,6 +246,9 @@ get_property (GObject    *object,
         break;
       case PROP_FALLBACK_STATUS:
         g_value_set_enum(value, priv->fallback_status);
+        break;
+      case PROP_EFFECTIVE_USER:
+        g_value_set_string(value, priv->effective_user);
         break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -634,6 +652,24 @@ milter_manager_configuration_set_manager_connection_spec (MilterManagerConfigura
     priv->manager_connection_spec = g_strdup(spec);
 }
 
+const gchar *
+milter_manager_configuration_get_effective_user (MilterManagerConfiguration *configuration)
+{
+    return MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration)->effective_user;
+}
+
+void
+milter_manager_configuration_set_effective_user (MilterManagerConfiguration *configuration,
+                                                 const gchar *effective_user)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    if (priv->effective_user)
+        g_free(priv->effective_user);
+    priv->effective_user = g_strdup(effective_user);
+}
+
 void
 milter_manager_configuration_add_egg (MilterManagerConfiguration *configuration,
                                       MilterManagerEgg         *egg)
@@ -873,6 +909,11 @@ milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
     if (priv->manager_connection_spec) {
         g_free(priv->manager_connection_spec);
         priv->manager_connection_spec = NULL;
+    }
+
+    if (priv->effective_user) {
+        g_free(priv->effective_user);
+        priv->effective_user = NULL;
     }
 
     priv->privilege_mode = FALSE;

@@ -28,6 +28,7 @@
 
 void test_children (void);
 void test_privilege_mode (void);
+void test_effective_user (void);
 void test_control_connection_spec (void);
 void test_manager_connection_spec (void);
 void test_fallback_status (void);
@@ -172,6 +173,15 @@ test_privilege_mode (void)
     cut_assert_false(milter_manager_configuration_is_privilege_mode(config));
     milter_manager_configuration_set_privilege_mode(config, TRUE);
     cut_assert_true(milter_manager_configuration_is_privilege_mode(config));
+}
+
+void
+test_effective_user (void)
+{
+    cut_assert_null(milter_manager_configuration_get_effective_user(config));
+    milter_manager_configuration_set_effective_user(config, "nobody");
+    cut_assert_equal_string("nobody",
+                            milter_manager_configuration_get_effective_user(config));
 }
 
 void

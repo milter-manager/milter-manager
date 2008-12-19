@@ -129,6 +129,11 @@ const gchar  *milter_manager_configuration_get_manager_connection_spec
 void          milter_manager_configuration_set_manager_connection_spec
                                      (MilterManagerConfiguration *configuration,
                                       const gchar                *spec);
+const gchar  *milter_manager_configuration_get_effective_user
+                                     (MilterManagerConfiguration *configuration);
+void          milter_manager_configuration_set_effective_user
+                                     (MilterManagerConfiguration *configuration,
+                                      const gchar                *user_name);
 
 MilterStatus  milter_manager_configuration_get_fallback_status
                                      (MilterManagerConfiguration *configuration);
