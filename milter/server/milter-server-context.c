@@ -627,8 +627,8 @@ write_packet (MilterServerContext *context, gchar *packet, gsize packet_size,
                                                 cb_writing_timeout,
                                                 context);
     milter_agent_write_packet(MILTER_AGENT(context),
-                                packet, packet_size,
-                                &agent_error);
+                              packet, packet_size,
+                              &agent_error);
     disable_timeout(priv);
     g_free(packet);
     if (agent_error) {
