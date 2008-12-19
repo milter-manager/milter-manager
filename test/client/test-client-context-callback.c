@@ -53,7 +53,7 @@ void test_feed_end_of_message (gconstpointer data);
 void test_feed_quit (void);
 void test_feed_abort (void);
 void test_write_error (void);
-void test_mta_timeout (void);
+void test_timeout (void);
 
 static MilterClientContext *context;
 static MilterCommandEncoder *encoder;
@@ -1293,14 +1293,16 @@ cb_timeout_detect (gpointer data)
 }
 
 void
-test_mta_timeout (void)
+test_timeout (void)
 {
     gboolean timed_out_before = FALSE;
     gboolean timed_out = FALSE;
     gboolean timed_out_after = FALSE;
     guint timeout_id;
 
+    cut_assert_equal_uint(7210, milter_client_context_get_timeout(context));
     milter_client_context_set_timeout(context, 1);
+    cut_assert_equal_uint(1, milter_client_context_get_timeout(context));
 
     g_signal_connect(context, "timeout", G_CALLBACK(cb_timeout), &timed_out);
     timeout_id = g_timeout_add(500, cb_timeout_detect, &timed_out_before);

@@ -376,8 +376,8 @@ void                 milter_client_context_set_private_data  (MilterClientContex
  * @code is used on %MILTER_REPLY_TEMPORARY_FAILURE. Set
  * error reply reply code with 5xx @code is used on
  * %MILTER_REPLY_REJECT. See also <link
- * linked="https://www.milter.org/developers/api/smfi_setreply">smfi_setreply()
- * </link> on milter.org.
+ * linked="https://www.milter.org/developers/api/smfi_setreply">
+ * smfi_setreply</link> on milter.org.
  *
  * Returns: %TRUE on success.
  */
@@ -409,8 +409,8 @@ gchar               *milter_client_context_format_reply      (MilterClientContex
  * function can be called in
  * #MilterClientContext::end-of-message signal.  See also
  * <link
- * linked="https://www.milter.org/developers/api/smfi_addheader">smfi_addheader()
- * </link> on milter.org.
+ * linked="https://www.milter.org/developers/api/smfi_addheader">
+ * smfi_addheader</link> on milter.org.
  *
  * FIXME: write about MILTER_ACTION_ADD_HEADERS.
  *
@@ -431,8 +431,8 @@ gboolean             milter_client_context_add_header        (MilterClientContex
  * at @index. This function can be called in
  * #MilterClientContext::end-of-message signal.  See also
  * <link
- * linked="https://www.milter.org/developers/api/smfi_insheader">smfi_insheader()
- * </link> on milter.org.
+ * linked="https://www.milter.org/developers/api/smfi_insheader">
+ * smfi_insheader</link> on milter.org.
  *
  * FIXME: write about MILTER_ACTION_ADD_HEADERS.
  *
@@ -457,8 +457,8 @@ gboolean             milter_client_context_insert_header     (MilterClientContex
  * header is deleted. This function can be
  * called in #MilterClientContext::end-of-message signal.
  * See also <link
- * linked="https://www.milter.org/developers/api/smfi_chgheader">smfi_chgheader()
- * on milter.org</link>.
+ * linked="https://www.milter.org/developers/api/smfi_chgheader">
+ * smfi_chgheader</link> on milter.org.
  *
  * FIXME: write about MILTER_ACTION_CHANGE_HEADERS.
  *
@@ -503,7 +503,7 @@ gboolean             milter_client_context_delete_header     (MilterClientContex
  * @parameters. @parameters may be %NULL. This function can be
  * called in #MilterClientContext::end-of-message signal.
  * See also <link
- * linked="https://www.milter.org/developers/api/smfi_chgfrom">smfi_chgfrom()
+ * linked="https://www.milter.org/developers/api/smfi_chgfrom">smfi_chgfrom
  * </link> on milter.org.
  *
  * FIXME: write about MILTER_ACTION_CHANGE_FROM.
@@ -526,9 +526,9 @@ gboolean             milter_client_context_change_from       (MilterClientContex
  * @parameters. @parameters may be %NULL. This function can
  * be called in #MilterClientContext::end-of-message
  * signal. See also <link
- * linked="https://www.milter.org/developers/api/smfi_addrcpt">smfi_addrcpt()
+ * linked="https://www.milter.org/developers/api/smfi_addrcpt">smfi_addrcpt
  * </link> and <link
- * linked="https://www.milter.org/developers/api/smfi_addrcpt_par">smfi_addrcpt_par()
+ * linked="https://www.milter.org/developers/api/smfi_addrcpt_par">smfi_addrcpt_par
  * </link> on milter.org.
  *
  * FIXME: write about MILTER_ACTION_ADD_RECIPIENT and
@@ -549,7 +549,7 @@ gboolean             milter_client_context_add_recipient     (MilterClientContex
  * function can be called in
  * #MilterClientContext::end-of-message signal. See also
  * <link
- * linked="https://www.milter.org/developers/api/smfi_delrcpt">smfi_delrcpt()
+ * linked="https://www.milter.org/developers/api/smfi_delrcpt">smfi_delrcpt
  * </link> on milter.org.
  *
  * FIXME: write about MILTER_ACTION_DELETE_RECIPIENT.
@@ -570,7 +570,7 @@ gboolean             milter_client_context_delete_recipient  (MilterClientContex
  * function can be called in
  * #MilterClientContext::end-of-message signal. See also
  * <link
- * linked="https://www.milter.org/developers/api/smfi_replacebody">smfi_replacebody()
+ * linked="https://www.milter.org/developers/api/smfi_replacebody">smfi_replacebody
  * </link> on milter.org.
  *
  * FIXME: write about MILTER_ACTION_CHANGE_BODY.
@@ -589,7 +589,7 @@ gboolean             milter_client_context_replace_body      (MilterClientContex
  * progress. This function can be called in
  * #MilterClientContext::end-of-message signal. See also
  * <link
- * linked="https://www.milter.org/developers/api/smfi_progress">smfi_progress()
+ * linked="https://www.milter.org/developers/api/smfi_progress">smfi_progress
  * </link> on milter.org.
  *
  * Returns: %TRUE on success.
@@ -605,7 +605,7 @@ gboolean             milter_client_context_progress          (MilterClientContex
  * function can be called in
  * #MilterClientContext::end-of-message signal. See also
  * <link
- * linked="https://www.milter.org/developers/api/smfi_quarantine">smfi_quarantine()
+ * linked="https://www.milter.org/developers/api/smfi_quarantine">smfi_quarantine
  * </link> on milter.org.
  *
  * FIXME: write about MILTER_ACTION_QUARANTINE.
@@ -624,13 +624,21 @@ gboolean             milter_client_context_quarantine        (MilterClientContex
  * @timeout seconds, #MilterClientContext::timeout
  * signal is emitted. See also
  * <link
- * linked="https://www.milter.org/developers/api/smfi_settimeout">smfi_settimeout()
+ * linked="https://www.milter.org/developers/api/smfi_settimeout">smfi_settimeout
  * </link> on milter.org.
- *
- * Returns: %TRUE on success.
  */
 void                 milter_client_context_set_timeout       (MilterClientContext *context,
                                                               guint timeout);
+
+/**
+ * milter_client_context_get_timeout:
+ * @context: a %MilterClientContext.
+ *
+ * Gets the timeout by seconds.
+ *
+ * Returns: timeout by seconds.
+ */
+guint                milter_client_context_get_timeout       (MilterClientContext *context);
 
 G_END_DECLS
 

@@ -211,6 +211,53 @@ milter_client_context_class_init (MilterClientContextClass *klass)
     klass->quit_response = quit_response;
     klass->abort_response = abort_response;
 
+    /**
+     * MilterClientContext::negotiate:
+     * @context: the context that received the signal.
+     * @option: the negotiate option from MTA.
+     * @macros_requests: the macros requests.
+     *
+     * This signal is emitted on negotiate request from MTA.
+     * If you want to modify actions (%MilterActionFlags)
+     * and steps (%MilterStepFlags), you modify @option. If
+     * you want to add macros that you want to receive, you
+     * modify @macros_requests.
+     *
+     * All available response statues are the followings:
+     *
+     * <rd>
+     * : %MILTER_STATUS_ALL_OPTIONS
+     *    Enables all available actions and steps.
+     * : %MILTER_STATUS_REJECT
+     *    Rejects the current session.
+     * : %MILTER_STATUS_CONTINUE
+     *    Continues processing the current session with
+     *    actions, steps and macros requests that are
+     *    specified by @option and @macros_requests.
+     * : %MILTER_STATUS_PROGRESS
+     *    It means that the processing in callback is in
+     *    progress and returning response status is
+     *    pending. The main loop for the milter is
+     *    continued.
+     *
+     *    If you returns this status, you need to emit
+     *    %MilterClientContext::negotiate-response signal by
+     *    yourself with one of the above
+     *    %MilterStatus<!-- -->es.
+     *
+     *    This status may be used for a milter that has IO
+     *    wait. (e.g. The milter may need to connect to the
+     *    its server like clamav-milter) Normally, this
+     *    status will not be used.
+     * </rd>
+     *
+     * See also <link
+     * linked="https://www.milter.org/developers/api/xxfi_negotiate">
+     * xxfi_negotiate</link>
+     * on milter.org.
+     *
+     * Returns: response status.
+     */
     signals[NEGOTIATE] =
         g_signal_new("negotiate",
                      MILTER_TYPE_CLIENT_CONTEXT,
@@ -221,6 +268,23 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      MILTER_TYPE_STATUS, 2,
                      MILTER_TYPE_OPTION, MILTER_TYPE_MACROS_REQUESTS);
 
+    /**
+     * MilterClientContext::negotiate-response:
+     * @context: the context that received the signal.
+     * @option: the negotiate option from MTA.
+     * @macros_requests: the macros requests.
+     * @status: the response status.
+     *
+     * This signal is emitted implicitly after
+     * %MilterClientContext::negotiate returns a status
+     * except %MILTER_STATUS_PROGRESS. This signal's default
+     * handler replies a response to MTA. You don't need to
+     * connect this signal.
+     *
+     * If you returns %MILTER_STATUS_PROGRESS in
+     * %MilterClientContext::negotiate handler, you need to
+     * emit this signal to @context by yourself.
+     */
     signals[NEGOTIATE_RESPONSE] =
         g_signal_new("negotiate-response",
                      MILTER_TYPE_CLIENT_CONTEXT,
@@ -233,6 +297,69 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      MILTER_TYPE_OPTION, MILTER_TYPE_MACROS_REQUESTS,
                      MILTER_TYPE_STATUS);
 
+    /**
+     * MilterClientContext::connect:
+     * @context: the context that received the signal.
+     * @host_name: the host name of connected SMTP client.
+     * @address: the address of connected SMTP
+     *           client. (struct sockaddr)
+     * @address_size: the size of @address. (socklen_t)
+     *
+     * This signal is emitted on SMTP client is connected to
+     * MTA.
+     *
+     * All available response statuses are the followings:
+     *
+     * <rd>
+     * : %MILTER_STATUS_CONTINUE
+     *    Continues processing the current connection.
+     *
+     * : %MILTER_STATUS_REJECT
+     *    Rejects the current connection.
+     *
+     *    #MilterClientContext::finished will be emitted.
+     *
+     * : %MILTER_STATUS_ACCEPT
+     *    Accepts the current connection without further
+     *    more processing.
+     *
+     *    #MilterClientContext::finished will be emitted.
+     *
+     * : %MILTER_STATUS_TEMPORARY_FAILURE
+     *    Rejects the current connection with a temporary
+     *    failure. (i.e. 4xx status code in SMTP)
+     *
+     *    #MilterClientContext::finished will be emitted.
+     *
+     * : %MILTER_STATUS_NO_REPLY
+     *    Doesn't send a reply back to MTA. The milter
+     *    must set %MILTER_STEP_NO_REPLY_CONNECT in
+     *    #MilerClientContext::negotiate handler.
+     *
+     * : %MILTER_STATUS_PROGRESS
+     *    It means that the processing in callback is in
+     *    progress and returning response status is
+     *    pending. The main loop for the milter is
+     *    continued.
+     *
+     *    If you returns this status, you need to emit
+     *    %MilterClientContext::connect-response signal by
+     *    yourself with one of the above
+     *    %MilterStatus<!-- -->es.
+     *
+     *    This status may be used for a milter that has IO
+     *    wait. (e.g. The milter may need to connect to the
+     *    its server like clamav-milter) Normally, this
+     *    status will not be used.
+     * </rd>
+     *
+     * See also <link
+     * linked="https://www.milter.org/developers/api/xxfi_connect">
+     * xxfi_connect</link>
+     * on milter.org.
+     *
+     * Returns: response status.
+     */
     signals[CONNECT] =
         g_signal_new("connect",
                      MILTER_TYPE_CLIENT_CONTEXT,
@@ -243,6 +370,21 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      MILTER_TYPE_STATUS, 3,
                      G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_UINT);
 
+    /**
+     * MilterClientContext::connect-response:
+     * @context: the context that received the signal.
+     * @status: the response status.
+     *
+     * This signal is emitted implicitly after
+     * %MilterClientContext::connect returns a status except
+     * %MILTER_STATUS_PROGRESS. This signal's default
+     * handler replies a response to MTA. You don't need to
+     * connect this signal.
+     *
+     * If you returns %MILTER_STATUS_PROGRESS in
+     * %MilterClientContext::connect, you need to emit this
+     * signal to @context by yourself.
+     */
     signals[CONNECT_RESPONSE] =
         g_signal_new("connect-response",
                      MILTER_TYPE_CLIENT_CONTEXT,
@@ -253,6 +395,67 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      _milter_marshal_VOID__ENUM,
                      G_TYPE_NONE, 1, MILTER_TYPE_STATUS);
 
+    /**
+     * MilterClientContext::helo:
+     * @context: the context that received the signal.
+     * @fqdn: the FQDN in SMTP's "HELO"/"EHLO" command.
+     *
+     * This signal is emitted on SMTP's "HELO"/"EHLO"
+     * command.
+     *
+     * All available response statues are the followings:
+     *
+     * <rd>
+     * : %MILTER_STATUS_CONTINUE
+     *    Continues processing the current connection.
+     *
+     * : %MILTER_STATUS_REJECT
+     *    Rejects the current connection.
+     *
+     *    #MilterClientContext::finished will be emitted.
+     *
+     * : %MILTER_STATUS_ACCEPT
+     *    Accepts the current connection without further
+     *    more processing.
+     *
+     *    #MilterClientContext::finished will be emitted.
+     *
+     * : %MILTER_STATUS_TEMPORARY_FAILURE
+     *    Rejects the current connection with a temporary
+     *    failure. (i.e. 4xx status code in SMTP)
+     *
+     *    #MilterClientContext::finished will be emitted.
+     *
+     * : %MILTER_STATUS_NO_REPLY
+     *    Doesn't send a reply back to MTA. The milter
+     *    must set %MILTER_STEP_NO_REPLY_HELO in
+     *
+     *    #MilerClientContext::negotiate handler.
+     *
+     * : %MILTER_STATUS_PROGRESS
+     *    It means that the processing in callback is in
+     *    progress and returning response status is
+     *    pending. The main loop for the milter is
+     *    continued.
+     *
+     *    If you returns this status, you need to emit
+     *    %MilterClientContext::helo-response signal by
+     *    yourself with one of the above
+     *    %MilterStatus<!-- -->es.
+     *
+     *    This status may be used for a milter that has IO
+     *    wait. (e.g. The milter may need to connect to the
+     *    its server like clamav-milter) Normally, this
+     *    status will not be used.
+     * </rd>
+     *
+     * See also <link
+     * linked="https://www.milter.org/developers/api/xxfi_helo">
+     * xxfi_helo</link>
+     * on milter.org.
+     *
+     * Returns: response status.
+     */
     signals[HELO] =
         g_signal_new("helo",
                      MILTER_TYPE_CLIENT_CONTEXT,
@@ -262,6 +465,21 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      _milter_marshal_ENUM__STRING,
                      MILTER_TYPE_STATUS, 1, G_TYPE_STRING);
 
+    /**
+     * MilterClientContext::helo-response:
+     * @context: the context that received the signal.
+     * @status: the response status.
+     *
+     * This signal is emitted implicitly after
+     * %MilterClientContext::helo returns a status except
+     * %MILTER_STATUS_PROGRESS. This signal's default
+     * handler replies a response to MTA. You don't need to
+     * connect this signal.
+     *
+     * If you returns %MILTER_STATUS_PROGRESS in
+     * %MilterClientContext::helo, you need to emit this
+     * signal to @context by yourself.
+     */
     signals[HELO_RESPONSE] =
         g_signal_new("helo-response",
                      MILTER_TYPE_CLIENT_CONTEXT,
@@ -271,6 +489,74 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      _milter_marshal_VOID__ENUM,
                      G_TYPE_NONE, 1, MILTER_TYPE_STATUS);
 
+    /**
+     * MilterClientContext::envelope-from:
+     * @context: the context that received the signal.
+     * @from: the envelope from address in SMTP's "MAIL
+     *        FROM" command.
+     *
+     * This signal is emitted on SMTP's "MAIL FROM" command.
+     *
+     * All available response statues are the followings:
+     *
+     * <rd>
+     * : %MILTER_STATUS_CONTINUE
+     *    Continues processing the current message.
+     *
+     * : %MILTER_STATUS_REJECT
+     *    Rejects the current envelope from address. A new
+     *    envelope from may be specified.
+     *
+     *    #MilterClientContext::aborted is not emitted.
+     *
+     * : %MILTER_STATUS_DISCARD
+     *    Accepts the current message and discards it silently.
+     *
+     *    #MilterClientContext::aborted is not emitted.
+     *
+     * : %MILTER_STATUS_ACCEPT
+     *    Accepts the current message without further
+     *    more processing.
+     *
+     *    #MilterClientContext::aborted is not emitted.
+     *
+     * : %MILTER_STATUS_TEMPORARY_FAILURE
+     *    Rejects the envelope from address and the current
+     *    connection with temporary failure. (i.e. 4xx
+     *    status code in SMTP) A new envelope from address
+     *    may be specified.
+     *
+     *    #MilterClientContext::aborted is not emitted.
+     *
+     * : %MILTER_STATUS_NO_REPLY
+     *    Doesn't send a reply back to MTA. The milter
+     *    must set %MILTER_STEP_NO_REPLY_ENVELOPE_FROM in
+     *    #MilerClientContext::negotiate handler.
+     *
+     * : %MILTER_STATUS_PROGRESS
+     *    It means that the processing in callback is in
+     *    progress and returning response status is
+     *    pending. The main loop for the milter is
+     *    continued.
+     *
+     *    If you returns this status, you need to emit
+     *    %MilterClientContext::envelope-from-response
+     *    signal by yourself with one of the above
+     *    %MilterStatus<!-- -->es.
+     *
+     *    This status may be used for a milter that has IO
+     *    wait. (e.g. The milter may need to connect to the
+     *    its server like clamav-milter) Normally, this
+     *    status will not be used.
+     * </rd>
+     *
+     * See also <link
+     * linked="https://www.milter.org/developers/api/xxfi_envfrom">
+     * xxfi_envfrom</link>
+     * on milter.org.
+     *
+     * Returns: response status.
+     */
     signals[ENVELOPE_FROM] =
         g_signal_new("envelope-from",
                      MILTER_TYPE_CLIENT_CONTEXT,
@@ -280,6 +566,21 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      _milter_marshal_ENUM__STRING,
                      MILTER_TYPE_STATUS, 1, G_TYPE_STRING);
 
+    /**
+     * MilterClientContext::envelope-from-response:
+     * @context: the context that received the signal.
+     * @status: the response status.
+     *
+     * This signal is emitted implicitly after
+     * %MilterClientContext::envelope-from returns a status
+     * except %MILTER_STATUS_PROGRESS. This signal's default
+     * handler replies a response to MTA. You don't need to
+     * connect this signal.
+     *
+     * If you returns %MILTER_STATUS_PROGRESS in
+     * %MilterClientContext::envelope-from, you need to emit
+     * this signal to @context by yourself.
+     */
     signals[ENVELOPE_FROM_RESPONSE] =
         g_signal_new("envelope-from-response",
                      MILTER_TYPE_CLIENT_CONTEXT,
@@ -290,6 +591,73 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      _milter_marshal_VOID__ENUM,
                      G_TYPE_NONE, 1, MILTER_TYPE_STATUS);
 
+    /**
+     * MilterClientContext::envelope-recipient:
+     * @context: the context that received the signal.
+     * @recipient: the envelope recipient address in SMTP's
+     *             "RCPT TO" command.
+     *
+     * This signal is emitted on SMTP's "RCPT TO" command.
+     *
+     * All available response statues are the followings:
+     *
+     * <rd>
+     * : %MILTER_STATUS_CONTINUE
+     *    Continues processing the current message.
+     *
+     * : %MILTER_STATUS_REJECT
+     *    Rejects the current envelope recipient
+     *    address. Processing the current messages is
+     *    continued.
+     *
+     *    #MilterClientContext::aborted is not emitted.
+     *
+     * : %MILTER_STATUS_DISCARD
+     *    Accepts the current message and discards it silently.
+     *
+     *    #MilterClientContext::aborted is not emitted.
+     *
+     * : %MILTER_STATUS_ACCEPT
+     *    Accepts the current envelope recipient.
+     *
+     *    #MilterClientContext::aborted is not emitted.
+     *
+     * : %MILTER_STATUS_TEMPORARY_FAILURE
+     *    Rejects the current envelope recipient address
+     *    with temporary failure. (i.e. 4xx status code in
+     *    SMTP) Processing the current message is continued.
+     *
+     *    #MilterClientContext::aborted is not emitted.
+     *
+     * : %MILTER_STATUS_NO_REPLY
+     *    Doesn't send a reply back to MTA. The milter
+     *    must set %MILTER_STEP_NO_REPLY_ENVELOPE_RECIPIENT
+     *    in #MilerClientContext::negotiate handler.
+     *
+     * : %MILTER_STATUS_PROGRESS
+     *    It means that the processing in callback is in
+     *    progress and returning response status is
+     *    pending. The main loop for the milter is
+     *    continued.
+     *
+     *    If you returns this status, you need to emit
+     *    %MilterClientContext::envelope-recipient-response
+     *    signal by yourself with one of the above
+     *    %MilterStatus<!-- -->es.
+     *
+     *    This status may be used for a milter that has IO
+     *    wait. (e.g. The milter may need to connect to the
+     *    its server like clamav-milter) Normally, this
+     *    status will not be used.
+     * </rd>
+     *
+     * See also <link
+     * linked="https://www.milter.org/developers/api/xxfi_envrcpt">
+     * xxfi_envrcpt</link>
+     * on milter.org.
+     *
+     * Returns: response status.
+     */
     signals[ENVELOPE_RECIPIENT] =
         g_signal_new("envelope-recipient",
                      MILTER_TYPE_CLIENT_CONTEXT,
@@ -300,6 +668,21 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      _milter_marshal_ENUM__STRING,
                      MILTER_TYPE_STATUS, 1, G_TYPE_STRING);
 
+    /**
+     * MilterClientContext::envelope-recipient-response:
+     * @context: the context that received the signal.
+     * @status: the response status.
+     *
+     * This signal is emitted implicitly after
+     * %MilterClientContext::envelope-recipient returns a
+     * status except %MILTER_STATUS_PROGRESS. This signal's
+     * default handler replies a response to MTA. You don't
+     * need to connect this signal.
+     *
+     * If you returns %MILTER_STATUS_PROGRESS in
+     * %MilterClientContext::envelope-recipient, you need to
+     * emit this signal to @context by yourself.
+     */
     signals[ENVELOPE_RECIPIENT_RESPONSE] =
         g_signal_new("envelope-recipient-response",
                      MILTER_TYPE_CLIENT_CONTEXT,
@@ -310,6 +693,67 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      _milter_marshal_VOID__ENUM,
                      G_TYPE_NONE, 1, MILTER_TYPE_STATUS);
 
+    /**
+     * MilterClientContext::data:
+     * @context: the context that received the signal.
+     *
+     * This signal is emitted on SMTP's "DATA" command.
+     *
+     * All available response statues are the followings:
+     *
+     * <rd>
+     * : %MILTER_STATUS_CONTINUE
+     *    Continues processing the current message.
+     *
+     * : %MILTER_STATUS_REJECT
+     *    Rejects the current message.
+     *
+     *    #MilterClientContext::aborted is not emitted.
+     *
+     * : %MILTER_STATUS_DISCARD
+     *    Accepts the current message and discards it silently.
+     *
+     *    #MilterClientContext::aborted is not emitted.
+     *
+     * : %MILTER_STATUS_ACCEPT
+     *    Accepts the current envelope recipient.
+     *
+     *    #MilterClientContext::aborted is not emitted.
+     *
+     * : %MILTER_STATUS_TEMPORARY_FAILURE
+     *    Rejects the current message with temporary
+     *    failure. (i.e. 4xx status code in SMTP)
+     *
+     *    #MilterClientContext::aborted is not emitted.
+     *
+     * : %MILTER_STATUS_NO_REPLY
+     *    Doesn't send a reply back to MTA. The milter
+     *    must set %MILTER_STEP_NO_REPLY_DATA
+     *    in #MilerClientContext::negotiate handler.
+     *
+     * : %MILTER_STATUS_PROGRESS
+     *    It means that the processing in callback is in
+     *    progress and returning response status is
+     *    pending. The main loop for the milter is
+     *    continued.
+     *
+     *    If you returns this status, you need to emit
+     *    %MilterClientContext::data-response
+     *    signal by yourself with one of the above
+     *    %MilterStatus<!-- -->es.
+     *
+     *    This status may be used for a milter that has IO
+     *    wait. (e.g. The milter may need to connect to the
+     *    its server like clamav-milter) Normally, this
+     *    status will not be used.
+     * </rd>
+     *
+     * See also <link
+     * linked="https://www.milter.org/developers/api/xxfi_data">
+     * xxfi_data</link> on milter.org.
+     *
+     * Returns: response status.
+     */
     signals[DATA] =
         g_signal_new("data",
                      MILTER_TYPE_CLIENT_CONTEXT,
@@ -319,6 +763,21 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      _milter_marshal_ENUM__VOID,
                      MILTER_TYPE_STATUS, 0);
 
+    /**
+     * MilterClientContext::data-response:
+     * @context: the context that received the signal.
+     * @status: the response status.
+     *
+     * This signal is emitted implicitly after
+     * %MilterClientContext::data returns a status except
+     * %MILTER_STATUS_PROGRESS. This signal's default
+     * handler replies a response to MTA. You don't need to
+     * connect this signal.
+     *
+     * If you returns %MILTER_STATUS_PROGRESS in
+     * %MilterClientContext::data, you need to emit this
+     * signal to @context by yourself.
+     */
     signals[DATA_RESPONSE] =
         g_signal_new("data-response",
                      MILTER_TYPE_CLIENT_CONTEXT,
@@ -328,6 +787,59 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      _milter_marshal_VOID__ENUM,
                      G_TYPE_NONE, 1, MILTER_TYPE_STATUS);
 
+    /**
+     * MilterClientContext::command:
+     * @context: the context that received the signal.
+     * @command: the unknown SMTP command.
+     *
+     * This signal is emitted on unknown or unimplemented
+     * SMTP command is sent.
+     *
+     * All available response statues are the followings:
+     *
+     * <rd>
+     * : %MILTER_STATUS_REJECT
+     *    Rejects the current message.
+     *
+     *    #MilterClientContext::aborted is not emitted.
+     *
+     * : %MILTER_STATUS_TEMPORARY_FAILURE
+     *    Rejects the the current message with temporary
+     *    failure. (i.e. 4xx status code in SMTP)
+     *
+     *    #MilterClientContext::aborted is not emitted.
+     *
+     * : %MILTER_STATUS_NO_REPLY
+     *    Doesn't send a reply back to MTA. The milter
+     *    must set %MILTER_STEP_NO_REPLY_DATA
+     *    in #MilerClientContext::negotiate handler.
+     *
+     * : %MILTER_STATUS_PROGRESS
+     *    It means that the processing in callback is in
+     *    progress and returning response status is
+     *    pending. The main loop for the milter is
+     *    continued.
+     *
+     *    If you returns this status, you need to emit
+     *    %MilterClientContext::unknown-response
+     *    signal by yourself with one of the above
+     *    %MilterStatus<!-- -->es.
+     *
+     *    This status may be used for a milter that has IO
+     *    wait. (e.g. The milter may need to connect to the
+     *    its server like clamav-milter) Normally, this
+     *    status will not be used.
+     * </rd>
+     *
+     * Note that the unknown or unimplemented SMTP command
+     * will always be rejected by MTA.
+     *
+     * See also <link
+     * linked="https://www.milter.org/developers/api/xxfi_unknown">
+     * xxfi_unknown</link> on milter.org.
+     *
+     * Returns: response status.
+     */
     signals[UNKNOWN] =
         g_signal_new("unknown",
                      MILTER_TYPE_CLIENT_CONTEXT,
@@ -337,6 +849,21 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      _milter_marshal_ENUM__STRING,
                      MILTER_TYPE_STATUS, 1, G_TYPE_STRING);
 
+    /**
+     * MilterClientContext::unknown-response:
+     * @context: the context that received the signal.
+     * @status: the response status.
+     *
+     * This signal is emitted implicitly after
+     * %MilterClientContext::unknown returns a status except
+     * %MILTER_STATUS_PROGRESS. This signal's default
+     * handler replies a response to MTA. You don't need to
+     * connect this signal.
+     *
+     * If you returns %MILTER_STATUS_PROGRESS in
+     * %MilterClientContext::unknown, you need to emit this
+     * signal to @context by yourself.
+     */
     signals[UNKNOWN_RESPONSE] =
         g_signal_new("unknown-response",
                      MILTER_TYPE_CLIENT_CONTEXT,
@@ -346,6 +873,98 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      _milter_marshal_VOID__ENUM,
                      G_TYPE_NONE, 1, MILTER_TYPE_STATUS);
 
+    /**
+     * MilterClientContext::header:
+     * @context: the context that received the signal.
+     * @name: the header name.
+     * @value: the header value. @value may include folded
+     *         white space.
+     *
+     * This signal is emitted on each header. If
+     * %MILTER_STEP_HEADER_LEAD_SPACE is set in
+     * %MilterClientContext::negotiate, @value have spaces
+     * after header name and value separator ":".
+     *
+     * Example:
+     *
+     * |[
+     * From: from &lt;from@example.com&gt;
+     * To: recipient &lt;recipient@example.com&gt;
+     * Subject:a subject
+     * ]|
+     *
+     * With %MILTER_STEP_HEADER_LEAD_SPACE:
+     *
+     * |[
+     * "From", " from &lt;from@example.com&gt;"
+     * "To", " recipient &lt;recipient@example.com&gt;"
+     * "Subject", "a subject"
+     * ]|
+     *
+     * Without %MILTER_STEP_HEADER_LEAD_SPACE:
+     *
+     * |[
+     * "From", "from &lt;from@example.com&gt;"
+     * "To", "recipient &lt;recipient@example.com&gt;"
+     * "Subject", "a subject"
+     * ]|
+     *
+     * All available response statues are the followings:
+     *
+     * <rd>
+     * : %MILTER_STATUS_CONTINUE
+     *    Continues processing the current message.
+     *
+     * : %MILTER_STATUS_REJECT
+     *    Rejects the current message.
+     *
+     *    #MilterClientContext::aborted is not emitted.
+     *
+     * : %MILTER_STATUS_DISCARD
+     *    Accepts the current message and discards it silently.
+     *
+     *    #MilterClientContext::aborted is not emitted.
+     *
+     * : %MILTER_STATUS_ACCEPT
+     *    Accepts the current message without further
+     *    more processing.
+     *
+     *    #MilterClientContext::aborted is not emitted.
+     *
+     * : %MILTER_STATUS_TEMPORARY_FAILURE
+     *    Rejects the the current message with temporary
+     *    failure. (i.e. 4xx status code in SMTP)
+     *
+     *    #MilterClientContext::aborted is not emitted.
+     *
+     * : %MILTER_STATUS_NO_REPLY
+     *    Doesn't send a reply back to MTA. The milter
+     *    must set %MILTER_STEP_NO_REPLY_HEADER
+     *    in #MilerClientContext::negotiate handler.
+     *
+     * : %MILTER_STATUS_PROGRESS
+     *    It means that the processing in callback is in
+     *    progress and returning response status is
+     *    pending. The main loop for the milter is
+     *    continued.
+     *
+     *    If you returns this status, you need to emit
+     *    %MilterClientContext::header-response
+     *    signal by yourself with one of the above
+     *    %MilterStatus<!-- -->es.
+     *
+     *    This status may be used for a milter that has IO
+     *    wait. (e.g. The milter may need to connect to the
+     *    its server like clamav-milter) Normally, this
+     *    status will not be used.
+     * </rd>
+     *
+     * See also <link
+     * linked="https://www.milter.org/developers/api/xxfi_header">
+     * xxfi_header</link> on milter.org.
+     *
+     * Returns: response status.
+     */
     signals[HEADER] =
         g_signal_new("header",
                      MILTER_TYPE_CLIENT_CONTEXT,
@@ -355,6 +974,21 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      _milter_marshal_ENUM__STRING_STRING,
                      MILTER_TYPE_STATUS, 2, G_TYPE_STRING, G_TYPE_STRING);
 
+    /**
+     * MilterClientContext::header-response:
+     * @context: the context that received the signal.
+     * @status: the response status.
+     *
+     * This signal is emitted implicitly after
+     * %MilterClientContext::header returns a status except
+     * %MILTER_STATUS_PROGRESS. This signal's default
+     * handler replies a response to MTA. You don't need to
+     * connect this signal.
+     *
+     * If you returns %MILTER_STATUS_PROGRESS in
+     * %MilterClientContext::header, you need to emit this
+     * signal to @context by yourself.
+     */
     signals[HEADER_RESPONSE] =
         g_signal_new("header-response",
                      MILTER_TYPE_CLIENT_CONTEXT,
@@ -364,6 +998,68 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      _milter_marshal_VOID__ENUM,
                      G_TYPE_NONE, 1, MILTER_TYPE_STATUS);
 
+    /**
+     * MilterClientContext::end-of-header:
+     * @context: the context that received the signal.
+     *
+     * This signal is emitted on all headers are processed.
+     *
+     * All available response statues are the followings:
+     *
+     * <rd>
+     * : %MILTER_STATUS_CONTINUE
+     *    Continues processing the current message.
+     *
+     * : %MILTER_STATUS_REJECT
+     *    Rejects the current message.
+     *
+     *    #MilterClientContext::aborted is not emitted.
+     *
+     * : %MILTER_STATUS_DISCARD
+     *    Accepts the current message and discards it silently.
+     *
+     *    #MilterClientContext::aborted is not emitted.
+     *
+     * : %MILTER_STATUS_ACCEPT
+     *    Accepts the current message without further
+     *    more processing.
+     *
+     *    #MilterClientContext::aborted is not emitted.
+     *
+     * : %MILTER_STATUS_TEMPORARY_FAILURE
+     *    Rejects the the current message with temporary
+     *    failure. (i.e. 4xx status code in SMTP)
+     *
+     *    #MilterClientContext::aborted is not emitted.
+     *
+     * : %MILTER_STATUS_NO_REPLY
+     *    Doesn't send a reply back to MTA. The milter
+     *    must set %MILTER_STEP_NO_REPLY_END_OF_HEADER
+     *    in #MilerClientContext::negotiate handler.
+     *
+     * : %MILTER_STATUS_PROGRESS
+     *    It means that the processing in callback is in
+     *    progress and returning response status is
+     *    pending. The main loop for the milter is
+     *    continued.
+     *
+     *    If you returns this status, you need to emit
+     *    %MilterClientContext::end-of-header-response
+     *    signal by yourself with one of the above
+     *    %MilterStatus<!-- -->es.
+     *
+     *    This status may be used for a milter that has IO
+     *    wait. (e.g. The milter may need to connect to the
+     *    its server like clamav-milter) Normally, this
+     *    status will not be used.
+     * </rd>
+     *
+     * See also <link
+     * linked="https://www.milter.org/developers/api/xxfi_eof">
+     * xxfi_eof</link> on milter.org.
+     *
+     * Returns: response status.
+     */
     signals[END_OF_HEADER] =
         g_signal_new("end-of-header",
                      MILTER_TYPE_CLIENT_CONTEXT,
@@ -373,6 +1069,21 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      _milter_marshal_ENUM__VOID,
                      MILTER_TYPE_STATUS, 0);
 
+    /**
+     * MilterClientContext::end-of-header-response:
+     * @context: the context that received the signal.
+     * @status: the response status.
+     *
+     * This signal is emitted implicitly after
+     * %MilterClientContext::end-of-header returns a status
+     * except %MILTER_STATUS_PROGRESS. This signal's default
+     * handler replies a response to MTA. You don't need to
+     * connect this signal.
+     *
+     * If you returns %MILTER_STATUS_PROGRESS in
+     * %MilterClientContext::end-of-header, you need to emit
+     * this signal to @context by yourself.
+     */
     signals[END_OF_HEADER_RESPONSE] =
         g_signal_new("end-of-header-response",
                      MILTER_TYPE_CLIENT_CONTEXT,
@@ -383,6 +1094,78 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      _milter_marshal_VOID__ENUM,
                      G_TYPE_NONE, 1, MILTER_TYPE_STATUS);
 
+    /**
+     * MilterClientContext::body:
+     * @context: the context that received the signal.
+     * @chunk: the body chunk.
+     * @size: the size of @chunk.
+     *
+     * This signal is emitted on body data is received. This
+     * signal is emitted zero or more times between
+     * #MilterClientContext::end-of-header and
+     * #MilterClientContext::end-of-message.
+     *
+     * All available response statues are the followings:
+     *
+     * <rd>
+     * : %MILTER_STATUS_CONTINUE
+     *    Continues processing the current message.
+     *
+     * : %MILTER_STATUS_REJECT
+     *    Rejects the current message.
+     *
+     *    #MilterClientContext::aborted is not emitted.
+     *
+     * : %MILTER_STATUS_DISCARD
+     *    Accepts the current message and discards it silently.
+     *
+     *    #MilterClientContext::aborted is not emitted.
+     *
+     * : %MILTER_STATUS_ACCEPT
+     *    Accepts the current message without further
+     *    more processing.
+     *
+     *    #MilterClientContext::aborted is not emitted.
+     *
+     * : %MILTER_STATUS_TEMPORARY_FAILURE
+     *    Rejects the the current message with temporary
+     *    failure. (i.e. 4xx status code in SMTP)
+     *
+     *    #MilterClientContext::aborted is not emitted.
+     *
+     * : %MILTER_STATUS_SKIP
+     *    Skips further body
+     *    processing. #MilterClientContext::end-of-message
+     *    is called.
+     *
+     * : %MILTER_STATUS_NO_REPLY
+     *    Doesn't send a reply back to MTA. The milter
+     *    must set %MILTER_STEP_NO_REPLY_BODY
+     *    in #MilerClientContext::negotiate handler.
+     *
+     * : %MILTER_STATUS_PROGRESS
+     *    It means that the processing in callback is in
+     *    progress and returning response status is
+     *    pending. The main loop for the milter is
+     *    continued.
+     *
+     *    If you returns this status, you need to emit
+     *    %MilterClientContext::body-response
+     *    signal by yourself with one of the above
+     *    %MilterStatus<!-- -->es.
+     *
+     *    This status may be used for a milter that has IO
+     *    wait. (e.g. The milter may need to connect to the
+     *    its server like clamav-milter) Normally, this
+     *    status will not be used.
+     * </rd>
+     *
+     * See also <link
+     * linked="https://www.milter.org/developers/api/xxfi_body">
+     * xxfi_body</link> on milter.org.
+     *
+     * Returns: response status.
+     */
     signals[BODY] =
         g_signal_new("body",
                      MILTER_TYPE_CLIENT_CONTEXT,
@@ -392,6 +1175,21 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      _milter_marshal_ENUM__STRING_UINT,
                      MILTER_TYPE_STATUS, 2, G_TYPE_STRING, G_TYPE_UINT);
 
+    /**
+     * MilterClientContext::body-response:
+     * @context: the context that received the signal.
+     * @status: the response status.
+     *
+     * This signal is emitted implicitly after
+     * %MilterClientContext::body returns a status except
+     * %MILTER_STATUS_PROGRESS. This signal's default
+     * handler replies a response to MTA. You don't need to
+     * connect this signal.
+     *
+     * If you returns %MILTER_STATUS_PROGRESS in
+     * %MilterClientContext::body, you need to emit this
+     * signal to @context by yourself.
+     */
     signals[BODY_RESPONSE] =
         g_signal_new("body_response",
                      MILTER_TYPE_CLIENT_CONTEXT,
@@ -401,6 +1199,63 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      _milter_marshal_VOID__ENUM,
                      G_TYPE_NONE, 1, MILTER_TYPE_STATUS);
 
+    /**
+     * MilterClientContext::end-of-message:
+     * @context: the context that received the signal.
+     *
+     * This signal is emitted after all
+     * #MilterClientContext::body are emitted. All message
+     * modifications can be done only in this signal
+     * handler. The modifications can be done with
+     * milter_client_context_add_header(),
+     * milter_client_context_change_from() and so on.
+     *
+     * All available response statues are the followings:
+     *
+     * <rd>
+     * : %MILTER_STATUS_CONTINUE
+     *    Continues processing the current message.
+     *
+     * : %MILTER_STATUS_DISCARD
+     *    Accepts the current message and discards it silently.
+     *
+     *    #MilterClientContext::aborted is not emitted.
+     *
+     * : %MILTER_STATUS_ACCEPT
+     *    Accepts the current message without further
+     *    more processing.
+     *
+     *    #MilterClientContext::aborted is not emitted.
+     *
+     * : %MILTER_STATUS_TEMPORARY_FAILURE
+     *    Rejects the the current message with temporary
+     *    failure. (i.e. 4xx status code in SMTP)
+     *
+     *    #MilterClientContext::aborted is not emitted.
+     *
+     * : %MILTER_STATUS_PROGRESS
+     *    It means that the processing in callback is in
+     *    progress and returning response status is
+     *    pending. The main loop for the milter is
+     *    continued.
+     *
+     *    If you returns this status, you need to emit
+     *    %MilterClientContext::end-of-message-response
+     *    signal by yourself with one of the above
+     *    %MilterStatus<!-- -->es.
+     *
+     *    This status may be used for a milter that has IO
+     *    wait. (e.g. The milter may need to connect to the
+     *    its server like clamav-milter) Normally, this
+     *    status will not be used.
+     * </rd>
+     *
+     * See also <link
+     * linked="https://www.milter.org/developers/api/xxfi_eom">
+     * xxfi_eom</link> on milter.org.
+     *
+     * Returns: response status.
+     */
     signals[END_OF_MESSAGE] =
         g_signal_new("end-of-message",
                      MILTER_TYPE_CLIENT_CONTEXT,
@@ -410,6 +1265,21 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      _milter_marshal_ENUM__VOID,
                      MILTER_TYPE_STATUS, 0);
 
+    /**
+     * MilterClientContext::end-of-message-response:
+     * @context: the context that received the signal.
+     * @status: the response status.
+     *
+     * This signal is emitted implicitly after
+     * %MilterClientContext::end-of-message returns a status
+     * except %MILTER_STATUS_PROGRESS. This signal's default
+     * handler replies a response to MTA. You don't need to
+     * connect this signal.
+     *
+     * If you returns %MILTER_STATUS_PROGRESS in
+     * %MilterClientContext::end-of-message, you need to
+     * emit this signal to @context by yourself.
+     */
     signals[END_OF_MESSAGE_RESPONSE] =
         g_signal_new("end-of-message-response",
                      MILTER_TYPE_CLIENT_CONTEXT,
@@ -420,6 +1290,12 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      _milter_marshal_VOID__ENUM,
                      G_TYPE_NONE, 1, MILTER_TYPE_STATUS);
 
+    /**
+     * MilterClientContext::quit:
+     * @context: the context that received the signal.
+     *
+     * REMOVE ME.
+     */
     signals[QUIT] =
         g_signal_new("quit",
                      MILTER_TYPE_CLIENT_CONTEXT,
@@ -429,6 +1305,13 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      _milter_marshal_ENUM__VOID,
                      MILTER_TYPE_STATUS, 0);
 
+    /**
+     * MilterClientContext::quit-response:
+     * @context: the context that received the signal.
+     * @status: the response status.
+     *
+     * REMOVE ME.
+     */
     signals[QUIT_RESPONSE] =
         g_signal_new("quit-response",
                      MILTER_TYPE_CLIENT_CONTEXT,
@@ -438,6 +1321,74 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      _milter_marshal_VOID__ENUM,
                      G_TYPE_NONE, 1, MILTER_TYPE_STATUS);
 
+    /**
+     * MilterClientContext::abort:
+     * @context: the context that received the signal.
+     *
+     * This signal may be emitted at any time between
+     * #MilterClientContext::envelope-from and
+     * #MilterClientContext::end-of-message. This signal is
+     * only emitted if the milter causes an internal error
+     * and the message processing isn't completed. For
+     * example, if the milter has already returned
+     * %MILTER_STATUS_ACCEPT, %MILTER_STATUS_REJECT,
+     * %MILTER_STATUS_DISCARD and
+     * %MILTER_STATUS_TEMPORARY_FAILURE, this signal will
+     * not emitted.
+     *
+     * If the milter has any resources allocated for the
+     * message between #MilterClientContext::envelope-from
+     * and #MilterClientContext::end-of-message, should be
+     * freed in this signal. But any resources allocated for
+     * the connection should not be freed in this signal. It
+     * should be freed in #MilterClientContext::finished.
+     *
+     * All available response statues are the followings:
+     *
+     * <rd>
+     * : %MILTER_STATUS_CONTINUE
+     *    Continues processing the current message.
+     *
+     * : %MILTER_STATUS_DISCARD
+     *    Accepts the current message and discards it silently.
+     *
+     *    #MilterClientContext::aborted is not emitted.
+     *
+     * : %MILTER_STATUS_ACCEPT
+     *    Accepts the current message without further
+     *    more processing.
+     *
+     *    #MilterClientContext::aborted is not emitted.
+     *
+     * : %MILTER_STATUS_TEMPORARY_FAILURE
+     *    Rejects the the current message with temporary
+     *    failure. (i.e. 4xx status code in SMTP)
+     *
+     *    #MilterClientContext::aborted is not emitted.
+     *
+     * : %MILTER_STATUS_PROGRESS
+     *    It means that the processing in callback is in
+     *    progress and returning response status is
+     *    pending. The main loop for the milter is
+     *    continued.
+     *
+     *    If you returns this status, you need to emit
+     *    %MilterClientContext::end-of-message-response
+     *    signal by yourself with one of the above
+     *    %MilterStatus<!-- -->es.
+     *
+     *    This status may be used for a milter that has IO
+     *    wait. (e.g. The milter may need to connect to the
+     *    its server like clamav-milter) Normally, this
+     *    status will not be used.
+     * </rd>
+     *
+     * See also <link
+     * linked="https://www.milter.org/developers/api/xxfi_abort">
+     * xxfi_abort</link> on milter.org.
+     *
+     * Returns: response status.
+     */
     signals[ABORT] =
         g_signal_new("abort",
                      MILTER_TYPE_CLIENT_CONTEXT,
@@ -447,6 +1398,21 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      _milter_marshal_ENUM__VOID,
                      MILTER_TYPE_STATUS, 0);
 
+    /**
+     * MilterClientContext::abort-response:
+     * @context: the context that received the signal.
+     * @status: the response status.
+     *
+     * This signal is emitted implicitly after
+     * %MilterClientContext::abort returns a status except
+     * %MILTER_STATUS_PROGRESS. This signal's default
+     * handler replies a response to MTA. You don't need to
+     * connect this signal.
+     *
+     * If you returns %MILTER_STATUS_PROGRESS in
+     * %MilterClientContext::abort, you need to emit this
+     * signal to @context by yourself.
+     */
     signals[ABORT_RESPONSE] =
         g_signal_new("abort-response",
                      MILTER_TYPE_CLIENT_CONTEXT,
@@ -465,6 +1431,19 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      _milter_marshal_VOID__ENUM_POINTER,
                      G_TYPE_NONE, 2, MILTER_TYPE_COMMAND, G_TYPE_POINTER);
 
+    /**
+     * MilterClientContext::timeout:
+     * @context: the context that received the signal.
+     *
+     * This signal is emitted if MTA doesn't return the next
+     * command within milter_client_context_get_timeout()
+     * seconds. If #MilterClientContext::timeout is emitted,
+     * the current connection is aborted and
+     * #MilterClientContext::finished are emitted.
+     * #MilterClientContext::abort may be emitted before
+     * #MilterClientContext::finished if the milter
+     * is processing a message.
+     */
     signals[TIMEOUT] =
         g_signal_new("timeout",
                      G_TYPE_FROM_CLASS(klass),
@@ -1697,6 +2676,12 @@ milter_client_context_set_timeout (MilterClientContext *context,
                                    guint timeout)
 {
     MILTER_CLIENT_CONTEXT_GET_PRIVATE(context)->timeout = timeout;
+}
+
+guint
+milter_client_context_get_timeout (MilterClientContext *context)
+{
+    return MILTER_CLIENT_CONTEXT_GET_PRIVATE(context)->timeout;
 }
 
 /*
