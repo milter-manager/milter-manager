@@ -99,13 +99,16 @@ set_user (const gchar *user_name, GError **error)
 {
     struct passwd *password;
 
+    errno = 0;
     password = getpwnam(user_name);
     if (!password) {
         g_set_error(error,
                     MILTER_MANAGER_CHILD_ERROR,
                     MILTER_MANAGER_CHILD_ERROR_INVALID_USER_NAME,
-                    "No passwd entry for %s: %s",
-                    user_name, strerror(errno));
+                    "No password entry: <%s>%s%s",
+                    user_name,
+                    errno == 0 ? "" : ": ",
+                    errno == 0 ? "" : g_strerror(errno));
         return FALSE;
     }
 
@@ -153,7 +156,7 @@ launch (MilterManagerProcessLauncher *launcher,
             MILTER_MANAGER_PROCESS_LAUNCHER_ERROR,
             MILTER_MANAGER_PROCESS_LAUNCHER_ERROR_BAD_COMMAND_STRING,
             internal_error,
-            "Command string(%s) has invalid character(s).",
+            "Command string has invalid character(s): <%s>",
             command_line);
         return FALSE;
     }
@@ -178,12 +181,12 @@ launch (MilterManagerProcessLauncher *launcher,
             MILTER_MANAGER_PROCESS_LAUNCHER_ERROR,
             MILTER_MANAGER_PROCESS_LAUNCHER_ERROR_START_FAILURE,
             internal_error,
-            "Couldn't start new %s process.",
+            "Couldn't start new process: <%s>",
             command_line);
         return FALSE;
     }
 
-    milter_debug("started %s.", command_line);
+    milter_debug("started: <%s>", command_line);
     return TRUE;
 }
 
@@ -209,10 +212,9 @@ cb_decoder_launch (MilterManagerLaunchCommandDecoder *decoder,
     encoder = MILTER_MANAGER_REPLY_ENCODER(_encoder);
 
     if (!milter_manager_configuration_is_privilege_mode(priv->configuration)) {
-        milter_manager_reply_encoder_encode_error(encoder,
-                                                  &packet,
-                                                  &packet_size,
-                                                  "MilterManager is not running on privilege mode.");
+        milter_manager_reply_encoder_encode_error(
+            encoder, &packet, &packet_size,
+            "MilterManager is not running on privilege mode.");
     } else if (!launch(launcher, command_line, user_name, &error)) {
         milter_manager_reply_encoder_encode_error(encoder,
                                                   &packet,

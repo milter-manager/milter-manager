@@ -199,26 +199,33 @@ test_launch_no_privilege_mode (void)
 void
 data_launch_error (void)
 {
-#define ADD(label, command, user_name, expected_error_message)                      \
-    gcut_add_datum(label,                                                           \
-                   "command", G_TYPE_STRING, command,                               \
-                   "user-name", G_TYPE_STRING, user_name,                           \
-                   "expected-error-message", G_TYPE_STRING, expected_error_message, \
+#define ADD(label, command, user_name, expected_error_message)  \
+    gcut_add_datum(label,                                       \
+                   "command", G_TYPE_STRING, command,           \
+                   "user-name", G_TYPE_STRING, user_name,       \
+                   "expected-error-message",                    \
+                   G_TYPE_STRING, expected_error_message,       \
                    NULL)
+
+
     ADD("bad command string",
-        "/bin/echo \"-n", g_get_user_name(),
-        cut_take_printf("Command string(/bin/echo \"-n) has invalid character(s).: "
-                        "%s:%d: %s (%s)",
+        "/bin/echo \"-n",
+        g_get_user_name(),
+        cut_take_printf("Command string has invalid character(s): "
+                        "</bin/echo \"-n>: %s:%d: %s (%s)",
                         g_quark_to_string(g_shell_error_quark()),
                         G_SHELL_ERROR_BAD_QUOTING,
                         "Text ended before matching quote was found for \".",
                         "The text was '/bin/echo \"-n'"));
+
     ADD("nonexistent user",
-        "/bin/echo", "Who are you?",
-        cut_take_printf("No passwd entry for Who are you?: %s",
-                         g_strerror(0)));
+        "/bin/echo",
+        "nonexistent",
+        "No password entry: <nonexistent>");
+
     ADD("nonexistent command",
-        "/bin/oecho", g_get_user_name(),
+        "/bin/oecho",
+        g_get_user_name(),
         cut_take_printf("Couldn't start new /bin/oecho process.: "
                         "%s:%d: %s \"%s\" (%s)",
                         g_quark_to_string(g_spawn_error_quark()),
@@ -226,6 +233,7 @@ data_launch_error (void)
                         "Failed to execute child process",
                         "/bin/oecho",
                         g_strerror(ENOENT)));
+#undef ADD
 }
 
 void
@@ -240,7 +248,8 @@ test_launch_error (gconstpointer _data)
 
     command = gcut_data_get_string(data, "command");
     user_name = gcut_data_get_string(data, "user-name");
-    expected_error_message = gcut_data_get_string(data, "expected-error-message");
+    expected_error_message = gcut_data_get_string(data,
+                                                  "expected-error-message");
 
     milter_manager_launch_command_encoder_encode_launch(command_encoder,
                                                         &packet, &packet_size,
