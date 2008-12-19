@@ -207,6 +207,8 @@ cb_decoder_launch (MilterManagerLaunchCommandDecoder *decoder,
 
     priv = MILTER_MANAGER_PROCESS_LAUNCHER_GET_PRIVATE(launcher);
 
+    /* FIXME */ 
+    /* check the child has been already launched. */
     agent = MILTER_AGENT(launcher);
     _encoder = milter_agent_get_encoder(agent);
     encoder = MILTER_MANAGER_REPLY_ENCODER(_encoder);
