@@ -1,5 +1,7 @@
 2008-12-22  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: remove: milter-client-context: mta-timeout -> timeout.
+
 	* TODO, milter/client/milter-client-context.[ch]: remove
 	MilterClientContext::quit signal.
 	* milter/, test/: follow the above change.

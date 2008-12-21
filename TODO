@@ -80,7 +80,6 @@
 * milter-manager supports macros requests.
 * milter-client-context should close reader and writer and emit finished signal
   on timeout.
-* milter-client-context: mta-timeout -> timeout.
 * support MAIL FROM/RCPT TO additional info parsing.
   (MilterClientContext::envelope-from, MilterClientContext::envelope-recipient)
   cited from ESMTP (RFC 1869) 6.1.:
