@@ -143,12 +143,6 @@ cb_abort (MilterClientContext *context, gpointer user_data)
 }
 
 static MilterStatus
-cb_quit (MilterClientContext *context, gpointer user_data)
-{
-    return MILTER_STATUS_CONTINUE;
-}
-
-static MilterStatus
 cb_unknown (MilterClientContext *context, const gchar *command,
             gpointer user_data)
 {
@@ -172,7 +166,6 @@ setup_signals (MilterClientContext *context)
     CONNECT(body);
     CONNECT(end_of_message);
     CONNECT(abort);
-    CONNECT(quit);
     CONNECT(unknown);
 
 #undef CONNECT

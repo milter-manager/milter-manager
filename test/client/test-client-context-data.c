@@ -52,8 +52,9 @@ static gint n_end_of_headers;
 static gint n_bodies;
 static gint n_end_of_messages;
 static gint n_aborts;
-static gint n_quits;
 static gint n_unknowns;
+
+static gint n_finished_emissions;
 
 static GList *private_data_list;
 static GList *expected_private_data_list;
@@ -175,15 +176,6 @@ cb_abort (MilterClientContext *context, gpointer user_data)
 }
 
 static MilterStatus
-cb_quit (MilterClientContext *context, gpointer user_data)
-{
-    n_quits++;
-    append_private_data(context, "quit");
-
-    return MILTER_STATUS_CONTINUE;
-}
-
-static MilterStatus
 cb_unknown (MilterClientContext *context, const gchar *command,
             gpointer user_data)
 {
@@ -191,6 +183,13 @@ cb_unknown (MilterClientContext *context, const gchar *command,
     append_private_data(context, "unknown");
 
     return MILTER_STATUS_CONTINUE;
+}
+
+static void
+cb_finished (MilterClientContext *context, gpointer user_data)
+{
+    n_finished_emissions++;
+    append_private_data(context, "finished");
 }
 
 static void
@@ -210,9 +209,9 @@ setup_signals (MilterClientContext *context)
     CONNECT(body);
     CONNECT(end_of_message);
     CONNECT(abort);
-    CONNECT(quit);
     CONNECT(unknown);
 
+    CONNECT(finished);
 #undef CONNECT
 }
 
@@ -240,8 +239,9 @@ setup (void)
     n_bodies = 0;
     n_end_of_messages = 0;
     n_aborts = 0;
-    n_quits = 0;
     n_unknowns = 0;
+
+    n_finished_emissions = 0;
 
     private_data_list = NULL;
     expected_private_data_list = NULL;

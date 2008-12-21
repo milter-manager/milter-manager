@@ -88,11 +88,10 @@ static gint n_end_of_messages;
 static gint n_end_of_message_responses;
 static gint n_aborts;
 static gint n_abort_responses;
-static gint n_quits;
-static gint n_quit_responses;
 static gint n_unknowns;
 static gint n_unknown_responses;
 static gint n_errors;
+static gint n_finished_emissions;
 
 static MilterOption *negotiate_option;
 static MilterMacrosRequests *negotiate_macros_requests;
@@ -392,23 +391,6 @@ cb_abort_response (MilterClientContext *context, MilterStatus status,
 }
 
 static MilterStatus
-cb_quit (MilterClientContext *context, gpointer user_data)
-{
-    n_quits++;
-
-    retrieve_context_info(context);
-
-    return MILTER_STATUS_CONTINUE;
-}
-
-static void
-cb_quit_response (MilterClientContext *context, MilterStatus status,
-                   gpointer user_data)
-{
-    n_quit_responses++;
-}
-
-static MilterStatus
 cb_unknown (MilterClientContext *context, const gchar *command,
             gpointer user_data)
 {
@@ -431,11 +413,17 @@ cb_unknown_response (MilterClientContext *context,
 }
 
 static void
-cb_error (MilterErrorEmittable *emittable, GError *error)
+cb_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
 {
     n_errors++;
 
     actual_error = g_error_copy(error);
+}
+
+static void
+cb_finished (MilterFinishedEmittable *emittable, gpointer user_data)
+{
+    n_finished_emissions++;
 }
 
 static void
@@ -459,11 +447,11 @@ setup_signals (MilterClientContext *context)
     CONNECT(body);
     CONNECT(end_of_message);
     CONNECT(abort);
-    CONNECT(quit);
     CONNECT(unknown);
 
 #undef CONNECT
     g_signal_connect(context, "error", G_CALLBACK(cb_error), NULL);
+    g_signal_connect(context, "finished", G_CALLBACK(cb_finished), NULL);
     g_signal_connect(context, "define-macro", G_CALLBACK(cb_define_macro), NULL);
 }
 
@@ -506,11 +494,10 @@ setup (void)
     n_end_of_message_responses = 0;
     n_aborts = 0;
     n_abort_responses = 0;
-    n_quits = 0;
-    n_quit_responses = 0;
     n_unknowns = 0;
     n_unknown_responses = 0;
     n_errors = 0;
+    n_finished_emissions = 0;
     n_define_macros = 0;
 
     negotiate_option = NULL;
@@ -1263,8 +1250,7 @@ test_feed_quit (void)
 {
     milter_command_encoder_encode_quit(encoder, &packet, &packet_size);
     gcut_assert_error(feed());
-    cut_assert_equal_int(1, n_quits);
-    cut_assert_equal_int(1, n_quit_responses);
+    cut_assert_equal_int(1, n_finished_emissions);
 }
 
 void

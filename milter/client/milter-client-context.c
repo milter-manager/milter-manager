@@ -132,7 +132,6 @@ static MilterStatus default_body       (MilterClientContext *context,
                                         gsize          size);
 static MilterStatus default_end_of_message
                                        (MilterClientContext *context);
-static MilterStatus default_quit       (MilterClientContext *context);
 static MilterStatus default_abort      (MilterClientContext *context);
 static void         negotiate_response (MilterClientContext *context,
                                         MilterOption        *option,
@@ -161,8 +160,6 @@ static void         body_response      (MilterClientContext *context,
                                         MilterStatus         status);
 static void         end_of_message_response
                                        (MilterClientContext *context,
-                                        MilterStatus         status);
-static void         quit_response      (MilterClientContext *context,
                                         MilterStatus         status);
 static void         abort_response     (MilterClientContext *context,
                                         MilterStatus         status);
@@ -194,7 +191,6 @@ milter_client_context_class_init (MilterClientContextClass *klass)
     klass->end_of_header = default_end_of_header;
     klass->body = default_body;
     klass->end_of_message = default_end_of_message;
-    klass->quit = default_quit;
     klass->abort = default_abort;
 
     klass->negotiate_response = negotiate_response;
@@ -208,7 +204,6 @@ milter_client_context_class_init (MilterClientContextClass *klass)
     klass->end_of_header_response = end_of_header_response;
     klass->body_response = body_response;
     klass->end_of_message_response = end_of_message_response;
-    klass->quit_response = quit_response;
     klass->abort_response = abort_response;
 
     /**
@@ -1291,37 +1286,6 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_TYPE_NONE, 1, MILTER_TYPE_STATUS);
 
     /**
-     * MilterClientContext::quit:
-     * @context: the context that received the signal.
-     *
-     * REMOVE ME.
-     */
-    signals[QUIT] =
-        g_signal_new("quit",
-                     MILTER_TYPE_CLIENT_CONTEXT,
-                     G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MilterClientContextClass, quit),
-                     status_accumulator, NULL,
-                     _milter_marshal_ENUM__VOID,
-                     MILTER_TYPE_STATUS, 0);
-
-    /**
-     * MilterClientContext::quit-response:
-     * @context: the context that received the signal.
-     * @status: the response status.
-     *
-     * REMOVE ME.
-     */
-    signals[QUIT_RESPONSE] =
-        g_signal_new("quit-response",
-                     MILTER_TYPE_CLIENT_CONTEXT,
-                     G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MilterClientContextClass, quit_response),
-                     NULL, NULL,
-                     _milter_marshal_VOID__ENUM,
-                     G_TYPE_NONE, 1, MILTER_TYPE_STATUS);
-
-    /**
      * MilterClientContext::abort:
      * @context: the context that received the signal.
      *
@@ -2192,12 +2156,6 @@ default_end_of_message (MilterClientContext *context)
 }
 
 static MilterStatus
-default_quit (MilterClientContext *context)
-{
-    return MILTER_STATUS_NOT_CHANGE;
-}
-
-static MilterStatus
 default_abort (MilterClientContext *context)
 {
     return MILTER_STATUS_NOT_CHANGE;
@@ -2379,12 +2337,6 @@ end_of_message_response (MilterClientContext *context, MilterStatus status)
     reset_macro_context(context, MILTER_COMMAND_END_OF_MESSAGE);
     milter_statistics("Reply %s to MTA on end-of-message",
                        milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status));
-}
-
-static void
-quit_response (MilterClientContext *context, MilterStatus status)
-{
-    milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(context));
 }
 
 static void
@@ -2582,14 +2534,10 @@ cb_decoder_end_of_message (MilterDecoder *decoder, const gchar *chunk,
 static void
 cb_decoder_quit (MilterDecoder *decoder, gpointer user_data)
 {
-    MilterClientContext *context = MILTER_CLIENT_CONTEXT(user_data);
-    MilterStatus status;
+    MilterClientContext *context;
 
-    disable_timeout(context);
-    g_signal_emit(context, signals[QUIT], 0, &status);
-    if (status == MILTER_STATUS_PROGRESS)
-        return;
-    g_signal_emit(context, signals[QUIT_RESPONSE], 0, status);
+    context = MILTER_CLIENT_CONTEXT(user_data);
+    milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(context));
 }
 
 static void

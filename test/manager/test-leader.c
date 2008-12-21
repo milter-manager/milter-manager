@@ -60,7 +60,6 @@ static gint n_end_of_header_responses;
 static gint n_body_responses;
 static gint n_end_of_message_responses;
 static gint n_abort_responses;
-static gint n_quit_responses;
 static gint n_unknown_responses;
 
 static MilterStatus response_status;
@@ -210,16 +209,6 @@ cb_abort_response (MilterClientContext *context,
 }
 
 static MilterStatus
-cb_quit_response (MilterClientContext *context,
-                  MilterStatus status, gpointer user_data)
-{
-    n_quit_responses++;
-
-    response_status = status;
-    return status;
-}
-
-static MilterStatus
 cb_unknown_response (MilterClientContext *context,
                      MilterStatus status, gpointer user_data)
 {
@@ -249,7 +238,6 @@ setup_client_context_signals (MilterClientContext *context)
     CONNECT(body);
     CONNECT(end_of_message);
     CONNECT(abort);
-    CONNECT(quit);
     CONNECT(unknown);
 
 #undef CONNECT
@@ -310,7 +298,6 @@ setup (void)
     n_body_responses = 0;
     n_end_of_message_responses = 0;
     n_abort_responses = 0;
-    n_quit_responses = 0;
     n_unknown_responses = 0;
 
     expected_error = NULL;
@@ -398,8 +385,6 @@ get_response_count (const gchar *response)
         return n_body_responses;
     } else if (g_str_equal(response, "end-of-message-response")) {
         return n_end_of_message_responses;
-    } else if (g_str_equal(response, "quit-response")) {
-        return n_quit_responses;
     } else if (g_str_equal(response, "abort-response")) {
         return n_abort_responses;
     } else if (g_str_equal(response, "unknown-response")) {
@@ -511,8 +496,6 @@ response_to_get_n_received (const gchar *response)
         return milter_manager_test_client_get_n_body_received;
     } else if (g_str_equal(response, "end-of-message")) {
         return milter_manager_test_client_get_n_end_of_message_received;
-    } else if (g_str_equal(response, "quit")) {
-        return milter_manager_test_client_get_n_quit_received;
     } else if (g_str_equal(response, "abort")) {
         return milter_manager_test_client_get_n_abort_received;
     } else if (g_str_equal(response, "unknown")) {
@@ -650,16 +633,21 @@ assert_response_common (MilterManagerTestScenario *scenario, const gchar *group)
         cut_trace(assert_have_response_helper(response_signal_name));
     }
 
-    get_n_received = response_to_get_n_received(response);
-    cut_assert_not_null(get_n_received, "response: <%s>(%s)", response, group);
+    if (!g_str_equal(response, "quit")) {
+        get_n_received = response_to_get_n_received(response);
+        cut_assert_not_null(get_n_received,
+                            "response: <%s>(%s)", response, group);
 
-    if (n_received >= g_list_length((GList *)started_clients))
-        milter_manager_test_clients_wait_reply(started_clients, get_n_received);
+        if (n_received >= g_list_length((GList *)started_clients))
+            milter_manager_test_clients_wait_reply(started_clients,
+                                                   get_n_received);
 
-    actual_n_received =
-        milter_manager_test_clients_collect_n_received(started_clients,
-                                                       get_n_received);
-    cut_assert_equal_uint(n_received, actual_n_received, "[%s]", group);
+        actual_n_received =
+            milter_manager_test_clients_collect_n_received(started_clients,
+                                                           get_n_received);
+        cut_assert_equal_uint(n_received, actual_n_received, "[%s]", group);
+    }
+
     gcut_assert_equal_enum(MILTER_TYPE_STATUS, status, response_status,
                            "[%s]", group);
 

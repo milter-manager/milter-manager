@@ -52,8 +52,8 @@ static gint n_end_of_headers;
 static gint n_bodies;
 static gint n_end_of_messages;
 static gint n_aborts;
-static gint n_quits;
 static gint n_unknowns;
+static gint n_finished_emissions;
 
 static guint idle_id;
 static guint idle_shutdown_id;
@@ -93,7 +93,7 @@ static GError *actual_error;
 static GError *expected_error;
 
 static void
-cb_negotiate (MilterDecoder *decoder, MilterOption *option,
+cb_negotiate (MilterClientContext *context, MilterOption *option,
               MilterMacrosRequests *macros_requests, gpointer user_data)
 {
     n_negotiates++;
@@ -102,7 +102,7 @@ cb_negotiate (MilterDecoder *decoder, MilterOption *option,
 }
 
 static void
-cb_connect (MilterDecoder *decoder, const gchar *host_name,
+cb_connect (MilterClientContext *context, const gchar *host_name,
             const struct sockaddr *address, socklen_t address_length,
             gpointer user_data)
 {
@@ -115,7 +115,7 @@ cb_connect (MilterDecoder *decoder, const gchar *host_name,
 }
 
 static void
-cb_helo (MilterDecoder *decoder, const gchar *fqdn, gpointer user_data)
+cb_helo (MilterClientContext *context, const gchar *fqdn, gpointer user_data)
 {
     n_helos++;
 
@@ -123,7 +123,7 @@ cb_helo (MilterDecoder *decoder, const gchar *fqdn, gpointer user_data)
 }
 
 static void
-cb_envelope_from (MilterDecoder *decoder, const gchar *from, gpointer user_data)
+cb_envelope_from (MilterClientContext *context, const gchar *from, gpointer user_data)
 {
     n_envelope_froms++;
 
@@ -131,7 +131,7 @@ cb_envelope_from (MilterDecoder *decoder, const gchar *from, gpointer user_data)
 }
 
 static void
-cb_envelope_recipient (MilterDecoder *decoder, const gchar *to,
+cb_envelope_recipient (MilterClientContext *context, const gchar *to,
                        gpointer user_data)
 {
     n_envelope_recipients++;
@@ -140,13 +140,13 @@ cb_envelope_recipient (MilterDecoder *decoder, const gchar *to,
 }
 
 static void
-cb_data (MilterDecoder *decoder, gpointer user_data)
+cb_data (MilterClientContext *context, gpointer user_data)
 {
     n_datas++;
 }
 
 static void
-cb_header (MilterDecoder *decoder, const gchar *name, const gchar *value,
+cb_header (MilterClientContext *context, const gchar *name, const gchar *value,
            gpointer user_data)
 {
     n_headers++;
@@ -161,13 +161,13 @@ cb_header (MilterDecoder *decoder, const gchar *name, const gchar *value,
 }
 
 static void
-cb_end_of_header (MilterDecoder *decoder, gpointer user_data)
+cb_end_of_header (MilterClientContext *context, gpointer user_data)
 {
     n_end_of_headers++;
 }
 
 static void
-cb_body (MilterDecoder *decoder, const gchar *chunk, gsize length,
+cb_body (MilterClientContext *context, const gchar *chunk, gsize length,
          gpointer user_data)
 {
     n_bodies++;
@@ -179,31 +179,32 @@ cb_body (MilterDecoder *decoder, const gchar *chunk, gsize length,
 }
 
 static void
-cb_end_of_message (MilterDecoder *decoder, gpointer user_data)
+cb_end_of_message (MilterClientContext *context, gpointer user_data)
 {
     n_end_of_messages++;
 }
 
 static void
-cb_abort (MilterDecoder *decoder, gpointer user_data)
+cb_abort (MilterClientContext *context, gpointer user_data)
 {
     n_aborts++;
 }
 
 static void
-cb_quit (MilterDecoder *decoder, gpointer user_data)
-{
-    n_quits++;
-}
-
-static void
-cb_unknown (MilterDecoder *decoder, const gchar *command, gpointer user_data)
+cb_unknown (MilterClientContext *context, const gchar *command,
+            gpointer user_data)
 {
     n_unknowns++;
 
     if (unknown_command)
         g_free(unknown_command);
     unknown_command = g_strdup(command);
+}
+
+static void
+cb_finished (MilterFinishedEmittable *emittable, gpointer user_data)
+{
+    n_finished_emissions++;
 }
 
 static void
@@ -223,9 +224,9 @@ setup_context_signals (MilterClientContext *context)
     CONNECT(body);
     CONNECT(end_of_message);
     CONNECT(abort);
-    CONNECT(quit);
     CONNECT(unknown);
 
+    CONNECT(finished);
 #undef CONNECT
 }
 
@@ -288,8 +289,9 @@ setup (void)
     n_bodies = 0;
     n_end_of_messages = 0;
     n_aborts = 0;
-    n_quits = 0;
     n_unknowns = 0;
+
+    n_finished_emissions = 0;
 
     connect_host_name = NULL;
     connect_address = NULL;

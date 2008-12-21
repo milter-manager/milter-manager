@@ -315,16 +315,9 @@ cb_client_timeout (MilterClientContext *context, gpointer user_data)
     milter_manager_leader_timeout(leader);
 }
 
-static MilterStatus
-cb_client_quit (MilterClientContext *context, gpointer user_data)
-{
-    MilterManagerLeader *leader = user_data;
-
-    return milter_manager_leader_quit(leader);
-}
-
 static void
-teardown_client_context_signals (MilterClientContext *context, gpointer user_data)
+teardown_client_context_signals (MilterClientContext *context,
+                                 gpointer user_data)
 {
 #define DISCONNECT(name)                                                \
     g_signal_handlers_disconnect_by_func(context,                       \
@@ -342,7 +335,6 @@ teardown_client_context_signals (MilterClientContext *context, gpointer user_dat
     DISCONNECT(end_of_header);
     DISCONNECT(body);
     DISCONNECT(end_of_message);
-    DISCONNECT(quit);
     DISCONNECT(abort);
     DISCONNECT(define_macro);
     DISCONNECT(timeout);
@@ -362,6 +354,10 @@ cb_idle (gpointer data)
 static void
 cb_finished (MilterFinishedEmittable *emittable, gpointer user_data)
 {
+    MilterManagerLeader *leader;
+
+    leader = MILTER_MANAGER_LEADER(emittable);
+    milter_manager_leader_quit(leader);
     teardown_client_context_signals(MILTER_CLIENT_CONTEXT(user_data), emittable);
     milter_statistics("End of session in (%p)", user_data);
     g_idle_add(cb_idle, emittable);
@@ -394,7 +390,6 @@ setup_context_signals (MilterClientContext *context,
     CONNECT(end_of_header);
     CONNECT(body);
     CONNECT(end_of_message);
-    CONNECT(quit);
     CONNECT(abort);
     CONNECT(define_macro);
     CONNECT(timeout);

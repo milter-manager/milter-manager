@@ -159,13 +159,6 @@ G_BEGIN_DECLS
  * }
  * 
  * static MilterStatus
- * cb_quit (MilterClientContext *context, gpointer user_data)
- * {
- *     g_print("quit\n");
- *     return MILTER_STATUS_CONTINUE;
- * }
- * 
- * static MilterStatus
  * cb_unknown (MilterClientContext *context, const gchar *command,
  *             gpointer user_data)
  * {
@@ -190,7 +183,6 @@ G_BEGIN_DECLS
  *     CONNECT(body);
  *     CONNECT(end_of_message);
  *     CONNECT(abort);
- *     CONNECT(quit);
  *     CONNECT(unknown);
  * 
  * #undef CONNECT

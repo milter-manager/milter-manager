@@ -245,7 +245,7 @@ state_to_response_signal_name (MilterManagerLeaderState state)
         signal_name = "end-of-message-response";
         break;
       case MILTER_MANAGER_LEADER_STATE_QUIT:
-        signal_name = "quit-response";
+        signal_name = "error-invalid-state-quit-response";
         break;
       case MILTER_MANAGER_LEADER_STATE_ABORT:
         signal_name = "abort-response";

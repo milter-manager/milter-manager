@@ -308,17 +308,6 @@ cb_end_of_message (MilterClientContext *context, gpointer user_data)
 }
 
 static MilterStatus
-cb_quit (MilterClientContext *context, gpointer user_data)
-{
-    SmfiContext *smfi_context = user_data;
-
-    if (!filter_description.xxfi_close)
-        return MILTER_STATUS_DEFAULT;
-
-    return filter_description.xxfi_close(smfi_context);
-}
-
-static MilterStatus
 cb_abort (MilterClientContext *context, gpointer user_data)
 {
     SmfiContext *smfi_context = user_data;
@@ -329,13 +318,17 @@ cb_abort (MilterClientContext *context, gpointer user_data)
     return filter_description.xxfi_abort(smfi_context);
 }
 
-static MilterStatus
-cb_quit_response (MilterClientContext *context, MilterStatus status,
-                  gpointer user_data)
+static void
+cb_finished (MilterFinishedEmittable *emittable, gpointer user_data)
 {
-    smfi_context_detach_from_client_context(user_data, context);
+    MilterClientContext *context;
+    SmfiContext *smfi_context = user_data;
 
-    return status;
+    if (filter_description.xxfi_close)
+        filter_description.xxfi_close(smfi_context);
+
+    context = MILTER_CLIENT_CONTEXT(emittable);
+    smfi_context_detach_from_client_context(smfi_context, context);
 }
 
 void
@@ -364,12 +357,12 @@ smfi_context_attach_to_client_context (SmfiContext *context,
     CONNECT(end_of_header, eoh);
     CONNECT(body, body);
     CONNECT(end_of_message, eom);
-    CONNECT(quit, close);
     CONNECT(abort, abort);
 
 #undef CONNECT
-    g_signal_connect_after(client_context, "quit-response",
-                           G_CALLBACK(cb_quit_response), context);
+
+    g_signal_connect_after(client_context, "finished",
+                           G_CALLBACK(cb_finished), context);
 }
 
 void
@@ -396,9 +389,9 @@ smfi_context_detach_from_client_context (SmfiContext *context,
     DISCONNECT(end_of_header);
     DISCONNECT(body);
     DISCONNECT(end_of_message);
-    DISCONNECT(quit);
     DISCONNECT(abort);
-    DISCONNECT(quit_response);
+
+    DISCONNECT(finished);
 
 #undef DISCONNECT
 

@@ -1,3 +1,9 @@
+2008-12-22  Kouhei Sutou  <kou@cozmixng.org>
+
+	* TODO, milter/client/milter-client-context.[ch]: remove
+	MilterClientContext::quit signal.
+	* milter/, test/: follow the above change.
+
 2008-12-19  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/core/milter-finished-emittable.[ch]: add documents.

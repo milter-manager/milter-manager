@@ -98,4 +98,3 @@
 			    ; accept extended parameters.
        inner-esmtp-cmd  ::= ("MAIL FROM:" reverse-path)   /
 			    ("RCPT TO:" forward-path)
-* remove MilterClientContext::quit signal.
