@@ -43,7 +43,6 @@ static MilterManagerConfiguration *config;
 
 static MilterWriter *writer;
 static GIOChannel *output_channel;
-static GIOChannel *input_channel;
 
 static GString *expected_packet;
 static gchar *expected_error_message;
@@ -84,8 +83,7 @@ setup_input_io (void)
 
     writer = milter_writer_io_channel_new(channel);
 
-    //g_io_channel_unref(channel);
-    input_channel = channel;
+    g_io_channel_unref(channel);
 }
 
 static void
@@ -141,8 +139,6 @@ teardown (void)
         g_object_unref(writer);
     if (output_channel)
         g_io_channel_unref(output_channel);
-    if (input_channel)
-        g_io_channel_unref(input_channel);
 
     if (command_encoder)
         g_object_unref(command_encoder);
@@ -203,7 +199,7 @@ test_launch_no_privilege_mode (void)
     g_free(packet);
     milter_manager_reply_encoder_encode_error(reply_encoder,
                                               &packet, &packet_size,
-                                              "MIlterManager is not running on privilege mode.");
+                                              "MilterManager is not running on privilege mode.");
     output = gcut_string_io_channel_get_string(output_channel);
     cut_assert_equal_memory(packet, packet_size,
                             output->str, output->len);
