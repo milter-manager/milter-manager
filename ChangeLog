@@ -1,5 +1,7 @@
 2008-12-22  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter.rb: cancel log handler. (just a workaround)
+
 	* TODO: remove: milter-client-context: mta-timeout -> timeout.
 
 	* TODO, milter/client/milter-client-context.[ch]: remove
