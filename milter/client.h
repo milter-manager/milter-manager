@@ -171,6 +171,9 @@ gboolean             milter_client_set_connection_spec
                                                      (MilterClient  *client,
                                                       const gchar   *spec,
                                                       GError       **error);
+GIOChannel          *milter_client_get_listen_channel(MilterClient *client);
+void                 milter_client_set_listen_channel(MilterClient *client,
+                                                      GIOChannel *channel);
 void                 milter_client_set_timeout       (MilterClient  *client,
                                                       guint          timeout);
 gboolean             milter_client_main              (MilterClient  *client);

@@ -1,5 +1,9 @@
 2008-12-22  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client.h, milter/client/milter-client.c: add
+	milter_client_get_listen_channel() and
+	milter_client_set_listen_channel().
+
 	* libmilter/mfapi.h, milter/client/milter-client-context.[ch]: add
 	document.
 

@@ -54,6 +54,7 @@ struct _MilterClientPrivate
     gchar *connection_spec;
     GList *process_data;
     guint timeout;
+    GIOChannel *listen_channel;
 };
 
 typedef struct _MilterClientProcessData
@@ -124,6 +125,7 @@ milter_client_init (MilterClient *client)
     priv->connection_spec = NULL;
     priv->process_data = NULL;
     priv->timeout = 7210;
+    priv->listen_channel = NULL;
 }
 
 static void
@@ -166,6 +168,11 @@ dispose (GObject *object)
         g_list_foreach(priv->process_data, (GFunc)process_data_free, NULL);
         g_list_free(priv->process_data);
         priv->process_data = NULL;
+    }
+
+    if (priv->listen_channel) {
+        g_io_channel_unref(priv->listen_channel);
+        priv->listen_channel = NULL;
     }
 
     G_OBJECT_CLASS(milter_client_parent_class)->dispose(object);
@@ -249,6 +256,25 @@ milter_client_set_connection_spec (MilterClient *client, const gchar *spec,
         priv->connection_spec = g_strdup(spec);
 
     return success;
+}
+
+GIOChannel *
+milter_client_get_listen_channel (MilterClient *client)
+{
+    return MILTER_CLIENT_GET_PRIVATE(client)->listen_channel;
+}
+
+void
+milter_client_set_listen_channel (MilterClient *client, GIOChannel *channel)
+{
+    MilterClientPrivate *priv;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    if (priv->listen_channel)
+        g_io_channel_unref(priv->listen_channel);
+    priv->listen_channel = channel;
+    if (priv->listen_channel)
+        g_io_channel_ref(priv->listen_channel);
 }
 
 static gboolean
@@ -422,7 +448,13 @@ milter_client_main (MilterClient *client)
         g_free(default_connection_spec);
     }
 
-    server_channel = milter_connection_listen(priv->connection_spec, 5, &error);
+    if (priv->listen_channel) {
+        g_io_channel_ref(priv->listen_channel);
+        server_channel = priv->listen_channel;
+    } else {
+        server_channel = milter_connection_listen(priv->connection_spec, 5, &error);
+    }
+
     if (!server_channel) {
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client), error);
         g_error_free(error);
