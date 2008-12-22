@@ -65,6 +65,8 @@ void                 smfi_context_detach_from_client_context
                                                     (SmfiContext         *context,
                                                      MilterClientContext *client_context);
 
+void                 libmilter_compatible_reset     (void);
+
 G_END_DECLS
 
 #endif /* __LIBMILTER_COMPATIBLE_H__ */

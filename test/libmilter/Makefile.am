@@ -1,6 +1,7 @@
 if WITH_CUTTER
 noinst_LTLIBRARIES =			\
-	test-smfi-context.la
+	test-smfi-context.la		\
+	test-libmilter-compatible.la
 endif
 
 INCLUDES =				\
@@ -21,4 +22,5 @@ LIBS =							\
 	$(top_builddir)/test/lib/libmilter-test.la	\
 	$(GCUTTER_LIBS)
 
-test_smfi_context_la_SOURCES = test-smfi-context.c
+test_smfi_context_la_SOURCES		= test-smfi-context.c
+test_libmilter_compatible_la_SOURCES	= test-libmilter-compatible.c

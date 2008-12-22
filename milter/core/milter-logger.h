@@ -48,7 +48,7 @@ G_BEGIN_DECLS
     milter_log(MILTER_LOG_LEVEL_DEBUG, format, ## __VA_ARGS__)
 #define milter_info(format, ...)                                \
     milter_log(MILTER_LOG_LEVEL_INFO, format, ## __VA_ARGS__)
-#define milter_statistics(format, ...)                             \
+#define milter_statistics(format, ...)                                  \
     milter_log(MILTER_LOG_LEVEL_STATISTICS, format, ## __VA_ARGS__)
 
 #define MILTER_TYPE_LOGGER            (milter_logger_get_type())

@@ -24,12 +24,19 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+#include <errno.h>
+
+#include <sys/socket.h>
+#include <sys/un.h>
+
+#include <glib/gstdio.h>
 
 #include "libmilter-compatible.h"
 
-static struct smfiDesc filter_description = {0};
+static struct smfiDesc *filter_description;
 static gchar *connection_spec = NULL;
-static guint mta_timeout = 7210;
+static GIOChannel *listen_channel = NULL;
+static guint timeout = 7210;
 
 #define SMFI_CONTEXT_GET_PRIVATE(obj)                   \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                 \
@@ -131,7 +138,67 @@ smfi_context_new (void)
 int
 smfi_opensocket (bool remove_socket)
 {
+    GError *error = NULL;
+    GIOChannel *channel;
+    struct sockaddr *address = NULL;
+    socklen_t address_size;
+    gboolean success = TRUE;
+
+    if (!filter_description)
+        return MI_FAILURE;
+
+    if (!connection_spec)
+        return MI_FAILURE;
+
+    if (!milter_connection_parse_spec(connection_spec,
+                                      NULL, &address, &address_size,
+                                      &error)) {
+        milter_error("%s", error->message);
+        g_error_free(error);
+        return MI_FAILURE;
+    }
+
+    if (address->sa_family == AF_UNIX && remove_socket) {
+        struct sockaddr_un *address_unix = (struct sockaddr_un *)address;
+        gchar *path;
+
+        path = address_unix->sun_path;
+        if (g_file_test(path, G_FILE_TEST_EXISTS)) {
+            if (g_unlink(path) == -1) {
+                milter_error("can't remove existing socket: <%s>: %s",
+                             path, g_strerror(errno));
+                success = FALSE;
+            }
+        }
+    }
+    g_free(address);
+    if (!success)
+        return MI_FAILURE;
+
+    channel = milter_connection_listen(connection_spec, 5, &error);
+    if (error) {
+        milter_error("%s", error->message);
+        g_error_free(error);
+        return MI_FAILURE;
+    }
+
+    if (listen_channel)
+        g_io_channel_unref(listen_channel);
+    listen_channel = channel;
     return MI_SUCCESS;
+}
+
+static void
+filter_description_free (void)
+{
+    if (!filter_description)
+        return;
+
+    if (filter_description->xxfi_name)
+        g_free(filter_description->xxfi_name);
+
+    g_free(filter_description);
+    filter_description = NULL;
 }
 
 int
@@ -144,12 +211,12 @@ smfi_register (struct smfiDesc description)
         return MI_FAILURE;
     }
 
-    if (filter_description.xxfi_name)
-        g_free(filter_description.xxfi_name);
-    filter_description = description;
-    filter_description.xxfi_name = g_strdup(filter_description.xxfi_name);
-    if (!filter_description.xxfi_name)
+    if (!description.xxfi_name)
         return MI_FAILURE;
+
+    filter_description_free();
+    filter_description = g_memdup(&description, sizeof(struct smfiDesc));
+    filter_description->xxfi_name = g_strdup(filter_description->xxfi_name);
 
     return MI_SUCCESS;
 }
@@ -163,12 +230,12 @@ cb_negotiate (MilterClientContext *context, MilterOption *option,
     gulong action, step, preserve1 = 0, preserve2 = 0;
     gulong action_out, step_out, preserve1_out = 0, preserve2_out = 0;
 
-    if (!filter_description.xxfi_negotiate)
+    if (!filter_description->xxfi_negotiate)
         return MILTER_STATUS_DEFAULT;
 
     action = action_out = milter_option_get_action(option);
     step = step_out = milter_option_get_step(option);
-    status = filter_description.xxfi_negotiate(smfi_context,
+    status = filter_description->xxfi_negotiate(smfi_context,
                                                action, step,
                                                preserve1, preserve2,
                                                &action_out, &step_out,
@@ -187,10 +254,10 @@ cb_connect (MilterClientContext *context, const gchar *host_name,
 {
     SmfiContext *smfi_context = user_data;
 
-    if (!filter_description.xxfi_connect)
+    if (!filter_description->xxfi_connect)
         return MILTER_STATUS_DEFAULT;
 
-    return filter_description.xxfi_connect(smfi_context,
+    return filter_description->xxfi_connect(smfi_context,
                                            (gchar *)host_name,
                                            address);
 }
@@ -200,10 +267,10 @@ cb_helo (MilterClientContext *context, const gchar *fqdn, gpointer user_data)
 {
     SmfiContext *smfi_context = user_data;
 
-    if (!filter_description.xxfi_helo)
+    if (!filter_description->xxfi_helo)
         return MILTER_STATUS_DEFAULT;
 
-    return filter_description.xxfi_helo(smfi_context, (gchar *)fqdn);
+    return filter_description->xxfi_helo(smfi_context, (gchar *)fqdn);
 }
 
 static MilterStatus
@@ -213,12 +280,12 @@ cb_envelope_from (MilterClientContext *context, const gchar *from,
     SmfiContext *smfi_context = user_data;
     gchar *addresses[2];
 
-    if (!filter_description.xxfi_envfrom)
+    if (!filter_description->xxfi_envfrom)
         return MILTER_STATUS_DEFAULT;
 
     addresses[0] = (gchar *)from;
     addresses[1] = NULL;
-    return filter_description.xxfi_envfrom(smfi_context, addresses);
+    return filter_description->xxfi_envfrom(smfi_context, addresses);
 }
 
 static MilterStatus
@@ -228,12 +295,12 @@ cb_envelope_recipient (MilterClientContext *context, const gchar *recipient,
     SmfiContext *smfi_context = user_data;
     gchar *addresses[2];
 
-    if (!filter_description.xxfi_envrcpt)
+    if (!filter_description->xxfi_envrcpt)
         return MILTER_STATUS_DEFAULT;
 
     addresses[0] = (gchar *)recipient;
     addresses[1] = NULL;
-    return filter_description.xxfi_envrcpt(smfi_context, addresses);
+    return filter_description->xxfi_envrcpt(smfi_context, addresses);
 }
 
 static MilterStatus
@@ -241,10 +308,10 @@ cb_data (MilterClientContext *context, gpointer user_data)
 {
     SmfiContext *smfi_context = user_data;
 
-    if (!filter_description.xxfi_data)
+    if (!filter_description->xxfi_data)
         return MILTER_STATUS_DEFAULT;
 
-    return filter_description.xxfi_data(smfi_context);
+    return filter_description->xxfi_data(smfi_context);
 }
 
 static MilterStatus
@@ -253,10 +320,10 @@ cb_unknown (MilterClientContext *context, const gchar *command,
 {
     SmfiContext *smfi_context = user_data;
 
-    if (!filter_description.xxfi_unknown)
+    if (!filter_description->xxfi_unknown)
         return MILTER_STATUS_DEFAULT;
 
-    return filter_description.xxfi_unknown(smfi_context, command);
+    return filter_description->xxfi_unknown(smfi_context, command);
 }
 
 static MilterStatus
@@ -265,10 +332,10 @@ cb_header (MilterClientContext *context, const gchar *name, const gchar *value,
 {
     SmfiContext *smfi_context = user_data;
 
-    if (!filter_description.xxfi_header)
+    if (!filter_description->xxfi_header)
         return MILTER_STATUS_DEFAULT;
 
-    return filter_description.xxfi_header(smfi_context,
+    return filter_description->xxfi_header(smfi_context,
                                           (gchar *)name,
                                           (gchar *)value);
 }
@@ -278,10 +345,10 @@ cb_end_of_header (MilterClientContext *context, gpointer user_data)
 {
     SmfiContext *smfi_context = user_data;
 
-    if (!filter_description.xxfi_eoh)
+    if (!filter_description->xxfi_eoh)
         return MILTER_STATUS_DEFAULT;
 
-    return filter_description.xxfi_eoh(smfi_context);
+    return filter_description->xxfi_eoh(smfi_context);
 }
 
 static MilterStatus
@@ -290,10 +357,10 @@ cb_body (MilterClientContext *context, const guchar *chunk, gsize size,
 {
     SmfiContext *smfi_context = user_data;
 
-    if (!filter_description.xxfi_body)
+    if (!filter_description->xxfi_body)
         return MILTER_STATUS_DEFAULT;
 
-    return filter_description.xxfi_body(smfi_context, (guchar *)chunk, size);
+    return filter_description->xxfi_body(smfi_context, (guchar *)chunk, size);
 }
 
 static MilterStatus
@@ -301,10 +368,10 @@ cb_end_of_message (MilterClientContext *context, gpointer user_data)
 {
     SmfiContext *smfi_context = user_data;
 
-    if (!filter_description.xxfi_eom)
+    if (!filter_description->xxfi_eom)
         return MILTER_STATUS_DEFAULT;
 
-    return filter_description.xxfi_eom(smfi_context);
+    return filter_description->xxfi_eom(smfi_context);
 }
 
 static MilterStatus
@@ -312,10 +379,10 @@ cb_abort (MilterClientContext *context, gpointer user_data)
 {
     SmfiContext *smfi_context = user_data;
 
-    if (!filter_description.xxfi_abort)
+    if (!filter_description->xxfi_abort)
         return MILTER_STATUS_DEFAULT;
 
-    return filter_description.xxfi_abort(smfi_context);
+    return filter_description->xxfi_abort(smfi_context);
 }
 
 static void
@@ -324,8 +391,8 @@ cb_finished (MilterFinishedEmittable *emittable, gpointer user_data)
     MilterClientContext *context;
     SmfiContext *smfi_context = user_data;
 
-    if (filter_description.xxfi_close)
-        filter_description.xxfi_close(smfi_context);
+    if (filter_description->xxfi_close)
+        filter_description->xxfi_close(smfi_context);
 
     context = MILTER_CLIENT_CONTEXT(emittable);
     smfi_context_detach_from_client_context(smfi_context, context);
@@ -341,7 +408,7 @@ smfi_context_attach_to_client_context (SmfiContext *context,
     priv->client_context = g_object_ref(client_context);
 
 #define CONNECT(name, smfi_name)                        \
-    if (filter_description.xxfi_ ## smfi_name)          \
+    if (filter_description->xxfi_ ## smfi_name)         \
         g_signal_connect(client_context, #name,         \
                          G_CALLBACK(cb_ ## name),       \
                          context)
@@ -412,7 +479,7 @@ static void
 setup_milter_client (MilterClient *client, SmfiContext *context)
 {
     milter_client_set_connection_spec(client, connection_spec, NULL);
-    milter_client_set_timeout(client, mta_timeout);
+    milter_client_set_timeout(client, timeout);
     g_signal_connect(client, "connection-established",
                      G_CALLBACK(cb_connection_established), context);
 }
@@ -456,7 +523,7 @@ smfi_setdbg (int level)
 int
 smfi_settimeout (int timeout)
 {
-    mta_timeout = timeout;
+    timeout = timeout;
 
     return MI_SUCCESS;
 }
@@ -751,6 +818,19 @@ smfi_setsymlist (SMFICTX *context, int where, char *macros)
     g_strfreev(macro_array);
 
     return MI_SUCCESS;
+}
+
+void
+libmilter_compatible_reset (void)
+{
+    filter_description_free();
+    if (connection_spec)
+        g_free(connection_spec);
+    connection_spec = NULL;
+    if (listen_channel)
+        g_io_channel_unref(listen_channel);
+    listen_channel = NULL;
+    timeout = 7210;
 }
 
 /*
