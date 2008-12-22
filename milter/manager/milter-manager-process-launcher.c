@@ -188,25 +188,28 @@ compare_process_data_pid (gconstpointer a, gconstpointer b)
 static void
 child_watch_func (GPid pid, gint status, gpointer user_data)
 {
+    GList *process;
+    ProcessData *data;
     MilterManagerProcessLauncherPrivate *priv;
 
     priv = MILTER_MANAGER_PROCESS_LAUNCHER_GET_PRIVATE(user_data);
 
+    process = g_list_find_custom(priv->processes, GINT_TO_POINTER(pid),
+                                 compare_process_data_pid);
+    if (!process)
+        return;
+
+    data = process->data;
     if (WIFSIGNALED(status)) {
         /* FIXME restart */
-    } else {
-        GList *process;
-        ProcessData *data;
-
-        process = g_list_find_custom(priv->processes, GINT_TO_POINTER(pid),
-                                     compare_process_data_pid);
-        if (!process)
-            return;
-        data = process->data;
+    } else if (WIFEXITED(status)){
         milter_info("%s terminated normally.", data->command_line);
-        process_data_free(process->data);
-        priv->processes = g_list_remove_link(priv->processes, process);
+    } else {
+        milter_info("%s terminated with status(%d).",
+                    data->command_line, status);
     }
+    process_data_free(process->data);
+    priv->processes = g_list_remove_link(priv->processes, process);
 }
 
 static gboolean

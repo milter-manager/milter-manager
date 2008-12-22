@@ -14,6 +14,8 @@
 	the option is enabled.
 	* milter/manager/milter-manager-process-launcher.c: Output log if
 	launched child terminated normailly.
+	* milter/manager/milter-manager-process-launcher.c: Also log if
+	launched child terminated unexpectedly.
 
 2008-12-22  Kouhei Sutou  <kou@cozmixng.org>
 
