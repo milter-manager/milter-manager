@@ -19,6 +19,8 @@
 	* test/fixtures/children/negotiate-retry-fail.txt: MilterManagerChild
 	does not emit milter-exit error any more.
 	* milter/manager/milter-manager-main.c: Ensure to kill launcher.
+	* milter/manager/milter-manager-main.c: Do not kill if launcher_pid is
+	not valid.
 
 2008-12-22  Kouhei Sutou  <kou@cozmixng.org>
 
