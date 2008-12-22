@@ -30,6 +30,7 @@
 #include <milter-manager-test-scenario.h>
 #include <milter/manager/milter-manager-children.h>
 #include <milter/manager/milter-manager-enum-types.h>
+#include <milter/manager/milter-manager-process-launcher.h>
 
 #include <gcutter.h>
 
@@ -63,6 +64,7 @@ static MilterManagerTestScenario *main_scenario;
 static MilterManagerConfiguration *config;
 static MilterManagerChildren *children;
 static MilterOption *option;
+static MilterManagerProcessLauncher *launcher;
 
 static GError *actual_error;
 static GError *expected_error;
@@ -365,6 +367,7 @@ setup (void)
     children = milter_manager_children_new(config);
     setup_signals(children);
 
+    launcher = NULL;
     option = NULL;
 
     actual_error = NULL;
@@ -430,6 +433,9 @@ teardown (void)
 
     if (option)
         g_object_unref(option);
+
+    if (launcher)
+        g_object_unref(launcher);
 
     if (actual_error)
         g_error_free(actual_error);
@@ -649,6 +655,44 @@ wait_children_error_helper (void)
 #define get_pair_list(scenario, group, key)                             \
     milter_manager_test_scenario_get_pair_list(scenario, group, key)
 
+static GIOChannel *
+create_io_channel (void)
+{
+    GIOChannel *channel;
+    channel = gcut_string_io_channel_new(NULL);
+    g_io_channel_set_encoding(channel, NULL, NULL);
+    gcut_string_io_channel_set_pipe_mode(channel, TRUE);
+
+    return channel;
+}
+
+static void
+setup_process_launcher (MilterManagerChildren *children,
+                        MilterManagerConfiguration *config)
+{
+    GIOChannel *read_channel, *write_channel;
+    MilterReader *reader;
+    MilterWriter *writer;
+
+    launcher = milter_manager_process_launcher_new(config);
+
+    read_channel = create_io_channel();
+    reader = milter_reader_io_channel_new(read_channel);
+    milter_agent_set_reader(MILTER_AGENT(launcher), reader);
+    g_object_unref(reader);
+
+    write_channel = create_io_channel();
+    writer = milter_writer_io_channel_new(write_channel);
+    milter_agent_set_writer(MILTER_AGENT(launcher), writer);
+    g_object_unref(writer);
+
+    milter_manager_children_set_launcher_channel(children,
+                                                 write_channel, read_channel);
+    g_io_channel_unref(read_channel);
+    g_io_channel_unref(write_channel);
+
+}
+
 static void
 setup_parameters (MilterManagerTestScenario *scenario,
                   MilterManagerChildren *children,
@@ -657,6 +701,7 @@ setup_parameters (MilterManagerTestScenario *scenario,
     const gchar group[] = "config";
     const gchar privilege_mode_key[] = "privilege_mode";
     const gchar retry_connect_time_key[] = "retry_connect_time";
+    const gchar use_process_launcher[] = "use_process_launcher";
 
     if (!has_group(scenario, group))
         return;
@@ -672,6 +717,11 @@ setup_parameters (MilterManagerTestScenario *scenario,
         milter_manager_children_set_retry_connect_time(
             children,
             get_double(scenario, group, retry_connect_time_key));
+
+    if (has_key(scenario, group, use_process_launcher)) {
+        if (get_boolean(scenario, group, use_process_launcher))
+            setup_process_launcher(children, config);
+    }
 }
 
 static guint

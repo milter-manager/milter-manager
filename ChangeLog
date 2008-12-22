@@ -8,6 +8,10 @@
 	milter_manager_child_start and milter_manager_child_get_pid.
 	* milter/manager/milter-manager-process-launcher.[ch]: Check process
 	has been already launched.
+	* test/lib/milter-manager-test-scenario.c: Set user name to
+	MilterManagerEgg for MilterManagerProcessLauncher.
+	* test/manager/test-children.c: Use MilterManagerProcessLauncher if
+	the option is enabled.
 
 2008-12-22  Kouhei Sutou  <kou@cozmixng.org>
 

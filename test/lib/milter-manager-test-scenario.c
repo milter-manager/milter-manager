@@ -221,6 +221,7 @@ add_egg (MilterManagerTestScenarioPrivate *priv,
         milter_manager_egg_set_command_options(egg, command_options);
         g_free(command_options);
     }
+    milter_manager_egg_set_user_name(egg, g_get_user_name());
 }
 
 
