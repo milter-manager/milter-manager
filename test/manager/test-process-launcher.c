@@ -34,6 +34,7 @@ void test_launch (void);
 void test_launch_no_privilege_mode (void);
 void test_launch_error (gconstpointer data);
 void data_launch_error (void);
+void test_already_launched (void);
 
 static MilterManagerProcessLauncher *launcher;
 static MilterManagerLaunchCommandEncoder *command_encoder;
@@ -42,7 +43,9 @@ static MilterManagerConfiguration *config;
 
 static MilterWriter *writer;
 static GIOChannel *output_channel;
+static GIOChannel *input_channel;
 
+static GString *expected_packet;
 static gchar *expected_error_message;
 
 static gchar *packet;
@@ -81,7 +84,8 @@ setup_input_io (void)
 
     writer = milter_writer_io_channel_new(channel);
 
-    g_io_channel_unref(channel);
+    //g_io_channel_unref(channel);
+    input_channel = channel;
 }
 
 static void
@@ -137,6 +141,8 @@ teardown (void)
         g_object_unref(writer);
     if (output_channel)
         g_io_channel_unref(output_channel);
+    if (input_channel)
+        g_io_channel_unref(input_channel);
 
     if (command_encoder)
         g_object_unref(command_encoder);
@@ -146,6 +152,8 @@ teardown (void)
     if (packet)
         g_free(packet);
 
+    if (expected_packet)
+        g_string_free(expected_packet, TRUE);
     if (expected_error_message)
         g_free(expected_error_message);
 }
@@ -182,9 +190,6 @@ test_launch_no_privilege_mode (void)
     const gchar command_line[] = "/bin/echo";
     const gchar *user_name;
 
-    expected_error_message = 
-        g_strdup_printf("MilterManager is not running on privilege mode.");
-
     milter_manager_configuration_set_privilege_mode(config, FALSE);
 
     user_name = g_get_user_name();
@@ -198,9 +203,41 @@ test_launch_no_privilege_mode (void)
     g_free(packet);
     milter_manager_reply_encoder_encode_error(reply_encoder,
                                               &packet, &packet_size,
-                                              expected_error_message);
+                                              "MIlterManager is not running on privilege mode.");
     output = gcut_string_io_channel_get_string(output_channel);
     cut_assert_equal_memory(packet, packet_size,
+                            output->str, output->len);
+}
+
+void
+test_already_launched (void)
+{
+    GString *output;
+    GString *expected_packet;
+    GError *error = NULL;
+    const gchar command_line[] = "/bin/cat";
+    const gchar *user_name;
+
+    user_name = g_get_user_name();
+    milter_manager_launch_command_encoder_encode_launch(command_encoder,
+                                                        &packet, &packet_size,
+                                                        command_line, user_name);
+    milter_writer_write(writer, packet, packet_size, NULL, &error);
+    milter_writer_write(writer, packet, packet_size, NULL, &error);
+    gcut_assert_error(error);
+    milter_test_pump_all_events();
+
+    g_free(packet);
+    milter_manager_reply_encoder_encode_success(reply_encoder,
+                                                &packet, &packet_size);
+    expected_packet = g_string_new_len(packet, packet_size);
+    g_free(packet);
+    milter_manager_reply_encoder_encode_error(reply_encoder,
+                                              &packet, &packet_size,
+                                              "/bin/cat has been already launched.");
+    g_string_append_len(expected_packet, packet, packet_size);
+    output = gcut_string_io_channel_get_string(output_channel);
+    cut_assert_equal_memory(expected_packet->str, expected_packet->len,
                             output->str, output->len);
 }
 

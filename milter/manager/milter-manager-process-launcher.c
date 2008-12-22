@@ -22,6 +22,7 @@
 #endif /* HAVE_CONFIG_H */
 
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <unistd.h>
 #include <string.h>
 #include <pwd.h>
@@ -42,6 +43,7 @@ typedef struct _MilterManagerProcessLauncherPrivate MilterManagerProcessLauncher
 struct _MilterManagerProcessLauncherPrivate
 {
     MilterManagerConfiguration *configuration;
+    GList *processes;
 };
 
 enum
@@ -52,6 +54,14 @@ enum
 
 G_DEFINE_TYPE(MilterManagerProcessLauncher, milter_manager_process_launcher,
               MILTER_TYPE_AGENT)
+
+typedef struct _ProcessData
+{
+    GPid pid;
+    guint watch_id;
+    gchar *command_line;
+    gchar *user_name;
+} ProcessData;
 
 static void dispose        (GObject         *object);
 static void set_property   (GObject         *object,
@@ -131,6 +141,91 @@ set_user (const gchar *user_name, GError **error)
     return TRUE;
 }
 
+static ProcessData *
+process_data_new (GPid pid, guint watch_id,
+                  const gchar *command_line, const gchar *user_name)
+{
+    ProcessData *data;
+
+    data = g_new0(ProcessData, 1);
+
+    data->pid = pid;
+    data->watch_id = watch_id;
+    data->command_line = g_strdup(command_line);
+    data->user_name = g_strdup(user_name);
+
+    return data;
+}
+
+static void
+process_data_free (ProcessData *data)
+{
+    g_source_remove(data->watch_id);
+    g_spawn_close_pid(data->pid);
+    g_free(data->command_line);
+    g_free(data->user_name);
+    g_free(data);
+}
+
+static gint
+compare_process_data_command_line (gconstpointer a, gconstpointer b)
+{
+    ProcessData *data;
+    data = (ProcessData*)a;
+
+    return strcmp(data->command_line, b);
+}
+
+static gint
+compare_process_data_pid (gconstpointer a, gconstpointer b)
+{
+    ProcessData *data;
+    data = (ProcessData*)a;
+
+    return (data->pid - GPOINTER_TO_INT(b));
+}
+
+static void
+child_watch_func (GPid pid, gint status, gpointer user_data)
+{
+    MilterManagerProcessLauncherPrivate *priv;
+
+    priv = MILTER_MANAGER_PROCESS_LAUNCHER_GET_PRIVATE(user_data);
+
+    if (WIFSIGNALED(status)) {
+        /* FIXME restart */
+    } else {
+        GList *process;
+        process = g_list_find_custom(priv->processes, GINT_TO_POINTER(pid),
+                                     compare_process_data_pid);
+        if (!process)
+            return;
+        process_data_free(process->data);
+        priv->processes = g_list_remove_link(priv->processes, process);
+    }
+}
+
+static gboolean
+is_already_launched (MilterManagerProcessLauncher *launcher,
+                     const gchar *command_line,
+                     GError **error)
+{
+    MilterManagerProcessLauncherPrivate *priv;
+
+    priv = MILTER_MANAGER_PROCESS_LAUNCHER_GET_PRIVATE(launcher);
+
+    if (!g_list_find_custom(priv->processes, command_line,
+                            compare_process_data_command_line))
+        return FALSE;
+
+    g_set_error(error,
+                MILTER_MANAGER_PROCESS_LAUNCHER_ERROR,
+                MILTER_MANAGER_PROCESS_LAUNCHER_ERROR_ALREADY_LAUNCHED,
+                "%s has been already launched.", 
+                command_line);
+    return TRUE;
+}
+
 static gboolean
 launch (MilterManagerProcessLauncher *launcher,
         const gchar *command_line, const gchar *user_name,
@@ -142,6 +237,11 @@ launch (MilterManagerProcessLauncher *launcher,
     GError *internal_error = NULL;
     GSpawnFlags flags;
     GPid pid;
+    guint watch_id;
+    MilterManagerProcessLauncherPrivate *priv;
+
+    if (is_already_launched(launcher, command_line, error))
+        return FALSE;
 
     if (user_name && !set_user(user_name, error))
         return FALSE;
@@ -187,6 +287,12 @@ launch (MilterManagerProcessLauncher *launcher,
     }
 
     milter_debug("started: <%s>", command_line);
+
+    priv = MILTER_MANAGER_PROCESS_LAUNCHER_GET_PRIVATE(launcher);
+    watch_id = g_child_watch_add(pid, (GChildWatchFunc)child_watch_func, launcher);
+    priv->processes = g_list_prepend(priv->processes,
+                                     process_data_new(pid, watch_id, command_line, user_name));
+
     return TRUE;
 }
 
@@ -207,8 +313,6 @@ cb_decoder_launch (MilterManagerLaunchCommandDecoder *decoder,
 
     priv = MILTER_MANAGER_PROCESS_LAUNCHER_GET_PRIVATE(launcher);
 
-    /* FIXME */ 
-    /* check the child has been already launched. */
     agent = MILTER_AGENT(launcher);
     _encoder = milter_agent_get_encoder(agent);
     encoder = MILTER_MANAGER_REPLY_ENCODER(_encoder);
@@ -268,6 +372,7 @@ milter_manager_process_launcher_init (MilterManagerProcessLauncher *launcher)
     priv = MILTER_MANAGER_PROCESS_LAUNCHER_GET_PRIVATE(launcher);
 
     priv->configuration = NULL;
+    priv->processes = NULL;
 }
 
 static void
@@ -280,6 +385,12 @@ dispose (GObject *object)
     if (priv->configuration) {
         g_object_unref(priv->configuration);
         priv->configuration = NULL;
+    }
+
+    if (priv->processes) {
+        g_list_foreach(priv->processes, (GFunc)process_data_free, NULL);
+        g_list_free(priv->processes);
+        priv->processes = NULL;
     }
 
     G_OBJECT_CLASS(milter_manager_process_launcher_parent_class)->dispose(object);

@@ -6,6 +6,8 @@
 
 	* milter/manager/milter-manager-child.[ch]: remove
 	milter_manager_child_start and milter_manager_child_get_pid.
+	* milter/manager/milter-manager-process-launcher.[ch]: Check process
+	has been already launched.
 
 2008-12-22  Kouhei Sutou  <kou@cozmixng.org>
 
