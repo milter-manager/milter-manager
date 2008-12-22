@@ -218,17 +218,20 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      * you want to add macros that you want to receive, you
      * modify @macros_requests.
      *
-     * All available response statues are the followings:
+     * All available response statuses are the followings:
      *
      * <rd>
      * : %MILTER_STATUS_ALL_OPTIONS
      *    Enables all available actions and steps.
+     *
      * : %MILTER_STATUS_REJECT
      *    Rejects the current session.
+     *
      * : %MILTER_STATUS_CONTINUE
      *    Continues processing the current session with
      *    actions, steps and macros requests that are
      *    specified by @option and @macros_requests.
+     *
      * : %MILTER_STATUS_PROGRESS
      *    It means that the processing in callback is in
      *    progress and returning response status is
@@ -246,9 +249,9 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    status will not be used.
      * </rd>
      *
-     * See also <link
-     * linked="https://www.milter.org/developers/api/xxfi_negotiate">
-     * xxfi_negotiate</link>
+     * See also <ulink
+     * url="https://www.milter.org/developers/api/xxfi_negotiate">
+     * xxfi_negotiate</ulink>
      * on milter.org.
      *
      * Returns: response status.
@@ -348,9 +351,9 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    status will not be used.
      * </rd>
      *
-     * See also <link
-     * linked="https://www.milter.org/developers/api/xxfi_connect">
-     * xxfi_connect</link>
+     * See also <ulink
+     * url="https://www.milter.org/developers/api/xxfi_connect">
+     * xxfi_connect</ulink>
      * on milter.org.
      *
      * Returns: response status.
@@ -398,7 +401,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      * This signal is emitted on SMTP's "HELO"/"EHLO"
      * command.
      *
-     * All available response statues are the followings:
+     * All available response statuses are the followings:
      *
      * <rd>
      * : %MILTER_STATUS_CONTINUE
@@ -444,9 +447,9 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    status will not be used.
      * </rd>
      *
-     * See also <link
-     * linked="https://www.milter.org/developers/api/xxfi_helo">
-     * xxfi_helo</link>
+     * See also <ulink
+     * url="https://www.milter.org/developers/api/xxfi_helo">
+     * xxfi_helo</ulink>
      * on milter.org.
      *
      * Returns: response status.
@@ -492,7 +495,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      * This signal is emitted on SMTP's "MAIL FROM" command.
      *
-     * All available response statues are the followings:
+     * All available response statuses are the followings:
      *
      * <rd>
      * : %MILTER_STATUS_CONTINUE
@@ -545,9 +548,9 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    status will not be used.
      * </rd>
      *
-     * See also <link
-     * linked="https://www.milter.org/developers/api/xxfi_envfrom">
-     * xxfi_envfrom</link>
+     * See also <ulink
+     * url="https://www.milter.org/developers/api/xxfi_envfrom">
+     * xxfi_envfrom</ulink>
      * on milter.org.
      *
      * Returns: response status.
@@ -594,7 +597,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      * This signal is emitted on SMTP's "RCPT TO" command.
      *
-     * All available response statues are the followings:
+     * All available response statuses are the followings:
      *
      * <rd>
      * : %MILTER_STATUS_CONTINUE
@@ -646,9 +649,9 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    status will not be used.
      * </rd>
      *
-     * See also <link
-     * linked="https://www.milter.org/developers/api/xxfi_envrcpt">
-     * xxfi_envrcpt</link>
+     * See also <ulink
+     * url="https://www.milter.org/developers/api/xxfi_envrcpt">
+     * xxfi_envrcpt</ulink>
      * on milter.org.
      *
      * Returns: response status.
@@ -694,7 +697,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      * This signal is emitted on SMTP's "DATA" command.
      *
-     * All available response statues are the followings:
+     * All available response statuses are the followings:
      *
      * <rd>
      * : %MILTER_STATUS_CONTINUE
@@ -743,9 +746,9 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    status will not be used.
      * </rd>
      *
-     * See also <link
-     * linked="https://www.milter.org/developers/api/xxfi_data">
-     * xxfi_data</link> on milter.org.
+     * See also <ulink
+     * url="https://www.milter.org/developers/api/xxfi_data">
+     * xxfi_data</ulink> on milter.org.
      *
      * Returns: response status.
      */
@@ -783,14 +786,14 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_TYPE_NONE, 1, MILTER_TYPE_STATUS);
 
     /**
-     * MilterClientContext::command:
+     * MilterClientContext::unknown:
      * @context: the context that received the signal.
      * @command: the unknown SMTP command.
      *
      * This signal is emitted on unknown or unimplemented
      * SMTP command is sent.
      *
-     * All available response statues are the followings:
+     * All available response statuses are the followings:
      *
      * <rd>
      * : %MILTER_STATUS_REJECT
@@ -829,9 +832,9 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      * Note that the unknown or unimplemented SMTP command
      * will always be rejected by MTA.
      *
-     * See also <link
-     * linked="https://www.milter.org/developers/api/xxfi_unknown">
-     * xxfi_unknown</link> on milter.org.
+     * See also <ulink
+     * url="https://www.milter.org/developers/api/xxfi_unknown">
+     * xxfi_unknown</ulink> on milter.org.
      *
      * Returns: response status.
      */
@@ -904,7 +907,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      * "Subject", "a subject"
      * ]|
      *
-     * All available response statues are the followings:
+     * All available response statuses are the followings:
      *
      * <rd>
      * : %MILTER_STATUS_CONTINUE
@@ -954,9 +957,9 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    status will not be used.
      * </rd>
      *
-     * See also <link
-     * linked="https://www.milter.org/developers/api/xxfi_header">
-     * xxfi_header</link> on milter.org.
+     * See also <ulink
+     * url="https://www.milter.org/developers/api/xxfi_header">
+     * xxfi_header</ulink> on milter.org.
      *
      * Returns: response status.
      */
@@ -999,7 +1002,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      * This signal is emitted on all headers are processed.
      *
-     * All available response statues are the followings:
+     * All available response statuses are the followings:
      *
      * <rd>
      * : %MILTER_STATUS_CONTINUE
@@ -1049,9 +1052,9 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    status will not be used.
      * </rd>
      *
-     * See also <link
-     * linked="https://www.milter.org/developers/api/xxfi_eof">
-     * xxfi_eof</link> on milter.org.
+     * See also <ulink
+     * url="https://www.milter.org/developers/api/xxfi_eof">
+     * xxfi_eof</ulink> on milter.org.
      *
      * Returns: response status.
      */
@@ -1100,7 +1103,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      * #MilterClientContext::end-of-header and
      * #MilterClientContext::end-of-message.
      *
-     * All available response statues are the followings:
+     * All available response statuses are the followings:
      *
      * <rd>
      * : %MILTER_STATUS_CONTINUE
@@ -1155,9 +1158,9 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    status will not be used.
      * </rd>
      *
-     * See also <link
-     * linked="https://www.milter.org/developers/api/xxfi_body">
-     * xxfi_body</link> on milter.org.
+     * See also <ulink
+     * url="https://www.milter.org/developers/api/xxfi_body">
+     * xxfi_body</ulink> on milter.org.
      *
      * Returns: response status.
      */
@@ -1205,7 +1208,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      * milter_client_context_add_header(),
      * milter_client_context_change_from() and so on.
      *
-     * All available response statues are the followings:
+     * All available response statuses are the followings:
      *
      * <rd>
      * : %MILTER_STATUS_CONTINUE
@@ -1245,9 +1248,9 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    status will not be used.
      * </rd>
      *
-     * See also <link
-     * linked="https://www.milter.org/developers/api/xxfi_eom">
-     * xxfi_eom</link> on milter.org.
+     * See also <ulink
+     * url="https://www.milter.org/developers/api/xxfi_eom">
+     * xxfi_eom</ulink> on milter.org.
      *
      * Returns: response status.
      */
@@ -1307,7 +1310,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      * the connection should not be freed in this signal. It
      * should be freed in #MilterFinishedEmittable::finished.
      *
-     * All available response statues are the followings:
+     * All available response statuses are the followings:
      *
      * <rd>
      * : %MILTER_STATUS_CONTINUE
@@ -1347,9 +1350,9 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    status will not be used.
      * </rd>
      *
-     * See also <link
-     * linked="https://www.milter.org/developers/api/xxfi_abort">
-     * xxfi_abort</link> on milter.org.
+     * See also <ulink
+     * url="https://www.milter.org/developers/api/xxfi_abort">
+     * xxfi_abort</ulink> on milter.org.
      *
      * Returns: response status.
      */

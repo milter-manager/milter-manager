@@ -24,32 +24,134 @@
 
 G_BEGIN_DECLS
 
+/**
+ * SECTION: mfapi
+ * @title: libmilter/mfapi.h
+ * @short_description: libmilter compatible API.
+ *
+ * libmilter/mfapi.h provides Sendmail's libmilter
+ * compatible API. You can use this library instead of
+ * Sendmail's libmilter. See also <link
+ * linked="https://www.milter.org/developers/api/">API
+ * Documentation on milter.org</link>.
+ */
+
+/**
+ * SMFI_VERSION:
+ *
+ * libmilter version number.
+ */
 #ifndef SMFI_VERSION
 #  define SMFI_VERSION	0x01000001
 #endif
 
-#define SM_LM_VRS_MAJOR(v)	(((v) & 0x7f000000) >> 24)
-#define SM_LM_VRS_MINOR(v)	(((v) & 0x007fff00) >> 8)
-#define SM_LM_VRS_PLVL(v)	((v) & 0x0000007f)
+/**
+ * SM_LM_VRS_MAJOR:
+ * @version: the version number.
+ *
+ * Extracts major version number from @version.
+ *
+ * Returns: major version number.
+ */
+#define SM_LM_VRS_MAJOR(version)	(((version) & 0x7f000000) >> 24)
+
+/**
+ * SM_LM_VRS_MINOR:
+ * @version: the version number.
+ *
+ * Extracts minor version number from @version.
+ *
+ * Returns: minor version number.
+ */
+#define SM_LM_VRS_MINOR(version)	(((version) & 0x007fff00) >> 8)
+
+/**
+ * SM_LM_VRS_PLVL:
+ * @version: the version number.
+ *
+ * Extracts patch level from @version.
+ *
+ * Returns: patch level.
+ */
+#define SM_LM_VRS_PLVL(version)		((version) & 0x0000007f)
 
 #include <sys/types.h>
 #include <sys/socket.h>
 
 #include "mfdef.h"
 
+/**
+ * _SOCK_ADDR:
+ *
+ * %_SOCK_ADDR is just an alias of 'struct sockaddr'.
+ */
 #ifndef _SOCK_ADDR
 #  define _SOCK_ADDR	struct sockaddr
 #endif
 
+/**
+ * MI_SUCCESS:
+ *
+ * Indicates an operation is done successfully.
+ */
 #define MI_SUCCESS	0
+
+/**
+ * MI_FAILURE:
+ *
+ * Indicates an operation is failed.
+ */
 #define MI_FAILURE	(-1)
 
+/**
+ * SMFICTX:
+ *
+ * Holds information for a milter session. %SMFICTX is
+ * created for each milter session. %SMFICTX is the most
+ * important object in libmilter API.
+ */
 typedef struct smfi_str  SMFICTX;
+
+/**
+ * SMFICTX_PTR:
+ *
+ * The pointer type of %SMFICTX.
+ */
 typedef struct smfi_str *SMFICTX_PTR;
 
-typedef struct smfiDesc  smfiDesc_str;
+/**
+ * smfiDesc_str:
+ *
+ * Holds information for the milter. %smfiDesc_str is
+ * used by smfi_register().
+ */
+typedef struct smfiDesc smfiDesc_str;
+
+/**
+ * smfiDesc_ptr:
+ *
+ * The pointer type of %smfiDesc_str.
+ */
 typedef struct smfiDesc	*smfiDesc_ptr;
 
+/**
+ * sfsistat:
+ *
+ * Indicates response status of callback.
+ *
+ * <rd>
+ * Available response status is one of the followings:
+ *
+ *   * %SMFIS_CONTINUE
+ *   * %SMFIS_REJECT
+ *   * %SMFIS_DISCARD
+ *   * %SMFIS_ACCEPT
+ *   * %SMFIS_TEMPFAIL
+ *   * %SMFIS_NOREPLY
+ *   * %SMFIS_SKIP
+ *   * %SMFIS_ALL_OPTS
+ * </rd>
+ */
 typedef int sfsistat;
 
 #if HAVE_STDBOOL_H
@@ -57,12 +159,27 @@ typedef int sfsistat;
 #else
 #  ifndef __cplusplus
 #    ifndef bool
+/**
+ * bool:
+ *
+ * The boolean type.
+ */
 #      define bool int
 #    endif
 #    ifndef true
+/**
+ * true:
+ *
+ * The true value.
+ */
 #      define true 1
 #    endif
 #    ifndef false
+/**
+ * false:
+ *
+ * The false value.
+ */
 #      define false 0
 #    endif
 #    ifndef __bool_true_false_are_defined
@@ -77,37 +194,565 @@ struct smfiDesc
     int            xxfi_version; /* version code -- do not change */
     unsigned long  xxfi_flags;   /* flags */
 
+    /**
+     * xxfi_connect:
+     * @context: the context for the current milter session.
+     * @host_name: the host name of the SMTP client.
+     * @address: the host address of the SMTP client.
+     *
+     * This callback is called at the start of each milter
+     * session.
+     *
+     * All available response statuses are the followings:
+     *
+     * <rd>
+     * : %SMFIS_CONTINUE
+     *    Continues processing the current connection.
+     *
+     * : %SMFIS_REJECT
+     *    Rejects the current connection.
+     *
+     * : %SMFIS_ACCEPT
+     *    Accepts the current connection without further
+     *    more processing.
+     *
+     * : %SMFIS_TEMPFAIL
+     *    Rejects the current connection with a temporary
+     *    failure. (i.e. 4xx status code in SMTP)
+     *
+     * : %SMFIS_NOREPLY
+     *    Doesn't send a reply back to MTA. The milter
+     *    must set %SMFIP_NR_CONN flag to
+     *    %smfiDesc_str's xxfi_flags.
+     * </rd>
+     *
+     * See also <ulink
+     * url="https://www.milter.org/developers/api/xxfi_connect">xxfi_connect
+     * </ulink> on milter.org.
+     *
+     * Returns: response status.
+     */
     sfsistat	(*xxfi_connect)   (SMFICTX     *context,
                                    char        *host_name,
                                    _SOCK_ADDR  *address);
+
+    /**
+     * xxfi_helo:
+     * @context: the context for the current milter session.
+     * @fqdn: the FQDN in SMTP's "HELO"/"EHLO" command.
+     *
+     * This callback is called on SMTP's "HELO"/"EHLO"
+     * command.
+     *
+     * All available response statuses are the followings:
+     *
+     * <rd>
+     * : %SMFIS_CONTINUE
+     *    Continues processing the current connection.
+     *
+     * : %SMFIS_REJECT
+     *    Rejects the current connection.
+     *
+     * : %SMFIS_ACCEPT
+     *    Accepts the current connection without further
+     *    more processing.
+     *
+     * : %SMFIS_TEMPFAIL
+     *    Rejects the current connection with a temporary
+     *    failure. (i.e. 4xx status code in SMTP)
+     *
+     * : %SMFIS_NOREPLY
+     *    Doesn't send a reply back to MTA. The milter
+     *    must set %SMFIP_NR_HELO flag to
+     *    %smfiDesc_str's xxfi_flags.
+     * </rd>
+     *
+     * See also <ulink
+     * url="https://www.milter.org/developers/api/xxfi_helo">
+     * xxfi_helo</ulink> on milter.org.
+     *
+     * Returns: response status.
+     */
     sfsistat	(*xxfi_helo)      (SMFICTX    *context,
                                    char       *fqdn);
+
+    /**
+     * xxfi_envfrom:
+     * @context: the context for the current milter session.
+     * @from: the envelope from address in SMTP's "MAIL
+     *        FROM" command.
+     *
+     * This callback is called on SMTP's "MAIL FROM" command.
+     *
+     * All available response statuses are the followings:
+     *
+     * <rd>
+     * : %SMFIS_CONTINUE
+     *    Continues processing the current message.
+     *
+     * : %SMFIS_REJECT
+     *    Rejects the current envelope from address. A new
+     *    envelope from may be specified.
+     *
+     * : %SMFIS_DISCARD
+     *    Accepts the current message and discards it silently.
+     *
+     * : %SMFIS_ACCEPT
+     *    Accepts the current message without further
+     *    more processing.
+     *
+     * : %SMFIS_TEMPFAIL
+     *    Rejects the envelope from address and the current
+     *    connection with temporary failure. (i.e. 4xx
+     *    status code in SMTP) A new envelope from address
+     *    may be specified.
+     *
+     * : %SMFIS_NOREPLY
+     *    Doesn't send a reply back to MTA. The milter
+     *    must set %SMFIP_NR_MAIL flag to
+     *    %smfiDesc_str's xxfi_flags.
+     * </rd>
+     *
+     * See also <ulink
+     * url="https://www.milter.org/developers/api/xxfi_envfrom">
+     * xxfi_envfrom</ulink>
+     * on milter.org.
+     *
+     * Returns: response status.
+     */
     sfsistat	(*xxfi_envfrom)   (SMFICTX    *context,
                                    char      **addresses);
+
+    /**
+     * xxfi_envrcpt:
+     * @context: the context for the current milter session.
+     * @recipient: the envelope recipient address in SMTP's
+     *             "RCPT TO" command.
+     *
+     * This callback is called on SMTP's "RCPT TO" command.
+     *
+     * All available response statuses are the followings:
+     *
+     * <rd>
+     * : %SMFIS_CONTINUE
+     *    Continues processing the current message.
+     *
+     * : %SMFIS_REJECT
+     *    Rejects the current envelope recipient
+     *    address. Processing the current messages is
+     *    continued.
+     *
+     * : %SMFIS_DISCARD
+     *    Accepts the current message and discards it silently.
+     *
+     * : %SMFIS_ACCEPT
+     *    Accepts the current envelope recipient.
+     *
+     * : %SMFIS_TEMPFAIL
+     *    Rejects the current envelope recipient address
+     *    with temporary failure. (i.e. 4xx status code in
+     *    SMTP) Processing the current message is continued.
+     *
+     * : %SMFIS_NOREPLY
+     *    Doesn't send a reply back to MTA. The milter
+     *    must set %SMFIP_NR_RCPT flag to
+     *    %smfiDesc_str's xxfi_flags.
+     * </rd>
+     *
+     * See also <ulink
+     * url="https://www.milter.org/developers/api/xxfi_envrcpt">
+     * xxfi_envrcpt</ulink>
+     * on milter.org.
+     *
+     * Returns: response status.
+     */
     sfsistat	(*xxfi_envrcpt)   (SMFICTX    *context,
                                    char      **addresses);
+
+    /**
+     * xxfi_header:
+     * @context: the context for the current milter session.
+     * @name: the header name.
+     * @value: the header value. @value may include folded
+     *         white space.
+     *
+     * This callback is called on each header. If
+     * %SMFIP_HDR_LEADSPC flag is set to %smfiDesc_str's
+     * xxfi_flags, @value have spaces after header name and
+     * value separator ":".
+     *
+     * Example:
+     *
+     * |[
+     * From: from &lt;from@example.com&gt;
+     * To: recipient &lt;recipient@example.com&gt;
+     * Subject:a subject
+     * ]|
+     *
+     * With %SMFIP_HDR_LEADSPC:
+     *
+     * |[
+     * "From", " from &lt;from@example.com&gt;"
+     * "To", " recipient &lt;recipient@example.com&gt;"
+     * "Subject", "a subject"
+     * ]|
+     *
+     * Without %SMFIP_HDR_LEADSPC:
+     *
+     * |[
+     * "From", "from &lt;from@example.com&gt;"
+     * "To", "recipient &lt;recipient@example.com&gt;"
+     * "Subject", "a subject"
+     * ]|
+     *
+     * All available response statuses are the followings:
+     *
+     * <rd>
+     * : %SMFIS_CONTINUE
+     *    Continues processing the current message.
+     *
+     * : %SMFIS_REJECT
+     *    Rejects the current message.
+     *
+     * : %SMFIS_DISCARD
+     *    Accepts the current message and discards it silently.
+     *
+     * : %SMFIS_ACCEPT
+     *    Accepts the current message without further
+     *    more processing.
+     *
+     * : %SMFIS_TEMPFAIL
+     *    Rejects the the current message with temporary
+     *    failure. (i.e. 4xx status code in SMTP)
+     *
+     * : %SMFIS_NOREPLY
+     *    Doesn't send a reply back to MTA. The milter
+     *    must set %SMFIP_NR_HDR flag to
+     *    %smfiDesc_str's xxfi_flags.
+     * </rd>
+     *
+     * See also <ulink
+     * url="https://www.milter.org/developers/api/xxfi_header">
+     * xxfi_header</ulink> on milter.org.
+     *
+     * Returns: response status.
+     */
     sfsistat	(*xxfi_header)    (SMFICTX    *context,
                                    char       *name,
                                    char       *value);
+
+    /**
+     * xxfi_eoh:
+     * @context: the context for the current milter session.
+     *
+     * This callback is called on all headers are processed.
+     *
+     * All available response statuses are the followings:
+     *
+     * <rd>
+     * : %SMFIS_CONTINUE
+     *    Continues processing the current message.
+     *
+     * : %SMFIS_REJECT
+     *    Rejects the current message.
+     *
+     * : %SMFIS_DISCARD
+     *    Accepts the current message and discards it silently.
+     *
+     * : %SMFIS_ACCEPT
+     *    Accepts the current message without further
+     *    more processing.
+     *
+     * : %SMFIS_TEMPFAIL
+     *    Rejects the the current message with temporary
+     *    failure. (i.e. 4xx status code in SMTP)
+     *
+     * : %SMFIS_NOREPLY
+     *    Doesn't send a reply back to MTA. The milter
+     *    must set %SMFIP_NR_EOH flag to
+     *    %smfiDesc_str's xxfi_flags.
+     * </rd>
+     *
+     * See also <ulink
+     * url="https://www.milter.org/developers/api/xxfi_eof">
+     * xxfi_eof</ulink> on milter.org.
+     *
+     * Returns: response status.
+     */
     sfsistat	(*xxfi_eoh)       (SMFICTX    *context);
+
+    /**
+     * xxfi_body:
+     * @context: the context for the current milter session.
+     * @data: the body chunk.
+     * @data_size: the size of @data.
+     *
+     * This callback is called on body data is received. This
+     * callback is called zero or more times between
+     * xxfi_eoh() and xxfi_eom().
+     *
+     * All available response statuses are the followings:
+     *
+     * <rd>
+     * : %SMFIS_CONTINUE
+     *    Continues processing the current message.
+     *
+     * : %SMFIS_REJECT
+     *    Rejects the current message.
+     *
+     * : %SMFIS_DISCARD
+     *    Accepts the current message and discards it silently.
+     *
+     * : %SMFIS_ACCEPT
+     *    Accepts the current message without further
+     *    more processing.
+     *
+     * : %SMFIS_TEMPFAIL
+     *    Rejects the the current message with temporary
+     *    failure. (i.e. 4xx status code in SMTP)
+     *
+     * : %SMFIS_SKIP
+     *    Skips further body
+     *    processing. xxfi_eom() is called.
+     *
+     * : %SMFIS_NOREPLY
+     *    Doesn't send a reply back to MTA. The milter
+     *    must set %SMFIP_NR_BODY flag to
+     *    %smfiDesc_str's xxfi_flags.
+     * </rd>
+     *
+     * See also <ulink
+     * url="https://www.milter.org/developers/api/xxfi_body">
+     * xxfi_body</ulink> on milter.org.
+     *
+     * Returns: response status.
+     */
     sfsistat	(*xxfi_body)      (SMFICTX    *context,
                                    unsigned char *data,
                                    size_t     data_size);
+
+    /**
+     * xxfi_eom:
+     * @context: the context for the current milter session.
+     *
+     * This callback is called after all xxfi_eom() are
+     * called. All message modifications can be done only in
+     * this callback. The modifications can be done with
+     * smfi_addheader(), smfi_chgfrom() and so on.
+     *
+     * All available response statuses are the followings:
+     *
+     * <rd>
+     * : %SMFIS_CONTINUE
+     *    Continues processing the current message.
+     *
+     * : %SMFIS_DISCARD
+     *    Accepts the current message and discards it silently.
+     *
+     * : %SMFIS_ACCEPT
+     *    Accepts the current message without further
+     *    more processing.
+     *
+     * : %SMFIS_TEMPFAIL
+     *    Rejects the the current message with temporary
+     *    failure. (i.e. 4xx status code in SMTP)
+     * </rd>
+     *
+     * See also <ulink
+     * url="https://www.milter.org/developers/api/xxfi_eom">
+     * xxfi_eom</ulink> on milter.org.
+     *
+     * Returns: response status.
+     */
     sfsistat	(*xxfi_eom)       (SMFICTX    *context);
+
+    /**
+     * xxfi_abort:
+     * @context: the context for the current milter session.
+     *
+     * This callback may be called at any time between
+     * xxfi_envfrom() and xxfi_eom(). This callback is only
+     * called if the milter causes an internal error and the
+     * message processing isn't completed. For example, if
+     * the milter has already returned %SMFIS_ACCEPT,
+     * %SMFIS_REJECT, %SMFIS_DISCARD and %SMFIS_TEMPFAIL,
+     * this callback will not be called.
+     *
+     * If the milter has any resources allocated for the
+     * message between xxfi_envfrom and xxfi_eom(), should
+     * be freed in this callback. But any resources
+     * allocated for the connection should not be freed in
+     * this callback. It should be freed in xxfi_close().
+     *
+     * All available response statuses are the followings:
+     *
+     * <rd>
+     * : %SMFIS_CONTINUE
+     *    Continues processing the current message.
+     *
+     * : %SMFIS_DISCARD
+     *    Accepts the current message and discards it silently.
+     *
+     * : %SMFIS_ACCEPT
+     *    Accepts the current message without further
+     *    more processing.
+     *
+     * : %SMFIS_TEMPFAIL
+     *    Rejects the the current message with temporary
+     *    failure. (i.e. 4xx status code in SMTP)
+     * </rd>
+     *
+     * See also <ulink
+     * url="https://www.milter.org/developers/api/xxfi_abort">
+     * xxfi_abort</ulink> on milter.org.
+     *
+     * Returns: response status.
+     */
     sfsistat	(*xxfi_abort)     (SMFICTX    *context);
+
+    /**
+     * xxfi_close:
+     * @context: the context for the current milter session.
+     *
+     * This callback is called at the end of each miler
+     * session. If the milter has any resources allocated
+     * for the session free, should be freed in this
+     * callback.
+     *
+     * All response statuses are ignored. Use %SMFIS_CONTINUE.
+     *
+     * See also <ulink
+     * url="https://www.milter.org/developers/api/xxfi_close">
+     * xxfi_close</ulink> on milter.org.
+     *
+     * Returns: response status.
+     */
     sfsistat	(*xxfi_close)     (SMFICTX    *context);
+
+    /**
+     * xxfi_unknown:
+     * @context: the context for the current milter session.
+     * @command: the unknown SMTP command.
+     *
+     * This callback is called on unknown or unimplemented
+     * SMTP command is sent.
+     *
+     * All available response statuses are the followings:
+     *
+     * <rd>
+     * : %SMFIS_REJECT
+     *    Rejects the current message.
+     *
+     * : %SMFIS_TEMPFAIL
+     *    Rejects the the current message with temporary
+     *    failure. (i.e. 4xx status code in SMTP)
+     *
+     * : %SMFIS_NOREPLY
+     *    Doesn't send a reply back to MTA. The milter
+     *    must set %SMFIP_NR_UNKN flag to
+     *    %smfiDesc_str's xxfi_flags.
+     * </rd>
+     *
+     * Note that the unknown or unimplemented SMTP command
+     * will always be rejected by MTA.
+     *
+     * See also <ulink
+     * url="https://www.milter.org/developers/api/xxfi_unknown">
+     * xxfi_unknown</ulink> on milter.org.
+     *
+     * Returns: response status.
+     */
     sfsistat	(*xxfi_unknown)   (SMFICTX    *context,
                                    const char *command);
+
+    /**
+     * xxfi_data:
+     * @context: the context for the current milter session.
+     *
+     * This callback is called on SMTP's "DATA" command.
+     *
+     * All available response statuses are the followings:
+     *
+     * <rd>
+     * : %SMFIS_CONTINUE
+     *    Continues processing the current message.
+     *
+     * : %SMFIS_REJECT
+     *    Rejects the current message.
+     *
+     * : %SMFIS_DISCARD
+     *    Accepts the current message and discards it silently.
+     *
+     * : %SMFIS_ACCEPT
+     *    Accepts the current envelope recipient.
+     *
+     * : %SMFIS_TEMPFAIL
+     *    Rejects the current message with temporary
+     *    failure. (i.e. 4xx status code in SMTP)
+     *
+     * : %SMFIS_NOREPLY
+     *    Doesn't send a reply back to MTA. The milter
+     *    must set %SMFIP_NR_DATA flag to
+     *    %smfiDesc_str's xxfi_flags.
+     * </rd>
+     *
+     * See also <ulink
+     * url="https://www.milter.org/developers/api/xxfi_data">
+     * xxfi_data</ulink> on milter.org.
+     *
+     * Returns: response status.
+     */
     sfsistat	(*xxfi_data)      (SMFICTX    *context);
+
+    /**
+     * xxfi_negotiate:
+     * @context: the context that received the signal.
+     * @actions: the actions received from MTA.
+     * @steps: the milter protocol steps offered from MTA.
+     * @unused0: unused.
+     * @unused1: unused.
+     * @actions_output: the actions requested to MTA.
+     * @steps_output: the milter protocol steps requested to MTA.
+     * @unused0_output: unused.
+     * @unused1_output: unused.
+     *
+     * This callback is called on negotiate request from
+     * MTA.  If you want to change received @actions and
+     * @steps from MTA, you set @actions_output and
+     * @steps_output and returns %SMFIS_CONTINUE. If you
+     * don't need to change @actions and @steps, you can
+     * just return %SMFIS_ALL_OPTS.
+     *
+     * All available response statuses are the followings:
+     *
+     * <rd>
+     * : %SMFIS_ALL_OPTS
+     *    Enables all available actions and steps.
+     *
+     * : %SMFIS_REJECT
+     *    Rejects the current session.
+     *
+     * : %SMFIS_CONTINUE
+     *    Continues processing the current session with
+     *    @actions_output and @steps_output.
+     * </rd>
+     *
+     * See also <ulink
+     * url="https://www.milter.org/developers/api/xxfi_negotiate">
+     * xxfi_negotiate</ulink>
+     * on milter.org.
+     *
+     * Returns: response status.
+     */
     sfsistat	(*xxfi_negotiate) (SMFICTX    *context,
-                                   unsigned long  flag0,
-                                   unsigned long  flag1,
-                                   unsigned long  flag2,
-                                   unsigned long  flag3,
-                                   unsigned long *flag0_output,
-                                   unsigned long *flag1_output,
-                                   unsigned long *flag2_output,
-                                   unsigned long *flag3_output);
+                                   unsigned long  actions,
+                                   unsigned long  steps,
+                                   unsigned long  unused0,
+                                   unsigned long  unused1,
+                                   unsigned long *actions_output,
+                                   unsigned long *steps_output,
+                                   unsigned long *unused0_output,
+                                   unsigned long *unused1_output);
 };
 
 int smfi_opensocket (bool             remove_socket);

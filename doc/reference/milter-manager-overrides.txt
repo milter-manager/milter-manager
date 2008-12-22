@@ -1,0 +1,5 @@
+# libmilter/mfapi.h
+
+<MACRO>
+<NAME>_SOCK_ADDR</NAME>
+</MACRO>

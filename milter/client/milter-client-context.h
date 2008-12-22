@@ -364,9 +364,9 @@ void                 milter_client_context_set_private_data  (MilterClientContex
  * Sets the error reply code. Set error reply code with 4xx
  * @code is used on %MILTER_REPLY_TEMPORARY_FAILURE. Set
  * error reply reply code with 5xx @code is used on
- * %MILTER_REPLY_REJECT. See also <link
- * linked="https://www.milter.org/developers/api/smfi_setreply">
- * smfi_setreply</link> on milter.org.
+ * %MILTER_REPLY_REJECT. See also <ulink
+ * url="https://www.milter.org/developers/api/smfi_setreply">
+ * smfi_setreply</ulink> on milter.org.
  *
  * Returns: %TRUE on success.
  */
@@ -397,9 +397,9 @@ gchar               *milter_client_context_format_reply      (MilterClientContex
  * Adds a header to the current message's header lists. This
  * function can be called in
  * #MilterClientContext::end-of-message signal.  See also
- * <link
- * linked="https://www.milter.org/developers/api/smfi_addheader">
- * smfi_addheader</link> on milter.org.
+ * <ulink
+ * url="https://www.milter.org/developers/api/smfi_addheader">
+ * smfi_addheader</ulink> on milter.org.
  *
  * FIXME: write about MILTER_ACTION_ADD_HEADERS.
  *
@@ -419,9 +419,9 @@ gboolean             milter_client_context_add_header        (MilterClientContex
  * Inserts a header into the current message's header lists
  * at @index. This function can be called in
  * #MilterClientContext::end-of-message signal.  See also
- * <link
- * linked="https://www.milter.org/developers/api/smfi_insheader">
- * smfi_insheader</link> on milter.org.
+ * <ulink
+ * url="https://www.milter.org/developers/api/smfi_insheader">
+ * smfi_insheader</ulink> on milter.org.
  *
  * FIXME: write about MILTER_ACTION_ADD_HEADERS.
  *
@@ -445,9 +445,9 @@ gboolean             milter_client_context_insert_header     (MilterClientContex
  * that all of them are named @name. If @value is %NULL, the
  * header is deleted. This function can be
  * called in #MilterClientContext::end-of-message signal.
- * See also <link
- * linked="https://www.milter.org/developers/api/smfi_chgheader">
- * smfi_chgheader</link> on milter.org.
+ * See also <ulink
+ * url="https://www.milter.org/developers/api/smfi_chgheader">
+ * smfi_chgheader</ulink> on milter.org.
  *
  * FIXME: write about MILTER_ACTION_CHANGE_HEADERS.
  *
@@ -491,9 +491,9 @@ gboolean             milter_client_context_delete_header     (MilterClientContex
  * ESMTP's 'MAIL FROM' parameter can be set by
  * @parameters. @parameters may be %NULL. This function can be
  * called in #MilterClientContext::end-of-message signal.
- * See also <link
- * linked="https://www.milter.org/developers/api/smfi_chgfrom">smfi_chgfrom
- * </link> on milter.org.
+ * See also <ulink
+ * url="https://www.milter.org/developers/api/smfi_chgfrom">smfi_chgfrom
+ * </ulink> on milter.org.
  *
  * FIXME: write about MILTER_ACTION_CHANGE_FROM.
  *
@@ -514,11 +514,11 @@ gboolean             milter_client_context_change_from       (MilterClientContex
  * message.  ESMTP's 'RCPT TO' parameter can be set by
  * @parameters. @parameters may be %NULL. This function can
  * be called in #MilterClientContext::end-of-message
- * signal. See also <link
- * linked="https://www.milter.org/developers/api/smfi_addrcpt">smfi_addrcpt
- * </link> and <link
- * linked="https://www.milter.org/developers/api/smfi_addrcpt_par">smfi_addrcpt_par
- * </link> on milter.org.
+ * signal. See also <ulink
+ * url="https://www.milter.org/developers/api/smfi_addrcpt">smfi_addrcpt
+ * </ulink> and <ulink
+ * url="https://www.milter.org/developers/api/smfi_addrcpt_par">smfi_addrcpt_par
+ * </ulink> on milter.org.
  *
  * FIXME: write about MILTER_ACTION_ADD_RECIPIENT and
  * MILTER_ACTION_ADD_ENVELOPE_RECIPIENT_WITH_PARAMETERS.
@@ -537,9 +537,9 @@ gboolean             milter_client_context_add_recipient     (MilterClientContex
  * Removes a envelope recipient that named @recipient. This
  * function can be called in
  * #MilterClientContext::end-of-message signal. See also
- * <link
- * linked="https://www.milter.org/developers/api/smfi_delrcpt">smfi_delrcpt
- * </link> on milter.org.
+ * <ulink
+ * url="https://www.milter.org/developers/api/smfi_delrcpt">smfi_delrcpt
+ * </ulink> on milter.org.
  *
  * FIXME: write about MILTER_ACTION_DELETE_RECIPIENT.
  *
@@ -558,9 +558,9 @@ gboolean             milter_client_context_delete_recipient  (MilterClientContex
  * Replaces the body of the current message with @body. This
  * function can be called in
  * #MilterClientContext::end-of-message signal. See also
- * <link
- * linked="https://www.milter.org/developers/api/smfi_replacebody">smfi_replacebody
- * </link> on milter.org.
+ * <ulink
+ * url="https://www.milter.org/developers/api/smfi_replacebody">smfi_replacebody
+ * </ulink> on milter.org.
  *
  * FIXME: write about MILTER_ACTION_CHANGE_BODY.
  *
@@ -577,9 +577,9 @@ gboolean             milter_client_context_replace_body      (MilterClientContex
  * Notifies the MTA that this milter is still in
  * progress. This function can be called in
  * #MilterClientContext::end-of-message signal. See also
- * <link
- * linked="https://www.milter.org/developers/api/smfi_progress">smfi_progress
- * </link> on milter.org.
+ * <ulink
+ * url="https://www.milter.org/developers/api/smfi_progress">smfi_progress
+ * </ulink> on milter.org.
  *
  * Returns: %TRUE on success.
  */
@@ -593,9 +593,9 @@ gboolean             milter_client_context_progress          (MilterClientContex
  * Quarantines the current message with @reason. This
  * function can be called in
  * #MilterClientContext::end-of-message signal. See also
- * <link
- * linked="https://www.milter.org/developers/api/smfi_quarantine">smfi_quarantine
- * </link> on milter.org.
+ * <ulink
+ * url="https://www.milter.org/developers/api/smfi_quarantine">smfi_quarantine
+ * </ulink> on milter.org.
  *
  * FIXME: write about MILTER_ACTION_QUARANTINE.
  *
@@ -612,9 +612,9 @@ gboolean             milter_client_context_quarantine        (MilterClientContex
  * Sets the timeout by seconds. If MTA doesn't responses in
  * @timeout seconds, #MilterClientContext::timeout
  * signal is emitted. See also
- * <link
- * linked="https://www.milter.org/developers/api/smfi_settimeout">smfi_settimeout
- * </link> on milter.org.
+ * <ulink
+ * url="https://www.milter.org/developers/api/smfi_settimeout">smfi_settimeout
+ * </ulink> on milter.org.
  */
 void                 milter_client_context_set_timeout       (MilterClientContext *context,
                                                               guint timeout);

@@ -29,10 +29,10 @@
       <xi:include href="xml/client.xml"/>
       <xi:include href="xml/milter-client-context.xml"/>
     </chapter>
-    <!--chapter id="libmilter">
+    <chapter id="libmilter">
       <title>libmilter</title>
       <xi:include href="xml/mfapi.xml"/>
-    </chapter-->
+    </chapter>
   </part>
 
   <index id="index-all">

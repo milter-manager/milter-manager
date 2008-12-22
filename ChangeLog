@@ -1,5 +1,8 @@
 2008-12-22  Kouhei Sutou  <kou@cozmixng.org>
 
+	* libmilter/mfapi.h, milter/client/milter-client-context.[ch]: add
+	document.
+
 	* milter/core/milter-error-emittable.[ch]: add document.
 
 2008-12-22  Hiroyuki Ikezoe  <poincare@ikezoe.net>
