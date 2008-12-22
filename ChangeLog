@@ -16,6 +16,8 @@
 	launched child terminated normailly.
 	* milter/manager/milter-manager-process-launcher.c: Also log if
 	launched child terminated unexpectedly.
+	* test/fixtures/children/negotiate-retry-fail.txt: MilterManagerChild
+	does not emit milter-exit error any more.
 
 2008-12-22  Kouhei Sutou  <kou@cozmixng.org>
 

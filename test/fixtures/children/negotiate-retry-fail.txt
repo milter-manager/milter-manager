@@ -4,7 +4,7 @@ actions=negotiate-retry-fail
 
 [config]
 privilege_mode=true
-retry_connect_time=2.0
+retry_connect_time=0.3
 use_process_launcher=true
 
 [client10026]
@@ -25,7 +25,7 @@ step=none
 response=negotiate-reply
 n_emitted=1
 
-error_domain=milter-manager-child-error-quark
-error_type=MilterManagerChildError
-error_code=milter-exit
-error_message=client10027 exits with status: 0
+error_domain=milter-server-context-error-quark
+error_type=MilterServerContextError
+error_code=connection-failure
+error_message=Connection error on inet:10027@localhost: Error | Hung up

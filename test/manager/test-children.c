@@ -113,6 +113,7 @@ void
 startup (void)
 {
     MILTER_TYPE_MANAGER_CHILD_ERROR;
+    MILTER_TYPE_SERVER_CONTEXT_ERROR;
 }
 
 static void
