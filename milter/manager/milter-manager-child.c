@@ -42,9 +42,6 @@ struct _MilterManagerChildPrivate
     gchar *command;
     gchar *command_options;
     gboolean search_path;
-    GSpawnChildSetupFunc child_setup;
-    GPid pid;
-    guint child_watch_id;
 };
 
 enum
@@ -134,9 +131,6 @@ milter_manager_child_init (MilterManagerChild *milter)
     priv->command = NULL;
     priv->command_options = NULL;
     priv->search_path = TRUE;
-    priv->child_setup = NULL;
-    priv->pid = -1;
-    priv->child_watch_id = 0;
 }
 
 static void
@@ -164,16 +158,6 @@ dispose (GObject *object)
     if (priv->command_options) {
         g_free(priv->command_options);
         priv->command_options = NULL;
-    }
-
-    if (priv->pid > 0) {
-        g_spawn_close_pid(priv->pid);
-        priv->pid = -1;
-    }
-
-    if (priv->child_watch_id > 0) {
-        g_source_remove(priv->child_watch_id);
-        priv->child_watch_id = 0;
     }
 
     G_OBJECT_CLASS(milter_manager_child_parent_class)->dispose(object);
@@ -272,78 +256,6 @@ milter_manager_child_new_va_list (const gchar *first_name, va_list args)
                                                     first_name, args));
 }
 
-static void
-child_watch_func (GPid pid, gint status, gpointer user_data)
-{
-    MilterManagerChildPrivate *priv;
-
-    priv = MILTER_MANAGER_CHILD_GET_PRIVATE(user_data);
-
-    if (WIFSIGNALED(status)) {
-        GError *error = NULL;
-        g_set_error(&error,
-                    MILTER_MANAGER_CHILD_ERROR,
-                    MILTER_MANAGER_CHILD_ERROR_MILTER_TERMINATED_BY_SIGNAL,
-                    "%s terminated by signal(%d)", 
-                    milter_server_context_get_name(MILTER_SERVER_CONTEXT(user_data)),
-                    WTERMSIG(status));
-        milter_error("%s", error->message);
-        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(user_data),
-                                    error);
-        g_error_free(error);
-    } else if (WIFEXITED(status)) {
-        GError *error = NULL;
-        g_set_error(&error,
-                    MILTER_MANAGER_CHILD_ERROR,
-                    MILTER_MANAGER_CHILD_ERROR_MILTER_EXIT,
-                    "%s exits with status: %d", 
-                    milter_server_context_get_name(MILTER_SERVER_CONTEXT(user_data)),
-                    WEXITSTATUS(status));
-        milter_error("%s", error->message);
-        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(user_data),
-                                    error);
-        g_error_free(error);
-    }
-
-    g_spawn_close_pid(priv->pid);
-    priv->pid = -1;
-    priv->child_watch_id = 0;
-}
-
-static gboolean
-set_user (const gchar *user_name, GError **error)
-{
-    struct passwd *password;
-
-    password = getpwnam(user_name);
-    if (!password) {
-        g_set_error(error,
-                    MILTER_MANAGER_CHILD_ERROR,
-                    MILTER_MANAGER_CHILD_ERROR_INVALID_USER_NAME,
-                    "No passwd entry for %s: %s",
-                    user_name, strerror(errno));
-        return FALSE;
-    }
-
-    if (setregid(-1, password->pw_gid) == -1) {
-        g_set_error(error,
-                    MILTER_MANAGER_CHILD_ERROR,
-                    MILTER_MANAGER_CHILD_ERROR_NO_PRIVILEGE_MODE,
-                    "MilterManager is not running on privilege mode.");
-        return FALSE;
-    }
-
-    if (setreuid(-1, password->pw_uid) == -1) {
-        g_set_error(error,
-                    MILTER_MANAGER_CHILD_ERROR,
-                    MILTER_MANAGER_CHILD_ERROR_NO_PRIVILEGE_MODE,
-                    "MilterManager is not running on privilege mode.");
-        return FALSE;
-    }
-
-    return TRUE;
-}
-
 gchar *
 milter_manager_child_get_command_line_string (MilterManagerChild *milter)
 {
@@ -369,88 +281,6 @@ milter_manager_child_get_user_name (MilterManagerChild *milter)
 {
     return MILTER_MANAGER_CHILD_GET_PRIVATE(milter)->user_name;
 }
-
-gboolean
-milter_manager_child_start (MilterManagerChild *milter, GError **error)
-{
-    gint argc;
-    gchar **argv;
-    gchar *command_line;
-    gboolean success;
-    MilterManagerChildPrivate *priv;
-    GError *internal_error = NULL;
-    GSpawnFlags flags;
-
-    priv = MILTER_MANAGER_CHILD_GET_PRIVATE(milter);
-
-    command_line = milter_manager_child_get_command_line_string(milter);
-    if (!command_line) {
-        g_set_error(error,
-                    MILTER_MANAGER_CHILD_ERROR,
-                    MILTER_MANAGER_CHILD_ERROR_BAD_COMMAND_STRING,
-                    "No command set yet.");
-        return FALSE;
-    }
-
-    success = g_shell_parse_argv(command_line,
-                                 &argc, &argv,
-                                 &internal_error);
-    g_free(command_line);
-
-    if (!success) {
-        milter_utils_set_error_with_sub_error(
-            error,
-            MILTER_MANAGER_CHILD_ERROR,
-            MILTER_MANAGER_CHILD_ERROR_BAD_COMMAND_STRING,
-            internal_error,
-            "Command string(%s %s) has invalid character(s).",
-            priv->command, priv->command_options);
-        return FALSE;
-    }
-
-    if (priv->user_name && !set_user(priv->user_name, error))
-        return FALSE;
-
-    flags = G_SPAWN_DO_NOT_REAP_CHILD |
-        G_SPAWN_STDOUT_TO_DEV_NULL |
-        G_SPAWN_STDERR_TO_DEV_NULL;
-    if (priv->search_path)
-        flags |= G_SPAWN_SEARCH_PATH;
-    success = g_spawn_async(priv->working_directory,
-                            argv,
-                            NULL,
-                            flags,
-                            priv->child_setup,
-                            milter,
-                            &priv->pid,
-                            &internal_error);
-    g_strfreev(argv);
-
-    if (!success) {
-        milter_utils_set_error_with_sub_error(
-            error,
-            MILTER_MANAGER_CHILD_ERROR,
-            MILTER_MANAGER_CHILD_ERROR_START_FAILURE,
-            internal_error,
-            "Couldn't start new %s process.",
-            milter_server_context_get_name(MILTER_SERVER_CONTEXT(milter)));
-        return FALSE;
-    }
-
-    milter_debug("started %s.",
-                 milter_server_context_get_name(MILTER_SERVER_CONTEXT(milter)));
-    priv->child_watch_id =
-        g_child_watch_add(priv->pid, (GChildWatchFunc)child_watch_func, milter);
-
-    return success;
-}
-
-GPid
-milter_manager_child_get_pid (MilterManagerChild *milter)
-{
-    return MILTER_MANAGER_CHILD_GET_PRIVATE(milter)->pid;
-}
-
 
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4

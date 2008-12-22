@@ -69,9 +69,6 @@ MilterManagerChild   *milter_manager_child_new         (const gchar *name);
 MilterManagerChild   *milter_manager_child_new_va_list (const gchar *first_name,
                                                         va_list      args);
 
-gboolean              milter_manager_child_start       (MilterManagerChild *milter,
-                                                        GError **error);
-GPid                  milter_manager_child_get_pid     (MilterManagerChild *milter);
 gchar                *milter_manager_child_get_command_line_string
                                                        (MilterManagerChild *milter);
 gchar                *milter_manager_child_get_user_name
