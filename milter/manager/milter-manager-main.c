@@ -131,6 +131,7 @@ shutdown_client (int signum)
 {
     if (current_client)
         milter_client_shutdown(current_client);
+    kill(launcher_pid, SIGKILL);
 }
 
 static void

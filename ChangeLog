@@ -18,6 +18,7 @@
 	launched child terminated unexpectedly.
 	* test/fixtures/children/negotiate-retry-fail.txt: MilterManagerChild
 	does not emit milter-exit error any more.
+	* milter/manager/milter-manager-main.c: Ensure to kill launcher.
 
 2008-12-22  Kouhei Sutou  <kou@cozmixng.org>
 
