@@ -30,7 +30,9 @@ G_BEGIN_DECLS
  * @short_description: An interface for "finished" signal.
  *
  * The %MilterFinishedEmittable interface provides
- * "finished" signal.
+ * #MilterFinishedEmittable::finished
+ * signal. #MilterFinishedEmittable::finished signal will be
+ * emitted on finishing something.
  */
 
 #define MILTER_TYPE_FINISHED_EMITTABLE             (milter_finished_emittable_get_type())

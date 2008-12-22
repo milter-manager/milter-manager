@@ -38,6 +38,12 @@ base_init (gpointer g_class)
 
     if (initialized) return;
 
+    /**
+     * MilterErrorEmittable::error:
+     * @emittable: the object that received the signal.
+     *
+     * This signal is emitted on error.
+     */
     signals[ERROR] =
         g_signal_new("error",
                      G_TYPE_FROM_CLASS(g_class),

@@ -24,6 +24,17 @@
 
 G_BEGIN_DECLS
 
+/**
+ * SECTION: milter-error-emittable
+ * @title: MilterErrorEmittable
+ * @short_description: An interface for "error" signal.
+ *
+ * The %MilterErrorEmittable interface provides
+ * #MilterErrorEmittable::error
+ * signal. #MilterErrorEmittable::error signal will be
+ * emitted on error.
+ */
+
 #define MILTER_TYPE_ERROR_EMITTABLE             (milter_error_emittable_get_type ())
 #define MILTER_ERROR_EMITTABLE(obj)             (G_TYPE_CHECK_INSTANCE_CAST ((obj), MILTER_TYPE_ERROR_EMITTABLE, MilterErrorEmittable))
 #define MILTER_ERROR_EMITTABLE_CLASS(vtable)    (G_TYPE_CHECK_CLASS_CAST ((vtable), MILTER_TYPE_ERROR_EMITTABLE, MilterErrorEmittableClass))
@@ -43,6 +54,12 @@ struct _MilterErrorEmittableClass
 
 GType    milter_error_emittable_get_type (void) G_GNUC_CONST;
 
+/**
+ * milter_error_emittable_emit:
+ * @emittable: a %MilterErrorEmittable.
+ *
+ * Emits #MilterErrorEmittable::error signal.
+ */
 void     milter_error_emittable_emit     (MilterErrorEmittable *emittable,
                                           GError *error);
 
