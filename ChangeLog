@@ -5,6 +5,8 @@
 
 2008-12-22  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-finished-emittable.h: add document.
+
 	* binding/ruby/lib/milter.rb: cancel log handler. (just a workaround)
 
 	* TODO: remove: milter-client-context: mta-timeout -> timeout.

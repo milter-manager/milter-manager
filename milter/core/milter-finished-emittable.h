@@ -24,6 +24,15 @@
 
 G_BEGIN_DECLS
 
+/**
+ * SECTION: milter-finished-emittable
+ * @title: MilterFinishedEmittable
+ * @short_description: An interface for "finished" signal.
+ *
+ * The %MilterFinishedEmittable interface provides
+ * "finished" signal.
+ */
+
 #define MILTER_TYPE_FINISHED_EMITTABLE             (milter_finished_emittable_get_type())
 #define MILTER_FINISHED_EMITTABLE(obj)             (G_TYPE_CHECK_INSTANCE_CAST((obj), MILTER_TYPE_FINISHED_EMITTABLE, MilterFinishedEmittable))
 #define MILTER_FINISHED_EMITTABLE_CLASS(obj)       (G_TYPE_CHECK_CLASS_CAST((obj), MILTER_TYPE_FINISHED_EMITTABLE, MilterFinishedEmittableClass))
