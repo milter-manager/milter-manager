@@ -5,6 +5,7 @@ actions=negotiate-retry
 [config]
 privilege_mode=true
 retry_connect_time=0.3
+use_process_launcher=true
 
 [client10026]
 port=10026
