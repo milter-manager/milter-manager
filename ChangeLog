@@ -12,6 +12,8 @@
 	MilterManagerEgg for MilterManagerProcessLauncher.
 	* test/manager/test-children.c: Use MilterManagerProcessLauncher if
 	the option is enabled.
+	* milter/manager/milter-manager-process-launcher.c: Output log if
+	launched child terminated normailly.
 
 2008-12-22  Kouhei Sutou  <kou@cozmixng.org>
 

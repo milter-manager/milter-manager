@@ -196,10 +196,14 @@ child_watch_func (GPid pid, gint status, gpointer user_data)
         /* FIXME restart */
     } else {
         GList *process;
+        ProcessData *data;
+
         process = g_list_find_custom(priv->processes, GINT_TO_POINTER(pid),
                                      compare_process_data_pid);
         if (!process)
             return;
+        data = process->data;
+        milter_info("%s terminated normally.", data->command_line);
         process_data_free(process->data);
         priv->processes = g_list_remove_link(priv->processes, process);
     }
