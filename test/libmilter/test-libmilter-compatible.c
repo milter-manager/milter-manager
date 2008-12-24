@@ -1,4 +1,3 @@
-
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
  *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
@@ -33,6 +32,7 @@
 
 void test_opensocket (void);
 void test_opensocket_with_remove_socket (void);
+void test_setbacklog (void);
 
 static gchar *tmp_dir;
 
@@ -114,6 +114,14 @@ test_opensocket_with_remove_socket (void)
 
     milter_assert_success(smfi_opensocket(TRUE));
     cut_assert_path_exist(socket_path);
+}
+
+void
+test_setbacklog (void)
+{
+    milter_assert_fail(smfi_setbacklog(-1));
+    milter_assert_fail(smfi_setbacklog(0));
+    milter_assert_success(smfi_setbacklog(1));
 }
 
 /*

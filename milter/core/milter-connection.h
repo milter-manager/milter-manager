@@ -27,6 +27,12 @@
 
 G_BEGIN_DECLS
 
+#if defined(SOMAXCONN) && SOMAXCONN > 20
+#  define MILTER_CONNECTION_DEFAULT_BACKLOG SOMAXCONN
+#else
+#  define MILTER_CONNECTION_DEFAULT_BACKLOG 20
+#endif
+
 #define MILTER_CONNECTION_ERROR           (milter_connection_error_quark())
 
 typedef enum

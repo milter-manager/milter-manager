@@ -55,6 +55,7 @@ struct _MilterClientPrivate
     GList *process_data;
     guint timeout;
     GIOChannel *listen_channel;
+    gint listen_backlog;
 };
 
 typedef struct _MilterClientProcessData
@@ -126,6 +127,7 @@ milter_client_init (MilterClient *client)
     priv->process_data = NULL;
     priv->timeout = 7210;
     priv->listen_channel = NULL;
+    priv->listen_backlog = -1;
 }
 
 static void
@@ -472,7 +474,9 @@ milter_client_main (MilterClient *client)
         g_io_channel_ref(priv->listen_channel);
         server_channel = priv->listen_channel;
     } else {
-        server_channel = milter_connection_listen(priv->connection_spec, 5, &error);
+        server_channel = milter_connection_listen(priv->connection_spec,
+                                                  priv->listen_backlog,
+                                                  &error);
     }
 
     if (!server_channel) {
@@ -508,6 +512,12 @@ milter_client_shutdown (MilterClient *client)
     priv = MILTER_CLIENT_GET_PRIVATE(client);
     g_main_loop_quit(priv->accept_loop);
     g_main_loop_quit(priv->main_loop);
+}
+
+void
+milter_client_set_listen_backlog (MilterClient *client, gint backlog)
+{
+    MILTER_CLIENT_GET_PRIVATE(client)->listen_backlog = backlog;
 }
 
 void

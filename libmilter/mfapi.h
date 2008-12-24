@@ -863,7 +863,47 @@ int smfi_opensocket (bool             remove_socket);
  * Returns: %MI_SUCCESS if success, %MI_FAILURE otherwise.
  */
 int smfi_register   (struct smfiDesc  description);
+
+/**
+ * smfi_main:
+ *
+ * Enters event loop. The mail filter should be initialized
+ * with smfi_register(), smfi_setconn() and so on before
+ * smfi_main() is called.
+ *
+ * <rd>
+ * Here are the fail conditions:
+ *   * failed to create the socket.
+ * </rd>
+ *
+ * See also <ulink
+ * url="https://www.milter.org/developers/api/smfi_main">
+ * smfi_main</ulink>
+ * on milter.org.
+ *
+ * Returns: %MI_SUCCESS if success, %MI_FAILURE otherwise.
+ */
 int smfi_main       (void);
+
+/**
+ * smfi_setbacklog:
+ * @backlog: The maximum length of the pending connections queue.
+ *
+ * Sets the mail filters' backlog value that is used for
+ * listen(2).
+ *
+ * <rd>
+ * Here are the fail conditions:
+ *   * @backlog <= 0.
+ * </rd>
+ *
+ * See also <ulink
+ * url="https://www.milter.org/developers/api/smfi_setbacklog">
+ * smfi_setbacklog</ulink>
+ * on milter.org.
+ *
+ * Returns: %MI_SUCCESS if success, %MI_FAILURE otherwise.
+ */
 int smfi_setbacklog (int              backlog);
 int smfi_setdbg     (int              level);
 int smfi_settimeout (int              timeout);

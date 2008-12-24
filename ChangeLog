@@ -1,5 +1,17 @@
 2008-12-24  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-main.c,
+	milter/client/milter-client.c: use default backlog value by default.
+
+	* libmilter/main.h: add documents.
+
+	* libmilter/libmilter-compatible.c,
+	test/libmilter/test-libmilter-compatible.c: implement
+	smfi_setbacklog().
+
+	* milter/core/milter-connection.[ch]: use default backlog value if
+	passed backlog value is <= 0.
+
 	* libmilter/libmilter-compatible.c: adapt the current
 	smfi_opensocket() and smfi_register() implementations to the
 	original one.

@@ -36,6 +36,7 @@
 static struct smfiDesc *filter_description;
 static gchar *connection_spec = NULL;
 static GIOChannel *listen_channel = NULL;
+static gint listen_backlog = -1;
 static guint timeout = 7210;
 
 #define SMFI_CONTEXT_GET_PRIVATE(obj)                   \
@@ -175,7 +176,7 @@ smfi_opensocket (bool remove_socket)
     if (!success)
         return MI_FAILURE;
 
-    channel = milter_connection_listen(connection_spec, 5, &error);
+    channel = milter_connection_listen(connection_spec, listen_backlog, &error);
     if (error) {
         milter_error("%s", error->message);
         g_error_free(error);
@@ -480,6 +481,7 @@ setup_milter_client (MilterClient *client, SmfiContext *context)
 {
     milter_client_set_connection_spec(client, connection_spec, NULL);
     milter_client_set_listen_channel(client, listen_channel);
+    milter_client_set_listen_backlog(client, listen_backlog);
     milter_client_set_timeout(client, timeout);
     g_signal_connect(client, "connection-established",
                      G_CALLBACK(cb_connection_established), context);
@@ -514,6 +516,10 @@ smfi_main (void)
 int
 smfi_setbacklog (int backlog)
 {
+    if (backlog <= 0)
+        return MI_FAILURE;
+
+    listen_backlog = backlog;
     return MI_SUCCESS;
 }
 
@@ -833,6 +839,7 @@ libmilter_compatible_reset (void)
     if (listen_channel)
         g_io_channel_unref(listen_channel);
     listen_channel = NULL;
+    listen_backlog = -1;
     timeout = 7210;
 }
 

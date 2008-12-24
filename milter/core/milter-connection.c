@@ -367,6 +367,9 @@ milter_connection_listen (const gchar *spec, gint backlog, GError **error)
     }
     g_free(address);
 
+    if (backlog <= 0)
+        backlog = MILTER_CONNECTION_DEFAULT_BACKLOG;
+
     if (listen(fd, backlog) == -1) {
         g_set_error(error,
                     MILTER_CONNECTION_ERROR,
