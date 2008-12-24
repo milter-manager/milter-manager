@@ -556,13 +556,23 @@ smfi_settimeout (int timeout)
 int
 smfi_setconn (char *spec)
 {
+    GError *error = NULL;
+
+    if (!spec) {
+        milter_error("must not be NULL");
+        return MI_FAILURE;
+    }
+
+    if (!milter_connection_parse_spec(spec, NULL, NULL, NULL, &error)) {
+        milter_error("%s", error->message);
+        g_error_free(error);
+        return MI_FAILURE;
+    }
+
     if (connection_spec)
         g_free(connection_spec);
     connection_spec = g_strdup(spec);
-    if (connection_spec)
-        return MI_SUCCESS;
-    else
-        return MI_FAILURE;
+    return MI_SUCCESS;
 }
 
 int

@@ -34,6 +34,8 @@ void test_opensocket (void);
 void test_opensocket_with_remove_socket (void);
 void test_setbacklog (void);
 void test_setdbg (void);
+void test_settimeout (void);
+void test_setconn (void);
 
 static gchar *tmp_dir;
 
@@ -171,6 +173,22 @@ test_setdbg (void)
 
     milter_assert_success(smfi_setdbg(-1));
     milter_assert_equal_target_level(0);
+}
+
+void
+test_settimeout (void)
+{
+    milter_assert_success(smfi_settimeout(7210));
+}
+
+void
+test_setconn (void)
+{
+    milter_assert_fail(smfi_setconn(NULL));
+    milter_assert_fail(smfi_setconn("unknown:/path"));
+    milter_assert_success(smfi_setconn("unix:/tmp/nonexistent"));
+    milter_assert_success(smfi_setconn("inet:12345"));
+    milter_assert_success(smfi_setconn("inet6:12345@localhost"));
 }
 
 /*

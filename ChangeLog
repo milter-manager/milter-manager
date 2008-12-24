@@ -1,5 +1,9 @@
 2008-12-24  Kouhei Sutou  <kou@cozmixng.org>
 
+	* libmilter/libmilter-compatible.c,
+	test/libmilter/test-libmilter-compatible.c: add format error check
+	in smfi_setconn().
+
 	* libmilter/mfapi.h: add documents.
 
 	* libmilter/libmilter-compatible.c,

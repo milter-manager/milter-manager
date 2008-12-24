@@ -922,7 +922,52 @@ int smfi_setbacklog (int              backlog);
  * Returns: always %MI_SUCCESS.
  */
 int smfi_setdbg     (int              level);
+
+/**
+ * smfi_settimeout:
+ * @timeout: The timeout value in seconds.
+ *
+ * Sets the I/O timeout value in seconds. The default value
+ * is 7210 seconds. @timeout == 0 means no wait, not "wait
+ * forever".
+ *
+ * See also <ulink
+ * url="https://www.milter.org/developers/api/smfi_settimeout">
+ * smfi_settimeout</ulink>
+ * on milter.org.
+ *
+ * Returns: always %MI_SUCCESS.
+ */
 int smfi_settimeout (int              timeout);
+
+/**
+ * smfi_setconn:
+ * @connection_spec: The connection spec for communicating MTA.
+ *
+ * Sets the connection spec.
+ *
+ * <rd>
+ * @connection_spec format is one of them:
+ *   * "unix:/PATH/TO/SOCKET": UNIX domain socket.
+ *   * "inet:PORT", "inet:PORT@HOST_NAME" or
+ *     "inet:PORT@IP_ADDRESS": IPv4.
+ *   * "inet6:PORT", "inet6:PORT@HOST_NAME" or
+ *     "inet6:PORT@IP_ADDRESS": IPv6.
+ * </rd>
+ *
+ * <rd>
+ * Here are the fail conditions:
+ *   * invalid format.
+ *   * @connection_spec is NULL.
+ * </rd>
+ *
+ * See also <ulink
+ * url="https://www.milter.org/developers/api/smfi_setconn">
+ * smfi_setconn</ulink>
+ * on milter.org.
+ *
+ * Returns: %MI_SUCCESS if success, %MI_FAILURE otherwise.
+ */
 int smfi_setconn    (char            *connection_spec);
 int smfi_stop       (void);
 int smfi_version    (unsigned int    *major,
