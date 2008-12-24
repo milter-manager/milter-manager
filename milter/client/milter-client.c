@@ -283,7 +283,6 @@ cb_idle_free_data (gpointer _data)
     MilterClientProcessData *data = _data;
 
     milter_debug("removing a MilterClientContext");
-    /* FIXME: should use mutex */
     data->priv->process_data = g_list_remove(data->priv->process_data, data);
     process_data_free(data);
     milter_debug("removed a MilterClientContext");
@@ -303,6 +302,26 @@ cb_finished (MilterClientContext *context, gpointer _data)
     g_source_unref(source);
 }
 
+typedef struct _ConnectionEstablishedData
+{
+    MilterClient *client;
+    MilterClientContext *context;
+} ConnectionEstablishedData;
+
+static gboolean
+cb_idle_connection_established (gpointer user_data)
+{
+    ConnectionEstablishedData *data = user_data;
+
+    g_signal_emit(data->client, signals[CONNECTION_ESTABLISHED],
+                  0, data->context);
+    milter_agent_start(MILTER_AGENT(data->context));
+
+    g_free(data);
+
+    return FALSE;
+}
+
 static void
 process_client_channel (MilterClient *client, GIOChannel *channel)
 {
@@ -311,6 +330,7 @@ process_client_channel (MilterClient *client, GIOChannel *channel)
     MilterWriter *writer;
     MilterReader *reader;
     MilterClientProcessData *data;
+    ConnectionEstablishedData *connection_established_data;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
@@ -330,13 +350,12 @@ process_client_channel (MilterClient *client, GIOChannel *channel)
 
     g_signal_connect(context, "finished", G_CALLBACK(cb_finished), data);
 
-    /* FIXME: should use mutex */
     priv->process_data = g_list_prepend(priv->process_data, data);
 
-    /* FIXME: should this be done in the accept thread? or
-     * main thread by using g_idle_add? */
-    g_signal_emit(client, signals[CONNECTION_ESTABLISHED], 0, context);
-    milter_agent_start(MILTER_AGENT(context));
+    connection_established_data = g_new0(ConnectionEstablishedData, 1);
+    connection_established_data->client = client;
+    connection_established_data->context = context;
+    g_idle_add(cb_idle_connection_established, connection_established_data);
 }
 
 static gboolean

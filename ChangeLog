@@ -1,5 +1,8 @@
 2008-12-24  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client.c: emits connection established
+	signal on main thread.
+
 	* tool/milter-test-server.c: use milter_agent_shutdown() instead
 	of g_main_loop_quit().
 
