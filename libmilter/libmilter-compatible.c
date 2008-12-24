@@ -212,7 +212,7 @@ smfi_register (struct smfiDesc description)
     }
 
     if (!description.xxfi_name)
-        return MI_FAILURE;
+        description.xxfi_name = "Unknown";
 
     filter_description_free();
     filter_description = g_memdup(&description, sizeof(struct smfiDesc));
@@ -479,6 +479,7 @@ static void
 setup_milter_client (MilterClient *client, SmfiContext *context)
 {
     milter_client_set_connection_spec(client, connection_spec, NULL);
+    milter_client_set_listen_channel(client, listen_channel);
     milter_client_set_timeout(client, timeout);
     g_signal_connect(client, "connection-established",
                      G_CALLBACK(cb_connection_established), context);
@@ -501,6 +502,8 @@ smfi_main (void)
     g_object_unref(client);
 
     milter_quit();
+
+    libmilter_compatible_reset();
 
     if (success)
         return MI_SUCCESS;

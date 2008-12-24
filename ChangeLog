@@ -1,5 +1,9 @@
 2008-12-24  Kouhei Sutou  <kou@cozmixng.org>
 
+	* libmilter/libmilter-compatible.c: adapt the current
+	smfi_opensocket() and smfi_register() implementations to the
+	original one.
+
 	* doc/reference/, doc/reference/: add documents.
 
 	* milter/core/milter-reader.c: handle error on shutdown.
