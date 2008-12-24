@@ -266,10 +266,12 @@ setup_client_signals (MilterClient *client)
 }
 
 static void
-shutdown_client (int signum)
+cb_sigint_shutdown_client (int signum)
 {
     if (client)
         milter_client_shutdown(client);
+
+    signal(SIGINT, SIG_DFL);
 }
 
 int
@@ -301,7 +303,7 @@ main (int argc, char *argv[])
         void (*sigint_handler) (int signum);
 
         setup_client_signals(client);
-        sigint_handler = signal(SIGINT, shutdown_client);
+        sigint_handler = signal(SIGINT, cb_sigint_shutdown_client);
         success = milter_client_main(client);
         signal(SIGINT, sigint_handler);
     } else {

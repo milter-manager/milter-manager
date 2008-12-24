@@ -1,5 +1,11 @@
 2008-12-24  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-test-client.c: handle SIGINT only once.
+
+	* milter/client/milter-client.c, test/client/test-client.c:
+	milter_client_shutdown() stops accepting new connections but
+	existing connections are continued until finished.
+
 	* libmilter/libmilter-compatible.c,
 	test/libmilter/test-libmilter-compatible.c: add format error check
 	in smfi_setconn().
