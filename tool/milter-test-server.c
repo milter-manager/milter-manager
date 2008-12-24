@@ -78,9 +78,9 @@ typedef struct Message
 
 typedef struct _ProcessData
 {
+    GMainLoop *main_loop;
     GTimer *timer;
     gboolean success;
-    gboolean finished;
     guint reply_code;
     gchar *reply_extended_code;
     gchar *reply_message;
@@ -107,7 +107,7 @@ static void
 send_quit (MilterServerContext *context, ProcessData *data)
 {
     milter_server_context_quit(context);
-    data->finished = TRUE;
+    g_main_loop_quit(data->main_loop);
 }
 
 static void
@@ -537,8 +537,8 @@ cb_finished (MilterFinishedEmittable *emittable, gpointer user_data)
 {
     ProcessData *data = user_data;
 
-    data->finished = TRUE;
     g_timer_stop(data->timer);
+    g_main_loop_quit(data->main_loop);
 }
 
 static void
@@ -626,9 +626,10 @@ static void
 cb_connection_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
 {
     ProcessData *data = user_data;
-    data->finished = TRUE;
+
     data->success = FALSE;
     data->error = g_error_copy(error);
+    g_main_loop_quit(data->main_loop);
 }
 
 static gboolean
@@ -1028,9 +1029,9 @@ free_message (Message *message)
 static void
 init_process_data (ProcessData *data)
 {
+    data->main_loop = g_main_loop_new(NULL, FALSE);
     data->timer = g_timer_new();
     data->success = TRUE;
-    data->finished = FALSE;
     data->status = MILTER_STATUS_NOT_CHANGE;
     data->quarantine_reason = NULL;
     data->option = NULL;
@@ -1371,8 +1372,7 @@ start_process (MilterServerContext *context, ProcessData *process_data)
         return FALSE;
     }
 
-    while (!process_data->finished)
-        g_main_context_iteration(NULL, TRUE);
+    g_main_loop_run(process_data->main_loop);
 
     print_result(process_data);
 
