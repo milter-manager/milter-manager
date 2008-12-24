@@ -359,7 +359,7 @@ test_encode_delete_header (gconstpointer data)
 void
 data_encode_change_from (void)
 {
-    cut_add_data("",
+    cut_add_data("from",
                  g_strsplit("kou@localhost", " ", 2),
                  g_strfreev,
                  "from - parameters",
