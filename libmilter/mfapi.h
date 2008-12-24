@@ -905,6 +905,22 @@ int smfi_main       (void);
  * Returns: %MI_SUCCESS if success, %MI_FAILURE otherwise.
  */
 int smfi_setbacklog (int              backlog);
+
+/**
+ * smfi_setdbg:
+ * @level: The log level.
+ *
+ * Sets the log level. If @level is 0, turns off any log
+ * message. The greater value is specified, more log
+ * messages are output.
+ *
+ * See also <ulink
+ * url="https://www.milter.org/developers/api/smfi_setdbg">
+ * smfi_setdbg</ulink>
+ * on milter.org.
+ *
+ * Returns: always %MI_SUCCESS.
+ */
 int smfi_setdbg     (int              level);
 int smfi_settimeout (int              timeout);
 int smfi_setconn    (char            *connection_spec);

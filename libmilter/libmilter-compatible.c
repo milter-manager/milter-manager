@@ -526,6 +526,22 @@ smfi_setbacklog (int backlog)
 int
 smfi_setdbg (int level)
 {
+    MilterLogLevelFlags target_level = 0;
+
+    if (level > 0)
+        target_level |= MILTER_LOG_LEVEL_CRITICAL;
+    if (level > 1)
+        target_level |= MILTER_LOG_LEVEL_ERROR;
+    if (level > 2)
+        target_level |= MILTER_LOG_LEVEL_WARNING;
+    if (level > 3)
+        target_level |= MILTER_LOG_LEVEL_MESSAGE;
+    if (level > 4)
+        target_level |= MILTER_LOG_LEVEL_INFO;
+    if (level > 5)
+        target_level |= MILTER_LOG_LEVEL_DEBUG;
+
+    milter_logger_set_target_level(milter_logger(), target_level);
     return MI_SUCCESS;
 }
 

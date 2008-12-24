@@ -60,8 +60,8 @@ G_BEGIN_DECLS
 
 typedef enum
 {
-    MILTER_LOG_LEVEL_ERROR      = 1 << 0,
-    MILTER_LOG_LEVEL_CRITICAL   = 1 << 1,
+    MILTER_LOG_LEVEL_CRITICAL   = 1 << 0,
+    MILTER_LOG_LEVEL_ERROR      = 1 << 1,
     MILTER_LOG_LEVEL_WARNING    = 1 << 2,
     MILTER_LOG_LEVEL_MESSAGE    = 1 << 3,
     MILTER_LOG_LEVEL_INFO       = 1 << 4,
@@ -69,8 +69,8 @@ typedef enum
     MILTER_LOG_LEVEL_STATISTICS = 1 << 6
 } MilterLogLevelFlags;
 
-#define MILTER_LOG_LEVEL_ALL (MILTER_LOG_LEVEL_ERROR |          \
-                              MILTER_LOG_LEVEL_CRITICAL |       \
+#define MILTER_LOG_LEVEL_ALL (MILTER_LOG_LEVEL_CRITICAL |       \
+                              MILTER_LOG_LEVEL_ERROR |          \
                               MILTER_LOG_LEVEL_WARNING |        \
                               MILTER_LOG_LEVEL_MESSAGE |        \
                               MILTER_LOG_LEVEL_INFO |           \
@@ -127,6 +127,16 @@ GType            milter_logger_get_type       (void) G_GNUC_CONST;
 MilterLogLevelFlags milter_log_level_flags_from_string (const gchar *level_name);
 
 MilterLogger    *milter_logger                (void);
+void             milter_logger_default_log_handler
+                                              (MilterLogger        *logger,
+                                               const gchar         *domain,
+                                               MilterLogLevelFlags  level,
+                                               const gchar         *file,
+                                               guint                line,
+                                               const gchar         *function,
+                                               GTimeVal            *time_value,
+                                               const gchar         *message,
+                                               gpointer             user_data);
 MilterLogger    *milter_logger_new            (void);
 void             milter_logger_log            (MilterLogger        *logger,
                                                const gchar         *domain,
@@ -144,6 +154,12 @@ void             milter_logger_log_va_list    (MilterLogger        *logger,
                                                const gchar         *function,
                                                const gchar         *format,
                                                va_list              args);
+MilterLogLevelFlags
+                 milter_logger_get_target_level
+                                              (MilterLogger        *logger);
+void             milter_logger_set_target_level
+                                              (MilterLogger        *logger,
+                                               MilterLogLevelFlags  level);
 
 G_END_DECLS
 

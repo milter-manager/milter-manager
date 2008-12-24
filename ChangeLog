@@ -1,5 +1,15 @@
 2008-12-24  Kouhei Sutou  <kou@cozmixng.org>
 
+	* libmilter/mfapi.h: add documents.
+
+	* libmilter/libmilter-compatible.c,
+	test/libmilter/test-libmilter-compatible.c: implement
+	smfi_setdbg().
+
+	* milter/core/milter-logger.[ch], test/core/test-logger.c:
+	- add target level to logger.
+	- export default log handler.
+
 	* milter/manager/milter-manager-main.c,
 	milter/client/milter-client.c: use default backlog value by default.
 

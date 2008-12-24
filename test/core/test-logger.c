@@ -36,6 +36,9 @@ void test_warning (void);
 void test_debug (void);
 void test_info (void);
 void test_console_output (void);
+void test_target_level (void);
+
+static MilterLogger *logger;
 
 static const gchar *logged_domain;
 static MilterLogLevelFlags logged_level;
@@ -45,6 +48,9 @@ static guint logged_line;
 static const gchar *logged_function;
 static GString *stdout_string;
 static gboolean end_of_log;
+
+static gchar *env_log_level;
+static GPrintFunc original_print_hander;
 
 static void
 cb_log (MilterLogger *logger,
@@ -66,6 +72,8 @@ cb_log (MilterLogger *logger,
 void
 setup (void)
 {
+    logger = NULL;
+
     logged_domain = NULL;
     logged_level = 0;
     logged_message = NULL;
@@ -73,12 +81,28 @@ setup (void)
     stdout_string = g_string_new(NULL);
     end_of_log = FALSE;
 
+    env_log_level = g_strdup(g_getenv("MILTER_LOG_LEVEL"));
+    original_print_hander = NULL;
+
     g_signal_connect(milter_logger(), "log", G_CALLBACK(cb_log), NULL);
 }
 
 void
 teardown (void)
 {
+    if (logger)
+        g_object_unref(logger);
+
+    if (env_log_level) {
+        g_setenv("MILTER_LOG_LEVEL", env_log_level, TRUE);
+        g_free(env_log_level);
+    } else {
+        g_unsetenv("MILTER_LOG_LEVEL");
+    }
+
+    if (original_print_hander)
+        g_set_print_handler(original_print_hander);
+
     g_signal_handlers_disconnect_by_func(milter_logger(),
                                          G_CALLBACK(cb_log), NULL);
     g_string_free(stdout_string, TRUE);
@@ -174,23 +198,44 @@ print_handler (const gchar *string)
 void
 test_console_output (void)
 {
-    GPrintFunc original_func;
-    const gchar *log_level;
-
-    log_level = g_getenv("MILTER_LOG_LEVEL");
-
-    original_func = g_set_print_handler(print_handler);
-
+    original_print_hander = g_set_print_handler(print_handler);
     g_setenv("MILTER_LOG_LEVEL", "info", TRUE);
     milter_info("info");
     milter_info("end-of-log");
-    g_setenv("MILTER_LOG_LEVEL", log_level, TRUE);
+    g_set_print_handler(original_print_hander);
+    original_print_hander = NULL;
 
     while (!end_of_log)
-        g_main_context_iteration(NULL, FALSE);
-    g_set_print_handler(original_func);
+        g_main_context_iteration(NULL, TRUE);
 
     cut_assert_match("info", stdout_string->str);
+}
+
+void
+test_target_level (void)
+{
+    g_unsetenv("MILTER_LOG_LEVEL");
+
+    logger = milter_logger_new();
+    g_signal_connect(logger, "log",
+                     G_CALLBACK(milter_logger_default_log_handler), NULL);
+
+    original_print_hander = g_set_print_handler(print_handler);
+    milter_logger_log(logger, "domain", MILTER_LOG_LEVEL_INFO,
+                      "file", 29, "function",
+                      "message");
+    g_set_print_handler(original_print_hander);
+    original_print_hander = NULL;
+    cut_assert_equal_string("", stdout_string->str);
+
+    milter_logger_set_target_level(logger, MILTER_LOG_LEVEL_INFO);
+    original_print_hander = g_set_print_handler(print_handler);
+    milter_logger_log(logger, "domain", MILTER_LOG_LEVEL_INFO,
+                      "file", 29, "function",
+                      "message");
+    g_set_print_handler(original_print_hander);
+    original_print_hander = NULL;
+    cut_assert_match("message", stdout_string->str);
 }
 
 /*

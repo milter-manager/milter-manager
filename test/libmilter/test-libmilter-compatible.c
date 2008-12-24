@@ -33,6 +33,7 @@
 void test_opensocket (void);
 void test_opensocket_with_remove_socket (void);
 void test_setbacklog (void);
+void test_setdbg (void);
 
 static gchar *tmp_dir;
 
@@ -122,6 +123,54 @@ test_setbacklog (void)
     milter_assert_fail(smfi_setbacklog(-1));
     milter_assert_fail(smfi_setbacklog(0));
     milter_assert_success(smfi_setbacklog(1));
+}
+
+#define milter_assert_equal_target_level(expected)              \
+    gcut_assert_equal_flags(                                    \
+        MILTER_TYPE_LOG_LEVEL_FLAGS,                            \
+        expected,                                               \
+        milter_logger_get_target_level(milter_logger()))
+
+void
+test_setdbg (void)
+{
+    milter_assert_equal_target_level(0);
+
+    milter_assert_success(smfi_setdbg(1));
+    milter_assert_equal_target_level(MILTER_LOG_LEVEL_CRITICAL);
+
+    milter_assert_success(smfi_setdbg(2));
+    milter_assert_equal_target_level(MILTER_LOG_LEVEL_CRITICAL |
+                                     MILTER_LOG_LEVEL_ERROR);
+
+    milter_assert_success(smfi_setdbg(3));
+    milter_assert_equal_target_level(MILTER_LOG_LEVEL_CRITICAL |
+                                     MILTER_LOG_LEVEL_ERROR |
+                                     MILTER_LOG_LEVEL_WARNING);
+
+    milter_assert_success(smfi_setdbg(4));
+    milter_assert_equal_target_level(MILTER_LOG_LEVEL_CRITICAL |
+                                     MILTER_LOG_LEVEL_ERROR |
+                                     MILTER_LOG_LEVEL_WARNING |
+                                     MILTER_LOG_LEVEL_MESSAGE);
+
+    milter_assert_success(smfi_setdbg(5));
+    milter_assert_equal_target_level(MILTER_LOG_LEVEL_CRITICAL |
+                                     MILTER_LOG_LEVEL_ERROR |
+                                     MILTER_LOG_LEVEL_WARNING |
+                                     MILTER_LOG_LEVEL_MESSAGE |
+                                     MILTER_LOG_LEVEL_INFO);
+
+    milter_assert_success(smfi_setdbg(6));
+    milter_assert_equal_target_level(MILTER_LOG_LEVEL_CRITICAL |
+                                     MILTER_LOG_LEVEL_ERROR |
+                                     MILTER_LOG_LEVEL_WARNING |
+                                     MILTER_LOG_LEVEL_MESSAGE |
+                                     MILTER_LOG_LEVEL_INFO |
+                                     MILTER_LOG_LEVEL_DEBUG);
+
+    milter_assert_success(smfi_setdbg(-1));
+    milter_assert_equal_target_level(0);
 }
 
 /*
