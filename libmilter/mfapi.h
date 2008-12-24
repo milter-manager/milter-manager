@@ -190,9 +190,9 @@ typedef int sfsistat;
 
 /**
  * smfiDesc:
- * @xxfi_name: The name of the mail filter.
- * @xxfi_version: The version code of the mail filter.
- * @xxfi_flags: The flags of the mail filter. Available
+ * @xxfi_name: The name of the milter.
+ * @xxfi_version: The version code of the milter.
+ * @xxfi_flags: The flags of the milter. Available
  *              values are SMFIF_*.
  * @xxfi_connect: See xxfi_connect().
  * @xxfi_helo: See xxfi_helo().
@@ -208,39 +208,38 @@ typedef int sfsistat;
  * @xxfi_data: See xxfi_data().
  * @xxfi_negotiate: See xxfi_negotiate().
  *
- * %smfiDesc is used by smfi_register() to register a mail
- * filter.
+ * %smfiDesc is used by smfi_register() to register a milter.
  *
- * If @xxfi_name is %NULL, "Unknown" is used as default mail
- * filter name.
+ * If @xxfi_name is %NULL, "Unknown" is used as default
+ * milter name.
  *
  * @xxfi_version must be specified %SMFI_VERSION.
  *
  * <rd>
  * Here are the available @xxfi_flags values.
  *
- *   * %SMFIF_ADDHDRS: The mail filter may call
+ *   * %SMFIF_ADDHDRS: The milter may call
  *     smfi_addheader().
- *   * %SMFIF_CHGHDRS: The mail filter may call
+ *   * %SMFIF_CHGHDRS: The milter may call
  *     smfi_chgheader().
- *   * %SMFIF_CHGBODY: The mail filter may call
+ *   * %SMFIF_CHGBODY: The milter may call
  *     smfi_chgbody().
- *   * %SMFIF_ADDRCPT: The mail filter may call
+ *   * %SMFIF_ADDRCPT: The milter may call
  *     smfi_addrcpt().
- *   * %SMFIF_ADDRCPT_PTR: The mail filter may call
+ *   * %SMFIF_ADDRCPT_PTR: The milter may call
  *     smfi_addrcpt_ptr().
- *   * %SMFIF_DELRCPT: The mail filter may call
+ *   * %SMFIF_DELRCPT: The milter may call
  *     smfi_delrcpt().
- *   * %SMFIF_QUARANTINE: The mail filter may call
+ *   * %SMFIF_QUARANTINE: The milter may call
  *     smfi_quarantine().
- *   * %SMFIF_CHGROM: The mail filter may call
+ *   * %SMFIF_CHGROM: The milter may call
  *     smfi_chgrom().
- *   * %SMFIF_SETSMLIST: The mail filter may call
+ *   * %SMFIF_SETSMLIST: The milter may call
  *     smfi_setsymlist().  ymbolx().
  *
  * All callbacks (e.g. xxfi_helo(), xxfi_envfrom() and so
  * on) may be %NULL. If a callback is %NULL, the event is
- * just ignored the mail filter.
+ * just ignored the milter.
  *
  * They can be used together by bitwise OR.
  * </rd>
@@ -845,9 +844,9 @@ int smfi_opensocket (bool             remove_socket);
 
 /**
  * smfi_register:
- * @description: The mail filter description.
+ * @description: The milter description.
  *
- * Registers the mail filter implementation as callbacks.
+ * Registers the milter implementation as callbacks.
  *
  * <rd>
  * Here are the fail conditions:
@@ -867,7 +866,7 @@ int smfi_register   (struct smfiDesc  description);
 /**
  * smfi_main:
  *
- * Enters event loop. The mail filter should be initialized
+ * Enters event loop. The milter should be initialized
  * with smfi_register(), smfi_setconn() and so on before
  * smfi_main() is called.
  *
@@ -889,7 +888,7 @@ int smfi_main       (void);
  * smfi_setbacklog:
  * @backlog: The maximum length of the pending connections queue.
  *
- * Sets the mail filters' backlog value that is used for
+ * Sets the milters' backlog value that is used for
  * listen(2).
  *
  * <rd>
@@ -969,6 +968,21 @@ int smfi_settimeout (int              timeout);
  * Returns: %MI_SUCCESS if success, %MI_FAILURE otherwise.
  */
 int smfi_setconn    (char            *connection_spec);
+
+/**
+ * smfi_stop:
+ *
+ * Stops the milter. No more connections are accepted but
+ * processing connections are continued until they are
+ * finished.
+ *
+ * See also <ulink
+ * url="https://www.milter.org/developers/api/smfi_stop">
+ * smfi_stop</ulink>
+ * on milter.org.
+ *
+ * Returns: always %MI_SUCCESS.
+ */
 int smfi_stop       (void);
 int smfi_version    (unsigned int    *major,
                      unsigned int    *minor,
