@@ -1,5 +1,8 @@
 2008-12-24  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-test-client.c: use finished instead of quit. quit is
+	no longer existed.
+
 	* tool/milter-test-server.c: use main loop.
 
 	* test/: follow the below changes.

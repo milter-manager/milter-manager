@@ -201,20 +201,18 @@ cb_abort (MilterClientContext *context, gpointer user_data)
 }
 
 static MilterStatus
-cb_quit (MilterClientContext *context, gpointer user_data)
-{
-    g_print("quit\n");
-
-    return MILTER_STATUS_CONTINUE;
-}
-
-static MilterStatus
 cb_unknown (MilterClientContext *context, const gchar *command,
             gpointer user_data)
 {
     g_print("unknown: <%s>\n", command);
 
     return MILTER_STATUS_CONTINUE;
+}
+
+static void
+cb_finished (MilterFinishedEmittable *emittable)
+{
+    g_print("finished\n");
 }
 
 static void
@@ -234,8 +232,9 @@ setup_context_signals (MilterClientContext *context)
     CONNECT(body);
     CONNECT(end_of_message);
     CONNECT(abort);
-    CONNECT(quit);
     CONNECT(unknown);
+
+    CONNECT(finished);
 
 #undef CONNECT
 }
