@@ -468,7 +468,7 @@ milter_client_main (MilterClient *client)
                           client, NULL);
     priv->server_watch_id =
         g_source_attach(watch_source,
-                        g_main_loop_get_context(priv->main_loop));
+                        g_main_loop_get_context(priv->accept_loop));
     g_source_unref(watch_source);
 
     thread = g_thread_create(server_accept_thread, client, TRUE, NULL);

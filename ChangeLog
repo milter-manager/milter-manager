@@ -1,3 +1,8 @@
+2008-12-24  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/client/milter-client.c (milter_client_main): fix wrong
+	main context attached.
+
 2008-12-22  Kouhei Sutou  <kou@cozmixng.org>
 
 	* libmilter/libmilter-compatible.[ch],
