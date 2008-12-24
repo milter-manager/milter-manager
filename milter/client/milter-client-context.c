@@ -2538,7 +2538,7 @@ cb_decoder_quit (MilterDecoder *decoder, gpointer user_data)
     MilterClientContext *context;
 
     context = MILTER_CLIENT_CONTEXT(user_data);
-    milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(context));
+    milter_agent_shutdown(MILTER_AGENT(context));
 }
 
 static void

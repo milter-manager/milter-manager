@@ -1,5 +1,17 @@
 2008-12-24  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-test-server.c: use milter_agent_shutdown() instead
+	of g_main_loop_quit().
+
+	* test/core/test-reader.c (test_shutdown): add.
+
+	* milter/client/milter-client-context.c (cb_decoder_quit): use
+	shutdown instead of emitting finished signal directory.
+
+	* milter/core/milter-reader.[ch] (milter_reader_shutdown): add.
+
+	* milter/core/milter-agent.[ch] (milter_agent_shutdown): add.
+
 	* milter/client/milter-client-context.c: remove garbages.
 
 	* tool/milter-test-client.c: use finished instead of quit. quit is

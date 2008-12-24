@@ -107,7 +107,7 @@ static void
 send_quit (MilterServerContext *context, ProcessData *data)
 {
     milter_server_context_quit(context);
-    g_main_loop_quit(data->main_loop);
+    milter_agent_shutdown(MILTER_AGENT(context));
 }
 
 static void

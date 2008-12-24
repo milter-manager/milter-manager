@@ -33,6 +33,7 @@ void test_reader_io_channel_binary (void);
 void test_reader_huge_data (void);
 void test_io_error (void);
 void test_finished_signal (void);
+void test_shutdown (void);
 
 static MilterReader *reader;
 
@@ -60,6 +61,7 @@ setup (void)
 
     reader = milter_reader_io_channel_new(channel);
     milter_reader_start(reader);
+
     actual_read_string = g_string_new(NULL);
     actual_read_size = 0;
 
@@ -200,6 +202,16 @@ test_finished_signal (void)
     cut_assert_equal_memory("first", strlen("first"),
                             actual_read_string->str, actual_read_size);
     cut_assert_true(finished);
+}
+
+void
+test_shutdown (void)
+{
+    cut_assert_true(milter_reader_is_watching(reader));
+    milter_reader_shutdown(reader);
+    cut_assert_true(milter_reader_is_watching(reader));
+    g_main_context_iteration(NULL, FALSE);
+    cut_assert_false(milter_reader_is_watching(reader));
 }
 
 /*

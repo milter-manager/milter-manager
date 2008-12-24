@@ -41,6 +41,8 @@ struct _MilterReaderPrivate
 {
     GIOChannel *io_channel;
     guint channel_watch_id;
+    gboolean processing;
+    gboolean shutdown_requested;
 };
 
 enum
@@ -111,6 +113,8 @@ milter_reader_init (MilterReader *reader)
     priv = MILTER_READER_GET_PRIVATE(reader);
     priv->io_channel = NULL;
     priv->channel_watch_id = 0;
+    priv->processing = FALSE;
+    priv->shutdown_requested = FALSE;
 }
 
 #define BUFFER_SIZE 4096
@@ -167,6 +171,7 @@ channel_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
     gboolean keep_callback = TRUE;
 
     priv = MILTER_READER_GET_PRIVATE(reader);
+    priv->processing = TRUE;
 
     if (condition & G_IO_IN ||
         condition & G_IO_PRI) {
@@ -193,11 +198,19 @@ channel_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
         keep_callback = FALSE;
     }
 
+    if (priv->shutdown_requested) {
+        milter_debug("shutdown requested.");
+        keep_callback = FALSE;
+    }
+
     if (!keep_callback) {
         milter_debug("done.");
+        priv->shutdown_requested = FALSE;
         priv->channel_watch_id = 0;
         milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(reader));
     }
+
+    priv->processing = FALSE;
 
     return keep_callback;
 }
@@ -297,6 +310,26 @@ milter_reader_start (MilterReader *reader)
     priv = MILTER_READER_GET_PRIVATE(reader);
     if (priv->io_channel && priv->channel_watch_id == 0)
         watch_io_channel(reader);
+}
+
+gboolean
+milter_reader_is_watching (MilterReader *reader)
+{
+    return MILTER_READER_GET_PRIVATE(reader)->channel_watch_id > 0;
+}
+
+void
+milter_reader_shutdown (MilterReader *reader)
+{
+    MilterReaderPrivate *priv;
+
+    priv = MILTER_READER_GET_PRIVATE(reader);
+
+    if (priv->channel_watch_id > 0)
+        priv->shutdown_requested = TRUE;
+
+    if (priv->io_channel && !priv->processing)
+        g_io_channel_shutdown(priv->io_channel, TRUE, NULL);
 }
 
 /*

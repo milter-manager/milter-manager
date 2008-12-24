@@ -349,6 +349,19 @@ milter_agent_start (MilterAgent *agent)
         milter_reader_start(priv->reader);
 }
 
+void
+milter_agent_shutdown (MilterAgent *agent)
+{
+    MilterAgentPrivate *priv;
+
+    priv = MILTER_AGENT_GET_PRIVATE(agent);
+
+    if (priv->reader)
+        milter_reader_shutdown(priv->reader);
+    else
+        milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(agent));
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */
