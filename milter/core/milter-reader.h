@@ -67,6 +67,8 @@ GType            milter_reader_get_type       (void) G_GNUC_CONST;
 
 MilterReader    *milter_reader_io_channel_new (GIOChannel       *channel);
 
+void             milter_reader_start          (MilterReader     *reader);
+
 G_END_DECLS
 
 #endif /* __MILTER_READER_H__ */

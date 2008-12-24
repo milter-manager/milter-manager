@@ -63,10 +63,6 @@ G_DEFINE_TYPE_WITH_CODE(MilterReader, milter_reader, G_TYPE_OBJECT,
     G_IMPLEMENT_INTERFACE(MILTER_TYPE_ERROR_EMITTABLE, error_emittable_init)
     G_IMPLEMENT_INTERFACE(MILTER_TYPE_FINISHED_EMITTABLE, finished_emittable_init))
 
-static GObject *constructor  (GType                  type,
-                              guint                  n_props,
-                              GObjectConstructParam *props);
-
 static void dispose        (GObject         *object);
 static void set_property   (GObject         *object,
                             guint            prop_id,
@@ -85,7 +81,6 @@ milter_reader_class_init (MilterReaderClass *klass)
 
     gobject_class = G_OBJECT_CLASS(klass);
 
-    gobject_class->constructor  = constructor;
     gobject_class->dispose      = dispose;
     gobject_class->set_property = set_property;
     gobject_class->get_property = get_property;
@@ -138,15 +133,15 @@ read_from_channel (MilterReader *reader, GIOChannel *channel)
         }
         if (io_error) {
             GError *error = NULL;
+
             milter_utils_set_error_with_sub_error(&error,
                                                   MILTER_READER_ERROR,
                                                   MILTER_READER_ERROR_IO_ERROR,
                                                   io_error,
                                                   "I/O error");
-
+            milter_error("%s", error->message);
             milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(reader),
                                         error);
-            milter_error("error: %s", error->message);
             g_error_free(error);
             error_occurred = TRUE;
             break;
@@ -167,8 +162,11 @@ read_from_channel (MilterReader *reader, GIOChannel *channel)
 static gboolean
 channel_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
 {
+    MilterReaderPrivate *priv;
     MilterReader *reader = data;
     gboolean keep_callback = TRUE;
+
+    priv = MILTER_READER_GET_PRIVATE(reader);
 
     if (condition & G_IO_IN ||
         condition & G_IO_PRI) {
@@ -187,19 +185,16 @@ channel_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
                     MILTER_READER_ERROR,
                     MILTER_READER_ERROR_IO_ERROR,
                     "%s", message);
+        milter_error("read error: %s", message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(reader),
                                     error);
-        milter_error("error!: %s", message);
         g_error_free(error);
         g_free(message);
         keep_callback = FALSE;
     }
 
     if (!keep_callback) {
-        MilterReaderPrivate *priv;
-
         milter_debug("done.");
-        priv = MILTER_READER_GET_PRIVATE(reader);
         priv->channel_watch_id = 0;
         milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(reader));
     }
@@ -220,23 +215,6 @@ watch_io_channel (MilterReader *reader)
                                             channel_watch_func, reader);
 }
 
-static GObject *
-constructor (GType type, guint n_props, GObjectConstructParam *props)
-{
-    GObject *object;
-    GObjectClass *klass;
-    MilterReaderPrivate *priv;
-
-    klass = G_OBJECT_CLASS(milter_reader_parent_class);
-    object = klass->constructor(type, n_props, props);
-
-    priv = MILTER_READER_GET_PRIVATE(object);
-    if (priv->io_channel)
-        watch_io_channel(MILTER_READER(object));
-
-    return object;
-}
-
 static void
 dispose (GObject *object)
 {
@@ -244,7 +222,7 @@ dispose (GObject *object)
 
     priv = MILTER_READER_GET_PRIVATE(object);
 
-    if (priv->channel_watch_id) {
+    if (priv->channel_watch_id > 0) {
         g_source_remove(priv->channel_watch_id);
         priv->channel_watch_id = 0;
     }
@@ -309,6 +287,16 @@ milter_reader_io_channel_new (GIOChannel *channel)
     return g_object_new(MILTER_TYPE_READER,
                         "io-channel", channel,
                         NULL);
+}
+
+void
+milter_reader_start (MilterReader *reader)
+{
+    MilterReaderPrivate *priv;
+
+    priv = MILTER_READER_GET_PRIVATE(reader);
+    if (priv->io_channel && priv->channel_watch_id == 0)
+        watch_io_channel(reader);
 }
 
 /*

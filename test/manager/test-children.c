@@ -692,6 +692,7 @@ setup_process_launcher (MilterManagerChildren *children,
     g_io_channel_unref(read_channel);
     g_io_channel_unref(write_channel);
 
+    milter_agent_start(MILTER_AGENT(launcher));
 }
 
 static void

@@ -1897,9 +1897,10 @@ connect_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
     disable_timeout(priv);
 
     if (condition & G_IO_OUT) {
-        if (prepare_reader(context) &&
-            prepare_writer(context))
+        if (prepare_reader(context) && prepare_writer(context)) {
             g_signal_emit(context, signals[READY], 0);
+            milter_agent_start(MILTER_AGENT(context));
+        }
     }
 
     if (condition & G_IO_ERR ||

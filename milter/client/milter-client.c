@@ -336,6 +336,7 @@ process_client_channel (MilterClient *client, GIOChannel *channel)
     /* FIXME: should this be done in the accept thread? or
      * main thread by using g_idle_add? */
     g_signal_emit(client, signals[CONNECTION_ESTABLISHED], 0, context);
+    milter_agent_start(MILTER_AGENT(context));
 }
 
 static gboolean

@@ -278,6 +278,8 @@ setup (void)
     milter_agent_set_reader(MILTER_AGENT(server), reader);
     g_object_unref(reader);
 
+    milter_agent_start(MILTER_AGENT(server));
+
     leader = milter_manager_leader_new(config, client_context);
     actual_error = NULL;
     setup_leader_signals(leader);

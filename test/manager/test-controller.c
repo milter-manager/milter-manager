@@ -68,6 +68,8 @@ setup_input_io (void)
     writer = milter_writer_io_channel_new(channel);
 
     g_io_channel_unref(channel);
+
+    milter_agent_start(MILTER_AGENT(controller));
 }
 
 static void

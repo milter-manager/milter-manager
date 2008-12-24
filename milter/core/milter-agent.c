@@ -338,6 +338,17 @@ milter_agent_get_decoder (MilterAgent *agent)
     return MILTER_AGENT_GET_PRIVATE(agent)->decoder;
 }
 
+void
+milter_agent_start (MilterAgent *agent)
+{
+    MilterAgentPrivate *priv;
+
+    priv = MILTER_AGENT_GET_PRIVATE(agent);
+
+    if (priv->reader)
+        milter_reader_start(priv->reader);
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */

@@ -80,6 +80,8 @@ gboolean             milter_agent_write_packet      (MilterAgent *agent,
                                                      gsize packet_size,
                                                      GError **error);
 
+void                 milter_agent_start             (MilterAgent *agent);
+
 G_END_DECLS
 
 #endif /* __MILTER_AGENT_H__ */
