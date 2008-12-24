@@ -571,6 +571,7 @@ static gboolean
 cb_writing_timeout (gpointer data)
 {
     g_signal_emit(data, signals[WRITING_TIMEOUT], 0);
+    milter_agent_shutdown(MILTER_AGENT(data));
 
     return FALSE;
 }
@@ -579,6 +580,7 @@ static gboolean
 cb_end_of_message_timeout (gpointer data)
 {
     g_signal_emit(data, signals[END_OF_MESSAGE_TIMEOUT], 0);
+    milter_agent_shutdown(MILTER_AGENT(data));
 
     return FALSE;
 }
@@ -587,6 +589,7 @@ static gboolean
 cb_reading_timeout (gpointer data)
 {
     g_signal_emit(data, signals[READING_TIMEOUT], 0);
+    milter_agent_shutdown(MILTER_AGENT(data));
 
     return FALSE;
 }

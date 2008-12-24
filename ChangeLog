@@ -1,5 +1,10 @@
 2008-12-24  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-reader.c: handle error on shutdown.
+
+	* milter/client/milter-client-context.c,
+	milter/server/milter-server-context.c: shutdown on timeout.
+
 	* milter/client/milter-client.c: emits connection established
 	signal on main thread.
 

@@ -1800,6 +1800,7 @@ static gboolean
 cb_timeout (gpointer data)
 {
     g_signal_emit(data, signals[TIMEOUT], 0);
+    milter_agent_shutdown(MILTER_AGENT(data));
 
     return FALSE;
 }
