@@ -382,8 +382,13 @@ static gboolean
 cb_idle_shutdown (gpointer user_data)
 {
     shutdown_count--;
-    if (shutdown_count == 0)
+    if (shutdown_count == 0) {
         milter_client_shutdown(client);
+        if (server) {
+            g_object_unref(server);
+            server = NULL;
+        }
+    }
 
     return shutdown_count > 0;
 }

@@ -48,14 +48,17 @@ static gint signals[LAST_SIGNAL] = {0};
 typedef struct _MilterClientPrivate	MilterClientPrivate;
 struct _MilterClientPrivate
 {
+    GIOChannel *listening_channel;
     GMainLoop *accept_loop;
     GMainLoop *main_loop;
     guint server_watch_id;
     gchar *connection_spec;
-    GList *process_data;
+    GList *processing_data;
+    guint n_processing_data;
     guint timeout;
     GIOChannel *listen_channel;
     gint listen_backlog;
+    gboolean quitting;
 };
 
 typedef struct _MilterClientProcessData
@@ -117,6 +120,8 @@ milter_client_init (MilterClient *client)
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
+    priv->listening_channel = NULL;
+
     main_context = g_main_context_new();
     priv->accept_loop = g_main_loop_new(main_context, FALSE);
     g_main_context_unref(main_context);
@@ -124,10 +129,12 @@ milter_client_init (MilterClient *client)
 
     priv->server_watch_id = 0;
     priv->connection_spec = NULL;
-    priv->process_data = NULL;
+    priv->processing_data = NULL;
+    priv->n_processing_data = 0;
     priv->timeout = 7210;
     priv->listen_channel = NULL;
     priv->listen_backlog = -1;
+    priv->quitting = FALSE;
 }
 
 static void
@@ -145,6 +152,11 @@ dispose (GObject *object)
     MilterClientPrivate *priv;
 
     priv = MILTER_CLIENT_GET_PRIVATE(object);
+
+    if (priv->listening_channel) {
+        g_io_channel_unref(priv->listening_channel);
+        priv->listening_channel = NULL;
+    }
 
     if (priv->accept_loop) {
         g_main_loop_unref(priv->accept_loop);
@@ -166,10 +178,11 @@ dispose (GObject *object)
         priv->connection_spec = NULL;
     }
 
-    if (priv->process_data) {
-        g_list_foreach(priv->process_data, (GFunc)process_data_free, NULL);
-        g_list_free(priv->process_data);
-        priv->process_data = NULL;
+    if (priv->processing_data) {
+        g_list_foreach(priv->processing_data, (GFunc)process_data_free, NULL);
+        g_list_free(priv->processing_data);
+        priv->processing_data = NULL;
+        priv->n_processing_data = 0;
     }
 
     if (priv->listen_channel) {
@@ -283,11 +296,19 @@ static gboolean
 cb_idle_free_data (gpointer _data)
 {
     MilterClientProcessData *data = _data;
+    guint n_processing_data;
 
     milter_debug("removing a MilterClientContext");
-    data->priv->process_data = g_list_remove(data->priv->process_data, data);
+    data->priv->processing_data =
+        g_list_remove(data->priv->processing_data, data);
+    data->priv->n_processing_data--;
+    n_processing_data = data->priv->n_processing_data;
+    if (data->priv->quitting && n_processing_data == 0) {
+        milter_debug("quit main loop");
+        g_main_loop_quit(data->priv->main_loop);
+    }
     process_data_free(data);
-    milter_debug("removed a MilterClientContext");
+    milter_debug("removed a MilterClientContext: rest: <%u>", n_processing_data);
 
     return FALSE;
 }
@@ -296,53 +317,39 @@ static void
 cb_finished (MilterClientContext *context, gpointer _data)
 {
     MilterClientProcessData *data = _data;
-    GSource *source;
 
-    source = g_idle_source_new();
-    g_source_set_callback(source, cb_idle_free_data, data, NULL);
-    g_source_attach(source, g_main_loop_get_context(data->priv->accept_loop));
-    g_source_unref(source);
+    g_idle_add(cb_idle_free_data, data);
 }
 
-typedef struct _ConnectionEstablishedData
+typedef struct _ClientChannelSetupData
 {
     MilterClient *client;
-    MilterClientContext *context;
-} ConnectionEstablishedData;
+    GIOChannel *channel;
+} ClientChannelSetupData;
 
 static gboolean
-cb_idle_connection_established (gpointer user_data)
+cb_idle_client_channel_setup (gpointer user_data)
 {
-    ConnectionEstablishedData *data = user_data;
-
-    g_signal_emit(data->client, signals[CONNECTION_ESTABLISHED],
-                  0, data->context);
-    milter_agent_start(MILTER_AGENT(data->context));
-
-    g_free(data);
-
-    return FALSE;
-}
-
-static void
-process_client_channel (MilterClient *client, GIOChannel *channel)
-{
+    ClientChannelSetupData *setup_data = user_data;
+    MilterClient *client;
     MilterClientPrivate *priv;
     MilterClientContext *context;
     MilterWriter *writer;
     MilterReader *reader;
     MilterClientProcessData *data;
-    ConnectionEstablishedData *connection_established_data;
 
+    client = setup_data->client;
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
-    writer = milter_writer_io_channel_new(channel);
+    writer = milter_writer_io_channel_new(setup_data->channel);
     context = milter_client_context_new();
     milter_agent_set_writer(MILTER_AGENT(context), writer);
     g_object_unref(writer);
-    reader = milter_reader_io_channel_new(channel);
+
+    reader = milter_reader_io_channel_new(setup_data->channel);
     milter_agent_set_reader(MILTER_AGENT(context), reader);
     g_object_unref(reader);
+
     milter_client_context_set_timeout(context, priv->timeout);
 
     data = g_new(MilterClientProcessData, 1);
@@ -352,12 +359,29 @@ process_client_channel (MilterClient *client, GIOChannel *channel)
 
     g_signal_connect(context, "finished", G_CALLBACK(cb_finished), data);
 
-    priv->process_data = g_list_prepend(priv->process_data, data);
+    priv->processing_data = g_list_prepend(priv->processing_data, data);
+    priv->n_processing_data++;
 
-    connection_established_data = g_new0(ConnectionEstablishedData, 1);
-    connection_established_data->client = client;
-    connection_established_data->context = context;
-    g_idle_add(cb_idle_connection_established, connection_established_data);
+    g_signal_emit(client, signals[CONNECTION_ESTABLISHED], 0, context);
+    milter_agent_start(MILTER_AGENT(context));
+
+    g_io_channel_unref(setup_data->channel);
+    g_free(setup_data);
+
+    return FALSE;
+}
+
+static void
+process_client_channel (MilterClient *client, GIOChannel *channel)
+{
+    ClientChannelSetupData *data;
+
+    data = g_new(ClientChannelSetupData, 1);
+    data->client = client;
+    data->channel = channel;
+    g_io_channel_ref(channel);
+
+    g_idle_add(cb_idle_client_channel_setup, data);
 }
 
 static gboolean
@@ -455,12 +479,15 @@ milter_client_main (MilterClient *client)
 {
     MilterClientPrivate *priv;
     GError *error = NULL;
-    GIOChannel *server_channel;
     GSource *watch_source;
     GThread *thread;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
+    if (priv->listen_channel)
+        return FALSE;
+
+    priv->quitting = FALSE;
     if (!priv->connection_spec) {
         gchar *default_connection_spec;
 
@@ -472,20 +499,20 @@ milter_client_main (MilterClient *client)
 
     if (priv->listen_channel) {
         g_io_channel_ref(priv->listen_channel);
-        server_channel = priv->listen_channel;
+        priv->listening_channel = priv->listen_channel;
     } else {
-        server_channel = milter_connection_listen(priv->connection_spec,
-                                                  priv->listen_backlog,
-                                                  &error);
+        priv->listening_channel = milter_connection_listen(priv->connection_spec,
+                                                           priv->listen_backlog,
+                                                           &error);
     }
 
-    if (!server_channel) {
+    if (!priv->listening_channel) {
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client), error);
         g_error_free(error);
         return FALSE;
     }
 
-    watch_source = g_io_create_watch(server_channel,
+    watch_source = g_io_create_watch(priv->listening_channel,
                                      G_IO_IN | G_IO_PRI |
                                      G_IO_ERR | G_IO_HUP | G_IO_NVAL);
     g_source_set_callback(watch_source, (GSourceFunc)server_watch_func,
@@ -499,7 +526,8 @@ milter_client_main (MilterClient *client)
     g_main_loop_run(priv->main_loop);
     g_thread_join(thread);
 
-    g_io_channel_unref(server_channel);
+    if (priv->listening_channel)
+        g_io_channel_unref(priv->listening_channel);
 
     return TRUE;
 }
@@ -510,8 +538,22 @@ milter_client_shutdown (MilterClient *client)
     MilterClientPrivate *priv;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
-    g_main_loop_quit(priv->accept_loop);
-    g_main_loop_quit(priv->main_loop);
+    if (priv->listening_channel) {
+        GIOChannel *listening_channel;
+
+        listening_channel = priv->listening_channel;
+        priv->listening_channel = NULL;
+        priv->quitting = TRUE;
+        g_main_loop_quit(priv->accept_loop);
+        if (priv->server_watch_id > 0) {
+            g_source_remove(priv->server_watch_id);
+            priv->server_watch_id = 0;
+        }
+        g_io_channel_unref(listening_channel);
+
+        if (priv->n_processing_data == 0)
+            g_main_loop_quit(priv->main_loop);
+    }
 }
 
 void
