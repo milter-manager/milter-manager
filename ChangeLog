@@ -1,5 +1,7 @@
 2008-12-24  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/reference/, doc/reference/: add documents.
+
 	* milter/core/milter-reader.c: handle error on shutdown.
 
 	* milter/client/milter-client-context.c,

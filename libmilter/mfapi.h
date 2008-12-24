@@ -188,11 +188,68 @@ typedef int sfsistat;
 #  endif
 #endif
 
+/**
+ * smfiDesc:
+ * @xxfi_name: The name of the mail filter.
+ * @xxfi_version: The version code of the mail filter.
+ * @xxfi_flags: The flags of the mail filter. Available
+ *              values are SMFIF_*.
+ * @xxfi_connect: See xxfi_connect().
+ * @xxfi_helo: See xxfi_helo().
+ * @xxfi_envfrom: See xxfi_envfrom().
+ * @xxfi_envrcpt: See xxfi_envrcpt().
+ * @xxfi_header: See xxfi_header().
+ * @xxfi_eoh: See xxfi_eoh().
+ * @xxfi_body: See xxfi_body().
+ * @xxfi_eom: See xxfi_eom().
+ * @xxfi_abort: See xxfi_abort().
+ * @xxfi_close: See xxfi_close().
+ * @xxfi_unknown: See xxfi_unknown().
+ * @xxfi_data: See xxfi_data().
+ * @xxfi_negotiate: See xxfi_negotiate().
+ *
+ * %smfiDesc is used by smfi_register() to register a mail
+ * filter.
+ *
+ * If @xxfi_name is %NULL, "Unknown" is used as default mail
+ * filter name.
+ *
+ * @xxfi_version must be specified %SMFI_VERSION.
+ *
+ * <rd>
+ * Here are the available @xxfi_flags values.
+ *
+ *   * %SMFIF_ADDHDRS: The mail filter may call
+ *     smfi_addheader().
+ *   * %SMFIF_CHGHDRS: The mail filter may call
+ *     smfi_chgheader().
+ *   * %SMFIF_CHGBODY: The mail filter may call
+ *     smfi_chgbody().
+ *   * %SMFIF_ADDRCPT: The mail filter may call
+ *     smfi_addrcpt().
+ *   * %SMFIF_ADDRCPT_PTR: The mail filter may call
+ *     smfi_addrcpt_ptr().
+ *   * %SMFIF_DELRCPT: The mail filter may call
+ *     smfi_delrcpt().
+ *   * %SMFIF_QUARANTINE: The mail filter may call
+ *     smfi_quarantine().
+ *   * %SMFIF_CHGROM: The mail filter may call
+ *     smfi_chgrom().
+ *   * %SMFIF_SETSMLIST: The mail filter may call
+ *     smfi_setsymlist().  ymbolx().
+ *
+ * All callbacks (e.g. xxfi_helo(), xxfi_envfrom() and so
+ * on) may be %NULL. If a callback is %NULL, the event is
+ * just ignored the mail filter.
+ *
+ * They can be used together by bitwise OR.
+ * </rd>
+ */
 struct smfiDesc
 {
-    char          *xxfi_name;    /* filter name */
-    int            xxfi_version; /* version code -- do not change */
-    unsigned long  xxfi_flags;   /* flags */
+    char          *xxfi_name;
+    int            xxfi_version;
+    unsigned long  xxfi_flags;
 
     /**
      * xxfi_connect:
@@ -223,7 +280,7 @@ struct smfiDesc
      * : %SMFIS_NOREPLY
      *    Doesn't send a reply back to MTA. The milter
      *    must set %SMFIP_NR_CONN flag to
-     *    %smfiDesc_str's xxfi_flags.
+     *    %smfiDesc::xxfi_flags.
      * </rd>
      *
      * See also <ulink
@@ -264,7 +321,7 @@ struct smfiDesc
      * : %SMFIS_NOREPLY
      *    Doesn't send a reply back to MTA. The milter
      *    must set %SMFIP_NR_HELO flag to
-     *    %smfiDesc_str's xxfi_flags.
+     *    %smfiDesc::xxfi_flags.
      * </rd>
      *
      * See also <ulink
@@ -310,7 +367,7 @@ struct smfiDesc
      * : %SMFIS_NOREPLY
      *    Doesn't send a reply back to MTA. The milter
      *    must set %SMFIP_NR_MAIL flag to
-     *    %smfiDesc_str's xxfi_flags.
+     *    %smfiDesc::xxfi_flags.
      * </rd>
      *
      * See also <ulink
@@ -356,7 +413,7 @@ struct smfiDesc
      * : %SMFIS_NOREPLY
      *    Doesn't send a reply back to MTA. The milter
      *    must set %SMFIP_NR_RCPT flag to
-     *    %smfiDesc_str's xxfi_flags.
+     *    %smfiDesc::xxfi_flags.
      * </rd>
      *
      * See also <ulink
@@ -377,9 +434,9 @@ struct smfiDesc
      *         white space.
      *
      * This callback is called on each header. If
-     * %SMFIP_HDR_LEADSPC flag is set to %smfiDesc_str's
-     * xxfi_flags, @value have spaces after header name and
-     * value separator ":".
+     * %SMFIP_HDR_LEADSPC flag is set to
+     * %smfiDesc::xxfi_flags, @value have spaces after
+     * header name and value separator ":".
      *
      * Example:
      *
@@ -428,7 +485,7 @@ struct smfiDesc
      * : %SMFIS_NOREPLY
      *    Doesn't send a reply back to MTA. The milter
      *    must set %SMFIP_NR_HDR flag to
-     *    %smfiDesc_str's xxfi_flags.
+     *    %smfiDesc::xxfi_flags.
      * </rd>
      *
      * See also <ulink
@@ -755,7 +812,56 @@ struct smfiDesc
                                    unsigned long *unused1_output);
 };
 
+/**
+ * smfi_opensocket:
+ * @remove_socket: Whether or not trying to remove existing
+ *                 UNIX domain socket before creating a new
+ *                 socket.
+ *
+ * Creates the socket that is used to connect from MTA.
+ *
+ * Normally, smfi_opensocket() isn't needed to call
+ * explicitly. The socket is created in smfi_main()
+ * implicitly.
+ *
+ * <rd>
+ * Here are the fail conditions:
+ *   * smfi_register() hasn't called successfully.
+ *   * smfi_setconn() hasn't called successfully.
+ *   * smfi_opensocket() fails to remove existing UNIX
+ *     domain socket if connection spec is for UNIX domain
+ *     socket and @remove_socket is true.
+ *   * smfi_opensocket() fails to create the new socket.
+ * </rd>
+ *
+ * See also <ulink
+ * url="https://www.milter.org/developers/api/smfi_opensocket">
+ * smfi_opensocket</ulink>
+ * on milter.org.
+ *
+ * Returns: %MI_SUCCESS if success, %MI_FAILURE otherwise.
+ */
 int smfi_opensocket (bool             remove_socket);
+
+/**
+ * smfi_register:
+ * @description: The mail filter description.
+ *
+ * Registers the mail filter implementation as callbacks.
+ *
+ * <rd>
+ * Here are the fail conditions:
+ *   * incompatible xxfi_version.
+ *   * illegal xxfi_flags value.
+ * </rd>
+ *
+ * See also <ulink
+ * url="https://www.milter.org/developers/api/smfi_register">
+ * smfi_register</ulink>
+ * on milter.org.
+ *
+ * Returns: %MI_SUCCESS if success, %MI_FAILURE otherwise.
+ */
 int smfi_register   (struct smfiDesc  description);
 int smfi_main       (void);
 int smfi_setbacklog (int              backlog);

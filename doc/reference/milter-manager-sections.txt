@@ -1209,6 +1209,8 @@ MI_SUCCESS
 MI_FAILURE
 SMFICTX
 SMFICTX_PTR
+_SOCK_ADDR
+smfiDesc
 smfiDesc_str
 smfiDesc_ptr
 sfsistat

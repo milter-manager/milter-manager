@@ -1,5 +1,48 @@
 # libmilter/mfapi.h
 
-<MACRO>
+<TYPEDEF>
 <NAME>_SOCK_ADDR</NAME>
-</MACRO>
+typedef _SOCK_ADDR struct sockaddr
+</TYPEDEF>
+
+<STRUCT>
+<NAME>smfiDesc</NAME>
+struct smfiDesc
+{
+    char          *xxfi_name;
+    int            xxfi_version;
+    unsigned long  xxfi_flags;
+
+    sfsistat	(*xxfi_connect)   (SMFICTX     *context,
+                                   char        *host_name,
+                                   _SOCK_ADDR  *address);
+    sfsistat	(*xxfi_helo)      (SMFICTX    *context,
+                                   char       *fqdn);
+    sfsistat	(*xxfi_envfrom)   (SMFICTX    *context,
+                                   char      **addresses);
+    sfsistat	(*xxfi_envrcpt)   (SMFICTX    *context,
+                                   char      **addresses);
+    sfsistat	(*xxfi_header)    (SMFICTX    *context,
+                                   char       *name,
+                                   char       *value);
+    sfsistat	(*xxfi_eoh)       (SMFICTX    *context);
+    sfsistat	(*xxfi_body)      (SMFICTX    *context,
+                                   unsigned char *data,
+                                   size_t     data_size);
+    sfsistat	(*xxfi_eom)       (SMFICTX    *context);
+    sfsistat	(*xxfi_abort)     (SMFICTX    *context);
+    sfsistat	(*xxfi_close)     (SMFICTX    *context);
+    sfsistat	(*xxfi_unknown)   (SMFICTX    *context,
+                                   const char *command);
+    sfsistat	(*xxfi_data)      (SMFICTX    *context);
+    sfsistat	(*xxfi_negotiate) (SMFICTX    *context,
+                                   unsigned long  actions,
+                                   unsigned long  steps,
+                                   unsigned long  unused0,
+                                   unsigned long  unused1,
+                                   unsigned long *actions_output,
+                                   unsigned long *steps_output,
+                                   unsigned long *unused0_output,
+                                   unsigned long *unused1_output);
+};
+</STRUCT>
