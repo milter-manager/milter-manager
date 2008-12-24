@@ -595,6 +595,35 @@ cb_reading_timeout (gpointer data)
 }
 
 static gboolean
+is_processing_previous_command (MilterServerContext *context)
+{
+    MilterServerContextPrivate *priv;
+    gchar *inspected_state;
+    GError *error = NULL;
+
+    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+
+    if (priv->timeout_id == 0)
+        return FALSE;
+
+    inspected_state =
+        milter_utils_get_enum_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                                   priv->state);
+    g_set_error(&error,
+                MILTER_SERVER_CONTEXT_ERROR,
+                MILTER_SERVER_CONTEXT_ERROR_BUSY,
+                "Previous command(%s) has been processing in milter",
+                inspected_state);
+    milter_error("%s", error->message);
+    milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(context),
+                                error);
+    g_error_free(error);
+    g_free(inspected_state);
+
+    return TRUE;
+}
+
+static gboolean
 write_packet (MilterServerContext *context, gchar *packet, gsize packet_size,
               MilterServerContextState next_state)
 {
@@ -606,34 +635,25 @@ write_packet (MilterServerContext *context, gchar *packet, gsize packet_size,
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
 
-    if (priv->timeout_id > 0) {
-        gchar *inspected_state;
-        GError *error = NULL;
-
-        inspected_state =
-            milter_utils_get_enum_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
-                                       priv->state);
-        g_set_error(&error,
-                    MILTER_SERVER_CONTEXT_ERROR,
-                    MILTER_SERVER_CONTEXT_ERROR_BUSY,
-                    "Previous command(%s) has been processing in milter",
-                    inspected_state);
-        milter_error("%s", error->message);
-        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(context),
-                                    error);
-        g_error_free(error);
-        g_free(inspected_state);
-        return FALSE;
+    switch (next_state) {
+      case MILTER_SERVER_CONTEXT_STATE_ABORT:
+      case MILTER_SERVER_CONTEXT_STATE_QUIT:
+        break;
+      default:
+        if (is_processing_previous_command(context))
+            return FALSE;
+        priv->timeout_id = milter_utils_timeout_add(priv->writing_timeout,
+                                                    cb_writing_timeout,
+                                                    context);
+        break;
     }
 
-    priv->timeout_id = milter_utils_timeout_add(priv->writing_timeout,
-                                                cb_writing_timeout,
-                                                context);
     milter_agent_write_packet(MILTER_AGENT(context),
                               packet, packet_size,
                               &agent_error);
     disable_timeout(priv);
     g_free(packet);
+
     if (agent_error) {
         GError *error = NULL;
         milter_utils_set_error_with_sub_error(
@@ -662,10 +682,13 @@ write_packet (MilterServerContext *context, gchar *packet, gsize packet_size,
         break;
       case MILTER_SERVER_CONTEXT_STATE_BODY:
       case MILTER_SERVER_CONTEXT_STATE_DEFINE_MACRO:
-      case MILTER_SERVER_CONTEXT_STATE_ABORT:
-      case MILTER_SERVER_CONTEXT_STATE_QUIT:
         priv->state = next_state;
         disable_timeout(priv);
+        break;
+      case MILTER_SERVER_CONTEXT_STATE_QUIT:
+        milter_agent_shutdown(MILTER_AGENT(context));
+      case MILTER_SERVER_CONTEXT_STATE_ABORT:
+        priv->state = next_state;
         break;
       default:
         priv->state = next_state;

@@ -55,6 +55,7 @@ void test_reading_timeout (void);
 void test_writing_timeout (void);
 void test_invalid_state_error (void);
 void test_busy_error (void);
+void test_no_busy_on_abort (void);
 void test_decode_error (void);
 void test_write_error (void);
 
@@ -921,8 +922,17 @@ test_busy_error (void)
                                  inspected_state);
 
     milter_server_context_helo(context, "delian");
-    milter_server_context_abort(context);
+    milter_server_context_data(context);
     gcut_assert_equal_error(expected_error, actual_error);
+}
+
+void
+test_no_busy_on_abort (void)
+{
+    milter_server_context_helo(context, "delian");
+    milter_server_context_abort(context);
+    milter_server_context_quit(context);
+    gcut_assert_error(actual_error);
 }
 
 static void

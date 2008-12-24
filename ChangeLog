@@ -1,3 +1,8 @@
+2008-12-25  Hiroyuki Ikezoe  <poincare@ikezoe.net>
+
+	* milter/server/milter-server-context.c (write_packet): Do not check
+	busy if abort and quit state.
+
 2008-12-24  Kouhei Sutou  <kou@cozmixng.org>
 
 	* tool/milter-test-client.c: handle SIGINT only once.
