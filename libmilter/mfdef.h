@@ -42,29 +42,8 @@
 #define SMFIR_REPLYCODE       'y'
 
 
-#define SMFIP_NOCONNECT       0x00000001L
-#define SMFIP_NOHELO          0x00000002L
-#define SMFIP_NOMAIL          0x00000004L
-#define SMFIP_NORCPT          0x00000008L
-#define SMFIP_NOBODY          0x00000010L
-#define SMFIP_NOHDRS          0x00000020L
-#define SMFIP_NOEOH           0x00000040L
-#define SMFIP_NR_HDR          0x00000080L
-#define SMFIP_NOHREPL         SMFIP_NR_HDR
-#define SMFIP_NOUNKNOWN       0x00000100L
-#define SMFIP_NODATA          0x00000200L
-#define SMFIP_SKIP            0x00000400L
-#define SMFIP_RCPT_REJ        0x00000800L
-#define SMFIP_NR_CONN         0x00001000L
-#define SMFIP_NR_HELO         0x00002000L
-#define SMFIP_NR_MAIL         0x00004000L
-#define SMFIP_NR_RCPT         0x00008000L
-#define SMFIP_NR_DATA         0x00010000L
-#define SMFIP_NR_UNKN         0x00020000L
-#define SMFIP_NR_EOH          0x00040000L
-#define SMFIP_NR_BODY         0x00080000L
-#define SMFIP_HDR_LEADSPC     0x00100000L
-
+#define SMFIM_FIRST           SMFIM_CONNECT
+#define SMFIM_LAST            SMFIM_EOH
 
 #endif /* __LIBMILTER_MFDEF_H__ */
 

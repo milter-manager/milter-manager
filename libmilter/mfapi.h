@@ -522,7 +522,7 @@ struct smfiDesc
      * : %SMFIS_NOREPLY
      *    Doesn't send a reply back to MTA. The milter
      *    must set %SMFIP_NR_EOH flag to
-     *    %smfiDesc_str's xxfi_flags.
+     *    %smfiDesc::xxfi_flags.
      * </rd>
      *
      * See also <ulink
@@ -570,7 +570,7 @@ struct smfiDesc
      * : %SMFIS_NOREPLY
      *    Doesn't send a reply back to MTA. The milter
      *    must set %SMFIP_NR_BODY flag to
-     *    %smfiDesc_str's xxfi_flags.
+     *    %smfiDesc::xxfi_flags.
      * </rd>
      *
      * See also <ulink
@@ -702,7 +702,7 @@ struct smfiDesc
      * : %SMFIS_NOREPLY
      *    Doesn't send a reply back to MTA. The milter
      *    must set %SMFIP_NR_UNKN flag to
-     *    %smfiDesc_str's xxfi_flags.
+     *    %smfiDesc::xxfi_flags.
      * </rd>
      *
      * Note that the unknown or unimplemented SMTP command
@@ -745,7 +745,7 @@ struct smfiDesc
      * : %SMFIS_NOREPLY
      *    Doesn't send a reply back to MTA. The milter
      *    must set %SMFIP_NR_DATA flag to
-     *    %smfiDesc_str's xxfi_flags.
+     *    %smfiDesc::xxfi_flags.
      * </rd>
      *
      * See also <ulink
@@ -1108,24 +1108,370 @@ int smfi_version    (unsigned int    *major,
 #define SMFIF_SETSYMLIST  0x00000100L
 
 
+/**
+ * SMFIS_CONTINUE:
+ *
+ * Continues the current process.
+ *
+ * See each callback (xxfi_connect(), xxfi_helo() and so
+ * on) and <ulink
+ * url="https://www.milter.org/developers/api/&num;conn-spec">
+ * callback return status description</ulink> on milter.org.
+ */
 #define SMFIS_CONTINUE    0
+
+/**
+ * SMFIS_REJECT:
+ *
+ * Reject the current processing target.
+ *
+ * See each callback (xxfi_connect(), xxfi_helo() and so
+ * on) and <ulink
+ * url="https://www.milter.org/developers/api/&num;conn-spec">
+ * callback return status description</ulink> on milter.org.
+ */
 #define SMFIS_REJECT      1
+
+/**
+ * SMFIS_DISCARD:
+ *
+ * Accepts the current processing target and discards it
+ * silently.
+ *
+ * See each callback (xxfi_envfrom(), xxfi_envrcpt() and so
+ * on) and <ulink
+ * url="https://www.milter.org/developers/api/&num;conn-spec">
+ * callback return status description</ulink> on milter.org.
+ */
 #define SMFIS_DISCARD     2
+
+/**
+ * SMFIS_ACCEPT:
+ *
+ * Accepts the current processing target.
+ *
+ * See each callback (xxfi_connect(), xxfi_helo() and so
+ * on) and <ulink
+ * url="https://www.milter.org/developers/api/&num;conn-spec">
+ * callback return status description</ulink> on milter.org.
+ */
 #define SMFIS_ACCEPT      3
+
+/**
+ * SMFIS_TEMPFAIL:
+ *
+ * Returns a temporary failure status for the current
+ * processing target.
+ *
+ * See each callback (xxfi_connect(), xxfi_helo() and so
+ * on) and <ulink
+ * url="https://www.milter.org/developers/api/&num;conn-spec">
+ * callback return status description</ulink> on milter.org.
+ */
 #define SMFIS_TEMPFAIL    4
+
+/**
+ * SMFIS_NOREPLY:
+ *
+ * Doesn't reply to the MTA.
+ *
+ * See each callback (xxfi_connect(), xxfi_helo() and so
+ * on) and <ulink
+ * url="https://www.milter.org/developers/api/&num;conn-spec">
+ * callback return status description</ulink> on milter.org.
+ */
 #define SMFIS_NOREPLY     7
+
+/**
+ * SMFIS_SKIP:
+ *
+ * Skips the rest body chunks. This can be used only in
+ * xxfi_body().
+ *
+ * See <ulink
+ * url="https://www.milter.org/developers/api/&num;conn-spec">
+ * callback return status description</ulink> on milter.org.
+ */
 #define SMFIS_SKIP        8
+
+/**
+ * SMFIS_ALL_OPTS:
+ *
+ * Uses the all negotiate options received from the
+ * MTA. This can be used only in xxfi_negotiate().
+ */
 #define SMFIS_ALL_OPTS    10
 
-#define SMFIM_FIRST	  0
+/**
+ * SMFIM_CONNECT:
+ *
+ * Indicates the protocol stage for xxfi_connect().
+ *
+ * See smfi_setsymlist().
+ **/
 #define SMFIM_CONNECT	  0
+
+/**
+ * SMFIM_HELO:
+ *
+ * Indicates the protocol stage for xxfi_helo().
+ *
+ * See smfi_setsymlist().
+ **/
 #define SMFIM_HELO	  1
+
+/**
+ * SMFIM_ENVFROM:
+ *
+ * Indicates the protocol stage for xxfi_envfrom().
+ *
+ * See smfi_setsymlist().
+ **/
 #define SMFIM_ENVFROM	  2
+
+/**
+ * SMFIM_ENVRCPT:
+ *
+ * Indicates the protocol stage for xxfi_envrcpt().
+ *
+ * See smfi_setsymlist().
+ **/
 #define SMFIM_ENVRCPT	  3
+
+/**
+ * SMFIM_DATA:
+ *
+ * Indicates the protocol stage for xxfi_data().
+ *
+ * See smfi_setsymlist().
+ **/
 #define SMFIM_DATA	  4
+
+/**
+ * SMFIM_EOM:
+ *
+ * Indicates the protocol stage for xxfi_eom().
+ *
+ * See smfi_setsymlist().
+ **/
 #define SMFIM_EOM	  5
+
+/**
+ * SMFIM_EOH:
+ *
+ * Indicates the protocol stage for xxfi_eoh().
+ *
+ * See smfi_setsymlist().
+ **/
 #define SMFIM_EOH	  6
-#define SMFIM_LAST	  6
+
+/**
+ * SMFIP_NOCONNECT:
+ *
+ * Indicates that the MTA should not send information for
+ * xxfi_connect().
+ *
+ * This flag can be got/set to @steps_output of xxfi_negotiate().
+ **/
+#define SMFIP_NOCONNECT       0x00000001L
+
+/**
+ * SMFIP_NOHELO:
+ *
+ * Indicates that the MTA should not send information for
+ * xxfi_helo().
+ *
+ * This flag can be got/set to @steps_output of xxfi_negotiate().
+ **/
+#define SMFIP_NOHELO          0x00000002L
+
+/**
+ * SMFIP_NOMAIL:
+ *
+ * Indicates that the MTA should not send information for
+ * xxfi_mail().
+ *
+ * This flag can be got/set to @steps_output of xxfi_negotiate().
+ **/
+#define SMFIP_NOMAIL          0x00000004L
+
+/**
+ * SMFIP_NORCPT:
+ *
+ * Indicates that the MTA should not send information for
+ * xxfi_rcpt().
+ *
+ * This flag can be got/set to @steps_output of xxfi_negotiate().
+ **/
+#define SMFIP_NORCPT          0x00000008L
+
+/**
+ * SMFIP_BODY:
+ *
+ * Indicates that the MTA should not send information for
+ * xxfi_body().
+ *
+ * This flag can be got/set to @steps_output of xxfi_negotiate().
+ **/
+#define SMFIP_NOBODY          0x00000010L
+
+/**
+ * SMFIP_NOHDRS:
+ *
+ * Indicates that the MTA should not send information for
+ * xxfi_header().
+ *
+ * This flag can be got/set to @steps_output of xxfi_negotiate().
+ **/
+#define SMFIP_NOHDRS          0x00000020L
+
+/**
+ * SMFIP_NOEOH:
+ *
+ * Indicates that the MTA should not send information for
+ * xxfi_eoh().
+ *
+ * This flag can be got/set to @steps_output of xxfi_negotiate().
+ **/
+#define SMFIP_NOEOH           0x00000040L
+
+/**
+ * SMFIP_NR_HDR:
+ *
+ * Indicates that the milter don't reply on xxfi_header().
+ *
+ * This flag can be got/set to @steps_output of xxfi_negotiate().
+ **/
+#define SMFIP_NR_HDR          0x00000080L
+
+/**
+ * SMFIP_NOHREPL:
+ *
+ * Same as %SMFIP_NR_HDR.
+ **/
+#define SMFIP_NOHREPL         SMFIP_NR_HDR
+
+/**
+ * SMFIP_NOUNKNOWN:
+ *
+ * Indicates that the MTA should not send information for
+ * xxfi_unknown().
+ *
+ * This flag can be got/set to @steps_output of xxfi_negotiate().
+ **/
+#define SMFIP_NOUNKNOWN       0x00000100L
+
+/**
+ * SMFIP_NODATA:
+ *
+ * Indicates that the MTA should not send information for
+ * xxfi_data().
+ *
+ * This flag can be got/set to @steps_output of xxfi_negotiate().
+ **/
+#define SMFIP_NODATA          0x00000200L
+
+/**
+ * SMFIP_SKIP:
+ *
+ * Indicates that the MTA supports SMFIS_SKIP in xxfi_body().
+ *
+ * This flag can be got/set to @steps_output of xxfi_negotiate().
+ **/
+#define SMFIP_SKIP            0x00000400L
+
+/**
+ * SMFIP_RCPT_REJ:
+ *
+ * Indicates that the MTA should send rejected envelope
+ * recipients and xxfi_header() is called for them.
+ *
+ * This flag can be got/set to @steps_output of xxfi_negotiate().
+ **/
+#define SMFIP_RCPT_REJ        0x00000800L
+
+/**
+ * SMFIP_NR_CONN:
+ *
+ * Indicates that the milter don't reply on xxfi_connect().
+ *
+ * This flag can be got/set to @steps_output of xxfi_negotiate().
+ **/
+#define SMFIP_NR_CONN         0x00001000L
+
+/**
+ * SMFIP_NR_HELO:
+ *
+ * Indicates that the milter don't reply on xxfi_helo().
+ *
+ * This flag can be got/set to @steps_output of xxfi_negotiate().
+ **/
+#define SMFIP_NR_HELO         0x00002000L
+
+/**
+ * SMFIP_NR_MAIL:
+ *
+ * Indicates that the milter don't reply on xxfi_mail().
+ *
+ * This flag can be got/set to @steps_output of xxfi_negotiate().
+ **/
+#define SMFIP_NR_MAIL         0x00004000L
+
+/**
+ * SMFIP_NR_RCPT:
+ *
+ * Indicates that the milter don't reply on xxfi_rcpt().
+ *
+ * This flag can be got/set to @steps_output of xxfi_negotiate().
+ **/
+#define SMFIP_NR_RCPT         0x00008000L
+
+/**
+ * SMFIP_NR_DATA:
+ *
+ * Indicates that the milter don't reply on xxfi_data().
+ *
+ * This flag can be got/set to @steps_output of xxfi_negotiate().
+ **/
+#define SMFIP_NR_DATA         0x00010000L
+
+/**
+ * SMFIP_NR_UNKN:
+ *
+ * Indicates that the milter don't reply on xxfi_unknown().
+ *
+ * This flag can be got/set to @steps_output of xxfi_negotiate().
+ **/
+#define SMFIP_NR_UNKN         0x00020000L
+
+/**
+ * SMFIP_NR_EOH:
+ *
+ * Indicates that the milter don't reply on xxfi_eoh().
+ *
+ * This flag can be got/set to @steps_output of xxfi_negotiate().
+ **/
+#define SMFIP_NR_EOH          0x00040000L
+
+/**
+ * SMFIP_NR_BODY:
+ *
+ * Indicates that the milter don't reply on xxfi_body().
+ *
+ * This flag can be got/set to @steps_output of xxfi_negotiate().
+ **/
+#define SMFIP_NR_BODY         0x00080000L
+
+/**
+ * SMFIP_HDR_LEADSPC:
+ *
+ * Indicates that xxfi_header() callback is received a
+ * header value including spaces after ':'. See
+ * xxfi_header() for examples.
+ *
+ * This flag can be got/set to @steps_output of xxfi_negotiate().
+ **/
+#define SMFIP_HDR_LEADSPC     0x00100000L
 
 char   *smfi_getsymval   (SMFICTX        *context,
                           char           *name);

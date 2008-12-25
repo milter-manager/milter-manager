@@ -1,5 +1,8 @@
 2008-12-25  Kouhei Sutou  <kou@cozmixng.org>
 
+	* libmilter/mfapi.h: move documentation unnecessary codes to ...
+	* libmilter/mfdef.h: ... here.
+
 	* test/libmilter/test-libmilter-compatible.c: add missing tests.
 
 	* Makefile.am: install *.pc.
@@ -46,7 +49,7 @@
 	test/libmilter/test-libmilter-compatible.c: add
 	libmilter_compatible_convert_action_flags().
 
-	* libmilter/mfaph.h: follow the current enum name.
+	* libmilter/mfapi.h: follow the current enum name.
 
 	* milter/client.h, milter/client/milter-client.c: improve error
 	handling.
@@ -55,7 +58,7 @@
 	test/libmilter/test-libmilter-compatible.c: implement smfi_stop()
 	and smfi_version().
 
-	* libmilter/mfaph.h: add documents.
+	* libmilter/mfapi.h: add documents.
 
 2008-12-25  Hiroyuki Ikezoe  <poincare@ikezoe.net>
 
