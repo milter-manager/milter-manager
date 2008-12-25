@@ -330,29 +330,29 @@ milter_option_merge (MilterOption *dest, MilterOption *src)
     return TRUE;
 }
 
-#define MILTER_NO_STEP_FLAGS    \
-    (MILTER_STEP_NO_CONNECT |    \
-     MILTER_STEP_NO_HELO |       \
-     MILTER_STEP_NO_ENVELOPE_FROM | \
-     MILTER_STEP_NO_ENVELOPE_RECIPIENT | \
-     MILTER_STEP_NO_BODY | \
-     MILTER_STEP_NO_HEADERS | \
-     MILTER_STEP_NO_END_OF_HEADER | \
-     MILTER_STEP_NO_REPLY_HEADER | \
-     MILTER_STEP_NO_UNKNOWN | \
-     MILTER_STEP_NO_DATA | \
-     MILTER_STEP_NO_REPLY_CONNECT | \
-     MILTER_STEP_NO_REPLY_HELO | \
-     MILTER_STEP_NO_REPLY_ENVELOPE_FROM | \
-     MILTER_STEP_NO_REPLY_ENVELOPE_RECIPIENT | \
-     MILTER_STEP_NO_REPLY_DATA | \
-     MILTER_STEP_NO_REPLY_UNKNOWN | \
-     MILTER_STEP_NO_REPLY_END_OF_HEADER | \
-     MILTER_STEP_NO_REPLY_BODY)
+#define MILTER_NO_STEP_FLAGS                    \
+    (MILTER_STEP_NO_CONNECT |                   \
+     MILTER_STEP_NO_HELO |                      \
+     MILTER_STEP_NO_ENVELOPE_FROM |             \
+     MILTER_STEP_NO_ENVELOPE_RECIPIENT |        \
+     MILTER_STEP_NO_BODY |                      \
+     MILTER_STEP_NO_HEADERS |                   \
+     MILTER_STEP_NO_END_OF_HEADER |             \
+     MILTER_STEP_NO_REPLY_HEADER |              \
+     MILTER_STEP_NO_UNKNOWN |                   \
+     MILTER_STEP_NO_DATA |                      \
+     MILTER_STEP_NO_REPLY_CONNECT |             \
+     MILTER_STEP_NO_REPLY_HELO |                \
+     MILTER_STEP_NO_REPLY_ENVELOPE_FROM |       \
+     MILTER_STEP_NO_REPLY_ENVELOPE_RECIPIENT |  \
+     MILTER_STEP_NO_REPLY_DATA |                \
+     MILTER_STEP_NO_REPLY_UNKNOWN |             \
+     MILTER_STEP_NO_REPLY_END_OF_HEADER |       \
+     MILTER_STEP_NO_REPLY_BODY)                 \
 
-#define MILTER_NORMAL_STEP_FLAGS \
-    (MILTER_STEP_SKIP |          \
-     MILTER_STEP_ENVELOPE_RECIPIENT_REJECTED | \
+#define MILTER_NORMAL_STEP_FLAGS                \
+    (MILTER_STEP_SKIP |                         \
+     MILTER_STEP_ENVELOPE_RECIPIENT_REJECTED |  \
      MILTER_STEP_HEADER_LEAD_SPACE)
 
 MilterStepFlags
