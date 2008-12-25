@@ -36,6 +36,8 @@ void test_setbacklog (void);
 void test_setdbg (void);
 void test_settimeout (void);
 void test_setconn (void);
+void test_stop (void);
+void test_version (void);
 
 static gchar *tmp_dir;
 
@@ -189,6 +191,45 @@ test_setconn (void)
     milter_assert_success(smfi_setconn("unix:/tmp/nonexistent"));
     milter_assert_success(smfi_setconn("inet:12345"));
     milter_assert_success(smfi_setconn("inet6:12345@localhost"));
+}
+
+static gboolean
+cb_idle_stop (gpointer data)
+{
+    gboolean *stopped = data;
+
+    milter_assert_success(smfi_stop());
+    *stopped = TRUE;
+
+    return FALSE;
+}
+
+void
+test_stop (void)
+{
+    const gchar *socket_path;
+    gboolean stopped = FALSE;
+
+    milter_assert_success(smfi_register(smfilter));
+
+    socket_path = cut_take_printf("unix:%s/sock", tmp_dir);
+    milter_assert_success(smfi_setconn((gchar *)socket_path));
+
+    g_idle_add(cb_idle_stop, &stopped);
+
+    milter_assert_success(smfi_main());
+    cut_assert_true(stopped);
+}
+
+void
+test_version (void)
+{
+    unsigned int major, minor, patch_level;
+
+    milter_assert_success(smfi_version(&major, &minor, &patch_level));
+    cut_assert_equal_uint(1, major);
+    cut_assert_equal_uint(0, minor);
+    cut_assert_equal_uint(1, patch_level);
 }
 
 /*

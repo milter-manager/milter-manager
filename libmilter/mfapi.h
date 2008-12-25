@@ -984,6 +984,23 @@ int smfi_setconn    (char            *connection_spec);
  * Returns: always %MI_SUCCESS.
  */
 int smfi_stop       (void);
+
+/**
+ * smfi_version:
+ * @major: return location for major version.
+ * @minor: return location for minor version.
+ * @patch_level: return location for patch level.
+ *
+ * Gets the libmilter version. The version is for using
+ * libmilter not built libmilter.
+ *
+ * See also <ulink
+ * url="https://www.milter.org/developers/api/smfi_version">
+ * smfi_version</ulink>
+ * on milter.org.
+ *
+ * Returns: always %MI_SUCCESS.
+ */
 int smfi_version    (unsigned int    *major,
                      unsigned int    *minor,
                      unsigned int    *patch_level);

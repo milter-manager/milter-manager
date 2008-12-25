@@ -33,6 +33,7 @@
 
 #include "libmilter-compatible.h"
 
+static MilterClient *client = NULL;
 static struct smfiDesc *filter_description;
 static gchar *connection_spec = NULL;
 static GIOChannel *listen_channel = NULL;
@@ -491,17 +492,19 @@ int
 smfi_main (void)
 {
     gboolean success;
-    MilterClient *client;
     SmfiContext *smfi_context;
 
     milter_init();
 
+    if (client)
+        g_object_unref(client);
     client = milter_client_new();
     smfi_context = smfi_context_new();
     setup_milter_client(client, smfi_context);
     success = milter_client_main(client);
     g_object_unref(smfi_context);
     g_object_unref(client);
+    client = NULL;
 
     milter_quit();
 
@@ -578,6 +581,8 @@ smfi_setconn (char *spec)
 int
 smfi_stop (void)
 {
+    if (client)
+        milter_client_shutdown(client);
     return MI_SUCCESS;
 }
 
@@ -585,6 +590,12 @@ int
 smfi_version (unsigned int *major, unsigned int *minor,
               unsigned int *patch_level)
 {
+    if (major)
+        *major = SM_LM_VRS_MAJOR(SMFI_VERSION);
+    if (minor)
+        *minor = SM_LM_VRS_MINOR(SMFI_VERSION);
+    if (patch_level)
+        *patch_level = SM_LM_VRS_PLVL(SMFI_VERSION);
     return MI_SUCCESS;
 }
 
@@ -858,6 +869,9 @@ smfi_setsymlist (SMFICTX *context, int where, char *macros)
 void
 libmilter_compatible_reset (void)
 {
+    if (client)
+        g_object_unref(client);
+    client = NULL;
     filter_description_free();
     if (connection_spec)
         g_free(connection_spec);
