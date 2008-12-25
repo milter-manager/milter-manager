@@ -9,6 +9,14 @@ SUBDIRS =		\
 	test		\
 	doc
 
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA =				\
+	milter-core.pc				\
+	milter-client.pc			\
+	milter-server.pc			\
+	milter-manager.pc			\
+	libmilter.pc
+
 EXTRA_DIST =					\
 	autogen.sh				\
 	ChangeLog.toolkit			\
