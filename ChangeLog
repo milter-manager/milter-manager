@@ -1,5 +1,10 @@
 2008-12-25  Kouhei Sutou  <kou@cozmixng.org>
 
+	* libmilter/libmilter-compatible.c:
+	- initialize implicitly.
+	- accept non protocol connection spec form as "unix:" protocol
+	connection spec. should it be widely supported in milter-manager?
+
 	* milter/core/milter-connection.c, test/core/test-connection.c:
 	accept "local:" protocol as alias of "unix:".
 

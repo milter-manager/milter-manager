@@ -137,6 +137,18 @@ smfi_context_new (void)
                         NULL);
 }
 
+static void
+libmilter_compatible_initialize (void)
+{
+    static gboolean initialized = FALSE;
+
+    if (initialized)
+        return;
+
+    initialized = TRUE;
+    milter_init();
+}
+
 int
 smfi_opensocket (bool remove_socket)
 {
@@ -151,6 +163,8 @@ smfi_opensocket (bool remove_socket)
 
     if (!connection_spec)
         return MI_FAILURE;
+
+    libmilter_compatible_initialize();
 
     if (!milter_connection_parse_spec(connection_spec,
                                       NULL, &address, &address_size,
@@ -518,7 +532,7 @@ smfi_main (void)
     gboolean success;
     SmfiContext *smfi_context;
 
-    milter_init();
+    libmilter_compatible_initialize();
 
     if (client)
         g_object_unref(client);
@@ -584,21 +598,32 @@ int
 smfi_setconn (char *spec)
 {
     GError *error = NULL;
+    gchar *normalized_spec;
+
+    libmilter_compatible_initialize();
 
     if (!spec) {
         milter_error("must not be NULL");
         return MI_FAILURE;
     }
 
-    if (!milter_connection_parse_spec(spec, NULL, NULL, NULL, &error)) {
+    if (strchr(spec, ':'))
+        normalized_spec = g_strdup(spec);
+    else
+        normalized_spec = g_strdup_printf("unix:%s", spec);
+
+    if (!milter_connection_parse_spec(normalized_spec,
+                                      NULL, NULL, NULL,
+                                      &error)) {
         milter_error("%s", error->message);
         g_error_free(error);
+        g_free(normalized_spec);
         return MI_FAILURE;
     }
 
     if (connection_spec)
         g_free(connection_spec);
-    connection_spec = g_strdup(spec);
+    connection_spec = normalized_spec;
     return MI_SUCCESS;
 }
 
