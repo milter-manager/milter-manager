@@ -94,3 +94,4 @@
 			    ; accept extended parameters.
        inner-esmtp-cmd  ::= ("MAIL FROM:" reverse-path)   /
 			    ("RCPT TO:" forward-path)
+* milter-client-context supports MilterStepFlags.
