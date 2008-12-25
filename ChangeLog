@@ -1,5 +1,8 @@
 2008-12-25  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-connection.c, test/core/test-connection.c:
+	accept "local:" protocol as alias of "unix:".
+
 	* TODO: remove: make libmilter.so ABI compatible.
 
 	* configure.ac, libmilter/Makefile.am, libmilter/mfapi.h,

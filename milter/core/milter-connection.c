@@ -241,7 +241,8 @@ milter_connection_parse_spec (const gchar      *spec,
         return FALSE;
     }
 
-    if (g_str_has_prefix(spec, "unix:")) {
+    if (g_str_has_prefix(spec, "unix:") ||
+        g_str_has_prefix(spec, "local:")) {
         if (domain)
             *domain = PF_UNIX;
         if (address && address_size) {

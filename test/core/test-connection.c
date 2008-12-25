@@ -178,6 +178,11 @@ data_parse_connection_spec_unix (void)
                                sockaddr_un_new("/tmp/xxx.sock"),
                                NULL),
                  test_data_free,
+                 "normal - local",
+                 test_data_new("local:/tmp/xxx.sock",
+                               sockaddr_un_new("/tmp/xxx.sock"),
+                               NULL),
+                 test_data_free,
                  "no path",
                  test_data_new("unix:",
                                NULL,
@@ -185,6 +190,14 @@ data_parse_connection_spec_unix (void)
                                    MILTER_CONNECTION_ERROR,
                                    MILTER_CONNECTION_ERROR_INVALID_FORMAT,
                                    "spec doesn't have content: <unix:>")),
+                 test_data_free,
+                 "no path - local",
+                 test_data_new("local:",
+                               NULL,
+                               g_error_new(
+                                   MILTER_CONNECTION_ERROR,
+                                   MILTER_CONNECTION_ERROR_INVALID_FORMAT,
+                                   "spec doesn't have content: <local:>")),
                  test_data_free);
 }
 
