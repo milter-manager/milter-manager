@@ -1,5 +1,7 @@
 2008-12-25  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client.c: fix a typo.
+
 	* milter/client/milter-client.c: fix connected address detection.
 
 	* libmilter/libmilter-compatible.c (mi_stop): export

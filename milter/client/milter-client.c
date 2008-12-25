@@ -503,7 +503,7 @@ milter_client_main (MilterClient *client)
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
-    if (priv->listen_channel || priv->n_processing_data > 0) {
+    if (priv->listening_channel || priv->n_processing_data > 0) {
         GError *error;
 
         error = g_error_new(MILTER_CLIENT_ERROR,
