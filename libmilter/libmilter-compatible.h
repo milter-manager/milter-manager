@@ -66,6 +66,8 @@ void                 smfi_context_detach_from_client_context
                                                      MilterClientContext *client_context);
 
 void                 libmilter_compatible_reset     (void);
+MilterActionFlags    libmilter_compatible_convert_action_flags
+                                                    (unsigned long flags);
 
 G_END_DECLS
 

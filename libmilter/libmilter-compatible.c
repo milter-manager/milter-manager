@@ -883,6 +883,33 @@ libmilter_compatible_reset (void)
     timeout = 7210;
 }
 
+MilterActionFlags
+libmilter_compatible_convert_action_flags (unsigned long flags)
+{
+    MilterActionFlags action_flags = MILTER_ACTION_NONE;
+
+    if (flags & SMFIF_ADDHDRS)
+        action_flags |= MILTER_ACTION_ADD_HEADERS;
+    if (flags & (SMFIF_CHGBODY | SMFIF_MODBODY))
+        action_flags |= MILTER_ACTION_CHANGE_BODY;
+    if (flags & SMFIF_ADDRCPT)
+        action_flags |= MILTER_ACTION_ADD_ENVELOPE_RECIPIENT;
+    if (flags & SMFIF_DELRCPT)
+        action_flags |= MILTER_ACTION_DELETE_ENVELOPE_RECIPIENT;
+    if (flags & SMFIF_CHGHDRS)
+        action_flags |= MILTER_ACTION_CHANGE_HEADERS;
+    if (flags & SMFIF_QUARANTINE)
+        action_flags |= MILTER_ACTION_QUARANTINE;
+    if (flags & SMFIF_CHGFROM)
+        action_flags |= MILTER_ACTION_CHANGE_ENVELOPE_FROM;
+    if (flags & SMFIF_ADDRCPT_PAR)
+        action_flags |= MILTER_ACTION_ADD_ENVELOPE_RECIPIENT_WITH_PARAMETERS;
+    if (flags & SMFIF_SETSYMLIST)
+        action_flags |= MILTER_ACTION_SET_SYMBOL_LIST;
+
+    return action_flags;
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */
