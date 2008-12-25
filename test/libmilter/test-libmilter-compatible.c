@@ -40,6 +40,7 @@ void test_stop (void);
 void test_version (void);
 void test_convert_status_to (void);
 void test_convert_status_from (void);
+void test_mi_stop (void);
 
 static gchar *tmp_dir;
 
@@ -248,6 +249,8 @@ test_convert_status_to (void)
                                     SMFIS_REJECT);
     milter_assert_convert_status_to(MILTER_STATUS_DISCARD,
                                     SMFIS_DISCARD);
+    milter_assert_convert_status_to(MILTER_STATUS_ACCEPT,
+                                    SMFIS_ACCEPT);
     milter_assert_convert_status_to(MILTER_STATUS_TEMPORARY_FAILURE,
                                     SMFIS_TEMPFAIL);
     milter_assert_convert_status_to(MILTER_STATUS_NO_REPLY,
@@ -273,6 +276,8 @@ test_convert_status_from (void)
                                       MILTER_STATUS_REJECT);
     milter_assert_convert_status_from(SMFIS_DISCARD,
                                       MILTER_STATUS_DISCARD);
+    milter_assert_convert_status_from(SMFIS_ACCEPT,
+                                      MILTER_STATUS_ACCEPT);
     milter_assert_convert_status_from(SMFIS_TEMPFAIL,
                                       MILTER_STATUS_TEMPORARY_FAILURE);
     milter_assert_convert_status_from(SMFIS_NOREPLY,
@@ -283,6 +288,13 @@ test_convert_status_from (void)
                                       MILTER_STATUS_ALL_OPTIONS);
 
 #undef milter_assert_convert_status_from
+}
+
+void
+test_mi_stop (void)
+{
+    int mi_stop(void);
+    cut_assert_equal_int(0, mi_stop());
 }
 
 /*

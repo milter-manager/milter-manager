@@ -1,5 +1,7 @@
 2008-12-25  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/libmilter/test-libmilter-compatible.c: add missing tests.
+
 	* Makefile.am: install *.pc.
 
 	* milter/client/milter-client.c: fix a typo.
