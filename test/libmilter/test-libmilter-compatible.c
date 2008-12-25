@@ -38,7 +38,8 @@ void test_settimeout (void);
 void test_setconn (void);
 void test_stop (void);
 void test_version (void);
-void test_convert_action_flags (void);
+void test_convert_to_action_flags (void);
+void test_convert_from_action_flags (void);
 
 static gchar *tmp_dir;
 
@@ -233,49 +234,96 @@ test_version (void)
     cut_assert_equal_uint(1, patch_level);
 }
 
-#define milter_assert_convert_action_flags(expected, flags)     \
-    gcut_assert_equal_flags(                                    \
-        MILTER_TYPE_ACTION_FLAGS,                               \
-        (expected),                                             \
-        libmilter_compatible_convert_action_flags((flags)))
+void
+test_convert_to_action_flags (void)
+{
+    MilterActionFlags action_flags = 0;
+    unsigned long flags = 0;
+
+#define milter_assert_convert_to_action_flags(additional_action_flags,  \
+                                              additional_flags)         \
+    gcut_assert_equal_flags(                                            \
+        MILTER_TYPE_ACTION_FLAGS,                                       \
+        (action_flags |= additional_action_flags),                      \
+        libmilter_compatible_convert_to_action_flags(flags |= additional_flags))
+
+
+    milter_assert_convert_to_action_flags(MILTER_ACTION_NONE,
+                                          SMFIF_NONE);
+    milter_assert_convert_to_action_flags(MILTER_ACTION_ADD_HEADERS,
+                                          SMFIF_ADDHDRS);
+    milter_assert_convert_to_action_flags(MILTER_ACTION_CHANGE_BODY,
+                                          SMFIF_CHGBODY);
+
+    action_flags = MILTER_ACTION_ADD_HEADERS;
+    flags = SMFIF_ADDHDRS;
+    milter_assert_convert_to_action_flags(MILTER_ACTION_CHANGE_BODY,
+                                          SMFIF_MODBODY);
+
+    milter_assert_convert_to_action_flags(MILTER_ACTION_ADD_ENVELOPE_RECIPIENT,
+                                          SMFIF_ADDRCPT);
+    milter_assert_convert_to_action_flags(
+        MILTER_ACTION_DELETE_ENVELOPE_RECIPIENT,
+        SMFIF_DELRCPT);
+    milter_assert_convert_to_action_flags(MILTER_ACTION_CHANGE_HEADERS,
+                                          SMFIF_CHGHDRS);
+    milter_assert_convert_to_action_flags(MILTER_ACTION_QUARANTINE,
+                                          SMFIF_QUARANTINE);
+    milter_assert_convert_to_action_flags(MILTER_ACTION_CHANGE_ENVELOPE_FROM,
+                                          SMFIF_CHGFROM);
+    milter_assert_convert_to_action_flags(
+        MILTER_ACTION_ADD_ENVELOPE_RECIPIENT_WITH_PARAMETERS,
+        SMFIF_ADDRCPT_PAR);
+    milter_assert_convert_to_action_flags(MILTER_ACTION_SET_SYMBOL_LIST,
+                                          SMFIF_SETSYMLIST);
+
+#undef milter_assert_convert_to_action_flags
+}
 
 void
-test_convert_action_flags (void)
+test_convert_from_action_flags (void)
 {
-    MilterActionFlags action_flags;
-    unsigned long flags;
+    unsigned long flags = 0;
+    MilterActionFlags action_flags = 0;
 
-    milter_assert_convert_action_flags(action_flags = MILTER_ACTION_NONE,
-                                       flags = SMFIF_NONE);
-    milter_assert_convert_action_flags(action_flags |= MILTER_ACTION_ADD_HEADERS,
-                                       flags |= SMFIF_ADDHDRS);
-    milter_assert_convert_action_flags(action_flags |= MILTER_ACTION_CHANGE_BODY,
-                                       flags |= SMFIF_CHGBODY);
-    milter_assert_convert_action_flags(MILTER_ACTION_ADD_HEADERS |
-                                       MILTER_ACTION_CHANGE_BODY,
-                                       SMFIF_ADDHDRS | SMFIF_MODBODY);
+#define milter_assert_convert_from_action_flags(additional_flags,       \
+                                                additional_action_flags) \
+    action_flags |= additional_action_flags;                            \
+    cut_assert_equal_uint(                                              \
+        (flags |= additional_flags),                                    \
+        libmilter_compatible_convert_from_action_flags(action_flags))
 
-    milter_assert_convert_action_flags(
-        action_flags |= MILTER_ACTION_ADD_ENVELOPE_RECIPIENT,
-        flags |= SMFIF_ADDRCPT);
-    milter_assert_convert_action_flags(
-        action_flags |= MILTER_ACTION_DELETE_ENVELOPE_RECIPIENT,
-        flags |= SMFIF_DELRCPT);
-    milter_assert_convert_action_flags(
-        action_flags |= MILTER_ACTION_CHANGE_HEADERS,
-        flags |= SMFIF_CHGHDRS);
-    milter_assert_convert_action_flags(
-        action_flags |= MILTER_ACTION_QUARANTINE,
-        flags |= SMFIF_QUARANTINE);
-    milter_assert_convert_action_flags(
-        action_flags |= MILTER_ACTION_CHANGE_ENVELOPE_FROM,
-        flags |= SMFIF_CHGFROM);
-    milter_assert_convert_action_flags(
-        action_flags |= MILTER_ACTION_ADD_ENVELOPE_RECIPIENT_WITH_PARAMETERS,
-        flags |= SMFIF_ADDRCPT_PAR);
-    milter_assert_convert_action_flags(
-        action_flags |= MILTER_ACTION_SET_SYMBOL_LIST,
-        flags |= SMFIF_SETSYMLIST);
+
+    milter_assert_convert_from_action_flags(SMFIF_NONE,
+                                            MILTER_ACTION_NONE);
+    milter_assert_convert_from_action_flags(SMFIF_ADDHDRS,
+                                            MILTER_ACTION_ADD_HEADERS);
+    milter_assert_convert_from_action_flags(SMFIF_CHGBODY,
+                                            MILTER_ACTION_CHANGE_BODY);
+
+    flags = SMFIF_ADDHDRS;
+    action_flags = MILTER_ACTION_ADD_HEADERS;
+    milter_assert_convert_from_action_flags(SMFIF_MODBODY,
+                                            MILTER_ACTION_CHANGE_BODY);
+
+    milter_assert_convert_from_action_flags(MILTER_ACTION_ADD_ENVELOPE_RECIPIENT,
+                                            SMFIF_ADDRCPT);
+    milter_assert_convert_from_action_flags(
+        SMFIF_DELRCPT,
+        MILTER_ACTION_DELETE_ENVELOPE_RECIPIENT);
+    milter_assert_convert_from_action_flags(SMFIF_CHGHDRS,
+                                            MILTER_ACTION_CHANGE_HEADERS);
+    milter_assert_convert_from_action_flags(SMFIF_QUARANTINE,
+                                            MILTER_ACTION_QUARANTINE);
+    milter_assert_convert_from_action_flags(SMFIF_CHGFROM,
+                                            MILTER_ACTION_CHANGE_ENVELOPE_FROM);
+    milter_assert_convert_from_action_flags(
+        SMFIF_ADDRCPT_PAR,
+        MILTER_ACTION_ADD_ENVELOPE_RECIPIENT_WITH_PARAMETERS);
+    milter_assert_convert_from_action_flags(SMFIF_SETSYMLIST,
+                                            MILTER_ACTION_SET_SYMBOL_LIST);
+
+#undef milter_assert_convert_from_action_flags
 }
 
 /*

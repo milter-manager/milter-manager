@@ -229,21 +229,25 @@ cb_negotiate (MilterClientContext *context, MilterOption *option,
 {
     SmfiContext *smfi_context = user_data;
     MilterStatus status;
+    MilterActionFlags action_flags;
     gulong action, step, preserve1 = 0, preserve2 = 0;
     gulong action_out, step_out, preserve1_out = 0, preserve2_out = 0;
 
     if (!filter_description->xxfi_negotiate)
         return MILTER_STATUS_DEFAULT;
 
-    action = action_out = milter_option_get_action(option);
+    action_flags = milter_option_get_action(option);
+    action = action_out =
+        libmilter_compatible_convert_from_action_flags(action_flags);
     step = step_out = milter_option_get_step(option);
     status = filter_description->xxfi_negotiate(smfi_context,
-                                               action, step,
-                                               preserve1, preserve2,
-                                               &action_out, &step_out,
-                                               &preserve1_out, &preserve2_out);
+                                                action, step,
+                                                preserve1, preserve2,
+                                                &action_out, &step_out,
+                                                &preserve1_out, &preserve2_out);
     if (status == MILTER_STATUS_CONTINUE) {
-        milter_option_set_action(option, action_out);
+        action_flags = libmilter_compatible_convert_to_action_flags(action_out);
+        milter_option_set_action(option, action_flags);
         milter_option_set_step(option, step_out);
     }
     return status;
@@ -884,7 +888,7 @@ libmilter_compatible_reset (void)
 }
 
 MilterActionFlags
-libmilter_compatible_convert_action_flags (unsigned long flags)
+libmilter_compatible_convert_to_action_flags (unsigned long flags)
 {
     MilterActionFlags action_flags = MILTER_ACTION_NONE;
 
@@ -908,6 +912,33 @@ libmilter_compatible_convert_action_flags (unsigned long flags)
         action_flags |= MILTER_ACTION_SET_SYMBOL_LIST;
 
     return action_flags;
+}
+
+unsigned long
+libmilter_compatible_convert_from_action_flags (MilterActionFlags action_flags)
+{
+    unsigned long flags = SMFIF_NONE;
+
+    if (action_flags & MILTER_ACTION_ADD_HEADERS)
+        flags |= SMFIF_ADDHDRS;
+    if (action_flags & MILTER_ACTION_CHANGE_BODY)
+        flags |= (SMFIF_CHGBODY | SMFIF_MODBODY);
+    if (action_flags & MILTER_ACTION_ADD_ENVELOPE_RECIPIENT)
+        flags |= SMFIF_ADDRCPT;
+    if (action_flags & MILTER_ACTION_DELETE_ENVELOPE_RECIPIENT)
+        flags |= SMFIF_DELRCPT;
+    if (action_flags & MILTER_ACTION_CHANGE_HEADERS)
+        flags |= SMFIF_CHGHDRS;
+    if (action_flags & MILTER_ACTION_QUARANTINE)
+        flags |= SMFIF_QUARANTINE;
+    if (action_flags & MILTER_ACTION_CHANGE_ENVELOPE_FROM)
+        flags |= SMFIF_CHGFROM;
+    if (action_flags & MILTER_ACTION_ADD_ENVELOPE_RECIPIENT_WITH_PARAMETERS)
+        flags |= SMFIF_ADDRCPT_PAR;
+    if (action_flags & MILTER_ACTION_SET_SYMBOL_LIST)
+        flags |= SMFIF_SETSYMLIST;
+
+    return flags;
 }
 
 /*

@@ -2,6 +2,13 @@
 
 	* libmilter/libmilter-compatible.[ch],
 	test/libmilter/test-libmilter-compatible.c: add
+	libmilter_compatible_convert_from_action_flags().
+
+	* libmilter/libmilter-compatible.c, libmilter/mfapi.h: use same
+	values for SMFIS_*.
+
+	* libmilter/libmilter-compatible.[ch],
+	test/libmilter/test-libmilter-compatible.c: add
 	libmilter_compatible_convert_action_flags().
 
 	* libmilter/mfaph.h: follow the current enum name.
