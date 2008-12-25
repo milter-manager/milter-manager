@@ -25,9 +25,9 @@
 
 #include "milter-syslog-logger.h"
 
-#define MILTER_SYSLOG_LOGGER_GET_PRIVATE(obj)                 \
-    (G_TYPE_INSTANCE_GET_PRIVATE((obj),                           \
-                                 MILTER_TYPE_SYSLOG_LOGGER,   \
+#define MILTER_SYSLOG_LOGGER_GET_PRIVATE(obj)                   \
+    (G_TYPE_INSTANCE_GET_PRIVATE((obj),                         \
+                                 MILTER_TYPE_SYSLOG_LOGGER,     \
                                  MilterSyslogLoggerPrivate))
 
 typedef struct _MilterSyslogLoggerPrivate MilterSyslogLoggerPrivate;
@@ -124,7 +124,7 @@ cb_log (MilterLogger *logger, const gchar *domain,
 
     g_string_append(log, message);
 
-    syslog_level = milter_log_level_to_syslog_level(level); 
+    syslog_level = milter_log_level_to_syslog_level(level);
     syslog(syslog_level, "%s", log->str);
 
     g_string_free(log, TRUE);
