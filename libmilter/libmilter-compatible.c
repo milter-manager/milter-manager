@@ -569,6 +569,8 @@ smfi_setdbg (int level)
 {
     MilterLogLevelFlags target_level = 0;
 
+    libmilter_compatible_initialize();
+
     if (level > 0)
         target_level |= MILTER_LOG_LEVEL_CRITICAL;
     if (level > 1)
