@@ -228,7 +228,7 @@ cb_negotiate (MilterClientContext *context, MilterOption *option,
               gpointer user_data)
 {
     SmfiContext *smfi_context = user_data;
-    MilterStatus status;
+    sfsistat status;
     gulong action, step, preserve1 = 0, preserve2 = 0;
     gulong action_out, step_out, preserve1_out = 0, preserve2_out = 0;
 
@@ -242,11 +242,11 @@ cb_negotiate (MilterClientContext *context, MilterOption *option,
                                                 preserve1, preserve2,
                                                 &action_out, &step_out,
                                                 &preserve1_out, &preserve2_out);
-    if (status == MILTER_STATUS_CONTINUE) {
+    if (status == SMFIS_CONTINUE) {
         milter_option_set_action(option, action_out);
         milter_option_set_step(option, step_out);
     }
-    return status;
+    return libmilter_compatible_convert_status_to(status);
 }
 
 static MilterStatus
@@ -255,24 +255,28 @@ cb_connect (MilterClientContext *context, const gchar *host_name,
             gpointer user_data)
 {
     SmfiContext *smfi_context = user_data;
+    sfsistat status;
 
     if (!filter_description->xxfi_connect)
         return MILTER_STATUS_DEFAULT;
 
-    return filter_description->xxfi_connect(smfi_context,
-                                           (gchar *)host_name,
-                                           address);
+    status = filter_description->xxfi_connect(smfi_context,
+                                              (gchar *)host_name,
+                                              address);
+    return libmilter_compatible_convert_status_to(status);
 }
 
 static MilterStatus
 cb_helo (MilterClientContext *context, const gchar *fqdn, gpointer user_data)
 {
     SmfiContext *smfi_context = user_data;
+    sfsistat status;
 
     if (!filter_description->xxfi_helo)
         return MILTER_STATUS_DEFAULT;
 
-    return filter_description->xxfi_helo(smfi_context, (gchar *)fqdn);
+    status = filter_description->xxfi_helo(smfi_context, (gchar *)fqdn);
+    return libmilter_compatible_convert_status_to(status);
 }
 
 static MilterStatus
@@ -280,6 +284,7 @@ cb_envelope_from (MilterClientContext *context, const gchar *from,
                   gpointer user_data)
 {
     SmfiContext *smfi_context = user_data;
+    sfsistat status;
     gchar *addresses[2];
 
     if (!filter_description->xxfi_envfrom)
@@ -287,7 +292,9 @@ cb_envelope_from (MilterClientContext *context, const gchar *from,
 
     addresses[0] = (gchar *)from;
     addresses[1] = NULL;
-    return filter_description->xxfi_envfrom(smfi_context, addresses);
+
+    status = filter_description->xxfi_envfrom(smfi_context, addresses);
+    return libmilter_compatible_convert_status_to(status);
 }
 
 static MilterStatus
@@ -295,6 +302,7 @@ cb_envelope_recipient (MilterClientContext *context, const gchar *recipient,
                        gpointer user_data)
 {
     SmfiContext *smfi_context = user_data;
+    sfsistat status;
     gchar *addresses[2];
 
     if (!filter_description->xxfi_envrcpt)
@@ -302,18 +310,22 @@ cb_envelope_recipient (MilterClientContext *context, const gchar *recipient,
 
     addresses[0] = (gchar *)recipient;
     addresses[1] = NULL;
-    return filter_description->xxfi_envrcpt(smfi_context, addresses);
+
+    status = filter_description->xxfi_envrcpt(smfi_context, addresses);
+    return libmilter_compatible_convert_status_to(status);
 }
 
 static MilterStatus
 cb_data (MilterClientContext *context, gpointer user_data)
 {
     SmfiContext *smfi_context = user_data;
+    sfsistat status;
 
     if (!filter_description->xxfi_data)
         return MILTER_STATUS_DEFAULT;
 
-    return filter_description->xxfi_data(smfi_context);
+    status = filter_description->xxfi_data(smfi_context);
+    return libmilter_compatible_convert_status_to(status);
 }
 
 static MilterStatus
@@ -321,11 +333,13 @@ cb_unknown (MilterClientContext *context, const gchar *command,
             gpointer user_data)
 {
     SmfiContext *smfi_context = user_data;
+    sfsistat status;
 
     if (!filter_description->xxfi_unknown)
         return MILTER_STATUS_DEFAULT;
 
-    return filter_description->xxfi_unknown(smfi_context, command);
+    status = filter_description->xxfi_unknown(smfi_context, command);
+    return libmilter_compatible_convert_status_to(status);
 }
 
 static MilterStatus
@@ -333,24 +347,28 @@ cb_header (MilterClientContext *context, const gchar *name, const gchar *value,
            gpointer user_data)
 {
     SmfiContext *smfi_context = user_data;
+    sfsistat status;
 
     if (!filter_description->xxfi_header)
         return MILTER_STATUS_DEFAULT;
 
-    return filter_description->xxfi_header(smfi_context,
-                                          (gchar *)name,
-                                          (gchar *)value);
+    status = filter_description->xxfi_header(smfi_context,
+                                             (gchar *)name,
+                                             (gchar *)value);
+    return libmilter_compatible_convert_status_to(status);
 }
 
 static MilterStatus
 cb_end_of_header (MilterClientContext *context, gpointer user_data)
 {
     SmfiContext *smfi_context = user_data;
+    sfsistat status;
 
     if (!filter_description->xxfi_eoh)
         return MILTER_STATUS_DEFAULT;
 
-    return filter_description->xxfi_eoh(smfi_context);
+    status = filter_description->xxfi_eoh(smfi_context);
+    return libmilter_compatible_convert_status_to(status);
 }
 
 static MilterStatus
@@ -358,33 +376,39 @@ cb_body (MilterClientContext *context, const guchar *chunk, gsize size,
          gpointer user_data)
 {
     SmfiContext *smfi_context = user_data;
+    sfsistat status;
 
     if (!filter_description->xxfi_body)
         return MILTER_STATUS_DEFAULT;
 
-    return filter_description->xxfi_body(smfi_context, (guchar *)chunk, size);
+    status = filter_description->xxfi_body(smfi_context, (guchar *)chunk, size);
+    return libmilter_compatible_convert_status_to(status);
 }
 
 static MilterStatus
 cb_end_of_message (MilterClientContext *context, gpointer user_data)
 {
     SmfiContext *smfi_context = user_data;
+    sfsistat status;
 
     if (!filter_description->xxfi_eom)
         return MILTER_STATUS_DEFAULT;
 
-    return filter_description->xxfi_eom(smfi_context);
+    status = filter_description->xxfi_eom(smfi_context);
+    return libmilter_compatible_convert_status_to(status);
 }
 
 static MilterStatus
 cb_abort (MilterClientContext *context, gpointer user_data)
 {
     SmfiContext *smfi_context = user_data;
+    sfsistat status;
 
     if (!filter_description->xxfi_abort)
         return MILTER_STATUS_DEFAULT;
 
-    return filter_description->xxfi_abort(smfi_context);
+    status = filter_description->xxfi_abort(smfi_context);
+    return libmilter_compatible_convert_status_to(status);
 }
 
 static void
@@ -881,6 +905,58 @@ libmilter_compatible_reset (void)
     listen_channel = NULL;
     listen_backlog = -1;
     timeout = 7210;
+}
+
+MilterStatus
+libmilter_compatible_convert_status_to (sfsistat status)
+{
+    switch (status) {
+    case SMFIS_CONTINUE:
+        return MILTER_STATUS_CONTINUE;
+    case SMFIS_REJECT:
+        return MILTER_STATUS_REJECT;
+    case SMFIS_DISCARD:
+        return MILTER_STATUS_DISCARD;
+    case SMFIS_ACCEPT:
+        return MILTER_STATUS_ACCEPT;
+    case SMFIS_TEMPFAIL:
+        return MILTER_STATUS_TEMPORARY_FAILURE;
+    case SMFIS_NOREPLY:
+        return MILTER_STATUS_NO_REPLY;
+    case SMFIS_SKIP:
+        return MILTER_STATUS_SKIP;
+    case SMFIS_ALL_OPTS:
+        return MILTER_STATUS_ALL_OPTIONS;
+    default:
+        milter_error("invalid SMFIS_* value: <%d>", status);
+        return MILTER_STATUS_DEFAULT;
+    }
+}
+
+sfsistat
+libmilter_compatible_convert_status_from (MilterStatus status)
+{
+    switch (status) {
+    case MILTER_STATUS_CONTINUE:
+        return SMFIS_CONTINUE;
+    case MILTER_STATUS_REJECT:
+        return SMFIS_REJECT;
+    case MILTER_STATUS_DISCARD:
+        return SMFIS_DISCARD;
+    case MILTER_STATUS_ACCEPT:
+        return SMFIS_ACCEPT;
+    case MILTER_STATUS_TEMPORARY_FAILURE:
+        return SMFIS_TEMPFAIL;
+    case MILTER_STATUS_NO_REPLY:
+        return SMFIS_NOREPLY;
+    case MILTER_STATUS_SKIP:
+        return SMFIS_SKIP;
+    case MILTER_STATUS_ALL_OPTIONS:
+        return SMFIS_ALL_OPTS;
+    default:
+        milter_error("invalid MILTER_STATUS_* value: <%d>", status);
+        return 0;
+    }
 }
 
 /*

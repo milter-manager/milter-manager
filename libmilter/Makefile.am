@@ -21,3 +21,5 @@ libmilter_la_SOURCES =		\
 libmilter_la_LIBADD =						\
 	$(top_builddir)/milter/client/libmilter-client.la
 
+libmilter_la_LDFLAGS =					\
+	-version-info $(LIBMILTER_LT_VERSION_INFO)

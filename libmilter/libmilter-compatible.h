@@ -69,14 +69,10 @@ void                 smfi_context_detach_from_client_context
 
 void                 libmilter_compatible_reset     (void);
 
-MilterActionFlags    libmilter_compatible_convert_to_action_flags
-                                                    (unsigned long flags);
-unsigned long        libmilter_compatible_convert_from_action_flags
-                                                    (MilterActionFlags action_flags);
-MilterStepFlags      libmilter_compatible_convert_to_step_flags
-                                                    (unsigned long flags);
-unsigned long        libmilter_compatible_convert_from_step_flags
-                                                    (MilterStepFlags step_flags);
+MilterStatus         libmilter_compatible_convert_status_to
+                                                    (sfsistat     status);
+sfsistat             libmilter_compatible_convert_status_from
+                                                    (MilterStatus status);
 
 G_END_DECLS
 

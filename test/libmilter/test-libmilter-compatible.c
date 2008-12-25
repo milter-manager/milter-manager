@@ -38,6 +38,8 @@ void test_settimeout (void);
 void test_setconn (void);
 void test_stop (void);
 void test_version (void);
+void test_convert_status_to (void);
+void test_convert_status_from (void);
 
 static gchar *tmp_dir;
 
@@ -230,6 +232,57 @@ test_version (void)
     cut_assert_equal_uint(1, major);
     cut_assert_equal_uint(0, minor);
     cut_assert_equal_uint(1, patch_level);
+}
+
+void
+test_convert_status_to (void)
+{
+#define milter_assert_convert_status_to(expected, input)                \
+    gcut_assert_equal_enum(MILTER_TYPE_STATUS,                          \
+                           expected,                                    \
+                           libmilter_compatible_convert_status_to(input))
+
+    milter_assert_convert_status_to(MILTER_STATUS_CONTINUE,
+                                    SMFIS_CONTINUE);
+    milter_assert_convert_status_to(MILTER_STATUS_REJECT,
+                                    SMFIS_REJECT);
+    milter_assert_convert_status_to(MILTER_STATUS_DISCARD,
+                                    SMFIS_DISCARD);
+    milter_assert_convert_status_to(MILTER_STATUS_TEMPORARY_FAILURE,
+                                    SMFIS_TEMPFAIL);
+    milter_assert_convert_status_to(MILTER_STATUS_NO_REPLY,
+                                    SMFIS_NOREPLY);
+    milter_assert_convert_status_to(MILTER_STATUS_SKIP,
+                                    SMFIS_SKIP);
+    milter_assert_convert_status_to(MILTER_STATUS_ALL_OPTIONS,
+                                    SMFIS_ALL_OPTS);
+
+#undef milter_assert_convert_status_to
+}
+
+void
+test_convert_status_from (void)
+{
+#define milter_assert_convert_status_from(expected, input)              \
+    cut_assert_equal_int(expected,                                      \
+                         libmilter_compatible_convert_status_from(input))
+
+    milter_assert_convert_status_from(SMFIS_CONTINUE,
+                                      MILTER_STATUS_CONTINUE);
+    milter_assert_convert_status_from(SMFIS_REJECT,
+                                      MILTER_STATUS_REJECT);
+    milter_assert_convert_status_from(SMFIS_DISCARD,
+                                      MILTER_STATUS_DISCARD);
+    milter_assert_convert_status_from(SMFIS_TEMPFAIL,
+                                      MILTER_STATUS_TEMPORARY_FAILURE);
+    milter_assert_convert_status_from(SMFIS_NOREPLY,
+                                      MILTER_STATUS_NO_REPLY);
+    milter_assert_convert_status_from(SMFIS_SKIP,
+                                      MILTER_STATUS_SKIP);
+    milter_assert_convert_status_from(SMFIS_ALL_OPTS,
+                                      MILTER_STATUS_ALL_OPTIONS);
+
+#undef milter_assert_convert_status_from
 }
 
 /*

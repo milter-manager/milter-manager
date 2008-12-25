@@ -1,5 +1,15 @@
 2008-12-25  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: remove: make libmilter.so ABI compatible.
+
+	* configure.ac, libmilter/Makefile.am, libmilter/mfapi.h,
+	libmilter/libmilter-compatible.c: make libmilter.so ABI compatible.
+
+	* libmilter/libmilter-compatible.[ch],
+	test/libmilter/test-libmilter-compatible.c: add
+	libmilter_compatible_convert_status_to() and
+	libmilter_compatible_convert_status_from().
+
 	* libmilter/mfdef.h, libmilter/mfapi.h: don't use MILTER_* value.
 	(MILTER_STATUS_* are the next works)
 
