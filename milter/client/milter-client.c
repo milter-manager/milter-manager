@@ -28,9 +28,20 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/un.h>
 #include <netinet/ip.h>
 
 #include "../client.h"
+
+typedef struct _GenericSocketAddress
+{
+    union {
+        struct sockaddr address;
+        struct sockaddr_un address_un;
+        struct sockaddr_in address_inet;
+        struct sockaddr_in6 address_inet6;
+    } addresses;
+} GenericSocketAddress;
 
 enum
 {
@@ -395,10 +406,12 @@ accept_client (gint server_fd, MilterClient *client)
 {
     gint client_fd;
     GIOChannel *client_channel;
-    struct sockaddr address;
+    GenericSocketAddress address;
     gchar *spec;
     socklen_t address_size;
 
+    address_size = sizeof(address);
+    memset(&address, '\0', address_size);
     milter_debug("start accepting...");
     client_fd = accept(server_fd, (struct sockaddr *)(&address), &address_size);
     if (client_fd == -1) {
@@ -414,7 +427,7 @@ accept_client (gint server_fd, MilterClient *client)
         return TRUE;
     }
 
-    spec = milter_connection_address_to_spec(&address);
+    spec = milter_connection_address_to_spec(&(address.addresses.address));
     milter_debug("accepted from %s.", spec);
     g_free(spec);
 
