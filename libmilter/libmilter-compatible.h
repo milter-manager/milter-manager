@@ -22,6 +22,8 @@
 
 #include <libmilter/mfapi.h>
 
+#include <milter/client.h>
+
 G_BEGIN_DECLS
 
 #define SMFI_CONTEXT_ERROR           (smfi_context_error_quark())
@@ -66,10 +68,15 @@ void                 smfi_context_detach_from_client_context
                                                      MilterClientContext *client_context);
 
 void                 libmilter_compatible_reset     (void);
+
 MilterActionFlags    libmilter_compatible_convert_to_action_flags
                                                     (unsigned long flags);
 unsigned long        libmilter_compatible_convert_from_action_flags
                                                     (MilterActionFlags action_flags);
+MilterStepFlags      libmilter_compatible_convert_to_step_flags
+                                                    (unsigned long flags);
+unsigned long        libmilter_compatible_convert_from_step_flags
+                                                    (MilterStepFlags step_flags);
 
 G_END_DECLS
 

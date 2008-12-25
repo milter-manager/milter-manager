@@ -1,7 +1,11 @@
 2008-12-25  Kouhei Sutou  <kou@cozmixng.org>
 
 	* libmilter/libmilter-compatible.[ch],
-	test/libmilter/test-libmilter-compatible.c: add
+	test/libmilter/test-libmilter-compatible.c: MilterActionFlags
+	and MilterStepFlags <-> SMFIF_* and SMFIP_* converters aren't
+	needed. :<
+
+	* libmilter/libmilter-compatible.[ch],
 	libmilter_compatible_convert_from_action_flags().
 
 	* libmilter/libmilter-compatible.c, libmilter/mfapi.h: use same
