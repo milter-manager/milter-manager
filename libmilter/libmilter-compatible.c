@@ -984,6 +984,16 @@ libmilter_compatible_convert_status_from (MilterStatus status)
     }
 }
 
+
+int mi_stop (void);
+int
+mi_stop (void)
+{
+    /* export this symbol because spamass-milter use it for
+       detecting -lmilter. :< */
+    return 0;
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */

@@ -1,5 +1,7 @@
 2008-12-25  Kouhei Sutou  <kou@cozmixng.org>
 
+	* libmilter/libmilter-compatible.c (mi_stop): export
+
 	* libmilter/libmilter-compatible.c:
 	- initialize implicitly.
 	- accept non protocol connection spec form as "unix:" protocol
