@@ -130,6 +130,7 @@ G_BEGIN_DECLS
  * </rd>
  */
 
+#define MILTER_CLIENT_ERROR           (milter_client_error_quark())
 
 #define MILTER_TYPE_CLIENT            (milter_client_get_type())
 #define MILTER_CLIENT(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), MILTER_TYPE_CLIENT, MilterClient))
@@ -137,6 +138,11 @@ G_BEGIN_DECLS
 #define MILTER_IS_CLIENT(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), MILTER_TYPE_CLIENT))
 #define MILTER_IS_CLIENT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), MILTER_TYPE_CLIENT))
 #define MILTER_CLIENT_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MILTER_TYPE_CLIENT, MilterClientClass))
+
+typedef enum
+{
+    MILTER_CLIENT_ERROR_RUNNING
+} MilterClientError;
 
 typedef struct _MilterClient         MilterClient;
 typedef struct _MilterClientClass    MilterClientClass;
@@ -160,6 +166,8 @@ struct _MilterClientClass
                                            MilterClientContext *context);
     gchar *(*get_default_connection_spec) (MilterClient *client);
 };
+
+GQuark               milter_client_error_quark       (void);
 
 GType                milter_client_get_type          (void) G_GNUC_CONST;
 

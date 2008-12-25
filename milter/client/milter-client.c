@@ -225,6 +225,12 @@ get_property (GObject    *object,
     }
 }
 
+GQuark
+milter_client_error_quark (void)
+{
+    return g_quark_from_static_string("milter-client-error-quark");
+}
+
 MilterClient *
 milter_client_new (void)
 {
@@ -484,8 +490,18 @@ milter_client_main (MilterClient *client)
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
-    if (priv->listen_channel)
+    if (priv->listen_channel || priv->n_processing_data > 0) {
+        GError *error;
+
+        error = g_error_new(MILTER_CLIENT_ERROR,
+                            MILTER_CLIENT_ERROR_RUNNING,
+                            "The milter client is already running: <%p>",
+                            client);
+        milter_error("%s", error->message);
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client), error);
+        g_error_free(error);
         return FALSE;
+    }
 
     priv->quitting = FALSE;
     if (!priv->connection_spec) {
@@ -507,6 +523,7 @@ milter_client_main (MilterClient *client)
     }
 
     if (!priv->listening_channel) {
+        milter_error("%s", error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client), error);
         g_error_free(error);
         return FALSE;

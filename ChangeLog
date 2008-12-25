@@ -1,5 +1,8 @@
 2008-12-25  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client.h, milter/client/milter-client.c: improve error
+	handling.
+
 	* libmilter/libmilter-compatible.c,
 	test/libmilter/test-libmilter-compatible.c: implement smfi_stop()
 	and smfi_version().
