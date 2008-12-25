@@ -216,33 +216,24 @@ typedef int sfsistat;
  * @xxfi_version must be specified %SMFI_VERSION.
  *
  * <rd>
- * Here are the available @xxfi_flags values.
+ * Here are the available @xxfi_flags values:
  *
- *   * %SMFIF_ADDHDRS: The milter may call
- *     smfi_addheader().
- *   * %SMFIF_CHGHDRS: The milter may call
- *     smfi_chgheader().
- *   * %SMFIF_CHGBODY: The milter may call
- *     smfi_chgbody().
- *   * %SMFIF_ADDRCPT: The milter may call
- *     smfi_addrcpt().
- *   * %SMFIF_ADDRCPT_PTR: The milter may call
- *     smfi_addrcpt_ptr().
- *   * %SMFIF_DELRCPT: The milter may call
- *     smfi_delrcpt().
- *   * %SMFIF_QUARANTINE: The milter may call
- *     smfi_quarantine().
- *   * %SMFIF_CHGROM: The milter may call
- *     smfi_chgrom().
- *   * %SMFIF_SETSMLIST: The milter may call
- *     smfi_setsymlist().  ymbolx().
+ *   * %SMFIF_ADDHDRS: The milter may call smfi_addheader().
+ *   * %SMFIF_CHGHDRS: The milter may call smfi_chgheader().
+ *   * %SMFIF_CHGBODY: The milter may call smfi_chgbody().
+ *   * %SMFIF_ADDRCPT: The milter may call smfi_addrcpt().
+ *   * %SMFIF_ADDRCPT_PAR: The milter may call smfi_addrcpt_par().
+ *   * %SMFIF_DELRCPT: The milter may call smfi_delrcpt().
+ *   * %SMFIF_QUARANTINE: The milter may call smfi_quarantine().
+ *   * %SMFIF_CHGFROM: The milter may call smfi_chgfrom().
+ *   * %SMFIF_SETSMLIST: The milter may call smfi_setsymlist().
+ *
+ * They can be used together by bitwise OR.
+ * </rd>
  *
  * All callbacks (e.g. xxfi_helo(), xxfi_envfrom() and so
  * on) may be %NULL. If a callback is %NULL, the event is
  * just ignored the milter.
- *
- * They can be used together by bitwise OR.
- * </rd>
  */
 struct smfiDesc
 {
@@ -1005,17 +996,119 @@ int smfi_version    (unsigned int    *major,
                      unsigned int    *minor,
                      unsigned int    *patch_level);
 
+/**
+ * SMFIF_NONE:
+ *
+ * No additional operation.
+ */
 #define SMFIF_NONE        0x00000000L
+
+/**
+ * SMFIF_ADDHDRS:
+ *
+ * The milter may call smfi_addheader().
+ *
+ * See also %smfiDesc, xxfi_negotiate() and <ulink
+ * url="https://www.milter.org/developers/api/smfi_register">
+ * smfi_register on milter.org</ulink>.
+ */
 #define SMFIF_ADDHDRS     0x00000001L
+
+/**
+ * SMFIF_CHGBODY:
+ *
+ * The milter may call smfi_chgbody().
+ *
+ * See also %smfiDesc, xxfi_negotiate() and <ulink
+ * url="https://www.milter.org/developers/api/smfi_register">
+ * smfi_register on milter.org</ulink>.
+ */
 #define SMFIF_CHGBODY     0x00000002L
+
+/**
+ * SMFIF_MODBODY:
+ *
+ * Same as %SMFIF_CHGBODY.
+ */
 #define SMFIF_MODBODY     SMFIF_CHGBODY
+
+/**
+ * SMFIF_ADDRCPT:
+ *
+ * The milter may call smfi_addrcpt().
+ *
+ * See also %smfiDesc, xxfi_negotiate() and <ulink
+ * url="https://www.milter.org/developers/api/smfi_register">
+ * smfi_register on milter.org</ulink>.
+ */
 #define SMFIF_ADDRCPT     0x00000004L
+
+/**
+ * SMFIF_DELRCPT:
+ *
+ * The milter may call smfi_delrcpt().
+ *
+ * See also %smfiDesc, xxfi_negotiate() and <ulink
+ * url="https://www.milter.org/developers/api/smfi_register">
+ * smfi_register on milter.org</ulink>.
+ */
 #define SMFIF_DELRCPT     0x00000008L
+
+/**
+ * SMFIF_CHGHDRS:
+ *
+ * The milter may call smfi_chgheader().
+ *
+ * See also %smfiDesc, xxfi_negotiate() and <ulink
+ * url="https://www.milter.org/developers/api/smfi_register">
+ * smfi_register on milter.org</ulink>.
+ */
 #define SMFIF_CHGHDRS     0x00000010L
+
+/**
+ * SMFIF_QUARANTINE:
+ *
+ * The milter may call smfi_quarantine().
+ *
+ * See also %smfiDesc, xxfi_negotiate() and <ulink
+ * url="https://www.milter.org/developers/api/smfi_register">
+ * smfi_register on milter.org</ulink>.
+ */
 #define SMFIF_QUARANTINE  0x00000020L
+
+/**
+ * SMFIF_CHGFROM:
+ *
+ * The milter may call smfi_chgfrom().
+ *
+ * See also %smfiDesc, xxfi_negotiate() and <ulink
+ * url="https://www.milter.org/developers/api/smfi_register">
+ * smfi_register on milter.org</ulink>.
+ */
 #define SMFIF_CHGFROM     0x00000040L
+
+/**
+ * SMFIF_ADDRCPT_PAR:
+ *
+ * The milter may call smfi_addrcpt_par().
+ *
+ * See also %smfiDesc, xxfi_negotiate() and <ulink
+ * url="https://www.milter.org/developers/api/smfi_register">
+ * smfi_register on milter.org</ulink>.
+ */
 #define SMFIF_ADDRCPT_PAR 0x00000080L
+
+/**
+ * SMFIF_SETSYMLIST:
+ *
+ * The milter may call smfi_setsymlist().
+ *
+ * See also %smfiDesc, xxfi_negotiate() and <ulink
+ * url="https://www.milter.org/developers/api/smfi_register">
+ * smfi_register on milter.org</ulink>.
+ */
 #define SMFIF_SETSYMLIST  0x00000100L
+
 
 #define SMFIS_CONTINUE    MILTER_STATUS_CONTINUE
 #define SMFIS_REJECT      MILTER_STATUS_REJECT
