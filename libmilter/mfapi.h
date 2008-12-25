@@ -20,9 +20,14 @@
 #ifndef __LIBMILTER_MFAPI_H__
 #define __LIBMILTER_MFAPI_H__
 
-#include <milter/client.h>
+#include <sys/types.h>
+#include <sys/socket.h>
 
-G_BEGIN_DECLS
+#include "mfdef.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * SECTION: mfapi
@@ -997,13 +1002,6 @@ int smfi_version    (unsigned int    *major,
                      unsigned int    *patch_level);
 
 /**
- * SMFIF_NONE:
- *
- * No additional operation.
- */
-#define SMFIF_NONE        0x00000000L
-
-/**
  * SMFIF_ADDHDRS:
  *
  * The milter may call smfi_addheader().
@@ -1119,15 +1117,15 @@ int smfi_version    (unsigned int    *major,
 #define SMFIS_SKIP        MILTER_STATUS_SKIP
 #define SMFIS_ALL_OPTS    MILTER_STATUS_ALL_OPTIONS
 
-#define SMFIM_FIRST	0
-#define SMFIM_CONNECT	MILTER_MACRO_STAGE_CONNECT
-#define SMFIM_HELO	MILTER_MACRO_STAGE_HELO
-#define SMFIM_ENVFROM	MILTER_MACRO_STAGE_MAIL
-#define SMFIM_ENVRCPT	MILTER_MACRO_STAGE_RCPT
-#define SMFIM_DATA	MILTER_MACRO_STATE_DATA
-#define SMFIM_EOM	MILTER_MACRO_STAGE_END_OF_MESSAGE
-#define SMFIM_EOH	MILTER_MACRO_STAGE_END_OF_HEADER
-#define SMFIM_LAST	MILTER_MACRO_STAGE_END_OF_HEADER
+#define SMFIM_FIRST	  0
+#define SMFIM_CONNECT	  0
+#define SMFIM_HELO	  1
+#define SMFIM_ENVFROM	  2
+#define SMFIM_ENVRCPT	  3
+#define SMFIM_DATA	  4
+#define SMFIM_EOM	  5
+#define SMFIM_EOH	  6
+#define SMFIM_LAST	  6
 
 char   *smfi_getsymval   (SMFICTX        *context,
                           char           *name);
@@ -1173,7 +1171,9 @@ int     smfi_setsymlist  (SMFICTX        *context,
                           int             where,
                           char           *macros);
 
-G_END_DECLS
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __LIBMILTER_MFAPI_H__ */
 

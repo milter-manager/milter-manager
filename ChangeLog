@@ -1,5 +1,8 @@
 2008-12-25  Kouhei Sutou  <kou@cozmixng.org>
 
+	* libmilter/mfdef.h, libmilter/mfapi.h: don't use MILTER_* value.
+	(MILTER_STATUS_* are the next works)
+
 	* libmilter/libmilter-compatible.[ch],
 	test/libmilter/test-libmilter-compatible.c: MilterActionFlags
 	and MilterStepFlags <-> SMFIF_* and SMFIP_* converters aren't
