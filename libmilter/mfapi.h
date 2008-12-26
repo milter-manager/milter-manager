@@ -1561,6 +1561,32 @@ int     smfi_setmlreply  (SMFICTX        *context,
                           const char     *return_code,
                           const char     *extended_code,
                           ...);
+
+/**
+ * smfi_addheader:
+ * @context: the context for the current milter session.
+ * @name: the header name.
+ * @value: the header value.
+ *
+ * Adds a header to the current message's header
+ * list. smfi_addheader() can be called in xxfi_eom().
+ *
+ * <rd>
+ * Here are the fail conditions:
+ *   * @name is %NULL.
+ *   * @value is %NULL.
+ *   * called in except xxfi_eom().
+ *   * %SMFIF_ADDHDRS flag isn't set in smfi_register() or
+ *     xxfi_negotiate().
+ *   * network error is occurred.
+ * </rd>
+ *
+ * See also <ulink
+ * url="https://www.milter.org/developers/api/smfi_addheader">
+ * smfi_addheader</ulink> on milter.org.
+ *
+ * Returns: %MI_SUCCESS if success, %MI_FAILURE otherwise.
+ **/
 int     smfi_addheader   (SMFICTX        *context,
                           char           *name,
                           char           *value);

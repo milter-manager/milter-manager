@@ -39,6 +39,8 @@ static MilterReplyEncoder *reply_encoder;
 static GIOChannel *channel;
 static MilterWriter *writer;
 
+static GError *error_in_callback;
+
 static gchar *packet;
 static gsize packet_size;
 
@@ -116,7 +118,8 @@ static MilterStatus
 cb_end_of_message (MilterClientContext *context, gpointer user_data)
 {
     if (add_header) {
-        milter_client_context_add_header(context, header_name, header_value);
+        milter_client_context_add_header(context, header_name, header_value,
+                                         &error_in_callback);
         milter_agent_set_writer(MILTER_AGENT(context), NULL);
     }
 
@@ -194,6 +197,8 @@ setup (void)
     packet = NULL;
     packet_size = 0;
 
+    error_in_callback = NULL;
+
     header_name = NULL;
     header_value = NULL;
     header_index = 0;
@@ -244,7 +249,9 @@ feed (void)
 {
     GError *error = NULL;
 
+    gcut_assert_error(error_in_callback);
     milter_client_context_feed(context, packet, packet_size, &error);
+    gcut_assert_error(error_in_callback);
 
     return error;
 }

@@ -1,5 +1,11 @@
 2008-12-26  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client-context.[ch]:
+	milter_client_add_header() check input.
+	* milter/manager/milter-manager-leader.c,
+	libmilter/libmilter-compatible.c, libmilter/mfapi.h,
+	test/client/test-client-context-header.c: follow the above change.
+
 	* TODO: add:
 	  check client context's modify operations
 	  (e.g. milter_client_add_header()) are called on end-of-message

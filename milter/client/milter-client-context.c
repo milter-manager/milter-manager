@@ -1842,11 +1842,22 @@ write_packet (MilterClientContext *context, gchar *packet, gsize packet_size)
 
 gboolean
 milter_client_context_add_header (MilterClientContext *context,
-                                  const gchar *name, const gchar *value)
+                                  const gchar *name, const gchar *value,
+                                  GError **error)
 {
     gchar *packet = NULL;
     gsize packet_size;
     MilterEncoder *encoder;
+
+    if (!name || !value) {
+        g_set_error(error,
+                    MILTER_CLIENT_CONTEXT_ERROR,
+                    MILTER_CLIENT_CONTEXT_ERROR_NULL,
+                    "both header name and value should not be NULL: <%s>=<%s>",
+                    name ? name : "NULL",
+                    value ? value : "NULL");
+        return FALSE;
+    }
 
     milter_debug("sending ADD HEADER: <%s>=<%s>", name, value);
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));

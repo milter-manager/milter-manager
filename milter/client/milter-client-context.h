@@ -218,7 +218,8 @@ G_BEGIN_DECLS
 typedef enum
 {
     MILTER_CLIENT_CONTEXT_ERROR_INVALID_CODE,
-    MILTER_CLIENT_CONTEXT_ERROR_IO_ERROR
+    MILTER_CLIENT_CONTEXT_ERROR_IO_ERROR,
+    MILTER_CLIENT_CONTEXT_ERROR_NULL
 } MilterClientContextError;
 
 typedef struct _MilterClientContext         MilterClientContext;
@@ -394,21 +395,24 @@ gchar               *milter_client_context_format_reply      (MilterClientContex
  * @context: a %MilterClientContext.
  * @name: the header name.
  * @value: the header value.
+ * @error: return location for an error, or %NULL.
  *
- * Adds a header to the current message's header lists. This
+ * Adds a header to the current message's header list. This
  * function can be called in
- * #MilterClientContext::end-of-message signal.  See also
- * <ulink
+ * #MilterClientContext::end-of-message signal.
+ *
+ * See also <ulink
  * url="https://www.milter.org/developers/api/smfi_addheader">
  * smfi_addheader</ulink> on milter.org.
  *
- * FIXME: write about MILTER_ACTION_ADD_HEADERS.
+ * FIXME: write about %MILTER_ACTION_ADD_HEADERS.
  *
  * Returns: %TRUE on success.
  */
 gboolean             milter_client_context_add_header        (MilterClientContext *context,
                                                               const gchar *name,
-                                                              const gchar *value);
+                                                              const gchar *value,
+                                                              GError     **error);
 
 /**
  * milter_client_context_insert_header:

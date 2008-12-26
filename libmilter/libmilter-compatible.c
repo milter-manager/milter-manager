@@ -740,15 +740,22 @@ int
 smfi_addheader (SMFICTX *context, char *name, char *value)
 {
     SmfiContextPrivate *priv;
+    GError *error = NULL;
 
     priv = SMFI_CONTEXT_GET_PRIVATE(context);
     if (!priv->client_context)
         return MI_FAILURE;
 
-    if (milter_client_context_add_header(priv->client_context, name, value))
+    if (milter_client_context_add_header(priv->client_context, name, value,
+                                         &error)) {
         return MI_SUCCESS;
-    else
+    } else {
+        if (error) {
+            milter_error("failed to add header: %s", error->message);
+            g_error_free(error);
+        }
         return MI_FAILURE;
+    }
 }
 
 int
