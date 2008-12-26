@@ -129,6 +129,11 @@ static GList *timeout_ids;
 static GError *actual_error;
 static GError *expected_error;
 
+#define milter_assert_equal_state(state)                                \
+    gcut_assert_equal_enum(MILTER_TYPE_CLIENT_CONTEXT_STATE,            \
+                           MILTER_CLIENT_CONTEXT_STATE_ ## state,       \
+                           milter_client_context_get_state(context))
+
 static void
 retrieve_context_info (MilterClientContext *context)
 {
@@ -161,6 +166,8 @@ cb_negotiate (MilterClientContext *context, MilterOption *option,
 
     retrieve_context_info(context);
 
+    milter_assert_equal_state(NEGOTIATE);
+
     return MILTER_STATUS_CONTINUE;
 }
 
@@ -191,6 +198,8 @@ cb_connect (MilterClientContext *context, const gchar *host_name,
     connect_address_size = address_size;
 
     retrieve_context_info(context);
+
+    milter_assert_equal_state(CONNECT);
 
     return MILTER_STATUS_CONTINUE;
 }
@@ -223,6 +232,8 @@ cb_helo (MilterClientContext *context, const gchar *fqdn, gpointer user_data)
 
     retrieve_context_info(context);
 
+    milter_assert_equal_state(HELO);
+
     return MILTER_STATUS_CONTINUE;
 }
 
@@ -242,6 +253,8 @@ cb_envelope_from (MilterClientContext *context, const gchar *from,
     envelope_from_address = g_strdup(from);
 
     retrieve_context_info(context);
+
+    milter_assert_equal_state(ENVELOPE_FROM);
 
     return MILTER_STATUS_CONTINUE;
 }
@@ -263,6 +276,8 @@ cb_envelope_recipient (MilterClientContext *context, const gchar *to,
 
     retrieve_context_info(context);
 
+    milter_assert_equal_state(ENVELOPE_RECIPIENT);
+
     return MILTER_STATUS_CONTINUE;
 }
 
@@ -279,6 +294,8 @@ cb_data (MilterClientContext *context, gpointer user_data)
     n_datas++;
 
     retrieve_context_info(context);
+
+    milter_assert_equal_state(DATA);
 
     return MILTER_STATUS_CONTINUE;
 }
@@ -306,6 +323,8 @@ cb_header (MilterClientContext *context, const gchar *name, const gchar *value,
 
     retrieve_context_info(context);
 
+    milter_assert_equal_state(HEADER);
+
     return MILTER_STATUS_CONTINUE;
 }
 
@@ -322,6 +341,8 @@ cb_end_of_header (MilterClientContext *context, gpointer user_data)
     n_end_of_headers++;
 
     retrieve_context_info(context);
+
+    milter_assert_equal_state(END_OF_HEADER);
 
     return MILTER_STATUS_CONTINUE;
 }
@@ -346,6 +367,8 @@ cb_body (MilterClientContext *context, const gchar *chunk, gsize size,
 
     retrieve_context_info(context);
 
+    milter_assert_equal_state(BODY);
+
     return MILTER_STATUS_CONTINUE;
 }
 
@@ -363,6 +386,8 @@ cb_end_of_message (MilterClientContext *context, gpointer user_data)
 
     retrieve_context_info(context);
 
+    milter_assert_equal_state(END_OF_MESSAGE);
+
     return MILTER_STATUS_CONTINUE;
 }
 
@@ -379,6 +404,8 @@ cb_abort (MilterClientContext *context, gpointer user_data)
     n_aborts++;
 
     retrieve_context_info(context);
+
+    milter_assert_equal_state(ABORT);
 
     return MILTER_STATUS_CONTINUE;
 }
@@ -401,6 +428,8 @@ cb_unknown (MilterClientContext *context, const gchar *command,
     unknown_command = g_strdup(command);
 
     retrieve_context_info(context);
+
+    milter_assert_equal_state(UNKNOWN);
 
     return MILTER_STATUS_CONTINUE;
 }
@@ -668,6 +697,7 @@ test_feed_negotiate (void)
     gcut_assert_error(feed());
     cut_assert_equal_int(1, n_negotiates);
     cut_assert_equal_int(1, n_negotiate_responses);
+    milter_assert_equal_state(NEGOTIATE_REPLIED);
 
     milter_assert_equal_option(option, negotiate_option);
 
@@ -716,6 +746,7 @@ test_feed_negotiate_progress (void)
     cut_assert_equal_int(1, n_negotiate_progresss);
     cut_assert_equal_int(0, n_negotiate_responses);
 
+    milter_assert_equal_state(NEGOTIATE);
 
     milter_assert_equal_option(option, negotiate_option);
 
@@ -748,6 +779,8 @@ test_feed_connect_ipv4 (void)
                                           sizeof(address));
     gcut_assert_error(feed());
     cut_assert_equal_int(1, n_connects);
+    milter_assert_equal_state(CONNECT_REPLIED);
+
     cut_assert_equal_string(host_name, connect_host_name);
     cut_assert_equal_int(sizeof(struct sockaddr_in), connect_address_size);
 
@@ -780,6 +813,8 @@ test_feed_connect_ipv6 (void)
     gcut_assert_error(feed());
     cut_assert_equal_int(1, n_connects);
     cut_assert_equal_int(1, n_connect_responses);
+    milter_assert_equal_state(CONNECT_REPLIED);
+
     cut_assert_equal_string(host_name, connect_host_name);
     cut_assert_equal_int(sizeof(struct sockaddr_in6), connect_address_size);
 
@@ -812,6 +847,8 @@ test_feed_connect_unix (void)
     gcut_assert_error(feed());
     cut_assert_equal_int(1, n_connects);
     cut_assert_equal_int(1, n_connect_responses);
+    milter_assert_equal_state(CONNECT_REPLIED);
+
     cut_assert_equal_string(host_name, connect_host_name);
     cut_assert_equal_int(sizeof(struct sockaddr_un), connect_address_size);
 
@@ -857,6 +894,8 @@ test_feed_connect_with_macro (void)
     gcut_assert_error(feed());
     cut_assert_equal_int(1, n_connects);
     cut_assert_equal_int(1, n_connect_responses);
+    milter_assert_equal_state(CONNECT_REPLIED);
+
     cut_assert_equal_string(host_name, connect_host_name);
     cut_assert_equal_int(sizeof(struct sockaddr_in), connect_address_size);
 
@@ -903,6 +942,8 @@ test_feed_helo (gconstpointer data)
     gcut_assert_error(feed());
     cut_assert_equal_int(1, n_helos);
     cut_assert_equal_int(1, n_helo_responses);
+    milter_assert_equal_state(HELO_REPLIED);
+
     cut_assert_equal_string(fqdn, helo_fqdn);
 
     gcut_assert_equal_hash_table_string_string(expected_macros, defined_macros);
@@ -953,6 +994,8 @@ test_feed_envelope_from (gconstpointer data)
     gcut_assert_error(feed());
     cut_assert_equal_int(1, n_envelope_froms);
     cut_assert_equal_int(1, n_envelope_from_responses);
+    milter_assert_equal_state(ENVELOPE_FROM_REPLIED);
+
     cut_assert_equal_string(from, envelope_from_address);
 
     gcut_assert_equal_hash_table_string_string(expected_macros, defined_macros);
@@ -1005,6 +1048,8 @@ test_feed_envelope_recipient (gconstpointer data)
     gcut_assert_error(feed());
     cut_assert_equal_int(1, n_envelope_recipients);
     cut_assert_equal_int(1, n_envelope_recipient_responses);
+    milter_assert_equal_state(ENVELOPE_RECIPIENT_REPLIED);
+
     cut_assert_equal_string(to, envelope_recipient_address);
 
     gcut_assert_equal_hash_table_string_string(expected_macros, defined_macros);
@@ -1031,6 +1076,7 @@ test_feed_data (void)
     gcut_assert_error(feed());
     cut_assert_equal_int(1, n_datas);
     cut_assert_equal_int(1, n_data_responses);
+    milter_assert_equal_state(DATA_REPLIED);
 
     packet_free();
     milter_reply_encoder_encode_continue(reply_encoder, &packet, &packet_size);
@@ -1069,10 +1115,13 @@ test_feed_header (gconstpointer data)
     if (pre_hook)
         pre_hook();
 
-    milter_command_encoder_encode_header(encoder, &packet, &packet_size, "Date", date);
+    milter_command_encoder_encode_header(encoder, &packet, &packet_size,
+                                         "Date", date);
     gcut_assert_error(feed());
     cut_assert_equal_int(1, n_headers);
     cut_assert_equal_int(1, n_header_responses);
+    milter_assert_equal_state(HEADER_REPLIED);
+
     cut_assert_equal_string("Date", header_name);
     cut_assert_equal_string(date, header_value);
 
@@ -1115,6 +1164,7 @@ test_feed_end_of_header (gconstpointer data)
     gcut_assert_error(feed());
     cut_assert_equal_int(1, n_end_of_headers);
     cut_assert_equal_int(1, n_end_of_header_responses);
+    milter_assert_equal_state(END_OF_HEADER_REPLIED);
 
     gcut_assert_equal_hash_table_string_string(expected_macros, defined_macros);
     if (macro_name)
@@ -1162,6 +1212,8 @@ test_feed_body (gconstpointer data)
     gcut_assert_error(feed());
     cut_assert_equal_int(1, n_bodies);
     cut_assert_equal_int(1, n_body_responses);
+    milter_assert_equal_state(BODY_REPLIED);
+
     cut_assert_equal_string(body, body_chunk);
     cut_assert_equal_uint(sizeof(body), body_chunk_size);
     cut_assert_equal_uint(sizeof(body), packed_size);
@@ -1239,6 +1291,7 @@ test_feed_end_of_message (gconstpointer data)
     }
     cut_assert_equal_int(1, n_end_of_messages);
     cut_assert_equal_int(1, n_end_of_message_responses);
+    milter_assert_equal_state(END_OF_MESSAGE_REPLIED);
 
     gcut_assert_equal_hash_table_string_string(expected_macros, defined_macros);
     if (macro_name)
@@ -1251,6 +1304,7 @@ test_feed_quit (void)
     milter_command_encoder_encode_quit(encoder, &packet, &packet_size);
     gcut_assert_error(feed());
     cut_assert_equal_int(1, n_finished_emissions);
+    milter_assert_equal_state(FINISHED);
 }
 
 void
@@ -1260,6 +1314,7 @@ test_feed_abort (void)
     gcut_assert_error(feed());
     cut_assert_equal_int(1, n_aborts);
     cut_assert_equal_int(1, n_abort_responses);
+    milter_assert_equal_state(ABORT_REPLIED);
 }
 
 static gboolean
