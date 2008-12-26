@@ -1538,7 +1538,8 @@ int     smfi_setreply    (SMFICTX        *context,
  * @extended_code: the extended reply code (RFC 1893/2034),
  *                 or %NULL. Only 4.x.x and 5.x.x are
  *                 available.
- * @message: the text part of the SMTP reply, or %NULL.
+ * @...: the single lines of text part of the SMTP reply,
+ *       terminated by %NULL.
  *
  * Sets the error reply code. 4xx @return_code is used on
  * %SMFIS_TEMPFAIL. 5xx @return_code is used on
@@ -1551,8 +1552,8 @@ int     smfi_setreply    (SMFICTX        *context,
  * </rd>
  *
  * See also <ulink
- * url="https://www.milter.org/developers/api/smfi_setreply">
- * smfi_setreply</ulink> on milter.org.
+ * url="https://www.milter.org/developers/api/smfi_setmlreply">
+ * smfi_setmlreply</ulink> on milter.org.
  *
  * Returns: %MI_SUCCESS if success, %MI_FAILURE otherwise.
  **/

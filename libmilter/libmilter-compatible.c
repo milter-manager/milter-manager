@@ -694,39 +694,46 @@ int
 smfi_setmlreply (SMFICTX *context,
                  const char *return_code, const char *extended_code, ...)
 {
-    gboolean error = FALSE;
-    int ret = MI_SUCCESS;
+    int result = MI_SUCCESS;
     GString *string = g_string_new(NULL);
     va_list var_args;
     const gchar *message;
 
     va_start(var_args, extended_code);
 
-    message = va_arg(var_args, gchar*);
+    message = va_arg(var_args, gchar *);
     while (message) {
-        if (strlen(message) > MAXREPLYLEN ||
-            !strchr(message, '\r')) {
-            error = TRUE;
-            break;
+        size_t length;
+
+        length = strlen(message);
+        if (length > MAXREPLYLEN) {
+            milter_error("a line is too long: <%" G_GSIZE_FORMAT ">: "
+                         "max: <%d>: <%s>",
+                         length, MAXREPLYLEN, message);
+            result = MI_FAILURE;
+        } else if (strchr(message, '\r')) {
+            milter_error("a line should not include '\\r': <%s>", message);
+            result = MI_FAILURE;
         }
+        if (result == MI_FAILURE)
+            break;
         g_string_append(string, message);
-        message = va_arg(var_args, gchar*);
+        message = va_arg(var_args, gchar *);
+        if (message)
+            g_string_append(string, "\n");
     }
     va_end(var_args);
 
-    if (error) {
-        g_string_free(string, TRUE);
-        return MI_FAILURE;
-    }
-
-    if (string->len > 0) {
-        ret = smfi_setreply(context,
-                            (char*)return_code, (char*)extended_code,
-                            string->str);
+    if (result == MI_SUCCESS) {
+        if (string->len > 0)
+            result = smfi_setreply(context,
+                                   (char *)return_code,
+                                   (char *)extended_code,
+                                   string->str);
     }
     g_string_free(string, TRUE);
 
-    return ret;
+    return result;
 }
 
 int

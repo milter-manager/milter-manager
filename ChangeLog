@@ -1,5 +1,9 @@
 2008-12-26  Kouhei Sutou  <kou@cozmixng.org>
 
+	* libmilter/libmilter-compatible.c,
+	test/libmilter/test-smfi-context.c, libmilter/mfapi.h,
+	milter/core/milter-utils.c: cleanup smfi_setmlreply().
+
 	* libmilter/mfapi.h: add documents.
 	* milter/client/milter-client-context.h: improve documents.
 

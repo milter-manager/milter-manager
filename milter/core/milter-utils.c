@@ -380,10 +380,9 @@ milter_utils_format_reply_code (guint reply_code,
     if (reply_code == 0)
         return NULL;
 
-    if (reply_message)
-        messages = g_strsplit(reply_message, "\n", -1);
-    else
-        messages = g_strsplit("\n", "\n", -1);
+    if (!reply_message)
+        reply_message = "\n";
+    messages = g_strsplit(reply_message, "\n", -1);
 
     original_messages = messages;
     reply = g_string_new("");
