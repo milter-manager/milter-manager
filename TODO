@@ -95,3 +95,5 @@
        inner-esmtp-cmd  ::= ("MAIL FROM:" reverse-path)   /
 			    ("RCPT TO:" forward-path)
 * milter-client-context supports MilterStepFlags.
+* check client context's modify operations (e.g. milter_client_add_header())
+  are called on end-of-message state.

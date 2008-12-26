@@ -1,5 +1,10 @@
 2008-12-26  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: add:
+	  check client context's modify operations
+	  (e.g. milter_client_add_header()) are called on end-of-message
+	  state.
+
 	* libmilter/libmilter-compatible.c,
 	test/libmilter/test-smfi-context.c, libmilter/mfapi.h,
 	milter/core/milter-utils.c: cleanup smfi_setmlreply().
