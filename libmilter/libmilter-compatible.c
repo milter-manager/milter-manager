@@ -669,6 +669,7 @@ smfi_setreply (SMFICTX *context,
                char *return_code, char *extended_code, char *message)
 {
     SmfiContextPrivate *priv;
+    GError *error = NULL;
 
     priv = SMFI_CONTEXT_GET_PRIVATE(context);
     if (!priv->client_context)
@@ -678,10 +679,13 @@ smfi_setreply (SMFICTX *context,
                                         atoi(return_code),
                                         extended_code,
                                         message,
-                                        NULL))
+                                        &error)) {
         return MI_SUCCESS;
-    else
+    } else {
+        milter_error("failed to set reply: %s", error->message);
+        g_error_free(error);
         return MI_FAILURE;
+    }
 }
 
 #define MAXREPLYLEN 980
@@ -709,7 +713,7 @@ smfi_setmlreply (SMFICTX *context,
         message = va_arg(var_args, gchar*);
     }
     va_end(var_args);
-    
+
     if (error) {
         g_string_free(string, TRUE);
         return MI_FAILURE;

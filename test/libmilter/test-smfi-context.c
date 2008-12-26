@@ -32,6 +32,8 @@
 
 void test_private (void);
 void test_getsymval (void);
+void data_setreply (void);
+void test_setreply (gconstpointer _data);
 void test_addheader (void);
 void test_chgheader (void);
 void test_insheader (void);
@@ -85,6 +87,12 @@ static GString *body;
 static int replace_body_result;
 
 static gchar *quarantine_reason;
+
+static gchar *reply_return_code;
+static gchar *reply_extended_code;
+static gchar *reply_message;
+static int set_reply_result;
+static sfsistat reply_status;
 
 static sfsistat
 xxfi_connect (SMFICTX *context, char *host_name, _SOCK_ADDR *address)
@@ -187,6 +195,14 @@ xxfi_unknown (SMFICTX *context, const char *command)
 static sfsistat
 xxfi_data (SMFICTX *context)
 {
+    if (reply_return_code) {
+        set_reply_result = smfi_setreply(context,
+                                         reply_return_code,
+                                         reply_extended_code,
+                                         reply_message);
+        return reply_status;
+    }
+
     return SMFIS_CONTINUE;
 }
 
@@ -270,6 +286,12 @@ setup (void)
     replace_body_result = 0;
 
     quarantine_reason = NULL;
+
+    reply_return_code = NULL;
+    reply_extended_code = NULL;
+    reply_message = NULL;
+    set_reply_result = MI_FAILURE;
+    reply_status = SMFIS_CONTINUE;
 }
 
 static void
@@ -327,6 +349,13 @@ teardown (void)
 
     if (quarantine_reason)
         g_free(quarantine_reason);
+
+    if (reply_return_code)
+        g_free(reply_return_code);
+    if (reply_extended_code)
+        g_free(reply_extended_code);
+    if (reply_message)
+        g_free(reply_message);
 }
 
 static GError *
@@ -371,6 +400,52 @@ test_getsymval (void)
                                                 "<kou@cozmixng.org>");
     gcut_assert_error(feed());
     cut_assert_equal_string("kou@cozmixng.org", macro_value);
+}
+
+void
+data_setreply (void)
+{
+#define ADD(label, expected_return_status,                              \
+            return_code, extended_code, message, status)                \
+    gcut_add_datum(label,                                               \
+                   "expected-return-status",                            \
+                   G_TYPE_INT, expected_return_status,                  \
+                   "return-code", G_TYPE_STRING, return_code,           \
+                   "extended-code", G_TYPE_STRING, extended_code,       \
+                   "message", G_TYPE_STRING, message,                   \
+                   "status", G_TYPE_INT, status,                        \
+                   NULL)
+
+    ADD("4xx - no extended",
+        MI_SUCCESS, "450", NULL, "rejected", SMFIS_REJECT);
+    ADD("4xx - extended",
+        MI_SUCCESS, "450", "4.2.0", "Rejected by Greylist", SMFIS_REJECT);
+    ADD("5xx",
+        MI_SUCCESS, "551", "5.7.1", "Forwarding to remote host disabled",
+        SMFIS_TEMPFAIL);
+    ADD("invalid - 3xx",
+        MI_FAILURE, "399", NULL, "message", SMFIS_CONTINUE);
+    ADD("invalid - empty extended code",
+        MI_FAILURE, "450", "", "Rejected", SMFIS_REJECT);
+
+#undef ADD
+}
+
+void
+test_setreply (gconstpointer _data)
+{
+    const GCutData *data = _data;
+
+    reply_return_code = g_strdup(gcut_data_get_string(data, "return-code"));
+    reply_extended_code = g_strdup(gcut_data_get_string(data, "extended-code"));
+    reply_message = g_strdup(gcut_data_get_string(data, "message"));
+    reply_status = gcut_data_get_int(data, "status");
+
+    milter_command_encoder_encode_data(command_encoder,
+                                       &packet, &packet_size);
+    gcut_assert_error(feed());
+    cut_assert_equal_int(gcut_data_get_int(data, "expected-return-status"),
+                         set_reply_result);
 }
 
 void

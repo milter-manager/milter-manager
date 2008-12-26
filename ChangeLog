@@ -1,3 +1,8 @@
+2008-12-26  Kouhei Sutou  <kou@cozmixng.org>
+
+	* libmilter/libmilter-compatible.c,
+	test/libmilter/test-smfi-context.c: handle error.
+
 2008-12-25  Kouhei Sutou  <kou@cozmixng.org>
 
 	* libmilter/mfapi.h: move documentation unnecessary codes to ...
