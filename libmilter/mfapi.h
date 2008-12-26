@@ -758,7 +758,7 @@ struct smfiDesc
 
     /**
      * xxfi_negotiate:
-     * @context: the context that received the signal.
+     * @context: the context for the current milter session.
      * @actions: the actions received from MTA.
      * @steps: the milter protocol steps offered from MTA.
      * @unused0: unused.
@@ -1188,7 +1188,7 @@ int smfi_version    (unsigned int    *major,
  * Skips the rest body chunks. This can be used only in
  * xxfi_body().
  *
- * See <ulink
+ * See also <ulink
  * url="https://www.milter.org/developers/api/&num;conn-spec">
  * callback return status description</ulink> on milter.org.
  */
@@ -1473,12 +1473,89 @@ int smfi_version    (unsigned int    *major,
  **/
 #define SMFIP_HDR_LEADSPC     0x00100000L
 
+/**
+ * smfi_getsymval:
+ * @context: the context for the current milter session.
+ * @name: the name of a macro.
+ *
+ * Gets a value of the macro named @name in the current milter
+ * session context. smfi_getsymval() can be called in
+ * xxfi_XXX callbacks. (e.g. xxfi_connect(), xxfi_helo(),
+ * ...)
+ *
+ * @name should be enclosed in braces ("{" and "}") like
+ * "{if_name}" except @name contains a character like "i".
+ *
+ * See also <ulink
+ * url="https://www.milter.org/developers/api/smfi_getsymval">
+ * smfi_getsymval</ulink> on milter.org. Sendmail's default
+ * macros are also shown in the page.
+ *
+ * Returns: a value of the macro named @name if it exists,
+ *          %NULL otherwise.
+ **/
 char   *smfi_getsymval   (SMFICTX        *context,
                           char           *name);
+
+/**
+ * smfi_setreply:
+ * @context: the context for the current milter session.
+ * @return_code: the three-digit SMTP error reply
+ *               code. (RFC 2821) Only 4xx and 5xx are
+ *               accepted.
+ * @extended_code: the extended reply code (RFC 1893/2034),
+ *                 or %NULL. Only 4.x.x and 5.x.x are
+ *                 available.
+ * @message: the text part of the SMTP reply, or %NULL.
+ *
+ * Sets the error reply code. 4xx @return_code is used on
+ * %SMFIS_TEMPFAIL. 5xx @return_code is used on
+ * %SMFIS_REJECT.
+ *
+ * <rd>
+ * Here are the fail conditions:
+ *   * @return_code is neither 4xx nor 5xx.
+ *   * @extended_code is neither 4.x.x nor 5.x.x.
+ * </rd>
+ *
+ * See also <ulink
+ * url="https://www.milter.org/developers/api/smfi_setreply">
+ * smfi_setreply</ulink> on milter.org.
+ *
+ * Returns: %MI_SUCCESS if success, %MI_FAILURE otherwise.
+ **/
 int     smfi_setreply    (SMFICTX        *context,
                           char           *return_code,
                           char           *extended_code,
                           char           *message);
+
+/**
+ * smfi_setmlreply:
+ * @context: the context for the current milter session.
+ * @return_code: the three-digit SMTP error reply
+ *               code. (RFC 2821) Only 4xx and 5xx are
+ *               accepted.
+ * @extended_code: the extended reply code (RFC 1893/2034),
+ *                 or %NULL. Only 4.x.x and 5.x.x are
+ *                 available.
+ * @message: the text part of the SMTP reply, or %NULL.
+ *
+ * Sets the error reply code. 4xx @return_code is used on
+ * %SMFIS_TEMPFAIL. 5xx @return_code is used on
+ * %SMFIS_REJECT.
+ *
+ * <rd>
+ * Here are the fail conditions:
+ *   * @return_code is neither 4xx nor 5xx.
+ *   * @extended_code is neither 4.x.x nor 5.x.x.
+ * </rd>
+ *
+ * See also <ulink
+ * url="https://www.milter.org/developers/api/smfi_setreply">
+ * smfi_setreply</ulink> on milter.org.
+ *
+ * Returns: %MI_SUCCESS if success, %MI_FAILURE otherwise.
+ **/
 int     smfi_setmlreply  (SMFICTX        *context,
                           const char     *return_code,
                           const char     *extended_code,

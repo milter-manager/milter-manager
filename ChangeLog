@@ -1,5 +1,8 @@
 2008-12-26  Kouhei Sutou  <kou@cozmixng.org>
 
+	* libmilter/mfapi.h: add documents.
+	* milter/client/milter-client-context.h: improve documents.
+
 	* libmilter/libmilter-compatible.c,
 	test/libmilter/test-smfi-context.c: handle error.
 

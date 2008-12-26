@@ -355,16 +355,17 @@ void                 milter_client_context_set_private_data  (MilterClientContex
  * milter_client_context_set_reply:
  * @context: a %MilterClientContext.
  * @code: the three-digit SMTP error reply
- * code. (RFC 2821) Only 4xx and 5xx are accepted.
+ *        code. (RFC 2821) Only 4xx and 5xx are accepted.
  * @extended_code: the extended reply code (RFC 1893/2034),
- * or %NULL.
+ *                 or %NULL.
  * @message: the text part of the SMTP reply, or %NULL.
  * @error: return location for an error, or %NULL.
  *
- * Sets the error reply code. Set error reply code with 4xx
- * @code is used on %MILTER_REPLY_TEMPORARY_FAILURE. Set
- * error reply reply code with 5xx @code is used on
- * %MILTER_REPLY_REJECT. See also <ulink
+ * Sets the error reply code. 4xx @code is used on
+ * %MILTER_REPLY_TEMPORARY_FAILURE. 5xx @code is used on
+ * %MILTER_REPLY_REJECT.
+ *
+ * See also <ulink
  * url="https://www.milter.org/developers/api/smfi_setreply">
  * smfi_setreply</ulink> on milter.org.
  *
