@@ -216,6 +216,9 @@ G_BEGIN_DECLS
  * @MILTER_CLIENT_CONTEXT_ERROR_INVALID_STATE: Indicates
  * unexpected operation is requested on the current
  * %MilterClientContextState.
+ * @MILTER_CLIENT_CONTEXT_ERROR_INVALID_STATE: Indicates
+ * unexpected operation is requested on the context's
+ * %MilterActionFlags.
  *
  * These identify the variable errors that can occur while
  * calling %MilterClientContext functions.
@@ -225,7 +228,8 @@ typedef enum
     MILTER_CLIENT_CONTEXT_ERROR_INVALID_CODE,
     MILTER_CLIENT_CONTEXT_ERROR_IO_ERROR,
     MILTER_CLIENT_CONTEXT_ERROR_NULL,
-    MILTER_CLIENT_CONTEXT_ERROR_INVALID_STATE
+    MILTER_CLIENT_CONTEXT_ERROR_INVALID_STATE,
+    MILTER_CLIENT_CONTEXT_ERROR_INVALID_ACTION
 } MilterClientContextError;
 
 typedef enum
@@ -675,8 +679,12 @@ guint                milter_client_context_get_timeout       (MilterClientContex
 
 void                 milter_client_context_set_state         (MilterClientContext *context,
                                                               MilterClientContextState state);
-
 MilterClientContextState milter_client_context_get_state     (MilterClientContext *context);
+
+void                 milter_client_context_set_option        (MilterClientContext *context,
+                                                              MilterOption *option);
+MilterOption        *milter_client_context_get_option        (MilterClientContext *context);
+
 
 
 G_END_DECLS

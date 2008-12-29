@@ -1,5 +1,12 @@
 2008-12-29  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client-context.[ch],
+	test/client/test-client-context-modify.c:
+	milter_client_add_header() checks action flags of negotiated
+	option.
+	* test/client/test-client-context-header.c,
+	test/libmilter/test-smfi-context.c: follow the above change.
+
 	* milter/core/milter-command-encoder.c
 	(milter_command_encoder_encode_body): accept NULL as packed_size.
 

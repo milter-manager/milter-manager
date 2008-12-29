@@ -256,10 +256,26 @@ feed (void)
     return error;
 }
 
+static void
+set_option (void)
+{
+    MilterOption *option;
+    MilterActionFlags action;
+    GError *error = NULL;
+
+    action = gcut_flags_get_all(MILTER_TYPE_ACTION_FLAGS, &error);
+    gcut_assert_error(error);
+    option = milter_option_new(2, action, 0);
+    milter_client_context_set_option(context, option);
+    g_object_unref(option);
+}
+
 void
 test_add_header (void)
 {
     GString *actual_data;
+
+    set_option();
 
     add_header = TRUE;
     header_name = g_strdup("X-Test-Header");
@@ -282,6 +298,8 @@ void
 test_insert_header (void)
 {
     GString *actual_data;
+
+    set_option();
 
     insert_header = TRUE;
 
@@ -308,6 +326,8 @@ test_change_header (void)
 {
     GString *actual_data;
 
+    set_option();
+
     change_header = TRUE;
 
     header_name = g_strdup("X-Test-Header");
@@ -333,6 +353,8 @@ void
 test_delete_header (void)
 {
     GString *actual_data;
+
+    set_option();
 
     delete_header = TRUE;
 

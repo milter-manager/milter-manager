@@ -80,6 +80,7 @@ struct _MilterClientContextPrivate
     gpointer private_data;
     GDestroyNotify private_data_destroy;
     MilterClientContextState state;
+    MilterOption *option;
     guint reply_code;
     gchar *extended_reply_code;
     gchar *reply_message;
@@ -1437,6 +1438,7 @@ milter_client_context_init (MilterClientContext *context)
     priv->private_data = NULL;
     priv->private_data_destroy = NULL;
     priv->state = MILTER_CLIENT_CONTEXT_STATE_START;
+    priv->option = NULL;
     priv->reply_code = 0;
     priv->extended_reply_code = NULL;
     priv->reply_message = NULL;
@@ -1472,6 +1474,11 @@ dispose (GObject *object)
         priv->private_data = NULL;
     }
     priv->private_data_destroy = NULL;
+
+    if (priv->option) {
+        g_object_unref(priv->option);
+        priv->option = NULL;
+    }
 
     if (priv->extended_reply_code) {
         g_free(priv->extended_reply_code);
@@ -1877,6 +1884,37 @@ validate_state (const gchar *operation,
     return FALSE;
 }
 
+static gboolean
+validate_action (const gchar *operation,
+                 MilterActionFlags expected_action,
+                 MilterOption *option,
+                 GError **error)
+{
+    MilterActionFlags actual_action;
+    gchar *expected_action_names;
+    gchar *actual_action_names;
+
+    actual_action = milter_option_get_action(option);
+    if ((actual_action & expected_action) == expected_action)
+        return TRUE;
+
+    expected_action_names =
+        milter_utils_get_flags_names(MILTER_TYPE_ACTION_FLAGS,
+                                     expected_action);
+    actual_action_names =
+        milter_utils_get_flags_names(MILTER_TYPE_ACTION_FLAGS,
+                                     actual_action);
+    g_set_error(error,
+                MILTER_CLIENT_CONTEXT_ERROR,
+                MILTER_CLIENT_CONTEXT_ERROR_INVALID_ACTION,
+                "%s can only be done with <%s> action flags: <%s>",
+                operation, expected_action_names, actual_action_names);
+    g_free(expected_action_names);
+    g_free(actual_action_names);
+
+    return FALSE;
+}
+
 gboolean
 milter_client_context_add_header (MilterClientContext *context,
                                   const gchar *name, const gchar *value,
@@ -1902,6 +1940,12 @@ milter_client_context_add_header (MilterClientContext *context,
                         MILTER_CLIENT_CONTEXT_STATE_END_OF_MESSAGE,
                         priv->state,
                         error))
+        return FALSE;
+
+    if (!validate_action("add-header",
+                         MILTER_ACTION_ADD_HEADERS,
+                         priv->option,
+                         error))
         return FALSE;
 
     milter_debug("sending ADD HEADER: <%s>=<%s>", name, value);
@@ -2256,19 +2300,19 @@ negotiate_response (MilterClientContext *context,
     priv->state = MILTER_CLIENT_CONTEXT_STATE_NEGOTIATE_REPLIED;
 
     switch (status) {
+    case MILTER_STATUS_CONTINUE:
+        milter_client_context_set_option(context, option);
       case MILTER_STATUS_ALL_OPTIONS:
-        milter_option_set_step(option, 0);
-      case MILTER_STATUS_CONTINUE:
         milter_debug("sending NEGOTIATE: "
                      "version = %d, action = %04X, step = %06X",
-                     milter_option_get_version(option),
-                     milter_option_get_action(option),
-                     milter_option_get_step(option));
+                     milter_option_get_version(priv->option),
+                     milter_option_get_action(priv->option),
+                     milter_option_get_step(priv->option));
         encoder = milter_agent_get_encoder(MILTER_AGENT(context));
 
         milter_reply_encoder_encode_negotiate(MILTER_REPLY_ENCODER(encoder),
                                               &packet, &packet_size,
-                                              option, macros_requests);
+                                              priv->option, macros_requests);
         write_packet(MILTER_CLIENT_CONTEXT(context), packet, packet_size);
         break;
       case MILTER_STATUS_REJECT:
@@ -2278,10 +2322,12 @@ negotiate_response (MilterClientContext *context,
         write_packet(MILTER_CLIENT_CONTEXT(context), packet, packet_size);
         break;
       default:
+        /* FIXME: error */
         break;
     }
     milter_statistics("Reply %s to MTA on negotiate.",
-                       milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status));
+                       milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS,
+                                                       status));
 }
 
 static void
@@ -2493,6 +2539,7 @@ cb_decoder_negotiate (MilterDecoder *decoder, MilterOption *option,
 {
     MilterStatus status = MILTER_STATUS_NOT_CHANGE;
     MilterClientContext *context = MILTER_CLIENT_CONTEXT(user_data);
+    MilterOption *copied_option;
     MilterMacrosRequests *macros_requests;
     MilterClientContextPrivate *priv;
 
@@ -2501,6 +2548,9 @@ cb_decoder_negotiate (MilterDecoder *decoder, MilterOption *option,
     priv->state = MILTER_CLIENT_CONTEXT_STATE_NEGOTIATE;
 
     disable_timeout(context);
+    copied_option = milter_option_copy(option);
+    milter_client_context_set_option(context, copied_option);
+    g_object_unref(copied_option);
     macros_requests = milter_macros_requests_new();
     g_signal_emit(context, signals[NEGOTIATE], 0,
                   option, macros_requests, &status);
@@ -2855,6 +2905,27 @@ milter_client_context_get_state (MilterClientContext *context)
 {
     return MILTER_CLIENT_CONTEXT_GET_PRIVATE(context)->state;
 }
+
+void
+milter_client_context_set_option (MilterClientContext *context,
+                                  MilterOption *option)
+{
+    MilterClientContextPrivate *priv;
+
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    if (priv->option)
+        g_object_unref(priv->option);
+    priv->option = option;
+    if (priv->option)
+        g_object_ref(priv->option);
+}
+
+MilterOption *
+milter_client_context_get_option (MilterClientContext *context)
+{
+    return MILTER_CLIENT_CONTEXT_GET_PRIVATE(context)->option;
+}
+
 
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
