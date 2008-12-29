@@ -1,5 +1,8 @@
 2008-12-29  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-command-encoder.c
+	(milter_command_encoder_encode_body): accept NULL as packed_size.
+
 	* milter/client/milter-client.c: wait starting main loop until
 	accept loop is started to milter_client_shutdown() always works
 	well. Bad case: main loop start -> milter_client_shutdown() ->

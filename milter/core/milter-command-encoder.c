@@ -276,16 +276,20 @@ milter_command_encoder_encode_body (MilterCommandEncoder *encoder,
                                     gsize *packed_size)
 {
     GString *buffer;
+    gsize packed_chunk_size;
 
     buffer = milter_encoder_get_buffer(MILTER_ENCODER(encoder));
 
     g_string_append_c(buffer, MILTER_COMMAND_BODY);
     if (size > MILTER_CHUNK_SIZE)
-        *packed_size = MILTER_CHUNK_SIZE;
+        packed_chunk_size = MILTER_CHUNK_SIZE;
     else
-        *packed_size = size;
-    g_string_append_len(buffer, chunk, *packed_size);
+        packed_chunk_size = size;
+    g_string_append_len(buffer, chunk, packed_chunk_size);
     milter_encoder_pack(MILTER_ENCODER(encoder), packet, packet_size);
+
+    if (packed_size)
+        *packed_size = packed_chunk_size;
 }
 
 void
