@@ -1,3 +1,8 @@
+2008-12-29  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/client/milter-client-context.[ch],
+	test/client/test-client-context-modify.c: add state validation.
+
 2008-12-26  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/client/milter-client-context.[ch],

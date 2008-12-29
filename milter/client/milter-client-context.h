@@ -211,6 +211,11 @@ G_BEGIN_DECLS
  * milter_client_context_set_reply() is invalid.
  * @MILTER_CLIENT_CONTEXT_ERROR_IO_ERROR: Indicates an IO
  * error causing on writing/reading milter protocol data.
+ * @MILTER_CLIENT_CONTEXT_ERROR_NULL: Indicates unexpected
+ * %NULL is passed.
+ * @MILTER_CLIENT_CONTEXT_ERROR_INVALID_STATE: Indicates
+ * unexpected operation is requested on the current
+ * %MilterClientContextState.
  *
  * These identify the variable errors that can occur while
  * calling %MilterClientContext functions.
@@ -219,7 +224,8 @@ typedef enum
 {
     MILTER_CLIENT_CONTEXT_ERROR_INVALID_CODE,
     MILTER_CLIENT_CONTEXT_ERROR_IO_ERROR,
-    MILTER_CLIENT_CONTEXT_ERROR_NULL
+    MILTER_CLIENT_CONTEXT_ERROR_NULL,
+    MILTER_CLIENT_CONTEXT_ERROR_INVALID_STATE
 } MilterClientContextError;
 
 typedef enum

@@ -1848,11 +1848,41 @@ write_packet (MilterClientContext *context, gchar *packet, gsize packet_size)
     return success;
 }
 
+static gboolean
+validate_state (const gchar *operation,
+                MilterClientContextState expected_state,
+                MilterClientContextState actual_state,
+                GError **error)
+{
+    gchar *expected_state_nick;
+    gchar *actual_state_nick;
+
+    if (expected_state == actual_state)
+        return TRUE;
+
+    expected_state_nick =
+        milter_utils_get_enum_nick_name(MILTER_TYPE_CLIENT_CONTEXT_STATE,
+                                        expected_state);
+    actual_state_nick =
+        milter_utils_get_enum_nick_name(MILTER_TYPE_CLIENT_CONTEXT_STATE,
+                                        actual_state);
+    g_set_error(error,
+                MILTER_CLIENT_CONTEXT_ERROR,
+                MILTER_CLIENT_CONTEXT_ERROR_INVALID_STATE,
+                "%s can only be done on %s state: <%s>",
+                operation, expected_state_nick, actual_state_nick);
+    g_free(expected_state_nick);
+    g_free(actual_state_nick);
+
+    return FALSE;
+}
+
 gboolean
 milter_client_context_add_header (MilterClientContext *context,
                                   const gchar *name, const gchar *value,
                                   GError **error)
 {
+    MilterClientContextPrivate *priv;
     gchar *packet = NULL;
     gsize packet_size;
     MilterEncoder *encoder;
@@ -1866,6 +1896,13 @@ milter_client_context_add_header (MilterClientContext *context,
                     value ? value : "NULL");
         return FALSE;
     }
+
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    if (!validate_state("add-header",
+                        MILTER_CLIENT_CONTEXT_STATE_END_OF_MESSAGE,
+                        priv->state,
+                        error))
+        return FALSE;
 
     milter_debug("sending ADD HEADER: <%s>=<%s>", name, value);
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
