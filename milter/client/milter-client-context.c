@@ -1959,11 +1959,36 @@ milter_client_context_add_header (MilterClientContext *context,
 gboolean
 milter_client_context_insert_header (MilterClientContext *context,
                                      guint32 index,
-                                     const gchar *name, const gchar *value)
+                                     const gchar *name, const gchar *value,
+                                     GError **error)
 {
+    MilterClientContextPrivate *priv;
     gchar *packet = NULL;
     gsize packet_size;
     MilterEncoder *encoder;
+
+    if (!name || !value) {
+        g_set_error(error,
+                    MILTER_CLIENT_CONTEXT_ERROR,
+                    MILTER_CLIENT_CONTEXT_ERROR_NULL,
+                    "both header name and value should not be NULL: <%s>=<%s>",
+                    name ? name : "NULL",
+                    value ? value : "NULL");
+        return FALSE;
+    }
+
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    if (!validate_state("insert-header",
+                        MILTER_CLIENT_CONTEXT_STATE_END_OF_MESSAGE,
+                        priv->state,
+                        error))
+        return FALSE;
+
+    if (!validate_action("insert-header",
+                         MILTER_ACTION_ADD_HEADERS,
+                         priv->option,
+                         error))
+        return FALSE;
 
     milter_debug("sending INSERT_HEADER: [%u] <%s>=<%s>", index, name, value);
 

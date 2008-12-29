@@ -448,10 +448,16 @@ cb_insert_header (MilterServerContext *context,
 {
     MilterManagerLeader *leader = user_data;
     MilterManagerLeaderPrivate *priv;
+    GError *error = NULL;
 
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
     milter_client_context_insert_header(priv->client_context,
-                                        index, name, value);
+                                        index, name, value, &error);
+    if (error) {
+        milter_error("failed to insert header: %s", error->message);
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(leader), error);
+        g_error_free(error);
+    }
 }
 
 static void

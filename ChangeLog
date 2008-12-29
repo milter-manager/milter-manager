@@ -1,5 +1,13 @@
 2008-12-29  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client-context.[ch],
+	test/client/test-client-context-modify.c:
+	milter_client_insert_header() supports validation.
+	* libmilter/libmilter-compatible.c,
+	milter/manager/milter-manager-leader.c,
+	test/client/test-client-context-header.c,
+	test/manager/test-leader.c: follow the above changes.
+
 	* test/client/test-client-context-modify.c (test_add_header): add
 	a written packet assertion.
 

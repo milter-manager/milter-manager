@@ -881,6 +881,8 @@ do_end_of_message (MilterManagerTestScenario *scenario, const gchar *group)
     if (has_key(scenario, group, "chunk"))
         chunk = get_string(scenario, group, "chunk");
 
+    milter_client_context_set_state(client_context,
+                                    MILTER_CLIENT_CONTEXT_STATE_END_OF_MESSAGE);
     milter_manager_leader_end_of_message(leader,
                                          chunk,
                                          chunk ? strlen(chunk) : 0);
@@ -926,7 +928,8 @@ do_end_of_message_quarantine (MilterManagerTestScenario *scenario, const gchar *
 }
 
 static void
-do_end_of_message_header (MilterManagerTestScenario *scenario, const gchar *group)
+do_end_of_message_header (MilterManagerTestScenario *scenario,
+                          const gchar *group)
 {
     const GList *expected_headers;
     const GList *actual_header_list;

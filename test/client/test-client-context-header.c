@@ -125,7 +125,8 @@ cb_end_of_message (MilterClientContext *context, gpointer user_data)
 
     if (insert_header) {
         milter_client_context_insert_header(context, header_index,
-                                            header_name, header_value);
+                                            header_name, header_value,
+                                            &error_in_callback);
         milter_agent_set_writer(MILTER_AGENT(context), NULL);
     }
 
@@ -275,6 +276,8 @@ test_add_header (void)
 {
     GString *actual_data;
 
+    cut_notify("should be removed.");
+
     set_option();
 
     add_header = TRUE;
@@ -298,6 +301,8 @@ void
 test_insert_header (void)
 {
     GString *actual_data;
+
+    cut_notify("should be removed.");
 
     set_option();
 
@@ -326,6 +331,8 @@ test_change_header (void)
 {
     GString *actual_data;
 
+    cut_notify("should be implemented in test-client-context-modify.c.");
+
     set_option();
 
     change_header = TRUE;
@@ -353,6 +360,8 @@ void
 test_delete_header (void)
 {
     GString *actual_data;
+
+    cut_notify("should be implemented in test-client-context-modify.c.");
 
     set_option();
 

@@ -778,16 +778,22 @@ int
 smfi_insheader (SMFICTX *context, int index, char *name, char *value)
 {
     SmfiContextPrivate *priv;
+    GError *error = NULL;
 
     priv = SMFI_CONTEXT_GET_PRIVATE(context);
     if (!priv->client_context)
         return MI_FAILURE;
 
     if (milter_client_context_insert_header(priv->client_context,
-                                            index, name, value))
+                                            index, name, value, &error)) {
         return MI_SUCCESS;
-    else
+    } else {
+        if (error) {
+            milter_error("failed to insert header: %s", error->message);
+            g_error_free(error);
+        }
         return MI_FAILURE;
+    }
 }
 
 int

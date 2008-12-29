@@ -463,6 +463,7 @@ gboolean             milter_client_context_add_header        (MilterClientContex
  * @index: the index to be inserted.
  * @name: the header name.
  * @value: the header value.
+ * @error: return location for an error, or %NULL.
  *
  * Inserts a header into the current message's header lists
  * at @index. This function can be called in
@@ -478,7 +479,8 @@ gboolean             milter_client_context_add_header        (MilterClientContex
 gboolean             milter_client_context_insert_header     (MilterClientContext *context,
                                                               guint32      index,
                                                               const gchar *name,
-                                                              const gchar *value);
+                                                              const gchar *value,
+                                                              GError     **error);
 
 /**
  * milter_client_context_change_header:
