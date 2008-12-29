@@ -1,5 +1,8 @@
 2008-12-29  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/client/test-client-context-modify.c (test_add_header): add
+	a written packet assertion.
+
 	* milter/client/milter-client-context.[ch],
 	test/client/test-client-context-modify.c:
 	milter_client_add_header() checks action flags of negotiated
