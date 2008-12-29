@@ -639,7 +639,7 @@ emit_replace_body_signal (MilterManagerChildren *children)
 
         status = g_io_channel_read_chars(priv->body_file, buffer, MILTER_CHUNK_SIZE,
                                          &read_size, &error);
-    
+
         if (status == G_IO_STATUS_NORMAL)
             g_signal_emit_by_name(children, "replace-body", buffer, read_size);
     }
@@ -744,7 +744,7 @@ emit_signals_on_end_of_message (MilterManagerChildren *children)
     processing_headers = milter_headers_copy(priv->original_headers);
     header_list = milter_headers_get_list(priv->headers);
 
-    /* FIXME thes following process admits of improvement. */
+    /* FIXME the following process admits improvement. */
     for (node = header_list, i = 0;
          node;
          node = g_list_next(node), i++) {
@@ -825,7 +825,7 @@ send_first_command_to_next_child (MilterManagerChildren *children,
 
     priv->sent_end_of_message = TRUE;
     priv->processing_header_index = 0;
-    priv->command_waiting_child_queue = 
+    priv->command_waiting_child_queue =
         g_list_remove(priv->command_waiting_child_queue, context);
 
     next_child = get_first_child_in_command_waiting_child_queue(children);
@@ -838,9 +838,9 @@ send_first_command_to_next_child (MilterManagerChildren *children,
     }
     milter_server_context_quit(context);
 
-    first_command = fetch_first_command_for_child_in_queue(next_child, 
+    first_command = fetch_first_command_for_child_in_queue(next_child,
                                                            &priv->command_queue);
-    if (first_command == -1) 
+    if (first_command == -1)
         g_signal_emit_by_name(children, "continue");
     else
         send_command_to_child(children, next_child, first_command);
@@ -1252,7 +1252,7 @@ cb_finished (MilterAgent *agent, gpointer user_data)
     child_name = milter_server_context_get_name(context);
 
     milter_debug("%s exits on %s.", child_name, state_string);
-            
+
     g_free(state_string);
 
     switch (priv->current_state) {
