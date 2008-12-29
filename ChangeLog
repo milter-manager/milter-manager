@@ -1,5 +1,10 @@
 2008-12-29  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client.c: wait starting main loop until
+	accept loop is started to milter_client_shutdown() always works
+	well. Bad case: main loop start -> milter_client_shutdown() ->
+	accept loop start.
+
 	* milter/client/milter-client-context.[ch],
 	test/client/test-client-context-modify.c: add state validation.
 

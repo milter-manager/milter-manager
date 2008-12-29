@@ -61,6 +61,8 @@ struct _MilterClientPrivate
 {
     GIOChannel *listening_channel;
     GMainLoop *accept_loop;
+    GMutex *accept_loop_mutex;
+    GCond *accept_loop_ran_cond;
     GMainLoop *main_loop;
     guint server_watch_id;
     gchar *connection_spec;
@@ -136,6 +138,9 @@ milter_client_init (MilterClient *client)
     main_context = g_main_context_new();
     priv->accept_loop = g_main_loop_new(main_context, FALSE);
     g_main_context_unref(main_context);
+    priv->accept_loop_mutex = g_mutex_new();
+    priv->accept_loop_ran_cond = g_cond_new();
+
     priv->main_loop = g_main_loop_new(NULL, FALSE);
 
     priv->server_watch_id = 0;
@@ -172,6 +177,16 @@ dispose (GObject *object)
     if (priv->accept_loop) {
         g_main_loop_unref(priv->accept_loop);
         priv->accept_loop = NULL;
+    }
+
+    if (priv->accept_loop_mutex) {
+        g_mutex_free(priv->accept_loop_mutex);
+        priv->accept_loop_mutex = NULL;
+    }
+
+    if (priv->accept_loop_ran_cond) {
+        g_cond_free(priv->accept_loop_ran_cond);
+        priv->accept_loop_ran_cond = NULL;
     }
 
     if (priv->main_loop) {
@@ -480,18 +495,39 @@ server_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
     return keep_callback;
 }
 
-static gpointer
-server_accept_thread (gpointer data)
+static gboolean
+cb_timeout_accept_loop_ran (gpointer data)
 {
     MilterClient *client = data;
     MilterClientPrivate *priv;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
+    g_cond_broadcast(priv->accept_loop_ran_cond);
+
+    return FALSE;
+}
+
+static gpointer
+server_accept_thread (gpointer data)
+{
+    MilterClient *client = data;
+    MilterClientPrivate *priv;
+    GSource *timeout_source;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+
+    timeout_source = g_timeout_source_new(0);
+    g_source_set_callback(timeout_source,
+                          cb_timeout_accept_loop_ran,
+                          client, NULL);
+    g_source_attach(timeout_source, g_main_loop_get_context(priv->accept_loop));
+    g_source_unref(timeout_source);
 
     g_main_loop_run(priv->accept_loop);
 
     return NULL;
 }
+
 
 gboolean
 milter_client_main (MilterClient *client)
@@ -553,6 +589,7 @@ milter_client_main (MilterClient *client)
     g_source_unref(watch_source);
 
     thread = g_thread_create(server_accept_thread, client, TRUE, NULL);
+    g_cond_wait(priv->accept_loop_ran_cond, priv->accept_loop_mutex);
     g_main_loop_run(priv->main_loop);
     g_thread_join(thread);
 
