@@ -1,5 +1,14 @@
 2008-12-30  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client.c,
+	milter/core/milter-command-decoder.c,
+	milter/core/milter-command-encoder.c,
+	milter/server/milter-server-context.c,
+	binding/ruby/src/toolkit/rb-milter-connection.c,
+	binding/ruby/src/toolkit/rb-milter-core-private.c,
+	binding/ruby/src/toolkit/rb-milter-socket-address.c: fix IP
+	related header file including to work on FreeBSD.
+
 	* tool/milter-performance-check: use different Message-Id for each
 	test mail.
 

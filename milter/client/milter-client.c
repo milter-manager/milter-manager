@@ -29,7 +29,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>
-#include <netinet/ip.h>
+#include <netinet/in.h>
 
 #include "../client.h"
 
