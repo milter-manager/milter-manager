@@ -19,17 +19,17 @@
 
 #include <string.h>
 
-#include <gcutter.h>
+#include <milter/manager/milter-manager-leader.h>
+#include <milter/manager/milter-manager-enum-types.h>
 
-#define shutdown inet_shutdown
 #include <milter-test-utils.h>
 #include <milter-manager-test-utils.h>
 #include <milter-manager-test-client.h>
-#include <milter/manager/milter-manager-leader.h>
-#include <milter/manager/milter-manager-enum-types.h>
 #include <milter-manager-test-server.h>
 #include <milter-manager-test-scenario.h>
-#undef shutdown
+
+#include <gcutter.h>
+
 
 void data_scenario (void);
 void test_scenario (gconstpointer data);
@@ -599,7 +599,7 @@ assert_response_common (MilterManagerTestScenario *scenario, const gchar *group)
 {
     MilterManagerTestClientGetNReceived get_n_received;
     guint n_received, actual_n_received;
-    const gchar *response;
+    const gchar *response = NULL;
     MilterStatus status;
 
     n_received = get_integer(scenario, group, "n_received");

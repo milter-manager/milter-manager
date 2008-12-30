@@ -17,11 +17,14 @@
  *
  */
 
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <sys/un.h>
 #include <arpa/inet.h>
-#include <errno.h>
 
 #include <milter/client.h>
 #include <milter-assertions.h>

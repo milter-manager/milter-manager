@@ -17,17 +17,17 @@
  *
  */
 
-#include <gcutter.h>
+#include <stdlib.h>
 
-#define shutdown inet_shutdown
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <sys/un.h>
 #include <arpa/inet.h>
-#undef shutdown
 
 #include <milter/core/milter-command-decoder.h>
 #include <milter/core/milter-enum-types.h>
+
+#include <gcutter.h>
 
 void test_decode_negotiate (void);
 void test_decode_negotiate_empty (void);

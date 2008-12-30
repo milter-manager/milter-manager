@@ -17,16 +17,18 @@
  *
  */
 
+#include <stdlib.h>
+
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <sys/un.h>
 #include <arpa/inet.h>
 
-#include <gcutter.h>
-
 #include <milter/core/milter-encoder.h>
 #include <milter/core/milter-enum-types.h>
 #include <milter/core/milter-macros-requests.h>
+
+#include <gcutter.h>
 
 void test_encode_negotiate (void);
 void test_encode_negotiate_null (void);

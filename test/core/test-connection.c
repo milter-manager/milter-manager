@@ -17,16 +17,17 @@
  *
  */
 
-#include <gcutter.h>
+#include <stdlib.h>
+#include <errno.h>
 
-#define shutdown inet_shutdown
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <errno.h>
+
 #include <milter/core/milter-connection.h>
-#undef shutdown
+
+#include <gcutter.h>
 
 void test_parse_connection_spec_null (void);
 void data_parse_connection_spec_unix (void);

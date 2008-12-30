@@ -1,5 +1,7 @@
 2008-12-30  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/: include missing <stdlib.h> and <string.h>.
+
 	* test/run-test.sh: improve default make detection.
 
 	* milter/core/milter-command-decoder.c: fix indent.
