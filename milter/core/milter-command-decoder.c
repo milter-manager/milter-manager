@@ -402,11 +402,11 @@ decode_define_macro (MilterDecoder *decoder, GError **error)
 
 static gboolean
 decode_connect_inet_address (const gchar *buffer,
-                                     struct sockaddr **address,
-                                     socklen_t *address_length,
-                                     const gchar *host_name,
-                                     gchar family, guint port,
-                                     GError **error)
+                             struct sockaddr **address,
+                             socklen_t *address_length,
+                             const gchar *host_name,
+                             gchar family, guint port,
+                             GError **error)
 {
     struct sockaddr_in *address_in;
     struct in_addr ip_address;
@@ -434,11 +434,11 @@ decode_connect_inet_address (const gchar *buffer,
 
 static gboolean
 decode_connect_inet6_address (const gchar *buffer,
-                                     struct sockaddr **address,
-                                     socklen_t *address_length,
-                                     const gchar *host_name,
-                                     gchar family, guint port,
-                                     GError **error)
+                              struct sockaddr **address,
+                              socklen_t *address_length,
+                              const gchar *host_name,
+                              gchar family, guint port,
+                              GError **error)
 {
     struct sockaddr_in6 *address_in6;
     struct in6_addr ipv6_address;
@@ -466,11 +466,11 @@ decode_connect_inet6_address (const gchar *buffer,
 
 static gboolean
 decode_connect_unix_address (const gchar *buffer,
-                                    struct sockaddr **address,
-                                    socklen_t *address_length,
-                                    const gchar *host_name,
-                                    gchar family, guint port,
-                                    GError **error)
+                             struct sockaddr **address,
+                             socklen_t *address_length,
+                             const gchar *host_name,
+                             gchar family, guint port,
+                             GError **error)
 {
     struct sockaddr_un *address_un;
 
@@ -486,10 +486,10 @@ decode_connect_unix_address (const gchar *buffer,
 
 static gboolean
 decode_connect_content (const gchar *buffer, gint length,
-                               gchar **host_name,
-                               struct sockaddr **address,
-                               socklen_t *address_length,
-                               GError **error)
+                        gchar **host_name,
+                        struct sockaddr **address,
+                        socklen_t *address_length,
+                        GError **error)
 {
     gchar family;
     gint i, null_character_point;
@@ -510,9 +510,9 @@ decode_connect_content (const gchar *buffer, gint length,
     family = buffer[i];
     i++;
     switch (family) {
-      case MILTER_SOCKET_FAMILY_INET:
-      case MILTER_SOCKET_FAMILY_INET6:
-      case MILTER_SOCKET_FAMILY_UNIX:
+    case MILTER_SOCKET_FAMILY_INET:
+    case MILTER_SOCKET_FAMILY_INET6:
+    case MILTER_SOCKET_FAMILY_UNIX:
         if (!milter_decoder_check_command_length(
                 buffer + i, length - i, sizeof(port),
                 MILTER_DECODER_COMPARE_AT_LEAST, error,
@@ -521,7 +521,7 @@ decode_connect_content (const gchar *buffer, gint length,
         memcpy(&port, buffer + i, sizeof(port));
         i += sizeof(port);
         break;
-      default:
+    default:
         g_set_error(error,
                     MILTER_COMMAND_DECODER_ERROR,
                     MILTER_COMMAND_DECODER_ERROR_UNKNOWN_SOCKET_FAMILY,
@@ -534,36 +534,38 @@ decode_connect_content (const gchar *buffer, gint length,
                                     "on connect command: <%s>: <%c>: <%u>",
                                     decoded_host_name, family, g_ntohs(port));
     null_character_point =
-        milter_decoder_decode_null_terminated_value(buffer + i, length - i, error,
-                                    error_message);
+        milter_decoder_decode_null_terminated_value(buffer + i,
+                                                    length - i,
+                                                    error,
+                                                    error_message);
     g_free(error_message);
     if (null_character_point <= 0)
         return FALSE;
 
     switch (family) {
-      case MILTER_SOCKET_FAMILY_INET:
+    case MILTER_SOCKET_FAMILY_INET:
         if (!decode_connect_inet_address(buffer + i,
-                                                 address, address_length,
-                                                 decoded_host_name, family, port,
-                                                 error))
+                                         address, address_length,
+                                         decoded_host_name, family, port,
+                                         error))
             return FALSE;
         break;
-      case MILTER_SOCKET_FAMILY_INET6:
+    case MILTER_SOCKET_FAMILY_INET6:
         if (!decode_connect_inet6_address(buffer + i,
-                                                  address, address_length,
-                                                  decoded_host_name,
-                                                  family, port,
-                                                  error))
+                                          address, address_length,
+                                          decoded_host_name,
+                                          family, port,
+                                          error))
             return FALSE;
         break;
-      case MILTER_SOCKET_FAMILY_UNIX:
+    case MILTER_SOCKET_FAMILY_UNIX:
         if (!decode_connect_unix_address(buffer + i,
-                                                 address, address_length,
-                                                 decoded_host_name, family, port,
-                                                 error))
+                                         address, address_length,
+                                         decoded_host_name, family, port,
+                                         error))
             return FALSE;
         break;
-      default:
+    default:
         g_set_error(error,
                     MILTER_COMMAND_DECODER_ERROR,
                     MILTER_COMMAND_DECODER_ERROR_UNKNOWN_SOCKET_FAMILY,
@@ -590,8 +592,8 @@ decode_connect (MilterDecoder *decoder, GError **error)
     buffer = milter_decoder_get_buffer(decoder);
 
     if (!decode_connect_content(buffer + 1,
-                                        command_length - 1,
-                                        &host_name, &address, &length, error))
+                                command_length - 1,
+                                &host_name, &address, &length, error))
         return FALSE;
 
     g_signal_emit(decoder, signals[CONNECT], 0, host_name, address, length);
@@ -612,11 +614,9 @@ decode_helo (MilterDecoder *decoder, GError **error)
     buffer = milter_decoder_get_buffer(decoder);
 
     null_character_point =
-        milter_decoder_decode_null_terminated_value(buffer + 1,
-                                                    command_length - 1,
-                                                    error,
-                                                    "FQDN isn't terminated by NULL "
-                                                    "on HELO command");
+        milter_decoder_decode_null_terminated_value(
+            buffer + 1, command_length - 1, error,
+            "FQDN isn't terminated by NULL on HELO command");
     if (null_character_point <= 0)
         return FALSE;
 
@@ -817,11 +817,9 @@ decode_unknown (MilterDecoder *decoder, GError **error)
     buffer = milter_decoder_get_buffer(decoder);
 
     null_character_point =
-        milter_decoder_decode_null_terminated_value(buffer + 1,
-                                                    command_length - 1,
-                                                    error,
-                                                    "command value isn't terminated by NULL "
-                                                    "on unknown command");
+        milter_decoder_decode_null_terminated_value(
+            buffer + 1, command_length - 1, error,
+            "command value isn't terminated by NULL on unknown command");
     if (null_character_point <= 0)
         return FALSE;
 
@@ -870,49 +868,49 @@ decode (MilterDecoder *decoder, GError **error)
 
     command = milter_decoder_get_buffer(decoder)[0];
     switch (command) {
-      case MILTER_COMMAND_NEGOTIATE:
+    case MILTER_COMMAND_NEGOTIATE:
         success = decode_negotiate(decoder, error);
         break;
-      case MILTER_COMMAND_DEFINE_MACRO:
+    case MILTER_COMMAND_DEFINE_MACRO:
         success = decode_define_macro(decoder, error);
         break;
-      case MILTER_COMMAND_CONNECT:
+    case MILTER_COMMAND_CONNECT:
         success = decode_connect(decoder, error);
         break;
-      case MILTER_COMMAND_HELO:
+    case MILTER_COMMAND_HELO:
         success = decode_helo(decoder, error);
         break;
-      case MILTER_COMMAND_ENVELOPE_FROM:
+    case MILTER_COMMAND_ENVELOPE_FROM:
         success = decode_envelope_from(decoder, error);
         break;
-      case MILTER_COMMAND_ENVELOPE_RECIPIENT:
+    case MILTER_COMMAND_ENVELOPE_RECIPIENT:
         success = decode_envelope_recipient(decoder, error);
         break;
-      case MILTER_COMMAND_DATA:
+    case MILTER_COMMAND_DATA:
         success = decode_data(decoder, error);
         break;
-      case MILTER_COMMAND_HEADER:
+    case MILTER_COMMAND_HEADER:
         success = decode_header(decoder, error);
         break;
-      case MILTER_COMMAND_END_OF_HEADER:
+    case MILTER_COMMAND_END_OF_HEADER:
         success = decode_end_of_header(decoder, error);
         break;
-      case MILTER_COMMAND_BODY:
+    case MILTER_COMMAND_BODY:
         success = decode_body(decoder, error);
         break;
-      case MILTER_COMMAND_END_OF_MESSAGE:
+    case MILTER_COMMAND_END_OF_MESSAGE:
         success = decode_end_of_message(decoder, error);
         break;
-      case MILTER_COMMAND_ABORT:
+    case MILTER_COMMAND_ABORT:
         success = decode_abort(decoder, error);
         break;
-      case MILTER_COMMAND_QUIT:
+    case MILTER_COMMAND_QUIT:
         success = decode_quit(decoder, error);
         break;
-      case MILTER_COMMAND_UNKNOWN:
+    case MILTER_COMMAND_UNKNOWN:
         success = decode_unknown(decoder, error);
         break;
-      default:
+    default:
         g_set_error(error,
                     MILTER_DECODER_ERROR,
                     MILTER_DECODER_ERROR_UNEXPECTED_COMMAND,

@@ -1,5 +1,7 @@
 2008-12-30  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-command-decoder.c: fix indent.
+
 	* milter/manager/milter-manager-configuration.c: use
 	G_GSIZE_MODIFIER for time_t value. Is it OK?
 
