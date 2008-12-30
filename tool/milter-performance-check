@@ -7,61 +7,64 @@ require 'net/smtp'
 
 class MilterPerformanceTool
   def initialize
-    @smtp_server = nil
+    @smtp_server = "localhost"
     @smtp_port = 25
     @helo_domain = "localhost"
     @from = "from@example.com"
     @recipients = []
-    @mail_src = "body"
-    @num_mails = 100
+    @default_recipients = ["to@example.com"]
+    @n_mails = 100
   end
 
   def parse_options(argv)
     opts = OptionParser.new do |opts|
-      opts.on("--smtp-server=HOSTNAME") do |smtp_server|
+      opts.on("--smtp-server=SERVER",
+              "Use SERVER as SMTP server",
+              "(#{@smtp_server})") do |smtp_server|
         @smtp_server = smtp_server
       end
 
-      opts.on("--smtp-port=PORT") do |smtp_port|
+      opts.on("--smtp-port=PORT", Integer,
+              "Use PORT as SMTP port",
+              "(#{@smtp_port})") do |smtp_port|
         @smtp_port = smtp_port
       end
 
-      opts.on("--helo-domain=FQDN") do |helo_domain|
+      opts.on("--helo-domain=FQDN",
+              "Use FQDN as domain name on SMTP HELO command",
+              "(#{@helo_domain})") do |helo_domain|
         @helo_domain = helo_domain
       end
 
-      opts.on("--from=FROM") do |from|
+      opts.on("--from=FROM",
+              "Use FROM as envelope from address on SMTP MAIL command",
+              "(#{@from})") do |from|
         @from = from
       end
 
-      opts.on("--recipient=RECIPIENT") do |recipient|
-        @recipients.unshift(recipient)
+      opts.on("--recipient=RECIPIENT",
+              "Use RECIPIENT as envelope recipient address on SMTP RCPT command",
+              "This option can be used n-times to set multi recipients.",
+              "(#{@default_recipients.inspect})") do |recipient|
+        @recipients << recipient
       end
 
-      opts.on("--mail-number=INTEGER") do |number|
-        @num_mails = number.to_i
+      opts.on("--n-mails=N", Integer,
+              "Send a test mail N times",
+              "(#{@n_mails})") do |n_mails|
+        @n_mails = n_mails
       end
     end
     opts.parse!(argv)
-    @recipients = ["to@example.com"] unless @recipients.length > 0
+    @recipients = @default_recipients if @recipients.empty?
+    @mail_source = generate_mail_source
   end
 
-  def start_smtp
-    start_time = Time.now
-    begin
-      Net::SMTP.start(@helo_domain, @port) do |smtp|
-        smtp.send_mail(@mail_src, @from, *@recipients)
-      end
-    rescue Net::ProtoFatalError
-      puts "SMTP error: #{$!}"
-    end
-    Time.now - start_time
-  end
-
-  def start
+  def run
+    Thread.abort_on_exception = true
     @elapsed_time = 0
     threads = []
-    @num_mails.times do
+    @n_mails.times do
       thread = Thread.start do
         @elapsed_time += start_smtp
       end
@@ -72,15 +75,46 @@ class MilterPerformanceTool
     end
   end
 
-  def stop
-    puts "Processed #{@num_mails} in #{@elapsed_time} sec."
-    puts "Average #{@num_mails / @elapsed_time} mails/sec."
+  def report
+    puts "Processed #{@n_mails} in #{@elapsed_time} sec."
+    puts "Average #{@n_mails / @elapsed_time} mails/sec."
+  end
+
+  private
+  def start_smtp
+    start_time = Time.now
+    begin
+      Net::SMTP.start(@smtp_server, @port, @helo_domain) do |smtp|
+        smtp.send_mail(@mail_source, @from, *@recipients)
+      end
+    rescue Net::ProtoFatalError
+      puts "SMTP error: #{$!}"
+    end
+    Time.now - start_time
+  end
+
+  def generate_mail_source
+    <<-EOM
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
+X-Mailer: milter-performance-check
+Message-Id: <495a22211ab9_3ed03fc45af9c9b0285@mail.example.com>
+Subject: test mail
+From: #{@from}
+To: #{@recipients.join(', ')}
+Date: Tue, 30 Dec 2008 22:26:06 +0900
+
+Hello,
+
+This is a test mail.
+EOM
   end
 end
 
 performance_tool = MilterPerformanceTool.new
 performance_tool.parse_options(ARGV)
-performance_tool.start
-performance_tool.stop
+performance_tool.run
+performance_tool.report
 
 # vi:ts=2:nowrap:ai:expandtab:sw=2

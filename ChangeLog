@@ -1,5 +1,7 @@
 2008-12-30  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-performance-check: fix strange SMTP client behavior.
+
 	* tool/milter-performance-check: cleanup.
 
 2008-12-29  Kouhei Sutou  <kou@cozmixng.org>
