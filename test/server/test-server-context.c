@@ -92,8 +92,11 @@ cb_ready_received (MilterServerContext *context, gpointer user_data)
 }
 
 static void
-cb_error_received (MilterServerContext *context, GError *error ,gpointer user_data)
+cb_error_received (MilterServerContext *context, GError *error,
+                   gpointer user_data)
 {
+    if (actual_error)
+        g_error_free(actual_error);
     actual_error = g_error_copy(error);
 }
 
@@ -224,14 +227,15 @@ void
 test_establish_connection (void)
 {
     const gchar spec[] = "inet:9999@127.0.0.1";
+    GError *error = NULL;
 
     cut_trace(setup_test_client(spec));
 
-    milter_server_context_set_connection_spec(context, spec, &actual_error);
-    gcut_assert_error(actual_error);
+    milter_server_context_set_connection_spec(context, spec, &error);
+    gcut_assert_error(error);
 
-    milter_server_context_establish_connection(context, &actual_error);
-    gcut_assert_error(actual_error);
+    milter_server_context_establish_connection(context, &error);
+    gcut_assert_error(error);
 
     wait_ready();
 }
@@ -240,18 +244,20 @@ void
 test_establish_connection_failure (void)
 {
     const gchar spec[] = "inet:9999@127.0.0.1";
+    GError *error = NULL;
 
-    milter_server_context_set_connection_spec(context, spec, &actual_error);
-    gcut_assert_error(actual_error);
+    milter_server_context_set_connection_spec(context, spec, &error);
+    gcut_assert_error(error);
 
     expected_error = g_error_new(MILTER_SERVER_CONTEXT_ERROR,
                                  MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE,
                                  "Connection error on %s: Error | Hung up",
                                  spec);
-    milter_server_context_establish_connection(context, &actual_error);
+    milter_server_context_establish_connection(context, &error);
+    gcut_assert_error(error);
 
     wait_error();
-    gcut_assert_equal_error(actual_error, expected_error);
+    gcut_assert_equal_error(expected_error, actual_error);
 }
 
 static void

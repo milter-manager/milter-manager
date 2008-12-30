@@ -1,3 +1,7 @@
+2008-12-31  Kouhei Sutou  <kou@cozmixng.org>
+
+	* test/server/test-server-context.c: fix invalid memory management.
+
 2008-12-30  Kouhei Sutou  <kou@cozmixng.org>
 
 	* test/manager/test-leader.c (assert_have_response_helper): fix SEGV.
