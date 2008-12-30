@@ -1,5 +1,8 @@
 2008-12-30  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/test-egg.c (test_connection_spec_error): use
+	g_unsetenv() not g_setenv() with NULL.
+
 	* test/: include missing <string.h>.
 
 	* test/run-test.sh: improve default make detection.

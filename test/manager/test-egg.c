@@ -228,7 +228,7 @@ test_connection_spec_error (void)
                                  "<%s>: <unknown>",
                                  MILTER_CONNECTION_ERROR_INVALID_FORMAT,
                                  spec);
-    g_setenv("MILTER_LOG_LEVEL", NULL, TRUE);
+    g_unsetenv("MILTER_LOG_LEVEL");
     milter_manager_egg_set_connection_spec(egg, spec, &actual_error);
     gcut_assert_equal_error(expected_error, actual_error);
 }
