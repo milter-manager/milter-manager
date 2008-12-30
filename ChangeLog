@@ -1,5 +1,8 @@
 2008-12-30  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-performance-check: use different Message-Id for each
+	test mail.
+
 	* tool/milter-performance-check: fix strange SMTP client behavior.
 
 	* tool/milter-performance-check: cleanup.

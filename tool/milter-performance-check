@@ -4,6 +4,7 @@ require 'pathname'
 require 'time'
 require 'optparse'
 require 'net/smtp'
+require 'digest/sha1'
 
 class MilterPerformanceTool
   def initialize
@@ -57,7 +58,6 @@ class MilterPerformanceTool
     end
     opts.parse!(argv)
     @recipients = @default_recipients if @recipients.empty?
-    @mail_source = generate_mail_source
   end
 
   def run
@@ -82,10 +82,11 @@ class MilterPerformanceTool
 
   private
   def start_smtp
+    mail_source = generate_mail_source
     start_time = Time.now
     begin
       Net::SMTP.start(@smtp_server, @port, @helo_domain) do |smtp|
-        smtp.send_mail(@mail_source, @from, *@recipients)
+        smtp.send_mail(mail_source, @from, *@recipients)
       end
     rescue Net::ProtoFatalError
       puts "SMTP error: #{$!}"
@@ -99,7 +100,7 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Type: text/plain; charset=US-ASCII
 X-Mailer: milter-performance-check
-Message-Id: <495a22211ab9_3ed03fc45af9c9b0285@mail.example.com>
+Message-Id: <#{random_tag}@mail.example.com>
 Subject: test mail
 From: #{@from}
 To: #{@recipients.join(', ')}
@@ -109,6 +110,10 @@ Hello,
 
 This is a test mail.
 EOM
+  end
+
+  def random_tag
+    Digest::SHA2.hexdigest("#{Time.now.to_i.to_s}.#{rand(Time.now.to_i)}")
   end
 end
 
