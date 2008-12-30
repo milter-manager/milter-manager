@@ -18,7 +18,7 @@ class MilterPerformanceTool
 
   def parse_options(argv)
     opts = OptionParser.new do |opts|
-      opts.on("--smtp_server=HOSTNAME") do |smtp_server|
+      opts.on("--smtp-server=HOSTNAME") do |smtp_server|
         @smtp_server = smtp_server
       end
 
@@ -49,9 +49,9 @@ class MilterPerformanceTool
   def start_smtp
     start_time = Time.now
     begin
-      Net::SMTP.start(@helo_domain, @port) {|smtp|
+      Net::SMTP.start(@helo_domain, @port) do |smtp|
         smtp.send_mail(@mail_src, @from, *@recipients)
-      }
+      end
     rescue Net::ProtoFatalError
       puts "SMTP error: #{$!}"
     end
@@ -61,12 +61,15 @@ class MilterPerformanceTool
   def start
     @elapsed_time = 0
     threads = []
-    @num_mails.times {
-      threads.push(Thread.start {
+    @num_mails.times do
+      thread = Thread.start do
         @elapsed_time += start_smtp
-      })
-    }
-    threads.each {|thread| thread.join}
+      end
+      threads.push << thread
+    end
+    threads.each do |thread|
+      thread.join
+    end
   end
 
   def stop
