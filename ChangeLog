@@ -1,5 +1,7 @@
 2008-12-30  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/test-leader.c (assert_have_response_helper): fix SEGV.
+
 	* test/manager/test-egg.c (test_connection_spec_error): use
 	g_unsetenv() not g_setenv() with NULL.
 

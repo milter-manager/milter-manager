@@ -409,6 +409,7 @@ get_response_count (const gchar *response)
 static void
 assert_have_response_helper (const gchar *name)
 {
+    GError *error;
     gboolean timeout_emitted = FALSE;
     guint timeout_emitted_id;
 
@@ -421,7 +422,9 @@ assert_have_response_helper (const gchar *name)
     g_source_remove(timeout_emitted_id);
 
     cut_assert_false(timeout_emitted, "<%s>", name);
-    gcut_assert_error(actual_error);
+    error = actual_error;
+    actual_error = NULL;
+    gcut_assert_error(error);
 }
 
 #define wait_reply_from_client(client, actual_getter)   \
