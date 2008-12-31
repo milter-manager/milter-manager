@@ -1,3 +1,4 @@
+* support UNIX socket mode changing by configuration.
 * use chroot
 * write unit test for libmilter.
 * add --disable-milter-manager configure option.
