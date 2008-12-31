@@ -1,5 +1,7 @@
 2008-12-31  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/test-manager.c (wait_for_manager_ready): reuse address.
+
 	* test/lib/Makefile.am, test/lib/milter-test-utils.h: add
 	errno GType.
 

@@ -260,12 +260,13 @@ wait_for_manager_ready (const gchar *spec)
     gboolean manager_ready = FALSE;
     guint timeout_waiting_id;
     guint connect_watch_id;
-    gint sock_fd;
+    gint socket_fd;
     gint domain;
     struct sockaddr *address;
     socklen_t address_size;
     GIOChannel *channel;
     gint errno_keep;
+    gboolean reuse_address = TRUE;
     GError *error = NULL;
 
     milter_connection_parse_spec(spec,
@@ -275,9 +276,11 @@ wait_for_manager_ready (const gchar *spec)
                                  &error);
     gcut_assert_error(error);
 
-    sock_fd = socket(domain, SOCK_STREAM, 0);
+    socket_fd = socket(domain, SOCK_STREAM, 0);
     cut_assert_errno();
-    channel = g_io_channel_unix_new(sock_fd);
+    setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR,
+               &reuse_address, sizeof(reuse_address));
+    channel = g_io_channel_unix_new(socket_fd);
     g_io_channel_set_flags(channel, G_IO_FLAG_NONBLOCK, NULL);
 
     connect_watch_id = g_io_add_watch(channel,
@@ -292,7 +295,7 @@ wait_for_manager_ready (const gchar *spec)
     }
 
     errno = 0;
-    while (!timeout_emitted && connect(sock_fd, address, address_size) == -1) {
+    while (!timeout_emitted && connect(socket_fd, address, address_size) == -1) {
         g_main_context_iteration(NULL, FALSE);
         errno = 0;
     }
@@ -301,7 +304,7 @@ wait_for_manager_ready (const gchar *spec)
     g_source_remove(timeout_waiting_id);
     g_source_remove(connect_watch_id);
 
-    close(sock_fd);
+    close(socket_fd);
 
     cut_assert_true(manager_ready);
     cut_assert_false(timeout_emitted);
