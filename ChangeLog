@@ -1,5 +1,8 @@
 2008-12-31  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-logger.c (log_message): treat "linux" TERM as
+	color available terminal.
+
 	* test/server/test-server-context.c: fix invalid memory management.
 
 2008-12-30  Kouhei Sutou  <kou@cozmixng.org>

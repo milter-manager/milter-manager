@@ -240,7 +240,8 @@ log_message (GString *log, MilterLogLevelFlags level, const gchar *message)
         if (isatty(STDOUT_FILENO) &&
             term && (g_str_has_suffix(term, "term") ||
                      g_str_has_suffix(term, "term-color") ||
-                     g_str_equal(term, "screen"))) {
+                     g_str_equal(term, "screen") ||
+                     g_str_equal(term, "linux"))) {
             colorize = MILTER_LOG_COLORIZE_CONSOLE;
         } else {
             colorize = MILTER_LOG_COLORIZE_NONE;
