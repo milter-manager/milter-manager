@@ -1,0 +1,2 @@
+EXTRADIST =		\
+	milter-manager

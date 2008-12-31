@@ -1,6 +1,7 @@
 SUBDIRS =			\
 	packet			\
-	applicable-conditions
+	applicable-conditions	\
+	rc.d
 
 pkgsysconf_DATA =		\
 	milter-manager.conf
