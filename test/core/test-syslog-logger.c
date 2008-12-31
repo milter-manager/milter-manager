@@ -24,25 +24,41 @@
 #include <gcutter.h>
 #include <glib/gstdio.h>
 
+#define MILTER_LOG_DOMAIN "MilterSyslogTestSyslogLogger"
+
 void test_info (void);
 void test_statistics (void);
 
 static MilterSyslogLogger *logger;
 static GIOChannel *syslog;
-static GError *error;
 static gchar *actual;
+static gchar *syslog_file_name;
 static gsize first_log_file_size;
-
-#define MILTER_LOG_DOMAIN "MilterSyslogTestSyslogLogger"
-#define SYSLOG_NAME "/var/log/syslog"
 
 static void
 setup_syslog (void)
 {
     struct stat buf;
-    cut_assert_true(g_file_test(SYSLOG_NAME, G_FILE_TEST_EXISTS),
-                    SYSLOG_NAME " does not exists.");
-    cut_assert_equal_int(0, g_lstat(SYSLOG_NAME, &buf));
+    gint i;
+    gchar *candidates[] = {
+        "/var/log/mail.log",
+        "/var/log/maillog",
+        "/var/log/syslog",
+        "/var/log/messages",
+        NULL
+    };
+
+    for (i = 0; candidates[i]; i++) {
+        if (g_file_test(candidates[i], G_FILE_TEST_EXISTS)) {
+            syslog_file_name = g_strdup(candidates[i]);
+            break;
+        }
+    }
+    cut_set_message("syslog file name candidates: [%s]",
+                    cut_take_string(g_strjoinv(", ", candidates)));
+    cut_assert_not_null(syslog_file_name);
+
+    cut_assert_equal_int(0, g_lstat(syslog_file_name, &buf));
     first_log_file_size = buf.st_size;
 }
 
@@ -51,8 +67,7 @@ setup (void)
 {
     logger = milter_syslog_logger_new(MILTER_LOG_DOMAIN);
     actual = NULL;
-
-    error = NULL;
+    syslog_file_name = NULL;
     cut_trace(setup_syslog());
 }
 
@@ -67,14 +82,18 @@ teardown (void)
 
     if (actual)
         g_free(actual);
+
+    if (syslog_file_name)
+        g_free(syslog_file_name);
 }
 
 static void
 collect_log_message (void)
 {
     gsize read_length;
+    GError *error = NULL;
 
-    syslog = g_io_channel_new_file(SYSLOG_NAME, "r", &error);
+    syslog = g_io_channel_new_file(syslog_file_name, "r", &error);
     gcut_assert_error(error);
 
     g_io_channel_seek_position(syslog, first_log_file_size, G_SEEK_SET, &error);

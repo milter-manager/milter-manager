@@ -1,5 +1,7 @@
 2008-12-31  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/core/test-syslog-logger.c (setup_syslog): more portable.
+
 	* milter/client/milter-client.c: surround g_cond_*() with mutex lock
 	and unlock.
 
