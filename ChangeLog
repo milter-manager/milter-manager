@@ -1,5 +1,8 @@
 2008-12-31  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/test-manager.c: recreate socket FD for each connect()
+	try.
+
 	* test/manager/test-manager.c: sleep a bit for reducing test failure.
 
 	* test/lib/milter-test-client.rb,

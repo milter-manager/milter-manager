@@ -119,7 +119,7 @@ wait_for_reaping (EggData *data, gboolean must)
     gboolean timeout_emitted = FALSE;
     guint timeout_id;
 
-    timeout_id = g_timeout_add(500, cb_timeout_emitted, &timeout_emitted);
+    timeout_id = g_timeout_add(2000, cb_timeout_emitted, &timeout_emitted);
     while (!timeout_emitted && !data->reaped)
         g_main_context_iteration(NULL, TRUE);
     g_source_remove(timeout_id);
@@ -242,11 +242,10 @@ wait_for_manager_ready (const gchar *spec)
 {
     gboolean timeout_emitted = FALSE;
     guint timeout_waiting_id;
-    gint socket_fd;
+    gint socket_fd = -1;
     gint domain;
     struct sockaddr *address;
     socklen_t address_size;
-    gboolean reuse_address = TRUE;
     gint errno_keep = 0;
     GError *error = NULL;
 
@@ -257,16 +256,15 @@ wait_for_manager_ready (const gchar *spec)
                                  &error);
     gcut_assert_error(error);
 
-    socket_fd = socket(domain, SOCK_STREAM, 0);
-    if (socket_fd == -1)
-        cut_assert_errno();
-    setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR,
-               &reuse_address, sizeof(reuse_address));
-
-    g_usleep(0.5 * G_USEC_PER_SEC);
-    timeout_waiting_id = g_timeout_add(500, cb_timeout_emitted,
+    timeout_waiting_id = g_timeout_add(1000, cb_timeout_emitted,
                                        &timeout_emitted);
-    while (!timeout_emitted) {
+    do {
+        if (socket_fd != -1)
+            close(socket_fd);
+        socket_fd = socket(domain, SOCK_STREAM, 0);
+        if (socket_fd == -1)
+            break;
+
         if (connect(socket_fd, address, address_size) == 0) {
             errno_keep = 0;
             break;
@@ -274,10 +272,11 @@ wait_for_manager_ready (const gchar *spec)
             errno_keep = errno;
         }
         g_main_context_iteration(NULL, FALSE);
-    }
+    } while (!timeout_emitted);
     g_source_remove(timeout_waiting_id);
 
-    close(socket_fd);
+    if (socket_fd != -1)
+        close(socket_fd);
 
     errno = errno_keep;
     cut_assert_errno();
