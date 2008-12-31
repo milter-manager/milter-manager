@@ -277,7 +277,8 @@ wait_for_manager_ready (const gchar *spec)
     gcut_assert_error(error);
 
     socket_fd = socket(domain, SOCK_STREAM, 0);
-    cut_assert_errno();
+    if (socket_fd == -1)
+        cut_assert_errno();
     setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR,
                &reuse_address, sizeof(reuse_address));
     channel = g_io_channel_unix_new(socket_fd);
