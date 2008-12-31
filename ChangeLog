@@ -1,5 +1,7 @@
 2008-12-31  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/server/milter-server-context.c: fix error message.
+
 	* test/manager/test-manager.c: improve connectability check.
 
 	* test/manager/test-manager.c: fix GError usage.

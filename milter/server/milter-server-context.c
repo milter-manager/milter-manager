@@ -1932,19 +1932,16 @@ connect_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
     }
 
     if (socket_errno) {
-        gchar *message;
         GError *error = NULL;
 
-        message = milter_utils_inspect_io_condition_error(condition);
         g_set_error(&error,
                     MILTER_SERVER_CONTEXT_ERROR,
                     MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE,
-                    "Failed to connect to %s: %s", priv->spec,
-                    g_strerror(socket_errno));
+                    "Failed to connect to %s: %s",
+                    priv->spec, g_strerror(socket_errno));
+        milter_error("%s", error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(context), error);
-        milter_error("error!: %s", message);
         g_error_free(error);
-        g_free(message);
 
         close_client_fd(priv);
     } else {
