@@ -1,5 +1,10 @@
 2008-12-31  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-configuration.[ch],
+	test/manager/test-configuration.c: add
+	milter_manager_configuration_get_unix_socket_mode() and
+	milter_manager_configuration_set_unix_socket_mode().
+
 	* test/manager/test-leader.c: increase timeout value.
 
 	* test/manager/test-manager.c: recreate socket FD for each connect()

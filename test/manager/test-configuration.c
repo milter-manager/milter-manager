@@ -29,6 +29,7 @@
 void test_children (void);
 void test_privilege_mode (void);
 void test_effective_user (void);
+void test_unix_socket_mode (void);
 void test_control_connection_spec (void);
 void test_manager_connection_spec (void);
 void test_fallback_status (void);
@@ -182,6 +183,18 @@ test_effective_user (void)
     milter_manager_configuration_set_effective_user(config, "nobody");
     cut_assert_equal_string("nobody",
                             milter_manager_configuration_get_effective_user(config));
+}
+
+void
+test_unix_socket_mode (void)
+{
+    cut_assert_equal_uint(
+        0660,
+        milter_manager_configuration_get_unix_socket_mode(config));
+    milter_manager_configuration_set_unix_socket_mode(config, 0600);
+    cut_assert_equal_uint(
+        0600,
+        milter_manager_configuration_get_unix_socket_mode(config));
 }
 
 void

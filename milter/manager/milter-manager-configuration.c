@@ -48,6 +48,7 @@ struct _MilterManagerConfigurationPrivate
     gchar *manager_connection_spec;
     MilterStatus fallback_status;
     gchar *effective_user;
+    guint unix_socket_mode;
 };
 
 enum
@@ -57,7 +58,8 @@ enum
     PROP_CONTROL_CONNECTION_SPEC,
     PROP_MANAGER_CONNECTION_SPEC,
     PROP_FALLBACK_STATUS,
-    PROP_EFFECTIVE_USER
+    PROP_EFFECTIVE_USER,
+    PROP_UNIX_SOCKET_MODE
 };
 
 enum
@@ -131,12 +133,22 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
 
     spec = g_param_spec_string("effective-user",
                                "Effective user name",
-                               "The effective user name "
-                               "of the milter-manager",
+                               "The effective user name of the milter-manager",
                                NULL,
                                G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
     g_object_class_install_property(gobject_class, PROP_EFFECTIVE_USER,
                                     spec);
+
+    spec = g_param_spec_uint("unix-socket-mode",
+                             "UNIX socket mode",
+                             "The UNIX socket mode",
+                             0000,
+                             0777,
+                             0660,
+                             G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+    g_object_class_install_property(gobject_class, PROP_UNIX_SOCKET_MODE,
+                                    spec);
+ 
     signals[TO_XML] =
         g_signal_new("to-xml",
                      G_TYPE_FROM_CLASS(klass),
@@ -163,6 +175,7 @@ milter_manager_configuration_init (MilterManagerConfiguration *configuration)
     priv->control_connection_spec = NULL;
     priv->manager_connection_spec = NULL;
     priv->effective_user = NULL;
+    priv->unix_socket_mode = 0660;
 
     config_dir_env = g_getenv("MILTER_MANAGER_CONFIG_DIR");
     if (config_dir_env)
@@ -219,6 +232,10 @@ set_property (GObject      *object,
         milter_manager_configuration_set_effective_user(
             config, g_value_get_string(value));
         break;
+      case PROP_UNIX_SOCKET_MODE:
+        milter_manager_configuration_set_unix_socket_mode(
+            config, g_value_get_uint(value));
+        break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -250,6 +267,8 @@ get_property (GObject    *object,
       case PROP_EFFECTIVE_USER:
         g_value_set_string(value, priv->effective_user);
         break;
+      case PROP_UNIX_SOCKET_MODE:
+        g_value_set_uint(value, priv->unix_socket_mode);
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -668,6 +687,25 @@ milter_manager_configuration_set_effective_user (MilterManagerConfiguration *con
     if (priv->effective_user)
         g_free(priv->effective_user);
     priv->effective_user = g_strdup(effective_user);
+}
+
+guint
+milter_manager_configuration_get_unix_socket_mode (MilterManagerConfiguration *configuration)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    return priv->unix_socket_mode;
+}
+
+void
+milter_manager_configuration_set_unix_socket_mode (MilterManagerConfiguration *configuration,
+                                                   guint mode)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    priv->unix_socket_mode = mode;
 }
 
 void

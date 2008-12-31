@@ -134,6 +134,11 @@ const gchar  *milter_manager_configuration_get_effective_user
 void          milter_manager_configuration_set_effective_user
                                      (MilterManagerConfiguration *configuration,
                                       const gchar                *user_name);
+guint         milter_manager_configuration_get_unix_socket_mode
+                                     (MilterManagerConfiguration *configuration);
+void          milter_manager_configuration_set_unix_socket_mode
+                                     (MilterManagerConfiguration *configuration,
+                                      guint                       mode);
 
 MilterStatus  milter_manager_configuration_get_fallback_status
                                      (MilterManagerConfiguration *configuration);
