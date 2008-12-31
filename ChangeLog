@@ -1,5 +1,7 @@
 2008-12-31  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/test-leader.c: increase timeout value.
+
 	* test/manager/test-manager.c: recreate socket FD for each connect()
 	try.
 

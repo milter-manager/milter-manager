@@ -413,7 +413,7 @@ assert_have_response_helper (const gchar *name)
     gboolean timeout_emitted = FALSE;
     guint timeout_emitted_id;
 
-    timeout_emitted_id = g_timeout_add(200, cb_timeout_emitted,
+    timeout_emitted_id = g_timeout_add(1000, cb_timeout_emitted,
                                        &timeout_emitted);
     while (!timeout_emitted &&
            get_response_count(name) == 0) {
@@ -421,7 +421,8 @@ assert_have_response_helper (const gchar *name)
     }
     g_source_remove(timeout_emitted_id);
 
-    cut_assert_false(timeout_emitted, "<%s>", name);
+    cut_set_message("<%s>", name);
+    cut_assert_false(timeout_emitted);
     error = actual_error;
     actual_error = NULL;
     gcut_assert_error(error);
