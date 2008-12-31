@@ -237,29 +237,17 @@ setup_egg (EggData *data, const gchar *first_arg, ...)
 #undef CONNECT
 }
 
-static gboolean
-connect_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
-{
-    gboolean *ready = data;
-
-    *ready = TRUE;
-    return FALSE;
-}
-
 static void
 wait_for_manager_ready (const gchar *spec)
 {
     gboolean timeout_emitted = FALSE;
-    gboolean manager_ready = FALSE;
     guint timeout_waiting_id;
-    guint connect_watch_id;
     gint socket_fd;
     gint domain;
     struct sockaddr *address;
     socklen_t address_size;
-    GIOChannel *channel;
-    gint errno_keep;
     gboolean reuse_address = TRUE;
+    gint errno_keep = 0;
     GError *error = NULL;
 
     milter_connection_parse_spec(spec,
@@ -274,37 +262,26 @@ wait_for_manager_ready (const gchar *spec)
         cut_assert_errno();
     setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR,
                &reuse_address, sizeof(reuse_address));
-    channel = g_io_channel_unix_new(socket_fd);
-    g_io_channel_set_flags(channel, G_IO_FLAG_NONBLOCK, NULL);
-
-    connect_watch_id = g_io_add_watch(channel,
-                                      G_IO_OUT,
-                                      connect_watch_func, &manager_ready);
-    g_io_channel_unref(channel);
 
     timeout_waiting_id = g_timeout_add(500, cb_timeout_emitted,
                                        &timeout_emitted);
-    while (!timeout_emitted && !manager_ready) {
-        g_main_context_iteration(NULL, TRUE);
-    }
-
-    errno = 0;
-    while (!timeout_emitted && connect(socket_fd, address, address_size) == -1) {
+    while (!timeout_emitted) {
+        if (connect(socket_fd, address, address_size) == 0) {
+            errno_keep = 0;
+            break;
+        } else {
+            errno_keep = errno;
+        }
         g_main_context_iteration(NULL, FALSE);
-        errno = 0;
     }
-    errno_keep = errno;
-
     g_source_remove(timeout_waiting_id);
-    g_source_remove(connect_watch_id);
 
     close(socket_fd);
 
-    cut_assert_true(manager_ready);
-    cut_assert_false(timeout_emitted);
-
     errno = errno_keep;
     cut_assert_errno();
+
+    cut_assert_false(timeout_emitted);
 }
 
 static void

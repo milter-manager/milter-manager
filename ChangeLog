@@ -1,5 +1,7 @@
 2008-12-31  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/test-manager.c: improve connectability check.
+
 	* test/manager/test-manager.c: fix GError usage.
 
 	* test/manager/test-manager.c (wait_for_manager_ready): check
