@@ -1,5 +1,7 @@
 2008-12-31  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/reference/Makefile.am: don't remove sections.txt on 'make clean'.
+
 	* milter/server/milter-server-context.c: fix error message.
 
 	* test/manager/test-manager.c: improve connectability check.

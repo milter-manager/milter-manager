@@ -69,7 +69,6 @@ generated_xml_files =		\
 	introduction.xml.ja
 
 CLEANFILES +=				\
-	$(DOC_MODULE)-sections.txt	\
 	$(generated_xml_files)
 
 # Other files to distribute
