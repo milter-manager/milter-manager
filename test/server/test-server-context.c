@@ -17,11 +17,8 @@
  *
  */
 
-#include <gcutter.h>
-
 #include <errno.h>
 
-#define shutdown inet_shutdown
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <sys/un.h>
@@ -30,8 +27,10 @@
 
 #include <milter/server.h>
 #include <milter/core.h>
-#undef shutdown
-#include "milter-test-utils.h"
+
+#include <milter-test-utils.h>
+
+#include <gcutter.h>
 
 void test_establish_connection (void);
 void test_establish_connection_failure (void);
