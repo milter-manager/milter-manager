@@ -21,6 +21,7 @@
 #define __MILTER_TEST_UTILS_H__
 
 #include <string.h>
+#include <errno.h>
 
 #include <gcutter.h>
 #include "milter-assertions.h"
@@ -28,6 +29,11 @@
 #include "milter-test-server.h"
 
 G_BEGIN_DECLS
+
+typedef enum
+{
+    MILTER_TEST_ERRNO_ECONNREFUSED = ECONNREFUSED
+} MilterTestErrno;
 
 const gchar   *milter_test_get_base_dir    (void);
 

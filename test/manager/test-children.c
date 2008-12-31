@@ -24,13 +24,15 @@
 #include <arpa/inet.h>
 #include <errno.h>
 
-#include <milter-test-utils.h>
-#include <milter-manager-test-utils.h>
-#include <milter-manager-test-client.h>
-#include <milter-manager-test-scenario.h>
 #include <milter/manager/milter-manager-children.h>
 #include <milter/manager/milter-manager-enum-types.h>
 #include <milter/manager/milter-manager-process-launcher.h>
+
+#include <milter-test-utils.h>
+#include <milter-test-enum-types.h>
+#include <milter-manager-test-utils.h>
+#include <milter-manager-test-client.h>
+#include <milter-manager-test-scenario.h>
 
 #include <gcutter.h>
 
@@ -798,7 +800,16 @@ assert_response_error (MilterManagerTestScenario *scenario, const gchar *group)
         code = get_enum(scenario, group, "error_code", type);
 
         message = get_string(scenario, group, "error_message");
-        expected_error = g_error_new(domain, code, "%s", message);
+        if (has_key(scenario, group, "error_errno")) {
+            MilterTestErrno error_errno;
+
+            error_errno = get_enum(scenario, group, "error_errno",
+                                   MILTER_TYPE_TEST_ERRNO);
+            expected_error = g_error_new(domain, code,
+                                         message, g_strerror(error_errno));
+        } else {
+            expected_error = g_error_new(domain, code, "%s", message);
+        }
         wait_children_error();
     }
 

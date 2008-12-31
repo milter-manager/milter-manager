@@ -28,4 +28,5 @@ n_emitted=1
 error_domain=milter-server-context-error-quark
 error_type=MilterServerContextError
 error_code=connection-failure
-error_message=Connection error on inet:10027@localhost: Error | Hung up
+error_message=Failed to connect to inet:10027@localhost: %s
+error_errno=ECONNREFUSED

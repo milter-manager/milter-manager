@@ -1,5 +1,14 @@
 2008-12-31  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/lib/Makefile.am, test/lib/milter-test-utils.h: add
+	errno GType.
+
+	* milter/server/milter-server-context.c,
+	test/server/test-server-context.c: fix connect() failure handling.
+	* test/server/test-server-context.c,
+	test/fixtures/children/negotiate-retry-fail.txt: follow the above
+	change.
+
 	* test/core/test-syslog-logger.c (setup_syslog): more portable.
 
 	* milter/client/milter-client.c: surround g_cond_*() with mutex lock

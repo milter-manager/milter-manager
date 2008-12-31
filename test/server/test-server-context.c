@@ -248,14 +248,14 @@ test_establish_connection_failure (void)
     milter_server_context_set_connection_spec(context, spec, &error);
     gcut_assert_error(error);
 
-    expected_error = g_error_new(MILTER_SERVER_CONTEXT_ERROR,
-                                 MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE,
-                                 "Connection error on %s: Error | Hung up",
-                                 spec);
     milter_server_context_establish_connection(context, &error);
     gcut_assert_error(error);
 
     wait_error();
+    expected_error = g_error_new(MILTER_SERVER_CONTEXT_ERROR,
+                                 MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE,
+                                 "Failed to connect to %s: %s",
+                                 spec, g_strerror(ECONNREFUSED));
     gcut_assert_equal_error(expected_error, actual_error);
 }
 

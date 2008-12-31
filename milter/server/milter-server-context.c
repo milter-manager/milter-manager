@@ -1918,21 +1918,20 @@ connect_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
 {
     MilterServerContext *context = data;
     MilterServerContextPrivate *priv;
+    gint socket_errno = 0;
+    socklen_t option_length;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
 
     disable_timeout(priv);
 
-    if (condition & G_IO_OUT) {
-        if (prepare_reader(context) && prepare_writer(context)) {
-            g_signal_emit(context, signals[READY], 0);
-            milter_agent_start(MILTER_AGENT(context));
-        }
+    option_length = sizeof(socket_errno);
+    if (getsockopt(priv->client_fd, SOL_SOCKET, SO_ERROR,
+                   &socket_errno, &option_length) == -1) {
+        socket_errno = errno;
     }
 
-    if (condition & G_IO_ERR ||
-        condition & G_IO_HUP ||
-        condition & G_IO_NVAL) {
+    if (socket_errno) {
         gchar *message;
         GError *error = NULL;
 
@@ -1940,12 +1939,21 @@ connect_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
         g_set_error(&error,
                     MILTER_SERVER_CONTEXT_ERROR,
                     MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE,
-                    "Connection error on %s: %s", priv->spec, message);
-        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(context),
-                                    error);
+                    "Failed to connect to %s: %s", priv->spec,
+                    g_strerror(socket_errno));
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(context), error);
         milter_error("error!: %s", message);
         g_error_free(error);
         g_free(message);
+
+        close_client_fd(priv);
+    } else {
+        if (prepare_reader(context) && prepare_writer(context)) {
+            g_signal_emit(context, signals[READY], 0);
+            milter_agent_start(MILTER_AGENT(context));
+        } else {
+            close_client_fd(priv);
+        }
     }
 
     return FALSE;

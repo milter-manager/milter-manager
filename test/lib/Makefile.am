@@ -5,7 +5,15 @@ noinst_LTLIBRARIES =			\
 endif
 
 EXTRA_DISTS =			\
-	milter-test-server.rb
+	milter-test-server.rb	\
+	milter-test-client.rb
+
+MAINTAINERCLEANFILES =
+BUILT_SOURCES =
+
+enum_source_prefix = milter-test-enum-types
+enum_sources_h =			\
+	$(libmilter_test_headers)
 
 INCLUDES =			\
 	-I$(top_srcdir)
@@ -23,13 +31,17 @@ AM_LDFLAGS =			\
 LIBS =			\
 	$(GCUTTER_LIBS)
 
+libmilter_test_headers =	\
+	milter-test-utils.h	\
+	milter-test-client.h	\
+	milter-test-server.h
+
 libmilter_test_la_SOURCES =		\
 	milter-test-utils.c		\
-	milter-test-utils.h		\
 	milter-test-client.c		\
-	milter-test-client.h		\
 	milter-test-server.c		\
-	milter-test-server.h		\
+	milter-test-enum-types.c	\
+	milter-test-enum-types.h	\
 	milter-assertions.c		\
 	milter-assertions.h
 
@@ -50,3 +62,5 @@ libmilter_manager_test_la_CFLAGS =	\
 
 libmilter_manager_test_la_LIBS =			\
 	$(top_builddir)/milter/core/libmilter-core.la
+
+include $(top_srcdir)/build/enum-types.mk
