@@ -1,5 +1,8 @@
 2008-12-31  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client.c: surround g_cond_*() with mutex lock
+	and unlock.
+
 	* milter/server/milter-server-context.c: improve error message handling.
 
 	* milter/core/milter-agent.c: cleanup to resolve dispose order problem.

@@ -502,7 +502,10 @@ cb_timeout_accept_loop_ran (gpointer data)
     MilterClientPrivate *priv;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
+
+    g_mutex_lock(priv->accept_loop_mutex);
     g_cond_broadcast(priv->accept_loop_ran_cond);
+    g_mutex_unlock(priv->accept_loop_mutex);
 
     return FALSE;
 }
@@ -589,7 +592,11 @@ milter_client_main (MilterClient *client)
     g_source_unref(watch_source);
 
     thread = g_thread_create(server_accept_thread, client, TRUE, NULL);
+
+    g_mutex_lock(priv->accept_loop_mutex);
     g_cond_wait(priv->accept_loop_ran_cond, priv->accept_loop_mutex);
+    g_mutex_unlock(priv->accept_loop_mutex);
+
     g_main_loop_run(priv->main_loop);
     g_thread_join(thread);
 
