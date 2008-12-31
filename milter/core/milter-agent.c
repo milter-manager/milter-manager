@@ -140,14 +140,9 @@ dispose (GObject *object)
 
     priv = MILTER_AGENT_GET_PRIVATE(object);
 
-    if (priv->encoder) {
-        g_object_unref(priv->encoder);
-        priv->encoder = NULL;
-    }
-
-    if (priv->decoder) {
-        g_object_unref(priv->decoder);
-        priv->decoder = NULL;
+    if (priv->reader) {
+        g_object_unref(priv->reader);
+        priv->reader = NULL;
     }
 
     if (priv->writer) {
@@ -155,8 +150,14 @@ dispose (GObject *object)
         priv->writer = NULL;
     }
 
-    if (priv->reader) {
-        milter_agent_set_reader(MILTER_AGENT(object), NULL);
+    if (priv->decoder) {
+        g_object_unref(priv->decoder);
+        priv->decoder = NULL;
+    }
+
+    if (priv->encoder) {
+        g_object_unref(priv->encoder);
+        priv->encoder = NULL;
     }
 
     G_OBJECT_CLASS(milter_agent_parent_class)->dispose(object);
@@ -258,32 +259,32 @@ milter_agent_set_reader (MilterAgent *agent, MilterReader *reader)
 
     priv = MILTER_AGENT_GET_PRIVATE(agent);
 
-#define DISCONNECT(name)                                                \
-    g_signal_handlers_disconnect_by_func(priv->reader,                  \
-                                         G_CALLBACK(cb_reader_ ## name),\
-                                         agent)
-
-#define CONNECT(name)                                                    \
-    g_signal_connect(priv->reader, #name, G_CALLBACK(cb_reader_ ## name),\
-                     agent)
-
     if (priv->reader) {
+#define DISCONNECT(name)                                                \
+        g_signal_handlers_disconnect_by_func(priv->reader,              \
+                                             G_CALLBACK(cb_reader_ ## name), \
+                                             agent)
+
         DISCONNECT(flow);
         DISCONNECT(error);
         DISCONNECT(finished);
+#undef DISCONNECT
+
         g_object_unref(priv->reader);
     }
 
     priv->reader = reader;
     if (priv->reader) {
+        g_object_ref(priv->reader);
+
+#define CONNECT(name)                                                   \
+        g_signal_connect(priv->reader, #name, G_CALLBACK(cb_reader_ ## name), \
+                         agent)
         CONNECT(flow);
         CONNECT(error);
         CONNECT(finished);
-        g_object_ref(priv->reader);
-    }
-
-#undef DISCONNECT
 #undef CONNECT
+    }
 }
 
 GQuark
