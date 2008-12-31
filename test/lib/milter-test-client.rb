@@ -21,7 +21,7 @@ class MilterTestClient
   end
 
   def run
-    TCPServer.open(@port) do |socket|
+    TCPServer.open(@host, @port) do |socket|
       print_status("ready")
 
       Timeout.timeout(@timeout) do
@@ -41,6 +41,10 @@ class MilterTestClient
     opts = OptionParser.new do |opts|
       opts.on("--exit", "Exit immediately") do
         exit(true)
+      end
+
+      opts.on("--host=HOST", "Listen on HOST (#{@host})") do |host|
+        @host = host
       end
 
       opts.on("--port=PORT", Integer, "Listen on PORT (#{@port})") do |port|
@@ -187,6 +191,7 @@ class MilterTestClient
 
   private
   def initialize_options
+    @host = "127.0.0.1"
     @port = 9999
     @print_ready = false
     @timeout = 3

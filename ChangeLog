@@ -1,5 +1,8 @@
 2008-12-31  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/lib/milter-test-client.rb,
+	test/lib/milter-manager-test-client.c: specify IPv4 address explicitly.
+
 	* doc/reference/Makefile.am: don't remove sections.txt on 'make clean'.
 
 	* milter/server/milter-server-context.c: fix error message.

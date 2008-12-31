@@ -719,6 +719,8 @@ milter_manager_test_client_set_arguments (MilterManagerTestClient *client,
     append_command(priv->command, "--print-status");
     append_command(priv->command, "--timeout");
     append_command(priv->command, "0.5");
+    append_command(priv->command, "--host");
+    append_command(priv->command, "127.0.0.1");
     append_command(priv->command, "--port");
     port = g_strdup_printf("%u", priv->port);
     g_array_append_val(priv->command, port);
