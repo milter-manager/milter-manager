@@ -1966,6 +1966,7 @@ milter_server_context_establish_connection (MilterServerContext *context,
                     MILTER_SERVER_CONTEXT_ERROR,
                     MILTER_SERVER_CONTEXT_ERROR_NO_SPEC,
                     "No spec set yet.");
+        milter_error("No spec set yet.");
         return FALSE;
     }
 
@@ -1983,13 +1984,13 @@ milter_server_context_establish_connection (MilterServerContext *context,
     g_io_channel_set_flags(channel, G_IO_FLAG_NONBLOCK, &io_error);
     if (io_error) {
         close_client_fd(priv);
+        milter_error("failed to prepare connection(): %s", io_error->message);
         milter_utils_set_error_with_sub_error(
             error,
             MILTER_SERVER_CONTEXT_ERROR,
             MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE,
             io_error,
-            "Failed to prepare connect().");
-        milter_error("failed to prepare connection().");
+            "Failed to prepare connect()");
         return FALSE;
     }
 
