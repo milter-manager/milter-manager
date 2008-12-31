@@ -35,10 +35,14 @@
 #include "milter-manager-process-launcher.h"
 
 static gboolean initialized = FALSE;
-static MilterClient *current_client = NULL;
+static MilterManager *the_manager = NULL;
 static gchar *option_spec = NULL;
 static gchar *config_dir = NULL;
 static pid_t launcher_pid = -1;
+
+static void (*default_sigint_handler) (int signum);
+static void (*default_sighup_handler) (int signum);
+
 
 static gboolean
 print_version (const gchar *option_name, const gchar *value,
@@ -129,10 +133,30 @@ milter_manager_quit (void)
 static void
 shutdown_client (int signum)
 {
-    if (current_client)
-        milter_client_shutdown(current_client);
-    if (launcher_pid > 0)
+    if (the_manager)
+        milter_client_shutdown(MILTER_CLIENT(the_manager));
+
+    if (launcher_pid > 0) {
         kill(launcher_pid, SIGKILL);
+        launcher_pid = -1;
+    }
+
+    signal(SIGINT, default_sigint_handler);
+}
+
+static void
+reload_configuration (int signum)
+{
+    MilterManagerConfiguration *config;
+
+    if (!the_manager)
+        return;
+
+    config = milter_manager_get_configuration(the_manager);
+    if (!config)
+        return;
+
+    milter_manager_configuration_reload(config);
 }
 
 static void
@@ -413,11 +437,10 @@ milter_manager_main (void)
     MilterClient *client;
     MilterManager *manager;
     MilterManagerConfiguration *config;
-    void (*sigint_handler) (int signum);
     guint control_connection_watch_id = 0;
     GError *error = NULL;
     pid_t pid = -1;
-        
+
     config = milter_manager_configuration_new(NULL);
     if (config_dir)
         milter_manager_configuration_prepend_load_path(config, config_dir);
@@ -463,13 +486,15 @@ milter_manager_main (void)
         return;
     }
 
-    current_client = client;
-    sigint_handler = signal(SIGINT, shutdown_client);
+    the_manager = manager;
+    default_sigint_handler = signal(SIGINT, shutdown_client);
+    default_sighup_handler = signal(SIGHUP, reload_configuration);
     if (!milter_client_main(client))
         g_print("Failed to start milter-manager process.\n");
-    signal(SIGINT, sigint_handler);
+    signal(SIGHUP, default_sighup_handler);
+    signal(SIGINT, default_sigint_handler);
 
-    current_client = NULL;
+    the_manager = NULL;
     g_object_unref(manager);
     if (launcher_pid > 0)
         kill(launcher_pid, SIGKILL);

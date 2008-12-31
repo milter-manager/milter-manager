@@ -1,5 +1,9 @@
 2009-01-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-main.c:
+	- cleanup signal handling.
+	- support configuration reload by SIGHUP.
+
 	* data/rc.d/milter-manager: add init script for FreeBSD. not
 	completed yet.
 
