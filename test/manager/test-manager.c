@@ -216,7 +216,7 @@ setup_egg (EggData *data, const gchar *first_arg, ...)
     }
     va_end(var_args);
 
-    argv = g_new0(gchar*, argc + 1);
+    argv = g_new0(gchar *, argc + 1);
     argv[0] = g_strdup(data->command_path);
     argv[argc] = NULL;
     for (node = strings, i = 1; node; node = g_list_next(node), i++) {
@@ -263,6 +263,7 @@ wait_for_manager_ready (const gchar *spec)
     setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR,
                &reuse_address, sizeof(reuse_address));
 
+    g_usleep(0.5 * G_USEC_PER_SEC);
     timeout_waiting_id = g_timeout_add(500, cb_timeout_emitted,
                                        &timeout_emitted);
     while (!timeout_emitted) {

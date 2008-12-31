@@ -1,5 +1,7 @@
 2008-12-31  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/test-manager.c: sleep a bit for reducing test failure.
+
 	* test/lib/milter-test-client.rb,
 	test/lib/milter-manager-test-client.c: specify IPv4 address explicitly.
 
