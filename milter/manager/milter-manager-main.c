@@ -41,6 +41,7 @@ static gchar *config_dir = NULL;
 static pid_t launcher_pid = -1;
 
 static void (*default_sigint_handler) (int signum);
+static void (*default_sigterm_handler) (int signum);
 static void (*default_sighup_handler) (int signum);
 
 
@@ -141,7 +142,17 @@ shutdown_client (int signum)
         launcher_pid = -1;
     }
 
-    signal(SIGINT, default_sigint_handler);
+    switch (signum) {
+    case SIGINT:
+        signal(SIGINT, default_sigint_handler);
+        break;
+    case SIGTERM:
+        signal(SIGTERM, default_sigterm_handler);
+        break;
+    default:
+        signal(signum, SIG_DFL);
+        break;
+    }
 }
 
 static void
@@ -488,10 +499,12 @@ milter_manager_main (void)
 
     the_manager = manager;
     default_sigint_handler = signal(SIGINT, shutdown_client);
+    default_sigterm_handler = signal(SIGTERM, shutdown_client);
     default_sighup_handler = signal(SIGHUP, reload_configuration);
     if (!milter_client_main(client))
         g_print("Failed to start milter-manager process.\n");
     signal(SIGHUP, default_sighup_handler);
+    signal(SIGTERM, default_sigterm_handler);
     signal(SIGINT, default_sigint_handler);
 
     the_manager = NULL;

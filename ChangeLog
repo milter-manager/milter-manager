@@ -3,6 +3,7 @@
 	* milter/manager/milter-manager-main.c:
 	- cleanup signal handling.
 	- support configuration reload by SIGHUP.
+	- support shutdown by SIGTERM.
 
 	* data/rc.d/milter-manager: add init script for FreeBSD. not
 	completed yet.
