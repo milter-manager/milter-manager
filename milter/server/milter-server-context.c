@@ -1799,7 +1799,6 @@ make_channel (int fd, GIOFlags flags, GError **error)
 
     g_io_channel_set_flags(io_channel, G_IO_FLAG_NONBLOCK | flags, error);
     g_io_channel_set_buffered(io_channel, FALSE);
-    g_io_channel_set_close_on_unref(io_channel, TRUE);
 
     return io_channel;
 }
@@ -1869,6 +1868,8 @@ prepare_reader (MilterServerContext *context)
         return FALSE;
     }
 
+    g_io_channel_set_close_on_unref(read_channel, TRUE);
+
     reader = milter_reader_io_channel_new(read_channel);
     g_io_channel_unref(read_channel);
     milter_agent_set_reader(MILTER_AGENT(context), reader);
@@ -1905,7 +1906,7 @@ prepare_writer (MilterServerContext *context)
         return FALSE;
     }
     writer = milter_writer_io_channel_new(write_channel);
-    /* g_io_channel_unref(write_channel); */
+    g_io_channel_unref(write_channel);
     milter_agent_set_writer(MILTER_AGENT(context), writer);
     g_object_unref(writer);
 

@@ -1,5 +1,7 @@
 2008-12-31  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/server/milter-server-context.c: fix a memory leak.
+
 	* test/lib/milter-test-client.c (dispose): ensure clearing
 	instance variable.
 
