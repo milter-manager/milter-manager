@@ -1590,6 +1590,36 @@ int     smfi_setmlreply  (SMFICTX        *context,
 int     smfi_addheader   (SMFICTX        *context,
                           char           *name,
                           char           *value);
+
+/**
+ * smfi_chgheader:
+ * @context: the context for the current milter session.
+ * @name: the header name.
+ * @index: the index of headers that all of them are named
+ *         @name. (1-based)
+ * @value: the header value. Use %NULL to delete the target
+ *         header.
+ *
+ * Changes a header that is located at @index in headers
+ * that all of them are named @name. If @value is %NULL, the
+ * header is deleted. smfi_chgheader() can be called in
+ * xxfi_eom().
+ *
+ * <rd>
+ * Here are the fail conditions:
+ *   * @name is %NULL.
+ *   * called in except xxfi_eom(). FIXME: not-implemented yet.
+ *   * %SMFIF_CHGHDRS flag isn't set in smfi_register() or
+ *     xxfi_negotiate(). FIXME: not-implemented yet.
+ *   * network error is occurred.
+ * </rd>
+ *
+ * See also <ulink
+ * url="https://www.milter.org/developers/api/smfi_chgheader">
+ * smfi_chgheader</ulink> on milter.org.
+ *
+ * Returns: %MI_SUCCESS if success, %MI_FAILURE otherwise.
+ **/
 int     smfi_chgheader   (SMFICTX        *context,
                           char           *name,
                           int             index,

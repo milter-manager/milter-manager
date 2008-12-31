@@ -487,14 +487,15 @@ gboolean             milter_client_context_insert_header     (MilterClientContex
  * @context: a %MilterClientContext.
  * @name: the header name.
  * @index: the index of headers that all of them are named
- * @name. (1-based) FIXME: should change 0-based?
+ *         @name. (1-based) FIXME: should change 0-based?
  * @value: the header value. Use %NULL to delete the target
- * header.
+ *         header.
  *
  * Changes a header that is located at @index in headers
  * that all of them are named @name. If @value is %NULL, the
  * header is deleted. This function can be
  * called in #MilterClientContext::end-of-message signal.
+ *
  * See also <ulink
  * url="https://www.milter.org/developers/api/smfi_chgheader">
  * smfi_chgheader</ulink> on milter.org.
