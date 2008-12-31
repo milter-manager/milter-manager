@@ -637,7 +637,8 @@ emit_replace_body_signal (MilterManagerChildren *children)
         gchar buffer[MILTER_CHUNK_SIZE + 1];
         gsize read_size;
 
-        status = g_io_channel_read_chars(priv->body_file, buffer, MILTER_CHUNK_SIZE,
+        status = g_io_channel_read_chars(priv->body_file,
+                                         buffer, MILTER_CHUNK_SIZE,
                                          &read_size, &error);
 
         if (status == G_IO_STATUS_NORMAL)
@@ -757,7 +758,8 @@ emit_signals_on_end_of_message (MilterManagerChildren *children)
             continue;
         }
 
-        found_header = milter_headers_lookup_by_name(processing_headers, header->name);
+        found_header = milter_headers_lookup_by_name(processing_headers,
+                                                     header->name);
         if (!found_header) {
             g_signal_emit_by_name(children, "insert-header",
                                   i, header->name, header->value);
@@ -1488,7 +1490,7 @@ cb_connection_error (MilterErrorEmittable *emittable, GError *error, gpointer us
 
     prepare_retry_establish_connection(data->child,
                                        data->option,
-                                       data->children, 
+                                       data->children,
                                        TRUE);
     g_hash_table_remove(priv->try_negotiate_ids, data);
 }
