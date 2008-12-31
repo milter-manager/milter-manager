@@ -58,8 +58,6 @@ typedef struct _EggData
 static EggData *manager_data;
 static EggData *server_data;
 
-static GError *error;
-
 static gchar *
 build_manager_path (void)
 {
@@ -161,8 +159,6 @@ setup (void)
 
     manager_data = egg_data_new(build_manager_path);
     server_data = egg_data_new(build_server_path);
-
-    error = NULL;
 }
 
 void
@@ -177,9 +173,6 @@ teardown (void)
         egg_data_free(manager_data);
     if (server_data)
         egg_data_free(server_data);
-
-    if (error)
-        g_error_free(error);
 }
 
 static void
@@ -317,6 +310,7 @@ wait_for_manager_ready (const gchar *spec)
 static void
 start_manager (void)
 {
+    GError *error = NULL;
     const gchar spec[] = "inet:19999@localhost";
 
     setup_egg(manager_data, "-s", spec, "--config-dir", scenario_dir, NULL);
@@ -331,15 +325,19 @@ start_manager (void)
 static void
 start_server (void)
 {
+    GError *error = NULL;
     const gchar spec[] = "inet:19999@localhost";
-    setup_egg(server_data, "--unknown='!'", "-s", spec, NULL);
 
+    setup_egg(server_data, "--unknown='!'", "-s", spec, NULL);
     gcut_egg_hatch(server_egg, &error);
+    gcut_assert_error(error);
 }
 
 void
 test_version (void)
 {
+    GError *error = NULL;
+
     setup_egg(manager_data, "--version", NULL);
     gcut_egg_hatch(manager_egg, &error);
     gcut_assert_error(error);
@@ -353,6 +351,8 @@ test_version (void)
 void
 test_invalid_spec (void)
 {
+    GError *error = NULL;
+
     setup_egg(manager_data, "-s", "XXXX@localhost", NULL);
     gcut_egg_hatch(manager_egg, &error);
     gcut_assert_error(error);
