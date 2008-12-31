@@ -17,12 +17,11 @@
  *
  */
 
-#include <gcutter.h>
-#define shutdown inet_shutdown
-#include "milter-test-utils.h"
-#undef shutdown
-
 #include <unistd.h>
+
+#include "milter-test-utils.h"
+
+#include <gcutter.h>
 
 #define BUFFER_SIZE 4096
 
@@ -87,23 +86,40 @@ dispose (GObject *object)
 
     priv = MILTER_TEST_CLIENT_GET_PRIVATE(object);
 
-    if (priv->server_watch_id > 0)
+    if (priv->server_watch_id > 0) {
         g_source_remove(priv->server_watch_id);
-    if (priv->watch_id > 0)
+        priv->server_watch_id = 0;
+    }
+
+    if (priv->watch_id > 0) {
         g_source_remove(priv->watch_id);
+        priv->watch_id = 0;
+    }
 
-    if (priv->server_channel)
+    if (priv->server_channel) {
         g_io_channel_unref(priv->server_channel);
-    if (priv->channel)
+        priv->server_channel = NULL;
+    }
+
+    if (priv->channel) {
         g_io_channel_unref(priv->channel);
+        priv->channel = NULL;
+    }
 
-    if (priv->server_fd > 0)
+    if (priv->server_fd > 0) {
         close(priv->server_fd);
-    if (priv->fd > 0)
-        close(priv->fd);
+        priv->server_fd = 0;
+    }
 
-    if (priv->decoder)
+    if (priv->fd > 0) {
+        close(priv->fd);
+        priv->fd = 0;
+    }
+
+    if (priv->decoder) {
         g_object_unref(priv->decoder);
+        priv->decoder = NULL;
+    }
 
     G_OBJECT_CLASS(milter_test_client_parent_class)->dispose(object);
 }

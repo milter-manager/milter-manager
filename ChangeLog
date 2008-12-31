@@ -1,5 +1,8 @@
 2008-12-31  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/lib/milter-test-client.c (dispose): ensure clearing
+	instance variable.
+
 	* libmilter/mfapi.h: add documents.
 	* milter/client/milter-client-context.h: improve document.
 
