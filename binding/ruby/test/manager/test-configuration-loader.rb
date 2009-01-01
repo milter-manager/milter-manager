@@ -28,6 +28,12 @@ class TestConfigurationLoader < Test::Unit::TestCase
     assert_equal(0600, @configuration.unix_socket_mode)
   end
 
+  def test_manager_remove_unix_socket_on_close
+    assert_true(@configuration.remove_manager_unix_socket_on_close?)
+    @loader.manager.remove_unix_socket_on_close = false
+    assert_false(@configuration.remove_manager_unix_socket_on_close?)
+  end
+
   def test_to_xml
     assert_equal(<<-EOX, @configuration.to_xml)
 <configuration>

@@ -381,6 +381,14 @@ module Milter::Manager
         Milter::Connection.parse_spec(spec) unless spec.nil?
         @configuration.manager_connection_spec = spec
       end
+
+      def remove_unix_socket_on_close?
+        @configuration.remove_manager_unix_socket_on_close?
+      end
+
+      def remove_unix_socket_on_close=(remove)
+        @configuration.remove_manager_unix_socket_on_close = remove
+      end
     end
 
     class EggConfiguration
