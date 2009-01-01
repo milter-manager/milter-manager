@@ -1,5 +1,7 @@
 2009-01-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: remove: support changing effective group.
+
 	* milter/manager/milter-manager-configuration.[ch],
 	test/manager/test-configuration.c: split
 	unix_socket_mode() for manager and controller.
