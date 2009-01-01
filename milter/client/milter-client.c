@@ -61,8 +61,6 @@ struct _MilterClientPrivate
 {
     GIOChannel *listening_channel;
     GMainLoop *accept_loop;
-    GMutex *accept_loop_mutex;
-    GCond *accept_loop_ran_cond;
     GMainLoop *main_loop;
     guint server_watch_id;
     gchar *connection_spec;
@@ -71,6 +69,7 @@ struct _MilterClientPrivate
     guint timeout;
     GIOChannel *listen_channel;
     gint listen_backlog;
+    GMutex *quit_mutex;
     gboolean quitting;
 };
 
@@ -138,8 +137,6 @@ milter_client_init (MilterClient *client)
     main_context = g_main_context_new();
     priv->accept_loop = g_main_loop_new(main_context, FALSE);
     g_main_context_unref(main_context);
-    priv->accept_loop_mutex = g_mutex_new();
-    priv->accept_loop_ran_cond = g_cond_new();
 
     priv->main_loop = g_main_loop_new(NULL, FALSE);
 
@@ -150,6 +147,7 @@ milter_client_init (MilterClient *client)
     priv->timeout = 7210;
     priv->listen_channel = NULL;
     priv->listen_backlog = -1;
+    priv->quit_mutex = g_mutex_new();
     priv->quitting = FALSE;
 }
 
@@ -179,16 +177,6 @@ dispose (GObject *object)
         priv->accept_loop = NULL;
     }
 
-    if (priv->accept_loop_mutex) {
-        g_mutex_free(priv->accept_loop_mutex);
-        priv->accept_loop_mutex = NULL;
-    }
-
-    if (priv->accept_loop_ran_cond) {
-        g_cond_free(priv->accept_loop_ran_cond);
-        priv->accept_loop_ran_cond = NULL;
-    }
-
     if (priv->main_loop) {
         g_main_loop_unref(priv->main_loop);
         priv->main_loop = NULL;
@@ -214,6 +202,11 @@ dispose (GObject *object)
     if (priv->listen_channel) {
         g_io_channel_unref(priv->listen_channel);
         priv->listen_channel = NULL;
+    }
+
+    if (priv->quit_mutex) {
+        g_mutex_free(priv->quit_mutex);
+        priv->quit_mutex = NULL;
     }
 
     G_OBJECT_CLASS(milter_client_parent_class)->dispose(object);
@@ -334,11 +327,15 @@ cb_idle_free_data (gpointer _data)
     data->priv->processing_data =
         g_list_remove(data->priv->processing_data, data);
     data->priv->n_processing_data--;
+
     n_processing_data = data->priv->n_processing_data;
+    g_mutex_lock(data->priv->quit_mutex);
     if (data->priv->quitting && n_processing_data == 0) {
         milter_debug("quit main loop");
         g_main_loop_quit(data->priv->main_loop);
     }
+    g_mutex_unlock(data->priv->quit_mutex);
+
     process_data_free(data);
     milter_debug("removed a MilterClientContext: rest: <%u>", n_processing_data);
 
@@ -503,9 +500,7 @@ cb_timeout_accept_loop_ran (gpointer data)
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
-    g_mutex_lock(priv->accept_loop_mutex);
-    g_cond_broadcast(priv->accept_loop_ran_cond);
-    g_mutex_unlock(priv->accept_loop_mutex);
+    g_mutex_unlock(priv->quit_mutex);
 
     return FALSE;
 }
@@ -526,7 +521,11 @@ server_accept_thread (gpointer data)
     g_source_attach(timeout_source, g_main_loop_get_context(priv->accept_loop));
     g_source_unref(timeout_source);
 
-    g_main_loop_run(priv->accept_loop);
+    g_mutex_lock(priv->quit_mutex);
+    if (priv->quitting)
+        g_mutex_unlock(priv->quit_mutex);
+    else
+        g_main_loop_run(priv->accept_loop);
 
     return NULL;
 }
@@ -595,15 +594,13 @@ milter_client_main (MilterClient *client)
 
     thread = g_thread_create(server_accept_thread, client, TRUE, NULL);
 
-    g_mutex_lock(priv->accept_loop_mutex);
-    g_cond_wait(priv->accept_loop_ran_cond, priv->accept_loop_mutex);
-    g_mutex_unlock(priv->accept_loop_mutex);
-
     g_main_loop_run(priv->main_loop);
     g_thread_join(thread);
 
-    if (priv->listening_channel)
+    if (priv->listening_channel) {
         g_io_channel_unref(priv->listening_channel);
+        priv->listening_channel = NULL;
+    }
 
     return TRUE;
 }
@@ -614,22 +611,22 @@ milter_client_shutdown (MilterClient *client)
     MilterClientPrivate *priv;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
-    if (priv->listening_channel) {
-        GIOChannel *listening_channel;
 
-        listening_channel = priv->listening_channel;
-        priv->listening_channel = NULL;
+    g_mutex_lock(priv->quit_mutex);
+    if (!priv->quitting) {
         priv->quitting = TRUE;
         g_main_loop_quit(priv->accept_loop);
         if (priv->server_watch_id > 0) {
             g_source_remove(priv->server_watch_id);
             priv->server_watch_id = 0;
         }
-        g_io_channel_unref(listening_channel);
+        g_io_channel_unref(priv->listening_channel);
+        priv->listening_channel = NULL;
 
         if (priv->n_processing_data == 0)
             g_main_loop_quit(priv->main_loop);
     }
+    g_mutex_unlock(priv->quit_mutex);
 }
 
 void

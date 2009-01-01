@@ -1,5 +1,9 @@
 2009-01-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client.c: improve quitting
+	synchronization. GCond approach doesn't solve a problem for that:
+	accept loop start -> cond broadcast -> cond wait -> infinite wait.
+
 	* milter/core/milter-connection.[ch], test/core/test-connection.c:
 	milter_connection_listen() returns socket address and size if needed.
 	* libmilter/libmilter-compatible.c, milter/client/milter-client.c,
