@@ -4,6 +4,7 @@
 	- add:
 	  - support controller's UNIX socket mode changing.
 	  - support controller's UNIX socket mode removing on close.
+	  - support changing effective group.
 	- remove:
 	  - support UNIX socket mode changing by configuration.
 	  - write unit test for libmilter.
