@@ -30,6 +30,7 @@ void test_children (void);
 void test_privilege_mode (void);
 void test_effective_user (void);
 void test_unix_socket_mode (void);
+void test_remove_unix_socket_on_close (void);
 void test_control_connection_spec (void);
 void test_manager_connection_spec (void);
 void test_fallback_status (void);
@@ -195,6 +196,14 @@ test_unix_socket_mode (void)
     cut_assert_equal_uint(
         0600,
         milter_manager_configuration_get_unix_socket_mode(config));
+}
+
+void
+test_remove_unix_socket_on_close (void)
+{
+    cut_assert_true(milter_manager_configuration_is_remove_unix_socket_on_close(config));
+    milter_manager_configuration_set_remove_unix_socket_on_close(config, FALSE);
+    cut_assert_false(milter_manager_configuration_is_remove_unix_socket_on_close(config));
 }
 
 void
