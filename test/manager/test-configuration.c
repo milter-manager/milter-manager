@@ -32,7 +32,7 @@ void test_effective_user (void);
 void test_unix_socket_mode (void);
 void test_remove_manager_unix_socket_on_close (void);
 void test_remove_controller_unix_socket_on_close (void);
-void test_control_connection_spec (void);
+void test_controller_connection_spec (void);
 void test_manager_connection_spec (void);
 void test_fallback_status (void);
 void test_egg (void);
@@ -216,19 +216,19 @@ test_remove_controller_unix_socket_on_close (void)
 }
 
 void
-test_control_connection_spec (void)
+test_controller_connection_spec (void)
 {
     const gchar spec[] = "inet:2929@localhost";
     const gchar *actual_spec;
 
     actual_spec =
-        milter_manager_configuration_get_control_connection_spec(config);
+        milter_manager_configuration_get_controller_connection_spec(config);
     cut_assert_equal_string(NULL, actual_spec);
 
-    milter_manager_configuration_set_control_connection_spec(config, spec);
+    milter_manager_configuration_set_controller_connection_spec(config, spec);
 
     actual_spec =
-        milter_manager_configuration_get_control_connection_spec(config);
+        milter_manager_configuration_get_controller_connection_spec(config);
     cut_assert_equal_string(spec, actual_spec);
 }
 
@@ -273,7 +273,7 @@ milter_assert_default_configuration_helper (MilterManagerConfiguration *config)
 
     cut_assert_false(milter_manager_configuration_is_privilege_mode(config));
 
-    spec = milter_manager_configuration_get_control_connection_spec(config);
+    spec = milter_manager_configuration_get_controller_connection_spec(config);
     cut_assert_equal_string(NULL, spec);
 
     status = milter_manager_configuration_get_fallback_status(config);
@@ -470,7 +470,7 @@ test_clear (void)
     milter_assert_default_configuration(config);
 
     test_privilege_mode();
-    test_control_connection_spec();
+    test_controller_connection_spec();
     test_fallback_status();
     test_children();
 

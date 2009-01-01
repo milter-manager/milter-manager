@@ -34,6 +34,19 @@ class TestConfigurationLoader < Test::Unit::TestCase
     assert_false(@configuration.remove_manager_unix_socket_on_close?)
   end
 
+  def test_controller_remove_unix_socket_on_close
+    assert_true(@configuration.remove_controller_unix_socket_on_close?)
+    @loader.controller.remove_unix_socket_on_close = false
+    assert_false(@configuration.remove_controller_unix_socket_on_close?)
+  end
+
+  def test_controller_connection_spec
+    assert_nil(@configuration.controller_connection_spec)
+    @loader.controller.connection_spec = "inet:2929@localhost"
+    assert_equal("inet:2929@localhost",
+                 @configuration.controller_connection_spec)
+  end
+
   def test_to_xml
     assert_equal(<<-EOX, @configuration.to_xml)
 <configuration>

@@ -54,11 +54,11 @@ module Milter::Manager
       end
     end
 
-    attr_reader :security, :control, :manager, :configuration
+    attr_reader :security, :controller, :manager, :configuration
     def initialize(configuration)
       @configuration = configuration
       @security = SecurityConfiguration.new(configuration)
-      @control = ControlConfiguration.new(configuration)
+      @controller = ControllerConfiguration.new(configuration)
       @manager = ManagerConfiguration.new(configuration)
     end
 
@@ -205,7 +205,7 @@ module Milter::Manager
           text = @text_stack.pop
           uri, local = @tag_stack.pop
           no_action_states = [:root, :configuration, :security,
-                              :control, :manager, :milters,
+                              :controller, :manager, :milters,
                               :milter_applicable_conditions]
           case state
           when *no_action_states
@@ -265,8 +265,8 @@ module Milter::Manager
             case local
             when "security"
               :security
-            when "control"
-              :control
+            when "controller"
+              :controller
             when "manager"
               :manager
             when "milters"
@@ -274,7 +274,7 @@ module Milter::Manager
             else
               raise "unexpected element: #{current_path}"
             end
-          when :security, :control, :manager
+          when :security, :controller, :manager
             if @configuration.send(current_state).respond_to?("#{local}=")
               local
             else
@@ -361,14 +361,22 @@ module Milter::Manager
       end
     end
 
-    class ControlConfiguration
+    class ControllerConfiguration
       def initialize(configuration)
         @configuration = configuration
       end
 
       def connection_spec=(spec)
         Milter::Connection.parse_spec(spec) unless spec.nil?
-        @configuration.control_connection_spec = spec
+        @configuration.controller_connection_spec = spec
+      end
+
+      def remove_unix_socket_on_close?
+        @configuration.remove_controller_unix_socket_on_close?
+      end
+
+      def remove_unix_socket_on_close=(remove)
+        @configuration.remove_controller_unix_socket_on_close = remove
       end
     end
 

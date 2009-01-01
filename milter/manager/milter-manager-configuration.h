@@ -118,9 +118,9 @@ gboolean      milter_manager_configuration_is_privilege_mode
 void          milter_manager_configuration_set_privilege_mode
                                      (MilterManagerConfiguration *configuration,
                                       gboolean                    mode);
-const gchar  *milter_manager_configuration_get_control_connection_spec
+const gchar  *milter_manager_configuration_get_controller_connection_spec
                                      (MilterManagerConfiguration *configuration);
-void          milter_manager_configuration_set_control_connection_spec
+void          milter_manager_configuration_set_controller_connection_spec
                                      (MilterManagerConfiguration *configuration,
                                       const gchar                *spec);
 

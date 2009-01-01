@@ -3,11 +3,12 @@ class TestConfiguration < Test::Unit::TestCase
     @configuration = Milter::Manager::Configuration.new
   end
 
-  def test_control_connection_spec
-    @configuration.control_connection_spec = "inet:2929@localhost"
-    assert_equal("inet:2929@localhost", @configuration.control_connection_spec)
-    @configuration.control_connection_spec = nil
-    assert_nil(@configuration.control_connection_spec)
+  def test_controller_connection_spec
+    @configuration.controller_connection_spec = "inet:2929@localhost"
+    assert_equal("inet:2929@localhost",
+                 @configuration.controller_connection_spec)
+    @configuration.controller_connection_spec = nil
+    assert_nil(@configuration.controller_connection_spec)
   end
 
   def test_manager_connection_spec

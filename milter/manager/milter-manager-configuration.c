@@ -44,7 +44,7 @@ struct _MilterManagerConfigurationPrivate
     GList *eggs;
     GList *applicable_conditions;
     gboolean privilege_mode;
-    gchar *control_connection_spec;
+    gchar *controller_connection_spec;
     gchar *manager_connection_spec;
     MilterStatus fallback_status;
     gchar *effective_user;
@@ -57,7 +57,7 @@ enum
 {
     PROP_0,
     PROP_PRIVILEGE_MODE,
-    PROP_CONTROL_CONNECTION_SPEC,
+    PROP_CONTROLLER_CONNECTION_SPEC,
     PROP_MANAGER_CONNECTION_SPEC,
     PROP_FALLBACK_STATUS,
     PROP_EFFECTIVE_USER,
@@ -109,13 +109,14 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
                                 G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
     g_object_class_install_property(gobject_class, PROP_PRIVILEGE_MODE, spec);
 
-    spec = g_param_spec_string("control-connection-spec",
-                               "Control connection spec",
-                               "The control connection spec "
+    spec = g_param_spec_string("controller-connection-spec",
+                               "Controller connection spec",
+                               "The controller connection spec "
                                "of the milter-manager",
                                NULL,
                                G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
-    g_object_class_install_property(gobject_class, PROP_CONTROL_CONNECTION_SPEC,
+    g_object_class_install_property(gobject_class,
+                                    PROP_CONTROLLER_CONNECTION_SPEC,
                                     spec);
 
     spec = g_param_spec_string("manager-connection-spec",
@@ -196,7 +197,7 @@ milter_manager_configuration_init (MilterManagerConfiguration *configuration)
     priv->load_paths = NULL;
     priv->eggs = NULL;
     priv->applicable_conditions = NULL;
-    priv->control_connection_spec = NULL;
+    priv->controller_connection_spec = NULL;
     priv->manager_connection_spec = NULL;
     priv->effective_user = NULL;
     priv->unix_socket_mode = 0660;
@@ -242,8 +243,8 @@ set_property (GObject      *object,
         milter_manager_configuration_set_privilege_mode(
             config, g_value_get_boolean(value));
         break;
-      case PROP_CONTROL_CONNECTION_SPEC:
-        milter_manager_configuration_set_control_connection_spec(
+      case PROP_CONTROLLER_CONNECTION_SPEC:
+        milter_manager_configuration_set_controller_connection_spec(
             config, g_value_get_string(value));
         break;
       case PROP_MANAGER_CONNECTION_SPEC:
@@ -289,8 +290,8 @@ get_property (GObject    *object,
       case PROP_PRIVILEGE_MODE:
         g_value_set_boolean(value, priv->privilege_mode);
         break;
-      case PROP_CONTROL_CONNECTION_SPEC:
-        g_value_set_string(value, priv->control_connection_spec);
+      case PROP_CONTROLLER_CONNECTION_SPEC:
+        g_value_set_string(value, priv->controller_connection_spec);
         break;
       case PROP_MANAGER_CONNECTION_SPEC:
         g_value_set_string(value, priv->manager_connection_spec);
@@ -677,21 +678,21 @@ milter_manager_configuration_set_privilege_mode (MilterManagerConfiguration *con
 }
 
 const gchar *
-milter_manager_configuration_get_control_connection_spec (MilterManagerConfiguration *configuration)
+milter_manager_configuration_get_controller_connection_spec (MilterManagerConfiguration *configuration)
 {
-    return MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration)->control_connection_spec;
+    return MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration)->controller_connection_spec;
 }
 
 void
-milter_manager_configuration_set_control_connection_spec (MilterManagerConfiguration *configuration,
-                                                          const gchar *spec)
+milter_manager_configuration_set_controller_connection_spec (MilterManagerConfiguration *configuration,
+                                                             const gchar *spec)
 {
     MilterManagerConfigurationPrivate *priv;
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
-    if (priv->control_connection_spec)
-        g_free(priv->control_connection_spec);
-    priv->control_connection_spec = g_strdup(spec);
+    if (priv->controller_connection_spec)
+        g_free(priv->controller_connection_spec);
+    priv->controller_connection_spec = g_strdup(spec);
 }
 
 const gchar *
@@ -1018,9 +1019,9 @@ milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
     milter_manager_configuration_clear_eggs(configuration);
     milter_manager_configuration_clear_applicable_conditions(configuration);
 
-    if (priv->control_connection_spec) {
-        g_free(priv->control_connection_spec);
-        priv->control_connection_spec = NULL;
+    if (priv->controller_connection_spec) {
+        g_free(priv->controller_connection_spec);
+        priv->controller_connection_spec = NULL;
     }
 
     if (priv->manager_connection_spec) {

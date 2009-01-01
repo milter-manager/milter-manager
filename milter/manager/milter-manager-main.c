@@ -182,7 +182,7 @@ cb_free_controller (gpointer data)
 }
 
 static void
-cb_control_reader_finished (MilterReader *reader, gpointer data)
+cb_controller_reader_finished (MilterReader *reader, gpointer data)
 {
     MilterManagerController *controller = data;
 
@@ -190,7 +190,7 @@ cb_control_reader_finished (MilterReader *reader, gpointer data)
 }
 
 static void
-process_control_connection(MilterManager *manager, GIOChannel *agent_channel)
+process_controller_connection(MilterManager *manager, GIOChannel *agent_channel)
 {
     MilterManagerController *controller;
     MilterWriter *writer;
@@ -207,17 +207,17 @@ process_control_connection(MilterManager *manager, GIOChannel *agent_channel)
     g_object_unref(reader);
 
     g_signal_connect(reader, "finished",
-                     G_CALLBACK(cb_control_reader_finished), controller);
+                     G_CALLBACK(cb_controller_reader_finished), controller);
 }
 
 static gboolean
-accept_control_connection (gint control_fd, MilterManager *manager)
+accept_controller_connection (gint controller_fd, MilterManager *manager)
 {
     gint agent_fd;
     GIOChannel *agent_channel;
 
-    milter_debug("start accepting...: %d", control_fd);
-    agent_fd = accept(control_fd, NULL, NULL);
+    milter_debug("start accepting...: %d", controller_fd);
+    agent_fd = accept(controller_fd, NULL, NULL);
     if (agent_fd == -1) {
         milter_error("failed to accept(): %s", g_strerror(errno));
         return TRUE;
@@ -228,14 +228,15 @@ accept_control_connection (gint control_fd, MilterManager *manager)
     g_io_channel_set_encoding(agent_channel, NULL, NULL);
     g_io_channel_set_flags(agent_channel, G_IO_FLAG_NONBLOCK, NULL);
     g_io_channel_set_close_on_unref(agent_channel, TRUE);
-    process_control_connection(manager, agent_channel);
+    process_controller_connection(manager, agent_channel);
     g_io_channel_unref(agent_channel);
 
     return TRUE;
 }
 
 static gboolean
-control_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
+controller_watch_func (GIOChannel *channel, GIOCondition condition,
+                       gpointer data)
 {
     MilterManager *manager = data;
     gboolean keep_callback = TRUE;
@@ -245,7 +246,7 @@ control_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
         guint fd;
 
         fd = g_io_channel_unix_get_fd(channel);
-        keep_callback = accept_control_connection(fd, manager);
+        keep_callback = accept_controller_connection(fd, manager);
     }
 
     if (condition & G_IO_ERR ||
@@ -264,7 +265,7 @@ control_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
 
 
 static guint
-setup_control_connection (MilterManager *manager)
+setup_controller_connection (MilterManager *manager)
 {
     MilterManagerConfiguration *config;
     const gchar *spec;
@@ -273,16 +274,16 @@ setup_control_connection (MilterManager *manager)
     guint watch_id = 0;
 
     config = milter_manager_get_configuration(manager);
-    spec = milter_manager_configuration_get_control_connection_spec(config);
+    spec = milter_manager_configuration_get_controller_connection_spec(config);
     if (!spec) {
-        milter_debug("control connection spec is missing. "
-                     "control connection is disabled");
+        milter_debug("controller connection spec is missing. "
+                     "controller connection is disabled");
         return 0;
     }
 
     channel = milter_connection_listen(spec, -1, NULL, NULL, &error);
     if (!channel) {
-        milter_error("failed to listen control connection: <%s>: <%s>",
+        milter_error("failed to listen controller connection: <%s>: <%s>",
                      spec, error->message);
         g_error_free(error);
         return 0;
@@ -291,7 +292,7 @@ setup_control_connection (MilterManager *manager)
     watch_id = g_io_add_watch(channel,
                               G_IO_IN | G_IO_PRI |
                               G_IO_ERR | G_IO_HUP | G_IO_NVAL,
-                              control_watch_func, manager);
+                              controller_watch_func, manager);
 
     return watch_id;
 }
@@ -444,7 +445,7 @@ milter_manager_main (void)
     MilterClient *client;
     MilterManager *manager;
     MilterManagerConfiguration *config;
-    guint control_connection_watch_id = 0;
+    guint controller_connection_watch_id = 0;
     GError *error = NULL;
     pid_t pid = -1;
 
@@ -458,7 +459,7 @@ milter_manager_main (void)
     client = MILTER_CLIENT(manager);
 
     /* FIXME */
-    control_connection_watch_id = setup_control_connection(manager);
+    controller_connection_watch_id = setup_controller_connection(manager);
 
     g_signal_connect(client, "error",
                      G_CALLBACK(cb_error), NULL);
