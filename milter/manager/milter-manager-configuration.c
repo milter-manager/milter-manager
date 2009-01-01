@@ -49,7 +49,8 @@ struct _MilterManagerConfigurationPrivate
     MilterStatus fallback_status;
     gchar *effective_user;
     guint unix_socket_mode;
-    gboolean remove_unix_socket_on_close;
+    gboolean remove_manager_unix_socket_on_close;
+    gboolean remove_controller_unix_socket_on_close;
 };
 
 enum
@@ -61,7 +62,8 @@ enum
     PROP_FALLBACK_STATUS,
     PROP_EFFECTIVE_USER,
     PROP_UNIX_SOCKET_MODE,
-    PROP_REMOVE_UNIX_SOCKET_ON_CLOSE
+    PROP_REMOVE_MANAGER_UNIX_SOCKET_ON_CLOSE,
+    PROP_REMOVE_CONTROLLER_UNIX_SOCKET_ON_CLOSE
 };
 
 enum
@@ -151,14 +153,24 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
     g_object_class_install_property(gobject_class, PROP_UNIX_SOCKET_MODE,
                                     spec);
 
-    spec = g_param_spec_boolean("remove-unix-socket-on-close",
-                                "Remove unix socket on close",
+    spec = g_param_spec_boolean("remove-manager-unix-socket-on-close",
+                                "Remove unix socket for manager on close",
                                 "Whether MilterManager removes "
-                                "used UNIX socket on close",
+                                "UNIX socket used for manager on close",
                                 TRUE,
                                 G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class,
-                                    PROP_REMOVE_UNIX_SOCKET_ON_CLOSE,
+                                    PROP_REMOVE_MANAGER_UNIX_SOCKET_ON_CLOSE,
+                                    spec);
+
+    spec = g_param_spec_boolean("remove-controller-unix-socket-on-close",
+                                "Remove unix socket for controller on close",
+                                "Whether MilterManager removes "
+                                "UNIX socket used for controller on close",
+                                TRUE,
+                                G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class,
+                                    PROP_REMOVE_MANAGER_UNIX_SOCKET_ON_CLOSE,
                                     spec);
 
     signals[TO_XML] =
@@ -188,7 +200,8 @@ milter_manager_configuration_init (MilterManagerConfiguration *configuration)
     priv->manager_connection_spec = NULL;
     priv->effective_user = NULL;
     priv->unix_socket_mode = 0660;
-    priv->remove_unix_socket_on_close = TRUE;
+    priv->remove_manager_unix_socket_on_close = TRUE;
+    priv->remove_controller_unix_socket_on_close = TRUE;
 
     config_dir_env = g_getenv("MILTER_MANAGER_CONFIG_DIR");
     if (config_dir_env)
@@ -249,8 +262,12 @@ set_property (GObject      *object,
         milter_manager_configuration_set_unix_socket_mode(
             config, g_value_get_uint(value));
         break;
-      case PROP_REMOVE_UNIX_SOCKET_ON_CLOSE:
-        milter_manager_configuration_set_remove_unix_socket_on_close(
+      case PROP_REMOVE_MANAGER_UNIX_SOCKET_ON_CLOSE:
+        milter_manager_configuration_set_remove_manager_unix_socket_on_close(
+            config, g_value_get_boolean(value));
+        break;
+      case PROP_REMOVE_CONTROLLER_UNIX_SOCKET_ON_CLOSE:
+        milter_manager_configuration_set_remove_controller_unix_socket_on_close(
             config, g_value_get_boolean(value));
         break;
       default:
@@ -287,8 +304,11 @@ get_property (GObject    *object,
       case PROP_UNIX_SOCKET_MODE:
         g_value_set_uint(value, priv->unix_socket_mode);
         break;
-      case PROP_REMOVE_UNIX_SOCKET_ON_CLOSE:
-        g_value_set_boolean(value, priv->remove_unix_socket_on_close);
+      case PROP_REMOVE_MANAGER_UNIX_SOCKET_ON_CLOSE:
+        g_value_set_boolean(value, priv->remove_manager_unix_socket_on_close);
+        break;
+      case PROP_REMOVE_CONTROLLER_UNIX_SOCKET_ON_CLOSE:
+        g_value_set_boolean(value, priv->remove_controller_unix_socket_on_close);
         break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -730,22 +750,41 @@ milter_manager_configuration_set_unix_socket_mode (MilterManagerConfiguration *c
 }
 
 gboolean
-milter_manager_configuration_is_remove_unix_socket_on_close (MilterManagerConfiguration *configuration)
+milter_manager_configuration_is_remove_manager_unix_socket_on_close (MilterManagerConfiguration *configuration)
 {
     MilterManagerConfigurationPrivate *priv;
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
-    return priv->remove_unix_socket_on_close;
+    return priv->remove_manager_unix_socket_on_close;
 }
 
 void
-milter_manager_configuration_set_remove_unix_socket_on_close (MilterManagerConfiguration *configuration,
-                                                              gboolean remove)
+milter_manager_configuration_set_remove_manager_unix_socket_on_close (MilterManagerConfiguration *configuration,
+                                                                      gboolean remove)
 {
     MilterManagerConfigurationPrivate *priv;
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
-    priv->remove_unix_socket_on_close = remove;
+    priv->remove_manager_unix_socket_on_close = remove;
+}
+
+gboolean
+milter_manager_configuration_is_remove_controller_unix_socket_on_close (MilterManagerConfiguration *configuration)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    return priv->remove_controller_unix_socket_on_close;
+}
+
+void
+milter_manager_configuration_set_remove_controller_unix_socket_on_close (MilterManagerConfiguration *configuration,
+                                                                         gboolean remove)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    priv->remove_controller_unix_socket_on_close = remove;
 }
 
 void

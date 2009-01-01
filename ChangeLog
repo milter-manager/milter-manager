@@ -1,6 +1,10 @@
 2009-01-01  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/manager/milter-manager-configuration.[ch],
+	test/manager/test-configuration.c: split
+	remove_unix_socket_on_close() for manager and controller.
+
+	* milter/manager/milter-manager-configuration.[ch],
 	test/manager/test-configuration.c: add
 	milter_manager_configuration_is_remove_unix_socket_on_close() and
 	milter_manager_configuration_set_remove_unix_socket_on_close().
