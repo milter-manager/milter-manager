@@ -1,5 +1,9 @@
 2009-01-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client.h, milter/client/milter-client.c,
+	test/client/test-client.c: support removing UNIX domain socket on
+	close.
+
 	* milter/manager/milter-manager-main.c: move change UNIX domain
 	socket mode feature to ...
 	* milter/client.h, milter/client/milter-client.c,

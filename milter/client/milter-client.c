@@ -76,6 +76,7 @@ struct _MilterClientPrivate
     GMutex *quit_mutex;
     gboolean quitting;
     guint default_unix_socket_mode;
+    gboolean default_remove_unix_socket_on_close;
 };
 
 typedef struct _MilterClientProcessData
@@ -169,6 +170,7 @@ milter_client_init (MilterClient *client)
     priv->quit_mutex = g_mutex_new();
     priv->quitting = FALSE;
     priv->default_unix_socket_mode = 0660;
+    priv->default_remove_unix_socket_on_close = TRUE;
 }
 
 static void
@@ -293,7 +295,7 @@ listen_started (MilterClient *client,
         GError *error;
 
         error = g_error_new(MILTER_CLIENT_ERROR,
-                            MILTER_CLIENT_ERROR_CHMOD,
+                            MILTER_CLIENT_ERROR_UNIX_SOCKET,
                             "failed to change the mode of UNIX socket: "
                             "%s(%o): %s",
                             address_un->sun_path, mode, g_strerror(errno));
@@ -584,6 +586,8 @@ milter_client_main (MilterClient *client)
     GError *error = NULL;
     GSource *watch_source;
     GThread *thread;
+    struct sockaddr *address = NULL;
+    socklen_t address_size = 0;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
@@ -614,19 +618,14 @@ milter_client_main (MilterClient *client)
         g_io_channel_ref(priv->listen_channel);
         priv->listening_channel = priv->listen_channel;
     } else {
-        struct sockaddr *address = NULL;
-        socklen_t address_size = 0;
-
         priv->listening_channel = milter_connection_listen(priv->connection_spec,
                                                            priv->listen_backlog,
                                                            &address,
                                                            &address_size,
                                                            &error);
-        if (address_size > 0) {
+        if (address_size > 0)
             g_signal_emit(client, signals[LISTEN_STARTED], 0,
                           address, address_size);
-            g_free(address);
-        }
     }
 
     if (!priv->listening_channel) {
@@ -654,6 +653,28 @@ milter_client_main (MilterClient *client)
     if (priv->listening_channel) {
         g_io_channel_unref(priv->listening_channel);
         priv->listening_channel = NULL;
+    }
+
+    if (address) {
+        if (address->sa_family == AF_UNIX &&
+            milter_client_is_remove_unix_socket_on_close(client)) {
+            struct sockaddr_un *address_un;
+
+            address_un = (struct sockaddr_un *)address;
+            if (g_unlink(address_un->sun_path) == -1) {
+                GError *error;
+
+                error = g_error_new(MILTER_CLIENT_ERROR,
+                                    MILTER_CLIENT_ERROR_UNIX_SOCKET,
+                                    "failed to remove used UNIX socket: %s: %s",
+                                    address_un->sun_path, g_strerror(errno));
+                milter_error("%s", error->message);
+                milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client),
+                                            error);
+                g_error_free(error);
+            }
+        }
+        g_free(address);
     }
 
     return TRUE;
@@ -717,6 +738,31 @@ void
 milter_client_set_default_unix_socket_mode (MilterClient *client, guint mode)
 {
     MILTER_CLIENT_GET_PRIVATE(client)->default_unix_socket_mode = mode;
+}
+
+gboolean
+milter_client_is_remove_unix_socket_on_close (MilterClient *client)
+{
+    MilterClientClass *klass;
+
+    klass = MILTER_CLIENT_GET_CLASS(client);
+    if (klass->is_remove_unix_socket_on_close)
+        return klass->is_remove_unix_socket_on_close(client);
+    else
+        return milter_client_get_default_remove_unix_socket_on_close(client);
+}
+
+gboolean
+milter_client_get_default_remove_unix_socket_on_close (MilterClient *client)
+{
+    return MILTER_CLIENT_GET_PRIVATE(client)->default_remove_unix_socket_on_close;
+}
+
+void
+milter_client_set_default_remove_unix_socket_on_close (MilterClient *client,
+                                                       gboolean remove)
+{
+    MILTER_CLIENT_GET_PRIVATE(client)->default_remove_unix_socket_on_close = remove;
 }
 
 /*

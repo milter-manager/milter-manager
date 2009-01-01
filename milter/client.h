@@ -142,7 +142,7 @@ G_BEGIN_DECLS
 typedef enum
 {
     MILTER_CLIENT_ERROR_RUNNING,
-    MILTER_CLIENT_ERROR_CHMOD
+    MILTER_CLIENT_ERROR_UNIX_SOCKET
 } MilterClientError;
 
 typedef struct _MilterClient         MilterClient;
@@ -170,6 +170,8 @@ struct _MilterClientClass
                                            socklen_t        address_size);
     gchar *(*get_default_connection_spec) (MilterClient *client);
     guint  (*get_unix_socket_mode)        (MilterClient *client);
+    gboolean (*is_remove_unix_socket_on_close)
+                                          (MilterClient *client);
 };
 
 GQuark               milter_client_error_quark       (void);
@@ -198,6 +200,13 @@ guint                milter_client_get_default_unix_socket_mode
 void                 milter_client_set_default_unix_socket_mode
                                                      (MilterClient  *client,
                                                       guint          mode);
+gboolean             milter_client_is_remove_unix_socket_on_close
+                                                     (MilterClient  *client);
+gboolean             milter_client_get_default_remove_unix_socket_on_close
+                                                     (MilterClient  *client);
+void                 milter_client_set_default_remove_unix_socket_on_close
+                                                     (MilterClient  *client,
+                                                      gboolean       remove);
 gboolean             milter_client_main              (MilterClient  *client);
 void                 milter_client_shutdown          (MilterClient  *client);
 

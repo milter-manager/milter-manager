@@ -37,6 +37,8 @@ void test_helo (void);
 void test_listen_started (void);
 void test_unix_socket_mode (void);
 void test_change_unix_socket_mode (void);
+void test_remove_unix_socket_on_close_accessor (void);
+void test_remove_unix_socket_on_close (void);
 
 static MilterClient *client;
 static MilterTestServer *server;
@@ -544,7 +546,6 @@ test_listen_started (void)
 void
 test_unix_socket_mode (void)
 {
-    return;
     cut_assert_equal_uint(0660,
                           milter_client_get_default_unix_socket_mode(client));
     cut_assert_equal_uint(0660,
@@ -566,6 +567,7 @@ test_change_unix_socket_mode (void)
     spec = cut_take_printf("unix:%s", path);
 
     milter_client_set_default_unix_socket_mode(client, 0666);
+    milter_client_set_default_remove_unix_socket_on_close(client, FALSE);
 
     cut_trace(setup_client());
     if (!milter_client_main(client))
@@ -575,6 +577,31 @@ test_change_unix_socket_mode (void)
         cut_assert_errno();
 
     cut_assert_equal_uint(S_IFSOCK | 0666, stat_buffer.st_mode);
+}
+
+void
+test_remove_unix_socket_on_close_accessor (void)
+{
+    cut_assert_true(milter_client_get_default_remove_unix_socket_on_close(client));
+    cut_assert_true(milter_client_is_remove_unix_socket_on_close(client));
+    milter_client_set_default_remove_unix_socket_on_close(client, FALSE);
+    cut_assert_false(milter_client_get_default_remove_unix_socket_on_close(client));
+    cut_assert_false(milter_client_is_remove_unix_socket_on_close(client));
+}
+
+void
+test_remove_unix_socket_on_close (void)
+{
+    const gchar *path;
+
+    path = cut_take_printf("%s/milter.sock", tmp_dir);
+    spec = cut_take_printf("unix:%s", path);
+
+    cut_trace(setup_client());
+    if (!milter_client_main(client))
+        cut_assert_errno();
+
+    cut_assert_false(g_file_test(path, G_FILE_TEST_EXISTS));
 }
 
 /*
