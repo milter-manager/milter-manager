@@ -1,5 +1,8 @@
 2009-01-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client.c (milter_client_main): guard this
+	case: listen -> client shutdown -> main loop run.
+
 	* milter/manager/milter-manager-configuration.[ch],
 	test/manager/test-configuration.c: split
 	remove_unix_socket_on_close() for manager and controller.
