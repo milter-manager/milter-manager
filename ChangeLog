@@ -1,5 +1,10 @@
 2009-01-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-connection.[ch], test/core/test-connection.c:
+	milter_connection_listen() returns socket address and size if needed.
+	* libmilter/libmilter-compatible.c, milter/client/milter-client.c,
+	milter/manager/milter-manager-main.c: follow the above change.
+
 	* milter/manager/milter-manager-configuration.c (get_property):
 	add missing break.
 

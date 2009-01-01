@@ -322,16 +322,19 @@ milter_connection_parse_spec (const gchar      *spec,
 }
 
 GIOChannel *
-milter_connection_listen (const gchar *spec, gint backlog, GError **error)
+milter_connection_listen (const gchar *spec, gint backlog,
+                          struct sockaddr **address, socklen_t *address_size,
+                          GError **error)
 {
     GIOChannel *socket_channel;
     gint fd;
     gboolean reuse_address = TRUE;
     gint domain;
-    struct sockaddr *address;
-    socklen_t address_size;
+    struct sockaddr *local_address;
+    socklen_t local_address_size;
 
-    if (!milter_connection_parse_spec(spec, &domain, &address, &address_size,
+    if (!milter_connection_parse_spec(spec, &domain,
+                                      &local_address, &local_address_size,
                                       error))
         return NULL;
 
@@ -340,9 +343,9 @@ milter_connection_listen (const gchar *spec, gint backlog, GError **error)
         g_set_error(error,
                     MILTER_CONNECTION_ERROR,
                     MILTER_CONNECTION_ERROR_SOCKET_FAILURE,
-                    "failed to socket(): %s",
-                    g_strerror(errno));
-        g_free(address);
+                    "failed to socket(): %s: %s",
+                    spec, g_strerror(errno));
+        g_free(local_address);
         return NULL;
     }
 
@@ -351,22 +354,22 @@ milter_connection_listen (const gchar *spec, gint backlog, GError **error)
         g_set_error(error,
                     MILTER_CONNECTION_ERROR,
                     MILTER_CONNECTION_ERROR_SET_SOCKET_OPTION_FAILURE,
-                    "failed to setsockopt(SO_REUSEADDR): %s",
-                    g_strerror(errno));
-        g_free(address);
-        return NULL;
-    }
-
-    if (bind(fd, address, address_size) == -1) {
-        g_set_error(error,
-                    MILTER_CONNECTION_ERROR,
-                    MILTER_CONNECTION_ERROR_BIND_FAILURE,
-                    "failed to bind() to %s: %s", spec, g_strerror(errno));
-        g_free(address);
+                    "failed to setsockopt(SO_REUSEADDR): %s: %s",
+                    spec, g_strerror(errno));
+        g_free(local_address);
         close(fd);
         return NULL;
     }
-    g_free(address);
+
+    if (bind(fd, local_address, local_address_size) == -1) {
+        g_set_error(error,
+                    MILTER_CONNECTION_ERROR,
+                    MILTER_CONNECTION_ERROR_BIND_FAILURE,
+                    "failed to bind(): %s: %s", spec, g_strerror(errno));
+        g_free(local_address);
+        close(fd);
+        return NULL;
+    }
 
     if (backlog <= 0)
         backlog = MILTER_CONNECTION_DEFAULT_BACKLOG;
@@ -375,13 +378,22 @@ milter_connection_listen (const gchar *spec, gint backlog, GError **error)
         g_set_error(error,
                     MILTER_CONNECTION_ERROR,
                     MILTER_CONNECTION_ERROR_LISTEN_FAILURE,
-                    "failed to listen() from %s: %s", spec, g_strerror(errno));
+                    "failed to listen(): %s: %s", spec, g_strerror(errno));
+        g_free(local_address);
         close(fd);
         return NULL;
     }
 
     socket_channel = g_io_channel_unix_new(fd);
     g_io_channel_set_close_on_unref(socket_channel, TRUE);
+
+    if (address)
+        *address = local_address;
+    else
+        g_free(local_address);
+
+    if (address_size)
+        *address_size = local_address_size;
 
     return socket_channel;
 }

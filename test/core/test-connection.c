@@ -26,6 +26,7 @@
 #include <arpa/inet.h>
 
 #include <milter/core/milter-connection.h>
+#include <milter-test-utils.h>
 
 #include <gcutter.h>
 
@@ -38,13 +39,16 @@ void data_parse_connection_spec_inet6 (void);
 void test_parse_connection_spec_inet6 (gconstpointer data);
 void data_address_to_spec (void);
 void test_address_to_spec (gconstpointer data);
-void test_bind_failure (void);
+void test_listen (void);
+void test_listen_failure (void);
 
 static struct sockaddr *actual_address;
 static socklen_t actual_address_size;
 
 static GError *expected_error;
 static GError *actual_error;
+
+static gchar *tmp_dir;
 
 void
 setup (void)
@@ -54,6 +58,13 @@ setup (void)
 
     expected_error = NULL;
     actual_error = NULL;
+
+    tmp_dir = g_build_filename(milter_test_get_base_dir(),
+                               "tmp",
+                               NULL);
+    cut_remove_path(tmp_dir, NULL);
+    if (g_mkdir_with_parents(tmp_dir, 0700) == -1)
+        cut_assert_errno();
 }
 
 void
@@ -66,6 +77,11 @@ teardown (void)
         g_error_free(expected_error);
     if (actual_error)
         g_error_free(actual_error);
+
+    if (tmp_dir) {
+        cut_remove_path(tmp_dir, NULL);
+        g_free(tmp_dir);
+    }
 }
 
 typedef struct _TestData
@@ -415,19 +431,48 @@ test_address_to_spec (gconstpointer data)
 }
 
 void
-test_bind_failure (void)
+test_listen (void)
+{
+    const gchar *socket_path;
+    const gchar *spec;
+    GError *error;
+    struct sockaddr_un *address_un = NULL;
+
+    socket_path = cut_take_printf("%s/milter.sock", tmp_dir);
+    spec = cut_take_printf("unix:%s", socket_path);
+    cut_assert_true(milter_connection_listen(spec, 5,
+                                             &actual_address,
+                                             &actual_address_size,
+                                             &error));
+    gcut_assert_error(error);
+
+    cut_assert_not_null(actual_address);
+
+    address_un = (struct sockaddr_un *)actual_address;
+    cut_assert_equal_uint(AF_UNIX, address_un->sun_family);
+    cut_assert_equal_string(socket_path, address_un->sun_path);
+    cut_assert_equal_int(sizeof(*address_un), actual_address_size);
+}
+
+void
+test_listen_failure (void)
 {
     const gchar spec[] = "unix:/nonexistent/milter.sock";
+    struct sockaddr *address = NULL;
+    socklen_t address_size = 0;
+
     expected_error = g_error_new(MILTER_CONNECTION_ERROR,
                                  MILTER_CONNECTION_ERROR_BIND_FAILURE,
-                                 "failed to bind() to %s: %s",
+                                 "failed to bind(): %s: %s",
                                  spec,
                                  g_strerror(ENOENT));
 
-    cut_assert_false(milter_connection_listen(spec, 5,
+    cut_assert_false(milter_connection_listen(spec, 5, &address, &address_size,
                                               &actual_error));
-
     gcut_assert_equal_error(expected_error, actual_error);
+
+    cut_assert_null(address);
+    cut_assert_equal_int(0, address_size);
 }
 
 /*

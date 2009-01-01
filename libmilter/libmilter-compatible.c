@@ -191,7 +191,8 @@ smfi_opensocket (bool remove_socket)
     if (!success)
         return MI_FAILURE;
 
-    channel = milter_connection_listen(connection_spec, listen_backlog, &error);
+    channel = milter_connection_listen(connection_spec, listen_backlog,
+                                       NULL, NULL, &error);
     if (error) {
         milter_error("%s", error->message);
         g_error_free(error);

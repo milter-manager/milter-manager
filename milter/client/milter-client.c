@@ -571,6 +571,8 @@ milter_client_main (MilterClient *client)
     } else {
         priv->listening_channel = milter_connection_listen(priv->connection_spec,
                                                            priv->listen_backlog,
+                                                           NULL,
+                                                           NULL,
                                                            &error);
     }
 

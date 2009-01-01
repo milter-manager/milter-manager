@@ -54,6 +54,8 @@ gboolean         milter_connection_parse_spec  (const gchar      *spec,
                                                 GError          **error);
 GIOChannel      *milter_connection_listen      (const gchar      *spec,
                                                 gint              backlog,
+                                                struct sockaddr **address,
+                                                socklen_t        *address_size,
                                                 GError          **error);
 gchar           *milter_connection_address_to_spec
                                                (const struct sockaddr *address);

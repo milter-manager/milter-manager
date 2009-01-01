@@ -284,9 +284,9 @@ setup_control_connection (MilterManager *manager)
         return 0;
     }
 
-    channel = milter_connection_listen(spec, -1, &error);
+    channel = milter_connection_listen(spec, -1, NULL, NULL, &error);
     if (!channel) {
-        milter_error("failed to listen control connection: <%s>:<%s>",
+        milter_error("failed to listen control connection: <%s>: <%s>",
                      spec, error->message);
         g_error_free(error);
         return 0;
