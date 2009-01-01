@@ -1,5 +1,10 @@
 2009-01-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-configuration.[ch],
+	test/manager/test-configuration.c: add
+	milter_manager_configuration_get_effective_group() and
+	milter_manager_configuration_set_effective_group().
+
 	* milter/manager/milter-manager-main.c (switch_user): improve
 	error handling.
 

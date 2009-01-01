@@ -48,6 +48,7 @@ struct _MilterManagerConfigurationPrivate
     gchar *manager_connection_spec;
     MilterStatus fallback_status;
     gchar *effective_user;
+    gchar *effective_group;
     guint unix_socket_mode;
     gboolean remove_manager_unix_socket_on_close;
     gboolean remove_controller_unix_socket_on_close;
@@ -61,6 +62,7 @@ enum
     PROP_MANAGER_CONNECTION_SPEC,
     PROP_FALLBACK_STATUS,
     PROP_EFFECTIVE_USER,
+    PROP_EFFECTIVE_GROUP,
     PROP_UNIX_SOCKET_MODE,
     PROP_REMOVE_MANAGER_UNIX_SOCKET_ON_CLOSE,
     PROP_REMOVE_CONTROLLER_UNIX_SOCKET_ON_CLOSE
@@ -144,6 +146,14 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
     g_object_class_install_property(gobject_class, PROP_EFFECTIVE_USER,
                                     spec);
 
+    spec = g_param_spec_string("effective-group",
+                               "Effective group name",
+                               "The effective group name of the milter-manager",
+                               NULL,
+                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+    g_object_class_install_property(gobject_class, PROP_EFFECTIVE_GROUP,
+                                    spec);
+
     spec = g_param_spec_uint("unix-socket-mode",
                              "UNIX socket mode",
                              "The UNIX socket mode",
@@ -200,6 +210,7 @@ milter_manager_configuration_init (MilterManagerConfiguration *configuration)
     priv->controller_connection_spec = NULL;
     priv->manager_connection_spec = NULL;
     priv->effective_user = NULL;
+    priv->effective_group = NULL;
     priv->unix_socket_mode = 0660;
     priv->remove_manager_unix_socket_on_close = TRUE;
     priv->remove_controller_unix_socket_on_close = TRUE;
@@ -259,6 +270,10 @@ set_property (GObject      *object,
         milter_manager_configuration_set_effective_user(
             config, g_value_get_string(value));
         break;
+      case PROP_EFFECTIVE_GROUP:
+        milter_manager_configuration_set_effective_group(
+            config, g_value_get_string(value));
+        break;
       case PROP_UNIX_SOCKET_MODE:
         milter_manager_configuration_set_unix_socket_mode(
             config, g_value_get_uint(value));
@@ -301,6 +316,9 @@ get_property (GObject    *object,
         break;
       case PROP_EFFECTIVE_USER:
         g_value_set_string(value, priv->effective_user);
+        break;
+      case PROP_EFFECTIVE_GROUP:
+        g_value_set_string(value, priv->effective_group);
         break;
       case PROP_UNIX_SOCKET_MODE:
         g_value_set_uint(value, priv->unix_socket_mode);
@@ -729,6 +747,24 @@ milter_manager_configuration_set_effective_user (MilterManagerConfiguration *con
     if (priv->effective_user)
         g_free(priv->effective_user);
     priv->effective_user = g_strdup(effective_user);
+}
+
+const gchar *
+milter_manager_configuration_get_effective_group (MilterManagerConfiguration *configuration)
+{
+    return MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration)->effective_group;
+}
+
+void
+milter_manager_configuration_set_effective_group (MilterManagerConfiguration *configuration,
+                                                  const gchar *effective_group)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    if (priv->effective_group)
+        g_free(priv->effective_group);
+    priv->effective_group = g_strdup(effective_group);
 }
 
 guint

@@ -29,6 +29,7 @@
 void test_children (void);
 void test_privilege_mode (void);
 void test_effective_user (void);
+void test_effective_group (void);
 void test_unix_socket_mode (void);
 void test_remove_manager_unix_socket_on_close (void);
 void test_remove_controller_unix_socket_on_close (void);
@@ -185,6 +186,15 @@ test_effective_user (void)
     milter_manager_configuration_set_effective_user(config, "nobody");
     cut_assert_equal_string("nobody",
                             milter_manager_configuration_get_effective_user(config));
+}
+
+void
+test_effective_group (void)
+{
+    cut_assert_null(milter_manager_configuration_get_effective_group(config));
+    milter_manager_configuration_set_effective_group(config, "nogroup");
+    cut_assert_equal_string("nogroup",
+                            milter_manager_configuration_get_effective_group(config));
 }
 
 void
