@@ -1,5 +1,7 @@
 2009-01-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/core/test-connection.c (test_listen): add missing NULL initialize.
+
 	* test/manager/test-launch-command-decoder.c: add missing <string.h>.
 
 	* milter/client/milter-client.c: improve quitting

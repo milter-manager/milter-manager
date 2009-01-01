@@ -435,7 +435,7 @@ test_listen (void)
 {
     const gchar *socket_path;
     const gchar *spec;
-    GError *error;
+    GError *error = NULL;
     struct sockaddr_un *address_un = NULL;
 
     socket_path = cut_take_printf("%s/milter.sock", tmp_dir);
