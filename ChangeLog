@@ -1,5 +1,13 @@
 2009-01-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO:
+	- add:
+	  - support controller's UNIX socket mode changing.
+	  - support controller's UNIX socket mode removing on close.
+	- remove:
+	  - support UNIX socket mode changing by configuration.
+	  - write unit test for libmilter.
+
 	* milter/manager/milter-manager-configuration.[ch]:
 	control_connection_spec -> controller_connection_spec.
 	* milter/manager/milter-manager-main.c,

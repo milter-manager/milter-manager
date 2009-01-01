@@ -1,7 +1,7 @@
 * add init script for FreeBSD and Ubuntu.
-* support UNIX socket mode changing by configuration.
+* support controller's UNIX socket mode changing.
+* support controller's UNIX socket mode removing on close.
 * use chroot
-* write unit test for libmilter.
 * add --disable-milter-manager configure option.
 * add --disable-ruby configure option.
 * tool/milter-test-server:
