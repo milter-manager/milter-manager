@@ -1,5 +1,11 @@
 2009-01-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-main.c: move change UNIX domain
+	socket mode feature to ...
+	* milter/client.h, milter/client/milter-client.c,
+	test/client/test-client.c: ... here.
+	* milter/manager/milter-manager.c: follow the above change.
+
 	* milter/manager/milter-manager-main.c,
 	test/manager/test-manager.c: support changing UNIX domain socket mode.
 

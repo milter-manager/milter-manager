@@ -19,22 +19,24 @@
 
 #include <errno.h>
 
-#include <gcutter.h>
-
-#define shutdown inet_shutdown
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <sys/un.h>
 #include <arpa/inet.h>
 #include <unistd.h>
 
+#include <glib/gstdio.h>
+
 #include <milter/client.h>
 #include <milter-test-utils.h>
-#undef shutdown
+
+#include <gcutter.h>
 
 void test_negotiate (void);
 void test_helo (void);
 void test_listen_started (void);
+void test_unix_socket_mode (void);
+void test_change_unix_socket_mode (void);
 
 static MilterClient *client;
 static MilterTestServer *server;
@@ -60,7 +62,7 @@ static guint idle_id;
 static guint idle_shutdown_id;
 static guint shutdown_count;
 
-static const gchar spec[] = "inet:9999@127.0.0.1";
+static const gchar *spec;
 
 static gchar *packet;
 
@@ -95,6 +97,8 @@ static GError *expected_error;
 
 static struct sockaddr *actual_address;
 static socklen_t actual_address_size;
+
+static gchar *tmp_dir;
 
 static void
 cb_negotiate (MilterClientContext *context, MilterOption *option,
@@ -275,6 +279,8 @@ setup_client_signals (void)
 void
 setup (void)
 {
+    spec = "inet:9999@127.0.0.1";
+
     client = milter_client_new();
     setup_client_signals();
     server = NULL;
@@ -333,6 +339,13 @@ setup (void)
 
     actual_address = NULL;
     actual_address_size = 0;
+
+    tmp_dir = g_build_filename(milter_test_get_base_dir(),
+                               "tmp",
+                               NULL);
+    cut_remove_path(tmp_dir, NULL);
+    if (g_mkdir_with_parents(tmp_dir, 0700) == -1)
+        cut_assert_errno();
 }
 
 void
@@ -395,6 +408,11 @@ teardown (void)
         g_error_free(actual_error);
     if (expected_error)
         g_error_free(expected_error);
+
+    if (tmp_dir) {
+        cut_remove_path(tmp_dir, NULL);
+        g_free(tmp_dir);
+    }
 }
 
 static gboolean
@@ -510,8 +528,6 @@ test_listen_started (void)
 {
     struct sockaddr_in *address_inet;
 
-    idle_id = g_idle_add(cb_idle_shutdown, NULL);
-
     cut_trace(setup_client());
     if (!milter_client_main(client))
         cut_assert_errno();
@@ -523,6 +539,42 @@ test_listen_started (void)
     cut_assert_equal_uint(9999, g_ntohs(address_inet->sin_port));
     cut_assert_equal_string("127.0.0.1", inet_ntoa(address_inet->sin_addr));
     cut_assert_equal_uint(sizeof(*address_inet), actual_address_size);
+}
+
+void
+test_unix_socket_mode (void)
+{
+    return;
+    cut_assert_equal_uint(0660,
+                          milter_client_get_default_unix_socket_mode(client));
+    cut_assert_equal_uint(0660,
+                          milter_client_get_unix_socket_mode(client));
+    milter_client_set_default_unix_socket_mode(client, 0600);
+    cut_assert_equal_uint(0600,
+                          milter_client_get_default_unix_socket_mode(client));
+    cut_assert_equal_uint(0600,
+                          milter_client_get_unix_socket_mode(client));
+}
+
+void
+test_change_unix_socket_mode (void)
+{
+    const gchar *path;
+    struct stat stat_buffer;
+
+    path = cut_take_printf("%s/milter.sock", tmp_dir);
+    spec = cut_take_printf("unix:%s", path);
+
+    milter_client_set_default_unix_socket_mode(client, 0666);
+
+    cut_trace(setup_client());
+    if (!milter_client_main(client))
+        cut_assert_errno();
+
+    if (stat(path, &stat_buffer) == -1)
+        cut_assert_errno();
+
+    cut_assert_equal_uint(S_IFSOCK | 0666, stat_buffer.st_mode);
 }
 
 /*

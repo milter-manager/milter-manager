@@ -31,6 +31,8 @@
 #include <sys/un.h>
 #include <netinet/in.h>
 
+#include <glib/gstdio.h>
+
 #include <milter/core/milter-marshalers.h>
 #include "../client.h"
 
@@ -73,6 +75,7 @@ struct _MilterClientPrivate
     gint listen_backlog;
     GMutex *quit_mutex;
     gboolean quitting;
+    guint default_unix_socket_mode;
 };
 
 typedef struct _MilterClientProcessData
@@ -96,6 +99,10 @@ static void get_property   (GObject         *object,
 
 static gchar *get_default_connection_spec
                            (MilterClient    *client);
+static void   listen_started
+                           (MilterClient    *client,
+                            struct sockaddr *address,
+                            socklen_t        address_size);
 static void   cb_finished  (MilterClientContext *context,
                             gpointer _data);
 
@@ -113,6 +120,7 @@ milter_client_class_init (MilterClientClass *klass)
     gobject_class->get_property = get_property;
 
     client_class->get_default_connection_spec = get_default_connection_spec;
+    client_class->listen_started = listen_started;
 
     signals[CONNECTION_ESTABLISHED] =
         g_signal_new("connection-established",
@@ -160,6 +168,7 @@ milter_client_init (MilterClient *client)
     priv->listen_backlog = -1;
     priv->quit_mutex = g_mutex_new();
     priv->quitting = FALSE;
+    priv->default_unix_socket_mode = 0660;
 }
 
 static void
@@ -266,6 +275,32 @@ milter_client_new (void)
 {
     return g_object_new(MILTER_TYPE_CLIENT,
                         NULL);
+}
+
+static void
+listen_started (MilterClient *client,
+                struct sockaddr *address, socklen_t address_size)
+{
+    struct sockaddr_un *address_un;
+    guint mode;
+
+    if (address->sa_family != AF_UNIX)
+        return;
+
+    address_un = (struct sockaddr_un *)address;
+    mode = milter_client_get_unix_socket_mode(client);
+    if (g_chmod(address_un->sun_path, mode) == -1) {
+        GError *error;
+
+        error = g_error_new(MILTER_CLIENT_ERROR,
+                            MILTER_CLIENT_ERROR_CHMOD,
+                            "failed to change the mode of UNIX socket: "
+                            "%s(%o): %s",
+                            address_un->sun_path, mode, g_strerror(errno));
+        milter_error("%s", error->message);
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client), error);
+        g_error_free(error);
+    }
 }
 
 static gchar *
@@ -658,6 +693,30 @@ void
 milter_client_set_timeout (MilterClient *client, guint timeout)
 {
     MILTER_CLIENT_GET_PRIVATE(client)->timeout = timeout;
+}
+
+guint
+milter_client_get_unix_socket_mode (MilterClient *client)
+{
+    MilterClientClass *klass;
+
+    klass = MILTER_CLIENT_GET_CLASS(client);
+    if (klass->get_unix_socket_mode)
+        return klass->get_unix_socket_mode(client);
+    else
+        return milter_client_get_default_unix_socket_mode(client);
+}
+
+guint
+milter_client_get_default_unix_socket_mode (MilterClient *client)
+{
+    return MILTER_CLIENT_GET_PRIVATE(client)->default_unix_socket_mode;
+}
+
+void
+milter_client_set_default_unix_socket_mode (MilterClient *client, guint mode)
+{
+    MILTER_CLIENT_GET_PRIVATE(client)->default_unix_socket_mode = mode;
 }
 
 /*

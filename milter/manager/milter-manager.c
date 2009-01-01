@@ -68,7 +68,8 @@ static void get_property   (GObject         *object,
 static void   connection_established      (MilterClient *client,
                                            MilterClientContext *context);
 static gchar *get_default_connection_spec (MilterClient *client);
-static void    cb_finished                (MilterFinishedEmittable *emittable,
+static guint  get_unix_socket_mode        (MilterClient *client);
+static void   cb_finished                 (MilterFinishedEmittable *emittable,
                                            gpointer user_data);
 
 static void
@@ -87,6 +88,7 @@ milter_manager_class_init (MilterManagerClass *klass)
 
     client_class->connection_established      = connection_established;
     client_class->get_default_connection_spec = get_default_connection_spec;
+    client_class->get_unix_socket_mode        = get_unix_socket_mode;
 
     spec = g_param_spec_object("configuration",
                                "Configuration",
@@ -431,6 +433,19 @@ get_default_connection_spec (MilterClient *client)
         klass = MILTER_CLIENT_CLASS(milter_manager_parent_class);
         return klass->get_default_connection_spec(MILTER_CLIENT(manager));
     }
+}
+
+static guint
+get_unix_socket_mode (MilterClient *client)
+{
+    MilterManager *manager;
+    MilterManagerPrivate *priv;
+    MilterManagerConfiguration *configuration;
+
+    manager = MILTER_MANAGER(client);
+    priv = MILTER_MANAGER_GET_PRIVATE(manager);
+    configuration = priv->configuration;
+    return milter_manager_configuration_get_unix_socket_mode(configuration);
 }
 
 MilterManagerConfiguration *
