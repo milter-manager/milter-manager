@@ -42,6 +42,7 @@ void test_version (void);
 void test_invalid_spec (void);
 void test_check_controller_port (void);
 void test_unix_socket_mode (void);
+void test_remove_manager_unix_socket_on_close (void);
 
 void data_scenario (void);
 void test_scenario (gconstpointer data);
@@ -453,7 +454,11 @@ test_scenario (gconstpointer data)
 void
 test_check_controller_port (void)
 {
-    cut_trace(test_scenario("normal.txt"));
+    GError *error = NULL;
+
+    setup_egg(manager_data, "--config-dir", scenario_dir, NULL);
+    gcut_egg_hatch(manager_egg, &error);
+    gcut_assert_error(error);
     cut_trace(wait_for_manager_ready("inet:2929@localhost"));
 }
 
@@ -477,6 +482,29 @@ test_unix_socket_mode (void)
         cut_assert_errno();
 
     cut_assert_equal_uint(S_IFSOCK | 0660, stat_buffer.st_mode);
+}
+
+void
+test_remove_manager_unix_socket_on_close (void)
+{
+    GError *error = NULL;
+    const gchar *path;
+    const gchar *spec;
+
+    path = cut_take_printf("%s/milter.sock", tmp_dir);
+    cut_assert_false(g_file_test(path, G_FILE_TEST_EXISTS));
+
+    spec = cut_take_printf("unix:%s", path);
+    setup_egg(manager_data, "-s", spec, NULL);
+    gcut_egg_hatch(manager_egg, &error);
+    gcut_assert_error(error);
+
+    cut_trace(wait_for_manager_ready(spec));
+    cut_assert_true(g_file_test(path, G_FILE_TEST_EXISTS));
+
+    gcut_egg_kill(manager_egg, SIGINT);
+    cut_trace(wait_for_reaping(manager_data, TRUE));
+    cut_assert_false(g_file_test(path, G_FILE_TEST_EXISTS));
 }
 
 /*

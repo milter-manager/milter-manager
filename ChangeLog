@@ -1,5 +1,8 @@
 2009-01-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager.c, test/manager/test-manager.c:
+	milter-manager supports removing UNIX socket path on close.
+
 	* milter/client/milter-client.c (milter_client_main): guard this
 	case: listen -> client shutdown -> main loop run.
 

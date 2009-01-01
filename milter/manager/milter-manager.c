@@ -69,6 +69,7 @@ static void   connection_established      (MilterClient *client,
                                            MilterClientContext *context);
 static gchar *get_default_connection_spec (MilterClient *client);
 static guint  get_unix_socket_mode        (MilterClient *client);
+static gboolean is_remove_unix_socket_on_close (MilterClient *client);
 static void   cb_finished                 (MilterFinishedEmittable *emittable,
                                            gpointer user_data);
 
@@ -89,6 +90,7 @@ milter_manager_class_init (MilterManagerClass *klass)
     client_class->connection_established      = connection_established;
     client_class->get_default_connection_spec = get_default_connection_spec;
     client_class->get_unix_socket_mode        = get_unix_socket_mode;
+    client_class->is_remove_unix_socket_on_close = is_remove_unix_socket_on_close;
 
     spec = g_param_spec_object("configuration",
                                "Configuration",
@@ -446,6 +448,19 @@ get_unix_socket_mode (MilterClient *client)
     priv = MILTER_MANAGER_GET_PRIVATE(manager);
     configuration = priv->configuration;
     return milter_manager_configuration_get_unix_socket_mode(configuration);
+}
+
+static gboolean
+is_remove_unix_socket_on_close (MilterClient *client)
+{
+    MilterManager *manager;
+    MilterManagerPrivate *priv;
+    MilterManagerConfiguration *configuration;
+
+    manager = MILTER_MANAGER(client);
+    priv = MILTER_MANAGER_GET_PRIVATE(manager);
+    configuration = priv->configuration;
+    return milter_manager_configuration_is_remove_manager_unix_socket_on_close(configuration);
 }
 
 MilterManagerConfiguration *
