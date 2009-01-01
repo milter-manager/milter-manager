@@ -1,5 +1,8 @@
 2009-01-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-main.c,
+	test/manager/test-manager.c: support changing UNIX domain socket mode.
+
 	* milter/client.h, milter/client/milter-client.c,
 	test/client/test-client.c: add listen-started signal.
 

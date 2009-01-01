@@ -21,15 +21,18 @@
 #  include "../../config.h"
 #endif /* HAVE_CONFIG_H */
 
-#include <locale.h>
-#include <glib/gi18n.h>
-
 #include <stdlib.h>
 #include <signal.h>
 #include <errno.h>
 #include <sys/types.h>
+#include <sys/un.h>
 #include <pwd.h>
 #include <unistd.h>
+
+#include <locale.h>
+#include <glib/gi18n.h>
+
+#include <glib/gstdio.h>
 
 #include "../manager.h"
 #include "milter-manager-process-launcher.h"
@@ -137,11 +140,6 @@ shutdown_client (int signum)
     if (the_manager)
         milter_client_shutdown(MILTER_CLIENT(the_manager));
 
-    if (launcher_pid > 0) {
-        kill(launcher_pid, SIGKILL);
-        launcher_pid = -1;
-    }
-
     switch (signum) {
     case SIGINT:
         signal(SIGINT, default_sigint_handler);
@@ -171,7 +169,35 @@ reload_configuration (int signum)
 }
 
 static void
-cb_error (MilterAgent *agent, GError *error, gpointer user_data)
+cb_listen_started (MilterClient *client,
+                   struct sockaddr *address, socklen_t address_size,
+                   gpointer user_data)
+{
+    MilterManager *manager;
+    MilterManagerConfiguration *config;
+    gint mode;
+    struct sockaddr_un *address_un;
+
+    manager = MILTER_MANAGER(client);
+    if (!manager)
+        return;
+
+    config = milter_manager_get_configuration(manager);
+    if (!config)
+        return;
+
+    if (address->sa_family != AF_UNIX)
+        return;
+
+    address_un = (struct sockaddr_un *)address;
+    mode = milter_manager_configuration_get_unix_socket_mode(config);
+    if (g_chmod(address_un->sun_path, mode) == -1)
+        g_print("failed to change the mode of UNIX socket: %s: %s\n",
+                address_un->sun_path, g_strerror(errno));
+}
+
+static void
+cb_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
 {
     g_print("MilterManager error: %s\n", error->message);
 }
@@ -464,8 +490,11 @@ milter_manager_main (void)
     /* FIXME */
     control_connection_watch_id = setup_control_connection(manager);
 
+    g_signal_connect(client, "listen-started",
+                     G_CALLBACK(cb_listen_started), NULL);
     g_signal_connect(client, "error",
                      G_CALLBACK(cb_error), NULL);
+
 
     if (!milter_client_set_connection_spec(client, option_spec, &error)) {
         g_object_unref(manager);
@@ -507,10 +536,15 @@ milter_manager_main (void)
     signal(SIGTERM, default_sigterm_handler);
     signal(SIGINT, default_sigint_handler);
 
-    the_manager = NULL;
-    g_object_unref(manager);
-    if (launcher_pid > 0)
+    if (the_manager) {
+        g_object_unref(the_manager);
+        the_manager = NULL;
+    }
+
+    if (launcher_pid > 0) {
         kill(launcher_pid, SIGKILL);
+        launcher_pid = -1;
+    }
 }
 
 /*

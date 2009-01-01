@@ -29,6 +29,8 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
+#include <sys/stat.h>
+
 #include <signal.h>
 
 #include <gcutter.h>
@@ -39,12 +41,15 @@
 void test_version (void);
 void test_invalid_spec (void);
 void test_check_controller_port (void);
+void test_unix_socket_mode (void);
 
 void data_scenario (void);
 void test_scenario (gconstpointer data);
 
 static gchar *scenario_dir;
 static MilterManagerTestScenario *main_scenario;
+
+static gchar *tmp_dir;
 
 typedef struct _EggData
 {
@@ -159,6 +164,13 @@ setup (void)
 
     manager_data = egg_data_new(build_manager_path);
     server_data = egg_data_new(build_server_path);
+
+    tmp_dir = g_build_filename(milter_test_get_base_dir(),
+                               "tmp",
+                               NULL);
+    cut_remove_path(tmp_dir, NULL);
+    if (g_mkdir_with_parents(tmp_dir, 0700) == -1)
+        cut_assert_errno();
 }
 
 void
@@ -173,6 +185,11 @@ teardown (void)
         egg_data_free(manager_data);
     if (server_data)
         egg_data_free(server_data);
+
+    if (tmp_dir) {
+        cut_remove_path(tmp_dir, NULL);
+        g_free(tmp_dir);
+    }
 }
 
 static void
@@ -438,6 +455,28 @@ test_check_controller_port (void)
 {
     cut_trace(test_scenario("normal.txt"));
     cut_trace(wait_for_manager_ready("inet:2929@localhost"));
+}
+
+void
+test_unix_socket_mode (void)
+{
+    GError *error = NULL;
+    const gchar *path;
+    const gchar *spec;
+    struct stat stat_buffer;
+
+    path = cut_take_printf("%s/milter.sock", tmp_dir);
+    spec = cut_take_printf("unix:%s", path);
+    setup_egg(manager_data, "-s", spec, NULL);
+    gcut_egg_hatch(manager_egg, &error);
+    gcut_assert_error(error);
+
+    cut_trace(wait_for_manager_ready(spec));
+
+    if (stat(path, &stat_buffer) == -1)
+        cut_assert_errno();
+
+    cut_assert_equal_uint(S_IFSOCK | 0660, stat_buffer.st_mode);
 }
 
 /*
