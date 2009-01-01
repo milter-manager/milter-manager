@@ -10,7 +10,7 @@ $LOAD_PATH.unshift(test_unit_dir.to_s)
 require 'test/unit'
 
 if ENV["NO_MAKE"] != "make" and system("which make > /dev/null")
-  system("cd #{top.to_s.dump} && make > /dev/null") or exit(1)
+  system("make -C #{top.to_s.dump} > /dev/null") or exit(1)
 end
 
 $LOAD_PATH.unshift((top + "src" + "toolkit" + ".libs").to_s)

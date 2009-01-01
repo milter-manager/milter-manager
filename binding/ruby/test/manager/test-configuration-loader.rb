@@ -4,6 +4,30 @@ class TestConfigurationLoader < Test::Unit::TestCase
     @loader = Milter::Manager::ConfigurationLoader.new(@configuration)
   end
 
+  def test_security
+    assert_false(@configuration.privilege_mode?)
+    @loader.security.privilege_mode = true
+    assert_true(@configuration.privilege_mode?)
+  end
+
+  def test_security_privilege_mode
+    assert_false(@configuration.privilege_mode?)
+    @loader.security.privilege_mode = true
+    assert_true(@configuration.privilege_mode?)
+  end
+
+  def test_security_effective_user
+    assert_nil(@configuration.effective_user)
+    @loader.security.effective_user = "nobody"
+    assert_equal("nobody", @configuration.effective_user)
+  end
+
+  def test_security_unix_socket_mode
+    assert_equal(0660, @configuration.unix_socket_mode)
+    @loader.security.unix_socket_mode = 0600
+    assert_equal(0600, @configuration.unix_socket_mode)
+  end
+
   def test_to_xml
     assert_equal(<<-EOX, @configuration.to_xml)
 <configuration>

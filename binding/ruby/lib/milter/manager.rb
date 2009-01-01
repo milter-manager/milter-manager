@@ -344,8 +344,20 @@ module Milter::Manager
         @configuration.privilege_mode = mode
       end
 
+      def effective_user
+        @configuration.effective_user
+      end
+
       def effective_user=(user_name)
         @configuration.effective_user = user_name
+      end
+
+      def unix_socket_mode
+        @configuration.unix_socket_mode
+      end
+
+      def unix_socket_mode=(mode)
+        @configuration.unix_socket_mode = mode
       end
     end
 

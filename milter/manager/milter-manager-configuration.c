@@ -148,7 +148,7 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
                              G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
     g_object_class_install_property(gobject_class, PROP_UNIX_SOCKET_MODE,
                                     spec);
- 
+
     signals[TO_XML] =
         g_signal_new("to-xml",
                      G_TYPE_FROM_CLASS(klass),
@@ -269,6 +269,7 @@ get_property (GObject    *object,
         break;
       case PROP_UNIX_SOCKET_MODE:
         g_value_set_uint(value, priv->unix_socket_mode);
+        break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
