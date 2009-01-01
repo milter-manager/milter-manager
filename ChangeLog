@@ -1,5 +1,8 @@
 2009-01-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-main.c (switch_user): improve
+	error handling.
+
 	* TODO:
 	- add:
 	  - support controller's UNIX socket mode changing.
