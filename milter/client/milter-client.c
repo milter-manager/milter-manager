@@ -31,6 +31,7 @@
 #include <sys/un.h>
 #include <netinet/in.h>
 
+#include <milter/core/milter-marshalers.h>
 #include "../client.h"
 
 typedef struct _GenericSocketAddress
@@ -46,6 +47,7 @@ typedef struct _GenericSocketAddress
 enum
 {
     CONNECTION_ESTABLISHED,
+    LISTEN_STARTED,
     LAST_SIGNAL
 };
 
@@ -120,6 +122,15 @@ milter_client_class_init (MilterClientClass *klass)
                      NULL, NULL,
                      g_cclosure_marshal_VOID__OBJECT,
                      G_TYPE_NONE, 1, MILTER_TYPE_CLIENT_CONTEXT);
+
+    signals[LISTEN_STARTED] =
+        g_signal_new("listen-started",
+                     MILTER_TYPE_CLIENT,
+                     G_SIGNAL_RUN_LAST,
+                     G_STRUCT_OFFSET(MilterClientClass, listen_started),
+                     NULL, NULL,
+                     _milter_marshal_VOID__POINTER_UINT,
+                     G_TYPE_NONE, 2, G_TYPE_POINTER, G_TYPE_UINT);
 
     g_type_class_add_private(gobject_class, sizeof(MilterClientPrivate));
 }
@@ -568,11 +579,19 @@ milter_client_main (MilterClient *client)
         g_io_channel_ref(priv->listen_channel);
         priv->listening_channel = priv->listen_channel;
     } else {
+        struct sockaddr *address = NULL;
+        socklen_t address_size = 0;
+
         priv->listening_channel = milter_connection_listen(priv->connection_spec,
                                                            priv->listen_backlog,
-                                                           NULL,
-                                                           NULL,
+                                                           &address,
+                                                           &address_size,
                                                            &error);
+        if (address_size > 0) {
+            g_signal_emit(client, signals[LISTEN_STARTED], 0,
+                          address, address_size);
+            g_free(address);
+        }
     }
 
     if (!priv->listening_channel) {

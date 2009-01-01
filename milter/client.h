@@ -164,6 +164,9 @@ struct _MilterClientClass
 
     void   (*connection_established)      (MilterClient *client,
                                            MilterClientContext *context);
+    void   (*listen_started)              (MilterClient *client,
+                                           struct sockaddr *address,
+                                           socklen_t        address_size);
     gchar *(*get_default_connection_spec) (MilterClient *client);
 };
 

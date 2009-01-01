@@ -1,5 +1,8 @@
 2009-01-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client.h, milter/client/milter-client.c,
+	test/client/test-client.c: add listen-started signal.
+
 	* test/core/test-connection.c (test_listen): add missing NULL initialize.
 
 	* test/manager/test-launch-command-decoder.c: add missing <string.h>.

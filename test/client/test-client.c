@@ -34,6 +34,7 @@
 
 void test_negotiate (void);
 void test_helo (void);
+void test_listen_started (void);
 
 static MilterClient *client;
 static MilterTestServer *server;
@@ -91,6 +92,9 @@ static gsize unknown_command_length;
 
 static GError *actual_error;
 static GError *expected_error;
+
+static struct sockaddr *actual_address;
+static socklen_t actual_address_size;
 
 static void
 cb_negotiate (MilterClientContext *context, MilterOption *option,
@@ -238,6 +242,17 @@ cb_connection_established (MilterClient *client, MilterClientContext *context,
 }
 
 static void
+cb_listen_started (MilterClient *client,
+                   struct sockaddr *address, socklen_t address_size,
+                   gpointer user_data)
+{
+    if (actual_address)
+        g_free(actual_address);
+    actual_address = g_memdup(address, address_size);
+    actual_address_size = address_size;
+}
+
+static void
 cb_error (MilterErrorEmittable *emittable, GError *error,
           gpointer user_data)
 {
@@ -251,6 +266,7 @@ setup_client_signals (void)
     g_signal_connect(client, #name, G_CALLBACK(cb_ ## name), NULL)
 
     CONNECT(connection_established);
+    CONNECT(listen_started);
     CONNECT(error);
 
 #undef CONNECT
@@ -314,6 +330,9 @@ setup (void)
 
     actual_error = NULL;
     expected_error = NULL;
+
+    actual_address = NULL;
+    actual_address_size = 0;
 }
 
 void
@@ -484,6 +503,26 @@ test_helo (void)
         cut_assert_errno();
 
     cut_assert_equal_string(fqdn, helo_fqdn);
+}
+
+void
+test_listen_started (void)
+{
+    struct sockaddr_in *address_inet;
+
+    idle_id = g_idle_add(cb_idle_shutdown, NULL);
+
+    cut_trace(setup_client());
+    if (!milter_client_main(client))
+        cut_assert_errno();
+
+    cut_assert_not_null(actual_address);
+
+    address_inet = (struct sockaddr_in *)actual_address;
+    cut_assert_equal_uint(AF_INET, address_inet->sin_family);
+    cut_assert_equal_uint(9999, g_ntohs(address_inet->sin_port));
+    cut_assert_equal_string("127.0.0.1", inet_ntoa(address_inet->sin_addr));
+    cut_assert_equal_uint(sizeof(*address_inet), actual_address_size);
 }
 
 /*
