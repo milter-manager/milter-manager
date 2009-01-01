@@ -27,6 +27,7 @@
 #include <sys/types.h>
 #include <sys/un.h>
 #include <pwd.h>
+#include <grp.h>
 #include <unistd.h>
 
 #include <locale.h>
@@ -452,6 +453,42 @@ switch_user (MilterManager *manager)
     return TRUE;
 }
 
+static gboolean
+switch_group (MilterManager *manager)
+{
+    MilterManagerConfiguration *configuration;
+    const gchar *effective_group;
+    struct group *group;
+
+    configuration = milter_manager_get_configuration(manager);
+
+    effective_group = milter_manager_configuration_get_effective_group(configuration);
+    if (!effective_group)
+        return TRUE;
+
+    errno = 0;
+    group = getgrnam(effective_group);
+    if (!group) {
+        if (errno == 0) {
+            g_print("failed to find group entry for effective group: %s\n",
+                    effective_group);
+        } else {
+            g_print("failed to get group entry for effective group: %s: %s\n",
+                    effective_group, g_strerror(errno));
+        }
+        return FALSE;
+    }
+
+
+    if (setgid(group->gr_gid) == -1) {
+        g_print("failed to change effective group: %s: %s\n",
+                effective_group, g_strerror(errno));
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
 void
 milter_manager_main (void)
 {
@@ -500,7 +537,8 @@ milter_manager_main (void)
         }
     }
 
-    if (geteuid() == 0 && !switch_user(manager)) {
+    if (geteuid() == 0 &&
+        (!switch_group(manager) || !switch_user(manager))) {
         g_object_unref(manager);
         if (launcher_pid > 0)
             kill(launcher_pid, SIGKILL);
