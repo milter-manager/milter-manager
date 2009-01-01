@@ -49,7 +49,8 @@ struct _MilterManagerConfigurationPrivate
     MilterStatus fallback_status;
     gchar *effective_user;
     gchar *effective_group;
-    guint unix_socket_mode;
+    guint manager_unix_socket_mode;
+    guint controller_unix_socket_mode;
     gboolean remove_manager_unix_socket_on_close;
     gboolean remove_controller_unix_socket_on_close;
 };
@@ -63,7 +64,8 @@ enum
     PROP_FALLBACK_STATUS,
     PROP_EFFECTIVE_USER,
     PROP_EFFECTIVE_GROUP,
-    PROP_UNIX_SOCKET_MODE,
+    PROP_MANAGER_UNIX_SOCKET_MODE,
+    PROP_CONTROLLER_UNIX_SOCKET_MODE,
     PROP_REMOVE_MANAGER_UNIX_SOCKET_ON_CLOSE,
     PROP_REMOVE_CONTROLLER_UNIX_SOCKET_ON_CLOSE
 };
@@ -154,19 +156,31 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
     g_object_class_install_property(gobject_class, PROP_EFFECTIVE_GROUP,
                                     spec);
 
-    spec = g_param_spec_uint("unix-socket-mode",
-                             "UNIX socket mode",
-                             "The UNIX socket mode",
+    spec = g_param_spec_uint("manager-unix-socket-mode",
+                             "milter-manager's UNIX socket mode",
+                             "The milter-manager's UNIX socket mode",
                              0000,
                              0777,
                              0660,
                              G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
-    g_object_class_install_property(gobject_class, PROP_UNIX_SOCKET_MODE,
+    g_object_class_install_property(gobject_class,
+                                    PROP_MANAGER_UNIX_SOCKET_MODE,
+                                    spec);
+
+    spec = g_param_spec_uint("controller-unix-socket-mode",
+                             "milter-manager controller's UNIX socket mode",
+                             "The milter-manager controller's UNIX socket mode",
+                             0000,
+                             0777,
+                             0660,
+                             G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+    g_object_class_install_property(gobject_class,
+                                    PROP_CONTROLLER_UNIX_SOCKET_MODE,
                                     spec);
 
     spec = g_param_spec_boolean("remove-manager-unix-socket-on-close",
                                 "Remove unix socket for manager on close",
-                                "Whether MilterManager removes "
+                                "Whether milter-manager removes "
                                 "UNIX socket used for manager on close",
                                 TRUE,
                                 G_PARAM_READWRITE);
@@ -176,7 +190,7 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
 
     spec = g_param_spec_boolean("remove-controller-unix-socket-on-close",
                                 "Remove unix socket for controller on close",
-                                "Whether MilterManager removes "
+                                "Whether milter-manager removes "
                                 "UNIX socket used for controller on close",
                                 TRUE,
                                 G_PARAM_READWRITE);
@@ -211,7 +225,8 @@ milter_manager_configuration_init (MilterManagerConfiguration *configuration)
     priv->manager_connection_spec = NULL;
     priv->effective_user = NULL;
     priv->effective_group = NULL;
-    priv->unix_socket_mode = 0660;
+    priv->manager_unix_socket_mode = 0660;
+    priv->controller_unix_socket_mode = 0660;
     priv->remove_manager_unix_socket_on_close = TRUE;
     priv->remove_controller_unix_socket_on_close = TRUE;
 
@@ -274,8 +289,12 @@ set_property (GObject      *object,
         milter_manager_configuration_set_effective_group(
             config, g_value_get_string(value));
         break;
-      case PROP_UNIX_SOCKET_MODE:
-        milter_manager_configuration_set_unix_socket_mode(
+      case PROP_MANAGER_UNIX_SOCKET_MODE:
+        milter_manager_configuration_set_manager_unix_socket_mode(
+            config, g_value_get_uint(value));
+        break;
+      case PROP_CONTROLLER_UNIX_SOCKET_MODE:
+        milter_manager_configuration_set_controller_unix_socket_mode(
             config, g_value_get_uint(value));
         break;
       case PROP_REMOVE_MANAGER_UNIX_SOCKET_ON_CLOSE:
@@ -320,8 +339,11 @@ get_property (GObject    *object,
       case PROP_EFFECTIVE_GROUP:
         g_value_set_string(value, priv->effective_group);
         break;
-      case PROP_UNIX_SOCKET_MODE:
-        g_value_set_uint(value, priv->unix_socket_mode);
+      case PROP_MANAGER_UNIX_SOCKET_MODE:
+        g_value_set_uint(value, priv->manager_unix_socket_mode);
+        break;
+      case PROP_CONTROLLER_UNIX_SOCKET_MODE:
+        g_value_set_uint(value, priv->controller_unix_socket_mode);
         break;
       case PROP_REMOVE_MANAGER_UNIX_SOCKET_ON_CLOSE:
         g_value_set_boolean(value, priv->remove_manager_unix_socket_on_close);
@@ -768,22 +790,41 @@ milter_manager_configuration_set_effective_group (MilterManagerConfiguration *co
 }
 
 guint
-milter_manager_configuration_get_unix_socket_mode (MilterManagerConfiguration *configuration)
+milter_manager_configuration_get_manager_unix_socket_mode (MilterManagerConfiguration *configuration)
 {
     MilterManagerConfigurationPrivate *priv;
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
-    return priv->unix_socket_mode;
+    return priv->manager_unix_socket_mode;
 }
 
 void
-milter_manager_configuration_set_unix_socket_mode (MilterManagerConfiguration *configuration,
-                                                   guint mode)
+milter_manager_configuration_set_manager_unix_socket_mode (MilterManagerConfiguration *configuration,
+                                                           guint mode)
 {
     MilterManagerConfigurationPrivate *priv;
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
-    priv->unix_socket_mode = mode;
+    priv->manager_unix_socket_mode = mode;
+}
+
+guint
+milter_manager_configuration_get_controller_unix_socket_mode (MilterManagerConfiguration *configuration)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    return priv->controller_unix_socket_mode;
+}
+
+void
+milter_manager_configuration_set_controller_unix_socket_mode (MilterManagerConfiguration *configuration,
+                                                              guint mode)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    priv->controller_unix_socket_mode = mode;
 }
 
 gboolean

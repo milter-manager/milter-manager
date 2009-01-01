@@ -28,16 +28,22 @@ class TestConfigurationLoader < Test::Unit::TestCase
     assert_equal("nogroup", @configuration.effective_group)
   end
 
-  def test_security_unix_socket_mode
-    assert_equal(0660, @configuration.unix_socket_mode)
-    @loader.security.unix_socket_mode = 0600
-    assert_equal(0600, @configuration.unix_socket_mode)
+  def test_manager_unix_socket_mode
+    assert_equal(0660, @configuration.manager_unix_socket_mode)
+    @loader.manager.unix_socket_mode = 0600
+    assert_equal(0600, @configuration.manager_unix_socket_mode)
   end
 
   def test_manager_remove_unix_socket_on_close
     assert_true(@configuration.remove_manager_unix_socket_on_close?)
     @loader.manager.remove_unix_socket_on_close = false
     assert_false(@configuration.remove_manager_unix_socket_on_close?)
+  end
+
+  def test_controller_unix_socket_mode
+    assert_equal(0660, @configuration.controller_unix_socket_mode)
+    @loader.controller.unix_socket_mode = 0600
+    assert_equal(0600, @configuration.controller_unix_socket_mode)
   end
 
   def test_controller_remove_unix_socket_on_close

@@ -447,7 +447,7 @@ get_unix_socket_mode (MilterClient *client)
     manager = MILTER_MANAGER(client);
     priv = MILTER_MANAGER_GET_PRIVATE(manager);
     configuration = priv->configuration;
-    return milter_manager_configuration_get_unix_socket_mode(configuration);
+    return milter_manager_configuration_get_manager_unix_socket_mode(configuration);
 }
 
 static gboolean

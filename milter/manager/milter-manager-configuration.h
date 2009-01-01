@@ -139,9 +139,14 @@ const gchar  *milter_manager_configuration_get_effective_group
 void          milter_manager_configuration_set_effective_group
                                      (MilterManagerConfiguration *configuration,
                                       const gchar                *group_name);
-guint         milter_manager_configuration_get_unix_socket_mode
+guint         milter_manager_configuration_get_manager_unix_socket_mode
                                      (MilterManagerConfiguration *configuration);
-void          milter_manager_configuration_set_unix_socket_mode
+void          milter_manager_configuration_set_manager_unix_socket_mode
+                                     (MilterManagerConfiguration *configuration,
+                                      guint                       mode);
+guint         milter_manager_configuration_get_controller_unix_socket_mode
+                                     (MilterManagerConfiguration *configuration);
+void          milter_manager_configuration_set_controller_unix_socket_mode
                                      (MilterManagerConfiguration *configuration,
                                       guint                       mode);
 gboolean      milter_manager_configuration_is_remove_manager_unix_socket_on_close

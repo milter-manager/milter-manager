@@ -30,7 +30,8 @@ void test_children (void);
 void test_privilege_mode (void);
 void test_effective_user (void);
 void test_effective_group (void);
-void test_unix_socket_mode (void);
+void test_manager_unix_socket_mode (void);
+void test_controller_unix_socket_mode (void);
 void test_remove_manager_unix_socket_on_close (void);
 void test_remove_controller_unix_socket_on_close (void);
 void test_controller_connection_spec (void);
@@ -198,15 +199,27 @@ test_effective_group (void)
 }
 
 void
-test_unix_socket_mode (void)
+test_manager_unix_socket_mode (void)
 {
     cut_assert_equal_uint(
         0660,
-        milter_manager_configuration_get_unix_socket_mode(config));
-    milter_manager_configuration_set_unix_socket_mode(config, 0600);
+        milter_manager_configuration_get_manager_unix_socket_mode(config));
+    milter_manager_configuration_set_manager_unix_socket_mode(config, 0600);
     cut_assert_equal_uint(
         0600,
-        milter_manager_configuration_get_unix_socket_mode(config));
+        milter_manager_configuration_get_manager_unix_socket_mode(config));
+}
+
+void
+test_controller_unix_socket_mode (void)
+{
+    cut_assert_equal_uint(
+        0660,
+        milter_manager_configuration_get_controller_unix_socket_mode(config));
+    milter_manager_configuration_set_controller_unix_socket_mode(config, 0600);
+    cut_assert_equal_uint(
+        0600,
+        milter_manager_configuration_get_controller_unix_socket_mode(config));
 }
 
 void

@@ -359,14 +359,6 @@ module Milter::Manager
       def effective_group=(group_name)
         @configuration.effective_group = group_name
       end
-
-      def unix_socket_mode
-        @configuration.unix_socket_mode
-      end
-
-      def unix_socket_mode=(mode)
-        @configuration.unix_socket_mode = mode
-      end
     end
 
     class ControllerConfiguration
@@ -377,6 +369,14 @@ module Milter::Manager
       def connection_spec=(spec)
         Milter::Connection.parse_spec(spec) unless spec.nil?
         @configuration.controller_connection_spec = spec
+      end
+
+      def unix_socket_mode
+        @configuration.controller_unix_socket_mode
+      end
+
+      def unix_socket_mode=(mode)
+        @configuration.controller_unix_socket_mode = mode
       end
 
       def remove_unix_socket_on_close?
@@ -396,6 +396,14 @@ module Milter::Manager
       def connection_spec=(spec)
         Milter::Connection.parse_spec(spec) unless spec.nil?
         @configuration.manager_connection_spec = spec
+      end
+
+      def unix_socket_mode
+        @configuration.manager_unix_socket_mode
+      end
+
+      def unix_socket_mode=(mode)
+        @configuration.manager_unix_socket_mode = mode
       end
 
       def remove_unix_socket_on_close?
