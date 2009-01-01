@@ -1,5 +1,9 @@
 2009-01-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager.rb,
+	binding/ruby/test/manager/test-configuration-loader.rb: support
+	effective group configuration.
+
 	* milter/manager/milter-manager-configuration.[ch],
 	test/manager/test-configuration.c: add
 	milter_manager_configuration_get_effective_group() and

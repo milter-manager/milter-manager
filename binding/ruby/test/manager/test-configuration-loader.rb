@@ -22,6 +22,12 @@ class TestConfigurationLoader < Test::Unit::TestCase
     assert_equal("nobody", @configuration.effective_user)
   end
 
+  def test_security_effective_group
+    assert_nil(@configuration.effective_group)
+    @loader.security.effective_group = "nogroup"
+    assert_equal("nogroup", @configuration.effective_group)
+  end
+
   def test_security_unix_socket_mode
     assert_equal(0660, @configuration.unix_socket_mode)
     @loader.security.unix_socket_mode = 0600

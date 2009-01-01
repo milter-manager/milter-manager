@@ -352,6 +352,14 @@ module Milter::Manager
         @configuration.effective_user = user_name
       end
 
+      def effective_group
+        @configuration.effective_group
+      end
+
+      def effective_group=(group_name)
+        @configuration.effective_group = group_name
+      end
+
       def unix_socket_mode
         @configuration.unix_socket_mode
       end
