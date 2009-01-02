@@ -23,7 +23,7 @@ load_rc_config $name
 : ${milter_manager_group_name="mail"}
 : ${milter_manager_connection_spec=""}
 
-command=/usr/local/bin/milter-manager
+command=/usr/local/sbin/milter-manager
 pidfile="${milter_manager_pid_file}"
 command_args="--daemon --pid-file ${milter_manager_pid_file}"
 command_args="${command_args} --user-name ${milter_manager_user_name}"

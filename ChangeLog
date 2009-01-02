@@ -1,5 +1,9 @@
 2009-01-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* data/rc.d/Makefile.am: install milter-manager RC script.
+
+	* data/rc.d/milter-manager: bin/ -> sbin/.
+
 	* src/Makefile.am: bin/ -> sbin/.
 
 	* data/rc.d/milter-manager: set customizable variables.
