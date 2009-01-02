@@ -648,6 +648,7 @@ milter_manager_main (void)
     guint controller_connection_watch_id = 0;
     GError *error = NULL;
     gboolean daemon;
+    gchar *pid_file = NULL;
 
     config = milter_manager_configuration_new(NULL);
     if (config_dir)
@@ -689,6 +690,20 @@ milter_manager_main (void)
         return;
     }
 
+    pid_file = g_strdup(milter_manager_configuration_get_pid_file(config));
+    if (pid_file) {
+        gchar *content;
+        GError *error = NULL;
+
+        content = g_strdup_printf("%u\n", getpid());
+        if (!g_file_set_contents(pid_file, content, -1, &error)) {
+            milter_error("failed to save PID: %s: %s", pid_file, error->message);
+            g_error_free(error);
+            g_free(pid_file);
+            pid_file = NULL;
+        }
+    }
+
     the_manager = manager;
     default_sigint_handler = signal(SIGINT, shutdown_client);
     default_sigterm_handler = signal(SIGTERM, shutdown_client);
@@ -702,6 +717,13 @@ milter_manager_main (void)
     if (the_manager) {
         g_object_unref(the_manager);
         the_manager = NULL;
+    }
+
+    if (pid_file) {
+        if (g_unlink(pid_file) == -1)
+            milter_error("failed to remove PID file: %s: %s",
+                         pid_file, g_strerror(errno));
+        g_free(pid_file);
     }
 }
 
