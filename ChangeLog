@@ -1,5 +1,7 @@
 2009-01-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* data/rc.d/milter-manager: set customizable variables.
+
 	* milter/manager/milter-manager-main.c: support some useful
 	command line options: --pid-file, --user-name, --group-name and
 	--daemon.

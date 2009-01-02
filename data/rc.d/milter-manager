@@ -16,9 +16,20 @@
 name="milter_manager"
 rcvar=`set_rcvar`
 
-command=/usr/local/bin/milter-manager
-
 load_rc_config $name
 : ${milter_manager_enable="NO"}
+: ${milter_manager_pid_file="/var/run/milter-manager/milter-manager.pid"}
+: ${milter_manager_user_name="mailnull"}
+: ${milter_manager_group_name="mail"}
+: ${milter_manager_connection_spec=""}
+
+command=/usr/local/bin/milter-manager
+pidfile="${milter_manager_pid_file}"
+command_args="--daemon --pid-file ${milter_manager_pid_file}"
+command_args="${command_args} --user-name ${milter_manager_user_name}"
+command_args="${command_args} --group-name ${milter_manager_group_name}"
+if test -n "$milter_manager_connection_connection_spec"; then
+    command_args="${command_args} --spec ${milter_manager_connection_spec}"
+fi
 
 run_rc_command "$1"
