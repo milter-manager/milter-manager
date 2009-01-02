@@ -1,5 +1,7 @@
 2009-01-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: add: send quit command to launcher on manager dispose.
+
 	* milter/manager/milter-manager-main.c: improve launcher process
 	starting. daemonize is done before launcher started.
 
