@@ -397,6 +397,8 @@ start_process_launcher (MilterManager *manager,
     milter_agent_set_writer(MILTER_AGENT(launcher), writer);
     g_object_unref(reader);
     g_object_unref(writer);
+
+    milter_agent_start(MILTER_AGENT(launcher));
 }
 
 static pid_t

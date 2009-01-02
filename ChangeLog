@@ -1,5 +1,8 @@
 2009-01-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-main.c (start_process_launcher):
+	start launcher.
+
 	* tool/milter-test-server.c: miler-test-server doesn't need to log
 	syslog.
 
