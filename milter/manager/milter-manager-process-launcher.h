@@ -65,6 +65,8 @@ GType                         milter_manager_process_launcher_get_type (void) G_
 
 MilterManagerProcessLauncher *milter_manager_process_launcher_new      (MilterManagerConfiguration *configuration);
 
+void                          milter_manager_process_launcher_run      (MilterManagerProcessLauncher *launcher);
+
 G_END_DECLS
 
 #endif /* __MILTER_MANAGER_PROCESS_LAUNCHER_H__ */

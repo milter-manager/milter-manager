@@ -1,5 +1,11 @@
 2009-01-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-process-launcher.[ch]: launcher
+	has its own main loop and handle finished signal.
+	* milter/manager/milter-manager-main.c: don't use busy loop and
+	kill. milter-manager's launcher will exit if pipe is closed on
+	milter-manager quit.
+
 	* milter/manager/milter-manager-main.c (start_process_launcher):
 	start launcher.
 

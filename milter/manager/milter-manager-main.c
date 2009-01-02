@@ -43,7 +43,6 @@ static gboolean initialized = FALSE;
 static MilterManager *the_manager = NULL;
 static gchar *option_spec = NULL;
 static gchar *config_dir = NULL;
-static pid_t launcher_pid = -1;
 
 static void (*default_sigint_handler) (int signum);
 static void (*default_sigterm_handler) (int signum);
@@ -399,6 +398,8 @@ start_process_launcher (MilterManager *manager,
     g_object_unref(writer);
 
     milter_agent_start(MILTER_AGENT(launcher));
+
+    milter_manager_process_launcher_run(launcher);
 }
 
 static pid_t
@@ -631,27 +632,19 @@ milter_manager_main (void)
             return;
         }
         if (pid == 0) {
-            while (TRUE) {
-                g_main_context_iteration(NULL, FALSE);
-            }
-        } else {
-            launcher_pid = pid;
+            _exit(EXIT_SUCCESS);
         }
     }
 
     if (geteuid() == 0 &&
         (!switch_group(manager) || !switch_user(manager))) {
         g_object_unref(manager);
-        if (launcher_pid > 0)
-            kill(launcher_pid, SIGKILL);
         return;
     }
 
     daemon = milter_manager_configuration_is_daemon(config);
     if (daemon && !daemonize()) {
         g_object_unref(manager);
-        if (launcher_pid > 0)
-            kill(launcher_pid, SIGKILL);
         return;
     }
 
@@ -674,11 +667,6 @@ milter_manager_main (void)
     if (the_manager) {
         g_object_unref(the_manager);
         the_manager = NULL;
-    }
-
-    if (launcher_pid > 0) {
-        kill(launcher_pid, SIGKILL);
-        launcher_pid = -1;
     }
 }
 

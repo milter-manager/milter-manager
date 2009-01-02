@@ -44,6 +44,7 @@ struct _MilterManagerProcessLauncherPrivate
 {
     MilterManagerConfiguration *configuration;
     GList *processes;
+    GMainLoop *main_loop;
 };
 
 enum
@@ -52,8 +53,15 @@ enum
     PROP_CONFIGURATION
 };
 
-G_DEFINE_TYPE(MilterManagerProcessLauncher, milter_manager_process_launcher,
-              MILTER_TYPE_AGENT)
+static void         finished           (MilterFinishedEmittable *emittable);
+
+MILTER_IMPLEMENT_FINISHED_EMITTABLE_WITH_CODE(finished_emittable_init,
+                                              iface->finished = finished)
+G_DEFINE_TYPE_WITH_CODE(MilterManagerProcessLauncher,
+                        milter_manager_process_launcher,
+                        MILTER_TYPE_AGENT,
+                        G_IMPLEMENT_INTERFACE(MILTER_TYPE_FINISHED_EMITTABLE,
+                                              finished_emittable_init))
 
 typedef struct _ProcessData
 {
@@ -228,7 +236,7 @@ is_already_launched (MilterManagerProcessLauncher *launcher,
     g_set_error(error,
                 MILTER_MANAGER_PROCESS_LAUNCHER_ERROR,
                 MILTER_MANAGER_PROCESS_LAUNCHER_ERROR_ALREADY_LAUNCHED,
-                "%s has been already launched.", 
+                "%s has been already launched.",
                 command_line);
     return TRUE;
 }
@@ -380,6 +388,7 @@ milter_manager_process_launcher_init (MilterManagerProcessLauncher *launcher)
 
     priv->configuration = NULL;
     priv->processes = NULL;
+    priv->main_loop = g_main_loop_new(NULL, FALSE);
 }
 
 static void
@@ -445,6 +454,17 @@ get_property (GObject    *object,
     }
 }
 
+static void
+finished (MilterFinishedEmittable *emittable)
+{
+    MilterManagerProcessLauncher *launcher;
+    MilterManagerProcessLauncherPrivate *priv;
+
+    launcher = MILTER_MANAGER_PROCESS_LAUNCHER(emittable);
+    priv = MILTER_MANAGER_PROCESS_LAUNCHER_GET_PRIVATE(launcher);
+    g_main_loop_quit(priv->main_loop);
+}
+
 GQuark
 milter_manager_process_launcher_error_quark (void)
 {
@@ -457,6 +477,15 @@ milter_manager_process_launcher_new (MilterManagerConfiguration *configuration)
     return g_object_new(MILTER_TYPE_MANAGER_PROCESS_LAUNCHER,
                         "configuration", configuration,
                         NULL);
+}
+
+void
+milter_manager_process_launcher_run (MilterManagerProcessLauncher *launcher)
+{
+    MilterManagerProcessLauncherPrivate *priv;
+
+    priv = MILTER_MANAGER_PROCESS_LAUNCHER_GET_PRIVATE(launcher);
+    g_main_loop_run(priv->main_loop);
 }
 
 /*
