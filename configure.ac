@@ -334,6 +334,7 @@ AC_CONFIG_FILES([Makefile
 		 src/Makefile
 		 data/Makefile
 		 data/applicable-conditions/Makefile
+		 data/defaults/Makefile
 		 data/packet/Makefile
 		 data/rc.d/Makefile
 		 tool/Makefile
