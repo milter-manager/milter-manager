@@ -1,5 +1,9 @@
 2009-01-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/test/manager/test-configuration-loader.rb
+	(TestConfigurationLoader#test_define_milter_again): add test for
+	enabled.
+
 	* data/rc.d/milter-manager (extra_commands): support reload.
 
 	* data/rc.d/Makefile.am: data/rc.d/milter-manager is executable.

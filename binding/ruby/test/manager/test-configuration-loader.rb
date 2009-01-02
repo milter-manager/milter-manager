@@ -160,20 +160,28 @@ EOX
   def test_define_milter_again
     @loader.define_milter("milter1") do |milter|
       milter.description = "description"
+      milter.enabled = true
     end
-    assert_equal([["milter1", "description"]],
-                 @configuration.eggs.collect {|egg| [egg.name, egg.description]})
+    assert_equal([["milter1", true, "description"]],
+                 @configuration.eggs.collect do |egg|
+                   [egg.name, egg.enabled?, egg.description]
+                 end)
 
     @loader.define_milter("milter1") do |milter|
     end
-    assert_equal([["milter1", "description"]],
-                 @configuration.eggs.collect {|egg| [egg.name, egg.description]})
+    assert_equal([["milter1", true, "description"]],
+                 @configuration.eggs.collect do |egg|
+                   [egg.name, egg.enabled?, egg.description]
+                 end)
 
     @loader.define_milter("milter1") do |milter|
       milter.description = "new description"
+      milter.enabled = false
     end
-    assert_equal([["milter1", "new description"]],
-                 @configuration.eggs.collect {|egg| [egg.name, egg.description]})
+    assert_equal([["milter1", false, "new description"]],
+                 @configuration.eggs.collect do |egg|
+                   [egg.name, egg.enabled?, egg.description]
+                 end)
   end
 
   def test_define_milter_set_applicable_conditions
