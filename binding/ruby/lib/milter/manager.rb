@@ -593,8 +593,16 @@ module Milter::Manager
         File.exist?(rc_script)
       end
 
+      def enabled?
+        if /\AYES\z/i =~ (@variables["enable"] || "NO")
+          true
+        else
+          false
+        end
+      end
+
       def apply(loader)
-        return unless rc_script_exist?
+        return if @name.nil?
       end
 
       private
@@ -608,6 +616,9 @@ module Milter::Manager
         return unless rc_script_exist?
 
         parse_rc_script
+        return if @name.nil?
+        parse_rc_conf(rc_conf)
+        parse_rc_conf(specific_rc_conf)
       end
 
       def parse_rc_script
@@ -620,15 +631,37 @@ module Milter::Manager
             if /#{Regexp.escape(@name)}_(.+)(?:=|:-)(.+)/ =~ line
               variable_name, variable_value = $1, $2
               variable_value = variable_value.sub(/\}\z/, '')
-              variable_value = variable_value.sub(/\A"(.*)"\z/, '\\1')
+              variable_value = normalize_variable_value(variable_value)
               @variables[variable_name] = variable_value
             end
           end
         end
       end
 
+      def parse_rc_conf(file)
+        return unless File.exist?(file)
+        content = File.read(file)
+        content.each_line do |line|
+          case line
+          when /\A#{@name}_(.+)=(.+)/
+            variable_name = $1
+            variable_value = $2
+            variable_value = normalize_variable_value(variable_value)
+            @variables[variable_name] = variable_value
+          end
+        end
+      end
+
+      def normalize_variable_value(value)
+        value.sub(/\A"(.*)"\z/, '\\1')
+      end
+
       def rc_script
         File.join(rc_d, @script_name)
+      end
+
+      def specific_rc_conf
+        File.join(rc_conf_d, @name)
       end
 
       def rc_d

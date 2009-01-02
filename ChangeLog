@@ -1,5 +1,9 @@
 2009-01-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager.rb,
+	binding/ruby/test/manager/test-bsd-rc-detector.rb: support rc_conf
+	parsing.
+
 	* binding/ruby/test/manager/test-bsd-rc-detector.rb: add.
 
 	* binding/ruby/lib/milter/manager.rb,

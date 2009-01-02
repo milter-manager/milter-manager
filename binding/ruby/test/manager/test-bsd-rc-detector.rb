@@ -9,7 +9,6 @@ class TestBSDRCDetector < Test::Unit::TestCase
     @rc_conf = @tmp_dir + "rc.conf"
     @rc_conf_d = @tmp_dir + "rc.conf.d"
     @rc_d.mkpath
-    @rc_conf.mkpath
     @rc_conf_d.mkpath
   end
 
@@ -45,6 +44,30 @@ class TestBSDRCDetector < Test::Unit::TestCase
                    "connection_spec" => "",
                  },
                  detector.variables)
+  end
+
+  def test_parse_rc_conf
+    (@rc_d + "milter-manager").open("w") do |file|
+      file << milter_manager_rc_script
+    end
+    @rc_conf.open("w") do |file|
+      file << <<-EOC
+milter_manager_enable="YES"
+# milter_manager_pid_file="/tmp/milter-manager.pid"
+milter_manager_connection_spec=inet:10025@localhost
+EOC
+    end
+
+    detector = bsd_rc_detector("milter-manager")
+    assert_equal({
+                   "enable" => "YES",
+                   "pid_file" => "/var/run/milter-manager/milter-manager.pid",
+                   "user_name" => "mailnull",
+                   "group_name" => "mail",
+                   "connection_spec" => "inet:10025@localhost",
+                 },
+                 detector.variables)
+    assert_true(detector.enabled?)
   end
 
   private
