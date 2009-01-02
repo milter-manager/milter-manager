@@ -1,5 +1,7 @@
 2009-01-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/Makefile.am: bin/ -> sbin/.
+
 	* data/rc.d/milter-manager: set customizable variables.
 
 	* milter/manager/milter-manager-main.c: support some useful

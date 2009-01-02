@@ -8,7 +8,7 @@ AM_CFLAGS = 				\
 
 CLEANFILES = *.gcno *.gcda
 
-bin_PROGRAMS =		\
+sbin_PROGRAMS =		\
 	milter-manager
 
 milter_manager_SOURCES =		\
