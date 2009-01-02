@@ -32,7 +32,6 @@
 #include "milter-manager-enum-types.h"
 #include "milter-manager-launch-command-decoder.h"
 #include "milter-manager-reply-encoder.h"
-#include "milter-manager-configuration.h"
 
 #define MILTER_MANAGER_PROCESS_LAUNCHER_GET_PRIVATE(obj)                   \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                              \
@@ -42,15 +41,13 @@
 typedef struct _MilterManagerProcessLauncherPrivate MilterManagerProcessLauncherPrivate;
 struct _MilterManagerProcessLauncherPrivate
 {
-    MilterManagerConfiguration *configuration;
     GList *processes;
     GMainLoop *main_loop;
 };
 
 enum
 {
-    PROP_0,
-    PROP_CONFIGURATION
+    PROP_0
 };
 
 static void         finished           (MilterFinishedEmittable *emittable);
@@ -89,7 +86,6 @@ milter_manager_process_launcher_class_init (MilterManagerProcessLauncherClass *k
 {
     GObjectClass *gobject_class;
     MilterAgentClass *agent_class;
-    GParamSpec *spec;
 
     gobject_class = G_OBJECT_CLASS(klass);
     agent_class = MILTER_AGENT_CLASS(klass);
@@ -100,13 +96,6 @@ milter_manager_process_launcher_class_init (MilterManagerProcessLauncherClass *k
 
     agent_class->decoder_new   = decoder_new;
     agent_class->encoder_new   = encoder_new;
-
-    spec = g_param_spec_object("configuration",
-                               "Configuration",
-                               "The configuration of the milter manager",
-                               MILTER_TYPE_MANAGER_CONFIGURATION,
-                               G_PARAM_READWRITE);
-    g_object_class_install_property(gobject_class, PROP_CONFIGURATION, spec);
 
     g_type_class_add_private(gobject_class,
                              sizeof(MilterManagerProcessLauncherPrivate));
@@ -332,11 +321,7 @@ cb_decoder_launch (MilterManagerLaunchCommandDecoder *decoder,
     _encoder = milter_agent_get_encoder(agent);
     encoder = MILTER_MANAGER_REPLY_ENCODER(_encoder);
 
-    if (!milter_manager_configuration_is_privilege_mode(priv->configuration)) {
-        milter_manager_reply_encoder_encode_error(
-            encoder, &packet, &packet_size,
-            "MilterManager is not running on privilege mode.");
-    } else if (!launch(launcher, command_line, user_name, &error)) {
+    if (!launch(launcher, command_line, user_name, &error)) {
         milter_manager_reply_encoder_encode_error(encoder,
                                                   &packet,
                                                   &packet_size,
@@ -386,7 +371,6 @@ milter_manager_process_launcher_init (MilterManagerProcessLauncher *launcher)
 
     priv = MILTER_MANAGER_PROCESS_LAUNCHER_GET_PRIVATE(launcher);
 
-    priv->configuration = NULL;
     priv->processes = NULL;
     priv->main_loop = g_main_loop_new(NULL, FALSE);
 }
@@ -398,15 +382,15 @@ dispose (GObject *object)
 
     priv = MILTER_MANAGER_PROCESS_LAUNCHER_GET_PRIVATE(object);
 
-    if (priv->configuration) {
-        g_object_unref(priv->configuration);
-        priv->configuration = NULL;
-    }
-
     if (priv->processes) {
         g_list_foreach(priv->processes, (GFunc)process_data_free, NULL);
         g_list_free(priv->processes);
         priv->processes = NULL;
+    }
+
+    if (priv->main_loop) {
+        g_main_loop_unref(priv->main_loop);
+        priv->main_loop = NULL;
     }
 
     G_OBJECT_CLASS(milter_manager_process_launcher_parent_class)->dispose(object);
@@ -422,13 +406,6 @@ set_property (GObject      *object,
 
     priv = MILTER_MANAGER_PROCESS_LAUNCHER_GET_PRIVATE(object);
     switch (prop_id) {
-      case PROP_CONFIGURATION:
-        if (priv->configuration)
-            g_object_unref(priv->configuration);
-        priv->configuration = g_value_get_object(value);
-        if (priv->configuration)
-            g_object_ref(priv->configuration);
-        break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -445,9 +422,6 @@ get_property (GObject    *object,
 
     priv = MILTER_MANAGER_PROCESS_LAUNCHER_GET_PRIVATE(object);
     switch (prop_id) {
-      case PROP_CONFIGURATION:
-        g_value_set_object(value, priv->configuration);
-        break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -472,10 +446,9 @@ milter_manager_process_launcher_error_quark (void)
 }
 
 MilterManagerProcessLauncher *
-milter_manager_process_launcher_new (MilterManagerConfiguration *configuration)
+milter_manager_process_launcher_new (void)
 {
     return g_object_new(MILTER_TYPE_MANAGER_PROCESS_LAUNCHER,
-                        "configuration", configuration,
                         NULL);
 }
 

@@ -31,15 +31,14 @@
 #include <gcutter.h>
 
 void test_launch (void);
-void test_launch_no_privilege_mode (void);
 void test_launch_error (gconstpointer data);
 void data_launch_error (void);
 void test_already_launched (void);
+void test_run (void);
 
 static MilterManagerProcessLauncher *launcher;
 static MilterManagerLaunchCommandEncoder *command_encoder;
 static MilterManagerReplyEncoder *reply_encoder;
-static MilterManagerConfiguration *config;
 
 static MilterWriter *writer;
 static GIOChannel *output_channel;
@@ -51,6 +50,9 @@ static gchar *packet;
 static gsize packet_size;
 
 static gchar *current_locale;
+
+static guint idle_id;
+static guint timeout_id;
 
 void
 cut_startup (void)
@@ -114,10 +116,7 @@ setup (void)
 {
     MilterEncoder *encoder;
 
-    config = milter_manager_configuration_new(NULL);
-    milter_manager_configuration_set_privilege_mode(config, TRUE);
-
-    launcher = milter_manager_process_launcher_new(config);
+    launcher = milter_manager_process_launcher_new();
 
     setup_io();
 
@@ -127,6 +126,9 @@ setup (void)
     reply_encoder = MILTER_MANAGER_REPLY_ENCODER(encoder);
 
     expected_error_message = NULL;
+
+    idle_id = 0;
+    timeout_id = 0;
 }
 
 void
@@ -134,8 +136,6 @@ teardown (void)
 {
     if (launcher)
         g_object_unref(launcher);
-    if (config)
-        g_object_unref(config);
 
     if (writer)
         g_object_unref(writer);
@@ -154,6 +154,11 @@ teardown (void)
         g_string_free(expected_packet, TRUE);
     if (expected_error_message)
         g_free(expected_error_message);
+
+    if (idle_id > 0)
+        g_source_remove(idle_id);
+    if (timeout_id > 0)
+        g_source_remove(timeout_id);
 }
 
 void
@@ -175,33 +180,6 @@ test_launch (void)
     g_free(packet);
     milter_manager_reply_encoder_encode_success(reply_encoder,
                                                 &packet, &packet_size);
-    output = gcut_string_io_channel_get_string(output_channel);
-    cut_assert_equal_memory(packet, packet_size,
-                            output->str, output->len);
-}
-
-void
-test_launch_no_privilege_mode (void)
-{
-    GString *output;
-    GError *error = NULL;
-    const gchar command_line[] = "/bin/echo";
-    const gchar *user_name;
-
-    milter_manager_configuration_set_privilege_mode(config, FALSE);
-
-    user_name = g_get_user_name();
-    milter_manager_launch_command_encoder_encode_launch(command_encoder,
-                                                        &packet, &packet_size,
-                                                        command_line, user_name);
-    milter_writer_write(writer, packet, packet_size, NULL, &error);
-    gcut_assert_error(error);
-    milter_test_pump_all_events();
-
-    g_free(packet);
-    milter_manager_reply_encoder_encode_error(reply_encoder,
-                                              &packet, &packet_size,
-                                              "MilterManager is not running on privilege mode.");
     output = gcut_string_io_channel_get_string(output_channel);
     cut_assert_equal_memory(packet, packet_size,
                             output->str, output->len);
@@ -308,6 +286,39 @@ test_launch_error (gconstpointer _data)
     output = gcut_string_io_channel_get_string(output_channel);
     cut_assert_equal_memory(packet, packet_size,
                             output->str, output->len);
+}
+
+static gboolean
+cb_idle_shutdown (gpointer data)
+{
+    MilterManagerProcessLauncher *launcher = data;
+
+    milter_agent_shutdown(MILTER_AGENT(launcher));
+
+    return FALSE;
+}
+
+static gboolean
+cb_timeout_mark_emitted (gpointer data)
+{
+    gboolean *timeout_emitted = data;
+
+    *timeout_emitted = TRUE;
+
+    return FALSE;
+}
+
+void
+test_run (void)
+{
+    gboolean timeout_emitted = FALSE;
+
+    idle_id = g_idle_add(cb_idle_shutdown, launcher);
+    timeout_id = g_timeout_add(100, cb_timeout_mark_emitted, &timeout_emitted);
+
+    milter_manager_process_launcher_run(launcher);
+
+    cut_assert_false(timeout_emitted);
 }
 
 /*

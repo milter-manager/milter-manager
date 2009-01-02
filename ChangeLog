@@ -1,6 +1,14 @@
 2009-01-02  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/manager/milter-manager-process-launcher.[ch]: launcher
+	doesn't need configuration.
+	* milter/manager/milter-manager-main.c,
+	test/manager/test-children.c,
+	test/manager/test-process-launcher.c: follow the above change.
+
+	* test/manager/test-process-launcher.c: add a test for launcher run.
+
+	* milter/manager/milter-manager-process-launcher.[ch]: launcher
 	has its own main loop and handle finished signal.
 	* milter/manager/milter-manager-main.c: don't use busy loop and
 	kill. milter-manager's launcher will exit if pipe is closed on

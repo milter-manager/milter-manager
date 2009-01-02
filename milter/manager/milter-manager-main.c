@@ -383,15 +383,13 @@ start_process_launcher (MilterManager *manager,
     MilterManagerProcessLauncher *launcher;
     MilterReader *reader;
     MilterWriter *writer;
-    MilterManagerConfiguration *configuration;
 
     reader = milter_reader_io_channel_new(read_channel);
     g_io_channel_unref(read_channel);
 
     writer = milter_writer_io_channel_new(write_channel);
 
-    configuration = milter_manager_get_configuration(manager);
-    launcher = milter_manager_process_launcher_new(configuration);
+    launcher = milter_manager_process_launcher_new();
     milter_agent_set_reader(MILTER_AGENT(launcher), reader);
     milter_agent_set_writer(MILTER_AGENT(launcher), writer);
     g_object_unref(reader);

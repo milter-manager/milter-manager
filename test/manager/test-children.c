@@ -670,14 +670,13 @@ create_io_channel (void)
 }
 
 static void
-setup_process_launcher (MilterManagerChildren *children,
-                        MilterManagerConfiguration *config)
+setup_process_launcher (MilterManagerChildren *children)
 {
     GIOChannel *read_channel, *write_channel;
     MilterReader *reader;
     MilterWriter *writer;
 
-    launcher = milter_manager_process_launcher_new(config);
+    launcher = milter_manager_process_launcher_new();
 
     read_channel = create_io_channel();
     reader = milter_reader_io_channel_new(read_channel);
@@ -699,8 +698,7 @@ setup_process_launcher (MilterManagerChildren *children,
 
 static void
 setup_parameters (MilterManagerTestScenario *scenario,
-                  MilterManagerChildren *children,
-                  MilterManagerConfiguration *config)
+                  MilterManagerChildren *children)
 {
     const gchar group[] = "config";
     const gchar privilege_mode_key[] = "privilege_mode";
@@ -724,7 +722,7 @@ setup_parameters (MilterManagerTestScenario *scenario,
 
     if (has_key(scenario, group, use_process_launcher)) {
         if (get_boolean(scenario, group, use_process_launcher))
-            setup_process_launcher(children, config);
+            setup_process_launcher(children);
     }
 }
 
@@ -1064,7 +1062,7 @@ test_scenario (gconstpointer data)
     cut_trace(milter_manager_test_scenario_load(main_scenario,
                                                 scenario_dir,
                                                 scenario_name));
-    cut_trace(setup_parameters(main_scenario, children, config));
+    cut_trace(setup_parameters(main_scenario, children));
 
     cut_trace(milter_manager_test_scenario_start_clients(main_scenario));
 

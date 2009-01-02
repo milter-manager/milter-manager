@@ -63,7 +63,7 @@ GQuark                        milter_manager_process_launcher_error_quark (void)
 
 GType                         milter_manager_process_launcher_get_type (void) G_GNUC_CONST;
 
-MilterManagerProcessLauncher *milter_manager_process_launcher_new      (MilterManagerConfiguration *configuration);
+MilterManagerProcessLauncher *milter_manager_process_launcher_new      (void);
 
 void                          milter_manager_process_launcher_run      (MilterManagerProcessLauncher *launcher);
 
