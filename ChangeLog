@@ -1,5 +1,9 @@
 2009-01-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-main.c: support some useful
+	command line options: --pid-file, --user-name, --group-name and
+	--daemon.
+
 	* milter/manager/milter-manager-main.c: support saving PID to file.
 
 	* binding/ruby/lib/milter/manager.rb,

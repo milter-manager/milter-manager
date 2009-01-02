@@ -42,7 +42,11 @@
 static gboolean initialized = FALSE;
 static MilterManager *the_manager = NULL;
 static gchar *option_spec = NULL;
-static gchar *config_dir = NULL;
+static gchar *option_config_dir = NULL;
+static gchar *option_pid_file = NULL;
+static gchar *option_user_name = NULL;
+static gchar *option_group_name = NULL;
+static gboolean option_daemon = FALSE;
 
 static gboolean io_detached = FALSE;
 
@@ -96,9 +100,22 @@ static const GOptionEntry option_entries[] =
 {
     {"spec", 's', 0, G_OPTION_ARG_CALLBACK, parse_spec_arg,
      N_("The address of the desired communication socket."), "PROTOCOL:ADDRESS"},
-    {"config-dir", 0, 0, G_OPTION_ARG_STRING, &config_dir,
+    {"config-dir", 'c',
+     G_OPTION_FLAG_FILENAME, G_OPTION_ARG_STRING, &option_config_dir,
      N_("The configuration directory that has configuration file."),
      "DIRECTORY"},
+    {"pid-file", 0,
+     G_OPTION_FLAG_FILENAME, G_OPTION_ARG_STRING, &option_pid_file,
+     N_("The file name to be saved PID."),
+     "FILE"},
+    {"user-name", 'u', 0, G_OPTION_ARG_STRING, &option_user_name,
+     N_("The user name for running milter-manager."),
+     "NAME"},
+    {"group-name", 'g', 0, G_OPTION_ARG_STRING, &option_group_name,
+     N_("The group name for running milter-manager."),
+     "NAME"},
+    {"daemon", 0, 0, G_OPTION_ARG_NONE, &option_daemon,
+     N_("Run as daemon process."), NULL},
     {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, print_version,
      N_("Show version"), NULL},
     {NULL}
@@ -646,13 +663,13 @@ milter_manager_main (void)
     MilterManager *manager;
     MilterManagerConfiguration *config;
     guint controller_connection_watch_id = 0;
-    GError *error = NULL;
     gboolean daemon;
     gchar *pid_file = NULL;
 
     config = milter_manager_configuration_new(NULL);
-    if (config_dir)
-        milter_manager_configuration_prepend_load_path(config, config_dir);
+    if (option_config_dir)
+        milter_manager_configuration_prepend_load_path(config,
+                                                       option_config_dir);
     milter_manager_configuration_reload(config);
     manager = milter_manager_new(config);
     g_object_unref(config);
@@ -662,15 +679,21 @@ milter_manager_main (void)
     /* FIXME */
     controller_connection_watch_id = setup_controller_connection(manager);
 
-    g_signal_connect(client, "error",
-                     G_CALLBACK(cb_error), NULL);
+    g_signal_connect(client, "error", G_CALLBACK(cb_error), NULL);
 
-
-    if (!milter_client_set_connection_spec(client, option_spec, &error)) {
-        g_object_unref(manager);
-        g_print("%s\n", error->message);
-        return;
-    }
+    if (option_spec)
+        milter_manager_configuration_set_manager_connection_spec(config,
+                                                                 option_spec);
+    if (option_pid_file)
+        milter_manager_configuration_set_pid_file(config, option_pid_file);
+    if (option_user_name)
+        milter_manager_configuration_set_effective_user(config,
+                                                        option_user_name);
+    if (option_group_name)
+        milter_manager_configuration_set_effective_group(config,
+                                                         option_group_name);
+    if (option_daemon)
+        milter_manager_configuration_set_daemon(config, TRUE);
 
     daemon = milter_manager_configuration_is_daemon(config);
     if (daemon && !daemonize()) {
