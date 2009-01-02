@@ -66,6 +66,13 @@ class TestConfigurationLoader < Test::Unit::TestCase
     assert_equal(@configuration.daemon?, @loader.manager.daemon?)
   end
 
+  def test_manager_pid_file
+    assert_nil(@configuration.pid_file)
+    @loader.manager.pid_file = "/var/run/milter-manager.pid"
+    assert_equal("/var/run/milter-manager.pid", @configuration.pid_file)
+    assert_equal(@configuration.pid_file, @loader.manager.pid_file)
+  end
+
   def test_to_xml
     assert_equal(<<-EOX, @configuration.to_xml)
 <configuration>

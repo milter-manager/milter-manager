@@ -421,6 +421,14 @@ module Milter::Manager
       def daemon?
         @configuration.daemon?
       end
+
+      def pid_file=(pid_file)
+        @configuration.pid_file = pid_file
+      end
+
+      def pid_file
+        @configuration.pid_file
+      end
     end
 
     class EggConfiguration
