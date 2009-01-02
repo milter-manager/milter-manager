@@ -166,6 +166,12 @@ void          milter_manager_configuration_set_daemon
                                      (MilterManagerConfiguration *configuration,
                                       gboolean                    daemon);
 
+const gchar  *milter_manager_configuration_get_pid_file
+                                     (MilterManagerConfiguration *configuration);
+void          milter_manager_configuration_set_pid_file
+                                     (MilterManagerConfiguration *configuration,
+                                      const gchar                *pid_file);
+
 MilterStatus  milter_manager_configuration_get_fallback_status
                                      (MilterManagerConfiguration *configuration);
 void          milter_manager_configuration_set_fallback_status

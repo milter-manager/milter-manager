@@ -54,6 +54,7 @@ struct _MilterManagerConfigurationPrivate
     gboolean remove_manager_unix_socket_on_close;
     gboolean remove_controller_unix_socket_on_close;
     gboolean daemon;
+    gchar *pid_file;
 };
 
 enum
@@ -69,7 +70,8 @@ enum
     PROP_CONTROLLER_UNIX_SOCKET_MODE,
     PROP_REMOVE_MANAGER_UNIX_SOCKET_ON_CLOSE,
     PROP_REMOVE_CONTROLLER_UNIX_SOCKET_ON_CLOSE,
-    PROP_DAEMON
+    PROP_DAEMON,
+    PROP_PID_FILE
 };
 
 enum
@@ -207,6 +209,13 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
                                 G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
     g_object_class_install_property(gobject_class, PROP_DAEMON, spec);
 
+    spec = g_param_spec_string("pid-file",
+                               "File name to be saved process ID",
+                               "The file name to be saved process ID",
+                               NULL,
+                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+    g_object_class_install_property(gobject_class, PROP_PID_FILE,
+                                    spec);
     signals[TO_XML] =
         g_signal_new("to-xml",
                      G_TYPE_FROM_CLASS(klass),
@@ -234,6 +243,7 @@ milter_manager_configuration_init (MilterManagerConfiguration *configuration)
     priv->manager_connection_spec = NULL;
     priv->effective_user = NULL;
     priv->effective_group = NULL;
+    priv->pid_file = NULL;
 
     config_dir_env = g_getenv("MILTER_MANAGER_CONFIG_DIR");
     if (config_dir_env)
@@ -314,6 +324,10 @@ set_property (GObject      *object,
         milter_manager_configuration_set_daemon(
             config, g_value_get_boolean(value));
         break;
+      case PROP_PID_FILE:
+        milter_manager_configuration_set_pid_file(
+            config, g_value_get_string(value));
+        break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -362,6 +376,9 @@ get_property (GObject    *object,
         break;
       case PROP_DAEMON:
         g_value_set_boolean(value, priv->daemon);
+        break;
+      case PROP_PID_FILE:
+        g_value_set_string(value, priv->pid_file);
         break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -893,6 +910,24 @@ milter_manager_configuration_set_daemon (MilterManagerConfiguration *configurati
     priv->daemon = daemon;
 }
 
+const gchar *
+milter_manager_configuration_get_pid_file (MilterManagerConfiguration *configuration)
+{
+    return MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration)->pid_file;
+}
+
+void
+milter_manager_configuration_set_pid_file (MilterManagerConfiguration *configuration,
+                                           const gchar *pid_file)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    if (priv->pid_file)
+        g_free(priv->pid_file);
+    priv->pid_file = g_strdup(pid_file);
+}
+
 void
 milter_manager_configuration_add_egg (MilterManagerConfiguration *configuration,
                                       MilterManagerEgg         *egg)
@@ -1142,6 +1177,11 @@ milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
     if (priv->effective_group) {
         g_free(priv->effective_group);
         priv->effective_group = NULL;
+    }
+
+    if (priv->pid_file) {
+        g_free(priv->pid_file);
+        priv->pid_file = NULL;
     }
 
     priv->privilege_mode = FALSE;

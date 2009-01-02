@@ -35,6 +35,7 @@ void test_controller_unix_socket_mode (void);
 void test_remove_manager_unix_socket_on_close (void);
 void test_remove_controller_unix_socket_on_close (void);
 void test_daemon (void);
+void test_pid_file (void);
 void test_controller_connection_spec (void);
 void test_manager_connection_spec (void);
 void test_fallback_status (void);
@@ -184,7 +185,8 @@ test_privilege_mode (void)
 void
 test_effective_user (void)
 {
-    cut_assert_null(milter_manager_configuration_get_effective_user(config));
+    cut_assert_equal_string(NULL,
+                            milter_manager_configuration_get_effective_user(config));
     milter_manager_configuration_set_effective_user(config, "nobody");
     cut_assert_equal_string("nobody",
                             milter_manager_configuration_get_effective_user(config));
@@ -193,7 +195,8 @@ test_effective_user (void)
 void
 test_effective_group (void)
 {
-    cut_assert_null(milter_manager_configuration_get_effective_group(config));
+    cut_assert_equal_string(NULL,
+                            milter_manager_configuration_get_effective_group(config));
     milter_manager_configuration_set_effective_group(config, "nogroup");
     cut_assert_equal_string("nogroup",
                             milter_manager_configuration_get_effective_group(config));
@@ -245,6 +248,18 @@ test_daemon (void)
     cut_assert_false(milter_manager_configuration_is_daemon(config));
     milter_manager_configuration_set_daemon(config, TRUE);
     cut_assert_true(milter_manager_configuration_is_daemon(config));
+}
+
+void
+test_pid_file (void)
+{
+    const gchar pid_file[] = "/var/run/milter-manager.pid";
+
+    cut_assert_equal_string(NULL,
+                            milter_manager_configuration_get_pid_file(config));
+    milter_manager_configuration_set_pid_file(config, pid_file);
+    cut_assert_equal_string(pid_file,
+                            milter_manager_configuration_get_pid_file(config));
 }
 
 void
@@ -314,6 +329,9 @@ milter_assert_default_configuration_helper (MilterManagerConfiguration *config)
     cut_assert_equal_string(
         NULL,
         milter_manager_configuration_get_effective_group(config));
+    cut_assert_equal_string(
+        NULL,
+        milter_manager_configuration_get_pid_file(config));
 
     cut_assert_equal_uint(
         0660,

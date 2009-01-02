@@ -1,5 +1,10 @@
 2009-01-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-configuration.[ch],
+	test/manager/test-configuration.c: add
+	milter_manager_configuration_get_pid_file() and
+	milter_manager_configuration_set_pid_file().
+
 	* TODO: add: send quit command to launcher on manager dispose.
 
 	* milter/manager/milter-manager-main.c: improve launcher process
