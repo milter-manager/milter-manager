@@ -225,10 +225,6 @@ milter_manager_configuration_init (MilterManagerConfiguration *configuration)
     priv->manager_connection_spec = NULL;
     priv->effective_user = NULL;
     priv->effective_group = NULL;
-    priv->manager_unix_socket_mode = 0660;
-    priv->controller_unix_socket_mode = 0660;
-    priv->remove_manager_unix_socket_on_close = TRUE;
-    priv->remove_controller_unix_socket_on_close = TRUE;
 
     config_dir_env = g_getenv("MILTER_MANAGER_CONFIG_DIR");
     if (config_dir_env)
@@ -1111,7 +1107,16 @@ milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
         priv->effective_user = NULL;
     }
 
+    if (priv->effective_group) {
+        g_free(priv->effective_group);
+        priv->effective_group = NULL;
+    }
+
     priv->privilege_mode = FALSE;
+    priv->manager_unix_socket_mode = 0660;
+    priv->controller_unix_socket_mode = 0660;
+    priv->remove_manager_unix_socket_on_close = TRUE;
+    priv->remove_controller_unix_socket_on_close = TRUE;
     priv->fallback_status = MILTER_STATUS_CONTINUE;
 }
 

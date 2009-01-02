@@ -291,16 +291,35 @@ test_fallback_status (void)
 static void
 milter_assert_default_configuration_helper (MilterManagerConfiguration *config)
 {
-    const gchar *spec;
-    MilterStatus status;
-
     cut_assert_false(milter_manager_configuration_is_privilege_mode(config));
 
-    spec = milter_manager_configuration_get_controller_connection_spec(config);
-    cut_assert_equal_string(NULL, spec);
+    cut_assert_equal_string(
+        NULL,
+        milter_manager_configuration_get_manager_connection_spec(config));
+    cut_assert_equal_string(
+        NULL,
+        milter_manager_configuration_get_controller_connection_spec(config));
+    cut_assert_equal_string(
+        NULL,
+        milter_manager_configuration_get_effective_user(config));
+    cut_assert_equal_string(
+        NULL,
+        milter_manager_configuration_get_effective_group(config));
 
-    status = milter_manager_configuration_get_fallback_status(config);
-    gcut_assert_equal_enum(MILTER_TYPE_STATUS, MILTER_STATUS_CONTINUE, status);
+    cut_assert_equal_uint(
+        0660,
+        milter_manager_configuration_get_manager_unix_socket_mode(config));
+    cut_assert_equal_uint(
+        0660,
+        milter_manager_configuration_get_controller_unix_socket_mode(config));
+
+    cut_assert_true(milter_manager_configuration_is_remove_manager_unix_socket_on_close(config));
+    cut_assert_true(milter_manager_configuration_is_remove_controller_unix_socket_on_close(config));
+
+    gcut_assert_equal_enum(
+        MILTER_TYPE_STATUS,
+        MILTER_STATUS_CONTINUE,
+        milter_manager_configuration_get_fallback_status(config));
 
     if (expected_children)
         g_object_unref(expected_children);
