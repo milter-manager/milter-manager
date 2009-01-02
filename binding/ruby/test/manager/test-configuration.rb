@@ -145,4 +145,94 @@ class TestConfiguration < Test::Unit::TestCase
     @configuration.clear_load_paths
     assert_equal([], @configuration.load_paths)
   end
+
+  def test_dump
+    assert_equal(<<-EOD.strip,
+security.privilege_mode = false
+security.effective_user = nil
+security.effective_group = nil
+
+controller.connection_spec = nil
+controller.unix_socket_mode = 0660
+controller.remove_unix_socket_on_close = true
+
+manager.connection_spec = nil
+manager.unix_socket_mode = 0660
+manager.remove_unix_socket_on_close = true
+manager.daemon = false
+manager.pid_file = nil
+EOD
+                 @configuration.dump)
+  end
+
+  def test_dump_full
+    loader = Milter::Manager::ConfigurationLoader.new(@configuration)
+    loader.security.effective_user = "nobody"
+    loader.security.effective_group = "nogroup"
+
+    loader.define_applicable_condition("S25R") do |condition|
+      condition.description = "Selective SMTP Rejection"
+    end
+
+    loader.define_milter("milter1") do |milter|
+      milter.description = "The first milter"
+      milter.connection_spec = "unix:/tmp/xxx"
+      milter.add_applicable_condition("S25R")
+    end
+
+    loader.define_milter("milter2") do |milter|
+      milter.description = "The second milter"
+      milter.connection_spec = "inet:2929"
+      milter.enabled = false
+    end
+
+    assert_equal(<<-EOD.strip,
+security.privilege_mode = false
+security.effective_user = "nobody"
+security.effective_group = "nogroup"
+
+controller.connection_spec = nil
+controller.unix_socket_mode = 0660
+controller.remove_unix_socket_on_close = true
+
+manager.connection_spec = nil
+manager.unix_socket_mode = 0660
+manager.remove_unix_socket_on_close = true
+manager.daemon = false
+manager.pid_file = nil
+
+define_applicable_condition("S25R") do |condition|
+  condition.description = "Selective SMTP Rejection"
+end
+
+define_milter("milter1") do |milter|
+  milter.description = "The first milter"
+  milter.connection_spec = "unix:/tmp/xxx"
+  milter.enabled = true
+  milter.applicable_conditions = ["S25R"]
+  milter.command = nil
+  milter.command_options = nil
+  milter.user_name = nil
+  milter.connection_timeout = 300.0
+  milter.writing_timeout = 10.0
+  milter.reading_timeout = 10.0
+  milter.end_of_message_timeout = 200.0
+end
+
+define_milter("milter2") do |milter|
+  milter.description = "The second milter"
+  milter.connection_spec = "inet:2929"
+  milter.enabled = false
+  milter.applicable_conditions = []
+  milter.command = nil
+  milter.command_options = nil
+  milter.user_name = nil
+  milter.connection_timeout = 300.0
+  milter.writing_timeout = 10.0
+  milter.reading_timeout = 10.0
+  milter.end_of_message_timeout = 200.0
+end
+EOD
+                 @configuration.dump)
+  end
 end

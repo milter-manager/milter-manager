@@ -11,7 +11,61 @@ require 'milter'
 require 'milter_manager.so'
 
 module Milter::Manager
-  class ConfigurationLoader
+  class Configuration
+    def dump
+      result = ''
+
+      result << "security.privilege_mode = #{privilege_mode?}\n"
+      result << "security.effective_user = #{effective_user.inspect}\n"
+      result << "security.effective_group = #{effective_group.inspect}\n"
+      result << "\n"
+
+      result << "controller.connection_spec = #{controller_connection_spec.inspect}\n"
+      result << "controller.unix_socket_mode = 0%o\n" % controller_unix_socket_mode
+      result << "controller.remove_unix_socket_on_close = #{remove_controller_unix_socket_on_close?}\n"
+      result << "\n"
+
+      result << "manager.connection_spec = #{manager_connection_spec.inspect}\n"
+      result << "manager.unix_socket_mode = 0%o\n" % manager_unix_socket_mode
+      result << "manager.remove_unix_socket_on_close = #{remove_manager_unix_socket_on_close?}\n"
+      result << "manager.daemon = #{daemon?}\n"
+      result << "manager.pid_file = #{pid_file.inspect}\n"
+      result << "\n"
+
+      applicable_conditions.each do |condition|
+        result << "define_applicable_condition(#{condition.name.inspect}) do |condition|\n"
+        result << "  condition.description = #{condition.description.inspect}\n"
+        result << "end\n"
+        result << "\n"
+      end
+
+      eggs.each do |egg|
+        result << "define_milter(#{egg.name.inspect}) do |milter|\n"
+        result << "  milter.description = #{egg.description.inspect}\n"
+        result << "  milter.connection_spec = #{egg.connection_spec.inspect}\n"
+        result << "  milter.enabled = #{egg.enabled?}\n"
+        condition_names = egg.applicable_conditions.collect do |condition|
+          condition.name
+        end
+        result << "  milter.applicable_conditions = #{condition_names.inspect}\n"
+        result << "  milter.command = #{egg.command.inspect}\n"
+        result << "  milter.command_options = #{egg.command_options.inspect}\n"
+        result << "  milter.user_name = #{egg.user_name.inspect}\n"
+        result << "  milter.connection_timeout = #{egg.connection_timeout}\n"
+        result << "  milter.writing_timeout = #{egg.writing_timeout}\n"
+        result << "  milter.reading_timeout = #{egg.reading_timeout}\n"
+        result << "  milter.end_of_message_timeout = #{egg.end_of_message_timeout}\n"
+        result << "end\n"
+        result << "\n"
+      end
+
+      result.strip
+    rescue Exception
+      [$!.message, $@].join("\n")
+    end
+  end
+
+class ConfigurationLoader
     class Error < StandardError
     end
 
@@ -471,6 +525,26 @@ module Milter::Manager
                                  name)
         end
         @egg.add_applicable_condition(condition)
+      end
+
+      def applicable_conditions=(condition_names)
+        configuration = @loader.configuration
+        conditions = condition_names.collect do |name|
+          condition = configuration.find_applicable_condition(name)
+          if condition.nil?
+            available_conditions = configuration.applicable_conditions
+            available_condition_names =
+              available_conditions.collect {|cond| cond.name}
+            raise InvalidValue.new("applicable condition",
+                                   available_condition_names,
+                                   condition_names)
+          end
+          condition
+        end
+        @egg.clear_applicable_conditions
+        conditions.each do |condition|
+          @egg.add_applicable_condition(condition)
+        end
       end
 
       def command_options=(options)

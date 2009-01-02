@@ -1279,6 +1279,20 @@ milter_manager_configuration_to_xml_string (MilterManagerConfiguration *configur
     g_string_append(string, "</configuration>\n");
 }
 
+gchar *
+milter_manager_configuration_dump (MilterManagerConfiguration *configuration)
+{
+    MilterManagerConfigurationClass *configuration_class;
+
+    configuration_class = MILTER_MANAGER_CONFIGURATION_GET_CLASS(configuration);
+    if (configuration_class->dump) {
+        return configuration_class->dump(configuration);
+    } else {
+        return milter_manager_configuration_to_xml(configuration);
+    }
+}
+
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */

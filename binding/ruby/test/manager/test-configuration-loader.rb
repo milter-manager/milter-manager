@@ -176,6 +176,35 @@ EOX
                  @configuration.eggs.collect {|egg| [egg.name, egg.description]})
   end
 
+  def test_define_milter_set_applicable_conditions
+    @loader.define_applicable_condition("S25R") do |condition|
+      condition.description = "Selective SMTP Rejection."
+    end
+    @loader.define_applicable_condition("Remote Network") do |condition|
+      condition.description = "Only works for remote network."
+    end
+
+    @loader.define_milter("milter1") do |milter|
+      milter.applicable_conditions = ["S25R", "Remote Network"]
+    end
+    assert_equal([["milter1", ["S25R", "Remote Network"]]],
+                 @configuration.eggs.collect do |egg|
+                   [egg.name,
+                    egg.applicable_conditions.collect {|cond| cond.name}]
+                 end)
+
+    @loader.define_milter("milter2") do |milter|
+      milter.applicable_conditions = ["S25R", "Remote Network"]
+      milter.applicable_conditions = ["S25R"]
+    end
+    assert_equal([["milter1", ["S25R", "Remote Network"]],
+                  ["milter2", ["S25R"]]],
+                 @configuration.eggs.collect do |egg|
+                   [egg.name,
+                    egg.applicable_conditions.collect {|cond| cond.name}]
+                 end)
+  end
+
   def test_define_applicable_condition_again
     @loader.define_applicable_condition("S25R") do |condition|
       condition.description = "Selective SMTP Rejection."

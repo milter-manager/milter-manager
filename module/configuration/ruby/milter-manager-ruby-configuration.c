@@ -66,6 +66,7 @@ static gboolean real_load         (MilterManagerConfiguration *configuration,
 static gboolean real_load_custom  (MilterManagerConfiguration *configuration,
                                    const gchar                *file_name,
                                    GError                    **error);
+static gchar   *real_dump         (MilterManagerConfiguration *configuration);
 
 static gpointer milter_manager_ruby_configuration_parent_class = NULL;
 static GType    milter_manager_ruby_configuration_type_id = 0;
@@ -91,6 +92,7 @@ milter_manager_ruby_configuration_class_init (MilterManagerRubyConfigurationClas
 
     configuration_class->load = real_load;
     configuration_class->load_custom = real_load_custom;
+    configuration_class->dump = real_dump;
 }
 
 static void
@@ -412,6 +414,26 @@ real_load_custom (MilterManagerConfiguration *_configuration,
                   const gchar *file_name, GError **error)
 {
     return load(_configuration, rb_intern("load_custom"), file_name, error);
+}
+
+static gchar *
+real_dump (MilterManagerConfiguration *_configuration)
+{
+    MilterManagerRubyConfiguration *configuration;
+    VALUE result;
+    GError *local_error = NULL;
+
+    configuration = MILTER_MANAGER_RUBY_CONFIGURATION(_configuration);
+    result = rb_funcall_protect(&local_error,
+                                GOBJ2RVAL(configuration),
+                                rb_intern("dump"), 0);
+    if (local_error) {
+        milter_error("%s", local_error->message);
+        g_error_free(local_error);
+        return NULL;
+    } else {
+        return g_strdup(RVAL2CSTR(result));
+    }
 }
 
 /*

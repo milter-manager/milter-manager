@@ -47,6 +47,7 @@ static gchar *option_pid_file = NULL;
 static gchar *option_user_name = NULL;
 static gchar *option_group_name = NULL;
 static gboolean option_daemon = FALSE;
+static gboolean option_show_config = FALSE;
 
 static gboolean io_detached = FALSE;
 
@@ -116,6 +117,8 @@ static const GOptionEntry option_entries[] =
      "NAME"},
     {"daemon", 0, 0, G_OPTION_ARG_NONE, &option_daemon,
      N_("Run as daemon process."), NULL},
+    {"show-config", 0, 0, G_OPTION_ARG_NONE, &option_show_config,
+     N_("Show configuration and exit"), NULL},
     {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, print_version,
      N_("Show version"), NULL},
     {NULL}
@@ -680,9 +683,6 @@ milter_manager_main (void)
 
     client = MILTER_CLIENT(manager);
 
-    /* FIXME */
-    controller_connection_watch_id = setup_controller_connection(manager);
-
     g_signal_connect(client, "error", G_CALLBACK(cb_error), NULL);
 
     if (option_spec)
@@ -698,6 +698,22 @@ milter_manager_main (void)
                                                          option_group_name);
     if (option_daemon)
         milter_manager_configuration_set_daemon(config, TRUE);
+    if (option_show_config) {
+        gchar *dumped_config;
+
+        dumped_config = milter_manager_configuration_dump(config);
+        if (dumped_config) {
+            g_print("%s", dumped_config);
+            if (!g_str_has_suffix(dumped_config, "\n"))
+                g_print("\n");
+            g_free(dumped_config);
+        }
+        g_object_unref(manager);
+        return;
+    }
+
+    /* FIXME */
+    controller_connection_watch_id = setup_controller_connection(manager);
 
     daemon = milter_manager_configuration_is_daemon(config);
     if (daemon && !daemonize()) {

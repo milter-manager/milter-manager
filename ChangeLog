@@ -1,5 +1,17 @@
 2009-01-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-configuration.[ch],
+	module/configuration/ruby/milter-manager-ruby-configuration.c,
+	binding/ruby/lib/milter/manager.rb,
+	binding/ruby/test/manager/test-configuration.rb: support
+	configuration dumping.
+
+	* milter/manager/milter-manager-main.c: add --show-config option.
+
+	* binding/ruby/lib/milter/manager.rb,
+	binding/ruby/test/manager/test-configuration-loader.rb: support
+	milter.applicable_conditions=.
+
 	* TODO: remove: change process name of forked process launcher.
 
 	* data/milter-manager.conf, data/defaults/freebsd.conf: add

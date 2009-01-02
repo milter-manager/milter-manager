@@ -65,6 +65,7 @@ struct _MilterManagerConfigurationClass
     void         (*to_xml)        (MilterManagerConfiguration *configuration,
                                    GString                    *xml,
                                    guint                       indent);
+    gchar       *(*dump)          (MilterManagerConfiguration *configuration);
 };
 
 GQuark        milter_manager_configuration_error_quark (void);
@@ -223,6 +224,9 @@ void          milter_manager_configuration_to_xml_string
                                      (MilterManagerConfiguration *configuration,
                                       GString *string,
                                       guint indent);
+
+gchar        *milter_manager_configuration_dump
+                                     (MilterManagerConfiguration *configuration);
 
 G_END_DECLS
 
