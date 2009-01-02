@@ -413,6 +413,14 @@ module Milter::Manager
       def remove_unix_socket_on_close=(remove)
         @configuration.remove_manager_unix_socket_on_close = remove
       end
+
+      def daemon=(boolean)
+        @configuration.daemon = boolean
+      end
+
+      def daemon?
+        @configuration.daemon?
+      end
     end
 
     class EggConfiguration

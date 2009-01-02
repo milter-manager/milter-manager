@@ -59,6 +59,13 @@ class TestConfigurationLoader < Test::Unit::TestCase
                  @configuration.controller_connection_spec)
   end
 
+  def test_manager_daemon
+    assert_false(@configuration.daemon?)
+    @loader.manager.daemon = true
+    assert_true(@configuration.daemon?)
+    assert_equal(@configuration.daemon?, @loader.manager.daemon?)
+  end
+
   def test_to_xml
     assert_equal(<<-EOX, @configuration.to_xml)
 <configuration>
