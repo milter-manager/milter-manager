@@ -1,5 +1,7 @@
 2009-01-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* data/rc.d/Makefile.am: data/rc.d/milter-manager is executable.
+
 	* binding/ruby/lib/milter/manager.rb (Shellwords): backport
 	Shellwords methods from ruby 1.8.7.
 
