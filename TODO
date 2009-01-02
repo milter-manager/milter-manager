@@ -1,3 +1,4 @@
+* change process name of forked process launcher.
 * send quit command to launcher on manager dispose.
 * add init script for FreeBSD and Ubuntu.
 * support controller's UNIX socket mode changing.

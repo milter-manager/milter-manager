@@ -455,6 +455,10 @@ start_process_launcher_process (MilterManager *manager)
 
     switch (fork()) {
     case 0:
+        /* FIXME: change process name to
+           'milter-manager: process-launcher' by
+           setproctitle() on *BSD, memcpy() argv on Linux or
+           spawning another process. */
         g_object_unref(manager);
         prepare_process_launcher_pipes_for_process_launcher(command_pipe_p,
                                                             reply_pipe_p,

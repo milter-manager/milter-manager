@@ -1,5 +1,7 @@
 2009-01-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: remove: change process name of forked process launcher.
+
 	* data/milter-manager.conf, data/defaults/freebsd.conf: add
 	default configuration file for FreeBSD.
 
