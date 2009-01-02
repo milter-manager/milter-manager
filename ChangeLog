@@ -1,5 +1,8 @@
 2009-01-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager.rb (Shellwords): backport
+	Shellwords methods from ruby 1.8.7.
+
 	* milter/manager/milter-manager-configuration.[ch],
 	module/configuration/ruby/milter-manager-ruby-configuration.c,
 	binding/ruby/lib/milter/manager.rb,
