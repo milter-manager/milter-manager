@@ -118,6 +118,11 @@ module Milter::Manager
       # ignore. log this?
     end
 
+    def load_default
+      platform = guess_platform
+      load_if_exist("defaults/#{platform}.conf") if platform
+    end
+
     def define_milter(name, &block)
       egg_configuration = EggConfiguration.new(name, self)
       yield(egg_configuration)
@@ -145,6 +150,22 @@ module Milter::Manager
       end.flatten.compact
       raise NonexistentPath.new(path) if resolved_paths.empty?
       resolved_paths
+    end
+
+    def guess_platform
+      if File.exist?("/COPYRIGHT")
+        copyright = File.read("/COPYRIGHT")
+        case copyright
+        when /The FreeBSD Project/
+          "freebsd"
+        else
+          nil
+        end
+      elsif File.exist?("/etc/debian_version")
+        "debian"
+      else
+        nil
+      end
     end
 
     class XMLConfigurationLoader
@@ -556,6 +577,70 @@ module Milter::Manager
             end
           end
         end
+      end
+    end
+
+    class BSDRCDetector
+      attr_reader :name, :variables
+      def initialize(script_name)
+        @script_name = script_name
+        init_variables
+        yield(self) if block_given?
+        detect
+      end
+
+      def rc_script_exist?
+        File.exist?(rc_script)
+      end
+
+      def apply(loader)
+        return unless rc_script_exist?
+      end
+
+      private
+      def init_variables
+        @name = nil
+        @variables = {}
+      end
+
+      def detect
+        init_variables
+        return unless rc_script_exist?
+
+        parse_rc_script
+      end
+
+      def parse_rc_script
+        rc_script_content = File.read(rc_script)
+        rc_script_content.each_line do |line|
+          if /\Aname=(.+)/ =~ line
+            @name = $1.sub(/\A"(.+)"\z/, '\1')
+          else
+            next if @name.nil?
+            if /#{Regexp.escape(@name)}_(.+)(?:=|:-)(.+)/ =~ line
+              variable_name, variable_value = $1, $2
+              variable_value = variable_value.sub(/\}\z/, '')
+              variable_value = variable_value.sub(/\A"(.*)"\z/, '\\1')
+              @variables[variable_name] = variable_value
+            end
+          end
+        end
+      end
+
+      def rc_script
+        File.join(rc_d, @script_name)
+      end
+
+      def rc_d
+        "/usr/local/etc/rc.d"
+      end
+
+      def rc_conf
+        "/etc/rc.conf"
+      end
+
+      def rc_conf_d
+        "/etc/rc.conf.d"
       end
     end
   end

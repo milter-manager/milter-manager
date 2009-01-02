@@ -1,5 +1,7 @@
 require 'socket'
 require 'tempfile'
+require 'fileutils'
+require 'pathname'
 
 module MilterTestUtils
 end
