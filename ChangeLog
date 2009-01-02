@@ -1,5 +1,8 @@
 2009-01-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-main.c: support daemonize.
+	* TODO: remove: support daemon mode (run in background)
+
 	* binding/ruby/lib/milter/manager.rb,
 	binding/ruby/test/manager/test-configuration-loader.rb: support
 	daemon configuration by configuration file.

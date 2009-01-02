@@ -29,9 +29,12 @@
 #include <pwd.h>
 #include <grp.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 #include <locale.h>
 #include <glib/gi18n.h>
+
+#include <glib/gstdio.h>
 
 #include "../manager.h"
 #include "milter-manager-process-launcher.h"
@@ -170,7 +173,7 @@ reload_configuration (int signum)
 static void
 cb_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
 {
-    g_print("MilterManager error: %s\n", error->message);
+    g_print("milter-manager error: %s\n", error->message);
 }
 
 static gboolean
@@ -489,6 +492,102 @@ switch_group (MilterManager *manager)
     return TRUE;
 }
 
+static gboolean
+detach_io (void)
+{
+    gboolean success = FALSE;
+    int null_stdin_fd = -1;
+    int null_stdout_fd = -1;
+    int null_stderr_fd = -1;
+
+    null_stdin_fd = open("/dev/null", O_RDONLY);
+    if (null_stdin_fd == -1) {
+        g_print("failed to open /dev/null for STDIN: %s\n", g_strerror(errno));
+        goto cleanup;
+    }
+
+    null_stdout_fd = open("/dev/null", O_WRONLY);
+    if (null_stdout_fd == -1) {
+        g_print("failed to open /dev/null for STDOUT: %s\n", g_strerror(errno));
+        goto cleanup;
+    }
+
+    null_stderr_fd = open("/dev/null", O_WRONLY);
+    if (null_stderr_fd == -1) {
+        g_print("failed to open /dev/null for STDERR: %s\n", g_strerror(errno));
+        goto cleanup;
+    }
+
+    if (dup2(null_stdin_fd, STDIN_FILENO) == -1) {
+        g_print("failed to detach STDIN: %s\n", g_strerror(errno));
+        goto cleanup;
+    }
+
+    if (dup2(null_stdout_fd, STDOUT_FILENO) == -1) {
+        g_print("failed to detach STDOUT: %s\n", g_strerror(errno));
+        goto cleanup;
+    }
+
+    if (dup2(null_stderr_fd, STDERR_FILENO) == -1) {
+        g_printerr("failed to detach STDERR: %s\n", g_strerror(errno));
+        goto cleanup;
+    }
+
+    success = TRUE;
+
+cleanup:
+    if (null_stdin_fd == -1)
+        close(null_stdin_fd);
+    if (null_stdout_fd == -1)
+        close(null_stdout_fd);
+    if (null_stderr_fd == -1)
+        close(null_stderr_fd);
+
+    return success;
+}
+
+static gboolean
+daemonize (void)
+{
+    switch (fork()) {
+    case 0:
+        break;
+    case -1:
+        g_print("failed to fork child process: %s\n", g_strerror(errno));
+        return FALSE;
+    default:
+        _exit(EXIT_SUCCESS);
+        break;
+    }
+
+    if (setsid() == -1) {
+        g_print("failed to create session: %s\n", g_strerror(errno));
+        return FALSE;
+    }
+
+    switch (fork()) {
+    case 0:
+        break;
+    case -1:
+        g_print("failed to fork grandchild process: %s\n", g_strerror(errno));
+        return FALSE;
+    default:
+        _exit(EXIT_SUCCESS);
+        break;
+    }
+
+    if (g_chdir("/") == -1) {
+        g_print("failed to change working directory to '/': %s\n",
+                g_strerror(errno));
+        return FALSE;
+    }
+
+    if (!detach_io())
+        return FALSE;
+
+    return TRUE;
+}
+
 void
 milter_manager_main (void)
 {
@@ -498,6 +597,7 @@ milter_manager_main (void)
     guint controller_connection_watch_id = 0;
     GError *error = NULL;
     pid_t pid = -1;
+    gboolean daemon;
 
     config = milter_manager_configuration_new(NULL);
     if (config_dir)
@@ -525,7 +625,7 @@ milter_manager_main (void)
         pid = fork_launcher_process(manager);
         if (pid == -1) {
             g_object_unref(manager);
-            g_print("%s\n", g_strerror(errno));
+            g_print("failed to fork launcher process: %s\n", g_strerror(errno));
             return;
         }
         if (pid == 0) {
@@ -545,12 +645,26 @@ milter_manager_main (void)
         return;
     }
 
+    daemon = milter_manager_configuration_is_daemon(config);
+    if (daemon && !daemonize()) {
+        g_object_unref(manager);
+        if (launcher_pid > 0)
+            kill(launcher_pid, SIGKILL);
+        return;
+    }
+
     the_manager = manager;
     default_sigint_handler = signal(SIGINT, shutdown_client);
     default_sigterm_handler = signal(SIGTERM, shutdown_client);
     default_sighup_handler = signal(SIGHUP, reload_configuration);
-    if (!milter_client_main(client))
-        g_print("Failed to start milter-manager process.\n");
+    if (!milter_client_main(client)) {
+        const gchar message[] = "failed to start milter-manager process.";
+
+        if (daemon)
+            milter_error(message);
+        else
+            g_print("%s\n", message);
+    }
     signal(SIGHUP, default_sighup_handler);
     signal(SIGTERM, default_sigterm_handler);
     signal(SIGINT, default_sigint_handler);

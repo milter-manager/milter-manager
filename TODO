@@ -1,4 +1,3 @@
-* support daemon mode (run in background)
 * add init script for FreeBSD and Ubuntu.
 * support controller's UNIX socket mode changing.
 * support controller's UNIX socket mode removing on close.
