@@ -1,5 +1,8 @@
 2009-01-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-main.c: improve launcher process
+	starting. daemonize is done before launcher started.
+
 	* milter/manager/milter-manager-process-launcher.[ch]: launcher
 	doesn't need configuration.
 	* milter/manager/milter-manager-main.c,

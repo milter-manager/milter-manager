@@ -44,10 +44,21 @@ static MilterManager *the_manager = NULL;
 static gchar *option_spec = NULL;
 static gchar *config_dir = NULL;
 
+static gboolean io_detached = FALSE;
+
 static void (*default_sigint_handler) (int signum);
 static void (*default_sigterm_handler) (int signum);
 static void (*default_sighup_handler) (int signum);
 
+#define milter_manager_error(...) G_STMT_START  \
+{                                               \
+    if (io_detached) {                          \
+        milter_error(__VA_ARGS__);              \
+    } else {                                    \
+        g_print(__VA_ARGS__);                   \
+        g_print("\n");                          \
+    }                                           \
+} G_STMT_END
 
 static gboolean
 print_version (const gchar *option_name, const gchar *value,
@@ -339,46 +350,54 @@ create_write_io_channel (int pipe)
     return create_io_channel(pipe, G_IO_FLAG_IS_WRITEABLE);
 }
 
-static pid_t
-prepare_pipes (MilterManager *manager,
-               GIOChannel **read_channel,
-               GIOChannel **write_channel)
+static gboolean
+create_process_launcher_pipes (gint **command_pipe, gint **reply_pipe)
 {
-    int fork_errno = 0;
-    int launcher_command_pipe[2];
-    int launcher_reply_pipe[2];
-    pid_t pid;
-
-    if (pipe(launcher_command_pipe) < 0 ||
-        pipe(launcher_reply_pipe) < 0) {
-        return -1;
+    if (pipe(*command_pipe) == -1) {
+        milter_manager_error("failed to create pipe for launcher command: %s",
+                             g_strerror(errno));
+        return FALSE;
     }
 
-    pid = fork();
-    if (pid == -1)
-        fork_errno = errno;
-
-    if (pid == 0) {
-        close_pipe(launcher_command_pipe, WRITE_PIPE);
-        close_pipe(launcher_reply_pipe, READ_PIPE);
-
-        *write_channel = create_write_io_channel(launcher_reply_pipe[WRITE_PIPE]);
-        *read_channel = create_read_io_channel(launcher_command_pipe[READ_PIPE]);
-    } else {
-        close_pipe(launcher_command_pipe, READ_PIPE);
-        close_pipe(launcher_reply_pipe, WRITE_PIPE);
-
-        *write_channel = create_write_io_channel(launcher_command_pipe[WRITE_PIPE]);
-        *read_channel = create_read_io_channel(launcher_reply_pipe[READ_PIPE]);
+    if (pipe(*reply_pipe) == -1) {
+        milter_manager_error("failed to create pipe for launcher reply: %s",
+                             g_strerror(errno));
+        close((*command_pipe)[WRITE_PIPE]);
+        close((*command_pipe)[READ_PIPE]);
+        return FALSE;
     }
 
-    errno = fork_errno;
-    return pid;
+    return TRUE;
 }
 
 static void
-start_process_launcher (MilterManager *manager,
-                        GIOChannel *read_channel, GIOChannel *write_channel)
+prepare_process_launcher_pipes_for_process_launcher (gint *command_pipe,
+                                                     gint *reply_pipe,
+                                                     GIOChannel **read_channel,
+                                                     GIOChannel **write_channel)
+{
+    close_pipe(command_pipe, WRITE_PIPE);
+    close_pipe(reply_pipe, READ_PIPE);
+
+    *write_channel = create_write_io_channel(reply_pipe[WRITE_PIPE]);
+    *read_channel = create_read_io_channel(command_pipe[READ_PIPE]);
+}
+
+static void
+prepare_process_launcher_pipes_for_manager (gint *command_pipe,
+                                            gint *reply_pipe,
+                                            GIOChannel **read_channel,
+                                            GIOChannel **write_channel)
+{
+    close_pipe(command_pipe, READ_PIPE);
+    close_pipe(reply_pipe, WRITE_PIPE);
+
+    *write_channel = create_write_io_channel(command_pipe[WRITE_PIPE]);
+    *read_channel = create_read_io_channel(reply_pipe[READ_PIPE]);
+}
+
+static void
+start_process_launcher (GIOChannel *read_channel, GIOChannel *write_channel)
 {
     MilterManagerProcessLauncher *launcher;
     MilterReader *reader;
@@ -398,27 +417,51 @@ start_process_launcher (MilterManager *manager,
     milter_agent_start(MILTER_AGENT(launcher));
 
     milter_manager_process_launcher_run(launcher);
+
+    g_object_unref(launcher);
 }
 
-static pid_t
-fork_launcher_process (MilterManager *manager)
+static gboolean
+start_process_launcher_process (MilterManager *manager)
 {
-    pid_t pid;
-    GIOChannel *read_channel = NULL, *write_channel = NULL;
+    gint command_pipe[2];
+    gint reply_pipe[2];
+    gint *command_pipe_p;
+    gint *reply_pipe_p;
+    GIOChannel *read_channel = NULL;
+    GIOChannel *write_channel = NULL;
 
-    pid = prepare_pipes(manager, &read_channel, &write_channel);
-    if (pid == -1)
-        return -1;
+    command_pipe_p = command_pipe;
+    reply_pipe_p = reply_pipe;
+    if (!create_process_launcher_pipes(&command_pipe_p, &reply_pipe_p))
+        return FALSE;
 
-    if (pid == 0) {
-        start_process_launcher(manager, read_channel, write_channel);
-    } else {
+    switch (fork()) {
+    case 0:
+        g_object_unref(manager);
+        prepare_process_launcher_pipes_for_process_launcher(command_pipe_p,
+                                                            reply_pipe_p,
+                                                            &read_channel,
+                                                            &write_channel);
+        start_process_launcher(read_channel, write_channel);
+        _exit(EXIT_FAILURE);
+        break;
+    case -1:
+        milter_manager_error("failed to fork process launcher process: %s",
+                             g_strerror(errno));
+        return FALSE;
+    default:
+        prepare_process_launcher_pipes_for_manager(command_pipe_p,
+                                                   reply_pipe_p,
+                                                   &read_channel,
+                                                   &write_channel);
         milter_manager_set_launcher_channel(manager,
                                             read_channel,
                                             write_channel);
+        break;
     }
 
-    return pid;
+    return TRUE;
 }
 
 static gboolean
@@ -438,19 +481,21 @@ switch_user (MilterManager *manager)
     password = getpwnam(effective_user);
     if (!password) {
         if (errno == 0) {
-            g_print("failed to find password entry for effective user: %s\n",
-                    effective_user);
+            milter_manager_error(
+                "failed to find password entry for effective user: %s",
+                effective_user);
         } else {
-            g_print("failed to get password entry for effective user: %s: %s\n",
-                    effective_user, g_strerror(errno));
+            milter_manager_error(
+                "failed to get password entry for effective user: %s: %s",
+                effective_user, g_strerror(errno));
         }
         return FALSE;
     }
 
 
     if (setuid(password->pw_uid) == -1) {
-        g_print("failed to change effective user: %s: %s\n",
-                effective_user, g_strerror(errno));
+        milter_manager_error("failed to change effective user: %s: %s",
+                             effective_user, g_strerror(errno));
         return FALSE;
     }
 
@@ -474,19 +519,21 @@ switch_group (MilterManager *manager)
     group = getgrnam(effective_group);
     if (!group) {
         if (errno == 0) {
-            g_print("failed to find group entry for effective group: %s\n",
-                    effective_group);
+            milter_manager_error(
+                "failed to find group entry for effective group: %s",
+                effective_group);
         } else {
-            g_print("failed to get group entry for effective group: %s: %s\n",
-                    effective_group, g_strerror(errno));
+            milter_manager_error(
+                "failed to get group entry for effective group: %s: %s",
+                effective_group, g_strerror(errno));
         }
         return FALSE;
     }
 
 
     if (setgid(group->gr_gid) == -1) {
-        g_print("failed to change effective group: %s: %s\n",
-                effective_group, g_strerror(errno));
+        milter_manager_error("failed to change effective group: %s: %s",
+                             effective_group, g_strerror(errno));
         return FALSE;
     }
 
@@ -544,6 +591,9 @@ cleanup:
     if (null_stderr_fd == -1)
         close(null_stderr_fd);
 
+    if (success)
+        io_detached = TRUE;
+
     return success;
 }
 
@@ -597,7 +647,6 @@ milter_manager_main (void)
     MilterManagerConfiguration *config;
     guint controller_connection_watch_id = 0;
     GError *error = NULL;
-    pid_t pid = -1;
     gboolean daemon;
 
     config = milter_manager_configuration_new(NULL);
@@ -622,16 +671,16 @@ milter_manager_main (void)
         return;
     }
 
-    if (milter_manager_configuration_is_privilege_mode(config)) {
-        pid = fork_launcher_process(manager);
-        if (pid == -1) {
-            g_object_unref(manager);
-            g_print("failed to fork launcher process: %s\n", g_strerror(errno));
-            return;
-        }
-        if (pid == 0) {
-            _exit(EXIT_SUCCESS);
-        }
+    daemon = milter_manager_configuration_is_daemon(config);
+    if (daemon && !daemonize()) {
+        g_object_unref(manager);
+        return;
+    }
+
+    if (milter_manager_configuration_is_privilege_mode(config) &&
+        !start_process_launcher_process(manager)) {
+        g_object_unref(manager);
+        return;
     }
 
     if (geteuid() == 0 &&
@@ -640,24 +689,12 @@ milter_manager_main (void)
         return;
     }
 
-    daemon = milter_manager_configuration_is_daemon(config);
-    if (daemon && !daemonize()) {
-        g_object_unref(manager);
-        return;
-    }
-
     the_manager = manager;
     default_sigint_handler = signal(SIGINT, shutdown_client);
     default_sigterm_handler = signal(SIGTERM, shutdown_client);
     default_sighup_handler = signal(SIGHUP, reload_configuration);
-    if (!milter_client_main(client)) {
-        const gchar message[] = "failed to start milter-manager process.";
-
-        if (daemon)
-            milter_error(message);
-        else
-            g_print("%s\n", message);
-    }
+    if (!milter_client_main(client))
+        milter_manager_error("failed to start milter-manager process.");
     signal(SIGHUP, default_sighup_handler);
     signal(SIGTERM, default_sigterm_handler);
     signal(SIGINT, default_sigint_handler);
