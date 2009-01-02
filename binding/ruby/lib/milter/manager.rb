@@ -169,12 +169,12 @@ module Milter::Manager
     end
 
     class XMLConfigurationLoader
-      def initialize(configuration)
-        @configuration = configuration
+      def initialize(loader)
+        @loader = loader
       end
 
       def load(file)
-        listener = Listener.new(@configuration)
+        listener = Listener.new(@loader)
         File.open(file) do |input|
           parser = REXML::Parsers::StreamParser.new(input, listener)
           begin
@@ -191,8 +191,8 @@ module Milter::Manager
       class Listener
         include REXML::StreamListener
 
-        def initialize(configuration)
-          @configuration = configuration
+        def initialize(loader)
+          @loader = loader
           @ns_stack = [{"xml" => :xml}]
           @tag_stack = [["", :root]]
           @text_stack = ['']
@@ -232,7 +232,7 @@ module Milter::Manager
           when *no_action_states
             # do nothing
           when :milter
-            @configuration.define_milter(@egg_config["name"]) do |milter|
+            @loader.define_milter(@egg_config["name"]) do |milter|
               spec = @egg_config["connection_spec"] || ""
               milter.connection_spec = spec unless spec.empty?
               (@egg_config["applicable_conditions"] || []).each do |condition|
@@ -254,7 +254,7 @@ module Milter::Manager
             @egg_config[$POSTMATCH] = text
           else
             local = normalize_local(local)
-            @configuration.send(@state_stack.last).send("#{local}=", text)
+            @loader.send(@state_stack.last).send("#{local}=", text)
           end
           @ns_stack.pop
         end
@@ -296,7 +296,7 @@ module Milter::Manager
               raise "unexpected element: #{current_path}"
             end
           when :security, :controller, :manager
-            if @configuration.send(current_state).respond_to?("#{local}=")
+            if @loader.send(current_state).respond_to?("#{local}=")
               local
             else
               raise "unexpected element: #{current_path}"
@@ -582,11 +582,20 @@ module Milter::Manager
 
     class BSDRCDetector
       attr_reader :name, :variables
-      def initialize(script_name)
+      def initialize(script_name, &connection_spec_detector)
         @script_name = script_name
+        @connection_spec_detector = connection_spec_detector
         init_variables
-        yield(self) if block_given?
-        detect
+      end
+
+      def detect
+        init_variables
+        return unless rc_script_exist?
+
+        parse_rc_script
+        return if @name.nil?
+        parse_rc_conf(rc_conf)
+        parse_rc_conf(specific_rc_conf)
       end
 
       def rc_script_exist?
@@ -603,6 +612,15 @@ module Milter::Manager
 
       def apply(loader)
         return if @name.nil?
+        connection_spec = guess_connection_spec
+        return if connection_spec.nil?
+        connection_spec = "unix:#{connection_spec}" if /\A\// =~ connection_spec
+        loader.define_milter(@name) do |milter|
+          milter.enabled = enabled?
+          milter.command = rc_script
+          milter.command_options = "start"
+          milter.connection_spec = connection_spec
+        end
       end
 
       private
@@ -611,29 +629,20 @@ module Milter::Manager
         @variables = {}
       end
 
-      def detect
-        init_variables
-        return unless rc_script_exist?
-
-        parse_rc_script
-        return if @name.nil?
-        parse_rc_conf(rc_conf)
-        parse_rc_conf(specific_rc_conf)
-      end
-
       def parse_rc_script
         rc_script_content = File.read(rc_script)
         rc_script_content.each_line do |line|
           if /\Aname=(.+)/ =~ line
             @name = $1.sub(/\A"(.+)"\z/, '\1')
-          else
-            next if @name.nil?
-            if /#{Regexp.escape(@name)}_(.+)(?:=|:-)(.+)/ =~ line
-              variable_name, variable_value = $1, $2
-              variable_value = variable_value.sub(/\}\z/, '')
-              variable_value = normalize_variable_value(variable_value)
-              @variables[variable_name] = variable_value
-            end
+          end
+        end
+        return if @name.nil?
+
+        rc_script_content.each_line do |line|
+          if /\$\{#{Regexp.escape(@name)}_(.+?)(?::?-|=)(.*)\}/ =~ line
+            variable_name, variable_value = $1, $2
+            variable_value = normalize_variable_value(variable_value)
+            @variables[variable_name] = variable_value
           end
         end
       end
@@ -654,6 +663,40 @@ module Milter::Manager
 
       def normalize_variable_value(value)
         value.sub(/\A"(.*)"\z/, '\\1')
+      end
+
+      def guess_connection_spec
+        spec = nil
+        if @connection_spec_detector
+          spec = @connection_spec_detector.call(self)
+        end
+        spec ||= @variables["socket"] || @variables["sockfile"]
+        spec ||= @variables["connection_spec"]
+        spec ||= extract_connection_spec_parameter_from_flags(@variables["flags"])
+        spec
+      end
+
+      def extract_connection_spec_parameter_from_flags(flags)
+        return nil if flags.nil?
+
+        options = Shellwords.split(flags)
+        p_option_index = options.index("-p")
+        if p_option_index
+          spec = options[p_option_index + 1]
+          return spec unless shell_variable?(spec)
+        else
+          options.each do |option|
+            if /\A-p/ =~ option
+              spec = $POSTMATCH
+              return spec unless shell_variable?(spec)
+            end
+          end
+        end
+        nil
+      end
+
+      def shell_variable?(string)
+        /\A\$/ =~ string
       end
 
       def rc_script

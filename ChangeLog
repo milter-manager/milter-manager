@@ -1,6 +1,10 @@
 2009-01-02  Kouhei Sutou  <kou@cozmixng.org>
 
 	* binding/ruby/lib/milter/manager.rb,
+	binding/ruby/test/manager/test-bsd-rc-detector.rb: support auto
+	socket detection.
+
+	* binding/ruby/lib/milter/manager.rb,
 	binding/ruby/test/manager/test-bsd-rc-detector.rb: support rc_conf
 	parsing.
 
