@@ -160,6 +160,12 @@ void          milter_manager_configuration_set_remove_controller_unix_socket_on_
                                      (MilterManagerConfiguration *configuration,
                                       gboolean                    remove);
 
+gboolean      milter_manager_configuration_is_daemon
+                                     (MilterManagerConfiguration *configuration);
+void          milter_manager_configuration_set_daemon
+                                     (MilterManagerConfiguration *configuration,
+                                      gboolean                    daemon);
+
 MilterStatus  milter_manager_configuration_get_fallback_status
                                      (MilterManagerConfiguration *configuration);
 void          milter_manager_configuration_set_fallback_status

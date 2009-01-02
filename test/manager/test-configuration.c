@@ -34,6 +34,7 @@ void test_manager_unix_socket_mode (void);
 void test_controller_unix_socket_mode (void);
 void test_remove_manager_unix_socket_on_close (void);
 void test_remove_controller_unix_socket_on_close (void);
+void test_daemon (void);
 void test_controller_connection_spec (void);
 void test_manager_connection_spec (void);
 void test_fallback_status (void);
@@ -239,6 +240,14 @@ test_remove_controller_unix_socket_on_close (void)
 }
 
 void
+test_daemon (void)
+{
+    cut_assert_false(milter_manager_configuration_is_daemon(config));
+    milter_manager_configuration_set_daemon(config, TRUE);
+    cut_assert_true(milter_manager_configuration_is_daemon(config));
+}
+
+void
 test_controller_connection_spec (void)
 {
     const gchar spec[] = "inet:2929@localhost";
@@ -315,6 +324,7 @@ milter_assert_default_configuration_helper (MilterManagerConfiguration *config)
 
     cut_assert_true(milter_manager_configuration_is_remove_manager_unix_socket_on_close(config));
     cut_assert_true(milter_manager_configuration_is_remove_controller_unix_socket_on_close(config));
+    cut_assert_false(milter_manager_configuration_is_daemon(config));
 
     gcut_assert_equal_enum(
         MILTER_TYPE_STATUS,

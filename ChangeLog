@@ -1,5 +1,10 @@
 2009-01-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-configuration.[ch],
+	test/manager/test-configuration.c: add
+	milter_manager_configuration_is_daemon() and
+	milter_manager_configuration_set_daemon().
+
 	* milter/manager/milter-manager-configuration.c,
 	test/manager/test-configuration.c: clear works again.
 

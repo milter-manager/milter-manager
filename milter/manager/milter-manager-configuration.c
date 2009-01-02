@@ -53,6 +53,7 @@ struct _MilterManagerConfigurationPrivate
     guint controller_unix_socket_mode;
     gboolean remove_manager_unix_socket_on_close;
     gboolean remove_controller_unix_socket_on_close;
+    gboolean daemon;
 };
 
 enum
@@ -67,7 +68,8 @@ enum
     PROP_MANAGER_UNIX_SOCKET_MODE,
     PROP_CONTROLLER_UNIX_SOCKET_MODE,
     PROP_REMOVE_MANAGER_UNIX_SOCKET_ON_CLOSE,
-    PROP_REMOVE_CONTROLLER_UNIX_SOCKET_ON_CLOSE
+    PROP_REMOVE_CONTROLLER_UNIX_SOCKET_ON_CLOSE,
+    PROP_DAEMON
 };
 
 enum
@@ -183,7 +185,7 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
                                 "Whether milter-manager removes "
                                 "UNIX socket used for manager on close",
                                 TRUE,
-                                G_PARAM_READWRITE);
+                                G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
     g_object_class_install_property(gobject_class,
                                     PROP_REMOVE_MANAGER_UNIX_SOCKET_ON_CLOSE,
                                     spec);
@@ -193,10 +195,17 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
                                 "Whether milter-manager removes "
                                 "UNIX socket used for controller on close",
                                 TRUE,
-                                G_PARAM_READWRITE);
+                                G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
     g_object_class_install_property(gobject_class,
                                     PROP_REMOVE_MANAGER_UNIX_SOCKET_ON_CLOSE,
                                     spec);
+
+    spec = g_param_spec_boolean("daemon",
+                                "Run as daemon process",
+                                "Whether milter-manager runs as daemon process",
+                                FALSE,
+                                G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+    g_object_class_install_property(gobject_class, PROP_DAEMON, spec);
 
     signals[TO_XML] =
         g_signal_new("to-xml",
@@ -301,6 +310,10 @@ set_property (GObject      *object,
         milter_manager_configuration_set_remove_controller_unix_socket_on_close(
             config, g_value_get_boolean(value));
         break;
+      case PROP_DAEMON:
+        milter_manager_configuration_set_daemon(
+            config, g_value_get_boolean(value));
+        break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -346,6 +359,9 @@ get_property (GObject    *object,
         break;
       case PROP_REMOVE_CONTROLLER_UNIX_SOCKET_ON_CLOSE:
         g_value_set_boolean(value, priv->remove_controller_unix_socket_on_close);
+        break;
+      case PROP_DAEMON:
+        g_value_set_boolean(value, priv->daemon);
         break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -861,6 +877,22 @@ milter_manager_configuration_set_remove_controller_unix_socket_on_close (MilterM
     priv->remove_controller_unix_socket_on_close = remove;
 }
 
+gboolean
+milter_manager_configuration_is_daemon (MilterManagerConfiguration *configuration)
+{
+    return MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration)->daemon;
+}
+
+void
+milter_manager_configuration_set_daemon (MilterManagerConfiguration *configuration,
+                                         gboolean daemon)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    priv->daemon = daemon;
+}
+
 void
 milter_manager_configuration_add_egg (MilterManagerConfiguration *configuration,
                                       MilterManagerEgg         *egg)
@@ -1117,6 +1149,7 @@ milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
     priv->controller_unix_socket_mode = 0660;
     priv->remove_manager_unix_socket_on_close = TRUE;
     priv->remove_controller_unix_socket_on_close = TRUE;
+    priv->daemon = FALSE;
     priv->fallback_status = MILTER_STATUS_CONTINUE;
 }
 
