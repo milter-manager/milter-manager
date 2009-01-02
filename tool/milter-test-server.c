@@ -53,7 +53,6 @@ static gchar **recipients = NULL;
 static gchar **body_chunks = NULL;
 static gchar *unknown_command = NULL;
 static MilterHeaders *option_headers = NULL;
-static MilterSyslogLogger *logger = NULL;
 
 #define PROGRAM_NAME "milter-test-server"
 
@@ -1409,15 +1408,12 @@ main (int argc, char *argv[])
     if (verbose)
         g_setenv("MILTER_LOG_LEVEL", "all", FALSE);
 
-    logger = milter_syslog_logger_new("milter-test-server");
-
     context = milter_server_context_new();
     init_process_data(&process_data);
     setup_context(context, &process_data);
 
     success = start_process(context, &process_data);
 
-    g_object_unref(logger);
     g_object_unref(context);
     free_process_data(&process_data);
 

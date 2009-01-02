@@ -1,5 +1,8 @@
 2009-01-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-test-server.c: miler-test-server doesn't need to log
+	syslog.
+
 	* milter/manager/milter-manager-main.c: support daemonize.
 	* TODO: remove: support daemon mode (run in background)
 
