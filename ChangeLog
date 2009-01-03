@@ -1,5 +1,8 @@
 2009-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/test-manager.c (wait_for_manager_ready): add more
+	information.
+
 	* test/manager/test-process-launcher.c (setup): add missing
 	variables initialization.
 
