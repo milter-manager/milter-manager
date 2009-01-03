@@ -1,5 +1,7 @@
 2009-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/server/milter-server-context.c (write_macro): log sent macros.
+
 	* milter/core/milter-utils.[ch], test/core/test-utils.c:
 	add inspect_hash_string_string_element().
 

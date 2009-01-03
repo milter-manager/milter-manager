@@ -813,6 +813,8 @@ write_macro (MilterServerContext *context,
 {
     GHashTable *macros, *filtered_macros = NULL, *target_macros;
     GList *request_symbols = NULL;
+    gchar *command_name;
+    gchar *inspected_macros;
     gchar *packet = NULL;
     gsize packet_size;
     MilterEncoder *encoder;
@@ -852,6 +854,15 @@ write_macro (MilterServerContext *context,
                                                target_macros);
     if (filtered_macros)
         g_hash_table_unref(filtered_macros);
+
+    command_name = milter_utils_get_enum_nick_name(MILTER_TYPE_COMMAND, command);
+    inspected_macros = milter_utils_inspect_hash_string_string(target_macros);
+    milter_debug("%s is sending macros for %s: %s",
+                 milter_server_context_get_name(context),
+                 command_name,
+                 inspected_macros);
+    g_free(command_name);
+    g_free(inspected_macros);
 
     return write_packet(context, packet, packet_size,
                         MILTER_SERVER_CONTEXT_STATE_DEFINE_MACRO);
