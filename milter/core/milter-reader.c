@@ -204,7 +204,7 @@ channel_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
     }
 
     if (!keep_callback) {
-        milter_debug("done.");
+        milter_debug("removing reader watcher.");
         priv->shutdown_requested = FALSE;
         priv->channel_watch_id = 0;
         milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(reader));
