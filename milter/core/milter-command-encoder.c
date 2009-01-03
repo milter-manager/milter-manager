@@ -82,11 +82,18 @@ milter_command_encoder_encode_negotiate (MilterCommandEncoder *encoder,
 }
 
 static void
-encode_each_macro (gpointer key, gpointer value, gpointer user_data)
+encode_each_macro (gpointer _key, gpointer _value, gpointer user_data)
 {
+    gchar *key = _key;
+    gchar *value = _value;
     GString *buffer = user_data;
 
-    g_string_append(buffer, key);
+    if (key[0] == '\0')
+        return;
+    if (key[0] == '{' || key[1] == '\0')
+        g_string_append(buffer, key);
+    else
+        g_string_append_printf(buffer, "{%s}", key);
     g_string_append_c(buffer, '\0');
     g_string_append(buffer, value);
     g_string_append_c(buffer, '\0');

@@ -1,5 +1,9 @@
 2009-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-command-encoder.c,
+	test/core/test-command-encoder.c: encoded macro name should be
+	surrounded with "{" and "}" if the name length is more than 1.
+
 	* milter/server/milter-server-context.c (write_macro): log sent macros.
 
 	* milter/core/milter-utils.[ch], test/core/test-utils.c:

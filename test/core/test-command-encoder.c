@@ -217,7 +217,7 @@ setup_define_macro_connect_packet (void)
 {
     g_string_append(expected, "C");
     append_name_and_value(expected, "j", "debian.cozmixng.org");
-    append_name_and_value(expected, "daemon_name", "debian.cozmixng.org");
+    append_name_and_value(expected, "{daemon_name}", "debian.cozmixng.org");
     append_name_and_value(expected, "v", "Postfix 2.5.5");
 }
 
@@ -270,22 +270,24 @@ data_encode_define_macro (void)
                  define_macro_test_data_new(
                      setup_define_macro_envelope_from_packet,
                      MILTER_COMMAND_ENVELOPE_FROM,
-                     "{mail_addr}", "kou@cozmixng.org",
+                     "mail_addr", "kou@cozmixng.org",
                      NULL),
                  define_macro_test_data_free);
 
     cut_add_data("RCPT TO",
-                 define_macro_test_data_new(setup_define_macro_envelope_recipient_packet,
-                                            MILTER_COMMAND_ENVELOPE_RECIPIENT,
-                                            "{rcpt_addr}", "kou@cozmixng.org",
-                                            NULL),
+                 define_macro_test_data_new(
+                     setup_define_macro_envelope_recipient_packet,
+                     MILTER_COMMAND_ENVELOPE_RECIPIENT,
+                     "rcpt_addr", "kou@cozmixng.org",
+                     NULL),
                  define_macro_test_data_free);
 
     cut_add_data("header",
-                 define_macro_test_data_new(setup_define_macro_header_packet,
-                                            MILTER_COMMAND_HEADER,
-                                            "i", "69FDD42DF4A",
-                                            NULL),
+                 define_macro_test_data_new(
+                     setup_define_macro_header_packet,
+                     MILTER_COMMAND_HEADER,
+                     "i", "69FDD42DF4A",
+                     NULL),
                  define_macro_test_data_free);
 }
 
