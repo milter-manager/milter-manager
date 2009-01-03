@@ -42,6 +42,7 @@ struct _MilterAgentPrivate
     MilterDecoder *decoder;
     MilterReader *reader;
     MilterWriter *writer;
+    gboolean finished;
 };
 
 enum
@@ -50,8 +51,11 @@ enum
     PROP_READER
 };
 
+static void         finished           (MilterFinishedEmittable *emittable);
+
 MILTER_IMPLEMENT_ERROR_EMITTABLE(error_emittable_init);
-MILTER_IMPLEMENT_FINISHED_EMITTABLE(finished_emittable_init);
+MILTER_IMPLEMENT_FINISHED_EMITTABLE_WITH_CODE(finished_emittable_init,
+                                              iface->finished = finished)
 G_DEFINE_ABSTRACT_TYPE_WITH_CODE(MilterAgent, milter_agent, G_TYPE_OBJECT,
     G_IMPLEMENT_INTERFACE(MILTER_TYPE_ERROR_EMITTABLE, error_emittable_init)
     G_IMPLEMENT_INTERFACE(MILTER_TYPE_FINISHED_EMITTABLE, finished_emittable_init))
@@ -131,6 +135,7 @@ milter_agent_init (MilterAgent *agent)
     priv->decoder = NULL;
     priv->writer = NULL;
     priv->reader = NULL;
+    priv->finished = FALSE;
 }
 
 static void
@@ -202,6 +207,22 @@ get_property (GObject    *object,
 }
 
 static void
+finished (MilterFinishedEmittable *emittable)
+{
+    MilterAgent *agent;
+    MilterAgentPrivate *priv;
+
+    agent = MILTER_AGENT(emittable);
+    priv = MILTER_AGENT_GET_PRIVATE(agent);
+
+    priv->finished = TRUE;
+    if (priv->reader)
+        milter_reader_shutdown(priv->reader);
+    if (priv->writer)
+        milter_writer_shutdown(priv->writer);
+}
+
+static void
 cb_reader_flow (MilterReader *reader,
                 const gchar *data, gsize data_size,
                 gpointer user_data)
@@ -239,7 +260,7 @@ cb_reader_error (MilterReader *reader,
                                           MILTER_AGENT_ERROR,
                                           MILTER_AGENT_ERROR_IO_ERROR,
                                           g_error_copy(reader_error),
-                                          "I/O error");
+                                          "Input error");
     milter_error("%s", error->message);
     milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(user_data),
                                 error);
@@ -249,7 +270,13 @@ cb_reader_error (MilterReader *reader,
 static void
 cb_reader_finished (MilterFinishedEmittable *emittable, gpointer user_data)
 {
-    milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(user_data));
+    MilterAgent *agent = user_data;
+    MilterAgentPrivate *priv;
+
+    priv = MILTER_AGENT_GET_PRIVATE(agent);
+    if (!priv->finished)
+        milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(agent));
+    milter_agent_set_reader(agent, NULL);
 }
 
 void
@@ -293,10 +320,36 @@ milter_agent_error_quark (void)
     return g_quark_from_static_string("milter-agent-error-quark");
 }
 
+static void
+cb_writer_error (MilterWriter *writer,
+                 GError *writer_error,
+                 gpointer user_data)
+{
+    GError *error = NULL;
+
+    milter_utils_set_error_with_sub_error(&error,
+                                          MILTER_AGENT_ERROR,
+                                          MILTER_AGENT_ERROR_IO_ERROR,
+                                          g_error_copy(writer_error),
+                                          "Output error");
+    milter_error("%s", error->message);
+    milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(user_data),
+                                error);
+    g_error_free(error);
+}
+
+static void
+cb_writer_finished (MilterFinishedEmittable *emittable, gpointer user_data)
+{
+    MilterAgent *agent = user_data;
+
+    milter_agent_set_writer(agent, NULL);
+}
+
 gboolean
 milter_agent_write_packet (MilterAgent *agent,
-                             const gchar *packet, gsize packet_size,
-                             GError **error)
+                           const gchar *packet, gsize packet_size,
+                           GError **error)
 {
     MilterAgentPrivate *priv;
     gboolean success;
@@ -319,12 +372,30 @@ milter_agent_set_writer (MilterAgent *agent, MilterWriter *writer)
 
     priv = MILTER_AGENT_GET_PRIVATE(agent);
 
-    if (priv->writer)
+    if (priv->writer) {
+#define DISCONNECT(name)                                                \
+        g_signal_handlers_disconnect_by_func(priv->writer,              \
+                                             G_CALLBACK(cb_writer_ ## name), \
+                                             agent)
+        DISCONNECT(error);
+        DISCONNECT(finished);
+#undef DISCONNECT
+
         g_object_unref(priv->writer);
+    }
 
     priv->writer = writer;
-    if (priv->writer)
+    if (priv->writer) {
         g_object_ref(priv->writer);
+
+#define CONNECT(name)                                                   \
+        g_signal_connect(priv->writer, #name,                           \
+                         G_CALLBACK(cb_writer_ ## name),                \
+                         agent)
+        CONNECT(error);
+        CONNECT(finished);
+#undef CONNECT
+    }
 }
 
 MilterEncoder *
@@ -348,6 +419,8 @@ milter_agent_start (MilterAgent *agent)
 
     if (priv->reader)
         milter_reader_start(priv->reader);
+    if (priv->writer)
+        milter_reader_start(priv->reader);
 }
 
 void
@@ -357,10 +430,12 @@ milter_agent_shutdown (MilterAgent *agent)
 
     priv = MILTER_AGENT_GET_PRIVATE(agent);
 
-    if (priv->reader)
+    if (priv->reader) {
         milter_reader_shutdown(priv->reader);
-    else
-        milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(agent));
+    } else {
+        if (!priv->finished)
+            milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(agent));
+    }
 }
 
 /*

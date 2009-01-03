@@ -27,6 +27,8 @@
 #include <glib.h>
 
 #include "milter-writer.h"
+#include "milter-logger.h"
+#include "milter-utils.h"
 
 #define MILTER_WRITER_GET_PRIVATE(obj)                  \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                 \
@@ -37,6 +39,7 @@ typedef struct _MilterWriterPrivate	MilterWriterPrivate;
 struct _MilterWriterPrivate
 {
     GIOChannel *io_channel;
+    guint channel_watch_id;
 };
 
 enum
@@ -45,7 +48,12 @@ enum
     PROP_IO_CHANNEL
 };
 
-G_DEFINE_TYPE(MilterWriter, milter_writer, G_TYPE_OBJECT);
+MILTER_IMPLEMENT_ERROR_EMITTABLE(error_emittable_init);
+MILTER_IMPLEMENT_FINISHED_EMITTABLE(finished_emittable_init);
+G_DEFINE_TYPE_WITH_CODE(
+    MilterWriter, milter_writer, G_TYPE_OBJECT,
+    G_IMPLEMENT_INTERFACE(MILTER_TYPE_ERROR_EMITTABLE, error_emittable_init)
+    G_IMPLEMENT_INTERFACE(MILTER_TYPE_FINISHED_EMITTABLE, finished_emittable_init))
 
 static void dispose        (GObject         *object);
 static void set_property   (GObject         *object,
@@ -86,6 +94,7 @@ milter_writer_init (MilterWriter *writer)
 
     priv = MILTER_WRITER_GET_PRIVATE(writer);
     priv->io_channel = NULL;
+    priv->channel_watch_id = 0;
 }
 
 static void
@@ -94,6 +103,12 @@ dispose (GObject *object)
     MilterWriterPrivate *priv;
 
     priv = MILTER_WRITER_GET_PRIVATE(object);
+
+    if (priv->channel_watch_id > 0) {
+        g_source_remove(priv->channel_watch_id);
+        priv->channel_watch_id = 0;
+    }
+
     if (priv->io_channel) {
         g_io_channel_unref(priv->io_channel);
         priv->io_channel = NULL;
@@ -216,6 +231,100 @@ milter_writer_write (MilterWriter *writer, const gchar *chunk, gsize chunk_size,
     }
 
     return write_to_io_channel(writer, chunk, chunk_size, written_size, error);
+}
+
+static gboolean
+channel_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
+{
+    MilterWriterPrivate *priv;
+    MilterWriter *writer = data;
+    gboolean keep_callback = TRUE;
+
+    priv = MILTER_WRITER_GET_PRIVATE(writer);
+
+    if (condition & G_IO_ERR ||
+        condition & G_IO_HUP ||
+        condition & G_IO_NVAL) {
+        gchar *message;
+        GError *error = NULL;
+
+        message = milter_utils_inspect_io_condition_error(condition);
+        g_set_error(&error,
+                    MILTER_WRITER_ERROR,
+                    MILTER_WRITER_ERROR_IO_ERROR,
+                    "%s", message);
+        milter_error("write error: %s", message);
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(writer), error);
+        g_error_free(error);
+        g_free(message);
+        keep_callback = FALSE;
+    }
+
+    if (!keep_callback) {
+        milter_debug("removing writer watcher");
+        priv->channel_watch_id = 0;
+        milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(writer));
+    }
+
+    return keep_callback;
+}
+
+static void
+watch_io_channel (MilterWriter *writer)
+{
+    MilterWriterPrivate *priv;
+
+    priv = MILTER_WRITER_GET_PRIVATE(writer);
+
+    priv->channel_watch_id = g_io_add_watch(priv->io_channel,
+                                            G_IO_ERR | G_IO_HUP | G_IO_NVAL,
+                                            channel_watch_func, writer);
+}
+
+void
+milter_writer_start (MilterWriter *writer)
+{
+    MilterWriterPrivate *priv;
+
+    priv = MILTER_WRITER_GET_PRIVATE(writer);
+    if (priv->io_channel && priv->channel_watch_id == 0)
+        watch_io_channel(writer);
+}
+
+gboolean
+milter_writer_is_watching (MilterWriter *writer)
+{
+    return MILTER_WRITER_GET_PRIVATE(writer)->channel_watch_id > 0;
+}
+
+void
+milter_writer_shutdown (MilterWriter *writer)
+{
+    MilterWriterPrivate *priv;
+    GError *channel_error = NULL;
+
+    priv = MILTER_WRITER_GET_PRIVATE(writer);
+
+    if (priv->channel_watch_id == 0)
+        return;
+
+    g_io_channel_shutdown(priv->io_channel, TRUE, &channel_error);
+    if (channel_error) {
+        GError *error = NULL;
+
+        milter_utils_set_error_with_sub_error(
+            &error,
+            MILTER_WRITER_ERROR,
+            MILTER_WRITER_ERROR_IO_ERROR,
+            channel_error,
+            "failed to shutdown");
+        milter_error("%s", error->message);
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(writer), error);
+        g_error_free(error);
+    } else {
+        g_source_remove(priv->channel_watch_id);
+        priv->channel_watch_id = 0;
+    }
 }
 
 /*

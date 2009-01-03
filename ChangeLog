@@ -1,5 +1,8 @@
 2009-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-agent.c, milter/core/milter-writer.[ch]:
+	handle writer channel error case. (maybe work)
+
 	* milter/core/milter-utils.h: include missing
 	milter-finished-emittable.h.
 

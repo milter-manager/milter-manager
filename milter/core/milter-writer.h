@@ -38,7 +38,8 @@ G_BEGIN_DECLS
 
 typedef enum
 {
-    MILTER_WRITER_ERROR_NO_CHANNEL
+    MILTER_WRITER_ERROR_NO_CHANNEL,
+    MILTER_WRITER_ERROR_IO_ERROR
 } MilterWriterError;
 
 typedef struct _MilterWriter         MilterWriter;
@@ -65,6 +66,10 @@ gboolean         milter_writer_write          (MilterWriter     *writer,
                                                gsize             chunk_size,
                                                gsize            *written_size,
                                                GError          **error);
+
+void             milter_writer_start          (MilterWriter     *writer);
+gboolean         milter_writer_is_watching    (MilterWriter     *writer);
+void             milter_writer_shutdown       (MilterWriter     *writer);
 
 G_END_DECLS
 
