@@ -1,5 +1,8 @@
 2009-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-utils.h: include missing
+	milter-finished-emittable.h.
+
 	* test/manager/test-manager.c: detect milter-manager program name.
 
 	* milter/manager/milter-manager-main.c: fix a memory leak.

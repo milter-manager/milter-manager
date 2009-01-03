@@ -27,6 +27,7 @@
 
 #include <milter/core/milter-protocol.h>
 #include <milter/core/milter-error-emittable.h>
+#include <milter/core/milter-finished-emittable.h>
 
 G_BEGIN_DECLS
 
