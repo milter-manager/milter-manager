@@ -1,3 +1,4 @@
+* bug? milter-manager sometimes doesn't finish child milter?
 * change process name of forked process launcher.
 * send quit command to launcher on manager dispose.
 * add init script for FreeBSD and Ubuntu.

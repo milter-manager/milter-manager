@@ -1,5 +1,7 @@
 2009-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: add: bug? milter-manager sometimes doesn't finish child milter?
+
 	* milter/manager/milter-manager.c: improve name.
 
 	* tool/milter-test-client.c:
