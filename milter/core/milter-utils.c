@@ -408,6 +408,43 @@ milter_utils_format_reply_code (guint reply_code,
     return g_string_free(reply, FALSE);
 }
 
+static void
+inspect_hash_string_string_element (gpointer _key, gpointer _value,
+                                    gpointer user_data)
+{
+    gchar *key = _key;
+    gchar *value = _value;
+    GString *inspected = user_data;
+
+    if (key)
+        g_string_append_printf(inspected, "\"%s\"", key);
+    else
+        g_string_append(inspected, "NULL");
+    g_string_append(inspected, " => ");
+    if (key)
+        g_string_append_printf(inspected, "\"%s\"", value);
+    else
+        g_string_append(inspected, "NULL");
+    g_string_append(inspected, ", ");
+}
+
+gchar *
+milter_utils_inspect_hash_string_string (GHashTable *hash)
+{
+    GString *inspected;
+
+    inspected = g_string_new("{");
+    if (g_hash_table_size(hash) > 0) {
+        g_hash_table_foreach(hash,
+                             inspect_hash_string_string_element,
+                             inspected);
+        g_string_truncate(inspected, inspected->len - strlen(", "));
+    }
+    g_string_append(inspected, "}");
+
+    return g_string_free(inspected, FALSE);
+}
+
 guint
 milter_utils_timeout_add (gdouble interval,
                           GSourceFunc function,

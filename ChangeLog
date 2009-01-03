@@ -1,5 +1,8 @@
 2009-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-utils.[ch], test/core/test-utils.c:
+	add inspect_hash_string_string_element().
+
 	* TODO: add: bug? milter-manager sometimes doesn't finish child milter?
 
 	* milter/manager/milter-manager.c: improve name.

@@ -28,6 +28,7 @@ void test_inspect_io_condition_error (gconstpointer data);
 void test_inspect_enum (void);
 void test_inspect_flags (void);
 void test_inspect_object (void);
+void test_inspect_hash_string_string (void);
 void data_command_to_macro_stage (void);
 void test_command_to_macro_stage (gconstpointer data);
 void data_macro_stage_to_command (void);
@@ -214,6 +215,31 @@ test_inspect_object (void)
     actual_inspected_object = milter_utils_inspect_object(G_OBJECT(option));
     cut_assert_equal_string(expected_inspected_object,
                             actual_inspected_object);
+}
+
+void
+test_inspect_hash_string_string (void)
+{
+    GHashTable *hash;
+    gchar *inspected;
+
+    hash = gcut_take_new_hash_table_string_string(NULL, NULL, NULL);
+    inspected = milter_utils_inspect_hash_string_string(hash);
+    cut_assert_equal_string_with_free("{}", inspected);
+
+    hash = gcut_take_new_hash_table_string_string("name", "value",
+                                                  NULL);
+    inspected = milter_utils_inspect_hash_string_string(hash);
+    cut_assert_equal_string_with_free("{\"name\" => \"value\"}", inspected);
+
+    hash = gcut_take_new_hash_table_string_string("name1", "value1",
+                                                  "name2", "value2",
+                                                  NULL);
+    inspected = milter_utils_inspect_hash_string_string(hash);
+    cut_assert_equal_string_with_free("{"
+                                      "\"name1\" => \"value1\", "
+                                      "\"name2\" => \"value2\""
+                                      "}", inspected);
 }
 
 typedef struct _CommandAndMacroStageTestData

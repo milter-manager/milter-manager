@@ -91,6 +91,8 @@ gchar    *milter_utils_inspect_object        (GObject *object);
 gchar    *milter_utils_format_reply_code     (guint reply_code,
                                               const gchar *extended_code,
                                               const gchar *message);
+gchar    *milter_utils_inspect_hash_string_string
+                                             (GHashTable *hash);
 
 MilterMacroStage milter_utils_command_to_macro_stage
                                              (MilterCommand command);
