@@ -1,5 +1,8 @@
 2009-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-command-decoder.c,
+	test/core/test-command-decoder.c: support macro context on DATA.
+
 	* data/defaults/freebsd.conf: controller connection spec is
 	disabled for now.
 

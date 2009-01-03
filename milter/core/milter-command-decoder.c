@@ -286,6 +286,7 @@ check_macro_context (MilterCommand macro_context, GError **error)
       case MILTER_COMMAND_HELO:
       case MILTER_COMMAND_ENVELOPE_FROM:
       case MILTER_COMMAND_ENVELOPE_RECIPIENT:
+      case MILTER_COMMAND_DATA:
       case MILTER_COMMAND_HEADER:
       case MILTER_COMMAND_END_OF_HEADER:
       case MILTER_COMMAND_BODY:

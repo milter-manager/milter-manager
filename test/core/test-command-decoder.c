@@ -775,6 +775,12 @@ setup_define_macro_envelope_recipient_packet (void)
 }
 
 static void
+setup_define_macro_data_packet (void)
+{
+    g_string_append(buffer, "T");
+}
+
+static void
 setup_define_macro_header_packet (void)
 {
     g_string_append(buffer, "L");
@@ -821,6 +827,14 @@ data_decode_define_macro (void)
                      setup_define_macro_envelope_recipient_packet,
                      MILTER_COMMAND_ENVELOPE_RECIPIENT,
                      "rcpt_addr", "kou@cozmixng.org",
+                     NULL),
+                 define_macro_test_data_free);
+
+    cut_add_data("DATA",
+                 define_macro_test_data_new(
+                     setup_define_macro_data_packet,
+                     MILTER_COMMAND_DATA,
+                     NULL, NULL,
                      NULL),
                  define_macro_test_data_free);
 
