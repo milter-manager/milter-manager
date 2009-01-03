@@ -127,6 +127,9 @@ setup (void)
 
     expected_error_message = NULL;
 
+    packet = NULL;
+    packet_size = 0;
+
     idle_id = 0;
     timeout_id = 0;
 }
@@ -234,7 +237,7 @@ data_launch_error (void)
         g_get_user_name(),
         cut_take_printf("Command string has invalid character(s): "
                         "</bin/echo \"-n>: %s:%d: %s (%s)",
-                        g_quark_to_string(g_shell_error_quark()),
+                        g_quark_to_string(G_SHELL_ERROR),
                         G_SHELL_ERROR_BAD_QUOTING,
                         "Text ended before matching quote was found for \".",
                         "The text was '/bin/echo \"-n'"));
@@ -249,7 +252,7 @@ data_launch_error (void)
         g_get_user_name(),
         cut_take_printf("Couldn't start new process: </bin/oecho>: "
                         "%s:%d: %s \"%s\" (%s)",
-                        g_quark_to_string(g_spawn_error_quark()),
+                        g_quark_to_string(G_SPAWN_ERROR),
                         G_SPAWN_ERROR_NOENT,
                         "Failed to execute child process",
                         "/bin/oecho",

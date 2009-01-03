@@ -1,5 +1,8 @@
 2009-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/test-process-launcher.c (setup): add missing
+	variables initialization.
+
 	* milter/manager/milter-manager-main.c,
 	test/manager/test-manager.c: implicit help text showing is done
 	only when unknown option is specified.
