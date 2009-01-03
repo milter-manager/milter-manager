@@ -1,5 +1,8 @@
 2009-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* data/defaults/freebsd.conf: controller connection spec is
+	disabled for now.
+
 	* milter/core/milter-agent.c, milter/core/milter-writer.[ch]:
 	handle writer channel error case. (maybe work)
 
