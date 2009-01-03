@@ -87,7 +87,7 @@ print_macro (gpointer _key, gpointer _value, gpointer user_data)
     const gchar *key = _key;
     const gchar *value = _value;
 
-    g_print("%s=%s\n", key, value);
+    g_print("  %s=%s\n", key, value);
 }
 
 static void
