@@ -151,9 +151,17 @@ milter_manager_init (int *argc, char ***argv)
     main_group = g_option_context_get_main_group(option_context);
 
     if (!g_option_context_parse(option_context, argc, argv, &error)) {
+        gchar *help;
+
         g_print("%s\n", error->message);
         g_error_free(error);
+
+        help = g_option_context_get_help(option_context, TRUE, NULL);
+        g_print("\n%s", help);
+        g_free(help);
+
         g_option_context_free(option_context);
+
         exit(EXIT_FAILURE);
     }
 

@@ -2,6 +2,7 @@
 
 	* milter/manager/milter-manager-main.c (milter_manager_main): add
 	--verbose option.
+	(milter_manager_init): show help text on unknown option passed.
 
 2009-01-02  Kouhei Sutou  <kou@cozmixng.org>
 
