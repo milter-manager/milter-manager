@@ -1,3 +1,8 @@
+2009-01-03  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/manager/milter-manager-main.c (milter_manager_main): add
+	--verbose option.
+
 2009-01-02  Kouhei Sutou  <kou@cozmixng.org>
 
 	* binding/ruby/test/manager/test-configuration-loader.rb

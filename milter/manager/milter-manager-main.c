@@ -48,6 +48,7 @@ static gchar *option_user_name = NULL;
 static gchar *option_group_name = NULL;
 static gboolean option_daemon = FALSE;
 static gboolean option_show_config = FALSE;
+static gboolean option_verbose = FALSE;
 
 static gboolean io_detached = FALSE;
 
@@ -119,6 +120,8 @@ static const GOptionEntry option_entries[] =
      N_("Run as daemon process."), NULL},
     {"show-config", 0, 0, G_OPTION_ARG_NONE, &option_show_config,
      N_("Show configuration and exit"), NULL},
+    {"verbose", 0, 0, G_OPTION_ARG_NONE, &option_verbose,
+     N_("Verbose mode"), NULL},
     {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, print_version,
      N_("Show version"), NULL},
     {NULL}
@@ -153,6 +156,9 @@ milter_manager_init (int *argc, char ***argv)
         g_option_context_free(option_context);
         exit(EXIT_FAILURE);
     }
+
+    if (option_verbose)
+        g_setenv("MILTER_LOG_LEVEL", "all", TRUE);
 
     _milter_manager_configuration_init();
 }
