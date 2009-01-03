@@ -41,7 +41,7 @@
 
 static gboolean initialized = FALSE;
 static MilterManager *the_manager = NULL;
-static const gchar *option_spec = NULL;
+static gchar *option_spec = NULL;
 static gchar *option_config_dir = NULL;
 static gchar *option_pid_file = NULL;
 static gchar *option_user_name = NULL;
@@ -86,7 +86,9 @@ parse_spec_arg (const gchar *option_name,
 
     success = milter_connection_parse_spec(value, NULL, NULL, NULL, &spec_error);
     if (success) {
-        option_spec = value;
+        if (option_spec)
+            g_free(option_spec);
+        option_spec = g_strdup(value);
     } else {
         g_set_error(error,
                     G_OPTION_ERROR,
@@ -181,6 +183,11 @@ milter_manager_quit (void)
         return;
 
     _milter_manager_configuration_quit();
+
+    if (option_spec) {
+        g_free(option_spec);
+        option_spec = NULL;
+    }
 }
 
 static void
