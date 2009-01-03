@@ -1,5 +1,7 @@
 2009-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/test-manager.c: detect milter-manager program name.
+
 	* milter/manager/milter-manager-main.c: fix a memory leak.
 
 	* test/manager/test-manager.c (wait_for_manager_ready): add more

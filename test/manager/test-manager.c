@@ -51,6 +51,8 @@ void test_scenario (gconstpointer data);
 static gchar *scenario_dir;
 static MilterManagerTestScenario *main_scenario;
 
+static gchar *milter_manager_program_name;
+
 static gchar *tmp_dir;
 
 typedef struct _EggData
@@ -157,6 +159,8 @@ egg_data_free (EggData *data)
 void
 setup (void)
 {
+    gchar *lt_milter_manager;
+
     scenario_dir = g_build_filename(milter_test_get_base_dir(),
                                     "fixtures",
                                     "manager",
@@ -166,6 +170,18 @@ setup (void)
 
     manager_data = egg_data_new(build_manager_path);
     server_data = egg_data_new(build_server_path);
+
+    lt_milter_manager = g_build_filename(milter_test_get_base_dir(),
+                                         "..",
+                                         "src",
+                                         ".libs",
+                                         "lt-milter-manager",
+                                         NULL);
+    if (g_file_test(lt_milter_manager, G_FILE_TEST_EXISTS))
+        milter_manager_program_name = g_strdup("lt-milter-manager");
+    else
+        milter_manager_program_name = g_strdup("milter-manager");
+    g_free(lt_milter_manager);
 
     tmp_dir = g_build_filename(milter_test_get_base_dir(),
                                "tmp",
@@ -187,6 +203,9 @@ teardown (void)
         egg_data_free(manager_data);
     if (server_data)
         egg_data_free(server_data);
+
+    if (milter_manager_program_name)
+        g_free(milter_manager_program_name);
 
     if (tmp_dir) {
         cut_remove_path(tmp_dir, NULL);
@@ -373,25 +392,27 @@ test_unknown_option (void)
     wait_for_manager_reaping();
 
     cut_assert_equal_string(
-        "Unknown option --nonexistent\n"
-        "\n"
-        "Usage:\n"
-        "  lt-milter-manager [OPTION...]\n"
-        "\n"
-        "Help Options:\n"
-        "  -?, --help                      Show help options\n"
-        "\n"
-        "Application Options:\n"
-        "  -s, --spec=PROTOCOL:ADDRESS     The address of the desired communication socket.\n"
-        "  -c, --config-dir=DIRECTORY      The configuration directory that has configuration file.\n"
-        "  --pid-file=FILE                 The file name to be saved PID.\n"
-        "  -u, --user-name=NAME            The user name for running milter-manager.\n"
-        "  -g, --group-name=NAME           The group name for running milter-manager.\n"
-        "  --daemon                        Run as daemon process.\n"
-        "  --show-config                   Show configuration and exit\n"
-        "  --verbose                       Verbose mode\n"
-        "  --version                       Show version\n"
-        "\n",
+        cut_take_printf(
+            "Unknown option --nonexistent\n"
+            "\n"
+            "Usage:\n"
+            "  %s [OPTION...]\n"
+            "\n"
+            "Help Options:\n"
+            "  -?, --help                      Show help options\n"
+            "\n"
+            "Application Options:\n"
+            "  -s, --spec=PROTOCOL:ADDRESS     The address of the desired communication socket.\n"
+            "  -c, --config-dir=DIRECTORY      The configuration directory that has configuration file.\n"
+            "  --pid-file=FILE                 The file name to be saved PID.\n"
+            "  -u, --user-name=NAME            The user name for running milter-manager.\n"
+            "  -g, --group-name=NAME           The group name for running milter-manager.\n"
+            "  --daemon                        Run as daemon process.\n"
+            "  --show-config                   Show configuration and exit\n"
+            "  --verbose                       Verbose mode\n"
+            "  --version                       Show version\n"
+            "\n",
+            milter_manager_program_name),
         manager_data->output_string->str);
 }
 
