@@ -40,6 +40,7 @@
 
 void test_version (void);
 void test_invalid_spec (void);
+void test_unknown_option (void);
 void test_check_controller_port (void);
 void test_unix_socket_mode (void);
 void test_remove_manager_unix_socket_on_close (void);
@@ -354,8 +355,43 @@ test_invalid_spec (void)
 
     wait_for_manager_reaping();
 
-    cut_assert_equal_string("spec doesn't have colon: <XXXX@localhost>\n",
+    cut_assert_equal_string("invalid connection spec: "
+                            "spec doesn't have colon: <XXXX@localhost>\n",
                             manager_data->output_string->str);
+}
+
+void
+test_unknown_option (void)
+{
+    GError *error = NULL;
+
+    setup_egg(manager_data, "--nonexistent", NULL);
+    gcut_egg_hatch(manager_egg, &error);
+    gcut_assert_error(error);
+
+    wait_for_manager_reaping();
+
+    cut_assert_equal_string(
+        "Unknown option --nonexistent\n"
+        "\n"
+        "Usage:\n"
+        "  lt-milter-manager [OPTION...]\n"
+        "\n"
+        "Help Options:\n"
+        "  -?, --help                      Show help options\n"
+        "\n"
+        "Application Options:\n"
+        "  -s, --spec=PROTOCOL:ADDRESS     The address of the desired communication socket.\n"
+        "  -c, --config-dir=DIRECTORY      The configuration directory that has configuration file.\n"
+        "  --pid-file=FILE                 The file name to be saved PID.\n"
+        "  -u, --user-name=NAME            The user name for running milter-manager.\n"
+        "  -g, --group-name=NAME           The group name for running milter-manager.\n"
+        "  --daemon                        Run as daemon process.\n"
+        "  --show-config                   Show configuration and exit\n"
+        "  --verbose                       Verbose mode\n"
+        "  --version                       Show version\n"
+        "\n",
+        manager_data->output_string->str);
 }
 
 #define has_key(scenario, group, key)                                     \

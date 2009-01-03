@@ -1,5 +1,9 @@
 2009-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-main.c,
+	test/manager/test-manager.c: implicit help text showing is done
+	only when unknown option is specified.
+
 	* milter/manager/milter-manager-main.c (milter_manager_main): add
 	--verbose option.
 	(milter_manager_init): show help text on unknown option passed.

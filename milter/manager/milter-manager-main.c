@@ -41,7 +41,7 @@
 
 static gboolean initialized = FALSE;
 static MilterManager *the_manager = NULL;
-static gchar *option_spec = NULL;
+static const gchar *option_spec = NULL;
 static gchar *option_config_dir = NULL;
 static gchar *option_pid_file = NULL;
 static gchar *option_user_name = NULL;
@@ -86,12 +86,13 @@ parse_spec_arg (const gchar *option_name,
 
     success = milter_connection_parse_spec(value, NULL, NULL, NULL, &spec_error);
     if (success) {
-        option_spec = g_strdup(value);
+        option_spec = value;
     } else {
         g_set_error(error,
                     G_OPTION_ERROR,
                     G_OPTION_ERROR_BAD_VALUE,
-                    _("%s"), spec_error->message);
+                    "invalid connection spec: %s",
+                    spec_error->message);
         g_error_free(spec_error);
     }
 
@@ -151,14 +152,16 @@ milter_manager_init (int *argc, char ***argv)
     main_group = g_option_context_get_main_group(option_context);
 
     if (!g_option_context_parse(option_context, argc, argv, &error)) {
-        gchar *help;
-
         g_print("%s\n", error->message);
-        g_error_free(error);
 
-        help = g_option_context_get_help(option_context, TRUE, NULL);
-        g_print("\n%s", help);
-        g_free(help);
+        if (g_error_matches(error,
+                            G_OPTION_ERROR, G_OPTION_ERROR_UNKNOWN_OPTION)) {
+            gchar *help;
+            help = g_option_context_get_help(option_context, TRUE, NULL);
+            g_print("\n%s", help);
+            g_free(help);
+        }
+        g_error_free(error);
 
         g_option_context_free(option_context);
 
