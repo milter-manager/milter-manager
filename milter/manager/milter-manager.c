@@ -349,7 +349,7 @@ teardown_client_context_signals (MilterClientContext *context,
 }
 
 static gboolean
-cb_idle (gpointer data)
+cb_idle_unref (gpointer data)
 {
     g_object_unref(data);
     return FALSE;
@@ -364,7 +364,7 @@ cb_finished (MilterFinishedEmittable *emittable, gpointer user_data)
     milter_manager_leader_quit(leader);
     teardown_client_context_signals(MILTER_CLIENT_CONTEXT(user_data), emittable);
     milter_statistics("End of session in (%p)", user_data);
-    g_idle_add(cb_idle, emittable);
+    g_idle_add(cb_idle_unref, emittable);
 }
 
 static void

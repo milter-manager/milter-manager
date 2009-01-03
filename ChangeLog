@@ -1,5 +1,7 @@
 2009-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager.c: improve name.
+
 	* tool/milter-test-client.c:
 	- print macros.
 	- remove NO_* steps to handle all events.
