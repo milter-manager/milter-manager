@@ -81,6 +81,28 @@ static const GOptionEntry option_entries[] =
     {NULL}
 };
 
+static void
+print_macro (gpointer _key, gpointer _value, gpointer user_data)
+{
+    const gchar *key = _key;
+    const gchar *value = _value;
+
+    g_print("%s=%s\n", key, value);
+}
+
+static void
+print_macros (MilterClientContext *context)
+{
+    GHashTable *macros;
+
+    macros = milter_protocol_agent_get_macros(MILTER_PROTOCOL_AGENT(context));
+    if (!macros)
+        return;
+
+    g_print("macros:\n");
+    g_hash_table_foreach(macros, print_macro, NULL);
+}
+
 static MilterStatus
 cb_negotiate (MilterClientContext *context, MilterOption *option,
               gpointer user_data)
@@ -96,14 +118,34 @@ cb_negotiate (MilterClientContext *context, MilterOption *option,
     action_names = milter_utils_get_flags_names(MILTER_TYPE_ACTION_FLAGS,
                                                 action);
     step_names = milter_utils_get_flags_names(MILTER_TYPE_STEP_FLAGS, step);
-
     g_print("negotiate: version=<%u>, action=<%s>, step=<%s>\n",
             milter_option_get_version(option), action_names, step_names);
-
     g_free(action_names);
     g_free(step_names);
 
-    return MILTER_STATUS_ALL_OPTIONS;
+    print_macros(context);
+
+    milter_option_remove_step(option,
+                              MILTER_STEP_NO_CONNECT |
+                              MILTER_STEP_NO_HELO |
+                              MILTER_STEP_NO_ENVELOPE_FROM |
+                              MILTER_STEP_NO_ENVELOPE_RECIPIENT |
+                              MILTER_STEP_NO_BODY |
+                              MILTER_STEP_NO_HEADERS |
+                              MILTER_STEP_NO_END_OF_HEADER |
+                              MILTER_STEP_NO_REPLY_HEADER |
+                              MILTER_STEP_NO_UNKNOWN |
+                              MILTER_STEP_NO_DATA |
+                              MILTER_STEP_NO_REPLY_CONNECT |
+                              MILTER_STEP_NO_REPLY_HELO |
+                              MILTER_STEP_NO_REPLY_ENVELOPE_FROM |
+                              MILTER_STEP_NO_REPLY_ENVELOPE_RECIPIENT |
+                              MILTER_STEP_NO_REPLY_DATA |
+                              MILTER_STEP_NO_REPLY_UNKNOWN |
+                              MILTER_STEP_NO_REPLY_END_OF_HEADER |
+                              MILTER_STEP_NO_REPLY_BODY);
+
+    return MILTER_STATUS_CONTINUE;
 }
 
 static MilterStatus
@@ -117,6 +159,8 @@ cb_connect (MilterClientContext *context, const gchar *host_name,
     g_print("connect: host=<%s>, address=<%s>\n", host_name, spec);
     g_free(spec);
 
+    print_macros(context);
+
     return MILTER_STATUS_CONTINUE;
 }
 
@@ -124,6 +168,8 @@ static MilterStatus
 cb_helo (MilterClientContext *context, const gchar *fqdn, gpointer user_data)
 {
     g_print("helo: <%s>\n", fqdn);
+
+    print_macros(context);
 
     return MILTER_STATUS_CONTINUE;
 }
@@ -134,6 +180,8 @@ cb_envelope_from (MilterClientContext *context, const gchar *from,
 {
     g_print("envelope-from: <%s>\n", from);
 
+    print_macros(context);
+
     return MILTER_STATUS_CONTINUE;
 }
 
@@ -143,6 +191,8 @@ cb_envelope_recipient (MilterClientContext *context, const gchar *to,
 {
     g_print("envelope-recipient: <%s>\n", to);
 
+    print_macros(context);
+
     return MILTER_STATUS_CONTINUE;
 }
 
@@ -150,6 +200,8 @@ static MilterStatus
 cb_data (MilterClientContext *context, gpointer user_data)
 {
     g_print("data\n");
+
+    print_macros(context);
 
     return MILTER_STATUS_CONTINUE;
 }
@@ -160,6 +212,8 @@ cb_header (MilterClientContext *context, const gchar *name, const gchar *value,
 {
     g_print("header: <%s: %s>\n", name, value);
 
+    print_macros(context);
+
     return MILTER_STATUS_CONTINUE;
 }
 
@@ -167,6 +221,8 @@ static MilterStatus
 cb_end_of_header (MilterClientContext *context, gpointer user_data)
 {
     g_print("end-of-header\n");
+
+    print_macros(context);
 
     return MILTER_STATUS_CONTINUE;
 }
@@ -181,6 +237,8 @@ cb_body (MilterClientContext *context, const gchar *chunk, gsize length,
     g_print("body: <%s>\n", null_terminated_chunk->str);
     g_string_free(null_terminated_chunk, TRUE);
 
+    print_macros(context);
+
     return MILTER_STATUS_CONTINUE;
 }
 
@@ -188,6 +246,8 @@ static MilterStatus
 cb_end_of_message (MilterClientContext *context, gpointer user_data)
 {
     g_print("end-of-message\n");
+
+    print_macros(context);
 
     return MILTER_STATUS_CONTINUE;
 }
@@ -197,6 +257,8 @@ cb_abort (MilterClientContext *context, gpointer user_data)
 {
     g_print("abort\n");
 
+    print_macros(context);
+
     return MILTER_STATUS_CONTINUE;
 }
 
@@ -205,6 +267,8 @@ cb_unknown (MilterClientContext *context, const gchar *command,
             gpointer user_data)
 {
     g_print("unknown: <%s>\n", command);
+
+    print_macros(context);
 
     return MILTER_STATUS_CONTINUE;
 }

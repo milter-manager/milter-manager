@@ -1,5 +1,9 @@
 2009-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-test-client.c:
+	- print macros.
+	- remove NO_* steps to handle all events.
+
 	* milter/core/milter-command-decoder.c,
 	test/core/test-command-decoder.c: support macro context on DATA.
 
