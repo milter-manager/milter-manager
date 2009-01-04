@@ -1575,8 +1575,7 @@ test_end_of_message_timeout (void)
     wait_reply(7, n_continue_emitted);
     wait_reply(1, n_end_of_message_timeout_emitted);
 
-    cut_assert_equal_string("The response of end-of-message from "
-                            "milter@10026 is timed out.",
+    cut_assert_equal_string("[milter@10026] end-of-message response timeout",
                             error_message);
 }
 
@@ -1621,7 +1620,7 @@ test_writing_timeout (void)
     wait_reply(1, n_writing_timeout_emitted);
     wait_reply(1, n_continue_emitted);
 
-    cut_assert_equal_string("writing to milter@10027 is timed out.",
+    cut_assert_equal_string("[milter@10027] writing timeout",
                             error_message);
 }
 
@@ -1659,7 +1658,7 @@ test_reading_timeout (void)
     wait_reply(1, n_continue_emitted);
     wait_reply(1, n_reading_timeout_emitted);
 
-    cut_assert_equal_string("reading from milter@10027 is timed out.",
+    cut_assert_equal_string("[milter@10027] reading timeout",
                             error_message);
 }
 

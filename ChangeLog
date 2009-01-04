@@ -1,5 +1,8 @@
 2009-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.c,
+	test/manager/test-children.c: improve error message.
+
 	* milter/manager/milter-manager-main.c: don't log if controller
 	connection is disabled.
 
