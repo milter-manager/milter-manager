@@ -140,6 +140,11 @@ CentOS 5.2、Ubuntu 8.04 TLSで動作することを想定しています。そ
 
     ((<URL:http://ltp.sourceforge.net/coverage/lcov.php>))
 
+  * RRDtool（付属のRubyバインディングも必要）
+
+    milter-log-toolでmilter-managerに登録されたmilterの動作
+    のグラフを表示する場合は必要。
+
 == 入手方法
 
 tar.gz:
@@ -253,9 +258,156 @@ configure時に--prefixオプションを指定していない場合は
    シリティで出力します。デーモンプロセスになっていない場合
    は標準出力にもログが出力されます。
 
+   「MILTER_LOG_LEVEL=all」という環境変数をしている場合と同
+   じ効果があります。
+
 : --version
 
    バージョンを表示して終了します。
 
 == ツール
 
+milter-managerにはいくつか便利なツールが付属されていて、bin/
+以下にインストールされます。
+
+  * milter-test-server: MTA側のmilterプロトコルの機能を提供
+    する。MTA無しでmilterの動作をテストするために使用するこ
+    とができる。
+  * milter-test-client: MTA側から渡ってきた情報を表示するだ
+    けのmilter。MTA側から渡っている情報を確認するために使用
+    することができる。
+  * milter-performance-check: MTAのパフォーマンスを計測する
+    SMTPクライアント。同時のツールにPostfix付属のsmtp-source
+    がある。
+  * milter-log-tool: milter-managerのログを解析し、
+    milter-managerに登録されたmilterの動作をグラフ化する。
+
+=== milter-test-server
+
+milter-test-serverはMTA側のmilterプロトコルを話します。つまり、
+MTA無しでmilterに接続することができます。現時点では、同様のツー
+ルは存在しないため、MTA+milterではなくmilter単体のテストを行
+うためには有用なツールです。例えば、以下のような用途に利用で
+きます。
+
+  * milterの速度計測
+  * milterの動作確認
+
+milter-test-serverは実行時間を表示するので、簡単な速度計測に
+も利用できます。このとき、MTAとは関係なくmilter単体での実行時
+間を確認できるため、MTA経由で試す場合よりも速度上の問題点の発
+見が容易になります。
+
+milter-test-serverはヘッダや本文が変更された場合は、変更され
+た内容を表示します。そのため、ヘッダや本文を変更するmilterの
+テストも容易に行うことができます。Cutterなどと組み合わせて自
+動化された単体テストを作成することもできます。
+
+==== オプション
+
+: --connection-spec=SPEC
+
+   接続先のmilterのソケットを指定します。SPECの書式は次のう
+   ちのどれかです。
+
+     * unix:パス
+     * inet:ポート番号
+     * inet:ポート番号@ホスト名
+     * inet6:ポート番号
+     * inet6:ポート番号@ホスト名
+
+   例:
+     * unix:/var/run/milter/milter-manager.sock
+     * inet:10025
+     * inet:10025@localhost
+     * inet6:10025
+     * inet6:10025@localhost
+
+: --connect-host=HOST
+
+    接続元のホスト名としてHOSTを使用します。
+
+    このホスト名はmilterのxxfi_connect()コールバックに渡りま
+    す。
+
+: --connect-address=SPEC
+
+    接続元のアドレスとしてSPECを使用します。SPECの書式
+    は--connection-specの書式と同じです。
+
+    このアドレスはmilterのxxfi_connect()コールバックに渡りま
+    す。
+
+: --helo-fqdn=FQDN
+
+    HELO/EHLO時の引数としてFQDNを使用します。
+
+    このFQDNはmilterのxxfi_helo()コールバックに渡ります。
+
+: --from=FROM
+
+    MAIL FROM時の引数としてFROMを使用します。
+
+    このアドレスはmilterのxxfi_envfrom()コールバックに渡ります。
+
+: --recipient=RECIPIENT
+
+    RCPT TO時の引数としてRECIPIENTを使用します。複数の宛先を
+    指定したい場合は--recipientオプションを複数回指定してく
+    ださい。
+
+    このアドレスはmilterのxxfi_envrcpt()コールバックに渡ります。
+
+: --header=NAME:VALUE
+
+    名前がNAMEで値がVALUEのヘッダを追加します。複数のヘッダ
+    を追加したい場合は--headerオプションを複数回指定してくだ
+    さい。
+
+    このヘッダはmilterのxxfi_header()コールバックに渡ります。
+    xxfi_header()は1つのヘッダにつき1回呼ばれるので、ヘッダ
+    が複数個ある場合はその分だけxxfi_header()が呼ばれます。
+
+: --body=CHUNK
+
+    本文の一片としてCHUNKを追加します。複数のまとまりを追加
+    する場合は--bodyオプションを複数回指定してください。
+
+    この本文のまとまりはmilterのxxfi_body()コールバックに渡り
+    ます。xxfi_body()は1つのまとまりにつき1回呼ばれるので、
+    まとまりが複数個ある場合はその分だけxxfi_body()が呼ばれま
+    す。
+
+: --unknown=COMMAND
+
+    未知のSMTPコマンドとしてCOMMANDを使います。
+
+    このコマンドはmilterのxxfi_unknown()コールバックに渡りま
+    す。xxfi_unknown()コールバックは、xxfi_envrcpt()コールバッ
+    クとxxfi_data()コールバックの間に呼ばれます。
+
+: --mail-file=PATH
+
+    メールの内容としてPATHにあるメールを使います。メール中に
+    From:やTo:があった場合は、それらの値を送信元や宛先のアド
+    レスとして使用します。
+
+: --output-message
+
+    milter適用後のメッセージを表示します。ヘッダを追加・削除
+    したり、本文を置換するmilterの動作を確認したい場合はこの
+    オプションを指定してください。
+
+: --verbose
+
+    実行時のログを詳細に表示します。
+
+: --version
+
+    バージョンを表示して終了します。
+
+=== milter-test-client
+
+=== milter-performance-check
+
+=== milter-log-tool
