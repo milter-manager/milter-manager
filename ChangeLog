@@ -1,5 +1,9 @@
 2009-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-configuration.c,
+	test/manager/test-configuration.c: set default manager connection
+	spec as inet:10025@[127.0.0.1].
+
 	* binding/ruby/lib/milter/manager.rb (Milter::Configuration#dump):
 	swap manager and controller order.
 

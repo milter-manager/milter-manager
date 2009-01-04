@@ -32,6 +32,8 @@
 #include "milter-manager-children.h"
 #include <milter/core/milter-marshalers.h>
 
+#define DEFAULT_MANAGER_CONNECTION_SPEC "inet:10025@[127.0.0.1]"
+
 #define MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(obj)                   \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                                 \
                                  MILTER_TYPE_MANAGER_CONFIGURATION,     \
@@ -135,7 +137,7 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
                                "Manager connection spec",
                                "The manager connection spec "
                                "of the milter-manager",
-                               NULL,
+                               DEFAULT_MANAGER_CONNECTION_SPEC,
                                G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
     g_object_class_install_property(gobject_class, PROP_MANAGER_CONNECTION_SPEC,
                                     spec);
@@ -290,6 +292,11 @@ dispose (GObject *object)
 
     milter_manager_configuration_clear_load_paths(configuration);
     milter_manager_configuration_clear(configuration);
+
+    if (priv->manager_connection_spec) {
+        g_free(priv->manager_connection_spec);
+        priv->manager_connection_spec = NULL;
+    }
 
     G_OBJECT_CLASS(milter_manager_configuration_parent_class)->dispose(object);
 }
@@ -1244,6 +1251,7 @@ milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
         g_free(priv->manager_connection_spec);
         priv->manager_connection_spec = NULL;
     }
+    priv->manager_connection_spec = g_strdup(DEFAULT_MANAGER_CONNECTION_SPEC);
 
     if (priv->effective_user) {
         g_free(priv->effective_user);
