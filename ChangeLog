@@ -1,5 +1,7 @@
 2009-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* README.ja: add merits of milter-manager.
+
 	* ./: mention and fix license.
 
 	* TODO: add: where cutsom.conf should be used? readable and
