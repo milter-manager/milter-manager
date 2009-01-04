@@ -167,17 +167,17 @@ security.privilege_mode = false
 security.effective_user = nil
 security.effective_group = nil
 
-controller.connection_spec = nil
-controller.unix_socket_mode = 0660
-controller.remove_unix_socket_on_create = true
-controller.remove_unix_socket_on_close = true
-
-manager.connection_spec = nil
+manager.connection_spec = "inet:10025@[127.0.0.1]"
 manager.unix_socket_mode = 0660
 manager.remove_unix_socket_on_create = true
 manager.remove_unix_socket_on_close = true
 manager.daemon = false
 manager.pid_file = nil
+
+controller.connection_spec = nil
+controller.unix_socket_mode = 0660
+controller.remove_unix_socket_on_create = true
+controller.remove_unix_socket_on_close = true
 EOD
                  @configuration.dump)
   end
@@ -208,25 +208,25 @@ security.privilege_mode = false
 security.effective_user = "nobody"
 security.effective_group = "nogroup"
 
-controller.connection_spec = nil
-controller.unix_socket_mode = 0660
-controller.remove_unix_socket_on_create = true
-controller.remove_unix_socket_on_close = true
-
-manager.connection_spec = nil
+manager.connection_spec = "inet:10025@[127.0.0.1]"
 manager.unix_socket_mode = 0660
 manager.remove_unix_socket_on_create = true
 manager.remove_unix_socket_on_close = true
 manager.daemon = false
 manager.pid_file = nil
 
+controller.connection_spec = nil
+controller.unix_socket_mode = 0660
+controller.remove_unix_socket_on_create = true
+controller.remove_unix_socket_on_close = true
+
 define_applicable_condition("S25R") do |condition|
   condition.description = "Selective SMTP Rejection"
 end
 
 define_milter("milter1") do |milter|
-  milter.description = "The first milter"
   milter.connection_spec = "unix:/tmp/xxx"
+  milter.description = "The first milter"
   milter.enabled = true
   milter.applicable_conditions = ["S25R"]
   milter.command = nil
@@ -239,8 +239,8 @@ define_milter("milter1") do |milter|
 end
 
 define_milter("milter2") do |milter|
-  milter.description = "The second milter"
   milter.connection_spec = "inet:2929"
+  milter.description = "The second milter"
   milter.enabled = false
   milter.applicable_conditions = []
   milter.command = nil

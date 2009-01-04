@@ -60,8 +60,8 @@ module Milter::Manager
 
       eggs.each do |egg|
         result << "define_milter(#{egg.name.inspect}) do |milter|\n"
-        result << "  milter.description = #{egg.description.inspect}\n"
         result << "  milter.connection_spec = #{egg.connection_spec.inspect}\n"
+        result << "  milter.description = #{egg.description.inspect}\n"
         result << "  milter.enabled = #{egg.enabled?}\n"
         condition_names = egg.applicable_conditions.collect do |condition|
           condition.name
