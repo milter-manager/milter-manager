@@ -409,7 +409,7 @@ test_unknown_option (void)
             "  -g, --group-name=NAME          The group name for running milter-manager.\n"
             "  --daemon                       Run as daemon process.\n"
             "  --show-config                  Show configuration and exit\n"
-            "  --verbose                      Verbose mode\n"
+            "  --verbose                      Be verbose\n"
             "  --version                      Show version\n"
             "\n",
             milter_manager_program_name),

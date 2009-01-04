@@ -125,7 +125,7 @@ static const GOptionEntry option_entries[] =
     {"show-config", 0, 0, G_OPTION_ARG_NONE, &option_show_config,
      N_("Show configuration and exit"), NULL},
     {"verbose", 0, 0, G_OPTION_ARG_NONE, &option_verbose,
-     N_("Verbose mode"), NULL},
+     N_("Be verbose"), NULL},
     {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, print_version,
      N_("Show version"), NULL},
     {NULL}

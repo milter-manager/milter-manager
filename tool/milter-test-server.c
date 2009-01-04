@@ -946,8 +946,9 @@ parse_mail_file_arg (const gchar *option_name,
 
 static const GOptionEntry option_entries[] =
 {
-    {"spec", 's', 0, G_OPTION_ARG_CALLBACK, parse_spec_arg,
-     N_("The address of the desired communication socket."), "PROTOCOL:ADDRESS"},
+    {"connection-spec", 's', 0, G_OPTION_ARG_CALLBACK, parse_spec_arg,
+     N_("The spec of socket. (unix:PATH|inet:PORT[@HOST]|inet6:PORT[@HOST])"),
+     "SPEC"},
     {"connect-host", 0, 0, G_OPTION_ARG_STRING, &connect_host,
      N_("Set a host name for connect"), "HOST"},
     {"connect-address", 0, 0, G_OPTION_ARG_CALLBACK, parse_connect_address_arg,
