@@ -7,7 +7,8 @@ SUBDIRS =		\
 	tool		\
 	data		\
 	test		\
-	doc
+	doc		\
+	license
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA =				\

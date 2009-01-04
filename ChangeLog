@@ -1,5 +1,7 @@
 2009-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* README.ja, license/: add license text.
+
 	* milter/server/milter-server-context.c,
 	milter/manager/milter-manager-children.c: improve messages.
 

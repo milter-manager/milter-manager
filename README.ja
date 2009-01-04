@@ -14,10 +14,10 @@ milter-manager
 
 以下の規則に従います。
 
-  * コマンド: GPL3
-  * ドキュメント: GFDL
-  * Webインターフェイス: AGPL3
-  * ライブラリ: LGPL3
+  * コマンド: GPL3(license/gpl.txt)
+  * ドキュメント: GFDL(license/fdl.txt)
+  * Webインターフェイス: AGPL3(license/agpl.txt)
+  * ライブラリ: LGPL3(license/lgpl.txt)
 
 具体的には以下の通りです。
 
