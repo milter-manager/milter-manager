@@ -262,6 +262,9 @@ test_merge_hash_string_string (void)
                                                       "name3", "new value3",
                                                       NULL);
     gcut_assert_equal_hash_table_string_string(expected, dest);
+
+    milter_utils_merge_hash_string_string(dest, NULL);
+    gcut_assert_equal_hash_table_string_string(expected, dest);
 }
 
 typedef struct _CommandAndMacroStageTestData

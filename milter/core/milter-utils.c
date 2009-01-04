@@ -459,6 +459,9 @@ merge_hash_string_string_element (gpointer _key, gpointer _value,
 void
 milter_utils_merge_hash_string_string (GHashTable *dest, GHashTable *src)
 {
+    if (!src)
+        return;
+
     g_hash_table_foreach(src,
                          merge_hash_string_string_element,
                          dest);
