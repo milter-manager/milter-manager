@@ -43,7 +43,8 @@ void data_feed_envelope_from (void);
 void test_feed_envelope_from (gconstpointer data);
 void data_feed_envelope_recipient (void);
 void test_feed_envelope_recipient (gconstpointer data);
-void test_feed_data (void);
+void data_feed_data (void);
+void test_feed_data (gconstpointer data);
 void test_feed_unknown (void);
 void data_feed_header (void);
 void test_feed_header (gconstpointer data);
@@ -101,6 +102,8 @@ static MilterMacrosRequests *negotiate_macros_requests;
 
 static GHashTable *expected_macros;
 static GHashTable *defined_macros;
+static GHashTable *expected_available_macros;
+static GHashTable *available_macros;
 
 static gchar *macro_name;
 static gchar *macro_value;
@@ -143,20 +146,30 @@ retrieve_context_info (MilterClientContext *context)
     MilterProtocolAgent *agent;
 
     agent = MILTER_PROTOCOL_AGENT(context);
+
     if (defined_macros)
         g_hash_table_unref(defined_macros);
     defined_macros = milter_protocol_agent_get_macros(agent);
+    if (defined_macros)
+        g_hash_table_ref(defined_macros);
+
+    if (available_macros)
+        g_hash_table_unref(available_macros);
+    available_macros = milter_protocol_agent_get_available_macros(agent);
+    if (available_macros)
+        g_hash_table_ref(available_macros);
+
+    if (macro_value)
+        g_free(macro_value);
+    macro_value = NULL;
+
     if (macro_name) {
         const gchar *value;
 
-        if (macro_value)
-            g_free(macro_value);
         value = milter_protocol_agent_get_macro(agent, macro_name);
         if (value)
             macro_value = g_strdup(value);
     }
-    if (defined_macros)
-        g_hash_table_ref(defined_macros);
 }
 
 static MilterStatus
@@ -537,6 +550,9 @@ setup (void)
 
     expected_macros = NULL;
     defined_macros = NULL;
+    expected_available_macros = g_hash_table_new_full(g_str_hash, g_str_equal,
+                                                      g_free, g_free);
+    available_macros = NULL;
 
     macro_name = NULL;
     macro_value = NULL;
@@ -578,6 +594,40 @@ packet_free (void)
     packet_size = 0;
 }
 
+static void
+expected_macros_free (void)
+{
+    if (expected_macros)
+        g_hash_table_unref(expected_macros);
+    expected_macros = NULL;
+}
+
+static void
+macro_name_free (void)
+{
+    if (macro_name)
+        g_free(macro_name);
+    macro_name = NULL;
+}
+
+static void
+expected_macro_value_free (void)
+{
+    if (expected_macro_value)
+        g_free(expected_macro_value);
+    expected_macro_value = NULL;
+}
+
+static void
+clear_reuse_data (void)
+{
+    packet_free();
+    expected_macros_free();
+    macro_name_free();
+    expected_macro_value_free();
+    gcut_string_io_channel_clear(channel);
+}
+
 void
 teardown (void)
 {
@@ -610,16 +660,19 @@ teardown (void)
     if (negotiate_macros_requests)
         g_object_unref(negotiate_macros_requests);
 
-    if (expected_macros)
-        g_hash_table_unref(expected_macros);
+    expected_macros_free();
     if (defined_macros)
         g_hash_table_unref(defined_macros);
-    if (macro_name)
-        g_free(macro_name);
+
+    if (expected_available_macros)
+        g_hash_table_unref(expected_available_macros);
+    if (available_macros)
+        g_hash_table_unref(available_macros);
+
+    macro_name_free();
     if (macro_value)
         g_free(macro_value);
-    if (expected_macro_value)
-        g_free(expected_macro_value);
+    expected_macro_value_free();
 
     if (connect_host_name)
         g_free(connect_host_name);
@@ -710,6 +763,8 @@ test_feed_negotiate (void)
                                         negotiate_macros_requests);
 
     gcut_assert_equal_hash_table_string_string(NULL, defined_macros);
+    gcut_assert_equal_hash_table_string_string(expected_available_macros,
+                                               available_macros);
 }
 
 void
@@ -759,6 +814,8 @@ test_feed_negotiate_progress (void)
                                         negotiate_macros_requests);
 
     gcut_assert_equal_hash_table_string_string(NULL, defined_macros);
+    gcut_assert_equal_hash_table_string_string(expected_available_macros,
+                                               available_macros);
 }
 
 void
@@ -791,6 +848,10 @@ test_feed_connect_ipv4 (void)
     cut_assert_equal_int(AF_INET, connected_address->sin_family);
     cut_assert_equal_uint(port, connected_address->sin_port);
     cut_assert_equal_string(ip_address, inet_ntoa(connected_address->sin_addr));
+
+    gcut_assert_equal_hash_table_string_string(NULL, defined_macros);
+    gcut_assert_equal_hash_table_string_string(expected_available_macros,
+                                               available_macros);
 }
 
 void
@@ -829,6 +890,10 @@ test_feed_connect_ipv6 (void)
                                       &(connected_address->sin6_addr),
                                       connected_ipv6_address,
                                       sizeof(connected_ipv6_address)));
+
+    gcut_assert_equal_hash_table_string_string(NULL, defined_macros);
+    gcut_assert_equal_hash_table_string_string(expected_available_macros,
+                                               available_macros);
 }
 
 void
@@ -859,8 +924,9 @@ test_feed_connect_unix (void)
     cut_assert_equal_int(AF_UNIX, connected_address->sun_family);
     cut_assert_equal_string(path, connected_address->sun_path);
 
-
     gcut_assert_equal_hash_table_string_string(NULL, defined_macros);
+    gcut_assert_equal_hash_table_string_string(expected_available_macros,
+                                               available_macros);
 }
 
 void
@@ -871,6 +937,9 @@ test_feed_connect_with_macro (void)
     const gchar host_name[] = "mx.local.net";
     const gchar ip_address[] = "192.168.123.123";
     guint16 port;
+
+    test_feed_negotiate();
+    clear_reuse_data();
 
     expected_macros =
         gcut_hash_table_string_string_new("j", "debian.cozmixng.org",
@@ -909,6 +978,11 @@ test_feed_connect_with_macro (void)
 
     cut_assert_equal_int(1, n_define_macros);
     gcut_assert_equal_hash_table_string_string(expected_macros, defined_macros);
+
+    milter_utils_merge_hash_string_string(expected_available_macros,
+                                          expected_macros);
+    gcut_assert_equal_hash_table_string_string(expected_available_macros,
+                                               available_macros);
 }
 
 static void
@@ -938,6 +1012,9 @@ test_feed_helo (gconstpointer data)
     const HookFunction pre_hook = data;
     const gchar fqdn[] = "delian";
 
+    test_feed_connect_with_macro();
+    clear_reuse_data();
+
     if (pre_hook)
         pre_hook();
 
@@ -952,6 +1029,11 @@ test_feed_helo (gconstpointer data)
     gcut_assert_equal_hash_table_string_string(expected_macros, defined_macros);
     if (macro_name)
         cut_assert_equal_string(expected_macro_value, macro_value);
+
+    milter_utils_merge_hash_string_string(expected_available_macros,
+                                          expected_macros);
+    gcut_assert_equal_hash_table_string_string(expected_available_macros,
+                                               available_macros);
 }
 
 static void
@@ -989,6 +1071,9 @@ test_feed_envelope_from (gconstpointer data)
     const HookFunction pre_hook = data;
     const gchar from[] = "<kou@cozmixng.org>";
 
+    test_feed_helo(feed_helo_pre_hook_with_macro);
+    clear_reuse_data();
+
     if (pre_hook)
         pre_hook();
 
@@ -1004,6 +1089,11 @@ test_feed_envelope_from (gconstpointer data)
     gcut_assert_equal_hash_table_string_string(expected_macros, defined_macros);
     if (macro_name)
         cut_assert_equal_string(expected_macro_value, macro_value);
+
+    milter_utils_merge_hash_string_string(expected_available_macros,
+                                          expected_macros);
+    gcut_assert_equal_hash_table_string_string(expected_available_macros,
+                                               available_macros);
 }
 
 static void
@@ -1020,9 +1110,9 @@ feed_envelope_recipient_pre_hook_with_macro (void)
         gcut_hash_table_string_string_new("rcpt_addr", "kou@cozmixng.org",
                                           NULL);
     milter_command_encoder_encode_define_macro(encoder,
-                                       &packet, &packet_size,
-                                       MILTER_COMMAND_ENVELOPE_RECIPIENT,
-                                       macros);
+                                               &packet, &packet_size,
+                                               MILTER_COMMAND_ENVELOPE_RECIPIENT,
+                                               macros);
     g_hash_table_unref(macros);
     gcut_assert_error(feed());
     packet_free();
@@ -1043,6 +1133,9 @@ test_feed_envelope_recipient (gconstpointer data)
     const HookFunction pre_hook = data;
     const gchar to[] = "<kou@cozmixng.org>";
 
+    test_feed_envelope_from(feed_envelope_from_pre_hook_with_macro);
+    clear_reuse_data();
+
     if (pre_hook)
         pre_hook();
 
@@ -1058,22 +1151,69 @@ test_feed_envelope_recipient (gconstpointer data)
     gcut_assert_equal_hash_table_string_string(expected_macros, defined_macros);
     if (macro_name)
         cut_assert_equal_string(expected_macro_value, macro_value);
+
+    milter_utils_merge_hash_string_string(expected_available_macros,
+                                          expected_macros);
+    gcut_assert_equal_hash_table_string_string(expected_available_macros,
+                                               available_macros);
 }
 
 void
 test_feed_unknown (void)
 {
+    test_feed_envelope_recipient(feed_envelope_recipient_pre_hook_with_macro);
+    clear_reuse_data();
+
     milter_command_encoder_encode_unknown(encoder, &packet, &packet_size, "!");
     gcut_assert_error(feed());
     cut_assert_equal_int(1, n_unknowns);
     cut_assert_equal_int(1, n_unknown_responses);
     cut_assert_equal_string("!", unknown_command);
+
+    gcut_assert_equal_hash_table_string_string(expected_available_macros,
+                                               available_macros);
+}
+
+static void
+feed_data_pre_hook_with_macro (void)
+{
+    GHashTable *macros;
+
+    macro_name = g_strdup("{auth_type}");
+    expected_macro_value = g_strdup("CRAM-MD5");
+    macros =
+        gcut_hash_table_string_string_new("{auth_type}", "CRAM-MD5",
+                                          NULL);
+    expected_macros =
+        gcut_hash_table_string_string_new("auth_type", "CRAM-MD5",
+                                          NULL);
+    milter_command_encoder_encode_define_macro(encoder,
+                                               &packet, &packet_size,
+                                               MILTER_COMMAND_DATA,
+                                               macros);
+    g_hash_table_unref(macros);
+    gcut_assert_error(feed());
+    packet_free();
 }
 
 void
-test_feed_data (void)
+data_feed_data (void)
 {
+    cut_add_data("without macro", NULL, NULL,
+                 "with macro", feed_data_pre_hook_with_macro, NULL);
+}
+
+void
+test_feed_data (gconstpointer data)
+{
+    const HookFunction pre_hook = data;
     GString *string;
+
+    test_feed_envelope_recipient(feed_envelope_recipient_pre_hook_with_macro);
+    clear_reuse_data();
+
+    if (pre_hook)
+        pre_hook();
 
     milter_command_encoder_encode_data(encoder, &packet, &packet_size);
     gcut_assert_error(feed());
@@ -1085,6 +1225,15 @@ test_feed_data (void)
     milter_reply_encoder_encode_continue(reply_encoder, &packet, &packet_size);
     string = gcut_string_io_channel_get_string(channel);
     cut_assert_equal_memory(packet, packet_size, string->str, string->len);
+
+    gcut_assert_equal_hash_table_string_string(expected_macros, defined_macros);
+    if (macro_name)
+        cut_assert_equal_string(expected_macro_value, macro_value);
+
+    milter_utils_merge_hash_string_string(expected_available_macros,
+                                          expected_macros);
+    gcut_assert_equal_hash_table_string_string(expected_available_macros,
+                                               available_macros);
 }
 
 static void
@@ -1115,6 +1264,9 @@ test_feed_header (gconstpointer data)
     const HookFunction pre_hook = data;
     const gchar date[] = "Fri,  5 Sep 2008 09:19:56 +0900 (JST)";
 
+    test_feed_data(feed_data_pre_hook_with_macro);
+    clear_reuse_data();
+
     if (pre_hook)
         pre_hook();
 
@@ -1131,6 +1283,11 @@ test_feed_header (gconstpointer data)
     gcut_assert_equal_hash_table_string_string(expected_macros, defined_macros);
     if (macro_name)
         cut_assert_equal_string(expected_macro_value, macro_value);
+
+    milter_utils_merge_hash_string_string(expected_available_macros,
+                                          expected_macros);
+    gcut_assert_equal_hash_table_string_string(expected_available_macros,
+                                               available_macros);
 }
 
 static void
@@ -1160,6 +1317,9 @@ test_feed_end_of_header (gconstpointer data)
 {
     const HookFunction pre_hook = data;
 
+    test_feed_header(feed_header_pre_hook_with_macro);
+    clear_reuse_data();
+
     if (pre_hook)
         pre_hook();
 
@@ -1172,6 +1332,11 @@ test_feed_end_of_header (gconstpointer data)
     gcut_assert_equal_hash_table_string_string(expected_macros, defined_macros);
     if (macro_name)
         cut_assert_equal_string(expected_macro_value, macro_value);
+
+    milter_utils_merge_hash_string_string(expected_available_macros,
+                                          expected_macros);
+    gcut_assert_equal_hash_table_string_string(expected_available_macros,
+                                               available_macros);
 }
 
 static void
@@ -1207,6 +1372,9 @@ test_feed_body (gconstpointer data)
         "La de da de da 4.";
     gsize packed_size;
 
+    test_feed_end_of_header(feed_end_of_header_pre_hook_with_macro);
+    clear_reuse_data();
+
     if (pre_hook)
         pre_hook();
 
@@ -1224,6 +1392,11 @@ test_feed_body (gconstpointer data)
     gcut_assert_equal_hash_table_string_string(expected_macros, defined_macros);
     if (macro_name)
         cut_assert_equal_string(expected_macro_value, macro_value);
+
+    milter_utils_merge_hash_string_string(expected_available_macros,
+                                          expected_macros);
+    gcut_assert_equal_hash_table_string_string(expected_available_macros,
+                                               available_macros);
 }
 
 static void
@@ -1276,21 +1449,24 @@ test_feed_end_of_message (gconstpointer data)
 {
     const HookFunction pre_hook = data;
 
+    test_feed_body(feed_body_pre_hook_with_macro);
+    clear_reuse_data();
+
     if (pre_hook)
         pre_hook();
 
     milter_command_encoder_encode_end_of_message(encoder, &packet, &packet_size,
-                                         body_chunk_test_data,
-                                         body_chunk_test_data_size);
+                                                 body_chunk_test_data,
+                                                 body_chunk_test_data_size);
     gcut_assert_error(feed());
     if (body_chunk_test_data) {
-        cut_assert_equal_int(1, n_bodies);
-        cut_assert_equal_int(1, n_body_responses);
+        cut_assert_equal_int(2, n_bodies);
+        cut_assert_equal_int(2, n_body_responses);
         cut_assert_equal_string(body_chunk_test_data, body_chunk);
         cut_assert_equal_int(body_chunk_test_data_size, body_chunk_size);
     } else {
-        cut_assert_equal_int(0, n_bodies);
-        cut_assert_equal_int(0, n_body_responses);
+        cut_assert_equal_int(1, n_bodies);
+        cut_assert_equal_int(1, n_body_responses);
     }
     cut_assert_equal_int(1, n_end_of_messages);
     cut_assert_equal_int(1, n_end_of_message_responses);
@@ -1299,25 +1475,46 @@ test_feed_end_of_message (gconstpointer data)
     gcut_assert_equal_hash_table_string_string(expected_macros, defined_macros);
     if (macro_name)
         cut_assert_equal_string(expected_macro_value, macro_value);
+
+    milter_utils_merge_hash_string_string(expected_available_macros,
+                                          expected_macros);
+    gcut_assert_equal_hash_table_string_string(expected_available_macros,
+                                               available_macros);
 }
 
 void
 test_feed_quit (void)
 {
+    test_feed_end_of_message(feed_end_of_message_pre_hook_with_macro);
+    clear_reuse_data();
+
     milter_command_encoder_encode_quit(encoder, &packet, &packet_size);
     gcut_assert_error(feed());
     cut_assert_equal_int(1, n_finished_emissions);
     milter_assert_equal_state(FINISHED);
+
+    milter_utils_merge_hash_string_string(expected_available_macros,
+                                          expected_macros);
+    gcut_assert_equal_hash_table_string_string(expected_available_macros,
+                                               available_macros);
 }
 
 void
 test_feed_abort (void)
 {
+    test_feed_body(feed_body_pre_hook_with_macro);
+    clear_reuse_data();
+
     milter_command_encoder_encode_abort(encoder, &packet, &packet_size);
     gcut_assert_error(feed());
     cut_assert_equal_int(1, n_aborts);
     cut_assert_equal_int(1, n_abort_responses);
     milter_assert_equal_state(ABORT_REPLIED);
+
+    milter_utils_merge_hash_string_string(expected_available_macros,
+                                          expected_macros);
+    gcut_assert_equal_hash_table_string_string(expected_available_macros,
+                                               available_macros);
 }
 
 static gboolean

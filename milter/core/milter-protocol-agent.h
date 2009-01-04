@@ -67,6 +67,8 @@ void                 milter_protocol_agent_set_macro(MilterProtocolAgent *agent,
                                                      const gchar   *macro_value);
 GHashTable          *milter_protocol_agent_get_macros
                                                     (MilterProtocolAgent *agent);
+GHashTable          *milter_protocol_agent_get_available_macros
+                                                    (MilterProtocolAgent *agent);
 const gchar         *milter_protocol_agent_get_macro(MilterProtocolAgent *agent,
                                                      const gchar   *name);
 void                 milter_protocol_agent_clear_macros

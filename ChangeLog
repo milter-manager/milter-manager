@@ -1,5 +1,14 @@
 2009-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-protocol-agent.[ch]
+	(milter_protocol_agent_get_available_macros): add.
+
+	* milter/core/milter-protocol-agent.[ch],
+	milter/client/milter-client-context.c,
+	test/client/test-client-context-callback.c:
+	milter_protocol_agent_get_macros() should be able to get macro
+	values set at the prior contexts.
+
 	* milter/core/milter-utils.[ch],
 	test/core/test-utils.c: add milter_utils_merge_hash_string_string().
 

@@ -2298,16 +2298,6 @@ set_macro_context (MilterClientContext *context, MilterCommand macro_context)
 }
 
 static void
-reset_macro_context (MilterClientContext *context, MilterCommand macro_context)
-{
-    MilterProtocolAgent *agent;
-
-    agent = MILTER_PROTOCOL_AGENT(context);
-    milter_protocol_agent_clear_macros(agent, macro_context);
-    milter_protocol_agent_set_macro_context(agent, MILTER_COMMAND_UNKNOWN);
-}
-
-static void
 negotiate_response (MilterClientContext *context,
                     MilterOption *option, MilterMacrosRequests *macros_requests,
                     MilterStatus status)
@@ -2368,7 +2358,6 @@ connect_response (MilterClientContext *context, MilterStatus status)
     priv->state = MILTER_CLIENT_CONTEXT_STATE_CONNECT_REPLIED;
 
     reply(context, status);
-    reset_macro_context(context, MILTER_COMMAND_CONNECT);
     milter_statistics("Reply %s to MTA on connect.",
                        milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status));
 }
@@ -2386,7 +2375,6 @@ helo_response (MilterClientContext *context, MilterStatus status)
     priv->state = MILTER_CLIENT_CONTEXT_STATE_HELO_REPLIED;
 
     reply(context, status);
-    reset_macro_context(context, MILTER_COMMAND_HELO);
     milter_statistics("Reply %s to MTA on helo.",
                        milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status));
 }
@@ -2404,7 +2392,6 @@ envelope_from_response (MilterClientContext *context, MilterStatus status)
     priv->state = MILTER_CLIENT_CONTEXT_STATE_ENVELOPE_FROM_REPLIED;
 
     reply(context, status);
-    reset_macro_context(context, MILTER_COMMAND_ENVELOPE_FROM);
     milter_statistics("Reply %s to MTA on evenlope-from.",
                        milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status));
 }
@@ -2422,7 +2409,6 @@ envelope_recipient_response (MilterClientContext *context, MilterStatus status)
     priv->state = MILTER_CLIENT_CONTEXT_STATE_ENVELOPE_RECIPIENT_REPLIED;
 
     reply(context, status);
-    reset_macro_context(context, MILTER_COMMAND_ENVELOPE_RECIPIENT);
     milter_statistics("Reply %s to MTA on evenlope-recipient.",
                        milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status));
 }
@@ -2474,7 +2460,6 @@ header_response (MilterClientContext *context, MilterStatus status)
     priv->state = MILTER_CLIENT_CONTEXT_STATE_HEADER_REPLIED;
 
     reply(context, status);
-    reset_macro_context(context, MILTER_COMMAND_HEADER);
     milter_statistics("Reply %s to MTA on header",
                        milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status));
 }
@@ -2492,7 +2477,6 @@ end_of_header_response (MilterClientContext *context, MilterStatus status)
     priv->state = MILTER_CLIENT_CONTEXT_STATE_END_OF_HEADER_REPLIED;
 
     reply(context, status);
-    reset_macro_context(context, MILTER_COMMAND_END_OF_HEADER);
     milter_statistics("Reply %s to MTA on end-of-header",
                        milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status));
 }
@@ -2510,7 +2494,6 @@ body_response (MilterClientContext *context, MilterStatus status)
     priv->state = MILTER_CLIENT_CONTEXT_STATE_BODY_REPLIED;
 
     reply(context, status);
-    reset_macro_context(context, MILTER_COMMAND_BODY);
     milter_statistics("Reply %s to MTA on body",
                        milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status));
 }
@@ -2528,7 +2511,6 @@ end_of_message_response (MilterClientContext *context, MilterStatus status)
     priv->state = MILTER_CLIENT_CONTEXT_STATE_END_OF_MESSAGE_REPLIED;
 
     reply(context, status);
-    reset_macro_context(context, MILTER_COMMAND_END_OF_MESSAGE);
     milter_statistics("Reply %s to MTA on end-of-message",
                        milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status));
 }
@@ -2709,6 +2691,7 @@ cb_decoder_data (MilterDecoder *decoder, gpointer user_data)
     priv->state = MILTER_CLIENT_CONTEXT_STATE_DATA;
 
     disable_timeout(context);
+    set_macro_context(context, MILTER_COMMAND_DATA);
     g_signal_emit(context, signals[DATA], 0, &status);
     if (status == MILTER_STATUS_PROGRESS)
         return;

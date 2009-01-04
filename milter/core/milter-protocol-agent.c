@@ -39,8 +39,22 @@ typedef struct _MilterProtocolAgentPrivate	MilterProtocolAgentPrivate;
 struct _MilterProtocolAgentPrivate
 {
     GHashTable *macros;
+    GHashTable *available_macros;
     MilterCommand macro_context;
     MilterMacrosRequests *macros_requests;
+};
+
+static MilterCommand macro_search_order[] = {
+    MILTER_COMMAND_END_OF_MESSAGE,
+    MILTER_COMMAND_BODY,
+    MILTER_COMMAND_END_OF_HEADER,
+    MILTER_COMMAND_HEADER,
+    MILTER_COMMAND_DATA,
+    MILTER_COMMAND_ENVELOPE_RECIPIENT,
+    MILTER_COMMAND_ENVELOPE_FROM,
+    MILTER_COMMAND_HELO,
+    MILTER_COMMAND_CONNECT,
+    0,
 };
 
 G_DEFINE_ABSTRACT_TYPE(MilterProtocolAgent, milter_protocol_agent,
@@ -72,8 +86,18 @@ milter_protocol_agent_init (MilterProtocolAgent *agent)
     priv->macros = g_hash_table_new_full(g_direct_hash, g_direct_equal,
                                          NULL,
                                          (GDestroyNotify)g_hash_table_unref);
+    priv->available_macros = NULL;
     priv->macro_context = MILTER_COMMAND_UNKNOWN;
     priv->macros_requests = NULL;
+}
+
+static void
+clear_available_macros (MilterProtocolAgentPrivate *priv)
+{
+    if (priv->available_macros) {
+        g_hash_table_unref(priv->available_macros);
+        priv->available_macros = NULL;
+    }
 }
 
 static void
@@ -88,6 +112,8 @@ dispose (GObject *object)
         priv->macros = NULL;
     }
 
+    clear_available_macros(priv);
+
     if (priv->macros_requests) {
         g_object_unref(priv->macros_requests);
         priv->macros_requests = NULL;
@@ -99,22 +125,60 @@ dispose (GObject *object)
 const gchar *
 milter_protocol_agent_get_macro (MilterProtocolAgent *agent, const gchar *name)
 {
-    GHashTable *macros;
-    const gchar *value;
+    GHashTable *available_macros;
+    gchar *value;
 
-    macros = milter_protocol_agent_get_macros(agent);
-    if (!macros)
+    if (!name)
         return NULL;
 
-    value = g_hash_table_lookup(macros, name);
-    if (!value && g_str_has_prefix(name, "{") && g_str_has_suffix(name, "}")) {
-        gchar *unbracket_name;
+    available_macros = milter_protocol_agent_get_available_macros(agent);
+    value = g_hash_table_lookup(available_macros, name);
+    if (!value) {
+        gchar *unbracket_name = NULL;
 
-        unbracket_name = g_strndup(name + 1, strlen(name) - 2);
-        value = g_hash_table_lookup(macros, unbracket_name);
-        g_free(unbracket_name);
+        if (g_str_has_prefix(name, "{") && g_str_has_suffix(name, "}")) {
+            unbracket_name = g_strndup(name + 1, strlen(name) - 2);
+            value = g_hash_table_lookup(available_macros, unbracket_name);
+            g_free(unbracket_name);
+        }
     }
+
     return value;
+}
+
+GHashTable *
+milter_protocol_agent_get_available_macros (MilterProtocolAgent *agent)
+{
+    MilterProtocolAgentPrivate *priv;
+    gboolean found_current_context = FALSE;
+    gint i;
+
+    priv = MILTER_PROTOCOL_AGENT_GET_PRIVATE(agent);
+    if (priv->available_macros)
+        return priv->available_macros;
+
+    priv->available_macros = g_hash_table_new_full(g_str_hash, g_str_equal,
+                                                   g_free, g_free);
+    for (i = 0; macro_search_order[i] != 0; i++) {
+        GHashTable *macros;
+        MilterCommand context;
+
+        context = macro_search_order[i];
+        if (!found_current_context) {
+            if (context != priv->macro_context)
+                continue;
+            found_current_context = TRUE;
+        }
+
+        macros = g_hash_table_lookup(priv->macros, GINT_TO_POINTER(context));
+        if (!macros)
+            continue;
+
+        milter_utils_merge_hash_string_string(priv->available_macros, macros);
+    }
+
+    return priv->available_macros;
+
 }
 
 GHashTable *
@@ -135,6 +199,7 @@ milter_protocol_agent_clear_macros (MilterProtocolAgent *agent,
 
     priv = MILTER_PROTOCOL_AGENT_GET_PRIVATE(agent);
     g_hash_table_remove(priv->macros, GINT_TO_POINTER(macro_context));
+    clear_available_macros(priv);
 }
 
 static void
@@ -149,7 +214,11 @@ void
 milter_protocol_agent_set_macro_context (MilterProtocolAgent *agent,
                                          MilterCommand macro_context)
 {
-    MILTER_PROTOCOL_AGENT_GET_PRIVATE(agent)->macro_context = macro_context;
+    MilterProtocolAgentPrivate *priv;
+
+    priv = MILTER_PROTOCOL_AGENT_GET_PRIVATE(agent);
+    priv->macro_context = macro_context;
+    clear_available_macros(priv);
 }
 
 static void
@@ -170,6 +239,7 @@ milter_protocol_agent_set_macros_valist (MilterProtocolAgent *agent,
         name = va_arg(var_args, gchar*);
     }
 }
+
 void
 milter_protocol_agent_set_macros (MilterProtocolAgent *agent,
                                   MilterCommand macro_context,
@@ -223,6 +293,7 @@ milter_protocol_agent_set_macro (MilterProtocolAgent *agent,
 
     g_hash_table_replace(macros,
                          g_strdup(macro_name), g_strdup(macro_value));
+    clear_available_macros(priv);
 }
 
 void
