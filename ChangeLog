@@ -1,5 +1,7 @@
 2009-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/configuration.rd.ja: add.
+
 	* data/milter-manager.conf: add default configurations in comment.
 
 	* binding/ruby/lib/milter/manager.rb,

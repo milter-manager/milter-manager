@@ -1,0 +1,417 @@
+# -*- rd -*-
+
+= 設定 --- milter-manager.confの書式
+
+milter-managerの設定ファイルmilter-manager.confの書き方につ
+いて説明します。
+
+== 場所
+
+ここでは/usr/local/以下にインストールされたものとして説明しま
+す。configure時に--prefix=/usr/local/オプションを指定する
+か、--prefixオプションを省略した場合は/usr/local/以下にインス
+トールされます。
+
+この場合は、設定ファイルは
+/usr/local/etc/milter-manager/milter-manager.confになります。
+インストールが成功していれば、もうすでにファイルが存在するは
+ずです。
+
+== 概要
+
+設定ファイルの先頭は以下のようになっています。
+
+  # -*- ruby -*-
+
+  load("applicable-conditions/*.conf")
+  load_default
+
+通常は、この部分はそのままにしておき、それより下の部分に設定
+を追記します。
+
+設定項目は以下のように分類されています。
+
+  * セキュリティ関連
+  * milter-manager関連
+  * コントローラ関連
+  * 適用条件関連
+  * 子milter関連
+
+それぞれ順に説明しますが、その前に、設定をする上で便利な
+milter-manager機能を紹介します。milter-managerを--show-configオ
+プションを付きで起動すると、現在の設定内容が表示されます。
+
+  % /usr/local/sbin/milter-manager --show-config
+  security.privilege_mode = false
+  security.effective_user = nil
+  security.effective_group = nil
+
+  manager.connection_spec = nil
+  manager.unix_socket_mode = 0660
+  manager.remove_unix_socket_on_create = true
+  manager.remove_unix_socket_on_close = true
+  manager.daemon = false
+  manager.pid_file = nil
+
+  controller.connection_spec = nil
+  controller.unix_socket_mode = 0660
+  controller.remove_unix_socket_on_create = true
+  controller.remove_unix_socket_on_close = true
+
+  define_applicable_condition("S25R") do |condition|
+    condition.description = "Selective SMTP Rejection"
+  end
+
+  define_applicable_condition("Remote Network") do |condition|
+    condition.description = "Check only remote network"
+  end
+
+この内容で設定内容を確認することができます。
+
+また、この書式はそのまま設定ファイルの書式になっているので、
+設定の書き方を忘れたときにはこの内容をヒントにすることができ
+ます。
+
+それでは、それぞれの分類毎に説明します。
+
+== セキュリティ関連
+
+: security.privilege_mode
+
+   特権モードで動作するかどうかを指定します。子milter自動起
+   動機能を利用する場合は有効にする必要があります。
+
+   有効にする場合はtrueを指定します。無効にする場合はfalseを
+   指定します。
+
+   例:
+     security.privilege_mode = true
+
+   既定値:
+     security.privilege_mode = false
+
+: security.effective_user
+
+   milter-managerプロセスの実効ユーザを指定します。ユーザを
+   切り替えるにはmilter-managerコマンドをroot権限で起動する
+   必要があります。
+
+   実効ユーザは「"」で囲んて"nobody"というように指定します。
+   ユーザを指定しない場合はnilを指定します。
+
+   例:
+     security.effective_user = "nobody"
+
+   既定値:
+     security.effective_user = nil
+
+: security.effective_group
+
+   milter-managerプロセスの実効グループを指定します。グルー
+   プを切り替えるにはmilter-managerコマンドをroot権限で起動
+   する必要があります。
+
+   実効ユーザは「"」で囲んて"nogroup"というように指定します。
+   ユーザを指定しない場合はnilを指定します。
+
+   例:
+     security.effective_group = "nogroup"
+
+   既定値:
+     security.effective_group = nil
+
+== milter-manager関連
+
+: manager.connection_spec
+
+   milter-managerが接続を受け付けるソケットを指定します。
+
+   ソケットは「"」で囲んて"inet:10025"というように指定します。
+   指定できる書式は以下の通りです。
+
+     * UNIXドメインソケット: unix:パス
+       * 例: unix:/var/run/milter/milter-manager.sock
+
+     * IPv4ソケット: inet:ポート番号
+       * 例: inet:10025
+
+     * IPv4ソケット: inet:ポート番号@ホスト名
+       * 例: inet:10025@localhost
+
+     * IPv4ソケット: inet:ポート番号@[アドレス]
+       * 例: inet:10025@[127.0.0.1]
+
+     * IPv6ソケット: inet6:ポート番号
+       * 例: inet6:10025
+
+     * IPv6ソケット: inet6:ポート番号@ホスト名
+       * 例: inet6:10025@localhost
+
+     * IPv6ソケット: inet6:ポート番号@[アドレス]
+       * 例: inet6:10025@[::1]
+
+   もし、security.effective_user, security.effective_groupを
+   指定している場合は、その権限でUNIXドメインソケットを作成し
+   ます。ソケットを作成するディレクトリのパーミッションに注意
+   してください。
+
+   IPv4ソケット・IPv6ソケットでホスト名を省略した場合は、す
+   べてのネットワークインターフェイスから接続を受け付けます。
+   ホスト名やアドレスを指定した場合はそのアドレスからのみ接
+   続を受け付けます。
+
+   例:
+     manager.connection_spec = "unix:/var/run/milter/milter-manager.sock"
+
+   既定値:
+     manager.connection_spec = "inet:10025@[127.0.0.1]"
+
+: manager.unix_socket_mode
+
+   milter-managerが接続を受け付けるUNIXドメインソケットのパー
+   ミッションを指定します。manager.connection_specでUNIXドメ
+   インソケットを使用している場合のみ利用されます。
+
+   8進数で値を指定するために、先頭に「0」をつけることを忘れ
+   ないでください。
+
+   例:
+    manager.unix_socket_mode = 0600
+
+   既定値:
+    manager.unix_socket_mode = 0660
+
+: manager.remove_unix_socket_on_create
+
+   milter-managerが接続を受け付けるUNIXドメインソケットを作
+   成する前にすでにファイルが存在した場合、削除するかどうか
+   を指定します。manager.connection_specでUNIXドメインソケッ
+   トを使用している場合のみ利用されます。
+
+   削除する場合はtrueを指定します。削除しない場合はfalseを指
+   定します。
+
+   例:
+     manager.remove_unix_socket_on_create = false
+
+   既定値:
+     manager.remove_unix_socket_on_create = true
+
+: manager.remove_unix_socket_on_close
+
+   milter-managerが終了するときに、接続を受け付けていたUNIX
+   ドメインソケットを削除するかどうかを指定します。
+   manager.connection_specでUNIXドメインソケットを使用してい
+   る場合のみ利用されます。
+
+   削除する場合はtrueを指定します。削除しない場合はfalseを指
+   定します。
+
+   例:
+    manager.remove_unix_socket_on_close = false
+
+   既定値:
+    manager.remove_unix_socket_on_close = true
+
+: manager.daemon
+
+   デーモンプロセスとして動作するかどうかを指定します。デー
+   モンプロセスで動作する場合は、端末を切り離し、バックグラ
+   ウンドで動作します。運用時はバックグラウンドで起動するこ
+   とをお勧めします。この設定項目はmilter-managerの--daemon
+   コマンドラインオプションで上書きできるため、必ずしも設定ファ
+   イル内で設定する必要はありません。
+
+   デーモンプロセスとして動作する場合はtrueを指定します。そ
+   うでない場合はfalseを指定します。
+
+   例:
+     manager.daemon = true
+
+   既定値:
+     manager.daemon = false
+
+: manager.pid_file
+
+   起動したmilter-managerのプロセスIDを保存するファイルを指
+   定します。
+
+   もし、security.effective_user, security.effective_groupを
+   指定して場合は、その権限でファイルへ書き込みます。ファイ
+   ルのパーミッションに注意してください。
+
+   ファイルのパスは「"」で囲んで
+   "/var/run/milter/milter-manager.pid"というように指定しま
+   す。保存しない場合はnilを指定します。
+
+   例:
+     manager.pid_file = "/var/run/milter/milter-manager.pid"
+
+   既定値:
+     manager.pid_file = nil
+
+== コントローラ関連
+
+FIXME
+
+== 適用条件関連
+
+FIXME
+
+== 子milter関連
+
+子milterは以下の書式で登録します。
+
+  define_mitler("名前") do |milter|
+    milter.XXX = ...
+    milter.YYY = ...
+    milter.ZZZ = ...
+  end
+
+例えば、「inet:10026@localhost」で接続待ちしているmilterを
+「test-milter」という名前で登録する場合は以下のようになります。
+
+  define_milter("test-milter") do |milter|
+    milter.connection_spec = "inet:10026@localhost"
+  end
+
+define_mitler do ... end内で設定できる項目は以下の通りです。
+
+必須の項目はmilter.connection_specだけです。
+
+
+: mitler.connection_spec
+
+   子milterが接続待ちしているソケットを指定します。
+   ((*必須項目*))です。
+
+   書式はmanager.connection_specと同じです。
+
+   例:
+     milter.connection_spec = "inet:10026@localhost"
+
+   既定値:
+     milter.connection_spec = nil
+
+: milter.description
+
+   子milterの説明を指定します。
+
+   説明は「"」で囲んで"test milter"というように指定します。
+
+   例:
+     milter.description = "test milter"
+
+   既定値:
+     milter.description = nil
+
+: milter.enabled
+
+   子milterを利用するかどうかを指定します。
+
+   利用する場合はtrueを指定します。利用しない場合はfalseを指
+   定します。
+
+   例:
+     milter.enabled = false
+
+   既定値:
+     milter.enabled = true
+
+: milter.applicable_conditions
+
+   FIXME
+
+: milter.command
+
+   子milterを起動するコマンドを指定します。
+   security.privilege_modeがtrueでmilter-managerコマンドが
+   root権限で実行されている場合、milter.connection_specへの
+   接続が失敗した時に、子milterを自動で起動します。そのとき
+   に利用するコマンドです。
+
+   /etc/init.d/以下や/usr/local/etc/rc.d/以下にある起動スク
+   リプトを指定することを想定しています。
+
+   コマンドは「"」で囲んで"/etc/init.d/milter-greylist"とい
+   うように指定します。自動で起動しない場合はnilを指定します。
+
+   例:
+     milter.command = "/etc/init.d/milter-greylist"
+
+   既定値:
+     milter.command = nil
+
+: milter.command_options
+
+   milter.commandに渡すオプションを指定します。
+
+   オプションは「"」で囲んで"start"というように指定します。
+   複数のオプションを指定するときは"--option1 --option2"とい
+   うように指定します。あるいは、全体を「[]」で囲み、それぞれ
+   のオプションを「,」で区切り、["--option1", "--option2"]と
+   いうように指定することもできます。
+
+   例:
+     milter.command_options = "start"
+     milter.command_options = ["--option1", "--option2"]
+
+   既定値:
+     milter.command_options = nil
+
+: milter.user_name
+
+   mitler.commandを実行するユーザ名を指定します。
+
+   ユーザ名は「"」で囲んで"nobody"というように指定します。
+   root権限で実行する場合はnilを指定します。
+
+   例:
+     milter.user_name = "nobody"
+
+   既定値:
+     milter.user_name = nil
+
+: milter.connection_timeout
+
+   子milterに接続したときのタイムアウト時間を秒単位で指定しま
+   す。
+
+   例:
+     milter.connection_timeout = 60
+
+   既定値:
+     milter.connection_timeout = 300.0
+
+: milter.writing_timeout
+
+   子milterへデータを送信したときのタイムアウト時間を秒単位で
+   指定します。
+
+   例:
+     milter.writing_timeout = 15
+
+   既定値:
+     milter.writing_timeout = 10.0
+
+: milter.reading_timeout
+
+   子milterからデータを受信するときのタイムアウト時間を秒単位で
+   指定します。
+
+   例:
+     milter.reading_timeout = 15
+
+   既定値:
+     milter.reading_timeout = 10.0
+
+: milter.end_of_message_timeout
+
+   子milterからxxfi_eom()のレスポンスを受信するときのタイム
+   アウト時間を秒単位で指定します。
+
+   例:
+     milter.end_of_message_timeout = 300
+
+   既定値:
+     milter.end_of_message_timeout = 200.0
