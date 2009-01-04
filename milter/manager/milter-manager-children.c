@@ -1676,7 +1676,9 @@ child_establish_connection (MilterManagerChild *child,
 
     if (!milter_server_context_establish_connection(context, &error)) {
 
-        milter_error("Error: %s", error->message);
+        milter_error("[%s] %s",
+                     milter_server_context_get_name(context),
+                     error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
                                     error);
 
