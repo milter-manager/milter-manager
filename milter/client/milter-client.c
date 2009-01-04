@@ -77,6 +77,7 @@ struct _MilterClientPrivate
     gboolean quitting;
     guint default_unix_socket_mode;
     gboolean default_remove_unix_socket_on_close;
+    gboolean remove_unix_socket_on_create;
 };
 
 typedef struct _MilterClientProcessData
@@ -171,6 +172,7 @@ milter_client_init (MilterClient *client)
     priv->quitting = FALSE;
     priv->default_unix_socket_mode = 0660;
     priv->default_remove_unix_socket_on_close = TRUE;
+    priv->remove_unix_socket_on_create = TRUE;
 }
 
 static void
@@ -617,12 +619,13 @@ milter_client_main (MilterClient *client)
         g_io_channel_ref(priv->listen_channel);
         priv->listening_channel = priv->listen_channel;
     } else {
-        priv->listening_channel = milter_connection_listen(priv->connection_spec,
-                                                           priv->listen_backlog,
-                                                           &address,
-                                                           &address_size,
-                                                           TRUE,
-                                                           &error);
+        priv->listening_channel =
+            milter_connection_listen(priv->connection_spec,
+                                     priv->listen_backlog,
+                                     &address,
+                                     &address_size,
+                                     priv->remove_unix_socket_on_create,
+                                     &error);
         if (address_size > 0)
             g_signal_emit(client, signals[LISTEN_STARTED], 0,
                           address, address_size);
@@ -714,6 +717,19 @@ void
 milter_client_set_listen_backlog (MilterClient *client, gint backlog)
 {
     MILTER_CLIENT_GET_PRIVATE(client)->listen_backlog = backlog;
+}
+
+gboolean
+milter_client_is_remove_unix_socket_on_create (MilterClient *client)
+{
+    return MILTER_CLIENT_GET_PRIVATE(client)->remove_unix_socket_on_create;
+}
+
+void
+milter_client_set_remove_unix_socket_on_create (MilterClient *client,
+                                                gboolean remove)
+{
+    MILTER_CLIENT_GET_PRIVATE(client)->remove_unix_socket_on_create = remove;
 }
 
 void

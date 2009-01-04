@@ -192,6 +192,11 @@ void                 milter_client_set_listen_channel(MilterClient  *client,
                                                       GIOChannel    *channel);
 void                 milter_client_set_listen_backlog(MilterClient  *client,
                                                       gint           backlog);
+gboolean             milter_client_is_remove_unix_socket_on_create
+                                                     (MilterClient  *client);
+void                 milter_client_set_remove_unix_socket_on_create
+                                                     (MilterClient  *client,
+                                                      gboolean       remove);
 void                 milter_client_set_timeout       (MilterClient  *client,
                                                       guint          timeout);
 guint                milter_client_get_unix_socket_mode

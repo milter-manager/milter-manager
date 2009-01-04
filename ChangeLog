@@ -1,5 +1,10 @@
 2009-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client.h, milter/client/milter-client.c,
+	test/client/test-client.c: add
+	milter_client_is_remove_unix_socket_on_create() and
+	milter_client_set_remove_unix_socket_on_create().
+
 	* milter/core/milter-connection.[ch], test/core/test-connection.c:
 	milter_connection_listen() supports removing existing UNIX socket
 	before bind().

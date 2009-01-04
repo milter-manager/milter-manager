@@ -39,6 +39,9 @@ void test_unix_socket_mode (void);
 void test_change_unix_socket_mode (void);
 void test_remove_unix_socket_on_close_accessor (void);
 void test_remove_unix_socket_on_close (void);
+void test_remove_unix_socket_on_create_accessor (void);
+void test_remove_unix_socket_on_create (void);
+void test_not_remove_unix_socket_on_create (void);
 
 static MilterClient *client;
 static MilterTestServer *server;
@@ -598,10 +601,58 @@ test_remove_unix_socket_on_close (void)
     spec = cut_take_printf("unix:%s", path);
 
     cut_trace(setup_client());
-    if (!milter_client_main(client))
-        cut_assert_errno();
+    cut_assert_true(milter_client_main(client));
 
     cut_assert_false(g_file_test(path, G_FILE_TEST_EXISTS));
+}
+
+void
+test_remove_unix_socket_on_create_accessor (void)
+{
+    cut_assert_true(milter_client_is_remove_unix_socket_on_create(client));
+    milter_client_set_remove_unix_socket_on_create(client, FALSE);
+    cut_assert_false(milter_client_is_remove_unix_socket_on_create(client));
+}
+
+void
+test_remove_unix_socket_on_create (void)
+{
+    const gchar *path;
+    GError *error = NULL;
+
+    path = cut_take_printf("%s/milter.sock", tmp_dir);
+    spec = cut_take_printf("unix:%s", path);
+
+    g_file_set_contents(path, "", 0, &error);
+    gcut_assert_error(error);
+
+    cut_trace(setup_client());
+    cut_assert_true(milter_client_main(client));
+    cut_assert_null(actual_error);
+}
+
+void
+test_not_remove_unix_socket_on_create (void)
+{
+    const gchar *path;
+    GError *error = NULL;
+
+    path = cut_take_printf("%s/milter.sock", tmp_dir);
+    spec = cut_take_printf("unix:%s", path);
+
+    g_file_set_contents(path, "", 0, &error);
+    gcut_assert_error(error);
+
+    milter_client_set_remove_unix_socket_on_create(client, FALSE);
+
+    cut_trace(setup_client());
+    cut_assert_false(milter_client_main(client));
+
+    expected_error = g_error_new(MILTER_CONNECTION_ERROR,
+                                 MILTER_CONNECTION_ERROR_BIND_FAILURE,
+                                 "failed to bind(): %s: %s",
+                                 spec, g_strerror(EADDRINUSE));
+    gcut_assert_equal_error(expected_error, actual_error);
 }
 
 /*
