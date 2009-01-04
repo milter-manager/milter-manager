@@ -336,14 +336,14 @@ set_property (GObject      *object,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(object);
     switch (prop_id) {
-      case PROP_CONFIGURATION:
+    case PROP_CONFIGURATION:
         if (priv->configuration)
             g_object_unref(priv->configuration);
         priv->configuration = g_value_get_object(value);
         if (priv->configuration)
             g_object_ref(priv->configuration);
         break;
-      default:
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
@@ -359,10 +359,10 @@ get_property (GObject    *object,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(object);
     switch (prop_id) {
-      case PROP_CONFIGURATION:
+    case PROP_CONFIGURATION:
         g_value_set_object(value, priv->configuration);
         break;
-      default:
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
@@ -424,28 +424,28 @@ status_to_signal_name (MilterStatus status)
     const gchar *signal_name;
 
     switch (status) {
-      case MILTER_STATUS_CONTINUE:
+    case MILTER_STATUS_CONTINUE:
         signal_name = "continue";
         break;
-      case MILTER_STATUS_REJECT:
+    case MILTER_STATUS_REJECT:
         signal_name = "reject";
         break;
-      case MILTER_STATUS_DISCARD:
+    case MILTER_STATUS_DISCARD:
         signal_name = "discard";
         break;
-      case MILTER_STATUS_ACCEPT:
+    case MILTER_STATUS_ACCEPT:
         signal_name = "accept";
         break;
-      case MILTER_STATUS_TEMPORARY_FAILURE:
+    case MILTER_STATUS_TEMPORARY_FAILURE:
         signal_name = "temporary-failure";
         break;
-      case MILTER_STATUS_SKIP:
+    case MILTER_STATUS_SKIP:
         signal_name = "skip";
         break;
-      case MILTER_STATUS_PROGRESS:
+    case MILTER_STATUS_PROGRESS:
         signal_name = "progress";
         break;
-      default:
+    default:
         signal_name = "continue";
         break;
     }
@@ -589,17 +589,17 @@ remove_child_from_queue (MilterManagerChildren *children,
         }
 
         switch (status) {
-          case MILTER_STATUS_REJECT:
+        case MILTER_STATUS_REJECT:
             /* FIXME: children should have the current state. */
             if (milter_server_context_get_state(context) !=
                 MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT) {
                 expire_all_children(children);
             }
             break;
-          case MILTER_STATUS_DISCARD:
+        case MILTER_STATUS_DISCARD:
             expire_all_children(children);
             break;
-          default:
+        default:
             break;
         }
     }
@@ -660,35 +660,35 @@ static MilterStepFlags
 command_to_no_step_flag (MilterCommand command)
 {
     switch (command) {
-      case MILTER_COMMAND_CONNECT:
+    case MILTER_COMMAND_CONNECT:
         return MILTER_STEP_NO_CONNECT;
         break;
-      case MILTER_COMMAND_HELO:
+    case MILTER_COMMAND_HELO:
         return MILTER_STEP_NO_HELO;
         break;
-      case MILTER_COMMAND_ENVELOPE_FROM:
+    case MILTER_COMMAND_ENVELOPE_FROM:
         return MILTER_STEP_NO_ENVELOPE_FROM;
         break;
-      case MILTER_COMMAND_ENVELOPE_RECIPIENT:
+    case MILTER_COMMAND_ENVELOPE_RECIPIENT:
         return MILTER_STEP_NO_ENVELOPE_RECIPIENT;
         break;
-      case MILTER_COMMAND_DATA:
+    case MILTER_COMMAND_DATA:
         return MILTER_STEP_NO_DATA;
         break;
-      case MILTER_COMMAND_HEADER:
+    case MILTER_COMMAND_HEADER:
         return MILTER_STEP_NO_HEADERS;
         break;
-      case MILTER_COMMAND_END_OF_HEADER:
+    case MILTER_COMMAND_END_OF_HEADER:
         return MILTER_STEP_NO_END_OF_HEADER;
         break;
-      case MILTER_COMMAND_BODY:
+    case MILTER_COMMAND_BODY:
         return MILTER_STEP_NO_BODY;
         break;
-      case MILTER_COMMAND_UNKNOWN:
+    case MILTER_COMMAND_UNKNOWN:
         return MILTER_STEP_NO_UNKNOWN;
         break;
-      case MILTER_COMMAND_END_OF_MESSAGE:
-      default:
+    case MILTER_COMMAND_END_OF_MESSAGE:
+    default:
         return 0;
         break;
     }
@@ -701,20 +701,20 @@ send_command_to_child (MilterManagerChildren *children,
                        MilterCommand command)
 {
     switch (command) {
-      case MILTER_COMMAND_DATA:
+    case MILTER_COMMAND_DATA:
         return milter_server_context_data(child);
         break;
-      case MILTER_COMMAND_HEADER:
+    case MILTER_COMMAND_HEADER:
         return send_next_header_to_child(children, child);
         break;
-      case MILTER_COMMAND_END_OF_HEADER:
+    case MILTER_COMMAND_END_OF_HEADER:
         return milter_server_context_end_of_header(child);
         break;
-      case MILTER_COMMAND_BODY:
+    case MILTER_COMMAND_BODY:
         return send_body_to_child(children, child);
         break;
-      case MILTER_COMMAND_END_OF_MESSAGE:
-      {
+    case MILTER_COMMAND_END_OF_MESSAGE:
+    {
         MilterManagerChildrenPrivate *priv;
         priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
@@ -723,8 +723,8 @@ send_command_to_child (MilterManagerChildren *children,
                                                     priv->end_of_message_chunk,
                                                     priv->end_of_message_size);
         break;
-      }
-      default:
+    }
+    default:
         break;
     }
     return FALSE;
@@ -861,11 +861,11 @@ cb_continue (MilterServerContext *context, gpointer user_data)
 
     compile_reply_status(children, state, MILTER_STATUS_CONTINUE);
     switch (state) {
-      case MILTER_SERVER_CONTEXT_STATE_DATA:
-      case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
+    case MILTER_SERVER_CONTEXT_STATE_DATA:
+    case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
         send_next_command(children, context, state);
         break;
-      case MILTER_SERVER_CONTEXT_STATE_HEADER:
+    case MILTER_SERVER_CONTEXT_STATE_HEADER:
         if (!priv->sent_end_of_message) {
             g_signal_emit_by_name(children, "continue");
             return;
@@ -877,7 +877,7 @@ cb_continue (MilterServerContext *context, gpointer user_data)
             send_next_command(children, context, state);
         }
         break;
-      case MILTER_SERVER_CONTEXT_STATE_BODY:
+    case MILTER_SERVER_CONTEXT_STATE_BODY:
         priv->sent_body_count--;
         if (!priv->sent_end_of_message) {
             g_signal_emit_by_name(children, "continue");
@@ -886,10 +886,10 @@ cb_continue (MilterServerContext *context, gpointer user_data)
         if (priv->sent_body_count == 0)
             send_next_command(children, context, state);
         break;
-      case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
+    case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
         send_first_command_to_next_child(children, context, state);
         break;
-      default:
+    default:
         remove_child_from_queue(children, context);
         break;
     }
@@ -910,7 +910,7 @@ cb_temporary_failure (MilterServerContext *context, gpointer user_data)
     case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT:
         remove_child_from_queue(children, context);
         break;
-      case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
+    case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
         g_signal_emit_by_name(children, "temporary-failure");
         expire_all_children(children);
         break;
@@ -919,10 +919,10 @@ cb_temporary_failure (MilterServerContext *context, gpointer user_data)
         /* FIXME: should expire all children? */
         milter_server_context_quit(context);
         break;
-      case MILTER_SERVER_CONTEXT_STATE_DATA:
-      case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
-      case MILTER_SERVER_CONTEXT_STATE_HEADER:
-      case MILTER_SERVER_CONTEXT_STATE_BODY:
+    case MILTER_SERVER_CONTEXT_STATE_DATA:
+    case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
+    case MILTER_SERVER_CONTEXT_STATE_HEADER:
+    case MILTER_SERVER_CONTEXT_STATE_BODY:
         /* FIXME: should expire all children? */
         milter_server_context_quit(context);
         break;
@@ -953,7 +953,7 @@ cb_reject (MilterServerContext *context, gpointer user_data)
     case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT:
         remove_child_from_queue(children, context);
         break;
-      case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
+    case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
         g_signal_emit_by_name(children, "reject");
         expire_all_children(children);
         break;
@@ -962,10 +962,10 @@ cb_reject (MilterServerContext *context, gpointer user_data)
         /* FIXME: should expire all children? */
         milter_server_context_quit(context);
         break;
-      case MILTER_SERVER_CONTEXT_STATE_DATA:
-      case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
-      case MILTER_SERVER_CONTEXT_STATE_HEADER:
-      case MILTER_SERVER_CONTEXT_STATE_BODY:
+    case MILTER_SERVER_CONTEXT_STATE_DATA:
+    case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
+    case MILTER_SERVER_CONTEXT_STATE_HEADER:
+    case MILTER_SERVER_CONTEXT_STATE_BODY:
         /* FIXME: should expire all children? */
         milter_server_context_quit(context);
         break;
@@ -1021,11 +1021,11 @@ cb_accept (MilterServerContext *context, gpointer user_data)
     case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT:
         milter_server_context_quit(context);
         break;
-      case MILTER_SERVER_CONTEXT_STATE_DATA:
-      case MILTER_SERVER_CONTEXT_STATE_HEADER:
-      case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
-      case MILTER_SERVER_CONTEXT_STATE_BODY:
-      case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
+    case MILTER_SERVER_CONTEXT_STATE_DATA:
+    case MILTER_SERVER_CONTEXT_STATE_HEADER:
+    case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
+    case MILTER_SERVER_CONTEXT_STATE_BODY:
+    case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
         send_first_command_to_next_child(children, context, state);
         break;
     default:
@@ -1051,7 +1051,7 @@ cb_discard (MilterServerContext *context, gpointer user_data)
 
     compile_reply_status(children, state, MILTER_STATUS_DISCARD);
     switch (state) {
-      case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
+    case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
         g_signal_emit_by_name(children, "discard");
         expire_all_children(children);
         break;
@@ -1060,10 +1060,10 @@ cb_discard (MilterServerContext *context, gpointer user_data)
         /* FIXME: should expire all children? */
         milter_server_context_quit(context);
         break;
-      case MILTER_SERVER_CONTEXT_STATE_DATA:
-      case MILTER_SERVER_CONTEXT_STATE_HEADER:
-      case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
-      case MILTER_SERVER_CONTEXT_STATE_BODY:
+    case MILTER_SERVER_CONTEXT_STATE_DATA:
+    case MILTER_SERVER_CONTEXT_STATE_HEADER:
+    case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
+    case MILTER_SERVER_CONTEXT_STATE_BODY:
         /* FIXME: should expire all children? */
         milter_server_context_quit(context);
         break;
@@ -1335,14 +1335,14 @@ cb_finished (MilterAgent *agent, gpointer user_data)
     g_free(state_name);
 
     switch (priv->current_state) {
-      case MILTER_SERVER_CONTEXT_STATE_DATA:
-      case MILTER_SERVER_CONTEXT_STATE_HEADER:
-      case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
-      case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
-      case MILTER_SERVER_CONTEXT_STATE_BODY:
+    case MILTER_SERVER_CONTEXT_STATE_DATA:
+    case MILTER_SERVER_CONTEXT_STATE_HEADER:
+    case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
+    case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
+    case MILTER_SERVER_CONTEXT_STATE_BODY:
         return;
         break;
-      default:
+    default:
         remove_child_from_queue(children, context);
         break;
     }
@@ -1697,34 +1697,34 @@ static MilterServerContextState
 command_to_state (MilterCommand command)
 {
     switch (command) {
-      case MILTER_COMMAND_CONNECT:
+    case MILTER_COMMAND_CONNECT:
         return MILTER_SERVER_CONTEXT_STATE_CONNECT;
         break;
-      case MILTER_COMMAND_HELO:
+    case MILTER_COMMAND_HELO:
         return MILTER_SERVER_CONTEXT_STATE_HELO;
         break;
-      case MILTER_COMMAND_ENVELOPE_FROM:
+    case MILTER_COMMAND_ENVELOPE_FROM:
         return MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM;
         break;
-      case MILTER_COMMAND_ENVELOPE_RECIPIENT:
+    case MILTER_COMMAND_ENVELOPE_RECIPIENT:
         return MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT;
         break;
-      case MILTER_COMMAND_DATA:
+    case MILTER_COMMAND_DATA:
         return MILTER_SERVER_CONTEXT_STATE_DATA;
         break;
-      case MILTER_COMMAND_HEADER:
+    case MILTER_COMMAND_HEADER:
         return MILTER_SERVER_CONTEXT_STATE_HEADER;
         break;
-      case MILTER_COMMAND_END_OF_HEADER:
+    case MILTER_COMMAND_END_OF_HEADER:
         return MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER;
         break;
-      case MILTER_COMMAND_BODY:
+    case MILTER_COMMAND_BODY:
         return MILTER_SERVER_CONTEXT_STATE_BODY;
         break;
-      case MILTER_COMMAND_END_OF_MESSAGE:
+    case MILTER_COMMAND_END_OF_MESSAGE:
         return MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE;
         break;
-      default:
+    default:
         return MILTER_SERVER_CONTEXT_STATE_START;
         break;
     }
@@ -1736,22 +1736,22 @@ static MilterCommand
 state_to_command (MilterServerContextState state)
 {
     switch (state) {
-      case MILTER_SERVER_CONTEXT_STATE_DATA:
+    case MILTER_SERVER_CONTEXT_STATE_DATA:
         return MILTER_COMMAND_DATA;
         break;
-      case MILTER_SERVER_CONTEXT_STATE_HEADER:
+    case MILTER_SERVER_CONTEXT_STATE_HEADER:
         return MILTER_COMMAND_HEADER;
         break;
-      case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
+    case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
         return MILTER_COMMAND_END_OF_HEADER;
         break;
-      case MILTER_SERVER_CONTEXT_STATE_BODY:
+    case MILTER_SERVER_CONTEXT_STATE_BODY:
         return MILTER_COMMAND_BODY;
         break;
-      case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
+    case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
         return MILTER_COMMAND_END_OF_MESSAGE;
         break;
-      default:
+    default:
         return MILTER_COMMAND_UNKNOWN;
         break;
     }
@@ -2520,42 +2520,42 @@ milter_manager_children_is_important_status (MilterManagerChildren *children,
     b = status;
 
     switch (a) {
-      case MILTER_STATUS_REJECT:
+    case MILTER_STATUS_REJECT:
         if (state != MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT)
             return FALSE;
         return (b == MILTER_STATUS_DISCARD);
         break;
-      case MILTER_STATUS_DISCARD:
+    case MILTER_STATUS_DISCARD:
         if (state == MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT)
             return FALSE;
         return (b == MILTER_STATUS_REJECT);
         break;
-      case MILTER_STATUS_TEMPORARY_FAILURE:
+    case MILTER_STATUS_TEMPORARY_FAILURE:
         if (b == MILTER_STATUS_NOT_CHANGE)
             return FALSE;
         return TRUE;
         break;
-      case MILTER_STATUS_ACCEPT:
+    case MILTER_STATUS_ACCEPT:
         if (b == MILTER_STATUS_NOT_CHANGE ||
             b == MILTER_STATUS_TEMPORARY_FAILURE)
             return FALSE;
         return TRUE;
         break;
-      case MILTER_STATUS_SKIP:
+    case MILTER_STATUS_SKIP:
         if (b == MILTER_STATUS_NOT_CHANGE ||
             b == MILTER_STATUS_ACCEPT ||
             b == MILTER_STATUS_TEMPORARY_FAILURE)
             return FALSE;
         return TRUE;
         break;
-      case MILTER_STATUS_CONTINUE:
+    case MILTER_STATUS_CONTINUE:
         if (b == MILTER_STATUS_NOT_CHANGE ||
             b == MILTER_STATUS_ACCEPT ||
             b == MILTER_STATUS_TEMPORARY_FAILURE ||
             b == MILTER_STATUS_SKIP)
             return FALSE;
         return TRUE;
-      default:
+    default:
         return TRUE;
         break;
     }
