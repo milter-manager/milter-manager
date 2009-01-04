@@ -68,7 +68,7 @@ parse_spec_arg (const gchar *option_name,
 
 static const GOptionEntry option_entries[] =
 {
-    {"spec", 's', 0, G_OPTION_ARG_CALLBACK, parse_spec_arg,
+    {"connection-spec", 's', 0, G_OPTION_ARG_CALLBACK, parse_spec_arg,
      N_("The spec of socket. (unix:PATH|inet:PORT[@HOST]|inet6:PORT[@HOST])"),
      "SPEC"},
     {"verbose", 'v', G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_NONE, &verbose,

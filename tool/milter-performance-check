@@ -25,7 +25,7 @@ class MilterPerformanceTool
   def initialize
     @smtp_server = "localhost"
     @smtp_port = 25
-    @helo_domain = "localhost"
+    @helo_fqdn = "localhost.localdomain"
     @from = "from@example.com"
     @recipients = []
     @default_recipients = ["to@example.com"]
@@ -34,6 +34,17 @@ class MilterPerformanceTool
 
   def parse_options(argv)
     opts = OptionParser.new do |opts|
+      opts.separator ""
+      opts.separator "Help options:"
+
+      opts.on("-h", "--help", "Show this message") do
+        puts opts
+        exit(0)
+      end
+
+      opts.separator ""
+      opts.separator "Application options:"
+
       opts.on("--smtp-server=SERVER",
               "Use SERVER as SMTP server",
               "(#{@smtp_server})") do |smtp_server|
@@ -46,10 +57,10 @@ class MilterPerformanceTool
         @smtp_port = smtp_port
       end
 
-      opts.on("--helo-domain=FQDN",
-              "Use FQDN as domain name on SMTP HELO command",
-              "(#{@helo_domain})") do |helo_domain|
-        @helo_domain = helo_domain
+      opts.on("--helo-fqdn=FQDN",
+              "Use FQDN for SMTP HELO command",
+              "(#{@helo_fqdn})") do |helo_fqdn|
+        @helo_fqdn = helo_fqdn
       end
 
       opts.on("--from=FROM",
@@ -100,7 +111,7 @@ class MilterPerformanceTool
     mail_source = generate_mail_source
     start_time = Time.now
     begin
-      Net::SMTP.start(@smtp_server, @port, @helo_domain) do |smtp|
+      Net::SMTP.start(@smtp_server, @port, @helo_fqdn) do |smtp|
         smtp.send_mail(mail_source, @from, *@recipients)
       end
     rescue Net::ProtoFatalError

@@ -1,5 +1,8 @@
 2009-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-performance-check, tool/milter-test-client.c:
+	improve command line option.
+
 	* tool/milter-test-server.c,
 	test/milter-test-server.c: improve command line option.
 
