@@ -1,3 +1,18 @@
+# Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+#
+# This library is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this library.  If not, see <http://www.gnu.org/licenses/>.
+
 require 'pathname'
 require 'shellwords'
 require 'erb'
@@ -10,34 +25,7 @@ require "rexml/streamlistener"
 require 'milter'
 require 'milter_manager.so'
 
-module Shellwords
-  # backport from ruby 1.8.7.
-  unless respond_to?(:split)
-    module_function
-    def split(line)
-      shellwords(line)
-    end
-  end
-
-  unless respond_to?(:escape)
-    module_function
-    def escape(str)
-      return "''" if str.empty?
-
-      str = str.dup
-
-      # Process as a single byte sequence because not all shell
-      # implementations are multibyte aware.
-      str.gsub!(/([^A-Za-z0-9_\-.,:\/@\n])/n, "\\\\\\1")
-
-      # A LF cannot be escaped with a backslash because a backslash + LF
-      # combo is regarded as line continuation and simply ignored.
-      str.gsub!(/\n/, "'\n'")
-
-      return str
-    end
-  end
-end
+require 'milter/compatible'
 
 module Milter::Manager
   class Configuration

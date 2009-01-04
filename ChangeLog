@@ -1,5 +1,7 @@
 2009-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* ./: mention and fix license.
+
 	* TODO: add: where cutsom.conf should be used? readable and
 	writabe file has the highest priority?
 

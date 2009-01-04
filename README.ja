@@ -14,6 +14,7 @@ milter-manager
 
 以下の規則に従います。
 
+  * ライセンスが明記してあるファイル: そのライセンス
   * コマンド: GPL3(license/gpl.txt)
   * ドキュメント: GFDL(license/fdl.txt)
   * Webインターフェイス: AGPL3(license/agpl.txt)
@@ -21,6 +22,8 @@ milter-manager
 
 具体的には以下の通りです。
 
+  * ライセンスが明記してあるファイル:
+    * binding/ruby/lib/milter/compatible.rb: Ruby's
   * コマンド: GPL3
     * src/以下
     * tool/直下
@@ -29,7 +32,7 @@ milter-manager
     * INTRODUCTION/INTRODUCTION.ja
     * doc/以下
   * Webインターフェイス: AGPL3
-    * admin/以下
+    * admin/以下（未収録）
   * ライブラリ: LGPL3
     * 上記以外
 
@@ -57,7 +60,7 @@ milter-managerを導入する意義については((<はじめに
       用可能）
   * GLib >= 2.12.3
   * Ruby >= 1.8.5
-  * Ruby/GLib2(Ruby-GNOME2) >= 0.16.0
+  * Ruby/GLib2 (Ruby-GNOME2) >= 0.16.0
   * Linux >= 2.6.18
 
 CentOS 5.2、Ubuntu 8.04 TLSで動作することを想定しています。そ
@@ -81,7 +84,7 @@ Subversion:
 
 == 使い方
 
-...
+  % milter-manager
 
 === オプション
 
