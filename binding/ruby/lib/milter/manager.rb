@@ -37,18 +37,18 @@ module Milter::Manager
       result << "security.effective_group = #{effective_group.inspect}\n"
       result << "\n"
 
-      result << "controller.connection_spec = #{controller_connection_spec.inspect}\n"
-      result << "controller.unix_socket_mode = 0%o\n" % controller_unix_socket_mode
-      result << "controller.remove_unix_socket_on_create = #{remove_controller_unix_socket_on_create?}\n"
-      result << "controller.remove_unix_socket_on_close = #{remove_controller_unix_socket_on_close?}\n"
-      result << "\n"
-
       result << "manager.connection_spec = #{manager_connection_spec.inspect}\n"
       result << "manager.unix_socket_mode = 0%o\n" % manager_unix_socket_mode
       result << "manager.remove_unix_socket_on_create = #{remove_manager_unix_socket_on_create?}\n"
       result << "manager.remove_unix_socket_on_close = #{remove_manager_unix_socket_on_close?}\n"
       result << "manager.daemon = #{daemon?}\n"
       result << "manager.pid_file = #{pid_file.inspect}\n"
+      result << "\n"
+
+      result << "controller.connection_spec = #{controller_connection_spec.inspect}\n"
+      result << "controller.unix_socket_mode = 0%o\n" % controller_unix_socket_mode
+      result << "controller.remove_unix_socket_on_create = #{remove_controller_unix_socket_on_create?}\n"
+      result << "controller.remove_unix_socket_on_close = #{remove_controller_unix_socket_on_close?}\n"
       result << "\n"
 
       applicable_conditions.each do |condition|
