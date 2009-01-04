@@ -175,6 +175,7 @@ milter_manager_init (int *argc, char ***argv)
         g_setenv("MILTER_LOG_LEVEL", "all", TRUE);
 
     _milter_manager_configuration_init();
+    g_option_context_free(option_context);
 }
 
 void
