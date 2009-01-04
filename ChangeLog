@@ -1,5 +1,8 @@
 2009-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-main.c: don't log if controller
+	connection is disabled.
+
 	* binding/ruby/test/toolkit/test-command-encoder.rb: follow the
 	recent command encoder change.
 

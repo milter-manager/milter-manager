@@ -334,11 +334,8 @@ setup_controller_connection (MilterManager *manager)
 
     config = milter_manager_get_configuration(manager);
     spec = milter_manager_configuration_get_controller_connection_spec(config);
-    if (!spec) {
-        milter_debug("controller connection spec is missing. "
-                     "controller connection is disabled");
+    if (!spec)
         return 0;
-    }
 
     remove_socket = milter_manager_configuration_is_remove_controller_unix_socket_on_create(config);
     channel = milter_connection_listen(spec, -1, NULL, NULL,
