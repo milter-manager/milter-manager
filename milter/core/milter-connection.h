@@ -43,7 +43,7 @@ typedef enum
     MILTER_CONNECTION_ERROR_ACCEPT_FAILURE,
     MILTER_CONNECTION_ERROR_BIND_FAILURE,
     MILTER_CONNECTION_ERROR_LISTEN_FAILURE,
-    MILTER_CONNECTION_ERROR_IO_ERROR
+    MILTER_CONNECTION_ERROR_UNIX_SOCKET
 } MilterConnectionError;
 
 GQuark           milter_connection_error_quark (void);
@@ -56,6 +56,7 @@ GIOChannel      *milter_connection_listen      (const gchar      *spec,
                                                 gint              backlog,
                                                 struct sockaddr **address,
                                                 socklen_t        *address_size,
+                                                gboolean          remove_unix_socket,
                                                 GError          **error);
 gchar           *milter_connection_address_to_spec
                                                (const struct sockaddr *address);

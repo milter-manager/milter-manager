@@ -339,7 +339,7 @@ setup_controller_connection (MilterManager *manager)
         return 0;
     }
 
-    channel = milter_connection_listen(spec, -1, NULL, NULL, &error);
+    channel = milter_connection_listen(spec, -1, NULL, NULL, TRUE, &error);
     if (!channel) {
         milter_error("failed to listen controller connection: <%s>: <%s>",
                      spec, error->message);

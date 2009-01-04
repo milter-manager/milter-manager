@@ -142,7 +142,8 @@ G_BEGIN_DECLS
 typedef enum
 {
     MILTER_CLIENT_ERROR_RUNNING,
-    MILTER_CLIENT_ERROR_UNIX_SOCKET
+    MILTER_CLIENT_ERROR_UNIX_SOCKET,
+    MILTER_CLIENT_ERROR_IO_ERROR
 } MilterClientError;
 
 typedef struct _MilterClient         MilterClient;

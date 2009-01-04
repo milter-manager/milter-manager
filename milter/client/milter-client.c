@@ -522,16 +522,15 @@ server_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
 
         message = milter_utils_inspect_io_condition_error(condition);
 
-        g_set_error(&error,
-                    MILTER_CONNECTION_ERROR,
-                    MILTER_CONNECTION_ERROR_IO_ERROR,
-                    "%s", message);
+        error = g_error_new(MILTER_CLIENT_ERROR,
+                            MILTER_CLIENT_ERROR_IO_ERROR,
+                            "IO error on waiting MTA connection socket: %s",
+                            message);
+        milter_error("%s", error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client),
                                     error);
         g_error_free(error);
 
-        milter_error("%s", message);
-        g_free(message);
         keep_callback = FALSE;
     }
 
@@ -622,6 +621,7 @@ milter_client_main (MilterClient *client)
                                                            priv->listen_backlog,
                                                            &address,
                                                            &address_size,
+                                                           TRUE,
                                                            &error);
         if (address_size > 0)
             g_signal_emit(client, signals[LISTEN_STARTED], 0,

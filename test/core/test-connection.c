@@ -25,6 +25,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
+#include <glib/gstdio.h>
+
 #include <milter/core/milter-connection.h>
 #include <milter-test-utils.h>
 
@@ -40,7 +42,9 @@ void test_parse_connection_spec_inet6 (gconstpointer data);
 void data_address_to_spec (void);
 void test_address_to_spec (gconstpointer data);
 void test_listen (void);
-void test_listen_failure (void);
+void test_listen_exist_socket (void);
+void test_listen_remove_failure (void);
+void test_listen_nonexistent_path (void);
 
 static struct sockaddr *actual_address;
 static socklen_t actual_address_size;
@@ -79,6 +83,7 @@ teardown (void)
         g_error_free(actual_error);
 
     if (tmp_dir) {
+        g_chmod(tmp_dir, 0755);
         cut_remove_path(tmp_dir, NULL);
         g_free(tmp_dir);
     }
@@ -443,6 +448,7 @@ test_listen (void)
     cut_assert_true(milter_connection_listen(spec, 5,
                                              &actual_address,
                                              &actual_address_size,
+                                             TRUE,
                                              &error));
     gcut_assert_error(error);
 
@@ -455,7 +461,94 @@ test_listen (void)
 }
 
 void
-test_listen_failure (void)
+test_listen_exist_socket (void)
+{
+    const gchar *socket_path;
+    const gchar *spec;
+    GError *error = NULL;
+    struct sockaddr_un *address_un = NULL;
+
+    socket_path = cut_take_printf("%s/milter.sock", tmp_dir);
+    spec = cut_take_printf("unix:%s", socket_path);
+    g_file_set_contents(socket_path, "", 0, &error);
+    gcut_assert_error(error);
+
+    expected_error = g_error_new(MILTER_CONNECTION_ERROR,
+                                 MILTER_CONNECTION_ERROR_BIND_FAILURE,
+                                 "failed to bind(): %s: %s",
+                                 spec,
+                                 g_strerror(EADDRINUSE));
+    cut_assert_false(milter_connection_listen(spec, 5,
+                                              &actual_address,
+                                              &actual_address_size,
+                                              FALSE,
+                                              &actual_error));
+    gcut_assert_equal_error(expected_error, actual_error);
+    cut_assert_null(actual_address);
+    cut_assert_equal_uint(0, actual_address_size);
+
+    cut_assert_true(milter_connection_listen(spec, 5,
+                                             &actual_address,
+                                             &actual_address_size,
+                                             TRUE,
+                                             &error));
+    gcut_assert_error(error);
+    cut_assert_not_null(actual_address);
+
+    address_un = (struct sockaddr_un *)actual_address;
+    cut_assert_equal_uint(AF_UNIX, address_un->sun_family);
+    cut_assert_equal_string(socket_path, address_un->sun_path);
+    cut_assert_equal_int(sizeof(*address_un), actual_address_size);
+}
+
+void
+test_listen_remove_failure (void)
+{
+    const gchar *socket_path;
+    const gchar *spec;
+    GError *error = NULL;
+    struct sockaddr_un *address_un = NULL;
+
+    socket_path = cut_take_printf("%s/milter.sock", tmp_dir);
+    spec = cut_take_printf("unix:%s", socket_path);
+    g_file_set_contents(socket_path, "", 0, &error);
+    gcut_assert_error(error);
+    if (g_chmod(tmp_dir, 0500))
+        cut_assert_errno();
+
+    expected_error = g_error_new(MILTER_CONNECTION_ERROR,
+                                 MILTER_CONNECTION_ERROR_UNIX_SOCKET,
+                                 "can't remove existing socket: <%s>: <%s>: %s",
+                                 socket_path,
+                                 spec,
+                                 g_strerror(EACCES));
+    cut_assert_false(milter_connection_listen(spec, 5,
+                                              &actual_address,
+                                              &actual_address_size,
+                                              TRUE,
+                                              &actual_error));
+    gcut_assert_equal_error(expected_error, actual_error);
+    cut_assert_null(actual_address);
+    cut_assert_equal_uint(0, actual_address_size);
+
+    if (g_chmod(tmp_dir, 0755))
+        cut_assert_errno();
+    cut_assert_true(milter_connection_listen(spec, 5,
+                                             &actual_address,
+                                             &actual_address_size,
+                                             TRUE,
+                                             &error));
+    gcut_assert_error(error);
+    cut_assert_not_null(actual_address);
+
+    address_un = (struct sockaddr_un *)actual_address;
+    cut_assert_equal_uint(AF_UNIX, address_un->sun_family);
+    cut_assert_equal_string(socket_path, address_un->sun_path);
+    cut_assert_equal_int(sizeof(*address_un), actual_address_size);
+}
+
+void
+test_listen_nonexistent_path (void)
 {
     const gchar spec[] = "unix:/nonexistent/milter.sock";
     struct sockaddr *address = NULL;
@@ -468,7 +561,7 @@ test_listen_failure (void)
                                  g_strerror(ENOENT));
 
     cut_assert_false(milter_connection_listen(spec, 5, &address, &address_size,
-                                              &actual_error));
+                                              TRUE, &actual_error));
     gcut_assert_equal_error(expected_error, actual_error);
 
     cut_assert_null(address);

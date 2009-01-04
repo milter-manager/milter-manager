@@ -1,5 +1,12 @@
 2009-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-connection.[ch], test/core/test-connection.c:
+	milter_connection_listen() supports removing existing UNIX socket
+	before bind().
+	* libmilter/libmilter-compatible.c, milter/client.h,
+	milter/client/milter-client.c,
+	milter/manager/milter-manager-main.c: follow the above change.
+
 	* milter/core/milter-protocol-agent.[ch]
 	(milter_protocol_agent_get_available_macros): add.
 

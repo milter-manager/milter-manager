@@ -154,9 +154,6 @@ smfi_opensocket (bool remove_socket)
 {
     GError *error = NULL;
     GIOChannel *channel;
-    struct sockaddr *address = NULL;
-    socklen_t address_size;
-    gboolean success = TRUE;
 
     if (!filter_description)
         return MI_FAILURE;
@@ -166,35 +163,10 @@ smfi_opensocket (bool remove_socket)
 
     libmilter_compatible_initialize();
 
-    if (!milter_connection_parse_spec(connection_spec,
-                                      NULL, &address, &address_size,
-                                      &error)) {
-        milter_error("%s", error->message);
-        g_error_free(error);
-        return MI_FAILURE;
-    }
-
-    if (address->sa_family == AF_UNIX && remove_socket) {
-        struct sockaddr_un *address_unix = (struct sockaddr_un *)address;
-        gchar *path;
-
-        path = address_unix->sun_path;
-        if (g_file_test(path, G_FILE_TEST_EXISTS)) {
-            if (g_unlink(path) == -1) {
-                milter_error("can't remove existing socket: <%s>: %s",
-                             path, g_strerror(errno));
-                success = FALSE;
-            }
-        }
-    }
-    g_free(address);
-    if (!success)
-        return MI_FAILURE;
-
     channel = milter_connection_listen(connection_spec, listen_backlog,
-                                       NULL, NULL, &error);
+                                       NULL, NULL, remove_socket, &error);
     if (error) {
-        milter_error("%s", error->message);
+        milter_error("[%s] %s", filter_description->xxfi_name, error->message);
         g_error_free(error);
         return MI_FAILURE;
     }

@@ -32,6 +32,8 @@
 #include <netdb.h>
 #include <unistd.h>
 
+#include <glib/gstdio.h>
+
 #include "milter-connection.h"
 
 GQuark
@@ -324,6 +326,7 @@ milter_connection_parse_spec (const gchar      *spec,
 GIOChannel *
 milter_connection_listen (const gchar *spec, gint backlog,
                           struct sockaddr **address, socklen_t *address_size,
+                          gboolean remove_unix_socket,
                           GError **error)
 {
     GIOChannel *socket_channel;
@@ -337,6 +340,24 @@ milter_connection_listen (const gchar *spec, gint backlog,
                                       &local_address, &local_address_size,
                                       error))
         return NULL;
+
+    if (local_address->sa_family == AF_UNIX && remove_unix_socket) {
+        struct sockaddr_un *address_unix = (struct sockaddr_un *)local_address;
+        gchar *path;
+
+        path = address_unix->sun_path;
+        if (g_file_test(path, G_FILE_TEST_EXISTS)) {
+            if (g_unlink(path) == -1) {
+                g_set_error(error,
+                            MILTER_CONNECTION_ERROR,
+                            MILTER_CONNECTION_ERROR_UNIX_SOCKET,
+                            "can't remove existing socket: <%s>: <%s>: %s",
+                            path, spec, g_strerror(errno));
+                g_free(local_address);
+                return NULL;
+            }
+        }
+    }
 
     fd = socket(domain, SOCK_STREAM, 0);
     if (fd == -1) {
