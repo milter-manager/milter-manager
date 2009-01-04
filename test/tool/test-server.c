@@ -87,7 +87,7 @@ static gint n_unknowns;
 static GHashTable *actual_defined_macros;
 static gchar *actual_connect_host;
 static gchar *actual_connect_address;
-static gchar *actual_helo_host;
+static gchar *actual_helo_fqdn;
 static gchar *actual_envelope_from;
 static GList *actual_recipients;
 static GString *actual_body_string;
@@ -229,7 +229,7 @@ cb_helo (MilterCommandDecoder *decoder, const gchar *fqdn, TestData *test_data)
     send_reply(MILTER_COMMAND_HELO, test_data);
 
     n_helos++;
-    actual_helo_host = g_strdup(fqdn);
+    actual_helo_fqdn = g_strdup(fqdn);
 }
 
 static void
@@ -389,7 +389,7 @@ setup (void)
     actual_status = MILTER_STATUS_DEFAULT;
     actual_connect_host = NULL;
     actual_connect_address = NULL;
-    actual_helo_host = NULL;
+    actual_helo_fqdn = NULL;
     actual_envelope_from = NULL;
     actual_recipients = NULL;
     actual_headers = milter_headers_new();
@@ -424,8 +424,8 @@ teardown (void)
         g_free(actual_connect_host);
     if (actual_connect_address)
         g_free(actual_connect_address);
-    if (actual_helo_host)
-        g_free(actual_helo_host);
+    if (actual_helo_fqdn)
+        g_free(actual_helo_fqdn);
     if (actual_envelope_from)
         g_free(actual_envelope_from);
     if (actual_recipients) {
@@ -991,9 +991,9 @@ option_test_assert_connect (void)
 }
 
 static void
-option_test_assert_helo_host (void)
+option_test_assert_helo_fqdn (void)
 {
-    cut_assert_equal_string("test-host", actual_helo_host);
+    cut_assert_equal_string("test-host", actual_helo_fqdn);
 }
 
 static void
@@ -1138,9 +1138,9 @@ data_option (void)
                                       "--connect-address=inet:12345@192.168.1.1",
                                       option_test_assert_connect),
                  option_test_data_free,
-                 "helo-host",
-                 option_test_data_new("--helo-host=test-host",
-                                      option_test_assert_helo_host),
+                 "helo-fqdn",
+                 option_test_data_new("--helo-fqdn=test-host",
+                                      option_test_assert_helo_fqdn),
                  option_test_data_free,
                  "envelope-from",
                  option_test_data_new("--from=from@example.com",

@@ -1,5 +1,8 @@
 2009-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-test-server.c,
+	test/milter-test-server.c: improve command line option.
+
 	* README.ja: describe milter-test-server.
 
 	* milter/manager/milter-manager-main.c,
