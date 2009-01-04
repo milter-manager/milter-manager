@@ -1,5 +1,8 @@
 2009-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: add: where cutsom.conf should be used? readable and
+	writabe file has the highest priority?
+
 	* README.ja, license/: add license text.
 
 	* milter/server/milter-server-context.c,
