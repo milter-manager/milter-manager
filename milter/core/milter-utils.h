@@ -93,6 +93,9 @@ gchar    *milter_utils_format_reply_code     (guint reply_code,
                                               const gchar *message);
 gchar    *milter_utils_inspect_hash_string_string
                                              (GHashTable *hash);
+void      milter_utils_merge_hash_string_string
+                                             (GHashTable *dest,
+                                              GHashTable *src);
 
 MilterMacroStage milter_utils_command_to_macro_stage
                                              (MilterCommand command);

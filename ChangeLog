@@ -1,3 +1,8 @@
+2009-01-04  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/core/milter-utils.[ch],
+	test/core/test-utils.c: add milter_utils_merge_hash_string_string().
+
 2009-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/core/milter-command-encoder.c,

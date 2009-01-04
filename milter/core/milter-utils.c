@@ -445,6 +445,25 @@ milter_utils_inspect_hash_string_string (GHashTable *hash)
     return g_string_free(inspected, FALSE);
 }
 
+static void
+merge_hash_string_string_element (gpointer _key, gpointer _value,
+                                  gpointer user_data)
+{
+    gchar *key = _key;
+    gchar *value = _value;
+    GHashTable *dest = user_data;
+
+    g_hash_table_insert(dest, g_strdup(key), g_strdup(value));
+}
+
+void
+milter_utils_merge_hash_string_string (GHashTable *dest, GHashTable *src)
+{
+    g_hash_table_foreach(src,
+                         merge_hash_string_string_element,
+                         dest);
+}
+
 guint
 milter_utils_timeout_add (gdouble interval,
                           GSourceFunc function,

@@ -29,6 +29,7 @@ void test_inspect_enum (void);
 void test_inspect_flags (void);
 void test_inspect_object (void);
 void test_inspect_hash_string_string (void);
+void test_merge_hash_string_string (void);
 void data_command_to_macro_stage (void);
 void test_command_to_macro_stage (gconstpointer data);
 void data_macro_stage_to_command (void);
@@ -240,6 +241,27 @@ test_inspect_hash_string_string (void)
                                       "\"name1\" => \"value1\", "
                                       "\"name2\" => \"value2\""
                                       "}", inspected);
+}
+
+void
+test_merge_hash_string_string (void)
+{
+    GHashTable *expected;
+    GHashTable *dest;
+    GHashTable *src;
+
+    dest = gcut_take_new_hash_table_string_string("name1", "value1",
+                                                  "name2", "value2",
+                                                  NULL);
+    src = gcut_take_new_hash_table_string_string("name1", "new value1",
+                                                 "name3", "new value3",
+                                                 NULL);
+    milter_utils_merge_hash_string_string(dest, src);
+    expected = gcut_take_new_hash_table_string_string("name1", "new value1",
+                                                      "name2", "value2",
+                                                      "name3", "new value3",
+                                                      NULL);
+    gcut_assert_equal_hash_table_string_string(expected, dest);
 }
 
 typedef struct _CommandAndMacroStageTestData
