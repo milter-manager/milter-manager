@@ -160,6 +160,16 @@ gboolean      milter_manager_configuration_is_remove_controller_unix_socket_on_c
 void          milter_manager_configuration_set_remove_controller_unix_socket_on_close
                                      (MilterManagerConfiguration *configuration,
                                       gboolean                    remove);
+gboolean      milter_manager_configuration_is_remove_manager_unix_socket_on_create
+                                     (MilterManagerConfiguration *configuration);
+void          milter_manager_configuration_set_remove_manager_unix_socket_on_create
+                                     (MilterManagerConfiguration *configuration,
+                                      gboolean                    remove);
+gboolean      milter_manager_configuration_is_remove_controller_unix_socket_on_create
+                                     (MilterManagerConfiguration *configuration);
+void          milter_manager_configuration_set_remove_controller_unix_socket_on_create
+                                     (MilterManagerConfiguration *configuration,
+                                      gboolean                    remove);
 
 gboolean      milter_manager_configuration_is_daemon
                                      (MilterManagerConfiguration *configuration);

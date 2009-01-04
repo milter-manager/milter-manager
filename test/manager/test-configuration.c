@@ -34,6 +34,8 @@ void test_manager_unix_socket_mode (void);
 void test_controller_unix_socket_mode (void);
 void test_remove_manager_unix_socket_on_close (void);
 void test_remove_controller_unix_socket_on_close (void);
+void test_remove_manager_unix_socket_on_create (void);
+void test_remove_controller_unix_socket_on_create (void);
 void test_daemon (void);
 void test_pid_file (void);
 void test_controller_connection_spec (void);
@@ -243,6 +245,22 @@ test_remove_controller_unix_socket_on_close (void)
 }
 
 void
+test_remove_manager_unix_socket_on_create (void)
+{
+    cut_assert_true(milter_manager_configuration_is_remove_manager_unix_socket_on_create(config));
+    milter_manager_configuration_set_remove_manager_unix_socket_on_create(config, FALSE);
+    cut_assert_false(milter_manager_configuration_is_remove_manager_unix_socket_on_create(config));
+}
+
+void
+test_remove_controller_unix_socket_on_create (void)
+{
+    cut_assert_true(milter_manager_configuration_is_remove_controller_unix_socket_on_create(config));
+    milter_manager_configuration_set_remove_controller_unix_socket_on_create(config, FALSE);
+    cut_assert_false(milter_manager_configuration_is_remove_controller_unix_socket_on_create(config));
+}
+
+void
 test_daemon (void)
 {
     cut_assert_false(milter_manager_configuration_is_daemon(config));
@@ -342,6 +360,8 @@ milter_assert_default_configuration_helper (MilterManagerConfiguration *config)
 
     cut_assert_true(milter_manager_configuration_is_remove_manager_unix_socket_on_close(config));
     cut_assert_true(milter_manager_configuration_is_remove_controller_unix_socket_on_close(config));
+    cut_assert_true(milter_manager_configuration_is_remove_manager_unix_socket_on_create(config));
+    cut_assert_true(milter_manager_configuration_is_remove_controller_unix_socket_on_create(config));
     cut_assert_false(milter_manager_configuration_is_daemon(config));
 
     gcut_assert_equal_enum(

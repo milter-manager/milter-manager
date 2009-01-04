@@ -53,6 +53,8 @@ struct _MilterManagerConfigurationPrivate
     guint controller_unix_socket_mode;
     gboolean remove_manager_unix_socket_on_close;
     gboolean remove_controller_unix_socket_on_close;
+    gboolean remove_manager_unix_socket_on_create;
+    gboolean remove_controller_unix_socket_on_create;
     gboolean daemon;
     gchar *pid_file;
 };
@@ -70,6 +72,8 @@ enum
     PROP_CONTROLLER_UNIX_SOCKET_MODE,
     PROP_REMOVE_MANAGER_UNIX_SOCKET_ON_CLOSE,
     PROP_REMOVE_CONTROLLER_UNIX_SOCKET_ON_CLOSE,
+    PROP_REMOVE_MANAGER_UNIX_SOCKET_ON_CREATE,
+    PROP_REMOVE_CONTROLLER_UNIX_SOCKET_ON_CREATE,
     PROP_DAEMON,
     PROP_PID_FILE
 };
@@ -202,6 +206,26 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
                                     PROP_REMOVE_MANAGER_UNIX_SOCKET_ON_CLOSE,
                                     spec);
 
+    spec = g_param_spec_boolean("remove-manager-unix-socket-on-create",
+                                "Remove unix socket for manager on create",
+                                "Whether milter-manager removes "
+                                "UNIX socket used for manager on create",
+                                TRUE,
+                                G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+    g_object_class_install_property(gobject_class,
+                                    PROP_REMOVE_MANAGER_UNIX_SOCKET_ON_CREATE,
+                                    spec);
+
+    spec = g_param_spec_boolean("remove-controller-unix-socket-on-create",
+                                "Remove unix socket for controller on create",
+                                "Whether milter-manager removes "
+                                "UNIX socket used for controller on create",
+                                TRUE,
+                                G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+    g_object_class_install_property(gobject_class,
+                                    PROP_REMOVE_MANAGER_UNIX_SOCKET_ON_CREATE,
+                                    spec);
+
     spec = g_param_spec_boolean("daemon",
                                 "Run as daemon process",
                                 "Whether milter-manager runs as daemon process",
@@ -320,6 +344,14 @@ set_property (GObject      *object,
         milter_manager_configuration_set_remove_controller_unix_socket_on_close(
             config, g_value_get_boolean(value));
         break;
+      case PROP_REMOVE_MANAGER_UNIX_SOCKET_ON_CREATE:
+        milter_manager_configuration_set_remove_manager_unix_socket_on_create(
+            config, g_value_get_boolean(value));
+        break;
+      case PROP_REMOVE_CONTROLLER_UNIX_SOCKET_ON_CREATE:
+        milter_manager_configuration_set_remove_controller_unix_socket_on_create(
+            config, g_value_get_boolean(value));
+        break;
       case PROP_DAEMON:
         milter_manager_configuration_set_daemon(
             config, g_value_get_boolean(value));
@@ -373,6 +405,12 @@ get_property (GObject    *object,
         break;
       case PROP_REMOVE_CONTROLLER_UNIX_SOCKET_ON_CLOSE:
         g_value_set_boolean(value, priv->remove_controller_unix_socket_on_close);
+        break;
+      case PROP_REMOVE_MANAGER_UNIX_SOCKET_ON_CREATE:
+        g_value_set_boolean(value, priv->remove_manager_unix_socket_on_create);
+        break;
+      case PROP_REMOVE_CONTROLLER_UNIX_SOCKET_ON_CREATE:
+        g_value_set_boolean(value, priv->remove_controller_unix_socket_on_create);
         break;
       case PROP_DAEMON:
         g_value_set_boolean(value, priv->daemon);
@@ -895,6 +933,44 @@ milter_manager_configuration_set_remove_controller_unix_socket_on_close (MilterM
 }
 
 gboolean
+milter_manager_configuration_is_remove_manager_unix_socket_on_create (MilterManagerConfiguration *configuration)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    return priv->remove_manager_unix_socket_on_create;
+}
+
+void
+milter_manager_configuration_set_remove_manager_unix_socket_on_create (MilterManagerConfiguration *configuration,
+                                                                      gboolean remove)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    priv->remove_manager_unix_socket_on_create = remove;
+}
+
+gboolean
+milter_manager_configuration_is_remove_controller_unix_socket_on_create (MilterManagerConfiguration *configuration)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    return priv->remove_controller_unix_socket_on_create;
+}
+
+void
+milter_manager_configuration_set_remove_controller_unix_socket_on_create (MilterManagerConfiguration *configuration,
+                                                                         gboolean remove)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    priv->remove_controller_unix_socket_on_create = remove;
+}
+
+gboolean
 milter_manager_configuration_is_daemon (MilterManagerConfiguration *configuration)
 {
     return MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration)->daemon;
@@ -1189,6 +1265,8 @@ milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
     priv->controller_unix_socket_mode = 0660;
     priv->remove_manager_unix_socket_on_close = TRUE;
     priv->remove_controller_unix_socket_on_close = TRUE;
+    priv->remove_manager_unix_socket_on_create = TRUE;
+    priv->remove_controller_unix_socket_on_create = TRUE;
     priv->daemon = FALSE;
     priv->fallback_status = MILTER_STATUS_CONTINUE;
 }

@@ -1,5 +1,13 @@
 2009-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-configuration.[ch],
+	test/manager/test-configuration.c: add
+	milter_manager_configuration_is_remove_manager_unix_socket_on_create(),
+	milter_manager_configuration_set_remove_manager_unix_socket_on_create(),
+	milter_manager_configuration_is_remove_controller_unix_socket_on_create()
+	and
+	milter_manager_configuration_set_remove_controller_unix_socket_on_create().
+
 	* milter/client.h, milter/client/milter-client.c,
 	test/client/test-client.c: add
 	milter_client_is_remove_unix_socket_on_create() and
