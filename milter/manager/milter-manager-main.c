@@ -103,8 +103,9 @@ parse_spec_arg (const gchar *option_name,
 
 static const GOptionEntry option_entries[] =
 {
-    {"spec", 's', 0, G_OPTION_ARG_CALLBACK, parse_spec_arg,
-     N_("The address of the desired communication socket."), "PROTOCOL:ADDRESS"},
+    {"connection-spec", 's', 0, G_OPTION_ARG_CALLBACK, parse_spec_arg,
+     N_("The spec of socket. (unix:PATH|inet:PORT[@HOST]|inet6:PORT[@HOST])"),
+     "SPEC"},
     {"config-dir", 'c',
      G_OPTION_FLAG_FILENAME, G_OPTION_ARG_STRING, &option_config_dir,
      N_("The configuration directory that has configuration file."),

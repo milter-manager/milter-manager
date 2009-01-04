@@ -1,5 +1,8 @@
 2009-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-main.c,
+	test/manager/test-manager.c: --spec -> --connection-spec.
+
 	* README.ja: add merits of milter-manager.
 
 	* ./: mention and fix license.
