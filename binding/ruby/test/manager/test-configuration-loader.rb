@@ -40,6 +40,12 @@ class TestConfigurationLoader < Test::Unit::TestCase
     assert_false(@configuration.remove_manager_unix_socket_on_close?)
   end
 
+  def test_manager_remove_unix_socket_on_create
+    assert_true(@configuration.remove_manager_unix_socket_on_create?)
+    @loader.manager.remove_unix_socket_on_create = false
+    assert_false(@configuration.remove_manager_unix_socket_on_create?)
+  end
+
   def test_controller_unix_socket_mode
     assert_equal(0660, @configuration.controller_unix_socket_mode)
     @loader.controller.unix_socket_mode = 0600
@@ -50,6 +56,12 @@ class TestConfigurationLoader < Test::Unit::TestCase
     assert_true(@configuration.remove_controller_unix_socket_on_close?)
     @loader.controller.remove_unix_socket_on_close = false
     assert_false(@configuration.remove_controller_unix_socket_on_close?)
+  end
+
+  def test_controller_remove_unix_socket_on_create
+    assert_true(@configuration.remove_controller_unix_socket_on_create?)
+    @loader.controller.remove_unix_socket_on_create = false
+    assert_false(@configuration.remove_controller_unix_socket_on_create?)
   end
 
   def test_controller_connection_spec

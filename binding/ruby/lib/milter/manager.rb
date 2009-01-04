@@ -51,11 +51,13 @@ module Milter::Manager
 
       result << "controller.connection_spec = #{controller_connection_spec.inspect}\n"
       result << "controller.unix_socket_mode = 0%o\n" % controller_unix_socket_mode
+      result << "controller.remove_unix_socket_on_create = #{remove_controller_unix_socket_on_create?}\n"
       result << "controller.remove_unix_socket_on_close = #{remove_controller_unix_socket_on_close?}\n"
       result << "\n"
 
       result << "manager.connection_spec = #{manager_connection_spec.inspect}\n"
       result << "manager.unix_socket_mode = 0%o\n" % manager_unix_socket_mode
+      result << "manager.remove_unix_socket_on_create = #{remove_manager_unix_socket_on_create?}\n"
       result << "manager.remove_unix_socket_on_close = #{remove_manager_unix_socket_on_close?}\n"
       result << "manager.daemon = #{daemon?}\n"
       result << "manager.pid_file = #{pid_file.inspect}\n"
@@ -483,6 +485,14 @@ class ConfigurationLoader
         @configuration.controller_unix_socket_mode = mode
       end
 
+      def remove_unix_socket_on_create?
+        @configuration.remove_controller_unix_socket_on_create?
+      end
+
+      def remove_unix_socket_on_create=(remove)
+        @configuration.remove_controller_unix_socket_on_create = remove
+      end
+
       def remove_unix_socket_on_close?
         @configuration.remove_controller_unix_socket_on_close?
       end
@@ -508,6 +518,14 @@ class ConfigurationLoader
 
       def unix_socket_mode=(mode)
         @configuration.manager_unix_socket_mode = mode
+      end
+
+      def remove_unix_socket_on_create?
+        @configuration.remove_manager_unix_socket_on_create?
+      end
+
+      def remove_unix_socket_on_create=(remove)
+        @configuration.remove_manager_unix_socket_on_create = remove
       end
 
       def remove_unix_socket_on_close?

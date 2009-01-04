@@ -328,6 +328,7 @@ setup_controller_connection (MilterManager *manager)
     MilterManagerConfiguration *config;
     const gchar *spec;
     GIOChannel *channel;
+    gboolean remove_socket;
     GError *error = NULL;
     guint watch_id = 0;
 
@@ -339,7 +340,9 @@ setup_controller_connection (MilterManager *manager)
         return 0;
     }
 
-    channel = milter_connection_listen(spec, -1, NULL, NULL, TRUE, &error);
+    remove_socket = milter_manager_configuration_is_remove_controller_unix_socket_on_create(config);
+    channel = milter_connection_listen(spec, -1, NULL, NULL,
+                                       remove_socket, &error);
     if (!channel) {
         milter_error("failed to listen controller connection: <%s>: <%s>",
                      spec, error->message);
@@ -769,6 +772,12 @@ milter_manager_main (void)
             g_free(pid_file);
             pid_file = NULL;
         }
+    }
+
+    {
+        gboolean remove;
+        remove = milter_manager_configuration_is_remove_manager_unix_socket_on_create(config);
+        milter_client_set_remove_unix_socket_on_create(client, remove);
     }
 
     the_manager = manager;

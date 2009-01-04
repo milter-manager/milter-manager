@@ -154,10 +154,12 @@ security.effective_group = nil
 
 controller.connection_spec = nil
 controller.unix_socket_mode = 0660
+controller.remove_unix_socket_on_create = true
 controller.remove_unix_socket_on_close = true
 
 manager.connection_spec = nil
 manager.unix_socket_mode = 0660
+manager.remove_unix_socket_on_create = true
 manager.remove_unix_socket_on_close = true
 manager.daemon = false
 manager.pid_file = nil
@@ -193,10 +195,12 @@ security.effective_group = "nogroup"
 
 controller.connection_spec = nil
 controller.unix_socket_mode = 0660
+controller.remove_unix_socket_on_create = true
 controller.remove_unix_socket_on_close = true
 
 manager.connection_spec = nil
 manager.unix_socket_mode = 0660
+manager.remove_unix_socket_on_create = true
 manager.remove_unix_socket_on_close = true
 manager.daemon = false
 manager.pid_file = nil
