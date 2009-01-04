@@ -276,9 +276,8 @@ milter-managerにはいくつか便利なツールが付属されていて、bin
   * milter-test-client: MTA側から渡ってきた情報を表示するだ
     けのmilter。MTA側から渡っている情報を確認するために使用
     することができる。
-  * milter-performance-check: MTAのパフォーマンスを計測する
-    SMTPクライアント。同時のツールにPostfix付属のsmtp-source
-    がある。
+  * milter-performance-check: MTAの性能を計測するSMTPクライ
+    アント。
   * milter-log-tool: milter-managerのログを解析し、
     milter-managerに登録されたmilterの動作をグラフ化する。
 
@@ -290,13 +289,13 @@ MTA無しでmilterに接続することができます。現時点では、同�
 うためには有用なツールです。例えば、以下のような用途に利用で
 きます。
 
-  * milterの速度計測
+  * milterの性能計測
   * milterの動作確認
 
-milter-test-serverは実行時間を表示するので、簡単な速度計測に
+milter-test-serverは実行時間を表示するので、簡単な性能計測に
 も利用できます。このとき、MTAとは関係なくmilter単体での実行時
-間を確認できるため、MTA経由で試す場合よりも速度上の問題点の発
-見が容易になります。
+間を確認できるため、MTA経由で試す場合よりも問題点の発見が容易
+になります。
 
 milter-test-serverはヘッダや本文が変更された場合は、変更され
 た内容を表示します。そのため、ヘッダや本文を変更するmilterの
@@ -304,6 +303,10 @@ milter-test-serverはヘッダや本文が変更された場合は、変更さ�
 動化された単体テストを作成することもできます。
 
 ==== オプション
+
+: --help
+
+   利用できるオプションを表示して終了します。
 
 : --connection-spec=SPEC
 
@@ -400,7 +403,10 @@ milter-test-serverはヘッダや本文が変更された場合は、変更さ�
 
 : --verbose
 
-    実行時のログを詳細に表示します。
+   実行時のログをより詳細に表示します。
+
+   「MILTER_LOG_LEVEL=all」という環境変数をしている場合と同
+   じ効果があります。
 
 : --version
 
@@ -408,6 +414,122 @@ milter-test-serverはヘッダや本文が変更された場合は、変更さ�
 
 === milter-test-client
 
+milter-test-clientはMTA側から渡ってきた情報を表示するだけの
+milterです。マクロも含めてMTA側から渡っている情報を表示する
+ので、MTA側のmilterの設定を確認するために利用できます。
+
+Postfixのアーカイブの中にも同様のツールがあります。
+src/milter/内にあるtest-milter.cがそれで、Postfixのmilterの実
+装のテストにも使っているようです。ただし、test-milterはマクロ
+までは表示してくれません。もし、マクロを利用しているmilterが
+期待通りに動かない場合の問題調査を行うのであれば、
+milter-test-clientが役立つでしょう。
+
+==== オプション
+
+: --help
+
+   利用できるオプションを表示して終了します。
+
+: --connection-spec=SPEC
+
+   接続を待ち受けるソケットを指定します。SPECの書式は次のう
+   ちのどれかです。
+
+     * unix:パス
+     * inet:ポート番号
+     * inet:ポート番号@ホスト名
+     * inet6:ポート番号
+     * inet6:ポート番号@ホスト名
+
+   例:
+     * unix:/var/run/milter/milter-manager.sock
+     * inet:10025
+     * inet:10025@localhost
+     * inet6:10025
+     * inet6:10025@localhost
+
+   設定ファイル中の「manager.connection_spec」の値を上書きし
+   ます。
+
+: --verbose
+
+   実行時のログをより詳細に出力します。
+
+   「MILTER_LOG_LEVEL=all」という環境変数をしている場合と同
+   じ効果があります。
+
+: --version
+
+   バージョンを表示して終了します。
+
 === milter-performance-check
 
+milter-performance-checkはMTAの性能を計測するSMTPクライアント
+です。milter-test-serverでmilterのみの性能を計測し、
+milter-performance-checkでMTAとmilterを合わせた性能を計測する
+という住み分けです。
+
+同様のツールにはPostfix付属のsmtp-sourceがあります。どちらも、
+同時に複数のSMTPセッションを張って一斉にメールを送信すること
+ができます。機能的にはsmtp-sourceの方が高機能です。
+
+milter-performance-checkが便利なのはSMTPセッションの時間のみ
+を計測してくれることです。smtp-sourceではtimeコマンドと組み合
+わせるなどして、smtp-source全体の実行時間を計測します。
+
+実際は、SMTPセッションの時間のみでも、ツール全体の実行時間で
+もそれほど違いはでないと思います。また、テスト用のメール総数
+を多くすればするほど、SMTPセッションにかかる時間が大きくなり、
+ツール自体の実行時間による影響は小さくなります。
+
+milter-performance-checkが提供している機能で十分な時は、
+milter-performance-checkを利用し、それでは不十分な時は
+smtp-sourceを利用するとよいでしょう。
+
+==== オプション
+
+: --help
+
+   利用できるオプションを表示して終了します。
+
+: --smtp-server=SERVER
+
+   接続先のSMTPサーバを指定します。
+
+   既定値はlocalhostです。
+
+: --smtp-port=PORT
+
+   接続先のSMTPサーバをのポート番号指定します。
+
+   既定値は25です。
+
+: --helo-fqdn=FQDN
+
+   HELOコマンドでFQDNを使います。
+
+   既定値はlocalhost.localdomainです。
+
+: --from=FROM
+
+   MAILコマンドのアドレスにFROMを使います。
+
+   既定値はfrom@example.comです。
+
+: --recipient=RECIPIENT
+
+   RCPTコマンドのアドレスにRECIPIENTを使います。複数の宛先を
+   指定する場合は複数回このオプションを指定してください。
+
+   既定値は[to@example.com]です。
+
+: --n-mails=N
+
+   合計でN個のメールを送信します。各メールは一斉に送信を開始します。
+
+   既定値は100です。
+
 === milter-log-tool
+
+FIXME

@@ -1,5 +1,7 @@
 2009-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* README.ja: describe milter-test-client and milter-performance-check.
+
 	* tool/milter-performance-check, tool/milter-test-client.c:
 	improve command line option.
 
