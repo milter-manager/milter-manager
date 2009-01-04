@@ -126,6 +126,20 @@ CentOS 5.2、Ubuntu 8.04 TLSで動作することを想定しています。そ
 関しては、そのバージョンのソフトウェアで動作することを想定し
 ています。
 
+=== あるとよいライブラリ他
+
+  * Cutter >= 1.0.6: C言語用単体テストフレームワーク
+
+    make checkおよびmake coverageを実行する場合は必要。
+
+    ((<Cutter|URL:http://cutter.sourceforge.net/>))
+
+  * LCOV: カバレッジ結果整形ツール
+
+    make coverageを実行する場合は必要。
+
+    ((<URL:http://ltp.sourceforge.net/coverage/lcov.php>))
+
 == 入手方法
 
 tar.gz:
@@ -140,16 +154,108 @@ Subversion:
   % make
   # make install
 
+== 設定
+
+((<設定|doc/configuration.rd.ja>))を見てください。
+
 == 使い方
 
-  % milter-manager
+milter-managerコマンドはbin/以下ではなくsbin/以下にインストー
+ルされることに注意してください。非常に多くの場合、一般ユーザ
+はsbin/にパスが通っていないので、フルパスで起動します。
+
+configure時に--prefixオプションを指定していない場合は
+/usr/local/sbin/以下にインストールされているので以下のように
+なります。
+
+  % /usr/local/sbin/milter-manager --help
+
+インストールが成功していれば、使用できるオプションが表示され
+ます。オプションの詳細は以下の通りです。まずは、--show-configオ
+プションで設定内容を確認するとよいでしょう。
+
+  % /usr/local/sbin/milter-manager --show-config
+
+指定できるオプションは設定ファイル中の値を上書きします。
 
 === オプション
+
+: --help
+
+   利用できるオプションを表示して終了します。
+
+: --connection-spec=SPEC
+
+   接続を待ち受けるソケットを指定します。SPECの書式は次のう
+   ちのどれかです。
+
+     * unix:パス
+     * inet:ポート番号
+     * inet:ポート番号@ホスト名
+     * inet6:ポート番号
+     * inet6:ポート番号@ホスト名
+
+   例:
+     * unix:/var/run/milter/milter-manager.sock
+     * inet:10025
+     * inet:10025@localhost
+     * inet6:10025
+     * inet6:10025@localhost
+
+   設定ファイル中の「manager.connection_spec」の値を上書きし
+   ます。
+
+: --config-dir=DIRECTORY
+
+    設定ファイルのあるディレクトリを指定します。
+    milter-managerは、まず、DIRECTORY/milter-manager.confの
+    読み込みを試みます。もし、見つからなかった場合はシステム
+    標準の場所にあるmilter-manager.confを読み込みます。
+
+: --pid-file=FILE
+
+   milter-managerのプロセスIDをFILEに保存します。
+
+   設定ファイル中の「manager.pid_file」の値を上書きします。
+
+: --user-name=NAME
+
+   milter-managerをNAMEユーザの権限で実行します。
+   milter-managerはroot権限で起動しなければいけません。
+
+   設定ファイル中の「security.effective_user」の値を上書きします。
+
+: --group-name=NAME
+
+   milter-managerをNAMEグループの権限で実行します。
+   milter-managerはroot権限で起動しなければいけません。
+
+   設定ファイル中の「security.effective_group」の値を上書きします。
+
+: --daemon
+
+   端末を切り離し、バックグラウンドでデーモンプロセスとして動
+   作します。運用時はデーモンプロセスで動作させることをお勧
+   めします。
+
+   設定ファイル中の「manager.daemon」の値を上書きします。
+
+: --show-config
+
+   設定内容を表示して終了します。設定内容はそのまま設定ファ
+   イルに使える書式で表示されます。登録されているmilterを確
+   認する場合や、milter-managerの問題を報告する場合などで有
+   用です。
+
+: --verbose
+
+   実行時のログをより詳細に出力します。ログはsyslogのmailファ
+   シリティで出力します。デーモンプロセスになっていない場合
+   は標準出力にもログが出力されます。
 
 : --version
 
    バージョンを表示して終了します。
 
-: ...
+== ツール
 
-   ...

@@ -1,5 +1,7 @@
 2009-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* README.ja: describe options.
+
 	* milter/manager/milter-manager-main.c,
 	test/manager/test-manager.c: --spec -> --connection-spec.
 
