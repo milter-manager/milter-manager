@@ -359,7 +359,9 @@ main (int argc, char *argv[])
     if (verbose)
         logger = milter_syslog_logger_new("milter-test-client");
     client = milter_client_new();
-    success = milter_client_set_connection_spec(client, spec, &error);
+
+    if (spec)
+        success = milter_client_set_connection_spec(client, spec, &error);
     if (success) {
         void (*sigint_handler) (int signum);
 

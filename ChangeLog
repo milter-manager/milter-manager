@@ -1,5 +1,11 @@
 2009-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-test-client.c: --connection-spec is optional.
+
+	* milter/client/milter-client.c (get_default_connection_spec):
+	make default connection spec more strict:
+	inet:10025 -> inet:10025@[127.0.0.1].
+
 	* README.ja: describe milter-test-client and milter-performance-check.
 
 	* tool/milter-performance-check, tool/milter-test-client.c:

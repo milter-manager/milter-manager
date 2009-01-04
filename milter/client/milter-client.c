@@ -310,7 +310,7 @@ listen_started (MilterClient *client,
 static gchar *
 get_default_connection_spec (MilterClient *client)
 {
-    return g_strdup("inet:10025");
+    return g_strdup("inet:10025@[127.0.0.1]");
 }
 
 gchar *
