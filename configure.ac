@@ -10,7 +10,7 @@ m4_define([milter_manager_version],
           [milter_manager_version_major.milter_manager_version_minor.milter_manager_version_micro])
 
 AC_INIT(milter-manager, [milter_manager_version], kou@cozmixng.org)
-AC_CONFIG_AUX_DIR([build])
+AC_CONFIG_AUX_DIR([config])
 
 AC_CONFIG_SRCDIR([milter/manager.h])
 AM_CONFIG_HEADER([config.h])

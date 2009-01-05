@@ -1,5 +1,8 @@
 2009-01-05  Kouhei Sutou  <kou@cozmixng.org>
 
+	* config/, build/, configure.ac: use config/ instead of build/ for
+	auxiliary directory.
+
 	* binding/ruby/test/Makefile.am,
 	binding/ruby/test/toolkit/Makefile.am,
 	binding/ruby/test/manager/Makefile.am: add missing files.
