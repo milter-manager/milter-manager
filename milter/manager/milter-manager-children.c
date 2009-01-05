@@ -1254,7 +1254,32 @@ cb_connection_failure (MilterServerContext *context, gpointer user_data)
 static void
 cb_shutdown (MilterServerContext *context, gpointer user_data)
 {
-    g_signal_emit_by_name(user_data, "shutdown");
+    MilterManagerChildren *children = user_data;
+
+    g_signal_emit_by_name(children, "shutdown");
+}
+
+static void
+cb_passed (MilterServerContext *context, gpointer user_data)
+{
+    /*
+      FIXME: I want to just call like the followings:
+        milter_server_context_abort(context);
+        cb_accept(context, children);
+      Or
+        cb_accept(context, children);
+        milter_server_context_abort(context);
+     */
+    MilterManagerChildren *children = user_data;
+    MilterServerContextState state;
+
+    state = milter_server_context_get_state(context);
+    compile_reply_status(children, state, MILTER_STATUS_ACCEPT);
+    remove_child_from_queue(children, context);
+
+    expire_child(children, context);
+    milter_server_context_abort(context);
+    milter_server_context_quit(context);
 }
 
 static void
@@ -1377,6 +1402,8 @@ setup_server_context_signals (MilterManagerChildren *children,
     CONNECT(shutdown);
     CONNECT(skip);
 
+    CONNECT(passed);
+
     CONNECT(writing_timeout);
     CONNECT(reading_timeout);
     CONNECT(end_of_message_timeout);
@@ -1415,6 +1442,8 @@ teardown_server_context_signals (MilterManagerChild *child,
     DISCONNECT(connection_failure);
     DISCONNECT(shutdown);
     DISCONNECT(skip);
+
+    DISCONNECT(passed);
 
     DISCONNECT(writing_timeout);
     DISCONNECT(reading_timeout);
@@ -1973,7 +2002,7 @@ milter_manager_children_connect (MilterManagerChildren *children,
                                  struct sockaddr       *address,
                                  socklen_t              address_length)
 {
-    GList *child;
+    GList *child, *targets;
     MilterManagerChildrenPrivate *priv;
     gboolean success = TRUE;
 
@@ -1996,11 +2025,20 @@ milter_manager_children_connect (MilterManagerChildren *children,
             continue;
 
         g_queue_push_tail(priv->reply_queue, context);
+    }
+
+    targets = g_list_copy(priv->reply_queue->head);
+    for (child = targets; child; child = g_list_next(child)) {
+        MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
+
+        /* FIXME: I don't know why |= is used. It seems that
+         * success is always TRUE. */
         success |= milter_server_context_connect(context,
                                                  host_name,
                                                  address,
                                                  address_length);
     }
+    g_list_free(targets);
 
     return success;
 }

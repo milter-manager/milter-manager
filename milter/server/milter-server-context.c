@@ -46,6 +46,7 @@ enum
     CHECK_END_OF_MESSAGE,
 
     READY,
+    PASSED,
 
     CONNECTION_TIMEOUT,
     WRITING_TIMEOUT,
@@ -173,6 +174,15 @@ milter_server_context_class_init (MilterServerContextClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterServerContextClass,
                                      ready),
+                     NULL, NULL,
+                     g_cclosure_marshal_VOID__VOID,
+                     G_TYPE_NONE, 0);
+
+    signals[PASSED] =
+        g_signal_new("passed",
+                     G_TYPE_FROM_CLASS(klass),
+                     G_SIGNAL_RUN_LAST,
+                     G_STRUCT_OFFSET(MilterServerContextClass, passed),
                      NULL, NULL,
                      g_cclosure_marshal_VOID__VOID,
                      G_TYPE_NONE, 0);
@@ -674,7 +684,7 @@ write_packet (MilterServerContext *context, gchar *packet, gsize packet_size,
       case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
         if (priv->process_body_count == 0)
             priv->state = next_state;
-        else 
+        else
             priv->sent_end_of_message = TRUE;
         priv->timeout_id = milter_utils_timeout_add(priv->end_of_message_timeout,
                                                     cb_end_of_message_timeout,
@@ -688,6 +698,7 @@ write_packet (MilterServerContext *context, gchar *packet, gsize packet_size,
       case MILTER_SERVER_CONTEXT_STATE_QUIT:
         milter_agent_shutdown(MILTER_AGENT(context));
       case MILTER_SERVER_CONTEXT_STATE_ABORT:
+          /* FIXME: should shutdown on ABORT? */
         priv->state = next_state;
         break;
       default:
@@ -717,7 +728,7 @@ pass_state (MilterServerContext *context, MilterServerContextState state)
     g_free(inspected_state);
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
     priv->state = state;
-    g_signal_emit_by_name(context, "accept");
+    g_signal_emit_by_name(context, "passed");
 }
 
 gboolean

@@ -61,6 +61,7 @@ static gchar *end_of_message_chunk;
 static gsize end_of_message_chunk_size;
 
 static guint n_accept;
+static guint n_passed;
 static guint n_check_connect;
 static guint n_check_helo;
 static guint n_check_envelope_from;
@@ -70,16 +71,23 @@ static guint n_check_body;
 static guint n_check_end_of_message;
 
 static void
-cb_accept (MilterServerContext *context)
+cb_accept (MilterServerContext *context, gpointer user_data)
 {
     n_accept++;
+}
+
+static void
+cb_passed (MilterServerContext *context, gpointer user_data)
+{
+    n_passed++;
 }
 
 static gboolean
 cb_check_connect (MilterServerContext *context,
                   const gchar *host_name,
                   const struct sockaddr *address,
-                  socklen_t address_size)
+                  socklen_t address_size,
+                  gpointer user_data)
 {
     connect_host_name = g_strdup(host_name);
     connect_address = malloc(address_size);
@@ -92,7 +100,8 @@ cb_check_connect (MilterServerContext *context,
 }
 
 static gboolean
-cb_check_helo (MilterServerContext *context, const gchar *fqdn)
+cb_check_helo (MilterServerContext *context, const gchar *fqdn,
+               gpointer user_data)
 {
     helo_fqdn = g_strdup(fqdn);
 
@@ -101,7 +110,8 @@ cb_check_helo (MilterServerContext *context, const gchar *fqdn)
 }
 
 static gboolean
-cb_check_envelope_from (MilterServerContext *context, const gchar *from)
+cb_check_envelope_from (MilterServerContext *context, const gchar *from,
+                        gpointer user_data)
 {
     actual_envelope_from = g_strdup(from);
 
@@ -111,7 +121,8 @@ cb_check_envelope_from (MilterServerContext *context, const gchar *from)
 
 static gboolean
 cb_check_envelope_recipient (MilterServerContext *context,
-                             const gchar *recipient)
+                             const gchar *recipient,
+                             gpointer user_data)
 {
     actual_envelope_recipient = g_strdup(recipient);
 
@@ -121,7 +132,8 @@ cb_check_envelope_recipient (MilterServerContext *context,
 
 static gboolean
 cb_check_header (MilterServerContext *context,
-                  const gchar *name, const gchar *value)
+                  const gchar *name, const gchar *value,
+                 gpointer user_data)
 {
     actual_header_name = g_strdup(name);
     actual_header_value = g_strdup(value);
@@ -168,6 +180,7 @@ setup_signals (MilterServerContext *context)
     CONNECT(check_end_of_message);
 
     CONNECT(accept);
+    CONNECT(passed);
 #undef CONNECT
 }
 
@@ -199,6 +212,7 @@ setup (void)
     end_of_message_chunk_size = 0;
 
     n_accept = 0;
+    n_passed = 0;
     n_check_connect = 0;
     n_check_helo = 0;
     n_check_envelope_from = 0;
@@ -267,7 +281,8 @@ test_check_connect (void)
     cut_assert_equal_string(host_name, connect_host_name);
     cut_assert_equal_int(sizeof(struct sockaddr_in), connect_address_size);
 
-    cut_assert_equal_uint(1, n_accept);
+    cut_assert_equal_uint(1, n_passed);
+    cut_assert_equal_uint(0, n_accept);
 }
 
 void
@@ -280,7 +295,8 @@ test_check_helo (void)
     cut_assert_equal_uint(1, n_check_helo);
     cut_assert_equal_string(fqdn, helo_fqdn);
 
-    cut_assert_equal_uint(1, n_accept);
+    cut_assert_equal_uint(1, n_passed);
+    cut_assert_equal_uint(0, n_accept);
 }
 
 void
@@ -293,7 +309,8 @@ test_check_envelope_from (void)
     cut_assert_equal_uint(1, n_check_envelope_from);
     cut_assert_equal_string(from, actual_envelope_from);
 
-    cut_assert_equal_uint(1, n_accept);
+    cut_assert_equal_uint(1, n_passed);
+    cut_assert_equal_uint(0, n_accept);
 }
 
 void
@@ -307,7 +324,8 @@ test_check_envelope_recipient (void)
     cut_assert_equal_uint(1, n_check_envelope_recipient);
     cut_assert_equal_string(recipient, actual_envelope_recipient);
 
-    cut_assert_equal_uint(1, n_accept);
+    cut_assert_equal_uint(1, n_passed);
+    cut_assert_equal_uint(0, n_accept);
 }
 
 void
@@ -322,7 +340,8 @@ test_check_header (void)
     cut_assert_equal_string(name, actual_header_name);
     cut_assert_equal_string(value, actual_header_value);
 
-    cut_assert_equal_uint(1, n_accept);
+    cut_assert_equal_uint(1, n_passed);
+    cut_assert_equal_uint(0, n_accept);
 }
 
 void
@@ -337,7 +356,8 @@ test_check_body (void)
     cut_assert_equal_uint(1, n_check_body);
     cut_assert_equal_memory(body, sizeof(body), body_chunk, body_chunk_size);
 
-    cut_assert_equal_uint(1, n_accept);
+    cut_assert_equal_uint(1, n_passed);
+    cut_assert_equal_uint(0, n_accept);
 }
 
 void
@@ -362,7 +382,8 @@ test_check_end_of_message (gconstpointer data)
     cut_assert_equal_memory(chunk, size,
                             end_of_message_chunk, end_of_message_chunk_size);
 
-    cut_assert_equal_uint(1, n_accept);
+    cut_assert_equal_uint(1, n_passed);
+    cut_assert_equal_uint(0, n_accept);
 }
 
 /*

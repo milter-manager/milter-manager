@@ -106,6 +106,7 @@ struct _MilterServerContextClass
                                     gsize size);
 
     void (*ready)               (MilterServerContext *context);
+    void (*passed)              (MilterServerContext *context);
 
     void (*connection_timeout)  (MilterServerContext *context);
     void (*writing_timeout)     (MilterServerContext *context);
