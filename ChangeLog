@@ -1,5 +1,7 @@
 2009-01-05  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/core/test-syslog-logger.c: follow the recent syslog logger change.
+
 	* tool/ruby/milter-rrd.rb: cleanup.
 
 	* milter/core/milter-syslog-logger.c (cb_log): don't log except

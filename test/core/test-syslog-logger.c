@@ -35,6 +35,8 @@ static gchar *actual;
 static gchar *syslog_file_name;
 static gsize first_log_file_size;
 
+static gchar *env_log_level;
+
 static void
 setup_syslog (void)
 {
@@ -65,6 +67,8 @@ setup_syslog (void)
 void
 setup (void)
 {
+    env_log_level = g_strdup(g_getenv("MILTER_LOG_LEVEL"));
+
     logger = milter_syslog_logger_new(MILTER_LOG_DOMAIN);
     actual = NULL;
     syslog_file_name = NULL;
@@ -85,6 +89,13 @@ teardown (void)
 
     if (syslog_file_name)
         g_free(syslog_file_name);
+
+    if (env_log_level) {
+        g_setenv("MILTER_LOG_LEVEL", env_log_level, TRUE);
+        g_free(env_log_level);
+    } else {
+        g_unsetenv("MILTER_LOG_LEVEL");
+    }
 }
 
 static void
@@ -106,6 +117,8 @@ collect_log_message (void)
 void
 test_info (void)
 {
+    g_setenv("MILTER_LOG_LEVEL", "info", TRUE);
+
     milter_info("This is informative message.");
     cut_trace(collect_log_message());
 
