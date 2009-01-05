@@ -1,5 +1,8 @@
 2009-01-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-leader.c (cb_error): improve error
+	message.
+
 	* po/POTFILES.in: remove a needless file.
 
 	* milter/core/milter-reader.c (channel_watch_func): ignore invalid

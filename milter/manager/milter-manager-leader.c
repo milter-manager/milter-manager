@@ -580,7 +580,7 @@ cb_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
 {
     MilterManagerLeader *leader = user_data;
 
-    milter_error("%s", error->message);
+    milter_error("leader error: %s", error->message);
     milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(leader),
                                 error);
 
