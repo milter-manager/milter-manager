@@ -1,3 +1,7 @@
+2009-01-05  Kouhei Sutou  <kou@cozmixng.org>
+
+	* README.ja, doc/: setup documentation environment.
+
 2009-01-05  Hiroyuki Ikezoe  <poincare@ikezoe.net>
 
 	* milter/manager/milter-manager-main.c: fix memory leak.

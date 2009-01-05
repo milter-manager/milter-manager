@@ -22,9 +22,7 @@ EXTRA_DIST =					\
 	autogen.sh				\
 	ChangeLog.toolkit			\
 	README					\
-	README.ja				\
-	INTRODUCTION				\
-	INTRODUCTION.ja
+	README.ja
 
 upload: upload-doc
 

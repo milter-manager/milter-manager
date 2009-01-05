@@ -1,6 +1,6 @@
 # -*- rd -*-
 
-= 設定 --- milter-manager.confの書式
+= 設定 --- milter-manager.confの書き方
 
 milter-managerの設定ファイルmilter-manager.confの書き方につ
 いて説明します。

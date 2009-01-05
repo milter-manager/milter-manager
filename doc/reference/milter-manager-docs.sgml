@@ -13,6 +13,7 @@
     <!--xi:include href="news.xml"/-->
     <xi:include href="readme.xml"/>
     <xi:include href="introduction.xml"/>
+    <xi:include href="configuration.xml"/>
     <!--xi:include href="tutorial.xml"/-->
   </part>
 

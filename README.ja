@@ -8,7 +8,7 @@ milter-manager
 
 == サイト
 
-((<URL:http://milter-manager.sf.net>))
+((<URL:http://milter-manager.sourceforge.net/>))
 
 == ライセンス
 
@@ -50,8 +50,8 @@ milter-managerを導入することにより、MTAが行っていたmilter管理
   * 他のmilterの設定を検出し、動的にmilter-managerの設定を追
     従させることができる
 
-詳細は((<はじめに|INTRODUCTION.ja>))に書いてありますが、ここ
-でも簡単に説明します。
+詳細は((<はじめに|"doc/introduction.rd.ja">))に書いてあります
+が、ここでも簡単に説明します。
 
 === milter登録方法
 
@@ -161,7 +161,7 @@ Subversion:
 
 == 設定
 
-((<設定|doc/configuration.rd.ja>))を見てください。
+((<設定|"doc/configuration.rd.ja">))を見てください。
 
 == 使い方
 

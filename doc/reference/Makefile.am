@@ -52,7 +52,8 @@ HTML_IMAGES =
 content_files =			\
 	version.xml		\
 	readme.xml		\
-	introduction.xml
+	introduction.xml	\
+	configuration.xml
 
 # Extra options to supply to gtkdoc-fixxref
 FIXXREF_OPTIONS=
@@ -66,7 +67,9 @@ generated_xml_files =		\
 	readme.xml		\
 	readme.xml.ja		\
 	introduction.xml	\
-	introduction.xml.ja
+	introduction.xml.ja	\
+	configuration.xml	\
+	configuration.xml.ja
 
 CLEANFILES +=				\
 	$(generated_xml_files)
@@ -93,7 +96,7 @@ update-po: Makefile sgml.stamp
 
 EXPAND_RD2_SNIPPET = $(top_srcdir)/misc/expand-rd2-snippet.rb
 RD2REFENTRY_LIB = $(top_srcdir)/misc/rd2refentry-lib.rb
-RD2 = rd2 -r $(RD2REFENTRY_LIB)
+RD2 = rd2 -r $(RD2REFENTRY_LIB) --name=MILTER-MANAGER
 RD2_JA = $(RD2) --po=$(srcdir)/ja.po
 
 readme.xml: $(top_srcdir)/README $(RD2REFENTRY_LIB) readme.xml.ja
@@ -102,11 +105,17 @@ readme.xml: $(top_srcdir)/README $(RD2REFENTRY_LIB) readme.xml.ja
 readme.xml.ja: $(top_srcdir)/README.ja $(RD2REFENTRY_LIB) ja.po
 	$(RD2_JA) $(top_srcdir)/README.ja > readme.xml.ja
 
-introduction.xml: $(top_srcdir)/INTRODUCTION $(RD2REFENTRY_LIB) introduction.xml.ja
-	$(RD2) $(top_srcdir)/INTRODUCTION > introduction.xml
+introduction.xml: $(top_srcdir)/doc/introduction.rd $(RD2REFENTRY_LIB) introduction.xml.ja
+	$(RD2) $(top_srcdir)/doc/introduction.rd > introduction.xml
 
-introduction.xml.ja: $(top_srcdir)/INTRODUCTION.ja $(RD2REFENTRY_LIB) ja.po
-	$(RD2_JA) $(top_srcdir)/INTRODUCTION.ja > introduction.xml.ja
+introduction.xml.ja: $(top_srcdir)/doc/introduction.rd.ja $(RD2REFENTRY_LIB) ja.po
+	$(RD2_JA) $(top_srcdir)/doc/introduction.rd.ja > introduction.xml.ja
+
+configuration.xml: $(top_srcdir)/doc/configuration.rd $(RD2REFENTRY_LIB) configuration.xml.ja
+	$(RD2) $(top_srcdir)/doc/configuration.rd > configuration.xml
+
+configuration.xml.ja: $(top_srcdir)/doc/configuration.rd.ja $(RD2REFENTRY_LIB) ja.po
+	$(RD2_JA) $(top_srcdir)/doc/configuration.rd.ja > configuration.xml.ja
 
 upload: docs
 	rm -rf tmp/

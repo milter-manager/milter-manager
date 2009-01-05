@@ -169,11 +169,11 @@ milterを効率的に組み合わせるためにはSendmail, Postfixにどのよ
 
 Sendmail、Postfixともに、milterを適用する設定を行うと、すべて
 のメールに対してmilterが適用されます。そのため、特定の条件の
-ときのみmilterを適用するということはできません。((-Postfixで
+ときのみmilterを適用するということはできません。（Postfixで
 は、milterではなく、((<アクセスポリシー委譲
 |URL:http://www.postfix.org/SMTPD_POLICY_README.html>))の仕組
 みを使うことによりS25Rで怪しいと判断した場合のみGreylistingを
-適用するということができます。-))
+適用するということができます。）
 
 また、Sendmailではmilter毎に接続に失敗した時のアクションやタ
 イムアウト時間の設定ができるのに対して、Postfixではmilter全体
