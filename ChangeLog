@@ -1,5 +1,7 @@
 2009-01-05  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/test/Makefile.am: add a missing file.
+
 	* Makefile.am, configure.ac: add misc/.
 
 	* data/**/Makefile.am: distributes missing files.

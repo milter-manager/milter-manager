@@ -11,4 +11,5 @@ utils_files =					\
 	milter-manager-encoder-test-utils.rb
 
 EXTRA_DIST =		\
+	$(TESTS)	\
 	$(utils_files)
