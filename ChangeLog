@@ -1,5 +1,7 @@
 2009-01-05  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/tool/fixtures/Makefile.am (EXTRA_DIST): add a missing file.
+
 	* configure.ac, test/: add missing files.
 
 	* binding/ruby/test/Makefile.am: add a missing file.
