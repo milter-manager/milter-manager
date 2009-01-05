@@ -1,5 +1,7 @@
 2009-01-05  Kouhei Sutou  <kou@cozmixng.org>
 
+	* Makefile.am: add missing directories.
+
 	* configure.ac: 0.0.1 -> 0.7.0.
 
 	* config/, build/, configure.ac: use config/ instead of build/ for

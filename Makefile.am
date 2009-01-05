@@ -7,6 +7,8 @@ SUBDIRS =		\
 	tool		\
 	data		\
 	test		\
+	po		\
+	build		\
 	doc		\
 	license
 
