@@ -159,9 +159,8 @@ module Milter
     end
 
     class Graph
-      def initialize(rrd_directory, log, update_time)
+      def initialize(rrd_directory, update_time)
         @rrd_directory = rrd_directory
-        @log = log
         @update_time = update_time
         @data = []
         @items = nil
@@ -218,14 +217,13 @@ module Milter
 
           next if counts.uniq.length == 1 and counts.uniq.include?("U")
 
-          p("update #{rrd} with #{Time.at(time)}  #{counts.join(':')}")
+          puts("update #{rrd} with #{Time.at(time)}  #{counts.join(':')}")
           ::RRD.update("#{rrd_name(time_span)}",
                        "#{time}:#{counts.join(':')}")
         end
       end
 
       def update
-        collect
         update_db(TimeSpan.new("second"))
         update_db(TimeSpan.new("minute"))
         update_db(TimeSpan.new("hour"))
@@ -235,11 +233,11 @@ module Milter
         step = time_span.step
         rows = time_span.rows
         ::RRD.create("#{rrd_name(time_span)}",
-            "--start", (start_time - 1).to_i.to_s,
-            "--step", step,
-            "RRA:MAX:0.5:1:#{rows}",
-            "RRA:AVERAGE:0.5:1:#{rows}",
-            *args.map{|arg| "DS:#{arg}:GAUGE:#{step}:0:U"})
+                     "--start", (start_time - 1).to_i.to_s,
+                     "--step", step,
+                     "RRA:MAX:0.5:1:#{rows}",
+                     "RRA:AVERAGE:0.5:1:#{rows}",
+                     *args.map{|arg| "DS:#{arg}:GAUGE:#{step}:0:U"})
       end
 
       def output_graph(time_span, start_time = nil, end_time = "now", width = 1000 , height = 250, *args)
@@ -252,17 +250,17 @@ module Milter
         title = "#{@title} - #{time_stamp}"
         vertical_label = "#{@vertical_label}/#{time_span.short_name}"
         ::RRD.graph("#{graph_name(time_span)}",
-                  "--title", title,
-                  "--vertical-label", vertical_label,
-                  "--step", time_span.step,
-                  "--start", start_time,
-                  "--end", end_time,
-                  "--width","#{width}",
-                  "--height", "#{height}",
-                  "--alt-y-grid",
-                  *(@items.map{|item| "DEF:#{item}=#{rrd_file}:#{item}:MAX"} +
-                    @items.map{|item| "CDEF:n_#{item}=#{item},UN,0,#{item},IF"} +
-                    args))
+                    "--title", title,
+                    "--vertical-label", vertical_label,
+                    "--step", time_span.step,
+                    "--start", start_time,
+                    "--end", end_time,
+                    "--width","#{width}",
+                    "--height", "#{height}",
+                    "--alt-y-grid",
+                    *(@items.map{|item| "DEF:#{item}=#{rrd_file}:#{item}:MAX"} +
+                      @items.map{|item| "CDEF:n_#{item}=#{item},UN,0,#{item},IF"} +
+                      args))
       end
 
       private
@@ -272,11 +270,13 @@ module Milter
     end
 
     class Session < Graph
-      def initialize(rrd_directory, log, update_time)
-        super(rrd_directory, log, update_time)
-        @title = 'milter-manager condition'
+      def initialize(rrd_directory, update_time)
+        super(rrd_directory, update_time)
+        @title = 'milter-manager sessions'
         @vertical_label = "sessions"
         @items = ["smtp", "child"]
+        @child_sessions = []
+        @client_sessions = []
       end
 
       def rrd_name(time_span)
@@ -287,23 +287,20 @@ module Milter
         build_path("session.#{time_span.name}.png")
       end
 
-      def collect_session(regex)
-        sessions = []
-        @log.each do |line|
-          if Regexp.new(regex).match(line)
-            time = Time.parse($1)
-            name = $3
-            id = $4
-            if $2 == "Start"
-              session = Milter::Session.new(id, name)
-              session.start_time = time
-              sessions << session
-            else
-              sessions.reverse_each do |session|
-                if session.id == id
-                  session.end_time = time
-                  break
-                end
+      def collect_session(line, sessions, regex)
+        if regex.match(line)
+          time = Time.parse($1)
+          name = $3
+          id = $4
+          if $2 == "Start"
+            session = Milter::Session.new(id, name)
+            session.start_time = time
+            sessions << session
+          else
+            sessions.reverse_each do |session|
+              if session.id == id
+                session.end_time = time
+                break
               end
             end
           end
@@ -311,18 +308,20 @@ module Milter
         sessions
       end
 
-      def collect
+      def feed(line)
         @child_sessions =
-          collect_session("milter-manager\\[.+\\]: \\[(.+)\\](Start|End).* filter process of (.*)\\((.+)\\)$")
+          collect_session(line, @child_sessions,
+                          /milter-manager\[.+\]: \[(.+)\](Start|End).* filter process of (.*)\((.+)\)$/)
         @client_sessions =
-          collect_session("milter-manager\\[.+\\]: \\[(.+)\\](Start|End).* session in (.*)\\((.+)\\)$")
+          collect_session(line, @client_sessions,
+                          /milter-manager\[.+\]: \[(.+)\](Start|End).* session in (.*)\((.+)\)$/)
       end
 
       def count_sessions(sessions, time_span, last_update_time)
         counting = Hash.new("U")
         sessions.each do |session|
           next if session.end_time == nil
-          start_time =time_span.adjust_time(session.start_time)
+          start_time = time_span.adjust_time(session.start_time)
           end_time = time_span.adjust_time(session.end_time)
 
           # ignore sessions which has been already registerd due to RRD.update fails on past time stamp
@@ -363,8 +362,8 @@ module Milter
     end
 
     class MailStatus < Graph
-      def initialize(rrd_directory, log, update_time)
-        super(rrd_directory, log, update_time)
+      def initialize(rrd_directory, update_time)
+        super(rrd_directory, update_time)
         @vertical_label = "mails"
         @title = 'Processed mails'
         @items = ["normal", "accept",
@@ -381,17 +380,15 @@ module Milter
         build_path("mail.#{time_span.name}.png")
       end
 
-      def collect
-        @log.each do |line|
-          if /milter-manager\[.+\]: \[(.+)\]Reply (.+) to MTA on (.+)$/ =~ line
-            time = Time.parse($1)
-            status = $2
-            state = $3
-            next if state == "envelope-recipient"
-            next if status == "continue" and state != "end-of-message"
-            status = "normal" if status == "continue"
-            @data << Milter::Mail.new(status, time)
-          end
+      def feed(line)
+        if /milter-manager\[.+\]: \[(.+)\]Reply (.+) to MTA on (.+)$/ =~ line
+          time = Time.parse($1)
+          status = $2
+          state = $3
+          return if state == "envelope-recipient"
+          return if status == "continue" and state != "end-of-message"
+          status = "normal" if status == "continue"
+          @data << Milter::Mail.new(status, time)
         end
       end
 
@@ -407,8 +404,8 @@ module Milter
     end
 
     class PassChild < Graph
-      def initialize(rrd_directory, log, update_time)
-        super(rrd_directory, log, update_time)
+      def initialize(rrd_directory, update_time)
+        super(rrd_directory, update_time)
         @title = 'Pass child milters'
         @vertical_label = "milters"
         @items = ["connect",
@@ -428,14 +425,12 @@ module Milter
         build_path("pass-child.#{time_span.name}.png")
       end
 
-      def collect
-        @log.each do |line|
-          if /milter-manager\[.+\]: \[(.+)\]Pass filter process of (.+)\(.+\) on (.+)$/ =~ line
-            time = Time.parse($1)
-            name = $2
-            state = $3
-            @data << Milter::PassChild.new(name, state, time)
-          end
+      def feed(line)
+        if /milter-manager\[.+\]: \[(.+)\]Pass filter process of (.+)\(.+\) on (.+)$/ =~ line
+          time = Time.parse($1)
+          name = $2
+          state = $3
+          @data << Milter::PassChild.new(name, state, time)
         end
       end
 

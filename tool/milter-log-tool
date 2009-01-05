@@ -27,7 +27,7 @@ require 'milter-rrd'
 
 class MilterLogTool
   def initialize
-    @log = nil
+    @log = ARGF
     @update_db = true
     @sessions = nil
     @mail_status = nil
@@ -36,8 +36,10 @@ class MilterLogTool
 
   def parse_options(argv)
     opts = OptionParser.new do |opts|
-      opts.on("--log=LOG_FILENAME", "The log file name in which is stored Milter log") do |log|
-        @log = File.read(log)
+      opts.on("--log=LOG_FILENAME",
+              "The log file name in which is stored Milter log",
+              "(STDIN)") do |log|
+        @log = File.open(log)
       end
 
       opts.on("--rrd-directory=DIRECTORY") do |directory|
@@ -46,7 +48,8 @@ class MilterLogTool
       end
 
       opts.on("--[no-]update-db",
-              "Update RRD database with log file") do |boolean|
+              "Update RRD database with log file",
+              "(#{@update_db})") do |boolean|
         @update_db = boolean
       end
     end
@@ -54,22 +57,24 @@ class MilterLogTool
   end
 
   def update
-    @now = Time.now.utc
+    return unless @update_db
 
-    @sessions = Milter::RRD::Session.new(@rrd_directory, @log, @now)
-    @sessions.update
+    listeners = [sessions, mail_status, pass_child]
+    @log.each_line do |line|
+      listeners.each do |listener|
+        listener.feed(line)
+      end
+    end
 
-    @mail_status = Milter::RRD::MailStatus.new(@rrd_directory, @log, @now)
-    @mail_status.update
-    
-    @pass_child = Milter::RRD::PassChild.new(@rrd_directory, @log, @now)
-    @pass_child.update
+    listeners.each do |listener|
+      listener.update
+    end
   end
 
   def output_graph(time_span)
-    @sessions.output_graph(Milter::RRD::TimeSpan.new(time_span))
-    @mail_status.output_graph(Milter::RRD::TimeSpan.new(time_span))
-    @pass_child.output_graph(Milter::RRD::TimeSpan.new(time_span))
+    sessions.output_graph(Milter::RRD::TimeSpan.new(time_span))
+    mail_status.output_graph(Milter::RRD::TimeSpan.new(time_span))
+    pass_child.output_graph(Milter::RRD::TimeSpan.new(time_span))
   end
 
   def output_all_graph
@@ -77,11 +82,28 @@ class MilterLogTool
     output_graph("minute")
     output_graph("hour")
   end
+
+  private
+  def now
+    @now ||= Time.now.utc
+  end
+
+  def sessions
+    @sessions ||= Milter::RRD::Session.new(@rrd_directory, now)
+  end
+
+  def mail_status
+    @mail_status ||= Milter::RRD::MailStatus.new(@rrd_directory, now)
+  end
+
+  def pass_child
+    @pass_child ||= Milter::RRD::PassChild.new(@rrd_directory, now)
+  end
 end
 
 milter_log_tool = MilterLogTool.new
 milter_log_tool.parse_options(ARGV)
-milter_log_tool.update unless @update_rb
+milter_log_tool.update
 milter_log_tool.output_all_graph
 
 # vi:ts=2:nowrap:ai:expandtab:sw=2

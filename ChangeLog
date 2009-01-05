@@ -1,5 +1,8 @@
 2009-01-05  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-log-tool, tool/ruby/milter-rrd.rb: use stream
+	parsing for scaling.
+
 	* test/core/test-syslog-logger.c: follow the recent syslog logger change.
 
 	* tool/ruby/milter-rrd.rb: cleanup.
