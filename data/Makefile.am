@@ -4,5 +4,5 @@ SUBDIRS =			\
 	defaults		\
 	rc.d
 
-pkgsysconf_DATA =		\
+dist_pkgsysconf_DATA =		\
 	milter-manager.conf

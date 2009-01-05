@@ -1,3 +1,3 @@
 defaultsdir = $(pkgsysconfdir)/defaults
-defaults_DATA =		\
+dist_defaults_DATA =		\
 	freebsd.conf

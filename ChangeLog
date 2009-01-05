@@ -1,6 +1,6 @@
 2009-01-05  Kouhei Sutou  <kou@cozmixng.org>
 
-	* data/packet/Makefile.am: distributes missing files.
+	* data/**/Makefile.am: distributes missing files.
 
 	* tool/Makefile.am: distributes missing files.
 

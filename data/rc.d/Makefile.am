@@ -1,3 +1,3 @@
 rcdir = $(pkgsysconfdir)/rc.d
-rc_SCRIPTS =		\
+dist_rc_SCRIPTS =	\
 	milter-manager
