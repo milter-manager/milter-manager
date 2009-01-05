@@ -82,8 +82,8 @@ Postfixもバージョン2.3からmilterシステムのサポートを始めま�
 SendmailとPostfixのようにmilterをサポートしているMTAであれば、
 MTAによらずmilterを利用できますが、milterを登録する方法や
 milterの設定方法はMTA毎に異なります。せっかくSendmailと
-Postfix間で同じmilterを利用できるようになったのですが、効率
-的・効果的にmilerを組み合わせるノウハウは共有できません。
+Postfix間で同じmilterを利用できるようになったのですが、効率的・
+効果的にmilterを組み合わせるノウハウは共有できません。
 
 === より効率的・効果的なmilterの利用
 
@@ -169,11 +169,11 @@ milterを効率的に組み合わせるためにはSendmail, Postfixにどのよ
 
 Sendmail、Postfixともに、milterを適用する設定を行うと、すべて
 のメールに対してmilterが適用されます。そのため、特定の条件の
-ときのみmilterを適用するということはできません。（Postfixで
+ときのみmilterを適用するということはできません。((-Postfixで
 は、milterではなく、((<アクセスポリシー委譲
 |URL:http://www.postfix.org/SMTPD_POLICY_README.html>))の仕組
 みを使うことによりS25Rで怪しいと判断した場合のみGreylistingを
-適用するということができます。）
+適用するということができます。-))
 
 また、Sendmailではmilter毎に接続に失敗した時のアクションやタ
 イムアウト時間の設定ができるのに対して、Postfixではmilter全体
@@ -262,3 +262,33 @@ Rubyインタプリタを用いることにより、milter-managerの設定を�
 
   * milter-managerを用いることによりmilterの欠点を解消するこ
     とができる
+
+# == 素材
+#
+# どこかで使う？
+#
+# ---
+# 新しい迷惑メール対策手法はmilterとして実装されることも多
+# くあります。milterという仕組みにより、素早くそのような手法を
+# 試すことができます。
+#
+# milterの中にはシンプルに専用の機能を提供するmilterと、それ1つ
+# で多くのことを行うmilterがあります。前者の例はmilter-dkimです。
+# 後者の例はspamass-milterやamavisd-milterです。
+# ---
+#
+# ---
+# milterはSendmailとPostfixのどちらでも使える技術ですが、MTAへ
+# のmilterの登録方法はそれぞれ異なります。その違いを吸収するの
+# がmilter-managerです。
+#
+#   Sendmail ---------------- milter-manager ----------------- milter1
+#             Sendmail特有の                 ----------------- milter2
+# 	    mitler登録方法                 ----------------- ...
+#                                            milter-manager
+#                              MTA非依存 →  特有の
+#                                            milter登録方法
+#             Postfix特有の                  ----------------- ...
+# 	    mitler登録方法                 ----------------- milter2
+#   Postfix  ---------------- milter-manager ----------------- milter1
+# ---
