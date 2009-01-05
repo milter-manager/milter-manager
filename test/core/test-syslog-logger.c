@@ -36,6 +36,7 @@ static gchar *syslog_file_name;
 static gsize first_log_file_size;
 
 static gchar *env_log_level;
+static GPrintFunc original_print_hander;
 
 static void
 setup_syslog (void)
@@ -68,6 +69,7 @@ void
 setup (void)
 {
     env_log_level = g_strdup(g_getenv("MILTER_LOG_LEVEL"));
+    original_print_hander = NULL;
 
     logger = milter_syslog_logger_new(MILTER_LOG_DOMAIN);
     actual = NULL;
@@ -89,6 +91,9 @@ teardown (void)
 
     if (syslog_file_name)
         g_free(syslog_file_name);
+
+    if (original_print_hander)
+        g_set_print_handler(original_print_hander);
 
     if (env_log_level) {
         g_setenv("MILTER_LOG_LEVEL", env_log_level, TRUE);
@@ -114,12 +119,20 @@ collect_log_message (void)
     gcut_assert_error(error);
 }
 
+static void
+print_handler (const gchar *string)
+{
+}
+
 void
 test_info (void)
 {
+    original_print_hander = g_set_print_handler(print_handler);
     g_setenv("MILTER_LOG_LEVEL", "info", TRUE);
-
     milter_info("This is informative message.");
+    g_set_print_handler(original_print_hander);
+    original_print_hander = NULL;
+
     cut_trace(collect_log_message());
 
     cut_assert_match(".* " MILTER_LOG_DOMAIN "\\[\\d+\\]: "
