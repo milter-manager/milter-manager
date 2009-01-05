@@ -1,5 +1,7 @@
 2009-01-05  Kouhei Sutou  <kou@cozmixng.org>
 
+	* libmilter/Makefile.am: add a missing file.
+
 	* milter/Makefile.am: add missing files.
 
 	* Makefile.am: add missing directories.

@@ -16,7 +16,8 @@ pkglib_LTLIBRARIES =		\
 	libmilter.la
 
 libmilter_la_SOURCES =		\
-	libmilter-compatible.c
+	libmilter-compatible.c	\
+	libmilter-compatible.h
 
 libmilter_la_LIBADD =						\
 	$(top_builddir)/milter/client/libmilter-client.la
