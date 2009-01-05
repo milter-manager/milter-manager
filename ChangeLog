@@ -1,5 +1,7 @@
 2009-01-05  Kouhei Sutou  <kou@cozmixng.org>
 
+	* Makefile.am (update-po): include module/ and tool/.
+
 	* po/POTFILES.in: update.
 
 	* binding/ruby/Makefile.am (EXTRA_DIST): add test-unit files.

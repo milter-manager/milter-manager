@@ -61,7 +61,7 @@ module Milter
         when "minute"
           60
         when "hour"
-          3600 
+          3600
         end
       end
 

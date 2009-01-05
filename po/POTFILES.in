@@ -47,3 +47,6 @@ milter/manager/milter-manager-reply-encoder.c
 milter/manager/milter-manager.c
 milter/server/milter-server-context.c
 milter/server/milter-server-enum-types.c
+module/configuration/ruby/milter-manager-ruby-configuration.c
+tool/milter-test-client.c
+tool/milter-test-server.c

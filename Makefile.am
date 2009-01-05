@@ -40,8 +40,10 @@ upload-doc:
 	cd doc/reference && $(MAKE) $(AM_MAKEFLAGS) upload
 
 update-po:
-	cd $(top_srcdir) && \
-	  (find milter -name '*.c') | \
+	cd $(top_srcdir) &&				\
+	  (find milter -name '*.c';			\
+	   find module -name '*.c';			\
+	   find tool -name '*.c') |			\
 	  sort > po/POTFILES.in
 	cd po && $(MAKE) $(AM_MAKEFLAGS) update-po
 
