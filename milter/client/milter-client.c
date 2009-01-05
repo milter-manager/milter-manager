@@ -544,10 +544,9 @@ server_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
 static gboolean
 cb_timeout_unlock_quit_mutex (gpointer data)
 {
-    MilterClient *client = data;
     MilterClientPrivate *priv;
 
-    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    priv = MILTER_CLIENT_GET_PRIVATE(data);
 
     g_mutex_unlock(priv->quit_mutex);
 
