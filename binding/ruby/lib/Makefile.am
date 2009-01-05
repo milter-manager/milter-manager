@@ -1,4 +1,4 @@
 SUBDIRS = milter
 
-binding_lib_DATA =	\
+dist_binding_lib_DATA =	\
 	milter.rb
