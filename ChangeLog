@@ -1,5 +1,7 @@
 2009-01-05  Kouhei Sutou  <kou@cozmixng.org>
 
+	* po/POTFILES.in: update.
+
 	* binding/ruby/Makefile.am (EXTRA_DIST): add test-unit files.
 
 	* test/tool/fixtures/Makefile.am (EXTRA_DIST): add a missing file.
