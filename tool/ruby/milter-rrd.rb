@@ -220,7 +220,7 @@ module Milter
 
           p("update #{rrd} with #{Time.at(time)}  #{counts.join(':')}")
           ::RRD.update("#{rrd_name(time_span)}",
-                     "#{time}:#{counts.join(':')}")
+                       "#{time}:#{counts.join(':')}")
         end
       end
 
@@ -248,9 +248,12 @@ module Milter
         return unless File.exist?(rrd_file)
         last_update_time = ::RRD.last(rrd_file)
 
+        time_stamp = last_update_time.strftime("%a %b %d %H:%M:%S %Z %Y")
+        title = "#{@title} - #{time_stamp}"
+        vertical_label = "#{@vertical_label}/#{time_span.short_name}"
         ::RRD.graph("#{graph_name(time_span)}",
-                  "--title", "#{@title} - #{last_update_time.strftime("%a %b %d %H:%M:%S %Z %Y")}",
-                  "--vertical-label", "#{@vertical_label}/#{time_span.short_name}",
+                  "--title", title,
+                  "--vertical-label", vertical_label,
                   "--step", time_span.step,
                   "--start", start_time,
                   "--end", end_time,
@@ -442,6 +445,7 @@ module Milter
       end
 
       def output_graph(time_span, start_time = nil, end_time = "now", width = 1000, height = 250)
+        path = build_path("milter-log.#{time_span.name}.rrd")
         super(time_span, start_time, end_time, width, height,
               "AREA:n_connect#0000ff:connect",
               "STACK:n_helo#ff00ff:helo",
@@ -450,7 +454,7 @@ module Milter
               "STACK:n_header#a52a2a:header",
               "STACK:n_body#ff0000:body",
               "STACK:n_end-of-message#00ff00:end-of-message",
-              "DEF:child=#{build_path("milter-log.#{time_span.name}.rrd")}:child:MAX",
+              "DEF:child=#{path}:child:MAX",
               "CDEF:n_milters=child,UN,0,child,IF,10,/",
               "LINE:n_milters#000000:The number of 10 milters")
       end

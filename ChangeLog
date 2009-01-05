@@ -1,5 +1,7 @@
 2009-01-05  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/ruby/milter-rrd.rb: cleanup.
+
 	* milter/core/milter-syslog-logger.c (cb_log): don't log except
 	statics by default.
 
