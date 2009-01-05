@@ -524,7 +524,7 @@ cb_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
 
     data->error = g_error_copy(error);
 
-    send_abort(MILTER_SERVER_CONTEXT(emittable), data);
+    milter_agent_shutdown(MILTER_AGENT(emittable));
 }
 
 static void

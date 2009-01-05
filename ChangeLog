@@ -1,6 +1,8 @@
 2009-01-05  Hiroyuki Ikezoe  <poincare@ikezoe.net>
 
 	* milter/manager/milter-manager-main.c: fix memory leak.
+	* tool/milter-test-server.c (cb_error): Invoke milter_agent_shutdown
+	instead of send_abort() to prevent infinite loop.
 
 2009-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
