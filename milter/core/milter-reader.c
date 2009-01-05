@@ -181,7 +181,7 @@ channel_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
 
     if (condition & G_IO_ERR ||
         condition & G_IO_HUP ||
-        condition & G_IO_NVAL) {
+        (!priv->shutdown_requested && condition & G_IO_NVAL)) {
         gchar *message;
         GError *error = NULL;
 
