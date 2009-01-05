@@ -1,5 +1,9 @@
 2009-01-05  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/test/Makefile.am,
+	binding/ruby/test/toolkit/Makefile.am,
+	binding/ruby/test/manager/Makefile.am: add missing files.
+
 	* README.ja, doc/: setup documentation environment.
 
 2009-01-05  Hiroyuki Ikezoe  <poincare@ikezoe.net>

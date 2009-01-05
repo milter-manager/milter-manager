@@ -1,7 +1,3 @@
-utils_files =					\
-	milter-encoder-test-utils.rb		\
-	milter-test-utils.rb
-
 test_files =					\
 	test-client-context.rb			\
 	test-command-decoder.rb			\
@@ -14,5 +10,4 @@ test_files =					\
 	test-socket-address.rb
 
 EXTRA_DIST =		\
-	$(utils_files)	\
 	$(test_files)
