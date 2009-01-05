@@ -704,8 +704,8 @@ write_packet (MilterServerContext *context, gchar *packet, gsize packet_size,
       default:
         priv->state = next_state;
         priv->timeout_id = milter_utils_timeout_add(priv->reading_timeout,
-                                                 cb_reading_timeout,
-                                                 context);
+                                                    cb_reading_timeout,
+                                                    context);
         break;
     }
 
