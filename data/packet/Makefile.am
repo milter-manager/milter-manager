@@ -1,5 +1,7 @@
-noinst_DATA =						\
-	collect-packet.rb				\
+dist_noinst_SCRPITS =		\
+	collect-packet.rb
+
+dist_noinst_DATA =					\
 	milter-packet-accept-on-body.log		\
 	milter-packet-accept-on-connect.log		\
 	milter-packet-accept-on-eoh.log			\
