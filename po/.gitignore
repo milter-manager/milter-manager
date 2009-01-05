@@ -2,4 +2,5 @@
 /Makefile.in
 /Makefile.in.in
 /POTFILES
+/milter-manager.pot
 /stamp-it
