@@ -1,5 +1,7 @@
 2009-01-05  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/ruby/Makefile.am: distributes missing files.
+
 	* binding/ruby/lib/Makefile.am,
 	binding/ruby/lib/milter/Makefile.am: distributes missing files.
 
