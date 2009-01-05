@@ -9,6 +9,7 @@ SUBDIRS =		\
 	test		\
 	po		\
 	build		\
+	misc		\
 	doc		\
 	license
 

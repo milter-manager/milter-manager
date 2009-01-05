@@ -37,6 +37,7 @@ libmilter_test_headers =	\
 	milter-test-server.h
 
 libmilter_test_la_SOURCES =		\
+	$(libmilter_test_headers)	\
 	milter-test-utils.c		\
 	milter-test-client.c		\
 	milter-test-server.c		\

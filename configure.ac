@@ -355,6 +355,7 @@ AC_CONFIG_FILES([Makefile
 		 doc/Makefile
 		 doc/reference/Makefile
 		 doc/reference/version.xml
+		 misc/Makefile
 		 license/Makefile
 		 build/Makefile])
 
