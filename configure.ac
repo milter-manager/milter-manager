@@ -342,8 +342,10 @@ AC_CONFIG_FILES([Makefile
 		 test/Makefile
 		 test/lib/Makefile
 		 test/fixtures/Makefile
+		 test/fixtures/children/Makefile
 		 test/fixtures/configuration/Makefile
 		 test/fixtures/leader/Makefile
+		 test/fixtures/manager/Makefile
 		 test/core/Makefile
 		 test/client/Makefile
 		 test/libmilter/Makefile

@@ -1,5 +1,7 @@
 2009-01-05  Kouhei Sutou  <kou@cozmixng.org>
 
+	* configure.ac, test/: add missing files.
+
 	* binding/ruby/test/Makefile.am: add a missing file.
 
 	* Makefile.am, configure.ac: add misc/.

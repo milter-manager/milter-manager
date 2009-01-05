@@ -4,7 +4,7 @@ noinst_LTLIBRARIES =			\
 	libmilter-manager-test.la
 endif
 
-EXTRA_DISTS =			\
+dist_noinst_SCRIPTS =		\
 	milter-test-server.rb	\
 	milter-test-client.rb
 

@@ -1249,7 +1249,8 @@ data_scenario_envelope_recipient (void)
         "envelope-recipient - reject",
         g_strdup("envelope-recipient-reject.txt"), g_free,
         "envelope-recipient - reject & temporary-failure & discard",
-        g_strdup("envelope-recipient-reject-and-temporary-failure-and-discard.txt"),
+        g_strdup("envelope-recipient--reject--temp-fail--discard.txt"),
+        /* tar says 'file name is too long' :< */
         g_free,
         "envelope-recipient - reject & discard - simultaneously",
         g_strdup("envelope-recipient-reject-and-discard-simultaneously.txt"),

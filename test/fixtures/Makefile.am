@@ -1,3 +1,5 @@
 SUBDIRS =		\
+	children	\
 	configuration	\
-	leader
+	leader		\
+	manager
