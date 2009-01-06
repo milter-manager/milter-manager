@@ -262,9 +262,9 @@ class TestServerContext < Test::Unit::TestCase
       @context.connection_spec = "inet:9999@localhost"
       @context.establish_connection
 
-      @accepted = false
-      @context.signal_connect("accept") do
-        @accepted = true
+      @passed = false
+      @context.signal_connect("passed") do
+        @passed = true
       end
 
       yield
@@ -274,14 +274,14 @@ class TestServerContext < Test::Unit::TestCase
   def assert_check_pass
     connect do
       yield
-      assert_true(@accepted)
+      assert_true(@passed)
     end
   end
 
   def assert_check_not_pass
     connect do
       yield
-      assert_false(@accepted)
+      assert_false(@passed)
     end
   end
 end
