@@ -371,12 +371,16 @@ static gboolean
 cb_idle_free_data (gpointer _data)
 {
     MilterClientProcessData *data = _data;
+    GList *processing_data, *process_data;
     guint n_processing_data;
+    GString *rest_process;
 
-    milter_debug("removing a MilterClientContext");
+    milter_debug("finish client process: %p", data);
     data->priv->processing_data =
         g_list_remove(data->priv->processing_data, data);
     data->priv->n_processing_data--;
+
+    processing_data = g_list_copy(data->priv->processing_data);
 
     n_processing_data = data->priv->n_processing_data;
     g_mutex_lock(data->priv->quit_mutex);
@@ -387,7 +391,20 @@ cb_idle_free_data (gpointer _data)
     g_mutex_unlock(data->priv->quit_mutex);
 
     process_data_free(data);
-    milter_debug("removed a MilterClientContext: rest: <%u>", n_processing_data);
+
+
+    rest_process = g_string_new("[");
+    for (process_data = processing_data;
+         process_data;
+         process_data = g_list_next(process_data)) {
+        g_string_append_printf(rest_process, "<%p>, ", process_data->data);
+    }
+    if (processing_data)
+        g_string_truncate(rest_process, rest_process->len - 2);
+    g_string_append(rest_process, "]");
+    g_list_free(processing_data);
+    milter_debug("rest client process: %s", rest_process->str);
+    g_string_free(rest_process, TRUE);
 
     return FALSE;
 }
@@ -435,6 +452,8 @@ cb_idle_client_channel_setup (gpointer user_data)
     data->priv = priv;
     data->client = client;
     data->context = context;
+
+    milter_debug("start client process: %p", data);
 
     g_signal_connect(context, "finished", G_CALLBACK(cb_finished), data);
 
