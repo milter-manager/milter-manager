@@ -1,5 +1,9 @@
 2009-01-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.c
+	(milter_manager_children_negotiate): push all milters before
+	action to avoid replying before all responses are collected.
+
 	* milter/client/milter-client-context.c (negotiate_response): add
 	missing REPLY in log message.
 

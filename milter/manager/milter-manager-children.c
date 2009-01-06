@@ -1906,18 +1906,20 @@ milter_manager_children_negotiate (MilterManagerChildren *children,
     init_reply_queue(children, MILTER_SERVER_CONTEXT_STATE_NEGOTIATE);
     for (node = priv->milters; node; node = g_list_next(node)) {
         MilterManagerChild *child = MILTER_MANAGER_CHILD(node->data);
+        g_queue_push_tail(priv->reply_queue, child);
+    }
+
+    for (node = priv->milters; node; node = g_list_next(node)) {
+        MilterManagerChild *child = MILTER_MANAGER_CHILD(node->data);
 
         if (!child_establish_connection(child, option, children, FALSE)) {
             if (privilege &&
                 milter_manager_children_start_child(children, child)) {
                 prepare_retry_establish_connection(child, option, children,
                                                    FALSE);
-                g_queue_push_tail(priv->reply_queue, child);
             } else {
-                success = FALSE;
+                remove_child_from_queue(children, MILTER_SERVER_CONTEXT(child));
             }
-        } else {
-            g_queue_push_tail(priv->reply_queue, child);
         }
     }
 
