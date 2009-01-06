@@ -337,6 +337,7 @@ AC_CONFIG_FILES([Makefile
 		 data/defaults/Makefile
 		 data/packet/Makefile
 		 data/rc.d/Makefile
+		 data/init.d/Makefile
 		 tool/Makefile
 		 tool/ruby/Makefile
 		 test/Makefile
