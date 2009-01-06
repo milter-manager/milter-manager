@@ -729,7 +729,7 @@ class ConfigurationLoader
           milter.command = rc_script
           milter.command_options = "start"
           milter.connection_spec = connection_spec
-          yield(milter)
+          yield(milter) if block_given?
         end
       end
 
