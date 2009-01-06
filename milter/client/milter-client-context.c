@@ -2319,7 +2319,7 @@ negotiate_response (MilterClientContext *context,
     case MILTER_STATUS_CONTINUE:
         milter_client_context_set_option(context, option);
       case MILTER_STATUS_ALL_OPTIONS:
-        milter_debug("sending NEGOTIATE: "
+        milter_debug("sending NEGOTIATE REPLY: "
                      "version = %d, action = %04X, step = %06X",
                      milter_option_get_version(priv->option),
                      milter_option_get_action(priv->option),
