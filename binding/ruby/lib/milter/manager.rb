@@ -894,8 +894,8 @@ class ConfigurationLoader
       def parse_init_info(info)
         info = info.gsub(/^# /, '').split(/([a-zA-Z\-]+):\s*/m)[1..-1]
         0.step(info.size - 1, 2) do |i|
-          key, value = info[i], (info[i + 1] || '').strip
-          @info[key] = value
+          key, value = info[i], (info[i + 1] || '')
+          @info[key] = value.gsub(/\s*\n\s*/, ' ').strip
         end
       end
 

@@ -1,5 +1,9 @@
 2009-01-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager.rb,
+	binding/ruby/test/manager/test-debian-init-detector.rb: partially
+	support spamass-milter style on Debian.
+
 	* binding/ruby/test/toolkit/test-server-context.rb: follow the
 	recent server context's check-* callback changes.
 

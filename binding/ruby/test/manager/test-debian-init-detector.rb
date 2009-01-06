@@ -364,6 +364,73 @@ EOM
                   "unix:/var/run/milter-greylist/milter-greylist.sock"]])
   end
 
+  def test_apply_spamass_mitler_style
+    (@init_d + "spamass-milter").open("w") do |file|
+      file << <<-EOM
+### BEGIN INIT INFO
+# Provides:          spamass-milter
+# Required-Start:    $syslog $local_fs
+# Required-Stop:     $syslog $local_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: milter for spamassassin
+# Description:       Calls spamassassin to allow filtering out
+#                    spam from ham in libmilter compatible MTAs.
+### END INIT INFO
+
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+NAME=spamass-milter
+DAEMON=/usr/sbin/spamass-milter
+SOCKET=/var/run/spamass/spamass.sock
+PIDFILE=/var/run/spamass/spamass.pid
+DESC="Sendmail milter plugin for SpamAssassin"
+
+DEFAULT=/etc/default/spamass-milter
+OPTIONS=""
+RUNAS="spamass-milter"
+CHUID=""
+SOCKETMODE="0600"
+SOCKETOWNER="root:root"
+
+test -x $DAEMON || exit 0
+
+if [ -e /etc/mail/sendmail.cf ] && egrep -q 'X.+S=local:/var/run/sendmail/spamass\.sock' /etc/mail/sendmail.cf; then
+    SOCKET=/var/run/sendmail/spamass.sock
+    SOCKETMODE=""
+    SOCKETOWNER=""
+    RUNAS=""
+    echo "WARNING: You are using the old location of spamass.sock. Change your input filter to use";
+    echo "/var/run/spamass/spamass.sock so spamass-milter can run as spamass-milter";
+fi;
+
+# If /usr/sbin/postfix exists, set up the defaults for a postfix install
+# These can be overridden in /etc/default/spamass-milter
+if [ -x /usr/sbin/postfix ]; then
+    SOCKET="/var/spool/postfix/spamass/spamass.sock"
+    SOCKETOWNER="postfix:postfix"
+    SOCKETMODE="0660"
+fi;
+EOM
+    end
+    (@default_dir + "spamass-milter").open("w") do |file|
+      file << <<-EOC
+SOCKET="/tmp/spamass.sock"
+EOC
+    end
+
+    detector = debain_init_detector("spamass-milter")
+    detector.detect
+    detector.apply(@loader)
+    assert_eggs([["spamass-milter",
+                  "Calls spamassassin to allow filtering out spam " +
+                  "from ham in libmilter compatible MTAs.",
+                  true,
+                  (@init_d + "spamass-milter").to_s,
+                  "start",
+                  "unix:/tmp/spamass.sock"]])
+  end
+
   private
   def debain_init_detector(name)
     detector = Milter::Manager::ConfigurationLoader::DebianInitDetector.new(name)
