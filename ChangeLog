@@ -1,3 +1,8 @@
+2009-01-06  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/core/miter-utils.[ch], test/core/test-utils.c: add
+	milter_utils_inspect_list_pointer().
+
 2009-01-06  Hiroyuki Ikezoe  <poincare@ikezoe.net>
 
 	* milter/manager/milter-manager-children.c: Fix OR confusion.

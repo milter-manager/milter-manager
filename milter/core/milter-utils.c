@@ -467,6 +467,23 @@ milter_utils_merge_hash_string_string (GHashTable *dest, GHashTable *src)
                          dest);
 }
 
+gchar *
+milter_utils_inspect_list_pointer (const GList *list)
+{
+    const GList *node;
+    GString *inspected;
+
+    inspected = g_string_new("[");
+    for (node = list; node; node = g_list_next(node)) {
+        g_string_append_printf(inspected, "<%p>, ", node->data);
+    }
+    if (list)
+        g_string_truncate(inspected, inspected->len - strlen(", "));
+    g_string_append(inspected, "]");
+
+    return g_string_free(inspected, FALSE);
+}
+
 guint
 milter_utils_timeout_add (gdouble interval,
                           GSourceFunc function,

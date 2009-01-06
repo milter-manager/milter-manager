@@ -30,6 +30,7 @@ void test_inspect_flags (void);
 void test_inspect_object (void);
 void test_inspect_hash_string_string (void);
 void test_merge_hash_string_string (void);
+void test_inspect_list_pointer (void);
 void data_command_to_macro_stage (void);
 void test_command_to_macro_stage (gconstpointer data);
 void data_macro_stage_to_command (void);
@@ -240,7 +241,8 @@ test_inspect_hash_string_string (void)
     cut_assert_equal_string_with_free("{"
                                       "\"name1\" => \"value1\", "
                                       "\"name2\" => \"value2\""
-                                      "}", inspected);
+                                      "}",
+                                      inspected);
 }
 
 void
@@ -265,6 +267,29 @@ test_merge_hash_string_string (void)
 
     milter_utils_merge_hash_string_string(dest, NULL);
     gcut_assert_equal_hash_table_string_string(expected, dest);
+}
+
+void
+test_inspect_list_pointer (void)
+{
+    const GList *list;
+    gchar *inspected;
+
+    list = gcut_take_new_list_string(NULL, NULL);
+    inspected = milter_utils_inspect_list_pointer(list);
+    cut_assert_equal_string_with_free("[]", inspected);
+
+    list = gcut_take_new_list_string("abc", NULL);
+    inspected = milter_utils_inspect_list_pointer(list);
+    cut_assert_equal_string_with_free(cut_take_printf("[<%p>]", list->data),
+                                      inspected);
+
+    list = gcut_take_new_list_string("abc", "def", NULL);
+    inspected = milter_utils_inspect_list_pointer(list);
+    cut_assert_equal_string_with_free(cut_take_printf("[<%p>, <%p>]",
+                                                      list->data,
+                                                      list->next->data),
+                                      inspected);
 }
 
 typedef struct _CommandAndMacroStageTestData
