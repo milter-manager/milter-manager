@@ -2318,12 +2318,14 @@ negotiate_response (MilterClientContext *context,
     switch (status) {
     case MILTER_STATUS_CONTINUE:
         milter_client_context_set_option(context, option);
-      case MILTER_STATUS_ALL_OPTIONS:
-        milter_debug("sending NEGOTIATE REPLY: "
-                     "version = %d, action = %04X, step = %06X",
-                     milter_option_get_version(priv->option),
-                     milter_option_get_action(priv->option),
-                     milter_option_get_step(priv->option));
+    case MILTER_STATUS_ALL_OPTIONS:
+    {
+        gchar *inspected_option;
+
+        inspected_option = milter_utils_inspect_object(G_OBJECT(option));
+        milter_debug("sending NEGOTIATE REPLY: %s", inspected_option);
+        g_free(inspected_option);
+
         encoder = milter_agent_get_encoder(MILTER_AGENT(context));
 
         milter_reply_encoder_encode_negotiate(MILTER_REPLY_ENCODER(encoder),
@@ -2331,13 +2333,14 @@ negotiate_response (MilterClientContext *context,
                                               priv->option, macros_requests);
         write_packet(MILTER_CLIENT_CONTEXT(context), packet, packet_size);
         break;
-      case MILTER_STATUS_REJECT:
+    }
+    case MILTER_STATUS_REJECT:
         encoder = milter_agent_get_encoder(MILTER_AGENT(context));
         milter_reply_encoder_encode_reject(MILTER_REPLY_ENCODER(encoder),
                                            &packet, &packet_size);
         write_packet(MILTER_CLIENT_CONTEXT(context), packet, packet_size);
         break;
-      default:
+    default:
         /* FIXME: error */
         break;
     }
