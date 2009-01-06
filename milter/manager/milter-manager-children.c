@@ -1262,14 +1262,6 @@ cb_shutdown (MilterServerContext *context, gpointer user_data)
 static void
 cb_passed (MilterServerContext *context, gpointer user_data)
 {
-    /*
-      FIXME: I want to just call like the followings:
-        milter_server_context_abort(context);
-        cb_accept(context, children);
-      Or
-        cb_accept(context, children);
-        milter_server_context_abort(context);
-     */
     MilterManagerChildren *children = user_data;
     MilterServerContextState state;
 
