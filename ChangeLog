@@ -1,5 +1,9 @@
 2009-01-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager.rb,
+	binding/ruby/test/manager/test-debian-init-detector.rb,
+	data/init.d/milter-manager: add Debian's init script detector.
+
 	* binding/ruby/lib/milter/manager.rb: add missing block check.
 
 	* data/init.d/milter-manager: add a init script for Debian.

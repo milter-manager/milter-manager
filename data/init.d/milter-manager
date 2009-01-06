@@ -3,7 +3,7 @@
 # Provides:          milter-manager
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: milter-manager's initscript
+# Short-Description: milter-manager's init script
 # Description:       The milter that manages milters to combine them flexibly.
 ### END INIT INFO
 
