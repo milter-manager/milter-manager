@@ -274,9 +274,9 @@ cb_reader_finished (MilterFinishedEmittable *emittable, gpointer user_data)
     MilterAgentPrivate *priv;
 
     priv = MILTER_AGENT_GET_PRIVATE(agent);
+    milter_agent_set_reader(agent, NULL);
     if (!priv->finished)
         milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(agent));
-    milter_agent_set_reader(agent, NULL);
 }
 
 void
