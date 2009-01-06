@@ -1,5 +1,8 @@
 2009-01-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.c: expire negotiate
+	failed child.
+
 	* milter/manager/milter-manager.c: log at each callback.
 
 	* milter/client/milter-client-context.c (negotiate_response): log

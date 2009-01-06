@@ -1704,8 +1704,11 @@ child_establish_connection (MilterManagerChild *child,
                                     error);
 
         g_error_free(error);
-        if (is_retry)
+        if (is_retry) {
+            remove_child_from_queue(children, context);
+            expire_child(children, context);
             return FALSE;
+        }
 
         prepare_retry_establish_connection(child, option, children, TRUE);
         return FALSE;
@@ -1890,7 +1893,7 @@ milter_manager_children_negotiate (MilterManagerChildren *children,
                                    MilterOption          *option,
                                    MilterMacrosRequests  *macros_requests)
 {
-    GList *node;
+    GList *node, *copied_milters;
     MilterManagerChildrenPrivate *priv;
     gboolean success = TRUE;
     gboolean privilege;
@@ -1909,7 +1912,8 @@ milter_manager_children_negotiate (MilterManagerChildren *children,
         g_queue_push_tail(priv->reply_queue, child);
     }
 
-    for (node = priv->milters; node; node = g_list_next(node)) {
+    copied_milters = g_list_copy(priv->milters);
+    for (node = copied_milters; node; node = g_list_next(node)) {
         MilterManagerChild *child = MILTER_MANAGER_CHILD(node->data);
 
         if (!child_establish_connection(child, option, children, FALSE)) {
@@ -1919,9 +1923,11 @@ milter_manager_children_negotiate (MilterManagerChildren *children,
                                                    FALSE);
             } else {
                 remove_child_from_queue(children, MILTER_SERVER_CONTEXT(child));
+                expire_child(children, MILTER_SERVER_CONTEXT(child));
             }
         }
     }
+    g_list_free(copied_milters);
 
     return success;
 }
@@ -2251,7 +2257,7 @@ milter_manager_children_unknown (MilterManagerChildren *children,
     return success;
 }
 
-static gboolean 
+static gboolean
 send_next_header_to_child (MilterManagerChildren *children, MilterServerContext *context)
 {
     MilterManagerChildrenPrivate *priv;
