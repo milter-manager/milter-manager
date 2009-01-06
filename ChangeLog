@@ -1,3 +1,8 @@
+2009-01-07  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/manager/milter-manager-main.c
+	(process_controller_connection): add missing milter_agent_start().
+
 2009-01-06  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/manager/milter-manager-children.c: fix typos.

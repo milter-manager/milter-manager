@@ -268,6 +268,8 @@ process_controller_connection(MilterManager *manager, GIOChannel *agent_channel)
 
     g_signal_connect(reader, "finished",
                      G_CALLBACK(cb_controller_reader_finished), controller);
+
+    milter_agent_start(MILTER_AGENT(controller));
 }
 
 static gboolean
