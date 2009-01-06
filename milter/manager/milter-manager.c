@@ -200,6 +200,14 @@ cb_client_negotiate (MilterClientContext *context, MilterOption *option,
                      MilterMacrosRequests *macros_requests, gpointer user_data)
 {
     MilterManagerLeader *leader = user_data;
+    gchar *inspected_option, *inspected_macros_requests;
+
+    inspected_option = milter_utils_inspect_object(G_OBJECT(option));
+    inspected_macros_requests = milter_utils_inspect_object(G_OBJECT(macros_requests));
+    milter_debug("[milter-manager] NEGOTIATE: <%s>:<%s>",
+                 inspected_option, inspected_macros_requests);
+    g_free(inspected_option);
+    g_free(inspected_macros_requests);
 
     return milter_manager_leader_negotiate(leader, option, macros_requests);
 }
@@ -210,6 +218,11 @@ cb_client_connect (MilterClientContext *context, const gchar *host_name,
                    gpointer user_data)
 {
     MilterManagerLeader *leader = user_data;
+    gchar *spec;
+
+    spec = milter_connection_address_to_spec(address);
+    milter_debug("[milter-manager] CONNECT: <%s>:<%s>", host_name, spec);
+    g_free(spec);
 
     return milter_manager_leader_connect(leader, host_name,
                                          address, address_length);
@@ -221,6 +234,8 @@ cb_client_helo (MilterClientContext *context, const gchar *fqdn,
 {
     MilterManagerLeader *leader = user_data;
 
+    milter_debug("[milter-manager] HELO: <%s>", fqdn);
+
     return milter_manager_leader_helo(leader, fqdn);
 }
 
@@ -229,6 +244,8 @@ cb_client_envelope_from (MilterClientContext *context, const gchar *from,
                          gpointer user_data)
 {
     MilterManagerLeader *leader = user_data;
+
+    milter_debug("[milter-manager] ENVELOPE FROM: <%s>", from);
 
     return milter_manager_leader_envelope_from(leader, from);
 }
@@ -239,6 +256,8 @@ cb_client_envelope_recipient (MilterClientContext *context,
 {
     MilterManagerLeader *leader = user_data;
 
+    milter_debug("[milter-manager] ENVELOPE RECIPIENT: <%s>", recipient);
+
     return milter_manager_leader_envelope_recipient(leader, recipient);
 }
 
@@ -246,6 +265,8 @@ static MilterStatus
 cb_client_data (MilterClientContext *context, gpointer user_data)
 {
     MilterManagerLeader *leader = user_data;
+
+    milter_debug("[milter-manager] DATA");
 
     return milter_manager_leader_data(leader);
 }
@@ -255,6 +276,8 @@ cb_client_unknown (MilterClientContext *context, const gchar *command,
                    gpointer user_data)
 {
     MilterManagerLeader *leader = user_data;
+
+    milter_debug("[milter-manager] UNKNOWN: <%s>", command);
 
     return milter_manager_leader_unknown(leader, command);
 }
@@ -266,6 +289,8 @@ cb_client_header (MilterClientContext *context,
 {
     MilterManagerLeader *leader = user_data;
 
+    milter_debug("[milter-manager] HEADER: <%s>:<%s>", name, value);
+
     return milter_manager_leader_header(leader, name, value);
 }
 
@@ -273,6 +298,8 @@ static MilterStatus
 cb_client_end_of_header (MilterClientContext *context, gpointer user_data)
 {
     MilterManagerLeader *leader = user_data;
+
+    milter_debug("[milter-manager] END OF HEADER");
 
     return milter_manager_leader_end_of_header(leader);
 }
@@ -283,6 +310,8 @@ cb_client_body (MilterClientContext *context, const gchar *chunk, gsize size,
 {
     MilterManagerLeader *leader = user_data;
 
+    milter_debug("[milter-manager] BODY: <%" G_GSIZE_FORMAT ">", size);
+
     return milter_manager_leader_body(leader, chunk, size);
 }
 
@@ -290,6 +319,8 @@ static MilterStatus
 cb_client_end_of_message (MilterClientContext *context, gpointer user_data)
 {
     MilterManagerLeader *leader = user_data;
+
+    milter_debug("[milter-manager] END OF MESSAGE");
 
     return milter_manager_leader_end_of_message(leader, NULL, 0);
 }
@@ -299,6 +330,8 @@ cb_client_abort (MilterClientContext *context, gpointer user_data)
 {
     MilterManagerLeader *leader = user_data;
 
+    milter_debug("[milter-manager] ABORT");
+
     return milter_manager_leader_abort(leader);
 }
 
@@ -307,6 +340,12 @@ cb_client_define_macro (MilterClientContext *context, MilterCommand command,
                         GHashTable *macros, gpointer user_data)
 {
     MilterManagerLeader *leader = user_data;
+    gchar *inspected_macros;
+
+    inspected_macros = milter_utils_inspect_hash_string_string(macros);
+    milter_debug("[milter-manager] DEFINE MACRO: <%s>",
+                 inspected_macros);
+    g_free(inspected_macros);
 
     milter_manager_leader_define_macro(leader, command, macros);
 }
@@ -315,6 +354,8 @@ static void
 cb_client_timeout (MilterClientContext *context, gpointer user_data)
 {
     MilterManagerLeader *leader = user_data;
+
+    milter_debug("[milter-manager] timeout");
 
     milter_manager_leader_timeout(leader);
 }
