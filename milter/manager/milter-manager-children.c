@@ -2207,7 +2207,7 @@ milter_manager_children_data (MilterManagerChildren *children)
 
     if (!milter_manager_children_is_demanding_command(children,
                                                       MILTER_COMMAND_DATA)) {
-        emit_no_demand_command_error(children, MILTER_COMMAND_UNKNOWN);
+        emit_no_demand_command_error(children, MILTER_COMMAND_DATA);
         return FALSE;
     }
 
@@ -2316,7 +2316,7 @@ milter_manager_children_end_of_header (MilterManagerChildren *children)
 
     if (!milter_manager_children_is_demanding_command(children,
                                                       MILTER_COMMAND_END_OF_HEADER)) {
-        emit_no_demand_command_error(children, MILTER_COMMAND_UNKNOWN);
+        emit_no_demand_command_error(children, MILTER_COMMAND_END_OF_HEADER);
         return FALSE;
     }
 
