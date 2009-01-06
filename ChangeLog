@@ -1,5 +1,11 @@
 2009-01-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager.rb
+	(ConfigurationLoader::DebianInitDetector#extract_variables):
+	support comment.
+	(ConfigurationLoader::DebianInitDetector#default_conf): use
+	@script_name not @name.
+
 	* data/defaults/debian.conf: add a default configuration for Debian.
 
 	* binding/ruby/lib/milter/manager.rb,

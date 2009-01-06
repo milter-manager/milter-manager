@@ -908,7 +908,7 @@ class ConfigurationLoader
 
       def extract_variables(input)
         input.each_line do |line|
-          case line
+          case line.sub(/#.*/, '')
           when VARIABLE_DEFINITION_RE
             variable_name, variable_value = $1, $2
             variable_value = normalize_variable_value(variable_value)
@@ -972,7 +972,7 @@ class ConfigurationLoader
       end
 
       def default_conf
-        File.join(default_dir, @name)
+        File.join(default_dir, @script_name)
       end
 
       def init_d

@@ -103,6 +103,7 @@ class TestDebianInitDetector < Test::Unit::TestCase
       file << <<-EOC
 ENABLED="0"
 CONNECTION_SPEC=inet:10025@localhost
+# CONNECTION_SPEC=inet6:2929
 EOC
     end
 
@@ -352,13 +353,18 @@ test -f /etc/default/milter-greylist && . /etc/default/milter-greylist
 DOPTIONS="-P $PIDFILE -u $USER -p $SOCKET"
 EOM
     end
+    (@default_dir + "milter-greylist").open("w") do |file|
+      file << <<-EOC
+ENABLED=1
+EOC
+    end
 
     detector = debain_init_detector("milter-greylist")
     detector.detect
     detector.apply(@loader)
     assert_eggs([["greylist",
                   "another spam-defense service",
-                  false,
+                  true,
                   (@init_d + "milter-greylist").to_s,
                   "start",
                   "unix:/var/run/milter-greylist/milter-greylist.sock"]])
