@@ -1,5 +1,8 @@
 2009-01-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-test-server.c: treat /path/to/socket as
+	unix:/path/to/socket for convenience.
+
 	* milter/manager/milter-manager-children.c: expire negotiate
 	failed child.
 

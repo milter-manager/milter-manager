@@ -645,17 +645,26 @@ parse_spec_arg (const gchar *option_name,
                 GError **error)
 {
     GError *spec_error = NULL;
+    gchar *normalized_value;
     gboolean success;
 
-    success = milter_connection_parse_spec(value, NULL, NULL, NULL, &spec_error);
+    if (g_str_has_prefix(value, "/"))
+        normalized_value = g_strdup_printf("unix:%s", value);
+    else
+        normalized_value = g_strdup(value);
+
+    success = milter_connection_parse_spec(normalized_value,
+                                           NULL, NULL, NULL,
+                                           &spec_error);
     if (success) {
-        spec = g_strdup(value);
+        spec = normalized_value;
     } else {
         g_set_error(error,
                     G_OPTION_ERROR,
                     G_OPTION_ERROR_BAD_VALUE,
                     "%s", spec_error->message);
         g_error_free(spec_error);
+        g_free(normalized_value);
     }
 
     return success;
