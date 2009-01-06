@@ -1832,6 +1832,7 @@ write_packet (MilterClientContext *context, gchar *packet, gsize packet_size)
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
 
+    disable_timeout(context);
     priv->timeout_id = milter_utils_timeout_add(priv->timeout,
                                                 cb_timeout,
                                                 context);
