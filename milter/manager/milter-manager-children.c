@@ -2032,9 +2032,6 @@ milter_manager_children_connect (MilterManagerChildren *children,
     targets = g_list_copy(priv->reply_queue->head);
     for (child = targets; child; child = g_list_next(child)) {
         MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
-
-        /* FIXME: I don't know why |= is used. It seems that
-         * success is always TRUE. */
         if (milter_server_context_connect(context,
                                           host_name,
                                           address,
@@ -2459,7 +2456,7 @@ send_body_to_child (MilterManagerChildren *children, MilterServerContext *contex
     priv->sent_body_count = 0;
     g_io_channel_seek_position(priv->body_file, 0, G_SEEK_SET, &error);
 
-    while (status == G_IO_STATUS_NORMAL && success) {
+    while (status == G_IO_STATUS_NORMAL) {
         gchar buffer[MILTER_CHUNK_SIZE + 1];
         gsize read_size;
 
@@ -2467,10 +2464,13 @@ send_body_to_child (MilterManagerChildren *children, MilterServerContext *contex
                                          &read_size, &error);
 
         if (status == G_IO_STATUS_NORMAL) {
-            success &= milter_server_context_body(context,
-                                                  buffer, read_size);
-            if (success)
+            if (milter_server_context_body(context,
+                                           buffer, read_size)) {
                 priv->sent_body_count++;
+            } else {
+                success = FALSE;
+                break;
+            }
         }
     }
 
