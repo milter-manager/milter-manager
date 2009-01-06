@@ -1,5 +1,10 @@
 2009-01-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager.rb,
+	binding/ruby/test/manager/test-bsd-rc-detector.rb,
+	binding/ruby/test/manager/test-debian-init-detector.rb: use
+	@script_name not @name for milter name.
+
 	* tool/milter-test-server.c: treat /path/to/socket as
 	unix:/path/to/socket for convenience.
 

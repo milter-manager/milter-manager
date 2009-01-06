@@ -724,7 +724,7 @@ class ConfigurationLoader
         connection_spec = guess_connection_spec
         return if connection_spec.nil?
         connection_spec = "unix:#{connection_spec}" if /\A\// =~ connection_spec
-        loader.define_milter(@name) do |milter|
+        loader.define_milter(@script_name) do |milter|
           milter.enabled = enabled?
           milter.command = rc_script
           milter.command_options = "start"
@@ -864,7 +864,7 @@ class ConfigurationLoader
         connection_spec = guess_connection_spec
         return if connection_spec.nil?
         connection_spec = "unix:#{connection_spec}" if /\A\// =~ connection_spec
-        loader.define_milter(@name) do |milter|
+        loader.define_milter(@script_name) do |milter|
           milter.enabled = enabled?
           milter.description = description
           milter.command = init_script

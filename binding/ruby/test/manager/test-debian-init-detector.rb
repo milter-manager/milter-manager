@@ -200,7 +200,8 @@ EOM
     detector = debain_init_detector("amavisd-new-milter")
     detector.detect
     detector.apply(@loader)
-    assert_eggs([["amavis-milter",
+    assert_equal("amavis-milter", detector.name)
+    assert_eggs([["amavisd-new-milter",
                   "milter for sendmail/postfix and amavisd-new",
                   true,
                   (@init_d + "amavisd-new-milter").to_s,
@@ -362,7 +363,8 @@ EOC
     detector = debain_init_detector("milter-greylist")
     detector.detect
     detector.apply(@loader)
-    assert_eggs([["greylist",
+    assert_equal("greylist", detector.name)
+    assert_eggs([["milter-greylist",
                   "another spam-defense service",
                   true,
                   (@init_d + "milter-greylist").to_s,

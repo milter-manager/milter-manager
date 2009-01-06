@@ -124,7 +124,8 @@ EOM
     detector = bsd_rc_detector("amavis-milter")
     detector.detect
     detector.apply(@loader)
-    assert_eggs([["amavis_milter",
+    assert_equal("amavis_milter", detector.name)
+    assert_eggs([["amavis-milter",
                   true,
                   (@rc_d + "amavis-milter").to_s,
                   "start",
@@ -143,7 +144,8 @@ EOM
     detector = bsd_rc_detector("clamav-milter")
     detector.detect
     detector.apply(@loader)
-    assert_eggs([["clamav_milter",
+    assert_equal("clamav_milter", detector.name)
+    assert_eggs([["clamav-milter",
                   false,
                   (@rc_d + "clamav-milter").to_s,
                   "start",
@@ -168,7 +170,8 @@ EOC
     detector = bsd_rc_detector("milter-dkim")
     detector.detect
     detector.apply(@loader)
-    assert_eggs([["milterdkim",
+    assert_equal("milterdkim", detector.name)
+    assert_eggs([["milter-dkim",
                   true,
                   (@rc_d + "milter-dkim").to_s,
                   "start",
@@ -188,7 +191,8 @@ EOM
     detector = bsd_rc_detector("milter-greylist")
     detector.detect
     detector.apply(@loader)
-    assert_eggs([["miltergreylist",
+    assert_equal("miltergreylist", detector.name)
+    assert_eggs([["milter-greylist",
                   false,
                   (@rc_d + "milter-greylist").to_s,
                   "start",
