@@ -1,5 +1,11 @@
 2009-01-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager.rb
+	(ConfigurationLoader::BSDRCDetector#apply): support customize in block.
+
+	* data/defaults/freebsd.conf: use S25R for milter-greylist by
+	default.
+
 	* milter/client/milter-client-context.c: disable timeout before
 	writing new packet.
 
