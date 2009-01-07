@@ -1,5 +1,9 @@
 2009-01-07  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: add: * if all alive child milters don't need to receive
+	the command, children do nothing and leader returns response
+	immediately not returning PROGRESS. For example:
+
 	* milter/manager/milter-manager-main.c
 	(process_controller_connection): add missing milter_agent_start().
 

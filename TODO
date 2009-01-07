@@ -1,3 +1,50 @@
+* if all alive child milters don't need to receive the
+  command, children do nothing and leader returns response
+  immediately not returning PROGRESS. For example:
+Index: milter/manager/milter-manager-children.c
+===================================================================
+--- milter/manager/milter-manager-children.c	(revision 2280)
++++ milter/manager/milter-manager-children.c	(working copy)
+@@ -2205,15 +2205,13 @@
+     if (!milter_manager_children_check_alive(children))
+         return FALSE;
+ 
++    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
++    priv->current_state = MILTER_SERVER_CONTEXT_STATE_DATA;
++
+     if (!milter_manager_children_is_demanding_command(children,
+-                                                      MILTER_COMMAND_DATA)) {
+-        emit_no_demand_command_error(children, MILTER_COMMAND_DATA);
++                                                      MILTER_COMMAND_DATA))
+         return FALSE;
+-    }
+ 
+-    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+-
+-    priv->current_state = MILTER_SERVER_CONTEXT_STATE_DATA;
+     init_command_waiting_child_queue(children, MILTER_COMMAND_DATA);
+ 
+     return send_command_to_first_waiting_child(children, MILTER_COMMAND_DATA);
+Index: milter/manager/milter-manager-leader.c
+===================================================================
+--- milter/manager/milter-manager-leader.c	(revision 2280)
++++ milter/manager/milter-manager-leader.c	(working copy)
+@@ -783,10 +783,12 @@
+     if (!priv->children)
+         return MILTER_STATUS_NOT_CHANGE;
+ 
+-    if (milter_manager_children_data(priv->children))
++    if (milter_manager_children_data(priv->children)) {
+         return MILTER_STATUS_PROGRESS;
+-    else
+-        return MILTER_STATUS_NOT_CHANGE; /* FIXME: reject or accept */
++    } else {
++        priv->state = next_state(leader, priv->state);
++        return MILTER_STATUS_NOT_CHANGE;
++    }
+ }
+ 
+ MilterStatus
 * where cutsom.conf should be used? readable and writabe file has the highest
   priority?
 * bug? milter-manager sometimes doesn't finish child milter?
