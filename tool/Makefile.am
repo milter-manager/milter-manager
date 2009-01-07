@@ -28,5 +28,7 @@ milter_test_server_CFLAGS =				\
 	-DMILTER_LOG_DOMAIN=\""milter-test-server"\"
 
 dist_bin_SCRIPTS =		\
-	milter-log-tool		\
 	milter-performance-check
+
+dist_noinst_SCRIPTS =		\
+	milter-log-tool

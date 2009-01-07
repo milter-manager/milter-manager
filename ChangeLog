@@ -1,5 +1,7 @@
 2009-01-07  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/Makefile.am: don't install milter-log-tool.
+
 	* milter/manager/milter-manager-controller.c,
 	test/manager/test-controller.c: fix SEGV bug on error.
 
