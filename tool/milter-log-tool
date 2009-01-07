@@ -123,6 +123,8 @@ class MilterLogTool
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+    <meta http-equiv="Refresh" content="300" />
+    <meta http-equiv="Pragma" content="no-cache" />
     <title>milter-manager statistics</title>
   </head>
 

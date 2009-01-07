@@ -1,5 +1,7 @@
 2009-01-07  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-log-tool: add refresh.
+
 	* tool/ruby/milter-rrd.rb: count processed mail on envelope-recipient.
 
 	* tool/milter-log-tool, tool/ruby/milter-rrd.rb: output HTML for images.
