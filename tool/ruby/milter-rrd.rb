@@ -392,7 +392,6 @@ module Milter
           time = Time.parse($1)
           status = $2
           state = $3
-          return if state == "envelope-recipient"
           return if status == "continue" and state != "end-of-message"
           status = "normal" if status == "continue"
           @data << Milter::Mail.new(status, time)

@@ -1,5 +1,7 @@
 2009-01-07  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/ruby/milter-rrd.rb: count processed mail on envelope-recipient.
+
 	* tool/milter-log-tool, tool/ruby/milter-rrd.rb: output HTML for images.
 
 	* tool/Makefile.am: don't install milter-log-tool.
