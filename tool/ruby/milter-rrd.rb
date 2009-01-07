@@ -240,16 +240,22 @@ module Milter
                      *args.map{|arg| "DS:#{arg}:GAUGE:#{step}:0:U"})
       end
 
-      def output_graph(time_span, start_time = nil, end_time = "now", width = 1000 , height = 250, *args)
+      def output_graph(time_span, options={}, *args)
+        start_time = options[:start_time]
+        end_time = options[:end_time] || "now"
+        width = options[:width] || 600
+        height = options[:height] || 200
+
         start_time = time_span.default_start_time unless start_time
         rrd_file = rrd_name(time_span)
-        return unless File.exist?(rrd_file)
+        return nil unless File.exist?(rrd_file)
         last_update_time = ::RRD.last(rrd_file)
 
         time_stamp = last_update_time.strftime("%a %b %d %H:%M:%S %Z %Y")
         title = "#{@title} - #{time_stamp}"
         vertical_label = "#{@vertical_label}/#{time_span.short_name}"
-        ::RRD.graph("#{graph_name(time_span)}",
+        name = graph_name(time_span)
+        ::RRD.graph(name,
                     "--title", title,
                     "--vertical-label", vertical_label,
                     "--step", time_span.step,
@@ -261,6 +267,7 @@ module Milter
                     *(@items.map{|item| "DEF:#{item}=#{rrd_file}:#{item}:MAX"} +
                       @items.map{|item| "CDEF:n_#{item}=#{item},UN,0,#{item},IF"} +
                       args))
+        name
       end
 
       private
@@ -354,8 +361,8 @@ module Milter
         Data.new(counting)
       end
 
-      def output_graph(time_span, start_time = nil, end_time = "now", width = 1000 , height = 250)
-        super(time_span, start_time, end_time, width, height,
+      def output_graph(time_span, options={})
+        super(time_span, options,
               "LINE:n_smtp#0000ff:The number of SMTP session",
               "LINE:n_child#00ff00:The number of milter")
       end
@@ -392,8 +399,8 @@ module Milter
         end
       end
 
-      def output_graph(time_span, start_time = nil, end_time = "now", width = 1000 , height = 250)
-        super(time_span, start_time, end_time, width, height,
+      def output_graph(time_span, options={})
+        super(time_span, options,
               "AREA:n_normal#0000ff:Normal",
               "STACK:n_accept#00ff00:Accept",
               "STACK:n_reject#ff0000:Reject",
@@ -439,9 +446,9 @@ module Milter
         Data.new(pass_counting)
       end
 
-      def output_graph(time_span, start_time = nil, end_time = "now", width = 1000, height = 250)
+      def output_graph(time_span, options={})
         path = build_path("milter-log.#{time_span.name}.rrd")
-        super(time_span, start_time, end_time, width, height,
+        super(time_span, options,
               "AREA:n_connect#0000ff:connect",
               "STACK:n_helo#ff00ff:helo",
               "STACK:n_envelope-from#00ffff:envelope-from",

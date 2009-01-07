@@ -1,5 +1,7 @@
 2009-01-07  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-log-tool, tool/ruby/milter-rrd.rb: output HTML for images.
+
 	* tool/Makefile.am: don't install milter-log-tool.
 
 	* milter/manager/milter-manager-controller.c,
