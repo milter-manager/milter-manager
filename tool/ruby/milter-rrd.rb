@@ -48,6 +48,53 @@ module Milter
   end
 
   class RRD
+    class TimeRange
+      def initialize(rrd_step, rows)
+        @rrd_step = rrd_step
+        @rows = rows
+      end
+    end
+
+    class DayRange < TimeRange
+      def name
+        "Day"
+      end
+
+      def steps
+        (3600 * 24) / (@rrd_step * @rows)
+      end
+    end
+
+    class WeekRange < TimeRange
+      def name
+        "Week"
+      end
+
+      def steps
+        DayRange.new(@rrd_step, @rows).steps * 7
+      end
+    end
+
+    class MonthRange < TimeRange
+      def name
+        "Month"
+      end
+
+      def steps
+        WeekRange.new(@rrd_step, @rows).steps * 5
+      end
+    end
+
+    class YearRange < TimeRange
+      def name
+        "Year"
+      end
+
+      def steps
+        MonthRange.new(@rrd_step, @rows).steps * 12
+      end
+    end
+
     class TimeSpan
       attr_accessor :name
       def initialize(name)
@@ -166,12 +213,19 @@ module Milter
         @items = nil
         @title = nil
         @vertical_label = nil
+        @rrd_step = 60
+        @width = 600
+        @points_per_sample = 3
+      end
+
+      def rows
+        @width / @points_per_sample
       end
 
       def count(time_span, last_update_time)
         counting = Count.new()
         @data.each do |datum|
-          time =time_span.adjust_time(datum.time)
+          time = time_span.adjust_time(datum.time)
 
           # ignore sessions which has been already registerd due to RRD.update fails on past time stamp
           if last_update_time
@@ -199,13 +253,17 @@ module Milter
 
       def update_db(time_span)
         rrd = rrd_name(time_span)
-        last_update_time = ::RRD.last("#{rrd}") if File.exist?(rrd)
+        last_update_time = ::RRD.last(rrd) if File.exist?(rrd)
 
         data = collect_data(time_span, last_update_time)
         return if data.empty?
 
         end_time = data.last_time
-        start_time = last_update_time ? last_update_time + time_span.step: data.first_time
+        if last_update_time
+          start_time = last_update_time + time_span.step
+        else
+          start_time = data.first_time
+        end
 
         create_rrd(time_span, start_time, *@items) unless File.exist?(rrd)
 
@@ -224,29 +282,36 @@ module Milter
       end
 
       def update
-        update_db(TimeSpan.new("second"))
         update_db(TimeSpan.new("minute"))
-        update_db(TimeSpan.new("hour"))
       end
 
       def create_rrd(time_span, start_time, *args)
-        step = time_span.step
-        rows = time_span.rows
+        step = @rrd_step
+
+        day_range = DayRange.new(@rrd_step, rows)
+        week_range = WeekRange.new(@rrd_step, rows)
+        month_range = MonthRange.new(@rrd_step, rows)
+        year_range = YearRange.new(@rrd_step, rows)
         ::RRD.create("#{rrd_name(time_span)}",
                      "--start", (start_time - 1).to_i.to_s,
                      "--step", step,
-                     "RRA:MAX:0.5:1:#{rows}",
-                     "RRA:AVERAGE:0.5:1:#{rows}",
-                     *args.map{|arg| "DS:#{arg}:GAUGE:#{step}:0:U"})
+                     "RRA:MAX:0.5:#{day_range.steps}:#{rows}",
+                     "RRA:MAX:0.5:#{week_range.steps}:#{rows}",
+                     "RRA:MAX:0.5:#{month_range.steps}:#{rows}",
+                     "RRA:MAX:0.5:#{year_range.steps}:#{rows}",
+                     "RRA:AVERAGE:0.5:#{day_range.steps}:#{rows}",
+                     "RRA:AVERAGE:0.5:#{week_range.steps}:#{rows}",
+                     "RRA:AVERAGE:0.5:#{month_range.steps}:#{rows}",
+                     "RRA:AVERAGE:0.5:#{year_range.steps}:#{rows}",
+                     *args.map{|arg| "DS:#{arg}:GAUGE:#{step * 3}:0:U"})
       end
 
       def output_graph(time_span, options={}, *args)
-        start_time = options[:start_time]
+        start_time = options[:start_time] || time_span.default_start_time
         end_time = options[:end_time] || "now"
-        width = options[:width] || 600
+        width = options[:width] || @width
         height = options[:height] || 200
 
-        start_time = time_span.default_start_time unless start_time
         rrd_file = rrd_name(time_span)
         return nil unless File.exist?(rrd_file)
         last_update_time = ::RRD.last(rrd_file)
@@ -255,18 +320,26 @@ module Milter
         title = "#{@title} - #{time_stamp}"
         vertical_label = "#{@vertical_label}/#{time_span.short_name}"
         name = graph_name(time_span)
+
+        items = @items.inject([]) do |_items, item|
+          _items + ["DEF:#{item}=#{rrd_file}:#{item}:AVERAGE",
+                    "DEF:max_#{item}=#{rrd_file}:#{item}:MAX",
+                    "CDEF:n_#{item}=#{item},UN,0,#{item},IF",
+                    "CDEF:total_#{item}=PREV,UN,n_#{item},PREV,IF,n_#{item},+",
+                    "CDEF:real_#{item}=#{item},#{@rrd_step},*",
+                    "CDEF:real_max_#{item}=max_#{item},#{@rrd_step},*",
+                    "CDEF:real_n_#{item}=n_#{item},#{@rrd_step},*",
+                    "CDEF:real_total_#{item}=total_#{item},#{@rrd_step},*"]
+        end
         ::RRD.graph(name,
                     "--title", title,
                     "--vertical-label", vertical_label,
-                    "--step", time_span.step,
                     "--start", start_time,
                     "--end", end_time,
-                    "--width","#{width}",
-                    "--height", "#{height}",
+                    "--width", width.to_s,
+                    "--height", height.to_s,
                     "--alt-y-grid",
-                    *(@items.map{|item| "DEF:#{item}=#{rrd_file}:#{item}:MAX"} +
-                      @items.map{|item| "CDEF:n_#{item}=#{item},UN,0,#{item},IF"} +
-                      args))
+                    *(items + args))
         name
       end
 
@@ -296,16 +369,18 @@ module Milter
 
       def collect_session(line, sessions, regex)
         if regex.match(line)
-          time = Time.parse($1)
+          time = $1
+          type = $2
           name = $3
           id = $4
-          if $2 == "Start"
+          time = Time.parse(time)
+          if type == "Start"
             session = Milter::Session.new(id, name)
             session.start_time = time
             sessions << session
           else
-            sessions.reverse_each do |session|
-              if session.id == id
+            sessions.each do |session|
+              if session.id == id and session.end_time.nil?
                 session.end_time = time
                 break
               end
@@ -345,10 +420,12 @@ module Milter
           end_time = end_time.to_i
 
           start_time.step(end_time, time_span.step) do |time|
+            time = end_time # FIXME
             count = counting[time]
             count = 0 if count == "U"
             count += 1
             counting[time] = count
+            break
           end
         end
         counting
@@ -363,8 +440,14 @@ module Milter
 
       def output_graph(time_span, options={})
         super(time_span, options,
-              "LINE:n_smtp#0000ff:The number of SMTP session",
-              "LINE:n_child#00ff00:The number of milter")
+              "AREA:n_smtp#0000ff:SMTP  ",
+              "GPRINT:total_smtp:MAX:total\\: %8.0lf sessions",
+              "GPRINT:smtp:AVERAGE:avg\\: %6.2lf sessions/min",
+              "GPRINT:max_smtp:MAX:max\\: %4.0lf sessions/min\\l",
+              "LINE2:n_child#00ff00:milter",
+              "GPRINT:total_child:MAX:total\\: %8.0lf sessions",
+              "GPRINT:child:AVERAGE:avg\\: %6.2lf sessions/min",
+              "GPRINT:max_child:MAX:max\\: %4.0lf sessions/min\\l")
       end
     end
 
@@ -399,13 +482,36 @@ module Milter
       end
 
       def output_graph(time_span, options={})
-        super(time_span, options,
-              "AREA:n_normal#0000ff:Normal",
-              "STACK:n_accept#00ff00:Accept",
-              "STACK:n_reject#ff0000:Reject",
-              "STACK:n_discard#ffd400:Discard",
-              "STACK:n_temporary-failure#888888:Temporary failure",
-              "STACK:n_quarantine#a52a2a:Quarantine")
+        entries = [
+         ["AREA", "normal", "#0000ff", "Normal"],
+         ["STACK", "accept", "#00ff00", "Accept"],
+         ["STACK", "reject", "#ff0000", "Reject"],
+         ["STACK", "discard", "#ffd400", "Discard"],
+         ["STACK", "temporary-failure", "#888888", "Temp-Fail"],
+         ["STACK", "quarantine", "#a52a2a", "Quarantine"],
+        ]
+        max_label_size = entries.collect {|_, _, _, label| label.size}.max
+
+        items = []
+        entries.each do |type, name, color, label|
+          items << "#{type}:#{name}#{color}:#{label.ljust(max_label_size)}"
+          items << "GPRINT:total_#{name}:MAX:total\\: %11.0lf mails"
+          items << "GPRINT:#{name}:AVERAGE:avg\\: %9.2lf mails/min"
+          items << "GPRINT:max_#{name}:MAX:max\\: %7.0lf mails/min\\l"
+        end
+
+        path = build_path("milter-log.#{time_span.name}.rrd")
+        items << "DEF:smtp=#{path}:smtp:AVERAGE"
+        items << "DEF:max_smtp=#{path}:smtp:MAX"
+        items << "CDEF:n_smtp=smtp,UN,0,smtp,IF"
+        items << "CDEF:total_smtp=PREV,UN,n_smtp,PREV,IF,n_smtp,+"
+
+        label = "SMTP".ljust(max_label_size)
+        items << "LINE2:n_smtp#000000:#{label}"
+        items << "GPRINT:total_smtp:MAX:total\\: %8.0lf sessions"
+        items << "GPRINT:smtp:AVERAGE:avg\\: %6.2lf sessions/min"
+        items << "GPRINT:max_smtp:MAX:max\\: %4.0lf sessions/min\\l"
+        super(time_span, options, *items)
       end
     end
 
@@ -446,18 +552,38 @@ module Milter
       end
 
       def output_graph(time_span, options={})
+        entries = [
+         ["AREA", "connect", "#0000ff"],
+         ["STACK", "helo", "#ff00ff"],
+         ["STACK", "envelope-from", "#00ffff"],
+         ["STACK", "envelope-recipient", "#ffff00"],
+         ["STACK", "header", "#a52a2a"],
+         ["STACK", "body", "#ff0000"],
+         ["STACK", "end-of-message", "#00ff00"],
+        ]
+        max_name_size = entries.collect {|_, name, _| name.size}.max
+
+        items = []
+        entries.each do |type, name, color|
+          items << "#{type}:#{name}#{color}:#{name.ljust(max_name_size)}"
+          items << "GPRINT:total_#{name}:MAX:total\\: %8.0lf milters"
+          items << "GPRINT:#{name}:AVERAGE:avg\\: %6.2lf milters/min"
+          items << "GPRINT:max_#{name}:MAX:max\\: %4.0lf milters/min\\l"
+        end
+
         path = build_path("milter-log.#{time_span.name}.rrd")
-        super(time_span, options,
-              "AREA:n_connect#0000ff:connect",
-              "STACK:n_helo#ff00ff:helo",
-              "STACK:n_envelope-from#00ffff:envelope-from",
-              "STACK:n_envelope-recipient#ffff00:envelope-recipient",
-              "STACK:n_header#a52a2a:header",
-              "STACK:n_body#ff0000:body",
-              "STACK:n_end-of-message#00ff00:end-of-message",
-              "DEF:child=#{path}:child:MAX",
-              "CDEF:n_milters=child,UN,0,child,IF,10,/",
-              "LINE:n_milters#000000:The number of 10 milters")
+        items << "DEF:child=#{path}:child:AVERAGE"
+        items << "DEF:max_child=#{path}:child:MAX"
+        items << "CDEF:n_milters=child,UN,0,child,IF"
+        items << "CDEF:total_milters=PREV,UN,n_milters,PREV,IF,n_milters,+"
+        items << "CDEF:smaller_n_milters=n_milters,10,/"
+
+        label = 'total'.ljust(max_name_size)
+        items << "LINE2:n_milters#000000:#{label}"
+        items << "GPRINT:total_milters:MAX:total\\: %8.0lf milters"
+        items << "GPRINT:child:AVERAGE:avg\\: %6.2lf milters/min"
+        items << "GPRINT:max_child:MAX:max\\: %4.0lf milters/min\\l"
+        super(time_span, options, *items)
       end
     end
   end
