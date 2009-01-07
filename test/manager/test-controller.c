@@ -19,18 +19,22 @@
 
 #include <string.h>
 
-#include <milter-test-utils.h>
-#include <milter-manager-test-utils.h>
-#include <milter-manager-test-client.h>
-#include <milter-manager-test-scenario.h>
+#include <glib/gstdio.h>
+
 #include <milter/manager/milter-manager-controller.h>
 #include <milter/manager/milter-manager-control-command-encoder.h>
 #include <milter/manager/milter-manager-control-reply-encoder.h>
 #include <milter/manager/milter-manager-enum-types.h>
 
+#include <milter-test-utils.h>
+#include <milter-manager-test-utils.h>
+#include <milter-manager-test-client.h>
+#include <milter-manager-test-scenario.h>
+
 #include <gcutter.h>
 
 void test_set_configuration (void);
+void test_set_configuration_failed (void);
 void test_reload (void);
 
 static MilterManager *manager;
@@ -156,6 +160,7 @@ teardown (void)
         g_free(packet);
 
     if (tmp_dir) {
+        g_chmod(tmp_dir, 0700);
         cut_remove_path(tmp_dir, NULL);
         g_free(tmp_dir);
     }
@@ -189,6 +194,53 @@ test_set_configuration (void)
     output = gcut_string_io_channel_get_string(output_channel);
     cut_assert_equal_memory(packet, packet_size,
                             output->str, output->len);
+}
+
+void
+test_set_configuration_failed (void)
+{
+    MilterManagerConfiguration *config;
+    const gchar configuration[] = "XXX";
+    GString *output;
+    guint packet_size_space;
+    GError *error = NULL;
+
+    config = milter_manager_get_configuration(manager);
+    milter_manager_configuration_clear_load_paths(config);
+    milter_manager_configuration_prepend_load_path(config, tmp_dir);
+
+    cut_assert_path_not_exist(custom_config_path);
+
+    g_chmod(tmp_dir, 0000);
+    milter_manager_control_command_encoder_encode_set_configuration(
+        command_encoder,
+        &packet, &packet_size,
+        configuration, strlen(configuration));
+    milter_writer_write(writer, packet, packet_size, NULL, &error);
+    gcut_assert_error(error);
+    milter_test_pump_all_events();
+
+    cut_assert_path_not_exist(custom_config_path);
+
+    g_free(packet);
+    milter_manager_control_reply_encoder_encode_error(
+        reply_encoder,
+        &packet, &packet_size,
+        "");
+    output = gcut_string_io_channel_get_string(output_channel);
+
+    packet_size_space = sizeof(guint32);
+    cut_assert_equal_memory(packet + packet_size_space,
+                            packet_size - packet_size_space,
+                            output->str + packet_size_space,
+                            packet_size - packet_size_space);
+    cut_assert_match(cut_take_printf(
+                         "failed to save custom configuration file: "
+                         "can't find writable custom configuration file in "
+                         "\\[\"%s\"\\(.+\\)\\]",
+                         custom_config_path),
+                     output->str + packet_size);
+
 }
 
 void

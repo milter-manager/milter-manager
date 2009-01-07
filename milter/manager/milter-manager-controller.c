@@ -117,21 +117,27 @@ cb_decoder_set_configuration (MilterManagerControlCommandDecoder *decoder,
                                                             &packet,
                                                             &packet_size);
         if (!milter_agent_write_packet(agent, packet, packet_size, &error)) {
-            milter_error("failed to write control reply success packet: <%s>",
+            milter_error("[controller] "
+                         "failed to write control reply success packet: %s",
                          error->message);
             g_error_free(error);
         }
     } else {
-        milter_error("failed to save custom configuration filet: <%s>",
-                     error->message);
+        gchar *message;
+
+        message = g_strdup_printf("failed to save custom configuration file: %s",
+                                  error->message);
         g_error_free(error);
         error = NULL;
+
+        milter_error("[controller] %s", message);
         milter_manager_control_reply_encoder_encode_error(encoder,
                                                           &packet,
                                                           &packet_size,
-                                                          error->message);
+                                                          message);
         if (!milter_agent_write_packet(agent, packet, packet_size, &error)) {
-            milter_error("failed to write control reply error packet: <%s>",
+            milter_error("[controller] "
+                         "failed to write control reply error packet: %s",
                          error->message);
             g_error_free(error);
         }
