@@ -1,5 +1,7 @@
 2009-01-07  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager.c: [milter-manager] -> [manager].
+
 	* binding/ruby/lib/milter/manager.rb: improve error message.
 
 	* binding/ruby/lib/milter/manager.rb,
