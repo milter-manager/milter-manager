@@ -19,7 +19,7 @@ require 'pathname'
 require 'time'
 require 'optparse'
 require 'net/smtp'
-require 'digest/sha1'
+require 'digest/sha2'
 
 class MilterPerformanceTool
   def initialize
