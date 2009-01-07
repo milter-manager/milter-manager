@@ -389,7 +389,9 @@ module Milter::Manager
             when *available_locals
               "milter_#{local}"
             else
-              raise "unexpected element: #{current_path}"
+              message = "unexpected element: #{current_path}: " +
+                "available elements: #{available_locals.inspect}"
+              raise message
             end
           when :milter_applicable_conditions
             if local == "applicable_condition"
