@@ -740,9 +740,6 @@ milter_manager_main (void)
         return;
     }
 
-    /* FIXME */
-    controller_connection_watch_id = setup_controller_connection(manager);
-
     daemon = milter_manager_configuration_is_daemon(config);
     if (daemon && !daemonize()) {
         g_object_unref(manager);
@@ -760,6 +757,9 @@ milter_manager_main (void)
         g_object_unref(manager);
         return;
     }
+
+    /* FIXME */
+    controller_connection_watch_id = setup_controller_connection(manager);
 
     pid_file = g_strdup(milter_manager_configuration_get_pid_file(config));
     if (pid_file) {
