@@ -84,7 +84,7 @@ module Milter::Manager
     end
   end
 
-class ConfigurationLoader
+  class ConfigurationLoader
     class Error < StandardError
     end
 
@@ -317,6 +317,10 @@ class ConfigurationLoader
               if @egg_config.has_key?("description")
                 milter.description = @egg_config["description"]
               end
+              if @egg_config.has_key?("command")
+                milter.command = @egg_config["command"]
+                milter.command_options = @egg_config["command_options"]
+              end
             end
             @egg_config = nil
           when "milter_applicable_condition"
@@ -376,7 +380,8 @@ class ConfigurationLoader
             end
           when :milter
             available_locals = ["name", "description",
-                                "enabled", "connection_spec"]
+                                "enabled", "connection_spec",
+                                "command", "command_options"]
             case local
             when "applicable_conditions"
               @egg_config["applicable_conditions"] = []

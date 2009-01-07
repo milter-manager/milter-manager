@@ -42,9 +42,11 @@ EOC
 <configuration>
   <milters>
     <milter>
-      <name>milter@10026</name>
+      <name>milter-greylist</name>
       <enabled>false</enabled>
       <connection-spec>inet:10026@localhost</connection-spec>
+      <command>/etc/init.d/milter-greylist</command>
+      <command-options>start</command-options>
       <applicable-conditions>
         <applicable-condition>S25R</applicable-condition>
       </applicable-conditions>
@@ -63,9 +65,11 @@ EOC
   </applicable-conditions>
   <milters>
     <milter>
-      <name>milter@10026</name>
+      <name>milter-greylist</name>
       <enabled>false</enabled>
       <connection-spec>inet:10026@localhost</connection-spec>
+      <command>/etc/init.d/milter-greylist</command>
+      <command-options>start</command-options>
       <applicable-conditions>
         <applicable-condition>S25R</applicable-condition>
       </applicable-conditions>
