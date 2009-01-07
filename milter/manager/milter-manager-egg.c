@@ -801,6 +801,11 @@ milter_manager_egg_to_xml_string (MilterManagerEgg *egg,
         milter_utils_xml_append_text_element(string,
                                              "command", priv->command,
                                              indent + 2);
+    if (priv->command_options)
+        milter_utils_xml_append_text_element(string,
+                                             "command-options",
+                                             priv->command_options,
+                                             indent + 2);
 
     if (priv->applicable_conditions) {
         GList *node = priv->applicable_conditions;

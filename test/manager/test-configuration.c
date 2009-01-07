@@ -682,6 +682,7 @@ test_to_xml_signal (void)
     gcut_assert_error(error);
 
     milter_manager_egg_set_command(egg, "test-milter");
+    milter_manager_egg_set_command_options(egg, "--user nobody");
 
     milter_manager_configuration_add_egg(config, egg);
 
@@ -694,6 +695,7 @@ test_to_xml_signal (void)
         "      <enabled>true</enabled>\n"
         "      <connection-spec>inet:10025</connection-spec>\n"
         "      <command>test-milter</command>\n"
+        "      <command-options>--user nobody</command-options>\n"
         "    </milter>\n"
         "  </milters>\n"
         "</configuration>\n",
@@ -710,6 +712,7 @@ test_to_xml_signal (void)
         "      <enabled>true</enabled>\n"
         "      <connection-spec>inet:10025</connection-spec>\n"
         "      <command>test-milter</command>\n"
+        "      <command-options>--user nobody</command-options>\n"
         "    </milter>\n"
         "  </milters>\n"
         "  <additional-field>VALUE</additional-field>\n"

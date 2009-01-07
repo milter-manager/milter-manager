@@ -1,5 +1,8 @@
 2009-01-07  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-egg.c,
+	test/manager/test-configuration.c: add command-options to XML.
+
 	* milter/manager/milter-manager-main.c: controller should be
 	started after daemonize() because daemonize() may fork().
 
