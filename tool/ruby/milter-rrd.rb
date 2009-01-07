@@ -315,6 +315,9 @@ module Milter
         rrd_file = rrd_name(time_span)
         return nil unless File.exist?(rrd_file)
         last_update_time = ::RRD.last(rrd_file)
+        if last_update_time <= Time.at(0)
+          last_update_time = Time.at(Integer(`rrdtool last '#{rrd_file}'`))
+        end
 
         time_stamp = last_update_time.strftime("%a %b %d %H:%M:%S %Z %Y")
         title = "#{@title} - #{time_stamp}"
