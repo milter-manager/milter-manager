@@ -2517,8 +2517,6 @@ end_of_message_response (MilterClientContext *context, MilterStatus status)
     reply(context, status);
     milter_statistics("Reply %s to MTA on end-of-message",
                        milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status));
-
-    milter_agent_shutdown(MILTER_AGENT(context));
 }
 
 static void
