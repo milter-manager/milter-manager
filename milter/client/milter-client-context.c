@@ -25,10 +25,10 @@
 #include <stdlib.h>
 
 #include <milter/core.h>
+#include <milter/core/milter-marshalers.h>
 #include "../client.h"
 #include "milter-client-context.h"
 #include "milter-client-enum-types.h"
-#include "milter/core/milter-marshalers.h"
 
 enum
 {
