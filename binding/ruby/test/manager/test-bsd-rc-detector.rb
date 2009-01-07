@@ -102,7 +102,7 @@ EOC
     detector = bsd_rc_detector("milter-manager")
     detector.detect
     detector.apply(@loader)
-    assert_eggs([["milter_manager",
+    assert_eggs([["milter-manager",
                   true,
                   (@rc_d + "milter-manager").to_s,
                   "start",
