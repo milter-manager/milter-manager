@@ -767,7 +767,7 @@ milter_manager_configuration_save_custom (MilterManagerConfiguration *configurat
         g_set_error(error,
                     MILTER_MANAGER_CONFIGURATION_ERROR,
                     MILTER_MANAGER_CONFIGURATION_ERROR_SAVE,
-                    "can't find writable custom config file in %s",
+                    "can't find writable custom configuration file in %s",
                     inspected_tried_paths->str);
         g_string_free(inspected_tried_paths, TRUE);
     }
