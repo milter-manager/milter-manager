@@ -1,5 +1,8 @@
 2009-01-07  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client-context.c (end_of_message_response):
+	shutdown agent because the session has no longer more future.
+
 	* tool/milter-log-tool: fix label. (just workaround...)
 
 	* milter/server/milter-server-context.h
