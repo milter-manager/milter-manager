@@ -1,3 +1,8 @@
+2009-01-08  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/manager/milter-manager.c: don't ignore client context's
+	finished to detect QUIT from MTA.
+
 2009-01-07  Kouhei Sutou  <kou@cozmixng.org>
 
 	* tool/milter-log-tool: fix label. (just workaround...)

@@ -70,7 +70,7 @@ static void   connection_established      (MilterClient *client,
 static gchar *get_default_connection_spec (MilterClient *client);
 static guint  get_unix_socket_mode        (MilterClient *client);
 static gboolean is_remove_unix_socket_on_close (MilterClient *client);
-static void   cb_finished                 (MilterFinishedEmittable *emittable,
+static void   cb_leader_finished          (MilterFinishedEmittable *emittable,
                                            gpointer user_data);
 
 static void
@@ -361,6 +361,16 @@ cb_client_timeout (MilterClientContext *context, gpointer user_data)
 }
 
 static void
+cb_client_finished (MilterClientContext *context, gpointer user_data)
+{
+    MilterManagerLeader *leader = user_data;
+
+    milter_debug("[manager] finished");
+
+    milter_manager_leader_quit(leader);
+}
+
+static void
 teardown_client_context_signals (MilterClientContext *context,
                                  gpointer user_data)
 {
@@ -384,9 +394,12 @@ teardown_client_context_signals (MilterClientContext *context,
     DISCONNECT(define_macro);
     DISCONNECT(timeout);
 
+    DISCONNECT(finished);
+
 #undef DISCONNECT
     g_signal_handlers_disconnect_by_func(user_data,
-                                         G_CALLBACK(cb_finished), context);
+                                         G_CALLBACK(cb_leader_finished),
+                                         context);
 }
 
 static gboolean
@@ -397,12 +410,11 @@ cb_idle_unref (gpointer data)
 }
 
 static void
-cb_finished (MilterFinishedEmittable *emittable, gpointer user_data)
+cb_leader_finished (MilterFinishedEmittable *emittable, gpointer user_data)
 {
     MilterManagerLeader *leader;
 
     leader = MILTER_MANAGER_LEADER(emittable);
-    milter_manager_leader_quit(leader);
     teardown_client_context_signals(MILTER_CLIENT_CONTEXT(user_data), emittable);
     milter_statistics("End of session in (%p)", user_data);
     g_idle_add(cb_idle_unref, emittable);
@@ -439,9 +451,11 @@ setup_context_signals (MilterClientContext *context,
     CONNECT(define_macro);
     CONNECT(timeout);
 
+    CONNECT(finished);
+
 #undef CONNECT
     g_signal_connect(leader, "finished",
-                     G_CALLBACK(cb_finished), context);
+                     G_CALLBACK(cb_leader_finished), context);
     milter_manager_leader_set_launcher_channel(leader,
                                                priv->launcher_read_channel,
                                                priv->launcher_write_channel);
