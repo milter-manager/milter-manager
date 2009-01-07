@@ -149,7 +149,7 @@ EOH
       next if graphs.empty?
       result << %Q[<h2 id=\"#{h(time_span)}\">#{h(time_span)}</h2>\n]
       graphs.each do |graph|
-        result << %Q[<p><img src="#{h(graph)}" /></p>\n]
+        result << %Q[  <p><img src="#{h(File.basename(graph))}" /></p>\n]
       end
       result << "\n"
     end
