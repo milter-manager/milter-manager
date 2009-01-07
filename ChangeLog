@@ -1,5 +1,8 @@
 2009-01-07  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-configuration.c: improve error
+	message format.
+
 	* TODO: add: * if all alive child milters don't need to receive
 	the command, children do nothing and leader returns response
 	immediately not returning PROGRESS. For example:

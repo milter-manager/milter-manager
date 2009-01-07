@@ -750,7 +750,7 @@ milter_manager_configuration_save_custom (MilterManagerConfiguration *configurat
         if (g_file_set_contents(full_path, content, size, &local_error)) {
             success = TRUE;
         } else {
-            g_string_append_printf(inspected_tried_paths, "[%s]",
+            g_string_append_printf(inspected_tried_paths, "(%s)",
                                    local_error->message);
             g_error_free(local_error);
             local_error = NULL;
