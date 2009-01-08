@@ -135,7 +135,7 @@ static MilterStatus send_body_to_child
 static MilterStatus send_next_header_to_child
                            (MilterManagerChildren *children,
                             MilterServerContext *context);
-static gboolean send_next_command
+static MilterStatus send_next_command
                            (MilterManagerChildren *children,
                             MilterServerContext *context,
                             MilterServerContextState current_state);
@@ -1812,7 +1812,7 @@ get_next_command (MilterManagerChildren *children,
     return fetch_first_command_for_child_in_queue(context, &node);
 }
 
-static gboolean
+static MilterStatus
 send_next_command (MilterManagerChildren *children,
                    MilterServerContext *context,
                    MilterServerContextState current_state)
@@ -1824,13 +1824,11 @@ send_next_command (MilterManagerChildren *children,
 
     next_command = get_next_command(children, context, current_state);
     if (next_command == -1) {
-        g_signal_emit_by_name(children, "continue");
-        return FALSE;
+        g_signal_emit_by_name(children, "continue"); /* FIXME: remove me */
+        return MILTER_STATUS_NOT_CHANGE;
     }
 
-    send_command_to_child(children, context,  next_command);
-
-    return TRUE;
+    return send_command_to_child(children, context, next_command);
 }
 
 static void
