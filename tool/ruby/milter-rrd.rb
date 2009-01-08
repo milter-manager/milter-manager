@@ -159,7 +159,7 @@ module Milter
 
     class Count < Hash
       def [](key)
-        super(key) ? super(key) : store(key, Hash.new("U"))
+        super(key) ? super(key) : store(key, Hash.new(0))
       end
     end
 
@@ -402,7 +402,7 @@ module Milter
       end
 
       def count_sessions(sessions, time_span, last_update_time)
-        counting = Hash.new("U")
+        counting = Hash.new(0)
         sessions.each do |session|
           next if session.end_time == nil
           start_time = time_span.adjust_time(session.start_time)
