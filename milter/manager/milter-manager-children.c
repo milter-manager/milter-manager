@@ -695,23 +695,29 @@ command_to_no_step_flag (MilterCommand command)
     return 0;
 }
 
-static gboolean
+static MilterStatus
 send_command_to_child (MilterManagerChildren *children,
                        MilterServerContext *child,
                        MilterCommand command)
 {
+    MilterStatus status = MILTER_STATUS_TEMPORARY_FAILURE;
+
     switch (command) {
     case MILTER_COMMAND_DATA:
-        return milter_server_context_data(child);
+        if (milter_server_context_data(child))
+            status = MILTER_STATUS_PROGRESS;
         break;
     case MILTER_COMMAND_HEADER:
-        return send_next_header_to_child(children, child);
+        if (send_next_header_to_child(children, child))
+            status = MILTER_STATUS_PROGRESS;
         break;
     case MILTER_COMMAND_END_OF_HEADER:
-        return milter_server_context_end_of_header(child);
+        if (milter_server_context_end_of_header(child))
+            status = MILTER_STATUS_PROGRESS;
         break;
     case MILTER_COMMAND_BODY:
-        return send_body_to_child(children, child);
+        if (send_body_to_child(children, child))
+            status = MILTER_STATUS_PROGRESS;
         break;
     case MILTER_COMMAND_END_OF_MESSAGE:
     {
@@ -719,15 +725,17 @@ send_command_to_child (MilterManagerChildren *children,
         priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
         priv->processing_header_index = 0;
-        return milter_server_context_end_of_message(child,
-                                                    priv->end_of_message_chunk,
-                                                    priv->end_of_message_size);
+        if (milter_server_context_end_of_message(child,
+                                                 priv->end_of_message_chunk,
+                                                 priv->end_of_message_size))
+            status = MILTER_STATUS_PROGRESS;
         break;
     }
     default:
         break;
     }
-    return FALSE;
+
+    return status;
 }
 
 static void
@@ -2164,12 +2172,8 @@ send_command_to_first_waiting_child (MilterManagerChildren *children,
         return MILTER_STATUS_NOT_CHANGE;
 
     no_step = command_to_no_step_flag(command);
-    if (!milter_server_context_is_enable_step(first_child, no_step)) {
-        if (send_command_to_child(children, first_child, command))
-            return MILTER_STATUS_PROGRESS;
-        else
-            return MILTER_STATUS_NOT_CHANGE;
-    }
+    if (!milter_server_context_is_enable_step(first_child, no_step))
+        return send_command_to_child(children, first_child, command);
 
     /*
      * If the first child is not needed the command, 
