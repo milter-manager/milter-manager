@@ -328,11 +328,10 @@ module Milter
           _items + ["DEF:#{item}=#{rrd_file}:#{item}:AVERAGE",
                     "DEF:max_#{item}=#{rrd_file}:#{item}:MAX",
                     "CDEF:n_#{item}=#{item},UN,0,#{item},IF",
-                    "CDEF:total_#{item}=PREV,UN,n_#{item},PREV,IF,n_#{item},+",
                     "CDEF:real_#{item}=#{item},#{@rrd_step},*",
                     "CDEF:real_max_#{item}=max_#{item},#{@rrd_step},*",
                     "CDEF:real_n_#{item}=n_#{item},#{@rrd_step},*",
-                    "CDEF:real_total_#{item}=total_#{item},#{@rrd_step},*"]
+                    "CDEF:total_#{item}=PREV,UN,real_n_#{item},PREV,IF,real_n_#{item},+"]
         end
         ::RRD.graph(name,
                     "--title", title,
@@ -507,7 +506,8 @@ module Milter
         items << "DEF:smtp=#{path}:smtp:AVERAGE"
         items << "DEF:max_smtp=#{path}:smtp:MAX"
         items << "CDEF:n_smtp=smtp,UN,0,smtp,IF"
-        items << "CDEF:total_smtp=PREV,UN,n_smtp,PREV,IF,n_smtp,+"
+        items << "CDEF:real_n_smtp=n_smtp,#{@rrd_step},*"
+        items << "CDEF:total_smtp=PREV,UN,real_n_smtp,PREV,IF,real_n_smtp,+"
 
         label = "SMTP".ljust(max_label_size)
         items << "LINE2:n_smtp#000000:#{label}"
@@ -578,7 +578,8 @@ module Milter
         items << "DEF:child=#{path}:child:AVERAGE"
         items << "DEF:max_child=#{path}:child:MAX"
         items << "CDEF:n_milters=child,UN,0,child,IF"
-        items << "CDEF:total_milters=PREV,UN,n_milters,PREV,IF,n_milters,+"
+        items << "CDEF:real_n_milters=n_milters,#{@rrd_step},*"
+        items << "CDEF:total_milters=PREV,UN,real_n_milters,PREV,IF,real_n_milters,+"
         items << "CDEF:smaller_n_milters=n_milters,10,/"
 
         label = 'total'.ljust(max_name_size)

@@ -1,5 +1,7 @@
 2009-01-08  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/ruby/milter-rrd.rb: fix number of total.
+
 	* libmilter/libmilter-compatible.[ch],
 	test/libmilter/test-smfi-context.c: fix memory leak.
 
