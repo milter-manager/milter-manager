@@ -132,7 +132,7 @@ static gboolean write_to_body_file
 static gboolean send_body_to_child
                            (MilterManagerChildren *children,
                             MilterServerContext *context);
-static gboolean send_next_header_to_child
+static MilterStatus send_next_header_to_child
                            (MilterManagerChildren *children,
                             MilterServerContext *context);
 static gboolean send_next_command
@@ -708,8 +708,7 @@ send_command_to_child (MilterManagerChildren *children,
             status = MILTER_STATUS_PROGRESS;
         break;
     case MILTER_COMMAND_HEADER:
-        if (send_next_header_to_child(children, child))
-            status = MILTER_STATUS_PROGRESS;
+        status = send_next_header_to_child(children, child);
         break;
     case MILTER_COMMAND_END_OF_HEADER:
         if (milter_server_context_end_of_header(child))
@@ -2266,7 +2265,7 @@ milter_manager_children_unknown (MilterManagerChildren *children,
     return success;
 }
 
-static gboolean
+static MilterStatus
 send_next_header_to_child (MilterManagerChildren *children, MilterServerContext *context)
 {
     MilterManagerChildrenPrivate *priv;
@@ -2275,7 +2274,7 @@ send_next_header_to_child (MilterManagerChildren *children, MilterServerContext 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     if (milter_server_context_is_enable_step(context, MILTER_STEP_NO_HEADERS))
-        return TRUE;
+        return MILTER_STATUS_NOT_CHANGE;
 
     priv->current_state = MILTER_SERVER_CONTEXT_STATE_HEADER;
 
@@ -2283,11 +2282,12 @@ send_next_header_to_child (MilterManagerChildren *children, MilterServerContext 
     header = milter_headers_get_nth_header(priv->headers,
                                            priv->processing_header_index);
     if (!header)
-        return FALSE;
+        return MILTER_STATUS_NOT_CHANGE;
 
-    return milter_server_context_header(context,
-                                        header->name,
-                                        header->value);
+    if (milter_server_context_header(context, header->name, header->value))
+        return MILTER_STATUS_PROGRESS;
+    else
+        return MILTER_STATUS_TEMPORARY_FAILURE;
 }
 
 gboolean

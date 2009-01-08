@@ -1,8 +1,8 @@
 2009-01-08  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/manager/milter-manager-children.c
-	(send_command_to_first_waiting_child, send_command_to_child):
-	return MilterStatus instead of gboolean.
+	(send_command_to_first_waiting_child, send_command_to_child),
+	(send_next_header_to_child): return MilterStatus instead of gboolean.
 
 	* tool/ruby/milter-rrd.rb: use 0 not "U" for empty data.
 
