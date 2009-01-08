@@ -129,7 +129,7 @@ static gboolean write_to_body_file
                            (MilterManagerChildren *children,
                             const gchar *chunk,
                             gsize size);
-static gboolean send_body_to_child
+static MilterStatus send_body_to_child
                            (MilterManagerChildren *children,
                             MilterServerContext *context);
 static MilterStatus send_next_header_to_child
@@ -715,8 +715,7 @@ send_command_to_child (MilterManagerChildren *children,
             status = MILTER_STATUS_PROGRESS;
         break;
     case MILTER_COMMAND_BODY:
-        if (send_body_to_child(children, child))
-            status = MILTER_STATUS_PROGRESS;
+        return send_body_to_child(children, child);
         break;
     case MILTER_COMMAND_END_OF_MESSAGE:
     {
@@ -2443,66 +2442,66 @@ milter_manager_children_body (MilterManagerChildren *children,
     return TRUE;
 }
 
-static gboolean
+static MilterStatus
 send_body_to_child (MilterManagerChildren *children, MilterServerContext *context)
 {
     MilterManagerChildrenPrivate *priv;
-    gboolean success = TRUE;
+    MilterStatus status = MILTER_STATUS_PROGRESS;
     GError *error = NULL;
-    GIOStatus status = G_IO_STATUS_NORMAL;
+    GIOStatus io_status = G_IO_STATUS_NORMAL;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     if (milter_server_context_is_enable_step(context, MILTER_STEP_NO_BODY))
-        return TRUE;
+        return MILTER_STATUS_NOT_CHANGE;
 
     if (milter_server_context_get_skip_body(context))
-        return TRUE;
+        return MILTER_STATUS_NOT_CHANGE;
 
     priv->current_state = MILTER_SERVER_CONTEXT_STATE_BODY;
 
     if (!priv->body_file)
-        return TRUE;
+        return MILTER_STATUS_NOT_CHANGE;
 
     priv->sent_body_count = 0;
     g_io_channel_seek_position(priv->body_file, 0, G_SEEK_SET, &error);
 
-    while (status == G_IO_STATUS_NORMAL) {
+    while (io_status == G_IO_STATUS_NORMAL) {
         gchar buffer[MILTER_CHUNK_SIZE + 1];
         gsize read_size;
 
-        status = g_io_channel_read_chars(priv->body_file, buffer, MILTER_CHUNK_SIZE,
-                                         &read_size, &error);
+        io_status = g_io_channel_read_chars(priv->body_file,
+                                            buffer, MILTER_CHUNK_SIZE,
+                                            &read_size, &error);
 
-        if (status == G_IO_STATUS_NORMAL) {
-            if (milter_server_context_body(context,
-                                           buffer, read_size)) {
+        if (io_status == G_IO_STATUS_NORMAL) {
+            if (milter_server_context_body(context, buffer, read_size)) {
                 priv->sent_body_count++;
             } else {
-                success = FALSE;
+                status = MILTER_STATUS_TEMPORARY_FAILURE;
                 break;
             }
         }
     }
 
     if (error) {
-        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
-                error);
+        milter_error("[children] send BODY: %s", error->message);
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children), error);
         g_error_free(error);
 
-        return FALSE;
+        return status;
     }
 
     g_io_channel_seek_position(priv->body_file, 0, G_SEEK_SET, &error);
     if (error) {
-        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
-                error);
+        milter_error("[children] seek body: %s", error->message);
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children), error);
         g_error_free(error);
 
-        return FALSE;
+        return MILTER_STATUS_TEMPORARY_FAILURE;
     }
 
-    return success;
+    return status;
 }
 
 gboolean
