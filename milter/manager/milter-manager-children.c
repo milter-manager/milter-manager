@@ -562,10 +562,12 @@ expire_all_children (MilterManagerChildren *children)
     g_list_free(milters_copy);
 }
 
-static void
+static MilterStatus
 remove_child_from_queue (MilterManagerChildren *children,
                          MilterServerContext *context)
 {
+    /* FIXME: don't want to return PROGRESS. */
+
     MilterManagerChildrenPrivate *priv;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
@@ -603,6 +605,8 @@ remove_child_from_queue (MilterManagerChildren *children,
             break;
         }
     }
+
+    return MILTER_STATUS_PROGRESS;
 }
 
 static void
@@ -820,7 +824,7 @@ fetch_first_command_for_child_in_queue (MilterServerContext *child,
     return -1;
 }
 
-static void
+static MilterStatus
 send_first_command_to_next_child (MilterManagerChildren *children,
                                   MilterServerContext *context,
                                   MilterServerContextState current_state)
@@ -829,6 +833,7 @@ send_first_command_to_next_child (MilterManagerChildren *children,
     MilterServerContext *next_child;
     MilterCommand first_command;
 
+    /* FIXME: don't want to return PROGRESS. */
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     priv->sent_end_of_message = TRUE;
@@ -842,7 +847,7 @@ send_first_command_to_next_child (MilterManagerChildren *children,
             emit_signals_on_end_of_message(children);
 
         emit_reply_status_of_state(children, current_state);
-        return;
+        return MILTER_STATUS_PROGRESS;
     }
     milter_server_context_quit(context);
 
@@ -852,6 +857,18 @@ send_first_command_to_next_child (MilterManagerChildren *children,
         g_signal_emit_by_name(children, "continue");
     else
         send_command_to_child(children, next_child, first_command);
+
+    return MILTER_STATUS_PROGRESS;
+}
+
+static void
+handle_status (MilterManagerChildren *children,
+               MilterStatus status)
+{
+    if (status == MILTER_STATUS_PROGRESS)
+        return;
+
+    g_signal_emit_by_name(children, status_to_signal_name(status));
 }
 
 static void
@@ -860,45 +877,49 @@ cb_continue (MilterServerContext *context, gpointer user_data)
     MilterManagerChildren *children = user_data;
     MilterServerContextState state;
     MilterManagerChildrenPrivate *priv;
+    MilterStatus status = MILTER_STATUS_NOT_CHANGE;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     state = milter_server_context_get_state(context);
 
     compile_reply_status(children, state, MILTER_STATUS_CONTINUE);
+
     switch (state) {
     case MILTER_SERVER_CONTEXT_STATE_DATA:
     case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
-        send_next_command(children, context, state);
+        status = send_next_command(children, context, state);
         break;
     case MILTER_SERVER_CONTEXT_STATE_HEADER:
         if (!priv->sent_end_of_message) {
-            g_signal_emit_by_name(children, "continue");
-            return;
-        }
-        if (priv->processing_header_index <
-            milter_headers_length(priv->headers)) {
-            send_next_header_to_child(children, context);
+            status = MILTER_STATUS_NOT_CHANGE;
         } else {
-            send_next_command(children, context, state);
+            if (priv->processing_header_index <
+                milter_headers_length(priv->headers)) {
+                status = send_next_header_to_child(children, context);
+            } else {
+                status = send_next_command(children, context, state);
+            }
         }
         break;
     case MILTER_SERVER_CONTEXT_STATE_BODY:
         priv->sent_body_count--;
         if (!priv->sent_end_of_message) {
-            g_signal_emit_by_name(children, "continue");
-            return;
+            status = MILTER_STATUS_NOT_CHANGE;
+        } else {
+            if (priv->sent_body_count == 0)
+                status = send_next_command(children, context, state);
         }
-        if (priv->sent_body_count == 0)
-            send_next_command(children, context, state);
         break;
     case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
-        send_first_command_to_next_child(children, context, state);
+        status = send_first_command_to_next_child(children, context, state);
         break;
     default:
-        remove_child_from_queue(children, context);
+        status = remove_child_from_queue(children, context);
         break;
     }
+
+    return handle_status(children, status);
 }
 
 static void
@@ -1823,10 +1844,8 @@ send_next_command (MilterManagerChildren *children,
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     next_command = get_next_command(children, context, current_state);
-    if (next_command == -1) {
-        g_signal_emit_by_name(children, "continue"); /* FIXME: remove me */
+    if (next_command == -1)
         return MILTER_STATUS_NOT_CHANGE;
-    }
 
     return send_command_to_child(children, context, next_command);
 }
