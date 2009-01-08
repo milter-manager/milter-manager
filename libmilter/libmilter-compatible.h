@@ -58,14 +58,7 @@ GQuark               smfi_context_error_quark       (void);
 
 GType                smfi_context_get_type          (void) G_GNUC_CONST;
 
-SmfiContext         *smfi_context_new               (void);
-
-void                 smfi_context_attach_to_client_context
-                                                    (SmfiContext         *context,
-                                                     MilterClientContext *client_context);
-void                 smfi_context_detach_from_client_context
-                                                    (SmfiContext         *context,
-                                                     MilterClientContext *client_context);
+SmfiContext         *smfi_context_new               (MilterClientContext *client_context);
 
 void                 libmilter_compatible_reset     (void);
 

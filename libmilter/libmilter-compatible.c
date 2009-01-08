@@ -52,6 +52,12 @@ struct _SmfiContextPrivate
     gpointer private_data;
 };
 
+enum
+{
+    PROP_0,
+    PROP_CLIENT_CONTEXT
+};
+
 G_DEFINE_TYPE(SmfiContext, smfi_context, G_TYPE_OBJECT);
 
 static void dispose        (GObject         *object);
@@ -64,16 +70,27 @@ static void get_property   (GObject         *object,
                             GValue          *value,
                             GParamSpec      *pspec);
 
+static void smfi_context_attach_to_client_context   (SmfiContext *context);
+static void smfi_context_detach_from_client_context (SmfiContext *context);
+
 static void
 smfi_context_class_init (SmfiContextClass *klass)
 {
     GObjectClass *gobject_class;
+    GParamSpec *spec;
 
     gobject_class = G_OBJECT_CLASS(klass);
 
     gobject_class->dispose      = dispose;
     gobject_class->set_property = set_property;
     gobject_class->get_property = get_property;
+
+    spec = g_param_spec_object("client-context",
+                               "client context",
+                               "A MilterClientContext object",
+                               MILTER_TYPE_CLIENT_CONTEXT,
+                               G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_CLIENT_CONTEXT, spec);
 
     g_type_class_add_private(gobject_class, sizeof(SmfiContextPrivate));
 }
@@ -89,11 +106,32 @@ smfi_context_init (SmfiContext *context)
 }
 
 static void
+smfi_context_set_client_context (SmfiContext *context,
+                                 MilterClientContext *client_context)
+{
+    SmfiContextPrivate *priv;
+
+    priv = SMFI_CONTEXT_GET_PRIVATE(context);
+    if (priv->client_context) {
+        smfi_context_detach_from_client_context(context);
+        g_object_unref(priv->client_context);
+    }
+
+    priv->client_context = client_context;
+    if (priv->client_context) {
+        g_object_ref(priv->client_context);
+        smfi_context_attach_to_client_context(context);
+    }
+}
+
+static void
 dispose (GObject *object)
 {
     SmfiContext *context;
 
     context = SMFI_CONTEXT(object);
+
+    smfi_context_set_client_context(context, NULL);
 
     G_OBJECT_CLASS(smfi_context_parent_class)->dispose(object);
 }
@@ -104,8 +142,14 @@ set_property (GObject      *object,
               const GValue *value,
               GParamSpec   *pspec)
 {
+    SmfiContext *context;
+
+    context = SMFI_CONTEXT(object);
     switch (prop_id) {
-      default:
+    case PROP_CLIENT_CONTEXT:
+        smfi_context_set_client_context(context, g_value_get_object(value));
+        break;
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
@@ -117,8 +161,14 @@ get_property (GObject    *object,
               GValue     *value,
               GParamSpec *pspec)
 {
+    SmfiContextPrivate *priv;
+
+    priv = SMFI_CONTEXT_GET_PRIVATE(object);
     switch (prop_id) {
-      default:
+    case PROP_CLIENT_CONTEXT:
+        g_value_set_object(value, priv->client_context);
+        break;
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
@@ -131,9 +181,10 @@ smfi_context_error_quark (void)
 }
 
 SmfiContext *
-smfi_context_new (void)
+smfi_context_new (MilterClientContext *client_context)
 {
     return g_object_new(SMFI_TYPE_CONTEXT,
+                        "client-context", client_context,
                         NULL);
 }
 
@@ -408,17 +459,17 @@ cb_finished (MilterFinishedEmittable *emittable, gpointer user_data)
         filter_description->xxfi_close(smfi_context);
 
     context = MILTER_CLIENT_CONTEXT(emittable);
-    smfi_context_detach_from_client_context(smfi_context, context);
+    g_object_unref(smfi_context);
 }
 
-void
-smfi_context_attach_to_client_context (SmfiContext *context,
-                                       MilterClientContext *client_context)
+static void
+smfi_context_attach_to_client_context (SmfiContext *context)
 {
     SmfiContextPrivate *priv;
+    MilterClientContext *client_context;
 
     priv = SMFI_CONTEXT_GET_PRIVATE(context);
-    priv->client_context = g_object_ref(client_context);
+    client_context = priv->client_context;
 
 #define CONNECT(name, smfi_name)                        \
     if (filter_description->xxfi_ ## smfi_name)         \
@@ -441,17 +492,18 @@ smfi_context_attach_to_client_context (SmfiContext *context,
 
 #undef CONNECT
 
-    g_signal_connect_after(client_context, "finished",
-                           G_CALLBACK(cb_finished), context);
+    g_signal_connect(client_context, "finished",
+                     G_CALLBACK(cb_finished), context);
 }
 
-void
-smfi_context_detach_from_client_context (SmfiContext *context,
-                                         MilterClientContext *client_context)
+static void
+smfi_context_detach_from_client_context (SmfiContext *context)
 {
     SmfiContextPrivate *priv;
+    MilterClientContext *client_context;
 
     priv = SMFI_CONTEXT_GET_PRIVATE(context);
+    client_context = priv->client_context;
 
 #define DISCONNECT(name)                                                \
     g_signal_handlers_disconnect_by_func(client_context,                \
@@ -474,46 +526,38 @@ smfi_context_detach_from_client_context (SmfiContext *context,
     DISCONNECT(finished);
 
 #undef DISCONNECT
-
-    if (priv->client_context) {
-        g_object_unref(priv->client_context);
-        priv->client_context = NULL;
-    }
 }
 
 static void
 cb_connection_established (MilterClient *client, MilterClientContext *context,
                            gpointer user_data)
 {
-    smfi_context_attach_to_client_context(user_data, context);
+    smfi_context_new(context);
 }
 
 static void
-setup_milter_client (MilterClient *client, SmfiContext *context)
+setup_milter_client (MilterClient *client)
 {
     milter_client_set_connection_spec(client, connection_spec, NULL);
     milter_client_set_listen_channel(client, listen_channel);
     milter_client_set_listen_backlog(client, listen_backlog);
     milter_client_set_timeout(client, timeout);
     g_signal_connect(client, "connection-established",
-                     G_CALLBACK(cb_connection_established), context);
+                     G_CALLBACK(cb_connection_established), NULL);
 }
 
 int
 smfi_main (void)
 {
     gboolean success;
-    SmfiContext *smfi_context;
 
     libmilter_compatible_initialize();
 
     if (client)
         g_object_unref(client);
     client = milter_client_new();
-    smfi_context = smfi_context_new();
-    setup_milter_client(client, smfi_context);
+    setup_milter_client(client);
     success = milter_client_main(client);
-    g_object_unref(smfi_context);
     g_object_unref(client);
     client = NULL;
 

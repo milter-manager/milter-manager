@@ -253,18 +253,17 @@ static struct smfiDesc smfilter = {
 void
 setup (void)
 {
-    context = smfi_context_new();
     smfi_register(smfilter);
 
     client_context = milter_client_context_new();
     expected_output = NULL;
 
+    context = smfi_context_new(client_context);
+
     channel = gcut_string_io_channel_new(NULL);
     g_io_channel_set_encoding(channel, NULL, NULL);
     writer = milter_writer_io_channel_new(channel);
     milter_agent_set_writer(MILTER_AGENT(client_context), writer);
-
-    smfi_context_attach_to_client_context(context, client_context);
 
     command_encoder = MILTER_COMMAND_ENCODER(milter_command_encoder_new());
     reply_encoder = MILTER_REPLY_ENCODER(milter_reply_encoder_new());
@@ -323,9 +322,6 @@ packet_free (void)
 void
 teardown (void)
 {
-    if (context && client_context)
-        smfi_context_detach_from_client_context(context, client_context);
-
     if (context)
         g_object_unref(context);
     if (client_context)

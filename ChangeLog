@@ -1,5 +1,8 @@
 2009-01-08  Kouhei Sutou  <kou@cozmixng.org>
 
+	* libmilter/libmilter-compatible.[ch],
+	test/libmilter/test-smfi-context.c: fix memory leak.
+
 	* tool/ruby/milter-rrd.rb: add fallback for RRDtool binding.
 
 	* tool/milter-log-tool: use relative path.
