@@ -67,17 +67,17 @@ class MilterLogTool
     listeners = [sessions, mail_status, pass_child]
     @log.each_line do |line|
       case line
-      when /\A(\w{3} \d+ \d+:\d:\d) \w+ (\w+)\[\d+\]: /
+      when /\A(\w{3} \d+ \d+:\d+:\d+) [\w\-]+ ([\w\-]+)\[\d+\]: /
         time_stamp = $1
         name = $2
         content = $POSTMATCH
-        time_stamp = Time.parse(time_stamp)
         next unless name == "milter-manager"
         if /\A\[statistics\] / =~ content
           content = $POSTMATCH.chomp
         else
           next
         end
+        time_stamp = Time.parse(time_stamp).utc
         listeners.each do |listener|
           listener.feed(time_stamp, content)
         end

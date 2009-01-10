@@ -253,7 +253,7 @@ module Milter
       def update_db(time_span)
         rrd = rrd_name(time_span)
         last_update_time = ::RRD.last(rrd) if File.exist?(rrd)
-        if last_update_time <= Time.at(0)
+        if last_update_time and last_update_time <= Time.at(0)
           last_update_time = Time.at(Integer(`rrdtool last '#{rrd}'`))
         end
 
@@ -372,12 +372,12 @@ module Milter
       end
 
       def collect_session(time_stamp, content, sessions, regex)
-        if regex.match(line)
+        if regex.match(content)
           elapsed = $1
           name = $2
-          session = Milter::Session.new(id, name)
-          session.end_time = time
-          session.start_time = time - Float(elapsed)
+          session = Milter::Session.new(name)
+          session.end_time = time_stamp
+          session.start_time = time_stamp - Float(elapsed)
           sessions << session
         end
         sessions
@@ -464,7 +464,7 @@ module Milter
       end
 
       def feed(time_stamp, content)
-        if /\A\[reply\]\[(.+)\]\[(.+)\]\z/ =~ line
+        if /\A\[reply\]\[(.+)\]\[(.+)\]\z/ =~ content
           state = $1
           status = $2
           return if status == "continue" and state != "end-of-message"
@@ -531,7 +531,7 @@ module Milter
       end
 
       def feed(time_stamp, content)
-        if /\A\[pass\]\[(.+)\]: (.+)\z/ =~ line
+        if /\A\[pass\]\[(.+)\]: (.+)\z/ =~ content
           state = $1
           name = $2
           @data << Milter::PassChild.new(name, state, time_stamp)
