@@ -1,5 +1,9 @@
 2009-01-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/test-children.c: follow the recent changes.
+
+	* milter/manager/milter-manager-children.c: remove needless code.
+
 	* milter/server/milter-server-context.c,
 	manager/milter-manager-children.c: add server: and children:
 	prefix to tag name.
