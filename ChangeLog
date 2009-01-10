@@ -1,5 +1,8 @@
 2009-01-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/ruby/milter-rrd.rb: use String instead of Integer for
+	avoiding overflow.
+
 	* tool/milter-log-tool, tool/ruby/milter-rrd.rb: show correct range.
 
 	* tool/ruby/milter-rrd.rb: follow the recent log change.
