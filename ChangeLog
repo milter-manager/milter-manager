@@ -1,5 +1,8 @@
 2009-01-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-log-tool: parse syslog format.
+	* tool/ruby/milter-rrd.rb: support new statistics format.
+
 	* milter/server/milter-server-context.c: improve log format.
 
 	* milter/manager/milter-manager-children.c: measure elapsed time

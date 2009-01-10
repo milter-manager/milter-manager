@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+require 'English'
 require 'pathname'
 require 'fileutils'
 require 'time'
@@ -65,8 +66,22 @@ class MilterLogTool
 
     listeners = [sessions, mail_status, pass_child]
     @log.each_line do |line|
-      listeners.each do |listener|
-        listener.feed(line)
+      case line
+      when /\A(\w{3} \d+ \d+:\d:\d) \w+ (\w+)\[\d+\]: /
+        time_stamp = $1
+        name = $2
+        content = $POSTMATCH
+        time_stamp = Time.parse(time_stamp)
+        next unless name == "milter-manager"
+        if /\A\[statistics\] / =~ content
+          content = $POSTMATCH.chomp
+        else
+          next
+        end
+        listeners.each do |listener|
+          listener.feed(time_stamp, content)
+        end
+      else
       end
     end
 

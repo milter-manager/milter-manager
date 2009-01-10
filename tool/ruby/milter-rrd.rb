@@ -19,9 +19,8 @@ require 'time'
 
 module Milter
   class Session
-    attr_accessor :id, :name, :start_time, :end_time
-    def initialize(id, name)
-      @id = id
+    attr_accessor :name, :start_time, :end_time
+    def initialize(name)
       @name = name
       @start_time = nil
       @end_time = nil
@@ -254,6 +253,9 @@ module Milter
       def update_db(time_span)
         rrd = rrd_name(time_span)
         last_update_time = ::RRD.last(rrd) if File.exist?(rrd)
+        if last_update_time <= Time.at(0)
+          last_update_time = Time.at(Integer(`rrdtool last '#{rrd_file}'`))
+        end
 
         data = collect_data(time_span, last_update_time)
         return if data.empty?
@@ -369,36 +371,25 @@ module Milter
         build_path("session.#{time_span.name}.png")
       end
 
-      def collect_session(line, sessions, regex)
+      def collect_session(time_stamp, content, sessions, regex)
         if regex.match(line)
-          time = $1
-          type = $2
-          name = $3
-          id = $4
-          time = Time.parse(time)
-          if type == "Start"
-            session = Milter::Session.new(id, name)
-            session.start_time = time
-            sessions << session
-          else
-            sessions.each do |session|
-              if session.id == id and session.end_time.nil?
-                session.end_time = time
-                break
-              end
-            end
-          end
+          elapsed = $1
+          name = $2
+          session = Milter::Session.new(id, name)
+          session.end_time = time
+          session.start_time = time - Float(elapsed)
+          sessions << session
         end
         sessions
       end
 
-      def feed(line)
+      def feed(time_stamp, content)
         @child_sessions =
-          collect_session(line, @child_sessions,
-                          /milter-manager\[.+\]: \[(.+)\](Start|End).* filter process of (.*)\((.+)\)$/)
+          collect_session(time_stamp, content, @child_sessions,
+                          /\A\[milter\]\[end\]\[(.+)\]\(.+\): (.+)\z/)
         @client_sessions =
-          collect_session(line, @client_sessions,
-                          /milter-manager\[.+\]: \[(.+)\](Start|End).* session in (.*)\((.+)\)$/)
+          collect_session(time_stamp, content, @client_sessions,
+                          /\A\[session\]\[end\]\[(.+)\]\(.+\): (.+)\z/)
       end
 
       def count_sessions(sessions, time_span, last_update_time)
@@ -472,14 +463,13 @@ module Milter
         build_path("mail.#{time_span.name}.png")
       end
 
-      def feed(line)
-        if /milter-manager\[.+\]: \[(.+)\]Reply (.+) to MTA on (.+)$/ =~ line
-          time = Time.parse($1)
-          status = $2
-          state = $3
+      def feed(time_stamp, content)
+        if /\A\[reply\]\[(.+)\]\[(.+)\]\z/ =~ line
+          status = $1
+          state = $2
           return if status == "continue" and state != "end-of-message"
           status = "normal" if status == "continue"
-          @data << Milter::Mail.new(status, time)
+          @data << Milter::Mail.new(status, time_stamp)
         end
       end
 
@@ -540,12 +530,11 @@ module Milter
         build_path("pass-child.#{time_span.name}.png")
       end
 
-      def feed(line)
-        if /milter-manager\[.+\]: \[(.+)\]Pass filter process of (.+)\(.+\) on (.+)$/ =~ line
-          time = Time.parse($1)
+      def feed(time_stamp, content)
+        if /\A\[pass\]\[(.+)\]: (.+)\z/ =~ line
+          state = $1
           name = $2
-          state = $3
-          @data << Milter::PassChild.new(name, state, time)
+          @data << Milter::PassChild.new(name, state, time_stamp)
         end
       end
 
