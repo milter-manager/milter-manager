@@ -2148,7 +2148,7 @@ milter_client_context_quarantine (MilterClientContext *context,
     milter_debug("sending QUARANTINE: <%s>", reason);
 
     /* quarantine allows only on end-of-message. */
-    milter_statistics("Reply quarantine to MTA on end-of-message.");
+    milter_statistics("[reply][quarantine][end-of-message]");
 
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     milter_reply_encoder_encode_quarantine(MILTER_REPLY_ENCODER(encoder),
@@ -2344,7 +2344,7 @@ negotiate_response (MilterClientContext *context,
         /* FIXME: error */
         break;
     }
-    milter_statistics("Reply %s to MTA on negotiate.",
+    milter_statistics("[reply][%s][negotiate]",
                        milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS,
                                                        status));
 }
@@ -2362,7 +2362,7 @@ connect_response (MilterClientContext *context, MilterStatus status)
     priv->state = MILTER_CLIENT_CONTEXT_STATE_CONNECT_REPLIED;
 
     reply(context, status);
-    milter_statistics("Reply %s to MTA on connect.",
+    milter_statistics("[reply][%s][connect]",
                        milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status));
 }
 
@@ -2379,7 +2379,7 @@ helo_response (MilterClientContext *context, MilterStatus status)
     priv->state = MILTER_CLIENT_CONTEXT_STATE_HELO_REPLIED;
 
     reply(context, status);
-    milter_statistics("Reply %s to MTA on helo.",
+    milter_statistics("[reply][%s][helo]",
                        milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status));
 }
 
@@ -2396,7 +2396,7 @@ envelope_from_response (MilterClientContext *context, MilterStatus status)
     priv->state = MILTER_CLIENT_CONTEXT_STATE_ENVELOPE_FROM_REPLIED;
 
     reply(context, status);
-    milter_statistics("Reply %s to MTA on evenlope-from.",
+    milter_statistics("[reply][%s][evenlope-from]",
                        milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status));
 }
 
@@ -2413,7 +2413,7 @@ envelope_recipient_response (MilterClientContext *context, MilterStatus status)
     priv->state = MILTER_CLIENT_CONTEXT_STATE_ENVELOPE_RECIPIENT_REPLIED;
 
     reply(context, status);
-    milter_statistics("Reply %s to MTA on evenlope-recipient.",
+    milter_statistics("[reply][%s][evenlope-recipient]",
                        milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status));
 }
 
@@ -2430,7 +2430,7 @@ unknown_response (MilterClientContext *context, MilterStatus status)
     priv->state = MILTER_CLIENT_CONTEXT_STATE_UNKNOWN_REPLIED;
 
     reply(context, status);
-    milter_statistics("Reply %s to MTA on unknown",
+    milter_statistics("[reply][%s][unknown]",
                        milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status));
 }
 
@@ -2447,7 +2447,7 @@ data_response (MilterClientContext *context, MilterStatus status)
     priv->state = MILTER_CLIENT_CONTEXT_STATE_DATA_REPLIED;
 
     reply(context, status);
-    milter_statistics("Reply %s to MTA on data",
+    milter_statistics("[reply][%s][data]",
                        milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status));
 }
 
@@ -2464,7 +2464,7 @@ header_response (MilterClientContext *context, MilterStatus status)
     priv->state = MILTER_CLIENT_CONTEXT_STATE_HEADER_REPLIED;
 
     reply(context, status);
-    milter_statistics("Reply %s to MTA on header",
+    milter_statistics("[reply][%s][header]",
                        milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status));
 }
 
@@ -2481,7 +2481,7 @@ end_of_header_response (MilterClientContext *context, MilterStatus status)
     priv->state = MILTER_CLIENT_CONTEXT_STATE_END_OF_HEADER_REPLIED;
 
     reply(context, status);
-    milter_statistics("Reply %s to MTA on end-of-header",
+    milter_statistics("[reply][%s][end-of-header]",
                        milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status));
 }
 
@@ -2498,7 +2498,7 @@ body_response (MilterClientContext *context, MilterStatus status)
     priv->state = MILTER_CLIENT_CONTEXT_STATE_BODY_REPLIED;
 
     reply(context, status);
-    milter_statistics("Reply %s to MTA on body",
+    milter_statistics("[reply][%s][body]",
                        milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status));
 }
 
@@ -2515,7 +2515,7 @@ end_of_message_response (MilterClientContext *context, MilterStatus status)
     priv->state = MILTER_CLIENT_CONTEXT_STATE_END_OF_MESSAGE_REPLIED;
 
     reply(context, status);
-    milter_statistics("Reply %s to MTA on end-of-message",
+    milter_statistics("[reply][%s][end-of-message]",
                        milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status));
 }
 

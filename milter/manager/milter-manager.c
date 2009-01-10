@@ -412,11 +412,17 @@ cb_idle_unref (gpointer data)
 static void
 cb_leader_finished (MilterFinishedEmittable *emittable, gpointer user_data)
 {
+    MilterClientContext *client_context = user_data;
+    GTimer *timer;
     MilterManagerLeader *leader;
 
+    timer = milter_client_context_get_private_data(client_context);
+    g_timer_stop(timer);
     leader = MILTER_MANAGER_LEADER(emittable);
-    teardown_client_context_signals(MILTER_CLIENT_CONTEXT(user_data), emittable);
-    milter_statistics("End of session in (%p)", user_data);
+    teardown_client_context_signals(client_context, emittable);
+    milter_statistics("[session][end][%g](%p)",
+                      g_timer_elapsed(timer, NULL),
+                      client_context);
     g_idle_add(cb_idle_unref, emittable);
 }
 
@@ -464,9 +470,14 @@ setup_context_signals (MilterClientContext *context,
 static void
 connection_established (MilterClient *client, MilterClientContext *context)
 {
+    GTimer *timer;
+
     setup_context_signals(context, MILTER_MANAGER(client));
 
-    milter_statistics("Start session in (%p)", context);
+    timer = g_timer_new();
+    milter_client_context_set_private_data(context, timer,
+                                           (GDestroyNotify)g_timer_destroy);
+    milter_statistics("[session][start](%p)", context);
 }
 
 static gchar *

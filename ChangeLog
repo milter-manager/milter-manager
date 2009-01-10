@@ -1,5 +1,11 @@
 2009-01-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client-context.c,
+	milter/manager/milter-manager-children.c,
+	milter/manager/milter-manager-leader.c,
+	milter/manager/milter-manager.c,
+	milter/server/milter-server-context.c: improve log format.
+
 	* milter/manager/milter-manager-children.c: remove needless error check.
 
 	* test/manager/test-children.c: follow the recent changes.
