@@ -722,8 +722,8 @@ pass_state (MilterServerContext *context, MilterServerContextState state)
                                                       state);
     milter_debug("pass state: %s", inspected_state);
     milter_statistics("[pass][%s]: %s",
-                      milter_server_context_get_name(context),
-                      inspected_state);
+                      inspected_state,
+                      milter_server_context_get_name(context));
     g_free(inspected_state);
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
     priv->state = state;

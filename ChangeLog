@@ -1,5 +1,7 @@
 2009-01-11  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/server/milter-server-context.c (pass_state): improve log format.
+
 	* tool/ruby/milter-rrd.rb: cleanup.
 
 2009-01-10  Kouhei Sutou  <kou@cozmixng.org>
