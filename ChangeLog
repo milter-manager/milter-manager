@@ -1,5 +1,7 @@
 2009-01-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/server/milter-server-context.c: improve log format.
+
 	* milter/manager/milter-manager-children.c: measure elapsed time
 	for each milter.
 

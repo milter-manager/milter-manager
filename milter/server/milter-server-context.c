@@ -721,7 +721,7 @@ pass_state (MilterServerContext *context, MilterServerContextState state)
     inspected_state = milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
                                                       state);
     milter_debug("pass state: %s", inspected_state);
-    milter_statistics("[pass][%s][%s]",
+    milter_statistics("[pass][%s]: %s",
                       milter_server_context_get_name(context),
                       inspected_state);
     g_free(inspected_state);
