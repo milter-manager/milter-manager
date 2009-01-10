@@ -277,7 +277,7 @@ module Milter
 
           next if counts.uniq.length == 1 and counts.uniq.include?("U")
 
-          puts("update #{rrd} with #{Time.at(time)}  #{counts.join(':')}")
+          # puts("update #{rrd} with #{Time.at(time)}  #{counts.join(':')}")
           ::RRD.update("#{rrd_name(time_span)}",
                        "#{time}:#{counts.join(':')}")
         end
