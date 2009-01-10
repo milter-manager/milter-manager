@@ -28,6 +28,8 @@
 #include "milter/core.h"
 #include "milter-manager-launch-command-encoder.h"
 
+#define TIMER_KEY "timer"
+
 #define MILTER_MANAGER_CHILDREN_GET_PRIVATE(obj)                    \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                             \
                                  MILTER_TYPE_MANAGER_CHILDREN,      \
@@ -491,9 +493,13 @@ cb_ready (MilterServerContext *context, gpointer user_data)
 {
     NegotiateData *negotiate_data = (NegotiateData*)user_data;
     MilterManagerChildrenPrivate *priv;
+    GTimer *timer;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(negotiate_data->children);
 
+    timer = g_timer_new();
+    g_object_set_data_full(G_OBJECT(context), TIMER_KEY, timer,
+                           (GDestroyNotify)g_timer_destroy);
     milter_statistics("[milter][start](%p): %s",
                       context,
                       milter_server_context_get_name(context));
@@ -528,11 +534,15 @@ expire_child (MilterManagerChildren *children,
 {
     MilterManagerChildrenPrivate *priv;
     const gchar *child_name;
+    GTimer *timer;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     child_name = milter_server_context_get_name(context);
-    milter_statistics("[milter][end](%p): %s", context, child_name);
+    timer = g_object_get_data(G_OBJECT(context), TIMER_KEY);
+    g_timer_stop(timer);
+    milter_statistics("[milter][end][%g](%p): %s",
+                      g_timer_elapsed(timer, NULL), context, child_name);
 
     teardown_server_context_signals(MILTER_MANAGER_CHILD(context), children);
     priv->milters = g_list_remove(priv->milters, context);
