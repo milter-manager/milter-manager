@@ -956,7 +956,7 @@ cb_temporary_failure (MilterServerContext *context, gpointer user_data)
     default:
         state_name = milter_utils_get_enum_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
                                                 state);
-        milter_error("[%s] unexpected TEMPORARY_FAILURE: %s",
+        milter_error("[children:%s] unexpected TEMPORARY_FAILURE: %s",
                      milter_server_context_get_name(context),
                      state_name);
         g_free(state_name);
@@ -999,7 +999,7 @@ cb_reject (MilterServerContext *context, gpointer user_data)
     default:
         state_name = milter_utils_get_enum_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
                                                 state);
-        milter_error("[%s] unexpected REJECT: %s",
+        milter_error("[children:%s] unexpected REJECT: %s",
                      milter_server_context_get_name(context),
                      state_name);
         g_free(state_name);
@@ -1058,7 +1058,7 @@ cb_accept (MilterServerContext *context, gpointer user_data)
     default:
         state_name = milter_utils_get_enum_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
                                                 state);
-        milter_error("[%s] unexpected ACCEPT: %s",
+        milter_error("[children:%s] unexpected ACCEPT: %s",
                      milter_server_context_get_name(context),
                      state_name);
         g_free(state_name);
@@ -1097,7 +1097,7 @@ cb_discard (MilterServerContext *context, gpointer user_data)
     default:
         state_name = milter_utils_get_enum_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
                                                 state);
-        milter_error("[%s] unexpected DISCARD: %s",
+        milter_error("[children:%s] unexpected DISCARD: %s",
                      milter_server_context_get_name(context),
                      state_name);
         g_free(state_name);
@@ -1231,7 +1231,7 @@ cb_progress (MilterServerContext *context, gpointer user_data)
 
         state_name = milter_utils_get_enum_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
                                                 state);
-        milter_error("[%s] PROGRESS reply is only allowed "
+        milter_error("[children:%s] PROGRESS reply is only allowed "
                      "in end of message session: %s",
                      milter_server_context_get_name(context),
                      state_name);
@@ -1258,7 +1258,7 @@ cb_quarantine (MilterServerContext *context,
 
         state_name = milter_utils_get_enum_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
                                                 state);
-        milter_error("[%s] QUARANTINE reply is only allowed "
+        milter_error("[children:%s] QUARANTINE reply is only allowed "
                      "in end of message session: %s",
                      milter_server_context_get_name(context),
                      state_name);
@@ -1306,7 +1306,7 @@ cb_writing_timeout (MilterServerContext *context, gpointer user_data)
 {
     MilterManagerChildren *children = MILTER_MANAGER_CHILDREN(user_data);
 
-    milter_error("[%s] writing timeout",
+    milter_error("[children:%s] writing timeout",
                  milter_server_context_get_name(context));
 
     expire_child(children, context);
@@ -1318,7 +1318,7 @@ cb_reading_timeout (MilterServerContext *context, gpointer user_data)
 {
     MilterManagerChildren *children = MILTER_MANAGER_CHILDREN(user_data);
 
-    milter_error("[%s] reading timeout",
+    milter_error("[children:%s] reading timeout",
                  milter_server_context_get_name(context));
 
     expire_child(children, context);
@@ -1330,7 +1330,7 @@ cb_end_of_message_timeout (MilterServerContext *context, gpointer user_data)
 {
     MilterManagerChildren *children = MILTER_MANAGER_CHILDREN(user_data);
 
-    milter_error("[%s] end-of-message response timeout",
+    milter_error("[children:%s] end-of-message response timeout",
                  milter_server_context_get_name(context));
 
     expire_child(children, context);
@@ -1348,7 +1348,7 @@ cb_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
     children = MILTER_MANAGER_CHILDREN(user_data);
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    milter_error("[%s] %s",
+    milter_error("[children:%s] %s",
                  milter_server_context_get_name(context),
                  error->message);
 
@@ -1373,7 +1373,7 @@ cb_finished (MilterAgent *agent, gpointer user_data)
 
     state_name = milter_utils_get_enum_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
                                             priv->current_state);
-    milter_debug("[%s] exits on %s.",
+    milter_debug("[children:%s] exits on %s.",
                  milter_server_context_get_name(context),
                  state_name);
     g_free(state_name);
@@ -1724,7 +1724,7 @@ child_establish_connection (MilterManagerChild *child,
 
     if (!milter_server_context_establish_connection(context, &error)) {
 
-        milter_error("[%s] %s",
+        milter_error("[children:%s] %s",
                      milter_server_context_get_name(context),
                      error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),

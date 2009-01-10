@@ -1,5 +1,9 @@
 2009-01-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/server/milter-server-context.c,
+	manager/milter-manager-children.c: add server: and children:
+	prefix to tag name.
+
 	* milter/core/milter-syslog-logger.c,
 	test/core/test-syslog-logger.c: use
 	[statistics] tag instead of time-stamp.
