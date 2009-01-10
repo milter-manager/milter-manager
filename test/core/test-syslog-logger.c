@@ -148,7 +148,7 @@ test_statistics (void)
     cut_trace(collect_log_message());
 
     cut_assert_match(".* " MILTER_LOG_DOMAIN "\\[\\d+\\]: "
-                     "\\[.+\\]"
+                     "\\[statistics\\] "
                      "This is statistics message.$",
                      actual);
 

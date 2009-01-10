@@ -124,10 +124,7 @@ cb_log (MilterLogger *logger, const gchar *domain,
         return;
 
     if (level & MILTER_LOG_LEVEL_STATISTICS) {
-        gchar *time_string;
-        time_string = g_time_val_to_iso8601(time_value);
-        g_string_append_printf(log, "[%s]", time_string);
-        g_free(time_string);
+        g_string_append(log, "[statistics] ");
     }
 
     g_string_append(log, message);
