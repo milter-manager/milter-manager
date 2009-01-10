@@ -37,12 +37,15 @@ module Milter
   end
 
   class PassChild
-    attr_accessor :name, :state, :time, :key
-    def initialize(name, state, time)
-      @name = name
+    attr_accessor :state, :name, :time
+    def initialize(state, name, time)
       @state = state
+      @name = name
       @time = time
-      @key = state
+    end
+
+    def key
+      @state
     end
   end
 
@@ -543,7 +546,7 @@ module Milter
         if /\A\[pass\]\[(.+)\]: (.+)\z/ =~ content
           state = $1
           name = $2
-          @data << Milter::PassChild.new(name, state, time_stamp)
+          @data << Milter::PassChild.new(state, name, time_stamp)
         end
       end
 

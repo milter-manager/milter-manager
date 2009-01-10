@@ -1,3 +1,7 @@
+2009-01-11  Kouhei Sutou  <kou@cozmixng.org>
+
+	* tool/ruby/milter-rrd.rb: cleanup.
+
 2009-01-10  Kouhei Sutou  <kou@cozmixng.org>
 
 	* tool/ruby/milter-rrd.rb: use String instead of Integer for
