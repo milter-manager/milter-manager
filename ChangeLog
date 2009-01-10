@@ -1,5 +1,7 @@
 2009-01-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/ruby/milter-rrd.rb: follow the recent log change.
+
 	* milter/client/milter-client-context.c: improve log format.
 
 	* tool/milter-log-tool: parse syslog format.

@@ -254,7 +254,7 @@ module Milter
         rrd = rrd_name(time_span)
         last_update_time = ::RRD.last(rrd) if File.exist?(rrd)
         if last_update_time <= Time.at(0)
-          last_update_time = Time.at(Integer(`rrdtool last '#{rrd_file}'`))
+          last_update_time = Time.at(Integer(`rrdtool last '#{rrd}'`))
         end
 
         data = collect_data(time_span, last_update_time)
@@ -465,8 +465,8 @@ module Milter
 
       def feed(time_stamp, content)
         if /\A\[reply\]\[(.+)\]\[(.+)\]\z/ =~ line
-          status = $1
-          state = $2
+          state = $1
+          status = $2
           return if status == "continue" and state != "end-of-message"
           status = "normal" if status == "continue"
           @data << Milter::Mail.new(status, time_stamp)
