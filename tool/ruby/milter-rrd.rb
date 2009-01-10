@@ -398,7 +398,7 @@ module Milter
                           /\A\[milter\]\[end\]\[(.+)\]\(.+\): (.+)\z/)
         @client_sessions =
           collect_session(time_stamp, content, @client_sessions,
-                          /\A\[session\]\[end\]\[(.+)\]\(.+\): (.+)\z/)
+                          /\A\[session\]\[end\]\[(.+)\]\(.+\)\z/)
       end
 
       def count_sessions(sessions, time_span, last_update_time)
