@@ -1,5 +1,7 @@
 2009-01-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.c: remove needless error check.
+
 	* test/manager/test-children.c: follow the recent changes.
 
 	* milter/manager/milter-manager-children.c: remove needless code.
