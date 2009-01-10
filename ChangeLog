@@ -1,5 +1,7 @@
 2009-01-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client-context.c: improve log format.
+
 	* tool/milter-log-tool: parse syslog format.
 	* tool/ruby/milter-rrd.rb: support new statistics format.
 
