@@ -251,10 +251,9 @@ module Milter
       end
 
       def update_db(time_span)
-        rrd = rrd_name(time_span)
-        last_update_time = ::RRD.last(rrd) if File.exist?(rrd)
+        last_update_time = ::RRD.last(rrd_file) if File.exist?(rrd_file)
         if last_update_time and last_update_time <= Time.at(0)
-          last_update_time = Time.at(Integer(`rrdtool last '#{rrd}'`))
+          last_update_time = Time.at(Integer(`rrdtool last '#{rrd_file}'`))
         end
 
         data = collect_data(time_span, last_update_time)
@@ -267,7 +266,7 @@ module Milter
           start_time = data.first_time
         end
 
-        create_rrd(time_span, start_time, *@items) unless File.exist?(rrd)
+        create_rrd(time_span, start_time, *@items) unless File.exist?(rrd_file)
 
         start_time.to_i.step(end_time, time_span.step) do |time|
           counts = []
@@ -278,7 +277,7 @@ module Milter
           next if counts.uniq.length == 1 and counts.uniq.include?("U")
 
           # puts("update #{rrd} with #{Time.at(time)}  #{counts.join(':')}")
-          ::RRD.update("#{rrd_name(time_span)}",
+          ::RRD.update(rrd_file,
                        "#{time}:#{counts.join(':')}")
         end
       end
@@ -294,7 +293,7 @@ module Milter
         week_range = WeekRange.new(@rrd_step, rows)
         month_range = MonthRange.new(@rrd_step, rows)
         year_range = YearRange.new(@rrd_step, rows)
-        ::RRD.create("#{rrd_name(time_span)}",
+        ::RRD.create(rrd_file,
                      "--start", (start_time - 1).to_i.to_s,
                      "--step", step,
                      "RRA:MAX:0.5:#{day_range.steps}:#{rows}",
@@ -310,11 +309,11 @@ module Milter
 
       def output_graph(time_span, options={}, *args)
         start_time = options[:start_time] || time_span.default_start_time
-        end_time = options[:end_time] || "now"
+        end_time = options[:end_time] || guess_end_time(start_time)
+        graph_tag = options[:graph_tag] || time_span.name
         width = options[:width] || @width
         height = options[:height] || 200
 
-        rrd_file = rrd_name(time_span)
         return nil unless File.exist?(rrd_file)
         last_update_time = ::RRD.last(rrd_file)
         if last_update_time <= Time.at(0)
@@ -324,7 +323,7 @@ module Milter
         time_stamp = last_update_time.strftime("%a %b %d %H:%M:%S %Z %Y")
         title = "#{@title} - #{time_stamp}"
         vertical_label = "#{@vertical_label}/#{time_span.short_name}"
-        name = graph_name(time_span)
+        name = graph_name(graph_tag)
 
         items = @items.inject([]) do |_items, item|
           _items + ["DEF:#{item}=#{rrd_file}:#{item}:AVERAGE",
@@ -351,6 +350,16 @@ module Milter
       def build_path(*paths)
         File.join(*([@rrd_directory, *paths].compact))
       end
+
+      def guess_end_time(start_time)
+        if start_time.is_a?(String)
+          "now"
+        else
+          end_time = Time.now.to_i
+          step = start_time.abs * @points_per_sample / @width
+          end_time - (end_time % step)
+        end
+      end
     end
 
     class Session < Graph
@@ -363,12 +372,12 @@ module Milter
         @client_sessions = []
       end
 
-      def rrd_name(time_span)
-        build_path("milter-log.#{time_span.name}.rrd")
+      def rrd_file
+        build_path("milter-log.session.rrd")
       end
 
-      def graph_name(time_span)
-        build_path("session.#{time_span.name}.png")
+      def graph_name(tag)
+        build_path("session.#{tag}.png")
       end
 
       def collect_session(time_stamp, content, sessions, regex)
@@ -455,12 +464,12 @@ module Milter
                   "quarantine"]
       end
 
-      def rrd_name(time_span)
-        build_path("milter-log.mail.#{time_span.name}.rrd")
+      def rrd_file
+        build_path("milter-log.mail.rrd")
       end
 
-      def graph_name(time_span)
-        build_path("mail.#{time_span.name}.png")
+      def graph_name(tag)
+        build_path("mail.#{tag}.png")
       end
 
       def feed(time_stamp, content)
@@ -492,7 +501,7 @@ module Milter
           items << "GPRINT:max_#{name}:MAX:max\\: %7.0lf mails/min\\l"
         end
 
-        path = build_path("milter-log.#{time_span.name}.rrd")
+        path = build_path("milter-log.session.rrd")
         items << "DEF:smtp=#{path}:smtp:AVERAGE"
         items << "DEF:max_smtp=#{path}:smtp:MAX"
         items << "CDEF:n_smtp=smtp,UN,0,smtp,IF"
@@ -522,12 +531,12 @@ module Milter
                   "end-of-message"]
       end
 
-      def rrd_name(time_span)
-        build_path("milter-log.state.#{time_span.name}.rrd")
+      def rrd_file
+        build_path("milter-log.pass.rrd")
       end
 
-      def graph_name(time_span)
-        build_path("pass-child.#{time_span.name}.png")
+      def graph_name(tag)
+        build_path("pass.#{tag}.png")
       end
 
       def feed(time_stamp, content)
@@ -563,7 +572,7 @@ module Milter
           items << "GPRINT:max_#{name}:MAX:max\\: %4.0lf milters/min\\l"
         end
 
-        path = build_path("milter-log.#{time_span.name}.rrd")
+        path = build_path("milter-log.session.rrd")
         items << "DEF:child=#{path}:child:AVERAGE"
         items << "DEF:max_child=#{path}:child:MAX"
         items << "CDEF:n_milters=child,UN,0,child,IF"

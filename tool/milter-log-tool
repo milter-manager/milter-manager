@@ -90,19 +90,29 @@ class MilterLogTool
     end
   end
 
-  def output_graph(time_span, label=nil)
+  def output_graph(time_span, label=nil, options={})
     output_graphs = []
     [sessions, mail_status, pass_child].each do |generator|
-      file_name = generator.output_graph(Milter::RRD::TimeSpan.new(time_span))
+      file_name = generator.output_graph(Milter::RRD::TimeSpan.new(time_span),
+                                         options)
       output_graphs << file_name if file_name
     end
     @output_graphs << [label || time_span, output_graphs]
   end
 
   def output_all_graph
-    output_graph("second")
-    output_graph("minute", "Day")
-    output_graph("hour")
+    output_graph("minute", "Last Day",
+                 :start_time => -3600 * 24,
+                 :graph_tag => "day")
+    output_graph("minute", "Last Week",
+                 :start_time => -3600 * 24 * 7,
+                 :graph_tag => "week")
+    output_graph("minute", "Last Month",
+                 :start_time => -3600 * 24 * 31,
+                 :graph_tag => "month")
+    output_graph("minute", "Last Year",
+                 :start_time => -3600 * 24 * 365,
+                 :graph_tag => "year")
   end
 
   def output_html
