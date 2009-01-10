@@ -1,14 +1,17 @@
 # -*- rd -*-
 
-= はじめに --- milter-managerの概要
+= はじめに --- milter managerの概要
 
-milter-managerを導入することによって得られる以下のメリットの
+milter managerを導入することによって得られる以下のメリットの
 理由を説明します。
+
+  * milter管理コストを減らすことができる
+  * milterを柔軟に組み合わせることができる
 
   * milterの登録方法がMTAに依存しなくなる
   * 迷惑メール対策を効果的に実行するようにmilterを柔軟に組み
     合わせることができる
-  * 他のmilterの設定を検出し、動的にmilter-managerの設定を追
+  * 他のmilterの設定を検出し、動的にmilter managerの設定を追
     従させることができる
 
 milterに関する知識がない読者でも読み進められるようにmilterの
@@ -34,8 +37,8 @@ Sendmailとmilterの関係を図示して整理する前に、用語の整理を
   * milter: メールフィルタプラグイン
   * milterシステム: メールフィルタプラグインの仕組み
 
-milterはSendmailとは別プロセスで動作し、milterとSendmailは
-独自のプロトコルで通信を行います。このプロトコルのことを
+milterはSendmailとは別プロセスで動作し、milterとSendmailは独
+自のプロトコルで通信を行います。このプロトコルのことを
 「milterプロトコル」と呼ぶこととします。また、Sendmailが
 milterに接続し、milterプロトコルで通信を行い、milterとの接続
 を切断するまでを「milterセッション」と呼ぶこととします。
@@ -123,7 +126,7 @@ Postfix間で同じmilterを利用できるようになったのですが、効�
 方式などがあります。商用製品のブラックリスト方式では独自のデー
 タベースを利用することが多くあります。フリーソフトウェアでの
 実装ではDNSBLと呼ばれるDNSのインターフェイスを利用したデータ
-ベースを利用することが多いです。また、データベースを使用せず
+ベースを利用することが多いです。また、データベースを使用せず、
 数種類の正規表現で迷惑メール送信者を検出するS25R（Selective
 SMTP Rejection）という手法もあります。
 
@@ -164,13 +167,13 @@ S25Rの欠点といえるメンテナンスコストを解消することもで�
 === MTAの設定の問題点
 
 迷惑メール対策の手法はmilterとして実装されています。それでは、
-milterを効率的に組み合わせるためにはSendmail, Postfixにどのよ
+milterを効率的に組み合わせるためにはSendmail、Postfixにどのよ
 うな設定を行えばよいでしょうか。
 
 Sendmail、Postfixともに、milterを適用する設定を行うと、すべて
-のメールに対してmilterが適用されます。そのため、特定の条件の
-ときのみmilterを適用するということはできません。((-Postfixで
-は、milterではなく、((<アクセスポリシー委譲
+のメールに対してmilterが適用されます。そのため、前述のように
+特定の条件のときのみmilterを適用するということはできません。
+((-Postfixでは、milterではなく、((<アクセスポリシー委譲
 |URL:http://www.postfix.org/SMTPD_POLICY_README.html>))の仕組
 みを使うことによりS25Rで怪しいと判断した場合のみGreylistingを
 適用するということができます。-))
@@ -184,62 +187,73 @@ milterはすでに多くの実装が開発されているという点、複数�
 かし、MTAでmilterの適用を柔軟に設定できないことやMTA間での設
 定方法の違いから、そのような利点を活かしきれていません。
 
-そのようなmilterの利点を活かすためのフリーソフトウェアが
-milter-managerです。
+そのようなmilterの利点をより活かすためのフリーソフトウェアが
+milter managerです。
 
-=== milter-manager
+=== milter manager
 
-milter-managerは複数のmilterを管理するmilterです。
-milter-managerには複数のmilterを登録することができ、
-milter-managerに対するmilterセッションは登録された複数の
-milterに転送されます。milter-managerに登録されたmilterのこと
+milter managerは複数のmilterを管理するmilterです。
+milter managerには複数のmilterを登録することができ、
+milter managerに対するmilterセッションは登録された複数の
+milterに転送されます。milter managerに登録されたmilterのこと
 を「子milter」と呼ぶこととします。
 
-つまり、milter-managerは1種のプロキシとして動作します。MTAか
-ら見ると、milter-managerは1つのmilterです。一方、子milterか
-ら見ると、milter-managerからはMTAのように見えます。
+つまり、milter managerは1種のプロキシとして動作します。MTAか
+ら見ると、milter managerは1つのmilterです。一方、子milterか
+ら見ると、milter managerからはMTAのように見えます。
 
-図: MTAとmilter-managerと子milter
+図: MTAとmilter managerと子milter
 
 このような構成にすることで、各MTA毎に異なっていた部分が
-milter-managerの層で共通化されます。これにより、以下の2つの
-利点があります。
+milter managerの層で共通化されます。これにより、以下の2つの
+機能を提供します。
 
-  (1) milterを登録する方法がMTAに依存しなくなる
-  (2) milterの適用方法を柔軟に変更することができる
+  (1) MTA非依存のmilter登録機能
+  (2) 柔軟なmilterの適用機能
+
+前者は「milter管理コストを減らすことができる」というメリット
+につながり、後者は「milterを柔軟に組み合わせることができる」
+というメリットにつながります.
 
 milterの登録方法がMTAに依存しなくなるのは、milterを登録する
-先がMTAではなく、milter-managerになるためです。milterの適用
+先がMTAではなく、milter managerになるためです。milterの適用
 方法が柔軟に変更できるようになるのは、複数のmilterを適用する
-処理をMTAではなくmilter-managerの層で行うようになるためです。
+処理をMTAではなくmilter managerの層で行うようになるためです。
 
-milter-managerのこの2つの利点により、milterの利点を活かすこ
-とができます。
+milter managerのこの2つの機能により、milterの利点をより活かす
+ことができます。
 
-一方、milter-managerを間に入れることにより、パフォーマンス面
-での影響があります。ただし、milter-managerは以下の通り十分高
-速に動作するため、milter-managerがシステムのボトルネックにな
+一方、milter managerを間に入れることにより、パフォーマンス面
+での影響があります。ただし、milter managerは以下の通り十分高
+速に動作するため、milter managerがシステムのボトルネックにな
 ることはないでしょう。
 
 図: ベンチマークデータ？
 
-== MTAとmilterを連携させる設定
+また、milter managerに登録された子milterは特定の条件のときの
+み実行することができます。つまり、必要の無い場合は子milterを
+実行しません.一方、MTAにmilterを直接登録すると、登録されたす
+べてのmilterが毎回実行されます。milter managerを導入すること
+による処理速度の低下は、実行する総子milter数が減ることにより
+相殺され、導入前とほとんど同じ程度になると考えられます。
 
-milterはそれぞれ別々の機能を提供しており、複数のmilterを組み
-合わせることにより目的とする機能を実現します。そのため、複数
-のmilterを設定する必要がでてきます。また、各milterをMTAと連携
-させる設定もする必要があります。このように、milter関連の設定
-が複数箇所に分散され、管理コストがあがってしまう危険性があり
-ます。
+=== MTAとmilterを連携させる設定
 
-milter-managerはRubyインタプリタを内蔵しています。Rubyは本物
+milterはそれぞれ別々の機能を提供しています。そのため、目的と
+する機能を実現するためには、複数のmilterを組み合わせる必要が
+あり、複数のmilterを設定する必要がでてきます。また、各milter
+をMTAと連携させる設定もする必要があります。このように、
+milter関連の設定が複数箇所に分散され、管理コストがあがってし
+まう危険性があります。
+
+milter managerはRubyインタプリタを内蔵しています。Rubyは本物
 のプログラミング言語であり、読みやすい文法と柔軟な処理能力を
 提供します。
 
-Rubyインタプリタを用いることにより、milter-managerの設定を自
-分で編集せずに、システム内のmilterを検出することができます。
-これにより、milterとMTAを連携させる設定を管理する必要がなく
-なり、管理コストを下げることができます。
+Rubyインタプリタを用いることにより、milter managerの設定を自
+分で編集しなくとも、システム内のmilterを検出することができま
+す。これにより、milterとMTAを連携させる設定を管理する必要がな
+くなり、管理コストを下げることができます。
 
 == まとめ
 
@@ -260,8 +274,8 @@ Rubyインタプリタを用いることにより、milter-managerの設定を�
       * MTAとmilterの設定が分散しているため、連携させる設定
         が面倒である
 
-  * milter-managerを用いることによりmilterの欠点を解消するこ
-    とができる
+  * milter managerを用いることにより、milterの利点をより活か
+    し、欠点を解消することができる
 
 # == 素材
 #
@@ -280,15 +294,15 @@ Rubyインタプリタを用いることにより、milter-managerの設定を�
 # ---
 # milterはSendmailとPostfixのどちらでも使える技術ですが、MTAへ
 # のmilterの登録方法はそれぞれ異なります。その違いを吸収するの
-# がmilter-managerです。
+# がmilter managerです。
 #
-#   Sendmail ---------------- milter-manager ----------------- milter1
+#   Sendmail ---------------- milter manager ----------------- milter1
 #             Sendmail特有の                 ----------------- milter2
 # 	    mitler登録方法                 ----------------- ...
-#                                            milter-manager
+#                                            milter manager
 #                              MTA非依存 →  特有の
 #                                            milter登録方法
 #             Postfix特有の                  ----------------- ...
 # 	    mitler登録方法                 ----------------- milter2
-#   Postfix  ---------------- milter-manager ----------------- milter1
+#   Postfix  ---------------- milter manager ----------------- milter1
 # ---

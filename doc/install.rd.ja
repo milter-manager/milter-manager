@@ -1,0 +1,51 @@
+# -*- rd -*-
+
+= インストール --- milter managerのインストール方法
+
+milter managerのインストール方法について説明します。
+
+== 依存ライブラリ他
+
+milter managerが依存しているライブラリ・ソフトウェアについて
+説明します。
+
+=== 必須
+
+milter managerは以下のライブラリに依存しているため、milter
+manager のビルドには以下のライブラリが事前にインストールされ
+ている必要があります。
+
+  * GLib >= 2.12.3
+  * Ruby >= 1.8.5 （1.9系列は未対応）
+  * Ruby/GLib2 (Ruby-GNOME2) >= 0.16.0
+
+=== 任意: テスト実行
+
+milter managerの単体テストを実行するためには以下のソフトウェ
+アが必要ですが、milter managerの実行には必須ではありません。
+
+  * Cutter >= 1.0.6
+  * LCOV
+
+# === 任意: グラフ生成
+
+# FIXME
+
+#  * RRDtool
+#  * RRDtoolのRubyバインディング
+
+# === 任意: 管理用Webインターフェイス
+
+# FIXME
+
+#  * RubyGems
+#  * Rake
+#  * Ruby on Rails 2.2.2
+#  * ...
+
+== 詳細
+
+  * ((<Ubuntu|install-ubuntu.rd.ja>))
+  * ((<CentOS|install-centos.rd.ja>))
+  * ((<FreeBSD|install-freebsd.rd.ja>))
+  * ((<その他|install-etc.rd.ja>))

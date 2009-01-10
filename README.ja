@@ -1,10 +1,10 @@
 # -*- rd -*-
 
-= README --- milter-manager: より柔軟にmilterを使うためのmilter
+= README --- milter manager: より柔軟にmilterを使うためのmilter
 
 == 名前
 
-milter-manager
+milter manager
 
 == サイト
 
@@ -36,18 +36,18 @@ milter-manager
   * ライブラリ: LGPL3
     * 上記以外
 
-== milter-manager
+== milter manager
 
-milter-managerは複数のmilterを管理するmilterです。
+milter managerは複数のmilterを管理するmilterです。
 
-milter-managerを導入することにより、MTAが行っていたmilter管理
-をmilter-managerが行うことになるため、以下のような利点があり
+milter managerを導入することにより、MTAが行っていたmilter管理
+をmilter managerが行うことになるため、以下のような利点があり
 ます。
 
   * milterの登録方法がMTAに依存しなくなる
   * 迷惑メール対策を効果的に実行するようにmilterを柔軟に組み
     合わせることができる
-  * 他のmilterの設定を検出し、動的にmilter-managerの設定を追
+  * 他のmilterの設定を検出し、動的にmilter managerの設定を追
     従させることができる
 
 詳細は((<はじめに|"doc/introduction.rd.ja">))に書いてあります
@@ -61,7 +61,7 @@ milter-managerを導入することにより、MTAが行っていたmilter管理
 用できることがmilterの利点の1つですが、その設定方法までは共有
 できません。
 
-MTAとmilterの間にmilter-managerを導入することにより、MTAに依
+MTAとmilterの間にmilter managerを導入することにより、MTAに依
 存せずに同じ方法で複数のmilterを登録できます。
 
 === milterの柔軟な組み合わせ
@@ -70,26 +70,26 @@ MTAの設定では、milterは適用するか適用しないかのどちらか�
 択肢しかありません。特定の条件のみmilterを適用するということ
 ができません。
 
-milter-managerは処理の途中にいくつかチェックポイントを用意し
+milter managerは処理の途中にいくつかチェックポイントを用意し
 ています。このチェックポイントに必要な処理を組み込むことによ
 り、特定の条件のときのみmilterを適用する、ということができま
 す。
 
 === 動的な設定
 
-milter-managerはRubyインタプリタを内蔵しています。Rubyは読み
+milter managerはRubyインタプリタを内蔵しています。Rubyは読み
 やすい文法と柔軟性を兼ね備えた本物のプログラミング言語です。
 
 設定ファイルはRubyプログラムとして処理されるため、既存のMTAに
 比べてより柔軟にmilterの設定を行うことができます。例えば、シ
 ステムにインストールされているmilterを検出して、動的にmilter
-の設定を行うことができます。つまり、milter-managerの設定を行
-わなくても、milterの設定を変更するだけで、milter-manager側で
+の設定を行うことができます。つまり、milter managerの設定を行
+わなくても、milterの設定を変更するだけで、milter manager側で
 それを検出して対応できるということです。
 
 現在のところ、FreeBSD上でportsからインストールしたmilterを使っ
 ている場合においては、設定ファイルを一切変更する必要はありま
-せん。milterをインストールすれば、milter-managerが検出し、利
+せん。milterをインストールすれば、milter managerが検出し、利
 用します。
 
 設定ファイルがRubyプログラムになるため、MTAでmilterを登録する
@@ -141,7 +141,7 @@ CentOS 5.2、Ubuntu 8.04 TLSで動作することを想定しています。そ
 
   * RRDtool（付属のRubyバインディングも必要）
 
-    milter-log-toolでmilter-managerに登録されたmilterの動作
+    milter-log-toolでmilter managerに登録されたmilterの動作
     のグラフを表示する場合は必要。
 
 == 入手方法
@@ -266,7 +266,7 @@ configure時に--prefixオプションを指定していない場合は
 
 == ツール
 
-milter-managerにはいくつか便利なツールが付属されていて、bin/
+milter managerにはいくつか便利なツールが付属されていて、bin/
 以下にインストールされます。
 
   * milter-test-server: MTA側のmilterプロトコルの機能を提供

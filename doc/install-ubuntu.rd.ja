@@ -1,0 +1,74 @@
+# -*- rd -*-
+
+= Ubuntuへインストール --- Ubuntuへのmilter managerのインストール方法
+
+Ubuntu GNU/Linuxに特化したmilter managerのインストール方法に
+ついて説明します。Ubuntuに依存しない一般的なインストール情報
+は((<インストール|install.rd.ja>))を見てください。
+
+== パッケージのインストール
+
+以下のパッケージをインストールすることにより、関連するパッケー
+ジもインストールされます。
+
+  % sudo aptitude -V -r install ruby-dev libglib2-ruby1.8 librrd-ruby
+
+== ビルドとインストール
+
+~/src/以下で作業をすることとします。また、/usr/local/以下に
+インストールします。
+
+  % mkdir -p ~/src/
+  % cd ~/src/
+  % wget ...
+  % cd milter-manager-0.7.0
+  % ./configure
+  % make
+  % sudo make install
+
+== 設定
+
+まず、使用するmilterをインストールします。amavisd-new-milter
+とmilter-greylistを使用するとよいでしょう。
+
+  % sudo aptitude -V -r install amavisd-new-milter spamassassin clamav milter-greylist
+
+=== amavisd-new-milterの設定
+
+/etc/amavis/conf.d/50-userに以下を追記し、スパム判定されたメー
+ルも配信されるようにします。
+
+  $final_spam_destiny = D_PASS;
+
+amavisdを再起動します。
+
+FIXME: Subjectはいじられたくないよね。
+
+  % sudo env - /etc/init.d/amavis restart
+
+=== milter-greylistの設定
+
+/etc/milter-greylist/greylist.confを編集し、デフォルトで
+Greylistを使うようにします。
+
+変更前:
+  racl whitelist default
+
+変更後:
+  racl greylist default
+
+次に、/etc/default/milter-greylistを変更し、milter-greylist
+を有効にします。また、グループ権限でmilter-greylistとUNIXドメ
+インソケット経由でアクセスできるようにumaskも設定します。
+
+変更前:
+  ENABLED=0
+
+変更後:
+  ENABLED=1
+  umask 002
+
+milter-greylistを起動します。
+
+  % sudo env - /etc/init.d/milter-greylist start
+
