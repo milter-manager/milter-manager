@@ -1,5 +1,8 @@
 2009-01-12  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.c: use children's state
+	not server context's state.
+
 	* milter/manager/milter-manager-children.c:
 	- fix the last response handling.
 	- improve log format.

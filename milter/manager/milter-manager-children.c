@@ -599,8 +599,7 @@ remove_child_from_queue (MilterManagerChildren *children,
 
         switch (status) {
         case MILTER_STATUS_REJECT:
-            /* FIXME: children should have the current state. */
-            if (milter_server_context_get_state(context) !=
+            if (priv->current_state !=
                 MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT) {
                 expire_all_children(children);
             }
