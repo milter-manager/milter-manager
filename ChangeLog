@@ -1,5 +1,8 @@
 2009-01-12  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-command-decoder.c (check_macro_context):
+	support define macro on unknown command.
+
 	* configure.ac: Cutter 1.0.6 is required.
 
 	* data/defaults/debian.conf, data/defaults/freebsd.conf: spam

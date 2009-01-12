@@ -291,6 +291,7 @@ check_macro_context (MilterCommand macro_context, GError **error)
       case MILTER_COMMAND_END_OF_HEADER:
       case MILTER_COMMAND_BODY:
       case MILTER_COMMAND_END_OF_MESSAGE:
+      case MILTER_COMMAND_UNKNOWN:
         break;
       default:
         g_set_error(error,
