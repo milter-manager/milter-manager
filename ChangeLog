@@ -1,5 +1,8 @@
 2009-01-12  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-reply-decoder.c,
+	milter/manager/milter-manager.c: improve log format.
+
 	* test/lib/milter-manager-test-client.[ch]
 	(milter_manager_test_client_assert_nothing_output): add.
 
