@@ -116,7 +116,7 @@ dnl **************************************************************
 dnl Check for Cutter
 dnl **************************************************************
 m4_ifdef([AC_CHECK_GCUTTER], [
-AC_CHECK_GCUTTER(>= 1.0.5)
+AC_CHECK_GCUTTER(>= 1.0.6)
 ],
 [ac_cv_use_cutter="no"])
 
