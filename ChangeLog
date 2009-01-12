@@ -1,5 +1,9 @@
 2009-01-12  Kouhei Sutou  <kou@cozmixng.org>
 
+	* data/defaults/: use Remote Network condition.
+
+	* data/applicable-conditions/remote-network.conf: use local?.
+
 	* binding/ruby/lib/milter/toolkit.rb,
 	binding/ruby/test/toolkit/test-socket-address.rb: add local?.
 
