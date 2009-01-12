@@ -383,9 +383,8 @@ cb_reply_code (MilterServerContext *context,
     milter_client_context_set_reply(priv->client_context,
                                     code, extended_code, message,
                                     &error);
-    
     if (error) {
-        milter_error("%s", error->message);
+        milter_error("[leader][error][reply-code] %s", error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(leader),
                                     error);
         g_error_free(error);
@@ -435,7 +434,7 @@ cb_add_header (MilterServerContext *context,
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
     milter_client_context_add_header(priv->client_context, name, value, &error);
     if (error) {
-        milter_error("failed to add header: %s", error->message);
+        milter_error("[leader][error][add-header] %s", error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(leader), error);
         g_error_free(error);
     }
@@ -454,7 +453,7 @@ cb_insert_header (MilterServerContext *context,
     milter_client_context_insert_header(priv->client_context,
                                         index, name, value, &error);
     if (error) {
-        milter_error("failed to insert header: %s", error->message);
+        milter_error("[leader][error][insert-header] %s", error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(leader), error);
         g_error_free(error);
     }
@@ -559,13 +558,13 @@ cb_quarantine (MilterServerContext *context,
 static void
 cb_connection_failure (MilterServerContext *context, gpointer user_data)
 {
-    milter_debug(PACKAGE_STRING "could'nt handle CONNECTION-FAILURE reply yet.");
+    milter_debug("[leader][unsupported][connection-failure]");
 }
 
 static void
 cb_shutdown (MilterServerContext *context, gpointer user_data)
 {
-    milter_debug(PACKAGE_STRING "could'nt handle SHUTDOWN reply yet.");
+    milter_debug("[leader][unsupported][shutdown]");
 }
 
 static void
@@ -580,7 +579,7 @@ cb_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
 {
     MilterManagerLeader *leader = user_data;
 
-    milter_error("[leader] error: %s", error->message);
+    milter_error("[leader][error] %s", error->message);
     milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(leader),
                                 error);
 
