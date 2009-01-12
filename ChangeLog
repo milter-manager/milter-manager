@@ -1,5 +1,9 @@
 2009-01-12  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.c:
+	- fix the last response handling.
+	- improve log format.
+
 	* milter/manager/milter-manager-children.c,
 	milter/manager/milter-manager-leader.c,
 	test/manager/test-children.c: improve log format.

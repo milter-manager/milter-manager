@@ -547,9 +547,6 @@ expire_child (MilterManagerChildren *children,
     teardown_server_context_signals(MILTER_MANAGER_CHILD(context), children);
     priv->milters = g_list_remove(priv->milters, context);
     priv->quitted_milters = g_list_prepend(priv->quitted_milters, context);
-
-    if (!priv->milters)
-        milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(children));
 }
 
 static void
@@ -1381,25 +1378,27 @@ cb_finished (MilterAgent *agent, gpointer user_data)
 
     expire_child(children, context);
 
-    state_name = milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
-                                                 priv->current_state);
-    milter_debug("[children][end][%s]: %s",
-                 state_name,
-                 milter_server_context_get_name(context));
-    g_free(state_name);
-
     switch (priv->current_state) {
     case MILTER_SERVER_CONTEXT_STATE_DATA:
     case MILTER_SERVER_CONTEXT_STATE_HEADER:
     case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
     case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
     case MILTER_SERVER_CONTEXT_STATE_BODY:
-        return;
         break;
     default:
         remove_child_from_queue(children, context);
         break;
     }
+
+    state_name = milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                                                 priv->current_state);
+    milter_debug("[children][end][%s] %s",
+                 state_name,
+                 milter_server_context_get_name(context));
+    g_free(state_name);
+
+    if (!priv->milters)
+        milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(children));
 }
 
 static void
@@ -1734,9 +1733,9 @@ child_establish_connection (MilterManagerChild *child,
 
     if (!milter_server_context_establish_connection(context, &error)) {
 
-        milter_error("[children:%s] %s",
-                     milter_server_context_get_name(context),
-                     error->message);
+        milter_error("[children][error][connection] %s: %s",
+                     error->message,
+                     milter_server_context_get_name(context));
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
                                     error);
 
@@ -2492,7 +2491,9 @@ send_body_to_child (MilterManagerChildren *children, MilterServerContext *contex
     }
 
     if (error) {
-        milter_error("[children] send BODY: %s", error->message);
+        milter_error("[children][error][body][send] %s: %s",
+                     error->message,
+                     milter_server_context_get_name(context));
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children), error);
         g_error_free(error);
 
@@ -2501,7 +2502,9 @@ send_body_to_child (MilterManagerChildren *children, MilterServerContext *contex
 
     g_io_channel_seek_position(priv->body_file, 0, G_SEEK_SET, &error);
     if (error) {
-        milter_error("[children] seek body: %s", error->message);
+        milter_error("[children][error][body][seek] %s: %s",
+                     error->message,
+                     milter_server_context_get_name(context));
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children), error);
         g_error_free(error);
 
