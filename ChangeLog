@@ -1,5 +1,7 @@
 2009-01-12  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/install-freebsd.rd.ja: add.
+
 	* milter/core/milter-command-decoder.c (check_macro_context):
 	support define macro on unknown command.
 

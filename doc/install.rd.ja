@@ -46,6 +46,6 @@ milter managerの単体テストを実行するためには以下のソフトウ
 == 詳細
 
   * ((<Ubuntu|install-ubuntu.rd.ja>))
-  * ((<CentOS|install-centos.rd.ja>))
+#  * ((<CentOS|install-centos.rd.ja>))
   * ((<FreeBSD|install-freebsd.rd.ja>))
   * ((<その他|install-etc.rd.ja>))

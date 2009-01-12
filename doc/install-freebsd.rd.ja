@@ -1,0 +1,84 @@
+# -*- rd -*-
+
+= FreeBSDへインストール --- FreeBSDへのmilter managerのインストール方法
+
+FreeBSDに特化したmilter managerのインストール方法について説明
+します。FreeBSDに依存しない一般的なインストール情報は((<イン
+ストール|install.rd.ja>))を見てください。
+
+== パッケージのインストール
+
+以下のパッケージをインストールすることにより、関連するパッケー
+ジもインストールされます。
+
+  % sudo /usr/local/sbin/portupgrade -NRr ruby18-glib2
+  % sudo /usr/local/sbin/portupgrade -NRr -m 'WITH_RUBY_MODULE=true' rrdtool
+
+== ビルドとインストール
+
+~/src/以下で作業をすることとします。また、/usr/local/以下に
+インストールします。
+
+  % mkdir -p ~/src/
+  % cd ~/src/
+  % wget ...
+  % cd milter-manager-0.7.0
+  % ./configure
+  % make
+  % sudo make install
+
+== 設定
+
+まず、使用するmilterをインストールします。spamass-milterと
+clamav-milterとmilter-greylistを使用するとよいでしょう。
+
+  % sudo /usr/local/sbin/portupgrade -NRr spamass-milter milter-greylist
+  % sudo /usr/local/sbin/portupgrade -NRr -m 'WITH_MILTER=true' clamav
+
+=== spamass-milterの設定
+
+以下のような内容の/usr/local/etc/mail/spamassassin/local.cf
+を作成します。これで、スパム判定された場合のみ、その詳細をヘッ
+ダに追加するようになります。
+
+  remove_header ham Status
+  remove_header ham Level
+
+spamdを有効にするため、/etc/rc.confに以下を追加します。
+
+  spamd_enable=YES
+
+spamdを起動します。
+
+  % sudo /usr/local/etc/rc.d/sa-spamd start
+
+FIXME: spamass-milterのこと
+
+=== milter-greylistの設定
+
+FIXME: 全部
+
+/etc/milter-greylist/greylist.confを編集し、デフォルトで
+Greylistを使うようにします。
+
+変更前:
+  racl whitelist default
+
+変更後:
+  racl greylist default
+
+次に、/etc/default/milter-greylistを変更し、milter-greylist
+を有効にします。また、グループ権限でmilter-greylistとUNIXドメ
+インソケット経由でアクセスできるようにumaskも設定します。
+
+変更前:
+  ENABLED=0
+
+変更後:
+  ENABLED=1
+  umask 002
+
+milter-greylistを起動します。
+
+  % sudo env - /etc/init.d/milter-greylist start
+
