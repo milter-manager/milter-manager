@@ -1,5 +1,14 @@
 2009-01-12  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/lib/milter-manager-test-client.[ch]
+	(milter_manager_test_client_assert_nothing_output): add.
+
+	* milter/manager/milter-manager-children.c: send quit to
+	a milter that replied end-of-message immediately.
+	* test/manager/test-leader.c,
+	test/fixtures/leader/abort-on-end-of-message.txt: follow the above
+	change.
+
 	* milter/manager/milter-manager-children.c: use children's state
 	not server context's state.
 

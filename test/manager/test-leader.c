@@ -434,6 +434,11 @@ assert_have_response_helper (const gchar *name)
             client, actual_getter),                     \
         wait_reply_from_client(client, actual_getter))
 
+#define assert_nothing_output(client)                                   \
+    cut_trace_with_info_expression(                                     \
+        milter_manager_test_client_assert_nothing_output(client),       \
+        assert_nothing_output(client))
+
 
 #define wait_finished()                    \
     cut_trace_with_info_expression(        \
@@ -602,11 +607,9 @@ static void
 assert_response_common (MilterManagerTestScenario *scenario, const gchar *group)
 {
     MilterManagerTestClientGetNReceived get_n_received;
-    guint n_received, actual_n_received;
     const gchar *response = NULL;
     MilterStatus status;
 
-    n_received = get_integer(scenario, group, "n_received");
     if (g_str_equal(group, "abort")) {
         const GList *node;
         for (node = started_clients; node; node = g_list_next(node)) {
@@ -617,7 +620,7 @@ assert_response_common (MilterManagerTestScenario *scenario, const gchar *group)
 
             response = get_string_with_sub_key(scenario, group, "response", name);
             if (g_str_equal(response, "none")) {
-                /* FIXME check somthing! */
+                assert_nothing_output(client);
             } else {
                 get_n_received = response_to_get_n_received(response);
                 wait_reply_from_client(client, get_n_received);
@@ -630,7 +633,8 @@ assert_response_common (MilterManagerTestScenario *scenario, const gchar *group)
 
     if (g_str_equal(response, "quit")) {
         wait_finished();
-    } else if (g_str_equal(response, "abort")) {
+    } else if (g_str_equal(response, "abort") ||
+               g_str_equal(response, "none")) {
         /* Do nothing */
     } else {
         const gchar *response_signal_name;
@@ -639,11 +643,14 @@ assert_response_common (MilterManagerTestScenario *scenario, const gchar *group)
         cut_trace(assert_have_response_helper(response_signal_name));
     }
 
-    if (!g_str_equal(response, "quit")) {
+    if (!g_str_equal(response, "quit") && !g_str_equal(response, "none")) {
+        guint n_received, actual_n_received;
+
         get_n_received = response_to_get_n_received(response);
         cut_assert_not_null(get_n_received,
                             "response: <%s>(%s)", response, group);
 
+        n_received = get_integer(scenario, group, "n_received");
         if (n_received >= g_list_length((GList *)started_clients))
             milter_manager_test_clients_wait_reply(started_clients,
                                                    get_n_received);

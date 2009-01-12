@@ -69,6 +69,8 @@ struct _MilterManagerTestClientPrivate
     gchar *body_chunk;
     gchar *end_of_message_chunk;
     gchar *unknown_command;
+
+    gboolean have_output;
 };
 
 G_DEFINE_TYPE(MilterManagerTestClient, milter_manager_test_client, G_TYPE_OBJECT)
@@ -116,6 +118,8 @@ milter_manager_test_client_init (MilterManagerTestClient *test_client)
     priv->body_chunk = NULL;
     priv->end_of_message_chunk = NULL;
     priv->unknown_command = NULL;
+
+    priv->have_output = TRUE;
 
     milter_manager_test_client_clear_data(test_client);
 }
@@ -387,6 +391,7 @@ cb_output_received (GCutEgg *egg, const gchar *chunk, gsize size,
         return;
     }
 
+    priv->have_output = TRUE;
     responses = split_response(priv->output_received->str,
                                priv->output_received->len);
     for (node = g_list_first(responses); node; node = g_list_next(node)) {
@@ -959,6 +964,26 @@ milter_manager_test_clients_wait_reply (const GList *clients,
                           milter_manager_test_clients_collect_n_received(clients,
                                                                          getter));
 }
+
+void
+milter_manager_test_client_assert_nothing_output (MilterManagerTestClient *client)
+{
+    MilterManagerTestClientPrivate *priv;
+    gboolean timeout_waiting = TRUE;
+    guint timeout_waiting_id;
+
+    priv = MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client);
+    priv->have_output = FALSE;
+    timeout_waiting_id = g_timeout_add(100, cb_timeout_waiting,
+                                       &timeout_waiting);
+    while (timeout_waiting && !priv->have_output)
+        g_main_context_iteration(NULL, TRUE);
+    g_source_remove(timeout_waiting_id);
+
+    cut_assert_false(timeout_waiting);
+    cut_assert_false(priv->have_output);
+}
+
 
 MilterManagerTestClient *
 milter_manager_test_clients_find (const GList *clients, const gchar *name)

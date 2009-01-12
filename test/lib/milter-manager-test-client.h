@@ -130,6 +130,8 @@ void                     milter_manager_test_client_clear_data
 void                     milter_manager_test_client_wait_reply
                                               (MilterManagerTestClient *client,
                                                MilterManagerTestClientGetNReceived getter);
+void                     milter_manager_test_client_assert_nothing_output
+                                              (MilterManagerTestClient *client);
 
 
 MilterManagerTestClient *milter_manager_test_clients_find
