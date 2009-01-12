@@ -1949,7 +1949,7 @@ milter_client_context_add_header (MilterClientContext *context,
                          error))
         return FALSE;
 
-    milter_debug("sending ADD HEADER: <%s>=<%s>", name, value);
+    milter_debug("[client][send][add-header] <%s>=<%s>", name, value);
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     milter_reply_encoder_encode_add_header(MILTER_REPLY_ENCODER(encoder),
                                            &packet, &packet_size,
@@ -1991,7 +1991,8 @@ milter_client_context_insert_header (MilterClientContext *context,
                          error))
         return FALSE;
 
-    milter_debug("sending INSERT_HEADER: [%u] <%s>=<%s>", index, name, value);
+    milter_debug("[client][send][insert-header] [%u]<%s>=<%s>",
+                 index, name, value);
 
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     milter_reply_encoder_encode_insert_header(MILTER_REPLY_ENCODER(encoder),
@@ -2009,7 +2010,8 @@ milter_client_context_change_header (MilterClientContext *context,
     gsize packet_size;
     MilterEncoder *encoder;
 
-    milter_debug("sending CHANGE_HEADER: <%s>[%u]=<%s>", name, index, value);
+    milter_debug("[client][send][change-header] <%s>[%u]=<%s>",
+                 name, index, value);
 
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     milter_reply_encoder_encode_change_header(MILTER_REPLY_ENCODER(encoder),
@@ -2026,7 +2028,7 @@ milter_client_context_delete_header (MilterClientContext *context,
     gsize packet_size;
     MilterEncoder *encoder;
 
-    milter_debug("sending DELETE_HEADER(CHANGE_HEADER): <%s>[%u]", name, index);
+    milter_debug("[client][send][delete-header] <%s>[%u]", name, index);
 
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     milter_reply_encoder_encode_delete_header(MILTER_REPLY_ENCODER(encoder),
@@ -2044,7 +2046,9 @@ milter_client_context_change_from (MilterClientContext *context,
     gchar *packet = NULL;
     gsize packet_size;
 
-    milter_debug("sending CHANGE_FROM: <%s>=<%s>", from, parameters);
+    milter_debug("[client][send][change-from] <%s>:<%s>",
+                 from,
+                 parameters ? parameters : "NULL");
 
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     milter_reply_encoder_encode_change_from(MILTER_REPLY_ENCODER(encoder),
@@ -2062,7 +2066,9 @@ milter_client_context_add_recipient (MilterClientContext *context,
     gchar *packet = NULL;
     gsize packet_size;
 
-    milter_debug("sending ADD_RECIPIENT: <%s>=<%s>", recipient, parameters);
+    milter_debug("[client][send][add-recipient] <%s>:<%s>",
+                 recipient,
+                 parameters ? parameters : "NULL");
 
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     milter_reply_encoder_encode_add_recipient(MILTER_REPLY_ENCODER(encoder),
@@ -2079,7 +2085,7 @@ milter_client_context_delete_recipient (MilterClientContext *context,
     gchar *packet = NULL;
     gsize packet_size;
 
-    milter_debug("sending DELETE_RECIPIENT: <%s>", recipient);
+    milter_debug("[client][send][delete-recipient] <%s>", recipient);
 
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     milter_reply_encoder_encode_delete_recipient(MILTER_REPLY_ENCODER(encoder),
@@ -2096,7 +2102,8 @@ milter_client_context_replace_body (MilterClientContext *context,
     MilterEncoder *encoder;
     MilterReplyEncoder *reply_encoder;
 
-    milter_debug("sending REPLACE_BODY: body_size = %" G_GSIZE_FORMAT, body_size);
+    milter_debug("[client][send][replace-body] <%" G_GSIZE_FORMAT ">",
+                 body_size);
 
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     reply_encoder = MILTER_REPLY_ENCODER(encoder);
@@ -2128,7 +2135,7 @@ milter_client_context_progress (MilterClientContext *context)
     gchar *packet = NULL;
     gsize packet_size;
 
-    milter_debug("sending PROGRESS");
+    milter_debug("[client][send][progress]");
 
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     milter_reply_encoder_encode_progress(MILTER_REPLY_ENCODER(encoder),
@@ -2145,7 +2152,7 @@ milter_client_context_quarantine (MilterClientContext *context,
     gchar *packet = NULL;
     gsize packet_size;
 
-    milter_debug("sending QUARANTINE: <%s>", reason);
+    milter_debug("[client][reply][quarantine] <%s>", reason);
 
     /* quarantine allows only on end-of-message. */
     milter_statistics("[reply][end-of-message][quarantine]");
@@ -2307,6 +2314,7 @@ negotiate_response (MilterClientContext *context,
     gsize packet_size;
     MilterEncoder *encoder;
     MilterClientContextPrivate *priv;
+    gchar *status_name;
 
     if (status == MILTER_STATUS_DEFAULT)
         status = MILTER_STATUS_ALL_OPTIONS;
@@ -2323,7 +2331,7 @@ negotiate_response (MilterClientContext *context,
         gchar *inspected_option;
 
         inspected_option = milter_utils_inspect_object(G_OBJECT(option));
-        milter_debug("sending NEGOTIATE REPLY: %s", inspected_option);
+        milter_debug("[client][reply][negotiate] %s", inspected_option);
         g_free(inspected_option);
 
         encoder = milter_agent_get_encoder(MILTER_AGENT(context));
@@ -2344,15 +2352,17 @@ negotiate_response (MilterClientContext *context,
         /* FIXME: error */
         break;
     }
-    milter_statistics("[reply][negotiate][%s]",
-                       milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS,
-                                                       status));
+
+    status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
+    milter_statistics("[reply][negotiate][%s]", status_name);
+    g_free(status_name);
 }
 
 static void
 connect_response (MilterClientContext *context, MilterStatus status)
 {
     MilterClientContextPrivate *priv;
+    gchar *status_name;
 
     if (status == MILTER_STATUS_DEFAULT)
         status = MILTER_STATUS_CONTINUE;
@@ -2362,14 +2372,16 @@ connect_response (MilterClientContext *context, MilterStatus status)
     priv->state = MILTER_CLIENT_CONTEXT_STATE_CONNECT_REPLIED;
 
     reply(context, status);
-    milter_statistics("[reply][connect][%s]",
-                       milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status));
+    status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
+    milter_statistics("[reply][connect][%s]", status_name);
+    g_free(status_name);
 }
 
 static void
 helo_response (MilterClientContext *context, MilterStatus status)
 {
     MilterClientContextPrivate *priv;
+    gchar *status_name;
 
     if (status == MILTER_STATUS_DEFAULT)
         status = MILTER_STATUS_CONTINUE;
@@ -2379,14 +2391,16 @@ helo_response (MilterClientContext *context, MilterStatus status)
     priv->state = MILTER_CLIENT_CONTEXT_STATE_HELO_REPLIED;
 
     reply(context, status);
-    milter_statistics("[reply][helo][%s]",
-                       milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status));
+    status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
+    milter_statistics("[reply][helo][%s]", status_name);
+    g_free(status_name);
 }
 
 static void
 envelope_from_response (MilterClientContext *context, MilterStatus status)
 {
     MilterClientContextPrivate *priv;
+    gchar *status_name;
 
     if (status == MILTER_STATUS_DEFAULT)
         status = MILTER_STATUS_CONTINUE;
@@ -2396,14 +2410,17 @@ envelope_from_response (MilterClientContext *context, MilterStatus status)
     priv->state = MILTER_CLIENT_CONTEXT_STATE_ENVELOPE_FROM_REPLIED;
 
     reply(context, status);
-    milter_statistics("[reply][evenlope-from][%s]",
-                       milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status));
+
+    status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
+    milter_statistics("[reply][evenlope-from][%s]", status_name);
+    g_free(status_name);
 }
 
 static void
 envelope_recipient_response (MilterClientContext *context, MilterStatus status)
 {
     MilterClientContextPrivate *priv;
+    gchar *status_name;
 
     if (status == MILTER_STATUS_DEFAULT)
         status = MILTER_STATUS_CONTINUE;
@@ -2413,14 +2430,16 @@ envelope_recipient_response (MilterClientContext *context, MilterStatus status)
     priv->state = MILTER_CLIENT_CONTEXT_STATE_ENVELOPE_RECIPIENT_REPLIED;
 
     reply(context, status);
-    milter_statistics("[reply][evenlope-recipient][%s]",
-                       milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status));
+    status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
+    milter_statistics("[reply][evenlope-recipient][%s]", status_name);
+    g_free(status_name);
 }
 
 static void
 unknown_response (MilterClientContext *context, MilterStatus status)
 {
     MilterClientContextPrivate *priv;
+    gchar *status_name;
 
     if (status == MILTER_STATUS_DEFAULT)
         status = MILTER_STATUS_CONTINUE;
@@ -2430,14 +2449,16 @@ unknown_response (MilterClientContext *context, MilterStatus status)
     priv->state = MILTER_CLIENT_CONTEXT_STATE_UNKNOWN_REPLIED;
 
     reply(context, status);
-    milter_statistics("[reply][unknown][%s]",
-                       milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status));
+    status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
+    milter_statistics("[reply][unknown][%s]", status_name);
+    g_free(status_name);
 }
 
 static void
 data_response (MilterClientContext *context, MilterStatus status)
 {
     MilterClientContextPrivate *priv;
+    gchar *status_name;
 
     if (status == MILTER_STATUS_DEFAULT)
         status = MILTER_STATUS_CONTINUE;
@@ -2447,14 +2468,16 @@ data_response (MilterClientContext *context, MilterStatus status)
     priv->state = MILTER_CLIENT_CONTEXT_STATE_DATA_REPLIED;
 
     reply(context, status);
-    milter_statistics("[reply][data][%s]",
-                       milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status));
+    status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
+    milter_statistics("[reply][data][%s]", status_name);
+    g_free(status_name);
 }
 
 static void
 header_response (MilterClientContext *context, MilterStatus status)
 {
     MilterClientContextPrivate *priv;
+    gchar *status_name;
 
     if (status == MILTER_STATUS_DEFAULT)
         status = MILTER_STATUS_CONTINUE;
@@ -2464,14 +2487,16 @@ header_response (MilterClientContext *context, MilterStatus status)
     priv->state = MILTER_CLIENT_CONTEXT_STATE_HEADER_REPLIED;
 
     reply(context, status);
-    milter_statistics("[reply][header][%s]",
-                       milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status));
+    status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
+    milter_statistics("[reply][header][%s]", status_name);
+    g_free(status_name);
 }
 
 static void
 end_of_header_response (MilterClientContext *context, MilterStatus status)
 {
     MilterClientContextPrivate *priv;
+    gchar *status_name;
 
     if (status == MILTER_STATUS_DEFAULT)
         status = MILTER_STATUS_CONTINUE;
@@ -2481,14 +2506,16 @@ end_of_header_response (MilterClientContext *context, MilterStatus status)
     priv->state = MILTER_CLIENT_CONTEXT_STATE_END_OF_HEADER_REPLIED;
 
     reply(context, status);
-    milter_statistics("[reply][end-of-header][%s]",
-                       milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status));
+    status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
+    milter_statistics("[reply][end-of-header][%s]", status_name);
+    g_free(status_name);
 }
 
 static void
 body_response (MilterClientContext *context, MilterStatus status)
 {
     MilterClientContextPrivate *priv;
+    gchar *status_name;
 
     if (status == MILTER_STATUS_DEFAULT)
         status = MILTER_STATUS_CONTINUE;
@@ -2498,14 +2525,16 @@ body_response (MilterClientContext *context, MilterStatus status)
     priv->state = MILTER_CLIENT_CONTEXT_STATE_BODY_REPLIED;
 
     reply(context, status);
-    milter_statistics("[reply][body][%s]",
-                       milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status));
+    status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
+    milter_statistics("[reply][body][%s]", status_name);
+    g_free(status_name);
 }
 
 static void
 end_of_message_response (MilterClientContext *context, MilterStatus status)
 {
     MilterClientContextPrivate *priv;
+    gchar *status_name;
 
     if (status == MILTER_STATUS_DEFAULT)
         status = MILTER_STATUS_CONTINUE;
@@ -2515,8 +2544,9 @@ end_of_message_response (MilterClientContext *context, MilterStatus status)
     priv->state = MILTER_CLIENT_CONTEXT_STATE_END_OF_MESSAGE_REPLIED;
 
     reply(context, status);
-    milter_statistics("[reply][end-of-message][%s]",
-                       milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status));
+    status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
+    milter_statistics("[reply][end-of-message][%s]", status_name);
+    g_free(status_name);
 }
 
 static void

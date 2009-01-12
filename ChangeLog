@@ -1,5 +1,7 @@
 2009-01-12  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client-context.c: fix memory leaks.
+
 	* milter/core/milter-reply-decoder.c,
 	milter/manager/milter-manager.c: improve log format.
 
