@@ -1,5 +1,8 @@
 2009-01-12  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/toolkit.rb,
+	binding/ruby/test/toolkit/test-socket-address.rb: add local?.
+
 	* tool/milter-log-tool, tool/ruby/milter-rrd.rb: follow the below
 	changes.
 
