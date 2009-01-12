@@ -1,5 +1,8 @@
 2009-01-12  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-log-tool, tool/ruby/milter-rrd.rb: follow the below
+	changes.
+
 	* milter/server/milter-server-context.[ch]:
 	- check-XXX -> stop-on-XXX.
 	- passed -> stopped.

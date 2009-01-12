@@ -35,7 +35,7 @@ class MilterLogTool
     @update_db = true
     @sessions = nil
     @mail_status = nil
-    @pass_child = nil
+    @stops = nil
     @output_graphs = []
   end
 
@@ -64,7 +64,7 @@ class MilterLogTool
   def update
     return unless @update_db
 
-    listeners = [sessions, mail_status, pass_child]
+    listeners = [sessions, mail_status, stops]
     @log.each_line do |line|
       case line
       when /\A(\w{3} \d+ \d+:\d+:\d+) [\w\-]+ ([\w\-]+)\[\d+\]: /
@@ -92,7 +92,7 @@ class MilterLogTool
 
   def output_graph(time_span, label=nil, options={})
     output_graphs = []
-    [sessions, mail_status, pass_child].each do |generator|
+    [sessions, mail_status, stops].each do |generator|
       file_name = generator.output_graph(Milter::RRD::TimeSpan.new(time_span),
                                          options)
       output_graphs << file_name if file_name
@@ -137,8 +137,8 @@ class MilterLogTool
     @mail_status ||= Milter::RRD::MailStatus.new(@rrd_directory, now)
   end
 
-  def pass_child
-    @pass_child ||= Milter::RRD::PassChild.new(@rrd_directory, now)
+  def stops
+    @stops ||= Milter::RRD::Stops.new(@rrd_directory, now)
   end
 
   def html_header

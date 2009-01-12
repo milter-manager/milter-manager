@@ -36,7 +36,7 @@ module Milter
     end
   end
 
-  class PassChild
+  class Stop
     attr_accessor :state, :name, :time
     def initialize(state, name, time)
       @state = state
@@ -520,10 +520,10 @@ module Milter
       end
     end
 
-    class PassChild < Graph
+    class Stops < Graph
       def initialize(rrd_directory, update_time)
         super(rrd_directory, update_time)
-        @title = 'Pass child milters'
+        @title = 'Stopped milters'
         @vertical_label = "milters"
         @items = ["connect",
                   "helo",
@@ -535,24 +535,24 @@ module Milter
       end
 
       def rrd_file
-        build_path("milter-log.pass.rrd")
+        build_path("milter-log.stop.rrd")
       end
 
       def graph_name(tag)
-        build_path("pass.#{tag}.png")
+        build_path("stop.#{tag}.png")
       end
 
       def feed(time_stamp, content)
-        if /\A\[pass\]\[(.+)\]: (.+)\z/ =~ content
+        if /\A\[stop\]\[(.+)\]: (.+)\z/ =~ content
           state = $1
           name = $2
-          @data << Milter::PassChild.new(state, name, time_stamp)
+          @data << Milter::Stop.new(state, name, time_stamp)
         end
       end
 
       def collect_data(time_span, last_update_time)
-        pass_counting = count(time_span, last_update_time)
-        Data.new(pass_counting)
+        stop_counting = count(time_span, last_update_time)
+        Data.new(stop_counting)
       end
 
       def output_graph(time_span, options={})
