@@ -1,5 +1,9 @@
 2009-01-12  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.c,
+	milter/server/milter-server-context.c,
+	test/server/test-server-context-signals.c: improve log format.
+
 	* data/defaults/debian.conf: add missing dkim-filter detection.
 
 	* data/defaults/: use Remote Network condition.

@@ -1381,11 +1381,11 @@ cb_finished (MilterAgent *agent, gpointer user_data)
 
     expire_child(children, context);
 
-    state_name = milter_utils_get_enum_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
-                                            priv->current_state);
-    milter_debug("[children:%s] exits on %s.",
-                 milter_server_context_get_name(context),
-                 state_name);
+    state_name = milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                                                 priv->current_state);
+    milter_debug("[children][end][%s]: %s",
+                 state_name,
+                 milter_server_context_get_name(context));
     g_free(state_name);
 
     switch (priv->current_state) {
