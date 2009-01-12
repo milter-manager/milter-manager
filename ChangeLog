@@ -1,5 +1,9 @@
 2009-01-12  Kouhei Sutou  <kou@cozmixng.org>
 
+	* data/defaults/debian.conf, data/defaults/freebsd.conf: spam
+	filter is enabled only for remote network but virus filter is
+	always enabled.
+
 	* milter/client/milter-client-context.c: fix memory leaks.
 
 	* milter/core/milter-reply-decoder.c,
