@@ -43,8 +43,8 @@ void test_negotiate (void);
 void test_no_negotiation (void);
 void test_connect (void);
 void test_connect_with_macro (void);
-void test_connect_pass (void);
-void test_connect_half_pass (void);
+void test_connect_stop (void);
+void test_connect_half_stop (void);
 void test_helo (void);
 void test_envelope_from (void);
 void test_envelope_recipient (void);
@@ -1040,8 +1040,8 @@ data_scenario (void)
                  g_strdup("negotiate-retry-fail.txt"), g_free,
                  "connect", g_strdup("connect.txt"), g_free,
                  /* WRITEME */
-                 /* "connect - pass", g_strdup("connect-pass.txt"), g_free */
-                 /* "connect - half pass", g_strdup("connect-half-pass.txt"),
+                 /* "connect - stop", g_strdup("connect-stop.txt"), g_free */
+                 /* "connect - half stop", g_strdup("connect-half-stop.txt"),
                     g_free */
                  "helo", g_strdup("helo.txt"), g_free,
                  "envelope-from", g_strdup("envelope-from.txt"), g_free,
@@ -1171,7 +1171,7 @@ test_connect (void)
 }
 
 static gboolean
-cb_check_connect_pass (MilterServerContext *context,
+cb_stop_on_connect (MilterServerContext *context,
                        const gchar *host_name,
                        const struct sockaddr *address,
                        socklen_t address_length,
@@ -1181,20 +1181,20 @@ cb_check_connect_pass (MilterServerContext *context,
 }
 
 static void
-connect_pass_check_signals (gpointer data, gpointer user_data)
+connect_stop_signals (gpointer data, gpointer user_data)
 {
     MilterManagerChild *child = data;
 
 #define CONNECT(name)                                                   \
-    g_signal_connect(child, #name, G_CALLBACK(cb_ ## name ## _pass), NULL)
+    g_signal_connect(child, #name, G_CALLBACK(cb_ ## name), NULL)
 
-    CONNECT(check_connect);
+    CONNECT(stop_on_connect);
 
 #undef CONNECT
 }
 
 void
-test_connect_pass (void)
+test_connect_stop (void)
 {
     struct sockaddr_in address;
     const gchar host_name[] = "mx.local.net";
@@ -1202,7 +1202,7 @@ test_connect_pass (void)
 
     cut_trace(test_negotiate());
 
-    milter_manager_children_foreach(children, connect_pass_check_signals, NULL);
+    milter_manager_children_foreach(children, connect_stop_signals, NULL);
 
     address.sin_family = AF_INET;
     address.sin_port = g_htons(50443);
@@ -1216,7 +1216,7 @@ test_connect_pass (void)
 }
 
 void
-test_connect_half_pass (void)
+test_connect_half_stop (void)
 {
     GList *child_list = NULL;
     struct sockaddr_in address;
@@ -1226,7 +1226,7 @@ test_connect_half_pass (void)
     cut_trace(test_negotiate());
 
     child_list = milter_manager_children_get_children(children);
-    connect_pass_check_signals(child_list->data, NULL);
+    connect_stop_signals(child_list->data, NULL);
 
     address.sin_family = AF_INET;
     address.sin_port = g_htons(50443);

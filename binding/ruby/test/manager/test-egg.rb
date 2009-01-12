@@ -67,7 +67,7 @@ class TestEgg < Test::Unit::TestCase
 
   def test_end_of_message_timeout
     end_of_message_timeout = 29
-    assert_equal(200, @egg.end_of_message_timeout)
+    assert_equal(300, @egg.end_of_message_timeout)
     @egg.end_of_message_timeout = end_of_message_timeout
     assert_equal(end_of_message_timeout, @egg.end_of_message_timeout)
   end

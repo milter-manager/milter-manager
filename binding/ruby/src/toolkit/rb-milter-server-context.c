@@ -152,7 +152,7 @@ context_end_of_message (int argc, VALUE *argv, VALUE self)
 }
 
 static VALUE
-check_body_signal_convert (guint num, const GValue *values)
+stop_body_signal_convert (guint num, const GValue *values)
 {
     return rb_ary_new3(2,
 		       GVAL2RVAL(&values[0]),
@@ -166,7 +166,7 @@ check_body_signal_convert (guint num, const GValue *values)
 }
 
 static VALUE
-check_end_of_message_signal_convert (guint num, const GValue *values)
+stop_end_of_message_signal_convert (guint num, const GValue *values)
 {
     VALUE rb_chunk = Qnil;
     const gchar *chunk;
@@ -213,12 +213,12 @@ Init_milter_server_context (void)
     rb_define_method(rb_cMilterServerContext, "end_of_message",
 		     context_end_of_message, -1);
 
-    G_DEF_SIGNAL_FUNC(rb_cMilterServerContext, "check-connect",
+    G_DEF_SIGNAL_FUNC(rb_cMilterServerContext, "stop-on-connect",
 		      rb_milter__connect_signal_convert);
-    G_DEF_SIGNAL_FUNC(rb_cMilterServerContext, "check-body",
-		      check_body_signal_convert);
-    G_DEF_SIGNAL_FUNC(rb_cMilterServerContext, "check-end-of-message",
-		      check_end_of_message_signal_convert);
+    G_DEF_SIGNAL_FUNC(rb_cMilterServerContext, "stop-on-body",
+		      stop_body_signal_convert);
+    G_DEF_SIGNAL_FUNC(rb_cMilterServerContext, "stop-on-end-of-message",
+		      stop_end_of_message_signal_convert);
 
     G_DEF_SETTERS(rb_cMilterServerContext);
 }

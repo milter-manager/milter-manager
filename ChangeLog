@@ -1,3 +1,14 @@
+2009-01-12  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/server/milter-server-context.[ch]:
+	- check-XXX -> stop-on-XXX.
+	- passed -> stopped.
+	* milter/manager/milter-manager-children.c,
+	test/manager/, test/server/, data/applicable-conditions/,
+	binding/ruby/lib/milter/manager.rb,
+	binding/ruby/src/toolkit/rb-milter-server-context.c,
+	binding/ruby/test/: follow the above changes.
+
 2009-01-11  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/server/milter-server-context.c (pass_state): improve log format.

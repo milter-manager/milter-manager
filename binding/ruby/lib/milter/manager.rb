@@ -612,37 +612,37 @@ module Milter::Manager
       def initialize(name, loader)
         @condition = Milter::Manager::ApplicableCondition.new(name)
         @loader = loader
-        @connect_checkers = []
-        @envelope_from_checkers = []
-        @envelope_recipient_checkers = []
-        @header_checkers = []
+        @connect_stoppers = []
+        @envelope_from_stoppers = []
+        @envelope_recipient_stoppers = []
+        @header_stoppers = []
 
         exist_condition = @loader.configuration.find_applicable_condition(name)
         @condition.merge(exist_condition) if exist_condition
       end
 
-      def define_connect_checker(&block)
-        @connect_checkers << block
+      def define_connect_stopper(&block)
+        @connect_stoppers << block
       end
 
-      def define_envelope_from_checker(&block)
-        @envelope_from_checkers << block
+      def define_envelope_from_stopper(&block)
+        @envelope_from_stoppers << block
       end
 
-      def define_envelope_recipient_checker(&block)
-        @envelope_recipient_checkers << block
+      def define_envelope_recipient_stopper(&block)
+        @envelope_recipient_stoppers << block
       end
 
-      def define_header_checker(&block)
-        @header_checkers << block
+      def define_header_stopper(&block)
+        @header_stoppers << block
       end
 
-      def have_checker?
-        [@connect_checkers,
-         @envelope_from_checkers,
-         @envelope_recipient_checkers,
-         @header_checkers].any? do |checkers|
-          not checkers.empty?
+      def have_stopper?
+        [@connect_stoppers,
+         @envelope_from_stoppers,
+         @envelope_recipient_stoppers,
+         @header_stoppers].any? do |stoppers|
+          not stoppers.empty?
         end
       end
 
@@ -652,43 +652,43 @@ module Milter::Manager
 
       def apply
         @loader.configuration.remove_applicable_condition(@condition.name)
-        setup_checker
+        setup_stopper
         @loader.configuration.add_applicable_condition(@condition)
       end
 
       private
-      def setup_checker
-        return unless have_checker?
+      def setup_stopper
+        return unless have_stopper?
 
         @condition.signal_connect("attach-to") do |_, child|
-          unless @connect_checkers.empty?
-            child.signal_connect("check-connect") do |_child, host, address|
-              @connect_checkers.any? do |checker|
-                checker.call(_child, host, address)
+          unless @connect_stoppers.empty?
+            child.signal_connect("stop-on-connect") do |_child, host, address|
+              @connect_stoppers.any? do |stopper|
+                stopper.call(_child, host, address)
               end
             end
           end
 
-          unless @envelope_from_checkers.empty?
-            child.signal_connect("check-envelope-from") do |_child, from|
-              @envelope_from_checkers.any? do |checker|
-                checker.call(_child, from)
+          unless @envelope_from_stoppers.empty?
+            child.signal_connect("stop-on-envelope-from") do |_child, from|
+              @envelope_from_stoppers.any? do |stopper|
+                stopper.call(_child, from)
               end
             end
           end
 
-          unless @envelope_recipient_checkers.empty?
-            child.signal_connect("check-envelope-recipient") do |_child, recipient|
-              @envelope_recipient_checkers.any? do |checker|
-                checker.call(_child, recipient)
+          unless @envelope_recipient_stoppers.empty?
+            child.signal_connect("stop-on-envelope-recipient") do |_child, recipient|
+              @envelope_recipient_stoppers.any? do |stopper|
+                stopper.call(_child, recipient)
               end
             end
           end
 
-          unless @header_checkers.empty?
-            child.signal_connect("check-header") do |_child, name, value|
-              @header_checkers.any? do |checker|
-                checker.call(_child, name, value)
+          unless @header_stoppers.empty?
+            child.signal_connect("stop-on-header") do |_child, name, value|
+              @header_stoppers.any? do |stopper|
+                stopper.call(_child, name, value)
               end
             end
           end

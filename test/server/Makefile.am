@@ -3,7 +3,7 @@ noinst_LTLIBRARIES =				\
 	test-server-context.la			\
 	test-server-context-command.la		\
 	test-server-context-signals.la		\
-	test-server-context-check-signals.la
+	test-server-context-stop-signals.la
 endif
 
 INCLUDES =				\
@@ -29,4 +29,4 @@ LIBS =								\
 test_server_context_la_SOURCES = test-server-context.c
 test_server_context_command_la_SOURCES = test-server-context-command.c
 test_server_context_signals_la_SOURCES = test-server-context-signals.c
-test_server_context_check_signals_la_SOURCES = test-server-context-check-signals.c
+test_server_context_stop_signals_la_SOURCES = test-server-context-stop-signals.c

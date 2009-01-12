@@ -83,30 +83,31 @@ struct _MilterServerContextClass
 {
     MilterProtocolAgentClass parent_class;
 
-    gboolean (*check_connect)      (MilterServerContext *context,
+    gboolean (*stop_on_connect)    (MilterServerContext *context,
                                     const gchar *host_name,
                                     const struct sockaddr *address,
                                     socklen_t address_length);
-    gboolean (*check_helo)         (MilterServerContext *context,
+    gboolean (*stop_on_helo)       (MilterServerContext *context,
                                     const gchar *fqdn);
-    gboolean (*check_envelope_from)(MilterServerContext *context,
+    gboolean (*stop_on_envelope_from)
+                                   (MilterServerContext *context,
                                     const gchar *from);
-    gboolean (*check_envelope_recipient)
+    gboolean (*stop_on_envelope_recipient)
                                    (MilterServerContext *context,
                                     const gchar *to);
-    gboolean (*check_header)       (MilterServerContext *context,
+    gboolean (*stop_on_header)     (MilterServerContext *context,
                                     const gchar *name,
                                     const gchar *value);
-    gboolean (*check_body)         (MilterServerContext *context,
+    gboolean (*stop_on_body)       (MilterServerContext *context,
                                     const gchar *chunk,
                                     gsize size);
-    gboolean (*check_end_of_message)
+    gboolean (*stop_on_end_of_message)
                                    (MilterServerContext *context,
                                     const gchar *chunk,
                                     gsize size);
 
     void (*ready)               (MilterServerContext *context);
-    void (*passed)              (MilterServerContext *context);
+    void (*stopped)             (MilterServerContext *context);
 
     void (*connection_timeout)  (MilterServerContext *context);
     void (*writing_timeout)     (MilterServerContext *context);

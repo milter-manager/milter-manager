@@ -37,16 +37,16 @@
 
 enum
 {
-    CHECK_CONNECT,
-    CHECK_HELO,
-    CHECK_ENVELOPE_FROM,
-    CHECK_ENVELOPE_RECIPIENT,
-    CHECK_HEADER,
-    CHECK_BODY,
-    CHECK_END_OF_MESSAGE,
+    STOP_ON_CONNECT,
+    STOP_ON_HELO,
+    STOP_ON_ENVELOPE_FROM,
+    STOP_ON_ENVELOPE_RECIPIENT,
+    STOP_ON_HEADER,
+    STOP_ON_BODY,
+    STOP_ON_END_OF_MESSAGE,
 
     READY,
-    PASSED,
+    STOPPED,
 
     CONNECTION_TIMEOUT,
     WRITING_TIMEOUT,
@@ -58,7 +58,7 @@ enum
 
 static gint signals[LAST_SIGNAL] = {0};
 
-static gboolean    check_accumulator  (GSignalInvocationHint *hint,
+static gboolean    stop_on_accumulator(GSignalInvocationHint *hint,
                                        GValue *return_accumulator,
                                        const GValue *context_return,
                                        gpointer data);
@@ -123,21 +123,21 @@ static void get_property   (GObject         *object,
                             GValue          *value,
                             GParamSpec      *pspec);
 
-static gboolean check_connect        (MilterServerContext *context,
+static gboolean stop_on_connect      (MilterServerContext *context,
                                       const gchar   *host_name,
                                       const struct sockaddr *address,
                                       socklen_t      address_length);
-static gboolean check_helo           (MilterServerContext *context,
+static gboolean stop_on_helo         (MilterServerContext *context,
                                       const gchar   *fqdn);
-static gboolean check_envelope_from  (MilterServerContext *context,
+static gboolean stop_on_envelope_from(MilterServerContext *context,
                                       const gchar   *from);
-static gboolean check_envelope_recipient
+static gboolean stop_on_envelope_recipient
                                      (MilterServerContext *context,
                                       const gchar   *recipient);
-static gboolean check_header         (MilterServerContext *context,
+static gboolean stop_on_header       (MilterServerContext *context,
                                       const gchar   *name,
                                       const gchar   *value);
-static gboolean check_body           (MilterServerContext *context,
+static gboolean stop_on_body         (MilterServerContext *context,
                                       const gchar   *chunk,
                                       gsize          size);
 
@@ -161,12 +161,12 @@ milter_server_context_class_init (MilterServerContextClass *klass)
     agent_class->decoder_new   = decoder_new;
     agent_class->encoder_new   = encoder_new;
 
-    klass->check_connect          = check_connect;
-    klass->check_helo             = check_helo;
-    klass->check_envelope_from    = check_envelope_from;
-    klass->check_envelope_recipient = check_envelope_recipient;
-    klass->check_header           = check_header;
-    klass->check_body             = check_body;
+    klass->stop_on_connect          = stop_on_connect;
+    klass->stop_on_helo             = stop_on_helo;
+    klass->stop_on_envelope_from    = stop_on_envelope_from;
+    klass->stop_on_envelope_recipient = stop_on_envelope_recipient;
+    klass->stop_on_header           = stop_on_header;
+    klass->stop_on_body             = stop_on_body;
 
     signals[READY] =
         g_signal_new("ready",
@@ -178,69 +178,69 @@ milter_server_context_class_init (MilterServerContextClass *klass)
                      g_cclosure_marshal_VOID__VOID,
                      G_TYPE_NONE, 0);
 
-    signals[PASSED] =
-        g_signal_new("passed",
+    signals[STOPPED] =
+        g_signal_new("stopped",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MilterServerContextClass, passed),
+                     G_STRUCT_OFFSET(MilterServerContextClass, stopped),
                      NULL, NULL,
                      g_cclosure_marshal_VOID__VOID,
                      G_TYPE_NONE, 0);
 
-    signals[CHECK_CONNECT] =
-        g_signal_new("check-connect",
+    signals[STOP_ON_CONNECT] =
+        g_signal_new("stop-on-connect",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MilterServerContextClass, check_connect),
-                     check_accumulator, NULL,
+                     G_STRUCT_OFFSET(MilterServerContextClass, stop_on_connect),
+                     stop_on_accumulator, NULL,
                      _milter_marshal_BOOLEAN__STRING_POINTER_UINT,
                      G_TYPE_BOOLEAN, 3,
                      G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_UINT);
 
-    signals[CHECK_HELO] =
-        g_signal_new("check-helo",
+    signals[STOP_ON_HELO] =
+        g_signal_new("stop-on-helo",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MilterServerContextClass, check_helo),
-                     check_accumulator, NULL,
+                     G_STRUCT_OFFSET(MilterServerContextClass, stop_on_helo),
+                     stop_on_accumulator, NULL,
                      _milter_marshal_BOOLEAN__STRING,
                      G_TYPE_BOOLEAN, 1, G_TYPE_STRING);
 
-    signals[CHECK_ENVELOPE_FROM] =
-        g_signal_new("check-envelope-from",
+    signals[STOP_ON_ENVELOPE_FROM] =
+        g_signal_new("stop-on-envelope-from",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterServerContextClass,
-                                     check_envelope_from),
-                     check_accumulator, NULL,
+                                     stop_on_envelope_from),
+                     stop_on_accumulator, NULL,
                      _milter_marshal_BOOLEAN__STRING,
                      G_TYPE_BOOLEAN, 1, G_TYPE_STRING);
 
-    signals[CHECK_ENVELOPE_RECIPIENT] =
-        g_signal_new("check-envelope-recipient",
+    signals[STOP_ON_ENVELOPE_RECIPIENT] =
+        g_signal_new("stop-on-envelope-recipient",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterServerContextClass,
-                                     check_envelope_recipient),
-                     check_accumulator, NULL,
+                                     stop_on_envelope_recipient),
+                     stop_on_accumulator, NULL,
                      _milter_marshal_BOOLEAN__STRING,
                      G_TYPE_BOOLEAN, 1, G_TYPE_STRING);
 
-    signals[CHECK_HEADER] =
-        g_signal_new("check-header",
+    signals[STOP_ON_HEADER] =
+        g_signal_new("stop-on-header",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MilterServerContextClass, check_header),
-                     check_accumulator, NULL,
+                     G_STRUCT_OFFSET(MilterServerContextClass, stop_on_header),
+                     stop_on_accumulator, NULL,
                      _milter_marshal_BOOLEAN__STRING_STRING,
                      G_TYPE_BOOLEAN, 2, G_TYPE_STRING, G_TYPE_STRING);
 
-    signals[CHECK_BODY] =
-        g_signal_new("check-body",
+    signals[STOP_ON_BODY] =
+        g_signal_new("stop-on-body",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MilterServerContextClass, check_body),
-                     check_accumulator, NULL,
+                     G_STRUCT_OFFSET(MilterServerContextClass, stop_on_body),
+                     stop_on_accumulator, NULL,
 #if GLIB_SIZEOF_SIZE_T == 8
                      _milter_marshal_BOOLEAN__STRING_UINT64,
                      G_TYPE_BOOLEAN, 2, G_TYPE_STRING, G_TYPE_UINT64
@@ -250,13 +250,13 @@ milter_server_context_class_init (MilterServerContextClass *klass)
 #endif
             );
 
-    signals[CHECK_END_OF_MESSAGE] =
-        g_signal_new("check-end-of-message",
+    signals[STOP_ON_END_OF_MESSAGE] =
+        g_signal_new("stop-on-end-of-message",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterServerContextClass,
-                                     check_end_of_message),
-                     check_accumulator, NULL,
+                                     stop_on_end_of_message),
+                     stop_on_accumulator, NULL,
 #if GLIB_SIZEOF_SIZE_T == 8
                      _milter_marshal_BOOLEAN__STRING_UINT64,
                      G_TYPE_BOOLEAN, 2, G_TYPE_STRING, G_TYPE_UINT64
@@ -535,7 +535,7 @@ milter_server_context_set_state (MilterServerContext *context,
 
 
 static gboolean
-check_connect (MilterServerContext *context,
+stop_on_connect (MilterServerContext *context,
                const gchar   *host_name,
                const struct sockaddr *address,
                socklen_t      address_length)
@@ -544,25 +544,25 @@ check_connect (MilterServerContext *context,
 }
 
 static gboolean
-check_helo (MilterServerContext *context, const gchar *fqdn)
+stop_on_helo (MilterServerContext *context, const gchar *fqdn)
 {
     return FALSE;
 }
 
 static gboolean
-check_envelope_from (MilterServerContext *context, const gchar *from)
+stop_on_envelope_from (MilterServerContext *context, const gchar *from)
 {
     return FALSE;
 }
 
 static gboolean
-check_envelope_recipient (MilterServerContext *context, const gchar *recipient)
+stop_on_envelope_recipient (MilterServerContext *context, const gchar *recipient)
 {
     return FALSE;
 }
 
 static gboolean
-check_header (MilterServerContext *context,
+stop_on_header (MilterServerContext *context,
               const gchar   *name,
               const gchar   *value)
 {
@@ -570,7 +570,7 @@ check_header (MilterServerContext *context,
 }
 
 static gboolean
-check_body (MilterServerContext *context,
+stop_on_body (MilterServerContext *context,
             const gchar   *chunk,
             gsize          size)
 {
@@ -713,21 +713,21 @@ write_packet (MilterServerContext *context, gchar *packet, gsize packet_size,
 }
 
 static void
-pass_state (MilterServerContext *context, MilterServerContextState state)
+stop_on_state (MilterServerContext *context, MilterServerContextState state)
 {
     gchar *inspected_state;
     MilterServerContextPrivate *priv;
 
     inspected_state = milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
                                                       state);
-    milter_debug("pass state: %s", inspected_state);
-    milter_statistics("[pass][%s]: %s",
+    milter_debug("stop state: %s", inspected_state);
+    milter_statistics("[stop][%s]: %s",
                       inspected_state,
                       milter_server_context_get_name(context));
     g_free(inspected_state);
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
     priv->state = state;
-    g_signal_emit_by_name(context, "passed");
+    g_signal_emit_by_name(context, "stopped");
 }
 
 gboolean
@@ -770,15 +770,15 @@ milter_server_context_helo (MilterServerContext *context,
     gchar *packet = NULL;
     gsize packet_size;
     MilterEncoder *encoder;
-    gboolean pass;
+    gboolean stop = FALSE;
 
     milter_debug("[server:%s] send HELO: <%s>",
                  milter_server_context_get_name(context),
                  fqdn);
 
-    g_signal_emit(context, signals[CHECK_HELO],0, fqdn, &pass);
-    if (pass) {
-        pass_state(context, MILTER_SERVER_CONTEXT_STATE_HELO);
+    g_signal_emit(context, signals[STOP_ON_HELO], 0, fqdn, &stop);
+    if (stop) {
+        stop_on_state(context, MILTER_SERVER_CONTEXT_STATE_HELO);
         return TRUE;
     }
 
@@ -899,16 +899,16 @@ milter_server_context_connect (MilterServerContext *context,
     gchar *packet = NULL;
     gsize packet_size;
     MilterEncoder *encoder;
-    gboolean pass = FALSE;
+    gboolean stop = FALSE;
 
     milter_debug("[server:%s] send CONNECT: host_name=<%s>",
                  milter_server_context_get_name(context),
                  host_name);
 
-    g_signal_emit(context, signals[CHECK_CONNECT], 0,
-                  host_name, address, address_length, &pass);
-    if (pass) {
-        pass_state(context, MILTER_SERVER_CONTEXT_STATE_CONNECT);
+    g_signal_emit(context, signals[STOP_ON_CONNECT], 0,
+                  host_name, address, address_length, &stop);
+    if (stop) {
+        stop_on_state(context, MILTER_SERVER_CONTEXT_STATE_CONNECT);
         return TRUE;
     }
 
@@ -930,15 +930,15 @@ milter_server_context_envelope_from (MilterServerContext *context,
     gchar *packet = NULL;
     gsize packet_size;
     MilterEncoder *encoder;
-    gboolean pass;
+    gboolean stop = FALSE;
 
     milter_debug("[server:%s] send MAIL: <%s>",
                  milter_server_context_get_name(context),
                  from);
 
-    g_signal_emit(context, signals[CHECK_ENVELOPE_FROM], 0, from, &pass);
-    if (pass) {
-        pass_state(context, MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM);
+    g_signal_emit(context, signals[STOP_ON_ENVELOPE_FROM], 0, from, &stop);
+    if (stop) {
+        stop_on_state(context, MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM);
         return TRUE;
     }
 
@@ -960,16 +960,16 @@ milter_server_context_envelope_recipient (MilterServerContext *context,
     gsize packet_size;
     MilterEncoder *encoder;
     MilterCommandEncoder *command_encoder;
-    gboolean pass;
+    gboolean stop = FALSE;
 
     milter_debug("[server:%s] send RCPT: <%s>",
                  milter_server_context_get_name(context),
                  recipient);
 
-    g_signal_emit(context, signals[CHECK_ENVELOPE_RECIPIENT], 0,
-                  recipient, &pass);
-    if (pass) {
-        pass_state(context, MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT);
+    g_signal_emit(context, signals[STOP_ON_ENVELOPE_RECIPIENT], 0,
+                  recipient, &stop);
+    if (stop) {
+        stop_on_state(context, MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT);
         return TRUE;
     }
 
@@ -1033,15 +1033,15 @@ milter_server_context_header (MilterServerContext *context,
     gchar *packet = NULL;
     gsize packet_size;
     MilterEncoder *encoder;
-    gboolean pass;
+    gboolean stop = FALSE;
 
     milter_debug("[server:%s] send HEADER: <%s>=<%s>",
                  milter_server_context_get_name(context),
                  name, value);
 
-    g_signal_emit(context, signals[CHECK_HEADER], 0, name, value, &pass);
-    if (pass) {
-        pass_state(context, MILTER_SERVER_CONTEXT_STATE_HEADER);
+    g_signal_emit(context, signals[STOP_ON_HEADER], 0, name, value, &stop);
+    if (stop) {
+        stop_on_state(context, MILTER_SERVER_CONTEXT_STATE_HEADER);
         return TRUE;
     }
 
@@ -1109,15 +1109,15 @@ milter_server_context_body (MilterServerContext *context,
     gsize packet_size;
     MilterEncoder *encoder;
     MilterCommandEncoder *command_encoder;
-    gboolean pass;
+    gboolean stop = FALSE;
 
     milter_debug("[server:%s] send BODY: body_size=%" G_GSIZE_FORMAT,
                  milter_server_context_get_name(context),
                  size);
 
-    g_signal_emit(context, signals[CHECK_BODY], 0, chunk, size, &pass);
-    if (pass) {
-        pass_state(context, MILTER_SERVER_CONTEXT_STATE_BODY);
+    g_signal_emit(context, signals[STOP_ON_BODY], 0, chunk, size, &stop);
+    if (stop) {
+        stop_on_state(context, MILTER_SERVER_CONTEXT_STATE_BODY);
         return TRUE;
     }
 
@@ -1154,14 +1154,15 @@ milter_server_context_end_of_message (MilterServerContext *context,
     gchar *packet = NULL;
     gsize packet_size;
     MilterEncoder *encoder;
-    gboolean pass;
+    gboolean stop = FALSE;
 
     milter_debug("[server:%s] send END_OF_MESSAGE",
                  milter_server_context_get_name(context));
 
-    g_signal_emit(context, signals[CHECK_END_OF_MESSAGE],0, chunk, size, &pass);
-    if (pass) {
-        pass_state(context, MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE);
+    g_signal_emit(context, signals[STOP_ON_END_OF_MESSAGE], 0,
+                  chunk, size, &stop);
+    if (stop) {
+        stop_on_state(context, MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE);
         return TRUE;
     }
 
@@ -2124,17 +2125,17 @@ milter_server_context_set_name (MilterServerContext *context, const gchar *name)
 }
 
 static gboolean
-check_accumulator (GSignalInvocationHint *hint,
-                   GValue *return_accumulator,
-                   const GValue *context_return,
-                   gpointer data)
+stop_on_accumulator (GSignalInvocationHint *hint,
+                     GValue *return_accumulator,
+                     const GValue *context_return,
+                     gpointer data)
 {
-    gboolean pass;
+    gboolean stop;
 
-    pass = g_value_get_boolean(context_return);
-    g_value_set_boolean(return_accumulator, pass);
+    stop = g_value_get_boolean(context_return);
+    g_value_set_boolean(return_accumulator, stop);
 
-    return !pass;
+    return !stop;
 }
 
 /*

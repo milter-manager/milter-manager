@@ -235,7 +235,7 @@ define_milter("milter1") do |milter|
   milter.connection_timeout = 300.0
   milter.writing_timeout = 10.0
   milter.reading_timeout = 10.0
-  milter.end_of_message_timeout = 200.0
+  milter.end_of_message_timeout = 300.0
 end
 
 define_milter("milter2") do |milter|
@@ -249,7 +249,7 @@ define_milter("milter2") do |milter|
   milter.connection_timeout = 300.0
   milter.writing_timeout = 10.0
   milter.reading_timeout = 10.0
-  milter.end_of_message_timeout = 200.0
+  milter.end_of_message_timeout = 300.0
 end
 EOD
                  @configuration.dump)

@@ -109,19 +109,19 @@ EOX
     @loader.define_applicable_condition("remote-network") do |condition|
       condition.description = "Check only remote network"
 
-      condition.define_connect_checker do |child, host, address|
+      condition.define_connect_stopper do |child, host, address|
         host == "localhost"
       end
 
-      condition.define_envelope_from_checker do |child, from|
+      condition.define_envelope_from_stopper do |child, from|
         from =~ /@my-domain1.example.com\z/
       end
 
-      condition.define_envelope_recipient_checker do |child, recipient|
+      condition.define_envelope_recipient_stopper do |child, recipient|
         recipient =~ /@my-domain2.example.com\z/
       end
 
-      condition.define_header_checker do |child, name, value|
+      condition.define_header_stopper do |child, name, value|
         name == "X-Internal" and value =~ /\A(yes|true)\z/i
       end
     end
@@ -157,7 +157,7 @@ EOX
   def test_applicable_conditions
     @loader.define_applicable_condition("S25R") do |condition|
       condition.description = "Selective SMTP Rejection."
-      condition.define_connect_checker do |child, host, address|
+      condition.define_connect_stopper do |child, host, address|
         case host
         when "unknown",
           /\A[^.]*\d[^\d.]+\d/,

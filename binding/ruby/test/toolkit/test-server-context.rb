@@ -48,11 +48,11 @@ class TestServerContext < Test::Unit::TestCase
     end
   end
 
-  def test_check_connect_pass
-    assert_check_pass do
+  def test_stop_on_connect_stop
+    assert_stop do
       received_host = nil
       received_address = nil
-      @context.signal_connect("check-connect") do |_, host, address|
+      @context.signal_connect("stop-on-connect") do |_, host, address|
         received_host = host
         received_address = address
         true
@@ -67,9 +67,9 @@ class TestServerContext < Test::Unit::TestCase
     end
   end
 
-  def test_check_connect_not_pass
-    assert_check_not_pass do
-      @context.signal_connect("check-connect") do
+  def test_stop_on_connect_not_stop
+    assert_not_stop do
+      @context.signal_connect("stop-on-connect") do
         false
       end
 
@@ -79,10 +79,10 @@ class TestServerContext < Test::Unit::TestCase
     end
   end
 
-  def test_check_helo_pass
-    assert_check_pass do
+  def test_stop_on_helo_stop
+    assert_stop do
       received_fqdn = nil
-      @context.signal_connect("check-helo") do |_, fqdn|
+      @context.signal_connect("stop-on-helo") do |_, fqdn|
         received_fqdn = fqdn
         true
       end
@@ -94,9 +94,9 @@ class TestServerContext < Test::Unit::TestCase
     end
   end
 
-  def test_check_helo_not_pass
-    assert_check_not_pass do
-      @context.signal_connect("check-helo") do
+  def test_stop_on_helo_not_stop
+    assert_not_stop do
+      @context.signal_connect("stop-on-helo") do
         false
       end
 
@@ -104,10 +104,10 @@ class TestServerContext < Test::Unit::TestCase
     end
   end
 
-  def test_check_envelope_from_pass
-    assert_check_pass do
+  def test_stop_on_envelope_from_stop
+    assert_stop do
       received_from = nil
-      @context.signal_connect("check-envelope-from") do |_, from|
+      @context.signal_connect("stop-on-envelope-from") do |_, from|
         received_from = from
         true
       end
@@ -119,9 +119,9 @@ class TestServerContext < Test::Unit::TestCase
     end
   end
 
-  def test_check_envelope_from_not_pass
-    assert_check_not_pass do
-      @context.signal_connect("check-envelope-from") do
+  def test_stop_on_envelope_from_not_stop
+    assert_not_stop do
+      @context.signal_connect("stop-on-envelope-from") do
         false
       end
 
@@ -129,10 +129,10 @@ class TestServerContext < Test::Unit::TestCase
     end
   end
 
-  def test_check_envelope_recipient_pass
-    assert_check_pass do
+  def test_stop_on_envelope_recipient_stop
+    assert_stop do
       received_recipient = nil
-      @context.signal_connect("check-envelope-recipient") do |_, recipient|
+      @context.signal_connect("stop-on-envelope-recipient") do |_, recipient|
         received_recipient = recipient
         true
       end
@@ -144,9 +144,9 @@ class TestServerContext < Test::Unit::TestCase
     end
   end
 
-  def test_check_envelope_recipient_not_pass
-    assert_check_not_pass do
-      @context.signal_connect("check-envelope-recipient") do
+  def test_stop_on_envelope_recipient_not_stop
+    assert_not_stop do
+      @context.signal_connect("stop-on-envelope-recipient") do
         false
       end
 
@@ -154,11 +154,11 @@ class TestServerContext < Test::Unit::TestCase
     end
   end
 
-  def test_check_header_pass
-    assert_check_pass do
+  def test_stop_on_header_stop
+    assert_stop do
       received_name = nil
       received_value = nil
-      @context.signal_connect("check-header") do |_, name, value|
+      @context.signal_connect("stop-on-header") do |_, name, value|
         received_name = name
         received_value = value
         true
@@ -172,9 +172,9 @@ class TestServerContext < Test::Unit::TestCase
     end
   end
 
-  def test_check_header_not_pass
-    assert_check_not_pass do
-      @context.signal_connect("check-header") do
+  def test_stop_on_header_not_stop
+    assert_not_stop do
+      @context.signal_connect("stop-on-header") do
         false
       end
 
@@ -182,10 +182,10 @@ class TestServerContext < Test::Unit::TestCase
     end
   end
 
-  def test_check_body_pass
-    assert_check_pass do
+  def test_stop_on_body_stop
+    assert_stop do
       received_chunk = nil
-      @context.signal_connect("check-body") do |_, chunk|
+      @context.signal_connect("stop-on-body") do |_, chunk|
         received_chunk = chunk
         true
       end
@@ -197,9 +197,9 @@ class TestServerContext < Test::Unit::TestCase
     end
   end
 
-  def test_check_body_not_pass
-    assert_check_not_pass do
-      @context.signal_connect("check-body") do
+  def test_stop_on_body_not_stop
+    assert_not_stop do
+      @context.signal_connect("stop-on-body") do
         false
       end
 
@@ -207,10 +207,10 @@ class TestServerContext < Test::Unit::TestCase
     end
   end
 
-  def test_check_end_of_message_pass
-    assert_check_pass do
+  def test_stop_on_end_of_message_stop
+    assert_stop do
       received_chunk = nil
-      @context.signal_connect("check-end-of-message") do |_, chunk|
+      @context.signal_connect("stop-on-end-of-message") do |_, chunk|
         received_chunk = chunk
         true
       end
@@ -221,10 +221,10 @@ class TestServerContext < Test::Unit::TestCase
     end
   end
 
-  def test_check_end_of_message_pass_with_chunk
-    assert_check_pass do
+  def test_stop_on_end_of_message_stop_with_chunk
+    assert_stop do
       received_chunk = nil
-      @context.signal_connect("check-end-of-message") do |_, chunk|
+      @context.signal_connect("stop-on-end-of-message") do |_, chunk|
         received_chunk = chunk
         true
       end
@@ -236,9 +236,9 @@ class TestServerContext < Test::Unit::TestCase
     end
   end
 
-  def test_check_end_of_message_not_pass
-    assert_check_not_pass do
-      @context.signal_connect("check-end-of-message") do
+  def test_stop_on_end_of_message_not_stop
+    assert_not_stop do
+      @context.signal_connect("stop-on-end-of-message") do
         false
       end
 
@@ -246,9 +246,9 @@ class TestServerContext < Test::Unit::TestCase
     end
   end
 
-  def test_check_end_of_message_not_pass_with_chunk
-    assert_check_not_pass do
-      @context.signal_connect("check-end-of-message") do
+  def test_stop_on_end_of_message_not_stop_with_chunk
+    assert_not_stop do
+      @context.signal_connect("stop-on-end-of-message") do
         false
       end
 
@@ -262,26 +262,26 @@ class TestServerContext < Test::Unit::TestCase
       @context.connection_spec = "inet:9999@localhost"
       @context.establish_connection
 
-      @passed = false
-      @context.signal_connect("passed") do
-        @passed = true
+      @stopped = false
+      @context.signal_connect("stopped") do
+        @stopped = true
       end
 
       yield
     end
   end
 
-  def assert_check_pass
+  def assert_stop
     connect do
       yield
-      assert_true(@passed)
+      assert_true(@stopped)
     end
   end
 
-  def assert_check_not_pass
+  def assert_not_stop
     connect do
       yield
-      assert_false(@passed)
+      assert_false(@stopped)
     end
   end
 end

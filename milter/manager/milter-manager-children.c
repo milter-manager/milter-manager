@@ -1297,7 +1297,7 @@ cb_shutdown (MilterServerContext *context, gpointer user_data)
 }
 
 static void
-cb_passed (MilterServerContext *context, gpointer user_data)
+cb_stopped (MilterServerContext *context, gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
     MilterServerContextState state;
@@ -1431,7 +1431,7 @@ setup_server_context_signals (MilterManagerChildren *children,
     CONNECT(shutdown);
     CONNECT(skip);
 
-    CONNECT(passed);
+    CONNECT(stopped);
 
     CONNECT(writing_timeout);
     CONNECT(reading_timeout);
@@ -1472,7 +1472,7 @@ teardown_server_context_signals (MilterManagerChild *child,
     DISCONNECT(shutdown);
     DISCONNECT(skip);
 
-    DISCONNECT(passed);
+    DISCONNECT(stopped);
 
     DISCONNECT(writing_timeout);
     DISCONNECT(reading_timeout);
