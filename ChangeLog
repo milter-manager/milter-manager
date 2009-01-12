@@ -1,5 +1,7 @@
 2009-01-12  Kouhei Sutou  <kou@cozmixng.org>
 
+	* data/defaults/debian.conf: add missing dkim-filter detection.
+
 	* data/defaults/: use Remote Network condition.
 
 	* data/applicable-conditions/remote-network.conf: use local?.
