@@ -461,7 +461,7 @@ module Milter
         super(rrd_directory, update_time)
         @vertical_label = "mails"
         @title = 'Processed mails'
-        @items = ["normal", "accept",
+        @items = ["pass", "accept",
                   "reject", "discard",
                   "temporary-failure",
                   "quarantine"]
@@ -480,14 +480,14 @@ module Milter
           state = $1
           status = $2
           return if status == "continue" and state != "end-of-message"
-          status = "normal" if status == "continue"
+          status = "pass" if status == "continue"
           @data << Milter::Mail.new(status, time_stamp)
         end
       end
 
       def output_graph(time_span, options={})
         entries = [
-         ["AREA", "normal", "#0000ff", "Normal"],
+         ["AREA", "pass", "#0000ff", "Pass"],
          ["STACK", "accept", "#00ff00", "Accept"],
          ["STACK", "reject", "#ff0000", "Reject"],
          ["STACK", "discard", "#ffd400", "Discard"],
