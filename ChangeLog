@@ -1,5 +1,7 @@
 2009-01-13  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: add: add default applicable conditions: unauthorized connection.
+
 	* data/applicable-conditions/s25r.conf: add unresolved address.
 
 	* milter/manager/milter-manager-main.c: don't use
