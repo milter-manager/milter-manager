@@ -1,5 +1,7 @@
 2009-01-13  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: add NOTE: getifaddrs(3) can be used to determine local network.
+
 	* test/lib/milter-test-client.rb: resolve flags value by myself
 	not using Ruby/GLib2's feature because we should support older
 	Ruby/GLib2.

@@ -69,6 +69,7 @@ Index: milter/manager/milter-manager-leader.c
     * S25R
     * DNSBL: http://spam-champuru.livedoor.com/dnsbl/
     * remote network (local network may not be a spammer)
+      * getifaddrs(3) can be used to determine local network.
     * detected as spam (X-Spam-Flag:, X-Bogosity:)
     * detected as virus (X-Virus-Status:)
     * unauthorized connection
