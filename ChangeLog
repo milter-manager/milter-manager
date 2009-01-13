@@ -1,5 +1,7 @@
 2009-01-13  Kouhei Sutou  <kou@cozmixng.org>
 
+	* data/applicable-conditions/s25r.conf: add unresolved address.
+
 	* milter/manager/milter-manager-main.c: don't use
 	g_option_context_get_help() on CentOS. It's available since GLib 2.14.
 
