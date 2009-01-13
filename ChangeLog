@@ -1,5 +1,9 @@
 2009-01-13  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/lib/milter-test-client.rb: resolve flags value by myself
+	not using Ruby/GLib2's feature because we should support older
+	Ruby/GLib2.
+
 	* configure.ac: check Ruby availability.
 
 	* README.ja: add FreeBSD.

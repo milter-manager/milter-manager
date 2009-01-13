@@ -314,7 +314,7 @@ class MilterTestClient
   def do_negotiate(option)
     invalid_state(:negotiate) unless valid_state?(:negotiate)
     @option = option
-    @option.step = @negotiate_flags
+    @option.step = resolve_flags(Milter::StepFlags, @negotiate_flags)
 
     write(:negotiated, :negotiate, @option)
   end
@@ -475,6 +475,17 @@ class MilterTestClient
     state = @state
     write(:shutdown, :shutdown)
     raise "should not receive reply for #{reply_state} on #{state}"
+  end
+
+  def resolve_flags(flags_class, flags)
+    values = flags_class.values
+    flags.inject(0) do |result, flag|
+      flag_value = values.find {|value| value.nick == flag}
+      if flag_value.nil?
+        raise "unknown flag name for #{flags_class.name}: #{flag}"
+      end
+      result | flag_value
+    end
   end
 end
 
