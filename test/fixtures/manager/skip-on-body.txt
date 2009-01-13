@@ -1,6 +1,6 @@
 [scenario]
 clients=client10026;client10027
-expected=The message was 'pass'.
+expected=status: pass
 
 [client10026]
 port=10026

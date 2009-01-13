@@ -466,7 +466,7 @@ do_actions (MilterManagerTestScenario *scenario)
     cut_take_string_array(lines);
     /* g_print("%s", server_data->output_string->str); */
     cut_assert_equal_string(expected, lines[0]);
-    cut_assert_match("^Finished in [\\d.]+sec.\\s*$", lines[1]);
+    cut_assert_match("^elapsed: [\\d.]+ seconds$", lines[1]);
 }
 
 void

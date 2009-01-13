@@ -518,9 +518,9 @@ wait_for_reaping (gboolean check_success)
     if (!check_success)
         return;
 
-    cut_assert_match("The message was '(.*)'.", output_string->str);
-    begin_pos = output_string->str + strlen("The message was '");
-    end_pos = g_strrstr(output_string->str, "'.");
+    cut_assert_match("status: (.*)", output_string->str);
+    begin_pos = output_string->str + strlen("status: ");
+    end_pos = strstr(output_string->str, "\n");
     status_string = g_strndup(begin_pos, end_pos - begin_pos);
     cut_take_string(status_string);
 
@@ -1090,10 +1090,10 @@ option_test_assert_output_message (void)
     const gchar *normalized_output;
 
     normalized_output = cut_take_replace(output_string->str,
-                                        "Finished in [\\d.]+sec.",
-                                        "Finished in XXXsec.");
+                                         "elapsed: [\\d.]+ seconds",
+                                         "elapsed: XXX seconds");
     cut_assert_equal_string(
-        "The message was 'pass'.\n"
+        "status: pass\n"
         "\n"
         NORMAL_COLOR "  From: <kou+send@cozmixng.org>" NORMAL_COLOR "\n"
         NORMAL_COLOR "  To: <kou+receive@cozmixng.org>" NORMAL_COLOR "\n"
@@ -1103,7 +1103,7 @@ option_test_assert_output_message (void)
         "La de da de da 3.\n"
         "La de da de da 4.\n"
         "\n"
-        "Finished in XXXsec.\n",
+        "elapsed: XXX seconds\n",
         normalized_output);
 }
 

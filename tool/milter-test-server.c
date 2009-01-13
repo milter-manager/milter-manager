@@ -1291,7 +1291,7 @@ print_status (ProcessData *data)
         g_type_class_unref(enum_class);
     }
 
-    g_printf("The message was '%s'.\n", status_name);
+    g_printf("status: %s\n", status_name);
 }
 
 static void
@@ -1314,7 +1314,7 @@ print_result (ProcessData *data)
         g_print("\n");
     }
 
-    g_print("Finished in %gsec.\n", g_timer_elapsed(data->timer, NULL));
+    g_print("elapsed: %g seconds\n", g_timer_elapsed(data->timer, NULL));
 }
 
 static void
