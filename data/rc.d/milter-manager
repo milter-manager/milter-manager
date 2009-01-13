@@ -23,14 +23,20 @@ load_rc_config $name
 : ${milter_manager_user_name="mailnull"}
 : ${milter_manager_group_name="mail"}
 : ${milter_manager_connection_spec=""}
+: ${milter_manager_debug="NO"}
 
 command=/usr/local/sbin/milter-manager
 pidfile="${milter_manager_pid_file}"
-command_args="--daemon --pid-file ${milter_manager_pid_file}"
+command_args="--pid-file ${milter_manager_pid_file}"
 command_args="${command_args} --user-name ${milter_manager_user_name}"
 command_args="${command_args} --group-name ${milter_manager_group_name}"
 if test -n "$milter_manager_connection_connection_spec"; then
     command_args="${command_args} --spec ${milter_manager_connection_spec}"
+fi
+if test "$milter_manager_debug" = "YES"; then
+    command_args="${command_args} --verbose"
+else
+    command_args="${command_args} --daemon"
 fi
 
 run_rc_command "$1"
