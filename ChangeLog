@@ -1,5 +1,8 @@
 2009-01-13  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/test-manager.c (wait_for_reaping): add a message
+	for debugging.
+
 	* data/rc.d/milter-manager: add milter_manager_debug option.
 
 	* milter/manager/milter-manager-main.c, README.ja,

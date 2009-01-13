@@ -133,8 +133,13 @@ wait_for_reaping (EggData *data, gboolean must)
         g_main_context_iteration(NULL, TRUE);
     g_source_remove(timeout_id);
 
-    if (must)
+    if (must) {
+        cut_set_message("OUTPUT: <%s>\n"
+                        "ERROR: <%s>",
+                        data->output_string->str,
+                        data->error_string->str);
         cut_assert_false(timeout_emitted);
+    }
 }
 
 static void
