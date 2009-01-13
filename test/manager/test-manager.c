@@ -408,6 +408,7 @@ test_unknown_option (void)
             "  -u, --user-name=NAME           The user name for running milter-manager.\n"
             "  -g, --group-name=NAME          The group name for running milter-manager.\n"
             "  --daemon                       Run as daemon process.\n"
+            "  --no-daemon                    Cancel the prior --daemon options.\n"
             "  --show-config                  Show configuration and exit\n"
             "  --verbose                      Be verbose\n"
             "  --version                      Show version\n"
