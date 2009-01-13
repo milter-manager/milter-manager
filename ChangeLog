@@ -1,5 +1,9 @@
 2009-01-13  Kouhei Sutou  <kou@cozmixng.org>
 
+	* data/defaults/debian.conf, data/defaults/freebsd.conf: improve
+	milter apply order. milter-greylist should be applied in first
+	because it may reject message.
+
 	* TODO: add NOTE: getifaddrs(3) can be used to determine local network.
 
 	* test/lib/milter-test-client.rb: resolve flags value by myself
