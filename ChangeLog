@@ -1,3 +1,7 @@
+2009-01-14  Kouhei Sutou  <kou@cozmixng.org>
+
+	* test/run-test.sh: unset LANG.
+
 2009-01-13  Kouhei Sutou  <kou@cozmixng.org>
 
 	* data/defaults/debian.conf, data/defaults/freebsd.conf: improve
