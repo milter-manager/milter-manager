@@ -66,6 +66,8 @@ struct _MilterManagerChildrenPrivate
     gboolean replaced_body;
     MilterWriter *launcher_writer;
     MilterReader *launcher_reader;
+
+    gboolean finished;
 };
 
 typedef struct _NegotiateData NegotiateData;
@@ -86,8 +88,11 @@ enum
     PROP_CONFIGURATION
 };
 
+static void         finished           (MilterFinishedEmittable *emittable);
+
 MILTER_IMPLEMENT_ERROR_EMITTABLE(error_emittable_init);
-MILTER_IMPLEMENT_FINISHED_EMITTABLE(finished_emittable_init);
+MILTER_IMPLEMENT_FINISHED_EMITTABLE_WITH_CODE(finished_emittable_init,
+                                              iface->finished = finished)
 MILTER_IMPLEMENT_REPLY_SIGNALS(reply_init);
 G_DEFINE_TYPE_WITH_CODE(MilterManagerChildren, milter_manager_children, G_TYPE_OBJECT,
     G_IMPLEMENT_INTERFACE(MILTER_TYPE_ERROR_EMITTABLE, error_emittable_init)
@@ -225,6 +230,8 @@ milter_manager_children_init (MilterManagerChildren *milter)
     priv->retry_connect_time = 20.0;
     priv->launcher_reader = NULL;
     priv->launcher_writer = NULL;
+
+    priv->finished = FALSE;
 }
 
 static void
@@ -368,6 +375,18 @@ get_property (GObject    *object,
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
+}
+
+static void
+finished (MilterFinishedEmittable *emittable)
+{
+    MilterManagerChildren *children;
+    MilterManagerChildrenPrivate *priv;
+
+    children = MILTER_MANAGER_CHILDREN(emittable);
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    priv->finished = TRUE;
 }
 
 GQuark
@@ -567,6 +586,9 @@ expire_all_children (MilterManagerChildren *children)
         expire_child(children, context);
     }
     g_list_free(milters_copy);
+
+    if (!priv->finished)
+        milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(children));
 }
 
 static MilterStatus
@@ -2559,7 +2581,8 @@ milter_manager_children_quit (MilterManagerChildren *children)
             success = TRUE;
     }
 
-    milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(children));
+    if (!priv->finished)
+        milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(children));
 
     return success;
 }

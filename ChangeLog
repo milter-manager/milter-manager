@@ -1,5 +1,9 @@
 2009-01-13  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.c: also emit finished on
+	expire all children because server doesn't send quit on replying
+	reject, temporary-failure and discard.
+
 	* test/manager/test-manager.c (wait_for_reaping): add a message
 	for debugging.
 
