@@ -1277,13 +1277,21 @@ print_message (Message *message)
 static void
 print_status (ProcessData *data)
 {
-    GEnumValue *value;
-    GEnumClass *enum_class;
+    const gchar *status_name;
 
-    enum_class = g_type_class_ref(MILTER_TYPE_STATUS);
-    value = g_enum_get_value(enum_class, data->status);
-    g_type_class_unref(enum_class);
-    g_printf("The message was '%s'.\n", value->value_nick);
+    if (data->status == MILTER_STATUS_NOT_CHANGE) {
+        status_name = "pass";
+    } else {
+        GEnumValue *value;
+        GEnumClass *enum_class;
+
+        enum_class = g_type_class_ref(MILTER_TYPE_STATUS);
+        value = g_enum_get_value(enum_class, data->status);
+        status_name = value->value_nick;
+        g_type_class_unref(enum_class);
+    }
+
+    g_printf("The message was '%s'.\n", status_name);
 }
 
 static void

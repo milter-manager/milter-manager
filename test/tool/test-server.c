@@ -524,6 +524,8 @@ wait_for_reaping (gboolean check_success)
     status_string = g_strndup(begin_pos, end_pos - begin_pos);
     cut_take_string(status_string);
 
+    if (g_str_equal(status_string, "pass"))
+        status_string = "not-change";
     actual_status = gcut_enum_parse(MILTER_TYPE_STATUS, status_string, &error);
 
     gcut_assert_error(error);
@@ -1091,7 +1093,7 @@ option_test_assert_output_message (void)
                                         "Finished in [\\d.]+sec.",
                                         "Finished in XXXsec.");
     cut_assert_equal_string(
-        "The message was 'not-change'.\n"
+        "The message was 'pass'.\n"
         "\n"
         NORMAL_COLOR "  From: <kou+send@cozmixng.org>" NORMAL_COLOR "\n"
         NORMAL_COLOR "  To: <kou+receive@cozmixng.org>" NORMAL_COLOR "\n"

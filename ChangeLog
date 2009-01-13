@@ -1,5 +1,9 @@
 2009-01-13  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-test-server.c (print_status): improve format.
+	* test/tool/test-server.c, test/fixtures/manager/: follow the
+	above change.
+
 	* TODO: add: support socket group separated by effective group.
 
 	* TODO: add: add default applicable conditions: unauthorized connection.
