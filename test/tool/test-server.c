@@ -1090,8 +1090,8 @@ option_test_assert_output_message (void)
     const gchar *normalized_output;
 
     normalized_output = cut_take_replace(output_string->str,
-                                         "elapsed: [\\d.]+ seconds",
-                                         "elapsed: XXX seconds");
+                                         "elapsed-time: [\\d.]+ seconds",
+                                         "elapsed-time: XXX seconds");
     cut_assert_equal_string(
         "status: pass\n"
         "\n"
@@ -1103,7 +1103,7 @@ option_test_assert_output_message (void)
         "La de da de da 3.\n"
         "La de da de da 4.\n"
         "\n"
-        "elapsed: XXX seconds\n",
+        "elapsed-time: XXX seconds\n",
         normalized_output);
 }
 

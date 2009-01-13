@@ -1314,7 +1314,7 @@ print_result (ProcessData *data)
         g_print("\n");
     }
 
-    g_print("elapsed: %g seconds\n", g_timer_elapsed(data->timer, NULL));
+    g_print("elapsed-time: %g seconds\n", g_timer_elapsed(data->timer, NULL));
 }
 
 static void
