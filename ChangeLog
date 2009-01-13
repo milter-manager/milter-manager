@@ -1,5 +1,8 @@
 2009-01-13  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-main.c, README.ja: add --no-daemon
+	option.
+
 	* tool/ruby/milter-rrd.rb: improve message.
 
 	* tool/milter-test-server.c: improve output format.

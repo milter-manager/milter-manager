@@ -122,6 +122,8 @@ static const GOptionEntry option_entries[] =
      "NAME"},
     {"daemon", 0, 0, G_OPTION_ARG_NONE, &option_daemon,
      N_("Run as daemon process."), NULL},
+    {"no-daemon", 0, G_OPTION_FLAG_REVERSE, G_OPTION_ARG_NONE, &option_daemon,
+     N_("Cancel the prior --daemon option."), NULL},
     {"show-config", 0, 0, G_OPTION_ARG_NONE, &option_show_config,
      N_("Show configuration and exit"), NULL},
     {"verbose", 0, 0, G_OPTION_ARG_NONE, &option_verbose,
