@@ -368,7 +368,7 @@ module Milter
     class Session < Graph
       def initialize(rrd_directory, update_time)
         super(rrd_directory, update_time)
-        @title = 'milter-manager sessions'
+        @title = 'Sessions'
         @vertical_label = "sessions"
         @items = ["smtp", "child"]
         @child_sessions = []
