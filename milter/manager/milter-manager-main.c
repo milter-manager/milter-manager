@@ -157,6 +157,7 @@ milter_manager_init (int *argc, char ***argv)
     if (!g_option_context_parse(option_context, argc, argv, &error)) {
         g_print("%s\n", error->message);
 
+#if GLIB_CHECK_VERSION(2, 14, 0)
         if (g_error_matches(error,
                             G_OPTION_ERROR, G_OPTION_ERROR_UNKNOWN_OPTION)) {
             gchar *help;
@@ -164,6 +165,8 @@ milter_manager_init (int *argc, char ***argv)
             g_print("\n%s", help);
             g_free(help);
         }
+#endif
+
         g_error_free(error);
 
         g_option_context_free(option_context);
