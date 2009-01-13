@@ -1396,9 +1396,6 @@ cb_finished (MilterAgent *agent, gpointer user_data)
                  state_name,
                  milter_server_context_get_name(context));
     g_free(state_name);
-
-    if (!priv->milters)
-        milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(children));
 }
 
 static void
@@ -2561,6 +2558,8 @@ milter_manager_children_quit (MilterManagerChildren *children)
         if (milter_server_context_quit(context))
             success = TRUE;
     }
+
+    milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(children));
 
     return success;
 }
