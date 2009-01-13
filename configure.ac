@@ -179,20 +179,33 @@ if test "$ruby_available" = "yes"; then
 #undef PACKAGE_STRING
 #undef PACKAGE_VERSION
 "
-  ruby_disable_message="Disable milter manager."
   CFLAGS="$CFLAGS $RUBY_CFLAGS"
   AC_CHECK_HEADERS(ruby.h, [],
-                   [ruby_available="no"
-                    AC_MSG_WARN([$ruby_disable_message])],
+                   [ruby_available="no"],
                    [$ruby_undef_package_macros])
+  if test "x$ruby_available" = "xyes"; then
+    ruby_library_name="`echo $rbconfig_LIBRUBYARG | sed -e s/-l//`"
+    AC_CHECK_LIB($ruby_library_name,
+                 ruby_init,
+                 [],
+                 [ruby_available="no"],
+                 $rbconfig_LIBS)
+  fi
+  if test "x$ruby_available" != "xyes"; then
+    AC_MSG_ERROR([Ruby is required.])
+  fi
+
   if test "x$ruby_available" = "xyes"; then
     CFLAGS="$CFLAGS $GLIB_CFLAGS"
     AC_CHECK_HEADERS(rbgobject.h, [],
-		     [ruby_available="no"
-		      AC_MSG_WARN([$ruby_disable_message])],
+		     [ruby_available="no"],
 		     [$ruby_undef_package_macros])
   fi
-  AC_CHECK_FUNC("rb_errinfo")
+  if test "x$ruby_available" != "xyes"; then
+    AC_MSG_ERROR([Ruby/GLib2 is required.])
+  fi
+
+  AC_CHECK_FUNC(rb_errinfo)
   CFLAGS=$_SAVE_CFLAGS
 fi
 

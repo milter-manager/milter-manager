@@ -1,5 +1,7 @@
 2009-01-13  Kouhei Sutou  <kou@cozmixng.org>
 
+	* configure.ac: check Ruby availability.
+
 	* README.ja: add FreeBSD.
 
 	* doc/install-freebsd.rd.ja: complete.
