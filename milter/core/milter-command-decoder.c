@@ -32,6 +32,7 @@
 #include <glib.h>
 
 #include "milter-command-decoder.h"
+#include "milter-logger.h"
 #include "milter-enum-types.h"
 #include "milter-marshalers.h"
 
@@ -396,6 +397,8 @@ decode_define_macro (MilterDecoder *decoder, GError **error)
     if (!macros)
         return FALSE;
 
+    milter_debug("[command-decoder][define-macro] <%c>", context);
+
     g_signal_emit(decoder, signals[DEFINE_MACRO], 0, context, macros);
     g_hash_table_unref(macros);
 
@@ -598,6 +601,8 @@ decode_connect (MilterDecoder *decoder, GError **error)
                                 &host_name, &address, &length, error))
         return FALSE;
 
+    milter_debug("[command-decoder][connect] <%s>", host_name);
+
     g_signal_emit(decoder, signals[CONNECT], 0, host_name, address, length);
     g_free(host_name);
     g_free(address);
@@ -622,6 +627,8 @@ decode_helo (MilterDecoder *decoder, GError **error)
     if (null_character_point <= 0)
         return FALSE;
 
+    milter_debug("[command-decoder][helo] <%s>", buffer + 1);
+
     g_signal_emit(decoder, signals[HELO], 0, buffer + 1);
 
     return TRUE;
@@ -643,6 +650,8 @@ decode_envelope_from (MilterDecoder *decoder, GError **error)
             "FROM isn't terminated by NULL on MAIL command");
     if (null_character_point <= 0)
         return FALSE;
+
+    milter_debug("[command-decoder][envelope-from] <%s>", buffer + 1);
 
     g_signal_emit(decoder, signals[ENVELOPE_FROM], 0, buffer + 1);
 
@@ -666,6 +675,8 @@ decode_envelope_recipient (MilterDecoder *decoder, GError **error)
     if (null_character_point <= 0)
         return FALSE;
 
+    milter_debug("[command-decoder][envelope-recipient] <%s>", buffer + 1);
+
     g_signal_emit(decoder, signals[ENVELOPE_RECIPIENT], 0, buffer + 1);
     return TRUE;
 }
@@ -684,6 +695,8 @@ decode_data (MilterDecoder *decoder, GError **error)
             MILTER_DECODER_COMPARE_EXACT, error,
             "DATA command"))
         return FALSE;
+
+    milter_debug("[command-decoder][data]");
 
     g_signal_emit(decoder, signals[DATA], 0);
 
@@ -708,6 +721,8 @@ decode_header (MilterDecoder *decoder, GError **error)
     if (!decoded)
         return FALSE;
 
+    milter_debug("[command-decoder][header] <%s>=<%s>", name, value);
+
     g_signal_emit(decoder, signals[HEADER], 0, name, value);
 
     return TRUE;
@@ -728,6 +743,8 @@ decode_end_of_header (MilterDecoder *decoder, GError **error)
             "END OF HEADER command"))
         return FALSE;
 
+    milter_debug("[command-decoder][end-of-header]");
+
     g_signal_emit(decoder, signals[END_OF_HEADER], 0);
 
     return TRUE;
@@ -741,6 +758,8 @@ decode_body (MilterDecoder *decoder, GError **error)
 
     command_length = milter_decoder_get_command_length(decoder);
     buffer = milter_decoder_get_buffer(decoder);
+
+    milter_debug("[command-decoder][body] <%d>", command_length - 1);
 
     g_signal_emit(decoder, signals[BODY], 0,
                   buffer + 1, command_length - 1);
@@ -763,6 +782,10 @@ decode_end_of_message (MilterDecoder *decoder, GError **error)
         chunk = NULL;
         chunk_size = 0;
     }
+
+    milter_debug("[command-decoder][end-of-message] <%" G_GSIZE_FORMAT ">",
+                 chunk_size);
+
     g_signal_emit(decoder, signals[END_OF_MESSAGE], 0, chunk, chunk_size);
 
     return TRUE;
@@ -783,6 +806,8 @@ decode_abort (MilterDecoder *decoder, GError **error)
             "ABORT command"))
         return FALSE;
 
+    milter_debug("[command-decoder][abort]");
+
     g_signal_emit(decoder, signals[ABORT], 0);
 
     return TRUE;
@@ -802,6 +827,8 @@ decode_quit (MilterDecoder *decoder, GError **error)
             MILTER_DECODER_COMPARE_EXACT, error,
             "QUIT command"))
         return FALSE;
+
+    milter_debug("[command-decoder][quit]");
 
     g_signal_emit(decoder, signals[QUIT], 0);
 
@@ -824,6 +851,8 @@ decode_unknown (MilterDecoder *decoder, GError **error)
             "command value isn't terminated by NULL on unknown command");
     if (null_character_point <= 0)
         return FALSE;
+
+    milter_debug("[command-decoder][unknown] <%s>", buffer + 1);
 
     g_signal_emit(decoder, signals[UNKNOWN], 0, buffer + 1);
 
@@ -855,6 +884,8 @@ decode_negotiate (MilterDecoder *decoder, GError **error)
         g_object_unref(option);
         return FALSE;
     }
+
+    milter_debug("[command-decoder][negotiate]");
 
     g_signal_emit(decoder, signals[NEGOTIATE], 0, option);
     g_object_unref(option);

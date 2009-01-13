@@ -1,3 +1,7 @@
+2009-01-13  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/core/milter-command-decoder.c: log decoded commands.
+
 2009-01-12  Kouhei Sutou  <kou@cozmixng.org>
 
 	* doc/install-freebsd.rd.ja: add.
