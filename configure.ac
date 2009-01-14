@@ -155,7 +155,7 @@ if test "$ruby_available" = "yes"; then
 
   changequote(<<, >>)
   for var_name in archdir sitearchdir venderarchdir arch \
-      	       	  CFLAGS LIBRUBYARG LIBS libdir; do
+      	       	  CFLAGS LIBRUBYARG LIBS RUBY_SO_NAME libdir; do
     rbconfig_tmp=`$rbconfig "print Config::CONFIG['$var_name']"`
     eval "rbconfig_$var_name=\"$rbconfig_tmp\""
   done
@@ -184,12 +184,11 @@ if test "$ruby_available" = "yes"; then
                    [ruby_available="no"],
                    [$ruby_undef_package_macros])
   if test "x$ruby_available" = "xyes"; then
-    ruby_library_name="`echo $rbconfig_LIBRUBYARG | sed -e s/-l//`"
-    AC_CHECK_LIB($ruby_library_name,
+    AC_CHECK_LIB($rbconfig_RUBY_SO_NAME,
                  ruby_init,
                  [],
                  [ruby_available="no"],
-                 $rbconfig_LIBS)
+                 $RUBY_LIBS)
   fi
   if test "x$ruby_available" != "xyes"; then
     AC_MSG_ERROR([Ruby is required.])
