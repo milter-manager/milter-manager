@@ -871,6 +871,7 @@ module Milter::Manager
         connection_spec = guess_connection_spec
         return if connection_spec.nil?
         connection_spec = "unix:#{connection_spec}" if /\A\// =~ connection_spec
+        connection_spec = connection_spec.gsub(/\A(?:(unix|local):)+/, '\\1:')
         loader.define_milter(@script_name) do |milter|
           milter.enabled = enabled?
           milter.description = description

@@ -1,5 +1,12 @@
 2009-01-14  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager.rb,
+	binding/ruby/test/manager/test-debian-init-detector.rb: improve
+	clamav-milter type socket detection.
+
+	* binding/ruby/test/manager/test-bsd-rc-detector.rb: follow the
+	recent changes.
+
 	* test/run-test.sh: unset LANG.
 
 2009-01-13  Kouhei Sutou  <kou@cozmixng.org>

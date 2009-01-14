@@ -244,6 +244,17 @@ CLAMAVDAEMONUPGRADE="/var/run/clamav-daemon-being-upgraded"
 [ -r "$DEFAULT" ] && . $DEFAULT
 [ -z "$PIDFILE" ] && PIDFILE=/var/run/clamav/clamav-milter.pid
 [ -z "$SOCKET" ] && SOCKET=local:/var/run/clamav/clamav-milter.ctl
+
+case "$SOCKET" in
+  /*)
+  SOCKET_PATH="$SOCKET"
+  SOCKET="local:$SOCKET"
+  ;;
+  *)
+  SOCKET_PATH=`echo $SOCKET | sed -e s/local\://`
+  # If the socket is type inet: we don't care - we can't rm -f that later :)
+  ;;
+esac
 EOM
     end
 

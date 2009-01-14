@@ -55,6 +55,7 @@ class TestBSDRCDetector < Test::Unit::TestCase
     detector.detect
     assert_equal({
                    "enable" => "NO",
+                   "debug" => "NO",
                    "pid_file" => "/var/run/milter-manager/milter-manager.pid",
                    "user_name" => "mailnull",
                    "group_name" => "mail",
@@ -79,6 +80,7 @@ EOC
     detector.detect
     assert_equal({
                    "enable" => "YES",
+                   "debug" => "NO",
                    "pid_file" => "/var/run/milter-manager/milter-manager.pid",
                    "user_name" => "mailnull",
                    "group_name" => "mail",
