@@ -16,7 +16,7 @@ FreeBSD 7.1-RELEASEを想定しています。
   % sudo /usr/local/sbin/portupgrade -NRr ruby18-glib2
   % sudo /usr/local/sbin/portupgrade -NRr -m 'WITH_RUBY_MODULE=true' rrdtool
 
-MTAとしてはPostfixを利用することとします。
+MTAはPostfixを利用することとします。
 
   % sudo /usr/local/sbin/portupgrade -NRr postfix
 
@@ -47,10 +47,9 @@ UNIXドメインソケットで接続を受け付けるようにします。こ�
 セキュリティ面と速度面の理由からです。
 
 milterの実効ユーザも一般ユーザにします。これもセキュリティ面
-の理由からです。Postfixとmilterは同じグループに所属させ、
-UNIXドメインソケットはグループでの読み書き権限を設定します。
-milterとPostfixの共通のグループとしてmailグループを使用しま
-す。
+の理由からです。UNIXドメインソケットはグループでの読み書き権
+限を設定します。読み書き権限のあるグループとしてmailグループ
+を使用し、postfixユーザはmailグループに所属させます。
 
 ここでは、milterはmailnullユーザで動かします。milter毎に異な
 るユーザを作成した方がよいのですが、以下の理由からmailnullユー
@@ -179,24 +178,31 @@ milter-greylistを検出していることを確認してください。
 以下のように表示されていれば検出は成功しています。
 
   ...
-  define_milter("clamav-milter") do |milter|
-    milter.connection_spec = "unix:/var/run/clamav/clmilter.sock"
+  define_milter("milter-greylist") do |milter|
+    milter.connection_spec = "unix:/var/milter-greylist/milter-greylist.sock"
+    ...
+    milter.enabled = true
     ...
   end
   ..
-  define_milter("milter-greylist") do |milter|
-    milter.connection_spec = "unix:/var/milter-greylist/milter-greylist.sock"
+  define_milter("clamav-milter") do |milter|
+    milter.connection_spec = "unix:/var/run/clamav/clmilter.sock"
+    ...
+    milter.enabled = true
     ...
   end
   ..
   define_milter("spamass-milter") do |milter|
-  milter.connection_spec = "unix:/var/run/milter/spamass-milter.sock"
+    milter.connection_spec = "unix:/var/run/milter/spamass-milter.sock"
+    ...
+    milter.enabled = true
     ...
   end
   ..
 
-milterの名前とソケットのパスを確認してください。異なっていた
-場合は、((<設定|configuration.rd.ja>))を参考に
+milterの名前、ソケットのパス、enabledがtrueになっていることを
+確認してください。異なっていた場合は、((<設定
+|configuration.rd.ja>))を参考に
 /usr/local/etc/milter-manager/milter-manager.confを編集してく
 ださい。ただ、できれば、設定を変更せずに使用できるようにした
 いと考えています。もし、検出できなかった環境のことを教えても
@@ -268,7 +274,7 @@ milter_manager_debugをコメントアウトし、デーモンプロセスで起
 
 まず、postfixユーザをmailグループに追加します。
 
-  % sudp /usr/sbin/pw groupmod postfix mail -m postfix
+  % sudo /usr/sbin/pw groupmod postfix mail -m postfix
 
 次に、milterの設定をします。
 
@@ -309,7 +315,7 @@ clamav-milter、milter-greylistはmilter-manager経由で利用する
 ので、Postfixにはmilter-managerだけを登録すればよいことに注
 意してください。
 
-/usr/local/etc/main.cfに以下を追加します。
+/usr/local/etc/postfix/main.cfに以下を追加します。
 
   smtpd_milters = unix:/var/run/milter-manager/milter-manager.sock
 

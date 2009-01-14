@@ -1,5 +1,7 @@
 2009-01-14  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/install-freebsd.rd.ja, doc/install-ubuntu.rd.ja: update.
+
 	* milter/manager.h, milter/manager/milter-manager-main.c,
 	src/milter-manager.c: consider return status.
 
