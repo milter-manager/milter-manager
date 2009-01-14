@@ -1600,6 +1600,7 @@ clear_try_negotiate_data (NegotiateData *data)
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(data->children);
 
     remove_queue_in_negotiate(data->children, data->child);
+    expire_child(data->children, MILTER_SERVER_CONTEXT(data->child));
     g_hash_table_remove(priv->try_negotiate_ids, data);
 }
 
