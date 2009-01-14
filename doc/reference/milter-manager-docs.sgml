@@ -5,7 +5,7 @@
 <book xmlns:xi="http://www.w3.org/2003/XInclude" id="index" lang="en">
   <bookinfo>
     <title>milter-manager Reference Manual</title>
-    <releaseinfo>for milter-manager &version;</releaseinfo>
+    <releaseinfo>for milter manager &version;</releaseinfo>
   </bookinfo>
 
   <part id="start">
@@ -13,11 +13,16 @@
     <!--xi:include href="news.xml"/-->
     <xi:include href="readme.xml"/>
     <xi:include href="introduction.xml"/>
+    <xi:include href="install.xml"/>
+    <chapter id="install-to">
+      <title>Install milter manager to your platform</title>
+      <xi:include href="install-to-ubuntu.xml"/>
+      <xi:include href="install-to-freebsd.xml"/>
+    </chapter>
     <xi:include href="configuration.xml"/>
-    <!--xi:include href="tutorial.xml"/-->
   </part>
 
-  <part id="reference">
+  <!--part id="reference">
     <title>Reference</title>
     <chapter id="milter-core">
       <title>milter-core</title>
@@ -34,15 +39,15 @@
       <title>libmilter</title>
       <xi:include href="xml/mfapi.xml"/>
     </chapter>
-  </part>
+  </part-->
 
-  <index id="index-all">
+  <!--index id="index-all">
     <title>Index of all symbols</title>
   </index>
   <index id="index-deprecated" role="deprecated">
     <title>Index of deprecated symbols</title>
   </index>
-  <!--index id="index-1-0-0" role="1.0.0">
+  <index id="index-1-0-0" role="1.0.0">
     <title>Index of new symbols in 1.0.0</title>
   </index-->
 </book>

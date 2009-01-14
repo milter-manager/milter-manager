@@ -1,5 +1,7 @@
 2009-01-14  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/: generate HTML from RD.
+
 	* milter/manager/milter-manager-children.c
 	(clear_try_negotiate_data): expire child failed to connect.
 

@@ -53,7 +53,10 @@ content_files =			\
 	version.xml		\
 	readme.xml		\
 	introduction.xml	\
-	configuration.xml
+	configuration.xml	\
+	install.xml		\
+	install-to-ubuntu.xml	\
+	install-to-freebsd.xml
 
 # Extra options to supply to gtkdoc-fixxref
 FIXXREF_OPTIONS=
@@ -63,13 +66,19 @@ CATALOGS=ja.po
 # include common portion ...
 include $(top_srcdir)/gtk-doc.make
 
-generated_xml_files =		\
-	readme.xml		\
-	readme.xml.ja		\
-	introduction.xml	\
-	introduction.xml.ja	\
-	configuration.xml	\
-	configuration.xml.ja
+generated_xml_files =				\
+	readme.xml				\
+	readme.xml.ja				\
+	introduction.xml			\
+	introduction.xml.ja			\
+	configuration.xml			\
+	configuration.xml.ja			\
+	install.xml				\
+	install.xml.ja				\
+	install-to-ubuntu.xml			\
+	install-to-ubuntu.xml.ja		\
+	install-to-freebsd.xml			\
+	install-to-freebsd.xml.ja
 
 CLEANFILES +=				\
 	$(generated_xml_files)
@@ -116,6 +125,24 @@ configuration.xml: $(top_srcdir)/doc/configuration.rd $(RD2REFENTRY_LIB) configu
 
 configuration.xml.ja: $(top_srcdir)/doc/configuration.rd.ja $(RD2REFENTRY_LIB) ja.po
 	$(RD2_JA) $(top_srcdir)/doc/configuration.rd.ja > configuration.xml.ja
+
+install.xml: $(top_srcdir)/doc/install.rd $(RD2REFENTRY_LIB) install.xml.ja
+	$(RD2) $(top_srcdir)/doc/install.rd > install.xml
+
+install.xml.ja: $(top_srcdir)/doc/install.rd.ja $(RD2REFENTRY_LIB) ja.po
+	$(RD2_JA) $(top_srcdir)/doc/install.rd.ja > install.xml.ja
+
+install-to-ubuntu.xml: $(top_srcdir)/doc/install-to-ubuntu.rd $(RD2REFENTRY_LIB) install-to-ubuntu.xml.ja
+	$(RD2) $(top_srcdir)/doc/install-to-ubuntu.rd > install-to-ubuntu.xml
+
+install-to-ubuntu.xml.ja: $(top_srcdir)/doc/install-to-ubuntu.rd.ja $(RD2REFENTRY_LIB) ja.po
+	$(RD2_JA) $(top_srcdir)/doc/install-to-ubuntu.rd.ja > install-to-ubuntu.xml.ja
+
+install-to-freebsd.xml: $(top_srcdir)/doc/install-to-freebsd.rd $(RD2REFENTRY_LIB) install-to-freebsd.xml.ja
+	$(RD2) $(top_srcdir)/doc/install-to-freebsd.rd > install-to-freebsd.xml
+
+install-to-freebsd.xml.ja: $(top_srcdir)/doc/install-to-freebsd.rd.ja $(RD2REFENTRY_LIB) ja.po
+	$(RD2_JA) $(top_srcdir)/doc/install-to-freebsd.rd.ja > install-to-freebsd.xml.ja
 
 upload: docs
 	rm -rf tmp/
