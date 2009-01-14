@@ -290,6 +290,9 @@ init_ruby (void)
     ruby_incpush(BINDING_EXT_DIR);
     ruby_init_loadpath();
     load_libraries();
+#if RBGLIB_MINOR_VERSION <= 16
+    g_main_context_set_poll_func(NULL, NULL);
+#endif
 }
 
 G_MODULE_EXPORT GList *

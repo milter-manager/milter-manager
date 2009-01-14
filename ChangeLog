@@ -1,5 +1,8 @@
 2009-01-14  Kouhei Sutou  <kou@cozmixng.org>
 
+	* module/configuration/ruby/milter-manager-ruby-configuration.c:
+	reset poll function set by Ruby/GLib2 0.16.0.
+
 	* tool/milter-test-server.c: handle timeout.
 
 	* configure.ac, data/init.d/: move init script for Debian to
