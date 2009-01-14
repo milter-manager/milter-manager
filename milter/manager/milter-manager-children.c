@@ -872,17 +872,16 @@ send_first_command_to_next_child (MilterManagerChildren *children,
     priv->command_waiting_child_queue =
         g_list_remove(priv->command_waiting_child_queue, context);
 
+    milter_server_context_quit(context);
+
     next_child = get_first_child_in_command_waiting_child_queue(children);
     if (!next_child) {
         if (current_state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
             emit_signals_on_end_of_message(children);
 
         emit_reply_status_of_state(children, current_state);
-    }
-
-    milter_server_context_quit(context);
-    if (!next_child)
         return MILTER_STATUS_PROGRESS;
+    }
 
     first_command = fetch_first_command_for_child_in_queue(next_child,
                                                            &priv->command_queue);
