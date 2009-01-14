@@ -350,6 +350,7 @@ AC_CONFIG_FILES([Makefile
 		 data/packet/Makefile
 		 data/rc.d/Makefile
 		 data/init.d/Makefile
+		 data/init.d/debian/Makefile
 		 tool/Makefile
 		 tool/ruby/Makefile
 		 test/Makefile

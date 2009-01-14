@@ -1,5 +1,8 @@
 2009-01-14  Kouhei Sutou  <kou@cozmixng.org>
 
+	* configure.ac, data/init.d/: move init script for Debian to
+	data/init.d/debian/.
+
 	* configure.ac: use RUBY_SO_NAME.
 
 	* binding/ruby/lib/milter/manager.rb,
