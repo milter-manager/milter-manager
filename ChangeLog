@@ -1,5 +1,8 @@
 2009-01-14  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.c (expire_child): add
+	NULL check.
+
 	* tool/milter-test-server.c: send abort on exit by timeout.
 
 	* module/configuration/ruby/milter-manager-ruby-configuration.c:

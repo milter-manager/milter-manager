@@ -554,14 +554,17 @@ expire_child (MilterManagerChildren *children,
     MilterManagerChildrenPrivate *priv;
     const gchar *child_name;
     GTimer *timer;
+    gdouble elapsed = 0.0;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     child_name = milter_server_context_get_name(context);
     timer = g_object_get_data(G_OBJECT(context), TIMER_KEY);
-    g_timer_stop(timer);
-    milter_statistics("[milter][end][%g](%p): %s",
-                      g_timer_elapsed(timer, NULL), context, child_name);
+    if (timer) {
+        g_timer_stop(timer);
+        elapsed = g_timer_elapsed(timer, NULL);
+    }
+    milter_statistics("[milter][end][%g](%p): %s", elapsed, context, child_name);
 
     teardown_server_context_signals(MILTER_MANAGER_CHILD(context), children);
     priv->milters = g_list_remove(priv->milters, context);
