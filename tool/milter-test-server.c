@@ -58,7 +58,8 @@ static MilterHeaders *option_headers = NULL;
 typedef enum
 {
     MILTER_TEST_SERVER_ERROR_INVALID_HEADER,
-    MILTER_TEST_SERVER_ERROR_INVALID_MAIL_ADDRESS
+    MILTER_TEST_SERVER_ERROR_INVALID_MAIL_ADDRESS,
+    MILTER_TEST_SERVER_ERROR_TIMEOUT
 } MilterTestServerError;
 
 typedef struct Message
@@ -537,6 +538,50 @@ cb_finished (MilterFinishedEmittable *emittable, gpointer user_data)
 }
 
 static void
+cb_connection_timeout (MilterServerContext *context, gpointer user_data)
+{
+    ProcessData *data = user_data;
+
+    data->success = FALSE;
+    data->error = g_error_new(MILTER_TEST_SERVER_ERROR,
+                              MILTER_TEST_SERVER_ERROR_TIMEOUT,
+                              "connection timeout");
+}
+
+static void
+cb_writing_timeout (MilterServerContext *context, gpointer user_data)
+{
+    ProcessData *data = user_data;
+
+    data->success = FALSE;
+    data->error = g_error_new(MILTER_TEST_SERVER_ERROR,
+                              MILTER_TEST_SERVER_ERROR_TIMEOUT,
+                              "writing timeout");
+}
+
+static void
+cb_reading_timeout (MilterServerContext *context, gpointer user_data)
+{
+    ProcessData *data = user_data;
+
+    data->success = FALSE;
+    data->error = g_error_new(MILTER_TEST_SERVER_ERROR,
+                              MILTER_TEST_SERVER_ERROR_TIMEOUT,
+                              "reading timeout");
+}
+
+static void
+cb_end_of_message_timeout (MilterServerContext *context, gpointer user_data)
+{
+    ProcessData *data = user_data;
+
+    data->success = FALSE;
+    data->error = g_error_new(MILTER_TEST_SERVER_ERROR,
+                              MILTER_TEST_SERVER_ERROR_TIMEOUT,
+                              "end-of-message timeout");
+}
+
+static void
 setup (MilterServerContext *context, ProcessData *data)
 {
 #define CONNECT(name)                                                   \
@@ -564,6 +609,11 @@ setup (MilterServerContext *context, ProcessData *data)
     CONNECT(skip);
     CONNECT(error);
     CONNECT(finished);
+
+    CONNECT(connection_timeout);
+    CONNECT(writing_timeout);
+    CONNECT(reading_timeout);
+    CONNECT(end_of_message_timeout);
 
 #undef CONNECT
 }

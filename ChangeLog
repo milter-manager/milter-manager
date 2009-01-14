@@ -1,5 +1,7 @@
 2009-01-14  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-test-server.c: handle timeout.
+
 	* configure.ac, data/init.d/: move init script for Debian to
 	data/init.d/debian/.
 
