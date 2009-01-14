@@ -536,7 +536,7 @@ wait_reply_helper (guint expected, guint *actual)
     }
     g_source_remove(timeout_waiting_id);
 
-    cut_assert_true(timeout_waiting, "timeout");
+    cut_assert_true(timeout_waiting);
     cut_assert_equal_uint(expected, *actual);
 }
 
