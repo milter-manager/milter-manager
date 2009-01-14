@@ -568,6 +568,7 @@ cb_reading_timeout (MilterServerContext *context, gpointer user_data)
     data->error = g_error_new(MILTER_TEST_SERVER_ERROR,
                               MILTER_TEST_SERVER_ERROR_TIMEOUT,
                               "reading timeout");
+    send_abort(context, data);
 }
 
 static void
@@ -579,6 +580,7 @@ cb_end_of_message_timeout (MilterServerContext *context, gpointer user_data)
     data->error = g_error_new(MILTER_TEST_SERVER_ERROR,
                               MILTER_TEST_SERVER_ERROR_TIMEOUT,
                               "end-of-message timeout");
+    send_abort(context, data);
 }
 
 static void
