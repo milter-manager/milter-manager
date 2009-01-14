@@ -37,7 +37,7 @@ G_BEGIN_DECLS
 
 void milter_manager_init (int *argc, char ***argv);
 void milter_manager_quit (void);
-void milter_manager_main (void);
+gboolean milter_manager_main (void);
 
 
 G_END_DECLS

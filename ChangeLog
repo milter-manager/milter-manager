@@ -1,5 +1,8 @@
 2009-01-14  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager.h, milter/manager/milter-manager-main.c,
+	src/milter-manager.c: consider return status.
+
 	* milter/manager/milter-manager-children.c (expire_child): add
 	NULL check.
 

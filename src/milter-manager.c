@@ -30,14 +30,16 @@
 int
 main (int argc, char **argv)
 {
+    gboolean success;
+
     {
         RUBY_INIT_STACK;
         milter_manager_init(&argc, &argv);
-        milter_manager_main();
+        success = milter_manager_main();
         milter_manager_quit();
     }
 
-    return 0;
+    return success ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 /*

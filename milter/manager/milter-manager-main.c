@@ -696,7 +696,7 @@ daemonize (void)
     return TRUE;
 }
 
-void
+gboolean
 milter_manager_main (void)
 {
     MilterClient *client;
@@ -742,25 +742,25 @@ milter_manager_main (void)
             g_free(dumped_config);
         }
         g_object_unref(manager);
-        return;
+        return TRUE;
     }
 
     daemon = milter_manager_configuration_is_daemon(config);
     if (daemon && !daemonize()) {
         g_object_unref(manager);
-        return;
+        return FALSE;
     }
 
     if (milter_manager_configuration_is_privilege_mode(config) &&
         !start_process_launcher_process(manager)) {
         g_object_unref(manager);
-        return;
+        return FALSE;
     }
 
     if (geteuid() == 0 &&
         (!switch_group(manager) || !switch_user(manager))) {
         g_object_unref(manager);
-        return;
+        return FALSE;
     }
 
     /* FIXME */
@@ -807,6 +807,8 @@ milter_manager_main (void)
                          pid_file, g_strerror(errno));
         g_free(pid_file);
     }
+
+    return TRUE;
 }
 
 /*
