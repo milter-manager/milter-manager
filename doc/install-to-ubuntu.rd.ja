@@ -56,6 +56,11 @@ UNIXドメインソケットはpostfixグループでの読み書き権限を設
 ます。これは、既存のmilterパッケージの設定をできるだけ利用す
 るためです。
 
+必要のない配送遅延をできるだけ抑えるため、milter-greylistは
+((<S25R|URL:http://gabacho.reto.jp/anti-spam/>))にマッチする
+ときのみ適用します。しかし、これはmilter-managerが自動で行う
+ため、特に設定する必要はありません。
+
 === spamass-milterの設定
 
 まず、spamdの設定をします。
@@ -127,8 +132,8 @@ milter-greylistを起動します。
 
 === milter-managerの設定
 
-milter-managerはシステムにインストールされている検出します。
-以下のコマンドでspamass-milter、clamav-milter、
+milter-managerはシステムにインストールされているmilterを検出
+します。以下のコマンドでspamass-milter、clamav-milter、
 milter-greylistを検出していることを確認してください。
 
   % /usr/local/sbin/milter-manager --show-config
