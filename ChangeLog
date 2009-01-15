@@ -1,5 +1,7 @@
 2009-01-15  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/install-to*: add download URL.
+
 	* html/: add.
 
 	* doc/install-to-freebsd.rd*: use gmake.

@@ -34,7 +34,8 @@ We work at ~/src/. We will install milter manager into /usr/local/.
 
   % mkdir -p ~/src/
   % cd ~/src/
-  % wget ...
+  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-0.7.0.tar.gz
+  % tar xvzf milter-manager-0.7.0.tar.gz
   % cd milter-manager-0.7.0
   % ./configure
   % make
