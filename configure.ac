@@ -267,7 +267,7 @@ dnl **************************************************************
 dnl Check for SF.net.
 dnl **************************************************************
 
-SF_PROJECT_NAME="milter manager"
+SF_PROJECT_NAME="milter-manager"
 AC_SUBST(SF_PROJECT_NAME)
 
 AC_ARG_WITH([sf-user],
