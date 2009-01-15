@@ -266,7 +266,7 @@ restarted.
 
 === Configure Postfix
 
-We need to add the following milter configuration to
+We add the following milter configuration to
 /etc/postfix/main.cf.
 
   milter_default_action = accept
