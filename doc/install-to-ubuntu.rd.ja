@@ -119,7 +119,7 @@ Greylistを使うようにします。
 
 変更後:
   ENABLED=1
-  SOCKET="inet:11125@127.0.0.1"
+  SOCKET="inet:11125@[127.0.0.1]"
 
 milter-greylistを起動します。
 
@@ -137,7 +137,7 @@ milter-greylistを検出していることを確認してください。
 
   ...
   define_milter("milter-greylist") do |milter|
-    milter.connection_spec = "inet:11125@127.0.0.1"
+    milter.connection_spec = "inet:11125@[127.0.0.1]"
     ...
     milter.enabled = true
     ...

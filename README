@@ -189,15 +189,19 @@ configuration file.
      * unix:PATH
      * inet:PORT
      * inet:PORT@HOST
+     * inet:PORT@[ADDRESS]
      * inet6:POST
      * inet6:PORT@HOST
+     * inet6:PORT@[ADDRESS]
 
    Examples:
      * unix:/var/run/milter/milter-manager.sock
      * inet:10025
      * inet:10025@localhost
+     * inet:10025@[127.0.0.1]
      * inet6:10025
      * inet6:10025@localhost
+     * inet6:10025@[::1]
 
    This option overrides "manager.connection_spec" in
    configuration file.
@@ -317,15 +321,19 @@ unit tests.
      * unix:PATH
      * inet:PORT
      * inet:PORT@HOST
+     * inet:PORT@[ADDRESS]
      * inet6:POST
      * inet6:PORT@HOST
+     * inet6:PORT@[ADDRESS]
 
    Examples:
      * unix:/var/run/milter/milter-manager.sock
      * inet:10025
      * inet:10025@localhost
+     * inet:10025@[127.0.0.1]
      * inet6:10025
      * inet6:10025@localhost
+     * inet6:10025@[::1]
 
 : --connect-host=HOST
 
@@ -436,15 +444,19 @@ tool for looking into the problems.
      * unix:PATH
      * inet:PORT
      * inet:PORT@HOST
+     * inet:PORT@[ADDRESS]
      * inet6:POST
      * inet6:PORT@HOST
+     * inet6:PORT@[ADDRESS]
 
    Examples:
      * unix:/tmp/milter-test-client.sock
      * inet:10025
      * inet:10025@localhost
+     * inet:10025@[127.0.0.1]
      * inet6:10025
      * inet6:10025@localhost
+     * inet6:10025@[::1]
 
 : --verbose
 
