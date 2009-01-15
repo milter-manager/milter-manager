@@ -52,6 +52,7 @@ HTML_IMAGES =
 content_files =			\
 	version.xml		\
 	readme.xml		\
+	news.xml		\
 	introduction.xml	\
 	configuration.xml	\
 	install.xml		\
@@ -69,6 +70,8 @@ include $(top_srcdir)/gtk-doc.make
 generated_xml_files =				\
 	readme.xml				\
 	readme.xml.ja				\
+	news.xml				\
+	news.xml.ja				\
 	introduction.xml			\
 	introduction.xml.ja			\
 	configuration.xml			\
@@ -114,6 +117,12 @@ readme.xml: $(top_srcdir)/README $(RD2REFENTRY_LIB) readme.xml.ja
 readme.xml.ja: $(top_srcdir)/README.ja $(RD2REFENTRY_LIB) ja.po
 	$(RD2_JA) $(top_srcdir)/README.ja > readme.xml.ja
 
+news.xml: $(top_srcdir)/NEWS $(RD2REFENTRY_LIB) news.xml.ja
+	$(RD2) $(top_srcdir)/NEWS > news.xml
+
+news.xml.ja: $(top_srcdir)/NEWS.ja $(RD2REFENTRY_LIB) ja.po
+	$(RD2_JA) $(top_srcdir)/NEWS.ja > news.xml.ja
+
 introduction.xml: $(top_srcdir)/doc/introduction.rd $(RD2REFENTRY_LIB) introduction.xml.ja
 	$(RD2) $(top_srcdir)/doc/introduction.rd > introduction.xml
 
@@ -157,5 +166,5 @@ upload: docs
 	                       	File.read("sf-logo.html") + "</body>")'	\
 	  tmp/reference/*.html						\
 	  tmp/reference/*/*.html
-	rsync -avz tmp/reference $(SF_HTDOCS)/reference/
+	rsync -avz tmp/reference/ $(SF_HTDOCS)/reference/
 	ssh $(SF_HOST) chmod -R g+w $(SF_HTDOCS_PATH)/reference/

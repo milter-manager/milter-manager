@@ -1,5 +1,9 @@
 2009-01-15  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/reference/Makefile.am (upload): add missing last '/'.
+
+	* NEWS*: add.
+
 	* doc/install-to*: add download URL.
 
 	* html/: add.

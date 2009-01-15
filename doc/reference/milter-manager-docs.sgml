@@ -10,7 +10,7 @@
 
   <part id="start">
     <title>Getting start</title>
-    <!--xi:include href="news.xml"/-->
+    <xi:include href="news.xml"/>
     <xi:include href="readme.xml"/>
     <xi:include href="introduction.xml"/>
     <xi:include href="install.xml"/>
