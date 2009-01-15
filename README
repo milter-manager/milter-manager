@@ -2,4 +2,527 @@
 
 = README --- milter-manager: An milter to use milters flexibly.
 
-FIXME
+== Name
+
+milter manager
+
+== Site
+
+((<URL:http://milter-manager.sourceforge.net/>))
+
+== License
+
+Use the following rules:
+
+  * Files that describe their license: their license
+  * Commands: GPL3(license/gpl.txt)
+  * Documents: GFDL(license/fdl.txt)
+  * Web interface: AGPL3(license/agpl.txt)
+  * Libraries: LGPL3(license/lgpl.txt)
+
+Here is a concrete list:
+
+  * Files that describe their license:
+    * binding/ruby/lib/milter/compatible.rb: Ruby's
+  * Commands: GPL3
+    * src/*
+    * tool/*
+  * Documents: GFDL
+    * README, README.ja
+    * doc/*
+  * Web interface: AGPL3
+    * admin/**/* (will be included since the next release)
+  * Libraries: LGPL3
+    * others than those above
+
+== milter manager
+
+milter manager is a milter that administrates multiple
+milters.
+
+If milter manager is introduced, milter manager
+administrates milters instead of MTA. The was has some
+advantages:
+
+  * milter registration way doesn't depend on MTA.
+  * milters can be combined to apply spam and/or virus
+    protections effectively.
+  * milters installed in system will be detected and milter
+    manager doesn't need to configure.
+
+The details of them are described in
+((<Introduction|"doc/introduction.rd">)) but summary is
+showed here.
+
+=== How to register milter
+
+Now, milter can be supported by Sendmail and Postfix. But
+they have different configuration way. That is milters are
+registered with different configuration way. It's a milter
+advantage that common mail filter can be shared by different
+MTAs. But configuration way can't be shared.
+
+If milter manager is introduced between MTA and milters,
+milters can be registered without MTA dependency.
+
+=== Flexible milter combination
+
+In MTA configuration, each milter always applies or not. It
+can't be done that a milter applies only when some
+conditions are true. milter manager has some check points in
+milter session. They can be used for it.
+
+=== Dynamic configuration
+
+milter manager embeds Ruby interpreter. Ruby is a real
+programming language that provides easy to read syntax and
+flexibility.
+
+milter manager can configure milters more flexible than
+existing MTA because milter manager's configuration file is
+processed as a Ruby script. For example, milter manager can
+detect milters installed in your system and register
+it. It means that you can change each milter's configuration
+without updating milter manager's configuration.
+
+Currently, Ubuntu (Debian) and FreeBSD are supported. If you
+want to use milters installed by package system (dpkg or
+ports), you don't need to change milter manager's
+configuration. If a milter is installed by package system
+and enabled, milter manager detects and uses it. See
+((<Install|"doc/install.rd">)) for more information.
+
+There is a opinion that milter manager's configuration file
+has more difficult syntax than MTA's configuration file. As
+mentioned above, Ruby has easy to read syntax, it's not
+difficult in normal use. ((-At least, it's more easier
+rather than Sendmail's one.-))
+
+For example, here is a configuration for connection socket:
+
+  manager.connection_spec = "inet:10025@localhost"
+
+It's almost same as Postfix's configuration syntax.
+("item = value")
+
+milter manager will also provide Web interface for
+configuration since the next release.
+
+== Dependencies
+
+  * MTA that supports milter
+    * Sendmail >= 8.13.8
+    * Postfix >= 2.3.3
+  * GLib >= 2.12.3
+  * Ruby >= 1.8.5
+  * Ruby/GLib2 (Ruby-GNOME2) >= 0.16.0
+  * UN*X OS
+    * Linux >= 2.6.18
+    * FreeBSD
+
+=== Optional dependencies
+
+  * Cutter >= 1.0.6: unit testing framework for C
+
+    It is needed for 'make check' and 'make coverage'.
+
+    ((<Cutter|URL:http://cutter.sourceforge.net/>))
+
+  * LCOV: graphical front-end for GCC's coverage testing tool gcov
+
+    It is needed for 'make coverage'.
+
+    ((<URL:http://ltp.sourceforge.net/coverage/lcov.php>))
+
+#   * RRDtool (and bundled Ruby bindings)
+
+#     It is needed for milter-log-tool.
+
+== Get
+
+tar.gz:
+((<URL:http://sourceforge.net/project/showfiles.php?group_id=236233>))
+
+Subversion:
+  % svn co https://milter-manager.svn.sourceforge.net/svnroot/milter-manager/milter-manager/trunk milter-manager
+
+== Install
+
+See ((<Install|"doc/install.rd">)).
+
+== Configuration
+
+See ((<Configuration|"doc/configuration.rd">)).
+
+== Usage
+
+milter-manager command is installed into sbin/ not
+bin/. In most cases, normal user doesn't include sbin/ in
+PATH. You will need to use absolute path.
+
+If you don't specify --prefix option for configure script,
+milter-manager is installed into /usr/local/sbin/:
+
+  % /usr/local/sbin/milter-manager --help
+
+If install is succeeded, available options are
+shown. Details of them are described in the next section. At
+first --show-config option will be useful for confirming the
+current configuration:
+
+  % /usr/local/sbin/milter-manager --show-config
+
+Command line options overrides configurations specified in
+configuration file.
+
+=== Options
+
+: --help
+
+   Shows available options and exits.
+
+: --connection-spec=SPEC
+
+   Specifies a socket that accepts connections from
+   MTA. SPEC should be formatted as one of the followings:
+
+     * unix:PATH
+     * inet:PORT
+     * inet:PORT@HOST
+     * inet6:POST
+     * inet6:PORT@HOST
+
+   Examples:
+     * unix:/var/run/milter/milter-manager.sock
+     * inet:10025
+     * inet:10025@localhost
+     * inet6:10025
+     * inet6:10025@localhost
+
+   This option overrides "manager.connection_spec" in
+   configuration file.
+
+: --config-dir=DIRECTORY
+
+    Specifies a directory that includes milter-manager's
+    configuration file. milter-manager tries to load
+    DIRECTORY/milter-manager.conf. If it isn't find,
+    milter-manager loads milter-manager.conf in default
+    directory.
+
+: --pid-file=FILE
+
+   Saves process ID of milter-manager to FILE.
+
+   This option overrides "manager.pid_file" in configuration
+   file.
+
+: --user-name=NAME
+
+   Runs milter-manager as NAME user.
+   milter-manager should be started by root.
+
+   This option overrides "security.effective_user" in
+   configuration file.
+
+: --group-name=NAME
+
+   Runs milter-manager as NAME group.
+   milter-manager should be started by root.
+
+   This option overrides "security.effective_group" in
+   configuration file.
+
+: --daemon
+
+   Runs milter-manager as daemon process.
+
+   This option overrides "manager.daemon" in configuration
+   file.
+
+: --no-daemon
+
+   This option cancels the prior --daemon option.
+
+: --show-config
+
+   Shows the current configuration and exits. The output
+   format can be used in configuration file. This option is
+   useful for confirming registered milters and reporting your
+   milter-manager's configuration when you report
+   milter-manager's problems.
+
+: --verbose
+
+   Logs verbosely. Logs by syslog with 'mail'. If
+   milter-manager isn't daemon process, standard output is
+   also used.
+
+   'MILTER_LOG_LEVEL=all' environment variable configuration
+   has the same effect.
+
+: --version
+
+   Shows version and exits.
+
+== Tools
+
+milter manager includes some useful tools. They are
+installed into bin/.
+
+  * milter-test-server: It talks MTA side milter protocol.
+    It can be used for testing a milter without MTA.
+  * milter-test-client: It is a milter that just shows
+    received data from MTA. It can be used for confirming
+    what data is sent from MTA.
+  * milter-performance-check: It is a SMTP client that
+    measures MTA performance.
+#   * milter-log-tool: It analyzes log of milter-manager and
+#     visualizes behavior of milters registered by
+#     milter-manager.
+
+=== milter-test-server
+
+milter-test-server talks MTA side milter protocol. It can
+connect to a milter without MTA. For now, there is no
+similar tool. It is useful to test milter not MTA +
+milter. For example, it can be used for the following
+situation:
+
+  * milter's performance check
+  * milter's operation check
+
+milter-test-server can be used for simple performance check
+because it shows elapsed time. You can confirm elapsed time
+without MTA's processing time. You will find a problem of a
+milter more easily because it doesn't depend on MTA.
+
+If a milter changes headers and/or body, milter-test-server
+can show changed message. It can be used for testing a
+milter that may change headers and/or body. If it is used
+with unit testing frame like Cutter, you can write automated
+unit tests.
+
+==== Options
+
+: --help
+
+   Shows available options and exits.
+
+: --connection-spec=SPEC
+
+   Specifies a socket to connect to milter. SPEC should be
+   formatted as one of the followings:
+
+     * unix:PATH
+     * inet:PORT
+     * inet:PORT@HOST
+     * inet6:POST
+     * inet6:PORT@HOST
+
+   Examples:
+     * unix:/var/run/milter/milter-manager.sock
+     * inet:10025
+     * inet:10025@localhost
+     * inet6:10025
+     * inet6:10025@localhost
+
+: --connect-host=HOST
+
+    Uses HOST as connected host.
+
+    The host name is passed to milter's xxfi_connect() callback.
+
+: --connect-address=SPEC
+
+    Uses SPEC as connected address. SPEC format is same as
+    --connection-spec option's SPEC.
+
+    The address is passed to milter's xxfi_connect() callback.
+
+: --helo-fqdn=FQDN
+
+    Uses FQDN for 'HELO/EHLO' SMTP command.
+
+    The FQDN is passed to milter's xxfi_helo() callback.
+
+: --from=FROM
+
+    Uses FROM for 'MAIL FROM' SMTP command.
+
+    The address is passed to milter's xxfi_envfrom() callback.
+
+: --recipient=RECIPIENT
+
+    Uses RECIPIENT for 'RCPT TO' SMTP command. If you want
+    to use multiple recipients, specify --recipient option
+    n-times.
+
+    The address is passed to milter's xxfi_envrcpt()
+    callback. xxfi_envrcpt() is called for each recipient.
+
+: --header=NAME:VALUE
+
+    Adds a header that names NAME and its value is VALUE. If
+    you want to multiple headers, specify --header option
+    n-times.
+
+    The header is passed to milter's xxfi_header() callback.
+    xxfi_header() is called for each header.
+
+: --body=CHUNK
+
+    Adds CHUNK as body chunk. If you want to multiple
+    chunks, specify --body option n-times.
+
+    The chunk is passed to milter's xxfi_body()
+    callback. xxfi_body() is called for each chunk.
+
+: --unknown=COMMAND
+
+    Uses COMMAND as unknown SMTP command.
+
+    The command is passed to milter's xxfi_unknown()
+    callback. xxfi_unknown() is called between
+    xxfi_envrcpt() and xxfi_data().
+
+: --mail-file=PATH
+
+    Uses file exists at PATH as mail content. If the file
+    has 'From:' and/or 'To:', they are used for from and/or
+    recipient addresses.
+
+: --output-message
+
+    Shows a message applied a milter. If you want to
+    check milter's operation that may change header and/or
+    body, specify this option.
+
+: --verbose
+
+   Logs verbosely.
+
+   'MILTER_LOG_LEVEL=all' environment variable configuration
+   has the same effect.
+
+: --version
+
+   Shows version and exits.
+
+=== milter-test-client
+
+milter-test-client is a milter that just shows received data
+from MTA. It also shows macros received from MTA, it can be
+used for confirming MTA's milter configuration.
+
+Postfix's source archive includes similar tool.
+It's src/milter/test-milter.c. It seems that it's used for
+testing Postfix's milter implementation. But test-milter
+doesn't show macros. If you have a milter that doesn't work
+as you expect and uses macro, milter-test-client is useful
+tool for looking into the problems.
+
+==== Options
+
+: --help
+
+   Shows available options and exits.
+
+: --connection-spec=SPEC
+
+   Specifies a socket that accepts connections from
+   MTA. SPEC should be formatted as one of the followings:
+
+     * unix:PATH
+     * inet:PORT
+     * inet:PORT@HOST
+     * inet6:POST
+     * inet6:PORT@HOST
+
+   Examples:
+     * unix:/tmp/milter-test-client.sock
+     * inet:10025
+     * inet:10025@localhost
+     * inet6:10025
+     * inet6:10025@localhost
+
+: --verbose
+
+   Logs verbosely.
+
+   'MILTER_LOG_LEVEL=all' environment variable configuration
+   has the same effect.
+
+: --version
+
+   Shows version and exits.
+
+=== milter-performance-check
+
+milter-performance-check is a SMTP client that measures MTA
+performance. milter-test-server measures milter's
+performance and miter-performance-check measures MTA +
+milter's performance.
+
+smtp-source bundled with Postfix is a similar
+tool. smtp-source has more features.
+
+milter-performance-check is useful because it measures
+elapsed time of only SMTP sessions. smtp-source doesn't
+provide the feature. You need to also use 'time' command and
+measure smtp-source command runtime not elapsed time of SMTP
+sessions.
+
+Normally, there isn't big difference between elapsed time of
+SMTP sessions and tool runtime.
+
+If you satisfy milter-performance-check's features, it's
+better that you use milter-performance-check. If you don't,
+smtp-source is more better tool for you.
+
+==== Options
+
+: --help
+
+   Shows available options and exits.
+
+: --smtp-server=SERVER
+
+   Uses SEVER as target SMTP server.
+
+   The default is localhost.
+
+: --smtp-port=PORT
+
+   Uses PORT as SMTP port.
+
+   The default is 25.
+
+: --helo-fqdn=FQDN
+
+   Uses FQDN as HELO SMTP command.
+
+   The default localhost.localdomain.
+
+: --from=FROM
+
+   Uses FROM as MAIL SMTP command.
+
+   The default from@example.com.
+
+: --recipient=RECIPIENT
+
+   Uses RECIPIENT as RCPT SMTP command. If you want to use
+   multiple recipients, use --recipient n-times.
+
+   The default is [to@example.com].
+
+: --n-mails=N
+
+   Sends N mails. All mails are sent concurrently.
+
+   The default is 100.
+
+# === milter-log-tool
+
+# FIXME

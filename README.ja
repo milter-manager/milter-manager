@@ -28,8 +28,7 @@ milter manager
     * src/以下
     * tool/直下
   * ドキュメント: GFDL
-    * README/README.ja
-    * INTRODUCTION/INTRODUCTION.ja
+    * README, README.ja
     * doc/以下
   * Webインターフェイス: AGPL3
     * admin/以下（次のリリースから収録予定）
@@ -87,10 +86,11 @@ milter managerはRubyインタプリタを内蔵しています。Rubyは読み
 わなくても、milterの設定を変更するだけで、milter manager側で
 それを検出して対応できるということです。
 
-現在のところ、FreeBSD上でportsからインストールしたmilterを使っ
-ている場合においては、設定ファイルを一切変更する必要はありま
-せん。milterをインストールすれば、milter managerが検出し、利
-用します。
+現在のところ、Ubuntu上でパッケージからインストールしたmilter、
+FreeBSD上でportsからインストールしたmilterを使っている場合に
+おいては、設定ファイルを一切変更する必要はありません。milter
+をインストールすれば、milter managerが検出し、利用します。詳
+しくは((<インストール|"doc/install.rd.ja"))を見てください。
 
 設定ファイルがRubyプログラムになるため、MTAでmilterを登録する
 場合よりも難しくなるのではないかという意見があります。前述の
@@ -141,10 +141,10 @@ LinuxではCentOS 5.2、Ubuntu 8.04 TLS上で動作することを想定し
 
     ((<URL:http://ltp.sourceforge.net/coverage/lcov.php>))
 
-  * RRDtool（付属のRubyバインディングも必要）
+#   * RRDtool（付属のRubyバインディングも必要）
 
-    milter-log-toolでmilter managerに登録されたmilterの動作
-    のグラフを表示する場合は必要。
+#     milter-log-toolでmilter managerに登録されたmilterの動作
+#     のグラフを表示する場合は必要。
 
 == 入手方法
 
@@ -156,9 +156,7 @@ Subversion:
 
 == インストール
 
-  % ./configure
-  % make
-  # make install
+((<インストール|"doc/install.rd.ja">))を見てください。
 
 == 設定
 
@@ -264,8 +262,8 @@ configure時に--prefixオプションを指定していない場合は
    シリティで出力します。デーモンプロセスになっていない場合
    は標準出力にもログが出力されます。
 
-   「MILTER_LOG_LEVEL=all」という環境変数をしている場合と同
-   じ効果があります。
+   「MILTER_LOG_LEVEL=all」というように環境変数を設定している
+   場合と同じ効果があります。
 
 : --version
 
@@ -284,8 +282,8 @@ milter managerにはいくつか便利なツールが付属されていて、bin
     することができる。
   * milter-performance-check: MTAの性能を計測するSMTPクライ
     アント。
-  * milter-log-tool: milter-managerのログを解析し、
-    milter-managerに登録されたmilterの動作をグラフ化する。
+#   * milter-log-tool: milter-managerのログを解析し、
+#     milter-managerに登録されたmilterの動作をグラフ化する。
 
 === milter-test-server
 
@@ -365,7 +363,9 @@ milter-test-serverはヘッダや本文が変更された場合は、変更さ�
     指定したい場合は--recipientオプションを複数回指定してく
     ださい。
 
-    このアドレスはmilterのxxfi_envrcpt()コールバックに渡ります。
+    このアドレスはmilterのxxfi_envrcpt()コールバックに渡りま
+    す。xxfi_envrcpt()は1つの宛先につき1回呼ばれるので、宛先
+    が複数個ある場合はその分だけxxfi_envrcpt()が呼ばれます。
 
 : --header=NAME:VALUE
 
@@ -409,10 +409,10 @@ milter-test-serverはヘッダや本文が変更された場合は、変更さ�
 
 : --verbose
 
-   実行時のログをより詳細に表示します。
+   実行時のログをより詳細に出力します。
 
-   「MILTER_LOG_LEVEL=all」という環境変数をしている場合と同
-   じ効果があります。
+   「MILTER_LOG_LEVEL=all」というように環境変数を設定している
+   場合と同じ効果があります。
 
 : --version
 
@@ -449,21 +449,18 @@ milter-test-clientが役立つでしょう。
      * inet6:ポート番号@ホスト名
 
    例:
-     * unix:/var/run/milter/milter-manager.sock
+     * unix:/tmp/milter-test-client.sock
      * inet:10025
      * inet:10025@localhost
      * inet6:10025
      * inet6:10025@localhost
 
-   設定ファイル中の「manager.connection_spec」の値を上書きし
-   ます。
-
 : --verbose
 
    実行時のログをより詳細に出力します。
 
-   「MILTER_LOG_LEVEL=all」という環境変数をしている場合と同
-   じ効果があります。
+   「MILTER_LOG_LEVEL=all」というように環境変数を設定している
+   場合と同じ効果があります。
 
 : --version
 
@@ -507,7 +504,7 @@ smtp-sourceを利用するとよいでしょう。
 
 : --smtp-port=PORT
 
-   接続先のSMTPサーバをのポート番号指定します。
+   接続先のSMTPサーバのポート番号指定します。
 
    既定値は25です。
 
@@ -536,6 +533,6 @@ smtp-sourceを利用するとよいでしょう。
 
    既定値は100です。
 
-=== milter-log-tool
+# === milter-log-tool
 
-FIXME
+# FIXME
