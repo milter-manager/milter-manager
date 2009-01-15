@@ -34,7 +34,7 @@ upload: upload-doc upload-coverage
 
 release: dist
 	$(srcdir)/misc/release.rb				\
-	  $(SF_USER) $(SF_PROJECT_NAME) '$(PACKAGE_TITLE)'	\
+	  $(SF_USER) '$(SF_PROJECT_NAME)' '$(PACKAGE_TITLE)'	\
 	  $(VERSION) $(PACKAGE)-$(VERSION).tar.gz       	\
 	  README NEWS
 
