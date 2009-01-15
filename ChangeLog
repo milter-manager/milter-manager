@@ -1,5 +1,10 @@
 2009-01-15  Kouhei Sutou  <kou@clear-code.com>
 
+	* README: remove garbages.
+
+	* doc/reference/ja.po, doc/reference/milter-manager-docs.sgml:
+	translate.
+
 	* doc/introduction.rd: translate.
 
 	* doc/install-to-freebsd.rd: translate.

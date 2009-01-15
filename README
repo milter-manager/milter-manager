@@ -47,28 +47,7 @@ advantages:
   * reduce milter administration cost
   * combine milters flexibly
 
-  * milter registration way doesn't depend on MTA.
-  * milters can be combined to apply spam and/or virus
-    protections effectively.
-  * milters installed in system will be detected and milter
-    manager doesn't need to configure.
-
-The details of them are described in
-((<Introduction|"doc/introduction.rd">)) but summary is
-showed here.
-
-=== How to register milter
-
-Now, milter can be supported by Sendmail and Postfix. But
-they have different configuration way. That is milters are
-registered with different configuration way. It's a milter
-advantage that common mail filter can be shared by different
-MTAs. But configuration way can't be shared.
-
-If milter manager is introduced between MTA and milters,
-milters can be registered without MTA dependency.
-
-=== Flexible milter combination
+See ((<Introduction|"doc/introduction.rd">)) for more details.
 
 == Dependencies
 

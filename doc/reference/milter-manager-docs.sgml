@@ -4,7 +4,7 @@
 ]>
 <book xmlns:xi="http://www.w3.org/2003/XInclude" id="index" lang="en">
   <bookinfo>
-    <title>milter-manager Reference Manual</title>
+    <title>milter manager Reference Manual</title>
     <releaseinfo>for milter manager &version;</releaseinfo>
   </bookinfo>
 
