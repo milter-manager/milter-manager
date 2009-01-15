@@ -26,7 +26,9 @@ EXTRA_DIST =					\
 	autogen.sh				\
 	ChangeLog.toolkit			\
 	README					\
-	README.ja
+	README.ja				\
+	NEWS					\
+	NEWS.ja
 
 upload: upload-doc upload-coverage
 
