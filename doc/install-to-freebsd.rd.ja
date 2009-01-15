@@ -35,9 +35,9 @@ milterはspamass-milter、clamav-milter、milter-greylistを使用
   % cd ~/src/
   % wget ...
   % cd milter-manager-0.7.0
-  % ./configure
-  % make
-  % sudo make install
+  % ./configure CFLAGS="-I/usr/local/include"
+  % gmake
+  % sudo gmake install
 
 == 設定
 

@@ -34,9 +34,9 @@ We work at ~/src/. We will install milter manager into /usr/local/.
   % cd ~/src/
   % wget ...
   % cd milter-manager-0.7.0
-  % ./configure
-  % make
-  % sudo make install
+  % ./configure CFLAGS="-I/usr/local/include"
+  % gmake
+  % sudo gmake install
 
 == Configuration
 
