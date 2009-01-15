@@ -28,7 +28,7 @@ EXTRA_DIST =					\
 	README					\
 	README.ja
 
-upload: upload-doc
+upload: upload-doc upload-coverage
 
 release: dist
 	$(srcdir)/misc/release.rb				\
@@ -39,6 +39,9 @@ release: dist
 upload-doc:
 	cd html && $(MAKE) $(AM_MAKEFLAGS) upload
 	cd doc/reference && $(MAKE) $(AM_MAKEFLAGS) upload
+
+upload-coverage: coverage
+	rsync -avz coverage/ $(SF_HTDOCS)/coverage/
 
 update-po:
 	cd $(top_srcdir) &&				\

@@ -1,5 +1,7 @@
 2009-01-15  Kouhei Sutou  <kou@clear-code.com>
 
+	* Makefile.am, html/index.html*: support coverage upload.
+
 	* doc/reference/Makefile.am (upload): add missing last '/'.
 
 	* NEWS*: add.
