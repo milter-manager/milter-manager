@@ -44,6 +44,9 @@ If milter manager is introduced, milter manager
 administrates milters instead of MTA. The was has some
 advantages:
 
+  * reduce milter administration cost
+  * combine milters flexibly
+
   * milter registration way doesn't depend on MTA.
   * milters can be combined to apply spam and/or virus
     protections effectively.
@@ -66,47 +69,6 @@ If milter manager is introduced between MTA and milters,
 milters can be registered without MTA dependency.
 
 === Flexible milter combination
-
-In MTA configuration, each milter always applies or not. It
-can't be done that a milter applies only when some
-conditions are true. milter manager has some check points in
-milter session. They can be used for it.
-
-=== Dynamic configuration
-
-milter manager embeds Ruby interpreter. Ruby is a real
-programming language that provides easy to read syntax and
-flexibility.
-
-milter manager can configure milters more flexible than
-existing MTA because milter manager's configuration file is
-processed as a Ruby script. For example, milter manager can
-detect milters installed in your system and register
-it. It means that you can change each milter's configuration
-without updating milter manager's configuration.
-
-Currently, Ubuntu (Debian) and FreeBSD are supported. If you
-want to use milters installed by package system (dpkg or
-ports), you don't need to change milter manager's
-configuration. If a milter is installed by package system
-and enabled, milter manager detects and uses it. See
-((<Install|"doc/install.rd">)) for more information.
-
-There is a opinion that milter manager's configuration file
-has more difficult syntax than MTA's configuration file. As
-mentioned above, Ruby has easy to read syntax, it's not
-difficult in normal use. ((-At least, it's more easier
-rather than Sendmail's one.-))
-
-For example, here is a configuration for connection socket:
-
-  manager.connection_spec = "inet:10025@localhost"
-
-It's almost same as Postfix's configuration syntax.
-("item = value")
-
-milter manager will also provide Web interface for
-configuration since the next release.
 
 == Dependencies
 
