@@ -129,7 +129,7 @@ LinuxではCentOS 5.2、Ubuntu 8.04 TLS上で動作することを想定し
 
 === あるとよいライブラリ他
 
-  * Cutter >= 1.0.6: C言語用単体テストフレームワーク
+  * Cutter >= 1.0.6（未リリース）: C言語用単体テストフレームワーク
 
     make checkおよびmake coverageを実行する場合は必要。
 

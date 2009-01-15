@@ -122,7 +122,7 @@ configuration since the next release.
 
 === Optional dependencies
 
-  * Cutter >= 1.0.6: unit testing framework for C
+  * Cutter >= 1.0.6 (not released yet): unit testing framework for C
 
     It is needed for 'make check' and 'make coverage'.
 

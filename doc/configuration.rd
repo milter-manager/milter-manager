@@ -153,7 +153,7 @@ Here are descriptions of configuration items.
      * IPv6 socket: inet6:PORT@HOST
        * Example: inet6:10025@localhost
 
-     * IPv6ソケット: inet6:PORT@[ADDRESS]
+     * IPv6 socket: inet6:PORT@[ADDRESS]
        * Example: inet6:10025@[::1]
 
    If security.effective_user and/or
