@@ -1,6 +1,6 @@
 # -*- rd -*-
 
-= README --- milter manager: より柔軟にmilterを使うためのmilter
+= README --- milter manager: より効果的にmilterを使うためのmilter
 
 == 名前
 
@@ -37,7 +37,7 @@ milter manager
 
 == milter manager
 
-milter managerは複数のmilterを管理するmilterです。
+milter managerはmilter効果的に利用するためのmilterです。
 
 milter managerを導入することにより、MTAが行っていたmilter管理
 をmilter managerが行うことになるため、以下のような利点があり

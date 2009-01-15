@@ -11,6 +11,7 @@ SUBDIRS =		\
 	build		\
 	misc		\
 	doc		\
+	html		\
 	license
 
 pkgconfigdir = $(libdir)/pkgconfig

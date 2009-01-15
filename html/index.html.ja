@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja" xml:lang="ja">
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <title>milter manager - milterを効果的に使うためのmilter</title>
+  </head>
+  <body>
+    <h1>milter manager - milterを効果的に使うためのmilter</h1>
+    <p>[<a href="./">English</a>]</p>
+    <ul>
+      <li><a href="http://sourceforge.net/projects/milter-manager/">プロジェクトページ</a></li>
+      <li>
+        <a href="reference/ja/news.html">ニュース</a>
+        (<a href="reference/news.html">en</a>)
+      </li>
+      <li>
+        <a href="reference/ja/readme.html">README</a>
+        (<a href="reference/readme.html">en</a>)
+      </li>
+      <li>
+        <a href="reference/ja/introduction.html">はじめに</a>
+        (<a href="reference/introduction.html">en</a>)
+      </li>
+      <li>
+        <a href="reference/ja/install.html">インストール</a>
+        (<a href="reference/install.html">en</a>)
+      </li>
+    </ul>
+    <p>
+      <a href="http://sourceforge.net">
+	<img src="http://sflogo.sourceforge.net/sflogo.php?group_id=236233&amp;type=1"
+	  width="88" height="31" border="0" alt="SourceForge.net Logo" />
+      </a>
+    </p>
+  </body>
+</html>

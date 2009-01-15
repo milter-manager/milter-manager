@@ -1,6 +1,6 @@
 # -*- rd -*-
 
-= README --- milter-manager: An milter to use milters flexibly.
+= README --- milter-manager: a milter to use milters effectively.
 
 == Name
 
@@ -37,8 +37,8 @@ Here is a concrete list:
 
 == milter manager
 
-milter manager is a milter that administrates multiple
-milters.
+milter manager is a milter to use multiple milters
+effectively.
 
 If milter manager is introduced, milter manager
 administrates milters instead of MTA. The was has some
