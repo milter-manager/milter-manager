@@ -1,5 +1,8 @@
 2009-01-16  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/manager/milter-manager-children.c,
+	test/manager/test-children.c: improve log.
+
 	* admin/TODO: add.
 
 	* **/*: fix typos: mitler -> milter.

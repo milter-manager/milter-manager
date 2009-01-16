@@ -661,6 +661,7 @@ emit_replace_body_signal (MilterManagerChildren *children)
 
     g_io_channel_seek_position(priv->body_file, 0, G_SEEK_SET, &error);
     if (error) {
+        milter_error("[children][error][body][read][seek] %s", error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
                                     error);
         g_error_free(error);
@@ -681,6 +682,7 @@ emit_replace_body_signal (MilterManagerChildren *children)
     }
 
     if (error) {
+        milter_error("[children][error][body][read] %s", error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
                                     error);
         g_error_free(error);
@@ -1533,30 +1535,41 @@ milter_manager_children_start_child (MilterManagerChildren *children,
     gchar *command;
     gchar *user_name;
     MilterManagerChildrenPrivate *priv;
+    MilterServerContext *context;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+    context = MILTER_SERVER_CONTEXT(child);
 
-    if (!priv->launcher_writer)
+    if (!priv->launcher_writer) {
+        milter_debug("[children][start-child][skip] launcher isn't available: %s",
+                     milter_server_context_get_name(context));
         return FALSE;
+    }
 
     command = milter_manager_child_get_command_line_string(child);
     user_name = milter_manager_child_get_user_name(child);
 
-    if (!command || !user_name)
+    if (!command) {
+        milter_debug("[children][start-child][skip] command isn't set: %s",
+                     milter_server_context_get_name(context));
         return FALSE;
+    }
 
     encoder = MILTER_MANAGER_LAUNCH_COMMAND_ENCODER(milter_manager_launch_command_encoder_new());
 
     milter_manager_launch_command_encoder_encode_launch(encoder,
                                                         &packet, &packet_size,
                                                         command,
-                                                        g_get_user_name());
-    milter_writer_write(priv->launcher_writer, packet, packet_size, NULL, &error);
+                                                        user_name);
+    milter_writer_write(priv->launcher_writer, packet, packet_size,
+                        NULL, &error);
     g_free(packet);
     g_object_unref(encoder);
 
     if (error) {
-        milter_error("Error: %s", error->message);
+        milter_error("[children][error][start-child] %s: %s",
+                     error->message,
+                     milter_server_context_get_name(context));
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
                                     error);
         g_error_free(error);
@@ -1579,12 +1592,17 @@ remove_queue_in_negotiate (MilterManagerChildren *children,
             g_signal_emit_by_name(children, "negotiate-reply",
                                   priv->option, priv->macros_requests);
         } else {
+            MilterServerContext *context;
             GError *error = NULL;
+
+            context = MILTER_SERVER_CONTEXT(child);
             g_set_error(&error,
                         MILTER_MANAGER_CHILDREN_ERROR,
                         MILTER_MANAGER_CHILDREN_ERROR_NO_NEGOTIATION_RESPONSE,
-                        "There is no negotiation response from milters.");
-            milter_error("%s", error->message);
+                        "There is no negotiation response from milters");
+            milter_error("[children][remove][queue] %s: %s",
+                         error->message,
+                         milter_server_context_get_name(context));
             milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
                                         error);
             g_error_free(error);
@@ -1609,7 +1627,7 @@ cb_connection_timeout (MilterServerContext *context, gpointer user_data)
 {
     NegotiateData *data = user_data;
 
-    milter_error("connection to %s is timed out.",
+    milter_error("[children][timeout][connection] %s",
                  milter_server_context_get_name(context));
     clear_try_negotiate_data(data);
 }
@@ -1618,11 +1636,15 @@ static void
 cb_connection_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
 {
     NegotiateData *data = user_data;
+    MilterServerContext *context;
     MilterManagerChildrenPrivate *priv;
     gboolean privilege;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(data->children);
-    milter_debug("connection_error: %s", error->message);
+    context = MILTER_SERVER_CONTEXT(data->child);
+    milter_error("[children][error][connection] %s: %s",
+                 error->message,
+                 milter_server_context_get_name(context));
 
     /* ignore MILTER_MANAGER_CHILD_ERROR_MILTER_EXIT */
     if (error->domain != MILTER_SERVER_CONTEXT_ERROR ||
@@ -1845,7 +1867,7 @@ state_to_command (MilterServerContextState state)
 }
 
 static MilterCommand
-get_next_command (MilterManagerChildren *children, 
+get_next_command (MilterManagerChildren *children,
                   MilterServerContext *context,
                   MilterServerContextState state)
 {
@@ -2021,7 +2043,7 @@ milter_manager_children_check_alive (MilterManagerChildren *children)
                 MILTER_MANAGER_CHILDREN_ERROR,
                 MILTER_MANAGER_CHILDREN_ERROR_NO_ALIVE_MILTER,
                 "All milters are no longer alive.");
-    milter_error("%s", error->message);
+    milter_error("[children][error][alive] %s", error->message);
     milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
                                 error);
     g_error_free(error);
@@ -2226,8 +2248,7 @@ send_command_to_first_waiting_child (MilterManagerChildren *children,
      * If the first child is not needed the command, 
      * send dummy "continue" to shift next state.
      */
-    milter_server_context_set_state(first_child,
-                                    command_to_state(command));
+    milter_server_context_set_state(first_child, command_to_state(command));
     g_signal_emit_by_name(first_child, "continue");
     return MILTER_STATUS_PROGRESS;
 }
@@ -2380,6 +2401,7 @@ open_body_file (MilterManagerChildren *children)
     fd = g_file_open_tmp(NULL, &priv->body_file_name, &error);
     priv->body_file = g_io_channel_unix_new(fd);
     if (error) {
+        milter_error("[children][error][body][open] %s", error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
                                     error);
         g_error_free(error);
@@ -2388,6 +2410,7 @@ open_body_file (MilterManagerChildren *children)
 
     g_io_channel_set_encoding(priv->body_file, NULL, &error);
     if (error) {
+        milter_error("[children][error][body][encoding] %s", error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
                                     error);
         g_error_free(error);
@@ -2419,6 +2442,7 @@ write_to_body_file (MilterManagerChildren *children,
 
     g_io_channel_write_chars(priv->body_file, chunk, size, &written_size, &error);
     if (error) {
+        milter_error("[children][error][body][write] %s", error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
                                     error);
         g_error_free(error);
@@ -2525,7 +2549,7 @@ send_body_to_child (MilterManagerChildren *children, MilterServerContext *contex
 
     g_io_channel_seek_position(priv->body_file, 0, G_SEEK_SET, &error);
     if (error) {
-        milter_error("[children][error][body][seek] %s: %s",
+        milter_error("[children][error][body][send][seek] %s: %s",
                      error->message,
                      milter_server_context_get_name(context));
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children), error);

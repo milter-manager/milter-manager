@@ -1519,7 +1519,9 @@ test_no_negotiation (void)
 
     cut_assert_true(milter_manager_children_negotiate(children, option, NULL));
     g_main_context_iteration(NULL, FALSE);
-    cut_assert_equal_string("There is no negotiation response from milters.",
+    cut_assert_equal_string("[children][remove][queue] "
+                            "There is no negotiation response from milters: "
+                            "milter@10027",
                             error_message);
 }
 
