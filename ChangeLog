@@ -1,5 +1,8 @@
 2009-01-16  Kouhei Sutou  <kou@clear-code.com>
 
+	* data/defaults/debian.conf, data/defaults/freebsd.conf: enable
+	controller by default.
+
 	* milter/manager/milter-manager-children.c: default
 	retry_connect_timeout should be less than 10 seconds because write
 	timeout is 10 seconds by default.
