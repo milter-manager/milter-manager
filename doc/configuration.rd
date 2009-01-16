@@ -95,7 +95,7 @@ Here are descriptions of configuration items.
 : security.effective_user
 
    Specifies effective user of milter-manager process. To switch
-   effective user, you need to run mitler-manager command as
+   effective user, you need to run milter-manager command as
    root user.
 
    Effective user is specified like "nobody". User name should
@@ -111,7 +111,7 @@ Here are descriptions of configuration items.
 : security.effective_group
 
    Specifies effective group of milter-manager process. To switch
-   effective group, you need to run mitler-manager command as
+   effective group, you need to run milter-manager command as
    root group.
 
    Effective group is specified like "nogroup". Group name should
@@ -263,7 +263,7 @@ FIXME
 
 Child milter is registered as the following syntax:
 
-  define_mitler("NAME") do |milter|
+  define_milter("NAME") do |milter|
     milter.XXX = ...
     milter.YYY = ...
     milter.ZZZ = ...
@@ -276,12 +276,12 @@ For example, to register a milter that accepts connection at
     milter.connection_spec = "inet:10026@localhost"
   end
 
-The following items can be used in 'define_mitler do ... end'.
+The following items can be used in 'define_milter do ... end'.
 
 Required item is just only milter.connection_spec.
 
 
-: mitler.connection_spec
+: milter.connection_spec
 
    Specifies socket that the child milter accepts.
    This is ((*required item*)).
@@ -363,7 +363,7 @@ Required item is just only milter.connection_spec.
 
 : milter.user_name
 
-   Specifies user name to run mitler.command.
+   Specifies user name to run milter.command.
 
    User name is specified like "nobody". User name should be
    surround with '"' (double quote). If you want to run

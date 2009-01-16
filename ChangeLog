@@ -1,5 +1,7 @@
 2009-01-16  Kouhei Sutou  <kou@clear-code.com>
 
+	* **/*: fix typos: mitler -> milter.
+
 	* milter/server/milter-server-context.c (cb_decoder_accept): use
 	nick name.
 

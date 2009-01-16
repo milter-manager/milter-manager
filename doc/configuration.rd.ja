@@ -262,7 +262,7 @@ FIXME
 
 子milterは以下の書式で登録します。
 
-  define_mitler("名前") do |milter|
+  define_milter("名前") do |milter|
     milter.XXX = ...
     milter.YYY = ...
     milter.ZZZ = ...
@@ -275,12 +275,12 @@ FIXME
     milter.connection_spec = "inet:10026@localhost"
   end
 
-define_mitler do ... end内で設定できる項目は以下の通りです。
+define_milter do ... end内で設定できる項目は以下の通りです。
 
 必須の項目はmilter.connection_specだけです。
 
 
-: mitler.connection_spec
+: milter.connection_spec
 
    子milterが接続待ちしているソケットを指定します。
    ((*必須項目*))です。
@@ -361,7 +361,7 @@ define_mitler do ... end内で設定できる項目は以下の通りです。
 
 : milter.user_name
 
-   mitler.commandを実行するユーザ名を指定します。
+   milter.commandを実行するユーザ名を指定します。
 
    ユーザ名は「"」で囲んで"nobody"というように指定します。
    root権限で実行する場合はnilを指定します。

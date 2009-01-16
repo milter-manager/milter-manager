@@ -383,7 +383,7 @@ EOC
                   "unix:/var/run/milter-greylist/milter-greylist.sock"]])
   end
 
-  def test_apply_spamass_mitler_style
+  def test_apply_spamass_milter_style
     (@init_d + "spamass-milter").open("w") do |file|
       file << <<-EOM
 ### BEGIN INIT INFO
