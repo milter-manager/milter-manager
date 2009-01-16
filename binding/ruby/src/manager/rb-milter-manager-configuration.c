@@ -184,15 +184,32 @@ to_xml (int argc, VALUE *argv, VALUE self)
     return rb_xml;
 }
 
+static void
+mark (gpointer data)
+{
+    MilterManagerConfiguration *configuration = data;
+    const GList *node;
+
+    for (node = milter_manager_configuration_get_eggs(configuration);
+	 node;
+	 node = g_list_next(node)) {
+	MilterManagerEgg *egg = node->data;
+
+	rbgobj_gc_mark_instance(egg);
+    }
+}
+
 void
 Init_milter_manager_configuration (void)
 {
     VALUE rb_cMilterManagerConfiguration;
 
     rb_cMilterManagerConfiguration =
-	G_DEF_CLASS(MILTER_TYPE_MANAGER_CONFIGURATION,
-		    "Configuration",
-		    rb_mMilterManager);
+	G_DEF_CLASS_WITH_GC_FUNC(MILTER_TYPE_MANAGER_CONFIGURATION,
+				 "Configuration",
+				 rb_mMilterManager,
+				 mark,
+				 NULL);
 
     G_DEF_SIGNAL_FUNC(rb_cMilterManagerConfiguration,
                       "to-xml", rb_milter_manager_gstring_handle_to_xml_signal);

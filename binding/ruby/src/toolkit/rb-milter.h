@@ -41,4 +41,9 @@ VALUE rb_cMilterSocketAddressUnix;
 
 VALUE rb_milter_cstr2rval_size_free(gchar *string, gsize size);
 
+#ifndef G_DEF_CLASS_WITH_GC_FUNC
+#  define G_DEF_CLASS_WITH_GC_FUNC(gtype, name, module, mark, free) \
+    G_DEF_CLASS2(gtype, name, module, mark, free)
+#endif
+
 #endif

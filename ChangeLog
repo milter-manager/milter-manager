@@ -1,5 +1,10 @@
 2009-01-16  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/src/toolkit/rb-milter.h (G_DEF_CLASS_WITH_GC_FUNC):
+	support Ruby/GLib2 0.16.0.
+
+	* binding/ruby/src/manager/rb-milter-manager-configuration.c: mark eggs.
+
 	* configure.ac (contact address): kou@cozmixng.org ->
 	milter-manager-users-en@lists.sourceforge.net.
 
