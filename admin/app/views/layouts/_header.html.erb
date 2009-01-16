@@ -9,7 +9,7 @@
 <% elsif User.count.zero? -%>
   <li><%= link_to(t("menu.signup"), signup_path) %></li>
 <% else -%>
-  <li><%= link_to(t("menu.login"), login_path) %></li>
+  <li><%= link_to_unless_current(t("menu.login"), login_path) %></li>
 <% end -%>
 </ul>
 

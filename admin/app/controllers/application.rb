@@ -24,6 +24,8 @@ class ApplicationController < ActionController::Base
       Configuration.sync
       configuration = Configuration.latest
     rescue ::Milter::Manager::ConnectionError
+      flash[:notice] = t("notice.failure.milter-manager-connect",
+                         :message => $!.message)
       logger.info($!)
     end
 

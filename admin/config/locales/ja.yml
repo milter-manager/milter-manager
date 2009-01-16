@@ -76,6 +76,7 @@ ja:
       sync: "同期に失敗しました。"
       signup: "登録に失敗しました。"
       login: "「{{value}}」でのログインに失敗しました。"
+      milter-manager-connect: "milter-managerへの接続に失敗しました: {{message}}"
   target:
     milter: "milter"
   message:
