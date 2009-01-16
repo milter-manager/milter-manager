@@ -213,7 +213,7 @@ test_already_launched (void)
     g_free(packet);
     milter_manager_reply_encoder_encode_error(reply_encoder,
                                               &packet, &packet_size,
-                                              "/bin/cat has been already launched.");
+                                              "already launched: </bin/cat>");
     g_string_append_len(expected_packet, packet, packet_size);
     output = gcut_string_io_channel_get_string(output_channel);
     cut_assert_equal_memory(expected_packet->str, expected_packet->len,

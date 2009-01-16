@@ -123,15 +123,15 @@ set_user (const gchar *user_name, GError **error)
         g_set_error(error,
                     MILTER_MANAGER_CHILD_ERROR,
                     MILTER_MANAGER_CHILD_ERROR_NO_PRIVILEGE_MODE,
-                    "MilterManager is not running on privilege mode.");
+                    "failed to change GID: %s", g_strerror(errno));
         return FALSE;
     }
 
-    if (setreuid(-1, password->pw_uid) == -1) {
+    if (setreuid(password->pw_uid, -1) == -1) {
         g_set_error(error,
                     MILTER_MANAGER_CHILD_ERROR,
                     MILTER_MANAGER_CHILD_ERROR_NO_PRIVILEGE_MODE,
-                    "MilterManager is not running on privilege mode.");
+                    "failed to change UID: %s", g_strerror(errno));
         return FALSE;
     }
 
@@ -200,10 +200,10 @@ child_watch_func (GPid pid, gint status, gpointer user_data)
     if (WIFSIGNALED(status)) {
         /* FIXME restart */
     } else if (WIFEXITED(status)){
-        milter_info("%s terminated normally.", data->command_line);
+        milter_debug("[launcher][finish][success] <%s>", data->command_line);
     } else {
-        milter_info("%s terminated with status(%d).",
-                    data->command_line, status);
+        milter_debug("[launcher][finish][failure] %d: <%s>",
+                    status, data->command_line);
     }
     process_data_free(process->data);
     priv->processes = g_list_remove_link(priv->processes, process);
@@ -225,7 +225,7 @@ is_already_launched (MilterManagerProcessLauncher *launcher,
     g_set_error(error,
                 MILTER_MANAGER_PROCESS_LAUNCHER_ERROR,
                 MILTER_MANAGER_PROCESS_LAUNCHER_ERROR_ALREADY_LAUNCHED,
-                "%s has been already launched.",
+                "already launched: <%s>",
                 command_line);
     return TRUE;
 }
@@ -290,12 +290,14 @@ launch (MilterManagerProcessLauncher *launcher,
         return FALSE;
     }
 
-    milter_debug("started: <%s>", command_line);
+    milter_debug("[launcher][start] <%s>", command_line);
 
     priv = MILTER_MANAGER_PROCESS_LAUNCHER_GET_PRIVATE(launcher);
-    watch_id = g_child_watch_add(pid, (GChildWatchFunc)child_watch_func, launcher);
-    priv->processes = g_list_prepend(priv->processes,
-                                     process_data_new(pid, watch_id, command_line, user_name));
+    watch_id = g_child_watch_add(pid,
+                                 (GChildWatchFunc)child_watch_func, launcher);
+    priv->processes =
+        g_list_prepend(priv->processes,
+                       process_data_new(pid, watch_id, command_line, user_name));
 
     return TRUE;
 }
@@ -322,6 +324,10 @@ cb_decoder_launch (MilterManagerLaunchCommandDecoder *decoder,
     encoder = MILTER_MANAGER_REPLY_ENCODER(_encoder);
 
     if (!launch(launcher, command_line, user_name, &error)) {
+        milter_error("[launcher][error][launch] <%s>@<%s>: %s",
+                     command_line,
+                     user_name ? user_name : "NULL",
+                     error->message);
         milter_manager_reply_encoder_encode_error(encoder,
                                                   &packet,
                                                   &packet_size,
@@ -334,7 +340,9 @@ cb_decoder_launch (MilterManagerLaunchCommandDecoder *decoder,
     }
 
     if (!milter_agent_write_packet(agent, packet, packet_size, &error)) {
-        milter_error("failed to write reply success packet: <%s>",
+        milter_error("[launcher][error][write] <%s>@<%s>: %s",
+                     command_line,
+                     user_name ? user_name : "NULL",
                      error->message);
         g_error_free(error);
     }
