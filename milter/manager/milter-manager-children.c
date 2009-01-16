@@ -227,7 +227,7 @@ milter_manager_children_init (MilterManagerChildren *milter)
     priv->reply_extended_code = NULL;
     priv->reply_message = NULL;
 
-    priv->retry_connect_time = 20.0;
+    priv->retry_connect_time = 5.0;
     priv->launcher_reader = NULL;
     priv->launcher_writer = NULL;
 
