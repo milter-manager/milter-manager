@@ -8,8 +8,6 @@
     * user name
     * timeouts
     * command options?
-* user management.
-* merge into milter-manager/admin/
 * control/status
 * implement get-status of milter-manager-controller. YAML?
 * config/reload
