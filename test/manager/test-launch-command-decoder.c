@@ -29,6 +29,7 @@
 #include <gcutter.h>
 
 void test_decode_launch (void);
+void test_decode_launch_without_user_name (void);
 void test_decode_unknown (void);
 
 static MilterDecoder *decoder;
@@ -134,6 +135,22 @@ test_decode_launch (void)
     cut_assert_equal_int(1, n_launch_received);
     cut_assert_equal_string(command_line, actual_command_line);
     cut_assert_equal_string(user_name, actual_user_name);
+}
+
+void
+test_decode_launch_without_user_name (void)
+{
+    const gchar command_line[] = "/bin/echo -n";
+
+    g_string_append(buffer, "launch");
+    g_string_append_c(buffer, '\0');
+    g_string_append(buffer, command_line);
+    g_string_append_c(buffer, '\0');
+
+    gcut_assert_error(decode());
+    cut_assert_equal_int(1, n_launch_received);
+    cut_assert_equal_string(command_line, actual_command_line);
+    cut_assert_equal_string(NULL, actual_user_name);
 }
 
 /*

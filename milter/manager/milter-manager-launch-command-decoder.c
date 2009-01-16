@@ -98,7 +98,7 @@ decode_launch (MilterDecoder *decoder,
 {
     gint null_character_point;
     const gchar *command_line;
-    const gchar *user_name;
+    const gchar *user_name = NULL;
 
     null_character_point =
         milter_decoder_decode_null_terminated_value(content,
@@ -110,8 +110,12 @@ decode_launch (MilterDecoder *decoder,
         return FALSE;
 
     command_line = content;
-    user_name = content + null_character_point + 1;
+    if (null_character_point < length - 1)
+        user_name = content + null_character_point + 1;
 
+    milter_debug("[launch-command-decoder][launch] <%s>@<%s>",
+                 command_line,
+                 user_name ? user_name : "NULL");
     g_signal_emit(decoder, signals[LAUNCH], 0, command_line, user_name);
 
     return TRUE;

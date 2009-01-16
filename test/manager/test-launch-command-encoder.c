@@ -24,6 +24,7 @@
 #include <gcutter.h>
 
 void test_encode_launch (void);
+void test_encode_launch_without_user_name (void);
 
 static MilterManagerLaunchCommandEncoder *encoder;
 static GString *expected;
@@ -84,6 +85,26 @@ test_encode_launch (void)
         encoder,
         &actual, &actual_size,
         command_line, user_name);
+
+    cut_assert_equal_memory(expected->str, expected->len,
+                            actual, actual_size);
+}
+
+void
+test_encode_launch_without_user_name (void)
+{
+    const gchar command_line[] = "/bin/echo -n";
+
+    g_string_append(expected, "launch");
+    g_string_append_c(expected, '\0');
+    g_string_append(expected, command_line);
+    g_string_append_c(expected, '\0');
+
+    pack(expected);
+    milter_manager_launch_command_encoder_encode_launch(
+        encoder,
+        &actual, &actual_size,
+        command_line, NULL);
 
     cut_assert_equal_memory(expected->str, expected->len,
                             actual, actual_size);

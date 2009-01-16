@@ -73,7 +73,8 @@ milter_manager_launch_command_encoder_encode_launch (
     g_string_append_c(buffer, '\0');
     g_string_append(buffer, command_line);
     g_string_append_c(buffer, '\0');
-    g_string_append(buffer, user_name);
+    if (user_name)
+        g_string_append(buffer, user_name);
     milter_encoder_pack(_encoder, packet, packet_size);
 }
 
