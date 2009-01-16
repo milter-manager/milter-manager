@@ -33,3 +33,6 @@ en:
       signup: "We couldn't set up that account."
       login: "Couldn't log you in as '{{value}}'"
       milter-manager-connect: "Failed to connect to milter-manager: {{message}}"
+  message:
+    configuration:
+      index: "milter manager's configuration."

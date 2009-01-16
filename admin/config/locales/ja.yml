@@ -83,6 +83,8 @@ ja:
     confirm:
       delete: "本当に削除してもよいですか？"
     logged-in-as: "{{value}}でログイン中"
+    configuration:
+      index: "milter-managerの設定を行います。"
 
   activerecord:
     models:
