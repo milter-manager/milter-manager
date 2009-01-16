@@ -1,0 +1,30 @@
+<h2><%= t("title.applicable-condition") %> - <%= h(@condition.name) %></h2>
+
+<table>
+  <tr>
+    <th><%= t("label.name") %></th>
+    <td><%=h @condition.name %></td>
+  </tr>
+  <tr>
+    <th><%= t("label.description") %></th>
+    <td><p><%=h @condition.description %></p></td>
+  </tr>
+</table>
+
+<h3><%= t("label.applied-milters") %></h3>
+<% if @condition.milters.empty? -%>
+  <p><%= t("label.empty") %></p>
+<% else -%>
+  <table>
+    <tr>
+      <th><%= t("label.name") %></th>
+      <th><%= t("label.description") %></th>
+    </tr>
+<%  @condition.milters.each do |milter| -%>
+    <tr <%= enabled_class(milter.enabled?) %>>
+      <td><%= link_to(h(milter.name), config_milter_path(milter)) %></td>
+      <td><p><%= h(milter.description) %></p></td>
+    </tr>
+<%   end -%>
+  </table>
+<% end -%>

@@ -1,0 +1,12 @@
+  <h2><%= t("title.control") %></h2>
+
+  <p><%= t("label.status") %>: <%=h @status %></p>
+
+  <ul class="menu">
+    <li><%= link_to(t("menu.control-reload"),
+                    control_path(:action => "reload")) %></li>
+    <li><%= link_to(t("menu.control-restart"),
+                    control_path(:action => "restart")) %></li>
+    <li><%= link_to(t("menu.control-quit"),
+                    control_path(:action => "quit")) %></li>
+  </ul>

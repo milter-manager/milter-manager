@@ -1,0 +1,8 @@
+<h1><%= link_to("milter-manager admin", root_path) %></h1>
+
+<ul class="header-menu">
+  <li><%= link_to(t("menu.config"), config_path) %></li>
+<% unless Config::Connection.default.spec.blank? -%>
+  <li><%= link_to(t("menu.control"), control_path) %></li>
+<% end -%>
+</ul>

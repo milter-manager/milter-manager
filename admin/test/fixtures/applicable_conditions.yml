@@ -1,0 +1,9 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+s25r:
+  name: S25R
+  description: Selective SMTP Rejection
+
+remote_network:
+  name: remote-network
+  description: Check only remote network

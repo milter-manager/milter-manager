@@ -1,0 +1,17 @@
+* validation
+  * must: name
+  * format: connection
+* UI
+  * don't show delete action if the milter is defined in base
+    milter-manager.conf.
+  * show missing fields
+    * user name
+    * timeouts
+    * command options?
+* user management.
+* merge into milter-manager/admin/
+* control/status
+* implement get-status of milter-manager-controller. YAML?
+* config/reload
+* config/security
+  * privilege mode

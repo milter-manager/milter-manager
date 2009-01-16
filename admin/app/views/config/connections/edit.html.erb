@@ -1,0 +1,15 @@
+<h2><%= t("title.connection") %></h2>
+
+<% form_for(@connection) do |form| %>
+  <%= form.error_messages %>
+
+  <table>
+    <tr>
+      <th><%= t("label.spec") %></th>
+      <td><%= spec_input_tag(form) %></td>
+    </tr>
+    <tr class="concatenated">
+      <td colspan="2"><%= form.submit(t("action.update")) %></td>
+    </tr>
+  </table>
+<% end %>

@@ -1,0 +1,13 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+virus_scan_s25r:
+  milter: virus_scanner
+  applicable_condition: s25r
+
+greylist_s25r:
+  milter: greylist
+  applicable_condition: s25r
+
+anti_spam_remote:
+  milter: anti_spam
+  applicable_condition: remote_network

@@ -1,0 +1,28 @@
+<h2><%= t("title.milters") %></h2>
+
+<table class="list">
+  <tr>
+    <th><%= t("title.name") %></th>
+    <th><%= t("title.description") %></th>
+    <th><%= t("title.enabled") %></th>
+    <th><%= t("title.operations") %></th>
+  </tr>
+<% @milters.each do |milter| -%>
+  <tr <%= enabled_class(milter.enabled?) %>>
+    <td><%= link_to(h(milter.name), config_milter_path(milter)) %></td>
+    <td><p><%= h(milter.description) %></p></td>
+    <td><%= check_box_tag("milter-enabled-#{milter.id}",
+	                  "1",
+                          milter.enabled?,
+                          :disabled => true) %>
+    </td>
+    <td>
+     [<%= toggle_enabled_link(milter) %>]
+     [<%= link_to(t("action.edit"), edit_config_milter_path(milter)) %>]
+     [<%= link_to(t("action.destroy"), milter,
+                  :confirm => t("message.confirm.delete"),
+                  :method => :delete) %>]
+    </td>
+  </tr>
+<% end -%>
+</table>

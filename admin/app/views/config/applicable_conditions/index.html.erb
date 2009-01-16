@@ -1,0 +1,15 @@
+<h2><%= t("title.applicable-conditions") %></h2>
+
+<table class="list">
+  <tr>
+    <th><%= t("label.name") %></th>
+    <th><%= t("label.description") %></th>
+  </tr>
+<% @conditions.each do |condition| -%>
+  <tr>
+    <td><%= link_to(h(condition.name),
+                    config_applicable_condition_path(condition)) %></td>
+    <td><p><%= h(condition.description) %></p></td>
+  </tr>
+<% end -%>
+</table>

@@ -1,0 +1,13 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+<%
+  random_port_number = nil
+  TCPServer.open("localhost", 0) do |server|
+    random_port_number = server.addr[1]
+  end
+%>
+default:
+  name: <%= Config::Connection::DEFAULT_NAME %>
+  spec_type: inet
+  spec_port: <%= random_port_number %>
+  spec_host: 127.0.0.1

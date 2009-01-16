@@ -1,0 +1,22 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+anti_spam:
+  name: anti spam
+  connection_spec_type: inet
+  connection_spec_port: 10026
+  connection_spec_host: localhost
+  command: anti-spam-milter
+
+greylist:
+  name: greylist
+  connection_spec_type: inet
+  connection_spec_port: 10027
+  connection_spec_host: localhost
+  command: greylist-milter
+
+virus_scanner:
+  name: virus scanner
+  connection_spec_type: inet
+  connection_spec_port: 10028
+  connection_spec_host: localhost
+  command: virus-scan-milter

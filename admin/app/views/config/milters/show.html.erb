@@ -1,0 +1,42 @@
+<h2><%= t("title.milter") %> - <%= h(@milter.name) %></h2>
+
+<p <%= enabled_class(@milter.enabled?) %>>
+<%= enabled_label(@milter.enabled?) %>
+</p>
+
+<table <%= enabled_class(@milter.enabled?) %>>
+  <tr>
+    <th><%= t("label.name") %></th>
+    <td><%=h @milter.name %></td>
+  </tr>
+  <tr>
+    <th><%= t("label.description") %></th>
+    <td><p><%=h @milter.description %></p></td>
+  </tr>
+  <tr>
+    <th><%= t("label.connection-spec") %></th>
+    <td><%=h @milter.connection_spec %></td>
+  </tr>
+  <tr>
+    <th><%= t("label.command") %></th>
+    <td><%=h @milter.command %> <%=h @milter.command_options %></td>
+  </tr>
+</table>
+
+<h3><%= t("title.applicable-condition") %></h3>
+<% if @milter.applicable_conditions.empty? -%>
+<p><%= t("label.empty") %></p>
+<% else -%>
+<table>
+  <tr>
+    <th><%= t("label.name") %></th>
+    <th><%= t("label.description") %></th>
+  </tr>
+<%   @milter.applicable_conditions.each do |condition| -%>
+  <tr>
+    <td><%= h(condition.name) %></td>
+    <td><p><%= h(condition.description) %></p></td>
+  </tr>
+<%   end -%>
+</table>
+<% end -%>

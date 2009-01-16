@@ -1,0 +1,131 @@
+html,
+body
+{
+  margin: 0px;
+  padding: 0px;
+  background-color: white;
+}
+
+h1
+{
+  margin: 0px;
+  margin-top: 15px;
+  margin-left: 15px;
+  padding: 0px;
+  background-image: url("../images/logo.png");
+  background-repeat: no-repeat;
+  height: 75px;
+}
+
+h1 a
+{
+  top: 15px;
+  left: 15px;
+  width: 250px;
+  height: 75px;
+  padding: 0px;
+  position: absolute;
+  text-indent: -30em;
+}
+
+div.header
+{
+}
+
+div.body
+{
+  padding: 0px 1em;
+  position: relative;
+}
+
+div.footer
+{
+  text-align: right;
+  margin-top: 2em;
+  margin-right: 1em;
+}
+
+div.flash-box-container
+{
+  position: relative;
+}
+
+div.flash-box
+{
+  position: absolute;
+  top: 0;
+  left: 20%;
+  width: 60%;
+  background-color: #fcfffc;
+  border: 1px solid #cdc;
+}
+
+div.flash-box p
+{
+  margin-left: auto;
+  margin-right: auto;
+  width: 80%;
+}
+
+ul.header-menu
+{
+  background-image: url("../images/menu-background.png");
+  background-repeat: repeat-x;
+  padding-top: 5px;
+  height: 30px;
+  width: 100%;
+}
+
+ul.header-menu li
+{
+  display: inline;
+}
+
+ul.header-menu li a:link,
+ul.header-menu li a:visited
+{
+  color: white;
+  padding: 0.75em;
+}
+
+ul.header-menu li a:hover,
+ul.header-menu li a:active,
+ul.header-menu li a:focus
+{
+}
+
+span.translation_missing
+{
+  color: red;
+}
+
+table,
+tr,
+th,
+td
+{
+  border: 1px solid black;
+}
+
+th,
+td
+{
+  padding: 5px 10px;
+}
+
+tr.concatenated
+{
+  border: 0px none black;
+  text-align: right;
+}
+
+p.disabled
+{
+  color: red;
+}
+
+table.disabled,
+tr.disabled
+{
+  background-color: #eee;
+}

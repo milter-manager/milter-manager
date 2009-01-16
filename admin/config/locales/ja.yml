@@ -1,0 +1,75 @@
+# -*- indent-tabs-mode: nil -*-
+
+ja:
+  menu:
+    config: "設定"
+    config-connection: "接続"
+    config-milter: "milter"
+    config-applicable-condition: "適用条件"
+    control: "制御"
+    control-reload: "再読み込み"
+    control-restart: "再起動"
+    control-quit: "終了"
+  title:
+    welcome: "ようこそ!"
+    config: "設定"
+    config-items: "設定項目"
+    operations: "操作"
+    connection: "接続"
+    milters: "milter一覧"
+    milter: "milter"
+    applicable-condition: "適用条件"
+    applicable-conditions: "適用条件一覧"
+    control: "制御"
+    name: "名前"
+    description: "説明"
+    enabled: "有効"
+  label:
+    name: "名前"
+    description: "説明"
+    spec: "接続先"
+    status: "状態"
+    connection-spec: "接続先"
+    command: "コマンド"
+    command_options: "コマンドオプション"
+    use: "使う"
+    enabled: "有効"
+    disabled: "無効"
+    enabled-or-disabled: "有効/無効"
+    empty: "無し"
+    applied-milters: "適用されているmilter"
+    type: "種類"
+    path: "パス"
+    port: "ポート番号"
+    host: "ホスト"
+  action:
+    add: "追加"
+    show: "表示"
+    edit: "編集"
+    update: "更新"
+    create: "作成"
+    destroy: "削除"
+    list: "一覧"
+    enable: "有効にする"
+    disable: "無効にする"
+  notice:
+    success:
+      create: "{{target}}を正常に作成しました。"
+      update: "{{target}}を正常に更新しました。"
+      enable: "{{target}}を有効にしました。"
+      disable: "{{target}}を無効にしました。"
+    failure:
+      sync: "同期に失敗しました。"
+  target:
+    milter: "milter"
+  message:
+    confirm:
+      delete: "本当に削除してもよいですか？"
+
+  activerecord:
+    models:
+      config milter: "milter"
+
+    attributes:
+      config/milter:
+        name: "名前"

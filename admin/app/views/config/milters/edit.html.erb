@@ -1,0 +1,51 @@
+<h2><%= t("title.milter") %> - <%= link_to(h(@milter.name), @milter) %></h2>
+
+<% form_for(@milter) do |form| %>
+  <%= form.error_messages %>
+
+  <table>
+    <tr>
+      <th><%= form.label("name", t("label.name")) %></th>
+      <td><%= form.text_field("name") %></td>
+    </tr>
+    <tr>
+      <th><%= form.label("connection_spec", t("label.connection-spec")) %></th>
+      <td><%= spec_input_tag(form, "connection_") %></td>
+    </tr>
+    <tr>
+      <th><%= form.label("description", t("label.description")) %></th>
+      <td><%= form.text_area("description", :rows => 3) %></td>
+    </tr>
+    <tr>
+      <th><%= form.label("enabled", t("label.enabled")) %></th>
+      <td><%= form.check_box("enabled") %></td>
+    </tr>
+  </table>
+
+  <h3><%= t("title.applicable-condition") %></h3>
+  <table>
+    <tr>
+      <th><%= t("label.name") %></th>
+      <th><%= t("label.description") %></th>
+      <th><%= t("label.use") %></th>
+    </tr>
+<%
+  ids = {}
+  @milter.applicable_conditions.each {|condition| ids[condition.id] = true}
+-%>
+<% Config::ApplicableCondition.find(:all).each do |condition| -%>
+    <tr>
+      <td><%= h(condition.name) %></td>
+      <td><p><%= h(condition.description) %></p></td>
+      <td>
+        <%= check_box_tag("applicable_conditions[]",
+                          condition.id,
+                          ids[condition.id],
+                          :id => "applicable_condition_#{condition.id}") %>
+      </td>
+    </tr>
+<% end -%>
+  </table>
+
+  <p><%= form.submit(t("action.update")) %></p>
+<% end %>

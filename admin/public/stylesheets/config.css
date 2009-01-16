@@ -1,0 +1,20 @@
+div.body div.content
+{
+  margin-left: 7.5em;
+}
+
+div.body div.sub-menu
+{
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 7em;
+  margin-left: 0.5em;
+}
+
+div.body div.sub-menu ul
+{
+  padding: 0;
+  margin-left: 1em;
+  margin-right: 0;
+}
