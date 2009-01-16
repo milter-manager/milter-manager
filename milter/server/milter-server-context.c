@@ -1464,8 +1464,8 @@ cb_decoder_accept (MilterReplyDecoder *decoder, gpointer user_data)
     disable_timeout(priv);
 
     state = priv->state;
-    state_name = milter_utils_get_enum_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
-                                            state);
+    state_name = milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                                                 state);
     milter_debug("[server][receive][accept][%s] %s",
                  state_name,
                  milter_server_context_get_name(context));

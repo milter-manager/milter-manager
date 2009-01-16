@@ -1,5 +1,8 @@
 2009-01-16  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/server/milter-server-context.c (cb_decoder_accept): use
+	nick name.
+
 	* binding/ruby/src/toolkit/rb-milter.h (G_DEF_CLASS_WITH_GC_FUNC):
 	support Ruby/GLib2 0.16.0.
 
