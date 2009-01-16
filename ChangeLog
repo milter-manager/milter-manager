@@ -1,5 +1,8 @@
 2009-01-16  Kouhei Sutou  <kou@clear-code.com>
 
+	* configure.ac (contact address): kou@cozmixng.org ->
+	milter-manager-users-en@lists.sourceforge.net.
+
 	* configure.ac: 0.7.0 -> 0.8.0.
 
 	* doc/install-to-freebsd.rd*: use fetch instead of wget on FreeBSD.
