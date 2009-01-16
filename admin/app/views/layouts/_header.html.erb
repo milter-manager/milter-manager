@@ -1,12 +1,23 @@
 <h1><%= link_to("milter-manager admin", root_path) %></h1>
 
 <ul class="top-menu">
+<% if logged_in? -%>
+  <li><%= t("message.logged-in-as",
+            :value => h(current_user.login)) %></li>
+  <li><%= link_to(t("menu.logout"), logout_path) %></li>
+  <li><%= link_to(t("menu.signup"), signup_path) %></li>
+<% elsif User.count.zero? -%>
+  <li><%= link_to(t("menu.signup"), signup_path) %></li>
+<% else -%>
   <li><%= link_to(t("menu.login"), login_path) %></li>
+<% end -%>
 </ul>
 
 <ul class="header-menu">
+<% if logged_in? -%>
   <li><%= link_to(t("menu.config"), config_path) %></li>
-<% unless Config::Connection.default.spec.blank? -%>
-  <li><%= link_to(t("menu.control"), control_path) %></li>
+<%   unless Config::Connection.default.spec.blank? -%>
+  <!--li><%= link_to(t("menu.control"), control_path) %></li-->
+<%   end -%>
 <% end -%>
 </ul>

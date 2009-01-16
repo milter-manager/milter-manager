@@ -11,6 +11,8 @@ ja:
     control-restart: "再起動"
     control-quit: "終了"
     login: "ログイン"
+    logout: "ログアウト"
+    signup: "登録"
   title:
     welcome: "ようこそ!"
     config: "設定"
@@ -26,6 +28,7 @@ ja:
     description: "説明"
     enabled: "有効"
     login: "ログイン"
+    signup: "新しいユーザを登録"
   label:
     name: "名前"
     description: "説明"
@@ -46,7 +49,9 @@ ja:
     host: "ホスト"
     login: "ログイン名"
     password: "パスワード"
+    confirm-password: "確認用パスワード"
     remember-me: "次回は認証なしでログインする"
+    signup: "登録"
   action:
     add: "追加"
     show: "表示"
@@ -64,18 +69,29 @@ ja:
       update: "{{target}}を正常に更新しました。"
       enable: "{{target}}を有効にしました。"
       disable: "{{target}}を無効にしました。"
+      signup: "登録しました。"
+      login: "ログインしました。"
+      logout: "ログアウトしました。"
     failure:
       sync: "同期に失敗しました。"
+      signup: "登録に失敗しました。"
+      login: "「{{value}}」でのログインに失敗しました。"
   target:
     milter: "milter"
   message:
     confirm:
       delete: "本当に削除してもよいですか？"
+    logged-in-as: "{{value}}でログイン中"
 
   activerecord:
     models:
       config milter: "milter"
+      user: "ユーザ"
 
     attributes:
       config/milter:
         name: "名前"
+      user:
+        login: "名前"
+        password: "パスワード"
+        password_confirmation: "確認用パスワード"

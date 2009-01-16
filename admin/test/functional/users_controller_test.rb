@@ -42,11 +42,11 @@ class UsersControllerTest < ActionController::TestCase
     end
   end
 
-  def test_should_require_email_on_signup
-    assert_no_difference 'User.count' do
+  def test_should_not_require_email_on_signup
+    assert_difference 'User.count' do
       create_user(:email => nil)
-      assert assigns(:user).errors.on(:email)
-      assert_response :success
+      assert_nil assigns(:user).errors.on(:email)
+      assert_response :redirect
     end
   end
   

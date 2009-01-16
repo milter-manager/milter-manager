@@ -8,6 +8,7 @@ en:
     welcome: "Welcome!"
     connection: "Connection"
     milter: "Milter"
+    signup: "Sign up as a new user"
   label:
     name: "Name"
     spec: "Specification"
@@ -17,7 +18,17 @@ en:
     port: "Port"
     host: "Host"
     path: "Path"
+    confirm-password: "Confirm password"
+    signup: "Sign up"
   action:
     edit: "Edit"
     update: "Update"
     create: "Create"
+  notice:
+    success:
+      signup: "Signed up successfully."
+      login: "Logged in successfully."
+      logout: "You have been logged out."
+    failure:
+      signup: "We couldn't set up that account."
+      login: "Couldn't log you in as '{{value}}'"
