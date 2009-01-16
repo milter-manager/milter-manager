@@ -147,6 +147,7 @@ decode_set_configuration (MilterDecoder *decoder,
                           const gchar *content, gint length,
                           GError **error)
 {
+    milter_debug("[control-command-decoder][set-configuration] %d", length);
     g_signal_emit(decoder, signals[SET_CONFIGURATION], 0, content, length);
     return TRUE;
 }
@@ -162,6 +163,7 @@ decode_get_configuration (MilterDecoder *decoder,
             "get-configuration command"))
         return FALSE;
 
+    milter_debug("[control-command-decoder][get-configuration]");
     g_signal_emit(decoder, signals[GET_CONFIGURATION], 0, content, length);
 
     return TRUE;
@@ -178,6 +180,7 @@ decode_reload (MilterDecoder *decoder,
             "reload command"))
         return FALSE;
 
+    milter_debug("[control-command-decoder][reload]");
     g_signal_emit(decoder, signals[RELOAD], 0);
 
     return TRUE;
@@ -194,6 +197,7 @@ decode_get_status (MilterDecoder *decoder,
             "get-status command"))
         return FALSE;
 
+    milter_debug("[control-command-decoder][get-status]");
     g_signal_emit(decoder, signals[GET_STATUS], 0);
 
     return TRUE;

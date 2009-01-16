@@ -1,5 +1,7 @@
 2009-01-16  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/manager/milter-manager-control-command-decoder.c: log.
+
 	* milter/manager/milter-manager-launch-command-decoder.c,
 	milter/manager/milter-manager-launch-command-encoder.c,
 	test/manager/test-launch-command-decoder.c,
