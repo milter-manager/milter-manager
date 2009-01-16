@@ -1,0 +1,14 @@
+<h2><%= t('title.login') %></h2>
+
+<% form_tag session_path do -%>
+<p><%= label_tag('login', t('label.login')) %><br />
+<%= text_field_tag('login', @login) %></p>
+
+<p><%= label_tag('password', t('label.password')) %><br/>
+<%= password_field_tag('password', nil) %></p>
+
+<p><%= label_tag('remember_me', t('label.remember-me')) %>
+<%= check_box_tag('remember_me', '1', @remember_me) %></p>
+
+<p><%= submit_tag(t('action.login')) %></p>
+<% end -%>

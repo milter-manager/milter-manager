@@ -10,6 +10,7 @@ ja:
     control-reload: "再読み込み"
     control-restart: "再起動"
     control-quit: "終了"
+    login: "ログイン"
   title:
     welcome: "ようこそ!"
     config: "設定"
@@ -24,6 +25,7 @@ ja:
     name: "名前"
     description: "説明"
     enabled: "有効"
+    login: "ログイン"
   label:
     name: "名前"
     description: "説明"
@@ -42,6 +44,9 @@ ja:
     path: "パス"
     port: "ポート番号"
     host: "ホスト"
+    login: "ログイン名"
+    password: "パスワード"
+    remember-me: "次回は認証なしでログインする"
   action:
     add: "追加"
     show: "表示"
@@ -52,6 +57,7 @@ ja:
     list: "一覧"
     enable: "有効にする"
     disable: "無効にする"
+    login: "ログイン"
   notice:
     success:
       create: "{{target}}を正常に作成しました。"
