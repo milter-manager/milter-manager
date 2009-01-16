@@ -281,16 +281,24 @@ static gboolean
 accept_controller_connection (gint controller_fd, MilterManager *manager)
 {
     gint agent_fd;
+    MilterGenericSocketAddress address;
+    socklen_t address_size;
+    gchar *spec;
     GIOChannel *agent_channel;
 
-    milter_debug("start accepting...: %d", controller_fd);
-    agent_fd = accept(controller_fd, NULL, NULL);
+    address_size = sizeof(address);
+    memset(&address, '\0', address_size);
+    agent_fd = accept(controller_fd,
+                      (struct sockaddr *)(&address), &address_size);
     if (agent_fd == -1) {
-        milter_error("failed to accept(): %s", g_strerror(errno));
+        milter_error("[controller][error][accept] %s", g_strerror(errno));
         return TRUE;
     }
 
-    milter_debug("accepted!: %d", agent_fd);
+    spec = milter_connection_address_to_spec(&(address.address.base));
+    milter_debug("[controller][accept] %d: %s", agent_fd, spec);
+    g_free(spec);
+
     agent_channel = g_io_channel_unix_new(agent_fd);
     g_io_channel_set_encoding(agent_channel, NULL, NULL);
     g_io_channel_set_flags(agent_channel, G_IO_FLAG_NONBLOCK, NULL);
@@ -322,7 +330,7 @@ controller_watch_func (GIOChannel *channel, GIOCondition condition,
         gchar *message;
 
         message = milter_utils_inspect_io_condition_error(condition);
-        milter_error("%s", message);
+        milter_error("[controller][error][watch] %s", message);
         g_free(message);
         keep_callback = FALSE;
     }
@@ -350,7 +358,7 @@ setup_controller_connection (MilterManager *manager)
     channel = milter_connection_listen(spec, -1, NULL, NULL,
                                        remove_socket, &error);
     if (!channel) {
-        milter_error("failed to listen controller connection: <%s>: <%s>",
+        milter_error("[controller][error][listen] <%s>: %s",
                      spec, error->message);
         g_error_free(error);
         return 0;
@@ -773,7 +781,8 @@ milter_manager_main (void)
 
         content = g_strdup_printf("%u\n", getpid());
         if (!g_file_set_contents(pid_file, content, -1, &error)) {
-            milter_error("failed to save PID: %s: %s", pid_file, error->message);
+            milter_error("[manager][error][pid][save] %s: %s",
+                         pid_file, error->message);
             g_error_free(error);
             g_free(pid_file);
             pid_file = NULL;
@@ -803,7 +812,7 @@ milter_manager_main (void)
 
     if (pid_file) {
         if (g_unlink(pid_file) == -1)
-            milter_error("failed to remove PID file: %s: %s",
+            milter_error("[manager][error][pid][remove] %s: %s",
                          pid_file, g_strerror(errno));
         g_free(pid_file);
     }

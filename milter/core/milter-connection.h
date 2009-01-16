@@ -22,6 +22,8 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/un.h>
+#include <netinet/in.h>
 
 #include <glib-object.h>
 
@@ -34,6 +36,18 @@ G_BEGIN_DECLS
 #endif
 
 #define MILTER_CONNECTION_ERROR           (milter_connection_error_quark())
+
+typedef struct _MilterGenericSocketAddress MilterGenericSocketAddress;
+
+struct _MilterGenericSocketAddress
+{
+    union {
+        struct sockaddr base;
+        struct sockaddr_un un;
+        struct sockaddr_in inet;
+        struct sockaddr_in6 inet6;
+    } address;
+};
 
 typedef enum
 {

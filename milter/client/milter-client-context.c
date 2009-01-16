@@ -1847,7 +1847,7 @@ write_packet (MilterClientContext *context, gchar *packet, gsize packet_size)
                                               MILTER_CLIENT_CONTEXT_ERROR_IO_ERROR,
                                               agent_error,
                                               "Failed to write to MTA");
-        milter_error("%s", error->message);
+        milter_error("[client][error][write] %s", error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(context),
                                     error);
         g_error_free(error);

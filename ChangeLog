@@ -1,5 +1,7 @@
 2009-01-16  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/**.c: improve log.
+
 	* data/defaults/debian.conf, data/defaults/freebsd.conf: enable
 	controller by default.
 

@@ -713,7 +713,7 @@ milter_manager_configuration_reload (MilterManagerConfiguration *configuration)
     milter_manager_configuration_clear(configuration);
     if (!milter_manager_configuration_load(configuration, CONFIG_FILE_NAME,
                                            &error)) {
-        milter_error("failed to load config file: <%s>: %s",
+        milter_error("[configuration][error][load] <%s>: %s",
                      CONFIG_FILE_NAME, error->message);
         g_error_free(error);
         return;
@@ -721,7 +721,7 @@ milter_manager_configuration_reload (MilterManagerConfiguration *configuration)
 
     if (!milter_manager_configuration_load_custom_if_exist(
             configuration, CUSTOM_CONFIG_FILE_NAME, &error)) {
-        milter_error("failed to load custom config file: <%s>: %s",
+        milter_error("[configuration][error][load][custom] <%s>: %s",
                      CUSTOM_CONFIG_FILE_NAME, error->message);
         g_error_free(error);
     }

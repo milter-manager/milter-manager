@@ -171,7 +171,7 @@ cb_decoder_get_configuration (MilterManagerControlCommandDecoder *decoder,
         config_xml, strlen(config_xml));
     g_free(config_xml);
     if (!milter_agent_write_packet(agent, packet, packet_size, &error)) {
-        milter_error("failed to write control reply configuration packet: <%s>",
+        milter_error("[controller][error][write][configuration] %s",
                      error->message);
         g_error_free(error);
     }
@@ -202,7 +202,7 @@ cb_decoder_reload (MilterManagerControlCommandDecoder *decoder,
                                                         &packet,
                                                         &packet_size);
     if (!milter_agent_write_packet(agent, packet, packet_size, &error)) {
-        milter_error("failed to write control reply success packet: <%s>",
+        milter_error("[controller][error][write][success] %s",
                      error->message);
         g_error_free(error);
     }
@@ -242,7 +242,7 @@ cb_decoder_get_status (MilterManagerControlCommandDecoder *decoder,
                                                        status->len);
     g_string_free(status, TRUE);
     if (!milter_agent_write_packet(agent, packet, packet_size, &error)) {
-        milter_error("failed to write control reply status packet: <%s>",
+        milter_error("[controller][error][write][status] %s",
                      error->message);
         g_error_free(error);
     }

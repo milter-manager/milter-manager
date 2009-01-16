@@ -242,7 +242,7 @@ cb_reader_flow (MilterReader *reader,
                                               MILTER_AGENT_ERROR_DECODE_ERROR,
                                               decoder_error,
                                               "Decode error");
-        milter_error("%s", error->message);
+        milter_error("[agent][error][decode] %s", error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(user_data),
                                     error);
         g_error_free(error);
@@ -261,7 +261,7 @@ cb_reader_error (MilterReader *reader,
                                           MILTER_AGENT_ERROR_IO_ERROR,
                                           g_error_copy(reader_error),
                                           "Input error");
-    milter_error("%s", error->message);
+    milter_error("[agent][error][reader] %s", error->message);
     milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(user_data),
                                 error);
     g_error_free(error);
@@ -332,7 +332,7 @@ cb_writer_error (MilterWriter *writer,
                                           MILTER_AGENT_ERROR_IO_ERROR,
                                           g_error_copy(writer_error),
                                           "Output error");
-    milter_error("%s", error->message);
+    milter_error("[agent][error][writer] %s", error->message);
     milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(user_data),
                                 error);
     g_error_free(error);

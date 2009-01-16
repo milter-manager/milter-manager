@@ -80,7 +80,8 @@ encode_macros_request (gpointer key, gpointer value, gpointer user_data)
     stage = milter_utils_command_to_macro_stage(command);
     if (stage == -1) {
         /* should emit 'error' signal? */
-        milter_error("unknown command: '%c'", command);
+        milter_error("[reply-encoder][error][macro] unknown command: '%c'",
+                     command);
         return;
     }
 

@@ -437,13 +437,13 @@ milter_manager_egg_hatch (MilterManagerEgg *egg)
                 milter_manager_applicable_condition_attach_to(condition, child);
             }
         } else {
-            milter_error("<%s>: invalid connection spec: %s",
-                         priv->name ? priv->name : "(null)",
-                         error->message);
+            milter_error("[egg][error] invalid connection spec: %s: %s",
+                         error->message,
+                         priv->name ? priv->name : "(null)");
             g_error_free(error);
         }
     } else {
-        milter_error("<%s>: must set connection spec",
+        milter_error("[egg][error] must set connection spec: %s",
                      priv->name ? priv->name : "(null)");
         g_object_unref(child);
         child = NULL;
@@ -536,7 +536,7 @@ milter_manager_egg_set_connection_spec (MilterManagerEgg *egg,
                                               spec_error,
                                               "<%s>: invalid connection spec",
                                               priv->name ? priv->name : "(null)");
-        milter_error("%s", wrapped_error->message);
+        milter_error("[egg][error][set-spec] %s", wrapped_error->message);
         if (error)
             *error = g_error_copy(wrapped_error);
         g_error_free(wrapped_error);

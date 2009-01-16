@@ -26,25 +26,10 @@
 
 #include <errno.h>
 
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/un.h>
-#include <netinet/in.h>
-
 #include <glib/gstdio.h>
 
 #include <milter/core/milter-marshalers.h>
 #include "../client.h"
-
-typedef struct _GenericSocketAddress
-{
-    union {
-        struct sockaddr address;
-        struct sockaddr_un address_un;
-        struct sockaddr_in address_inet;
-        struct sockaddr_in6 address_inet6;
-    } addresses;
-} GenericSocketAddress;
 
 enum
 {
@@ -301,7 +286,7 @@ listen_started (MilterClient *client,
                             "failed to change the mode of UNIX socket: "
                             "%s(%o): %s",
                             address_un->sun_path, mode, g_strerror(errno));
-        milter_error("%s", error->message);
+        milter_error("[client][error][unix] %s", error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client), error);
         g_error_free(error);
     }
@@ -375,7 +360,7 @@ cb_idle_free_data (gpointer _data)
     guint n_processing_data;
     GString *rest_process;
 
-    milter_debug("finish client process: %p", data);
+    milter_debug("[client][finish] %p", data);
     data->priv->processing_data =
         g_list_remove(data->priv->processing_data, data);
     data->priv->n_processing_data--;
@@ -385,7 +370,7 @@ cb_idle_free_data (gpointer _data)
     n_processing_data = data->priv->n_processing_data;
     g_mutex_lock(data->priv->quit_mutex);
     if (data->priv->quitting && n_processing_data == 0) {
-        milter_debug("quit main loop");
+        milter_debug("[client][loop][quit]");
         g_main_loop_quit(data->priv->main_loop);
     }
     g_mutex_unlock(data->priv->quit_mutex);
@@ -403,7 +388,7 @@ cb_idle_free_data (gpointer _data)
         g_string_truncate(rest_process, rest_process->len - 2);
     g_string_append(rest_process, "]");
     g_list_free(processing_data);
-    milter_debug("rest client process: %s", rest_process->str);
+    milter_debug("[client][rest] %s", rest_process->str);
     g_string_free(rest_process, TRUE);
 
     return FALSE;
@@ -453,7 +438,7 @@ cb_idle_client_channel_setup (gpointer user_data)
     data->client = client;
     data->context = context;
 
-    milter_debug("start client process: %p", data);
+    milter_debug("[client][start] %p", data);
 
     g_signal_connect(context, "finished", G_CALLBACK(cb_finished), data);
 
@@ -487,13 +472,12 @@ accept_client (gint server_fd, MilterClient *client)
 {
     gint client_fd;
     GIOChannel *client_channel;
-    GenericSocketAddress address;
+    MilterGenericSocketAddress address;
     gchar *spec;
     socklen_t address_size;
 
     address_size = sizeof(address);
     memset(&address, '\0', address_size);
-    milter_debug("start accepting...");
     client_fd = accept(server_fd, (struct sockaddr *)(&address), &address_size);
     if (client_fd == -1) {
         GError *error = NULL;
@@ -501,15 +485,15 @@ accept_client (gint server_fd, MilterClient *client)
                     MILTER_CONNECTION_ERROR,
                     MILTER_CONNECTION_ERROR_ACCEPT_FAILURE,
                     "failed to accept(): %s", g_strerror(errno));
-        milter_error("failed to accept(): %s", g_strerror(errno));
+        milter_error("[client][error][accept] %s", g_strerror(errno));
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client),
                                     error);
         g_error_free(error);
         return TRUE;
     }
 
-    spec = milter_connection_address_to_spec(&(address.addresses.address));
-    milter_debug("accepted from %s.", spec);
+    spec = milter_connection_address_to_spec(&(address.address.base));
+    milter_debug("[client][accept] %d:%s", client_fd, spec);
     g_free(spec);
 
     client_channel = g_io_channel_unix_new(client_fd);
@@ -547,7 +531,7 @@ server_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
                             MILTER_CLIENT_ERROR_IO_ERROR,
                             "IO error on waiting MTA connection socket: %s",
                             message);
-        milter_error("%s", error->message);
+        milter_error("[client][error][watch] %s", error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client),
                                     error);
         g_error_free(error);
@@ -617,7 +601,7 @@ milter_client_main (MilterClient *client)
                             MILTER_CLIENT_ERROR_RUNNING,
                             "The milter client is already running: <%p>",
                             client);
-        milter_error("%s", error->message);
+        milter_error("[client][error][main] %s", error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client), error);
         g_error_free(error);
         return FALSE;
@@ -650,7 +634,7 @@ milter_client_main (MilterClient *client)
     }
 
     if (!priv->listening_channel) {
-        milter_error("%s", error->message);
+        milter_error("[client][error][listen] %s", error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client), error);
         g_error_free(error);
         return FALSE;
@@ -695,7 +679,7 @@ milter_client_main (MilterClient *client)
                                     MILTER_CLIENT_ERROR_UNIX_SOCKET,
                                     "failed to remove used UNIX socket: %s: %s",
                                     address_un->sun_path, g_strerror(errno));
-                milter_error("%s", error->message);
+                milter_error("[client][error][unix] %s", error->message);
                 milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client),
                                             error);
                 g_error_free(error);

@@ -253,7 +253,7 @@ channel_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
                     MILTER_WRITER_ERROR,
                     MILTER_WRITER_ERROR_IO_ERROR,
                     "%s", message);
-        milter_error("write error: %s", message);
+        milter_error("[writer][error] %s", message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(writer), error);
         g_error_free(error);
         g_free(message);
@@ -261,7 +261,7 @@ channel_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
     }
 
     if (!keep_callback) {
-        milter_debug("removing writer watcher");
+        milter_debug("[writer] removing writer watcher");
         priv->channel_watch_id = 0;
         milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(writer));
     }
@@ -318,7 +318,7 @@ milter_writer_shutdown (MilterWriter *writer)
             MILTER_WRITER_ERROR_IO_ERROR,
             channel_error,
             "failed to shutdown");
-        milter_error("%s", error->message);
+        milter_error("[writer][error][shutdown] %s", error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(writer), error);
         g_error_free(error);
     } else {

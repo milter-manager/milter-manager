@@ -624,7 +624,7 @@ is_processing_previous_command (MilterServerContext *context)
                 MILTER_SERVER_CONTEXT_ERROR_BUSY,
                 "Previous command(%s) has been processing in milter",
                 inspected_state);
-    milter_error("%s", error->message);
+    milter_error("[server][error] %s", error->message);
     milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(context),
                                 error);
     g_error_free(error);
@@ -672,7 +672,7 @@ write_packet (MilterServerContext *context, gchar *packet, gsize packet_size,
             MILTER_SERVER_CONTEXT_ERROR_IO_ERROR,
             agent_error,
             "Failed to write to milter");
-        milter_error("%s", error->message);
+        milter_error("[server][error][write] %s", error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(context),
                                     error);
         g_error_free(error);
@@ -720,7 +720,9 @@ stop_on_state (MilterServerContext *context, MilterServerContextState state)
 
     inspected_state = milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
                                                       state);
-    milter_debug("stop state: %s", inspected_state);
+    milter_debug("[client][stop][%s] %s",
+                 inspected_state,
+                 milter_server_context_get_name(context));
     milter_statistics("[stop][%s]: %s",
                       inspected_state,
                       milter_server_context_get_name(context));
