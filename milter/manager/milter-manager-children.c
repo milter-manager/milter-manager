@@ -1785,13 +1785,8 @@ child_establish_connection (MilterManagerChild *child,
                                     error);
 
         g_error_free(error);
-        if (is_retry) {
-            remove_child_from_queue(children, context);
-            expire_child(children, context);
-            return FALSE;
-        }
-
-        prepare_retry_establish_connection(child, option, children, TRUE);
+        if (!is_retry)
+            prepare_retry_establish_connection(child, option, children, TRUE);
         return FALSE;
     }
 
@@ -1998,9 +1993,6 @@ milter_manager_children_negotiate (MilterManagerChildren *children,
                 milter_manager_children_start_child(children, child)) {
                 prepare_retry_establish_connection(child, option, children,
                                                    FALSE);
-            } else {
-                remove_child_from_queue(children, MILTER_SERVER_CONTEXT(child));
-                expire_child(children, MILTER_SERVER_CONTEXT(child));
             }
         }
     }
