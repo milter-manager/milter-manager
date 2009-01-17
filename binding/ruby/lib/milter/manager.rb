@@ -660,7 +660,13 @@ module Milter::Manager
       def setup_stopper
         return unless have_stopper?
 
+        @children = []
         @condition.signal_connect("attach-to") do |_, child|
+          @children << child
+          child.signal_connect("finished") do
+            @children.delete(child)
+          end
+
           unless @connect_stoppers.empty?
             child.signal_connect("stop-on-connect") do |_child, host, address|
               @connect_stoppers.any? do |stopper|

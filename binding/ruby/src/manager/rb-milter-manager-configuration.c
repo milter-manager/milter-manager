@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -188,15 +188,11 @@ static void
 mark (gpointer data)
 {
     MilterManagerConfiguration *configuration = data;
-    const GList *node;
 
-    for (node = milter_manager_configuration_get_eggs(configuration);
-	 node;
-	 node = g_list_next(node)) {
-	MilterManagerEgg *egg = node->data;
-
-	rbgobj_gc_mark_instance(egg);
-    }
+    g_list_foreach((GList *)milter_manager_configuration_get_eggs(configuration),
+		   (GFunc)rbgobj_gc_mark_instance, NULL);
+    g_list_foreach((GList *)milter_manager_configuration_get_applicable_conditions(configuration),
+		   (GFunc)rbgobj_gc_mark_instance, NULL);
 }
 
 void
