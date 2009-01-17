@@ -739,6 +739,9 @@ milter_manager_main (void)
                                                          option_group_name);
     if (option_daemon)
         milter_manager_configuration_set_daemon(config, TRUE);
+    if (getuid() != 0)
+        milter_manager_configuration_set_privilege_mode(config, FALSE);
+
     if (option_show_config) {
         gchar *dumped_config;
 
