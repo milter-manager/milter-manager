@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -2510,6 +2510,15 @@ send_body_to_child (MilterManagerChildren *children, MilterServerContext *contex
 
     priv->sent_body_count = 0;
     g_io_channel_seek_position(priv->body_file, 0, G_SEEK_SET, &error);
+    if (error) {
+        milter_error("[children][error][body][send][seek] %s: %s",
+                     error->message,
+                     milter_server_context_get_name(context));
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children), error);
+        g_error_free(error);
+
+        return MILTER_STATUS_TEMPORARY_FAILURE;
+    }
 
     while (io_status == G_IO_STATUS_NORMAL) {
         gchar buffer[MILTER_CHUNK_SIZE + 1];
@@ -2537,17 +2546,6 @@ send_body_to_child (MilterManagerChildren *children, MilterServerContext *contex
         g_error_free(error);
 
         return status;
-    }
-
-    g_io_channel_seek_position(priv->body_file, 0, G_SEEK_SET, &error);
-    if (error) {
-        milter_error("[children][error][body][send][seek] %s: %s",
-                     error->message,
-                     milter_server_context_get_name(context));
-        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children), error);
-        g_error_free(error);
-
-        return MILTER_STATUS_TEMPORARY_FAILURE;
     }
 
     return status;
