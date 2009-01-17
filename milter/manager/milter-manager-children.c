@@ -2511,7 +2511,7 @@ send_body_to_child (MilterManagerChildren *children, MilterServerContext *contex
     priv->sent_body_count = 0;
     g_io_channel_seek_position(priv->body_file, 0, G_SEEK_SET, &error);
     if (error) {
-        milter_error("[children][error][body][send][seek] %s: %s",
+        milter_error("[children][error][body][send][seek][before] %s: %s",
                      error->message,
                      milter_server_context_get_name(context));
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children), error);
@@ -2546,6 +2546,17 @@ send_body_to_child (MilterManagerChildren *children, MilterServerContext *contex
         g_error_free(error);
 
         return status;
+    }
+
+    g_io_channel_seek_position(priv->body_file, 0, G_SEEK_SET, &error);
+    if (error) {
+        milter_error("[children][error][body][send][seek][after] %s: %s",
+                     error->message,
+                     milter_server_context_get_name(context));
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children), error);
+        g_error_free(error);
+
+        return MILTER_STATUS_TEMPORARY_FAILURE;
     }
 
     return status;
