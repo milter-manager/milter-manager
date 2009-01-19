@@ -1,5 +1,7 @@
 2009-01-19  Kouhei Sutou  <kou@clear-code.com>
 
+	* configure.ac, data/init.d/redhat/: add a init script for RedHat.
+
 	* binding/ruby/test/manager/test-debian-init-detector.rb: fix path
 	of Debian's milter-manager init script.
 

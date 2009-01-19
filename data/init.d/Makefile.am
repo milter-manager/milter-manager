@@ -1,2 +1,3 @@
 SUBDIRS =	\
-	debian
+	debian	\
+	redhat
