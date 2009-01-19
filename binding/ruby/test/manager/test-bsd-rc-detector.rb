@@ -203,7 +203,7 @@ EOM
 
   private
   def bsd_rc_detector(name)
-    detector = Milter::Manager::ConfigurationLoader::BSDRCDetector.new(name)
+    detector = Milter::Manager::BSDRCDetector.new(name)
 
     _rc_d = @rc_d
     _rc_conf = @rc_conf

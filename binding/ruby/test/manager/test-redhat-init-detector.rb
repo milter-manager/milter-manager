@@ -298,7 +298,7 @@ EOC
 
   private
   def redhat_init_detector(name)
-    detector = Milter::Manager::ConfigurationLoader::RedHatInitDetector.new(name)
+    detector = Milter::Manager::RedHatInitDetector.new(name)
 
     _init_d = @init_d
     _sysconfig_dir = @sysconfig_dir

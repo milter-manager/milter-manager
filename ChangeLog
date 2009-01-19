@@ -1,5 +1,10 @@
 2009-01-19  Kouhei Sutou  <kou@clear-code.com>
 
+	* bindings/ruby/lib/milter/manager.rb: split detector to ...
+	* bindings/ruby/lib/milter/manager/: ... here.
+	* binding/ruby/test/manager/, configure.ac, data/defaults/: follow
+	the above change.
+
 	* data/init.d/redhat/milter-manager: add missing ';;'.
 
 	* binding/ruby/lib/milter/manager.rb,
