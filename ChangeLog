@@ -1,3 +1,8 @@
+2009-01-19  Kouhei Sutou  <kou@clear-code.com>
+
+	* binding/ruby/test/manager/test-debian-init-detector.rb: fix path
+	of Debian's milter-manager init script.
+
 2009-01-18  Kouhei Sutou  <kou@cozmixng.org>
 
 	* TODO: add: consider header-lead-space negotiate in
