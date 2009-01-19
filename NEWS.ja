@@ -2,6 +2,11 @@
 
 = NEWS --- milter managerの歴史
 
+== 0.8.0: 2009-02-XX
+
+  * バグ修正
+    * [#2518782] typo in configure: [OBATA Akio]
+
 == 0.7.0: 2009-01-16
 
   * SF.netでの最初のリリース。

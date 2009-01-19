@@ -155,7 +155,7 @@ if test "$ruby_available" = "yes"; then
   rbconfig="$RUBY -rrbconfig -e "
 
   changequote(<<, >>)
-  for var_name in archdir sitearchdir venderarchdir arch \
+  for var_name in archdir sitearchdir vendorarchdir arch \
       	       	  CFLAGS LIBRUBYARG LIBS RUBY_SO_NAME libdir; do
     rbconfig_tmp=`$rbconfig "print Config::CONFIG['$var_name']"`
     eval "rbconfig_$var_name=\"$rbconfig_tmp\""
@@ -163,7 +163,7 @@ if test "$ruby_available" = "yes"; then
   changequote([, ])
 
   RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_sitearchdir "
-  RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_venderarchdir "
+  RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_vendorarchdir "
   RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_archdir "
   RUBY_CFLAGS="$RUBY_CFLAGS $rbconfig_CFLAGS "
   RUBY_LIBS="$rbconfig_LIBRUBYARG $rbconfig_LIBS"

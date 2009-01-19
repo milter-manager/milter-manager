@@ -1,5 +1,9 @@
 2009-01-19  Kouhei Sutou  <kou@clear-code.com>
 
+	* README*, NEWS*: add the below info.
+	* configure.ac: fix typos: vender -> vendor. [#2518782]
+	Reported by OBATA Akio. Thanks!!!
+
 	* configure.ac, data/init.d/redhat/: add a init script for RedHat.
 
 	* binding/ruby/test/manager/test-debian-init-detector.rb: fix path
