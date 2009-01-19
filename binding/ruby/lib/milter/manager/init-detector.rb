@@ -13,9 +13,13 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
+require 'milter/manager/detector'
+
 module Milter::Manager
   module InitDetector
-    attr_reader :name, :variables, :info
+    include Detector
+
+    attr_reader :info
     def detect
       init_variables
       return unless init_script_exist?
@@ -25,32 +29,18 @@ module Milter::Manager
       parse_custom_conf
     end
 
+    def command
+      init_script
+    end
+
     def init_script_exist?
       File.exist?(init_script)
     end
 
-    def apply(loader)
-      return if @name.nil?
-      spec = guess_spec
-      loader.define_milter(@script_name) do |milter|
-        milter.enabled = enabled?
-        milter.description = description
-        milter.command = init_script
-        milter.command_options = "start"
-        if spec
-          spec = "unix:#{spec}" if /\A\// =~ spec
-          spec = spec.gsub(/\A(?:(unix|local):)+/, '\\1:')
-          milter.connection_spec = spec
-        end
-        yield(milter) if block_given?
-      end
-    end
-
     private
     def init_variables
-      @name = nil
+      super
       @info = {}
-      @variables = {}
     end
 
     INIT_INFO_BLOCK_RE = /^### BEGIN INIT INFO\n(.+)\n### END INIT INFO$/m
@@ -67,72 +57,6 @@ module Milter::Manager
         key, value = info[i], (info[i + 1] || '')
         @info[key] = value.gsub(/\s*\n\s*/, ' ').strip
       end
-    end
-
-    def extract_variables(content, options={})
-      if options[:accept_lower_case]
-        variable_definition_re = /\b([A-Za-z\d_]+)=(".*?"|\S*)/
-      else
-        variable_definition_re = /\b([A-Z\d_]+)=(".*?"|\S*)/
-      end
-
-      content.each_line do |line|
-        case line.sub(/#.*/, '')
-        when variable_definition_re
-          variable_name, variable_value = $1, $2
-          variable_value = normalize_variable_value(variable_value)
-          @variables[variable_name] = variable_value
-        end
-      end
-    end
-
-    def normalize_variable_value(value)
-      value = value.sub(/\A"(.*)"\z/, '\\1')
-      variable_expand_re = /\$(\{?)([a-zA-Z\d_]+)(\}?)/
-      value = value.gsub(variable_expand_re) do |matched|
-        left_brace, name, right_brace = $1, $2, $3
-        if [left_brace, right_brace] == ["{", "}"] or
-            [left_brace, right_brace] == ["", ""]
-          @variables[name] || matched
-        else
-          matched
-        end
-      end
-    end
-
-    def extract_spec_parameter_from_flags(flags)
-      return nil if flags.nil?
-
-      spec = nil
-
-      options = Shellwords.split(flags)
-      p_option_index = options.rindex("-p")
-      if p_option_index
-        _spec = options[p_option_index + 1]
-        spec = _spec unless shell_variable?(_spec)
-      else
-        options.each do |option|
-          if /\A-p/ =~ option
-            _spec = $POSTMATCH
-            spec = _spec unless shell_variable?(_spec)
-          end
-        end
-      end
-
-      spec
-    end
-
-    def normalize_spec(spec)
-      return nil if spec.nil?
-
-      spec = spec.strip
-      return nil if spec.empty?
-
-      spec
-    end
-
-    def shell_variable?(string)
-      /\A\$/ =~ string
     end
 
     def init_script

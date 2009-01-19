@@ -13,13 +13,24 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
+require 'milter/manager/detector'
+
 module Milter::Manager
   class BSDRCDetector
-    attr_reader :name, :variables
+    include Detector
+
     def initialize(script_name, &connection_spec_detector)
       @script_name = script_name
       @connection_spec_detector = connection_spec_detector
       init_variables
+    end
+
+    def description
+      nil
+    end
+
+    def command
+      rc_script
     end
 
     def detect
@@ -44,26 +55,7 @@ module Milter::Manager
       end
     end
 
-    def apply(loader)
-      return if @name.nil?
-      connection_spec = guess_connection_spec
-      return if connection_spec.nil?
-      connection_spec = "unix:#{connection_spec}" if /\A\// =~ connection_spec
-      loader.define_milter(@script_name) do |milter|
-        milter.enabled = enabled?
-        milter.command = rc_script
-        milter.command_options = "start"
-        milter.connection_spec = connection_spec
-        yield(milter) if block_given?
-      end
-    end
-
     private
-    def init_variables
-      @name = nil
-      @variables = {}
-    end
-
     def parse_rc_script
       rc_script_content = File.read(rc_script)
       rc_script_content.each_line do |line|
@@ -96,42 +88,16 @@ module Milter::Manager
       end
     end
 
-    def normalize_variable_value(value)
-      value.sub(/\A"(.*)"\z/, '\\1')
-    end
-
-    def guess_connection_spec
+    def guess_spec
       spec = nil
       if @connection_spec_detector
-        spec = @connection_spec_detector.call(self)
+        spec = normalize_spec(@connection_spec_detector.call(self))
       end
-      spec ||= @variables["socket"] || @variables["sockfile"]
-      spec ||= @variables["connection_spec"]
-      spec ||= extract_connection_spec_parameter_from_flags(@variables["flags"])
+      spec ||= normalize_spec(@variables["socket"])
+      spec ||= normalize_spec(@variables["sockfile"])
+      spec ||= normalize_spec(@variables["connection_spec"])
+      spec ||= extract_spec_parameter_from_flags(@variables["flags"])
       spec
-    end
-
-    def extract_connection_spec_parameter_from_flags(flags)
-      return nil if flags.nil?
-
-      options = Shellwords.split(flags)
-      p_option_index = options.index("-p")
-      if p_option_index
-        spec = options[p_option_index + 1]
-        return spec unless shell_variable?(spec)
-      else
-        options.each do |option|
-          if /\A-p/ =~ option
-            spec = $POSTMATCH
-            return spec unless shell_variable?(spec)
-          end
-        end
-      end
-      nil
-    end
-
-    def shell_variable?(string)
-      /\A\$/ =~ string
     end
 
     def rc_script

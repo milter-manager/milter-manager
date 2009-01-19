@@ -60,7 +60,7 @@ module Milter::Manager
     def guess_spec
       spec = nil
       if @connection_spec_detector
-        spec = @connection_spec_detector.call(self)
+        spec = normalize_spec(@connection_spec_detector.call(self))
       end
       spec ||= normalize_spec(@variables["SOCKET"])
       spec ||= normalize_spec(@variables["SOCKFILE"])

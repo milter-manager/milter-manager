@@ -1,5 +1,9 @@
 2009-01-19  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/lib/milter/manager/detector.rb: add.
+	* binding/ruby/lib/milter/manager/init-detector.rb,
+	binding/ruby/lib/milter/manager/bsd-rc-detector.rb: use the above.
+
 	* binding/ruby/lib/milter/manager/init-detector.rb: add.
 	* binding/ruby/lib/milter/manager/debian-init-detector.rb,
 	binding/ruby/lib/milter/manager/redhat-init-detector.rb: use the above.
