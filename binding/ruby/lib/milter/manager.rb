@@ -236,8 +236,8 @@ module Milter::Manager
         end
       elsif File.exist?("/etc/debian_version")
         "debian"
-      elsif File.exist?("/etc/sysconfig/")
-        "red-hat"
+      elsif File.directory?("/etc/sysconfig/")
+        "redhat"
       else
         nil
       end

@@ -1,5 +1,7 @@
 2009-01-19  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/lib/milter/manager.rb: fix a typo.
+
 	* data/defaults/Makefile.am (dist_defaults_DATA): add redhat.conf.
 
 	* binding/ruby/lib/milter/manager.rb,
