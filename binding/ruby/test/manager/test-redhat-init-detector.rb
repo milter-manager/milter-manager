@@ -216,6 +216,30 @@ EOC
   end
 
 
+  def test_apply_clamav_milter_style_with_config
+    (@init_d + "clamav-milter").open("w") do |file|
+      file << clamav_milter_init_header
+    end
+    (@sysconfig_dir + "clamav-milter").open("w") do |file|
+      file << <<-'EOC'
+#SOCKET_ADDRESS="local:/var/clamav/clmilter.socket"
+SOCKET_ADDRESS="inet:11121@[127.0.0.1]"
+EOC
+    end
+
+    detector = redhat_init_detector("clamav-milter")
+    detector.detect
+    detector.apply(@loader)
+    assert_eggs([["clamav-milter",
+                  "clamav-milter is a daemon which hooks into sendmail " +
+                  "and routes email messages to clamav.",
+                  true,
+                  (@init_d + "clamav-milter").to_s,
+                  "start",
+                  "inet:11121@[127.0.0.1]"]])
+  end
+
+
   def test_apply_milter_greylist_style
     (@init_d + "milter-greylist").open("w") do |file|
       file << milter_greylist_init_header
@@ -233,13 +257,13 @@ EOC
                   "unix:/var/milter-greylist/milter-greylist.sock"]])
   end
 
-  def test_apply_milter_greylist_style
+  def test_apply_milter_greylist_style_with_config
     (@init_d + "milter-greylist").open("w") do |file|
       file << milter_greylist_init_header
     end
     (@sysconfig_dir + "milter-greylist").open("w") do |file|
       file << <<-'EOC'
-OPTIONS="-P $pidfile -p inet:10025@localhost"
+OPTIONS="$OPTIONS -p inet:10025@localhost"
 EOC
     end
 

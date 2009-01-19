@@ -972,7 +972,7 @@ module Milter::Manager
           options.each do |option|
             if /\A-p/ =~ option
               spec = $POSTMATCH
-              return spec unless shell_variable?(spec)
+              return spec unless shell_variable?(_spec)
             end
           end
         end
@@ -1145,6 +1145,7 @@ module Milter::Manager
         end
         spec ||= normalize_spec(@variables["SOCKET"])
         spec ||= normalize_spec(@variables["SOCKFILE"])
+        spec ||= normalize_spec(@variables["SOCKET_ADDRESS"])
         spec ||= normalize_spec(@variables["MILTER_SOCKET"])
         spec ||= normalize_spec(@variables["CONNECTION_SPEC"])
         spec ||= extract_connection_spec_parameter_from_flags(@variables["OPTIONS"])
@@ -1165,20 +1166,23 @@ module Milter::Manager
       def extract_connection_spec_parameter_from_flags(flags)
         return nil if flags.nil?
 
+        spec = nil
+
         options = Shellwords.split(flags)
-        p_option_index = options.index("-p")
+        p_option_index = options.rindex("-p")
         if p_option_index
-          spec = options[p_option_index + 1]
-          return spec unless shell_variable?(spec)
+          _spec = options[p_option_index + 1]
+          spec = _spec unless shell_variable?(_spec)
         else
           options.each do |option|
             if /\A-p/ =~ option
-              spec = $POSTMATCH
-              return spec unless shell_variable?(spec)
+              _spec = $POSTMATCH
+              spec = _spec unless shell_variable?(_spec)
             end
           end
         end
-        nil
+
+        spec
       end
 
       def shell_variable?(string)
