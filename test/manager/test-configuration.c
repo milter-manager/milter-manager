@@ -321,9 +321,10 @@ test_fallback_status (void)
 
     actual_status = milter_manager_configuration_get_fallback_status(config);
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
-                           MILTER_STATUS_CONTINUE, actual_status);
+                           MILTER_STATUS_ACCEPT, actual_status);
 
-    milter_manager_configuration_set_fallback_status(config, MILTER_STATUS_REJECT);
+    milter_manager_configuration_set_fallback_status(config,
+                                                     MILTER_STATUS_REJECT);
 
     actual_status = milter_manager_configuration_get_fallback_status(config);
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
@@ -366,7 +367,7 @@ milter_assert_default_configuration_helper (MilterManagerConfiguration *config)
 
     gcut_assert_equal_enum(
         MILTER_TYPE_STATUS,
-        MILTER_STATUS_CONTINUE,
+        MILTER_STATUS_ACCEPT,
         milter_manager_configuration_get_fallback_status(config));
 
     if (expected_children)

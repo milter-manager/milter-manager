@@ -146,7 +146,7 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
                              "Fallback status",
                              "The fallback status of the milter-manager",
                              MILTER_TYPE_STATUS,
-                             MILTER_STATUS_CONTINUE,
+                             MILTER_STATUS_ACCEPT,
                              G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
     g_object_class_install_property(gobject_class, PROP_FALLBACK_STATUS, spec);
 
@@ -1276,7 +1276,7 @@ milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
     priv->remove_manager_unix_socket_on_create = TRUE;
     priv->remove_controller_unix_socket_on_create = TRUE;
     priv->daemon = FALSE;
-    priv->fallback_status = MILTER_STATUS_CONTINUE;
+    priv->fallback_status = MILTER_STATUS_ACCEPT;
 }
 
 gchar *

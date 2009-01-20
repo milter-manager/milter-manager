@@ -1,5 +1,9 @@
 2009-01-20  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/manager/milter-manager-configuration.c,
+	test/manager/test-configuration.c: make default fallback status
+	accept instead of continue.
+
 	* test/server/test-server-context-signals.c (test_busy_error):
 	follow the below change.
 	* milter/server/milter-server-context.[ch],
