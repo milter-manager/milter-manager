@@ -1,3 +1,4 @@
+* detect OS/distribution when configure not dynamic by Ruby.
 * consider header-lead-space negotiate in {add,insert,change}-header.
 * support socket group separated by effective group.
 * if all alive child milters don't need to receive the

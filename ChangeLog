@@ -1,5 +1,7 @@
 2009-01-20  Kouhei Sutou  <kou@clear-code.com>
 
+	* TODO: add: detect OS/distribution when configure not dynamic by Ruby.
+
 	* milter/client/milter-client-context.c,
 	milter/server/milter-server-context.c,
 	milter/manager/milter-manager.c: use milter_option_inspect().
