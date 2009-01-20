@@ -332,7 +332,7 @@ milter-managerはmilterが無効になったことを検出し、無効になっ
 
   % sudo /etc/init.d/milter-manager reload
 
-Postfixのmain.confを変更する必要はありません。
+Postfixのmain.cfを変更する必要はありません。
 
 Ubuntu上でmilterを複数使っている場合は、milter-managerを導入
 して、管理コストを削減することができます。

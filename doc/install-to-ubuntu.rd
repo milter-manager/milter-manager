@@ -337,7 +337,7 @@ We need to reload milter-manager after we disable a milter.
   % sudo /etc/init.d/milter-manager reload
 
 milter-manager detects a milter is disabled and doesn't use
-it. We doesn't need to change Postfix's main.conf.
+it. We doesn't need to change Postfix's main.cf.
 
 We can reduce maintainance cost by introducing
 milter-manager if we use some milters on Ubuntu.

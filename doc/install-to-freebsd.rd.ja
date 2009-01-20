@@ -362,7 +362,7 @@ milterを無効にしたい場合は、他のサーバプロセスと同様に�
 
   % sudo /usr/local/etc/rc.d/milter-manager reload
 
-Postfixのmain.confを変更する必要はありません。
+Postfixのmain.cfを変更する必要はありません。
 
 FreeBSD上でmilterを複数使っている場合は、milter-managerを導入
 して、管理コストを削減することができます。
