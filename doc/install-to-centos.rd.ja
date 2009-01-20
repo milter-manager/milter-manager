@@ -1,0 +1,351 @@
+# -*- rd -*-
+
+= CentOSへインストール --- CentOSへのmilter managerのインストール方法
+
+CentOSに特化したmilter managerのインストール方法について説明
+します。CentSSに依存しない一般的なインストール情報は((<インス
+トール|install.rd.ja>))を見てください。
+
+CentOSのバージョンは5.2を想定しています。また、root権限での
+実行はsudoを使用することを想定しています。sudoを利用していな
+い場合はsuなどroot権限で実行してください。
+
+== パッケージのインストール
+
+以下のパッケージをインストールすることにより、関連するパッケー
+ジもインストールされます。
+
+  % sudo yum install -y glib2-devel ruby-devel
+
+MTAは標準でインストールされているSendmailを利用することとします。
+
+milterはspamass-milter、clamav-milter、milter-greylistを使用
+することとします。
+
+各milterはRPMforgeにあるものを利用します。
+
+32bit環境の場合は以下のようにRPMforgeを登録します。
+
+  % wget http://packages.sw.be/rpmforge-release/rpmforge-release-0.3.6-1.el5.rf.i386.rpm
+  % sudo rpm -Uhv rpmforge-release-0.3.6-1.el5.rf.i386.rpm
+
+64bit環境の場合は以下のようにRPMforgeを登録します。
+
+  % wget http://packages.sw.be/rpmforge-release/rpmforge-release-0.3.6-1.el5.rf.x86_64.rpm
+  % sudo rpm -Uhv rpmforge-release-0.3.6-1.el5.rf.x86_64.rpm
+
+RPMforgeを登録したらmilterをインストールします。
+
+  % sudo yum install -y spamass-milter clamav-milter milter-greylist
+
+== ビルドとインストール
+
+~/src/以下で作業をすることとします。
+
+  % mkdir -p ~/src/
+
+=== Ruby/GLib2のインストール
+
+Ruby/GLib2 0.17以降ではRuby 1.8.5はサポートされていないため、
+Ruby/GLib2 0.16.0を使います。
+
+  % cd ~/src/
+  % wget http://downloads.sourceforge.net/ruby-gnome2/ruby-gtk2-0.16.0.tar.gz
+  % tar xvzf ruby-gtk2-0.16.0.tar.gz
+  % cd ruby-gtk2-0.16.0
+  % ruby extconf.rb glib
+  % make
+  % sudo make install
+
+=== milter managerのインストール
+
+/usr/local/以下にインストールします。
+
+  % cd ~/src/
+  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-0.8.0.tar.gz
+  % tar xvzf milter-manager-0.8.0.tar.gz
+  % cd milter-manager-0.8.0
+  % ./configure
+  % make
+  % sudo make install
+
+milter-manager用のユーザを作成します。
+
+  % sudo /usr/sbin/groupadd -r milter-manager
+  % sudo /usr/sbin/useradd -r -s /sbin/nologin -c 'milter manager' -g milter-manager milter-manager
+
+== 設定
+
+milterの基本的な設定方針は以下の通りです。
+
+接続はIPv4ソケットでローカルホストからのみ接続を受け付けるよ
+うにします。
+
+必要のない配送遅延をできるだけ抑えるため、milter-greylistは
+((<S25R|URL:http://gabacho.reto.jp/anti-spam/>))にマッチする
+ときのみ適用します。しかし、これはmilter-managerが自動で行う
+ため、特に設定する必要はありません。
+
+=== spamass-milterの設定
+
+まず、spamdの設定をします。
+
+デフォルトの設定ではスパム判定されたメールは件名に「[SPAM]」
+が追加されます。もし、これが嫌な場合は
+/etc/main/spamassassin/local.cfを以下のように変更します。
+
+変更前:
+  rewrite_header Subject [SPAM]
+
+変更後:
+  # rewrite_header Subject [SPAM]
+
+また、スパム判定された場合のみ、その詳細をヘッダに追加するよ
+うにする場合は以下を追加します。
+
+  remove_header ham Status
+  remove_header ham Level
+
+システム起動時にspamdを起動するようにします。
+
+  % sudo /sbin/chkconfig spamassassin on
+
+spamdを起動します。
+
+  % sudo /sbin/service spamassassin start
+
+spamass-milterはソケットを変更します。
+
+/etc/sysconfig/spamass-milterに以下を追加します。
+
+  SOCKET="inet:11120@[127.0.0.1]"
+
+システム起動時にspamass-milterを起動するようにします。
+
+  % sudo /sbin/chkconfig spamass-milter on
+
+spamass-milterを起動します。
+
+  % sudo /sbin/service spamass-milter start
+
+=== clamav-milterの設定
+
+まず、clamdの起動設定をします。
+
+clamdを起動します。
+
+  % sudo /sbin/service clamd start
+
+clamav-milterはソケットを変更します。また、Sendmailの設定ファ
+イルチェックを省略します。
+
+/etc/sysconfig/clamav-milterを以下のように変更します。
+
+変更前:
+  SOCKET_ADDRESS="local:/var/clamav/clmilter.socket"
+
+変更後:
+  SOCKET_ADDRESS="inet:11121@[127.0.0.1]"
+  CLAMAV_FLAGS="$CLAMAV_FLAGS --no-check-cf"
+
+clamav-milterを起動します。
+
+  % sudo /sbin/service clamav-milter start
+
+=== milter-greylistの設定
+
+/etc/mail/greylist.confを編集し、デフォルトでGreylistを使うよ
+うにします。
+
+変更前:
+  racl whitelist default
+
+変更後:
+  racl greylist default
+
+次に、以下の内容の/etc/sysconfig/milter-greylistを作成します。
+
+  OPTIONS="$OPTIONS -p inet:11122@[127.0.0.1]"
+
+システム起動時にmilter-greylistを起動するようにします。
+
+  % sudo /sbin/chkconfig milter-greylist on
+
+milter-greylistを起動します。
+
+  % sudo /sbin/service milter-greylist start
+
+=== milter-managerの設定
+
+milter-managerはシステムにインストールされているmilterを検出
+します。以下のコマンドでspamass-milter、clamav-milter、
+milter-greylistを検出していることを確認してください。
+
+  % /usr/local/sbin/milter-manager --show-config
+
+以下のように表示されていれば検出は成功しています。
+
+  ...
+  define_milter("milter-greylist") do |milter|
+    milter.connection_spec = "inet:11122@[127.0.0.1]"
+    ...
+    milter.enabled = true
+    ...
+  end
+  ..
+  define_milter("clamav-milter") do |milter|
+    milter.connection_spec = "inet:11121@[127.0.0.1]"
+    ...
+    milter.enabled = true
+    ...
+  end
+  ..
+  define_milter("spamass-milter") do |milter|
+    milter.connection_spec = "inet:11120@[127.0.0.1]"
+    ...
+    milter.enabled = true
+    ...
+  end
+  ..
+
+milterの名前、ソケットのパス、enabledがtrueになっていることを
+確認してください。異なっていた場合は、((<設定
+|configuration.rd.ja>))を参考に
+/usr/local/etc/milter-manager/milter-manager.confを編集してく
+ださい。ただ、できれば、設定を変更せずに使用できるようにした
+いと考えています。もし、検出できなかった環境のことを教えても
+らえれば、milter-manager.confを編集しなくとも使用できるように
+検出方法を改良することができるかもしれません。
+
+CentOS上ではデフォルトでは
+/var/run/milter-manager/milter-manager.pidにプロセスIDを記録
+します。そのため、事前に/var/run/milter-manager/ディレクトリ
+を作成しておく必要があります。
+
+  % sudo mkdir -p /var/run/milter-manager
+  % sudo chown -R milter-manager:milter-manager /var/run/milter-manager
+
+また、Postfixは/var/spool/postfix/にchrootして動作するため、
+ソケットファイルは/var/spool/postfix/以下に作成する必要があり
+ます。ここでは、
+/var/spool/postfix/milter-manager/milter-manager.sockに作成す
+ることにします。そのため、事前に
+/var/spool/postfix/milter-manager/ディレクトリを作成しておく
+必要があります。
+
+  % sudo mkdir -p /var/spool/postfix/milter-manager
+  % sudo chown -R milter-manager:milter-manager /var/spool/postfix/milter-manager
+
+milter-managerの設定が完了したので、起動の設定をします。
+
+CentOS用の起動スクリプトが
+/usr/local/etc/milter-manager/init.d/redhat/milter-managerに
+インストールされています。/etc/init.d/以下にシンボリックリン
+クを作成し、自動起動するようにします。
+
+  % cd /etc/init.d
+  % sudo ln -s /usr/local/etc/milter-manager/init.d/redhat/milter-manager ./
+  % sudo /sbin/chkconfig --add milter-manager
+
+起動スクリプトはmilter-managerコマンドが
+/usr/sbin/milter-managerにインストールされていることを前提と
+しているため、シンボリックリンクを作成します。
+
+  % cd /usr/sbin
+  % sudo ln -s /usr/local/sbin/milter-manager ./
+
+milter-managerを起動します。
+
+  % sudo /sbin/service milter-manager start
+
+FIXME
+
+/usr/local/bin/milter-test-serverで起動の確認をすることがで
+きます。
+
+  % sudo -u postfix milter-test-server -s unix:/var/run/milter-manager/milter-manager.sock
+
+このように表示されれば成功です。
+
+  status: pass
+  elapsed-time: 0.128 seconds
+
+起動に失敗しているときはこのように表示されます。
+
+  Failed to connect to unix:/var/spool/postfix/milter-manager/milter-manager.sock
+
+失敗している時はログを頼りに問題を解決します。--verboseオプショ
+ンをつけると詳細なログが表示されます。また、デーモンプロセス
+にしないことにより、標準出力にもログが表示されます。
+
+/etc/sysconfig/milter-managerに以下の内容を追加します。これによ
+り、標準出力に詳細なログが表示されます。
+
+  OPTION_ARGS="--verbose --no-daemon"
+
+milter-managerをもう一度起動します。
+
+  % sudo /sbin/service milter-manager start
+
+問題があればログが表示されます。起動しているmilter-managerは
+Ctrl+cで終了することができます。
+
+問題が解決した後は、/etc/sysconfig/milter-managerに追加した
+OPTION_ARGSをコメントアウトし、デーモンプロセスで起動するよう
+に戻してから、milter-managerを起動しなおしてください。
+
+=== Sendmailの設定
+
+Sendmailにmilter-managerを登録するために、
+/etc/mail/sendmail.mcに以下を追加します。
+
+  INPUT_MAIL_FILTER(`milter-manager', `S=local:/var/run/milter-manager/milter-manager.sock')
+
+spamass-milter、clamav-milter、milter-greylistは
+milter-manager経由で利用するので、Sendmailにはmilter-manager
+だけを登録すればよいことに注意してください。
+
+Sendmailの設定を更新し、再読み込みします。
+
+  % sudo make -C /etc/mail
+  % sudo /sbin/service sendmail reload
+
+以上で設定は完了です。
+
+milter-managerはいくつかsyslogにログを出力します。mail.info
+に出力するので、正常に動作していればmilter-managerからのログ
+が/var/log/maillogにログがでるはずです。テストメールを送信
+して確認してください。
+
+== まとめ
+
+milter-managerを導入することにより、milterとSendmailを連携さ
+せる手間が削減されています。
+
+通常であれば、sendmail.mcにspamass-milter、clamav-milter、
+miler-greylistのそれぞれのソケットを指定する必要があります。
+しかし、milter-managerを導入することにより、milter-managerの
+ソケットのみを指定するだけですむようになりました。各milterの
+ソケットはmilter-managerが検出するため、typoなどの小さいです
+が気づきにくいミスに惑わされることがなくなります。
+
+FIXME: chkconfigをみる？
+
+また、ここでは触れませんでしたが、milter-managerは
+/etc/sysconfig/milter-greylist内にあるようなENABLEDの設定も検出
+します。そのため、milterを無効にしたい場合は、以下のような手
+順になります。
+
+  % sudo /etc/init.d/milter-greylist stop
+  % sudo vim /etc/default/milter-greylist # ENABLED=1 => ENABLED=0
+
+milterを無効にしたら、milter-managerの設定を再読み込みします。
+milter-managerはmilterが無効になったことを検出し、無効になっ
+たmilter とは接続しなくなります。
+
+  % sudo /sbin/service milter-manager reload
+
+Sendmailのsendmail.mcを変更する必要はありません。
+
+Ubuntu上でmilterを複数使っている場合は、milter-managerを導入
+して、管理コストを削減することができます。

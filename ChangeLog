@@ -1,5 +1,8 @@
 2009-01-20  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/install-to-centos.rd.ja: add.
+	* doc/install.rd.ja: add a link to the above document.
+
 	* binding/ruby/lib/milter/manager.rb: keep reference of loaded
 	configuration to guard from Ruby's GC.
 
