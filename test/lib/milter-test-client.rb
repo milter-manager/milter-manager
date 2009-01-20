@@ -185,6 +185,11 @@ class MilterTestClient
               "Add CHUNK_REGEXP targets to be applied ACTION") do |chunk_regexp|
         @end_of_message_chunks << [@current_action, Regexp.new(chunk_regexp)]
       end
+
+      opts.on("--quit-without-reply=ACTION",
+              "Quit without reply on ACTION") do |action|
+        @quit_without_reply_action = action
+      end
     end
     opts.parse!(argv)
   end
@@ -205,6 +210,7 @@ class MilterTestClient
     @body_chunks = []
     @end_of_message_chunks = []
     @negotiate_flags = ["none"]
+    @quit_without_reply_action = nil
   end
 
   def print_status(status)
@@ -265,8 +271,12 @@ class MilterTestClient
           status << ": #{additional_info}" unless additional_info.to_s.empty?
         end
         print_status(status)
-        callback_name = "do_#{normalized_signal}"
-        send(callback_name, *args) if respond_to?(callback_name, true)
+        if signal == @quit_without_reply_action
+          @state = :shutdown
+        else
+          callback_name = "do_#{normalized_signal}"
+          send(callback_name, *args) if respond_to?(callback_name, true)
+        end
       end
     end
   end

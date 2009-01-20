@@ -1,5 +1,11 @@
 2009-01-20  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/manager/milter-manager-children.c,
+	test/manager/test-leader.c,
+	test/fixtures/leader/data-close-without-reply.txt,
+	test/lib/milter-test-client.rb: handle unexpected finished case:
+	finish without receiving response.
+
 	* milter/manager/milter-manager-configuration.c,
 	test/manager/test-configuration.c: make default fallback status
 	accept instead of continue.

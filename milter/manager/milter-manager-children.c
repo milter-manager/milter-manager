@@ -68,6 +68,7 @@ struct _MilterManagerChildrenPrivate
     MilterReader *launcher_reader;
 
     gboolean finished;
+    gboolean emitted_reply_for_message_oriented_command;
 };
 
 typedef struct _NegotiateData NegotiateData;
@@ -232,6 +233,7 @@ milter_manager_children_init (MilterManagerChildren *milter)
     priv->launcher_writer = NULL;
 
     priv->finished = FALSE;
+    priv->emitted_reply_for_message_oriented_command = FALSE;
 }
 
 static void
@@ -472,6 +474,72 @@ status_to_signal_name (MilterStatus status)
     }
 
     return signal_name;
+}
+
+static MilterServerContextState
+command_to_state (MilterCommand command)
+{
+    switch (command) {
+    case MILTER_COMMAND_CONNECT:
+        return MILTER_SERVER_CONTEXT_STATE_CONNECT;
+        break;
+    case MILTER_COMMAND_HELO:
+        return MILTER_SERVER_CONTEXT_STATE_HELO;
+        break;
+    case MILTER_COMMAND_ENVELOPE_FROM:
+        return MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM;
+        break;
+    case MILTER_COMMAND_ENVELOPE_RECIPIENT:
+        return MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT;
+        break;
+    case MILTER_COMMAND_DATA:
+        return MILTER_SERVER_CONTEXT_STATE_DATA;
+        break;
+    case MILTER_COMMAND_HEADER:
+        return MILTER_SERVER_CONTEXT_STATE_HEADER;
+        break;
+    case MILTER_COMMAND_END_OF_HEADER:
+        return MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER;
+        break;
+    case MILTER_COMMAND_BODY:
+        return MILTER_SERVER_CONTEXT_STATE_BODY;
+        break;
+    case MILTER_COMMAND_END_OF_MESSAGE:
+        return MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE;
+        break;
+    default:
+        return MILTER_SERVER_CONTEXT_STATE_START;
+        break;
+    }
+
+    return MILTER_SERVER_CONTEXT_STATE_START;
+}
+
+static MilterCommand
+state_to_command (MilterServerContextState state)
+{
+    switch (state) {
+    case MILTER_SERVER_CONTEXT_STATE_DATA:
+        return MILTER_COMMAND_DATA;
+        break;
+    case MILTER_SERVER_CONTEXT_STATE_HEADER:
+        return MILTER_COMMAND_HEADER;
+        break;
+    case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
+        return MILTER_COMMAND_END_OF_HEADER;
+        break;
+    case MILTER_SERVER_CONTEXT_STATE_BODY:
+        return MILTER_COMMAND_BODY;
+        break;
+    case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
+        return MILTER_COMMAND_END_OF_MESSAGE;
+        break;
+    default:
+        return MILTER_COMMAND_UNKNOWN;
+        break;
+    }
+
+    return MILTER_COMMAND_UNKNOWN;
 }
 
 static MilterStatus
@@ -837,6 +905,25 @@ emit_signals_on_end_of_message (MilterManagerChildren *children)
     g_object_unref(processing_headers);
 }
 
+static void
+emit_reply_for_message_oriented_command (MilterManagerChildren *children,
+                                         MilterServerContextState current_state)
+{
+    MilterManagerChildrenPrivate *priv;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    if (priv->emitted_reply_for_message_oriented_command)
+        return;
+
+    priv->emitted_reply_for_message_oriented_command = TRUE;
+
+    if (current_state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
+        emit_signals_on_end_of_message(children);
+
+    emit_reply_status_of_state(children, current_state);
+}
+
 static MilterCommand
 fetch_first_command_for_child_in_queue (MilterServerContext *child,
                                         GList **queue)
@@ -878,10 +965,7 @@ send_first_command_to_next_child (MilterManagerChildren *children,
 
     next_child = get_first_child_in_command_waiting_child_queue(children);
     if (!next_child) {
-        if (current_state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
-            emit_signals_on_end_of_message(children);
-
-        emit_reply_status_of_state(children, current_state);
+        emit_reply_for_message_oriented_command(children, current_state);
         return MILTER_STATUS_PROGRESS;
     }
 
@@ -1405,24 +1489,48 @@ cb_finished (MilterAgent *agent, gpointer user_data)
 
     expire_child(children, context);
 
+    state_name =
+        milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                                        priv->current_state);
+    milter_debug("[children][end][%s] %s",
+                 state_name,
+                 milter_server_context_get_name(context));
+    g_free(state_name);
+
     switch (priv->current_state) {
     case MILTER_SERVER_CONTEXT_STATE_DATA:
     case MILTER_SERVER_CONTEXT_STATE_HEADER:
     case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
-    case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
     case MILTER_SERVER_CONTEXT_STATE_BODY:
+    case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
+        if (!priv->emitted_reply_for_message_oriented_command &&
+            milter_server_context_is_processing(context)) {
+            milter_debug("[children][unexpected] "
+                         "finish without receiving response: %s",
+                         milter_server_context_get_name(context));
+            if (priv->milters) {
+                MilterCommand command;
+
+                command = state_to_command(priv->current_state);
+                send_first_command_to_next_child(children, context, command);
+            } else {
+                MilterStatus fallback_status;
+
+                /* FIXME: Can we use fallback_status?
+                   Should we provide another configuration item? */
+                fallback_status =
+                    milter_manager_configuration_get_fallback_status(priv->configuration);
+                compile_reply_status(children, priv->current_state,
+                                     fallback_status);
+                emit_reply_for_message_oriented_command(children,
+                                                        priv->current_state);
+            }
+        }
         break;
     default:
         remove_child_from_queue(children, context);
         break;
     }
-
-    state_name = milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
-                                                 priv->current_state);
-    milter_debug("[children][end][%s] %s",
-                 state_name,
-                 milter_server_context_get_name(context));
-    g_free(state_name);
 }
 
 static void
@@ -1793,72 +1901,6 @@ child_establish_connection (MilterManagerChild *child,
     prepare_negotiate(child, option, children, is_retry);
 
     return TRUE;
-}
-
-static MilterServerContextState
-command_to_state (MilterCommand command)
-{
-    switch (command) {
-    case MILTER_COMMAND_CONNECT:
-        return MILTER_SERVER_CONTEXT_STATE_CONNECT;
-        break;
-    case MILTER_COMMAND_HELO:
-        return MILTER_SERVER_CONTEXT_STATE_HELO;
-        break;
-    case MILTER_COMMAND_ENVELOPE_FROM:
-        return MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM;
-        break;
-    case MILTER_COMMAND_ENVELOPE_RECIPIENT:
-        return MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT;
-        break;
-    case MILTER_COMMAND_DATA:
-        return MILTER_SERVER_CONTEXT_STATE_DATA;
-        break;
-    case MILTER_COMMAND_HEADER:
-        return MILTER_SERVER_CONTEXT_STATE_HEADER;
-        break;
-    case MILTER_COMMAND_END_OF_HEADER:
-        return MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER;
-        break;
-    case MILTER_COMMAND_BODY:
-        return MILTER_SERVER_CONTEXT_STATE_BODY;
-        break;
-    case MILTER_COMMAND_END_OF_MESSAGE:
-        return MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE;
-        break;
-    default:
-        return MILTER_SERVER_CONTEXT_STATE_START;
-        break;
-    }
-
-    return MILTER_SERVER_CONTEXT_STATE_START;
-}
-
-static MilterCommand
-state_to_command (MilterServerContextState state)
-{
-    switch (state) {
-    case MILTER_SERVER_CONTEXT_STATE_DATA:
-        return MILTER_COMMAND_DATA;
-        break;
-    case MILTER_SERVER_CONTEXT_STATE_HEADER:
-        return MILTER_COMMAND_HEADER;
-        break;
-    case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
-        return MILTER_COMMAND_END_OF_HEADER;
-        break;
-    case MILTER_SERVER_CONTEXT_STATE_BODY:
-        return MILTER_COMMAND_BODY;
-        break;
-    case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
-        return MILTER_COMMAND_END_OF_MESSAGE;
-        break;
-    default:
-        return MILTER_COMMAND_UNKNOWN;
-        break;
-    }
-
-    return MILTER_COMMAND_UNKNOWN;
 }
 
 static MilterCommand
