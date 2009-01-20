@@ -1,3 +1,7 @@
+2009-01-20  Kouhei Sutou  <kou@cozmixng.org>
+
+	* test/tool/test-server.c (cb_negotiate): use milter protocol 8.
+
 2009-01-20  Kouhei Sutou  <kou@clear-code.com>
 
 	* tool/milter-test-server.c: data command requires milter
