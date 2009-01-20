@@ -1,5 +1,7 @@
 2009-01-20  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/lib/milter/manager/Makefile.am: add missing detector.rb.
+
 	* TODO: add: detect OS/distribution when configure not dynamic by Ruby.
 
 	* milter/client/milter-client-context.c,
