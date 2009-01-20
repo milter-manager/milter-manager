@@ -17,12 +17,10 @@
  *
  */
 
-#include <gcutter.h>
-
-#define shutdown inet_shutdown
 #include <milter/core/milter-option.h>
 #include <milter/core/milter-enum-types.h>
-#undef shutdown
+
+#include <gcutter.h>
 
 void test_new (void);
 void test_new_empty (void);
@@ -32,6 +30,8 @@ void test_version (void);
 void test_action (void);
 void test_step (void);
 void test_combine (void);
+void test_combine_older_version (void);
+void test_combine_newer_version (void);
 void test_merge (void);
 void test_inspect (void);
 
@@ -251,6 +251,68 @@ test_combine (void)
                             milter_option_get_action(option));
     gcut_assert_equal_flags(MILTER_TYPE_STEP_FLAGS,
                             MILTER_STEP_NO_ENVELOPE_FROM,
+                            milter_option_get_step(option));
+}
+
+void
+test_combine_older_version (void)
+{
+    guint32 version, older_version;
+    MilterActionFlags action;
+    MilterStepFlags step;
+
+    version = 8;
+    older_version = 6;
+    action = MILTER_ACTION_ADD_HEADERS | MILTER_ACTION_CHANGE_BODY;
+    step = MILTER_STEP_NO_ENVELOPE_FROM | MILTER_STEP_NO_REPLY_CONNECT;
+
+    option = milter_option_new(version, action, step);
+    copied_option = milter_option_new(older_version,
+                                      MILTER_ACTION_ADD_HEADERS |
+                                      MILTER_ACTION_CHANGE_HEADERS,
+                                      MILTER_STEP_NO_ENVELOPE_FROM |
+                                      MILTER_STEP_NO_DATA |
+                                      MILTER_STEP_NO_REPLY_HELO);
+
+    cut_assert_true(milter_option_combine(option, copied_option));
+
+    cut_assert_equal_uint(older_version, milter_option_get_version(option));
+    gcut_assert_equal_flags(MILTER_TYPE_ACTION_FLAGS,
+                            MILTER_ACTION_ADD_HEADERS,
+                            milter_option_get_action(option));
+    gcut_assert_equal_flags(MILTER_TYPE_STEP_FLAGS,
+                            MILTER_STEP_NO_ENVELOPE_FROM,
+                            milter_option_get_step(option));
+}
+
+void
+test_combine_newer_version (void)
+{
+    guint32 version, newer_version;
+    MilterActionFlags action;
+    MilterStepFlags step;
+
+    version = 6;
+    newer_version = 8;
+    action = MILTER_ACTION_ADD_HEADERS | MILTER_ACTION_CHANGE_BODY;
+    step = MILTER_STEP_NO_ENVELOPE_FROM | MILTER_STEP_NO_REPLY_CONNECT;
+
+    option = milter_option_new(version, action, step);
+    copied_option = milter_option_new(newer_version,
+                                      MILTER_ACTION_ADD_HEADERS |
+                                      MILTER_ACTION_CHANGE_HEADERS,
+                                      MILTER_STEP_NO_ENVELOPE_FROM |
+                                      MILTER_STEP_NO_DATA |
+                                      MILTER_STEP_NO_REPLY_HELO);
+
+    cut_assert_false(milter_option_combine(option, copied_option));
+
+    cut_assert_equal_uint(version, milter_option_get_version(option));
+    gcut_assert_equal_flags(MILTER_TYPE_ACTION_FLAGS,
+                            action,
+                            milter_option_get_action(option));
+    gcut_assert_equal_flags(MILTER_TYPE_STEP_FLAGS,
+                            step,
                             milter_option_get_step(option));
 }
 

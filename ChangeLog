@@ -1,5 +1,8 @@
 2009-01-20  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/core/milter-option.c, test/core/test-option.c: combining
+	accepts older version.
+
 	* TODO: add: support milter's in pkgsrc.
 
 	* milter/server/milter-server-context.[ch],

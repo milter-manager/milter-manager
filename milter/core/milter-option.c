@@ -301,12 +301,12 @@ milter_option_combine (MilterOption *dest, MilterOption *src)
 {
     MilterOptionPrivate *priv;
 
-    if (milter_option_get_version(dest) !=
-        milter_option_get_version(src))
+    if (milter_option_get_version(dest) < milter_option_get_version(src))
         return FALSE;
 
     priv = MILTER_OPTION_GET_PRIVATE(dest);
 
+    priv->version = milter_option_get_version(src);
     priv->step &= milter_option_get_step(src);
     priv->action &= milter_option_get_action(src);
 
