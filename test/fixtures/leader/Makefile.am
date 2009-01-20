@@ -13,6 +13,7 @@ EXTRA_DIST =								\
 	connect-with-macro.txt						\
 	connect.txt							\
 	data.txt							\
+	data-close-without-reply.txt					\
 	delete-header.txt						\
 	delete-recipient.txt						\
 	end-of-header.txt						\
