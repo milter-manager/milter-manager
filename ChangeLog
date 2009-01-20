@@ -1,5 +1,9 @@
 2009-01-20  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/client/milter-client-context.c,
+	milter/server/milter-server-context.c,
+	milter/manager/milter-manager.c: use milter_option_inspect().
+
 	* doc/install-to-{ubuntu,freebsd}.*: fix typos.
 
 	* milter/core/milter-option.[ch], test/core/test-option.c:

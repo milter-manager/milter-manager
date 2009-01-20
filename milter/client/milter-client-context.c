@@ -2330,7 +2330,7 @@ negotiate_response (MilterClientContext *context,
     {
         gchar *inspected_option;
 
-        inspected_option = milter_utils_inspect_object(G_OBJECT(option));
+        inspected_option = milter_option_inspect(option);
         milter_debug("[client][reply][negotiate] %s", inspected_option);
         g_free(inspected_option);
 

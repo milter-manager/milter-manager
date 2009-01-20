@@ -202,7 +202,7 @@ cb_client_negotiate (MilterClientContext *context, MilterOption *option,
     MilterManagerLeader *leader = user_data;
     gchar *inspected_option, *inspected_macros_requests;
 
-    inspected_option = milter_utils_inspect_object(G_OBJECT(option));
+    inspected_option = milter_option_inspect(option);
     inspected_macros_requests = milter_utils_inspect_object(G_OBJECT(macros_requests));
     milter_debug("[manager][receive][negotiate] <%s>:<%s>",
                  inspected_option, inspected_macros_requests);

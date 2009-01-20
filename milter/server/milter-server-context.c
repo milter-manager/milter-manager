@@ -746,7 +746,7 @@ milter_server_context_negotiate (MilterServerContext *context,
     {
         gchar *inspected_option;
 
-        inspected_option = milter_utils_inspect_object(G_OBJECT(option));
+        inspected_option = milter_option_inspect(option);
         milter_debug("[server][send][negotiate] %s: %s",
                      inspected_option,
                      milter_server_context_get_name(context));
