@@ -1,5 +1,7 @@
 2009-01-20  Kouhei Sutou  <kou@clear-code.com>
 
+	* TODO: add: support milter's in pkgsrc.
+
 	* milter/server/milter-server-context.[ch],
 	test/server/test-server-context-command.c: add error check for
 	negotiate version mismatch.

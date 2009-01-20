@@ -1,3 +1,5 @@
+* support milter's in pkgsrc:
+  http://pkgsrc.se/dependon.php?path=mail/libmilter&branch=CURRENT
 * detect OS/distribution when configure not dynamic by Ruby.
 * consider header-lead-space negotiate in {add,insert,change}-header.
 * support socket group separated by effective group.
