@@ -1,5 +1,8 @@
 2009-01-20  Kouhei Sutou  <kou@clear-code.com>
 
+	* test/server/test-server-context-signals.c (test_busy_error):
+	remove needless variable.
+
 	* test/fixtures/leader/Makefile.am (EXTRA_DIST): add missing file.
 
 	* milter/manager/milter-manager-children.c,

@@ -909,16 +909,10 @@ test_invalid_state_error (void)
 void
 test_busy_error (void)
 {
-    gchar *inspected_state;
-    inspected_state =
-        milter_utils_get_enum_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
-                                   MILTER_SERVER_CONTEXT_STATE_HELO);
-    cut_take_string(inspected_state);
     expected_error = g_error_new(MILTER_SERVER_CONTEXT_ERROR,
                                  MILTER_SERVER_CONTEXT_ERROR_BUSY,
                                  "previous command has been processing: "
-                                 "helo -> data",
-                                 inspected_state);
+                                 "helo -> data");
 
     milter_server_context_helo(context, "delian");
     milter_server_context_data(context);
