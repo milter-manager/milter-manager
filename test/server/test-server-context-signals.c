@@ -916,7 +916,8 @@ test_busy_error (void)
     cut_take_string(inspected_state);
     expected_error = g_error_new(MILTER_SERVER_CONTEXT_ERROR,
                                  MILTER_SERVER_CONTEXT_ERROR_BUSY,
-                                 "Previous command(%s) has been processing in milter",
+                                 "previous command has been processing: "
+                                 "helo -> data",
                                  inspected_state);
 
     milter_server_context_helo(context, "delian");

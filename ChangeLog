@@ -1,5 +1,7 @@
 2009-01-20  Kouhei Sutou  <kou@clear-code.com>
 
+	* test/server/test-server-context-signals.c (test_busy_error):
+	follow the below change.
 	* milter/server/milter-server-context.[ch],
 	test/server/test-server-context.c: export predicate that
 	asks whether processing or not.
