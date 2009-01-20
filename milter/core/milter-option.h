@@ -151,6 +151,7 @@ gboolean           milter_option_combine           (MilterOption      *dest,
                                                     MilterOption      *src);
 gboolean           milter_option_merge             (MilterOption      *dest,
                                                     MilterOption      *src);
+gchar             *milter_option_inspect           (MilterOption      *option);
 
 G_END_DECLS
 

@@ -22,6 +22,7 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "milter-option.h"
+#include "milter-utils.h"
 #include "milter-enum-types.h"
 
 #define MILTER_OPTION_GET_PRIVATE(obj)                  \
@@ -368,6 +369,35 @@ milter_step_flags_merge (MilterStepFlags dest, MilterStepFlags src)
     dest_normal_step_flags |= (src & MILTER_NORMAL_STEP_FLAGS);
 
     return dest_no_step_flags | dest_normal_step_flags;
+}
+
+gchar *
+milter_option_inspect (MilterOption *option)
+{
+    MilterOptionPrivate *priv;
+    GString *inspected;
+    gchar *action_names;
+    gchar *step_names;
+
+    priv = MILTER_OPTION_GET_PRIVATE(option);
+
+    inspected = g_string_new("#<MilterOption ");
+
+    g_string_append_printf(inspected, "version=<%d> ", priv->version);
+
+    action_names = milter_utils_get_flags_names(MILTER_TYPE_ACTION_FLAGS,
+                                                priv->action);
+    g_string_append_printf(inspected, "action=<%s> ", action_names);
+    g_free(action_names);
+
+    step_names = milter_utils_get_flags_names(MILTER_TYPE_STEP_FLAGS,
+                                              priv->step);
+    g_string_append_printf(inspected, "step=<%s>", step_names);
+    g_free(step_names);
+
+    g_string_append_printf(inspected, ">");
+
+    return g_string_free(inspected, FALSE);
 }
 
 /*

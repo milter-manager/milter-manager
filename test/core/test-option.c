@@ -33,6 +33,7 @@ void test_action (void);
 void test_step (void);
 void test_combine (void);
 void test_merge (void);
+void test_inspect (void);
 
 static MilterOption *option;
 static MilterOption *copied_option;
@@ -283,6 +284,24 @@ test_merge (void)
     gcut_assert_equal_flags(MILTER_TYPE_STEP_FLAGS,
                             MILTER_STEP_NO_ENVELOPE_FROM,
                             milter_option_get_step(option));
+}
+
+void
+test_inspect (void)
+{
+    guint32 version;
+    MilterActionFlags action;
+    MilterStepFlags step;
+
+    version = 8;
+    action = MILTER_ACTION_ADD_HEADERS | MILTER_ACTION_CHANGE_BODY;
+    step = MILTER_STEP_NO_ENVELOPE_FROM | MILTER_STEP_NO_REPLY_CONNECT;
+
+    option = milter_option_new(version, action, step);
+    cut_assert_equal_string_with_free(
+        "#<MilterOption version=<8> action=<add-headers|change-body> "
+        "step=<no-envelope-from|no-reply-connect>>",
+        milter_option_inspect(option));
 }
 
 /*
