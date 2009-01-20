@@ -212,7 +212,7 @@ Ubuntu用の起動スクリプトが
   % sudo /usr/sbin/update-rc.d milter-manager defaults
 
 起動スクリプトはmilter-managerコマンドが
-/usr/sbin/milter-managerにインストールされていることを前庭と
+/usr/sbin/milter-managerにインストールされていることを前提と
 しているため、シンボリックリンクを作成します。
 
   % cd /usr/sbin
