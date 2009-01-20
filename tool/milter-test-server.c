@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -148,7 +148,7 @@ cb_continue (MilterServerContext *context, gpointer user_data)
         step = milter_option_get_step(data->option);
 
     switch (milter_server_context_get_state(context)) {
-      case MILTER_SERVER_CONTEXT_STATE_NEGOTIATE:
+    case MILTER_SERVER_CONTEXT_STATE_NEGOTIATE:
         if (!(step & MILTER_STEP_NO_CONNECT)) {
             const gchar *host_name;
 
@@ -177,22 +177,22 @@ cb_continue (MilterServerContext *context, gpointer user_data)
             }
             break;
         }
-      case MILTER_SERVER_CONTEXT_STATE_CONNECT:
+    case MILTER_SERVER_CONTEXT_STATE_CONNECT:
         if (!(step & MILTER_STEP_NO_HELO)) {
             milter_server_context_helo(context, helo_host);
             break;
         }
-      case MILTER_SERVER_CONTEXT_STATE_HELO:
+    case MILTER_SERVER_CONTEXT_STATE_HELO:
         if (!(step & MILTER_STEP_NO_ENVELOPE_FROM)) {
             milter_server_context_envelope_from(context, envelope_from);
             break;
         }
-      case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM:
+    case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM:
         if (!(step & MILTER_STEP_NO_ENVELOPE_RECIPIENT)) {
             send_recipient(context);
             break;
         }
-      case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT:
+    case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT:
         if (!(step & MILTER_STEP_NO_ENVELOPE_RECIPIENT) &&
             *recipients) {
             send_recipient(context);
@@ -202,12 +202,12 @@ cb_continue (MilterServerContext *context, gpointer user_data)
             milter_server_context_unknown(context, unknown_command);
             break;
         }
-      case MILTER_SERVER_CONTEXT_STATE_UNKNOWN:
+    case MILTER_SERVER_CONTEXT_STATE_UNKNOWN:
         if (!(step & MILTER_STEP_NO_DATA)) {
             milter_server_context_data(context);
             break;
         }
-      case MILTER_SERVER_CONTEXT_STATE_DATA:
+    case MILTER_SERVER_CONTEXT_STATE_DATA:
         if (!(step & MILTER_STEP_NO_HEADERS)) {
             MilterHeader *header;
             header = milter_headers_get_nth_header(option_headers, 1);
@@ -215,7 +215,7 @@ cb_continue (MilterServerContext *context, gpointer user_data)
             milter_headers_remove(option_headers, header);
             break;
         }
-      case MILTER_SERVER_CONTEXT_STATE_HEADER:
+    case MILTER_SERVER_CONTEXT_STATE_HEADER:
         if (!(step & MILTER_STEP_NO_HEADERS) &&
             milter_headers_length(option_headers) > 0) {
             MilterHeader *header;
@@ -228,13 +228,13 @@ cb_continue (MilterServerContext *context, gpointer user_data)
             milter_server_context_end_of_header(context);
             break;
         }
-      case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
+    case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
         if (!(step & MILTER_STEP_NO_BODY)) {
             milter_server_context_body(context, *body_chunks, strlen(*body_chunks));
             body_chunks++;
             break;
         }
-      case MILTER_SERVER_CONTEXT_STATE_BODY:
+    case MILTER_SERVER_CONTEXT_STATE_BODY:
         if (!(step & MILTER_STEP_NO_BODY) &&
             *body_chunks) {
             milter_server_context_body(context, *body_chunks, strlen(*body_chunks));
@@ -243,10 +243,10 @@ cb_continue (MilterServerContext *context, gpointer user_data)
         }
         milter_server_context_end_of_message(context, NULL, 0);
         break;
-      case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
+    case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
         send_quit(context, data);
         break;
-      default:
+    default:
         milter_error("Unknown state.");
         send_abort(context, data);
         break;
@@ -280,10 +280,10 @@ cb_temporary_failure (MilterServerContext *context, gpointer user_data)
     state = milter_server_context_get_state(context);
 
     switch (state) {
-      case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT:
+    case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT:
         cb_continue(context, user_data);
         break;
-      default:
+    default:
         send_abort(context, data);
         data->success = FALSE;
         data->status = MILTER_STATUS_TEMPORARY_FAILURE;
@@ -300,10 +300,10 @@ cb_reject (MilterServerContext *context, gpointer user_data)
     state = milter_server_context_get_state(context);
 
     switch (state) {
-      case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT:
+    case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT:
         cb_continue(context, user_data);
         break;
-      default:
+    default:
         send_abort(context, data);
         data->success = FALSE;
         data->status = MILTER_STATUS_REJECT;
