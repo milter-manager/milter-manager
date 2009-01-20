@@ -1015,8 +1015,8 @@ static const GOptionEntry option_entries[] =
         "(unix:PATH|inet:PORT[@HOST]|inet6:PORT[@HOST])"),
      "SPEC"},
     {"negotiate-version", 0, 0, G_OPTION_ARG_INT, &negotiate_version,
-     N_("Use VERSION as milter protocol version on negotiate. ")
-     "(" G_STRINGIFY(DEFAULT_NEGOTIATE_VERSION) ")",
+     N_("Use VERSION as milter protocol version on negotiate. "
+        "(" G_STRINGIFY(DEFAULT_NEGOTIATE_VERSION) ")"),
      "VERSION"},
     {"connect-host", 0, 0, G_OPTION_ARG_STRING, &connect_host,
      N_("Use HOST as host name on connect"), "HOST"},
