@@ -1,5 +1,8 @@
 2009-01-20  Kouhei Sutou  <kou@clear-code.com>
 
+	* tool/milter-test-server.c: data command requires milter
+	protocol version > 2.
+
 	* doc/install-to-centos.rd.ja: add.
 	* doc/install.rd.ja: add a link to the above document.
 

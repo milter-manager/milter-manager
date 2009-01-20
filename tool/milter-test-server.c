@@ -203,7 +203,8 @@ cb_continue (MilterServerContext *context, gpointer user_data)
             break;
         }
     case MILTER_SERVER_CONTEXT_STATE_UNKNOWN:
-        if (!(step & MILTER_STEP_NO_DATA)) {
+        if (!(step & MILTER_STEP_NO_DATA) &&
+            milter_option_get_version(data->option) > 2) {
             milter_server_context_data(context);
             break;
         }
