@@ -285,9 +285,13 @@ test_helo (void)
     cut_trace(test_establish_connection());
 
     milter_server_context_helo(context, fqdn);
+    cut_assert_true(milter_server_context_is_processing(context));
+
     wait_for_receiving_command();
+    cut_assert_true(milter_server_context_is_processing(context));
 
     wait_for_receiving_reply();
+    cut_assert_false(milter_server_context_is_processing(context));
 }
 
 void

@@ -145,6 +145,8 @@ gboolean             milter_server_context_establish_connection
 MilterServerContextState milter_server_context_get_state (MilterServerContext *context);
 void                 milter_server_context_set_state   (MilterServerContext *context,
                                                         MilterServerContextState state);
+gboolean             milter_server_context_is_processing
+                                                       (MilterServerContext *context);
 
 gboolean             milter_server_context_negotiate   (MilterServerContext *context,
                                                         MilterOption        *option);

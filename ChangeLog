@@ -1,5 +1,9 @@
 2009-01-20  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/server/milter-server-context.[ch],
+	test/server/test-server-context.c: export predicate that
+	asks whether processing or not.
+
 	* tool/milter-test-server.c, README*: add --negotiate-version
 	option.
 
