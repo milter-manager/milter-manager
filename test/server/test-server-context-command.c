@@ -30,6 +30,7 @@
 #include "milter-test-utils.h"
 
 void test_negotiate (void);
+void test_negotiated_newer_version (void);
 void test_connect (void);
 void test_helo (void);
 void test_envelope_from (void);
@@ -52,6 +53,7 @@ static MilterServerContext *context;
 static MilterWriter *writer;
 
 static MilterCommandEncoder *encoder;
+static MilterReplyEncoder *reply_encoder;
 static gchar *packet;
 static gsize packet_size;
 static GString *packet_string;
@@ -63,17 +65,32 @@ static gboolean timed_out_before;
 static gboolean timed_out_after;
 static guint timeout_id;
 
+static GError *expected_error, *actual_error;
+
+static void
+cb_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
+{
+    if (actual_error)
+        g_error_free(actual_error);
+    actual_error = g_error_copy(error);
+}
+
 void
 setup (void)
 {
     context = milter_server_context_new();
 
+    g_signal_connect(context, "error", G_CALLBACK(cb_error), NULL);
+
     channel = gcut_string_io_channel_new(NULL);
     g_io_channel_set_encoding(channel, NULL, NULL);
+
     writer = milter_writer_io_channel_new(channel);
     milter_agent_set_writer(MILTER_AGENT(context), writer);
 
+
     encoder = MILTER_COMMAND_ENCODER(milter_command_encoder_new());
+    reply_encoder = MILTER_REPLY_ENCODER(milter_reply_encoder_new());
     packet = NULL;
     packet_size = 0;
     packet_string = NULL;
@@ -82,6 +99,9 @@ setup (void)
     timed_out_before = FALSE;
     timed_out_after = FALSE;
     timeout_id = 0;
+
+    expected_error = NULL;
+    actual_error = NULL;
 }
 
 static void
@@ -107,6 +127,8 @@ teardown (void)
 
     if (encoder)
         g_object_unref(encoder);
+    if (reply_encoder)
+        g_object_unref(reply_encoder);
 
     if (channel)
         g_io_channel_unref(channel);
@@ -116,6 +138,11 @@ teardown (void)
         g_string_free(packet_string, TRUE);
     if (macros)
         g_hash_table_unref(macros);
+
+    if (expected_error)
+        g_error_free(expected_error);
+    if (actual_error)
+        g_error_free(actual_error);
 }
 
 #define milter_test_assert_packet(channel, packet, packet_size)         \
@@ -151,6 +178,40 @@ test_negotiate (void)
                                             &packet, &packet_size,
                                             option);
     milter_test_assert_packet(channel, packet, packet_size);
+}
+
+void
+test_negotiated_newer_version (void)
+{
+    MilterDecoder *decoder;
+    MilterOption *option, *reply_option;
+    MilterMacrosRequests *macros_requests;
+    GError *error = NULL;
+
+    option = milter_option_new(2, MILTER_ACTION_ADD_HEADERS, MILTER_STEP_NONE);
+    gcut_take_object(G_OBJECT(option));
+    cut_assert_true(milter_server_context_negotiate(context, option));
+    milter_test_assert_status(NEGOTIATE);
+
+    reply_option = milter_option_new(6,
+                                     MILTER_ACTION_ADD_HEADERS,
+                                     MILTER_STEP_NONE);
+    gcut_take_object(G_OBJECT(reply_option));
+    macros_requests = milter_macros_requests_new();
+    gcut_take_object(G_OBJECT(macros_requests));
+    milter_reply_encoder_encode_negotiate(reply_encoder,
+                                          &packet, &packet_size,
+                                          reply_option, macros_requests);
+
+    decoder = milter_agent_get_decoder(MILTER_AGENT(context));
+    milter_decoder_decode(decoder, packet, packet_size, &error);
+    gcut_assert_error(error);
+
+    expected_error =
+        g_error_new(MILTER_SERVER_CONTEXT_ERROR,
+                    MILTER_SERVER_CONTEXT_ERROR_NEWER_VERSION_REQUESTED,
+                    "unsupported newer version is requested: 2 < 6");
+    gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void

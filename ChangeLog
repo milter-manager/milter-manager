@@ -1,5 +1,9 @@
 2009-01-20  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/server/milter-server-context.[ch],
+	test/server/test-server-context-command.c: add error check for
+	negotiate version mismatch.
+
 	* milter/server/milter-server-context.c: use milter_option_inspect().
 
 	* binding/ruby/lib/milter/manager/Makefile.am: add missing detector.rb.

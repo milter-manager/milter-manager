@@ -546,7 +546,7 @@ wait_for_written (void)
     g_idle_add_full(G_PRIORITY_LOW, cb_idle_func, NULL, NULL);
 
     while (!data_written) {
-        g_main_context_iteration(NULL, FALSE);
+        g_main_context_iteration(NULL, TRUE);
     }
 }
 

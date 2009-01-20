@@ -1260,10 +1260,25 @@ cb_decoder_negotiate_reply (MilterDecoder *decoder,
                      milter_server_context_get_name(context));
         g_free(inspected_option);
     }
-    if (priv->option)
-        milter_option_combine(priv->option, option);
-    else
+
+    if (priv->option) {
+        if (!milter_option_combine(priv->option, option)) {
+            GError *error = NULL;
+
+            g_set_error(&error,
+                        MILTER_SERVER_CONTEXT_ERROR,
+                        MILTER_SERVER_CONTEXT_ERROR_NEWER_VERSION_REQUESTED,
+                        "unsupported newer version is requested: %d < %d",
+                        milter_option_get_version(priv->option),
+                        milter_option_get_version(option));
+            milter_error("[server][error] %s", error->message);
+            milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(context), error);
+            g_error_free(error);
+            return;
+        }
+    } else {
         priv->option = milter_option_copy(option);
+    }
 
     if (state == MILTER_SERVER_CONTEXT_STATE_NEGOTIATE) {
         g_signal_emit_by_name(context, "negotiate-reply",
