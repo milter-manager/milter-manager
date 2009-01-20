@@ -353,7 +353,7 @@ spamass-milter, clamav-milter and milter-greylist to
 smtpd_milters. With milter-manager, we doesn't need to
 specify sockets of them, just specify a coket of
 milter-manager. They are detected automatically. We doesn't
-some small mistakes like typo.
+need to take care some small mistakes like typo.
 
 milter-manager also supports xxx_enabled="NO" configuration
 used in /etc/rc.conf. If we disable a milter, we use the

@@ -344,9 +344,10 @@ milter-managerを導入することにより、milterとPostfixを連携さ
 通常であれば、Postfixのsmtpd_miltersにspamass-milter、
 clamav-milter、miler-greylistのソケットを指定する必要がありま
 す。しかし、milter-managerを導入することにより、
-smtpd_miltersのソケットのみを指定するだけですむようになりまし
-た。各milterのソケットはmilter-managerが検出するため、typoな
-どの小さいですが細かいミスに惑わされることがなくなります。
+milter-managerのソケットのみを指定するだけですむようになりま
+した。各milterのソケットはmilter-managerが検出するため、typo
+などの小さいですが気づきにくいミスに惑わされることがなくなり
+ます。
 
 また、ここでは触れませんでしたが、milter-managerは
 /etc/rc.conf内のXXX_enabled="NO"の設定も検出します。そのため、

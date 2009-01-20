@@ -1,5 +1,7 @@
 2009-01-20  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/install-to-{ubuntu,freebsd}.*: fix typos.
+
 	* milter/core/milter-option.[ch], test/core/test-option.c:
 	add milter_option_inspect().
 

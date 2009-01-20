@@ -321,9 +321,9 @@ together. They can be reduced by introducing milter-manager.
 Without milter-manager, we need to specify sockets of
 spamass-milter, clamav-milter and milter-greylist to
 smtpd_milters. With milter-manager, we doesn't need to
-specify sockets of them, just specify a coket of
+specify sockets of them, just specify a socket of
 milter-manager. They are detected automatically. We doesn't
-some small mistakes like typo.
+need to take care some small mistakes like typo.
 
 milter-manager also supports ENABELD configuration used in
 /etc/default/milter-greylist. If we disable a milter, we
