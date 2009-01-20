@@ -110,13 +110,16 @@ module Milter::Manager
     end
 
     class << self
+      @@current_configuration = nil
       def load(configuration, file)
+        @@current_configuration = configuration
         guard do
           new(configuration).load_configuration(file)
         end
       end
 
       def load_custom(configuration, file)
+        @@current_configuration = configuration
         guard do
           new(configuration).load_custom_configuration(file)
         end
