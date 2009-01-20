@@ -37,9 +37,12 @@
 #include <milter/server.h>
 #include <milter/core.h>
 
+#define DEFAULT_NEGOTIATE_VERSION 8
+
 static gboolean verbose = FALSE;
 static gboolean output_message = FALSE;
 static gchar *spec = NULL;
+static gint negotiate_version = DEFAULT_NEGOTIATE_VERSION;
 static gchar *connect_host = NULL;
 static struct sockaddr *connect_address = NULL;
 static socklen_t connect_address_length = 0;
@@ -625,7 +628,7 @@ negotiate (MilterServerContext *context)
 {
     MilterOption *option;
 
-    option = milter_option_new(6,
+    option = milter_option_new(negotiate_version,
                                MILTER_ACTION_ADD_HEADERS |
                                MILTER_ACTION_CHANGE_BODY |
                                MILTER_ACTION_ADD_ENVELOPE_RECIPIENT |
@@ -1011,6 +1014,10 @@ static const GOptionEntry option_entries[] =
      N_("The spec of client socket. "
         "(unix:PATH|inet:PORT[@HOST]|inet6:PORT[@HOST])"),
      "SPEC"},
+    {"negotiate-version", 0, 0, G_OPTION_ARG_INT, &negotiate_version,
+     N_("Use VERSION as milter protocol version on negotiate. ")
+     "(" G_STRINGIFY(DEFAULT_NEGOTIATE_VERSION) ")",
+     "VERSION"},
     {"connect-host", 0, 0, G_OPTION_ARG_STRING, &connect_host,
      N_("Use HOST as host name on connect"), "HOST"},
     {"connect-address", 0, 0, G_OPTION_ARG_CALLBACK, parse_connect_address_arg,

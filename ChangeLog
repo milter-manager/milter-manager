@@ -1,5 +1,8 @@
 2009-01-20  Kouhei Sutou  <kou@clear-code.com>
 
+	* tool/milter-test-server.c, README*: add --negotiate-version
+	option.
+
 	* milter/core/milter-option.c, test/core/test-option.c: combining
 	accepts older version.
 

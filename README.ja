@@ -279,6 +279,13 @@ milter-test-serverはヘッダや本文が変更された場合は、変更さ�
      * inet6:10025@localhost
      * inet6:10025@[::1]
 
+: --negotiate-version=VERSION
+
+    クライアントへ送信するmilterプロトコルのバージョンとして
+    VERSIONを使用します。
+
+    デフォルトは8（Sendmail 8.14のデフォルトと同じ）です。
+
 : --connect-host=HOST
 
     接続元のホスト名としてHOSTを使用します。
