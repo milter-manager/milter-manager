@@ -1,5 +1,9 @@
 2009-01-21  Kouhei Sutou  <kou@clear-code.com>
 
+	* tool/milter-manager-log-analyzer:
+	- rename from milter-log-tool.
+	- merge tool/ruby/milter-rrd.rb.
+
 	* milter/manager/milter-manager-children.c,
 	test/fixtures/leader/header-with-leading-space-no-space.txt,
 	test/fixtures/leader/header-with-leading-space.txt,

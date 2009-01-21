@@ -1,5 +1,3 @@
-SUBDIRS = ruby
-
 INCLUDES = 			\
 	 -I$(top_builddir)	\
 	 -I$(top_srcdir)
@@ -27,8 +25,6 @@ milter_test_server_CFLAGS =				\
 	$(AM_CFLAGS)					\
 	-DMILTER_LOG_DOMAIN=\""milter-test-server"\"
 
-dist_bin_SCRIPTS =		\
-	milter-performance-check
-
-dist_noinst_SCRIPTS =		\
-	milter-log-tool
+dist_bin_SCRIPTS =			\
+	milter-performance-check	\
+	milter-manager-log-analyzer
