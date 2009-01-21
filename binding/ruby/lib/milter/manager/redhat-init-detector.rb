@@ -30,12 +30,12 @@ module Milter::Manager
     end
 
     def enabled?
-      not guess_spec.nil?
+      !guess_spec.nil? and !rc_files.empty?
     end
 
     private
     def parse_custom_conf
-      parse_sysconfig_conf(sysconfig_conf)
+      parse_sysconfig(sysconfig)
     end
 
     def parse_init_script
@@ -81,7 +81,7 @@ module Milter::Manager
       end
     end
 
-    def parse_sysconfig_conf(file)
+    def parse_sysconfig(file)
       return unless File.exist?(file)
       File.open(file) do |input|
         extract_variables(input)
@@ -105,12 +105,18 @@ module Milter::Manager
       spec
     end
 
-    def sysconfig_conf
+    def sysconfig
       File.join(sysconfig_dir, @script_name)
     end
 
     def sysconfig_dir
       "/etc/sysconfig"
+    end
+
+    def rc_files
+      Dir.glob(File.join(init_base_dir,
+                         "rc[0-6].d",
+                         "[SK][0-9][0-9]#{@script_name}"))
     end
   end
 end

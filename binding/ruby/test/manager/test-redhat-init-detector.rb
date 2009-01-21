@@ -22,7 +22,8 @@ class TestRedHatInitDetector < Test::Unit::TestCase
     @configuration = Milter::Manager::Configuration.new
     @loader = Milter::Manager::ConfigurationLoader.new(@configuration)
     @tmp_dir = Pathname(File.dirname(__FILE__)) + ".." + "tmp"
-    @init_d = @tmp_dir + "init.d"
+    @init_base_dir = @tmp_dir
+    @init_d = @init_base_dir + "init.d"
     @sysconfig_dir = @tmp_dir + "sysconfig"
     @init_d.mkpath
     @sysconfig_dir.mkpath
@@ -105,6 +106,7 @@ class TestRedHatInitDetector < Test::Unit::TestCase
     (@init_d + "milter-manager").open("w") do |file|
       file << milter_manager_init_script
     end
+    create_rc_files("milter-manager")
     (@sysconfig_dir + "milter-manager").open("w") do |file|
       file << <<-EOC
 CONNECTION_SPEC=inet:10025@localhost
@@ -138,10 +140,26 @@ EOC
     assert_true(detector.enabled?)
   end
 
+  def test_enabled
+    (@init_d + "milter-manager").open("w") do |file|
+      file << milter_manager_init_script
+    end
+
+    detector = redhat_init_detector("milter-manager")
+    detector.detect
+    assert_false(detector.enabled?)
+
+    create_rc_files("milter-manager")
+    detector = redhat_init_detector("milter-manager")
+    detector.detect
+    assert_true(detector.enabled?)
+  end
+
   def test_apply
     (@init_d + "milter-manager").open("w") do |file|
       file << milter_manager_init_script
     end
+    create_rc_files("milter-manager")
     (@sysconfig_dir + "milter-manager").open("w") do |file|
       file << <<-EOC
 CONNECTION_SPEC=inet:10025@localhost
@@ -180,6 +198,7 @@ EOC
     (@init_d + "amavisd").open("w") do |file|
       file << amavisd_init_header
     end
+    create_rc_files("amavisd")
     (@sysconfig_dir + "amavisd").open("w") do |file|
       file << <<-EOC
 MILTER_SOCKET=inet:10025@localhost
@@ -220,6 +239,7 @@ EOC
     (@init_d + "clamav-milter").open("w") do |file|
       file << clamav_milter_init_header
     end
+    create_rc_files("clamav-milter")
     (@sysconfig_dir + "clamav-milter").open("w") do |file|
       file << <<-'EOC'
 #SOCKET_ADDRESS="local:/var/clamav/clmilter.socket"
@@ -244,6 +264,7 @@ EOC
     (@init_d + "milter-greylist").open("w") do |file|
       file << milter_greylist_init_header
     end
+    create_rc_files("milter-greylist")
 
     detector = redhat_init_detector("milter-greylist")
     detector.detect
@@ -261,6 +282,7 @@ EOC
     (@init_d + "milter-greylist").open("w") do |file|
       file << milter_greylist_init_header
     end
+    create_rc_files("milter-greylist")
     (@sysconfig_dir + "milter-greylist").open("w") do |file|
       file << <<-'EOC'
 OPTIONS="$OPTIONS -p inet:10025@localhost"
@@ -283,6 +305,7 @@ EOC
     (@init_d + "spamass-milter").open("w") do |file|
       file << spamass_milter_init_header
     end
+    create_rc_files("spamass-milter")
 
     detector = redhat_init_detector("spamass-milter")
     detector.detect
@@ -300,11 +323,11 @@ EOC
   def redhat_init_detector(name)
     detector = Milter::Manager::RedHatInitDetector.new(name)
 
-    _init_d = @init_d
+    _init_base_dir = @init_base_dir
     _sysconfig_dir = @sysconfig_dir
     singleton_object = class << detector; self; end
-    singleton_object.send(:define_method, :init_d) do
-      _init_d.to_s
+    singleton_object.send(:define_method, :init_base_dir) do
+      _init_base_dir.to_s
     end
 
     singleton_object.send(:define_method, :sysconfig_dir) do
@@ -312,6 +335,26 @@ EOC
     end
 
     detector
+  end
+
+  def create_rc_files(name)
+    start_priority = 80
+    end_priority = 20
+    0.upto(6) do |i|
+      case i
+      when 2, 3, 4, 5
+        mark = "S"
+        priority = start_priority
+      when 0, 1, 6
+        mark = "K"
+        priority = end_priority
+      end
+      rc_d = @init_base_dir + "rc#{i}.d"
+      rc_d.mkpath
+      base_name = "%s%02d%s" % [mark, priority, name]
+      rc_file = rc_d + base_name
+      rc_file.open("w") {}
+    end
   end
 
   def milter_manager_init_script

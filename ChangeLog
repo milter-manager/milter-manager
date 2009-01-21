@@ -1,5 +1,9 @@
 2009-01-21  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/lib/milter/manager/redhat-init-detector.rb,
+	binding/ruby/test/manager/test-redhat-init-detector.rb: check
+	/etc/rcX.d/* for detecting whether enabled or disabled.
+
 	* binding/ruby/lib/milter/manager/init-detector.rb: add
 	init_base_dir.
 	* binding/ruby/test/manager/test-debian-init-detector.rb: follow
