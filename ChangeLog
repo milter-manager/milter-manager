@@ -1,3 +1,12 @@
+2009-01-21  Kouhei Sutou  <kou@cozmixng.org>
+
+	* TODO: remove: consider header-lead-space negotiate in
+	{add,insert,change}-header.
+
+	* milter/manager/milter-manager-children.c: consider leading-space.
+	* test/fixtures/leader/change-header-with-leading-space.txt: fix
+	meaningless test.
+
 2009-01-21  Kouhei Sutou  <kou@clear-code.com>
 
 	* doc/install.rd.ja: add description for

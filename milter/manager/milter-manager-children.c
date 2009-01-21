@@ -1315,11 +1315,16 @@ cb_change_header (MilterServerContext *context,
 {
     MilterManagerChildren *children = user_data;
     MilterManagerChildrenPrivate *priv;
+    gchar *normalized_value = NULL;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
+    normalized_value = normalize_header_value(children, context, value);
     milter_headers_change_header(priv->headers,
-                                 name, index, value);
+                                 name, index,
+                                 normalized_value ? normalized_value : value);
+    if (normalized_value)
+        g_free(normalized_value);
 }
 
 static void
