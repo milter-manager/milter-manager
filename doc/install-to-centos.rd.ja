@@ -258,12 +258,10 @@ milter-managerを起動します。
 
   % sudo /sbin/service milter-manager start
 
-FIXME
-
 /usr/local/bin/milter-test-serverで起動の確認をすることがで
 きます。
 
-  % sudo -u postfix milter-test-server -s unix:/var/run/milter-manager/milter-manager.sock
+  % sudo -u milter-manager milter-test-server -s unix:/var/run/milter-manager/milter-manager.sock
 
 このように表示されれば成功です。
 
@@ -329,15 +327,13 @@ miler-greylistのそれぞれのソケットを指定する必要があります
 ソケットはmilter-managerが検出するため、typoなどの小さいです
 が気づきにくいミスに惑わされることがなくなります。
 
-FIXME: chkconfigをみる？
-
 また、ここでは触れませんでしたが、milter-managerは
-/etc/sysconfig/milter-greylist内にあるようなENABLEDの設定も検出
-します。そのため、milterを無効にしたい場合は、以下のような手
-順になります。
+/sbin/chkconfig --addされているかどうかも検出します。そのため、
+milterを無効にしたい場合は、他のサービスと同様に以下のような
+手順になります。
 
-  % sudo /etc/init.d/milter-greylist stop
-  % sudo vim /etc/default/milter-greylist # ENABLED=1 => ENABLED=0
+  % sudo /sbin/service milter-greylist stop
+  % sudo /sbin/chkconfig --del milter-greylist
 
 milterを無効にしたら、milter-managerの設定を再読み込みします。
 milter-managerはmilterが無効になったことを検出し、無効になっ
@@ -347,5 +343,5 @@ milter-managerはmilterが無効になったことを検出し、無効になっ
 
 Sendmailのsendmail.mcを変更する必要はありません。
 
-Ubuntu上でmilterを複数使っている場合は、milter-managerを導入
+CentOS上でmilterを複数使っている場合は、milter-managerを導入
 して、管理コストを削減することができます。
