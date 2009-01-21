@@ -156,7 +156,7 @@ Apacheを起動します。
 milter-manager-log-analyzerを実行します。
 
   # milter manager
-  */5 * * * root cat /var/log/maillog | /usr/local/bin/sudo -u mailnull /usr/local/bin/ruby /usr/local/bin/milter-manager-log-analyzer --output-directory /usr/local/var/www/data/milter-manager/log
+  */5 * * * * root cat /var/log/maillog | /usr/local/bin/sudo -u mailnull /usr/local/bin/ruby /usr/local/bin/milter-manager-log-analyzer --output-directory /usr/local/var/www/data/milter-manager/log
 
 FreeBSDではmilter-managerのログは/var/log/maillogに出力されま
 す。/var/log/maillogはmailグループ以外のユーザ以外は読むこと
