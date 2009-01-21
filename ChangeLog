@@ -1,5 +1,7 @@
 2009-01-21  Kouhei Sutou  <kou@clear-code.com>
 
+	* README.ja: add milter-manager-log-analyzer.
+
 	* tool/milter-manager-log-analyzer: --rrd-directory ->
 	--output-directory.
 

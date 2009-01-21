@@ -82,10 +82,10 @@ LinuxではCentOS 5.2、Ubuntu 8.04 TLS上で動作することを想定し
 
     ((<URL:http://ltp.sourceforge.net/coverage/lcov.php>))
 
-#   * RRDtool（付属のRubyバインディングも必要）
+  * RRDtool（付属のRubyバインディングも必要）
 
-#     milter-log-toolでmilter managerに登録されたmilterの動作
-#     のグラフを表示する場合は必要。
+    milter-manager-log-analyzerでmilter managerに登録された
+    milterの動作のグラフを表示する場合は必要。
 
 == 入手方法
 
@@ -227,8 +227,8 @@ milter managerにはいくつか便利なツールが付属されていて、bin
     することができる。
   * milter-performance-check: MTAの性能を計測するSMTPクライ
     アント。
-#   * milter-log-tool: milter-managerのログを解析し、
-#     milter-managerに登録されたmilterの動作をグラフ化する。
+  * milter-manager-log-analyzer: milter-managerのログを解析
+    し、milter-managerに登録されたmilterの動作をグラフ化する。
 
 === milter-test-server
 
@@ -493,9 +493,38 @@ smtp-sourceを利用するとよいでしょう。
 
    既定値は100です。
 
-# === milter-log-tool
+=== milter-manager-log-analyzer
 
-# FIXME
+milter-manager-log-analyzerはmilter-managerのログを解析し、
+milter-managerや子milterの動作結果をグラフ化します。グラフは
+時系列で表示されるので、状況の推移を確認することができます。
+このため、新しい子milterを導入した前後での変化を確認する用途
+にも使うことができます。
+
+==== オプション
+
+: --help
+
+   利用できるオプションを表示して終了します。
+
+: --log=LOG_FILENAME
+
+    LOG_FILENAMEからログを読み込みます。
+
+    既定値は標準入力から読み込みます。
+
+: --output-directory=DIRECTORY
+
+   DIRECTORYにグラフ、HTML、グラフ生成用のデータを保存します。
+
+   既定値はカレントディレクトリ（"."）です。
+
+: --no-update-db
+
+   これまでに読み込んだデータが入っているデータベースを更新
+   しません。グラフを出力する場合のみに有用です。
+
+   このオプションを指定しない場合は更新します。
 
 == 感謝
 
