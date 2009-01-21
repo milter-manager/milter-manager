@@ -64,7 +64,11 @@ module Milter::Manager
     end
 
     def init_d
-      "/etc/init.d"
+      File.join(init_base_dir, "init.d")
+    end
+
+    def init_base_dir
+      "/etc"
     end
   end
 end

@@ -1,3 +1,10 @@
+2009-01-21  Kouhei Sutou  <kou@clear-code.com>
+
+	* binding/ruby/lib/milter/manager/init-detector.rb: add
+	init_base_dir.
+	* binding/ruby/test/manager/test-debian-init-detector.rb: follow
+	the above change.
+
 2009-01-20  Kouhei Sutou  <kou@cozmixng.org>
 
 	* test/tool/test-server.c (cb_negotiate): use milter protocol 8.

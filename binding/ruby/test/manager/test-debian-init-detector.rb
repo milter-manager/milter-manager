@@ -22,7 +22,8 @@ class TestDebianInitDetector < Test::Unit::TestCase
     @configuration = Milter::Manager::Configuration.new
     @loader = Milter::Manager::ConfigurationLoader.new(@configuration)
     @tmp_dir = Pathname(File.dirname(__FILE__)) + ".." + "tmp"
-    @init_d = @tmp_dir + "init.d"
+    @init_base_dir = @tmp_dir
+    @init_d = @init_base_dir + "init.d"
     @default_dir = @tmp_dir + "default"
     @init_d.mkpath
     @default_dir.mkpath
@@ -455,11 +456,11 @@ EOC
   def debain_init_detector(name)
     detector = Milter::Manager::DebianInitDetector.new(name)
 
-    _init_d = @init_d
+    _init_base_dir = @init_base_dir
     _default_dir = @default_dir
     singleton_object = class << detector; self; end
-    singleton_object.send(:define_method, :init_d) do
-      _init_d.to_s
+    singleton_object.send(:define_method, :init_base_dir) do
+      _init_base_dir.to_s
     end
 
     singleton_object.send(:define_method, :default_dir) do
