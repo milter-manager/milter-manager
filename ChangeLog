@@ -1,5 +1,7 @@
 2009-01-21  Kouhei Sutou  <kou@clear-code.com>
 
+	* data/cron.d/: split file for Ubuntu and CentOS.
+
 	* data/cron.d/milter-manager-log: add.
 
 	* README.ja: add milter-manager-log-analyzer.
