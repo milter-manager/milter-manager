@@ -1,6 +1,13 @@
 2009-01-21  Kouhei Sutou  <kou@clear-code.com>
 
 	* milter/manager/milter-manager-children.c,
+	test/fixtures/leader/header-with-leading-space-no-space.txt,
+	test/fixtures/leader/header-with-leading-space.txt,
+	test/lib/milter-manager-test-client.c,
+	test/manager/test-leader.c: remove leading space for non leading
+	space mode milter.
+
+	* milter/manager/milter-manager-children.c,
 	test/fixtures/leader/change-header-with-leading-space.txt,
 	test/fixtures/leader/insert-header-with-leading-space.txt,
 	test/manager/test-leader.c: add leading space for non leading

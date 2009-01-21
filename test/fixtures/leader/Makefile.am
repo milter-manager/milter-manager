@@ -2,6 +2,7 @@ EXTRA_DIST =								\
 	abort-on-end-of-message.txt					\
 	abort-on-envelope-from.txt					\
 	add-header.txt							\
+	add-header-with-leading-space.txt				\
 	add-recipient.txt						\
 	body-accept.txt							\
 	body-larger-than-milter-chunk-size.txt				\
@@ -10,6 +11,7 @@ EXTRA_DIST =								\
 	body.txt							\
 	change-from.txt							\
 	change-header.txt						\
+	change-header-with-leading-space.txt				\
 	connect-with-macro.txt						\
 	connect.txt							\
 	data.txt							\
@@ -42,8 +44,11 @@ EXTRA_DIST =								\
 	envelope-recipient.txt						\
 	header-from-and-mailer.txt					\
 	header-from.txt							\
+	header-with-leading-space.txt					\
+	header-with-leading-space-no-space.txt				\
 	helo.txt							\
 	insert-header.txt						\
+	insert-header-with-leading-space.txt				\
 	negotiate.txt							\
 	no-body-flag-on-both-client.txt					\
 	no-body-flag-on-second-client.txt				\

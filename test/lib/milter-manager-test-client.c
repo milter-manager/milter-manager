@@ -271,14 +271,22 @@ parse_header_info (MilterManagerTestClientPrivate *priv,
 {
     gchar **items;
 
-    items = g_strsplit_set(chunk, " \n", -1);
-    if (items[0] && items[1] && items[2] && items[3]) {
-        if (priv->header_name)
+    items = g_strsplit_set(chunk, " ", 3);
+    if (items[0] && items[1] && items[2]) {
+        gchar **header_info;
+
+        header_info = g_strsplit(items[2], " ", 2);
+        if (header_info[0] && header_info[1]) {
+            if (priv->header_name)
                 g_free(priv->header_name);
-        if (priv->header_value)
-            g_free(priv->header_value);
-        priv->header_name = g_strdup(items[2]);
-        priv->header_value = g_strdup(items[3]);
+            if (priv->header_value)
+                g_free(priv->header_value);
+            priv->header_name = g_strdup(header_info[0]);
+            priv->header_value =
+                g_strndup(header_info[1],
+                          strstr(header_info[1], "\n") - header_info[1]);
+        }
+        g_strfreev(header_info);
     }
     g_strfreev(items);
 }

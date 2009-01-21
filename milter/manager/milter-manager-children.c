@@ -1242,20 +1242,29 @@ cb_skip (MilterServerContext *context, gpointer user_data)
         send_next_command(children, context, state);
 }
 
-static gchar *
-normalize_header_value (MilterManagerChildren *children,
-                        MilterServerContext *context,
-                        const gchar *value)
+static gboolean
+need_header_value_leading_space_conversion (MilterManagerChildren *children,
+                                            MilterServerContext *context)
 {
     MilterManagerChildrenPrivate *priv;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    if (!milter_server_context_is_enable_step(
+    if (milter_server_context_is_enable_step(
             context,
-            MILTER_STEP_HEADER_VALUE_WITH_LEADING_SPACE) &&
-        (milter_option_get_step(priv->option) &
-         MILTER_STEP_HEADER_VALUE_WITH_LEADING_SPACE)) {
+            MILTER_STEP_HEADER_VALUE_WITH_LEADING_SPACE))
+        return FALSE;
+
+    return (milter_option_get_step(priv->option) &
+            MILTER_STEP_HEADER_VALUE_WITH_LEADING_SPACE);
+}
+
+static gchar *
+normalize_header_value (MilterManagerChildren *children,
+                        MilterServerContext *context,
+                        const gchar *value)
+{
+    if (need_header_value_leading_space_conversion(children, context)) {
         if (value && value[0] != ' ')
             return g_strconcat(" ", value, NULL);
     }
@@ -2382,6 +2391,7 @@ send_next_header_to_child (MilterManagerChildren *children, MilterServerContext 
 {
     MilterManagerChildrenPrivate *priv;
     MilterHeader *header;
+    gint value_offset = 0;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
@@ -2396,7 +2406,14 @@ send_next_header_to_child (MilterManagerChildren *children, MilterServerContext 
     if (!header)
         return MILTER_STATUS_NOT_CHANGE;
 
-    if (milter_server_context_header(context, header->name, header->value))
+    if (need_header_value_leading_space_conversion(children, context)) {
+        if (header->value && header->value[0] == ' ')
+            value_offset = 1;
+    }
+
+    if (milter_server_context_header(context,
+                                     header->name,
+                                     header->value + value_offset))
         return MILTER_STATUS_PROGRESS;
     else
         return MILTER_STATUS_TEMPORARY_FAILURE;
