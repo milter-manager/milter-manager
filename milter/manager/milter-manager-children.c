@@ -1242,6 +1242,27 @@ cb_skip (MilterServerContext *context, gpointer user_data)
         send_next_command(children, context, state);
 }
 
+static gchar *
+normalize_header_value (MilterManagerChildren *children,
+                        MilterServerContext *context,
+                        const gchar *value)
+{
+    MilterManagerChildrenPrivate *priv;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    if (!milter_server_context_is_enable_step(
+            context,
+            MILTER_STEP_HEADER_VALUE_WITH_LEADING_SPACE) &&
+        (milter_option_get_step(priv->option) &
+         MILTER_STEP_HEADER_VALUE_WITH_LEADING_SPACE)) {
+        if (value && value[0] != ' ')
+            return g_strconcat(" ", value, NULL);
+    }
+
+    return NULL;
+}
+
 static void
 cb_add_header (MilterServerContext *context,
                const gchar *name, const gchar *value,
@@ -1253,15 +1274,7 @@ cb_add_header (MilterServerContext *context,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    if (!milter_server_context_is_enable_step(
-            context,
-            MILTER_STEP_HEADER_VALUE_WITH_LEADING_SPACE) &&
-        (milter_option_get_step(priv->option) &
-         MILTER_STEP_HEADER_VALUE_WITH_LEADING_SPACE)) {
-        if (value && value[0] != ' ')
-            normalized_value = g_strconcat(" ", value, NULL);
-    }
-
+    normalized_value = normalize_header_value(children, context, value);
     milter_headers_add_header(priv->headers, name,
                               normalized_value ? normalized_value : value);
     if (normalized_value)
@@ -1275,11 +1288,15 @@ cb_insert_header (MilterServerContext *context,
 {
     MilterManagerChildren *children = user_data;
     MilterManagerChildrenPrivate *priv;
+    gchar *normalized_value = NULL;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    milter_headers_insert_header(priv->headers,
-                                 index, name, value);
+    normalized_value = normalize_header_value(children, context, value);
+    milter_headers_insert_header(priv->headers, index, name,
+                                 normalized_value ? normalized_value : value);
+    if (normalized_value)
+        g_free(normalized_value);
 }
 
 static void
