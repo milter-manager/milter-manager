@@ -1249,11 +1249,23 @@ cb_add_header (MilterServerContext *context,
 {
     MilterManagerChildren *children = user_data;
     MilterManagerChildrenPrivate *priv;
+    gchar *normalized_value = NULL;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    milter_headers_add_header(priv->headers,
-                              name, value);
+    if (!milter_server_context_is_enable_step(
+            context,
+            MILTER_STEP_HEADER_VALUE_WITH_LEADING_SPACE) &&
+        (milter_option_get_step(priv->option) &
+         MILTER_STEP_HEADER_VALUE_WITH_LEADING_SPACE)) {
+        if (value && value[0] != ' ')
+            normalized_value = g_strconcat(" ", value, NULL);
+    }
+
+    milter_headers_add_header(priv->headers, name,
+                              normalized_value ? normalized_value : value);
+    if (normalized_value)
+        g_free(normalized_value);
 }
 
 static void

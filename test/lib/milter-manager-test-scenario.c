@@ -338,6 +338,7 @@ milter_manager_test_scenario_get_option (MilterManagerTestScenario *scenario,
     step = GET_STEP(scenario);
 
     if (base_scenario &&
+        scenario != base_scenario &&
         milter_manager_test_scenario_has_group(base_scenario, group)) {
         if (HAS_VERSION(base_scenario))
             version = GET_VERSION(base_scenario);
