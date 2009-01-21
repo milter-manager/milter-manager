@@ -311,18 +311,48 @@ milter_manager_test_scenario_has_group (MilterManagerTestScenario *scenario,
 
 MilterOption *
 milter_manager_test_scenario_get_option (MilterManagerTestScenario *scenario,
-                                         const gchar *group)
+                                         const gchar *group,
+                                         MilterManagerTestScenario *base_scenario)
 {
     guint32 version;
     MilterActionFlags action;
     MilterStepFlags step;
 
-    version = milter_manager_test_scenario_get_integer(scenario,
-                                                       group, "version");
-    action = milter_manager_test_scenario_get_flags(scenario, group, "action",
-                                                    MILTER_TYPE_ACTION_FLAGS);
-    step = milter_manager_test_scenario_get_flags(scenario, group, "step",
-                                                  MILTER_TYPE_STEP_FLAGS);
+#define GET_VERSION(_scenario)                                          \
+    milter_manager_test_scenario_get_integer(_scenario, group, "version")
+#define GET_ACTION(_scenario)                                           \
+    milter_manager_test_scenario_get_flags(_scenario, group, "action",  \
+                                           MILTER_TYPE_ACTION_FLAGS)
+#define GET_STEP(_scenario)                                             \
+    milter_manager_test_scenario_get_flags(_scenario, group, "step",    \
+                                           MILTER_TYPE_STEP_FLAGS)
+#define HAS_VERSION(_scenario)                                          \
+    milter_manager_test_scenario_has_key(_scenario, group, "version")
+#define HAS_ACTION(_scenario)                                           \
+    milter_manager_test_scenario_has_key(_scenario, group, "action")
+#define HAS_STEP(_scenario)                                             \
+    milter_manager_test_scenario_has_key(_scenario, group, "step")
+
+    version = GET_VERSION(scenario);
+    action = GET_ACTION(scenario);
+    step = GET_STEP(scenario);
+
+    if (base_scenario &&
+        milter_manager_test_scenario_has_group(base_scenario, group)) {
+        if (HAS_VERSION(base_scenario))
+            version = GET_VERSION(base_scenario);
+        if (HAS_ACTION(base_scenario))
+            action = GET_ACTION(base_scenario);
+        if (HAS_STEP(base_scenario))
+            step = GET_STEP(base_scenario);
+    }
+
+#undef GET_VERSION
+#undef GET_ACTION
+#undef GET_STEP
+#undef HAS_VERSION
+#undef HAS_ACTION
+#undef HAS_STEP
 
     return milter_option_new(version, action, step);
 }
@@ -337,7 +367,8 @@ milter_manager_test_scenario_get_integer (MilterManagerTestScenario *scenario,
 
     priv = MILTER_MANAGER_TEST_SCENARIO_GET_PRIVATE(scenario);
     value = g_key_file_get_integer(priv->key_file, group, key, &error);
-    gcut_assert_error(error, "[%s]", group);
+    cut_set_message("[%s][%s]", group, key);
+    gcut_assert_error(error);
     return value;
 }
 

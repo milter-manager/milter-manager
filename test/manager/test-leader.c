@@ -687,13 +687,15 @@ assert_response (MilterManagerTestScenario *scenario, const gchar *group)
 }
 
 static void
-do_negotiate (MilterManagerTestScenario *scenario, const gchar *group)
+do_negotiate (MilterManagerTestScenario *scenario, const gchar *group,
+              MilterManagerTestScenario *base_scenario)
 {
     MilterOption *option;
 
     milter_server_context_set_state(MILTER_SERVER_CONTEXT(server),
                                     MILTER_SERVER_CONTEXT_STATE_NEGOTIATE);
-    option = milter_manager_test_scenario_get_option(scenario, group);
+    option = milter_manager_test_scenario_get_option(scenario, group,
+                                                     base_scenario);
     gcut_take_object(G_OBJECT(option));
     milter_server_context_negotiate(MILTER_SERVER_CONTEXT(server), option);
     milter_manager_leader_negotiate(leader, option, NULL);
@@ -844,7 +846,7 @@ do_header (MilterManagerTestScenario *scenario, const gchar *group)
     cut_trace(assert_response(scenario, group));
 
     expected_headers = get_pair_list(scenario, group, "headers");
-    actual_headers = 
+    actual_headers =
         g_list_sort((GList*)collect_received_pairs(header_name, header_value),
                      milter_manager_test_pair_compare);
     gcut_assert_equal_list(
@@ -1076,14 +1078,15 @@ do_unknown (MilterManagerTestScenario *scenario, const gchar *group)
 }
 
 static void
-do_action (MilterManagerTestScenario *scenario, const gchar *group)
+do_action (MilterManagerTestScenario *scenario, const gchar *group,
+           MilterManagerTestScenario *base_scenario)
 {
     MilterCommand command;
 
     command = get_enum(scenario, group, "command", MILTER_TYPE_COMMAND);
     switch (command) {
-      case MILTER_COMMAND_NEGOTIATE:
-        cut_trace(do_negotiate(scenario, group));
+    case MILTER_COMMAND_NEGOTIATE:
+        cut_trace(do_negotiate(scenario, group, base_scenario));
         break;
       case MILTER_COMMAND_CONNECT:
         cut_trace(do_connect(scenario, group));
@@ -1132,7 +1135,8 @@ do_action (MilterManagerTestScenario *scenario, const gchar *group)
 }
 
 static void
-do_actions (MilterManagerTestScenario *scenario)
+do_actions (MilterManagerTestScenario *scenario,
+            MilterManagerTestScenario *base_scenario)
 {
     const GList *imported_scenarios;
     gsize length, i;
@@ -1140,12 +1144,12 @@ do_actions (MilterManagerTestScenario *scenario)
 
     imported_scenarios =
         milter_manager_test_scenario_get_imported_scenarios(scenario);
-    g_list_foreach((GList *)imported_scenarios, (GFunc)do_actions, NULL);
+    g_list_foreach((GList *)imported_scenarios, (GFunc)do_actions, scenario);
 
     actions = get_string_list(scenario, MILTER_MANAGER_TEST_SCENARIO_GROUP_NAME,
                               "actions", &length);
     for (i = 0; i < length; i++) {
-        cut_trace(do_action(scenario, actions[i]));
+        cut_trace(do_action(scenario, actions[i], base_scenario));
     }
 }
 
@@ -1316,7 +1320,7 @@ test_scenario (gconstpointer data)
                                   omit_key));
 
     cut_trace(milter_manager_test_scenario_start_clients(main_scenario));
-    cut_trace(do_actions(main_scenario));
+    cut_trace(do_actions(main_scenario, NULL));
 }
 
 /* over 512 kbytes data causes hang up..? */

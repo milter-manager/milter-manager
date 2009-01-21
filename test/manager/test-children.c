@@ -866,7 +866,7 @@ do_negotiate (MilterManagerTestScenario *scenario, const gchar *group)
 {
     MilterOption *option;
 
-    option = milter_manager_test_scenario_get_option(scenario, group);
+    option = milter_manager_test_scenario_get_option(scenario, group, NULL);
     gcut_take_object(G_OBJECT(option));
     milter_manager_children_negotiate(children, option, NULL);
     wait_reply(1, n_negotiate_reply_emitted);

@@ -74,7 +74,8 @@ gboolean                   milter_manager_test_scenario_has_key
                                                const gchar *key);
 MilterOption              *milter_manager_test_scenario_get_option
                                               (MilterManagerTestScenario *scenario,
-                                               const gchar *group);
+                                               const gchar *group,
+                                               MilterManagerTestScenario *base_scenario);
 gint                       milter_manager_test_scenario_get_integer
                                               (MilterManagerTestScenario *scenario,
                                                const gchar *group,
