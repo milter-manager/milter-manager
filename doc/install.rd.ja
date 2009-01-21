@@ -27,12 +27,13 @@ milter managerの単体テストを実行するためには以下のソフトウ
   * Cutter >= 1.0.6 （未リリース）
   * LCOV
 
-# === 任意: グラフ生成
+=== 任意: グラフ生成
 
-# FIXME
+milter managerはログからmilterの適用状況などをグラフ化する機
+能も提供しています。グラフを
 
-#  * RRDtool
-#  * RRDtoolのRubyバインディング
+  * RRDtool
+  * RRDtoolのRubyバインディング
 
 # === 任意: 管理用Webインターフェイス
 
@@ -53,28 +54,115 @@ milter-managerのインストール方法はプラットフォーム毎に解説
   * ((<FreeBSD|install-to-freebsd.rd.ja>))
 #   * ((<その他|install-to-others.rd.ja>))
 
-== milter-log-tool
+== milter-manager-log-analyzer
 
-milter-log-toolの設定は必須ではありません。
+milter-manager-log-analyzerの設定は必須ではありません。
 
-milter-log-toolはmilterの状況を時系列で確認することができます。
-新しく追加したmilterの効果や、milterの適用結果の傾向などを視
-覚的に確認したい場合に有用です。
+milter-manager-log-analyzerを用いると、milterの状況を時系列で
+確認することができます。新しく追加したmilterの効果や、milter
+の適用結果の傾向などを視覚的に確認したい場合に有用です。
 
-milter-log-toolはsyslogに出力されたmilter-managerのログを解
+milter-manager-log-analyzerはsyslogに出力されたmilter-managerのログを解
 析し、((<RRDtool|URL:http://oss.oetiker.ch/rrdtool/>))でグラ
 フ化します。ログはcronを設定し、定期的に確認します。
 
 === CentOSの場合
 
+グラフはインストール時に作成したmilter-managerユーザのホーム
+ディレクトリ以下に出力し、
+http://localhost/~milter-manager/log/で閲覧できるようにします。
 
+  % sudo mkdir -p ~milter-manager/public_html/log
+  % sudo chown -R milter-manager:milter-manager ~milter-manager
+
+WebサーバとしてApacheをインストールします。
+
+  % sudo yum install -y httpd
+
+/etc/cron.d/以下にcronファイルへのシンボリックリンクを作成し
+ます。
+
+  % sudo ln -s /usr/local/etc/milter-manager/cron.d/redhat/milter-manager-log /etc/cron.d/
+  % sudo chmod 600 /etc/cron.d/milter-manager-log
+
+CentOSではmilter-managerのログは/var/log/maillogに出力されま
+す。/var/log/maillogはroot以外は読むことができないので、cron
+ファイル内では、rootで読み込んだ/var/log/maillogをパイプで
+milter-manager-log-analyzerに渡します。
+milter-manager-log-analyzerはrootではなく、インストール時に作
+成したmilter-manager権限で実行します。
+
+milter-manager-log-analyzerは5分おきに実行されます。/var/log/cronで実行
+されたかどうかを確認することができます。
 
 === Ubuntuの場合
 
+グラフはインストール時に作成したmilter-managerユーザのホーム
+ディレクトリ以下に出力し、
+http://localhost/~milter-manager/log/で閲覧できるようにします。
+
+  % sudo -u milter-manager mkdir -p ~milter-manager/public_html/log
+
+WebサーバとしてApacheをインストールします。
+
+  % sudo aptitude -V -D install apache2
+
+Apacheで各ユーザ毎にファイルを公開できるようにします。
+
+  % sudo /usr/sbin/a2enmod userdir
+  % sudo /etc/init.d/apache2 force-reload
+
+次に、cronの設定をします。/etc/cron.d/以下にcronファイルへの
+シンボリックリンクを作成します。
+
+  % sudo ln -s /usr/local/etc/milter-manager/cron.d/debian/milter-manager-log /etc/cron.d/
+  % sudo chmod 600 /etc/cron.d/milter-manager-log
+
+Ubuntuではmilter-managerのログは/var/log/mail.infoに出力され
+ます。/var/log/mail.infoは管理者用のユーザ以外は読むことがで
+きないので、cron ファイル内では、rootで読み込んだ
+/var/log/mail.infoをパイプでmilter-manager-log-analyzerに渡し
+ます。milter-manager-log-analyzerはrootではなく、インストール
+時に作成したmilter-manager権限で実行します。
+
+milter-manager-log-analyzerは5分おきに実行されます。
+/var/log/syslogで実行されたかどうかを確認することができます。
+
 === FreeBSDの場合
 
-milter-manager
+グラフは/usr/local/www/apache22/data/milter-manager/log/以下
+に出力し、http://localhost/milter-manager/log/で閲覧できるよ
+うにします。
 
-以下のようにcronを設定し、
+Apacheをインストールします。
+
+  % sudo /usr/local/sbin/portupgrade -NRr apache
+
+Apacheを有効にするため、/etc/rc.confに以下を追加します。
+
+  apache22_enable="YES"
+
+Apacheを起動します。
+
+  % sudo /usr/local/etc/rc.d/apache22 start
+
+出力用のディレクトリを作成します。グラフ作成はmilter-manager
+と同じくmailnullユーザ権限で行います。
+
+  % sudo mkdir -p /usr/local/www/apache22/data/milter-manager/log/
+  % sudo /usr/sbin/chown -R mailnull:mail /usr/local/www/apache22/data/milter-manager/
+
+/etc/crontabに以下を追加し、5分おきに
+milter-manager-log-analyzerを実行します。
+
+  # milter manager
+  */5 * * * root cat /var/log/maillog | /usr/local/bin/sudo -u mailnull /usr/local/bin/ruby /usr/local/bin/milter-manager-log-analyzer --output-directory /usr/local/var/www/data/milter-manager
+
+FreeBSDではmilter-managerのログは/var/log/maillogに出力されま
+す。/var/log/maillogはmailグループ以外のユーザ以外は読むこと
+ができないので、crontabでは、rootで読み込んだ
+/var/log/maillogをパイプでmilter-manager-log-analyzerに渡しま
+す。milter-manager-log-analyzerはrootではなく、mailnull権限で
+実行します。
 
 == 管理用Webインターフェイス

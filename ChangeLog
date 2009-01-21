@@ -1,5 +1,8 @@
 2009-01-21  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/install.rd.ja: add description for
+	milter-manager-log-analyzer but it's not completed yet.
+
 	* data/cron.d/: split file for Ubuntu and CentOS.
 
 	* data/cron.d/milter-manager-log: add.
