@@ -218,8 +218,8 @@ class MilterManagerLogAnalyzer
   end
 
   class GraphGenerator
-    def initialize(rrd_directory, update_time)
-      @rrd_directory = rrd_directory
+    def initialize(output_directory, update_time)
+      @output_directory = output_directory
       @update_time = update_time
       @data = []
       @items = nil
@@ -361,7 +361,7 @@ class MilterManagerLogAnalyzer
 
     private
     def build_path(*paths)
-      File.join(*([@rrd_directory, *paths].compact))
+      File.join(*([@output_directory, *paths].compact))
     end
 
     def guess_end_time(start_time)
@@ -376,8 +376,8 @@ class MilterManagerLogAnalyzer
   end
 
   class SessionGraphGenerator < GraphGenerator
-    def initialize(rrd_directory, update_time)
-      super(rrd_directory, update_time)
+    def initialize(output_directory, update_time)
+      super(output_directory, update_time)
       @title = 'Sessions'
       @vertical_label = "sessions"
       @items = ["smtp", "child"]
@@ -467,8 +467,8 @@ class MilterManagerLogAnalyzer
   end
 
   class MailStatusGraphGenerator < GraphGenerator
-    def initialize(rrd_directory, update_time)
-      super(rrd_directory, update_time)
+    def initialize(output_directory, update_time)
+      super(output_directory, update_time)
       @vertical_label = "mails"
       @title = 'Processed mails'
       @items = ["pass", "accept",
@@ -531,8 +531,8 @@ class MilterManagerLogAnalyzer
   end
 
   class StopGraphGenerator < GraphGenerator
-    def initialize(rrd_directory, update_time)
-      super(rrd_directory, update_time)
+    def initialize(output_directory, update_time)
+      super(output_directory, update_time)
       @title = 'Stopped milters'
       @vertical_label = "milters"
       @items = ["connect",
@@ -668,6 +668,7 @@ EOF
     @sessions = nil
     @mail_status = nil
     @stops = nil
+    @output_directory = "."
     @output_graphs = []
   end
 
@@ -679,9 +680,13 @@ EOF
         @log = File.open(log)
       end
 
-      opts.on("--rrd-directory=DIRECTORY") do |directory|
-        @rrd_directory = directory
-        FileUtils.mkdir_p(@rrd_directory) unless File.exist?(@rrd_directory)
+      opts.on("--output-directory=DIRECTORY",
+              "Output graph, HTML and graph data to DIRECTORY",
+              "(#{@output_directory})") do |directory|
+        @output_directory = directory
+        unless File.exist?(@output_directory)
+          FileUtils.mkdir_p(@output_directory)
+        end
       end
 
       opts.on("--[no-]update-db",
@@ -748,7 +753,7 @@ EOF
   end
 
   def output_html
-    File.open(File.join(@rrd_directory, "index.html"), "w") do |html|
+    File.open(File.join(@output_directory, "index.html"), "w") do |html|
       generator = HTMLGenerator.new(@output_graphs)
       html.print(generator.generate)
     end
@@ -760,15 +765,15 @@ EOF
   end
 
   def sessions
-    @sessions ||= SessionGraphGenerator.new(@rrd_directory, now)
+    @sessions ||= SessionGraphGenerator.new(@output_directory, now)
   end
 
   def mail_status
-    @mail_status ||= MailStatusGraphGenerator.new(@rrd_directory, now)
+    @mail_status ||= MailStatusGraphGenerator.new(@output_directory, now)
   end
 
   def stops
-    @stops ||= StopGraphGenerator.new(@rrd_directory, now)
+    @stops ||= StopGraphGenerator.new(@output_directory, now)
   end
 end
 

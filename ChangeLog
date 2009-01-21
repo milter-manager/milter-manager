@@ -1,5 +1,8 @@
 2009-01-21  Kouhei Sutou  <kou@clear-code.com>
 
+	* tool/milter-manager-log-analyzer: --rrd-directory ->
+	--output-directory.
+
 	* tool/milter-manager-log-analyzer:
 	- rename from milter-log-tool.
 	- merge tool/ruby/milter-rrd.rb.
