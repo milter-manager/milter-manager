@@ -659,7 +659,7 @@ negotiate (MilterServerContext *context)
                                MILTER_STEP_NO_REPLY_UNKNOWN |
                                MILTER_STEP_NO_REPLY_END_OF_HEADER |
                                MILTER_STEP_NO_REPLY_BODY |
-                               MILTER_STEP_HEADER_LEAD_SPACE);
+                               MILTER_STEP_HEADER_VALUE_WITH_LEADING_SPACE);
     milter_server_context_negotiate(context, option);
     g_object_unref(option);
 }

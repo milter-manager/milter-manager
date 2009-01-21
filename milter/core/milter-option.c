@@ -354,7 +354,7 @@ milter_option_merge (MilterOption *dest, MilterOption *src)
 #define MILTER_NORMAL_STEP_FLAGS                \
     (MILTER_STEP_SKIP |                         \
      MILTER_STEP_ENVELOPE_RECIPIENT_REJECTED |  \
-     MILTER_STEP_HEADER_LEAD_SPACE)
+     MILTER_STEP_HEADER_VALUE_WITH_LEADING_SPACE)
 
 MilterStepFlags
 milter_step_flags_merge (MilterStepFlags dest, MilterStepFlags src)

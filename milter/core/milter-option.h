@@ -98,8 +98,8 @@ typedef enum
     MILTER_STEP_NO_REPLY_END_OF_HEADER = 0x00040000L,
     /* No reply for body chunk */
     MILTER_STEP_NO_REPLY_BODY =          0x00080000L,
-    /* header value leading space */
-    MILTER_STEP_HEADER_LEAD_SPACE =      0x00100000L
+    /* header value with leading space */
+    MILTER_STEP_HEADER_VALUE_WITH_LEADING_SPACE = 0x00100000L
 } MilterStepFlags;
 
 MilterStepFlags milter_step_flags_merge (MilterStepFlags a, MilterStepFlags b);

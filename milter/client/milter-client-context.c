@@ -885,7 +885,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *         white space.
      *
      * This signal is emitted on each header. If
-     * %MILTER_STEP_HEADER_LEAD_SPACE is set in
+     * %MILTER_STEP_HEADER_LEADING_SPACE is set in
      * %MilterClientContext::negotiate, @value have spaces
      * after header name and value separator ":".
      *
@@ -897,7 +897,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      * Subject:a subject
      * ]|
      *
-     * With %MILTER_STEP_HEADER_LEAD_SPACE:
+     * With %MILTER_STEP_HEADER_VALUE_WITH_LEADING_SPACE:
      *
      * |[
      * "From", " from &lt;from@example.com&gt;"
@@ -905,7 +905,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      * "Subject", "a subject"
      * ]|
      *
-     * Without %MILTER_STEP_HEADER_LEAD_SPACE:
+     * Without %MILTER_STEP_HEADER_VALUE_WITH_LEADING_SPACE:
      *
      * |[
      * "From", "from &lt;from@example.com&gt;"

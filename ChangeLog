@@ -1,5 +1,12 @@
 2009-01-21  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/core/milter-option.h:
+	MILTER_STEP_HEADER_LEAD_SPACE ->
+	MILTER_STEP_HEADER_VALUE_WITH_LEADING_SPACE.
+	* milter/core/milter-option.c,
+	milter/client/milter-client-context.c,
+	tool/milter-test-server.c: follow the above change.
+
 	* doc/install-to-centos.rd.ja: add description for detecting
 	enabled.
 
