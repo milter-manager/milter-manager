@@ -17,7 +17,7 @@
    version="1.0"
    sodipodi:docname="logo.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
-   inkscape:export-filename="/home/kou/work/ruby/milter-manager-admin/public/images/logo.png"
+   inkscape:export-filename="/home/kou/work/c/milter-manager/admin/public/images/logo.png"
    inkscape:export-xdpi="183.76721"
    inkscape:export-ydpi="183.76721">
   <defs
@@ -1139,7 +1139,7 @@
          y="-589.58075"
          x="165.0101"
          id="tspan3609"
-         sodipodi:role="line">milter-manager</tspan></text>
+         sodipodi:role="line">milter manager</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:16px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:url(#linearGradient3651);fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans"
@@ -1151,7 +1151,7 @@
          id="tspan2385"
          x="201.02036"
          y="484.15137"
-         style="fill:url(#linearGradient3651);fill-opacity:1">milter-manager</tspan></text>
+         style="fill:url(#linearGradient3651);fill-opacity:1">milter manager</tspan></text>
     <g
        transform="matrix(0.5052699,0,0,0.5052699,218.94573,484.10577)"
        id="g3447">
