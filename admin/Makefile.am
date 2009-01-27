@@ -21,7 +21,7 @@ nobase_dist_admin_SCRIPTS =			\
 	script/performance/profiler		\
 	script/generate
 
-# find . -name '.svn' -prune -o -path './log' -prune -o -not -name '*.sqlite3' -not -name 'Makefile*' -type f -not -perm +111 -print
+# find . -name '.svn' -prune -o -path './log' -prune -o -not -name '*.sqlite3' -not -name 'Makefile*' -not -name 'schema.rb' -type f -not -perm +111 -print
 nobase_dist_admin_DATA =							\
 	app/helpers/sessions_helper.rb						\
 	app/helpers/config_helper.rb						\
@@ -131,7 +131,6 @@ nobase_dist_admin_DATA =							\
 	db/migrate/20081203131215_create_configurations.rb			\
 	db/migrate/20081216125103_add_timeout_to_milters.rb			\
 	db/migrate/20090116065917_create_users.rb				\
-	db/schema.rb								\
 	test/test_helper.rb							\
 	test/functional/config_controller_test.rb				\
 	test/functional/users_controller_test.rb				\
