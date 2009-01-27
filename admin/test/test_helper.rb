@@ -86,5 +86,14 @@ module ActionController
     def t(*args)
       I18n.translate(*args)
     end
+
+    private
+    def login
+      user = users(:aaron)
+      visit(root_path)
+      fill_in(t("label.login"), :with => user.login)
+      fill_in(t("label.password"), :with => "monkey")
+      click_button(t("action.login"))
+    end
   end
 end

@@ -3,6 +3,7 @@ require 'test_helper'
 class MilterActionsTest < ActionController::IntegrationTest
   def test_create
     login
+
     assert_difference("Config::Milter.count", 1) do
       visit(config_milters_path)
       click_link(t("action.create"))
@@ -36,14 +37,5 @@ class MilterActionsTest < ActionController::IntegrationTest
     anti_spam = ::Config::Milter.find(anti_spam)
     assert_equal(expected_spec, anti_spam.connection_spec)
     assert_equal(expected_description, anti_spam.description)
-  end
-
-  private
-  def login
-    user = users(:aaron)
-    visit(root_path)
-    fill_in(t("label.login"), :with => user.login)
-    fill_in(t("label.password"), :with => "monkey")
-    click_button(t("action.login"))
   end
 end
