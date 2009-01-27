@@ -14,8 +14,7 @@ class WelcomeControllerTest < ActionController::TestCase
     default_connection.spec = nil
     default_connection.save(false)
     get(:index)
-    assert_response(:success)
-    assert_select("ul.header-menu a[href=#{control_path}]", 0)
+    assert_redirected_to(edit_config_connection_path(default_connection))
   end
 
   def test_menu_after_connection_setup
