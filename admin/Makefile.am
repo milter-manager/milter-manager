@@ -35,6 +35,8 @@ nobase_dist_admin_DATA =							\
 	app/views/control/index.html.erb					\
 	app/views/users/new.html.erb						\
 	app/views/welcome/index.html.erb					\
+	app/views/rescues/404.html.erb						\
+	app/views/rescues/500.html.erb						\
 	app/views/sessions/new.html.erb						\
 	app/views/layouts/_header.html.erb					\
 	app/views/layouts/application.html.erb					\
