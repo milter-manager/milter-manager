@@ -1,9 +1,9 @@
-# This controller handles the login/logout function of the site.  
+# This controller handles the login/logout function of the site.
 class SessionsController < ApplicationController
   skip_before_filter :login_required
 
-  # render new.rhtml
   def new
+    redirect_to new_user_path if User.count.zero?
   end
 
   def create
@@ -33,7 +33,7 @@ class SessionsController < ApplicationController
     redirect_back_or_default('/')
   end
 
-protected
+  protected
   # Track failed login attempts
   def note_failed_signin
     flash[:error] = t("notice.failure.login", :value => params[:login])

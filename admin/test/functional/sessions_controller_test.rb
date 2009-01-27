@@ -11,6 +11,12 @@ class SessionsControllerTest < ActionController::TestCase
 
   fixtures :users
 
+  def test_login_when_no_user
+    User.destroy_all
+    get(:new)
+    assert_redirected_to(new_user_path)
+  end
+
   def test_should_login_and_redirect
     post :create, :login => 'quentin', :password => 'monkey'
     assert session[:user_id]
@@ -72,11 +78,11 @@ class SessionsControllerTest < ActionController::TestCase
   end
 
   protected
-    def auth_token(token)
-      CGI::Cookie.new('name' => 'auth_token', 'value' => token)
-    end
-    
-    def cookie_for(user)
-      auth_token users(user).remember_token
-    end
+  def auth_token(token)
+    CGI::Cookie.new('name' => 'auth_token', 'value' => token)
+  end
+
+  def cookie_for(user)
+    auth_token users(user).remember_token
+  end
 end
