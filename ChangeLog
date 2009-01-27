@@ -1,5 +1,8 @@
 2009-01-27  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/install.rd.ja: move Ubuntu related descriptions to ...
+	* doc/install-options-to-ubuntu.rd.ja: ... here.
+
 	* admin/app/: add error pages.
 
 	* admin/db/sqlite3/: add a directory for database files of SQLite3.

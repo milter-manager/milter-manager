@@ -30,19 +30,29 @@ milter managerの単体テストを実行するためには以下のソフトウ
 === 任意: グラフ生成
 
 milter managerはログからmilterの適用状況などをグラフ化する機
-能も提供しています。グラフを
+能も提供しています。グラフを生成する場合は以下のソフトウェア
+が必要ですが、milter managerの実行には必須ではありません。
 
   * RRDtool
   * RRDtoolのRubyバインディング
 
-# === 任意: 管理用Webインターフェイス
+=== 任意: 管理用Webインターフェイス
 
-# FIXME
+milter managerはシステム標準のパッケージシステムを利用してい
+る場合は、設定を変更せずに動作させることができます。しかし、
+特別な方法で子milterを設定していたり、より細かくシステムに応
+じたmilter managerの設定を行いたい場合は設定を変更する必要が
+あります。子milterの接続先の変更や、子milterへの適用条件の設
+定など単純な項目であればブラウザを使って変更することもできま
+す。そのような設定は設定ファイルを編集することでも行えるため、
+milter managerの実行には必須ではありません。利用する場合は以
+下のソフトウェアが必要です。
 
-#  * RubyGems
-#  * Rake
-#  * Ruby on Rails 2.2.2
-#  * ...
+  * Ruby >= 1.8.6
+  * RubyGems >= 1.3.1
+  * Ruby on Rails 2.2.2
+  * Ruby-Locale for Ruby on Rails
+  * ...
 
 == milter-manager
 
@@ -94,39 +104,6 @@ milter-manager-log-analyzerはrootではなく、インストール時に作
 
 milter-manager-log-analyzerは5分おきに実行されます。/var/log/cronで実行
 されたかどうかを確認することができます。
-
-=== Ubuntuの場合
-
-グラフはインストール時に作成したmilter-managerユーザのホーム
-ディレクトリ以下に出力し、
-http://localhost/~milter-manager/log/で閲覧できるようにします。
-
-  % sudo -u milter-manager mkdir -p ~milter-manager/public_html/log
-
-WebサーバとしてApacheをインストールします。
-
-  % sudo aptitude -V -D install apache2
-
-Apacheで各ユーザ毎にファイルを公開できるようにします。
-
-  % sudo /usr/sbin/a2enmod userdir
-  % sudo /etc/init.d/apache2 force-reload
-
-次に、cronの設定をします。/etc/cron.d/以下にcronファイルへの
-シンボリックリンクを作成します。
-
-  % sudo ln -s /usr/local/etc/milter-manager/cron.d/debian/milter-manager-log /etc/cron.d/
-  % sudo chmod 600 /etc/cron.d/milter-manager-log
-
-Ubuntuではmilter-managerのログは/var/log/mail.infoに出力され
-ます。/var/log/mail.infoは管理者用のユーザ以外は読むことがで
-きないので、cron ファイル内では、rootで読み込んだ
-/var/log/mail.infoをパイプでmilter-manager-log-analyzerに渡し
-ます。milter-manager-log-analyzerはrootではなく、インストール
-時に作成したmilter-manager権限で実行します。
-
-milter-manager-log-analyzerは5分おきに実行されます。
-/var/log/syslogで実行されたかどうかを確認することができます。
 
 === FreeBSDの場合
 
