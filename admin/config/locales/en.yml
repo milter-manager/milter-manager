@@ -4,11 +4,16 @@
 en:
   menu:
     config-connection: "Connection"
+    config: "Configuration"
+    logout: "Logout"
+    signup: "Signup"
   title:
     welcome: "Welcome!"
     connection: "Connection"
     milter: "Milter"
     signup: "Sign up as a new user"
+    not-found: "Not Found"
+    internal-server-error: "Internal Server Error"
   label:
     name: "Name"
     spec: "Specification"
@@ -39,3 +44,7 @@ en:
   message:
     configuration:
       index: "milter manager's configuration."
+    logged-in-as: "Logging in as {{value}}"
+    rescue:
+      go-to-top: "Go to top"
+      internal-server-error: "Sorry. An unexpected exception is occurred."

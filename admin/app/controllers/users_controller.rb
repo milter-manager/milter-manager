@@ -3,6 +3,7 @@ class UsersController < ApplicationController
 
   # render new.rhtml
   def new
+    raise "XXX"
     @user = User.new
   end
  

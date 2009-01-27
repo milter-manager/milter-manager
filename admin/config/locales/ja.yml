@@ -29,6 +29,8 @@ ja:
     enabled: "有効"
     login: "ログイン"
     signup: "新しいユーザを登録"
+    not-found: "ページがありません"
+    internal-server-error: "問題発生"
   label:
     name: "名前"
     description: "説明"
@@ -85,6 +87,9 @@ ja:
     logged-in-as: "{{value}}でログイン中"
     configuration:
       index: "milter-managerの設定を行います。"
+    rescue:
+      go-to-top: "トップへ"
+      internal-server-error: "予期しない問題が発生しました。"
 
   activerecord:
     models:

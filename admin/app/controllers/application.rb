@@ -35,4 +35,13 @@ class ApplicationController < ActionController::Base
 
     true
   end
+
+  def rescue_action_in_public(exception)
+    status_code = response_code_for_rescue(exception)
+    init_locale if status_code == :not_found
+    status = interpret_status(status_code)
+    render(:file => "/rescues/#{status[0,3]}",
+           :layout => "application",
+           :status => status)
+  end
 end
