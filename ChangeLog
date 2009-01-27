@@ -1,3 +1,7 @@
+2009-01-27  Kouhei Sutou  <kou@clear-code.com>
+
+	* configure.ac, Makefile.am, admin/Makefile.am: dist and install admin.
+
 2009-01-21  Kouhei Sutou  <kou@cozmixng.org>
 
 	* TODO: remove: consider header-lead-space negotiate in
