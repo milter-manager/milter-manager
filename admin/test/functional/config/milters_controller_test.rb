@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class Config::MiltersControllerTest < ActionController::TestCase
+  include AuthenticatedTestHelper
+
   def setup
     @thread = nil
   end
@@ -13,16 +15,34 @@ class Config::MiltersControllerTest < ActionController::TestCase
 
   def test_index
     get(:index)
+    assert_redirected_to(new_session_path)
+
+    login_as(:aaron)
+    get(:index)
     assert_response(:success)
     assert_not_nil(assigns(:milters))
   end
 
   def test_new
     get(:new)
+    assert_redirected_to(new_session_path)
+
+    login_as(:aaron)
+    get(:new)
     assert_response(:success)
   end
 
   def test_create
+    params = {
+      :config_milter => {
+        :name => "milter1",
+        :connection_spec => "inet:29292@localhost",
+      }
+    }
+    post(:create, params)
+    assert_redirected_to(new_session_path)
+
+    login_as(:aaron)
     open_milter_manager_controller do |server|
       @thread = Thread.new do
         client = server.accept
@@ -40,11 +60,7 @@ class Config::MiltersControllerTest < ActionController::TestCase
         client.print(packet("status", "FIXME"))
       end
       assert_difference('Config::Milter.count') do
-        post(:create,
-             :config_milter => {
-               :name => "milter1",
-               :connection_spec => "inet:29292@localhost",
-             })
+        post(:create, params)
       end
     end
     milter = assigns(:milter)
@@ -53,16 +69,34 @@ class Config::MiltersControllerTest < ActionController::TestCase
   end
 
   def test_show
-    get(:show, :id => milters(:anti_spam).id)
+    params = {:id => milters(:anti_spam).id}
+    get(:show, params)
+    assert_redirected_to(new_session_path)
+
+    login_as(:aaron)
+    get(:show, params)
     assert_response(:success)
   end
 
   def test_edit
-    get(:edit, :id => milters(:anti_spam).id)
+    params = {:id => milters(:anti_spam).id}
+    get(:edit, params)
+    assert_redirected_to(new_session_path)
+
+    login_as(:aaron)
+    get(:edit, params)
     assert_response(:success)
   end
 
   def test_update
+    params = {
+      :id => milters(:anti_spam).id,
+      :config_milter => {:name => "changed name"}
+    }
+    put(:update, params)
+    assert_redirected_to(new_session_path)
+
+    login_as(:aaron)
     open_milter_manager_controller do |server|
       @thread = Thread.new do
         client = server.accept
@@ -79,9 +113,7 @@ class Config::MiltersControllerTest < ActionController::TestCase
         get_status_packet = client.readpartial(4096)
         client.print(packet("status", "FIXME"))
       end
-      put(:update,
-          :id => milters(:anti_spam).id,
-          :config_milter => {:name => "changed name"})
+      put(:update, params)
     end
 
     milter = assigns(:milter)
@@ -90,8 +122,13 @@ class Config::MiltersControllerTest < ActionController::TestCase
   end
 
   def test_destroy
+    params = {:id => milters(:anti_spam).id}
+    delete(:destroy, params)
+    assert_redirected_to(new_session_path)
+
+    login_as(:aaron)
     assert_difference('Config::Milter.count', -1) do
-      delete(:destroy, :id => milters(:anti_spam).id)
+      delete(:destroy, params)
     end
 
     assert_redirected_to(config_milters_path)
