@@ -84,8 +84,8 @@ class Config::MiltersController < ApplicationController
         Configuration.update
         true
       end
-    rescue ::Milter::Manager::ConnectionError, ActiveRecord::ActiveRecordError
-      if $!.is_a?(::Milter::Manager::ConnectionError)
+    rescue ::Milter::Manager::Error, ActiveRecord::ActiveRecordError
+      if $!.is_a?(::Milter::Manager::Error)
         milter.errors.add(:update,
                           "failed to update milter-manager's configuration: " +
                           $!.message)
