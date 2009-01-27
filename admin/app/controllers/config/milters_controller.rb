@@ -97,11 +97,9 @@ class Config::MiltersController < ApplicationController
   def save_and_back_to_index(milter, success_message)
     if save_milter(milter)
       flash[:notice] = success_message
-      redirect_to(config_milters_path)
     else
-      index
       flash[:error] = milter.errors.on(:update)
-      render(:action => "index")
     end
+    redirect_to(config_milters_path)
   end
 end
