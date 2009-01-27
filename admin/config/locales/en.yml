@@ -20,10 +20,13 @@ en:
     path: "Path"
     confirm-password: "Confirm password"
     signup: "Sign up"
+    login: "Login"
+    password: "Password"
   action:
     edit: "Edit"
     update: "Update"
     create: "Create"
+    login: "Login"
   notice:
     success:
       signup: "Signed up successfully."
