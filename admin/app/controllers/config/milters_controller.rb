@@ -100,12 +100,7 @@ class Config::MiltersController < ApplicationController
       redirect_to(config_milters_path)
     else
       index
-      @milters.each_with_index do |_milter, i|
-        if milter.id == _milter.id
-          @milters[i] = milter
-          break
-        end
-      end
+      flash[:error] = milter.errors.on(:update)
       render(:action => "index")
     end
   end
