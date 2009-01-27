@@ -1,5 +1,7 @@
 2009-01-27  Kouhei Sutou  <kou@clear-code.com>
 
+	* admin/db/sqlite3/: add a directory for database files of SQLite3.
+
 	* configure.ac, Makefile.am, admin/Makefile.am: dist and install admin.
 
 2009-01-21  Kouhei Sutou  <kou@cozmixng.org>
