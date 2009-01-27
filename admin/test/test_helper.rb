@@ -6,7 +6,11 @@ ENV["RAILS_ENV"] = "test"
 require File.expand_path(File.dirname(__FILE__) + "/../config/environment")
 require 'test_help'
 
-require 'webrat/rails'
+require 'webrat'
+
+Webrat.configure do |config|
+  config.mode = :rails
+end
 
 class Test::Unit::TestCase
   # Transactional fixtures accelerate your tests by wrapping each test method
