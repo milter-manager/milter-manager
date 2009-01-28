@@ -60,6 +60,8 @@ milterの実効ユーザも一般ユーザにします。これもセキュリ�
   * SendmailではなくPostfixを使用しているため、mailnullユー
     ザは使用されていない
 
+ただし、milter-managerはmilter-managerユーザで動かします。
+
 必要のない配送遅延をできるだけ抑えるため、milter-greylistは
 ((<S25R|URL:http://gabacho.reto.jp/anti-spam/>))にマッチする
 ときのみ適用します。しかし、これはmilter-managerが自動で行う
@@ -215,13 +217,19 @@ milterの名前、ソケットのパス、enabledがtrueになっていること
 らえれば、milter-manager.confを編集しなくとも使用できるように
 検出方法を改良することができるかもしれません。
 
+milter-managerはmilter-managerユーザで動作させるので、
+milter-managerユーザを作成します。
+
+  % sudo /usr/sbin/pw groupadd milter-manager
+  % sudo /usr/sbin/pw useradd milter-manager -g milter-manager -G mail
+
 FreeBSD上ではデフォルトでは
 /var/run/milter-manager/milter-manager.sockというソケットファ
 イルを作成します。そのため、事前に/var/run/milter-manager/ディ
 レクトリを作成しておく必要があります。
 
   % sudo mkdir -p /var/run/milter-manager
-  % sudo /usr/sbin/chown -R mailnull:mail /var/run/milter-manager
+  % sudo /usr/sbin/chown -R milter-manager:mail /var/run/milter-manager
 
 milter-managerの設定が完了したので、起動の設定をします。
 
@@ -244,7 +252,7 @@ milter-managerを起動します。
 /usr/local/bin/milter-test-serverで起動の確認をすることがで
 きます。
 
-  % sudo -u mailnull milter-test-server -s unix:/var/run/milter-manager/milter-manager.sock
+  % sudo -u milter-manager milter-test-server -s unix:/var/run/milter-manager/milter-manager.sock
 
 このように表示されれば成功です。
 

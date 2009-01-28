@@ -1,12 +1,12 @@
 # -*- rd -*-
 
-= Ubuntuへインストール（任意） --- Ubuntuへのmilter manager関連ソフトウェアのインストール方法
+= CentOSへインストール（任意） --- CentOSへのmilter manager関連ソフトウェアのインストール方法
 
-Ubuntu Linuxに特化したmilter manager関連ソフトウェアのインス
-トール方法について説明します。milter manager本体のインストー
-ル情報は((<Ubuntuへインストール|install-to-ubuntu.rd.ja>))、
-Ubuntu Linuxに依存しない一般的なインストール情報は((<インストー
-ル|install.rd.ja>))を見てください。
+CentOSに特化したmilter manager関連ソフトウェアのインストール
+方法について説明します。milter manager本体のインストール情報
+は((<CentOSへインストール|install-to-centos.rd.ja>))、CentOS
+に依存しない一般的なインストール情報は((<インストール
+|install.rd.ja>))を見てください。
 
 == milter-manager-log-analyzerのインストール
 
@@ -18,27 +18,23 @@ http://localhost/~milter-manager/log/で閲覧できるようにします。
 
 WebサーバとしてApacheをインストールします。
 
-  % sudo aptitude -V -D install apache2
+  % sudo yum install -y httpd
 
-Apacheで各ユーザ毎にファイルを公開できるようにします。
+/etc/cron.d/以下にcronファイルへのシンボリックリンクを作成し
+ます。
 
-  % sudo /usr/sbin/a2enmod userdir
-  % sudo /etc/init.d/apache2 force-reload
+  % sudo ln -s /usr/local/etc/milter-manager/cron.d/redhat/milter-manager-log /etc/cron.d/
+  % sudo chmod 700 /etc/cron.d/milter-manager-log
 
-次に、cronの設定をします。/etc/cron.d/以下にcronファイルへの
-シンボリックリンクを作成します。
-
-  % sudo ln -s /usr/local/etc/milter-manager/cron.d/debian/milter-manager-log /etc/cron.d/
-
-Ubuntuではmilter-managerのログは/var/log/mail.infoに出力され
-ます。/var/log/mail.infoは管理者用のユーザ以外は読むことがで
-きないので、cron ファイル内では、rootで読み込んだ
-/var/log/mail.infoをパイプでmilter-manager-log-analyzerに渡し
-ます。milter-manager-log-analyzerはrootではなく、インストール
-時に作成したmilter-manager権限で実行します。
+CentOSではmilter-managerのログは/var/log/maillogに出力されま
+す。/var/log/maillogはroot以外は読むことができないので、cron
+ファイル内では、rootで読み込んだ/var/log/maillogをパイプで
+milter-manager-log-analyzerに渡します。
+milter-manager-log-analyzerはrootではなく、インストール時に作
+成したmilter-manager権限で実行します。
 
 milter-manager-log-analyzerは5分おきに実行されます。
-/var/log/syslogで実行されたかどうかを確認することができます。
+/var/log/cronで実行されたかどうかを確認することができます。
 
 == milter manager adminのインストール
 
@@ -47,7 +43,7 @@ milter-manager-log-analyzerは5分おきに実行されます。
 以下のパッケージをインストールすることにより、関連するパッケー
 ジもインストールされます。
 
-  % sudo aptitude -V -D install rdoc libopenssl-ruby apache2-threaded-dev libsqlite3-ruby
+  % sudo yum install -y ruby-rdoc gcc-c++ httpd-devel sqlite-devel
 
 === RubyGemsのインストール
 
@@ -59,37 +55,36 @@ milter-manager-log-analyzerは5分おきに実行されます。
 
 === gemのインストール
 
-  % sudo gem1.8 install rails -v '2.2.2'
-  % sudo gem1.8 install locale_rails
-  % sudo gem1.8 install passenger
+  % sudo gem install sqlite3-ruby
+  % sudo gem install rails -v '2.2.2'
+  % sudo gem install locale_rails
+  % sudo gem install passenger
 
 === Passengerのインストール
 
 以下のコマンドを実行し、Passengerをビルドします。
 
-  % (echo 1; echo) | sudo /var/lib/gems/1.8/bin/passenger-install-apache2-module
+  % (echo 1; echo) | sudo passenger-install-apache2-module
 
-以下の内容のpassenger.loadとpassenger.confを
-/etc/apache2/mods-available/に作成します。
+以下の内容のmilter-manager.confを/etc/httpd/conf.d/に作成しま
+す。
 
-/etc/apache2/mods-available/passenger.load:
+/etc/httpd/conf.d/milter-manager.conf:
   LoadModule passenger_module /usr/lib/ruby/gems/1.8/gems/passenger-2.0.6/ext/apache2/mod_passenger.so
-
-/etc/apache2/mods-available/passenger.conf:
   PassengerRoot /usr/lib/ruby/gems/1.8/gems/passenger-2.0.6
-  PassengerRuby /usr/bin/ruby1.8
+  PassengerRuby /usr/bin/ruby
 
   RailsBaseURI /milter-manager
 
 設定ファイルを再読み込みします。
 
-  % sudo /etc/init.d/apache2 force-reload
+  % sudo /sbin/service httpd reload
 
 milter manager adminはパスワード認証がついていますが、可能で
 あれば信頼できるホストからのみ接続を受け付ける方がセキュリティ
 上は好ましいです。例えば、ローカルホストのみ信頼できるのであ
-れば、以下の設定を/etc/apache2/mods-available/passenger.conf
-に追記してください。
+れば、以下の設定を/etc/httpd/conf.d/milter-manager.confに追
+記してください。
 
   <Location /milter-manager>
     Allow from 127.0.0.1
@@ -99,7 +94,7 @@ milter manager adminはパスワード認証がついていますが、可能で
 追記した場合は設定ファイルを再読み込みするのを忘れないでくだ
 さい。
 
-  % sudo /etc/init.d/apache2 force-reload
+  % sudo /sbin/service httpd reload
 
 === milter manager adminのインストール
 
@@ -107,6 +102,8 @@ milter manager adminは/usr/local/share/milter-manager/admin/
 以下にインストールされています。これをmilter-managerユーザ権
 限で動かし、http://localhost/milter-manager/でアクセスできる
 ようにします。
+
+FIXME
 
   % tar cf - -C /usr/local/share/milter-manager admin | sudo -u milter-manager -H tar xf - -C ~milter-manager
   % sudo ln -s /usr/local/share/milter-manager/admin/public /var/www/milter-manager

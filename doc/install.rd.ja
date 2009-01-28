@@ -72,38 +72,16 @@ milter-manager-log-analyzerを用いると、milterの状況を時系列で
 確認することができます。新しく追加したmilterの効果や、milter
 の適用結果の傾向などを視覚的に確認したい場合に有用です。
 
-milter-manager-log-analyzerはsyslogに出力されたmilter-managerのログを解
-析し、((<RRDtool|URL:http://oss.oetiker.ch/rrdtool/>))でグラ
-フ化します。ログはcronを設定し、定期的に確認します。
+milter-manager-log-analyzerはsyslogに出力された
+milter-managerのログを解析し、
+((<RRDtool|URL:http://oss.oetiker.ch/rrdtool/>))でグラフ化し
+ます。ログはcronを設定し、定期的に確認します。
 
-=== CentOSの場合
+milter-manager-log-analyzerのインストール方法は管理用Webイン
+ターフェイスのインストール方法と一緒に、プラットフォーム毎に
+解説しています。
 
-グラフはインストール時に作成したmilter-managerユーザのホーム
-ディレクトリ以下に出力し、
-http://localhost/~milter-manager/log/で閲覧できるようにします。
-
-  % sudo mkdir -p ~milter-manager/public_html/log
-  % sudo chown -R milter-manager:milter-manager ~milter-manager
-
-WebサーバとしてApacheをインストールします。
-
-  % sudo yum install -y httpd
-
-/etc/cron.d/以下にcronファイルへのシンボリックリンクを作成し
-ます。
-
-  % sudo ln -s /usr/local/etc/milter-manager/cron.d/redhat/milter-manager-log /etc/cron.d/
-  % sudo chmod 600 /etc/cron.d/milter-manager-log
-
-CentOSではmilter-managerのログは/var/log/maillogに出力されま
-す。/var/log/maillogはroot以外は読むことができないので、cron
-ファイル内では、rootで読み込んだ/var/log/maillogをパイプで
-milter-manager-log-analyzerに渡します。
-milter-manager-log-analyzerはrootではなく、インストール時に作
-成したmilter-manager権限で実行します。
-
-milter-manager-log-analyzerは5分おきに実行されます。/var/log/cronで実行
-されたかどうかを確認することができます。
+  * ((<Ubuntu|install-options-to-ubuntu.rd.ja>))
 
 === FreeBSDの場合
 
@@ -162,3 +140,9 @@ milter manager adminでは使いやすいシンプルなインターフェイス
 てしまうよりは、必要性の高い機能だけにしぼってシンプルで使い
 やすいインターフェイスを提供するほうが有用だという判断でこの
 ような方針になっています。
+
+milter manager adminのインストール方法は
+milter-manager-log-analyzerのインストール方法と一緒に、プラッ
+トフォーム毎に解説しています。
+
+  * ((<Ubuntu|install-options-to-ubuntu.rd.ja>))

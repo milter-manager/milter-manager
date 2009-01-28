@@ -1,5 +1,7 @@
 2009-01-28  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/install*: update.
+
 	* data/cron.d/debian/milter-manager-log,
 	data/cron.d/redhat/milter-manager-log: use -c option.
 

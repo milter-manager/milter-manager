@@ -1,12 +1,12 @@
 # -*- rd -*-
 
-= Ubuntuへインストール（任意） --- Ubuntuへのmilter manager関連ソフトウェアのインストール方法
+= FreeBSDへインストール（任意） --- FreeBSDへのmilter manager関連ソフトウェアのインストール方法
 
-Ubuntu Linuxに特化したmilter manager関連ソフトウェアのインス
-トール方法について説明します。milter manager本体のインストー
-ル情報は((<Ubuntuへインストール|install-to-ubuntu.rd.ja>))、
-Ubuntu Linuxに依存しない一般的なインストール情報は((<インストー
-ル|install.rd.ja>))を見てください。
+FreeBSDに特化したmilter manager関連ソフトウェアのインストール
+方法について説明します。milter manager本体のインストール情報
+は((<FreeBSDへインストール|install-to-freebsd.rd.ja>))、
+FreeBSDに依存しない一般的なインストール情報は((<インストール
+|install.rd.ja>))を見てください。
 
 == milter-manager-log-analyzerのインストール
 
@@ -17,6 +17,8 @@ http://localhost/~milter-manager/log/で閲覧できるようにします。
   % sudo -u milter-manager mkdir -p ~milter-manager/public_html/log
 
 WebサーバとしてApacheをインストールします。
+
+FIXME
 
   % sudo aptitude -V -D install apache2
 
@@ -29,6 +31,7 @@ Apacheで各ユーザ毎にファイルを公開できるようにします。
 シンボリックリンクを作成します。
 
   % sudo ln -s /usr/local/etc/milter-manager/cron.d/debian/milter-manager-log /etc/cron.d/
+  % sudo chmod 600 /etc/cron.d/milter-manager-log
 
 Ubuntuではmilter-managerのログは/var/log/mail.infoに出力され
 ます。/var/log/mail.infoは管理者用のユーザ以外は読むことがで
