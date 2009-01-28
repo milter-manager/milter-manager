@@ -13,7 +13,7 @@ class User < ActiveRecord::Base
   validates_length_of       :name,     :maximum => 100
 
   validates_length_of       :email, :allow_nil => true, :within => 6..100 #r@a.wk
-  validates_uniqueness_of   :email
+  validates_uniqueness_of   :email, :allow_nil => true
   validates_format_of       :email, :allow_nil => true, :with => Authentication.email_regex, :message => Authentication.bad_email_message
 
   # HACK HACK HACK -- how to do attr_accessible from here?

@@ -39,6 +39,11 @@ class UserTest < ActiveSupport::TestCase
       u = create_user(:email => nil)
       assert_nil u.errors.on(:email)
     end
+
+    assert_difference 'User.count' do
+      u = create_user(:login => "other user", :email => nil)
+      assert_nil u.errors.on(:email)
+    end
   end
 
   def test_should_reset_password
