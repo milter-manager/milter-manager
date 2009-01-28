@@ -42,6 +42,7 @@ class ApplicationController < ActionController::Base
     status = interpret_status(status_code)
     render(:file => "/rescues/#{status[0,3]}",
            :layout => "application",
-           :status => status)
+           :status => status,
+           :locals => {:exception => exception})
   end
 end

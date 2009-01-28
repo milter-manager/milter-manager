@@ -1,5 +1,7 @@
 2009-01-28  Kouhei Sutou  <kou@clear-code.com>
 
+	* admin/: show details on error.
+
 	* admin/config/environment.rb: create log directory unless exists.
 
 2009-01-27  Kouhei Sutou  <kou@clear-code.com>

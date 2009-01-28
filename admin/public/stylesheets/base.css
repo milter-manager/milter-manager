@@ -178,3 +178,23 @@ tr.disabled
 {
   font-size: smaller;
 }
+
+div.exception
+{
+  margin: 1em;
+}
+
+div.exception p.message
+{
+  background-color: #fcfffc;
+  border: 1px solid #cdc;
+  padding: 0.5em 1em;
+  margin: 1em;
+}
+
+div.exception pre
+{
+  border: 1px solid #cdc;
+  padding: 0.5em;
+  overflow: auto;
+}

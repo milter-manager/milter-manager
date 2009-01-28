@@ -3,3 +3,11 @@
   <p><%= t("message.rescue.internal-server-error") %></p>
 
   <p><%= link_to(t("message.rescue.go-to-top"), root_path) %></p>
+
+  <div class="exception">
+    <h3><%= h(exception.class.name) %></h3>
+    <p class="message"><%= h(exception.message) %></p>
+    <pre><%= h(exception.backtrace.join("\n")) %></pre>
+  </div>
+
+  <p><%= link_to(t("message.rescue.go-to-top"), root_path) %></p>
