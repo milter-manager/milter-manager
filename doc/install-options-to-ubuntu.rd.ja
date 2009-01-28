@@ -8,7 +8,7 @@ Ubuntu Linuxに特化したmilter manager関連ソフトウェアのインス
 Ubuntuに依存しない一般的なインストール情報は((<インストール
 |install.rd.ja>))を見てください。
 
-== milter-log-analyzerのインストール
+== milter-manager-log-analyzerのインストール
 
 グラフはインストール時に作成したmilter-managerユーザのホーム
 ディレクトリ以下に出力し、
@@ -86,6 +86,22 @@ milter-manager-log-analyzerは5分おきに実行されます。
 
   % sudo /etc/init.d/apache2 force-reload
 
+milter manager adminはパスワード認証がついていますが、可能で
+あれば信頼できるホストからのみ接続を受け付ける方がセキュリティ
+上は好ましいです。例えば、ローカルホストのみ信頼できるのであ
+れば、以下の設定を/etc/apache2/mods-available/passenger.conf
+に追記してください。
+
+  <Location /milter-manager>
+    Allow from 127.0.0.1
+    Deny from ALL
+  </Location>
+
+追記した場合は設定ファイルを再読み込みするのを忘れないでくだ
+さい。
+
+  % sudo /etc/init.d/apache2 force-reload
+
 === milter manager adminのインストール
 
 milter manager adminは/usr/local/share/milter-manager/admin/
@@ -93,22 +109,16 @@ milter manager adminは/usr/local/share/milter-manager/admin/
 限で動かし、http://localhost/milter-manager/でアクセスできる
 ようにします。
 
+  % tar cf - -C /usr/local/share/milter-manager admin | sudo -u milter-manager -H tar xf - -C ~milter-manager
   % sudo ln -s /usr/local/share/milter-manager/admin/public /var/www/milter-manager
-  % sudo chown milter-manager:milter-manager /usr/local/share/milter-manager/admin/config/environment.rb
-  % sudo mkdir -p /var/log/milter-manager
-  % sudo chown milter-manager:milter-manager /var/log/milter-manager
-  % sudo ln -s /var/log/milter-manager /usr/local/share/milter-manager/admin/log
-  % sudo mkdir -p /var/lib/milter-manager/sqlite3
-  % sudo chown -R milter-manager:milter-manager /var/lib/milter-manager
-  % sudo ln -s /var/lib/milter-manager/sqlite3 /usr/local/share/milter-manager/admin/db/sqlite3
-  % cd /usr/local/share/milter-manager/admin
-  % sudo -u milter-manager -H rake RAILS_ENV=production SCHEMA=db/sqlite3/schema.rb db:migrate
+  % cd ~milter-manager/admin
+  % sudo -u milter-manager -H rake RAILS_ENV=production db:migrate
 
 最後に以下の内容の
-/usr/local/share/milter-manager/admin/config/initializer/relative_url_root.rb
+~milter-manager/admin/config/initializer/relative_url_root.rb
 を作成します。
 
-/usr/local/share/milter-manager/admin/config/initializer/relative_url_root.rb
+~milter-manager/admin/config/initializer/relative_url_root.rb
   ActionController::Base.relative_url_root = "/milter-manager"
 
 http://localhost/milter-manager/にアクセスしてユーザを登録し
@@ -119,8 +129,29 @@ http://localhost/milter-manager/にアクセスしてユーザを登録し
   % /usr/local/sbin/milter-manager --show-config | grep controller.connection_spec
   controller.connection_spec = "unix:/var/run/milter-manager/milter-manager-controller.sock"
 
-確認した値をブラウザから登録してください。登録すると、
-milter-managerに登録されている子milterやその設定状況をブラウ
-ザから確認することができます。
+確認した値をブラウザから登録してください。上記の場合だと、
+まず、「種類」から「unix」を選びます。これで編集フォームに
+「パス」がでてきます。「パス」には
+「/var/run/milter-manager/milter-manager-controller.sock」を
+指定してください。
 
-FIXME: カスタム設定ファイルに書き込みできない。
+登録すると、milter-managerに登録されている子milterやその設定
+状況をブラウザから確認することができます。
+
+== まとめ
+
+milter-manager-log-analyzerを利用することによりmilterを導入し
+た効果を視覚的に確認することができます。MTAとしてPostfixを使
+用しているのであれば、
+((<Mailgraph|URL:http://mailgraph.schweikert.ch/>))のグラフと
+見くらべてmilter導入の効果を確認することができます。milter の
+試験的に導入している場合などに有効に活用できます。
+
+milter manager adminを利用することで設定ファイルを変更せずに
+運用できる領域が広がり、メールシステムの管理コストを下げるこ
+とができます。
+
+また、Webブラウザからmilterの有効・無効を切り替えることもでき
+るため、milterの効果を試行錯誤する場合に便利です。
+milter-manager-log-analyzerのグラフとあわせて、それぞれのメー
+ルシステムに適した迷惑メール対策の適用を支援します。

@@ -1,5 +1,8 @@
 2009-01-28  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/install.rd.ja, doc/install-options-to-ubuntu.rd.ja: add
+	milter manager admin.
+
 	* milter/manager/milter-manager-main.c: use ~/.milter-manager/ for
 	user local configuration.
 
