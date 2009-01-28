@@ -14,7 +14,7 @@ class SessionsControllerTest < ActionController::TestCase
   def test_login_when_no_user
     User.destroy_all
     get(:new)
-    assert_redirected_to(new_user_path)
+    assert_redirected_to(signup_path)
   end
 
   def test_should_login_and_redirect

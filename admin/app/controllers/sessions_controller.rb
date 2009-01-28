@@ -3,7 +3,7 @@ class SessionsController < ApplicationController
   skip_before_filter :login_required
 
   def new
-    redirect_to new_user_path if User.count.zero?
+    redirect_to(signup_path) if User.count.zero?
   end
 
   def create
