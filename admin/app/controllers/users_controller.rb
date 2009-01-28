@@ -1,12 +1,10 @@
 class UsersController < ApplicationController
   skip_before_filter :login_required
 
-  # render new.rhtml
   def new
-    raise "XXX"
     @user = User.new
   end
- 
+
   def create
     logout_keeping_session!
     @user = User.new(params[:user])
