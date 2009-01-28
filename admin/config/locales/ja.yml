@@ -100,6 +100,6 @@ ja:
       config/milter:
         name: "名前"
       user:
-        login: "名前"
+        login: "ログイン名"
         password: "パスワード"
         password_confirmation: "確認用パスワード"

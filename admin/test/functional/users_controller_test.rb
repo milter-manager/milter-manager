@@ -11,7 +11,15 @@ class UsersControllerTest < ActionController::TestCase
 
   fixtures :users
 
-  def test_should_allow_signup
+  def test_should_not_allow_signup_when_no_login
+    assert_no_difference 'User.count' do
+      create_user
+      assert_response :redirect
+    end
+  end
+
+  def test_should_allow_signup_when_no_users
+    User.destroy_all
     assert_difference 'User.count' do
       create_user
       assert_response :redirect
@@ -19,6 +27,7 @@ class UsersControllerTest < ActionController::TestCase
   end
 
   def test_should_require_login_on_signup
+    login_as(:aaron)
     assert_no_difference 'User.count' do
       create_user(:login => nil)
       assert assigns(:user).errors.on(:login)
@@ -27,6 +36,7 @@ class UsersControllerTest < ActionController::TestCase
   end
 
   def test_should_require_password_on_signup
+    login_as(:aaron)
     assert_no_difference 'User.count' do
       create_user(:password => nil)
       assert assigns(:user).errors.on(:password)
@@ -35,6 +45,7 @@ class UsersControllerTest < ActionController::TestCase
   end
 
   def test_should_require_password_confirmation_on_signup
+    login_as(:aaron)
     assert_no_difference 'User.count' do
       create_user(:password_confirmation => nil)
       assert assigns(:user).errors.on(:password_confirmation)
@@ -43,19 +54,22 @@ class UsersControllerTest < ActionController::TestCase
   end
 
   def test_should_not_require_email_on_signup
+    login_as(:aaron)
     assert_difference 'User.count' do
       create_user(:email => nil)
       assert_nil assigns(:user).errors.on(:email)
       assert_response :redirect
     end
   end
-  
 
-  
-
-  protected
-    def create_user(options = {})
-      post :create, :user => { :login => 'quire', :email => 'quire@example.com',
-        :password => 'quire69', :password_confirmation => 'quire69' }.merge(options)
-    end
+  private
+  def create_user(options = {})
+    post(:create,
+         :user => {
+           :login => 'quire',
+           :email => 'quire@example.com',
+           :password => 'quire69',
+           :password_confirmation => 'quire69'
+         }.merge(options))
+  end
 end

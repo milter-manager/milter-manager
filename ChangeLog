@@ -1,5 +1,7 @@
 2009-01-28  Kouhei Sutou  <kou@clear-code.com>
 
+	* admin/: don't allow signup when no login.
+
 	* admin/: don't link signup in signup page.
 
 	* admin/: show details on error.
