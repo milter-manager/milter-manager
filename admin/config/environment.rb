@@ -76,6 +76,11 @@ Rails::Initializer.run do |config|
   # Please note that observers generated using script/generate observer need to have an _observer suffix
   # config.active_record.observers = :cacher, :garbage_collector, :forum_observer
 
+  log_dir = File.dirname(config.log_path)
+  unless File.exist?(log_dir)
+    require 'fileutils'
+    FileUtils.mkdir_p(log_dir)
+  end
   log_device = Logger::LogDevice.new(config.log_path)
   config.log_path = log_device
 end
