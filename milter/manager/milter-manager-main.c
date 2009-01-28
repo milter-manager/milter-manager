@@ -705,28 +705,9 @@ daemonize (void)
     return TRUE;
 }
 
-gboolean
-milter_manager_main (void)
+static void
+apply_command_line_options (MilterManagerConfiguration *config)
 {
-    MilterClient *client;
-    MilterManager *manager;
-    MilterManagerConfiguration *config;
-    guint controller_connection_watch_id = 0;
-    gboolean daemon;
-    gchar *pid_file = NULL;
-
-    config = milter_manager_configuration_new(NULL);
-    if (option_config_dir)
-        milter_manager_configuration_prepend_load_path(config,
-                                                       option_config_dir);
-    milter_manager_configuration_reload(config);
-    manager = milter_manager_new(config);
-    g_object_unref(config);
-
-    client = MILTER_CLIENT(manager);
-
-    g_signal_connect(client, "error", G_CALLBACK(cb_error), NULL);
-
     if (option_spec)
         milter_manager_configuration_set_manager_connection_spec(config,
                                                                  option_spec);
@@ -742,6 +723,84 @@ milter_manager_main (void)
         milter_manager_configuration_set_daemon(config, TRUE);
     if (getuid() != 0)
         milter_manager_configuration_set_privilege_mode(config, FALSE);
+}
+
+static void
+append_user_local_configuration_path (MilterManagerConfiguration *config)
+{
+    uid_t uid;
+    struct passwd *password;
+    gchar *user_local_config_path;
+
+    uid = geteuid();
+    if (uid == 0)
+        return;
+
+    password = getpwuid(uid);
+
+    user_local_config_path = g_build_filename(password->pw_dir,
+                                              ".milter-manager",
+                                              NULL);
+    if (!g_file_test(user_local_config_path, G_FILE_TEST_EXISTS)) {
+        if (g_mkdir(user_local_config_path, 0700) == -1) {
+            milter_manager_error("failed to create user local "
+                                 "configuration directory: %s: %s",
+                                 user_local_config_path,
+                                 g_strerror(errno));
+            return;
+        }
+    }
+
+    milter_manager_configuration_append_load_path(config,
+                                                  user_local_config_path);
+    milter_manager_configuration_reload(config);
+    apply_command_line_options(config);
+}
+
+
+gboolean
+milter_manager_main (void)
+{
+    MilterClient *client;
+    MilterManager *manager;
+    MilterManagerConfiguration *config;
+    guint controller_connection_watch_id = 0;
+    gboolean daemon;
+    gchar *pid_file = NULL;
+
+    config = milter_manager_configuration_new(NULL);
+    if (option_config_dir)
+        milter_manager_configuration_prepend_load_path(config,
+                                                       option_config_dir);
+    milter_manager_configuration_reload(config);
+    apply_command_line_options(config);
+
+    manager = milter_manager_new(config);
+    g_object_unref(config);
+
+    client = MILTER_CLIENT(manager);
+    g_signal_connect(client, "error", G_CALLBACK(cb_error), NULL);
+
+    daemon = milter_manager_configuration_is_daemon(config);
+    if (!option_show_config && daemon && !daemonize()) {
+        g_object_unref(manager);
+        return FALSE;
+    }
+
+    if (!option_show_config &&
+        milter_manager_configuration_is_privilege_mode(config) &&
+        !start_process_launcher_process(manager)) {
+        g_object_unref(manager);
+        return FALSE;
+    }
+
+    if (geteuid() == 0 &&
+        (!switch_group(manager) || !switch_user(manager))) {
+        g_object_unref(manager);
+        return FALSE;
+    }
+
+    append_user_local_configuration_path(config);
 
     if (option_show_config) {
         gchar *dumped_config;
@@ -755,24 +814,6 @@ milter_manager_main (void)
         }
         g_object_unref(manager);
         return TRUE;
-    }
-
-    daemon = milter_manager_configuration_is_daemon(config);
-    if (daemon && !daemonize()) {
-        g_object_unref(manager);
-        return FALSE;
-    }
-
-    if (milter_manager_configuration_is_privilege_mode(config) &&
-        !start_process_launcher_process(manager)) {
-        g_object_unref(manager);
-        return FALSE;
-    }
-
-    if (geteuid() == 0 &&
-        (!switch_group(manager) || !switch_user(manager))) {
-        g_object_unref(manager);
-        return FALSE;
     }
 
     /* FIXME */

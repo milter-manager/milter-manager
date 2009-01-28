@@ -1,5 +1,8 @@
 2009-01-28  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/manager/milter-manager-main.c: use ~/.milter-manager/ for
+	user local configuration.
+
 	* admin/: allow duplicated NULL emails.
 
 	* admin/: don't allow signup when no login.
