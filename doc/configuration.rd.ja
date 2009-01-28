@@ -176,10 +176,10 @@ milter-manager機能を紹介します。milter-managerを--show-configオ
    ないでください。
 
    例:
-    manager.unix_socket_mode = 0600
+     manager.unix_socket_mode = 0600
 
    既定値:
-    manager.unix_socket_mode = 0660
+     manager.unix_socket_mode = 0660
 
 : manager.remove_unix_socket_on_create
 
@@ -208,10 +208,10 @@ milter-manager機能を紹介します。milter-managerを--show-configオ
    定します。
 
    例:
-    manager.remove_unix_socket_on_close = false
+     manager.remove_unix_socket_on_close = false
 
    既定値:
-    manager.remove_unix_socket_on_close = true
+     manager.remove_unix_socket_on_close = true
 
 : manager.daemon
 
@@ -252,7 +252,66 @@ milter-manager機能を紹介します。milter-managerを--show-configオ
 
 == コントローラ関連
 
-FIXME
+: controller.connection_spec
+
+   milter-managerを制御するための接続を受け付けるソケットを指
+   定します。
+
+   書式はmanager.connection_specと同じです。
+
+   例:
+     controller.connection_spec = "inet:10026@localhost"
+
+   既定値:
+     controller.connection_spec = nil
+
+: controller.unix_socket_mode
+
+   milter-managerを制御するための接続を受け付けるUNIXドメイン
+   ソケットのパーミッションを指定します。
+   controller.connection_specでUNIXドメインソケットを使用し
+   ている場合のみ利用されます。
+
+   8進数で値を指定するために、先頭に「0」をつけることを忘れ
+   ないでください。
+
+   例:
+     controller.unix_socket_mode = 0600
+
+   既定値:
+     controller.unix_socket_mode = 0660
+
+: controller.remove_unix_socket_on_create
+
+   milter-managerを制御するための接続を受け付けるUNIXドメイン
+   ソケットを作成する前にすでにファイルが存在した場合、削除
+   するかどうかを指定します。controller.connection_specで
+   UNIXドメインソケットを使用している場合のみ利用されます。
+
+   削除する場合はtrueを指定します。削除しない場合はfalseを指
+   定します。
+
+   例:
+     controller.remove_unix_socket_on_create = false
+
+   既定値:
+     controller.remove_unix_socket_on_create = true
+
+: controller.remove_unix_socket_on_close
+
+   milter-managerが終了するときに、milter-managerを制御する
+   ための接続を受け付けていたUNIXドメインソケットを削除する
+   かどうかを指定します。controller.connection_specでUNIXドメ
+   インソケットを使用している場合のみ利用されます。
+
+   削除する場合はtrueを指定します。削除しない場合はfalseを指
+   定します。
+
+   例:
+     controller.remove_unix_socket_on_close = false
+
+   既定値:
+     controller.remove_unix_socket_on_close = true
 
 == 適用条件関連
 
