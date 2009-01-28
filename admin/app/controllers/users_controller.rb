@@ -27,7 +27,7 @@ class UsersController < ApplicationController
   private
   def login_required_when_no_users
     if User.count.zero?
-      false
+      true
     else
       login_required
     end
