@@ -315,6 +315,183 @@ milter-manager機能を紹介します。milter-managerを--show-configオ
 
 == 適用条件関連
 
+適用条件は以下の書式で定義します。適用条件の定義にはRubyの知
+識が必要になります。
+
+  define_applicable_condition("名前") do |condition|
+    condition.description = ...
+    condition.define_connect_stopper do |...|
+      ...
+    end
+    ...
+  end
+
+例えば、((<S25R|URL:http://gabacho.reto.jp/anti-spam/>))を実
+現する適用条件は以下のようになります。
+
+  define_applicable_condition("S25R") do |condition|
+    condition.description = "Selective SMTP Rejection"
+
+    condition.define_connect_stopper do |child, host, address|
+      case host
+      when "unknown",
+        /\A\[.+\]\z/,
+        /\A[^.]*\d[^\d.]+\d/,
+        /\A[^.]*\d{5}/,
+        /\A(?:[^.]+\.)?\d[^.]*\.[^.]+\..+\.[a-z]/i,
+        /\A[^.]*\d\.[^.]*\d-\d/,
+        /\A[^.]*\d\.[^.]*\d\.[^.]+\..+\./,
+        /\A(?:dhcp|dialup|ppp|[achrsvx]?dsl)[^.]*\d/i
+        false
+      else
+        true
+      end
+    end
+  end
+
+名前解決ができなかったときはhostは"unknown"ではなく、"[IPア
+ドレス]"になります。そのため、本当は"unknown"は必要なく、
+/\A\[.+\]\z/で十分ですが、念のため入れています。 :-)
+
+define_applicable_condition do ... end内で設定できる項目は以
+下の通りです。
+
+必須の項目はありません。
+
+: condition.description
+
+   適用条件の説明を指定します。
+
+   説明は「"」で囲んで"test condition"というように指定します。
+
+   例:
+     condition.description = "test condition"
+
+   既定値:
+     condition.description = nil
+
+: condition.define_connect_stopper {|child, host, address| ...}
+
+   SMTPクライアントがSMTPサーバに接続してきたときのホスト名
+   とIPアドレスを利用して子milterを適用するかどうかを判断し
+   ます。このときに利用できる情報はmilterのxxfi_connectで利用
+   可能な情報と同じです。
+
+   子milterの適用を中止する場合はtrueを返し、続ける場合は
+   falseを返します。
+
+   : child
+      子milterの情報を持ったオブジェクトです。詳細は後述しま
+      す。
+
+   : host
+      接続してきたIPアドレスを名前解決して得られたホスト名
+      （文字列）です。名前解決に失敗した場合はIPアドレスが
+      「[]」で囲まれた文字列になります。例えば、"[1.2.3.4]"
+      となります。
+
+   : address
+      接続してきIPアドレスを表すオブジェクトです。FIXME
+
+   以下はクライアントからの接続が名前解決できた場合はmilter
+   を適用しない例です。
+
+     condition.define_connect_stopper do |child, host, address|
+       if /\A\[.+\]\z/ =~ host
+         false
+       else
+         true
+       end
+     end
+
+: define_envelope_from_stopper {|child, from| ...}
+
+   SMTPのMAIL FROMコマンドで渡された送信元アドレスを利用して
+   子milterを適用するかどうかを判断します。このときに利用で
+   きる情報はmilterのxxfi_envfromで利用可能な情報と同じです。
+
+   子milterの適用を中止する場合はtrueを返し、続ける場合は
+   falseを返します。
+
+   : child
+      子milterの情報を持ったオブジェクトです。詳細は後述しま
+      す。
+
+   : from
+      MAIL FROMコマンドに渡された送信元です。
+      例えば、"<sender@example.com>"となります。
+
+   以下はexample.comから送信された場合はmilterを適用しない例
+   です。
+
+     condition.define_envelope_from_stopper do |child, from|
+       if /@example.com>\z/ =~ from
+         true
+       else
+         false
+       end
+     end
+
+: define_envelope_recipient_stopper {|child, recipient| ...}
+
+   SMTPのRCPT TOコマンドで渡された宛先アドレスを利用して子
+   milterを適用するかどうかを判断します。このときに利用でき
+   る情報はmilterのxxfi_envrcptで利用可能な情報と同じです。
+   宛先が複数ある場合は複数回呼ばれます。
+
+   子milterの適用を中止する場合はtrueを返し、続ける場合は
+   falseを返します。
+
+   : child
+      子milterの情報を持ったオブジェクトです。詳細は後述しま
+      す。
+
+   : recipient
+      RCPT TOコマンドに渡された宛先です。
+      例えば、"<receiver@example.com>"となります。
+
+   以下はml.example.com宛の場合はmilterを適用しない例です。
+
+     condition.define_envelope_recipient_stopper do |child, recipient|
+       if /@ml.example.com>\z/ =~ recipient
+         true
+       else
+         false
+       end
+     end
+
+: define_header_stopper {|child, name, value| ...}
+
+   メールのヘッダを利用して子milterを適用するかどうかを判断
+   します。このときに利用できる情報はmilterのxxfi_headerで利
+   用可能な情報と同じです。各ヘッダ毎に呼ばれます。
+
+   子milterの適用を中止する場合はtrueを返し、続ける場合は
+   falseを返します。
+
+   : child
+      子milterの情報を持ったオブジェクトです。詳細は後述しま
+      す。
+
+   : name
+      ヘッダ名です。例えば、"From"となります。
+
+   : value
+      ヘッダの値です。例えば、"sender@example.com"となります。
+
+   以下は"X-Spam-Flag"ヘッダの値が"YES"の場合はmilterを適用
+   しない例です。
+
+     condition.define_header_stopper do |child, name, value|
+       if ["X-Spam-Flag", "YES"] == [name, value]
+         true
+       else
+         false
+       end
+     end
+
+=== child
+
 FIXME
 
 == 子milter関連
