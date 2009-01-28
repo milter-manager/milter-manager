@@ -20,7 +20,11 @@ extra_commands="reload"
 load_rc_config $name
 : ${milter_manager_enable="NO"}
 : ${milter_manager_pid_file="/var/run/milter-manager/milter-manager.pid"}
-: ${milter_manager_user_name="mailnull"}
+if getent passwd milter-manager > /dev/null; then
+    : ${milter_manager_user_name="milter-manager"}
+else
+    : ${milter_manager_user_name="mailnull"}
+fi
 : ${milter_manager_group_name="mail"}
 : ${milter_manager_connection_spec=""}
 : ${milter_manager_debug="NO"}
@@ -28,8 +32,12 @@ load_rc_config $name
 command=/usr/local/sbin/milter-manager
 pidfile="${milter_manager_pid_file}"
 command_args="--pid-file ${milter_manager_pid_file}"
-command_args="${command_args} --user-name ${milter_manager_user_name}"
-command_args="${command_args} --group-name ${milter_manager_group_name}"
+if test -n "${milter_manager_user_name}"; then
+    command_args="${command_args} --user-name ${milter_manager_user_name}"
+fi
+if test -n "${milter_manager_group_name}"; then
+    command_args="${command_args} --group-name ${milter_manager_group_name}"
+fi
 if test -n "$milter_manager_connection_connection_spec"; then
     command_args="${command_args} --spec ${milter_manager_connection_spec}"
 fi

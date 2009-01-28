@@ -1,5 +1,7 @@
 2009-01-28  Kouhei Sutou  <kou@clear-code.com>
 
+	* data/rc.d/milter-manager: use milter-manager user by default.
+
 	* doc/install.rd.ja, doc/install-options-to-ubuntu.rd.ja: add
 	milter manager admin.
 
