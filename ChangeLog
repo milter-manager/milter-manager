@@ -1,5 +1,8 @@
 2009-01-28  Kouhei Sutou  <kou@clear-code.com>
 
+	* data/cron.d/debian/milter-manager-log,
+	data/cron.d/redhat/milter-manager-log: use -c option.
+
 	* data/rc.d/milter-manager: use milter-manager user by default.
 
 	* doc/install.rd.ja, doc/install-options-to-ubuntu.rd.ja: add
