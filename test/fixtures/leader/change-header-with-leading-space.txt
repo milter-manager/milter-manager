@@ -5,11 +5,11 @@ actions=header;end-of-header;body;end-of-message-change-header
 
 [client10026]
 port=10026
-arguments=--add-header;X-Test-Header1:Test-Header-Value2;
+arguments=--add-header;X-Test-Header1: Test-Header-Value2;--negotiate-flags=header-value-with-leading-space
 
 [client10027]
 port=10027
-arguments=--change-header;X-Test-Header1:1: Replaced Value;--negotiate-flags=header-value-with-leading-space
+arguments=--change-header;X-Test-Header1:1:Replaced Value;
 
 [negotiate]
 
