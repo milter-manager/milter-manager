@@ -117,7 +117,7 @@ Greylistを使うようにします。
 次に、/etc/default/milter-greylistを変更し、milter-greylist
 を有効にします。milter-greylistの起動ファイルではソケットファ
 イルをpostfixグループで作成できないため、IPv4で接続すること
-とします。ただし、ローカルホストからの接続のみを受け付ける異
+とします。ただし、ローカルホストからの接続のみを受け付けること
 にします。
 
 変更前:
