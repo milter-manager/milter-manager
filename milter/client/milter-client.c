@@ -377,7 +377,6 @@ cb_idle_free_data (gpointer _data)
 
     process_data_free(data);
 
-
     rest_process = g_string_new("[");
     for (process_data = processing_data;
          process_data;
