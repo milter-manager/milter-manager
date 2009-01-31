@@ -1,5 +1,8 @@
 2009-01-31  Kouhei Sutou  <kou@cozmixng.org>
 
+	* admin/app/controllers/application.rb: don't log password related
+	parameters.
+
 	* doc/install-options-to-freebsd.rd.ja: complete.
 
 	* admin/app/helpers/config_helper.rb: show "unix" spec type by
