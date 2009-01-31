@@ -37,13 +37,14 @@ module ConfigHelper
   end
 
   def spec_input_tag(form, prefix=nil)
+    specs = [
+             ["unix", "unix"],
+             ["inet", "inet"],
+             ["inet6", "inet6"],
+            ]
     result = form.label("#{prefix}spec_type", t("label.type")) + ":\n"
     result << form.select("#{prefix}spec_type",
-                          {
-                            "inet" => "inet",
-                            "inet6" => "inet6",
-                            "unix" => "unix",
-                          },
+                          specs,
                           {},
                           :onchange => "selectSpecInfoInputTag(this.value)")
     result << "\n&nbsp;\n"
@@ -64,7 +65,7 @@ module ConfigHelper
                           form.text_field("#{prefix}spec_path"),
                           :id => "spec_unix_info_tag")
     result << "\n"
-    spec_type = form.object.send("#{prefix}spec_type") || "inet"
+    spec_type = form.object.send("#{prefix}spec_type") || specs[0][0]
     result << javascript_tag("selectSpecInfoInputTag(#{spec_type.dump})")
     result << "\n"
     result

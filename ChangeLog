@@ -1,5 +1,8 @@
 2009-01-31  Kouhei Sutou  <kou@cozmixng.org>
 
+	* admin/app/helpers/config_helper.rb: show "unix" spec type by
+	default.
+
 	* data/cron.d/freebsd/: add crontab for
 	milter-manager-log-analyzer on FreeBSD.
 
