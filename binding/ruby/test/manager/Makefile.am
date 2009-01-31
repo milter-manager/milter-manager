@@ -8,7 +8,8 @@ test_files =					\
 	test-control-reply-decoder.rb		\
 	test-control-reply-encoder.rb		\
 	test-custom-xml-loader.rb		\
-	test-egg.rb
+	test-egg.rb				\
+	test-child-context.rb
 
 EXTRA_DIST =		\
 	$(test_files)

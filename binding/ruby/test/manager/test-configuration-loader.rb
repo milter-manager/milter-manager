@@ -109,19 +109,19 @@ EOX
     @loader.define_applicable_condition("remote-network") do |condition|
       condition.description = "Check only remote network"
 
-      condition.define_connect_stopper do |child, host, address|
+      condition.define_connect_stopper do |context, host, address|
         host == "localhost"
       end
 
-      condition.define_envelope_from_stopper do |child, from|
+      condition.define_envelope_from_stopper do |context, from|
         from =~ /@my-domain1.example.com\z/
       end
 
-      condition.define_envelope_recipient_stopper do |child, recipient|
+      condition.define_envelope_recipient_stopper do |context, recipient|
         recipient =~ /@my-domain2.example.com\z/
       end
 
-      condition.define_header_stopper do |child, name, value|
+      condition.define_header_stopper do |context, name, value|
         name == "X-Internal" and value =~ /\A(yes|true)\z/i
       end
     end

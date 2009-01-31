@@ -34,6 +34,34 @@ length (VALUE self)
     return UINT2NUM(milter_manager_children_length(SELF(self)));
 }
 
+static VALUE
+add_child (VALUE self, VALUE child)
+{
+    milter_manager_children_add_child(SELF(self), RVAL2GOBJ(child));
+    return Qnil;
+}
+
+static VALUE
+add_child_less_than (VALUE self, VALUE child)
+{
+    add_child(self, child);
+    return self;
+}
+
+static void
+cb_each (gpointer data, gpointer user_data)
+{
+    MilterManagerChild *child = data;
+    rb_yield(GOBJ2RVAL(child));
+}
+
+static VALUE
+each (VALUE self)
+{
+    milter_manager_children_foreach(SELF(self), cb_each, NULL);
+    return Qnil;
+}
+
 void
 Init_milter_manager_children (void)
 {
@@ -45,4 +73,7 @@ Init_milter_manager_children (void)
     rb_define_method(rb_cMilterManagerChildren, "initialize",
                      initialize, 1);
     rb_define_method(rb_cMilterManagerChildren, "length", length, 0);
+    rb_define_method(rb_cMilterManagerChildren, "add", add_child, 1);
+    rb_define_method(rb_cMilterManagerChildren, "<<", add_child_less_than, 1);
+    rb_define_method(rb_cMilterManagerChildren, "each", each, 0);
 }

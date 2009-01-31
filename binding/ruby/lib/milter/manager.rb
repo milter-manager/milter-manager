@@ -27,6 +27,8 @@ require 'milter_manager.so'
 
 require 'milter/compatible'
 
+require 'milter/manager/child-context'
+
 require 'milter/manager/bsd-rc-detector'
 require 'milter/manager/debian-init-detector'
 require 'milter/manager/redhat-init-detector'
@@ -661,25 +663,21 @@ module Milter::Manager
 
       def apply
         @loader.configuration.remove_applicable_condition(@condition.name)
-        setup_stopper
+        setup_stoppers
         @loader.configuration.add_applicable_condition(@condition)
       end
 
       private
-      def setup_stopper
+      def setup_stoppers
         return unless have_stopper?
 
-        @children = []
-        @condition.signal_connect("attach-to") do |_, child|
-          @children << child
-          child.signal_connect("finished") do
-            @children.delete(child)
-          end
+        @condition.signal_connect("attach-to") do |_, child, children|
+          context = ChildContext.new(child, children)
 
           unless @connect_stoppers.empty?
             child.signal_connect("stop-on-connect") do |_child, host, address|
               @connect_stoppers.any? do |stopper|
-                stopper.call(_child, host, address)
+                stopper.call(context, host, address)
               end
             end
           end
@@ -687,7 +685,7 @@ module Milter::Manager
           unless @envelope_from_stoppers.empty?
             child.signal_connect("stop-on-envelope-from") do |_child, from|
               @envelope_from_stoppers.any? do |stopper|
-                stopper.call(_child, from)
+                stopper.call(context, from)
               end
             end
           end
@@ -695,7 +693,7 @@ module Milter::Manager
           unless @envelope_recipient_stoppers.empty?
             child.signal_connect("stop-on-envelope-recipient") do |_child, recipient|
               @envelope_recipient_stoppers.any? do |stopper|
-                stopper.call(_child, recipient)
+                stopper.call(context, recipient)
               end
             end
           end
@@ -703,7 +701,7 @@ module Milter::Manager
           unless @header_stoppers.empty?
             child.signal_connect("stop-on-header") do |_child, name, value|
               @header_stoppers.any? do |stopper|
-                stopper.call(_child, name, value)
+                stopper.call(context, name, value)
               end
             end
           end

@@ -1,5 +1,18 @@
 2009-01-31  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager/child-context.rb,
+	binding/ruby/test/manager/test-child-context.rb: add child context
+	for stopper.
+
+	* binding/ruby/src/manager/rb-milter-manager-children.c: bind some
+	functions for child context.
+
+	* binding/ruby/lib/milter/manager.rb: use child context not child.
+
+	* binding/ruby/test/manager/test-configuration-loader.rb,
+	binding/ruby/test/manager/test-configuration-loader.rb,
+	data/applicable-conditions/s25r.conf: follow new API.
+
 	* milter/manager/milter-manager-applicable-condition.[ch],
 	milter/manager/milter-manager-children.[ch],
 	milter/manager/milter-manager-egg.[ch],
