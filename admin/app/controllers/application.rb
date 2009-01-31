@@ -3,6 +3,7 @@
 
 class ApplicationController < ActionController::Base
   include AuthenticatedSystem
+  include ExceptionNotifiable
 
   helper :all # include all helpers, all the time
 
@@ -36,13 +37,19 @@ class ApplicationController < ActionController::Base
     true
   end
 
-  def rescue_action_in_public(exception)
-    status_code = response_code_for_rescue(exception)
-    init_locale if status_code == :not_found
-    status = interpret_status(status_code)
-    render(:file => "/rescues/#{status[0,3]}",
+  def render_404(exception)
+    init_locale
+    render(:file => "/rescues/404",
            :layout => "application",
-           :status => status,
+           :status => "404 Not Found",
+           :locals => {:exception => exception})
+  end
+
+  def render_500(exception)
+    init_locale
+    render(:file => "/rescues/500",
+           :layout => "application",
+           :status => "500 Error",
            :locals => {:exception => exception})
   end
 end

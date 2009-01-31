@@ -63,14 +63,14 @@ module ExceptionNotifiable
       !self.class.local_addresses.detect { |addr| addr.include?(remote) }.nil?
     end
 
-    def render_404
+    def render_404(exception)
       respond_to do |type|
         type.html { render :file => "#{RAILS_ROOT}/public/404.html", :status => "404 Not Found" }
         type.all  { render :nothing => true, :status => "404 Not Found" }
       end
     end
 
-    def render_500
+    def render_500(exception)
       respond_to do |type|
         type.html { render :file => "#{RAILS_ROOT}/public/500.html", :status => "500 Error" }
         type.all  { render :nothing => true, :status => "500 Error" }
@@ -80,10 +80,10 @@ module ExceptionNotifiable
     def rescue_action_in_public(exception)
       case exception
         when *self.class.exceptions_to_treat_as_404
-          render_404
+          render_404(exception)
 
         else          
-          render_500
+          render_500(exception)
 
           deliverer = self.class.exception_data
           data = case deliverer
