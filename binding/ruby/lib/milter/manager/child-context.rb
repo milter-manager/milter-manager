@@ -24,6 +24,10 @@ module Milter::Manager
       @child.name
     end
 
+    def [](name)
+      (@child.available_macros || {})[name]
+    end
+
     def children
       @child_contexts ||= create_child_contexts
     end

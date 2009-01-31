@@ -32,6 +32,26 @@ class TestChildContext < Test::Unit::TestCase
     assert_equal("clamav-milter", @context.name)
   end
 
+  def test_macro
+    @clamav.macro_context = Milter::COMMAND_CONNECT
+    @clamav.set_macros(Milter::COMMAND_CONNECT,
+                       {
+                         "j" => "mail.example.com",
+                         "daemon_name" => "mail.example.com",
+                         "v" => "Postfix 2.5.5",
+                       })
+    assert_equal("mail.example.com", @context["j"])
+    assert_equal("Postfix 2.5.5", @context["v"])
+
+    @clamav.macro_context = Milter::COMMAND_HELO
+    @clamav.set_macros(Milter::COMMAND_HELO,
+                       {
+                         "v" => "Sendmail",
+                       })
+    assert_equal("mail.example.com", @context["j"])
+    assert_equal("Sendmail", @context["v"])
+  end
+
   def test_children
     assert_equal("milter-greylist", @context.children["milter-greylist"].name)
   end

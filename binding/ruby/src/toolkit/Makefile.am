@@ -40,6 +40,7 @@ milter_toolkit_la_SOURCES =			\
 	rb-milter-socket-address.c		\
 	rb-milter-macros-requests.c		\
 	rb-milter-option.c			\
+	rb-milter-protocol-agent.c		\
 	rb-milter-utils.c			\
 	rb-milter-client.c			\
 	rb-milter-client-context.c		\

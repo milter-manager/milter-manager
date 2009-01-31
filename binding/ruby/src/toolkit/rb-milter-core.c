@@ -34,4 +34,5 @@ Init_milter_core (void)
     Init_milter_command_encoder();
     Init_milter_reply_encoder();
     Init_milter_decoder();
+    Init_milter_protocol_agent();
 }

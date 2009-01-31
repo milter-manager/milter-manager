@@ -1,5 +1,11 @@
 2009-01-31  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/src/toolkit/rb-milter-protocol-agent.c: bind some
+	macro related functions.
+
+	* binding/ruby/lib/milter/manager/child-context.rb,
+	binding/ruby/test/manager/test-child-context.rb: provide macro reader.
+
 	* milter/core/milter-protocol-agent.c: fix macro search order.
 
 	* milter/core/milter-protocol-agent.c: make macro-context property.

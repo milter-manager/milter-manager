@@ -31,4 +31,12 @@ module Milter
       end
     end
   end
+
+  class ProtocolAgent
+    def set_macros(context, macros)
+      macros.each do |name, value|
+        set_macro(context, name, value)
+      end
+    end
+  end
 end
