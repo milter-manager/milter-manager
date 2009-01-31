@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -142,6 +142,7 @@ gboolean             milter_server_context_establish_connection
                                                        (MilterServerContext *context,
                                                         GError **error);
 
+MilterStatus         milter_server_context_get_status  (MilterServerContext *context);
 MilterServerContextState milter_server_context_get_state (MilterServerContext *context);
 void                 milter_server_context_set_state   (MilterServerContext *context,
                                                         MilterServerContextState state);

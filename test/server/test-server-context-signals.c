@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -567,6 +567,11 @@ write_data (const gchar *data, gsize data_size)
     wait_for_written();
 }
 
+#define milter_assert_status(expected)                                  \
+    gcut_assert_equal_enum(MILTER_TYPE_STATUS,                          \
+                           expected,                                    \
+                           milter_server_context_get_status(context))
+
 void
 test_negotiate_reply (void)
 {
@@ -584,6 +589,7 @@ test_negotiate_reply (void)
     cut_assert_equal_int(1, n_negotiate_replys);
     milter_assert_equal_option(option, actual_option);
     milter_assert_equal_macros_requests(requests, actual_requests);
+    milter_assert_status(MILTER_STATUS_NOT_CHANGE);
 }
 
 void
@@ -594,6 +600,7 @@ test_continue (void)
     milter_reply_encoder_encode_continue(encoder, &packet, &packet_size);
     write_data(packet, packet_size);
     cut_assert_equal_int(1, n_continues);
+    milter_assert_status(MILTER_STATUS_NOT_CHANGE);
 }
 
 void
@@ -604,6 +611,7 @@ test_reply_code (void)
     write_data(packet, packet_size);
     cut_assert_equal_int(1, n_reply_codes);
     cut_assert_equal_uint(554, actual_reply_code);
+    milter_assert_status(MILTER_STATUS_NOT_CHANGE);
 }
 
 void
@@ -612,6 +620,7 @@ test_temporary_failure (void)
     milter_reply_encoder_encode_temporary_failure(encoder, &packet, &packet_size);
     write_data(packet, packet_size);
     cut_assert_equal_int(1, n_temporary_failures);
+    milter_assert_status(MILTER_STATUS_TEMPORARY_FAILURE);
 }
 
 void
@@ -620,6 +629,7 @@ test_reject (void)
     milter_reply_encoder_encode_reject(encoder, &packet, &packet_size);
     write_data(packet, packet_size);
     cut_assert_equal_int(1, n_rejects);
+    milter_assert_status(MILTER_STATUS_REJECT);
 }
 
 void
@@ -628,6 +638,7 @@ test_accept (void)
     milter_reply_encoder_encode_accept(encoder, &packet, &packet_size);
     write_data(packet, packet_size);
     cut_assert_equal_int(1, n_accepts);
+    milter_assert_status(MILTER_STATUS_ACCEPT);
 }
 
 void
@@ -636,6 +647,7 @@ test_discard (void)
     milter_reply_encoder_encode_discard(encoder, &packet, &packet_size);
     write_data(packet, packet_size);
     cut_assert_equal_int(1, n_discards);
+    milter_assert_status(MILTER_STATUS_DISCARD);
 }
 
 void
@@ -653,6 +665,7 @@ test_add_header (void)
     cut_assert_equal_int(1, n_add_headers);
     cut_assert_equal_string(name, actual_header_name);
     cut_assert_equal_string(value, actual_header_value);
+    milter_assert_status(MILTER_STATUS_NOT_CHANGE);
 }
 
 void
@@ -671,6 +684,7 @@ test_insert_header (void)
     cut_assert_equal_int(G_MAXUINT32, actual_header_index);
     cut_assert_equal_string(name, actual_header_name);
     cut_assert_equal_string(value, actual_header_value);
+    milter_assert_status(MILTER_STATUS_NOT_CHANGE);
 }
 
 void
@@ -688,6 +702,7 @@ test_change_header (void)
     cut_assert_equal_int(0, actual_header_index);
     cut_assert_equal_string(name, actual_header_name);
     cut_assert_equal_string(value, actual_header_value);
+    milter_assert_status(MILTER_STATUS_NOT_CHANGE);
 }
 
 void
@@ -703,6 +718,7 @@ test_delete_header (void)
     cut_assert_equal_int(1, n_delete_headers);
     cut_assert_equal_int(0, actual_header_index);
     cut_assert_equal_string(name, actual_header_name);
+    milter_assert_status(MILTER_STATUS_NOT_CHANGE);
 }
 
 void
@@ -717,6 +733,7 @@ test_change_from (void)
     write_data(packet, packet_size);
     cut_assert_equal_int(1, n_change_froms);
     cut_assert_equal_string(from, actual_envelope_from);
+    milter_assert_status(MILTER_STATUS_NOT_CHANGE);
 }
 
 void
@@ -733,6 +750,7 @@ test_add_recipient (void)
     cut_assert_equal_int(1, n_add_recipients);
     cut_assert_equal_string(recipient, actual_recipient);
     cut_assert_null(actual_recipient_parameters);
+    milter_assert_status(MILTER_STATUS_NOT_CHANGE);
 }
 
 void
@@ -746,6 +764,7 @@ test_delete_recipient (void)
     write_data(packet, packet_size);
     cut_assert_equal_int(1, n_delete_recipients);
     cut_assert_equal_string(recipient, actual_recipient);
+    milter_assert_status(MILTER_STATUS_NOT_CHANGE);
 }
 
 void
@@ -760,6 +779,7 @@ test_replace_body (void)
                                              chunk, strlen(chunk), &packed_size);
     write_data(packet, packet_size);
     cut_assert_equal_int(1, n_replace_bodys);
+    milter_assert_status(MILTER_STATUS_NOT_CHANGE);
 }
 
 void
@@ -768,6 +788,7 @@ test_progress (void)
     milter_reply_encoder_encode_progress(encoder, &packet, &packet_size);
     write_data(packet, packet_size);
     cut_assert_equal_int(1, n_progresss);
+    milter_assert_status(MILTER_STATUS_NOT_CHANGE);
 }
 
 void
@@ -779,6 +800,7 @@ test_quarantine (void)
     write_data(packet, packet_size);
     cut_assert_equal_int(1, n_quarantines);
     cut_assert_equal_string(reason, actual_quarantine_reason);
+    milter_assert_status(MILTER_STATUS_NOT_CHANGE);
 }
 
 void
@@ -787,6 +809,7 @@ test_connection_failure (void)
     milter_reply_encoder_encode_connection_failure(encoder, &packet, &packet_size);
     write_data(packet, packet_size);
     cut_assert_equal_int(1, n_connection_failures);
+    milter_assert_status(MILTER_STATUS_NOT_CHANGE);
 }
 
 void
@@ -795,6 +818,7 @@ test_shutdown (void)
     milter_reply_encoder_encode_shutdown(encoder, &packet, &packet_size);
     write_data(packet, packet_size);
     cut_assert_equal_int(1, n_shutdowns);
+    milter_assert_status(MILTER_STATUS_NOT_CHANGE);
 }
 
 void
@@ -807,6 +831,7 @@ test_skip (void)
     write_data(packet, packet_size);
     cut_assert_equal_int(1, n_skips);
     cut_assert_true(milter_server_context_get_skip_body(context));
+    milter_assert_status(MILTER_STATUS_NOT_CHANGE);
 }
 
 void

@@ -1,5 +1,10 @@
 2009-01-31  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/server/milter-server-context.[ch],
+	tool/milter-test-server.c,
+	test/server/test-server-context-signals.c: server context holds
+	its status.
+
 	* binding/ruby/src/toolkit/rb-milter-protocol-agent.c: bind some
 	macro related functions.
 

@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -77,6 +77,7 @@ struct _MilterServerContextPrivate
     gint domain;
     struct sockaddr *address;
     socklen_t address_size;
+    MilterStatus status;
     MilterServerContextState state;
     gchar *reply_code;
     MilterOption *option;
@@ -100,6 +101,8 @@ enum
 {
     PROP_0,
     PROP_NAME,
+    PROP_STATUS,
+    PROP_STATE,
     PROP_CONNECTION_TIMEOUT,
     PROP_WRITING_TIMEOUT,
     PROP_READING_TIMEOUT,
@@ -273,6 +276,22 @@ milter_server_context_class_init (MilterServerContextClass *klass)
                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_NAME, spec);
 
+    spec = g_param_spec_enum("status",
+                             "Status",
+                             "The status of the MilterServerContext",
+                             MILTER_TYPE_STATUS,
+                             MILTER_STATUS_NOT_CHANGE,
+                             G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_STATUS, spec);
+
+    spec = g_param_spec_enum("state",
+                             "State",
+                             "The state of the MilterServerContext",
+                             MILTER_TYPE_SERVER_CONTEXT_STATE,
+                             MILTER_SERVER_CONTEXT_STATE_START,
+                             G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_STATE, spec);
+
     spec = g_param_spec_double("connection-timeout",
                                "Connection timeout",
                                "The timeout seconds for connecting to a filter",
@@ -366,6 +385,7 @@ milter_server_context_init (MilterServerContext *context)
     priv->address = NULL;
     priv->address_size = 0;
 
+    priv->status = MILTER_STATUS_NOT_CHANGE;
     priv->state = MILTER_SERVER_CONTEXT_STATE_START;
 
     priv->option = NULL;
@@ -451,27 +471,34 @@ set_property (GObject      *object,
               const GValue *value,
               GParamSpec   *pspec)
 {
+    MilterServerContext *context;
     MilterServerContextPrivate *priv;
 
-    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(object);
+    context = MILTER_SERVER_CONTEXT(object);
+    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
     switch (prop_id) {
-      case PROP_NAME:
-        milter_server_context_set_name(MILTER_SERVER_CONTEXT(object),
-                                       g_value_get_string(value));
+    case PROP_NAME:
+        milter_server_context_set_name(context, g_value_get_string(value));
         break;
-      case PROP_CONNECTION_TIMEOUT:
+    case PROP_STATUS:
+        priv->status = g_value_get_enum(value);
+        break;
+    case PROP_STATE:
+        milter_server_context_set_state(context, g_value_get_enum(value));
+        break;
+    case PROP_CONNECTION_TIMEOUT:
         priv->connection_timeout = g_value_get_double(value);
         break;
-      case PROP_WRITING_TIMEOUT:
+    case PROP_WRITING_TIMEOUT:
         priv->writing_timeout = g_value_get_double(value);
         break;
-      case PROP_READING_TIMEOUT:
+    case PROP_READING_TIMEOUT:
         priv->reading_timeout = g_value_get_double(value);
         break;
-      case PROP_END_OF_MESSAGE_TIMEOUT:
+    case PROP_END_OF_MESSAGE_TIMEOUT:
         priv->end_of_message_timeout = g_value_get_double(value);
         break;
-      default:
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
@@ -487,22 +514,28 @@ get_property (GObject    *object,
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(object);
     switch (prop_id) {
-      case PROP_NAME:
+    case PROP_NAME:
         g_value_set_string(value, priv->name);
         break;
-      case PROP_CONNECTION_TIMEOUT:
+    case PROP_STATUS:
+        g_value_set_enum(value, priv->status);
+        break;
+    case PROP_STATE:
+        g_value_set_enum(value, priv->state);
+        break;
+    case PROP_CONNECTION_TIMEOUT:
         g_value_set_double(value, priv->connection_timeout);
         break;
-      case PROP_WRITING_TIMEOUT:
+    case PROP_WRITING_TIMEOUT:
         g_value_set_double(value, priv->writing_timeout);
         break;
-      case PROP_READING_TIMEOUT:
+    case PROP_READING_TIMEOUT:
         g_value_set_double(value, priv->reading_timeout);
         break;
-      case PROP_END_OF_MESSAGE_TIMEOUT:
+    case PROP_END_OF_MESSAGE_TIMEOUT:
         g_value_set_double(value, priv->end_of_message_timeout);
         break;
-      default:
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
@@ -518,6 +551,12 @@ MilterServerContext *
 milter_server_context_new (void)
 {
     return g_object_new(MILTER_TYPE_SERVER_CONTEXT, NULL);
+}
+
+MilterStatus
+milter_server_context_get_status (MilterServerContext *context)
+{
+    return MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->status;
 }
 
 MilterServerContextState
@@ -1421,6 +1460,8 @@ cb_decoder_temporary_failure (MilterReplyDecoder *decoder, gpointer user_data)
     gchar *state_name;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+    if (priv->state != MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT)
+        priv->status = MILTER_STATUS_TEMPORARY_FAILURE;
 
     disable_timeout(priv);
 
@@ -1450,6 +1491,8 @@ cb_decoder_reject (MilterReplyDecoder *decoder, gpointer user_data)
     gchar *state_name;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+    if (priv->state != MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT)
+        priv->status = MILTER_STATUS_REJECT;
 
     disable_timeout(priv);
 
@@ -1463,10 +1506,10 @@ cb_decoder_reject (MilterReplyDecoder *decoder, gpointer user_data)
     g_signal_emit_by_name(context, "reject");
 
     switch (priv->state) {
-      case MILTER_SERVER_CONTEXT_STATE_BODY:
+    case MILTER_SERVER_CONTEXT_STATE_BODY:
         clear_process_body_count(context);
         break;
-      default:
+    default:
         break;
     }
 }
@@ -1480,6 +1523,7 @@ cb_decoder_accept (MilterReplyDecoder *decoder, gpointer user_data)
     gchar *state_name;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+    priv->status = MILTER_STATUS_ACCEPT;
 
     disable_timeout(priv);
 
@@ -1510,6 +1554,8 @@ cb_decoder_discard (MilterReplyDecoder *decoder, gpointer user_data)
     gchar *state_name;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(user_data);
+    if (priv->state != MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT)
+        priv->status = MILTER_STATUS_DISCARD;
 
     disable_timeout(priv);
 

@@ -84,7 +84,6 @@ typedef struct _ProcessData
     gchar *reply_extended_code;
     gchar *reply_message;
     gchar *quarantine_reason;
-    MilterStatus status;
     MilterOption *option;
     Message *message;
     GError *error;
@@ -287,7 +286,6 @@ cb_temporary_failure (MilterServerContext *context, gpointer user_data)
     default:
         send_abort(context, data);
         data->success = FALSE;
-        data->status = MILTER_STATUS_TEMPORARY_FAILURE;
         break;
     }
 }
@@ -307,7 +305,6 @@ cb_reject (MilterServerContext *context, gpointer user_data)
     default:
         send_abort(context, data);
         data->success = FALSE;
-        data->status = MILTER_STATUS_REJECT;
         break;
     }
 }
@@ -339,7 +336,6 @@ cb_accept (MilterServerContext *context, gpointer user_data)
 
     send_abort(context, data);
     data->success = TRUE;
-    data->status = MILTER_STATUS_ACCEPT;
 }
 
 static void
@@ -349,7 +345,6 @@ cb_discard (MilterServerContext *context, gpointer user_data)
 
     send_abort(context, data);
     data->success = FALSE;
-    data->status = MILTER_STATUS_DISCARD;
 }
 
 static void
@@ -1098,7 +1093,6 @@ init_process_data (ProcessData *data)
     data->main_loop = g_main_loop_new(NULL, FALSE);
     data->timer = g_timer_new();
     data->success = TRUE;
-    data->status = MILTER_STATUS_NOT_CHANGE;
     data->quarantine_reason = NULL;
     data->option = NULL;
     data->reply_code = 0;
@@ -1335,18 +1329,20 @@ print_message (Message *message)
 }
 
 static void
-print_status (ProcessData *data)
+print_status (MilterServerContext *context, ProcessData *data)
 {
+    MilterStatus status;
     const gchar *status_name;
 
-    if (data->status == MILTER_STATUS_NOT_CHANGE) {
+    status = milter_server_context_get_status(context);
+    if (status == MILTER_STATUS_NOT_CHANGE) {
         status_name = "pass";
     } else {
         GEnumValue *value;
         GEnumClass *enum_class;
 
         enum_class = g_type_class_ref(MILTER_TYPE_STATUS);
-        value = g_enum_get_value(enum_class, data->status);
+        value = g_enum_get_value(enum_class, status);
         status_name = value->value_nick;
         g_type_class_unref(enum_class);
     }
@@ -1355,14 +1351,14 @@ print_status (ProcessData *data)
 }
 
 static void
-print_result (ProcessData *data)
+print_result (MilterServerContext *context, ProcessData *data)
 {
     if (data->error) {
         g_printf("%s\n", data->error->message);
         return;
     }
 
-    print_status(data);
+    print_status(context, data);
     if (data->quarantine_reason) {
         g_printf("The message was quarantined.: %s\n",
                  data->quarantine_reason);
@@ -1448,7 +1444,7 @@ start_process (MilterServerContext *context, ProcessData *process_data)
 
     g_main_loop_run(process_data->main_loop);
 
-    print_result(process_data);
+    print_result(context, process_data);
 
     return TRUE;
 }
