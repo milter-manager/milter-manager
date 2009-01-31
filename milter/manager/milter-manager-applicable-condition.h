@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -24,7 +24,9 @@
 
 #include <milter/client.h>
 #include <milter/server.h>
+#include <milter/manager/milter-manager-objects.h>
 #include <milter/manager/milter-manager-child.h>
+#include <milter/manager/milter-manager-children.h>
 
 G_BEGIN_DECLS
 
@@ -35,7 +37,6 @@ G_BEGIN_DECLS
 #define MILTER_MANAGER_IS_APPLICABLE_CONDITION_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), MILTER_TYPE_MANAGER_APPLICABLE_CONDITION))
 #define MILTER_MANAGER_APPLICABLE_CONDITION_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MILTER_TYPE_MANAGER_APPLICABLE_CONDITION, MilterManagerApplicableConditionClass))
 
-typedef struct _MilterManagerApplicableCondition         MilterManagerApplicableCondition;
 typedef struct _MilterManagerApplicableConditionClass    MilterManagerApplicableConditionClass;
 
 struct _MilterManagerApplicableCondition
@@ -48,7 +49,8 @@ struct _MilterManagerApplicableConditionClass
     GObjectClass parent_class;
 
     void (*attach_to) (MilterManagerApplicableCondition   *applicable_condition,
-                       MilterManagerChild *child);
+                       MilterManagerChild *child,
+                       MilterManagerChildren *children);
 };
 
 GType        milter_manager_applicable_condition_get_type (void) G_GNUC_CONST;
@@ -73,7 +75,8 @@ void         milter_manager_applicable_condition_merge
 
 void         milter_manager_applicable_condition_attach_to
                                    (MilterManagerApplicableCondition *condition,
-                                    MilterManagerChild               *child);
+                                    MilterManagerChild               *child,
+                                    MilterManagerChildren            *children);
 
 G_END_DECLS
 

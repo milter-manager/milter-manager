@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -150,15 +150,31 @@ child_equal (gconstpointer a, gconstpointer b)
         milter_manager_children_get_children(actual),              \
         child_equal)
 
+static void
+cb_attach_to (MilterManagerApplicableCondition *condition,
+              MilterManagerChild *child, MilterManagerChildren *children,
+              gpointer user_data)
+{
+    gboolean *attached_to = user_data;
+
+    *attached_to = TRUE;
+}
+
 void
 test_children (void)
 {
     MilterManagerChild *child;
+    gboolean attached_to = FALSE;
     GError *error = NULL;
 
     egg = milter_manager_egg_new("child-milter");
     milter_manager_egg_set_connection_spec(egg, "inet:2929@localhost", &error);
     gcut_assert_error(error);
+
+    condition = milter_manager_applicable_condition_new("S25R");
+    milter_manager_egg_add_applicable_condition(egg, condition);
+    g_signal_connect(condition, "attach-to",
+                     G_CALLBACK(cb_attach_to), &attached_to);
 
     another_egg = milter_manager_egg_new("brother-milter");
     milter_manager_egg_set_connection_spec(another_egg,
@@ -172,8 +188,10 @@ test_children (void)
     child = milter_manager_egg_hatch(egg);
     milter_manager_children_add_child(expected_children, child);
 
+    cut_assert_false(attached_to);
     actual_children = milter_manager_configuration_create_children(config);
     milter_assert_equal_children(expected_children, actual_children);
+    cut_assert_true(attached_to);
 }
 
 void

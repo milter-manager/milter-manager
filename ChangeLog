@@ -1,5 +1,14 @@
 2009-01-31  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-applicable-condition.[ch],
+	milter/manager/milter-manager-children.[ch],
+	milter/manager/milter-manager-egg.[ch],
+	milter/manager/milter-manager-configuration.c,
+	milter/manager/milter-manager-objects.h,
+	test/manager/test-egg.c,
+	test/manager/test-configuration.c: pass children to applicable
+	condition's attach-to signal.
+
 	* README*: add licenses for Rails plugins.
 
 	* admin/Makefile.am, admin/vendor/plugins/exception_notification/,

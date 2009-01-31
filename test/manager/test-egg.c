@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -41,11 +41,13 @@ void test_command (void);
 void test_command_options (void);
 void test_merge (void);
 void test_applicable_condition (void);
+void test_attach_applicable_conditions (void);
 void test_to_xml (void);
 
 static MilterManagerEgg *egg;
 static MilterManagerEgg *merged_egg;
 static MilterManagerChild *child;
+static MilterManagerChildren *children;
 static MilterManagerApplicableCondition *condition;
 
 static GError *expected_error;
@@ -64,6 +66,7 @@ setup (void)
     egg = NULL;
     merged_egg = NULL;
     child = NULL;
+    children = NULL;
     condition = NULL;
 
     expected_error = NULL;
@@ -85,6 +88,8 @@ teardown (void)
         g_object_unref(merged_egg);
     if (child)
         g_object_unref(child);
+    if (children)
+        g_object_unref(children);
     if (condition)
         g_object_unref(condition);
 
@@ -133,7 +138,8 @@ cb_hatched (MilterManagerEgg *egg, MilterManagerChild *child, gpointer user_data
 
 static void
 cb_attach_to (MilterManagerApplicableCondition *condition,
-              MilterManagerChild *child, gpointer user_data)
+              MilterManagerChild *child, MilterManagerChildren *children,
+              gpointer user_data)
 {
     gboolean *attached_to = user_data;
 
@@ -164,7 +170,7 @@ test_hatch (void)
     cut_assert_equal_string("child-milter",
                             milter_server_context_get_name(MILTER_SERVER_CONTEXT(child)));
     cut_assert_true(hatched);
-    cut_assert_true(attached_to);
+    cut_assert_false(attached_to);
 }
 
 void
@@ -344,6 +350,25 @@ test_applicable_condition (void)
         NULL,
         milter_manager_egg_get_applicable_conditions(egg),
         milter_manager_test_applicable_condition_equal);
+}
+
+void
+test_attach_applicable_conditions (void)
+{
+    gboolean attached_to = FALSE;
+
+    egg = milter_manager_egg_new("child-milter");
+
+    condition = milter_manager_applicable_condition_new("S25R");
+    g_signal_connect(condition, "attach-to",
+                     G_CALLBACK(cb_attach_to), &attached_to);
+    milter_manager_egg_add_applicable_condition(egg, condition);
+
+    child = milter_manager_child_new("child-milter");
+    children = milter_manager_children_new(NULL);
+
+    milter_manager_egg_attach_applicable_conditions(egg, child, children);
+    cut_assert_true(attached_to);
 }
 
 void

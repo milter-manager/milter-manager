@@ -429,13 +429,7 @@ milter_manager_egg_hatch (MilterManagerEgg *egg)
         if (milter_server_context_set_connection_spec(context,
                                                       priv->connection_spec,
                                                       &error)) {
-            GList *node = priv->applicable_conditions;
-
             g_signal_emit(egg, signals[HATCHED], 0, child);
-            for (; node; node = g_list_next(node)) {
-                MilterManagerApplicableCondition *condition = node->data;
-                milter_manager_applicable_condition_attach_to(condition, child);
-            }
         } else {
             milter_error("[egg][error] invalid connection spec: %s: %s",
                          error->message,
@@ -698,6 +692,21 @@ milter_manager_egg_clear_applicable_conditions (MilterManagerEgg *egg)
         g_list_foreach(priv->applicable_conditions, (GFunc)g_object_unref, NULL);
         g_list_free(priv->applicable_conditions);
         priv->applicable_conditions = NULL;
+    }
+}
+
+void
+milter_manager_egg_attach_applicable_conditions (MilterManagerEgg      *egg,
+                                                 MilterManagerChild    *child,
+                                                 MilterManagerChildren *children)
+{
+    MilterManagerEggPrivate *priv;
+    GList *node;
+
+    priv = MILTER_MANAGER_EGG_GET_PRIVATE(egg);
+    for (node = priv->applicable_conditions; node; node = g_list_next(node)) {
+        MilterManagerApplicableCondition *condition = node->data;
+        milter_manager_applicable_condition_attach_to(condition, child, children);
     }
 }
 

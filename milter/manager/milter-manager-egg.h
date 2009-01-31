@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -24,6 +24,7 @@
 
 #include <milter/client.h>
 #include <milter/server.h>
+#include <milter/manager/milter-manager-objects.h>
 #include <milter/manager/milter-manager-child.h>
 #include <milter/manager/milter-manager-applicable-condition.h>
 
@@ -43,7 +44,6 @@ typedef enum
     MILTER_MANAGER_EGG_ERROR_INVALID
 } MilterManagerEggError;
 
-typedef struct _MilterManagerEgg         MilterManagerEgg;
 typedef struct _MilterManagerEggClass    MilterManagerEggClass;
 
 struct _MilterManagerEgg
@@ -132,6 +132,10 @@ const GList        *milter_manager_egg_get_applicable_conditions
                                                 (MilterManagerEgg *egg);
 void                milter_manager_egg_clear_applicable_conditions
                                                 (MilterManagerEgg *egg);
+void                milter_manager_egg_attach_applicable_conditions
+                                                (MilterManagerEgg      *egg,
+                                                 MilterManagerChild    *child,
+                                                 MilterManagerChildren *children);
 
 gboolean            milter_manager_egg_merge    (MilterManagerEgg *egg,
                                                  MilterManagerEgg *other_egg,

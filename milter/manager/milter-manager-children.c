@@ -1504,6 +1504,8 @@ cb_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
     MilterServerContext *context;
     MilterManagerChildren *children;
     MilterManagerChildrenPrivate *priv;
+    MilterServerContextState state;
+    MilterStatus fallback_status;
 
     context = MILTER_SERVER_CONTEXT(emittable);
     children = MILTER_MANAGER_CHILDREN(user_data);
@@ -1513,8 +1515,11 @@ cb_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
                  error->message,
                  milter_server_context_get_name(context));
 
-    milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children), error);
+    fallback_status =
+        milter_manager_configuration_get_fallback_status(priv->configuration);
 
+    state = milter_server_context_get_state(context);
+    compile_reply_status(children, state, MILTER_STATUS_REJECT);
     expire_child(children, context);
     remove_child_from_queue(children, context);
 }

@@ -1114,6 +1114,7 @@ milter_manager_configuration_create_children (MilterManagerConfiguration *config
         child = milter_manager_egg_hatch(egg);
         if (child) {
             milter_manager_children_add_child(children, child);
+            milter_manager_egg_attach_applicable_conditions(egg, child, children);
             g_object_unref(child);
         }
     }

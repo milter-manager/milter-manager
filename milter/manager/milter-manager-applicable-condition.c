@@ -99,8 +99,9 @@ milter_manager_applicable_condition_class_init (MilterManagerApplicableCondition
                      G_STRUCT_OFFSET(MilterManagerApplicableConditionClass,
                                      attach_to),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__OBJECT,
-                     G_TYPE_NONE, 1, MILTER_TYPE_MANAGER_CHILD);
+                     _milter_marshal_VOID__OBJECT_OBJECT,
+                     G_TYPE_NONE, 2,
+                     MILTER_TYPE_MANAGER_CHILD, MILTER_TYPE_MANAGER_CHILDREN);
 
     g_type_class_add_private(gobject_class,
                              sizeof(MilterManagerApplicableConditionPrivate));
@@ -242,9 +243,10 @@ milter_manager_applicable_condition_merge (MilterManagerApplicableCondition *con
 
 void
 milter_manager_applicable_condition_attach_to (MilterManagerApplicableCondition *condition,
-                                               MilterManagerChild               *child)
+                                               MilterManagerChild               *child,
+                                               MilterManagerChildren            *children)
 {
-    g_signal_emit(condition, signals[ATTACH_TO], 0, child);
+    g_signal_emit(condition, signals[ATTACH_TO], 0, child, children);
 }
 
 /*

@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -75,8 +75,7 @@ void                   milter_manager_children_foreach     (MilterManagerChildre
 gboolean               milter_manager_children_negotiate   (MilterManagerChildren *children,
                                                             MilterOption          *option,
                                                             MilterMacrosRequests  *macros_requests);
-gboolean               milter_manager_children_define_macro 
-                                                           (MilterManagerChildren *children,
+gboolean               milter_manager_children_define_macro(MilterManagerChildren *children,
                                                             MilterCommand          command,
                                                             GHashTable            *macro);
 gboolean               milter_manager_children_connect     (MilterManagerChildren *children,
