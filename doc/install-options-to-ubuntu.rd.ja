@@ -109,7 +109,7 @@ milter manager adminは/usr/local/share/milter-manager/admin/
 ようにします。
 
   % tar cf - -C /usr/local/share/milter-manager admin | sudo -u milter-manager -H tar xf - -C ~milter-manager
-  % sudo ln -s /usr/local/share/milter-manager/admin/public /var/www/milter-manager
+  % sudo ln -s ~milter-manager/admin/public /var/www/milter-manager
   % cd ~milter-manager/admin
   % sudo -u milter-manager -H rake RAILS_ENV=production db:migrate
 
@@ -125,7 +125,7 @@ http://localhost/milter-manager/にアクセスしてユーザを登録し
 の情報を設定するページへ移動します。milter-managerがどこで接
 続を受け付けているかは以下で確認可能です。
 
-  % /usr/local/sbin/milter-manager --show-config | grep controller.connection_spec
+  % sudo -u milter-manager -H /usr/local/sbin/milter-manager --show-config | grep controller.connection_spec
   controller.connection_spec = "unix:/var/run/milter-manager/milter-manager-controller.sock"
 
 確認した値をブラウザから登録してください。上記の場合だと、
