@@ -1,3 +1,4 @@
 SUBDIRS =	\
 	debian	\
-	redhat
+	redhat	\
+	freebsd

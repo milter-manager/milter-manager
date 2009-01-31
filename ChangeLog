@@ -1,3 +1,8 @@
+2009-01-31  Kouhei Sutou  <kou@cozmixng.org>
+
+	* data/cron.d/freebsd/: add crontab for
+	milter-manager-log-analyzer on FreeBSD.
+
 2009-01-28  Kouhei Sutou  <kou@cozmixng.org>
 
 	* doc/configuration.rd.ja: describe define_applicable_condition.

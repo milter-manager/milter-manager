@@ -357,6 +357,7 @@ AC_CONFIG_FILES([Makefile
 		 data/cron.d/Makefile
 		 data/cron.d/debian/Makefile
 		 data/cron.d/redhat/Makefile
+		 data/cron.d/freebsd/Makefile
 		 tool/Makefile
 		 admin/Makefile
 		 test/Makefile
