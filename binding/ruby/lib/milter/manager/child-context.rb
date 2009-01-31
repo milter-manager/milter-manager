@@ -28,6 +28,27 @@ module Milter::Manager
       (@child.available_macros || {})[name]
     end
 
+    def reject?
+      @child.status == Milter::STATUS_REJECT
+    end
+
+    def temporary_failure?
+      @child.status == Milter::STATUS_TEMPORARY_FAILURE
+    end
+
+    def accept?
+      @child.status == Milter::STATUS_ACCEPT
+    end
+
+    def discard?
+      @child.status == Milter::STATUS_DISCARD
+    end
+
+    def processing?
+      [Milter::STATUS_CONTINUE,
+       Milter::STATUS_NOT_CHANGE].include?(@child.status)
+    end
+
     def children
       @child_contexts ||= create_child_contexts
     end

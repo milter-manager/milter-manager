@@ -1,5 +1,9 @@
 2009-01-31  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager/child-context.rb,
+	binding/ruby/test/manager/test-child-context.rb: add status
+	related methods.
+
 	* milter/server/milter-server-context.[ch],
 	tool/milter-test-server.c,
 	test/server/test-server-context-signals.c: server context holds

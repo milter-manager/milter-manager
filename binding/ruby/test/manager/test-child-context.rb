@@ -52,6 +52,18 @@ class TestChildContext < Test::Unit::TestCase
     assert_equal("Sendmail", @context["v"])
   end
 
+  def test_status
+    assert_true(@context.processing?)
+    @clamav.status = Milter::STATUS_REJECT
+    assert_true(@context.reject?)
+    @clamav.status = Milter::STATUS_DISCARD
+    assert_true(@context.discard?)
+    @clamav.status = Milter::STATUS_TEMPORARY_FAILURE
+    assert_true(@context.temporary_failure?)
+    @clamav.status = Milter::STATUS_ACCEPT
+    assert_true(@context.accept?)
+  end
+
   def test_children
     assert_equal("milter-greylist", @context.children["milter-greylist"].name)
   end
