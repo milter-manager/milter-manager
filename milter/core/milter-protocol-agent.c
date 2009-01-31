@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -51,15 +51,15 @@ enum
 };
 
 static MilterCommand macro_search_order[] = {
-    MILTER_COMMAND_END_OF_MESSAGE,
-    MILTER_COMMAND_BODY,
-    MILTER_COMMAND_END_OF_HEADER,
-    MILTER_COMMAND_HEADER,
-    MILTER_COMMAND_DATA,
-    MILTER_COMMAND_ENVELOPE_RECIPIENT,
-    MILTER_COMMAND_ENVELOPE_FROM,
-    MILTER_COMMAND_HELO,
     MILTER_COMMAND_CONNECT,
+    MILTER_COMMAND_HELO,
+    MILTER_COMMAND_ENVELOPE_FROM,
+    MILTER_COMMAND_ENVELOPE_RECIPIENT,
+    MILTER_COMMAND_DATA,
+    MILTER_COMMAND_HEADER,
+    MILTER_COMMAND_END_OF_HEADER,
+    MILTER_COMMAND_BODY,
+    MILTER_COMMAND_END_OF_MESSAGE,
     0,
 };
 
@@ -94,8 +94,8 @@ milter_protocol_agent_class_init (MilterProtocolAgentClass *klass)
     spec = g_param_spec_enum("macro-context",
                              "macro context",
                              "The current macro context",
-                             MILTER_COMMAND_UNKNOWN,
                              MILTER_TYPE_COMMAND,
+                             MILTER_COMMAND_UNKNOWN,
                              G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_MACRO_CONTEXT, spec);
 
@@ -211,7 +211,6 @@ GHashTable *
 milter_protocol_agent_get_available_macros (MilterProtocolAgent *agent)
 {
     MilterProtocolAgentPrivate *priv;
-    gboolean found_current_context = FALSE;
     gint i;
 
     priv = MILTER_PROTOCOL_AGENT_GET_PRIVATE(agent);
@@ -225,17 +224,13 @@ milter_protocol_agent_get_available_macros (MilterProtocolAgent *agent)
         MilterCommand context;
 
         context = macro_search_order[i];
-        if (!found_current_context) {
-            if (context != priv->macro_context)
-                continue;
-            found_current_context = TRUE;
-        }
 
         macros = g_hash_table_lookup(priv->macros, GINT_TO_POINTER(context));
-        if (!macros)
-            continue;
-
-        milter_utils_merge_hash_string_string(priv->available_macros, macros);
+        if (macros)
+            milter_utils_merge_hash_string_string(priv->available_macros,
+                                                  macros);
+        if (context == priv->macro_context)
+            break;
     }
 
     return priv->available_macros;
