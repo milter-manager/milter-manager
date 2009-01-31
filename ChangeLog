@@ -1,5 +1,9 @@
 2009-01-31  Kouhei Sutou  <kou@cozmixng.org>
 
+	* admin/Makefile.am, admin/vendor/plugins/exception_notification/,
+	admin/vendor/plugins/exc-notify: shorten name to be able to
+	include in tar ball.
+
 	* admin/app/controllers/application.rb,
 	admin/vendor/plugins/exception_notification/lib/exception_notifiable.rb:
 	integrated with exception notification.
