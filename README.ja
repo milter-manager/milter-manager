@@ -24,6 +24,7 @@ milter manager
 
   * ライセンスが明記してあるファイル:
     * binding/ruby/lib/milter/compatible.rb: Ruby's
+    * admin/vendor/plugins/exc-notify/: MIT
   * コマンド: GPL3
     * src/以下
     * tool/直下
@@ -31,7 +32,8 @@ milter manager
     * README, README.ja
     * doc/以下
   * Webインターフェイス: AGPL3
-    * admin/以下（次のリリースから収録予定）
+    * admin/以下（admin/vendor/plugins/restful-auth/以外）
+    * admin/vendor/plugins/restful-auth/: MIT
   * ライブラリ: LGPL3
     * 上記以外
 
