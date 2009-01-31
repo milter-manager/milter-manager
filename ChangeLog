@@ -1,5 +1,7 @@
 2009-01-31  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/install-options-to-freebsd.rd.ja: complete.
+
 	* admin/app/helpers/config_helper.rb: show "unix" spec type by
 	default.
 
