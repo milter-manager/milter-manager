@@ -44,6 +44,12 @@ struct _MilterProtocolAgentPrivate
     MilterMacrosRequests *macros_requests;
 };
 
+enum
+{
+    PROP_0,
+    PROP_MACRO_CONTEXT
+};
+
 static MilterCommand macro_search_order[] = {
     MILTER_COMMAND_END_OF_MESSAGE,
     MILTER_COMMAND_BODY,
@@ -62,17 +68,36 @@ G_DEFINE_ABSTRACT_TYPE(MilterProtocolAgent, milter_protocol_agent,
 
 
 static void dispose        (GObject         *object);
+static void set_property   (GObject         *object,
+                            guint            prop_id,
+                            const GValue    *value,
+                            GParamSpec      *pspec);
+static void get_property   (GObject         *object,
+                            guint            prop_id,
+                            GValue          *value,
+                            GParamSpec      *pspec);
 
 static void
 milter_protocol_agent_class_init (MilterProtocolAgentClass *klass)
 {
     GObjectClass *gobject_class;
     MilterAgentClass *agent_class;
+    GParamSpec *spec;
 
     gobject_class = G_OBJECT_CLASS(klass);
     agent_class = MILTER_AGENT_CLASS(klass);
 
     gobject_class->dispose      = dispose;
+    gobject_class->set_property = set_property;
+    gobject_class->get_property = get_property;
+
+    spec = g_param_spec_enum("macro-context",
+                             "macro context",
+                             "The current macro context",
+                             MILTER_COMMAND_UNKNOWN,
+                             MILTER_TYPE_COMMAND,
+                             G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_MACRO_CONTEXT, spec);
 
     g_type_class_add_private(gobject_class, sizeof(MilterProtocolAgentPrivate));
 }
@@ -120,6 +145,42 @@ dispose (GObject *object)
     }
 
     G_OBJECT_CLASS(milter_protocol_agent_parent_class)->dispose(object);
+}
+
+static void
+set_property (GObject      *object,
+              guint         prop_id,
+              const GValue *value,
+              GParamSpec   *pspec)
+{
+    switch (prop_id) {
+    case PROP_MACRO_CONTEXT:
+        milter_protocol_agent_set_macro_context(MILTER_PROTOCOL_AGENT(object),
+                                                g_value_get_enum(value));
+        break;
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+        break;
+    }
+}
+
+static void
+get_property (GObject    *object,
+              guint       prop_id,
+              GValue     *value,
+              GParamSpec *pspec)
+{
+    MilterProtocolAgentPrivate *priv;
+
+    priv = MILTER_PROTOCOL_AGENT_GET_PRIVATE(object);
+    switch (prop_id) {
+    case PROP_MACRO_CONTEXT:
+        g_value_set_enum(value, priv->macro_context);
+        break;
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+        break;
+    }
 }
 
 const gchar *
