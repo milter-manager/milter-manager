@@ -198,7 +198,7 @@ milterに転送されます。milter managerに登録されたmilterのこと
 ら見ると、milter managerは1つのmilterです。一方、子milterか
 ら見ると、milter managerからはMTAのように見えます。
 
-FIXME: 図: MTAとmilter managerと子milter
+((<MTAとmilter managerと子milter|mta-and-milter-manager-and-child-milter-ja.svg>))
 
 このような構成にすることで、各MTA毎に異なっていたmilter管理
 部分をmilter managerの層で行えます。milter managerは以下のよ

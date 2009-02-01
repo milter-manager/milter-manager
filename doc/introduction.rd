@@ -186,7 +186,7 @@ milter manager works as a proxy. milter manager looks like a
 milter from MTA side. milter manager looks like a MTA from
 child milter.
 
-FIXME: Figure: MTA, milter manager and child milter
+((<MTA, milter manager and child milter|mta-and-milter-manager-and-child-milter.svg>))
 
 milters can be managed by milter manager layer not MTA layer
 by the structure. milter manager has the following features

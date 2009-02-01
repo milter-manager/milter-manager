@@ -1,5 +1,9 @@
 2009-02-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/mta-and-milter-manager-and-child-milter*.svg: add images for
+	relation between MTA, milter manager and child milter.
+	* doc/introduction.rd*, doc/reference/: use the above images.
+
 	* doc/introduction.rd*: add image link.
 	* gtk-doc.make, doc/reference/Makefile.am: generate PNG from SVG.
 

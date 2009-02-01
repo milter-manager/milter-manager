@@ -45,13 +45,15 @@ GTKDOC_LIBS =							\
 # Extra options to supply to gtkdoc-mkdb
 MKDB_OPTIONS=--sgml-mode --output-format=xml
 
-# Images to copy into HTML directory
-generated_image_files =				\
-	sendmail-and-milter.png			\
-	sendmail-and-milter-ja.png		\
-	sendmail-and-postfix-and-milter.png	\
+generated_image_files =					\
+	mta-and-milter-manager-and-child-milter.png	\
+	mta-and-milter-manager-and-child-milter-ja.png	\
+	sendmail-and-milter.png				\
+	sendmail-and-milter-ja.png			\
+	sendmail-and-postfix-and-milter.png		\
 	sendmail-and-postfix-and-milter-ja.png
 
+# Images to copy into HTML directory
 HTML_IMAGES = $(generated_image_files)
 
 # Extra SGML files that are included by $(DOC_MAIN_SGML_FILE)
@@ -160,6 +162,12 @@ install-to-freebsd.xml: $(top_srcdir)/doc/install-to-freebsd.rd $(RD2REFENTRY_LI
 
 install-to-freebsd.xml.ja: $(top_srcdir)/doc/install-to-freebsd.rd.ja $(RD2REFENTRY_LIB) ja.po
 	$(RD2_JA) $(top_srcdir)/doc/install-to-freebsd.rd.ja > install-to-freebsd.xml.ja
+
+mta-and-milter-manager-and-child-milter.png: $(top_srcdir)/doc/mta-and-milter-manager-and-child-milter.svg
+	$(SVG2PNG) $@ $<
+
+mta-and-milter-manager-and-child-milter-ja.png: $(top_srcdir)/doc/mta-and-milter-manager-and-child-milter-ja.svg
+	$(SVG2PNG) $@ $<
 
 sendmail-and-milter.png: $(top_srcdir)/doc/sendmail-and-milter.svg
 	$(SVG2PNG) $@ $<
