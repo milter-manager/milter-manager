@@ -1,5 +1,8 @@
 2009-02-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager/child-context.rb: normalize
+	macro name for convenient.
+
 	* milter/core/milter-agent.c: make decoder property.
 
 	* binding/ruby/lib/milter/manager.rb: make child context brief.

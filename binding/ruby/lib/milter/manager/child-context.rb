@@ -26,7 +26,7 @@ module Milter::Manager
     end
 
     def [](name)
-      (@macros ||= @child.available_macros || {})[name]
+      (@macros ||= @child.available_macros || {})[normalize_macro_name(name)]
     end
 
     def reject?
@@ -43,11 +43,6 @@ module Milter::Manager
 
     def discard?
       @child.status == Milter::STATUS_DISCARD
-    end
-
-    def processing?
-      [Milter::STATUS_CONTINUE,
-       Milter::STATUS_NOT_CHANGE].include?(@child.status)
     end
 
     def quitted?
@@ -68,6 +63,10 @@ module Milter::Manager
         contexts[child.name] = self.class.new(child, @children, true)
       end
       contexts
+    end
+
+    def normalize_macro_name(name)
+      name.sub(/\A\{(.+)\}\z/, '\1')
     end
   end
 end
