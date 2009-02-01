@@ -1,5 +1,9 @@
 2009-02-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/fixtures/leader/connect.txt,
+	test/fixtures/leader/connect-with-macro.txt: follow socket address
+	format fixing.
+
 	* tool/milter-manager-log-analyzer: fix syslog date format matching.
 
 	* doc/sendmail-and-postfix-and-milter.svg, doc/introduction.rd.ja:
