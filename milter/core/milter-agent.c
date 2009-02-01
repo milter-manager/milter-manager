@@ -91,8 +91,8 @@ milter_agent_class_init (MilterAgentClass *klass)
     klass->decoder_new = NULL;
     klass->encoder_new = NULL;
 
-    spec = g_param_spec_object("milter-reader",
-                               "milter reader",
+    spec = g_param_spec_object("reader",
+                               "reader",
                                "A MilterReader object",
                                MILTER_TYPE_READER,
                                G_PARAM_READWRITE);

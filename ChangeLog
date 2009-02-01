@@ -1,5 +1,7 @@
 2009-02-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-agent.c: milter-reader -> reader.
+
 	* milter/manager/milter-manager-children.[ch],
 	test/manager/test-children.c: make quitted milter public.
 
