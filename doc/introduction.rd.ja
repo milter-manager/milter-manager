@@ -39,7 +39,7 @@ milterに接続し、milterプロトコルで通信を行い、milterとの接�
 
 これらの用語を用いたSendmailとmilterの関係は以下の通りです。
 
-FIXME: 図: Sendmailとmilterの関係
+((<Sendmailとmilterの関係|sendmail-and-milter.png>))
 
 Sendmailがmilterシステムを提供してから、多くのmilterが開発さ
 れています。((<URL:https://www.milter.org/>))というサイトでは

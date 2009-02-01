@@ -1,5 +1,8 @@
 2009-02-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/sendmail-and-milter.svg, doc/introduction.rd.ja: add a image
+	for Sendmail and milter.
+
 	* doc/configuration.rd.ja: complete.
 
 	* binding/ruby/src/toolkit/rb-milter-socket-address.c,
