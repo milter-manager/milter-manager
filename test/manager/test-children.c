@@ -1232,11 +1232,13 @@ test_connect_half_stop (void)
     address.sin_port = g_htons(50443);
     inet_aton(ip_address, &(address.sin_addr));
 
+    cut_assert_null(milter_manager_children_get_quitted_children(children));
     milter_manager_children_connect(children,
                                     host_name,
                                     (struct sockaddr *)(&address),
                                     sizeof(address));
     wait_reply(1, n_continue_emitted);
+    cut_assert_not_null(milter_manager_children_get_quitted_children(children));
 }
 
 void
@@ -1543,7 +1545,8 @@ test_connection_timeout (void)
     /* FIXME This case does not cause connection timeout! */
     add_child("milter@10026", "inet:10026@192.168.99.1");
 
-    prepare_timeout_test(milter_manager_children_get_children(children)->data, NULL);
+    prepare_timeout_test(milter_manager_children_get_children(children)->data,
+                         NULL);
 
     option = milter_option_new(2,
                                MILTER_ACTION_ADD_HEADERS |
@@ -1570,7 +1573,8 @@ test_end_of_message_timeout (void)
     logger = milter_logger();
     log_signal_id = g_signal_connect(logger, "log", G_CALLBACK(cb_log), NULL);
 
-    prepare_timeout_test(milter_manager_children_get_children(children)->data, NULL);
+    prepare_timeout_test(milter_manager_children_get_children(children)->data,
+                         NULL);
 
     milter_manager_children_end_of_message(children, "end", strlen("end"));
 

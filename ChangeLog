@@ -1,3 +1,8 @@
+2009-02-01  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/manager/milter-manager-children.[ch],
+	test/manager/test-children.c: make quitted milter public.
+
 2009-01-31  Kouhei Sutou  <kou@cozmixng.org>
 
 	* binding/ruby/lib/milter/manager/child-context.rb,

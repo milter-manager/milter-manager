@@ -431,6 +431,12 @@ milter_manager_children_get_children (MilterManagerChildren *children)
     return MILTER_MANAGER_CHILDREN_GET_PRIVATE(children)->milters;
 }
 
+GList *
+milter_manager_children_get_quitted_children (MilterManagerChildren *children)
+{
+    return MILTER_MANAGER_CHILDREN_GET_PRIVATE(children)->quitted_milters;
+}
+
 void
 milter_manager_children_foreach (MilterManagerChildren *children,
                                  GFunc func, gpointer user_data)
