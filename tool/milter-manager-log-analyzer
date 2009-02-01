@@ -24,6 +24,17 @@ require 'erb'
 
 require 'RRD'
 
+module RRD
+  module_function
+  def last_update_time(file)
+    time = last(file)
+    if time and time < Time.at(0)
+      time = Time.at(Integer(`rrdtool last '#{file}'`))
+    end
+    time
+  end
+end
+
 class MilterManagerLogAnalyzer
   module LogData
     class Session
@@ -264,9 +275,10 @@ class MilterManagerLogAnalyzer
     end
 
     def update_db(time_span)
-      last_update_time = RRD.last(rrd_file) if File.exist?(rrd_file)
-      if last_update_time and last_update_time <= Time.at(0)
-        last_update_time = Time.at(Integer(`rrdtool last '#{rrd_file}'`))
+      if File.exist?(rrd_file)
+        last_update_time = RRD.last_update_time(rrd_file)
+      else
+        last_update_time = nil
       end
 
       data = collect_data(time_span, last_update_time)
@@ -328,10 +340,7 @@ class MilterManagerLogAnalyzer
       height = options[:height] || 200
 
       return nil unless File.exist?(rrd_file)
-      last_update_time = ::RRD.last(rrd_file)
-      if last_update_time <= Time.at(0)
-        last_update_time = Time.at(Integer(`rrdtool last '#{rrd_file}'`))
-      end
+      last_update_time = RRD.last_update_time(rrd_file)
 
       time_stamp = last_update_time.strftime("%a %b %d %H:%M:%S %Z %Y")
       title = "#{@title} - #{time_stamp}"

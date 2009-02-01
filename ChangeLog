@@ -1,5 +1,8 @@
 2009-02-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-manager-log-analyzer: define RRD.last_update_time
+	for buggy RRDtool bindings.
+
 	* test/fixtures/leader/connect.txt,
 	test/fixtures/leader/connect-with-macro.txt: follow socket address
 	format fixing.
