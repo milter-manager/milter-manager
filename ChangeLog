@@ -1,5 +1,9 @@
 2009-02-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/install-options-*.rd: add empty English documents.
+	* doc/reference/milter-manager-docs.sgml: register optional
+	installation documents.
+
 	* doc/mta-and-milter-manager-and-child-milter*.svg: add images for
 	relation between MTA, milter manager and child milter.
 	* doc/introduction.rd*, doc/reference/: use the above images.

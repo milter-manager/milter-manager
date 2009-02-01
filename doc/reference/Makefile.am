@@ -57,15 +57,19 @@ generated_image_files =					\
 HTML_IMAGES = $(generated_image_files)
 
 # Extra SGML files that are included by $(DOC_MAIN_SGML_FILE)
-content_files =			\
-	version.xml		\
-	readme.xml		\
-	news.xml		\
-	introduction.xml	\
-	configuration.xml	\
-	install.xml		\
-	install-to-ubuntu.xml	\
-	install-to-freebsd.xml
+content_files =					\
+	version.xml				\
+	readme.xml				\
+	news.xml				\
+	introduction.xml			\
+	configuration.xml			\
+	install.xml				\
+	install-to-ubuntu.xml			\
+	install-to-centos.xml			\
+	install-to-freebsd.xml			\
+	install-options-to-ubuntu.xml		\
+	install-options-to-centos.xml		\
+	install-options-to-freebsd.xml
 
 # Extra options to supply to gtkdoc-fixxref
 FIXXREF_OPTIONS=
@@ -88,8 +92,16 @@ generated_xml_files =				\
 	install.xml.ja				\
 	install-to-ubuntu.xml			\
 	install-to-ubuntu.xml.ja		\
+	install-to-centos.xml			\
+	install-to-centos.xml.ja		\
 	install-to-freebsd.xml			\
-	install-to-freebsd.xml.ja
+	install-to-freebsd.xml.ja		\
+	install-options-to-ubuntu.xml		\
+	install-options-to-ubuntu.xml.ja	\
+	install-options-to-centos.xml		\
+	install-options-to-centos.xml.ja	\
+	install-options-to-freebsd.xml		\
+	install-options-to-freebsd.xml.ja
 
 CLEANFILES +=				\
 	$(generated_xml_files)		\
@@ -157,11 +169,35 @@ install-to-ubuntu.xml: $(top_srcdir)/doc/install-to-ubuntu.rd $(RD2REFENTRY_LIB)
 install-to-ubuntu.xml.ja: $(top_srcdir)/doc/install-to-ubuntu.rd.ja $(RD2REFENTRY_LIB) ja.po
 	$(RD2_JA) $(top_srcdir)/doc/install-to-ubuntu.rd.ja > install-to-ubuntu.xml.ja
 
+install-to-centos.xml: $(top_srcdir)/doc/install-to-centos.rd $(RD2REFENTRY_LIB) install-to-centos.xml.ja
+	$(RD2) $(top_srcdir)/doc/install-to-centos.rd > install-to-centos.xml
+
+install-to-centos.xml.ja: $(top_srcdir)/doc/install-to-centos.rd.ja $(RD2REFENTRY_LIB) ja.po
+	$(RD2_JA) $(top_srcdir)/doc/install-to-centos.rd.ja > install-to-centos.xml.ja
+
 install-to-freebsd.xml: $(top_srcdir)/doc/install-to-freebsd.rd $(RD2REFENTRY_LIB) install-to-freebsd.xml.ja
 	$(RD2) $(top_srcdir)/doc/install-to-freebsd.rd > install-to-freebsd.xml
 
 install-to-freebsd.xml.ja: $(top_srcdir)/doc/install-to-freebsd.rd.ja $(RD2REFENTRY_LIB) ja.po
 	$(RD2_JA) $(top_srcdir)/doc/install-to-freebsd.rd.ja > install-to-freebsd.xml.ja
+
+install-options-to-ubuntu.xml: $(top_srcdir)/doc/install-options-to-ubuntu.rd $(RD2REFENTRY_LIB) install-options-to-ubuntu.xml.ja
+	$(RD2) $(top_srcdir)/doc/install-options-to-ubuntu.rd > install-options-to-ubuntu.xml
+
+install-options-to-ubuntu.xml.ja: $(top_srcdir)/doc/install-options-to-ubuntu.rd.ja $(RD2REFENTRY_LIB) ja.po
+	$(RD2_JA) $(top_srcdir)/doc/install-options-to-ubuntu.rd.ja > install-options-to-ubuntu.xml.ja
+
+install-options-to-centos.xml: $(top_srcdir)/doc/install-options-to-centos.rd $(RD2REFENTRY_LIB) install-options-to-centos.xml.ja
+	$(RD2) $(top_srcdir)/doc/install-options-to-centos.rd > install-options-to-centos.xml
+
+install-options-to-centos.xml.ja: $(top_srcdir)/doc/install-options-to-centos.rd.ja $(RD2REFENTRY_LIB) ja.po
+	$(RD2_JA) $(top_srcdir)/doc/install-options-to-centos.rd.ja > install-options-to-centos.xml.ja
+
+install-options-to-freebsd.xml: $(top_srcdir)/doc/install-options-to-freebsd.rd $(RD2REFENTRY_LIB) install-options-to-freebsd.xml.ja
+	$(RD2) $(top_srcdir)/doc/install-options-to-freebsd.rd > install-options-to-freebsd.xml
+
+install-options-to-freebsd.xml.ja: $(top_srcdir)/doc/install-options-to-freebsd.rd.ja $(RD2REFENTRY_LIB) ja.po
+	$(RD2_JA) $(top_srcdir)/doc/install-options-to-freebsd.rd.ja > install-options-to-freebsd.xml.ja
 
 mta-and-milter-manager-and-child-milter.png: $(top_srcdir)/doc/mta-and-milter-manager-and-child-milter.svg
 	$(SVG2PNG) $@ $<

@@ -17,7 +17,11 @@
     <chapter id="install-to">
       <title>Install milter manager to your platform</title>
       <xi:include href="install-to-ubuntu.xml"/>
+      <xi:include href="install-options-to-ubuntu.xml"/>
+      <xi:include href="install-to-centos.xml"/>
+      <xi:include href="install-options-to-centos.xml"/>
       <xi:include href="install-to-freebsd.xml"/>
+      <xi:include href="install-options-to-freebsd.xml"/>
     </chapter>
     <xi:include href="configuration.xml"/>
   </part>
