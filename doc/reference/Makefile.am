@@ -46,7 +46,13 @@ GTKDOC_LIBS =							\
 MKDB_OPTIONS=--sgml-mode --output-format=xml
 
 # Images to copy into HTML directory
-HTML_IMAGES =
+generated_image_files =				\
+	sendmail-and-milter.png			\
+	sendmail-and-milter-ja.png		\
+	sendmail-and-postfix-and-milter.png	\
+	sendmail-and-postfix-and-milter-ja.png
+
+HTML_IMAGES = $(generated_image_files)
 
 # Extra SGML files that are included by $(DOC_MAIN_SGML_FILE)
 content_files =			\
@@ -84,7 +90,8 @@ generated_xml_files =				\
 	install-to-freebsd.xml.ja
 
 CLEANFILES +=				\
-	$(generated_xml_files)
+	$(generated_xml_files)		\
+	$(generated_image_files)
 
 # Other files to distribute
 EXTRA_DIST +=				\
@@ -110,6 +117,7 @@ EXPAND_RD2_SNIPPET = $(top_srcdir)/misc/expand-rd2-snippet.rb
 RD2REFENTRY_LIB = $(top_srcdir)/misc/rd2refentry-lib.rb
 RD2 = rd2 -r $(RD2REFENTRY_LIB) --name=MILTER-MANAGER
 RD2_JA = $(RD2) --po=$(srcdir)/ja.po
+SVG2PNG = inkscape --export-dpi=60 --export-background=white --export-png
 
 readme.xml: $(top_srcdir)/README $(RD2REFENTRY_LIB) readme.xml.ja
 	$(RD2) $(top_srcdir)/README > readme.xml
@@ -152,6 +160,18 @@ install-to-freebsd.xml: $(top_srcdir)/doc/install-to-freebsd.rd $(RD2REFENTRY_LI
 
 install-to-freebsd.xml.ja: $(top_srcdir)/doc/install-to-freebsd.rd.ja $(RD2REFENTRY_LIB) ja.po
 	$(RD2_JA) $(top_srcdir)/doc/install-to-freebsd.rd.ja > install-to-freebsd.xml.ja
+
+sendmail-and-milter.png: $(top_srcdir)/doc/sendmail-and-milter.svg
+	$(SVG2PNG) $@ $<
+
+sendmail-and-milter-ja.png: $(top_srcdir)/doc/sendmail-and-milter-ja.svg
+	$(SVG2PNG) $@ $<
+
+sendmail-and-postfix-and-milter.png: $(top_srcdir)/doc/sendmail-and-postfix-and-milter.svg
+	$(SVG2PNG) $@ $<
+
+sendmail-and-postfix-and-milter-ja.png: $(top_srcdir)/doc/sendmail-and-postfix-and-milter-ja.svg
+	$(SVG2PNG) $@ $<
 
 upload: docs
 	rm -rf tmp/

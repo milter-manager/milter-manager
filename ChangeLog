@@ -1,5 +1,8 @@
 2009-02-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/introduction.rd*: add image link.
+	* gtk-doc.make, doc/reference/Makefile.am: generate PNG from SVG.
+
 	* doc/*.svg: add English version.
 
 	* tool/milter-manager-log-analyzer: define RRD.last_update_time

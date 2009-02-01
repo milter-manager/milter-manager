@@ -118,7 +118,7 @@ sgml.stamp: sgml-build.stamp
 
 #### html ####
 
-html-build.stamp: sgml.stamp $(CATALOGS) $(MAIN_SGML_FILE) $(content_files)
+html-build.stamp: sgml.stamp $(CATALOGS) $(MAIN_SGML_FILE) $(content_files) $(HTML_IMAGES)
 	@echo 'gtk-doc: Building HTML'
 	@echo "English:"
 	rm -rf html

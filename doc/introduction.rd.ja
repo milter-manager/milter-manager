@@ -39,7 +39,7 @@ milterに接続し、milterプロトコルで通信を行い、milterとの接�
 
 これらの用語を用いたSendmailとmilterの関係は以下の通りです。
 
-((<Sendmailとmilterの関係|sendmail-and-milter.png>))
+((<Sendmailとmilterの関係|sendmail-and-milter-ja.svg>))
 
 Sendmailがmilterシステムを提供してから、多くのmilterが開発さ
 れています。((<URL:https://www.milter.org/>))というサイトでは
@@ -74,7 +74,7 @@ Postfixもバージョン2.3からmilterシステムのサポートを始めま�
 タを作成することができるようになり、milterの再利用性が向上し
 ました。
 
-((<SendmailとPostfixとmilterの関係|sendmail-and-postfix-and-milter.png>))
+((<SendmailとPostfixとmilterの関係|sendmail-and-postfix-and-milter-ja.png>))
 
 SendmailとPostfixのようにmilterシステムをサポートしているMTA
 であれば、MTAによらずmilterを利用できますが、milterを登録する

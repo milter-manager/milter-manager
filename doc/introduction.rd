@@ -41,7 +41,7 @@ connects and takes off a milter is called "milter session".
 Here is a figure that describes relation between Sendmail
 and milter with terms as mentioned above:
 
-FIXME: Figure: Relation between Sendmail and milter
+((<Relation between Sendmail and milter|sendmail-and-milter.svg>))
 
 Many milters has been developed since Sendmail provides
 milter system. We can search registered milters at
@@ -74,7 +74,7 @@ means that we can use and development mail filter that is
 used with both Sendmail and Postfix. It makes milter more
 portable.
 
-FIXME: Figure: Relation between Sendmail, Postfix and milter
+((<Relation between Sendmail, Postfix and milter|sendmail-and-postfix-and-milter.svg>))
 
 milter can be used with any milter system support MTA like
 Sendmail and Postfix. But configuration for using milter
