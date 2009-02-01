@@ -1,4 +1,4 @@
-# Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+# Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -15,6 +15,12 @@
 
 class TestSocketAddresss < Test::Unit::TestCase
   include MilterTestUtils
+
+  def test_ipv4_accessor
+    ipv4_address = ipv4("127.0.0.1", 2929)
+    assert_equal(["127.0.0.1", 2929],
+                 [ipv4_address.address, ipv4_address.port])
+  end
 
   def test_ipv4_to_s
     address = ipv4("127.0.0.1", 2929)
@@ -52,6 +58,12 @@ class TestSocketAddresss < Test::Unit::TestCase
     assert_false(ipv4("192.169.0.1", 2929).local?)
   end
 
+  def test_ipv6_accessor
+    ipv6_address = ipv6("::1", 2929)
+    assert_equal(["::1", 2929],
+                 [ipv6_address.address, ipv6_address.port])
+  end
+
   def test_ipv6_to_s
     address = ipv6("::1", 2929)
 
@@ -76,6 +88,12 @@ class TestSocketAddresss < Test::Unit::TestCase
     assert_false(ipv6("fe81::1", 2929).local?)
   end
 
+  def test_unix_accessor
+    unix_address = unix("/tmp/local.sock")
+    assert_equal(["/tmp/local.sock"],
+                 [unix_address.path])
+  end
+
   def test_unix_to_s
     address = unix("/tmp/local.sock")
 
@@ -97,12 +115,12 @@ class TestSocketAddresss < Test::Unit::TestCase
   end
 
   private
-  def ipv4(host, port)
-    Milter::SocketAddress::IPv4.new(host, port)
+  def ipv4(address, port)
+    Milter::SocketAddress::IPv4.new(address, port)
   end
 
-  def ipv6(host, port)
-    Milter::SocketAddress::IPv6.new(host, port)
+  def ipv6(address, port)
+    Milter::SocketAddress::IPv6.new(address, port)
   end
 
   def unix(path)

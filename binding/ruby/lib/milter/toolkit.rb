@@ -2,7 +2,7 @@ module Milter
   module SocketAddress
     class IPv4
       def local?
-        bit1, bit2, bit3, bit4 = host.split(/\./).collect {|bit| bit.to_i}
+        bit1, bit2, bit3, bit4 = address.split(/\./).collect {|bit| bit.to_i}
         return true if bit1 == 127
         return true if bit1 == 10
         return true if bit1 == 172 and (16 <= bit2 and bit2 < 32)
@@ -13,7 +13,7 @@ module Milter
 
     class IPv6
       def local?
-        abbreviated_before, abbreviated_after = host.split(/::/)
+        abbreviated_before, abbreviated_after = address.split(/::/)
         bits_before = abbreviated_before.split(/:/)
         bits_after = (abbreviated_after || '').split(/:/)
         abbreviated_bits_size = 8 - bits_before.size - bits_after.size

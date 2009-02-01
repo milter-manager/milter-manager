@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -88,14 +88,14 @@ rb_milter__connect_signal_convert (guint num, const GValue *values)
     switch (address->sa_family) {
       case AF_INET:
 	{
-	    gchar host[INET_ADDRSTRLEN];
+	    gchar address_string[INET_ADDRSTRLEN];
 	    struct sockaddr_in *address_in;
 
 	    address_in = (struct sockaddr_in *)address;
 	    if (inet_ntop(AF_INET, &(address_in->sin_addr),
-			  host, INET_ADDRSTRLEN)) {
+			  address_string, INET_ADDRSTRLEN)) {
 		rb_address = rb_funcall(rb_cMilterSocketAddressIPv4, id_new, 2,
-					rb_str_new2(host),
+					rb_str_new2(address_string),
 					UINT2NUM(ntohs(address_in->sin_port)));
 	    } else {
 		g_warning("fail to unpack IPv4 address: %s", g_strerror(errno));
@@ -105,14 +105,14 @@ rb_milter__connect_signal_convert (guint num, const GValue *values)
 	break;
       case AF_INET6:
 	{
-	    gchar host[INET6_ADDRSTRLEN];
+	    gchar address_string[INET6_ADDRSTRLEN];
 	    struct sockaddr_in6 *address_in6;
 
 	    address_in6 = (struct sockaddr_in6 *)address;
 	    if (inet_ntop(AF_INET6, &(address_in6->sin6_addr),
-			  host, INET6_ADDRSTRLEN)) {
+			  address_string, INET6_ADDRSTRLEN)) {
 		rb_address = rb_funcall(rb_cMilterSocketAddressIPv6, id_new, 2,
-					rb_str_new2(host),
+					rb_str_new2(address_string),
 					UINT2NUM(ntohs(address_in6->sin6_port)));
 	    } else {
 		g_warning("fail to unpack IPv6 address: %s", g_strerror(errno));

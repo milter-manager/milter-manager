@@ -1,5 +1,11 @@
 2009-02-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/src/toolkit/rb-milter-core-private.c,
+	binding/ruby/src/toolkit/rb-milter-socket-address.c,
+	binding/ruby/test/manager/test-child-context.rb,
+	binding/ruby/test/toolkit/test-socket-address.rb,
+	binding/ruby/lib/milter/toolkit.rb: host -> address.
+
 	* binding/ruby/lib/milter/manager/child-context.rb: normalize
 	macro name for convenient.
 

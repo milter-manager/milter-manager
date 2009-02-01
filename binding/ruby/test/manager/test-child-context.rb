@@ -1,4 +1,4 @@
-# Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+# Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -40,7 +40,8 @@ class TestChildContext < Test::Unit::TestCase
                          "daemon_name" => "mail.example.com",
                          "v" => "Postfix 2.5.5",
                        })
-    assert_equal("mail.example.com", @context["j"])
+    assert_equal("mail.example.com", @context["daemon_name"])
+    assert_equal("mail.example.com", @context["{daemon_name}"])
     assert_equal("Postfix 2.5.5", @context["v"])
 
     @clamav.macro_context = Milter::COMMAND_HELO
@@ -56,7 +57,6 @@ class TestChildContext < Test::Unit::TestCase
   end
 
   def test_status
-    assert_true(@context.processing?)
     @clamav.status = Milter::STATUS_REJECT
     assert_true(@context.reject?)
     @clamav.status = Milter::STATUS_DISCARD
