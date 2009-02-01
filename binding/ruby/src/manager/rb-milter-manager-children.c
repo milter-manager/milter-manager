@@ -62,6 +62,18 @@ each (VALUE self)
     return Qnil;
 }
 
+static VALUE
+get_children (VALUE self)
+{
+    return GLIST2ARY(milter_manager_children_get_children(SELF(self)));
+}
+
+static VALUE
+get_quitted_children (VALUE self)
+{
+    return GLIST2ARY(milter_manager_children_get_quitted_children(SELF(self)));
+}
+
 void
 Init_milter_manager_children (void)
 {
@@ -76,4 +88,7 @@ Init_milter_manager_children (void)
     rb_define_method(rb_cMilterManagerChildren, "add", add_child, 1);
     rb_define_method(rb_cMilterManagerChildren, "<<", add_child_less_than, 1);
     rb_define_method(rb_cMilterManagerChildren, "each", each, 0);
+    rb_define_method(rb_cMilterManagerChildren, "children", get_children, 0);
+    rb_define_method(rb_cMilterManagerChildren, "quitted_children",
+		     get_quitted_children, 0);
 }

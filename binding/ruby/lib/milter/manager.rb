@@ -672,10 +672,9 @@ module Milter::Manager
         return unless have_stopper?
 
         @condition.signal_connect("attach-to") do |_, child, children|
-          context = ChildContext.new(child, children)
-
           unless @connect_stoppers.empty?
             child.signal_connect("stop-on-connect") do |_child, host, address|
+              context = ChildContext.new(child, children)
               @connect_stoppers.any? do |stopper|
                 stopper.call(context, host, address)
               end
@@ -684,6 +683,7 @@ module Milter::Manager
 
           unless @envelope_from_stoppers.empty?
             child.signal_connect("stop-on-envelope-from") do |_child, from|
+              context = ChildContext.new(child, children)
               @envelope_from_stoppers.any? do |stopper|
                 stopper.call(context, from)
               end
@@ -692,6 +692,7 @@ module Milter::Manager
 
           unless @envelope_recipient_stoppers.empty?
             child.signal_connect("stop-on-envelope-recipient") do |_child, recipient|
+              context = ChildContext.new(child, children)
               @envelope_recipient_stoppers.any? do |stopper|
                 stopper.call(context, recipient)
               end
@@ -700,6 +701,7 @@ module Milter::Manager
 
           unless @header_stoppers.empty?
             child.signal_connect("stop-on-header") do |_child, name, value|
+              context = ChildContext.new(child, children)
               @header_stoppers.any? do |stopper|
                 stopper.call(context, name, value)
               end

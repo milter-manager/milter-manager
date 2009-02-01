@@ -15,9 +15,10 @@
 
 module Milter::Manager
   class ChildContext
-    def initialize(child, children)
+    def initialize(child, children, quitted=false)
       @child = child
       @children = children
+      @quitted = quitted
     end
 
     def name
@@ -25,7 +26,7 @@ module Milter::Manager
     end
 
     def [](name)
-      (@child.available_macros || {})[name]
+      (@macros ||= @child.available_macros || {})[name]
     end
 
     def reject?
@@ -49,6 +50,10 @@ module Milter::Manager
        Milter::STATUS_NOT_CHANGE].include?(@child.status)
     end
 
+    def quitted?
+      @quitted
+    end
+
     def children
       @child_contexts ||= create_child_contexts
     end
@@ -56,8 +61,11 @@ module Milter::Manager
     private
     def create_child_contexts
       contexts = {}
-      @children.each do |child|
-        contexts[child.name] = self.class.new(child, @children)
+      @children.children.each do |child|
+        contexts[child.name] = self.class.new(child, @children, false)
+      end
+      @children.quitted_children.each do |child|
+        contexts[child.name] = self.class.new(child, @children, true)
       end
       contexts
     end

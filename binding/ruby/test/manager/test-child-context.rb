@@ -48,6 +48,9 @@ class TestChildContext < Test::Unit::TestCase
                        {
                          "v" => "Sendmail",
                        })
+    assert_equal("Postfix 2.5.5", @context["v"])
+
+    @context = Milter::Manager::ChildContext.new(@clamav, @children)
     assert_equal("mail.example.com", @context["j"])
     assert_equal("Sendmail", @context["v"])
   end
@@ -66,5 +69,9 @@ class TestChildContext < Test::Unit::TestCase
 
   def test_children
     assert_equal("milter-greylist", @context.children["milter-greylist"].name)
+  end
+
+  def test_quitted
+    assert_false(@context.quitted?)
   end
 end

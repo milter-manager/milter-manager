@@ -33,6 +33,7 @@ void Init_milter_encoder (void);
 void Init_milter_command_encoder (void);
 void Init_milter_reply_encoder (void);
 void Init_milter_decoder (void);
+void Init_milter_agent (void);
 void Init_milter_protocol_agent (void);
 
 #define RVAL2ENCODER(obj)         (MILTER_ENCODER(RVAL2GOBJ(obj)))

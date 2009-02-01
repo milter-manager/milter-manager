@@ -1,5 +1,15 @@
 2009-02-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager.rb: make child context brief.
+
+	* binding/ruby/lib/milter/manager/child-context.rb,
+	binding/ruby/test/manager/test-child-context.rb: add quitted?.
+
+	* binding/ruby/src/manager/rb-milter-manager-children.c: bind get
+	children related functions.
+
+	* binding/ruby/src/toolkit/rb-milter-agent.c: add.
+
 	* milter/core/milter-agent.c: milter-reader -> reader.
 
 	* milter/manager/milter-manager-children.[ch],

@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -19,21 +19,23 @@
 
 #include "rb-milter-core-private.h"
 
-void
-Init_milter_core (void)
-{
-    rb_mMilterCore = rb_define_module_under(rb_mMilter, "Core");
+#define SELF(self) MILTER_AGENT(RVAL2GOBJ(self))
 
-    Init_milter_socket_address();
-    Init_milter_utils();
-    Init_milter_connection();
-    Init_milter_protocol();
-    Init_milter_option();
-    Init_milter_macros_requests();
-    Init_milter_encoder();
-    Init_milter_command_encoder();
-    Init_milter_reply_encoder();
-    Init_milter_decoder();
-    Init_milter_agent();
-    Init_milter_protocol_agent();
+static VALUE
+agent_shutdown (VALUE self)
+{
+    milter_agent_shutdown(SELF(self));
+    return Qnil;
+}
+
+void
+Init_milter_agent (void)
+{
+    VALUE rb_cMilterAgent;
+
+    rb_cMilterAgent = G_DEF_CLASS(MILTER_TYPE_AGENT, "Agent", rb_mMilter);
+
+    rb_define_method(rb_cMilterAgent, "shutdown", agent_shutdown, 0);
+
+    G_DEF_SETTERS(rb_cMilterAgent);
 }
