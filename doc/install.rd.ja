@@ -2,6 +2,8 @@
 
 = インストール --- milter managerのインストール方法
 
+== このドキュメントについて
+
 milter managerのインストール方法について説明します。
 
 == 依存ライブラリ他
@@ -82,43 +84,8 @@ milter-manager-log-analyzerのインストール方法は管理用Webイン
 解説しています。
 
   * ((<Ubuntu|install-options-to-ubuntu.rd.ja>))
-
-=== FreeBSDの場合
-
-グラフは/usr/local/www/apache22/data/milter-manager/log/以下
-に出力し、http://localhost/milter-manager/log/で閲覧できるよ
-うにします。
-
-Apacheをインストールします。
-
-  % sudo /usr/local/sbin/portupgrade -NRr apache
-
-Apacheを有効にするため、/etc/rc.confに以下を追加します。
-
-  apache22_enable="YES"
-
-Apacheを起動します。
-
-  % sudo /usr/local/etc/rc.d/apache22 start
-
-出力用のディレクトリを作成します。グラフ作成はmilter-manager
-と同じくmailnullユーザ権限で行います。
-
-  % sudo mkdir -p /usr/local/www/apache22/data/milter-manager/log/
-  % sudo /usr/sbin/chown -R mailnull:mail /usr/local/www/apache22/data/milter-manager/
-
-/etc/crontabに以下を追加し、5分おきに
-milter-manager-log-analyzerを実行します。
-
-  # milter manager
-  */5 * * * * root cat /var/log/maillog | /usr/local/bin/sudo -u mailnull /usr/local/bin/ruby /usr/local/bin/milter-manager-log-analyzer --output-directory /usr/local/var/www/data/milter-manager/log
-
-FreeBSDではmilter-managerのログは/var/log/maillogに出力されま
-す。/var/log/maillogはmailグループ以外のユーザ以外は読むこと
-ができないので、crontabでは、rootで読み込んだ
-/var/log/maillogをパイプでmilter-manager-log-analyzerに渡しま
-す。milter-manager-log-analyzerはrootではなく、mailnull権限で
-実行します。
+  * ((<CentOS|install-options-to-centos.rd.ja>))
+  * ((<FreeBSD|install-options-to-freebsd.rd.ja>))
 
 == 管理用Webインターフェイス
 
@@ -146,3 +113,5 @@ milter-manager-log-analyzerのインストール方法と一緒に、プラッ
 トフォーム毎に解説しています。
 
   * ((<Ubuntu|install-options-to-ubuntu.rd.ja>))
+  * ((<CentOS|install-options-to-centos.rd.ja>))
+  * ((<FreeBSD|install-options-to-freebsd.rd.ja>))

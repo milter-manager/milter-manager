@@ -2,6 +2,8 @@
 
 = FreeBSDへインストール --- FreeBSDへのmilter managerのインストール方法
 
+== このドキュメントについて
+
 FreeBSDに特化したmilter managerのインストール方法について説明
 します。FreeBSDに依存しない一般的なインストール情報は((<イン
 ストール|install.rd.ja>))を見てください。

@@ -2,6 +2,8 @@
 
 = Install to FreeBSD --- How to install milter manager to FreeBSD
 
+== About this document
+
 This document describes how to install milter manager to
 FreeBSD. See ((<Install|install.rd>)) for general install
 information.

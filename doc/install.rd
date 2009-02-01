@@ -2,6 +2,8 @@
 
 = Install --- How to install milter manager
 
+== About this document
+
 This document describes how to install milter manager.
 
 == Dependencies

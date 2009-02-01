@@ -2,6 +2,8 @@
 
 = Introduction --- An introduction of milter-manager
 
+== About this document
+
 This document describes the following advantages by introducing
 milter manager:
 

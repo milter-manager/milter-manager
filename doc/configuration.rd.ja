@@ -2,6 +2,8 @@
 
 = 設定 --- milter-manager.confの書き方
 
+== このドキュメントについて
+
 milter-managerの設定ファイルmilter-manager.confの書き方につ
 いて説明します。
 

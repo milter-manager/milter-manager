@@ -2,6 +2,8 @@
 
 = Configuration --- How to write milter-manager.conf
 
+== About this document
+
 This document describes how to write milter-manager.conf
 that is milter-manager's configuration file.
 

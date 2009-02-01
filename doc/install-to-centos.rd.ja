@@ -2,6 +2,8 @@
 
 = CentOSへインストール --- CentOSへのmilter managerのインストール方法
 
+== このドキュメントについて
+
 CentOSに特化したmilter managerのインストール方法について説明
 します。CentSSに依存しない一般的なインストール情報は((<インス
 トール|install.rd.ja>))を見てください。

@@ -2,6 +2,8 @@
 
 = Install to Ubuntu Linux --- How to install milter manager to Ubuntu Linux
 
+== About this document
+
 This document describes how to install milter manager to
 Ubuntu Linux. See ((<Install|install.rd>)) for general
 install information.

@@ -2,6 +2,8 @@
 
 = Ubuntuへインストール --- Ubuntuへのmilter managerのインストール方法
 
+== このドキュメントについて
+
 Ubuntu Linuxに特化したmilter managerのインストール方法につい
 て説明します。Ubuntuに依存しない一般的なインストール情報は
 ((<インストール|install.rd.ja>))を見てください。
