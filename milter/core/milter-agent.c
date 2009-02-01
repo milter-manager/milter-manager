@@ -48,7 +48,8 @@ struct _MilterAgentPrivate
 enum
 {
     PROP_0,
-    PROP_READER
+    PROP_READER,
+    PROP_DECODER
 };
 
 static void         finished           (MilterFinishedEmittable *emittable);
@@ -92,11 +93,18 @@ milter_agent_class_init (MilterAgentClass *klass)
     klass->encoder_new = NULL;
 
     spec = g_param_spec_object("reader",
-                               "reader",
-                               "A MilterReader object",
+                               "Reader",
+                               "The reader of the agent",
                                MILTER_TYPE_READER,
                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_READER, spec);
+
+    spec = g_param_spec_object("decoder",
+                               "Decoder",
+                               "The decoder of the agent",
+                               MILTER_TYPE_DECODER,
+                               G_PARAM_READABLE);
+    g_object_class_install_property(gobject_class, PROP_DECODER, spec);
 
     g_type_class_add_private(gobject_class, sizeof(MilterAgentPrivate));
 }
@@ -197,10 +205,13 @@ get_property (GObject    *object,
 
     priv = MILTER_AGENT_GET_PRIVATE(object);
     switch (prop_id) {
-      case PROP_READER:
+    case PROP_READER:
         g_value_set_object(value, priv->reader);
         break;
-      default:
+    case PROP_DECODER:
+        g_value_set_object(value, priv->decoder);
+        break;
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
