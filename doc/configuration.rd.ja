@@ -34,12 +34,19 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
   * セキュリティ関連
   * milter-manager関連
   * コントローラ関連
-  * 適用条件関連
   * 子milter関連
+  * 適用条件関連
 
-それぞれ順に説明しますが、その前に、設定をする上で便利な
-milter-manager機能を紹介します。milter-managerを--show-configオ
-プションを付きで起動すると、現在の設定内容が表示されます。
+このうち、適用条件関連はRubyの知識が必要になります。
+((<S25R|URL:http://gabacho.reto.jp/anti-spam/>))などの有用な
+適用条件は標準で提供されているので、必ずしも自分で適用条件を
+定義できる必要はありません。そのため、適用条件の説明は一番最
+後にあります。適用条件を定義する必要がない場合は、適用条件関
+連の部分は読み飛ばしても構いません。
+
+それぞれ順に説明する前に、設定をする上で便利なmilter-manager
+機能を紹介します。milter-managerを--show-configオプションを付
+きで起動すると、現在の設定内容が表示されます。
 
   % /usr/local/sbin/milter-manager --show-config
   security.privilege_mode = false
@@ -313,187 +320,6 @@ milter-manager機能を紹介します。milter-managerを--show-configオ
    既定値:
      controller.remove_unix_socket_on_close = true
 
-== 適用条件関連
-
-適用条件は以下の書式で定義します。適用条件の定義にはRubyの知
-識が必要になります。
-
-  define_applicable_condition("名前") do |condition|
-    condition.description = ...
-    condition.define_connect_stopper do |...|
-      ...
-    end
-    ...
-  end
-
-例えば、((<S25R|URL:http://gabacho.reto.jp/anti-spam/>))を実
-現する適用条件は以下のようになります。
-
-  define_applicable_condition("S25R") do |condition|
-    condition.description = "Selective SMTP Rejection"
-
-    condition.define_connect_stopper do |child, host, address|
-      case host
-      when "unknown",
-        /\A\[.+\]\z/,
-        /\A[^.]*\d[^\d.]+\d/,
-        /\A[^.]*\d{5}/,
-        /\A(?:[^.]+\.)?\d[^.]*\.[^.]+\..+\.[a-z]/i,
-        /\A[^.]*\d\.[^.]*\d-\d/,
-        /\A[^.]*\d\.[^.]*\d\.[^.]+\..+\./,
-        /\A(?:dhcp|dialup|ppp|[achrsvx]?dsl)[^.]*\d/i
-        false
-      else
-        true
-      end
-    end
-  end
-
-名前解決ができなかったときはhostは"unknown"ではなく、"[IPア
-ドレス]"になります。そのため、本当は"unknown"は必要なく、
-/\A\[.+\]\z/で十分ですが、念のため入れています。 :-)
-
-define_applicable_condition do ... end内で設定できる項目は以
-下の通りです。
-
-必須の項目はありません。
-
-: condition.description
-
-   適用条件の説明を指定します。
-
-   説明は「"」で囲んで"test condition"というように指定します。
-
-   例:
-     condition.description = "test condition"
-
-   既定値:
-     condition.description = nil
-
-: condition.define_connect_stopper {|child, host, address| ...}
-
-   SMTPクライアントがSMTPサーバに接続してきたときのホスト名
-   とIPアドレスを利用して子milterを適用するかどうかを判断し
-   ます。このときに利用できる情報はmilterのxxfi_connectで利用
-   可能な情報と同じです。
-
-   子milterの適用を中止する場合はtrueを返し、続ける場合は
-   falseを返します。
-
-   : child
-      子milterの情報を持ったオブジェクトです。詳細は後述しま
-      す。
-
-   : host
-      接続してきたIPアドレスを名前解決して得られたホスト名
-      （文字列）です。名前解決に失敗した場合はIPアドレスが
-      「[]」で囲まれた文字列になります。例えば、"[1.2.3.4]"
-      となります。
-
-   : address
-      接続してきIPアドレスを表すオブジェクトです。FIXME
-
-   以下はクライアントからの接続が名前解決できた場合はmilter
-   を適用しない例です。
-
-     condition.define_connect_stopper do |child, host, address|
-       if /\A\[.+\]\z/ =~ host
-         false
-       else
-         true
-       end
-     end
-
-: define_envelope_from_stopper {|child, from| ...}
-
-   SMTPのMAIL FROMコマンドで渡された送信元アドレスを利用して
-   子milterを適用するかどうかを判断します。このときに利用で
-   きる情報はmilterのxxfi_envfromで利用可能な情報と同じです。
-
-   子milterの適用を中止する場合はtrueを返し、続ける場合は
-   falseを返します。
-
-   : child
-      子milterの情報を持ったオブジェクトです。詳細は後述しま
-      す。
-
-   : from
-      MAIL FROMコマンドに渡された送信元です。
-      例えば、"<sender@example.com>"となります。
-
-   以下はexample.comから送信された場合はmilterを適用しない例
-   です。
-
-     condition.define_envelope_from_stopper do |child, from|
-       if /@example.com>\z/ =~ from
-         true
-       else
-         false
-       end
-     end
-
-: define_envelope_recipient_stopper {|child, recipient| ...}
-
-   SMTPのRCPT TOコマンドで渡された宛先アドレスを利用して子
-   milterを適用するかどうかを判断します。このときに利用でき
-   る情報はmilterのxxfi_envrcptで利用可能な情報と同じです。
-   宛先が複数ある場合は複数回呼ばれます。
-
-   子milterの適用を中止する場合はtrueを返し、続ける場合は
-   falseを返します。
-
-   : child
-      子milterの情報を持ったオブジェクトです。詳細は後述しま
-      す。
-
-   : recipient
-      RCPT TOコマンドに渡された宛先です。
-      例えば、"<receiver@example.com>"となります。
-
-   以下はml.example.com宛の場合はmilterを適用しない例です。
-
-     condition.define_envelope_recipient_stopper do |child, recipient|
-       if /@ml.example.com>\z/ =~ recipient
-         true
-       else
-         false
-       end
-     end
-
-: define_header_stopper {|child, name, value| ...}
-
-   メールのヘッダを利用して子milterを適用するかどうかを判断
-   します。このときに利用できる情報はmilterのxxfi_headerで利
-   用可能な情報と同じです。各ヘッダ毎に呼ばれます。
-
-   子milterの適用を中止する場合はtrueを返し、続ける場合は
-   falseを返します。
-
-   : child
-      子milterの情報を持ったオブジェクトです。詳細は後述しま
-      す。
-
-   : name
-      ヘッダ名です。例えば、"From"となります。
-
-   : value
-      ヘッダの値です。例えば、"sender@example.com"となります。
-
-   以下は"X-Spam-Flag"ヘッダの値が"YES"の場合はmilterを適用
-   しない例です。
-
-     condition.define_header_stopper do |child, name, value|
-       if ["X-Spam-Flag", "YES"] == [name, value]
-         true
-       else
-         false
-       end
-     end
-
-=== child
-
-FIXME
-
 == 子milter関連
 
 子milterは以下の書式で登録します。
@@ -556,7 +382,32 @@ define_milter do ... end内で設定できる項目は以下の通りです。
 
 : milter.applicable_conditions
 
-   FIXME
+   子milterを適用する条件を指定します。
+   条件は複数指定できます。1つでも条件を満たさない場合は子
+   milterの適用は中止されます。
+
+   利用可能は適用条件は以下のコマンドで確認できます。
+
+     % /usr/local/sbin/milter-manager --show-config | grep define_applicable_condition
+     define_applicable_condition("S25R") do |condition|
+     define_applicable_condition("Remote Network") do |condition|
+
+   この場合は"S25R"と"Remote Network"が利用可能です。
+
+   適用条件は標準で提供されているだけではなく、独自に定義す
+   ることもできます。定義方法については((<適用条件関連>))を
+   見てください。ただし、独自に定義する場合にはRubyの知識が
+   必要になります。
+
+   適用条件は以下のように「,」でくぎって複数指定できます。
+
+     milter.applicable_conditions = ["S25R", "Remote Network"]
+
+   例:
+     milter.applicable_conditions = ["S25R"]
+
+   既定値:
+     milter.applicable_conditions = []
 
 : milter.command
 
@@ -651,3 +502,395 @@ define_milter do ... end内で設定できる項目は以下の通りです。
 
    既定値:
      milter.end_of_message_timeout = 200.0
+
+== 適用条件関連
+
+ここからはRubyの知識が必要になります。標準でS25Rなどの有用な
+適用条件は用意されています。それらで十分ではない場合は、適用
+条件を定義することができます。適用条件を定義することにより、
+子milterを適用するかを動的に判断することができます。
+
+適用条件は以下の書式で定義します。適用条件の定義にはRubyの知
+識が必要になります。
+
+  define_applicable_condition("名前") do |condition|
+    condition.description = ...
+    condition.define_connect_stopper do |...|
+      ...
+    end
+    ...
+  end
+
+例えば、S25Rを実現する適用条件は以下のようになります。
+
+  define_applicable_condition("S25R") do |condition|
+    condition.description = "Selective SMTP Rejection"
+
+    condition.define_connect_stopper do |context, host, socket_address|
+      case host
+      when "unknown",
+        /\A\[.+\]\z/,
+        /\A[^.]*\d[^\d.]+\d/,
+        /\A[^.]*\d{5}/,
+        /\A(?:[^.]+\.)?\d[^.]*\.[^.]+\..+\.[a-z]/i,
+        /\A[^.]*\d\.[^.]*\d-\d/,
+        /\A[^.]*\d\.[^.]*\d\.[^.]+\..+\./,
+        /\A(?:dhcp|dialup|ppp|[achrsvx]?dsl)[^.]*\d/i
+        false
+      else
+        true
+      end
+    end
+  end
+
+名前解決ができなかったときはhostは"unknown"ではなく、"[IPア
+ドレス]"になります。そのため、本当は"unknown"は必要なく、
+/\A\[.+\]\z/で十分ですが、念のため入れています。 :-)
+
+define_applicable_condition do ... end内で設定できる項目は以
+下の通りです。
+
+必須の項目はありません。
+
+: condition.description
+
+   適用条件の説明を指定します。
+
+   説明は「"」で囲んで"test condition"というように指定します。
+
+   例:
+     condition.description = "test condition"
+
+   既定値:
+     condition.description = nil
+
+: condition.define_connect_stopper {|context, host, socket_address| ...}
+
+   SMTPクライアントがSMTPサーバに接続してきたときのホスト名
+   とIPアドレスを利用して子milterを適用するかどうかを判断し
+   ます。このときに利用できる情報はmilterのxxfi_connectで利用
+   可能な情報と同じです。
+
+   子milterの適用を中止する場合はtrueを返し、続ける場合は
+   falseを返します。
+
+   : context
+      その時点での様々な情報を持ったオブジェクトです。詳細は
+      後述します。
+
+   : host
+      接続してきたIPアドレスを名前解決して得られたホスト名
+      （文字列）です。名前解決に失敗した場合はIPアドレスが
+      「[]」で囲まれた文字列になります。例えば、"[1.2.3.4]"
+      となります。
+
+   : socket_address
+      接続してきIPアドレスを表すオブジェクトです。詳細は後述
+      します。
+
+   以下はクライアントからの接続が名前解決できた場合はmilter
+   を適用しない例です。
+
+     condition.define_connect_stopper do |context, host, socket_address|
+       if /\A\[.+\]\z/ =~ host
+         false
+       else
+         true
+       end
+     end
+
+: define_envelope_from_stopper {|context, from| ...}
+
+   SMTPのMAIL FROMコマンドで渡された送信元アドレスを利用して
+   子milterを適用するかどうかを判断します。このときに利用で
+   きる情報はmilterのxxfi_envfromで利用可能な情報と同じです。
+
+   子milterの適用を中止する場合はtrueを返し、続ける場合は
+   falseを返します。
+
+   : context
+      その時点での様々な情報を持ったオブジェクトです。詳細は
+      後述します。
+
+   : from
+      MAIL FROMコマンドに渡された送信元です。
+      例えば、"<sender@example.com>"となります。
+
+   以下はexample.comから送信された場合はmilterを適用しない例
+   です。
+
+     condition.define_envelope_from_stopper do |context, from|
+       if /@example.com>\z/ =~ from
+         true
+       else
+         false
+       end
+     end
+
+: define_envelope_recipient_stopper {|context, recipient| ...}
+
+   SMTPのRCPT TOコマンドで渡された宛先アドレスを利用して子
+   milterを適用するかどうかを判断します。このときに利用でき
+   る情報はmilterのxxfi_envrcptで利用可能な情報と同じです。
+   宛先が複数ある場合は複数回呼ばれます。
+
+   子milterの適用を中止する場合はtrueを返し、続ける場合は
+   falseを返します。
+
+   : context
+      その時点での様々な情報を持ったオブジェクトです。詳細は
+      後述します。
+
+   : recipient
+      RCPT TOコマンドに渡された宛先です。
+      例えば、"<receiver@example.com>"となります。
+
+   以下はml.example.com宛の場合はmilterを適用しない例です。
+
+     condition.define_envelope_recipient_stopper do |context, recipient|
+       if /@ml.example.com>\z/ =~ recipient
+         true
+       else
+         false
+       end
+     end
+
+: define_header_stopper {|context, name, value| ...}
+
+   メールのヘッダを利用して子milterを適用するかどうかを判断
+   します。このときに利用できる情報はmilterのxxfi_headerで利
+   用可能な情報と同じです。各ヘッダ毎に呼ばれます。
+
+   子milterの適用を中止する場合はtrueを返し、続ける場合は
+   falseを返します。
+
+   : context
+      その時点での様々な情報を持ったオブジェクトです。詳細は
+      後述します。
+
+   : name
+      ヘッダ名です。例えば、"From"となります。
+
+   : value
+      ヘッダの値です。例えば、"sender@example.com"となります。
+
+   以下は"X-Spam-Flag"ヘッダの値が"YES"の場合はmilterを適用
+   しない例です。
+
+     condition.define_header_stopper do |context, name, value|
+       if ["X-Spam-Flag", "YES"] == [name, value]
+         true
+       else
+         false
+       end
+     end
+
+=== context
+
+子milterを適用するかどうかを判断する時点での様々な情報を持っ
+たオブジェクトです。（クラスはMilter::Manager::ChildContextで
+す。）
+
+以下の情報を持っています。
+
+: context.name
+
+   子milterの名前です。define_milterで使った名前になります。
+
+   例:
+     context.name # -> "clamav-milter"
+
+: context[name]
+
+   子milterが利用可能なマクロの値を返します。libmilterのAPI
+   では1文字より長いマクロ名の場合は「{}」で囲まなければいけ
+   ませんが、context[]では囲んでも囲まなくてもどちらでも構い
+   ません。
+
+   例:
+     context["j"] # -> "mail.example.com"
+     context["rcpt_address"] # -> "receiver@example.com"
+     context["{rcpt_address}"] # -> "receiver@example.com"
+
+: context.reject?
+
+   子milterがrejectを返したときにtrueを返します。
+
+   引数として渡ってくるcontextは処理中のため、
+   context.reject?がtrueを返すことはありません。
+   context.children[]で取得した別の子milterの結果を利用する
+   ときに有用です。
+
+   例:
+     context.reject? # -> false
+     context.children["milter-greylist"].reject? # -> true or false
+
+: context.temporary_failure?
+
+   子milterがtemporary failureを返したときにtrueを返します。
+
+   引数として渡ってくるcontextは処理中のため、
+   context.temporary_failure?がtrueを返すことはありません。
+   context.children[]で取得した別の子milterの結果を利用する
+   ときに有用です。
+
+   例:
+     context.temporary_failure? # -> false
+     context.children["milter-greylist"].temporary_failure? # -> true or false
+
+: context.accept?
+
+   子milterがacceptを返したときにtrueを返します。
+
+   引数として渡ってくるcontextは処理中のため、
+   context.accept?がtrueを返すことはありません。
+   context.children[]で取得した別の子milterの結果を利用する
+   ときに有用です。
+
+   例:
+     context.accept? # -> false
+     context.children["milter-greylist"].accept? # -> true or false
+
+: context.discard?
+
+   子milterがdiscardを返したときにtrueを返します。
+
+   引数として渡ってくるcontextは処理中のため、
+   context.discard?がtrueを返すことはありません。
+   context.children[]で取得した別の子milterの結果を利用する
+   ときに有用です。
+
+   例:
+     context.discard? # -> false
+     context.children["milter-greylist"].discard? # -> true or false
+
+: context.quitted?
+
+   子milterの処理が終了している場合にtrueを返します。
+
+   引数として渡ってくるcontextは処理中のため、
+   context.quitted?は常にfalseです。
+   context.children[]で取得した別の子milterの結果を利用する
+   ときに有用です。
+
+   例:
+     context.quitted? # -> false
+     context.children["milter-greylist"].quitted? # -> true or false
+
+: context.children[name]
+
+   別の子milterのcontextを取得します。
+
+   別の子milterを参照するときに利用する名前はdefine_milterで
+   使った名前（context.nameで取得できる名前）になります。
+
+   存在しない名前で参照しようとした場合はnilが返ります。
+
+   例:
+     context.children["milter-greylist"] # -> milter-greylistのcontext
+     context.children["nonexistent"]     # -> nil
+     context.children[context.name]      # -> 自分のcontext
+
+=== socket_address
+
+ソケットのアドレスを表現しているオブジェクトです。IPv4ソケッ
+ト、IPv6ソケット、UNIXドメインソケットそれぞれで別々のオブジェ
+クトになります。
+
+==== Milter::SocketAddress::IPv4
+
+IPv4ソケットのアドレスを表現するオブジェクトです。以下のメソッ
+ドを持ちます。
+
+: address
+   ドット表記のIPv4アドレスを返します。
+
+   例:
+     socket_address.address # -> "192.168.1.1"
+
+: port
+   ポート番号を返します。
+
+   例:
+     socket_address.port # -> 12345
+
+: to_s
+   connection_specと同じ書式で表現したIPv4アドレスを返します。
+
+   例:
+     socket_address.to_s # -> "inet:12345@[192.168.1.1]"
+
+: local?
+   プライベートなネットワークのアドレスの場合はtrueを返しま
+   す。
+
+   例:
+     socket_address.to_s   # -> "inet:12345@[127.0.0.1]"
+     socket_address.local? # -> true
+
+     socket_address.to_s   # -> "inet:12345@[192.168.1.1]"
+     socket_address.local? # -> true
+
+     socket_address.to_s   # -> "inet:12345@[160.XXX.XXX.XXX]"
+     socket_address.local? # -> false
+
+==== Milter::SocketAddress::IPv6
+
+IPv6ソケットのアドレスを表現するオブジェクトです。以下のメソッ
+ドを持ちます。
+
+: address
+   コロン表記のIPv6アドレスを返します。
+
+   例:
+     socket_address.address # -> "::1"
+
+: port
+   ポート番号を返します。
+
+   例:
+     socket_address.port # -> 12345
+
+: to_s
+   connection_specと同じ書式で表現したIPv6アドレスを返します。
+
+   例:
+     socket_address.to_s # -> "inet6:12345@[::1]"
+
+: local?
+   プライベートなネットワークのアドレスの場合はtrueを返しま
+   す。
+
+   例:
+     socket_address.to_s   # -> "inet6:12345@[::1]"
+     socket_address.local? # -> true
+
+     socket_address.to_s   # -> "inet6:12345@[fe80::XXXX]"
+     socket_address.local? # -> true
+
+     socket_address.to_s   # -> "inet6:12345@[2001::XXXX]"
+     socket_address.local? # -> false
+
+==== Milter::SocketAddress::Unix
+
+UNIXドメインソケットのアドレスを表現するオブジェクトです。以
+下のメソッドを持ちます。
+
+: path
+   ソケットのパスを返します。
+
+   例:
+     socket_address.path # -> "/tmp/local.sock"
+
+: to_s
+   connection_specと同じ書式で表現したUNIXドメインソケットア
+   ドレスを返します。
+
+   例:
+     socket_address.to_s # -> "unix:/tmp/local.sock"
+
+: local?
+   常にtrueを返します。
+
+   例:
+     socket_address.local? # -> true
