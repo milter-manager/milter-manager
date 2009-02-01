@@ -82,7 +82,7 @@ ipv4_to_s (VALUE self)
 	argv[0] = rb_str_new2("inet:%d");
         return rb_f_sprintf(2, argv);
     } else {
-	argv[0] = rb_str_new2("inet:%d@%s");
+	argv[0] = rb_str_new2("inet:%d@[%s]");
         return rb_f_sprintf(3, argv);
     }
 }
@@ -142,7 +142,7 @@ ipv6_to_s (VALUE self)
 	argv[0] = rb_str_new2("inet6:%d");
         return rb_f_sprintf(2, argv);
     } else {
-	argv[0] = rb_str_new2("inet6:%d@%s");
+	argv[0] = rb_str_new2("inet6:%d@[%s]");
         return rb_f_sprintf(3, argv);
     }
 }

@@ -1,5 +1,9 @@
 2009-02-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/src/toolkit/rb-milter-socket-address.c,
+	binding/ruby/test/toolkit/test-socket-address.rb: add missing '[]'
+	around address.
+
 	* binding/ruby/src/toolkit/rb-milter-core-private.c,
 	binding/ruby/src/toolkit/rb-milter-socket-address.c,
 	binding/ruby/test/manager/test-child-context.rb,

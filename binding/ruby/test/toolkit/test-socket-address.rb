@@ -25,7 +25,7 @@ class TestSocketAddresss < Test::Unit::TestCase
   def test_ipv4_to_s
     address = ipv4("127.0.0.1", 2929)
 
-    assert_equal("inet:2929@127.0.0.1", address.to_s)
+    assert_equal("inet:2929@[127.0.0.1]", address.to_s)
   end
 
   def test_ipv4_equal
@@ -67,7 +67,7 @@ class TestSocketAddresss < Test::Unit::TestCase
   def test_ipv6_to_s
     address = ipv6("::1", 2929)
 
-    assert_equal("inet6:2929@::1", address.to_s)
+    assert_equal("inet6:2929@[::1]", address.to_s)
   end
 
   def test_ipv6_equal
