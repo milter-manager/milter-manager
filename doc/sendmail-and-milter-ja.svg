@@ -288,7 +288,7 @@
          sodipodi:role="line"
          id="tspan5704"
          x="-147.14285"
-         y="143.79076">milter protocol</tspan></text>
+         y="143.79076">milterプロトコル</tspan></text>
     <text
        id="text5722"
        y="183.79076"
@@ -298,7 +298,7 @@
          y="183.79076"
          x="-122.85713"
          id="tspan5724"
-         sodipodi:role="line">milter session</tspan></text>
+         sodipodi:role="line">milterセッション</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:24px;font-style:normal;font-weight:normal;fill:#f26422;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
@@ -308,7 +308,7 @@
          sodipodi:role="line"
          id="tspan5728"
          x="-122.85713"
-         y="279.79077">milter session</tspan></text>
+         y="279.79077">milterセッション</tspan></text>
     <text
        id="text5730"
        y="419.79077"
@@ -318,7 +318,7 @@
          y="419.79077"
          x="-122.85713"
          id="tspan5732"
-         sodipodi:role="line">milter session</tspan></text>
+         sodipodi:role="line">milterセッション</tspan></text>
     <rect
        style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#f26422;stroke-width:5;stroke-linecap:round;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
        id="rect5734"
@@ -335,7 +335,7 @@
          y="110.36219"
          x="110.57143"
          id="tspan5738"
-         sodipodi:role="line">milter system</tspan></text>
+         sodipodi:role="line">milterシステム</tspan></text>
     <g
        id="g5752">
       <path

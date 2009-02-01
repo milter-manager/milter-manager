@@ -1,5 +1,7 @@
 2009-02-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/*.svg: add English version.
+
 	* tool/milter-manager-log-analyzer: define RRD.last_update_time
 	for buggy RRDtool bindings.
 
