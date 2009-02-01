@@ -74,7 +74,7 @@ Postfixもバージョン2.3からmilterシステムのサポートを始めま�
 タを作成することができるようになり、milterの再利用性が向上し
 ました。
 
-FIXME: 図: SendmailとPostfixとmilterの関係
+((<SendmailとPostfixとmilterの関係|sendmail-and-postfix-and-milter.png>))
 
 SendmailとPostfixのようにmilterシステムをサポートしているMTA
 であれば、MTAによらずmilterを利用できますが、milterを登録する
