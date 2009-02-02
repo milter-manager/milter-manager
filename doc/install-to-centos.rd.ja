@@ -22,9 +22,7 @@ CentOSのバージョンは5.2を想定しています。また、root権限で�
 MTAは標準でインストールされているSendmailを利用することとします。
 
 milterはspamass-milter、clamav-milter、milter-greylistを使用
-することとします。
-
-各milterはRPMforgeにあるものを利用します。
+することとします。各milterはRPMforgeにあるものを利用します。
 
 32bit環境の場合は以下のようにRPMforgeを登録します。
 
@@ -132,8 +130,6 @@ spamass-milterを起動します。
 
 === clamav-milterの設定
 
-まず、clamdの起動設定をします。
-
 clamdを起動します。
 
   % sudo /sbin/service clamd start
@@ -194,21 +190,21 @@ milter-greylistを検出していることを確認してください。
     milter.enabled = true
     ...
   end
-  ..
+  ...
   define_milter("clamav-milter") do |milter|
     milter.connection_spec = "inet:11121@[127.0.0.1]"
     ...
     milter.enabled = true
     ...
   end
-  ..
+  ...
   define_milter("spamass-milter") do |milter|
     milter.connection_spec = "inet:11120@[127.0.0.1]"
     ...
     milter.enabled = true
     ...
   end
-  ..
+  ...
 
 milterの名前、ソケットのパス、enabledがtrueになっていることを
 確認してください。異なっていた場合は、((<設定
@@ -226,17 +222,6 @@ CentOS上ではデフォルトでは
 
   % sudo mkdir -p /var/run/milter-manager
   % sudo chown -R milter-manager:milter-manager /var/run/milter-manager
-
-また、Postfixは/var/spool/postfix/にchrootして動作するため、
-ソケットファイルは/var/spool/postfix/以下に作成する必要があり
-ます。ここでは、
-/var/spool/postfix/milter-manager/milter-manager.sockに作成す
-ることにします。そのため、事前に
-/var/spool/postfix/milter-manager/ディレクトリを作成しておく
-必要があります。
-
-  % sudo mkdir -p /var/spool/postfix/milter-manager
-  % sudo chown -R milter-manager:milter-manager /var/spool/postfix/milter-manager
 
 milter-managerの設定が完了したので、起動の設定をします。
 
@@ -272,7 +257,7 @@ milter-managerを起動します。
 
 起動に失敗しているときはこのように表示されます。
 
-  Failed to connect to unix:/var/spool/postfix/milter-manager/milter-manager.sock
+  Failed to connect to unix:/var/run/milter-manager/milter-manager.sock
 
 失敗している時はログを頼りに問題を解決します。--verboseオプショ
 ンをつけると詳細なログが表示されます。また、デーモンプロセス
