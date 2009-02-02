@@ -33,7 +33,7 @@ symbolic link under /etc/cron.d/.
 
   % sudo ln -s /usr/local/etc/milter-manager/cron.d/debian/milter-manager-log /etc/cron.d/
 
-On Ubuntu Linux, milter-manager's logs to
+On Ubuntu Linux, milter-manager logs to
 /var/log/mail.info. /var/log/mail.info can be read only by
 administration users. In cron file, we read
 /var/log/mail.info as root and it is passed to

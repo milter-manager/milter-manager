@@ -22,7 +22,7 @@ WebサーバとしてApacheをインストールします。
 
   % sudo aptitude -V -D install apache2
 
-Apacheで各ユーザ毎にファイルを公開できるようにします。
+各ユーザ毎にファイルを公開できるようにします。
 
   % sudo /usr/sbin/a2enmod userdir
   % sudo /etc/init.d/apache2 force-reload
