@@ -116,10 +116,10 @@ milter manager adminは/usr/local/share/milter-manager/admin/
   % sudo -u milter-manager -H rake RAILS_ENV=production db:migrate
 
 最後に以下の内容の
-~milter-manager/admin/config/initializer/relative_url_root.rb
+~milter-manager/admin/config/initializers/relative_url_root.rb
 を作成します。
 
-~milter-manager/admin/config/initializer/relative_url_root.rb
+~milter-manager/admin/config/initializers/relative_url_root.rb
   ActionController::Base.relative_url_root = "/milter-manager"
 
 http://localhost/milter-manager/にアクセスしてユーザを登録し
