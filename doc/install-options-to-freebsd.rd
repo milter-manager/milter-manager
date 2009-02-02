@@ -12,7 +12,6 @@ information.
 
 == Install milter-manager-log-analyzer
 
-We setup milter-manager-log-analyzer as the following:
 milter-manager-log-analyzer generates graphs to
 milter-manager user's home directory. They are published at
 at http://localhost/~milter-manager/log/.

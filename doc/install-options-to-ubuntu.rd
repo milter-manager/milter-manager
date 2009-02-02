@@ -12,7 +12,6 @@ information.
 
 == Install milter-manager-log-analyzer
 
-We setup milter-manager-log-analyzer as the following:
 milter-manager-log-analyzer generates graphs to
 milter-manager user's home directory. They are published at
 at http://localhost/~milter-manager/log/.
@@ -28,7 +27,7 @@ Apache publishes users' files.
   % sudo /usr/sbin/a2enmod userdir
   % sudo /etc/init.d/apache2 force-reload
 
-Next, we setup cron for milter-manager user. We create a
+Next, we set cron for milter-manager user up. We create a
 symbolic link under /etc/cron.d/.
 
   % sudo ln -s /usr/local/etc/milter-manager/cron.d/debian/milter-manager-log /etc/cron.d/
