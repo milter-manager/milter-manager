@@ -206,7 +206,7 @@ content:
   CONNECTION_SPEC=unix:/var/spool/postfix/milter-manager/milter-manager.sock
 
 milter-manager's configuration is completed. We start to
-setup running milter-manager.
+configure about milter-manager's start-up.
 
 milter-manager has its own run script for Ubuntu. It will be
 installed into
@@ -225,7 +225,7 @@ symbolik link:
   % cd /usr/sbin
   % sudo ln -s /usr/local/sbin/milter-manager ./
 
-milter-manager should be started:
+We start milter-manager:
 
   % sudo /etc/init.d/milter-manager start
 
@@ -251,11 +251,11 @@ milter-manager isn't daemon process.
 
 We can add the following configuration to
 /etc/default/milter-manager to output verbose log to
-starndard output:
+standard output:
 
   OPTION_ARGS="--verbose --no-daemon"
 
-milter-manager should be started:
+We start milter-manager again:
 
   % sudo /etc/init.d/milter-manager start
 
@@ -264,8 +264,8 @@ milter-manager can be exitted by Ctrl+c.
 
 OPTION_ARGS configuration in /etc/default/milter-manager
 should be commented out after the problem is solved to run
-milter-manager as daemon process. And milter-manager should
-restarted.
+milter-manager as daemon process. And we should restart
+milter-manager.
 
 === Configure Postfix
 
