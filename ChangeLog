@@ -1,5 +1,7 @@
 2009-02-02  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/install-{,options-}to-centos.rd.ja: add missing descriptions.
+
 	* doc/install-options-to-{freebsd,ubuntu}.rd: translate.
 
 	* admin/: update translations.

@@ -296,6 +296,10 @@ OPTION_ARGSをコメントアウトし、デーモンプロセスで起動する
 
 === Sendmailの設定
 
+まず、Sendmailを有効にします。
+
+  % sudo /sbin/chkconfig --add sendmail
+
 Sendmailにmilter-managerを登録するために、
 /etc/mail/sendmail.mcに以下を追加します。
 
