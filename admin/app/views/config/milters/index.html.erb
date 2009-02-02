@@ -2,10 +2,10 @@
 
 <table class="list">
   <tr>
-    <th><%= t("title.name") %></th>
-    <th><%= t("title.description") %></th>
-    <th><%= t("title.enabled") %></th>
-    <th><%= t("title.operations") %></th>
+    <th><%= t("label.name") %></th>
+    <th><%= t("label.description") %></th>
+    <th><%= t("label.enabled") %></th>
+    <th><%= t("label.operations") %></th>
   </tr>
 <% @milters.each do |milter| -%>
   <tr <%= enabled_class(milter.enabled?) %>>

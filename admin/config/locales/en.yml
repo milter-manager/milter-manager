@@ -4,7 +4,10 @@
 en:
   menu:
     config-connection: "Connection"
+    config-milter: "Milter"
+    config-applicable-condition: "Applicable condition"
     config: "Configuration"
+    login: "Login"
     logout: "Logout"
     signup: "Signup"
   title:
@@ -14,6 +17,14 @@ en:
     signup: "Sign up as a new user"
     not-found: "Not Found"
     internal-server-error: "Internal Server Error"
+    config-items: "Items"
+    operations: "Operations"
+    milters: "Milters"
+    applicable-condition: "Applicable condition"
+    applicable-conditions: "Applicable conditions"
+    login: "Login"
+    config: "Configuration"
+    applied-milters: "Applied milters"
   label:
     name: "Name"
     spec: "Specification"
@@ -27,21 +38,40 @@ en:
     signup: "Sign up"
     login: "Login"
     password: "Password"
+    enabled: "Enabled"
+    disabled: "Disabled"
+    operations: "Operations"
+    use: "Use"
+    command: "Command"
+    empty: "Empty"
+    remember-me: "Remeber me"
   action:
     edit: "Edit"
     update: "Update"
     create: "Create"
     login: "Login"
+    show: "Show"
+    enable: "Enable"
+    disable: "Disable"
+    destroy: "Destroy"
+    list: "List"
   notice:
     success:
       signup: "Signed up successfully."
       login: "Logged in successfully."
       logout: "You have been logged out."
+      update: "{{target}} was updateded successfully."
+      enable: "{{target}} was enabled successfully."
+      disable: "{{target}} was disabled successfully."
     failure:
       signup: "We couldn't set up that account."
       login: "Couldn't log you in as '{{value}}'"
       milter-manager-connect: "Failed to connect to milter-manager: {{message}}"
+  target:
+    milter: "Milter"
   message:
+    confirm:
+      delete: "Are you sure?"
     configuration:
       index: "milter manager's configuration."
     logged-in-as: "Logging in as {{value}}"
