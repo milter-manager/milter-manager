@@ -99,12 +99,6 @@ PassengerをSELinux環境下で動かすことは困難です。ファイアウ�
 
   RailsBaseURI /milter-manager
 
-この状態でPassengerを有効にしてもSELinuxのチェックに引っかかっ
-てしまいます。そのため、一時的にSELinuxをpermissive（アクセス
-拒否は実行せずにログだけ出力するモード）にします。
-
-  % sudo setenforce Permissive
-
 設定ファイルを再読み込みします。
 
   % sudo /sbin/service httpd reload

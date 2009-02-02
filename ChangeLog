@@ -1,5 +1,8 @@
 2009-02-02  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/install-options-to-centos.rd.ja: remove needless description.
+	* doc/install-options-to-cents.rd: translate.
+
 	* admin/config/locales/ja.yml: update messages.
 
 	* doc/install-{,options-}to-centos.rd.ja: add missing descriptions.
