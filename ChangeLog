@@ -1,3 +1,7 @@
+2009-02-02  Kouhei Sutou  <kou@clear-code.com>
+
+	* doc/install-options-to-centos.rd.ja: complete.
+
 2009-02-01  Kouhei Sutou  <kou@cozmixng.org>
 
 	* doc/*.rd*: add "about this document" section.

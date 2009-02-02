@@ -68,6 +68,15 @@ milter-manager-log-analyzerは5分おきに実行されます。
 
   % (echo 1; echo) | sudo passenger-install-apache2-module
 
+PassengerをSELinux環境下で動かすことは困難です。ファイアウォー
+ルの初期設定（iptables -Lで確認可能）では外部からのHTTPがブロッ
+クされていて、それなりに安全であると言えるため、（非常に心苦
+しいですが）ここではApacheのみSELinuxの制限を無効にします。今
+後、それなりの手間でSELinux環境下で動作させる方法が確立できた
+場合は、この箇所を更新することとします。
+
+  % sudo setsebool httpd_disable_trans true
+
 以下の内容のmilter-manager.confを/etc/httpd/conf.d/に作成しま
 す。
 
@@ -78,23 +87,13 @@ milter-manager-log-analyzerは5分おきに実行されます。
 
   RailsBaseURI /milter-manager
 
+この状態でPassengerを有効にしてもSELinuxのチェックに引っかかっ
+てしまいます。そのため、一時的にSELinuxをpermissive（アクセス
+拒否は実行せずにログだけ出力するモード）にします。
+
+  % sudo setenforce Permissive
+
 設定ファイルを再読み込みします。
-
-  % sudo /sbin/service httpd reload
-
-milter manager adminはパスワード認証がついていますが、可能で
-あれば信頼できるホストからのみ接続を受け付ける方がセキュリティ
-上は好ましいです。例えば、ローカルホストのみ信頼できるのであ
-れば、以下の設定を/etc/httpd/conf.d/milter-manager.confに追
-記してください。
-
-  <Location /milter-manager>
-    Allow from 127.0.0.1
-    Deny from ALL
-  </Location>
-
-追記した場合は設定ファイルを再読み込みするのを忘れないでくだ
-さい。
 
   % sudo /sbin/service httpd reload
 
@@ -105,18 +104,16 @@ milter manager adminは/usr/local/share/milter-manager/admin/
 限で動かし、http://localhost/milter-manager/でアクセスできる
 ようにします。
 
-FIXME
-
   % tar cf - -C /usr/local/share/milter-manager admin | sudo -u milter-manager -H tar xf - -C ~milter-manager
-  % sudo ln -s ~milter-manager/admin/public /var/www/milter-manager
+  % sudo ln -s ~milter-manager/admin/public /var/www/html/milter-manager
   % cd ~milter-manager/admin
   % sudo -u milter-manager -H rake RAILS_ENV=production db:migrate
 
 最後に以下の内容の
-~milter-manager/admin/config/initializer/relative_url_root.rb
+~milter-manager/admin/config/initializers/relative_url_root.rb
 を作成します。
 
-~milter-manager/admin/config/initializer/relative_url_root.rb
+~milter-manager/admin/config/initializers/relative_url_root.rb
   ActionController::Base.relative_url_root = "/milter-manager"
 
 http://localhost/milter-manager/にアクセスしてユーザを登録し
