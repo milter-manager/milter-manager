@@ -39,8 +39,8 @@ Apacheで各ユーザ毎にファイルを公開できるようにします。
   % sudo /usr/local/etc/rc.d/apache22 reload
 
 次に、milter-managerユーザのcronの設定をします。定期的に
-milter-log-analyzerがログからmilter-managerの情報を抜きだし、
-グラフを生成します。
+milter-manager-log-analyzerがログからmilter-managerの情報を抜
+きだし、グラフを生成します。
 
   % sudo -u milter-manager -H crontab /usr/local/etc/milter-manager/cron.d/freebsd/milter-manager-log
 
@@ -140,7 +140,7 @@ milter-manager-log-analyzerを利用することによりmilterを導入し
 た効果を視覚的に確認することができます。MTAとしてPostfixを使
 用しているのであれば、
 ((<Mailgraph|URL:http://mailgraph.schweikert.ch/>))のグラフと
-見くらべてmilter導入の効果を確認することができます。milter の
+見くらべてmilter導入の効果を確認することができます。milterを
 試験的に導入している場合などに有効に活用できます。
 
 milter manager adminを利用することで設定ファイルを変更せずに

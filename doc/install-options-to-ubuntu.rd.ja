@@ -32,9 +32,9 @@ Apacheで各ユーザ毎にファイルを公開できるようにします。
 
   % sudo ln -s /usr/local/etc/milter-manager/cron.d/debian/milter-manager-log /etc/cron.d/
 
-Ubuntuではmilter-managerのログは/var/log/mail.infoに出力され
-ます。/var/log/mail.infoは管理者用のユーザ以外は読むことがで
-きないので、cron ファイル内では、rootで読み込んだ
+Ubuntu Linuxではmilter-managerのログは/var/log/mail.infoに出
+力されます。/var/log/mail.infoは管理者用のユーザ以外は読むこ
+とができないので、cron ファイル内では、rootで読み込んだ
 /var/log/mail.infoをパイプでmilter-manager-log-analyzerに渡し
 ます。milter-manager-log-analyzerはrootではなく、インストール
 時に作成したmilter-manager権限で実行します。
@@ -83,8 +83,9 @@ milter-manager-log-analyzerは5分おきに実行されます。
 
   RailsBaseURI /milter-manager
 
-設定ファイルを再読み込みします。
+設定を有効にして、再読み込みします。
 
+  % sudo /usr/sbin/a2enmod passenger
   % sudo /etc/init.d/apache2 force-reload
 
 milter manager adminはパスワード認証がついていますが、可能で
@@ -145,7 +146,7 @@ milter-manager-log-analyzerを利用することによりmilterを導入し
 た効果を視覚的に確認することができます。MTAとしてPostfixを使
 用しているのであれば、
 ((<Mailgraph|URL:http://mailgraph.schweikert.ch/>))のグラフと
-見くらべてmilter導入の効果を確認することができます。milter の
+見くらべてmilter導入の効果を確認することができます。milterを
 試験的に導入している場合などに有効に活用できます。
 
 milter manager adminを利用することで設定ファイルを変更せずに
