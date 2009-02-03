@@ -6,16 +6,15 @@
 
 milter managerのインストール方法について説明します。
 
-== 依存ライブラリ他
+== 依存ソフトウェア
 
-milter managerが依存しているライブラリ・ソフトウェアについて
-説明します。
+milter managerが依存しているソフトウェアについて説明します。
 
 === 必須
 
-milter managerは以下のライブラリに依存しているため、milter
-manager のビルドには以下のライブラリが事前にインストールされ
-ている必要があります。
+milter managerは以下のソフトウェアに依存しているため、milter
+manager のビルドには以下のソフトウェアが事前にインストールさ
+れている必要があります。
 
   * GLib >= 2.12.3
   * Ruby >= 1.8.5 （1.9系列は未対応）
@@ -44,19 +43,26 @@ milter managerはシステム標準のパッケージシステムを利用して
 る場合は、設定を変更せずに動作させることができます。しかし、
 特別な方法で子milterを設定していたり、より細かくシステムに応
 じたmilter managerの設定を行いたい場合は設定を変更する必要が
-あります。子milterの接続先の変更や、子milterへの適用条件の設
-定など単純な項目であればブラウザを使って変更することもできま
-す。そのような設定は設定ファイルを編集することでも行えるため、
-milter managerの実行には必須ではありません。利用する場合は以
-下のソフトウェアが必要です。
+あります。
 
-  * Ruby >= 1.8.6
+子milterの接続先の変更や、子milterへの適用条件の設定など単純
+な項目であればブラウザを使って変更することもできます。そのよ
+うな設定は設定ファイルを編集することでも行えるため、milter
+managerの実行には必須ではありません。利用する場合は以下のソフ
+トウェアが必要です。
+
   * RubyGems >= 1.3.1
   * Ruby on Rails 2.2.2
+  * SQLite3
+  * SQLite3のRubyバインディング
   * Ruby-Locale for Ruby on Rails
-  * ...
+  * Passenger
 
 == milter-manager
+
+milter-managerはmilter managerパッケージの中核となるプログラ
+ムです。milter-managerがmilterとして動作し、MTA・子milterと
+接続します。
 
 milter-managerのインストール方法はプラットフォーム毎に解説し
 ています。
@@ -68,7 +74,9 @@ milter-managerのインストール方法はプラットフォーム毎に解説
 
 == milter-manager-log-analyzer
 
-milter-manager-log-analyzerの設定は必須ではありません。
+milter-manager-log-analyzerはmilter-managerのログからグラフを
+出力するプログラムです。milter-manager-log-analyzerの設定は必
+須ではありません。
 
 milter-manager-log-analyzerを用いると、milterの状況を時系列で
 確認することができます。新しく追加したmilterの効果や、milter
@@ -77,26 +85,27 @@ milter-manager-log-analyzerを用いると、milterの状況を時系列で
 milter-manager-log-analyzerはsyslogに出力された
 milter-managerのログを解析し、
 ((<RRDtool|URL:http://oss.oetiker.ch/rrdtool/>))でグラフ化し
-ます。ログはcronを設定し、定期的に確認します。
+ます。cronを設定し、定期的にログを確認します。
 
-milter-manager-log-analyzerのインストール方法は管理用Webイン
-ターフェイスのインストール方法と一緒に、プラットフォーム毎に
-解説しています。
+milter-manager-log-analyzerのインストール方法はプラットフォー
+ム毎に解説しています。管理用Webインターフェイスのインストール
+方法も一緒に解説しています。
 
   * ((<Ubuntu|install-options-to-ubuntu.rd.ja>))
   * ((<CentOS|install-options-to-centos.rd.ja>))
   * ((<FreeBSD|install-options-to-freebsd.rd.ja>))
 
-== 管理用Webインターフェイス
+== milter manager admin
 
-管理用Webインターフェイスの設定は必須ではありません。
+milter manager adminはmilter-managerを管理するためのWebインター
+フェイスです。milter manager adminの設定は必須ではありません。
 
-管理用Webインターフェイスであるmilter manager adminを用いると、
-Webブラウザ上からmilter-managerの設定を変更できます。例えば、
-子milterの有効・無効を切り替えたり、子milterの適用条件を変更
-することができます。これにより、どのような迷惑メール対策を適
-用するか、必要性の小さいmilterはどれかなど、目的に沿ったメー
-ルシステムを構築するための試行錯誤が簡単に行えます。
+milter manager adminを用いると、Webブラウザ上から
+milter-managerの設定を変更できます。例えば、子milterの有効・
+無効を切り替えたり、子milterの適用条件を変更することができま
+す。これにより、どのような迷惑メール対策を適用するか、必要性
+の小さいmilterはどれかなど、目的に沿ったメールシステムを構築
+するための試行錯誤が簡単に行えます。
 
 milter manager adminでは使いやすいシンプルなインターフェイス
 を提供するために、設定ファイルで行えるすべての機能を提供して
@@ -108,9 +117,9 @@ milter manager adminでは使いやすいシンプルなインターフェイス
 やすいインターフェイスを提供するほうが有用だという判断でこの
 ような方針になっています。
 
-milter manager adminのインストール方法は
-milter-manager-log-analyzerのインストール方法と一緒に、プラッ
-トフォーム毎に解説しています。
+milter manager adminのインストール方法はプラットフォーム毎に
+解説しています。milter-manager-log-analyzerのインストール方法
+も一緒に解説しています。
 
   * ((<Ubuntu|install-options-to-ubuntu.rd.ja>))
   * ((<CentOS|install-options-to-centos.rd.ja>))
