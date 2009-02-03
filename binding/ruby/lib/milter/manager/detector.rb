@@ -40,6 +40,28 @@ module Milter::Manager
       end
     end
 
+    def extract_parameter_from_flags(flags, option)
+      return nil if flags.nil?
+
+      parameter = nil
+
+      options = Shellwords.split(flags)
+      option_index = options.rindex(option)
+      if option_index
+        _parameter = options[option_index + 1]
+        parameter = _parameter unless shell_variable?(_parameter)
+      else
+        options.each do |_option|
+          if /\A#{Regexp.escape(option)}/ =~ _option
+            _parameter = $POSTMATCH
+            parameter = _parameter unless shell_variable?(_parameter)
+          end
+        end
+      end
+
+      parameter
+    end
+
     private
     def init_variables
       @name = nil
@@ -89,25 +111,7 @@ module Milter::Manager
     end
 
     def extract_spec_parameter_from_flags(flags)
-      return nil if flags.nil?
-
-      spec = nil
-
-      options = Shellwords.split(flags)
-      p_option_index = options.rindex("-p")
-      if p_option_index
-        _spec = options[p_option_index + 1]
-        spec = _spec unless shell_variable?(_spec)
-      else
-        options.each do |option|
-          if /\A-p/ =~ option
-            _spec = $POSTMATCH
-            spec = _spec unless shell_variable?(_spec)
-          end
-        end
-      end
-
-      spec
+      extract_parameter_from_flags(flags, "-p")
     end
 
     def normalize_spec(spec)

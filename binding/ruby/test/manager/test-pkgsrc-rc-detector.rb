@@ -303,6 +303,51 @@ EOM
                   "unix:/var/spool/milter-regex/sock"]])
   end
 
+  def test_apply_enma_style
+    enma_conf = @tmp_dir + "enma.conf"
+    (@rc_d + "enma").open("w") do |file|
+      file << <<-EOM
+name="enma"
+rcvar=${name}
+command="@PREFIX@/bin/enma"
+pidfile="/var/run/enma/${name}.pid"
+required_files="#{enma_conf}"
+command_args="-c #{enma_conf}"
+EOM
+    end
+
+    enma_conf.open("w") do |conf|
+      conf << <<-EOC
+## Milter ##
+milter.socket:  inet:10025@127.0.0.1
+milter.user:    daemon
+milter.pidfile: /var/run/enma/enma.pid
+milter.chdir:   /var/tmp
+milter.timeout: 7210
+milter.loglevel:   0
+milter.postfix: false
+EOC
+    end
+
+    detector = pkgsrc_rc_detector("enma") do |_detector, guessed_spec|
+      if guessed_spec
+        guessed_spec
+      else
+        command_args = _detector.command_args
+        conf_file = _detector.extract_parameter_from_flags(command_args, "-c")
+        Milter::Manager::EnmaSocketDetector.new(conf_file).detect
+      end
+    end
+    detector.detect
+    detector.apply(@loader)
+    assert_equal("enma", detector.name)
+    assert_eggs([["enma",
+                  false,
+                  (@rc_d + "enma").to_s,
+                  "start",
+                  "inet:10025@127.0.0.1"]])
+  end
+
   private
   def pkgsrc_rc_detector(name, &spec_detector)
     detector = Milter::Manager::PkgsrcRCDetector.new(name, &spec_detector)

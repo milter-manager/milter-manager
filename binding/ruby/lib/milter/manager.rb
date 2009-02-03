@@ -34,6 +34,8 @@ require 'milter/manager/redhat-init-detector'
 require 'milter/manager/freebsd-rc-detector'
 require 'milter/manager/pkgsrc-rc-detector'
 
+require 'milter/manager/enma-socket-detector'
+
 module Milter::Manager
   class Configuration
     def dump

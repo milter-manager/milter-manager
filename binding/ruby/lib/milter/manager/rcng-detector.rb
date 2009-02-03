@@ -19,6 +19,7 @@ module Milter::Manager
   module RCNGDetector
     include Detector
 
+    attr_reader :command_args
     def initialize(*args, &block)
       super
       @rcvar = nil
