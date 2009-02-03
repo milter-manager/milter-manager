@@ -51,7 +51,7 @@ milter managerを導入することにより、MTAが行っていたmilter管理
 詳細は((<はじめに|"doc/introduction.rd.ja">))に書いてありま
 す。
 
-== 依存ライブラリ他
+== 依存ソフトウェア
 
   * milterをサポートしたMTA
     * Sendmail >= 8.13.8
@@ -65,12 +65,12 @@ milter managerを導入することにより、MTAが行っていたmilter管理
     * Linux >= 2.6.18
     * FreeBSD
 
-LinuxではCentOS 5.2、Ubuntu 8.04 TLS上で動作することを想定し
+LinuxではUbuntu 8.04 TLS、CentOS 5.2上で動作することを想定し
 ています。そのため、各ディストリビューションに含まれているソ
 フトウェアに関しては、そのバージョンのソフトウェアで動作する
 ことを想定しています。
 
-=== あるとよいライブラリ他
+=== あるとよいソフトウェア
 
   * Cutter >= 1.0.6（未リリース）: C言語用単体テストフレームワーク
 
@@ -156,29 +156,29 @@ configure時に--prefixオプションを指定していない場合は
    設定ファイル中の「manager.connection_spec」の値を上書きし
    ます。
 
-: --config-dir=DIRECTORY
+: --config-dir=directory
 
     設定ファイルのあるディレクトリを指定します。
-    milter-managerは、まず、DIRECTORY/milter-manager.confの
+    milter-managerは、まず、directory/milter-manager.confの
     読み込みを試みます。もし、見つからなかった場合はシステム
     標準の場所にあるmilter-manager.confを読み込みます。
 
-: --pid-file=FILE
+: --pid-file=file
 
-   milter-managerのプロセスIDをFILEに保存します。
+   milter-managerのプロセスidをfileに保存します。
 
    設定ファイル中の「manager.pid_file」の値を上書きします。
 
-: --user-name=NAME
+: --user-name=name
 
-   milter-managerをNAMEユーザの権限で実行します。
+   milter-managerをnameユーザの権限で実行します。
    milter-managerはroot権限で起動しなければいけません。
 
    設定ファイル中の「security.effective_user」の値を上書きします。
 
-: --group-name=NAME
+: --group-name=name
 
-   milter-managerをNAMEグループの権限で実行します。
+   milter-managerをnameグループの権限で実行します。
    milter-managerはroot権限で起動しなければいけません。
 
    設定ファイル中の「security.effective_group」の値を上書きします。
@@ -209,7 +209,7 @@ configure時に--prefixオプションを指定していない場合は
    シリティで出力します。デーモンプロセスになっていない場合
    は標準出力にもログが出力されます。
 
-   「MILTER_LOG_LEVEL=all」というように環境変数を設定している
+   「milter_log_level=all」というように環境変数を設定している
    場合と同じ効果があります。
 
 : --version
@@ -221,22 +221,22 @@ configure時に--prefixオプションを指定していない場合は
 milter managerにはいくつか便利なツールが付属されていて、bin/
 以下にインストールされます。
 
-  * milter-test-server: MTA側のmilterプロトコルの機能を提供
-    する。MTA無しでmilterの動作をテストするために使用するこ
+  * milter-test-server: mta側のmilterプロトコルの機能を提供
+    する。mta無しでmilterの動作をテストするために使用するこ
     とができる。
-  * milter-test-client: MTA側から渡ってきた情報を表示するだ
-    けのmilter。MTA側から渡っている情報を確認するために使用
+  * milter-test-client: mta側から渡ってきた情報を表示するだ
+    けのmilter。mta側から渡っている情報を確認するために使用
     することができる。
-  * milter-performance-check: MTAの性能を計測するSMTPクライ
+  * milter-performance-check: mtaの性能を計測するsmtpクライ
     アント。
   * milter-manager-log-analyzer: milter-managerのログを解析
     し、milter-managerに登録されたmilterの動作をグラフ化する。
 
 === milter-test-server
 
-milter-test-serverはMTA側のmilterプロトコルを話します。つまり、
-MTA無しでmilterに接続することができます。現時点では、同様のツー
-ルは存在しないため、MTA+milterではなくmilter単体のテストを行
+milter-test-serverはmta側のmilterプロトコルを話します。つまり、
+mta無しでmilterに接続することができます。現時点では、同様のツー
+ルは存在しないため、mta+milterではなくmilter単体のテストを行
 うためには有用なツールです。例えば、以下のような用途に利用で
 きます。
 
@@ -244,13 +244,13 @@ MTA無しでmilterに接続することができます。現時点では、同�
   * milterの動作確認
 
 milter-test-serverは実行時間を表示するので、簡単な性能計測に
-も利用できます。このとき、MTAとは関係なくmilter単体での実行時
-間を確認できるため、MTA経由で試す場合よりも問題点の発見が容易
+も利用できます。このとき、mtaとは関係なくmilter単体での実行時
+間を確認できるため、mta経由で試す場合よりも問題点の発見が容易
 になります。
 
 milter-test-serverはヘッダや本文が変更された場合は、変更され
 た内容を表示します。そのため、ヘッダや本文を変更するmilterの
-テストも容易に行うことができます。Cutterなどと組み合わせて自
+テストも容易に行うことができます。cutterなどと組み合わせて自
 動化された単体テストを作成することもできます。
 
 ==== オプション
@@ -259,9 +259,9 @@ milter-test-serverはヘッダや本文が変更された場合は、変更さ�
 
    利用できるオプションを表示して終了します。
 
-: --connection-spec=SPEC
+: --connection-spec=spec
 
-   接続先のmilterのソケットを指定します。SPECの書式は次のう
+   接続先のmilterのソケットを指定します。specの書式は次のう
    ちのどれかです。
 
      * unix:パス
@@ -281,43 +281,43 @@ milter-test-serverはヘッダや本文が変更された場合は、変更さ�
      * inet6:10025@localhost
      * inet6:10025@[::1]
 
-: --negotiate-version=VERSION
+: --negotiate-version=version
 
     クライアントへ送信するmilterプロトコルのバージョンとして
-    VERSIONを使用します。
+    versionを使用します。
 
-    デフォルトは8（Sendmail 8.14のデフォルトと同じ）です。
+    デフォルトは8（sendmail 8.14のデフォルトと同じ）です。
 
-: --connect-host=HOST
+: --connect-host=host
 
-    接続元のホスト名としてHOSTを使用します。
+    接続元のホスト名としてhostを使用します。
 
     このホスト名はmilterのxxfi_connect()コールバックに渡りま
     す。
 
-: --connect-address=SPEC
+: --connect-address=spec
 
-    接続元のアドレスとしてSPECを使用します。SPECの書式
+    接続元のアドレスとしてspecを使用します。specの書式
     は--connection-specの書式と同じです。
 
     このアドレスはmilterのxxfi_connect()コールバックに渡りま
     す。
 
-: --helo-fqdn=FQDN
+: --helo-fqdn=fqdn
 
-    HELO/EHLO時の引数としてFQDNを使用します。
+    helo/ehlo時の引数としてfqdnを使用します。
 
-    このFQDNはmilterのxxfi_helo()コールバックに渡ります。
+    このfqdnはmilterのxxfi_helo()コールバックに渡ります。
 
-: --from=FROM
+: --from=from
 
-    MAIL FROM時の引数としてFROMを使用します。
+    mail from時の引数としてfromを使用します。
 
     このアドレスはmilterのxxfi_envfrom()コールバックに渡ります。
 
-: --recipient=RECIPIENT
+: --recipient=recipient
 
-    RCPT TO時の引数としてRECIPIENTを使用します。複数の宛先を
+    rcpt to時の引数としてrecipientを使用します。複数の宛先を
     指定したい場合は--recipientオプションを複数回指定してく
     ださい。
 
@@ -325,9 +325,9 @@ milter-test-serverはヘッダや本文が変更された場合は、変更さ�
     す。xxfi_envrcpt()は1つの宛先につき1回呼ばれるので、宛先
     が複数個ある場合はその分だけxxfi_envrcpt()が呼ばれます。
 
-: --header=NAME:VALUE
+: --header=name:value
 
-    名前がNAMEで値がVALUEのヘッダを追加します。複数のヘッダ
+    名前がnameで値がvalueのヘッダを追加します。複数のヘッダ
     を追加したい場合は--headerオプションを複数回指定してくだ
     さい。
 
@@ -335,9 +335,9 @@ milter-test-serverはヘッダや本文が変更された場合は、変更さ�
     xxfi_header()は1つのヘッダにつき1回呼ばれるので、ヘッダ
     が複数個ある場合はその分だけxxfi_header()が呼ばれます。
 
-: --body=CHUNK
+: --body=chunk
 
-    本文の一片としてCHUNKを追加します。複数のまとまりを追加
+    本文の一片としてchunkを追加します。複数のまとまりを追加
     する場合は--bodyオプションを複数回指定してください。
 
     この本文のまとまりはmilterのxxfi_body()コールバックに渡り
@@ -345,18 +345,18 @@ milter-test-serverはヘッダや本文が変更された場合は、変更さ�
     まとまりが複数個ある場合はその分だけxxfi_body()が呼ばれま
     す。
 
-: --unknown=COMMAND
+: --unknown=command
 
-    未知のSMTPコマンドとしてCOMMANDを使います。
+    未知のsmtpコマンドとしてcommandを使います。
 
     このコマンドはmilterのxxfi_unknown()コールバックに渡りま
     す。xxfi_unknown()コールバックは、xxfi_envrcpt()コールバッ
     クとxxfi_data()コールバックの間に呼ばれます。
 
-: --mail-file=PATH
+: --mail-file=path
 
-    メールの内容としてPATHにあるメールを使います。メール中に
-    From:やTo:があった場合は、それらの値を送信元や宛先のアド
+    メールの内容としてpathにあるメールを使います。メール中に
+    from:やto:があった場合は、それらの値を送信元や宛先のアド
     レスとして使用します。
 
 : --output-message
@@ -369,7 +369,7 @@ milter-test-serverはヘッダや本文が変更された場合は、変更さ�
 
    実行時のログをより詳細に出力します。
 
-   「MILTER_LOG_LEVEL=all」というように環境変数を設定している
+   「milter_log_level=all」というように環境変数を設定している
    場合と同じ効果があります。
 
 : --version
@@ -378,12 +378,12 @@ milter-test-serverはヘッダや本文が変更された場合は、変更さ�
 
 === milter-test-client
 
-milter-test-clientはMTA側から渡ってきた情報を表示するだけの
-milterです。マクロも含めてMTA側から渡っている情報を表示する
-ので、MTA側のmilterの設定を確認するために利用できます。
+milter-test-clientはmta側から渡ってきた情報を表示するだけの
+milterです。マクロも含めてmta側から渡っている情報を表示する
+ので、mta側のmilterの設定を確認するために利用できます。
 
-Postfixのアーカイブの中にも同様のツールがあります。
-src/milter/内にあるtest-milter.cがそれで、Postfixのmilterの実
+postfixのアーカイブの中にも同様のツールがあります。
+src/milter/内にあるtest-milter.cがそれで、postfixのmilterの実
 装のテストにも使っているようです。ただし、test-milterはマクロ
 までは表示してくれません。もし、マクロを利用しているmilterが
 期待通りに動かない場合の問題調査を行うのであれば、
@@ -395,9 +395,9 @@ milter-test-clientが役立つでしょう。
 
    利用できるオプションを表示して終了します。
 
-: --connection-spec=SPEC
+: --connection-spec=spec
 
-   接続を待ち受けるソケットを指定します。SPECの書式は次のう
+   接続を待ち受けるソケットを指定します。specの書式は次のう
    ちのどれかです。
 
      * unix:パス
@@ -421,7 +421,7 @@ milter-test-clientが役立つでしょう。
 
    実行時のログをより詳細に出力します。
 
-   「MILTER_LOG_LEVEL=all」というように環境変数を設定している
+   「milter_log_level=all」というように環境変数を設定している
    場合と同じ効果があります。
 
 : --version
@@ -430,22 +430,22 @@ milter-test-clientが役立つでしょう。
 
 === milter-performance-check
 
-milter-performance-checkはMTAの性能を計測するSMTPクライアント
+milter-performance-checkはmtaの性能を計測するsmtpクライアント
 です。milter-test-serverでmilterのみの性能を計測し、
-milter-performance-checkでMTAとmilterを合わせた性能を計測する
+milter-performance-checkでmtaとmilterを合わせた性能を計測する
 という住み分けです。
 
-同様のツールにはPostfix付属のsmtp-sourceがあります。どちらも、
-同時に複数のSMTPセッションを張って一斉にメールを送信すること
+同様のツールにはpostfix付属のsmtp-sourceがあります。どちらも、
+同時に複数のsmtpセッションを張って一斉にメールを送信すること
 ができます。機能的にはsmtp-sourceの方が高機能です。
 
-milter-performance-checkが便利なのはSMTPセッションの時間のみ
+milter-performance-checkが便利なのはsmtpセッションの時間のみ
 を計測してくれることです。smtp-sourceではtimeコマンドと組み合
 わせるなどして、smtp-source全体の実行時間を計測します。
 
-実際は、SMTPセッションの時間のみでも、ツール全体の実行時間で
+実際は、smtpセッションの時間のみでも、ツール全体の実行時間で
 もそれほど違いはでないと思います。また、テスト用のメール総数
-を多くすればするほど、SMTPセッションにかかる時間が大きくなり、
+を多くすればするほど、smtpセッションにかかる時間が大きくなり、
 ツール自体の実行時間による影響は小さくなります。
 
 milter-performance-checkが提供している機能で十分な時は、
@@ -458,40 +458,40 @@ smtp-sourceを利用するとよいでしょう。
 
    利用できるオプションを表示して終了します。
 
-: --smtp-server=SERVER
+: --smtp-server=server
 
-   接続先のSMTPサーバを指定します。
+   接続先のsmtpサーバを指定します。
 
    既定値はlocalhostです。
 
-: --smtp-port=PORT
+: --smtp-port=port
 
-   接続先のSMTPサーバのポート番号指定します。
+   接続先のsmtpサーバのポート番号指定します。
 
    既定値は25です。
 
-: --helo-fqdn=FQDN
+: --helo-fqdn=fqdn
 
-   HELOコマンドでFQDNを使います。
+   heloコマンドでfqdnを使います。
 
    既定値はlocalhost.localdomainです。
 
-: --from=FROM
+: --from=from
 
-   MAILコマンドのアドレスにFROMを使います。
+   mailコマンドのアドレスにfromを使います。
 
    既定値はfrom@example.comです。
 
-: --recipient=RECIPIENT
+: --recipient=recipient
 
-   RCPTコマンドのアドレスにRECIPIENTを使います。複数の宛先を
+   rcptコマンドのアドレスにrecipientを使います。複数の宛先を
    指定する場合は複数回このオプションを指定してください。
 
    既定値は[to@example.com]です。
 
-: --n-mails=N
+: --n-mails=n
 
-   合計でN個のメールを送信します。各メールは一斉に送信を開始します。
+   合計でn個のメールを送信します。各メールは一斉に送信を開始します。
 
    既定値は100です。
 
@@ -509,11 +509,11 @@ milter-managerや子milterの動作結果をグラフ化します。グラフは
 
    利用できるオプションを表示して終了します。
 
-: --log=LOG_FILENAME
+: --log=LOG_FILE
 
-    LOG_FILENAMEからログを読み込みます。
+   LOG_FILEからログを読み込みます。
 
-    既定値は標準入力から読み込みます。
+   既定値は標準入力から読み込みます。
 
 : --output-directory=DIRECTORY
 

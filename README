@@ -75,11 +75,13 @@ See ((<Introduction|"doc/introduction.rd">)) for more details.
 
     It is needed for 'make coverage'.
 
-    ((<URL:http://ltp.sourceforge.net/coverage/lcov.php>))
+    ((<LCOV - the LTP GCOV extension|URL:http://ltp.sourceforge.net/coverage/lcov.php>))
 
-#   * RRDtool (and bundled Ruby bindings)
+  * RRDtool (and bundled Ruby bindings)
 
-#     It is needed for milter-log-tool.
+    It is needed for milter-manager-log-analyzer.
+
+    ((<RRDtool|URL:http://oss.oetiker.ch/rrdtool/>))
 
 == Get
 
@@ -104,13 +106,14 @@ bin/. In most cases, normal user doesn't include sbin/ in
 PATH. You will need to use absolute path.
 
 If you don't specify --prefix option for configure script,
-milter-manager is installed into /usr/local/sbin/:
+milter-manager is installed into /usr/local/sbin/. You can
+run milter-manager like the following:
 
   % /usr/local/sbin/milter-manager --help
 
-If install is succeeded, available options are
-shown. Details of them are described in the next section. At
-first --show-config option will be useful for confirming the
+Available options are shown if installation is succeeded.
+Details of them are described in the next section. It's good
+startup that we use --show-config option to confirm the
 current configuration:
 
   % /usr/local/sbin/milter-manager --show-config
@@ -224,9 +227,9 @@ installed into bin/.
     what data is sent from MTA.
   * milter-performance-check: It is a SMTP client that
     measures MTA performance.
-#   * milter-log-tool: It analyzes log of milter-manager and
-#     visualizes behavior of milters registered by
-#     milter-manager.
+  * milter-manager-log-analyzer: It analyzes log of
+    milter-manager and visualizes behavior of milters
+    registered to milter-manager.
 
 === milter-test-server
 
@@ -485,9 +488,39 @@ smtp-source is more better tool for you.
 
    The default is 100.
 
-# === milter-log-tool
+=== milter-manager-log-analyzer
 
-# FIXME
+milter-manager-log-analyzer analyzes milter-manager log and
+generates graphs for milters' result. It's useful for
+confirming system status transition because graphs shows
+data in time-line. Graphs can also be used for comparing
+changes between before introducing new milter and after
+introducing new milter.
+
+==== Options
+
+: --help
+
+   Shows available options and exits.
+
+: --log=lOG_FILE
+
+   Reads log from LOG_FILE
+
+   The default is standard input.
+
+: --output-directory=DIRECTORY
+
+   Outputs graphs, HTML and data to DIRECTORY.
+
+   The default is the current directory. (".")
+
+: --no-update-db
+
+   Doesn't update database. It's useful for just generates
+   graphs.
+
+   If this option is not specified, database will be updated.
 
 == Thanks
 
