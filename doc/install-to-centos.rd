@@ -287,4 +287,56 @@ milter-manager.
 
 === Configure Sendmail
 
-FIXME
+First, we enables Sendmail:
+
+  % sudo /sbin/chkconfig --add sendmail
+  % sudo /sbin/service sendmail start
+
+We append the following content to /etc/mail/sendmail.mc to
+register milter-manager to Sendmail.
+
+  INPUT_MAIL_FILTER(`milter-manager', `S=local:/var/run/milter-manager/milter-manager.sock')
+
+It's important that spamass-milter, clamav-milter,
+milter-greylist aren't needed to be registered because they
+are used via milter-manager.
+
+We update Sendmail configuration and reload it.
+
+  % sudo make -C /etc/mail
+  % sudo /sbin/service sendmail reload
+
+Sendmail's milter configuration is completed.
+
+milter-manager logs to syslog. If milter-manager works well,
+some logs can be showen in /var/log/maillog. We need to sent
+a test mail for confirming.
+
+== Conclusion
+
+There are many configurations to work milter and Sendmail
+together. They can be reduced by introducing milter-manager.
+
+Without milter-manager, we need to specify sockets of
+spamass-milter, clamav-milter and milter-greylist to
+sendmail.mc. With milter-manager, we doesn't need to
+specify sockets of them, just specify a socket of
+milter-manager. They are detected automatically. We doesn't
+need to take care some small mistakes like typo.
+
+milter-manager also detects which '/sbin/chkconfig -add' is
+done or not. If we disable a milter, we use the following
+steps:
+
+  % sudo /sbin/service milter-greylist stop
+  % sudo /sbin/chkconfig --del milter-greylist
+
+We need to reload milter-manager after we disable a milter.
+
+  % sudo /sbin/service milter-manager reload
+
+milter-manager detects a milter is disabled and doesn't use
+it. We doesn't need to change Sendmail's sendmail.mc.
+
+We can reduce maintainance cost by introducing
+milter-manager if we use some milters on CentOS.
