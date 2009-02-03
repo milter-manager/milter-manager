@@ -683,7 +683,7 @@ EOF
 
   def parse_options(argv)
     opts = OptionParser.new do |opts|
-      opts.on("--log=LOG_FILENAME",
+      opts.on("--log=LOG_FILE",
               "The log file name in which is stored Milter log",
               "(STDIN)") do |log|
         @log = File.open(log)
