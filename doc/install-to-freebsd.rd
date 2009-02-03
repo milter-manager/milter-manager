@@ -340,10 +340,9 @@ Postfix should reload its configuration:
 
 Postfix's milter configuration is completed.
 
-milter-manager outputs some logs to syslog. If milter-manager
-works well, some logs can be showen in
-/var/log/maillog. We need to sent a test mail for
-confirming.
+milter-manager logs to syslog. If milter-manager works well,
+some logs can be showen in /var/log/maillog. We need to sent
+a test mail for confirming.
 
 == Conclusion
 

@@ -304,16 +304,15 @@ We need to add the following configuration to
 
   smtpd_milters = unix:/milter-manager/milter-manager.sock
 
-Postfix should reload its configuration:
+We reload Postfix configuration:
 
   % sudo /etc/init.d/postfix reload
 
 Postfix's milter configuration is completed.
 
-milter-manager outputs some logs to syslog. If milter-manager
-works well, some logs can be showen in
-/var/log/mail.info. We need to sent a test mail for
-confirming.
+milter-manager logs to syslog. If milter-manager works well,
+some logs can be showen in /var/log/mail.info. We need to
+sent a test mail for confirming.
 
 == Conclusion
 
