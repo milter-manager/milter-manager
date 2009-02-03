@@ -17,6 +17,12 @@ module Milter::Manager
   module Detector
     attr_reader :name, :variables
 
+    def initialize(script_name, &connection_spec_detector)
+      @script_name = script_name
+      @connection_spec_detector = connection_spec_detector
+      init_variables
+    end
+
     def apply(loader)
       return if @name.nil?
       spec = guess_spec

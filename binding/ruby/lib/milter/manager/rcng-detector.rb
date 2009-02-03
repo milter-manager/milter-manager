@@ -16,14 +16,8 @@
 require 'milter/manager/detector'
 
 module Milter::Manager
-  class BSDRCDetector
+  module RCNGDetector
     include Detector
-
-    def initialize(script_name, &connection_spec_detector)
-      @script_name = script_name
-      @connection_spec_detector = connection_spec_detector
-      init_variables
-    end
 
     def description
       nil

@@ -19,12 +19,6 @@ module Milter::Manager
   class RedHatInitDetector
     include InitDetector
 
-    def initialize(script_name, &connection_spec_detector)
-      @script_name = script_name
-      @connection_spec_detector = connection_spec_detector
-      init_variables
-    end
-
     def description
       @info["description"]
     end

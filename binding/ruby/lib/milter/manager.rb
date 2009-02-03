@@ -29,9 +29,10 @@ require 'milter/compatible'
 
 require 'milter/manager/child-context'
 
-require 'milter/manager/bsd-rc-detector'
 require 'milter/manager/debian-init-detector'
 require 'milter/manager/redhat-init-detector'
+require 'milter/manager/freebsd-rc-detector'
+require 'milter/manager/pkgsrc-rc-detector'
 
 module Milter::Manager
   class Configuration

@@ -1,6 +1,8 @@
 test_files =					\
 	test-applicable-condition.rb		\
-	test-bsd-rc-detector.rb			\
+	test-freebsd-rc-detector.rb		\
+	test-debian-init-detector.rb		\
+	test-redhat-init-detector.rb		\
 	test-configuration.rb			\
 	test-configuration-loader.rb		\
 	test-control-command-decoder.rb		\

@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
-class TestBSDRCDetector < Test::Unit::TestCase
+class TestFreeBSDRCDetector < Test::Unit::TestCase
   include MilterTestUtils
 
   def setup
@@ -32,7 +32,7 @@ class TestBSDRCDetector < Test::Unit::TestCase
   end
 
   def test_rc_script_exist?
-    detector = bsd_rc_detector("milter-manager")
+    detector = freebsd_rc_detector("milter-manager")
     assert_false(detector.rc_script_exist?)
     (@rc_d + "milter-manager").open("w") {}
     assert_true(detector.rc_script_exist?)
@@ -42,7 +42,7 @@ class TestBSDRCDetector < Test::Unit::TestCase
     (@rc_d + "milter-manager").open("w") do |file|
       file << milter_manager_rc_script
     end
-    detector = bsd_rc_detector("milter-manager")
+    detector = freebsd_rc_detector("milter-manager")
     detector.detect
     assert_equal("milter_manager", detector.name)
   end
@@ -51,7 +51,7 @@ class TestBSDRCDetector < Test::Unit::TestCase
     (@rc_d + "milter-manager").open("w") do |file|
       file << milter_manager_rc_script
     end
-    detector = bsd_rc_detector("milter-manager")
+    detector = freebsd_rc_detector("milter-manager")
     detector.detect
     assert_equal({
                    "enable" => "NO",
@@ -76,7 +76,7 @@ milter_manager_connection_spec=inet:10025@localhost
 EOC
     end
 
-    detector = bsd_rc_detector("milter-manager")
+    detector = freebsd_rc_detector("milter-manager")
     detector.detect
     assert_equal({
                    "enable" => "YES",
@@ -101,7 +101,7 @@ milter_manager_connection_spec=inet:10025@localhost
 EOC
     end
 
-    detector = bsd_rc_detector("milter-manager")
+    detector = freebsd_rc_detector("milter-manager")
     detector.detect
     detector.apply(@loader)
     assert_eggs([["milter-manager",
@@ -123,7 +123,7 @@ EOM
       file << "amavis_milter_enable=YES"
     end
 
-    detector = bsd_rc_detector("amavis-milter")
+    detector = freebsd_rc_detector("amavis-milter")
     detector.detect
     detector.apply(@loader)
     assert_equal("amavis_milter", detector.name)
@@ -143,7 +143,7 @@ name=clamav_milter
 EOM
     end
 
-    detector = bsd_rc_detector("clamav-milter")
+    detector = freebsd_rc_detector("clamav-milter")
     detector.detect
     detector.apply(@loader)
     assert_equal("clamav_milter", detector.name)
@@ -169,7 +169,7 @@ milterdkim_socket="/var/run/milter/milter-dkim.sock"
 EOC
     end
 
-    detector = bsd_rc_detector("milter-dkim")
+    detector = freebsd_rc_detector("milter-dkim")
     detector.detect
     detector.apply(@loader)
     assert_equal("milterdkim", detector.name)
@@ -190,7 +190,7 @@ miltergreylist_sockfile=${miltergreylist_sockfile-"/var/milter-greylist/milter-g
 EOM
     end
 
-    detector = bsd_rc_detector("milter-greylist")
+    detector = freebsd_rc_detector("milter-greylist")
     detector.detect
     detector.apply(@loader)
     assert_equal("miltergreylist", detector.name)
@@ -202,8 +202,8 @@ EOM
   end
 
   private
-  def bsd_rc_detector(name)
-    detector = Milter::Manager::BSDRCDetector.new(name)
+  def freebsd_rc_detector(name)
+    detector = Milter::Manager::FreeBSDRCDetector.new(name)
 
     _rc_d = @rc_d
     _rc_conf = @rc_conf

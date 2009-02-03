@@ -1,5 +1,11 @@
 2009-02-03  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/lib/milter/manager/:
+	- add PkgsrcRCDetector but not implemented yet.
+	- rename BSDRCDetector to FreeBSDRDDetector.
+	* binding/ruby/test/manager/, data/default/freebsd.conf: follow
+	the above change.
+
 	* html/milter-manager.css: add margin to html.
 
 	* html/Makefile.am: don't upload *.svg.
