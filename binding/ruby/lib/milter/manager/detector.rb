@@ -46,7 +46,11 @@ module Milter::Manager
       @variables = {}
     end
 
-    def extract_variables(content, options={})
+    def set_variable(name, unnormalized_value)
+      @variables[name] = normalize_variable_value(unnormalized_value)
+    end
+
+    def extract_variables(output, content, options={})
       if options[:accept_lower_case]
         variable_definition_re = /\b([A-Za-z\d_]+)=(".*?"|\S*)/
       else
@@ -57,8 +61,7 @@ module Milter::Manager
         case line.sub(/#.*/, '')
         when variable_definition_re
           variable_name, variable_value = $1, $2
-          variable_value = normalize_variable_value(variable_value)
-          @variables[variable_name] = variable_value
+          output[variable_name] = normalize_variable_value(variable_value)
         end
       end
     end
@@ -70,10 +73,18 @@ module Milter::Manager
         left_brace, name, right_brace = $1, $2, $3
         if [left_brace, right_brace] == ["{", "}"] or
             [left_brace, right_brace] == ["", ""]
-          @variables[name] || matched
+          expand_variable(name) || matched
         else
           matched
         end
+      end
+    end
+
+    def expand_variable(name)
+      if name == "name"
+        @name
+      else
+        @variables[name]
       end
     end
 

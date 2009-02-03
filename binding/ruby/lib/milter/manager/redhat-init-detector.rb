@@ -40,7 +40,7 @@ module Milter::Manager
       parse_init_info(init_info_content) if init_info_content
       parse_tag_block(after) if after
 
-      extract_variables(content)
+      extract_variables(@variables, content)
 
       @name = @script_name
     end
@@ -78,24 +78,24 @@ module Milter::Manager
     def parse_sysconfig(file)
       return unless File.exist?(file)
       File.open(file) do |input|
-        extract_variables(input)
+        extract_variables(@variables, input)
       end
     end
 
-    def extract_variables(content)
-      super(content, :accept_lower_case => true)
+    def extract_variables(output, content)
+      super(output, content, :accept_lower_case => true)
     end
 
     def guess_spec
       spec = nil
-      if @connection_spec_detector
-        spec = normalize_spec(@connection_spec_detector.call(self))
-      end
       spec ||= normalize_spec(@variables["SOCKET"])
       spec ||= normalize_spec(@variables["SOCKET_ADDRESS"])
       spec ||= normalize_spec(@variables["MILTER_SOCKET"])
       spec ||= normalize_spec(@variables["CONNECTION_SPEC"])
       spec ||= extract_spec_parameter_from_flags(@variables["OPTIONS"])
+      if @connection_spec_detector
+        spec = normalize_spec(@connection_spec_detector.call(self, spec)) || spec
+      end
       spec
     end
 

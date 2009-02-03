@@ -18,5 +18,27 @@ require 'milter/manager/rcng-detector'
 module Milter::Manager
   class PkgsrcRCDetector
     include RCNGDetector
+
+    def rcvar
+      @rcvar || @name
+    end
+
+    def rcvar_value
+      @rcvar_value || "NO"
+    end
+
+    private
+    def parse_rc_conf_unknown_line(line)
+      case line
+      when /\Arcvar=(.+)/
+        @rcvar = normalize_variable_value($1)
+      when /\A#{Regexp.escape(rcvar)}=(.+)/
+        @rcvar_value = normalize_variable_value($1)
+      end
+    end
+
+    def rc_d
+      "/usr/pkg/etc/rc.d"
+    end
   end
 end

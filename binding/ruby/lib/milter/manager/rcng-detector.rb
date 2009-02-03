@@ -19,6 +19,13 @@ module Milter::Manager
   module RCNGDetector
     include Detector
 
+    def initialize(*args, &block)
+      super
+      @rcvar = nil
+      @rcvar_value = nil
+      @command_args = nil
+    end
+
     def description
       nil
     end
@@ -42,7 +49,7 @@ module Milter::Manager
     end
 
     def enabled?
-      if /\AYES\z/i =~ (@variables["enable"] || "NO")
+      if /\AYES\z/i =~ rcvar_value
         true
       else
         false
@@ -50,47 +57,72 @@ module Milter::Manager
     end
 
     private
+    def init_variables
+      super
+      @other_variables = {}
+    end
+
     def parse_rc_script
       rc_script_content = File.read(rc_script)
       rc_script_content.each_line do |line|
         if /\Aname=(.+)/ =~ line
-          @name = $1.sub(/\A"(.+)"\z/, '\1')
+          @name = normalize_variable_value($1)
         end
       end
       return if @name.nil?
 
+      extract_variables(@other_variables, rc_script_content,
+                        :accept_lower_case => true)
+
+      before_load_rc_conf = true
       rc_script_content.each_line do |line|
-        if /\$\{#{Regexp.escape(@name)}_(.+?)(?::?-|=)(.*)\}/ =~ line
-          variable_name, variable_value = $1, $2
-          variable_value = normalize_variable_value(variable_value)
-          @variables[variable_name] = variable_value
+        case line
+        when /\A\s*load_rc_conf /
+          before_load_rc_conf = false
+        when /\$\{#{Regexp.escape(@name)}_(.+?)(?::?-|=)(.*)\}/
+          set_variable($1, $2)
+        when /\A#{Regexp.escape(@name)}_(.+?)=(.*)/
+          set_variable($1, $2) if before_load_rc_conf
+        when /\Acommand_args=(.+)/
+          @command_args = normalize_variable_value($1)
         end
       end
     end
 
     def parse_rc_conf(file)
       return unless File.exist?(file)
-      content = File.read(file)
-      content.each_line do |line|
-        case line
-        when /\A#{@name}_(.+)=(.+)/
-          variable_name = $1
-          variable_value = $2
-          variable_value = normalize_variable_value(variable_value)
-          @variables[variable_name] = variable_value
+      File.open(file) do |conf|
+        conf.each_line do |line|
+          case line
+          when /\A#{Regexp.escape(@name)}_(.+)=(.+)/
+            variable_name = $1
+            variable_value = $2
+            variable_value = normalize_variable_value(variable_value)
+            @variables[variable_name] = variable_value
+          else
+            parse_rc_conf_unknown_line(line)
+          end
         end
       end
     end
 
+    def parse_rc_conf_unknown_line(line)
+    end
+
+    def expand_variable(name)
+      @other_variables[name] || super(name)
+    end
+
     def guess_spec
       spec = nil
-      if @connection_spec_detector
-        spec = normalize_spec(@connection_spec_detector.call(self))
-      end
       spec ||= normalize_spec(@variables["socket"])
       spec ||= normalize_spec(@variables["sockfile"])
       spec ||= normalize_spec(@variables["connection_spec"])
       spec ||= extract_spec_parameter_from_flags(@variables["flags"])
+      spec ||= extract_spec_parameter_from_flags(@command_args)
+      if @connection_spec_detector
+        spec = normalize_spec(@connection_spec_detector.call(self, spec)) || spec
+      end
       spec
     end
 
@@ -100,10 +132,6 @@ module Milter::Manager
 
     def specific_rc_conf
       File.join(rc_conf_d, @name)
-    end
-
-    def rc_d
-      "/usr/local/etc/rc.d"
     end
 
     def rc_conf

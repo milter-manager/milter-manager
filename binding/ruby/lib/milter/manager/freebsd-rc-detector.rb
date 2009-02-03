@@ -18,5 +18,31 @@ require 'milter/manager/rcng-detector'
 module Milter::Manager
   class FreeBSDRCDetector
     include RCNGDetector
+
+    def rcvar
+      @rcvar || "#{@name}_enable"
+    end
+
+    def rcvar_value
+      @rcvar_value || @variables[rcvar_variable_name] || "NO"
+    end
+
+    private
+    def parse_rc_conf_unknown_line(line)
+      case line
+      when /\Arcvar=`set_rcvar`/
+        @rcvar = "#{@name}_enable"
+      when /\A#{Regexp.escape(rcvar)}=(.+)/
+        @rcvar_value = normalize_variable_value($1)
+      end
+    end
+
+    def rcvar_variable_name
+      rcvar.gsub(/\A#{Regexp.escape(@name)}_/, '')
+    end
+
+    def rc_d
+      "/usr/local/etc/rc.d"
+    end
   end
 end

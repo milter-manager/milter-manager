@@ -39,7 +39,7 @@ module Milter::Manager
       before, init_info_content, after = extract_meta_data_blocks(content)
       parse_init_info(init_info_content) if init_info_content
 
-      extract_variables(content)
+      extract_variables(@variables, content)
 
       @name = @variables["NAME"] || @info["Provides"] || @script_name
     end
@@ -47,21 +47,21 @@ module Milter::Manager
     def parse_default_conf(file)
       return unless File.exist?(file)
       File.open(file) do |input|
-        extract_variables(input)
+        extract_variables(@variables, input)
       end
     end
 
     def guess_spec
       spec = nil
-      if @connection_spec_detector
-        spec = normalize_spec(@connection_spec_detector.call(self))
-      end
       spec ||= normalize_spec(@variables["SOCKET"])
       spec ||= normalize_spec(@variables["SOCKFILE"])
       spec ||= normalize_spec(@variables["CONNECTION_SPEC"])
       spec ||= extract_spec_parameter_from_flags(@variables["OPTARGS"])
       spec ||= extract_spec_parameter_from_flags(@variables["DAEMON_ARGS"])
       spec ||= extract_spec_parameter_from_flags(@variables["PARAMS"])
+      if @connection_spec_detector
+        spec = normalize_spec(@connection_spec_detector.call(self, spec)) || spec
+      end
       spec
     end
 
