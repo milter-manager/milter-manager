@@ -1,5 +1,9 @@
 2009-02-03  Kouhei Sutou  <kou@clear-code.com>
 
+	* html/milter-manager.css: add margin to html.
+
+	* html/Makefile.am: don't upload *.svg.
+
 	* html/index.html*: add sponsor notation.
 
 	* html/milter-manager.css, html/logo.svg,
