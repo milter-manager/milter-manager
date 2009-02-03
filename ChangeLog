@@ -1,5 +1,10 @@
 2009-02-03  Kouhei Sutou  <kou@clear-code.com>
 
+	* html/index.html*: add sponsor notation.
+
+	* html/milter-manager.css, html/logo.svg,
+	html/what-is-miter-manager.svg: add.
+
 	* README: translate.
 
 	* README*: fix license section.

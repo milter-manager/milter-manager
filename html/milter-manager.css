@@ -1,0 +1,29 @@
+body
+{
+  background: url(what-is-milter-manager.png) no-repeat right top;
+}
+
+h1
+{
+  background: url(logo.png) no-repeat;
+  text-indent: 256px;
+  font-size: smaller;
+  padding-top: 10px;
+  height: 30px;
+}
+
+div.sponsors
+{
+  border-top: solid black 1px;
+}
+
+div.sponsors p
+{
+  margin-left: 1em;
+  margin-right: 1em;
+}
+
+p.other-languages
+{
+  float: right;
+}
