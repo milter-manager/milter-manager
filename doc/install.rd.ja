@@ -70,7 +70,7 @@ milter-managerのインストール方法はプラットフォーム毎に解説
   * ((<Ubuntu|install-to-ubuntu.rd.ja>))
   * ((<CentOS|install-to-centos.rd.ja>))
   * ((<FreeBSD|install-to-freebsd.rd.ja>))
-#   * ((<その他|install-to-others.rd.ja>))
+  * ((<その他|install-to-others.rd.ja>))
 
 == milter-manager-log-analyzer
 

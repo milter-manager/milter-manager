@@ -1,0 +1,74 @@
+# -*- rd -*-
+
+= その他のプラットフォームへインストール --- その他のプラットフォームへのmilter managerのインストール方法
+
+== このドキュメントについて
+
+((<Ubuntu Linux|install-to-ubuntu.rd.ja>))、
+((<CentOS|install-to-centos.rd.ja>))、
+((<FreeBSD|install-to-freebsd.rd.ja>))以外のプラットフォーム
+にmilter managerをインストールときのヒントを示します。プラッ
+トフォームに依存しない一般的なインストール情報は((<インストー
+ル|install.rd.ja>))を見てください。
+
+== パッケージシステムの検出
+
+milter-managerはシステムにインストールされているmilterを自動
+検出します。どのように検出するかはconfigure時に判断します。
+configureの最後に出力される"Package Platform"が判断した検出
+方法です。
+
+  % ./configure
+  ...
+  Configure Result:
+
+    Package Platform : debian
+    Package Options  :
+  ...
+
+この例だと"debian"系のプラットフォーム用の検出方法を用います。
+
+"unknown"となっている場合は、configureが判断に失敗したか、
+milter-managerがサポートしていないプラットフォームかのどちら
+かです。
+
+もし、configureが判断に失敗しているのであれば、明示的に
+"--with-package-platform"を指定することができます。
+
+  % ./configure --with-package-platform=freebsd
+  ...
+  Configure Result:
+
+    Package Platform : freebsd
+    Package Options  :
+  ...
+
+現在サポートしているプラットフォームはdebian, redhat,
+freebsd(, pkgsrc)ですが、独自のプラットフォームを指定するこ
+ともできます。
+
+例えば、新しくsuseプラットフォームに対応するとします。
+
+  % ./configure --with-package-platform=suse
+  ...
+  Configure Result:
+
+    Package Platform : suse
+    Package Options  :
+  ...
+
+これでsuseプラットフォームを使用することになりました。後は、
+suseプラットフォーム用のmilter自動検出スクリプトをRubyで書く
+だけです。スクリプトは
+$prefix/etc/milter-manager/defaults/以下に"#{プラットフォー
+ム名}.conf"という名前で作成します。今の例でいうと"suse.conf"
+になります。
+
+$prefix/etc/milter-manager/defaults/suse.confの中では、
+milterを検出し、define_milterで検出したmilterを登録します。
+milterの登録方法の詳細は((<設定|configuration.rd.ja>))を見て
+ください。
+
+== ...
+
+...
