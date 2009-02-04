@@ -1,3 +1,7 @@
+2009-02-04  Kouhei Sutou  <kou@clear-code.com>
+
+	* configure.ac, **/Makefile.am: cleanup dependencies.
+
 2009-02-04  Kouhei Sutou  <kou@cozmixng.org>
 
 	* binding/ruby/lib/milter/manager/,

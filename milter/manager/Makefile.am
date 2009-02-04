@@ -1,8 +1,6 @@
 INCLUDES =						\
 	 -I$(top_builddir)				\
-	 -I$(top_srcdir)				\
-	 -I$(top_srcdir)/binding/ruby/src/toolkit	\
-	 -I$(top_srcdir)/binding/ruby/src/manager
+	 -I$(top_srcdir)
 
 AM_CFLAGS = 						\
 	-DLOCALEDIR=\""$(localedir)"\"			\
@@ -10,7 +8,7 @@ AM_CFLAGS = 						\
 	$(MILTER_MANAGER_CFLAGS)			\
 	$(COVERAGE_CFLAGS)
 
-LIBS =								\
+LIBS =							\
 	$(MILTER_MANAGER_LIBS)
 
 CLEANFILES = *.gcno *.gcda
@@ -58,7 +56,6 @@ lib_LTLIBRARIES =		\
 
 libmilter_manager_la_SOURCES =				\
 	milter-manager-enum-types.c			\
-	milter-manager-ruby-internal.h			\
 	milter-manager.c				\
 	milter-manager-main.c				\
 	milter-manager-configuration.c			\

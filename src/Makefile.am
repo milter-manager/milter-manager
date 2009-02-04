@@ -4,7 +4,11 @@ INCLUDES = 					\
 
 AM_CFLAGS = 				\
 	-DLOCALEDIR=\""$(localedir)"\"	\
-	$(MILTER_MANAGER_CFLAGS)
+	$(MILTER_MANAGER_CFLAGS)	\
+	$(RUBY_CFLAGS)
+
+LIBS =			\
+	$(RUBY_LIBS)
 
 CLEANFILES = *.gcno *.gcda
 

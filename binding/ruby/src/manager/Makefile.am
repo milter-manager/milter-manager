@@ -3,11 +3,11 @@ INCLUDES =						\
 	 -I$(top_srcdir)/binding/ruby/src/toolkit
 
 AM_CFLAGS = 				\
-	$(MILTER_MANAGER_CFLAGS)
+	$(MILTER_MANAGER_CFLAGS)	\
+	$(RUBY_CFLAGS)
 
-LIBS =								\
-	$(MILTER_MANAGER_LIBS)					\
-	$(top_builddir)/milter/manager/libmilter-manager.la
+LIBS =			\
+	$(RUBY_LIBS)
 
 AM_LDFLAGS =			\
 	-module			\
@@ -34,3 +34,6 @@ milter_manager_la_SOURCES =				\
 	rb-milter-manager-control-reply-encoder.c	\
 	rb-milter-manager-control-decoder.c		\
 	rb-milter-manager-applicable-condition.c
+
+milter_manager_la_LIBADD =					\
+	$(top_builddir)/milter/manager/libmilter-manager.la

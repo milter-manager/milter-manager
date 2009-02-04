@@ -6,11 +6,12 @@ INCLUDES =						\
 
 AM_CFLAGS = 								\
 	-DMILTER_LOG_DOMAIN=\""milter-manager-ruby-configuration"\"	\
-	$(MILTER_MANAGER_CFLAGS)
+	$(MILTER_MANAGER_CFLAGS)					\
+	$(RUBY_CFLAGS)
 #	$(COVERAGE_CFLAGS)
 
 LIBS =					\
-	$(MILTER_MANAGER_LIBS)
+	$(RUBY_LIBS)
 
 AM_LDFLAGS =				\
 	-module				\
@@ -24,3 +25,6 @@ module_configuration_LTLIBRARIES =		\
 
 milter_manager_ruby_configuration_la_SOURCES =	\
 	milter-manager-ruby-configuration.c
+
+milter_manager_ruby_configuration_la_LIBADD =			\
+	$(top_builddir)/milter/manager/libmilter-manager.la

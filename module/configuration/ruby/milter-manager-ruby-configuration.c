@@ -17,7 +17,19 @@
  *
  */
 
-#include <milter/manager/milter-manager-ruby-internal.h>
+
+#include <rb-milter-manager.h>
+
+#undef PACKAGE_NAME
+#undef PACKAGE_TARNAME
+#undef PACKAGE_VERSION
+#undef PACKAGE_STRING
+#undef PACKAGE_BUGREPORT
+
+#ifndef HAVE_RB_ERRINFO
+#  define rb_errinfo() (ruby_errinfo)
+#endif
+
 
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
