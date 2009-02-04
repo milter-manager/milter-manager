@@ -1,5 +1,8 @@
 2009-02-04  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/lib/milter/manager/pkgsrc-rc-detector.rb: use
+	/usr/pkg/etc as prefix.
+
 	* configure.ac: fix a typo.
 
 	* binding/ruby/lib/milter/manager.rb,

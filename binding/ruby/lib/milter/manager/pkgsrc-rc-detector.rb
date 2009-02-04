@@ -44,11 +44,11 @@ module Milter::Manager
     end
 
     def rc_d
-      "#{package_prefix}/etc/rc.d"
+      "#{package_prefix}/rc.d"
     end
 
     def package_prefix
-      package_options["prefix"] || "/usr/pkg"
+      package_options["prefix"] || "/usr/pkg/etc"
     end
   end
 end
