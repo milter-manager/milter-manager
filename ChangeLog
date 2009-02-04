@@ -1,5 +1,7 @@
 2009-02-04  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/install-to-others.rd: translate.
+
 	* binding/ruby/lib/milter/manager/pkgsrc-rc-detector.rb: use
 	/usr/pkg/etc as prefix.
 

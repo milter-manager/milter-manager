@@ -11,4 +11,6 @@ EXTRA_DIST =					\
 	install-to-ubuntu.rd			\
 	install-to-ubuntu.rd.ja			\
 	install-to-freebsd.rd			\
-	install-to-freebsd.rd.ja
+	install-to-freebsd.rd.ja		\
+	install-to-others.rd			\
+	install-to-others.rd.ja
