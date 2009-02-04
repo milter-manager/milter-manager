@@ -83,7 +83,7 @@ class MilterManagerLogAnalyzer
       end
 
       def steps
-        (3600 * 24) / (@rrd_step * @rows)
+        (3600 * 24) / (@rrd_step * @rows) + 1
       end
     end
 

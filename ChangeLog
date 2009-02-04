@@ -1,3 +1,8 @@
+2009-02-04  Kouhei Sutou  <kou@cozmixng.org>
+
+	* tool/milter-manager-log-analyzer: add a bit step for more high
+	resolution.
+
 2009-02-04  Kouhei Sutou  <kou@clear-code.com>
 
 	* TODO: remove:
