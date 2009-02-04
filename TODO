@@ -51,7 +51,6 @@ Index: milter/manager/milter-manager-leader.c
 * bug? milter-manager sometimes doesn't finish child milter?
 * change process name of forked process launcher.
 * send quit command to launcher on manager dispose.
-* add init script for FreeBSD and Ubuntu.
 * support controller's UNIX socket mode changing.
 * support controller's UNIX socket mode removing on close.
 * use chroot
@@ -119,11 +118,6 @@ Index: milter/manager/milter-manager-leader.c
 * don't handle log event in Ruby/GLib.
 * fix FIXME in data/applicable-conditions/remote-network.conf
   * add local network option?
-* add default milter configurations to data/milters/*.conf.
-  * configurated milters must be disabled by default
-  * start command must be /etc/init.d/xxx
-    * if /etc/init.d/xxx exists, the milter is enabled by default?
-  * the default values must be guessed by running distribution.
 * milter-manager can be ran as normal user if milter-manager process is
   invoked as root user. just only control connection handler and child
   milter process invoker can be ran as root user.
@@ -131,7 +125,6 @@ Index: milter/manager/milter-manager-leader.c
   milter-test-server and milter-log-tool.
 * milter_manager_egg_to_xml_string(): add user name, timeouts and
   command options (<- needed?)
-* mention GPL license in src/*.c, tool/*.
 * milter-manager supports macros requests.
 * milter-client-context should also close writer on timeout.
 * support MAIL FROM/RCPT TO additional info parsing.

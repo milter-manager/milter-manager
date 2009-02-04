@@ -1,5 +1,10 @@
 2009-02-04  Kouhei Sutou  <kou@clear-code.com>
 
+	* TODO: remove:
+	- add init script for FreeBSD and Ubuntu.
+	- add default milter configurations to data/milters/*.conf.
+	- mention GPL license in src/*.c, tool/*.
+
 	* doc/reference/: register install-to-others.
 
 	* doc/configuration.rd*: add package.* items.
