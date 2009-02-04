@@ -43,6 +43,20 @@ milter-managerがサポートしていないプラットフォームかのどち
     Package Options  :
   ...
 
+また、--with-package-optionsを指定することで、付加情報を指定
+することができます。付加情報は「名前1=値1,名前2=値2,...」と
+いうように指定します。例えば、pkgsrcプラットフォームで起動ス
+クリプトを/usr/pkg/etc/rc.d/以下ではなく、/etc/rc.d/以下にイ
+ンストールしている場合は以下のようになります。
+
+  % ./configure --with-package-platform=pkgsrc --with-package-options=prefix=/etc
+  ...
+  Configure Result:
+
+    Package Platform : pkgsrc
+    Package Options  : prefix=/etc
+  ...
+
 現在サポートしているプラットフォームはdebian, redhat,
 freebsd(, pkgsrc)ですが、独自のプラットフォームを指定するこ
 ともできます。
@@ -68,6 +82,18 @@ $prefix/etc/milter-manager/defaults/suse.confの中では、
 milterを検出し、define_milterで検出したmilterを登録します。
 milterの登録方法の詳細は((<設定|configuration.rd.ja>))を見て
 ください。
+
+また、インストール後に現在のプラットフォームを確認する場合は、
+以下のようにします。
+
+  % /usr/local/sbin/milter-manager --show-config
+  ...
+  package.platform = "debian"
+  package.options = nil
+  ...
+
+この場合は、プラットフォームはdebianで、付加情報は指定されて
+いないということになります。
 
 == ...
 
