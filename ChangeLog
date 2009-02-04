@@ -1,5 +1,12 @@
 2009-02-04  Kouhei Sutou  <kou@clear-code.com>
 
+	* data/defaults/pkgsrc.conf, data/defaults/Makefile.am: add a
+	detector for pkgsrc.
+
+	* TODO: remove:
+	support milter's in pkgsrc:
+	http://pkgsrc.se/dependon.php?path=mail/libmilter&branch=CURRENT
+
 	* TODO: remove: detect OS/distribution when configure not dynamic
 	by Ruby.
 

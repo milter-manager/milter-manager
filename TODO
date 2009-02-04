@@ -1,5 +1,3 @@
-* support milter's in pkgsrc:
-  http://pkgsrc.se/dependon.php?path=mail/libmilter&branch=CURRENT
 * support socket group separated by effective group.
 * if all alive child milters don't need to receive the
   command, children do nothing and leader returns response
