@@ -1,5 +1,6 @@
 test_files =					\
 	test-applicable-condition.rb		\
+	test-detector.rb			\
 	test-freebsd-rc-detector.rb		\
 	test-pkgsrc-rc-detector.rb		\
 	test-debian-init-detector.rb		\

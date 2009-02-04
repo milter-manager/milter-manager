@@ -63,10 +63,23 @@ module Milter::Manager
       parameter
     end
 
+    def package_options
+      @package_options ||= parse_package_options
+    end
+
     private
     def init_variables
       @name = nil
       @variables = {}
+    end
+
+    def parse_package_options
+      options = {}
+      (@configuration.package_options || '').split(/,/).each do |option|
+        name, value = option.split(/=/, 2)
+        options[name] = value
+      end
+      options
     end
 
     def set_variable(name, unnormalized_value)

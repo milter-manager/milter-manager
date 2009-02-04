@@ -274,7 +274,8 @@ fi
 
 AC_ARG_WITH([package-options],
             AS_HELP_STRING([--with-package-options=OPTIONS],
-                           [Package platform dependent free form options.
+                           [Package platform dependent options.
+			    OPTIONS has VAR1=VAL1,VAR2=VAL2,... format.
                             (default: none)]),
             [MILTER_MANAGER_PACKAGE_OPTIONS="$withval"])
 
