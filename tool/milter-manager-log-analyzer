@@ -605,7 +605,7 @@ class MilterManagerLogAnalyzer
       path = build_path("milter-log.session.rrd")
       items << "DEF:child=#{path}:child:AVERAGE"
       items << "DEF:max_child=#{path}:child:MAX"
-      items << "CDEF:n_milters=child,UN,0,child,IF"
+      items << "CDEF:n_milters=child"
       items << "CDEF:real_n_milters=n_milters,#{range.steps},*"
       items << "CDEF:total_milters=PREV,UN,real_n_milters,PREV,IF,real_n_milters,+"
 

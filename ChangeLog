@@ -2,6 +2,7 @@
 
 	* tool/milter-manager-log-analyzer:
 	- put last updated date as comment.
+	- don't draw no data region.
 
 2009-02-04  Kouhei Sutou  <kou@cozmixng.org>
 
