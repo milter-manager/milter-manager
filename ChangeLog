@@ -1,7 +1,8 @@
 2009-02-04  Kouhei Sutou  <kou@cozmixng.org>
 
-	* tool/milter-manager-log-analyzer: add a bit step for more high
-	resolution.
+	* tool/milter-manager-log-analyzer:
+	- add a bit step for more high resolution.
+	- fix total counting.
 
 2009-02-04  Kouhei Sutou  <kou@clear-code.com>
 

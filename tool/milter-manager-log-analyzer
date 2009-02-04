@@ -332,7 +332,7 @@ class MilterManagerLogAnalyzer
                  *args.map{|arg| "DS:#{arg}:GAUGE:#{step * 3}:0:U"})
     end
 
-    def output_graph(time_span, options={}, *args)
+    def output_graph(time_span, range_class, options={}, *args)
       start_time = options[:start_time] || time_span.default_start_time
       end_time = options[:end_time] || guess_end_time(start_time)
       graph_tag = options[:graph_tag] || time_span.name
@@ -342,18 +342,19 @@ class MilterManagerLogAnalyzer
       return nil unless File.exist?(rrd_file)
       last_update_time = RRD.last_update_time(rrd_file)
 
-      time_stamp = last_update_time.strftime("%a %b %d %H:%M:%S %Z %Y")
+      time_stamp = last_update_time.iso8601
       title = "#{@title} - #{time_stamp}"
       vertical_label = "#{@vertical_label}/#{time_span.short_name}"
       name = graph_name(graph_tag)
 
+      range = range_class.new(@rrd_step, rows)
       items = @items.inject([]) do |_items, item|
         _items + ["DEF:#{item}=#{rrd_file}:#{item}:AVERAGE",
                   "DEF:max_#{item}=#{rrd_file}:#{item}:MAX",
                   "CDEF:n_#{item}=#{item},UN,0,#{item},IF",
-                  "CDEF:real_#{item}=#{item},#{@rrd_step},*",
-                  "CDEF:real_max_#{item}=max_#{item},#{@rrd_step},*",
-                  "CDEF:real_n_#{item}=n_#{item},#{@rrd_step},*",
+                  "CDEF:real_#{item}=#{item}",
+                  "CDEF:real_max_#{item}=max_#{item}",
+                  "CDEF:real_n_#{item}=n_#{item},#{range.steps},*",
                   "CDEF:total_#{item}=PREV,UN,real_n_#{item},PREV,IF,real_n_#{item},+"]
       end
       RRD.graph(name,
@@ -462,8 +463,8 @@ class MilterManagerLogAnalyzer
       GraphData::Data.new(counting)
     end
 
-    def output_graph(time_span, options={})
-      super(time_span, options,
+    def output_graph(time_span, range_class, options={})
+      super(time_span, range_class, options,
             "AREA:n_smtp#0000ff:SMTP  ",
             "GPRINT:total_smtp:MAX:total\\: %8.0lf sessions",
             "GPRINT:smtp:AVERAGE:avg\\: %6.2lf sessions/min",
@@ -504,7 +505,7 @@ class MilterManagerLogAnalyzer
       end
     end
 
-    def output_graph(time_span, options={})
+    def output_graph(time_span, range_class, options={})
       entries = [
                  ["AREA", "pass", "#0000ff", "Pass"],
                  ["STACK", "accept", "#00ff00", "Accept"],
@@ -523,11 +524,12 @@ class MilterManagerLogAnalyzer
         items << "GPRINT:max_#{name}:MAX:max\\: %7.0lf mails/min\\l"
       end
 
+      range = range_class.new(@rrd_step, rows)
       path = build_path("milter-log.session.rrd")
       items << "DEF:smtp=#{path}:smtp:AVERAGE"
       items << "DEF:max_smtp=#{path}:smtp:MAX"
       items << "CDEF:n_smtp=smtp,UN,0,smtp,IF"
-      items << "CDEF:real_n_smtp=n_smtp,#{@rrd_step},*"
+      items << "CDEF:real_n_smtp=n_smtp,#{range.steps},*"
       items << "CDEF:total_smtp=PREV,UN,real_n_smtp,PREV,IF,real_n_smtp,+"
 
       label = "SMTP".ljust(max_label_size)
@@ -535,7 +537,7 @@ class MilterManagerLogAnalyzer
       items << "GPRINT:total_smtp:MAX:total\\: %8.0lf sessions"
       items << "GPRINT:smtp:AVERAGE:avg\\: %6.2lf sessions/min"
       items << "GPRINT:max_smtp:MAX:max\\: %4.0lf sessions/min\\l"
-      super(time_span, options, *items)
+      super(time_span, range_class, options, *items)
     end
   end
 
@@ -574,7 +576,7 @@ class MilterManagerLogAnalyzer
       GraphData::Data.new(stop_counting)
     end
 
-    def output_graph(time_span, options={})
+    def output_graph(time_span, range_class, options={})
       entries = [
                  ["AREA", "connect", "#0000ff"],
                  ["STACK", "helo", "#ff00ff"],
@@ -594,20 +596,20 @@ class MilterManagerLogAnalyzer
         items << "GPRINT:max_#{name}:MAX:max\\: %4.0lf milters/min\\l"
       end
 
+      range = range_class.new(@rrd_step, rows)
       path = build_path("milter-log.session.rrd")
       items << "DEF:child=#{path}:child:AVERAGE"
       items << "DEF:max_child=#{path}:child:MAX"
       items << "CDEF:n_milters=child,UN,0,child,IF"
-      items << "CDEF:real_n_milters=n_milters,#{@rrd_step},*"
+      items << "CDEF:real_n_milters=n_milters,#{range.steps},*"
       items << "CDEF:total_milters=PREV,UN,real_n_milters,PREV,IF,real_n_milters,+"
-      items << "CDEF:smaller_n_milters=n_milters,10,/"
 
       label = 'total'.ljust(max_name_size)
       items << "LINE2:n_milters#000000:#{label}"
       items << "GPRINT:total_milters:MAX:total\\: %8.0lf milters"
       items << "GPRINT:child:AVERAGE:avg\\: %6.2lf milters/min"
       items << "GPRINT:max_child:MAX:max\\: %4.0lf milters/min\\l"
-      super(time_span, options, *items)
+      super(time_span, range_class, options, *items)
     end
   end
 
@@ -736,27 +738,27 @@ EOF
     end
   end
 
-  def output_graph(time_span, label=nil, options={})
+  def output_graph(time_span, range, label, options={})
     output_graphs = []
     [sessions, mail_status, stops].each do |generator|
       file_name = generator.output_graph(GraphData::TimeSpan.new(time_span),
-                                         options)
+                                         range, options)
       output_graphs << file_name if file_name
     end
     @output_graphs << [label || time_span, output_graphs]
   end
 
   def output_all_graph
-    output_graph("minute", "Last Day",
+    output_graph("minute", GraphData::DayRange, "Last Day",
                  :start_time => -3600 * 24,
                  :graph_tag => "day")
-    output_graph("minute", "Last Week",
+    output_graph("minute", GraphData::WeekRange, "Last Week",
                  :start_time => -3600 * 24 * 7,
                  :graph_tag => "week")
-    output_graph("minute", "Last Month",
+    output_graph("minute", GraphData::MonthRange, "Last Month",
                  :start_time => -3600 * 24 * 31,
                  :graph_tag => "month")
-    output_graph("minute", "Last Year",
+    output_graph("minute", GraphData::YearRange, "Last Year",
                  :start_time => -3600 * 24 * 365,
                  :graph_tag => "year")
   end
