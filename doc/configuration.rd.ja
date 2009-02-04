@@ -33,6 +33,7 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
 
 設定項目は以下のように分類されています。
 
+  * パッケージ関連
   * セキュリティ関連
   * milter-manager関連
   * コントローラ関連
@@ -51,6 +52,9 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
 きで起動すると、現在の設定内容が表示されます。
 
   % /usr/local/sbin/milter-manager --show-config
+  package.platform = "debian"
+  package.options = nil
+
   security.privilege_mode = false
   security.effective_user = nil
   security.effective_group = nil
@@ -82,6 +86,65 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
 ます。
 
 それでは、それぞれの分類毎に説明します。
+
+== パッケージ関連
+
+: package.platform
+
+   ((*この項目は通常は変更する必要はありません。*))
+
+   milterの自動検出方法はプラットフォーム毎に異なります。自
+   動検出はmilterがプラットフォームで用いているパッケージシ
+   ステムでインストールされていることを前提としています。そ
+   のため、実際のプラットフォームとmilter-managerが認識して
+   いるプラットフォームが異なると、自動検出がうまく動きませ
+   ん。
+
+   プラットフォームはビルド時に検出しています。検出結果が間
+   違っている場合は、ビルド時に修正することができます。検出
+   結果が間違っているが、ビルドをやり直すことができない場合
+   に、この設定項目を利用します。
+
+   現在、標準で利用可能なプラットフォームは以下の通りです。
+
+     * debian: Debian GNU/LinuxやUbuntu LinuxなどDebian系Linux用
+     * redhat: CentOSなどRedHat系Linux
+     * freebsd: FreeBSD用
+     * pkgsrc: NetBSDやDragonFly BSDなどpkgsrcを利用している*BSD用
+
+   プラットフォーム名は「"」で囲んて"debian"というように指定
+   します。
+
+   注意: 変更する場合はload_defaultの((*前*))に行って下さい。
+
+   例:
+     package.platform = "pkgsrc"
+
+   既定値:
+     package.platform = "debian" # 環境に依存
+
+: package.options
+
+   ((*この項目は通常は変更する必要はありません。*))
+
+   package.platformと同様にビルド時に決定しています。
+
+   milter自動検出処理へ付加情報を渡すための項目です。
+   "名前1=値1,名前2=値2,.."という形式で複数の情報を渡すこと
+   ができます。
+
+   現在、この付加情報を使っているのはpkgsrcプラットフォーム
+   のときだけで、"prefix=rc.dがあるディレクトリのパス"という
+   情報を使っています。例えば、/etc/rc.d/以下に起動スクリプ
+   トをインストールしている時は、"prefix=/etc"と指定します。
+
+   注意: 変更する場合はload_defaultの((*前*))に行って下さい。
+
+   例:
+     package.options = "prefix=/etc,name=value"
+
+   既定値:
+     package.options = nil # 環境に依存
 
 == セキュリティ関連
 

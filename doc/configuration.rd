@@ -33,6 +33,7 @@ configuration below the part.
 
 Configuration items are categorized as the followings:
 
+  * package
   * security
   * milter-manager
   * controller
@@ -46,6 +47,9 @@ If you run milter-manager with --show-config option, the
 current configuration is shown.
 
   % /usr/local/sbin/milter-manager --show-config
+  package.platform = "debian"
+  package.options = nil
+
   security.privilege_mode = false
   security.effective_user = nil
   security.effective_group = nil
@@ -77,6 +81,68 @@ syntax. You can refer the output for writing
 milter-manager.conf.
 
 Here are descriptions of configuration items.
+
+== Package
+
+: package.platform
+
+   ((*Normally, this item doesn't need to be changed.*))
+
+   milter auto-detect method is different on each
+   platform. The auto-detect method assumes that milters are
+   installed with package system on its platform. If
+   real platform and platform detected by milter-manager are
+   different, the auto-detect method doesn't work well.
+
+   Your platform is detected on building milter-manager. You
+   can specify correct platform if the detected platform is
+   wrong. You will use this item only when the detected
+   platform is wrong but you can't build again.
+
+   Here are supported platforms:
+
+     * debian: for Debian series Linux like Debian
+       GNU/Linux and Ubuntu Linux.
+     * redhat: for RedHat series Linux like CentOS.
+     * freebsd: for FreeBSD.
+     * pkgsrc: for *BSD that use pkgsrc like NetBSD and
+       DragonFly BSD.
+
+   Platform name should be surround with '"' (double quote)
+   like "debian".
+
+   NOTE: This item should be change ((*before*)) load_default.
+
+   Example:
+     package.platform = "pkgsrc"
+
+   Default:
+     package.platform = "debian" # depend on your environment.
+
+: package.options
+
+   ((*Normally, this item doesn't need to be changed.*))
+
+   This item is determined on building like package.platform.
+
+   You can pass additional information to milter auto-detect
+   method. The format of this item is
+   "NAME1=VALUE1,NAME2=VALUE2,...". You can pass zero or
+   more information.
+
+   Currently, additional information is only used on
+   "pkgsrc" platform. "pkgsrc" platform only uses
+   "prefix=/PATH/TO/DIRECTORY/HAS/rc.d". For example, you
+   need to specify "prefix=/etc" if you install start-script
+   under /etc/rc.d/ directory.
+
+   NOTE: This item should be change ((*before*)) load_default.
+
+   Example:
+     package.options = "prefix=/etc,name=value"
+
+   Default:
+     package.options = nil # depend on your environment.
 
 == Security
 
