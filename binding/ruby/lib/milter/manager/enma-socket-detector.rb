@@ -22,15 +22,15 @@ module Milter::Manager
     def detect
       return nil unless File.exist?(@conf_file)
 
-      socket = nil
+      connection_spec = nil
       File.open(@conf_file) do |conf|
         conf.each_line do |line|
           if /\A\s*milter\.socket\s*:\s*(.+)/ =~ line
-            socket = $1
+            connection_spec = $1
           end
         end
       end
-      socket
+      connection_spec
     end
   end
 end

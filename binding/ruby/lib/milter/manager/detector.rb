@@ -17,7 +17,8 @@ module Milter::Manager
   module Detector
     attr_reader :name, :variables
 
-    def initialize(script_name, &connection_spec_detector)
+    def initialize(configuration, script_name, &connection_spec_detector)
+      @configuration = configuration
       @script_name = script_name
       @connection_spec_detector = connection_spec_detector
       init_variables

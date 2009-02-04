@@ -14,6 +14,7 @@
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 require 'milter/manager/rcng-detector'
+require 'milter/manager/enma-socket-detector'
 
 module Milter::Manager
   class PkgsrcRCDetector
@@ -25,6 +26,11 @@ module Milter::Manager
 
     def rcvar_value
       @rcvar_value || "NO"
+    end
+
+    def detect_enma_connection_spec
+      conf_file = extract_parameter_from_flags(command_args, "-c")
+      Milter::Manager::EnmaSocketDetector.new(conf_file).detect
     end
 
     private

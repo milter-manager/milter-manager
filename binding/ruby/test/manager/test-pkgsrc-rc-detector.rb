@@ -330,13 +330,7 @@ EOC
     end
 
     detector = pkgsrc_rc_detector("enma") do |_detector, guessed_spec|
-      if guessed_spec
-        guessed_spec
-      else
-        command_args = _detector.command_args
-        conf_file = _detector.extract_parameter_from_flags(command_args, "-c")
-        Milter::Manager::EnmaSocketDetector.new(conf_file).detect
-      end
+      guessed_spec || _detector.detect_enma_connection_spec
     end
     detector.detect
     detector.apply(@loader)
