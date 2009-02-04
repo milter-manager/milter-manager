@@ -243,6 +243,7 @@ dnl **************************************************************
 dnl Check for package platform.
 dnl **************************************************************
 
+AC_MSG_CHECKING(package-platform)
 AC_ARG_WITH([package-platform],
             AS_HELP_STRING([--with-package-platform=PLATFORM],
                            [Package platform.
@@ -251,7 +252,7 @@ AC_ARG_WITH([package-platform],
             [MILTER_MANAGER_PACKAGE_PLATFORM="$withval"])
 
 if test "$MILTER_MANAGER_PACKAGE_PLATFORM" = ""; then
-  case `uname -r` in
+  case `uname` in
   Linux)
     if test -f /etc/debian_version -o -x /usr/bin/dpkg; then
       MILTER_MANAGER_PACKAGE_PLATFORM="debian"
@@ -271,13 +272,17 @@ fi
 if test "$MILTER_MANAGER_PACKAGE_PLATFORM" = ""; then
   MILTER_MANAGER_PACKAGE_PLATFORM="unknown"
 fi
+AC_MSG_RESULT($MILTER_MANAGER_PACKAGE_PLATFORM)
 
+AC_MSG_CHECKING(package-options)
 AC_ARG_WITH([package-options],
             AS_HELP_STRING([--with-package-options=OPTIONS],
                            [Package platform dependent options.
 			    OPTIONS format is VAR1=VAL1,VAR2=VAL2,....
                             (default: none)]),
             [MILTER_MANAGER_PACKAGE_OPTIONS="$withval"])
+AC_MSG_RESULT($MILTER_MANAGER_PACKAGE_OPTIONS)
+
 
 MILTER_MANAGER_PACKAGE_PLATFORM_C_STRING="\\\"\$(MILTER_MANAGER_PACKAGE_PLATFORM)\\\""
 
@@ -441,3 +446,19 @@ AC_CONFIG_FILES([Makefile
 		 build/Makefile])
 
 AC_OUTPUT
+
+glib_version="$glib_config_major_version.$glib_config_minor_version.$glib_config_micro_version"
+
+echo
+echo "Configure Result:"
+echo
+echo "  Package Platform : $MILTER_MANAGER_PACKAGE_PLATFORM"
+echo "  Package Options  : $MILTER_MANAGER_PACKAGE_OPTIONS"
+echo
+echo "  GLib             : $glib_version"
+echo "  Ruby             : $RUBY"
+echo
+echo "  GTK-Doc          : $GTKDOC_CHECK"
+echo
+echo "  Cutter           : $CUTTER"
+echo "  LCOV             : $LCOV"
