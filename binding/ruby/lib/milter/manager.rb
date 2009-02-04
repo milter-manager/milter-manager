@@ -93,6 +93,18 @@ module Milter::Manager
     rescue Exception
       [$!.message, $@].join("\n")
     end
+
+    def parsed_package_options
+      _package_options = package_options
+      return nil if _package_options.nil?
+
+      options = {}
+      _package_options.split(/,/).each do |option|
+        name, value = option.split(/=/, 2)
+        options[name] = value
+      end
+      options
+    end
   end
 
   class ConfigurationLoader
@@ -141,9 +153,10 @@ module Milter::Manager
       end
     end
 
-    attr_reader :security, :controller, :manager, :configuration
+    attr_reader :package, :security, :controller, :manager, :configuration
     def initialize(configuration)
       @configuration = configuration
+      @package = PackageConfiguration.new(configuration)
       @security = SecurityConfiguration.new(configuration)
       @controller = ControllerConfiguration.new(configuration)
       @manager = ManagerConfiguration.new(configuration)
@@ -419,6 +432,38 @@ module Milter::Manager
         def normalize_local(local)
           local.gsub(/-/, "_")
         end
+      end
+    end
+
+    class PackageConfiguration
+      def initialize(configuration)
+        @configuration = configuration
+      end
+
+      def platform
+        @configuration.package_platform
+      end
+
+      def platform=(platform)
+        @configuration.package_platform = platform
+      end
+
+      def options
+        @options ||= @configuration.parsed_package_options
+      end
+
+      def options=(options)
+        @configuration.package_options = encode_options(options)
+        @options = nil
+      end
+
+      private
+      def encode_options(options)
+        return nil if options.nil?
+        return options if options.is_a?(String)
+        options.collect do |name, value|
+          "#{name}=#{value}"
+        end.join(",")
       end
     end
 

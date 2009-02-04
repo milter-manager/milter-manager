@@ -19,10 +19,16 @@ class TestConfigurationLoader < Test::Unit::TestCase
     @loader = Milter::Manager::ConfigurationLoader.new(@configuration)
   end
 
-  def test_security
-    assert_false(@configuration.privilege_mode?)
-    @loader.security.privilege_mode = true
-    assert_true(@configuration.privilege_mode?)
+  def test_package_platform
+    @loader.package.platform = "new-platform"
+    assert_equal("new-platform", @configuration.package_platform)
+    assert_equal("new-platform", @loader.package.platform)
+  end
+
+  def test_package_options
+    @loader.package.options = "prefix=/usr/pkg"
+    assert_equal("prefix=/usr/pkg", @configuration.package_options)
+    assert_equal({"prefix" => "/usr/pkg"}, @loader.package.options)
   end
 
   def test_security_privilege_mode
