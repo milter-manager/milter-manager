@@ -33,6 +33,13 @@ class TestConfiguration < Test::Unit::TestCase
     assert_nil(@configuration.manager_connection_spec)
   end
 
+  def test_package
+    @configuration.package_platform = "pkgsrc"
+    assert_equal("pkgsrc", @configuration.package_platform)
+    @configuration.package_options = "prefix=/etc"
+    assert_equal("prefix=/etc", @configuration.package_options)
+  end
+
   def test_add_egg
     assert_equal(0, @configuration.create_children.length)
 

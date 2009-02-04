@@ -204,7 +204,7 @@ module Milter::Manager
     end
 
     def load_default
-      platform = guess_platform
+      platform = @configuration.package_platform
       load_if_exist("defaults/#{platform}.conf") if platform
     end
 
@@ -235,24 +235,6 @@ module Milter::Manager
       end.flatten.compact
       raise NonexistentPath.new(path) if resolved_paths.empty?
       resolved_paths
-    end
-
-    def guess_platform
-      if File.exist?("/COPYRIGHT")
-        copyright = File.read("/COPYRIGHT")
-        case copyright
-        when /The FreeBSD Project/
-          "freebsd"
-        else
-          nil
-        end
-      elsif File.exist?("/etc/debian_version")
-        "debian"
-      elsif File.directory?("/etc/sysconfig/")
-        "redhat"
-      else
-        nil
-      end
     end
 
     class XMLConfigurationLoader
