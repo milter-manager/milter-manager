@@ -1,5 +1,8 @@
 2009-02-04  Kouhei Sutou  <kou@clear-code.com>
 
+	* TODO: remove: detect OS/distribution when configure not dynamic
+	by Ruby.
+
 	* binding/ruby/test/manager/test-*-detector.rb,
 	data/defaults/*.conf: pass configuration.
 
