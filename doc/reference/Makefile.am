@@ -67,6 +67,7 @@ content_files =					\
 	install-to-ubuntu.xml			\
 	install-to-centos.xml			\
 	install-to-freebsd.xml			\
+	install-to-others.xml			\
 	install-options-to-ubuntu.xml		\
 	install-options-to-centos.xml		\
 	install-options-to-freebsd.xml
@@ -96,6 +97,8 @@ generated_xml_files =				\
 	install-to-centos.xml.ja		\
 	install-to-freebsd.xml			\
 	install-to-freebsd.xml.ja		\
+	install-to-others.xml			\
+	install-to-ohters.xml.ja		\
 	install-options-to-ubuntu.xml		\
 	install-options-to-ubuntu.xml.ja	\
 	install-options-to-centos.xml		\
@@ -180,6 +183,12 @@ install-to-freebsd.xml: $(top_srcdir)/doc/install-to-freebsd.rd $(RD2REFENTRY_LI
 
 install-to-freebsd.xml.ja: $(top_srcdir)/doc/install-to-freebsd.rd.ja $(RD2REFENTRY_LIB) ja.po
 	$(RD2_JA) $(top_srcdir)/doc/install-to-freebsd.rd.ja > install-to-freebsd.xml.ja
+
+install-to-others.xml: $(top_srcdir)/doc/install-to-others.rd $(RD2REFENTRY_LIB) install-to-others.xml.ja
+	$(RD2) $(top_srcdir)/doc/install-to-others.rd > install-to-others.xml
+
+install-to-others.xml.ja: $(top_srcdir)/doc/install-to-others.rd.ja $(RD2REFENTRY_LIB) ja.po
+	$(RD2_JA) $(top_srcdir)/doc/install-to-others.rd.ja > install-to-others.xml.ja
 
 install-options-to-ubuntu.xml: $(top_srcdir)/doc/install-options-to-ubuntu.rd $(RD2REFENTRY_LIB) install-options-to-ubuntu.xml.ja
 	$(RD2) $(top_srcdir)/doc/install-options-to-ubuntu.rd > install-options-to-ubuntu.xml

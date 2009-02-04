@@ -1,5 +1,7 @@
 2009-02-04  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/reference/: register install-to-others.
+
 	* doc/configuration.rd*: add package.* items.
 
 	* doc/install-to-others.rd: translate.

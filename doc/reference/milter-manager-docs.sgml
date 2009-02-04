@@ -22,6 +22,7 @@
       <xi:include href="install-options-to-centos.xml"/>
       <xi:include href="install-to-freebsd.xml"/>
       <xi:include href="install-options-to-freebsd.xml"/>
+      <xi:include href="install-to-others.xml"/>
     </chapter>
     <xi:include href="configuration.xml"/>
   </part>

@@ -72,7 +72,7 @@ your platform:
   * ((<Ubuntu|install-to-ubuntu.rd>))
   * ((<CentOS|install-to-centos.rd>))
   * ((<FreeBSD|install-to-freebsd.rd>))
-#   * ((<Etc|install-to-others.rd>))
+  * ((<Etc|install-to-others.rd>))
 
 == milter-manager-log-analyzer
 
