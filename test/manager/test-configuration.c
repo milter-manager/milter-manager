@@ -41,6 +41,8 @@ void test_pid_file (void);
 void test_controller_connection_spec (void);
 void test_manager_connection_spec (void);
 void test_fallback_status (void);
+void test_package_platform (void);
+void test_package_options (void);
 void test_egg (void);
 void test_find_egg (void);
 void test_remove_egg (void);
@@ -349,6 +351,42 @@ test_fallback_status (void)
                            MILTER_STATUS_REJECT, actual_status);
 }
 
+void
+test_package_platform (void)
+{
+    const gchar *actual_package_platform;
+
+    actual_package_platform =
+        milter_manager_configuration_get_package_platform(config);
+    cut_assert_equal_string(MILTER_MANAGER_PACKAGE_PLATFORM,
+                            actual_package_platform);
+
+    milter_manager_configuration_set_package_platform(config, "new-platform");
+
+    actual_package_platform =
+        milter_manager_configuration_get_package_platform(config);
+    cut_assert_equal_string("new-platform",
+                            actual_package_platform);
+}
+
+void
+test_package_options (void)
+{
+    const gchar *actual_package_options;
+
+    actual_package_options =
+        milter_manager_configuration_get_package_options(config);
+    cut_assert_equal_string(MILTER_MANAGER_PACKAGE_OPTIONS,
+                            actual_package_options);
+
+    milter_manager_configuration_set_package_options(config, "prefix=/etc");
+
+    actual_package_options =
+        milter_manager_configuration_get_package_options(config);
+    cut_assert_equal_string("prefix=/etc",
+                            actual_package_options);
+}
+
 static void
 milter_assert_default_configuration_helper (MilterManagerConfiguration *config)
 {
@@ -387,6 +425,13 @@ milter_assert_default_configuration_helper (MilterManagerConfiguration *config)
         MILTER_TYPE_STATUS,
         MILTER_STATUS_ACCEPT,
         milter_manager_configuration_get_fallback_status(config));
+
+    cut_assert_equal_string(
+        MILTER_MANAGER_PACKAGE_PLATFORM,
+        milter_manager_configuration_get_package_platform(config));
+    cut_assert_equal_string(
+        MILTER_MANAGER_PACKAGE_OPTIONS,
+        milter_manager_configuration_get_package_options(config));
 
     if (expected_children)
         g_object_unref(expected_children);

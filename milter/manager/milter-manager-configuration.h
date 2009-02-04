@@ -188,6 +188,18 @@ MilterStatus  milter_manager_configuration_get_fallback_status
 void          milter_manager_configuration_set_fallback_status
                                      (MilterManagerConfiguration *configuration,
                                       MilterStatus                status);
+
+const gchar  *milter_manager_configuration_get_package_platform
+                                     (MilterManagerConfiguration *configuration);
+void          milter_manager_configuration_set_package_platform
+                                     (MilterManagerConfiguration *configuration,
+                                      const gchar                *platform);
+const gchar  *milter_manager_configuration_get_package_options
+                                     (MilterManagerConfiguration *configuration);
+void          milter_manager_configuration_set_package_options
+                                     (MilterManagerConfiguration *configuration,
+                                      const gchar                *options);
+
 void          milter_manager_configuration_add_egg
                                      (MilterManagerConfiguration *configuration,
                                       MilterManagerEgg *egg);

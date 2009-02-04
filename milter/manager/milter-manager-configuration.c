@@ -49,6 +49,8 @@ struct _MilterManagerConfigurationPrivate
     gchar *controller_connection_spec;
     gchar *manager_connection_spec;
     MilterStatus fallback_status;
+    gchar *package_platform;
+    gchar *package_options;
     gchar *effective_user;
     gchar *effective_group;
     guint manager_unix_socket_mode;
@@ -68,6 +70,8 @@ enum
     PROP_CONTROLLER_CONNECTION_SPEC,
     PROP_MANAGER_CONNECTION_SPEC,
     PROP_FALLBACK_STATUS,
+    PROP_PACKAGE_PLATFORM,
+    PROP_PACKAGE_OPTIONS,
     PROP_EFFECTIVE_USER,
     PROP_EFFECTIVE_GROUP,
     PROP_MANAGER_UNIX_SOCKET_MODE,
@@ -149,6 +153,22 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
                              MILTER_STATUS_ACCEPT,
                              G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
     g_object_class_install_property(gobject_class, PROP_FALLBACK_STATUS, spec);
+
+    spec = g_param_spec_string("package-platform",
+                               "Package platform",
+                               "The package platform of the milter-manager",
+                               MILTER_MANAGER_PACKAGE_PLATFORM,
+                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+    g_object_class_install_property(gobject_class, PROP_PACKAGE_PLATFORM,
+                                    spec);
+
+    spec = g_param_spec_string("package-options",
+                               "Package options",
+                               "The package options of the milter-manager",
+                               MILTER_MANAGER_PACKAGE_OPTIONS,
+                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+    g_object_class_install_property(gobject_class, PROP_PACKAGE_OPTIONS,
+                                    spec);
 
     spec = g_param_spec_string("effective-user",
                                "Effective user name",
@@ -327,6 +347,14 @@ set_property (GObject      *object,
         milter_manager_configuration_set_fallback_status(
             config, g_value_get_enum(value));
         break;
+      case PROP_PACKAGE_PLATFORM:
+        milter_manager_configuration_set_package_platform(
+            config, g_value_get_string(value));
+        break;
+      case PROP_PACKAGE_OPTIONS:
+        milter_manager_configuration_set_package_options(
+            config, g_value_get_string(value));
+        break;
       case PROP_EFFECTIVE_USER:
         milter_manager_configuration_set_effective_user(
             config, g_value_get_string(value));
@@ -394,6 +422,12 @@ get_property (GObject    *object,
         break;
       case PROP_FALLBACK_STATUS:
         g_value_set_enum(value, priv->fallback_status);
+        break;
+      case PROP_PACKAGE_PLATFORM:
+        g_value_set_string(value, priv->package_platform);
+        break;
+      case PROP_PACKAGE_OPTIONS:
+        g_value_set_string(value, priv->package_options);
         break;
       case PROP_EFFECTIVE_USER:
         g_value_set_string(value, priv->effective_user);
@@ -1140,6 +1174,46 @@ milter_manager_configuration_set_fallback_status
     priv->fallback_status = status;
 }
 
+const gchar *
+milter_manager_configuration_get_package_platform
+                                     (MilterManagerConfiguration *configuration)
+{
+    return MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration)->package_platform;
+}
+
+void
+milter_manager_configuration_set_package_platform
+                                     (MilterManagerConfiguration *configuration,
+                                      const gchar *platform)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    if (priv->package_platform)
+        g_free(priv->package_platform);
+    priv->package_platform = g_strdup(platform);
+}
+
+const gchar *
+milter_manager_configuration_get_package_options
+                                     (MilterManagerConfiguration *configuration)
+{
+    return MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration)->package_options;
+}
+
+void
+milter_manager_configuration_set_package_options
+                                     (MilterManagerConfiguration *configuration,
+                                      const gchar *options)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    if (priv->package_options)
+        g_free(priv->package_options);
+    priv->package_options = g_strdup(options);
+}
+
 void
 milter_manager_configuration_add_applicable_condition (MilterManagerConfiguration *configuration,
                                                        MilterManagerApplicableCondition *condition)
@@ -1253,6 +1327,16 @@ milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
         priv->manager_connection_spec = NULL;
     }
     priv->manager_connection_spec = g_strdup(DEFAULT_MANAGER_CONNECTION_SPEC);
+
+    if (priv->package_platform) {
+        g_free(priv->package_platform);
+        priv->package_platform = g_strdup(MILTER_MANAGER_PACKAGE_PLATFORM);
+    }
+
+    if (priv->package_options) {
+        g_free(priv->package_options);
+        priv->package_options = g_strdup(MILTER_MANAGER_PACKAGE_OPTIONS);
+    }
 
     if (priv->effective_user) {
         g_free(priv->effective_user);

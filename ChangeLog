@@ -1,5 +1,9 @@
 2009-02-04  Kouhei Sutou  <kou@clear-code.com>
 
+	* configure.ac, milter/manager/milter-manager-configuration.[ch],
+	test/manager/test-configuration.c: add --with-package-platform and
+	--with-package-options.
+
 	* configure.ac, **/Makefile.am: cleanup dependencies.
 
 2009-02-04  Kouhei Sutou  <kou@cozmixng.org>

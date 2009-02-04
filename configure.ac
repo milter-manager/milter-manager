@@ -240,6 +240,58 @@ AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED([GETTEXT_PACKAGE], ["$GETTEXT_PACKAGE"], [Gettext package])
 
 dnl **************************************************************
+dnl Check for package platform.
+dnl **************************************************************
+
+AC_ARG_WITH([package-platform],
+            AS_HELP_STRING([--with-package-platform=PLATFORM],
+                           [Package platform.
+                            e.g. debian, redhat, freebsd, pkgsrc, ...
+                            (default: auto-detect)]),
+            [MILTER_MANAGER_PACKAGE_PLATFORM="$withval"])
+
+if test "$MILTER_MANAGER_PACKAGE_PLATFORM" = ""; then
+  case `uname -r` in
+  Linux)
+    if test -f /etc/debian_version -o -x /usr/bin/dpkg; then
+      MILTER_MANAGER_PACKAGE_PLATFORM="debian"
+    elif test -f /etc/redhat-release; then
+      MILTER_MANAGER_PACKAGE_PLATFORM="redhat"
+    fi
+    ;;
+  FreeBSD)
+    MILTER_MANAGER_PACKAGE_PLATFORM="freebsd"
+    ;;
+  NetBSD|DragonFly)
+    MILTER_MANAGER_PACKAGE_PLATFORM="pkgsrc"
+    ;;
+  esac
+fi
+
+if test "$MILTER_MANAGER_PACKAGE_PLATFORM" = ""; then
+  MILTER_MANAGER_PACKAGE_PLATFORM="unknown"
+fi
+
+AC_ARG_WITH([package-options],
+            AS_HELP_STRING([--with-package-options=OPTIONS],
+                           [Package platform dependent free form options.
+                            (default: none)]),
+            [MILTER_MANAGER_PACKAGE_OPTIONS="$withval"])
+
+MILTER_MANAGER_PACKAGE_PLATFORM_C_STRING="\\\"\$(MILTER_MANAGER_PACKAGE_PLATFORM)\\\""
+
+if test "$MILTER_PACKAGE_OPTIONS" = ""; then
+  MILTER_MANAGER_PACKAGE_OPTIONS_C_STRING="NULL"
+else
+  MILTER_MANAGER_PACKAGE_OPTIONS_C_STRING="\\\"\$(MILTER_MANAGER_PACKAGE_OPTIONS)\\\""
+fi
+
+AC_SUBST(MILTER_MANAGER_PACKAGE_PLATFORM)
+AC_SUBST(MILTER_MANAGER_PACKAGE_PLATFORM_C_STRING)
+AC_SUBST(MILTER_MANAGER_PACKAGE_OPTIONS)
+AC_SUBST(MILTER_MANAGER_PACKAGE_OPTIONS_C_STRING)
+
+dnl **************************************************************
 dnl Check for path.
 dnl **************************************************************
 
@@ -309,6 +361,8 @@ MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DBINDING_LIB_DIR=\\\"\$(binding_l
 MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DCONFIG_DIR=\\\"\$(pkgsysconfdir)\\\""
 MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DCONFIG_FILE_NAME=\\\"\$(CONFIG_FILE_NAME)\\\""
 MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DCUSTOM_CONFIG_FILE_NAME=\\\"\$(CUSTOM_CONFIG_FILE_NAME)\\\""
+MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DMILTER_MANAGER_PACKAGE_PLATFORM=\$(MILTER_MANAGER_PACKAGE_PLATFORM_C_STRING)"
+MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DMILTER_MANAGER_PACKAGE_OPTIONS=\$(MILTER_MANAGER_PACKAGE_OPTIONS_C_STRING)"
 AC_SUBST(MILTER_TOOLKIT_CFLAGS)
 AC_SUBST(MILTER_RUBY_CFLAGS)
 AC_SUBST(MILTER_MANAGER_CFLAGS)
