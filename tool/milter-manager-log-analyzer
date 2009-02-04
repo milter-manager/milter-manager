@@ -346,8 +346,6 @@ class MilterManagerLogAnalyzer
       return nil unless File.exist?(rrd_file)
       last_update_time = RRD.last_update_time(rrd_file)
 
-      time_stamp = last_update_time.iso8601
-      title = "#{@title} - #{time_stamp}"
       vertical_label = "#{@vertical_label}/#{time_span.short_name}"
       name = graph_name(graph_tag)
 
@@ -361,15 +359,18 @@ class MilterManagerLogAnalyzer
                   "CDEF:real_n_#{item}=n_#{item},#{range.steps},*",
                   "CDEF:total_#{item}=PREV,UN,real_n_#{item},PREV,IF,real_n_#{item},+"]
       end
+
+      data = items + args
+      data << "COMMENT:[#{last_update_time.iso8601.gsub(/:/, '\:')}]\\r"
       RRD.graph(name,
-                "--title", title,
+                "--title", @title,
                 "--vertical-label", vertical_label,
                 "--start", start_time.to_s,
                 "--end", end_time.to_s,
                 "--width", width.to_s,
                 "--height", height.to_s,
                 "--alt-y-grid",
-                *(items + args))
+                *data)
       name
     end
 
