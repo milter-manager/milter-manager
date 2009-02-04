@@ -170,6 +170,9 @@ class TestConfiguration < Test::Unit::TestCase
 
   def test_dump
     assert_equal(<<-EOD.strip,
+package.platform = #{@configuration.package_platform.inspect}
+package.options = #{@configuration.package_options.inspect}
+
 security.privilege_mode = false
 security.effective_user = nil
 security.effective_group = nil
@@ -211,6 +214,9 @@ EOD
     end
 
     assert_equal(<<-EOD.strip,
+package.platform = #{@configuration.package_platform.inspect}
+package.options = #{@configuration.package_options.inspect}
+
 security.privilege_mode = false
 security.effective_user = "nobody"
 security.effective_group = "nogroup"

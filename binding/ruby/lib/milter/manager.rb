@@ -39,6 +39,10 @@ module Milter::Manager
     def dump
       result = ''
 
+      result << "package.platform = #{package_platform.inspect}\n"
+      result << "package.options = #{package_options.inspect}\n"
+      result << "\n"
+
       result << "security.privilege_mode = #{privilege_mode?}\n"
       result << "security.effective_user = #{effective_user.inspect}\n"
       result << "security.effective_group = #{effective_group.inspect}\n"
