@@ -213,7 +213,11 @@ class MilterManagerLogAnalyzer
         @countings.each_value do |counting|
           next if counting.empty?
           first_one = counting.sort { |a, b| a[0] <=> b[0] }.first[0]
-          first_time = first_time > first_one ? first_time : first_one
+          if first_time.zero?
+            first_time = first_one
+          else
+            first_time = first_time > first_one ? first_one : first_time
+          end
         end
         first_time
       end
@@ -301,7 +305,7 @@ class MilterManagerLogAnalyzer
 
         next if counts.uniq.length == 1 and counts.uniq.include?("U")
 
-        # puts("update #{rrd} with #{Time.at(time)}  #{counts.join(':')}")
+        # puts("update #{rrd_file} with #{Time.at(time).iso8601} #{counts.join(':')}")
         RRD.update(rrd_file,
                    "#{time}:#{counts.join(':')}")
       end
@@ -351,7 +355,7 @@ class MilterManagerLogAnalyzer
       items = @items.inject([]) do |_items, item|
         _items + ["DEF:#{item}=#{rrd_file}:#{item}:AVERAGE",
                   "DEF:max_#{item}=#{rrd_file}:#{item}:MAX",
-                  "CDEF:n_#{item}=#{item},UN,0,#{item},IF",
+                  "CDEF:n_#{item}=#{item}",
                   "CDEF:real_#{item}=#{item}",
                   "CDEF:real_max_#{item}=max_#{item}",
                   "CDEF:real_n_#{item}=n_#{item},#{range.steps},*",
@@ -528,7 +532,7 @@ class MilterManagerLogAnalyzer
       path = build_path("milter-log.session.rrd")
       items << "DEF:smtp=#{path}:smtp:AVERAGE"
       items << "DEF:max_smtp=#{path}:smtp:MAX"
-      items << "CDEF:n_smtp=smtp,UN,0,smtp,IF"
+      items << "CDEF:n_smtp=smtp"
       items << "CDEF:real_n_smtp=n_smtp,#{range.steps},*"
       items << "CDEF:total_smtp=PREV,UN,real_n_smtp,PREV,IF,real_n_smtp,+"
 

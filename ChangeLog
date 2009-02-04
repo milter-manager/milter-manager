@@ -3,6 +3,7 @@
 	* tool/milter-manager-log-analyzer:
 	- add a bit step for more high resolution.
 	- fix total counting.
+	- don't draw no data region.
 
 2009-02-04  Kouhei Sutou  <kou@clear-code.com>
 
