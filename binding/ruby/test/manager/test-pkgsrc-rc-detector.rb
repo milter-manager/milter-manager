@@ -344,7 +344,8 @@ EOC
 
   private
   def pkgsrc_rc_detector(name, &spec_detector)
-    detector = Milter::Manager::PkgsrcRCDetector.new(name, &spec_detector)
+    detector = Milter::Manager::PkgsrcRCDetector.new(@configuration, name,
+                                                     &spec_detector)
 
     _rc_d = @rc_d
     _rc_conf = @rc_conf

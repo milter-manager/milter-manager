@@ -454,7 +454,7 @@ EOC
 
   private
   def debain_init_detector(name)
-    detector = Milter::Manager::DebianInitDetector.new(name)
+    detector = Milter::Manager::DebianInitDetector.new(@configuration, name)
 
     _init_base_dir = @init_base_dir
     _default_dir = @default_dir

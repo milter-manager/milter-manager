@@ -203,7 +203,7 @@ EOM
 
   private
   def freebsd_rc_detector(name)
-    detector = Milter::Manager::FreeBSDRCDetector.new(name)
+    detector = Milter::Manager::FreeBSDRCDetector.new(@configuration, name)
 
     _rc_d = @rc_d
     _rc_conf = @rc_conf

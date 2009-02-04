@@ -1,5 +1,8 @@
 2009-02-04  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/test/manager/test-*-detector.rb,
+	data/defaults/*.conf: pass configuration.
+
 	* binding/ruby/lib/milter/manager.rb,
 	binding/ruby/lib/milter/manager/enma-socket-detector.rb,
 	binding/ruby/lib/milter/manager/pkgsrc-rc-detector.rb:
