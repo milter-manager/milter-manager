@@ -52,7 +52,9 @@ generated_image_files =					\
 	sendmail-and-milter-ja.png			\
 	sendmail-and-postfix-and-milter.png		\
 	sendmail-and-postfix-and-milter-ja.png		\
-	milter-manager-log-analyzer-graphs.png
+	milter-manager-log-analyzer-graphs.png		\
+	milter-manager-admin.png			\
+	milter-manager-admin-ja.png
 
 # Images to copy into HTML directory
 HTML_IMAGES = $(generated_image_files)
@@ -229,6 +231,13 @@ sendmail-and-postfix-and-milter-ja.png: $(top_srcdir)/doc/sendmail-and-postfix-a
 
 milter-manager-log-analyzer-graphs.png: $(top_srcdir)/doc/milter-manager-log-analyzer-graphs.svg
 	$(SVG2PNG) $@ $<
+
+milter-manager-admin.png: $(top_srcdir)/doc/milter-manager-admin.svg
+	$(SVG2PNG) $@ $<
+
+milter-manager-admin-ja.png: $(top_srcdir)/doc/milter-manager-admin-ja.svg
+	$(SVG2PNG) $@ $<
+
 
 upload: docs
 	rm -rf tmp/

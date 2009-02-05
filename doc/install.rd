@@ -103,6 +103,8 @@ to install Web interface for administration.
 
 == milter manager admin
 
+((<milter manager admin|milter-manager-admin.svg>))
+
 milter manager admin is a Web interface for administrating
 milter-manager. Installing milter manager admin is optional.
 

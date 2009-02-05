@@ -99,6 +99,8 @@ milter-manager-log-analyzerのインストール方法はプラットフォー
 
 == milter manager admin
 
+((<milter manager admin|milter-manager-admin-ja.svg>))
+
 milter manager adminはmilter-managerを管理するためのWebインター
 フェイスです。milter manager adminの設定は必須ではありません。
 
