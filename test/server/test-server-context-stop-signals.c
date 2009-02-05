@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -35,7 +35,9 @@ void test_stop_on_connect (void);
 void test_stop_on_helo (void);
 void test_stop_on_envelope_from (void);
 void test_stop_on_envelope_recipient (void);
+void test_stop_on_data (void);
 void test_stop_on_header (void);
+void test_stop_on_end_of_header (void);
 void test_stop_on_body (void);
 void data_stop_on_end_of_message (void);
 void test_stop_on_end_of_message (gconstpointer data);
@@ -66,7 +68,9 @@ static guint n_stop_on_connect;
 static guint n_stop_on_helo;
 static guint n_stop_on_envelope_from;
 static guint n_stop_on_envelope_recipient;
+static guint n_stop_on_data;
 static guint n_stop_on_header;
+static guint n_stop_on_end_of_header;
 static guint n_stop_on_body;
 static guint n_stop_on_end_of_message;
 
@@ -84,10 +88,10 @@ cb_stopped (MilterServerContext *context, gpointer user_data)
 
 static gboolean
 cb_stop_on_connect (MilterServerContext *context,
-                  const gchar *host_name,
-                  const struct sockaddr *address,
-                  socklen_t address_size,
-                  gpointer user_data)
+                    const gchar *host_name,
+                    const struct sockaddr *address,
+                    socklen_t address_size,
+                    gpointer user_data)
 {
     connect_host_name = g_strdup(host_name);
     connect_address = malloc(address_size);
@@ -101,7 +105,7 @@ cb_stop_on_connect (MilterServerContext *context,
 
 static gboolean
 cb_stop_on_helo (MilterServerContext *context, const gchar *fqdn,
-               gpointer user_data)
+                 gpointer user_data)
 {
     helo_fqdn = g_strdup(fqdn);
 
@@ -111,7 +115,7 @@ cb_stop_on_helo (MilterServerContext *context, const gchar *fqdn,
 
 static gboolean
 cb_stop_on_envelope_from (MilterServerContext *context, const gchar *from,
-                        gpointer user_data)
+                          gpointer user_data)
 {
     actual_envelope_from = g_strdup(from);
 
@@ -121,8 +125,8 @@ cb_stop_on_envelope_from (MilterServerContext *context, const gchar *from,
 
 static gboolean
 cb_stop_on_envelope_recipient (MilterServerContext *context,
-                             const gchar *recipient,
-                             gpointer user_data)
+                               const gchar *recipient,
+                               gpointer user_data)
 {
     actual_envelope_recipient = g_strdup(recipient);
 
@@ -131,9 +135,16 @@ cb_stop_on_envelope_recipient (MilterServerContext *context,
 }
 
 static gboolean
+cb_stop_on_data (MilterServerContext *context, gpointer user_data)
+{
+    n_stop_on_data++;
+    return TRUE;
+}
+
+static gboolean
 cb_stop_on_header (MilterServerContext *context,
-                  const gchar *name, const gchar *value,
-                 gpointer user_data)
+                   const gchar *name, const gchar *value,
+                   gpointer user_data)
 {
     actual_header_name = g_strdup(name);
     actual_header_value = g_strdup(value);
@@ -143,8 +154,15 @@ cb_stop_on_header (MilterServerContext *context,
 }
 
 static gboolean
+cb_stop_on_end_of_header (MilterServerContext *context, gpointer user_data)
+{
+    n_stop_on_end_of_header++;
+    return TRUE;
+}
+
+static gboolean
 cb_stop_on_body (MilterServerContext *context, const gchar *chunk, gsize size,
-               gpointer user_data)
+                 gpointer user_data)
 {
     body_chunk = g_memdup(chunk, size);
     body_chunk_size = size;
@@ -155,8 +173,8 @@ cb_stop_on_body (MilterServerContext *context, const gchar *chunk, gsize size,
 
 static gboolean
 cb_stop_on_end_of_message (MilterServerContext *context,
-                         const gchar *chunk, gsize size,
-                         gpointer user_data)
+                           const gchar *chunk, gsize size,
+                           gpointer user_data)
 {
     end_of_message_chunk = g_memdup(chunk, size);
     end_of_message_chunk_size = size;
@@ -175,7 +193,9 @@ setup_signals (MilterServerContext *context)
     CONNECT(stop_on_helo);
     CONNECT(stop_on_envelope_from);
     CONNECT(stop_on_envelope_recipient);
+    CONNECT(stop_on_data);
     CONNECT(stop_on_header);
+    CONNECT(stop_on_end_of_header);
     CONNECT(stop_on_body);
     CONNECT(stop_on_end_of_message);
 
@@ -218,7 +238,9 @@ setup (void)
     n_stop_on_helo = 0;
     n_stop_on_envelope_from = 0;
     n_stop_on_envelope_recipient = 0;
+    n_stop_on_data = 0;
     n_stop_on_header = 0;
+    n_stop_on_end_of_header = 0;
     n_stop_on_body = 0;
     n_stop_on_end_of_message = 0;
 }
@@ -330,6 +352,17 @@ test_stop_on_envelope_recipient (void)
 }
 
 void
+test_stop_on_data (void)
+{
+    cut_assert_true(milter_server_context_data(context));
+
+    cut_assert_equal_uint(1, n_stop_on_data);
+
+    cut_assert_equal_uint(1, n_stopped);
+    cut_assert_equal_uint(0, n_accept);
+}
+
+void
 test_stop_on_header (void)
 {
     const gchar name[] = "X-Test-Header";
@@ -340,6 +373,17 @@ test_stop_on_header (void)
     cut_assert_equal_uint(1, n_stop_on_header);
     cut_assert_equal_string(name, actual_header_name);
     cut_assert_equal_string(value, actual_header_value);
+
+    cut_assert_equal_uint(1, n_stopped);
+    cut_assert_equal_uint(0, n_accept);
+}
+
+void
+test_stop_on_end_of_header (void)
+{
+    cut_assert_true(milter_server_context_end_of_header(context));
+
+    cut_assert_equal_uint(1, n_stop_on_end_of_header);
 
     cut_assert_equal_uint(1, n_stopped);
     cut_assert_equal_uint(0, n_accept);

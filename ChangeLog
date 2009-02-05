@@ -1,5 +1,8 @@
 2009-02-05  Kouhei Sutou  <kou@clear-code.com>
 
+	* test/server/test-server-context-stop-signals.c: add tests for
+	stoppers on DATA and end of header.
+
 	* binding/ruby/lib/milter/manager/child-context.rb,
 	binding/ruby/test/manager/test-child-context.rb: support set macro.
 
