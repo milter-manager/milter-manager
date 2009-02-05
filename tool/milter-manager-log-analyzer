@@ -263,7 +263,7 @@ class MilterManagerLogAnalyzer
       @items = nil
       @title = nil
       @vertical_label = nil
-      @step = 60
+      @step = 60 # seconds
       @width = 600
       @points_per_sample = 3
     end
@@ -301,7 +301,7 @@ class MilterManagerLogAnalyzer
       GraphData::Data.new(counting)
     end
 
-    def update_db
+    def update
       if File.exist?(rrd_file)
         last_update_time = RRD.last_update_time(rrd_file)
       else
@@ -326,37 +326,33 @@ class MilterManagerLogAnalyzer
           counts << data[item][time]
         end
 
-        next if counts.uniq.length == 1 and counts.uniq.include?("U")
-
-        # puts("update #{rrd_file} with #{Time.at(time).iso8601} #{counts.join(':')}")
-        RRD.update(rrd_file,
-                   "#{time}:#{counts.join(':')}")
+        # puts("#{Time.at(time).iso8601} #{counts.join(':')}: #{rrd_file}")
+        RRD.update(rrd_file, "#{time}:#{counts.join(':')}")
       end
     end
 
-    def update
-      update_db
-    end
+    def create_rrd(start_time, *sources)
+      ranges = [
+                GraphData::DayRange.new(@step, rows),
+                GraphData::WeekRange.new(@step, rows),
+                GraphData::MonthRange.new(@step, rows),
+                GraphData::YearRange.new(@step, rows),
+               ]
 
-    def create_rrd(start_time, *args)
-      step = @step
+      rra = []
+      ranges.each do |range|
+        rra << "RRA:MAX:0.5:#{range.steps}:#{rows}"
+        rra << "RRA:AVERAGE:0.5:#{range.steps}:#{rows}"
+      end
 
-      day_range = GraphData::DayRange.new(@step, rows)
-      week_range = GraphData::WeekRange.new(@step, rows)
-      month_range = GraphData::MonthRange.new(@step, rows)
-      year_range = GraphData::YearRange.new(@step, rows)
+      data_sources = sources.collect do |source|
+        "DS:#{source}:GAUGE:#{@step * 3}:0:U"
+      end
+
       RRD.create(rrd_file,
                  "--start", (start_time - 1).to_i.to_s,
-                 "--step", step,
-                 "RRA:MAX:0.5:#{day_range.steps}:#{rows}",
-                 "RRA:MAX:0.5:#{week_range.steps}:#{rows}",
-                 "RRA:MAX:0.5:#{month_range.steps}:#{rows}",
-                 "RRA:MAX:0.5:#{year_range.steps}:#{rows}",
-                 "RRA:AVERAGE:0.5:#{day_range.steps}:#{rows}",
-                 "RRA:AVERAGE:0.5:#{week_range.steps}:#{rows}",
-                 "RRA:AVERAGE:0.5:#{month_range.steps}:#{rows}",
-                 "RRA:AVERAGE:0.5:#{year_range.steps}:#{rows}",
-                 *args.map{|arg| "DS:#{arg}:GAUGE:#{step * 3}:0:U"})
+                 "--step", @step,
+                 *(rra + data_sources))
     end
 
     def output_graph(range_class, options={}, *args)
