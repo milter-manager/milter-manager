@@ -31,6 +31,7 @@ noinst_HEADERS =				\
 milter_toolkit_la_SOURCES =			\
 	rb-milter-core.c			\
 	rb-milter-core-private.c		\
+	rb-milter-logger.c			\
 	rb-milter-decoder.c			\
 	rb-milter-encoder.c			\
 	rb-milter-command-encoder.c		\

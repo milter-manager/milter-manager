@@ -147,9 +147,7 @@ module Milter::Manager
       def guard(fallback_value=nil)
         yield
       rescue Exception => error
-        location = error.backtrace[0].split(/(:\d+):?/, 2)[0, 2].join
-        puts "#{location}: #{error.message} (#{error.class})"
-        # FIXME: log full error
+        Milter::Logger.error(error)
         fallback_value
       end
     end
@@ -174,8 +172,8 @@ module Milter::Manager
             nil
           end
         end.compact
-        puts "#{backtrace[0]}: #{$!.message}"
-        puts backtrace[1..-1]
+        Milter::Logger.error("#{backtrace[0]}: #{$!.message}")
+        Milter::Logger.error(backtrace[1..-1].join("\n"))
       end
     end
 
@@ -268,7 +266,7 @@ module Milter::Manager
             source = parser.source
             info = "#{file}:#{source.line}:#{source.position}"
             info << ":#{source.current_line}: #{$!.message}"
-            puts info
+            Logger.error(info)
           end
         end
       end

@@ -1,5 +1,11 @@
 2009-02-05  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/src/toolkit/rb-milter-logger.c,
+	binding/ruby/lib/milter/toolkit.rb,
+	binding/ruby/test/toolkit/test-logger.rb: add logger.
+
+	* binding/ruby/lib/milter/manager.rb: use logger.
+
 	* NEWS*: add entries for 0.8.0.
 
 	* test/server/test-server-context-stop-signals.c: add tests for
