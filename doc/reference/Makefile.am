@@ -101,7 +101,7 @@ generated_xml_files =				\
 	install-to-freebsd.xml			\
 	install-to-freebsd.xml.ja		\
 	install-to-others.xml			\
-	install-to-ohters.xml.ja		\
+	install-to-others.xml.ja		\
 	install-options-to-ubuntu.xml		\
 	install-options-to-ubuntu.xml.ja	\
 	install-options-to-centos.xml		\
