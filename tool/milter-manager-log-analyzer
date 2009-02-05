@@ -203,13 +203,13 @@ class MilterManagerLogAnalyzer
     end
 
     class Data
-      def initialize(countings)
-        @countings = countings
+      def initialize(counts)
+        @counts = counts
       end
 
       def empty?
-        return true unless @countings
-        @countings.each_value do |counting|
+        return true unless @counts
+        @counts.each_value do |counting|
           return false unless counting.empty?
         end
         true
@@ -217,7 +217,7 @@ class MilterManagerLogAnalyzer
 
       def last_time
         last_time = 0
-        @countings.each_value do |counting|
+        @counts.each_value do |counting|
           next if counting.empty?
           last_one = counting.sort { |a, b| a[0] <=> b[0] }.last[0]
           last_time = last_time > last_one ? last_time : last_one
@@ -227,7 +227,7 @@ class MilterManagerLogAnalyzer
 
       def first_time
         first_time = 0
-        @countings.each_value do |counting|
+        @counts.each_value do |counting|
           next if counting.empty?
           first_one = counting.sort { |a, b| a[0] <=> b[0] }.first[0]
           if first_time.zero?
@@ -240,11 +240,11 @@ class MilterManagerLogAnalyzer
       end
 
       def [](key)
-        @countings[key]
+        @counts[key]
       end
 
       def []=(key, value)
-        @countings[key] = value
+        @counts[key] = value
       end
     end
   end
@@ -270,33 +270,9 @@ class MilterManagerLogAnalyzer
       build_path(self.class.base_rrd_file_name)
     end
 
-    def count_data(last_update_time)
-      data = {}
-      @data.each do |datum|
-        time = normalize_time(datum.time)
-
-        # ignore sessions which has been already registerd
-        # due to RRD.update fails on past time stamp
-        if last_update_time
-          next if time <= last_update_time
-        end
-
-        # ignore recent sessions due to RRD.update fails on
-        # past time stamp
-        next if time >= normalize_time(@update_time)
-
-        time = time.to_i
-        key = datum.key
-
-        data[key] ||= {}
-        data[key][time] ||= 0
-        data[key][time] += 1
-      end
-      data
-    end
-
     def collect_data(last_update_time)
-      GraphData::Data.new(count_data(last_update_time))
+      data = @data.collect {|datum| [datum.key, datum.time]}
+      GraphData::Data.new(count_data({}, data, last_update_time))
     end
 
     def update
@@ -431,6 +407,27 @@ class MilterManagerLogAnalyzer
         "unknown"
       end
     end
+
+    def count_data(output, data, last_update_time)
+      data.each do |key, time|
+        time = normalize_time(time)
+
+        # ignore sessions which has been already registerd
+        # due to RRD.update fails on past time stamp
+        next if last_update_time and time <= last_update_time
+
+        # ignore recent sessions due to RRD.update fails on
+        # past time stamp
+        next if time >= normalize_time(@update_time)
+
+        time = time.to_i
+
+        output[key] ||= {}
+        output[key][time] ||= 0
+        output[key][time] += 1
+      end
+      output
+    end
   end
 
   class SessionGraphGenerator < GraphGenerator
@@ -474,38 +471,13 @@ class MilterManagerLogAnalyzer
                         /\A\[session\]\[end\]\[(.+)\]\(.+\)\z/)
     end
 
-    def count_sessions(sessions, last_update_time)
-      data = Hash.new
-      sessions.each do |session|
-        next if session.end_time.nil?
-        start_time = normalize_time(session.start_time)
-        end_time = normalize_time(session.end_time)
-
-        # ignore sessions which has been already registerd
-        # due to RRD.update fails on past time stamp
-        if last_update_time
-          next if end_time <= last_update_time
-          next if start_time <= last_update_time
-        end
-
-        # ignore recent sessions due to RRD.update fails on past time stamp
-        normalized_update_time = normalize_time(@update_time)
-        next if end_time >= normalized_update_time
-        next if start_time >= normalized_update_time
-
-        start_time = start_time.to_i
-        end_time = end_time.to_i
-
-        data[end_time] ||= 0
-        data[end_time] += 1
-      end
-      data
-    end
-
     def collect_data(last_update_time)
       count = {}
-      count["smtp"] = count_sessions(@client_sessions, last_update_time)
-      count["child"] = count_sessions(@child_sessions, last_update_time)
+      [["smtp", @client_sessions],
+       ["child", @child_sessions]].each do |key, sessions|
+        data = sessions.collect {|session| [key, session.end_time]}
+        count_data(count, data, last_update_time)
+      end
       GraphData::Data.new(count)
     end
 
@@ -615,10 +587,6 @@ class MilterManagerLogAnalyzer
         name = $2
         @data << LogData::Stop.new(state, name, time_stamp)
       end
-    end
-
-    def collect_data(last_update_time)
-      GraphData::Data.new(count_data(last_update_time))
     end
 
     def output_graph(range_class, options={})
