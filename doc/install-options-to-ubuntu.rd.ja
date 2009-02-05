@@ -70,7 +70,6 @@ milter-manager-log-analyzerは5分おきに実行されます。
 === gemのインストール
 
   % sudo gem1.8 install rails -v '2.2.2'
-  % sudo gem1.8 install locale_rails
   % sudo gem1.8 install passenger
 
 === Passengerのインストール
@@ -122,6 +121,7 @@ milter manager adminは/usr/local/share/milter-manager/admin/
   % tar cf - -C /usr/local/share/milter-manager admin | sudo -u milter-manager -H tar xf - -C ~milter-manager
   % sudo ln -s ~milter-manager/admin/public /var/www/milter-manager
   % cd ~milter-manager/admin
+  % sudo -u milter-manager -H rake gems:install
   % sudo -u milter-manager -H rake RAILS_ENV=production db:migrate
 
 最後に以下の内容の

@@ -68,7 +68,6 @@ installed:
 === Instal gems
 
   % sudo gem install rails -v '2.2.2'
-  % sudo gem install locale_rails
   % sudo gem install passenger
 
 === Install Passenger
@@ -117,6 +116,7 @@ http://localhost/milter-manager/.
   % tar cf - -C /usr/local/share/milter-manager admin | sudo -u milter-manager -H tar xf - -C ~milter-manager
   % sudo ln -s ~milter-manager/admin/public /usr/local/www/apache22/data/milter-manager
   % cd ~milter-manager/admin
+  % sudo -u milter-manager -H rake gems:install
   % sudo -u milter-manager -H rake RAILS_ENV=production db:migrate
 
 Then we create a file to

@@ -3,7 +3,11 @@
 
 class ApplicationController < ActionController::Base
   include AuthenticatedSystem
-  include ExceptionNotifiable
+  begin
+    include ExceptionNotifiable
+  rescue NameError
+    # for rake gems:install :<
+  end
 
   helper :all # include all helpers, all the time
 

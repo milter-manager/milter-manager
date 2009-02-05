@@ -1,5 +1,9 @@
 2009-02-05  Kouhei Sutou  <kou@clear-code.com>
 
+	* admin/, doc/install-options-to*, README*: use exception
+	notification gem not plugin because the package has too long file
+	name...
+
 	* doc/: add screenshot of milter manager admin.
 
 	* admin/public/stylesheets/base.css: remove needless 100%.

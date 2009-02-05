@@ -24,7 +24,6 @@ Here is a concrete list:
 
   * Files that describe their license:
     * binding/ruby/lib/milter/compatible.rb: Ruby's
-    * admin/vendor/plugins/exc-notify/: MIT
     * admin/vendor/plugins/restful-auth/: MIT
   * Commands: GPL3
     * src/*
