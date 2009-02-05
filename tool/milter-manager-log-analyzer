@@ -129,6 +129,18 @@ class MilterManagerLogAnalyzer
         @rrd_step = rrd_step
         @rows = rows
       end
+
+      def tag
+        name.downcase
+      end
+
+      def steps
+        base_range.steps * n_times
+      end
+
+      def start_time
+        base_range.start_time * n_times
+      end
     end
 
     class DayRange < TimeRange
@@ -139,6 +151,10 @@ class MilterManagerLogAnalyzer
       def steps
         (3600 * 24) / (@rrd_step * @rows) + 1
       end
+
+      def start_time
+        -(60 * 60 * 24)
+      end
     end
 
     class WeekRange < TimeRange
@@ -146,8 +162,13 @@ class MilterManagerLogAnalyzer
         "Week"
       end
 
-      def steps
-        DayRange.new(@rrd_step, @rows).steps * 7
+      private
+      def base_range
+        DayRange.new(@rrd_step, @rows)
+      end
+
+      def n_times
+        7
       end
     end
 
@@ -156,8 +177,13 @@ class MilterManagerLogAnalyzer
         "Month"
       end
 
-      def steps
-        WeekRange.new(@rrd_step, @rows).steps * 5
+      private
+      def base_range
+        WeekRange.new(@rrd_step, @rows)
+      end
+
+      def n_times
+        5
       end
     end
 
@@ -166,8 +192,13 @@ class MilterManagerLogAnalyzer
         "Year"
       end
 
-      def steps
-        MonthRange.new(@rrd_step, @rows).steps * 12
+      private
+      def base_range
+        MonthRange.new(@rrd_step, @rows)
+      end
+
+      def n_times
+        12
       end
     end
 
@@ -185,39 +216,6 @@ class MilterManagerLogAnalyzer
           60
         when "hour"
           3600
-        end
-      end
-
-      def short_name
-        case @name
-        when "second"
-          "sec"
-        when "minute"
-          "min"
-        when "hour"
-          "hour"
-        end
-      end
-
-      def rows
-        case @name
-        when "second"
-          86400 # 1day
-        when "minute"
-          43200 # 4weeks
-        when "hour"
-          8760 # 365days
-        end
-      end
-
-      def default_start_time
-        case @name
-        when "second"
-          "-3h" # 1hour
-        when "minute"
-          "-24h" # 12hours
-        when "hour"
-          "-7d" # 1day
         end
       end
 
@@ -390,20 +388,20 @@ class MilterManagerLogAnalyzer
                  *args.map{|arg| "DS:#{arg}:GAUGE:#{step * 3}:0:U"})
     end
 
-    def output_graph(time_span, range_class, options={}, *args)
-      start_time = options[:start_time] || time_span.default_start_time
-      end_time = options[:end_time] || guess_end_time(start_time)
-      graph_tag = options[:graph_tag] || time_span.name
-      width = options[:width] || @width
-      height = options[:height] || 200
-
+    def output_graph(range_class, options={}, *args)
       return nil unless File.exist?(rrd_file)
       last_update_time = RRD.last_update_time(rrd_file)
 
-      vertical_label = "#{@vertical_label}/#{time_span.short_name}"
+      range = range_class.new(@rrd_step, rows)
+      start_time = options[:start_time] || range.start_time
+      end_time = options[:end_time] || guess_end_time(start_time)
+      graph_tag = options[:graph_tag] || range.tag
+      width = options[:width] || @width
+      height = options[:height] || 200
+
+      vertical_label = "#{@vertical_label}/min"
       name = graph_name(graph_tag)
 
-      range = range_class.new(@rrd_step, rows)
       items = @items.inject([]) do |_items, item|
         _items + ["DEF:#{item}=#{rrd_file}:#{item}:AVERAGE",
                   "DEF:max_#{item}=#{rrd_file}:#{item}:MAX",
@@ -522,8 +520,8 @@ class MilterManagerLogAnalyzer
       GraphData::Data.new(counting)
     end
 
-    def output_graph(time_span, range_class, options={})
-      super(time_span, range_class, options,
+    def output_graph(range_class, options={})
+      super(range_class, options,
             "AREA:n_smtp#0000ff:SMTP  ",
             "GPRINT:total_smtp:MAX:total\\: %8.0lf sessions",
             "GPRINT:smtp:AVERAGE:avg\\: %6.2lf sessions/min",
@@ -564,7 +562,7 @@ class MilterManagerLogAnalyzer
       end
     end
 
-    def output_graph(time_span, range_class, options={})
+    def output_graph(range_class, options={})
       entries = [
                  ["AREA", "pass", "#0000ff", "Pass"],
                  ["STACK", "accept", "#00ff00", "Accept"],
@@ -596,7 +594,7 @@ class MilterManagerLogAnalyzer
       items << "GPRINT:total_smtp:MAX:total\\: %8.0lf sessions"
       items << "GPRINT:smtp:AVERAGE:avg\\: %6.2lf sessions/min"
       items << "GPRINT:max_smtp:MAX:max\\: %4.0lf sessions/min\\l"
-      super(time_span, range_class, options, *items)
+      super(range_class, options, *items)
     end
   end
 
@@ -635,7 +633,7 @@ class MilterManagerLogAnalyzer
       GraphData::Data.new(stop_counting)
     end
 
-    def output_graph(time_span, range_class, options={})
+    def output_graph(range_class, options={})
       entries = [
                  ["AREA", "connect", "#0000ff"],
                  ["STACK", "helo", "#ff00ff"],
@@ -668,7 +666,7 @@ class MilterManagerLogAnalyzer
       items << "GPRINT:total_milters:MAX:total\\: %8.0lf milters"
       items << "GPRINT:child:AVERAGE:avg\\: %6.2lf milters/min"
       items << "GPRINT:max_child:MAX:max\\: %4.0lf milters/min\\l"
-      super(time_span, range_class, options, *items)
+      super(range_class, options, *items)
     end
   end
 
@@ -797,29 +795,20 @@ EOF
     end
   end
 
-  def output_graph(time_span, range, label, options={})
+  def output_graph(range, label, options={})
     output_graphs = []
     [sessions, mail_status, stops].each do |generator|
-      file_name = generator.output_graph(GraphData::TimeSpan.new(time_span),
-                                         range, options)
+      file_name = generator.output_graph(range, options)
       output_graphs << file_name if file_name
     end
-    @output_graphs << [label || time_span, output_graphs]
+    @output_graphs << [label, output_graphs]
   end
 
   def output_all_graph
-    output_graph("minute", GraphData::DayRange, "Last Day",
-                 :start_time => -3600 * 24,
-                 :graph_tag => "day")
-    output_graph("minute", GraphData::WeekRange, "Last Week",
-                 :start_time => -3600 * 24 * 7,
-                 :graph_tag => "week")
-    output_graph("minute", GraphData::MonthRange, "Last Month",
-                 :start_time => -3600 * 24 * 31,
-                 :graph_tag => "month")
-    output_graph("minute", GraphData::YearRange, "Last Year",
-                 :start_time => -3600 * 24 * 365,
-                 :graph_tag => "year")
+    output_graph(GraphData::DayRange, "Last Day")
+    output_graph(GraphData::WeekRange, "Last Week")
+    output_graph(GraphData::MonthRange, "Last Month")
+    output_graph(GraphData::YearRange, "Last Year")
   end
 
   def output_html
