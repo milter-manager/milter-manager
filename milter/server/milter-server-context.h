@@ -96,9 +96,12 @@ struct _MilterServerContextClass
     gboolean (*stop_on_envelope_recipient)
                                    (MilterServerContext *context,
                                     const gchar *to);
+    gboolean (*stop_on_data)       (MilterServerContext *context);
     gboolean (*stop_on_header)     (MilterServerContext *context,
                                     const gchar *name,
                                     const gchar *value);
+    gboolean (*stop_on_end_of_header)
+                                   (MilterServerContext *context);
     gboolean (*stop_on_body)       (MilterServerContext *context,
                                     const gchar *chunk,
                                     gsize size);

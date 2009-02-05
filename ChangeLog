@@ -1,5 +1,10 @@
 2009-02-05  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/server/milter-server-context.c: set macro context before
+	calling stop callback.
+	* milter/server/milter-server-context.[ch]: add stoppers on DATA
+	and end of header.
+
 	* data/milter-manager.conf: disable sample configuration.
 
 	* doc/install-to-*.rd*: 0.7.0 -> 0.8.0.
