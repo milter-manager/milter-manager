@@ -370,7 +370,7 @@ class MilterManagerLogAnalyzer
       width = options[:width] || @width
       height = options[:height] || 200
 
-      vertical_label = "#{@vertical_label}/min"
+      vertical_label = "#{@vertical_label}/#{unit}"
       name = graph_name(graph_tag)
 
       items = @items.inject([]) do |_items, item|
@@ -421,6 +421,21 @@ class MilterManagerLogAnalyzer
        "CDEF:real_n_#{label}=n_#{label},#{range.steps},*",
        "CDEF:total_#{label}=PREV,UN,real_n_#{label},PREV,IF,real_n_#{label},+",
       ]
+    end
+
+    def unit
+      case @step
+      when 60
+        "min"
+      when 60 * 60
+        "hour"
+      when 60 * 60 * 24
+        "day"
+      when 60 * 60 * 24 * 365
+        "year"
+      else
+        "unknown"
+      end
     end
   end
 
@@ -509,12 +524,12 @@ class MilterManagerLogAnalyzer
       super(range_class, options,
             "AREA:n_smtp#0000ff:SMTP  ",
             "GPRINT:total_smtp:MAX:total\\: %8.0lf sessions",
-            "GPRINT:smtp:AVERAGE:avg\\: %6.2lf sessions/min",
-            "GPRINT:max_smtp:MAX:max\\: %4.0lf sessions/min\\l",
+            "GPRINT:smtp:AVERAGE:avg\\: %6.2lf sessions/#{unit}",
+            "GPRINT:max_smtp:MAX:max\\: %4.0lf sessions/#{unit}\\l",
             "LINE2:n_child#00ff00:milter",
             "GPRINT:total_child:MAX:total\\: %8.0lf sessions",
-            "GPRINT:child:AVERAGE:avg\\: %6.2lf sessions/min",
-            "GPRINT:max_child:MAX:max\\: %4.0lf sessions/min\\l")
+            "GPRINT:child:AVERAGE:avg\\: %6.2lf sessions/#{unit}",
+            "GPRINT:max_child:MAX:max\\: %4.0lf sessions/#{unit}\\l")
     end
   end
 
@@ -564,8 +579,8 @@ class MilterManagerLogAnalyzer
       entries.each do |type, name, color, label|
         items << "#{type}:#{name}#{color}:#{label.ljust(max_label_size)}"
         items << "GPRINT:total_#{name}:MAX:total\\: %11.0lf mails"
-        items << "GPRINT:#{name}:AVERAGE:avg\\: %9.2lf mails/min"
-        items << "GPRINT:max_#{name}:MAX:max\\: %7.0lf mails/min\\l"
+        items << "GPRINT:#{name}:AVERAGE:avg\\: %9.2lf mails/#{unit}"
+        items << "GPRINT:max_#{name}:MAX:max\\: %7.0lf mails/#{unit}\\l"
       end
 
       range = range_class.new(@step, rows)
@@ -575,8 +590,8 @@ class MilterManagerLogAnalyzer
       label = "SMTP".ljust(max_label_size)
       items << "LINE2:n_smtp#000000:#{label}"
       items << "GPRINT:total_smtp:MAX:total\\: %8.0lf sessions"
-      items << "GPRINT:smtp:AVERAGE:avg\\: %6.2lf sessions/min"
-      items << "GPRINT:max_smtp:MAX:max\\: %4.0lf sessions/min\\l"
+      items << "GPRINT:smtp:AVERAGE:avg\\: %6.2lf sessions/#{unit}"
+      items << "GPRINT:max_smtp:MAX:max\\: %4.0lf sessions/#{unit}\\l"
       super(range_class, options, *items)
     end
   end
@@ -634,8 +649,8 @@ class MilterManagerLogAnalyzer
       entries.each do |type, name, color|
         items << "#{type}:#{name}#{color}:#{name.ljust(max_name_size)}"
         items << "GPRINT:total_#{name}:MAX:total\\: %8.0lf milters"
-        items << "GPRINT:#{name}:AVERAGE:avg\\: %6.2lf milters/min"
-        items << "GPRINT:max_#{name}:MAX:max\\: %4.0lf milters/min\\l"
+        items << "GPRINT:#{name}:AVERAGE:avg\\: %6.2lf milters/#{unit}"
+        items << "GPRINT:max_#{name}:MAX:max\\: %4.0lf milters/#{unit}\\l"
       end
 
       range = range_class.new(@step, rows)
@@ -645,8 +660,8 @@ class MilterManagerLogAnalyzer
       label = 'total'.ljust(max_name_size)
       items << "LINE2:n_milter#000000:#{label}"
       items << "GPRINT:total_milter:MAX:total\\: %8.0lf milters"
-      items << "GPRINT:milter:AVERAGE:avg\\: %6.2lf milters/min"
-      items << "GPRINT:max_milter:MAX:max\\: %4.0lf milters/min\\l"
+      items << "GPRINT:milter:AVERAGE:avg\\: %6.2lf milters/#{unit}"
+      items << "GPRINT:max_milter:MAX:max\\: %4.0lf milters/#{unit}\\l"
       super(range_class, options, *items)
     end
   end
