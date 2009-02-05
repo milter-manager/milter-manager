@@ -37,9 +37,9 @@ milter-greylistの推奨パッケージとしてsendmailが登録されている
 
   % mkdir -p ~/src/
   % cd ~/src/
-  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-0.7.0.tar.gz
-  % tar xvzf milter-manager-0.7.0.tar.gz
-  % cd milter-manager-0.7.0
+  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-0.8.0.tar.gz
+  % tar xvzf milter-manager-0.8.0.tar.gz
+  % cd milter-manager-0.8.0
   % ./configure
   % make
   % sudo make install

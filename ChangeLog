@@ -1,5 +1,7 @@
 2009-02-05  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/install-to-*.rd*: 0.7.0 -> 0.8.0.
+
 	* data/applicable-conditions/s25r.conf: update to S25R version
 	2009/02/01.
 
