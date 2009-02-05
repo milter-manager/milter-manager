@@ -144,12 +144,13 @@ module Milter::Manager
         end
       end
 
-      def guard
+      def guard(fallback_value=nil)
         yield
       rescue Exception => error
         location = error.backtrace[0].split(/(:\d+):?/, 2)[0, 2].join
         puts "#{location}: #{error.message} (#{error.class})"
         # FIXME: log full error
+        fallback_value
       end
     end
 
@@ -708,7 +709,9 @@ module Milter::Manager
             child.signal_connect("stop-on-connect") do |_child, host, address|
               context = ChildContext.new(child, children)
               @connect_stoppers.any? do |stopper|
-                stopper.call(context, host, address)
+                ConfigurationLoader.guard(false) do
+                  stopper.call(context, host, address)
+                end
               end
             end
           end
@@ -717,7 +720,9 @@ module Milter::Manager
             child.signal_connect("stop-on-envelope-from") do |_child, from|
               context = ChildContext.new(child, children)
               @envelope_from_stoppers.any? do |stopper|
-                stopper.call(context, from)
+                ConfigurationLoader.guard(false) do
+                  stopper.call(context, from)
+                end
               end
             end
           end
@@ -726,7 +731,9 @@ module Milter::Manager
             child.signal_connect("stop-on-envelope-recipient") do |_child, recipient|
               context = ChildContext.new(child, children)
               @envelope_recipient_stoppers.any? do |stopper|
-                stopper.call(context, recipient)
+                ConfigurationLoader.guard(false) do
+                  stopper.call(context, recipient)
+                end
               end
             end
           end
@@ -735,7 +742,9 @@ module Milter::Manager
             child.signal_connect("stop-on-header") do |_child, name, value|
               context = ChildContext.new(child, children)
               @header_stoppers.any? do |stopper|
-                stopper.call(context, name, value)
+                ConfigurationLoader.guard(false) do
+                  stopper.call(context, name, value)
+                end
               end
             end
           end

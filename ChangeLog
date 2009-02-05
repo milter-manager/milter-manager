@@ -1,5 +1,8 @@
 2009-02-05  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/lib/milter/manager.rb: guard exception raising in
+	stopper callback.
+
 	* milter/server/milter-server-context.c: set macro context before
 	calling stop callback.
 	* milter/server/milter-server-context.[ch]: add stoppers on DATA
