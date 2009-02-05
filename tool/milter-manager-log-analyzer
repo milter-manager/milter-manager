@@ -272,6 +272,10 @@ class MilterManagerLogAnalyzer
       @width / @points_per_sample
     end
 
+    def rrd_file
+      build_path(self.class.base_rrd_file_name)
+    end
+
     def count(last_update_time)
       counting = GraphData::Count.new()
       @data.each do |datum|
@@ -370,13 +374,7 @@ class MilterManagerLogAnalyzer
       name = graph_name(graph_tag)
 
       items = @items.inject([]) do |_items, item|
-        _items + ["DEF:#{item}=#{rrd_file}:#{item}:AVERAGE",
-                  "DEF:max_#{item}=#{rrd_file}:#{item}:MAX",
-                  "CDEF:n_#{item}=#{item}",
-                  "CDEF:real_#{item}=#{item}",
-                  "CDEF:real_max_#{item}=max_#{item}",
-                  "CDEF:real_n_#{item}=n_#{item},#{range.steps},*",
-                  "CDEF:total_#{item}=PREV,UN,real_n_#{item},PREV,IF,real_n_#{item},+"]
+        _items + generate_definitions(rrd_file, range, item)
       end
 
       data = items + args
@@ -411,9 +409,28 @@ class MilterManagerLogAnalyzer
     def normalize_time(time)
       Time.at(time.to_i - time.to_i % @step).utc
     end
+
+    def generate_definitions(rrd_file, range, item, label=nil)
+      label ||= item
+      [
+       "DEF:#{label}=#{rrd_file}:#{item}:AVERAGE",
+       "DEF:max_#{label}=#{rrd_file}:#{item}:MAX",
+       "CDEF:n_#{label}=#{label}",
+       "CDEF:real_#{label}=#{label}",
+       "CDEF:real_max_#{label}=max_#{label}",
+       "CDEF:real_n_#{label}=n_#{label},#{range.steps},*",
+       "CDEF:total_#{label}=PREV,UN,real_n_#{label},PREV,IF,real_n_#{label},+",
+      ]
+    end
   end
 
   class SessionGraphGenerator < GraphGenerator
+    class << self
+      def base_rrd_file_name
+        "milter-log.session.rrd"
+      end
+    end
+
     def initialize(output_directory, update_time)
       super(output_directory, update_time)
       @title = 'Sessions'
@@ -421,10 +438,6 @@ class MilterManagerLogAnalyzer
       @items = ["smtp", "child"]
       @child_sessions = []
       @client_sessions = []
-    end
-
-    def rrd_file
-      build_path("milter-log.session.rrd")
     end
 
     def graph_name(tag)
@@ -506,6 +519,12 @@ class MilterManagerLogAnalyzer
   end
 
   class MailStatusGraphGenerator < GraphGenerator
+    class << self
+      def base_rrd_file_name
+        "milter-log.mail.rrd"
+      end
+    end
+
     def initialize(output_directory, update_time)
       super(output_directory, update_time)
       @vertical_label = "mails"
@@ -514,10 +533,6 @@ class MilterManagerLogAnalyzer
                 "reject", "discard",
                 "temporary-failure",
                 "quarantine"]
-    end
-
-    def rrd_file
-      build_path("milter-log.mail.rrd")
     end
 
     def graph_name(tag)
@@ -554,12 +569,8 @@ class MilterManagerLogAnalyzer
       end
 
       range = range_class.new(@step, rows)
-      path = build_path("milter-log.session.rrd")
-      items << "DEF:smtp=#{path}:smtp:AVERAGE"
-      items << "DEF:max_smtp=#{path}:smtp:MAX"
-      items << "CDEF:n_smtp=smtp"
-      items << "CDEF:real_n_smtp=n_smtp,#{range.steps},*"
-      items << "CDEF:total_smtp=PREV,UN,real_n_smtp,PREV,IF,real_n_smtp,+"
+      path = build_path(SessionGraphGenerator.base_rrd_file_name)
+      items += generate_definitions(path, range, "smtp")
 
       label = "SMTP".ljust(max_label_size)
       items << "LINE2:n_smtp#000000:#{label}"
@@ -571,6 +582,12 @@ class MilterManagerLogAnalyzer
   end
 
   class StopGraphGenerator < GraphGenerator
+    class << self
+      def base_rrd_file_name
+        "milter-log.stop.rrd"
+      end
+    end
+
     def initialize(output_directory, update_time)
       super(output_directory, update_time)
       @title = 'Stopped milters'
@@ -582,10 +599,6 @@ class MilterManagerLogAnalyzer
                 "header",
                 "body",
                 "end-of-message"]
-    end
-
-    def rrd_file
-      build_path("milter-log.stop.rrd")
     end
 
     def graph_name(tag)
@@ -626,18 +639,14 @@ class MilterManagerLogAnalyzer
       end
 
       range = range_class.new(@step, rows)
-      path = build_path("milter-log.session.rrd")
-      items << "DEF:child=#{path}:child:AVERAGE"
-      items << "DEF:max_child=#{path}:child:MAX"
-      items << "CDEF:n_milters=child"
-      items << "CDEF:real_n_milters=n_milters,#{range.steps},*"
-      items << "CDEF:total_milters=PREV,UN,real_n_milters,PREV,IF,real_n_milters,+"
+      path = build_path(SessionGraphGenerator.base_rrd_file_name)
+      items += generate_definitions(path, range, "child", "milter")
 
       label = 'total'.ljust(max_name_size)
-      items << "LINE2:n_milters#000000:#{label}"
-      items << "GPRINT:total_milters:MAX:total\\: %8.0lf milters"
-      items << "GPRINT:child:AVERAGE:avg\\: %6.2lf milters/min"
-      items << "GPRINT:max_child:MAX:max\\: %4.0lf milters/min\\l"
+      items << "LINE2:n_milter#000000:#{label}"
+      items << "GPRINT:total_milter:MAX:total\\: %8.0lf milters"
+      items << "GPRINT:milter:AVERAGE:avg\\: %6.2lf milters/min"
+      items << "GPRINT:max_milter:MAX:max\\: %4.0lf milters/min\\l"
       super(range_class, options, *items)
     end
   end
