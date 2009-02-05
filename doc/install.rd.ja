@@ -74,6 +74,8 @@ milter-managerのインストール方法はプラットフォーム毎に解説
 
 == milter-manager-log-analyzer
 
+((<milter-manager-log-analyzerが生成するグラフ|milter-manager-log-analyzer-graphs.svg>))
+
 milter-manager-log-analyzerはmilter-managerのログからグラフを
 出力するプログラムです。milter-manager-log-analyzerの設定は必
 須ではありません。

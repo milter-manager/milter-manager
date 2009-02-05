@@ -1,4 +1,4 @@
-MAINTAINERCLEANFILE = Makefile.in
+MAINTAINERCLEANFILES = Makefile.in
 
 # The name of the module.
 DOC_MODULE = milter-manager
@@ -51,7 +51,8 @@ generated_image_files =					\
 	sendmail-and-milter.png				\
 	sendmail-and-milter-ja.png			\
 	sendmail-and-postfix-and-milter.png		\
-	sendmail-and-postfix-and-milter-ja.png
+	sendmail-and-postfix-and-milter-ja.png		\
+	milter-manager-log-analyzer-graphs.png
 
 # Images to copy into HTML directory
 HTML_IMAGES = $(generated_image_files)
@@ -106,7 +107,7 @@ generated_xml_files =				\
 	install-options-to-freebsd.xml		\
 	install-options-to-freebsd.xml.ja
 
-CLEANFILES +=				\
+MAINTAINERCLEANFILES +=			\
 	$(generated_xml_files)		\
 	$(generated_image_files)
 
@@ -224,6 +225,9 @@ sendmail-and-postfix-and-milter.png: $(top_srcdir)/doc/sendmail-and-postfix-and-
 	$(SVG2PNG) $@ $<
 
 sendmail-and-postfix-and-milter-ja.png: $(top_srcdir)/doc/sendmail-and-postfix-and-milter-ja.svg
+	$(SVG2PNG) $@ $<
+
+milter-manager-log-analyzer-graphs.png: $(top_srcdir)/doc/milter-manager-log-analyzer-graphs.svg
 	$(SVG2PNG) $@ $<
 
 upload: docs
