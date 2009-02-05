@@ -5,12 +5,13 @@
 == 0.8.0: 2009-02-06
 
   * 新機能
-    * milter-managerのログをグラフ化する
-      milter-manager-log-analyzerの追加
-    * milter-managerの管理用Webインターフェイスmilter
-      manager adminの追加
-    * ↑のスクリーンショット: ((<インストール
-      |"doc/install.rd.ja">))ページの下部
+    * 追加ツール
+      * milter-manager-log-analyzer:
+        milter-managerのログをグラフ化
+      * milter manager admin:
+        milter-managerの管理用Webインターフェイス
+      * ↑のスクリーンショット:
+        ((<インストール|"doc/install.rd.ja">))ページの下部
     * pkgsrc用milter検出機能の追加
     * CentOS対応
     * 適用条件

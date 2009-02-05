@@ -5,12 +5,13 @@
 == 0.8.0: 2009-02-06
 
   * New features
-    * Add milter-manager-log-analyzer that visualizes
-      milter-manager's log
-    * Add milter manager admin that is a Web interface for
-      administrate milter-manager.
-    * Screenshots of the above two applications: the bottom of
-      ((<Install|"doc/install.rd">)) page.
+    * New tools:
+      * milter-manager-log-analyzer:
+        It visualizes milter-manager's log.
+      * milter manager admin:
+        Web interface for administrating milter-manager.
+      * Screenshots of the above two tools:
+        The bottom of ((<Install|"doc/install.rd">)) page.
     * Add milter detection method for pkgsrc.
     * Support CentOS.
     * Applicable condition
