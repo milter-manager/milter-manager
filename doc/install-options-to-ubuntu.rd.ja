@@ -57,7 +57,7 @@ milter-manager-log-analyzerは5分おきに実行されます。
 以下のパッケージをインストールすることにより、関連するパッケー
 ジもインストールされます。
 
-  % sudo aptitude -V -D install rdoc libopenssl-ruby apache2-threaded-dev libsqlite3-ruby
+  % sudo aptitude -V -D install build-essential rdoc libopenssl-ruby apache2-threaded-dev libsqlite3-ruby
 
 === RubyGemsのインストール
 
@@ -65,18 +65,18 @@ milter-manager-log-analyzerは5分おきに実行されます。
   % wget http://rubyforge.org/frs/download.php/45905/rubygems-1.3.1.tgz
   % tar xvzf rubygems-1.3.1.tgz
   % cd rubygems-1.3.1
-  % sudo ruby setup.rb
+  % sudo ruby setup.rb --no-format-executable
 
 === gemのインストール
 
-  % sudo gem1.8 install rails -v '2.2.2'
-  % sudo gem1.8 install passenger
+  % sudo gem install rails -v '2.2.2'
+  % sudo gem install passenger
 
 === Passengerのインストール
 
 以下のコマンドを実行し、Passengerをビルドします。
 
-  % (echo 1; echo) | sudo /var/lib/gems/1.8/bin/passenger-install-apache2-module
+  % (echo 1; echo) | sudo passenger-install-apache2-module
 
 以下の内容のpassenger.loadとpassenger.confを
 /etc/apache2/mods-available/に作成します。

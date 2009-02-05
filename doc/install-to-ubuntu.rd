@@ -13,7 +13,7 @@ install information.
 To install the following packages, related packages are also
 installed:
 
-  % sudo aptitude -V -D install libglib2.0-dev ruby1.8-dev libglib2-ruby1.8
+  % sudo aptitude -V -D install libtool intltool libglib2.0-dev ruby ruby1.8-dev libglib2-ruby1.8
 
 We use Postfix as MTA:
 
@@ -42,6 +42,7 @@ We work at ~/src/. We will install milter manager into /usr/local/.
   % ./configure
   % make
   % sudo make install
+  % sudo /sbin/ldconfig
 
 We create a user for milter-manager:
 
@@ -103,7 +104,7 @@ After:
 
 clamav-milter should be restarted:
 
-  % sudo /etc/init.d/clamav-milter start
+  % sudo /etc/init.d/clamav-milter restart
 
 === Configure milter-greylist
 

@@ -66,7 +66,7 @@ installed:
   % wget http://rubyforge.org/frs/download.php/45905/rubygems-1.3.1.tgz
   % tar xvzf rubygems-1.3.1.tgz
   % cd rubygems-1.3.1
-  % sudo ruby setup.rb
+  % sudo ruby setup.rb --no-format-executable
 
 === Instal gems
 
@@ -77,7 +77,7 @@ installed:
 
 To build Passenger we run the following command:
 
-  % (echo 1; echo) | sudo /var/lib/gems/1.8/bin/passenger-install-apache2-module
+  % (echo 1; echo) | sudo passenger-install-apache2-module
 
 We create passenger.load and passenger.conf under
 /etc/apache2/mods-available/.

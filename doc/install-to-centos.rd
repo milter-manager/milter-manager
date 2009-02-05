@@ -17,7 +17,7 @@ use sudo, use su instead.
 To install the following packages, related packages are also
 installed:
 
-  % sudo yum install -y glib2-devel ruby-devel
+  % sudo yum install -y libtool intltool glib2-devel ruby-devel
 
 We use Sendmail as MTA because it's installed by default.
 

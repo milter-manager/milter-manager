@@ -13,7 +13,7 @@ Ubuntu Linuxに特化したmilter managerのインストール方法につい
 以下のパッケージをインストールすることにより、関連するパッケー
 ジもインストールされます。
 
-  % sudo aptitude -V -D install libglib2.0-dev ruby1.8-dev libglib2-ruby1.8
+  % sudo aptitude -V -D install libtool intltool libglib2.0-dev ruby ruby1.8-dev libglib2-ruby1.8
 
 MTAはPostfixを利用することとします。
 
@@ -30,6 +30,8 @@ Sendmailがインストールされてしまうからです。これは、
 milter-greylistの推奨パッケージとしてsendmailが登録されている
 ためです。
 
+
+
 == ビルドとインストール
 
 ~/src/以下で作業をすることとします。また、/usr/local/以下に
@@ -43,6 +45,7 @@ milter-greylistの推奨パッケージとしてsendmailが登録されている
   % ./configure
   % make
   % sudo make install
+  % sudo /sbin/ldconfig
 
 milter-manager用のユーザを作成します。
 
@@ -103,7 +106,7 @@ clamav-milterはpostfixグループでソケットに読み書きできるよう
 
 clamav-milterを再起動します。
 
-  % sudo /etc/init.d/clamav-milter start
+  % sudo /etc/init.d/clamav-milter restart
 
 === milter-greylistの設定
 
