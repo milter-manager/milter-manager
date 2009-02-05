@@ -318,9 +318,7 @@ module Milter::Manager
             @loader.define_milter(@egg_config["name"]) do |milter|
               spec = @egg_config["connection_spec"] || ""
               milter.connection_spec = spec unless spec.empty?
-              (@egg_config["applicable_conditions"] || []).each do |condition|
-                milter.add_applicable_condition(condition)
-              end
+              milter.applicable_conditions = @egg_config["applicable_conditions"]
               if @egg_config.has_key?("enabled")
                 milter.enabled = @egg_config["enabled"]
               end
@@ -613,7 +611,7 @@ module Milter::Manager
 
       def applicable_conditions=(condition_names)
         configuration = @loader.configuration
-        conditions = condition_names.collect do |name|
+        conditions = (condition_names || []).collect do |name|
           condition = configuration.find_applicable_condition(name)
           if condition.nil?
             available_conditions = configuration.applicable_conditions

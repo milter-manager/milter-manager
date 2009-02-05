@@ -79,6 +79,104 @@ EOC
 EOX
   end
 
+  def test_change_applicable_conditions
+    @loader.define_applicable_condition("S25R") do |condition|
+      condition.description = "Selective SMTP Rejection"
+    end
+    @loader.define_applicable_condition("Remote Network") do |condition|
+      condition.description = "Remote Network"
+    end
+
+    @loader.define_milter("milter-greylist") do |milter|
+      milter.connection_spec = "inet:10026"
+      milter.applicable_conditions = ["Remote Network"]
+    end
+
+    load(<<-EOC)
+<configuration>
+  <milters>
+    <milter>
+      <name>milter-greylist</name>
+      <applicable-conditions>
+        <applicable-condition>S25R</applicable-condition>
+      </applicable-conditions>
+    </milter>
+  </milters>
+</configuration>
+EOC
+
+    assert_equal(<<-EOX, @configuration.to_xml)
+<configuration>
+  <applicable-conditions>
+    <applicable-condition>
+      <name>S25R</name>
+      <description>Selective SMTP Rejection</description>
+    </applicable-condition>
+    <applicable-condition>
+      <name>Remote Network</name>
+      <description>Remote Network</description>
+    </applicable-condition>
+  </applicable-conditions>
+  <milters>
+    <milter>
+      <name>milter-greylist</name>
+      <enabled>true</enabled>
+      <connection-spec>inet:10026</connection-spec>
+      <applicable-conditions>
+        <applicable-condition>S25R</applicable-condition>
+      </applicable-conditions>
+    </milter>
+  </milters>
+</configuration>
+EOX
+  end
+
+  def test_remove_applicable_conditions
+    @loader.define_applicable_condition("S25R") do |condition|
+      condition.description = "Selective SMTP Rejection"
+    end
+    @loader.define_applicable_condition("Remote Network") do |condition|
+      condition.description = "Remote Network"
+    end
+
+    @loader.define_milter("milter-greylist") do |milter|
+      milter.connection_spec = "inet:10026"
+      milter.applicable_conditions = ["S25R", "Remote Network"]
+    end
+
+    load(<<-EOC)
+<configuration>
+  <milters>
+    <milter>
+      <name>milter-greylist</name>
+    </milter>
+  </milters>
+</configuration>
+EOC
+
+    assert_equal(<<-EOX, @configuration.to_xml)
+<configuration>
+  <applicable-conditions>
+    <applicable-condition>
+      <name>S25R</name>
+      <description>Selective SMTP Rejection</description>
+    </applicable-condition>
+    <applicable-condition>
+      <name>Remote Network</name>
+      <description>Remote Network</description>
+    </applicable-condition>
+  </applicable-conditions>
+  <milters>
+    <milter>
+      <name>milter-greylist</name>
+      <enabled>true</enabled>
+      <connection-spec>inet:10026</connection-spec>
+    </milter>
+  </milters>
+</configuration>
+EOX
+  end
+
   private
   def load(content)
     file = Tempfile.new("xml-loader")
