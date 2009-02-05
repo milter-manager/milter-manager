@@ -458,7 +458,7 @@ echo
 echo "  GLib             : $glib_version"
 echo "  Ruby             : $RUBY"
 echo
-echo "  GTK-Doc          : $GTKDOC_CHECK"
+echo "  GTK-Doc          : $enable_gtk_doc"
 echo
 echo "  Cutter           : $CUTTER"
 echo "  LCOV             : $LCOV"
