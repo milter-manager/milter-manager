@@ -125,8 +125,8 @@ class MilterManagerLogAnalyzer
 
   module GraphData
     class TimeRange
-      def initialize(rrd_step, rows)
-        @rrd_step = rrd_step
+      def initialize(step, rows)
+        @step = step
         @rows = rows
       end
 
@@ -149,7 +149,7 @@ class MilterManagerLogAnalyzer
       end
 
       def steps
-        (3600 * 24) / (@rrd_step * @rows) + 1
+        (3600 * 24) / (@step * @rows) + 1
       end
 
       def start_time
@@ -164,7 +164,7 @@ class MilterManagerLogAnalyzer
 
       private
       def base_range
-        DayRange.new(@rrd_step, @rows)
+        DayRange.new(@step, @rows)
       end
 
       def n_times
@@ -179,7 +179,7 @@ class MilterManagerLogAnalyzer
 
       private
       def base_range
-        WeekRange.new(@rrd_step, @rows)
+        WeekRange.new(@step, @rows)
       end
 
       def n_times
@@ -194,40 +194,11 @@ class MilterManagerLogAnalyzer
 
       private
       def base_range
-        MonthRange.new(@rrd_step, @rows)
+        MonthRange.new(@step, @rows)
       end
 
       def n_times
         12
-      end
-    end
-
-    class TimeSpan
-      attr_accessor :name
-      def initialize(name)
-        @name = name
-      end
-
-      def step
-        case @name
-        when "second"
-          1
-        when "minute"
-          60
-        when "hour"
-          3600
-        end
-      end
-
-      def adjust_time(time)
-        case @name
-        when "second"
-          time
-        when "minute"
-          Time.utc(0, time.min, time.hour, time.mday, time.mon, time.year, time.wday, time.yday, time.isdst, time.zone)
-        when "hour"
-          Time.utc(0, 0, time.hour, time.mday, time.mon, time.year, time.wday, time.yday, time.isdst, time.zone)
-        end
       end
     end
 
@@ -292,7 +263,7 @@ class MilterManagerLogAnalyzer
       @items = nil
       @title = nil
       @vertical_label = nil
-      @rrd_step = 60
+      @step = 60
       @width = 600
       @points_per_sample = 3
     end
@@ -301,10 +272,10 @@ class MilterManagerLogAnalyzer
       @width / @points_per_sample
     end
 
-    def count(time_span, last_update_time)
+    def count(last_update_time)
       counting = GraphData::Count.new()
       @data.each do |datum|
-        time = time_span.adjust_time(datum.time)
+        time = normalize_time(datum.time)
 
         # ignore sessions which has been already registerd due to RRD.update fails on past time stamp
         if last_update_time
@@ -312,7 +283,7 @@ class MilterManagerLogAnalyzer
         end
 
         # ignore recent sessions due to RRD.update fails on past time stamp
-        next if time >= time_span.adjust_time(@update_time)
+        next if time >= normalize_time(@update_time)
 
         time = time.to_i
         key = datum.key
@@ -325,31 +296,31 @@ class MilterManagerLogAnalyzer
       counting
     end
 
-    def collect_data(time_span, last_update_time)
-      counting = count(time_span, last_update_time)
+    def collect_data(last_update_time)
+      counting = count(last_update_time)
       GraphData::Data.new(counting)
     end
 
-    def update_db(time_span)
+    def update_db
       if File.exist?(rrd_file)
         last_update_time = RRD.last_update_time(rrd_file)
       else
         last_update_time = nil
       end
 
-      data = collect_data(time_span, last_update_time)
+      data = collect_data(last_update_time)
       return if data.empty?
 
       end_time = data.last_time
       if last_update_time
-        start_time = last_update_time + time_span.step
+        start_time = last_update_time + @step
       else
         start_time = data.first_time
       end
 
-      create_rrd(time_span, start_time, *@items) unless File.exist?(rrd_file)
+      create_rrd(start_time, *@items) unless File.exist?(rrd_file)
 
-      start_time.to_i.step(end_time, time_span.step) do |time|
+      start_time.to_i.step(end_time, @step) do |time|
         counts = []
         @items.each do |item|
           counts << data[item][time]
@@ -364,16 +335,16 @@ class MilterManagerLogAnalyzer
     end
 
     def update
-      update_db(GraphData::TimeSpan.new("minute"))
+      update_db
     end
 
-    def create_rrd(time_span, start_time, *args)
-      step = @rrd_step
+    def create_rrd(start_time, *args)
+      step = @step
 
-      day_range = GraphData::DayRange.new(@rrd_step, rows)
-      week_range = GraphData::WeekRange.new(@rrd_step, rows)
-      month_range = GraphData::MonthRange.new(@rrd_step, rows)
-      year_range = GraphData::YearRange.new(@rrd_step, rows)
+      day_range = GraphData::DayRange.new(@step, rows)
+      week_range = GraphData::WeekRange.new(@step, rows)
+      month_range = GraphData::MonthRange.new(@step, rows)
+      year_range = GraphData::YearRange.new(@step, rows)
       RRD.create(rrd_file,
                  "--start", (start_time - 1).to_i.to_s,
                  "--step", step,
@@ -392,7 +363,7 @@ class MilterManagerLogAnalyzer
       return nil unless File.exist?(rrd_file)
       last_update_time = RRD.last_update_time(rrd_file)
 
-      range = range_class.new(@rrd_step, rows)
+      range = range_class.new(@step, rows)
       start_time = options[:start_time] || range.start_time
       end_time = options[:end_time] || guess_end_time(start_time)
       graph_tag = options[:graph_tag] || range.tag
@@ -440,6 +411,10 @@ class MilterManagerLogAnalyzer
         end_time - (end_time % step)
       end
     end
+
+    def normalize_time(time)
+      Time.at(time.to_i - time.to_i % @step).utc
+    end
   end
 
   class SessionGraphGenerator < GraphGenerator
@@ -481,12 +456,12 @@ class MilterManagerLogAnalyzer
                         /\A\[session\]\[end\]\[(.+)\]\(.+\)\z/)
     end
 
-    def count_sessions(sessions, time_span, last_update_time)
+    def count_sessions(sessions, last_update_time)
       counting = Hash.new(0)
       sessions.each do |session|
         next if session.end_time == nil
-        start_time = time_span.adjust_time(session.start_time)
-        end_time = time_span.adjust_time(session.end_time)
+        start_time = normalize_time(session.start_time)
+        end_time = normalize_time(session.end_time)
 
         # ignore sessions which has been already registerd due to RRD.update fails on past time stamp
         if last_update_time
@@ -495,13 +470,14 @@ class MilterManagerLogAnalyzer
         end
 
         # ignore recent sessions due to RRD.update fails on past time stamp
-        next if end_time >= time_span.adjust_time(@update_time)
-        next if start_time >= time_span.adjust_time(@update_time)
+        normalized_update_time = normalize_time(@update_time)
+        next if end_time >= normalized_update_time
+        next if start_time >= normalized_update_time
 
         start_time = start_time.to_i
         end_time = end_time.to_i
 
-        start_time.step(end_time, time_span.step) do |time|
+        start_time.step(end_time, @step) do |time|
           time = end_time # FIXME
           count = counting[time]
           count = 0 if count == "U"
@@ -513,10 +489,10 @@ class MilterManagerLogAnalyzer
       counting
     end
 
-    def collect_data(time_span, last_update_time)
+    def collect_data(last_update_time)
       counting = GraphData::Count.new()
-      counting["smtp"] = count_sessions(@client_sessions, time_span, last_update_time)
-      counting["child"] = count_sessions(@child_sessions, time_span, last_update_time)
+      counting["smtp"] = count_sessions(@client_sessions, last_update_time)
+      counting["child"] = count_sessions(@child_sessions, last_update_time)
       GraphData::Data.new(counting)
     end
 
@@ -581,7 +557,7 @@ class MilterManagerLogAnalyzer
         items << "GPRINT:max_#{name}:MAX:max\\: %7.0lf mails/min\\l"
       end
 
-      range = range_class.new(@rrd_step, rows)
+      range = range_class.new(@step, rows)
       path = build_path("milter-log.session.rrd")
       items << "DEF:smtp=#{path}:smtp:AVERAGE"
       items << "DEF:max_smtp=#{path}:smtp:MAX"
@@ -628,8 +604,8 @@ class MilterManagerLogAnalyzer
       end
     end
 
-    def collect_data(time_span, last_update_time)
-      stop_counting = count(time_span, last_update_time)
+    def collect_data(last_update_time)
+      stop_counting = count(last_update_time)
       GraphData::Data.new(stop_counting)
     end
 
@@ -653,7 +629,7 @@ class MilterManagerLogAnalyzer
         items << "GPRINT:max_#{name}:MAX:max\\: %4.0lf milters/min\\l"
       end
 
-      range = range_class.new(@rrd_step, rows)
+      range = range_class.new(@step, rows)
       path = build_path("milter-log.session.rrd")
       items << "DEF:child=#{path}:child:AVERAGE"
       items << "DEF:max_child=#{path}:child:MAX"
@@ -701,9 +677,10 @@ EOH
 
     def index
       result = "<ul>\n"
-      @graph_info.each do |time_span, graphs|
+      @graph_info.each do |label, graphs|
         next if graphs.empty?
-        result << %Q[  <li><a href="\##{h(time_span)}">#{h(time_span)}</a></li>\n]
+        id = label_to_id(label)
+        result << %Q[  <li><a href="\##{h(id)}">#{h(label)}</a></li>\n]
       end
       result << "</ul>\n"
       result
@@ -711,9 +688,10 @@ EOH
 
     def graphs
       result = ""
-      @graph_info.each do |time_span, graphs|
+      @graph_info.each do |label, graphs|
         next if graphs.empty?
-        result << %Q[<h2 id=\"#{h(time_span)}\">#{h(time_span)}</h2>\n]
+        id = label_to_id(label)
+        result << %Q[<h2 id=\"#{h(id)}\">#{h(label)}</h2>\n]
         graphs.each do |graph|
           result << %Q[  <p><img src="#{h(File.basename(graph))}" /></p>\n]
         end
@@ -727,6 +705,10 @@ EOH
   </body>
 </html>
 EOF
+    end
+
+    def label_to_id(label)
+      label.downcase.gsub(/ +/, '-')
     end
   end
 
