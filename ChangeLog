@@ -1,5 +1,7 @@
 2009-02-05  Kouhei Sutou  <kou@clear-code.com>
 
+	* admin/Makefile.am: support 'make check.
+
 	* admin/, doc/install-options-to*, README*: use exception
 	notification gem not plugin because the package has too long file
 	name...

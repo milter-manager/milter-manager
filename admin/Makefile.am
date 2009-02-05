@@ -1,3 +1,5 @@
+TESTS = test/run-test.sh
+
 admindir = $(pkgdatadir)/admin
 
 # find . -type f -perm +111
