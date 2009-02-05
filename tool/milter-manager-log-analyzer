@@ -217,24 +217,21 @@ class MilterManagerLogAnalyzer
 
       def last_time
         last_time = 0
-        @counts.each_value do |counting|
-          next if counting.empty?
-          last_one = counting.sort { |a, b| a[0] <=> b[0] }.last[0]
-          last_time = last_time > last_one ? last_time : last_one
+        @counts.each_value do |count|
+          next if count.empty?
+          _last_time = count.keys.sort.last
+          last_time = [last_time, _last_time].max
         end
-        last_time
+        last_time || 0
       end
 
       def first_time
-        first_time = 0
-        @counts.each_value do |counting|
-          next if counting.empty?
-          first_one = counting.sort { |a, b| a[0] <=> b[0] }.first[0]
-          if first_time.zero?
-            first_time = first_one
-          else
-            first_time = first_time > first_one ? first_one : first_time
-          end
+        first_time = nil
+        @counts.each_value do |count|
+          next if count.empty?
+          _first_time = count.keys.sort.first
+          first_time ||= _first_time
+          first_time = [first_time, _first_time].min
         end
         first_time
       end
