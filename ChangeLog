@@ -1,3 +1,8 @@
+2009-02-05  Kouhei Sutou  <kou@clear-code.com>
+
+	* doc/install-options-to-*.rd*: add description about installing
+	RRDtool.
+
 2009-02-05  Kouhei Sutou  <kou@cozmixng.org>
 
 	* tool/milter-manager-log-analyzer:

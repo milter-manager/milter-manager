@@ -12,15 +12,23 @@ Ubuntu Linuxに依存しない一般的なインストール情報は((<イン�
 
 == milter-manager-log-analyzerのインストール
 
+=== パッケージのインストール
+
+WebサーバとしてApacheを使います。
+
+  % sudo aptitude -V -D install apache2
+
+グラフを生成するためのRRDtoolを使います。
+
+  % sudo aptitude -V -D install rrdtool
+
+=== milter-manager-log-analyzerの設定
+
 グラフはインストール時に作成したmilter-managerユーザのホーム
 ディレクトリ以下に出力し、
 http://localhost/~milter-manager/log/で閲覧できるようにします。
 
   % sudo -u milter-manager mkdir -p ~milter-manager/public_html/log
-
-WebサーバとしてApacheをインストールします。
-
-  % sudo aptitude -V -D install apache2
 
 各ユーザ毎にファイルを公開できるようにします。
 
@@ -104,7 +112,7 @@ milter manager adminはパスワード認証がついていますが、可能で
 
   % sudo /etc/init.d/apache2 force-reload
 
-=== milter manager adminのインストール
+=== milter manager adminの設定
 
 milter manager adminは/usr/local/share/milter-manager/admin/
 以下にインストールされています。これをmilter-managerユーザ権

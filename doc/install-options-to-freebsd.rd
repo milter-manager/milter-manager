@@ -12,16 +12,25 @@ information.
 
 == Install milter-manager-log-analyzer
 
+=== Install packages
+
+We use Apache as Web server. We will install Apache 2.2
+series. (www/apache22)
+
+  % sudo /usr/local/sbin/portupgrade -NRr www/apache22
+
+We use RRDtool for generating graphs. We also install Ruby
+bindings to RRDtool.
+
+  % sudo /usr/local/sbin/portupgrade -NRr -M'WITH_RUBY_MODULE=yes' rrdtool
+
+=== Configure milter-manager-log-analyzer
+
 milter-manager-log-analyzer generates graphs to
 milter-manager user's home directory. They are published at
 at http://localhost/~milter-manager/log/.
 
   % sudo -u milter-manager mkdir -p ~milter-manager/public_html/log
-
-We use Apache as Web server. We will install Apache 2.2
-series. (www/apache22)
-
-  % sudo /usr/local/sbin/portupgrade -NRr apache
 
 Apache publishes users' files. We edit
 /usr/local/etc/apache22/httpd.conf like the following:
@@ -98,7 +107,7 @@ reload configuration:
 
   % sudo /usr/local/etc/rc.d/apache22 reload
 
-=== Install milter manager admin
+=== Configure milter manager admin
 
 milter manager admin is installed to
 /usr/local/share/milter-manager/admin/. We run it as

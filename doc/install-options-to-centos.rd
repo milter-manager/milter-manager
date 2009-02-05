@@ -12,15 +12,24 @@ information.
 
 == Install milter-manager-log-analyzer
 
+=== Install packages
+
+We use Apache as Web server.
+
+  % sudo yum install -y httpd
+
+We use RRDtool for generating graphs. We also install Ruby
+bindings to RRDtool.
+
+  % sudo yum install -y ruby-rrdtool
+
+=== Configure milter-manager-log-analyzer
+
 milter-manager-log-analyzer generates graphs to
 milter-manager user's home directory. They are published at
 at http://localhost/~milter-manager/log/.
 
   % sudo -u milter-manager mkdir -p ~milter-manager/public_html/log
-
-We use Apache as Web server.
-
-  % sudo yum install -y httpd
 
 We edit /etc/httpd/conf/httpd.conf to publish users' files.
 
@@ -99,7 +108,7 @@ We need to reload configuration.
 
   % sudo /sbin/service httpd reload
 
-=== Install milter manager admin
+=== Configure milter manager admin
 
 milter manager admin is installed to
 /usr/local/share/milter-manager/admin/. We run it as

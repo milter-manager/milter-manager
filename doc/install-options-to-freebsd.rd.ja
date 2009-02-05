@@ -12,16 +12,25 @@ FreeBSDに依存しない一般的なインストール情報は((<インスト�
 
 == milter-manager-log-analyzerのインストール
 
+=== パッケージのインストール
+
+WebサーバとしてApacheを使います。ここでは、Apache 2.2系列
+（www/apache22）をインストールします。
+
+  % sudo /usr/local/sbin/portupgrade -NRr www/apache22
+
+グラフを生成するためにRRDtoolを使います。RRDtoolのRubyインター
+フェイスもインストールします。
+
+  % sudo /usr/local/sbin/portupgrade -NRr -M'WITH_RUBY_MODULE=yes' rrdtool
+
+=== milter-manager-log-analyzerの設定
+
 グラフはインストール時に作成したmilter-managerユーザのホーム
 ディレクトリ以下に出力し、
 http://localhost/~milter-manager/log/で閲覧できるようにします。
 
   % sudo -u milter-manager mkdir -p ~milter-manager/public_html/log
-
-WebサーバとしてApacheをインストールします。ここでは、Apache
-2.2系列（www/apache22）をインストールしたものとします。
-
-  % sudo /usr/local/sbin/portupgrade -NRr apache
 
 Apacheで各ユーザ毎にファイルを公開できるようにします。
 /usr/local/etc/apache22/httpd.confを以下のように編集します。
@@ -98,7 +107,7 @@ milter manager adminはパスワード認証がついていますが、可能で
 
   % sudo /usr/local/etc/rc.d/apache22 reload
 
-=== milter manager adminのインストール
+=== milter manager adminの設定
 
 milter manager adminは/usr/local/share/milter-manager/admin/
 以下にインストールされています。これをmilter-managerユーザ権
