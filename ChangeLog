@@ -1,5 +1,8 @@
 2009-02-05  Kouhei Sutou  <kou@clear-code.com>
 
+	* data/applicable-conditions/s25r.conf: update to S25R version
+	2009/02/01.
+
 	* admin/Makefile.am: add missing entries.
 	* admin/test/run-test.sh: run 'rake db:migrate' before testing.
 
