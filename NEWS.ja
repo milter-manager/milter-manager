@@ -2,8 +2,21 @@
 
 = NEWS --- milter managerの歴史
 
-== 0.8.0: 2009-02-XX
+== 0.8.0: 2009-02-06
 
+  * 新機能
+    * milter-managerのログをグラフ化する
+      milter-manager-log-analyzerの追加
+    * milter-managerの管理用Webインターフェイスmilter
+      manager adminの追加
+    * ↑のスクリーンショット: ((<インストール
+      |"doc/install.rd.ja">))ページの下部
+    * pkgsrc用milter検出機能の追加
+    * CentOS対応
+    * 適用条件
+      * 他のmilterのステータス取得対応
+      * milterのマクロの取得・書き換え対応
+  * S25R更新（2009/02/01版）
   * バグ修正
     * [#2518782] typo in configure: [OBATA Akio]
 

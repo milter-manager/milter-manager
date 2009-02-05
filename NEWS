@@ -2,8 +2,21 @@
 
 = NEWS --- The history of milter manager
 
-== 0.8.0: 2009-02-XX
+== 0.8.0: 2009-02-06
 
+  * New features
+    * Add milter-manager-log-analyzer that visualizes
+      milter-manager's log
+    * Add milter manager admin that is a Web interface for
+      administrate milter-manager.
+    * Screenshots of the above two applications: the bottom of
+      ((<Install|"doc/install.rd">)) page.
+    * Add milter detection method for pkgsrc.
+    * Support CentOS.
+    * Applicable condition
+      * Support getting status of other milter.
+      * Support getting/setting macros of milter.
+  * Update S25R (2009/02/01 version)
   * Bug fixes
     * [#2518782] typo in configure: [OBATA Akio]
 
