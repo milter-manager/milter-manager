@@ -77,7 +77,7 @@ See ((<Introduction|"doc/introduction.rd">)) for more details.
 
     ((<LCOV - the LTP GCOV extension|URL:http://ltp.sourceforge.net/coverage/lcov.php>))
 
-  * RRDtool (and bundled Ruby bindings)
+  * RRDtool (It's better that bundled Ruby bindings are also installed)
 
     It is needed for milter-manager-log-analyzer.
 

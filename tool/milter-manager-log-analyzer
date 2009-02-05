@@ -22,7 +22,61 @@ require 'time'
 require 'optparse'
 require 'erb'
 
-require 'RRD'
+begin
+  require 'RRD'
+rescue LoadError
+  module RRD
+    module_function
+    def method_missing(method_name, *args)
+      run(method_name.to_s, *args)
+    end
+
+    def last(file)
+      Time.at(Integer(run("last", file)))
+    end
+
+    def run(command, *args)
+      command_line = ["rrdtool", command] + args.collect {|arg| arg.to_s}
+
+      stdin_pipe = IO.pipe
+      stdout_pipe = IO.pipe
+      stderr_pipe = IO.pipe
+
+      pid = fork do
+        stdin_pipe[1].close
+        STDIN.reopen(stdin_pipe[0])
+        stdin_pipe[0].close
+
+        stdout_pipe[0].close
+        STDOUT.reopen(stdout_pipe[1])
+        stdout_pipe[1].close
+
+        stderr_pipe[0].close
+        STDERR.reopen(stderr_pipe[1])
+        stderr_pipe[1].close
+
+        exec(*command_line)
+        exit!(1)
+      end
+
+      stdin_pipe[0].close
+      stdout_pipe[1].close
+      stderr_pipe[1].close
+      _, status = Process.waitpid2(pid)
+
+      stdout = stdout_pipe[0].read
+      stderr = stderr_pipe[0].read
+      [stdin_pipe[1], stdout_pipe[0], stderr_pipe[0]].each do |pipe|
+        pipe.close unless pipe.closed?
+      end
+
+      unless status.success?
+        raise "failed to run: #{command_line.join(' ')}: #{stderr}"
+      end
+      stdout
+    end
+  end
+end
 
 module RRD
   module_function

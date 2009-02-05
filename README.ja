@@ -84,7 +84,7 @@ LinuxではUbuntu 8.04 TLS、CentOS 5.2上で動作することを想定し
 
     ((<URL:http://ltp.sourceforge.net/coverage/lcov.php>))
 
-  * RRDtool（付属のRubyバインディングも必要）
+  * RRDtool（付属のRubyバインディングもあるとなおよい）
 
     milter-manager-log-analyzerでmilter managerに登録された
     milterの動作のグラフを表示する場合は必要。
