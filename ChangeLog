@@ -1,5 +1,8 @@
 2009-02-05  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/lib/milter/manager/child-context.rb,
+	binding/ruby/test/manager/test-child-context.rb: support set macro.
+
 	* binding/ruby/lib/milter/manager.rb: guard exception raising in
 	stopper callback.
 

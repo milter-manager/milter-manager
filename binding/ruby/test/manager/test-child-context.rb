@@ -56,6 +56,16 @@ class TestChildContext < Test::Unit::TestCase
     assert_equal("Sendmail", @context["v"])
   end
 
+  def test_set_macro
+    @clamav.macro_context = Milter::COMMAND_CONNECT
+    assert_equal(nil, @context["j"])
+    @context["j"] = "mail.example.com"
+    assert_equal("mail.example.com", @context["j"])
+
+    @context = Milter::Manager::ChildContext.new(@clamav, @children)
+    assert_equal("mail.example.com", @context["j"])
+  end
+
   def test_status
     @clamav.status = Milter::STATUS_REJECT
     assert_true(@context.reject?)

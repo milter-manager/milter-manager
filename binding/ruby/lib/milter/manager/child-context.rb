@@ -29,6 +29,12 @@ module Milter::Manager
       (@macros ||= @child.available_macros || {})[normalize_macro_name(name)]
     end
 
+    def []=(name, value)
+      @child.set_macro(@child.macro_context, normalize_macro_name(name), value)
+      @macros = nil
+      value
+    end
+
     def reject?
       @child.status == Milter::STATUS_REJECT
     end
