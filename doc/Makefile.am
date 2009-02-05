@@ -10,6 +10,8 @@ EXTRA_DIST =						\
 	install.rd.ja					\
 	install-to-ubuntu.rd				\
 	install-to-ubuntu.rd.ja				\
+	install-to-centos.rd				\
+	install-to-centos.rd.ja				\
 	install-to-freebsd.rd				\
 	install-to-freebsd.rd.ja			\
 	install-to-others.rd				\

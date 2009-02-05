@@ -1,5 +1,7 @@
 2009-02-05  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/Makefile.am: add missing entries.
+
 	* admin/Makefile.am: support 'make check.
 
 	* admin/, doc/install-options-to*, README*: use exception
