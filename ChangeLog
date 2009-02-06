@@ -1,3 +1,7 @@
+2009-02-06  Kouhei Sutou  <kou@clear-code.com>
+
+	* gtk-doc.make: fix gtkdoc-rebase detection.
+
 2009-02-05  Kouhei Sutou  <kou@clear-code.com>
 
 	* binding/ruby/lib/milter/manager.rb,

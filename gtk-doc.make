@@ -208,7 +208,7 @@ install-data-local:
 	    echo "-- Installing $$dir/index.sgml";			\
 	    $(INSTALL_DATA) $$dir/index.sgml				\
 	      $(DESTDIR)$(TARGET_DIR)$$target_dir || :;			\
-	    if test `which gtkdoc-rebase` != ""; then			\
+	    if which gtkdoc-rebase > /dev/null 2>&1; then		\
 	      if test "$(DESTDIR)" = ""; then				\
 	        gtkdoc-rebase --relative 				\
 	          --html-dir=$(DESTDIR)$(TARGET_DIR)$$target_dir;	\
