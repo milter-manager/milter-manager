@@ -1,5 +1,7 @@
 2009-02-06  Kouhei Sutou  <kou@clear-code.com>
 
+	* configure.ac: 0.8.0 -> 0.8.1.
+
 	* gtk-doc.make: fix gtkdoc-rebase detection.
 
 2009-02-05  Kouhei Sutou  <kou@clear-code.com>
