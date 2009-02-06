@@ -17,6 +17,7 @@ information.
 We use Apache as Web server.
 
   % sudo yum install -y httpd
+  % sudo /sbin/chkconfig httpd on
 
 We use RRDtool for generating graphs. We also install Ruby
 bindings to RRDtool.

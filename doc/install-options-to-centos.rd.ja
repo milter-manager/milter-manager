@@ -17,6 +17,7 @@ CentOSに特化したmilter manager関連ソフトウェアのインストール
 WebサーバとしてApacheを使いいます。
 
   % sudo yum install -y httpd
+  % sudo /sbin/chkconfig httpd on
 
 グラフを生成するためにRRDtoolを使います。
 
