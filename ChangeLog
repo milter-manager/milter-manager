@@ -1,5 +1,8 @@
 2009-02-06  Kouhei Sutou  <kou@clear-code.com>
 
+	* tool/milter-performance-check: support collect test mails from
+	directory.
+
 	* tool/milter-performance-check: support from/recipient overriding.
 
 	* tool/milter-performance-check: support reading test mail from local.

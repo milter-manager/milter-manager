@@ -17,6 +17,7 @@
 
 require 'pathname'
 require 'time'
+require 'find'
 require 'optparse'
 require 'net/smtp'
 require 'digest/sha2'
@@ -127,11 +128,8 @@ class MilterPerformanceTool
   def run
     Thread.abort_on_exception = true
     @elapsed_time = 0
-    if @mails.size > 1
-      mails = @mails
-    else
-      mails = [@mails[0]] * @n_mails
-    end
+    mails = expand_mails(@mails)
+    mails = [mails[0]] * @n_mails if mails.size <= 1
     if @period
       threads = send_mails_in_period(mails)
     else
@@ -148,6 +146,16 @@ class MilterPerformanceTool
   end
 
   private
+  def expand_mails(mails)
+    expanded_mails = []
+    mails.each do |mail|
+      Find.find(mail) do |file|
+        expanded_mails << file if File.file?(file)
+      end
+    end
+    expanded_mails.sort
+  end
+
   def send_mails_in_period(mails)
     interval =  mails.size / @period
     mails.collect do |mail|
