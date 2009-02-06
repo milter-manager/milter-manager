@@ -1,5 +1,7 @@
 2009-02-06  Kouhei Sutou  <kou@clear-code.com>
 
+	* tool/milter-performance-check: support from/recipient overriding.
+
 	* tool/milter-performance-check: support reading test mail from local.
 
 	* configure.ac: 0.8.0 -> 0.8.1.

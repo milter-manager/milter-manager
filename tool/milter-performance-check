@@ -28,6 +28,8 @@ class MilterPerformanceTool
     @helo_fqdn = "localhost.localdomain"
     @from = "from@example.com"
     @recipients = []
+    @force_from = nil
+    @force_recipients = nil
     @default_recipients = ["to@example.com"]
     @n_mails = 100
     @mails = []
@@ -79,6 +81,29 @@ class MilterPerformanceTool
               "This option can be used n-times to set multi recipients.",
               "(#{@default_recipients.inspect})") do |recipient|
         @recipients << recipient
+      end
+
+      opts.on("--force-from=FROM",
+              "Ensure using FROM as envelope from address on SMTP MAIL command.",
+              "(#{@force_from})") do |from|
+        @force_from = from
+      end
+
+      opts.on("--recipient=RECIPIENT",
+              "Use RECIPIENT as envelope recipient address",
+              "on SMTP RCPT command as default value.",
+              "This option can be used n-times to set multi recipients.",
+              "(#{@default_recipients.inspect})") do |recipient|
+        @recipients << recipient
+      end
+
+      opts.on("--force-recipient=RECIPIENT",
+              "Ensure using RECIPIENT as envelope recipient address",
+              "on SMTP RCPT command as default value.",
+              "This option can be used n-times to set multi recipients.",
+              "(#{@force_recipients.inspect})") do |recipient|
+        @force_recipients ||= []
+        @force_recipients << recipient
       end
 
       opts.on("--n-mails=N", Integer,
@@ -156,6 +181,9 @@ class MilterPerformanceTool
     helo_fqdn ||= @helo_fqdn
     from ||= @from
     recipients ||= @recipients
+
+    from = @force_from || from
+    recipients = @force_recipients || recipients
 
     start_time = Time.now
     begin
