@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 #
-# Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+# Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -30,6 +30,9 @@ class MilterPerformanceTool
     @recipients = []
     @default_recipients = ["to@example.com"]
     @n_mails = 100
+    @mails = []
+    @period = nil
+    @mail_source_from_stdin = nil
   end
 
   def parse_options(argv)
@@ -58,19 +61,21 @@ class MilterPerformanceTool
       end
 
       opts.on("--helo-fqdn=FQDN",
-              "Use FQDN for SMTP HELO command",
+              "Use FQDN for SMTP HELO command as default value.",
               "(#{@helo_fqdn})") do |helo_fqdn|
         @helo_fqdn = helo_fqdn
       end
 
       opts.on("--from=FROM",
-              "Use FROM as envelope from address on SMTP MAIL command",
+              "Use FROM as envelope from address",
+              "on SMTP MAIL command as default value.",
               "(#{@from})") do |from|
         @from = from
       end
 
       opts.on("--recipient=RECIPIENT",
-              "Use RECIPIENT as envelope recipient address on SMTP RCPT command",
+              "Use RECIPIENT as envelope recipient address",
+              "on SMTP RCPT command as default value.",
               "This option can be used n-times to set multi recipients.",
               "(#{@default_recipients.inspect})") do |recipient|
         @recipients << recipient
@@ -78,23 +83,34 @@ class MilterPerformanceTool
 
       opts.on("--n-mails=N", Integer,
               "Send a test mail N times",
+              "This option is ignored when mail files are specified",
               "(#{@n_mails})") do |n_mails|
         @n_mails = n_mails
       end
+
+      opts.on("--period=PERIOD",
+              "Send mail files on average in PERIOD seconds/minutes/hours",
+              "e.g.: 5s, 5m, 1.5h and so on. Default is seconds",
+              "(#{@period})") do |period|
+        @period = parse_period(period)
+      end
     end
-    opts.parse!(argv)
+    @mails = opts.parse!(argv)
     @recipients = @default_recipients if @recipients.empty?
   end
 
   def run
     Thread.abort_on_exception = true
     @elapsed_time = 0
-    threads = []
-    @n_mails.times do
-      thread = Thread.start do
-        @elapsed_time += start_smtp
-      end
-      threads.push << thread
+    if @mails.size > 1
+      mails = @mails
+    else
+      mails = [@mails[0]] * @n_mails
+    end
+    if @period
+      threads = send_mails_in_period(mails)
+    else
+      threads = send_mails_in_parallel(mails)
     end
     threads.each do |thread|
       thread.join
@@ -103,16 +119,48 @@ class MilterPerformanceTool
 
   def report
     puts "Processed #{@n_mails} in #{@elapsed_time} sec."
-    puts "Average #{@n_mails / @elapsed_time} mails/sec."
+    puts "Average #{@n_mails / @elapsed_time} mails/sec." if @elapsed_time > 0
   end
 
   private
-  def start_smtp
-    mail_source = generate_mail_source
+  def send_mails_in_period(mails)
+    interval =  mails.size / @period
+    mails.collect do |mail|
+      thread = Thread.start do
+        @elapsed_time += send_mail(mail)
+      end
+      sleep(interval) if interval > 0
+      thread
+    end
+  end
+
+  def send_mails_in_parallel(mails)
+    mails.collect do |mail|
+      Thread.start do
+        @elapsed_time += send_mail(mail)
+      end
+    end
+  end
+
+  def send_mail(mail_source_file=nil)
+    if mail_source_file
+      if mail_source_file == "-" and File.exist?(mail_source_file)
+        mail_source = read_mails_source_from_stdin
+      else
+        mail_source = File.read(mail_source_file)
+      end
+    else
+      mail_source = generate_mail_source
+    end
+    helo_fqdn, from, recipients = parse_mail_source(mail_source)
+    helo_fqdn ||= @helo_fqdn
+    from ||= @from
+    recipients ||= @recipients
+
     start_time = Time.now
     begin
-      Net::SMTP.start(@smtp_server, @port, @helo_fqdn) do |smtp|
-        smtp.send_mail(mail_source, @from, *@recipients)
+      Net::SMTP.start(@smtp_server, @port, helo_fqdn) do |smtp|
+        smtp.send_mail(mail_source, from, *recipients)
       end
     rescue Net::ProtoFatalError
       puts "SMTP error: #{$!}"
@@ -120,8 +168,78 @@ class MilterPerformanceTool
     Time.now - start_time
   end
 
+  def read_mails_source_from_stdin
+    if @mail_source_from_stdin
+      @mail_source_from_stdin.gsub(/^Message-Id:.*$/) do
+        "Message-Id: <#{random_tag}@mail.example.com>"
+      end
+    else
+      @mail_source_from_stdin = ARGF.read
+    end
+  end
+
+  def parse_mail_source(source)
+    header_part, body_part = source.split(/(?:\r?\n){2}/, 2)
+    _, *names_and_values = header_part.split(/^([a-z][a-z\-]+):\s*/i)
+    headers = {}
+    received = []
+    until names_and_values.empty?
+      name = names_and_values.shift
+      value = names_and_values.shift
+      value = value.chomp.gsub(/(?:\r?\n)\s*/, ' ')
+      received << value if name == "Received"
+      headers[name] = value
+    end
+    helo_fqdn = extract_helo_fqdn_from_received(received[0])
+    from = headers["From"]
+    recipients = parse_recipient_header(headers["To"])
+    recipients += parse_recipient_header(headers["Cc"])
+    recipients = nil if recipients.empty?
+    [helo_fqdn, from, recipients]
+  end
+
+  def parse_recipient_header(header_value)
+    return [] if header_value.nil?
+    header_value.split(/\s*,\s*/)
+  end
+
+  def extract_helo_fqdn_from_received(received)
+    return nil if received.nil?
+    if /\Afrom ([a-z.]+)/i =~ received
+      $1
+    else
+      nil
+    end
+  end
+
+  def parse_period(period)
+    if /\A(\d+(:.\d+)?)(s|sec|seconds?|m|min|minutes?|h|hours?)?\z/i =~ period
+      numeric = $1
+      unit = $2
+      numeric = Float(numeric)
+      unit ||= "seconds"
+      case unit.downcase[0]
+      when ?s
+        numeric
+      when ?m
+        numeric * 60
+      when ?h
+        numeric * 60 * 60
+      else
+        raise OptionParser::InvalidArgument, "invalid period unit"
+      end
+    else
+      raise OptionParser::InvalidArgument, "invalid period format"
+    end
+  end
+
   def generate_mail_source
+    now = Time.now.rfc2822
     <<-EOM
+Return-Path: <#{@from}>
+Received: from #{@helo_fqdn} (#{@helo_fqdn} [192.168.1.1])
+	by mail.example.com with ESMTP id #{generate_id};
+	#{now}
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Type: text/plain; charset=US-ASCII
@@ -130,7 +248,7 @@ Message-Id: <#{random_tag}@mail.example.com>
 Subject: test mail
 From: #{@from}
 To: #{@recipients.join(', ')}
-Date: Tue, 30 Dec 2008 22:26:06 +0900
+Date: #{now}
 
 Hello,
 
@@ -138,14 +256,26 @@ This is a test mail.
 EOM
   end
 
+  def generate_id
+    characters = ("0".."9").to_a + ("a".."z").to_a + ("A".."Z").to_a
+    length = 10
+    id = ""
+    length.times do
+      id << characters[rand(characters.size)]
+    end
+    id
+  end
+
   def random_tag
     Digest::SHA2.hexdigest("#{Time.now.to_i.to_s}.#{rand(Time.now.to_i)}")
   end
 end
 
-performance_tool = MilterPerformanceTool.new
-performance_tool.parse_options(ARGV)
-performance_tool.run
-performance_tool.report
+if __FILE__ == $0
+  performance_tool = MilterPerformanceTool.new
+  performance_tool.parse_options(ARGV)
+  performance_tool.run
+  performance_tool.report
+end
 
 # vi:ts=2:nowrap:ai:expandtab:sw=2
