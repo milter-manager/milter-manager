@@ -1,3 +1,4 @@
+*.gcda
 *.gcno
 *.la
 *.lo
@@ -5,9 +6,11 @@
 .deps
 .gdb_history
 .libs
+.test-result
 /aclocal.m4
 /autom4te.cache
 /build
+/config
 /config.h
 /config.h.in
 /config.log
@@ -25,6 +28,7 @@
 /milter-core.pc
 /milter-manager.pc
 /milter-server.pc
+/misc
 /stamp-h1
 Makefile
 Makefile.in
