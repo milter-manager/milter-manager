@@ -153,13 +153,13 @@ class MilterPerformanceTool
   def report
     puts "Total:"
     puts "     N mails: %d" % @n_processed_mails
-    puts "Elapsed time: %3g (sec)" % @elapsed_time
-    puts "     Average: %3g (mails/sec)" % average(@elapsed_time)
+    puts "Elapsed time: %#5.2f (sec)" % @elapsed_time
+    puts "     Average: %#5.2f (mails/sec)" % average(@elapsed_time)
     puts
     puts "Per mail:"
-    puts "         Max: %3g (sec)" % @max_elapsed_time
-    puts "         Min: %3g (sec)" % (@min_elapsed_time || 0)
-    puts "     Average: %3g (sec)" % average(@accumulated_elapsed_time)
+    puts "         Max: %#5.2f (sec)" % @max_elapsed_time
+    puts "         Min: %#5.2f (sec)" % (@min_elapsed_time || 0)
+    puts "     Average: %#5.2f (sec)" % average(@accumulated_elapsed_time)
     puts
     puts "Status:"
     puts statistics_report("Temporary failure", @n_temporary_failure_mails)
