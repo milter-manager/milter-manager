@@ -21,6 +21,7 @@ require 'find'
 require 'optparse'
 require 'net/smtp'
 require 'digest/sha2'
+require 'thread'
 
 class MilterPerformanceTool
   def initialize
@@ -36,6 +37,7 @@ class MilterPerformanceTool
     @mails = []
     @period = nil
     @mail_source_from_stdin = nil
+    @mutex = Mutex.new
   end
 
   def parse_options(argv)
@@ -127,22 +129,41 @@ class MilterPerformanceTool
 
   def run
     Thread.abort_on_exception = true
-    @elapsed_time = 0
+    @accumulated_elapsed_time = 0
+    @max_elapsed_time = 0
+    @min_elapsed_time = nil
+    @n_temporary_failure_mails = 0
+    @n_reject_mails = 0
     mails = expand_mails(@mails)
     mails = [mails[0]] * @n_mails if mails.size <= 1
+
+    start_time = Time.now
     if @period
       threads = send_mails_in_period(mails)
     else
       threads = send_mails_in_parallel(mails)
     end
+    @n_processed_mails = threads.size
     threads.each do |thread|
       thread.join
     end
+    @elapsed_time = Time.now - start_time
   end
 
   def report
-    puts "Processed #{@n_mails} in #{@elapsed_time} sec."
-    puts "Average #{@n_mails / @elapsed_time} mails/sec." if @elapsed_time > 0
+    puts "Total:"
+    puts "     N mails: %d" % @n_processed_mails
+    puts "Elapsed time: %3g (sec)" % @elapsed_time
+    puts "     Average: %3g (mails/sec)" % average(@elapsed_time)
+    puts
+    puts "Per mail:"
+    puts "         Max: %3g (sec)" % @max_elapsed_time
+    puts "         Min: %3g (sec)" % (@min_elapsed_time || 0)
+    puts "     Average: %3g (sec)" % average(@accumulated_elapsed_time)
+    puts
+    puts "Status:"
+    puts statistics_report("Temporary failure", @n_temporary_failure_mails)
+    puts statistics_report("           Reject", @n_reject_mails)
   end
 
   private
@@ -160,7 +181,7 @@ class MilterPerformanceTool
     interval =  mails.size / @period
     mails.collect do |mail|
       thread = Thread.start do
-        @elapsed_time += send_mail(mail)
+        send_mail(mail)
       end
       sleep(interval) if interval > 0
       thread
@@ -170,12 +191,12 @@ class MilterPerformanceTool
   def send_mails_in_parallel(mails)
     mails.collect do |mail|
       Thread.start do
-        @elapsed_time += send_mail(mail)
+        send_mail(mail)
       end
     end
   end
 
-  def send_mail(mail_source_file=nil)
+  def prepare_send_mail(mail_source_file)
     if mail_source_file
       if mail_source_file == "-" and File.exist?(mail_source_file)
         mail_source = read_mails_source_from_stdin
@@ -193,15 +214,43 @@ class MilterPerformanceTool
     from = @force_from || from
     recipients = @force_recipients || recipients
 
+    [helo_fqdn, from, recipients, mail_source]
+  end
+
+  def send_mail(mail_source_file=nil)
+    helo_fqdn, from, recipients, source = prepare_send_mail(mail_source_file)
+
+    temporary_failure = false
+    reject = false
+    error = false
+    error_message = nil
     start_time = Time.now
     begin
       Net::SMTP.start(@smtp_server, @port, helo_fqdn) do |smtp|
-        smtp.send_mail(mail_source, from, *recipients)
+        smtp.send_mail(source, from, *recipients)
       end
+    rescue Net::SMTPServerBusy
+      temporary_failure = true
+    rescue Net::SMTPFatalError
+      reject = true
     rescue Net::ProtoFatalError
-      puts "SMTP error: #{$!}"
+      error = true
+      error_object = $!
     end
-    Time.now - start_time
+    elapsed_time = Time.now - start_time
+    puts "#{error_object.class}: #{error_object.message}" if error_object
+    update_statistics(elapsed_time, temporary_failure, reject, error)
+  end
+
+  def update_statistics(elapsed_time, temporary_failure, reject, error)
+    @mutex.synchronize do
+      @accumulated_elapsed_time += elapsed_time
+      @max_elapsed_time = [elapsed_time, @max_elapsed_time].max
+      @min_elapsed_time = [elapsed_time, @min_elapsed_time || elapsed_time].min
+      @n_temporary_failure_mails += 1 if temporary_failure
+      @n_reject_mails += 1 if reject
+      @n_error_mails += 1 if error
+    end
   end
 
   def read_mails_source_from_stdin
@@ -304,6 +353,19 @@ EOM
 
   def random_tag
     Digest::SHA2.hexdigest("#{Time.now.to_i.to_s}.#{rand(Time.now.to_i)}")
+  end
+
+  def average(elapsed_time)
+    if elapsed_time.zero?
+      @n_processed_mails
+    else
+      @n_processed_mails / elapsed_time.to_f
+    end
+  end
+
+  def statistics_report(label, n_mails)
+    " #{label}: %2d (%3g%%)" % [n_mails,
+                                n_mails.to_f / @n_processed_mails * 100]
   end
 end
 

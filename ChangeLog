@@ -1,3 +1,7 @@
+2009-02-07  Kouhei Sutou  <kou@clear-code.com>
+
+	* tool/milter-performance-check: report details.
+
 2009-02-06  Kouhei Sutou  <kou@clear-code.com>
 
 	* tool/milter-performance-check: support collect test mails from
