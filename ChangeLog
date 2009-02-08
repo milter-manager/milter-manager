@@ -1,3 +1,7 @@
+2009-02-08  Kouhei Sutou  <kou@cozmixng.org>
+
+	* doc/poster-for-explanation-ja.svg: add.
+
 2009-02-07  Kouhei Sutou  <kou@clear-code.com>
 
 	* tool/milter-performance-check: improve report format.
