@@ -1,5 +1,8 @@
 2009-02-08  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-main.c, README*: add
+	--socket-group-name option.
+
 	* binding/ruby/lib/milter/manager.rb,
 	binding/ruby/test/manager/test-configuration-loader.rb,
 	binding/ruby/test/manager/test-configuration.rb,

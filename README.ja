@@ -155,32 +155,41 @@ configure時に--prefixオプションを指定していない場合は
    設定ファイル中の「manager.connection_spec」の値を上書きし
    ます。
 
-: --config-dir=directory
+: --config-dir=DIRECTORY
 
     設定ファイルのあるディレクトリを指定します。
-    milter-managerは、まず、directory/milter-manager.confの
+    milter-managerは、まず、DIRECTORY/milter-manager.confの
     読み込みを試みます。もし、見つからなかった場合はシステム
     標準の場所にあるmilter-manager.confを読み込みます。
 
-: --pid-file=file
+: --pid-file=FILE
 
-   milter-managerのプロセスidをfileに保存します。
+   milter-managerのプロセスidをFILEに保存します。
 
    設定ファイル中の「manager.pid_file」の値を上書きします。
 
-: --user-name=name
+: --user-name=NAME
 
-   milter-managerをnameユーザの権限で実行します。
+   milter-managerをNAMEユーザの権限で実行します。
    milter-managerはroot権限で起動しなければいけません。
 
    設定ファイル中の「security.effective_user」の値を上書きします。
 
-: --group-name=name
+: --group-name=NAME
 
-   milter-managerをnameグループの権限で実行します。
+   milter-managerをNAMEグループの権限で実行します。
    milter-managerはroot権限で起動しなければいけません。
 
    設定ファイル中の「security.effective_group」の値を上書きします。
+
+: --socket-group-name=NAME
+
+   milter-managerが接続を受け付けるUNIXドメインソケットのグ
+   ループをNAMEグループに変更します。グループは実効ユーザの
+   補助グループでなければいけません。
+
+   設定ファイル中の「manager.unix_socket_group」の値を上書き
+   します。
 
 : --daemon
 

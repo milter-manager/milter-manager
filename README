@@ -182,6 +182,16 @@ configuration file.
    This option overrides "security.effective_group" in
    configuration file.
 
+: --socket-group-name=NAME
+
+   Changes group of UNIX domain socket for accepting
+   connection by milter-manager to NAME group. Specified
+   group should be one of the effective user's supplementary
+   groups.
+
+   This option overrides "manager.unix_socket_group" in
+   configuration file.
+
 : --daemon
 
    Runs milter-manager as daemon process.

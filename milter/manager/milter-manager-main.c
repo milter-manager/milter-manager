@@ -47,6 +47,7 @@ static gchar *option_config_dir = NULL;
 static gchar *option_pid_file = NULL;
 static gchar *option_user_name = NULL;
 static gchar *option_group_name = NULL;
+static gchar *option_socket_group_name = NULL;
 static gboolean option_daemon = FALSE;
 static gboolean option_show_config = FALSE;
 static gboolean option_verbose = FALSE;
@@ -120,6 +121,9 @@ static const GOptionEntry option_entries[] =
      "NAME"},
     {"group-name", 'g', 0, G_OPTION_ARG_STRING, &option_group_name,
      N_("The group name for running milter-manager."),
+     "NAME"},
+    {"socket-group-name", 0, 0, G_OPTION_ARG_STRING, &option_socket_group_name,
+     N_("The group name for UNIX domain socket."),
      "NAME"},
     {"daemon", 0, 0, G_OPTION_ARG_NONE, &option_daemon,
      N_("Run as daemon process."), NULL},
@@ -719,6 +723,9 @@ apply_command_line_options (MilterManagerConfiguration *config)
     if (option_group_name)
         milter_manager_configuration_set_effective_group(config,
                                                          option_group_name);
+    if (option_socket_group_name)
+        milter_manager_configuration_set_manager_unix_socket_group(
+            config, option_socket_group_name);
     if (option_daemon)
         milter_manager_configuration_set_daemon(config, TRUE);
     if (getuid() != 0)
