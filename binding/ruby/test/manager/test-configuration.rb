@@ -179,6 +179,7 @@ security.effective_group = nil
 
 manager.connection_spec = "inet:10025@[127.0.0.1]"
 manager.unix_socket_mode = 0660
+manager.unix_socket_group = nil
 manager.remove_unix_socket_on_create = true
 manager.remove_unix_socket_on_close = true
 manager.daemon = false
@@ -223,6 +224,7 @@ security.effective_group = "nogroup"
 
 manager.connection_spec = "inet:10025@[127.0.0.1]"
 manager.unix_socket_mode = 0660
+manager.unix_socket_group = nil
 manager.remove_unix_socket_on_create = true
 manager.remove_unix_socket_on_close = true
 manager.daemon = false

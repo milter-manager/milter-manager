@@ -61,6 +61,7 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
 
   manager.connection_spec = nil
   manager.unix_socket_mode = 0660
+  manager.unix_socket_group = nil
   manager.remove_unix_socket_on_create = true
   manager.remove_unix_socket_on_close = true
   manager.daemon = false
@@ -183,8 +184,8 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
    プを切り替えるにはmilter-managerコマンドをroot権限で起動
    する必要があります。
 
-   実効ユーザは「"」で囲んて"nogroup"というように指定します。
-   ユーザを指定しない場合はnilを指定します。
+   実効グループは「"」で囲んて"nogroup"というように指定します。
+   グループを指定しない場合はnilを指定します。
 
    例:
      security.effective_group = "nogroup"
@@ -252,6 +253,27 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
 
    既定値:
      manager.unix_socket_mode = 0660
+
+: manager.unix_socket_group
+
+   milter-managerが接続を受け付けるUNIXドメインソケットのグ
+   ループを指定します。manager.connection_specでUNIXドメイン
+   ソケットを使用している場合のみ利用されます。
+
+   ソケットのグループは
+   security.effective_user/security.effective_group権限で作
+   成された後に、chown(2)で変更します。そのため、指定するグルー
+   プはsecurity.effective_userの補助グループである必要があり
+   ます。
+
+   グループは「"」で囲んて"nogroup"というように指定します。
+   グループを指定しない場合はnilを指定します。
+
+   例:
+     manager.unix_socket_group = "nobody"
+
+   既定値:
+     manager.unix_socket_group = nil
 
 : manager.remove_unix_socket_on_create
 

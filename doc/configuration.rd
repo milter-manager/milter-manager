@@ -56,6 +56,7 @@ current configuration is shown.
 
   manager.connection_spec = nil
   manager.unix_socket_mode = 0660
+  manager.unix_socket_group = nil
   manager.remove_unix_socket_on_create = true
   manager.remove_unix_socket_on_close = true
   manager.daemon = false
@@ -254,6 +255,29 @@ Here are descriptions of configuration items.
 
    Default:
     manager.unix_socket_mode = 0660
+
+: manager.unix_socket_group
+
+   Specifies group of UNIX domain socket that
+   milter-manager uses for accepting
+   connection. This is used only when UNIX domain socket is
+   specified for manager.connection_spec.
+
+   Socket's group is changed by chown(2) after creating a
+   socket with
+   security.effective_user/security.effective_group
+   authority. Specified group should be one of the
+   security.effective_user's supplementary groups.
+
+   Group is specified like "nogroup". Group name should
+   be surround with '"' (double quote). If you don't want to
+   specify group, use nil.
+
+   Example:
+     manager.unix_socket_group = "nobody"
+
+   Default:
+     manager.unix_socket_group = nil
 
 : manager.remove_unix_socket_on_create
 

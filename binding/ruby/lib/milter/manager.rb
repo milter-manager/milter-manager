@@ -50,6 +50,7 @@ module Milter::Manager
 
       result << "manager.connection_spec = #{manager_connection_spec.inspect}\n"
       result << "manager.unix_socket_mode = 0%o\n" % manager_unix_socket_mode
+      result << "manager.unix_socket_group = #{manager_unix_socket_group.inspect}\n"
       result << "manager.remove_unix_socket_on_create = #{remove_manager_unix_socket_on_create?}\n"
       result << "manager.remove_unix_socket_on_close = #{remove_manager_unix_socket_on_close?}\n"
       result << "manager.daemon = #{daemon?}\n"
@@ -553,6 +554,14 @@ module Milter::Manager
 
       def unix_socket_mode=(mode)
         @configuration.manager_unix_socket_mode = mode
+      end
+
+      def unix_socket_group
+        @configuration.manager_unix_socket_group
+      end
+
+      def unix_socket_group=(group)
+        @configuration.manager_unix_socket_group = group
       end
 
       def remove_unix_socket_on_create?
