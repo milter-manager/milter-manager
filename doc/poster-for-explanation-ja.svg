@@ -5078,13 +5078,13 @@
        y1="3471.0513"
        x2="337.30948"
        y2="3515.9314"
-       gradientTransform="translate(72,-7.0002578)" />
+       gradientTransform="translate(72,-7.000258)" />
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient11536"
        id="linearGradient11534"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(312.09993,-6.9401877)"
+       gradientTransform="translate(305.39993,-7.1402346)"
        x1="190.36807"
        y1="3501.0178"
        x2="190.36807"
@@ -6925,6 +6925,26 @@
        y1="33.357376"
        x2="22.17771"
        y2="31.026741" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient11484"
+       id="linearGradient4365"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(72,-7.000258)"
+       x1="337.30948"
+       y1="3471.0513"
+       x2="337.30948"
+       y2="3515.9314" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient11536"
+       id="linearGradient4367"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(305.39993,-7.1402346)"
+       x1="190.36807"
+       y1="3501.0178"
+       x2="190.36807"
+       y2="3505.5217" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -6936,16 +6956,16 @@
      objecttolerance="10"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.12374369"
-     inkscape:cx="1597.5058"
-     inkscape:cy="1874.3907"
+     inkscape:zoom="0.35000001"
+     inkscape:cx="1120.0471"
+     inkscape:cy="932.56865"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="843"
      inkscape:window-height="650"
-     inkscape:window-x="155"
-     inkscape:window-y="123"
+     inkscape:window-x="27"
+     inkscape:window-y="188"
      showguides="false"
      inkscape:guide-bbox="true">
     <inkscape:grid
@@ -6974,19 +6994,13 @@
        transform="matrix(2.7216092,0,0,2.7216092,2078.518,1046.3117)" />
     <text
        xml:space="preserve"
-       style="font-size:136px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
+       style="font-size:136px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;writing-mode:lr;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:FreeSans;-inkscape-font-specification:FreeSans"
        x="1225.7697"
        y="166.44998"
        id="text2383"
-       sodipodi:linespacing="125%"><tspan
+       sodipodi:linespacing="100%"><tspan
          sodipodi:role="line"
-         id="tspan2389"
-         x="1225.7697"
-         y="166.44998">milter manager</tspan><tspan
-         sodipodi:role="line"
-         id="tspan2391"
-         x="1225.7697"
-         y="336.44998">効率的な迷惑メール対策</tspan></text>
+         id="tspan4333">milter manager</tspan></text>
     <rect
        style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:10;stroke-linecap:round;stroke-linejoin:round;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
        id="rect14526"
@@ -6996,44 +7010,49 @@
        y="29.021366" />
     <text
        xml:space="preserve"
-       style="font-size:63.71164322px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
+       style="font-size:63.71164322px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:FreeSans;-inkscape-font-specification:FreeSans;text-anchor:start;text-align:start;writing-mode:lr;line-height:125%"
        x="793.28754"
        y="564.9364"
-       id="text4558"><tspan
+       id="text4558"
+       sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan4560"
          x="793.28754"
          y="564.9364">Greylisting</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:63.71164322px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
-       x="1357.7805"
+       style="font-size:63.71164322px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:'IPAゴシック';-inkscape-font-specification:'IPAゴシック'"
+       x="1359.002"
        y="528.30219"
        id="text4643"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan4651"
-         x="1357.7805"
-         y="528.30219">ウィルス</tspan><tspan
+         x="1359.002"
+         y="528.30219"
+         dx="0 -11.428571 -11.428571">ウィルス</tspan><tspan
          sodipodi:role="line"
          id="tspan4653"
-         x="1357.7805"
-         y="607.94171">チェック</tspan></text>
+         x="1359.002"
+         y="607.94171"
+         dx="0 -8.5714283 -8.5714283 -14.285714">チェック</tspan></text>
     <text
        sodipodi:linespacing="125%"
        id="text4655"
        y="530.27722"
-       x="1772.0555"
-       style="font-size:63.71164322px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
+       x="1782.0555"
+       style="font-size:63.71164322px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:'IPAゴシック';-inkscape-font-specification:'IPAゴシック'"
        xml:space="preserve"><tspan
          y="530.27722"
-         x="1772.0555"
+         x="1782.0555"
          id="tspan4657"
          sodipodi:role="line">スパム</tspan><tspan
          y="609.91675"
-         x="1772.0555"
+         x="1782.0555"
          id="tspan4659"
-         sodipodi:role="line">チェック</tspan></text>
+         sodipodi:role="line"
+         dx="0 -11.428571 -11.428571 -11.428571"
+         dy="0 0 -9.6542479e-08">チェック</tspan></text>
     <g
        id="g4196"
        transform="matrix(2.4192011,0,0,2.4192011,2011.4299,927.90467)">
@@ -8448,10 +8467,11 @@
        sodipodi:nodetypes="cc" />
     <text
        xml:space="preserve"
-       style="font-size:74px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
+       style="font-size:74px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:'IPAゴシック';-inkscape-font-specification:'IPAゴシック';text-anchor:start;text-align:start;writing-mode:lr;line-height:125%"
        x="277.62439"
        y="569.01178"
-       id="text14618"><tspan
+       id="text14618"
+       sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan14620"
          x="277.62439"
@@ -9911,12 +9931,12 @@
     </g>
     <text
        id="text3303"
-       y="1390.2936"
-       x="776.01288"
-       style="font-size:51.65808868px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#273176;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
+       y="1392.2936"
+       x="786.01288"
+       style="font-size:56px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#273176;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:FreeSans;-inkscape-font-specification:FreeSans"
        xml:space="preserve"><tspan
-         y="1390.2936"
-         x="776.01288"
+         y="1392.2936"
+         x="786.01288"
          id="tspan3305"
          sodipodi:role="line">milter-greylist</tspan></text>
     <g
@@ -9949,13 +9969,13 @@
     </g>
     <text
        xml:space="preserve"
-       style="font-size:61.98970795px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#273176;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
-       x="1243.421"
+       style="font-size:72px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#273176;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:FreeSans;-inkscape-font-specification:FreeSans"
+       x="1239.421"
        y="1403.5491"
        id="text10431"><tspan
          sodipodi:role="line"
          id="tspan10433"
-         x="1243.421"
+         x="1239.421"
          y="1403.5491">ClamAV</tspan></text>
     <g
        id="g11396"
@@ -9989,7 +10009,7 @@
        id="text10443"
        y="1396.2765"
        x="1598.6064"
-       style="font-size:49.93615341px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#273176;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
+       style="font-size:54;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#273176;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:FreeSans;-inkscape-font-specification:FreeSans"
        xml:space="preserve"><tspan
          y="1396.2765"
          x="1598.6064"
@@ -10025,20 +10045,21 @@
     <text
        id="text10485"
        y="2109.5483"
-       x="1362.4014"
-       style="font-size:61.98970795px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#273176;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
+       x="1359.4032"
+       style="font-size:61.98970795px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#273176;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:FreeSans;-inkscape-font-specification:FreeSans"
        xml:space="preserve"
        sodipodi:linespacing="125%"><tspan
          y="2109.5483"
-         x="1362.4014"
+         x="1359.4032"
          id="tspan10487"
          sodipodi:role="line">Postfix</tspan></text>
     <text
        id="text14622"
        y="1396.6193"
        x="277.62439"
-       style="font-size:74px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
-       xml:space="preserve"><tspan
+       style="font-size:74px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:'IPAゴシック';-inkscape-font-specification:'IPAゴシック';text-anchor:start;text-align:start;writing-mode:lr;line-height:125%"
+       xml:space="preserve"
+       sodipodi:linespacing="125%"><tspan
          y="1396.6193"
          x="277.62439"
          id="tspan14624"
@@ -11561,14 +11582,14 @@
     </g>
     <text
        xml:space="preserve"
-       style="font-size:51.65808868px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#273176;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
-       x="776.01288"
-       y="2408.2224"
+       style="font-size:56px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#273176;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:FreeSans;-inkscape-font-specification:FreeSans"
+       x="786.01288"
+       y="2410.2224"
        id="text12065"><tspan
          sodipodi:role="line"
          id="tspan12067"
-         x="776.01288"
-         y="2408.2224">milter-greylist</tspan></text>
+         x="786.01288"
+         y="2410.2224">milter-greylist</tspan></text>
     <g
        transform="matrix(0.8609682,0,0,0.8609682,230.59884,1086.2155)"
        id="g12069">
@@ -11600,11 +11621,11 @@
     <text
        id="text12077"
        y="2421.4778"
-       x="1243.421"
-       style="font-size:61.98970795px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#273176;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
+       x="1239.421"
+       style="font-size:72px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#273176;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:FreeSans;-inkscape-font-specification:FreeSans"
        xml:space="preserve"><tspan
          y="2421.4778"
-         x="1243.421"
+         x="1239.421"
          id="tspan12079"
          sodipodi:role="line">ClamAV</tspan></text>
     <g
@@ -11637,7 +11658,7 @@
     </g>
     <text
        xml:space="preserve"
-       style="font-size:49.93615341px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#273176;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
+       style="font-size:54;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#273176;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:FreeSans;-inkscape-font-specification:FreeSans"
        x="1598.6064"
        y="2414.2056"
        id="text12089"><tspan
@@ -11671,7 +11692,7 @@
        style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#5b100a;stroke-width:10;stroke-linecap:round;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;filter:url(#filter3197);enable-background:accumulate" />
     <text
        xml:space="preserve"
-       style="font-size:61.98970795px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#5d0c0b;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
+       style="font-size:61.98970795000000322px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#5d0c0b;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:FreeSans;-inkscape-font-specification:FreeSans"
        x="1359.6196"
        y="3127.4773"
        id="text12101"
@@ -11710,20 +11731,21 @@
     <text
        id="text12993"
        y="3267.4773"
-       x="1362.4014"
-       style="font-size:61.98970795px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#273176;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
+       x="1359.4032"
+       style="font-size:61.98970795px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#273176;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:FreeSans;-inkscape-font-specification:FreeSans"
        xml:space="preserve"
        sodipodi:linespacing="125%"><tspan
          y="3267.4773"
-         x="1362.4014"
+         x="1359.4032"
          id="tspan12995"
          sodipodi:role="line">Postfix</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:74px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
+       style="font-size:74px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:'IPAゴシック';-inkscape-font-specification:'IPAゴシック';text-anchor:start;text-align:start;writing-mode:lr;line-height:125%"
        x="277.62439"
        y="2375.012"
-       id="text14626"><tspan
+       id="text14626"
+       sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan14628"
          x="277.62439"
@@ -11741,7 +11763,7 @@
        y="2533.1543" />
     <text
        xml:space="preserve"
-       style="font-size:74px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
+       style="font-size:74px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:'IPAゴシック';-inkscape-font-specification:'IPAゴシック'"
        x="2016.0209"
        y="2622.0476"
        id="text3830"
@@ -11753,7 +11775,8 @@
          sodipodi:role="line"
          x="2016.0209"
          y="2714.5476"
-         id="tspan3837">チェック</tspan></text>
+         id="tspan3837"
+         dx="0 -11.428571 -11.428571 -11.428571">チェック</tspan></text>
     <g
        id="g5058"
        inkscape:label="Layer 1"
@@ -11993,79 +12016,94 @@
     <g
        id="g11455"
        transform="translate(238,4)">
-      <flowRoot
-         transform="translate(447.21627,-9.3496625)"
-         id="flowRoot11445"
-         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
-         xml:space="preserve"><flowRegion
-           id="flowRegion11447"><use
-             height="3543.3071"
-             width="2505.1182"
-             id="use11449"
-             xlink:href="#rect11443"
-             y="0"
-             x="0" /></flowRegion><flowPara
-           id="flowPara11451">株式会社クリアコードは平成20年度独立行政法人情報処理推進機構（IPA）オープンソフトウェア利用促進事業「迷惑メール対策を柔軟に実現するためのmilterの開発」の一環としてmilter managerの開発を行なっています。</flowPara></flowRoot>      <rect
+      <rect
          y="3397.2356"
          x="476.60272"
          height="124.06232"
          width="1713.9651"
          id="rect11453"
          style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+      <text
+         xml:space="preserve"
+         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:'IPAゴシック';-inkscape-font-specification:'IPAゴシック'"
+         x="532.30365"
+         y="3446.5256"
+         id="text4341"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan4343"
+           x="532.30365"
+           y="3446.5256">株式会社クリアコードは平成<tspan
+   style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:FreeSans;-inkscape-font-specification:FreeSans"
+   id="tspan4351">20</tspan>年度独立行政法人情報処理推進機構（<tspan
+   style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:FreeSans;-inkscape-font-specification:FreeSans"
+   id="tspan4349">IPA</tspan>）オープンソフトウェア利用促進事業</tspan><tspan
+           sodipodi:role="line"
+           x="532.30365"
+           y="3493.8186"
+           id="tspan4353">「迷惑メール対策を柔軟に実現するための<tspan
+   style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:FreeSans;-inkscape-font-specification:FreeSans"
+   id="tspan4347">milter</tspan>の開発」の一環として<tspan
+   style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:FreeSans;-inkscape-font-specification:FreeSans"
+   id="tspan4345">milter manager</tspan>の開発を行なっています。</tspan></text>
     </g>
     <text
        xml:space="preserve"
-       style="font-size:32px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#0000ff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
-       x="126.28572"
-       y="3446.1643"
+       style="font-size:32px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#0000ff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:FreeSans;-inkscape-font-specification:FreeSans"
+       x="176.79335"
+       y="3452.2253"
        id="text11462"><tspan
          sodipodi:role="line"
          id="tspan11464"
-         x="126.28572"
-         y="3446.1643">http://milter-manager.sf.net/</tspan></text>
+         x="176.79335"
+         y="3452.2253">http://milter-manager.sf.net/</tspan></text>
     <text
        id="text11466"
-       y="3446.1643"
-       x="126.28572"
-       style="font-size:32px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#0000ff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
+       y="3452.2253"
+       x="176.79335"
+       style="font-size:32px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#0000ff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:FreeSans;-inkscape-font-specification:FreeSans"
        xml:space="preserve"><tspan
-         y="3446.1643"
-         x="126.28572"
+         y="3452.2253"
+         x="176.79335"
          id="tspan11468"
          sodipodi:role="line">http://milter-manager.sf.net/</tspan></text>
-    <text
-       id="text11498"
-       y="3498.9214"
-       x="257.86807"
-       style="font-size:30px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;filter:url(#filter11504);font-family:Sans;-inkscape-font-specification:Sans"
-       xml:space="preserve"><tspan
-         style="fill:#000000;fill-opacity:1"
+    <g
+       id="g4357"
+       transform="translate(-1.4111541,-2.020305)">
+      <text
+         xml:space="preserve"
+         style="font-size:30px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;filter:url(#filter11504);font-family:FreeSans;-inkscape-font-specification:FreeSans"
+         x="257.86807"
          y="3498.9214"
-         x="257.86807"
-         id="tspan11500"
-         sodipodi:role="line">SOURCEFORGE.NET</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:30px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:url(#linearGradient11516);fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
-       x="257.86807"
-       y="3497.9211"
-       id="text11470"><tspan
-         sodipodi:role="line"
-         id="tspan11472"
-         x="257.86807"
+         id="text11498"><tspan
+           sodipodi:role="line"
+           id="tspan11500"
+           x="257.86807"
+           y="3498.9214"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;font-family:FreeSans;-inkscape-font-specification:FreeSans">SOURCEFORGE.NET</tspan></text>
+      <text
+         id="text11470"
          y="3497.9211"
-         style="fill:url(#linearGradient11516);fill-opacity:1">SOURCEFORGE.NET</tspan></text>
-    <text
-       id="text11528"
-       y="3497.9812"
-       x="497.96799"
-       style="font-size:30px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:url(#linearGradient11534);fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
-       xml:space="preserve"><tspan
-         style="fill:url(#linearGradient11534);fill-opacity:1"
-         y="3497.9812"
-         x="497.96799"
-         id="tspan11530"
-         sodipodi:role="line">.</tspan></text>
+         x="257.86807"
+         style="font-size:30px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:url(#linearGradient4365);fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:FreeSans;-inkscape-font-specification:FreeSans"
+         xml:space="preserve"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:url(#linearGradient4365);fill-opacity:1;font-family:FreeSans;-inkscape-font-specification:FreeSans"
+           y="3497.9211"
+           x="257.86807"
+           id="tspan11472"
+           sodipodi:role="line">SOURCEFORGE.NET</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:30px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:url(#linearGradient4367);fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:FreeSans;-inkscape-font-specification:FreeSans"
+         x="491.26801"
+         y="3497.7812"
+         id="text11528"><tspan
+           sodipodi:role="line"
+           id="tspan11530"
+           x="491.26801"
+           y="3497.7812"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:url(#linearGradient4367);fill-opacity:1;font-family:FreeSans;-inkscape-font-specification:FreeSans">.</tspan></text>
+    </g>
     <g
        id="g4264"
        transform="matrix(4.1952975,0,0,4.1952975,288.62985,643.64077)">
@@ -13542,5 +13580,16 @@
            sodipodi:nodetypes="cccccc" />
       </g>
     </g>
+    <text
+       sodipodi:linespacing="100%"
+       id="text4325"
+       y="316.44998"
+       x="1225.7697"
+       style="font-size:136px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:'IPAゴシック';-inkscape-font-specification:'IPAゴシック'"
+       xml:space="preserve"><tspan
+         sodipodi:role="line"
+         id="tspan4331"
+         x="1225.7697"
+         y="316.44998">効率的な迷惑メール対策</tspan></text>
   </g>
 </svg>

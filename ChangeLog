@@ -1,5 +1,7 @@
 2009-02-08  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/poster-for-explanation-ja.svg: use free fonts.
+
 	* milter/manager/milter-manager-configuration.[ch],
 	test/manager/test-configuration.c: add UNIX socket group for manager.
 
