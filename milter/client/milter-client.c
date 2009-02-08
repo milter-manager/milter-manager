@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -23,6 +23,8 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <grp.h>
 
 #include <errno.h>
 
@@ -61,6 +63,7 @@ struct _MilterClientPrivate
     GMutex *quit_mutex;
     gboolean quitting;
     guint default_unix_socket_mode;
+    gchar *default_unix_socket_group;
     gboolean default_remove_unix_socket_on_close;
     gboolean remove_unix_socket_on_create;
 };
@@ -156,6 +159,7 @@ milter_client_init (MilterClient *client)
     priv->quit_mutex = g_mutex_new();
     priv->quitting = FALSE;
     priv->default_unix_socket_mode = 0660;
+    priv->default_unix_socket_group = NULL;
     priv->default_remove_unix_socket_on_close = TRUE;
     priv->remove_unix_socket_on_create = TRUE;
 }
@@ -218,6 +222,11 @@ dispose (GObject *object)
         priv->quit_mutex = NULL;
     }
 
+    if (priv->default_unix_socket_group) {
+        g_free(priv->default_unix_socket_group);
+        priv->default_unix_socket_group = NULL;
+    }
+
     G_OBJECT_CLASS(milter_client_parent_class)->dispose(object);
 }
 
@@ -267,16 +276,42 @@ milter_client_new (void)
 }
 
 static void
-listen_started (MilterClient *client,
-                struct sockaddr *address, socklen_t address_size)
+change_unix_socket_group (MilterClient *client, struct sockaddr_un *address_un)
 {
-    struct sockaddr_un *address_un;
-    guint mode;
+    const gchar *socket_group;
+    struct group *group;
 
-    if (address->sa_family != AF_UNIX)
+    socket_group = milter_client_get_unix_socket_group(client);
+    if (!socket_group)
         return;
 
-    address_un = (struct sockaddr_un *)address;
+    errno = 0;
+    group = getgrnam(socket_group);
+    if (!group) {
+        if (errno == 0) {
+            milter_error(
+                "failed to find group entry for UNIX socket group: %s",
+                socket_group);
+        } else {
+            milter_error(
+                "failed to get group entry for UNIX socket group: %s: %s",
+                socket_group, g_strerror(errno));
+        }
+        return;
+    }
+
+    if (chown(address_un->sun_path, -1, group->gr_gid) == -1) {
+        milter_error(
+            "failed to change UNIX socket group: %s: %s",
+            socket_group, g_strerror(errno));
+    }
+}
+
+static void
+change_unix_socket_mode (MilterClient *client, struct sockaddr_un *address_un)
+{
+    guint mode;
+
     mode = milter_client_get_unix_socket_mode(client);
     if (g_chmod(address_un->sun_path, mode) == -1) {
         GError *error;
@@ -290,6 +325,21 @@ listen_started (MilterClient *client,
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client), error);
         g_error_free(error);
     }
+}
+
+static void
+listen_started (MilterClient *client,
+                struct sockaddr *address, socklen_t address_size)
+{
+    struct sockaddr_un *address_un;
+
+    if (address->sa_family != AF_UNIX)
+        return;
+
+    address_un = (struct sockaddr_un *)address;
+
+    change_unix_socket_group(client, address_un);
+    change_unix_socket_mode(client, address_un);
 }
 
 static gchar *
@@ -761,6 +811,36 @@ void
 milter_client_set_default_unix_socket_mode (MilterClient *client, guint mode)
 {
     MILTER_CLIENT_GET_PRIVATE(client)->default_unix_socket_mode = mode;
+}
+
+const gchar *
+milter_client_get_unix_socket_group (MilterClient *client)
+{
+    MilterClientClass *klass;
+
+    klass = MILTER_CLIENT_GET_CLASS(client);
+    if (klass->get_unix_socket_group)
+        return klass->get_unix_socket_group(client);
+    else
+        return milter_client_get_default_unix_socket_group(client);
+}
+
+const gchar *
+milter_client_get_default_unix_socket_group (MilterClient *client)
+{
+    return MILTER_CLIENT_GET_PRIVATE(client)->default_unix_socket_group;
+}
+
+void
+milter_client_set_default_unix_socket_group (MilterClient *client,
+                                             const gchar *group)
+{
+    MilterClientPrivate *priv;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    if (priv->default_unix_socket_group)
+        g_free(priv->default_unix_socket_group);
+    priv->default_unix_socket_group = g_strdup(group);
 }
 
 gboolean

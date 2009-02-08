@@ -23,7 +23,9 @@
 #include <netinet/in.h>
 #include <sys/un.h>
 #include <arpa/inet.h>
+#include <sys/types.h>
 #include <unistd.h>
+#include <grp.h>
 
 #include <glib/gstdio.h>
 
@@ -36,7 +38,9 @@ void test_negotiate (void);
 void test_helo (void);
 void test_listen_started (void);
 void test_unix_socket_mode (void);
+void test_unix_socket_group (void);
 void test_change_unix_socket_mode (void);
+void test_change_unix_socket_group (void);
 void test_remove_unix_socket_on_close_accessor (void);
 void test_remove_unix_socket_on_close (void);
 void test_remove_unix_socket_on_create_accessor (void);
@@ -561,6 +565,20 @@ test_unix_socket_mode (void)
 }
 
 void
+test_unix_socket_group (void)
+{
+    cut_assert_equal_string(NULL,
+                            milter_client_get_default_unix_socket_group(client));
+    cut_assert_equal_string(NULL,
+                            milter_client_get_unix_socket_group(client));
+    milter_client_set_default_unix_socket_group(client, "nogroup");
+    cut_assert_equal_string("nogroup",
+                            milter_client_get_default_unix_socket_group(client));
+    cut_assert_equal_string("nogroup",
+                            milter_client_get_unix_socket_group(client));
+}
+
+void
 test_change_unix_socket_mode (void)
 {
     const gchar *path;
@@ -580,6 +598,59 @@ test_change_unix_socket_mode (void)
         cut_assert_errno();
 
     cut_assert_equal_uint(S_IFSOCK | 0666, stat_buffer.st_mode);
+}
+
+void
+test_change_unix_socket_group (void)
+{
+    const gchar *path;
+    struct stat stat_buffer;
+    gint i, n_groups, max_n_groups;
+    gid_t *groups;
+    struct group *group = NULL;
+
+    path = cut_take_printf("%s/milter.sock", tmp_dir);
+    spec = cut_take_printf("unix:%s", path);
+
+    max_n_groups = getgroups(0, NULL);
+    if (max_n_groups < 0)
+        max_n_groups = 5;
+
+    groups = g_new0(gid_t, max_n_groups);
+    cut_take_memory(groups);
+
+    n_groups = getgroups(max_n_groups, groups);
+    if (n_groups == -1)
+        cut_assert_errno();
+
+    for (i = 0; i < n_groups; i++) {
+        if (groups[i] == getegid())
+            continue;
+
+        errno = 0;
+        group = getgrgid(groups[i]);
+        if (!group) {
+            if (errno == 0)
+                cut_omit("can't find supplementary group: %u", groups[i]);
+            else
+                cut_assert_errno();
+        }
+    }
+
+    if (!group)
+        cut_omit("no supplementary group");
+
+    milter_client_set_default_unix_socket_group(client, group->gr_name);
+    milter_client_set_default_remove_unix_socket_on_close(client, FALSE);
+
+    cut_trace(setup_client());
+    if (!milter_client_main(client))
+        cut_assert_errno();
+
+    if (stat(path, &stat_buffer) == -1)
+        cut_assert_errno();
+
+    cut_assert_equal_uint(group->gr_gid, stat_buffer.st_gid);
 }
 
 void

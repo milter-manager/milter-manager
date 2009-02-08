@@ -171,6 +171,7 @@ struct _MilterClientClass
                                            socklen_t        address_size);
     gchar *(*get_default_connection_spec) (MilterClient *client);
     guint  (*get_unix_socket_mode)        (MilterClient *client);
+    const gchar *(*get_unix_socket_group) (MilterClient *client);
     gboolean (*is_remove_unix_socket_on_close)
                                           (MilterClient *client);
 };
@@ -206,6 +207,13 @@ guint                milter_client_get_default_unix_socket_mode
 void                 milter_client_set_default_unix_socket_mode
                                                      (MilterClient  *client,
                                                       guint          mode);
+const gchar         *milter_client_get_unix_socket_group
+                                                     (MilterClient  *client);
+const gchar         *milter_client_get_default_unix_socket_group
+                                                     (MilterClient  *client);
+void                 milter_client_set_default_unix_socket_group
+                                                     (MilterClient  *client,
+                                                      const gchar   *group);
 gboolean             milter_client_is_remove_unix_socket_on_close
                                                      (MilterClient  *client);
 gboolean             milter_client_get_default_remove_unix_socket_on_close
