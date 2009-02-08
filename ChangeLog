@@ -1,5 +1,9 @@
 2009-02-08  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: remove.
+	- where cutsom.conf should be used? readable and writabe file has
+	the highest priority?
+
 	* html/milter-manager.css: remove unusable style.
 
 	* doc/Makefile.am (EXTRA_DIST): add poster-for-explanation-ja.svg.

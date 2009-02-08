@@ -46,8 +46,6 @@ Index: milter/manager/milter-manager-leader.c
  }
  
  MilterStatus
-* where cutsom.conf should be used? readable and writabe file has the highest
-  priority?
 * bug? milter-manager sometimes doesn't finish child milter?
 * change process name of forked process launcher.
 * send quit command to launcher on manager dispose.
