@@ -37,4 +37,6 @@ EXTRA_DIST =						\
 	mail.day.png					\
 	session.day.png					\
 	stop.day.png					\
-	milter-manager-log-analyzer-graphs.svg
+	milter-manager-log-analyzer-graphs.svg		\
+	poster-for-explanation-ja.svg
+
