@@ -150,6 +150,11 @@ guint         milter_manager_configuration_get_controller_unix_socket_mode
 void          milter_manager_configuration_set_controller_unix_socket_mode
                                      (MilterManagerConfiguration *configuration,
                                       guint                       mode);
+const gchar  *milter_manager_configuration_get_manager_unix_socket_group
+                                     (MilterManagerConfiguration *configuration);
+void          milter_manager_configuration_set_manager_unix_socket_group
+                                     (MilterManagerConfiguration *configuration,
+                                      const gchar                *group);
 gboolean      milter_manager_configuration_is_remove_manager_unix_socket_on_close
                                      (MilterManagerConfiguration *configuration);
 void          milter_manager_configuration_set_remove_manager_unix_socket_on_close

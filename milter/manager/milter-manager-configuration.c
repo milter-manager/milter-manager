@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -55,6 +55,7 @@ struct _MilterManagerConfigurationPrivate
     gchar *effective_group;
     guint manager_unix_socket_mode;
     guint controller_unix_socket_mode;
+    gchar *manager_unix_socket_group;
     gboolean remove_manager_unix_socket_on_close;
     gboolean remove_controller_unix_socket_on_close;
     gboolean remove_manager_unix_socket_on_create;
@@ -76,6 +77,7 @@ enum
     PROP_EFFECTIVE_GROUP,
     PROP_MANAGER_UNIX_SOCKET_MODE,
     PROP_CONTROLLER_UNIX_SOCKET_MODE,
+    PROP_MANAGER_UNIX_SOCKET_GROUP,
     PROP_REMOVE_MANAGER_UNIX_SOCKET_ON_CLOSE,
     PROP_REMOVE_CONTROLLER_UNIX_SOCKET_ON_CLOSE,
     PROP_REMOVE_MANAGER_UNIX_SOCKET_ON_CREATE,
@@ -206,6 +208,15 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
                              G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
     g_object_class_install_property(gobject_class,
                                     PROP_CONTROLLER_UNIX_SOCKET_MODE,
+                                    spec);
+
+    spec = g_param_spec_string("manager-unix-socket-group",
+                               "milter-manager's UNIX socket group",
+                               "The milter-manager's UNIX socket group",
+                               NULL,
+                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+    g_object_class_install_property(gobject_class,
+                                    PROP_MANAGER_UNIX_SOCKET_GROUP,
                                     spec);
 
     spec = g_param_spec_boolean("remove-manager-unix-socket-on-close",
@@ -371,6 +382,10 @@ set_property (GObject      *object,
         milter_manager_configuration_set_controller_unix_socket_mode(
             config, g_value_get_uint(value));
         break;
+      case PROP_MANAGER_UNIX_SOCKET_GROUP:
+        milter_manager_configuration_set_manager_unix_socket_group(
+            config, g_value_get_string(value));
+        break;
       case PROP_REMOVE_MANAGER_UNIX_SOCKET_ON_CLOSE:
         milter_manager_configuration_set_remove_manager_unix_socket_on_close(
             config, g_value_get_boolean(value));
@@ -440,6 +455,9 @@ get_property (GObject    *object,
         break;
       case PROP_CONTROLLER_UNIX_SOCKET_MODE:
         g_value_set_uint(value, priv->controller_unix_socket_mode);
+        break;
+      case PROP_MANAGER_UNIX_SOCKET_GROUP:
+        g_value_set_string(value, priv->manager_unix_socket_group);
         break;
       case PROP_REMOVE_MANAGER_UNIX_SOCKET_ON_CLOSE:
         g_value_set_boolean(value, priv->remove_manager_unix_socket_on_close);
@@ -935,6 +953,27 @@ milter_manager_configuration_set_controller_unix_socket_mode (MilterManagerConfi
     priv->controller_unix_socket_mode = mode;
 }
 
+const gchar *
+milter_manager_configuration_get_manager_unix_socket_group (MilterManagerConfiguration *configuration)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    return priv->manager_unix_socket_group;
+}
+
+void
+milter_manager_configuration_set_manager_unix_socket_group (MilterManagerConfiguration *configuration,
+                                                            const gchar *group)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    if (priv->manager_unix_socket_group)
+        g_free(priv->manager_unix_socket_group);
+    priv->manager_unix_socket_group = g_strdup(group);
+}
+
 gboolean
 milter_manager_configuration_is_remove_manager_unix_socket_on_close (MilterManagerConfiguration *configuration)
 {
@@ -1346,6 +1385,11 @@ milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
     if (priv->effective_group) {
         g_free(priv->effective_group);
         priv->effective_group = NULL;
+    }
+
+    if (priv->manager_unix_socket_group) {
+        g_free(priv->manager_unix_socket_group);
+        priv->manager_unix_socket_group = NULL;
     }
 
     if (priv->pid_file) {
