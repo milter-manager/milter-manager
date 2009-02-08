@@ -1,5 +1,9 @@
 2009-02-08  Kouhei Sutou  <kou@cozmixng.org>
 
+	* data/init.d/redhat/milter-manager,
+	data/init.d/debian/milter-manager,
+	data/rc.d/milter-manager: support --socket-group-name option.
+
 	* milter/manager/milter-manager-main.c, README*: add
 	--socket-group-name option.
 

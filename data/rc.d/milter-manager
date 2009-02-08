@@ -26,6 +26,7 @@ else
     : ${milter_manager_user_name="mailnull"}
 fi
 : ${milter_manager_group_name="mail"}
+: ${milter_manager_socket_group_name="mail"}
 : ${milter_manager_connection_spec=""}
 : ${milter_manager_debug="NO"}
 
@@ -37,6 +38,9 @@ if test -n "${milter_manager_user_name}"; then
 fi
 if test -n "${milter_manager_group_name}"; then
     command_args="${command_args} --group-name ${milter_manager_group_name}"
+fi
+if test -n "${milter_manager_socket_group_name}"; then
+    command_args="${command_args} --socket-group-name ${milter_manager_socket_group_name}"
 fi
 if test -n "$milter_manager_connection_connection_spec"; then
     command_args="${command_args} --spec ${milter_manager_connection_spec}"

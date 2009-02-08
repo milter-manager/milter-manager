@@ -18,6 +18,7 @@ NAME=milter-manager
 DAEMON=/usr/sbin/$NAME
 USER="milter-manager"
 GROUP="mail"
+SOCKET_GROUP="mail"
 PIDFILE=/var/run/milter-manager/$NAME.pid
 CONNECTION_SPEC=unix:/var/run/milter-manager/milter-manager.sock
 SCRIPTNAME=/etc/init.d/$NAME
@@ -48,6 +49,13 @@ if [ -n "${GROUP}" ]; then
 	exit 1
     fi
     DAEMON_ARGS="${DAEMON_ARGS} --group-name ${GROUP}"
+fi
+if [ -n "${SOCKET_GROUP}" ]; then
+    if ! getent group | grep -q "^${SOCKET_GROUP}:"; then
+	echo "$0: group for socket doesn't exist: ${SOCKET_GROUP}" >&2
+	exit 1
+    fi
+    DAEMON_ARGS="${DAEMON_ARGS} --socket-group-name ${SOCKET_GROUP}"
 fi
 DAEMON_ARGS="${DAEMON_ARGS} ${OPTION_ARGS}"
 

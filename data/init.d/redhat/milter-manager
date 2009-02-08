@@ -24,6 +24,7 @@ prog="milter-manager"
 milter_manager=/usr/sbin/milter-manager
 USER="milter-manager"
 GROUP="smmsp"
+SOCKET_GROUP="smmsp"
 PIDFILE=/var/run/milter-manager/$prog.pid
 CONNECTION_SPEC=unix:/var/run/milter-manager/milter-manager.sock
 OPTION_ARGS=""
@@ -51,6 +52,13 @@ if [ -n "${GROUP}" ]; then
 		exit 1
 	fi
 	DAEMON_ARGS="${DAEMON_ARGS} --group-name ${GROUP}"
+fi
+if [ -n "${SOCKET_GROUP}" ]; then
+	if ! getent group | grep -q "^${SOCKET_GROUP}:"; then
+		echo "$0: group for socket doesn't exist: ${SOCKET_GROUP}" >&2
+		exit 1
+	fi
+	DAEMON_ARGS="${DAEMON_ARGS} --socket-group-name ${SOCKET_GROUP}"
 fi
 DAEMON_ARGS="${DAEMON_ARGS} ${OPTION_ARGS}"
 
