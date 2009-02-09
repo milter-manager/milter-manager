@@ -144,8 +144,10 @@ class MilterPerformanceTool
       threads = send_mails_in_parallel(mails)
     end
     @n_processed_mails = threads.size
-    threads.each do |thread|
+    threads.each_with_index do |thread, i|
+      before = Time.now
       thread.join
+      p [i, Time.now - before]
     end
     @elapsed_time = Time.now - start_time
   end
@@ -159,7 +161,7 @@ class MilterPerformanceTool
     puts "Per mail:"
     puts "         Max: %#5.2f (sec)" % @max_elapsed_time
     puts "         Min: %#5.2f (sec)" % (@min_elapsed_time || 0)
-    puts "     Average: %#5.2f (mails/sec)" % average(@accumulated_elapsed_time)
+    puts "     Average: %#5.2f (sec)" % average_per_mail(@accumulated_elapsed_time)
     puts
     puts "Status:"
     puts statistics_report("Temporary failure", @n_temporary_failure_mails)
@@ -360,6 +362,14 @@ EOM
       @n_processed_mails
     else
       @n_processed_mails / elapsed_time.to_f
+    end
+  end
+
+  def average_per_mail(elapsed_time)
+    if @n_processed_mails.zero?
+      elapsed_time.to_f
+    else
+      elapsed_time.to_f / @n_processed_mails
     end
   end
 
