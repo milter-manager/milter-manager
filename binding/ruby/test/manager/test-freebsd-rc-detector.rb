@@ -59,6 +59,7 @@ class TestFreeBSDRCDetector < Test::Unit::TestCase
                    "pid_file" => "/var/run/milter-manager/milter-manager.pid",
                    "user_name" => "mailnull",
                    "group_name" => "mail",
+                   "socket_group_name" => "mail",
                    "connection_spec" => "",
                  },
                  detector.variables)
@@ -84,6 +85,7 @@ EOC
                    "pid_file" => "/var/run/milter-manager/milter-manager.pid",
                    "user_name" => "mailnull",
                    "group_name" => "mail",
+                   "socket_group_name" => "mail",
                    "connection_spec" => "inet:10025@localhost",
                  },
                  detector.variables)
