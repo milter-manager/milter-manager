@@ -1,5 +1,10 @@
 2009-02-09  Kouhei Sutou  <kou@clear-code.com>
 
+	* tool/milter-performance-check
+	(MilterPerformanceTool#parse_period): fix too much grouping.
+	(MilterPerformanceTool#report): fix wrong unit.
+	(MilterPerformanceTool#send_mails_in_period): fix inverted expression.
+
 	* test/manager/test-manager.c (test_unknown_option): add
 	--socket-group-name option.
 

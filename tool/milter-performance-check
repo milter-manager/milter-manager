@@ -159,7 +159,7 @@ class MilterPerformanceTool
     puts "Per mail:"
     puts "         Max: %#5.2f (sec)" % @max_elapsed_time
     puts "         Min: %#5.2f (sec)" % (@min_elapsed_time || 0)
-    puts "     Average: %#5.2f (sec)" % average(@accumulated_elapsed_time)
+    puts "     Average: %#5.2f (mails/sec)" % average(@accumulated_elapsed_time)
     puts
     puts "Status:"
     puts statistics_report("Temporary failure", @n_temporary_failure_mails)
@@ -178,7 +178,7 @@ class MilterPerformanceTool
   end
 
   def send_mails_in_period(mails)
-    interval =  mails.size / @period
+    interval =  @period / mails.size
     mails.collect do |mail|
       thread = Thread.start do
         send_mail(mail)
@@ -298,7 +298,7 @@ class MilterPerformanceTool
   end
 
   def parse_period(period)
-    if /\A(\d+(:.\d+)?)(s|sec|seconds?|m|min|minutes?|h|hours?)?\z/i =~ period
+    if /\A(\d+(?:.\d+)?)(s|sec|seconds?|m|min|minutes?|h|hours?)?\z/i =~ period
       numeric = $1
       unit = $2
       numeric = Float(numeric)
