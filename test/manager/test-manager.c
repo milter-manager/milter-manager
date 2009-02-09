@@ -412,6 +412,7 @@ test_unknown_option (void)
             "  --pid-file=FILE                The file name to be saved PID.\n"
             "  -u, --user-name=NAME           The user name for running milter-manager.\n"
             "  -g, --group-name=NAME          The group name for running milter-manager.\n"
+            "  --socket-group-name=NAME       The group name for UNIX domain socket.\n"
             "  --daemon                       Run as daemon process.\n"
             "  --no-daemon                    Cancel the prior --daemon options.\n"
             "  --show-config                  Show configuration and exit\n"
