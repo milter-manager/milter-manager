@@ -409,6 +409,10 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
 
 == 子milter関連
 
+子milterに関連する設定項目について説明します。
+
+=== 子milter定義
+
 子milterは以下の書式で登録します。
 
   define_milter("名前") do |milter|
@@ -495,6 +499,14 @@ define_milter do ... end内で設定できる項目は以下の通りです。
 
    既定値:
      milter.applicable_conditions = []
+
+: milter.add_applicable_condition(name)
+
+   子milterを適用する条件を追加します。適用する条件について
+   はmilter.applicable_conditionsを見てください。
+
+   例:
+     milter.add_applicable_condition("S25R")
 
 : milter.command
 
@@ -590,12 +602,56 @@ define_milter do ... end内で設定できる項目は以下の通りです。
    既定値:
      milter.end_of_message_timeout = 200.0
 
+=== 子milter操作
+
+定義された子milterを操作するために便利な機能があります。ただ
+し、これらの機能を利用するには多少Rubyの知識が必要になります。
+
+定義されている子milter名の一覧を取得することができます。
+
+  define_milter("milter1") do |milter|
+    ...
+  end
+
+  define_milter("milter2") do |milter|
+    ...
+  end
+
+  defined_milters # => ["milter1", "milter2"]
+
+これを利用することにより、すべての子milterの設定をまとめて変
+更するということが簡単にできるようになります。
+
+以下はすべての子milterを無効にする例です。
+
+  define_milters.each do |name|
+    define_milter(name) do |milter|
+      milter.enabled = false
+    end
+  end
+
+以下はすべての子milterの適用条件にS25Rを追加する例です。
+
+  define_milters.each do |name|
+    define_milter(name) do |milter|
+      milter.add_applicable_condition("S25R")
+    end
+  end
+
+
+: defined_milters
+   定義されている子milterの名前の一覧を返します。返される値
+   は文字列の配列です。
+
+   例:
+     defined_milters # => ["milter1", "milter2"]
+
 == 適用条件関連
 
-ここからはRubyの知識が必要になります。標準でS25Rなどの有用な
-適用条件は用意されています。それらで十分ではない場合は、適用
-条件を定義することができます。適用条件を定義することにより、
-子milterを適用するかを動的に判断することができます。
+ここからは本格的にRubyの知識が必要になります。標準でS25Rなど
+の有用な適用条件は用意されています。それらで十分ではない場合
+は、適用条件を定義することができます。適用条件を定義すること
+により、子milterを適用するかを動的に判断することができます。
 
 適用条件は以下の書式で定義します。適用条件の定義にはRubyの知
 識が必要になります。

@@ -223,6 +223,28 @@ EOX
                  end)
   end
 
+  def test_defined_milters
+    @loader.define_milter("milter1") do |milter|
+      milter.description = "description1"
+      milter.enabled = true
+    end
+    @loader.define_milter("milter2") do |milter|
+      milter.description = "description2"
+    end
+
+    @loader.defined_milters.each do |name|
+      @loader.define_milter(name) do |milter|
+        milter.description = "rewrite - #{milter.description}"
+      end
+    end
+
+    assert_equal([["milter1", true, "rewrite - description1"],
+                  ["milter2", true, "rewrite - description2"]],
+                 @configuration.eggs.collect do |egg|
+                   [egg.name, egg.enabled?, egg.description]
+                 end)
+  end
+
   def test_define_milter_set_applicable_conditions
     @loader.define_applicable_condition("S25R") do |condition|
       condition.description = "Selective SMTP Rejection."

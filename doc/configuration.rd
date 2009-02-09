@@ -353,6 +353,11 @@ FIXME
 
 == Child milter
 
+This section describes about configuration items related
+with child milter.
+
+=== Define child milter
+
 Child milter is registered as the following syntax:
 
   define_milter("NAME") do |milter|
@@ -413,7 +418,43 @@ Required item is just only milter.connection_spec.
 
 : milter.applicable_conditions
 
-   FIXME
+   Specifies applicable conditions for the child milter. The
+   child milter is stopped if any condition isn't satisfied.
+
+   The following command shows available applicable
+   conditions:
+
+     % /usr/local/sbin/milter-manager --show-config | grep define_applicable_condition
+     define_applicable_condition("S25R") do |condition|
+     define_applicable_condition("Remote Network") do |condition|
+
+   In the above case, "S25R" and "Remote Network" are
+   available.
+
+   Some applicable conditions are available in default
+   configuration. You can also define your original
+   applicable condition. See ((<Applicable condition>))
+   about how to define applicable condition. But defining
+   applicable condition requires Ruby's knowledge.
+
+   To specify multiple applicable conditions, you can use
+   ",":
+
+     milter.applicable_conditions = ["S25R", "Remote Network"]
+
+   Example:
+     milter.applicable_conditions = ["S25R"]
+
+   Default:
+     milter.applicable_conditions = []
+
+: milter.add_applicable_condition(name)
+
+   Adds an applicable condition to the child milter. See
+   milter.applicable_conditions about 'applicable condition'.
+
+   Example:
+     milter.add_applicable_condition("S25R")
 
 : milter.command
 
@@ -510,3 +551,50 @@ Required item is just only milter.connection_spec.
 
    Default:
      milter.end_of_message_timeout = 200.0
+
+=== Operate child milter
+
+There is convenient features to operate defined child
+milters. But the features require knowledge about Ruby a
+bit.
+
+defined_milters returns a list of define child milter names.
+
+  define_milter("milter1") do |milter|
+    ...
+  end
+
+  define_milter("milter2") do |milter|
+    ...
+  end
+
+  defined_milters # => ["milter1", "milter2"]
+
+It's easy that changing configuration of all child milter by
+this feature.
+
+Here is an example that disabling all child milters:
+
+  define_milters.each do |name|
+    define_milter(name) do |milter|
+      milter.enabled = false
+    end
+  end
+
+Here is an example that adding "S25R" applicable condition
+to all child milters.
+
+  define_milters.each do |name|
+    define_milter(name) do |milter|
+      milter.add_applicable_condition("S25R")
+    end
+  end
+
+
+: defined_milters
+   Returns a list of defined child milter names. Returned
+   value is an array of string.
+
+   Example:
+     defined_milters # => ["milter1", "milter2"]
+

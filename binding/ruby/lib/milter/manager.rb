@@ -235,6 +235,12 @@ module Milter::Manager
       condition_configuration.apply
     end
 
+    def defined_milters
+      @configuration.eggs.collect do |egg|
+         egg.name
+      end
+    end
+
     private
     def resolve_path(path)
       return [path] if Pathname(path).absolute?
