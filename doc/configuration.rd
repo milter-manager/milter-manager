@@ -345,11 +345,63 @@ Here are descriptions of configuration items.
 
 == Controller
 
-FIXME
+: controller.connection_spec
 
-== Applicable condition
+   Specifies a socket that milter-manager accepts connection
+   for controlling milter-manager.
 
-FIXME
+   Format is same as manager.connection_spec.
+
+   Example:
+     controller.connection_spec = "inet:10026@localhost"
+
+   Default:
+     controller.connection_spec = nil
+
+: controller.unix_socket_mode
+
+   Specifies permission of UNIX domain socket for
+   controlling milter-manager. This is used only when UNIX
+   domain socket is specified for controller.connection_spec.
+
+   Don't forget to prepend '0' to specify permission as
+   octal notation.
+
+   Example:
+     controller.unix_socket_mode = 0600
+
+   Default:
+     controller.unix_socket_mode = 0660
+
+: controller.remove_unix_socket_on_create
+
+   Specifies whether remove existing UNIX domain socket
+   for controlling milter-manager before creating new UNIX
+   domain socket or not. This is used only when UNIX domain
+   socket is specified for controller.connection_spec.
+
+   True if remove, false otherwise.
+
+   Example:
+     controller.remove_unix_socket_on_create = false
+
+   Default:
+     controller.remove_unix_socket_on_create = true
+
+: controller.remove_unix_socket_on_close
+
+   Specifies whether remove used UNIX domain socket for
+   controlling milter-manager after shutting down. This is
+   used only when UNIX domain socket is specified for
+   controller.connection_spec.
+
+   True if remove, false otherwise.
+
+   Example:
+     controller.remove_unix_socket_on_close = false
+
+   Default:
+     controller.remove_unix_socket_on_close = true
 
 == Child milter
 
@@ -598,3 +650,6 @@ to all child milters.
    Example:
      defined_milters # => ["milter1", "milter2"]
 
+== Applicable condition
+
+FIXME

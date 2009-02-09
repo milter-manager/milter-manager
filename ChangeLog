@@ -1,5 +1,7 @@
 2009-02-09  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/configuration.rd: add document for controller.
+
 	* milter/core/milter-reader.c: avoid reading after shutdown.
 
 	* tool/milter-performance-check: improve output format.
