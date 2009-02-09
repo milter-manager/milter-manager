@@ -163,6 +163,26 @@ read_from_channel (MilterReader *reader, GIOChannel *channel)
     return !error_occurred && !eof;
 }
 
+static void
+clear_watch_id (MilterReaderPrivate *priv)
+{
+    if (priv->channel_watch_id) {
+        g_source_remove(priv->channel_watch_id);
+        priv->channel_watch_id = 0;
+    }
+}
+
+static void
+finish (MilterReader *reader)
+{
+    MilterReaderPrivate *priv;
+
+    priv = MILTER_READER_GET_PRIVATE(reader);
+    priv->shutdown_requested = FALSE;
+    clear_watch_id(priv);
+    milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(reader));
+}
+
 static gboolean
 channel_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
 {
@@ -205,9 +225,7 @@ channel_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
 
     if (!keep_callback) {
         milter_debug("[reader] removing reader watcher.");
-        priv->shutdown_requested = FALSE;
-        priv->channel_watch_id = 0;
-        milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(reader));
+        finish(reader);
     }
 
     priv->processing = FALSE;
@@ -235,10 +253,7 @@ dispose (GObject *object)
 
     priv = MILTER_READER_GET_PRIVATE(object);
 
-    if (priv->channel_watch_id > 0) {
-        g_source_remove(priv->channel_watch_id);
-        priv->channel_watch_id = 0;
-    }
+    clear_watch_id(priv);
 
     if (priv->io_channel) {
         g_io_channel_unref(priv->io_channel);
@@ -347,7 +362,11 @@ milter_reader_shutdown (MilterReader *reader)
         milter_error("[reader][error][shutdown] %s", error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(reader), error);
         g_error_free(error);
+        return;
     }
+
+    milter_debug("[reader][shutdown]");
+    finish(reader);
 }
 
 /*

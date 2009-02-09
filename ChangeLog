@@ -1,5 +1,16 @@
 2009-02-09  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/core/milter-reader.c: avoid reading after shutdown.
+
+	* tool/milter-performance-check: improve output format.
+
+	* binding/ruby/test/manager/test-*-detector.rb: follow the recent
+	init file change.
+
+	* binding/ruby/lib/milter/manager.rb,
+	binding/ruby/test/manager/test-configuration-loader.rb,
+	doc/configuration.rd*: add defined_milters.
+
 	* tool/milter-performance-check
 	(MilterPerformanceTool#parse_period): fix too much grouping.
 	(MilterPerformanceTool#report): fix wrong unit.
