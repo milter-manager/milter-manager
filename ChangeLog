@@ -1,3 +1,7 @@
+2009-02-09  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/core/milter-reader.c: delay watch func removing.
+
 2009-02-09  Kouhei Sutou  <kou@clear-code.com>
 
 	* doc/configuration.rd: add document for controller.

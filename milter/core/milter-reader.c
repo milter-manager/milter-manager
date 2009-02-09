@@ -193,14 +193,13 @@ channel_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
     priv = MILTER_READER_GET_PRIVATE(reader);
     priv->processing = TRUE;
 
-    if (condition & G_IO_IN ||
-        condition & G_IO_PRI) {
+    if (!priv->shutdown_requested &&
+        (condition & (G_IO_IN | G_IO_PRI))) {
         milter_debug("[reader] reading from io channel...");
         keep_callback = read_from_channel(reader, channel);
     }
 
-    if (condition & G_IO_ERR ||
-        condition & G_IO_HUP ||
+    if ((condition & (G_IO_ERR | G_IO_HUP)) ||
         (!priv->shutdown_requested && condition & G_IO_NVAL)) {
         gchar *message;
         GError *error = NULL;
@@ -225,6 +224,7 @@ channel_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
 
     if (!keep_callback) {
         milter_debug("[reader] removing reader watcher.");
+        priv->channel_watch_id = 0;
         finish(reader);
     }
 
@@ -362,11 +362,7 @@ milter_reader_shutdown (MilterReader *reader)
         milter_error("[reader][error][shutdown] %s", error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(reader), error);
         g_error_free(error);
-        return;
     }
-
-    milter_debug("[reader][shutdown]");
-    finish(reader);
 }
 
 /*
