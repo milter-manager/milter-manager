@@ -134,6 +134,7 @@ class MilterPerformanceTool
     @min_elapsed_time = nil
     @n_temporary_failure_mails = 0
     @n_reject_mails = 0
+    @n_error_mails = 0
     mails = expand_mails(@mails)
     mails = [mails[0]] * @n_mails if mails.size <= 1
 
@@ -144,10 +145,8 @@ class MilterPerformanceTool
       threads = send_mails_in_parallel(mails)
     end
     @n_processed_mails = threads.size
-    threads.each_with_index do |thread, i|
-      before = Time.now
+    threads.each do |thread|
       thread.join
-      p [i, Time.now - before]
     end
     @elapsed_time = Time.now - start_time
   end
@@ -166,6 +165,7 @@ class MilterPerformanceTool
     puts "Status:"
     puts statistics_report("Temporary failure", @n_temporary_failure_mails)
     puts statistics_report("           Reject", @n_reject_mails)
+    puts statistics_report("            Error", @n_error_mails)
   end
 
   private
@@ -235,7 +235,7 @@ class MilterPerformanceTool
       temporary_failure = true
     rescue Net::SMTPFatalError
       reject = true
-    rescue Net::ProtoFatalError
+    rescue Net::ProtoFatalError, Timeout::Error
       error = true
       error_object = $!
     end
@@ -374,8 +374,8 @@ EOM
   end
 
   def statistics_report(label, n_mails)
-    " #{label}: %2d (%3g%%)" % [n_mails,
-                                n_mails.to_f / @n_processed_mails * 100]
+    " #{label}: %3d (%5.2f%%)" % [n_mails,
+                                  n_mails.to_f / @n_processed_mails * 100]
   end
 end
 
