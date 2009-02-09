@@ -458,7 +458,7 @@ typedef struct _ClientChannelSetupData
 } ClientChannelSetupData;
 
 static gboolean
-cb_idle_client_channel_setup (gpointer user_data)
+cb_timeout_client_channel_setup (gpointer user_data)
 {
     ClientChannelSetupData *setup_data = user_data;
     MilterClient *client;
@@ -513,7 +513,7 @@ process_client_channel (MilterClient *client, GIOChannel *channel)
     data->channel = channel;
     g_io_channel_ref(channel);
 
-    g_idle_add(cb_idle_client_channel_setup, data);
+    g_timeout_add(0, cb_timeout_client_channel_setup, data);
 }
 
 static gboolean

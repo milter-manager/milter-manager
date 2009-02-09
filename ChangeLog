@@ -1,5 +1,8 @@
 2009-02-09  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client.c (process_client_channel): start
+	client as soon as possible.
+
 	* milter/core/milter-reader.c: delay watch func removing.
 
 2009-02-09  Kouhei Sutou  <kou@clear-code.com>
