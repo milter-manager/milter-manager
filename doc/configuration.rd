@@ -652,4 +652,413 @@ to all child milters.
 
 == Applicable condition
 
-FIXME
+We need knowledge about Ruby from this section. Some useful
+applicable conditions are provided by default. We can define
+new applicable conditions if we need more conditions. We can
+decide which child milter is applied or not dynamically by
+defining our applicable conditions.
+
+We define an applicable condition with the following
+syntax. We need knowledge about Ruby for defining applicable
+condition.
+
+  define_applicable_condition("NAME") do |condition|
+    condition.description = ...
+    condition.define_connect_stopper do |...|
+      ...
+    end
+    ...
+  end
+
+For example, here is an applicable condition to implement
+S25R:
+
+  define_applicable_condition("S25R") do |condition|
+    condition.description = "Selective SMTP Rejection"
+
+    condition.define_connect_stopper do |context, host, socket_address|
+      case host
+      when "unknown",
+        /\A\[.+\]\z/,
+        /\A[^.]*\d[^\d.]+\d.*\./,
+        /\A[^.]*\d{5}/,
+        /\A(?:[^.]+\.)?\d[^.]*\.[^.]+\..+\.[a-z]/i,
+        /\A[^.]*\d\.[^.]*\d-\d/,
+        /\A[^.]*\d\.[^.]*\d\.[^.]+\..+\./,
+        /\A(?:dhcp|dialup|ppp|[achrsvx]?dsl)[^.]*\d/i
+        false
+      else
+        true
+      end
+    end
+  end
+
+'host' is "[IP ADDRESS]" not "unknown" when name resolution
+is failed. So, "unknown" is needless. It's sufficient that
+we just use /\A\[.+\]\z/. But it is included just in case. :-)
+
+Here are configurable items in 'define_applicable_condition
+do ... end'.
+
+There is no required item.
+
+: condition.description
+
+   Specifies description of the applicable condition.
+
+   Description is specified like "test condition". Description is
+   surrounded with '"' (double quote).
+
+   Example:
+     condition.description = "test condition"
+
+   Default:
+     condition.description = nil
+
+: condition.define_connect_stopper {|context, host, socket_address| ...}
+
+   Decides whether the child milter is applied or not with
+   host name and IP address of connected SMTP client. The
+   available information is same as milter's xxfi_connect.
+
+   It returns true if we stop the child milter, false otherwise.
+
+   : context
+      The object that has several information at the
+      time. Details are said later.
+
+   : host
+      The host name (string) of connected SMTP client. It is
+      got by resolving connected IP address. It may be "[IP
+      ADDRESS]" string when name resolution is failed. For
+      example, "[1.2.3.4]".
+
+   : socket_address
+      The object that describes connected IP
+      address. Details are said later.
+
+   Here is an example that we stop the child milter when
+   SMTP client is connected from resolvable host:
+
+     condition.define_connect_stopper do |context, host, socket_address|
+       if /\A\[.+\]\z/ =~ host
+         false
+       else
+         true
+       end
+     end
+
+: define_envelope_from_stopper {|context, from| ...}
+
+   Decides whether the child milter is applied or not with
+   envelope from address passed on MAIL FROM command of
+   SMTP. The available information is same as milter's
+   xxfi_envfrom.
+
+   It returns true if we stop the child milter, false otherwise.
+
+   : context
+      The object that has several information at the
+      time. Details are said later.
+
+   : from
+      The envelope from address passed on MAIL FROM command.
+      For example, "<sender@example.com>".
+
+   Here is an example that we stop the child milter when
+   mails are sent from example.com.
+
+     condition.define_envelope_from_stopper do |context, from|
+       if /@example.com>\z/ =~ from
+         true
+       else
+         false
+       end
+     end
+
+: define_envelope_recipient_stopper {|context, recipient| ...}
+
+   Decides whether the child milter is applied or not with
+   envelope recipient address passed on RCPT TO command of
+   SMTP. The available information is same as milter's
+   xxfi_envrcpt. This callback is called one or more times
+   when there are multiple recipients.
+
+   It returns true if we stop the child milter, false otherwise.
+
+   : context
+      The object that has several information at the
+      time. Details are said later.
+
+   : recipient
+      The envelope recipient address passed on RCPT TO command.
+      For example, "<receiver@example.com>".
+
+   Here is an example that we stop the child milter when
+   mails are sent to ml.example.com.
+
+     condition.define_envelope_recipient_stopper do |context, recipient|
+       if /@ml.example.com>\z/ =~ recipient
+         true
+       else
+         false
+       end
+     end
+
+: define_header_stopper {|context, name, value| ...}
+
+   Decides whether the child milter is applied or not with
+   header information. The available information is same as
+   milter's xxfi_header. This callback is called for each
+   header.
+
+   It returns true if we stop the child milter, false otherwise.
+
+   : context
+      The object that has several information at the
+      time. Details are said later.
+
+   : name
+      The header name. For example, "From".
+
+   : value
+      The header value. For example, "sender@example.com".
+
+   Here is an example that we stop the child milter when
+   mails have a header that name is "X-Spam-Flag" and value
+   is "YES".
+
+     condition.define_header_stopper do |context, name, value|
+       if ["X-Spam-Flag", "YES"] == [name, value]
+         true
+       else
+         false
+       end
+     end
+
+=== context
+
+The object that has several information when we decide
+whether a child milter is applied or not. (The class of
+context is Milter::Manager::ChildContext.)
+
+It has the following information.
+
+: context.name
+
+   Returns the name of child milter. It's name used when
+   define_milter.
+
+   Example:
+     context.name # -> "clamav-milter"
+
+: context[name]
+
+   Returns value of available macro in the child milter In
+   libmilter API, we need to surround macro name that has
+   two or more length with "{}" but it isn't
+   required. context[name] works well with/without "{}".
+
+   Example:
+     context["j"] # -> "mail.example.com"
+     context["rcpt_address"] # -> "receiver@example.com"
+     context["{rcpt_address}"] # -> "receiver@example.com"
+
+: context.reject?
+
+   Returns true if the child milter returns 'reject'.
+
+   Passed context should be always processing. So,
+   context.reject? never return true. It's usuful when we
+   use the other child milter's result. The other child can
+   be retrieved by context.children[].
+
+   Example:
+     context.reject? # -> false
+     context.children["milter-greylist"].reject? # -> true or false
+
+: context.temporary_failure?
+
+   Returns true if the child milter returns 'temporary failure'.
+
+   Passed context should be always processing. So,
+   context.temporay_failure? never return true. It's usuful
+   when we use the other child milter's result. The other
+   child can be retrieved by context.children[].
+
+   Example:
+     context.temporary_failure? # -> false
+     context.children["milter-greylist"].temporary_failure? # -> true or false
+
+: context.accept?
+
+   Returns true if the child milter returns 'accept'.
+
+   Passed context should be always processing. So,
+   context.accept? never return true. It's usuful
+   when we use the other child milter's result. The other
+   child can be retrieved by context.children[].
+
+   Example:
+     context.accept? # -> false
+     context.children["milter-greylist"].accept? # -> true or false
+
+: context.discard?
+
+   Returns true if the child milter returns 'discard'.
+
+   Passed context should be always processing. So,
+   context.discard? never return true. It's usuful
+   when we use the other child milter's result. The other
+   child can be retrieved by context.children[].
+
+   Example:
+     context.discard? # -> false
+     context.children["milter-greylist"].discard? # -> true or false
+
+: context.quitted?
+
+   Returns true if the child milter was quitted.
+
+   Passed context should be always processing. So,
+   context.quitted? never return true. It's usuful
+   when we use the other child milter's result. The other
+   child can be retrieved by context.children[].
+
+   Example:
+     context.quitted? # -> false
+     context.children["milter-greylist"].quitted? # -> true or false
+
+: context.children[name]
+
+   Returnes the other child milter's context.
+
+   The name to refere the other child milter is a name that
+   is used for define_milter. (i.e. the name returned by
+   context.name)
+
+   It returns nil if we refer with nonexistent name.
+
+   Example:
+     context.children["milter-greylist"] # -> milter-greylist's context
+     context.children["nonexistent"]     # -> nil
+     context.children[context.name]      # -> my context
+
+: context.postfix?
+
+   Returns true when MTA is Postfix. It is decided by "v"
+   macro's value. If the value includes "Postfix", MTA will
+   be Postfix.
+
+   Returns true when MTA is Postfix, false otherwise.
+
+   Example:
+     context["v"]     # -> "Postfix 2.5.5"
+     context.postfix? # -> true
+
+     context["v"]     # -> "2.5.5"
+     context.postfix? # -> false
+
+     context["v"]     # -> nil
+     context.postfix? # -> false
+
+=== socket_address
+
+The object that describes socket address. Socket is one of
+IPv4 socket, IPv6 socket and UNIX domain socket. Socket
+address is described as corresponding object.
+
+==== Milter::SocketAddress::IPv4
+
+It describes IPv4 socket address. It has the following methods.
+
+: address
+   Returns dot-notation IPv4 address.
+
+   Example:
+     socket_address.address # -> "192.168.1.1"
+
+: port
+   Returns port number.
+
+   Example:
+     socket_address.port # -> 12345
+
+: to_s
+   Returns IPv4 address formated as connection_spec format.
+
+   Example:
+     socket_address.to_s # -> "inet:12345@[192.168.1.1]"
+
+: local?
+   Returns true if the address is private network address,
+   false otherwise.
+
+   Example:
+     socket_address.to_s   # -> "inet:12345@[127.0.0.1]"
+     socket_address.local? # -> true
+
+     socket_address.to_s   # -> "inet:12345@[192.168.1.1]"
+     socket_address.local? # -> true
+
+     socket_address.to_s   # -> "inet:12345@[160.XXX.XXX.XXX]"
+     socket_address.local? # -> false
+
+==== Milter::SocketAddress::IPv6
+
+It describes IPv6 socket address. It has the following methods.
+
+: address
+   Returns colon-notation IPv6 address.
+
+   Example:
+     socket_address.address # -> "::1"
+
+: port
+   Returns port number.
+
+   Example:
+     socket_address.port # -> 12345
+
+: to_s
+   Returns IPv6 address formated as connection_spec format.
+
+   Example:
+     socket_address.to_s # -> "inet6:12345@[::1]"
+
+: local?
+   Returns true if the address is private network address,
+   false otherwise.
+
+   Example:
+     socket_address.to_s   # -> "inet6:12345@[::1]"
+     socket_address.local? # -> true
+
+     socket_address.to_s   # -> "inet6:12345@[fe80::XXXX]"
+     socket_address.local? # -> true
+
+     socket_address.to_s   # -> "inet6:12345@[2001::XXXX]"
+     socket_address.local? # -> false
+
+==== Milter::SocketAddress::Unix
+
+It describes UNIX domain ssocket address. It has the following methods.
+
+: path
+   Returns path of the socket.
+
+   Example:
+     socket_address.path # -> "/tmp/local.sock"
+
+: to_s
+   Returns UNIX domain socket address formated as
+   connection_spec format.
+
+   Exampel:
+     socket_address.to_s # -> "unix:/tmp/local.sock"
+
+: local?
+   Always returns true.
+
+   Example:
+     socket_address.local? # -> true

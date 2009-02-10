@@ -673,7 +673,7 @@ define_milter do ... end内で設定できる項目は以下の通りです。
       case host
       when "unknown",
         /\A\[.+\]\z/,
-        /\A[^.]*\d[^\d.]+\d/,
+        /\A[^.]*\d[^\d.]+\d.*\./,
         /\A[^.]*\d{5}/,
         /\A(?:[^.]+\.)?\d[^.]*\.[^.]+\..+\.[a-z]/i,
         /\A[^.]*\d\.[^.]*\d-\d/,
@@ -943,11 +943,13 @@ define_applicable_condition do ... end内で設定できる項目は以
    Postfixの場合はtrue、そうでない場合はfalseが返ります。
 
    例:
-     # "v" = "Postfix 2.5.5"のとき
+     context["v"]     # -> "Postfix 2.5.5"
      context.postfix? # -> true
-     # "v" = "2.5.5"のとき
+
+     context["v"]     # -> "2.5.5"
      context.postfix? # -> false
-     # "v"がないとき
+
+     context["v"]     # -> nil
      context.postfix? # -> false
 
 === socket_address

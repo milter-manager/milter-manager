@@ -1,5 +1,7 @@
 2009-02-10  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/configuration.rd: translate.
+
 	* data/applicable-conditions/sendmail-compatible.rb: add a new
 	applicable condition to use a milter that depends on Sendmail with
 	Postfix.
