@@ -67,7 +67,7 @@ module Milter::Manager
       end
     end
 
-    def authorized?
+    def authenticated?
       if self["auth_type"] || self["auth_authen"]
         true
       else

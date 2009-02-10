@@ -1,5 +1,9 @@
 2009-02-10  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/lib/milter/manager/child-context.rb,
+	binding/ruby/test/manager/test-child-context.rb,
+	doc/configuration.rd*: authorized? -> authenticated?.
+
 	* binding/ruby/src/toolkit/rb-milter-protocol-agent.c,
 	binding/ruby/src/toolkit/rb-milter-core-private.h: accept nil for
 	macro value.

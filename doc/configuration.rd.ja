@@ -952,6 +952,31 @@ define_applicable_condition do ... end内で設定できる項目は以
      context["v"]     # -> nil
      context.postfix? # -> false
 
+: context.authenticated?
+
+   送信元が認証されている場合に真を返します。認証されている
+   かどうかは「auto_type」マクロか「auth_authen」マクロの値
+   があるかで判断します。これらのマクロはMAIL FROM以降でのみ
+   使えるので、それ以前の場合は常に偽を返します。Postfixの場
+   合はmain.cfに以下を追加することを忘れないで下さい。
+
+     milter_mail_macros = {auth_author} {auth_type} {auth_authen}
+
+   認証されている場合はtrue、そうでない場合はfalseが返ります。
+
+   Example:
+     context["auth_type"]   # -> nil
+     context["auth_authen"] # -> nil
+     context.authenticated? # -> false
+
+     context["auth_type"]   # -> "CRAM-MD5"
+     context["auth_authen"] # -> nil
+     context.authenticated? # -> true
+
+     context["auth_type"]   # -> nil
+     context["auth_authen"] # -> "sender"
+     context.authenticated? # -> true
+
 === socket_address
 
 ソケットのアドレスを表現しているオブジェクトです。IPv4ソケッ

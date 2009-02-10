@@ -962,9 +962,9 @@ It has the following information.
      context["v"]     # -> nil
      context.postfix? # -> false
 
-: context.authorized?
+: context.authenticated?
 
-   Returns true when sender is authorized. It is decided by
+   Returns true when sender is authenticated. It is decided by
    "auto_type" macro or "auth_authen" macro is
    available. They are available since MAIL FROM. So, it
    always returns false before MAIL FROM. We don't forget to
@@ -973,20 +973,20 @@ It has the following information.
 
      milter_mail_macros = {auth_author} {auth_type} {auth_authen}
 
-   It returns true when sender is authorized, false otherwise.
+   It returns true when sender is authenticated, false otherwise.
 
    Example:
      context["auth_type"]   # -> nil
      context["auth_authen"] # -> nil
-     context.authorized?    # -> false
+     context.authenticated? # -> false
 
-     context["auth_type"]   # -> "sasl"
+     context["auth_type"]   # -> "CRAM-MD5"
      context["auth_authen"] # -> nil
-     context.authorized?    # -> true
+     context.authenticated? # -> true
 
      context["auth_type"]   # -> nil
      context["auth_authen"] # -> "sender"
-     context.authorized?    # -> true
+     context.authenticated? # -> true
 
 === socket_address
 
