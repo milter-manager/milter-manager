@@ -4,4 +4,4 @@ dist_conditions_DATA =			\
 	s25r.conf			\
 	remote-network.conf		\
 	sendmail-compatible.conf	\
-	authenticated.conf
+	authentication.conf
