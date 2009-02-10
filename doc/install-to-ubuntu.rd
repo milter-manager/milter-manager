@@ -128,6 +128,12 @@ Before:
 After:
   ENABLED=1
   SOCKET="inet:11125@[127.0.0.1]"
+  DOPTIONS="-P $PIDFILE -u $USER -p $SOCKET"
+
+We need to specify not only SOCKET but also DOPTIONS because
+/etc/init.d/milter-greylist has a problem in 8.04 LTS Hardy
+Heron. The problem was fixed in 8.10 Intrepid Ibex. We
+doesn't need to specify DOPTIONS if we use 8.10.
 
 milter-greylist should be started:
 

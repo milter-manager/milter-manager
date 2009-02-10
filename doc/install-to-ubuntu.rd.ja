@@ -129,6 +129,13 @@ Greylistを使うようにします。
 変更後:
   ENABLED=1
   SOCKET="inet:11125@[127.0.0.1]"
+  DOPTIONS="-P $PIDFILE -u $USER -p $SOCKET"
+
+SOCKETを指定しただけではなく、DOPTIONSも指定しているのは、
+8.04 LTS Hardy Heronのmilter-greylistパッケージに含まれる
+/etc/init.d/milter-greylistに問題があるからです。この問題は
+8.10 Intrepid Ibexでは修正されているので、8.10を使用している
+場合はDOPTIONSは指定する必要はありません。
 
 milter-greylistを起動します。
 
