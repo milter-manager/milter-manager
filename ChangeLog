@@ -1,5 +1,7 @@
 2009-02-10  Kouhei Sutou  <kou@clear-code.com>
 
+	* data/defaults/*.conf: use unauthenticated applicable condition.
+
 	* data/applicable-conditions/authentication.conf: add new
 	applicable conditions to stop a milter when sender is
 	authenticated or unauthenticated.
