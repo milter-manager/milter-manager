@@ -25,7 +25,7 @@ class TestChildContext < Test::Unit::TestCase
     @children << @greylist
     @children << @spamass
 
-    @context = Milter::Manager::ChildContext.new(@clamav, @children)
+    @context = create_context
   end
 
   def test_name
@@ -83,5 +83,21 @@ class TestChildContext < Test::Unit::TestCase
 
   def test_quitted
     assert_false(@context.quitted?)
+  end
+
+  def test_postfix?
+    @clamav.macro_context = Milter::COMMAND_CONNECT
+    assert_false(create_context.postfix?)
+
+    @clamav.set_macros(Milter::COMMAND_CONNECT, "v" => "Sendmail")
+    assert_false(create_context.postfix?)
+
+    @clamav.set_macros(Milter::COMMAND_CONNECT, "v" => "Postfix 2.5.5")
+    assert_true(create_context.postfix?)
+  end
+
+  private
+  def create_context
+    Milter::Manager::ChildContext.new(@clamav, @children)
   end
 end

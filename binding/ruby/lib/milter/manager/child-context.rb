@@ -59,6 +59,14 @@ module Milter::Manager
       @child_contexts ||= create_child_contexts
     end
 
+    def postfix?
+      if /\bPostfix\b/i =~ (self["v"] || '')
+        true
+      else
+        false
+      end
+    end
+
     private
     def create_child_contexts
       contexts = {}

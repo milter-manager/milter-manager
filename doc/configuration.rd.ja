@@ -934,6 +934,22 @@ define_applicable_condition do ... end内で設定できる項目は以
      context.children["nonexistent"]     # -> nil
      context.children[context.name]      # -> 自分のcontext
 
+: context.postfix?
+
+   MTAがPostfixの場合に真を返します。Postfixかどうかは「v」
+   マクロの値に「Postfix」という文字列が含まれるかどうかで判
+   断します。
+
+   Postfixの場合はtrue、そうでない場合はfalseが返ります。
+
+   例:
+     # "v" = "Postfix 2.5.5"のとき
+     context.postfix? # -> true
+     # "v" = "2.5.5"のとき
+     context.postfix? # -> false
+     # "v"がないとき
+     context.postfix? # -> false
+
 === socket_address
 
 ソケットのアドレスを表現しているオブジェクトです。IPv4ソケッ
