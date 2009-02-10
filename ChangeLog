@@ -1,5 +1,9 @@
 2009-02-10  Kouhei Sutou  <kou@clear-code.com>
 
+	* data/applicable-conditions/sendmail-compatible.rb: add a new
+	applicable condition to use a milter that depends on Sendmail with
+	Postfix.
+
 	* binding/ruby/test/manager/test-child-context.rb,
 	binding/ruby/test/manager/test-child-context.rb,
 	doc/configuration.rd.ja: add
