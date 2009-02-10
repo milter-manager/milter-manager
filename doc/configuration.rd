@@ -962,6 +962,32 @@ It has the following information.
      context["v"]     # -> nil
      context.postfix? # -> false
 
+: context.authorized?
+
+   Returns true when sender is authorized. It is decided by
+   "auto_type" macro or "auth_authen" macro is
+   available. They are available since MAIL FROM. So, it
+   always returns false before MAIL FROM. We don't forget to
+   add the following configuration to main.cf if we are
+   using Postfix.
+
+     milter_mail_macros = {auth_author} {auth_type} {auth_authen}
+
+   It returns true when sender is authorized, false otherwise.
+
+   Example:
+     context["auth_type"]   # -> nil
+     context["auth_authen"] # -> nil
+     context.authorized?    # -> false
+
+     context["auth_type"]   # -> "sasl"
+     context["auth_authen"] # -> nil
+     context.authorized?    # -> true
+
+     context["auth_type"]   # -> nil
+     context["auth_authen"] # -> "sender"
+     context.authorized?    # -> true
+
 === socket_address
 
 The object that describes socket address. Socket is one of

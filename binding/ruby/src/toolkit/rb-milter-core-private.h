@@ -52,6 +52,11 @@ void Init_milter_protocol_agent (void);
 #define RVAL2MACROS(hash)   (rb_milter__rval2macros(hash))
 #define MACROS2RVAL(macros) (rb_milter__macros2rval(macros))
 
+#ifndef RVAL2CSTR_ACCEPT_NIL
+#  define RVAL2CSTR_ACCEPT_NIL(string) RVAL2CSTR2(string)
+#endif
+
+
 GHashTable *rb_milter__rval2macros(VALUE rb_macros);
 VALUE       rb_milter__macros2rval(GHashTable *macros);
 

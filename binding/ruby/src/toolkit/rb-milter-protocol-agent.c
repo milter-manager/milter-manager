@@ -30,7 +30,8 @@ set_macro (VALUE self, VALUE rb_macro_context, VALUE name, VALUE value)
     agent = SELF(self);
     macro_context = RVAL2GENUM(rb_macro_context, MILTER_TYPE_COMMAND);
     milter_protocol_agent_set_macro(agent, macro_context,
-                                    RVAL2CSTR(name), RVAL2CSTR(value));
+                                    RVAL2CSTR(name),
+				    RVAL2CSTR_ACCEPT_NIL(value));
     return Qnil;
 }
 

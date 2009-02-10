@@ -67,6 +67,14 @@ module Milter::Manager
       end
     end
 
+    def authorized?
+      if self["auth_type"] || self["auth_authen"]
+        true
+      else
+        false
+      end
+    end
+
     private
     def create_child_contexts
       contexts = {}

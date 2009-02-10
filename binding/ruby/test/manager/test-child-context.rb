@@ -96,6 +96,20 @@ class TestChildContext < Test::Unit::TestCase
     assert_true(create_context.postfix?)
   end
 
+  def test_authorized?
+    @clamav.macro_context = Milter::COMMAND_ENVELOPE_FROM
+    assert_false(create_context.authorized?)
+
+    @clamav.set_macros(Milter::COMMAND_ENVELOPE_FROM, "auth_type" => "sasl")
+    assert_true(create_context.authorized?)
+
+    @clamav.set_macros(Milter::COMMAND_ENVELOPE_FROM, "auth_type" => nil)
+    assert_false(create_context.authorized?)
+
+    @clamav.set_macros(Milter::COMMAND_ENVELOPE_FROM, "auth_authen" => "user")
+    assert_true(create_context.authorized?)
+  end
+
   private
   def create_context
     Milter::Manager::ChildContext.new(@clamav, @children)
