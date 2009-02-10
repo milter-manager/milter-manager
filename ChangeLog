@@ -20,7 +20,7 @@
 
 	* doc/configuration.rd: translate.
 
-	* data/applicable-conditions/sendmail-compatible.rb: add a new
+	* data/applicable-conditions/sendmail-compatible.conf: add a new
 	applicable condition to use a milter that depends on Sendmail with
 	Postfix.
 
