@@ -1,5 +1,7 @@
 2009-02-12  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/manager/milter-manager-children.c: log skip.
+
 	* milter/manager/milter-manager-children.c
 	(emit_replace_body_signal): add missing priv get.
 

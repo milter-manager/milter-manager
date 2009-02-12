@@ -2237,7 +2237,10 @@ milter_manager_children_connect (MilterManagerChildren *children,
     for (child = priv->milters; child; child = g_list_next(child)) {
         MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
 
-        if (milter_server_context_is_enable_step(context, MILTER_STEP_NO_CONNECT)) {
+        if (milter_server_context_is_enable_step(context,
+                                                 MILTER_STEP_NO_CONNECT)) {
+            milter_debug("[children][connect][skip] %s",
+                         milter_server_context_get_name(context));
             success = TRUE;
             continue;
         }
@@ -2284,6 +2287,8 @@ milter_manager_children_helo (MilterManagerChildren *children,
         MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
 
         if (milter_server_context_is_enable_step(context, MILTER_STEP_NO_HELO)) {
+            milter_debug("[children][helo][skip] %s",
+                         milter_server_context_get_name(context));
             success = TRUE;
             continue;
         }
@@ -2321,6 +2326,8 @@ milter_manager_children_envelope_from (MilterManagerChildren *children,
 
         if (milter_server_context_is_enable_step(context,
                                                  MILTER_STEP_NO_ENVELOPE_FROM)) {
+            milter_debug("[children][envelope-from][skip] %s",
+                         milter_server_context_get_name(context));
             success = TRUE;
             continue;
         }
@@ -2356,6 +2363,8 @@ milter_manager_children_envelope_recipient (MilterManagerChildren *children,
         MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
 
         if (milter_server_context_is_enable_step(context, MILTER_STEP_NO_ENVELOPE_RECIPIENT)) {
+            milter_debug("[children][envelope-recipient][skip] %s",
+                         milter_server_context_get_name(context));
             success = TRUE;
             continue;
         }
@@ -2438,7 +2447,10 @@ milter_manager_children_unknown (MilterManagerChildren *children,
     for (child = priv->milters; child; child = g_list_next(child)) {
         MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
 
-        if (milter_server_context_is_enable_step(context, MILTER_STEP_NO_UNKNOWN)) {
+        if (milter_server_context_is_enable_step(context,
+                                                 MILTER_STEP_NO_UNKNOWN)) {
+            milter_debug("[children][unknown][skip] %s",
+                         milter_server_context_get_name(context));
             success = TRUE;
             continue;
         }
@@ -2462,8 +2474,11 @@ send_next_header_to_child (MilterManagerChildren *children, MilterServerContext 
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    if (milter_server_context_is_enable_step(context, MILTER_STEP_NO_HEADERS))
+    if (milter_server_context_is_enable_step(context, MILTER_STEP_NO_HEADERS)) {
+        milter_debug("[children][header][skip] %s",
+                     milter_server_context_get_name(context));
         return MILTER_STATUS_NOT_CHANGE;
+    }
 
     priv->current_state = MILTER_SERVER_CONTEXT_STATE_HEADER;
 
@@ -2699,10 +2714,10 @@ milter_manager_children_body (MilterManagerChildren *children,
     priv->replaced_body_for_each_child = FALSE;
     priv->sent_body_count++;
 
-    if (!milter_server_context_is_enable_step(first_child, MILTER_STEP_NO_BODY) &&
-        !milter_server_context_get_skip_body(first_child)) {
+    if (!milter_server_context_is_enable_step(first_child,
+                                              MILTER_STEP_NO_BODY) &&
+        !milter_server_context_get_skip_body(first_child))
         return milter_server_context_body(first_child, chunk, size);
-    }
 
     /*
      * If the first child is not needed the command,
@@ -2815,8 +2830,11 @@ send_body_to_child (MilterManagerChildren *children, MilterServerContext *contex
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    if (milter_server_context_is_enable_step(context, MILTER_STEP_NO_BODY))
+    if (milter_server_context_is_enable_step(context, MILTER_STEP_NO_BODY)) {
+        milter_debug("[children][body][skip] %s",
+                     milter_server_context_get_name(context));
         return MILTER_STATUS_NOT_CHANGE;
+    }
 
     if (milter_server_context_get_skip_body(context))
         return MILTER_STATUS_NOT_CHANGE;
