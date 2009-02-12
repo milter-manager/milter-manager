@@ -2321,13 +2321,13 @@ milter_manager_children_envelope_from (MilterManagerChildren *children,
 
         if (milter_server_context_is_enable_step(context,
                                                  MILTER_STEP_NO_ENVELOPE_FROM)) {
-            success =TRUE;
+            success = TRUE;
             continue;
         }
 
         g_queue_push_tail(priv->reply_queue, context);
         if (milter_server_context_envelope_from(context, from))
-            success =TRUE;
+            success = TRUE;
     }
 
     return success;
