@@ -484,6 +484,13 @@ smtp-source is more better tool for you.
 
    The default from@example.com.
 
+: --force-from=FROM
+
+   Uses FROM as MAIL SMTP command even if mail file includes
+   'From:' header.
+
+   The default is none.
+
 : --recipient=RECIPIENT
 
    Uses RECIPIENT as RCPT SMTP command. If you want to use
@@ -491,11 +498,46 @@ smtp-source is more better tool for you.
 
    The default is [to@example.com].
 
+: --force-recipient=RECIPIENT
+
+   Uses RECIPIENT as RCPT SMTP command even if mail file
+   includes 'To:' header. If you want to use multiple
+   recipients, use --recipient n-times.
+
+   The default is none.
+
 : --n-mails=N
 
    Sends N mails. All mails are sent concurrently.
 
    The default is 100.
+
+: --period=PERIOD
+
+   Sends mails in PERIOD seconds/minutes/hours. Each mail is
+   sent averagely. PERIOD is treated as seconds when its
+   unit is omitted.
+
+   Example (100 mails are sent):
+     * --period=5    # sends mails at intervals of 0.05 seconds (5 / 100)
+     * --period=50s  # sends mails at intervals of 0.5 seconds (50 / 100)
+     * --period=10m  # sends mails at intervals of 6 seconds (60 * 10 / 100)
+     * --period=0.5h # sends mails at intervals of 18 seconds (60 * 60 * 0.5 / 100)
+
+   The default is none.
+
+: --interval=INTERVAL
+
+   Sends mails at intervals of INTERVAL seconds/minutes/hours.
+   INTERVAL is treated as seconds when its unit is omitted.
+
+   Example:
+     * --interval=5    # sends mails at intervals of 5 seconds
+     * --interval=0.5s # sends mails at intervals of 0.5 seconds
+     * --interval=10m  # sends mails at intervals of 10 minutes
+     * --interval=0.5h # sends mails at intervals of 0.5 hours
+
+   The default is none.
 
 === milter-manager-log-analyzer
 

@@ -1,3 +1,7 @@
+2009-02-13  Kouhei Sutou  <kou@cozmixng.org>
+
+	* tool/milter-performance-check, README*: add --interval option.
+
 2009-02-12  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/manager/milter-manager-leader.[ch] (reply): handle

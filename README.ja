@@ -267,9 +267,9 @@ milter-test-serverはヘッダや本文が変更された場合は、変更さ�
 
    利用できるオプションを表示して終了します。
 
-: --connection-spec=spec
+: --connection-spec=SPEC
 
-   接続先のmilterのソケットを指定します。specの書式は次のう
+   接続先のmilterのソケットを指定します。SPECの書式は次のう
    ちのどれかです。
 
      * unix:パス
@@ -289,43 +289,43 @@ milter-test-serverはヘッダや本文が変更された場合は、変更さ�
      * inet6:10025@localhost
      * inet6:10025@[::1]
 
-: --negotiate-version=version
+: --negotiate-version=VERSION
 
     クライアントへ送信するmilterプロトコルのバージョンとして
-    versionを使用します。
+    VERSIONを使用します。
 
-    デフォルトは8（sendmail 8.14のデフォルトと同じ）です。
+    デフォルトは8（Sendmail 8.14のデフォルトと同じ）です。
 
-: --connect-host=host
+: --connect-host=HOST
 
-    接続元のホスト名としてhostを使用します。
+    接続元のホスト名としてHOSTを使用します。
 
     このホスト名はmilterのxxfi_connect()コールバックに渡りま
     す。
 
-: --connect-address=spec
+: --connect-address=SPEC
 
-    接続元のアドレスとしてspecを使用します。specの書式
+    接続元のアドレスとしてSPECを使用します。SPECの書式
     は--connection-specの書式と同じです。
 
     このアドレスはmilterのxxfi_connect()コールバックに渡りま
     す。
 
-: --helo-fqdn=fqdn
+: --helo-fqdn=FQDN
 
-    helo/ehlo時の引数としてfqdnを使用します。
+    HELO/EHLO時の引数としてFQDNを使用します。
 
     このfqdnはmilterのxxfi_helo()コールバックに渡ります。
 
-: --from=from
+: --from=FROM
 
-    mail from時の引数としてfromを使用します。
+    MAIL FROM時の引数としてFROMを使用します。
 
     このアドレスはmilterのxxfi_envfrom()コールバックに渡ります。
 
-: --recipient=recipient
+: --recipient=RECIPIENT
 
-    rcpt to時の引数としてrecipientを使用します。複数の宛先を
+    RCPT TO時の引数としてRECIPIENTを使用します。複数の宛先を
     指定したい場合は--recipientオプションを複数回指定してく
     ださい。
 
@@ -333,9 +333,9 @@ milter-test-serverはヘッダや本文が変更された場合は、変更さ�
     す。xxfi_envrcpt()は1つの宛先につき1回呼ばれるので、宛先
     が複数個ある場合はその分だけxxfi_envrcpt()が呼ばれます。
 
-: --header=name:value
+: --header=NAME:VALUE
 
-    名前がnameで値がvalueのヘッダを追加します。複数のヘッダ
+    名前がNAMEで値がVALUEのヘッダを追加します。複数のヘッダ
     を追加したい場合は--headerオプションを複数回指定してくだ
     さい。
 
@@ -343,9 +343,9 @@ milter-test-serverはヘッダや本文が変更された場合は、変更さ�
     xxfi_header()は1つのヘッダにつき1回呼ばれるので、ヘッダ
     が複数個ある場合はその分だけxxfi_header()が呼ばれます。
 
-: --body=chunk
+: --body=CHUNK
 
-    本文の一片としてchunkを追加します。複数のまとまりを追加
+    本文の一片としてCHUNKを追加します。複数のまとまりを追加
     する場合は--bodyオプションを複数回指定してください。
 
     この本文のまとまりはmilterのxxfi_body()コールバックに渡り
@@ -353,18 +353,18 @@ milter-test-serverはヘッダや本文が変更された場合は、変更さ�
     まとまりが複数個ある場合はその分だけxxfi_body()が呼ばれま
     す。
 
-: --unknown=command
+: --unknown=COMMAND
 
-    未知のsmtpコマンドとしてcommandを使います。
+    未知のSMTPコマンドとしてCOMMANDを使います。
 
     このコマンドはmilterのxxfi_unknown()コールバックに渡りま
     す。xxfi_unknown()コールバックは、xxfi_envrcpt()コールバッ
     クとxxfi_data()コールバックの間に呼ばれます。
 
-: --mail-file=path
+: --mail-file=PATH
 
-    メールの内容としてpathにあるメールを使います。メール中に
-    from:やto:があった場合は、それらの値を送信元や宛先のアド
+    メールの内容としてPATHにあるメールを使います。メール中に
+    From:やTo:があった場合は、それらの値を送信元や宛先のアド
     レスとして使用します。
 
 : --output-message
@@ -403,9 +403,9 @@ milter-test-clientが役立つでしょう。
 
    利用できるオプションを表示して終了します。
 
-: --connection-spec=spec
+: --connection-spec=SPEC
 
-   接続を待ち受けるソケットを指定します。specの書式は次のう
+   接続を待ち受けるソケットを指定します。SPECの書式は次のう
    ちのどれかです。
 
      * unix:パス
@@ -466,42 +466,86 @@ smtp-sourceを利用するとよいでしょう。
 
    利用できるオプションを表示して終了します。
 
-: --smtp-server=server
+: --smtp-server=SERVER
 
-   接続先のsmtpサーバを指定します。
+   接続先のSMTPサーバを指定します。
 
    既定値はlocalhostです。
 
-: --smtp-port=port
+: --smtp-port=PORT
 
-   接続先のsmtpサーバのポート番号指定します。
+   接続先のSMTPサーバのポート番号指定します。
 
    既定値は25です。
 
-: --helo-fqdn=fqdn
+: --helo-fqdn=FQDN
 
-   heloコマンドでfqdnを使います。
+   HELOコマンドでFQDNを使います。
 
    既定値はlocalhost.localdomainです。
 
-: --from=from
+: --from=FROM
 
-   mailコマンドのアドレスにfromを使います。
+   MAILコマンドのアドレスにFROMを使います。
 
    既定値はfrom@example.comです。
 
-: --recipient=recipient
+: --force-from=FROM
 
-   rcptコマンドのアドレスにrecipientを使います。複数の宛先を
+   送信するメールファイルを指定した場合でも、ファイル中にあ
+   るFrom:の値ではなく、FROMをMAILコマンドのアドレスに使いま
+   す。
+
+   既定値はありません。
+
+: --recipient=RECIPIENT
+
+   RCPTコマンドのアドレスにRECIPIENTを使います。複数の宛先を
    指定する場合は複数回このオプションを指定してください。
 
    既定値は[to@example.com]です。
 
-: --n-mails=n
+: --force-recipient=RECIPIENT
 
-   合計でn個のメールを送信します。各メールは一斉に送信を開始します。
+   送信するメールファイルを指定した場合でも、ファイル中にあ
+   るTo:の値ではなく、RECIPIENTをRCPTコマンドのアドレスに使
+   います。複数の宛先を指定する場合は複数回このオプションを
+   指定してください。
+
+   既定値はありません。
+
+: --n-mails=N
+
+   合計でN個のメールを送信します。各メールは一斉に送信を開始します。
 
    既定値は100です。
+
+: --period=PERIOD
+
+   PERIOD（単位は秒、分、時間のどれか）の間に指定されたメー
+   ルを送信します。各メールは間隔内で平均的に送信します。単
+   位を省略した場合は秒として扱われます
+
+   例（送信メール数を100とする）:
+     * --period=5    # 0.05秒間隔で送信（5 / 100）
+     * --period=50s  # 0.5秒間隔で送信（50 / 100）
+     * --period=10m  # 6秒間隔で送信（60 * 10 / 100）
+     * --period=0.5h # 18秒間隔で送信（60 * 60 * 0.5 / 100）
+
+   既定値はありません。
+
+: --interval=INTERVAL
+
+   INTERVAL（単位は秒、分、時間のどれか）間隔で指定されたメー
+   ルを送信します。単位を省略した場合は秒として扱われます。
+
+   例:
+     * --interval=5    # 5秒間隔で送信
+     * --interval=0.5s # 0.5秒間隔で送信
+     * --interval=10m  # 10分間隔で送信
+     * --interval=0.5h # 30分間隔で送信
+
+   既定値はありません。
 
 === milter-manager-log-analyzer
 
