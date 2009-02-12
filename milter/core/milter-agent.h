@@ -79,6 +79,8 @@ gboolean             milter_agent_write_packet      (MilterAgent *agent,
                                                      const char *packet,
                                                      gsize packet_size,
                                                      GError **error);
+gboolean             milter_agent_flush             (MilterAgent *agent,
+                                                     GError **error);
 
 void                 milter_agent_start             (MilterAgent *agent);
 void                 milter_agent_shutdown          (MilterAgent *agent);

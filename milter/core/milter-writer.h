@@ -66,6 +66,8 @@ gboolean         milter_writer_write          (MilterWriter     *writer,
                                                gsize             chunk_size,
                                                gsize            *written_size,
                                                GError          **error);
+gboolean         milter_writer_flush          (MilterWriter     *writer,
+                                               GError          **error);
 
 void             milter_writer_start          (MilterWriter     *writer);
 gboolean         milter_writer_is_watching    (MilterWriter     *writer);

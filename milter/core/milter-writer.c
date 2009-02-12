@@ -233,6 +233,23 @@ milter_writer_write (MilterWriter *writer, const gchar *chunk, gsize chunk_size,
     return write_to_io_channel(writer, chunk, chunk_size, written_size, error);
 }
 
+gboolean
+milter_writer_flush (MilterWriter *writer, GError **error)
+{
+    MilterWriterPrivate *priv;
+
+    priv = MILTER_WRITER_GET_PRIVATE(writer);
+
+    if (!priv->io_channel) {
+        g_set_error(error,
+                    MILTER_WRITER_ERROR, MILTER_WRITER_ERROR_NO_CHANNEL,
+                    "GIOChannel is NULL");
+        return FALSE;
+    }
+
+    return g_io_channel_flush(priv->io_channel, error) != G_IO_CHANNEL_ERROR;
+}
+
 static gboolean
 channel_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
 {

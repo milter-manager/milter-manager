@@ -376,6 +376,22 @@ milter_agent_write_packet (MilterAgent *agent,
     return success;
 }
 
+gboolean
+milter_agent_flush (MilterAgent *agent, GError **error)
+{
+    MilterAgentPrivate *priv;
+    gboolean success;
+
+    priv = MILTER_AGENT_GET_PRIVATE(agent);
+
+    if (!priv->writer)
+        return TRUE;
+
+    success = milter_writer_flush(priv->writer, error);
+
+    return success;
+}
+
 void
 milter_agent_set_writer (MilterAgent *agent, MilterWriter *writer)
 {
