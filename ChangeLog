@@ -1,3 +1,9 @@
+2009-02-12  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/server/milter-server-context.c (write_packet): send
+	defined macro command with actual command in a packet. This change
+	very improve performance.
+
 2009-02-12  Kouhei Sutou  <kou@clear-code.com>
 
 	* admin/app/controllers/application.rb: pass exception object.

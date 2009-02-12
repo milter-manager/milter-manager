@@ -674,12 +674,101 @@ milter_server_context_is_processing (MilterServerContext *context)
     return priv->timeout_id != 0;
 }
 
+static GHashTable *
+filter_macros (GHashTable *macros, GList *request_symbols)
+{
+    GList *symbol;
+    GHashTable *filtered_macros;
+
+    filtered_macros = g_hash_table_new_full(g_str_hash, g_str_equal,
+                                            g_free, g_free);
+
+    for (symbol = request_symbols; symbol; symbol = g_list_next(symbol)) {
+        const gchar *value;
+        value = g_hash_table_lookup(macros, symbol->data);
+        if (value) {
+            g_hash_table_insert(filtered_macros,
+                                g_strdup(symbol->data),
+                                g_strdup(value));
+        }
+    }
+
+    if (g_hash_table_size(filtered_macros) == 0) {
+        g_hash_table_unref(filtered_macros);
+        filtered_macros = NULL;
+    }
+
+    return filtered_macros;
+}
+
+static void
+prepend_macro (MilterServerContext *context, GString *packed_packet,
+               MilterCommand command)
+{
+    GHashTable *macros, *filtered_macros = NULL, *target_macros;
+    GList *request_symbols = NULL;
+    gchar *command_name;
+    gchar *inspected_macros;
+    gchar *packet = NULL;
+    gsize packet_size;
+    MilterEncoder *encoder;
+    MilterAgent *agent;
+    MilterProtocolAgent *protocol_agent;
+    MilterMacrosRequests *macros_requests;
+    MilterServerContextPrivate *priv;
+
+    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+    agent = MILTER_AGENT(context);
+    protocol_agent = MILTER_PROTOCOL_AGENT(context);
+
+    milter_protocol_agent_set_macro_context(protocol_agent, command);
+    macros = milter_protocol_agent_get_macros(protocol_agent);
+    milter_protocol_agent_set_macro_context(protocol_agent,
+                                            MILTER_COMMAND_UNKNOWN);
+    if (!macros || g_hash_table_size(macros) == 0)
+        return;
+
+    target_macros = macros;
+    macros_requests = milter_protocol_agent_get_macros_requests(protocol_agent);
+
+    if (macros_requests) {
+        request_symbols =
+            milter_macros_requests_get_symbols(macros_requests, command);
+        if (request_symbols)
+            filtered_macros = filter_macros(macros, request_symbols);
+        if (!filtered_macros)
+            return;
+        target_macros = filtered_macros;
+    }
+
+    encoder = milter_agent_get_encoder(agent);
+    milter_command_encoder_encode_define_macro(MILTER_COMMAND_ENCODER(encoder),
+                                               &packet, &packet_size,
+                                               command,
+                                               target_macros);
+    if (filtered_macros)
+        g_hash_table_unref(filtered_macros);
+
+    command_name = milter_utils_get_enum_nick_name(MILTER_TYPE_COMMAND, command);
+    inspected_macros = milter_utils_inspect_hash_string_string(target_macros);
+    milter_debug("[server][send][%s][macros] %s: %s",
+                 command_name,
+                 inspected_macros,
+                 milter_server_context_get_name(context));
+    g_free(command_name);
+    g_free(inspected_macros);
+
+    g_string_prepend_len(packed_packet, packet, packet_size);
+    g_free(packet);
+}
+
 static gboolean
 write_packet (MilterServerContext *context, gchar *packet, gsize packet_size,
               MilterServerContextState next_state)
 {
     GError *agent_error = NULL;
     MilterServerContextPrivate *priv;
+    GString *packed_packet;
 
     if (!packet)
         return FALSE;
@@ -721,11 +810,45 @@ write_packet (MilterServerContext *context, gchar *packet, gsize packet_size,
         break;
     }
 
+    packed_packet = g_string_new_len(packet, packet_size);
+    switch (next_state) {
+    case MILTER_SERVER_CONTEXT_STATE_HELO:
+        prepend_macro(context, packed_packet, MILTER_COMMAND_HELO);
+        break;
+    case MILTER_SERVER_CONTEXT_STATE_CONNECT:
+        prepend_macro(context, packed_packet, MILTER_COMMAND_CONNECT);
+        break;
+    case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM:
+        prepend_macro(context, packed_packet, MILTER_COMMAND_ENVELOPE_FROM);
+        break;
+    case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT:
+        prepend_macro(context, packed_packet, MILTER_COMMAND_ENVELOPE_RECIPIENT);
+        break;
+    case MILTER_SERVER_CONTEXT_STATE_DATA:
+        prepend_macro(context, packed_packet, MILTER_COMMAND_DATA);
+        break;
+    case MILTER_SERVER_CONTEXT_STATE_HEADER:
+        prepend_macro(context, packed_packet, MILTER_COMMAND_HEADER);
+        break;
+    case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
+        prepend_macro(context, packed_packet, MILTER_COMMAND_END_OF_HEADER);
+        break;
+    case MILTER_SERVER_CONTEXT_STATE_BODY:
+        prepend_macro(context, packed_packet, MILTER_COMMAND_BODY);
+        break;
+    case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
+        prepend_macro(context, packed_packet, MILTER_COMMAND_END_OF_MESSAGE);
+        break;
+    default:
+        break;
+    }
+    g_free(packet);
+
     milter_agent_write_packet(MILTER_AGENT(context),
-                              packet, packet_size,
+                              packed_packet->str, packed_packet->len,
                               &agent_error);
     disable_timeout(priv);
-    g_free(packet);
+    g_string_free(packed_packet, TRUE);
 
     if (agent_error) {
         GError *error = NULL;
@@ -754,7 +877,6 @@ write_packet (MilterServerContext *context, gchar *packet, gsize packet_size,
                                                     context);
         break;
       case MILTER_SERVER_CONTEXT_STATE_BODY:
-      case MILTER_SERVER_CONTEXT_STATE_DEFINE_MACRO:
         priv->state = next_state;
         disable_timeout(priv);
         break;
@@ -855,94 +977,6 @@ milter_server_context_helo (MilterServerContext *context,
                         MILTER_SERVER_CONTEXT_STATE_HELO);
 }
 
-static GHashTable *
-filter_macros (GHashTable *macros, GList *request_symbols)
-{
-    GList *symbol;
-    GHashTable *filtered_macros;
-
-    filtered_macros = g_hash_table_new_full(g_str_hash, g_str_equal,
-                                            g_free, g_free);
-
-    for (symbol = request_symbols; symbol; symbol = g_list_next(symbol)) {
-        const gchar *value;
-        value = g_hash_table_lookup(macros, symbol->data);
-        if (value) {
-            g_hash_table_insert(filtered_macros,
-                                g_strdup(symbol->data),
-                                g_strdup(value));
-        }
-    }
-
-    if (g_hash_table_size(filtered_macros) == 0) {
-        g_hash_table_unref(filtered_macros);
-        filtered_macros = NULL;
-    }
-
-    return filtered_macros;
-}
-
-static gboolean
-write_macro (MilterServerContext *context,
-             MilterCommand command)
-{
-    GHashTable *macros, *filtered_macros = NULL, *target_macros;
-    GList *request_symbols = NULL;
-    gchar *command_name;
-    gchar *inspected_macros;
-    gchar *packet = NULL;
-    gsize packet_size;
-    MilterEncoder *encoder;
-    MilterAgent *agent;
-    MilterProtocolAgent *protocol_agent;
-    MilterMacrosRequests *macros_requests;
-    MilterServerContextPrivate *priv;
-
-    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
-    agent = MILTER_AGENT(context);
-    protocol_agent = MILTER_PROTOCOL_AGENT(context);
-
-    milter_protocol_agent_set_macro_context(protocol_agent, command);
-    macros = milter_protocol_agent_get_macros(protocol_agent);
-    milter_protocol_agent_set_macro_context(protocol_agent,
-                                            MILTER_COMMAND_UNKNOWN);
-    if (!macros || g_hash_table_size(macros) == 0)
-        return TRUE;
-
-    target_macros = macros;
-    macros_requests = milter_protocol_agent_get_macros_requests(protocol_agent);
-
-    if (macros_requests) {
-        request_symbols =
-            milter_macros_requests_get_symbols(macros_requests, command);
-        if (request_symbols)
-            filtered_macros = filter_macros(macros, request_symbols);
-        if (!filtered_macros)
-            return TRUE;
-        target_macros = filtered_macros;
-    }
-
-    encoder = milter_agent_get_encoder(agent);
-    milter_command_encoder_encode_define_macro(MILTER_COMMAND_ENCODER(encoder),
-                                               &packet, &packet_size,
-                                               command,
-                                               target_macros);
-    if (filtered_macros)
-        g_hash_table_unref(filtered_macros);
-
-    command_name = milter_utils_get_enum_nick_name(MILTER_TYPE_COMMAND, command);
-    inspected_macros = milter_utils_inspect_hash_string_string(target_macros);
-    milter_debug("[server][send][%s][macros] %s: %s",
-                 command_name,
-                 inspected_macros,
-                 milter_server_context_get_name(context));
-    g_free(command_name);
-    g_free(inspected_macros);
-
-    return write_packet(context, packet, packet_size,
-                        MILTER_SERVER_CONTEXT_STATE_DEFINE_MACRO);
-}
-
 gboolean
 milter_server_context_is_enable_step (MilterServerContext *context,
                                       MilterStepFlags step)
@@ -979,8 +1013,6 @@ milter_server_context_connect (MilterServerContext *context,
         return TRUE;
     }
 
-    write_macro(context, MILTER_COMMAND_CONNECT);
-
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     milter_command_encoder_encode_connect(MILTER_COMMAND_ENCODER(encoder),
                                           &packet, &packet_size,
@@ -1010,8 +1042,6 @@ milter_server_context_envelope_from (MilterServerContext *context,
         stop_on_state(context, MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM);
         return TRUE;
     }
-
-    write_macro(context, MILTER_COMMAND_ENVELOPE_FROM);
 
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     milter_command_encoder_encode_envelope_from(MILTER_COMMAND_ENCODER(encoder),
@@ -1044,8 +1074,6 @@ milter_server_context_envelope_recipient (MilterServerContext *context,
         return TRUE;
     }
 
-    write_macro(context, MILTER_COMMAND_ENVELOPE_RECIPIENT);
-
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     command_encoder = MILTER_COMMAND_ENCODER(encoder);
     milter_command_encoder_encode_envelope_recipient(command_encoder,
@@ -1074,7 +1102,6 @@ milter_server_context_data (MilterServerContext *context)
         stop_on_state(context, MILTER_SERVER_CONTEXT_STATE_DATA);
         return TRUE;
     }
-    write_macro(context, MILTER_COMMAND_DATA);
 
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     milter_command_encoder_encode_data(MILTER_COMMAND_ENCODER(encoder),
@@ -1126,8 +1153,6 @@ milter_server_context_header (MilterServerContext *context,
         return TRUE;
     }
 
-    write_macro(context, MILTER_COMMAND_HEADER);
-
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     milter_command_encoder_encode_header(MILTER_COMMAND_ENCODER(encoder),
                                          &packet, &packet_size, name, value);
@@ -1154,8 +1179,6 @@ milter_server_context_end_of_header (MilterServerContext *context)
         stop_on_state(context, MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER);
         return TRUE;
     }
-    write_macro(context, MILTER_COMMAND_END_OF_HEADER);
-
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     milter_command_encoder_encode_end_of_header(MILTER_COMMAND_ENCODER(encoder),
                                                 &packet, &packet_size);
@@ -1212,8 +1235,6 @@ milter_server_context_body (MilterServerContext *context,
         return TRUE;
     }
 
-    write_macro(context, MILTER_COMMAND_BODY);
-
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     command_encoder = MILTER_COMMAND_ENCODER(encoder);
     append_body_response_queue(context);
@@ -1258,8 +1279,6 @@ milter_server_context_end_of_message (MilterServerContext *context,
         stop_on_state(context, MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE);
         return TRUE;
     }
-
-    write_macro(context, MILTER_COMMAND_END_OF_MESSAGE);
 
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     milter_command_encoder_encode_end_of_message(MILTER_COMMAND_ENCODER(encoder),
