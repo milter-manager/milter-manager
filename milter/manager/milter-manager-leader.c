@@ -194,6 +194,12 @@ get_property (GObject    *object,
     }
 }
 
+GQuark
+milter_manager_leader_error_quark (void)
+{
+    return g_quark_from_static_string("milter-manager-leader-error-quark");
+}
+
 MilterManagerLeader *
 milter_manager_leader_new (MilterManagerConfiguration *configuration,
                            MilterClientContext *client_context)
@@ -251,7 +257,7 @@ state_to_response_signal_name (MilterManagerLeaderState state)
         signal_name = "abort-response";
         break;
       default:
-        signal_name = "error-invalid-state";
+        signal_name = NULL;
         break;
     }
 
@@ -354,9 +360,29 @@ reply (MilterManagerLeader *leader, MilterStatus status)
         g_signal_emit_by_name(priv->client_context, "negotiate-response",
                               NULL, NULL, status);
     } else {
-        g_signal_emit_by_name(priv->client_context,
-                              state_to_response_signal_name(priv->state),
-                              status);
+        const gchar *signal_name;
+
+        signal_name = state_to_response_signal_name(priv->state);
+        if (signal_name) {
+            g_signal_emit_by_name(priv->client_context, signal_name, status);
+        } else {
+            GError *error;
+            gchar *state_name;
+
+            state_name =
+                milter_utils_get_enum_nick_name(MILTER_TYPE_MANAGER_LEADER_STATE,
+                                                priv->state);
+            error = g_error_new(MILTER_MANAGER_LEADER_ERROR,
+                                MILTER_MANAGER_LEADER_ERROR_INVALID_STATE,
+                                "invalid state to reply: %s",
+                                state_name);
+            g_free(state_name);
+            milter_error("[leader][error] %s", error->message);
+            milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(priv->children),
+                                        error);
+            g_error_free(error);
+            return;
+        }
     }
     priv->state = next_state(leader, priv->state);
 }

@@ -28,12 +28,19 @@
 
 G_BEGIN_DECLS
 
+#define MILTER_MANAGER_LEADER_ERROR           (milter_manager_leader_error_quark())
+
 #define MILTER_TYPE_MANAGER_LEADER            (milter_manager_leader_get_type())
 #define MILTER_MANAGER_LEADER(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), MILTER_TYPE_MANAGER_LEADER, MilterManagerLeader))
 #define MILTER_MANAGER_LEADER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), MILTER_TYPE_MANAGER_LEADER, MilterManagerLeaderClass))
 #define MILTER_MANAGER_IS_LEADER(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), MILTER_TYPE_MANAGER_LEADER))
 #define MILTER_MANAGER_IS_LEADER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), MILTER_TYPE_MANAGER_LEADER))
 #define MILTER_MANAGER_LEADER_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MILTER_TYPE_MANAGER_LEADER, MilterManagerLeaderClass))
+
+typedef enum
+{
+    MILTER_MANAGER_LEADER_ERROR_INVALID_STATE
+} MilterManagerLeaderError;
 
 typedef struct _MilterManagerLeader         MilterManagerLeader;
 typedef struct _MilterManagerLeaderClass    MilterManagerLeaderClass;
@@ -79,6 +86,8 @@ typedef enum
     MILTER_MANAGER_LEADER_STATE_ABORT,
     MILTER_MANAGER_LEADER_STATE_ABORT_REPLIED
 } MilterManagerLeaderState;
+
+GQuark                milter_manager_leader_error_quark (void);
 
 GType                 milter_manager_leader_get_type    (void) G_GNUC_CONST;
 
