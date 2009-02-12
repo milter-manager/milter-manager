@@ -1,3 +1,8 @@
+2009-02-12  Kouhei Sutou  <kou@clear-code.com>
+
+	* milter/manager/milter-manager-children.c
+	(emit_replace_body_signal): add missing priv get.
+
 2009-02-11  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/manager/milter-manager-children.c: handle small body content on

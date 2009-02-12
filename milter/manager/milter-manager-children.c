@@ -806,6 +806,7 @@ emit_replace_body_signal (MilterManagerChildren *children)
 {
     MilterManagerChildrenPrivate *priv;
 
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
     if (priv->body)
         return emit_replace_body_signal_string(children);
     else
