@@ -1,5 +1,7 @@
 2009-02-12  Kouhei Sutou  <kou@clear-code.com>
 
+	* admin/app/controllers/application.rb: pass exception object.
+
 	* milter/core/milter-{agent,writer}.[ch]: export flush.
 
 	* milter/manager/milter-manager-children.c: log skip.
