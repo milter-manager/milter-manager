@@ -97,10 +97,12 @@ clamav-milterはpostfixグループでソケットに読み書きできるよう
 に、以下のように/etc/default/clamav-milterを変更します。
 
 変更前:
-  # USE_POSTFIX='yes'
+  #USE_POSTFIX='yes'
+  #SOCKET=local:/var/spool/postfix/clamav/clamav-milter.ctl
 
 変更後:
   USE_POSTFIX='yes'
+  SOCKET=local:/var/spool/postfix/clamav/clamav-milter.ctl
 
 clamav-milterを再起動します。
 
@@ -160,7 +162,7 @@ milter-greylistを検出していることを確認してください。
   end
   ..
   define_milter("clamav-milter") do |milter|
-    milter.connection_spec = "local:/var/run/clamav/clamav-milter.ctl"
+    milter.connection_spec = "local:/var/spool/postfix/clamav/clamav-milter.ctl"
     ...
     milter.enabled = true
     ...

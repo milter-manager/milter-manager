@@ -97,10 +97,12 @@ We change /etc/default/clamav-milter to permit 'postfix'
 group to read/write socket:
 
 Before:
-  # USE_POSTFIX='yes'
+  #USE_POSTFIX='yes'
+  #SOCKET=local:/var/spool/postfix/clamav/clamav-milter.ctl
 
 After:
   USE_POSTFIX='yes'
+  SOCKET=local:/var/spool/postfix/clamav/clamav-milter.ctl
 
 clamav-milter should be restarted:
 
@@ -158,7 +160,7 @@ The following output shows milters are detected:
   end
   ..
   define_milter("clamav-milter") do |milter|
-    milter.connection_spec = "local:/var/run/clamav/clamav-milter.ctl"
+    milter.connection_spec = "local:/var/spool/postfix/clamav/clamav-milter.ctl"
     ...
     milter.enabled = true
     ...

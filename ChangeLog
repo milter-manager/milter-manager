@@ -1,3 +1,7 @@
+2009-02-13  Kouhei Sutou  <kou@clear-code.com>
+
+	* doc/install-to-ubuntu.rd*: add needed configurations.
+
 2009-02-13  Kouhei Sutou  <kou@cozmixng.org>
 
 	* tool/milter-performance-check, README*: add --interval option.
