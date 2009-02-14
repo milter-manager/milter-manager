@@ -1,3 +1,8 @@
+2009-02-14  Kouhei Sutou  <kou@clear-code.com>
+
+	* milter/manager/milter-manager-children.c (cb_continue): don't
+	return response before all body responses are returned.
+
 2009-02-13  Kouhei Sutou  <kou@clear-code.com>
 
 	* doc/install-to-ubuntu.rd*: add needed configurations.

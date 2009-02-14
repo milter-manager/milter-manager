@@ -1079,6 +1079,8 @@ cb_continue (MilterServerContext *context, gpointer user_data)
         } else {
             if (priv->sent_body_count == 0) {
                 status = send_next_command(children, context, state);
+            } else {
+                status = MILTER_STATUS_PROGRESS;
             }
         }
         break;
