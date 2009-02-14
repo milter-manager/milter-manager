@@ -145,6 +145,8 @@ class MilterPerformanceTool
 
   def run
     Thread.abort_on_exception = true
+    @sources = []
+    @rejected_sources = []
     @accumulated_elapsed_time = 0
     @max_elapsed_time = 0
     @min_elapsed_time = nil
@@ -173,6 +175,17 @@ class MilterPerformanceTool
   end
 
   def report
+    @sources.sort_by do |elapsed_time, source_file|
+      -elapsed_time
+    end[0, 10].each do |elapsed_time, source_file|
+      puts "%#5.2f (sec): %s" % [elapsed_time, source_file]
+    end
+    puts
+    puts "Rejected mails:"
+    @rejected_sources.each  do |source_file|
+      puts source_file
+    end
+    puts
     puts "Total:"
     puts "     N mails: %d" % @n_processed_mails
     puts "Elapsed time: %#5.2f (sec)" % @elapsed_time
@@ -201,11 +214,12 @@ class MilterPerformanceTool
   end
 
   def send_mails_in_interval(mails, interval)
+    last_mail = mails.last
     mails.collect do |mail|
       thread = Thread.start do
         send_mail(mail)
       end
-      sleep(interval) if interval > 0
+      sleep(interval) if interval > 0 and mail != mails.last
       thread
     end
   end
@@ -265,11 +279,15 @@ class MilterPerformanceTool
     end
     elapsed_time = Time.now - start_time
     puts "#{error_object.class}: #{error_object.message}" if error_object
-    update_statistics(elapsed_time, temporary_failure, reject, error)
+    update_statistics(mail_source_file,
+                      elapsed_time, temporary_failure, reject, error)
   end
 
-  def update_statistics(elapsed_time, temporary_failure, reject, error)
+  def update_statistics(source_file,
+                        elapsed_time, temporary_failure, reject, error)
     @mutex.synchronize do
+      @sources << [elapsed_time, source_file]
+      @rejected_sources << source_file if reject
       @accumulated_elapsed_time += elapsed_time
       @n_processed_mails += 1
       @max_elapsed_time = [elapsed_time, @max_elapsed_time].max

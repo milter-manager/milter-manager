@@ -1,5 +1,8 @@
 2009-02-14  Kouhei Sutou  <kou@clear-code.com>
 
+	* tool/milter-performance-check: report slow mail fails and
+	rejected mail files.
+
 	* milter/manager/milter-manager-children.c (cb_continue): don't
 	return response before all body responses are returned.
 
