@@ -73,7 +73,7 @@ static gboolean    stop_on_accumulator(GSignalInvocationHint *hint,
 typedef struct _MilterServerContextPrivate	MilterServerContextPrivate;
 struct _MilterServerContextPrivate
 {
-    gint client_fd;
+    GIOChannel *client_channel;
 
     gchar *spec;
     gint domain;
@@ -400,7 +400,7 @@ milter_server_context_init (MilterServerContext *context)
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
 
-    priv->client_fd = -1;
+    priv->client_channel = NULL;
     priv->spec = NULL;
     priv->domain = PF_UNSPEC;
     priv->address = NULL;
@@ -426,20 +426,20 @@ milter_server_context_init (MilterServerContext *context)
 }
 
 static void
-close_client_fd (MilterServerContextPrivate *priv)
-{
-    if (priv->client_fd > 0) {
-        close(priv->client_fd);
-        priv->client_fd = -1;
-    }
-}
-
-static void
 disable_timeout (MilterServerContextPrivate *priv)
 {
     if (priv->timeout_id > 0) {
         g_source_remove(priv->timeout_id);
         priv->timeout_id = 0;
+    }
+}
+
+static void
+dispose_client_channel (MilterServerContextPrivate *priv)
+{
+    if (priv->client_channel) {
+        g_io_channel_unref(priv->client_channel);
+        priv->client_channel = NULL;
     }
 }
 
@@ -451,6 +451,8 @@ dispose (GObject *object)
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(object);
 
     disable_timeout(priv);
+
+    dispose_client_channel(priv);
 
     if (priv->connect_watch_id > 0) {
         g_source_remove(priv->connect_watch_id);
@@ -482,8 +484,6 @@ dispose (GObject *object)
         priv->body_response_queue = NULL;
     }
     G_OBJECT_CLASS(milter_server_context_parent_class)->dispose(object);
-
-    close_client_fd(priv);
 }
 
 static void
@@ -1959,25 +1959,6 @@ encoder_new (MilterAgent *agent)
     return milter_command_encoder_new();
 }
 
-static GIOChannel *
-make_channel (int fd, GIOFlags flags, GError **error)
-{
-    GIOChannel *io_channel;
-
-    io_channel = g_io_channel_unix_new(fd);
-
-    if (g_io_channel_set_encoding(io_channel, NULL, error) !=
-        G_IO_STATUS_NORMAL) {
-        g_io_channel_unref(io_channel);
-        return NULL;
-    }
-
-    g_io_channel_set_flags(io_channel, G_IO_FLAG_NONBLOCK | flags, error);
-    g_io_channel_set_buffered(io_channel, FALSE);
-
-    return io_channel;
-}
-
 gboolean
 milter_server_context_set_connection_spec (MilterServerContext *context,
                                            const gchar *spec,
@@ -2022,35 +2003,11 @@ static gboolean
 prepare_reader (MilterServerContext *context)
 {
     MilterReader *reader;
-    GIOChannel *read_channel = NULL;
-    GError *io_error = NULL;
     MilterServerContextPrivate *priv;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
 
-    read_channel = make_channel(priv->client_fd,
-                                G_IO_FLAG_IS_READABLE, &io_error);
-    if (!read_channel) {
-        GError *error = NULL;
-        close_client_fd(priv);
-        milter_utils_set_error_with_sub_error(
-            &error,
-            MILTER_SERVER_CONTEXT_ERROR,
-            MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE,
-            io_error,
-            "Failed to prepare reading channel");
-        milter_error("[server][error][reader] %s: %s",
-                     error->message,
-                     milter_server_context_get_name(context));
-        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(context),
-                                    error);
-        g_error_free(io_error);
-        g_error_free(error);
-        return FALSE;
-    }
-
-    reader = milter_reader_io_channel_new(read_channel);
-    g_io_channel_unref(read_channel);
+    reader = milter_reader_io_channel_new(priv->client_channel);
     milter_agent_set_reader(MILTER_AGENT(context), reader);
     g_object_unref(reader);
 
@@ -2061,34 +2018,11 @@ static gboolean
 prepare_writer (MilterServerContext *context)
 {
     MilterWriter *writer;
-    GIOChannel *write_channel = NULL;
-    GError *io_error = NULL;
     MilterServerContextPrivate *priv;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
 
-    write_channel = make_channel(priv->client_fd,
-                                 G_IO_FLAG_IS_WRITEABLE, &io_error);
-    if (!write_channel) {
-        GError *error = NULL;
-        close_client_fd(priv);
-        milter_utils_set_error_with_sub_error(
-            &error,
-            MILTER_SERVER_CONTEXT_ERROR,
-            MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE,
-            io_error,
-            "Failed to prepare writing channel");
-        milter_error("[server][error][writer] %s: %s",
-                     error->message,
-                     milter_server_context_get_name(context));
-        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(context),
-                                    error);
-        g_error_free(io_error);
-        g_error_free(error);
-        return FALSE;
-    }
-    writer = milter_writer_io_channel_new(write_channel);
-    g_io_channel_unref(write_channel);
+    writer = milter_writer_io_channel_new(priv->client_channel);
     milter_agent_set_writer(MILTER_AGENT(context), writer);
     g_object_unref(writer);
 
@@ -2108,7 +2042,8 @@ connect_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
     disable_timeout(priv);
 
     option_length = sizeof(socket_errno);
-    if (getsockopt(priv->client_fd, SOL_SOCKET, SO_ERROR,
+    if (getsockopt(g_io_channel_unix_get_fd(priv->client_channel),
+                   SOL_SOCKET, SO_ERROR,
                    &socket_errno, &option_length) == -1) {
         socket_errno = errno;
     }
@@ -2126,13 +2061,13 @@ connect_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(context), error);
         g_error_free(error);
 
-        close_client_fd(priv);
+        dispose_client_channel(priv);
     } else {
         if (prepare_reader(context) && prepare_writer(context)) {
             g_signal_emit(context, signals[READY], 0);
             milter_agent_start(MILTER_AGENT(context));
         } else {
-            close_client_fd(priv);
+            dispose_client_channel(priv);
         }
     }
 
@@ -2144,8 +2079,8 @@ milter_server_context_establish_connection (MilterServerContext *context,
                                             GError **error)
 {
     MilterServerContextPrivate *priv;
-    GIOChannel *channel = NULL;
     GError *io_error = NULL;
+    gint client_fd;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
 
@@ -2157,8 +2092,8 @@ milter_server_context_establish_connection (MilterServerContext *context,
         return FALSE;
     }
 
-    priv->client_fd = socket(priv->domain, SOCK_STREAM, 0);
-    if (priv->client_fd == -1) {
+    client_fd = socket(priv->domain, SOCK_STREAM, 0);
+    if (client_fd == -1) {
         g_set_error(error,
                     MILTER_SERVER_CONTEXT_ERROR,
                     MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE,
@@ -2166,34 +2101,52 @@ milter_server_context_establish_connection (MilterServerContext *context,
         return FALSE;
     }
 
-    channel = g_io_channel_unix_new(priv->client_fd);
-    g_io_channel_set_flags(channel, G_IO_FLAG_NONBLOCK, &io_error);
+    priv->client_channel = g_io_channel_unix_new(client_fd);
+    g_io_channel_set_close_on_unref(priv->client_channel, TRUE);
+    g_io_channel_set_buffered(priv->client_channel, FALSE);
+
+    g_io_channel_set_encoding(priv->client_channel, NULL, &io_error);
     if (io_error) {
-        close_client_fd(priv);
+        dispose_client_channel(priv);
         milter_utils_set_error_with_sub_error(
             error,
             MILTER_SERVER_CONTEXT_ERROR,
             MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE,
             io_error,
-            "Failed to prepare connect()");
+            "Failed to set encoding for preparing connect()");
         return FALSE;
     }
 
-    priv->connect_watch_id = g_io_add_watch(channel,
+    g_io_channel_set_flags(priv->client_channel,
+                           G_IO_FLAG_NONBLOCK |
+                           G_IO_FLAG_IS_READABLE |
+                           G_IO_FLAG_IS_WRITEABLE,
+                           &io_error);
+    if (io_error) {
+        dispose_client_channel(priv);
+        milter_utils_set_error_with_sub_error(
+            error,
+            MILTER_SERVER_CONTEXT_ERROR,
+            MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE,
+            io_error,
+            "Failed to set flags for preparing connect()");
+        return FALSE;
+    }
+
+    priv->connect_watch_id = g_io_add_watch(priv->client_channel,
                                             G_IO_OUT |
                                             G_IO_ERR | G_IO_HUP | G_IO_NVAL,
                                             connect_watch_func, context);
-    g_io_channel_unref(channel);
 
     priv->timeout_id = milter_utils_timeout_add(priv->connection_timeout,
                                                 cb_connection_timeout, context);
 
-    if (connect(priv->client_fd, priv->address, priv->address_size) == -1) {
+    if (connect(client_fd, priv->address, priv->address_size) == -1) {
         if (errno == EINPROGRESS)
             return TRUE;
 
-        close_client_fd(priv);
         disable_timeout(priv);
+        dispose_client_channel(priv);
         g_set_error(error,
                     MILTER_SERVER_CONTEXT_ERROR,
                     MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE,

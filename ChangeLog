@@ -1,5 +1,8 @@
 2009-02-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/server/milter-server-context.c: use GIOChannel instead of
+	using FD directory.
+
 	* README*, tool/milter-performance-check: add --shuffle.
 
 	* tool/milter-performance-check: show temporary failure mails too.
