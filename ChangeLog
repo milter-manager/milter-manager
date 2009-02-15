@@ -1,5 +1,9 @@
 2009-02-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/reference/milter-manager-overrides.txt,
+	doc/reference/milter-manager-sections.txt,
+	libmilter/mfapi.h: update document.
+
 	* libmilter/libmilter-compatible.c, libmilter/mfapi.h: fix document.
 
 	* milter/client/milter-client-context.c,

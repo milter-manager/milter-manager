@@ -1125,7 +1125,7 @@ int smfi_version    (unsigned int    *major,
 /**
  * SMFIS_REJECT:
  *
- * Reject the current processing target.
+ * Rejects the current processing target.
  *
  * See each callback (xxfi_connect(), xxfi_helo() and so
  * on) and <ulink
@@ -1162,7 +1162,7 @@ int smfi_version    (unsigned int    *major,
 /**
  * SMFIS_TEMPFAIL:
  *
- * Returns a temporary failure status for the current
+ * Replies a temporary failure status for the current
  * processing target.
  *
  * See each callback (xxfi_connect(), xxfi_helo() and so

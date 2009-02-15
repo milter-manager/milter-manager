@@ -19,9 +19,9 @@ struct smfiDesc
     sfsistat	(*xxfi_helo)      (SMFICTX    *context,
                                    char       *fqdn);
     sfsistat	(*xxfi_envfrom)   (SMFICTX    *context,
-                                   char      **addresses);
+                                   char      **arguments);
     sfsistat	(*xxfi_envrcpt)   (SMFICTX    *context,
-                                   char      **addresses);
+                                   char      **arguments);
     sfsistat	(*xxfi_header)    (SMFICTX    *context,
                                    char       *name,
                                    char       *value);
