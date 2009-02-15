@@ -2103,7 +2103,6 @@ milter_server_context_establish_connection (MilterServerContext *context,
 
     priv->client_channel = g_io_channel_unix_new(client_fd);
     g_io_channel_set_close_on_unref(priv->client_channel, TRUE);
-    g_io_channel_set_buffered(priv->client_channel, FALSE);
 
     g_io_channel_set_encoding(priv->client_channel, NULL, &io_error);
     if (io_error) {
@@ -2116,6 +2115,7 @@ milter_server_context_establish_connection (MilterServerContext *context,
             "Failed to set encoding for preparing connect()");
         return FALSE;
     }
+    g_io_channel_set_buffered(priv->client_channel, FALSE);
 
     g_io_channel_set_flags(priv->client_channel,
                            G_IO_FLAG_NONBLOCK |
