@@ -216,7 +216,7 @@ G_BEGIN_DECLS
  * @MILTER_CLIENT_CONTEXT_ERROR_INVALID_STATE: Indicates
  * unexpected operation is requested on the current
  * %MilterClientContextState.
- * @MILTER_CLIENT_CONTEXT_ERROR_INVALID_STATE: Indicates
+ * @MILTER_CLIENT_CONTEXT_ERROR_INVALID_ACTION: Indicates
  * unexpected operation is requested on the context's
  * %MilterActionFlags.
  *
@@ -680,12 +680,44 @@ void                 milter_client_context_set_timeout       (MilterClientContex
  */
 guint                milter_client_context_get_timeout       (MilterClientContext *context);
 
+/**
+ * milter_client_context_set_state:
+ * @context: a %MilterClientContext.
+ * @state: a %MilterClientContextState.
+ *
+ * Sets the current state.
+ */
 void                 milter_client_context_set_state         (MilterClientContext *context,
                                                               MilterClientContextState state);
+
+/**
+ * milter_client_context_get_state:
+ * @context: a %MilterClientContext.
+ *
+ * Gets the current state.
+ *
+ * Returns: the current state.
+ */
 MilterClientContextState milter_client_context_get_state     (MilterClientContext *context);
 
+/**
+ * milter_client_context_set_option:
+ * @context: a %MilterClientContext.
+ * @option: a %MilterOption.
+ *
+ * Sets the option for the context.
+ */
 void                 milter_client_context_set_option        (MilterClientContext *context,
                                                               MilterOption *option);
+
+/**
+ * milter_client_context_get_option:
+ * @context: a %MilterClientContext.
+ *
+ * Gets the option for the context.
+ *
+ * Returns: the option for the context.
+ */
 MilterOption        *milter_client_context_get_option        (MilterClientContext *context);
 
 
