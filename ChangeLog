@@ -1,5 +1,13 @@
 2009-02-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client-context.c,
+	milter/manager/milter-manager-children.c,
+	milter/manager/milter-manager-leader.c,
+	test/manager/test-leader.c,
+	test/fixtures/leader/end-of-message-reply-code-reject.txt,
+	test/fixtures/leader/end-of-message-reply-code-temporary-failure.txt:
+	support temporary failure reply code.
+
 	* milter/server/milter-server-context.c: dispose connect watch
 	callback on failure.
 

@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -2181,6 +2181,7 @@ reply (MilterClientContext *context, MilterStatus status)
         milter_reply_encoder_encode_continue(reply_encoder,
                                              &packet, &packet_size);
         break;
+      case MILTER_STATUS_TEMPORARY_FAILURE:
       case MILTER_STATUS_REJECT:
         {
             gchar *code;
@@ -2192,14 +2193,15 @@ reply (MilterClientContext *context, MilterStatus status)
                                                        code);
                 g_free(code);
             } else {
-                milter_reply_encoder_encode_reject(reply_encoder,
-                                                   &packet, &packet_size);
+                if (status == MILTER_STATUS_TEMPORARY_FAILURE)
+                    milter_reply_encoder_encode_temporary_failure(reply_encoder,
+                                                                  &packet,
+                                                                  &packet_size);
+                else
+                    milter_reply_encoder_encode_reject(reply_encoder,
+                                                       &packet, &packet_size);
             }
         }
-        break;
-      case MILTER_STATUS_TEMPORARY_FAILURE:
-        milter_reply_encoder_encode_temporary_failure(reply_encoder,
-                                                      &packet, &packet_size);
         break;
       case MILTER_STATUS_ACCEPT:
         milter_reply_encoder_encode_accept(reply_encoder, &packet, &packet_size);

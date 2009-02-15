@@ -258,6 +258,22 @@ body_file_free (MilterManagerChildrenPrivate *priv)
 }
 
 static void
+dispose_reply (MilterManagerChildrenPrivate *priv)
+{
+    priv->reply_code = 0;
+
+    if (priv->reply_extended_code) {
+        g_free(priv->reply_extended_code);
+        priv->reply_extended_code = NULL;
+    }
+
+    if (priv->reply_message) {
+        g_free(priv->reply_message);
+        priv->reply_message = NULL;
+    }
+}
+
+static void
 dispose (GObject *object)
 {
     MilterManagerChildrenPrivate *priv;
@@ -340,14 +356,7 @@ dispose (GObject *object)
         priv->end_of_message_chunk = NULL;
     }
 
-    if (priv->reply_extended_code) {
-        g_free(priv->reply_extended_code);
-        priv->reply_extended_code = NULL;
-    }
-    if (priv->reply_message) {
-        g_free(priv->reply_message);
-        priv->reply_message = NULL;
-    }
+    dispose_reply(priv);
 
     milter_manager_children_set_launcher_channel(MILTER_MANAGER_CHILDREN(object), NULL, NULL);
 
@@ -701,10 +710,14 @@ remove_child_from_queue (MilterManagerChildren *children,
         MilterStatus status;
         status = get_reply_status_for_state(children, priv->current_state);
 
-        if (priv->reply_code > 0) {
+        if ((((priv->reply_code / 100) == 4) &&
+             status == MILTER_STATUS_TEMPORARY_FAILURE) ||
+            (((priv->reply_code / 100) == 5) &&
+             status == MILTER_STATUS_REJECT)) {
             g_signal_emit_by_name(children, "reply-code",
                                   priv->reply_code, priv->reply_extended_code,
                                   priv->reply_message);
+            dispose_reply(priv);
         } else {
             if (status != MILTER_STATUS_NOT_CHANGE &&
                 priv->current_state != MILTER_SERVER_CONTEXT_STATE_BODY) {
@@ -715,6 +728,7 @@ remove_child_from_queue (MilterManagerChildren *children,
 
         switch (status) {
         case MILTER_STATUS_REJECT:
+        case MILTER_STATUS_TEMPORARY_FAILURE:
             if (priv->current_state !=
                 MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT) {
                 expire_all_children(children);
@@ -857,10 +871,13 @@ send_command_to_child (MilterManagerChildren *children,
                        MilterServerContext *child,
                        MilterCommand command)
 {
+    MilterManagerChildrenPrivate *priv;
     MilterStatus status = MILTER_STATUS_TEMPORARY_FAILURE;
 
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
     switch (command) {
     case MILTER_COMMAND_DATA:
+        priv->current_state = MILTER_SERVER_CONTEXT_STATE_DATA;
         if (milter_server_context_data(child))
             status = MILTER_STATUS_PROGRESS;
         break;
@@ -868,6 +885,7 @@ send_command_to_child (MilterManagerChildren *children,
         status = send_next_header_to_child(children, child);
         break;
     case MILTER_COMMAND_END_OF_HEADER:
+        priv->current_state = MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER;
         if (milter_server_context_end_of_header(child))
             status = MILTER_STATUS_PROGRESS;
         break;
@@ -875,17 +893,13 @@ send_command_to_child (MilterManagerChildren *children,
         return send_body_to_child(children, child);
         break;
     case MILTER_COMMAND_END_OF_MESSAGE:
-    {
-        MilterManagerChildrenPrivate *priv;
-        priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
-
         priv->processing_header_index = 0;
+        priv->current_state = MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE;
         if (milter_server_context_end_of_message(child,
                                                  priv->end_of_message_chunk,
                                                  priv->end_of_message_size))
             status = MILTER_STATUS_PROGRESS;
         break;
-    }
     default:
         break;
     }
@@ -1108,11 +1122,8 @@ cb_temporary_failure (MilterServerContext *context, gpointer user_data)
     switch (state) {
     case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM:
     case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT:
-        remove_child_from_queue(children, context);
-        break;
     case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
-        g_signal_emit_by_name(children, "temporary-failure");
-        expire_all_children(children);
+        remove_child_from_queue(children, context);
         break;
     case MILTER_SERVER_CONTEXT_STATE_CONNECT:
     case MILTER_SERVER_CONTEXT_STATE_HELO:
@@ -1151,11 +1162,8 @@ cb_reject (MilterServerContext *context, gpointer user_data)
     switch (state) {
     case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM:
     case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT:
-        remove_child_from_queue(children, context);
-        break;
     case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
-        g_signal_emit_by_name(children, "reject");
-        expire_all_children(children);
+        remove_child_from_queue(children, context);
         break;
     case MILTER_SERVER_CONTEXT_STATE_CONNECT:
     case MILTER_SERVER_CONTEXT_STATE_HELO:
@@ -1193,15 +1201,16 @@ cb_reply_code (MilterServerContext *context,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
+    dispose_reply(priv);
     priv->reply_code = code;
-    if (priv->reply_extended_code)
-        g_free(priv->reply_extended_code);
     priv->reply_extended_code = g_strdup(extended_code);
-    if (priv->reply_message)
-        g_free(priv->reply_message);
     priv->reply_message = g_strdup(message);
 
-    cb_reject(context, user_data);
+    if ((priv->reply_code / 100) == 4) {
+        cb_temporary_failure(context, user_data);
+    } else {
+        cb_reject(context, user_data);
+    }
 }
 
 static void
@@ -2931,47 +2940,48 @@ milter_manager_children_is_important_status (MilterManagerChildren *children,
                                              MilterStatus status)
 {
     MilterManagerChildrenPrivate *priv;
-    MilterStatus a, b;
+    MilterStatus current_status;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    a = get_reply_status_for_state(children, state);
-    b = status;
+    current_status = get_reply_status_for_state(children, state);
 
-    switch (a) {
+    switch (current_status) {
     case MILTER_STATUS_REJECT:
         if (state != MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT)
             return FALSE;
-        return (b == MILTER_STATUS_DISCARD);
+        return (status == MILTER_STATUS_DISCARD);
         break;
     case MILTER_STATUS_DISCARD:
         if (state == MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT)
             return FALSE;
-        return (b == MILTER_STATUS_REJECT);
+        return (status == MILTER_STATUS_REJECT);
         break;
     case MILTER_STATUS_TEMPORARY_FAILURE:
-        if (b == MILTER_STATUS_NOT_CHANGE)
+        if (status == MILTER_STATUS_NOT_CHANGE)
             return FALSE;
         return TRUE;
         break;
     case MILTER_STATUS_ACCEPT:
-        if (b == MILTER_STATUS_NOT_CHANGE ||
-            b == MILTER_STATUS_TEMPORARY_FAILURE)
+        if (status == MILTER_STATUS_NOT_CHANGE ||
+            status == MILTER_STATUS_TEMPORARY_FAILURE)
             return FALSE;
         return TRUE;
         break;
     case MILTER_STATUS_SKIP:
-        if (b == MILTER_STATUS_NOT_CHANGE ||
-            b == MILTER_STATUS_ACCEPT ||
-            b == MILTER_STATUS_TEMPORARY_FAILURE)
+        if (status == MILTER_STATUS_NOT_CHANGE ||
+            status == MILTER_STATUS_ACCEPT ||
+            status == MILTER_STATUS_TEMPORARY_FAILURE)
             return FALSE;
         return TRUE;
         break;
     case MILTER_STATUS_CONTINUE:
-        if (b == MILTER_STATUS_NOT_CHANGE ||
-            b == MILTER_STATUS_ACCEPT ||
-            b == MILTER_STATUS_TEMPORARY_FAILURE ||
-            b == MILTER_STATUS_SKIP)
+        if (status == MILTER_STATUS_NOT_CHANGE ||
+            status == MILTER_STATUS_ACCEPT ||
+            status == MILTER_STATUS_SKIP)
+            return FALSE;
+        if (status == MILTER_STATUS_TEMPORARY_FAILURE &&
+            state != MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
             return FALSE;
         return TRUE;
     default:

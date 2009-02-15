@@ -1,0 +1,24 @@
+[scenario]
+clients=client10026;client10027
+import=body.txt
+actions=end-of-message-reply-code-temporary-failure
+
+[client10026]
+port=10026
+arguments=--reply-code;451 4.7.0 DNS timeout;--end-of-message-regexp;Reply code
+
+[client10027]
+port=10027
+
+[end-of-message-reply-code-temporary-failure]
+command=end-of-message
+chunk=Reply code
+
+response=end-of-message
+n_received=1
+status=temporary-failure
+reply_codes=451 4.7.0 DNS timeout
+
+chunks=;;
+end_of_message_chunks=Reply code;;
+headers=From:kou+sender@cozmixng.org

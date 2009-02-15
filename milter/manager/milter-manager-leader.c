@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -417,7 +417,11 @@ cb_reply_code (MilterServerContext *context,
         return;
     }
 
-    reply(leader, MILTER_STATUS_REJECT);
+    if ((code / 100) == 4) {
+        reply(leader, MILTER_STATUS_TEMPORARY_FAILURE);
+    } else {
+        reply(leader, MILTER_STATUS_REJECT);
+    }
 }
 
 static void
