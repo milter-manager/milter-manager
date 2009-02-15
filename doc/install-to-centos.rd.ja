@@ -62,9 +62,9 @@ Ruby/GLib2 0.16.0を使います。
 /usr/local/以下にインストールします。
 
   % cd ~/src/
-  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-0.8.0.tar.gz
-  % tar xvzf milter-manager-0.8.0.tar.gz
-  % cd milter-manager-0.8.0
+  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-0.8.1.tar.gz
+  % tar xvzf milter-manager-0.8.1.tar.gz
+  % cd milter-manager-0.8.1
   % ./configure
   % make
   % sudo make install

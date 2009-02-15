@@ -60,9 +60,9 @@ doesn't support Ruby 1.8.5.
 We install milter manager under /usr/local/.
 
   % cd ~/src/
-  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-0.8.0.tar.gz
-  % tar xvzf milter-manager-0.8.0.tar.gz
-  % cd milter-manager-0.8.0
+  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-0.8.1.tar.gz
+  % tar xvzf milter-manager-0.8.1.tar.gz
+  % cd milter-manager-0.8.1
   % ./configure
   % make
   % sudo make install
