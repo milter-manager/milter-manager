@@ -814,7 +814,7 @@ smfi_insheader (SMFICTX *context, int index, char *name, char *value)
 }
 
 int
-smfi_chgfrom (SMFICTX *context, char *mail, char *args)
+smfi_chgfrom (SMFICTX *context, char *mail, char *arguments)
 {
     SmfiContextPrivate *priv;
 
@@ -822,7 +822,7 @@ smfi_chgfrom (SMFICTX *context, char *mail, char *args)
     if (!priv->client_context)
         return MI_FAILURE;
 
-    if (milter_client_context_change_from(priv->client_context, mail, args))
+    if (milter_client_context_change_from(priv->client_context, mail, arguments))
         return MI_SUCCESS;
     else
         return MI_FAILURE;
@@ -933,7 +933,7 @@ smfi_getpriv (SMFICTX *context)
 }
 
 int
-smfi_setsymlist (SMFICTX *context, int where, char *macros)
+smfi_setsymlist (SMFICTX *context, int state, char *macros)
 {
     SmfiContextPrivate *priv;
     MilterProtocolAgent *agent;
@@ -951,7 +951,7 @@ smfi_setsymlist (SMFICTX *context, int where, char *macros)
 
     macro_array = g_strsplit(macros, " ", -1);
     milter_macros_requests_set_symbols_string_array(macros_requests,
-                                                    where,
+                                                    state,
                                                     (const gchar**)macro_array);
     g_strfreev(macro_array);
 

@@ -1626,31 +1626,293 @@ int     smfi_chgheader   (SMFICTX        *context,
                           char           *name,
                           int             index,
                           char           *value);
+
+/**
+ * smfi_insheader:
+ * @context: the context for the current milter session.
+ * @index: the index of inserted header. 0 means that the
+ *         header is prepended.
+ * @name: the header name.
+ * @value: the header value.
+ *
+ * Inserts a header to @index in headers. smfi_insheader()
+ * can be called in xxfi_eom().
+ *
+ * <rd>
+ * Here are the fail conditions:
+ *   * @name is %NULL.
+ *   * @value is %NULL. FIXME: not-implemented yet.
+ *   * called in except xxfi_eom(). FIXME: not-implemented yet.
+ *   * %SMFIF_ADDHDRS flag isn't set in smfi_register() or
+ *     xxfi_negotiate(). FIXME: not-implemented yet.
+ *   * network error is occurred.
+ * </rd>
+ *
+ * See also <ulink
+ * url="https://www.milter.org/developers/api/smfi_insheader">
+ * smfi_insheader</ulink> on milter.org.
+ *
+ * Returns: %MI_SUCCESS if success, %MI_FAILURE otherwise.
+ **/
 int     smfi_insheader   (SMFICTX        *context,
                           int             index,
                           char           *name,
                           char           *value);
+
+/**
+ * smfi_chgfrom:
+ * @context: the context for the current milter session.
+ * @mail: the new sender address.
+ * @arguments: the extra arguments for ESMTP.
+ *
+ * Changes a sender address. smfi_chgfrom() can be called in
+ * xxfi_eom().
+ *
+ * <rd>
+ * Here are the fail conditions:
+ *   * @mail is %NULL. FIXME: not-implemented yet.
+ *   * called in except xxfi_eom(). FIXME: not-implemented yet.
+ *   * %SMFIF_CHGFROM flag isn't set in smfi_register() or
+ *     xxfi_negotiate(). FIXME: not-implemented yet.
+ *   * network error is occurred.
+ * </rd>
+ *
+ * See also <ulink
+ * url="https://www.milter.org/developers/api/smfi_chgfrom">
+ * smfi_chgfrom</ulink> on milter.org.
+ *
+ * Returns: %MI_SUCCESS if success, %MI_FAILURE otherwise.
+ **/
 int     smfi_chgfrom     (SMFICTX        *context,
                           char           *mail,
-                          char           *args);
+                          char           *arguments);
+
+/**
+ * smfi_addrcpt:
+ * @context: the context for the current milter session.
+ * @recipient: the new recipient address.
+ *
+ * Adds a recipient address. smfi_addrcpt() can be called in
+ * xxfi_eom().
+ *
+ * <rd>
+ * Here are the fail conditions:
+ *   * @recipient is %NULL. FIXME: not-implemented yet.
+ *   * called in except xxfi_eom(). FIXME: not-implemented yet.
+ *   * %SMFIF_ADDRCPT flag isn't set in smfi_register() or
+ *     xxfi_negotiate(). FIXME: not-implemented yet.
+ *   * network error is occurred.
+ * </rd>
+ *
+ * See also <ulink
+ * url="https://www.milter.org/developers/api/smfi_addrcpt">
+ * smfi_addrcpt</ulink> on milter.org.
+ *
+ * Returns: %MI_SUCCESS if success, %MI_FAILURE otherwise.
+ **/
 int     smfi_addrcpt     (SMFICTX        *context,
                           char           *recipient);
+
+/**
+ * smfi_addrcpt_par:
+ * @context: the context for the current milter session.
+ * @recipient: the recipient address.
+ * @arguments: the extra arguments for ESMTP.
+ *
+ * Adds a recipient address with extra ESMTP
+ * arguments. smfi_addrcpt_par() can be called in
+ * xxfi_eom().
+ *
+ * <rd>
+ * Here are the fail conditions:
+ *   * @recipient is %NULL. FIXME: not-implemented yet.
+ *   * called in except xxfi_eom(). FIXME: not-implemented yet.
+ *   * %SMFIF_ADDRCPT_PAR flag isn't set in smfi_register() or
+ *     xxfi_negotiate(). FIXME: not-implemented yet.
+ *   * network error is occurred.
+ * </rd>
+ *
+ * See also <ulink
+ * url="https://www.milter.org/developers/api/smfi_addrcpt_par">
+ * smfi_addrcpt_par</ulink> on milter.org.
+ *
+ * Returns: %MI_SUCCESS if success, %MI_FAILURE otherwise.
+ **/
 int     smfi_addrcpt_par (SMFICTX        *context,
                           char           *recipient,
-                          char           *args);
+                          char           *arguments);
+
+/**
+ * smfi_delrcpt:
+ * @context: the context for the current milter session.
+ * @recipient: the recipient address.
+ *
+ * Deletes a recipient address. smfi_delrcpt() can be called in
+ * xxfi_eom().
+ *
+ * <rd>
+ * Here are the fail conditions:
+ *   * @recipient is %NULL. FIXME: not-implemented yet.
+ *   * called in except xxfi_eom(). FIXME: not-implemented yet.
+ *   * %SMFIF_DELRCPT flag isn't set in smfi_register() or
+ *     xxfi_negotiate(). FIXME: not-implemented yet.
+ *   * network error is occurred.
+ * </rd>
+ *
+ * See also <ulink
+ * url="https://www.milter.org/developers/api/smfi_delrcpt">
+ * smfi_delrcpt</ulink> on milter.org.
+ *
+ * Returns: %MI_SUCCESS if success, %MI_FAILURE otherwise.
+ **/
 int     smfi_delrcpt     (SMFICTX        *context,
                           char           *recipient);
+
+/**
+ * smfi_progress:
+ * @context: the context for the current milter session.
+ *
+ * Keeps the current connection. smfi_progress() can be called in
+ * xxfi_eom().
+ *
+ * <rd>
+ * Here are the fail conditions:
+ *   * called in except xxfi_eom(). FIXME: not-implemented yet.
+ *   * network error is occurred.
+ * </rd>
+ *
+ * See also <ulink
+ * url="https://www.milter.org/developers/api/smfi_progress">
+ * smfi_progress</ulink> on milter.org.
+ *
+ * Returns: %MI_SUCCESS if success, %MI_FAILURE otherwise.
+ **/
 int     smfi_progress    (SMFICTX        *context);
+
+/**
+ * smfi_replacebody:
+ * @context: the context for the current milter session.
+ * @new_body: the new body data.
+ * @new_body_size: the size of @new_body.
+ *
+ * Replaces the current body data with
+ * @new_body. smfi_replacebody() can be called in
+ * xxfi_eom().
+ *
+ * <rd>
+ * Here are the fail conditions:
+ *   * @new_body == NULL and @new_body_size > 0. FIXME:
+ *     not-implemented yet.
+ *   * called in except xxfi_eom(). FIXME: not-implemented yet.
+ *   * %SMFIF_CHGBODY flag isn't set in smfi_register() or
+ *     xxfi_negotiate(). FIXME: not-implemented yet.
+ *   * network error is occurred.
+ * </rd>
+ *
+ * See also <ulink
+ * url="https://www.milter.org/developers/api/smfi_replacebody">
+ * smfi_replacebody</ulink> on milter.org.
+ *
+ * Returns: %MI_SUCCESS if success, %MI_FAILURE otherwise.
+ **/
 int     smfi_replacebody (SMFICTX        *context,
                           unsigned char  *new_body,
                           int             new_body_size);
+
+/**
+ * smfi_quarantine:
+ * @context: the context for the current milter session.
+ * @reason: the quarantine reason.
+ *
+ * Quarantines the current message with
+ * @reason. smfi_quarantine() can be called in xxfi_eom().
+ *
+ * <rd>
+ * Here are the fail conditions:
+ *   * @reason is NULL or empty. FIXME: not-implemented yet.
+ *   * called in except xxfi_eom(). FIXME: not-implemented yet.
+ *   * %SMFIF_QUARANTINE flag isn't set in smfi_register() or
+ *     xxfi_negotiate(). FIXME: not-implemented yet.
+ *   * network error is occurred.
+ * </rd>
+ *
+ * See also <ulink
+ * url="https://www.milter.org/developers/api/smfi_quarantine">
+ * smfi_quarantine</ulink> on milter.org.
+ *
+ * Returns: %MI_SUCCESS if success, %MI_FAILURE otherwise.
+ **/
 int     smfi_quarantine  (SMFICTX        *context,
                           char           *reason);
+
+/**
+ * smfi_setpriv:
+ * @context: the context for the current milter session.
+ * @data: the private data.
+ *
+ * Sets the private data.
+ *
+ * <rd>
+ * Here are the fail conditions:
+ *   * @context is invalid. FIXME: not-implemented yet.
+ * </rd>
+ *
+ * See also <ulink
+ * url="https://www.milter.org/developers/api/smfi_setpriv">
+ * smfi_setpriv</ulink> on milter.org.
+ *
+ * Returns: %MI_SUCCESS if success, %MI_FAILURE otherwise.
+ **/
 int     smfi_setpriv     (SMFICTX        *context,
                           void           *data);
+
+/**
+ * smfi_getpriv:
+ * @context: the context for the current milter session.
+ *
+ * Gets the private data.
+ *
+ * <rd>
+ * Here are the fail conditions:
+ *   * @context is invalid. FIXME: not-implemented yet.
+ * </rd>
+ *
+ * See also <ulink
+ * url="https://www.milter.org/developers/api/smfi_getpriv">
+ * smfi_getpriv</ulink> on milter.org.
+ *
+ * Returns: the private data set by smfi_setpriv() or %NULL.
+ **/
 void   *smfi_getpriv     (SMFICTX        *context);
+
+/**
+ * smfi_setsymlist:
+ * @context: the context for the current milter session.
+ * @state: the state defined as SMFIM_XXX like %SMFIM_CONNECT.
+ * @macros: the space separated macro names like
+ *          "{rcpt_mailer} {rcpt_host}".
+ *
+ * Sets the list of requested macros. smfi_setsymlist() can
+ * be called in xxfi_negotiate().
+ *
+ * <rd>
+ * Here are the fail conditions:
+ *   * @state is not a valid value. FIXME: not-implemented yet.
+ *   * @macros is NULL or empty. FIXME: not-implemented yet.
+ *   * the macro list for @state has been set before. FIXME:
+ *     not-implemented yet.
+ *   * called in except xxfi_negotiate(). FIXME: not-implemented yet.
+ *   * network error is occurred.
+ * </rd>
+ *
+ * See also <ulink
+ * url="https://www.milter.org/developers/api/smfi_setsymlist">
+ * smfi_setsymlist</ulink> on milter.org.
+ *
+ * Returns: %MI_SUCCESS if success, %MI_FAILURE otherwise.
+ **/
 int     smfi_setsymlist  (SMFICTX        *context,
-                          int             where,
+                          int             state,
                           char           *macros);
 
 #ifdef __cplusplus
