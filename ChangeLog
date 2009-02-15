@@ -1,3 +1,7 @@
+2009-02-15  Kouhei Sutou  <kou@clear-code.com>
+
+	* doc/install-to-ubuntu.rd*: add SOCKET_GROUP.
+
 2009-02-15  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/server/milter-server-context.c: use GIOChannel instead of

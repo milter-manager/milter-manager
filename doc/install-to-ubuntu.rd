@@ -212,6 +212,7 @@ We create /etc/default/milter-manager with the following
 content:
 
   GROUP=postfix
+  SOCKET_GROUP=postfix
   CONNECTION_SPEC=unix:/var/spool/postfix/milter-manager/milter-manager.sock
 
 milter-manager's configuration is completed. We start to
