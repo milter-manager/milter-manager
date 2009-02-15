@@ -1,5 +1,9 @@
 2009-02-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client-context.c,
+	milter/manager/milter-manager-process-launcher.c: call parent's
+	finished.
+
 	* milter/server/milter-server-context.c: fix too much FD close.
 
 	* tool/milter-performance-check: don't show needless information.

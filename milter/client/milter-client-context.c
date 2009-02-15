@@ -2572,6 +2572,9 @@ finished (MilterFinishedEmittable *emittable)
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
     /* FIXME: should check the previous state */
     priv->state = MILTER_CLIENT_CONTEXT_STATE_FINISHED;
+
+    if (finished_emittable_parent->finished)
+        finished_emittable_parent->finished(emittable);
 }
 
 static void

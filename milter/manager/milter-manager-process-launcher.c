@@ -445,6 +445,9 @@ finished (MilterFinishedEmittable *emittable)
     launcher = MILTER_MANAGER_PROCESS_LAUNCHER(emittable);
     priv = MILTER_MANAGER_PROCESS_LAUNCHER_GET_PRIVATE(launcher);
     g_main_loop_quit(priv->main_loop);
+
+    if (finished_emittable_parent->finished)
+        finished_emittable_parent->finished(emittable);
 }
 
 GQuark
