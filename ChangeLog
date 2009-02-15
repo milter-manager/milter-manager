@@ -1,3 +1,7 @@
+2009-02-16  Kouhei Sutou  <kou@clear-code.com>
+
+	* doc/introduction.rd*: improve document about speed.
+
 2009-02-16  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/server/milter-{client,server}-context.h,

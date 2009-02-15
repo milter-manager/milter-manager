@@ -249,20 +249,21 @@ milter session. They can be used for it.
 We can decide whether apply a milter or not by using S25R
 result by the feature.
 
-==== Weakness
+==== Speed
 
-We have effect abount performance by introduce milter
-manager. But milter manager works fast enough. milter
-manager will not be bottleneck.
-
-FIXME: Figure: Benchmark
+We have effect about performance by introducing milter
+manager. But the effect is very small because milter manager
+works fast enough. So, it seems that the effect is
+none. milter manager will not be bottleneck.
 
 Registered child milters to milter manager are applied only
 if some conditions are true. It means that child milters
 doesn't run if they aren't needed. But registered milters to
-MTA are always ran. Noramlly, reduced speed intruduced by
-milter manager will be canceled because number of whole ran
-child milters are less than number of whole ran milters.
+MTA are always ran. Total processing time for milter system
+is almost same as milter system without milter manager or
+less than milter system without milter manager because the
+number of child milters to be ran are less than the number
+of whole milters.
 
 == Conclusion
 
