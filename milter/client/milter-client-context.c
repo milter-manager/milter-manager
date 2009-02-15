@@ -2177,13 +2177,13 @@ reply (MilterClientContext *context, MilterStatus status)
     reply_encoder = MILTER_REPLY_ENCODER(encoder);
 
     switch (status) {
-      case MILTER_STATUS_CONTINUE:
+    case MILTER_STATUS_CONTINUE:
         milter_reply_encoder_encode_continue(reply_encoder,
                                              &packet, &packet_size);
         break;
-      case MILTER_STATUS_TEMPORARY_FAILURE:
-      case MILTER_STATUS_REJECT:
-        {
+    case MILTER_STATUS_TEMPORARY_FAILURE:
+    case MILTER_STATUS_REJECT:
+    {
             gchar *code;
 
             code = milter_client_context_format_reply(context);
@@ -2201,20 +2201,19 @@ reply (MilterClientContext *context, MilterStatus status)
                     milter_reply_encoder_encode_reject(reply_encoder,
                                                        &packet, &packet_size);
             }
-        }
-        break;
-      case MILTER_STATUS_ACCEPT:
+            break;
+    }
+    case MILTER_STATUS_ACCEPT:
         milter_reply_encoder_encode_accept(reply_encoder, &packet, &packet_size);
         break;
-      case MILTER_STATUS_DISCARD:
+    case MILTER_STATUS_DISCARD:
         milter_reply_encoder_encode_discard(reply_encoder,
                                             &packet, &packet_size);
         break;
-      case MILTER_STATUS_SKIP:
-        milter_reply_encoder_encode_skip(reply_encoder,
-                                         &packet, &packet_size);
+    case MILTER_STATUS_SKIP:
+        milter_reply_encoder_encode_skip(reply_encoder, &packet, &packet_size);
         break;
-      default:
+    default:
         break;
     }
 
