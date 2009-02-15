@@ -435,6 +435,15 @@ disable_timeout (MilterServerContextPrivate *priv)
 }
 
 static void
+dispose_connect_watch (MilterServerContextPrivate *priv)
+{
+    if (priv->connect_watch_id > 0) {
+        g_source_remove(priv->connect_watch_id);
+        priv->connect_watch_id = 0;
+    }
+}
+
+static void
 dispose_client_channel (MilterServerContextPrivate *priv)
 {
     if (priv->client_channel) {
@@ -451,13 +460,8 @@ dispose (GObject *object)
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(object);
 
     disable_timeout(priv);
-
+    dispose_connect_watch(priv);
     dispose_client_channel(priv);
-
-    if (priv->connect_watch_id > 0) {
-        g_source_remove(priv->connect_watch_id);
-        priv->connect_watch_id = 0;
-    }
 
     if (priv->spec) {
         g_free(priv->spec);
@@ -2146,6 +2150,7 @@ milter_server_context_establish_connection (MilterServerContext *context,
             return TRUE;
 
         disable_timeout(priv);
+        dispose_connect_watch(priv);
         dispose_client_channel(priv);
         g_set_error(error,
                     MILTER_SERVER_CONTEXT_ERROR,
