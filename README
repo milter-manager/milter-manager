@@ -539,6 +539,12 @@ smtp-source is more better tool for you.
 
    The default is none.
 
+: --shuffle, --no-shuffle
+
+   Shuffles target mails before sending.
+
+   The default is false. (don't shuffle.)
+
 === milter-manager-log-analyzer
 
 milter-manager-log-analyzer analyzes milter-manager log and

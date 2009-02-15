@@ -547,6 +547,12 @@ smtp-sourceを利用するとよいでしょう。
 
    既定値はありません。
 
+: --shuffle, --no-shuffle
+
+   送信予定のメールを無作為に並び替えてから送信します。
+
+   既定値はfalseです。（並び替えません。）
+
 === milter-manager-log-analyzer
 
 milter-manager-log-analyzerはmilter-managerのログを解析し、

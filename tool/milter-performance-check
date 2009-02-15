@@ -37,6 +37,7 @@ class MilterPerformanceTool
     @mails = []
     @period = nil
     @interval = nil
+    @shuffle = false
     @mail_source_from_stdin = nil
     @mutex = Mutex.new
   end
@@ -138,6 +139,12 @@ class MilterPerformanceTool
         end
         @interval = parse_period(interval)
       end
+
+      opts.on("--[no-]shuffle",
+              "Shuffle target mails",
+              "(#{@shuffle})") do |shuffle|
+        @shuffle = shuffle
+      end
     end
     @mails = opts.parse!(argv)
     @recipients = @default_recipients if @recipients.empty?
@@ -157,6 +164,7 @@ class MilterPerformanceTool
     @n_processed_mails = 0
     mails = expand_mails(@mails)
     mails = [mails[0]] * @n_mails if mails.size <= 1
+    mails = mails.sort_by {rand} if @shuffle
 
     start_time = Time.now
     begin
