@@ -232,6 +232,59 @@ typedef enum
     MILTER_CLIENT_CONTEXT_ERROR_INVALID_ACTION
 } MilterClientContextError;
 
+/**
+ * MilterClientContextState:
+ * @MILTER_CLIENT_CONTEXT_STATE_INVALID: Invalid state.
+ * @MILTER_CLIENT_CONTEXT_STATE_START: Just started.
+ * @MILTER_CLIENT_CONTEXT_STATE_NEGOTIATE: Starting negotiation.
+ * @MILTER_CLIENT_CONTEXT_STATE_NEGOTIATE_REPLIED: Received
+ * negotiation response.
+ * @MILTER_CLIENT_CONTEXT_STATE_CONNECT: Starting connection
+ * information.
+ * @MILTER_CLIENT_CONTEXT_STATE_CONNECT_REPLIED: Received
+ * connection information response.
+ * @MILTER_CLIENT_CONTEXT_STATE_HELO: Starting HELO.
+ * @MILTER_CLIENT_CONTEXT_STATE_HELO_REPLIED: Received
+ * HELO response.
+ * @MILTER_CLIENT_CONTEXT_STATE_ENVELOPE_FROM: Starting MAIL
+ * FROM command.
+ * @MILTER_CLIENT_CONTEXT_STATE_ENVELOPE_FROM_REPLIED: Receive
+ * MAIL FROM response.
+ * @MILTER_CLIENT_CONTEXT_STATE_ENVELOPE_RECIPIENT: Starting
+ * RCPT TO command.
+ * @MILTER_CLIENT_CONTEXT_STATE_ENVELOPE_RECIPIENT_REPLIED: Receive
+ * RCPT TO response.
+ * @MILTER_CLIENT_CONTEXT_STATE_DATA: Starting DATA command.
+ * @MILTER_CLIENT_CONTEXT_STATE_DATA_REPLIED: Receive
+ * DATA response.
+ * @MILTER_CLIENT_CONTEXT_STATE_UNKNOWN: Receiving unknown
+ * SMTP command.
+ * @MILTER_CLIENT_CONTEXT_STATE_UNKNOWN_REPLIED: Receive
+ * unknown SMTP command response.
+ * @MILTER_CLIENT_CONTEXT_STATE_HEADER: Sent a header.
+ * @MILTER_CLIENT_CONTEXT_STATE_HEADER_REPLIED: Receive
+ * header response.
+ * @MILTER_CLIENT_CONTEXT_STATE_END_OF_HEADER: All headers are
+ * sent.
+ * @MILTER_CLIENT_CONTEXT_STATE_END_OF_HEADER_REPLIED: Receive
+ * end-of-header response.
+ * @MILTER_CLIENT_CONTEXT_STATE_BODY: Sending body chunks.
+ * @MILTER_CLIENT_CONTEXT_STATE_BODY_REPLIED: Received
+ * body response.
+ * @MILTER_CLIENT_CONTEXT_STATE_END_OF_MESSAGE: All body
+ * chunks are sent.
+ * @MILTER_CLIENT_CONTEXT_STATE_END_OF_MESSAGE_REPLIED: Receive
+ * end-of-message response.
+ * @MILTER_CLIENT_CONTEXT_STATE_QUIT: Starting quitting.
+ * @MILTER_CLIENT_CONTEXT_STATE_QUIT_REPLIED: Receive
+ * quit response.
+ * @MILTER_CLIENT_CONTEXT_STATE_ABORT: Starting aborting.
+ * @MILTER_CLIENT_CONTEXT_STATE_ABORT_REPLIED: Receive
+ * abort response.
+ * @MILTER_CLIENT_CONTEXT_STATE_FINISHED: Finished.
+ *
+ * These identify the state of %MilterClientContext.
+ */
 typedef enum
 {
     MILTER_CLIENT_CONTEXT_STATE_INVALID,

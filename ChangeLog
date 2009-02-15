@@ -1,4 +1,11 @@
+2009-02-16  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/client.h, milter/client/milter-client-context.h: add
+	document.
+
 2009-02-15  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/client.h: add document.
 
 	* libmilter/mfapi.h: add document.
 
