@@ -1,5 +1,7 @@
 2009-02-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* libmilter/libmilter-compatible.c, libmilter/mfapi.h: fix document.
+
 	* milter/client/milter-client-context.c,
 	milter/manager/milter-manager-children.c,
 	milter/manager/milter-manager-leader.c,

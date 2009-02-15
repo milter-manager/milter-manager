@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -323,15 +323,15 @@ cb_envelope_from (MilterClientContext *context, const gchar *from,
 {
     SmfiContext *smfi_context = user_data;
     sfsistat status;
-    gchar *addresses[2];
+    gchar *arguments[2];
 
     if (!filter_description->xxfi_envfrom)
         return MILTER_STATUS_DEFAULT;
 
-    addresses[0] = (gchar *)from;
-    addresses[1] = NULL;
+    arguments[0] = (gchar *)from;
+    arguments[1] = NULL;
 
-    status = filter_description->xxfi_envfrom(smfi_context, addresses);
+    status = filter_description->xxfi_envfrom(smfi_context, arguments);
     return libmilter_compatible_convert_status_to(status);
 }
 
@@ -341,15 +341,15 @@ cb_envelope_recipient (MilterClientContext *context, const gchar *recipient,
 {
     SmfiContext *smfi_context = user_data;
     sfsistat status;
-    gchar *addresses[2];
+    gchar *arguments[2];
 
     if (!filter_description->xxfi_envrcpt)
         return MILTER_STATUS_DEFAULT;
 
-    addresses[0] = (gchar *)recipient;
-    addresses[1] = NULL;
+    arguments[0] = (gchar *)recipient;
+    arguments[1] = NULL;
 
-    status = filter_description->xxfi_envrcpt(smfi_context, addresses);
+    status = filter_description->xxfi_envrcpt(smfi_context, arguments);
     return libmilter_compatible_convert_status_to(status);
 }
 

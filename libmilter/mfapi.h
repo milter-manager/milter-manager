@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -331,8 +331,9 @@ struct smfiDesc
     /**
      * xxfi_envfrom:
      * @context: the context for the current milter session.
-     * @from: the envelope from address in SMTP's "MAIL
-     *        FROM" command.
+     * @arguments: the SMTP's "MAIL FROM" command
+     *             arguments. The first element is sender
+     *             address. NULL-terminated.
      *
      * This callback is called on SMTP's "MAIL FROM" command.
      *
@@ -373,13 +374,14 @@ struct smfiDesc
      * Returns: response status.
      */
     sfsistat	(*xxfi_envfrom)   (SMFICTX    *context,
-                                   char      **addresses);
+                                   char      **arguments);
 
     /**
      * xxfi_envrcpt:
      * @context: the context for the current milter session.
-     * @recipient: the envelope recipient address in SMTP's
-     *             "RCPT TO" command.
+     * @arguments: the SMTP's "RCPT TO" command
+     *             arguments. The first element is recipient
+     *             address. NULL-terminated.
      *
      * This callback is called on SMTP's "RCPT TO" command.
      *
@@ -419,7 +421,7 @@ struct smfiDesc
      * Returns: response status.
      */
     sfsistat	(*xxfi_envrcpt)   (SMFICTX    *context,
-                                   char      **addresses);
+                                   char      **arguments);
 
     /**
      * xxfi_header:
