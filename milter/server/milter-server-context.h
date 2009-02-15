@@ -29,7 +29,7 @@ G_BEGIN_DECLS
 
 /**
  * SECTION: milter-server-context
- * @title: MilterServrContext
+ * @title: MilterServerContext
  * @short_description: Process server side milter protocol.
  *
  * The %MilterServerContext processes one server side milter
