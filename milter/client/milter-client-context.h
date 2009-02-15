@@ -711,7 +711,7 @@ gboolean             milter_client_context_quarantine        (MilterClientContex
 /**
  * milter_client_context_set_timeout:
  * @context: a %MilterClientContext.
- * @timeout: the timeout by seconds. (default 7210 seconds)
+ * @timeout: the timeout by seconds. (default is 7210 seconds)
  *
  * Sets the timeout by seconds. If MTA doesn't responses in
  * @timeout seconds, #MilterClientContext::timeout

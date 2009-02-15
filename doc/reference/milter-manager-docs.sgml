@@ -29,6 +29,10 @@
 
   <!--part id="reference">
     <title>Reference</title>
+    <chapter id="libmilter">
+      <title>libmilter</title>
+      <xi:include href="xml/mfapi.xml"/>
+    </chapter>
     <chapter id="milter-core">
       <title>milter-core</title>
       <xi:include href="xml/core.xml"/>
@@ -40,9 +44,9 @@
       <xi:include href="xml/client.xml"/>
       <xi:include href="xml/milter-client-context.xml"/>
     </chapter>
-    <chapter id="libmilter">
-      <title>libmilter</title>
-      <xi:include href="xml/mfapi.xml"/>
+    <chapter id="milter-server">
+      <title>milter-server</title>
+      <xi:include href="xml/milter-server-context.xml"/>
     </chapter>
   </part-->
 

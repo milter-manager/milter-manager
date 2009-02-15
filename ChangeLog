@@ -1,5 +1,8 @@
 2009-02-16  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/server/milter-{client,server}-context.h,
+	doc/reference/milter-manager-docs.sgml: add document.
+
 	* milter/client.h, milter/client/milter-client-context.h: add
 	document.
 
