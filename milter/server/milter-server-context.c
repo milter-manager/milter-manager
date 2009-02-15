@@ -2049,8 +2049,6 @@ prepare_reader (MilterServerContext *context)
         return FALSE;
     }
 
-    g_io_channel_set_close_on_unref(read_channel, TRUE);
-
     reader = milter_reader_io_channel_new(read_channel);
     g_io_channel_unref(read_channel);
     milter_agent_set_reader(MILTER_AGENT(context), reader);

@@ -1,5 +1,7 @@
 2009-02-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/server/milter-server-context.c: fix too much FD close.
+
 	* tool/milter-performance-check: don't show needless information.
 
 2009-02-14  Kouhei Sutou  <kou@clear-code.com>
