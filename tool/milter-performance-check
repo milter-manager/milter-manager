@@ -147,6 +147,7 @@ class MilterPerformanceTool
     Thread.abort_on_exception = true
     @sources = []
     @rejected_sources = []
+    @temporary_failure_sources = []
     @accumulated_elapsed_time = 0
     @max_elapsed_time = 0
     @min_elapsed_time = nil
@@ -184,9 +185,13 @@ class MilterPerformanceTool
       puts
     end
 
-    unless @rejected_sources.empty?
-      puts "Rejected mails:"
-      @rejected_sources.each  do |source_file|
+    [
+     ["Rejected mails:", @rejected_sources],
+     ["Temporary failed mails:", @temporary_failure_sources],
+    ].each do |label, sources|
+      next if sources.empty?
+      puts label
+      sources.each  do |source_file|
         puts source_file
       end
       puts
@@ -298,6 +303,7 @@ class MilterPerformanceTool
       if source_file
         @sources << [elapsed_time, source_file]
         @rejected_sources << source_file if reject
+        @temporary_failure_sources << source_file if temporary_failure
       end
       @accumulated_elapsed_time += elapsed_time
       @n_processed_mails += 1

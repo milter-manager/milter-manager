@@ -1,5 +1,7 @@
 2009-02-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-performance-check: show temporary failure mails too.
+
 	* milter/client/milter-client-context.c,
 	milter/manager/milter-manager-process-launcher.c: call parent's
 	finished.
