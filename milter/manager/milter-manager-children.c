@@ -1587,7 +1587,7 @@ cb_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
         milter_manager_configuration_get_fallback_status(priv->configuration);
 
     state = milter_server_context_get_state(context);
-    compile_reply_status(children, state, MILTER_STATUS_REJECT);
+    compile_reply_status(children, state, fallback_status);
     expire_child(children, context);
     remove_child_from_queue(children, context);
 }
