@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: milter-manager 0.0.1\n"
-"POT-Creation-Date: 2009-02-16 12:45+0900\n"
-"PO-Revision-Date: 2009-02-16 12:52+0900\n"
+"POT-Creation-Date: 2009-02-16 18:23+0900\n"
+"PO-Revision-Date: 2009-02-16 18:41+0900\n"
 "Last-Translator: Kouhei Sutou <kou@cozmixng.org>\n"
 "Language-Team: Japanese\n"
 "MIME-Version: 1.0\n"
@@ -1385,13 +1385,13 @@ msgstr ""
 #: xml/mfapi.xml:1062(term) xml/mfapi.xml:1118(term) xml/mfapi.xml:1183(term)
 #: xml/mfapi.xml:1266(term) xml/mfapi.xml:1319(term) xml/mfapi.xml:1349(term)
 #: xml/mfapi.xml:1375(term) xml/mfapi.xml:1405(term) xml/mfapi.xml:1427(term)
-#: xml/mfapi.xml:1449(term) xml/mfapi.xml:1502(term) xml/mfapi.xml:1521(term)
-#: xml/mfapi.xml:1550(term) xml/mfapi.xml:2184(term) xml/mfapi.xml:2236(term)
-#: xml/mfapi.xml:2288(term) xml/mfapi.xml:2344(term) xml/mfapi.xml:2403(term)
-#: xml/mfapi.xml:2464(term) xml/mfapi.xml:2515(term) xml/mfapi.xml:2562(term)
-#: xml/mfapi.xml:2614(term) xml/mfapi.xml:2661(term) xml/mfapi.xml:2693(term)
-#: xml/mfapi.xml:2746(term) xml/mfapi.xml:2793(term) xml/mfapi.xml:2825(term)
-#: xml/mfapi.xml:2853(term) xml/mfapi.xml:2910(term)
+#: xml/mfapi.xml:1449(term) xml/mfapi.xml:1498(term) xml/mfapi.xml:1517(term)
+#: xml/mfapi.xml:1546(term) xml/mfapi.xml:2180(term) xml/mfapi.xml:2232(term)
+#: xml/mfapi.xml:2284(term) xml/mfapi.xml:2340(term) xml/mfapi.xml:2399(term)
+#: xml/mfapi.xml:2460(term) xml/mfapi.xml:2511(term) xml/mfapi.xml:2558(term)
+#: xml/mfapi.xml:2610(term) xml/mfapi.xml:2657(term) xml/mfapi.xml:2689(term)
+#: xml/mfapi.xml:2742(term) xml/mfapi.xml:2789(term) xml/mfapi.xml:2821(term)
+#: xml/mfapi.xml:2849(term) xml/mfapi.xml:2906(term)
 #: xml/milter-agent.xml:114(term) xml/milter-agent.xml:128(term)
 #: xml/milter-agent.xml:142(term) xml/milter-agent.xml:200(term)
 #: xml/milter-agent.xml:218(term) xml/milter-client-context.xml:668(term)
@@ -3207,61 +3207,61 @@ msgstr ""
 msgid "smfi_setconn"
 msgstr ""
 
-#: xml/mfapi.xml:74(link) xml/mfapi.xml:1507(primary)
+#: xml/mfapi.xml:74(link) xml/mfapi.xml:1503(primary)
 msgid "smfi_stop"
 msgstr ""
 
-#: xml/mfapi.xml:75(link) xml/mfapi.xml:1526(primary)
+#: xml/mfapi.xml:75(link) xml/mfapi.xml:1522(primary)
 msgid "smfi_version"
 msgstr ""
 
-#: xml/mfapi.xml:78(link) xml/mfapi.xml:1554(title)
-#: xml/mfapi.xml:1555(primary)
+#: xml/mfapi.xml:78(link) xml/mfapi.xml:1550(title)
+#: xml/mfapi.xml:1551(primary)
 msgid "SMFIF_ADDHDRS"
 msgstr ""
 
-#: xml/mfapi.xml:79(link) xml/mfapi.xml:1568(title)
-#: xml/mfapi.xml:1569(primary)
+#: xml/mfapi.xml:79(link) xml/mfapi.xml:1564(title)
+#: xml/mfapi.xml:1565(primary)
 msgid "SMFIF_CHGBODY"
 msgstr ""
 
-#: xml/mfapi.xml:80(link) xml/mfapi.xml:1582(title)
-#: xml/mfapi.xml:1583(primary)
+#: xml/mfapi.xml:80(link) xml/mfapi.xml:1578(title)
+#: xml/mfapi.xml:1579(primary)
 msgid "SMFIF_MODBODY"
 msgstr ""
 
-#: xml/mfapi.xml:81(link) xml/mfapi.xml:1591(title)
-#: xml/mfapi.xml:1592(primary)
+#: xml/mfapi.xml:81(link) xml/mfapi.xml:1587(title)
+#: xml/mfapi.xml:1588(primary)
 msgid "SMFIF_ADDRCPT"
 msgstr ""
 
-#: xml/mfapi.xml:82(link) xml/mfapi.xml:1605(title)
-#: xml/mfapi.xml:1606(primary)
+#: xml/mfapi.xml:82(link) xml/mfapi.xml:1601(title)
+#: xml/mfapi.xml:1602(primary)
 msgid "SMFIF_DELRCPT"
 msgstr ""
 
-#: xml/mfapi.xml:83(link) xml/mfapi.xml:1619(title)
-#: xml/mfapi.xml:1620(primary)
+#: xml/mfapi.xml:83(link) xml/mfapi.xml:1615(title)
+#: xml/mfapi.xml:1616(primary)
 msgid "SMFIF_CHGHDRS"
 msgstr ""
 
-#: xml/mfapi.xml:84(link) xml/mfapi.xml:1633(title)
-#: xml/mfapi.xml:1634(primary)
+#: xml/mfapi.xml:84(link) xml/mfapi.xml:1629(title)
+#: xml/mfapi.xml:1630(primary)
 msgid "SMFIF_QUARANTINE"
 msgstr ""
 
-#: xml/mfapi.xml:85(link) xml/mfapi.xml:1647(title)
-#: xml/mfapi.xml:1648(primary)
+#: xml/mfapi.xml:85(link) xml/mfapi.xml:1643(title)
+#: xml/mfapi.xml:1644(primary)
 msgid "SMFIF_CHGFROM"
 msgstr ""
 
-#: xml/mfapi.xml:86(link) xml/mfapi.xml:1661(title)
-#: xml/mfapi.xml:1662(primary)
+#: xml/mfapi.xml:86(link) xml/mfapi.xml:1657(title)
+#: xml/mfapi.xml:1658(primary)
 msgid "SMFIF_ADDRCPT_PAR"
 msgstr ""
 
-#: xml/mfapi.xml:87(link) xml/mfapi.xml:1675(title)
-#: xml/mfapi.xml:1676(primary)
+#: xml/mfapi.xml:87(link) xml/mfapi.xml:1671(title)
+#: xml/mfapi.xml:1672(primary)
 msgid "SMFIF_SETSYMLIST"
 msgstr ""
 
@@ -3271,8 +3271,8 @@ msgstr ""
 #: xml/mfapi.xml:711(literal) xml/mfapi.xml:784(literal)
 #: xml/mfapi.xml:854(literal) xml/mfapi.xml:938(literal)
 #: xml/mfapi.xml:1001(literal) xml/mfapi.xml:1132(literal)
-#: xml/mfapi.xml:1222(literal) xml/mfapi.xml:1689(title)
-#: xml/mfapi.xml:1690(primary)
+#: xml/mfapi.xml:1222(literal) xml/mfapi.xml:1685(title)
+#: xml/mfapi.xml:1686(primary)
 msgid "SMFIS_CONTINUE"
 msgstr ""
 
@@ -3282,7 +3282,7 @@ msgstr ""
 #: xml/mfapi.xml:717(literal) xml/mfapi.xml:790(literal)
 #: xml/mfapi.xml:860(literal) xml/mfapi.xml:1078(literal)
 #: xml/mfapi.xml:1138(literal) xml/mfapi.xml:1216(literal)
-#: xml/mfapi.xml:1704(title) xml/mfapi.xml:1705(primary)
+#: xml/mfapi.xml:1700(title) xml/mfapi.xml:1701(primary)
 msgid "SMFIS_REJECT"
 msgstr ""
 
@@ -3291,7 +3291,7 @@ msgstr ""
 #: xml/mfapi.xml:723(literal) xml/mfapi.xml:796(literal)
 #: xml/mfapi.xml:866(literal) xml/mfapi.xml:944(literal)
 #: xml/mfapi.xml:1007(literal) xml/mfapi.xml:1144(literal)
-#: xml/mfapi.xml:1719(title) xml/mfapi.xml:1720(primary)
+#: xml/mfapi.xml:1715(title) xml/mfapi.xml:1716(primary)
 msgid "SMFIS_DISCARD"
 msgstr ""
 
@@ -3301,7 +3301,7 @@ msgstr ""
 #: xml/mfapi.xml:729(literal) xml/mfapi.xml:802(literal)
 #: xml/mfapi.xml:872(literal) xml/mfapi.xml:950(literal)
 #: xml/mfapi.xml:1013(literal) xml/mfapi.xml:1150(literal)
-#: xml/mfapi.xml:1735(title) xml/mfapi.xml:1736(primary)
+#: xml/mfapi.xml:1731(title) xml/mfapi.xml:1732(primary)
 msgid "SMFIS_ACCEPT"
 msgstr ""
 
@@ -3311,8 +3311,8 @@ msgstr ""
 #: xml/mfapi.xml:736(literal) xml/mfapi.xml:809(literal)
 #: xml/mfapi.xml:879(literal) xml/mfapi.xml:957(literal)
 #: xml/mfapi.xml:1020(literal) xml/mfapi.xml:1084(literal)
-#: xml/mfapi.xml:1156(literal) xml/mfapi.xml:1750(title)
-#: xml/mfapi.xml:1751(primary)
+#: xml/mfapi.xml:1156(literal) xml/mfapi.xml:1746(title)
+#: xml/mfapi.xml:1747(primary)
 msgid "SMFIS_TEMPFAIL"
 msgstr ""
 
@@ -3321,229 +3321,229 @@ msgstr ""
 #: xml/mfapi.xml:561(literal) xml/mfapi.xml:636(literal)
 #: xml/mfapi.xml:743(literal) xml/mfapi.xml:816(literal)
 #: xml/mfapi.xml:895(literal) xml/mfapi.xml:1091(literal)
-#: xml/mfapi.xml:1163(literal) xml/mfapi.xml:1766(title)
-#: xml/mfapi.xml:1767(primary)
+#: xml/mfapi.xml:1163(literal) xml/mfapi.xml:1762(title)
+#: xml/mfapi.xml:1763(primary)
 msgid "SMFIS_NOREPLY"
 msgstr ""
 
 #: xml/mfapi.xml:94(link) xml/mfapi.xml:341(literal)
-#: xml/mfapi.xml:886(literal) xml/mfapi.xml:1781(title)
-#: xml/mfapi.xml:1782(primary)
+#: xml/mfapi.xml:886(literal) xml/mfapi.xml:1777(title)
+#: xml/mfapi.xml:1778(primary)
 msgid "SMFIS_SKIP"
 msgstr ""
 
 #: xml/mfapi.xml:95(link) xml/mfapi.xml:346(literal)
-#: xml/mfapi.xml:1210(literal) xml/mfapi.xml:1796(title)
-#: xml/mfapi.xml:1797(primary)
+#: xml/mfapi.xml:1210(literal) xml/mfapi.xml:1792(title)
+#: xml/mfapi.xml:1793(primary)
 msgid "SMFIS_ALL_OPTS"
 msgstr ""
 
-#: xml/mfapi.xml:96(link) xml/mfapi.xml:1806(title)
-#: xml/mfapi.xml:1807(primary)
+#: xml/mfapi.xml:96(link) xml/mfapi.xml:1802(title)
+#: xml/mfapi.xml:1803(primary)
 msgid "SMFIM_CONNECT"
 msgstr ""
 
-#: xml/mfapi.xml:97(link) xml/mfapi.xml:1818(title)
-#: xml/mfapi.xml:1819(primary)
+#: xml/mfapi.xml:97(link) xml/mfapi.xml:1814(title)
+#: xml/mfapi.xml:1815(primary)
 msgid "SMFIM_HELO"
 msgstr ""
 
-#: xml/mfapi.xml:98(link) xml/mfapi.xml:1830(title)
-#: xml/mfapi.xml:1831(primary)
+#: xml/mfapi.xml:98(link) xml/mfapi.xml:1826(title)
+#: xml/mfapi.xml:1827(primary)
 msgid "SMFIM_ENVFROM"
 msgstr ""
 
-#: xml/mfapi.xml:99(link) xml/mfapi.xml:1842(title)
-#: xml/mfapi.xml:1843(primary)
+#: xml/mfapi.xml:99(link) xml/mfapi.xml:1838(title)
+#: xml/mfapi.xml:1839(primary)
 msgid "SMFIM_ENVRCPT"
 msgstr ""
 
-#: xml/mfapi.xml:100(link) xml/mfapi.xml:1854(title)
-#: xml/mfapi.xml:1855(primary)
+#: xml/mfapi.xml:100(link) xml/mfapi.xml:1850(title)
+#: xml/mfapi.xml:1851(primary)
 msgid "SMFIM_DATA"
 msgstr ""
 
-#: xml/mfapi.xml:101(link) xml/mfapi.xml:1866(title)
-#: xml/mfapi.xml:1867(primary)
+#: xml/mfapi.xml:101(link) xml/mfapi.xml:1862(title)
+#: xml/mfapi.xml:1863(primary)
 msgid "SMFIM_EOM"
 msgstr ""
 
-#: xml/mfapi.xml:102(link) xml/mfapi.xml:1878(title)
-#: xml/mfapi.xml:1879(primary)
+#: xml/mfapi.xml:102(link) xml/mfapi.xml:1874(title)
+#: xml/mfapi.xml:1875(primary)
 msgid "SMFIM_EOH"
 msgstr ""
 
-#: xml/mfapi.xml:103(link) xml/mfapi.xml:1890(title)
-#: xml/mfapi.xml:1891(primary)
+#: xml/mfapi.xml:103(link) xml/mfapi.xml:1886(title)
+#: xml/mfapi.xml:1887(primary)
 msgid "SMFIP_NOCONNECT"
 msgstr ""
 
-#: xml/mfapi.xml:104(link) xml/mfapi.xml:1903(title)
-#: xml/mfapi.xml:1904(primary)
+#: xml/mfapi.xml:104(link) xml/mfapi.xml:1899(title)
+#: xml/mfapi.xml:1900(primary)
 msgid "SMFIP_NOHELO"
 msgstr ""
 
-#: xml/mfapi.xml:105(link) xml/mfapi.xml:1916(title)
-#: xml/mfapi.xml:1917(primary)
+#: xml/mfapi.xml:105(link) xml/mfapi.xml:1912(title)
+#: xml/mfapi.xml:1913(primary)
 msgid "SMFIP_NOMAIL"
 msgstr ""
 
-#: xml/mfapi.xml:106(link) xml/mfapi.xml:1929(title)
-#: xml/mfapi.xml:1930(primary)
+#: xml/mfapi.xml:106(link) xml/mfapi.xml:1925(title)
+#: xml/mfapi.xml:1926(primary)
 msgid "SMFIP_NORCPT"
 msgstr ""
 
-#: xml/mfapi.xml:107(link) xml/mfapi.xml:1942(title)
-#: xml/mfapi.xml:1943(primary)
+#: xml/mfapi.xml:107(link) xml/mfapi.xml:1938(title)
+#: xml/mfapi.xml:1939(primary)
 msgid "SMFIP_NOBODY"
 msgstr ""
 
-#: xml/mfapi.xml:108(link) xml/mfapi.xml:1949(title)
-#: xml/mfapi.xml:1950(primary)
+#: xml/mfapi.xml:108(link) xml/mfapi.xml:1945(title)
+#: xml/mfapi.xml:1946(primary)
 msgid "SMFIP_NOHDRS"
 msgstr ""
 
-#: xml/mfapi.xml:109(link) xml/mfapi.xml:1962(title)
-#: xml/mfapi.xml:1963(primary)
+#: xml/mfapi.xml:109(link) xml/mfapi.xml:1958(title)
+#: xml/mfapi.xml:1959(primary)
 msgid "SMFIP_NOEOH"
 msgstr ""
 
-#: xml/mfapi.xml:110(link) xml/mfapi.xml:1975(title)
-#: xml/mfapi.xml:1976(primary)
+#: xml/mfapi.xml:110(link) xml/mfapi.xml:1971(title)
+#: xml/mfapi.xml:1972(primary)
 msgid "SMFIP_NR_HDR"
 msgstr ""
 
-#: xml/mfapi.xml:111(link) xml/mfapi.xml:1987(title)
-#: xml/mfapi.xml:1988(primary)
+#: xml/mfapi.xml:111(link) xml/mfapi.xml:1983(title)
+#: xml/mfapi.xml:1984(primary)
 msgid "SMFIP_NOHREPL"
 msgstr ""
 
-#: xml/mfapi.xml:112(link) xml/mfapi.xml:1996(title)
-#: xml/mfapi.xml:1997(primary)
+#: xml/mfapi.xml:112(link) xml/mfapi.xml:1992(title)
+#: xml/mfapi.xml:1993(primary)
 msgid "SMFIP_NOUNKNOWN"
 msgstr ""
 
-#: xml/mfapi.xml:113(link) xml/mfapi.xml:2009(title)
-#: xml/mfapi.xml:2010(primary)
+#: xml/mfapi.xml:113(link) xml/mfapi.xml:2005(title)
+#: xml/mfapi.xml:2006(primary)
 msgid "SMFIP_NODATA"
 msgstr ""
 
-#: xml/mfapi.xml:114(link) xml/mfapi.xml:2022(title)
-#: xml/mfapi.xml:2023(primary)
+#: xml/mfapi.xml:114(link) xml/mfapi.xml:2018(title)
+#: xml/mfapi.xml:2019(primary)
 msgid "SMFIP_SKIP"
 msgstr ""
 
-#: xml/mfapi.xml:115(link) xml/mfapi.xml:2034(title)
-#: xml/mfapi.xml:2035(primary)
+#: xml/mfapi.xml:115(link) xml/mfapi.xml:2030(title)
+#: xml/mfapi.xml:2031(primary)
 msgid "SMFIP_RCPT_REJ"
 msgstr ""
 
-#: xml/mfapi.xml:116(link) xml/mfapi.xml:2047(title)
-#: xml/mfapi.xml:2048(primary)
+#: xml/mfapi.xml:116(link) xml/mfapi.xml:2043(title)
+#: xml/mfapi.xml:2044(primary)
 msgid "SMFIP_NR_CONN"
 msgstr ""
 
-#: xml/mfapi.xml:117(link) xml/mfapi.xml:2059(title)
-#: xml/mfapi.xml:2060(primary)
+#: xml/mfapi.xml:117(link) xml/mfapi.xml:2055(title)
+#: xml/mfapi.xml:2056(primary)
 msgid "SMFIP_NR_HELO"
 msgstr ""
 
-#: xml/mfapi.xml:118(link) xml/mfapi.xml:2071(title)
-#: xml/mfapi.xml:2072(primary)
+#: xml/mfapi.xml:118(link) xml/mfapi.xml:2067(title)
+#: xml/mfapi.xml:2068(primary)
 msgid "SMFIP_NR_MAIL"
 msgstr ""
 
-#: xml/mfapi.xml:119(link) xml/mfapi.xml:2083(title)
-#: xml/mfapi.xml:2084(primary)
+#: xml/mfapi.xml:119(link) xml/mfapi.xml:2079(title)
+#: xml/mfapi.xml:2080(primary)
 msgid "SMFIP_NR_RCPT"
 msgstr ""
 
-#: xml/mfapi.xml:120(link) xml/mfapi.xml:2095(title)
-#: xml/mfapi.xml:2096(primary)
+#: xml/mfapi.xml:120(link) xml/mfapi.xml:2091(title)
+#: xml/mfapi.xml:2092(primary)
 msgid "SMFIP_NR_DATA"
 msgstr ""
 
-#: xml/mfapi.xml:121(link) xml/mfapi.xml:2107(title)
-#: xml/mfapi.xml:2108(primary)
+#: xml/mfapi.xml:121(link) xml/mfapi.xml:2103(title)
+#: xml/mfapi.xml:2104(primary)
 msgid "SMFIP_NR_UNKN"
 msgstr ""
 
-#: xml/mfapi.xml:122(link) xml/mfapi.xml:2119(title)
-#: xml/mfapi.xml:2120(primary)
+#: xml/mfapi.xml:122(link) xml/mfapi.xml:2115(title)
+#: xml/mfapi.xml:2116(primary)
 msgid "SMFIP_NR_EOH"
 msgstr ""
 
-#: xml/mfapi.xml:123(link) xml/mfapi.xml:2131(title)
-#: xml/mfapi.xml:2132(primary)
+#: xml/mfapi.xml:123(link) xml/mfapi.xml:2127(title)
+#: xml/mfapi.xml:2128(primary)
 msgid "SMFIP_NR_BODY"
 msgstr ""
 
-#: xml/mfapi.xml:124(link) xml/mfapi.xml:2143(title)
-#: xml/mfapi.xml:2144(primary)
+#: xml/mfapi.xml:124(link) xml/mfapi.xml:2139(title)
+#: xml/mfapi.xml:2140(primary)
 msgid "SMFIP_HDR_LEADSPC"
 msgstr ""
 
-#: xml/mfapi.xml:125(link) xml/mfapi.xml:2158(primary)
+#: xml/mfapi.xml:125(link) xml/mfapi.xml:2154(primary)
 msgid "smfi_getsymval"
 msgstr ""
 
-#: xml/mfapi.xml:127(link) xml/mfapi.xml:2190(primary)
+#: xml/mfapi.xml:127(link) xml/mfapi.xml:2186(primary)
 msgid "smfi_setreply"
 msgstr ""
 
-#: xml/mfapi.xml:131(link) xml/mfapi.xml:2241(primary)
+#: xml/mfapi.xml:131(link) xml/mfapi.xml:2237(primary)
 msgid "smfi_setmlreply"
 msgstr ""
 
-#: xml/mfapi.xml:135(link) xml/mfapi.xml:2293(primary)
+#: xml/mfapi.xml:135(link) xml/mfapi.xml:2289(primary)
 msgid "smfi_addheader"
 msgstr ""
 
-#: xml/mfapi.xml:138(link) xml/mfapi.xml:2349(primary)
+#: xml/mfapi.xml:138(link) xml/mfapi.xml:2345(primary)
 msgid "smfi_chgheader"
 msgstr ""
 
-#: xml/mfapi.xml:142(link) xml/mfapi.xml:2408(primary)
+#: xml/mfapi.xml:142(link) xml/mfapi.xml:2404(primary)
 msgid "smfi_insheader"
 msgstr ""
 
-#: xml/mfapi.xml:146(link) xml/mfapi.xml:2469(primary)
+#: xml/mfapi.xml:146(link) xml/mfapi.xml:2465(primary)
 msgid "smfi_chgfrom"
 msgstr ""
 
-#: xml/mfapi.xml:149(link) xml/mfapi.xml:2520(primary)
+#: xml/mfapi.xml:149(link) xml/mfapi.xml:2516(primary)
 msgid "smfi_addrcpt"
 msgstr ""
 
-#: xml/mfapi.xml:151(link) xml/mfapi.xml:2567(primary)
+#: xml/mfapi.xml:151(link) xml/mfapi.xml:2563(primary)
 msgid "smfi_addrcpt_par"
 msgstr ""
 
-#: xml/mfapi.xml:154(link) xml/mfapi.xml:2619(primary)
+#: xml/mfapi.xml:154(link) xml/mfapi.xml:2615(primary)
 msgid "smfi_delrcpt"
 msgstr ""
 
-#: xml/mfapi.xml:156(link) xml/mfapi.xml:2666(primary)
+#: xml/mfapi.xml:156(link) xml/mfapi.xml:2662(primary)
 msgid "smfi_progress"
 msgstr ""
 
-#: xml/mfapi.xml:157(link) xml/mfapi.xml:2698(primary)
+#: xml/mfapi.xml:157(link) xml/mfapi.xml:2694(primary)
 msgid "smfi_replacebody"
 msgstr ""
 
-#: xml/mfapi.xml:160(link) xml/mfapi.xml:2751(primary)
+#: xml/mfapi.xml:160(link) xml/mfapi.xml:2747(primary)
 msgid "smfi_quarantine"
 msgstr ""
 
-#: xml/mfapi.xml:162(link) xml/mfapi.xml:2798(primary)
+#: xml/mfapi.xml:162(link) xml/mfapi.xml:2794(primary)
 msgid "smfi_setpriv"
 msgstr ""
 
-#: xml/mfapi.xml:164(link) xml/mfapi.xml:2830(primary)
+#: xml/mfapi.xml:164(link) xml/mfapi.xml:2826(primary)
 msgid "smfi_getpriv"
 msgstr ""
 
-#: xml/mfapi.xml:165(link) xml/mfapi.xml:2858(primary)
+#: xml/mfapi.xml:165(link) xml/mfapi.xml:2854(primary)
 msgid "smfi_setsymlist"
 msgstr ""
 
@@ -3946,8 +3946,8 @@ msgid ""
 "Rejects the current connection with a temporary failure. (i.e. 4xx status "
 "code in SMTP)"
 msgstr ""
-"現在の接続を一時的な失敗として拒否します。（つまり、SMTPでは4xxのステータス"
-"コードになります。）"
+"現在の接続を一時的な障害が発生したとして拒否します。（つまり、SMTPでは4xxのス"
+"テータスコードになります。）"
 
 #: xml/mfapi.xml:422(para)
 msgid ""
@@ -3972,12 +3972,12 @@ msgstr ""
 #: xml/mfapi.xml:654(term) xml/mfapi.xml:760(term) xml/mfapi.xml:833(term)
 #: xml/mfapi.xml:912(term) xml/mfapi.xml:971(term) xml/mfapi.xml:1034(term)
 #: xml/mfapi.xml:1059(term) xml/mfapi.xml:1112(term) xml/mfapi.xml:1180(term)
-#: xml/mfapi.xml:1239(term) xml/mfapi.xml:2178(term) xml/mfapi.xml:2220(term)
-#: xml/mfapi.xml:2271(term) xml/mfapi.xml:2335(term) xml/mfapi.xml:2389(term)
-#: xml/mfapi.xml:2451(term) xml/mfapi.xml:2506(term) xml/mfapi.xml:2556(term)
-#: xml/mfapi.xml:2605(term) xml/mfapi.xml:2655(term) xml/mfapi.xml:2690(term)
-#: xml/mfapi.xml:2737(term) xml/mfapi.xml:2787(term) xml/mfapi.xml:2819(term)
-#: xml/mfapi.xml:2850(term) xml/mfapi.xml:2900(term)
+#: xml/mfapi.xml:1239(term) xml/mfapi.xml:2174(term) xml/mfapi.xml:2216(term)
+#: xml/mfapi.xml:2267(term) xml/mfapi.xml:2331(term) xml/mfapi.xml:2385(term)
+#: xml/mfapi.xml:2447(term) xml/mfapi.xml:2502(term) xml/mfapi.xml:2552(term)
+#: xml/mfapi.xml:2601(term) xml/mfapi.xml:2651(term) xml/mfapi.xml:2686(term)
+#: xml/mfapi.xml:2733(term) xml/mfapi.xml:2783(term) xml/mfapi.xml:2815(term)
+#: xml/mfapi.xml:2846(term) xml/mfapi.xml:2896(term)
 #: xml/milter-client-context.xml:698(term)
 #: xml/milter-client-context.xml:722(term)
 #: xml/milter-client-context.xml:742(term)
@@ -4061,15 +4061,15 @@ msgstr ""
 #: xml/mfapi.xml:913(simpara) xml/mfapi.xml:972(simpara)
 #: xml/mfapi.xml:1035(simpara) xml/mfapi.xml:1060(simpara)
 #: xml/mfapi.xml:1113(simpara) xml/mfapi.xml:1181(simpara)
-#: xml/mfapi.xml:1240(simpara) xml/mfapi.xml:2179(simpara)
-#: xml/mfapi.xml:2221(simpara) xml/mfapi.xml:2272(simpara)
-#: xml/mfapi.xml:2336(simpara) xml/mfapi.xml:2390(simpara)
-#: xml/mfapi.xml:2452(simpara) xml/mfapi.xml:2507(simpara)
-#: xml/mfapi.xml:2557(simpara) xml/mfapi.xml:2606(simpara)
-#: xml/mfapi.xml:2656(simpara) xml/mfapi.xml:2691(simpara)
-#: xml/mfapi.xml:2738(simpara) xml/mfapi.xml:2788(simpara)
-#: xml/mfapi.xml:2820(simpara) xml/mfapi.xml:2851(simpara)
-#: xml/mfapi.xml:2901(simpara)
+#: xml/mfapi.xml:1240(simpara) xml/mfapi.xml:2175(simpara)
+#: xml/mfapi.xml:2217(simpara) xml/mfapi.xml:2268(simpara)
+#: xml/mfapi.xml:2332(simpara) xml/mfapi.xml:2386(simpara)
+#: xml/mfapi.xml:2448(simpara) xml/mfapi.xml:2503(simpara)
+#: xml/mfapi.xml:2553(simpara) xml/mfapi.xml:2602(simpara)
+#: xml/mfapi.xml:2652(simpara) xml/mfapi.xml:2687(simpara)
+#: xml/mfapi.xml:2734(simpara) xml/mfapi.xml:2784(simpara)
+#: xml/mfapi.xml:2816(simpara) xml/mfapi.xml:2847(simpara)
+#: xml/mfapi.xml:2897(simpara)
 msgid "the context for the current milter session."
 msgstr "現在のmilterセッションのコンテキスト。"
 
@@ -4233,8 +4233,9 @@ msgid ""
 "failure. (i.e. 4xx status code in SMTP) A new envelope from address may be "
 "specified."
 msgstr ""
-"現在の差出人とメッセージを一時的な失敗として拒否します。（つまり、SMTPでは4xx"
-"のステータスコードになります。）新しい差出人が指定されるかもしれません。"
+"現在の差出人とメッセージを一時的な障害が発生したとして拒否します。（つまり、"
+"SMTPでは4xxのステータスコードになります。）新しい差出人が指定されるかもしれま"
+"せん。"
 
 #: xml/mfapi.xml:563(para)
 msgid ""
@@ -4254,8 +4255,8 @@ msgstr ""
 "milter.orgの<ulink url=\"https://www.milter.org/developers/api/xxfi_envfrom"
 "\"> xxfi_envfrom</ulink>も見てください。"
 
-#: xml/mfapi.xml:582(term) xml/mfapi.xml:657(term) xml/mfapi.xml:2512(term)
-#: xml/mfapi.xml:2611(term)
+#: xml/mfapi.xml:582(term) xml/mfapi.xml:657(term) xml/mfapi.xml:2508(term)
+#: xml/mfapi.xml:2607(term)
 msgid "<parameter>arguments</parameter>&nbsp;:"
 msgstr ""
 
@@ -4299,8 +4300,8 @@ msgid ""
 "Rejects the current envelope recipient address with temporary failure. (i.e. "
 "4xx status code in SMTP) Processing the current message is continued."
 msgstr ""
-"現在の宛先を一時的な失敗として拒否します。（つまり、SMTPでは4xxのステータス"
-"コードになります。）現在のメッセージの処理は継続します。"
+"現在の宛先を一時的な障害が発生したとして拒否します。（つまり、SMTPでは4xxのス"
+"テータスコードになります。）現在のメッセージの処理は継続します。"
 
 #: xml/mfapi.xml:638(para)
 msgid ""
@@ -4415,18 +4416,19 @@ msgstr "現在のメッセージを拒否します。"
 
 #: xml/mfapi.xml:738(para) xml/mfapi.xml:811(para) xml/mfapi.xml:881(para)
 #: xml/mfapi.xml:959(para) xml/mfapi.xml:1022(para) xml/mfapi.xml:1086(para)
-#: xml/milter-client-context.xml:1276(para)
+#: xml/mfapi.xml:1158(para) xml/milter-client-context.xml:1276(para)
 #: xml/milter-client-context.xml:1395(para)
+#: xml/milter-client-context.xml:1664(para)
 #: xml/milter-client-context.xml:1808(para)
 #: xml/milter-client-context.xml:1928(para)
 #: xml/milter-client-context.xml:2342(para)
 #: xml/milter-client-context.xml:2706(para)
 msgid ""
-"Rejects the the current message with temporary failure. (i.e. 4xx status "
-"code in SMTP)"
+"Rejects the current message with temporary failure. (i.e. 4xx status code in "
+"SMTP)"
 msgstr ""
-"現在のメッセージを一時的な失敗として拒否します。（つまり、SMTPでは4xxのステー"
-"タスコードになります。）"
+"現在のメッセージを一時的な障害が発生したとして拒否します。（つまり、SMTPでは"
+"4xxステータスコードになります。）"
 
 #: xml/mfapi.xml:745(para)
 msgid ""
@@ -4446,8 +4448,8 @@ msgstr ""
 "milter.orgの<ulink url=\"https://www.milter.org/developers/api/xxfi_header"
 "\"> xxfi_header</ulink>も見てください。"
 
-#: xml/mfapi.xml:763(term) xml/mfapi.xml:2181(term) xml/mfapi.xml:2338(term)
-#: xml/mfapi.xml:2392(term) xml/mfapi.xml:2458(term)
+#: xml/mfapi.xml:763(term) xml/mfapi.xml:2177(term) xml/mfapi.xml:2334(term)
+#: xml/mfapi.xml:2388(term) xml/mfapi.xml:2454(term)
 #: xml/milter-client-context.xml:831(term)
 #: xml/milter-client-context.xml:869(term)
 #: xml/milter-client-context.xml:906(term)
@@ -4480,8 +4482,8 @@ msgstr ""
 msgid "<parameter>name</parameter>&nbsp;:"
 msgstr ""
 
-#: xml/mfapi.xml:764(simpara) xml/mfapi.xml:2339(simpara)
-#: xml/mfapi.xml:2393(simpara) xml/mfapi.xml:2459(simpara)
+#: xml/mfapi.xml:764(simpara) xml/mfapi.xml:2335(simpara)
+#: xml/mfapi.xml:2389(simpara) xml/mfapi.xml:2455(simpara)
 #: xml/milter-client-context.xml:832(simpara)
 #: xml/milter-client-context.xml:870(simpara)
 #: xml/milter-client-context.xml:907(simpara)
@@ -4491,8 +4493,8 @@ msgstr ""
 msgid "the header name."
 msgstr "ヘッダ名。"
 
-#: xml/mfapi.xml:766(term) xml/mfapi.xml:2341(term) xml/mfapi.xml:2399(term)
-#: xml/mfapi.xml:2461(term) xml/milter-client-context.xml:834(term)
+#: xml/mfapi.xml:766(term) xml/mfapi.xml:2337(term) xml/mfapi.xml:2395(term)
+#: xml/mfapi.xml:2457(term) xml/milter-client-context.xml:834(term)
 #: xml/milter-client-context.xml:872(term)
 #: xml/milter-client-context.xml:913(term)
 #: xml/milter-client-context.xml:2392(term)
@@ -4597,7 +4599,7 @@ msgstr ""
 "milter.orgの<ulink url=\"https://www.milter.org/developers/api/xxfi_body\"> "
 "xxfi_body</ulink>も見てください。"
 
-#: xml/mfapi.xml:915(term) xml/mfapi.xml:2822(term)
+#: xml/mfapi.xml:915(term) xml/mfapi.xml:2818(term)
 #: xml/milter-client-context.xml:745(term) xml/milter-utils.xml:453(term)
 msgid "<parameter>data</parameter>&nbsp;:"
 msgstr ""
@@ -4669,21 +4671,40 @@ msgid ""
 "linkend=\"SMFIS-TEMPFAIL:CAPS\"><literal>SMFIS_TEMPFAIL</literal></link>, "
 "this callback will not be called."
 msgstr ""
+"このコールバックは <link linkend=\"xxfi-envfrom\"><function>xxfi_envfrom()</"
+"function></link>から<link linkend=\"xxfi-eom\"><function>xxfi_eom()</"
+"function></link>の間のどこかのタイミングで呼び出される可能性があります。この"
+"コールバックはmilter内部でエラーが発生し、かつ、メッセージ処理が完了していな"
+"いときだけ実行されます。例えば、milterが<link linkend=\"SMFIS-ACCEPT:CAPS"
+"\"><literal>SMFIS_ACCEPT</literal></link>、<link linkend=\"SMFIS-REJECT:CAPS"
+"\"><literal>SMFIS_REJECT</literal></link>、<link linkend=\"SMFIS-DISCARD:CAPS"
+"\"><literal>SMFIS_DISCARD</literal></link>、<link linkend=\"SMFIS-TEMPFAIL:"
+"CAPS\"><literal>SMFIS_TEMPFAIL</literal></link>を返しているときはこのコール"
+"バックは呼ばれません。"
 
 #: xml/mfapi.xml:989(para)
 msgid ""
-"If the milter has any resources allocated for the message between "
-"xxfi_envfrom and <link linkend=\"xxfi-eom\"><function>xxfi_eom()</function></"
-"link>, should be freed in this callback. But any resources allocated for the "
-"connection should not be freed in this callback. It should be freed in <link "
-"linkend=\"xxfi-close\"><function>xxfi_close()</function></link>."
+"If the milter has any resources allocated for the message between <link "
+"linkend=\"xxfi-envfrom\"><function>xxfi_envfrom()</function></link> and "
+"<link linkend=\"xxfi-eom\"><function>xxfi_eom()</function></link>, should be "
+"freed in this callback. But any resources allocated for the connection "
+"should not be freed in this callback. It should be freed in <link linkend="
+"\"xxfi-close\"><function>xxfi_close()</function></link>."
 msgstr ""
+"milterが<link linkend=\"xxfi-envfrom\"><function>xxfi_envfrom()</function></"
+"link>から<link linkend=\"xxfi-eom\"><function>xxfi_eom()</function></link>の"
+"間にメッセージのために割り当てたリソースがある場合は、このコールバックの中で"
+"解放してください。しかし、接続用に割り当てられたリソースは解放しないで下さ"
+"い。そのリソースは<link linkend=\"xxfi-close\"><function>xxfi_close()</"
+"function></link>で解放してください。"
 
 #: xml/mfapi.xml:1027(para) xml/milter-client-context.xml:1303(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/xxfi_abort\"> "
 "xxfi_abort</ulink> on milter.org."
 msgstr ""
+"milter.orgの<ulink url=\"https://www.milter.org/developers/api/xxfi_abort\"> "
+"xxfi_abort</ulink>も見てください。"
 
 #: xml/mfapi.xml:1041(title)
 msgid "xxfi_close ()"
@@ -4700,18 +4721,24 @@ msgid ""
 "any resources allocated for the session free, should be freed in this "
 "callback."
 msgstr ""
+"このコールバックは各milterセッションの最後に呼ばれます。milterがセッション中"
+"で割り当てたリソースはこのコールバックの中で解放してください。"
 
 #: xml/mfapi.xml:1049(para)
 msgid ""
 "All response statuses are ignored. Use <link linkend=\"SMFIS-CONTINUE:CAPS"
 "\"><literal>SMFIS_CONTINUE</literal></link>."
 msgstr ""
+"すべての応答ステータスは無視されます。<link linkend=\"SMFIS-CONTINUE:CAPS"
+"\"><literal>SMFIS_CONTINUE</literal></link>を使って下さい。"
 
 #: xml/mfapi.xml:1052(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/xxfi_close\"> "
 "xxfi_close</ulink> on milter.org."
 msgstr ""
+"milter.orgの<ulink url=\"https://www.milter.org/developers/api/xxfi_close\"> "
+"xxfi_close</ulink>も見てください。"
 
 #: xml/mfapi.xml:1066(title)
 msgid "xxfi_unknown ()"
@@ -4728,6 +4755,8 @@ msgstr ""
 msgid ""
 "This callback is called on unknown or unimplemented SMTP command is sent."
 msgstr ""
+"このコールバックは未知のSMTPコマンドまたは未実装のSMTPコマンドが送られてきた"
+"場合に呼ばれます。"
 
 #: xml/mfapi.xml:1093(para)
 msgid ""
@@ -4735,18 +4764,25 @@ msgid ""
 "NR-UNKN:CAPS\"><literal>SMFIP_NR_UNKN</literal></link> flag to <link linkend="
 "\"smfiDesc\"><literal>smfiDesc</literal></link>::xxfi_flags."
 msgstr ""
+"MTAに返答しません。milterは<link linkend=\"smfiDesc\"><literal>smfiDesc</"
+"literal></link>::xxfi_flagsに<link linkend=\"SMFIP-NR-UNKN:CAPS"
+"\"><literal>SMFIP_NR_UNKN</literal></link>フラグを設定しなければいけません。"
 
 #: xml/mfapi.xml:1101(para) xml/milter-client-context.xml:2743(para)
 msgid ""
 "Note that the unknown or unimplemented SMTP command will always be rejected "
 "by MTA."
 msgstr ""
+"MTAは、未知のSMTPコマンドまたは未実装のSMTPコマンドは常に拒否することに中して"
+"ください。"
 
 #: xml/mfapi.xml:1105(para) xml/milter-client-context.xml:2747(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/xxfi_unknown\"> "
 "xxfi_unknown</ulink> on milter.org."
 msgstr ""
+"milter.orgの<ulink url=\"https://www.milter.org/developers/api/xxfi_unknown"
+"\"> xxfi_unknown</ulink>も見てください。"
 
 #: xml/mfapi.xml:1115(term) xml/milter-client-context.xml:2757(term)
 #: xml/milter-command-encoder.xml:489(term)
@@ -4766,7 +4802,7 @@ msgstr ""
 #: xml/mfapi.xml:1116(simpara) xml/milter-client-context.xml:2758(simpara)
 #: xml/milter-server-context.xml:725(simpara)
 msgid "the unknown SMTP command."
-msgstr ""
+msgstr "未知のSMTPコマンド。"
 
 #: xml/mfapi.xml:1122(title)
 msgid "xxfi_data ()"
@@ -4779,13 +4815,7 @@ msgstr ""
 
 #: xml/mfapi.xml:1124(para)
 msgid "This callback is called on SMTP's \"DATA\" command."
-msgstr ""
-
-#: xml/mfapi.xml:1158(para) xml/milter-client-context.xml:1664(para)
-msgid ""
-"Rejects the current message with temporary failure. (i.e. 4xx status code in "
-"SMTP)"
-msgstr ""
+msgstr "このコールバックはSMTPの\"DATA\"コマンドのときに呼ばれます。"
 
 #: xml/mfapi.xml:1165(para)
 msgid ""
@@ -4793,12 +4823,17 @@ msgid ""
 "NR-DATA:CAPS\"><literal>SMFIP_NR_DATA</literal></link> flag to <link linkend="
 "\"smfiDesc\"><literal>smfiDesc</literal></link>::xxfi_flags."
 msgstr ""
+"MTAに返答しません。milterは<link linkend=\"smfiDesc\"><literal>smfiDesc</"
+"literal></link>::xxfi_flagsに<link linkend=\"SMFIP-NR-DATA:CAPS"
+"\"><literal>SMFIP_NR_DATA</literal></link>フラグを設定しなければいけません。"
 
 #: xml/mfapi.xml:1173(para) xml/milter-client-context.xml:1701(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/xxfi_data\"> "
 "xxfi_data</ulink> on milter.org."
 msgstr ""
+"milter.orgの<ulink url=\"https://www.milter.org/developers/api/xxfi_data\"> "
+"xxfi_data</ulink>も見てください。"
 
 #: xml/mfapi.xml:1187(title)
 msgid "xxfi_negotiate ()"
@@ -4829,26 +4864,38 @@ msgid ""
 "you can just return <link linkend=\"SMFIS-ALL-OPTS:CAPS"
 "\"><literal>SMFIS_ALL_OPTS</literal></link>."
 msgstr ""
+"このコールバックはMTAからネゴシエーション要求があったときに呼ばれます。MTAか"
+"ら受け取った<parameter>actions</parameter>と<parameter>steps</parameter>を変"
+"更したい場合は、<parameter>actions_output</parameter>と"
+"<parameter>steps_output</parameter>を設定して、<link linkend=\"SMFIS-"
+"CONTINUE:CAPS\"><literal>SMFIS_CONTINUE</literal></link>を返してください。も"
+"し、<parameter>actions</parameter>と<parameter>steps</parameter>の両方を変更"
+"しない場合は、たんに<link linkend=\"SMFIS-ALL-OPTS:CAPS"
+"\"><literal>SMFIS_ALL_OPTS</literal></link>を返してください。"
 
 #: xml/mfapi.xml:1212(para) xml/milter-client-context.xml:2568(para)
 msgid "Enables all available actions and steps."
-msgstr ""
+msgstr "すべての利用可能なアクションとステップを有効にします。"
 
 #: xml/mfapi.xml:1218(para) xml/milter-client-context.xml:2574(para)
 msgid "Rejects the current session."
-msgstr ""
+msgstr "現在のセッションを拒否します。"
 
 #: xml/mfapi.xml:1224(para)
 msgid ""
 "Continues processing the current session with <parameter>actions_output</"
 "parameter> and <parameter>steps_output</parameter>."
 msgstr ""
+"<parameter>actions_output</parameter>と<parameter>steps_output</parameter>を"
+"使って、現在のセッションの処理を継続します。"
 
 #: xml/mfapi.xml:1231(para) xml/milter-client-context.xml:2607(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/xxfi_negotiate"
 "\"> xxfi_negotiate</ulink> on milter.org."
 msgstr ""
+"milter.orgの<ulink url=\"https://www.milter.org/developers/api/xxfi_negotiate"
+"\"> xxfi_negotiate</ulink>も見てください。"
 
 #: xml/mfapi.xml:1242(term)
 msgid "<parameter>actions</parameter>&nbsp;:"
@@ -4856,7 +4903,7 @@ msgstr ""
 
 #: xml/mfapi.xml:1243(simpara)
 msgid "the actions received from MTA."
-msgstr ""
+msgstr "MTAから受け取ったアクション。"
 
 #: xml/mfapi.xml:1245(term)
 msgid "<parameter>steps</parameter>&nbsp;:"
@@ -4864,7 +4911,7 @@ msgstr ""
 
 #: xml/mfapi.xml:1246(simpara)
 msgid "the milter protocol steps offered from MTA."
-msgstr ""
+msgstr "MTAから提案されたmilterプロトコルの実行ステップ。"
 
 #: xml/mfapi.xml:1248(term)
 msgid "<parameter>unused0</parameter>&nbsp;:"
@@ -4873,7 +4920,7 @@ msgstr ""
 #: xml/mfapi.xml:1249(simpara) xml/mfapi.xml:1252(simpara)
 #: xml/mfapi.xml:1261(simpara) xml/mfapi.xml:1264(simpara)
 msgid "unused."
-msgstr ""
+msgstr "使われません。"
 
 #: xml/mfapi.xml:1251(term)
 msgid "<parameter>unused1</parameter>&nbsp;:"
@@ -4885,7 +4932,7 @@ msgstr ""
 
 #: xml/mfapi.xml:1255(simpara)
 msgid "the actions requested to MTA."
-msgstr ""
+msgstr "MTAに要求するアクション。"
 
 #: xml/mfapi.xml:1257(term)
 msgid "<parameter>steps_output</parameter>&nbsp;:"
@@ -4893,7 +4940,7 @@ msgstr ""
 
 #: xml/mfapi.xml:1258(simpara)
 msgid "the milter protocol steps requested to MTA."
-msgstr ""
+msgstr "MTAに要求するmilterプロトコルの実行ステップ。"
 
 #: xml/mfapi.xml:1260(term)
 msgid "<parameter>unused0_output</parameter>&nbsp;:"
@@ -4914,7 +4961,7 @@ msgstr ""
 
 #: xml/mfapi.xml:1272(para)
 msgid "Creates the socket that is used to connect from MTA."
-msgstr ""
+msgstr "MTAからの接続されるソケットを作成します。"
 
 #: xml/mfapi.xml:1275(para)
 msgid ""
@@ -4923,28 +4970,36 @@ msgid ""
 "<link linkend=\"smfi-main\"><function>smfi_main()</function></link> "
 "implicitly."
 msgstr ""
+"通常は、<link linkend=\"smfi-opensocket\"><function>smfi_opensocket()</"
+"function></link>を明示的に呼ぶ必要はありません。ソケットは<link linkend="
+"\"smfi-main\"><function>smfi_main()</function></link>の中で暗黙的に作られま"
+"す。"
 
 #: xml/mfapi.xml:1280(para) xml/mfapi.xml:1328(para) xml/mfapi.xml:1360(para)
-#: xml/mfapi.xml:1385(para) xml/mfapi.xml:1479(para) xml/mfapi.xml:2199(para)
-#: xml/mfapi.xml:2250(para) xml/mfapi.xml:2300(para) xml/mfapi.xml:2359(para)
-#: xml/mfapi.xml:2416(para) xml/mfapi.xml:2476(para) xml/mfapi.xml:2526(para)
-#: xml/mfapi.xml:2575(para) xml/mfapi.xml:2625(para) xml/mfapi.xml:2671(para)
-#: xml/mfapi.xml:2706(para) xml/mfapi.xml:2757(para) xml/mfapi.xml:2803(para)
-#: xml/mfapi.xml:2834(para) xml/mfapi.xml:2865(para)
+#: xml/mfapi.xml:1385(para) xml/mfapi.xml:1475(para) xml/mfapi.xml:2195(para)
+#: xml/mfapi.xml:2246(para) xml/mfapi.xml:2296(para) xml/mfapi.xml:2355(para)
+#: xml/mfapi.xml:2412(para) xml/mfapi.xml:2472(para) xml/mfapi.xml:2522(para)
+#: xml/mfapi.xml:2571(para) xml/mfapi.xml:2621(para) xml/mfapi.xml:2667(para)
+#: xml/mfapi.xml:2702(para) xml/mfapi.xml:2753(para) xml/mfapi.xml:2799(para)
+#: xml/mfapi.xml:2830(para) xml/mfapi.xml:2861(para)
 msgid "Here are the fail conditions:"
-msgstr ""
+msgstr "失敗条件は以下の通りです。"
 
 #: xml/mfapi.xml:1284(para)
 msgid ""
 "<link linkend=\"smfi-register\"><function>smfi_register()</function></link> "
 "hasn't called successfully."
 msgstr ""
+"<link linkend=\"smfi-register\"><function>smfi_register()</function></link>の"
+"呼び出しに成功していない。"
 
 #: xml/mfapi.xml:1289(para)
 msgid ""
 "<link linkend=\"smfi-setconn\"><function>smfi_setconn()</function></link> "
 "hasn't called successfully."
 msgstr ""
+"<link linkend=\"smfi-setconn\"><function>smfi_setconn()</function></link>の呼"
+"び出しに成功していない。"
 
 #: xml/mfapi.xml:1294(para)
 msgid ""
@@ -4952,18 +5007,25 @@ msgid ""
 "link> fails to remove existing UNIX domain socket if connection spec is for "
 "UNIX domain socket and <parameter>remove_socket</parameter> is true."
 msgstr ""
+"接続指定がUNIXドメインソケットで<parameter>remove_socket</parameter>が真のと"
+"き、<link linkend=\"smfi-opensocket\"><function>smfi_opensocket()</"
+"function></link>が既存のUNIXドメインソケットの削除に失敗した場合。"
 
 #: xml/mfapi.xml:1301(para)
 msgid ""
 "<link linkend=\"smfi-opensocket\"><function>smfi_opensocket()</function></"
 "link> fails to create the new socket."
 msgstr ""
+"<link linkend=\"smfi-opensocket\"><function>smfi_opensocket()</function></"
+"link>が新しいソケットの作成に失敗した場合。"
 
 #: xml/mfapi.xml:1306(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/smfi_opensocket"
 "\"> smfi_opensocket</ulink> on milter.org."
 msgstr ""
+"milter.orgの<ulink url=\"https://www.milter.org/developers/api/"
+"smfi_opensocket\"> smfi_opensocket</ulink>も見てください。"
 
 #: xml/mfapi.xml:1314(term)
 msgid "<parameter>remove_socket</parameter>&nbsp;:"
@@ -4974,22 +5036,27 @@ msgid ""
 "Whether or not trying to remove existing UNIX domain socket before creating "
 "a new socket."
 msgstr ""
+"新しいソケットを作る前に、既存のUNIXドメインソケットを削除しようとするかどう"
+"か。"
 
 #: xml/mfapi.xml:1319(simpara) xml/mfapi.xml:1349(simpara)
 #: xml/mfapi.xml:1375(simpara) xml/mfapi.xml:1405(simpara)
-#: xml/mfapi.xml:1502(simpara) xml/mfapi.xml:2236(simpara)
-#: xml/mfapi.xml:2288(simpara) xml/mfapi.xml:2344(simpara)
-#: xml/mfapi.xml:2403(simpara) xml/mfapi.xml:2464(simpara)
-#: xml/mfapi.xml:2515(simpara) xml/mfapi.xml:2562(simpara)
-#: xml/mfapi.xml:2614(simpara) xml/mfapi.xml:2661(simpara)
-#: xml/mfapi.xml:2693(simpara) xml/mfapi.xml:2746(simpara)
-#: xml/mfapi.xml:2793(simpara) xml/mfapi.xml:2825(simpara)
-#: xml/mfapi.xml:2910(simpara)
+#: xml/mfapi.xml:1498(simpara) xml/mfapi.xml:2232(simpara)
+#: xml/mfapi.xml:2284(simpara) xml/mfapi.xml:2340(simpara)
+#: xml/mfapi.xml:2399(simpara) xml/mfapi.xml:2460(simpara)
+#: xml/mfapi.xml:2511(simpara) xml/mfapi.xml:2558(simpara)
+#: xml/mfapi.xml:2610(simpara) xml/mfapi.xml:2657(simpara)
+#: xml/mfapi.xml:2689(simpara) xml/mfapi.xml:2742(simpara)
+#: xml/mfapi.xml:2789(simpara) xml/mfapi.xml:2821(simpara)
+#: xml/mfapi.xml:2906(simpara)
 msgid ""
 "<link linkend=\"MI-SUCCESS:CAPS\"><literal>MI_SUCCESS</literal></link> if "
 "success, <link linkend=\"MI-FAILURE:CAPS\"><literal>MI_FAILURE</literal></"
 "link> otherwise."
 msgstr ""
+"成功した場合は<link linkend=\"MI-SUCCESS:CAPS\"><literal>MI_SUCCESS</"
+"literal></link>、そうでない場合は<link linkend=\"MI-FAILURE:CAPS"
+"\"><literal>MI_FAILURE</literal></link>。"
 
 #: xml/mfapi.xml:1323(title)
 msgid "smfi_register ()"
@@ -5002,21 +5069,23 @@ msgstr ""
 
 #: xml/mfapi.xml:1325(para)
 msgid "Registers the milter implementation as callbacks."
-msgstr ""
+msgstr "milterの実装をコールバックとして登録します。"
 
 #: xml/mfapi.xml:1332(para)
 msgid "incompatible xxfi_version."
-msgstr ""
+msgstr "互換性のないxxfi_version。"
 
 #: xml/mfapi.xml:1335(para)
 msgid "illegal xxfi_flags value."
-msgstr ""
+msgstr "不正なxxfi_flagsの値。"
 
 #: xml/mfapi.xml:1338(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/smfi_register\"> "
 "smfi_register</ulink> on milter.org."
 msgstr ""
+"milter.orgの<ulink url=\"https://www.milter.org/developers/api/smfi_register"
+"\"> smfi_register</ulink>も見てください。"
 
 #: xml/mfapi.xml:1346(term)
 #: xml/milter-manager-applicable-condition.xml:161(term)
@@ -5026,7 +5095,7 @@ msgstr ""
 
 #: xml/mfapi.xml:1347(simpara)
 msgid "The milter description."
-msgstr ""
+msgstr "milterの説明。"
 
 #: xml/mfapi.xml:1353(title)
 msgid "smfi_main ()"
@@ -5045,16 +5114,23 @@ msgid ""
 "<link linkend=\"smfi-main\"><function>smfi_main()</function></link> is "
 "called."
 msgstr ""
+"イベントループに入ります。milterは<link linkend=\"smfi-main"
+"\"><function>smfi_main()</function></link>を呼ぶ前に、<link linkend=\"smfi-"
+"register\"><function>smfi_register()</function></link>、<link linkend=\"smfi-"
+"setconn\"><function>smfi_setconn()</function></link>などで初期化していなけれ"
+"ばいけません。"
 
 #: xml/mfapi.xml:1364(para)
 msgid "failed to create the socket."
-msgstr ""
+msgstr "ソケットの作成に失敗したとき。"
 
 #: xml/mfapi.xml:1367(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/smfi_main\"> "
 "smfi_main</ulink> on milter.org."
 msgstr ""
+"milter.orgの<ulink url=\"https://www.milter.org/developers/api/smfi_main\"> "
+"smfi_main</ulink>も見てください。"
 
 #: xml/mfapi.xml:1379(title)
 msgid "smfi_setbacklog ()"
@@ -5067,7 +5143,7 @@ msgstr ""
 
 #: xml/mfapi.xml:1381(para)
 msgid "Sets the milters' backlog value that is used for listen(2)."
-msgstr ""
+msgstr "listen(2)で使われるmilterの接続キューの最大長を設定します。"
 
 #: xml/mfapi.xml:1389(para)
 msgid "<parameter>backlog</parameter> &amp;lt;= 0."
@@ -5078,10 +5154,12 @@ msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/smfi_setbacklog"
 "\"> smfi_setbacklog</ulink> on milter.org."
 msgstr ""
+"milter.orgの<ulink url=\"https://www.milter.org/developers/api/"
+"smfi_setbacklog\"> smfi_setbacklog</ulink>も見てください。"
 
 #: xml/mfapi.xml:1403(simpara)
 msgid "The maximum length of the pending connections queue."
-msgstr ""
+msgstr "処理待ちの接続キューの最大長。"
 
 #: xml/mfapi.xml:1409(title)
 msgid "smfi_setdbg ()"
@@ -5097,12 +5175,17 @@ msgid ""
 "Sets the log level. If <parameter>level</parameter> is 0, turns off any log "
 "message. The greater value is specified, more log messages are output."
 msgstr ""
+"ログレベルを設定します。<parameter>level</parameter>が0ならすべてのログメッ"
+"セージが抑制されます。大きい値を指定すればするほど多くのログメッセージが出力"
+"されます。"
 
 #: xml/mfapi.xml:1416(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/smfi_setdbg\"> "
 "smfi_setdbg</ulink> on milter.org."
 msgstr ""
+"milter.orgの<ulink url=\"https://www.milter.org/developers/api/smfi_setdbg"
+"\"> smfi_setdbg</ulink>も見てください。"
 
 #: xml/mfapi.xml:1424(term) xml/milter-logger.xml:114(term)
 #: xml/milter-logger.xml:347(term) xml/milter-logger.xml:401(term)
@@ -5112,14 +5195,15 @@ msgstr ""
 
 #: xml/mfapi.xml:1425(simpara)
 msgid "The log level."
-msgstr ""
+msgstr "ログレベル。"
 
 #: xml/mfapi.xml:1427(simpara) xml/mfapi.xml:1449(simpara)
-#: xml/mfapi.xml:1521(simpara) xml/mfapi.xml:1550(simpara)
+#: xml/mfapi.xml:1517(simpara) xml/mfapi.xml:1546(simpara)
 msgid ""
 "always <link linkend=\"MI-SUCCESS:CAPS\"><literal>MI_SUCCESS</literal></"
 "link>."
 msgstr ""
+"常に<link linkend=\"MI-SUCCESS:CAPS\"><literal>MI_SUCCESS</literal></link>。"
 
 #: xml/mfapi.xml:1431(title)
 msgid "smfi_settimeout ()"
@@ -5135,16 +5219,21 @@ msgid ""
 "Sets the I/O timeout value in seconds. The default value is 7210 seconds. "
 "<parameter>timeout</parameter> == 0 means no wait, not \"wait forever\"."
 msgstr ""
+"入出力のタイムアウト時間を秒で設定します。既定値は7210秒です。"
+"<parameter>timeout</parameter> == 0は待たないことを意味します。\"永遠に待つ"
+"\"ではありません。"
 
 #: xml/mfapi.xml:1438(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/smfi_settimeout"
 "\"> smfi_settimeout</ulink> on milter.org."
 msgstr ""
+"milter.orgの<ulink url=\"https://www.milter.org/developers/api/"
+"smfi_settimeout\"> smfi_settimeout</ulink>も見てください。"
 
 #: xml/mfapi.xml:1447(simpara)
 msgid "The timeout value in seconds."
-msgstr ""
+msgstr "タイムアウト値を秒で指定します。"
 
 #: xml/mfapi.xml:1453(title)
 msgid "smfi_setconn ()"
@@ -5157,76 +5246,86 @@ msgstr ""
 
 #: xml/mfapi.xml:1455(para)
 msgid "Sets the connection spec."
-msgstr ""
+msgstr "接続指定を設定します。"
 
 #: xml/mfapi.xml:1458(para)
 msgid "<parameter>connection_spec</parameter> format is one of them:"
-msgstr ""
+msgstr "<parameter>connection_spec</parameter>の書式は以下のいずれかです。"
 
 #: xml/mfapi.xml:1464(para)
 msgid "\"unix:/PATH/TO/SOCKET\": UNIX domain socket."
-msgstr ""
+msgstr "\"unix:/PATH/TO/SOCKET\": UNIXドメインソケット。"
 
 #: xml/mfapi.xml:1467(para)
 msgid ""
-"\"inet:PORT\", \"inet:PORT<parameter>HOST_NAME</parameter>\" or \"inet:"
-"PORT<parameter>IP_ADDRESS</parameter>\": IPv4."
+"\"inet:PORT\", \"inet:PORT&commat;HOST_NAME\" or \"inet:PORT&commat;"
+"IP_ADDRESS\": IPv4."
 msgstr ""
+"\"inet:PORT\"、\"inet:PORT&commat;HOST_NAME\"、\"inet:PORT&commat;IP_ADDRESS"
+"\": IPv4。"
 
-#: xml/mfapi.xml:1473(para)
+#: xml/mfapi.xml:1471(para)
 msgid ""
-"\"inet6:PORT\", \"inet6:PORT<parameter>HOST_NAME</parameter>\" or \"inet6:"
-"PORT<parameter>IP_ADDRESS</parameter>\": IPv6."
+"\"inet6:PORT\", \"inet6:PORT&commat;HOST_NAME\" or \"inet6:PORT&commat;"
+"IP_ADDRESS\": IPv6."
 msgstr ""
+"\"inet6:PORT\"、\"inet6:PORT&commat;HOST_NAME\"、\"inet6:PORT&commat;"
+"IP_ADDRESS\": IPv6。"
 
-#: xml/mfapi.xml:1483(para)
+#: xml/mfapi.xml:1479(para)
 msgid "invalid format."
-msgstr ""
+msgstr "不正な形式。"
 
-#: xml/mfapi.xml:1486(para)
+#: xml/mfapi.xml:1482(para)
 msgid "<parameter>connection_spec</parameter> is NULL."
-msgstr ""
+msgstr "<parameter>connection_spec</parameter>がNULL。"
 
-#: xml/mfapi.xml:1491(para)
+#: xml/mfapi.xml:1487(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/smfi_setconn\"> "
 "smfi_setconn</ulink> on milter.org."
 msgstr ""
+"milter.orgの<ulink url=\"https://www.milter.org/developers/api/smfi_setconn"
+"\"> smfi_setconn</ulink>も見てください。"
 
-#: xml/mfapi.xml:1499(term) xml/milter-manager-egg.xml:328(term)
+#: xml/mfapi.xml:1495(term) xml/milter-manager-egg.xml:328(term)
 msgid "<parameter>connection_spec</parameter>&nbsp;:"
 msgstr ""
 
-#: xml/mfapi.xml:1500(simpara)
+#: xml/mfapi.xml:1496(simpara)
 msgid "The connection spec for communicating MTA."
-msgstr ""
+msgstr "MTAと通信するための接続指定。"
 
-#: xml/mfapi.xml:1506(title)
+#: xml/mfapi.xml:1502(title)
 msgid "smfi_stop ()"
 msgstr ""
 
-#: xml/mfapi.xml:1507(programlisting)
+#: xml/mfapi.xml:1503(programlisting)
 #, no-wrap
 msgid "<link linkend=\"int\">int</link>                 smfi_stop                           (void);"
 msgstr ""
 
-#: xml/mfapi.xml:1508(para)
+#: xml/mfapi.xml:1504(para)
 msgid ""
 "Stops the milter. No more connections are accepted but processing "
 "connections are continued until they are finished."
 msgstr ""
+"milterを中止します。これ以上の接続を受け付けませんが、処理中の接続は最後まで"
+"続けます。"
 
-#: xml/mfapi.xml:1513(para)
+#: xml/mfapi.xml:1509(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/smfi_stop\"> "
 "smfi_stop</ulink> on milter.org."
 msgstr ""
+"milter.orgの<ulink url=\"https://www.milter.org/developers/api/smfi_stop\"> "
+"smfi_stop</ulink>も見てください。"
 
-#: xml/mfapi.xml:1525(title)
+#: xml/mfapi.xml:1521(title)
 msgid "smfi_version ()"
 msgstr ""
 
-#: xml/mfapi.xml:1526(programlisting)
+#: xml/mfapi.xml:1522(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"int\">int</link>                 smfi_version                        (unsigned <link linkend=\"int\">int</link> *major,\n"
@@ -5234,612 +5333,701 @@ msgid ""
 "                                                         unsigned <link linkend=\"int\">int</link> *patch_level);"
 msgstr ""
 
-#: xml/mfapi.xml:1529(para)
+#: xml/mfapi.xml:1525(para)
 msgid ""
 "Gets the libmilter version. The version is for using libmilter not built "
 "libmilter."
 msgstr ""
+"libmilterのバージョンを取得します。バージョンはビルド時のlibmilterのバージョ"
+"ンではなくて、実行時に使用しているバージョンです。"
 
-#: xml/mfapi.xml:1533(para)
+#: xml/mfapi.xml:1529(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/smfi_version\"> "
 "smfi_version</ulink> on milter.org."
 msgstr ""
+"milter.orgの<ulink url=\"https://www.milter.org/developers/api/smfi_version"
+"\"> smfi_version</ulink>も見てください。"
 
-#: xml/mfapi.xml:1541(term) xml/milter-version.xml:81(term)
+#: xml/mfapi.xml:1537(term) xml/milter-version.xml:81(term)
 msgid "<parameter>major</parameter>&nbsp;:"
 msgstr ""
 
-#: xml/mfapi.xml:1542(simpara)
+#: xml/mfapi.xml:1538(simpara)
 msgid "return location for major version."
-msgstr ""
+msgstr "メジャーバージョンを返すアドレス。"
 
-#: xml/mfapi.xml:1544(term) xml/milter-version.xml:84(term)
+#: xml/mfapi.xml:1540(term) xml/milter-version.xml:84(term)
 msgid "<parameter>minor</parameter>&nbsp;:"
 msgstr ""
 
-#: xml/mfapi.xml:1545(simpara)
+#: xml/mfapi.xml:1541(simpara)
 msgid "return location for minor version."
-msgstr ""
+msgstr "マイナーバージョンを返すアドレス。"
 
-#: xml/mfapi.xml:1547(term)
+#: xml/mfapi.xml:1543(term)
 msgid "<parameter>patch_level</parameter>&nbsp;:"
 msgstr ""
 
-#: xml/mfapi.xml:1548(simpara)
+#: xml/mfapi.xml:1544(simpara)
 msgid "return location for patch level."
-msgstr ""
+msgstr "パッチレベルを返すアドレス。"
 
-#: xml/mfapi.xml:1555(programlisting)
+#: xml/mfapi.xml:1551(programlisting)
 #, no-wrap
 msgid "#define SMFIF_ADDHDRS     0x00000001L\n"
 msgstr ""
 
-#: xml/mfapi.xml:1557(para)
+#: xml/mfapi.xml:1553(para)
 msgid ""
 "The milter may call <link linkend=\"smfi-addheader\"><function>smfi_addheader"
 "()</function></link>."
 msgstr ""
+"milterは<link linkend=\"smfi-addheader\"><function>smfi_addheader()</"
+"function></link>を呼ぶかもしれません。"
 
-#: xml/mfapi.xml:1560(para) xml/mfapi.xml:1574(para) xml/mfapi.xml:1597(para)
-#: xml/mfapi.xml:1611(para) xml/mfapi.xml:1625(para) xml/mfapi.xml:1639(para)
-#: xml/mfapi.xml:1653(para) xml/mfapi.xml:1667(para) xml/mfapi.xml:1681(para)
+#: xml/mfapi.xml:1556(para) xml/mfapi.xml:1570(para) xml/mfapi.xml:1593(para)
+#: xml/mfapi.xml:1607(para) xml/mfapi.xml:1621(para) xml/mfapi.xml:1635(para)
+#: xml/mfapi.xml:1649(para) xml/mfapi.xml:1663(para) xml/mfapi.xml:1677(para)
 msgid ""
 "See also <link linkend=\"smfiDesc\"><literal>smfiDesc</literal></link>, "
 "<link linkend=\"xxfi-negotiate\"><function>xxfi_negotiate()</function></"
 "link> and <ulink url=\"https://www.milter.org/developers/api/smfi_register"
 "\"> smfi_register on milter.org</ulink>."
 msgstr ""
+"<link linkend=\"smfiDesc\"><literal>smfiDesc</literal></link>と<link linkend="
+"\"xxfi-negotiate\"><function>xxfi_negotiate()</function></link>と<ulink url="
+"\"https://www.milter.org/developers/api/smfi_register\">milter.orgの"
+"smfi_register</ulink>も見てください。"
 
-#: xml/mfapi.xml:1569(programlisting)
+#: xml/mfapi.xml:1565(programlisting)
 #, no-wrap
 msgid "#define SMFIF_CHGBODY     0x00000002L\n"
 msgstr ""
 
-#: xml/mfapi.xml:1571(para)
+#: xml/mfapi.xml:1567(para)
 msgid ""
 "The milter may call <link linkend=\"smfi-chgbody\"><function>smfi_chgbody()</"
 "function></link>."
 msgstr ""
+"milterは<link linkend=\"smfi-chgbody\"><function>smfi_chgbody()</function></"
+"link>を呼ぶかもしれません。"
 
-#: xml/mfapi.xml:1583(programlisting)
+#: xml/mfapi.xml:1579(programlisting)
 #, no-wrap
 msgid "#define SMFIF_MODBODY     SMFIF_CHGBODY\n"
 msgstr ""
 
-#: xml/mfapi.xml:1585(para)
+#: xml/mfapi.xml:1581(para)
 msgid ""
 "Same as <link linkend=\"SMFIF-CHGBODY:CAPS\"><literal>SMFIF_CHGBODY</"
 "literal></link>."
 msgstr ""
+"<link linkend=\"SMFIF-CHGBODY:CAPS\"><literal>SMFIF_CHGBODY</literal></link>"
+"と同じ。"
 
-#: xml/mfapi.xml:1592(programlisting)
+#: xml/mfapi.xml:1588(programlisting)
 #, no-wrap
 msgid "#define SMFIF_ADDRCPT     0x00000004L\n"
 msgstr ""
 
-#: xml/mfapi.xml:1594(para)
+#: xml/mfapi.xml:1590(para)
 msgid ""
 "The milter may call <link linkend=\"smfi-addrcpt\"><function>smfi_addrcpt()</"
 "function></link>."
 msgstr ""
+"milterは<link linkend=\"smfi-addrcpt\"><function>smfi_addrcpt()</function></"
+"link>を呼ぶかもしれません。"
 
-#: xml/mfapi.xml:1606(programlisting)
+#: xml/mfapi.xml:1602(programlisting)
 #, no-wrap
 msgid "#define SMFIF_DELRCPT     0x00000008L\n"
 msgstr ""
 
-#: xml/mfapi.xml:1608(para)
+#: xml/mfapi.xml:1604(para)
 msgid ""
 "The milter may call <link linkend=\"smfi-delrcpt\"><function>smfi_delrcpt()</"
 "function></link>."
 msgstr ""
+"milterは<link linkend=\"smfi-delrcpt\"><function>smfi_delrcpt()</function></"
+"link>を呼ぶかもしれません。"
 
-#: xml/mfapi.xml:1620(programlisting)
+#: xml/mfapi.xml:1616(programlisting)
 #, no-wrap
 msgid "#define SMFIF_CHGHDRS     0x00000010L\n"
 msgstr ""
 
-#: xml/mfapi.xml:1622(para)
+#: xml/mfapi.xml:1618(para)
 msgid ""
 "The milter may call <link linkend=\"smfi-chgheader\"><function>smfi_chgheader"
 "()</function></link>."
 msgstr ""
+"milterは<link linkend=\"smfi-chgheader\"><function>smfi_chgheader()</"
+"function></link>を呼ぶかもしれません。"
 
-#: xml/mfapi.xml:1634(programlisting)
+#: xml/mfapi.xml:1630(programlisting)
 #, no-wrap
 msgid "#define SMFIF_QUARANTINE  0x00000020L\n"
 msgstr ""
 
-#: xml/mfapi.xml:1636(para)
+#: xml/mfapi.xml:1632(para)
 msgid ""
 "The milter may call <link linkend=\"smfi-quarantine"
 "\"><function>smfi_quarantine()</function></link>."
 msgstr ""
+"milterは<link linkend=\"smfi-quarantine\"><function>smfi_quarantine()</"
+"function></link>を呼ぶかもしれません。"
 
-#: xml/mfapi.xml:1648(programlisting)
+#: xml/mfapi.xml:1644(programlisting)
 #, no-wrap
 msgid "#define SMFIF_CHGFROM     0x00000040L\n"
 msgstr ""
 
-#: xml/mfapi.xml:1650(para)
+#: xml/mfapi.xml:1646(para)
 msgid ""
 "The milter may call <link linkend=\"smfi-chgfrom\"><function>smfi_chgfrom()</"
 "function></link>."
 msgstr ""
+"milterは<link linkend=\"smfi-chgfrom\"><function>smfi_chgfrom()</function></"
+"link>を呼ぶかもしれません。"
 
-#: xml/mfapi.xml:1662(programlisting)
+#: xml/mfapi.xml:1658(programlisting)
 #, no-wrap
 msgid "#define SMFIF_ADDRCPT_PAR 0x00000080L\n"
 msgstr ""
 
-#: xml/mfapi.xml:1664(para)
+#: xml/mfapi.xml:1660(para)
 msgid ""
 "The milter may call <link linkend=\"smfi-addrcpt-par"
 "\"><function>smfi_addrcpt_par()</function></link>."
 msgstr ""
+"milterは<link linkend=\"smfi-addrcpt-par\"><function>smfi_addrcpt_par()</"
+"function></link>を呼ぶかもしれません。"
 
-#: xml/mfapi.xml:1676(programlisting)
+#: xml/mfapi.xml:1672(programlisting)
 #, no-wrap
 msgid "#define SMFIF_SETSYMLIST  0x00000100L\n"
 msgstr ""
 
-#: xml/mfapi.xml:1678(para)
+#: xml/mfapi.xml:1674(para)
 msgid ""
 "The milter may call <link linkend=\"smfi-setsymlist"
 "\"><function>smfi_setsymlist()</function></link>."
 msgstr ""
+"milterは<link linkend=\"smfi-setsymlist\"><function>smfi_setsymlist()</"
+"function></link>を呼ぶかもしれません。"
 
-#: xml/mfapi.xml:1690(programlisting)
+#: xml/mfapi.xml:1686(programlisting)
 #, no-wrap
 msgid "#define SMFIS_CONTINUE    0\n"
 msgstr ""
 
-#: xml/mfapi.xml:1692(para)
+#: xml/mfapi.xml:1688(para)
 msgid "Continues the current process."
-msgstr ""
+msgstr "現在の処理を継続します。"
 
-#: xml/mfapi.xml:1695(para) xml/mfapi.xml:1710(para) xml/mfapi.xml:1741(para)
-#: xml/mfapi.xml:1757(para) xml/mfapi.xml:1772(para)
+#: xml/mfapi.xml:1691(para) xml/mfapi.xml:1706(para) xml/mfapi.xml:1737(para)
+#: xml/mfapi.xml:1753(para) xml/mfapi.xml:1768(para)
 msgid ""
 "See each callback (<link linkend=\"xxfi-connect\"><function>xxfi_connect()</"
 "function></link>, <link linkend=\"xxfi-helo\"><function>xxfi_helo()</"
-"function></link> and so on) and &num;<ulink url=\"https://www.milter.org/"
-"developers/api/conn-spec\"> callback return status description</ulink> on "
-"milter.org."
+"function></link> and so on) and <ulink url=\"https://www.milter.org/"
+"developers/api/\"> callback return status description</ulink> on milter.org."
 msgstr ""
+"各コールバック（<link linkend=\"xxfi-connect\"><function>xxfi_connect()</"
+"function></link>、<link linkend=\"xxfi-helo\"><function>xxfi_helo()</"
+"function></link>など）とmilter.orgの<ulink url=\"https://www.milter.org/"
+"developers/api/#conn-spec\">コールバックの返値の説明</ulink>も見てください。"
 
-#: xml/mfapi.xml:1705(programlisting)
+#: xml/mfapi.xml:1701(programlisting)
 #, no-wrap
 msgid "#define SMFIS_REJECT      1\n"
 msgstr ""
 
-#: xml/mfapi.xml:1707(para)
+#: xml/mfapi.xml:1703(para)
 msgid "Rejects the current processing target."
-msgstr ""
+msgstr "現在処理中のターゲットを拒否します。"
 
-#: xml/mfapi.xml:1720(programlisting)
+#: xml/mfapi.xml:1716(programlisting)
 #, no-wrap
 msgid "#define SMFIS_DISCARD     2\n"
 msgstr ""
 
-#: xml/mfapi.xml:1722(para)
+#: xml/mfapi.xml:1718(para)
 msgid "Accepts the current processing target and discards it silently."
-msgstr ""
+msgstr "現在処理中のターゲットを受け入れて、だまって破棄します。"
 
-#: xml/mfapi.xml:1726(para)
+#: xml/mfapi.xml:1722(para)
 msgid ""
 "See each callback (<link linkend=\"xxfi-envfrom\"><function>xxfi_envfrom()</"
 "function></link>, <link linkend=\"xxfi-envrcpt\"><function>xxfi_envrcpt()</"
-"function></link> and so on) and &num;<ulink url=\"https://www.milter.org/"
-"developers/api/conn-spec\"> callback return status description</ulink> on "
-"milter.org."
+"function></link> and so on) and <ulink url=\"https://www.milter.org/"
+"developers/api/\"> callback return status description</ulink> on milter.org."
 msgstr ""
+"各コールバック（<link linkend=\"xxfi-envfrom\"><function>xxfi_envfrom()</"
+"function></link>、<link linkend=\"xxfi-envrcpt\"><function>xxfi_envrcpt()</"
+"function></link>など）とmiler.orgの<ulink url=\"https://www.milter.org/"
+"developers/api/#conn-spec\">コールバックの返値の説明</ulink>も見てください。"
 
-#: xml/mfapi.xml:1736(programlisting)
+#: xml/mfapi.xml:1732(programlisting)
 #, no-wrap
 msgid "#define SMFIS_ACCEPT      3\n"
 msgstr ""
 
-#: xml/mfapi.xml:1738(para)
+#: xml/mfapi.xml:1734(para)
 msgid "Accepts the current processing target."
-msgstr ""
+msgstr "現在処理中のターゲットを受け入れます。"
 
-#: xml/mfapi.xml:1751(programlisting)
+#: xml/mfapi.xml:1747(programlisting)
 #, no-wrap
 msgid "#define SMFIS_TEMPFAIL    4\n"
 msgstr ""
 
-#: xml/mfapi.xml:1753(para)
+#: xml/mfapi.xml:1749(para)
 msgid "Replies a temporary failure status for the current processing target."
-msgstr ""
+msgstr "現在のターゲットに対して、一時的な障害ステータスを返します。"
 
-#: xml/mfapi.xml:1767(programlisting)
+#: xml/mfapi.xml:1763(programlisting)
 #, no-wrap
 msgid "#define SMFIS_NOREPLY     7\n"
 msgstr ""
 
-#: xml/mfapi.xml:1769(para)
+#: xml/mfapi.xml:1765(para)
 msgid "Doesn't reply to the MTA."
-msgstr ""
+msgstr "MTAに返答しません。"
 
-#: xml/mfapi.xml:1782(programlisting)
+#: xml/mfapi.xml:1778(programlisting)
 #, no-wrap
 msgid "#define SMFIS_SKIP        8\n"
 msgstr ""
 
-#: xml/mfapi.xml:1784(para)
+#: xml/mfapi.xml:1780(para)
 msgid ""
 "Skips the rest body chunks. This can be used only in <link linkend=\"xxfi-"
 "body\"><function>xxfi_body()</function></link>."
 msgstr ""
+"残りの本文を省略します。<link linkend=\"xxfi-body\"><function>xxfi_body()</"
+"function></link>の中でだけ使えます。"
 
-#: xml/mfapi.xml:1788(para)
+#: xml/mfapi.xml:1784(para)
 msgid ""
-"See also &num;<ulink url=\"https://www.milter.org/developers/api/conn-spec"
-"\"> callback return status description</ulink> on milter.org."
+"See also <ulink url=\"https://www.milter.org/developers/api/\"> callback "
+"return status description</ulink> on milter.org."
 msgstr ""
+"milter.orgの<ulink url=\"https://www.milter.org/developers/api/#conn-spec\">"
+"コールバックの返値の説明</ulink>も見てください。"
 
-#: xml/mfapi.xml:1797(programlisting)
+#: xml/mfapi.xml:1793(programlisting)
 #, no-wrap
 msgid "#define SMFIS_ALL_OPTS    10\n"
 msgstr ""
 
-#: xml/mfapi.xml:1799(para)
+#: xml/mfapi.xml:1795(para)
 msgid ""
 "Uses the all negotiate options received from the MTA. This can be used only "
 "in <link linkend=\"xxfi-negotiate\"><function>xxfi_negotiate()</function></"
 "link>."
 msgstr ""
+"MTAから受け取ったすべてのネゴシエーションオプションを使います。これは<link "
+"linkend=\"xxfi-negotiate\"><function>xxfi_negotiate()</function></link>の中で"
+"だけ使えます。"
 
-#: xml/mfapi.xml:1807(programlisting)
+#: xml/mfapi.xml:1803(programlisting)
 #, no-wrap
 msgid "#define SMFIM_CONNECT\t  0\n"
 msgstr ""
 
-#: xml/mfapi.xml:1809(para)
+#: xml/mfapi.xml:1805(para)
 msgid ""
 "Indicates the protocol stage for <link linkend=\"xxfi-connect"
 "\"><function>xxfi_connect()</function></link>."
 msgstr ""
+"<link linkend=\"xxfi-connect\"><function>xxfi_connect()</function></link>のプ"
+"ロトコル段階であることを示します。"
 
-#: xml/mfapi.xml:1812(para) xml/mfapi.xml:1824(para) xml/mfapi.xml:1836(para)
-#: xml/mfapi.xml:1848(para) xml/mfapi.xml:1860(para) xml/mfapi.xml:1872(para)
-#: xml/mfapi.xml:1884(para)
+#: xml/mfapi.xml:1808(para) xml/mfapi.xml:1820(para) xml/mfapi.xml:1832(para)
+#: xml/mfapi.xml:1844(para) xml/mfapi.xml:1856(para) xml/mfapi.xml:1868(para)
+#: xml/mfapi.xml:1880(para)
 msgid ""
 "See <link linkend=\"smfi-setsymlist\"><function>smfi_setsymlist()</"
 "function></link>."
 msgstr ""
+"<link linkend=\"smfi-setsymlist\"><function>smfi_setsymlist()</function></"
+"link>も見てください。"
 
-#: xml/mfapi.xml:1819(programlisting)
+#: xml/mfapi.xml:1815(programlisting)
 #, no-wrap
 msgid "#define SMFIM_HELO\t  1\n"
 msgstr ""
 
-#: xml/mfapi.xml:1821(para)
+#: xml/mfapi.xml:1817(para)
 msgid ""
 "Indicates the protocol stage for <link linkend=\"xxfi-helo"
 "\"><function>xxfi_helo()</function></link>."
 msgstr ""
+"<link linkend=\"xxfi-helo\"><function>xxfi_helo()</function></link>のプロトコ"
+"ル段階であることを示します。"
 
-#: xml/mfapi.xml:1831(programlisting)
+#: xml/mfapi.xml:1827(programlisting)
 #, no-wrap
 msgid "#define SMFIM_ENVFROM\t  2\n"
 msgstr ""
 
-#: xml/mfapi.xml:1833(para)
+#: xml/mfapi.xml:1829(para)
 msgid ""
 "Indicates the protocol stage for <link linkend=\"xxfi-envfrom"
 "\"><function>xxfi_envfrom()</function></link>."
 msgstr ""
+"<link linkend=\"xxfi-envfrom\"><function>xxfi_envfrom()</function></link>のプ"
+"ロトコル段階であることを示します。"
 
-#: xml/mfapi.xml:1843(programlisting)
+#: xml/mfapi.xml:1839(programlisting)
 #, no-wrap
 msgid "#define SMFIM_ENVRCPT\t  3\n"
 msgstr ""
 
-#: xml/mfapi.xml:1845(para)
+#: xml/mfapi.xml:1841(para)
 msgid ""
 "Indicates the protocol stage for <link linkend=\"xxfi-envrcpt"
 "\"><function>xxfi_envrcpt()</function></link>."
 msgstr ""
+"<link linkend=\"xxfi-envrcpt\"><function>xxfi_envrcpt()</function></link>のプ"
+"ロトコル段階であることを示します。"
 
-#: xml/mfapi.xml:1855(programlisting)
+#: xml/mfapi.xml:1851(programlisting)
 #, no-wrap
 msgid "#define SMFIM_DATA\t  4\n"
 msgstr ""
 
-#: xml/mfapi.xml:1857(para)
+#: xml/mfapi.xml:1853(para)
 msgid ""
 "Indicates the protocol stage for <link linkend=\"xxfi-data"
 "\"><function>xxfi_data()</function></link>."
 msgstr ""
+"<link linkend=\"xxfi-data\"><function>xxfi_data()</function></link>のプロトコ"
+"ル段階であることを示します。"
 
-#: xml/mfapi.xml:1867(programlisting)
+#: xml/mfapi.xml:1863(programlisting)
 #, no-wrap
 msgid "#define SMFIM_EOM\t  5\n"
 msgstr ""
 
-#: xml/mfapi.xml:1869(para)
+#: xml/mfapi.xml:1865(para)
 msgid ""
 "Indicates the protocol stage for <link linkend=\"xxfi-eom"
 "\"><function>xxfi_eom()</function></link>."
 msgstr ""
+"<link linkend=\"xxfi-eom\"><function>xxfi_eom()</function></link>のプロトコル"
+"段階であることを示します。"
 
-#: xml/mfapi.xml:1879(programlisting)
+#: xml/mfapi.xml:1875(programlisting)
 #, no-wrap
 msgid "#define SMFIM_EOH\t  6\n"
 msgstr ""
 
-#: xml/mfapi.xml:1881(para)
+#: xml/mfapi.xml:1877(para)
 msgid ""
 "Indicates the protocol stage for <link linkend=\"xxfi-eoh"
 "\"><function>xxfi_eoh()</function></link>."
 msgstr ""
+"<link linkend=\"xxfi-eoh\"><function>xxfi_eoh()</function></link>のプロトコル"
+"段階であることを示します。"
 
-#: xml/mfapi.xml:1891(programlisting)
+#: xml/mfapi.xml:1887(programlisting)
 #, no-wrap
 msgid "#define SMFIP_NOCONNECT       0x00000001L\n"
 msgstr ""
 
-#: xml/mfapi.xml:1893(para)
+#: xml/mfapi.xml:1889(para)
 msgid ""
 "Indicates that the MTA should not send information for <link linkend=\"xxfi-"
 "connect\"><function>xxfi_connect()</function></link>."
 msgstr ""
+"MTAは<link linkend=\"xxfi-connect\"><function>xxfi_connect()</function></"
+"link>の情報を送信しないことを示します。"
 
-#: xml/mfapi.xml:1897(para) xml/mfapi.xml:1910(para) xml/mfapi.xml:1923(para)
-#: xml/mfapi.xml:1936(para) xml/mfapi.xml:1956(para) xml/mfapi.xml:1969(para)
-#: xml/mfapi.xml:1981(para) xml/mfapi.xml:2003(para) xml/mfapi.xml:2016(para)
-#: xml/mfapi.xml:2028(para) xml/mfapi.xml:2041(para) xml/mfapi.xml:2053(para)
-#: xml/mfapi.xml:2065(para) xml/mfapi.xml:2077(para) xml/mfapi.xml:2089(para)
-#: xml/mfapi.xml:2101(para) xml/mfapi.xml:2113(para) xml/mfapi.xml:2125(para)
-#: xml/mfapi.xml:2137(para) xml/mfapi.xml:2151(para)
+#: xml/mfapi.xml:1893(para) xml/mfapi.xml:1906(para) xml/mfapi.xml:1919(para)
+#: xml/mfapi.xml:1932(para) xml/mfapi.xml:1952(para) xml/mfapi.xml:1965(para)
+#: xml/mfapi.xml:1977(para) xml/mfapi.xml:1999(para) xml/mfapi.xml:2012(para)
+#: xml/mfapi.xml:2024(para) xml/mfapi.xml:2037(para) xml/mfapi.xml:2049(para)
+#: xml/mfapi.xml:2061(para) xml/mfapi.xml:2073(para) xml/mfapi.xml:2085(para)
+#: xml/mfapi.xml:2097(para) xml/mfapi.xml:2109(para) xml/mfapi.xml:2121(para)
+#: xml/mfapi.xml:2133(para) xml/mfapi.xml:2147(para)
 msgid ""
 "This flag can be got/set to <parameter>steps_output</parameter> of <link "
 "linkend=\"xxfi-negotiate\"><function>xxfi_negotiate()</function></link>."
 msgstr ""
+"このフラグは<link linkend=\"xxfi-negotiate\"><function>xxfi_negotiate()</"
+"function></link>の<parameter>steps_output</parameter>で取得・設定できます。"
 
-#: xml/mfapi.xml:1904(programlisting)
+#: xml/mfapi.xml:1900(programlisting)
 #, no-wrap
 msgid "#define SMFIP_NOHELO          0x00000002L\n"
 msgstr ""
 
-#: xml/mfapi.xml:1906(para)
+#: xml/mfapi.xml:1902(para)
 msgid ""
 "Indicates that the MTA should not send information for <link linkend=\"xxfi-"
 "helo\"><function>xxfi_helo()</function></link>."
 msgstr ""
+"MTAが<link linkend=\"xxfi-helo\"><function>xxfi_helo()</function></link>の情"
+"報を送信しないことを示します。"
 
-#: xml/mfapi.xml:1917(programlisting)
+#: xml/mfapi.xml:1913(programlisting)
 #, no-wrap
 msgid "#define SMFIP_NOMAIL          0x00000004L\n"
 msgstr ""
 
-#: xml/mfapi.xml:1919(para)
+#: xml/mfapi.xml:1915(para)
 msgid ""
 "Indicates that the MTA should not send information for <link linkend=\"xxfi-"
 "mail\"><function>xxfi_mail()</function></link>."
 msgstr ""
+"MTAが<link linkend=\"xxfi-mail\"><function>xxfi_mail()</function></link>の情"
+"報を送信しないことを示します。"
 
-#: xml/mfapi.xml:1930(programlisting)
+#: xml/mfapi.xml:1926(programlisting)
 #, no-wrap
 msgid "#define SMFIP_NORCPT          0x00000008L\n"
 msgstr ""
 
-#: xml/mfapi.xml:1932(para)
+#: xml/mfapi.xml:1928(para)
 msgid ""
 "Indicates that the MTA should not send information for <link linkend=\"xxfi-"
 "rcpt\"><function>xxfi_rcpt()</function></link>."
 msgstr ""
+"MTAが<link linkend=\"xxfi-rcpt\"><function>xxfi_rcpt()</function></link>の情"
+"報を送信しないことを示します。"
 
-#: xml/mfapi.xml:1943(programlisting)
+#: xml/mfapi.xml:1939(programlisting)
 #, no-wrap
 msgid "#define SMFIP_NOBODY          0x00000010L\n"
 msgstr ""
 
-#: xml/mfapi.xml:1950(programlisting)
+#: xml/mfapi.xml:1946(programlisting)
 #, no-wrap
 msgid "#define SMFIP_NOHDRS          0x00000020L\n"
 msgstr ""
 
-#: xml/mfapi.xml:1952(para)
+#: xml/mfapi.xml:1948(para)
 msgid ""
 "Indicates that the MTA should not send information for <link linkend=\"xxfi-"
 "header\"><function>xxfi_header()</function></link>."
 msgstr ""
+"MTAが<link linkend=\"xxfi-header\"><function>xxfi_header()</function></link>"
+"の情報を送信しないことを示します。"
 
-#: xml/mfapi.xml:1963(programlisting)
+#: xml/mfapi.xml:1959(programlisting)
 #, no-wrap
 msgid "#define SMFIP_NOEOH           0x00000040L\n"
 msgstr ""
 
-#: xml/mfapi.xml:1965(para)
+#: xml/mfapi.xml:1961(para)
 msgid ""
 "Indicates that the MTA should not send information for <link linkend=\"xxfi-"
 "eoh\"><function>xxfi_eoh()</function></link>."
 msgstr ""
+"MTAが<link linkend=\"xxfi-eoh\"><function>xxfi_eoh()</function></link>の情報"
+"を送信しないことを示します。"
 
-#: xml/mfapi.xml:1976(programlisting)
+#: xml/mfapi.xml:1972(programlisting)
 #, no-wrap
 msgid "#define SMFIP_NR_HDR          0x00000080L\n"
 msgstr ""
 
-#: xml/mfapi.xml:1978(para)
+#: xml/mfapi.xml:1974(para)
 msgid ""
 "Indicates that the milter don't reply on <link linkend=\"xxfi-header"
 "\"><function>xxfi_header()</function></link>."
 msgstr ""
+"milterが<link linkend=\"xxfi-header\"><function>xxfi_header()</function></"
+"link>に返答しないことを示します。"
 
-#: xml/mfapi.xml:1988(programlisting)
+#: xml/mfapi.xml:1984(programlisting)
 #, no-wrap
 msgid "#define SMFIP_NOHREPL         SMFIP_NR_HDR\n"
 msgstr ""
 
-#: xml/mfapi.xml:1990(para)
+#: xml/mfapi.xml:1986(para)
 msgid ""
 "Same as <link linkend=\"SMFIP-NR-HDR:CAPS\"><literal>SMFIP_NR_HDR</literal></"
 "link>."
 msgstr ""
+"<link linkend=\"SMFIP-NR-HDR:CAPS\"><literal>SMFIP_NR_HDR</literal></link>と"
+"同じ。"
 
-#: xml/mfapi.xml:1997(programlisting)
+#: xml/mfapi.xml:1993(programlisting)
 #, no-wrap
 msgid "#define SMFIP_NOUNKNOWN       0x00000100L\n"
 msgstr ""
 
-#: xml/mfapi.xml:1999(para)
+#: xml/mfapi.xml:1995(para)
 msgid ""
 "Indicates that the MTA should not send information for <link linkend=\"xxfi-"
 "unknown\"><function>xxfi_unknown()</function></link>."
 msgstr ""
+"MTAが<link linkend=\"xxfi-unknown\"><function>xxfi_unknown()</function></"
+"link>の情報を送信しないことを示します。"
 
-#: xml/mfapi.xml:2010(programlisting)
+#: xml/mfapi.xml:2006(programlisting)
 #, no-wrap
 msgid "#define SMFIP_NODATA          0x00000200L\n"
 msgstr ""
 
-#: xml/mfapi.xml:2012(para)
+#: xml/mfapi.xml:2008(para)
 msgid ""
 "Indicates that the MTA should not send information for <link linkend=\"xxfi-"
 "data\"><function>xxfi_data()</function></link>."
 msgstr ""
+"MTAが<link linkend=\"xxfi-data\"><function>xxfi_data()</function></link>の情"
+"報を送信しないことを示します。"
 
-#: xml/mfapi.xml:2023(programlisting)
+#: xml/mfapi.xml:2019(programlisting)
 #, no-wrap
 msgid "#define SMFIP_SKIP            0x00000400L\n"
 msgstr ""
 
-#: xml/mfapi.xml:2025(para)
+#: xml/mfapi.xml:2021(para)
 msgid ""
-"Indicates that the MTA supports SMFIS_SKIP in <link linkend=\"xxfi-body"
+"Indicates that the MTA supports <link linkend=\"SMFIS-SKIP:CAPS"
+"\"><literal>SMFIS_SKIP</literal></link> in <link linkend=\"xxfi-body"
 "\"><function>xxfi_body()</function></link>."
 msgstr ""
+"MTAが<link linkend=\"xxfi-body\"><function>xxfi_body()</function></link>での"
+"<link linkend=\"SMFIS-SKIP:CAPS\"><literal>SMFIS_SKIP</literal></link>をサ"
+"ポートしていることを示します。"
 
-#: xml/mfapi.xml:2035(programlisting)
+#: xml/mfapi.xml:2031(programlisting)
 #, no-wrap
 msgid "#define SMFIP_RCPT_REJ        0x00000800L\n"
 msgstr ""
 
-#: xml/mfapi.xml:2037(para)
+#: xml/mfapi.xml:2033(para)
 msgid ""
 "Indicates that the MTA should send rejected envelope recipients and <link "
-"linkend=\"xxfi-header\"><function>xxfi_header()</function></link> is called "
-"for them."
+"linkend=\"xxfi-envrcpt\"><function>xxfi_envrcpt()</function></link> is "
+"called for them."
 msgstr ""
+"MTAは拒否した宛先も送信し、<link linkend=\"xxfi-envrcpt"
+"\"><function>xxfi_envrcpt()</function></link>が呼び出されることを示します。"
 
-#: xml/mfapi.xml:2048(programlisting)
+#: xml/mfapi.xml:2044(programlisting)
 #, no-wrap
 msgid "#define SMFIP_NR_CONN         0x00001000L\n"
 msgstr ""
 
-#: xml/mfapi.xml:2050(para)
+#: xml/mfapi.xml:2046(para)
 msgid ""
 "Indicates that the milter don't reply on <link linkend=\"xxfi-connect"
 "\"><function>xxfi_connect()</function></link>."
 msgstr ""
+"milterが<link linkend=\"xxfi-connect\"><function>xxfi_connect()</function></"
+"link>に返答しないことを示します。"
 
-#: xml/mfapi.xml:2060(programlisting)
+#: xml/mfapi.xml:2056(programlisting)
 #, no-wrap
 msgid "#define SMFIP_NR_HELO         0x00002000L\n"
 msgstr ""
 
-#: xml/mfapi.xml:2062(para)
+#: xml/mfapi.xml:2058(para)
 msgid ""
 "Indicates that the milter don't reply on <link linkend=\"xxfi-helo"
 "\"><function>xxfi_helo()</function></link>."
 msgstr ""
+"milterが<link linkend=\"xxfi-helo\"><function>xxfi_helo()</function></link>に"
+"返答しないことを示します。"
 
-#: xml/mfapi.xml:2072(programlisting)
+#: xml/mfapi.xml:2068(programlisting)
 #, no-wrap
 msgid "#define SMFIP_NR_MAIL         0x00004000L\n"
 msgstr ""
 
-#: xml/mfapi.xml:2074(para)
+#: xml/mfapi.xml:2070(para)
 msgid ""
-"Indicates that the milter don't reply on <link linkend=\"xxfi-mail"
-"\"><function>xxfi_mail()</function></link>."
-msgstr ""
+"Indicates that the milter don't reply on <link linkend=\"xxfi-envfrom"
+"\"><function>xxfi_envfrom()</function></link>."
+msgstr "milterが<link linkend=\"xxfi-envfrom\"><function>xxfi_envfrom()</function></link>に返答しないことを示します。"
 
-#: xml/mfapi.xml:2084(programlisting)
+#: xml/mfapi.xml:2080(programlisting)
 #, no-wrap
 msgid "#define SMFIP_NR_RCPT         0x00008000L\n"
 msgstr ""
 
-#: xml/mfapi.xml:2086(para)
+#: xml/mfapi.xml:2082(para)
 msgid ""
-"Indicates that the milter don't reply on <link linkend=\"xxfi-rcpt"
-"\"><function>xxfi_rcpt()</function></link>."
-msgstr ""
+"Indicates that the milter don't reply on <link linkend=\"xxfi-envrcpt"
+"\"><function>xxfi_envrcpt()</function></link>."
+msgstr "milterが<link linkend=\"xxfi-envrcpt\"><function>xxfi_envrcpt()</function></link>に返答しないことを示します。"
 
-#: xml/mfapi.xml:2096(programlisting)
+#: xml/mfapi.xml:2092(programlisting)
 #, no-wrap
 msgid "#define SMFIP_NR_DATA         0x00010000L\n"
 msgstr ""
 
-#: xml/mfapi.xml:2098(para)
+#: xml/mfapi.xml:2094(para)
 msgid ""
 "Indicates that the milter don't reply on <link linkend=\"xxfi-data"
 "\"><function>xxfi_data()</function></link>."
-msgstr ""
+msgstr "milterが<link linkend=\"xxfi-data\"><function>xxfi_data()</function></link>に返答しないことを示します。"
 
-#: xml/mfapi.xml:2108(programlisting)
+#: xml/mfapi.xml:2104(programlisting)
 #, no-wrap
 msgid "#define SMFIP_NR_UNKN         0x00020000L\n"
 msgstr ""
 
-#: xml/mfapi.xml:2110(para)
+#: xml/mfapi.xml:2106(para)
 msgid ""
 "Indicates that the milter don't reply on <link linkend=\"xxfi-unknown"
 "\"><function>xxfi_unknown()</function></link>."
-msgstr ""
+msgstr "milterが<link linkend=\"xxfi-unknown\"><function>xxfi_unknown()</function></link>に返答しないことを示します。"
 
-#: xml/mfapi.xml:2120(programlisting)
+#: xml/mfapi.xml:2116(programlisting)
 #, no-wrap
 msgid "#define SMFIP_NR_EOH          0x00040000L\n"
 msgstr ""
 
-#: xml/mfapi.xml:2122(para)
+#: xml/mfapi.xml:2118(para)
 msgid ""
 "Indicates that the milter don't reply on <link linkend=\"xxfi-eoh"
 "\"><function>xxfi_eoh()</function></link>."
-msgstr ""
+msgstr "milterが<link linkend=\"xxfi-eoh\"><function>xxfi_eoh()</function></link>に返答しないことを示します。"
 
-#: xml/mfapi.xml:2132(programlisting)
+#: xml/mfapi.xml:2128(programlisting)
 #, no-wrap
 msgid "#define SMFIP_NR_BODY         0x00080000L\n"
 msgstr ""
 
-#: xml/mfapi.xml:2134(para)
+#: xml/mfapi.xml:2130(para)
 msgid ""
 "Indicates that the milter don't reply on <link linkend=\"xxfi-body"
 "\"><function>xxfi_body()</function></link>."
-msgstr ""
+msgstr "milterが<link linkend=\"xxfi-body\"><function>xxfi_body()</function></link>に返答しないことを示します。"
 
-#: xml/mfapi.xml:2144(programlisting)
+#: xml/mfapi.xml:2140(programlisting)
 #, no-wrap
 msgid "#define SMFIP_HDR_LEADSPC     0x00100000L\n"
 msgstr ""
 
-#: xml/mfapi.xml:2146(para)
+#: xml/mfapi.xml:2142(para)
 msgid ""
 "Indicates that <link linkend=\"xxfi-header\"><function>xxfi_header()</"
 "function></link> callback is received a header value including spaces after "
 "':'. See <link linkend=\"xxfi-header\"><function>xxfi_header()</function></"
 "link> for examples."
-msgstr ""
+msgstr "<link linkend=\"xxfi-header\"><function>xxfi_header()</function></link>コールバックが':'の後のスペース付きでヘッダの値を受けとることを示します。例は<link linkend=\"xxfi-header\"><function>xxfi_header()</function></link>を見てください。"
 
-#: xml/mfapi.xml:2157(title)
+#: xml/mfapi.xml:2153(title)
 msgid "smfi_getsymval ()"
 msgstr ""
 
-#: xml/mfapi.xml:2158(programlisting)
+#: xml/mfapi.xml:2154(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"char\">char</link>*               smfi_getsymval                      (<link linkend=\"SMFICTX:CAPS\">SMFICTX</link> *context,\n"
 "                                                         <link linkend=\"char\">char</link> *name);"
 msgstr ""
 
-#: xml/mfapi.xml:2160(para)
+#: xml/mfapi.xml:2156(para)
 msgid ""
 "Gets a value of the macro named <parameter>name</parameter> in the current "
 "milter session context. <link linkend=\"smfi-getsymval"
@@ -5847,37 +6035,37 @@ msgid ""
 "callbacks. (e.g. <link linkend=\"xxfi-connect\"><function>xxfi_connect()</"
 "function></link>, <link linkend=\"xxfi-helo\"><function>xxfi_helo()</"
 "function></link>, ...)"
-msgstr ""
+msgstr "現在のmilterセッションコンテキスト中での<parameter>name</parameter>というマクロ名の値を返します。<link linkend=\"smfi-getsymval\"><function>smfi_getsymval()</function></link>はxxfi_XXXコールバックの中で使えます。（例えば、<link linkend=\"xxfi-connect\"><function>xxfi_connect()</function></link>、<link linkend=\"xxfi-helo\"><function>xxfi_helo()</function></link>など）"
 
-#: xml/mfapi.xml:2166(para)
+#: xml/mfapi.xml:2162(para)
 msgid ""
 "<parameter>name</parameter> should be enclosed in braces (\"{\" and \"}\") "
 "like \"{if_name}\" except <parameter>name</parameter> contains a character "
 "like \"i\"."
-msgstr ""
+msgstr "<parameter>name</parameter>が\"i\"のように1文字でない場合は、\"{if_name}\"のようにかっこ（\"{\"と\"}\"）で囲みます。"
 
-#: xml/mfapi.xml:2170(para)
+#: xml/mfapi.xml:2166(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/smfi_getsymval"
 "\"> smfi_getsymval</ulink> on milter.org. Sendmail's default macros are also "
 "shown in the page."
-msgstr ""
+msgstr "milter.orgの<ulink url=\"https://www.milter.org/developers/api/smfi_getsymval\"> smfi_getsymval</ulink>も見てください。Sendmailの既定のマクロもそのページに載っています。"
 
-#: xml/mfapi.xml:2182(simpara)
+#: xml/mfapi.xml:2178(simpara)
 msgid "the name of a macro."
-msgstr ""
+msgstr "マクロ名。"
 
-#: xml/mfapi.xml:2184(simpara)
+#: xml/mfapi.xml:2180(simpara)
 msgid ""
 "a value of the macro named <parameter>name</parameter> if it exists, <link "
 "linkend=\"NULL:CAPS\"><literal>NULL</literal></link> otherwise."
-msgstr ""
+msgstr "もしあれば<parameter>name</parameter>というマクロ名の値、なければ<link linkend=\"NULL:CAPS\"><literal>NULL</literal></link>。"
 
-#: xml/mfapi.xml:2189(title)
+#: xml/mfapi.xml:2185(title)
 msgid "smfi_setreply ()"
 msgstr ""
 
-#: xml/mfapi.xml:2190(programlisting)
+#: xml/mfapi.xml:2186(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"int\">int</link>                 smfi_setreply                       (<link linkend=\"SMFICTX:CAPS\">SMFICTX</link> *context,\n"
@@ -5886,51 +6074,51 @@ msgid ""
 "                                                         <link linkend=\"char\">char</link> *message);"
 msgstr ""
 
-#: xml/mfapi.xml:2194(para) xml/mfapi.xml:2245(para)
+#: xml/mfapi.xml:2190(para) xml/mfapi.xml:2241(para)
 msgid ""
 "Sets the error reply code. 4xx <parameter>return_code</parameter> is used on "
 "<link linkend=\"SMFIS-TEMPFAIL:CAPS\"><literal>SMFIS_TEMPFAIL</literal></"
 "link>. 5xx <parameter>return_code</parameter> is used on <link linkend="
 "\"SMFIS-REJECT:CAPS\"><literal>SMFIS_REJECT</literal></link>."
-msgstr ""
+msgstr "エラー応答コードを設定します。4xx <parameter>return_code</parameter>は<link linkend=\"SMFIS-TEMPFAIL:CAPS\"><literal>SMFIS_TEMPFAIL</literal></link>のときに使います。5xx <parameter>return_code</parameter>は<link linkend=\"SMFIS-REJECT:CAPS\"><literal>SMFIS_REJECT</literal></link>のときに使います。"
 
-#: xml/mfapi.xml:2203(para) xml/mfapi.xml:2254(para)
+#: xml/mfapi.xml:2199(para) xml/mfapi.xml:2250(para)
 msgid "<parameter>return_code</parameter> is neither 4xx nor 5xx."
-msgstr ""
+msgstr "<parameter>return_code</parameter>が4xxでも5xxでもない。"
 
-#: xml/mfapi.xml:2208(para) xml/mfapi.xml:2259(para)
+#: xml/mfapi.xml:2204(para) xml/mfapi.xml:2255(para)
 msgid "<parameter>extended_code</parameter> is neither 4.x.x nor 5.x.x."
-msgstr ""
+msgstr "<parameter>extended_code</parameter>が4.x.xでも5.x.xでもない。"
 
-#: xml/mfapi.xml:2213(para) xml/milter-client-context.xml:764(para)
+#: xml/mfapi.xml:2209(para) xml/milter-client-context.xml:764(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/smfi_setreply\"> "
 "smfi_setreply</ulink> on milter.org."
-msgstr ""
+msgstr "milter.orgの<ulink url=\"https://www.milter.org/developers/api/smfi_setreply\"> smfi_setreply</ulink>も見てください。"
 
-#: xml/mfapi.xml:2223(term) xml/mfapi.xml:2274(term)
+#: xml/mfapi.xml:2219(term) xml/mfapi.xml:2270(term)
 msgid "<parameter>return_code</parameter>&nbsp;:"
 msgstr ""
 
-#: xml/mfapi.xml:2224(simpara) xml/mfapi.xml:2275(simpara)
+#: xml/mfapi.xml:2220(simpara) xml/mfapi.xml:2271(simpara)
 #: xml/milter-client-context.xml:775(simpara)
 msgid ""
 "the three-digit SMTP error reply code. (RFC 2821) Only 4xx and 5xx are "
 "accepted."
-msgstr ""
+msgstr "3桁のSMTPエラー応答コード。（RFC 2821）4xxと5xxだけが使えます。"
 
-#: xml/mfapi.xml:2228(term) xml/mfapi.xml:2279(term)
+#: xml/mfapi.xml:2224(term) xml/mfapi.xml:2275(term)
 #: xml/milter-client-context.xml:778(term) xml/milter-utils.xml:321(term)
 msgid "<parameter>extended_code</parameter>&nbsp;:"
 msgstr ""
 
-#: xml/mfapi.xml:2229(simpara) xml/mfapi.xml:2280(simpara)
+#: xml/mfapi.xml:2225(simpara) xml/mfapi.xml:2276(simpara)
 msgid ""
 "the extended reply code (RFC 1893/2034), or <link linkend=\"NULL:CAPS"
 "\"><literal>NULL</literal></link>. Only 4.x.x and 5.x.x are available."
-msgstr ""
+msgstr "拡張応答コード（RFC 1893/2034）または<link linkend=\"NULL:CAPS\"><literal>NULL</literal></link>。4.x.xと5.x.xだけが使えます。"
 
-#: xml/mfapi.xml:2233(term) xml/milter-client-context.xml:782(term)
+#: xml/mfapi.xml:2229(term) xml/milter-client-context.xml:782(term)
 #: xml/milter-decoder.xml:267(term) xml/milter-logger.xml:362(term)
 #: xml/milter-manager-control-reply-encoder.xml:139(term)
 #: xml/milter-manager-control-reply-encoder.xml:164(term)
@@ -5940,17 +6128,17 @@ msgstr ""
 msgid "<parameter>message</parameter>&nbsp;:"
 msgstr ""
 
-#: xml/mfapi.xml:2234(simpara) xml/milter-client-context.xml:783(simpara)
+#: xml/mfapi.xml:2230(simpara) xml/milter-client-context.xml:783(simpara)
 msgid ""
 "the text part of the SMTP reply, or <link linkend=\"NULL:CAPS"
 "\"><literal>NULL</literal></link>."
-msgstr ""
+msgstr "SMTP応答のテキスト部分または<link linkend=\"NULL:CAPS\"><literal>NULL</literal></link>。"
 
-#: xml/mfapi.xml:2240(title)
+#: xml/mfapi.xml:2236(title)
 msgid "smfi_setmlreply ()"
 msgstr ""
 
-#: xml/mfapi.xml:2241(programlisting)
+#: xml/mfapi.xml:2237(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"int\">int</link>                 smfi_setmlreply                     (<link linkend=\"SMFICTX:CAPS\">SMFICTX</link> *context,\n"
@@ -5959,13 +6147,13 @@ msgid ""
 "                                                         ...);"
 msgstr ""
 
-#: xml/mfapi.xml:2264(para)
+#: xml/mfapi.xml:2260(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/smfi_setmlreply"
 "\"> smfi_setmlreply</ulink> on milter.org."
-msgstr ""
+msgstr "milter.orgの<ulink url=\"https://www.milter.org/developers/api/smfi_setmlreply\"> smfi_setmlreply</ulink>も見てください。"
 
-#: xml/mfapi.xml:2284(term) xml/milter-logger.xml:120(term)
+#: xml/mfapi.xml:2280(term) xml/milter-logger.xml:120(term)
 #: xml/milter-logger.xml:135(term) xml/milter-logger.xml:150(term)
 #: xml/milter-logger.xml:165(term) xml/milter-logger.xml:180(term)
 #: xml/milter-logger.xml:195(term) xml/milter-logger.xml:210(term)
@@ -5976,17 +6164,17 @@ msgstr ""
 msgid "<parameter>...</parameter>&nbsp;:"
 msgstr ""
 
-#: xml/mfapi.xml:2285(simpara)
+#: xml/mfapi.xml:2281(simpara)
 msgid ""
 "the single lines of text part of the SMTP reply, terminated by <link linkend="
 "\"NULL:CAPS\"><literal>NULL</literal></link>."
-msgstr ""
+msgstr "SMTP応答のテキスト部分の一行。最後に<link linkend=\"NULL:CAPS\"><literal>NULL</literal></link>を指定すること。"
 
-#: xml/mfapi.xml:2292(title)
+#: xml/mfapi.xml:2288(title)
 msgid "smfi_addheader ()"
 msgstr ""
 
-#: xml/mfapi.xml:2293(programlisting)
+#: xml/mfapi.xml:2289(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"int\">int</link>                 smfi_addheader                      (<link linkend=\"SMFICTX:CAPS\">SMFICTX</link> *context,\n"
@@ -5994,64 +6182,64 @@ msgid ""
 "                                                         <link linkend=\"char\">char</link> *value);"
 msgstr ""
 
-#: xml/mfapi.xml:2296(para)
+#: xml/mfapi.xml:2292(para)
 msgid ""
 "Adds a header to the current message's header list. <link linkend=\"smfi-"
 "addheader\"><function>smfi_addheader()</function></link> can be called in "
 "<link linkend=\"xxfi-eom\"><function>xxfi_eom()</function></link>."
-msgstr ""
+msgstr "現在のメッセージのヘッダリストにヘッダを追加します。<link linkend=\"smfi-addheader\"><function>smfi_addheader()</function></link>は<link linkend=\"xxfi-eom\"><function>xxfi_eom()</function></link>の中で呼ぶことができます。"
 
-#: xml/mfapi.xml:2304(para) xml/mfapi.xml:2363(para) xml/mfapi.xml:2420(para)
+#: xml/mfapi.xml:2300(para) xml/mfapi.xml:2359(para) xml/mfapi.xml:2416(para)
 msgid ""
 "<parameter>name</parameter> is <link linkend=\"NULL:CAPS\"><literal>NULL</"
 "literal></link>."
-msgstr ""
+msgstr "<parameter>name</parameter>が<link linkend=\"NULL:CAPS\"><literal>NULL</literal></link>。"
 
-#: xml/mfapi.xml:2309(para)
+#: xml/mfapi.xml:2305(para)
 msgid ""
 "<parameter>value</parameter> is <link linkend=\"NULL:CAPS\"><literal>NULL</"
 "literal></link>."
-msgstr ""
+msgstr "<parameter>value</parameter>が<link linkend=\"NULL:CAPS\"><literal>NULL</literal></link>。"
 
-#: xml/mfapi.xml:2314(para)
+#: xml/mfapi.xml:2310(para)
 msgid ""
 "called in except <link linkend=\"xxfi-eom\"><function>xxfi_eom()</function></"
 "link>."
-msgstr ""
+msgstr "<link linkend=\"xxfi-eom\"><function>xxfi_eom()</function></link>以外のところで呼ばれた。"
 
-#: xml/mfapi.xml:2319(para)
+#: xml/mfapi.xml:2315(para)
 msgid ""
 "<link linkend=\"SMFIF-ADDHDRS:CAPS\"><literal>SMFIF_ADDHDRS</literal></link> "
 "flag isn't set in <link linkend=\"smfi-register\"><function>smfi_register()</"
 "function></link> or <link linkend=\"xxfi-negotiate\"><function>xxfi_negotiate"
 "()</function></link>."
-msgstr ""
+msgstr "<link linkend=\"SMFIF-ADDHDRS:CAPS\"><literal>SMFIF_ADDHDRS</literal></link>フラグが<link linkend=\"smfi-register\"><function>smfi_register()</function></link>の中でも、<link linkend=\"xxfi-negotiate\"><function>xxfi_negotiate()</function></link>でも指定されていない。"
 
-#: xml/mfapi.xml:2325(para) xml/mfapi.xml:2379(para) xml/mfapi.xml:2441(para)
-#: xml/mfapi.xml:2496(para) xml/mfapi.xml:2546(para) xml/mfapi.xml:2595(para)
-#: xml/mfapi.xml:2645(para) xml/mfapi.xml:2680(para) xml/mfapi.xml:2727(para)
-#: xml/mfapi.xml:2777(para) xml/mfapi.xml:2890(para)
+#: xml/mfapi.xml:2321(para) xml/mfapi.xml:2375(para) xml/mfapi.xml:2437(para)
+#: xml/mfapi.xml:2492(para) xml/mfapi.xml:2542(para) xml/mfapi.xml:2591(para)
+#: xml/mfapi.xml:2641(para) xml/mfapi.xml:2676(para) xml/mfapi.xml:2723(para)
+#: xml/mfapi.xml:2773(para) xml/mfapi.xml:2886(para)
 msgid "network error is occurred."
-msgstr ""
+msgstr "ネットワークエラー発生。"
 
-#: xml/mfapi.xml:2328(para) xml/milter-client-context.xml:818(para)
+#: xml/mfapi.xml:2324(para) xml/milter-client-context.xml:818(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/smfi_addheader"
 "\"> smfi_addheader</ulink> on milter.org."
-msgstr ""
+msgstr "milter.orgの<ulink url=\"https://www.milter.org/developers/api/smfi_addheader\"> smfi_addheader</ulink>も見てください。"
 
-#: xml/mfapi.xml:2342(simpara) xml/mfapi.xml:2462(simpara)
+#: xml/mfapi.xml:2338(simpara) xml/mfapi.xml:2458(simpara)
 #: xml/milter-client-context.xml:835(simpara)
 #: xml/milter-client-context.xml:873(simpara)
 #: xml/milter-server-context.xml:747(simpara)
 msgid "the header value."
-msgstr ""
+msgstr "ヘッダ値。"
 
-#: xml/mfapi.xml:2348(title)
+#: xml/mfapi.xml:2344(title)
 msgid "smfi_chgheader ()"
 msgstr ""
 
-#: xml/mfapi.xml:2349(programlisting)
+#: xml/mfapi.xml:2345(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"int\">int</link>                 smfi_chgheader                      (<link linkend=\"SMFICTX:CAPS\">SMFICTX</link> *context,\n"
@@ -6060,7 +6248,7 @@ msgid ""
 "                                                         <link linkend=\"char\">char</link> *value);"
 msgstr ""
 
-#: xml/mfapi.xml:2353(para)
+#: xml/mfapi.xml:2349(para)
 msgid ""
 "Changes a header that is located at <parameter>index</parameter> in headers "
 "that all of them are named <parameter>name</parameter>. If <parameter>value</"
@@ -6070,15 +6258,15 @@ msgid ""
 "linkend=\"xxfi-eom\"><function>xxfi_eom()</function></link>."
 msgstr ""
 
-#: xml/mfapi.xml:2368(para) xml/mfapi.xml:2430(para) xml/mfapi.xml:2485(para)
-#: xml/mfapi.xml:2535(para) xml/mfapi.xml:2584(para) xml/mfapi.xml:2634(para)
-#: xml/mfapi.xml:2675(para) xml/mfapi.xml:2716(para) xml/mfapi.xml:2766(para)
+#: xml/mfapi.xml:2364(para) xml/mfapi.xml:2426(para) xml/mfapi.xml:2481(para)
+#: xml/mfapi.xml:2531(para) xml/mfapi.xml:2580(para) xml/mfapi.xml:2630(para)
+#: xml/mfapi.xml:2671(para) xml/mfapi.xml:2712(para) xml/mfapi.xml:2762(para)
 msgid ""
 "called in except <link linkend=\"xxfi-eom\"><function>xxfi_eom()</function></"
 "link>. FIXME: not-implemented yet."
 msgstr ""
 
-#: xml/mfapi.xml:2373(para)
+#: xml/mfapi.xml:2369(para)
 msgid ""
 "<link linkend=\"SMFIF-CHGHDRS:CAPS\"><literal>SMFIF_CHGHDRS</literal></link> "
 "flag isn't set in <link linkend=\"smfi-register\"><function>smfi_register()</"
@@ -6086,13 +6274,13 @@ msgid ""
 "()</function></link>. FIXME: not-implemented yet."
 msgstr ""
 
-#: xml/mfapi.xml:2382(para) xml/milter-client-context.xml:893(para)
+#: xml/mfapi.xml:2378(para) xml/milter-client-context.xml:893(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/smfi_chgheader"
 "\"> smfi_chgheader</ulink> on milter.org."
 msgstr ""
 
-#: xml/mfapi.xml:2395(term) xml/mfapi.xml:2454(term)
+#: xml/mfapi.xml:2391(term) xml/mfapi.xml:2450(term)
 #: xml/milter-client-context.xml:866(term)
 #: xml/milter-client-context.xml:909(term)
 #: xml/milter-client-context.xml:944(term) xml/milter-headers.xml:284(term)
@@ -6103,23 +6291,23 @@ msgstr ""
 msgid "<parameter>index</parameter>&nbsp;:"
 msgstr ""
 
-#: xml/mfapi.xml:2396(simpara)
+#: xml/mfapi.xml:2392(simpara)
 msgid ""
 "the index of headers that all of them are named <parameter>name</parameter>. "
 "(1-based)"
 msgstr ""
 
-#: xml/mfapi.xml:2400(simpara) xml/milter-client-context.xml:914(simpara)
+#: xml/mfapi.xml:2396(simpara) xml/milter-client-context.xml:914(simpara)
 msgid ""
 "the header value. Use <link linkend=\"NULL:CAPS\"><literal>NULL</literal></"
 "link> to delete the target header."
 msgstr ""
 
-#: xml/mfapi.xml:2407(title)
+#: xml/mfapi.xml:2403(title)
 msgid "smfi_insheader ()"
 msgstr ""
 
-#: xml/mfapi.xml:2408(programlisting)
+#: xml/mfapi.xml:2404(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"int\">int</link>                 smfi_insheader                      (<link linkend=\"SMFICTX:CAPS\">SMFICTX</link> *context,\n"
@@ -6128,20 +6316,20 @@ msgid ""
 "                                                         <link linkend=\"char\">char</link> *value);"
 msgstr ""
 
-#: xml/mfapi.xml:2412(para)
+#: xml/mfapi.xml:2408(para)
 msgid ""
 "Inserts a header to <parameter>index</parameter> in headers. <link linkend="
 "\"smfi-insheader\"><function>smfi_insheader()</function></link> can be "
 "called in <link linkend=\"xxfi-eom\"><function>xxfi_eom()</function></link>."
 msgstr ""
 
-#: xml/mfapi.xml:2425(para)
+#: xml/mfapi.xml:2421(para)
 msgid ""
 "<parameter>value</parameter> is <link linkend=\"NULL:CAPS\"><literal>NULL</"
 "literal></link>. FIXME: not-implemented yet."
 msgstr ""
 
-#: xml/mfapi.xml:2435(para)
+#: xml/mfapi.xml:2431(para)
 msgid ""
 "<link linkend=\"SMFIF-ADDHDRS:CAPS\"><literal>SMFIF_ADDHDRS</literal></link> "
 "flag isn't set in <link linkend=\"smfi-register\"><function>smfi_register()</"
@@ -6149,21 +6337,21 @@ msgid ""
 "()</function></link>. FIXME: not-implemented yet."
 msgstr ""
 
-#: xml/mfapi.xml:2444(para)
+#: xml/mfapi.xml:2440(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/smfi_insheader"
 "\"> smfi_insheader</ulink> on milter.org."
 msgstr ""
 
-#: xml/mfapi.xml:2455(simpara)
+#: xml/mfapi.xml:2451(simpara)
 msgid "the index of inserted header. 0 means that the header is prepended."
 msgstr ""
 
-#: xml/mfapi.xml:2468(title)
+#: xml/mfapi.xml:2464(title)
 msgid "smfi_chgfrom ()"
 msgstr ""
 
-#: xml/mfapi.xml:2469(programlisting)
+#: xml/mfapi.xml:2465(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"int\">int</link>                 smfi_chgfrom                        (<link linkend=\"SMFICTX:CAPS\">SMFICTX</link> *context,\n"
@@ -6171,20 +6359,20 @@ msgid ""
 "                                                         <link linkend=\"char\">char</link> *arguments);"
 msgstr ""
 
-#: xml/mfapi.xml:2472(para)
+#: xml/mfapi.xml:2468(para)
 msgid ""
 "Changes a sender address. <link linkend=\"smfi-chgfrom"
 "\"><function>smfi_chgfrom()</function></link> can be called in <link linkend="
 "\"xxfi-eom\"><function>xxfi_eom()</function></link>."
 msgstr ""
 
-#: xml/mfapi.xml:2480(para)
+#: xml/mfapi.xml:2476(para)
 msgid ""
 "<parameter>mail</parameter> is <link linkend=\"NULL:CAPS\"><literal>NULL</"
 "literal></link>. FIXME: not-implemented yet."
 msgstr ""
 
-#: xml/mfapi.xml:2490(para)
+#: xml/mfapi.xml:2486(para)
 msgid ""
 "<link linkend=\"SMFIF-CHGFROM:CAPS\"><literal>SMFIF_CHGFROM</literal></link> "
 "flag isn't set in <link linkend=\"smfi-register\"><function>smfi_register()</"
@@ -6192,49 +6380,49 @@ msgid ""
 "()</function></link>. FIXME: not-implemented yet."
 msgstr ""
 
-#: xml/mfapi.xml:2499(para)
+#: xml/mfapi.xml:2495(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/smfi_chgfrom\"> "
 "smfi_chgfrom</ulink> on milter.org."
 msgstr ""
 
-#: xml/mfapi.xml:2509(term)
+#: xml/mfapi.xml:2505(term)
 msgid "<parameter>mail</parameter>&nbsp;:"
 msgstr ""
 
-#: xml/mfapi.xml:2510(simpara)
+#: xml/mfapi.xml:2506(simpara)
 msgid "the new sender address."
 msgstr ""
 
-#: xml/mfapi.xml:2513(simpara) xml/mfapi.xml:2612(simpara)
+#: xml/mfapi.xml:2509(simpara) xml/mfapi.xml:2608(simpara)
 msgid "the extra arguments for ESMTP."
 msgstr ""
 
-#: xml/mfapi.xml:2519(title)
+#: xml/mfapi.xml:2515(title)
 msgid "smfi_addrcpt ()"
 msgstr ""
 
-#: xml/mfapi.xml:2520(programlisting)
+#: xml/mfapi.xml:2516(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"int\">int</link>                 smfi_addrcpt                        (<link linkend=\"SMFICTX:CAPS\">SMFICTX</link> *context,\n"
 "                                                         <link linkend=\"char\">char</link> *recipient);"
 msgstr ""
 
-#: xml/mfapi.xml:2522(para)
+#: xml/mfapi.xml:2518(para)
 msgid ""
 "Adds a recipient address. <link linkend=\"smfi-addrcpt"
 "\"><function>smfi_addrcpt()</function></link> can be called in <link linkend="
 "\"xxfi-eom\"><function>xxfi_eom()</function></link>."
 msgstr ""
 
-#: xml/mfapi.xml:2530(para) xml/mfapi.xml:2579(para) xml/mfapi.xml:2629(para)
+#: xml/mfapi.xml:2526(para) xml/mfapi.xml:2575(para) xml/mfapi.xml:2625(para)
 msgid ""
 "<parameter>recipient</parameter> is <link linkend=\"NULL:CAPS"
 "\"><literal>NULL</literal></link>. FIXME: not-implemented yet."
 msgstr ""
 
-#: xml/mfapi.xml:2540(para)
+#: xml/mfapi.xml:2536(para)
 msgid ""
 "<link linkend=\"SMFIF-ADDRCPT:CAPS\"><literal>SMFIF_ADDRCPT</literal></link> "
 "flag isn't set in <link linkend=\"smfi-register\"><function>smfi_register()</"
@@ -6242,13 +6430,13 @@ msgid ""
 "()</function></link>. FIXME: not-implemented yet."
 msgstr ""
 
-#: xml/mfapi.xml:2549(para)
+#: xml/mfapi.xml:2545(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/smfi_addrcpt\"> "
 "smfi_addrcpt</ulink> on milter.org."
 msgstr ""
 
-#: xml/mfapi.xml:2559(term) xml/mfapi.xml:2608(term) xml/mfapi.xml:2658(term)
+#: xml/mfapi.xml:2555(term) xml/mfapi.xml:2604(term) xml/mfapi.xml:2654(term)
 #: xml/milter-client-context.xml:1008(term)
 #: xml/milter-client-context.xml:1039(term)
 #: xml/milter-client-context.xml:2226(term)
@@ -6260,15 +6448,15 @@ msgstr ""
 msgid "<parameter>recipient</parameter>&nbsp;:"
 msgstr ""
 
-#: xml/mfapi.xml:2560(simpara)
+#: xml/mfapi.xml:2556(simpara)
 msgid "the new recipient address."
 msgstr ""
 
-#: xml/mfapi.xml:2566(title)
+#: xml/mfapi.xml:2562(title)
 msgid "smfi_addrcpt_par ()"
 msgstr ""
 
-#: xml/mfapi.xml:2567(programlisting)
+#: xml/mfapi.xml:2563(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"int\">int</link>                 smfi_addrcpt_par                    (<link linkend=\"SMFICTX:CAPS\">SMFICTX</link> *context,\n"
@@ -6276,14 +6464,14 @@ msgid ""
 "                                                         <link linkend=\"char\">char</link> *arguments);"
 msgstr ""
 
-#: xml/mfapi.xml:2570(para)
+#: xml/mfapi.xml:2566(para)
 msgid ""
 "Adds a recipient address with extra ESMTP arguments. <link linkend=\"smfi-"
 "addrcpt-par\"><function>smfi_addrcpt_par()</function></link> can be called "
 "in <link linkend=\"xxfi-eom\"><function>xxfi_eom()</function></link>."
 msgstr ""
 
-#: xml/mfapi.xml:2589(para)
+#: xml/mfapi.xml:2585(para)
 msgid ""
 "<link linkend=\"SMFIF-ADDRCPT-PAR:CAPS\"><literal>SMFIF_ADDRCPT_PAR</"
 "literal></link> flag isn't set in <link linkend=\"smfi-register"
@@ -6292,35 +6480,35 @@ msgid ""
 "implemented yet."
 msgstr ""
 
-#: xml/mfapi.xml:2598(para)
+#: xml/mfapi.xml:2594(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/smfi_addrcpt_par"
 "\"> smfi_addrcpt_par</ulink> on milter.org."
 msgstr ""
 
-#: xml/mfapi.xml:2609(simpara) xml/mfapi.xml:2659(simpara)
+#: xml/mfapi.xml:2605(simpara) xml/mfapi.xml:2655(simpara)
 msgid "the recipient address."
 msgstr ""
 
-#: xml/mfapi.xml:2618(title)
+#: xml/mfapi.xml:2614(title)
 msgid "smfi_delrcpt ()"
 msgstr ""
 
-#: xml/mfapi.xml:2619(programlisting)
+#: xml/mfapi.xml:2615(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"int\">int</link>                 smfi_delrcpt                        (<link linkend=\"SMFICTX:CAPS\">SMFICTX</link> *context,\n"
 "                                                         <link linkend=\"char\">char</link> *recipient);"
 msgstr ""
 
-#: xml/mfapi.xml:2621(para)
+#: xml/mfapi.xml:2617(para)
 msgid ""
 "Deletes a recipient address. <link linkend=\"smfi-delrcpt"
 "\"><function>smfi_delrcpt()</function></link> can be called in <link linkend="
 "\"xxfi-eom\"><function>xxfi_eom()</function></link>."
 msgstr ""
 
-#: xml/mfapi.xml:2639(para)
+#: xml/mfapi.xml:2635(para)
 msgid ""
 "<link linkend=\"SMFIF-DELRCPT:CAPS\"><literal>SMFIF_DELRCPT</literal></link> "
 "flag isn't set in <link linkend=\"smfi-register\"><function>smfi_register()</"
@@ -6328,39 +6516,39 @@ msgid ""
 "()</function></link>. FIXME: not-implemented yet."
 msgstr ""
 
-#: xml/mfapi.xml:2648(para)
+#: xml/mfapi.xml:2644(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/smfi_delrcpt\"> "
 "smfi_delrcpt</ulink> on milter.org."
 msgstr ""
 
-#: xml/mfapi.xml:2665(title)
+#: xml/mfapi.xml:2661(title)
 msgid "smfi_progress ()"
 msgstr ""
 
-#: xml/mfapi.xml:2666(programlisting)
+#: xml/mfapi.xml:2662(programlisting)
 #, no-wrap
 msgid "<link linkend=\"int\">int</link>                 smfi_progress                       (<link linkend=\"SMFICTX:CAPS\">SMFICTX</link> *context);"
 msgstr ""
 
-#: xml/mfapi.xml:2667(para)
+#: xml/mfapi.xml:2663(para)
 msgid ""
 "Keeps the current connection. <link linkend=\"smfi-progress"
 "\"><function>smfi_progress()</function></link> can be called in <link "
 "linkend=\"xxfi-eom\"><function>xxfi_eom()</function></link>."
 msgstr ""
 
-#: xml/mfapi.xml:2683(para)
+#: xml/mfapi.xml:2679(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/smfi_progress\"> "
 "smfi_progress</ulink> on milter.org."
 msgstr ""
 
-#: xml/mfapi.xml:2697(title)
+#: xml/mfapi.xml:2693(title)
 msgid "smfi_replacebody ()"
 msgstr ""
 
-#: xml/mfapi.xml:2698(programlisting)
+#: xml/mfapi.xml:2694(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"int\">int</link>                 smfi_replacebody                    (<link linkend=\"SMFICTX:CAPS\">SMFICTX</link> *context,\n"
@@ -6368,7 +6556,7 @@ msgid ""
 "                                                         <link linkend=\"int\">int</link> new_body_size);"
 msgstr ""
 
-#: xml/mfapi.xml:2701(para)
+#: xml/mfapi.xml:2697(para)
 msgid ""
 "Replaces the current body data with <parameter>new_body</parameter>. <link "
 "linkend=\"smfi-replacebody\"><function>smfi_replacebody()</function></link> "
@@ -6376,13 +6564,13 @@ msgid ""
 "link>."
 msgstr ""
 
-#: xml/mfapi.xml:2710(para)
+#: xml/mfapi.xml:2706(para)
 msgid ""
 "<parameter>new_body</parameter> == NULL and <parameter>new_body_size</"
 "parameter> &amp;gt; 0. FIXME: not-implemented yet."
 msgstr ""
 
-#: xml/mfapi.xml:2721(para)
+#: xml/mfapi.xml:2717(para)
 msgid ""
 "<link linkend=\"SMFIF-CHGBODY:CAPS\"><literal>SMFIF_CHGBODY</literal></link> "
 "flag isn't set in <link linkend=\"smfi-register\"><function>smfi_register()</"
@@ -6390,40 +6578,40 @@ msgid ""
 "()</function></link>. FIXME: not-implemented yet."
 msgstr ""
 
-#: xml/mfapi.xml:2730(para)
+#: xml/mfapi.xml:2726(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/smfi_replacebody"
 "\"> smfi_replacebody</ulink> on milter.org."
 msgstr ""
 
-#: xml/mfapi.xml:2740(term)
+#: xml/mfapi.xml:2736(term)
 msgid "<parameter>new_body</parameter>&nbsp;:"
 msgstr ""
 
-#: xml/mfapi.xml:2741(simpara)
+#: xml/mfapi.xml:2737(simpara)
 msgid "the new body data."
 msgstr ""
 
-#: xml/mfapi.xml:2743(term)
+#: xml/mfapi.xml:2739(term)
 msgid "<parameter>new_body_size</parameter>&nbsp;:"
 msgstr ""
 
-#: xml/mfapi.xml:2744(simpara)
+#: xml/mfapi.xml:2740(simpara)
 msgid "the size of <parameter>new_body</parameter>."
 msgstr ""
 
-#: xml/mfapi.xml:2750(title)
+#: xml/mfapi.xml:2746(title)
 msgid "smfi_quarantine ()"
 msgstr ""
 
-#: xml/mfapi.xml:2751(programlisting)
+#: xml/mfapi.xml:2747(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"int\">int</link>                 smfi_quarantine                     (<link linkend=\"SMFICTX:CAPS\">SMFICTX</link> *context,\n"
 "                                                         <link linkend=\"char\">char</link> *reason);"
 msgstr ""
 
-#: xml/mfapi.xml:2753(para)
+#: xml/mfapi.xml:2749(para)
 msgid ""
 "Quarantines the current message with <parameter>reason</parameter>. <link "
 "linkend=\"smfi-quarantine\"><function>smfi_quarantine()</function></link> "
@@ -6431,12 +6619,12 @@ msgid ""
 "link>."
 msgstr ""
 
-#: xml/mfapi.xml:2761(para)
+#: xml/mfapi.xml:2757(para)
 msgid ""
 "<parameter>reason</parameter> is NULL or empty. FIXME: not-implemented yet."
 msgstr ""
 
-#: xml/mfapi.xml:2771(para)
+#: xml/mfapi.xml:2767(para)
 msgid ""
 "<link linkend=\"SMFIF-QUARANTINE:CAPS\"><literal>SMFIF_QUARANTINE</literal></"
 "link> flag isn't set in <link linkend=\"smfi-register"
@@ -6445,81 +6633,81 @@ msgid ""
 "implemented yet."
 msgstr ""
 
-#: xml/mfapi.xml:2780(para)
+#: xml/mfapi.xml:2776(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/smfi_quarantine"
 "\"> smfi_quarantine</ulink> on milter.org."
 msgstr ""
 
-#: xml/mfapi.xml:2790(term) xml/milter-client-context.xml:1114(term)
+#: xml/mfapi.xml:2786(term) xml/milter-client-context.xml:1114(term)
 #: xml/milter-reply-encoder.xml:604(term)
 msgid "<parameter>reason</parameter>&nbsp;:"
 msgstr ""
 
-#: xml/mfapi.xml:2791(simpara)
+#: xml/mfapi.xml:2787(simpara)
 msgid "the quarantine reason."
 msgstr ""
 
-#: xml/mfapi.xml:2797(title)
+#: xml/mfapi.xml:2793(title)
 msgid "smfi_setpriv ()"
 msgstr ""
 
-#: xml/mfapi.xml:2798(programlisting)
+#: xml/mfapi.xml:2794(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"int\">int</link>                 smfi_setpriv                        (<link linkend=\"SMFICTX:CAPS\">SMFICTX</link> *context,\n"
 "                                                         <link linkend=\"void\">void</link> *data);"
 msgstr ""
 
-#: xml/mfapi.xml:2800(para)
+#: xml/mfapi.xml:2796(para)
 msgid "Sets the private data."
 msgstr ""
 
-#: xml/mfapi.xml:2807(para) xml/mfapi.xml:2838(para)
+#: xml/mfapi.xml:2803(para) xml/mfapi.xml:2834(para)
 msgid "<parameter>context</parameter> is invalid. FIXME: not-implemented yet."
 msgstr ""
 
-#: xml/mfapi.xml:2812(para)
+#: xml/mfapi.xml:2808(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/smfi_setpriv\"> "
 "smfi_setpriv</ulink> on milter.org."
 msgstr ""
 
-#: xml/mfapi.xml:2823(simpara) xml/milter-client-context.xml:746(simpara)
+#: xml/mfapi.xml:2819(simpara) xml/milter-client-context.xml:746(simpara)
 msgid "the private data."
 msgstr ""
 
-#: xml/mfapi.xml:2829(title)
+#: xml/mfapi.xml:2825(title)
 msgid "smfi_getpriv ()"
 msgstr ""
 
-#: xml/mfapi.xml:2830(programlisting)
+#: xml/mfapi.xml:2826(programlisting)
 #, no-wrap
 msgid "<link linkend=\"void\">void</link>*               smfi_getpriv                        (<link linkend=\"SMFICTX:CAPS\">SMFICTX</link> *context);"
 msgstr ""
 
-#: xml/mfapi.xml:2831(para)
+#: xml/mfapi.xml:2827(para)
 msgid "Gets the private data."
 msgstr ""
 
-#: xml/mfapi.xml:2843(para)
+#: xml/mfapi.xml:2839(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/smfi_getpriv\"> "
 "smfi_getpriv</ulink> on milter.org."
 msgstr ""
 
-#: xml/mfapi.xml:2853(simpara)
+#: xml/mfapi.xml:2849(simpara)
 msgid ""
 "the private data set by <link linkend=\"smfi-setpriv\"><function>smfi_setpriv"
 "()</function></link> or <link linkend=\"NULL:CAPS\"><literal>NULL</literal></"
 "link>."
 msgstr ""
 
-#: xml/mfapi.xml:2857(title)
+#: xml/mfapi.xml:2853(title)
 msgid "smfi_setsymlist ()"
 msgstr ""
 
-#: xml/mfapi.xml:2858(programlisting)
+#: xml/mfapi.xml:2854(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"int\">int</link>                 smfi_setsymlist                     (<link linkend=\"SMFICTX:CAPS\">SMFICTX</link> *context,\n"
@@ -6527,62 +6715,62 @@ msgid ""
 "                                                         <link linkend=\"char\">char</link> *macros);"
 msgstr ""
 
-#: xml/mfapi.xml:2861(para)
+#: xml/mfapi.xml:2857(para)
 msgid ""
 "Sets the list of requested macros. <link linkend=\"smfi-setsymlist"
 "\"><function>smfi_setsymlist()</function></link> can be called in <link "
 "linkend=\"xxfi-negotiate\"><function>xxfi_negotiate()</function></link>."
 msgstr ""
 
-#: xml/mfapi.xml:2869(para)
+#: xml/mfapi.xml:2865(para)
 msgid ""
 "<parameter>state</parameter> is not a valid value. FIXME: not-implemented "
 "yet."
 msgstr ""
 
-#: xml/mfapi.xml:2874(para)
+#: xml/mfapi.xml:2870(para)
 msgid ""
 "<parameter>macros</parameter> is NULL or empty. FIXME: not-implemented yet."
 msgstr ""
 
-#: xml/mfapi.xml:2879(para)
+#: xml/mfapi.xml:2875(para)
 msgid ""
 "the macro list for <parameter>state</parameter> has been set before. FIXME: "
 "not-implemented yet."
 msgstr ""
 
-#: xml/mfapi.xml:2885(para)
+#: xml/mfapi.xml:2881(para)
 msgid ""
 "called in except <link linkend=\"xxfi-negotiate\"><function>xxfi_negotiate()"
 "</function></link>. FIXME: not-implemented yet."
 msgstr ""
 
-#: xml/mfapi.xml:2893(para)
+#: xml/mfapi.xml:2889(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/smfi_setsymlist"
 "\"> smfi_setsymlist</ulink> on milter.org."
 msgstr ""
 
-#: xml/mfapi.xml:2903(term) xml/milter-client-context.xml:1167(term)
+#: xml/mfapi.xml:2899(term) xml/milter-client-context.xml:1167(term)
 #: xml/milter-manager-children.xml:573(term)
 #: xml/milter-manager-children.xml:595(term)
 #: xml/milter-server-context.xml:580(term)
 msgid "<parameter>state</parameter>&nbsp;:"
 msgstr ""
 
-#: xml/mfapi.xml:2904(simpara)
+#: xml/mfapi.xml:2900(simpara)
 msgid ""
 "the state defined as SMFIM_XXX like <link linkend=\"SMFIM-CONNECT:CAPS"
 "\"><literal>SMFIM_CONNECT</literal></link>."
 msgstr ""
 
-#: xml/mfapi.xml:2906(term) xml/milter-command-encoder.xml:186(term)
+#: xml/mfapi.xml:2902(term) xml/milter-command-encoder.xml:186(term)
 #: xml/milter-manager-leader.xml:503(term)
 #: xml/milter-protocol-agent.xml:156(term)
 msgid "<parameter>macros</parameter>&nbsp;:"
 msgstr ""
 
-#: xml/mfapi.xml:2907(simpara)
+#: xml/mfapi.xml:2903(simpara)
 msgid "the space separated macro names like \"{rcpt_mailer} {rcpt_host}\"."
 msgstr ""
 
@@ -9724,7 +9912,7 @@ msgid ""
 "failure. (i.e. 4xx status code in SMTP) A new envelope from address may be "
 "specified."
 msgstr ""
-"差出人と現在の接続を一時的な失敗として拒否します。（つまり、SMTPでは4xxのス"
+"差出人と現在の接続を一時的な障害として拒否します。（つまり、SMTPでは4xxのス"
 "テータスコードになります。）新しい差出人が指定されるかもしれません。"
 
 #: xml/milter-client-context.xml:2056(para)
@@ -25717,3 +25905,10 @@ msgstr ""
 #: xml/milter-writer.xml:0(None)
 msgid "translator-credits"
 msgstr ""
+
+#~ msgid ""
+#~ "Indicates that the milter don't reply on <link linkend=\"xxfi-mail"
+#~ "\"><function>xxfi_mail()</function></link>."
+#~ msgstr ""
+#~ "milterが<link linkend=\"xxfi-mail\"><function>xxfi_mail()</function></"
+#~ "link>に返答しないことを示します。"

@@ -1,5 +1,9 @@
 2009-02-16  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/reference/ja.po: add translations.
+	* libmilter/mfapi.h,
+	milter/client/milter-client-context.c: fix typos.
+
 	* milter/manager/milter-manager-children.c,
 	test/manager/test-children.c,
 	test/fixtures/leader/envelope-recipient-temporary-failure.txt,

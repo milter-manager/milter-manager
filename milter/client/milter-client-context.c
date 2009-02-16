@@ -808,7 +808,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    #MilterClientContext::aborted is not emitted.
      *
      * : %MILTER_STATUS_TEMPORARY_FAILURE
-     *    Rejects the the current message with temporary
+     *    Rejects the current message with temporary
      *    failure. (i.e. 4xx status code in SMTP)
      *
      *    #MilterClientContext::aborted is not emitted.
@@ -936,7 +936,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    #MilterClientContext::aborted is not emitted.
      *
      * : %MILTER_STATUS_TEMPORARY_FAILURE
-     *    Rejects the the current message with temporary
+     *    Rejects the current message with temporary
      *    failure. (i.e. 4xx status code in SMTP)
      *
      *    #MilterClientContext::aborted is not emitted.
@@ -1031,7 +1031,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    #MilterClientContext::aborted is not emitted.
      *
      * : %MILTER_STATUS_TEMPORARY_FAILURE
-     *    Rejects the the current message with temporary
+     *    Rejects the current message with temporary
      *    failure. (i.e. 4xx status code in SMTP)
      *
      *    #MilterClientContext::aborted is not emitted.
@@ -1132,7 +1132,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    #MilterClientContext::aborted is not emitted.
      *
      * : %MILTER_STATUS_TEMPORARY_FAILURE
-     *    Rejects the the current message with temporary
+     *    Rejects the current message with temporary
      *    failure. (i.e. 4xx status code in SMTP)
      *
      *    #MilterClientContext::aborted is not emitted.
@@ -1232,7 +1232,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    #MilterClientContext::aborted is not emitted.
      *
      * : %MILTER_STATUS_TEMPORARY_FAILURE
-     *    Rejects the the current message with temporary
+     *    Rejects the current message with temporary
      *    failure. (i.e. 4xx status code in SMTP)
      *
      *    #MilterClientContext::aborted is not emitted.
@@ -1334,7 +1334,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    #MilterClientContext::aborted is not emitted.
      *
      * : %MILTER_STATUS_TEMPORARY_FAILURE
-     *    Rejects the the current message with temporary
+     *    Rejects the current message with temporary
      *    failure. (i.e. 4xx status code in SMTP)
      *
      *    #MilterClientContext::aborted is not emitted.

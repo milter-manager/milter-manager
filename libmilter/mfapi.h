@@ -476,7 +476,7 @@ struct smfiDesc
      *    more processing.
      *
      * : %SMFIS_TEMPFAIL
-     *    Rejects the the current message with temporary
+     *    Rejects the current message with temporary
      *    failure. (i.e. 4xx status code in SMTP)
      *
      * : %SMFIS_NOREPLY
@@ -518,7 +518,7 @@ struct smfiDesc
      *    more processing.
      *
      * : %SMFIS_TEMPFAIL
-     *    Rejects the the current message with temporary
+     *    Rejects the current message with temporary
      *    failure. (i.e. 4xx status code in SMTP)
      *
      * : %SMFIS_NOREPLY
@@ -562,7 +562,7 @@ struct smfiDesc
      *    more processing.
      *
      * : %SMFIS_TEMPFAIL
-     *    Rejects the the current message with temporary
+     *    Rejects the current message with temporary
      *    failure. (i.e. 4xx status code in SMTP)
      *
      * : %SMFIS_SKIP
@@ -608,7 +608,7 @@ struct smfiDesc
      *    more processing.
      *
      * : %SMFIS_TEMPFAIL
-     *    Rejects the the current message with temporary
+     *    Rejects the current message with temporary
      *    failure. (i.e. 4xx status code in SMTP)
      * </rd>
      *
@@ -633,7 +633,7 @@ struct smfiDesc
      * this callback will not be called.
      *
      * If the milter has any resources allocated for the
-     * message between xxfi_envfrom and xxfi_eom(), should
+     * message between xxfi_envfrom() and xxfi_eom(), should
      * be freed in this callback. But any resources
      * allocated for the connection should not be freed in
      * this callback. It should be freed in xxfi_close().
@@ -652,7 +652,7 @@ struct smfiDesc
      *    more processing.
      *
      * : %SMFIS_TEMPFAIL
-     *    Rejects the the current message with temporary
+     *    Rejects the current message with temporary
      *    failure. (i.e. 4xx status code in SMTP)
      * </rd>
      *
@@ -698,7 +698,7 @@ struct smfiDesc
      *    Rejects the current message.
      *
      * : %SMFIS_TEMPFAIL
-     *    Rejects the the current message with temporary
+     *    Rejects the current message with temporary
      *    failure. (i.e. 4xx status code in SMTP)
      *
      * : %SMFIS_NOREPLY
@@ -946,10 +946,10 @@ int smfi_settimeout (int              timeout);
  * <rd>
  * @connection_spec format is one of them:
  *   * "unix:/PATH/TO/SOCKET": UNIX domain socket.
- *   * "inet:PORT", "inet:PORT@HOST_NAME" or
- *     "inet:PORT@IP_ADDRESS": IPv4.
- *   * "inet6:PORT", "inet6:PORT@HOST_NAME" or
- *     "inet6:PORT@IP_ADDRESS": IPv6.
+ *   * "inet:PORT", "inet:PORT&commat;HOST_NAME" or
+ *     "inet:PORT&commat;IP_ADDRESS": IPv4.
+ *   * "inet6:PORT", "inet6:PORT&commat;HOST_NAME" or
+ *     "inet6:PORT&commat;IP_ADDRESS": IPv6.
  * </rd>
  *
  * <rd>
@@ -1117,7 +1117,7 @@ int smfi_version    (unsigned int    *major,
  *
  * See each callback (xxfi_connect(), xxfi_helo() and so
  * on) and <ulink
- * url="https://www.milter.org/developers/api/&num;conn-spec">
+ * url="https://www.milter.org/developers/api/">
  * callback return status description</ulink> on milter.org.
  */
 #define SMFIS_CONTINUE    0
@@ -1129,7 +1129,7 @@ int smfi_version    (unsigned int    *major,
  *
  * See each callback (xxfi_connect(), xxfi_helo() and so
  * on) and <ulink
- * url="https://www.milter.org/developers/api/&num;conn-spec">
+ * url="https://www.milter.org/developers/api/">
  * callback return status description</ulink> on milter.org.
  */
 #define SMFIS_REJECT      1
@@ -1142,7 +1142,7 @@ int smfi_version    (unsigned int    *major,
  *
  * See each callback (xxfi_envfrom(), xxfi_envrcpt() and so
  * on) and <ulink
- * url="https://www.milter.org/developers/api/&num;conn-spec">
+ * url="https://www.milter.org/developers/api/">
  * callback return status description</ulink> on milter.org.
  */
 #define SMFIS_DISCARD     2
@@ -1154,7 +1154,7 @@ int smfi_version    (unsigned int    *major,
  *
  * See each callback (xxfi_connect(), xxfi_helo() and so
  * on) and <ulink
- * url="https://www.milter.org/developers/api/&num;conn-spec">
+ * url="https://www.milter.org/developers/api/">
  * callback return status description</ulink> on milter.org.
  */
 #define SMFIS_ACCEPT      3
@@ -1167,7 +1167,7 @@ int smfi_version    (unsigned int    *major,
  *
  * See each callback (xxfi_connect(), xxfi_helo() and so
  * on) and <ulink
- * url="https://www.milter.org/developers/api/&num;conn-spec">
+ * url="https://www.milter.org/developers/api/">
  * callback return status description</ulink> on milter.org.
  */
 #define SMFIS_TEMPFAIL    4
@@ -1179,7 +1179,7 @@ int smfi_version    (unsigned int    *major,
  *
  * See each callback (xxfi_connect(), xxfi_helo() and so
  * on) and <ulink
- * url="https://www.milter.org/developers/api/&num;conn-spec">
+ * url="https://www.milter.org/developers/api/">
  * callback return status description</ulink> on milter.org.
  */
 #define SMFIS_NOREPLY     7
@@ -1191,7 +1191,7 @@ int smfi_version    (unsigned int    *major,
  * xxfi_body().
  *
  * See also <ulink
- * url="https://www.milter.org/developers/api/&num;conn-spec">
+ * url="https://www.milter.org/developers/api/">
  * callback return status description</ulink> on milter.org.
  */
 #define SMFIS_SKIP        8
@@ -1376,7 +1376,7 @@ int smfi_version    (unsigned int    *major,
 /**
  * SMFIP_SKIP:
  *
- * Indicates that the MTA supports SMFIS_SKIP in xxfi_body().
+ * Indicates that the MTA supports %SMFIS_SKIP in xxfi_body().
  *
  * This flag can be got/set to @steps_output of xxfi_negotiate().
  **/
@@ -1386,7 +1386,7 @@ int smfi_version    (unsigned int    *major,
  * SMFIP_RCPT_REJ:
  *
  * Indicates that the MTA should send rejected envelope
- * recipients and xxfi_header() is called for them.
+ * recipients and xxfi_envrcpt() is called for them.
  *
  * This flag can be got/set to @steps_output of xxfi_negotiate().
  **/
@@ -1413,7 +1413,7 @@ int smfi_version    (unsigned int    *major,
 /**
  * SMFIP_NR_MAIL:
  *
- * Indicates that the milter don't reply on xxfi_mail().
+ * Indicates that the milter don't reply on xxfi_envfrom().
  *
  * This flag can be got/set to @steps_output of xxfi_negotiate().
  **/
@@ -1422,7 +1422,7 @@ int smfi_version    (unsigned int    *major,
 /**
  * SMFIP_NR_RCPT:
  *
- * Indicates that the milter don't reply on xxfi_rcpt().
+ * Indicates that the milter don't reply on xxfi_envrcpt().
  *
  * This flag can be got/set to @steps_output of xxfi_negotiate().
  **/
