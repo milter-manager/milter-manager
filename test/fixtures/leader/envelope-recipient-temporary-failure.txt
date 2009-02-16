@@ -17,7 +17,7 @@ recipient=temporary-failure@example.com
 
 response=envelope-recipient
 n_received=2
-status=continue
+status=temporary-failure
 
 recipients=temporary-failure@example.com;temporary-failure@example.com
 

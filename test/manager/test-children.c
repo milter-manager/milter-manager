@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -1350,39 +1350,75 @@ data_important_status (void)
                         MILTER_STATUS_ ## status,               \
                         MILTER_STATUS_ ## next_status)
 
-    cut_add_data("connect - default - accept",
-                 test_data(CONNECT, DEFAULT, ACCEPT), g_free,
-                 "envelope_from - temporary_failure - continue",
-                 test_data(ENVELOPE_FROM, TEMPORARY_FAILURE, CONTINUE), g_free,
-                 "envelope_from - discard - reject",
-                 test_data(ENVELOPE_FROM, DISCARD, REJECT), g_free,
-                 "envelope_recipient - reject - discard",
-                 test_data(ENVELOPE_RECIPIENT, REJECT, DISCARD), g_free,
-                 "envelope_recipient - continue - reject",
-                 test_data(ENVELOPE_RECIPIENT, CONTINUE, REJECT), g_free,
-                 "envelope_recipient - accept - reject",
-                 test_data(ENVELOPE_RECIPIENT, ACCEPT, REJECT), g_free,
-                 "envelope_recipient - temporary_failure - reject",
-                 test_data(ENVELOPE_RECIPIENT, TEMPORARY_FAILURE, REJECT),
-                 g_free,
-                 "envelope_recipient - temporary_failure - discard",
-                 test_data(ENVELOPE_RECIPIENT, TEMPORARY_FAILURE, DISCARD),
-                 g_free,
-                 "envelope_recipient - temporary_failure - accept",
-                 test_data(ENVELOPE_RECIPIENT, TEMPORARY_FAILURE, ACCEPT),
-                 g_free,
-                 "envelope_recipient - default - temporary_failure",
-                 test_data(ENVELOPE_RECIPIENT, DEFAULT, TEMPORARY_FAILURE),
-                 g_free,
-                 "body - skip - discard",
-                 test_data(BODY, SKIP, DISCARD),
-                 g_free,
-                 "body - skip - continue",
-                 test_data(BODY, SKIP, CONTINUE),
-                 g_free,
+#define add_data(label, state)                                          \
+    cut_add_data(label " - default - accept",                           \
+                 test_data(state, DEFAULT, ACCEPT), g_free,             \
+                 label " - default - continue",                         \
+                 test_data(state, DEFAULT, ACCEPT), g_free,             \
+                 label " - default - temporary failure",                \
+                 test_data(state, DEFAULT, TEMPORARY_FAILURE), g_free,  \
+                 label " - default - reject",                           \
+                 test_data(state, DEFAULT, REJECT), g_free,             \
+                 label " - default - discard",                          \
+                 test_data(state, DEFAULT, DISCARD), g_free,            \
+                 label " - not change - accept",                        \
+                 test_data(state, NOT_CHANGE, ACCEPT), g_free,          \
+                 label " - not change - continue",                      \
+                 test_data(state, NOT_CHANGE, ACCEPT), g_free,          \
+                 label " - not change - temporary failure",             \
+                 test_data(state, NOT_CHANGE, TEMPORARY_FAILURE),       \
+                 g_free,                                                \
+                 label " - not change - reject",                        \
+                 test_data(state, NOT_CHANGE, REJECT), g_free,          \
+                 label " - not change - discard",                       \
+                 test_data(state, NOT_CHANGE, DISCARD), g_free,         \
+                 label " - accept - continue",                          \
+                 test_data(state, ACCEPT, CONTINUE), g_free,            \
+                 label " - accept - temporary failure",                 \
+                 test_data(state, ACCEPT, TEMPORARY_FAILURE), g_free,   \
+                 label " - accept - reject",                            \
+                 test_data(state, ACCEPT, REJECT), g_free,              \
+                 label " - accept - discard",                           \
+                 test_data(state, ACCEPT, DISCARD), g_free,             \
+                 label " - continue - temporary failure",               \
+                 test_data(state, CONTINUE, TEMPORARY_FAILURE), g_free, \
+                 label " - continue - reject",                          \
+                 test_data(state, CONTINUE, REJECT), g_free,            \
+                 label " - continue - discard",                         \
+                 test_data(state, CONTINUE, DISCARD), g_free,           \
+                 label " - temporary failure - reject",                 \
+                 test_data(state, TEMPORARY_FAILURE, REJECT), g_free,   \
+                 label " - temporary failure - discard",                \
+                 test_data(state, TEMPORARY_FAILURE, DISCARD), g_free,  \
+                 label " - reject - discard",                           \
+                 test_data(state, REJECT, DISCARD), g_free)
+
+    add_data("connect", CONNECT);
+    add_data("envelope from", ENVELOPE_FROM);
+    add_data("envelope recipient", ENVELOPE_RECIPIENT);
+    add_data("data", DATA);
+    add_data("header", HEADER);
+    add_data("end of header", END_OF_HEADER);
+    add_data("body", BODY);
+    cut_add_data("body - default - skip",
+                 test_data(BODY, DEFAULT, SKIP), g_free,
+                 "body - not change - skip",
+                 test_data(BODY, NOT_CHANGE, SKIP), g_free,
                  "body - accept - skip",
-                 test_data(BODY, ACCEPT, SKIP),
-                 g_free);
+                 test_data(BODY, ACCEPT, SKIP), g_free,
+                 "body - skip - continue",
+                 test_data(BODY, SKIP, CONTINUE), g_free,
+                 "body - skip - temporary failure",
+                 test_data(BODY, SKIP, TEMPORARY_FAILURE), g_free,
+                 "body - skip - reject",
+                 test_data(BODY, SKIP, REJECT), g_free,
+                 "body - skip - discard",
+                 test_data(BODY, SKIP, DISCARD), g_free,
+                 "body - accept - skip",
+                 test_data(BODY, ACCEPT, SKIP), g_free);
+    add_data("end of message", END_OF_MESSAGE);
+
+#undef add_data
 #undef test_data
 }
 
@@ -1405,24 +1441,50 @@ data_not_important_status (void)
                         MILTER_STATUS_ ## status,               \
                         MILTER_STATUS_ ## next_status)
 
-    cut_add_data("connect - continue - accept",
-                 test_data(CONNECT, CONTINUE, ACCEPT), g_free,
-                 "envelope_from - reject - discard",
-                 test_data(ENVELOPE_FROM, REJECT, DISCARD), g_free,
-                 "envelope_recipient - discard - reject",
-                 test_data(ENVELOPE_RECIPIENT, DISCARD, REJECT), g_free,
-                 "envelope_recipient - continue - temporary_failure",
-                 test_data(ENVELOPE_RECIPIENT, CONTINUE, TEMPORARY_FAILURE),
-                 g_free,
-                 "envelope_recipient - accept - temporary_failure",
-                 test_data(ENVELOPE_RECIPIENT, ACCEPT, TEMPORARY_FAILURE),
-                 g_free,
-                 "body - continue - skip",
-                 test_data(BODY, CONTINUE, SKIP),
-                 g_free,
-                 "body - skip - temporary_failure",
-                 test_data(BODY, SKIP, TEMPORARY_FAILURE),
-                 g_free);
+#define add_data(label, state)                                          \
+    cut_add_data(label " - continue - accept",                          \
+                 test_data(state, CONTINUE, ACCEPT), g_free,            \
+                 label " - temporary failure - continue",               \
+                 test_data(state, TEMPORARY_FAILURE, CONTINUE), g_free, \
+                 label " - temporary failure - accept",                 \
+                 test_data(state, TEMPORARY_FAILURE, ACCEPT), g_free,   \
+                 label " - reject - continue",                          \
+                 test_data(state, REJECT, CONTINUE), g_free,            \
+                 label " - reject - temporary failure",                 \
+                 test_data(state, REJECT, TEMPORARY_FAILURE), g_free,   \
+                 label " - reject - accept",                            \
+                 test_data(state, REJECT, ACCEPT), g_free,              \
+                 label " - discard - continue",                         \
+                 test_data(state, DISCARD, ACCEPT), g_free,             \
+                 label " - discard - temporary failure",                \
+                 test_data(state, DISCARD, TEMPORARY_FAILURE), g_free,  \
+                 label " - discard - accept",                           \
+                 test_data(state, DISCARD, ACCEPT), g_free,             \
+                 label " - discard - reject",                           \
+                 test_data(state, DISCARD, REJECT), g_free);
+
+    add_data("connect", CONNECT);
+    add_data("envelope from", ENVELOPE_FROM);
+    add_data("envelope recipient", ENVELOPE_RECIPIENT);
+    add_data("data", DATA);
+    add_data("header", HEADER);
+    add_data("end of header", END_OF_HEADER);
+    add_data("body", BODY);
+    cut_add_data("body - continue - skip",
+                 test_data(BODY, CONTINUE, SKIP), g_free,
+                 "body - temporary failure - skip",
+                 test_data(BODY, TEMPORARY_FAILURE, SKIP), g_free,
+                 "body - reject - skip",
+                 test_data(BODY, REJECT, SKIP), g_free,
+                 "body - discard - skip",
+                 test_data(BODY, DISCARD, SKIP), g_free,
+                 "body - skip - default",
+                 test_data(BODY, SKIP, DEFAULT), g_free,
+                 "body - skip - not change",
+                 test_data(BODY, SKIP, NOT_CHANGE), g_free);
+    add_data("end of message", END_OF_MESSAGE);
+
+#undef add_data
 #undef test_data
 }
 

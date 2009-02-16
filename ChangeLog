@@ -1,5 +1,11 @@
 2009-02-16  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/manager/milter-manager-children.c,
+	test/manager/test-children.c,
+	test/fixtures/leader/envelope-recipient-temporary-failure.txt,
+	test/fixtures/leader/envelope-from-reject-and-discard.txt: fix
+	status priority order.
+
 	* milter/manager/milter-manager-children.c (cb_error): use
 	fallback status not reject.
 

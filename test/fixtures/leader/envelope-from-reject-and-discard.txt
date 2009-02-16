@@ -18,7 +18,7 @@ from=reject+discard@example.com
 
 response=envelope-from
 n_received=2
-status=reject
+status=discard
 
 froms=reject+discard@example.com;reject+discard@example.com
 

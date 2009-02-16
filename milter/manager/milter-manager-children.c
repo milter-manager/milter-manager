@@ -2947,43 +2947,43 @@ milter_manager_children_is_important_status (MilterManagerChildren *children,
     current_status = get_reply_status_for_state(children, state);
 
     switch (current_status) {
-    case MILTER_STATUS_REJECT:
-        if (state != MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT)
-            return FALSE;
-        return (status == MILTER_STATUS_DISCARD);
-        break;
     case MILTER_STATUS_DISCARD:
-        if (state == MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT)
-            return FALSE;
-        return (status == MILTER_STATUS_REJECT);
+        return FALSE;
+        break;
+    case MILTER_STATUS_REJECT:
+        if (status == MILTER_STATUS_DISCARD)
+            return TRUE;
+        return FALSE;
         break;
     case MILTER_STATUS_TEMPORARY_FAILURE:
-        if (status == MILTER_STATUS_NOT_CHANGE)
-            return FALSE;
-        return TRUE;
-        break;
-    case MILTER_STATUS_ACCEPT:
-        if (status == MILTER_STATUS_NOT_CHANGE ||
-            status == MILTER_STATUS_TEMPORARY_FAILURE)
-            return FALSE;
-        return TRUE;
-        break;
-    case MILTER_STATUS_SKIP:
-        if (status == MILTER_STATUS_NOT_CHANGE ||
-            status == MILTER_STATUS_ACCEPT ||
-            status == MILTER_STATUS_TEMPORARY_FAILURE)
-            return FALSE;
-        return TRUE;
+        if (status == MILTER_STATUS_DISCARD ||
+            status == MILTER_STATUS_REJECT)
+            return TRUE;
+        return FALSE;
         break;
     case MILTER_STATUS_CONTINUE:
-        if (status == MILTER_STATUS_NOT_CHANGE ||
-            status == MILTER_STATUS_ACCEPT ||
-            status == MILTER_STATUS_SKIP)
-            return FALSE;
-        if (status == MILTER_STATUS_TEMPORARY_FAILURE &&
-            state != MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
-            return FALSE;
-        return TRUE;
+        if (status == MILTER_STATUS_DISCARD ||
+            status == MILTER_STATUS_REJECT ||
+            status == MILTER_STATUS_TEMPORARY_FAILURE)
+            return TRUE;
+        return FALSE;
+    case MILTER_STATUS_SKIP:
+        if (status == MILTER_STATUS_DISCARD ||
+            status == MILTER_STATUS_REJECT ||
+            status == MILTER_STATUS_TEMPORARY_FAILURE ||
+            status == MILTER_STATUS_CONTINUE)
+            return TRUE;
+        return FALSE;
+        break;
+    case MILTER_STATUS_ACCEPT:
+        if (status == MILTER_STATUS_DISCARD ||
+            status == MILTER_STATUS_REJECT ||
+            status == MILTER_STATUS_TEMPORARY_FAILURE ||
+            status == MILTER_STATUS_SKIP ||
+            status == MILTER_STATUS_CONTINUE)
+            return TRUE;
+        return FALSE;
+        break;
     default:
         return TRUE;
         break;
