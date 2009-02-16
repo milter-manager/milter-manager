@@ -1,6 +1,10 @@
 2009-02-16  Kouhei Sutou  <kou@cozmixng.org>
 
 	* doc/reference/ja.po: add translations.
+	* milter/client.h,
+	milter/client/milter-client-context.h: improve document.
+
+	* doc/reference/ja.po: add translations.
 	* milter/client.h: improve document.
 
 	* doc/reference/ja.po: add translations.

@@ -363,6 +363,7 @@ const gchar         *milter_client_get_default_unix_socket_group
 /**
  * milter_client_set_default_unix_socket_group:
  * @client: a %MilterClient.
+ * @group: the group name.
  *
  * Sets the default group of UNIX domain socket.
  */

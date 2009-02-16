@@ -239,7 +239,7 @@ typedef enum
  * @MILTER_CLIENT_CONTEXT_STATE_NEGOTIATE: Starting negotiation.
  * @MILTER_CLIENT_CONTEXT_STATE_NEGOTIATE_REPLIED: Received
  * negotiation response.
- * @MILTER_CLIENT_CONTEXT_STATE_CONNECT: Starting connection
+ * @MILTER_CLIENT_CONTEXT_STATE_CONNECT: Sent connection
  * information.
  * @MILTER_CLIENT_CONTEXT_STATE_CONNECT_REPLIED: Received
  * connection information response.
@@ -442,7 +442,7 @@ gpointer             milter_client_context_get_private_data  (MilterClientContex
  *
  * Sets the private data of the @context. @data is
  * destroyed by @destroy when @data is unset. @data is unset
- * when new private data is set or @context is @destroyed.
+ * when new private data is set or @context is destroyed.
  */
 void                 milter_client_context_set_private_data  (MilterClientContext *context,
                                                               gpointer data,
