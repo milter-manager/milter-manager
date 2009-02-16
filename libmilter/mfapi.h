@@ -589,7 +589,7 @@ struct smfiDesc
      * xxfi_eom:
      * @context: the context for the current milter session.
      *
-     * This callback is called after all xxfi_eom() are
+     * This callback is called after all xxfi_body() are
      * called. All message modifications can be done only in
      * this callback. The modifications can be done with
      * smfi_addheader(), smfi_chgfrom() and so on.

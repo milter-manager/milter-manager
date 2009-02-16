@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: milter-manager 0.0.1\n"
-"POT-Creation-Date: 2009-02-16 11:11+0900\n"
-"PO-Revision-Date: 2009-02-16 12:07+0900\n"
+"POT-Creation-Date: 2009-02-16 12:45+0900\n"
+"PO-Revision-Date: 2009-02-16 12:52+0900\n"
 "Last-Translator: Kouhei Sutou <kou@cozmixng.org>\n"
 "Language-Team: Japanese\n"
 "MIME-Version: 1.0\n"
@@ -4198,7 +4198,9 @@ msgstr "現在のメッセージに対する処理を続けます。"
 msgid ""
 "Rejects the current envelope from address and message. A new envelope from "
 "may be specified."
-msgstr "現在の差出人とメッセージを拒否します。新しい差出人が指定されるかもしれません。"
+msgstr ""
+"現在の差出人とメッセージを拒否します。新しい差出人が指定されるかもしれませ"
+"ん。"
 
 #: xml/mfapi.xml:541(para) xml/mfapi.xml:618(para) xml/mfapi.xml:725(para)
 #: xml/mfapi.xml:798(para) xml/mfapi.xml:868(para) xml/mfapi.xml:946(para)
@@ -4230,20 +4232,27 @@ msgid ""
 "Rejects the current envelope from address and message with temporary "
 "failure. (i.e. 4xx status code in SMTP) A new envelope from address may be "
 "specified."
-msgstr "現在の差出人とメッセージを一時的な失敗として拒否します。（つまり、SMTPでは4xxのステータスコードになります。）新しい差出人が指定されるかもしれません。"
+msgstr ""
+"現在の差出人とメッセージを一時的な失敗として拒否します。（つまり、SMTPでは4xx"
+"のステータスコードになります。）新しい差出人が指定されるかもしれません。"
 
 #: xml/mfapi.xml:563(para)
 msgid ""
 "Doesn't send a reply back to MTA. The milter must set <link linkend=\"SMFIP-"
 "NR-MAIL:CAPS\"><literal>SMFIP_NR_MAIL</literal></link> flag to <link linkend="
 "\"smfiDesc\"><literal>smfiDesc</literal></link>::xxfi_flags."
-msgstr "MTAに返答しません。milterは<link linkend=\"smfiDesc\"><literal>smfiDesc</literal></link>::xxfi_flagsに<link linkend=\"SMFIP-NR-MAIL:CAPS\"><literal>SMFIP_NR_MAIL</literal></link>フラグを設定しなければいけません。"
+msgstr ""
+"MTAに返答しません。milterは<link linkend=\"smfiDesc\"><literal>smfiDesc</"
+"literal></link>::xxfi_flagsに<link linkend=\"SMFIP-NR-MAIL:CAPS"
+"\"><literal>SMFIP_NR_MAIL</literal></link>フラグを設定しなければいけません。"
 
 #: xml/mfapi.xml:571(para) xml/milter-client-context.xml:2083(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/xxfi_envfrom\"> "
 "xxfi_envfrom</ulink> on milter.org."
-msgstr "milter.orgの<ulink url=\"https://www.milter.org/developers/api/xxfi_envfrom\"> xxfi_envfrom</ulink>も見てください。"
+msgstr ""
+"milter.orgの<ulink url=\"https://www.milter.org/developers/api/xxfi_envfrom"
+"\"> xxfi_envfrom</ulink>も見てください。"
 
 #: xml/mfapi.xml:582(term) xml/mfapi.xml:657(term) xml/mfapi.xml:2512(term)
 #: xml/mfapi.xml:2611(term)
@@ -4254,7 +4263,9 @@ msgstr ""
 msgid ""
 "the SMTP's \"MAIL FROM\" command arguments. The first element is sender "
 "address. NULL-terminated."
-msgstr "SMTPの\"MAIL FROM\"コマンドの引数。最初の要素は差出人のアドレスです。NULL終端しています。"
+msgstr ""
+"SMTPの\"MAIL FROM\"コマンドの引数。最初の要素は差出人のアドレスです。NULL終端"
+"しています。"
 
 #: xml/mfapi.xml:591(title)
 msgid "xxfi_envrcpt ()"
@@ -4287,26 +4298,34 @@ msgstr "現在の宛先を受け入れます。"
 msgid ""
 "Rejects the current envelope recipient address with temporary failure. (i.e. "
 "4xx status code in SMTP) Processing the current message is continued."
-msgstr "現在の宛先を一時的な失敗として拒否します。（つまり、SMTPでは4xxのステータスコードになります。）現在のメッセージの処理は継続します。"
+msgstr ""
+"現在の宛先を一時的な失敗として拒否します。（つまり、SMTPでは4xxのステータス"
+"コードになります。）現在のメッセージの処理は継続します。"
 
 #: xml/mfapi.xml:638(para)
 msgid ""
 "Doesn't send a reply back to MTA. The milter must set <link linkend=\"SMFIP-"
 "NR-RCPT:CAPS\"><literal>SMFIP_NR_RCPT</literal></link> flag to <link linkend="
 "\"smfiDesc\"><literal>smfiDesc</literal></link>::xxfi_flags."
-msgstr "MTAに返答しません。milterは<link linkend=\"smfiDesc\"><literal>smfiDesc</literal></link>::xxfi_flagsに<link linkend=\"SMFIP-NR-RCPT:CAPS\"><literal>SMFIP_NR_RCPT</literal></link>フラグを設定しなければいけません。"
+msgstr ""
+"MTAに返答しません。milterは<link linkend=\"smfiDesc\"><literal>smfiDesc</"
+"literal></link>::xxfi_flagsに<link linkend=\"SMFIP-NR-RCPT:CAPS"
+"\"><literal>SMFIP_NR_RCPT</literal></link>フラグを設定しなければいけません。"
 
 #: xml/mfapi.xml:646(para) xml/milter-client-context.xml:2215(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/xxfi_envrcpt\"> "
 "xxfi_envrcpt</ulink> on milter.org."
-msgstr "milter.orgの<ulink url=\"https://www.milter.org/developers/api/xxfi_envrcpt\"> xxfi_envrcpt</ulink>も見てください。"
+msgstr ""
+"milter.orgの<ulink url=\"https://www.milter.org/developers/api/xxfi_envrcpt"
+"\"> xxfi_envrcpt</ulink>も見てください。"
 
 #: xml/mfapi.xml:658(simpara)
 msgid ""
 "the SMTP's \"RCPT TO\" command arguments. The first element is recipient "
 "address. NULL-terminated."
-msgstr "SMTPの\"RCPT TO\"コマンドの引数。最初の要素は宛先です。NULL終端しています。"
+msgstr ""
+"SMTPの\"RCPT TO\"コマンドの引数。最初の要素は宛先です。NULL終端しています。"
 
 #: xml/mfapi.xml:666(title)
 msgid "xxfi_header ()"
@@ -4328,10 +4347,15 @@ msgid ""
 "<parameter>value</parameter> have spaces after header name and value "
 "separator \":\"."
 msgstr ""
+"このコールバックは各ヘッダに対して呼ばれます。もし、<link linkend=\"smfiDesc"
+"\"><literal>smfiDesc</literal></link>::xxfi_flagsに<link linkend=\"SMFIP-HDR-"
+"LEADSPC:CAPS\"><literal>SMFIP_HDR_LEADSPC</literal></link>フラグが設定されて"
+"いれば、<parameter>value</parameter>はヘッダ名と値を区切る\":\"の後ろにあるス"
+"ペースも含みます。"
 
 #: xml/mfapi.xml:676(para) xml/milter-client-context.xml:2271(para)
 msgid "Example:"
-msgstr ""
+msgstr "例:"
 
 #: xml/mfapi.xml:680(programlisting)
 #: xml/milter-client-context.xml:2275(programlisting)
@@ -4348,6 +4372,8 @@ msgid ""
 "With <link linkend=\"SMFIP-HDR-LEADSPC:CAPS\"><literal>SMFIP_HDR_LEADSPC</"
 "literal></link>:"
 msgstr ""
+"<link linkend=\"SMFIP-HDR-LEADSPC:CAPS\"><literal>SMFIP_HDR_LEADSPC</"
+"literal></link>あり:"
 
 #: xml/mfapi.xml:690(programlisting)
 #: xml/milter-client-context.xml:2285(programlisting)
@@ -4364,6 +4390,8 @@ msgid ""
 "Without <link linkend=\"SMFIP-HDR-LEADSPC:CAPS\"><literal>SMFIP_HDR_LEADSPC</"
 "literal></link>:"
 msgstr ""
+"<link linkend=\"SMFIP-HDR-LEADSPC:CAPS\"><literal>SMFIP_HDR_LEADSPC</"
+"literal></link>なし:"
 
 #: xml/mfapi.xml:700(programlisting)
 #: xml/milter-client-context.xml:2295(programlisting)
@@ -4383,7 +4411,7 @@ msgstr ""
 #: xml/milter-client-context.xml:2314(para)
 #: xml/milter-client-context.xml:2697(para)
 msgid "Rejects the current message."
-msgstr ""
+msgstr "現在のメッセージを拒否します。"
 
 #: xml/mfapi.xml:738(para) xml/mfapi.xml:811(para) xml/mfapi.xml:881(para)
 #: xml/mfapi.xml:959(para) xml/mfapi.xml:1022(para) xml/mfapi.xml:1086(para)
@@ -4397,6 +4425,8 @@ msgid ""
 "Rejects the the current message with temporary failure. (i.e. 4xx status "
 "code in SMTP)"
 msgstr ""
+"現在のメッセージを一時的な失敗として拒否します。（つまり、SMTPでは4xxのステー"
+"タスコードになります。）"
 
 #: xml/mfapi.xml:745(para)
 msgid ""
@@ -4404,12 +4434,17 @@ msgid ""
 "NR-HDR:CAPS\"><literal>SMFIP_NR_HDR</literal></link> flag to <link linkend="
 "\"smfiDesc\"><literal>smfiDesc</literal></link>::xxfi_flags."
 msgstr ""
+"MTAに返答しません。milterは<link linkend=\"smfiDesc\"><literal>smfiDesc</"
+"literal></link>::xxfi_flagsに<link linkend=\"SMFIP-NR-HDR:CAPS"
+"\"><literal>SMFIP_NR_HDR</literal></link>フラグを設定しなければいけません。"
 
 #: xml/mfapi.xml:753(para) xml/milter-client-context.xml:2379(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/xxfi_header\"> "
 "xxfi_header</ulink> on milter.org."
 msgstr ""
+"milter.orgの<ulink url=\"https://www.milter.org/developers/api/xxfi_header"
+"\"> xxfi_header</ulink>も見てください。"
 
 #: xml/mfapi.xml:763(term) xml/mfapi.xml:2181(term) xml/mfapi.xml:2338(term)
 #: xml/mfapi.xml:2392(term) xml/mfapi.xml:2458(term)
@@ -4454,7 +4489,7 @@ msgstr ""
 #: xml/milter-client-context.xml:2390(simpara)
 #: xml/milter-server-context.xml:744(simpara)
 msgid "the header name."
-msgstr ""
+msgstr "ヘッダ名。"
 
 #: xml/mfapi.xml:766(term) xml/mfapi.xml:2341(term) xml/mfapi.xml:2399(term)
 #: xml/mfapi.xml:2461(term) xml/milter-client-context.xml:834(term)
@@ -4478,6 +4513,8 @@ msgid ""
 "the header value. <parameter>value</parameter> may include folded white "
 "space."
 msgstr ""
+"ヘッダ値。<parameter>value</parameter>は折り返し時に挿入された空白を含むかも"
+"しれません。"
 
 #: xml/mfapi.xml:774(title)
 msgid "xxfi_eoh ()"
@@ -4490,7 +4527,7 @@ msgstr ""
 
 #: xml/mfapi.xml:776(para)
 msgid "This callback is called on all headers are processed."
-msgstr ""
+msgstr "このコールバックはすべてのヘッダが処理されたときに呼ばれます。"
 
 #: xml/mfapi.xml:818(para)
 msgid ""
@@ -4498,12 +4535,17 @@ msgid ""
 "NR-EOH:CAPS\"><literal>SMFIP_NR_EOH</literal></link> flag to <link linkend="
 "\"smfiDesc\"><literal>smfiDesc</literal></link>::xxfi_flags."
 msgstr ""
+"MTAに返答しません。milterは<link linkend=\"smfiDesc\"><literal>smfiDesc</"
+"literal></link>::xxfi_flagsに<link linkend=\"SMFIP-NR-EOH:CAPS"
+"\"><literal>SMFIP_NR_EOH</literal></link>フラグを設定しなければいけません。"
 
 #: xml/mfapi.xml:826(para) xml/milter-client-context.xml:1845(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/xxfi_eof\"> "
 "xxfi_eof</ulink> on milter.org."
 msgstr ""
+"milter.orgの<ulink url=\"https://www.milter.org/developers/api/xxfi_eof\"> "
+"xxfi_eof</ulink>も見てください。"
 
 #: xml/mfapi.xml:840(title)
 msgid "xxfi_body ()"
@@ -4524,12 +4566,18 @@ msgid ""
 "function></link> and <link linkend=\"xxfi-eom\"><function>xxfi_eom()</"
 "function></link>."
 msgstr ""
+"このコールバックは本文のデータを受け取ったときに呼ばれます。このコールバック"
+"は<link linkend=\"xxfi-eoh\"><function>xxfi_eoh()</function></link>と<link "
+"linkend=\"xxfi-eom\"><function>xxfi_eom()</function></link>の間に0回以上呼ば"
+"れます。"
 
 #: xml/mfapi.xml:888(para)
 msgid ""
 "Skips further body processing. <link linkend=\"xxfi-eom\"><function>xxfi_eom"
 "()</function></link> is called."
 msgstr ""
+"これ以上の本文の処理を省略します。<link linkend=\"xxfi-eom"
+"\"><function>xxfi_eom()</function></link>は呼ばれます。"
 
 #: xml/mfapi.xml:897(para)
 msgid ""
@@ -4537,12 +4585,17 @@ msgid ""
 "NR-BODY:CAPS\"><literal>SMFIP_NR_BODY</literal></link> flag to <link linkend="
 "\"smfiDesc\"><literal>smfiDesc</literal></link>::xxfi_flags."
 msgstr ""
+"MTAに返答しません。milterは<link linkend=\"smfiDesc\"><literal>smfiDesc</"
+"literal></link>::xxfi_flagsに<link linkend=\"SMFIP-NR-BODY:CAPS"
+"\"><literal>SMFIP_NR_BODY</literal></link>フラグを設定しなければいけません。"
 
 #: xml/mfapi.xml:905(para) xml/milter-client-context.xml:1442(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/xxfi_body\"> "
 "xxfi_body</ulink> on milter.org."
 msgstr ""
+"milter.orgの<ulink url=\"https://www.milter.org/developers/api/xxfi_body\"> "
+"xxfi_body</ulink>も見てください。"
 
 #: xml/mfapi.xml:915(term) xml/mfapi.xml:2822(term)
 #: xml/milter-client-context.xml:745(term) xml/milter-utils.xml:453(term)
@@ -4552,7 +4605,7 @@ msgstr ""
 #: xml/mfapi.xml:916(simpara) xml/milter-client-context.xml:1453(simpara)
 #: xml/milter-server-context.xml:780(simpara)
 msgid "the body chunk."
-msgstr ""
+msgstr "本文の1かたまり。"
 
 #: xml/mfapi.xml:918(term)
 msgid "<parameter>data_size</parameter>&nbsp;:"
@@ -4560,7 +4613,7 @@ msgstr ""
 
 #: xml/mfapi.xml:919(simpara)
 msgid "the size of <parameter>data</parameter>."
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/mfapi.xml:925(title)
 msgid "xxfi_eom ()"
@@ -4573,19 +4626,26 @@ msgstr ""
 
 #: xml/mfapi.xml:927(para)
 msgid ""
-"This callback is called after all <link linkend=\"xxfi-eom"
-"\"><function>xxfi_eom()</function></link> are called. All message "
+"This callback is called after all <link linkend=\"xxfi-body"
+"\"><function>xxfi_body()</function></link> are called. All message "
 "modifications can be done only in this callback. The modifications can be "
 "done with <link linkend=\"smfi-addheader\"><function>smfi_addheader()</"
 "function></link>, <link linkend=\"smfi-chgfrom\"><function>smfi_chgfrom()</"
 "function></link> and so on."
 msgstr ""
+"このコールバックはすべての<link linkend=\"xxfi-body\"><function>xxfi_body()</"
+"function></link>呼び出しが終わった後に呼ばれます。すべてのメッセージ変更はこ"
+"のコールバックの中でだけ行えます。変更は<link linkend=\"smfi-addheader"
+"\"><function>smfi_addheader()</function></link>、<link linkend=\"smfi-chgfrom"
+"\"><function>smfi_chgfrom()</function></link>などです。"
 
 #: xml/mfapi.xml:964(para) xml/milter-client-context.xml:1955(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/xxfi_eom\"> "
 "xxfi_eom</ulink> on milter.org."
 msgstr ""
+"milter.orgの<ulink url=\"https://www.milter.org/developers/api/xxfi_eom\"> "
+"xxfi_eom</ulink>も見てください。"
 
 #: xml/mfapi.xml:978(title)
 msgid "xxfi_abort ()"
