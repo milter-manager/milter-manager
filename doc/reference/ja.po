@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: milter-manager 0.0.1\n"
 "POT-Creation-Date: 2009-02-16 22:49+0900\n"
-"PO-Revision-Date: 2009-02-16 23:35+0900\n"
+"PO-Revision-Date: 2009-02-16 23:57+0900\n"
 "Last-Translator: Kouhei Sutou <kou@cozmixng.org>\n"
 "Language-Team: Japanese\n"
 "MIME-Version: 1.0\n"
@@ -19111,7 +19111,7 @@ msgid ""
 "literal></link> processes one server side milter protocol session. It means "
 "<link linkend=\"MilterServerContext\"><literal>MilterServerContext</"
 "literal></link> instance is created for each milter protocol session."
-msgstr ""
+msgstr "<link linkend=\"MilterServerContext\"><literal>MilterServerContext</literal></link>は1つのサーバ側のmilterプロトコルセッションを処理します。これは各milterプロトコルセッション毎に<link linkend=\"MilterServerContext\"><literal>MilterServerContext</literal></link>インスタンスが生成されるということです。"
 
 #: xml/milter-server-context.xml:119(programlisting)
 #, no-wrap
@@ -19162,7 +19162,7 @@ msgstr ""
 
 #: xml/milter-server-context.xml:157(para)
 msgid "The default end-of-message response timeout by seconds."
-msgstr ""
+msgstr "既定の秒単位でのメッセージ終了時の応答待ちタイムアウト。"
 
 #: xml/milter-server-context.xml:163(title)
 msgid "enum MilterServerContextError"
@@ -19227,7 +19227,7 @@ msgstr ""
 msgid ""
 "Indicates a new operation is requested before the previous operation's "
 "response is received."
-msgstr ""
+msgstr "前の操作の結果を受け取る前に新しい操作が要求されたことを示します。"
 
 #: xml/milter-server-context.xml:208(literal)
 msgid "MILTER_SERVER_CONTEXT_ERROR_IO_ERROR"
@@ -19243,7 +19243,7 @@ msgstr ""
 
 #: xml/milter-server-context.xml:220(simpara)
 msgid "Indicates unsupported newer version is requested."
-msgstr ""
+msgstr "未サポートの新しいバージョンが要求されたことを示します。"
 
 #: xml/milter-server-context.xml:226(title)
 msgid "enum MilterServerContextState"
@@ -19294,7 +19294,7 @@ msgstr ""
 
 #: xml/milter-server-context.xml:263(simpara)
 msgid "Negotiating."
-msgstr ""
+msgstr "ネゴシエーション中。"
 
 #: xml/milter-server-context.xml:267(literal)
 msgid "MILTER_SERVER_CONTEXT_STATE_CONNECT"
@@ -19310,7 +19310,7 @@ msgstr ""
 
 #: xml/milter-server-context.xml:274(simpara)
 msgid "Sent HELO information."
-msgstr ""
+msgstr "HELOコマンドの情報を送信しました。"
 
 #: xml/milter-server-context.xml:278(literal)
 msgid "MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM"
@@ -19318,7 +19318,7 @@ msgstr ""
 
 #: xml/milter-server-context.xml:279(simpara)
 msgid "Sent MAIL FROM command information."
-msgstr ""
+msgstr "MAIL FROMコマンドの情報を送信しました。"
 
 #: xml/milter-server-context.xml:284(literal)
 msgid "MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT"
@@ -19326,7 +19326,7 @@ msgstr ""
 
 #: xml/milter-server-context.xml:285(simpara)
 msgid "Sent RCPT TO command information."
-msgstr ""
+msgstr "RCPT TOコマンドの情報を送信しました。"
 
 #: xml/milter-server-context.xml:290(literal)
 msgid "MILTER_SERVER_CONTEXT_STATE_DATA"
@@ -19334,7 +19334,7 @@ msgstr ""
 
 #: xml/milter-server-context.xml:291(simpara)
 msgid "Sent DATA command information."
-msgstr ""
+msgstr "DATAコマンドの情報を送信しました。"
 
 #: xml/milter-server-context.xml:296(literal)
 msgid "MILTER_SERVER_CONTEXT_STATE_UNKNOWN"
@@ -19354,7 +19354,7 @@ msgstr ""
 
 #: xml/milter-server-context.xml:308(simpara)
 msgid "Sent all headers."
-msgstr ""
+msgstr "すべてのヘッダを送信しました。"
 
 #: xml/milter-server-context.xml:312(literal)
 msgid "MILTER_SERVER_CONTEXT_STATE_BODY"
@@ -19378,7 +19378,7 @@ msgstr ""
 
 #: xml/milter-server-context.xml:324(simpara)
 msgid "Sent quit request."
-msgstr ""
+msgstr "終了要求を送信しました。"
 
 #: xml/milter-server-context.xml:328(literal)
 msgid "MILTER_SERVER_CONTEXT_STATE_ABORT"
@@ -19386,7 +19386,7 @@ msgstr ""
 
 #: xml/milter-server-context.xml:329(simpara)
 msgid "Sent abort request."
-msgstr ""
+msgstr "中止要求を送信しました。"
 
 #: xml/milter-server-context.xml:335(programlisting)
 #, no-wrap
@@ -19444,7 +19444,7 @@ msgid ""
 "doesn't connects to client in <parameter>timeout</parameter> seconds, <link "
 "linkend=\"MilterServerContext-timeout\"><type>\"timeout\"</type></link> "
 "signal is emitted."
-msgstr ""
+msgstr "接続時のタイムアウトを秒で設定します。もし、<parameter>context</parameter>が<parameter>timeout</parameter>秒以内にクライアントに接続できない場合は<link linkend=\"MilterServerContext-timeout\"><type>\"timeout\"</type></link>シグナルが発行されます。"
 
 #: xml/milter-server-context.xml:377(simpara)
 #: xml/milter-server-context.xml:397(simpara)
@@ -19486,7 +19486,7 @@ msgid ""
 "CONTEXT-DEFAULT-CONNECTION-TIMEOUT:CAPS"
 "\"><literal>MILTER_SERVER_CONTEXT_DEFAULT_CONNECTION_TIMEOUT</literal></"
 "link>)"
-msgstr ""
+msgstr "接続時の秒単位のタイムアウト。（既定値は<link linkend=\"MILTER-SERVER-CONTEXT-DEFAULT-CONNECTION-TIMEOUT:CAPS\"><literal>MILTER_SERVER_CONTEXT_DEFAULT_CONNECTION_TIMEOUT</literal></link>）"
 
 #: xml/milter-server-context.xml:385(title)
 msgid "milter_server_context_set_writing_timeout ()"
@@ -19506,14 +19506,14 @@ msgid ""
 "doesn't write to client socket in <parameter>timeout</parameter> seconds, "
 "<link linkend=\"MilterServerContext-timeout\"><type>\"timeout\"</type></"
 "link> signal is emitted."
-msgstr ""
+msgstr "書き込み時の秒単位のタイムアウトを設定します。<parameter>context</parameter>が<parameter>timeout</parameter>秒以内にクライアントのソケットに書き込めない場合は<link linkend=\"MilterServerContext-timeout\"><type>\"timeout\"</type></link>シグナルが発行されます。"
 
 #: xml/milter-server-context.xml:400(simpara)
 msgid ""
 "the writing timeout by seconds. (default is <link linkend=\"MILTER-SERVER-"
 "CONTEXT-DEFAULT-WRITING-TIMEOUT:CAPS"
 "\"><literal>MILTER_SERVER_CONTEXT_DEFAULT_WRITING_TIMEOUT</literal></link>)"
-msgstr ""
+msgstr "秒単位での書き込みタイムアウト。（既定値は<link linkend=\"MILTER-SERVER-CONTEXT-DEFAULT-WRITING-TIMEOUT:CAPS\"><literal>MILTER_SERVER_CONTEXT_DEFAULT_WRITING_TIMEOUT</literal></link>）"
 
 #: xml/milter-server-context.xml:405(title)
 msgid "milter_server_context_set_reading_timeout ()"
@@ -19533,14 +19533,14 @@ msgid ""
 "doesn't receive response from client socket in <parameter>timeout</"
 "parameter> seconds, <link linkend=\"MilterServerContext-timeout\"><type>"
 "\"timeout\"</type></link> signal is emitted."
-msgstr ""
+msgstr "読み込み時のタイムアウトを秒単位で指定します。<parameter>context</parameter>が<parameter>timeout</parameter>秒以内にクライアントソケットから応答を受け取らなかった場合は、<link linkend=\"MilterServerContext-timeout\"><type>\"timeout\"</type></link>シグナルが発行されます。"
 
 #: xml/milter-server-context.xml:420(simpara)
 msgid ""
 "the reading timeout by seconds. (default is <link linkend=\"MILTER-SERVER-"
 "CONTEXT-DEFAULT-READING-TIMEOUT:CAPS"
 "\"><literal>MILTER_SERVER_CONTEXT_DEFAULT_READING_TIMEOUT</literal></link>)"
-msgstr ""
+msgstr "秒単位での読み込み時のタイムアウト。（既定値は<link linkend=\"MILTER-SERVER-CONTEXT-DEFAULT-READING-TIMEOUT:CAPS\"><literal>MILTER_SERVER_CONTEXT_DEFAULT_READING_TIMEOUT</literal></link>）"
 
 #: xml/milter-server-context.xml:425(title)
 msgid "milter_server_context_set_end_of_message_timeout ()"
@@ -19560,7 +19560,7 @@ msgid ""
 "parameter> doesn't receive response for end-of-message from client socket in "
 "<parameter>timeout</parameter> seconds, <link linkend=\"MilterServerContext-"
 "timeout\"><type>\"timeout\"</type></link> signal is emitted."
-msgstr ""
+msgstr "メッセージ終了時のタイムアウトを秒単位で設定します。<parameter>context</parameter>が<parameter>timeout</parameter>秒以内にクライアントソケットからメッセージ終了時の応答を受け取らなかった場合は、<link linkend=\"MilterServerContext-timeout\"><type>\"timeout\"</type></link>シグナルが発行されます。"
 
 #: xml/milter-server-context.xml:441(simpara)
 msgid ""
@@ -19568,7 +19568,7 @@ msgid ""
 "SERVER-CONTEXT-DEFAULT-END-OF-MESSAGE-TIMEOUT:CAPS"
 "\"><literal>MILTER_SERVER_CONTEXT_DEFAULT_END_OF_MESSAGE_TIMEOUT</literal></"
 "link>)"
-msgstr ""
+msgstr "秒単位でのメッセージ終了時のタイムアウト。（既定値は<link linkend=\"MILTER-SERVER-CONTEXT-DEFAULT-END-OF-MESSAGE-TIMEOUT:CAPS\"><literal>MILTER_SERVER_CONTEXT_DEFAULT_END_OF_MESSAGE_TIMEOUT</literal></link>）"
 
 #: xml/milter-server-context.xml:447(title)
 msgid "milter_server_context_set_connection_spec ()"
@@ -19676,7 +19676,7 @@ msgstr ""
 
 #: xml/milter-server-context.xml:540(para)
 msgid "Gets whether waiting response."
-msgstr ""
+msgstr "応答を待っているかどうかを取得します。"
 
 #: xml/milter-server-context.xml:548(simpara)
 msgid ""
@@ -19705,7 +19705,7 @@ msgstr "クライアントとネゴシエーションします。"
 
 #: xml/milter-server-context.xml:565(simpara)
 msgid "the negotiate option."
-msgstr ""
+msgstr "ネゴシエーションのオプション。"
 
 #: xml/milter-server-context.xml:571(title)
 msgid "milter_server_context_connect ()"
@@ -19722,7 +19722,7 @@ msgstr ""
 
 #: xml/milter-server-context.xml:576(para)
 msgid "Sends connected SMTP client information."
-msgstr ""
+msgstr "接続されたSMTPクライアントの情報を送信します。"
 
 #: xml/milter-server-context.xml:585(simpara)
 msgid "the host name of connected SMTP client."
@@ -19749,11 +19749,11 @@ msgstr ""
 
 #: xml/milter-server-context.xml:600(para)
 msgid "Sends the FQDN passed on HELO."
-msgstr ""
+msgstr "HELOに渡されたFQDNを送信します。"
 
 #: xml/milter-server-context.xml:609(simpara)
 msgid "the FQDN."
-msgstr ""
+msgstr "FQDN。"
 
 #: xml/milter-server-context.xml:615(title)
 msgid "milter_server_context_envelope_from ()"
@@ -19768,7 +19768,7 @@ msgstr ""
 
 #: xml/milter-server-context.xml:618(para)
 msgid "Sends the parameter passed on MAIL FROM."
-msgstr ""
+msgstr "MAIL FROM時に渡されたパラメタを送信します。"
 
 #: xml/milter-server-context.xml:627(simpara)
 msgid "the envelope from address."
@@ -19788,7 +19788,7 @@ msgstr ""
 
 #: xml/milter-server-context.xml:637(para)
 msgid "Sends the parameter passed on RCPT TO."
-msgstr ""
+msgstr "RCPT TO時に渡されたパラメタを送信します。"
 
 #: xml/milter-server-context.xml:646(simpara)
 msgid "the envelope recipient address."
@@ -19805,7 +19805,7 @@ msgstr ""
 
 #: xml/milter-server-context.xml:654(para)
 msgid "Notifies DATA is received."
-msgstr ""
+msgstr "DATAコマンドを受信したことを通知します。"
 
 #: xml/milter-server-context.xml:666(title)
 msgid "milter_server_context_unknown ()"
@@ -19836,7 +19836,7 @@ msgstr ""
 
 #: xml/milter-server-context.xml:688(para)
 msgid "Sends a header."
-msgstr ""
+msgstr "ヘッダを送信します。"
 
 #: xml/milter-server-context.xml:706(title)
 msgid "milter_server_context_end_of_header ()"
@@ -19849,7 +19849,7 @@ msgstr ""
 
 #: xml/milter-server-context.xml:708(para)
 msgid "Notifies all headers are sent."
-msgstr ""
+msgstr "すべてのヘッダが送信されたことを通知します。"
 
 #: xml/milter-server-context.xml:720(title)
 msgid "milter_server_context_body ()"
@@ -19882,7 +19882,7 @@ msgstr ""
 
 #: xml/milter-server-context.xml:747(para)
 msgid "Notifies all body chunks are sent with optional the last body chunk."
-msgstr ""
+msgstr "すべての本文のかたまりを送信したことを通知します。未送信の最後の本文のかたまりも一緒に送信することができます。"
 
 #: xml/milter-server-context.xml:757(simpara)
 msgid ""
@@ -19934,7 +19934,7 @@ msgstr ""
 msgid ""
 "Gets whether <parameter>step</parameter> flag is enabled in the "
 "<parameter>context</parameter>'s option."
-msgstr ""
+msgstr "<parameter>context</parameter>のオプションで<parameter>step</parameter>フラグが有効かどうかを取得します。"
 
 #: xml/milter-server-context.xml:807(simpara)
 msgid "the step flag."
@@ -19963,7 +19963,7 @@ msgstr ""
 msgid ""
 "Gets whether <parameter>context</parameter> received skip response on "
 "sending body chunks."
-msgstr ""
+msgstr "<parameter>context</parameter>が本文のかたまりを送っている間にスキップ応答を受け取ったかどうかを取得します。"
 
 #: xml/milter-server-context.xml:824(simpara)
 msgid ""
