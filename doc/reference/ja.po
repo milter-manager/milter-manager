@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: milter-manager 0.0.1\n"
 "POT-Creation-Date: 2009-02-16 18:23+0900\n"
-"PO-Revision-Date: 2009-02-16 18:41+0900\n"
+"PO-Revision-Date: 2009-02-16 19:16+0900\n"
 "Last-Translator: Kouhei Sutou <kou@cozmixng.org>\n"
 "Language-Team: Japanese\n"
 "MIME-Version: 1.0\n"
@@ -6256,7 +6256,7 @@ msgid ""
 "the header is deleted. <link linkend=\"smfi-chgheader"
 "\"><function>smfi_chgheader()</function></link> can be called in <link "
 "linkend=\"xxfi-eom\"><function>xxfi_eom()</function></link>."
-msgstr ""
+msgstr "<parameter>name</parameter>という名前のヘッダのうち、<parameter>index</parameter>番目にあるヘッダを変更します。<parameter>value</parameter>が<link linkend=\"NULL:CAPS\"><literal>NULL</literal></link>ならそのヘッダは削除されます。<link linkend=\"smfi-chgheader\"><function>smfi_chgheader()</function></link>は<link linkend=\"xxfi-eom\"><function>xxfi_eom()</function></link>の中で呼ぶことができます。"
 
 #: xml/mfapi.xml:2364(para) xml/mfapi.xml:2426(para) xml/mfapi.xml:2481(para)
 #: xml/mfapi.xml:2531(para) xml/mfapi.xml:2580(para) xml/mfapi.xml:2630(para)
@@ -6264,7 +6264,7 @@ msgstr ""
 msgid ""
 "called in except <link linkend=\"xxfi-eom\"><function>xxfi_eom()</function></"
 "link>. FIXME: not-implemented yet."
-msgstr ""
+msgstr "<link linkend=\"xxfi-eom\"><function>xxfi_eom()</function></link>以外で呼ばれた。FIXME: 未実装。"
 
 #: xml/mfapi.xml:2369(para)
 msgid ""
@@ -6272,13 +6272,13 @@ msgid ""
 "flag isn't set in <link linkend=\"smfi-register\"><function>smfi_register()</"
 "function></link> or <link linkend=\"xxfi-negotiate\"><function>xxfi_negotiate"
 "()</function></link>. FIXME: not-implemented yet."
-msgstr ""
+msgstr "<link linkend=\"smfi-register\"><function>smfi_register()</function></link>あるいは<link linkend=\"xxfi-negotiate\"><function>xxfi_negotiate()</function></link>で<link linkend=\"SMFIF-CHGHDRS:CAPS\"><literal>SMFIF_CHGHDRS</literal></link>フラグが設定されていない。FIXME: 未実装。"
 
 #: xml/mfapi.xml:2378(para) xml/milter-client-context.xml:893(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/smfi_chgheader"
 "\"> smfi_chgheader</ulink> on milter.org."
-msgstr ""
+msgstr "milter.orgの<ulink url=\"https://www.milter.org/developers/api/smfi_chgheader\"> smfi_chgheader</ulink>も見てください。"
 
 #: xml/mfapi.xml:2391(term) xml/mfapi.xml:2450(term)
 #: xml/milter-client-context.xml:866(term)
@@ -6295,13 +6295,13 @@ msgstr ""
 msgid ""
 "the index of headers that all of them are named <parameter>name</parameter>. "
 "(1-based)"
-msgstr ""
+msgstr "名前が<parameter>name</parameter>のすべてのヘッダの中の位置。（1ベース）"
 
 #: xml/mfapi.xml:2396(simpara) xml/milter-client-context.xml:914(simpara)
 msgid ""
 "the header value. Use <link linkend=\"NULL:CAPS\"><literal>NULL</literal></"
 "link> to delete the target header."
-msgstr ""
+msgstr "ヘッダ値。ターゲットのヘッダを削除する場合は<link linkend=\"NULL:CAPS\"><literal>NULL</literal></link>を指定してください。"
 
 #: xml/mfapi.xml:2403(title)
 msgid "smfi_insheader ()"
@@ -6321,13 +6321,13 @@ msgid ""
 "Inserts a header to <parameter>index</parameter> in headers. <link linkend="
 "\"smfi-insheader\"><function>smfi_insheader()</function></link> can be "
 "called in <link linkend=\"xxfi-eom\"><function>xxfi_eom()</function></link>."
-msgstr ""
+msgstr "ヘッダの<parameter>index</parameter>番目にヘッダを挿入します。<link linkend=\"smfi-insheader\"><function>smfi_insheader()</function></link>は<link linkend=\"xxfi-eom\"><function>xxfi_eom()</function></link>の中で呼ぶことができます。"
 
 #: xml/mfapi.xml:2421(para)
 msgid ""
 "<parameter>value</parameter> is <link linkend=\"NULL:CAPS\"><literal>NULL</"
 "literal></link>. FIXME: not-implemented yet."
-msgstr ""
+msgstr "<parameter>value</parameter>が<link linkend=\"NULL:CAPS\"><literal>NULL</literal></link>。FIXME: 未実装。"
 
 #: xml/mfapi.xml:2431(para)
 msgid ""
@@ -6335,17 +6335,17 @@ msgid ""
 "flag isn't set in <link linkend=\"smfi-register\"><function>smfi_register()</"
 "function></link> or <link linkend=\"xxfi-negotiate\"><function>xxfi_negotiate"
 "()</function></link>. FIXME: not-implemented yet."
-msgstr ""
+msgstr "<link linkend=\"smfi-register\"><function>smfi_register()</function></link>あるいは<link linkend=\"xxfi-negotiate\"><function>xxfi_negotiate()</function></link>で<link linkend=\"SMFIF-ADDHDRS:CAPS\"><literal>SMFIF_ADDHDRS</literal></link>フラグが設定されていない。FIXME: 未実装。"
 
 #: xml/mfapi.xml:2440(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/smfi_insheader"
 "\"> smfi_insheader</ulink> on milter.org."
-msgstr ""
+msgstr "milter.orgの<ulink url=\"https://www.milter.org/developers/api/smfi_insheader\"> smfi_insheader</ulink>も見てください。"
 
 #: xml/mfapi.xml:2451(simpara)
 msgid "the index of inserted header. 0 means that the header is prepended."
-msgstr ""
+msgstr "挿入されるヘッダの位置。0は先頭に追加するという意味になります。"
 
 #: xml/mfapi.xml:2464(title)
 msgid "smfi_chgfrom ()"
@@ -6364,13 +6364,13 @@ msgid ""
 "Changes a sender address. <link linkend=\"smfi-chgfrom"
 "\"><function>smfi_chgfrom()</function></link> can be called in <link linkend="
 "\"xxfi-eom\"><function>xxfi_eom()</function></link>."
-msgstr ""
+msgstr "送信者のアドレスを変更します。<link linkend=\"smfi-chgfrom\"><function>smfi_chgfrom()</function></link>は<link linkend=\"xxfi-eom\"><function>xxfi_eom()</function></link>の中で呼ぶことができます。"
 
 #: xml/mfapi.xml:2476(para)
 msgid ""
 "<parameter>mail</parameter> is <link linkend=\"NULL:CAPS\"><literal>NULL</"
 "literal></link>. FIXME: not-implemented yet."
-msgstr ""
+msgstr "<parameter>mail</parameter>が<link linkend=\"NULL:CAPS\"><literal>NULL</literal></link>。FIXME: 未実装。"
 
 #: xml/mfapi.xml:2486(para)
 msgid ""
@@ -6378,13 +6378,13 @@ msgid ""
 "flag isn't set in <link linkend=\"smfi-register\"><function>smfi_register()</"
 "function></link> or <link linkend=\"xxfi-negotiate\"><function>xxfi_negotiate"
 "()</function></link>. FIXME: not-implemented yet."
-msgstr ""
+msgstr "<link linkend=\"smfi-register\"><function>smfi_register()</function></link>あるいは<link linkend=\"xxfi-negotiate\"><function>xxfi_negotiate()</function></link>で<link linkend=\"SMFIF-CHGFROM:CAPS\"><literal>SMFIF_CHGFROM</literal></link>フラグが設定されていない。FIXME: 未実装。"
 
 #: xml/mfapi.xml:2495(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/smfi_chgfrom\"> "
 "smfi_chgfrom</ulink> on milter.org."
-msgstr ""
+msgstr "milter.orgの<ulink url=\"https://www.milter.org/developers/api/smfi_chgfrom\"> smfi_chgfrom</ulink>も見てください。"
 
 #: xml/mfapi.xml:2505(term)
 msgid "<parameter>mail</parameter>&nbsp;:"
@@ -6392,11 +6392,11 @@ msgstr ""
 
 #: xml/mfapi.xml:2506(simpara)
 msgid "the new sender address."
-msgstr ""
+msgstr "新しい送信者のアドレス。"
 
 #: xml/mfapi.xml:2509(simpara) xml/mfapi.xml:2608(simpara)
 msgid "the extra arguments for ESMTP."
-msgstr ""
+msgstr "ESMTPの追加の引数。"
 
 #: xml/mfapi.xml:2515(title)
 msgid "smfi_addrcpt ()"
@@ -6414,13 +6414,13 @@ msgid ""
 "Adds a recipient address. <link linkend=\"smfi-addrcpt"
 "\"><function>smfi_addrcpt()</function></link> can be called in <link linkend="
 "\"xxfi-eom\"><function>xxfi_eom()</function></link>."
-msgstr ""
+msgstr "宛先アドレスを追加します。<link linkend=\"smfi-addrcpt\"><function>smfi_addrcpt()</function></link>は<link linkend=\"xxfi-eom\"><function>xxfi_eom()</function></link>の中で呼ぶことができます。"
 
 #: xml/mfapi.xml:2526(para) xml/mfapi.xml:2575(para) xml/mfapi.xml:2625(para)
 msgid ""
 "<parameter>recipient</parameter> is <link linkend=\"NULL:CAPS"
 "\"><literal>NULL</literal></link>. FIXME: not-implemented yet."
-msgstr ""
+msgstr "<parameter>recipient</parameter>が<link linkend=\"NULL:CAPS\"><literal>NULL</literal></link>。FIXME: 未実装。"
 
 #: xml/mfapi.xml:2536(para)
 msgid ""
@@ -6428,13 +6428,13 @@ msgid ""
 "flag isn't set in <link linkend=\"smfi-register\"><function>smfi_register()</"
 "function></link> or <link linkend=\"xxfi-negotiate\"><function>xxfi_negotiate"
 "()</function></link>. FIXME: not-implemented yet."
-msgstr ""
+msgstr "<link linkend=\"smfi-register\"><function>smfi_register()</function></link>あるいは<link linkend=\"xxfi-negotiate\"><function>xxfi_negotiate()</function></link>で<link linkend=\"SMFIF-ADDRCPT:CAPS\"><literal>SMFIF_ADDRCPT</literal></link>フラグが設定されていない。FIXME: 未実装。"
 
 #: xml/mfapi.xml:2545(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/smfi_addrcpt\"> "
 "smfi_addrcpt</ulink> on milter.org."
-msgstr ""
+msgstr "milter.orgの<ulink url=\"https://www.milter.org/developers/api/smfi_addrcpt\"> smfi_addrcpt</ulink>も見てください。"
 
 #: xml/mfapi.xml:2555(term) xml/mfapi.xml:2604(term) xml/mfapi.xml:2654(term)
 #: xml/milter-client-context.xml:1008(term)
@@ -6450,7 +6450,7 @@ msgstr ""
 
 #: xml/mfapi.xml:2556(simpara)
 msgid "the new recipient address."
-msgstr ""
+msgstr "新しい宛先アドレス。"
 
 #: xml/mfapi.xml:2562(title)
 msgid "smfi_addrcpt_par ()"
@@ -6469,7 +6469,7 @@ msgid ""
 "Adds a recipient address with extra ESMTP arguments. <link linkend=\"smfi-"
 "addrcpt-par\"><function>smfi_addrcpt_par()</function></link> can be called "
 "in <link linkend=\"xxfi-eom\"><function>xxfi_eom()</function></link>."
-msgstr ""
+msgstr "追加のESMTP引数付きで宛先アドレスを追加します。<link linkend=\"smfi-addrcpt-par\"><function>smfi_addrcpt_par()</function></link>は<link linkend=\"xxfi-eom\"><function>xxfi_eom()</function></link>の中で呼ぶことができます。"
 
 #: xml/mfapi.xml:2585(para)
 msgid ""
@@ -6478,17 +6478,17 @@ msgid ""
 "\"><function>smfi_register()</function></link> or <link linkend=\"xxfi-"
 "negotiate\"><function>xxfi_negotiate()</function></link>. FIXME: not-"
 "implemented yet."
-msgstr ""
+msgstr "<link linkend=\"smfi-register\"><function>smfi_register()</function></link>あるいは<link linkend=\"xxfi-negotiate\"><function>xxfi_negotiate()</function></link>で<link linkend=\"SMFIF-ADDRCPT-PAR:CAPS\"><literal>SMFIF_ADDRCPT_PAR</literal></link>フラグが設定されていない。FIXME: 未実装。"
 
 #: xml/mfapi.xml:2594(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/smfi_addrcpt_par"
 "\"> smfi_addrcpt_par</ulink> on milter.org."
-msgstr ""
+msgstr "milter.orgの<ulink url=\"https://www.milter.org/developers/api/smfi_addrcpt_par\"> smfi_addrcpt_par</ulink>も見てください。"
 
 #: xml/mfapi.xml:2605(simpara) xml/mfapi.xml:2655(simpara)
 msgid "the recipient address."
-msgstr ""
+msgstr "宛先アドレス。"
 
 #: xml/mfapi.xml:2614(title)
 msgid "smfi_delrcpt ()"
@@ -6506,7 +6506,7 @@ msgid ""
 "Deletes a recipient address. <link linkend=\"smfi-delrcpt"
 "\"><function>smfi_delrcpt()</function></link> can be called in <link linkend="
 "\"xxfi-eom\"><function>xxfi_eom()</function></link>."
-msgstr ""
+msgstr "宛先のアドレスを削除します。<link linkend=\"smfi-delrcpt\"><function>smfi_delrcpt()</function></link>は<link linkend=\"xxfi-eom\"><function>xxfi_eom()</function></link>の中で呼ぶことができます。"
 
 #: xml/mfapi.xml:2635(para)
 msgid ""
@@ -6514,13 +6514,13 @@ msgid ""
 "flag isn't set in <link linkend=\"smfi-register\"><function>smfi_register()</"
 "function></link> or <link linkend=\"xxfi-negotiate\"><function>xxfi_negotiate"
 "()</function></link>. FIXME: not-implemented yet."
-msgstr ""
+msgstr "<link linkend=\"smfi-register\"><function>smfi_register()</function></link>あるいは<link linkend=\"xxfi-negotiate\"><function>xxfi_negotiate()</function></link>で<link linkend=\"SMFIF-DELRCPT:CAPS\"><literal>SMFIF_DELRCPT</literal></link>フラグが設定されていない。FIXME: 未実装。"
 
 #: xml/mfapi.xml:2644(para)
 msgid ""
 "See also <ulink url=\"https://www.milter.org/developers/api/smfi_delrcpt\"> "
 "smfi_delrcpt</ulink> on milter.org."
-msgstr ""
+msgstr "milter.orgの<ulink url=\"https://www.milter.org/developers/api/smfi_delrcpt\"> smfi_delrcpt</ulink>も見てください。"
 
 #: xml/mfapi.xml:2661(title)
 msgid "smfi_progress ()"
@@ -25905,10 +25905,3 @@ msgstr ""
 #: xml/milter-writer.xml:0(None)
 msgid "translator-credits"
 msgstr ""
-
-#~ msgid ""
-#~ "Indicates that the milter don't reply on <link linkend=\"xxfi-mail"
-#~ "\"><function>xxfi_mail()</function></link>."
-#~ msgstr ""
-#~ "milterが<link linkend=\"xxfi-mail\"><function>xxfi_mail()</function></"
-#~ "link>に返答しないことを示します。"
