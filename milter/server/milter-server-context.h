@@ -113,6 +113,7 @@ typedef enum
 /**
  * MilterServerContextState:
  * @MILTER_SERVER_CONTEXT_STATE_START: Just started.
+ * @MILTER_SERVER_CONTEXT_STATE_DEFINE_MACRO: Sent define macro.
  * @MILTER_SERVER_CONTEXT_STATE_NEGOTIATE: Negotiating.
  * @MILTER_SERVER_CONTEXT_STATE_CONNECT: Sent connection
  * information.
