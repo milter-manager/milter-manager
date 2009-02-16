@@ -1,5 +1,8 @@
 2009-02-16  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/reference/milter-manager-docs.sgml: enable API reference.
+	* doc/reference/milter-manager-sections.txt: update.
+
 	* tool/milter-performance-check: extract mail address from From:,
 	To:, Cc: header value.
 
