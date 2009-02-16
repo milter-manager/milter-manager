@@ -37,7 +37,7 @@ extern "C" {
  * libmilter/mfapi.h provides Sendmail's libmilter
  * compatible API. You can use this library instead of
  * Sendmail's libmilter. See also <link
- * linked="https://www.milter.org/developers/api/">API
+ * linkend="https://www.milter.org/developers/api/">API
  * Documentation on milter.org</link>.
  */
 
