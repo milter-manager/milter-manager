@@ -245,7 +245,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    continued.
      *
      *    If you returns this status, you need to emit
-     *    %MilterClientContext::negotiate-response signal by
+     *    #MilterClientContext::negotiate-response signal by
      *    yourself with one of the above
      *    %MilterStatus<!-- -->es.
      *
@@ -280,13 +280,13 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      * @status: the response status.
      *
      * This signal is emitted implicitly after
-     * %MilterClientContext::negotiate returns a status
+     * #MilterClientContext::negotiate returns a status
      * except %MILTER_STATUS_PROGRESS. This signal's default
      * handler replies a response to MTA. You don't need to
      * connect this signal.
      *
      * If you returns %MILTER_STATUS_PROGRESS in
-     * %MilterClientContext::negotiate handler, you need to
+     * #MilterClientContext::negotiate handler, you need to
      * emit this signal to @context by yourself.
      */
     signals[NEGOTIATE_RESPONSE] =
@@ -300,6 +300,25 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_TYPE_NONE, 3,
                      MILTER_TYPE_OPTION, MILTER_TYPE_MACROS_REQUESTS,
                      MILTER_TYPE_STATUS);
+
+    /**
+     * MilterClientContext::define-macro:
+     * @context: the context that received the signal.
+     * @command: the command to be defined macros.
+     * @macros: the macro definitions.
+     *
+     * This signal is emitted when macro definition is
+     * received. Normally, this signal isn't needed to be
+     * connected.
+     */
+    signals[DEFINE_MACRO] =
+        g_signal_new("define-macro",
+                     G_TYPE_FROM_CLASS(klass),
+                     G_SIGNAL_RUN_LAST,
+                     G_STRUCT_OFFSET(MilterClientContextClass, define_macro),
+                     NULL, NULL,
+                     _milter_marshal_VOID__ENUM_POINTER,
+                     G_TYPE_NONE, 2, MILTER_TYPE_COMMAND, G_TYPE_POINTER);
 
     /**
      * MilterClientContext::connect:
@@ -347,7 +366,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    continued.
      *
      *    If you returns this status, you need to emit
-     *    %MilterClientContext::connect-response signal by
+     *    #MilterClientContext::connect-response signal by
      *    yourself with one of the above
      *    %MilterStatus<!-- -->es.
      *
@@ -380,13 +399,13 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      * @status: the response status.
      *
      * This signal is emitted implicitly after
-     * %MilterClientContext::connect returns a status except
+     * #MilterClientContext::connect returns a status except
      * %MILTER_STATUS_PROGRESS. This signal's default
      * handler replies a response to MTA. You don't need to
      * connect this signal.
      *
      * If you returns %MILTER_STATUS_PROGRESS in
-     * %MilterClientContext::connect, you need to emit this
+     * #MilterClientContext::connect, you need to emit this
      * signal to @context by yourself.
      */
     signals[CONNECT_RESPONSE] =
@@ -443,7 +462,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    continued.
      *
      *    If you returns this status, you need to emit
-     *    %MilterClientContext::helo-response signal by
+     *    #MilterClientContext::helo-response signal by
      *    yourself with one of the above
      *    %MilterStatus<!-- -->es.
      *
@@ -475,13 +494,13 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      * @status: the response status.
      *
      * This signal is emitted implicitly after
-     * %MilterClientContext::helo returns a status except
+     * #MilterClientContext::helo returns a status except
      * %MILTER_STATUS_PROGRESS. This signal's default
      * handler replies a response to MTA. You don't need to
      * connect this signal.
      *
      * If you returns %MILTER_STATUS_PROGRESS in
-     * %MilterClientContext::helo, you need to emit this
+     * #MilterClientContext::helo, you need to emit this
      * signal to @context by yourself.
      */
     signals[HELO_RESPONSE] =
@@ -511,18 +530,18 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    Rejects the current envelope from address. A new
      *    envelope from may be specified.
      *
-     *    #MilterClientContext::aborted is not emitted.
+     *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_DISCARD
      *    Accepts the current message and discards it silently.
      *
-     *    #MilterClientContext::aborted is not emitted.
+     *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_ACCEPT
      *    Accepts the current message without further
      *    more processing.
      *
-     *    #MilterClientContext::aborted is not emitted.
+     *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_TEMPORARY_FAILURE
      *    Rejects the envelope from address and the current
@@ -530,7 +549,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    status code in SMTP) A new envelope from address
      *    may be specified.
      *
-     *    #MilterClientContext::aborted is not emitted.
+     *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_NO_REPLY
      *    Doesn't send a reply back to MTA. The milter
@@ -544,7 +563,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    continued.
      *
      *    If you returns this status, you need to emit
-     *    %MilterClientContext::envelope-from-response
+     *    #MilterClientContext::envelope-from-response
      *    signal by yourself with one of the above
      *    %MilterStatus<!-- -->es.
      *
@@ -576,13 +595,13 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      * @status: the response status.
      *
      * This signal is emitted implicitly after
-     * %MilterClientContext::envelope-from returns a status
+     * #MilterClientContext::envelope-from returns a status
      * except %MILTER_STATUS_PROGRESS. This signal's default
      * handler replies a response to MTA. You don't need to
      * connect this signal.
      *
      * If you returns %MILTER_STATUS_PROGRESS in
-     * %MilterClientContext::envelope-from, you need to emit
+     * #MilterClientContext::envelope-from, you need to emit
      * this signal to @context by yourself.
      */
     signals[ENVELOPE_FROM_RESPONSE] =
@@ -614,24 +633,24 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    address. Processing the current messages is
      *    continued.
      *
-     *    #MilterClientContext::aborted is not emitted.
+     *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_DISCARD
      *    Accepts the current message and discards it silently.
      *
-     *    #MilterClientContext::aborted is not emitted.
+     *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_ACCEPT
      *    Accepts the current envelope recipient.
      *
-     *    #MilterClientContext::aborted is not emitted.
+     *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_TEMPORARY_FAILURE
      *    Rejects the current envelope recipient address
      *    with temporary failure. (i.e. 4xx status code in
      *    SMTP) Processing the current message is continued.
      *
-     *    #MilterClientContext::aborted is not emitted.
+     *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_NO_REPLY
      *    Doesn't send a reply back to MTA. The milter
@@ -645,7 +664,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    continued.
      *
      *    If you returns this status, you need to emit
-     *    %MilterClientContext::envelope-recipient-response
+     *    #MilterClientContext::envelope-recipient-response
      *    signal by yourself with one of the above
      *    %MilterStatus<!-- -->es.
      *
@@ -678,13 +697,13 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      * @status: the response status.
      *
      * This signal is emitted implicitly after
-     * %MilterClientContext::envelope-recipient returns a
+     * #MilterClientContext::envelope-recipient returns a
      * status except %MILTER_STATUS_PROGRESS. This signal's
      * default handler replies a response to MTA. You don't
      * need to connect this signal.
      *
      * If you returns %MILTER_STATUS_PROGRESS in
-     * %MilterClientContext::envelope-recipient, you need to
+     * #MilterClientContext::envelope-recipient, you need to
      * emit this signal to @context by yourself.
      */
     signals[ENVELOPE_RECIPIENT_RESPONSE] =
@@ -712,23 +731,23 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      * : %MILTER_STATUS_REJECT
      *    Rejects the current message.
      *
-     *    #MilterClientContext::aborted is not emitted.
+     *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_DISCARD
      *    Accepts the current message and discards it silently.
      *
-     *    #MilterClientContext::aborted is not emitted.
+     *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_ACCEPT
      *    Accepts the current envelope recipient.
      *
-     *    #MilterClientContext::aborted is not emitted.
+     *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_TEMPORARY_FAILURE
      *    Rejects the current message with temporary
      *    failure. (i.e. 4xx status code in SMTP)
      *
-     *    #MilterClientContext::aborted is not emitted.
+     *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_NO_REPLY
      *    Doesn't send a reply back to MTA. The milter
@@ -742,7 +761,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    continued.
      *
      *    If you returns this status, you need to emit
-     *    %MilterClientContext::data-response
+     *    #MilterClientContext::data-response
      *    signal by yourself with one of the above
      *    %MilterStatus<!-- -->es.
      *
@@ -773,13 +792,13 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      * @status: the response status.
      *
      * This signal is emitted implicitly after
-     * %MilterClientContext::data returns a status except
+     * #MilterClientContext::data returns a status except
      * %MILTER_STATUS_PROGRESS. This signal's default
      * handler replies a response to MTA. You don't need to
      * connect this signal.
      *
      * If you returns %MILTER_STATUS_PROGRESS in
-     * %MilterClientContext::data, you need to emit this
+     * #MilterClientContext::data, you need to emit this
      * signal to @context by yourself.
      */
     signals[DATA_RESPONSE] =
@@ -805,13 +824,13 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      * : %MILTER_STATUS_REJECT
      *    Rejects the current message.
      *
-     *    #MilterClientContext::aborted is not emitted.
+     *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_TEMPORARY_FAILURE
      *    Rejects the current message with temporary
      *    failure. (i.e. 4xx status code in SMTP)
      *
-     *    #MilterClientContext::aborted is not emitted.
+     *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_NO_REPLY
      *    Doesn't send a reply back to MTA. The milter
@@ -825,7 +844,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    continued.
      *
      *    If you returns this status, you need to emit
-     *    %MilterClientContext::unknown-response
+     *    #MilterClientContext::unknown-response
      *    signal by yourself with one of the above
      *    %MilterStatus<!-- -->es.
      *
@@ -859,13 +878,13 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      * @status: the response status.
      *
      * This signal is emitted implicitly after
-     * %MilterClientContext::unknown returns a status except
+     * #MilterClientContext::unknown returns a status except
      * %MILTER_STATUS_PROGRESS. This signal's default
      * handler replies a response to MTA. You don't need to
      * connect this signal.
      *
      * If you returns %MILTER_STATUS_PROGRESS in
-     * %MilterClientContext::unknown, you need to emit this
+     * #MilterClientContext::unknown, you need to emit this
      * signal to @context by yourself.
      */
     signals[UNKNOWN_RESPONSE] =
@@ -886,7 +905,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      * This signal is emitted on each header. If
      * %MILTER_STEP_HEADER_LEADING_SPACE is set in
-     * %MilterClientContext::negotiate, @value have spaces
+     * #MilterClientContext::negotiate, @value have spaces
      * after header name and value separator ":".
      *
      * Example:
@@ -922,24 +941,24 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      * : %MILTER_STATUS_REJECT
      *    Rejects the current message.
      *
-     *    #MilterClientContext::aborted is not emitted.
+     *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_DISCARD
      *    Accepts the current message and discards it silently.
      *
-     *    #MilterClientContext::aborted is not emitted.
+     *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_ACCEPT
      *    Accepts the current message without further
      *    more processing.
      *
-     *    #MilterClientContext::aborted is not emitted.
+     *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_TEMPORARY_FAILURE
      *    Rejects the current message with temporary
      *    failure. (i.e. 4xx status code in SMTP)
      *
-     *    #MilterClientContext::aborted is not emitted.
+     *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_NO_REPLY
      *    Doesn't send a reply back to MTA. The milter
@@ -953,7 +972,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    continued.
      *
      *    If you returns this status, you need to emit
-     *    %MilterClientContext::header-response
+     *    #MilterClientContext::header-response
      *    signal by yourself with one of the above
      *    %MilterStatus<!-- -->es.
      *
@@ -984,13 +1003,13 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      * @status: the response status.
      *
      * This signal is emitted implicitly after
-     * %MilterClientContext::header returns a status except
+     * #MilterClientContext::header returns a status except
      * %MILTER_STATUS_PROGRESS. This signal's default
      * handler replies a response to MTA. You don't need to
      * connect this signal.
      *
      * If you returns %MILTER_STATUS_PROGRESS in
-     * %MilterClientContext::header, you need to emit this
+     * #MilterClientContext::header, you need to emit this
      * signal to @context by yourself.
      */
     signals[HEADER_RESPONSE] =
@@ -1017,24 +1036,24 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      * : %MILTER_STATUS_REJECT
      *    Rejects the current message.
      *
-     *    #MilterClientContext::aborted is not emitted.
+     *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_DISCARD
      *    Accepts the current message and discards it silently.
      *
-     *    #MilterClientContext::aborted is not emitted.
+     *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_ACCEPT
      *    Accepts the current message without further
      *    more processing.
      *
-     *    #MilterClientContext::aborted is not emitted.
+     *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_TEMPORARY_FAILURE
      *    Rejects the current message with temporary
      *    failure. (i.e. 4xx status code in SMTP)
      *
-     *    #MilterClientContext::aborted is not emitted.
+     *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_NO_REPLY
      *    Doesn't send a reply back to MTA. The milter
@@ -1048,7 +1067,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    continued.
      *
      *    If you returns this status, you need to emit
-     *    %MilterClientContext::end-of-header-response
+     *    #MilterClientContext::end-of-header-response
      *    signal by yourself with one of the above
      *    %MilterStatus<!-- -->es.
      *
@@ -1079,13 +1098,13 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      * @status: the response status.
      *
      * This signal is emitted implicitly after
-     * %MilterClientContext::end-of-header returns a status
+     * #MilterClientContext::end-of-header returns a status
      * except %MILTER_STATUS_PROGRESS. This signal's default
      * handler replies a response to MTA. You don't need to
      * connect this signal.
      *
      * If you returns %MILTER_STATUS_PROGRESS in
-     * %MilterClientContext::end-of-header, you need to emit
+     * #MilterClientContext::end-of-header, you need to emit
      * this signal to @context by yourself.
      */
     signals[END_OF_HEADER_RESPONSE] =
@@ -1118,29 +1137,29 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      * : %MILTER_STATUS_REJECT
      *    Rejects the current message.
      *
-     *    #MilterClientContext::aborted is not emitted.
+     *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_DISCARD
      *    Accepts the current message and discards it silently.
      *
-     *    #MilterClientContext::aborted is not emitted.
+     *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_ACCEPT
      *    Accepts the current message without further
      *    more processing.
      *
-     *    #MilterClientContext::aborted is not emitted.
+     *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_TEMPORARY_FAILURE
      *    Rejects the current message with temporary
      *    failure. (i.e. 4xx status code in SMTP)
      *
-     *    #MilterClientContext::aborted is not emitted.
+     *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_SKIP
      *    Skips further body
      *    processing. #MilterClientContext::end-of-message
-     *    is called.
+     *    is emitted.
      *
      * : %MILTER_STATUS_NO_REPLY
      *    Doesn't send a reply back to MTA. The milter
@@ -1154,7 +1173,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    continued.
      *
      *    If you returns this status, you need to emit
-     *    %MilterClientContext::body-response
+     *    #MilterClientContext::body-response
      *    signal by yourself with one of the above
      *    %MilterStatus<!-- -->es.
      *
@@ -1185,13 +1204,13 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      * @status: the response status.
      *
      * This signal is emitted implicitly after
-     * %MilterClientContext::body returns a status except
+     * #MilterClientContext::body returns a status except
      * %MILTER_STATUS_PROGRESS. This signal's default
      * handler replies a response to MTA. You don't need to
      * connect this signal.
      *
      * If you returns %MILTER_STATUS_PROGRESS in
-     * %MilterClientContext::body, you need to emit this
+     * #MilterClientContext::body, you need to emit this
      * signal to @context by yourself.
      */
     signals[BODY_RESPONSE] =
@@ -1223,19 +1242,19 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      * : %MILTER_STATUS_DISCARD
      *    Accepts the current message and discards it silently.
      *
-     *    #MilterClientContext::aborted is not emitted.
+     *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_ACCEPT
      *    Accepts the current message without further
      *    more processing.
      *
-     *    #MilterClientContext::aborted is not emitted.
+     *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_TEMPORARY_FAILURE
      *    Rejects the current message with temporary
      *    failure. (i.e. 4xx status code in SMTP)
      *
-     *    #MilterClientContext::aborted is not emitted.
+     *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_PROGRESS
      *    It means that the processing in callback is in
@@ -1244,7 +1263,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    continued.
      *
      *    If you returns this status, you need to emit
-     *    %MilterClientContext::end-of-message-response
+     *    #MilterClientContext::end-of-message-response
      *    signal by yourself with one of the above
      *    %MilterStatus<!-- -->es.
      *
@@ -1275,13 +1294,13 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      * @status: the response status.
      *
      * This signal is emitted implicitly after
-     * %MilterClientContext::end-of-message returns a status
+     * #MilterClientContext::end-of-message returns a status
      * except %MILTER_STATUS_PROGRESS. This signal's default
      * handler replies a response to MTA. You don't need to
      * connect this signal.
      *
      * If you returns %MILTER_STATUS_PROGRESS in
-     * %MilterClientContext::end-of-message, you need to
+     * #MilterClientContext::end-of-message, you need to
      * emit this signal to @context by yourself.
      */
     signals[END_OF_MESSAGE_RESPONSE] =
@@ -1325,19 +1344,19 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      * : %MILTER_STATUS_DISCARD
      *    Accepts the current message and discards it silently.
      *
-     *    #MilterClientContext::aborted is not emitted.
+     *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_ACCEPT
      *    Accepts the current message without further
      *    more processing.
      *
-     *    #MilterClientContext::aborted is not emitted.
+     *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_TEMPORARY_FAILURE
      *    Rejects the current message with temporary
      *    failure. (i.e. 4xx status code in SMTP)
      *
-     *    #MilterClientContext::aborted is not emitted.
+     *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_PROGRESS
      *    It means that the processing in callback is in
@@ -1346,7 +1365,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    continued.
      *
      *    If you returns this status, you need to emit
-     *    %MilterClientContext::end-of-message-response
+     *    #MilterClientContext::end-of-message-response
      *    signal by yourself with one of the above
      *    %MilterStatus<!-- -->es.
      *
@@ -1377,13 +1396,13 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      * @status: the response status.
      *
      * This signal is emitted implicitly after
-     * %MilterClientContext::abort returns a status except
+     * #MilterClientContext::abort returns a status except
      * %MILTER_STATUS_PROGRESS. This signal's default
      * handler replies a response to MTA. You don't need to
      * connect this signal.
      *
      * If you returns %MILTER_STATUS_PROGRESS in
-     * %MilterClientContext::abort, you need to emit this
+     * #MilterClientContext::abort, you need to emit this
      * signal to @context by yourself.
      */
     signals[ABORT_RESPONSE] =
@@ -1394,15 +1413,6 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      NULL, NULL,
                      _milter_marshal_VOID__ENUM,
                      G_TYPE_NONE, 1, MILTER_TYPE_STATUS);
-
-    signals[DEFINE_MACRO] =
-        g_signal_new("define-macro",
-                     G_TYPE_FROM_CLASS(klass),
-                     G_SIGNAL_RUN_LAST,
-                     G_STRUCT_OFFSET(MilterClientContextClass, define_macro),
-                     NULL, NULL,
-                     _milter_marshal_VOID__ENUM_POINTER,
-                     G_TYPE_NONE, 2, MILTER_TYPE_COMMAND, G_TYPE_POINTER);
 
     /**
      * MilterClientContext::timeout:
