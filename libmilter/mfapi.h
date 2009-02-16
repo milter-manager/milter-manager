@@ -36,9 +36,9 @@ extern "C" {
  *
  * libmilter/mfapi.h provides Sendmail's libmilter
  * compatible API. You can use this library instead of
- * Sendmail's libmilter. See also <link
- * linkend="https://www.milter.org/developers/api/">API
- * Documentation on milter.org</link>.
+ * Sendmail's libmilter. See also <ulink
+ * url="https://www.milter.org/developers/api/">API
+ * Documentation on milter.org</ulink>.
  */
 
 /**
@@ -142,7 +142,7 @@ typedef struct smfiDesc	*smfiDesc_ptr;
 /**
  * sfsistat:
  *
- * Indicates response status of callback.
+ * Indicates response status returned by callback.
  *
  * <rd>
  * Available response status is one of the followings:
@@ -250,7 +250,7 @@ struct smfiDesc
      * xxfi_connect:
      * @context: the context for the current milter session.
      * @host_name: the host name of the SMTP client.
-     * @address: the host address of the SMTP client.
+     * @address: the address of the SMTP client.
      *
      * This callback is called at the start of each milter
      * session.
@@ -344,8 +344,8 @@ struct smfiDesc
      *    Continues processing the current message.
      *
      * : %SMFIS_REJECT
-     *    Rejects the current envelope from address. A new
-     *    envelope from may be specified.
+     *    Rejects the current envelope from address and
+     *    message. A new envelope from may be specified.
      *
      * : %SMFIS_DISCARD
      *    Accepts the current message and discards it silently.
@@ -355,8 +355,8 @@ struct smfiDesc
      *    more processing.
      *
      * : %SMFIS_TEMPFAIL
-     *    Rejects the envelope from address and the current
-     *    connection with temporary failure. (i.e. 4xx
+     *    Rejects the current envelope from address and
+     *    message with temporary failure. (i.e. 4xx
      *    status code in SMTP) A new envelope from address
      *    may be specified.
      *
