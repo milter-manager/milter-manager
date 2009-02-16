@@ -346,9 +346,12 @@ class MilterPerformanceTool
       headers[name] = value
     end
     helo_fqdn = extract_helo_fqdn_from_received(received[0])
-    from = headers["From"]
+    from = extract_mail_address(headers["From"])
     recipients = parse_recipient_header(headers["To"])
     recipients += parse_recipient_header(headers["Cc"])
+    recipients.collect do |recipient|
+      extract_mail_address(recipient)
+    end
     recipients = nil if recipients.empty?
     [helo_fqdn, from, recipients]
   end
@@ -364,6 +367,15 @@ class MilterPerformanceTool
       $1
     else
       nil
+    end
+  end
+
+  def extract_mail_address(address)
+    return nil if address.nil?
+    if /<(.+?)>/ =~ address
+      $1
+    else
+      address.gsub(/\(.*?\)/, '').strip
     end
   end
 
