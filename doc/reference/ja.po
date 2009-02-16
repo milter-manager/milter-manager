@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: milter-manager 0.0.1\n"
-"POT-Creation-Date: 2009-02-17 00:01+0900\n"
-"PO-Revision-Date: 2009-02-17 00:06+0900\n"
+"POT-Creation-Date: 2009-02-17 00:10+0900\n"
+"PO-Revision-Date: 2009-02-17 00:10+0900\n"
 "Last-Translator: Kouhei Sutou <kou@cozmixng.org>\n"
 "Language-Team: Japanese\n"
 "MIME-Version: 1.0\n"
@@ -1455,29 +1455,29 @@ msgstr ""
 #: xml/milter-reader.xml:97(term) xml/milter-reader.xml:123(term)
 #: xml/milter-reply-decoder.xml:79(term) xml/milter-reply-decoder.xml:90(term)
 #: xml/milter-reply-encoder.xml:157(term)
-#: xml/milter-server-context.xml:348(term)
-#: xml/milter-server-context.xml:361(term)
-#: xml/milter-server-context.xml:468(term)
-#: xml/milter-server-context.xml:489(term)
-#: xml/milter-server-context.xml:503(term)
-#: xml/milter-server-context.xml:518(term)
-#: xml/milter-server-context.xml:548(term)
-#: xml/milter-server-context.xml:567(term)
-#: xml/milter-server-context.xml:593(term)
-#: xml/milter-server-context.xml:611(term)
-#: xml/milter-server-context.xml:629(term)
-#: xml/milter-server-context.xml:648(term)
-#: xml/milter-server-context.xml:662(term)
-#: xml/milter-server-context.xml:680(term)
-#: xml/milter-server-context.xml:702(term)
-#: xml/milter-server-context.xml:716(term)
-#: xml/milter-server-context.xml:738(term)
-#: xml/milter-server-context.xml:762(term)
-#: xml/milter-server-context.xml:776(term)
-#: xml/milter-server-context.xml:790(term)
-#: xml/milter-server-context.xml:809(term)
-#: xml/milter-server-context.xml:824(term)
-#: xml/milter-server-context.xml:839(term)
+#: xml/milter-server-context.xml:342(term)
+#: xml/milter-server-context.xml:355(term)
+#: xml/milter-server-context.xml:462(term)
+#: xml/milter-server-context.xml:483(term)
+#: xml/milter-server-context.xml:497(term)
+#: xml/milter-server-context.xml:512(term)
+#: xml/milter-server-context.xml:542(term)
+#: xml/milter-server-context.xml:561(term)
+#: xml/milter-server-context.xml:587(term)
+#: xml/milter-server-context.xml:605(term)
+#: xml/milter-server-context.xml:623(term)
+#: xml/milter-server-context.xml:642(term)
+#: xml/milter-server-context.xml:656(term)
+#: xml/milter-server-context.xml:674(term)
+#: xml/milter-server-context.xml:696(term)
+#: xml/milter-server-context.xml:710(term)
+#: xml/milter-server-context.xml:732(term)
+#: xml/milter-server-context.xml:756(term)
+#: xml/milter-server-context.xml:770(term)
+#: xml/milter-server-context.xml:784(term)
+#: xml/milter-server-context.xml:803(term)
+#: xml/milter-server-context.xml:818(term)
+#: xml/milter-server-context.xml:833(term)
 #: xml/milter-server-enum-types.xml:55(term)
 #: xml/milter-server-enum-types.xml:74(term)
 #: xml/milter-syslog-logger.xml:112(term) xml/milter-utils.xml:201(term)
@@ -1591,7 +1591,7 @@ msgstr ""
 #: xml/milter-connection.xml:154(term)
 #: xml/milter-manager-configuration.xml:531(term)
 #: xml/milter-manager-configuration.xml:563(term)
-#: xml/milter-server-context.xml:462(term)
+#: xml/milter-server-context.xml:456(term)
 msgid "<parameter>spec</parameter>&nbsp;:"
 msgstr ""
 
@@ -1614,8 +1614,8 @@ msgstr "inet:10025のような接続指定。"
 #: xml/milter-manager-configuration.xml:426(term)
 #: xml/milter-manager-configuration.xml:465(term)
 #: xml/milter-manager-egg.xml:296(term) xml/milter-manager-egg.xml:619(term)
-#: xml/milter-server-context.xml:465(term)
-#: xml/milter-server-context.xml:486(term) xml/milter-utils.xml:418(term)
+#: xml/milter-server-context.xml:459(term)
+#: xml/milter-server-context.xml:480(term) xml/milter-utils.xml:418(term)
 #: xml/milter-writer.xml:131(term) xml/milter-writer.xml:149(term)
 msgid "<parameter>error</parameter>&nbsp;:"
 msgstr ""
@@ -1624,8 +1624,8 @@ msgstr ""
 #: xml/milter-client-context.xml:741(simpara)
 #: xml/milter-client-context.xml:793(simpara)
 #: xml/milter-client-context.xml:831(simpara)
-#: xml/milter-server-context.xml:466(simpara)
-#: xml/milter-server-context.xml:487(simpara)
+#: xml/milter-server-context.xml:460(simpara)
+#: xml/milter-server-context.xml:481(simpara)
 msgid ""
 "return location for an error, or <link linkend=\"NULL:CAPS\"><literal>NULL</"
 "literal></link>."
@@ -1645,21 +1645,21 @@ msgstr ""
 #: xml/milter-client-context.xml:1027(simpara)
 #: xml/milter-client-context.xml:1046(simpara)
 #: xml/milter-client-context.xml:1072(simpara)
-#: xml/milter-server-context.xml:468(simpara)
-#: xml/milter-server-context.xml:489(simpara)
-#: xml/milter-server-context.xml:567(simpara)
-#: xml/milter-server-context.xml:593(simpara)
-#: xml/milter-server-context.xml:611(simpara)
-#: xml/milter-server-context.xml:629(simpara)
-#: xml/milter-server-context.xml:648(simpara)
-#: xml/milter-server-context.xml:662(simpara)
-#: xml/milter-server-context.xml:680(simpara)
-#: xml/milter-server-context.xml:702(simpara)
-#: xml/milter-server-context.xml:716(simpara)
-#: xml/milter-server-context.xml:738(simpara)
-#: xml/milter-server-context.xml:762(simpara)
-#: xml/milter-server-context.xml:776(simpara)
-#: xml/milter-server-context.xml:790(simpara)
+#: xml/milter-server-context.xml:462(simpara)
+#: xml/milter-server-context.xml:483(simpara)
+#: xml/milter-server-context.xml:561(simpara)
+#: xml/milter-server-context.xml:587(simpara)
+#: xml/milter-server-context.xml:605(simpara)
+#: xml/milter-server-context.xml:623(simpara)
+#: xml/milter-server-context.xml:642(simpara)
+#: xml/milter-server-context.xml:656(simpara)
+#: xml/milter-server-context.xml:674(simpara)
+#: xml/milter-server-context.xml:696(simpara)
+#: xml/milter-server-context.xml:710(simpara)
+#: xml/milter-server-context.xml:732(simpara)
+#: xml/milter-server-context.xml:756(simpara)
+#: xml/milter-server-context.xml:770(simpara)
+#: xml/milter-server-context.xml:784(simpara)
 msgid "<link linkend=\"TRUE:CAPS\"><literal>TRUE</literal></link> on success."
 msgstr "成功時は<link linkend=\"TRUE:CAPS\"><literal>TRUE</literal></link>。"
 
@@ -1815,10 +1815,10 @@ msgstr ""
 
 #: xml/client.xml:407(term) xml/mfapi.xml:1446(term)
 #: xml/milter-client-context.xml:1092(term)
-#: xml/milter-server-context.xml:379(term)
-#: xml/milter-server-context.xml:399(term)
-#: xml/milter-server-context.xml:419(term)
-#: xml/milter-server-context.xml:440(term)
+#: xml/milter-server-context.xml:373(term)
+#: xml/milter-server-context.xml:393(term)
+#: xml/milter-server-context.xml:413(term)
+#: xml/milter-server-context.xml:434(term)
 msgid "<parameter>timeout</parameter>&nbsp;:"
 msgstr ""
 
@@ -3389,33 +3389,33 @@ msgstr ""
 #: xml/milter-client-context.xml:1150(term)
 #: xml/milter-client-context.xml:1165(term)
 #: xml/milter-command-encoder.xml:177(term)
-#: xml/milter-server-context.xml:376(term)
-#: xml/milter-server-context.xml:396(term)
-#: xml/milter-server-context.xml:416(term)
-#: xml/milter-server-context.xml:437(term)
-#: xml/milter-server-context.xml:459(term)
-#: xml/milter-server-context.xml:483(term)
-#: xml/milter-server-context.xml:500(term)
-#: xml/milter-server-context.xml:515(term)
-#: xml/milter-server-context.xml:530(term)
-#: xml/milter-server-context.xml:545(term)
-#: xml/milter-server-context.xml:561(term)
-#: xml/milter-server-context.xml:581(term)
-#: xml/milter-server-context.xml:605(term)
-#: xml/milter-server-context.xml:623(term)
-#: xml/milter-server-context.xml:642(term)
-#: xml/milter-server-context.xml:659(term)
-#: xml/milter-server-context.xml:674(term)
-#: xml/milter-server-context.xml:693(term)
-#: xml/milter-server-context.xml:713(term)
-#: xml/milter-server-context.xml:729(term)
-#: xml/milter-server-context.xml:753(term)
-#: xml/milter-server-context.xml:773(term)
-#: xml/milter-server-context.xml:787(term)
-#: xml/milter-server-context.xml:803(term)
-#: xml/milter-server-context.xml:821(term)
-#: xml/milter-server-context.xml:836(term)
-#: xml/milter-server-context.xml:851(term)
+#: xml/milter-server-context.xml:370(term)
+#: xml/milter-server-context.xml:390(term)
+#: xml/milter-server-context.xml:410(term)
+#: xml/milter-server-context.xml:431(term)
+#: xml/milter-server-context.xml:453(term)
+#: xml/milter-server-context.xml:477(term)
+#: xml/milter-server-context.xml:494(term)
+#: xml/milter-server-context.xml:509(term)
+#: xml/milter-server-context.xml:524(term)
+#: xml/milter-server-context.xml:539(term)
+#: xml/milter-server-context.xml:555(term)
+#: xml/milter-server-context.xml:575(term)
+#: xml/milter-server-context.xml:599(term)
+#: xml/milter-server-context.xml:617(term)
+#: xml/milter-server-context.xml:636(term)
+#: xml/milter-server-context.xml:653(term)
+#: xml/milter-server-context.xml:668(term)
+#: xml/milter-server-context.xml:687(term)
+#: xml/milter-server-context.xml:707(term)
+#: xml/milter-server-context.xml:723(term)
+#: xml/milter-server-context.xml:747(term)
+#: xml/milter-server-context.xml:767(term)
+#: xml/milter-server-context.xml:781(term)
+#: xml/milter-server-context.xml:797(term)
+#: xml/milter-server-context.xml:815(term)
+#: xml/milter-server-context.xml:830(term)
+#: xml/milter-server-context.xml:845(term)
 msgid "<parameter>context</parameter>&nbsp;:"
 msgstr ""
 
@@ -3440,7 +3440,7 @@ msgstr "現在のmilterセッションのコンテキスト。"
 #: xml/mfapi.xml:440(term) xml/milter-command-encoder.xml:207(term)
 #: xml/milter-manager-children.xml:314(term)
 #: xml/milter-manager-leader.xml:248(term)
-#: xml/milter-server-context.xml:584(term)
+#: xml/milter-server-context.xml:578(term)
 msgid "<parameter>host_name</parameter>&nbsp;:"
 msgstr ""
 
@@ -3453,7 +3453,7 @@ msgstr "SMTPクライアントのホスト名。"
 #: xml/milter-connection.xml:183(term)
 #: xml/milter-manager-children.xml:317(term)
 #: xml/milter-manager-leader.xml:251(term)
-#: xml/milter-server-context.xml:587(term)
+#: xml/milter-server-context.xml:581(term)
 msgid "<parameter>address</parameter>&nbsp;:"
 msgstr ""
 
@@ -3507,7 +3507,7 @@ msgstr ""
 #: xml/mfapi.xml:508(term) xml/milter-command-encoder.xml:237(term)
 #: xml/milter-manager-children.xml:338(term)
 #: xml/milter-manager-leader.xml:272(term)
-#: xml/milter-server-context.xml:608(term)
+#: xml/milter-server-context.xml:602(term)
 msgid "<parameter>fqdn</parameter>&nbsp;:"
 msgstr ""
 
@@ -3790,8 +3790,8 @@ msgstr ""
 #: xml/milter-reply-encoder.xml:371(term)
 #: xml/milter-reply-encoder.xml:401(term)
 #: xml/milter-reply-encoder.xml:433(term)
-#: xml/milter-server-context.xml:696(term)
-#: xml/milter-server-context.xml:854(term) xml/milter-utils.xml:526(term)
+#: xml/milter-server-context.xml:690(term)
+#: xml/milter-server-context.xml:848(term) xml/milter-utils.xml:526(term)
 #: xml/milter-utils.xml:551(term)
 msgid "<parameter>name</parameter>&nbsp;:"
 msgstr ""
@@ -3802,7 +3802,7 @@ msgstr ""
 #: xml/milter-client-context.xml:825(simpara)
 #: xml/milter-client-context.xml:862(simpara)
 #: xml/milter-client-context.xml:897(simpara)
-#: xml/milter-server-context.xml:697(simpara)
+#: xml/milter-server-context.xml:691(simpara)
 msgid "the header name."
 msgstr "ヘッダ名。"
 
@@ -3818,7 +3818,7 @@ msgstr "ヘッダ名。"
 #: xml/milter-reply-encoder.xml:341(term)
 #: xml/milter-reply-encoder.xml:374(term)
 #: xml/milter-reply-encoder.xml:407(term)
-#: xml/milter-server-context.xml:699(term)
+#: xml/milter-server-context.xml:693(term)
 msgid "<parameter>value</parameter>&nbsp;:"
 msgstr ""
 
@@ -3916,7 +3916,7 @@ msgstr ""
 msgid "<parameter>data</parameter>&nbsp;:"
 msgstr ""
 
-#: xml/mfapi.xml:916(simpara) xml/milter-server-context.xml:733(simpara)
+#: xml/mfapi.xml:916(simpara) xml/milter-server-context.xml:727(simpara)
 msgid "the body chunk."
 msgstr "本文の1かたまり。"
 
@@ -4105,11 +4105,11 @@ msgstr ""
 #: xml/milter-manager-egg.xml:487(term)
 #: xml/milter-manager-leader.xml:341(term)
 #: xml/milter-manager-leader.xml:481(term)
-#: xml/milter-server-context.xml:677(term) xml/milter-utils.xml:384(term)
+#: xml/milter-server-context.xml:671(term) xml/milter-utils.xml:384(term)
 msgid "<parameter>command</parameter>&nbsp;:"
 msgstr ""
 
-#: xml/mfapi.xml:1116(simpara) xml/milter-server-context.xml:678(simpara)
+#: xml/mfapi.xml:1116(simpara) xml/milter-server-context.xml:672(simpara)
 msgid "the unknown SMTP command."
 msgstr "未知のSMTPコマンド。"
 
@@ -5601,7 +5601,7 @@ msgstr ""
 #: xml/mfapi.xml:2338(simpara) xml/mfapi.xml:2458(simpara)
 #: xml/milter-client-context.xml:790(simpara)
 #: xml/milter-client-context.xml:828(simpara)
-#: xml/milter-server-context.xml:700(simpara)
+#: xml/milter-server-context.xml:694(simpara)
 msgid "the header value."
 msgstr "ヘッダ値。"
 
@@ -5868,7 +5868,7 @@ msgstr ""
 #: xml/milter-manager-leader.xml:309(term)
 #: xml/milter-reply-encoder.xml:491(term)
 #: xml/milter-reply-encoder.xml:519(term)
-#: xml/milter-server-context.xml:645(term)
+#: xml/milter-server-context.xml:639(term)
 msgid "<parameter>recipient</parameter>&nbsp;:"
 msgstr ""
 
@@ -6251,7 +6251,7 @@ msgstr ""
 #: xml/mfapi.xml:2899(term) xml/milter-client-context.xml:1122(term)
 #: xml/milter-manager-children.xml:555(term)
 #: xml/milter-manager-children.xml:577(term)
-#: xml/milter-server-context.xml:533(term)
+#: xml/milter-server-context.xml:527(term)
 msgid "<parameter>state</parameter>&nbsp;:"
 msgstr ""
 
@@ -7444,7 +7444,7 @@ msgid "MILTER_CLIENT_CONTEXT_ERROR_IO_ERROR"
 msgstr ""
 
 #: xml/milter-client-context.xml:378(simpara)
-#: xml/milter-server-context.xml:209(simpara)
+#: xml/milter-server-context.xml:208(simpara)
 msgid "Indicates an IO error causing on writing/reading milter protocol data."
 msgstr "milterプロトコルデータの読み書き時に発生した入出力エラーを示します。"
 
@@ -7549,7 +7549,7 @@ msgid "MILTER_CLIENT_CONTEXT_STATE_START"
 msgstr ""
 
 #: xml/milter-client-context.xml:450(simpara)
-#: xml/milter-server-context.xml:253(simpara)
+#: xml/milter-server-context.xml:247(simpara)
 msgid "Just started."
 msgstr "はじまったばかり。"
 
@@ -7574,7 +7574,7 @@ msgid "MILTER_CLIENT_CONTEXT_STATE_CONNECT"
 msgstr ""
 
 #: xml/milter-client-context.xml:466(simpara)
-#: xml/milter-server-context.xml:268(simpara)
+#: xml/milter-server-context.xml:262(simpara)
 msgid "Sent connection information."
 msgstr "接続情報を送信しました。"
 
@@ -7671,7 +7671,7 @@ msgid "MILTER_CLIENT_CONTEXT_STATE_HEADER"
 msgstr ""
 
 #: xml/milter-client-context.xml:536(simpara)
-#: xml/milter-server-context.xml:303(simpara)
+#: xml/milter-server-context.xml:297(simpara)
 msgid "Sent a header."
 msgstr "ヘッダを送信した。"
 
@@ -7872,8 +7872,8 @@ msgstr ""
 #: xml/milter-manager-children.xml:487(term)
 #: xml/milter-manager-leader.xml:396(term)
 #: xml/milter-manager-leader.xml:419(term)
-#: xml/milter-server-context.xml:732(term)
-#: xml/milter-server-context.xml:756(term) xml/milter-writer.xml:122(term)
+#: xml/milter-server-context.xml:726(term)
+#: xml/milter-server-context.xml:750(term) xml/milter-writer.xml:122(term)
 msgid "<parameter>chunk</parameter>&nbsp;:"
 msgstr ""
 
@@ -7889,14 +7889,14 @@ msgstr "<parameter>context</parameter>への入力。"
 #: xml/milter-manager-configuration.xml:462(term)
 #: xml/milter-manager-leader.xml:399(term)
 #: xml/milter-manager-leader.xml:422(term)
-#: xml/milter-server-context.xml:735(term)
-#: xml/milter-server-context.xml:759(term) xml/milter-utils.xml:507(term)
+#: xml/milter-server-context.xml:729(term)
+#: xml/milter-server-context.xml:753(term) xml/milter-utils.xml:507(term)
 msgid "<parameter>size</parameter>&nbsp;:"
 msgstr ""
 
 #: xml/milter-client-context.xml:660(simpara)
-#: xml/milter-server-context.xml:736(simpara)
-#: xml/milter-server-context.xml:760(simpara)
+#: xml/milter-server-context.xml:730(simpara)
+#: xml/milter-server-context.xml:754(simpara)
 msgid "the size of <parameter>chunk</parameter>."
 msgstr "<parameter>chunk</parameter>のサイズ。"
 
@@ -8213,7 +8213,7 @@ msgstr "FIXME: MILTER_ACTION_CHANGE_FROMについて書くこと。"
 #: xml/milter-manager-children.xml:357(term)
 #: xml/milter-manager-leader.xml:290(term)
 #: xml/milter-reply-encoder.xml:462(term)
-#: xml/milter-server-context.xml:626(term)
+#: xml/milter-server-context.xml:620(term)
 msgid "<parameter>from</parameter>&nbsp;:"
 msgstr ""
 
@@ -8484,7 +8484,7 @@ msgid ""
 msgstr ""
 
 #: xml/milter-client-context.xml:1114(para)
-#: xml/milter-server-context.xml:525(para)
+#: xml/milter-server-context.xml:519(para)
 msgid "Sets the current state."
 msgstr "現在の状態を設定します。"
 
@@ -8508,12 +8508,12 @@ msgid ""
 msgstr ""
 
 #: xml/milter-client-context.xml:1130(para)
-#: xml/milter-server-context.xml:510(para)
+#: xml/milter-server-context.xml:504(para)
 msgid "Gets the current state."
 msgstr "現在の状態を取得します。"
 
 #: xml/milter-client-context.xml:1138(simpara)
-#: xml/milter-server-context.xml:518(simpara)
+#: xml/milter-server-context.xml:512(simpara)
 msgid "the current state."
 msgstr "現在の状態。"
 
@@ -8542,7 +8542,7 @@ msgstr "現在のコンテキストのオプションを取得します。"
 #: xml/milter-option.xml:347(term) xml/milter-option.xml:362(term)
 #: xml/milter-option.xml:378(term) xml/milter-option.xml:394(term)
 #: xml/milter-option.xml:445(term) xml/milter-reply-encoder.xml:182(term)
-#: xml/milter-server-context.xml:564(term)
+#: xml/milter-server-context.xml:558(term)
 msgid "<parameter>option</parameter>&nbsp;:"
 msgstr ""
 
@@ -12173,7 +12173,7 @@ msgstr ""
 #: xml/milter-server-context.xml:28(link)
 #: xml/milter-server-context.xml:52(link)
 #: xml/milter-server-context.xml:55(link)
-#: xml/milter-server-context.xml:227(primary)
+#: xml/milter-server-context.xml:221(primary)
 msgid "MilterServerContextState"
 msgstr ""
 
@@ -12495,7 +12495,7 @@ msgstr ""
 
 #: xml/milter-manager-children.xml:320(term)
 #: xml/milter-manager-leader.xml:254(term)
-#: xml/milter-server-context.xml:590(term)
+#: xml/milter-server-context.xml:584(term)
 msgid "<parameter>address_length</parameter>&nbsp;:"
 msgstr ""
 
@@ -17532,7 +17532,7 @@ msgstr "<parameter>action</parameter>&nbsp;:"
 
 #: xml/milter-option.xml:198(term) xml/milter-option.xml:365(term)
 #: xml/milter-option.xml:381(term) xml/milter-option.xml:397(term)
-#: xml/milter-server-context.xml:806(term)
+#: xml/milter-server-context.xml:800(term)
 msgid "<parameter>step</parameter>&nbsp;:"
 msgstr "<parameter>step</parameter>&nbsp;:"
 
@@ -18890,8 +18890,8 @@ msgstr ""
 #: xml/milter-server-context.xml:89(link)
 #: xml/milter-server-context.xml:90(link)
 #: xml/milter-server-context.xml:91(link)
-#: xml/milter-server-context.xml:334(title)
-#: xml/milter-server-context.xml:335(primary)
+#: xml/milter-server-context.xml:328(title)
+#: xml/milter-server-context.xml:329(primary)
 msgid "MilterServerContext"
 msgstr ""
 
@@ -18935,147 +18935,147 @@ msgid "MilterServerContextError"
 msgstr ""
 
 #: xml/milter-server-context.xml:30(link)
-#: xml/milter-server-context.xml:344(primary)
+#: xml/milter-server-context.xml:338(primary)
 msgid "milter_server_context_error_quark"
 msgstr ""
 
 #: xml/milter-server-context.xml:31(link)
-#: xml/milter-server-context.xml:355(primary)
+#: xml/milter-server-context.xml:349(primary)
 msgid "milter_server_context_new"
 msgstr ""
 
 #: xml/milter-server-context.xml:32(link)
-#: xml/milter-server-context.xml:366(primary)
+#: xml/milter-server-context.xml:360(primary)
 msgid "milter_server_context_set_connection_timeout"
 msgstr ""
 
 #: xml/milter-server-context.xml:35(link)
-#: xml/milter-server-context.xml:386(primary)
+#: xml/milter-server-context.xml:380(primary)
 msgid "milter_server_context_set_writing_timeout"
 msgstr ""
 
 #: xml/milter-server-context.xml:38(link)
-#: xml/milter-server-context.xml:406(primary)
+#: xml/milter-server-context.xml:400(primary)
 msgid "milter_server_context_set_reading_timeout"
 msgstr ""
 
 #: xml/milter-server-context.xml:41(link)
-#: xml/milter-server-context.xml:426(primary)
+#: xml/milter-server-context.xml:420(primary)
 msgid "milter_server_context_set_end_of_message_timeout"
 msgstr ""
 
 #: xml/milter-server-context.xml:44(link)
-#: xml/milter-server-context.xml:448(primary)
+#: xml/milter-server-context.xml:442(primary)
 msgid "milter_server_context_set_connection_spec"
 msgstr ""
 
 #: xml/milter-server-context.xml:48(link)
-#: xml/milter-server-context.xml:473(primary)
+#: xml/milter-server-context.xml:467(primary)
 msgid "milter_server_context_establish_connection"
 msgstr ""
 
 #: xml/milter-server-context.xml:51(link)
-#: xml/milter-server-context.xml:494(primary)
+#: xml/milter-server-context.xml:488(primary)
 msgid "milter_server_context_get_status"
 msgstr ""
 
 #: xml/milter-server-context.xml:52(link)
-#: xml/milter-server-context.xml:508(primary)
+#: xml/milter-server-context.xml:502(primary)
 msgid "milter_server_context_get_state"
 msgstr ""
 
 #: xml/milter-server-context.xml:54(link)
-#: xml/milter-server-context.xml:523(primary)
+#: xml/milter-server-context.xml:517(primary)
 msgid "milter_server_context_set_state"
 msgstr ""
 
 #: xml/milter-server-context.xml:56(link)
-#: xml/milter-server-context.xml:539(primary)
+#: xml/milter-server-context.xml:533(primary)
 msgid "milter_server_context_is_processing"
 msgstr ""
 
 #: xml/milter-server-context.xml:57(link)
-#: xml/milter-server-context.xml:554(primary)
+#: xml/milter-server-context.xml:548(primary)
 msgid "milter_server_context_negotiate"
 msgstr ""
 
 #: xml/milter-server-context.xml:59(link)
-#: xml/milter-server-context.xml:572(primary)
+#: xml/milter-server-context.xml:566(primary)
 msgid "milter_server_context_connect"
 msgstr ""
 
 #: xml/milter-server-context.xml:63(link)
-#: xml/milter-server-context.xml:598(primary)
+#: xml/milter-server-context.xml:592(primary)
 msgid "milter_server_context_helo"
 msgstr ""
 
 #: xml/milter-server-context.xml:65(link)
-#: xml/milter-server-context.xml:616(primary)
+#: xml/milter-server-context.xml:610(primary)
 msgid "milter_server_context_envelope_from"
 msgstr ""
 
 #: xml/milter-server-context.xml:67(link)
-#: xml/milter-server-context.xml:634(primary)
+#: xml/milter-server-context.xml:628(primary)
 msgid "milter_server_context_envelope_recipient"
 msgstr ""
 
 #: xml/milter-server-context.xml:70(link)
-#: xml/milter-server-context.xml:653(primary)
+#: xml/milter-server-context.xml:647(primary)
 msgid "milter_server_context_data"
 msgstr ""
 
 #: xml/milter-server-context.xml:71(link)
-#: xml/milter-server-context.xml:667(primary)
+#: xml/milter-server-context.xml:661(primary)
 msgid "milter_server_context_unknown"
 msgstr ""
 
 #: xml/milter-server-context.xml:73(link)
-#: xml/milter-server-context.xml:685(primary)
+#: xml/milter-server-context.xml:679(primary)
 msgid "milter_server_context_header"
 msgstr ""
 
 #: xml/milter-server-context.xml:76(link)
-#: xml/milter-server-context.xml:707(primary)
+#: xml/milter-server-context.xml:701(primary)
 msgid "milter_server_context_end_of_header"
 msgstr ""
 
 #: xml/milter-server-context.xml:77(link)
-#: xml/milter-server-context.xml:721(primary)
+#: xml/milter-server-context.xml:715(primary)
 msgid "milter_server_context_body"
 msgstr ""
 
 #: xml/milter-server-context.xml:80(link)
-#: xml/milter-server-context.xml:743(primary)
+#: xml/milter-server-context.xml:737(primary)
 msgid "milter_server_context_end_of_message"
 msgstr ""
 
 #: xml/milter-server-context.xml:84(link)
-#: xml/milter-server-context.xml:767(primary)
+#: xml/milter-server-context.xml:761(primary)
 msgid "milter_server_context_quit"
 msgstr ""
 
 #: xml/milter-server-context.xml:85(link)
-#: xml/milter-server-context.xml:781(primary)
+#: xml/milter-server-context.xml:775(primary)
 msgid "milter_server_context_abort"
 msgstr ""
 
 #: xml/milter-server-context.xml:86(link)
-#: xml/milter-server-context.xml:795(primary)
+#: xml/milter-server-context.xml:789(primary)
 msgid "milter_server_context_is_enable_step"
 msgstr ""
 
 #: xml/milter-server-context.xml:89(link)
-#: xml/milter-server-context.xml:814(primary)
+#: xml/milter-server-context.xml:808(primary)
 msgid "milter_server_context_get_skip_body"
 msgstr ""
 
 #: xml/milter-server-context.xml:90(link)
-#: xml/milter-server-context.xml:830(primary)
+#: xml/milter-server-context.xml:824(primary)
 msgid "milter_server_context_get_name"
 msgstr ""
 
 #: xml/milter-server-context.xml:91(link)
-#: xml/milter-server-context.xml:844(primary)
+#: xml/milter-server-context.xml:838(primary)
 msgid "milter_server_context_set_name"
 msgstr ""
 
@@ -19234,12 +19234,11 @@ msgid ""
 "    MILTER_SERVER_CONTEXT_ERROR_INVALID_STATE,\n"
 "    MILTER_SERVER_CONTEXT_ERROR_BUSY,\n"
 "    MILTER_SERVER_CONTEXT_ERROR_IO_ERROR,\n"
-"    MILTER_SERVER_CONTEXT_ERROR_DECODE_ERROR,\n"
 "    MILTER_SERVER_CONTEXT_ERROR_NEWER_VERSION_REQUESTED\n"
 "} MilterServerContextError;\n"
 msgstr ""
 
-#: xml/milter-server-context.xml:175(para)
+#: xml/milter-server-context.xml:174(para)
 msgid ""
 "These identify the variable errors that can occur while calling <link "
 "linkend=\"MilterServerContext\"><literal>MilterServerContext</literal></"
@@ -19248,27 +19247,27 @@ msgstr ""
 "<link linkend=\"MilterServerContext\"><literal>MilterServerContext</"
 "literal></link>の関数呼び出し中に発生するエラーを識別します。"
 
-#: xml/milter-server-context.xml:182(literal)
+#: xml/milter-server-context.xml:181(literal)
 msgid "MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE"
 msgstr ""
 
-#: xml/milter-server-context.xml:183(simpara)
+#: xml/milter-server-context.xml:182(simpara)
 msgid "Indicates a connection failure."
 msgstr "接続が失敗したことを示します。"
 
-#: xml/milter-server-context.xml:188(literal)
+#: xml/milter-server-context.xml:187(literal)
 msgid "MILTER_SERVER_CONTEXT_ERROR_NO_SPEC"
 msgstr ""
 
-#: xml/milter-server-context.xml:189(simpara)
+#: xml/milter-server-context.xml:188(simpara)
 msgid "Indicates the connection spec isn't set."
 msgstr "接続指定が設定されていないことを示します。"
 
-#: xml/milter-server-context.xml:194(literal)
+#: xml/milter-server-context.xml:193(literal)
 msgid "MILTER_SERVER_CONTEXT_ERROR_INVALID_STATE"
 msgstr ""
 
-#: xml/milter-server-context.xml:195(simpara)
+#: xml/milter-server-context.xml:194(simpara)
 msgid ""
 "Indicates unexpected response is received on the current <link linkend="
 "\"MilterServerContextState\"><literal>MilterServerContextState</literal></"
@@ -19277,37 +19276,33 @@ msgstr ""
 "現在の<link linkend=\"MilterServerContext\"><literal>MilterServerContext</"
 "literal></link>が予期しない応答を受け取ったことを示します。"
 
-#: xml/milter-server-context.xml:201(literal)
+#: xml/milter-server-context.xml:200(literal)
 msgid "MILTER_SERVER_CONTEXT_ERROR_BUSY"
 msgstr ""
 
-#: xml/milter-server-context.xml:202(simpara)
+#: xml/milter-server-context.xml:201(simpara)
 msgid ""
 "Indicates a new operation is requested before the previous operation's "
 "response is received."
 msgstr "前の操作の結果を受け取る前に新しい操作が要求されたことを示します。"
 
-#: xml/milter-server-context.xml:208(literal)
+#: xml/milter-server-context.xml:207(literal)
 msgid "MILTER_SERVER_CONTEXT_ERROR_IO_ERROR"
 msgstr ""
 
-#: xml/milter-server-context.xml:214(literal)
-msgid "MILTER_SERVER_CONTEXT_ERROR_DECODE_ERROR"
-msgstr ""
-
-#: xml/milter-server-context.xml:219(literal)
+#: xml/milter-server-context.xml:213(literal)
 msgid "MILTER_SERVER_CONTEXT_ERROR_NEWER_VERSION_REQUESTED"
 msgstr ""
 
-#: xml/milter-server-context.xml:220(simpara)
+#: xml/milter-server-context.xml:214(simpara)
 msgid "Indicates unsupported newer version is requested."
 msgstr "未サポートの新しいバージョンが要求されたことを示します。"
 
-#: xml/milter-server-context.xml:226(title)
+#: xml/milter-server-context.xml:220(title)
 msgid "enum MilterServerContextState"
 msgstr ""
 
-#: xml/milter-server-context.xml:227(programlisting)
+#: xml/milter-server-context.xml:221(programlisting)
 #, no-wrap
 msgid ""
 "typedef enum\n"
@@ -19330,7 +19325,7 @@ msgid ""
 "} MilterServerContextState;\n"
 msgstr ""
 
-#: xml/milter-server-context.xml:246(para)
+#: xml/milter-server-context.xml:240(para)
 msgid ""
 "These identify the state of <link linkend=\"MilterServerContext"
 "\"><literal>MilterServerContext</literal></link>."
@@ -19338,115 +19333,115 @@ msgstr ""
 "<link linkend=\"MilterServerContext\"><literal>MilterServerContext</"
 "literal></link>の状態を識別します。"
 
-#: xml/milter-server-context.xml:252(literal)
+#: xml/milter-server-context.xml:246(literal)
 msgid "MILTER_SERVER_CONTEXT_STATE_START"
 msgstr ""
 
-#: xml/milter-server-context.xml:257(literal)
+#: xml/milter-server-context.xml:251(literal)
 msgid "MILTER_SERVER_CONTEXT_STATE_DEFINE_MACRO"
 msgstr ""
 
-#: xml/milter-server-context.xml:258(simpara)
-msgid "Sent define macro."
-msgstr ""
+#: xml/milter-server-context.xml:252(simpara)
+msgid "Sent macro definition."
+msgstr "マクロ定義を送信しました。"
 
-#: xml/milter-server-context.xml:262(literal)
+#: xml/milter-server-context.xml:256(literal)
 msgid "MILTER_SERVER_CONTEXT_STATE_NEGOTIATE"
 msgstr ""
 
-#: xml/milter-server-context.xml:263(simpara)
+#: xml/milter-server-context.xml:257(simpara)
 msgid "Negotiating."
 msgstr "ネゴシエーション中。"
 
-#: xml/milter-server-context.xml:267(literal)
+#: xml/milter-server-context.xml:261(literal)
 msgid "MILTER_SERVER_CONTEXT_STATE_CONNECT"
 msgstr ""
 
-#: xml/milter-server-context.xml:273(literal)
+#: xml/milter-server-context.xml:267(literal)
 msgid "MILTER_SERVER_CONTEXT_STATE_HELO"
 msgstr ""
 
-#: xml/milter-server-context.xml:274(simpara)
+#: xml/milter-server-context.xml:268(simpara)
 msgid "Sent HELO information."
 msgstr "HELOコマンドの情報を送信しました。"
 
-#: xml/milter-server-context.xml:278(literal)
+#: xml/milter-server-context.xml:272(literal)
 msgid "MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM"
 msgstr ""
 
-#: xml/milter-server-context.xml:279(simpara)
+#: xml/milter-server-context.xml:273(simpara)
 msgid "Sent MAIL FROM command information."
 msgstr "MAIL FROMコマンドの情報を送信しました。"
 
-#: xml/milter-server-context.xml:284(literal)
+#: xml/milter-server-context.xml:278(literal)
 msgid "MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT"
 msgstr ""
 
-#: xml/milter-server-context.xml:285(simpara)
+#: xml/milter-server-context.xml:279(simpara)
 msgid "Sent RCPT TO command information."
 msgstr "RCPT TOコマンドの情報を送信しました。"
 
-#: xml/milter-server-context.xml:290(literal)
+#: xml/milter-server-context.xml:284(literal)
 msgid "MILTER_SERVER_CONTEXT_STATE_DATA"
 msgstr ""
 
-#: xml/milter-server-context.xml:291(simpara)
+#: xml/milter-server-context.xml:285(simpara)
 msgid "Sent DATA command information."
 msgstr "DATAコマンドの情報を送信しました。"
 
-#: xml/milter-server-context.xml:296(literal)
+#: xml/milter-server-context.xml:290(literal)
 msgid "MILTER_SERVER_CONTEXT_STATE_UNKNOWN"
 msgstr ""
 
-#: xml/milter-server-context.xml:297(simpara)
+#: xml/milter-server-context.xml:291(simpara)
 msgid "Sent unknown SMTP command."
 msgstr "未知のSMTPコマンドを送信しました。"
 
-#: xml/milter-server-context.xml:302(literal)
+#: xml/milter-server-context.xml:296(literal)
 msgid "MILTER_SERVER_CONTEXT_STATE_HEADER"
 msgstr ""
 
-#: xml/milter-server-context.xml:307(literal)
+#: xml/milter-server-context.xml:301(literal)
 msgid "MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER"
 msgstr ""
 
-#: xml/milter-server-context.xml:308(simpara)
+#: xml/milter-server-context.xml:302(simpara)
 msgid "Sent all headers."
 msgstr "すべてのヘッダを送信しました。"
 
-#: xml/milter-server-context.xml:312(literal)
+#: xml/milter-server-context.xml:306(literal)
 msgid "MILTER_SERVER_CONTEXT_STATE_BODY"
 msgstr ""
 
-#: xml/milter-server-context.xml:313(simpara)
+#: xml/milter-server-context.xml:307(simpara)
 msgid "Sent a body chunk."
 msgstr "本文の1かたまりを送信しました。"
 
-#: xml/milter-server-context.xml:317(literal)
+#: xml/milter-server-context.xml:311(literal)
 msgid "MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE"
 msgstr ""
 
-#: xml/milter-server-context.xml:318(simpara)
+#: xml/milter-server-context.xml:312(simpara)
 msgid "Sent all body chunks."
 msgstr "本文すべてを送信しました。"
 
-#: xml/milter-server-context.xml:323(literal)
+#: xml/milter-server-context.xml:317(literal)
 msgid "MILTER_SERVER_CONTEXT_STATE_QUIT"
 msgstr ""
 
-#: xml/milter-server-context.xml:324(simpara)
+#: xml/milter-server-context.xml:318(simpara)
 msgid "Sent quit request."
 msgstr "終了要求を送信しました。"
 
-#: xml/milter-server-context.xml:328(literal)
+#: xml/milter-server-context.xml:322(literal)
 msgid "MILTER_SERVER_CONTEXT_STATE_ABORT"
 msgstr ""
 
-#: xml/milter-server-context.xml:329(simpara)
+#: xml/milter-server-context.xml:323(simpara)
 msgid "Sent abort request."
 msgstr "中止要求を送信しました。"
 
-#: xml/milter-server-context.xml:335(programlisting)
+#: xml/milter-server-context.xml:329(programlisting)
 #, no-wrap
 msgid ""
 "typedef struct {\n"
@@ -19454,29 +19449,29 @@ msgid ""
 "} MilterServerContext;\n"
 msgstr ""
 
-#: xml/milter-server-context.xml:343(title)
+#: xml/milter-server-context.xml:337(title)
 msgid "milter_server_context_error_quark ()"
 msgstr ""
 
-#: xml/milter-server-context.xml:344(programlisting)
+#: xml/milter-server-context.xml:338(programlisting)
 #, no-wrap
 msgid "<link linkend=\"GQuark\">GQuark</link>              milter_server_context_error_quark   (void);"
 msgstr ""
 
-#: xml/milter-server-context.xml:354(title)
+#: xml/milter-server-context.xml:348(title)
 msgid "milter_server_context_new ()"
 msgstr ""
 
-#: xml/milter-server-context.xml:355(programlisting)
+#: xml/milter-server-context.xml:349(programlisting)
 #, no-wrap
 msgid "<link linkend=\"MilterServerContext\">MilterServerContext</link>* milter_server_context_new          (void);"
 msgstr ""
 
-#: xml/milter-server-context.xml:356(para)
+#: xml/milter-server-context.xml:350(para)
 msgid "Creates a new context object."
 msgstr "新しいコンテキストオブジェクトを生成します。"
 
-#: xml/milter-server-context.xml:361(simpara)
+#: xml/milter-server-context.xml:355(simpara)
 msgid ""
 "a new <link linkend=\"MilterServerContext\"><literal>MilterServerContext</"
 "literal></link> object."
@@ -19484,11 +19479,11 @@ msgstr ""
 "新しい<link linkend=\"MilterServerContext\"><literal>MilterServerContext</"
 "literal></link>オブジェクト。"
 
-#: xml/milter-server-context.xml:365(title)
+#: xml/milter-server-context.xml:359(title)
 msgid "milter_server_context_set_connection_timeout ()"
 msgstr ""
 
-#: xml/milter-server-context.xml:366(programlisting)
+#: xml/milter-server-context.xml:360(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"void\">void</link>                milter_server_context_set_connection_timeout\n"
@@ -19496,7 +19491,7 @@ msgid ""
 "                                                         <link linkend=\"gdouble\">gdouble</link> timeout);"
 msgstr ""
 
-#: xml/milter-server-context.xml:369(para)
+#: xml/milter-server-context.xml:363(para)
 msgid ""
 "Sets the timeout by seconds on connection. If <parameter>context</parameter> "
 "doesn't connects to client in <parameter>timeout</parameter> seconds, <link "
@@ -19508,33 +19503,33 @@ msgstr ""
 "linkend=\"MilterServerContext-timeout\"><type>\"timeout\"</type></link>シグナ"
 "ルが発行されます。"
 
-#: xml/milter-server-context.xml:377(simpara)
-#: xml/milter-server-context.xml:397(simpara)
-#: xml/milter-server-context.xml:417(simpara)
-#: xml/milter-server-context.xml:438(simpara)
-#: xml/milter-server-context.xml:460(simpara)
-#: xml/milter-server-context.xml:484(simpara)
-#: xml/milter-server-context.xml:501(simpara)
-#: xml/milter-server-context.xml:516(simpara)
-#: xml/milter-server-context.xml:531(simpara)
-#: xml/milter-server-context.xml:546(simpara)
-#: xml/milter-server-context.xml:562(simpara)
-#: xml/milter-server-context.xml:582(simpara)
-#: xml/milter-server-context.xml:606(simpara)
-#: xml/milter-server-context.xml:624(simpara)
-#: xml/milter-server-context.xml:643(simpara)
-#: xml/milter-server-context.xml:660(simpara)
-#: xml/milter-server-context.xml:675(simpara)
-#: xml/milter-server-context.xml:694(simpara)
-#: xml/milter-server-context.xml:714(simpara)
-#: xml/milter-server-context.xml:730(simpara)
-#: xml/milter-server-context.xml:754(simpara)
-#: xml/milter-server-context.xml:774(simpara)
-#: xml/milter-server-context.xml:788(simpara)
-#: xml/milter-server-context.xml:804(simpara)
-#: xml/milter-server-context.xml:822(simpara)
-#: xml/milter-server-context.xml:837(simpara)
-#: xml/milter-server-context.xml:852(simpara)
+#: xml/milter-server-context.xml:371(simpara)
+#: xml/milter-server-context.xml:391(simpara)
+#: xml/milter-server-context.xml:411(simpara)
+#: xml/milter-server-context.xml:432(simpara)
+#: xml/milter-server-context.xml:454(simpara)
+#: xml/milter-server-context.xml:478(simpara)
+#: xml/milter-server-context.xml:495(simpara)
+#: xml/milter-server-context.xml:510(simpara)
+#: xml/milter-server-context.xml:525(simpara)
+#: xml/milter-server-context.xml:540(simpara)
+#: xml/milter-server-context.xml:556(simpara)
+#: xml/milter-server-context.xml:576(simpara)
+#: xml/milter-server-context.xml:600(simpara)
+#: xml/milter-server-context.xml:618(simpara)
+#: xml/milter-server-context.xml:637(simpara)
+#: xml/milter-server-context.xml:654(simpara)
+#: xml/milter-server-context.xml:669(simpara)
+#: xml/milter-server-context.xml:688(simpara)
+#: xml/milter-server-context.xml:708(simpara)
+#: xml/milter-server-context.xml:724(simpara)
+#: xml/milter-server-context.xml:748(simpara)
+#: xml/milter-server-context.xml:768(simpara)
+#: xml/milter-server-context.xml:782(simpara)
+#: xml/milter-server-context.xml:798(simpara)
+#: xml/milter-server-context.xml:816(simpara)
+#: xml/milter-server-context.xml:831(simpara)
+#: xml/milter-server-context.xml:846(simpara)
 msgid ""
 "a <link linkend=\"MilterServerContext\"><literal>MilterServerContext</"
 "literal></link>."
@@ -19542,7 +19537,7 @@ msgstr ""
 "<link linkend=\"MilterServerContext\"><literal>MilterServerContext</"
 "literal></link>。"
 
-#: xml/milter-server-context.xml:380(simpara)
+#: xml/milter-server-context.xml:374(simpara)
 msgid ""
 "the connection timeout by seconds. (default is <link linkend=\"MILTER-SERVER-"
 "CONTEXT-DEFAULT-CONNECTION-TIMEOUT:CAPS"
@@ -19554,11 +19549,11 @@ msgstr ""
 "\"><literal>MILTER_SERVER_CONTEXT_DEFAULT_CONNECTION_TIMEOUT</literal></"
 "link>）"
 
-#: xml/milter-server-context.xml:385(title)
+#: xml/milter-server-context.xml:379(title)
 msgid "milter_server_context_set_writing_timeout ()"
 msgstr ""
 
-#: xml/milter-server-context.xml:386(programlisting)
+#: xml/milter-server-context.xml:380(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"void\">void</link>                milter_server_context_set_writing_timeout\n"
@@ -19566,7 +19561,7 @@ msgid ""
 "                                                         <link linkend=\"gdouble\">gdouble</link> timeout);"
 msgstr ""
 
-#: xml/milter-server-context.xml:389(para)
+#: xml/milter-server-context.xml:383(para)
 msgid ""
 "Sets the timeout by seconds on writing. If <parameter>context</parameter> "
 "doesn't write to client socket in <parameter>timeout</parameter> seconds, "
@@ -19578,7 +19573,7 @@ msgstr ""
 "場合は<link linkend=\"MilterServerContext-timeout\"><type>\"timeout\"</"
 "type></link>シグナルが発行されます。"
 
-#: xml/milter-server-context.xml:400(simpara)
+#: xml/milter-server-context.xml:394(simpara)
 msgid ""
 "the writing timeout by seconds. (default is <link linkend=\"MILTER-SERVER-"
 "CONTEXT-DEFAULT-WRITING-TIMEOUT:CAPS"
@@ -19588,11 +19583,11 @@ msgstr ""
 "CONTEXT-DEFAULT-WRITING-TIMEOUT:CAPS"
 "\"><literal>MILTER_SERVER_CONTEXT_DEFAULT_WRITING_TIMEOUT</literal></link>）"
 
-#: xml/milter-server-context.xml:405(title)
+#: xml/milter-server-context.xml:399(title)
 msgid "milter_server_context_set_reading_timeout ()"
 msgstr ""
 
-#: xml/milter-server-context.xml:406(programlisting)
+#: xml/milter-server-context.xml:400(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"void\">void</link>                milter_server_context_set_reading_timeout\n"
@@ -19600,7 +19595,7 @@ msgid ""
 "                                                         <link linkend=\"gdouble\">gdouble</link> timeout);"
 msgstr ""
 
-#: xml/milter-server-context.xml:409(para)
+#: xml/milter-server-context.xml:403(para)
 msgid ""
 "Sets the timeout by seconds on reading. If <parameter>context</parameter> "
 "doesn't receive response from client socket in <parameter>timeout</"
@@ -19612,7 +19607,7 @@ msgstr ""
 "らなかった場合は、<link linkend=\"MilterServerContext-timeout\"><type>"
 "\"timeout\"</type></link>シグナルが発行されます。"
 
-#: xml/milter-server-context.xml:420(simpara)
+#: xml/milter-server-context.xml:414(simpara)
 msgid ""
 "the reading timeout by seconds. (default is <link linkend=\"MILTER-SERVER-"
 "CONTEXT-DEFAULT-READING-TIMEOUT:CAPS"
@@ -19622,11 +19617,11 @@ msgstr ""
 "CONTEXT-DEFAULT-READING-TIMEOUT:CAPS"
 "\"><literal>MILTER_SERVER_CONTEXT_DEFAULT_READING_TIMEOUT</literal></link>）"
 
-#: xml/milter-server-context.xml:425(title)
+#: xml/milter-server-context.xml:419(title)
 msgid "milter_server_context_set_end_of_message_timeout ()"
 msgstr ""
 
-#: xml/milter-server-context.xml:426(programlisting)
+#: xml/milter-server-context.xml:420(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"void\">void</link>                milter_server_context_set_end_of_message_timeout\n"
@@ -19634,7 +19629,7 @@ msgid ""
 "                                                         <link linkend=\"gdouble\">gdouble</link> timeout);"
 msgstr ""
 
-#: xml/milter-server-context.xml:429(para)
+#: xml/milter-server-context.xml:423(para)
 msgid ""
 "Sets the timeout by seconds on end-of-message. If <parameter>context</"
 "parameter> doesn't receive response for end-of-message from client socket in "
@@ -19647,7 +19642,7 @@ msgstr ""
 "\"MilterServerContext-timeout\"><type>\"timeout\"</type></link>シグナルが発行"
 "されます。"
 
-#: xml/milter-server-context.xml:441(simpara)
+#: xml/milter-server-context.xml:435(simpara)
 msgid ""
 "the timeout by seconds on end-of-message. (default is <link linkend=\"MILTER-"
 "SERVER-CONTEXT-DEFAULT-END-OF-MESSAGE-TIMEOUT:CAPS"
@@ -19659,11 +19654,11 @@ msgstr ""
 "\"><literal>MILTER_SERVER_CONTEXT_DEFAULT_END_OF_MESSAGE_TIMEOUT</literal></"
 "link>）"
 
-#: xml/milter-server-context.xml:447(title)
+#: xml/milter-server-context.xml:441(title)
 msgid "milter_server_context_set_connection_spec ()"
 msgstr ""
 
-#: xml/milter-server-context.xml:448(programlisting)
+#: xml/milter-server-context.xml:442(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"gboolean\">gboolean</link>            milter_server_context_set_connection_spec\n"
@@ -19672,7 +19667,7 @@ msgid ""
 "                                                         <link linkend=\"GError\">GError</link> **error);"
 msgstr ""
 
-#: xml/milter-server-context.xml:452(para)
+#: xml/milter-server-context.xml:446(para)
 msgid ""
 "Sets a connection specification of client. If <parameter>spec</parameter> is "
 "invalid format and <parameter>error</parameter> is not <link linkend=\"NULL:"
@@ -19684,15 +19679,15 @@ msgstr ""
 "literal></link>でない場合は、エラーの詳細は<parameter>error</parameter>に設定"
 "されます。"
 
-#: xml/milter-server-context.xml:463(simpara)
+#: xml/milter-server-context.xml:457(simpara)
 msgid "the connection spec of client."
 msgstr "クライアントの接続指定。"
 
-#: xml/milter-server-context.xml:472(title)
+#: xml/milter-server-context.xml:466(title)
 msgid "milter_server_context_establish_connection ()"
 msgstr ""
 
-#: xml/milter-server-context.xml:473(programlisting)
+#: xml/milter-server-context.xml:467(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"gboolean\">gboolean</link>            milter_server_context_establish_connection\n"
@@ -19700,7 +19695,7 @@ msgid ""
 "                                                         <link linkend=\"GError\">GError</link> **error);"
 msgstr ""
 
-#: xml/milter-server-context.xml:476(para)
+#: xml/milter-server-context.xml:470(para)
 msgid ""
 "Establishes a connection to client. If establishing is failed and "
 "<parameter>error</parameter> is not <link linkend=\"NULL:CAPS"
@@ -19711,63 +19706,63 @@ msgstr ""
 "parameter>が<link linkend=\"NULL:CAPS\"><literal>NULL</literal></link>でない"
 "場合は、エラーの詳細は<parameter>error</parameter>に設定されます。"
 
-#: xml/milter-server-context.xml:493(title)
+#: xml/milter-server-context.xml:487(title)
 msgid "milter_server_context_get_status ()"
 msgstr ""
 
-#: xml/milter-server-context.xml:494(programlisting)
+#: xml/milter-server-context.xml:488(programlisting)
 #, no-wrap
 msgid "<link linkend=\"MilterStatus\">MilterStatus</link>        milter_server_context_get_status    (<link linkend=\"MilterServerContext\">MilterServerContext</link> *context);"
 msgstr ""
 
-#: xml/milter-server-context.xml:495(para)
+#: xml/milter-server-context.xml:489(para)
 msgid "Gets the current status."
 msgstr "現在の状態を取得します。"
 
-#: xml/milter-server-context.xml:503(simpara)
+#: xml/milter-server-context.xml:497(simpara)
 msgid "the current status."
 msgstr "現在の状態。"
 
-#: xml/milter-server-context.xml:507(title)
+#: xml/milter-server-context.xml:501(title)
 msgid "milter_server_context_get_state ()"
 msgstr ""
 
-#: xml/milter-server-context.xml:508(programlisting)
+#: xml/milter-server-context.xml:502(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"MilterServerContextState\">MilterServerContextState</link> milter_server_context_get_state\n"
 "                                                        (<link linkend=\"MilterServerContext\">MilterServerContext</link> *context);"
 msgstr ""
 
-#: xml/milter-server-context.xml:522(title)
+#: xml/milter-server-context.xml:516(title)
 msgid "milter_server_context_set_state ()"
 msgstr ""
 
-#: xml/milter-server-context.xml:523(programlisting)
+#: xml/milter-server-context.xml:517(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"void\">void</link>                milter_server_context_set_state     (<link linkend=\"MilterServerContext\">MilterServerContext</link> *context,\n"
 "                                                         <link linkend=\"MilterServerContextState\">MilterServerContextState</link> state);"
 msgstr ""
 
-#: xml/milter-server-context.xml:534(simpara)
+#: xml/milter-server-context.xml:528(simpara)
 msgid "the new state."
 msgstr "新しい状態。"
 
-#: xml/milter-server-context.xml:538(title)
+#: xml/milter-server-context.xml:532(title)
 msgid "milter_server_context_is_processing ()"
 msgstr ""
 
-#: xml/milter-server-context.xml:539(programlisting)
+#: xml/milter-server-context.xml:533(programlisting)
 #, no-wrap
 msgid "<link linkend=\"gboolean\">gboolean</link>            milter_server_context_is_processing (<link linkend=\"MilterServerContext\">MilterServerContext</link> *context);"
 msgstr ""
 
-#: xml/milter-server-context.xml:540(para)
+#: xml/milter-server-context.xml:534(para)
 msgid "Gets whether waiting response."
 msgstr "応答を待っているかどうかを取得します。"
 
-#: xml/milter-server-context.xml:548(simpara)
+#: xml/milter-server-context.xml:542(simpara)
 msgid ""
 "<link linkend=\"TRUE:CAPS\"><literal>TRUE</literal></link> if any response "
 "is received after the last writing, <link linkend=\"FALSE:CAPS"
@@ -19777,30 +19772,30 @@ msgstr ""
 "\"><literal>TRUE</literal></link>、そうでなければ<link linkend=\"FALSE:CAPS"
 "\"><literal>FALSE</literal></link>。"
 
-#: xml/milter-server-context.xml:553(title)
+#: xml/milter-server-context.xml:547(title)
 msgid "milter_server_context_negotiate ()"
 msgstr ""
 
-#: xml/milter-server-context.xml:554(programlisting)
+#: xml/milter-server-context.xml:548(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"gboolean\">gboolean</link>            milter_server_context_negotiate     (<link linkend=\"MilterServerContext\">MilterServerContext</link> *context,\n"
 "                                                         <link linkend=\"MilterOption\">MilterOption</link> *option);"
 msgstr ""
 
-#: xml/milter-server-context.xml:556(para)
+#: xml/milter-server-context.xml:550(para)
 msgid "Negotiates with client."
 msgstr "クライアントとネゴシエーションします。"
 
-#: xml/milter-server-context.xml:565(simpara)
+#: xml/milter-server-context.xml:559(simpara)
 msgid "the negotiate option."
 msgstr "ネゴシエーションのオプション。"
 
-#: xml/milter-server-context.xml:571(title)
+#: xml/milter-server-context.xml:565(title)
 msgid "milter_server_context_connect ()"
 msgstr ""
 
-#: xml/milter-server-context.xml:572(programlisting)
+#: xml/milter-server-context.xml:566(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"gboolean\">gboolean</link>            milter_server_context_connect       (<link linkend=\"MilterServerContext\">MilterServerContext</link> *context,\n"
@@ -19809,65 +19804,65 @@ msgid ""
 "                                                         <link linkend=\"socklen-t\">socklen_t</link> address_length);"
 msgstr ""
 
-#: xml/milter-server-context.xml:576(para)
+#: xml/milter-server-context.xml:570(para)
 msgid "Sends connected SMTP client information."
 msgstr "接続されたSMTPクライアントの情報を送信します。"
 
-#: xml/milter-server-context.xml:585(simpara)
+#: xml/milter-server-context.xml:579(simpara)
 msgid "the host name of connected SMTP client."
 msgstr "接続してきたSMTPクライアントのホスト名。"
 
-#: xml/milter-server-context.xml:588(simpara)
+#: xml/milter-server-context.xml:582(simpara)
 msgid "the address of connected SMTP client."
 msgstr "接続してきたSMTPクライアントのアドレス。"
 
-#: xml/milter-server-context.xml:591(simpara)
+#: xml/milter-server-context.xml:585(simpara)
 msgid "the length of <parameter>address</parameter>."
 msgstr "<parameter>address</parameter>のサイズ。"
 
-#: xml/milter-server-context.xml:597(title)
+#: xml/milter-server-context.xml:591(title)
 msgid "milter_server_context_helo ()"
 msgstr ""
 
-#: xml/milter-server-context.xml:598(programlisting)
+#: xml/milter-server-context.xml:592(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"gboolean\">gboolean</link>            milter_server_context_helo          (<link linkend=\"MilterServerContext\">MilterServerContext</link> *context,\n"
 "                                                         const <link linkend=\"gchar\">gchar</link> *fqdn);"
 msgstr ""
 
-#: xml/milter-server-context.xml:600(para)
+#: xml/milter-server-context.xml:594(para)
 msgid "Sends the FQDN passed on HELO."
 msgstr "HELOに渡されたFQDNを送信します。"
 
-#: xml/milter-server-context.xml:609(simpara)
+#: xml/milter-server-context.xml:603(simpara)
 msgid "the FQDN."
 msgstr "FQDN。"
 
-#: xml/milter-server-context.xml:615(title)
+#: xml/milter-server-context.xml:609(title)
 msgid "milter_server_context_envelope_from ()"
 msgstr ""
 
-#: xml/milter-server-context.xml:616(programlisting)
+#: xml/milter-server-context.xml:610(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"gboolean\">gboolean</link>            milter_server_context_envelope_from (<link linkend=\"MilterServerContext\">MilterServerContext</link> *context,\n"
 "                                                         const <link linkend=\"gchar\">gchar</link> *from);"
 msgstr ""
 
-#: xml/milter-server-context.xml:618(para)
+#: xml/milter-server-context.xml:612(para)
 msgid "Sends the parameter passed on MAIL FROM."
 msgstr "MAIL FROM時に渡されたパラメタを送信します。"
 
-#: xml/milter-server-context.xml:627(simpara)
+#: xml/milter-server-context.xml:621(simpara)
 msgid "the envelope from address."
 msgstr "送信者のアドレス。"
 
-#: xml/milter-server-context.xml:633(title)
+#: xml/milter-server-context.xml:627(title)
 msgid "milter_server_context_envelope_recipient ()"
 msgstr ""
 
-#: xml/milter-server-context.xml:634(programlisting)
+#: xml/milter-server-context.xml:628(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"gboolean\">gboolean</link>            milter_server_context_envelope_recipient\n"
@@ -19875,47 +19870,47 @@ msgid ""
 "                                                         const <link linkend=\"gchar\">gchar</link> *recipient);"
 msgstr ""
 
-#: xml/milter-server-context.xml:637(para)
+#: xml/milter-server-context.xml:631(para)
 msgid "Sends the parameter passed on RCPT TO."
 msgstr "RCPT TO時に渡されたパラメタを送信します。"
 
-#: xml/milter-server-context.xml:646(simpara)
+#: xml/milter-server-context.xml:640(simpara)
 msgid "the envelope recipient address."
 msgstr "宛先アドレス。"
 
-#: xml/milter-server-context.xml:652(title)
+#: xml/milter-server-context.xml:646(title)
 msgid "milter_server_context_data ()"
 msgstr ""
 
-#: xml/milter-server-context.xml:653(programlisting)
+#: xml/milter-server-context.xml:647(programlisting)
 #, no-wrap
 msgid "<link linkend=\"gboolean\">gboolean</link>            milter_server_context_data          (<link linkend=\"MilterServerContext\">MilterServerContext</link> *context);"
 msgstr ""
 
-#: xml/milter-server-context.xml:654(para)
+#: xml/milter-server-context.xml:648(para)
 msgid "Notifies DATA is received."
 msgstr "DATAコマンドを受信したことを通知します。"
 
-#: xml/milter-server-context.xml:666(title)
+#: xml/milter-server-context.xml:660(title)
 msgid "milter_server_context_unknown ()"
 msgstr ""
 
-#: xml/milter-server-context.xml:667(programlisting)
+#: xml/milter-server-context.xml:661(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"gboolean\">gboolean</link>            milter_server_context_unknown       (<link linkend=\"MilterServerContext\">MilterServerContext</link> *context,\n"
 "                                                         const <link linkend=\"gchar\">gchar</link> *command);"
 msgstr ""
 
-#: xml/milter-server-context.xml:669(para)
+#: xml/milter-server-context.xml:663(para)
 msgid "Sends received unknown SMTP command."
 msgstr "受信した未知のSMTPコマンドを送信します。"
 
-#: xml/milter-server-context.xml:684(title)
+#: xml/milter-server-context.xml:678(title)
 msgid "milter_server_context_header ()"
 msgstr ""
 
-#: xml/milter-server-context.xml:685(programlisting)
+#: xml/milter-server-context.xml:679(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"gboolean\">gboolean</link>            milter_server_context_header        (<link linkend=\"MilterServerContext\">MilterServerContext</link> *context,\n"
@@ -19923,28 +19918,28 @@ msgid ""
 "                                                         const <link linkend=\"gchar\">gchar</link> *value);"
 msgstr ""
 
-#: xml/milter-server-context.xml:688(para)
+#: xml/milter-server-context.xml:682(para)
 msgid "Sends a header."
 msgstr "ヘッダを送信します。"
 
-#: xml/milter-server-context.xml:706(title)
+#: xml/milter-server-context.xml:700(title)
 msgid "milter_server_context_end_of_header ()"
 msgstr ""
 
-#: xml/milter-server-context.xml:707(programlisting)
+#: xml/milter-server-context.xml:701(programlisting)
 #, no-wrap
 msgid "<link linkend=\"gboolean\">gboolean</link>            milter_server_context_end_of_header (<link linkend=\"MilterServerContext\">MilterServerContext</link> *context);"
 msgstr ""
 
-#: xml/milter-server-context.xml:708(para)
+#: xml/milter-server-context.xml:702(para)
 msgid "Notifies all headers are sent."
 msgstr "すべてのヘッダが送信されたことを通知します。"
 
-#: xml/milter-server-context.xml:720(title)
+#: xml/milter-server-context.xml:714(title)
 msgid "milter_server_context_body ()"
 msgstr ""
 
-#: xml/milter-server-context.xml:721(programlisting)
+#: xml/milter-server-context.xml:715(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"gboolean\">gboolean</link>            milter_server_context_body          (<link linkend=\"MilterServerContext\">MilterServerContext</link> *context,\n"
@@ -19952,15 +19947,15 @@ msgid ""
 "                                                         <link linkend=\"gsize\">gsize</link> size);"
 msgstr ""
 
-#: xml/milter-server-context.xml:724(para)
+#: xml/milter-server-context.xml:718(para)
 msgid "Sends a body chunk."
 msgstr "本文の1かたまりを送信します。"
 
-#: xml/milter-server-context.xml:742(title)
+#: xml/milter-server-context.xml:736(title)
 msgid "milter_server_context_end_of_message ()"
 msgstr ""
 
-#: xml/milter-server-context.xml:743(programlisting)
+#: xml/milter-server-context.xml:737(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"gboolean\">gboolean</link>            milter_server_context_end_of_message\n"
@@ -19969,13 +19964,13 @@ msgid ""
 "                                                         <link linkend=\"gsize\">gsize</link> size);"
 msgstr ""
 
-#: xml/milter-server-context.xml:747(para)
+#: xml/milter-server-context.xml:741(para)
 msgid "Notifies all body chunks are sent with optional the last body chunk."
 msgstr ""
 "すべての本文のかたまりを送信したことを通知します。未送信の最後の本文のかたま"
 "りも一緒に送信することができます。"
 
-#: xml/milter-server-context.xml:757(simpara)
+#: xml/milter-server-context.xml:751(simpara)
 msgid ""
 "the body chunk. maybe <link linkend=\"NULL:CAPS\"><literal>NULL</literal></"
 "link>."
@@ -19983,37 +19978,37 @@ msgstr ""
 "本文のかたまり。<link linkend=\"NULL:CAPS\"><literal>NULL</literal></link>か"
 "もしれません。"
 
-#: xml/milter-server-context.xml:766(title)
+#: xml/milter-server-context.xml:760(title)
 msgid "milter_server_context_quit ()"
 msgstr ""
 
-#: xml/milter-server-context.xml:767(programlisting)
+#: xml/milter-server-context.xml:761(programlisting)
 #, no-wrap
 msgid "<link linkend=\"gboolean\">gboolean</link>            milter_server_context_quit          (<link linkend=\"MilterServerContext\">MilterServerContext</link> *context);"
 msgstr ""
 
-#: xml/milter-server-context.xml:768(para)
+#: xml/milter-server-context.xml:762(para)
 msgid "Quits the current connection."
 msgstr "現在の接続を終了します。"
 
-#: xml/milter-server-context.xml:780(title)
+#: xml/milter-server-context.xml:774(title)
 msgid "milter_server_context_abort ()"
 msgstr ""
 
-#: xml/milter-server-context.xml:781(programlisting)
+#: xml/milter-server-context.xml:775(programlisting)
 #, no-wrap
 msgid "<link linkend=\"gboolean\">gboolean</link>            milter_server_context_abort         (<link linkend=\"MilterServerContext\">MilterServerContext</link> *context);"
 msgstr ""
 
-#: xml/milter-server-context.xml:782(para)
+#: xml/milter-server-context.xml:776(para)
 msgid "Aborts the current connection."
 msgstr "現在の接続を中止します。"
 
-#: xml/milter-server-context.xml:794(title)
+#: xml/milter-server-context.xml:788(title)
 msgid "milter_server_context_is_enable_step ()"
 msgstr ""
 
-#: xml/milter-server-context.xml:795(programlisting)
+#: xml/milter-server-context.xml:789(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"gboolean\">gboolean</link>            milter_server_context_is_enable_step\n"
@@ -20021,7 +20016,7 @@ msgid ""
 "                                                         <link linkend=\"MilterStepFlags\">MilterStepFlags</link> step);"
 msgstr ""
 
-#: xml/milter-server-context.xml:798(para)
+#: xml/milter-server-context.xml:792(para)
 msgid ""
 "Gets whether <parameter>step</parameter> flag is enabled in the "
 "<parameter>context</parameter>'s option."
@@ -20029,11 +20024,11 @@ msgstr ""
 "<parameter>context</parameter>のオプションで<parameter>step</parameter>フラグ"
 "が有効かどうかを取得します。"
 
-#: xml/milter-server-context.xml:807(simpara)
+#: xml/milter-server-context.xml:801(simpara)
 msgid "the step flag."
 msgstr "ステップフラグ。"
 
-#: xml/milter-server-context.xml:809(simpara)
+#: xml/milter-server-context.xml:803(simpara)
 msgid ""
 "<link linkend=\"TRUE:CAPS\"><literal>TRUE</literal></link> if "
 "<parameter>step</parameter> flags is enabled, <link linkend=\"FALSE:CAPS"
@@ -20043,16 +20038,16 @@ msgstr ""
 "\"><literal>TRUE</literal></link>、そうでなければ<link linkend=\"FALSE:CAPS"
 "\"><literal>FALSE</literal></link>。"
 
-#: xml/milter-server-context.xml:813(title)
+#: xml/milter-server-context.xml:807(title)
 msgid "milter_server_context_get_skip_body ()"
 msgstr ""
 
-#: xml/milter-server-context.xml:814(programlisting)
+#: xml/milter-server-context.xml:808(programlisting)
 #, no-wrap
 msgid "<link linkend=\"gboolean\">gboolean</link>            milter_server_context_get_skip_body (<link linkend=\"MilterServerContext\">MilterServerContext</link> *context);"
 msgstr ""
 
-#: xml/milter-server-context.xml:815(para)
+#: xml/milter-server-context.xml:809(para)
 msgid ""
 "Gets whether <parameter>context</parameter> received skip response on "
 "sending body chunks."
@@ -20060,7 +20055,7 @@ msgstr ""
 "<parameter>context</parameter>が本文のかたまりを送っている間にスキップ応答を"
 "受け取ったかどうかを取得します。"
 
-#: xml/milter-server-context.xml:824(simpara)
+#: xml/milter-server-context.xml:818(simpara)
 msgid ""
 "<link linkend=\"TRUE:CAPS\"><literal>TRUE</literal></link> if body chunks "
 "are skipped, <link linkend=\"FALSE:CAPS\"><literal>FALSE</literal></link> "
@@ -20070,39 +20065,39 @@ msgstr ""
 "literal></link>、そうでなければ<link linkend=\"FALSE:CAPS\"><literal>FALSE</"
 "literal></link>。"
 
-#: xml/milter-server-context.xml:829(title)
+#: xml/milter-server-context.xml:823(title)
 msgid "milter_server_context_get_name ()"
 msgstr ""
 
-#: xml/milter-server-context.xml:830(programlisting)
+#: xml/milter-server-context.xml:824(programlisting)
 #, no-wrap
 msgid "const <link linkend=\"gchar\">gchar</link>*        milter_server_context_get_name      (<link linkend=\"MilterServerContext\">MilterServerContext</link> *context);"
 msgstr ""
 
-#: xml/milter-server-context.xml:831(para)
+#: xml/milter-server-context.xml:825(para)
 msgid "Gets the name of <parameter>context</parameter>."
 msgstr "<parameter>context</parameter>の名前を取得します。"
 
-#: xml/milter-server-context.xml:839(simpara)
+#: xml/milter-server-context.xml:833(simpara)
 msgid "the name of <parameter>context</parameter>."
 msgstr "<parameter>context</parameter>の名前。"
 
-#: xml/milter-server-context.xml:843(title)
+#: xml/milter-server-context.xml:837(title)
 msgid "milter_server_context_set_name ()"
 msgstr ""
 
-#: xml/milter-server-context.xml:844(programlisting)
+#: xml/milter-server-context.xml:838(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"void\">void</link>                milter_server_context_set_name      (<link linkend=\"MilterServerContext\">MilterServerContext</link> *context,\n"
 "                                                         const <link linkend=\"gchar\">gchar</link> *name);"
 msgstr ""
 
-#: xml/milter-server-context.xml:846(para)
+#: xml/milter-server-context.xml:840(para)
 msgid "Sets the name of <parameter>context</parameter>."
 msgstr "<parameter>context</parameter>の名前を設定します。"
 
-#: xml/milter-server-context.xml:855(simpara)
+#: xml/milter-server-context.xml:849(simpara)
 msgid "the name."
 msgstr "名前。"
 
