@@ -333,7 +333,7 @@ struct smfiDesc
      * @context: the context for the current milter session.
      * @arguments: the SMTP's "MAIL FROM" command
      *             arguments. The first element is sender
-     *             address. NULL-terminated.
+     *             address. %NULL-terminated.
      *
      * This callback is called on SMTP's "MAIL FROM" command.
      *
@@ -381,7 +381,7 @@ struct smfiDesc
      * @context: the context for the current milter session.
      * @arguments: the SMTP's "RCPT TO" command
      *             arguments. The first element is recipient
-     *             address. NULL-terminated.
+     *             address. %NULL-terminated.
      *
      * This callback is called on SMTP's "RCPT TO" command.
      *
@@ -955,7 +955,7 @@ int smfi_settimeout (int              timeout);
  * <rd>
  * Here are the fail conditions:
  *   * invalid format.
- *   * @connection_spec is NULL.
+ *   * @connection_spec is %NULL.
  * </rd>
  *
  * See also <ulink
@@ -1801,7 +1801,7 @@ int     smfi_progress    (SMFICTX        *context);
  *
  * <rd>
  * Here are the fail conditions:
- *   * @new_body == NULL and @new_body_size > 0. FIXME:
+ *   * @new_body == %NULL and @new_body_size > 0. FIXME:
  *     not-implemented yet.
  *   * called in except xxfi_eom(). FIXME: not-implemented yet.
  *   * %SMFIF_CHGBODY flag isn't set in smfi_register() or
@@ -1829,7 +1829,7 @@ int     smfi_replacebody (SMFICTX        *context,
  *
  * <rd>
  * Here are the fail conditions:
- *   * @reason is NULL or empty. FIXME: not-implemented yet.
+ *   * @reason is %NULL or empty. FIXME: not-implemented yet.
  *   * called in except xxfi_eom(). FIXME: not-implemented yet.
  *   * %SMFIF_QUARANTINE flag isn't set in smfi_register() or
  *     xxfi_negotiate(). FIXME: not-implemented yet.
@@ -1898,7 +1898,7 @@ void   *smfi_getpriv     (SMFICTX        *context);
  * <rd>
  * Here are the fail conditions:
  *   * @state is not a valid value. FIXME: not-implemented yet.
- *   * @macros is NULL or empty. FIXME: not-implemented yet.
+ *   * @macros is %NULL or empty. FIXME: not-implemented yet.
  *   * the macro list for @state has been set before. FIXME:
  *     not-implemented yet.
  *   * called in except xxfi_negotiate(). FIXME: not-implemented yet.
