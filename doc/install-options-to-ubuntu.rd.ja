@@ -16,11 +16,11 @@ Ubuntu Linuxに依存しない一般的なインストール情報は((<イン�
 
 WebサーバとしてApacheを使います。
 
-  % sudo aptitude -V -D install apache2
+  % sudo aptitude -V -D -y install apache2
 
 グラフを生成するためのRRDtoolを使います。
 
-  % sudo aptitude -V -D install rrdtool
+  % sudo aptitude -V -D -y install rrdtool
 
 === milter-manager-log-analyzerの設定
 
@@ -57,7 +57,7 @@ milter-manager-log-analyzerは5分おきに実行されます。
 以下のパッケージをインストールすることにより、関連するパッケー
 ジもインストールされます。
 
-  % sudo aptitude -V -D install build-essential rdoc libopenssl-ruby apache2-threaded-dev libsqlite3-ruby
+  % sudo aptitude -V -D -y install build-essential rdoc libopenssl-ruby apache2-threaded-dev libsqlite3-ruby
 
 === RubyGemsのインストール
 

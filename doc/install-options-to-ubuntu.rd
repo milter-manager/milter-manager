@@ -16,11 +16,11 @@ information.
 
 We use Apache as Web server.
 
-  % sudo aptitude -V -D install apache2
+  % sudo aptitude -V -D -y install apache2
 
 We use RRDtool for generating graphs.
 
-  % sudo aptitude -V -D install rrdtool
+  % sudo aptitude -V -D -y install rrdtool
 
 === Configure milter-manager-log-analyzer
 
@@ -58,7 +58,7 @@ can confirm it is invoked at /var/log/cron.
 To install the following packages, related packages are also
 installed:
 
-  % sudo aptitude -V -D install rdoc libopenssl-ruby apache2-threaded-dev libsqlite3-ruby
+  % sudo aptitude -V -D -y install rdoc libopenssl-ruby apache2-threaded-dev libsqlite3-ruby
 
 === Install RubyGems
 

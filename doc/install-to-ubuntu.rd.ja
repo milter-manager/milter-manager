@@ -13,17 +13,17 @@ Ubuntu Linuxに特化したmilter managerのインストール方法につい
 以下のパッケージをインストールすることにより、関連するパッケー
 ジもインストールされます。
 
-  % sudo aptitude -V -D install libtool intltool libglib2.0-dev ruby ruby1.8-dev libglib2-ruby1.8
+  % sudo aptitude -V -D -y install libtool intltool libglib2.0-dev ruby ruby1.8-dev libglib2-ruby1.8
 
 MTAはPostfixを利用することとします。
 
-  % sudo aptitude -V -D install postfix
+  % sudo aptitude -V -D -y install postfix
 
 milterはspamass-milter、clamav-milter、milter-greylistを使用
 することとします。
 
-  % sudo aptitude -V -D install spamass-milter clamav-milter
-  % sudo aptitude -V -D --without-recommends install milter-greylist
+  % sudo aptitude -V -D -y install spamass-milter clamav-milter
+  % sudo aptitude -V -D -y --without-recommends install milter-greylist
 
 --without-recommendsを指定しているのは、Postfixが削除されて
 Sendmailがインストールされてしまうからです。これは、

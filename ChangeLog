@@ -1,5 +1,7 @@
 2009-02-16  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/install-*to-ubuntu.rd*: add -y option to aptitude.
+
 	* doc/introduction.rd*: improve document about speed.
 
 2009-02-16  Kouhei Sutou  <kou@cozmixng.org>

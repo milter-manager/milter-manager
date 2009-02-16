@@ -13,17 +13,17 @@ install information.
 To install the following packages, related packages are also
 installed:
 
-  % sudo aptitude -V -D install libtool intltool libglib2.0-dev ruby ruby1.8-dev libglib2-ruby1.8
+  % sudo aptitude -V -D -y install libtool intltool libglib2.0-dev ruby ruby1.8-dev libglib2-ruby1.8
 
 We use Postfix as MTA:
 
-  % sudo aptitude -V -D install postfix
+  % sudo aptitude -V -D -y install postfix
 
 We use spamass-milter, clamav-milter and milter-greylist as
 milters:
 
-  % sudo aptitude -V -D install spamass-milter clamav-milter
-  % sudo aptitude -V -D --without-recommends install milter-greylist
+  % sudo aptitude -V -D -y install spamass-milter clamav-milter
+  % sudo aptitude -V -D -y --without-recommends install milter-greylist
 
 It's the reason why --without-recommends is specified that
 Sendmail is recommended package. If --without-recommends
