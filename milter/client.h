@@ -49,10 +49,11 @@ G_BEGIN_DECLS
  *
  * Connection spec is a entry point of %MilterClient for
  * MTA.  It has 'PROTOCOL:INFORMATION' format. For IPv4
- * socket, 'inet:PORT' or 'inet:PORT&commat;HOST' are valid
- * formats. For IPv6 socket, 'inet6:PORT' or
- * 'inet6:PORT&commat;HOST' are valid formats. For UNIX domain
- * socket, 'unix:PATH' is a valid format.
+ * socket, 'inet:PORT', 'inet:PORT&commat;HOST' or
+ * 'inet:PORT&commat;[ADDRESS]' are valid formats. For IPv6
+ * socket, 'inet6:PORT', 'inet6:PORT&commat;HOST' or
+ * 'inet6:PORT&commat;[ADDRESS]' are valid formats. For UNIX
+ * domain socket, 'unix:PATH' is a valid format.
  *
  * %MilterClient emits #MilterClient::connection-established
  * signal. %MilterClientContext setup should be done in the
@@ -122,12 +123,12 @@ G_BEGIN_DECLS
  * loop backend but the milter-client library uses GLib's
  * %GMainLoop for it.)
  *
- * FIXME (should be confirmed): The libmilter's model will
- * have more cost to accepts rather than the milter-client
- * library's model. Because the libmilter's model creates a
- * thread but the milter-client library just allocate
- * %MilterClientContext.
- * </rd>
+ * The libmilter's model will have more cost to accept a
+ * connection rather than the milter-client library's
+ * model. Because the libmilter's model creates a thread but
+ * the milter-client library just allocate
+ * %MilterClientContext. But in many case, this difference
+ * is not bottleneck. :-|</rd>
  */
 
 /**

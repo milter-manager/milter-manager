@@ -1,6 +1,9 @@
 2009-02-16  Kouhei Sutou  <kou@cozmixng.org>
 
 	* doc/reference/ja.po: add translations.
+	* milter/client.h: improve document.
+
+	* doc/reference/ja.po: add translations.
 	* libmilter/mfapi.h: improve document.
 
 2009-02-16  Kouhei Sutou  <kou@clear-code.com>

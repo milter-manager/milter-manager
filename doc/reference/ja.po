@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: milter-manager 0.0.1\n"
-"POT-Creation-Date: 2009-02-16 21:14+0900\n"
-"PO-Revision-Date: 2009-02-16 21:16+0900\n"
+"POT-Creation-Date: 2009-02-16 22:13+0900\n"
+"PO-Revision-Date: 2009-02-16 22:34+0900\n"
 "Last-Translator: Kouhei Sutou <kou@cozmixng.org>\n"
 "Language-Team: Japanese\n"
 "MIME-Version: 1.0\n"
@@ -211,12 +211,12 @@ msgstr "milterを実装するためのクライアントライブラリ。"
 msgid "Synopsis"
 msgstr "概要"
 
-#: xml/client.xml:22(link) xml/client.xml:193(title)
-#: xml/client.xml:194(primary)
+#: xml/client.xml:22(link) xml/client.xml:195(title)
+#: xml/client.xml:196(primary)
 msgid "MILTER_CLIENT_ERROR"
 msgstr ""
 
-#: xml/client.xml:23(link) xml/client.xml:203(primary)
+#: xml/client.xml:23(link) xml/client.xml:205(primary)
 msgid "MilterClientError"
 msgstr ""
 
@@ -227,7 +227,7 @@ msgstr ""
 #: xml/client.xml:48(link) xml/client.xml:50(link) xml/client.xml:52(link)
 #: xml/client.xml:54(link) xml/client.xml:57(link) xml/client.xml:59(link)
 #: xml/client.xml:61(link) xml/client.xml:63(link) xml/client.xml:64(link)
-#: xml/client.xml:236(title) xml/client.xml:237(primary)
+#: xml/client.xml:238(title) xml/client.xml:239(primary)
 msgid "MilterClient"
 msgstr ""
 
@@ -251,11 +251,11 @@ msgstr ""
 msgid "GQuark"
 msgstr ""
 
-#: xml/client.xml:25(link) xml/client.xml:249(primary)
+#: xml/client.xml:25(link) xml/client.xml:251(primary)
 msgid "milter_client_error_quark"
 msgstr ""
 
-#: xml/client.xml:26(link) xml/client.xml:260(primary)
+#: xml/client.xml:26(link) xml/client.xml:262(primary)
 msgid "milter_client_new"
 msgstr ""
 
@@ -466,7 +466,7 @@ msgstr ""
 msgid "gchar"
 msgstr ""
 
-#: xml/client.xml:27(link) xml/client.xml:271(primary)
+#: xml/client.xml:27(link) xml/client.xml:273(primary)
 msgid "milter_client_get_default_connection_spec"
 msgstr ""
 
@@ -550,7 +550,7 @@ msgstr ""
 msgid "gboolean"
 msgstr ""
 
-#: xml/client.xml:29(link) xml/client.xml:288(primary)
+#: xml/client.xml:29(link) xml/client.xml:290(primary)
 msgid "milter_client_set_connection_spec"
 msgstr ""
 
@@ -586,7 +586,7 @@ msgstr ""
 msgid "GIOChannel"
 msgstr ""
 
-#: xml/client.xml:32(link) xml/client.xml:312(primary)
+#: xml/client.xml:32(link) xml/client.xml:314(primary)
 msgid "milter_client_get_listen_channel"
 msgstr ""
 
@@ -725,11 +725,11 @@ msgstr ""
 msgid "void"
 msgstr ""
 
-#: xml/client.xml:33(link) xml/client.xml:326(primary)
+#: xml/client.xml:33(link) xml/client.xml:328(primary)
 msgid "milter_client_set_listen_channel"
 msgstr ""
 
-#: xml/client.xml:35(link) xml/client.xml:342(primary)
+#: xml/client.xml:35(link) xml/client.xml:344(primary)
 msgid "milter_client_set_listen_backlog"
 msgstr ""
 
@@ -745,15 +745,15 @@ msgstr ""
 msgid "gint"
 msgstr ""
 
-#: xml/client.xml:37(link) xml/client.xml:358(primary)
+#: xml/client.xml:37(link) xml/client.xml:360(primary)
 msgid "milter_client_is_remove_unix_socket_on_create"
 msgstr ""
 
-#: xml/client.xml:39(link) xml/client.xml:375(primary)
+#: xml/client.xml:39(link) xml/client.xml:377(primary)
 msgid "milter_client_set_remove_unix_socket_on_create"
 msgstr ""
 
-#: xml/client.xml:42(link) xml/client.xml:394(primary)
+#: xml/client.xml:42(link) xml/client.xml:396(primary)
 msgid "milter_client_set_timeout"
 msgstr ""
 
@@ -778,47 +778,47 @@ msgstr ""
 msgid "guint"
 msgstr ""
 
-#: xml/client.xml:44(link) xml/client.xml:411(primary)
+#: xml/client.xml:44(link) xml/client.xml:413(primary)
 msgid "milter_client_get_unix_socket_mode"
 msgstr ""
 
-#: xml/client.xml:45(link) xml/client.xml:425(primary)
+#: xml/client.xml:45(link) xml/client.xml:427(primary)
 msgid "milter_client_get_default_unix_socket_mode"
 msgstr ""
 
-#: xml/client.xml:47(link) xml/client.xml:440(primary)
+#: xml/client.xml:47(link) xml/client.xml:442(primary)
 msgid "milter_client_set_default_unix_socket_mode"
 msgstr ""
 
-#: xml/client.xml:50(link) xml/client.xml:457(primary)
+#: xml/client.xml:50(link) xml/client.xml:459(primary)
 msgid "milter_client_get_unix_socket_group"
 msgstr ""
 
-#: xml/client.xml:51(link) xml/client.xml:471(primary)
+#: xml/client.xml:51(link) xml/client.xml:473(primary)
 msgid "milter_client_get_default_unix_socket_group"
 msgstr ""
 
-#: xml/client.xml:53(link) xml/client.xml:486(primary)
+#: xml/client.xml:53(link) xml/client.xml:488(primary)
 msgid "milter_client_set_default_unix_socket_group"
 msgstr ""
 
-#: xml/client.xml:56(link) xml/client.xml:505(primary)
+#: xml/client.xml:56(link) xml/client.xml:507(primary)
 msgid "milter_client_is_remove_unix_socket_on_close"
 msgstr ""
 
-#: xml/client.xml:58(link) xml/client.xml:522(primary)
+#: xml/client.xml:58(link) xml/client.xml:524(primary)
 msgid "milter_client_get_default_remove_unix_socket_on_close"
 msgstr ""
 
-#: xml/client.xml:60(link) xml/client.xml:539(primary)
+#: xml/client.xml:60(link) xml/client.xml:541(primary)
 msgid "milter_client_set_default_remove_unix_socket_on_close"
 msgstr ""
 
-#: xml/client.xml:63(link) xml/client.xml:558(primary)
+#: xml/client.xml:63(link) xml/client.xml:560(primary)
 msgid "milter_client_main"
 msgstr ""
 
-#: xml/client.xml:64(link) xml/client.xml:573(primary)
+#: xml/client.xml:64(link) xml/client.xml:575(primary)
 msgid "milter_client_shutdown"
 msgstr ""
 
@@ -925,6 +925,9 @@ msgid ""
 "The milter-client library provides full milter protocol processing features "
 "on client-side. \"client-side\" means milter-side not MTA-side."
 msgstr ""
+"milter-clientライブラリはクライアント側のすべてのmilterプロトコルを処理する機"
+"能を提供します。「クライアント側」というのは「milter側」ということで、「MTA"
+"側」ではありません。"
 
 #: xml/client.xml:83(para)
 msgid ""
@@ -935,10 +938,16 @@ msgid ""
 "connections from MTA and each connection is processed by <link linkend="
 "\"MilterClientContext\"><literal>MilterClientContext</literal></link>."
 msgstr ""
+"milter-clientライブラリでの主要なクラスは<link linkend=\"MilterClient"
+"\"><literal>MilterClient</literal></link>と<link linkend="
+"\"MilterClientContext\"><literal>MilterClientContext</literal></link>です。"
+"<link linkend=\"MilterClient\"><literal>MilterClient</literal></link>はMTAか"
+"らの複数の接続を受け付け、各接続は<link linkend=\"MilterClientContext"
+"\"><literal>MilterClientContext</literal></link>が処理します。"
 
 #: xml/client.xml:90(title)
 msgid "Usage overview"
-msgstr ""
+msgstr "使用法概観"
 
 #: xml/client.xml:91(para)
 msgid ""
@@ -946,17 +955,28 @@ msgid ""
 "connection-established\"><type>\"connection-established\"</type></link> "
 "signal before entering mail loop."
 msgstr ""
+"メインループに入る前に、接続指定をし、<link linkend=\"MilterClient-"
+"connection-established\"><type>\"connection-established\"</type></link>シグナ"
+"ルに接続します。"
 
 #: xml/client.xml:96(para)
 msgid ""
 "Connection spec is a entry point of <link linkend=\"MilterClient"
 "\"><literal>MilterClient</literal></link> for MTA. It has 'PROTOCOL:"
-"INFORMATION' format. For IPv4 socket, 'inet:PORT' or 'inet:PORT&commat;HOST' "
-"are valid formats. For IPv6 socket, 'inet6:PORT' or 'inet6:PORT&commat;HOST' "
-"are valid formats. For UNIX domain socket, 'unix:PATH' is a valid format."
+"INFORMATION' format. For IPv4 socket, 'inet:PORT', 'inet:PORT&commat;HOST' "
+"or 'inet:PORT&commat;[ADDRESS]' are valid formats. For IPv6 socket, 'inet6:"
+"PORT', 'inet6:PORT&commat;HOST' or 'inet6:PORT&commat;[ADDRESS]' are valid "
+"formats. For UNIX domain socket, 'unix:PATH' is a valid format."
 msgstr ""
+"接続指定はMTAが<link linkend=\"MilterClient\"><literal>MilterClient</"
+"literal></link>に接続するためのエントリポイントです。接続指定は「プロトコル:"
+"情報」という形式になっています。IPv4ソケットでは「inet:ポート番号」、「inet:"
+"ポート番号&commat;ホスト名」、「inet:ポート番号&commat;[IPv4アドレス]」が正し"
+"い形式です。IPv6ソケットでは、「inet6:ポート番号」、「inet6:ポート番号"
+"&commat;ホスト名」、「inet6:ポート番号&commat;[IPv6アドレス]」が正しい形式で"
+"す。UNIXドメインソケットでは「unix:パス」が正しい形式です。"
 
-#: xml/client.xml:104(para)
+#: xml/client.xml:105(para)
 msgid ""
 "<link linkend=\"MilterClient\"><literal>MilterClient</literal></link> emits "
 "<link linkend=\"MilterClient-connection-established\"><type>\"connection-"
@@ -967,23 +987,37 @@ msgid ""
 "link>. See <link linkend=\"MilterClientContext"
 "\"><literal>MilterClientContext</literal></link> for available signals."
 msgstr ""
+"<link linkend=\"MilterClient\"><literal>MilterClient</literal></link>は<link "
+"linkend=\"MilterClient-connection-established\"><type>\"connection-"
+"established\"</type></link>シグナルを発行します。<link linkend="
+"\"MilterClientContext\"><literal>MilterClientContext</literal></link>のセット"
+"アップはこのシグナルの中で行います。多くの場合、渡された<link linkend="
+"\"MilterClientContext\"><literal>MilterClientContext</literal></link>にコール"
+"バックを接続します。利用可能なシグナルは<link linkend=\"MilterClientContext"
+"\"><literal>MilterClientContext</literal></link>を見てください。"
 
-#: xml/client.xml:111(para)
+#: xml/client.xml:112(para)
 msgid ""
 "<link linkend=\"milter-client-main\"><function>milter_client_main()</"
 "function></link> is mail loop function. You can enter into mail loop after "
 "you finish to prepare your <link linkend=\"MilterClient"
 "\"><literal>MilterClient</literal></link>."
 msgstr ""
+"<link linkend=\"milter-client-main\"><function>milter_client_main()</"
+"function></link>はメインループ関数です。<link linkend=\"MilterClient"
+"\"><literal>MilterClient</literal></link>の準備が終わったらメインループには"
+"行ってください。"
 
-#: xml/client.xml:116(para)
+#: xml/client.xml:117(para)
 msgid ""
 "Here is an example codes that uses the milter-client library. See also tool/"
 "milter-test-client.c. It is an example milter implementation using the "
 "milter-client library."
 msgstr ""
+"milter-clientライブラリを使った例です。tool/milter-test-client.cも見てくださ"
+"い。milter-test-client.cはmilter-clientライブラリを使ったmilterの実装例です。"
 
-#: xml/client.xml:120(programlisting)
+#: xml/client.xml:121(programlisting)
 #, no-wrap
 msgid ""
 "\n"
@@ -1024,11 +1058,11 @@ msgid ""
 "}\n"
 msgstr ""
 
-#: xml/client.xml:161(title)
+#: xml/client.xml:162(title)
 msgid "Processing model"
-msgstr ""
+msgstr "処理モデル"
 
-#: xml/client.xml:162(para)
+#: xml/client.xml:163(para)
 msgid ""
 "The libmilter provided by Sendmail uses a thread for each connection model. "
 "But the milter-client library doesn't use it. The milter-client library uses "
@@ -1044,17 +1078,35 @@ msgid ""
 "backend but the milter-client library uses GLib's <link linkend=\"GMainLoop"
 "\"><literal>GMainLoop</literal></link> for it.)"
 msgstr ""
+"Sendmailが提供するlibmilterは各接続毎にスレッドを生成するモデルです。しかし、"
+"milter-clientライブラリはこのモデルを使いません。milter-clientライブラリは2つ"
+"のスレッドを使います。1つのスレッドは<link linkend=\"MilterClient"
+"\"><literal>MilterClient</literal></link>用のスレッドで、もう1つのスレッドは"
+"<link linkend=\"MilterClientContext\"><literal>MilterClientContext</"
+"literal></link>用のスレッドです。1つ目のスレッドでは<link linkend="
+"\"MilterClient\"><literal>MilterClient</literal></link>がMTAからの接続を受け"
+"付けて、それを割り振るだけです。<link linkend=\"MilterClientContext"
+"\"><literal>MilterClientContext</literal></linkに関連付けられた各接続は、2つ"
+"目のスレッド内で処理を行います。milter-clientライブラリのモデルはmemcachedの"
+"モデルと同じです。（memcachedはイベントループのバックエンドにlibeventを使って"
+"いますが、milter-clientライブラリはGLibの<link linkend=\"GMainLoop"
+"\"><literal>GMainLoop</literal></link>を使っています。）"
 
-#: xml/client.xml:176(para)
+#: xml/client.xml:177(para)
 msgid ""
-"FIXME (should be confirmed): The libmilter's model will have more cost to "
-"accepts rather than the milter-client library's model. Because the "
-"libmilter's model creates a thread but the milter-client library just "
-"allocate <link linkend=\"MilterClientContext\"><literal>MilterClientContext</"
-"literal></link>."
+"The libmilter's model will have more cost to accept a connection rather than "
+"the milter-client library's model. Because the libmilter's model creates a "
+"thread but the milter-client library just allocate <link linkend="
+"\"MilterClientContext\"><literal>MilterClientContext</literal></link>. But "
+"in many case, this difference is not bottleneck. :-|"
 msgstr ""
+"libmilterのモデルは接続を受け付けるためにmilter-clientライブラリのモデルより"
+"も多くコストがかかります。これは、libmilterのモデルがスレッドを生成するのに対"
+"して、milter-clientライブラリは単に<link linkend=\"MilterClientContext"
+"\"><literal>MilterClientContext</literal></link>オブジェクトを生成するだけだ"
+"からです。ただし、多くの場合、この違いはボトルネックとはなりません。:-|"
 
-#: xml/client.xml:191(title) xml/core.xml:68(title)
+#: xml/client.xml:193(title) xml/core.xml:68(title)
 #: xml/libmilter-compatible.xml:51(title) xml/manager.xml:45(title)
 #: xml/mfapi.xml:193(title) xml/mfdef.xml:63(title)
 #: xml/milter-agent.xml:59(title) xml/milter-client-context.xml:342(title)
@@ -1103,22 +1155,25 @@ msgstr ""
 msgid "Details"
 msgstr "詳細"
 
-#: xml/client.xml:194(programlisting)
+#: xml/client.xml:196(programlisting)
 #, no-wrap
 msgid "#define MILTER_CLIENT_ERROR           (milter_client_error_quark())\n"
 msgstr ""
 
-#: xml/client.xml:196(para)
+#: xml/client.xml:198(para)
 msgid ""
 "Used to get the <link linkend=\"GError\"><type>GError</type></link> quark "
 "for <link linkend=\"MilterClient\"><type>MilterClient</type></link> errors."
 msgstr ""
+"<link linkend=\"MilterClient\"><type>MilterClient</type></link>のエラー用の"
+"<link linkend=\"GError\"><type>GError</type></link>クォークを取得するために使"
+"われます。"
 
-#: xml/client.xml:202(title)
+#: xml/client.xml:204(title)
 msgid "enum MilterClientError"
 msgstr ""
 
-#: xml/client.xml:203(programlisting)
+#: xml/client.xml:205(programlisting)
 #, no-wrap
 msgid ""
 "typedef enum\n"
@@ -1129,37 +1184,39 @@ msgid ""
 "} MilterClientError;\n"
 msgstr ""
 
-#: xml/client.xml:210(para)
+#: xml/client.xml:212(para)
 msgid ""
 "These identify the variable errors that can occur while calling <link "
 "linkend=\"MilterClient\"><literal>MilterClient</literal></link> functions."
 msgstr ""
+"<link linkend=\"MilterClient\"><literal>MilterClient</literal></link>の関数呼"
+"び出し中に発生するエラーを識別します。"
 
-#: xml/client.xml:217(literal)
+#: xml/client.xml:219(literal)
 msgid "MILTER_CLIENT_ERROR_RUNNING"
 msgstr ""
 
-#: xml/client.xml:218(simpara)
+#: xml/client.xml:220(simpara)
 msgid "Indicates main loop has been running."
-msgstr ""
+msgstr "メインループがすでに回っていることを示します。"
 
-#: xml/client.xml:223(literal)
+#: xml/client.xml:225(literal)
 msgid "MILTER_CLIENT_ERROR_UNIX_SOCKET"
 msgstr ""
 
-#: xml/client.xml:224(simpara)
+#: xml/client.xml:226(simpara)
 msgid "Indicates UNIX domain socket related error."
-msgstr ""
+msgstr "UNIXドメインソケット関連のエラーであることを示します。"
 
-#: xml/client.xml:229(literal)
+#: xml/client.xml:231(literal)
 msgid "MILTER_CLIENT_ERROR_IO_ERROR"
 msgstr ""
 
-#: xml/client.xml:230(simpara)
+#: xml/client.xml:232(simpara)
 msgid "Indicates IO related error."
-msgstr ""
+msgstr "IO関連のエラーであることを示します。"
 
-#: xml/client.xml:237(programlisting)
+#: xml/client.xml:239(programlisting)
 #, no-wrap
 msgid ""
 "typedef struct {\n"
@@ -1167,26 +1224,29 @@ msgid ""
 "} MilterClient;\n"
 msgstr ""
 
-#: xml/client.xml:241(para)
+#: xml/client.xml:243(para)
 msgid ""
 "<link linkend=\"MilterClient\"><literal>MilterClient</literal></link> is a "
 "front object. It accepts connections from MTA and dispatches it."
 msgstr ""
+"<link linkend=\"MilterClient\"><literal>MilterClient</literal></link>は前面に"
+"でるオブジェクトです。このオブジェクトがMTAからの接続を受け付けて、各コンテキ"
+"ストに割り振ります。"
 
-#: xml/client.xml:248(title)
+#: xml/client.xml:250(title)
 msgid "milter_client_error_quark ()"
 msgstr ""
 
-#: xml/client.xml:249(programlisting)
+#: xml/client.xml:251(programlisting)
 #, no-wrap
 msgid "<link linkend=\"GQuark\">GQuark</link>              milter_client_error_quark           (void);"
 msgstr ""
 
-#: xml/client.xml:253(term) xml/client.xml:266(term) xml/client.xml:283(term)
-#: xml/client.xml:307(term) xml/client.xml:321(term) xml/client.xml:369(term)
-#: xml/client.xml:420(term) xml/client.xml:435(term) xml/client.xml:466(term)
-#: xml/client.xml:481(term) xml/client.xml:516(term) xml/client.xml:533(term)
-#: xml/client.xml:567(term) xml/libmilter-compatible.xml:84(term)
+#: xml/client.xml:255(term) xml/client.xml:268(term) xml/client.xml:285(term)
+#: xml/client.xml:309(term) xml/client.xml:323(term) xml/client.xml:371(term)
+#: xml/client.xml:422(term) xml/client.xml:437(term) xml/client.xml:468(term)
+#: xml/client.xml:483(term) xml/client.xml:518(term) xml/client.xml:535(term)
+#: xml/client.xml:569(term) xml/libmilter-compatible.xml:84(term)
 #: xml/libmilter-compatible.xml:98(term)
 #: xml/libmilter-compatible.xml:119(term)
 #: xml/libmilter-compatible.xml:134(term) xml/manager.xml:74(term)
@@ -1434,75 +1494,80 @@ msgstr ""
 msgid "<emphasis>Returns</emphasis>&nbsp;:"
 msgstr "<emphasis>返値</emphasis>&nbsp;:"
 
-#: xml/client.xml:259(title)
+#: xml/client.xml:261(title)
 msgid "milter_client_new ()"
 msgstr ""
 
-#: xml/client.xml:260(programlisting)
+#: xml/client.xml:262(programlisting)
 #, no-wrap
 msgid "<link linkend=\"MilterClient\">MilterClient</link>*       milter_client_new                   (void);"
 msgstr ""
 
-#: xml/client.xml:261(para)
+#: xml/client.xml:263(para)
 msgid "Creates a new client."
-msgstr ""
+msgstr "新しいクライアントを生成します。"
 
-#: xml/client.xml:266(simpara)
+#: xml/client.xml:268(simpara)
 msgid ""
 "a new <link linkend=\"MilterClient\"><literal>MilterClient</literal></link> "
 "object."
 msgstr ""
+"新しい<link linkend=\"MilterClient\"><literal>MilterClient</literal></link>オ"
+"ブジェクト。"
 
-#: xml/client.xml:270(title)
+#: xml/client.xml:272(title)
 msgid "milter_client_get_default_connection_spec ()"
 msgstr ""
 
-#: xml/client.xml:271(programlisting)
+#: xml/client.xml:273(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"gchar\">gchar</link>*              milter_client_get_default_connection_spec\n"
 "                                                        (<link linkend=\"MilterClient\">MilterClient</link> *client);"
 msgstr ""
 
-#: xml/client.xml:273(para)
+#: xml/client.xml:275(para)
 msgid ""
 "Gets the default connection specification. The default connection "
 "specification should be freed when no longer needed."
 msgstr ""
+"既定の接続指定を取得します。必要がなくなったら、既定の接続指定を開放してくだ"
+"さい。"
 
-#: xml/client.xml:280(term) xml/client.xml:298(term) xml/client.xml:318(term)
-#: xml/client.xml:333(term) xml/client.xml:349(term) xml/client.xml:366(term)
-#: xml/client.xml:384(term) xml/client.xml:402(term) xml/client.xml:417(term)
-#: xml/client.xml:432(term) xml/client.xml:448(term) xml/client.xml:463(term)
-#: xml/client.xml:478(term) xml/client.xml:494(term) xml/client.xml:513(term)
-#: xml/client.xml:530(term) xml/client.xml:548(term) xml/client.xml:564(term)
-#: xml/client.xml:579(term)
+#: xml/client.xml:282(term) xml/client.xml:300(term) xml/client.xml:320(term)
+#: xml/client.xml:335(term) xml/client.xml:351(term) xml/client.xml:368(term)
+#: xml/client.xml:386(term) xml/client.xml:404(term) xml/client.xml:419(term)
+#: xml/client.xml:434(term) xml/client.xml:450(term) xml/client.xml:465(term)
+#: xml/client.xml:480(term) xml/client.xml:496(term) xml/client.xml:515(term)
+#: xml/client.xml:532(term) xml/client.xml:550(term) xml/client.xml:566(term)
+#: xml/client.xml:581(term)
 msgid "<parameter>client</parameter>&nbsp;:"
 msgstr ""
 
-#: xml/client.xml:281(simpara) xml/client.xml:299(simpara)
-#: xml/client.xml:319(simpara) xml/client.xml:334(simpara)
-#: xml/client.xml:350(simpara) xml/client.xml:367(simpara)
-#: xml/client.xml:385(simpara) xml/client.xml:403(simpara)
-#: xml/client.xml:418(simpara) xml/client.xml:433(simpara)
-#: xml/client.xml:449(simpara) xml/client.xml:464(simpara)
-#: xml/client.xml:479(simpara) xml/client.xml:495(simpara)
-#: xml/client.xml:514(simpara) xml/client.xml:531(simpara)
-#: xml/client.xml:549(simpara) xml/client.xml:565(simpara)
-#: xml/client.xml:580(simpara)
+#: xml/client.xml:283(simpara) xml/client.xml:301(simpara)
+#: xml/client.xml:321(simpara) xml/client.xml:336(simpara)
+#: xml/client.xml:352(simpara) xml/client.xml:369(simpara)
+#: xml/client.xml:387(simpara) xml/client.xml:405(simpara)
+#: xml/client.xml:420(simpara) xml/client.xml:435(simpara)
+#: xml/client.xml:451(simpara) xml/client.xml:466(simpara)
+#: xml/client.xml:481(simpara) xml/client.xml:497(simpara)
+#: xml/client.xml:516(simpara) xml/client.xml:533(simpara)
+#: xml/client.xml:551(simpara) xml/client.xml:567(simpara)
+#: xml/client.xml:582(simpara)
 msgid ""
 "a <link linkend=\"MilterClient\"><literal>MilterClient</literal></link>."
 msgstr ""
+"<link linkend=\"MilterClient\"><literal>MilterClient</literal></link>。"
 
-#: xml/client.xml:283(simpara)
+#: xml/client.xml:285(simpara)
 msgid "the copy of default connection specification."
-msgstr ""
+msgstr "既定の接続指定のコピー。"
 
-#: xml/client.xml:287(title)
+#: xml/client.xml:289(title)
 msgid "milter_client_set_connection_spec ()"
 msgstr ""
 
-#: xml/client.xml:288(programlisting)
+#: xml/client.xml:290(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"gboolean\">gboolean</link>            milter_client_set_connection_spec   (<link linkend=\"MilterClient\">MilterClient</link> *client,\n"
@@ -1510,15 +1575,19 @@ msgid ""
 "                                                         <link linkend=\"GError\">GError</link> **error);"
 msgstr ""
 
-#: xml/client.xml:291(para)
+#: xml/client.xml:293(para)
 msgid ""
 "Sets a connection specification. If <parameter>spec</parameter> is invalid "
 "format and <parameter>error</parameter> is not <link linkend=\"NULL:CAPS"
 "\"><literal>NULL</literal></link>, error detail is stored into "
 "<parameter>error</parameter>."
 msgstr ""
+"接続指定を設定します。<parameter>spec</parameter>が不正な形式で、"
+"<parameter>error</parameter>が<link linkend=\"NULL:CAPS\"><literal>NULL</"
+"literal></link>でない場合は、エラーの詳細は<parameter>error</parameter>に設定"
+"されます。"
 
-#: xml/client.xml:301(term) xml/milter-connection.xml:123(term)
+#: xml/client.xml:303(term) xml/milter-connection.xml:123(term)
 #: xml/milter-connection.xml:154(term)
 #: xml/milter-manager-configuration.xml:531(term)
 #: xml/milter-manager-configuration.xml:563(term)
@@ -1526,11 +1595,11 @@ msgstr ""
 msgid "<parameter>spec</parameter>&nbsp;:"
 msgstr ""
 
-#: xml/client.xml:302(simpara)
+#: xml/client.xml:304(simpara)
 msgid "a connection specification like inet:10025."
-msgstr ""
+msgstr "inet:10025のような接続指定。"
 
-#: xml/client.xml:304(term) xml/milter-agent.xml:176(term)
+#: xml/client.xml:306(term) xml/milter-agent.xml:176(term)
 #: xml/milter-agent.xml:194(term) xml/milter-client-context.xml:662(term)
 #: xml/milter-client-context.xml:740(term)
 #: xml/milter-client-context.xml:792(term)
@@ -1551,7 +1620,7 @@ msgstr ""
 msgid "<parameter>error</parameter>&nbsp;:"
 msgstr ""
 
-#: xml/client.xml:305(simpara) xml/milter-client-context.xml:663(simpara)
+#: xml/client.xml:307(simpara) xml/milter-client-context.xml:663(simpara)
 #: xml/milter-client-context.xml:741(simpara)
 #: xml/milter-client-context.xml:793(simpara)
 #: xml/milter-client-context.xml:831(simpara)
@@ -1561,8 +1630,10 @@ msgid ""
 "return location for an error, or <link linkend=\"NULL:CAPS\"><literal>NULL</"
 "literal></link>."
 msgstr ""
+"エラーを受け取る場所のアドレス、または<link linkend=\"NULL:CAPS"
+"\"><literal>NULL</literal></link>。"
 
-#: xml/client.xml:307(simpara) xml/milter-client-context.xml:665(simpara)
+#: xml/client.xml:309(simpara) xml/milter-client-context.xml:665(simpara)
 #: xml/milter-client-context.xml:743(simpara)
 #: xml/milter-client-context.xml:795(simpara)
 #: xml/milter-client-context.xml:833(simpara)
@@ -1590,102 +1661,107 @@ msgstr ""
 #: xml/milter-server-context.xml:776(simpara)
 #: xml/milter-server-context.xml:790(simpara)
 msgid "<link linkend=\"TRUE:CAPS\"><literal>TRUE</literal></link> on success."
-msgstr ""
+msgstr "成功時は<link linkend=\"TRUE:CAPS\"><literal>TRUE</literal></link>。"
 
-#: xml/client.xml:311(title)
+#: xml/client.xml:313(title)
 msgid "milter_client_get_listen_channel ()"
 msgstr ""
 
-#: xml/client.xml:312(programlisting)
+#: xml/client.xml:314(programlisting)
 #, no-wrap
 msgid "<link linkend=\"GIOChannel\">GIOChannel</link>*         milter_client_get_listen_channel    (<link linkend=\"MilterClient\">MilterClient</link> *client);"
 msgstr ""
 
-#: xml/client.xml:313(para)
+#: xml/client.xml:315(para)
 msgid "Gets the channel for listening connection."
-msgstr ""
+msgstr "接続待ち用のチャンネルを取得します。"
 
-#: xml/client.xml:321(simpara)
+#: xml/client.xml:323(simpara)
 msgid "the listen channel."
-msgstr ""
+msgstr "接続待ち用チャンネル。"
 
-#: xml/client.xml:325(title)
+#: xml/client.xml:327(title)
 msgid "milter_client_set_listen_channel ()"
 msgstr ""
 
-#: xml/client.xml:326(programlisting)
+#: xml/client.xml:328(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"void\">void</link>                milter_client_set_listen_channel    (<link linkend=\"MilterClient\">MilterClient</link> *client,\n"
 "                                                         <link linkend=\"GIOChannel\">GIOChannel</link> *channel);"
 msgstr ""
 
-#: xml/client.xml:328(para)
+#: xml/client.xml:330(para)
 msgid "Sets a channel for listening connection."
-msgstr ""
+msgstr "接続待ち用チャンネルを設定します。"
 
-#: xml/client.xml:336(term) xml/milter-reader.xml:94(term)
+#: xml/client.xml:338(term) xml/milter-reader.xml:94(term)
 #: xml/milter-writer.xml:101(term)
 msgid "<parameter>channel</parameter>&nbsp;:"
 msgstr ""
 
-#: xml/client.xml:337(simpara)
+#: xml/client.xml:339(simpara)
 msgid "a channel for listening connection."
-msgstr ""
+msgstr "接続待ち用のチャンネル。"
 
-#: xml/client.xml:341(title)
+#: xml/client.xml:343(title)
 msgid "milter_client_set_listen_backlog ()"
 msgstr ""
 
-#: xml/client.xml:342(programlisting)
+#: xml/client.xml:344(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"void\">void</link>                milter_client_set_listen_backlog    (<link linkend=\"MilterClient\">MilterClient</link> *client,\n"
 "                                                         <link linkend=\"gint\">gint</link> backlog);"
 msgstr ""
 
-#: xml/client.xml:344(para)
+#: xml/client.xml:346(para)
 msgid "Sets a backlog for listen(2)."
-msgstr ""
+msgstr "listen(2)用のバックログを設定します。"
 
-#: xml/client.xml:352(term) xml/mfapi.xml:1402(term)
+#: xml/client.xml:354(term) xml/mfapi.xml:1402(term)
 #: xml/milter-connection.xml:157(term)
 msgid "<parameter>backlog</parameter>&nbsp;:"
 msgstr ""
 
-#: xml/client.xml:353(simpara)
+#: xml/client.xml:355(simpara)
 msgid "a backlog for listen(2)."
-msgstr ""
+msgstr "listen(2)用のバックログ。"
 
-#: xml/client.xml:357(title)
+#: xml/client.xml:359(title)
 msgid "milter_client_is_remove_unix_socket_on_create ()"
 msgstr ""
 
-#: xml/client.xml:358(programlisting)
+#: xml/client.xml:360(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"gboolean\">gboolean</link>            milter_client_is_remove_unix_socket_on_create\n"
 "                                                        (<link linkend=\"MilterClient\">MilterClient</link> *client);"
 msgstr ""
 
-#: xml/client.xml:360(para)
+#: xml/client.xml:362(para)
 msgid ""
 "Gets whether removing UNIX domain socket before new UNIX domain socket is "
 "created."
 msgstr ""
+"新しいUNIXドメインソケットを作成する前に既存のUNIXドメインソケットを削除する"
+"かどうかを取得します。"
 
-#: xml/client.xml:369(simpara)
+#: xml/client.xml:371(simpara)
 msgid ""
 "<link linkend=\"TRUE:CAPS\"><literal>TRUE</literal></link> if removing UNIX "
 "domain socket on create, <link linkend=\"FALSE:CAPS\"><literal>FALSE</"
 "literal></link> otherwise."
 msgstr ""
+"作成時に既存のUNIXドメインソケットを削除する場合は<link linkend=\"TRUE:CAPS"
+"\"><literal>TRUE</literal></link>、そうでない場合は<link linkend=\"FALSE:CAPS"
+"\"><literal>FALSE</literal></link>。"
 
-#: xml/client.xml:374(title)
+#: xml/client.xml:376(title)
 msgid "milter_client_set_remove_unix_socket_on_create ()"
 msgstr ""
 
-#: xml/client.xml:375(programlisting)
+#: xml/client.xml:377(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"void\">void</link>                milter_client_set_remove_unix_socket_on_create\n"
@@ -1693,13 +1769,15 @@ msgid ""
 "                                                         <link linkend=\"gboolean\">gboolean</link> remove);"
 msgstr ""
 
-#: xml/client.xml:378(para)
+#: xml/client.xml:380(para)
 msgid ""
 "Sets whether removing UNIX domain socket before new UNIX domain socket is "
 "created."
 msgstr ""
+"新しいUNIXドメインソケットを作成する前に既存のUNIXドメインソケットを削除する"
+"かどうかを設定します。"
 
-#: xml/client.xml:387(term) xml/client.xml:551(term)
+#: xml/client.xml:389(term) xml/client.xml:553(term)
 #: xml/milter-manager-configuration.xml:755(term)
 #: xml/milter-manager-configuration.xml:787(term)
 #: xml/milter-manager-configuration.xml:819(term)
@@ -1707,30 +1785,35 @@ msgstr ""
 msgid "<parameter>remove</parameter>&nbsp;:"
 msgstr ""
 
-#: xml/client.xml:388(simpara)
+#: xml/client.xml:390(simpara)
 msgid ""
 "<link linkend=\"TRUE:CAPS\"><literal>TRUE</literal></link> if removing UNIX "
 "domain socket before new UNIX domain socket is create."
 msgstr ""
+"新しいUNIXドメインソケットを作成する前に既存のUNIXドメインソケットを削除する"
+"なら<link linkend=\"TRUE:CAPS\"><literal>TRUE</literal></link>。"
 
-#: xml/client.xml:393(title)
+#: xml/client.xml:395(title)
 msgid "milter_client_set_timeout ()"
 msgstr ""
 
-#: xml/client.xml:394(programlisting)
+#: xml/client.xml:396(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"void\">void</link>                milter_client_set_timeout           (<link linkend=\"MilterClient\">MilterClient</link> *client,\n"
 "                                                         <link linkend=\"guint\">guint</link> timeout);"
 msgstr ""
 
-#: xml/client.xml:396(para)
+#: xml/client.xml:398(para)
 msgid ""
 "Sets the timeout value for established <link linkend=\"MilterClientContext"
 "\"><literal>MilterClientContext</literal></link>."
 msgstr ""
+"接続が確立した<link linkend=\"MilterClientContext"
+"\"><literal>MilterClientContext</literal></link>に設定するタイムアウト値を設"
+"定します。"
 
-#: xml/client.xml:405(term) xml/mfapi.xml:1446(term)
+#: xml/client.xml:407(term) xml/mfapi.xml:1446(term)
 #: xml/milter-client-context.xml:1092(term)
 #: xml/milter-server-context.xml:379(term)
 #: xml/milter-server-context.xml:399(term)
@@ -1739,51 +1822,51 @@ msgstr ""
 msgid "<parameter>timeout</parameter>&nbsp;:"
 msgstr ""
 
-#: xml/client.xml:406(simpara)
+#: xml/client.xml:408(simpara)
 msgid "a timeout by seconds."
-msgstr ""
+msgstr "秒単位でのタイムアウト。"
 
-#: xml/client.xml:410(title)
+#: xml/client.xml:412(title)
 msgid "milter_client_get_unix_socket_mode ()"
 msgstr ""
 
-#: xml/client.xml:411(programlisting)
+#: xml/client.xml:413(programlisting)
 #, no-wrap
 msgid "<link linkend=\"guint\">guint</link>               milter_client_get_unix_socket_mode  (<link linkend=\"MilterClient\">MilterClient</link> *client);"
 msgstr ""
 
-#: xml/client.xml:412(para)
+#: xml/client.xml:414(para)
 msgid "Gets the UNIX domain socket mode."
-msgstr ""
+msgstr "UNIXドメインソケットのモードを取得します。"
 
-#: xml/client.xml:420(simpara) xml/client.xml:452(simpara)
+#: xml/client.xml:422(simpara) xml/client.xml:454(simpara)
 msgid "the UNIX domain socket mode."
-msgstr ""
+msgstr "UNIXドメインソケットのモード。"
 
-#: xml/client.xml:424(title)
+#: xml/client.xml:426(title)
 msgid "milter_client_get_default_unix_socket_mode ()"
 msgstr ""
 
-#: xml/client.xml:425(programlisting)
+#: xml/client.xml:427(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"guint\">guint</link>               milter_client_get_default_unix_socket_mode\n"
 "                                                        (<link linkend=\"MilterClient\">MilterClient</link> *client);"
 msgstr ""
 
-#: xml/client.xml:427(para)
+#: xml/client.xml:429(para)
 msgid "Gets the default UNIX domain socket mode."
-msgstr ""
+msgstr "既定のUNIXドメインソケットのモードを取得します。"
 
-#: xml/client.xml:435(simpara)
+#: xml/client.xml:437(simpara)
 msgid "the default UNIX domain socket mode."
-msgstr ""
+msgstr "既定のUNIXドメインソケットのモード。"
 
-#: xml/client.xml:439(title)
+#: xml/client.xml:441(title)
 msgid "milter_client_set_default_unix_socket_mode ()"
 msgstr ""
 
-#: xml/client.xml:440(programlisting)
+#: xml/client.xml:442(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"void\">void</link>                milter_client_set_default_unix_socket_mode\n"
@@ -1791,57 +1874,57 @@ msgid ""
 "                                                         <link linkend=\"guint\">guint</link> mode);"
 msgstr ""
 
-#: xml/client.xml:443(para)
+#: xml/client.xml:445(para)
 msgid "Sets the default UNIX domain socket mode."
-msgstr ""
+msgstr "既定のUNIXドメインソケットモードを設定します。"
 
-#: xml/client.xml:451(term) xml/milter-manager-configuration.xml:499(term)
+#: xml/client.xml:453(term) xml/milter-manager-configuration.xml:499(term)
 #: xml/milter-manager-configuration.xml:659(term)
 #: xml/milter-manager-configuration.xml:691(term)
 msgid "<parameter>mode</parameter>&nbsp;:"
 msgstr ""
 
-#: xml/client.xml:456(title)
+#: xml/client.xml:458(title)
 msgid "milter_client_get_unix_socket_group ()"
 msgstr ""
 
-#: xml/client.xml:457(programlisting)
+#: xml/client.xml:459(programlisting)
 #, no-wrap
 msgid "const <link linkend=\"gchar\">gchar</link>*        milter_client_get_unix_socket_group (<link linkend=\"MilterClient\">MilterClient</link> *client);"
 msgstr ""
 
-#: xml/client.xml:458(para)
+#: xml/client.xml:460(para)
 msgid "Gets the group of UNIX domain socket."
-msgstr ""
+msgstr "UNIXドメインソケットのグループを設定します。"
 
-#: xml/client.xml:466(simpara)
+#: xml/client.xml:468(simpara)
 msgid "the group name for UNIX domain socket."
-msgstr ""
+msgstr "UNIXドメインソケットのグループ名。"
 
-#: xml/client.xml:470(title)
+#: xml/client.xml:472(title)
 msgid "milter_client_get_default_unix_socket_group ()"
 msgstr ""
 
-#: xml/client.xml:471(programlisting)
+#: xml/client.xml:473(programlisting)
 #, no-wrap
 msgid ""
 "const <link linkend=\"gchar\">gchar</link>*        milter_client_get_default_unix_socket_group\n"
 "                                                        (<link linkend=\"MilterClient\">MilterClient</link> *client);"
 msgstr ""
 
-#: xml/client.xml:473(para)
+#: xml/client.xml:475(para)
 msgid "Gets the default group of UNIX domain socket."
-msgstr ""
+msgstr "既定のUNIXドメインソケットグループを取得します。"
 
-#: xml/client.xml:481(simpara)
+#: xml/client.xml:483(simpara)
 msgid "the default group name for UNIX domain socket."
-msgstr ""
+msgstr "既定のUNIXドメインソケットグループ名。"
 
-#: xml/client.xml:485(title)
+#: xml/client.xml:487(title)
 msgid "milter_client_set_default_unix_socket_group ()"
 msgstr ""
 
-#: xml/client.xml:486(programlisting)
+#: xml/client.xml:488(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"void\">void</link>                milter_client_set_default_unix_socket_group\n"
@@ -1849,58 +1932,63 @@ msgid ""
 "                                                         const <link linkend=\"gchar\">gchar</link> *group);"
 msgstr ""
 
-#: xml/client.xml:489(para)
+#: xml/client.xml:491(para)
 msgid "Sets the default group of UNIX domain socket."
-msgstr ""
+msgstr "既定のUNIXドメインソケットグループを設定します。"
 
-#: xml/client.xml:497(term) xml/milter-manager-configuration.xml:723(term)
+#: xml/client.xml:499(term) xml/milter-manager-configuration.xml:723(term)
 msgid "<parameter>group</parameter>&nbsp;:"
 msgstr ""
 
-#: xml/client.xml:504(title)
+#: xml/client.xml:506(title)
 msgid "milter_client_is_remove_unix_socket_on_close ()"
 msgstr ""
 
-#: xml/client.xml:505(programlisting)
+#: xml/client.xml:507(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"gboolean\">gboolean</link>            milter_client_is_remove_unix_socket_on_close\n"
 "                                                        (<link linkend=\"MilterClient\">MilterClient</link> *client);"
 msgstr ""
 
-#: xml/client.xml:507(para)
+#: xml/client.xml:509(para)
 msgid "Gets whether removing UNIX domain socket after the socket is closed."
-msgstr ""
+msgstr "UNIXドメインソケットを閉じた後に削除するかどうかを取得します。"
 
-#: xml/client.xml:516(simpara) xml/client.xml:533(simpara)
+#: xml/client.xml:518(simpara) xml/client.xml:535(simpara)
 msgid ""
 "<link linkend=\"TRUE:CAPS\"><literal>TRUE</literal></link> if removing UNIX "
 "domain socket on close, <link linkend=\"FALSE:CAPS\"><literal>FALSE</"
 "literal></link> otherwise."
 msgstr ""
+"UNIXドメインソケットを閉じたときに削除するなら<link linkend=\"TRUE:CAPS"
+"\"><literal>TRUE</literal></link>、そうでなければ<link linkend=\"FALSE:CAPS"
+"\"><literal>FALSE</literal></link>。"
 
-#: xml/client.xml:521(title)
+#: xml/client.xml:523(title)
 msgid "milter_client_get_default_remove_unix_socket_on_close ()"
 msgstr ""
 
-#: xml/client.xml:522(programlisting)
+#: xml/client.xml:524(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"gboolean\">gboolean</link>            milter_client_get_default_remove_unix_socket_on_close\n"
 "                                                        (<link linkend=\"MilterClient\">MilterClient</link> *client);"
 msgstr ""
 
-#: xml/client.xml:524(para) xml/client.xml:542(para)
+#: xml/client.xml:526(para) xml/client.xml:544(para)
 msgid ""
 "Gets default value whether removing UNIX domain socket after the socket is "
 "closed."
 msgstr ""
+"ソケットを閉じた後にUNIXドメインソケットを削除するかどうかの既定の値を取得し"
+"ます。"
 
-#: xml/client.xml:538(title)
+#: xml/client.xml:540(title)
 msgid "milter_client_set_default_remove_unix_socket_on_close ()"
 msgstr ""
 
-#: xml/client.xml:539(programlisting)
+#: xml/client.xml:541(programlisting)
 #, no-wrap
 msgid ""
 "<link linkend=\"void\">void</link>                milter_client_set_default_remove_unix_socket_on_close\n"
@@ -1908,44 +1996,49 @@ msgid ""
 "                                                         <link linkend=\"gboolean\">gboolean</link> remove);"
 msgstr ""
 
-#: xml/client.xml:552(simpara)
+#: xml/client.xml:554(simpara)
 msgid ""
 "<link linkend=\"TRUE:CAPS\"><literal>TRUE</literal></link> if removing UNIX "
 "domain socket after the socket is closed."
 msgstr ""
+"ソケットを閉じた後にUNIXドメインソケットを削除するなら<link linkend=\"TRUE:"
+"CAPS\"><literal>TRUE</literal></link>。"
 
-#: xml/client.xml:557(title)
+#: xml/client.xml:559(title)
 msgid "milter_client_main ()"
 msgstr ""
 
-#: xml/client.xml:558(programlisting)
+#: xml/client.xml:560(programlisting)
 #, no-wrap
 msgid "<link linkend=\"gboolean\">gboolean</link>            milter_client_main                  (<link linkend=\"MilterClient\">MilterClient</link> *client);"
 msgstr ""
 
-#: xml/client.xml:559(para)
+#: xml/client.xml:561(para)
 msgid "Starts main loop."
-msgstr ""
+msgstr "メインループをはじめます。"
 
-#: xml/client.xml:567(simpara)
+#: xml/client.xml:569(simpara)
 msgid ""
 "<link linkend=\"TRUE:CAPS\"><literal>TRUE</literal></link> if main loop is "
 "quitted successfully, <link linkend=\"FALSE:CAPS\"><literal>FALSE</literal></"
 "link> otherwise."
 msgstr ""
+"メインループが正常終了したら<link linkend=\"TRUE:CAPS\"><literal>TRUE</"
+"literal></link>、そうでなければ<link linkend=\"FALSE:CAPS\"><literal>FALSE</"
+"literal></link>。"
 
-#: xml/client.xml:572(title)
+#: xml/client.xml:574(title)
 msgid "milter_client_shutdown ()"
 msgstr ""
 
-#: xml/client.xml:573(programlisting)
+#: xml/client.xml:575(programlisting)
 #, no-wrap
 msgid "<link linkend=\"void\">void</link>                milter_client_shutdown              (<link linkend=\"MilterClient\">MilterClient</link> *client);"
 msgstr ""
 
-#: xml/client.xml:574(para)
+#: xml/client.xml:576(para)
 msgid "Shuts main loop down."
-msgstr ""
+msgstr "メインループを終了します。"
 
 #: xml/core.xml:7(refentrytitle) xml/core.xml:13(refname)
 msgid "Core library"
@@ -3496,7 +3589,9 @@ msgid ""
 "the SMTP's \"MAIL FROM\" command arguments. The first element is sender "
 "address. <link linkend=\"NULL:CAPS\"><literal>NULL</literal></link>-"
 "terminated."
-msgstr "SMTPの\"MAIL FROM\"コマンドの引数。最初の要素は差出人のアドレスです。<link linkend=\"NULL:CAPS\"><literal>NULL</literal></link>終端しています。"
+msgstr ""
+"SMTPの\"MAIL FROM\"コマンドの引数。最初の要素は差出人のアドレスです。<link "
+"linkend=\"NULL:CAPS\"><literal>NULL</literal></link>終端しています。"
 
 #: xml/mfapi.xml:591(title)
 msgid "xxfi_envrcpt ()"
@@ -3554,7 +3649,9 @@ msgid ""
 "the SMTP's \"RCPT TO\" command arguments. The first element is recipient "
 "address. <link linkend=\"NULL:CAPS\"><literal>NULL</literal></link>-"
 "terminated."
-msgstr "SMTPの\"RCPT TO\"コマンドの引数。最初の要素は宛先です。<link linkend=\"NULL:CAPS\"><literal>NULL</literal></link>終端しています。"
+msgstr ""
+"SMTPの\"RCPT TO\"コマンドの引数。最初の要素は宛先です。<link linkend=\"NULL:"
+"CAPS\"><literal>NULL</literal></link>終端しています。"
 
 #: xml/mfapi.xml:666(title)
 msgid "xxfi_header ()"
@@ -4488,7 +4585,9 @@ msgstr "不正な形式。"
 msgid ""
 "<parameter>connection_spec</parameter> is <link linkend=\"NULL:CAPS"
 "\"><literal>NULL</literal></link>."
-msgstr "<parameter>connection_spec</parameter>が<link linkend=\"NULL:CAPS\"><literal>NULL</literal></link>。"
+msgstr ""
+"<parameter>connection_spec</parameter>が<link linkend=\"NULL:CAPS"
+"\"><literal>NULL</literal></link>。"
 
 #: xml/mfapi.xml:1487(para)
 msgid ""
@@ -5919,7 +6018,10 @@ msgid ""
 "<parameter>new_body</parameter> == <link linkend=\"NULL:CAPS"
 "\"><literal>NULL</literal></link> and <parameter>new_body_size</parameter> "
 "&amp;gt; 0. FIXME: not-implemented yet."
-msgstr "<parameter>new_body</parameter> == <link linkend=\"NULL:CAPS\"><literal>NULL</literal></link>で<parameter>new_body_size</parameter> &gt; 0のとき。FIXME: 未実装。"
+msgstr ""
+"<parameter>new_body</parameter> == <link linkend=\"NULL:CAPS"
+"\"><literal>NULL</literal></link>で<parameter>new_body_size</parameter> &gt; "
+"0のとき。FIXME: 未実装。"
 
 #: xml/mfapi.xml:2717(para)
 msgid ""
@@ -5984,7 +6086,9 @@ msgstr ""
 msgid ""
 "<parameter>reason</parameter> is <link linkend=\"NULL:CAPS\"><literal>NULL</"
 "literal></link> or empty. FIXME: not-implemented yet."
-msgstr "<parameter>reason</parameter>が<link linkend=\"NULL:CAPS\"><literal>NULL</literal></link>または空。FIXME: 未実装。"
+msgstr ""
+"<parameter>reason</parameter>が<link linkend=\"NULL:CAPS\"><literal>NULL</"
+"literal></link>または空。FIXME: 未実装。"
 
 #: xml/mfapi.xml:2767(para)
 msgid ""
@@ -6112,7 +6216,9 @@ msgstr "<parameter>state</parameter>が不正。FIXME: 未実装。"
 msgid ""
 "<parameter>macros</parameter> is <link linkend=\"NULL:CAPS\"><literal>NULL</"
 "literal></link> or empty. FIXME: not-implemented yet."
-msgstr "<parameter>macros</parameter>が<link linkend=\"NULL:CAPS\"><literal>NULL</literal></link>または空。FIXME: 未実装。"
+msgstr ""
+"<parameter>macros</parameter>が<link linkend=\"NULL:CAPS\"><literal>NULL</"
+"literal></link>または空。FIXME: 未実装。"
 
 #: xml/mfapi.xml:2875(para)
 msgid ""
@@ -10061,7 +10167,7 @@ msgstr ""
 msgid ""
 "a <link linkend=\"MilterErrorEmittable\"><literal>MilterErrorEmittable</"
 "literal></link>."
-msgstr ""
+msgstr "<link linkend=\"MilterErrorEmittable\"><literal>MilterErrorEmittable</literal></link>。"
 
 #: xml/milter-finished-emittable.xml:7(refentrytitle)
 #: xml/milter-finished-emittable.xml:13(refname)
@@ -10123,7 +10229,7 @@ msgstr ""
 msgid ""
 "a <link linkend=\"MilterFinishedEmittable"
 "\"><literal>MilterFinishedEmittable</literal></link>."
-msgstr ""
+msgstr "<link linkend=\"MilterFinishedEmittable\"><literal>MilterFinishedEmittable</literal></link>。"
 
 #: xml/milter-headers.xml:7(refentrytitle) xml/milter-headers.xml:13(refname)
 #: xml/milter-headers.xml:32(link) xml/milter-headers.xml:33(link)
@@ -10408,8 +10514,9 @@ msgstr ""
 #: xml/milter-headers.xml:318(term) xml/milter-headers.xml:333(term)
 #: xml/milter-headers.xml:351(term) xml/milter-headers.xml:369(term)
 #: xml/milter-headers.xml:387(term) xml/milter-headers.xml:406(term)
+#, fuzzy
 msgid "<parameter>headers</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-headers.xml:203(title)
 msgid "milter_headers_get_list ()"
@@ -10446,8 +10553,9 @@ msgid ""
 msgstr ""
 
 #: xml/milter-headers.xml:250(term)
+#, fuzzy
 msgid "<parameter>position</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-headers.xml:265(title)
 msgid "milter_headers_change_header ()"
@@ -10720,8 +10828,9 @@ msgstr ""
 #: xml/milter-logger.xml:187(term) xml/milter-logger.xml:202(term)
 #: xml/milter-logger.xml:396(term) xml/milter-logger.xml:436(term)
 #: xml/milter-utils.xml:430(term)
+#, fuzzy
 msgid "<parameter>format</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-logger.xml:107(title)
 msgid "milter_error()"
@@ -10874,8 +10983,9 @@ msgid "<link linkend=\"MilterLogLevelFlags\">MilterLogLevelFlags</link> milter_l
 msgstr ""
 
 #: xml/milter-logger.xml:291(term)
+#, fuzzy
 msgid "<parameter>level_name</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-logger.xml:300(title)
 msgid "milter_logger ()"
@@ -10907,27 +11017,32 @@ msgstr ""
 #: xml/milter-logger.xml:324(term) xml/milter-logger.xml:378(term)
 #: xml/milter-logger.xml:418(term) xml/milter-logger.xml:451(term)
 #: xml/milter-logger.xml:466(term)
+#, fuzzy
 msgid "<parameter>logger</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-logger.xml:333(term) xml/milter-logger.xml:387(term)
 #: xml/milter-logger.xml:427(term)
+#, fuzzy
 msgid "<parameter>file</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-logger.xml:336(term) xml/milter-logger.xml:390(term)
 #: xml/milter-logger.xml:430(term)
+#, fuzzy
 msgid "<parameter>line</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>new_body</parameter>のサイズ。"
 
 #: xml/milter-logger.xml:339(term) xml/milter-logger.xml:393(term)
 #: xml/milter-logger.xml:433(term) xml/milter-utils.xml:450(term)
+#, fuzzy
 msgid "<parameter>function</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>connection_spec</parameter>の書式は以下のいずれかです。"
 
 #: xml/milter-logger.xml:342(term)
+#, fuzzy
 msgid "<parameter>time_value</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-logger.xml:355(title)
 msgid "milter_logger_new ()"
@@ -10974,8 +11089,9 @@ msgstr ""
 
 #: xml/milter-logger.xml:439(term) xml/milter-macros-requests.xml:129(term)
 #: xml/milter-manager-child.xml:132(term)
+#, fuzzy
 msgid "<parameter>args</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-logger.xml:446(title)
 msgid "milter_logger_get_target_level ()"
@@ -11130,13 +11246,15 @@ msgstr ""
 #: xml/milter-macros-requests.xml:181(term)
 #: xml/milter-macros-requests.xml:213(term)
 #: xml/milter-protocol-agent.xml:239(term)
+#, fuzzy
 msgid "<parameter>requests</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-macros-requests.xml:101(term)
 #: xml/milter-macros-requests.xml:126(term)
+#, fuzzy
 msgid "<parameter>first_symbol</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>new_body</parameter>のサイズ。"
 
 #: xml/milter-macros-requests.xml:111(title)
 msgid "milter_macros_requests_set_symbols_va_list ()"
@@ -11166,8 +11284,9 @@ msgid ""
 msgstr ""
 
 #: xml/milter-macros-requests.xml:150(term)
+#, fuzzy
 msgid "<parameter>strings</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-macros-requests.xml:157(title)
 msgid "milter_macros_requests_get_symbols ()"
@@ -11204,13 +11323,15 @@ msgstr ""
 
 #: xml/milter-macros-requests.xml:196(term) xml/milter-option.xml:410(term)
 #: xml/milter-option.xml:428(term) xml/milter-utils.xml:355(term)
+#, fuzzy
 msgid "<parameter>dest</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-macros-requests.xml:199(term) xml/milter-option.xml:413(term)
 #: xml/milter-option.xml:431(term) xml/milter-utils.xml:358(term)
+#, fuzzy
 msgid "<parameter>src</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-macros-requests.xml:206(title)
 msgid "milter_macros_requests_foreach ()"
@@ -11226,8 +11347,9 @@ msgstr ""
 
 #: xml/milter-macros-requests.xml:216(term)
 #: xml/milter-manager-children.xml:248(term)
+#, fuzzy
 msgid "<parameter>func</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-manager-applicable-condition.xml:7(refentrytitle)
 #: xml/milter-manager-applicable-condition.xml:13(refname)
@@ -11394,8 +11516,9 @@ msgstr ""
 #: xml/milter-manager.xml:68(term) xml/milter-manager.xml:81(term)
 #: xml/milter-manager.xml:94(term) xml/milter-syslog-logger.xml:62(term)
 #: xml/milter-syslog-logger.xml:75(term) xml/milter-syslog-logger.xml:88(term)
+#, fuzzy
 msgid "<parameter>obj</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-manager-applicable-condition.xml:78(programlisting)
 #: xml/milter-manager-objects.xml:75(programlisting)
@@ -11438,8 +11561,9 @@ msgstr ""
 #: xml/milter-manager-configuration.xml:1141(term)
 #: xml/milter-manager-configuration.xml:1192(term)
 #: xml/milter-manager-egg.xml:550(term) xml/milter-utils.xml:198(term)
+#, fuzzy
 msgid "<parameter>condition</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>connection_spec</parameter>の書式は以下のいずれかです。"
 
 #: xml/milter-manager-applicable-condition.xml:118(title)
 msgid "milter_manager_applicable_condition_get_name ()"
@@ -11488,8 +11612,9 @@ msgid ""
 msgstr ""
 
 #: xml/milter-manager-applicable-condition.xml:175(term)
+#, fuzzy
 msgid "<parameter>other_condition</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>new_body</parameter>のサイズ。"
 
 #: xml/milter-manager-applicable-condition.xml:182(title)
 msgid "milter_manager_applicable_condition_attach_to ()"
@@ -11507,8 +11632,9 @@ msgstr ""
 #: xml/milter-manager-applicable-condition.xml:193(term)
 #: xml/milter-manager-children.xml:187(term)
 #: xml/milter-manager-egg.xml:596(term)
+#, fuzzy
 msgid "<parameter>child</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-manager-applicable-condition.xml:196(term)
 #: xml/milter-manager-children.xml:184(term)
@@ -11536,8 +11662,9 @@ msgstr ""
 #: xml/milter-manager-children.xml:593(term)
 #: xml/milter-manager-children.xml:610(term)
 #: xml/milter-manager-egg.xml:599(term)
+#, fuzzy
 msgid "<parameter>children</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-manager-child.xml:22(link)
 #: xml/milter-manager-child.xml:54(title)
@@ -11667,8 +11794,9 @@ msgid ""
 msgstr ""
 
 #: xml/milter-manager-child.xml:129(term)
+#, fuzzy
 msgid "<parameter>first_name</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-manager-child.xml:141(title)
 msgid "milter_manager_child_get_command_line_string ()"
@@ -11683,8 +11811,9 @@ msgstr ""
 
 #: xml/milter-manager-child.xml:147(term)
 #: xml/milter-manager-child.xml:161(term)
+#, fuzzy
 msgid "<parameter>milter</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-manager-child.xml:156(title)
 msgid "milter_manager_child_get_user_name ()"
@@ -11843,8 +11972,9 @@ msgstr ""
 
 #: xml/milter-manager-children.xml:49(link)
 #: xml/milter-manager-children.xml:330(primary)
+#, fuzzy
 msgid "milter_manager_children_helo"
-msgstr ""
+msgstr "milter managerリファレンスマニュアル"
 
 #: xml/milter-manager-children.xml:51(link)
 #: xml/milter-manager-children.xml:348(primary)
@@ -11858,8 +11988,9 @@ msgstr ""
 
 #: xml/milter-manager-children.xml:57(link)
 #: xml/milter-manager-children.xml:386(primary)
+#, fuzzy
 msgid "milter_manager_children_data"
-msgstr ""
+msgstr "milter managerリファレンスマニュアル"
 
 #: xml/milter-manager-children.xml:58(link)
 #: xml/milter-manager-children.xml:400(primary)
@@ -12139,8 +12270,9 @@ msgstr ""
 #: xml/milter-manager-control-command-encoder.xml:100(term)
 #: xml/milter-manager-control-reply-encoder.xml:183(term)
 #: xml/milter-manager-leader.xml:182(term) xml/milter-manager.xml:115(term)
+#, fuzzy
 msgid "<parameter>configuration</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>connection_spec</parameter>の書式は以下のいずれかです。"
 
 #: xml/milter-manager-children.xml:178(title)
 msgid "milter_manager_children_add_child ()"
@@ -12228,8 +12360,9 @@ msgid ""
 msgstr ""
 
 #: xml/milter-manager-children.xml:294(term)
+#, fuzzy
 msgid "<parameter>macro</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-manager-children.xml:303(title)
 msgid "milter_manager_children_connect ()"
@@ -12384,8 +12517,9 @@ msgid ""
 msgstr ""
 
 #: xml/milter-manager-children.xml:537(term)
+#, fuzzy
 msgid "<parameter>time</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-manager-children.xml:544(title)
 msgid "milter_manager_children_is_important_status ()"
@@ -12438,13 +12572,15 @@ msgstr ""
 
 #: xml/milter-manager-children.xml:613(term)
 #: xml/milter-manager-leader.xml:205(term) xml/milter-manager.xml:163(term)
+#, fuzzy
 msgid "<parameter>read_channel</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-manager-children.xml:616(term)
 #: xml/milter-manager-leader.xml:208(term) xml/milter-manager.xml:166(term)
+#, fuzzy
 msgid "<parameter>write_channel</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-manager-configuration.xml:22(link)
 #: xml/milter-manager-configuration.xml:209(title)
@@ -13065,8 +13201,9 @@ msgstr ""
 
 #: xml/milter-manager-configuration.xml:292(term)
 #: xml/milter-manager-configuration.xml:309(term)
+#, fuzzy
 msgid "<parameter>path</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-manager-configuration.xml:299(title)
 msgid "milter_manager_configuration_prepend_load_path ()"
@@ -13118,8 +13255,9 @@ msgstr ""
 #: xml/milter-manager-configuration.xml:377(term)
 #: xml/milter-manager-configuration.xml:400(term)
 #: xml/milter-manager-configuration.xml:423(term)
+#, fuzzy
 msgid "<parameter>file_name</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-manager-configuration.xml:366(title)
 msgid "milter_manager_configuration_load_if_exist ()"
@@ -13185,8 +13323,9 @@ msgstr ""
 
 #: xml/milter-manager-configuration.xml:459(term)
 #: xml/milter-utils.xml:529(term)
+#, fuzzy
 msgid "<parameter>content</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-manager-configuration.xml:474(title)
 msgid "milter_manager_configuration_is_privilege_mode ()"
@@ -13283,8 +13422,9 @@ msgstr ""
 #: xml/milter-manager-configuration.xml:595(term)
 #: xml/milter-manager-egg.xml:457(term)
 #: xml/milter-manager-launch-command-encoder.xml:95(term)
+#, fuzzy
 msgid "<parameter>user_name</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-manager-configuration.xml:602(title)
 msgid "milter_manager_configuration_get_effective_group ()"
@@ -13310,8 +13450,9 @@ msgid ""
 msgstr ""
 
 #: xml/milter-manager-configuration.xml:627(term)
+#, fuzzy
 msgid "<parameter>group_name</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-manager-configuration.xml:634(title)
 msgid "milter_manager_configuration_get_manager_unix_socket_mode ()"
@@ -13503,8 +13644,9 @@ msgid ""
 msgstr ""
 
 #: xml/milter-manager-configuration.xml:883(term)
+#, fuzzy
 msgid "<parameter>daemon</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-manager-configuration.xml:890(title)
 msgid "milter_manager_configuration_get_pid_file ()"
@@ -13530,8 +13672,9 @@ msgid ""
 msgstr ""
 
 #: xml/milter-manager-configuration.xml:915(term)
+#, fuzzy
 msgid "<parameter>pid_file</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-manager-configuration.xml:922(title)
 msgid "milter_manager_configuration_get_fallback_status ()"
@@ -13580,8 +13723,9 @@ msgid ""
 msgstr ""
 
 #: xml/milter-manager-configuration.xml:979(term)
+#, fuzzy
 msgid "<parameter>platform</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-manager-configuration.xml:986(title)
 msgid "milter_manager_configuration_get_package_options ()"
@@ -13607,8 +13751,9 @@ msgid ""
 msgstr ""
 
 #: xml/milter-manager-configuration.xml:1011(term)
+#, fuzzy
 msgid "<parameter>options</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>connection_spec</parameter>の書式は以下のいずれかです。"
 
 #: xml/milter-manager-configuration.xml:1018(title)
 msgid "milter_manager_configuration_add_egg ()"
@@ -13639,8 +13784,9 @@ msgstr ""
 #: xml/milter-manager-egg.xml:563(term) xml/milter-manager-egg.xml:578(term)
 #: xml/milter-manager-egg.xml:593(term) xml/milter-manager-egg.xml:613(term)
 #: xml/milter-manager-egg.xml:633(term) xml/milter-manager-egg.xml:649(term)
+#, fuzzy
 msgid "<parameter>egg</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-manager-configuration.xml:1035(title)
 msgid "milter_manager_configuration_find_egg ()"
@@ -13815,8 +13961,9 @@ msgstr ""
 #: xml/milter-manager-configuration.xml:1269(term)
 #: xml/milter-manager-egg.xml:655(term) xml/milter-utils.xml:532(term)
 #: xml/milter-utils.xml:557(term)
+#, fuzzy
 msgid "<parameter>indent</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-manager-configuration.xml:1276(title)
 msgid "milter_manager_configuration_dump ()"
@@ -14024,8 +14171,9 @@ msgstr ""
 
 #: xml/milter-manager-control-command-encoder.xml:103(term)
 #: xml/milter-manager-control-reply-encoder.xml:186(term)
+#, fuzzy
 msgid "<parameter>configuration_size</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>connection_spec</parameter>の書式は以下のいずれかです。"
 
 #: xml/milter-manager-control-command-encoder.xml:110(title)
 msgid "milter_manager_control_command_encoder_encode_reload ()"
@@ -14444,8 +14592,9 @@ msgid ""
 msgstr ""
 
 #: xml/milter-manager-control-reply-encoder.xml:215(term)
+#, fuzzy
 msgid "<parameter>status_size</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-manager-controller.xml:7(refentrytitle)
 #: xml/milter-manager-controller.xml:13(refname)
@@ -14512,8 +14661,9 @@ msgstr ""
 
 #: xml/milter-manager-controller.xml:73(term) xml/milter-manager.xml:130(term)
 #: xml/milter-manager.xml:144(term) xml/milter-manager.xml:160(term)
+#, fuzzy
 msgid "<parameter>manager</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-manager-egg.xml:22(link) xml/milter-manager-egg.xml:114(title)
 #: xml/milter-manager-egg.xml:115(primary)
@@ -14533,8 +14683,9 @@ msgid "milter_manager_egg_error_quark"
 msgstr ""
 
 #: xml/milter-manager-egg.xml:27(link) xml/milter-manager-egg.xml:165(primary)
+#, fuzzy
 msgid "milter_manager_egg_new"
-msgstr ""
+msgstr "milter managerリファレンスマニュアル"
 
 #: xml/milter-manager-egg.xml:28(link) xml/milter-manager-egg.xml:179(primary)
 msgid "milter_manager_egg_hatch"
@@ -14557,12 +14708,14 @@ msgid "milter_manager_egg_get_description"
 msgstr ""
 
 #: xml/milter-manager-egg.xml:35(link) xml/milter-manager-egg.xml:253(primary)
+#, fuzzy
 msgid "milter_manager_egg_set_enabled"
-msgstr ""
+msgstr "milter managerリファレンスマニュアル"
 
 #: xml/milter-manager-egg.xml:37(link) xml/milter-manager-egg.xml:269(primary)
+#, fuzzy
 msgid "milter_manager_egg_is_enabled"
-msgstr ""
+msgstr "milter managerリファレンスマニュアル"
 
 #: xml/milter-manager-egg.xml:38(link) xml/milter-manager-egg.xml:283(primary)
 msgid "milter_manager_egg_set_connection_spec"
@@ -14645,8 +14798,9 @@ msgid "milter_manager_egg_attach_applicable_conditions"
 msgstr ""
 
 #: xml/milter-manager-egg.xml:86(link) xml/milter-manager-egg.xml:607(primary)
+#, fuzzy
 msgid "milter_manager_egg_merge"
-msgstr ""
+msgstr "milter managerリファレンスマニュアル"
 
 #: xml/milter-manager-egg.xml:89(link) xml/milter-manager-egg.xml:629(primary)
 msgid "milter_manager_egg_to_xml"
@@ -14779,8 +14933,9 @@ msgid "<link linkend=\"GQuark\">GQuark</link>              milter_manager_egg_er
 msgstr ""
 
 #: xml/milter-manager-egg.xml:164(title)
+#, fuzzy
 msgid "milter_manager_egg_new ()"
-msgstr ""
+msgstr "milter managerリファレンスマニュアル"
 
 #: xml/milter-manager-egg.xml:165(programlisting)
 #, no-wrap
@@ -14848,8 +15003,9 @@ msgid ""
 msgstr ""
 
 #: xml/milter-manager-egg.xml:261(term)
+#, fuzzy
 msgid "<parameter>enabled</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>new_body</parameter>のサイズ。"
 
 #: xml/milter-manager-egg.xml:268(title)
 msgid "milter_manager_egg_is_enabled ()"
@@ -14897,8 +15053,9 @@ msgid ""
 msgstr ""
 
 #: xml/milter-manager-egg.xml:330(term)
+#, fuzzy
 msgid "<parameter>connection_timeout</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>connection_spec</parameter>の書式は以下のいずれかです。"
 
 #: xml/milter-manager-egg.xml:337(title)
 msgid "milter_manager_egg_get_connection_timeout ()"
@@ -15045,8 +15202,9 @@ msgid ""
 msgstr ""
 
 #: xml/milter-manager-egg.xml:518(term)
+#, fuzzy
 msgid "<parameter>command_options</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>connection_spec</parameter>の書式は以下のいずれかです。"
 
 #: xml/milter-manager-egg.xml:525(title)
 msgid "milter_manager_egg_get_command_options ()"
@@ -15107,8 +15265,9 @@ msgid ""
 msgstr ""
 
 #: xml/milter-manager-egg.xml:606(title)
+#, fuzzy
 msgid "milter_manager_egg_merge ()"
-msgstr ""
+msgstr "milter managerリファレンスマニュアル"
 
 #: xml/milter-manager-egg.xml:607(programlisting)
 #, no-wrap
@@ -15119,8 +15278,9 @@ msgid ""
 msgstr ""
 
 #: xml/milter-manager-egg.xml:616(term)
+#, fuzzy
 msgid "<parameter>other_egg</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-manager-egg.xml:628(title)
 msgid "milter_manager_egg_to_xml ()"
@@ -15638,8 +15798,9 @@ msgid ""
 msgstr ""
 
 #: xml/milter-manager-launch-command-encoder.xml:92(term)
+#, fuzzy
 msgid "<parameter>command_line</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>connection_spec</parameter>の書式は以下のいずれかです。"
 
 #: xml/milter-manager-launch-protocol.xml:7(refentrytitle)
 #: xml/milter-manager-launch-protocol.xml:13(refname)
@@ -15717,33 +15878,39 @@ msgstr ""
 
 #: xml/milter-manager-leader.xml:28(link)
 #: xml/milter-manager-leader.xml:177(primary)
+#, fuzzy
 msgid "milter_manager_leader_new"
-msgstr ""
+msgstr "milter managerリファレンスマニュアル"
 
 #: xml/milter-manager-leader.xml:30(link)
 #: xml/milter-manager-leader.xml:195(primary)
+#, fuzzy
 msgid "milter_manager_leader_set_launcher_channel"
-msgstr ""
+msgstr "milter managerリファレンスマニュアル"
 
 #: xml/milter-manager-leader.xml:34(link)
 #: xml/milter-manager-leader.xml:216(primary)
+#, fuzzy
 msgid "milter_manager_leader_negotiate"
-msgstr ""
+msgstr "milter managerリファレンスマニュアル"
 
 #: xml/milter-manager-leader.xml:37(link)
 #: xml/milter-manager-leader.xml:238(primary)
+#, fuzzy
 msgid "milter_manager_leader_connect"
-msgstr ""
+msgstr "milter managerリファレンスマニュアル"
 
 #: xml/milter-manager-leader.xml:41(link)
 #: xml/milter-manager-leader.xml:264(primary)
+#, fuzzy
 msgid "milter_manager_leader_helo"
-msgstr ""
+msgstr "milter managerリファレンスマニュアル"
 
 #: xml/milter-manager-leader.xml:43(link)
 #: xml/milter-manager-leader.xml:282(primary)
+#, fuzzy
 msgid "milter_manager_leader_envelope_from"
-msgstr ""
+msgstr "milter managerリファレンスマニュアル"
 
 #: xml/milter-manager-leader.xml:45(link)
 #: xml/milter-manager-leader.xml:300(primary)
@@ -15752,23 +15919,27 @@ msgstr ""
 
 #: xml/milter-manager-leader.xml:48(link)
 #: xml/milter-manager-leader.xml:319(primary)
+#, fuzzy
 msgid "milter_manager_leader_data"
-msgstr ""
+msgstr "milter managerリファレンスマニュアル"
 
 #: xml/milter-manager-leader.xml:49(link)
 #: xml/milter-manager-leader.xml:333(primary)
+#, fuzzy
 msgid "milter_manager_leader_unknown"
-msgstr ""
+msgstr "milter managerリファレンスマニュアル"
 
 #: xml/milter-manager-leader.xml:51(link)
 #: xml/milter-manager-leader.xml:351(primary)
+#, fuzzy
 msgid "milter_manager_leader_header"
-msgstr ""
+msgstr "milter managerリファレンスマニュアル"
 
 #: xml/milter-manager-leader.xml:54(link)
 #: xml/milter-manager-leader.xml:373(primary)
+#, fuzzy
 msgid "milter_manager_leader_end_of_header"
-msgstr ""
+msgstr "milter managerリファレンスマニュアル"
 
 #: xml/milter-manager-leader.xml:55(link)
 #: xml/milter-manager-leader.xml:387(primary)
@@ -15792,13 +15963,15 @@ msgstr ""
 
 #: xml/milter-manager-leader.xml:64(link)
 #: xml/milter-manager-leader.xml:460(primary)
+#, fuzzy
 msgid "milter_manager_leader_timeout"
-msgstr ""
+msgstr "milter managerリファレンスマニュアル"
 
 #: xml/milter-manager-leader.xml:65(link)
 #: xml/milter-manager-leader.xml:472(primary)
+#, fuzzy
 msgid "milter_manager_leader_define_macro"
-msgstr ""
+msgstr "milter managerリファレンスマニュアル"
 
 #: xml/milter-manager-leader.xml:21(synopsis)
 #, no-wrap
@@ -15937,8 +16110,9 @@ msgid "<link linkend=\"GQuark\">GQuark</link>              milter_manager_leader
 msgstr ""
 
 #: xml/milter-manager-leader.xml:176(title)
+#, fuzzy
 msgid "milter_manager_leader_new ()"
-msgstr ""
+msgstr "milter managerリファレンスマニュアル"
 
 #: xml/milter-manager-leader.xml:177(programlisting)
 #, no-wrap
@@ -15948,8 +16122,9 @@ msgid ""
 msgstr ""
 
 #: xml/milter-manager-leader.xml:194(title)
+#, fuzzy
 msgid "milter_manager_leader_set_launcher_channel ()"
-msgstr ""
+msgstr "milter managerリファレンスマニュアル"
 
 #: xml/milter-manager-leader.xml:195(programlisting)
 #, no-wrap
@@ -15976,8 +16151,9 @@ msgstr ""
 #: xml/milter-manager-leader.xml:450(term)
 #: xml/milter-manager-leader.xml:464(term)
 #: xml/milter-manager-leader.xml:478(term)
+#, fuzzy
 msgid "<parameter>leader</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-manager-leader.xml:215(title)
 msgid "milter_manager_leader_negotiate ()"
@@ -15992,8 +16168,9 @@ msgid ""
 msgstr ""
 
 #: xml/milter-manager-leader.xml:237(title)
+#, fuzzy
 msgid "milter_manager_leader_connect ()"
-msgstr ""
+msgstr "milter managerリファレンスマニュアル"
 
 #: xml/milter-manager-leader.xml:238(programlisting)
 #, no-wrap
@@ -16005,8 +16182,9 @@ msgid ""
 msgstr ""
 
 #: xml/milter-manager-leader.xml:263(title)
+#, fuzzy
 msgid "milter_manager_leader_helo ()"
-msgstr ""
+msgstr "milter managerリファレンスマニュアル"
 
 #: xml/milter-manager-leader.xml:264(programlisting)
 #, no-wrap
@@ -16039,8 +16217,9 @@ msgid ""
 msgstr ""
 
 #: xml/milter-manager-leader.xml:318(title)
+#, fuzzy
 msgid "milter_manager_leader_data ()"
-msgstr ""
+msgstr "milter managerリファレンスマニュアル"
 
 #: xml/milter-manager-leader.xml:319(programlisting)
 #, no-wrap
@@ -16059,8 +16238,9 @@ msgid ""
 msgstr ""
 
 #: xml/milter-manager-leader.xml:350(title)
+#, fuzzy
 msgid "milter_manager_leader_header ()"
-msgstr ""
+msgstr "milter managerリファレンスマニュアル"
 
 #: xml/milter-manager-leader.xml:351(programlisting)
 #, no-wrap
@@ -16219,8 +16399,9 @@ msgstr ""
 #: xml/milter-manager-module-impl.xml:97(term)
 #: xml/milter-manager-module.xml:158(term)
 #: xml/milter-manager-module.xml:207(term)
+#, fuzzy
 msgid "<parameter>module</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-manager-module-impl.xml:67(title)
 msgid "MilterManagerModuleExitFunc ()"
@@ -16254,8 +16435,9 @@ msgstr ""
 #: xml/milter-manager-module-impl.xml:83(term)
 #: xml/milter-manager-module-impl.xml:122(term)
 #: xml/milter-manager-module.xml:164(term)
+#, fuzzy
 msgid "<parameter>var_args</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-manager-module-impl.xml:92(title)
 msgid "MILTER_MANAGER_MODULE_IMPL_INIT ()"
@@ -16398,8 +16580,9 @@ msgstr ""
 #: xml/milter-manager-module.xml:88(term)
 #: xml/milter-manager-module.xml:105(term)
 #: xml/milter-manager-module.xml:121(term)
+#, fuzzy
 msgid "<parameter>base_dir</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>new_body</parameter>のサイズ。"
 
 #: xml/milter-manager-module.xml:100(title)
 msgid "milter_manager_module_load_modules ()"
@@ -16426,8 +16609,9 @@ msgstr ""
 #: xml/milter-manager-module.xml:139(term)
 #: xml/milter-manager-module.xml:179(term)
 #: xml/milter-manager-module.xml:193(term)
+#, fuzzy
 msgid "<parameter>modules</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-manager-module.xml:133(title)
 msgid "milter_manager_module_find ()"
@@ -16483,8 +16667,9 @@ msgstr ""
 
 #: xml/milter-manager-objects.xml:7(refentrytitle)
 #: xml/milter-manager-objects.xml:13(refname)
+#, fuzzy
 msgid "milter-manager-objects"
-msgstr ""
+msgstr "milter manager&version;用"
 
 #: xml/milter-manager-objects.xml:21(synopsis)
 #, no-wrap
@@ -16623,8 +16808,9 @@ msgid "<link linkend=\"void\">void</link>                milter_manager_process_
 msgstr ""
 
 #: xml/milter-manager-process-launcher.xml:124(term)
+#, fuzzy
 msgid "<parameter>launcher</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-manager-reply-decoder.xml:7(refentrytitle)
 #: xml/milter-manager-reply-decoder.xml:13(refname)
@@ -16741,8 +16927,9 @@ msgstr ""
 
 #: xml/milter-manager-reply-encoder.xml:23(link)
 #: xml/milter-manager-reply-encoder.xml:69(primary)
+#, fuzzy
 msgid "milter_manager_reply_encoder_new"
-msgstr ""
+msgstr "milter managerリファレンスマニュアル"
 
 #: xml/milter-manager-reply-encoder.xml:24(link)
 #: xml/milter-manager-reply-encoder.xml:80(primary)
@@ -16888,8 +17075,9 @@ msgstr ""
 
 #: xml/milter-manager-ruby-internal.xml:7(refentrytitle)
 #: xml/milter-manager-ruby-internal.xml:13(refname)
+#, fuzzy
 msgid "milter-manager-ruby-internal"
-msgstr ""
+msgstr "milter managerリファレンスマニュアル"
 
 #: xml/milter-manager.xml:22(link) xml/milter-manager.xml:55(title)
 #: xml/milter-manager.xml:56(primary)
@@ -16909,20 +17097,24 @@ msgid "MILTER_MANAGER_GET_CLASS"
 msgstr ""
 
 #: xml/milter-manager.xml:27(link) xml/milter-manager.xml:111(primary)
+#, fuzzy
 msgid "milter_manager_new"
-msgstr ""
+msgstr "milter managerリファレンスマニュアル"
 
 #: xml/milter-manager.xml:28(link) xml/milter-manager.xml:125(primary)
+#, fuzzy
 msgid "milter_manager_get_configuration"
-msgstr ""
+msgstr "milter manager&version;用"
 
 #: xml/milter-manager.xml:30(link) xml/milter-manager.xml:140(primary)
+#, fuzzy
 msgid "milter_manager_reload"
-msgstr ""
+msgstr "milter managerリファレンスマニュアル"
 
 #: xml/milter-manager.xml:31(link) xml/milter-manager.xml:154(primary)
+#, fuzzy
 msgid "milter_manager_set_launcher_channel"
-msgstr ""
+msgstr "milter managerリファレンスマニュアル"
 
 #: xml/milter-manager.xml:21(synopsis)
 #, no-wrap
@@ -16983,8 +17175,9 @@ msgid ""
 msgstr ""
 
 #: xml/milter-manager.xml:110(title)
+#, fuzzy
 msgid "milter_manager_new ()"
-msgstr ""
+msgstr "milter managerリファレンスマニュアル"
 
 #: xml/milter-manager.xml:111(programlisting)
 #, no-wrap
@@ -17059,8 +17252,9 @@ msgid "milter_option_equal"
 msgstr ""
 
 #: xml/milter-option.xml:34(link) xml/milter-option.xml:251(primary)
+#, fuzzy
 msgid "milter_option_get_version"
-msgstr ""
+msgstr "milter manager&version;用"
 
 #: xml/milter-option.xml:35(link) xml/milter-option.xml:265(primary)
 msgid "milter_option_set_version"
@@ -17249,12 +17443,14 @@ msgid ""
 msgstr ""
 
 #: xml/milter-option.xml:164(term)
+#, fuzzy
 msgid "<parameter>a</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-option.xml:167(term)
+#, fuzzy
 msgid "<parameter>b</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-option.xml:177(programlisting)
 #, no-wrap
@@ -17278,14 +17474,16 @@ msgstr ""
 
 #: xml/milter-option.xml:195(term) xml/milter-option.xml:303(term)
 #: xml/milter-option.xml:319(term) xml/milter-option.xml:335(term)
+#, fuzzy
 msgid "<parameter>action</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-option.xml:198(term) xml/milter-option.xml:365(term)
 #: xml/milter-option.xml:381(term) xml/milter-option.xml:397(term)
 #: xml/milter-server-context.xml:806(term)
+#, fuzzy
 msgid "<parameter>step</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-option.xml:207(title)
 msgid "milter_option_new_empty ()"
@@ -17317,12 +17515,14 @@ msgid ""
 msgstr ""
 
 #: xml/milter-option.xml:238(term)
+#, fuzzy
 msgid "<parameter>option1</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-option.xml:241(term)
+#, fuzzy
 msgid "<parameter>option2</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-option.xml:250(title)
 msgid "milter_option_get_version ()"
@@ -17586,8 +17786,9 @@ msgstr ""
 #: xml/milter-protocol-agent.xml:132(term)
 #: xml/milter-protocol-agent.xml:153(term)
 #: xml/milter-protocol-agent.xml:222(term)
+#, fuzzy
 msgid "<parameter>macro_context</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-protocol-agent.xml:97(title)
 msgid "milter_protocol_agent_set_macros ()"
@@ -17604,8 +17805,9 @@ msgstr ""
 
 #: xml/milter-protocol-agent.xml:111(term)
 #: xml/milter-protocol-agent.xml:156(term)
+#, fuzzy
 msgid "<parameter>macro_name</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-protocol-agent.xml:121(title)
 msgid "milter_protocol_agent_set_macros_hash_table ()"
@@ -17634,8 +17836,9 @@ msgid ""
 msgstr ""
 
 #: xml/milter-protocol-agent.xml:159(term)
+#, fuzzy
 msgid "<parameter>macro_value</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-protocol-agent.xml:166(title)
 msgid "milter_protocol_agent_get_macros ()"
@@ -18925,7 +19128,7 @@ msgid ""
 "Used to get the <link linkend=\"GError\"><type>GError</type></link> quark "
 "for <link linkend=\"MilterServerContext\"><type>MilterServerContext</type></"
 "link> errors."
-msgstr ""
+msgstr "<link linkend=\"MilterServerContext\"><type>MilterServerContext</type></link>のエラー用の<link linkend=\"GError\"><type>GError</type></link>クォークを取得するために使われます。"
 
 #: xml/milter-server-context.xml:128(programlisting)
 #, no-wrap
@@ -18934,7 +19137,7 @@ msgstr ""
 
 #: xml/milter-server-context.xml:130(para)
 msgid "The default connection timeout by seconds."
-msgstr ""
+msgstr "既定の秒単位での接続タイムアウト。"
 
 #: xml/milter-server-context.xml:137(programlisting)
 #, no-wrap
@@ -18943,7 +19146,7 @@ msgstr ""
 
 #: xml/milter-server-context.xml:139(para)
 msgid "The default writing timeout by seconds."
-msgstr ""
+msgstr "既定の秒単位での書き込みタイムアウト。"
 
 #: xml/milter-server-context.xml:146(programlisting)
 #, no-wrap
@@ -18952,7 +19155,7 @@ msgstr ""
 
 #: xml/milter-server-context.xml:148(para)
 msgid "The default reading timeout by seconds."
-msgstr ""
+msgstr "既定の秒単位での読み込みタイムアウト。"
 
 #: xml/milter-server-context.xml:155(programlisting)
 #, no-wrap
@@ -18987,7 +19190,7 @@ msgid ""
 "These identify the variable errors that can occur while calling <link "
 "linkend=\"MilterServerContext\"><literal>MilterServerContext</literal></"
 "link> functions."
-msgstr ""
+msgstr "<link linkend=\"MilterServerContext\"><literal>MilterServerContext</literal></link>の関数呼び出し中に発生するエラーを識別します。"
 
 #: xml/milter-server-context.xml:182(literal)
 msgid "MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE"
@@ -18995,7 +19198,7 @@ msgstr ""
 
 #: xml/milter-server-context.xml:183(simpara)
 msgid "Indicates a connection failure."
-msgstr ""
+msgstr "接続が失敗したことを示します。"
 
 #: xml/milter-server-context.xml:188(literal)
 msgid "MILTER_SERVER_CONTEXT_ERROR_NO_SPEC"
@@ -19003,7 +19206,7 @@ msgstr ""
 
 #: xml/milter-server-context.xml:189(simpara)
 msgid "Indicates the connection spec isn't set."
-msgstr ""
+msgstr "接続指定が設定されていないことを示します。"
 
 #: xml/milter-server-context.xml:194(literal)
 msgid "MILTER_SERVER_CONTEXT_ERROR_INVALID_STATE"
@@ -19014,7 +19217,7 @@ msgid ""
 "Indicates unexpected response is received on the current <link linkend="
 "\"MilterServerContextState\"><literal>MilterServerContextState</literal></"
 "link>."
-msgstr ""
+msgstr "現在の<link linkend=\"MilterServerContext\"><literal>MilterServerContext</literal></link>が予期しない応答を受け取ったことを示します。"
 
 #: xml/milter-server-context.xml:201(literal)
 msgid "MILTER_SERVER_CONTEXT_ERROR_BUSY"
@@ -19073,7 +19276,7 @@ msgstr ""
 msgid ""
 "These identify the state of <link linkend=\"MilterServerContext"
 "\"><literal>MilterServerContext</literal></link>."
-msgstr ""
+msgstr "<link linkend=\"MilterServerContext\"><literal>MilterServerContext</literal></link>の状態を識別します。"
 
 #: xml/milter-server-context.xml:252(literal)
 msgid "MILTER_SERVER_CONTEXT_STATE_START"
@@ -19097,7 +19300,7 @@ msgstr ""
 
 #: xml/milter-server-context.xml:268(simpara)
 msgid "Sent connection information."
-msgstr ""
+msgstr "接続情報を送信しました。"
 
 #: xml/milter-server-context.xml:273(literal)
 msgid "MILTER_SERVER_CONTEXT_STATE_HELO"
@@ -19137,7 +19340,7 @@ msgstr ""
 
 #: xml/milter-server-context.xml:297(simpara)
 msgid "Sent unknown SMTP command."
-msgstr ""
+msgstr "未知のSMTPコマンドを送信しました。"
 
 #: xml/milter-server-context.xml:302(literal)
 msgid "MILTER_SERVER_CONTEXT_STATE_HEADER"
@@ -19157,7 +19360,7 @@ msgstr ""
 
 #: xml/milter-server-context.xml:313(simpara)
 msgid "Sent a body chunk."
-msgstr ""
+msgstr "本文の1かたまりを送信しました。"
 
 #: xml/milter-server-context.xml:317(literal)
 msgid "MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE"
@@ -19165,7 +19368,7 @@ msgstr ""
 
 #: xml/milter-server-context.xml:318(simpara)
 msgid "Sent all body chunks."
-msgstr ""
+msgstr "本文すべてを送信しました。"
 
 #: xml/milter-server-context.xml:323(literal)
 msgid "MILTER_SERVER_CONTEXT_STATE_QUIT"
@@ -19211,13 +19414,13 @@ msgstr ""
 
 #: xml/milter-server-context.xml:356(para)
 msgid "Creates a new context object."
-msgstr ""
+msgstr "新しいコンテキストオブジェクトを生成します。"
 
 #: xml/milter-server-context.xml:361(simpara)
 msgid ""
 "a new <link linkend=\"MilterServerContext\"><literal>MilterServerContext</"
 "literal></link> object."
-msgstr ""
+msgstr "新しい<link linkend=\"MilterServerContext\"><literal>MilterServerContext</literal></link>オブジェクト。"
 
 #: xml/milter-server-context.xml:365(title)
 msgid "milter_server_context_set_connection_timeout ()"
@@ -19269,7 +19472,7 @@ msgstr ""
 msgid ""
 "a <link linkend=\"MilterServerContext\"><literal>MilterServerContext</"
 "literal></link>."
-msgstr ""
+msgstr "<link linkend=\"MilterServerContext\"><literal>MilterServerContext</literal></link>。"
 
 #: xml/milter-server-context.xml:380(simpara)
 msgid ""
@@ -19380,11 +19583,11 @@ msgid ""
 "invalid format and <parameter>error</parameter> is not <link linkend=\"NULL:"
 "CAPS\"><literal>NULL</literal></link>, error detail is stored into "
 "<parameter>error</parameter>."
-msgstr ""
+msgstr "クライアントの接続指定を設定します。<parameter>spec</parameter>が不正な形式で、<parameter>error</parameter>が<link linkend=\"NULL:CAPS\"><literal>NULL</literal></link>でない場合は、エラーの詳細は<parameter>error</parameter>に設定されます。"
 
 #: xml/milter-server-context.xml:463(simpara)
 msgid "the connection spec of client."
-msgstr ""
+msgstr "クライアントの接続指定。"
 
 #: xml/milter-server-context.xml:472(title)
 msgid "milter_server_context_establish_connection ()"
@@ -19404,7 +19607,7 @@ msgid ""
 "<parameter>error</parameter> is not <link linkend=\"NULL:CAPS"
 "\"><literal>NULL</literal></link>, error detail is stored into "
 "<parameter>error</parameter>."
-msgstr ""
+msgstr "クライアントへの接続を確立します。接続確立が失敗して、<parameter>error</parameter>が<link linkend=\"NULL:CAPS\"><literal>NULL</literal></link>でない場合は、エラーの詳細は<parameter>error</parameter>に設定されます。"
 
 #: xml/milter-server-context.xml:493(title)
 msgid "milter_server_context_get_status ()"
@@ -19417,11 +19620,11 @@ msgstr ""
 
 #: xml/milter-server-context.xml:495(para)
 msgid "Gets the current status."
-msgstr ""
+msgstr "現在の状態を取得します。"
 
 #: xml/milter-server-context.xml:503(simpara)
 msgid "the current status."
-msgstr ""
+msgstr "現在の状態。"
 
 #: xml/milter-server-context.xml:507(title)
 msgid "milter_server_context_get_state ()"
@@ -19447,7 +19650,7 @@ msgstr ""
 
 #: xml/milter-server-context.xml:534(simpara)
 msgid "the new state."
-msgstr ""
+msgstr "新しい状態。"
 
 #: xml/milter-server-context.xml:538(title)
 msgid "milter_server_context_is_processing ()"
@@ -19467,7 +19670,7 @@ msgid ""
 "<link linkend=\"TRUE:CAPS\"><literal>TRUE</literal></link> if any response "
 "is received after the last writing, <link linkend=\"FALSE:CAPS"
 "\"><literal>FALSE</literal></link> otherwise."
-msgstr ""
+msgstr "最後の書き込みの後に桜桃を受け取っていたら<link linkend=\"TRUE:CAPS\"><literal>TRUE</literal></link>、そうでなければ<link linkend=\"FALSE:CAPS\"><literal>FALSE</literal></link>。"
 
 #: xml/milter-server-context.xml:553(title)
 msgid "milter_server_context_negotiate ()"
@@ -19482,7 +19685,7 @@ msgstr ""
 
 #: xml/milter-server-context.xml:556(para)
 msgid "Negotiates with client."
-msgstr ""
+msgstr "クライアントと折り合いをつけます。"
 
 #: xml/milter-server-context.xml:565(simpara)
 msgid "the negotiate option."
@@ -19507,15 +19710,15 @@ msgstr ""
 
 #: xml/milter-server-context.xml:585(simpara)
 msgid "the host name of connected SMTP client."
-msgstr ""
+msgstr "接続してきたSMTPクライアントのホスト名。"
 
 #: xml/milter-server-context.xml:588(simpara)
 msgid "the address of connected SMTP client."
-msgstr ""
+msgstr "接続してきたSMTPクライアントのアドレス。"
 
 #: xml/milter-server-context.xml:591(simpara)
 msgid "the length of <parameter>address</parameter>."
-msgstr ""
+msgstr "<parameter>address</parameter>のサイズ。"
 
 #: xml/milter-server-context.xml:597(title)
 msgid "milter_server_context_helo ()"
@@ -19553,7 +19756,7 @@ msgstr ""
 
 #: xml/milter-server-context.xml:627(simpara)
 msgid "the envelope from address."
-msgstr ""
+msgstr "送信者のアドレス。"
 
 #: xml/milter-server-context.xml:633(title)
 msgid "milter_server_context_envelope_recipient ()"
@@ -19573,7 +19776,7 @@ msgstr ""
 
 #: xml/milter-server-context.xml:646(simpara)
 msgid "the envelope recipient address."
-msgstr ""
+msgstr "宛先アドレス。"
 
 #: xml/milter-server-context.xml:652(title)
 msgid "milter_server_context_data ()"
@@ -19601,7 +19804,7 @@ msgstr ""
 
 #: xml/milter-server-context.xml:669(para)
 msgid "Sends received unknown SMTP command."
-msgstr ""
+msgstr "受信した未知のSMTPコマンドを送信します。"
 
 #: xml/milter-server-context.xml:684(title)
 msgid "milter_server_context_header ()"
@@ -19646,7 +19849,7 @@ msgstr ""
 
 #: xml/milter-server-context.xml:724(para)
 msgid "Sends a body chunk."
-msgstr ""
+msgstr "本文の1かたまりを送信します。"
 
 #: xml/milter-server-context.xml:742(title)
 msgid "milter_server_context_end_of_message ()"
@@ -19669,7 +19872,7 @@ msgstr ""
 msgid ""
 "the body chunk. maybe <link linkend=\"NULL:CAPS\"><literal>NULL</literal></"
 "link>."
-msgstr ""
+msgstr "本文のかたまり。<link linkend=\"NULL:CAPS\"><literal>NULL</literal></link>かもしれません。"
 
 #: xml/milter-server-context.xml:766(title)
 msgid "milter_server_context_quit ()"
@@ -19682,7 +19885,7 @@ msgstr ""
 
 #: xml/milter-server-context.xml:768(para)
 msgid "Quits the current connection."
-msgstr ""
+msgstr "現在の接続を終了します。"
 
 #: xml/milter-server-context.xml:780(title)
 msgid "milter_server_context_abort ()"
@@ -19695,7 +19898,7 @@ msgstr ""
 
 #: xml/milter-server-context.xml:782(para)
 msgid "Aborts the current connection."
-msgstr ""
+msgstr "現在の接続を中止します。"
 
 #: xml/milter-server-context.xml:794(title)
 msgid "milter_server_context_is_enable_step ()"
@@ -19717,14 +19920,14 @@ msgstr ""
 
 #: xml/milter-server-context.xml:807(simpara)
 msgid "the step flag."
-msgstr ""
+msgstr "ステップフラグ。"
 
 #: xml/milter-server-context.xml:809(simpara)
 msgid ""
 "<link linkend=\"TRUE:CAPS\"><literal>TRUE</literal></link> if "
 "<parameter>step</parameter> flags is enabled, <link linkend=\"FALSE:CAPS"
 "\"><literal>FALSE</literal></link> otherwise."
-msgstr ""
+msgstr "<parameter>step</parameter>フラグが有効なら<link linkend=\"TRUE:CAPS\"><literal>TRUE</literal></link>、そうでなければ<link linkend=\"FALSE:CAPS\"><literal>FALSE</literal></link>。"
 
 #: xml/milter-server-context.xml:813(title)
 msgid "milter_server_context_get_skip_body ()"
@@ -19746,7 +19949,7 @@ msgid ""
 "<link linkend=\"TRUE:CAPS\"><literal>TRUE</literal></link> if body chunks "
 "are skipped, <link linkend=\"FALSE:CAPS\"><literal>FALSE</literal></link> "
 "otherwise."
-msgstr ""
+msgstr "本文のかたまりを省略していたら<link linkend=\"TRUE:CAPS\"><literal>TRUE</literal></link>、そうでなければ<link linkend=\"FALSE:CAPS\"><literal>FALSE</literal></link>。"
 
 #: xml/milter-server-context.xml:829(title)
 msgid "milter_server_context_get_name ()"
@@ -19759,11 +19962,11 @@ msgstr ""
 
 #: xml/milter-server-context.xml:831(para)
 msgid "Gets the name of <parameter>context</parameter>."
-msgstr ""
+msgstr "<parameter>context</parameter>の名前を取得します。"
 
 #: xml/milter-server-context.xml:839(simpara)
 msgid "the name of <parameter>context</parameter>."
-msgstr ""
+msgstr "<parameter>context</parameter>の名前。"
 
 #: xml/milter-server-context.xml:843(title)
 msgid "milter_server_context_set_name ()"
@@ -19778,11 +19981,11 @@ msgstr ""
 
 #: xml/milter-server-context.xml:846(para)
 msgid "Sets the name of <parameter>context</parameter>."
-msgstr ""
+msgstr "<parameter>context</parameter>の名前を設定します。"
 
 #: xml/milter-server-context.xml:855(simpara)
 msgid "the name."
-msgstr ""
+msgstr "名前。"
 
 #: xml/milter-server-enum-types.xml:7(refentrytitle)
 #: xml/milter-server-enum-types.xml:13(refname)
@@ -19939,8 +20142,9 @@ msgid "<link linkend=\"MilterSyslogLogger\">MilterSyslogLogger</link>* milter_sy
 msgstr ""
 
 #: xml/milter-syslog-logger.xml:109(term)
+#, fuzzy
 msgid "<parameter>identity</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-utils.xml:7(refentrytitle) xml/milter-utils.xml:13(refname)
 msgid "milter-utils"
@@ -20139,8 +20343,9 @@ msgstr ""
 
 #: xml/milter-utils.xml:108(term) xml/milter-utils.xml:138(term)
 #: xml/milter-utils.xml:153(term) xml/milter-utils.xml:185(term)
+#, fuzzy
 msgid "<parameter>init</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-utils.xml:115(title)
 msgid "MILTER_DEFINE_ERROR_EMITTABLE_TYPE()"
@@ -20152,12 +20357,14 @@ msgid "#define             MILTER_DEFINE_ERROR_EMITTABLE_TYPE(TypeName, type_nam
 msgstr ""
 
 #: xml/milter-utils.xml:120(term) xml/milter-utils.xml:167(term)
+#, fuzzy
 msgid "<parameter>TypeName</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-utils.xml:123(term) xml/milter-utils.xml:170(term)
+#, fuzzy
 msgid "<parameter>type_name</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-utils.xml:126(term) xml/milter-utils.xml:173(term)
 msgid "<parameter>TYPE_PARENT</parameter>&nbsp;:"
@@ -20226,13 +20433,15 @@ msgstr ""
 
 #: xml/milter-utils.xml:213(term) xml/milter-utils.xml:231(term)
 #: xml/milter-utils.xml:249(term) xml/milter-utils.xml:486(term)
+#, fuzzy
 msgid "<parameter>enum_type</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>new_body</parameter>のサイズ。"
 
 #: xml/milter-utils.xml:216(term) xml/milter-utils.xml:234(term)
 #: xml/milter-utils.xml:252(term)
+#, fuzzy
 msgid "<parameter>enum_value</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-utils.xml:225(title)
 msgid "milter_utils_get_enum_name ()"
@@ -20269,12 +20478,14 @@ msgstr ""
 
 #: xml/milter-utils.xml:267(term) xml/milter-utils.xml:285(term)
 #: xml/milter-utils.xml:468(term)
+#, fuzzy
 msgid "<parameter>flags_type</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-utils.xml:270(term) xml/milter-utils.xml:288(term)
+#, fuzzy
 msgid "<parameter>flags</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-utils.xml:279(title)
 msgid "milter_utils_get_flags_names ()"
@@ -20297,8 +20508,9 @@ msgid "<link linkend=\"gchar\">gchar</link>*              milter_utils_inspect_o
 msgstr ""
 
 #: xml/milter-utils.xml:302(term)
+#, fuzzy
 msgid "<parameter>object</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-utils.xml:311(title)
 msgid "milter_utils_format_reply_code ()"
@@ -20313,8 +20525,9 @@ msgid ""
 msgstr ""
 
 #: xml/milter-utils.xml:318(term)
+#, fuzzy
 msgid "<parameter>reply_code</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>new_body</parameter>のサイズ。"
 
 #: xml/milter-utils.xml:333(title)
 msgid "milter_utils_inspect_hash_string_string ()"
@@ -20328,8 +20541,9 @@ msgid ""
 msgstr ""
 
 #: xml/milter-utils.xml:339(term)
+#, fuzzy
 msgid "<parameter>hash</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-utils.xml:348(title)
 msgid "milter_utils_merge_hash_string_string ()"
@@ -20353,8 +20567,9 @@ msgid "<link linkend=\"gchar\">gchar</link>*              milter_utils_inspect_l
 msgstr ""
 
 #: xml/milter-utils.xml:370(term)
+#, fuzzy
 msgid "<parameter>list</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-utils.xml:379(title)
 msgid "milter_utils_command_to_macro_stage ()"
@@ -20375,8 +20590,9 @@ msgid "<link linkend=\"MilterCommand\">MilterCommand</link>       milter_utils_m
 msgstr ""
 
 #: xml/milter-utils.xml:398(term)
+#, fuzzy
 msgid "<parameter>stage</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-utils.xml:407(title)
 msgid "milter_utils_set_error_with_sub_error ()"
@@ -20395,12 +20611,14 @@ msgid ""
 msgstr ""
 
 #: xml/milter-utils.xml:424(term)
+#, fuzzy
 msgid "<parameter>error_code</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>new_body</parameter>のサイズ。"
 
 #: xml/milter-utils.xml:427(term)
+#, fuzzy
 msgid "<parameter>sub_error</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>new_body</parameter>のサイズ。"
 
 #: xml/milter-utils.xml:440(title)
 msgid "milter_utils_timeout_add ()"
@@ -20415,8 +20633,9 @@ msgid ""
 msgstr ""
 
 #: xml/milter-utils.xml:447(term)
+#, fuzzy
 msgid "<parameter>interval</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-utils.xml:462(title)
 msgid "milter_utils_flags_from_string ()"
@@ -20430,8 +20649,9 @@ msgid ""
 msgstr ""
 
 #: xml/milter-utils.xml:471(term)
+#, fuzzy
 msgid "<parameter>flags_string</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-utils.xml:480(title)
 msgid "milter_utils_enum_from_string ()"
@@ -20488,8 +20708,9 @@ msgid ""
 msgstr ""
 
 #: xml/milter-utils.xml:554(term)
+#, fuzzy
 msgid "<parameter>boolean</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-utils.xml:564(title)
 msgid "milter_utils_strcmp0 ()"
@@ -20503,16 +20724,19 @@ msgid ""
 msgstr ""
 
 #: xml/milter-utils.xml:570(term)
+#, fuzzy
 msgid "<parameter>str1</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-utils.xml:573(term)
+#, fuzzy
 msgid "<parameter>str2</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-version.xml:7(refentrytitle) xml/milter-version.xml:13(refname)
+#, fuzzy
 msgid "milter-version"
-msgstr ""
+msgstr "libmilterのバージョン番号。"
 
 #: xml/milter-version.xml:22(link) xml/milter-version.xml:48(title)
 #: xml/milter-version.xml:49(primary)
@@ -20579,8 +20803,9 @@ msgid "#define             MILTER_TOOLKIT_CHECK_VERSION(major, minor, micro)"
 msgstr ""
 
 #: xml/milter-version.xml:87(term)
+#, fuzzy
 msgid "<parameter>micro</parameter>&nbsp;:"
-msgstr ""
+msgstr "<parameter>data</parameter>のサイズ。"
 
 #: xml/milter-writer.xml:22(link) xml/milter-writer.xml:58(title)
 #: xml/milter-writer.xml:59(primary)
@@ -20749,35 +20974,3 @@ msgstr ""
 #: xml/milter-writer.xml:0(None)
 msgid "translator-credits"
 msgstr ""
-
-#~ msgid "Signal Details"
-#~ msgstr "シグナル詳細"
-
-#~ msgid "Property Details"
-#~ msgstr "プロパティ詳細"
-
-#~ msgid "<parameter>connection_spec</parameter> is NULL."
-#~ msgstr "<parameter>connection_spec</parameter>がNULL。"
-
-#~ msgid ""
-#~ "<parameter>reason</parameter> is NULL or empty. FIXME: not-implemented "
-#~ "yet."
-#~ msgstr "<parameter>reason</parameter>がNULLまたは空のとき。FIXME: 未実装。"
-
-#~ msgid ""
-#~ "<parameter>macros</parameter> is NULL or empty. FIXME: not-implemented "
-#~ "yet."
-#~ msgstr "<parameter>macros</parameter>がNULLまたは空。FIXME: 未実装。"
-
-#~ msgid ""
-#~ "Rejects the current envelope from address. A new envelope from may be "
-#~ "specified."
-#~ msgstr "現在の差出人を拒否します。新しい差出人が指定されるかもしれません。"
-
-#~ msgid ""
-#~ "Rejects the envelope from address and the current connection with "
-#~ "temporary failure. (i.e. 4xx status code in SMTP) A new envelope from "
-#~ "address may be specified."
-#~ msgstr ""
-#~ "差出人と現在の接続を一時的な障害として拒否します。（つまり、SMTPでは4xxの"
-#~ "ステータスコードになります。）新しい差出人が指定されるかもしれません。"
