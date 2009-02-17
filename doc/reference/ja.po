@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: milter-manager 0.0.1\n"
-"POT-Creation-Date: 2009-02-17 16:50+0900\n"
-"PO-Revision-Date: 2009-02-17 17:33+0900\n"
+"POT-Creation-Date: 2009-02-17 17:34+0900\n"
+"PO-Revision-Date: 2009-02-17 17:44+0900\n"
 "Last-Translator: Kouhei Sutou <kou@cozmixng.org>\n"
 "Language-Team: Japanese\n"
 "MIME-Version: 1.0\n"
@@ -3614,7 +3614,9 @@ msgstr ""
 "現在の接続を一時的な障害が発生したとして拒否します。（つまり、SMTPでは4xxのス"
 "テータスコードになります。）"
 
-#: xml/mfapi.xml:422(para) xml/mfapi.xml:490(para)
+#: xml/mfapi.xml:422(para) xml/mfapi.xml:490(para) xml/mfapi.xml:563(para)
+#: xml/mfapi.xml:638(para) xml/mfapi.xml:745(para) xml/mfapi.xml:818(para)
+#: xml/mfapi.xml:897(para) xml/mfapi.xml:1093(para) xml/mfapi.xml:1165(para)
 #: xml/milter-client-context.xml:1415(para)
 #: xml/milter-client-context.xml:1540(para)
 #: xml/milter-client-context.xml:1674(para)
@@ -3632,7 +3634,10 @@ msgid ""
 "The milter must set <link linkend=\"SMFIP-NR-CONN:CAPS"
 "\"><literal>SMFIP_NR_CONN</literal></link> flag to <link linkend=\"smfiDesc"
 "\"><literal>smfiDesc</literal></link>::xxfi_flags."
-msgstr "milterは<link linkend=\"SMFIP-NR-CONN:CAPS\"><literal>SMFIP_NR_CONN</literal></link>フラグを<link linkend=\"smfiDesc\"><literal>smfiDesc</literal></link>::xxfi_flagsに設定していなければいけません。"
+msgstr ""
+"milterは<link linkend=\"SMFIP-NR-CONN:CAPS\"><literal>SMFIP_NR_CONN</"
+"literal></link>フラグを<link linkend=\"smfiDesc\"><literal>smfiDesc</"
+"literal></link>::xxfi_flagsに設定していなければいけません。"
 
 #: xml/mfapi.xml:430(para)
 msgid ""
@@ -3815,7 +3820,10 @@ msgid ""
 "The milter must set <link linkend=\"SMFIP-NR-HELO:CAPS"
 "\"><literal>SMFIP_NR_HELO</literal></link> flag to <link linkend=\"smfiDesc"
 "\"><literal>smfiDesc</literal></link>::xxfi_flags."
-msgstr "milterは<link linkend=\"smfiDesc\"><literal>smfiDesc</literal></link>::xxfi_flagsに<link linkend=\"SMFIP-NR-HELO:CAPS\"><literal>SMFIP_NR_HELO</literal></link>フラグを設定しなければいけません。"
+msgstr ""
+"milterは<link linkend=\"smfiDesc\"><literal>smfiDesc</literal></link>::"
+"xxfi_flagsに<link linkend=\"SMFIP-NR-HELO:CAPS\"><literal>SMFIP_NR_HELO</"
+"literal></link>フラグを設定しなければいけません。"
 
 #: xml/mfapi.xml:498(para) xml/milter-client-context.xml:2509(para)
 msgid ""
@@ -3909,15 +3917,12 @@ msgstr ""
 "SMTPでは4xxのステータスコードになります。）新しい差出人が指定されるかもしれま"
 "せん。"
 
-#: xml/mfapi.xml:563(para)
+#: xml/mfapi.xml:564(para)
 msgid ""
-"Doesn't send a reply back to MTA. The milter must set <link linkend=\"SMFIP-"
-"NR-MAIL:CAPS\"><literal>SMFIP_NR_MAIL</literal></link> flag to <link linkend="
-"\"smfiDesc\"><literal>smfiDesc</literal></link>::xxfi_flags."
-msgstr ""
-"MTAに返答しません。milterは<link linkend=\"smfiDesc\"><literal>smfiDesc</"
-"literal></link>::xxfi_flagsに<link linkend=\"SMFIP-NR-MAIL:CAPS"
-"\"><literal>SMFIP_NR_MAIL</literal></link>フラグを設定しなければいけません。"
+"The milter must set <link linkend=\"SMFIP-NR-MAIL:CAPS"
+"\"><literal>SMFIP_NR_MAIL</literal></link> flag to <link linkend=\"smfiDesc"
+"\"><literal>smfiDesc</literal></link>::xxfi_flags."
+msgstr "milterは<link linkend=\"smfiDesc\"><literal>smfiDesc</literal></link>::xxfi_flagsに<link linkend=\"SMFIP-NR-MAIL:CAPS\"><literal>SMFIP_NR_MAIL</literal></link>フラグを設定しなければいけません。"
 
 #: xml/mfapi.xml:571(para) xml/milter-client-context.xml:2088(para)
 msgid ""
@@ -3976,15 +3981,12 @@ msgstr ""
 "現在の宛先を一時的な障害が発生したとして拒否します。（つまり、SMTPでは4xxのス"
 "テータスコードになります。）現在のメッセージの処理は継続します。"
 
-#: xml/mfapi.xml:638(para)
+#: xml/mfapi.xml:639(para)
 msgid ""
-"Doesn't send a reply back to MTA. The milter must set <link linkend=\"SMFIP-"
-"NR-RCPT:CAPS\"><literal>SMFIP_NR_RCPT</literal></link> flag to <link linkend="
-"\"smfiDesc\"><literal>smfiDesc</literal></link>::xxfi_flags."
-msgstr ""
-"MTAに返答しません。milterは<link linkend=\"smfiDesc\"><literal>smfiDesc</"
-"literal></link>::xxfi_flagsに<link linkend=\"SMFIP-NR-RCPT:CAPS"
-"\"><literal>SMFIP_NR_RCPT</literal></link>フラグを設定しなければいけません。"
+"The milter must set <link linkend=\"SMFIP-NR-RCPT:CAPS"
+"\"><literal>SMFIP_NR_RCPT</literal></link> flag to <link linkend=\"smfiDesc"
+"\"><literal>smfiDesc</literal></link>::xxfi_flags."
+msgstr "milterは<link linkend=\"SMFIP-NR-RCPT:CAPS\"><literal>SMFIP_NR_RCPT</literal></link>フラグを<link linkend=\"smfiDesc\"><literal>smfiDesc</literal></link>::xxfi_flagsに設定していなければいけません。"
 
 #: xml/mfapi.xml:646(para) xml/milter-client-context.xml:2221(para)
 msgid ""
@@ -4105,15 +4107,12 @@ msgstr ""
 "現在のメッセージを一時的な障害が発生したとして拒否します。（つまり、SMTPでは"
 "4xxステータスコードになります。）"
 
-#: xml/mfapi.xml:745(para)
+#: xml/mfapi.xml:746(para)
 msgid ""
-"Doesn't send a reply back to MTA. The milter must set <link linkend=\"SMFIP-"
-"NR-HDR:CAPS\"><literal>SMFIP_NR_HDR</literal></link> flag to <link linkend="
-"\"smfiDesc\"><literal>smfiDesc</literal></link>::xxfi_flags."
-msgstr ""
-"MTAに返答しません。milterは<link linkend=\"smfiDesc\"><literal>smfiDesc</"
-"literal></link>::xxfi_flagsに<link linkend=\"SMFIP-NR-HDR:CAPS"
-"\"><literal>SMFIP_NR_HDR</literal></link>フラグを設定しなければいけません。"
+"The milter must set <link linkend=\"SMFIP-NR-HDR:CAPS"
+"\"><literal>SMFIP_NR_HDR</literal></link> flag to <link linkend=\"smfiDesc"
+"\"><literal>smfiDesc</literal></link>::xxfi_flags."
+msgstr "milterは<link linkend=\"smfiDesc\"><literal>smfiDesc</literal></link>::xxfi_flagsに<link linkend=\"SMFIP-NR-HDR:CAPS\"><literal>SMFIP_NR_HDR</literal></link>フラグを設定しなければいけません。"
 
 #: xml/mfapi.xml:753(para) xml/milter-client-context.xml:2385(para)
 msgid ""
@@ -4206,15 +4205,12 @@ msgstr ""
 msgid "This callback is called on all headers are processed."
 msgstr "このコールバックはすべてのヘッダが処理されたときに呼ばれます。"
 
-#: xml/mfapi.xml:818(para)
+#: xml/mfapi.xml:819(para)
 msgid ""
-"Doesn't send a reply back to MTA. The milter must set <link linkend=\"SMFIP-"
-"NR-EOH:CAPS\"><literal>SMFIP_NR_EOH</literal></link> flag to <link linkend="
-"\"smfiDesc\"><literal>smfiDesc</literal></link>::xxfi_flags."
-msgstr ""
-"MTAに返答しません。milterは<link linkend=\"smfiDesc\"><literal>smfiDesc</"
-"literal></link>::xxfi_flagsに<link linkend=\"SMFIP-NR-EOH:CAPS"
-"\"><literal>SMFIP_NR_EOH</literal></link>フラグを設定しなければいけません。"
+"The milter must set <link linkend=\"SMFIP-NR-EOH:CAPS"
+"\"><literal>SMFIP_NR_EOH</literal></link> flag to <link linkend=\"smfiDesc"
+"\"><literal>smfiDesc</literal></link>::xxfi_flags."
+msgstr "milterは<link linkend=\"smfiDesc\"><literal>smfiDesc</literal></link>::xxfi_flagsに<link linkend=\"SMFIP-NR-EOH:CAPS\"><literal>SMFIP_NR_EOH</literal></link>フラグを設定しなければいけません。"
 
 #: xml/mfapi.xml:826(para) xml/milter-client-context.xml:1849(para)
 msgid ""
@@ -4256,15 +4252,12 @@ msgstr ""
 "これ以上の本文の処理を省略します。<link linkend=\"xxfi-eom"
 "\"><function>xxfi_eom()</function></link>は呼ばれます。"
 
-#: xml/mfapi.xml:897(para)
+#: xml/mfapi.xml:898(para)
 msgid ""
-"Doesn't send a reply back to MTA. The milter must set <link linkend=\"SMFIP-"
-"NR-BODY:CAPS\"><literal>SMFIP_NR_BODY</literal></link> flag to <link linkend="
-"\"smfiDesc\"><literal>smfiDesc</literal></link>::xxfi_flags."
-msgstr ""
-"MTAに返答しません。milterは<link linkend=\"smfiDesc\"><literal>smfiDesc</"
-"literal></link>::xxfi_flagsに<link linkend=\"SMFIP-NR-BODY:CAPS"
-"\"><literal>SMFIP_NR_BODY</literal></link>フラグを設定しなければいけません。"
+"The milter must set <link linkend=\"SMFIP-NR-BODY:CAPS"
+"\"><literal>SMFIP_NR_BODY</literal></link> flag to <link linkend=\"smfiDesc"
+"\"><literal>smfiDesc</literal></link>::xxfi_flags."
+msgstr "milterは<link linkend=\"SMFIP-NR-BODY:CAPS\"><literal>SMFIP_NR_BODY</literal></link>フラグを<link linkend=\"smfiDesc\"><literal>smfiDesc</literal></link>::xxfi_flagsに設定していなければいけません。"
 
 #: xml/mfapi.xml:905(para) xml/milter-client-context.xml:1442(para)
 msgid ""
@@ -4433,15 +4426,12 @@ msgstr ""
 "このコールバックは未知のSMTPコマンドまたは未実装のSMTPコマンドが送られてきた"
 "場合に呼ばれます。"
 
-#: xml/mfapi.xml:1093(para)
+#: xml/mfapi.xml:1094(para)
 msgid ""
-"Doesn't send a reply back to MTA. The milter must set <link linkend=\"SMFIP-"
-"NR-UNKN:CAPS\"><literal>SMFIP_NR_UNKN</literal></link> flag to <link linkend="
-"\"smfiDesc\"><literal>smfiDesc</literal></link>::xxfi_flags."
-msgstr ""
-"MTAに返答しません。milterは<link linkend=\"smfiDesc\"><literal>smfiDesc</"
-"literal></link>::xxfi_flagsに<link linkend=\"SMFIP-NR-UNKN:CAPS"
-"\"><literal>SMFIP_NR_UNKN</literal></link>フラグを設定しなければいけません。"
+"The milter must set <link linkend=\"SMFIP-NR-UNKN:CAPS"
+"\"><literal>SMFIP_NR_UNKN</literal></link> flag to <link linkend=\"smfiDesc"
+"\"><literal>smfiDesc</literal></link>::xxfi_flags."
+msgstr "milterは<link linkend=\"SMFIP-NR-UNKN:CAPS\"><literal>SMFIP_NR_UNKN</literal></link>フラグを<link linkend=\"smfiDesc\"><literal>smfiDesc</literal></link>::xxfi_flagsに設定していなければいけません。"
 
 #: xml/mfapi.xml:1101(para) xml/milter-client-context.xml:2747(para)
 msgid ""
@@ -4493,15 +4483,12 @@ msgstr ""
 msgid "This callback is called on SMTP's \"DATA\" command."
 msgstr "このコールバックはSMTPの\"DATA\"コマンドのときに呼ばれます。"
 
-#: xml/mfapi.xml:1165(para)
+#: xml/mfapi.xml:1166(para)
 msgid ""
-"Doesn't send a reply back to MTA. The milter must set <link linkend=\"SMFIP-"
-"NR-DATA:CAPS\"><literal>SMFIP_NR_DATA</literal></link> flag to <link linkend="
-"\"smfiDesc\"><literal>smfiDesc</literal></link>::xxfi_flags."
-msgstr ""
-"MTAに返答しません。milterは<link linkend=\"smfiDesc\"><literal>smfiDesc</"
-"literal></link>::xxfi_flagsに<link linkend=\"SMFIP-NR-DATA:CAPS"
-"\"><literal>SMFIP_NR_DATA</literal></link>フラグを設定しなければいけません。"
+"The milter must set <link linkend=\"SMFIP-NR-DATA:CAPS"
+"\"><literal>SMFIP_NR_DATA</literal></link> flag to <link linkend=\"smfiDesc"
+"\"><literal>smfiDesc</literal></link>::xxfi_flags."
+msgstr "milterは<link linkend=\"SMFIP-NR-DATA:CAPS\"><literal>SMFIP_NR_DATA</literal></link>フラグを<link linkend=\"smfiDesc\"><literal>smfiDesc</literal></link>::xxfi_flagsに設定していなければいけません。"
 
 #: xml/mfapi.xml:1173(para) xml/milter-client-context.xml:1701(para)
 msgid ""
@@ -9516,7 +9503,11 @@ msgid ""
 "The milter must set <link linkend=\"MILTER-STEP-NO-REPLY-BODY:CAPS"
 "\"><literal>MILTER_STEP_NO_REPLY_BODY</literal></link> in <link linkend="
 "\"MilerClientContext-negotiate\"><type>\"negotiate\"</type></link> handler."
-msgstr "milterは<link linkend=\"MilerClientContext-negotiate\"><type>\"negotiate\"</type></link>ハンドラの中で<link linkend=\"MILTER-STEP-NO-REPLY-BODY:CAPS\"><literal>MILTER_STEP_NO_REPLY_BODY</literal></link>を設定しなければいけません。"
+msgstr ""
+"milterは<link linkend=\"MilerClientContext-negotiate\"><type>\"negotiate\"</"
+"type></link>ハンドラの中で<link linkend=\"MILTER-STEP-NO-REPLY-BODY:CAPS"
+"\"><literal>MILTER_STEP_NO_REPLY_BODY</literal></link>を設定しなければいけま"
+"せん。"
 
 #: xml/milter-client-context.xml:1429(para)
 msgid ""
@@ -9599,7 +9590,11 @@ msgid ""
 "The milter must set <link linkend=\"MILTER-STEP-NO-REPLY-CONNECT:CAPS"
 "\"><literal>MILTER_STEP_NO_REPLY_CONNECT</literal></link> in <link linkend="
 "\"MilerClientContext-negotiate\"><type>\"negotiate\"</type></link> handler."
-msgstr "milterは<link linkend=\"MilerClientContext-negotiate\"><type>\"negotiate\"</type></link>ハンドラの中で<link linkend=\"MILTER-STEP-NO-REPLY-CONNECT:CAPS\"><literal>MILTER_STEP_NO_REPLY_CONNECT</literal></link>を設定しなければいけません。"
+msgstr ""
+"milterは<link linkend=\"MilerClientContext-negotiate\"><type>\"negotiate\"</"
+"type></link>ハンドラの中で<link linkend=\"MILTER-STEP-NO-REPLY-CONNECT:CAPS"
+"\"><literal>MILTER_STEP_NO_REPLY_CONNECT</literal></link>を設定しなければいけ"
+"ません。"
 
 #: xml/milter-client-context.xml:1554(para)
 msgid ""
@@ -9679,7 +9674,11 @@ msgid ""
 "The milter must set <link linkend=\"MILTER-STEP-NO-REPLY-DATA:CAPS"
 "\"><literal>MILTER_STEP_NO_REPLY_DATA</literal></link> in <link linkend="
 "\"MilerClientContext-negotiate\"><type>\"negotiate\"</type></link> handler."
-msgstr "milterは<link linkend=\"MilerClientContext-negotiate\"><type>\"negotiate\"</type></link>ハンドラの中で<link linkend=\"MILTER-STEP-NO-REPLY-DATA:CAPS\"><literal>MILTER_STEP_NO_REPLY_DATA</literal></link>を設定しなければいけません。"
+msgstr ""
+"milterは<link linkend=\"MilerClientContext-negotiate\"><type>\"negotiate\"</"
+"type></link>ハンドラの中で<link linkend=\"MILTER-STEP-NO-REPLY-DATA:CAPS"
+"\"><literal>MILTER_STEP_NO_REPLY_DATA</literal></link>を設定しなければいけま"
+"せん。"
 
 #: xml/milter-client-context.xml:1688(para)
 msgid ""
@@ -9763,7 +9762,11 @@ msgid ""
 "\"><literal>MILTER_STEP_NO_REPLY_END_OF_HEADER</literal></link> in <link "
 "linkend=\"MilerClientContext-negotiate\"><type>\"negotiate\"</type></link> "
 "handler."
-msgstr "milterは<link linkend=\"MilerClientContext-negotiate\"><type>\"negotiate\"</type></link>ハンドラの中で<link linkend=\"MILTER-STEP-NO-REPLY-END-OF-HEADER:CAPS\"><literal>MILTER_STEP_NO_REPLY_END_OF_HEADER</literal></link>を設定しなければいけません。"
+msgstr ""
+"milterは<link linkend=\"MilerClientContext-negotiate\"><type>\"negotiate\"</"
+"type></link>ハンドラの中で<link linkend=\"MILTER-STEP-NO-REPLY-END-OF-HEADER:"
+"CAPS\"><literal>MILTER_STEP_NO_REPLY_END_OF_HEADER</literal></link>を設定しな"
+"ければいけません。"
 
 #: xml/milter-client-context.xml:1836(para)
 msgid ""
@@ -9883,18 +9886,12 @@ msgid ""
 msgstr ""
 
 #: xml/milter-client-context.xml:2075(para)
-#, fuzzy
 msgid ""
 "If you returns this status, you need to emit <link linkend="
 "\"MilterClientContext-envelope-from-response\"><type>\"envelope-from-response"
 "\"</type></link> signal by yourself with one of the above <link linkend="
 "\"MilterStatus\"><literal>MilterStatus</literal></link>es."
 msgstr ""
-"このステータスを返すのは、<link linkend=\"MilterClientContext"
-"\"><literal>MilterClientContext</literal></link>::end-of-message-responseシグ"
-"ナルを自分で発行するということです。そのときは、上記のどれかの<link linkend="
-"\"MilterStatus\"><literal>MilterStatus</literal></link>を一緒に渡してくださ"
-"い。"
 
 #: xml/milter-client-context.xml:2100(simpara)
 msgid "the envelope from address in SMTP's \"MAIL FROM\" command."
@@ -10021,13 +10018,17 @@ msgstr ""
 msgid ""
 "With <link linkend=\"MILTER-STEP-HEADER-VALUE-WITH-LEADING-SPACE:CAPS"
 "\"><literal>MILTER_STEP_HEADER_VALUE_WITH_LEADING_SPACE</literal></link>:"
-msgstr "<link linkend=\"MILTER-STEP-HEADER-VALUE-WITH-LEADING-SPACE:CAPS\"><literal>MILTER_STEP_HEADER_VALUE_WITH_LEADING_SPACE</literal></link>あり:"
+msgstr ""
+"<link linkend=\"MILTER-STEP-HEADER-VALUE-WITH-LEADING-SPACE:CAPS"
+"\"><literal>MILTER_STEP_HEADER_VALUE_WITH_LEADING_SPACE</literal></link>あり:"
 
 #: xml/milter-client-context.xml:2297(para)
 msgid ""
 "Without <link linkend=\"MILTER-STEP-HEADER-VALUE-WITH-LEADING-SPACE:CAPS"
 "\"><literal>MILTER_STEP_HEADER_VALUE_WITH_LEADING_SPACE</literal></link>:"
-msgstr "<link linkend=\"MILTER-STEP-HEADER-VALUE-WITH-LEADING-SPACE:CAPS\"><literal>MILTER_STEP_HEADER_VALUE_WITH_LEADING_SPACE</literal></link>なし:"
+msgstr ""
+"<link linkend=\"MILTER-STEP-HEADER-VALUE-WITH-LEADING-SPACE:CAPS"
+"\"><literal>MILTER_STEP_HEADER_VALUE_WITH_LEADING_SPACE</literal></link>なし:"
 
 #: xml/milter-client-context.xml:2359(para)
 msgid ""
@@ -10165,7 +10166,10 @@ msgid ""
 "Continues processing the current session with actions, steps and macros "
 "requests that are specified by <parameter>option</parameter> and "
 "<parameter>macros_requests</parameter>."
-msgstr "<parameter>option</parameter>と<parameter>macros_requests</parameter>で指定されたアクション、ステップ、要求マクロリストを使って現在のセッションの処理を続けます"
+msgstr ""
+"<parameter>option</parameter>と<parameter>macros_requests</parameter>で指定さ"
+"れたアクション、ステップ、要求マクロリストを使って現在のセッションの処理を続"
+"けます"
 
 #: xml/milter-client-context.xml:2598(para)
 msgid ""
@@ -10275,7 +10279,9 @@ msgstr ""
 #: xml/milter-client-context.xml:2690(para)
 msgid ""
 "This signal is emitted on unknown or unimplemented SMTP command is sent."
-msgstr "このシグナルは未知のSMTPコマンドまたは未実装のSMTPコマンドが送られてきた場合に発行されます。"
+msgstr ""
+"このシグナルは未知のSMTPコマンドまたは未実装のSMTPコマンドが送られてきた場合"
+"に発行されます。"
 
 #: xml/milter-client-context.xml:2734(para)
 msgid ""
@@ -19619,7 +19625,10 @@ msgid ""
 "MilterProtocolAgent implements <link linkend=\"MilterErrorEmittable"
 "\">MilterErrorEmittable</link> and <link linkend=\"MilterFinishedEmittable"
 "\">MilterFinishedEmittable</link>."
-msgstr "MilterProtocolAgentは<link linkend=\"MilterErrorEmittable\">MilterErrorEmittable</link>と<link linkend=\"MilterFinishedEmittable\">MilterFinishedEmittable</link>を実装しています。"
+msgstr ""
+"MilterProtocolAgentは<link linkend=\"MilterErrorEmittable"
+"\">MilterErrorEmittable</link>と<link linkend=\"MilterFinishedEmittable"
+"\">MilterFinishedEmittable</link>を実装しています。"
 
 #: xml/milter-protocol-agent.xml:90(programlisting)
 #, no-wrap
@@ -19978,7 +19987,10 @@ msgid ""
 "MilterReader implements <link linkend=\"MilterErrorEmittable"
 "\">MilterErrorEmittable</link> and <link linkend=\"MilterFinishedEmittable"
 "\">MilterFinishedEmittable</link>."
-msgstr "MilterReaderは<link linkend=\"MilterErrorEmittable\">MilterErrorEmittable</link>と<link linkend=\"MilterFinishedEmittable\">MilterFinishedEmittable</link>を実装しています。"
+msgstr ""
+"MilterReaderは<link linkend=\"MilterErrorEmittable\">MilterErrorEmittable</"
+"link>と<link linkend=\"MilterFinishedEmittable\">MilterFinishedEmittable</"
+"link>を実装しています。"
 
 #: xml/milter-reader.xml:67(programlisting)
 #, no-wrap
@@ -20686,7 +20698,9 @@ msgstr ""
 msgid ""
 "MilterReplySignals is implemented by <link linkend=\"MilterServerContext"
 "\">MilterServerContext</link>."
-msgstr "MilterReplySignalsは<link linkend=\"MilterServerContext\">MilterServerContext</link>が実装しています。"
+msgstr ""
+"MilterReplySignalsは<link linkend=\"MilterServerContext"
+"\">MilterServerContext</link>が実装しています。"
 
 #: xml/milter-reply-signals.xml:60(programlisting)
 #, no-wrap
@@ -23256,3 +23270,73 @@ msgstr ""
 #: xml/milter-writer.xml:0(None)
 msgid "translator-credits"
 msgstr ""
+
+#~ msgid ""
+#~ "Doesn't send a reply back to MTA. The milter must set <link linkend="
+#~ "\"SMFIP-NR-MAIL:CAPS\"><literal>SMFIP_NR_MAIL</literal></link> flag to "
+#~ "<link linkend=\"smfiDesc\"><literal>smfiDesc</literal></link>::xxfi_flags."
+#~ msgstr ""
+#~ "MTAに返答しません。milterは<link linkend=\"smfiDesc\"><literal>smfiDesc</"
+#~ "literal></link>::xxfi_flagsに<link linkend=\"SMFIP-NR-MAIL:CAPS"
+#~ "\"><literal>SMFIP_NR_MAIL</literal></link>フラグを設定しなければいけませ"
+#~ "ん。"
+
+#~ msgid ""
+#~ "Doesn't send a reply back to MTA. The milter must set <link linkend="
+#~ "\"SMFIP-NR-RCPT:CAPS\"><literal>SMFIP_NR_RCPT</literal></link> flag to "
+#~ "<link linkend=\"smfiDesc\"><literal>smfiDesc</literal></link>::xxfi_flags."
+#~ msgstr ""
+#~ "MTAに返答しません。milterは<link linkend=\"smfiDesc\"><literal>smfiDesc</"
+#~ "literal></link>::xxfi_flagsに<link linkend=\"SMFIP-NR-RCPT:CAPS"
+#~ "\"><literal>SMFIP_NR_RCPT</literal></link>フラグを設定しなければいけませ"
+#~ "ん。"
+
+#~ msgid ""
+#~ "Doesn't send a reply back to MTA. The milter must set <link linkend="
+#~ "\"SMFIP-NR-HDR:CAPS\"><literal>SMFIP_NR_HDR</literal></link> flag to "
+#~ "<link linkend=\"smfiDesc\"><literal>smfiDesc</literal></link>::xxfi_flags."
+#~ msgstr ""
+#~ "MTAに返答しません。milterは<link linkend=\"smfiDesc\"><literal>smfiDesc</"
+#~ "literal></link>::xxfi_flagsに<link linkend=\"SMFIP-NR-HDR:CAPS"
+#~ "\"><literal>SMFIP_NR_HDR</literal></link>フラグを設定しなければいけませ"
+#~ "ん。"
+
+#~ msgid ""
+#~ "Doesn't send a reply back to MTA. The milter must set <link linkend="
+#~ "\"SMFIP-NR-EOH:CAPS\"><literal>SMFIP_NR_EOH</literal></link> flag to "
+#~ "<link linkend=\"smfiDesc\"><literal>smfiDesc</literal></link>::xxfi_flags."
+#~ msgstr ""
+#~ "MTAに返答しません。milterは<link linkend=\"smfiDesc\"><literal>smfiDesc</"
+#~ "literal></link>::xxfi_flagsに<link linkend=\"SMFIP-NR-EOH:CAPS"
+#~ "\"><literal>SMFIP_NR_EOH</literal></link>フラグを設定しなければいけませ"
+#~ "ん。"
+
+#~ msgid ""
+#~ "Doesn't send a reply back to MTA. The milter must set <link linkend="
+#~ "\"SMFIP-NR-BODY:CAPS\"><literal>SMFIP_NR_BODY</literal></link> flag to "
+#~ "<link linkend=\"smfiDesc\"><literal>smfiDesc</literal></link>::xxfi_flags."
+#~ msgstr ""
+#~ "MTAに返答しません。milterは<link linkend=\"smfiDesc\"><literal>smfiDesc</"
+#~ "literal></link>::xxfi_flagsに<link linkend=\"SMFIP-NR-BODY:CAPS"
+#~ "\"><literal>SMFIP_NR_BODY</literal></link>フラグを設定しなければいけませ"
+#~ "ん。"
+
+#~ msgid ""
+#~ "Doesn't send a reply back to MTA. The milter must set <link linkend="
+#~ "\"SMFIP-NR-UNKN:CAPS\"><literal>SMFIP_NR_UNKN</literal></link> flag to "
+#~ "<link linkend=\"smfiDesc\"><literal>smfiDesc</literal></link>::xxfi_flags."
+#~ msgstr ""
+#~ "MTAに返答しません。milterは<link linkend=\"smfiDesc\"><literal>smfiDesc</"
+#~ "literal></link>::xxfi_flagsに<link linkend=\"SMFIP-NR-UNKN:CAPS"
+#~ "\"><literal>SMFIP_NR_UNKN</literal></link>フラグを設定しなければいけませ"
+#~ "ん。"
+
+#~ msgid ""
+#~ "Doesn't send a reply back to MTA. The milter must set <link linkend="
+#~ "\"SMFIP-NR-DATA:CAPS\"><literal>SMFIP_NR_DATA</literal></link> flag to "
+#~ "<link linkend=\"smfiDesc\"><literal>smfiDesc</literal></link>::xxfi_flags."
+#~ msgstr ""
+#~ "MTAに返答しません。milterは<link linkend=\"smfiDesc\"><literal>smfiDesc</"
+#~ "literal></link>::xxfi_flagsに<link linkend=\"SMFIP-NR-DATA:CAPS"
+#~ "\"><literal>SMFIP_NR_DATA</literal></link>フラグを設定しなければいけませ"
+#~ "ん。"
