@@ -85,6 +85,8 @@ struct _MilterReplySignalsClass
     void (*connection_failure)  (MilterReplySignals *reply);
     void (*shutdown)            (MilterReplySignals *reply);
     void (*skip)                (MilterReplySignals *reply);
+
+    void (*abort)               (MilterReplySignals *reply);
 };
 
 GType    milter_reply_signals_get_type          (void) G_GNUC_CONST;

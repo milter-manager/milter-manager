@@ -46,6 +46,9 @@ enum
     CONNECTION_FAILURE,
     SHUTDOWN,
     SKIP,
+
+    ABORT,
+
     LAST_SIGNAL
 };
 
@@ -243,6 +246,17 @@ base_init (gpointer klass)
                      NULL, NULL,
                      g_cclosure_marshal_VOID__VOID,
                      G_TYPE_NONE, 0);
+
+
+    signals[ABORT] =
+        g_signal_new("abort",
+                     G_TYPE_FROM_CLASS(klass),
+                     G_SIGNAL_RUN_LAST,
+                     G_STRUCT_OFFSET(MilterReplySignalsClass, abort),
+                     NULL, NULL,
+                     g_cclosure_marshal_VOID__VOID,
+                     G_TYPE_NONE, 0);
+
 
     initialized = TRUE;
 }

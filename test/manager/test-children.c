@@ -72,7 +72,7 @@ static GError *actual_error;
 static GError *expected_error;
 static GList *actual_names;
 static GList *expected_names;
-static gchar *error_message;
+static GString *error_message;
 static GList *expected_macros_list;
 
 static guint n_negotiate_reply_emitted;
@@ -381,7 +381,7 @@ setup (void)
 
     expected_macros_list = NULL;
 
-    error_message = NULL;
+    error_message = g_string_new(NULL);
 
     clear_n_emitted();
 
@@ -446,7 +446,7 @@ teardown (void)
         g_error_free(expected_error);
 
     if (error_message)
-        g_free(error_message);
+        g_string_free(error_message, TRUE);
 
     if (actual_names)
         gcut_list_string_free(actual_names);
@@ -1562,7 +1562,7 @@ cb_log (MilterLogger *logger, const gchar *domain,
         return;
 
     if (g_str_equal(domain, "milter-manager"))
-        error_message = g_strdup(message);
+        g_string_append_printf(error_message, "%s\n", message);
 }
 
 void
@@ -1583,10 +1583,15 @@ test_no_negotiation (void)
 
     cut_assert_true(milter_manager_children_negotiate(children, option, NULL));
     g_main_context_iteration(NULL, FALSE);
-    cut_assert_equal_string("[children][remove][queue] "
-                            "There is no negotiation response from milters: "
-                            "milter@10027",
-                            error_message);
+    cut_assert_equal_string("[children][error][connection] "
+                            "Failed to connect to inet:10026@localhost: "
+                            "Connection refused: milter@10026\n"
+                            "[children][error][connection] "
+                            "Failed to connect to inet:10027@localhost: "
+                            "Connection refused: milter@10027\n"
+                            "[children][error][negotiate][no-response] "
+                            "milter@10027\n",
+                            error_message->str);
 }
 
 static void
@@ -1643,8 +1648,8 @@ test_end_of_message_timeout (void)
     wait_reply(7, n_continue_emitted);
     wait_reply(1, n_end_of_message_timeout_emitted);
 
-    cut_assert_equal_string("[children][timeout][end-of-message] milter@10026",
-                            error_message);
+    cut_assert_equal_string("[children][timeout][end-of-message] milter@10026\n",
+                            error_message->str);
 }
 
 void
@@ -1688,8 +1693,8 @@ test_writing_timeout (void)
     wait_reply(1, n_writing_timeout_emitted);
     wait_reply(1, n_continue_emitted);
 
-    cut_assert_equal_string("[children][timeout][writing] milter@10027",
-                            error_message);
+    cut_assert_equal_string("[children][timeout][writing] milter@10027\n",
+                            error_message->str);
 }
 
 void
@@ -1726,8 +1731,8 @@ test_reading_timeout (void)
     wait_reply(1, n_continue_emitted);
     wait_reply(1, n_reading_timeout_emitted);
 
-    cut_assert_equal_string("[children][timeout][reading] milter@10027",
-                            error_message);
+    cut_assert_equal_string("[children][timeout][reading] milter@10027\n",
+                            error_message->str);
 }
 
 /*

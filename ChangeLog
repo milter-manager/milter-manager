@@ -1,5 +1,17 @@
 2009-02-17  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/core/milter-reply-signals.[ch]: add abort signal.
+	* milter/manager/milter-manager-children.c,
+	milter/manager/milter-manager-children.c: use abort signal when no
+	child milters respond to negotiation because the case MTA doesn't
+	want to get any response.
+
+	* test/manager/test-leader.c,
+	test/fixtures/leader/negotiate-failure.txt: add a test for the
+	above case.
+
+	* test/manager/test-children.c: improve error message handling.
+
 	* milter/manager/milter-manager-children.c
 	(child_establish_connection): fix a bug that failing connection
 	establishment causes no more processing.

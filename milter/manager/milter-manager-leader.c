@@ -388,14 +388,14 @@ reply (MilterManagerLeader *leader, MilterStatus status)
 }
 
 static void
-cb_continue (MilterServerContext *context, gpointer user_data)
+cb_continue (MilterReplySignals *_reply, gpointer user_data)
 {
     MilterManagerLeader *leader = user_data;
     reply(leader, MILTER_STATUS_CONTINUE);
 }
 
 static void
-cb_reply_code (MilterServerContext *context,
+cb_reply_code (MilterReplySignals *_reply,
                guint code,
                const gchar *extended_code,
                const gchar *message,
@@ -425,35 +425,35 @@ cb_reply_code (MilterServerContext *context,
 }
 
 static void
-cb_temporary_failure (MilterServerContext *context, gpointer user_data)
+cb_temporary_failure (MilterReplySignals *_reply, gpointer user_data)
 {
     MilterManagerLeader *leader = user_data;
     reply(leader, MILTER_STATUS_TEMPORARY_FAILURE);
 }
 
 static void
-cb_reject (MilterServerContext *context, gpointer user_data)
+cb_reject (MilterReplySignals *_reply, gpointer user_data)
 {
     MilterManagerLeader *leader = user_data;
     reply(leader, MILTER_STATUS_REJECT);
 }
 
 static void
-cb_accept (MilterServerContext *context, gpointer user_data)
+cb_accept (MilterReplySignals *_reply, gpointer user_data)
 {
     MilterManagerLeader *leader = user_data;
     reply(leader, MILTER_STATUS_ACCEPT);
 }
 
 static void
-cb_discard (MilterServerContext *context, gpointer user_data)
+cb_discard (MilterReplySignals *_reply, gpointer user_data)
 {
     MilterManagerLeader *leader = user_data;
     reply(leader, MILTER_STATUS_DISCARD);
 }
 
 static void
-cb_add_header (MilterServerContext *context,
+cb_add_header (MilterReplySignals *_reply,
                const gchar *name, const gchar *value,
                gpointer user_data)
 {
@@ -471,7 +471,7 @@ cb_add_header (MilterServerContext *context,
 }
 
 static void
-cb_insert_header (MilterServerContext *context,
+cb_insert_header (MilterReplySignals *_reply,
                   guint32 index, const gchar *name, const gchar *value,
                   gpointer user_data)
 {
@@ -490,7 +490,7 @@ cb_insert_header (MilterServerContext *context,
 }
 
 static void
-cb_change_header (MilterServerContext *context,
+cb_change_header (MilterReplySignals *_reply,
                   const gchar *name, guint32 index, const gchar *value,
                   gpointer user_data)
 {
@@ -503,7 +503,7 @@ cb_change_header (MilterServerContext *context,
 }
 
 static void
-cb_delete_header (MilterServerContext *context,
+cb_delete_header (MilterReplySignals *_reply,
                   const gchar *name, guint32 index,
                   gpointer user_data)
 {
@@ -515,7 +515,7 @@ cb_delete_header (MilterServerContext *context,
 }
 
 static void
-cb_change_from (MilterServerContext *context,
+cb_change_from (MilterReplySignals *_reply,
                 const gchar *from, const gchar *parameters,
                 gpointer user_data)
 {
@@ -527,7 +527,7 @@ cb_change_from (MilterServerContext *context,
 }
 
 static void
-cb_add_recipient (MilterServerContext *context,
+cb_add_recipient (MilterReplySignals *_reply,
                   const gchar *recipient, const gchar *parameters,
                   gpointer user_data)
 {
@@ -540,7 +540,7 @@ cb_add_recipient (MilterServerContext *context,
 }
 
 static void
-cb_delete_recipient (MilterServerContext *context,
+cb_delete_recipient (MilterReplySignals *_reply,
                      const gchar *recipient,
                      gpointer user_data)
 {
@@ -552,7 +552,7 @@ cb_delete_recipient (MilterServerContext *context,
 }
 
 static void
-cb_replace_body (MilterServerContext *context,
+cb_replace_body (MilterReplySignals *_reply,
                  const gchar *chunk, gsize chunk_size,
                  gpointer user_data)
 {
@@ -564,7 +564,7 @@ cb_replace_body (MilterServerContext *context,
 }
 
 static void
-cb_progress (MilterServerContext *context, gpointer user_data)
+cb_progress (MilterReplySignals *_reply, gpointer user_data)
 {
     MilterManagerLeader *leader = user_data;
     MilterManagerLeaderPrivate *priv;
@@ -574,7 +574,7 @@ cb_progress (MilterServerContext *context, gpointer user_data)
 }
 
 static void
-cb_quarantine (MilterServerContext *context,
+cb_quarantine (MilterReplySignals *_reply,
                const gchar *reason,
                gpointer user_data)
 {
@@ -586,22 +586,39 @@ cb_quarantine (MilterServerContext *context,
 }
 
 static void
-cb_connection_failure (MilterServerContext *context, gpointer user_data)
+cb_connection_failure (MilterReplySignals *_reply, gpointer user_data)
 {
     milter_debug("[leader][unsupported][connection-failure]");
 }
 
 static void
-cb_shutdown (MilterServerContext *context, gpointer user_data)
+cb_shutdown (MilterReplySignals *_reply, gpointer user_data)
 {
     milter_debug("[leader][unsupported][shutdown]");
 }
 
 static void
-cb_skip (MilterServerContext *context, gpointer user_data)
+cb_skip (MilterReplySignals *_reply, gpointer user_data)
 {
     MilterManagerLeader *leader = user_data;
     reply(leader, MILTER_STATUS_SKIP);
+}
+
+static void
+cb_abort (MilterReplySignals *_reply, gpointer user_data)
+{
+    MilterManagerLeader *leader = user_data;
+    MilterManagerLeaderPrivate *priv;
+    gchar *state_name;
+
+    priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
+
+    state_name =
+        milter_utils_get_enum_nick_name(MILTER_TYPE_MANAGER_LEADER_STATE,
+                                        priv->state);
+    milter_statistics("[abort][%s]", state_name);
+    milter_agent_shutdown(MILTER_AGENT(priv->client_context));
+    milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(leader));
 }
 
 static void
@@ -657,6 +674,7 @@ setup_children_signals (MilterManagerLeader *leader,
     CONNECT(connection_failure);
     CONNECT(shutdown);
     CONNECT(skip);
+    CONNECT(abort);
 
     CONNECT(error);
     CONNECT(finished);

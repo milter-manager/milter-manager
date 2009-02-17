@@ -1163,6 +1163,8 @@ data_scenario_basic (void)
 {
     cut_add_data("negotiate",
                  g_strdup("negotiate.txt"), g_free,
+                 "negotiate - failure",
+                 g_strdup("negotiate-failure.txt"), g_free,
                  "connect",
                  g_strdup("connect.txt"), g_free,
                  "connect-with-macro",

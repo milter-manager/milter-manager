@@ -1817,19 +1817,11 @@ remove_queue_in_negotiate (MilterManagerChildren *children,
                                   priv->option, priv->macros_requests);
         } else {
             MilterServerContext *context;
-            GError *error = NULL;
 
             context = MILTER_SERVER_CONTEXT(child);
-            g_set_error(&error,
-                        MILTER_MANAGER_CHILDREN_ERROR,
-                        MILTER_MANAGER_CHILDREN_ERROR_NO_NEGOTIATION_RESPONSE,
-                        "There is no negotiation response from milters");
-            milter_error("[children][remove][queue] %s: %s",
-                         error->message,
+            milter_error("[children][error][negotiate][no-response] %s",
                          milter_server_context_get_name(context));
-            milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
-                                        error);
-            g_error_free(error);
+            g_signal_emit_by_name(children, "abort");
         }
     }
 }
