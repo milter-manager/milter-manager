@@ -1,5 +1,8 @@
 2009-02-17  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/reference/ja.po, libmilter/mfapi.h,
+	milter/client/milter-client-context.c: improve document.
+
 	* configure.ac: 0.8.1 -> 0.9.0.
 
 	* milter/core/milter-reply-signals.[ch]: add abort signal.

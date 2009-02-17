@@ -355,9 +355,10 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    #MilterFinishedEmittable::finished will be emitted.
      *
      * : %MILTER_STATUS_NO_REPLY
-     *    Doesn't send a reply back to MTA. The milter
-     *    must set %MILTER_STEP_NO_REPLY_CONNECT in
-     *    #MilerClientContext::negotiate handler.
+     *    Doesn't send a reply back to MTA.
+     *
+     *    The milter must set %MILTER_STEP_NO_REPLY_CONNECT
+     *    in #MilerClientContext::negotiate handler.
      *
      * : %MILTER_STATUS_PROGRESS
      *    It means that the processing in callback is in
@@ -450,9 +451,9 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    #MilterFinishedEmittable::finished will be emitted.
      *
      * : %MILTER_STATUS_NO_REPLY
-     *    Doesn't send a reply back to MTA. The milter
-     *    must set %MILTER_STEP_NO_REPLY_HELO in
+     *    Doesn't send a reply back to MTA.
      *
+     *    The milter must set %MILTER_STEP_NO_REPLY_HELO in
      *    #MilerClientContext::negotiate handler.
      *
      * : %MILTER_STATUS_PROGRESS
@@ -527,8 +528,8 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    Continues processing the current message.
      *
      * : %MILTER_STATUS_REJECT
-     *    Rejects the current envelope from address. A new
-     *    envelope from may be specified.
+     *    Rejects the current envelope from address and
+     *    message. A new envelope from may be specified.
      *
      *    #MilterClientContext::abort is not emitted.
      *
@@ -544,16 +545,18 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_TEMPORARY_FAILURE
-     *    Rejects the envelope from address and the current
-     *    connection with temporary failure. (i.e. 4xx
+     *    Rejects the current envelope from address and
+     *    message with temporary failure. (i.e. 4xx
      *    status code in SMTP) A new envelope from address
      *    may be specified.
      *
      *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_NO_REPLY
-     *    Doesn't send a reply back to MTA. The milter
-     *    must set %MILTER_STEP_NO_REPLY_ENVELOPE_FROM in
+     *    Doesn't send a reply back to MTA.
+     *
+     *    The milter must set
+     *    %MILTER_STEP_NO_REPLY_ENVELOPE_FROM in
      *    #MilerClientContext::negotiate handler.
      *
      * : %MILTER_STATUS_PROGRESS
@@ -653,9 +656,11 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_NO_REPLY
-     *    Doesn't send a reply back to MTA. The milter
-     *    must set %MILTER_STEP_NO_REPLY_ENVELOPE_RECIPIENT
-     *    in #MilerClientContext::negotiate handler.
+     *    Doesn't send a reply back to MTA.
+     *
+     *    The milter must set
+     *    %MILTER_STEP_NO_REPLY_ENVELOPE_RECIPIENT in
+     *    #MilerClientContext::negotiate handler.
      *
      * : %MILTER_STATUS_PROGRESS
      *    It means that the processing in callback is in
@@ -750,8 +755,9 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_NO_REPLY
-     *    Doesn't send a reply back to MTA. The milter
-     *    must set %MILTER_STEP_NO_REPLY_DATA
+     *    Doesn't send a reply back to MTA.
+     *
+     *    The milter must set %MILTER_STEP_NO_REPLY_DATA
      *    in #MilerClientContext::negotiate handler.
      *
      * : %MILTER_STATUS_PROGRESS
@@ -833,8 +839,9 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_NO_REPLY
-     *    Doesn't send a reply back to MTA. The milter
-     *    must set %MILTER_STEP_NO_REPLY_DATA
+     *    Doesn't send a reply back to MTA.
+     *
+     *    The milter must set %MILTER_STEP_NO_REPLY_DATA
      *    in #MilerClientContext::negotiate handler.
      *
      * : %MILTER_STATUS_PROGRESS
@@ -961,8 +968,9 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_NO_REPLY
-     *    Doesn't send a reply back to MTA. The milter
-     *    must set %MILTER_STEP_NO_REPLY_HEADER
+     *    Doesn't send a reply back to MTA.
+     *
+     *    The milter must set %MILTER_STEP_NO_REPLY_HEADER
      *    in #MilerClientContext::negotiate handler.
      *
      * : %MILTER_STATUS_PROGRESS
@@ -1056,8 +1064,10 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    #MilterClientContext::abort is not emitted.
      *
      * : %MILTER_STATUS_NO_REPLY
-     *    Doesn't send a reply back to MTA. The milter
-     *    must set %MILTER_STEP_NO_REPLY_END_OF_HEADER
+     *    Doesn't send a reply back to MTA.
+     *
+     *    The milter must set
+     *    %MILTER_STEP_NO_REPLY_END_OF_HEADER
      *    in #MilerClientContext::negotiate handler.
      *
      * : %MILTER_STATUS_PROGRESS
@@ -1162,8 +1172,9 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *    is emitted.
      *
      * : %MILTER_STATUS_NO_REPLY
-     *    Doesn't send a reply back to MTA. The milter
-     *    must set %MILTER_STEP_NO_REPLY_BODY
+     *    Doesn't send a reply back to MTA.
+     *
+     *    The milter must set %MILTER_STEP_NO_REPLY_BODY
      *    in #MilerClientContext::negotiate handler.
      *
      * : %MILTER_STATUS_PROGRESS

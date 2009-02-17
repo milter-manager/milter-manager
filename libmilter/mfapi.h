@@ -273,8 +273,9 @@ struct smfiDesc
      *    failure. (i.e. 4xx status code in SMTP)
      *
      * : %SMFIS_NOREPLY
-     *    Doesn't send a reply back to MTA. The milter
-     *    must set %SMFIP_NR_CONN flag to
+     *    Doesn't send a reply back to MTA.
+     *
+     *    The milter must set %SMFIP_NR_CONN flag to
      *    %smfiDesc::xxfi_flags.
      * </rd>
      *
@@ -314,8 +315,9 @@ struct smfiDesc
      *    failure. (i.e. 4xx status code in SMTP)
      *
      * : %SMFIS_NOREPLY
-     *    Doesn't send a reply back to MTA. The milter
-     *    must set %SMFIP_NR_HELO flag to
+     *    Doesn't send a reply back to MTA.
+     *
+     *    The milter must set %SMFIP_NR_HELO flag to
      *    %smfiDesc::xxfi_flags.
      * </rd>
      *
@@ -361,8 +363,9 @@ struct smfiDesc
      *    may be specified.
      *
      * : %SMFIS_NOREPLY
-     *    Doesn't send a reply back to MTA. The milter
-     *    must set %SMFIP_NR_MAIL flag to
+     *    Doesn't send a reply back to MTA.
+     *
+     *    The milter must set %SMFIP_NR_MAIL flag to
      *    %smfiDesc::xxfi_flags.
      * </rd>
      *
@@ -408,8 +411,9 @@ struct smfiDesc
      *    SMTP) Processing the current message is continued.
      *
      * : %SMFIS_NOREPLY
-     *    Doesn't send a reply back to MTA. The milter
-     *    must set %SMFIP_NR_RCPT flag to
+     *    Doesn't send a reply back to MTA.
+     *
+     *    The milter must set %SMFIP_NR_RCPT flag to
      *    %smfiDesc::xxfi_flags.
      * </rd>
      *
@@ -480,8 +484,9 @@ struct smfiDesc
      *    failure. (i.e. 4xx status code in SMTP)
      *
      * : %SMFIS_NOREPLY
-     *    Doesn't send a reply back to MTA. The milter
-     *    must set %SMFIP_NR_HDR flag to
+     *    Doesn't send a reply back to MTA.
+     *
+     *    The milter must set %SMFIP_NR_HDR flag to
      *    %smfiDesc::xxfi_flags.
      * </rd>
      *
@@ -522,8 +527,9 @@ struct smfiDesc
      *    failure. (i.e. 4xx status code in SMTP)
      *
      * : %SMFIS_NOREPLY
-     *    Doesn't send a reply back to MTA. The milter
-     *    must set %SMFIP_NR_EOH flag to
+     *    Doesn't send a reply back to MTA.
+     *
+     *    The milter must set %SMFIP_NR_EOH flag to
      *    %smfiDesc::xxfi_flags.
      * </rd>
      *
@@ -570,8 +576,9 @@ struct smfiDesc
      *    processing. xxfi_eom() is called.
      *
      * : %SMFIS_NOREPLY
-     *    Doesn't send a reply back to MTA. The milter
-     *    must set %SMFIP_NR_BODY flag to
+     *    Doesn't send a reply back to MTA.
+     *
+     *    The milter must set %SMFIP_NR_BODY flag to
      *    %smfiDesc::xxfi_flags.
      * </rd>
      *
@@ -702,8 +709,9 @@ struct smfiDesc
      *    failure. (i.e. 4xx status code in SMTP)
      *
      * : %SMFIS_NOREPLY
-     *    Doesn't send a reply back to MTA. The milter
-     *    must set %SMFIP_NR_UNKN flag to
+     *    Doesn't send a reply back to MTA.
+     *
+     *    The milter must set %SMFIP_NR_UNKN flag to
      *    %smfiDesc::xxfi_flags.
      * </rd>
      *
@@ -745,8 +753,9 @@ struct smfiDesc
      *    failure. (i.e. 4xx status code in SMTP)
      *
      * : %SMFIS_NOREPLY
-     *    Doesn't send a reply back to MTA. The milter
-     *    must set %SMFIP_NR_DATA flag to
+     *    Doesn't send a reply back to MTA.
+     *
+     *    The milter must set %SMFIP_NR_DATA flag to
      *    %smfiDesc::xxfi_flags.
      * </rd>
      *
