@@ -1,3 +1,9 @@
+2009-02-17  Kouhei Sutou  <kou@clear-code.com>
+
+	* milter/manager/milter-manager-children.c
+	(child_establish_connection): fix a bug that failing connection
+	establishment causes no more processing.
+
 2009-02-17  Kouhei Sutou  <kou@cozmixng.org>
 
 	* doc/reference/ja.po: remove fuzzy.
