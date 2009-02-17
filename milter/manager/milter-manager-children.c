@@ -2009,8 +2009,12 @@ child_establish_connection (MilterManagerChild *child,
                                     error);
 
         g_error_free(error);
-        if (!is_retry)
+        if (is_retry) {
+            remove_queue_in_negotiate(children, child);
+            expire_child(children, context);
+        } else {
             prepare_retry_establish_connection(child, option, children, TRUE);
+        }
         return FALSE;
     }
 
@@ -2127,14 +2131,11 @@ milter_manager_children_negotiate (MilterManagerChildren *children,
     MilterManagerChildrenPrivate *priv;
     gboolean success = TRUE;
     gboolean privilege;
-    MilterStatus fallback_status;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     privilege =
         milter_manager_configuration_is_privilege_mode(priv->configuration);
-    fallback_status =
-        milter_manager_configuration_get_fallback_status(priv->configuration);
 
     init_reply_queue(children, MILTER_SERVER_CONTEXT_STATE_NEGOTIATE);
     for (node = priv->milters; node; node = g_list_next(node)) {
