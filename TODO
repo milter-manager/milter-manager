@@ -1,3 +1,4 @@
+* --rrddir? for covenience notation of --platform-optionns=rrddir=...
 * support connection socket group separated by effective group.
 * if all alive child milters don't need to receive the
   command, children do nothing and leader returns response
