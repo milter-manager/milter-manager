@@ -52,6 +52,7 @@ EXTRA_DIST =								\
 	insert-header.txt						\
 	insert-header-with-leading-space.txt				\
 	negotiate.txt							\
+	negotiate-failure.txt						\
 	no-body-flag-on-both-client.txt					\
 	no-body-flag-on-second-client.txt				\
 	no-body-flag.txt						\
