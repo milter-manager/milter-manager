@@ -1,3 +1,7 @@
+2009-02-17  Kouhei Sutou  <kou@cozmixng.org>
+
+	* TODO: add: milter-manager-log-analyzer supports [abort][%s].
+
 2009-02-17  Kouhei Sutou  <kou@clear-code.com>
 
 	* TODO: add:
