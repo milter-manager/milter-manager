@@ -71,7 +71,7 @@ Index: milter/manager/milter-manager-leader.c
       * getifaddrs(3) can be used to determine local network.
     * detected as spam (X-Spam-Flag:, X-Bogosity:)
     * detected as virus (X-Virus-Status:)
-    * unauthorized connection
+    * mailing list? (X-ML-Name)
 * graphs:
   * child milters alive and dead.
     (This can not be drawn by rrdtool since rrdtool db does not handle variable items)
