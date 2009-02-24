@@ -1,3 +1,9 @@
+2009-02-24  Kouhei Sutou  <kou@clear-code.com>
+
+	* tool/milter-manager-log-analyzer
+	(MilterManagerLogAnalyzer::GraphGenerator#output_graph): don't use
+	exponential number in vertical axis.
+
 2009-02-19  Kouhei Sutou  <kou@cozmixng.org>
 
 	* TODO:
