@@ -929,7 +929,7 @@ static const GList *
 sort_const_string_list (const GList *strings)
 {
     return gcut_take_list(g_list_sort(g_list_copy((GList *)strings),
-                                      (GCompareFunction)g_utf8_collate),
+                                      (GCompareFunc)g_utf8_collate),
                           NULL);
 }
 
