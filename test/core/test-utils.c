@@ -405,9 +405,8 @@ data_flags_from_string (void)
 }
 
 void
-test_flags_from_string (gconstpointer _data)
+test_flags_from_string (gconstpointer data)
 {
-    const GCutData *data = _data;
     const gchar *input;
     GType type;
 
@@ -436,9 +435,8 @@ data_enum_from_string (void)
 }
 
 void
-test_enum_from_string (gconstpointer _data)
+test_enum_from_string (gconstpointer data)
 {
-    const GCutData *data = _data;
     const gchar *input;
     GType type;
 
@@ -472,9 +470,8 @@ data_flags_names (void)
 }
 
 void
-test_flags_names (gconstpointer _data)
+test_flags_names (gconstpointer data)
 {
-    const GCutData *data = _data;
     MilterLogLevelFlags input;
     GType type;
 

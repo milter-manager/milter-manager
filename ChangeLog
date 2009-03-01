@@ -1,5 +1,7 @@
 2009-03-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/core/test-utils.c: GCutData is hidden.
+
 	* test/lib/milter-manager-test-utils.c, core/test-headers.c,
 	test/core/test-headers.c: GCutInspectFunc -> GCutInspectFunction.
 
