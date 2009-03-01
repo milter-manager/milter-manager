@@ -243,7 +243,7 @@ test_copy (void)
             milter_headers_get_list(headers),
             milter_headers_get_list(copied_headers),
             milter_header_equal,
-            (GCutInspectFunc)milter_header_inspect,
+            (GCutInspectFunction)milter_header_inspect,
             NULL);
 }
 
@@ -313,7 +313,7 @@ test_add_header (void)
             expected_list,
             milter_headers_get_list(headers),
             milter_header_equal,
-            (GCutInspectFunc)milter_header_inspect,
+            (GCutInspectFunction)milter_header_inspect,
             NULL);
 }
 
@@ -350,7 +350,7 @@ test_insert_header (void)
             expected_list,
             milter_headers_get_list(headers),
             milter_header_equal,
-            (GCutInspectFunc)milter_header_inspect,
+            (GCutInspectFunction)milter_header_inspect,
             NULL);
 }
 
@@ -397,7 +397,7 @@ test_change_header (void)
             expected_list,
             milter_headers_get_list(headers),
             milter_header_equal,
-            (GCutInspectFunc)milter_header_inspect,
+            (GCutInspectFunction)milter_header_inspect,
             NULL);
 }
 
@@ -434,7 +434,7 @@ test_delete_header_with_change_header (void)
             expected_list,
             milter_headers_get_list(headers),
             milter_header_equal,
-            (GCutInspectFunc)milter_header_inspect,
+            (GCutInspectFunction)milter_header_inspect,
             NULL);
 }
 
@@ -471,7 +471,7 @@ test_delete_header (void)
             expected_list,
             milter_headers_get_list(headers),
             milter_header_equal,
-            (GCutInspectFunc)milter_header_inspect,
+            (GCutInspectFunction)milter_header_inspect,
             NULL);
 }
 

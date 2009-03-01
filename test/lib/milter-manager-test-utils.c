@@ -148,7 +148,7 @@ milter_manager_test_defined_macros_inspect (GString *string,
     inspected_defined_macros =
         gcut_hash_table_inspect(_defined_macros,
                                 macro_context_inspect,
-                                (GCutInspectFunc)gcut_hash_table_string_string_inspect,
+                                (GCutInspectFunction)gcut_hash_table_string_string_inspect,
                                 NULL);
     g_string_append(string, inspected_defined_macros);
     g_free(inspected_defined_macros);

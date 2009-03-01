@@ -752,7 +752,7 @@ do_connect (MilterManagerTestScenario *scenario, const gchar *group)
     gcut_assert_equal_list(
         expected_connect_infos, actual_connect_infos,
         milter_manager_test_pair_equal,
-        (GCutInspectFunc)milter_manager_test_pair_inspect,
+        (GCutInspectFunction)milter_manager_test_pair_inspect,
         NULL);
 
     expected_macros = get_pair_list_without_sort(scenario, group, "macros");
@@ -761,7 +761,7 @@ do_connect (MilterManagerTestScenario *scenario, const gchar *group)
         gcut_assert_equal_list(
             expected_macros, actual_macros,
             milter_manager_test_pair_equal,
-            (GCutInspectFunc)milter_manager_test_pair_inspect,
+            (GCutInspectFunction)milter_manager_test_pair_inspect,
             NULL);
     }
 }
@@ -859,7 +859,7 @@ do_header (MilterManagerTestScenario *scenario, const gchar *group)
     gcut_assert_equal_list(
         expected_headers, actual_headers,
         milter_manager_test_pair_equal,
-        (GCutInspectFunc)milter_manager_test_pair_inspect,
+        (GCutInspectFunction)milter_manager_test_pair_inspect,
         NULL);
 }
 
@@ -929,7 +929,7 @@ static const GList *
 sort_const_string_list (const GList *strings)
 {
     return gcut_take_list(g_list_sort(g_list_copy((GList *)strings),
-                                      (GCompareFunc)g_utf8_collate),
+                                      (GCompareFunction)g_utf8_collate),
                           NULL);
 }
 
@@ -964,7 +964,7 @@ do_end_of_message_header (MilterManagerTestScenario *scenario,
     gcut_assert_equal_list(
         expected_headers, actual_header_list,
         (GEqualFunc)milter_header_equal,
-        (GCutInspectFunc)milter_header_inspect,
+        (GCutInspectFunction)milter_header_inspect,
         NULL);
 }
 

@@ -1,3 +1,8 @@
+2009-03-01  Kouhei Sutou  <kou@cozmixng.org>
+
+	* test/lib/milter-manager-test-utils.c, core/test-headers.c,
+	test/core/test-headers.c: GCutInspectFunc -> GCutInspectFunction.
+
 2009-02-24  Kouhei Sutou  <kou@clear-code.com>
 
 	* tool/milter-manager-log-analyzer
