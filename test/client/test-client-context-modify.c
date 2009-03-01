@@ -150,9 +150,8 @@ data_add_header (void)
 }
 
 void
-test_add_header (gconstpointer _data)
+test_add_header (gconstpointer data)
 {
-    const GCutData *data = _data;
     const GError *expected_error;
     gboolean success;
     GError *actual_error = NULL;
@@ -253,9 +252,8 @@ data_insert_header (void)
 }
 
 void
-test_insert_header (gconstpointer _data)
+test_insert_header (gconstpointer data)
 {
-    const GCutData *data = _data;
     const GError *expected_error;
     gboolean success;
     GError *actual_error = NULL;

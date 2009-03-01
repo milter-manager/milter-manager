@@ -261,11 +261,10 @@ data_launch_error (void)
 }
 
 void
-test_launch_error (gconstpointer _data)
+test_launch_error (gconstpointer data)
 {
     GString *output;
     GError *error = NULL;
-    const GCutData *data = _data;
     const gchar *command;
     const gchar *user_name;
     const gchar *expected_error_message;

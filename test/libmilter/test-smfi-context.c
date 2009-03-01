@@ -580,10 +580,8 @@ data_setreply (void)
 }
 
 void
-test_setreply (gconstpointer _data)
+test_setreply (gconstpointer data)
 {
-    const GCutData *data = _data;
-
     reply_return_code = g_strdup(gcut_data_get_string(data, "return-code"));
     reply_extended_code = g_strdup(gcut_data_get_string(data, "extended-code"));
     reply_message = g_strdup(gcut_data_get_string(data, "message"));
