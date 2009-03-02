@@ -44,7 +44,7 @@ module Milter::Manager
     end
 
     def rc_d
-      "#{package_prefix}/rc.d"
+      package_options["rcddir"] || "#{package_prefix}/rc.d"
     end
 
     def package_prefix

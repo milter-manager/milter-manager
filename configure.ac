@@ -274,6 +274,11 @@ if test "$MILTER_MANAGER_PACKAGE_PLATFORM" = ""; then
 fi
 AC_MSG_RESULT($MILTER_MANAGER_PACKAGE_PLATFORM)
 
+AC_ARG_WITH([rcddir],
+             AS_HELP_STRING([--with-rcddir=DIR],
+                            [Synonym for --with-packege-options=rcddir=DIR.
+                             This option is for pkgsrc platform.
+                             (default: none)]))
 AC_MSG_CHECKING(package-options)
 AC_ARG_WITH([package-options],
             AS_HELP_STRING([--with-package-options=OPTIONS],
@@ -281,6 +286,13 @@ AC_ARG_WITH([package-options],
 			    OPTIONS format is VAR1=VAL1,VAR2=VAL2,....
                             (default: none)]),
             [MILTER_MANAGER_PACKAGE_OPTIONS="$withval"])
+if test -n "$with_rcddir"; then
+  if test -n "$MILTER_MANAGER_PACKAGE_OPTIONS"; then
+    MILTER_MANAGER_PACKAGE_OPTIONS="rcddir=$with_rcddir,$MILTER_MANAGER_PACKAGE_OPTIONS"
+  else
+    MILTER_MANAGER_PACKAGE_OPTIONS="rcddir=$with_rcddir"
+  fi
+fi
 AC_MSG_RESULT($MILTER_MANAGER_PACKAGE_OPTIONS)
 
 

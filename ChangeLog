@@ -1,3 +1,12 @@
+2009-03-02  Kouhei Sutou  <kou@cozmixng.org>
+
+	* configure.ac,
+	binding/ruby/lib/milter/manager/pkgsrc-rc-detector.rb: support
+	--with-rcddir option that is synonym for
+	--with-package-options="rcddir=DIR".
+	* TODO: remove: --rrddir? for covenience notation of
+	--platform-optionns=rrddir=...
+
 2009-03-01  Kouhei Sutou  <kou@cozmixng.org>
 
 	* test/*/test-*.c: GCutData is hidden.
