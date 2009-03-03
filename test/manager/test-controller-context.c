@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -21,7 +21,7 @@
 
 #include <glib/gstdio.h>
 
-#include <milter/manager/milter-manager-controller.h>
+#include <milter/manager/milter-manager-controller-context.h>
 #include <milter/manager/milter-manager-control-command-encoder.h>
 #include <milter/manager/milter-manager-control-reply-encoder.h>
 #include <milter/manager/milter-manager-enum-types.h>
@@ -38,7 +38,7 @@ void test_set_configuration_failed (void);
 void test_reload (void);
 
 static MilterManager *manager;
-static MilterManagerController *controller;
+static MilterManagerControllerContext *context;
 
 static GError *expected_error;
 static GError *actual_error;
@@ -66,14 +66,14 @@ setup_input_io (void)
     gcut_string_io_channel_set_pipe_mode(channel, TRUE);
 
     input_reader = milter_reader_io_channel_new(channel);
-    milter_agent_set_reader(MILTER_AGENT(controller), input_reader);
+    milter_agent_set_reader(MILTER_AGENT(context), input_reader);
     g_object_unref(input_reader);
 
     writer = milter_writer_io_channel_new(channel);
 
     g_io_channel_unref(channel);
 
-    milter_agent_start(MILTER_AGENT(controller));
+    milter_agent_start(MILTER_AGENT(context));
 }
 
 static void
@@ -86,7 +86,7 @@ setup_output_io (void)
     gcut_string_io_channel_set_pipe_mode(output_channel, TRUE);
 
     output_writer = milter_writer_io_channel_new(output_channel);
-    milter_agent_set_writer(MILTER_AGENT(controller), output_writer);
+    milter_agent_set_writer(MILTER_AGENT(context), output_writer);
     g_object_unref(output_writer);
 }
 
@@ -106,7 +106,7 @@ setup (void)
     config = milter_manager_configuration_new(NULL);
     manager = milter_manager_new(config);
     g_object_unref(config);
-    controller = milter_manager_controller_new(manager);
+    context = milter_manager_controller_context_new(manager);
 
     setup_io();
 
@@ -138,8 +138,8 @@ teardown (void)
 {
     if (manager)
         g_object_unref(manager);
-    if (controller)
-        g_object_unref(controller);
+    if (context)
+        g_object_unref(context);
 
     if (writer)
         g_object_unref(writer);

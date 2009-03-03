@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -23,18 +23,18 @@
 
 #include <string.h>
 
-#include "milter-manager-controller.h"
+#include "milter-manager-controller-context.h"
 #include "milter-manager-enum-types.h"
 #include "milter-manager-control-command-decoder.h"
 #include "milter-manager-control-reply-encoder.h"
 
-#define MILTER_MANAGER_CONTROLLER_GET_PRIVATE(obj)                   \
-    (G_TYPE_INSTANCE_GET_PRIVATE((obj),                              \
-                                 MILTER_TYPE_MANAGER_CONTROLLER,     \
-                                 MilterManagerControllerPrivate))
+#define MILTER_MANAGER_CONTROLLER_CONTEXT_GET_PRIVATE(obj)              \
+    (G_TYPE_INSTANCE_GET_PRIVATE((obj),                                 \
+                                 MILTER_TYPE_MANAGER_CONTROLLER_CONTEXT, \
+                                 MilterManagerControllerContextPrivate))
 
-typedef struct _MilterManagerControllerPrivate MilterManagerControllerPrivate;
-struct _MilterManagerControllerPrivate
+typedef struct _MilterManagerControllerContextPrivate MilterManagerControllerContextPrivate;
+struct _MilterManagerControllerContextPrivate
 {
     MilterManager *manager;
 };
@@ -45,7 +45,7 @@ enum
     PROP_MANAGER
 };
 
-G_DEFINE_TYPE(MilterManagerController, milter_manager_controller,
+G_DEFINE_TYPE(MilterManagerControllerContext, milter_manager_controller_context,
               MILTER_TYPE_AGENT)
 
 static void dispose        (GObject         *object);
@@ -62,7 +62,7 @@ static MilterDecoder *decoder_new    (MilterAgent *agent);
 static MilterEncoder *encoder_new    (MilterAgent *agent);
 
 static void
-milter_manager_controller_class_init (MilterManagerControllerClass *klass)
+milter_manager_controller_context_class_init (MilterManagerControllerContextClass *klass)
 {
     GObjectClass *gobject_class;
     MilterAgentClass *agent_class;
@@ -80,13 +80,13 @@ milter_manager_controller_class_init (MilterManagerControllerClass *klass)
 
     spec = g_param_spec_object("manager",
                                "Manager",
-                               "The manager of the milter controller",
+                               "The manager of the milter controller context",
                                MILTER_TYPE_MANAGER,
                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_MANAGER, spec);
 
     g_type_class_add_private(gobject_class,
-                             sizeof(MilterManagerControllerPrivate));
+                             sizeof(MilterManagerControllerContextPrivate));
 }
 
 static void
@@ -94,8 +94,8 @@ cb_decoder_set_configuration (MilterManagerControlCommandDecoder *decoder,
                               const gchar *configuration, gsize size,
                               gpointer user_data)
 {
-    MilterManagerController *controller = user_data;
-    MilterManagerControllerPrivate *priv;
+    MilterManagerControllerContext *context = user_data;
+    MilterManagerControllerContextPrivate *priv;
     MilterManagerConfiguration *config;
     GError *error = NULL;
     MilterAgent *agent;
@@ -104,10 +104,10 @@ cb_decoder_set_configuration (MilterManagerControlCommandDecoder *decoder,
     gchar *packet;
     gsize packet_size;
 
-    priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
+    priv = MILTER_MANAGER_CONTROLLER_CONTEXT_GET_PRIVATE(context);
     config = milter_manager_get_configuration(priv->manager);
 
-    agent = MILTER_AGENT(controller);
+    agent = MILTER_AGENT(context);
     _encoder = milter_agent_get_encoder(agent);
     encoder = MILTER_MANAGER_CONTROL_REPLY_ENCODER(_encoder);
     if (milter_manager_configuration_save_custom(config,
@@ -148,8 +148,8 @@ static void
 cb_decoder_get_configuration (MilterManagerControlCommandDecoder *decoder,
                               gpointer user_data)
 {
-    MilterManagerController *controller = user_data;
-    MilterManagerControllerPrivate *priv;
+    MilterManagerControllerContext *context = user_data;
+    MilterManagerControllerContextPrivate *priv;
     MilterManagerConfiguration *config;
     GError *error = NULL;
     MilterAgent *agent;
@@ -159,10 +159,10 @@ cb_decoder_get_configuration (MilterManagerControlCommandDecoder *decoder,
     gsize packet_size;
     gchar *config_xml;
 
-    priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
+    priv = MILTER_MANAGER_CONTROLLER_CONTEXT_GET_PRIVATE(context);
     config = milter_manager_get_configuration(priv->manager);
 
-    agent = MILTER_AGENT(controller);
+    agent = MILTER_AGENT(context);
     _encoder = milter_agent_get_encoder(agent);
     encoder = MILTER_MANAGER_CONTROL_REPLY_ENCODER(_encoder);
     config_xml = milter_manager_configuration_to_xml(config);
@@ -181,8 +181,8 @@ static void
 cb_decoder_reload (MilterManagerControlCommandDecoder *decoder,
                    gpointer user_data)
 {
-    MilterManagerController *controller = user_data;
-    MilterManagerControllerPrivate *priv;
+    MilterManagerControllerContext *context = user_data;
+    MilterManagerControllerContextPrivate *priv;
     MilterManagerConfiguration *config;
     GError *error = NULL;
     MilterAgent *agent;
@@ -191,11 +191,11 @@ cb_decoder_reload (MilterManagerControlCommandDecoder *decoder,
     gchar *packet;
     gsize packet_size;
 
-    priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
+    priv = MILTER_MANAGER_CONTROLLER_CONTEXT_GET_PRIVATE(context);
     config = milter_manager_get_configuration(priv->manager);
     milter_manager_configuration_reload(config);
 
-    agent = MILTER_AGENT(controller);
+    agent = MILTER_AGENT(context);
     _encoder = milter_agent_get_encoder(agent);
     encoder = MILTER_MANAGER_CONTROL_REPLY_ENCODER(_encoder);
     milter_manager_control_reply_encoder_encode_success(encoder,
@@ -209,7 +209,7 @@ cb_decoder_reload (MilterManagerControlCommandDecoder *decoder,
 }
 
 static void
-collect_status (MilterManagerController *controller, GString *status)
+collect_status (MilterManagerControllerContext *context, GString *status)
 {
     g_string_append(status, "FIXME");
 }
@@ -218,8 +218,8 @@ static void
 cb_decoder_get_status (MilterManagerControlCommandDecoder *decoder,
                        gpointer user_data)
 {
-    MilterManagerController *controller = user_data;
-    MilterManagerControllerPrivate *priv;
+    MilterManagerControllerContext *context = user_data;
+    MilterManagerControllerContextPrivate *priv;
     GString *status;
     GError *error = NULL;
     MilterAgent *agent;
@@ -228,11 +228,11 @@ cb_decoder_get_status (MilterManagerControlCommandDecoder *decoder,
     gchar *packet;
     gsize packet_size;
 
-    priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
+    priv = MILTER_MANAGER_CONTROLLER_CONTEXT_GET_PRIVATE(context);
 
     status = g_string_new(NULL);
-    collect_status(controller, status);
-    agent = MILTER_AGENT(controller);
+    collect_status(context, status);
+    agent = MILTER_AGENT(context);
     _encoder = milter_agent_get_encoder(agent);
     encoder = MILTER_MANAGER_CONTROL_REPLY_ENCODER(_encoder);
     milter_manager_control_reply_encoder_encode_status(encoder,
@@ -276,29 +276,29 @@ encoder_new (MilterAgent *agent)
 }
 
 static void
-milter_manager_controller_init (MilterManagerController *controller)
+milter_manager_controller_context_init (MilterManagerControllerContext *context)
 {
-    MilterManagerControllerPrivate *priv;
+    MilterManagerControllerContextPrivate *priv;
 
-    priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
+    priv = MILTER_MANAGER_CONTROLLER_CONTEXT_GET_PRIVATE(context);
     priv->manager = NULL;
 }
 
 static void
 dispose (GObject *object)
 {
-    MilterManagerController *controller;
-    MilterManagerControllerPrivate *priv;
+    MilterManagerControllerContext *context;
+    MilterManagerControllerContextPrivate *priv;
 
-    controller = MILTER_MANAGER_CONTROLLER(object);
-    priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(object);
+    context = MILTER_MANAGER_CONTROLLER_CONTEXT(object);
+    priv = MILTER_MANAGER_CONTROLLER_CONTEXT_GET_PRIVATE(object);
 
     if (priv->manager) {
         g_object_unref(priv->manager);
         priv->manager = NULL;
     }
 
-    G_OBJECT_CLASS(milter_manager_controller_parent_class)->dispose(object);
+    G_OBJECT_CLASS(milter_manager_controller_context_parent_class)->dispose(object);
 }
 
 static void
@@ -307,9 +307,9 @@ set_property (GObject      *object,
               const GValue *value,
               GParamSpec   *pspec)
 {
-    MilterManagerControllerPrivate *priv;
+    MilterManagerControllerContextPrivate *priv;
 
-    priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(object);
+    priv = MILTER_MANAGER_CONTROLLER_CONTEXT_GET_PRIVATE(object);
     switch (prop_id) {
       case PROP_MANAGER:
         if (priv->manager)
@@ -330,9 +330,9 @@ get_property (GObject    *object,
               GValue     *value,
               GParamSpec *pspec)
 {
-    MilterManagerControllerPrivate *priv;
+    MilterManagerControllerContextPrivate *priv;
 
-    priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(object);
+    priv = MILTER_MANAGER_CONTROLLER_CONTEXT_GET_PRIVATE(object);
     switch (prop_id) {
       case PROP_MANAGER:
         g_value_set_object(value, priv->manager);
@@ -343,10 +343,10 @@ get_property (GObject    *object,
     }
 }
 
-MilterManagerController *
-milter_manager_controller_new (MilterManager *manager)
+MilterManagerControllerContext *
+milter_manager_controller_context_new (MilterManager *manager)
 {
-    return g_object_new(MILTER_TYPE_MANAGER_CONTROLLER,
+    return g_object_new(MILTER_TYPE_MANAGER_CONTROLLER_CONTEXT,
                         "manager", manager,
                         NULL);
 }

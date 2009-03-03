@@ -14,7 +14,7 @@ noinst_LTLIBRARIES =				\
 	test-reply-decoder.la			\
 	test-launch-command-encoder.la		\
 	test-launch-command-decoder.la		\
-	test-controller.la			\
+	test-controller-context.la		\
 	test-applicable-condition.la		\
 	test-process-launcher.la
 endif
@@ -53,7 +53,7 @@ test_control_command_encoder_la_SOURCES	= test-control-command-encoder.c
 test_control_reply_encoder_la_SOURCES	= test-control-reply-encoder.c
 test_reply_encoder_la_SOURCES		= test-reply-encoder.c
 test_reply_decoder_la_SOURCES		= test-reply-decoder.c
-test_controller_la_SOURCES		= test-controller.c
+test_controller_context_la_SOURCES	= test-controller-context.c
 test_applicable_condition_la_SOURCES	= test-applicable-condition.c
 test_launch_command_encoder_la_SOURCES	= test-launch-command-encoder.c
 test_launch_command_decoder_la_SOURCES	= test-launch-command-decoder.c

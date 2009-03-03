@@ -243,43 +243,44 @@ cb_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
 }
 
 static gboolean
-cb_free_controller (gpointer data)
+cb_free_controller_context (gpointer data)
 {
-    MilterManagerController *controller = data;
+    MilterManagerControllerContext *context = data;
 
-    g_object_unref(controller);
+    g_object_unref(context);
     return FALSE;
 }
 
 static void
-cb_controller_reader_finished (MilterReader *reader, gpointer data)
+cb_controller_context_reader_finished (MilterReader *reader, gpointer data)
 {
-    MilterManagerController *controller = data;
+    MilterManagerControllerContext *context = data;
 
-    g_idle_add(cb_free_controller, controller);
+    g_idle_add(cb_free_controller_context, context);
 }
 
 static void
 process_controller_connection(MilterManager *manager, GIOChannel *agent_channel)
 {
-    MilterManagerController *controller;
+    MilterManagerControllerContext *context;
     MilterWriter *writer;
     MilterReader *reader;
 
-    controller = milter_manager_controller_new(manager);
+    context = milter_manager_controller_context_new(manager);
 
     writer = milter_writer_io_channel_new(agent_channel);
-    milter_agent_set_writer(MILTER_AGENT(controller), writer);
+    milter_agent_set_writer(MILTER_AGENT(context), writer);
     g_object_unref(writer);
 
     reader = milter_reader_io_channel_new(agent_channel);
-    milter_agent_set_reader(MILTER_AGENT(controller), reader);
+    milter_agent_set_reader(MILTER_AGENT(context), reader);
     g_object_unref(reader);
 
     g_signal_connect(reader, "finished",
-                     G_CALLBACK(cb_controller_reader_finished), controller);
+                     G_CALLBACK(cb_controller_context_reader_finished),
+                     context);
 
-    milter_agent_start(MILTER_AGENT(controller));
+    milter_agent_start(MILTER_AGENT(context));
 }
 
 static gboolean
