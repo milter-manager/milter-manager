@@ -30,6 +30,8 @@
 #include <milter/manager/milter-manager-control-command-encoder.h>
 #include <milter/manager/milter-manager-control-reply-encoder.h>
 #include <milter/manager/milter-manager-controller-context.h>
+#include <milter/manager/milter-manager-controller.h>
+#include <milter/manager/milter-manager-process-launcher.h>
 #include <milter/manager/milter-manager-enum-types.h>
 #include <milter/manager/milter-manager.h>
 

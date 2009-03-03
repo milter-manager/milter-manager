@@ -1,5 +1,9 @@
 2009-03-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/, test/manager/: create milter-manager-controller.[ch]
+	and move controller connection accepting codes from
+	milter-manager-main.c.
+
 	* milter/manager/, test/manager/:
 	milter-manager-controller ->
 	milter-manager-controller-context.

@@ -38,7 +38,6 @@
 #include <glib/gstdio.h>
 
 #include "../manager.h"
-#include "milter-manager-process-launcher.h"
 
 static gboolean initialized = FALSE;
 static MilterManager *the_manager = NULL;
@@ -240,142 +239,6 @@ static void
 cb_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
 {
     g_print("milter-manager error: %s\n", error->message);
-}
-
-static gboolean
-cb_free_controller_context (gpointer data)
-{
-    MilterManagerControllerContext *context = data;
-
-    g_object_unref(context);
-    return FALSE;
-}
-
-static void
-cb_controller_context_reader_finished (MilterReader *reader, gpointer data)
-{
-    MilterManagerControllerContext *context = data;
-
-    g_idle_add(cb_free_controller_context, context);
-}
-
-static void
-process_controller_connection(MilterManager *manager, GIOChannel *agent_channel)
-{
-    MilterManagerControllerContext *context;
-    MilterWriter *writer;
-    MilterReader *reader;
-
-    context = milter_manager_controller_context_new(manager);
-
-    writer = milter_writer_io_channel_new(agent_channel);
-    milter_agent_set_writer(MILTER_AGENT(context), writer);
-    g_object_unref(writer);
-
-    reader = milter_reader_io_channel_new(agent_channel);
-    milter_agent_set_reader(MILTER_AGENT(context), reader);
-    g_object_unref(reader);
-
-    g_signal_connect(reader, "finished",
-                     G_CALLBACK(cb_controller_context_reader_finished),
-                     context);
-
-    milter_agent_start(MILTER_AGENT(context));
-}
-
-static gboolean
-accept_controller_connection (gint controller_fd, MilterManager *manager)
-{
-    gint agent_fd;
-    MilterGenericSocketAddress address;
-    socklen_t address_size;
-    gchar *spec;
-    GIOChannel *agent_channel;
-
-    address_size = sizeof(address);
-    memset(&address, '\0', address_size);
-    agent_fd = accept(controller_fd,
-                      (struct sockaddr *)(&address), &address_size);
-    if (agent_fd == -1) {
-        milter_error("[controller][error][accept] %s", g_strerror(errno));
-        return TRUE;
-    }
-
-    spec = milter_connection_address_to_spec(&(address.address.base));
-    milter_debug("[controller][accept] %d: %s", agent_fd, spec);
-    g_free(spec);
-
-    agent_channel = g_io_channel_unix_new(agent_fd);
-    g_io_channel_set_encoding(agent_channel, NULL, NULL);
-    g_io_channel_set_flags(agent_channel, G_IO_FLAG_NONBLOCK, NULL);
-    g_io_channel_set_close_on_unref(agent_channel, TRUE);
-    process_controller_connection(manager, agent_channel);
-    g_io_channel_unref(agent_channel);
-
-    return TRUE;
-}
-
-static gboolean
-controller_watch_func (GIOChannel *channel, GIOCondition condition,
-                       gpointer data)
-{
-    MilterManager *manager = data;
-    gboolean keep_callback = TRUE;
-
-    if (condition & G_IO_IN ||
-        condition & G_IO_PRI) {
-        guint fd;
-
-        fd = g_io_channel_unix_get_fd(channel);
-        keep_callback = accept_controller_connection(fd, manager);
-    }
-
-    if (condition & G_IO_ERR ||
-        condition & G_IO_HUP ||
-        condition & G_IO_NVAL) {
-        gchar *message;
-
-        message = milter_utils_inspect_io_condition_error(condition);
-        milter_error("[controller][error][watch] %s", message);
-        g_free(message);
-        keep_callback = FALSE;
-    }
-
-    return keep_callback;
-}
-
-
-static guint
-setup_controller_connection (MilterManager *manager)
-{
-    MilterManagerConfiguration *config;
-    const gchar *spec;
-    GIOChannel *channel;
-    gboolean remove_socket;
-    GError *error = NULL;
-    guint watch_id = 0;
-
-    config = milter_manager_get_configuration(manager);
-    spec = milter_manager_configuration_get_controller_connection_spec(config);
-    if (!spec)
-        return 0;
-
-    remove_socket = milter_manager_configuration_is_remove_controller_unix_socket_on_create(config);
-    channel = milter_connection_listen(spec, -1, NULL, NULL,
-                                       remove_socket, &error);
-    if (!channel) {
-        milter_error("[controller][error][listen] <%s>: %s",
-                     spec, error->message);
-        g_error_free(error);
-        return 0;
-    }
-
-    watch_id = g_io_add_watch(channel,
-                              G_IO_IN | G_IO_PRI |
-                              G_IO_ERR | G_IO_HUP | G_IO_NVAL,
-                              controller_watch_func, manager);
-
-    return watch_id;
 }
 
 typedef enum {
@@ -771,8 +634,8 @@ milter_manager_main (void)
 {
     MilterClient *client;
     MilterManager *manager;
+    MilterManagerController *controller;
     MilterManagerConfiguration *config;
-    guint controller_connection_watch_id = 0;
     gboolean daemon;
     gchar *pid_file = NULL;
 
@@ -824,8 +687,9 @@ milter_manager_main (void)
         return TRUE;
     }
 
-    /* FIXME */
-    controller_connection_watch_id = setup_controller_connection(manager);
+    controller = milter_manager_controller_new(manager);
+    if (controller)
+        milter_manager_controller_listen(controller, NULL);
 
     pid_file = g_strdup(milter_manager_configuration_get_pid_file(config));
     if (pid_file) {
@@ -857,6 +721,9 @@ milter_manager_main (void)
     signal(SIGHUP, default_sighup_handler);
     signal(SIGTERM, default_sigterm_handler);
     signal(SIGINT, default_sigint_handler);
+
+    if (controller)
+        g_object_unref(controller);
 
     if (the_manager) {
         g_object_unref(the_manager);
