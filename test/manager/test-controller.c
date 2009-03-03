@@ -32,6 +32,8 @@
 void test_listen_no_spec (void);
 void test_listen_with_remove_on_create (void);
 void test_listen_without_remove_on_create (void);
+void test_listen_with_remove_on_close (void);
+void test_listen_without_remove_on_close (void);
 
 static MilterManager *manager;
 static MilterManagerConfiguration *config;
@@ -139,6 +141,38 @@ test_listen_without_remove_on_create (void)
                                  "failed to bind(): unix:%s: %s",
                                  socket_path, g_strerror(EADDRINUSE));
     gcut_assert_equal_error(expected_error, actual_error);
+}
+
+void
+test_listen_with_remove_on_close (void)
+{
+    milter_manager_configuration_set_remove_controller_unix_socket_on_close(config, TRUE);
+
+    cut_assert_true(milter_manager_controller_listen(controller, &actual_error));
+    gcut_assert_equal_error(NULL, actual_error);
+
+    cut_assert_path_exist(socket_path);
+
+    g_object_unref(controller);
+    controller = NULL;
+
+    cut_assert_path_not_exist(socket_path);
+}
+
+void
+test_listen_without_remove_on_close (void)
+{
+    milter_manager_configuration_set_remove_controller_unix_socket_on_close(config, FALSE);
+
+    cut_assert_true(milter_manager_controller_listen(controller, &actual_error));
+    gcut_assert_equal_error(NULL, actual_error);
+
+    cut_assert_path_exist(socket_path);
+
+    g_object_unref(controller);
+    controller = NULL;
+
+    cut_assert_path_exist(socket_path);
 }
 
 /*

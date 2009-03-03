@@ -1,3 +1,9 @@
+2009-03-04  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/manager/milter-manager-controller.c,
+	test/manager/test-controller.c: support remove UNIX domain socket
+	for controller on close.
+
 2009-03-03  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/manager/, test/manager/: create milter-manager-controller.[ch]

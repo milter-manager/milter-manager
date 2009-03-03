@@ -24,6 +24,8 @@
 #include <string.h>
 #include <errno.h>
 
+#include <glib/gstdio.h>
+
 #include "milter-manager-controller.h"
 #include "milter-manager-enum-types.h"
 
@@ -37,6 +39,7 @@ struct _MilterManagerControllerPrivate
 {
     MilterManager *manager;
     guint watch_id;
+    gchar *spec;
 };
 
 enum
@@ -89,6 +92,45 @@ milter_manager_controller_init (MilterManagerController *controller)
     priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
     priv->manager = NULL;
     priv->watch_id = 0;
+    priv->spec = NULL;
+}
+
+static void
+dispose_spec (MilterManagerControllerPrivate *priv)
+{
+    MilterManagerConfiguration *config;
+
+    if (!priv->spec)
+        return;
+
+    config = milter_manager_get_configuration(priv->manager);
+    if (milter_manager_configuration_is_remove_controller_unix_socket_on_close(config)) {
+        struct sockaddr *address = NULL;
+        socklen_t address_size = 0;
+        GError *error = NULL;
+
+        if (milter_connection_parse_spec(priv->spec,
+                                         NULL, &address, &address_size,
+                                         &error)) {
+            if (address->sa_family == AF_UNIX) {
+                struct sockaddr_un *address_un;
+
+                address_un = (struct sockaddr_un *)address;
+                if (g_unlink(address_un->sun_path) == -1) {
+                    milter_error("[controller][error][unix] "
+                                 "failed to remove used UNIX socket: %s: %s",
+                                 address_un->sun_path, g_strerror(errno));
+                }
+            }
+            g_free(address);
+        } else {
+            milter_error("[controller][error][unix] %s", error->message);
+            g_error_free(error);
+        }
+    }
+
+    g_free(priv->spec);
+    priv->spec = NULL;
 }
 
 static void
@@ -104,6 +146,8 @@ dispose (GObject *object)
         g_source_remove(priv->watch_id);
         priv->watch_id = 0;
     }
+
+    dispose_spec(priv);
 
     if (priv->manager) {
         g_object_unref(priv->manager);
@@ -300,6 +344,8 @@ milter_manager_controller_listen (MilterManagerController *controller,
         return FALSE;
     }
 
+    dispose_spec(priv);
+
     config = milter_manager_get_configuration(priv->manager);
     spec = milter_manager_configuration_get_controller_connection_spec(config);
     if (!spec) {
@@ -321,6 +367,7 @@ milter_manager_controller_listen (MilterManagerController *controller,
         return FALSE;
     }
 
+    priv->spec = g_strdup(spec);
     priv->watch_id = g_io_add_watch(channel,
                                     G_IO_IN | G_IO_PRI |
                                     G_IO_ERR | G_IO_HUP | G_IO_NVAL,
