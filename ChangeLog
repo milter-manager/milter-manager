@@ -1,3 +1,9 @@
+2009-03-05  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/manager/milter-manager-configuration.[ch],
+	test/manager/test-configuration.c: add controller socket group
+	configuration.
+
 2009-03-04  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/manager/milter-manager-controller.c,

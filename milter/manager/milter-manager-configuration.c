@@ -56,6 +56,7 @@ struct _MilterManagerConfigurationPrivate
     guint manager_unix_socket_mode;
     guint controller_unix_socket_mode;
     gchar *manager_unix_socket_group;
+    gchar *controller_unix_socket_group;
     gboolean remove_manager_unix_socket_on_close;
     gboolean remove_controller_unix_socket_on_close;
     gboolean remove_manager_unix_socket_on_create;
@@ -78,6 +79,7 @@ enum
     PROP_MANAGER_UNIX_SOCKET_MODE,
     PROP_CONTROLLER_UNIX_SOCKET_MODE,
     PROP_MANAGER_UNIX_SOCKET_GROUP,
+    PROP_CONTROLLER_UNIX_SOCKET_GROUP,
     PROP_REMOVE_MANAGER_UNIX_SOCKET_ON_CLOSE,
     PROP_REMOVE_CONTROLLER_UNIX_SOCKET_ON_CLOSE,
     PROP_REMOVE_MANAGER_UNIX_SOCKET_ON_CREATE,
@@ -217,6 +219,15 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
                                G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
     g_object_class_install_property(gobject_class,
                                     PROP_MANAGER_UNIX_SOCKET_GROUP,
+                                    spec);
+
+    spec = g_param_spec_string("controller-unix-socket-group",
+                               "milter-manager's UNIX socket group",
+                               "The milter-manager controller's UNIX socket group",
+                               NULL,
+                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+    g_object_class_install_property(gobject_class,
+                                    PROP_CONTROLLER_UNIX_SOCKET_GROUP,
                                     spec);
 
     spec = g_param_spec_boolean("remove-manager-unix-socket-on-close",
@@ -386,6 +397,10 @@ set_property (GObject      *object,
         milter_manager_configuration_set_manager_unix_socket_group(
             config, g_value_get_string(value));
         break;
+      case PROP_CONTROLLER_UNIX_SOCKET_GROUP:
+        milter_manager_configuration_set_controller_unix_socket_group(
+            config, g_value_get_string(value));
+        break;
       case PROP_REMOVE_MANAGER_UNIX_SOCKET_ON_CLOSE:
         milter_manager_configuration_set_remove_manager_unix_socket_on_close(
             config, g_value_get_boolean(value));
@@ -458,6 +473,9 @@ get_property (GObject    *object,
         break;
       case PROP_MANAGER_UNIX_SOCKET_GROUP:
         g_value_set_string(value, priv->manager_unix_socket_group);
+        break;
+      case PROP_CONTROLLER_UNIX_SOCKET_GROUP:
+        g_value_set_string(value, priv->controller_unix_socket_group);
         break;
       case PROP_REMOVE_MANAGER_UNIX_SOCKET_ON_CLOSE:
         g_value_set_boolean(value, priv->remove_manager_unix_socket_on_close);
@@ -974,6 +992,27 @@ milter_manager_configuration_set_manager_unix_socket_group (MilterManagerConfigu
     priv->manager_unix_socket_group = g_strdup(group);
 }
 
+const gchar *
+milter_manager_configuration_get_controller_unix_socket_group (MilterManagerConfiguration *configuration)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    return priv->controller_unix_socket_group;
+}
+
+void
+milter_manager_configuration_set_controller_unix_socket_group (MilterManagerConfiguration *configuration,
+                                                               const gchar *group)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    if (priv->controller_unix_socket_group)
+        g_free(priv->controller_unix_socket_group);
+    priv->controller_unix_socket_group = g_strdup(group);
+}
+
 gboolean
 milter_manager_configuration_is_remove_manager_unix_socket_on_close (MilterManagerConfiguration *configuration)
 {
@@ -1390,6 +1429,11 @@ milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
     if (priv->manager_unix_socket_group) {
         g_free(priv->manager_unix_socket_group);
         priv->manager_unix_socket_group = NULL;
+    }
+
+    if (priv->controller_unix_socket_group) {
+        g_free(priv->controller_unix_socket_group);
+        priv->controller_unix_socket_group = NULL;
     }
 
     if (priv->pid_file) {

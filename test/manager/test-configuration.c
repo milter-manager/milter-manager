@@ -33,6 +33,7 @@ void test_effective_group (void);
 void test_manager_unix_socket_mode (void);
 void test_controller_unix_socket_mode (void);
 void test_manager_unix_socket_group (void);
+void test_controller_unix_socket_group (void);
 void test_remove_manager_unix_socket_on_close (void);
 void test_remove_controller_unix_socket_on_close (void);
 void test_remove_manager_unix_socket_on_create (void);
@@ -266,6 +267,18 @@ test_manager_unix_socket_group (void)
 }
 
 void
+test_controller_unix_socket_group (void)
+{
+    cut_assert_equal_string(
+        NULL,
+        milter_manager_configuration_get_controller_unix_socket_group(config));
+    milter_manager_configuration_set_controller_unix_socket_group(config, "nobody");
+    cut_assert_equal_string(
+        "nobody",
+        milter_manager_configuration_get_controller_unix_socket_group(config));
+}
+
+void
 test_remove_manager_unix_socket_on_close (void)
 {
     cut_assert_true(milter_manager_configuration_is_remove_manager_unix_socket_on_close(config));
@@ -434,6 +447,9 @@ milter_assert_default_configuration_helper (MilterManagerConfiguration *config)
     cut_assert_equal_uint(
         0660,
         milter_manager_configuration_get_controller_unix_socket_mode(config));
+    cut_assert_equal_string(
+        NULL,
+        milter_manager_configuration_get_controller_unix_socket_group(config));
 
     cut_assert_true(milter_manager_configuration_is_remove_manager_unix_socket_on_close(config));
     cut_assert_true(milter_manager_configuration_is_remove_controller_unix_socket_on_close(config));
@@ -647,8 +663,9 @@ test_clear (void)
     test_effective_user();
     test_effective_group();
     test_manager_unix_socket_group();
-    test_controller_connection_spec();
+    test_controller_unix_socket_group();
     test_manager_connection_spec();
+    test_controller_connection_spec();
     test_fallback_status();
     test_children();
 
