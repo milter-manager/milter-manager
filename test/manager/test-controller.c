@@ -18,6 +18,9 @@
  */
 
 #include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <grp.h>
 
 #include <glib/gstdio.h>
 
@@ -34,6 +37,8 @@ void test_listen_with_remove_on_create (void);
 void test_listen_without_remove_on_create (void);
 void test_listen_with_remove_on_close (void);
 void test_listen_without_remove_on_close (void);
+void test_change_unix_socket_mode (void);
+void test_change_unix_socket_group (void);
 
 static MilterManager *manager;
 static MilterManagerConfiguration *config;
@@ -174,6 +179,72 @@ test_listen_without_remove_on_close (void)
 
     cut_assert_path_exist(socket_path);
 }
+
+void
+test_change_unix_socket_mode (void)
+{
+    struct stat stat_buffer;
+
+    milter_manager_configuration_set_controller_unix_socket_mode(config, 0666);
+    milter_manager_configuration_set_remove_controller_unix_socket_on_close(config, FALSE);
+
+    cut_assert_true(milter_manager_controller_listen(controller, &actual_error));
+    gcut_assert_equal_error(NULL, actual_error);
+
+    if (stat(socket_path, &stat_buffer) == -1)
+        cut_assert_errno();
+
+    cut_assert_equal_uint(S_IFSOCK | 0666, stat_buffer.st_mode);
+}
+
+void
+test_change_unix_socket_group (void)
+{
+    struct stat stat_buffer;
+    gint i, n_groups, max_n_groups;
+    gid_t *groups;
+    struct group *group = NULL;
+
+    max_n_groups = getgroups(0, NULL);
+    if (max_n_groups < 0)
+        max_n_groups = 5;
+
+    groups = g_new0(gid_t, max_n_groups);
+    cut_take_memory(groups);
+
+    n_groups = getgroups(max_n_groups, groups);
+    if (n_groups == -1)
+        cut_assert_errno();
+
+    for (i = 0; i < n_groups; i++) {
+        if (groups[i] == getegid())
+            continue;
+
+        errno = 0;
+        group = getgrgid(groups[i]);
+        if (!group) {
+            if (errno == 0)
+                cut_omit("can't find supplementary group: %u", groups[i]);
+            else
+                cut_assert_errno();
+        }
+    }
+
+    if (!group)
+        cut_omit("no supplementary group");
+
+    milter_manager_configuration_set_controller_unix_socket_group(config, group->gr_name);
+    milter_manager_configuration_set_remove_controller_unix_socket_on_close(config, FALSE);
+
+    cut_assert_true(milter_manager_controller_listen(controller, &actual_error));
+    gcut_assert_equal_error(NULL, actual_error);
+
+    if (stat(socket_path, &stat_buffer) == -1)
+        cut_assert_errno();
+
+    cut_assert_equal_uint(group->gr_gid, stat_buffer.st_gid);
+}
+
 
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4

@@ -23,6 +23,8 @@
 
 #include <string.h>
 #include <errno.h>
+#include <unistd.h>
+#include <grp.h>
 
 #include <glib/gstdio.h>
 
@@ -323,6 +325,73 @@ watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
     return keep_callback;
 }
 
+static void
+change_unix_socket_group (MilterManagerController *controller,
+                          struct sockaddr_un *address_un,
+                          MilterManagerConfiguration *config)
+{
+    const gchar *socket_group;
+    struct group *group;
+
+    socket_group = milter_manager_configuration_get_controller_unix_socket_group(config);
+    if (!socket_group)
+        return;
+
+    errno = 0;
+    group = getgrnam(socket_group);
+    if (!group) {
+        if (errno == 0) {
+            milter_error("[controller][error][unix] "
+                         "failed to find group entry for UNIX socket group: "
+                         "%s: %s",
+                         address_un->sun_path, socket_group);
+        } else {
+            milter_error("[controller][error][unix] "
+                         "failed to get group entry for UNIX socket group: "
+                         "%s: %s: %s",
+                         address_un->sun_path, socket_group, g_strerror(errno));
+        }
+        return;
+    }
+
+    if (chown(address_un->sun_path, -1, group->gr_gid) == -1) {
+        milter_error("[controller][error][unix] "
+                     "failed to change UNIX socket group: %s: %s: %s",
+                     address_un->sun_path, socket_group, g_strerror(errno));
+    }
+}
+
+static void
+change_unix_socket_mode (MilterManagerController *controller,
+                         struct sockaddr_un *address_un,
+                         MilterManagerConfiguration *config)
+{
+    guint mode;
+
+    mode = milter_manager_configuration_get_controller_unix_socket_mode(config);
+    if (g_chmod(address_un->sun_path, mode) == -1) {
+        milter_error("[controller][error][unix] "
+                     "failed to change the mode of UNIX socket: %s(%o): %s",
+                     address_un->sun_path, mode, g_strerror(errno));
+    }
+}
+
+static void
+listen_started (MilterManagerController *controller,
+                struct sockaddr *address, socklen_t address_size,
+                MilterManagerConfiguration *config)
+{
+    struct sockaddr_un *address_un;
+
+    if (address->sa_family != AF_UNIX)
+        return;
+
+    address_un = (struct sockaddr_un *)address;
+
+    change_unix_socket_group(controller, address_un, config);
+    change_unix_socket_mode(controller, address_un, config);
+}
+
 gboolean
 milter_manager_controller_listen (MilterManagerController *controller,
                                   GError **error)
@@ -331,6 +400,8 @@ milter_manager_controller_listen (MilterManagerController *controller,
     MilterManagerConfiguration *config;
     const gchar *spec;
     GIOChannel *channel;
+    struct sockaddr *address = NULL;
+    socklen_t address_size = 0;
     gboolean remove_socket;
     GError *local_error = NULL;
 
@@ -358,8 +429,13 @@ milter_manager_controller_listen (MilterManagerController *controller,
     }
 
     remove_socket = milter_manager_configuration_is_remove_controller_unix_socket_on_create(config);
-    channel = milter_connection_listen(spec, -1, NULL, NULL,
+    channel = milter_connection_listen(spec, -1, &address, &address_size,
                                        remove_socket, &local_error);
+    if (address) {
+        listen_started(controller, address, address_size, config);
+        g_free(address);
+    }
+
     if (!channel) {
         milter_error("[controller][error][listen] <%s>: %s",
                      spec, local_error->message);
