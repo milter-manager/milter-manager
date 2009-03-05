@@ -59,6 +59,7 @@ module Milter::Manager
 
       result << "controller.connection_spec = #{controller_connection_spec.inspect}\n"
       result << "controller.unix_socket_mode = 0%o\n" % controller_unix_socket_mode
+      result << "controller.unix_socket_group = #{@controller_unix_socket_group.inspect}\n"
       result << "controller.remove_unix_socket_on_create = #{remove_controller_unix_socket_on_create?}\n"
       result << "controller.remove_unix_socket_on_close = #{remove_controller_unix_socket_on_close?}\n"
       result << "\n"
@@ -525,6 +526,14 @@ module Milter::Manager
 
       def unix_socket_mode=(mode)
         @configuration.controller_unix_socket_mode = mode
+      end
+
+      def unix_socket_group
+        @configuration.controller_unix_socket_group
+      end
+
+      def unix_socket_group=(group)
+        @configuration.controller_unix_socket_group = group
       end
 
       def remove_unix_socket_on_create?

@@ -79,6 +79,12 @@ class TestConfigurationLoader < Test::Unit::TestCase
     assert_equal(0600, @configuration.controller_unix_socket_mode)
   end
 
+  def test_controller_unix_socket_group
+    assert_nil(@configuration.controller_unix_socket_group)
+    @loader.controller.unix_socket_group = "nogroup"
+    assert_equal("nogroup", @configuration.controller_unix_socket_group)
+  end
+
   def test_controller_remove_unix_socket_on_close
     assert_true(@configuration.remove_controller_unix_socket_on_close?)
     @loader.controller.remove_unix_socket_on_close = false

@@ -187,6 +187,7 @@ manager.pid_file = nil
 
 controller.connection_spec = nil
 controller.unix_socket_mode = 0660
+controller.unix_socket_group = nil
 controller.remove_unix_socket_on_create = true
 controller.remove_unix_socket_on_close = true
 EOD
@@ -232,6 +233,7 @@ manager.pid_file = nil
 
 controller.connection_spec = nil
 controller.unix_socket_mode = 0660
+controller.unix_socket_group = nil
 controller.remove_unix_socket_on_create = true
 controller.remove_unix_socket_on_close = true
 
