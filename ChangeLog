@@ -1,5 +1,9 @@
 2009-03-05  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: remove:
+	- support controller's UNIX socket mode changing.
+	- support controller's UNIX socket mode removing on close.
+
 	* tool/milter-manager-log-analyzer: support [abort][%s].
 
 	* TODO: remove:

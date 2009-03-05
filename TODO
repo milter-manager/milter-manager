@@ -48,8 +48,6 @@ Index: milter/manager/milter-manager-leader.c
 * bug? milter-manager sometimes doesn't finish child milter?
 * change process name of forked process launcher.
 * send quit command to launcher on manager dispose.
-* support controller's UNIX socket mode changing.
-* support controller's UNIX socket mode removing on close.
 * use chroot
 * add --disable-milter-manager configure option.
 * add --disable-ruby configure option.
