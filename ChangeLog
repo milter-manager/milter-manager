@@ -1,5 +1,7 @@
 2009-03-05  Kouhei Sutou  <kou@cozmixng.org>
 
+	* data/rc.d/milter-manager: fix a typo.
+
 	* milter/manager/milter-manager-controller.c,
 	test/manager/test-controller.c: support changing mode and group
 	for controller's UNIX domain socket.
