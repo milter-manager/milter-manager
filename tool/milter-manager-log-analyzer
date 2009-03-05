@@ -503,10 +503,13 @@ class MilterManagerLogAnalyzer
       super(output_directory, update_time)
       @vertical_label = "mails"
       @title = 'Processed mails'
-      @items = ["pass", "accept",
-                "reject", "discard",
+      @items = ["pass",
+                "accept",
+                "reject",
+                "discard",
                 "temporary-failure",
-                "quarantine"]
+                "quarantine",
+                "abort"]
     end
 
     def graph_name(tag)
@@ -514,12 +517,16 @@ class MilterManagerLogAnalyzer
     end
 
     def feed(time_stamp, content)
-      if /\A\[reply\]\[(.+)\]\[(.+)\]\z/ =~ content
+      case content
+      when /\A\[reply\]\[(.+)\]\[(.+)\]\z/
         state = $1
         status = $2
         return if status == "continue" and state != "end-of-message"
         status = "pass" if status == "continue"
         @data << LogData::Mail.new(status, time_stamp)
+      when /\A\[abort\]\[(.+)\]\z/
+        state = $1
+        @data << LogData::Mail.new("abort", time_stamp)
       end
     end
 
@@ -531,6 +538,7 @@ class MilterManagerLogAnalyzer
                  ["STACK", "discard", "#ffd400", "Discard"],
                  ["STACK", "temporary-failure", "#888888", "Temp-Fail"],
                  ["STACK", "quarantine", "#a52a2a", "Quarantine"],
+                 ["STACK", "abort", "#ff9999", "Abort"],
                 ]
       max_label_size = entries.collect {|_, _, _, label| label.size}.max
 

@@ -1,5 +1,10 @@
 2009-03-05  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-manager-log-analyzer: support [abort][%s].
+
+	* TODO: remove:
+	milter-manager-log-analyzer supports [abort][%s].
+
 	* data/rc.d/milter-manager: fix a typo.
 
 	* milter/manager/milter-manager-controller.c,
