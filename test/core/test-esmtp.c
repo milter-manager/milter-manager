@@ -87,6 +87,25 @@ data_parse_mail_from_argument (void)
     ADD_DATUM("multi source route",
               "<@example.com,@example.net:user@example.org>",
               NULL, "@example.com,@example.net:user@example.org", NULL);
+    ADD_DATUM("single parameter",
+              "<user@example.org> AUTH=xxx",
+              NULL,
+              "user@example.org",
+              gcut_hash_table_string_string_new("AUTH", "xxx",
+                                                NULL));
+    ADD_DATUM("multi parameters",
+              "<user@example.org> RET=HDRS ENVID=QQ314159",
+              NULL,
+              "user@example.org",
+              gcut_hash_table_string_string_new("RET", "HDRS",
+                                                "ENVID", "QQ314159",
+                                                NULL));
+    ADD_DATUM("keyword only",
+              "<user@example.org> KEY-WORD",
+              NULL,
+              "user@example.org",
+              gcut_hash_table_string_string_new("KEY-WORD", NULL,
+                                                NULL));
 
 #undef ERROR
 #undef ADD_DATUM

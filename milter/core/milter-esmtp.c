@@ -65,6 +65,8 @@ milter_esmtp_parse_mail_from_argument (const gchar  *argument,
                                        GHashTable  **parameters,
                                        GError      **error)
 {
+    gint index = 0;
+
 #define RETURN_ERROR(...) G_STMT_START {                \
         g_set_error(error,                              \
                     MILTER_ESMTP_ERROR,                 \
@@ -79,10 +81,12 @@ milter_esmtp_parse_mail_from_argument (const gchar  *argument,
     if (argument[0] != '<')
         RETURN_ERROR("argument should start with '<': <%s>", argument);
 
+    index++;
     if (argument[1] == '>') {
+        index++;
     } else if (argument[1] == '"') {
     } else {
-        gint i, index = 1;
+        gint i;
         const gchar *source_route, *local_part, *domain;
 
         source_route = argument + index;
@@ -132,7 +136,50 @@ milter_esmtp_parse_mail_from_argument (const gchar  *argument,
             RETURN_ERROR("terminate '>' is missing in path: <%s>", argument);
         if (path)
             *path = g_strndup(argument + 1, index - 1);
+        index++;
     }
+
+    while (argument[index] == ' ') {
+        gint i, keyword_length, value_length;
+        const gchar *keyword, *value = NULL;
+
+        keyword = argument + index + 1;
+        if (!keyword[0])
+            RETURN_ERROR("parameter keyword is missing: <%s>", argument);
+        if (!g_ascii_isalnum(keyword[0]))
+            RETURN_ERROR("parameter keyword should start with "
+                         "alphabet or number: <%s>", argument);
+
+        for (i = 1;
+             keyword[i] && (g_ascii_isalnum(keyword[i]) || keyword[i] == '-');
+             i++) {
+        }
+        keyword_length = i;
+        if (keyword[i] == '=') {
+            gint j;
+            value = keyword + i + 1;
+            for (j = 0;
+                 value[j] && (g_ascii_isgraph(value[j]) && value[j] != '=');
+                 j++) {
+            }
+            value_length = j;
+            i += 1 + j;
+        }
+        if (parameters) {
+            if (!*parameters)
+                *parameters = g_hash_table_new_full(g_str_hash,
+                                                    g_str_equal,
+                                                    g_free,
+                                                    g_free);
+            g_hash_table_insert(*parameters,
+                                g_strndup(keyword, keyword_length),
+                                value ? g_strndup(value, value_length) : NULL);
+        }
+        index += i + 1;
+    }
+
+    if (argument[index])
+        RETURN_ERROR("there is a garbage in the last: <%s>", argument);
 
     return TRUE;
 }
