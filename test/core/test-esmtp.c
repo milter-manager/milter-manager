@@ -79,20 +79,59 @@ data_parse_mail_from_argument (void)
     ADD_DATUM("not started with '<'", " <user@example.com>",
               ERROR("argument should start with '<': <|@| <user@example.com>>"),
               NULL, NULL);
+
     ADD_DATUM("domain: not started with alphabet nor digit",
               "<@.example.org:user@example.com>",
               ERROR("domain should start with alphabet or digit: "
                     "<<@|@|.example.org:user@example.com>>"),
+              NULL, NULL);
+    ADD_DATUM("domain: invalid quoted character",
+              "<@[192.168\\\n.1.1]:user@example.com>",
+              ERROR("invalid quoted character in domain: "
+                    "<<@[192.168\\|@|\n.1.1]:user@example.com>>"),
               NULL, NULL);
     ADD_DATUM("domain: terminated ']' is missing",
               "<@[192.168.1.1 :user@example.com>",
               ERROR("terminate ']' is missing in domain: "
                     "<<@[192.168.1.1|@| :user@example.com>>"),
               NULL, NULL);
-    ADD_DATUM("no source route separator ':'",
+
+    ADD_DATUM("source route: no ':'",
               "<@example.org user@example.com>",
               ERROR("separator ':' is missing after source route: "
                     "<<@example.org|@| user@example.com>>"),
+              NULL, NULL);
+
+    ADD_DATUM("local part: invalid quoted character",
+              "<\"us\\\ner\"@example.com>",
+              ERROR("invalid quoted character in local part: "
+                    "<<\"us\\|@|\ner\"@example.com>>"),
+              NULL, NULL);
+    ADD_DATUM("local part: end quote is missing",
+              "<\"user @example.com>",
+              ERROR("end quote for local part is missing: "
+                    "<<\"user|@| @example.com>>"),
+              NULL, NULL);
+
+    ADD_DATUM("mailbox: '@' is missing",
+              "<user example.com>",
+              ERROR("'@' is missing in mailbox: "
+                    "<<user|@| example.com>>"),
+              NULL, NULL);
+    ADD_DATUM("mailbox: domain is missing",
+              "<user@",
+              ERROR("domain is missing in mailbox: "
+                    "<<user@|@|>"),
+              NULL, NULL);
+    ADD_DATUM("mailbox: domain is missing",
+              "<user@>",
+              ERROR("domain is missing in mailbox: "
+                    "<<user@|@|>>"),
+              NULL, NULL);
+    ADD_DATUM("mailbox: domain: not started with alphabet nor digit",
+              "<user@.example.com>",
+              ERROR("domain should start with alphabet or digit: "
+                    "<<user@|@|.example.com>>"),
               NULL, NULL);
 
     ADD_DATUM("null reverse-path", "<>", NULL, NULL, NULL);
@@ -100,8 +139,8 @@ data_parse_mail_from_argument (void)
               NULL, "user@example.com", NULL);
     ADD_DATUM("with dot", "<first.family@example.com>",
               NULL, "first.family@example.com", NULL);
-    ADD_DATUM("quoted local part", "<\"user(s)+\\\\x\\ y\"@example.com>",
-              NULL, "\"user(s)+\\\\x\\ y\"@example.com", NULL);
+    ADD_DATUM("quoted local part", "<\"u<se>r(s)+\\\\x\\ y\"@example.com>",
+              NULL, "\"u<se>r(s)+\\\\x\\ y\"@example.com", NULL);
     ADD_DATUM("IPv4 address", "<user@[192.168.1.1]>",
               NULL, "user@[192.168.1.1]", NULL);
     ADD_DATUM("IPv6 address", "<user@[IPv6:::1]>",

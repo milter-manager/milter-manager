@@ -193,26 +193,31 @@ parse_local_part (const gchar *argument, gint index, gint *parsed_position,
                 if (IS_TEXT(local_part[i])) {
                     i++;
                 } else {
-                    RETURN_ERROR("invalid quoted character: <%s>: <0x%x>",
-                                 argument, local_part[i]);
+                    RETURN_ERROR_WITH_POSITION("invalid quoted character "
+                                               "in local part",
+                                               argument, index + i);
                 }
             } else if (local_part[i] == '"') {
                 break;
-            } else if (g_ascii_isgraph(local_part[i])) {
+            } else if (g_ascii_isspace(local_part[i])) {
+                break;
+            } else if (g_ascii_iscntrl(local_part[i]) ||
+                       g_ascii_isgraph(local_part[i])) {
                 i++;
             } else {
                 break;
             }
         }
         if (local_part[i] != '"')
-            RETURN_ERROR("end quote for local part is missing: <%s>",
-                         argument);
+            RETURN_ERROR_WITH_POSITION("end quote for local part is missing",
+                                       argument, index + i);
         i++;
     } else {
         i = -1;
         do {
             i++;
-            for (; local_part[i] && IS_ATOM_TEXT(local_part[i]); i++) {
+            while (IS_ATOM_TEXT(local_part[i])) {
+                i++;
             }
         } while (local_part[i] == '.');
     }
@@ -233,12 +238,12 @@ parse_mailbox (const gchar *argument, gint index, gint *parsed_position,
     i += local_part_parsed_position;
 
     if (argument[index + i] != '@')
-        RETURN_ERROR_WITH_POSITION("'@' is missing in path",
+        RETURN_ERROR_WITH_POSITION("'@' is missing in mailbox",
                                    argument, index + i);
     i++;
 
-    if (!argument[index + i])
-        RETURN_ERROR_WITH_POSITION("domain is missing in path",
+    if (!argument[index + i] || !argument[index + i + 1])
+        RETURN_ERROR_WITH_POSITION("domain is missing in mailbox",
                                    argument, index + i);
 
     if (!parse_domain(argument, index + i, &domain_parsed_position, error))
