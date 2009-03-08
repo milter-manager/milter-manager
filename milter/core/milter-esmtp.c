@@ -276,7 +276,7 @@ parse_path (gboolean accept_postmaster_path,
                g_str_has_prefix(path, postmaster_path)) {
         i = strlen(postmaster_path);
         if (parsed_path)
-            *parsed_path = g_strndup(postmaster_path + 1, i - 2);
+            *parsed_path = g_strdup(postmaster_path);
     } else {
         gint source_route_parsed_position;
         gint mailbox_parsed_position;
@@ -301,9 +301,10 @@ parse_path (gboolean accept_postmaster_path,
         if (path[i] != '>')
             RETURN_ERROR_WITH_POSITION("terminate '>' is missing in path",
                                        argument, index + i);
-        if (parsed_path)
-            *parsed_path = g_strndup(path + 1, i - 1);
         i++;
+
+        if (parsed_path)
+            *parsed_path = g_strndup(path, i);
     }
 
     *parsed_position = i;

@@ -160,44 +160,44 @@ data_parse_envelope_command_argument (void)
 
     ADD_DATUM("null reverse-path", "<>", NULL, NULL, NULL);
     ADD_DATUM("reverse-path only", "<user@example.com>",
-              NULL, "user@example.com", NULL);
+              NULL, "<user@example.com>", NULL);
     ADD_DATUM("with dot", "<first.family@example.com>",
-              NULL, "first.family@example.com", NULL);
+              NULL, "<first.family@example.com>", NULL);
     ADD_DATUM("quoted local part", "<\"u<se>r(s)+\\\\x\\ y\"@example.com>",
-              NULL, "\"u<se>r(s)+\\\\x\\ y\"@example.com", NULL);
+              NULL, "<\"u<se>r(s)+\\\\x\\ y\"@example.com>", NULL);
     ADD_DATUM("IPv4 address", "<user@[192.168.1.1]>",
-              NULL, "user@[192.168.1.1]", NULL);
+              NULL, "<user@[192.168.1.1]>", NULL);
     ADD_DATUM("IPv6 address", "<user@[IPv6:::1]>",
-              NULL, "user@[IPv6:::1]", NULL);
+              NULL, "<user@[IPv6:::1]>", NULL);
     ADD_DATUM("full IPv6 address", "<user@[IPv6:ff02:0:0:0:0:0:0:1]>",
-              NULL, "user@[IPv6:ff02:0:0:0:0:0:0:1]", NULL);
+              NULL, "<user@[IPv6:ff02:0:0:0:0:0:0:1]>", NULL);
     ADD_DATUM("general address", "<user@[tag:address\\]with-escape]>",
-              NULL, "user@[tag:address\\]with-escape]", NULL);
+              NULL, "<user@[tag:address\\]with-escape]>", NULL);
 
     ADD_DATUM("single source route", "<@example.com:user@example.org>",
-              NULL, "@example.com:user@example.org", NULL);
+              NULL, "<@example.com:user@example.org>", NULL);
     ADD_DATUM("multi source route",
               "<@example.com,@example.net:user@example.org>",
-              NULL, "@example.com,@example.net:user@example.org", NULL);
+              NULL, "<@example.com,@example.net:user@example.org>", NULL);
 
     ADD_DATUM("single parameter",
               "<user@example.org> SOLICIT=org.example:ADV:ADLT",
               NULL,
-              "user@example.org",
+              "<user@example.org>",
               gcut_hash_table_string_string_new("SOLICIT",
                                                 "org.example:ADV:ADLT",
                                                 NULL));
     ADD_DATUM("multi parameters",
               "<user@example.org> RET=HDRS ENVID=QQ314159",
               NULL,
-              "user@example.org",
+              "<user@example.org>",
               gcut_hash_table_string_string_new("RET", "HDRS",
                                                 "ENVID", "QQ314159",
                                                 NULL));
     ADD_DATUM("keyword only",
               "<user@example.org> KEY-WORD",
               NULL,
-              "user@example.org",
+              "<user@example.org>",
               gcut_hash_table_string_string_new("KEY-WORD", NULL,
                                                 NULL));
 }
@@ -219,7 +219,7 @@ data_parse_rcpt_to_argument (void)
     ADD_DATUM("postmaster path",
               "<Postmaster>",
               NULL,
-              "Postmaster",
+              "<Postmaster>",
               NULL);
 }
 #undef ERROR
