@@ -32,7 +32,7 @@ milter_esmtp_error_quark (void)
 }
 
 /*
-  RFC 2822 (Internet Message Format)  3.2.4. Atom:
+  RFC 2822 (Internet Message Format) 3.2.4. Atom:
 
   atext = ALPHA / DIGIT / ; Any character except controls,
           "!" / "#" /     ;  SP, and specials.
@@ -58,6 +58,21 @@ milter_esmtp_error_quark (void)
      character == '?' ||                        \
      ('^' <= character && character <= '`') ||  \
      ('{' <= character && character <= '~'))
+
+/*
+  RFC 2822 (Internet Message Format) 3.2.1. Primitive Tokens:
+
+  text = %d1-9 /         ; Characters excluding CR and LF
+         %d11 /
+         %d12 /
+         %d14-127 /
+         obs-text
+ */
+#define IS_TEXT(character)                      \
+    ((1 <= character && character <= 9) ||      \
+     character == 11 ||                         \
+     character == 12 ||                         \
+     (14 <= character && character <= 127))
 
 gboolean
 milter_esmtp_parse_mail_from_argument (const gchar  *argument,
@@ -116,10 +131,7 @@ milter_esmtp_parse_mail_from_argument (const gchar  *argument,
             while (TRUE) {
                 if (local_part[i] == '\\') {
                     i++;
-                    if ((1 <= local_part[i] && local_part[i] <= 9) ||
-                        local_part[i] == 11 ||
-                        local_part[i] == 12 ||
-                        (14 <= local_part[i] && local_part[i] <= 127)) {
+                    if (IS_TEXT(local_part[i])) {
                         i++;
                     } else {
                         RETURN_ERROR("invalid quoted character: <%s>: <0x%x>",
@@ -159,10 +171,7 @@ milter_esmtp_parse_mail_from_argument (const gchar  *argument,
                     break;
                 } else if (domain[i] == '\\') {
                     i++;
-                    if ((1 <= domain[i] && domain[i] <= 9) ||
-                        domain[i] == 11 ||
-                        domain[i] == 12 ||
-                        (14 <= domain[i] && domain[i] <= 127)) {
+                    if (IS_TEXT(domain[i])) {
                         i++;
                     } else {
                         RETURN_ERROR("invalid quoted character: <%s>: <0x%x>",
