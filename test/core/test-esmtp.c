@@ -140,6 +140,17 @@ data_parse_mail_from_argument (void)
                     "<<user@example.com|@|>"),
               NULL, NULL);
 
+    ADD_DATUM("parameter: keyword is missing",
+              "<user@example.com> ",
+              ERROR("parameter keyword is missing: "
+                    "<<user@example.com> |@|>"),
+              NULL, NULL);
+    ADD_DATUM("parameter: keyword is started without alphabet nor digit",
+              "<user@example.com> .",
+              ERROR("parameter keyword should start with alphabet or digit: "
+                    "<<user@example.com> |@|.>"),
+              NULL, NULL);
+
     ADD_DATUM("null reverse-path", "<>", NULL, NULL, NULL);
     ADD_DATUM("reverse-path only", "<user@example.com>",
               NULL, "user@example.com", NULL);

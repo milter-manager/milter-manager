@@ -261,31 +261,37 @@ parse_parameters (const gchar *argument, gint index, gint *parsed_position,
     gint local_index = 0;
 
     while (argument[index + local_index] == ' ') {
-        gint i, keyword_length, value_length;
+        gint i, current_argument_index;
+        gint keyword_length, value_length;
         const gchar *keyword, *value = NULL;
 
-        keyword = argument + index + local_index + 1;
+        current_argument_index = index + local_index + 1;
+        keyword = argument + current_argument_index;
         if (!keyword[0])
-            RETURN_ERROR("parameter keyword is missing: <%s>", argument);
+            RETURN_ERROR_WITH_POSITION("parameter keyword is missing",
+                                       argument, current_argument_index);
         if (!g_ascii_isalnum(keyword[0]))
-            RETURN_ERROR("parameter keyword should start with "
-                         "alphabet or number: <%s>", argument);
+            RETURN_ERROR_WITH_POSITION("parameter keyword should start with "
+                                       "alphabet or digit",
+                                       argument, current_argument_index);
 
-        for (i = 1;
-             keyword[i] && (g_ascii_isalnum(keyword[i]) || keyword[i] == '-');
-             i++) {
+        i = 1;
+        while (g_ascii_isalnum(keyword[i]) || keyword[i] == '-') {
+            i++;
         }
         keyword_length = i;
+
         if (keyword[i] == '=') {
-            gint j;
+            gint j = 0;
+
             value = keyword + i + 1;
-            for (j = 0;
-                 value[j] && (g_ascii_isgraph(value[j]) && value[j] != '=');
-                 j++) {
+            while (g_ascii_isgraph(value[j]) && value[j] != '=') {
+                j++;
             }
             value_length = j;
             i += 1 + j;
         }
+
         if (parameters) {
             if (!*parameters)
                 *parameters = g_hash_table_new_full(g_str_hash,
@@ -296,6 +302,7 @@ parse_parameters (const gchar *argument, gint index, gint *parsed_position,
                                 g_strndup(keyword, keyword_length),
                                 value ? g_strndup(value, value_length) : NULL);
         }
+
         local_index += i + 1;
     }
 
@@ -324,6 +331,8 @@ milter_esmtp_parse_mail_from_argument (const gchar  *argument,
 {
     gint index = 0;
     gint parsed_position;
+    gchar *parsed_path = NULL;
+    GHashTable *parsed_parameters = NULL;
 
     if (!argument)
         RETURN_ERROR("argument should not be NULL");
@@ -355,33 +364,41 @@ milter_esmtp_parse_mail_from_argument (const gchar  *argument,
             RETURN_ERROR_WITH_POSITION("terminate '>' is missing in path",
                                        argument, index);
         if (path)
-            *path = g_strndup(argument + 1, index - 1);
+            parsed_path = g_strndup(argument + 1, index - 1);
         index++;
     }
 
-    {
-        GHashTable *parsed_parameters = NULL;
-
-        if (!parse_parameters(argument, index, &parsed_position,
-                              parameters ? &parsed_parameters : NULL,
-                              error)) {
-            if (parsed_parameters)
-                g_hash_table_unref(parsed_parameters);
-            return FALSE;
-        }
-        if (parsed_parameters) {
-            if (*parameters) {
-                merge_parameters(*parameters, parsed_parameters);
-                g_hash_table_unref(parsed_parameters);
-            } else {
-                *parameters = parsed_parameters;
-            }
-        }
+    if (!parse_parameters(argument, index, &parsed_position,
+                          parameters ? &parsed_parameters : NULL,
+                          error)) {
+        if (parsed_path)
+            g_free(parsed_path);
+        if (parsed_parameters)
+            g_hash_table_unref(parsed_parameters);
+        return FALSE;
     }
+
     index += parsed_position;
 
-    if (argument[index])
+    if (argument[index]) {
+        if (parsed_path)
+            g_free(parsed_path);
+        if (parsed_parameters)
+            g_hash_table_unref(parsed_parameters);
         RETURN_ERROR("there is a garbage in the last: <%s>", argument);
+    }
+
+    if (parsed_path)
+        *path = parsed_path;
+
+    if (parsed_parameters) {
+        if (*parameters) {
+            merge_parameters(*parameters, parsed_parameters);
+            g_hash_table_unref(parsed_parameters);
+        } else {
+            *parameters = parsed_parameters;
+        }
+    }
 
     return TRUE;
 }
