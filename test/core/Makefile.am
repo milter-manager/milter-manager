@@ -16,7 +16,8 @@ noinst_LTLIBRARIES =			\
 	test-logger.la			\
 	test-syslog-logger.la		\
 	test-connection.la		\
-	test-headers.la
+	test-headers.la			\
+	test-esmtp.la
 endif
 
 INCLUDES =				\
@@ -53,3 +54,4 @@ test_logger_la_SOURCES = test-logger.c
 test_connection_la_SOURCES = test-connection.c
 test_headers_la_SOURCES = test-headers.c
 test_syslog_logger_la_SOURCES = test-syslog-logger.c
+test_esmtp_la_SOURCES			= test-esmtp.c

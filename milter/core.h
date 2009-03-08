@@ -24,6 +24,7 @@
 
 #include <milter/core/milter-version.h>
 #include <milter/core/milter-protocol.h>
+#include <milter/core/milter-esmtp.h>
 #include <milter/core/milter-encoder.h>
 #include <milter/core/milter-command-encoder.h>
 #include <milter/core/milter-reply-encoder.h>
