@@ -134,6 +134,12 @@ data_parse_mail_from_argument (void)
                     "<<user@|@|.example.com>>"),
               NULL, NULL);
 
+    ADD_DATUM("path: terminate '>' is missing",
+              "<user@example.com",
+              ERROR("terminate '>' is missing in path: "
+                    "<<user@example.com|@|>"),
+              NULL, NULL);
+
     ADD_DATUM("null reverse-path", "<>", NULL, NULL, NULL);
     ADD_DATUM("reverse-path only", "<user@example.com>",
               NULL, "user@example.com", NULL);

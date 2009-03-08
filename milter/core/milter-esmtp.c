@@ -254,55 +254,17 @@ parse_mailbox (const gchar *argument, gint index, gint *parsed_position,
     return TRUE;
 }
 
-gboolean
-milter_esmtp_parse_mail_from_argument (const gchar  *argument,
-                                       gchar       **path,
-                                       GHashTable  **parameters,
-                                       GError      **error)
+static gboolean
+parse_parameters (const gchar *argument, gint index, gint *parsed_position,
+                  GHashTable **parameters, GError **error)
 {
-    gint index = 0;
+    gint local_index = 0;
 
-    if (!argument)
-        RETURN_ERROR("argument should not be NULL");
-
-    if (argument[0] != '<')
-        RETURN_ERROR_WITH_POSITION("argument should start with '<'",
-                                   argument, 0);
-
-    index++;
-    if (argument[1] == '>') {
-        index++;
-    } else {
-        gint parsed_position = 0;
-
-        if (!parse_source_route(argument, index, &parsed_position, error))
-            return FALSE;
-        if (parsed_position > 0) {
-            if (argument[index + parsed_position] != ':')
-                RETURN_ERROR_WITH_POSITION("separator ':' is missing "
-                                           "after source route",
-                                           argument, index + parsed_position);
-            parsed_position++;
-        }
-        index += parsed_position;
-
-        if (!parse_mailbox(argument, index, &parsed_position, error))
-            return FALSE;
-        index += parsed_position;
-
-        if (argument[index] != '>')
-            RETURN_ERROR_WITH_POSITION("terminate '>' is missing in path",
-                                       argument, index);
-        if (path)
-            *path = g_strndup(argument + 1, index - 1);
-        index++;
-    }
-
-    while (argument[index] == ' ') {
+    while (argument[index + local_index] == ' ') {
         gint i, keyword_length, value_length;
         const gchar *keyword, *value = NULL;
 
-        keyword = argument + index + 1;
+        keyword = argument + index + local_index + 1;
         if (!keyword[0])
             RETURN_ERROR("parameter keyword is missing: <%s>", argument);
         if (!g_ascii_isalnum(keyword[0]))
@@ -334,8 +296,89 @@ milter_esmtp_parse_mail_from_argument (const gchar  *argument,
                                 g_strndup(keyword, keyword_length),
                                 value ? g_strndup(value, value_length) : NULL);
         }
-        index += i + 1;
+        local_index += i + 1;
     }
+
+    *parsed_position = local_index;
+    return TRUE;
+}
+
+static void
+merge_parameter (gpointer key, gpointer value, gpointer user_data)
+{
+    GHashTable *destination = user_data;
+    g_hash_table_insert(destination, key, value);
+}
+
+static void
+merge_parameters (GHashTable *destination, GHashTable *source)
+{
+    g_hash_table_foreach(source, merge_parameter, destination);
+}
+
+gboolean
+milter_esmtp_parse_mail_from_argument (const gchar  *argument,
+                                       gchar       **path,
+                                       GHashTable  **parameters,
+                                       GError      **error)
+{
+    gint index = 0;
+    gint parsed_position;
+
+    if (!argument)
+        RETURN_ERROR("argument should not be NULL");
+
+    if (argument[0] != '<')
+        RETURN_ERROR_WITH_POSITION("argument should start with '<'",
+                                   argument, 0);
+
+    index++;
+    if (argument[1] == '>') {
+        index++;
+    } else {
+        if (!parse_source_route(argument, index, &parsed_position, error))
+            return FALSE;
+        if (parsed_position > 0) {
+            if (argument[index + parsed_position] != ':')
+                RETURN_ERROR_WITH_POSITION("separator ':' is missing "
+                                           "after source route",
+                                           argument, index + parsed_position);
+            parsed_position++;
+        }
+        index += parsed_position;
+
+        if (!parse_mailbox(argument, index, &parsed_position, error))
+            return FALSE;
+        index += parsed_position;
+
+        if (argument[index] != '>')
+            RETURN_ERROR_WITH_POSITION("terminate '>' is missing in path",
+                                       argument, index);
+        if (path)
+            *path = g_strndup(argument + 1, index - 1);
+        index++;
+    }
+
+    {
+        GHashTable *parsed_parameters = NULL;
+
+        if (!parse_parameters(argument, index, &parsed_position,
+                              parameters ? &parsed_parameters : NULL,
+                              error)) {
+            if (parsed_parameters)
+                g_hash_table_unref(parsed_parameters);
+            return FALSE;
+        }
+        if (parsed_parameters) {
+            if (*parameters) {
+                merge_parameters(*parameters, parsed_parameters);
+                g_hash_table_unref(parsed_parameters);
+            } else {
+                *parameters = parsed_parameters;
+            }
+        }
+    }
+    index += parsed_position;
 
     if (argument[index])
         RETURN_ERROR("there is a garbage in the last: <%s>", argument);
