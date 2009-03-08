@@ -139,6 +139,11 @@ data_parse_mail_from_argument (void)
               ERROR("terminate '>' is missing in path: "
                     "<<user@example.com|@|>"),
               NULL, NULL);
+    ADD_DATUM("path: garbage at the last",
+              "<user@example.com>x",
+              ERROR("there is a garbage at the last: "
+                    "<<user@example.com>|@|x>"),
+              NULL, NULL);
 
     ADD_DATUM("parameter: keyword is missing",
               "<user@example.com> ",

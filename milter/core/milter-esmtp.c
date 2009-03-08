@@ -385,7 +385,8 @@ milter_esmtp_parse_mail_from_argument (const gchar  *argument,
             g_free(parsed_path);
         if (parsed_parameters)
             g_hash_table_unref(parsed_parameters);
-        RETURN_ERROR("there is a garbage in the last: <%s>", argument);
+        RETURN_ERROR_WITH_POSITION("there is a garbage at the last",
+                                   argument, index);
     }
 
     if (parsed_path)
