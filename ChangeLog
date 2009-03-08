@@ -1,6 +1,9 @@
 2009-03-08  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/core/milter-esmtp.c, test/core/test-esmtp.c:
+	improve error message from milter_esmtp_parse_mail_from_argument().
+
+	* milter/core/milter-esmtp.c, test/core/test-esmtp.c:
 	milter_esmtp_parse_mail_from_argument() supports address list
 	roughly and still too dirty.
 

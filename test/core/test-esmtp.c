@@ -77,7 +77,12 @@ data_parse_mail_from_argument (void)
     ADD_DATUM("NULL argument", NULL, ERROR("argument should not be NULL"),
               NULL, NULL);
     ADD_DATUM("not started with '<'", " <user@example.com>",
-              ERROR("argument should start with '<': < <user@example.com>>"),
+              ERROR("argument should start with '<': <|@| <user@example.com>>"),
+              NULL, NULL);
+    ADD_DATUM("no source route separator ':'",
+              "<@example.org user@example.com>",
+              ERROR("separator ':' is missing after source route: "
+                    "<<@example.org|@| user@example.com>>"),
               NULL, NULL);
 
     ADD_DATUM("null reverse-path", "<>", NULL, NULL, NULL);

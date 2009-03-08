@@ -74,6 +74,66 @@ milter_esmtp_error_quark (void)
      character == 12 ||                         \
      (14 <= character && character <= 127))
 
+#define RETURN_ERROR(...) G_STMT_START                  \
+{                                                       \
+    g_set_error(error,                                  \
+                MILTER_ESMTP_ERROR,                     \
+                MILTER_ESMTP_ERROR_INVALID_FORMAT,      \
+                __VA_ARGS__);                           \
+    return FALSE;                                       \
+} G_STMT_END
+
+#define RETURN_ERROR_WITH_POSITION(message, argument, index) G_STMT_START \
+{                                                                       \
+    GString *argument_with_error_position;                              \
+                                                                        \
+    argument_with_error_position = g_string_new_len(argument, index);   \
+    g_string_append(argument_with_error_position, "|@|");               \
+    g_string_append(argument_with_error_position, argument + index);    \
+    g_set_error(error,                                                  \
+                MILTER_ESMTP_ERROR,                                     \
+                MILTER_ESMTP_ERROR_INVALID_FORMAT,                      \
+                message ": <%s>",                                       \
+                argument_with_error_position->str);                     \
+    g_string_free(argument_with_error_position, TRUE);                  \
+    return FALSE;                                                       \
+} G_STMT_END
+
+static gint
+feed_domain (const gchar *string)
+{
+    gint i;
+
+    i = -1;
+    do {
+        i++;
+        while (g_ascii_isalnum(string[i]) || string[i] == '-') {
+            i++;
+        }
+    } while (string[i] == '.');
+
+    return i;
+}
+
+static gint
+feed_source_route (const gchar *string)
+{
+    gint i;
+
+    i = -1;
+    do {
+        i++;
+
+        if (string[i] != '@')
+            break;
+        i++;
+
+        i += feed_domain(string + i);
+    } while (string[i] == ',');
+
+    return i;
+}
+
 gboolean
 milter_esmtp_parse_mail_from_argument (const gchar  *argument,
                                        gchar       **path,
@@ -82,45 +142,26 @@ milter_esmtp_parse_mail_from_argument (const gchar  *argument,
 {
     gint index = 0;
 
-#define RETURN_ERROR(...) G_STMT_START {                \
-        g_set_error(error,                              \
-                    MILTER_ESMTP_ERROR,                 \
-                    MILTER_ESMTP_ERROR_INVALID_FORMAT,  \
-                    __VA_ARGS__);                       \
-        return FALSE;                                   \
-} G_STMT_END
-
     if (!argument)
         RETURN_ERROR("argument should not be NULL");
 
     if (argument[0] != '<')
-        RETURN_ERROR("argument should start with '<': <%s>", argument);
+        RETURN_ERROR_WITH_POSITION("argument should start with '<'",
+                                   argument, 0);
 
     index++;
     if (argument[1] == '>') {
         index++;
     } else {
         gint i;
-        const gchar *source_route, *local_part, *domain;
+        const gchar *local_part, *domain;
 
-        source_route = argument + index;
-        i = -1;
-        do {
-            i++;
-            if (source_route[i] != '@')
-                break;
-
-            do {
-                i++;
-                while (source_route[i] && (g_ascii_isalnum(source_route[i]) || source_route[i] == '-')) {
-                    i++;
-                }
-            } while (source_route[i] == '.');
-        } while (source_route[i] == ',');
+        i = feed_source_route(argument + index);
         if (i > 0) {
-            if (source_route[i] != ':')
-                RETURN_ERROR("separator ':' is missing after source route: <%s>",
-                             argument);
+            if (argument[index + i] != ':')
+                RETURN_ERROR_WITH_POSITION("separator ':' is missing "
+                                           "after source route",
+                                           argument, index + i);
             i++;
         }
         index += i;
