@@ -1,5 +1,9 @@
 2009-03-08  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-esmtp.c, test/core/test-esmtp.c: implement
+	milter_esmtp_parse_mail_from_argument(). But it's dirty and does
+	not implement parameters yet.
+
 	* milter/core/milter-esmtp.[ch], test/core/test-esmtp.c: add
 	milter_esmtp_parse_mail_from_argument(). not implemented yet.
 

@@ -24,7 +24,10 @@
 
 #include <gcutter.h>
 
-void test_parse_mail_from_argument (void);
+#if defined(CUTTER_CHECK_VERSION) && CUTTER_CHECK_VERSION(1, 0, 7)
+
+void data_parse_mail_from_argument (void);
+void test_parse_mail_from_argument (gconstpointer data);
 
 static gchar *actual_path;
 static GHashTable *actual_parameters;
@@ -57,16 +60,65 @@ teardown (void)
 }
 
 void
-test_parse_mail_from_argument (void)
+data_parse_mail_from_argument (void)
 {
-    cut_assert_true(milter_esmtp_parse_mail_from_argument("<>",
-                                                          &actual_path,
-                                                          &actual_parameters,
-                                                          &actual_error));
-    gcut_assert_equal_error(NULL, actual_error);
-    cut_assert_equal_string(NULL, actual_path);
-    gcut_assert_equal_hash_table_string_string(NULL, actual_parameters);
+#define ADD_DATUM(label, argument, error, path, parameters)     \
+    gcut_add_datum(label,                                       \
+                   "argument", G_TYPE_STRING, argument,         \
+                   "error", GCUT_TYPE_ERROR, error,             \
+                   "path", G_TYPE_STRING, path,                 \
+                   "parameters", G_TYPE_HASH_TABLE, parameters, \
+                   NULL)
+#define ERROR(...)                                      \
+    g_error_new(MILTER_ESMTP_ERROR,                     \
+                MILTER_ESMTP_ERROR_INVALID_FORMAT,      \
+                __VA_ARGS__)
+
+    ADD_DATUM("NULL argument", NULL, ERROR("argument should not be NULL"),
+              NULL, NULL);
+    ADD_DATUM("not started with '<'", " <user@example.com>",
+              ERROR("argument should start with '<': < <user@example.com>>"),
+              NULL, NULL);
+    ADD_DATUM("null reverse-path", "<>", NULL, NULL, NULL);
+    ADD_DATUM("reverse-path only", "<user@example.com>",
+              NULL, "user@example.com", NULL);
+    ADD_DATUM("single source route", "<@example.com:user@example.org>",
+              NULL, "@example.com:user@example.org", NULL);
+    ADD_DATUM("multi source route",
+              "<@example.com,@example.net:user@example.org>",
+              NULL, "@example.com,@example.net:user@example.org", NULL);
+
+#undef ERROR
+#undef ADD_DATUM
 }
+
+void
+test_parse_mail_from_argument (gconstpointer data)
+{
+    gboolean success;
+    const gchar *argument, *path;
+    GError *error;
+    GHashTable *parameters;
+
+    argument = gcut_data_get_string(data, "argument");
+    error = (GError *)gcut_data_get_boxed(data, "error");
+    path = gcut_data_get_string(data, "path");
+    parameters = (GHashTable *)gcut_data_get_boxed(data, "parameters");
+
+    success = milter_esmtp_parse_mail_from_argument(argument,
+                                                    &actual_path,
+                                                    &actual_parameters,
+                                                    &actual_error);
+    gcut_assert_equal_error(error, actual_error);
+    if (error)
+        cut_assert_false(success);
+    else
+        cut_assert_true(success);
+    cut_assert_equal_string(path, actual_path);
+    gcut_assert_equal_hash_table_string_string(parameters, actual_parameters);
+}
+
+#endif
 
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
