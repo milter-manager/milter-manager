@@ -79,19 +79,27 @@ data_parse_mail_from_argument (void)
     ADD_DATUM("not started with '<'", " <user@example.com>",
               ERROR("argument should start with '<': < <user@example.com>>"),
               NULL, NULL);
+
     ADD_DATUM("null reverse-path", "<>", NULL, NULL, NULL);
     ADD_DATUM("reverse-path only", "<user@example.com>",
               NULL, "user@example.com", NULL);
+    ADD_DATUM("with dot", "<first.family@example.com>",
+              NULL, "first.family@example.com", NULL);
+    ADD_DATUM("quoted local part", "<\"user(s)+\\\\x\\ y\"@example.com>",
+              NULL, "\"user(s)+\\\\x\\ y\"@example.com", NULL);
+
     ADD_DATUM("single source route", "<@example.com:user@example.org>",
               NULL, "@example.com:user@example.org", NULL);
     ADD_DATUM("multi source route",
               "<@example.com,@example.net:user@example.org>",
               NULL, "@example.com,@example.net:user@example.org", NULL);
+
     ADD_DATUM("single parameter",
-              "<user@example.org> AUTH=xxx",
+              "<user@example.org> SOLICIT=org.example:ADV:ADLT",
               NULL,
               "user@example.org",
-              gcut_hash_table_string_string_new("AUTH", "xxx",
+              gcut_hash_table_string_string_new("SOLICIT",
+                                                "org.example:ADV:ADLT",
                                                 NULL));
     ADD_DATUM("multi parameters",
               "<user@example.org> RET=HDRS ENVID=QQ314159",

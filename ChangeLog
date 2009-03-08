@@ -1,6 +1,10 @@
 2009-03-08  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/core/milter-esmtp.c, test/core/test-esmtp.c:
+	milter_esmtp_parse_mail_from_argument() supports quoted local part
+	but too dirty.
+
+	* milter/core/milter-esmtp.c, test/core/test-esmtp.c:
 	milter_esmtp_parse_mail_from_argument() supports parameter but too
 	dirty.
 

@@ -84,7 +84,6 @@ milter_esmtp_parse_mail_from_argument (const gchar  *argument,
     index++;
     if (argument[1] == '>') {
         index++;
-    } else if (argument[1] == '"') {
     } else {
         gint i;
         const gchar *source_route, *local_part, *domain;
@@ -112,7 +111,39 @@ milter_esmtp_parse_mail_from_argument (const gchar  *argument,
         index += i;
 
         local_part = argument + index;
-        for (i = 0; local_part[i] && IS_ATOM_TEXT(local_part[i]); i++) {
+        if (local_part[0] == '"') {
+            i = 1;
+            while (TRUE) {
+                if (local_part[i] == '\\') {
+                    i++;
+                    if ((1 <= local_part[i] && local_part[i] <= 9) ||
+                        local_part[i] == 11 ||
+                        local_part[i] == 12 ||
+                        (14 <= local_part[i] && local_part[i] <= 127)) {
+                        i++;
+                    } else {
+                        RETURN_ERROR("invalid quoted character: <%s>: <0x%x>",
+                                     argument, local_part[i]);
+                    }
+                } else if (local_part[i] == '"') {
+                    break;
+                } else if (g_ascii_isgraph(local_part[i])) {
+                    i++;
+                } else {
+                    break;
+                }
+            }
+            if (local_part[i] != '"')
+                RETURN_ERROR("end quote for local part is missing: <%s>",
+                             argument);
+            i++;
+        } else {
+            i = -1;
+            do {
+                i++;
+                for (; local_part[i] && IS_ATOM_TEXT(local_part[i]); i++) {
+                }
+            } while (local_part[i] == '.');
         }
         index += i;
         if (argument[index] != '@')
