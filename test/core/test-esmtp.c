@@ -87,6 +87,14 @@ data_parse_mail_from_argument (void)
               NULL, "first.family@example.com", NULL);
     ADD_DATUM("quoted local part", "<\"user(s)+\\\\x\\ y\"@example.com>",
               NULL, "\"user(s)+\\\\x\\ y\"@example.com", NULL);
+    ADD_DATUM("IPv4 address", "<user@[192.168.1.1]>",
+              NULL, "user@[192.168.1.1]", NULL);
+    ADD_DATUM("IPv6 address", "<user@[IPv6:::1]>",
+              NULL, "user@[IPv6:::1]", NULL);
+    ADD_DATUM("full IPv6 address", "<user@[IPv6:ff02:0:0:0:0:0:0:1]>",
+              NULL, "user@[IPv6:ff02:0:0:0:0:0:0:1]", NULL);
+    ADD_DATUM("general address", "<user@[tag:address\\]with-escape]>",
+              NULL, "user@[tag:address\\]with-escape]", NULL);
 
     ADD_DATUM("single source route", "<@example.com:user@example.org>",
               NULL, "@example.com:user@example.org", NULL);

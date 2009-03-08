@@ -152,17 +152,44 @@ milter_esmtp_parse_mail_from_argument (const gchar  *argument,
         domain = argument + index;
         if (!domain[0])
             RETURN_ERROR("domain is missing in path: <%s>", argument);
-        if (!g_ascii_isalnum(domain[1]))
-            RETURN_ERROR("domain should start with alphabet or digit: <%s>",
-                         argument);
-        i = 0;
-        do {
-            i++;
-            while (domain[i] && (g_ascii_isalnum(domain[i]) || domain[i] == '-')) {
-                i++;
+        if (domain[0] == '[') {
+            i = 1;
+            while (TRUE) {
+                if (domain[i] == ']') {
+                    break;
+                } else if (domain[i] == '\\') {
+                    i++;
+                    if ((1 <= domain[i] && domain[i] <= 9) ||
+                        domain[i] == 11 ||
+                        domain[i] == 12 ||
+                        (14 <= domain[i] && domain[i] <= 127)) {
+                        i++;
+                    } else {
+                        RETURN_ERROR("invalid quoted character: <%s>: <0x%x>",
+                                     argument, domain[i]);
+                    }
+                } else {
+                    i++;
+                }
             }
-        } while (domain[i] == '.');
+            if (domain[i] != ']')
+                RETURN_ERROR("terminate ']' is missing in domain: <%s>",
+                             argument);
+            i++;
+        } else {
+            if (!g_ascii_isalnum(domain[0]))
+                RETURN_ERROR("domain should start with alphabet or digit: <%s>",
+                             argument);
+            i = 0;
+            do {
+                i++;
+                while (domain[i] && (g_ascii_isalnum(domain[i]) || domain[i] == '-')) {
+                    i++;
+                }
+            } while (domain[i] == '.');
+        }
         index += i;
+
         if (domain[i] != '>')
             RETURN_ERROR("terminate '>' is missing in path: <%s>", argument);
         if (path)
