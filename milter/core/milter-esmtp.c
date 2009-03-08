@@ -99,39 +99,149 @@ milter_esmtp_error_quark (void)
     return FALSE;                                                       \
 } G_STMT_END
 
-static gint
-feed_domain (const gchar *string)
+static gboolean
+parse_domain (const gchar *argument, gint index, gint *parsed_position,
+              GError **error)
 {
     gint i;
+    const gchar *domain;
 
-    i = -1;
-    do {
-        i++;
-        while (g_ascii_isalnum(string[i]) || string[i] == '-') {
-            i++;
+    domain = argument + index;
+    if (domain[0] == '[') {
+        i = 1;
+        while (TRUE) {
+            if (domain[i] == ']') {
+                break;
+            } else if (domain[i] == '\\') {
+                i++;
+                if (IS_TEXT(domain[i])) {
+                    i++;
+                } else {
+                    RETURN_ERROR_WITH_POSITION("invalid quoted character "
+                                               "in domain",
+                                               argument, index + i);
+                }
+            } else {
+                i++;
+            }
         }
-    } while (string[i] == '.');
+        if (domain[i] != ']')
+            RETURN_ERROR_WITH_POSITION("terminate ']' is missing in domain",
+                                       argument, index + i);
+        i++;
+    } else {
+        i = 0;
+        if (!g_ascii_isalnum(domain[i]))
+            RETURN_ERROR_WITH_POSITION("domain should start with "
+                                       "alphabet or digit",
+                                       argument, index + i);
+        do {
+            i++;
+            while (g_ascii_isalnum(domain[i]) || domain[i] == '-') {
+                i++;
+            }
+        } while (domain[i] == '.');
+    }
 
-    return i;
+    *parsed_position = i;
+    return TRUE;
 }
 
-static gint
-feed_source_route (const gchar *string)
+static gboolean
+parse_source_route (const gchar *argument, gint index, gint *parsed_position,
+                    GError **error)
 {
-    gint i;
+    gint i, domain_parsed_position;
+    const gchar *source_route;
 
+    source_route = argument + index;
     i = -1;
     do {
         i++;
 
-        if (string[i] != '@')
+        if (source_route[i] != '@')
             break;
         i++;
 
-        i += feed_domain(string + i);
-    } while (string[i] == ',');
+        if (!parse_domain(argument, index + i, &domain_parsed_position, error))
+            return FALSE;
+        i += domain_parsed_position;
+    } while (source_route[i] == ',');
 
-    return i;
+    *parsed_position = i;
+    return TRUE;
+}
+
+static gboolean
+parse_local_part (const gchar *argument, gint index, gint *parsed_position,
+                  GError **error)
+{
+    gint i;
+    const gchar *local_part;
+
+    local_part = argument + index;
+    if (local_part[0] == '"') {
+        i = 1;
+        while (TRUE) {
+            if (local_part[i] == '\\') {
+                i++;
+                if (IS_TEXT(local_part[i])) {
+                    i++;
+                } else {
+                    RETURN_ERROR("invalid quoted character: <%s>: <0x%x>",
+                                 argument, local_part[i]);
+                }
+            } else if (local_part[i] == '"') {
+                break;
+            } else if (g_ascii_isgraph(local_part[i])) {
+                i++;
+            } else {
+                break;
+            }
+        }
+        if (local_part[i] != '"')
+            RETURN_ERROR("end quote for local part is missing: <%s>",
+                         argument);
+        i++;
+    } else {
+        i = -1;
+        do {
+            i++;
+            for (; local_part[i] && IS_ATOM_TEXT(local_part[i]); i++) {
+            }
+        } while (local_part[i] == '.');
+    }
+
+    *parsed_position = i;
+    return TRUE;
+}
+
+static gboolean
+parse_mailbox (const gchar *argument, gint index, gint *parsed_position,
+               GError **error)
+{
+    gint i = 0;
+    gint local_part_parsed_position, domain_parsed_position;
+
+    if (!parse_local_part(argument, index, &local_part_parsed_position, error))
+        return FALSE;
+    i += local_part_parsed_position;
+
+    if (argument[index + i] != '@')
+        RETURN_ERROR_WITH_POSITION("'@' is missing in path",
+                                   argument, index + i);
+    i++;
+
+    if (!argument[index + i])
+        RETURN_ERROR_WITH_POSITION("domain is missing in path",
+                                   argument, index + i);
+
+    if (!parse_domain(argument, index + i, &domain_parsed_position, error))
+        return FALSE;
+    i += domain_parsed_position;
+
+    *parsed_position = i;
+    return TRUE;
 }
 
 gboolean
@@ -153,95 +263,26 @@ milter_esmtp_parse_mail_from_argument (const gchar  *argument,
     if (argument[1] == '>') {
         index++;
     } else {
-        gint i;
-        const gchar *local_part, *domain;
+        gint parsed_position = 0;
 
-        i = feed_source_route(argument + index);
-        if (i > 0) {
-            if (argument[index + i] != ':')
+        if (!parse_source_route(argument, index, &parsed_position, error))
+            return FALSE;
+        if (parsed_position > 0) {
+            if (argument[index + parsed_position] != ':')
                 RETURN_ERROR_WITH_POSITION("separator ':' is missing "
                                            "after source route",
-                                           argument, index + i);
-            i++;
+                                           argument, index + parsed_position);
+            parsed_position++;
         }
-        index += i;
+        index += parsed_position;
 
-        local_part = argument + index;
-        if (local_part[0] == '"') {
-            i = 1;
-            while (TRUE) {
-                if (local_part[i] == '\\') {
-                    i++;
-                    if (IS_TEXT(local_part[i])) {
-                        i++;
-                    } else {
-                        RETURN_ERROR("invalid quoted character: <%s>: <0x%x>",
-                                     argument, local_part[i]);
-                    }
-                } else if (local_part[i] == '"') {
-                    break;
-                } else if (g_ascii_isgraph(local_part[i])) {
-                    i++;
-                } else {
-                    break;
-                }
-            }
-            if (local_part[i] != '"')
-                RETURN_ERROR("end quote for local part is missing: <%s>",
-                             argument);
-            i++;
-        } else {
-            i = -1;
-            do {
-                i++;
-                for (; local_part[i] && IS_ATOM_TEXT(local_part[i]); i++) {
-                }
-            } while (local_part[i] == '.');
-        }
-        index += i;
-        if (argument[index] != '@')
-            RETURN_ERROR("'@' is missing in path: <%s>", argument);
-        index++;
-        domain = argument + index;
-        if (!domain[0])
-            RETURN_ERROR("domain is missing in path: <%s>", argument);
-        if (domain[0] == '[') {
-            i = 1;
-            while (TRUE) {
-                if (domain[i] == ']') {
-                    break;
-                } else if (domain[i] == '\\') {
-                    i++;
-                    if (IS_TEXT(domain[i])) {
-                        i++;
-                    } else {
-                        RETURN_ERROR("invalid quoted character: <%s>: <0x%x>",
-                                     argument, domain[i]);
-                    }
-                } else {
-                    i++;
-                }
-            }
-            if (domain[i] != ']')
-                RETURN_ERROR("terminate ']' is missing in domain: <%s>",
-                             argument);
-            i++;
-        } else {
-            if (!g_ascii_isalnum(domain[0]))
-                RETURN_ERROR("domain should start with alphabet or digit: <%s>",
-                             argument);
-            i = 0;
-            do {
-                i++;
-                while (domain[i] && (g_ascii_isalnum(domain[i]) || domain[i] == '-')) {
-                    i++;
-                }
-            } while (domain[i] == '.');
-        }
-        index += i;
+        if (!parse_mailbox(argument, index, &parsed_position, error))
+            return FALSE;
+        index += parsed_position;
 
-        if (domain[i] != '>')
-            RETURN_ERROR("terminate '>' is missing in path: <%s>", argument);
+        if (argument[index] != '>')
+            RETURN_ERROR_WITH_POSITION("terminate '>' is missing in path",
+                                       argument, index);
         if (path)
             *path = g_strndup(argument + 1, index - 1);
         index++;

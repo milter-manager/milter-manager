@@ -79,6 +79,11 @@ data_parse_mail_from_argument (void)
     ADD_DATUM("not started with '<'", " <user@example.com>",
               ERROR("argument should start with '<': <|@| <user@example.com>>"),
               NULL, NULL);
+    ADD_DATUM("domain: not started with alphabet nor digit",
+              "<@.example.org:user@example.com>",
+              ERROR("domain should start with alphabet or digit: "
+                    "<<@|@|.example.org:user@example.com>>"),
+              NULL, NULL);
     ADD_DATUM("no source route separator ':'",
               "<@example.org user@example.com>",
               ERROR("separator ':' is missing after source route: "
