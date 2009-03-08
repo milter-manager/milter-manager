@@ -216,6 +216,16 @@ Index: milter/manager/milter-manager-leader.c
 	dot-atom        =       [CFWS] dot-atom-text [CFWS]
 	dot-atom-text   =       1*atext *("." 1*atext)
 
+   cited from Internet Message Format (RFC 2822) 3.2.1. Primitive Tokens:
+        text            =       %d1-9 /         ; Characters excluding CR and LF
+                                %d11 /
+                                %d12 /
+                                %d14-127 /
+                                obs-text
+
+   cited from Internet Message Format (RFC 2822) 3.2.2. Quoted characters:
+        quoted-pair     =       ("\" text) / obs-qp
+
    cited from Internet Message Format (RFC 2822) 3.2.5. Quoted strings:
 	qtext           =       NO-WS-CTL /     ; Non white space controls
 				%d33 /          ; The rest of the US-ASCII
@@ -225,6 +235,13 @@ Index: milter/manager/milter-manager-leader.c
 	quoted-string   =       [CFWS]
 				DQUOTE *([FWS] qcontent) [FWS] DQUOTE
 				[CFWS]
+
+   cited from Internet Message Format (RFC 2822) 4.1. Miscellaneous obsolete tokens:
+	obs-qp          =       "\" (%d0-127)
+	obs-text        =       *LF *CR *(obs-char *LF *CR)
+
+	obs-char        =       %d0-9 / %d11 /          ; %d0-127 except CR and
+				%d12 / %d14-127         ;  LF
 
 
 * milter-client-context supports MilterStepFlags.
