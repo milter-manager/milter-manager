@@ -1,5 +1,11 @@
 2009-03-08  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: add:
+	- MilterCommandDecoder: support ESMTP parameters on MAIL FROM and
+	  RCPT TO.
+	- MilterCommandEncoder support encoding ESMTP parameters on
+	  MAIL FROM and RCPT TO.
+
 	* milter/core/milter-esmtp.c, test/core/test-esmtp.c:
 	path should include '<' and '>'.
 

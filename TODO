@@ -1,3 +1,267 @@
+* MilterCommandDecoder: support ESMTP parameters on MAIL FROM and RCPT TO.
+-----
+Index: milter/core/milter-command-decoder.c
+===================================================================
+--- milter/core/milter-command-decoder.c	(revision 2780)
++++ milter/core/milter-command-decoder.c	(working copy)
+@@ -129,8 +129,8 @@
+                      G_SIGNAL_RUN_LAST,
+                      G_STRUCT_OFFSET(MilterCommandDecoderClass, envelope_from),
+                      NULL, NULL,
+-                     g_cclosure_marshal_VOID__STRING,
+-                     G_TYPE_NONE, 1, G_TYPE_STRING);
++                     _milter_marshal_VOID__STRING_BOXED,
++                     G_TYPE_NONE, 2, G_TYPE_STRING, G_TYPE_HASH_TABLE);
+ 
+     signals[ENVELOPE_RECIPIENT] =
+         g_signal_new("envelope-recipient",
+@@ -139,8 +139,8 @@
+                      G_STRUCT_OFFSET(MilterCommandDecoderClass,
+                                      envelope_recipient),
+                      NULL, NULL,
+-                     g_cclosure_marshal_VOID__STRING,
+-                     G_TYPE_NONE, 1, G_TYPE_STRING);
++                     _milter_marshal_VOID__STRING_BOXED,
++                     G_TYPE_NONE, 2, G_TYPE_STRING, G_TYPE_HASH_TABLE);
+ 
+     signals[DATA] =
+         g_signal_new("data",
+@@ -651,9 +651,14 @@
+     if (null_character_point <= 0)
+         return FALSE;
+ 
++    /* TODO: support parameters
++     * "<recipient-path>\0[PARAMETER1\0PARAMETER2\0...\0]"
++     * PARAMETER = "KEYWORD" or "KEYWORD=VALUE"
++     */
++
+     milter_debug("[command-decoder][envelope-from] <%s>", buffer + 1);
+ 
+-    g_signal_emit(decoder, signals[ENVELOPE_FROM], 0, buffer + 1);
++    g_signal_emit(decoder, signals[ENVELOPE_FROM], 0, buffer + 1, NULL);
+ 
+     return TRUE;
+ }
+@@ -675,9 +680,14 @@
+     if (null_character_point <= 0)
+         return FALSE;
+ 
++    /* TODO: support parameters
++     * "<recipient-path>\0[PARAMETER1\0PARAMETER2\0...\0]"
++     * PARAMETER = "KEYWORD" or "KEYWORD=VALUE"
++     */
++
+     milter_debug("[command-decoder][envelope-recipient] <%s>", buffer + 1);
+ 
+-    g_signal_emit(decoder, signals[ENVELOPE_RECIPIENT], 0, buffer + 1);
++    g_signal_emit(decoder, signals[ENVELOPE_RECIPIENT], 0, buffer + 1, NULL);
+     return TRUE;
+ }
+ 
+Index: milter/core/milter-command-decoder.h
+===================================================================
+--- milter/core/milter-command-decoder.h	(revision 2780)
++++ milter/core/milter-command-decoder.h	(working copy)
+@@ -71,9 +71,11 @@
+     void (*helo)                (MilterCommandDecoder *decoder,
+                                  const gchar *fqdn);
+     void (*envelope_from)       (MilterCommandDecoder *decoder,
+-                                 const gchar *from);
++                                 const gchar *from,
++                                 GHashTable *parameters);
+     void (*envelope_recipient)  (MilterCommandDecoder *decoder,
+-                                 const gchar *recipient);
++                                 const gchar *recipient,
++                                 GHashTable *parameters);
+     void (*data)                (MilterCommandDecoder *decoder);
+     void (*header)              (MilterCommandDecoder *decoder,
+                                  const gchar *name,
+Index: milter/core/milter-marshalers.list
+===================================================================
+--- milter/core/milter-marshalers.list	(revision 2780)
++++ milter/core/milter-marshalers.list	(working copy)
+@@ -10,6 +10,7 @@
+ VOID:STRING,FLAGS,STRING,UINT,STRING,POINTER,STRING
+ VOID:STRING,ENUM
+ VOID:STRING,POINTER,UINT,ENUM
++VOID:STRING,BOXED
+ VOID:POINTER,UINT
+ VOID:UINT,STRING,STRING
+ VOID:OBJECT,POINTER
+Index: test/core/test-command-decoder.c
+===================================================================
+--- test/core/test-command-decoder.c	(revision 2780)
++++ test/core/test-command-decoder.c	(working copy)
+@@ -1,6 +1,6 @@
+ /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+ /*
+- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
++ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
+  *
+  *  This library is free software: you can redistribute it and/or modify
+  *  it under the terms of the GNU Lesser General Public License as published by
+@@ -58,8 +58,10 @@
+ void test_decode_helo_without_null (void);
+ void test_decode_envelope_from (void);
+ void test_decode_envelope_from_without_null (void);
++void test_decode_envelope_from_with_parameters (void);
+ void test_decode_envelope_recipient (void);
+ void test_decode_envelope_recipient_without_null (void);
++void test_decode_envelope_recipient_with_parameters (void);
+ void test_decode_data (void);
+ void test_decode_data_with_garbage (void);
+ void test_decode_header (void);
+@@ -111,8 +113,10 @@
+ static gchar *helo_fqdn;
+ 
+ static gchar *envelope_from;
++static GHashTable *envelope_from_parameters;
+ 
+ static gchar *envelope_recipient;
++static GHashTable *envelope_recipient_parameters;
+ 
+ static gchar *header_name;
+ static gchar *header_value;
+@@ -169,19 +173,27 @@
+ }
+ 
+ static void
+-cb_envelope_from (MilterDecoder *decoder, const gchar *from, gpointer user_data)
++cb_envelope_from (MilterDecoder *decoder, const gchar *from,
++                  GHashTable *parameters, gpointer user_data)
+ {
+     n_envelope_froms++;
+ 
+     envelope_from = g_strdup(from);
++    envelope_from_parameters = parameters;
++    if (envelope_from_parameters)
++        g_hash_table_ref(envelope_from_parameters);
+ }
+ 
+ static void
+-cb_envelope_recipient (MilterDecoder *decoder, const gchar *to, gpointer user_data)
++cb_envelope_recipient (MilterDecoder *decoder, const gchar *to,
++                       GHashTable *parameters, gpointer user_data)
+ {
+     n_envelope_recipients++;
+ 
+     envelope_recipient = g_strdup(to);
++    envelope_recipient_parameters = parameters;
++    if (envelope_recipient_parameters)
++        g_hash_table_ref(envelope_recipient_parameters);
+ }
+ 
+ static void
+@@ -318,8 +330,10 @@
+     helo_fqdn = NULL;
+ 
+     envelope_from = NULL;
++    envelope_from_parameters = NULL;
+ 
+     envelope_recipient = NULL;
++    envelope_recipient_parameters = NULL;
+ 
+     header_name = NULL;
+     header_value = NULL;
+@@ -365,9 +379,13 @@
+ 
+     if (envelope_from)
+         g_free(envelope_from);
++    if (envelope_from_parameters)
++        g_hash_table_unref(envelope_from_parameters);
+ 
+     if (envelope_recipient)
+         g_free(envelope_recipient);
++    if (envelope_recipient_parameters)
++        g_hash_table_unref(envelope_recipient_parameters);
+ 
+     if (header_name)
+         g_free(header_name);
+@@ -1257,6 +1275,8 @@
+     gcut_assert_error(decode());
+     cut_assert_equal_int(1, n_envelope_froms);
+     cut_assert_equal_string(from, envelope_from);
++    gcut_assert_equal_hash_table_string_string(NULL,
++                                               envelope_from_parameters);
+ }
+ 
+ void
+@@ -1276,6 +1296,31 @@
+ }
+ 
+ void
++test_decode_envelope_from_with_parameters (void)
++{
++    const gchar from[] = "<kou@cozmixng.org>";
++
++    g_string_append(buffer, "M");
++    g_string_append(buffer, from);
++    g_string_append_c(buffer, '\0');
++    g_string_append(buffer, "NAME1=VALUE1");
++    g_string_append_c(buffer, '\0');
++    g_string_append(buffer, "NAME2=VALUE2");
++    g_string_append_c(buffer, '\0');
++
++    gcut_assert_error(decode());
++    cut_assert_equal_int(1, n_envelope_froms);
++    cut_assert_equal_string(from, envelope_from);
++
++    cut_omit("TODO: support parameter parsing");
++    gcut_assert_equal_hash_table_string_string(
++        gcut_take_new_hash_table_string_string("NAME1", "VALUE1",
++                                               "NAME2", "VALUE2",
++                                               NULL),
++        envelope_from_parameters);
++}
++
++void
+ test_decode_envelope_recipient (void)
+ {
+     const gchar recipient[] = "<kou@cozmixng.org>";
+@@ -1287,6 +1332,8 @@
+     gcut_assert_error(decode());
+     cut_assert_equal_int(1, n_envelope_recipients);
+     cut_assert_equal_string(recipient, envelope_recipient);
++    gcut_assert_equal_hash_table_string_string(NULL,
++                                               envelope_recipient_parameters);
+ }
+ 
+ void
+@@ -1306,6 +1353,31 @@
+ }
+ 
+ void
++test_decode_envelope_recipient_with_parameters (void)
++{
++    const gchar recipient[] = "<kou@cozmixng.org>";
++
++    g_string_append(buffer, "R");
++    g_string_append(buffer, recipient);
++    g_string_append_c(buffer, '\0');
++    g_string_append(buffer, "NAME1=VALUE1");
++    g_string_append_c(buffer, '\0');
++    g_string_append(buffer, "NAME2=VALUE2");
++    g_string_append_c(buffer, '\0');
++
++    gcut_assert_error(decode());
++    cut_assert_equal_int(1, n_envelope_recipients);
++    cut_assert_equal_string(recipient, envelope_recipient);
++
++    cut_omit("TODO: support parameter parsing");
++    gcut_assert_equal_hash_table_string_string(
++        gcut_take_new_hash_table_string_string("NAME1", "VALUE1",
++                                               "NAME2", "VALUE2",
++                                               NULL),
++        envelope_recipient_parameters);
++}
++
++void
+ test_decode_data (void)
+ {
+     g_string_append(buffer, "T");
+-----
+* MilterCommandEncoder support encoding ESMTP parameters on
+  MAIL FROM and RCPT TO.
 * if all alive child milters don't need to receive the
   command, children do nothing and leader returns response
   immediately not returning PROGRESS. For example:
