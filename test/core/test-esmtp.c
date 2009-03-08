@@ -84,6 +84,11 @@ data_parse_mail_from_argument (void)
               ERROR("domain should start with alphabet or digit: "
                     "<<@|@|.example.org:user@example.com>>"),
               NULL, NULL);
+    ADD_DATUM("domain: terminated ']' is missing",
+              "<@[192.168.1.1 :user@example.com>",
+              ERROR("terminate ']' is missing in domain: "
+                    "<<@[192.168.1.1|@| :user@example.com>>"),
+              NULL, NULL);
     ADD_DATUM("no source route separator ':'",
               "<@example.org user@example.com>",
               ERROR("separator ':' is missing after source route: "

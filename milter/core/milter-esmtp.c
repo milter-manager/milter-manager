@@ -110,7 +110,7 @@ parse_domain (const gchar *argument, gint index, gint *parsed_position,
     if (domain[0] == '[') {
         i = 1;
         while (TRUE) {
-            if (domain[i] == ']') {
+            if (domain[i] == '[' || domain[i] == ']') {
                 break;
             } else if (domain[i] == '\\') {
                 i++;
@@ -121,8 +121,13 @@ parse_domain (const gchar *argument, gint index, gint *parsed_position,
                                                "in domain",
                                                argument, index + i);
                 }
-            } else {
+            } else if (g_ascii_isspace(domain[i])) {
+                break;
+            } else if (g_ascii_iscntrl(domain[i]) ||
+                       g_ascii_isgraph(domain[i])) {
                 i++;
+            } else {
+                break;
             }
         }
         if (domain[i] != ']')
