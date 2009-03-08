@@ -255,6 +255,55 @@ parse_mailbox (const gchar *argument, gint index, gint *parsed_position,
 }
 
 static gboolean
+parse_path (const gchar *argument, gint index, gint *parsed_position,
+            gchar **parsed_path, GError **error)
+{
+    gint i = 0;
+    const gchar *path;
+
+    path = argument + index;
+    if (path[i] != '<') {
+        *parsed_position = 0;
+        return TRUE;
+    }
+
+    i++;
+    if (path[i] == '>') {
+        i++;
+    } else {
+        gint source_route_parsed_position;
+        gint mailbox_parsed_position;
+
+        if (!parse_source_route(argument, index + i,
+                                &source_route_parsed_position, error))
+            return FALSE;
+
+        i += source_route_parsed_position;
+        if (source_route_parsed_position > 0) {
+            if (argument[index + i] != ':')
+                RETURN_ERROR_WITH_POSITION("separator ':' is missing "
+                                           "after source route",
+                                           argument, index + i);
+            i++;
+        }
+
+        if (!parse_mailbox(argument, index + i, &mailbox_parsed_position, error))
+            return FALSE;
+        i += mailbox_parsed_position;
+
+        if (path[i] != '>')
+            RETURN_ERROR_WITH_POSITION("terminate '>' is missing in path",
+                                       argument, index + i);
+        if (parsed_path)
+            *parsed_path = g_strndup(path + 1, i - 1);
+        i++;
+    }
+
+    *parsed_position = i;
+    return TRUE;
+}
+
+static gboolean
 parse_parameters (const gchar *argument, gint index, gint *parsed_position,
                   GHashTable **parameters, GError **error)
 {
@@ -341,32 +390,12 @@ milter_esmtp_parse_mail_from_argument (const gchar  *argument,
         RETURN_ERROR_WITH_POSITION("argument should start with '<'",
                                    argument, 0);
 
-    index++;
-    if (argument[1] == '>') {
-        index++;
-    } else {
-        if (!parse_source_route(argument, index, &parsed_position, error))
-            return FALSE;
-        if (parsed_position > 0) {
-            if (argument[index + parsed_position] != ':')
-                RETURN_ERROR_WITH_POSITION("separator ':' is missing "
-                                           "after source route",
-                                           argument, index + parsed_position);
-            parsed_position++;
-        }
-        index += parsed_position;
-
-        if (!parse_mailbox(argument, index, &parsed_position, error))
-            return FALSE;
-        index += parsed_position;
-
-        if (argument[index] != '>')
-            RETURN_ERROR_WITH_POSITION("terminate '>' is missing in path",
-                                       argument, index);
-        if (path)
-            parsed_path = g_strndup(argument + 1, index - 1);
-        index++;
+    if (!parse_path(argument, index, &parsed_position,
+                    path ? &parsed_path : NULL,
+                    error)) {
+        return FALSE;
     }
+    index += parsed_position;
 
     if (!parse_parameters(argument, index, &parsed_position,
                           parameters ? &parsed_parameters : NULL,
