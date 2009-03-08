@@ -24,7 +24,8 @@
 
 #include <gcutter.h>
 
-#if defined(CUTTER_CHECK_VERSION) && CUTTER_CHECK_VERSION(1, 0, 7)
+#if defined(CUTTER_CHECK_VERSION)
+#  if CUTTER_CHECK_VERSION(1, 0, 7)
 
 void data_parse_mail_from_argument (void);
 void data_parse_rcpt_to_argument (void);
@@ -273,6 +274,7 @@ test_parse_rcpt_to_argument (gconstpointer data)
     cut_trace(assert_parse_envelope_command_argument(data, success));
 }
 
+#  endif
 #endif
 
 /*

@@ -1,3 +1,8 @@
+2009-03-09  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/core/milter-esmtp.c, test/core/test-esmtp.c: make
+	buildable on FreeBSD.
+
 2009-03-08  Kouhei Sutou  <kou@cozmixng.org>
 
 	* doc/configuration.rd{,.ja}, binding/ruby/lib/milter/manager.rb:

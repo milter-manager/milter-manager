@@ -72,7 +72,7 @@ milter_esmtp_error_quark (void)
     ((1 <= character && character <= 9) ||      \
      character == 11 ||                         \
      character == 12 ||                         \
-     (14 <= character && character <= 127))
+     (14 <= character && character <= 126))
 
 #define RETURN_ERROR(...) G_STMT_START                  \
 {                                                       \
@@ -319,7 +319,7 @@ parse_parameters (const gchar *argument, gint index, gint *parsed_position,
 
     while (argument[index + local_index] == ' ') {
         gint i, current_argument_index;
-        gint keyword_length, value_length;
+        gint keyword_length, value_length = 0;
         const gchar *keyword, *value = NULL;
 
         current_argument_index = index + local_index + 1;
