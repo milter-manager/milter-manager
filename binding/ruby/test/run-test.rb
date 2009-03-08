@@ -24,8 +24,10 @@ test_unit_dir = top + "test-unit" + "lib"
 $LOAD_PATH.unshift(test_unit_dir.to_s)
 require 'test/unit'
 
-if ENV["NO_MAKE"] != "make" and system("which make > /dev/null")
-  system("make -C #{top.to_s.dump} > /dev/null") or exit(1)
+if ENV["NO_MAKE"] != "yes"
+  make = "make"
+  make = "gmake" if system("which gmake > /dev/null")
+  system("#{make} -C #{top.to_s.dump} > /dev/null") or exit(1)
 end
 
 $LOAD_PATH.unshift((top + "src" + "toolkit" + ".libs").to_s)

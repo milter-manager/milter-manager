@@ -1,5 +1,7 @@
 2009-03-09  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/test/run-test.rb: support gmake.
+
 	* milter/core/milter-esmtp.c, test/core/test-esmtp.c: make
 	buildable on FreeBSD.
 
