@@ -255,11 +255,13 @@ parse_mailbox (const gchar *argument, gint index, gint *parsed_position,
 }
 
 static gboolean
-parse_path (const gchar *argument, gint index, gint *parsed_position,
+parse_path (gboolean accept_postmaster_path,
+            const gchar *argument, gint index, gint *parsed_position,
             gchar **parsed_path, GError **error)
 {
     gint i = 0;
     const gchar *path;
+    const gchar postmaster_path[] = "<Postmaster>";
 
     path = argument + index;
     if (path[i] != '<') {
@@ -270,6 +272,11 @@ parse_path (const gchar *argument, gint index, gint *parsed_position,
     i++;
     if (path[i] == '>') {
         i++;
+    } else if (accept_postmaster_path &&
+               g_str_has_prefix(path, postmaster_path)) {
+        i = strlen(postmaster_path);
+        if (parsed_path)
+            *parsed_path = g_strndup(postmaster_path + 1, i - 2);
     } else {
         gint source_route_parsed_position;
         gint mailbox_parsed_position;
@@ -372,11 +379,12 @@ merge_parameters (GHashTable *destination, GHashTable *source)
     g_hash_table_foreach(source, merge_parameter, destination);
 }
 
-gboolean
-milter_esmtp_parse_mail_from_argument (const gchar  *argument,
-                                       gchar       **path,
-                                       GHashTable  **parameters,
-                                       GError      **error)
+static gboolean
+milter_esmtp_parse_envelope_command_argument (gboolean accept_postmaster_path,
+                                              const gchar  *argument,
+                                              gchar       **path,
+                                              GHashTable  **parameters,
+                                              GError      **error)
 {
     gint index = 0;
     gint parsed_position;
@@ -390,7 +398,7 @@ milter_esmtp_parse_mail_from_argument (const gchar  *argument,
         RETURN_ERROR_WITH_POSITION("argument should start with '<'",
                                    argument, 0);
 
-    if (!parse_path(argument, index, &parsed_position,
+    if (!parse_path(accept_postmaster_path, argument, index, &parsed_position,
                     path ? &parsed_path : NULL,
                     error)) {
         return FALSE;
@@ -431,6 +439,32 @@ milter_esmtp_parse_mail_from_argument (const gchar  *argument,
     }
 
     return TRUE;
+}
+
+gboolean
+milter_esmtp_parse_mail_from_argument (const gchar  *argument,
+                                       gchar       **path,
+                                       GHashTable  **parameters,
+                                       GError      **error)
+{
+    return milter_esmtp_parse_envelope_command_argument(FALSE,
+                                                        argument,
+                                                        path,
+                                                        parameters,
+                                                        error);
+}
+
+gboolean
+milter_esmtp_parse_rcpt_to_argument (const gchar  *argument,
+                                     gchar       **path,
+                                     GHashTable  **parameters,
+                                     GError      **error)
+{
+    return milter_esmtp_parse_envelope_command_argument(TRUE,
+                                                        argument,
+                                                        path,
+                                                        parameters,
+                                                        error);
 }
 
 

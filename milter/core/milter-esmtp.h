@@ -37,6 +37,10 @@ gboolean         milter_esmtp_parse_mail_from_argument (const gchar  *argument,
                                                         gchar       **path,
                                                         GHashTable  **parameters,
                                                         GError      **error);
+gboolean         milter_esmtp_parse_rcpt_to_argument   (const gchar  *argument,
+                                                        gchar       **path,
+                                                        GHashTable  **parameters,
+                                                        GError      **error);
 G_END_DECLS
 
 #endif /* __MILTER_ESMTP_H__ */

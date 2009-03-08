@@ -1,5 +1,8 @@
 2009-03-08  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-esmtp.[ch], test/core/test-esmtp.c:
+	support RCPT TO.
+
 	* milter/core/milter-esmtp.c: cleanup
 	milter_esmtp_parse_mail_from_argument().
 

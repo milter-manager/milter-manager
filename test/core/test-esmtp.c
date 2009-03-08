@@ -27,7 +27,9 @@
 #if defined(CUTTER_CHECK_VERSION) && CUTTER_CHECK_VERSION(1, 0, 7)
 
 void data_parse_mail_from_argument (void);
+void data_parse_rcpt_to_argument (void);
 void test_parse_mail_from_argument (gconstpointer data);
+void test_parse_rcpt_to_argument (gconstpointer data);
 
 static gchar *actual_path;
 static GHashTable *actual_parameters;
@@ -59,9 +61,6 @@ teardown (void)
         g_error_free(actual_error);
 }
 
-void
-data_parse_mail_from_argument (void)
-{
 #define ADD_DATUM(label, argument, error, path, parameters)     \
     gcut_add_datum(label,                                       \
                    "argument", G_TYPE_STRING, argument,         \
@@ -74,6 +73,9 @@ data_parse_mail_from_argument (void)
                 MILTER_ESMTP_ERROR_INVALID_FORMAT,      \
                 __VA_ARGS__)
 
+static void
+data_parse_envelope_command_argument (void)
+{
     ADD_DATUM("NULL argument", NULL, ERROR("argument should not be NULL"),
               NULL, NULL);
     ADD_DATUM("not started with '<'", " <user@example.com>",
@@ -198,28 +200,42 @@ data_parse_mail_from_argument (void)
               "user@example.org",
               gcut_hash_table_string_string_new("KEY-WORD", NULL,
                                                 NULL));
-
-#undef ERROR
-#undef ADD_DATUM
 }
 
 void
-test_parse_mail_from_argument (gconstpointer data)
+data_parse_mail_from_argument (void)
 {
-    gboolean success;
-    const gchar *argument, *path;
+    data_parse_envelope_command_argument();
+    ADD_DATUM("postmaster path",
+              "<Postmaster>",
+              ERROR("'@' is missing in mailbox: <<Postmaster|@|>>"),
+              NULL, NULL);
+}
+
+void
+data_parse_rcpt_to_argument (void)
+{
+    data_parse_envelope_command_argument();
+    ADD_DATUM("postmaster path",
+              "<Postmaster>",
+              NULL,
+              "Postmaster",
+              NULL);
+}
+#undef ERROR
+#undef ADD_DATUM
+
+static void
+assert_parse_envelope_command_argument (gconstpointer data, gboolean success)
+{
+    const gchar *path;
     GError *error;
     GHashTable *parameters;
 
-    argument = gcut_data_get_string(data, "argument");
     error = (GError *)gcut_data_get_boxed(data, "error");
     path = gcut_data_get_string(data, "path");
     parameters = (GHashTable *)gcut_data_get_boxed(data, "parameters");
 
-    success = milter_esmtp_parse_mail_from_argument(argument,
-                                                    &actual_path,
-                                                    &actual_parameters,
-                                                    &actual_error);
     gcut_assert_equal_error(error, actual_error);
     if (error)
         cut_assert_false(success);
@@ -227,6 +243,34 @@ test_parse_mail_from_argument (gconstpointer data)
         cut_assert_true(success);
     cut_assert_equal_string(path, actual_path);
     gcut_assert_equal_hash_table_string_string(parameters, actual_parameters);
+}
+
+void
+test_parse_mail_from_argument (gconstpointer data)
+{
+    gboolean success;
+    const gchar *argument;
+
+    argument = gcut_data_get_string(data, "argument");
+    success = milter_esmtp_parse_mail_from_argument(argument,
+                                                    &actual_path,
+                                                    &actual_parameters,
+                                                    &actual_error);
+    cut_trace(assert_parse_envelope_command_argument(data, success));
+}
+
+void
+test_parse_rcpt_to_argument (gconstpointer data)
+{
+    gboolean success;
+    const gchar *argument;
+
+    argument = gcut_data_get_string(data, "argument");
+    success = milter_esmtp_parse_rcpt_to_argument(argument,
+                                                  &actual_path,
+                                                  &actual_parameters,
+                                                  &actual_error);
+    cut_trace(assert_parse_envelope_command_argument(data, success));
 }
 
 #endif
