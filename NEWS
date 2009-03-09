@@ -2,6 +2,59 @@
 
 = NEWS --- The history of milter manager
 
+== 0.9.0: 2009-03-10
+
+Speed and stability are improved.
+
+=== milter-manager
+
+  * Added a feature to change group of UNIX domain socket.
+  * Speed up:
+    * Changed to send milter commands in a packet.
+    * Changed to process mail body on memory as far as possible.
+  * configure:
+    * --with-rcddir: Add a option to specify pkgsrc's rc.d directory.
+  * Bug fixes:
+    * Fixed a bug that a file descriptor is too closed.
+    * Fixed a bug that 'temporary failure' is reported as
+      'reject' in log.
+
+=== New applicable conditions
+
+  * sendmail-compatible:
+    It's a feature to avoid macro related incompatibility
+    between Sendmail's milter implementation and Postfix's
+    milter implementation.
+    (ref. ((<Postfix before-queue Milter support -
+    Workarounds|URL:http://www.postfix.org/MILTER_README.html#workarounds>)))
+
+    It's not an applicable condition but it uses applicable
+    condition framework to convert macros passed to a milter
+    by MTA. dnsbl-milter can be worked with Postfix without
+    a patch(*) by the feature.
+
+    (*) ((<[2594714] Postfix support|URL:http://sourceforge.net/tracker/?func=detail&atid=1015126&aid=2594714&group_id=210782>))
+
+  * authentication: It's an applicable condition to apply a
+    milter only when a connection is authenticated or
+    unauthenticated.
+=== milter-performance-check
+
+  * Added a feature to send a file as a mail.
+  * Added a feature to send each file under specified
+    directories as a mail.
+  * --from, --recipient, --force-from, --force-recipient:
+    Added features to override from address and/or recipient
+    address.
+  * --interval: Added a feature to send a mail at intervals.
+  * --period: Added a feature to send mails at the same
+    interval in period.
+  * --shuffle: Added a feature to send mails in random order.
+
+=== milter-manager-log-analyzer
+
+  * [非互換]: 処理メールグラフに「abort」時の項目を追加
+
 == 0.8.0: 2009-02-06
 
   * New features

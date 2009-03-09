@@ -1,3 +1,7 @@
+2009-03-09  Kouhei Sutou  <kou@cozmixng.org>
+
+	* NEWS*: add entries for 0.9.0.
+
 2009-03-09  Kouhei Sutou  <kou@clear-code.com>
 
 	* doc/install-to-centos.rd*: add missing package to be installed.

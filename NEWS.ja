@@ -2,6 +2,57 @@
 
 = NEWS --- milter managerの歴史
 
+== 0.9.0: 2009-03-10
+
+速度と安定性が向上しました。
+
+=== milter-manager
+
+  * UNIXドメインソケットのグループを指定する機能の追加
+  * 高速化:
+    * 1つのパケットで多くのmilterコマンドを送信するように変更
+    * メール本文をできるだけオンメモリで処理するように変更
+  * configure:
+    * --with-rcddir: pkgsrcのrc.dディレクトリを指定するオプ
+      ションの追加
+  * バグ修正:
+    * ファイルディスクリプタをcloseしすぎていた問題の修正
+    * temporary failureをrejectとログに出力していた問題の修
+      正
+
+=== 新適用規則
+
+  * sendmail-compatible:
+    Sendmailのmilter実装とPostfixのmilter実装間にある、マク
+    ロに関する非互換を回避する機能
+    （参考: ((<Postfix before-queue Milterサポート - 回避方法|URL:http://www.postfix-jp.info/trans-2.3/jhtml/MILTER_README.html#workarounds>))）
+
+    適用規則ではないが、適用規則の枠組みを使ってMTAから
+    mitlerに渡されるマクロを変換している。この機能により、
+    dnsbl-milterがパッチ(*)なしでPostfixでも動くようになる。
+
+    (*) ((<[2594714] Postfix support|URL:http://sourceforge.net/tracker/?func=detail&atid=1015126&aid=2594714&group_id=210782>))
+
+  * authentication: 認証時あるいは非認証時のみmilterを適用す
+    る規則
+
+=== milter-performance-check
+
+  * ファイルを1通のメールとして送信する機能の追加
+  * 指定したディレクトリ以下にあるファイルをそれぞれ1通のメー
+    ルとして送信する機能の追加
+  * --from, --recipient, --force-from, --force-recipient:
+    差出アドレス・宛先アドレスの上書き機能の追加
+  * --interval: 一定間隔でメールを送信する機能の追加
+  * --period: 指定した期間内に一定の間隔でメールを送信する機
+    能の追加
+  * --shuffle: 送信順序をランダムに並び替えてメールを送信す
+    る機能の追加
+
+=== milter-manager-log-analyzer
+
+  * [非互換]: 処理メールグラフに「abort」時の項目を追加
+
 == 0.8.0: 2009-02-06
 
   * 新機能
