@@ -54,7 +54,7 @@ Speed and stability are improved.
 
 === milter-manager-log-analyzer
 
-  * [非互換]: 処理メールグラフに「abort」時の項目を追加
+  * [incompatible]: Added an item "abort" to processed mail graph.
 
 == 0.8.0: 2009-02-06
 
