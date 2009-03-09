@@ -36,9 +36,9 @@ We work at ~/src/. We will install milter manager into /usr/local/.
 
   % mkdir -p ~/src/
   % cd ~/src/
-  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-0.8.1.tar.gz
-  % tar xvzf milter-manager-0.8.1.tar.gz
-  % cd milter-manager-0.8.1
+  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-0.9.0.tar.gz
+  % tar xvzf milter-manager-0.9.0.tar.gz
+  % cd milter-manager-0.9.0
   % ./configure
   % make
   % sudo make install

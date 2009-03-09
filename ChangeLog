@@ -1,5 +1,7 @@
 2009-03-09  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/install-*.rd*: 0.8.1 -> 0.9.0.
+
 	* html/index.html*: IPA project is finished.
 	* doc/reference/milter-manager-docs.sgml: API reference isn't
 	public yet.

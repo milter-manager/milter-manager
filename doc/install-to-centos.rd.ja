@@ -5,7 +5,7 @@
 == このドキュメントについて
 
 CentOSに特化したmilter managerのインストール方法について説明
-します。CentSSに依存しない一般的なインストール情報は((<インス
+します。CentOSに依存しない一般的なインストール情報は((<インス
 トール|install.rd.ja>))を見てください。
 
 CentOSのバージョンは5.2を想定しています。また、root権限での
@@ -62,9 +62,9 @@ Ruby/GLib2 0.16.0を使います。
 /usr/local/以下にインストールします。
 
   % cd ~/src/
-  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-0.8.1.tar.gz
-  % tar xvzf milter-manager-0.8.1.tar.gz
-  % cd milter-manager-0.8.1
+  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-0.9.0.tar.gz
+  % tar xvzf milter-manager-0.9.0.tar.gz
+  % cd milter-manager-0.9.0
   % ./configure
   % make
   % sudo make install
