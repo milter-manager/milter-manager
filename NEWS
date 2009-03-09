@@ -38,6 +38,7 @@ Speed and stability are improved.
   * authentication: It's an applicable condition to apply a
     milter only when a connection is authenticated or
     unauthenticated.
+
 === milter-performance-check
 
   * Added a feature to send a file as a mail.
