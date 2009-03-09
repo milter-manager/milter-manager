@@ -17,7 +17,7 @@ CentOSのバージョンは5.2を想定しています。また、root権限で�
 以下のパッケージをインストールすることにより、関連するパッケー
 ジもインストールされます。
 
-  % sudo yum install -y libtool intltool glib2-devel ruby-devel
+  % sudo yum install -y libtool intltool gcc glib2-devel ruby ruby-devel
 
 MTAは標準でインストールされているSendmailを利用することとします。
 
