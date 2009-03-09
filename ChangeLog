@@ -1,5 +1,9 @@
 2009-03-09  Kouhei Sutou  <kou@clear-code.com>
 
+	* html/index.html*: IPA project is finished.
+	* doc/reference/milter-manager-docs.sgml: API reference isn't
+	public yet.
+
 	* TODO: add:
 	- MilterCommandDecoder: support ESMTP parameters on MAIL FROM and
 	  RCPT TO.

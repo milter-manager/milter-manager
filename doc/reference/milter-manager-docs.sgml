@@ -27,18 +27,18 @@
     <xi:include href="configuration.xml"/>
   </part>
 
-  <part id="reference">
+  <!--part id="reference">
     <title>Reference</title>
     <chapter id="libmilter">
       <title>libmilter</title>
       <xi:include href="xml/mfapi.xml"/>
     </chapter>
-    <!--chapter id="milter-core">
+    <chapter id="milter-core">
       <title>milter-core</title>
       <xi:include href="xml/core.xml"/>
       <xi:include href="xml/milter-error-emittable.xml"/>
       <xi:include href="xml/milter-finished-emittable.xml"/>
-    </chapter-->
+    </chapter>
     <chapter id="milter-client">
       <title>milter-client</title>
       <xi:include href="xml/client.xml"/>
@@ -53,7 +53,7 @@
   <index id="index-all">
     <title>Index of all symbols</title>
   </index>
-  <!--index id="index-deprecated" role="deprecated">
+  <index id="index-deprecated" role="deprecated">
     <title>Index of deprecated symbols</title>
   </index>
   <index id="index-1-0-0" role="1.0.0">
