@@ -742,7 +742,7 @@ define_applicable_condition do ... end内で設定できる項目は以
        end
      end
 
-: define_envelope_from_stopper {|context, from, parameters| ...}
+: define_envelope_from_stopper {|context, from| ...}
 
    SMTPのMAIL FROMコマンドで渡された送信元アドレスを利用して
    子milterを適用するかどうかを判断します。このときに利用で
@@ -759,16 +759,10 @@ define_applicable_condition do ... end内で設定できる項目は以
       MAIL FROMコマンドに渡された送信元です。
       例えば、"<sender@example.com>"となります。
 
-   : parameters
-      MAIL FROMコマンドに渡されたESMTPのパラメータです。
-      例えば、"RET=HDRS ENVID=QQ314159"というパラメータが渡
-      された場合は{"RET" => "HDRS", "ENVID" => "QQ314159"}と
-      なります。
-
    以下はexample.comから送信された場合はmilterを適用しない例
    です。
 
-     condition.define_envelope_from_stopper do |context, from, parameters|
+     condition.define_envelope_from_stopper do |context, from|
        if /@example.com>\z/ =~ from
          true
        else
@@ -776,7 +770,7 @@ define_applicable_condition do ... end内で設定できる項目は以
        end
      end
 
-: define_envelope_recipient_stopper {|context, recipient, parameters| ...}
+: define_envelope_recipient_stopper {|context, recipient| ...}
 
    SMTPのRCPT TOコマンドで渡された宛先アドレスを利用して子
    milterを適用するかどうかを判断します。このときに利用でき
@@ -794,16 +788,9 @@ define_applicable_condition do ... end内で設定できる項目は以
       RCPT TOコマンドに渡された宛先です。
       例えば、"<receiver@example.com>"となります。
 
-   : parameters
-      RCPT TOコマンドに渡されたESMTPのパラメータです。
-      例えば、"NOTIFY=SUCCESS ORCPT=rfc822;user@example.com"
-      というパラメータが渡された場合は
-      {"NOTIFY" => "SUCCESS", "ORCPT" => "rfc822;user@example.com"}
-      となります。
-
    以下はml.example.com宛の場合はmilterを適用しない例です。
 
-     condition.define_envelope_recipient_stopper do |context, recipient, parameters|
+     condition.define_envelope_recipient_stopper do |context, recipient|
        if /@ml.example.com>\z/ =~ recipient
          true
        else

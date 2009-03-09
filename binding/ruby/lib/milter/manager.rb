@@ -741,7 +741,7 @@ module Milter::Manager
               context = ChildContext.new(child, children)
               @envelope_from_stoppers.any? do |stopper|
                 ConfigurationLoader.guard(false) do
-                  stopper.call(context, from, {})
+                  stopper.call(context, from)
                 end
               end
             end
@@ -752,7 +752,7 @@ module Milter::Manager
               context = ChildContext.new(child, children)
               @envelope_recipient_stoppers.any? do |stopper|
                 ConfigurationLoader.guard(false) do
-                  stopper.call(context, recipient, {})
+                  stopper.call(context, recipient)
                 end
               end
             end

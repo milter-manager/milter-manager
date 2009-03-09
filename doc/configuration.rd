@@ -748,7 +748,7 @@ There is no required item.
        end
      end
 
-: define_envelope_from_stopper {|context, from, parameters| ...}
+: define_envelope_from_stopper {|context, from| ...}
 
    Decides whether the child milter is applied or not with
    envelope from address passed on MAIL FROM command of
@@ -765,15 +765,10 @@ There is no required item.
       The envelope from address passed on MAIL FROM command.
       For example, "<sender@example.com>".
 
-   : parameters
-      The ESMTP parameters passed on MAIL FROM command.
-      For example, {"RET" => "HDRS", "ENVID" => "QQ314159"} for
-      "RET=HDRS ENVID=QQ314159" parameters.
-
    Here is an example that we stop the child milter when
    mails are sent from example.com.
 
-     condition.define_envelope_from_stopper do |context, from, parameters|
+     condition.define_envelope_from_stopper do |context, from|
        if /@example.com>\z/ =~ from
          true
        else
@@ -781,7 +776,7 @@ There is no required item.
        end
      end
 
-: define_envelope_recipient_stopper {|context, recipient, parameters| ...}
+: define_envelope_recipient_stopper {|context, recipient| ...}
 
    Decides whether the child milter is applied or not with
    envelope recipient address passed on RCPT TO command of
@@ -798,12 +793,6 @@ There is no required item.
    : recipient
       The envelope recipient address passed on RCPT TO command.
       For example, "<receiver@example.com>".
-
-   : parameters
-      The ESMTP parameters passed on RCPT TO command.
-      For example,
-      {"NOTIFY" => "SUCCESS", "ORCPT" => "rfc822;user@example.com"}
-      for "NOTIFY=SUCCESS ORCPT=rfc822;user@example.com" parameters.
 
    Here is an example that we stop the child milter when
    mails are sent to ml.example.com.

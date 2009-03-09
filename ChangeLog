@@ -1,3 +1,9 @@
+2009-03-09  Kouhei Sutou  <kou@clear-code.com>
+
+	* TODO: add:
+	- MilterCommandDecoder: support ESMTP parameters on MAIL FROM and
+	  RCPT TO.
+
 2009-03-09  Kouhei Sutou  <kou@cozmixng.org>
 
 	* binding/ruby/test/run-test.rb: support gmake.
@@ -6,14 +12,6 @@
 	buildable on FreeBSD.
 
 2009-03-08  Kouhei Sutou  <kou@cozmixng.org>
-
-	* doc/configuration.rd{,.ja}, binding/ruby/lib/milter/manager.rb:
-	pass ESMTP parameters to stoppers on MAIL FROM and RCPT TO but
-	not implemented yet. They are always {} for now.
-
-	* data/applicable-conditions/authentication.conf,
-	data/applicable-conditions/sendmail-compatible.conf: follow the
-	above change.
 
 	* TODO: add:
 	- MilterCommandDecoder: support ESMTP parameters on MAIL FROM and
