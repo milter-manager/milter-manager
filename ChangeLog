@@ -1,3 +1,8 @@
+2009-03-10  Kouhei Sutou  <kou@clear-code.com>
+
+	* html/index.html, html/index.html.ja, doc/reference/sf-logo.html:
+	use new SF.net logo and Piwik.
+
 2009-03-09  Kouhei Sutou  <kou@cozmixng.org>
 
 	* NEWS*: add entries for 0.9.0.
