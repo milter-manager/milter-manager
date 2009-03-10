@@ -58,6 +58,18 @@ for run-script on "pkgsrc" platform:
     Package Options  : prefix=/etc
   ...
 
+For pkgsrc, --with-rcddir option is provided. You can use
+the following options to use the same configuration as the
+above:
+
+  % ./configure --with-package-platform=pkgsrc --with-rcddir=/etc/rc.d
+  ...
+  Configure Result:
+
+    Package Platform : pkgsrc
+    Package Options  : rcddir=/etc/rc.d
+  ...
+
 Currently, "debian", "redhat", "freebsd" (and "pkgsrc") are
 supported as platform. You can specify other platform.
 
@@ -93,7 +105,3 @@ installing:
 
 In this case, platform is "debian" and additional
 information is none.
-
-== ...
-
-...

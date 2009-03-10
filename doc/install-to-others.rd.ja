@@ -57,6 +57,18 @@ milter-managerがサポートしていないプラットフォームかのどち
     Package Options  : prefix=/etc
   ...
 
+pkgsrcのために、特別に--with-rcddirオプションが用意してありま
+す。このオプションを使うと、上述の設定は以下のようなオプショ
+ンになります。
+
+  % ./configure --with-package-platform=pkgsrc --with-rcddir=/etc/rc.d
+  ...
+  Configure Result:
+
+    Package Platform : pkgsrc
+    Package Options  : rcddir=/etc/rc.d
+  ...
+
 現在サポートしているプラットフォームはdebian, redhat,
 freebsd(, pkgsrc)ですが、独自のプラットフォームを指定するこ
 ともできます。
@@ -94,7 +106,3 @@ milterの登録方法の詳細は((<設定|configuration.rd.ja>))を見て
 
 この場合は、プラットフォームはdebianで、付加情報は指定されて
 いないということになります。
-
-== ...
-
-...
