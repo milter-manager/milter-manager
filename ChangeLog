@@ -1,5 +1,7 @@
 2009-03-10  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/reference/Makefile.am (upload): don't use ssh.
+
 	* html/Makefile.am (upload): don't use ssh.
 
 	* configure.ac: use web.sourceforge.net instead of shell.sourceforge.net.
