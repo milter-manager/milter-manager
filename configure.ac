@@ -355,7 +355,7 @@ if test -n "$SF_USER"; then
 fi
 AC_SUBST(SF_USER_OPTION)
 
-SF_HOST="shell.sourceforge.net"
+SF_HOST="web.sourceforge.net"
 if test -n "$SF_USER"; then
    SF_HOST="$SF_USER@$SF_HOST"
 fi

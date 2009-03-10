@@ -1,5 +1,7 @@
 2009-03-10  Kouhei Sutou  <kou@clear-code.com>
 
+	* configure.ac: use web.sourceforge.net instead of shell.sourceforge.net.
+
 	* doc/install-to-others.rd*: describe about --with-rcddir.
 
 	* doc/install.rd, doc/install.rd.ja: Cutter 1.0.6 had been released.
