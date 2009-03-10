@@ -1,3 +1,7 @@
+* bug? dkim-filter returns skip twice for large body mail.
+  (large body > (MILTER_CHUNK_SIZE == 65535))
+  It seems that MilterMangerChildren sends two body packets before receiving
+  response from dkim-filter.
 * MilterCommandDecoder: support ESMTP parameters on MAIL FROM and RCPT TO.
 -----
 Index: milter/core/milter-command-decoder.c
