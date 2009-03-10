@@ -1,5 +1,7 @@
 2009-03-10  Kouhei Sutou  <kou@clear-code.com>
 
+	* html/Makefile.am (upload): don't use ssh.
+
 	* configure.ac: use web.sourceforge.net instead of shell.sourceforge.net.
 
 	* doc/install-to-others.rd*: describe about --with-rcddir.

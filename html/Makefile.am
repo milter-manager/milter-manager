@@ -18,7 +18,6 @@ MAINTAINER_CLEANFILES = $(generated_images)
 upload: $(web_contents)
 	for file in $(web_contents); do				\
 	  scp $(srcdir)/$$file $(SF_HTDOCS)/;			\
-	  ssh $(SF_HOST) chmod g+w $(SF_HTDOCS_PATH)/$$file;	\
 	done
 
 SUFFIXES = .svg .png
