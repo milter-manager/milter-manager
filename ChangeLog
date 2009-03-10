@@ -1,5 +1,7 @@
 2009-03-10  Kouhei Sutou  <kou@clear-code.com>
 
+	* configure.ac: 0.9.0 -> 0.9.1. I hope that 0.9.0 will be 1.0.0. :)
+
 	* doc/reference/Makefile.am (upload): don't use ssh.
 
 	* html/Makefile.am (upload): don't use ssh.
