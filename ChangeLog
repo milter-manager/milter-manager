@@ -1,5 +1,9 @@
 2009-03-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: add:
+	- milter manager's header files should be installed into
+	  include/milter/manater/ not include/milter-manager/.
+
 	* TODO: add
 	- bug? dkim-filter returns skip twice for large body mail.
 	  (large body > (MILTER_CHUNK_SIZE == 65535))
