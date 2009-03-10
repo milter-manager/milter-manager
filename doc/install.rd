@@ -26,7 +26,7 @@ To run milter manager's unit tests, the following softwares
 are needed. They are needed for running unit tests but not
 needed for running milter manager.
 
-  * Cutter >= 1.0.6 (not released yet)
+  * Cutter >= 1.0.6
   * LCOV
 
 === Optional: Graph

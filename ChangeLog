@@ -1,5 +1,7 @@
 2009-03-10  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/install.rd, doc/install.rd.ja: Cutter 1.0.6 had been released.
+
 	* html/index.html, html/index.html.ja, doc/reference/sf-logo.html:
 	use new SF.net logo and Piwik.
 
