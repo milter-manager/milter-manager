@@ -28,7 +28,7 @@
     （参考: ((<Postfix before-queue Milterサポート - 回避方法|URL:http://www.postfix-jp.info/trans-2.3/jhtml/MILTER_README.html#workarounds>))）
 
     適用規則ではないが、適用規則の枠組みを使ってMTAから
-    mitlerに渡されるマクロを変換している。この機能により、
+    milterに渡されるマクロを変換している。この機能により、
     dnsbl-milterがパッチ(*)なしでPostfixでも動くようになる。
 
     (*) ((<[2594714] Postfix support|URL:http://sourceforge.net/tracker/?func=detail&atid=1015126&aid=2594714&group_id=210782>))
