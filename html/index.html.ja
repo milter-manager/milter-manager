@@ -6,12 +6,17 @@
   <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
     <link rel="stylesheet" href="milter-manager.css" type="text/css" />
-    <title>milter manager - milterを効果的に使うためのmilter</title>
+    <title>milter manager - milterを使った効果的な迷惑メール対策</title>
   </head>
   <body>
     <h1>milter manager</h1>
     <p class="other-languages">[<a href="./">English</a>]</p>
-    <p>milterを効果的に使うためのmilter</p>
+    <p>
+      milter managerはmilterを使って効果的に迷惑メール対策（スパムメール対策・ウィルスメール対策）を行うフリーソフトウェアです。
+    </p>
+    <p>
+      milter managerはmilterをサポートしているSendmailやPostfixといったMTAと一緒に使うことができます。Ubuntu、CentOS、FreeBSDなどのプラットフォーム上で動作します。
+    </p>
     <ul>
       <li><a href="http://sourceforge.net/projects/milter-manager/">プロジェクトページ</a></li>
       <li>
