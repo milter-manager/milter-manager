@@ -47,7 +47,7 @@ enum_source_prefix = milter-manager-enum-types
 enum_sources_h =			\
 	$(milter_manager_public_headers)
 
-milter_manager_includedir=$(pkgincludedir)/milter-manager
+milter_manager_includedir=$(pkgincludedir)/milter/manager
 milter_manager_include_HEADERS =	\
 	milter-manager-enum-types.h	\
 	$(milter_manager_public_headers)

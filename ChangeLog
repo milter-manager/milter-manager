@@ -1,5 +1,8 @@
 2009-03-17  Kouhei Sutou  <kou@clear-code.com>
 
+	* TODO, milter/manager/Makefile.am: fix wrong install location of
+	milter/manager/ headers.
+
 	* doc/install-to-ubuntu.rd.*: clamav-milter use --external option
 	to use clamd.
 
