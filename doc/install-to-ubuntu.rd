@@ -93,14 +93,20 @@ There are no changes for spamass-milter's configuration.
 
 === Configure clamav-milter
 
-We change /etc/default/clamav-milter to permit 'postfix'
-group to read/write socket:
+We change /etc/default/clamav-milter to do the followings:
+
+  * Virus check is done by clamd not clamav-milter.
+  * 'postfix' group can communicate to clamav-milter.
 
 Before:
+  OPTIONS="--max-children=2 -ol"
+
   #USE_POSTFIX='yes'
   #SOCKET=local:/var/spool/postfix/clamav/clamav-milter.ctl
 
 After:
+  OPTIONS="--max-children=2 -ol --external"
+
   USE_POSTFIX='yes'
   SOCKET=local:/var/spool/postfix/clamav/clamav-milter.ctl
 

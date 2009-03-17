@@ -93,14 +93,25 @@ spamass-milterはデフォルトの設定で問題ありません。
 
 === clamav-milterの設定
 
-clamav-milterはpostfixグループでソケットに読み書きできるよう
-に、以下のように/etc/default/clamav-milterを変更します。
+clamav-milterの設定は以下のように変更します。
+
+  * clamav-milter自身がウィルスチェックを行うのではなく、別
+    プロセスで動作しているclamdにウィルスチェックを行う
+  * clamav-milterと通信するためのソケットはpostfixグループに
+    読み書き権限を与える
+
+このように変更すするため、以下のように
+/etc/default/clamav-milterを変更します。
 
 変更前:
+  OPTIONS="--max-children=2 -ol"
+
   #USE_POSTFIX='yes'
   #SOCKET=local:/var/spool/postfix/clamav/clamav-milter.ctl
 
 変更後:
+  OPTIONS="--max-children=2 -ol --external"
+
   USE_POSTFIX='yes'
   SOCKET=local:/var/spool/postfix/clamav/clamav-milter.ctl
 

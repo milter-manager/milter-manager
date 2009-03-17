@@ -1,3 +1,8 @@
+2009-03-17  Kouhei Sutou  <kou@clear-code.com>
+
+	* doc/install-to-ubuntu.rd.*: clamav-milter use --external option
+	to use clamd.
+
 2009-03-15  Kouhei Sutou  <kou@cozmixng.org>
 
 	* html/index.html*: improve milter manager description.
