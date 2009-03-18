@@ -38,5 +38,15 @@ EXTRA_DIST =						\
 	session.day.png					\
 	stop.day.png					\
 	milter-manager-log-analyzer-graphs.svg		\
-	poster-for-explanation-ja.svg
+	poster-for-explanation-ja.svg			\
+	milter-test-server.rd				\
+	$(man_pages)
 
+man_pages = milter-test-server.1
+
+MAINTAINERCLEANFILES = $(man_pages)
+
+SUFFIXES: .rd .1
+
+.rd.1:
+	rd2 -r$(top_srcdir)/misc/rd2man-lib $< > $@

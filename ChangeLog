@@ -1,3 +1,11 @@
+2009-03-18  Kouhei Sutou  <kou@clear-code.com>
+
+	* README: move milter-test-server entry to ...
+	* doc/milter-test-server.rd: ... here.
+
+	* doc/Makefile.am: auto-generate milter-test-server.1 from
+	milter-test-server.rd.
+
 2009-03-17  Kouhei Sutou  <kou@clear-code.com>
 
 	* TODO, milter/manager/Makefile.am: fix wrong install location of
