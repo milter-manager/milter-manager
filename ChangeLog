@@ -1,5 +1,9 @@
 2009-03-19  Kouhei Sutou  <kou@clear-code.com>
 
+	* TODO: remove:
+	- write man for milter-manager, milter-test-client,
+	milter-test-server and milter-log-tool.
+
 	* doc/Makefile.am: mans in Japanese aren't installed.
 
 	* README.ja: move milter-manager-log-analyzer entry to ...

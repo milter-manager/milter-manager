@@ -572,8 +572,6 @@ Index: milter/manager/milter-manager-leader.c
 * milter-manager can be ran as normal user if milter-manager process is
   invoked as root user. just only control connection handler and child
   milter process invoker can be ran as root user.
-* write man for milter-manager, milter-test-client,
-  milter-test-server and milter-log-tool.
 * milter_manager_egg_to_xml_string(): add user name, timeouts and
   command options (<- needed?)
 * milter-manager supports macros requests.
