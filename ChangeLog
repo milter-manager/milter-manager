@@ -1,5 +1,8 @@
 2009-03-19  Kouhei Sutou  <kou@clear-code.com>
 
+	* README: move milter-manager entry to ...
+	* doc/milter-manager.rd: ... here.
+
 	* README: move milter-manager-log-analyzer entry to ...
 	* doc/milter-manager-log-analyzer.rd: ... here.
 
