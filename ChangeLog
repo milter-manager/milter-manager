@@ -1,5 +1,7 @@
 2009-03-19  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/Makefile.am: mans in Japanese aren't installed.
+
 	* README.ja: move milter-manager-log-analyzer entry to ...
 	* doc/milter-manager-log-analyzer.rd.ja: ... here.
 

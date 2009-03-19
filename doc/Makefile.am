@@ -54,25 +54,30 @@ dist_man1_MANS =			\
 	milter-manager-log-analyzer.man
 
 ja_man1dir = $(mandir)/ja/man1
-dist_ja_man1_DATA = 				\
+#dist_ja_man1_DATA = 				\
+# man in Japanese is not installed. Should they be installed? But how?
+dist_ja_man1_mans = 				\
 	milter-manager.jman			\
 	milter-test-server.jman			\
 	milter-test-client.jman			\
 	milter-performance-check.jman		\
 	milter-manager-log-analyzer.jman
 
+EXTRA_DIST += $(dist_ja_man1_mans)
+
+# durty...
 milter-manager.jman: milter-manager.rd.ja
 milter-test-server.jman: milter-test-server.rd.ja
 milter-test-client.jman: milter-test-client.rd.ja
 milter-performance-check.jman: milter-performance-check.rd.ja
 milter-manager-log-analyzer.jman: milter-manager-log-analyzer.rd.ja
 
-MAINTAINERCLEANFILES = $(dist_man1_MANS) $(ja_man1)
+MAINTAINERCLEANFILES = $(dist_man1_MANS) $(dist_ja_man1_mans)
 
 SUFFIXES: .rd .man .rd .jman
 
 .rd.man:
 	rd2 -r$(top_srcdir)/misc/rd2man-lib $< > $@
 
-.rd.jman:
+.rd.jman: # durty...
 	rd2 -r$(top_srcdir)/misc/rd2man-lib $<.ja > $@
