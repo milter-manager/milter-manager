@@ -1,3 +1,8 @@
+2009-03-19  Kouhei Sutou  <kou@clear-code.com>
+
+	* README: move milter-test-client entry to ...
+	* doc/milter-test-client.rd: ... here.
+
 2009-03-18  Kouhei Sutou  <kou@clear-code.com>
 
 	* README: move milter-test-server entry to ...

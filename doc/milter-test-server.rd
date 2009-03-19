@@ -27,8 +27,9 @@ milter more easily because it doesn't depend on MTA.
 If a milter changes headers and/or body, milter-test-server
 can show changed message. It can be used for testing a
 milter that may change headers and/or body. If it is used
-with unit testing frame like Cutter, you can write automated
-unit tests.
+with ((<unit testing frame like
+Cutter|URL:http://cutter.sourceforge.net/>)), you can write
+automated unit tests.
 
 == Options
 
@@ -163,4 +164,4 @@ The following example talks with a milter that works on host
 
 == SEE ALSO
 
-((<milter-test-client>))(1)
+((<milter-test-client.rd>))(1)

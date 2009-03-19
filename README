@@ -1,6 +1,6 @@
 # -*- rd -*-
 
-= README --- milter-manager: a milter to use milters effectively.
+= README --- milter manager: a milter to use milters effectively.
 
 == Name
 
@@ -229,69 +229,17 @@ configuration file.
 milter manager includes some useful tools. They are
 installed into bin/.
 
-  * ((<milter-test-server>)): It talks MTA side milter
-    protocol. It can be used for testing a milter without
-    MTA.
-  * milter-test-client: It is a milter that just shows
-    received data from MTA. It can be used for confirming
-    what data is sent from MTA.
+  * ((<"doc/milter-test-server.rd">)): It talks MTA side
+    milter protocol. It can be used for testing a milter
+    without MTA.
+  * ((<"doc/milter-test-client.rd">)): It is a milter that
+    just shows received data from MTA. It can be used for
+    confirming what data is sent from MTA.
   * milter-performance-check: It is a SMTP client that
     measures MTA performance.
   * milter-manager-log-analyzer: It analyzes log of
     milter-manager and visualizes behavior of milters
     registered to milter-manager.
-
-=== milter-test-client
-
-milter-test-client is a milter that just shows received data
-from MTA. It also shows macros received from MTA, it can be
-used for confirming MTA's milter configuration.
-
-Postfix's source archive includes similar tool.
-It's src/milter/test-milter.c. It seems that it's used for
-testing Postfix's milter implementation. But test-milter
-doesn't show macros. If you have a milter that doesn't work
-as you expect and uses macro, milter-test-client is useful
-tool for looking into the problems.
-
-==== Options
-
-: --help
-
-   Shows available options and exits.
-
-: --connection-spec=SPEC
-
-   Specifies a socket that accepts connections from
-   MTA. SPEC should be formatted as one of the followings:
-
-     * unix:PATH
-     * inet:PORT
-     * inet:PORT@HOST
-     * inet:PORT@[ADDRESS]
-     * inet6:POST
-     * inet6:PORT@HOST
-     * inet6:PORT@[ADDRESS]
-
-   Examples:
-     * unix:/tmp/milter-test-client.sock
-     * inet:10025
-     * inet:10025@localhost
-     * inet:10025@[127.0.0.1]
-     * inet6:10025
-     * inet6:10025@localhost
-     * inet6:10025@[::1]
-
-: --verbose
-
-   Logs verbosely.
-
-   'MILTER_LOG_LEVEL=all' environment variable configuration
-   has the same effect.
-
-: --version
-
-   Shows version and exits.
 
 === milter-performance-check
 
