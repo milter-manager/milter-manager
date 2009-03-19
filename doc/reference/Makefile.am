@@ -73,7 +73,12 @@ content_files =					\
 	install-to-others.xml			\
 	install-options-to-ubuntu.xml		\
 	install-options-to-centos.xml		\
-	install-options-to-freebsd.xml
+	install-options-to-freebsd.xml		\
+	milter-manager.xml			\
+	milter-test-server.xml			\
+	milter-test-client.xml			\
+	milter-performance-check.xml		\
+	milter-manager-log-analyzer.xml
 
 # Extra options to supply to gtkdoc-fixxref
 FIXXREF_OPTIONS=
@@ -116,8 +121,8 @@ generated_xml_files =				\
 	milter-test-client.xml.ja		\
 	milter-performance-check.xml		\
 	milter-performance-check.xml.ja		\
-	milter-manager-log-nalyzer.xml		\
-	milter-manager-log-nalyzer.xml.ja
+	milter-manager-log-analyzer.xml		\
+	milter-manager-log-analyzer.xml.ja
 
 MAINTAINERCLEANFILES +=			\
 	$(generated_xml_files)		\
@@ -149,6 +154,7 @@ RD2 = rd2 -r $(RD2REFENTRY_LIB) --name=MILTER-MANAGER
 RD2_JA = $(RD2) --po=$(srcdir)/ja.po
 SVG2PNG = inkscape --export-dpi=60 --export-background=white --export-png
 
+### RD -> XML
 readme.xml: $(top_srcdir)/README $(RD2REFENTRY_LIB) readme.xml.ja
 	$(RD2) $(top_srcdir)/README > readme.xml
 
@@ -251,6 +257,7 @@ milter-manager-log-analyzer.xml: $(top_srcdir)/doc/milter-manager-log-analyzer.r
 milter-manager-log-analyzer.xml.ja: $(top_srcdir)/doc/milter-manager-log-analyzer.rd.ja $(RD2REFENTRY_LIB) ja.po
 	$(RD2_JA) $(top_srcdir)/doc/milter-manager-log-analyzer.rd.ja > milter-manager-log-analyzer.xml.ja
 
+### SVG -> PNG
 mta-and-milter-manager-and-child-milter.png: $(top_srcdir)/doc/mta-and-milter-manager-and-child-milter.svg
 	$(SVG2PNG) $@ $<
 

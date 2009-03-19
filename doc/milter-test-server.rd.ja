@@ -1,0 +1,174 @@
+= milter-test-server / milter manager / milter managerのマニュアル
+
+== 名前
+
+milter-test-server - MTA側のmilterプロトコルを実装したプログラム
+
+== 書式
+
+(({milter-test-server})) [((*オプション ...*))]
+
+== 説明
+
+milter-test-serverはMTA側のmilterプロトコルを話します。つまり、
+MTA無しでmilterに接続することができます。現時点では、同様のツー
+ルは存在しないため、mta+milterではなくmilter単体のテストを行
+うためには有用なツールです。例えば、以下のような用途に利用で
+きます。
+
+  * milterの性能計測
+  * milterの動作確認
+
+milter-test-serverは実行時間を表示するので、簡単な性能計測に
+も利用できます。このとき、mtaとは関係なくmilter単体での実行時
+間を確認できるため、MTA経由で試す場合よりも問題点の発見が容易
+になります。
+
+milter-test-serverはヘッダや本文が変更された場合は、変更され
+た内容を表示します。そのため、ヘッダや本文を変更するmilterの
+テストも容易に行うことができます。
+((<C言語用テスティングフレームワークCutter|URL:http://cutter.sourceforge.net/index.html.ja>))
+などと組み合わせて自動化された単体テストを作成することもでき
+ます。
+
+== オプション
+
+: --help
+
+   利用できるオプションを表示して終了します。
+
+: --connection-spec=SPEC
+
+   接続先のmilterのソケットを指定します。SPECの書式は次のう
+   ちのどれかです。
+
+     * unix:パス
+     * inet:ポート番号
+     * inet:ポート番号@ホスト名
+     * inet:ポート番号@[アドレス]
+     * inet6:ポート番号
+     * inet6:ポート番号@ホスト名
+     * inet6:ポート番号@[アドレス]
+
+   例:
+     * unix:/var/run/milter/milter-manager.sock
+     * inet:10025
+     * inet:10025@localhost
+     * inet:10025@[127.0.0.1]
+     * inet6:10025
+     * inet6:10025@localhost
+     * inet6:10025@[::1]
+
+: --negotiate-version=VERSION
+
+    クライアントへ送信するmilterプロトコルのバージョンとして
+    VERSIONを使用します。
+
+    デフォルトは8（Sendmail 8.14のデフォルトと同じ）です。
+
+: --connect-host=HOST
+
+    接続元のホスト名としてHOSTを使用します。
+
+    このホスト名はmilterのxxfi_connect()コールバックに渡りま
+    す。
+
+: --connect-address=SPEC
+
+    接続元のアドレスとしてSPECを使用します。SPECの書式
+    は--connection-specの書式と同じです。
+
+    このアドレスはmilterのxxfi_connect()コールバックに渡りま
+    す。
+
+: --helo-fqdn=FQDN
+
+    HELO/EHLO時の引数としてFQDNを使用します。
+
+    このfqdnはmilterのxxfi_helo()コールバックに渡ります。
+
+: --from=FROM
+
+    MAIL FROM時の引数としてFROMを使用します。
+
+    このアドレスはmilterのxxfi_envfrom()コールバックに渡ります。
+
+: --recipient=RECIPIENT
+
+    RCPT TO時の引数としてRECIPIENTを使用します。複数の宛先を
+    指定したい場合は--recipientオプションを複数回指定してく
+    ださい。
+
+    このアドレスはmilterのxxfi_envrcpt()コールバックに渡りま
+    す。xxfi_envrcpt()は1つの宛先につき1回呼ばれるので、宛先
+    が複数個ある場合はその分だけxxfi_envrcpt()が呼ばれます。
+
+: --header=NAME:VALUE
+
+    名前がNAMEで値がVALUEのヘッダを追加します。複数のヘッダ
+    を追加したい場合は--headerオプションを複数回指定してくだ
+    さい。
+
+    このヘッダはmilterのxxfi_header()コールバックに渡ります。
+    xxfi_header()は1つのヘッダにつき1回呼ばれるので、ヘッダ
+    が複数個ある場合はその分だけxxfi_header()が呼ばれます。
+
+: --body=CHUNK
+
+    本文の一片としてCHUNKを追加します。複数のまとまりを追加
+    する場合は--bodyオプションを複数回指定してください。
+
+    この本文のまとまりはmilterのxxfi_body()コールバックに渡り
+    ます。xxfi_body()は1つのまとまりにつき1回呼ばれるので、
+    まとまりが複数個ある場合はその分だけxxfi_body()が呼ばれま
+    す。
+
+: --unknown=COMMAND
+
+    未知のSMTPコマンドとしてCOMMANDを使います。
+
+    このコマンドはmilterのxxfi_unknown()コールバックに渡りま
+    す。xxfi_unknown()コールバックは、xxfi_envrcpt()コールバッ
+    クとxxfi_data()コールバックの間に呼ばれます。
+
+: --mail-file=PATH
+
+    メールの内容としてPATHにあるメールを使います。メール中に
+    From:やTo:があった場合は、それらの値を送信元や宛先のアド
+    レスとして使用します。
+
+: --output-message
+
+    milter適用後のメッセージを表示します。ヘッダを追加・削除
+    したり、本文を置換するmilterの動作を確認したい場合はこの
+    オプションを指定してください。
+
+: --verbose
+
+   実行時のログをより詳細に出力します。
+
+   「MILTER_LOG_LEVEL=all」というように環境変数を設定している
+   場合と同じ効果があります。
+
+: --version
+
+    バージョンを表示して終了します。
+
+== 終了ステータス
+
+milterセッションが始まった場合は0で、そうでない場合は0以外に
+なります。ソケットの書式が間違っている場合か
+milter-test-serverがmilterに接続できない場合は、milterセッショ
+ンを始めることができません。
+
+== 例
+
+以下の例では、ホスト192.168.1.29上の10025番ポートで待ち受け
+ているmilterに接続します。
+
+  % milter-test-server -s inet:10025@192.168.1.29
+
+== 関連項目
+
+((<milter-test-client.rd.ja>))(1),
+((<milter-performance-check.rd.ja>))(1)

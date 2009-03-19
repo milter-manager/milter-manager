@@ -1,4 +1,4 @@
-= milter-test-client / milter manager / milter manager manual
+= milter-test-client / milter manager / milter manager's manual
 
 == NAME
 

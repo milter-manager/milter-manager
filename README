@@ -111,24 +111,24 @@ run milter-manager like the following:
   % /usr/local/sbin/milter-manager --help
 
 Available options are shown if installation is succeeded.
-See ((<"doc/milter-manager.rd">)) for more details.
+See ((<milter-manager|"doc/milter-manager.rd">)) for more details.
 
 == Tools
 
 milter manager includes some useful tools. They are
 installed into bin/.
 
-  * ((<"doc/milter-test-server.rd">)): It talks MTA side
-    milter protocol. It can be used for testing a milter
-    without MTA.
-  * ((<"doc/milter-test-client.rd">)): It is a milter that
-    just shows received data from MTA. It can be used for
-    confirming what data is sent from MTA.
-  * ((<"doc/milter-performance-check.rd">)): It is a SMTP
-    client that measures MTA performance.
-  * ((<"doc/milter-manager-log-analyzer.rd">)): It analyzes
-    log of milter-manager and visualizes behavior of milters
-    registered to milter-manager.
+  * ((<milter-test-server|"doc/milter-test-server.rd">)): It
+    talks MTA side milter protocol. It can be used for
+    testing a milter without MTA.
+  * ((<milter-test-client|"doc/milter-test-client.rd">)): It
+    is a milter that just shows received data from MTA. It
+    can be used for confirming what data is sent from MTA.
+  * ((<milter-performance-check|"doc/milter-performance-check.rd">)):
+    It is a SMTP client that measures MTA performance.
+  * ((<milter-manager-log-analyzer|"doc/milter-manager-log-analyzer.rd">)):
+    It analyzes log of milter-manager and visualizes
+    behavior of milters registered to milter-manager.
 
 == Thanks
 

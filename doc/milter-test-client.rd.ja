@@ -1,46 +1,46 @@
-= milter-test-client / milter manager / milter manager manual
+= milter-test-client / milter manager / milter managerのマニュアル
 
-== NAME
+== 名前
 
-milter-test-client - milter side milter protocol implemented program
+milter-test-client - milter側のmilterプロトコルを実装したプログラム
 
-== SYNOPSIS
+== 書式
 
-(({milter-test-client})) [((*option ...*))]
+(({milter-test-client})) [((*オプション ...*))]
 
-== DESCRIPTION
+== 説明
 
-milter-test-client is a milter that just shows received data
-from MTA. It also shows macros received from MTA, it can be
-used for confirming MTA's milter configuration.
+milter-test-clientはMTA側から渡ってきた情報を表示するだけの
+milterです。マクロも含めてMTA側から渡っている情報を表示する
+ので、MTA側のmilterの設定を確認するために利用できます。
 
-Postfix's source archive includes similar tool.
-It's src/milter/test-milter.c. It seems that it's used for
-testing Postfix's milter implementation. But test-milter
-doesn't show macros. If you have a milter that doesn't work
-as you expect and uses macro, milter-test-client is useful
-tool for looking into the problems.
+Postfixのアーカイブの中にも同様のツールがあります。
+src/milter/内にあるtest-milter.cがそれで、Postfixのmilterの実
+装のテストにも使っているようです。ただし、test-milterはマクロ
+までは表示してくれません。もし、マクロを利用しているmilterが
+期待通りに動かない場合の問題調査を行うのであれば、
+milter-test-clientが役立つでしょう。
 
-== Options
+== オプション
 
 : --help
 
-   Shows available options and exits.
+   利用できるオプションを表示して終了します。
 
 : --connection-spec=SPEC
 
-   Specifies a socket that accepts connections from
-   MTA. SPEC should be formatted as one of the followings:
+   接続を待ち受けるソケットを指定します。SPECの書式は次のう
+   ちのどれかです。
 
-     * unix:PATH
-     * inet:PORT
-     * inet:PORT@HOST
-     * inet:PORT@[ADDRESS]
-     * inet6:POST
-     * inet6:PORT@HOST
-     * inet6:PORT@[ADDRESS]
+     * unix:パス
+     * inet:ポート番号
+     * inet:ポート番号@ホスト名
+     * inet:ポート番号@[アドレス]
+     * inet6:ポート番号
+     * inet6:ポート番号@ホスト名
+     * inet6:ポート番号@[アドレス]
 
-   Examples:
+   例:
      * unix:/tmp/milter-test-client.sock
      * inet:10025
      * inet:10025@localhost
@@ -51,32 +51,32 @@ tool for looking into the problems.
 
 : --verbose
 
-   Logs verbosely.
+   実行時のログをより詳細に出力します。
 
-   'MILTER_LOG_LEVEL=all' environment variable configuration
-   has the same effect.
+   「milter_log_level=all」というように環境変数を設定している
+   場合と同じ効果があります。
 
 : --version
 
-   Shows version and exits.
+   バージョンを表示して終了します。
 
-== EXIT STATUS
+== 終了ステータス
 
-The exit status is 0 if milter starts to listen and non 0
-otherwise. milter-test-client can't start to listen when
-connection spec is invalid format or other connection
-specific problems. e.g. the port number is already used,
-permission isn't granted for create UNIX domain socket and
-so on.
+MTAからの接続を受け付ける状態になった場合は0になり、そうでな
+い場合は0以外になります。milter-test-clientはソケットの書式が
+間違っている場合か、ソケットまわりの問題が起こると接続を受け
+付ける状態になれません。そけっとまわりの問題とは、例えば、ポー
+トがすでに使用されているとか、UNIXドメインソケットを作成する
+パーミッションがない、などです。
 
-== EXAMPLE
+== 例
 
-The following example runs a milter which listens at 10025
-port and waits a connection from MTA.
+以下の例では、10025番ポートでMTAからの接続を待つmilterを起動
+します。
 
   % milter-test-client -s inet:10025
 
-== SEE ALSO
+== 関連項目
 
-((<milter-test-server.rd>))(1),
-((<milter-performance-check.rd>))(1)
+((<milter-test-server.rd.ja>))(1),
+((<milter-performance-check.rd.ja>))(1)

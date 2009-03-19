@@ -8,7 +8,7 @@ milter-manager - milterを使った効果的なスパム対策・ウィルス対
 
 (({milter-manager})) [((*オプション ...*))]
 
-== DESCRIPTION
+== 説明
 
 milter-managerはmilterを使った効果的なスパム対策・ウィルス対
 策（迷惑メール対策）を実現するmilterです。

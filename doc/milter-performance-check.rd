@@ -1,4 +1,4 @@
-= milter-performance-check / milter manager / milter manager manual
+= milter-performance-check / milter manager / milter manager's manual
 
 == NAME
 
@@ -130,17 +130,17 @@ Always 0.
 
 In the following example, milter-performance-check connects
 a SMTP server running on localhost at 25 port and sends 100
-mails to webmaster@localhost and info@localhost from
-from@example.com.
+mails. Each mail's sender is from@example.com and
+recipients are webmaster@localhost and info@localhost.
 
   % milter-performance-check --recipient=webmaster@localhost --recipient=info@localhost
 
 In the following example, milter-performance-check connects
 a SMTP server running on 192.168.1.102 at 25 port and sends
-mails under /tmp/test-mails/ directory. The mails are sent
-to user@localhost at intervals of 3 seconds (60 * 10 /
-100). Each mail is sent only 1 time because of --n-mails=1
-option.
+files under /tmp/test-mails/ directory. The files should be
+RFC 2822 format. The mails are sent to user@localhost at
+intervals of 3 seconds (60 * 10 / 100). Each mail is sent
+only 1 time because of --n-mails=1 option.
 
   % milter-performance-check --n-mails=1 --smtp-server=192.168.1.102 --force-recipient=user@localhost --period=5m /tmp/test-mails/
 

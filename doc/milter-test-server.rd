@@ -1,4 +1,4 @@
-= milter-test-server / milter manager / milter manager manual
+= milter-test-server / milter manager / milter manager's manual
 
 == NAME
 
@@ -27,7 +27,7 @@ milter more easily because it doesn't depend on MTA.
 If a milter changes headers and/or body, milter-test-server
 can show changed message. It can be used for testing a
 milter that may change headers and/or body. If it is used
-with ((<unit testing frame like
+with ((<unit testing framework like
 Cutter|URL:http://cutter.sourceforge.net/>)), you can write
 automated unit tests.
 
@@ -150,10 +150,10 @@ automated unit tests.
 
 == EXIT STATUS
 
-Normally, the exit status is 0 if milter session is started
-and non 0 otherwise. milter session can't be started when
-connection spec is invalid format or milter-test-server
-can't connect to a milter.
+The exit status is 0 if milter session is started and non 0
+otherwise. milter session can't be started when connection
+spec is invalid format or milter-test-server can't connect
+to a milter.
 
 == EXAMPLE
 
