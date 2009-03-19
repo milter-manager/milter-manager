@@ -1,0 +1,159 @@
+= milter-manager / milter manager / milter managerのマニュアル
+
+== 名前
+
+milter-manager - milterを使った効果的なスパム対策・ウィルス対策
+
+== 書式
+
+(({milter-manager})) [((*オプション ...*))]
+
+== DESCRIPTION
+
+milter-managerはmilterを使った効果的なスパム対策・ウィルス対
+策（迷惑メール対策）を実現するmilterです。
+
+milter-managerはmilterを効果的でかつ柔軟にmilterを使うための
+プラットフォームを提供します。milter-managerはRubyインタプリ
+タを組み込んでいて、動的にmilterを適用する条件を決定すること
+ができます。この組み込まれたRubyインタプリタを使うことで、効
+果的でかつ柔軟にmilterを使うプラットフォームを提供することが
+できます。
+
+milter-managerには設定ファイルがあります。現在の設定
+は--show-configオプションで確認できます。
+
+  % milter-manager --show-config
+
+milter-manager設定ファイルで指定された設定を上書きするオプショ
+ンも提供しています。
+
+== オプション
+
+: --help
+
+   利用できるオプションを表示して終了します。
+
+: --connection-spec=SPEC
+
+   接続を待ち受けるソケットを指定します。SPECの書式は次のう
+   ちのどれかです。
+
+     * unix:パス
+     * inet:ポート番号
+     * inet:ポート番号@ホスト名
+     * inet:ポート番号@[アドレス]
+     * inet6:ポート番号
+     * inet6:ポート番号@ホスト名
+     * inet6:ポート番号@[アドレス]
+
+   例:
+     * unix:/var/run/milter/milter-manager.sock
+     * inet:10025
+     * inet:10025@localhost
+     * inet:10025@[127.0.0.1]
+     * inet6:10025
+     * inet6:10025@localhost
+     * inet6:10025@[::1]
+
+   設定ファイル中の「manager.connection_spec」の値を上書きし
+   ます。
+
+: --config-dir=DIRECTORY
+
+    設定ファイルのあるディレクトリを指定します。
+    milter-managerは、まず、DIRECTORY/milter-manager.confの
+    読み込みを試みます。もし、見つからなかった場合はシステム
+    標準の場所にあるmilter-manager.confを読み込みます。
+
+: --pid-file=FILE
+
+   milter-managerのプロセスidをFILEに保存します。
+
+   設定ファイル中の「manager.pid_file」の値を上書きします。
+
+: --user-name=NAME
+
+   milter-managerをNAMEユーザの権限で実行します。
+   milter-managerはroot権限で起動しなければいけません。
+
+   設定ファイル中の「security.effective_user」の値を上書きします。
+
+: --group-name=NAME
+
+   milter-managerをNAMEグループの権限で実行します。
+   milter-managerはroot権限で起動しなければいけません。
+
+   設定ファイル中の「security.effective_group」の値を上書きします。
+
+: --socket-group-name=NAME
+
+   milter-managerが接続を受け付けるUNIXドメインソケットのグ
+   ループをNAMEグループに変更します。グループは実効ユーザの
+   補助グループでなければいけません。
+
+   設定ファイル中の「manager.unix_socket_group」の値を上書き
+   します。
+
+: --daemon
+
+   端末を切り離し、バックグラウンドでデーモンプロセスとして動
+   作します。運用時はデーモンプロセスで動作させることをお勧
+   めします。
+
+   設定ファイル中の「manager.daemon」の値を上書きします。
+
+: --no-daemon
+
+   このオプションより前に指定した--daemonオプションを無効にし
+   ます。
+
+: --show-config
+
+   設定内容を表示して終了します。設定内容はそのまま設定ファ
+   イルに使える書式で表示されます。登録されているmilterを確
+   認する場合や、milter-managerの問題を報告する場合などで有
+   用です。
+
+: --verbose
+
+   実行時のログをより詳細に出力します。ログはsyslogのmailファ
+   シリティで出力します。デーモンプロセスになっていない場合
+   は標準出力にもログが出力されます。
+
+   「MILTER_LOG_LEVEL=all」というように環境変数を設定している
+   場合と同じ効果があります。
+
+: --version
+
+   バージョンを表示して終了します。
+
+== 終了ステータス
+
+MTAからの接続を受け付ける状態になった場合は0になり、そうでな
+い場合は0以外になります。milter-managerはソケットの書式が間違っ
+ている場合か、ソケットまわりの問題が起こると接続を受け付ける
+状態になれません。そけっとまわりの問題とは、例えば、ポートが
+すでに使用されているとか、UNIXドメインソケットを作成するパー
+ミッションがない、などです。
+
+== ファイル
+
+: /usr/local/etc/milter-manager/milter-manager.conf
+
+   デフォルトの設定ファイルです。
+
+== 例
+
+以下はmilter-managerの挙動をデバッグするときの例です。
+この場合、milter-managerはフォアグラウンドで動作し、標準出力
+にログを吐きます。
+
+  % milter-manager --no-daemon --verbose
+
+== 関連項目
+
+((<milter-test-server.rd>))(1),
+((<milter-test-client.rd>))(1),
+((<milter-performance-check.rd>))(1),
+((<milter-manager-log-analyzer.rd>))(1)

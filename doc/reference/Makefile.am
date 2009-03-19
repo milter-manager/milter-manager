@@ -107,7 +107,17 @@ generated_xml_files =				\
 	install-options-to-centos.xml		\
 	install-options-to-centos.xml.ja	\
 	install-options-to-freebsd.xml		\
-	install-options-to-freebsd.xml.ja
+	install-options-to-freebsd.xml.ja	\
+	milter-manager.xml			\
+	milter-manager.xml.ja			\
+	milter-test-server.xml			\
+	milter-test-server.xml.ja		\
+	milter-test-client.xml			\
+	milter-test-client.xml.ja		\
+	milter-performance-check.xml		\
+	milter-performance-check.xml.ja		\
+	milter-manager-log-nalyzer.xml		\
+	milter-manager-log-nalyzer.xml.ja
 
 MAINTAINERCLEANFILES +=			\
 	$(generated_xml_files)		\
@@ -210,6 +220,36 @@ install-options-to-freebsd.xml: $(top_srcdir)/doc/install-options-to-freebsd.rd 
 
 install-options-to-freebsd.xml.ja: $(top_srcdir)/doc/install-options-to-freebsd.rd.ja $(RD2REFENTRY_LIB) ja.po
 	$(RD2_JA) $(top_srcdir)/doc/install-options-to-freebsd.rd.ja > install-options-to-freebsd.xml.ja
+
+milter-manager.xml: $(top_srcdir)/doc/milter-manager.rd $(RD2REFENTRY_LIB) milter-manager.xml.ja
+	$(RD2) $(top_srcdir)/doc/milter-manager.rd > milter-manager.xml
+
+milter-manager.xml.ja: $(top_srcdir)/doc/milter-manager.rd.ja $(RD2REFENTRY_LIB) ja.po
+	$(RD2_JA) $(top_srcdir)/doc/milter-manager.rd.ja > milter-manager.xml.ja
+
+milter-test-server.xml: $(top_srcdir)/doc/milter-test-server.rd $(RD2REFENTRY_LIB) milter-test-server.xml.ja
+	$(RD2) $(top_srcdir)/doc/milter-test-server.rd > milter-test-server.xml
+
+milter-test-server.xml.ja: $(top_srcdir)/doc/milter-test-server.rd.ja $(RD2REFENTRY_LIB) ja.po
+	$(RD2_JA) $(top_srcdir)/doc/milter-test-server.rd.ja > milter-test-server.xml.ja
+
+milter-test-client.xml: $(top_srcdir)/doc/milter-test-client.rd $(RD2REFENTRY_LIB) milter-test-client.xml.ja
+	$(RD2) $(top_srcdir)/doc/milter-test-client.rd > milter-test-client.xml
+
+milter-test-client.xml.ja: $(top_srcdir)/doc/milter-test-client.rd.ja $(RD2REFENTRY_LIB) ja.po
+	$(RD2_JA) $(top_srcdir)/doc/milter-test-client.rd.ja > milter-test-client.xml.ja
+
+milter-performance-check.xml: $(top_srcdir)/doc/milter-performance-check.rd $(RD2REFENTRY_LIB) milter-performance-check.xml.ja
+	$(RD2) $(top_srcdir)/doc/milter-performance-check.rd > milter-performance-check.xml
+
+milter-performance-check.xml.ja: $(top_srcdir)/doc/milter-performance-check.rd.ja $(RD2REFENTRY_LIB) ja.po
+	$(RD2_JA) $(top_srcdir)/doc/milter-performance-check.rd.ja > milter-performance-check.xml.ja
+
+milter-manager-log-analyzer.xml: $(top_srcdir)/doc/milter-manager-log-analyzer.rd $(RD2REFENTRY_LIB) milter-manager-log-analyzer.xml.ja
+	$(RD2) $(top_srcdir)/doc/milter-manager-log-analyzer.rd > milter-manager-log-analyzer.xml
+
+milter-manager-log-analyzer.xml.ja: $(top_srcdir)/doc/milter-manager-log-analyzer.rd.ja $(RD2REFENTRY_LIB) ja.po
+	$(RD2_JA) $(top_srcdir)/doc/milter-manager-log-analyzer.rd.ja > milter-manager-log-analyzer.xml.ja
 
 mta-and-milter-manager-and-child-milter.png: $(top_srcdir)/doc/mta-and-milter-manager-and-child-milter.svg
 	$(SVG2PNG) $@ $<

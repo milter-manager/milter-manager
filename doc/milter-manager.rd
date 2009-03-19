@@ -133,10 +133,12 @@ configurations specified in configuration file.
 
 == EXIT STATUS
 
-Normally, the exit status is 0 if milter session is started
-and non 0 otherwise. milter session can't be started when
-connection spec is invalid format or milter-manager can't
-listen a connection.
+The exit status is 0 if milter starts to listen and non 0
+otherwise. milter-manager can't start to listen when
+connection spec is invalid format or other connection
+specific problems. e.g. the port number is already used,
+permission isn't granted for create UNIX domain socket and
+so on.
 
 == FILES
 

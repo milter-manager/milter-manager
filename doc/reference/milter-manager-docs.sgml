@@ -12,6 +12,14 @@
     <title>Getting start</title>
     <xi:include href="news.xml"/>
     <xi:include href="readme.xml"/>
+    <chapter id="commands">
+      <title>Commands</title>
+      <xi:include href="milter-manager.xml"/>
+      <xi:include href="milter-test-server.xml"/>
+      <xi:include href="milter-test-client.xml"/>
+      <xi:include href="milter-performance-check.xml"/>
+      <xi:include href="milter-manager-log-analyzer.xml"/>
+    </chapter>
     <xi:include href="introduction.xml"/>
     <xi:include href="install.xml"/>
     <chapter id="install-to">

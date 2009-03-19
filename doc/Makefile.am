@@ -42,16 +42,37 @@ EXTRA_DIST =						\
 	milter-test-server.rd				\
 	milter-test-client.rd				\
 	milter-performance-check.rd			\
-	$(man_pages)
+	milter-manager-log-analyzer.rd			\
+	milter-manager.rd				\
+	milter-manager.rd.ja
 
-man_pages =				\
-	milter-test-server.1		\
-	milter-test-client.1		\
-	milter-performance-check.1
+dist_man1_MANS =			\
+	milter-manager.man		\
+	milter-test-server.man		\
+	milter-test-client.man		\
+	milter-performance-check.man	\
+	milter-manager-log-analyzer.man
 
-MAINTAINERCLEANFILES = $(man_pages)
+ja_man1dir = $(mandir)/ja/man1
+dist_ja_man1_DATA = 				\
+	milter-manager.jman			\
+	milter-test-server.jman			\
+	milter-test-client.jman			\
+	milter-performance-check.jman		\
+	milter-manager-log-analyzer.jman
 
-SUFFIXES: .rd .1
+milter-manager.jman: milter-manager.rd.ja
+milter-test-server.jman: milter-test-server.rd.ja
+milter-test-client.jman: milter-test-client.rd.ja
+milter-performance-check.jman: milter-performance-check.rd.ja
+milter-manager-log-analyzer.jman: milter-manager-log-analyzer.rd.ja
 
-.rd.1:
+MAINTAINERCLEANFILES = $(dist_man1_MANS) $(ja_man1)
+
+SUFFIXES: .rd .man .rd .jman
+
+.rd.man:
 	rd2 -r$(top_srcdir)/misc/rd2man-lib $< > $@
+
+.rd.jman:
+	rd2 -r$(top_srcdir)/misc/rd2man-lib $<.ja > $@
