@@ -71,11 +71,10 @@ LinuxではUbuntu 8.04 TLS、CentOS 5.2上で動作することを想定し
 
 === あるとよいソフトウェア
 
-  * Cutter >= 1.0.6: C言語用単体テストフレームワーク
+  * ((<Cutter: C言語用テスティングフレームワーク|URL:URL:http://cutter.sourceforge.net/index.html.ja>))
+    >= 1.0.6
 
     make checkおよびmake coverageを実行する場合は必要。
-
-    ((<Cutter|URL:http://cutter.sourceforge.net/index.html.ja>))
 
   * LCOV: カバレッジ結果整形ツール
 

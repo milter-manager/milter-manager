@@ -1,5 +1,7 @@
 2009-03-19  Kouhei Sutou  <kou@clear-code.com>
 
+	* README*: improve links to Cutter.
+
 	* TODO: remove:
 	- write man for milter-manager, milter-test-client,
 	milter-test-server and milter-log-tool.

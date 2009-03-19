@@ -64,11 +64,10 @@ See ((<Introduction|"doc/introduction.rd">)) for more details.
 
 === Optional dependencies
 
-  * Cutter >= 1.0.6: unit testing framework for C
+  * ((<Cutter: unit testing framework for C|URL:http://cutter.sourceforge.net/>))
+    >= 1.0.6
 
     It is needed for 'make check' and 'make coverage'.
-
-    ((<Cutter|URL:http://cutter.sourceforge.net/>))
 
   * LCOV: graphical front-end for GCC's coverage testing tool gcov
 
