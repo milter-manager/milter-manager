@@ -76,4 +76,5 @@ port and waits a connection from MTA.
 
 == SEE ALSO
 
-((<milter-test-server.rd>))(1)
+((<milter-test-server.rd>))(1),
+((<milter-performance-check.rd>))(1)

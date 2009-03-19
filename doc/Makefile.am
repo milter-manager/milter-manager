@@ -41,11 +41,13 @@ EXTRA_DIST =						\
 	poster-for-explanation-ja.svg			\
 	milter-test-server.rd				\
 	milter-test-client.rd				\
+	milter-performance-check.rd			\
 	$(man_pages)
 
-man_pages =			\
-	milter-test-server.1	\
-	milter-test-client.1
+man_pages =				\
+	milter-test-server.1		\
+	milter-test-client.1		\
+	milter-performance-check.1
 
 MAINTAINERCLEANFILES = $(man_pages)
 

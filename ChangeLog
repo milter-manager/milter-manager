@@ -1,5 +1,11 @@
 2009-03-19  Kouhei Sutou  <kou@clear-code.com>
 
+	* README: move milter-manager-log-analyzer entry to ...
+	* doc/milter-manager-log-analyzer.rd: ... here.
+
+	* README: move milter-performance-check entry to ...
+	* doc/milter-performance-check.rd: ... here.
+
 	* README: move milter-test-client entry to ...
 	* doc/milter-test-client.rd: ... here.
 

@@ -164,4 +164,5 @@ The following example talks with a milter that works on host
 
 == SEE ALSO
 
-((<milter-test-client.rd>))(1)
+((<milter-test-client.rd>))(1),
+((<milter-performance-check.rd>))(1)
