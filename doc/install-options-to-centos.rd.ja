@@ -95,7 +95,7 @@ PassengerをSELinux環境下で動かすことは困難です。ファイアウ�
 後、それなりの手間でSELinux環境下で動作させる方法が確立できた
 場合は、この箇所を更新することとします。
 
-  % sudo setsebool httpd_disable_trans true
+  % sudo /usr/sbin/setsebool httpd_disable_trans true
 
 以下の内容のmilter-manager.confを/etc/httpd/conf.d/に作成しま
 す。

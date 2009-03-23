@@ -93,7 +93,7 @@ good but) We disable SELinux just for Apache because HTTP
 accesses from other hosts are blocked by default. We will
 update this section when we know better other solution.
 
-  % sudo setsebool httpd_disable_trans true
+  % sudo /usr/sbin/setsebool httpd_disable_trans true
 
 We create milter-manager.conf under /etc/httpd/conf.d/.
 
