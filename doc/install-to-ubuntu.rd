@@ -73,6 +73,8 @@ We add the following configuration to
 /etc/spamassassin/local.cf. This configuration is for adding
 headers only if spam detected.
 
+  report_safe 0
+
   remove_header ham Status
   remove_header ham Level
 

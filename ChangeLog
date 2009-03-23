@@ -1,5 +1,7 @@
 2009-03-23  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/install-to-ubuntu.rd*: add 'report_safe 0'.
+
 	* TODO: add how handle MILTER_SOCKET_FAMILY_UNKNOWN.
 
 2009-03-19  Kouhei Sutou  <kou@clear-code.com>

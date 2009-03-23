@@ -73,6 +73,8 @@ UNIXドメインソケットはpostfixグループでの読み書き権限を設
 スパム判定された場合のみ、その詳細をヘッダに追加するようにな
 ります。
 
+  report_safe 0
+
   remove_header ham Status
   remove_header ham Level
 
