@@ -1,3 +1,6 @@
+* Postfix sends unknown socket family (MILTER_SOCKET_FAMILY_UNKNOWN) but when?
+  When ending queued mail?
+  milter-manager[1694]: [agent][error][decode] Decode error: milter-command-decoder-error-quark:2: unknown family on connect command: <unknown>: <U>
 * bug? dkim-filter returns skip twice for large body mail.
   (large body > (MILTER_CHUNK_SIZE == 65535))
   It seems that MilterMangerChildren sends two body packets before receiving
