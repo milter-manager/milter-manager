@@ -236,12 +236,14 @@ class MilterPerformanceTool
   end
 
   def send_mails_in_interval(mails, interval)
-    last_mail = mails.last
+    i = 0
+    last = mails.count
     mails.collect do |mail|
+      i += 1
       thread = Thread.start do
         send_mail(mail)
       end
-      sleep(interval) if interval > 0 and mail != mails.last
+      sleep(interval) if interval > 0 and i != last
       thread
     end
   end
