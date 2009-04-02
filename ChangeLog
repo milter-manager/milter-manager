@@ -1,3 +1,7 @@
+2009-04-03  Kouhei Sutou  <kou@cozmixng.org>
+
+	* html/: fix styles.
+
 2009-04-02  Kouhei Sutou  <kou@cozmixng.org>
 
 	* configure.ac: add missing milter-manager group name in SF.net

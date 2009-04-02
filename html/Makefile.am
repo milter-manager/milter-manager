@@ -41,9 +41,7 @@ generated_images =				\
 MAINTAINER_CLEANFILES = $(auto_generated_images)
 
 upload: $(web_contents)
-	for file in $(web_contents); do				\
-	  scp $(srcdir)/$$file $(SF_HTDOCS)/;			\
-	done
+	(cd $(srcdir) && rsync -avz $(web_contents) $(SF_HTDOCS)/)
 
 SUFFIXES = .svg .png
 

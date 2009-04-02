@@ -30,6 +30,12 @@
 
     <div class="content">
       <div class="main">
+	<h2>最新リリース</h2>
+	<p>
+	  2009-03-13にリリースされた0.9.0が最新です。
+          [<a href="http://downloads.sourceforge.net/milter-manager/milter-manager-0.9.0.tar.gz">ダウンロード</a>]
+	</p>
+
 	<h2>milter manager?</h2>
 	<p>
 	  milter managerはmilterを使って効果的に迷惑メール対策（スパムメール対策・ウィルスメール対策）を行うフリーソフトウェアです。

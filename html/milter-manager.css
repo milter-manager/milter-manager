@@ -12,7 +12,7 @@ div.header
   position: relative;
 }
 
-h1
+div.header h1
 {
   background: url(logo.png) no-repeat;
   font-size: smaller;
@@ -21,19 +21,19 @@ h1
   height: 40px;
 }
 
-h1 a
+div.header h1 a
 {
   color: black;
 }
 
-h1 span
+div.header h1 span
 {
   display: block;
   text-indent: 256px;
   margin-bottom: 2px;
 }
 
-h1 span.title-separator
+div.header h1 span.title-separator
 {
   display: none;
 }
@@ -209,10 +209,24 @@ div.sponsors p#sponsor-famfamfam
 {
   table.navigation#top
   {
-    position: absolute;
+    margin-top: 15px;
+    position: relative;
   }
 
   div.book
+  {
+    top: 0px;
+  }
+
+  div.refentry,
+  div.chapter,
+  div.reference,
+  div.part,
+  div.book,
+  div.glossary,
+  div.sect1,
+  div.appendix,
+  div.preface
   {
     top: 0px;
   }
