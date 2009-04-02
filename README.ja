@@ -18,6 +18,7 @@ milter manager
   * コマンド: GPL3(license/gpl.txt)
   * ドキュメント: GFDL(license/fdl.txt)
   * Webインターフェイス: AGPL3(license/agpl.txt)
+  * 画像: Public Domain
   * ライブラリ: LGPL3(license/lgpl.txt)
 
 具体的には以下の通りです。
@@ -33,6 +34,8 @@ milter manager
     * doc/以下
   * Webインターフェイス: AGPL3
     * admin/以下
+  * 画像: Public Domain
+    * doc/*.svg, doc/*.png, html/*.svg, html/*.png
   * ライブラリ: LGPL3
     * 上記以外
 

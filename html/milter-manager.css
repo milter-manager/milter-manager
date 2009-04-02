@@ -73,6 +73,7 @@ ul.menu
 ul.menu li
 {
   display: inline;
+  margin-right: 10px;
 }
 
 ul.menu li a
@@ -171,5 +172,19 @@ div.sponsors p#sponsor-sf-net
 {
   position: absolute;
   top: 0px;
+  right: 50px;
+}
+
+div.sponsors p#sponsor-tango
+{
+  position: absolute;
+  top: 40px;
+  right: 50px;
+}
+
+div.sponsors p#sponsor-famfamfam
+{
+  position: absolute;
+  top: 103px;
   right: 50px;
 }
