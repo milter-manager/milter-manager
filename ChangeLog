@@ -1,5 +1,9 @@
 2009-04-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* html/: upload missing files.
+	* doc/reference/: add common header and footer to HTMLs generated
+	by GTK-Doc.
+
 	* html/index.html: use new style.
 
 	* README, README.ja: make image license public domain.

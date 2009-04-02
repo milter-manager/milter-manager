@@ -133,7 +133,13 @@ EXTRA_DIST +=				\
 	html-build.stamp		\
 	version.xml.in			\
 	$(generated_xml_files)		\
-	sf-logo.html			\
+	prepare-for-publishing.rb	\
+	head.html			\
+	head-ja.html			\
+	header.html			\
+	header-ja.html			\
+	footer.html			\
+	footer-ja.html			\
 	ja.po
 
 $(DOC_MODULE).pot: sgml-build.stamp
@@ -295,8 +301,7 @@ upload: docs
 	  cp -rp $$lang/html/ tmp/reference/$$lang/;			\
 	done
 	chmod -R g+w tmp/reference
-	ruby -i'' -pe '$$_.sub!(/<\/body>/u,				\
-	                       	File.read("sf-logo.html") + "</body>")'	\
-	  tmp/reference/*.html						\
-	  tmp/reference/*/*.html
+	ruby $(srcdir)/prepare-for-publishing.rb tmp/reference/*.html
+	ruby $(srcdir)/prepare-for-publishing.rb \
+	  --language=ja tmp/reference/ja/*.html
 	rsync -avz tmp/reference/ $(SF_HTDOCS)/reference/
