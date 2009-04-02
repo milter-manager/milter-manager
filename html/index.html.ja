@@ -6,47 +6,66 @@
   <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
     <link rel="stylesheet" href="milter-manager.css" type="text/css" />
-    <title>milter manager - milterを使った効果的な迷惑メール対策</title>
+    <title>milterを使った効果的な迷惑メール対策 - milter manager</title>
   </head>
   <body>
-    <h1>milter manager</h1>
-    <p class="other-languages">[<a href="./">English</a>]</p>
-    <p>
-      milter managerはmilterを使って効果的に迷惑メール対策（スパムメール対策・ウィルスメール対策）を行うフリーソフトウェアです。
-    </p>
-    <p>
-      milter managerはmilterをサポートしているSendmailやPostfixといったMTAと一緒に使うことができます。Ubuntu、CentOS、FreeBSDなどのプラットフォーム上で動作します。
-    </p>
-    <ul>
-      <li><a href="http://sourceforge.net/projects/milter-manager/">プロジェクトページ</a></li>
-      <li>
-        <a href="reference/ja/news.html">ニュース</a>
-        (<a href="reference/news.html">en</a>)
-      </li>
-      <li>
-        <a href="reference/ja/readme.html">README</a>
-        (<a href="reference/readme.html">en</a>)
-      </li>
-      <li>
-        <a href="reference/ja/introduction.html">はじめに</a>
-        (<a href="reference/introduction.html">en</a>)
-      </li>
-      <li>
-        <a href="reference/ja/install.html">インストール</a>
-        (<a href="reference/install.html">en</a>)
-      </li>
-      <li>
-        <a href="coverage/">カバレッジ</a>
-      </li>
-    </ul>
+    <div class="header">
+      <h1>
+	<span class="title">milterを使った効果的な迷惑メール対策</span>
+	<span class="title-separator">-</span>
+	<span class="title-project">milter manager</span>
+      </h1>
+      <ul class="other-languages">
+        <li id="other-language-english"><a href="./">English</a></li>
+      </ul>
+      <ul class="menu">
+	<li id="menu-introduction"><a href="reference/ja/introduction.html">はじめに</a></li>
+	<li id="menu-install"><a href="reference/ja/install.html">インストール</a></li>
+	<li id="menu-download"><a href="http://downloads.sourceforge.net/milter-manager/milter-manager-0.9.0.tar.gz">ダウンロード</a></li>
+	<li id="menu-blog"><a href="ja/blog/">ブログ</a></li>
+      </ul>
+    </div>
+
+    <div class="content">
+      <div class="main">
+	<h2>milter manager?</h2>
+	<p>
+	  milter managerはmilterを使って効果的に迷惑メール対策（スパムメール対策・ウィルスメール対策）を行うフリーソフトウェアです。
+	</p>
+	<p>
+	  milter managerはmilterをサポートしているSendmailやPostfixといったMTAと一緒に使うことができます。Ubuntu、CentOS、FreeBSDなどのプラットフォーム上で動作します。
+	</p>
+      </div>
+
+      <div class="sidebar">
+	<ul>
+	  <li><a href="http://sourceforge.net/projects/milter-manager/">プロジェクトページ</a></li>
+	  <li>
+	    <a href="reference/ja/news.html">ニュース</a>
+	  </li>
+	  <li>
+	    <a href="reference/ja/readme.html">README</a>
+	  </li>
+	  <li>
+	    <a href="reference/ja/introduction.html">はじめに</a>
+	  </li>
+	  <li>
+	    <a href="reference/ja/install.html">インストール</a>
+	  </li>
+	  <li>
+	    <a href="coverage/">カバレッジ</a>
+	  </li>
+	</ul>
+      </div>
+    </div>
 
     <div class="sponsors">
-      <p>
+      <p id="sponsor-ipa">
         <a href="http://www.clear-code.com/">株式会社クリアコード</a>は<a href="http://www.ipa.go.jp/software/open/ossc/2008/theme/koubo1.html">平成20年度独立行政法人情報処理推進機構（IPA）オープンソフトウェア利用促進事業</a>「迷惑メール対策を柔軟に実現するためのmilterの開発」の一環としてmilter managerの開発を行ないました。
       </p>
-      <p>
+      <p id="sponsor-sf-net">
         <a href="http://sourceforge.net/projects/milter-manager">
-          <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=236233&type=12" width="120" height="30" border="0" alt="SourceForge.netからmilter managerをダウンロード。高速で安全なフリーオープンソースソフトウェアダウンロード。" />
+          <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=236233&amp;type=12" width="120" height="30" border="0" alt="SourceForge.netからmilter managerをダウンロード。高速で安全なフリーオープンソースソフトウェアダウンロード。" />
         </a>
 <!-- Piwik -->
 <script type="text/javascript">
