@@ -1,6 +1,8 @@
 2009-04-02  Kouhei Sutou  <kou@cozmixng.org>
 
-	* README.ja: make image license public domain.
+	* html/index.html: use new style.
+
+	* README, README.ja: make image license public domain.
 
 	* doc/: remove ClearCode logo.
 	* html/: add logos of Tango and famfamfam.

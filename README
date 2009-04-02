@@ -18,6 +18,7 @@ Use the following rules:
   * Commands: GPL3(license/gpl.txt)
   * Documents: GFDL(license/fdl.txt)
   * Web interface: AGPL3(license/agpl.txt)
+  * Images: Public Domain
   * Libraries: LGPL3(license/lgpl.txt)
 
 Here is a concrete list:
@@ -33,6 +34,8 @@ Here is a concrete list:
     * doc/*
   * Web interface: AGPL3
     * admin/**/*
+  * Images: Public Domain
+    * doc/*.svg, doc/*.png, html/*.svg, html/*.png
   * Libraries: LGPL3
     * others than those above
 

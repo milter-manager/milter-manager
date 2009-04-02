@@ -3,6 +3,7 @@ body
 {
   margin: 0px;
   padding: 0px;
+  color: black;
   background-color: white;
 }
 
@@ -18,6 +19,11 @@ h1
   margin-top: 20px;
   margin-left: 50px;
   height: 40px;
+}
+
+h1 a
+{
+  color: black;
 }
 
 h1 span
@@ -61,13 +67,20 @@ ul.other-languages li#other-language-english
   background: url(us.png) no-repeat;
 }
 
+ul.other-languages li#other-language-japanese
+{
+  background: url(jp.png) no-repeat;
+}
+
 ul.menu
 {
   background: url(bar.png) repeat-x;
-  height: 36px;
+  height: 28px;
   padding-top: 12px;
   padding-left: 50px;
   margin-left: 0px;
+  margin-bottom: 0px;
+  padding-bottom: 0px;
 }
 
 ul.menu li
@@ -112,12 +125,13 @@ ul.menu li#menu-blog
 div.content
 {
   position: relative;
+  margin-left: 50px;
+  margin-right: 50px;
 }
 
 div.main
 {
-  margin-left: 50px;
-  margin-right: 220px;
+  margin-right: 170px;
 }
 
 div.main p
@@ -138,7 +152,7 @@ div.sidebar
   clear: both;
   position: absolute;
   top: 0px;
-  right: 50px;
+  right: 0px;
   width: 150px;
   text-align: right;
   background-color: white;
@@ -187,4 +201,25 @@ div.sponsors p#sponsor-famfamfam
   position: absolute;
   top: 103px;
   right: 50px;
+}
+
+
+/* For GTK-Doc */
+@media screen
+{
+  table.navigation#top
+  {
+    position: absolute;
+  }
+
+  div.book
+  {
+    top: 0px;
+  }
+
+  div.footer
+  {
+    padding-top: 0px;
+    padding-bottom: 1em;
+  }
 }
