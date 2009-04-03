@@ -59,7 +59,7 @@ ul.other-languages li a
   display: block;
   height: 11px;
   width: 16px;
-  text-indent: -1000px;
+  text-indent: -100000px;
 }
 
 ul.other-languages li#other-language-english
