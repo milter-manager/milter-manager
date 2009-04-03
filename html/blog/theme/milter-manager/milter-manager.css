@@ -8,10 +8,52 @@ hr.sep
 div.footer
 {
   margin-left: 50px;
+  margin-bottom: 50px;
 }
 
 div.content
 {
   margin-top: 10px;
   margin-bottom: 20px;
+}
+
+span.date
+{
+  color: gray;
+  font-size: small;
+  display: block;
+  float: right;
+}
+
+div.adminmenu
+{
+  float: right;
+  font-size: 90%;
+}
+
+div.day p
+{
+  margin-left: 50px;
+  margin-right: 50px;
+}
+
+pre
+{
+  margin-left: 1em;
+  width: 90%;
+  overflow: auto;
+}
+
+div.error,
+span.error
+{
+  color: red;
+}
+
+ul.categories,
+ul.categories li
+{
+  display: inline;
+  padding: 0;
+  margin: 0;
 }

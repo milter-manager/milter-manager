@@ -7,6 +7,16 @@ body
   background-color: white;
 }
 
+a:link
+{
+  color: #f57900;
+}
+
+a:visited
+{
+  color: #ce5c00;
+}
+
 div.header
 {
   position: relative;
@@ -139,7 +149,8 @@ div.main p
   line-height: 150%;
 }
 
-div.main h2
+div.main h2,
+div.day h3
 {
   margin-left: -45px;
   text-indent: 45px;
