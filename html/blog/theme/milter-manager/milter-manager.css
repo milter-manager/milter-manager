@@ -1,0 +1,17 @@
+@import url(../../../../milter-manager.css);
+
+hr.sep
+{
+  visibility: hidden;
+}
+
+div.footer
+{
+  margin-left: 50px;
+}
+
+div.content
+{
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
