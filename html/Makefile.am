@@ -26,7 +26,6 @@ images =					\
 	$(generated_images)
 
 auto_generated_images =				\
-	logo.png				\
 	what-is-milter-manager.png
 
 generated_images =				\
@@ -36,6 +35,7 @@ generated_images =				\
 	heading-mark.png			\
 	install.png				\
 	introduction.png			\
+	logo.png				\
 	$(auto_generated_images)
 
 MAINTAINER_CLEANFILES = $(auto_generated_images)
