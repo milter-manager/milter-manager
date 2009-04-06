@@ -1,5 +1,8 @@
 2009-04-06  Kouhei Sutou  <kou@clear-code.com>
 
+	* html/index.html*: add lang.
+	* html/milter-manager.css: fix size.
+
 	* html/: resize images.
 
 2009-04-04  Kouhei Sutou  <kou@cozmixng.org>
