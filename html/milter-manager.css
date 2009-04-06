@@ -32,15 +32,18 @@ div.header h1
   height: 40px;
 }
 
-div.header h1 a
+div.header h1 a,
+div.header h1 a:link,
+div.header h1 a:visited
 {
   color: black;
+  text-decoration: none;
 }
 
 div.header h1 span
 {
   display: block;
-  margin-left: 230px;
+  padding-left: 230px;
   margin-bottom: 2px;
 }
 
@@ -111,6 +114,11 @@ ul.menu li a
 ul.menu li a:hover
 {
   text-decoration: underline;
+}
+
+ul.menu li a:visited
+{
+  color: #ffb84f;
 }
 
 ul.menu li#menu-introduction
@@ -186,11 +194,16 @@ div.sponsors
 {
   border-top: solid black 1px;
   position: relative;
-  margin-bottom: 1em;
+}
+
+div.sponsors p
+{
+  margin: 0px;
 }
 
 div.sponsors p#sponsor-ipa
 {
+  margin-top: 15px;
   margin-left: 50px;
   margin-right: 220px;
 }
@@ -198,21 +211,21 @@ div.sponsors p#sponsor-ipa
 div.sponsors p#sponsor-sf-net
 {
   position: absolute;
-  top: 0px;
+  top: 15px;
   right: 50px;
 }
 
 div.sponsors p#sponsor-tango
 {
   position: absolute;
-  top: 40px;
+  top: 55px;
   right: 50px;
 }
 
 div.sponsors p#sponsor-famfamfam
 {
   position: absolute;
-  top: 103px;
+  top: 118px;
   right: 50px;
   padding-bottom: 50px;
 }
