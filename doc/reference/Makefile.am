@@ -304,4 +304,4 @@ upload: docs
 	ruby $(srcdir)/prepare-for-publishing.rb tmp/reference/*.html
 	ruby $(srcdir)/prepare-for-publishing.rb \
 	  --language=ja tmp/reference/ja/*.html
-	rsync -avz tmp/reference/ $(SF_HTDOCS)/reference/
+	rsync -avz --delete tmp/reference/ $(SF_HTDOCS)/reference/
