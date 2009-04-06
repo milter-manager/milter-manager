@@ -9,7 +9,7 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="245.5625"
+   width="215.56"
    height="40.321609"
    id="svg2"
    sodipodi:version="0.32"
@@ -805,7 +805,7 @@
        xlink:href="#linearGradient3665"
        id="linearGradient3611"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(1.6417254,0,0,1.6417252,-216.59619,-1380.9216)"
+       gradientTransform="matrix(1.6417254,0,0,1.6417252,-213.31275,-1380.9216)"
        x1="278.29703"
        y1="468.49402"
        x2="278.29703"
@@ -825,7 +825,7 @@
        xlink:href="#linearGradient3653"
        id="linearGradient3651"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(2,0,0,2,-263.8641,-475.00445)"
+       gradientTransform="matrix(2,0,0,2,-259.8641,-475.00445)"
        x1="278.29703"
        y1="468.49402"
        x2="278.29703"
@@ -1900,7 +1900,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="2.8"
-     inkscape:cx="69.126309"
+     inkscape:cx="73.25446"
      inkscape:cy="-17.116044"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -1930,37 +1930,37 @@
     <g
        inkscape:r_cy="true"
        inkscape:r_cx="true"
-       transform="matrix(1.01362,0,0,-1.01362,231.09139,470.24125)"
+       transform="matrix(1.01362,0,0,-1.01362,235.09139,470.24125)"
        id="g3186" />
     <text
        sodipodi:linespacing="100%"
        id="text3607"
        y="-591.88239"
-       x="113.42402"
-       style="font-size:26.26760483px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:url(#linearGradient3611);fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans"
+       x="116.70748"
+       style="font-size:26.26760483px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:url(#linearGradient3611);fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:FreeSans;-inkscape-font-specification:FreeSans"
        xml:space="preserve"
        transform="scale(1.2182306,-0.8208627)"><tspan
-         style="fill:url(#linearGradient3611);fill-opacity:1"
+         style="font-size:26.26760483px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:url(#linearGradient3611);fill-opacity:1;font-family:FreeSans;-inkscape-font-specification:FreeSans"
          y="-591.88239"
-         x="113.42402"
+         x="116.70748"
          id="tspan3609"
          sodipodi:role="line">milter manager</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:32px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:url(#linearGradient3651);fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans"
-       x="138.17661"
+       style="font-size:32px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:url(#linearGradient3651);fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:FreeSans;-inkscape-font-specification:FreeSans"
+       x="142.17661"
        y="486.2272"
        id="text2383"
        sodipodi:linespacing="100%"><tspan
          sodipodi:role="line"
          id="tspan2385"
-         x="138.17661"
+         x="142.17661"
          y="486.2272"
-         style="fill:url(#linearGradient3651);fill-opacity:1">milter manager</tspan></text>
+         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:url(#linearGradient3651);fill-opacity:1;font-family:FreeSans;-inkscape-font-specification:FreeSans">milter manager</tspan></text>
     <g
        inkscape:label="Layer 1"
        id="g5275"
-       transform="matrix(1.966567e-2,0,0,1.966567e-2,248.85602,473.20969)">
+       transform="matrix(1.966567e-2,0,0,1.966567e-2,252.85602,473.20969)">
       <g
          inkscape:export-ydpi="90.000000"
          inkscape:export-xdpi="90.000000"
