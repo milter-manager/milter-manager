@@ -25,9 +25,6 @@ images =					\
 	us.png					\
 	$(generated_images)
 
-auto_generated_images =				\
-	what-is-milter-manager.png
-
 generated_images =				\
 	bar.png					\
 	blog.png				\
@@ -36,9 +33,9 @@ generated_images =				\
 	install.png				\
 	introduction.png			\
 	logo.png				\
-	$(auto_generated_images)
+	what-is-milter-manager.png
 
-MAINTAINER_CLEANFILES = $(auto_generated_images)
+MAINTAINER_CLEANFILES = $(generated_images)
 
 upload: $(web_contents)
 	(cd $(srcdir) && rsync -avz $(web_contents) $(SF_HTDOCS)/)
@@ -46,4 +43,4 @@ upload: $(web_contents)
 SUFFIXES = .svg .png
 
 .svg.png:
-	inkscape --export-background=white --export-png $@ $<
+	inkscape --export-png $@ $<

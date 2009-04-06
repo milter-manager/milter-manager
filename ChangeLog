@@ -1,3 +1,7 @@
+2009-04-06  Kouhei Sutou  <kou@clear-code.com>
+
+	* html/: resize images.
+
 2009-04-04  Kouhei Sutou  <kou@cozmixng.org>
 
 	* html/: improve style.

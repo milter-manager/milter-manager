@@ -1991,7 +1991,7 @@
      gridtolerance="10000"
      guidetolerance="10"
      objecttolerance="10"
-     inkscape:pageopacity="0.0"
+     inkscape:pageopacity="1"
      inkscape:pageshadow="2"
      inkscape:zoom="2.8"
      inkscape:cx="62.867115"
@@ -2001,8 +2001,8 @@
      showgrid="false"
      inkscape:window-width="812"
      inkscape:window-height="649"
-     inkscape:window-x="0"
-     inkscape:window-y="0" />
+     inkscape:window-x="18"
+     inkscape:window-y="67" />
   <metadata
      id="metadata5961">
     <rdf:RDF>
