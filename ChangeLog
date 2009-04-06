@@ -1,5 +1,7 @@
 2009-04-06  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/reference/header*.html: add lang.
+
 	* html/index.html*: add lang.
 	* html/milter-manager.css: fix size.
 
