@@ -1,3 +1,7 @@
+2009-04-07  Kouhei Sutou  <kou@clear-code.com>
+
+	* configure.ac (PACKAGE_TITLE): milter-manager -> milter manager.
+
 2009-04-06  Kouhei Sutou  <kou@clear-code.com>
 
 	* doc/reference/header*.html: add lang.
