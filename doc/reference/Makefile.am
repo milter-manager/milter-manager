@@ -301,7 +301,8 @@ upload: docs
 	  cp -rp $$lang/html/ tmp/reference/$$lang/;			\
 	done
 	chmod -R g+w tmp/reference
-	ruby $(srcdir)/prepare-for-publishing.rb tmp/reference/*.html
-	ruby $(srcdir)/prepare-for-publishing.rb \
-	  --language=ja tmp/reference/ja/*.html
+	ruby $(top_srcdir)/misc/prepare-gtk-doc-html-for-publishing.rb	\
+	  --template-directory=$(srcdir) tmp/reference/*.html
+	ruby $(top_srcdir)/misc/prepare-gtk-doc-html-for-publishing.rb	\
+	  --template-directory=$(srcdir) --language=ja tmp/reference/ja/*.html
 	rsync -avz --delete tmp/reference/ $(SF_HTDOCS)/reference/
