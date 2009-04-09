@@ -25,7 +25,7 @@ WebサーバとしてApacheを使います。
 === milter-manager-log-analyzerの設定
 
 グラフはインストール時に作成したmilter-managerユーザのホーム
-ディレクトリ以下に出力し、
+ディレクトリ以下に出力されています。このグラフを
 http://localhost/~milter-manager/log/で閲覧できるようにします。
 
   % sudo -u milter-manager mkdir -p ~milter-manager/public_html/log
@@ -35,20 +35,8 @@ http://localhost/~milter-manager/log/で閲覧できるようにします。
   % sudo /usr/sbin/a2enmod userdir
   % sudo /etc/init.d/apache2 force-reload
 
-次に、cronの設定をします。/etc/cron.d/以下にcronファイルへの
-シンボリックリンクを作成します。
-
-  % sudo ln -s /usr/local/etc/milter-manager/cron.d/debian/milter-manager-log /etc/cron.d/
-
-Ubuntu Linuxではmilter-managerのログは/var/log/mail.infoに出
-力されます。/var/log/mail.infoは管理者用のユーザ以外は読むこ
-とができないので、cron ファイル内では、rootで読み込んだ
-/var/log/mail.infoをパイプでmilter-manager-log-analyzerに渡し
-ます。milter-manager-log-analyzerはrootではなく、インストール
-時に作成したmilter-manager権限で実行します。
-
-milter-manager-log-analyzerは5分おきに実行されます。
-/var/log/syslogで実行されたかどうかを確認することができます。
+これでhttp://localhost/~milter-manager/log/でグラフを閲覧で
+きるようになります。
 
 == milter manager adminのインストール
 
@@ -57,7 +45,7 @@ milter-manager-log-analyzerは5分おきに実行されます。
 以下のパッケージをインストールすることにより、関連するパッケー
 ジもインストールされます。
 
-  % sudo aptitude -V -D -y install build-essential rdoc libopenssl-ruby apache2-threaded-dev libsqlite3-ruby
+  % sudo aptitude -V -D -y install build-essential rdoc libopenssl-ruby apache2-threaded-dev libsqlite3-ruby milter-manager-admin
 
 === RubyGemsのインストール
 
@@ -70,7 +58,7 @@ milter-manager-log-analyzerは5分おきに実行されます。
 === gemのインストール
 
   % sudo gem install rails -v '2.2.2'
-  % sudo gem install passenger
+  % sudo gem install passenger -v '2.0.6'
 
 === Passengerのインストール
 
@@ -113,12 +101,12 @@ milter manager adminはパスワード認証がついていますが、可能で
 
 === milter manager adminの設定
 
-milter manager adminは/usr/local/share/milter-manager/admin/
-以下にインストールされています。これをmilter-managerユーザ権
-限で動かし、http://localhost/milter-manager/でアクセスできる
-ようにします。
+milter manager adminは/usr/share/milter-manager/admin/以下に
+インストールされています。これをmilter-managerユーザ権限で動
+かし、http://localhost/milter-manager/でアクセスできるように
+します。
 
-  % tar cf - -C /usr/local/share/milter-manager admin | sudo -u milter-manager -H tar xf - -C ~milter-manager
+  % tar cf - -C /usr/share/milter-manager admin | sudo -u milter-manager -H tar xf - -C ~milter-manager
   % sudo ln -s ~milter-manager/admin/public /var/www/milter-manager
   % cd ~milter-manager/admin
   % sudo -u milter-manager -H rake gems:install
@@ -136,7 +124,7 @@ http://localhost/milter-manager/にアクセスしてユーザを登録し
 の情報を設定するページへ移動します。milter-managerがどこで接
 続を受け付けているかは以下で確認可能です。
 
-  % sudo -u milter-manager -H /usr/local/sbin/milter-manager --show-config | grep controller.connection_spec
+  % sudo -u milter-manager -H /usr/sbin/milter-manager --show-config | grep controller.connection_spec
   controller.connection_spec = "unix:/var/run/milter-manager/milter-manager-controller.sock"
 
 確認した値をブラウザから登録してください。上記の場合だと、

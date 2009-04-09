@@ -24,9 +24,9 @@ We use RRDtool for generating graphs.
 
 === Configure milter-manager-log-analyzer
 
-milter-manager-log-analyzer generates graphs to
-milter-manager user's home directory. They are published at
-at http://localhost/~milter-manager/log/.
+milter-manager-log-analyzer generates graphs into
+milter-manager user's home directory. We will publish them
+http://localhost/~milter-manager/log/.
 
   % sudo -u milter-manager mkdir -p ~milter-manager/public_html/log
 
@@ -35,21 +35,7 @@ Apache publishes users' files.
   % sudo /usr/sbin/a2enmod userdir
   % sudo /etc/init.d/apache2 force-reload
 
-Next, we set cron for milter-manager user up. We create a
-symbolic link under /etc/cron.d/.
-
-  % sudo ln -s /usr/local/etc/milter-manager/cron.d/debian/milter-manager-log /etc/cron.d/
-
-On Ubuntu Linux, milter-manager logs to
-/var/log/mail.info. /var/log/mail.info can be read only by
-administration users. In cron file, we read
-/var/log/mail.info as root and it is passed to
-milter-manager-log-analyzer by
-pipe. milter-manager-log-analyzer is ran as milter-manager
-user not root.
-
-milter-manager-log-analyzer is invoked every 5 minutes. We
-can confirm it is invoked at /var/log/cron.
+Now, we can see graphs at http://localhost/~milter-manager/log/.
 
 == Install milter manager admin
 
@@ -58,7 +44,7 @@ can confirm it is invoked at /var/log/cron.
 To install the following packages, related packages are also
 installed:
 
-  % sudo aptitude -V -D -y install rdoc libopenssl-ruby apache2-threaded-dev libsqlite3-ruby
+  % sudo aptitude -V -D -y install build-essential rdoc libopenssl-ruby apache2-threaded-dev libsqlite3-ruby milter-manager-admin
 
 === Install RubyGems
 
@@ -71,7 +57,7 @@ installed:
 === Instal gems
 
   % sudo gem install rails -v '2.2.2'
-  % sudo gem install passenger
+  % sudo gem install passenger -v '2.0.6'
 
 === Install Passenger
 
@@ -116,12 +102,12 @@ reload configuration:
 === Configure milter manager admin
 
 milter manager admin is installed to
-/usr/local/share/milter-manager/admin/. We run it as
+/usr/share/milter-manager/admin/. We run it as
 milter-manager user authority, and access it at
 http://localhost/milter-manager/.
 
-  % tar cf - -C /usr/local/share/milter-manager admin | sudo -u milter-manager -H tar xf - -C ~milter-manager
-  % sudo ln -s ~milter-manager/admin/public /usr/local/www/apache22/data/milter-manager
+  % tar cf - -C /usr/share/milter-manager admin | sudo -u milter-manager -H tar xf - -C ~milter-manager
+  % sudo ln -s ~milter-manager/admin/public /var/www/apache22/data/milter-manager
   % cd ~milter-manager/admin
   % sudo -u milter-manager -H rake gems:install
   % sudo -u milter-manager -H rake RAILS_ENV=production db:migrate
@@ -139,7 +125,7 @@ milter-manager connection configuration page after register
 a user. We can confirm where milter-manager accepts control
 connection:
 
-  % sudo -u milter-manager -H /usr/local/sbin/milter-manager --show-config | grep controller.connection_spec
+  % sudo -u milter-manager -H /usr/sbin/milter-manager --show-config | grep controller.connection_spec
   controller.connection_spec = "unix:/var/run/milter-manager/milter-manager-controller.sock"
 
 We register confirmed value by browser. In the above case,

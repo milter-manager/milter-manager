@@ -29,7 +29,8 @@ EXTRA_DIST =					\
 	README					\
 	README.ja				\
 	NEWS					\
-	NEWS.ja
+	NEWS.ja					\
+	milter-manager.spec
 
 upload: upload-doc upload-coverage
 
