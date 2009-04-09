@@ -1,5 +1,13 @@
 2009-04-09  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/Makefile.am (install-data-local): add missing $(DESTDIR).
+
+	* data/init.d/debian/default/milter-manager,
+	data/init.d/redhat/sysconfig/milter-manager: add package system's
+	user customize file for Debian and RedHat.
+
+	* milter-manager.spec.in: add a spec file for RedHat.
+
 	* doc/Makefile.am: install man in Japanese.
 
 2009-04-07  Kouhei Sutou  <kou@clear-code.com>

@@ -1,0 +1,4 @@
+# For postfix, you might want these settings:
+#GROUP=postfix
+#SOCKET_GROUP=postfix
+#CONNECTION_SPEC=unix:/var/spool/postfix/milter-manager/milter-manager.sock

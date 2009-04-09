@@ -398,6 +398,7 @@ AC_CONFIG_FILES([Makefile
 		 libmilter.pc
 		 milter-server.pc
 		 milter-manager.pc
+		 milter-manager.spec
 		 milter/Makefile
 		 milter/core/Makefile
 		 milter/core/milter-version.h
@@ -427,7 +428,9 @@ AC_CONFIG_FILES([Makefile
 		 data/rc.d/Makefile
 		 data/init.d/Makefile
 		 data/init.d/debian/Makefile
+		 data/init.d/debian/default/Makefile
 		 data/init.d/redhat/Makefile
+		 data/init.d/redhat/sysconfig/Makefile
 		 data/cron.d/Makefile
 		 data/cron.d/debian/Makefile
 		 data/cron.d/redhat/Makefile

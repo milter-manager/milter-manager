@@ -1,0 +1,8 @@
+# For debug:
+# OPTION_ARGS="--verbose"
+
+# For debug without daemonize (Use Ctrl+C to stop milter-manager):
+# OPTION_ARGS="--verbose --no-daemon"
+
+# For Postfix users:
+# 
