@@ -63,7 +63,7 @@ if ! getent group milter-manager &>/dev/null; then
 fi
 if ! id milter-manager &>/dev/null; then
     /usr/sbin/useradd -r -s /sbin/nologin -c 'milter manager' \
-	-d %{_localstatedir}/lib/milter-manager \
+	-d %{_localstatedir}/lib/milter-manager --create-home \
 	-g milter-manager milter-manager || \
         %logmsg "Unexpected error adding user \"milter-manager\". Aborting installation."
 fi

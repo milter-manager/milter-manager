@@ -1,5 +1,7 @@
 2009-04-09  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter-manager.spec.in: create home directory.
+
 	* data/defaults/redhat.conf,
 	binding/ruby/lib/milter/manager/redhat-init-detector.rb: support
 	enma detection on Red Hat platform.
