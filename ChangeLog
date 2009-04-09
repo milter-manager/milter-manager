@@ -1,3 +1,7 @@
+2009-04-09  Kouhei Sutou  <kou@clear-code.com>
+
+	* doc/Makefile.am: install man in Japanese.
+
 2009-04-07  Kouhei Sutou  <kou@clear-code.com>
 
 	* doc/reference/Makefile.am: add --template-directory option.
