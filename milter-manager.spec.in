@@ -1,13 +1,12 @@
 Summary: A milter to use milters effectively
 Name: milter-manager
 Version: @VERSION@
-Release: 1
+Release: 0
 License: GPLv3+, LGPL3+, AGPL3+, GFDL, Public Domain
 URL: http://milter-manager.sourceforge.net/
 Group: Applications/Internet
-Source0: milter-manager-@VERSION@.tar.gz
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildRequires: libtool
+Source: http://downloads.sourceforge.net/milter-manager/milter-manager-@VERSION@.tar.gz
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-%(%{__id_u} -n)
 BuildRequires: intltool
 BuildRequires: gcc
 BuildRequires: glib2-devel
@@ -38,18 +37,38 @@ make install DESTDIR=%{buildroot}
 
 mkdir -p %{buildroot}%{_initrddir}
 install -m 755 data/init.d/redhat/milter-manager %{buildroot}%{_initrddir}/milter-manager
-install -m 644 data/init.d/redhat/sysconfig/milter-manager %{buildroot}%{_sysconfdir}/milter-manager.dist
-if [ ! -e %{buildroot}%{_sysconfdir}/milter-manager ]; then
-    cp %{buildroot}%{_sysconfdir}/milter-manager.dist %{buildroot}%{_sysconfdir}/milter-manager
-fi
+
+mkdir -p %{buildroot}%{_sysconfdir}/sysconfig
+install -m 644 data/init.d/redhat/sysconfig/milter-manager %{buildroot}%{_sysconfdir}/sysconfig/milter-manager
+
+mkdir -p %{buildroot}%{_sysconfdir}/cron.d
+install -m 600 data/cron.d/redhat/milter-manager-log %{buildroot}%{_sysconfdir}/cron.d/milter-manager-log
 
 mkdir -p %{buildroot}%{_localstatedir}/run/milter-manager/
+
+mkdir -p %{buildroot}%{_sysconfdir}/httpd/conf.d/
+cat <<EOC > %{buildroot}%{_sysconfdir}/httpd/conf.d/milter-manager-log.conf
+Alias /milter-manager-log/ /var/lib/milter-manager/public_html/log/
+EOC
 
 %clean
 rm -rf %{buildroot}
 
 %post
 /sbin/chkconfig --add milter-manager
+
+if ! getent group milter-manager &>/dev/null; then
+    /usr/sbin/groupadd -r milter-manager || \
+        %logmsg "Unexpected error adding group \"milter-manager\". Aborting installation."
+fi
+if ! id milter-manager &>/dev/null; then
+    /usr/sbin/useradd -r -s /sbin/nologin -c 'milter manager' \
+	-d %{_localstatedir}/lib/milter-manager \
+	-g milter-manager milter-manager || \
+        %logmsg "Unexpected error adding user \"milter-manager\". Aborting installation."
+fi
+
+chown -R milter-manager:milter-manager %{_localstatedir}/run/milter-manager/
 
 %preun
 if [ $1 = 0 ] ; then
@@ -62,16 +81,34 @@ if [ $1 -ge 1 ] ; then
     /sbin/service milter-manager condrestart > /dev/null 2>&1
 fi
 
+if [ $1 -eq 0 ]; then
+    /usr/sbin/userdel milter-manager || %logmsg "User \"milter-manager\" could not be deleted."
+fi
+
+
 %files
 %defattr(-, root, root, -)
-%doc ChangeLog ChangeLog.toolkit README README.ja NEWS NEWS.ja README.ja TODO license/*.txt
-%{_bindir}/*
-%{_libexecdir}/*
-%{_mandir}/*/*
-%{_mandir}/ja*/*/*
+%doc ChangeLog ChangeLog.toolkit README README.ja NEWS NEWS.ja TODO license/*.txt
+%doc %{_datadir}/gtk-doc/html/milter-manager/
+%{_bindir}/
+%{_sbindir}/
+%{_includedir}/milter-manager/
+%{_libdir}/
+%{_mandir}/
 %{_initrddir}/milter-manager
-%config %{_sysconfdir}/milter-manager
-%attr(0750, daemon, daemon) %dir %{_localstatedir}/run/milter-manager/
+%{_datadir}/milter-manager/
+%{_sysconfdir}/milter-manager/cron.d/
+%{_sysconfdir}/milter-manager/init.d/
+%{_sysconfdir}/milter-manager/rc.d/
+%{_sysconfdir}/cron.d/
+%config %{_sysconfdir}/sysconfig/milter-manager
+%config %{_sysconfdir}/milter-manager/milter-manager.conf
+%config %{_sysconfdir}/milter-manager/defaults/
+%config %{_sysconfdir}/milter-manager/applicable-conditions/
+%config %{_sysconfdir}/httpd/conf.d/milter-manager-log.conf
+
+%defattr(-, milter-manager milter-manager, 0755)
+%dir %{_localstatedir}/run/milter-manager/
 
 %changelog
 * Thu Apr 16 2009 Kouhei Sutou <kou@clear-code.com>
