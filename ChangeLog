@@ -1,5 +1,9 @@
 2009-04-09  Kouhei Sutou  <kou@clear-code.com>
 
+	* data/defaults/redhat.conf,
+	binding/ruby/lib/milter/manager/redhat-init-detector.rb: support
+	enma detection on Red Hat platform.
+
 	* html/favicon.*: add favicon.
 
 	* milter-manager.spec.in: setup useful configuration.

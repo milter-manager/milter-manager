@@ -27,6 +27,11 @@ module Milter::Manager
       !guess_spec.nil? and !rc_files.empty?
     end
 
+    def detect_enma_connection_spec
+      conf_file = @variables["CONF_FILE"] || "/etc/enma.conf"
+      Milter::Manager::EnmaSocketDetector.new(conf_file).detect
+    end
+
     private
     def parse_custom_conf
       parse_sysconfig(sysconfig)
