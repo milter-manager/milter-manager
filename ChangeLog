@@ -1,3 +1,7 @@
+2009-04-09  Kouhei Sutou  <kou@cozmixng.org>
+
+	* html/index.html{,.ja}, doc/reference/head{,-ja}.html: set favicon.
+
 2009-04-09  Kouhei Sutou  <kou@clear-code.com>
 
 	* milter-manager.spec.in: create home directory.
