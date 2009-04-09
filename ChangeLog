@@ -1,5 +1,7 @@
 2009-04-09  Kouhei Sutou  <kou@clear-code.com>
 
+	* html/favicon.*: add favicon.
+
 	* milter-manager.spec.in: setup useful configuration.
 
 	* doc/install-options-to-centos.rd*: use RPM package.

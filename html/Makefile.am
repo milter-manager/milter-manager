@@ -16,7 +16,8 @@ svg_images =					\
 	download.svg				\
 	heading-mark.svg			\
 	install.svg				\
-	introduction.svg
+	introduction.svg			\
+	favicon.svg
 
 images =					\
 	famfamfam-logo.png			\
@@ -33,7 +34,9 @@ generated_images =				\
 	install.png				\
 	introduction.png			\
 	logo.png				\
-	what-is-milter-manager.png
+	what-is-milter-manager.png		\
+	favicon.png				\
+	favicon.ico
 
 MAINTAINER_CLEANFILES = $(generated_images)
 
