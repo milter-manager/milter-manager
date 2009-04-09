@@ -1,5 +1,7 @@
 2009-04-09  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/install-to-ubuntu.rd*: use Jun Kobayashi's package repository.
+
 	* doc/Makefile.am (install-data-local): add missing $(DESTDIR).
 
 	* data/init.d/debian/default/milter-manager,

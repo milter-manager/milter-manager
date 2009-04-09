@@ -10,10 +10,38 @@ Ubuntu Linuxに特化したmilter managerのインストール方法につい
 
 == パッケージのインストール
 
-以下のパッケージをインストールすることにより、関連するパッケー
-ジもインストールされます。
+((<Ubuntu Japanese Team|URL:http://www.ubuntulinux.jp>))の
+((<小林さん|URL:http://www.junkobayashi.jp/>))さんが、milter
+managerのパッケージを作成してくれているので、それを利用しま
+す。
 
-  % sudo aptitude -V -D -y install libtool intltool libglib2.0-dev ruby ruby1.8-dev libglib2-ruby1.8
+Hardy Heronを利用している場合は以下の内容の
+/etc/apt/sources.list.d/milter-manager.listを作成してくださ
+い。
+
+/etc/apt/sources.list.d/milter-manager.list:
+  deb http://ppa.launchpad.net/jkbys/ppa/ubuntu hardy main
+  deb-src http://ppa.launchpad.net/jkbys/ppa/ubuntu hardy main
+
+Intrepid Ibexを利用している場合は以下の内容の
+/etc/apt/sources.list.d/milter-manager.listを作成してくださ
+い。
+
+/etc/apt/sources.list.d/milter-manager.list:
+  deb http://ppa.launchpad.net/jkbys/ppa/ubuntu intrepid main
+  deb-src http://ppa.launchpad.net/jkbys/ppa/ubuntu intrepid main
+
+パッケージリポジトリの鍵を登録します。
+
+  % gpg --keyserver wwwkeys.eu.pgp.net --recv-keys E1124067
+  % gpg --armor --export E1124067 | sudo apt-key add -
+
+milter managerをインストールします。
+
+  % sudo aptitude update
+  % sudo aptitude -V -D -y install milter-manager
+  % sudo mkdir -p ~milter-manager
+  % sudo chown milter-manager:milter-manager ~milter-manager
 
 MTAはPostfixを利用することとします。
 
@@ -29,25 +57,6 @@ milterはspamass-milter、clamav-milter、milter-greylistを使用
 Sendmailがインストールされてしまうからです。これは、
 milter-greylistの推奨パッケージとしてsendmailが登録されている
 ためです。
-
-== ビルドとインストール
-
-~/src/以下で作業をすることとします。また、/usr/local/以下に
-インストールします。
-
-  % mkdir -p ~/src/
-  % cd ~/src/
-  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-0.9.0.tar.gz
-  % tar xvzf milter-manager-0.9.0.tar.gz
-  % cd milter-manager-0.9.0
-  % ./configure
-  % make
-  % sudo make install
-  % sudo /sbin/ldconfig
-
-milter-manager用のユーザを作成します。
-
-  % sudo /usr/sbin/adduser --system milter-manager --group
 
 == 設定
 
@@ -162,7 +171,7 @@ milter-managerはシステムにインストールされているmilterを検出
 します。以下のコマンドでspamass-milter、clamav-milter、
 milter-greylistを検出していることを確認してください。
 
-  % /usr/local/sbin/milter-manager --show-config
+  % /usr/sbin/milter-manager --show-config
 
 以下のように表示されていれば検出は成功しています。
 
@@ -192,64 +201,30 @@ milter-greylistを検出していることを確認してください。
 milterの名前、ソケットのパス、enabledがtrueになっていることを
 確認してください。異なっていた場合は、((<設定
 |configuration.rd.ja>))を参考に
-/usr/local/etc/milter-manager/milter-manager.confを編集してく
+/etc/milter-manager/milter-manager.confを編集してく
 ださい。ただ、できれば、設定を変更せずに使用できるようにした
 いと考えています。もし、検出できなかった環境のことを教えても
 らえれば、milter-manager.confを編集しなくとも使用できるように
 検出方法を改良することができるかもしれません。
 
-Ubuntu上ではデフォルトでは
-/var/run/milter-manager/milter-manager.pidにプロセスIDを記録
-します。そのため、事前に/var/run/milter-manager/ディレクトリ
-を作成しておく必要があります。
+Postfixと一緒に動作するように/etc/default/milter-managerを編
+集します。
 
-  % sudo mkdir -p /var/run/milter-manager
-  % sudo chown -R milter-manager:milter-manager /var/run/milter-manager
+変更前:
+  #GROUP=postfix
+  #SOCKET_GROUP=postfix
+  #CONNECTION_SPEC=unix:/var/spool/postfix/milter-manager/milter-manager.sock
 
-また、Postfixは/var/spool/postfix/にchrootして動作するため、
-ソケットファイルは/var/spool/postfix/以下に作成する必要があり
-ます。ここでは、
-/var/spool/postfix/milter-manager/milter-manager.sockに作成す
-ることにします。そのため、事前に
-/var/spool/postfix/milter-manager/ディレクトリを作成しておく
-必要があります。
-
-  % sudo mkdir -p /var/spool/postfix/milter-manager
-  % sudo chown -R milter-manager:milter-manager /var/spool/postfix/milter-manager
-
-最後に、実効グループと接続受付先の設定をします。実効グループ
-はpostfixグループで、接続受付先は
-/var/spool/postfix/milter-manager/milter-manager.sockになるの
-で、以下のような内容の/etc/default/milter-managerを作成します。
-
+変更後:
   GROUP=postfix
   SOCKET_GROUP=postfix
   CONNECTION_SPEC=unix:/var/spool/postfix/milter-manager/milter-manager.sock
 
-milter-managerの設定が完了したので、起動の設定をします。
+milter-managerの設定が完了したので、起動します。
 
-Ubuntu用の起動スクリプトが
-/usr/local/etc/milter-manager/init.d/debian/milter-managerに
-インストールされています。/etc/init.d/以下にシンボリックリン
-クを作成し、自動起動するようにします。
+  % sudo /etc/init.d/milter-manager restart
 
-  % cd /etc/init.d
-  % sudo ln -s /usr/local/etc/milter-manager/init.d/debian/milter-manager ./
-  % sudo /usr/sbin/update-rc.d milter-manager defaults
-
-起動スクリプトはmilter-managerコマンドが
-/usr/sbin/milter-managerにインストールされていることを前提と
-しているため、シンボリックリンクを作成します。
-
-  % cd /usr/sbin
-  % sudo ln -s /usr/local/sbin/milter-manager ./
-
-milter-managerを起動します。
-
-  % sudo /etc/init.d/milter-manager start
-
-/usr/local/bin/milter-test-serverで起動の確認をすることがで
-きます。
+milter-test-serverで起動の確認をすることができます。
 
   % sudo -u postfix milter-test-server -s unix:/var/spool/postfix/milter-manager/milter-manager.sock
 
@@ -273,7 +248,7 @@ milter-managerを起動します。
 
 milter-managerをもう一度起動します。
 
-  % sudo /etc/init.d/milter-manager start
+  % sudo /etc/init.d/milter-manager restart
 
 問題があればログが表示されます。起動しているmilter-managerは
 Ctrl+cで終了することができます。

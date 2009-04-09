@@ -10,10 +10,33 @@ install information.
 
 == Install packages
 
-To install the following packages, related packages are also
-installed:
+((<Jun Kobayashi|URL:https://launchpad.net/~jkbys/>)), the
+leader of Ubuntu Japanese Team, provides milter manager
+package. We use the package.
 
-  % sudo aptitude -V -D -y install libtool intltool libglib2.0-dev ruby ruby1.8-dev libglib2-ruby1.8
+If we are on Hardy Heron, we put the following content to
+/etc/apt/sources.list.d/milter-manager.list:
+
+  deb http://ppa.launchpad.net/jkbys/ppa/ubuntu hardy main
+  deb-src http://ppa.launchpad.net/jkbys/ppa/ubuntu hardy main
+
+If we are on Intrepid Ibex, we put the following content to
+/etc/apt/sources.list.d/milter-manager.list:
+
+  deb http://ppa.launchpad.net/jkbys/ppa/ubuntu intrepid main
+  deb-src http://ppa.launchpad.net/jkbys/ppa/ubuntu intrepid main
+
+We register the key of the package repository:
+
+  % gpg --keyserver wwwkeys.eu.pgp.net --recv-keys E1124067
+  % gpg --armor --export E1124067 | sudo apt-key add -
+
+We install milter manager package:
+
+  % sudo aptitude update
+  % sudo aptitude -V -D -y install milter-manager
+  % sudo mkdir -p ~milter-manager
+  % sudo chown milter-manager:milter-manager ~milter-manager
 
 We use Postfix as MTA:
 
@@ -29,24 +52,6 @@ It's the reason why --without-recommends is specified that
 Sendmail is recommended package. If --without-recommends
 option isn't specified, Sendmail is installed and Postfix is
 removed.
-
-== Build and Install
-
-We work at ~/src/. We will install milter manager into /usr/local/.
-
-  % mkdir -p ~/src/
-  % cd ~/src/
-  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-0.9.0.tar.gz
-  % tar xvzf milter-manager-0.9.0.tar.gz
-  % cd milter-manager-0.9.0
-  % ./configure
-  % make
-  % sudo make install
-  % sudo /sbin/ldconfig
-
-We create a user for milter-manager:
-
-  % sudo /usr/sbin/adduser --system milter-manager --group
 
 == Configuration
 
@@ -155,7 +160,7 @@ milter-manager detects milters that installed in system.
 We can confirm spamass-milter, clamav-milter and
 milter-greylist are detected:
 
-  % /usr/local/sbin/milter-manager --show-config
+  % /usr/sbin/milter-manager --show-config
 
 The following output shows milters are detected:
 
@@ -185,7 +190,7 @@ The following output shows milters are detected:
 We should confirm that milter's name, socket path and
 'enabled = true'. If the values are unexpected,
 we need to change
-/usr/local/etc/milter-manager/milter-manager.conf.
+/etc/milter-manager/milter-manager.conf.
 See ((<Configuration|configuration.rd>)) for details of
 milter-manager.conf.
 
@@ -194,60 +199,24 @@ miter-manager.conf. If you report your environment to the
 milter manager project, the milter manager project may
 improve detect method.
 
-milter-manager saves its process ID to
-/var/run/milter-manager/milter-manager.pid by default on
-Ubuntu. We need to create /var/run/milter-manager/ directory
-before running milter-manager:
+We change /etc/default/milter-manager to work with Postfix:
 
-  % sudo mkdir -p /var/run/milter-manager
-  % sudo chown -R milter-manager:milter-manager /var/run/milter-manager
+Before:
+  #GROUP=postfix
+  #SOCKET_GROUP=postfix
+  #CONNECTION_SPEC=unix:/var/spool/postfix/milter-manager/milter-manager.sock
 
-Postfix runs /var/spool/postfix/ chrooted environment,
-milter-manager's socket file should be placed into under
-/var/spool/postfix/. We use
-/var/spool/postfix/milter-manager/milter-manager.sock for
-the place. We need to create
-/var/spool/postfix/milter-manager/ before running
-milter-manager:
-
-  % sudo mkdir -p /var/spool/postfix/milter-manager
-  % sudo chown -R milter-manager:milter-manager /var/spool/postfix/milter-manager
-
-We need to configure effective group and socket. Effective
-group is 'postfix' group and socket is
-/var/spool/postfix/milter-manager/milter-manager.sock.
-We create /etc/default/milter-manager with the following
-content:
-
+After:
   GROUP=postfix
   SOCKET_GROUP=postfix
   CONNECTION_SPEC=unix:/var/spool/postfix/milter-manager/milter-manager.sock
 
-milter-manager's configuration is completed. We start to
-configure about milter-manager's start-up.
+milter-manager's configuration is completed. We start
+milter-manager:
 
-milter-manager has its own run script for Ubuntu. It will be
-installed into
-/usr/local/etc/milter-manager/init.d/debian/milter-manager.
-We need to create a symbolic link to /etc/init.d/ and
-mark it run on start-up:
+  % sudo /etc/init.d/milter-manager restart
 
-  % cd /etc/init.d
-  % sudo ln -s /usr/local/etc/milter-manager/init.d/debian/milter-manager ./
-  % sudo /usr/sbin/update-rc.d milter-manager defaults
-
-The run script assumes that milter-manager command is
-installed into /usr/sbin/milter-manager. We need to create a
-symbolik link:
-
-  % cd /usr/sbin
-  % sudo ln -s /usr/local/sbin/milter-manager ./
-
-We start milter-manager:
-
-  % sudo /etc/init.d/milter-manager start
-
-/usr/local/bin/milter-test-server is usuful to confirm
+/usr/bin/milter-test-server is usuful to confirm
 milter-manager was ran:
 
   % sudo -u postfix milter-test-server -s unix:/var/spool/postfix/milter-manager/milter-manager.sock
@@ -275,7 +244,7 @@ standard output:
 
 We start milter-manager again:
 
-  % sudo /etc/init.d/milter-manager start
+  % sudo /etc/init.d/milter-manager restart
 
 Some logs are output if there is a problem. Running
 milter-manager can be exitted by Ctrl+c.
