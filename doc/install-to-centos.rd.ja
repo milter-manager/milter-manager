@@ -8,7 +8,7 @@ CentOSに特化したmilter managerのインストール方法について説明
 します。CentOSに依存しない一般的なインストール情報は((<インス
 トール|install.rd.ja>))を見てください。
 
-CentOSのバージョンは5.2を想定しています。また、root権限での
+CentOSのバージョンは5.3を想定しています。また、root権限での
 実行はsudoを使用することを想定しています。sudoを利用していな
 い場合はsuなどroot権限で実行してください。
 
@@ -38,41 +38,44 @@ RPMforgeを登録したらmilterをインストールします。
 
   % sudo yum install -y spamass-milter clamav-milter milter-greylist
 
-== ビルドとインストール
+また、グラフ作成用にRRDtoolもインストールします。
 
-~/src/以下で作業をすることとします。
+  % sudo yum install -y ruby-rrdtool
 
-  % mkdir -p ~/src/
+== milter managerパッケージのインストール
+
+milter managerはRPMパッケージが用意されていますが、依存関係
+の問題でyumではインストールできません。そのため、手動でRPMパッ
+ケージをインストールします。
 
 === Ruby/GLib2のインストール
 
 Ruby/GLib2 0.17以降ではRuby 1.8.5はサポートされていないため、
-Ruby/GLib2 0.16.0を使います。
+Ruby/GLib2 0.16.0を使います。((<電脳Rubyプロジェクト
+|URL:http://dennou-k.kugi.kyoto-u.ac.jp/library/ruby/index-j.htm>))
+が提供しているRuby/GLib2のパッケージを利用します。
 
-  % cd ~/src/
-  % wget http://downloads.sourceforge.net/ruby-gnome2/ruby-gtk2-0.16.0.tar.gz
-  % tar xvzf ruby-gtk2-0.16.0.tar.gz
-  % cd ruby-gtk2-0.16.0
-  % ruby extconf.rb glib
-  % make
-  % sudo make install
+32bit環境の場合:
+
+  % wget http://dennou-k.kugi.kyoto-u.ac.jp/arch/ruby/products/rpm/RPMS/CentOS/5/i386/ruby-glib2-0.16.0-1dc.i386.rpm
+  % sudo rpm -Uvh ruby-glib2-0.16.0-1dc.i386.rpm
+
+64bit環境の場合:
+
+  % wget http://dennou-k.kugi.kyoto-u.ac.jp/arch/ruby/products/rpm/RPMS/CentOS/5/x86_64/ruby-glib2-0.16.0-1dc.x86_64.rpm
+  % sudo rpm -Uvh ruby-glib2-0.16.0-1dc.x86_64.rpm
 
 === milter managerのインストール
 
-/usr/local/以下にインストールします。
+32bit環境の場合:
 
-  % cd ~/src/
-  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-0.9.0.tar.gz
-  % tar xvzf milter-manager-0.9.0.tar.gz
-  % cd milter-manager-0.9.0
-  % ./configure
-  % make
-  % sudo make install
+  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-1.0.0-0.i386.rpm
+  % sudo rpm -Uvh milter-manager-1.0.0-0.i386.rpm
 
-milter-manager用のユーザを作成します。
+64bit環境の場合:
 
-  % sudo /usr/sbin/groupadd -r milter-manager
-  % sudo /usr/sbin/useradd -r -s /sbin/nologin -c 'milter manager' -g milter-manager milter-manager
+  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-1.0.0-0.x86_64.rpm
+  % sudo rpm -Uvh milter-manager-1.0.0-0.x86_64.rpm
 
 == 設定
 
@@ -179,7 +182,7 @@ milter-managerはシステムにインストールされているmilterを検出
 します。以下のコマンドでspamass-milter、clamav-milter、
 milter-greylistを検出していることを確認してください。
 
-  % /usr/local/sbin/milter-manager --show-config
+  % /usr/sbin/milter-manager --show-config
 
 以下のように表示されていれば検出は成功しています。
 
@@ -209,44 +212,17 @@ milter-greylistを検出していることを確認してください。
 milterの名前、ソケットのパス、enabledがtrueになっていることを
 確認してください。異なっていた場合は、((<設定
 |configuration.rd.ja>))を参考に
-/usr/local/etc/milter-manager/milter-manager.confを編集してく
-ださい。ただ、できれば、設定を変更せずに使用できるようにした
-いと考えています。もし、検出できなかった環境のことを教えても
-らえれば、milter-manager.confを編集しなくとも使用できるように
-検出方法を改良することができるかもしれません。
+/etc/milter-manager/milter-manager.confを編集してください。た
+だ、できれば、設定を変更せずに使用できるようにしたいと考えて
+います。もし、検出できなかった環境のことを教えてもらえれば、
+milter-manager.confを編集しなくとも使用できるように検出方法を
+改良することができるかもしれません。
 
-CentOS上ではデフォルトでは
-/var/run/milter-manager/milter-manager.pidにプロセスIDを記録
-します。そのため、事前に/var/run/milter-manager/ディレクトリ
-を作成しておく必要があります。
+milter-managerの設定が完了したので、起動します。
 
-  % sudo mkdir -p /var/run/milter-manager
-  % sudo chown -R milter-manager:milter-manager /var/run/milter-manager
+  % sudo /sbin/service milter-manager restart
 
-milter-managerの設定が完了したので、起動の設定をします。
-
-CentOS用の起動スクリプトが
-/usr/local/etc/milter-manager/init.d/redhat/milter-managerに
-インストールされています。/etc/init.d/以下にシンボリックリン
-クを作成し、自動起動するようにします。
-
-  % cd /etc/init.d
-  % sudo ln -s /usr/local/etc/milter-manager/init.d/redhat/milter-manager ./
-  % sudo /sbin/chkconfig --add milter-manager
-
-起動スクリプトはmilter-managerコマンドが
-/usr/sbin/milter-managerにインストールされていることを前提と
-しているため、シンボリックリンクを作成します。
-
-  % cd /usr/sbin
-  % sudo ln -s /usr/local/sbin/milter-manager ./
-
-milter-managerを起動します。
-
-  % sudo /sbin/service milter-manager start
-
-/usr/local/bin/milter-test-serverで起動の確認をすることがで
-きます。
+milter-test-serverで起動の確認をすることができます。
 
   % sudo -u milter-manager milter-test-server -s unix:/var/run/milter-manager/milter-manager.sock
 
@@ -270,7 +246,7 @@ milter-managerを起動します。
 
 milter-managerをもう一度起動します。
 
-  % sudo /sbin/service milter-manager start
+  % sudo /sbin/service milter-manager restart
 
 問題があればログが表示されます。起動しているmilter-managerは
 Ctrl+cで終了することができます。

@@ -1,5 +1,7 @@
 2009-04-09  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/install-to-centos.rd*: use RPM package.
+
 	* admin/public/dispatch.*: ruby1.8 -> ruby.
 
 	* doc/install-options-to-ubuntu.rd*: use Jun Kobayashi's package

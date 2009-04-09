@@ -8,7 +8,7 @@ This document describes how to install milter manager to
 CentOS. See ((<Install|install.rd>)) for general install
 information.
 
-We assume that CentOS version is 5.2. We also assume that we
+We assume that CentOS version is 5.3. We also assume that we
 use sudo to run a command with root authority. If you don't
 use sudo, use su instead.
 
@@ -38,39 +38,39 @@ Now, we can install milters:
 
   % sudo yum install -y spamass-milter clamav-milter milter-greylist
 
+And we install RRDtool for generating graphs:
+
+  % sudo yum install -y ruby-rrdtool
+
 == Build and Install
 
-  % mkdir -p ~/src/
+milter manager has its RPM package but it can't be installed
+with yum. We will install it by hand.
 
 === Install Ruby/GLib2
 
 We use Ruby/GLib2 0.16.0 because Ruby/GLib2 0.17 or later
-doesn't support Ruby 1.8.5.
+doesn't support Ruby 1.8.5. We use Ruby/GLib2 package
+provided by ((<Dennou Ruby
+Project|URL:http://dennou-k.kugi.kyoto-u.ac.jp/library/ruby/>)):
 
-  % cd ~/src/
-  % wget http://downloads.sourceforge.net/ruby-gnome2/ruby-gtk2-0.16.0.tar.gz
-  % tar xvzf ruby-gtk2-0.16.0.tar.gz
-  % cd ruby-gtk2-0.16.0
-  % ruby extconf.rb glib
-  % make
-  % sudo make install
+On 32bit environment:
+  % wget http://dennou-k.kugi.kyoto-u.ac.jp/arch/ruby/products/rpm/RPMS/CentOS/5/i386/ruby-glib2-0.16.0-1dc.i386.rpm
+  % sudo rpm -Uvh ruby-glib2-0.16.0-1dc.i386.rpm
+
+On 64bit environment:
+  % wget http://dennou-k.kugi.kyoto-u.ac.jp/arch/ruby/products/rpm/RPMS/CentOS/5/x86_64/ruby-glib2-0.16.0-1dc.x86_64.rpm
+  % sudo rpm -Uvh ruby-glib2-0.16.0-1dc.x86_64.rpm
 
 === Install milter manager
 
-We install milter manager under /usr/local/.
+On 32bit environment:
+  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-1.0.0-0.i386.rpm
+  % sudo rpm -Uvh milter-manager-1.0.0-0.i386.rpm
 
-  % cd ~/src/
-  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-0.9.0.tar.gz
-  % tar xvzf milter-manager-0.9.0.tar.gz
-  % cd milter-manager-0.9.0
-  % ./configure
-  % make
-  % sudo make install
-
-We create a user for milter-manager.
-
-  % sudo /usr/sbin/groupadd -r milter-manager
-  % sudo /usr/sbin/useradd -r -s /sbin/nologin -c 'milter manager' -g milter-manager milter-manager
+On 64bit environment:
+  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-1.0.0-0.x86_64.rpm
+  % sudo rpm -Uvh milter-manager-1.0.0-0.x86_64.rpm
 
 == Configuration
 
@@ -176,7 +176,7 @@ milter-manager detects milters that installed in system.
 We can confirm spamass-milter, clamav-milter and
 milter-greylist are detected:
 
-  % /usr/local/sbin/milter-manager --show-config
+  % /usr/sbin/milter-manager --show-config
 
 The following output shows milters are detected:
 
@@ -206,7 +206,7 @@ The following output shows milters are detected:
 We should confirm that milter's name, socket path and
 'enabled = true'. If the values are unexpected,
 we need to change
-/usr/local/etc/milter-manager/milter-manager.conf.
+/etc/milter-manager/milter-manager.conf.
 See ((<Configuration|configuration.rd>)) for details of
 milter-manager.conf.
 
@@ -215,40 +215,13 @@ miter-manager.conf. If you report your environment to the
 milter manager project, the milter manager project may
 improve detect method.
 
-milter-manager saves its process ID to
-/var/run/milter-manager/milter-manager.pid by default on
-CentOS. We need to create /var/run/milter-manager/ directory
-before running milter-manager:
-
-  % sudo mkdir -p /var/run/milter-manager
-  % sudo chown -R milter-manager:milter-manager /var/run/milter-manager
-
 milter-manager's configuration is finished. We start to
-configure about milter-manager's start-up.
-
-milter-manager has its own run script for CentOS. It will be
-installed into
-/usr/local/etc/milter-manager/init.d/redhat/milter-manager.
-We need to create a symbolic link to /etc/init.d/ and
-mark it run on start-up:
-
-  % cd /etc/init.d
-  % sudo ln -s /usr/local/etc/milter-manager/init.d/redhat/milter-manager ./
-  % sudo /sbin/chkconfig --add milter-manager
-
-The run script assumes that milter-manager command is
-installed into /usr/sbin/milter-manager. We need to create a
-symbolik link:
-
-  % cd /usr/sbin
-  % sudo ln -s /usr/local/sbin/milter-manager ./
-
-We start milter-manager:
+milter-manager:
 
   % sudo /sbin/service milter-manager start
 
-/usr/local/bin/milter-test-server is usuful to confirm
-milter-manager was ran:
+milter-test-server is usuful to confirm milter-manager was
+ran:
 
   % sudo -u milter-manager milter-test-server -s unix:/var/run/milter-manager/milter-manager.sock
 
@@ -275,7 +248,7 @@ standard output:
 
 We start milter-manager again:
 
-  % sudo /sbin/service milter-manager start
+  % sudo /sbin/service milter-manager restart
 
 Some logs are output if there is a problem. Running
 milter-manager can be exitted by Ctrl+c.
