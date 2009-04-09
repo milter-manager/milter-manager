@@ -12,30 +12,35 @@ Ubuntu Linuxに依存しない一般的なインストール情報は((<イン�
 
 == milter-manager-log-analyzerのインストール
 
+milter-manager-log-analyzerはmilter-managerパッケージに含ま
+れているので、すでにインストールされています。ここでは、
+milter-manager-log-analyzerが出力するグラフを閲覧するための
+設定を行います。
+
 === パッケージのインストール
 
 WebサーバとしてApacheを使います。
 
   % sudo aptitude -V -D -y install apache2
 
-グラフを生成するためのRRDtoolを使います。
-
-  % sudo aptitude -V -D -y install rrdtool
-
 === milter-manager-log-analyzerの設定
 
 グラフはインストール時に作成したmilter-managerユーザのホーム
-ディレクトリ以下に出力されています。このグラフを
-http://localhost/~milter-manager/log/で閲覧できるようにします。
+ディレクトリ（/var/lib/milter-manager/）以下に出力されていま
+す。このグラフをhttp://localhost/milter-manager-log/で閲覧で
+きるようにします。
 
-  % sudo -u milter-manager mkdir -p ~milter-manager/public_html/log
+以下の内容の/etc/apache2/conf.d/milter-manager-logを作成しま
+す。
 
-各ユーザ毎にファイルを公開できるようにします。
+/etc/apache2/conf.d/milter-manager-log:
+  Alias /milter-manager-log/ /var/lib/milter-manager/public_html/log/
 
-  % sudo /usr/sbin/a2enmod userdir
+作成したら、再読み込みします。
+
   % sudo /etc/init.d/apache2 force-reload
 
-これでhttp://localhost/~milter-manager/log/でグラフを閲覧で
+これでhttp://localhost/milter-manager-log/でグラフを閲覧で
 きるようになります。
 
 == milter manager adminのインストール

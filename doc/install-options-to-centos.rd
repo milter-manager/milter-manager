@@ -40,6 +40,8 @@ We need to reload configuration after editing:
 
   % sudo /sbin/service httpd reload
 
+Now, we can see graphs at http://localhost/milter-manager-log/.
+
 == Install milter manager admin
 
 === Install packages

@@ -41,6 +41,9 @@ WebサーバとしてApacheを使いいます。
 
   % sudo /sbin/service httpd reload
 
+これでhttp://localhost/milter-manager-log/でグラフを閲覧で
+きるようになります。
+
 == milter manager adminのインストール
 
 === パッケージのインストール
