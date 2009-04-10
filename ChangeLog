@@ -1,3 +1,7 @@
+2009-04-10  Kouhei Sutou  <kou@clear-code.com>
+
+	* milter-manager.spec.in: create milter-manager user on pre-install.
+
 2009-04-09  Kouhei Sutou  <kou@cozmixng.org>
 
 	* html/index.html{,.ja}, doc/reference/head{,-ja}.html: set favicon.

@@ -17,8 +17,11 @@ Requires: glib2
 Requires: ruby
 Requires: ruby-glib2
 Requires: ruby-rrdtool
-Requires(post): chkconfig
-Requires(preun): chkconfig
+Requires(pre): /usr/bin/getent, /usr/sbin/useradd
+Requires(pre): /usr/bin/id, /usr/sbin/groupadd
+Requires(post): /sbin/chkconfig
+Requires(preun): /sbin/service, /sbin/chkconfig
+Requires(postun): /sbin/service, /sbin/chkconfig, /usr/sbin/userdel
 
 %description
 milter manager administrates milters instead of MTA to reduce milter
@@ -54,21 +57,20 @@ EOC
 %clean
 rm -rf %{buildroot}
 
-%post
-/sbin/chkconfig --add milter-manager
-
-if ! getent group milter-manager &>/dev/null; then
+%pre
+if ! /usr/bin/getent group milter-manager &>/dev/null; then
     /usr/sbin/groupadd -r milter-manager || \
         %logmsg "Unexpected error adding group \"milter-manager\". Aborting installation."
 fi
-if ! id milter-manager &>/dev/null; then
+if ! /usr/bin/id milter-manager &>/dev/null; then
     /usr/sbin/useradd -r -s /sbin/nologin -c 'milter manager' \
 	-d %{_localstatedir}/lib/milter-manager --create-home \
 	-g milter-manager milter-manager || \
         %logmsg "Unexpected error adding user \"milter-manager\". Aborting installation."
 fi
 
-chown -R milter-manager:milter-manager %{_localstatedir}/run/milter-manager/
+%post
+/sbin/chkconfig --add milter-manager
 
 %preun
 if [ $1 = 0 ] ; then
@@ -107,7 +109,7 @@ fi
 %config %{_sysconfdir}/milter-manager/applicable-conditions/
 %config %{_sysconfdir}/httpd/conf.d/milter-manager-log.conf
 
-%defattr(-, milter-manager milter-manager, 0755)
+%defattr(-, milter-manager, milter-manager, 0755)
 %dir %{_localstatedir}/run/milter-manager/
 
 %changelog
