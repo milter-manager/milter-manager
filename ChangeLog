@@ -1,5 +1,11 @@
 2009-04-10  Kouhei Sutou  <kou@clear-code.com>
 
+	* data/init.d/redhat/milter-manager (GROUP): milter-manager is ran
+	as milter-manager group.
+
+	* data/init.d/redhat/sysconfig/milter-manager: add default value
+	as comment.
+
 	* milter-manager.spec.in: create milter-manager user on pre-install.
 
 2009-04-09  Kouhei Sutou  <kou@cozmixng.org>

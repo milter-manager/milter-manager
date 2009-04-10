@@ -4,5 +4,14 @@
 # For debug without daemonize (Use Ctrl+C to stop milter-manager):
 # OPTION_ARGS="--verbose --no-daemon"
 
-# For Postfix users:
-# 
+# Effective user:
+# USER="milter-manager"
+
+# Effective group:
+# GROUP="milter-manager"
+
+# If CONNECTION_SPEC is "unix:", socket is chgrp-ed to $SOCKET_GROUP:
+# SOCKET_GROUP="smmsp"
+
+# Socket location to listen connection from MTA:
+# CONNECTION_SPEC=unix:/var/run/milter-manager/milter-manager.sock
