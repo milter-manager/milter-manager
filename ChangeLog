@@ -1,3 +1,7 @@
+2009-04-11  Kouhei Sutou  <kou@cozmixng.org>
+
+	* html/blog/theme/milter-manager/milter-manager.css: fix indent style.
+
 2009-04-10  Kouhei Sutou  <kou@clear-code.com>
 
 	* data/init.d/redhat/milter-manager (GROUP): milter-manager is ran

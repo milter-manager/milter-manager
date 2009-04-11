@@ -31,17 +31,33 @@ div.adminmenu
   font-size: 90%;
 }
 
-div.day p
+div.day
 {
   margin-left: 50px;
   margin-right: 50px;
+}
+
+div.day p
+{
   line-height: 140%;
+}
+
+div.day h3
+{
+  margin-left: -95px;
+}
+
+div.day h4
+{
+  margin-left: -45px;
 }
 
 pre
 {
-  margin-left: 1em;
-  width: 90%;
+  margin-left: 20px;
+  margin-right: 20px;
+  border: 1px solid #aaa;
+  padding: 0.5em;
   overflow: auto;
 }
 
