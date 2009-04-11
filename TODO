@@ -1,3 +1,4 @@
+* support munin?
 * milter-manager-admin: update to Rails 2.3.2.
 * generates a result status graph for each milter.
 * Postfix sends unknown socket family (MILTER_SOCKET_FAMILY_UNKNOWN) but when?
