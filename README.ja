@@ -93,7 +93,7 @@ LinuxではUbuntu 8.04 TLS、CentOS 5.2上で動作することを想定し
 == 入手方法
 
 tar.gz:
-((<URL:http://sourceforge.net/project/showfiles.php?group_id=236233>))
+((<URL:http://downloads.sourceforge.net/milter-manager/milter-manager-1.0.0.tar.gz>))
 
 Subversion:
   % svn co https://milter-manager.svn.sourceforge.net/svnroot/milter-manager/milter-manager/trunk milter-manager
