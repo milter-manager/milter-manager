@@ -230,6 +230,15 @@ div.sponsors p#sponsor-famfamfam
   padding-bottom: 50px;
 }
 
+dt
+{
+  margin-bottom: 0.25em;
+}
+
+dd
+{
+  margin-bottom: 0.5em;
+}
 
 /* For GTK-Doc */
 @media screen
