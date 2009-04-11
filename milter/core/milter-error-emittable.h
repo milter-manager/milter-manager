@@ -57,6 +57,7 @@ GType    milter_error_emittable_get_type (void) G_GNUC_CONST;
 /**
  * milter_error_emittable_emit:
  * @emittable: a %MilterErrorEmittable.
+ * @error: a %GError describes error details.
  *
  * Emits #MilterErrorEmittable::error signal.
  */
