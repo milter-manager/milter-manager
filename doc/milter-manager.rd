@@ -120,11 +120,11 @@ configurations specified in configuration file.
 
 : --verbose
 
-   Logs verbosely. Logs by syslog with 'mail'. If
+   Logs verbosely. Logs by syslog with "mail". If
    milter-manager isn't daemon process, standard output is
    also used.
 
-   'MILTER_LOG_LEVEL=all' environment variable configuration
+   "MILTER_LOG_LEVEL=all" environment variable configuration
    has the same effect.
 
 : --version

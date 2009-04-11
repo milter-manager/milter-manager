@@ -1,5 +1,9 @@
 2009-04-11  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/milter-manager.rd, doc/milter-performance-check.rd,
+	doc/milter-test-client.rd, doc/milter-test-server.rd: use "
+	instead of ' for man.
+
 	* data/init.d/debian/milter-manager: add required-start and
 	required-stop.
 

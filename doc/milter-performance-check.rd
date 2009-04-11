@@ -64,7 +64,7 @@ smtp-source is more better tool for you.
 : --force-from=FROM
 
    Uses FROM as MAIL SMTP command even if mail file includes
-   'From:' header.
+   "From:" header.
 
    The default is none.
 

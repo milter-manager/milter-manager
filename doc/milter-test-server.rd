@@ -141,7 +141,7 @@ automated unit tests.
 
    Logs verbosely.
 
-   'MILTER_LOG_LEVEL=all' environment variable configuration
+   "MILTER_LOG_LEVEL=all" environment variable configuration
    has the same effect.
 
 : --version
