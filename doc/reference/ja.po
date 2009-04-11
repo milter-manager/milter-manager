@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: milter-manager 0.0.1\n"
-"POT-Creation-Date: 2009-04-03 00:15+0900\n"
-"PO-Revision-Date: 2009-04-03 00:26+0900\n"
+"POT-Creation-Date: 2009-04-11 18:34+0900\n"
+"PO-Revision-Date: 2009-04-11 18:34+0900\n"
 "Last-Translator: Kouhei Sutou <kou@cozmixng.org>\n"
 "Language-Team: Japanese\n"
 "MIME-Version: 1.0\n"
@@ -33,6 +33,38 @@ msgstr "コマンド"
 #: milter-manager-docs.sgml:26(title)
 msgid "Install milter manager to your platform"
 msgstr "プラットフォーム毎のmilter managerのインストール方法"
+
+#: milter-manager-docs.sgml:39(title)
+msgid "Reference"
+msgstr "リファレンス"
+
+#: milter-manager-docs.sgml:41(title)
+msgid "libmilter"
+msgstr ""
+
+#: milter-manager-docs.sgml:45(title)
+msgid "milter-core"
+msgstr "milter-core"
+
+#: milter-manager-docs.sgml:51(title)
+msgid "milter-client"
+msgstr "milter-client"
+
+#: milter-manager-docs.sgml:56(title)
+msgid "milter-server"
+msgstr "milter-server"
+
+#: milter-manager-docs.sgml:62(title)
+msgid "Index of all symbols"
+msgstr "すべてのシンボル一覧"
+
+#: milter-manager-docs.sgml:65(title)
+msgid "Index of deprecated symbols"
+msgstr "すべての非推奨のシンボル一覧"
+
+#: milter-manager-docs.sgml:68(title)
+msgid "Index of new symbols in 1.0.0"
+msgstr "1.0.0での新しいシンボル一覧"
 
 #: xml/api-index-full.xml:6(title)
 msgid "B"
@@ -6495,7 +6527,11 @@ msgid ""
 "format and <parameter>error</parameter> is not <link linkend=\"NULL--CAPS"
 "\"><literal>NULL</literal></link>, error detail is stored into "
 "<parameter>error</parameter>."
-msgstr "接続指定を設定します。<parameter>spec</parameter>が不正な形式で、<parameter>error</parameter>が<link linkend=\"NULL--CAPS\"><literal>NULL</literal></link>でない場合は、エラーの詳細は<parameter>error</parameter>に設定されます。"
+msgstr ""
+"接続指定を設定します。<parameter>spec</parameter>が不正な形式で、"
+"<parameter>error</parameter>が<link linkend=\"NULL--CAPS\"><literal>NULL</"
+"literal></link>でない場合は、エラーの詳細は<parameter>error</parameter>に設定"
+"されます。"
 
 #: xml/client.xml:309(term) xml/milter-connection.xml:113(term)
 #: xml/milter-connection.xml:141(term)
@@ -6539,7 +6575,9 @@ msgstr ""
 msgid ""
 "return location for an error, or <link linkend=\"NULL--CAPS\"><literal>NULL</"
 "literal></link>."
-msgstr "エラーを受け取る場所のアドレス、または<link linkend=\"NULL--CAPS\"><literal>NULL</literal></link>。"
+msgstr ""
+"エラーを受け取る場所のアドレス、または<link linkend=\"NULL--CAPS"
+"\"><literal>NULL</literal></link>。"
 
 #: xml/client.xml:315(simpara) xml/milter-client-context.xml:697(simpara)
 #: xml/milter-client-context.xml:772(simpara)
@@ -6662,8 +6700,8 @@ msgid ""
 "literal></link> otherwise."
 msgstr ""
 "作成時に既存のUNIXドメインソケットを削除する場合は<link linkend=\"TRUE--CAPS"
-"\"><literal>TRUE</literal></link>、そうでない場合は<link linkend=\"FALSE--CAPS"
-"\"><literal>FALSE</literal></link>。"
+"\"><literal>TRUE</literal></link>、そうでない場合は<link linkend=\"FALSE--"
+"CAPS\"><literal>FALSE</literal></link>。"
 
 #: xml/client.xml:378(title)
 msgid "milter_client_set_remove_unix_socket_on_create ()"
@@ -8563,10 +8601,10 @@ msgstr ""
 "コールバックはmilter内部でエラーが発生し、かつ、メッセージ処理が完了していな"
 "いときだけ実行されます。例えば、milterが<link linkend=\"SMFIS-ACCEPT--CAPS"
 "\"><literal>SMFIS_ACCEPT</literal></link>、<link linkend=\"SMFIS-REJECT--CAPS"
-"\"><literal>SMFIS_REJECT</literal></link>、<link linkend=\"SMFIS-DISCARD--CAPS"
-"\"><literal>SMFIS_DISCARD</literal></link>、<link linkend=\"SMFIS-TEMPFAIL:"
-"CAPS\"><literal>SMFIS_TEMPFAIL</literal></link>を返しているときはこのコール"
-"バックは呼ばれません。"
+"\"><literal>SMFIS_REJECT</literal></link>、<link linkend=\"SMFIS-DISCARD--"
+"CAPS\"><literal>SMFIS_DISCARD</literal></link>、<link linkend=\"SMFIS-"
+"TEMPFAIL:CAPS\"><literal>SMFIS_TEMPFAIL</literal></link>を返しているときはこ"
+"のコールバックは呼ばれません。"
 
 #: xml/mfapi.xml:965(para)
 msgid ""
@@ -10418,8 +10456,8 @@ msgid ""
 "<parameter>recipient</parameter> is <link linkend=\"NULL--CAPS"
 "\"><literal>NULL</literal></link>. FIXME: not-implemented yet."
 msgstr ""
-"<parameter>recipient</parameter>が<link linkend=\"NULL--CAPS\"><literal>NULL</"
-"literal></link>。FIXME: 未実装。"
+"<parameter>recipient</parameter>が<link linkend=\"NULL--CAPS"
+"\"><literal>NULL</literal></link>。FIXME: 未実装。"
 
 #: xml/mfapi.xml:2444(para)
 msgid ""
@@ -12337,8 +12375,8 @@ msgid ""
 msgstr ""
 "<link linkend=\"milter-client-context-set-private-data"
 "\"><function>milter_client_context_set_private_data()</function></link>で設定"
-"したプライベートなデータ、あるいは<link linkend=\"NULL--CAPS\"><literal>NULL</"
-"literal></link>。"
+"したプライベートなデータ、あるいは<link linkend=\"NULL--CAPS"
+"\"><literal>NULL</literal></link>。"
 
 #: xml/milter-client-context.xml:716(title)
 msgid "milter_client_context_set_private_data ()"
@@ -12538,8 +12576,8 @@ msgid ""
 "link> signal."
 msgstr ""
 "名前が<parameter>name</parameter>のヘッダのうち、<parameter>index</parameter>"
-"のヘッダを変更します。<parameter>value</parameter>が<link linkend=\"NULL--CAPS"
-"\"><literal>NULL</literal></link>ならヘッダは削除されます。<link linkend="
+"のヘッダを変更します。<parameter>value</parameter>が<link linkend=\"NULL--"
+"CAPS\"><literal>NULL</literal></link>ならヘッダは削除されます。<link linkend="
 "\"MilterClientContext-end-of-message\"><type>\"end-of-message\"</type></link>"
 "シグナルの中で呼ぶことができます。"
 
@@ -13023,8 +13061,8 @@ msgstr ""
 "<link linkend=\"MILTER-STATUS-ACCEPT--CAPS\"><literal>MILTER_STATUS_ACCEPT</"
 "literal></link>、<link linkend=\"MILTER-STATUS-REJECT--CAPS"
 "\"><literal>MILTER_STATUS_REJECT</literal></link>、<link linkend=\"MILTER-"
-"STATUS-DISCARD--CAPS\"><literal>MILTER_STATUS_DISCARD</literal></link>、<link "
-"linkend=\"MILTER-STATUS-TEMPORARY-FAILURE--CAPS"
+"STATUS-DISCARD--CAPS\"><literal>MILTER_STATUS_DISCARD</literal></link>、"
+"<link linkend=\"MILTER-STATUS-TEMPORARY-FAILURE--CAPS"
 "\"><literal>MILTER_STATUS_TEMPORARY_FAILURE</literal></link>を返しているとき"
 "は、このシグナルは発行されません。"
 
@@ -15465,6 +15503,12 @@ msgid ""
 msgstr ""
 "<link linkend=\"MilterErrorEmittable\"><literal>MilterErrorEmittable</"
 "literal></link>。"
+
+#: xml/milter-error-emittable.xml:78(simpara)
+msgid ""
+"a <link linkend=\"GError\"><literal>GError</literal></link> describes error "
+"details."
+msgstr "エラーの詳細を示した<link linkend=\"GError\"><literal>GError</literal></link>。"
 
 #: xml/milter-finished-emittable.xml:14(refpurpose)
 msgid "An interface for \"finished\" signal."
@@ -22506,9 +22550,9 @@ msgid ""
 "<parameter>error</parameter>."
 msgstr ""
 "クライアントの接続指定を設定します。<parameter>spec</parameter>が不正な形式"
-"で、<parameter>error</parameter>が<link linkend=\"NULL--CAPS\"><literal>NULL</"
-"literal></link>でない場合は、エラーの詳細は<parameter>error</parameter>に設定"
-"されます。"
+"で、<parameter>error</parameter>が<link linkend=\"NULL--CAPS"
+"\"><literal>NULL</literal></link>でない場合は、エラーの詳細は"
+"<parameter>error</parameter>に設定されます。"
 
 #: xml/milter-server-context.xml:482(simpara)
 msgid "the connection spec of client."
@@ -23935,36 +23979,3 @@ msgstr ""
 #: xml/milter-writer.xml:0(None)
 msgid "translator-credits"
 msgstr ""
-
-#~ msgid "Reference"
-#~ msgstr "リファレンス"
-
-#~ msgid "Index of all symbols"
-#~ msgstr "すべてのシンボル一覧"
-
-#~ msgid "check-envelope-from"
-#~ msgstr "check-envelope-from"
-
-#~ msgid "check-envelope-recipient"
-#~ msgstr "check-envelope-recipient"
-
-#~ msgid "check-header"
-#~ msgstr "check-header"
-
-#~ msgid "The <literal>\"check-body\"</literal> signal"
-#~ msgstr "<literal>\"check-body\"</literal>シグナル"
-
-#~ msgid "The <literal>\"check-connect\"</literal> signal"
-#~ msgstr "<literal>\"check-connect\"</literal>シグナル"
-
-#~ msgid "The <literal>\"check-envelope-from\"</literal> signal"
-#~ msgstr "<literal>\"check-envelope-from\"</literal>シグナル"
-
-#~ msgid "The <literal>\"check-envelope-recipient\"</literal> signal"
-#~ msgstr "<literal>\"check-envelope-recipient\"</literal>シグナル"
-
-#~ msgid "The <literal>\"check-header\"</literal> signal"
-#~ msgstr "<literal>\"check-header\"</literal>シグナル"
-
-#~ msgid "The <literal>\"check-helo\"</literal> signal"
-#~ msgstr "<literal>\"check-helo\"</literal>シグナル"
