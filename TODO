@@ -1,3 +1,4 @@
+* generates a result status graph for each milter.
 * Postfix sends unknown socket family (MILTER_SOCKET_FAMILY_UNKNOWN) but when?
   When ending queued mail?
   milter-manager[1694]: [agent][error][decode] Decode error: milter-command-decoder-error-quark:2: unknown family on connect command: <unknown>: <U>

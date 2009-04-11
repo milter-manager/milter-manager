@@ -1,5 +1,7 @@
 2009-04-11  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: add: generates a result status graph for each milter.
+
 	* configure.ac: 0.9.1 -> 1.0.0. :-)
 
 	* NEWS*: update.
