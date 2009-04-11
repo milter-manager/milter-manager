@@ -2,6 +2,26 @@
 
 = お知らせ --- milter managerの歴史
 
+== 1.0.0: 2009-04-16
+
+最初の安定版リリースです。
+
+=== ドキュメント
+
+  * コマンドのmanページを追加
+  * clamav-milterの設定に--externalオプションの追加
+  * UbuntuとCentOSのインストールドキュメントをパッケージを使っ
+    たものに変更
+
+=== milter-manager
+
+  * CentOS環境でのENMA検出機能の追加
+
+=== milter-performance-check
+
+  * --n-mailsオプションと、--period/--intervalオプションを使
+    えるように改良
+
 == 0.9.0: 2009-03-10
 
 速度と安定性が向上しました。

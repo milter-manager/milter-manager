@@ -2,6 +2,25 @@
 
 = NEWS --- The history of milter manager
 
+== 1.0.0: 2009-04-16
+
+The first stable release.
+
+=== Documentation
+
+  * Added man pages for commands.
+  * Added --external option to clamav-milter's configuration.
+  * Changed install documents for Ubuntu and CentOS to
+    package based installation.
+
+=== milter-manager
+
+  * Added ENMA detection on CentOS.
+
+=== milter-performance-check
+
+  * Worked --n-mails option with --period/--interval option.
+
 == 0.9.0: 2009-03-10
 
 Speed and stability are improved.
