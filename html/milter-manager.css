@@ -237,8 +237,9 @@ div.sponsors p#sponsor-famfamfam
   table.navigation#top
   {
     position: relative;
-    top: 20px;
+    top: 0;
     z-index: 0;
+    margin-top: 20px;
   }
 
   div.book
