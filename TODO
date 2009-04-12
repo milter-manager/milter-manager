@@ -1,3 +1,4 @@
+* per milter fallback status.
 * support munin?
 * milter-manager-admin: update to Rails 2.3.2.
 * generates a result status graph for each milter.
