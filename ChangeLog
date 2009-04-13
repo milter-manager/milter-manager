@@ -1,5 +1,7 @@
 2009-04-13  Kouhei Sutou  <kou@clear-code.com>
 
+	* TODO: add: run Ruby's GC periodically.
+
 	* doc/: add milter manager logo with description.
 
 2009-04-12  Kouhei Sutou  <kou@cozmixng.org>
