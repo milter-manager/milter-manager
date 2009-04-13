@@ -86,10 +86,13 @@ milter-manager-log-analyzer.jman: milter-manager-log-analyzer.rd.ja
 
 MAINTAINERCLEANFILES = $(dist_man1_MANS) $(dist_ja_man1_mans)
 
-SUFFIXES: .rd .man .rd .jman
+SUFFIXES = .rd .man .rd .jman .svg .png
 
 .rd.man:
 	rd2 -r$(top_srcdir)/misc/rd2man-lib $< > $@
 
 .rd.jman: # dirty...
 	rd2 -r$(top_srcdir)/misc/rd2man-lib $<.ja > $@
+
+.svg.png:
+	inkscape --export-png $@ $<
