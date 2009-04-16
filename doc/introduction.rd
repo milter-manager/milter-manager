@@ -86,7 +86,7 @@ combination configuration.
 
 === More effective milter combination
 
-There are many anti-spam techniques. But there is not
+There are many anti-spam techniques. But there is not the
 perfect technique. We need to combine some techniques. All
 techniques have a weakness. For example, it doesn't have
 false detection but low detection rate, it has high
