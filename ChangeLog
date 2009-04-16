@@ -1,5 +1,9 @@
 2009-04-16  Kouhei Sutou  <kou@clear-code.com>
 
+	* module/configuration/ruby/milter-manager-ruby-configuration.c:
+	run Ruby's GC periodically.
+	* TODO: remove: run Ruby's GC periodically.
+
 	* binding/ruby/test/manager/test-debian-init-detector.rb: follow
 	the data/init.d/debian/milter-manager.conf changes.
 

@@ -1,45 +1,4 @@
 * support Postfix SMTP Access Policy Delegation protocol.
-* run Ruby's GC periodically.
-Index: module/configuration/ruby/milter-manager-ruby-configuration.c
-===================================================================
---- module/configuration/ruby/milter-manager-ruby-configuration.c	(revision 2896)
-+++ module/configuration/ruby/milter-manager-ruby-configuration.c	(working copy)
-@@ -307,6 +307,27 @@
- #endif
- }
- 
-+static gboolean
-+run_gc (gpointer data)
-+{
-+    rb_gc_start();
-+    return FALSE;
-+}
-+
-+static gboolean
-+register_run_gc_on_idle (gpointer data)
-+{
-+    g_idle_add(run_gc, NULL);
-+    return TRUE;
-+}
-+
-+static void
-+register_periodic_gc (void)
-+{
-+    g_timeout_add(30 * 60 * 1000, /* 30m */
-+                  register_run_gc_on_idle, NULL);
-+}
-+
- G_MODULE_EXPORT GList *
- MILTER_MANAGER_MODULE_IMPL_INIT (GTypeModule *type_module)
- {
-@@ -319,6 +340,7 @@
-                            (gchar *)g_type_name(milter_manager_ruby_configuration_type_id));
- 
-     init_ruby();
-+    register_periodic_gc();
- 
-     return registered_types;
- }
 * per milter fallback status.
 * support munin?
 * milter-manager-admin: update to Rails 2.3.2.
