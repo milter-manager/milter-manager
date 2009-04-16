@@ -25,7 +25,7 @@
       <ul class="menu">
 	<li id="menu-introduction"><a href="reference/ja/introduction.html">はじめに</a></li>
 	<li id="menu-install"><a href="reference/ja/install.html">インストール</a></li>
-	<li id="menu-download"><a href="http://downloads.sourceforge.net/milter-manager/milter-manager-0.9.0.tar.gz">ダウンロード</a></li>
+	<li id="menu-download"><a href="http://downloads.sourceforge.net/milter-manager/milter-manager-1.0.0.tar.gz">ダウンロード</a></li>
 	<li id="menu-blog"><a href="blog/ja/">ブログ</a></li>
       </ul>
     </div>
@@ -34,8 +34,11 @@
       <div class="main">
 	<h2>最新リリース</h2>
 	<p>
-	  2009-03-13にリリースされた0.9.0が最新です。
-          [<a href="http://downloads.sourceforge.net/milter-manager/milter-manager-0.9.0.tar.gz">ダウンロード</a>]
+	  2009-04-16にリリースされた1.0.0が最新です。
+        </p>
+	<p>
+          [<a href="http://downloads.sourceforge.net/milter-manager/milter-manager-1.0.0.tar.gz">ダウンロード</a>]
+          [<a href="reference/ja/news.html">変更点</a>]
 	</p>
 
 	<h2>milter managerとは</h2>
@@ -61,6 +64,9 @@
 	  </li>
 	  <li>
 	    <a href="reference/ja/install.html">インストール</a>
+	  </li>
+	  <li>
+	    <a href="https://lists.sourceforge.net/lists/listinfo/milter-manager-users-ja">メーリングリスト</a>
 	  </li>
 	  <li>
 	    <a href="coverage/">カバレッジ</a>
