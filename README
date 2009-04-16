@@ -45,7 +45,7 @@ milter manager is a milter to use multiple milters
 effectively.
 
 If milter manager is introduced, milter manager
-administrates milters instead of MTA. The was has some
+administrates milters instead of MTA. The has some
 advantages:
 
   * reduce milter administration cost
