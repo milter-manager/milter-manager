@@ -1,3 +1,4 @@
+* add stopper interfaces on all events (e.g. DATA, BODY and so on)
 * support Postfix SMTP Access Policy Delegation protocol.
 * per milter fallback status.
 * support munin?

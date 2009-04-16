@@ -1,5 +1,8 @@
 2009-04-16  Kouhei Sutou  <kou@clear-code.com>
 
+	* TODO: add: add stopper interfaces on all events (e.g. DATA, BODY
+	and so on)
+
 	* html/index.html*: 0.9.0 -> 1.0.0.
 
 	* test/lib/milter-manager-test-client.c: sort macro names to
