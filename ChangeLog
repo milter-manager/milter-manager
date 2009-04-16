@@ -1,5 +1,8 @@
 2009-04-16  Kouhei Sutou  <kou@clear-code.com>
 
+	* test/lib/milter-manager-test-client.c: sort macro names to
+	improve test stability.
+
 	* module/configuration/ruby/milter-manager-ruby-configuration.c:
 	run Ruby's GC periodically.
 	* TODO: remove: run Ruby's GC periodically.

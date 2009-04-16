@@ -1090,14 +1090,6 @@ milter_manager_test_clients_collect_negotiate_options (const GList *clients)
     return gcut_take_list(collected_options, safe_g_object_unref);
 }
 
-static void
-append_macro_data (gpointer key, gpointer value, gpointer user_data)
-{
-    GList **list = user_data;
-    *list = g_list_append(*list,
-                          milter_manager_test_pair_new(key, value));
-}
-
 const GList *
 milter_manager_test_clients_collect_macros (const GList *clients,
                                             MilterCommand command)
@@ -1109,7 +1101,8 @@ milter_manager_test_clients_collect_macros (const GList *clients,
         MilterManagerTestClient *client = node->data;
         GHashTable *macros;
         GHashTable *context_macro;
-        GList *list = NULL;
+        GList *macro_list = NULL;
+        GList *macro_names, *node;
 
         macros = (GHashTable*)milter_manager_test_client_get_macros(client);
         context_macro = g_hash_table_lookup(macros,
@@ -1117,9 +1110,18 @@ milter_manager_test_clients_collect_macros (const GList *clients,
         if (!context_macro)
             continue;
 
-        g_hash_table_foreach(context_macro,
-                             (GHFunc)append_macro_data, &list);
-        collected_macros = g_list_concat(collected_macros, list);
+        macro_names = g_hash_table_get_keys(context_macro);
+        macro_names = g_list_sort(macro_names, (GCompareFunc)g_utf8_collate);
+        for (node = macro_names; node; node = g_list_next(node)) {
+            const gchar *macro_name = node->data;
+            const gchar *macro_value;
+            MilterManagerTestPair *pair;
+
+            macro_value = g_hash_table_lookup(context_macro, macro_name);
+            pair = milter_manager_test_pair_new(macro_name, macro_value);
+            macro_list = g_list_append(macro_list, pair);
+        }
+        collected_macros = g_list_concat(collected_macros, macro_list);
     }
 
     return gcut_take_list(collected_macros,
