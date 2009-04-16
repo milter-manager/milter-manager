@@ -3,6 +3,7 @@
 *.la
 *.lo
 *.o
+*~
 .deps
 .gdb_history
 .libs
@@ -27,6 +28,7 @@
 /milter-client.pc
 /milter-core.pc
 /milter-manager.pc
+/milter-manager.spec
 /milter-server.pc
 /misc
 /stamp-h1
