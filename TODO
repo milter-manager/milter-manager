@@ -1,3 +1,4 @@
+* support Postfix SMTP Access Policy Delegation protocol.
 * run Ruby's GC periodically.
 Index: module/configuration/ruby/milter-manager-ruby-configuration.c
 ===================================================================
