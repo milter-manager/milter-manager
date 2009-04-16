@@ -1,5 +1,7 @@
 2009-04-16  Kouhei Sutou  <kou@clear-code.com>
 
+	* html/logo.*: don't use opacity for background.
+
 	* TODO: add: support Postfix SMTP Access Policy Delegation protocol.
 
 	* configure.ac: 1.0.0 -> 1.0.1.

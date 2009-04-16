@@ -18,8 +18,8 @@
    sodipodi:docname="logo.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    inkscape:export-filename="/home/kou/work/c/milter-manager/html/logo.png"
-   inkscape:export-xdpi="183.76721"
-   inkscape:export-ydpi="183.76721">
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
   <defs
      id="defs4">
     <linearGradient
@@ -1897,7 +1897,7 @@
      gridtolerance="10000"
      guidetolerance="10"
      objecttolerance="10"
-     inkscape:pageopacity="0.0"
+     inkscape:pageopacity="1"
      inkscape:pageshadow="2"
      inkscape:zoom="2.8"
      inkscape:cx="73.25446"
