@@ -1,5 +1,8 @@
 2009-04-16  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/test/manager/test-redhat-init-detector.rb: follow
+	the data/init.d/redhat/milter-manager.conf changes.
+
 	* html/logo.*: don't use opacity for background.
 
 	* TODO: add: support Postfix SMTP Access Policy Delegation protocol.
