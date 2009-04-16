@@ -1,3 +1,7 @@
+2009-04-16  Kouhei Sutou  <kou@clear-code.com>
+
+	* configure.ac: 1.0.0 -> 1.0.1.
+
 2009-04-13  Kouhei Sutou  <kou@clear-code.com>
 
 	* TODO: add: run Ruby's GC periodically.
