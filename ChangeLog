@@ -1,3 +1,8 @@
+2009-04-17  Kouhei Sutou  <kou@clear-code.com>
+
+	* doc/reference/header.html: fix link URLs.
+	Reported by Павел Гришин. Thanks!!!
+
 2009-04-16  Kouhei Sutou  <kou@clear-code.com>
 
 	* TODO: add: add stopper interfaces on all events (e.g. DATA, BODY
