@@ -48,6 +48,9 @@
 	<p>
 	  milter managerはmilterをサポートしているSendmailやPostfixといったMTAと一緒に使うことができます。Ubuntu、CentOS、FreeBSDなどのプラットフォーム上で動作します。
 	</p>
+        <p>
+          [<a href="reference/ja/introduction.html">milter managerの紹介</a>]
+        </p>
       </div>
 
       <div class="sidebar">

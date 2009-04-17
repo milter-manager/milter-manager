@@ -1,5 +1,7 @@
 2009-04-17  Kouhei Sutou  <kou@clear-code.com>
 
+	* html/index.html*: add a link to milter-manager introduction page.
+
 	* doc/reference/header.html: fix link URLs.
 	Reported by Павел Гришин. Thanks!!!
 
