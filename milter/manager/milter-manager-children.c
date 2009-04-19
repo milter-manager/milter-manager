@@ -65,7 +65,8 @@ struct _MilterManagerChildrenPrivate
     gchar *end_of_message_chunk;
     gsize end_of_message_size;
     gboolean sent_end_of_message;
-    guint sent_body_count;
+    guint sending_body;
+    guint sent_body_offset;
     gboolean replaced_body_for_each_child;
     gboolean replaced_body;
     MilterWriter *launcher_writer;
@@ -141,6 +142,9 @@ static void     clear_body (MilterManagerChildren *children);
 static gboolean write_body (MilterManagerChildren *children,
                             const gchar *chunk,
                             gsize size);
+static MilterStatus init_child_for_body
+                           (MilterManagerChildren *children,
+                            MilterServerContext *context);
 static MilterStatus send_body_to_child
                            (MilterManagerChildren *children,
                             MilterServerContext *context);
@@ -224,7 +228,8 @@ milter_manager_children_init (MilterManagerChildren *milter)
     priv->end_of_message_chunk = NULL;
     priv->end_of_message_size = 0;
     priv->sent_end_of_message = FALSE;
-    priv->sent_body_count = 0;
+    priv->sending_body = FALSE;
+    priv->sent_body_offset = 0;
     priv->replaced_body = FALSE;
     priv->replaced_body_for_each_child = FALSE;
 
@@ -1087,15 +1092,13 @@ cb_continue (MilterServerContext *context, gpointer user_data)
         }
         break;
     case MILTER_SERVER_CONTEXT_STATE_BODY:
-        priv->sent_body_count--;
         if (!priv->sent_end_of_message) {
             status = MILTER_STATUS_NOT_CHANGE;
         } else {
-            if (priv->sent_body_count == 0) {
+            if (priv->sending_body)
+                status = send_body_to_child(children, context);
+            if (status == MILTER_STATUS_NOT_CHANGE)
                 status = send_next_command(children, context, state);
-            } else {
-                status = MILTER_STATUS_PROGRESS;
-            }
         }
         break;
     case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
@@ -1300,10 +1303,11 @@ cb_skip (MilterServerContext *context, gpointer user_data)
     compile_reply_status(children, state, MILTER_STATUS_SKIP);
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
-    if (!priv->sent_end_of_message)
+    if (!priv->sent_end_of_message) {
         g_signal_emit_by_name(children, "continue");
-    else
+    } else {
         send_next_command(children, context, state);
+    }
 }
 
 static gboolean
@@ -2050,6 +2054,14 @@ send_next_command (MilterManagerChildren *children,
     if (next_command == -1)
         return MILTER_STATUS_NOT_CHANGE;
 
+    if (next_command == MILTER_COMMAND_BODY &&
+        current_state != MILTER_SERVER_CONTEXT_STATE_BODY) {
+        MilterStatus status;
+        status = init_child_for_body(children, context);
+        if (status != MILTER_STATUS_NOT_CHANGE)
+            return status;
+    }
+
     return send_command_to_child(children, context, next_command);
 }
 
@@ -2716,7 +2728,7 @@ milter_manager_children_body (MilterManagerChildren *children,
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
     priv->current_state = MILTER_SERVER_CONTEXT_STATE_BODY;
     priv->replaced_body_for_each_child = FALSE;
-    priv->sent_body_count++;
+    priv->sending_body = FALSE;
 
     if (!milter_server_context_is_enable_step(first_child,
                                               MILTER_STEP_NO_BODY) &&
@@ -2733,22 +2745,31 @@ milter_manager_children_body (MilterManagerChildren *children,
 }
 
 static MilterStatus
-send_body_to_child_file (MilterManagerChildren *children,
-                         MilterServerContext *context)
+init_child_for_body_string (MilterManagerChildren *children,
+                            MilterServerContext *context)
 {
-    MilterStatus status = MILTER_STATUS_PROGRESS;
-    GError *error = NULL;
-    GIOStatus io_status = G_IO_STATUS_NORMAL;
     MilterManagerChildrenPrivate *priv;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+    priv->sent_body_offset = 0;
+
+    return MILTER_STATUS_NOT_CHANGE;
+}
+
+static MilterStatus
+init_child_for_body_file (MilterManagerChildren *children,
+                          MilterServerContext *context)
+{
+    MilterManagerChildrenPrivate *priv;
+    GError *error = NULL;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
     if (!priv->body_file)
         return MILTER_STATUS_NOT_CHANGE;
 
-    priv->sent_body_count = 0;
     g_io_channel_seek_position(priv->body_file, 0, G_SEEK_SET, &error);
     if (error) {
-        milter_error("[children][error][body][send][seek][before] %s: %s",
+        milter_error("[children][error][body][send][seek] %s: %s",
                      error->message,
                      milter_server_context_get_name(context));
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children), error);
@@ -2757,37 +2778,72 @@ send_body_to_child_file (MilterManagerChildren *children,
         return MILTER_STATUS_TEMPORARY_FAILURE;
     }
 
-    while (io_status == G_IO_STATUS_NORMAL) {
-        gchar buffer[MILTER_CHUNK_SIZE + 1];
-        gsize read_size;
+    return MILTER_STATUS_NOT_CHANGE;
+}
 
-        io_status = g_io_channel_read_chars(priv->body_file,
-                                            buffer, MILTER_CHUNK_SIZE,
-                                            &read_size, &error);
+static MilterStatus
+init_child_for_body (MilterManagerChildren *children,
+                     MilterServerContext *context)
+{
+    MilterManagerChildrenPrivate *priv;
 
-        if (io_status == G_IO_STATUS_NORMAL) {
-            if (milter_server_context_body(context, buffer, read_size)) {
-                priv->sent_body_count++;
-            } else {
-                status = MILTER_STATUS_TEMPORARY_FAILURE;
-                break;
-            }
+    milter_debug("[children][body][init] %s",
+                 milter_server_context_get_name(context));
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+    priv->current_state = MILTER_SERVER_CONTEXT_STATE_BODY;
+
+    priv->replaced_body_for_each_child = FALSE;
+    priv->sending_body = TRUE;
+    if (priv->body)
+        return init_child_for_body_string(children, context);
+    else
+        return init_child_for_body_file(children, context);
+}
+
+static MilterStatus
+send_body_to_child_file (MilterManagerChildren *children,
+                         MilterServerContext *context)
+{
+    MilterStatus status = MILTER_STATUS_PROGRESS;
+    GError *error = NULL;
+    GIOStatus io_status = G_IO_STATUS_NORMAL;
+    MilterManagerChildrenPrivate *priv;
+    gchar buffer[MILTER_CHUNK_SIZE + 1];
+    gsize read_size;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+    if (!priv->body_file)
+        return MILTER_STATUS_NOT_CHANGE;
+
+    io_status = g_io_channel_read_chars(priv->body_file,
+                                        buffer, MILTER_CHUNK_SIZE,
+                                        &read_size, &error);
+
+    switch (io_status) {
+    case G_IO_STATUS_ERROR:
+        status = MILTER_STATUS_TEMPORARY_FAILURE;
+        break;
+    case G_IO_STATUS_NORMAL:
+        if (milter_server_context_body(context, buffer, read_size)) {
+            status = MILTER_STATUS_PROGRESS;
+        } else {
+            status = MILTER_STATUS_TEMPORARY_FAILURE;
         }
+        break;
+    case G_IO_STATUS_EOF:
+        status = MILTER_STATUS_NOT_CHANGE;
+        break;
+    case G_IO_STATUS_AGAIN:
+        status = MILTER_STATUS_PROGRESS;
+        break;
+    default:
+        status = MILTER_STATUS_TEMPORARY_FAILURE;
+        break;
     }
 
     if (error) {
         milter_error("[children][error][body][send] %s: %s",
-                     error->message,
-                     milter_server_context_get_name(context));
-        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children), error);
-        g_error_free(error);
-
-        return status;
-    }
-
-    g_io_channel_seek_position(priv->body_file, 0, G_SEEK_SET, &error);
-    if (error) {
-        milter_error("[children][error][body][send][seek][after] %s: %s",
                      error->message,
                      milter_server_context_get_name(context));
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children), error);
@@ -2804,24 +2860,20 @@ send_body_to_child_string (MilterManagerChildren *children,
                            MilterServerContext *context)
 {
     MilterStatus status = MILTER_STATUS_PROGRESS;
-    gsize offset;
     MilterManagerChildrenPrivate *priv;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
-    if (priv->body->len == 0)
+    if (priv->sent_body_offset >= priv->body->len)
         return MILTER_STATUS_NOT_CHANGE;
 
-    priv->sent_body_count = 0;
-    for (offset = 0; offset < priv->body->len; offset += MILTER_CHUNK_SIZE) {
-        if (milter_server_context_body(context,
-                                       priv->body->str + offset,
-                                       MIN(priv->body->len - offset,
-                                           MILTER_CHUNK_SIZE))) {
-            priv->sent_body_count++;
-        } else {
-            status = MILTER_STATUS_TEMPORARY_FAILURE;
-            break;
-        }
+    if (milter_server_context_body(context,
+                                   priv->body->str + priv->sent_body_offset,
+                                   MIN(priv->body->len - priv->sent_body_offset,
+                                       MILTER_CHUNK_SIZE))) {
+        priv->sent_body_offset += MILTER_CHUNK_SIZE;
+        init_command_waiting_child_queue(children, MILTER_COMMAND_BODY);
+    } else {
+        status = MILTER_STATUS_TEMPORARY_FAILURE;
     }
 
     return status;
@@ -2831,25 +2883,31 @@ static MilterStatus
 send_body_to_child (MilterManagerChildren *children, MilterServerContext *context)
 {
     MilterManagerChildrenPrivate *priv;
+    MilterStatus status;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     if (milter_server_context_is_enable_step(context, MILTER_STEP_NO_BODY)) {
         milter_debug("[children][body][skip] %s",
                      milter_server_context_get_name(context));
+        priv->sending_body = FALSE;
         return MILTER_STATUS_NOT_CHANGE;
     }
 
-    if (milter_server_context_get_skip_body(context))
+    if (milter_server_context_get_skip_body(context)) {
+        priv->sending_body = FALSE;
         return MILTER_STATUS_NOT_CHANGE;
+    }
 
-    priv->current_state = MILTER_SERVER_CONTEXT_STATE_BODY;
-
-    priv->replaced_body_for_each_child = FALSE;
     if (priv->body)
-        return send_body_to_child_string(children, context);
+        status = send_body_to_child_string(children, context);
     else
-        return send_body_to_child_file(children, context);
+        status = send_body_to_child_file(children, context);
+
+    if (status != MILTER_STATUS_PROGRESS)
+        priv->sending_body = FALSE;
+
+    return status;
 }
 
 gboolean

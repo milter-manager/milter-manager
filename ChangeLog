@@ -1,5 +1,12 @@
 2009-04-19  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.c: fix a bug that milter
+	manager sends body chunks without waiting milter reply.
+
+	* TODO:
+	- remove: dkim-filter returns skip twice for large body mail.
+	- add: write a test for over max body chunk size (65535) and skip case.
+
 	* binding/ruby/lib/milter/manager/freebsd-rc-detector.rb,
 	binding/ruby/test/manager/test-freebsd-rc-detector.rb: support
 	ClamAV >= 0.95 on FreeBSD platform.

@@ -1,3 +1,5 @@
+* write a test for over max body chunk size (65535) and skip case.
+  It's a case for dkim-filter.
 * add stopper interfaces on all events (e.g. DATA, BODY and so on)
 * support Postfix SMTP Access Policy Delegation protocol.
 * per milter fallback status.
@@ -7,10 +9,6 @@
 * Postfix sends unknown socket family (MILTER_SOCKET_FAMILY_UNKNOWN) but when?
   When ending queued mail?
   milter-manager[1694]: [agent][error][decode] Decode error: milter-command-decoder-error-quark:2: unknown family on connect command: <unknown>: <U>
-* bug? dkim-filter returns skip twice for large body mail.
-  (large body > (MILTER_CHUNK_SIZE == 65535))
-  It seems that MilterMangerChildren sends two body packets before receiving
-  response from dkim-filter.
 * MilterCommandDecoder: support ESMTP parameters on MAIL FROM and RCPT TO.
 -----
 Index: milter/core/milter-command-decoder.c
