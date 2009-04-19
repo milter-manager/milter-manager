@@ -64,7 +64,7 @@ dist_ja_man1_mans = 				\
 EXTRA_DIST += $(dist_ja_man1_mans)
 
 install-data-local:
-	test -z "$(DESTDIR)$(ja_man1dir)" || $(MKDIR_P) "$(DESTDIR)$(ja_man1dir)"
+	test -z "$(DESTDIR)$(ja_man1dir)" || $(mkdir_p) "$(DESTDIR)$(ja_man1dir)"
 	@for jman in $(dist_ja_man1_mans); do					\
 	  jman_file=`echo $${jman} | sed -e s/jman$$/1/`;			\
 	  echo $(INSTALL_DATA) $${jman} "$(DESTDIR)$(ja_man1dir)"/$${jman_file};\
