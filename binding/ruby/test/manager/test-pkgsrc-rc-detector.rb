@@ -329,9 +329,7 @@ milter.postfix: false
 EOC
     end
 
-    detector = pkgsrc_rc_detector("enma") do |_detector, guessed_spec|
-      guessed_spec || _detector.detect_enma_connection_spec
-    end
+    detector = pkgsrc_rc_detector("enma")
     detector.detect
     detector.apply(@loader)
     assert_equal("enma", detector.name)

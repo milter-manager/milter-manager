@@ -33,6 +33,10 @@ module Milter::Manager
       Milter::Manager::EnmaSocketDetector.new(conf_file).detect
     end
 
+    def enma?
+      @script_name == "enma" or @name == "enma"
+    end
+
     private
     def parse_rc_conf_unknown_line(line)
       case line
@@ -49,6 +53,12 @@ module Milter::Manager
 
     def package_prefix
       package_options["prefix"] || "/usr/pkg/etc"
+    end
+
+    def guess_application_specific_spec
+      spec = nil
+      spec ||= detect_enma_connection_spec if enma?
+      spec
     end
   end
 end

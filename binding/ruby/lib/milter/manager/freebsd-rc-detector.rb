@@ -27,6 +27,17 @@ module Milter::Manager
       @rcvar_value || @variables[rcvar_variable_name] || "NO"
     end
 
+    def detect_enma_connection_spec
+      conf_file = @variables["cfgfile"]
+      conf_file ||= extract_parameter_from_flags(command_args, "-c")
+      return nil if conf_file.nil?
+      Milter::Manager::EnmaSocketDetector.new(conf_file).detect
+    end
+
+    def enma?
+      @script_name == "milter-enma" or @name == "milterenma"
+    end
+
     private
     def parse_rc_conf_unknown_line(line)
       case line
@@ -43,6 +54,12 @@ module Milter::Manager
 
     def rc_d
       "/usr/local/etc/rc.d"
+    end
+
+    def guess_application_specific_spec
+      spec = nil
+      spec ||= detect_enma_connection_spec if enma?
+      spec
     end
   end
 end

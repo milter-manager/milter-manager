@@ -323,6 +323,39 @@ EOC
                   "unix:/var/run/spamass.sock"]])
   end
 
+
+  def test_apply_enma_style
+    enma_conf = @tmp_dir + "enma.conf"
+    (@init_d + "enma").open("w") do |file|
+      file << enma_init_header(enma_conf.to_s)
+    end
+
+    enma_conf.open("w") do |conf|
+      conf << <<-EOC
+## Milter ##
+milter.socket:  inet:10025@127.0.0.1
+milter.user:    daemon
+milter.pidfile: /var/run/enma/enma.pid
+milter.chdir:   /var/tmp
+milter.timeout: 7210
+milter.loglevel:   0
+milter.sendmail813: false
+milter.postfix: false
+EOC
+    end
+
+    detector = redhat_init_detector("enma")
+    detector.detect
+    detector.apply(@loader)
+    assert_equal("enma", detector.name)
+    assert_eggs([["enma",
+                  "A milter program for domain authentication technologies",
+                  false,
+                  (@init_d + "enma").to_s,
+                  "start",
+                  "inet:10025@127.0.0.1"]])
+  end
+
   private
   def redhat_init_detector(name)
     detector = Milter::Manager::RedHatInitDetector.new(@configuration, name)
@@ -484,6 +517,34 @@ SYSCONFIG="/etc/sysconfig/spamass-milter"
 RETVAL=0
 prog="spamass-milter"
 desc="Spamassassin sendmail milter"
+EOS
+  end
+
+  def enma_init_header(enma_conf)
+    <<-EOS
+#!/bin/bash
+#
+# Copyright (c) 2008-2009 Internet Initiative Japan Inc. All rights reserved.
+#
+# The terms and conditions of the accompanying program
+# shall be provided separately by Internet Initiative Japan Inc.
+# Any use, reproduction or distribution of the program are permitted
+# provided that you agree to be bound to such terms and conditions.
+#
+# $Id: rc.enma-centos 882 2009-04-02 01:02:28Z takahiko $
+# 
+# chkconfig: 345 79 31
+# description: A milter program for domain authentication technologies
+
+# source function library
+. /etc/init.d/functions
+
+RETVAL=0
+prog=enma
+
+ENMA=/usr/libexec/enma
+CONF_FILE=#{enma_conf}
+LOCK_FILE=/var/lock/subsys/enma
 EOS
   end
 

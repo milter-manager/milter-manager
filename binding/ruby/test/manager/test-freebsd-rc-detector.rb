@@ -203,6 +203,61 @@ EOM
                   "unix:/var/milter-greylist/milter-greylist.sock"]])
   end
 
+  def test_apply_enma_style
+    enma_conf = @tmp_dir + "enma.conf"
+    (@rc_d + "milter-enma").open("w") do |file|
+      file << <<-EOM
+milterenma_enable=${milterenma_enable:-"NO"}
+milterenma_cfgfile=${milterenma_cfgfile:-"#{enma_conf}"}
+milterenma_pid=${milterenma_pid:-"/var/run/milterenma/enma.pid"}
+milterenma_uid=${milterenma_uid:-"mailnull"}
+
+. /etc/rc.subr
+
+name="milterenma"
+rcvar=`set_rcvar`
+
+load_rc_config $name
+
+if [ -f "${milterenma_cfgfile}" ];then
+    milterenma_cfgfile="-c ${milterenma_cfgfile}"
+else
+    echo "milterenma_cfgfile is not correctly set"
+    exit 1
+fi
+pidfile=${milterenma_pid}
+command="/usr/local/bin/enma"
+command_args="${milterenma_cfgfile}"
+start_precmd="enma_precmd"
+stop_postcmd="enma_postcmd"
+_piddir=$(dirname ${pidfile})
+EOM
+    end
+
+    enma_conf.open("w") do |conf|
+      conf << <<-EOC
+## Milter ##
+milter.socket:  inet:10025@127.0.0.1
+milter.user:    mailnull
+milter.pidfile: /var/run/milterenma/enma.pid
+milter.chdir:   /var/tmp
+milter.timeout: 7210
+milter.loglevel:   0
+milter.postfix: false
+EOC
+    end
+
+    detector = freebsd_rc_detector("milter-enma")
+    detector.detect
+    detector.apply(@loader)
+    assert_equal("milterenma", detector.name)
+    assert_eggs([["milter-enma",
+                  false,
+                  (@rc_d + "milter-enma").to_s,
+                  "start",
+                  "inet:10025@127.0.0.1"]])
+  end
+
   private
   def freebsd_rc_detector(name)
     detector = Milter::Manager::FreeBSDRCDetector.new(@configuration, name)

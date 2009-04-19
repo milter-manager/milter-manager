@@ -32,6 +32,10 @@ module Milter::Manager
       Milter::Manager::EnmaSocketDetector.new(conf_file).detect
     end
 
+    def enma?
+      @script_name == "enma"
+    end
+
     private
     def parse_custom_conf
       parse_sysconfig(sysconfig)
@@ -41,7 +45,7 @@ module Milter::Manager
       content = File.open(init_script).read
 
       before, init_info_content, after = extract_meta_data_blocks(content)
-      parse_tag_block(before)
+      parse_tag_block(before) if before
       parse_init_info(init_info_content) if init_info_content
       parse_tag_block(after) if after
 
@@ -98,9 +102,16 @@ module Milter::Manager
       spec ||= normalize_spec(@variables["MILTER_SOCKET"])
       spec ||= normalize_spec(@variables["CONNECTION_SPEC"])
       spec ||= extract_spec_parameter_from_flags(@variables["OPTIONS"])
+      spec ||= guess_application_specific_spec
       if @connection_spec_detector
         spec = normalize_spec(@connection_spec_detector.call(self, spec)) || spec
       end
+      spec
+    end
+
+    def guess_application_specific_spec
+      spec = nil
+      spec ||= detect_enma_connection_spec if enma?
       spec
     end
 

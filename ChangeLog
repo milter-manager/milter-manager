@@ -1,5 +1,18 @@
 2009-04-19  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager/freebsd-rc-detector.rb,
+	binding/ruby/test/manager/test-freebsd-rc-detector.rb,
+	data/defaults/freebsd.conf: add ENMA support on FreeBSD.
+
+	* binding/ruby/lib/milter/manager/pkgsrc-rc-detector.rb,
+	binding/ruby/lib/milter/manager/rcng-detector.rb,
+	binding/ruby/lib/milter/manager/redhat-init-detector.rb,
+	binding/ruby/test/manager/test-pkgsrc-rc-detector.rb,
+	binding/ruby/test/manager/test-redhat-init-detector.rb,
+	data/defaults/pkgsrc.conf,
+	data/defaults/redhat.conf: find enma.conf without explicit
+	detector specification.
+
 	* doc/Makefile.am (EXTRA_DIST): add missing Japanese document file.
 
 	* milter/core/milter-reader.c (channel_watch_func): ignore

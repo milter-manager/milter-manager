@@ -121,6 +121,7 @@ module Milter::Manager
       spec ||= normalize_spec(@variables["connection_spec"])
       spec ||= extract_spec_parameter_from_flags(@variables["flags"])
       spec ||= extract_spec_parameter_from_flags(@command_args)
+      spec ||= guess_application_specific_spec
       if @connection_spec_detector
         spec = normalize_spec(@connection_spec_detector.call(self, spec)) || spec
       end
