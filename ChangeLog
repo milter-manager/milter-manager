@@ -1,6 +1,8 @@
 2009-04-19  Kouhei Sutou  <kou@cozmixng.org>
 
-	* doc/Makefile.am (install-data-local): use mkdir_p instead of MKDIR_P.
+	* doc/Makefile.am (install-data-local):
+	- use mkdir_p instead of MKDIR_P.
+	- add missing dependencies.
 
 2009-04-17  Kouhei Sutou  <kou@clear-code.com>
 
