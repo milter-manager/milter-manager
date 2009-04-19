@@ -14,6 +14,7 @@
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 require 'milter/manager/init-detector'
+require 'milter/manager/clamav-milter-socket-detector'
 
 module Milter::Manager
   class DebianInitDetector
@@ -25,6 +26,16 @@ module Milter::Manager
 
     def enabled?
       @variables["ENABLED"] != "0"
+    end
+
+    def detect_clamav_milter_connection_spec
+      conf_file = @variables["CLAMAVMILTERCONF"]
+      conf ||= "/etc/clamav/clamav-milter.conf"
+      Milter::Manager::ClamAVMilterSocketDetector.new(conf_file).detect
+    end
+
+    def clamav_milter?
+      @script_name == "clamav-milter"
     end
 
     private
@@ -59,9 +70,16 @@ module Milter::Manager
       spec ||= extract_spec_parameter_from_flags(@variables["OPTARGS"])
       spec ||= extract_spec_parameter_from_flags(@variables["DAEMON_ARGS"])
       spec ||= extract_spec_parameter_from_flags(@variables["PARAMS"])
+      spec ||= guess_application_specific_spec
       if @connection_spec_detector
         spec = normalize_spec(@connection_spec_detector.call(self, spec)) || spec
       end
+      spec
+    end
+
+    def guess_application_specific_spec
+      spec = nil
+      spec ||= detect_clamav_milter_connection_spec if clamav_milter?
       spec
     end
 
