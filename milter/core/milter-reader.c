@@ -199,8 +199,9 @@ channel_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
         keep_callback = read_from_channel(reader, channel);
     }
 
-    if ((condition & (G_IO_ERR | G_IO_HUP)) ||
-        (!priv->shutdown_requested && condition & G_IO_NVAL)) {
+    if ((condition & G_IO_ERR) ||
+        (!keep_callback && (condition & G_IO_HUP)) ||
+        (!priv->shutdown_requested && (condition & G_IO_NVAL))) {
         gchar *message;
         GError *error = NULL;
 

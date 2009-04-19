@@ -1,5 +1,8 @@
 2009-04-19  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-reader.c (channel_watch_func): ignore
+	G_IO_HUP when EOF or an error is already occurred.
+
 	* doc/Makefile.am (install-data-local):
 	- use mkdir_p instead of MKDIR_P.
 	- add missing dependencies.
