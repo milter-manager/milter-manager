@@ -40,7 +40,9 @@ EXTRA_DIST =						\
 	milter-manager-log-analyzer-graphs.svg		\
 	poster-for-explanation-ja.svg			\
 	milter-test-server.rd				\
+	milter-test-server.rd.ja			\
 	milter-test-client.rd				\
+	milter-test-client.rd.ja			\
 	milter-performance-check.rd			\
 	milter-manager-log-analyzer.rd			\
 	milter-manager.rd				\

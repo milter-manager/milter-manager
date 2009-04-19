@@ -1,5 +1,7 @@
 2009-04-19  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/Makefile.am (EXTRA_DIST): add missing Japanese document file.
+
 	* milter/core/milter-reader.c (channel_watch_func): ignore
 	G_IO_HUP when EOF or an error is already occurred.
 
