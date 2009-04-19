@@ -14,6 +14,7 @@
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 require 'milter/manager/init-detector'
+require 'milter/manager/enma-socket-detector'
 
 module Milter::Manager
   class RedHatInitDetector

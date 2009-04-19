@@ -14,6 +14,7 @@
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 require 'milter/manager/rcng-detector'
+require 'milter/manager/enma-socket-detector'
 
 module Milter::Manager
   class FreeBSDRCDetector
@@ -30,7 +31,7 @@ module Milter::Manager
     def detect_enma_connection_spec
       conf_file = @variables["cfgfile"]
       conf_file ||= extract_parameter_from_flags(command_args, "-c")
-      return nil if conf_file.nil?
+      conf_file ||= "/usr/local/etc/enma.conf"
       Milter::Manager::EnmaSocketDetector.new(conf_file).detect
     end
 
