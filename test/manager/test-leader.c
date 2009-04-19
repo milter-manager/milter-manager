@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -874,44 +874,106 @@ do_end_of_header (MilterManagerTestScenario *scenario, const gchar *group)
 }
 
 static void
+get_chunk (MilterManagerTestScenario *scenario, const gchar *group,
+           const gchar **chunk, gsize *chunk_size)
+{
+    *chunk = NULL;
+    *chunk_size = 0;
+
+    if (has_key(scenario, group, "chunk_file")) {
+        const gchar *file_name;
+        gchar *file_path;
+        gchar *content;
+        GError *error = NULL;
+
+        file_name = get_string(scenario, group, "chunk_file");
+        file_path = g_build_filename(scenario_dir, file_name, NULL);
+        g_file_get_contents(file_path, &content, chunk_size, &error);
+        if (content && content[*chunk_size - 1] == '\n')
+            content[*chunk_size - 1] = '\0';
+        g_free(file_path);
+        gcut_assert_error(error);
+        *chunk = cut_take_string(content);
+    } else if (has_key(scenario, group, "chunk")) {
+        *chunk = get_string(scenario, group, "chunk");
+        *chunk_size = strlen(*chunk);
+    }
+}
+
+static const GList *
+get_chunks (MilterManagerTestScenario *scenario, const gchar *group)
+{
+    if (has_key(scenario, group, "chunk_files")) {
+        const GList *file_names, *node, *taken_chunks;
+        GList *chunks = NULL;
+        GError *error = NULL;
+
+        file_names = get_string_g_list(scenario, group, "chunk_files");
+        for (node = file_names; node; node = g_list_next(node)) {
+            const gchar *file_name = node->data;
+            gchar *content = NULL;
+            gsize content_size = 0;
+
+            if (file_name) {
+                gchar *file_path;
+
+                file_path = g_build_filename(scenario_dir, file_name, NULL);
+                g_file_get_contents(file_path, &content, &content_size, &error);
+                g_free(file_path);
+                if (error)
+                    break;
+            }
+            if (content && content[content_size - 1] == '\n')
+                content[content_size - 1] = '\0';
+            chunks = g_list_append(chunks, content);
+        }
+        taken_chunks = gcut_take_list(chunks, g_free);
+        gcut_assert_error(error);
+        return taken_chunks;
+    } else {
+        return get_string_g_list(scenario, group, "chunks");
+    }
+}
+
+static void
 do_body (MilterManagerTestScenario *scenario, const gchar *group)
 {
-    const gchar *chunk;
+    const gchar *chunk = NULL;
+    gsize chunk_size = 0;
+    const GList *expected_chunks, *actual_chunks;
 
     milter_server_context_set_state(MILTER_SERVER_CONTEXT(server),
                                     MILTER_SERVER_CONTEXT_STATE_BODY);
-    chunk = get_string(scenario, group, "chunk");
+    get_chunk(scenario, group, &chunk, &chunk_size);
     n_body_responses = 0;
-    milter_manager_leader_body(leader, chunk, strlen(chunk));
+    milter_manager_leader_body(leader, chunk, chunk_size);
 
     cut_trace(assert_response(scenario, group));
 
-    gcut_assert_equal_list_string(get_string_g_list(scenario, group, "chunks"),
-                                  collect_received_strings(body_chunk),
-                                  "<%s>", group);
+    expected_chunks = get_chunks(scenario, group);
+    actual_chunks = collect_received_strings(body_chunk);
+    cut_set_message("[%s]", group);
+    gcut_assert_equal_list_string(expected_chunks, actual_chunks);
 }
 
 static void
 do_end_of_message (MilterManagerTestScenario *scenario, const gchar *group)
 {
     const gchar *chunk = NULL;
+    gsize chunk_size = 0;
 
     milter_server_context_set_state(MILTER_SERVER_CONTEXT(server),
                                     MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE);
-    if (has_key(scenario, group, "chunk"))
-        chunk = get_string(scenario, group, "chunk");
+    get_chunk(scenario, group, &chunk, &chunk_size);
 
     milter_client_context_set_state(client_context,
                                     MILTER_CLIENT_CONTEXT_STATE_END_OF_MESSAGE);
-    milter_manager_leader_end_of_message(leader,
-                                         chunk,
-                                         chunk ? strlen(chunk) : 0);
+    milter_manager_leader_end_of_message(leader, chunk, chunk_size);
 
     cut_trace(assert_response(scenario, group));
 
-    gcut_assert_equal_list_string(
-        get_string_g_list(scenario, group, "chunks"),
-        collect_received_strings(body_chunk));
+    gcut_assert_equal_list_string(get_chunks(scenario, group),
+                                  collect_received_strings(body_chunk));
     gcut_assert_equal_list_string(
         get_string_g_list(scenario, group, "end_of_message_chunks"),
         collect_received_strings(end_of_message_chunk));
@@ -1193,7 +1255,7 @@ data_scenario_basic (void)
                  g_strdup("end-of-header.txt"), g_free,
                  "body",
                  g_strdup("body.txt"), g_free,
-                 "body - larger than milter_chunk_size",
+                 "body - larger than milter chunk size",
                  g_strdup("body-larger-than-milter-chunk-size.txt"), g_free,
                  "body - no body flag on both client",
                  g_strdup("no-body-flag-on-both-client.txt"), g_free,

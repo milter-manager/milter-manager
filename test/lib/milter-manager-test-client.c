@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -66,7 +66,7 @@ struct _MilterManagerTestClientPrivate
     gchar *envelope_recipient;
     gchar *header_name;
     gchar *header_value;
-    gchar *body_chunk;
+    GString *body_chunk;
     gchar *end_of_message_chunk;
     gchar *unknown_command;
 
@@ -115,7 +115,7 @@ milter_manager_test_client_init (MilterManagerTestClient *test_client)
     priv->envelope_recipient = NULL;
     priv->header_name = NULL;
     priv->header_value = NULL;
-    priv->body_chunk = NULL;
+    priv->body_chunk = g_string_new(NULL);
     priv->end_of_message_chunk = NULL;
     priv->unknown_command = NULL;
 
@@ -295,9 +295,10 @@ static void
 parse_body_info (MilterManagerTestClientPrivate *priv,
                  const gchar *chunk, gsize size)
 {
-    if (priv->body_chunk)
-        g_free(priv->body_chunk);
-    priv->body_chunk = receive_additional_info(chunk, size, "receive: body: ");
+    if (!priv->body_chunk)
+        priv->body_chunk = g_string_new(NULL);
+    g_string_append(priv->body_chunk,
+                    receive_additional_info(chunk, size, "receive: body: "));
 }
 
 static void
@@ -395,6 +396,7 @@ cb_output_received (GCutEgg *egg, const gchar *chunk, gsize size,
     g_string_append_len(priv->output_received, chunk, size);
     output_channel = gcut_egg_get_output(egg);
     if (chunk[size - 1] != '\n' ||
+        size == 4096 /* FIXME: 4096 is GCutEgg's buffer size */ ||
         g_io_channel_get_buffer_condition(output_channel) == G_IO_IN) {
         return;
     }
@@ -599,7 +601,7 @@ milter_manager_test_client_clear_data (MilterManagerTestClient *client)
     }
 
     if (priv->body_chunk) {
-        g_free(priv->body_chunk);
+        g_string_free(priv->body_chunk, TRUE);
         priv->body_chunk = NULL;
     }
 
@@ -731,7 +733,7 @@ milter_manager_test_client_set_arguments (MilterManagerTestClient *client,
     g_array_append_val(priv->command, test_client_path);
     append_command(priv->command, "--print-status");
     append_command(priv->command, "--timeout");
-    append_command(priv->command, "0.5");
+    append_command(priv->command, "1.5");
     append_command(priv->command, "--host");
     append_command(priv->command, "127.0.0.1");
     append_command(priv->command, "--port");
@@ -885,7 +887,12 @@ milter_manager_test_client_get_n_body_received (MilterManagerTestClient *client)
 const gchar *
 milter_manager_test_client_get_body_chunk (MilterManagerTestClient *client)
 {
-    return MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client)->body_chunk;
+    GString *body_chunk;
+
+    body_chunk = MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client)->body_chunk;
+    if (!body_chunk)
+        return NULL;
+    return body_chunk->len == 0 ? NULL : body_chunk->str;
 }
 
 guint
@@ -958,7 +965,7 @@ milter_manager_test_clients_wait_reply (const GList *clients,
     guint n_clients;
 
     n_clients = g_list_length((GList *)clients);
-    timeout_waiting_id = g_timeout_add(100, cb_timeout_waiting,
+    timeout_waiting_id = g_timeout_add(1000, cb_timeout_waiting,
                                        &timeout_waiting);
     while (timeout_waiting &&
            n_clients > milter_manager_test_clients_collect_n_received(clients,
