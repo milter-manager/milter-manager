@@ -44,7 +44,9 @@ EXTRA_DIST =						\
 	milter-test-client.rd				\
 	milter-test-client.rd.ja			\
 	milter-performance-check.rd			\
+	milter-performance-check.rd.ja			\
 	milter-manager-log-analyzer.rd			\
+	milter-manager-log-analyzer.rd.ja		\
 	milter-manager.rd				\
 	milter-manager.rd.ja
 
