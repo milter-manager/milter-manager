@@ -15,6 +15,7 @@
 
 require 'milter/manager/rcng-detector'
 require 'milter/manager/enma-socket-detector'
+require 'milter/manager/clamav-milter-socket-detector'
 
 module Milter::Manager
   class FreeBSDRCDetector
@@ -39,6 +40,17 @@ module Milter::Manager
       @script_name == "milter-enma" or @name == "milterenma"
     end
 
+    def detect_clamav_milter_connection_spec
+      conf_file = @other_variables["conf_file"]
+      conf_file ||= extract_parameter_from_flags(command_args, "-c")
+      conf_file ||= "/usr/local/etc/clamav-milter.conf"
+      Milter::Manager::ClamAVMilterSocketDetector.new(conf_file).detect
+    end
+
+    def clamav_milter?
+      @script_name == "clamav-milter" or @name == "clamav_milter"
+    end
+
     private
     def parse_rc_conf_unknown_line(line)
       case line
@@ -57,9 +69,10 @@ module Milter::Manager
       "/usr/local/etc/rc.d"
     end
 
-    def guess_application_specific_spec
+    def guess_application_specific_spec(guessed_spec)
       spec = nil
       spec ||= detect_enma_connection_spec if enma?
+      spec ||= detect_clamav_milter_connection_spec if clamav_milter?
       spec
     end
   end

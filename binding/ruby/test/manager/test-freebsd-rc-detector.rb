@@ -136,13 +136,58 @@ EOM
                   "unix:/var/amavis/amavis-milter.sock"]])
   end
 
-  def test_apply_clamav_milter_style
+  def test_apply_clamav_milter_before_0_95_style
     (@rc_d + "clamav-milter").open("w") do |file|
       file << <<-EOM
 name=clamav_milter
 : ${clamav_milter_enable="NO"}
 : ${clamav_milter_socket="/var/run/clamav/clmilter.sock"}
 EOM
+    end
+
+    detector = freebsd_rc_detector("clamav-milter")
+    detector.detect
+    detector.apply(@loader)
+    assert_equal("clamav_milter", detector.name)
+    assert_eggs([["clamav-milter",
+                  false,
+                  (@rc_d + "clamav-milter").to_s,
+                  "start",
+                  "unix:/var/run/clamav/clmilter.sock"]])
+  end
+
+  def test_apply_clamav_milter_since_0_95_style
+    clamav_milter_conf = @tmp_dir + "clamav-milter.conf"
+    (@rc_d + "clamav-milter").open("w") do |file|
+      file << <<-EOM
+name=clamav_milter
+rcvar=`set_rcvar`
+
+conf_file=#{clamav_milter_conf}
+command=/usr/local/sbin/clamav-milter
+required_dirs=/var/db/clamav
+required_files=${conf_file}
+
+# ...
+
+# read settings, set default values
+load_rc_config $name
+: ${clamav_milter_enable="NO"}
+: ${clamav_milter_socket="/var/run/clamav/clamav-milter.sock"}
+: ${clamav_milter_flags="-c ${conf_file}"}
+: ${clamav_milter_socktimeout="60"}
+: ${clamav_milter_socket_mode="755"}
+: ${clamav_milter_socket_user="clamav"}
+: ${clamav_milter_socket_group="clamav"}
+EOM
+    end
+
+    clamav_milter_conf.open("w") do |conf|
+      conf << <<-EOC
+# Default: no default
+MilterSocket /var/run/clamav/clmilter.sock
+#MilterSocket inet:7357
+EOC
     end
 
     detector = freebsd_rc_detector("clamav-milter")
