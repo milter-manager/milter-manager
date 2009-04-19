@@ -30,6 +30,7 @@ module Milter::Manager
 
     def detect_enma_connection_spec
       conf_file = extract_parameter_from_flags(command_args, "-c")
+      conf_file ||= File.join(package_prefix, "enma.conf")
       Milter::Manager::EnmaSocketDetector.new(conf_file).detect
     end
 
@@ -48,7 +49,7 @@ module Milter::Manager
     end
 
     def rc_d
-      package_options["rcddir"] || "#{package_prefix}/rc.d"
+      package_options["rcddir"] || File.join(package_prefix, "rc.d")
     end
 
     def package_prefix

@@ -1,5 +1,8 @@
 2009-04-19  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager/pkgsrc-rc-detector.rb: use
+	#{package_prefix}/enma.conf as default enma.conf place.
+
 	* binding/ruby/lib/milter/manager/freebsd-rc-detector.rb,
 	binding/ruby/test/manager/test-freebsd-rc-detector.rb,
 	data/defaults/freebsd.conf: add ENMA support on FreeBSD.
