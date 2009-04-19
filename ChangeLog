@@ -1,5 +1,8 @@
 2009-04-19  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-reader.c (channel_watch_func): suppress
+	hung up report when shutdown is requested.
+
 	* binding/ruby/lib/milter/manager/Makefile.am,
 	binding/ruby/lib/milter/manager/clamav-milter-socket-detector.rb,
 	binding/ruby/lib/milter/manager/debian-init-detector.rb,

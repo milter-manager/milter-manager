@@ -189,6 +189,7 @@ channel_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
     MilterReaderPrivate *priv;
     MilterReader *reader = data;
     gboolean keep_callback = TRUE;
+    gboolean error_occurred = FALSE;
 
     priv = MILTER_READER_GET_PRIVATE(reader);
     priv->processing = TRUE;
@@ -199,9 +200,15 @@ channel_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
         keep_callback = read_from_channel(reader, channel);
     }
 
-    if ((condition & G_IO_ERR) ||
-        (!keep_callback && (condition & G_IO_HUP)) ||
-        (!priv->shutdown_requested && (condition & G_IO_NVAL))) {
+    if (condition & G_IO_ERR)
+        error_occurred = TRUE;
+    if (!priv->shutdown_requested) {
+        if (!keep_callback && (condition & G_IO_HUP))
+            error_occurred = TRUE;
+        if (condition & G_IO_NVAL)
+            error_occurred = TRUE;
+    }
+    if (error_occurred) {
         gchar *message;
         GError *error = NULL;
 
