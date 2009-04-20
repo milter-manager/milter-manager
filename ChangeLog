@@ -1,5 +1,8 @@
 2009-04-20  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-connection.c, test/core/test-connection.c:
+	support unknown family inspection.
+
 	* milter/core/milter-command-decoder.c,
 	test/core/test-command-decoder.c: support unknown family on connect.
 

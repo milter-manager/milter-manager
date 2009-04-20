@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -148,6 +148,28 @@ sockaddr_in6_new (guint16 port, const gchar *host)
     address->sin6_addr = ipv6_address;
 
     return (struct sockaddr *)address;
+}
+
+static struct sockaddr *
+sockaddr_unknown_new (void)
+{
+    struct sockaddr *address;
+
+    address = g_new0(struct sockaddr, 1);
+    address->sa_family = AF_UNSPEC;
+
+    return address;
+}
+
+static struct sockaddr *
+sockaddr_unexpected_new (int family)
+{
+    struct sockaddr *address;
+
+    address = g_new0(struct sockaddr, 1);
+    address->sa_family = family;
+
+    return address;
 }
 
 static TestData *
@@ -413,6 +435,16 @@ data_address_to_spec (void)
                  "unix",
                  test_data_new("unix:/tmp/xxx.sock",
                                sockaddr_un_new("/tmp/xxx.sock"),
+                               NULL),
+                 test_data_free,
+                 "unknown",
+                 test_data_new("unknown",
+                               sockaddr_unknown_new(),
+                               NULL),
+                 test_data_free,
+                 "unexpected",
+                 test_data_new("unexpected:100",
+                               sockaddr_unexpected_new(100),
                                NULL),
                  test_data_free,
                  "no content",
