@@ -1,3 +1,8 @@
+2009-04-20  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/core/milter-command-decoder.c,
+	test/core/test-command-decoder.c: support unknown family on connect.
+
 2009-04-20  Kouhei Sutou  <kou@clear-code.com>
 
 	* configure.ac, doc/Makefile.am: add rd2 check.

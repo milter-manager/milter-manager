@@ -1047,19 +1047,19 @@ test_decode_connect_without_host_name_null (void)
 void
 test_decode_connect_with_unknown_family (void)
 {
-    const gchar host_name[] = "mx.local.net";
+    const gchar host_name[] = "unknown";
 
     g_string_append(buffer, "C");
     g_string_append(buffer, host_name);
     g_string_append_c(buffer, '\0');
     g_string_append(buffer, "U");
 
-    expected_error =
-        g_error_new(MILTER_COMMAND_DECODER_ERROR,
-                    MILTER_COMMAND_DECODER_ERROR_UNKNOWN_SOCKET_FAMILY,
-                    "unknown family on connect command: <mx.local.net>: <U>");
-    actual_error = decode();
-    gcut_assert_equal_error(expected_error, actual_error);
+    gcut_assert_error(decode());
+    cut_assert_equal_int(1, n_connects);
+    cut_assert_equal_string(host_name, connect_host_name);
+    cut_assert_equal_int(sizeof(struct sockaddr), connect_address_length);
+
+    cut_assert_equal_int(AF_UNSPEC, connect_address->sa_family);
 }
 
 void
@@ -1075,7 +1075,7 @@ test_decode_connect_with_unexpected_family (void)
     expected_error =
         g_error_new(MILTER_COMMAND_DECODER_ERROR,
                     MILTER_COMMAND_DECODER_ERROR_UNKNOWN_SOCKET_FAMILY,
-                    "unknown family on connect command: <mx.local.net>: <X>");
+                    "unexpected family on connect command: <mx.local.net>: <X>");
     actual_error = decode();
     gcut_assert_equal_error(expected_error, actual_error);
 }
@@ -1099,7 +1099,7 @@ test_decode_connect_with_unexpected_family_and_port (void)
     expected_error =
         g_error_new(MILTER_COMMAND_DECODER_ERROR,
                     MILTER_COMMAND_DECODER_ERROR_UNKNOWN_SOCKET_FAMILY,
-                    "unknown family on connect command: <mx.local.net>: <X>");
+                    "unexpected family on connect command: <mx.local.net>: <X>");
     actual_error = decode();
     gcut_assert_equal_error(expected_error, actual_error);
 }

@@ -526,26 +526,36 @@ decode_connect_content (const gchar *buffer, gint length,
         memcpy(&port, buffer + i, sizeof(port));
         i += sizeof(port);
         break;
+    case MILTER_SOCKET_FAMILY_UNKNOWN:
+        if (!milter_decoder_check_command_length(
+                buffer + i, length - i, 0,
+                MILTER_DECODER_COMPARE_EXACT, error,
+                "unknown family on connect command"))
+            return FALSE;
+        break;
     default:
         g_set_error(error,
                     MILTER_COMMAND_DECODER_ERROR,
                     MILTER_COMMAND_DECODER_ERROR_UNKNOWN_SOCKET_FAMILY,
-                    "unknown family on connect command: <%s>: <%c>",
+                    "unexpected family on connect command: <%s>: <%c>",
                     decoded_host_name, family);
         return FALSE;
     }
 
-    error_message = g_strdup_printf("address name isn't terminated by NULL "
-                                    "on connect command: <%s>: <%c>: <%u>",
-                                    decoded_host_name, family, g_ntohs(port));
-    null_character_point =
-        milter_decoder_decode_null_terminated_value(buffer + i,
-                                                    length - i,
-                                                    error,
-                                                    error_message);
-    g_free(error_message);
-    if (null_character_point <= 0)
-        return FALSE;
+    if (family != MILTER_SOCKET_FAMILY_UNKNOWN) {
+        error_message =
+            g_strdup_printf("address name isn't terminated by NULL "
+                            "on connect command: <%s>: <%c>: <%u>",
+                            decoded_host_name, family, g_ntohs(port));
+        null_character_point =
+            milter_decoder_decode_null_terminated_value(buffer + i,
+                                                        length - i,
+                                                        error,
+                                                        error_message);
+        g_free(error_message);
+        if (null_character_point <= 0)
+            return FALSE;
+    }
 
     switch (family) {
     case MILTER_SOCKET_FAMILY_INET:
@@ -570,11 +580,16 @@ decode_connect_content (const gchar *buffer, gint length,
                                          error))
             return FALSE;
         break;
+    case MILTER_SOCKET_FAMILY_UNKNOWN:
+        *address_length = sizeof(struct sockaddr);
+        *address = g_malloc0(*address_length);
+        (*address)->sa_family = AF_UNSPEC;
+        break;
     default:
         g_set_error(error,
                     MILTER_COMMAND_DECODER_ERROR,
                     MILTER_COMMAND_DECODER_ERROR_UNKNOWN_SOCKET_FAMILY,
-                    "unknown family on connect command: <%s>: <%c>: <%u>",
+                    "unexpected family on connect command: <%s>: <%c>: <%u>",
                     decoded_host_name, family, g_ntohs(port));
         return FALSE;
         break;
