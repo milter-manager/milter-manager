@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
+# Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -107,11 +107,26 @@ class TestSocketAddresss < Test::Unit::TestCase
 
     assert_equal(address1, address1)
     assert_not_equal(address1, address2)
-    assert_equal(address1, address1)
+    assert_equal(address1, address3)
   end
 
   def test_unix_local?
     assert_true(unix("/tmp/local.sock").local?)
+  end
+
+  def test_unknown_to_s
+    assert_equal("unknown", unknown.to_s)
+  end
+
+  def test_unknown_equal
+    address = unknown
+
+    assert_equal(address, address)
+    assert_equal(address, unknown)
+  end
+
+  def test_unknown_local?
+    assert_false(unknown.local?)
   end
 
   private
@@ -125,5 +140,9 @@ class TestSocketAddresss < Test::Unit::TestCase
 
   def unix(path)
     Milter::SocketAddress::Unix.new(path)
+  end
+
+  def unknown
+    Milter::SocketAddress::Unknown.new
   end
 end

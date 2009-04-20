@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -35,6 +35,7 @@ VALUE rb_eMilterError;
 VALUE rb_cMilterSocketAddressIPv4;
 VALUE rb_cMilterSocketAddressIPv6;
 VALUE rb_cMilterSocketAddressUnix;
+VALUE rb_cMilterSocketAddressUnknown;
 
 #define CSTR2RVAL_SIZE_FREE(string, size)		\
     (rb_milter_cstr2rval_size_free(string, size))

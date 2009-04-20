@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -94,6 +94,10 @@ parse_spec (VALUE self, VALUE spec)
 				    1,
 				    rb_path);
 	}
+	break;
+      case AF_UNSPEC:
+	g_free(address);
+	rb_address = rb_funcall(rb_cMilterSocketAddressUnknown, id_new, 0);
 	break;
       default:
 	rb_address = rb_str_new((gchar *)address, address_size);

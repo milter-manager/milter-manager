@@ -1,5 +1,13 @@
 2009-04-20  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/toolkit.rb,
+	binding/ruby/src/toolkit/rb-milter-connection.c,
+	binding/ruby/src/toolkit/rb-milter-core-private.c,
+	binding/ruby/src/toolkit/rb-milter-socket-address.c,
+	binding/ruby/src/toolkit/rb-milter.h,
+	binding/ruby/test/toolkit/test-socket-address.rb: support unknown
+	family.
+
 	* milter/core/milter-connection.c, test/core/test-connection.c:
 	support unknown family inspection.
 

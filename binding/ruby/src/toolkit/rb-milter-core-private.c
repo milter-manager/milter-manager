@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -129,8 +129,11 @@ rb_milter__connect_signal_convert (guint num, const GValue *values)
 				    rb_str_new2(address_un->sun_path));
 	}
 	break;
+      case AF_UNSPEC:
+	rb_address = rb_funcall(rb_cMilterSocketAddressUnknown, id_new, 0);
+	break;
       default:
-	g_warning("unknown family: %d", address->sa_family);
+	g_warning("unexpected family: %d", address->sa_family);
 	rb_address = rb_str_new((char *)address, address_length);
 	break;
     }

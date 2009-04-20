@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -197,6 +197,18 @@ unix_to_s (VALUE self)
     return rb_f_sprintf(2, argv);
 }
 
+static VALUE
+unknown_equal (VALUE self, VALUE other)
+{
+    return RVAL2CBOOL(rb_obj_is_kind_of(other, rb_cMilterSocketAddressUnknown));
+}
+
+static VALUE
+unknown_to_s (VALUE self)
+{
+    return rb_str_new2("unknown");
+}
+
 void
 Init_milter_socket_address (void)
 {
@@ -213,6 +225,8 @@ Init_milter_socket_address (void)
         rb_define_class_under(rb_mMilterSocketAddress, "IPv6", rb_cObject);
     rb_cMilterSocketAddressUnix =
         rb_define_class_under(rb_mMilterSocketAddress, "Unix", rb_cObject);
+    rb_cMilterSocketAddressUnknown =
+        rb_define_class_under(rb_mMilterSocketAddress, "Unknown", rb_cObject);
 
     rb_define_attr(rb_cMilterSocketAddressIPv4, "address", TRUE, TRUE);
     rb_define_attr(rb_cMilterSocketAddressIPv4, "port", TRUE, TRUE);
@@ -236,4 +250,7 @@ Init_milter_socket_address (void)
     rb_define_method(rb_cMilterSocketAddressUnix, "pack", unix_pack, 0);
     rb_define_method(rb_cMilterSocketAddressUnix, "==", unix_equal, 1);
     rb_define_method(rb_cMilterSocketAddressUnix, "to_s", unix_to_s, 0);
+
+    rb_define_method(rb_cMilterSocketAddressUnknown, "==", unknown_equal, 1);
+    rb_define_method(rb_cMilterSocketAddressUnknown, "to_s", unknown_to_s, 0);
 }
