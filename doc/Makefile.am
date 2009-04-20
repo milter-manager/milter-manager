@@ -50,6 +50,7 @@ EXTRA_DIST =						\
 	milter-manager.rd				\
 	milter-manager.rd.ja
 
+if WITH_RD2
 dist_man1_MANS =			\
 	milter-manager.man		\
 	milter-test-server.man		\
@@ -80,6 +81,7 @@ uninstall-local:
 	  jman_file=`echo $${jman} | sed -e s/jman$$/1/`;	\
 	  rm -f "$(DESTDIR)$(ja_man1dir)"/$${jman_file};	\
 	done
+endif
 
 # dirty...
 milter-manager.jman: milter-manager.rd.ja
@@ -93,10 +95,10 @@ MAINTAINERCLEANFILES = $(dist_man1_MANS) $(dist_ja_man1_mans)
 SUFFIXES = .rd .man .rd .jman .svg .png
 
 .rd.man:
-	rd2 -r$(top_srcdir)/misc/rd2man-lib $< > $@
+	$(RUBY) $(RD2) -r$(top_srcdir)/misc/rd2man-lib $< > $@
 
 .rd.jman: # dirty...
-	rd2 -r$(top_srcdir)/misc/rd2man-lib $<.ja > $@
+	$(RUBY) $(RD2) -r$(top_srcdir)/misc/rd2man-lib $<.ja > $@
 
 .svg.png:
 	inkscape --export-png $@ $<

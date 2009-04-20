@@ -1,5 +1,7 @@
 2009-04-20  Kouhei Sutou  <kou@clear-code.com>
 
+	* configure.ac, doc/Makefile.am: add rd2 check.
+
 	* autogen.sh: add workaround for old intltoolize.
 
 2009-04-19  Kouhei Sutou  <kou@cozmixng.org>
