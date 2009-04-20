@@ -1,5 +1,8 @@
 2009-04-20  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: remove: Postfix sends unknown socket family
+	(MILTER_SOCKET_FAMILY_UNKNOWN) but when?
+
 	* binding/ruby/lib/milter/toolkit.rb,
 	binding/ruby/src/toolkit/rb-milter-connection.c,
 	binding/ruby/src/toolkit/rb-milter-core-private.c,
