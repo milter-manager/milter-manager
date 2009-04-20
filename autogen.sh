@@ -9,6 +9,11 @@ run()
     fi
 }
 
+# for old intltoolize
+if [ ! -e config/po ]; then
+    ln -s ../po config/po
+fi
+
 run ${ACLOCAL:-aclocal} $ACLOCAL_OPTIONS
 run ${LIBTOOLIZE:-libtoolize} --copy --force
 run ${INTLTOOLIZE:-intltoolize} --force --copy

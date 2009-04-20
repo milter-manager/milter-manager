@@ -1,3 +1,7 @@
+2009-04-20  Kouhei Sutou  <kou@clear-code.com>
+
+	* autogen.sh: add workaround for old intltoolize.
+
 2009-04-19  Kouhei Sutou  <kou@cozmixng.org>
 
 	* test/lib/milter-manager-test-client.c: accept a large chunk
