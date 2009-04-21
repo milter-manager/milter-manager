@@ -37,6 +37,7 @@ void test_encode_define_macro (gconstpointer data);
 void test_encode_connect_ipv4 (void);
 void test_encode_connect_ipv6 (void);
 void test_encode_connect_unix (void);
+void test_encode_connect_unknown (void);
 void test_encode_helo (void);
 void test_encode_envelope_from (void);
 void test_encode_envelope_recipient (void);
@@ -407,6 +408,29 @@ test_encode_connect_unix (void)
                                           &actual, &actual_size,
                                           host_name,
                                           (const struct sockaddr *)&address,
+                                          sizeof(address));
+    cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
+}
+
+void
+test_encode_connect_unknown (void)
+{
+    struct sockaddr address;
+    const gchar host_name[] = "unknown";
+    gsize actual_size = 0;
+
+    g_string_append(expected, "C");
+    g_string_append(expected, host_name);
+    g_string_append_c(expected, '\0');
+    g_string_append(expected, "U");
+    pack(expected);
+
+    address.sa_family = AF_UNSPEC;
+
+    milter_command_encoder_encode_connect(encoder,
+                                          &actual, &actual_size,
+                                          host_name,
+                                          &address,
                                           sizeof(address));
     cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
 }

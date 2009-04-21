@@ -157,6 +157,12 @@ encode_connect_unix (GString *buffer, const struct sockaddr_un *address)
     g_string_append(buffer, address->sun_path);
 }
 
+static void
+encode_connect_unknown (GString *buffer, const struct sockaddr *address)
+{
+    g_string_append_c(buffer, MILTER_SOCKET_FAMILY_UNKNOWN);
+}
+
 void
 milter_command_encoder_encode_connect (MilterCommandEncoder *encoder,
                                        gchar **packet, gsize *packet_size,
@@ -165,6 +171,7 @@ milter_command_encoder_encode_connect (MilterCommandEncoder *encoder,
                                        socklen_t address_size)
 {
     GString *buffer;
+    gboolean need_last_null = TRUE;
 
     buffer = milter_encoder_get_buffer(MILTER_ENCODER(encoder));
 
@@ -172,21 +179,23 @@ milter_command_encoder_encode_connect (MilterCommandEncoder *encoder,
     g_string_append(buffer, host_name);
     g_string_append_c(buffer, '\0');
     switch (address->sa_family) {
-      case AF_INET:
+    case AF_INET:
         encode_connect_inet(buffer, (const struct sockaddr_in *)address);
         break;
-      case AF_INET6:
+    case AF_INET6:
         encode_connect_inet6(buffer, (const struct sockaddr_in6 *)address);
         break;
-      case AF_UNIX:
+    case AF_UNIX:
         encode_connect_unix(buffer, (const struct sockaddr_un *)address);
         break;
-      default:
-        *packet = NULL;
-        *packet_size = 0;
-        return;
+    default:
+        encode_connect_unknown(buffer, address);
+        need_last_null = FALSE;
+        break;
     }
-    g_string_append_c(buffer, '\0');
+
+    if (need_last_null)
+        g_string_append_c(buffer, '\0');
     milter_encoder_pack(MILTER_ENCODER(encoder), packet, packet_size);
 }
 

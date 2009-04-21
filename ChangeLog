@@ -1,3 +1,9 @@
+2009-04-21  Kouhei Sutou  <kou@clear-code.com>
+
+	* milter/core/milter-command-encoder.c,
+	test/core/test-command-encoder.c: support unknown socket family
+	encoding.
+
 2009-04-20  Kouhei Sutou  <kou@cozmixng.org>
 
 	* TODO: remove: Postfix sends unknown socket family
