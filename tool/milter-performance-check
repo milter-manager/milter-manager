@@ -237,7 +237,7 @@ class MilterPerformanceTool
 
   def send_mails_in_interval(mails, interval)
     i = 0
-    last = mails.count
+    last = mails.size
     mails.collect do |mail|
       i += 1
       thread = Thread.start do

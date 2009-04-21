@@ -1,5 +1,9 @@
 2009-04-21  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-performance-check
+	(MilterPerformanceTool#send_mails_in_interval): use size instead
+	of count.
+
 	* milter/core/milter-logger.[ch]: add a function and a macro to
 	delegate GLib log to MilterLogger.
 	* milter/core/, milter/client/, milter/server/, milter/server/,
