@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -575,6 +575,22 @@ milter_utils_xml_append_boolean_element (GString *string,
     milter_utils_xml_append_text_element(string,
                                          name, boolean ? "true" : "false",
                                          indent);
+}
+
+void
+milter_utils_xml_append_enum_element (GString *string,
+                                      const gchar *name,
+                                      GType enum_type,
+                                      gint enum_value,
+                                      guint indent)
+{
+    gchar *enum_nick_name;
+
+    enum_nick_name = milter_utils_get_enum_nick_name(enum_type, enum_value);
+    milter_utils_xml_append_text_element(string,
+                                         name, enum_nick_name,
+                                         indent);
+    g_free(enum_nick_name);
 }
 
 gint

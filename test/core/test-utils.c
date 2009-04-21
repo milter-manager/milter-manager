@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -44,6 +44,7 @@ void test_flags_names (gconstpointer _data);
 void test_append_index (void);
 void test_xml_append_text_element (void);
 void test_xml_append_boolean_element (void);
+void test_xml_append_enum_element (void);
 
 static GIOCondition io_condition;
 static const gchar *expected_inspected_io_condition;
@@ -505,6 +506,16 @@ test_xml_append_boolean_element (void)
     g_string_truncate(actual_string, 0);
     milter_utils_xml_append_boolean_element(actual_string, "NAME", FALSE, 2);
     cut_assert_equal_string("  <NAME>false</NAME>\n", actual_string->str);
+}
+
+void
+test_xml_append_enum_element (void)
+{
+    milter_utils_xml_append_enum_element(actual_string, "NAME",
+                                         MILTER_TYPE_STATUS,
+                                         MILTER_STATUS_CONTINUE,
+                                         2);
+    cut_assert_equal_string("  <NAME>continue</NAME>\n", actual_string->str);
 }
 
 /*

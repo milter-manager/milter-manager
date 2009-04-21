@@ -1,5 +1,8 @@
 2009-04-21  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-utils.[ch],
+	test/core/test-utils.c: add milter_utils_xml_append_enum_element().
+
 	* milter/manager/milter-manager-egg.[ch], test/manager/test-egg.c:
 	egg has fallback status configuration.
 
