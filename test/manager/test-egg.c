@@ -485,6 +485,7 @@ test_to_xml (void)
     cut_assert_equal_string("<milter>\n"
                             "  <name>child-milter</name>\n"
                             "  <enabled>true</enabled>\n"
+                            "  <fallback-status>accept</fallback-status>\n"
                             "</milter>\n",
                             actual_xml);
 
@@ -494,6 +495,7 @@ test_to_xml (void)
     cut_assert_equal_string("<milter>\n"
                             "  <name>child-milter</name>\n"
                             "  <enabled>true</enabled>\n"
+                            "  <fallback-status>accept</fallback-status>\n"
                             "  <additional-field>VALUE</additional-field>\n"
                             "</milter>\n",
                             actual_xml);
