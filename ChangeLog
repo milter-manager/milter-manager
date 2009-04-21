@@ -1,5 +1,8 @@
 2009-04-21  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-egg.[ch], test/manager/test-egg.c:
+	egg has fallback status configuration.
+
 	* milter/manager/milter-manager-child.[ch],
 	test/manager/test-child.c: child milter has its fallback status.
 

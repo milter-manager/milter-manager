@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -45,6 +45,7 @@ struct _MilterManagerEggPrivate
     gchar *command;
     gchar *command_options;
     GList *applicable_conditions;
+    MilterStatus fallback_status;
 };
 
 enum
@@ -61,6 +62,7 @@ enum
     PROP_USER_NAME,
     PROP_COMMAND,
     PROP_COMMAND_OPTIONS,
+    PROP_FALLBACK_STATUS
 };
 
 enum
@@ -187,6 +189,14 @@ milter_manager_egg_class_init (MilterManagerEggClass *klass)
                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_COMMAND_OPTIONS, spec);
 
+    spec = g_param_spec_enum("fallback-status",
+                             "Fallback status",
+                             "Fallback status on error",
+                             MILTER_TYPE_STATUS,
+                             MILTER_STATUS_ACCEPT,
+                             G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_FALLBACK_STATUS, spec);
+
 
     signals[HATCHED] =
         g_signal_new("hatched",
@@ -230,6 +240,7 @@ milter_manager_egg_init (MilterManagerEgg *egg)
     priv->command = NULL;
     priv->command_options = NULL;
     priv->applicable_conditions = NULL;
+    priv->fallback_status = MILTER_STATUS_ACCEPT;
 }
 
 static void
@@ -289,39 +300,42 @@ set_property (GObject      *object,
     priv = MILTER_MANAGER_EGG_GET_PRIVATE(object);
 
     switch (prop_id) {
-      case PROP_NAME:
+    case PROP_NAME:
         milter_manager_egg_set_name(egg, g_value_get_string(value));
         break;
-      case PROP_DESCRIPTION:
+    case PROP_DESCRIPTION:
         milter_manager_egg_set_description(egg, g_value_get_string(value));
         break;
-      case PROP_ENABLED:
+    case PROP_ENABLED:
         milter_manager_egg_set_enabled(egg, g_value_get_boolean(value));
         break;
-      case PROP_CONNECTION_TIMEOUT:
+    case PROP_CONNECTION_TIMEOUT:
         priv->connection_timeout = g_value_get_double(value);
         break;
-      case PROP_WRITING_TIMEOUT:
+    case PROP_WRITING_TIMEOUT:
         priv->writing_timeout = g_value_get_double(value);
         break;
-      case PROP_READING_TIMEOUT:
+    case PROP_READING_TIMEOUT:
         priv->reading_timeout = g_value_get_double(value);
         break;
-      case PROP_END_OF_MESSAGE_TIMEOUT:
+    case PROP_END_OF_MESSAGE_TIMEOUT:
         priv->end_of_message_timeout = g_value_get_double(value);
         break;
-      case PROP_USER_NAME:
+    case PROP_USER_NAME:
         milter_manager_egg_set_user_name(egg, g_value_get_string(value));
         break;
-      case PROP_COMMAND:
+    case PROP_COMMAND:
         milter_manager_egg_set_command(egg, g_value_get_string(value));
         break;
-      case PROP_COMMAND_OPTIONS:
+    case PROP_COMMAND_OPTIONS:
         if (priv->command_options)
             g_free(priv->command_options);
         priv->command_options = g_value_dup_string(value);
         break;
-      default:
+    case PROP_FALLBACK_STATUS:
+        milter_manager_egg_set_fallback_status(egg, g_value_get_enum(value));
+        break;
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
@@ -337,40 +351,43 @@ get_property (GObject    *object,
 
     priv = MILTER_MANAGER_EGG_GET_PRIVATE(object);
     switch (prop_id) {
-      case PROP_NAME:
+    case PROP_NAME:
         g_value_set_string(value, priv->name);
         break;
-      case PROP_DESCRIPTION:
+    case PROP_DESCRIPTION:
         g_value_set_string(value, priv->description);
         break;
-      case PROP_ENABLED:
+    case PROP_ENABLED:
         g_value_set_boolean(value, priv->enabled);
         break;
-      case PROP_CONNECTION_SPEC:
+    case PROP_CONNECTION_SPEC:
         g_value_set_string(value, priv->connection_spec);
         break;
-      case PROP_CONNECTION_TIMEOUT:
+    case PROP_CONNECTION_TIMEOUT:
         g_value_set_double(value, priv->connection_timeout);
         break;
-      case PROP_WRITING_TIMEOUT:
+    case PROP_WRITING_TIMEOUT:
         g_value_set_double(value, priv->writing_timeout);
         break;
-      case PROP_READING_TIMEOUT:
+    case PROP_READING_TIMEOUT:
         g_value_set_double(value, priv->reading_timeout);
         break;
-      case PROP_END_OF_MESSAGE_TIMEOUT:
+    case PROP_END_OF_MESSAGE_TIMEOUT:
         g_value_set_double(value, priv->end_of_message_timeout);
         break;
-      case PROP_USER_NAME:
+    case PROP_USER_NAME:
         g_value_set_string(value, priv->user_name);
         break;
-      case PROP_COMMAND:
+    case PROP_COMMAND:
         g_value_set_string(value, priv->command);
         break;
-      case PROP_COMMAND_OPTIONS:
+    case PROP_COMMAND_OPTIONS:
         g_value_set_string(value, priv->command_options);
         break;
-      default:
+    case PROP_FALLBACK_STATUS:
+        g_value_set_enum(value, priv->fallback_status);
+        break;
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
@@ -419,6 +436,7 @@ milter_manager_egg_hatch (MilterManagerEgg *egg)
                   "user-name", priv->user_name,
                   "command", priv->command,
                   "command-options", priv->command_options,
+                  "fallback-status", priv->fallback_status,
                   NULL);
 
     if (priv->connection_spec) {
@@ -661,6 +679,19 @@ const gchar *
 milter_manager_egg_get_command_options (MilterManagerEgg *egg)
 {
     return MILTER_MANAGER_EGG_GET_PRIVATE(egg)->command_options;
+}
+
+void
+milter_manager_egg_set_fallback_status (MilterManagerEgg *egg,
+                                        MilterStatus      status)
+{
+    MILTER_MANAGER_EGG_GET_PRIVATE(egg)->fallback_status = status;
+}
+
+MilterStatus
+milter_manager_egg_get_fallback_status (MilterManagerEgg *egg)
+{
+    return MILTER_MANAGER_EGG_GET_PRIVATE(egg)->fallback_status;
 }
 
 void

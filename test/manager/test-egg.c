@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -39,6 +39,7 @@ void test_end_of_message_timeout (void);
 void test_user_name (void);
 void test_command (void);
 void test_command_options (void);
+void test_fallback_status (void);
 void test_merge (void);
 void test_applicable_condition (void);
 void test_attach_applicable_conditions (void);
@@ -47,6 +48,7 @@ void test_to_xml (void);
 static MilterManagerEgg *egg;
 static MilterManagerEgg *merged_egg;
 static MilterManagerChild *child;
+static MilterManagerChild *hatched_child;
 static MilterManagerChildren *children;
 static MilterManagerApplicableCondition *condition;
 
@@ -66,6 +68,7 @@ setup (void)
     egg = NULL;
     merged_egg = NULL;
     child = NULL;
+    hatched_child = NULL;
     children = NULL;
     condition = NULL;
 
@@ -88,6 +91,8 @@ teardown (void)
         g_object_unref(merged_egg);
     if (child)
         g_object_unref(child);
+    if (hatched_child)
+        g_object_unref(hatched_child);
     if (children)
         g_object_unref(children);
     if (condition)
@@ -134,6 +139,12 @@ cb_hatched (MilterManagerEgg *egg, MilterManagerChild *child, gpointer user_data
     gboolean *hatched = user_data;
 
     *hatched = TRUE;
+
+    if (hatched_child)
+        g_object_unref(hatched_child);
+    hatched_child = child;
+    if (hatched_child)
+        g_object_ref(hatched_child);
 }
 
 static void
@@ -160,6 +171,8 @@ test_hatch (void)
     milter_manager_egg_set_connection_spec(egg, spec, &error);
     gcut_assert_error(error);
 
+    milter_manager_egg_set_fallback_status(egg, MILTER_STATUS_TEMPORARY_FAILURE);
+
     condition = milter_manager_applicable_condition_new("S25R");
     g_signal_connect(condition, "attach-to",
                      G_CALLBACK(cb_attach_to), &attached_to);
@@ -171,6 +184,11 @@ test_hatch (void)
                             milter_server_context_get_name(MILTER_SERVER_CONTEXT(child)));
     cut_assert_true(hatched);
     cut_assert_false(attached_to);
+
+    gcut_assert_equal_enum(
+        MILTER_TYPE_STATUS,
+        MILTER_STATUS_TEMPORARY_FAILURE,
+        milter_manager_child_get_fallback_status(hatched_child));
 }
 
 void
@@ -323,6 +341,20 @@ test_command_options (void)
                             milter_manager_egg_get_command_options(egg));
     milter_manager_egg_set_command_options(egg, command_options);
     cut_assert_equal_string(command_options, milter_manager_egg_get_command_options(egg));
+}
+
+void
+test_fallback_status (void)
+{
+    egg = milter_manager_egg_new("child-milter");
+    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
+                           MILTER_STATUS_ACCEPT,
+                           milter_manager_egg_get_fallback_status(egg));
+
+    milter_manager_egg_set_fallback_status(egg, MILTER_STATUS_TEMPORARY_FAILURE);
+    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
+                           MILTER_STATUS_TEMPORARY_FAILURE,
+                           milter_manager_egg_get_fallback_status(egg));
 }
 
 void

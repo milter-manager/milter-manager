@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -123,6 +123,11 @@ void                milter_manager_egg_set_command_options
                                                 (MilterManagerEgg *egg,
                                                  const gchar *command_options);
 const gchar        *milter_manager_egg_get_command_options
+                                                (MilterManagerEgg *egg);
+void                milter_manager_egg_set_fallback_status
+                                                (MilterManagerEgg *egg,
+                                                 MilterStatus      status);
+MilterStatus        milter_manager_egg_get_fallback_status
                                                 (MilterManagerEgg *egg);
 
 void                milter_manager_egg_add_applicable_condition
