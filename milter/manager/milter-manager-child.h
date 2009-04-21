@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -72,6 +72,9 @@ MilterManagerChild   *milter_manager_child_new_va_list (const gchar *first_name,
 gchar                *milter_manager_child_get_command_line_string
                                                        (MilterManagerChild *milter);
 gchar                *milter_manager_child_get_user_name
+                                                       (MilterManagerChild *milter);
+
+MilterStatus          milter_manager_child_get_fallback_status
                                                        (MilterManagerChild *milter);
 
 #endif /* __MILTER_MANAGER_CHILD_H__ */

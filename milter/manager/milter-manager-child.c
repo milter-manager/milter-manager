@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -42,6 +42,7 @@ struct _MilterManagerChildPrivate
     gchar *command;
     gchar *command_options;
     gboolean search_path;
+    MilterStatus fallback_status;
 };
 
 enum
@@ -51,7 +52,8 @@ enum
     PROP_COMMAND,
     PROP_COMMAND_OPTIONS,
     PROP_WORKING_DIRECTORY,
-    PROP_SEARCH_PATH
+    PROP_SEARCH_PATH,
+    PROP_FALLBACK_STATUS
 };
 
 MILTER_DEFINE_ERROR_EMITTABLE_TYPE(MilterManagerChild,
@@ -116,6 +118,14 @@ milter_manager_child_class_init (MilterManagerChildClass *klass)
                                 G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_SEARCH_PATH, spec);
 
+    spec = g_param_spec_enum("fallback-status",
+                             "Fallback status",
+                             "Fallback status on error",
+                             MILTER_TYPE_STATUS,
+                             MILTER_STATUS_ACCEPT,
+                             G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_FALLBACK_STATUS, spec);
+
     g_type_class_add_private(gobject_class,
                              sizeof(MilterManagerChildPrivate));
 }
@@ -131,6 +141,7 @@ milter_manager_child_init (MilterManagerChild *milter)
     priv->command = NULL;
     priv->command_options = NULL;
     priv->search_path = TRUE;
+    priv->fallback_status = MILTER_STATUS_ACCEPT;
 }
 
 static void
@@ -175,30 +186,33 @@ set_property (GObject      *object,
     milter = MILTER_MANAGER_CHILD(object);
     priv = MILTER_MANAGER_CHILD_GET_PRIVATE(object);
     switch (prop_id) {
-      case PROP_USER_NAME:
+    case PROP_USER_NAME:
         if (priv->user_name)
             g_free(priv->user_name);
         priv->user_name = g_value_dup_string(value);
         break;
-      case PROP_COMMAND:
+    case PROP_COMMAND:
         if (priv->command)
             g_free(priv->command);
         priv->command = g_value_dup_string(value);
         break;
-      case PROP_COMMAND_OPTIONS:
+    case PROP_COMMAND_OPTIONS:
         if (priv->command_options)
             g_free(priv->command_options);
         priv->command_options = g_value_dup_string(value);
         break;
-      case PROP_WORKING_DIRECTORY:
+    case PROP_WORKING_DIRECTORY:
         if (priv->working_directory)
             g_free(priv->working_directory);
         priv->working_directory = g_value_dup_string(value);
         break;
-      case PROP_SEARCH_PATH:
+    case PROP_SEARCH_PATH:
         priv->search_path = g_value_get_boolean(value);
         break;
-      default:
+    case PROP_FALLBACK_STATUS:
+        priv->fallback_status = g_value_get_enum(value);
+        break;
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
@@ -214,22 +228,25 @@ get_property (GObject    *object,
 
     priv = MILTER_MANAGER_CHILD_GET_PRIVATE(object);
     switch (prop_id) {
-      case PROP_USER_NAME:
+    case PROP_USER_NAME:
         g_value_set_string(value, priv->user_name);
         break;
-      case PROP_COMMAND:
+    case PROP_COMMAND:
         g_value_set_string(value, priv->command);
         break;
-      case PROP_COMMAND_OPTIONS:
+    case PROP_COMMAND_OPTIONS:
         g_value_set_string(value, priv->command_options);
         break;
-      case PROP_WORKING_DIRECTORY:
+    case PROP_WORKING_DIRECTORY:
         g_value_set_string(value, priv->working_directory);
         break;
-      case PROP_SEARCH_PATH:
+    case PROP_SEARCH_PATH:
         g_value_set_boolean(value, priv->search_path);
         break;
-      default:
+    case PROP_FALLBACK_STATUS:
+        g_value_set_enum(value, priv->fallback_status);
+        break;
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
@@ -280,6 +297,12 @@ gchar *
 milter_manager_child_get_user_name (MilterManagerChild *milter)
 {
     return MILTER_MANAGER_CHILD_GET_PRIVATE(milter)->user_name;
+}
+
+MilterStatus
+milter_manager_child_get_fallback_status (MilterManagerChild *milter)
+{
+    return MILTER_MANAGER_CHILD_GET_PRIVATE(milter)->fallback_status;
 }
 
 /*

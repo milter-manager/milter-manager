@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -29,6 +29,7 @@
 
 void test_get_command_line_string (void);
 void test_get_user_name (void);
+void test_get_fallback_status (void);
 
 static MilterManagerChild *milter;
 
@@ -69,6 +70,20 @@ test_get_user_name (void)
                  NULL);
     cut_assert_equal_string("Tom",
                             milter_manager_child_get_user_name(milter));
+}
+
+void
+test_get_fallback_status (void)
+{
+    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
+                           MILTER_STATUS_ACCEPT,
+                           milter_manager_child_get_fallback_status(milter));
+    g_object_set(milter,
+                 "fallback-status", MILTER_STATUS_TEMPORARY_FAILURE,
+                 NULL);
+    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
+                           MILTER_STATUS_TEMPORARY_FAILURE,
+                           milter_manager_child_get_fallback_status(milter));
 }
 
 /*
