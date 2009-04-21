@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -91,6 +91,7 @@ G_BEGIN_DECLS
  *     GError *error = NULL;
  *
  *     milter_init();
+ *     milter_client_init();
  *
  *     client = milter_client_new();
  *     if (!milter_client_set_connection_spec(client, spec, &error)) {
@@ -102,6 +103,7 @@ G_BEGIN_DECLS
  *                      G_CALLBACK(cb_connection_established), NULL);
  *     milter_client_main(client);
  *
+ *     milter_client_quit();
  *     milter_quit();
  *
  *     return success ? EXIT_SUCCESS : EXIT_FAILURE;
@@ -130,6 +132,21 @@ G_BEGIN_DECLS
  * %MilterClientContext. But in many case, this difference
  * is not bottleneck. :-|</rd>
  */
+
+/**
+ * milter_client_init:
+ *
+ * Call this function before using any other the milter-client
+ * library functions.
+ */
+void milter_client_init (void);
+
+/**
+ * milter_client_quit:
+ *
+ * Call this function after the milter-client library use.
+ */
+void milter_client_quit (void);
 
 /**
  * MILTER_CLIENT_ERROR:

@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -17,31 +17,26 @@
  *
  */
 
-#ifndef __MILTER_SERVER_H__
-#define __MILTER_SERVER_H__
+#ifdef HAVE_CONFIG_H
+#  include "../../config.h"
+#endif /* HAVE_CONFIG_H */
 
-#include <milter/core.h>
-#include <milter/server/milter-server-context.h>
-#include <milter/server/milter-server-enum-types.h>
+#include <milter/server.h>
 
-/**
- * milter_server_init:
- *
- * Call this function before using any other the milter-server
- * library functions.
- */
-void milter_server_init (void);
+static guint milter_server_log_handler_id = 0;
 
-/**
- * milter_quit:
- *
- * Call this function after the milter-server library use.
- */
-void milter_server_quit (void);
+void
+milter_server_init (void)
+{
+    milter_server_log_handler_id = MILTER_GLIB_LOG_DELEGATE("milter-server");
+}
 
-
-#endif /* __MILTER_SERVER_H__ */
+void
+milter_server_quit (void)
+{
+    g_log_remove_handler("milter-server", milter_server_log_handler_id);
+}
 
 /*
-vi:nowrap:ai:expandtab:sw=4
+vi:ts=4:nowrap:ai:expandtab:sw=4
 */

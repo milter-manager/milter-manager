@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -160,6 +160,24 @@ MilterLogLevelFlags
 void             milter_logger_set_target_level
                                               (MilterLogger        *logger,
                                                MilterLogLevelFlags  level);
+
+#define MILTER_GLIB_LOG_DELEGATE(domain)        \
+    g_log_set_handler(domain,                   \
+                      G_LOG_FLAG_RECURSION |    \
+                      G_LOG_FLAG_FATAL |        \
+                      G_LOG_LEVEL_ERROR |       \
+                      G_LOG_LEVEL_CRITICAL |    \
+                      G_LOG_LEVEL_WARNING |     \
+                      G_LOG_LEVEL_MESSAGE |     \
+                      G_LOG_LEVEL_INFO |        \
+                      G_LOG_LEVEL_DEBUG,        \
+                      milter_glib_log_handler,  \
+                      NULL)
+
+void             milter_glib_log_handler      (const gchar         *log_domain,
+                                               GLogLevelFlags       log_level,
+                                               const gchar         *message,
+                                               gpointer             user_data);
 
 G_END_DECLS
 

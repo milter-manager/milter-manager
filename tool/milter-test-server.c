@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -1460,6 +1460,7 @@ main (int argc, char *argv[])
     ProcessData process_data;
 
     milter_init();
+    milter_server_init();
 
     option_context = g_option_context_new(NULL);
     g_option_context_add_main_entries(option_context, option_entries, NULL);
@@ -1488,6 +1489,7 @@ main (int argc, char *argv[])
     g_object_unref(context);
     free_process_data(&process_data);
 
+    milter_server_quit();
     milter_quit();
     g_option_context_free(option_context);
     free_option_values();

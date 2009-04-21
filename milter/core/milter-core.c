@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -23,18 +23,47 @@
 
 #include <milter/core.h>
 
+static gboolean initialized = FALSE;
+
+static guint glib_log_handler_id = 0;
+static guint gobject_log_handler_id = 0;
+static guint gthread_log_handler_id = 0;
+static guint gmodule_log_handler_id = 0;
+static guint milter_core_log_handler_id = 0;
+
 void
 milter_init (void)
 {
+    if (initialized)
+        return;
+
+    initialized = TRUE;
+
     g_type_init();
 
     if (!g_thread_supported())
         g_thread_init(NULL);
+
+    glib_log_handler_id = MILTER_GLIB_LOG_DELEGATE("GLib");
+    gobject_log_handler_id = MILTER_GLIB_LOG_DELEGATE("GLib-GObject");
+    gthread_log_handler_id = MILTER_GLIB_LOG_DELEGATE("GThread");
+    gmodule_log_handler_id = MILTER_GLIB_LOG_DELEGATE("GModule");
+    milter_core_log_handler_id = MILTER_GLIB_LOG_DELEGATE("milter-core");
 }
 
 void
 milter_quit (void)
 {
+    if (!initialized)
+        return;
+
+    g_log_remove_handler("GLib", glib_log_handler_id);
+    g_log_remove_handler("GLib-GObject", gobject_log_handler_id);
+    g_log_remove_handler("GThread", gthread_log_handler_id);
+    g_log_remove_handler("GModule", gmodule_log_handler_id);
+    g_log_remove_handler("milter-core", milter_core_log_handler_id);
+
+    initialized = FALSE;
 }
 
 /*

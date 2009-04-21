@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -52,6 +52,8 @@ static gboolean option_show_config = FALSE;
 static gboolean option_verbose = FALSE;
 
 static gboolean io_detached = FALSE;
+
+static guint milter_manager_log_handler_id = 0;
 
 static void (*default_sigint_handler) (int signum);
 static void (*default_sigterm_handler) (int signum);
@@ -155,6 +157,9 @@ milter_manager_init (int *argc, char ***argv)
     textdomain(GETTEXT_PACKAGE);
 
     milter_init();
+    milter_client_init();
+    milter_server_init();
+    milter_manager_log_handler_id = MILTER_GLIB_LOG_DELEGATE("milter-manager");
 
     option_context = g_option_context_new(NULL);
     g_option_context_add_main_entries(option_context, option_entries, NULL);
@@ -199,6 +204,11 @@ milter_manager_quit (void)
         g_free(option_spec);
         option_spec = NULL;
     }
+
+    g_log_remove_handler("milter-manager", milter_manager_log_handler_id);
+    milter_server_quit();
+    milter_client_quit();
+    milter_quit();
 }
 
 static void

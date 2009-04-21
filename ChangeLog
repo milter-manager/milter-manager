@@ -1,3 +1,10 @@
+2009-04-21  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/core/milter-logger.[ch]: add a function and a macro to
+	delegate GLib log to MilterLogger.
+	* milter/core/, milter/client/, milter/server/, milter/server/,
+	tool/: use the above delegation.
+
 2009-04-21  Kouhei Sutou  <kou@clear-code.com>
 
 	* milter/core/milter-command-encoder.c,

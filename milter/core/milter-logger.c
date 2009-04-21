@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -321,7 +321,9 @@ milter_logger_default_log_handler (MilterLogger *logger, const gchar *domain,
     if (file && (target_item & MILTER_LOG_ITEM_LOCATION)) {
         if (log->len > 0)
             g_string_append(log, " ");
-        g_string_append_printf(log, "%s:%d: %s(): ", file, line, function);
+        g_string_append_printf(log, "%s:%d: ", file, line);
+        if (function)
+            g_string_append_printf(log, "%s(): ", function);
     } else {
         if (log->len > 0)
             g_string_append(log, ": ");
@@ -394,6 +396,52 @@ milter_logger_set_target_level (MilterLogger *logger,
                                 MilterLogLevelFlags level)
 {
     MILTER_LOGGER_GET_PRIVATE(logger)->target_level = level;
+}
+
+void
+milter_glib_log_handler (const gchar         *log_domain,
+                         GLogLevelFlags       log_level,
+                         const gchar         *message,
+                         gpointer             user_data)
+{
+    MilterLogger *logger = user_data;
+
+    if (!logger)
+        logger = milter_logger();
+
+#define LOG(level)                                              \
+    milter_logger_log(logger, "glib-log",                       \
+                      MILTER_LOG_LEVEL_ ## level,               \
+                      NULL, 0, NULL,                            \
+                      "%s%s%s %s",                              \
+                      log_domain ? "[" : "",                    \
+                      log_domain ? log_domain : "",             \
+                      log_domain ? "]" : "",                    \
+                      message)
+
+    switch (log_level & G_LOG_LEVEL_MASK) {
+    case G_LOG_LEVEL_ERROR:
+        LOG(ERROR);
+        break;
+    case G_LOG_LEVEL_CRITICAL:
+        LOG(CRITICAL);
+        break;
+    case G_LOG_LEVEL_WARNING:
+        LOG(WARNING);
+        break;
+    case G_LOG_LEVEL_MESSAGE:
+        LOG(MESSAGE);
+        break;
+    case G_LOG_LEVEL_INFO:
+        LOG(INFO);
+        break;
+    case G_LOG_LEVEL_DEBUG:
+        LOG(DEBUG);
+        break;
+    default:
+        break;
+    }
+#undef LOG
 }
 
 /*

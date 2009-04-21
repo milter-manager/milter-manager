@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -32,6 +32,21 @@
 
 #include <milter/core/milter-marshalers.h>
 #include "../client.h"
+
+static guint milter_client_log_handler_id = 0;
+
+void
+milter_client_init (void)
+{
+    milter_client_log_handler_id = MILTER_GLIB_LOG_DELEGATE("milter-client");
+}
+
+void
+milter_client_quit (void)
+{
+    g_log_remove_handler("milter-client", milter_client_log_handler_id);
+}
+
 
 enum
 {
@@ -75,7 +90,9 @@ typedef struct _MilterClientProcessData
     MilterClientContext *context;
 } MilterClientProcessData;
 
-MILTER_DEFINE_ERROR_EMITTABLE_TYPE(MilterClient, milter_client, G_TYPE_OBJECT)
+#define _milter_client_get_type milter_client_get_type
+MILTER_DEFINE_ERROR_EMITTABLE_TYPE(MilterClient, _milter_client, G_TYPE_OBJECT)
+#undef _milter_client_get_type
 
 static void dispose        (GObject         *object);
 static void set_property   (GObject         *object,
@@ -97,7 +114,7 @@ static void   cb_finished  (MilterClientContext *context,
                             gpointer _data);
 
 static void
-milter_client_class_init (MilterClientClass *klass)
+_milter_client_class_init (MilterClientClass *klass)
 {
     GObjectClass *gobject_class;
     MilterClientClass *client_class = NULL;
@@ -134,7 +151,7 @@ milter_client_class_init (MilterClientClass *klass)
 }
 
 static void
-milter_client_init (MilterClient *client)
+_milter_client_init (MilterClient *client)
 {
     MilterClientPrivate *priv;
     GMainContext *main_context;
@@ -227,7 +244,7 @@ dispose (GObject *object)
         priv->default_unix_socket_group = NULL;
     }
 
-    G_OBJECT_CLASS(milter_client_parent_class)->dispose(object);
+    G_OBJECT_CLASS(_milter_client_parent_class)->dispose(object);
 }
 
 static void
