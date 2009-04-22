@@ -2434,7 +2434,7 @@ envelope_from_response (MilterClientContext *context, MilterStatus status)
     reply(context, status);
 
     status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
-    milter_statistics("[reply][evenlope-from][%s]", status_name);
+    milter_statistics("[reply][envelope-from][%s]", status_name);
     g_free(status_name);
 }
 
@@ -2453,7 +2453,7 @@ envelope_recipient_response (MilterClientContext *context, MilterStatus status)
 
     reply(context, status);
     status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
-    milter_statistics("[reply][evenlope-recipient][%s]", status_name);
+    milter_statistics("[reply][envelope-recipient][%s]", status_name);
     g_free(status_name);
 }
 
