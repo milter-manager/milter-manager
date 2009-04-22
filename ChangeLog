@@ -1,5 +1,7 @@
 2009-04-23  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client-context.c: add tag into log message.
+
 	* milter/manager/milter-manager-leader.c: propagate manager tag to
 	children.
 

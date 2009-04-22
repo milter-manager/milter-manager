@@ -1868,7 +1868,9 @@ write_packet (MilterClientContext *context, gchar *packet, gsize packet_size)
                                               MILTER_CLIENT_CONTEXT_ERROR_IO_ERROR,
                                               agent_error,
                                               "Failed to write to MTA");
-        milter_error("[client][error][write] %s", error->message);
+        milter_error("[%u] [client][error][write] %s",
+                     milter_agent_get_tag(MILTER_AGENT(context)),
+                     error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(context),
                                     error);
         g_error_free(error);
@@ -1970,7 +1972,9 @@ milter_client_context_add_header (MilterClientContext *context,
                          error))
         return FALSE;
 
-    milter_debug("[client][send][add-header] <%s>=<%s>", name, value);
+    milter_debug("[%u] [client][send][add-header] <%s>=<%s>",
+                 milter_agent_get_tag(MILTER_AGENT(context)),
+                 name, value);
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     milter_reply_encoder_encode_add_header(MILTER_REPLY_ENCODER(encoder),
                                            &packet, &packet_size,
@@ -2012,7 +2016,8 @@ milter_client_context_insert_header (MilterClientContext *context,
                          error))
         return FALSE;
 
-    milter_debug("[client][send][insert-header] [%u]<%s>=<%s>",
+    milter_debug("[%u] [client][send][insert-header] [%u]<%s>=<%s>",
+                 milter_agent_get_tag(MILTER_AGENT(context)),
                  index, name, value);
 
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
@@ -2031,7 +2036,8 @@ milter_client_context_change_header (MilterClientContext *context,
     gsize packet_size;
     MilterEncoder *encoder;
 
-    milter_debug("[client][send][change-header] <%s>[%u]=<%s>",
+    milter_debug("[%u] [client][send][change-header] <%s>[%u]=<%s>",
+                 milter_agent_get_tag(MILTER_AGENT(context)),
                  name, index, value);
 
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
@@ -2049,7 +2055,9 @@ milter_client_context_delete_header (MilterClientContext *context,
     gsize packet_size;
     MilterEncoder *encoder;
 
-    milter_debug("[client][send][delete-header] <%s>[%u]", name, index);
+    milter_debug("[%u] [client][send][delete-header] <%s>[%u]",
+                 milter_agent_get_tag(MILTER_AGENT(context)),
+                 name, index);
 
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     milter_reply_encoder_encode_delete_header(MILTER_REPLY_ENCODER(encoder),
@@ -2067,7 +2075,8 @@ milter_client_context_change_from (MilterClientContext *context,
     gchar *packet = NULL;
     gsize packet_size;
 
-    milter_debug("[client][send][change-from] <%s>:<%s>",
+    milter_debug("[%u] [client][send][change-from] <%s>:<%s>",
+                 milter_agent_get_tag(MILTER_AGENT(context)),
                  from,
                  parameters ? parameters : "NULL");
 
@@ -2087,7 +2096,8 @@ milter_client_context_add_recipient (MilterClientContext *context,
     gchar *packet = NULL;
     gsize packet_size;
 
-    milter_debug("[client][send][add-recipient] <%s>:<%s>",
+    milter_debug("[%u] [client][send][add-recipient] <%s>:<%s>",
+                 milter_agent_get_tag(MILTER_AGENT(context)),
                  recipient,
                  parameters ? parameters : "NULL");
 
@@ -2106,7 +2116,9 @@ milter_client_context_delete_recipient (MilterClientContext *context,
     gchar *packet = NULL;
     gsize packet_size;
 
-    milter_debug("[client][send][delete-recipient] <%s>", recipient);
+    milter_debug("[%u] [client][send][delete-recipient] <%s>",
+                 milter_agent_get_tag(MILTER_AGENT(context)),
+                 recipient);
 
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     milter_reply_encoder_encode_delete_recipient(MILTER_REPLY_ENCODER(encoder),
@@ -2123,7 +2135,8 @@ milter_client_context_replace_body (MilterClientContext *context,
     MilterEncoder *encoder;
     MilterReplyEncoder *reply_encoder;
 
-    milter_debug("[client][send][replace-body] <%" G_GSIZE_FORMAT ">",
+    milter_debug("[%u] [client][send][replace-body] <%" G_GSIZE_FORMAT ">",
+                 milter_agent_get_tag(MILTER_AGENT(context)),
                  body_size);
 
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
@@ -2156,7 +2169,8 @@ milter_client_context_progress (MilterClientContext *context)
     gchar *packet = NULL;
     gsize packet_size;
 
-    milter_debug("[client][send][progress]");
+    milter_debug("[%u] [client][send][progress]",
+                 milter_agent_get_tag(MILTER_AGENT(context)));
 
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     milter_reply_encoder_encode_progress(MILTER_REPLY_ENCODER(encoder),
@@ -2355,7 +2369,9 @@ negotiate_response (MilterClientContext *context,
         gchar *inspected_option;
 
         inspected_option = milter_option_inspect(option);
-        milter_debug("[client][reply][negotiate] %s", inspected_option);
+        milter_debug("[%u] [client][reply][negotiate] %s",
+                     milter_agent_get_tag(MILTER_AGENT(context)),
+                     inspected_option);
         g_free(inspected_option);
 
         encoder = milter_agent_get_encoder(MILTER_AGENT(context));
