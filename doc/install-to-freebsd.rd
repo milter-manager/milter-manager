@@ -61,6 +61,8 @@ all milter because of the following reasons:
   * 'mailnull' user isn't used because we use Postfix
     instead of Sendmail
 
+Exception: milter-manager is ran as 'milter-manager' user.
+
 milter-greylist should be applied only if
 ((<S25R|URL:http://gabacho.reto.jp/en/anti-spam/>))
 condition is matched to reduce needless delivery delay.
@@ -177,11 +179,17 @@ milter-greylist should be started:
 
 === Configure milter-manager
 
+We create 'milter-manager' user because we run
+milter-manager as 'milter-manager' user:
+
+  % sudo /usr/sbin/pw groupadd milter-manager
+  % sudo /usr/sbin/pw useradd milter-manager -g milter-manager -G mail
+
 milter-manager detects milters that installed in system.
 We can confirm spamass-milter, clamav-milter and
 milter-greylist are detected:
 
-  % /usr/local/sbin/milter-manager --show-config
+  % sudo /usr/local/sbin/milter-manager -u milter-manager --show-config
 
 The following output shows milters are detected:
 
@@ -226,7 +234,7 @@ FreeBSD. We need to create /var/run/milter-manager directory
 before running milter-manager:
 
   % sudo mkdir -p /var/run/milter-manager
-  % sudo /usr/sbin/chown -R mailnull:mail /var/run/milter-manager
+  % sudo /usr/sbin/chown -R milter-manager:mail /var/run/milter-manager
 
 milter-manager's configuration is completed. We start to
 setup running milter-manager.

@@ -176,7 +176,7 @@ milter-manager detects milters that installed in system.
 We can confirm spamass-milter, clamav-milter and
 milter-greylist are detected:
 
-  % /usr/sbin/milter-manager --show-config
+  % sudo /usr/sbin/milter-manager -u milter-manager --show-config
 
 The following output shows milters are detected:
 
@@ -282,7 +282,7 @@ We update Sendmail configuration and reload it.
 Sendmail's milter configuration is completed.
 
 milter-manager logs to syslog. If milter-manager works well,
-some logs can be showen in /var/log/maillog. We need to sent
+some logs can be shown in /var/log/maillog. We need to sent
 a test mail for confirming.
 
 == Conclusion

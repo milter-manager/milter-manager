@@ -1,3 +1,8 @@
+2009-04-22  Kouhei Sutou  <kou@clear-code.com>
+
+	* doc/install-to-{ubuntu,centos,freebsd}.rd*: run 'milter-manager
+	--show-config' as milter-manager user.
+
 2009-04-21  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/manager/milter-manager-egg.c,

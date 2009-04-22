@@ -160,7 +160,7 @@ milter-manager detects milters that installed in system.
 We can confirm spamass-milter, clamav-milter and
 milter-greylist are detected:
 
-  % /usr/sbin/milter-manager --show-config
+  % sudo /usr/sbin/milter-manager -u milter-manager --show-config
 
 The following output shows milters are detected:
 

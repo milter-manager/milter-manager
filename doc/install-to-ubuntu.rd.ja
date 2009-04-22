@@ -171,7 +171,7 @@ milter-managerはシステムにインストールされているmilterを検出
 します。以下のコマンドでspamass-milter、clamav-milter、
 milter-greylistを検出していることを確認してください。
 
-  % /usr/sbin/milter-manager --show-config
+  % sudo /usr/sbin/milter-manager -u milter-manager --show-config
 
 以下のように表示されていれば検出は成功しています。
 

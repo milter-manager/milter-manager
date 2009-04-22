@@ -179,11 +179,17 @@ milter-greylistを起動します。
 
 === milter-managerの設定
 
+milter-managerはmilter-managerユーザで動作させるので、
+milter-managerユーザを作成します。
+
+  % sudo /usr/sbin/pw groupadd milter-manager
+  % sudo /usr/sbin/pw useradd milter-manager -g milter-manager -G mail
+
 milter-managerはシステムにインストールされているmilterを検出
 します。以下のコマンドでspamass-milter、clamav-milter、
 milter-greylistを検出していることを確認してください。
 
-  % /usr/local/sbin/milter-manager --show-config
+  % sudo /usr/local/sbin/milter-manager -u milter-manager --show-config
 
 以下のように表示されていれば検出は成功しています。
 
@@ -218,12 +224,6 @@ milterの名前、ソケットのパス、enabledがtrueになっていること
 いと考えています。もし、検出できなかった環境のことを教えても
 らえれば、milter-manager.confを編集しなくとも使用できるように
 検出方法を改良することができるかもしれません。
-
-milter-managerはmilter-managerユーザで動作させるので、
-milter-managerユーザを作成します。
-
-  % sudo /usr/sbin/pw groupadd milter-manager
-  % sudo /usr/sbin/pw useradd milter-manager -g milter-manager -G mail
 
 FreeBSD上ではデフォルトでは
 /var/run/milter-manager/milter-manager.sockというソケットファ
