@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -397,7 +397,9 @@ decode_define_macro (MilterDecoder *decoder, GError **error)
     if (!macros)
         return FALSE;
 
-    milter_debug("[command-decoder][define-macro] <%c>", context);
+    milter_debug("[%u] [command-decoder][define-macro] <%c>",
+                 milter_decoder_get_tag(decoder),
+                 context);
 
     g_signal_emit(decoder, signals[DEFINE_MACRO], 0, context, macros);
     g_hash_table_unref(macros);
@@ -616,7 +618,9 @@ decode_connect (MilterDecoder *decoder, GError **error)
                                 &host_name, &address, &length, error))
         return FALSE;
 
-    milter_debug("[command-decoder][connect] <%s>", host_name);
+    milter_debug("[%u] [command-decoder][connect] <%s>",
+                 milter_decoder_get_tag(decoder),
+                 host_name);
 
     g_signal_emit(decoder, signals[CONNECT], 0, host_name, address, length);
     g_free(host_name);
@@ -642,7 +646,9 @@ decode_helo (MilterDecoder *decoder, GError **error)
     if (null_character_point <= 0)
         return FALSE;
 
-    milter_debug("[command-decoder][helo] <%s>", buffer + 1);
+    milter_debug("[%u] [command-decoder][helo] <%s>",
+                 milter_decoder_get_tag(decoder),
+                 buffer + 1);
 
     g_signal_emit(decoder, signals[HELO], 0, buffer + 1);
 
@@ -666,7 +672,9 @@ decode_envelope_from (MilterDecoder *decoder, GError **error)
     if (null_character_point <= 0)
         return FALSE;
 
-    milter_debug("[command-decoder][envelope-from] <%s>", buffer + 1);
+    milter_debug("[%u] [command-decoder][envelope-from] <%s>",
+                 milter_decoder_get_tag(decoder),
+                 buffer + 1);
 
     g_signal_emit(decoder, signals[ENVELOPE_FROM], 0, buffer + 1);
 
@@ -690,7 +698,9 @@ decode_envelope_recipient (MilterDecoder *decoder, GError **error)
     if (null_character_point <= 0)
         return FALSE;
 
-    milter_debug("[command-decoder][envelope-recipient] <%s>", buffer + 1);
+    milter_debug("[%u] [command-decoder][envelope-recipient] <%s>",
+                 milter_decoder_get_tag(decoder),
+                 buffer + 1);
 
     g_signal_emit(decoder, signals[ENVELOPE_RECIPIENT], 0, buffer + 1);
     return TRUE;
@@ -711,7 +721,8 @@ decode_data (MilterDecoder *decoder, GError **error)
             "DATA command"))
         return FALSE;
 
-    milter_debug("[command-decoder][data]");
+    milter_debug("[%u] [command-decoder][data]",
+                 milter_decoder_get_tag(decoder));
 
     g_signal_emit(decoder, signals[DATA], 0);
 
@@ -736,7 +747,9 @@ decode_header (MilterDecoder *decoder, GError **error)
     if (!decoded)
         return FALSE;
 
-    milter_debug("[command-decoder][header] <%s>=<%s>", name, value);
+    milter_debug("[%u] [command-decoder][header] <%s>=<%s>",
+                 milter_decoder_get_tag(decoder),
+                 name, value);
 
     g_signal_emit(decoder, signals[HEADER], 0, name, value);
 
@@ -758,7 +771,8 @@ decode_end_of_header (MilterDecoder *decoder, GError **error)
             "END OF HEADER command"))
         return FALSE;
 
-    milter_debug("[command-decoder][end-of-header]");
+    milter_debug("[%u] [command-decoder][end-of-header]",
+                 milter_decoder_get_tag(decoder));
 
     g_signal_emit(decoder, signals[END_OF_HEADER], 0);
 
@@ -774,7 +788,9 @@ decode_body (MilterDecoder *decoder, GError **error)
     command_length = milter_decoder_get_command_length(decoder);
     buffer = milter_decoder_get_buffer(decoder);
 
-    milter_debug("[command-decoder][body] <%d>", command_length - 1);
+    milter_debug("[%u] [command-decoder][body] <%d>",
+                 milter_decoder_get_tag(decoder),
+                 command_length - 1);
 
     g_signal_emit(decoder, signals[BODY], 0,
                   buffer + 1, command_length - 1);
@@ -798,7 +814,8 @@ decode_end_of_message (MilterDecoder *decoder, GError **error)
         chunk_size = 0;
     }
 
-    milter_debug("[command-decoder][end-of-message] <%" G_GSIZE_FORMAT ">",
+    milter_debug("[%u] [command-decoder][end-of-message] <%" G_GSIZE_FORMAT ">",
+                 milter_decoder_get_tag(decoder),
                  chunk_size);
 
     g_signal_emit(decoder, signals[END_OF_MESSAGE], 0, chunk, chunk_size);
@@ -821,7 +838,8 @@ decode_abort (MilterDecoder *decoder, GError **error)
             "ABORT command"))
         return FALSE;
 
-    milter_debug("[command-decoder][abort]");
+    milter_debug("[%u] [command-decoder][abort]",
+                 milter_decoder_get_tag(decoder));
 
     g_signal_emit(decoder, signals[ABORT], 0);
 
@@ -843,7 +861,8 @@ decode_quit (MilterDecoder *decoder, GError **error)
             "QUIT command"))
         return FALSE;
 
-    milter_debug("[command-decoder][quit]");
+    milter_debug("[%u] [command-decoder][quit]",
+                 milter_decoder_get_tag(decoder));
 
     g_signal_emit(decoder, signals[QUIT], 0);
 
@@ -867,7 +886,9 @@ decode_unknown (MilterDecoder *decoder, GError **error)
     if (null_character_point <= 0)
         return FALSE;
 
-    milter_debug("[command-decoder][unknown] <%s>", buffer + 1);
+    milter_debug("[%u] [command-decoder][unknown] <%s>",
+                 milter_decoder_get_tag(decoder),
+                 buffer + 1);
 
     g_signal_emit(decoder, signals[UNKNOWN], 0, buffer + 1);
 
@@ -900,7 +921,8 @@ decode_negotiate (MilterDecoder *decoder, GError **error)
         return FALSE;
     }
 
-    milter_debug("[command-decoder][negotiate]");
+    milter_debug("[%u] [command-decoder][negotiate]",
+                 milter_decoder_get_tag(decoder));
 
     g_signal_emit(decoder, signals[NEGOTIATE], 0, option);
     g_object_unref(option);

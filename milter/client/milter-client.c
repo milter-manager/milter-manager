@@ -427,7 +427,9 @@ cb_idle_free_data (gpointer _data)
     guint n_processing_data;
     GString *rest_process;
 
-    milter_debug("[client][finish] %p", data);
+    milter_debug("[%u] [client][finish] %p",
+                 milter_agent_get_tag(MILTER_AGENT(data->context)),
+                 data);
     data->priv->processing_data =
         g_list_remove(data->priv->processing_data, data);
     data->priv->n_processing_data--;
@@ -437,7 +439,8 @@ cb_idle_free_data (gpointer _data)
     n_processing_data = data->priv->n_processing_data;
     g_mutex_lock(data->priv->quit_mutex);
     if (data->priv->quitting && n_processing_data == 0) {
-        milter_debug("[client][loop][quit]");
+        milter_debug("[%u] [client][loop][quit]",
+                     milter_agent_get_tag(MILTER_AGENT(data->context)));
         g_main_loop_quit(data->priv->main_loop);
     }
     g_mutex_unlock(data->priv->quit_mutex);
@@ -448,7 +451,10 @@ cb_idle_free_data (gpointer _data)
     for (process_data = processing_data;
          process_data;
          process_data = g_list_next(process_data)) {
-        g_string_append_printf(rest_process, "<%p>, ", process_data->data);
+        MilterClientProcessData *_process_data = process_data->data;
+        g_string_append_printf(
+            rest_process, "<%u>, ",
+            milter_agent_get_tag(MILTER_AGENT(_process_data->context)));
     }
     if (processing_data)
         g_string_truncate(rest_process, rest_process->len - 2);
@@ -504,7 +510,8 @@ cb_timeout_client_channel_setup (gpointer user_data)
     data->client = client;
     data->context = context;
 
-    milter_debug("[client][start] %p", data);
+    milter_debug("[%u] [client][start]",
+                 milter_agent_get_tag(MILTER_AGENT(data->context)));
 
     g_signal_connect(context, "finished", G_CALLBACK(cb_finished), data);
 

@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -1569,6 +1569,7 @@ void
 test_no_negotiation (void)
 {
     MilterLogger *logger;
+    MilterManagerChild *child10026, *child10027;
 
     logger = milter_logger();
     log_signal_id = g_signal_connect(logger, "log", G_CALLBACK(cb_log), NULL);
@@ -1581,17 +1582,27 @@ test_no_negotiation (void)
     add_child("milter@10026", "inet:10026@localhost");
     add_child("milter@10027", "inet:10027@localhost");
 
+    child10026 = milter_manager_children_get_children(children)->data;
+    child10027 = milter_manager_children_get_children(children)->next->data;
+
     cut_assert_true(milter_manager_children_negotiate(children, option, NULL));
     g_main_context_iteration(NULL, FALSE);
-    cut_assert_equal_string("[children][error][connection] "
-                            "Failed to connect to inet:10026@localhost: "
-                            "Connection refused: milter@10026\n"
-                            "[children][error][connection] "
-                            "Failed to connect to inet:10027@localhost: "
-                            "Connection refused: milter@10027\n"
-                            "[children][error][negotiate][no-response] "
-                            "milter@10027\n",
-                            error_message->str);
+    cut_assert_equal_string(
+        cut_take_printf("[%u] [children][error][connection] [%u] "
+                        "Failed to connect to inet:10026@localhost: "
+                        "Connection refused: milter@10026\n"
+                        "[%u] [children][error][connection] [%u] "
+                        "Failed to connect to inet:10027@localhost: "
+                        "Connection refused: milter@10027\n"
+                        "[%u] [children][error][negotiate][no-response] [%u] "
+                        "milter@10027\n",
+                        milter_manager_children_get_tag(children),
+                        milter_agent_get_tag(MILTER_AGENT(child10026)),
+                        milter_manager_children_get_tag(children),
+                        milter_agent_get_tag(MILTER_AGENT(child10027)),
+                        milter_manager_children_get_tag(children),
+                        milter_agent_get_tag(MILTER_AGENT(child10027))),
+        error_message->str);
 }
 
 static void
@@ -1628,6 +1639,7 @@ void
 test_end_of_message_timeout (void)
 {
     MilterLogger *logger;
+    MilterManagerChild *child;
 
     arguments_append(arguments1,
                      "--action", "no_response",
@@ -1640,16 +1652,20 @@ test_end_of_message_timeout (void)
     logger = milter_logger();
     log_signal_id = g_signal_connect(logger, "log", G_CALLBACK(cb_log), NULL);
 
-    prepare_timeout_test(milter_manager_children_get_children(children)->data,
-                         NULL);
+    child = milter_manager_children_get_children(children)->data;
+    prepare_timeout_test(child, NULL);
 
     milter_manager_children_end_of_message(children, "end", strlen("end"));
 
     wait_reply(7, n_continue_emitted);
     wait_reply(1, n_end_of_message_timeout_emitted);
 
-    cut_assert_equal_string("[children][timeout][end-of-message] milter@10026\n",
-                            error_message->str);
+    cut_assert_equal_string(
+        cut_take_printf("[%u] [children][timeout][end-of-message] [%u] "
+                        "milter@10026\n",
+                        milter_manager_children_get_tag(children),
+                        milter_agent_get_tag(MILTER_AGENT(child))),
+        error_message->str);
 }
 
 void
@@ -1693,8 +1709,11 @@ test_writing_timeout (void)
     wait_reply(1, n_writing_timeout_emitted);
     wait_reply(1, n_continue_emitted);
 
-    cut_assert_equal_string("[children][timeout][writing] milter@10027\n",
-                            error_message->str);
+    cut_assert_equal_string(
+        cut_take_printf("[%u] [children][timeout][writing] [%u] milter@10027\n",
+                        milter_manager_children_get_tag(children),
+                        milter_agent_get_tag(MILTER_AGENT(child))),
+        error_message->str);
 }
 
 void
@@ -1704,6 +1723,7 @@ test_reading_timeout (void)
     const gchar host_name[] = "mx.local.net";
     const gchar ip_address[] = "192.168.123.123";
     MilterLogger *logger;
+    MilterManagerChild *child;
 
     arguments_append(arguments2,
                      "--action", "no_response",
@@ -1716,8 +1736,8 @@ test_reading_timeout (void)
     logger = milter_logger();
     log_signal_id = g_signal_connect(logger, "log", G_CALLBACK(cb_log), NULL);
 
-    prepare_timeout_test(milter_manager_children_get_children(children)->next->data,
-                         NULL);
+    child = milter_manager_children_get_children(children)->next->data;
+    prepare_timeout_test(child, NULL);
 
     address.sin_family = AF_INET;
     address.sin_port = g_htons(50443);
@@ -1731,8 +1751,11 @@ test_reading_timeout (void)
     wait_reply(1, n_continue_emitted);
     wait_reply(1, n_reading_timeout_emitted);
 
-    cut_assert_equal_string("[children][timeout][reading] milter@10027\n",
-                            error_message->str);
+    cut_assert_equal_string(
+        cut_take_printf("[%u] [children][timeout][reading] [%u] milter@10027\n",
+                        milter_manager_children_get_tag(children),
+                        milter_agent_get_tag(MILTER_AGENT(child))),
+        error_message->str);
 }
 
 /*

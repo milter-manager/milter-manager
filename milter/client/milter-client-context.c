@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -2173,7 +2173,9 @@ milter_client_context_quarantine (MilterClientContext *context,
     gchar *packet = NULL;
     gsize packet_size;
 
-    milter_debug("[client][reply][quarantine] <%s>", reason);
+    milter_debug("[%u] [client][reply][quarantine] <%s>",
+                 milter_agent_get_tag(MILTER_AGENT(context)),
+                 reason);
 
     /* quarantine allows only on end-of-message. */
     milter_statistics("[reply][end-of-message][quarantine]");
@@ -2376,6 +2378,9 @@ negotiate_response (MilterClientContext *context,
     }
 
     status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
+    milter_debug("[%u] [client][reply][negotiate][%s]",
+                 milter_agent_get_tag(MILTER_AGENT(context)),
+                 status_name);
     milter_statistics("[reply][negotiate][%s]", status_name);
     g_free(status_name);
 }
@@ -2395,6 +2400,9 @@ connect_response (MilterClientContext *context, MilterStatus status)
 
     reply(context, status);
     status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
+    milter_debug("[%u] [client][reply][connect][%s]",
+                 milter_agent_get_tag(MILTER_AGENT(context)),
+                 status_name);
     milter_statistics("[reply][connect][%s]", status_name);
     g_free(status_name);
 }
@@ -2414,6 +2422,9 @@ helo_response (MilterClientContext *context, MilterStatus status)
 
     reply(context, status);
     status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
+    milter_debug("[%u] [client][reply][helo][%s]",
+                 milter_agent_get_tag(MILTER_AGENT(context)),
+                 status_name);
     milter_statistics("[reply][helo][%s]", status_name);
     g_free(status_name);
 }
@@ -2434,6 +2445,9 @@ envelope_from_response (MilterClientContext *context, MilterStatus status)
     reply(context, status);
 
     status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
+    milter_debug("[%u] [client][reply][envelope-from][%s]",
+                 milter_agent_get_tag(MILTER_AGENT(context)),
+                 status_name);
     milter_statistics("[reply][envelope-from][%s]", status_name);
     g_free(status_name);
 }
@@ -2453,6 +2467,9 @@ envelope_recipient_response (MilterClientContext *context, MilterStatus status)
 
     reply(context, status);
     status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
+    milter_debug("[%u] [client][reply][envelope-recipient][%s]",
+                 milter_agent_get_tag(MILTER_AGENT(context)),
+                 status_name);
     milter_statistics("[reply][envelope-recipient][%s]", status_name);
     g_free(status_name);
 }
@@ -2472,6 +2489,9 @@ unknown_response (MilterClientContext *context, MilterStatus status)
 
     reply(context, status);
     status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
+    milter_debug("[%u] [client][reply][unknown][%s]",
+                 milter_agent_get_tag(MILTER_AGENT(context)),
+                 status_name);
     milter_statistics("[reply][unknown][%s]", status_name);
     g_free(status_name);
 }
@@ -2491,6 +2511,9 @@ data_response (MilterClientContext *context, MilterStatus status)
 
     reply(context, status);
     status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
+    milter_debug("[%u] [client][reply][data][%s]",
+                 milter_agent_get_tag(MILTER_AGENT(context)),
+                 status_name);
     milter_statistics("[reply][data][%s]", status_name);
     g_free(status_name);
 }
@@ -2510,6 +2533,9 @@ header_response (MilterClientContext *context, MilterStatus status)
 
     reply(context, status);
     status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
+    milter_debug("[%u] [client][reply][header][%s]",
+                 milter_agent_get_tag(MILTER_AGENT(context)),
+                 status_name);
     milter_statistics("[reply][header][%s]", status_name);
     g_free(status_name);
 }
@@ -2529,6 +2555,9 @@ end_of_header_response (MilterClientContext *context, MilterStatus status)
 
     reply(context, status);
     status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
+    milter_debug("[%u] [client][reply][end-of-header][%s]",
+                 milter_agent_get_tag(MILTER_AGENT(context)),
+                 status_name);
     milter_statistics("[reply][end-of-header][%s]", status_name);
     g_free(status_name);
 }
@@ -2567,6 +2596,9 @@ end_of_message_response (MilterClientContext *context, MilterStatus status)
 
     reply(context, status);
     status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
+    milter_debug("[%u] [client][reply][end-of-message][%s]",
+                 milter_agent_get_tag(MILTER_AGENT(context)),
+                 status_name);
     milter_statistics("[reply][end-of-message][%s]", status_name);
     g_free(status_name);
 }

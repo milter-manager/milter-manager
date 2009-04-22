@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -137,7 +137,8 @@ decode_reply_continue (MilterDecoder *decoder, GError **error)
             "CONTINUE reply"))
         return FALSE;
 
-    milter_debug("[reply-decoder][continue]");
+    milter_debug("[%u] [reply-decoder][continue]",
+                 milter_decoder_get_tag(decoder));
 
     g_signal_emit_by_name(decoder, "continue");
 
@@ -221,7 +222,8 @@ decode_reply_reply_code (MilterDecoder *decoder, GError **error)
         message = g_strdup(buffer + space_character_point + 1);
     }
 
-    milter_debug("[reply-decoder][reply-code] <%u %s %s>",
+    milter_debug("[%u] [reply-decoder][reply-code] <%u %s %s>",
+                 milter_decoder_get_tag(decoder),
                  reply_code, extended_code, message);
 
     g_signal_emit_by_name(decoder, "reply-code",
@@ -250,7 +252,8 @@ decode_reply_temporary_failure (MilterDecoder *decoder, GError **error)
             "TEMPORARY FAILURE reply"))
         return FALSE;
 
-    milter_debug("[reply-decoder][temporary-failure]");
+    milter_debug("[%u] [reply-decoder][temporary-failure]",
+                 milter_decoder_get_tag(decoder));
 
     g_signal_emit_by_name(decoder, "temporary-failure");
 
@@ -272,7 +275,8 @@ decode_reply_reject (MilterDecoder *decoder, GError **error)
             "REJECT reply"))
         return FALSE;
 
-    milter_debug("[reply-decoder][reject]");
+    milter_debug("[%u] [reply-decoder][reject]",
+                 milter_decoder_get_tag(decoder));
 
     g_signal_emit_by_name(decoder, "reject");
 
@@ -294,7 +298,8 @@ decode_reply_accept (MilterDecoder *decoder, GError **error)
             "ACCEPT reply"))
         return FALSE;
 
-    milter_debug("[reply-decoder][accept]");
+    milter_debug("[%u] [reply-decoder][accept]",
+                 milter_decoder_get_tag(decoder));
 
     g_signal_emit_by_name(decoder, "accept");
 
@@ -316,7 +321,8 @@ decode_reply_discard (MilterDecoder *decoder, GError **error)
             "DISCARD reply"))
         return FALSE;
 
-    milter_debug("[reply-decoder][discard]");
+    milter_debug("[%u] [reply-decoder][discard]",
+                 milter_decoder_get_tag(decoder));
 
     g_signal_emit_by_name(decoder, "discard");
 
@@ -340,7 +346,9 @@ decode_reply_add_header (MilterDecoder *decoder, GError **error)
     if (!decoded)
         return FALSE;
 
-    milter_debug("[reply-decoder][add-header] <%s>=<%s>", name, value);
+    milter_debug("[%u] [reply-decoder][add-header] <%s>=<%s>",
+                 milter_decoder_get_tag(decoder),
+                 name, value);
 
     g_signal_emit_by_name(decoder, "add-header", name, value);
 
@@ -415,7 +423,8 @@ decode_reply_insert_header (MilterDecoder *decoder, GError **error)
     if (!decoded)
         return FALSE;
 
-    milter_debug("[reply-decoder][insert-header] [%d]<%s>=<%s>",
+    milter_debug("[%u] [reply-decoder][insert-header] [%d]<%s>=<%s>",
+                 milter_decoder_get_tag(decoder),
                  index, name, value);
 
     g_signal_emit_by_name(decoder, "insert-header", index, name, value);
@@ -441,11 +450,14 @@ decode_reply_change_header (MilterDecoder *decoder, GError **error)
         return FALSE;
 
     if (value) {
-        milter_debug("[reply-decoder][change-header] <%s>[%i]=<%s>",
+        milter_debug("[%u] [reply-decoder][change-header] <%s>[%i]=<%s>",
+                     milter_decoder_get_tag(decoder),
                      name, index, value);
         g_signal_emit_by_name(decoder, "change-header", name, index, value);
     } else {
-        milter_debug("[reply-decoder][delete-header] <%s>[%i]", name, index);
+        milter_debug("[%u] [reply-decoder][delete-header] <%s>[%i]",
+                     milter_decoder_get_tag(decoder),
+                     name, index);
         g_signal_emit_by_name(decoder, "delete-header", name, index);
     }
 
@@ -517,7 +529,8 @@ decode_reply_change_from (MilterDecoder *decoder, GError **error)
     if (!decoded)
         return FALSE;
 
-    milter_debug("[reply-decoder][change-from] <%s>:<%s>",
+    milter_debug("[%u] [reply-decoder][change-from] <%s>:<%s>",
+                 milter_decoder_get_tag(decoder),
                  from, parameters ? parameters : "NULL");
 
     g_signal_emit_by_name(decoder, "change-from", from, parameters);
@@ -540,7 +553,9 @@ decode_reply_add_recipient (MilterDecoder *decoder, GError **error)
             buffer + 1, command_length - 1, error,
             "Recipient isn't terminated by NULL on ADD RECIPIENT reply");
 
-    milter_debug("[reply-decoder][add-recipient] <%s>", buffer + 1);
+    milter_debug("[%u] [reply-decoder][add-recipient] <%s>",
+                 milter_decoder_get_tag(decoder),
+                 buffer + 1);
 
     g_signal_emit_by_name(decoder, "add-recipient", buffer + 1, NULL);
 
@@ -567,7 +582,8 @@ decode_reply_add_recipient_with_parameters (MilterDecoder *decoder, GError **err
     if (!decoded)
         return FALSE;
 
-    milter_debug("[reply-decoder][add-recipient-with-parameters] <%s>:<%s>",
+    milter_debug("[%u] [reply-decoder][add-recipient-with-parameters] <%s>:<%s>",
+                 milter_decoder_get_tag(decoder),
                  recipient,
                  parameters ? parameters : "NULL");
 
@@ -593,7 +609,9 @@ decode_reply_delete_recipient (MilterDecoder *decoder, GError **error)
     if (null_character_point <= 0)
         return FALSE;
 
-    milter_debug("[reply-decoder][delete-recipient] <%s>", buffer + 1);
+    milter_debug("[%u] [reply-decoder][delete-recipient] <%s>",
+                 milter_decoder_get_tag(decoder),
+                 buffer + 1);
 
     g_signal_emit_by_name(decoder, "delete-recipient", buffer + 1);
 
@@ -609,7 +627,9 @@ decode_reply_replace_body (MilterDecoder *decoder, GError **error)
     command_length = milter_decoder_get_command_length(decoder);
     buffer = milter_decoder_get_buffer(decoder);
 
-    milter_debug("[reply-decoder][replace-body] <%d>", command_length);
+    milter_debug("[%u] [reply-decoder][replace-body] <%d>",
+                 milter_decoder_get_tag(decoder),
+                 command_length);
 
     g_signal_emit_by_name(decoder, "replace-body",
                   buffer + 1, command_length - 1);
@@ -632,7 +652,8 @@ decode_reply_progress (MilterDecoder *decoder, GError **error)
             "PROGRESS reply"))
         return FALSE;
 
-    milter_debug("[reply-decoder][progress]");
+    milter_debug("[%u] [reply-decoder][progress]",
+                 milter_decoder_get_tag(decoder));
 
     g_signal_emit_by_name(decoder, "progress");
 
@@ -656,7 +677,9 @@ decode_reply_quarantine (MilterDecoder *decoder, GError **error)
     if (null_character_point <= 0)
         return FALSE;
 
-    milter_debug("[reply-decoder][quarantine] <%s>", buffer + 1);
+    milter_debug("[%u] [reply-decoder][quarantine] <%s>",
+                 milter_decoder_get_tag(decoder),
+                 buffer + 1);
 
     g_signal_emit_by_name(decoder, "quarantine", buffer + 1);
 
@@ -678,7 +701,8 @@ decode_reply_connection_failure (MilterDecoder *decoder, GError **error)
             "CONNECTION FAILURE reply"))
         return FALSE;
 
-    milter_debug("[reply-decoder][connection-failure]");
+    milter_debug("[%u] [reply-decoder][connection-failure]",
+                 milter_decoder_get_tag(decoder));
 
     g_signal_emit_by_name(decoder, "connection-failure");
 
@@ -700,7 +724,8 @@ decode_reply_shutdown (MilterDecoder *decoder, GError **error)
             "SHUTDOWN reply"))
         return FALSE;
 
-    milter_debug("[reply-decoder][shutdown]");
+    milter_debug("[%u] [reply-decoder][shutdown]",
+                 milter_decoder_get_tag(decoder));
 
     g_signal_emit_by_name(decoder, "shutdown");
 
@@ -722,7 +747,8 @@ decode_reply_skip (MilterDecoder *decoder, GError **error)
             "SKIP reply"))
         return FALSE;
 
-    milter_debug("[reply-decoder][skip]");
+    milter_debug("[%u] [reply-decoder][skip]",
+                 milter_decoder_get_tag(decoder));
 
     g_signal_emit_by_name(decoder, "skip");
 
@@ -833,7 +859,8 @@ decode_reply_negotiate (MilterDecoder *decoder, GError **error)
         return FALSE;
     }
 
-    milter_debug("[reply-decoder][negotiate]");
+    milter_debug("[%u] [reply-decoder][negotiate]",
+                 milter_decoder_get_tag(decoder));
 
     g_signal_emit_by_name(decoder, "negotiate-reply", option, macros_requests);
     g_object_unref(option);

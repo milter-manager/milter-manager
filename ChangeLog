@@ -1,3 +1,7 @@
+2009-04-23  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/: add tag into log message.
+
 2009-04-22  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/client/milter-client-context.c: fix typos in statistics log

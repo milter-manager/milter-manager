@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -588,13 +588,23 @@ cb_quarantine (MilterReplySignals *_reply,
 static void
 cb_connection_failure (MilterReplySignals *_reply, gpointer user_data)
 {
-    milter_debug("[leader][unsupported][connection-failure]");
+    MilterManagerLeader *leader = user_data;
+    MilterManagerLeaderPrivate *priv;
+
+    priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
+    milter_debug("[%u] [leader][unsupported][connection-failure]",
+                 milter_agent_get_tag(MILTER_AGENT(priv->client_context)));
 }
 
 static void
 cb_shutdown (MilterReplySignals *_reply, gpointer user_data)
 {
-    milter_debug("[leader][unsupported][shutdown]");
+    MilterManagerLeader *leader = user_data;
+    MilterManagerLeaderPrivate *priv;
+
+    priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
+    milter_debug("[%u] [leader][unsupported][shutdown]",
+                 milter_agent_get_tag(MILTER_AGENT(priv->client_context)));
 }
 
 static void
@@ -616,6 +626,9 @@ cb_abort (MilterReplySignals *_reply, gpointer user_data)
     state_name =
         milter_utils_get_enum_nick_name(MILTER_TYPE_MANAGER_LEADER_STATE,
                                         priv->state);
+    milter_debug("[%u] [leader][abort][%s]",
+                 milter_agent_get_tag(MILTER_AGENT(priv->client_context)),
+                 state_name);
     milter_statistics("[abort][%s]", state_name);
     milter_agent_shutdown(MILTER_AGENT(priv->client_context));
     milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(leader));
@@ -625,8 +638,12 @@ static void
 cb_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
 {
     MilterManagerLeader *leader = user_data;
+    MilterManagerLeaderPrivate *priv;
 
-    milter_error("[leader][error] %s", error->message);
+    priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
+    milter_error("[%u] [leader][error] %s",
+                 milter_agent_get_tag(MILTER_AGENT(priv->client_context)),
+                 error->message);
     milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(leader),
                                 error);
 

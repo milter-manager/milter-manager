@@ -293,7 +293,8 @@ cb_reader_flow (MilterReader *reader,
                                               MILTER_AGENT_ERROR_DECODE_ERROR,
                                               decoder_error,
                                               "Decode error");
-        milter_error("[agent][error][decode] %s", error->message);
+        milter_error("[%u] [agent][error][decode] %s",
+                     priv->tag, error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(user_data),
                                     error);
         g_error_free(error);
@@ -306,13 +307,16 @@ cb_reader_error (MilterReader *reader,
                  gpointer user_data)
 {
     GError *error = NULL;
+    MilterAgent *agent = user_data;
+    MilterAgentPrivate *priv;
 
+    priv = MILTER_AGENT_GET_PRIVATE(agent);
     milter_utils_set_error_with_sub_error(&error,
                                           MILTER_AGENT_ERROR,
                                           MILTER_AGENT_ERROR_IO_ERROR,
                                           g_error_copy(reader_error),
                                           "Input error");
-    milter_error("[agent][error][reader] %s", error->message);
+    milter_error("[%u] [agent][error][reader] %s", priv->tag, error->message);
     milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(user_data),
                                 error);
     g_error_free(error);
@@ -338,6 +342,8 @@ milter_agent_set_reader (MilterAgent *agent, MilterReader *reader)
     priv = MILTER_AGENT_GET_PRIVATE(agent);
 
     if (priv->reader) {
+        milter_reader_set_tag(priv->reader, 0);
+
 #define DISCONNECT(name)                                                \
         g_signal_handlers_disconnect_by_func(priv->reader,              \
                                              G_CALLBACK(cb_reader_ ## name), \
@@ -349,8 +355,6 @@ milter_agent_set_reader (MilterAgent *agent, MilterReader *reader)
 #undef DISCONNECT
 
         g_object_unref(priv->reader);
-
-        milter_reader_set_tag(priv->reader, 0);
     }
 
     priv->reader = reader;
@@ -381,13 +385,17 @@ cb_writer_error (MilterWriter *writer,
                  gpointer user_data)
 {
     GError *error = NULL;
+    MilterAgent *agent = user_data;
+    MilterAgentPrivate *priv;
 
+    priv = MILTER_AGENT_GET_PRIVATE(agent);
     milter_utils_set_error_with_sub_error(&error,
                                           MILTER_AGENT_ERROR,
                                           MILTER_AGENT_ERROR_IO_ERROR,
                                           g_error_copy(writer_error),
                                           "Output error");
-    milter_error("[agent][error][writer] %s", error->message);
+    milter_error("[%u] [agent][error][writer] %s",
+                 priv->tag, error->message);
     milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(user_data),
                                 error);
     g_error_free(error);
@@ -444,6 +452,8 @@ milter_agent_set_writer (MilterAgent *agent, MilterWriter *writer)
     priv = MILTER_AGENT_GET_PRIVATE(agent);
 
     if (priv->writer) {
+        milter_writer_set_tag(priv->writer, 0);
+
 #define DISCONNECT(name)                                                \
         g_signal_handlers_disconnect_by_func(priv->writer,              \
                                              G_CALLBACK(cb_writer_ ## name), \
@@ -453,8 +463,6 @@ milter_agent_set_writer (MilterAgent *agent, MilterWriter *writer)
 #undef DISCONNECT
 
         g_object_unref(priv->writer);
-
-        milter_writer_set_tag(priv->writer, 0);
     }
 
     priv->writer = writer;

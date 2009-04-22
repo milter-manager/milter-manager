@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -129,6 +129,11 @@ void                   milter_manager_children_set_launcher_channel
                                                            (MilterManagerChildren *children,
                                                             GIOChannel *read_channel,
                                                             GIOChannel *write_channel);
+
+guint                  milter_manager_children_get_tag     (MilterManagerChildren *children);
+void                   milter_manager_children_set_tag     (MilterManagerChildren *children,
+                                                            guint                  tag);
+
 
 #endif /* __MILTER_MANAGER_CHILDREN_H__ */
 
