@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -33,6 +33,7 @@ void test_decode_empty_text (void);
 void test_end_decode_immediately (void);
 void test_end_decode_in_command_length_decoding (void);
 void test_end_decode_in_command_content_decoding (void);
+void test_tag (void);
 
 static MilterDecoder *decoder;
 static GString *buffer;
@@ -41,7 +42,7 @@ static GError *expected_error;
 static GError *actual_error;
 
 void
-setup (void)
+cut_setup (void)
 {
     decoder = milter_command_decoder_new();
 
@@ -52,7 +53,7 @@ setup (void)
 }
 
 void
-teardown (void)
+cut_teardown (void)
 {
     if (decoder) {
         g_object_unref(decoder);
@@ -112,6 +113,15 @@ test_end_decode_in_command_content_decoding (void)
                                  "need more 1 byte for decoding "
                                  "command content: 0x61 0x62 0x63 (abc)");
     gcut_assert_equal_error(expected_error, actual_error);
+}
+
+void
+test_tag (void)
+{
+    cut_assert_equal_uint(0, milter_decoder_get_tag(decoder));
+
+    milter_decoder_set_tag(decoder, 29);
+    cut_assert_equal_uint(29, milter_decoder_get_tag(decoder));
 }
 
 /*

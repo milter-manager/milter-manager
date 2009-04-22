@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -46,6 +46,13 @@ typedef struct _MilterEncoderPrivate	MilterEncoderPrivate;
 struct _MilterEncoderPrivate
 {
     GString *buffer;
+    guint tag;
+};
+
+enum
+{
+    PROP_0,
+    PROP_TAG
 };
 
 G_DEFINE_TYPE(MilterEncoder, milter_encoder, G_TYPE_OBJECT);
@@ -64,12 +71,20 @@ static void
 milter_encoder_class_init (MilterEncoderClass *klass)
 {
     GObjectClass *gobject_class;
+    GParamSpec *spec;
 
     gobject_class = G_OBJECT_CLASS(klass);
 
     gobject_class->dispose      = dispose;
     gobject_class->set_property = set_property;
     gobject_class->get_property = get_property;
+
+    spec = g_param_spec_uint("tag",
+                             "Tag",
+                             "The tag of the encoder",
+                             0, G_MAXUINT, 0,
+                             G_PARAM_READABLE);
+    g_object_class_install_property(gobject_class, PROP_TAG, spec);
 
     g_type_class_add_private(gobject_class, sizeof(MilterEncoderPrivate));
 }
@@ -81,6 +96,7 @@ milter_encoder_init (MilterEncoder *encoder)
 
     priv = MILTER_ENCODER_GET_PRIVATE(encoder);
     priv->buffer = g_string_new(NULL);
+    priv->tag = 0;
 }
 
 static void
@@ -107,7 +123,10 @@ set_property (GObject      *object,
 
     priv = MILTER_ENCODER_GET_PRIVATE(object);
     switch (prop_id) {
-      default:
+    case PROP_TAG:
+        milter_encoder_set_tag(MILTER_ENCODER(object), g_value_get_uint(value));
+        break;
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
@@ -123,7 +142,10 @@ get_property (GObject    *object,
 
     priv = MILTER_ENCODER_GET_PRIVATE(object);
     switch (prop_id) {
-      default:
+    case PROP_TAG:
+        g_value_set_uint(value, priv->tag);
+        break;
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
@@ -186,6 +208,17 @@ milter_encoder_encode_negotiate (MilterEncoder *encoder, MilterOption *option)
     }
 }
 
+guint
+milter_encoder_get_tag (MilterEncoder *encoder)
+{
+    return MILTER_ENCODER_GET_PRIVATE(encoder)->tag;
+}
+
+void
+milter_encoder_set_tag (MilterEncoder *encoder, guint tag)
+{
+    MILTER_ENCODER_GET_PRIVATE(encoder)->tag = tag;
+}
 
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4

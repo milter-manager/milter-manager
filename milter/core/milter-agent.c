@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -43,14 +43,19 @@ struct _MilterAgentPrivate
     MilterReader *reader;
     MilterWriter *writer;
     gboolean finished;
+    guint tag;
 };
 
 enum
 {
     PROP_0,
     PROP_READER,
-    PROP_DECODER
+    PROP_DECODER,
+    PROP_TAG
 };
+
+static GStaticMutex auto_tag_mutex = G_STATIC_MUTEX_INIT;
+static guint auto_tag = 0;
 
 static void         finished           (MilterFinishedEmittable *emittable);
 
@@ -106,6 +111,13 @@ milter_agent_class_init (MilterAgentClass *klass)
                                G_PARAM_READABLE);
     g_object_class_install_property(gobject_class, PROP_DECODER, spec);
 
+    spec = g_param_spec_uint("tag",
+                             "Tag",
+                             "The tag of the agent",
+                             0, G_MAXUINT, 0,
+                             G_PARAM_READABLE);
+    g_object_class_install_property(gobject_class, PROP_TAG, spec);
+
     g_type_class_add_private(gobject_class, sizeof(MilterAgentPrivate));
 }
 
@@ -129,6 +141,13 @@ constructor (GType type, guint n_props, GObjectConstructParam *props)
         priv->decoder = agent_class->decoder_new(agent);
     if (agent_class->encoder_new)
         priv->encoder = agent_class->encoder_new(agent);
+    if (priv->tag == 0) {
+        g_static_mutex_lock(&auto_tag_mutex);
+        priv->tag = auto_tag++;
+        if (priv->tag == 0)
+            priv->tag = auto_tag++;
+        g_static_mutex_unlock(&auto_tag_mutex);
+    }
 
     return object;
 }
@@ -143,6 +162,7 @@ milter_agent_init (MilterAgent *agent)
     priv->decoder = NULL;
     priv->writer = NULL;
     priv->reader = NULL;
+    priv->tag = 0;
     priv->finished = FALSE;
 }
 
@@ -186,10 +206,13 @@ set_property (GObject      *object,
 
     priv = MILTER_AGENT_GET_PRIVATE(object);
     switch (prop_id) {
-      case PROP_READER:
+    case PROP_READER:
         milter_agent_set_reader(MILTER_AGENT(object), g_value_get_object(value));
         break;
-      default:
+    case PROP_TAG:
+        milter_agent_set_tag(MILTER_AGENT(object), g_value_get_uint(value));
+        break;
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
@@ -210,6 +233,9 @@ get_property (GObject    *object,
         break;
     case PROP_DECODER:
         g_value_set_object(value, priv->decoder);
+        break;
+    case PROP_TAG:
+        g_value_set_uint(value, priv->tag);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -463,6 +489,21 @@ milter_agent_shutdown (MilterAgent *agent)
         if (!priv->finished)
             milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(agent));
     }
+}
+
+guint
+milter_agent_get_tag (MilterAgent *agent)
+{
+    return MILTER_AGENT_GET_PRIVATE(agent)->tag;
+}
+
+void
+milter_agent_set_tag (MilterAgent *agent, guint tag)
+{
+    MilterAgentPrivate *priv;
+
+    priv = MILTER_AGENT_GET_PRIVATE(agent);
+    priv->tag = tag;
 }
 
 /*

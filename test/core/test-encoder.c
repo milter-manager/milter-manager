@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -32,13 +32,14 @@
 
 void test_encode_negotiate (void);
 void test_encode_negotiate_null (void);
+void test_tag (void);
 
 static MilterEncoder *encoder;
 static GString *expected;
 static gchar *actual;
 
 void
-setup (void)
+cut_setup (void)
 {
     encoder = milter_encoder_new();
 
@@ -47,7 +48,7 @@ setup (void)
 }
 
 void
-teardown (void)
+cut_teardown (void)
 {
     if (encoder) {
         g_object_unref(encoder);
@@ -137,6 +138,15 @@ test_encode_negotiate_null (void)
     milter_encoder_encode_negotiate(encoder, NULL);
     milter_encoder_pack(encoder, &actual, &actual_size);
     cut_assert_equal_memory(expected->str, expected->len, actual, actual_size);
+}
+
+void
+test_tag (void)
+{
+    cut_assert_equal_uint(0, milter_encoder_get_tag(encoder));
+
+    milter_encoder_set_tag(encoder, 29);
+    cut_assert_equal_uint(29, milter_encoder_get_tag(encoder));
 }
 
 /*

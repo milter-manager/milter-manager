@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -103,6 +103,10 @@ MilterOption    *milter_decoder_decode_negotiate     (const gchar *buffer,
                                                       gint length,
                                                       gint *processed_length,
                                                       GError **error);
+
+guint            milter_decoder_get_tag              (MilterDecoder *decoder);
+void             milter_decoder_set_tag              (MilterDecoder *decoder,
+                                                      guint          tag);
 
 G_END_DECLS
 

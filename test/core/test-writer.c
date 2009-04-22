@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 20080-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -28,6 +28,7 @@
 void test_writer (void);
 void test_writer_huge_data (void);
 void test_writer_error (void);
+void test_tag (void);
 
 static MilterWriter *writer;
 
@@ -37,7 +38,7 @@ static GError *expected_error;
 static GError *actual_error;
 
 void
-setup (void)
+cut_setup (void)
 {
     writer = NULL;
 
@@ -49,7 +50,7 @@ setup (void)
 }
 
 void
-teardown (void)
+cut_teardown (void)
 {
     if (channel)
         g_io_channel_unref(channel);
@@ -149,6 +150,16 @@ test_writer_error (void)
     milter_writer_write(writer, "test-data", strlen("test-data"),
                         &written_size, &actual_error);
     gcut_assert_equal_error(expected_error, actual_error);
+}
+
+void
+test_tag (void)
+{
+    writer = milter_writer_io_channel_new(channel);
+    cut_assert_equal_uint(0, milter_writer_get_tag(writer));
+
+    milter_writer_set_tag(writer, 29);
+    cut_assert_equal_uint(29, milter_writer_get_tag(writer));
 }
 
 /*

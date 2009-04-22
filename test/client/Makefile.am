@@ -1,5 +1,6 @@
 if WITH_CUTTER
 noinst_LTLIBRARIES =			\
+	test-client-context-base.la	\
 	test-client-context-callback.la	\
 	test-client-context-data.la	\
 	test-client-context-header.la	\
@@ -30,6 +31,7 @@ LIBS =								\
 	$(top_builddir)/test/lib/libmilter-test.la		\
 	$(GCUTTER_LIBS)
 
+test_client_context_base_la_SOURCES = test-client-context-base.c
 test_client_context_callback_la_SOURCES = test-client-context-callback.c
 test_client_context_data_la_SOURCES = test-client-context-data.c
 test_client_context_header_la_SOURCES = test-client-context-header.c

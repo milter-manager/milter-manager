@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -47,6 +47,13 @@ struct _MilterDecoderPrivate
     gint state;
     GString *buffer;
     gint32 command_length;
+    guint tag;
+};
+
+enum
+{
+    PROP_0,
+    PROP_TAG
 };
 
 typedef enum {
@@ -80,12 +87,20 @@ static void
 milter_decoder_class_init (MilterDecoderClass *klass)
 {
     GObjectClass *gobject_class;
+    GParamSpec *spec;
 
     gobject_class = G_OBJECT_CLASS(klass);
 
     gobject_class->dispose      = dispose;
     gobject_class->set_property = set_property;
     gobject_class->get_property = get_property;
+
+    spec = g_param_spec_uint("tag",
+                             "Tag",
+                             "The tag of the decoder",
+                             0, G_MAXUINT, 0,
+                             G_PARAM_READABLE);
+    g_object_class_install_property(gobject_class, PROP_TAG, spec);
 
     signals[DECODE] =
         g_signal_new("decode",
@@ -106,6 +121,7 @@ milter_decoder_init (MilterDecoder *decoder)
 
     priv->state = IN_START;
     priv->buffer = g_string_new(NULL);
+    priv->tag = 0;
 }
 
 static void
@@ -132,7 +148,10 @@ set_property (GObject      *object,
 
     priv = MILTER_DECODER_GET_PRIVATE(object);
     switch (prop_id) {
-      default:
+    case PROP_TAG:
+        milter_decoder_set_tag(MILTER_DECODER(object), g_value_get_uint(value));
+        break;
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
@@ -148,7 +167,10 @@ get_property (GObject    *object,
 
     priv = MILTER_DECODER_GET_PRIVATE(object);
     switch (prop_id) {
-      default:
+    case PROP_TAG:
+        g_value_set_uint(value, priv->tag);
+        break;
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
@@ -489,6 +511,18 @@ milter_decoder_decode_negotiate (const gchar *buffer,
     *processed_length = i;
 
     return milter_option_new(g_ntohl(version), g_ntohl(action), g_ntohl(step));
+}
+
+guint
+milter_decoder_get_tag (MilterDecoder *decoder)
+{
+    return MILTER_DECODER_GET_PRIVATE(decoder)->tag;
+}
+
+void
+milter_decoder_set_tag (MilterDecoder *decoder, guint tag)
+{
+    MILTER_DECODER_GET_PRIVATE(decoder)->tag = tag;
 }
 
 /*

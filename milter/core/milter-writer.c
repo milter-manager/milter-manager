@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -40,12 +40,14 @@ struct _MilterWriterPrivate
 {
     GIOChannel *io_channel;
     guint channel_watch_id;
+    guint tag;
 };
 
 enum
 {
     PROP_0,
-    PROP_IO_CHANNEL
+    PROP_IO_CHANNEL,
+    PROP_TAG
 };
 
 MILTER_IMPLEMENT_ERROR_EMITTABLE(error_emittable_init);
@@ -84,6 +86,13 @@ milter_writer_class_init (MilterWriterClass *klass)
                                 G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
     g_object_class_install_property(gobject_class, PROP_IO_CHANNEL, spec);
 
+    spec = g_param_spec_uint("tag",
+                             "Tag",
+                             "The tag of the reader",
+                             0, G_MAXUINT, 0,
+                             G_PARAM_READABLE);
+    g_object_class_install_property(gobject_class, PROP_TAG, spec);
+
     g_type_class_add_private(gobject_class, sizeof(MilterWriterPrivate));
 }
 
@@ -95,6 +104,7 @@ milter_writer_init (MilterWriter *writer)
     priv = MILTER_WRITER_GET_PRIVATE(writer);
     priv->io_channel = NULL;
     priv->channel_watch_id = 0;
+    priv->tag = 0;
 }
 
 static void
@@ -127,12 +137,15 @@ set_property (GObject      *object,
 
     priv = MILTER_WRITER_GET_PRIVATE(object);
     switch (prop_id) {
-      case PROP_IO_CHANNEL:
+    case PROP_IO_CHANNEL:
         priv->io_channel = g_value_get_pointer(value);
         if (priv->io_channel)
             g_io_channel_ref(priv->io_channel);
         break;
-      default:
+    case PROP_TAG:
+        milter_writer_set_tag(MILTER_WRITER(object), g_value_get_uint(value));
+        break;
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
@@ -148,10 +161,13 @@ get_property (GObject    *object,
 
     priv = MILTER_WRITER_GET_PRIVATE(object);
     switch (prop_id) {
-      case PROP_IO_CHANNEL:
+    case PROP_IO_CHANNEL:
         g_value_set_pointer(value, priv->io_channel);
         break;
-      default:
+    case PROP_TAG:
+        g_value_set_uint(value, priv->tag);
+        break;
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
@@ -342,6 +358,21 @@ milter_writer_shutdown (MilterWriter *writer)
         g_source_remove(priv->channel_watch_id);
         priv->channel_watch_id = 0;
     }
+}
+
+guint
+milter_writer_get_tag (MilterWriter *writer)
+{
+    return MILTER_WRITER_GET_PRIVATE(writer)->tag;
+}
+
+void
+milter_writer_set_tag (MilterWriter *writer, guint tag)
+{
+    MilterWriterPrivate *priv;
+
+    priv = MILTER_WRITER_GET_PRIVATE(writer);
+    priv->tag = tag;
 }
 
 /*

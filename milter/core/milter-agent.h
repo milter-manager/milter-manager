@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -84,6 +84,10 @@ gboolean             milter_agent_flush             (MilterAgent *agent,
 
 void                 milter_agent_start             (MilterAgent *agent);
 void                 milter_agent_shutdown          (MilterAgent *agent);
+
+guint                milter_agent_get_tag           (MilterAgent *agent);
+void                 milter_agent_set_tag           (MilterAgent *agent,
+                                                     guint        tag);
 
 G_END_DECLS
 

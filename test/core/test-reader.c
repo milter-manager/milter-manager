@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -34,6 +34,7 @@ void test_reader_huge_data (void);
 void test_io_error (void);
 void test_finished_signal (void);
 void test_shutdown (void);
+void test_tag (void);
 
 static MilterReader *reader;
 
@@ -51,7 +52,7 @@ static GError *expected_error;
 static gboolean finished;
 
 void
-setup (void)
+cut_setup (void)
 {
     signal_id = 0;
     finished_signal_id = 0;
@@ -72,7 +73,7 @@ setup (void)
 }
 
 void
-teardown (void)
+cut_teardown (void)
 {
     if (reader) {
         if (signal_id > 0)
@@ -212,6 +213,16 @@ test_shutdown (void)
     cut_assert_true(milter_reader_is_watching(reader));
     g_main_context_iteration(NULL, FALSE);
     cut_assert_false(milter_reader_is_watching(reader));
+}
+
+void
+test_tag (void)
+{
+    reader = milter_reader_io_channel_new(channel);
+    cut_assert_equal_uint(0, milter_reader_get_tag(reader));
+
+    milter_reader_set_tag(reader, 29);
+    cut_assert_equal_uint(29, milter_reader_get_tag(reader));
 }
 
 /*
