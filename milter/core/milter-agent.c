@@ -121,6 +121,19 @@ milter_agent_class_init (MilterAgentClass *klass)
     g_type_class_add_private(gobject_class, sizeof(MilterAgentPrivate));
 }
 
+static void
+apply_tag (MilterAgentPrivate *priv)
+{
+    if (priv->encoder)
+        milter_encoder_set_tag(priv->encoder, priv->tag);
+    if (priv->decoder)
+        milter_decoder_set_tag(priv->decoder, priv->tag);
+    if (priv->writer)
+        milter_writer_set_tag(priv->writer, priv->tag);
+    if (priv->reader)
+        milter_reader_set_tag(priv->reader, priv->tag);
+}
+
 static GObject *
 constructor (GType type, guint n_props, GObjectConstructParam *props)
 {
@@ -148,6 +161,7 @@ constructor (GType type, guint n_props, GObjectConstructParam *props)
             priv->tag = auto_tag++;
         g_static_mutex_unlock(&auto_tag_mutex);
     }
+    apply_tag(priv);
 
     return object;
 }
@@ -335,6 +349,8 @@ milter_agent_set_reader (MilterAgent *agent, MilterReader *reader)
 #undef DISCONNECT
 
         g_object_unref(priv->reader);
+
+        milter_reader_set_tag(priv->reader, 0);
     }
 
     priv->reader = reader;
@@ -348,6 +364,8 @@ milter_agent_set_reader (MilterAgent *agent, MilterReader *reader)
         CONNECT(error);
         CONNECT(finished);
 #undef CONNECT
+
+        milter_reader_set_tag(priv->reader, priv->tag);
     }
 }
 
@@ -435,6 +453,8 @@ milter_agent_set_writer (MilterAgent *agent, MilterWriter *writer)
 #undef DISCONNECT
 
         g_object_unref(priv->writer);
+
+        milter_writer_set_tag(priv->writer, 0);
     }
 
     priv->writer = writer;
@@ -448,6 +468,8 @@ milter_agent_set_writer (MilterAgent *agent, MilterWriter *writer)
         CONNECT(error);
         CONNECT(finished);
 #undef CONNECT
+
+        milter_writer_set_tag(priv->writer, priv->tag);
     }
 }
 
@@ -504,6 +526,7 @@ milter_agent_set_tag (MilterAgent *agent, guint tag)
 
     priv = MILTER_AGENT_GET_PRIVATE(agent);
     priv->tag = tag;
+    apply_tag(priv);
 }
 
 /*

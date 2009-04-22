@@ -1,5 +1,8 @@
 2009-04-22  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-agent.c,
+	test/client/test-client-context-base.c: propagate tag.
+
 	* milter/core/milter-{agent,decoder,encoder,reader,writer}.[ch],
 	test/core/test-{decoder,encoder,reader,writer}.c,
 	test/client/test-client-context-base.c: add tag for debugging.
