@@ -1,5 +1,7 @@
 2009-04-23  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.c: fix initialize order.
+
 	* test/manager/test-configuration.c: follow the recent
 	fallback-status configuration XML change.
 

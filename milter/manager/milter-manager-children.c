@@ -2903,12 +2903,13 @@ init_child_for_body (MilterManagerChildren *children,
 {
     MilterManagerChildrenPrivate *priv;
 
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
     milter_debug("[%u] [children][body][init] [%u] %s",
                  priv->tag,
                  milter_agent_get_tag(MILTER_AGENT(context)),
                  milter_server_context_get_name(context));
 
-    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
     priv->current_state = MILTER_SERVER_CONTEXT_STATE_BODY;
 
     priv->replaced_body_for_each_child = FALSE;
