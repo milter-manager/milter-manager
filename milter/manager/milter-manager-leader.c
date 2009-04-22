@@ -740,6 +740,7 @@ milter_manager_leader_negotiate (MilterManagerLeader *leader,
                                  MilterMacrosRequests *macros_requests)
 {
     MilterManagerLeaderPrivate *priv;
+    guint tag;
 
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
     priv->state = MILTER_MANAGER_LEADER_STATE_NEGOTIATE;
@@ -750,6 +751,8 @@ milter_manager_leader_negotiate (MilterManagerLeader *leader,
     if (!priv->children)
         return MILTER_STATUS_NOT_CHANGE;
 
+    tag = milter_agent_get_tag(MILTER_AGENT(priv->client_context));
+    milter_manager_children_set_tag(priv->children, tag);
     setup_children_signals(leader, priv->children);
     milter_manager_children_set_launcher_channel(priv->children,
                                                  priv->launcher_read_channel,
