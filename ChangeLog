@@ -1,3 +1,9 @@
+2009-04-23  Kouhei Sutou  <kou@clear-code.com>
+
+	* TODO:
+	- add: show more information on SEGV.
+	- add: ignore error for existed but unreadable config file.
+
 2009-04-23  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/client/milter-client-context.c: add tag into log message.
