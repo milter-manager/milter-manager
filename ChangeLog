@@ -1,5 +1,8 @@
 2009-04-26  Kouhei Sutou  <kou@cozmixng.org>
 
+	* data/milter-manager.conf: add a default manager.maintenance_interval
+	configuration as comment.
+
 	* module/configuration/ruby/milter-manager-ruby-configuration.c:
 	don't run GC with Ruby/GLib 0.17.0 because Ruby/GLib 0.17.0 has a
 	bug related GC.
