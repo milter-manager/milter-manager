@@ -27,6 +27,7 @@ footer = read_template("footer", target_language)
 ARGV.each do |target|
   File.open(target, "r+") do |input|
     content = input.read
+    content = content.sub(/(<\/title>)/, " - milter manager\\1")
     content = content.sub(/(<\/head>)/, head + "\n\\1")
     content = content.sub(/(<body\s.+?>)/, "\\1\n" + header)
     content = content.sub(/(<\/body>)/, footer + "\n\\1")

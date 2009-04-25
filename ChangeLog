@@ -1,3 +1,8 @@
+2009-04-25  Kouhei Sutou  <kou@cozmixng.org>
+
+	* doc/reference/prepare-for-publishing.rb: add " - milter manager"
+	suffix.
+
 2009-04-23  Kouhei Sutou  <kou@clear-code.com>
 
 	* TODO:
