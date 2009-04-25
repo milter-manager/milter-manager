@@ -400,7 +400,3 @@ milter_manager_module_unload (MilterManagerModule *module)
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */
-
-/*
-vi:ts=4:nowrap:ai:expandtab:sw=4
-*/
