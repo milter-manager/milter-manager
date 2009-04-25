@@ -1151,7 +1151,7 @@ milter_manager_configuration_set_pid_file (MilterManagerConfiguration *configura
     priv->pid_file = g_strdup(pid_file);
 }
 
-const guint
+guint
 milter_manager_configuration_get_maintenance_interval (MilterManagerConfiguration *configuration)
 {
     MilterManagerConfigurationPrivate *priv;

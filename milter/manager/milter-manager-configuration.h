@@ -211,7 +211,7 @@ void          milter_manager_configuration_set_package_options
                                      (MilterManagerConfiguration *configuration,
                                       const gchar                *options);
 
-const guint   milter_manager_configuration_get_maintenance_interval
+guint         milter_manager_configuration_get_maintenance_interval
                                      (MilterManagerConfiguration *configuration);
 void          milter_manager_configuration_set_maintenance_interval
                                      (MilterManagerConfiguration *configuration,
