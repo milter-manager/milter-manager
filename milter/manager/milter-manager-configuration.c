@@ -1452,6 +1452,16 @@ milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
     priv->fallback_status = MILTER_STATUS_ACCEPT;
 }
 
+void
+milter_manager_configuration_session_finished (MilterManagerConfiguration *configuration)
+{
+    MilterManagerConfigurationClass *configuration_class;
+
+    configuration_class = MILTER_MANAGER_CONFIGURATION_GET_CLASS(configuration);
+    if (configuration_class->maintain)
+        configuration_class->maintain(configuration);
+}
+
 gchar *
 milter_manager_configuration_to_xml (MilterManagerConfiguration *configuration)
 {

@@ -1,5 +1,8 @@
 2009-04-25  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-configuration.[ch]: add session
+	finished callback.
+
 	* milter/manager/milter-manager-leader.[ch],
 	test/manager/test-leader.c: add configuration getter to leader.
 

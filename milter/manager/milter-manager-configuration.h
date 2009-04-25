@@ -62,6 +62,7 @@ struct _MilterManagerConfigurationClass
     gboolean     (*load_custom)   (MilterManagerConfiguration *configuration,
                                    const gchar                *file_name,
                                    GError                    **error);
+    void         (*maintain)      (MilterManagerConfiguration *configuration);
     void         (*to_xml)        (MilterManagerConfiguration *configuration,
                                    GString                    *xml,
                                    guint                       indent);
@@ -249,6 +250,10 @@ void          milter_manager_configuration_clear_applicable_conditions
 
 void          milter_manager_configuration_clear
                                      (MilterManagerConfiguration *configuration);
+
+void          milter_manager_configuration_session_finished
+                                     (MilterManagerConfiguration *configuration);
+
 
 gchar        *milter_manager_configuration_to_xml
                                      (MilterManagerConfiguration *configuration);
