@@ -1,5 +1,8 @@
 2009-04-25  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/src/manager/rb-milter-manager-children.c (mark):
+	guard children from GC.
+
 	* module/configuration/ruby/milter-manager-ruby-configuration.c
 	(load): run GC after loading configuration file.
 
