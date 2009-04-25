@@ -1030,6 +1030,12 @@ milter_manager_leader_timeout (MilterManagerLeader *leader)
     milter_manager_leader_quit(leader);
 }
 
+MilterManagerConfiguration *
+milter_manager_leader_get_configuration (MilterManagerLeader *leader)
+{
+    return MILTER_MANAGER_LEADER_GET_PRIVATE(leader)->configuration;
+}
+
 void
 milter_manager_leader_set_launcher_channel (MilterManagerLeader *leader,
                                             GIOChannel *read_channel,

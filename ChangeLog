@@ -1,5 +1,8 @@
 2009-04-25  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-leader.[ch],
+	test/manager/test-leader.c: add configuration getter to leader.
+
 	* milter/manager/milter-manager-module.c: call "exit" callback to
 	clean module up on shutdown even if some types are registered.
 

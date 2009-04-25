@@ -37,6 +37,8 @@ void test_scenario (gconstpointer data);
 void data_large_body (void);
 void test_large_body (gconstpointer data);
 
+void test_configuration (void);
+
 static gchar *scenario_dir;
 static MilterManagerTestScenario *main_scenario;
 
@@ -1432,6 +1434,13 @@ test_large_body (gconstpointer data)
     cut_assert_equal_memory(chunk, LARGE_DATA_SIZE,
                             collect_received_strings(body_chunk), LARGE_DATA_SIZE);
     */
+}
+
+void
+test_configuration (void)
+{
+    gcut_assert_equal_object(config,
+                             milter_manager_leader_get_configuration(leader));
 }
 
 /*
