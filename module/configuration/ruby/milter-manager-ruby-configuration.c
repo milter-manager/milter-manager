@@ -309,27 +309,6 @@ init_ruby (void)
 #endif
 }
 
-static gboolean
-run_gc (gpointer data)
-{
-    rb_gc_start();
-    return FALSE;
-}
-
-static gboolean
-register_run_gc_on_idle (gpointer data)
-{
-    g_idle_add(run_gc, NULL);
-    return TRUE;
-}
-
-static void
-register_periodic_gc (void)
-{
-    g_timeout_add(30 * 60 * 1000, /* 30m */
-                  register_run_gc_on_idle, NULL);
-}
-
 G_MODULE_EXPORT GList *
 MILTER_MANAGER_MODULE_IMPL_INIT (GTypeModule *type_module)
 {
@@ -342,7 +321,6 @@ MILTER_MANAGER_MODULE_IMPL_INIT (GTypeModule *type_module)
                            (gchar *)g_type_name(milter_manager_ruby_configuration_type_id));
 
     init_ruby();
-    register_periodic_gc();
 
     return registered_types;
 }

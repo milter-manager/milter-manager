@@ -1,5 +1,8 @@
 2009-04-26  Kouhei Sutou  <kou@cozmixng.org>
 
+	* module/configuration/ruby/milter-manager-ruby-configuration.c:
+	remove periodically GC. Use manager.maintenance_interval instead.
+
 	* binding/ruby/test/manager/test-configuration-loader.rb,
 	binding/ruby/test/manager/test-configuration.rb,
 	binding/ruby/test/manager/test-custom-xml-loader.rb,
