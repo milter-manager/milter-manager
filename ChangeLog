@@ -1,5 +1,9 @@
 2009-04-26  Kouhei Sutou  <kou@cozmixng.org>
 
+	* module/configuration/ruby/milter-manager-ruby-configuration.c:
+	use another workaround. don't disable GC even if Ruby/GLib 0.17.0
+	is used.
+
 	* data/milter-manager.conf: add a default manager.maintenance_interval
 	configuration as comment.
 

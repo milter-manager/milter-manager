@@ -267,12 +267,30 @@ rb_funcall_protect (GError **g_error, VALUE receiver, ID name, guint argc, ...)
     return result;
 }
 
+#if RBGLIB_MINOR_VERSION == 17
+static gboolean
+cb_dummy (gpointer data)
+{
+    return FALSE;
+}
+#endif
 
 static void
 load_libraries (void)
 {
     VALUE milter, milter_manager;
     GError *error = NULL;
+
+#if RBGLIB_MINOR_VERSION == 17
+    {
+        guint id;
+
+        do {
+            id = g_idle_add(cb_dummy, NULL);
+            g_source_remove(id);
+        } while (id % 2 == 0);
+    }
+#endif
 
     rb_funcall_protect(&error,
                        Qnil, rb_intern("require"),
@@ -306,9 +324,6 @@ init_ruby (void)
     load_libraries();
 #if RBGLIB_MINOR_VERSION <= 16
     g_main_context_set_poll_func(NULL, NULL);
-#endif
-#if RBGLIB_MINOR_VERSION == 17
-    rb_gc_disable();
 #endif
 }
 
