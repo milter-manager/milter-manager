@@ -1,5 +1,8 @@
 2009-04-25  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager.c: call session finished callback
+	of configuration.
+
 	* milter/manager/milter-manager-configuration.[ch]: add session
 	finished callback.
 

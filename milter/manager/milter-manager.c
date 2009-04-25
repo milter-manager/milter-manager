@@ -396,12 +396,12 @@ cb_client_finished (MilterClientContext *context, gpointer user_data)
 
 static void
 teardown_client_context_signals (MilterClientContext *context,
-                                 gpointer user_data)
+                                 MilterManagerLeader *leader)
 {
 #define DISCONNECT(name)                                                \
     g_signal_handlers_disconnect_by_func(context,                       \
                                          G_CALLBACK(cb_client_ ## name), \
-                                         user_data)
+                                         leader)
 
     DISCONNECT(negotiate);
     DISCONNECT(connect);
@@ -421,15 +421,28 @@ teardown_client_context_signals (MilterClientContext *context,
     DISCONNECT(finished);
 
 #undef DISCONNECT
-    g_signal_handlers_disconnect_by_func(user_data,
+    g_signal_handlers_disconnect_by_func(leader,
                                          G_CALLBACK(cb_leader_finished),
                                          context);
 }
 
 static gboolean
-cb_idle_unref (gpointer data)
+cb_idle_notify_finish_session_to_configuration (gpointer data)
 {
-    g_object_unref(data);
+    MilterManagerConfiguration *config = data;
+
+    milter_manager_configuration_session_finished(config);
+
+    return FALSE;
+}
+
+static gboolean
+cb_idle_unref_leader (gpointer data)
+{
+    MilterManagerLeader *leader = data;
+
+    g_object_unref(leader);
+
     return FALSE;
 }
 
@@ -439,6 +452,7 @@ cb_leader_finished (MilterFinishedEmittable *emittable, gpointer user_data)
     MilterClientContext *client_context = user_data;
     GTimer *timer;
     MilterManagerLeader *leader;
+    MilterManagerConfiguration *config;
     gdouble elapsed;
 
     timer = milter_client_context_get_private_data(client_context);
@@ -446,12 +460,15 @@ cb_leader_finished (MilterFinishedEmittable *emittable, gpointer user_data)
     elapsed = g_timer_elapsed(timer, NULL);
 
     leader = MILTER_MANAGER_LEADER(emittable);
-    teardown_client_context_signals(client_context, emittable);
+    teardown_client_context_signals(client_context, leader);
     milter_debug("[%u] [manager][session][end][%g]",
                  milter_agent_get_tag(MILTER_AGENT(client_context)),
                  elapsed);
     milter_statistics("[session][end][%g](%p)", elapsed, client_context);
-    g_idle_add(cb_idle_unref, emittable);
+
+    config = milter_manager_leader_get_configuration(leader);
+    g_idle_add(cb_idle_notify_finish_session_to_configuration, config);
+    g_idle_add(cb_idle_unref_leader, leader);
 }
 
 static void
