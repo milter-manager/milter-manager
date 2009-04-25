@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -78,6 +78,7 @@ static gboolean real_load         (MilterManagerConfiguration *configuration,
 static gboolean real_load_custom  (MilterManagerConfiguration *configuration,
                                    const gchar                *file_name,
                                    GError                    **error);
+static void     real_maintain     (MilterManagerConfiguration *configuration);
 static gchar   *real_dump         (MilterManagerConfiguration *configuration);
 
 static gpointer milter_manager_ruby_configuration_parent_class = NULL;
@@ -104,6 +105,7 @@ milter_manager_ruby_configuration_class_init (MilterManagerRubyConfigurationClas
 
     configuration_class->load = real_load;
     configuration_class->load_custom = real_load_custom;
+    configuration_class->maintain = real_maintain;
     configuration_class->dump = real_dump;
 }
 
@@ -452,6 +454,12 @@ real_load_custom (MilterManagerConfiguration *_configuration,
                   const gchar *file_name, GError **error)
 {
     return load(_configuration, rb_intern("load_custom"), file_name, error);
+}
+
+static void
+real_maintain (MilterManagerConfiguration *_configuration)
+{
+    rb_gc_start();
 }
 
 static gchar *

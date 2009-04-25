@@ -1,5 +1,8 @@
 2009-04-25  Kouhei Sutou  <kou@cozmixng.org>
 
+	* module/configuration/ruby/milter-manager-ruby-configuration.c:
+	run GC on maintain.
+
 	* milter/manager/milter-manager.c: call session finished callback
 	of configuration.
 
