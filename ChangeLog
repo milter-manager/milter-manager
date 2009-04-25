@@ -1,5 +1,8 @@
 2009-04-26  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-configuration.[ch]: add
+	maintenance interval configuration.
+
 	* module/configuration/ruby/milter-manager-ruby-configuration.c:
 	remove periodically GC. Use manager.maintenance_interval instead.
 

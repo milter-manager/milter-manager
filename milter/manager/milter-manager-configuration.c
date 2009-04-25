@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -33,6 +33,7 @@
 #include <milter/core/milter-marshalers.h>
 
 #define DEFAULT_MANAGER_CONNECTION_SPEC "inet:10025@[127.0.0.1]"
+#define DEFAULT_MAINTENANCE_INTERVAL 100
 
 #define MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(obj)                   \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                                 \
@@ -63,6 +64,8 @@ struct _MilterManagerConfigurationPrivate
     gboolean remove_controller_unix_socket_on_create;
     gboolean daemon;
     gchar *pid_file;
+    guint maintenance_interval;
+    guint processed_sessions;
 };
 
 enum
@@ -85,13 +88,15 @@ enum
     PROP_REMOVE_MANAGER_UNIX_SOCKET_ON_CREATE,
     PROP_REMOVE_CONTROLLER_UNIX_SOCKET_ON_CREATE,
     PROP_DAEMON,
-    PROP_PID_FILE
+    PROP_PID_FILE,
+    PROP_MAINTENANCE_INTERVAL,
+    PROP_PROCESSED_SESSIONS
 };
 
 enum
 {
     TO_XML,
-    LAST_SIGNAL
+    LAST_SIGNAL,
 };
 
 static gint signals[LAST_SIGNAL] = {0};
@@ -284,6 +289,20 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
                                G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
     g_object_class_install_property(gobject_class, PROP_PID_FILE,
                                     spec);
+
+    spec = g_param_spec_uint("maintenance-interval",
+                             "Maintenance interval in sessions",
+                             "Run maintenance process in after each N sessions. "
+                             "0 means that periodical maintenance "
+                             "process isn't run.",
+                             0,
+                             G_MAXUINT,
+                             DEFAULT_MAINTENANCE_INTERVAL,
+                             G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+    g_object_class_install_property(gobject_class,
+                                    PROP_MAINTENANCE_INTERVAL,
+                                    spec);
+
     signals[TO_XML] =
         g_signal_new("to-xml",
                      G_TYPE_FROM_CLASS(klass),
@@ -312,6 +331,8 @@ milter_manager_configuration_init (MilterManagerConfiguration *configuration)
     priv->effective_user = NULL;
     priv->effective_group = NULL;
     priv->pid_file = NULL;
+    priv->maintenance_interval = DEFAULT_MAINTENANCE_INTERVAL;
+    priv->processed_sessions = 0;
 
     config_dir_env = g_getenv("MILTER_MANAGER_CONFIG_DIR");
     if (config_dir_env)
@@ -353,79 +374,83 @@ set_property (GObject      *object,
 
     config = MILTER_MANAGER_CONFIGURATION(object);
     switch (prop_id) {
-      case PROP_PRIVILEGE_MODE:
+    case PROP_PRIVILEGE_MODE:
         milter_manager_configuration_set_privilege_mode(
             config, g_value_get_boolean(value));
         break;
-      case PROP_CONTROLLER_CONNECTION_SPEC:
+    case PROP_CONTROLLER_CONNECTION_SPEC:
         milter_manager_configuration_set_controller_connection_spec(
             config, g_value_get_string(value));
         break;
-      case PROP_MANAGER_CONNECTION_SPEC:
+    case PROP_MANAGER_CONNECTION_SPEC:
         milter_manager_configuration_set_manager_connection_spec(
             config, g_value_get_string(value));
         break;
-      case PROP_FALLBACK_STATUS:
+    case PROP_FALLBACK_STATUS:
         milter_manager_configuration_set_fallback_status(
             config, g_value_get_enum(value));
         break;
-      case PROP_PACKAGE_PLATFORM:
+    case PROP_PACKAGE_PLATFORM:
         milter_manager_configuration_set_package_platform(
             config, g_value_get_string(value));
         break;
-      case PROP_PACKAGE_OPTIONS:
+    case PROP_PACKAGE_OPTIONS:
         milter_manager_configuration_set_package_options(
             config, g_value_get_string(value));
         break;
-      case PROP_EFFECTIVE_USER:
+    case PROP_EFFECTIVE_USER:
         milter_manager_configuration_set_effective_user(
             config, g_value_get_string(value));
         break;
-      case PROP_EFFECTIVE_GROUP:
+    case PROP_EFFECTIVE_GROUP:
         milter_manager_configuration_set_effective_group(
             config, g_value_get_string(value));
         break;
-      case PROP_MANAGER_UNIX_SOCKET_MODE:
+    case PROP_MANAGER_UNIX_SOCKET_MODE:
         milter_manager_configuration_set_manager_unix_socket_mode(
             config, g_value_get_uint(value));
         break;
-      case PROP_CONTROLLER_UNIX_SOCKET_MODE:
+    case PROP_CONTROLLER_UNIX_SOCKET_MODE:
         milter_manager_configuration_set_controller_unix_socket_mode(
             config, g_value_get_uint(value));
         break;
-      case PROP_MANAGER_UNIX_SOCKET_GROUP:
+    case PROP_MANAGER_UNIX_SOCKET_GROUP:
         milter_manager_configuration_set_manager_unix_socket_group(
             config, g_value_get_string(value));
         break;
-      case PROP_CONTROLLER_UNIX_SOCKET_GROUP:
+    case PROP_CONTROLLER_UNIX_SOCKET_GROUP:
         milter_manager_configuration_set_controller_unix_socket_group(
             config, g_value_get_string(value));
         break;
-      case PROP_REMOVE_MANAGER_UNIX_SOCKET_ON_CLOSE:
+    case PROP_REMOVE_MANAGER_UNIX_SOCKET_ON_CLOSE:
         milter_manager_configuration_set_remove_manager_unix_socket_on_close(
             config, g_value_get_boolean(value));
         break;
-      case PROP_REMOVE_CONTROLLER_UNIX_SOCKET_ON_CLOSE:
+    case PROP_REMOVE_CONTROLLER_UNIX_SOCKET_ON_CLOSE:
         milter_manager_configuration_set_remove_controller_unix_socket_on_close(
             config, g_value_get_boolean(value));
         break;
-      case PROP_REMOVE_MANAGER_UNIX_SOCKET_ON_CREATE:
+    case PROP_REMOVE_MANAGER_UNIX_SOCKET_ON_CREATE:
         milter_manager_configuration_set_remove_manager_unix_socket_on_create(
             config, g_value_get_boolean(value));
         break;
-      case PROP_REMOVE_CONTROLLER_UNIX_SOCKET_ON_CREATE:
+    case PROP_REMOVE_CONTROLLER_UNIX_SOCKET_ON_CREATE:
         milter_manager_configuration_set_remove_controller_unix_socket_on_create(
             config, g_value_get_boolean(value));
         break;
-      case PROP_DAEMON:
+    case PROP_DAEMON:
         milter_manager_configuration_set_daemon(
             config, g_value_get_boolean(value));
         break;
-      case PROP_PID_FILE:
+    case PROP_PID_FILE:
         milter_manager_configuration_set_pid_file(
             config, g_value_get_string(value));
         break;
-      default:
+    case PROP_MAINTENANCE_INTERVAL:
+        milter_manager_configuration_set_maintenance_interval(
+            config, g_value_get_uint(value));
+        break;
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
@@ -441,61 +466,64 @@ get_property (GObject    *object,
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(object);
     switch (prop_id) {
-      case PROP_PRIVILEGE_MODE:
+    case PROP_PRIVILEGE_MODE:
         g_value_set_boolean(value, priv->privilege_mode);
         break;
-      case PROP_CONTROLLER_CONNECTION_SPEC:
+    case PROP_CONTROLLER_CONNECTION_SPEC:
         g_value_set_string(value, priv->controller_connection_spec);
         break;
-      case PROP_MANAGER_CONNECTION_SPEC:
+    case PROP_MANAGER_CONNECTION_SPEC:
         g_value_set_string(value, priv->manager_connection_spec);
         break;
-      case PROP_FALLBACK_STATUS:
+    case PROP_FALLBACK_STATUS:
         g_value_set_enum(value, priv->fallback_status);
         break;
-      case PROP_PACKAGE_PLATFORM:
+    case PROP_PACKAGE_PLATFORM:
         g_value_set_string(value, priv->package_platform);
         break;
-      case PROP_PACKAGE_OPTIONS:
+    case PROP_PACKAGE_OPTIONS:
         g_value_set_string(value, priv->package_options);
         break;
-      case PROP_EFFECTIVE_USER:
+    case PROP_EFFECTIVE_USER:
         g_value_set_string(value, priv->effective_user);
         break;
-      case PROP_EFFECTIVE_GROUP:
+    case PROP_EFFECTIVE_GROUP:
         g_value_set_string(value, priv->effective_group);
         break;
-      case PROP_MANAGER_UNIX_SOCKET_MODE:
+    case PROP_MANAGER_UNIX_SOCKET_MODE:
         g_value_set_uint(value, priv->manager_unix_socket_mode);
         break;
-      case PROP_CONTROLLER_UNIX_SOCKET_MODE:
+    case PROP_CONTROLLER_UNIX_SOCKET_MODE:
         g_value_set_uint(value, priv->controller_unix_socket_mode);
         break;
-      case PROP_MANAGER_UNIX_SOCKET_GROUP:
+    case PROP_MANAGER_UNIX_SOCKET_GROUP:
         g_value_set_string(value, priv->manager_unix_socket_group);
         break;
-      case PROP_CONTROLLER_UNIX_SOCKET_GROUP:
+    case PROP_CONTROLLER_UNIX_SOCKET_GROUP:
         g_value_set_string(value, priv->controller_unix_socket_group);
         break;
-      case PROP_REMOVE_MANAGER_UNIX_SOCKET_ON_CLOSE:
+    case PROP_REMOVE_MANAGER_UNIX_SOCKET_ON_CLOSE:
         g_value_set_boolean(value, priv->remove_manager_unix_socket_on_close);
         break;
-      case PROP_REMOVE_CONTROLLER_UNIX_SOCKET_ON_CLOSE:
+    case PROP_REMOVE_CONTROLLER_UNIX_SOCKET_ON_CLOSE:
         g_value_set_boolean(value, priv->remove_controller_unix_socket_on_close);
         break;
-      case PROP_REMOVE_MANAGER_UNIX_SOCKET_ON_CREATE:
+    case PROP_REMOVE_MANAGER_UNIX_SOCKET_ON_CREATE:
         g_value_set_boolean(value, priv->remove_manager_unix_socket_on_create);
         break;
-      case PROP_REMOVE_CONTROLLER_UNIX_SOCKET_ON_CREATE:
+    case PROP_REMOVE_CONTROLLER_UNIX_SOCKET_ON_CREATE:
         g_value_set_boolean(value, priv->remove_controller_unix_socket_on_create);
         break;
-      case PROP_DAEMON:
+    case PROP_DAEMON:
         g_value_set_boolean(value, priv->daemon);
         break;
-      case PROP_PID_FILE:
+    case PROP_PID_FILE:
         g_value_set_string(value, priv->pid_file);
         break;
-      default:
+    case PROP_MAINTENANCE_INTERVAL:
+        g_value_set_uint(value, priv->maintenance_interval);
+        break;
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
@@ -1123,6 +1151,25 @@ milter_manager_configuration_set_pid_file (MilterManagerConfiguration *configura
     priv->pid_file = g_strdup(pid_file);
 }
 
+const guint
+milter_manager_configuration_get_maintenance_interval (MilterManagerConfiguration *configuration)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    return priv->maintenance_interval;
+}
+
+void
+milter_manager_configuration_set_maintenance_interval (MilterManagerConfiguration *configuration,
+                                                       guint n_sessions)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    priv->maintenance_interval = n_sessions;
+}
+
 void
 milter_manager_configuration_add_egg (MilterManagerConfiguration *configuration,
                                       MilterManagerEgg         *egg)
@@ -1450,12 +1497,23 @@ milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
     priv->remove_controller_unix_socket_on_create = TRUE;
     priv->daemon = FALSE;
     priv->fallback_status = MILTER_STATUS_ACCEPT;
+    priv->maintenance_interval = DEFAULT_MAINTENANCE_INTERVAL;
 }
 
 void
 milter_manager_configuration_session_finished (MilterManagerConfiguration *configuration)
 {
+    MilterManagerConfigurationPrivate *priv;
     MilterManagerConfigurationClass *configuration_class;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    priv->processed_sessions++;
+
+    if (priv->maintenance_interval == 0)
+        return;
+
+    if ((priv->processed_sessions % priv->maintenance_interval) != 0)
+        return;
 
     configuration_class = MILTER_MANAGER_CONFIGURATION_GET_CLASS(configuration);
     if (configuration_class->maintain)

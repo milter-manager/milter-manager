@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -210,6 +210,12 @@ const gchar  *milter_manager_configuration_get_package_options
 void          milter_manager_configuration_set_package_options
                                      (MilterManagerConfiguration *configuration,
                                       const gchar                *options);
+
+const guint   milter_manager_configuration_get_maintenance_interval
+                                     (MilterManagerConfiguration *configuration);
+void          milter_manager_configuration_set_maintenance_interval
+                                     (MilterManagerConfiguration *configuration,
+                                      guint                       n_sessions);
 
 void          milter_manager_configuration_add_egg
                                      (MilterManagerConfiguration *configuration,
