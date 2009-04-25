@@ -134,6 +134,7 @@ class TestConfiguration < Test::Unit::TestCase
                   "    <milter>",
                   "      <name>#{name}</name>",
                   "      <enabled>true</enabled>",
+                  "      <fallback-status>accept</fallback-status>",
                   "      <connection-spec>#{spec}</connection-spec>",
                   "    </milter>",
                   "  </milters>",

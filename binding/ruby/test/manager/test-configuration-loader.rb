@@ -174,6 +174,7 @@ EOX
     <milter>
       <name>child-milter</name>
       <enabled>true</enabled>
+      <fallback-status>accept</fallback-status>
       <connection-spec>unix:/tmp/socket</connection-spec>
       <applicable-conditions>
         <applicable-condition>remote-network</applicable-condition>

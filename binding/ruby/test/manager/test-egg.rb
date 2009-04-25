@@ -132,6 +132,7 @@ class TestEgg < Test::Unit::TestCase
     assert_equal(["<milter>",
                   "  <name>#{@name}</name>",
                   "  <enabled>true</enabled>",
+                  "  <fallback-status>accept</fallback-status>",
                   "</milter>"].join("\n") + "\n",
                  @egg.to_xml)
 
@@ -142,6 +143,7 @@ class TestEgg < Test::Unit::TestCase
     assert_equal(["<milter>",
                   "  <name>#{@name}</name>",
                   "  <enabled>true</enabled>",
+                  "  <fallback-status>accept</fallback-status>",
                   "  <additional-info>INFO</additional-info>",
                   "</milter>"].join("\n") + "\n",
                  @egg.to_xml)
