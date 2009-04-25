@@ -1,5 +1,8 @@
 2009-04-25  Kouhei Sutou  <kou@cozmixng.org>
 
+	* module/configuration/ruby/milter-manager-ruby-configuration.c
+	(load): run GC after loading configuration file.
+
 	* milter/manager/milter-manager-main.c
 	(append_user_local_configuration_path): fix a memory leak.
 

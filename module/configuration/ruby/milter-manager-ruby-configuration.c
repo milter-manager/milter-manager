@@ -433,6 +433,7 @@ load (MilterManagerConfiguration *_configuration, ID method_name,
             milter_error("%s", local_error->message);
         g_propagate_error(error, local_error);
     } else {
+        rb_gc_start();
         success = TRUE;
     }
 
