@@ -634,6 +634,8 @@ append_user_local_configuration_path (MilterManagerConfiguration *config)
 
     milter_manager_configuration_append_load_path(config,
                                                   user_local_config_path);
+    g_free(user_local_config_path);
+
     milter_manager_configuration_reload(config);
     apply_command_line_options(config);
 }
