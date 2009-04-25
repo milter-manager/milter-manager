@@ -307,6 +307,9 @@ init_ruby (void)
 #if RBGLIB_MINOR_VERSION <= 16
     g_main_context_set_poll_func(NULL, NULL);
 #endif
+#if RBGLIB_MINOR_VERSION == 17
+    rb_gc_disable();
+#endif
 }
 
 G_MODULE_EXPORT GList *
