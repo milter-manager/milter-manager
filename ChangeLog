@@ -1,5 +1,11 @@
 2009-04-25  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/configuration.rd*,
+	binding/ruby/lib/milter/manager.rb,
+	binding/ruby/test/manager/test-configuration-loader.rb,
+	binding/ruby/test/manager/test-configuration.rb: add
+	manager.maintenance_interval configuration.
+
 	* module/configuration/ruby/milter-manager-ruby-configuration.c:
 	run GC on maintain.
 

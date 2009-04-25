@@ -33,6 +33,12 @@ class TestConfiguration < Test::Unit::TestCase
     assert_nil(@configuration.manager_connection_spec)
   end
 
+  def test_maintenance_interval
+    assert_equal(100, @configuration.maintenance_interval)
+    @configuration.maintenance_interval = 0
+    assert_equal(0, @configuration.maintenance_interval)
+  end
+
   def test_package
     @configuration.package_platform = "pkgsrc"
     assert_equal("pkgsrc", @configuration.package_platform)
@@ -143,6 +149,7 @@ class TestConfiguration < Test::Unit::TestCase
                   "    <milter>",
                   "      <name>#{name}</name>",
                   "      <enabled>true</enabled>",
+                  "      <fallback-status>accept</fallback-status>",
                   "      <connection-spec>#{spec}</connection-spec>",
                   "    </milter>",
                   "  </milters>",
@@ -184,6 +191,7 @@ manager.remove_unix_socket_on_create = true
 manager.remove_unix_socket_on_close = true
 manager.daemon = false
 manager.pid_file = nil
+manager.maintenance_interval = 100
 
 controller.connection_spec = nil
 controller.unix_socket_mode = 0660
@@ -230,6 +238,7 @@ manager.remove_unix_socket_on_create = true
 manager.remove_unix_socket_on_close = true
 manager.daemon = false
 manager.pid_file = nil
+manager.maintenance_interval = 100
 
 controller.connection_spec = nil
 controller.unix_socket_mode = 0660

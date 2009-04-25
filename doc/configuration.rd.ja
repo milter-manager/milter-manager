@@ -66,6 +66,7 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
   manager.remove_unix_socket_on_close = true
   manager.daemon = false
   manager.pid_file = nil
+  manager.maintenance_interval = 100
 
   controller.connection_spec = nil
   controller.unix_socket_mode = 0660
@@ -343,6 +344,26 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
 
    既定値:
      manager.pid_file = nil
+
+: manager.maintenance_interval
+
+   何セッション終了毎にメンテナンス処理を実行するかを指定し
+   ます。
+
+   現時点でのメンテナンス処理とはメモリ解放処理のことです。
+   同時アクセス数が少ない環境では各セッション終了毎にメンテ
+   ナンス処理を実行することによりメモリ使用量を抑えることが
+   できます。同時アクセス数が多い環境では複数セッション終了
+   毎にまとめてメンテナンス処理を実行することにより処理効率
+   をあげることができます。
+
+   0またはnilを指定した場合はメンテナンス処理を実行しません。
+
+   例:
+     manager.maintenance_interval = nil
+
+   既定値:
+     manager.maintenance_interval = 100
 
 == コントローラ関連
 

@@ -118,6 +118,19 @@ class TestConfigurationLoader < Test::Unit::TestCase
     assert_equal(@configuration.pid_file, @loader.manager.pid_file)
   end
 
+  def test_manager_maintenance_interval
+    assert_equal(100, @configuration.maintenance_interval)
+
+    @loader.manager.maintenance_interval = nil
+    assert_equal(0, @configuration.maintenance_interval)
+
+    @loader.manager.maintenance_interval = 0
+    assert_equal(0, @configuration.maintenance_interval)
+
+    @loader.manager.maintenance_interval = 10
+    assert_equal(10, @configuration.maintenance_interval)
+  end
+
   def test_to_xml
     assert_equal(<<-EOX, @configuration.to_xml)
 <configuration>

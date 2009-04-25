@@ -61,6 +61,7 @@ current configuration is shown.
   manager.remove_unix_socket_on_close = true
   manager.daemon = false
   manager.pid_file = nil
+  manager.maintenance_interval = 100
 
   controller.connection_spec = nil
   controller.unix_socket_mode = 0660
@@ -342,6 +343,31 @@ Here are descriptions of configuration items.
 
    Default:
      manager.pid_file = nil
+
+: manager.maintenance_interval
+
+   Specifies maintenance process is ran after each N sessions.
+
+   For now, the maintenance process is memory release
+   process.
+
+   It's a good choice that maintenance process is ran
+   after each few sessions on few concurrently access
+   environment. The configuration will keep memory usage
+   low.
+
+   It's a good choice that maintenance process is ran
+   after each many sessions on many concurrently access
+   environment. The configuration will keep process
+   efficiency.
+
+   0 or nil means maintenance process is never ran.
+
+   Example:
+     manager.maintenance_interval = nil
+
+   Default:
+     manager.maintenance_interval = 100
 
 == Controller
 

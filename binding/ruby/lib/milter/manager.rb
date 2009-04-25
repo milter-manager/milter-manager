@@ -55,6 +55,9 @@ module Milter::Manager
       result << "manager.remove_unix_socket_on_close = #{remove_manager_unix_socket_on_close?}\n"
       result << "manager.daemon = #{daemon?}\n"
       result << "manager.pid_file = #{pid_file.inspect}\n"
+      _maintenance_interval = maintenance_interval
+      _maintenance_interval = nil if _maintenance_interval.zero?
+      result << "manager.maintenance_interval = #{_maintenance_interval.inspect}\n"
       result << "\n"
 
       result << "controller.connection_spec = #{controller_connection_spec.inspect}\n"
@@ -609,6 +612,15 @@ module Milter::Manager
 
       def pid_file
         @configuration.pid_file
+      end
+
+      def maintenance_interval=(n_sessions)
+        n_sessions ||= 0
+        @configuration.maintenance_interval = n_sessions
+      end
+
+      def maintenance_interval
+        @configuration.maintenance_interval
       end
     end
 
