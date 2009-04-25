@@ -130,9 +130,14 @@ load (GTypeModule *module)
 }
 
 static void
-unload (GTypeModule *module)
+cleanup (MilterManagerModule *module)
 {
-    MilterManagerModulePrivate *priv = MILTER_MANAGER_MODULE_GET_PRIVATE(module);
+    MilterManagerModulePrivate *priv;
+
+    priv = MILTER_MANAGER_MODULE_GET_PRIVATE(module);
+
+    if (!priv->exit)
+        return;
 
     priv->exit();
 
@@ -145,6 +150,12 @@ unload (GTypeModule *module)
 
     g_list_free(priv->registered_types);
     priv->registered_types = NULL;
+}
+
+static void
+unload (GTypeModule *module)
+{
+    cleanup(MILTER_MANAGER_MODULE(module));
 }
 
 GList *
@@ -391,10 +402,11 @@ milter_manager_module_unload (MilterManagerModule *module)
 
     type_module = G_TYPE_MODULE(module);
 
-    if (type_module->type_infos || type_module->interface_infos)
-        return;
-
-    g_object_unref(module);
+    if (type_module->type_infos || type_module->interface_infos) {
+        cleanup(module);
+    } else {
+        g_object_unref(module);
+    }
 }
 
 /*

@@ -1,5 +1,8 @@
 2009-04-25  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-module.c: call "exit" callback to
+	clean module up on shutdown even if some types are registered.
+
 	* binding/ruby/src/manager/rb-milter-manager-children.c (mark):
 	guard children from GC.
 
