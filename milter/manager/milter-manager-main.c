@@ -55,9 +55,17 @@ static gboolean io_detached = FALSE;
 
 static guint milter_manager_log_handler_id = 0;
 
-static void (*default_sigint_handler) (int signum);
-static void (*default_sigterm_handler) (int signum);
-static void (*default_sighup_handler) (int signum);
+static struct sigaction default_sigsegv_action;
+static struct sigaction default_sigabort_action;
+static struct sigaction default_sigint_action;
+static struct sigaction default_sigterm_action;
+static struct sigaction default_sighup_action;
+
+static gboolean set_sigsegv_action = TRUE;
+static gboolean set_sigabort_action = TRUE;
+static gboolean set_sigint_action = TRUE;
+static gboolean set_sigterm_action = TRUE;
+static gboolean set_sighup_action = TRUE;
 
 #define milter_manager_error(...) G_STMT_START  \
 {                                               \
@@ -214,18 +222,25 @@ milter_manager_quit (void)
 static void
 shutdown_client (int signum)
 {
+    struct sigaction default_action;
+
     if (the_manager)
         milter_client_shutdown(MILTER_CLIENT(the_manager));
 
     switch (signum) {
     case SIGINT:
-        signal(SIGINT, default_sigint_handler);
+        if (sigaction(SIGINT, &default_sigint_action, NULL) != -1)
+            set_sigint_action = FALSE;
         break;
     case SIGTERM:
-        signal(SIGTERM, default_sigterm_handler);
+        if (sigaction(SIGTERM, &default_sigterm_action, NULL) != -1)
+            set_sigterm_action = FALSE;
         break;
     default:
-        signal(signum, SIG_DFL);
+        default_action.sa_handler = SIG_DFL;
+        sigemptyset(&default_action.sa_mask);
+        default_action.sa_flags = 0;
+        sigaction(signum, &default_action, NULL);
         break;
     }
 }
@@ -640,6 +655,64 @@ append_user_local_configuration_path (MilterManagerConfiguration *config)
     apply_command_line_options(config);
 }
 
+static gchar report_stack_trace_window[4096];
+static void
+report_stack_trace (int signum)
+{
+    int fds[2];
+    int in_fd;
+    const char *label = "unknown";
+    int original_stdout_fileno;
+    gssize i, last_new_line, size;
+
+    switch (signum) {
+    case SIGSEGV:
+        label = "SEGV";
+        if (sigaction(SIGSEGV, &default_sigsegv_action, NULL) != -1)
+            set_sigsegv_action = FALSE;
+        break;
+    case SIGABRT:
+        label = "ABORT";
+        if (sigaction(SIGABRT, &default_sigabort_action, NULL) != -1)
+            set_sigabort_action = FALSE;
+        break;
+    }
+
+    if (pipe(fds) == -1) {
+        milter_critical("[%s] unable to open pipe for collecting stack trace",
+                        label);
+        return;
+    }
+
+    original_stdout_fileno = dup(STDOUT_FILENO);
+    dup2(fds[1], STDOUT_FILENO);
+    g_on_error_stack_trace(g_get_prgname());
+    dup2(original_stdout_fileno, STDOUT_FILENO);
+    close(original_stdout_fileno);
+    close(fds[1]);
+
+    in_fd = fds[0];
+    while ((size = read(in_fd,
+                        report_stack_trace_window,
+                        sizeof(report_stack_trace_window))) > 0) {
+        last_new_line = 0;
+        for (i = 0; i < size; i++) {
+            if (report_stack_trace_window[i] == '\n') {
+                report_stack_trace_window[i] = '\0';
+                milter_critical("%s", report_stack_trace_window + last_new_line);
+                last_new_line = i + 1;
+            }
+        }
+        if (last_new_line < size) {
+            report_stack_trace_window[size] = '\0';
+            milter_critical("%s", report_stack_trace_window + last_new_line);
+        }
+    }
+
+    close(fds[0]);
+
+    shutdown_client(SIGINT);
+}
 
 gboolean
 milter_manager_main (void)
@@ -650,6 +723,9 @@ milter_manager_main (void)
     MilterManagerConfiguration *config;
     gboolean daemon;
     gchar *pid_file = NULL;
+    struct sigaction report_stack_trace_action;
+    struct sigaction shutdown_client_action;
+    struct sigaction reload_configuration_action;
 
     config = milter_manager_configuration_new(NULL);
     if (option_config_dir)
@@ -725,14 +801,43 @@ milter_manager_main (void)
     }
 
     the_manager = manager;
-    default_sigint_handler = signal(SIGINT, shutdown_client);
-    default_sigterm_handler = signal(SIGTERM, shutdown_client);
-    default_sighup_handler = signal(SIGHUP, reload_configuration);
+
+#define SETUP_SIGNAL_ACTION(handler)            \
+    handler ## _action.sa_handler = handler;    \
+    sigemptyset(&handler ## _action.sa_mask);   \
+    handler ## _action.sa_flags = 0
+
+    SETUP_SIGNAL_ACTION(report_stack_trace);
+    SETUP_SIGNAL_ACTION(shutdown_client);
+    SETUP_SIGNAL_ACTION(reload_configuration);
+#undef SETUP_SIGNAL_ACTION
+
+#define SET_SIGNAL_ACTION(SIGNAL, signal, action)               \
+    if (sigaction(SIG ## SIGNAL,                                \
+                  &action,                                      \
+                  &default_sig ## signal ## _action) == -1)     \
+        set_sig ## signal ## _action = FALSE
+
+    SET_SIGNAL_ACTION(SEGV, segv, report_stack_trace_action);
+    SET_SIGNAL_ACTION(ABRT, abort, report_stack_trace_action);
+    SET_SIGNAL_ACTION(INT, int, shutdown_client_action);
+    SET_SIGNAL_ACTION(TERM, term, shutdown_client_action);
+    SET_SIGNAL_ACTION(HUP, hup, reload_configuration_action);
+#undef SET_SIGNAL_ACTION
+
     if (!milter_client_main(client))
         milter_manager_error("failed to start milter-manager process.");
-    signal(SIGHUP, default_sighup_handler);
-    signal(SIGTERM, default_sigterm_handler);
-    signal(SIGINT, default_sigint_handler);
+
+#define UNSET_SIGNAL_ACTION(SIGNAL, signal)                             \
+    if (set_sig ## signal ## _action)                                   \
+        sigaction(SIG ## SIGNAL, &default_sig ## signal ## _action, NULL)
+
+    UNSET_SIGNAL_ACTION(SEGV, segv);
+    UNSET_SIGNAL_ACTION(ABRT, abort);
+    UNSET_SIGNAL_ACTION(INT, int);
+    UNSET_SIGNAL_ACTION(TERM, term);
+    UNSET_SIGNAL_ACTION(HUP, hup);
+#undef UNSET_SIGNAL_ACTION
 
     if (controller)
         g_object_unref(controller);

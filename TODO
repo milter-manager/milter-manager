@@ -1,4 +1,3 @@
-* show more information on SEGV. (maybe use g_on_error_stack_trace())
 * ignore error for existed but unreadable config file.
   e.g. /etc/sysconfig/amavisd on CentOS.
 * write a test for over max body chunk size (65535) and skip case.

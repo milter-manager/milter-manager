@@ -1,3 +1,9 @@
+2009-04-27  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/manager/milter-manager-main.c: handle SIGSEGV and SIGABRT
+	to show stack trace.
+	* TODO: remove: show more information on SEGV.
+
 2009-04-26  Kouhei Sutou  <kou@cozmixng.org>
 
 	* module/configuration/ruby/milter-manager-ruby-configuration.c:
