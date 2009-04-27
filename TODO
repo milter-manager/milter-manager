@@ -572,7 +572,6 @@ Index: milter/manager/milter-manager-leader.c
       * 5_000 mails/hour (1.39 mails/sec)
       * CPU: Intel Pentium Xeon 2GHz
       * Memory: 2GB
-* don't handle log event in Ruby/GLib.
 * fix FIXME in data/applicable-conditions/remote-network.conf
   * add local network option?
 * milter-manager can be ran as normal user if milter-manager process is

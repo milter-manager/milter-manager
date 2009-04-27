@@ -1,5 +1,7 @@
 2009-04-27  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: remove: don't handle log event in Ruby/GLib.
+
 	* milter/core/milter-logger.h: reorder.
 
 	* milter/manager/milter-manager-main.c: handle SIGSEGV and SIGABRT
