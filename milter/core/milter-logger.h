@@ -36,18 +36,18 @@ G_BEGIN_DECLS
                        __PRETTY_FUNCTION__,     \
                        format, ## __VA_ARGS__))
 
-#define milter_error(format, ...)                               \
-    milter_log(MILTER_LOG_LEVEL_ERROR, format, ## __VA_ARGS__)
 #define milter_critical(format, ...)                            \
     milter_log(MILTER_LOG_LEVEL_CRITICAL, format, ## __VA_ARGS__)
-#define milter_message(format, ...)                             \
-    milter_log(MILTER_LOG_LEVEL_MESSAGE, format, ## __VA_ARGS__)
+#define milter_error(format, ...)                               \
+    milter_log(MILTER_LOG_LEVEL_ERROR, format, ## __VA_ARGS__)
 #define milter_warning(format, ...)                             \
     milter_log(MILTER_LOG_LEVEL_WARNING, format, ## __VA_ARGS__)
-#define milter_debug(format, ...)                               \
-    milter_log(MILTER_LOG_LEVEL_DEBUG, format, ## __VA_ARGS__)
+#define milter_message(format, ...)                             \
+    milter_log(MILTER_LOG_LEVEL_MESSAGE, format, ## __VA_ARGS__)
 #define milter_info(format, ...)                                \
     milter_log(MILTER_LOG_LEVEL_INFO, format, ## __VA_ARGS__)
+#define milter_debug(format, ...)                               \
+    milter_log(MILTER_LOG_LEVEL_DEBUG, format, ## __VA_ARGS__)
 #define milter_statistics(format, ...)                                  \
     milter_log(MILTER_LOG_LEVEL_STATISTICS, format, ## __VA_ARGS__)
 

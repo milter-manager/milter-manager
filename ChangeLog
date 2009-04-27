@@ -1,5 +1,7 @@
 2009-04-27  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-logger.h: reorder.
+
 	* milter/manager/milter-manager-main.c: handle SIGSEGV and SIGABRT
 	to show stack trace.
 	* TODO: remove: show more information on SEGV.
