@@ -2196,6 +2196,18 @@ milter_server_context_establish_connection (MilterServerContext *context,
         return FALSE;
     }
 
+    {
+        gchar *spec;
+
+        spec = milter_connection_address_to_spec(priv->address);
+        milter_debug("[%u] [server][established] %s: %d:%s",
+                     milter_agent_get_tag(MILTER_AGENT(context)),
+                     milter_server_context_get_name(context),
+                     client_fd,
+                     spec);
+        g_free(spec);
+    }
+
     return TRUE;
 }
 
