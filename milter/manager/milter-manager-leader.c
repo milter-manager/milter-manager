@@ -757,9 +757,7 @@ milter_manager_leader_negotiate (MilterManagerLeader *leader,
     milter_manager_children_set_launcher_channel(priv->children,
                                                  priv->launcher_read_channel,
                                                  priv->launcher_write_channel);
-    milter_debug("[%u] [leader][setup][children] %u",
-                 milter_agent_get_tag(MILTER_AGENT(priv->client_context)),
-                 tag);
+    milter_debug("[%u] [leader][setup][children]", tag);
 
     if (milter_manager_children_negotiate(priv->children, option,
                                           macros_requests))
