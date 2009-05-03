@@ -255,6 +255,7 @@ define_milter("milter1") do |milter|
   milter.connection_spec = "unix:/tmp/xxx"
   milter.description = "The first milter"
   milter.enabled = true
+  milter.fallback_status = "accept"
   milter.applicable_conditions = ["S25R"]
   milter.command = nil
   milter.command_options = nil
@@ -269,6 +270,7 @@ define_milter("milter2") do |milter|
   milter.connection_spec = "inet:2929"
   milter.description = "The second milter"
   milter.enabled = false
+  milter.fallback_status = "accept"
   milter.applicable_conditions = []
   milter.command = nil
   milter.command_options = nil

@@ -79,6 +79,8 @@ module Milter::Manager
         result << "  milter.connection_spec = #{egg.connection_spec.inspect}\n"
         result << "  milter.description = #{egg.description.inspect}\n"
         result << "  milter.enabled = #{egg.enabled?}\n"
+        fallback_status = egg.fallback_status.nick
+        result << "  milter.fallback_status = #{fallback_status.inspect}\n"
         condition_names = egg.applicable_conditions.collect do |condition|
           condition.name
         end
