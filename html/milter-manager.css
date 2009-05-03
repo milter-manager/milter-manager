@@ -240,6 +240,12 @@ dd
   margin-bottom: 0.5em;
 }
 
+em
+{
+  font-weight: bold;
+  color: #f57900;
+}
+
 /* For GTK-Doc */
 @media screen
 {
