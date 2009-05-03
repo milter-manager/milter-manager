@@ -792,6 +792,28 @@ There is no required item.
        end
      end
 
+: condition.define_helo_stopper {|context, fqdn| ...}
+
+   Decides whether the child milter is applied or not with
+   FQDN on HELO/EHLO command. The available information is
+   same as milter's xxfi_helo.
+
+   It returns true if we stop the child milter, false otherwise.
+
+   : context
+      The object that has several information at the
+      time. Details are said later.
+
+   : fqdn
+      The FQDN (string) sent by SMTP client on HELO/EHLO.
+
+   Here is an example that we stop the child milter when
+   FQDN is "localhost.localdomain".
+
+     condition.define_helo_stopper do |context, helo|
+       helo == "localhost.localdomain"
+     end
+
 : define_envelope_from_stopper {|context, from| ...}
 
    Decides whether the child milter is applied or not with
@@ -849,6 +871,30 @@ There is no required item.
        end
      end
 
+: condition.define_data_stopper {|context| ...}
+
+   Decides whether the child milter is applied or not on
+   DATA. The available information is same as milter's
+   xxfi_data.
+
+   It returns true if we stop the child milter, false otherwise.
+
+   : context
+      The object that has several information at the
+      time. Details are said later.
+
+   Here is an example that we stop the child milter on DATA.
+   milter can only add/delete/modify header and/or body
+   after whole message is processed. If we stop the child
+   milter on DATA, we ensure that milter don't
+   add/delete/modify header and/or body. We can confirm
+   the child milter's work if the child milter logs its
+   processed result.
+
+     condition.define_data_stopper do |context|
+       true
+     end
+
 : define_header_stopper {|context, name, value| ...}
 
    Decides whether the child milter is applied or not with
@@ -878,6 +924,76 @@ There is no required item.
        else
          false
        end
+     end
+
+: condition.define_end_of_header_stopper {|context| ...}
+
+   Decides whether the child milter is applied or not after
+   all headers are processed. The available information is
+   same as milter's xxfi_eoh.
+
+   It returns true if we stop the child milter, false otherwise.
+
+   : context
+      The object that has several information at the
+      time. Details are said later.
+
+   Here is an example that we stop the child milter after all
+   headers are processed.
+
+     condition.define_end_of_header_stopper do |context|
+       true
+     end
+
+: condition.define_body_stopper {|context, chunk| ...}
+
+   Decides whether the child milter is applied or not with
+   a body chunk. The available information is same as
+   milter's xxfi_body. This callback may be called multiple
+   times for a large body mail.
+
+   It returns true if we stop the child milter, false otherwise.
+
+   : context
+      The object that has several information at the
+      time. Details are said later.
+
+   Here is an example that we stop the child milter after all
+   headers are processed.
+
+   : chunk
+      A chunk of body. A large body is not processed at a
+      time. It is processed as small chunks. The maximum
+      chunk size is 65535 byte.
+
+   Here is an example that we stop the child milter when
+   chunk contains PGP signature.
+
+     condition.define_body_stopper do |context, chunk|
+       if /^-----BEGIN PGP SIGNATURE-----$/ =~ chunk
+         true
+       else
+         false
+       end
+     end
+
+: condition.define_end_of_message_stopper {|context| ...}
+
+   Decides whether the child milter is applied or not after
+   a mail is processed. The available information is
+   same as  milter's xxfi_eom.
+
+   It returns true if we stop the child milter, false otherwise.
+
+   : context
+      The object that has several information at the
+      time. Details are said later.
+
+   Here is an example that we stop the child milter after
+   a mail is processed.
+
+     condition.define_end_of_message_stopper do |context|
+       true
      end
 
 === context

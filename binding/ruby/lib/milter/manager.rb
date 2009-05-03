@@ -717,9 +717,14 @@ module Milter::Manager
         @condition = Milter::Manager::ApplicableCondition.new(name)
         @loader = loader
         @connect_stoppers = []
+        @helo_stoppers = []
         @envelope_from_stoppers = []
         @envelope_recipient_stoppers = []
+        @data_stoppers = []
         @header_stoppers = []
+        @end_of_header_stoppers = []
+        @body_stoppers = []
+        @end_of_message_stoppers = []
 
         exist_condition = @loader.configuration.find_applicable_condition(name)
         @condition.merge(exist_condition) if exist_condition
@@ -727,6 +732,10 @@ module Milter::Manager
 
       def define_connect_stopper(&block)
         @connect_stoppers << block
+      end
+
+      def define_helo_stopper(&block)
+        @helo_stoppers << block
       end
 
       def define_envelope_from_stopper(&block)
@@ -737,15 +746,37 @@ module Milter::Manager
         @envelope_recipient_stoppers << block
       end
 
+      def define_data_stopper(&block)
+        @data_stoppers << block
+      end
+
       def define_header_stopper(&block)
         @header_stoppers << block
       end
 
+      def define_end_of_header_stopper(&block)
+        @end_of_header_stoppers << block
+      end
+
+      def define_body_stopper(&block)
+        @body_stoppers << block
+      end
+
+      def define_end_of_message_stopper(&block)
+        @end_of_message_stoppers << block
+      end
+
       def have_stopper?
         [@connect_stoppers,
+         @helo_stoppers,
          @envelope_from_stoppers,
          @envelope_recipient_stoppers,
-         @header_stoppers].any? do |stoppers|
+         @data_stoppers,
+         @header_stoppers,
+         @end_of_header_stoppers,
+         @body_stoppers,
+         @end_of_message_stoppers,
+        ].any? do |stoppers|
           not stoppers.empty?
         end
       end
@@ -776,6 +807,17 @@ module Milter::Manager
             end
           end
 
+          unless @helo_stoppers.empty?
+            child.signal_connect("stop-on-helo") do |_child, fqdn|
+              context = ChildContext.new(child, children)
+              @helo_stoppers.any? do |stopper|
+                ConfigurationLoader.guard(false) do
+                  stopper.call(context, fqdn)
+                end
+              end
+            end
+          end
+
           unless @envelope_from_stoppers.empty?
             child.signal_connect("stop-on-envelope-from") do |_child, from|
               context = ChildContext.new(child, children)
@@ -798,12 +840,56 @@ module Milter::Manager
             end
           end
 
+          unless @data_stoppers.empty?
+            child.signal_connect("stop-on-data") do |_child|
+              context = ChildContext.new(child, children)
+              @data_stoppers.any? do |stopper|
+                ConfigurationLoader.guard(false) do
+                  stopper.call(context)
+                end
+              end
+            end
+          end
+
           unless @header_stoppers.empty?
             child.signal_connect("stop-on-header") do |_child, name, value|
               context = ChildContext.new(child, children)
               @header_stoppers.any? do |stopper|
                 ConfigurationLoader.guard(false) do
                   stopper.call(context, name, value)
+                end
+              end
+            end
+          end
+
+          unless @end_of_header_stoppers.empty?
+            child.signal_connect("stop-on-end-of-header") do |_child|
+              context = ChildContext.new(child, children)
+              @end_of_header_stoppers.any? do |stopper|
+                ConfigurationLoader.guard(false) do
+                  stopper.call(context)
+                end
+              end
+            end
+          end
+
+          unless @body_stoppers.empty?
+            child.signal_connect("stop-on-body") do |_child, chunk|
+              context = ChildContext.new(child, children)
+              @body_stoppers.any? do |stopper|
+                ConfigurationLoader.guard(false) do
+                  stopper.call(context, name, chunk)
+                end
+              end
+            end
+          end
+
+          unless @end_of_message_stoppers.empty?
+            child.signal_connect("stop-on-end-of-message") do |_child, chunk|
+              context = ChildContext.new(child, children)
+              @end_of_message_stoppers.any? do |stopper|
+                ConfigurationLoader.guard(false) do
+                  stopper.call(context)
                 end
               end
             end

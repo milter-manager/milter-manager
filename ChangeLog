@@ -1,5 +1,16 @@
 2009-05-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO:
+	- remove: add stopper interfaces on all events (e.g. DATA, BODY
+	  and so on)
+	- add: milter-test-server supports reply-code.
+	- add: milter-test-server supports non-auth connection by command
+	  line option.
+
+	* binding/ruby/lib/milter/manager.rb,
+	doc/configuration.rd*: support stop callback on HELO, DATA,
+	END-OF-HEADER, BODY and END-OF-MESSAGE.
+
 	* milter/server/milter-server-context.[ch],
 	test/server/test-server-context.c: make status updatable.
 

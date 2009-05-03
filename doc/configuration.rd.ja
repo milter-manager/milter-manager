@@ -781,6 +781,29 @@ define_applicable_condition do ... end内で設定できる項目は以
        end
      end
 
+: condition.define_helo_stopper {|context, fqdn| ...}
+
+   SMTPクライアントがHELO/EHLOのときに送ってきたFQDNを利用し
+   て子milterを適用するかどうかを判断します。このときに利用で
+   きる情報はmilterのxxfi_heloで利用可能な情報と同じです。
+
+   子milterの適用を中止する場合はtrueを返し、続ける場合は
+   falseを返します。
+
+   : context
+      その時点での様々な情報を持ったオブジェクトです。詳細は
+      後述します。
+
+   : fqdn
+      SMTPクライアントがHELO/EHLOのときに送ってきたFQDNです。
+
+   以下はクライアントから送られてきたFQDNが
+   "localhost.localdomain"の場合はmilterを適用しない例です。
+
+     condition.define_helo_stopper do |context, helo|
+       helo == "localhost.localdomain"
+     end
+
 : define_envelope_from_stopper {|context, from| ...}
 
    SMTPのMAIL FROMコマンドで渡された送信元アドレスを利用して
@@ -837,6 +860,30 @@ define_applicable_condition do ... end内で設定できる項目は以
        end
      end
 
+: condition.define_data_stopper {|context| ...}
+
+   SMTPクライアントがDATAを送ってきたときに子milterを適用す
+   るかどうかを判断します。このときに利用で
+   きる情報はmilterのxxfi_dataで利用可能な情報と同じです。
+
+   子milterの適用を中止する場合はtrueを返し、続ける場合は
+   falseを返します。
+
+   : context
+      その時点での様々な情報を持ったオブジェクトです。詳細は
+      後述します。
+
+   以下はDATAまで処理が進んだらmilterを終了する例です。
+   milterがヘッダや本文を書き換えるのはメール全体を処理した
+   後です。DATAの時点でmilterを終了させることにより、milter
+   がヘッダや本文を書き換えないことが保証されます。milterに
+   よっては途中の処理結果をログに出力するので、それを見て
+   DATAまでのmilterの動作を確認することができます。
+
+     condition.define_data_stopper do |context|
+       true
+     end
+
 : define_header_stopper {|context, name, value| ...}
 
    メールのヘッダを利用して子milterを適用するかどうかを判断
@@ -865,6 +912,72 @@ define_applicable_condition do ... end内で設定できる項目は以
        else
          false
        end
+     end
+
+: condition.define_end_of_header_stopper {|context| ...}
+
+   ヘッダをすべて処理した後に子milterを適用するかどうかを
+   判断します。このときに利用できる情報はmilterのxxfi_eohで
+   利用可能な情報と同じです。
+
+   子milterの適用を中止する場合はtrueを返し、続ける場合は
+   falseを返します。
+
+   : context
+      その時点での様々な情報を持ったオブジェクトです。詳細は
+      後述します。
+
+   以下はヘッダの処理が完了したらmilterを終了する例です。
+
+     condition.define_end_of_header_stopper do |context|
+       true
+     end
+
+: condition.define_body_stopper {|context, chunk| ...}
+
+   本文の一部を利用して子milterを適用するかどうかを判断しま
+   す。このときに利用できる情報はmilterのxxfi_bodyで利用可能
+   な情報と同じです。本文が大きい場合は複数回呼ばれます。
+
+   子milterの適用を中止する場合はtrueを返し、続ける場合は
+   falseを返します。
+
+   : context
+      その時点での様々な情報を持ったオブジェクトです。詳細は
+      後述します。
+
+   : chunk
+      本文の一部です。サイズが大きな本文は一度には処理されず
+      に、いくつかの固まりに分割されて処理されます。最大で
+      65535バイトのデータになります。
+
+   以下は本文が署名されていたらmilterを終了する例です。
+
+     condition.define_body_stopper do |context, chunk|
+       if /^-----BEGIN PGP SIGNATURE-----$/ =~ chunk
+         true
+       else
+         false
+       end
+     end
+
+: condition.define_end_of_message_stopper {|context| ...}
+
+   本文をすべて処理した後に子milterを適用するかどうかを
+   判断します。このときに利用できる情報はmilterのxxfi_eomで
+   利用可能な情報と同じです。
+
+   子milterの適用を中止する場合はtrueを返し、続ける場合は
+   falseを返します。
+
+   : context
+      その時点での様々な情報を持ったオブジェクトです。詳細は
+      後述します。
+
+   以下は本文の処理が完了したらmilterを終了する例です。
+
+     condition.define_end_of_message_stopper do |context|
+       true
      end
 
 === context

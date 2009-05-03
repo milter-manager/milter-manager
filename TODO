@@ -1,8 +1,9 @@
+* milter-test-server supports reply-code.
+* milter-test-server supports non-auth connection by command line option.
 * ignore error for existed but unreadable config file.
   e.g. /etc/sysconfig/amavisd on CentOS.
 * write a test for over max body chunk size (65535) and skip case.
   It's a case for dkim-filter.
-* add stopper interfaces on all events (e.g. DATA, BODY and so on)
 * support Postfix SMTP Access Policy Delegation protocol.
 * support munin?
 * milter-manager-admin: update to Rails 2.3.2.
