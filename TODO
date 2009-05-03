@@ -1,3 +1,4 @@
+* child milter: reputation mode.
 * milter-test-server supports reply-code.
 * milter-test-server supports non-auth connection by command line option.
 * ignore error for existed but unreadable config file.
