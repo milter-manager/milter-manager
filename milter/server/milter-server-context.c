@@ -584,6 +584,13 @@ milter_server_context_get_status (MilterServerContext *context)
     return MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->status;
 }
 
+void
+milter_server_context_set_status (MilterServerContext *context,
+                                  MilterStatus status)
+{
+    MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->status = status;
+}
+
 MilterServerContextState
 milter_server_context_get_state (MilterServerContext *context)
 {

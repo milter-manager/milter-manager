@@ -1695,6 +1695,7 @@ cb_finished (MilterAgent *agent, gpointer user_data)
         child = MILTER_MANAGER_CHILD(context);
         fallback_status = milter_manager_child_get_fallback_status(child);
         state = milter_server_context_get_state(context);
+        milter_server_context_set_status(context, fallback_status);
         compile_reply_status(children, state, fallback_status);
     }
 

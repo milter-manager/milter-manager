@@ -317,6 +317,17 @@ gboolean             milter_server_context_establish_connection
 MilterStatus         milter_server_context_get_status  (MilterServerContext *context);
 
 /**
+ * milter_server_context_set_status:
+ * @context: a %MilterServerContext.
+ * @status: the new status.
+ *
+ * Sets the current status.
+ */
+void                 milter_server_context_set_status  (MilterServerContext *context,
+                                                        MilterStatus         status);
+
+
+/**
  * milter_server_context_get_state:
  * @context: a %MilterServerContext.
  *

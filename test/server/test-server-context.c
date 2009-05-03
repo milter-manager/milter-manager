@@ -37,6 +37,7 @@ void test_establish_connection_failure (void);
 void test_helo (void);
 void test_envelope_from (void);
 void test_status (void);
+void test_state (void);
 
 static MilterServerContext *context;
 static MilterTestClient *client;
@@ -308,7 +309,7 @@ test_envelope_from (void)
 }
 
 void
-test_status (void)
+test_state (void)
 {
     gcut_assert_equal_enum(MILTER_TYPE_SERVER_CONTEXT_STATE,
                            MILTER_SERVER_CONTEXT_STATE_START,
@@ -318,6 +319,19 @@ test_status (void)
     gcut_assert_equal_enum(MILTER_TYPE_SERVER_CONTEXT_STATE,
                            MILTER_SERVER_CONTEXT_STATE_QUIT,
                            milter_server_context_get_state(context));
+}
+
+void
+test_status (void)
+{
+    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
+                           MILTER_STATUS_NOT_CHANGE,
+                           milter_server_context_get_status(context));
+
+    milter_server_context_set_status(context, MILTER_STATUS_ACCEPT);
+    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
+                           MILTER_STATUS_ACCEPT,
+                           milter_server_context_get_status(context));
 }
 
 
