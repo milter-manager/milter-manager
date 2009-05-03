@@ -1,5 +1,6 @@
 EXTRA_DIST =				\
 	connect.txt			\
+	connect-fail.txt		\
 	data.txt			\
 	end-of-header.txt		\
 	envelope-from.txt		\

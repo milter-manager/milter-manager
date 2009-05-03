@@ -903,34 +903,38 @@ command_to_no_step_flag (MilterCommand command)
 
 static MilterStatus
 send_command_to_child (MilterManagerChildren *children,
-                       MilterServerContext *child,
+                       MilterServerContext *context,
                        MilterCommand command)
 {
     MilterManagerChildrenPrivate *priv;
-    MilterStatus status = MILTER_STATUS_TEMPORARY_FAILURE;
+    MilterManagerChild *child;
+    MilterStatus status;
+
+    child = MILTER_MANAGER_CHILD(context);
+    status = milter_manager_child_get_fallback_status(child);
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
     switch (command) {
     case MILTER_COMMAND_DATA:
         priv->current_state = MILTER_SERVER_CONTEXT_STATE_DATA;
-        if (milter_server_context_data(child))
+        if (milter_server_context_data(context))
             status = MILTER_STATUS_PROGRESS;
         break;
     case MILTER_COMMAND_HEADER:
-        status = send_next_header_to_child(children, child);
+        status = send_next_header_to_child(children, context);
         break;
     case MILTER_COMMAND_END_OF_HEADER:
         priv->current_state = MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER;
-        if (milter_server_context_end_of_header(child))
+        if (milter_server_context_end_of_header(context))
             status = MILTER_STATUS_PROGRESS;
         break;
     case MILTER_COMMAND_BODY:
-        return send_body_to_child(children, child);
+        return send_body_to_child(children, context);
         break;
     case MILTER_COMMAND_END_OF_MESSAGE:
         priv->processing_header_index = 0;
         priv->current_state = MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE;
-        if (milter_server_context_end_of_message(child,
+        if (milter_server_context_end_of_message(context,
                                                  priv->end_of_message_chunk,
                                                  priv->end_of_message_size))
             status = MILTER_STATUS_PROGRESS;
@@ -1682,6 +1686,17 @@ cb_finished (MilterAgent *agent, gpointer user_data)
 
     children = MILTER_MANAGER_CHILDREN(user_data);
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    if (milter_server_context_is_processing(context)) {
+        MilterManagerChild *child;
+        MilterStatus fallback_status;
+        MilterServerContextState state;
+
+        child = MILTER_MANAGER_CHILD(context);
+        fallback_status = milter_manager_child_get_fallback_status(child);
+        state = milter_server_context_get_state(context);
+        compile_reply_status(children, state, fallback_status);
+    }
 
     expire_child(children, context);
 
@@ -2623,10 +2638,14 @@ send_next_header_to_child (MilterManagerChildren *children, MilterServerContext 
 
     if (milter_server_context_header(context,
                                      header->name,
-                                     header->value + value_offset))
+                                     header->value + value_offset)) {
         return MILTER_STATUS_PROGRESS;
-    else
-        return MILTER_STATUS_TEMPORARY_FAILURE;
+    } else {
+        MilterManagerChild *child;
+
+        child = MILTER_MANAGER_CHILD(context);
+        return milter_manager_child_get_fallback_status(child);
+    }
 }
 
 gboolean
@@ -2883,6 +2902,8 @@ init_child_for_body_file (MilterManagerChildren *children,
 
     g_io_channel_seek_position(priv->body_file, 0, G_SEEK_SET, &error);
     if (error) {
+        MilterManagerChild *child;
+
         milter_error("[%u] [children][error][body][send][seek] [%u] %s: %s",
                      priv->tag,
                      milter_agent_get_tag(MILTER_AGENT(context)),
@@ -2891,7 +2912,8 @@ init_child_for_body_file (MilterManagerChildren *children,
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children), error);
         g_error_free(error);
 
-        return MILTER_STATUS_TEMPORARY_FAILURE;
+        child = MILTER_MANAGER_CHILD(context);
+        return milter_manager_child_get_fallback_status(child);
     }
 
     return MILTER_STATUS_NOT_CHANGE;
@@ -2930,6 +2952,7 @@ send_body_to_child_file (MilterManagerChildren *children,
     MilterManagerChildrenPrivate *priv;
     gchar buffer[MILTER_CHUNK_SIZE + 1];
     gsize read_size;
+    MilterManagerChild *child;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
     if (!priv->body_file)
@@ -2939,15 +2962,16 @@ send_body_to_child_file (MilterManagerChildren *children,
                                         buffer, MILTER_CHUNK_SIZE,
                                         &read_size, &error);
 
+    child = MILTER_MANAGER_CHILD(context);
     switch (io_status) {
     case G_IO_STATUS_ERROR:
-        status = MILTER_STATUS_TEMPORARY_FAILURE;
+        status = milter_manager_child_get_fallback_status(child);
         break;
     case G_IO_STATUS_NORMAL:
         if (milter_server_context_body(context, buffer, read_size)) {
             status = MILTER_STATUS_PROGRESS;
         } else {
-            status = MILTER_STATUS_TEMPORARY_FAILURE;
+            status = milter_manager_child_get_fallback_status(child);
         }
         break;
     case G_IO_STATUS_EOF:
@@ -2957,7 +2981,7 @@ send_body_to_child_file (MilterManagerChildren *children,
         status = MILTER_STATUS_PROGRESS;
         break;
     default:
-        status = MILTER_STATUS_TEMPORARY_FAILURE;
+        status = milter_manager_child_get_fallback_status(child);
         break;
     }
 
@@ -2970,7 +2994,7 @@ send_body_to_child_file (MilterManagerChildren *children,
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children), error);
         g_error_free(error);
 
-        return MILTER_STATUS_TEMPORARY_FAILURE;
+        status = milter_manager_child_get_fallback_status(child);
     }
 
     return status;
@@ -2994,7 +3018,10 @@ send_body_to_child_string (MilterManagerChildren *children,
         priv->sent_body_offset += MILTER_CHUNK_SIZE;
         init_command_waiting_child_queue(children, MILTER_COMMAND_BODY);
     } else {
-        status = MILTER_STATUS_TEMPORARY_FAILURE;
+        MilterManagerChild *child;
+
+        child = MILTER_MANAGER_CHILD(context);
+        status = milter_manager_child_get_fallback_status(child);
     }
 
     return status;

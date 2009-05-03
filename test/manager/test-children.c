@@ -865,11 +865,13 @@ static void
 do_negotiate (MilterManagerTestScenario *scenario, const gchar *group)
 {
     MilterOption *option;
+    guint n_emitted;
 
     option = milter_manager_test_scenario_get_option(scenario, group, NULL);
     gcut_take_object(G_OBJECT(option));
     milter_manager_children_negotiate(children, option, NULL);
-    wait_reply(1, n_negotiate_reply_emitted);
+    n_emitted = get_integer(scenario, group, "n_emitted");
+    wait_reply(n_emitted, n_negotiate_reply_emitted);
     cut_trace(assert_response(scenario, group));
 
     milter_assert_equal_option(option, actual_option);
@@ -1039,6 +1041,7 @@ data_scenario (void)
                  "negotiate - retry - fail",
                  g_strdup("negotiate-retry-fail.txt"), g_free,
                  "connect", g_strdup("connect.txt"), g_free,
+                 "connect - fail", g_strdup("connect-fail.txt"), g_free,
                  /* WRITEME */
                  /* "connect - stop", g_strdup("connect-stop.txt"), g_free */
                  /* "connect - half stop", g_strdup("connect-half-stop.txt"),

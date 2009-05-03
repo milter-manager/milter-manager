@@ -1,3 +1,11 @@
+2009-05-03  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/manager/milter-manager-children.c,
+	test/manager/test-children.c,
+	test/fixtures/children/connect-fail.txt,
+	test/fixtures/children/Makefile.am: use fallback status on
+	unexpected case.
+
 2009-05-02  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/manager/milter-manager-leader.c,

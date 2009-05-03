@@ -1,0 +1,17 @@
+[scenario]
+clients=client10026
+import=negotiate.txt
+actions=connect-fail
+
+[client10026]
+port=10026
+arguments=--quit-without-reply=connect
+
+[connect-fail]
+command=connect
+
+host=mx.local.net
+address=inet:2929@192.168.1.29
+
+response=accept
+n_emitted=1
