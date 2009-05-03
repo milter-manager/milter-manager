@@ -4,7 +4,6 @@
   It's a case for dkim-filter.
 * add stopper interfaces on all events (e.g. DATA, BODY and so on)
 * support Postfix SMTP Access Policy Delegation protocol.
-* per milter fallback status.
 * support munin?
 * milter-manager-admin: update to Rails 2.3.2.
 * generates a result status graph for each milter.

@@ -494,6 +494,24 @@ Required item is just only milter.connection_spec.
    Default:
      milter.enabled = true
 
+: milter.fallback_status
+
+   Specifies a status that is used the child milter causes
+   an error.
+
+   Here is available values:
+
+     * "accept": Accepts a mail. It's the default.
+     * "temporary-failure": Rejects a mail temporary.
+     * "reject": Rejects a mail.
+     * "discard": Discards a mail.
+
+   Example:
+     milter.fallback_status = "temporary-failure"
+
+   Default:
+     milter.fallback_status = "accept"
+
 : milter.applicable_conditions
 
    Specifies applicable conditions for the child milter. The

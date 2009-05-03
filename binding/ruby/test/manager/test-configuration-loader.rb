@@ -294,6 +294,22 @@ EOX
                  end)
   end
 
+  def test_define_milter_fallback_status
+    @loader.define_milter("milter") do |milter|
+      assert_equal("accept", milter.fallback_status)
+      milter.fallback_status = "temporary_failure"
+      assert_equal("temporary-failure", milter.fallback_status)
+    end
+  end
+
+  def test_define_milter_invalid_fallback_status
+    @loader.define_milter("milter") do |milter|
+      assert_raise(Milter::Manager::ConfigurationLoader::InvalidValue) do
+        milter.fallback_status = "default"
+      end
+    end
+  end
+
   def test_define_applicable_condition_again
     @loader.define_applicable_condition("S25R") do |condition|
       condition.description = "Selective SMTP Rejection."

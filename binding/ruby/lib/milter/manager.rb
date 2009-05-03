@@ -674,6 +674,32 @@ module Milter::Manager
         @egg.command_options = options
       end
 
+      def fallback_status
+        status = @egg.fallback_status
+        status.nick
+      end
+
+      def fallback_status=(status)
+        available_values = {
+          "accept" => Milter::Status::ACCEPT,
+          "reject" => Milter::Status::REJECT,
+          "temporary-failure" => Milter::Status::TEMPORARY_FAILURE,
+          "discard" => Milter::Status::DISCARD,
+        }
+        if status.respond_to?(:nick)
+          normalized_status = status.nick
+        else
+          normalized_status = status.to_s.downcase.gsub(/_/, '-')
+        end
+        value = available_values[normalized_status]
+        if value.nil?
+          raise InvalidValue.new("milter.fallback_status",
+                                 available_values.keys,
+                                 status)
+        end
+        @egg.fallback_status = value
+      end
+
       def method_missing(name, *args, &block)
         @egg.send(name, *args, &block)
       end

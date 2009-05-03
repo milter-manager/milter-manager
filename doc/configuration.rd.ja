@@ -492,6 +492,24 @@ define_milter do ... end内で設定できる項目は以下の通りです。
    既定値:
      milter.enabled = true
 
+: milter.fallback_status
+
+   子milterに問題があったとき、指定したステータスを返したと
+   して扱います。
+
+   指定できる値は以下のいずれかの値です。
+
+     * "accept": メールを受信します。既定値です。
+     * "temporary-failure": メールを一時的に拒否します。
+     * "reject": メールを拒否します。
+     * "discard": メールを破棄します。
+
+   例:
+     milter.fallback_status = "temporary-failure"
+
+   既定値:
+     milter.fallback_status = "accept"
+
 : milter.applicable_conditions
 
    子milterを適用する条件を指定します。
