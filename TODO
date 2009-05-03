@@ -7,6 +7,7 @@
 * support Postfix SMTP Access Policy Delegation protocol.
 * support munin?
 * milter-manager-admin: update to Rails 2.3.2.
+* milter-manager-admin: supports fallback status.
 * generates a result status graph for each milter.
 * MilterCommandDecoder: support ESMTP parameters on MAIL FROM and RCPT TO.
 -----

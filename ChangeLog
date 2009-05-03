@@ -1,5 +1,7 @@
 2009-05-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: add: milter-manager-admin: supports fallback status.
+
 	* TODO:
 	- remove: add stopper interfaces on all events (e.g. DATA, BODY
 	  and so on)
