@@ -32,7 +32,8 @@
 
 void test_negotiate_reply (void);
 void test_continue (void);
-void test_reply_code (void);
+void test_reply_code_temporary_failure (void);
+void test_reply_code_reject (void);
 void test_temporary_failure (void);
 void test_reject (void);
 void test_accept (void);
@@ -604,14 +605,33 @@ test_continue (void)
 }
 
 void
-test_reply_code (void)
+test_reply_code_temporary_failure (void)
+{
+    const gchar code[] = "451 4.7.1 Greylisting in action, please come back";
+
+    milter_reply_encoder_encode_reply_code(encoder, &packet, &packet_size, code);
+    write_data(packet, packet_size);
+    cut_assert_equal_int(1, n_reply_codes);
+    cut_assert_equal_uint(451, actual_reply_code);
+    cut_assert_equal_string("4.7.1", actual_reply_extended_code);
+    cut_assert_equal_string("Greylisting in action, please come back",
+                            actual_reply_message);
+    milter_assert_status(MILTER_STATUS_TEMPORARY_FAILURE);
+}
+
+void
+test_reply_code_reject (void)
 {
     const gchar code[] = "554 5.7.1 1% 2%% 3%%%";
+
     milter_reply_encoder_encode_reply_code(encoder, &packet, &packet_size, code);
     write_data(packet, packet_size);
     cut_assert_equal_int(1, n_reply_codes);
     cut_assert_equal_uint(554, actual_reply_code);
-    milter_assert_status(MILTER_STATUS_NOT_CHANGE);
+    cut_assert_equal_string("5.7.1", actual_reply_extended_code);
+    cut_assert_equal_string("1% 2%% 3%%%",
+                            actual_reply_message);
+    milter_assert_status(MILTER_STATUS_REJECT);
 }
 
 void

@@ -1521,6 +1521,12 @@ cb_decoder_reply_code (MilterReplyDecoder *decoder,
     MilterServerContextPrivate *priv;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+    if (priv->state != MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT) {
+        if (400 <= code && code < 500)
+            priv->status = MILTER_STATUS_TEMPORARY_FAILURE;
+        else
+            priv->status = MILTER_STATUS_REJECT;
+    }
 
     disable_timeout(priv);
 
