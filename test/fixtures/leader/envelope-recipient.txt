@@ -12,10 +12,10 @@ port=10027
 [envelope-recipient]
 command=envelope-recipient
 
-recipient=kou+receiver@cozmixng.org
+recipient=kou+receiver@example.com
 
 response=envelope-recipient
 n_received=2
 status=continue
 
-recipients=kou+receiver@cozmixng.org;kou+receiver@cozmixng.org
+recipients=kou+receiver@example.com;kou+receiver@example.com

@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -749,8 +749,8 @@ static void
 setup_define_macro_connect_packet (void)
 {
     g_string_append(buffer, "C");
-    append_name_and_value("j", "debian.cozmixng.org");
-    append_name_and_value("daemon_name", "debian.cozmixng.org");
+    append_name_and_value("j", "debian.example.com");
+    append_name_and_value("daemon_name", "debian.example.com");
     append_name_and_value("v", "Postfix 2.5.5");
 }
 
@@ -764,14 +764,14 @@ static void
 setup_define_macro_envelope_from_packet (void)
 {
     g_string_append(buffer, "M");
-    append_name_and_value("{mail_addr}", "kou@cozmixng.org");
+    append_name_and_value("{mail_addr}", "kou@example.com");
 }
 
 static void
 setup_define_macro_envelope_recipient_packet (void)
 {
     g_string_append(buffer, "R");
-    append_name_and_value("{rcpt_addr}", "kou@cozmixng.org");
+    append_name_and_value("{rcpt_addr}", "kou@example.com");
 }
 
 static void
@@ -802,8 +802,8 @@ data_decode_define_macro (void)
     cut_add_data("connect",
                  define_macro_test_data_new(setup_define_macro_connect_packet,
                                             MILTER_COMMAND_CONNECT,
-                                            "j", "debian.cozmixng.org",
-                                            "daemon_name", "debian.cozmixng.org",
+                                            "j", "debian.example.com",
+                                            "daemon_name", "debian.example.com",
                                             "v", "Postfix 2.5.5",
                                             NULL),
                  define_macro_test_data_free);
@@ -818,7 +818,7 @@ data_decode_define_macro (void)
                  define_macro_test_data_new(
                      setup_define_macro_envelope_from_packet,
                      MILTER_COMMAND_ENVELOPE_FROM,
-                     "mail_addr", "kou@cozmixng.org",
+                     "mail_addr", "kou@example.com",
                      NULL),
                  define_macro_test_data_free);
 
@@ -826,7 +826,7 @@ data_decode_define_macro (void)
                  define_macro_test_data_new(
                      setup_define_macro_envelope_recipient_packet,
                      MILTER_COMMAND_ENVELOPE_RECIPIENT,
-                     "rcpt_addr", "kou@cozmixng.org",
+                     "rcpt_addr", "kou@example.com",
                      NULL),
                  define_macro_test_data_free);
 
@@ -1248,7 +1248,7 @@ test_decode_helo_without_null (void)
 void
 test_decode_envelope_from (void)
 {
-    const gchar from[] = "<kou@cozmixng.org>";
+    const gchar from[] = "<kou@example.com>";
 
     g_string_append(buffer, "M");
     g_string_append(buffer, from);
@@ -1262,7 +1262,7 @@ test_decode_envelope_from (void)
 void
 test_decode_envelope_from_without_null (void)
 {
-    const gchar from[] = "<kou@cozmixng.org>";
+    const gchar from[] = "<kou@example.com>";
 
     g_string_append(buffer, "M");
     g_string_append(buffer, from);
@@ -1270,7 +1270,7 @@ test_decode_envelope_from_without_null (void)
     expected_error = g_error_new(MILTER_DECODER_ERROR,
                                  MILTER_DECODER_ERROR_MISSING_NULL,
                                  "FROM isn't terminated by NULL "
-                                 "on MAIL command: <<kou@cozmixng.org>>");
+                                 "on MAIL command: <<kou@example.com>>");
     actual_error = decode();
     gcut_assert_equal_error(expected_error, actual_error);
 }
@@ -1278,7 +1278,7 @@ test_decode_envelope_from_without_null (void)
 void
 test_decode_envelope_recipient (void)
 {
-    const gchar recipient[] = "<kou@cozmixng.org>";
+    const gchar recipient[] = "<kou@example.com>";
 
     g_string_append(buffer, "R");
     g_string_append(buffer, recipient);
@@ -1292,7 +1292,7 @@ test_decode_envelope_recipient (void)
 void
 test_decode_envelope_recipient_without_null (void)
 {
-    const gchar recipient[] = "<kou@cozmixng.org>";
+    const gchar recipient[] = "<kou@example.com>";
 
     g_string_append(buffer, "R");
     g_string_append(buffer, recipient);
@@ -1300,7 +1300,7 @@ test_decode_envelope_recipient_without_null (void)
     expected_error = g_error_new(MILTER_DECODER_ERROR,
                                  MILTER_DECODER_ERROR_MISSING_NULL,
                                  "TO isn't terminated by NULL "
-                                 "on RCPT command: <<kou@cozmixng.org>>");
+                                 "on RCPT command: <<kou@example.com>>");
     actual_error = decode();
     gcut_assert_equal_error(expected_error, actual_error);
 }
@@ -1336,8 +1336,8 @@ test_decode_data_with_garbage (void)
 void
 test_decode_header (void)
 {
-    const gchar from[] = "<kou@cozmixng.org>";
-    const gchar recipient[] = "<kou@cozmixng.org>";
+    const gchar from[] = "<kou@example.com>";
+    const gchar recipient[] = "<kou@example.com>";
     const gchar date[] = "Fri,  5 Sep 2008 09:19:56 +0900 (JST)";
     const gchar message_id[] = "<1ed5.0003.0000@delian>";
 
@@ -1422,7 +1422,7 @@ test_decode_header_without_name_null (void)
 void
 test_decode_header_without_value_null (void)
 {
-    const gchar from[] = "<kou@cozmixng.org>";
+    const gchar from[] = "<kou@example.com>";
 
     g_string_append(buffer, "L");
     g_string_append(buffer, "From");
@@ -1433,7 +1433,7 @@ test_decode_header_without_value_null (void)
                                  MILTER_DECODER_ERROR_MISSING_NULL,
                                  "value isn't terminated by NULL "
                                  "on header: <From>: "
-                                 "<<kou@cozmixng.org>>");
+                                 "<<kou@example.com>>");
     actual_error = decode();
     gcut_assert_equal_error(expected_error, actual_error);
 }

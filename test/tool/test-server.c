@@ -1119,8 +1119,8 @@ option_test_assert_output_message (void)
     cut_assert_equal_string(
         "status: pass\n"
         "\n"
-        NORMAL_COLOR "  From: <kou+send@cozmixng.org>" NORMAL_COLOR "\n"
-        NORMAL_COLOR "  To: <kou+receive@cozmixng.org>" NORMAL_COLOR "\n"
+        NORMAL_COLOR "  From: <kou+send@example.com>" NORMAL_COLOR "\n"
+        NORMAL_COLOR "  To: <kou+receive@example.com>" NORMAL_COLOR "\n"
         "---------------------------------------\n"
         "La de da de da 1.\n"
         "La de da de da 2.\n"
@@ -1328,7 +1328,7 @@ change_from_function (void)
 static void
 end_of_message_action_assert_change_from (void)
 {
-    cut_assert_match("(.*\n)*- From: <kou\\+send@cozmixng\\.org>"
+    cut_assert_match("(.*\n)*- From: <kou\\+send@example\\.com>"
                      "(.*\n)*", output_string->str);
     cut_assert_match("(.*\n)*\\+ From: changed-from@example\\.com"
                      "(.*\n)*", output_string->str);
@@ -1348,9 +1348,9 @@ add_recipient_function (void)
 static void
 end_of_message_action_assert_add_recipient (void)
 {
-    cut_assert_match("(.*\n)*- To: <kou\\+receive@cozmixng\\.org>"
+    cut_assert_match("(.*\n)*- To: <kou\\+receive@example\\.com>"
                      "(.*\n)*", output_string->str);
-    cut_assert_match("(.*\n)*\\+ To: <kou\\+receive@cozmixng\\.org>, added-to@example\\.com"
+    cut_assert_match("(.*\n)*\\+ To: <kou\\+receive@example\\.com>, added-to@example\\.com"
                      "(.*\n)*", output_string->str);
 }
 
@@ -1360,7 +1360,7 @@ delete_recipient_function (void)
     packet_free();
 
     milter_reply_encoder_encode_delete_recipient(encoder, &packet, &packet_size,
-                                                 "kou+receive@cozmixng.org");
+                                                 "kou+receive@example.com");
 
     write_data(packet, packet_size);
 }
@@ -1368,7 +1368,7 @@ delete_recipient_function (void)
 static void
 end_of_message_action_assert_delete_recipient (void)
 {
-    cut_assert_match("(.*\n)*- To: <kou\\+receive@cozmixng\\.org>"
+    cut_assert_match("(.*\n)*- To: <kou\\+receive@example\\.com>"
                      "(.*\n)*", output_string->str);
 }
 
@@ -1422,7 +1422,7 @@ change_header_function (void)
 static void
 end_of_message_action_assert_change_header (void)
 {
-    cut_assert_match("(.*\n)*- To: <kou\\+receive@cozmixng\\.org>"
+    cut_assert_match("(.*\n)*- To: <kou\\+receive@example\\.com>"
                      "(.*\n)*", output_string->str);
     cut_assert_match("(.*\n)*\\+ To: changed-to@example\\.com"
                      "(.*\n)*", output_string->str);
@@ -1442,7 +1442,7 @@ delete_header_function (void)
 static void
 end_of_message_action_assert_delete_header (void)
 {
-    cut_assert_match("(.*\n)*- To: <kou\\+receive@cozmixng\\.org>"
+    cut_assert_match("(.*\n)*- To: <kou\\+receive@example\\.com>"
                      "(.*\n)*", output_string->str);
 }
 
@@ -1623,7 +1623,7 @@ create_expected_default_macros_table (void)
                         GINT_TO_POINTER(MILTER_COMMAND_ENVELOPE_RECIPIENT),
                         create_macro_hash_table("rcpt_mailer", "rcpt_mailer",
                                                 "rcpt_host", "rcpt_host",
-                                                "rcpt_addr", "<kou+receive@cozmixng.org>",
+                                                "rcpt_addr", "<kou+receive@example.com>",
                                                 NULL));
     g_hash_table_insert(expected_macros_table,
                         GINT_TO_POINTER(MILTER_COMMAND_END_OF_MESSAGE),

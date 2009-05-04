@@ -21,4 +21,4 @@ reply_codes=451 4.7.0 DNS timeout
 
 chunks=;;
 end_of_message_chunks=Reply code;;
-headers=From:kou+sender@cozmixng.org
+headers=From:kou+sender@example.com

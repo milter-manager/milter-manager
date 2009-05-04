@@ -13,13 +13,13 @@ port=10027
 command=header
 
 name=From
-value=kou+sender@cozmixng.org
+value=kou+sender@example.com
 
 response=header
 n_received=1
 status=continue
 
-headers=From;kou+sender@cozmixng.org;;;
+headers=From;kou+sender@example.com;;;
 
 [header-mailer]
 command=header

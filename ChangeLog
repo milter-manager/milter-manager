@@ -1,5 +1,8 @@
 2009-05-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/, test/: use example.com instead of cozmixng.org for sample
+	domain.
+
 	* TODO: add: milter-test-server: stop processing if all recipients
 	are rejected.
 

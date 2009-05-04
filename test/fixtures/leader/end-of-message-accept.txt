@@ -20,4 +20,4 @@ status=continue
 
 chunks=;Hi,;
 end_of_message_chunks=Accept;Accept;
-headers=From:kou+sender@cozmixng.org
+headers=From:kou+sender@example.com

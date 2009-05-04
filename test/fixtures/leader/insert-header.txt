@@ -18,7 +18,7 @@ response=end-of-message
 n_received=2
 status=continue
 
-headers=From:kou+sender@cozmixng.org;X-Test-Header2:Test Header2 Value;X-Test-Header1:Test Header1 Value
+headers=From:kou+sender@example.com;X-Test-Header2:Test Header2 Value;X-Test-Header1:Test Header1 Value
 
 chunks=;Hi,;
 end_of_message_chunks=;;

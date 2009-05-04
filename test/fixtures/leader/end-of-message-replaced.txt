@@ -32,4 +32,4 @@ chunks=;This is the replaced message by client1.
 end_of_message_chunks=;;
 
 replace_bodies=This is the replaced message by client1.
-headers=From:kou+sender@cozmixng.org
+headers=From:kou+sender@example.com

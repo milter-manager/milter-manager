@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -531,7 +531,7 @@ test_getsymval (void)
 {
     GHashTable *macros;
 
-    macros = gcut_hash_table_string_string_new("{mail_addr}", "kou@cozmixng.org",
+    macros = gcut_hash_table_string_string_new("{mail_addr}", "kou@example.com",
                                                NULL);
     milter_command_encoder_encode_define_macro(command_encoder,
                                                &packet, &packet_size,
@@ -545,9 +545,9 @@ test_getsymval (void)
     macro_name = g_strdup("mail_addr");
     milter_command_encoder_encode_envelope_from(command_encoder,
                                                 &packet, &packet_size,
-                                                "<kou@cozmixng.org>");
+                                                "<kou@example.com>");
     gcut_assert_error(feed());
-    cut_assert_equal_string("kou@cozmixng.org", macro_value);
+    cut_assert_equal_string("kou@example.com", macro_value);
 }
 
 void

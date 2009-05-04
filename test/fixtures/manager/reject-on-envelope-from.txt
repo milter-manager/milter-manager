@@ -4,7 +4,7 @@ expected=status: reject
 
 [client10026]
 port=10026
-arguments=--action;reject;--envelope-from;<kou+send@cozmixng.org>
+arguments=--action;reject;--envelope-from;<kou+send@example.com>
 
 [client10027]
 port=10027

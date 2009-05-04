@@ -22,4 +22,4 @@ n_progresses=2
 
 chunks=;Hi,;
 end_of_message_chunks=;;
-headers=From:kou+sender@cozmixng.org
+headers=From:kou+sender@example.com

@@ -1157,9 +1157,9 @@ post_option_parse (GOptionContext *option_context,
     if (!helo_host)
         helo_host = g_strdup("delian");
     if (!envelope_from)
-        envelope_from = g_strdup("<kou+send@cozmixng.org>");
+        envelope_from = g_strdup("<kou+send@example.com>");
     if (!recipients)
-        recipients = g_strsplit("<kou+receive@cozmixng.org>", ",", -1);
+        recipients = g_strsplit("<kou+receive@example.com>", ",", -1);
     if (!milter_headers_lookup_by_name(option_headers, "From"))
         milter_headers_add_header(option_headers, "From", envelope_from);
     if (!milter_headers_lookup_by_name(option_headers, "To"))

@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -942,8 +942,8 @@ test_feed_connect_with_macro (void)
     clear_reuse_data();
 
     expected_macros =
-        gcut_hash_table_string_string_new("j", "debian.cozmixng.org",
-                                          "daemon_name", "debian.cozmixng.org",
+        gcut_hash_table_string_string_new("j", "debian.example.com",
+                                          "daemon_name", "debian.example.com",
                                           "v", "Postfix 2.5.5",
                                           NULL);
     milter_command_encoder_encode_define_macro(encoder,
@@ -1042,12 +1042,12 @@ feed_envelope_from_pre_hook_with_macro (void)
     GHashTable *macros;
 
     macro_name = g_strdup("mail_addr");
-    expected_macro_value = g_strdup("kou@cozmixng.org");
+    expected_macro_value = g_strdup("kou@example.com");
     macros =
-        gcut_hash_table_string_string_new("{mail_addr}", "kou@cozmixng.org",
+        gcut_hash_table_string_string_new("{mail_addr}", "kou@example.com",
                                           NULL);
     expected_macros =
-        gcut_hash_table_string_string_new("mail_addr", "kou@cozmixng.org",
+        gcut_hash_table_string_string_new("mail_addr", "kou@example.com",
                                           NULL);
     milter_command_encoder_encode_define_macro(encoder,
                                        &packet, &packet_size,
@@ -1069,7 +1069,7 @@ void
 test_feed_envelope_from (gconstpointer data)
 {
     const HookFunction pre_hook = data;
-    const gchar from[] = "<kou@cozmixng.org>";
+    const gchar from[] = "<kou@example.com>";
 
     test_feed_helo(feed_helo_pre_hook_with_macro);
     clear_reuse_data();
@@ -1102,12 +1102,12 @@ feed_envelope_recipient_pre_hook_with_macro (void)
     GHashTable *macros;
 
     macro_name = g_strdup("{rcpt_addr}");
-    expected_macro_value = g_strdup("kou@cozmixng.org");
+    expected_macro_value = g_strdup("kou@example.com");
     macros =
-        gcut_hash_table_string_string_new("{rcpt_addr}", "kou@cozmixng.org",
+        gcut_hash_table_string_string_new("{rcpt_addr}", "kou@example.com",
                                           NULL);
     expected_macros =
-        gcut_hash_table_string_string_new("rcpt_addr", "kou@cozmixng.org",
+        gcut_hash_table_string_string_new("rcpt_addr", "kou@example.com",
                                           NULL);
     milter_command_encoder_encode_define_macro(encoder,
                                                &packet, &packet_size,
@@ -1131,7 +1131,7 @@ void
 test_feed_envelope_recipient (gconstpointer data)
 {
     const HookFunction pre_hook = data;
-    const gchar to[] = "<kou@cozmixng.org>";
+    const gchar to[] = "<kou@example.com>";
 
     test_feed_envelope_from(feed_envelope_from_pre_hook_with_macro);
     clear_reuse_data();
