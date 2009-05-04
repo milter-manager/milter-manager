@@ -1117,8 +1117,8 @@ test_connect_with_macro (void)
     inet_aton(ip_address, &(address.sin_addr));
 
     connect_macros =
-        gcut_hash_table_string_string_new("j", "debian.cozmixng.org",
-                                          "daemon_name", "debian.cozmixng.org",
+        gcut_hash_table_string_string_new("j", "debian.example.com",
+                                          "daemon_name", "debian.example.com",
                                           "v", "Postfix 2.5.5",
                                           NULL);
     milter_manager_children_define_macro(children,
