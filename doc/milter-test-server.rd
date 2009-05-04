@@ -125,6 +125,24 @@ automated unit tests.
     callback. xxfi_unknown() is called between
     xxfi_envrcpt() and xxfi_data().
 
+: --authenticated-name=NAME
+
+    Uses ((|NAME|)) as an authorized user name on SMTP
+    Auth. It corresponds to SASL login name. ((|NAME|)) is
+    passed as a value of (({{auth_authen}})) on MAIL FROM.
+
+: --authenticated-type=TYPE
+
+    Uses ((|TYPE|)) as an authorized type on SMTP Auth. It
+    corresponds to SASL login method. ((|TYPE|)) is passed
+    as a value of (({{auth_type}})) on MAIL FROM.
+
+: --authenticated-author=AUTHOR
+
+    Uses ((|AUTHOR|)) as an authorized sender on SMTP
+    Auth. It corresponds to SASL sender. ((|AUTHOR|)) is
+    passed as a value of (({{auth_author}})) on MAIL FROM.
+
 : --mail-file=PATH
 
     Uses file exists at PATH as mail content. If the file

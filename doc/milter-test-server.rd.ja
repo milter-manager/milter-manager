@@ -131,6 +131,26 @@ milter-test-serverはヘッダや本文が変更された場合は、変更さ�
     す。xxfi_unknown()コールバックは、xxfi_envrcpt()コールバッ
     クとxxfi_data()コールバックの間に呼ばれます。
 
+: --authenticated-name=NAME
+
+    SMTP Authで認証されたユーザ名を指定します。SASLでのログ
+    イン名に相当します。このオプションを指定するとMAIL FROM
+    のときに(({{auth_authen}}))の値として((|NAME|))を渡しま
+    す。
+
+: --authenticated-type=TYPE
+
+    SMTP Authの認証に使用した方法を指定します。SASLでのログ
+    インメソッドに相当します。このオプションを指定するとMAIL
+    FROMのときに(({{auth_type}}))の値として((|TYPE|))を渡しま
+    す。
+
+: --authenticated-author=AUTHOR
+
+    SMTP Authで認証された送信者を指定します。SASL送信者に相
+    当します。このオプションを指定するとMAIL FROMのときに
+    (({{auth_author}}))の値として((|AUTHOR|))を渡します。
+
 : --mail-file=PATH
 
     メールの内容としてPATHにあるメールを使います。メール中に

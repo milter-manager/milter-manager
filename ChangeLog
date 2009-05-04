@@ -1,5 +1,9 @@
 2009-05-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* misc/rd2man-lib.rb: support variable markup.
+
+	* doc/milter-test-server.rd*: add --authenticated-* option.
+
 	* test/tool/test-server.c: cleanup.
 
 	* test/tool/test-server.c (option_test_assert_large_mail): write you.
