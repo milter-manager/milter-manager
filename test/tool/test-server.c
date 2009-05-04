@@ -410,9 +410,10 @@ setup (void)
     actual_recipients = NULL;
     actual_headers = milter_headers_new();
     actual_body_string = g_string_new(NULL);
-    actual_defined_macros = g_hash_table_new_full(g_direct_hash, g_direct_equal,
-                                                  NULL,
-                                                  (GDestroyNotify)g_hash_table_unref);
+    actual_defined_macros =
+        g_hash_table_new_full(g_direct_hash, g_direct_equal,
+                              NULL,
+                              (GDestroyNotify)g_hash_table_unref);
     exit_status = EXIT_FAILURE;
 }
 
@@ -634,248 +635,241 @@ create_expected_command_receives (MilterCommand first_command, ...)
 void
 data_result (void)
 {
-    cut_add_data("all continue",
-                 result_test_data_new(MILTER_ACTION_NONE,
-                                      MILTER_STEP_NONE,
-                                      MILTER_STATUS_NOT_CHANGE,
-                                      NULL,
-                                      NULL,
-                                      NULL,
-                                      NULL),
-                 result_test_data_free,
-                 "no helo",
-                 result_test_data_new(MILTER_ACTION_NONE,
-                                      MILTER_STEP_NO_HELO,
-                                      MILTER_STATUS_NOT_CHANGE,
-                                      NULL,
-                                      create_expected_command_receives(MILTER_COMMAND_HELO, 0,
-                                                                       NULL),
-                                      NULL,
-                                      NULL),
-                 result_test_data_free,
-                 "no connect",
-                 result_test_data_new(MILTER_ACTION_NONE,
-                                      MILTER_STEP_NO_CONNECT,
-                                      MILTER_STATUS_NOT_CHANGE,
-                                      NULL,
-                                      create_expected_command_receives(MILTER_COMMAND_CONNECT, 0,
-                                                                       NULL),
-                                      NULL,
-                                      NULL),
-                 result_test_data_free,
-                 "no envelope-from",
-                 result_test_data_new(MILTER_ACTION_NONE,
-                                      MILTER_STEP_NO_ENVELOPE_FROM,
-                                      MILTER_STATUS_NOT_CHANGE,
-                                      NULL,
-                                      create_expected_command_receives(MILTER_COMMAND_ENVELOPE_FROM, 0,
-                                                                       NULL),
-                                      NULL,
-                                      NULL),
-                 result_test_data_free,
-                 "no envelope-recipient",
-                 result_test_data_new(MILTER_ACTION_NONE,
-                                      MILTER_STEP_NO_ENVELOPE_RECIPIENT,
-                                      MILTER_STATUS_NOT_CHANGE,
-                                      NULL,
-                                      create_expected_command_receives(MILTER_COMMAND_ENVELOPE_RECIPIENT, 0,
-                                                                       NULL),
-                                      NULL,
-                                      NULL),
-                 result_test_data_free,
-                 "no unknown",
-                 result_test_data_new(MILTER_ACTION_NONE,
-                                      MILTER_STEP_NO_UNKNOWN,
-                                      MILTER_STATUS_NOT_CHANGE,
-                                      NULL,
-                                      create_expected_command_receives(MILTER_COMMAND_UNKNOWN, 0,
-                                                                       NULL),
-                                      NULL,
-                                      NULL),
-                 result_test_data_free,
-                 "no header",
-                 result_test_data_new(MILTER_ACTION_NONE,
-                                      MILTER_STEP_NO_HEADERS,
-                                      MILTER_STATUS_NOT_CHANGE,
-                                      NULL,
-                                      create_expected_command_receives(MILTER_COMMAND_HEADER, 0,
-                                                                       NULL),
-                                      NULL,
-                                      NULL),
-                 result_test_data_free,
-                 "no end-of-header",
-                 result_test_data_new(MILTER_ACTION_NONE,
-                                      MILTER_STEP_NO_END_OF_HEADER,
-                                      MILTER_STATUS_NOT_CHANGE,
-                                      NULL,
-                                      create_expected_command_receives(MILTER_COMMAND_END_OF_HEADER, 0,
-                                                                       NULL),
-                                      NULL,
-                                      NULL),
-                 result_test_data_free,
-                 "no data",
-                 result_test_data_new(MILTER_ACTION_NONE,
-                                      MILTER_STEP_NO_DATA,
-                                      MILTER_STATUS_NOT_CHANGE,
-                                      NULL,
-                                      create_expected_command_receives(MILTER_COMMAND_DATA, 0,
-                                                                       NULL),
-                                      NULL,
-                                      NULL),
-                 result_test_data_free,
-                 "no body",
-                 result_test_data_new(MILTER_ACTION_NONE,
-                                      MILTER_STEP_NO_BODY,
-                                      MILTER_STATUS_NOT_CHANGE,
-                                      NULL,
-                                      create_expected_command_receives(MILTER_COMMAND_BODY, 0,
-                                                                       NULL),
-                                      NULL,
-                                      NULL),
-                 result_test_data_free,
-                 "helo accept",
-                 result_test_data_new(MILTER_ACTION_NONE,
-                                      MILTER_STEP_NONE,
-                                      MILTER_STATUS_ACCEPT,
-                                      create_replies(MILTER_COMMAND_HELO,
-                                                     MILTER_REPLY_ACCEPT,
-                                                     NULL),
-                                      create_expected_command_receives(MILTER_COMMAND_HELO, 1,
-                                                                       MILTER_COMMAND_ENVELOPE_FROM, 0,
-                                                                       NULL),
-                                      NULL,
-                                      NULL),
-                 result_test_data_free,
-                 "envelope-from discard",
-                 result_test_data_new(MILTER_ACTION_NONE,
-                                      MILTER_STEP_NONE,
-                                      MILTER_STATUS_DISCARD,
-                                      create_replies(MILTER_COMMAND_ENVELOPE_FROM,
-                                                     MILTER_REPLY_DISCARD,
-                                                     NULL),
-                                      create_expected_command_receives(MILTER_COMMAND_ENVELOPE_FROM, 1,
-                                                                       MILTER_COMMAND_ENVELOPE_RECIPIENT, 0,
-                                                                       NULL),
-                                      NULL,
-                                      NULL),
-                 result_test_data_free,
-                 "data temporary-failure",
-                 result_test_data_new(MILTER_ACTION_NONE,
-                                      MILTER_STEP_NONE,
-                                      MILTER_STATUS_TEMPORARY_FAILURE,
-                                      create_replies(MILTER_COMMAND_DATA,
-                                                     MILTER_REPLY_TEMPORARY_FAILURE,
-                                                     NULL),
-                                      create_expected_command_receives(MILTER_COMMAND_DATA, 1,
-                                                                       MILTER_COMMAND_HEADER, 0,
-                                                                       NULL),
-                                      NULL,
-                                      NULL),
-                 result_test_data_free,
-                 "body quarantine",
-                 result_test_data_new(MILTER_ACTION_NONE,
-                                      MILTER_STEP_NONE,
-                                      MILTER_STATUS_NOT_CHANGE,
-                                      create_replies(MILTER_COMMAND_BODY,
-                                                     MILTER_REPLY_QUARANTINE,
-                                                     NULL),
-                                      create_expected_command_receives(MILTER_COMMAND_BODY, 1,
-                                                                       MILTER_COMMAND_END_OF_MESSAGE, 0,
-                                                                       NULL),
-                                      NULL,
-                                      NULL),
-                 result_test_data_free,
-                 "connect reject",
-                 result_test_data_new(MILTER_ACTION_NONE,
-                                      MILTER_STEP_NONE,
-                                      MILTER_STATUS_REJECT,
-                                      create_replies(MILTER_COMMAND_CONNECT,
-                                                     MILTER_REPLY_REJECT,
-                                                     NULL),
-                                      create_expected_command_receives(MILTER_COMMAND_CONNECT, 1,
-                                                                       MILTER_COMMAND_HELO, 0,
-                                                                       NULL),
-                                      NULL,
-                                      NULL),
-                 result_test_data_free,
-                 "envelope-recipient reject",
-                 result_test_data_new(MILTER_ACTION_NONE,
-                                      MILTER_STEP_NONE,
-                                      MILTER_STATUS_NOT_CHANGE,
-                                      create_replies(MILTER_COMMAND_ENVELOPE_RECIPIENT,
-                                                     MILTER_REPLY_REJECT,
-                                                     NULL),
-                                      create_expected_command_receives(MILTER_COMMAND_ENVELOPE_RECIPIENT, 1,
-                                                                       MILTER_COMMAND_DATA, 1,
-                                                                       NULL),
-                                      NULL,
-                                      NULL),
-                 result_test_data_free,
-                 "envelope-recipient temporary-failure",
-                 result_test_data_new(MILTER_ACTION_NONE,
-                                      MILTER_STEP_NONE,
-                                      MILTER_STATUS_NOT_CHANGE,
-                                      create_replies(MILTER_COMMAND_ENVELOPE_RECIPIENT,
-                                                     MILTER_REPLY_TEMPORARY_FAILURE,
-                                                     NULL),
-                                      create_expected_command_receives(MILTER_COMMAND_ENVELOPE_RECIPIENT, 1,
-                                                                       MILTER_COMMAND_DATA, 1,
-                                                                       NULL),
-                                      NULL,
-                                      NULL),
-                 result_test_data_free,
-                 "reply-code - reject",
-                 result_test_data_new(MILTER_ACTION_NONE,
-                                      MILTER_STEP_NONE,
-                                      MILTER_STATUS_REJECT,
-                                      create_replies(MILTER_COMMAND_HELO,
-                                                     MILTER_REPLY_REPLY_CODE | REJECT_FLAG,
-                                                     NULL),
-                                      create_expected_command_receives(MILTER_COMMAND_HELO, 1,
-                                                                       MILTER_COMMAND_ENVELOPE_FROM, 0,
-                                                                       NULL),
-                                      NULL,
-                                      NULL),
-                 result_test_data_free,
-                 "reply-code - temporary failure",
-                 result_test_data_new(MILTER_ACTION_NONE,
-                                      MILTER_STEP_NONE,
-                                      MILTER_STATUS_TEMPORARY_FAILURE,
-                                      create_replies(MILTER_COMMAND_HELO,
-                                                     MILTER_REPLY_REPLY_CODE | TEMPORARY_FAILURE_FLAG,
-                                                     NULL),
-                                      create_expected_command_receives(MILTER_COMMAND_HELO, 1,
-                                                                       MILTER_COMMAND_ENVELOPE_FROM, 0,
-                                                                       NULL),
-                                      NULL,
-                                      NULL),
-                 result_test_data_free,
-                 "connection-faliure",
-                 result_test_data_new(MILTER_ACTION_NONE,
-                                      MILTER_STEP_NONE,
-                                      MILTER_STATUS_NOT_CHANGE,
-                                      create_replies(MILTER_COMMAND_HELO,
-                                                     MILTER_REPLY_CONNECTION_FAILURE,
-                                                     NULL),
-                                      create_expected_command_receives(MILTER_COMMAND_HELO, 1,
-                                                                       MILTER_COMMAND_ENVELOPE_FROM, 0,
-                                                                       NULL),
-                                      NULL,
-                                      NULL),
-                 result_test_data_free,
-                 "shutdown",
-                 result_test_data_new(MILTER_ACTION_NONE,
-                                      MILTER_STEP_NONE,
-                                      MILTER_STATUS_NOT_CHANGE,
-                                      create_replies(MILTER_COMMAND_HELO,
-                                                     MILTER_REPLY_SHUTDOWN,
-                                                     NULL),
-                                      create_expected_command_receives(MILTER_COMMAND_HELO, 1,
-                                                                       MILTER_COMMAND_ENVELOPE_FROM, 0,
-                                                                       NULL),
-                                      NULL,
-                                      NULL),
-                 result_test_data_free);
+#define ADD(label, actions, steps, status, replies,                     \
+            expected_command_receives, macros_requests, action_func)    \
+    cut_add_data(label,                                                 \
+                 result_test_data_new(actions,                          \
+                                      steps,                            \
+                                      status,                           \
+                                      replies,                          \
+                                      expected_command_receives,        \
+                                      macros_requests,                  \
+                                      action_func),                     \
+                 result_test_data_free,                                 \
+                 NULL)
+
+    ADD("all continue",
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NONE,
+        MILTER_STATUS_NOT_CHANGE,
+        NULL,
+        NULL,
+        NULL,
+        NULL);
+    ADD("no helo",
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NO_HELO,
+        MILTER_STATUS_NOT_CHANGE,
+        NULL,
+        create_expected_command_receives(MILTER_COMMAND_HELO, 0,
+                                         NULL),
+        NULL,
+        NULL);
+    ADD("no connect",
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NO_CONNECT,
+        MILTER_STATUS_NOT_CHANGE,
+        NULL,
+        create_expected_command_receives(MILTER_COMMAND_CONNECT, 0,
+                                         NULL),
+        NULL,
+        NULL);
+    ADD("no envelope-from",
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NO_ENVELOPE_FROM,
+        MILTER_STATUS_NOT_CHANGE,
+        NULL,
+        create_expected_command_receives(MILTER_COMMAND_ENVELOPE_FROM, 0,
+                                         NULL),
+        NULL,
+        NULL);
+    ADD("no envelope-recipient",
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NO_ENVELOPE_RECIPIENT,
+        MILTER_STATUS_NOT_CHANGE,
+        NULL,
+        create_expected_command_receives(MILTER_COMMAND_ENVELOPE_RECIPIENT, 0,
+                                         NULL),
+        NULL,
+        NULL);
+    ADD("no unknown",
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NO_UNKNOWN,
+        MILTER_STATUS_NOT_CHANGE,
+        NULL,
+        create_expected_command_receives(MILTER_COMMAND_UNKNOWN, 0,
+                                         NULL),
+        NULL,
+        NULL);
+    ADD("no header",
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NO_HEADERS,
+        MILTER_STATUS_NOT_CHANGE,
+        NULL,
+        create_expected_command_receives(MILTER_COMMAND_HEADER, 0,
+                                         NULL),
+        NULL,
+        NULL);
+    ADD("no end-of-header",
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NO_END_OF_HEADER,
+        MILTER_STATUS_NOT_CHANGE,
+        NULL,
+        create_expected_command_receives(MILTER_COMMAND_END_OF_HEADER, 0,
+                                         NULL),
+        NULL,
+        NULL);
+    ADD("no data",
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NO_DATA,
+        MILTER_STATUS_NOT_CHANGE,
+        NULL,
+        create_expected_command_receives(MILTER_COMMAND_DATA, 0,
+                                         NULL),
+        NULL,
+        NULL);
+    ADD("no body",
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NO_BODY,
+        MILTER_STATUS_NOT_CHANGE,
+        NULL,
+        create_expected_command_receives(MILTER_COMMAND_BODY, 0,
+                                         NULL),
+        NULL,
+        NULL);
+    ADD("helo accept",
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NONE,
+        MILTER_STATUS_ACCEPT,
+        create_replies(MILTER_COMMAND_HELO,
+                       MILTER_REPLY_ACCEPT,
+                       NULL),
+        create_expected_command_receives(MILTER_COMMAND_HELO, 1,
+                                         MILTER_COMMAND_ENVELOPE_FROM, 0,
+                                         NULL),
+        NULL,
+        NULL);
+    ADD("envelope-from discard",
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NONE,
+        MILTER_STATUS_DISCARD,
+        create_replies(MILTER_COMMAND_ENVELOPE_FROM,
+                       MILTER_REPLY_DISCARD,
+                       NULL),
+        create_expected_command_receives(MILTER_COMMAND_ENVELOPE_FROM, 1,
+                                         MILTER_COMMAND_ENVELOPE_RECIPIENT, 0,
+                                         NULL),
+        NULL,
+        NULL);
+    ADD("data temporary-failure",
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NONE,
+        MILTER_STATUS_TEMPORARY_FAILURE,
+        create_replies(MILTER_COMMAND_DATA,
+                       MILTER_REPLY_TEMPORARY_FAILURE,
+                       NULL),
+        create_expected_command_receives(MILTER_COMMAND_DATA, 1,
+                                         MILTER_COMMAND_HEADER, 0,
+                                         NULL),
+        NULL,
+        NULL);
+    ADD("body quarantine",
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NONE,
+        MILTER_STATUS_NOT_CHANGE,
+        create_replies(MILTER_COMMAND_BODY,
+                       MILTER_REPLY_QUARANTINE,
+                       NULL),
+        create_expected_command_receives(MILTER_COMMAND_BODY, 1,
+                                         MILTER_COMMAND_END_OF_MESSAGE, 0,
+                                         NULL),
+        NULL,
+        NULL);
+    ADD("connect reject",
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NONE,
+        MILTER_STATUS_REJECT,
+        create_replies(MILTER_COMMAND_CONNECT,
+                       MILTER_REPLY_REJECT,
+                       NULL),
+        create_expected_command_receives(MILTER_COMMAND_CONNECT, 1,
+                                         MILTER_COMMAND_HELO, 0,
+                                         NULL),
+        NULL,
+        NULL);
+    ADD("envelope-recipient reject",
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NONE,
+        MILTER_STATUS_NOT_CHANGE,
+        create_replies(MILTER_COMMAND_ENVELOPE_RECIPIENT,
+                       MILTER_REPLY_REJECT,
+                       NULL),
+        create_expected_command_receives(MILTER_COMMAND_ENVELOPE_RECIPIENT, 1,
+                                         MILTER_COMMAND_DATA, 1,
+                                         NULL),
+        NULL,
+        NULL);
+    ADD("envelope-recipient temporary-failure",
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NONE,
+        MILTER_STATUS_NOT_CHANGE,
+        create_replies(MILTER_COMMAND_ENVELOPE_RECIPIENT,
+                       MILTER_REPLY_TEMPORARY_FAILURE,
+                       NULL),
+        create_expected_command_receives(MILTER_COMMAND_ENVELOPE_RECIPIENT, 1,
+                                         MILTER_COMMAND_DATA, 1,
+                                         NULL),
+        NULL,
+        NULL);
+    ADD("reply-code - reject",
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NONE,
+        MILTER_STATUS_REJECT,
+        create_replies(MILTER_COMMAND_HELO,
+                       MILTER_REPLY_REPLY_CODE | REJECT_FLAG,
+                       NULL),
+        create_expected_command_receives(MILTER_COMMAND_HELO, 1,
+                                         MILTER_COMMAND_ENVELOPE_FROM, 0,
+                                         NULL),
+        NULL,
+        NULL);
+    ADD("reply-code - temporary failure",
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NONE,
+        MILTER_STATUS_TEMPORARY_FAILURE,
+        create_replies(MILTER_COMMAND_HELO,
+                       MILTER_REPLY_REPLY_CODE | TEMPORARY_FAILURE_FLAG,
+                       NULL),
+        create_expected_command_receives(MILTER_COMMAND_HELO, 1,
+                                         MILTER_COMMAND_ENVELOPE_FROM, 0,
+                                         NULL),
+        NULL,
+        NULL);
+    ADD("connection-failure",
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NONE,
+        MILTER_STATUS_NOT_CHANGE,
+        create_replies(MILTER_COMMAND_HELO,
+                       MILTER_REPLY_CONNECTION_FAILURE,
+                       NULL),
+        create_expected_command_receives(MILTER_COMMAND_HELO, 1,
+                                         MILTER_COMMAND_ENVELOPE_FROM, 0,
+                                         NULL),
+        NULL,
+        NULL);
+    ADD("shutdown",
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NONE,
+        MILTER_STATUS_NOT_CHANGE,
+        create_replies(MILTER_COMMAND_HELO,
+                       MILTER_REPLY_SHUTDOWN,
+                       NULL),
+        create_expected_command_receives(MILTER_COMMAND_HELO, 1,
+                                         MILTER_COMMAND_ENVELOPE_FROM, 0,
+                                         NULL),
+        NULL,
+        NULL);
+#undef ADD
 }
 
 static gint
@@ -1207,70 +1201,62 @@ get_mail_option (const gchar *file_name)
 void
 data_option (void)
 {
-    cut_add_data("connect-host",
-                 option_test_data_new("--connect-host=test-host",
-                                      option_test_assert_connect_host),
-                 option_test_data_free,
-                 "connect-address",
-                 option_test_data_new("--connect-address=inet:12345@192.168.1.1",
-                                      option_test_assert_connect_address),
-                 option_test_data_free,
-                 "connect",
-                 option_test_data_new("--connect-host=test-host "
-                                      "--connect-address=inet:12345@192.168.1.1",
-                                      option_test_assert_connect),
-                 option_test_data_free,
-                 "helo-fqdn",
-                 option_test_data_new("--helo-fqdn=test-host",
-                                      option_test_assert_helo_fqdn),
-                 option_test_data_free,
-                 "envelope-from",
-                 option_test_data_new("--from=from@example.com",
-                                      option_test_assert_from),
-                 option_test_data_free,
-                 "recipients",
-                 option_test_data_new("--recipient=recipient1@example.com "
-                                      "--recipient=recipient2@example.com "
-                                      "--recipient=recipient3@example.com",
-                                      option_test_assert_recipients),
-                 option_test_data_free,
-                 "headers",
-                 option_test_data_new("--header=X-TestHeader1:TestHeader1Value "
-                                      "--header=X-TestHeader2:TestHeader2Value "
-                                      "--header=X-TestHeader3:TestHeader3Value",
-                                      option_test_assert_headers),
-                 option_test_data_free,
-                 "body",
-                 option_test_data_new("--body=chunk1 "
-                                      "--body=chunk2 "
-                                      "--body=chunk3",
-                                      option_test_assert_body),
-                 option_test_data_free,
-                 "output-message",
-                 option_test_data_new("--output-message",
-                                      option_test_assert_output_message),
-                 option_test_data_free,
-                 "mail-file",
-                 option_test_data_new(get_mail_option("parse-test.mail"),
-                                      option_test_assert_mail_file),
-                 option_test_data_free,
-                 "large-file",
-                 option_test_data_new(get_mail_option("large.mail"),
-                                      option_test_assert_large_mail),
-                 option_test_data_free,
-                 "authentication-name",
-                 option_test_data_new("--authenticated-name=user",
-                                      option_test_assert_authenticated_name),
-                 option_test_data_free,
-                 "authentication-type",
-                 option_test_data_new("--authenticated-type=PLAIN",
-                                      option_test_assert_authenticated_type),
-                 option_test_data_free,
-                 "authentication-author",
-                 option_test_data_new("--authenticated-author="
-                                      "another-user@example.com",
-                                      option_test_assert_authenticated_author),
-                 option_test_data_free);
+#define ADD(label, option, ...)                                 \
+    cut_add_data(label,                                         \
+                 option_test_data_new(option, __VA_ARGS__),     \
+                 option_test_data_free,                         \
+                 NULL)
+
+    ADD("connect-host",
+        "--connect-host=test-host",
+        option_test_assert_connect_host);
+    ADD("connect-address",
+        "--connect-address=inet:12345@192.168.1.1",
+        option_test_assert_connect_address);
+    ADD("connect",
+        "--connect-host=test-host "
+        "--connect-address=inet:12345@192.168.1.1",
+        option_test_assert_connect);
+    ADD("helo-fqdn",
+        "--helo-fqdn=test-host",
+        option_test_assert_helo_fqdn);
+    ADD("envelope-from",
+        "--from=from@example.com",
+        option_test_assert_from);
+    ADD("recipients",
+        "--recipient=recipient1@example.com "
+        "--recipient=recipient2@example.com "
+        "--recipient=recipient3@example.com",
+        option_test_assert_recipients);
+    ADD("headers",
+        "--header=X-TestHeader1:TestHeader1Value "
+        "--header=X-TestHeader2:TestHeader2Value "
+        "--header=X-TestHeader3:TestHeader3Value",
+        option_test_assert_headers);
+    ADD("body",
+        "--body=chunk1 "
+        "--body=chunk2 "
+        "--body=chunk3",
+        option_test_assert_body);
+    ADD("output-message",
+        "--output-message",
+        option_test_assert_output_message);
+    ADD("mail-file",
+        get_mail_option("parse-test.mail"),
+        option_test_assert_mail_file);
+    ADD("large-file",
+        get_mail_option("large.mail"),
+        option_test_assert_large_mail);
+    ADD("authentication-name",
+        "--authenticated-name=user",
+        option_test_assert_authenticated_name);
+    ADD("authentication-type",
+        "--authenticated-type=PLAIN",
+        option_test_assert_authenticated_type);
+    ADD("authentication-author",
+        "--authenticated-author=another-user@example.com",
+        option_test_assert_authenticated_author);
+#undef ADD
 }
 
 void
@@ -1487,38 +1473,38 @@ end_of_message_action_assert_replace_body (void)
 void
 data_end_of_message_action (void)
 {
-    cut_add_data("change-from",
-                 end_of_message_action_test_data_new(change_from_function,
-                                                     end_of_message_action_assert_change_from),
-                 end_of_message_action_test_data_free,
-                 "add-recipient",
-                 end_of_message_action_test_data_new(add_recipient_function,
-                                                     end_of_message_action_assert_add_recipient),
-                 end_of_message_action_test_data_free,
-                 "delete-recipient",
-                 end_of_message_action_test_data_new(delete_recipient_function,
-                                                     end_of_message_action_assert_delete_recipient),
-                 end_of_message_action_test_data_free,
-                 "add-header",
-                 end_of_message_action_test_data_new(add_header_function,
-                                                     end_of_message_action_assert_add_header),
-                 end_of_message_action_test_data_free,
-                 "insert-header",
-                 end_of_message_action_test_data_new(insert_header_function,
-                                                     end_of_message_action_assert_insert_header),
-                 end_of_message_action_test_data_free,
-                 "change-header",
-                 end_of_message_action_test_data_new(change_header_function,
-                                                     end_of_message_action_assert_change_header),
-                 end_of_message_action_test_data_free,
-                 "delete-header",
-                 end_of_message_action_test_data_new(delete_header_function,
-                                                     end_of_message_action_assert_delete_header),
-                 end_of_message_action_test_data_free,
-                 "replace-body",
-                 end_of_message_action_test_data_new(replace_body_function,
-                                                     end_of_message_action_assert_replace_body),
-                 end_of_message_action_test_data_free);
+#define ADD(label, action_func, assert_func)                            \
+    cut_add_data(label,                                                 \
+                 end_of_message_action_test_data_new(action_func,       \
+                                                     assert_func),      \
+                 end_of_message_action_test_data_free,                  \
+                 NULL)
+
+    ADD("change-from",
+        change_from_function,
+        end_of_message_action_assert_change_from);
+    ADD("add-recipient",
+        add_recipient_function,
+        end_of_message_action_assert_add_recipient);
+    ADD("delete-recipient",
+        delete_recipient_function,
+        end_of_message_action_assert_delete_recipient);
+    ADD("add-header",
+        add_header_function,
+        end_of_message_action_assert_add_header);
+    ADD("insert-header",
+        insert_header_function,
+        end_of_message_action_assert_insert_header);
+    ADD("change-header",
+        change_header_function,
+        end_of_message_action_assert_change_header);
+    ADD("delete-header",
+        delete_header_function,
+        end_of_message_action_assert_delete_header);
+    ADD("replace-body",
+        replace_body_function,
+        end_of_message_action_assert_replace_body);
+#undef ADD
 }
 
 void
@@ -1713,17 +1699,25 @@ data_macro (void)
 {
     const gchar *connect_macros[] = {"{macro_name}", NULL};
 
-    cut_add_data("default",
-                 macro_test_data_new(create_expected_default_macros_table(),
-                                     NULL,
-                                     default_macro_test_assert),
-                 macro_test_data_free,
-                 "connect macro",
-                 macro_test_data_new(create_expected_connect_macros_table(),
-                                     create_macros_requests(MILTER_COMMAND_CONNECT,
-                                                            connect_macros, NULL),
-                                     default_macro_test_assert),
-                 macro_test_data_free);
+#define ADD(label, expected_macros_table, macros_requests, assert_func) \
+    cut_add_data(label,                                                 \
+                 macro_test_data_new(expected_macros_table,             \
+                                     macros_requests,                   \
+                                     assert_func),                      \
+                 macro_test_data_free,                                  \
+                 NULL)
+
+    ADD("default",
+        create_expected_default_macros_table(),
+        NULL,
+        default_macro_test_assert);
+    ADD("connect macro",
+        create_expected_connect_macros_table(),
+        create_macros_requests(MILTER_COMMAND_CONNECT,
+                               connect_macros, NULL),
+        default_macro_test_assert);
+
+#undef ADD
 }
 
 void
@@ -1778,16 +1772,22 @@ invalid_spec_test_data_free (InvalidSpecTestData *data)
 void
 data_invalid_spec (void)
 {
-    cut_add_data("invalid protocol name",
-                 invalid_spec_test_data_new("xxxx:9999@localhost",
-                                            "protocol must be 'unix', 'inet' or 'inet6': "
-                                            "<xxxx:9999@localhost>: <xxxx>\n"),
-                 invalid_spec_test_data_free,
-                 "out of range port number",
-                 invalid_spec_test_data_new("inet:99999@localhost",
-                                            "port number should be less than 65536: "
-                                            "<inet:99999@localhost>: <99999>\n"),
-                 invalid_spec_test_data_free);
+#define ADD(label, spec, expected_message)                              \
+    cut_add_data(label,                                                 \
+                 invalid_spec_test_data_new(spec, expected_message),    \
+                 invalid_spec_test_data_free,                           \
+                 NULL)
+
+    ADD("invalid protocol name",
+        "xxxx:9999@localhost",
+        "protocol must be 'unix', 'inet' or 'inet6': "
+        "<xxxx:9999@localhost>: <xxxx>\n");
+    ADD("out of range port number",
+        "inet:99999@localhost",
+        "port number should be less than 65536: "
+        "<inet:99999@localhost>: <99999>\n");
+
+#undef ADD
 }
 
 void

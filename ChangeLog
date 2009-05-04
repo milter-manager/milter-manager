@@ -1,5 +1,7 @@
 2009-05-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/tool/test-server.c: cleanup.
+
 	* test/tool/test-server.c (option_test_assert_large_mail): write you.
 
 	* tool/milter-test-server.c, test/tool/test-server.c:
