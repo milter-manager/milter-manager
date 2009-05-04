@@ -1190,7 +1190,8 @@ print_header (const gchar *prefix, MilterHeader *header)
         return;
     }
 
-    g_printf("%s%s %s: %s%s\n", color, prefix, header->name, *value_lines, NORMAL_COLOR);
+    g_printf("%s%s %s: %s%s\n", color, prefix, header->name, *value_lines,
+             NORMAL_COLOR);
     value_lines++;
 
     while (*value_lines) {
@@ -1368,12 +1369,12 @@ print_result (MilterServerContext *context, ProcessData *data)
     }
 
     if (output_message) {
-        g_print("\n");
+        g_printf("\n");
         print_message(data->message);
-        g_print("\n");
+        g_printf("\n");
     }
 
-    g_print("elapsed-time: %g seconds\n", g_timer_elapsed(data->timer, NULL));
+    g_printf("elapsed-time: %g seconds\n", g_timer_elapsed(data->timer, NULL));
 }
 
 static void
