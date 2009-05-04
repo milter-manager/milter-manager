@@ -1,5 +1,10 @@
 2009-05-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: remove: milter-test-server supports reply-code.
+
+	* test/tool/test-server.c, tool/milter-test-server.c: support
+	reply-code.
+
 	* milter/server/milter-server-context.c,
 	test/server/test-server-context-signals.c: apply reply code status
 	to server context status.

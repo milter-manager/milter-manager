@@ -36,6 +36,9 @@
 
 #include <gcutter.h>
 
+#define ADDITIONAL_FLAG_MASK 0xf000
+#define REJECT_FLAG 0x1000
+#define TEMPORARY_FAILURE_FLAG 0x2000
 
 void data_result (void);
 void test_result (gconstpointer data);
@@ -169,23 +172,30 @@ static void
 send_reply (MilterCommand command, TestData *test_data)
 {
     MilterReply reply;
+    gint additional_flag;
     gpointer hash_value;
 
-    hash_value = g_hash_table_lookup(test_data->replies, GINT_TO_POINTER(command));
+    hash_value = g_hash_table_lookup(test_data->replies,
+                                     GINT_TO_POINTER(command));
     if (!hash_value)
         reply = MILTER_REPLY_CONTINUE;
     else
         reply = GPOINTER_TO_INT(hash_value);
 
+    additional_flag = reply & ADDITIONAL_FLAG_MASK;
+    reply = reply & ~ADDITIONAL_FLAG_MASK;
+
     switch (reply) {
       case MILTER_REPLY_QUARANTINE:
-        milter_reply_encoder_encode_quarantine(encoder, &packet, &packet_size, "virus");
+        milter_reply_encoder_encode_quarantine(encoder, &packet, &packet_size,
+                                               "virus");
         break;
       case MILTER_REPLY_ACCEPT:
         milter_reply_encoder_encode_accept(encoder, &packet, &packet_size);
         break;
       case MILTER_REPLY_TEMPORARY_FAILURE:
-        milter_reply_encoder_encode_temporary_failure(encoder, &packet, &packet_size);
+        milter_reply_encoder_encode_temporary_failure(encoder,
+                                                      &packet, &packet_size);
         break;
       case MILTER_REPLY_REJECT:
         milter_reply_encoder_encode_reject(encoder, &packet, &packet_size);
@@ -194,8 +204,14 @@ send_reply (MilterCommand command, TestData *test_data)
         milter_reply_encoder_encode_discard(encoder, &packet, &packet_size);
         break;
       case MILTER_REPLY_REPLY_CODE:
-        milter_reply_encoder_encode_reply_code(encoder, &packet, &packet_size,
-                                               "554 5.7.1 1% 2%% 3%%%");
+        if (additional_flag == TEMPORARY_FAILURE_FLAG)
+            milter_reply_encoder_encode_reply_code(encoder,
+                                                   &packet, &packet_size,
+                                                   "451 4.7.1 Greylisting");
+        else
+            milter_reply_encoder_encode_reply_code(encoder,
+                                                   &packet, &packet_size,
+                                                   "554 5.7.1 1% 2%% 3%%%");
         break;
       case MILTER_REPLY_SHUTDOWN:
         milter_reply_encoder_encode_shutdown(encoder, &packet, &packet_size);
@@ -606,7 +622,8 @@ create_expected_command_receives (MilterCommand first_command, ...)
         gint expected_num;
         expected_num = va_arg(var_args, gint);
         g_hash_table_insert(expected_command_receives,
-                            GINT_TO_POINTER(command), GINT_TO_POINTER(expected_num));
+                            GINT_TO_POINTER(command),
+                            GINT_TO_POINTER(expected_num));
         command = va_arg(var_args, gint);
     }
     va_end(var_args);
@@ -807,15 +824,28 @@ data_result (void)
                                       NULL,
                                       NULL),
                  result_test_data_free,
-                 "reply-code",
+                 "reply-code - reject",
                  result_test_data_new(MILTER_ACTION_NONE,
                                       MILTER_STEP_NONE,
-                                      MILTER_STATUS_NOT_CHANGE,
+                                      MILTER_STATUS_REJECT,
                                       create_replies(MILTER_COMMAND_HELO,
-                                                     MILTER_REPLY_REPLY_CODE,
+                                                     MILTER_REPLY_REPLY_CODE | REJECT_FLAG,
                                                      NULL),
                                       create_expected_command_receives(MILTER_COMMAND_HELO, 1,
-                                                                       MILTER_COMMAND_ENVELOPE_FROM, 1,
+                                                                       MILTER_COMMAND_ENVELOPE_FROM, 0,
+                                                                       NULL),
+                                      NULL,
+                                      NULL),
+                 result_test_data_free,
+                 "reply-code - temporary failure",
+                 result_test_data_new(MILTER_ACTION_NONE,
+                                      MILTER_STEP_NONE,
+                                      MILTER_STATUS_TEMPORARY_FAILURE,
+                                      create_replies(MILTER_COMMAND_HELO,
+                                                     MILTER_REPLY_REPLY_CODE | TEMPORARY_FAILURE_FLAG,
+                                                     NULL),
+                                      create_expected_command_receives(MILTER_COMMAND_HELO, 1,
+                                                                       MILTER_COMMAND_ENVELOPE_FROM, 0,
                                                                        NULL),
                                       NULL,
                                       NULL),
