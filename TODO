@@ -1,3 +1,4 @@
+* milter-test-server: stop processing if all recipients are rejected.
 * XMail support.
 * child milter: reputation mode.
 * ignore error for existed but unreadable config file.

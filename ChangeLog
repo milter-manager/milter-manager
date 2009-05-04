@@ -1,6 +1,7 @@
 2009-05-04  Kouhei Sutou  <kou@cozmixng.org>
 
-	* misc/rd2man-lib.rb: support variable markup.
+	* TODO: add: milter-test-server: stop processing if all recipients
+	are rejected.
 
 	* doc/milter-test-server.rd*: add --authenticated-* option.
 
