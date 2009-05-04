@@ -1,5 +1,11 @@
 2009-05-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-test-server.c, test/tool/test-server.c:
+	make authentication macros customizable.
+
+	* TODO: remove: milter-test-server supports non-auth connection
+	by command line option.
+
 	* tool/milter-test-server.c: use g_printf() instead of g_print().
 
 	* TODO: remove: milter-test-server supports reply-code.

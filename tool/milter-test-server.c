@@ -51,6 +51,9 @@ static gchar *envelope_from = NULL;
 static gchar **recipients = NULL;
 static gchar **body_chunks = NULL;
 static gchar *unknown_command = NULL;
+static gchar *authenticated_name = NULL;
+static gchar *authenticated_type = NULL;
+static gchar *authenticated_author = NULL;
 static MilterHeaders *option_headers = NULL;
 
 #define PROGRAM_NAME "milter-test-server"
@@ -1038,6 +1041,16 @@ static const GOptionEntry option_entries[] =
      "CHUNK"},
     {"unknown", 0, 0, G_OPTION_ARG_STRING, &unknown_command,
      N_("Use COMMAND for unknown SMTP command."), "COMMAND"},
+    {"authenticated-name", 0, 0, G_OPTION_ARG_STRING, &authenticated_name,
+     N_("Use NAME for authenticated SASL login name. "
+        "(This is used for {auth_authen} macro value.)"),
+     "NAME"},
+    {"authenticated-type", 0, 0, G_OPTION_ARG_STRING, &authenticated_type,
+     N_("Use TYPE for authenticated SASL login method. "
+        "(This is used for {auth_type} macro value.)"), "TYPE"},
+    {"authenticated-author", 0, 0, G_OPTION_ARG_STRING, &authenticated_author,
+     N_("Use AUTHOR for authenticated SASL sender. "
+        "(This is used for {auth_author} macro value.)"), "AUTHOR"},
     {"mail-file", 'm', 0, G_OPTION_ARG_CALLBACK, parse_mail_file_arg,
      N_("Use mail placed at PATH as mail content."), "PATH"},
     {"output-message", 0,
@@ -1399,14 +1412,22 @@ setup_default_macros (MilterServerContext *context)
 
     milter_protocol_agent_set_macros(agent, MILTER_COMMAND_ENVELOPE_FROM,
                                      "i", "i",
-                                     "{auth_type}", "auth_type",
-                                     "{auth_authen}", "auth_authen",
-                                     "{auto_ssf}", "auto_ssf",
-                                     "{auto_author}", "auto_author",
                                      "{mail_mailer}", "mail_mailer",
                                      "{mail_host}", "mail_host",
                                      "{mail_addr}", "mail_addr",
                                      NULL);
+    if (authenticated_name)
+        milter_protocol_agent_set_macros(agent, MILTER_COMMAND_ENVELOPE_FROM,
+                                         "{auth_authen}", authenticated_name,
+                                         NULL);
+    if (authenticated_type)
+        milter_protocol_agent_set_macros(agent, MILTER_COMMAND_ENVELOPE_FROM,
+                                         "{auth_type}", authenticated_type,
+                                         NULL);
+    if (authenticated_author)
+        milter_protocol_agent_set_macros(agent, MILTER_COMMAND_ENVELOPE_FROM,
+                                         "{auth_author}", authenticated_author,
+                                         NULL);
 
     recipients_address = g_strjoinv(",", recipients);
     milter_protocol_agent_set_macros(agent, MILTER_COMMAND_ENVELOPE_RECIPIENT,

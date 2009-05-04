@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -1140,7 +1140,47 @@ option_test_assert_output_message (void)
 static void
 option_test_assert_large_mail (void)
 {
-    /* Nothing here yet. */
+    cut_omit("WRITE ME");
+}
+
+static void
+option_test_assert_authenticated_info (const gchar *key, const gchar *value)
+{
+    GHashTable *actual_macros;
+    GHashTable *expected_macros;
+
+    actual_macros =
+        g_hash_table_lookup(actual_defined_macros,
+                            GINT_TO_POINTER(MILTER_COMMAND_ENVELOPE_FROM));
+    expected_macros =
+        gcut_take_new_hash_table_string_string("i", "i",
+                                               "mail_mailer", "mail_mailer",
+                                               "mail_host", "mail_host",
+                                               "mail_addr", "mail_addr",
+                                               key, value,
+                                               NULL);
+
+    gcut_assert_equal_hash_table_string_string(expected_macros,
+                                               actual_macros);
+}
+
+static void
+option_test_assert_authenticated_name (void)
+{
+    cut_trace(option_test_assert_authenticated_info("auth_authen", "user"));
+}
+
+static void
+option_test_assert_authenticated_type (void)
+{
+    cut_trace(option_test_assert_authenticated_info("auth_type", "PLAIN"));
+}
+
+static void
+option_test_assert_authenticated_author (void)
+{
+    cut_trace(option_test_assert_authenticated_info("auth_author",
+                                                    "another-user@example.com"));
 }
 
 static const gchar *
@@ -1207,6 +1247,19 @@ data_option (void)
                  "large-file",
                  option_test_data_new(get_mail_option("large.mail"),
                                       option_test_assert_large_mail),
+                 option_test_data_free,
+                 "authentication-name",
+                 option_test_data_new("--authenticated-name=user",
+                                      option_test_assert_authenticated_name),
+                 option_test_data_free,
+                 "authentication-type",
+                 option_test_data_new("--authenticated-type=PLAIN",
+                                      option_test_assert_authenticated_type),
+                 option_test_data_free,
+                 "authentication-author",
+                 option_test_data_new("--authenticated-author="
+                                      "another-user@example.com",
+                                      option_test_assert_authenticated_author),
                  option_test_data_free);
 }
 
@@ -1474,7 +1527,8 @@ test_end_of_message_action (gconstpointer data)
     cut_assert_equal_int(EXIT_SUCCESS, exit_status);
 
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
-                           actual_status, action_test_data->test_data->expected_status);
+                           actual_status,
+                           action_test_data->test_data->expected_status);
 
     action_test_data->assert_func();
 }
@@ -1565,10 +1619,6 @@ create_expected_default_macros_table (void)
     g_hash_table_insert(expected_macros_table,
                         GINT_TO_POINTER(MILTER_COMMAND_ENVELOPE_FROM),
                         create_macro_hash_table("i", "i",
-                                                "auth_type", "auth_type",
-                                                "auth_authen", "auth_authen",
-                                                "auto_ssf", "auto_ssf",
-                                                "auto_author", "auto_author",
                                                 "mail_mailer", "mail_mailer",
                                                 "mail_host", "mail_host",
                                                 "mail_addr", "mail_addr",
