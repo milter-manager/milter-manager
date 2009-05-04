@@ -1140,7 +1140,17 @@ option_test_assert_output_message (void)
 static void
 option_test_assert_large_mail (void)
 {
-    cut_omit("WRITE ME");
+    const gchar expected_header[] = "\r\n--=-fXjrl3xPRPdvOSpDlnzU\r\n";
+    const gchar expected_footer[] = "\r\n--=-fXjrl3xPRPdvOSpDlnzU--\r\n";
+
+    cut_assert_equal_memory(expected_header, strlen(expected_header),
+                            actual_body_string->str, strlen(expected_header));
+    cut_assert_equal_memory(expected_footer, strlen(expected_footer),
+                            actual_body_string->str +
+                            actual_body_string->len -
+                            strlen(expected_footer),
+                            strlen(expected_footer));
+    cut_assert_equal_int(2435493, actual_body_string->len);
 }
 
 static void
