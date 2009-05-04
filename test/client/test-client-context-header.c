@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -269,61 +269,6 @@ set_option (void)
     option = milter_option_new(2, action, 0);
     milter_client_context_set_option(context, option);
     g_object_unref(option);
-}
-
-void
-test_add_header (void)
-{
-    GString *actual_data;
-
-    cut_notify("should be removed.");
-
-    set_option();
-
-    add_header = TRUE;
-    header_name = g_strdup("X-Test-Header");
-    header_value = g_strdup("Test Value");
-    milter_command_encoder_encode_end_of_message(command_encoder,
-                                                 &packet, &packet_size,
-                                                 NULL, 0);
-    gcut_assert_error(feed());
-
-    packet_free();
-    milter_reply_encoder_encode_add_header(reply_encoder,
-                                           &packet, &packet_size,
-                                           header_name, header_value);
-    actual_data = gcut_string_io_channel_get_string(channel);
-    cut_assert_equal_memory(packet, packet_size,
-                            actual_data->str, actual_data->len);
-}
-
-void
-test_insert_header (void)
-{
-    GString *actual_data;
-
-    cut_notify("should be removed.");
-
-    set_option();
-
-    insert_header = TRUE;
-
-    header_name = g_strdup("X-Test-Header");
-    header_value = g_strdup("Test Value");
-    header_index = 2;
-    milter_command_encoder_encode_end_of_message(command_encoder,
-                                                 &packet, &packet_size,
-                                                 NULL, 0);
-    gcut_assert_error(feed());
-
-    packet_free();
-    milter_reply_encoder_encode_insert_header(reply_encoder,
-                                              &packet, &packet_size,
-                                              header_index,
-                                              header_name, header_value);
-    actual_data = gcut_string_io_channel_get_string(channel);
-    cut_assert_equal_memory(packet, packet_size,
-                            actual_data->str, actual_data->len);
 }
 
 void
