@@ -1,3 +1,9 @@
+2009-05-05  Kouhei Sutou  <kou@cozmixng.org>
+
+	* doc/reference/prepare-for-publishing.rb,
+	doc/reference/Makefile.am: use Cutter's
+	prepare-gtk-doc-html-for-publishing.rb.
+
 2009-05-04  Kouhei Sutou  <kou@cozmixng.org>
 
 	* test/client/test-client-context-header.c: remove needless tests.
