@@ -1,5 +1,8 @@
 2009-05-05  Kouhei Sutou  <kou@cozmixng.org>
 
+	* data/defaults/*.conf: use milter-greylist as the last milter to
+	use other milter's result.
+
 	* doc/reference/prepare-for-publishing.rb,
 	doc/reference/Makefile.am: use Cutter's
 	prepare-gtk-doc-html-for-publishing.rb.
