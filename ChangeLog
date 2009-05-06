@@ -1,5 +1,7 @@
 2009-05-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: add: Exim local_scan support.
+
 	* data/defaults/*: apply "Sendmail Compatible" applicable
 	condition to milter-greylist.
 

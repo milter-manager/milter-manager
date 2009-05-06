@@ -1,3 +1,4 @@
+* Exim local_scan support.
 * milter-test-server: stop processing if all recipients are rejected.
 * XMail support.
 * child milter: reputation mode.
