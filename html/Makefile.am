@@ -32,6 +32,7 @@ generated_images =				\
 	download.png				\
 	heading-mark.png			\
 	install.png				\
+	mini-install.png			\
 	introduction.png			\
 	logo.png				\
 	what-is-milter-manager.png		\
@@ -47,3 +48,6 @@ SUFFIXES = .svg .png
 
 .svg.png:
 	inkscape --export-png $@ $<
+
+mini-install.png: install.png
+	convert install.png -resize 12x12 mini-install.png

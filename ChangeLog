@@ -1,5 +1,8 @@
 2009-05-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* html/index.html*, html/milter-manager.css,
+	html/mini-install.png: add install links to sidebar.
+
 	* TODO: add: Exim local_scan support.
 
 	* data/defaults/*: apply "Sendmail Compatible" applicable
