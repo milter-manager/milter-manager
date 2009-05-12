@@ -17,6 +17,17 @@ class Config::MilterTest < ActiveSupport::TestCase
                          },
                          new_milter(:name => "milter",
                                     :connection_spec => "unknown:/tmp/socket"))
+    assert_invalid_model({
+                           "fallback_status" =>
+                           [t_ar("errors.models.config/milter.attributes.fallback_status.not_available",
+                              :available_list => ["accept",
+                                                  "temporary_failure",
+                                                  "reject"].inspect,
+                              :value => "unknown")],
+                         },
+                         new_milter(:name => "milter",
+                                    :connection_spec => "unix:/tmp/socket",
+                                    :fallback_status => "unknown"))
   end
 
   def test_apply
