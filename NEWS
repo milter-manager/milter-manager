@@ -2,6 +2,15 @@
 
 = NEWS --- The history of milter manager
 
+== 1.0.1: 2009-05-XX
+
+A bug fix release of 1.0.0.
+
+=== milter manager admin
+
+  * Specified used gem version
+    [Reported by nhisa]
+
 == 1.0.0: 2009-04-16
 
 The first stable release.
