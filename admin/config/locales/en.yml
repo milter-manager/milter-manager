@@ -45,6 +45,11 @@ en:
     command: "Command"
     empty: "Empty"
     remember-me: "Remeber me"
+    fallback-status:
+      description: "How to handle a mail on milter problem"
+      accept: "Accept"
+      temporary_failure: "Temporary failure"
+      reject: "Reject"
   action:
     edit: "Edit"
     update: "Update"
