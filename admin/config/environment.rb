@@ -62,9 +62,17 @@ Rails::Initializer.run do |config|
   # If you change this key, all old sessions will become invalid!
   # Make sure the secret is at least 30 characters and all random, 
   # no regular words or you'll be exposed to dictionary attacks.
+  secret_file = File.join(RAILS_ROOT, "config", "secret")
+  unless File.exist?(secret_file)
+    secret = ActiveSupport::SecureRandom.hex(64)
+    File.open(secret_file, "w") do |output|
+      output.puts(secret)
+    end
+  end
+  secret = File.read(secret_file).strip
   config.action_controller.session = {
     :session_key => '_milter-manager-admin_session',
-    :secret      => 'ba5f4e4f9159453750dffc73982b5b065196226c038f8eeb71bee99576646b5588ff7890f36356fcebce2f600e30a6d61d13afb1969c954e4f4b0b889128e24c'
+    :secret      => secret,
   }
 
   # Use the database for sessions instead of the cookie-based default,
