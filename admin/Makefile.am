@@ -60,7 +60,7 @@ nobase_dist_admin_DATA =							\
 	app/models/config/applicable_condition.rb				\
 	app/controllers/users_controller.rb					\
 	app/controllers/config_controller.rb					\
-	app/controllers/application.rb						\
+	app/controllers/application_controller.rb				\
 	app/controllers/control_controller.rb					\
 	app/controllers/welcome_controller.rb					\
 	app/controllers/sessions_controller.rb					\
