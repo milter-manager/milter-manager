@@ -1,0 +1,11 @@
+# -*- ruby -*-
+
+class Autotest
+  alias_method :original_make_test_cmd, :make_test_cmd
+  def make_test_cmd(files_to_test)
+    original = original_make_test_cmd(files_to_test)
+    use_test_unit2 = original.sub(/ -e /,
+                                  ' -e "require \"test/test_helper\"" -e ')
+    use_test_unit2.sub(/\| unit_diff.*/, '')
+  end
+end
