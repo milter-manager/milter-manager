@@ -21,7 +21,7 @@ class Config::MilterTest < ActiveSupport::TestCase
                            "fallback_status" =>
                            [t_ar("errors.models.config/milter.attributes.fallback_status.not_available",
                               :available_list => ["accept",
-                                                  "temporary_failure",
+                                                  "temporary-failure",
                                                   "reject"].inspect,
                               :value => "unknown")],
                          },

@@ -48,7 +48,7 @@ en:
     fallback-status:
       description: "How to handle a mail on milter problem"
       accept: "Accept"
-      temporary_failure: "Temporary failure"
+      temporary-failure: "Temporary failure"
       reject: "Reject"
   action:
     edit: "Edit"

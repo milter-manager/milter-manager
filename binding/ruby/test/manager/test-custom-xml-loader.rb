@@ -80,6 +80,38 @@ EOC
 EOX
   end
 
+  def test_milter_fallback_status
+    load(<<-EOC)
+<configuration>
+  <milters>
+    <milter>
+      <name>milter-greylist</name>
+      <enabled>false</enabled>
+      <fallback-status>reject</fallback-status>
+      <connection-spec>inet:10026@localhost</connection-spec>
+      <command>/etc/init.d/milter-greylist</command>
+      <command-options>start</command-options>
+    </milter>
+  </milters>
+</configuration>
+EOC
+
+    assert_equal(<<-EOX, @configuration.to_xml)
+<configuration>
+  <milters>
+    <milter>
+      <name>milter-greylist</name>
+      <enabled>false</enabled>
+      <fallback-status>reject</fallback-status>
+      <connection-spec>inet:10026@localhost</connection-spec>
+      <command>/etc/init.d/milter-greylist</command>
+      <command-options>start</command-options>
+    </milter>
+  </milters>
+</configuration>
+EOX
+  end
+
   def test_change_applicable_conditions
     @loader.define_applicable_condition("S25R") do |condition|
       condition.description = "Selective SMTP Rejection"

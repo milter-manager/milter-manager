@@ -55,7 +55,7 @@ ja:
     fallback-status:
       description: "milterに問題があったときのメールの扱い"
       accept: "受信"
-      temporary_failure: "一時的に拒否"
+      temporary-failure: "一時的に拒否"
       reject: "拒否"
   action:
     add: "追加"

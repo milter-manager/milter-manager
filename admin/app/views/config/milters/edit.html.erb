@@ -17,6 +17,14 @@
       <td><%= form.text_area("description", :rows => 3) %></td>
     </tr>
     <tr>
+      <th><%= form.label("fallback_status",
+                         t("label.fallback-status.description")) %></th>
+      <td><%= form.select("fallback_status",
+	                  Config::Milter::FALLBACK_STATUSES.collect do |status|
+                            [t("label.fallback-status.#{status}"), status]
+                          end) %></td>
+    </tr>
+    <tr>
       <th><%= form.label("enabled", t("label.enabled")) %></th>
       <td><%= form.check_box("enabled") %></td>
     </tr>

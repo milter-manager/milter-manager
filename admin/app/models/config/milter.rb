@@ -1,5 +1,5 @@
 class Config::Milter < ActiveRecord::Base
-  FALLBACK_STATUSES = ["accept", "temporary_failure", "reject"]
+  FALLBACK_STATUSES = ["accept", "temporary-failure", "reject"]
 
   has_many :restrictions,
            :class_name => "Config::Restriction",
@@ -116,6 +116,7 @@ class Config::Milter < ActiveRecord::Base
         xml << content_tag("connection-spec", @milter.connection_spec)
         xml << content_tag("description", @milter.description)
         xml << content_boolean_tag("enabled", @milter.enabled)
+        xml << content_tag("fallback-status", @milter.fallback_status)
         xml << content_timeout_tag("connection-timeout",
                                    @milter.connection_timeout)
         xml << content_timeout_tag("writing-timeout",

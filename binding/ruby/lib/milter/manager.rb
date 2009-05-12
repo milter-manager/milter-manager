@@ -342,6 +342,9 @@ module Milter::Manager
                 milter.command = @egg_config["command"]
                 milter.command_options = @egg_config["command_options"]
               end
+              if @egg_config.has_key?("fallback_status")
+                milter.fallback_status = @egg_config["fallback_status"]
+              end
             end
             @egg_config = nil
           when "milter_applicable_condition"
@@ -402,7 +405,8 @@ module Milter::Manager
           when :milter
             available_locals = ["name", "description",
                                 "enabled", "connection_spec",
-                                "command", "command_options"]
+                                "command", "command_options",
+                                "fallback_status"]
             case local
             when "applicable_conditions"
               @egg_config["applicable_conditions"] = []
