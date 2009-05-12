@@ -25,6 +25,7 @@ nobase_dist_admin_SCRIPTS =			\
 
 # find . -name '.svn' -prune -o -path './log' -prune -o -not -name '*.sqlite3' -not -name 'Makefile*' -not -name 'schema.rb' -type f -not -perm +111 -print | sed -e 's,^\./,	,'
 nobase_dist_admin_DATA =							\
+	.autotest								\
 	app/helpers/sessions_helper.rb						\
 	app/helpers/config_helper.rb						\
 	app/helpers/application_helper.rb					\

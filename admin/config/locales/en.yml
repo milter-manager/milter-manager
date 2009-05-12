@@ -78,3 +78,11 @@ en:
     rescue:
       go-to-top: "Go to top"
       internal-server-error: "Sorry. An unexpected exception is occurred."
+
+  activerecord:
+    errors:
+      models:
+        config/milter:
+          attributes:
+            fallback_status:
+              not_available: "should be one of {{available_list}}: {{value}}"

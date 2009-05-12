@@ -101,3 +101,10 @@ ja:
         login: "ログイン名"
         password: "パスワード"
         password_confirmation: "確認用パスワード"
+
+    errors:
+      models:
+        config/milter:
+          attributes:
+            fallback_status:
+              not_available: "は{{available_list}}のどれかでなければいけません: {{value}}"

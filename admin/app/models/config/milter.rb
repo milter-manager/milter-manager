@@ -1,11 +1,15 @@
 class Config::Milter < ActiveRecord::Base
+  FALLBACK_STATUSES = ["accept", "temporary_failure", "reject"]
+
   has_many :restrictions,
            :class_name => "Config::Restriction",
            :dependent => :destroy
   has_many :applicable_conditions, :through => :restrictions
 
   validates_presence_of :name, :connection_spec
+  validate :validate_fallback_status
   validate :validate_connection_spec
+  before_save :ensure_fallback_status
   after_save :clear_connection_spec
 
   class << self
@@ -79,6 +83,19 @@ class Config::Milter < ActiveRecord::Base
     rescue ArgumentError
       errors.add("connection_spec", $!.message)
     end
+  end
+
+  def validate_fallback_status
+    return if fallback_status.nil?
+    unless FALLBACK_STATUSES.include?(fallback_status)
+      errors.add("fallback_status",
+                 :not_available,
+                 :available_list => FALLBACK_STATUSES.inspect)
+    end
+  end
+
+  def ensure_fallback_status
+    self.fallback_status ||= FALLBACK_STATUSES.first
   end
 
   def clear_connection_spec

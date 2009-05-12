@@ -1,3 +1,9 @@
+2009-05-12  Kouhei Sutou  <kou@cozmixng.org>
+
+	* admin/: support fallback status.
+
+	* admin/: use Rails 2.3.2 instead of 2.2.2.
+
 2009-05-06  Kouhei Sutou  <kou@cozmixng.org>
 
 	* html/index.html*, html/milter-manager.css,
