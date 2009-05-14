@@ -1,5 +1,8 @@
 2009-05-14  Kouhei Sutou  <kou@clear-code.com>
 
+	* NEWS*: add an entry for milter-manager RPM package updating
+	problem.
+
 	* data/init.d/redhat/milter-manager: work condrestart.
 
 	* milter-manager.spec.in: add 1.0.1-1 entry.

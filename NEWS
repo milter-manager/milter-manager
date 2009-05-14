@@ -6,6 +6,11 @@
 
 A bug fix release of 1.0.0.
 
+=== milter-manager
+
+  * Fixed a bug that milter-manager isn't restarted on
+    updating RPM package.
+
 === milter manager admin
 
   * Specified used gem version

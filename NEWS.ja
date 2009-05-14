@@ -6,6 +6,11 @@
 
 1.0.0のバグフィックス版です。
 
+=== milter-manager
+
+  * RPMパッケージアップデート時にmilter-managerが再起動され
+    ない問題を修正
+
 === milter manager admin
 
   * gemの使用バージョンを明示
