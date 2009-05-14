@@ -1,5 +1,11 @@
 2009-05-14  Kouhei Sutou  <kou@clear-code.com>
 
+	* TODO:
+	- remove: milter-manager-admin: update to Rails 2.3.2.
+	- remove: milter-manager-admin: supports fallback status.
+	- add: [1.1.0] support clamav-milter detection on sid.
+	- add: [1.1.0] reduce memory usage of milter-manager-log-analyzer.
+
 	* NEWS*: add a 1.0.1 entry.
 
 	* html/index.html*, doc/reference/header*.html: 1.0.1 is the
