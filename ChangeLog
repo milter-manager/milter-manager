@@ -1,5 +1,7 @@
 2009-05-14  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter-manager.spec.in: add 1.0.1-1 entry.
+
 	* configure.ac, NEWS*, doc/reference/header*.html, html/index.html*:
 	1.0.1.
 

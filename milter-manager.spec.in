@@ -113,6 +113,10 @@ fi
 %dir %{_localstatedir}/run/milter-manager/
 
 %changelog
+* Thu May 14 2009 Kouhei Sutou <kou@clear-code.com>
+- (1.0.1-1)
+- stable bug fix release
+
 * Thu Apr 16 2009 Kouhei Sutou <kou@clear-code.com>
 - (1.0.0-1)
 - initial stable release
