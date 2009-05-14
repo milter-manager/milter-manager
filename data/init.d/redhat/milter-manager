@@ -83,6 +83,11 @@ stop() {
 	return $RETVAL
 }
 
+restart() {
+	stop
+	start
+}
+
 case "$1" in
     start)
 	start
@@ -91,8 +96,7 @@ case "$1" in
 	stop
 	;;
     restart)
-    	stop
-	start
+    	restart
 	;;
     reload)
 	killproc $milter_manager -HUP
@@ -101,7 +105,7 @@ case "$1" in
 	[ -f /var/lock/subsys/$prog ] && restart || :
 	;;
     *)
-	echo "Usage: $prog {start|stop|reload|restart}"
+	echo "Usage: $prog {start|stop|reload|restart|condrestart}"
 	exit 1
 	;;
 esac
