@@ -1,5 +1,7 @@
 2009-05-14  Kouhei Sutou  <kou@clear-code.com>
 
+	* data/init.d/redhat/milter-manager: work condrestart.
+
 	* milter-manager.spec.in: add 1.0.1-1 entry.
 
 	* configure.ac, NEWS*, doc/reference/header*.html, html/index.html*:
