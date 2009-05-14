@@ -1,3 +1,8 @@
+2009-05-14  Kouhei Sutou  <kou@clear-code.com>
+
+	* configure.ac, NEWS*, doc/reference/header*.html, html/index.html*:
+	1.0.1.
+
 2009-05-12  Kouhei Sutou  <kou@clear-code.com>
 
 	* NEWS: add 1.0.1 entry.
