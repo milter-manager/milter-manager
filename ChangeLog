@@ -1,5 +1,8 @@
 2009-05-14  Kouhei Sutou  <kou@clear-code.com>
 
+	* html/index.html*, doc/reference/header*.html: 1.0.1 is the
+	latest release.
+
 	* data/init.d/redhat/milter-manager: work condrestart.
 
 2009-05-12  Kouhei Sutou  <kou@cozmixng.org>
