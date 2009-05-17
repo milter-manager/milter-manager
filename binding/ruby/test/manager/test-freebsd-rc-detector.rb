@@ -31,11 +31,13 @@ class TestFreeBSDRCDetector < Test::Unit::TestCase
     FileUtils.rm_rf(@tmp_dir.to_s)
   end
 
-  def test_rc_script_exist?
+  def test_rc_script_readable?
     detector = freebsd_rc_detector("milter-manager")
-    assert_false(detector.rc_script_exist?)
+    assert_false(detector.rc_script_readable?)
     (@rc_d + "milter-manager").open("w") {}
-    assert_true(detector.rc_script_exist?)
+    assert_true(detector.rc_script_readable?)
+    (@rc_d + "milter-manager").chmod(0200)
+    assert_false(detector.rc_script_readable?)
   end
 
   def test_name

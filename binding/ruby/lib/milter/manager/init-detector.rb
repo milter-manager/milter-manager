@@ -22,7 +22,7 @@ module Milter::Manager
     attr_reader :info
     def detect
       init_variables
-      return unless init_script_exist?
+      return unless init_script_readable?
 
       parse_init_script
       return if @name.nil?
@@ -33,9 +33,11 @@ module Milter::Manager
       init_script
     end
 
-    def init_script_exist?
-      File.exist?(init_script)
+    def init_script_readable?
+      File.readable?(init_script)
     end
+    # For backward compatibility. TODO: warning message.
+    alias_method :init_script_exist?, :init_script_readable?
 
     private
     def init_variables

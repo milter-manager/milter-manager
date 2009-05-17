@@ -61,7 +61,7 @@ module Milter::Manager
     end
 
     def parse_default_conf(file)
-      return unless File.exist?(file)
+      return unless File.readable?(file)
       File.open(file) do |input|
         extract_variables(@variables, input)
       end

@@ -20,7 +20,7 @@ module Milter::Manager
     end
 
     def detect
-      return nil unless File.exist?(@conf_file)
+      return nil unless File.readable?(@conf_file)
 
       connection_spec = nil
       File.open(@conf_file) do |conf|

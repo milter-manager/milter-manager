@@ -37,7 +37,7 @@ module Milter::Manager
 
     def detect
       init_variables
-      return unless rc_script_exist?
+      return unless rc_script_readable?
 
       parse_rc_script
       return if @name.nil?
@@ -45,9 +45,11 @@ module Milter::Manager
       parse_rc_conf(specific_rc_conf)
     end
 
-    def rc_script_exist?
-      File.exist?(rc_script)
+    def rc_script_readable?
+      File.readable?(rc_script)
     end
+    # For backward compatibility. TODO: warning message.
+    alias_method :rc_script_exist?, :rc_script_readable?
 
     def enabled?
       if /\AYES\z/i =~ rcvar_value
@@ -91,7 +93,7 @@ module Milter::Manager
     end
 
     def parse_rc_conf(file)
-      return unless File.exist?(file)
+      return unless File.readable?(file)
       File.open(file) do |conf|
         conf.each_line do |line|
           case line
