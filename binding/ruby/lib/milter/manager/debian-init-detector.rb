@@ -38,7 +38,9 @@ module Milter::Manager
     end
 
     def clamav_milter_0_95_or_later?
-      clamav_milter? and clamav_milter_conf
+      clamav_milter? and
+        (/clamav-milter/ =~ @variables["CLAMAVCONF"].to_s or
+         @variables["CLAMAVMILTERCONF"])
     end
 
     private

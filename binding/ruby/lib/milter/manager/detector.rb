@@ -88,15 +88,17 @@ module Milter::Manager
         case line.sub(/#.*/, '')
         when variable_definition_re
           variable_name, variable_value = $1, $2
-          output[variable_name] = normalize_variable_value(variable_value)
+          variable_value = normalize_variable_value(variable_value)
+          output[variable_name] = variable_value || output[variable_name]
         end
       end
     end
 
     def normalize_variable_value(value)
       value = value.sub(/\A"(.*)"\z/, '\\1')
+      return nil if /\A\$\d+\z/ =~ value
       variable_expand_re = /\$(\{?)([a-zA-Z\d_]+)(\}?)/
-      value = value.gsub(variable_expand_re) do |matched|
+      value.gsub(variable_expand_re) do |matched|
         left_brace, name, right_brace = $1, $2, $3
         if [left_brace, right_brace] == ["{", "}"] or
             [left_brace, right_brace] == ["", ""]

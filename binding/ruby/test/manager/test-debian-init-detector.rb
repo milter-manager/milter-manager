@@ -565,6 +565,11 @@ if [ ! -f "$CLAMAVCONF" ]; then
   exit 0
 fi
 
+slurp_config()
+{
+  CLAMAVCONF="$1"
+}
+
 slurp_config "$CLAMAVCONF"
 [ -n "$User" ] || User=clamav
 
