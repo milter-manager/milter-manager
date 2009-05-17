@@ -1,5 +1,7 @@
 2009-05-17  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-leader.c: fix a memory leak.
+
 	* milter/core/milter-syslog-logger.c: fix a memory leak.
 
 2009-05-14  Kouhei Sutou  <kou@clear-code.com>

@@ -617,6 +617,7 @@ cb_abort (MilterReplySignals *_reply, gpointer user_data)
         milter_utils_get_enum_nick_name(MILTER_TYPE_MANAGER_LEADER_STATE,
                                         priv->state);
     milter_statistics("[abort][%s]", state_name);
+    g_free(state_name);
     milter_agent_shutdown(MILTER_AGENT(priv->client_context));
     milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(leader));
 }
