@@ -115,13 +115,13 @@ cb_log (MilterLogger *logger, const gchar *domain,
     const gchar *target_level_flags;
     MilterLogLevelFlags target_level = MILTER_LOG_LEVEL_STATISTICS;
 
-    log = g_string_new(NULL);
-
     target_level_flags = g_getenv("MILTER_LOG_LEVEL");
     if (target_level_flags)
         target_level = milter_log_level_flags_from_string(target_level_flags);
     if (!(level & target_level))
         return;
+
+    log = g_string_new(NULL);
 
     if (level & MILTER_LOG_LEVEL_STATISTICS) {
         g_string_append(log, "[statistics] ");
