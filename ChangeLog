@@ -1,5 +1,9 @@
 2009-05-18  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: add:
+	- [1.1.0] make suspend_on_unacceptable customizable.
+	- [1.1.0] support max connections by MilterClient.
+
 	* milter/client/milter-client.c, milter/client.h,
 	test/client/test-client.c: sleep on unacceptable.
 
