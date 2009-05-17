@@ -539,27 +539,63 @@ EOC
 # Description:       Clam AntiVirus milter interface
 ### END INIT INFO
 
+# edit /etc/default/clamav-milter for options
+
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
 DAEMON=/usr/sbin/clamav-milter
-NAME=clamav-milter
 DESC="Sendmail milter plugin for ClamAV"
-CLAMAVMILTERCONF=#{clamav_milter_conf}
+BASENAME=clamav-milter
+CLAMAVCONF=#{clamav_milter_conf}
 DEFAULT=/etc/default/clamav-milter
 SUPERVISOR=/usr/bin/daemon
-SUPERVISORNAME=daemon
 SUPERVISORPIDFILE="/var/run/clamav/daemon-clamav-milter.pid"
-SUPERVISORARGS="--name=$NAME --respawn $DAEMON -F $SUPERVISORPIDFILE"
+SUPERVISORARGS="-F $SUPERVISORPIDFILE --name=$BASENAME --respawn"
+CLAMAVDAEMONUPGRADE="/var/run/clamav-daemon-being-upgraded"
 
 [ -x "$DAEMON" ] || exit 0
+[ ! -r $DEFAULT ] || . $DEFAULT
+
 . /lib/lsb/init-functions
 
-if [ ! -f "$CLAMAVMILTERCONF" ]; then
+if [ ! -f "$CLAMAVCONF" ]; then
   log_failure_msg "There is no configuration file for clamav-milter."
   log_failure_msg "Please either dpkg-reconfigure $DESC, or copy the example from"
-  log_failure_msg "/usr/share/doc/clamav-milter/examples/ to $CLAMAVMILTERCONF and run"
+  log_failure_msg "/usr/share/doc/clamav-milter/examples/ to $CLAMAVCONF and run"
   log_failure_msg "'/etc/init.d/clamav-milter start'"
   exit 0
 fi
+
+slurp_config "$CLAMAVCONF"
+[ -n "$User" ] || User=clamav
+
+if [ -n "$Example" ]; then
+  log_failure_msg "$DESC is not configured."
+  log_failure_msg "Please edit $CLAMAVCONF and run '/etc/init.d/clamav-milter start'"
+  exit 0
+fi
+
+if [ -z "$PidFile" ]; then
+  PIDFILE=/var/run/clamav/clamav-milter.pid
+else
+  PIDFILE="$PidFile"
+fi
+
+if [ -z "$MilterSocket" ]; then
+  SOCKET=local:/var/run/clamav/clamav-milter.ctl
+else
+  SOCKET="$MilterSocket"
+fi
+
+case "$SOCKET" in
+  /*)
+  SOCKET_PATH="$SOCKET"
+  SOCKET="local:$SOCKET"
+  ;;
+  *)
+  SOCKET_PATH=`echo $SOCKET | sed -e s/local\://`
+  # If the socket is type inet: we don't care - we can't rm -f that later :)
+  ;;
+esac
 EOS
   end
 

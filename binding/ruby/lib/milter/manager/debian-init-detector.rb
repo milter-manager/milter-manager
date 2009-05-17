@@ -29,13 +29,16 @@ module Milter::Manager
     end
 
     def detect_clamav_milter_connection_spec
-      conf_file = @variables["CLAMAVMILTERCONF"]
-      conf ||= "/etc/clamav/clamav-milter.conf"
-      Milter::Manager::ClamAVMilterSocketDetector.new(conf_file).detect
+      conf = clamav_milter_conf || "/etc/clamav/clamav-milter.conf"
+      Milter::Manager::ClamAVMilterSocketDetector.new(conf).detect
     end
 
     def clamav_milter?
       @script_name == "clamav-milter"
+    end
+
+    def clamav_milter_0_95_or_later?
+      clamav_milter? and clamav_milter_conf
     end
 
     private
@@ -62,15 +65,19 @@ module Milter::Manager
       end
     end
 
+    def clamav_milter_conf
+      @variables["CLAMAVCONF"] || @variables["CLAMAVMILTERCONF"]
+    end
+
     def guess_spec
       spec = nil
+      spec ||= guess_application_specific_spec
       spec ||= normalize_spec(@variables["SOCKET"])
       spec ||= normalize_spec(@variables["SOCKFILE"])
       spec ||= normalize_spec(@variables["CONNECTION_SPEC"])
       spec ||= extract_spec_parameter_from_flags(@variables["OPTARGS"])
       spec ||= extract_spec_parameter_from_flags(@variables["DAEMON_ARGS"])
       spec ||= extract_spec_parameter_from_flags(@variables["PARAMS"])
-      spec ||= guess_application_specific_spec
       if @connection_spec_detector
         spec = normalize_spec(@connection_spec_detector.call(self, spec)) || spec
       end
@@ -79,7 +86,9 @@ module Milter::Manager
 
     def guess_application_specific_spec
       spec = nil
-      spec ||= detect_clamav_milter_connection_spec if clamav_milter?
+      if clamav_milter_0_95_or_later?
+        spec ||= detect_clamav_milter_connection_spec
+      end
       spec
     end
 
