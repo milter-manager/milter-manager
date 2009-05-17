@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -46,6 +46,7 @@ void test_remove_unix_socket_on_close (void);
 void test_remove_unix_socket_on_create_accessor (void);
 void test_remove_unix_socket_on_create (void);
 void test_not_remove_unix_socket_on_create (void);
+void test_suspend_time_on_unacceptable (void);
 
 static MilterClient *client;
 static MilterTestServer *server;
@@ -724,6 +725,16 @@ test_not_remove_unix_socket_on_create (void)
                                  "failed to bind(): %s: %s",
                                  spec, g_strerror(EADDRINUSE));
     gcut_assert_equal_error(expected_error, actual_error);
+}
+
+void
+test_suspend_time_on_unacceptable (void)
+{
+    cut_assert_equal_uint(
+        5, milter_client_get_suspend_time_on_unacceptable(client));
+    milter_client_set_suspend_time_on_unacceptable(client, 1);
+    cut_assert_equal_uint(
+        1, milter_client_get_suspend_time_on_unacceptable(client));
 }
 
 /*

@@ -149,6 +149,15 @@ void milter_client_init (void);
 void milter_client_quit (void);
 
 /**
+ * MILTER_CLIENT_DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE:
+ *
+ * The suspend time on unacceptable situation. See
+ * milter_client_get_suspend_time_on_unacceptable() for more
+ * details of the situation.
+ */
+#define MILTER_CLIENT_DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE 5
+
+/**
  * MILTER_CLIENT_ERROR:
  *
  * Used to get the #GError quark for #MilterClient errors.
@@ -420,12 +429,42 @@ gboolean             milter_client_get_default_remove_unix_socket_on_close
  * @remove: %TRUE if removing UNIX domain socket after the
  *          socket is closed.
  *
- * Gets default value whether removing UNIX domain socket
+ * Sets default value whether removing UNIX domain socket
  * after the socket is closed.
  */
 void                 milter_client_set_default_remove_unix_socket_on_close
                                                      (MilterClient  *client,
                                                       gboolean       remove);
+
+/**
+ * milter_client_get_suspend_time_on_unacceptable:
+ * @client: a %MilterClient.
+ *
+ * Gets suspend time on unacceptable situation. The
+ * situation is occurred when many SMTP clients connect to
+ * SMTP server. The situation means that your mail system
+ * is overflowed. You need to take some
+ * measures. e.g. Reducing number of milters, running
+ * milters on other machines, upgrade machine spec, growing
+ * number of max file descriptors and so on.
+ *
+ * Returns: suspend time in seconds.
+ */
+guint                milter_client_get_suspend_time_on_unacceptable
+                                                     (MilterClient  *client);
+
+/**
+ * milter_client_get_suspend_time_on_unacceptable:
+ * @client: a %MilterClient.
+ * @suspend_time: suspend time in seconds.
+ *
+ * Sets suspend time on unacceptable situation. See
+ * milter_client_get_suspend_time_on_unacceptable() for more
+ * details of the situation.
+ */
+void                 milter_client_set_suspend_time_on_unacceptable
+                                                     (MilterClient  *client,
+                                                      guint          suspend_time);
 
 /**
  * milter_client_main:

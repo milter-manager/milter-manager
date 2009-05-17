@@ -1,3 +1,8 @@
+2009-05-18  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/client/milter-client.c, milter/client.h,
+	test/client/test-client.c: sleep on unacceptable.
+
 2009-05-17  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/manager/milter-manager-leader.c (cb_abort): fix a memory leak.

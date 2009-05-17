@@ -81,6 +81,7 @@ struct _MilterClientPrivate
     gchar *default_unix_socket_group;
     gboolean default_remove_unix_socket_on_close;
     gboolean remove_unix_socket_on_create;
+    guint suspend_time_on_unacceptable;
 };
 
 typedef struct _MilterClientProcessData
@@ -179,6 +180,8 @@ _milter_client_init (MilterClient *client)
     priv->default_unix_socket_group = NULL;
     priv->default_remove_unix_socket_on_close = TRUE;
     priv->remove_unix_socket_on_create = TRUE;
+    priv->suspend_time_on_unacceptable =
+        MILTER_CLIENT_DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE;
 }
 
 static void
@@ -543,11 +546,14 @@ process_client_channel (MilterClient *client, GIOChannel *channel)
 static gboolean
 accept_client (gint server_fd, MilterClient *client)
 {
+    MilterClientPrivate *priv;
     gint client_fd;
     GIOChannel *client_channel;
     MilterGenericSocketAddress address;
     gchar *spec;
     socklen_t address_size;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
 
     address_size = sizeof(address);
     memset(&address, '\0', address_size);
@@ -562,6 +568,17 @@ accept_client (gint server_fd, MilterClient *client)
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client),
                                     error);
         g_error_free(error);
+
+        if (errno == EMFILE) {
+            milter_warning("[client][accept][suspend] "
+                           "too many file is opened. "
+                           "suspend accepting connection in %d seconds",
+                           priv->suspend_time_on_unacceptable);
+            g_usleep(priv->suspend_time_on_unacceptable * G_USEC_PER_SEC);
+            milter_warning("[client][accept][resume] "
+                           "resume accepting connection.");
+        }
+
         return TRUE;
     }
 
@@ -890,6 +907,19 @@ milter_client_set_default_remove_unix_socket_on_close (MilterClient *client,
                                                        gboolean remove)
 {
     MILTER_CLIENT_GET_PRIVATE(client)->default_remove_unix_socket_on_close = remove;
+}
+
+guint
+milter_client_get_suspend_time_on_unacceptable (MilterClient *client)
+{
+    return MILTER_CLIENT_GET_PRIVATE(client)->suspend_time_on_unacceptable;
+}
+
+void
+milter_client_set_suspend_time_on_unacceptable (MilterClient *client,
+                                                guint suspend_time)
+{
+    MILTER_CLIENT_GET_PRIVATE(client)->suspend_time_on_unacceptable = suspend_time;
 }
 
 /*
