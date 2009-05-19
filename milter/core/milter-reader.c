@@ -150,6 +150,8 @@ read_from_channel (MilterReader *reader, GIOChannel *channel)
         if (io_error) {
             GError *error = NULL;
 
+            priv->shutdown_requested = TRUE;
+
             milter_utils_set_error_with_sub_error(&error,
                                                   MILTER_READER_ERROR,
                                                   MILTER_READER_ERROR_IO_ERROR,
@@ -224,6 +226,8 @@ channel_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
     if (error_occurred) {
         gchar *message;
         GError *error = NULL;
+
+        priv->shutdown_requested = TRUE;
 
         message = milter_utils_inspect_io_condition_error(condition);
         g_set_error(&error,
@@ -371,6 +375,8 @@ milter_reader_shutdown (MilterReader *reader)
     if (priv->channel_watch_id == 0)
         return;
 
+    if (priv->shutdown_requested)
+        return;
     priv->shutdown_requested = TRUE;
 
     if (priv->processing)

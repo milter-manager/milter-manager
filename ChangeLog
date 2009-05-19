@@ -1,3 +1,8 @@
+2009-05-19  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/core/milter-reader.c, milter/core/milter-writer.c:
+	suppress infinite loop on error while shutdown.
+
 2009-05-18  Kouhei Sutou  <kou@cozmixng.org>
 
 	* TODO: add:

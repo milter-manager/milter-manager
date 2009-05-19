@@ -341,6 +341,9 @@ milter_writer_shutdown (MilterWriter *writer)
     if (priv->channel_watch_id == 0)
         return;
 
+    g_source_remove(priv->channel_watch_id);
+    priv->channel_watch_id = 0;
+
     g_io_channel_shutdown(priv->io_channel, TRUE, &channel_error);
     if (channel_error) {
         GError *error = NULL;
@@ -355,9 +358,6 @@ milter_writer_shutdown (MilterWriter *writer)
                      priv->tag, error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(writer), error);
         g_error_free(error);
-    } else {
-        g_source_remove(priv->channel_watch_id);
-        priv->channel_watch_id = 0;
     }
 }
 
