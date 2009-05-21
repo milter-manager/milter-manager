@@ -694,7 +694,7 @@ EOF
     end
   end
 
-  attr_accessor :log, :rrd
+  attr_accessor :log, :output_directory
   def initialize
     @log = ARGF
     @update_db = true

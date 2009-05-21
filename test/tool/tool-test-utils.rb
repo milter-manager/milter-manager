@@ -13,10 +13,18 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
+require 'pathname'
+require 'tempfile'
+require 'fileutils'
+
 require 'rubygems'
 require 'rr'
 
 module RRD
+  module_function
+  def print_mock_code(name, *args)
+    puts "    mock(RRD).#{name}(#{args.inspect.gsub(/[\[\]]/, '')})"
+  end
 end
 
 load 'milter-manager-log-analyzer'
