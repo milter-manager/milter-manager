@@ -1,3 +1,4 @@
 EXTRA_DIST =			\
 	large.mail		\
-	parse-test.mail
+	parse-test.mail		\
+	mail.log

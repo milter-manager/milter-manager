@@ -1,3 +1,7 @@
+2009-05-21  Kouhei Sutou  <kou@cozmixng.org>
+
+	* test/tool/: add a test for milter-manager-log-analyzer.
+
 2009-05-19  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/core/milter-reader.c, milter/core/milter-writer.c:

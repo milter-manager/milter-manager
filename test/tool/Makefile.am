@@ -1,5 +1,12 @@
 SUBDIRS = fixtures
 
+TESTS = run-test.rb
+
+EXTRA_DIST =					\
+	run-test.rb				\
+	tool-test-utils.rb			\
+	test-log-analyzer.rb
+
 if WITH_CUTTER
 noinst_LTLIBRARIES =				\
 	test-server.la
