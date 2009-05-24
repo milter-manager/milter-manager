@@ -1,5 +1,7 @@
 2009-05-24  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/tool/fixtures/: add more test log.
+
 	* tool/milter-manager-log-analyzer: parse as stream.
 
 	* tool/milter-manager-log-analyzer: parse as stream. just stop.rrd.
