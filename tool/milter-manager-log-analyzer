@@ -270,8 +270,8 @@ class MilterManagerLogAnalyzer
 
     def prepare
       if File.exist?(rrd_file)
-        @last_update_time = RRD.last_update_time(rrd_file)
-        @current_time = @last_update_time + @step
+        @last_update_time = normalize_time(RRD.last_update_time(rrd_file))
+        @current_time = @last_update_time.to_i + @step
       else
         @last_update_time = nil
         @current_time = nil
