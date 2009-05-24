@@ -30,6 +30,7 @@ class TestLogAnalyzer < Test::Unit::TestCase
     FileUtils.rm_rf(@tmp_dir.to_s)
   end
 
+  priority :must
   def test_update
     @analyzer.output_directory = @tmp_dir.to_s
 

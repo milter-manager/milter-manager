@@ -635,12 +635,56 @@ class MilterManagerLogAnalyzer
       build_path("stop.#{tag}.png")
     end
 
+    def prepare
+      super
+      @data = {}
+    end
+
     def feed(time_stamp, content)
-      if /\A\[stop\]\[(.+)\]: (.+)\z/ =~ content
+      time_stamp = normalize_time(time_stamp)
+      return if @last_update_time and time_stamp < @last_update_time
+      return if time_stamp >= @update_time
+
+      time_stamp = time_stamp.to_i
+      state = nil
+      case content
+      when /\A\[stop\]\[(.+)\]: (.+)\z/
         state = $1
         name = $2
-        @data << LogData::Stop.new(state, name, time_stamp)
+      else
+        return
       end
+
+      @current_time ||= time_stamp
+      flush(time_stamp)
+      @data[state] ||= 0
+      @data[state] += 1
+    end
+
+    def update
+      flush
+    end
+
+    def flush(next_time_stamp=nil)
+      return if @current_time == next_time_stamp
+      create_rrd(@current_time, *@items) unless File.exist?(rrd_file)
+
+      if @data
+        counts = []
+        @items.each do |item|
+          counts << @data[item]
+        end
+        RRD.update(rrd_file, "#{@current_time}:#{counts.join(':')}")
+      end
+      @data = {}
+
+      if next_time_stamp
+        (@current_time + @step).step(next_time_stamp - @step, @step) do |time|
+          counts = ":" * (@items.size - 1)
+          RRD.update(rrd_file, "#{time}:#{counts}")
+        end
+      end
+      @current_time = next_time_stamp || @current_time
     end
 
     def output_graph(range_class, options={})

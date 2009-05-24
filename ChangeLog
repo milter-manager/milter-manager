@@ -1,5 +1,7 @@
 2009-05-24  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-manager-log-analyzer: parse as stream. just stop.rrd.
+
 	* test/tool/test-log-analyzer.rb: create dummy RRD file.
 
 	* tool/milter-manager-log-analyzer: parse as stream. just mail.rrd.
