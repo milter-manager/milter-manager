@@ -6,4 +6,4 @@ EXTRA_DIST =			\
 	milter-log.mail.rrd	\
 	milter-log.session.rrd	\
 	milter-log.stop.rrd	\
-	sanitaize-log.rb
+	sanitize-log.rb
