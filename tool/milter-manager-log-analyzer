@@ -268,11 +268,6 @@ class MilterManagerLogAnalyzer
       build_path(self.class.base_rrd_file_name)
     end
 
-    def collect_data(last_update_time)
-      data = @data.collect {|datum| [datum.key, datum.time]}
-      GraphData::Data.new(count_data({}, data, last_update_time))
-    end
-
     def prepare
       if File.exist?(rrd_file)
         @last_update_time = RRD.last_update_time(rrd_file)
@@ -281,54 +276,44 @@ class MilterManagerLogAnalyzer
         @last_update_time = nil
         @current_time = nil
       end
+      @data = {}
     end
 
-    def update
-      data = collect_data(@last_update_time)
-      return if data.empty?
+    def feed(time_stamp, content)
+      time_stamp = normalize_time(time_stamp)
+      return if @last_update_time and time_stamp < @last_update_time
+      return if time_stamp >= @update_time
 
-      if @last_update_time
-        start_time = @last_update_time + @step
-      else
-        start_time = data.first_time
-      end
+      time_stamp = time_stamp.to_i
+      key = find_key(content)
+      return if key.nil?
 
-      create_rrd(start_time, *@items) unless File.exist?(rrd_file)
+      @current_time ||= time_stamp
+      flush(time_stamp)
+      @data[key] ||= 0
+      @data[key] += 1
+    end
 
-      end_time = data.last_time
-      start_time.to_i.step(end_time, @step) do |time|
+    def flush(next_time_stamp=nil)
+      return if @current_time == next_time_stamp
+      create_rrd(@current_time, *@items) unless File.exist?(rrd_file)
+
+      if @data
         counts = []
         @items.each do |item|
-          counts << (data[item] || {})[time] || 0
+          counts << @data[item]
         end
-
-        # puts("#{Time.at(time).iso8601} #{counts.join(':')}: #{rrd_file}")
-        RRD.update(rrd_file, "#{time}:#{counts.join(':')}")
+        RRD.update(rrd_file, "#{@current_time}:#{counts.join(':')}")
       end
-    end
+      @data = {}
 
-    def create_rrd(start_time, *sources)
-      ranges = [
-                GraphData::DayRange.new(@step, rows),
-                GraphData::WeekRange.new(@step, rows),
-                GraphData::MonthRange.new(@step, rows),
-                GraphData::YearRange.new(@step, rows),
-               ]
-
-      rra = []
-      ranges.each do |range|
-        rra << "RRA:MAX:0.5:#{range.steps}:#{rows}"
-        rra << "RRA:AVERAGE:0.5:#{range.steps}:#{rows}"
+      if next_time_stamp
+        (@current_time + @step).step(next_time_stamp - @step, @step) do |time|
+          counts = ":" * (@items.size - 1)
+          RRD.update(rrd_file, "#{time}:#{counts}")
+        end
       end
-
-      data_sources = sources.collect do |source|
-        "DS:#{source}:GAUGE:#{@step * 3}:0:U"
-      end
-
-      RRD.create(rrd_file,
-                 "--start", (start_time - 1).to_i.to_s,
-                 "--step", @step,
-                 *(rra + data_sources))
+      @current_time = next_time_stamp || @current_time
     end
 
     def output_graph(range_class, options={}, *args)
@@ -365,6 +350,30 @@ class MilterManagerLogAnalyzer
     end
 
     private
+    def create_rrd(start_time, *sources)
+      ranges = [
+                GraphData::DayRange.new(@step, rows),
+                GraphData::WeekRange.new(@step, rows),
+                GraphData::MonthRange.new(@step, rows),
+                GraphData::YearRange.new(@step, rows),
+               ]
+
+      rra = []
+      ranges.each do |range|
+        rra << "RRA:MAX:0.5:#{range.steps}:#{rows}"
+        rra << "RRA:AVERAGE:0.5:#{range.steps}:#{rows}"
+      end
+
+      data_sources = sources.collect do |source|
+        "DS:#{source}:GAUGE:#{@step * 3}:0:U"
+      end
+
+      RRD.create(rrd_file,
+                 "--start", (start_time - 1).to_i.to_s,
+                 "--step", @step,
+                 *(rra + data_sources))
+    end
+
     def build_path(*paths)
       File.join(*([@output_directory, *paths].compact))
     end
@@ -410,27 +419,6 @@ class MilterManagerLogAnalyzer
         "unknown"
       end
     end
-
-    def count_data(output, data, last_update_time)
-      data.each do |key, time|
-        time = normalize_time(time)
-
-        # ignore sessions which has been already registered
-        # due to RRD.update fails on past time stamp
-        next if last_update_time and time <= last_update_time
-
-        # ignore recent sessions due to RRD.update fails on
-        # past time stamp
-        next if time >= @update_time
-
-        time = time.to_i
-
-        output[key] ||= {}
-        output[key][time] ||= 0
-        output[key][time] += 1
-      end
-      output
-    end
   end
 
   class SessionGraphGenerator < GraphGenerator
@@ -445,43 +433,25 @@ class MilterManagerLogAnalyzer
       @title = 'Sessions'
       @vertical_label = "sessions"
       @items = ["smtp", "child"]
-      @child_sessions = []
-      @client_sessions = []
     end
 
     def graph_name(tag)
       build_path("session.#{tag}.png")
     end
 
-    def collect_session(time_stamp, content, sessions, regex)
-      if regex.match(content)
+    def find_key(content)
+      key = nil
+      case content
+      when /\A\[milter\]\[end\]\[(.+)\]\(.+\): (.+)\z/
         elapsed = $1
         name = $2
-        session = LogData::Session.new(name)
-        session.end_time = time_stamp
-        session.start_time = time_stamp - Float(elapsed)
-        sessions << session
+        key = "child"
+      when /\A\[session\]\[end\]\[(.+)\]\(.+\)\z/
+        elapsed = $1
+        name = $2
+        key = "smtp"
       end
-      sessions
-    end
-
-    def feed(time_stamp, content)
-      @child_sessions =
-        collect_session(time_stamp, content, @child_sessions,
-                        /\A\[milter\]\[end\]\[(.+)\]\(.+\): (.+)\z/)
-      @client_sessions =
-        collect_session(time_stamp, content, @client_sessions,
-                        /\A\[session\]\[end\]\[(.+)\]\(.+\)\z/)
-    end
-
-    def collect_data(last_update_time)
-      count = {}
-      [["smtp", @client_sessions],
-       ["child", @child_sessions]].each do |key, sessions|
-        data = sessions.collect {|session| [key, session.end_time]}
-        count_data(count, data, last_update_time)
-      end
-      GraphData::Data.new(count)
+      key
     end
 
     def output_graph(range_class, options={})
@@ -521,63 +491,6 @@ class MilterManagerLogAnalyzer
       build_path("mail.#{tag}.png")
     end
 
-    def prepare
-      super
-      @data = {}
-    end
-
-    def feed(time_stamp, content)
-      time_stamp = normalize_time(time_stamp)
-      return if @last_update_time and time_stamp < @last_update_time
-      return if time_stamp >= @update_time
-
-      time_stamp = time_stamp.to_i
-      status = nil
-      case content
-      when /\A\[reply\]\[(.+)\]\[(.+)\]\z/
-        state = $1
-        status = $2
-        return if status == "continue" and state != "end-of-message"
-        status = "pass" if status == "continue"
-      when /\A\[abort\]\[(.+)\]\z/
-        state = $1
-        status = "abort"
-      else
-        return
-      end
-
-      @current_time ||= time_stamp
-      flush(time_stamp)
-      @data[status] ||= 0
-      @data[status] += 1
-    end
-
-    def update
-      flush
-    end
-
-    def flush(next_time_stamp=nil)
-      return if @current_time == next_time_stamp
-      create_rrd(@current_time, *@items) unless File.exist?(rrd_file)
-
-      if @data
-        counts = []
-        @items.each do |item|
-          counts << @data[item]
-        end
-        RRD.update(rrd_file, "#{@current_time}:#{counts.join(':')}")
-      end
-      @data = {}
-
-      if next_time_stamp
-        (@current_time + @step).step(next_time_stamp - @step, @step) do |time|
-          counts = ":" * (@items.size - 1)
-          RRD.update(rrd_file, "#{time}:#{counts}")
-        end
-      end
-      @current_time = next_time_stamp || @current_time
-    end
-
     def output_graph(range_class, options={})
       entries = [
                  ["AREA", "pass", "#0000ff", "Pass"],
@@ -609,6 +522,25 @@ class MilterManagerLogAnalyzer
       items << "GPRINT:max_smtp:MAX:max\\: %4.0lf sessions/#{unit}\\l"
       super(range_class, options, *items)
     end
+
+    private
+    def find_key(content)
+      key = nil
+      case content
+      when /\A\[reply\]\[(.+)\]\[(.+)\]\z/
+        state = $1
+        status = $2
+        return nil if status == "continue" and state != "end-of-message"
+        status = "pass" if status == "continue"
+        key = status
+      when /\A\[abort\]\[(.+)\]\z/
+        state = $1
+        status = "abort"
+        key = status
+      end
+
+      key
+    end
   end
 
   class StopGraphGenerator < GraphGenerator
@@ -633,58 +565,6 @@ class MilterManagerLogAnalyzer
 
     def graph_name(tag)
       build_path("stop.#{tag}.png")
-    end
-
-    def prepare
-      super
-      @data = {}
-    end
-
-    def feed(time_stamp, content)
-      time_stamp = normalize_time(time_stamp)
-      return if @last_update_time and time_stamp < @last_update_time
-      return if time_stamp >= @update_time
-
-      time_stamp = time_stamp.to_i
-      state = nil
-      case content
-      when /\A\[stop\]\[(.+)\]: (.+)\z/
-        state = $1
-        name = $2
-      else
-        return
-      end
-
-      @current_time ||= time_stamp
-      flush(time_stamp)
-      @data[state] ||= 0
-      @data[state] += 1
-    end
-
-    def update
-      flush
-    end
-
-    def flush(next_time_stamp=nil)
-      return if @current_time == next_time_stamp
-      create_rrd(@current_time, *@items) unless File.exist?(rrd_file)
-
-      if @data
-        counts = []
-        @items.each do |item|
-          counts << @data[item]
-        end
-        RRD.update(rrd_file, "#{@current_time}:#{counts.join(':')}")
-      end
-      @data = {}
-
-      if next_time_stamp
-        (@current_time + @step).step(next_time_stamp - @step, @step) do |time|
-          counts = ":" * (@items.size - 1)
-          RRD.update(rrd_file, "#{time}:#{counts}")
-        end
-      end
-      @current_time = next_time_stamp || @current_time
     end
 
     def output_graph(range_class, options={})
@@ -717,6 +597,18 @@ class MilterManagerLogAnalyzer
       items << "GPRINT:milter:AVERAGE:avg\\: %6.2lf milters/#{unit}"
       items << "GPRINT:max_milter:MAX:max\\: %4.0lf milters/#{unit}\\l"
       super(range_class, options, *items)
+    end
+
+    private
+    def find_key(content)
+      key = nil
+      case content
+      when /\A\[stop\]\[(.+)\]: (.+)\z/
+        state = $1
+        name = $2
+        key = state
+      end
+      key
     end
   end
 
@@ -852,7 +744,7 @@ EOF
     end
 
     listeners.each do |listener|
-      listener.update
+      listener.flush
     end
   end
 
