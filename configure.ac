@@ -217,8 +217,8 @@ dnl **************************************************************
 dnl Checks for RD2
 dnl **************************************************************
 
-AC_PATH_PROG(RD2, rd2, none)
-AM_CONDITIONAL([WITH_RD2], [test "$RD2" != "none"])
+AC_PATH_PROG(RD2, rd2, rd2-not-found)
+AM_CONDITIONAL([WITH_RD2], [test "$RD2" != "rd2-not-found"])
 
 dnl **************************************************************
 dnl Configure for maintainer mode.

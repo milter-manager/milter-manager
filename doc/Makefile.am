@@ -50,7 +50,6 @@ EXTRA_DIST =						\
 	milter-manager.rd				\
 	milter-manager.rd.ja
 
-if WITH_RD2
 dist_man1_MANS =			\
 	milter-manager.man		\
 	milter-test-server.man		\
@@ -68,12 +67,20 @@ dist_ja_man1_mans = 				\
 
 EXTRA_DIST += $(dist_ja_man1_mans)
 
+if WITH_RD2
 install-data-local: $(dist_ja_man1_mans)
+else
+install-data-local:
+endif
 	test -z "$(DESTDIR)$(ja_man1dir)" || $(mkdir_p) "$(DESTDIR)$(ja_man1dir)"
-	@for jman in $(dist_ja_man1_mans); do					\
-	  jman_file=`echo $${jman} | sed -e s/jman$$/1/`;			\
-	  echo $(INSTALL_DATA) $${jman} "$(DESTDIR)$(ja_man1dir)"/$${jman_file};\
-	  $(INSTALL_DATA) $${jman} "$(DESTDIR)$(ja_man1dir)"/$${jman_file};	\
+	@for jman in $(dist_ja_man1_mans); do			\
+	  test -f "$${jman}" || break;				\
+	  jman_path=$(top_builddir)/doc/$${jman};		\
+	  jman_file=`echo $${jman} | sed -e s/jman$$/1/`;	\
+	  echo $(INSTALL_DATA) $${jman_path}			\
+	    "$(DESTDIR)$(ja_man1dir)"/$${jman_file};		\
+	  $(INSTALL_DATA) $${jman_path}				\
+	    "$(DESTDIR)$(ja_man1dir)"/$${jman_file};		\
 	done
 
 uninstall-local:
@@ -81,7 +88,6 @@ uninstall-local:
 	  jman_file=`echo $${jman} | sed -e s/jman$$/1/`;	\
 	  rm -f "$(DESTDIR)$(ja_man1dir)"/$${jman_file};	\
 	done
-endif
 
 # dirty...
 milter-manager.jman: milter-manager.rd.ja
@@ -95,10 +101,10 @@ MAINTAINERCLEANFILES = $(dist_man1_MANS) $(dist_ja_man1_mans)
 SUFFIXES = .rd .man .rd .jman .svg .png
 
 .rd.man:
-	$(RUBY) $(RD2) -r$(top_srcdir)/misc/rd2man-lib $< > $@
+	$(RD2) -r$(top_srcdir)/misc/rd2man-lib $< > $@
 
 .rd.jman: # dirty...
-	$(RUBY) $(RD2) -r$(top_srcdir)/misc/rd2man-lib $<.ja > $@
+	$(RD2) -r$(top_srcdir)/misc/rd2man-lib $<.ja > $@
 
 .svg.png:
 	inkscape --export-png $@ $<

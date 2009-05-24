@@ -155,112 +155,112 @@ update-po: Makefile sgml.stamp
 
 EXPAND_RD2_SNIPPET = $(top_srcdir)/misc/expand-rd2-snippet.rb
 RD2REFENTRY_LIB = $(top_srcdir)/misc/rd2refentry-lib.rb
-RD2 = rd2 -r $(RD2REFENTRY_LIB) --name=MILTER-MANAGER
-RD2_JA = $(RD2) --po=$(srcdir)/ja.po
+RD2DOCBOOK = $(RD2) -r $(RD2REFENTRY_LIB) --name=MILTER-MANAGER
+RD2DOCBOOK_JA = $(RD2DOCBOOK) --po=$(srcdir)/ja.po
 SVG2PNG = inkscape --export-dpi=60 --export-background=white --export-png
 
 ### RD -> XML
 readme.xml: $(top_srcdir)/README $(RD2REFENTRY_LIB) readme.xml.ja
-	$(RD2) $(top_srcdir)/README > readme.xml
+	$(RD2DOCBOOK) $(top_srcdir)/README > readme.xml
 
 readme.xml.ja: $(top_srcdir)/README.ja $(RD2REFENTRY_LIB) ja.po
-	$(RD2_JA) $(top_srcdir)/README.ja > readme.xml.ja
+	$(RD2DOCBOOK_JA) $(top_srcdir)/README.ja > readme.xml.ja
 
 news.xml: $(top_srcdir)/NEWS $(RD2REFENTRY_LIB) news.xml.ja
-	$(RD2) $(top_srcdir)/NEWS > news.xml
+	$(RD2DOCBOOK) $(top_srcdir)/NEWS > news.xml
 
 news.xml.ja: $(top_srcdir)/NEWS.ja $(RD2REFENTRY_LIB) ja.po
-	$(RD2_JA) $(top_srcdir)/NEWS.ja > news.xml.ja
+	$(RD2DOCBOOK_JA) $(top_srcdir)/NEWS.ja > news.xml.ja
 
 introduction.xml: $(top_srcdir)/doc/introduction.rd $(RD2REFENTRY_LIB) introduction.xml.ja
-	$(RD2) $(top_srcdir)/doc/introduction.rd > introduction.xml
+	$(RD2DOCBOOK) $(top_srcdir)/doc/introduction.rd > introduction.xml
 
 introduction.xml.ja: $(top_srcdir)/doc/introduction.rd.ja $(RD2REFENTRY_LIB) ja.po
-	$(RD2_JA) $(top_srcdir)/doc/introduction.rd.ja > introduction.xml.ja
+	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/introduction.rd.ja > introduction.xml.ja
 
 configuration.xml: $(top_srcdir)/doc/configuration.rd $(RD2REFENTRY_LIB) configuration.xml.ja
-	$(RD2) $(top_srcdir)/doc/configuration.rd > configuration.xml
+	$(RD2DOCBOOK) $(top_srcdir)/doc/configuration.rd > configuration.xml
 
 configuration.xml.ja: $(top_srcdir)/doc/configuration.rd.ja $(RD2REFENTRY_LIB) ja.po
-	$(RD2_JA) $(top_srcdir)/doc/configuration.rd.ja > configuration.xml.ja
+	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/configuration.rd.ja > configuration.xml.ja
 
 install.xml: $(top_srcdir)/doc/install.rd $(RD2REFENTRY_LIB) install.xml.ja
-	$(RD2) $(top_srcdir)/doc/install.rd > install.xml
+	$(RD2DOCBOOK) $(top_srcdir)/doc/install.rd > install.xml
 
 install.xml.ja: $(top_srcdir)/doc/install.rd.ja $(RD2REFENTRY_LIB) ja.po
-	$(RD2_JA) $(top_srcdir)/doc/install.rd.ja > install.xml.ja
+	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/install.rd.ja > install.xml.ja
 
 install-to-ubuntu.xml: $(top_srcdir)/doc/install-to-ubuntu.rd $(RD2REFENTRY_LIB) install-to-ubuntu.xml.ja
-	$(RD2) $(top_srcdir)/doc/install-to-ubuntu.rd > install-to-ubuntu.xml
+	$(RD2DOCBOOK) $(top_srcdir)/doc/install-to-ubuntu.rd > install-to-ubuntu.xml
 
 install-to-ubuntu.xml.ja: $(top_srcdir)/doc/install-to-ubuntu.rd.ja $(RD2REFENTRY_LIB) ja.po
-	$(RD2_JA) $(top_srcdir)/doc/install-to-ubuntu.rd.ja > install-to-ubuntu.xml.ja
+	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/install-to-ubuntu.rd.ja > install-to-ubuntu.xml.ja
 
 install-to-centos.xml: $(top_srcdir)/doc/install-to-centos.rd $(RD2REFENTRY_LIB) install-to-centos.xml.ja
-	$(RD2) $(top_srcdir)/doc/install-to-centos.rd > install-to-centos.xml
+	$(RD2DOCBOOK) $(top_srcdir)/doc/install-to-centos.rd > install-to-centos.xml
 
 install-to-centos.xml.ja: $(top_srcdir)/doc/install-to-centos.rd.ja $(RD2REFENTRY_LIB) ja.po
-	$(RD2_JA) $(top_srcdir)/doc/install-to-centos.rd.ja > install-to-centos.xml.ja
+	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/install-to-centos.rd.ja > install-to-centos.xml.ja
 
 install-to-freebsd.xml: $(top_srcdir)/doc/install-to-freebsd.rd $(RD2REFENTRY_LIB) install-to-freebsd.xml.ja
-	$(RD2) $(top_srcdir)/doc/install-to-freebsd.rd > install-to-freebsd.xml
+	$(RD2DOCBOOK) $(top_srcdir)/doc/install-to-freebsd.rd > install-to-freebsd.xml
 
 install-to-freebsd.xml.ja: $(top_srcdir)/doc/install-to-freebsd.rd.ja $(RD2REFENTRY_LIB) ja.po
-	$(RD2_JA) $(top_srcdir)/doc/install-to-freebsd.rd.ja > install-to-freebsd.xml.ja
+	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/install-to-freebsd.rd.ja > install-to-freebsd.xml.ja
 
 install-to-others.xml: $(top_srcdir)/doc/install-to-others.rd $(RD2REFENTRY_LIB) install-to-others.xml.ja
-	$(RD2) $(top_srcdir)/doc/install-to-others.rd > install-to-others.xml
+	$(RD2DOCBOOK) $(top_srcdir)/doc/install-to-others.rd > install-to-others.xml
 
 install-to-others.xml.ja: $(top_srcdir)/doc/install-to-others.rd.ja $(RD2REFENTRY_LIB) ja.po
-	$(RD2_JA) $(top_srcdir)/doc/install-to-others.rd.ja > install-to-others.xml.ja
+	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/install-to-others.rd.ja > install-to-others.xml.ja
 
 install-options-to-ubuntu.xml: $(top_srcdir)/doc/install-options-to-ubuntu.rd $(RD2REFENTRY_LIB) install-options-to-ubuntu.xml.ja
-	$(RD2) $(top_srcdir)/doc/install-options-to-ubuntu.rd > install-options-to-ubuntu.xml
+	$(RD2DOCBOOK) $(top_srcdir)/doc/install-options-to-ubuntu.rd > install-options-to-ubuntu.xml
 
 install-options-to-ubuntu.xml.ja: $(top_srcdir)/doc/install-options-to-ubuntu.rd.ja $(RD2REFENTRY_LIB) ja.po
-	$(RD2_JA) $(top_srcdir)/doc/install-options-to-ubuntu.rd.ja > install-options-to-ubuntu.xml.ja
+	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/install-options-to-ubuntu.rd.ja > install-options-to-ubuntu.xml.ja
 
 install-options-to-centos.xml: $(top_srcdir)/doc/install-options-to-centos.rd $(RD2REFENTRY_LIB) install-options-to-centos.xml.ja
-	$(RD2) $(top_srcdir)/doc/install-options-to-centos.rd > install-options-to-centos.xml
+	$(RD2DOCBOOK) $(top_srcdir)/doc/install-options-to-centos.rd > install-options-to-centos.xml
 
 install-options-to-centos.xml.ja: $(top_srcdir)/doc/install-options-to-centos.rd.ja $(RD2REFENTRY_LIB) ja.po
-	$(RD2_JA) $(top_srcdir)/doc/install-options-to-centos.rd.ja > install-options-to-centos.xml.ja
+	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/install-options-to-centos.rd.ja > install-options-to-centos.xml.ja
 
 install-options-to-freebsd.xml: $(top_srcdir)/doc/install-options-to-freebsd.rd $(RD2REFENTRY_LIB) install-options-to-freebsd.xml.ja
-	$(RD2) $(top_srcdir)/doc/install-options-to-freebsd.rd > install-options-to-freebsd.xml
+	$(RD2DOCBOOK) $(top_srcdir)/doc/install-options-to-freebsd.rd > install-options-to-freebsd.xml
 
 install-options-to-freebsd.xml.ja: $(top_srcdir)/doc/install-options-to-freebsd.rd.ja $(RD2REFENTRY_LIB) ja.po
-	$(RD2_JA) $(top_srcdir)/doc/install-options-to-freebsd.rd.ja > install-options-to-freebsd.xml.ja
+	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/install-options-to-freebsd.rd.ja > install-options-to-freebsd.xml.ja
 
 milter-manager.xml: $(top_srcdir)/doc/milter-manager.rd $(RD2REFENTRY_LIB) milter-manager.xml.ja
-	$(RD2) $(top_srcdir)/doc/milter-manager.rd > milter-manager.xml
+	$(RD2DOCBOOK) $(top_srcdir)/doc/milter-manager.rd > milter-manager.xml
 
 milter-manager.xml.ja: $(top_srcdir)/doc/milter-manager.rd.ja $(RD2REFENTRY_LIB) ja.po
-	$(RD2_JA) $(top_srcdir)/doc/milter-manager.rd.ja > milter-manager.xml.ja
+	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/milter-manager.rd.ja > milter-manager.xml.ja
 
 milter-test-server.xml: $(top_srcdir)/doc/milter-test-server.rd $(RD2REFENTRY_LIB) milter-test-server.xml.ja
-	$(RD2) $(top_srcdir)/doc/milter-test-server.rd > milter-test-server.xml
+	$(RD2DOCBOOK) $(top_srcdir)/doc/milter-test-server.rd > milter-test-server.xml
 
 milter-test-server.xml.ja: $(top_srcdir)/doc/milter-test-server.rd.ja $(RD2REFENTRY_LIB) ja.po
-	$(RD2_JA) $(top_srcdir)/doc/milter-test-server.rd.ja > milter-test-server.xml.ja
+	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/milter-test-server.rd.ja > milter-test-server.xml.ja
 
 milter-test-client.xml: $(top_srcdir)/doc/milter-test-client.rd $(RD2REFENTRY_LIB) milter-test-client.xml.ja
-	$(RD2) $(top_srcdir)/doc/milter-test-client.rd > milter-test-client.xml
+	$(RD2DOCBOOK) $(top_srcdir)/doc/milter-test-client.rd > milter-test-client.xml
 
 milter-test-client.xml.ja: $(top_srcdir)/doc/milter-test-client.rd.ja $(RD2REFENTRY_LIB) ja.po
-	$(RD2_JA) $(top_srcdir)/doc/milter-test-client.rd.ja > milter-test-client.xml.ja
+	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/milter-test-client.rd.ja > milter-test-client.xml.ja
 
 milter-performance-check.xml: $(top_srcdir)/doc/milter-performance-check.rd $(RD2REFENTRY_LIB) milter-performance-check.xml.ja
-	$(RD2) $(top_srcdir)/doc/milter-performance-check.rd > milter-performance-check.xml
+	$(RD2DOCBOOK) $(top_srcdir)/doc/milter-performance-check.rd > milter-performance-check.xml
 
 milter-performance-check.xml.ja: $(top_srcdir)/doc/milter-performance-check.rd.ja $(RD2REFENTRY_LIB) ja.po
-	$(RD2_JA) $(top_srcdir)/doc/milter-performance-check.rd.ja > milter-performance-check.xml.ja
+	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/milter-performance-check.rd.ja > milter-performance-check.xml.ja
 
 milter-manager-log-analyzer.xml: $(top_srcdir)/doc/milter-manager-log-analyzer.rd $(RD2REFENTRY_LIB) milter-manager-log-analyzer.xml.ja
-	$(RD2) $(top_srcdir)/doc/milter-manager-log-analyzer.rd > milter-manager-log-analyzer.xml
+	$(RD2DOCBOOK) $(top_srcdir)/doc/milter-manager-log-analyzer.rd > milter-manager-log-analyzer.xml
 
 milter-manager-log-analyzer.xml.ja: $(top_srcdir)/doc/milter-manager-log-analyzer.rd.ja $(RD2REFENTRY_LIB) ja.po
-	$(RD2_JA) $(top_srcdir)/doc/milter-manager-log-analyzer.rd.ja > milter-manager-log-analyzer.xml.ja
+	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/milter-manager-log-analyzer.rd.ja > milter-manager-log-analyzer.xml.ja
 
 ### SVG -> PNG
 mta-and-milter-manager-and-child-milter.png: $(top_srcdir)/doc/mta-and-milter-manager-and-child-milter.svg

@@ -1,5 +1,10 @@
 2009-05-24  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/reference/Makefile.am: use detected rd2.
+
+	* doc/Makefile.am (install-data-local): don't install cutter.jman
+	on unavailable environment.
+
 	* test/tool/test-log-analyzer.rb: fix end time calculation.
 
 2009-05-21  Kouhei Sutou  <kou@cozmixng.org>
