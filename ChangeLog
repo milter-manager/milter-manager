@@ -1,5 +1,9 @@
 2009-05-24  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/tool/test-log-analyzer.rb: create dummy RRD file.
+
+	* tool/milter-manager-log-analyzer: parse as stream. just mail.rrd.
+
 	* doc/reference/Makefile.am: use detected rd2.
 
 	* doc/Makefile.am (install-data-local): don't install cutter.jman

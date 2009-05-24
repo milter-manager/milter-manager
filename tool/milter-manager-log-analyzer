@@ -249,7 +249,6 @@ class MilterManagerLogAnalyzer
   class GraphGenerator
     def initialize(output_directory, update_time=nil)
       @output_directory = output_directory
-      @update_time = update_time
       @data = []
       @items = nil
       @title = nil
@@ -257,6 +256,8 @@ class MilterManagerLogAnalyzer
       @step = 60 # seconds
       @width = 600
       @points_per_sample = 3
+
+      @update_time = normalize_time(update_time)
     end
 
     def rows
@@ -272,25 +273,29 @@ class MilterManagerLogAnalyzer
       GraphData::Data.new(count_data({}, data, last_update_time))
     end
 
-    def update
+    def prepare
       if File.exist?(rrd_file)
-        last_update_time = RRD.last_update_time(rrd_file)
+        @last_update_time = RRD.last_update_time(rrd_file)
+        @current_time = @last_update_time + @step
       else
-        last_update_time = nil
+        @last_update_time = nil
+        @current_time = nil
       end
+    end
 
-      data = collect_data(last_update_time)
+    def update
+      data = collect_data(@last_update_time)
       return if data.empty?
 
-      end_time = data.last_time
-      if last_update_time
-        start_time = last_update_time + @step
+      if @last_update_time
+        start_time = @last_update_time + @step
       else
         start_time = data.first_time
       end
 
       create_rrd(start_time, *@items) unless File.exist?(rrd_file)
 
+      end_time = data.last_time
       start_time.to_i.step(end_time, @step) do |time|
         counts = []
         @items.each do |item|
@@ -416,7 +421,7 @@ class MilterManagerLogAnalyzer
 
         # ignore recent sessions due to RRD.update fails on
         # past time stamp
-        next if time >= normalize_time(@update_time)
+        next if time >= @update_time
 
         time = time.to_i
 
@@ -516,18 +521,61 @@ class MilterManagerLogAnalyzer
       build_path("mail.#{tag}.png")
     end
 
+    def prepare
+      super
+      @data = {}
+    end
+
     def feed(time_stamp, content)
+      time_stamp = normalize_time(time_stamp)
+      return if @last_update_time and time_stamp < @last_update_time
+      return if time_stamp >= @update_time
+
+      time_stamp = time_stamp.to_i
+      status = nil
       case content
       when /\A\[reply\]\[(.+)\]\[(.+)\]\z/
         state = $1
         status = $2
         return if status == "continue" and state != "end-of-message"
         status = "pass" if status == "continue"
-        @data << LogData::Mail.new(status, time_stamp)
       when /\A\[abort\]\[(.+)\]\z/
         state = $1
-        @data << LogData::Mail.new("abort", time_stamp)
+        status = "abort"
+      else
+        return
       end
+
+      @current_time ||= time_stamp
+      flush(time_stamp)
+      @data[status] ||= 0
+      @data[status] += 1
+    end
+
+    def update
+      flush
+    end
+
+    def flush(next_time_stamp=nil)
+      return if @current_time == next_time_stamp
+      create_rrd(@current_time, *@items) unless File.exist?(rrd_file)
+
+      if @data
+        counts = []
+        @items.each do |item|
+          counts << @data[item]
+        end
+        RRD.update(rrd_file, "#{@current_time}:#{counts.join(':')}")
+      end
+      @data = {}
+
+      if next_time_stamp
+        (@current_time + @step).step(next_time_stamp - @step, @step) do |time|
+          counts = ":" * (@items.size - 1)
+          RRD.update(rrd_file, "#{time}:#{counts}")
+        end
+      end
+      @current_time = next_time_stamp || @current_time
     end
 
     def output_graph(range_class, options={})
@@ -735,6 +783,10 @@ EOF
     return unless @update_db
 
     listeners = [sessions, mail_status, stops]
+    listeners.each do |listener|
+      listener.prepare
+    end
+
     @log.each_line do |line|
       case line
       when /\A(\w{3} +\d+ \d+:\d+:\d+) [\w\-]+ ([\w\-]+)\[\d+\]: /
