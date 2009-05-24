@@ -1,3 +1,7 @@
+2009-05-24  Kouhei Sutou  <kou@cozmixng.org>
+
+	* test/tool/test-log-analyzer.rb: fix end time calculation.
+
 2009-05-21  Kouhei Sutou  <kou@cozmixng.org>
 
 	* test/tool/: add a test for graph output.

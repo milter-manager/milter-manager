@@ -367,6 +367,21 @@ class TestLogAnalyzer < Test::Unit::TestCase
 
     FileUtils.cp(Dir.glob((@data_dir + "*.rrd").to_s), @tmp_dir)
 
+    rows = 3 / 600.to_f
+    now = Time.now.to_i
+
+    day_start_time = -(60 * 60 * 24)
+    day_end_time = now - (now % (day_start_time.abs * rows).to_i)
+
+    week_start_time = day_start_time * 7
+    week_end_time = now - (now % (week_start_time.abs * rows).to_i)
+
+    month_start_time = week_start_time * 5
+    month_end_time = now - (now % (month_start_time.abs * rows).to_i)
+
+    year_start_time = month_start_time * 12
+    year_end_time = now - (now % (year_start_time.abs * rows).to_i)
+
     session_rrd = (@tmp_dir + "milter-log.session.rrd").to_s
     session_day_png = (@tmp_dir + "session.day.png").to_s
     session_week_png = (@tmp_dir + "session.week.png").to_s
@@ -390,7 +405,7 @@ class TestLogAnalyzer < Test::Unit::TestCase
                     "--title", "Sessions",
                     "--vertical-label", "sessions/min",
                     "--start", "-86400",
-                    "--end", "1242915408",
+                    "--end", day_end_time.to_s,
                     "--width", "600",
                     "--height", "200",
                     "--alt-y-grid",
@@ -424,7 +439,7 @@ class TestLogAnalyzer < Test::Unit::TestCase
                     "--title", "Processed mails",
                     "--vertical-label", "mails/min",
                     "--start", "-86400",
-                    "--end", "1242915408",
+                    "--end", day_end_time.to_s,
                     "--width", "600",
                     "--height", "200",
                     "--alt-y-grid",
@@ -524,7 +539,7 @@ class TestLogAnalyzer < Test::Unit::TestCase
                     "--title", "Stopped milters",
                     "--vertical-label", "milters/min",
                     "--start", "-86400",
-                    "--end", "1242915408",
+                    "--end", day_end_time.to_s,
                     "--width", "600",
                     "--height", "200",
                     "--alt-y-grid",
@@ -624,7 +639,7 @@ class TestLogAnalyzer < Test::Unit::TestCase
                     "--title", "Sessions",
                     "--vertical-label", "sessions/min",
                     "--start", "-604800",
-                    "--end", "1242915408",
+                    "--end", week_end_time.to_s,
                     "--width", "600",
                     "--height", "200",
                     "--alt-y-grid",
@@ -658,7 +673,7 @@ class TestLogAnalyzer < Test::Unit::TestCase
                     "--title", "Processed mails",
                     "--vertical-label", "mails/min",
                     "--start", "-604800",
-                    "--end", "1242915408",
+                    "--end", week_end_time.to_s,
                     "--width", "600",
                     "--height", "200",
                     "--alt-y-grid",
@@ -758,7 +773,7 @@ class TestLogAnalyzer < Test::Unit::TestCase
                     "--title", "Stopped milters",
                     "--vertical-label", "milters/min",
                     "--start", "-604800",
-                    "--end", "1242915408",
+                    "--end", week_end_time.to_s,
                     "--width", "600",
                     "--height", "200",
                     "--alt-y-grid",
@@ -858,7 +873,7 @@ class TestLogAnalyzer < Test::Unit::TestCase
                     "--title", "Sessions",
                     "--vertical-label", "sessions/min",
                     "--start", "-3024000",
-                    "--end", "1242909360",
+                    "--end", month_end_time.to_s,
                     "--width", "600",
                     "--height", "200",
                     "--alt-y-grid",
@@ -892,7 +907,7 @@ class TestLogAnalyzer < Test::Unit::TestCase
                     "--title", "Processed mails",
                     "--vertical-label", "mails/min",
                     "--start", "-3024000",
-                    "--end", "1242909360",
+                    "--end", month_end_time.to_s,
                     "--width", "600",
                     "--height", "200",
                     "--alt-y-grid",
@@ -992,7 +1007,7 @@ class TestLogAnalyzer < Test::Unit::TestCase
                     "--title", "Stopped milters",
                     "--vertical-label", "milters/min",
                     "--start", "-3024000",
-                    "--end", "1242909360",
+                    "--end", month_end_time.to_s,
                     "--width", "600",
                     "--height", "200",
                     "--alt-y-grid",
@@ -1092,7 +1107,7 @@ class TestLogAnalyzer < Test::Unit::TestCase
                     "--title", "Sessions",
                     "--vertical-label", "sessions/min",
                     "--start", "-36288000",
-                    "--end", "1242864000",
+                    "--end", year_end_time.to_s,
                     "--width", "600",
                     "--height", "200",
                     "--alt-y-grid",
@@ -1126,7 +1141,7 @@ class TestLogAnalyzer < Test::Unit::TestCase
                     "--title", "Processed mails",
                     "--vertical-label", "mails/min",
                     "--start", "-36288000",
-                    "--end", "1242864000",
+                    "--end", year_end_time.to_s,
                     "--width", "600",
                     "--height", "200",
                     "--alt-y-grid",
@@ -1226,7 +1241,7 @@ class TestLogAnalyzer < Test::Unit::TestCase
                     "--title", "Stopped milters",
                     "--vertical-label", "milters/min",
                     "--start", "-36288000",
-                    "--end", "1242864000",
+                    "--end", year_end_time.to_s,
                     "--width", "600",
                     "--height", "200",
                     "--alt-y-grid",
