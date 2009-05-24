@@ -1,5 +1,7 @@
 2009-05-24  Kouhei Sutou  <kou@cozmixng.org>
 
+	* configure.ac: 1.0.1 -> 1.1.0.
+
 	* TODO: remove:
 	- [1.1.0] reduce memory usage of milter-manager-log-analyzer.
 
