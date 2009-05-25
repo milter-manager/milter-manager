@@ -1,7 +1,7 @@
 2009-05-25  Kouhei Sutou  <kou@cozmixng.org>
 
-	* TODO: add: [1.1.1] support Postfix access(5) format for
-	whitelist applicable condition.
+	* TODO: add: [1.1.1] support Postfix access(5) and cidr_table(5)
+	format for whitelist applicable condition.
 
 2009-05-25  Kouhei Sutou  <kou@clear-code.com>
 
