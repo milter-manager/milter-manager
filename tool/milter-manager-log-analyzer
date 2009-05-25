@@ -289,26 +289,32 @@ class MilterManagerLogAnalyzer
       return if key.nil?
 
       @current_time ||= time_stamp
-      flush(time_stamp)
-      @data[key] ||= 0
-      @data[key] += 1
+      if time_stamp and @current_time > time_stamp
+        @data = {}
+      else
+        flush(time_stamp)
+        @data[key] ||= 0
+        @data[key] += 1
+      end
     end
 
     def flush(next_time_stamp=nil)
       return if @current_time == next_time_stamp
       create_rrd(@current_time, *@items) unless File.exist?(rrd_file)
 
-      if @data
+      start_time = @current_time
+      unless @data.empty?
         counts = []
         @items.each do |item|
           counts << @data[item]
         end
         RRD.update(rrd_file, "#{@current_time}:#{counts.join(':')}")
+        start_time += @step
       end
       @data = {}
 
       if next_time_stamp
-        (@current_time + @step).step(next_time_stamp - @step, @step) do |time|
+        start_time.step(next_time_stamp - @step, @step) do |time|
           counts = ":" * (@items.size - 1)
           RRD.update(rrd_file, "#{time}:#{counts}")
         end

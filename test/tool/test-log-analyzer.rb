@@ -67,8 +67,6 @@ class TestLogAnalyzer < Test::Unit::TestCase
     mail_rrd = (@tmp_dir + "milter-log.mail.rrd").to_s
     stop_rrd = (@tmp_dir + "milter-log.stop.rrd").to_s
 
-    require "RRD"
-
     (@data_dir + "mail-20090521-1.log").open do |log|
       lines = ""
       i = 0
