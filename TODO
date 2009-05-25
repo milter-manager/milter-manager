@@ -1,5 +1,6 @@
 * [1.1.1] make suspend_on_unacceptable customizable.
 * [1.1.1] support max connections by MilterClient.
+* [1.1.1] support Postfix access(5) format for whitelist applicable condition.
 * Exim local_scan support.
 * milter-test-server: stop processing if all recipients are rejected.
 * XMail support.
