@@ -20,11 +20,11 @@ require 'fileutils'
 require 'rubygems'
 require 'rr'
 
+load 'milter-manager-log-analyzer'
+
 module RRD
   module_function
   def print_mock_code(name, *args)
     puts "    mock(RRD).#{name}(#{args.inspect.gsub(/[\[\]]/, '')})"
   end
 end
-
-load 'milter-manager-log-analyzer'
