@@ -209,10 +209,14 @@ channel_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
     priv = MILTER_READER_GET_PRIVATE(reader);
     priv->processing = TRUE;
 
-    if (!priv->shutdown_requested &&
-        (condition & (G_IO_IN | G_IO_PRI))) {
-        milter_debug("[%d] [reader] reading from io channel...", priv->tag);
-        keep_callback = read_from_channel(reader, channel);
+    if (!priv->shutdown_requested) {
+        if (condition & (G_IO_IN | G_IO_PRI)) {
+            milter_debug("[%d] [reader] reading from io channel...", priv->tag);
+            keep_callback = read_from_channel(reader, channel);
+        } else if (condition & G_IO_HUP) {
+            milter_debug("[%d] [reader] connection is closed", priv->tag);
+            priv->shutdown_requested = TRUE;
+        }
     }
 
     if (condition & G_IO_ERR)
