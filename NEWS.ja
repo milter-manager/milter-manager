@@ -2,6 +2,57 @@
 
 = お知らせ --- milter managerの歴史
 
+== 1.1.0: 2009-05-29
+
+次期安定版1.2.0に向けた開発版です。
+
+=== milter-manager
+
+  * 不要なログの削減
+  * FreeBSD上でのENMAの自動検出をサポート
+  * ClamAV 0.95の自動検出をサポート
+  * メールのサイズが65535バイトより大きいとき、dkim-filterの
+    skipが無視される問題の修正
+  * connect時の未知のアドレスファミリーのサポート
+  * 子milter毎のエラー時ステータス設定をサポート
+    （milter.fallback_status）
+  * デバッグログにmilterのIDを追加
+  * メモリリークの修正
+  * 定期的なメンテナンス処理の実行
+    （manager.maintenance_interval）
+  * Ruby/GLib 0.17.0での問題回避処理の追加
+  * クラッシュ時にバックトレースログを出力する機能の追加
+  * milter適用を中止するコールバックが呼び出されるイベントの
+    追加
+    * condition.define_helo_stopper
+    * condition.define_data_stopper
+    * condition.define_end_of_header_stopper
+    * condition.define_body_stopper
+    * condition.define_end_of_message_stopper
+  * killで関連プロセスが終了しない問題の修正
+  * ファイルディスクリプタを開きすぎている場合に接続受付を一
+    時中止する機能を追加
+
+=== milter manager admin
+
+  * Ruby on Rails 2.3.2対応
+
+=== milter-test-server
+
+  * reply-codeのサポート
+  * 認証関連マクロを指定するオプションを追加
+    * --authenticated-name=NAME
+    * --authenticated-type=TYPE
+    * --authenticated-author=AUTHOR
+
+=== milter-manager-log-analyzer
+
+  * メモリ使用量の削減
+
+=== ドキュメント
+
+  * リンク先修正: [Павел Гришинさん]
+
 == 1.0.1: 2009-05-14
 
 1.0.0のバグフィックス版です。
