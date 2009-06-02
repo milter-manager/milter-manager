@@ -34,7 +34,7 @@
       <div class="main">
 	<h2>最新リリース</h2>
 	<p>
-	  2009-05-14にリリースされた1.0.1が最新です。
+	  2009-05-14にリリースされた1.0.1が最新安定版リリースです。
         </p>
 	<p>
           [<a href="http://downloads.sourceforge.net/milter-manager/milter-manager-1.0.1.tar.gz">ダウンロード</a>]
@@ -51,6 +51,16 @@
         <p>
           [<a href="reference/ja/introduction.html">milter managerの紹介</a>]
         </p>
+
+	<h2>開発版リリース</h2>
+	<p>
+	  2009-06-02に開発版1.1.0がリリースされました。開発版には多くの新機能が含まれていますが、安定して動作しない可能性があります。実運用には安定版を利用してください。
+        </p>
+	<p>
+          [<a href="http://downloads.sourceforge.net/milter-manager/milter-manager-1.1.0.tar.gz">ダウンロード</a>]
+          [<a href="dev/reference/ja/news.html">変更点</a>]
+          [<a href="dev/reference/ja/">ドキュメント</a>]
+	</p>
       </div>
 
       <div class="sidebar">
