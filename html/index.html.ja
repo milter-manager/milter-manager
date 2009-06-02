@@ -61,6 +61,28 @@
           [<a href="dev/reference/ja/news.html">変更点</a>]
           [<a href="dev/reference/ja/">ドキュメント</a>]
 	</p>
+	<p>
+	  Ubuntu 8.04 LTS Hardy Heron用apt-line:
+	  <pre>deb http://milter-manager.sourceforge.net/ubuntu/ hardy main
+deb-src http://milter-manager.sourceforge.net/ubuntu/ hardy main</pre>
+	  パッケージはkou@clear-code.comの鍵でサインされています。信用する場合は鍵を登録します。
+	  <pre class="command">% gpg --keyserver hkp://subkeys.pgp.net --recv-keys 1C837F31
+% gpg --export 1C837F31 | sudo apt-key add -</pre>
+	</p>
+	  Debian GNU/Linux lenny用apt-line:
+	  <pre>deb http://milter-manager.sourceforge.net/debian/ lenny main
+deb-src http://milter-manager.sourceforge.net/debian/ lenny main</pre>
+	  パッケージはkou@clear-code.comの鍵でサインされています。信用する場合は鍵を登録します。
+	  <pre class="command">% gpg --keyserver hkp://subkeys.pgp.net --recv-keys 1C837F31
+% gpg --export 1C837F31 | sudo apt-key add -</pre>
+	</p>
+	<p>
+	  CentOS 5.3用RPM:
+	  <ul>
+	    <li><a href="http://downloads.sourceforge.net/milter-manager/milter-manager-1.1.0-0.i386.rpm">i386</a></li>
+	    <li><a href="http://downloads.sourceforge.net/milter-manager/milter-manager-1.1.0-0.x86_64.rpm">x86_64</a></li>
+	  </ul>
+	</p>
       </div>
 
       <div class="sidebar">

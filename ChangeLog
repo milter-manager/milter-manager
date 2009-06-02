@@ -1,5 +1,7 @@
 2009-06-02  Kouhei Sutou  <kou@clear-code.com>
 
+	* html/index.html*: add a section for development series packages.
+
 	* html/index.html*: add a section for development series.
 
 	* doc/reference/: add templates for development release.
