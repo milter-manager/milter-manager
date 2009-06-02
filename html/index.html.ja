@@ -37,9 +37,25 @@
 	  2009-05-14にリリースされた1.0.1が最新安定版リリースです。
         </p>
 	<p>
-          [<a href="http://downloads.sourceforge.net/milter-manager/milter-manager-1.0.1.tar.gz">ダウンロード</a>]
           [<a href="reference/ja/news.html">変更点</a>]
 	</p>
+	<p>
+	  環境毎にインストール方法を説明しています。
+	</p>
+	<ul>
+	  <li>
+	    <a href="reference/ja/install-to-ubuntu.html">Ubuntu</a>
+	  </li>
+	  <li>
+	    <a href="reference/ja/install-to-centos.html">CentOS</a>
+	  </li>
+	  <li>
+	    <a href="reference/ja/install-to-freebsd.html">FreeBSD</a>
+	  </li>
+	  <li>
+	    <a href="reference/ja/install-to-others.html">上記以外</a>
+	  </li>
+	</ul>
 
 	<h2>milter managerとは</h2>
 	<p>
@@ -61,28 +77,36 @@
           [<a href="dev/reference/ja/news.html">変更点</a>]
           [<a href="dev/reference/ja/">ドキュメント</a>]
 	</p>
+
+	<h3>Ubuntu 8.04 LTS Hardy Heron用開発版パッケージ</h3>
 	<p>
-	  Ubuntu 8.04 LTS Hardy Heron用apt-line:
-	  <pre>deb http://milter-manager.sourceforge.net/ubuntu/ hardy main
+	  apt-line:
+	  <pre class="file">deb http://milter-manager.sourceforge.net/ubuntu/ hardy main
 deb-src http://milter-manager.sourceforge.net/ubuntu/ hardy main</pre>
-	  パッケージはkou@clear-code.comの鍵でサインされています。信用する場合は鍵を登録します。
-	  <pre class="command">% gpg --keyserver hkp://subkeys.pgp.net --recv-keys 1C837F31
-% gpg --export 1C837F31 | sudo apt-key add -</pre>
-	</p>
-	  Debian GNU/Linux lenny用apt-line:
-	  <pre>deb http://milter-manager.sourceforge.net/debian/ lenny main
-deb-src http://milter-manager.sourceforge.net/debian/ lenny main</pre>
-	  パッケージはkou@clear-code.comの鍵でサインされています。信用する場合は鍵を登録します。
-	  <pre class="command">% gpg --keyserver hkp://subkeys.pgp.net --recv-keys 1C837F31
-% gpg --export 1C837F31 | sudo apt-key add -</pre>
 	</p>
 	<p>
-	  CentOS 5.3用RPM:
-	  <ul>
-	    <li><a href="http://downloads.sourceforge.net/milter-manager/milter-manager-1.1.0-0.i386.rpm">i386</a></li>
-	    <li><a href="http://downloads.sourceforge.net/milter-manager/milter-manager-1.1.0-0.x86_64.rpm">x86_64</a></li>
-	  </ul>
+	  パッケージはkou@clear-code.comの鍵でサインされています。信用する場合は鍵を登録します。
+	  <pre class="command">% gpg --keyserver hkp://subkeys.pgp.net --recv-keys 1C837F31
+% gpg --export 1C837F31 | sudo apt-key add -</pre>
 	</p>
+
+	<h3>Debian GNU/Linux lenny用開発版パッケージ</h3>
+	<p>
+	  apt-line:
+	  <pre class="file">deb http://milter-manager.sourceforge.net/debian/ lenny main
+deb-src http://milter-manager.sourceforge.net/debian/ lenny main</pre>
+	</p>
+	<p>
+	  パッケージはkou@clear-code.comの鍵でサインされています。信用する場合は鍵を登録します。
+	  <pre class="command">% gpg --keyserver hkp://subkeys.pgp.net --recv-keys 1C837F31
+% gpg --export 1C837F31 | sudo apt-key add -</pre>
+	</p>
+
+	<h3>CentOS 5.3用開発版パッケージ</h3>
+	<ul>
+	  <li><a href="http://downloads.sourceforge.net/milter-manager/milter-manager-1.1.0-0.i386.rpm">i386</a></li>
+	  <li><a href="http://downloads.sourceforge.net/milter-manager/milter-manager-1.1.0-0.x86_64.rpm">x86_64</a></li>
+	</ul>
       </div>
 
       <div class="sidebar">

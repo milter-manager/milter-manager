@@ -242,6 +242,24 @@ div.sponsors p#sponsor-famfamfam
   padding-bottom: 50px;
 }
 
+pre
+{
+  overflow: auto;
+}
+
+pre.file
+{
+  border: 1px solid black;
+  padding: 5px 10px;
+}
+
+pre.command
+{
+  color: white;
+  background-color: black;
+  padding: 5px 10px;
+}
+
 dt
 {
   margin-bottom: 0.25em;
