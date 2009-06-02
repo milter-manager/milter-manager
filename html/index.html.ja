@@ -32,7 +32,7 @@
 
     <div class="content">
       <div class="main">
-	<h2>最新リリース</h2>
+	<h2 id="latest">最新リリース</h2>
 	<p>
 	  2009-05-14にリリースされた1.0.1が最新安定版リリースです。
         </p>
@@ -57,7 +57,7 @@
 	  </li>
 	</ul>
 
-	<h2>milter managerとは</h2>
+	<h2 id="about">milter managerとは</h2>
 	<p>
 	  milter managerはmilterを使って効果的に迷惑メール対策（スパムメール対策・ウィルスメール対策）を行うフリーソフトウェアです。
 	</p>
@@ -68,7 +68,7 @@
           [<a href="reference/ja/introduction.html">milter managerの紹介</a>]
         </p>
 
-	<h2>開発版リリース</h2>
+	<h2 id="development">開発版リリース</h2>
 	<p>
 	  2009-06-02に開発版1.1.0がリリースされました。開発版には多くの新機能が含まれていますが、安定して動作しない可能性があります。実運用には安定版を利用してください。
         </p>
