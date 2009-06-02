@@ -129,16 +129,22 @@ MAINTAINERCLEANFILES +=			\
 	$(generated_image_files)
 
 # Other files to distribute
-EXTRA_DIST +=				\
-	html-build.stamp		\
-	version.xml.in			\
-	$(generated_xml_files)		\
-	head.html			\
-	head-ja.html			\
-	header.html			\
-	header-ja.html			\
-	footer.html			\
-	footer-ja.html			\
+EXTRA_DIST +=					\
+	html-build.stamp			\
+	version.xml.in				\
+	$(generated_xml_files)			\
+	head.html				\
+	head-ja.html				\
+	header.html				\
+	header-ja.html				\
+	footer.html				\
+	footer-ja.html				\
+	head-dev.html				\
+	head-dev-ja.html			\
+	header-dev.html				\
+	header-dev-ja.html			\
+	footer-dev.html				\
+	footer-dev-ja.html			\
 	ja.po
 
 $(DOC_MODULE).pot: sgml-build.stamp
@@ -302,12 +308,9 @@ upload: docs
 	chmod -R g+w tmp/reference
 	ruby $(top_srcdir)/misc/prepare-gtk-doc-html-for-publishing.rb	\
 	  --template-directory=$(srcdir) --title "$(PACKAGE_TITLE)"	\
-	  tmp/reference/*.html
+	  --suffix=$(RELEASE_TYPE) tmp/reference/*.html
 	ruby $(top_srcdir)/misc/prepare-gtk-doc-html-for-publishing.rb	\
 	  --template-directory=$(srcdir) --title "$(PACKAGE_TITLE)"	\
-	  --language=ja tmp/reference/ja/*.html
-	if test "$(DEVELOPMENT_RELEASE)" = "yes"; then				\
-	  rsync -avz --delete tmp/reference/ $(SF_HTDOCS)/dev/reference/;	\
-	else									\
-	  rsync -avz --delete tmp/reference/ $(SF_HTDOCS)/reference/;		\
-	fi
+	  --language=ja --suffix=$(RELEASE_TYPE) tmp/reference/ja/*.html
+	rsync -avz --delete tmp/reference/		\
+	  $(SF_HTDOCS)$(RELEASE_TYPE_PATH)/reference/

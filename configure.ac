@@ -25,6 +25,20 @@ else
 fi
 AC_SUBST(DEVELOPMENT_RELEASE)
 
+if test "$DEVELOPMENT_RELEASE" = "yes"; then
+  RELEASE_TYPE=dev
+else
+  RELEASE_TYPE=
+fi
+AC_SUBST(RELEASE_TYPE)
+
+if test -n $RELEASE_TYPE; then
+   RELEASE_TYPE_PATH="/$RELEASE_TYPE"
+else
+   RELEASE_TYPE_PATH=""
+fi
+AC_SUBST(RELEASE_TYPE_PATH)
+
 PACKAGE_TITLE="milter manager"
 if test "$DEVELOPMENT_RELEASE" = "yes"; then
    PACKAGE_TITLE="$PACKAGE_TITLE (dev)"

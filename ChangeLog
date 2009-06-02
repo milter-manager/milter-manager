@@ -1,5 +1,7 @@
 2009-06-02  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/reference/: add templates for development release.
+
 	* configure.ac: detect development release.
 
 	* doc/reference/Makefile.am: change reference manual position for
