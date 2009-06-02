@@ -114,7 +114,7 @@ fi
 
 %changelog
 * Tue Jun 02 2009 Kouhei Sutou <kou@clear-code.com>
-- (1.1.0-1)
+- (1.1.0-0)
 - initial 1.1.x development seriese release
 
 * Thu Apr 16 2009 Kouhei Sutou <kou@clear-code.com>
