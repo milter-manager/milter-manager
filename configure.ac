@@ -18,7 +18,17 @@ AM_CONFIG_HEADER([config.h])
 
 AM_INIT_AUTOMAKE($PACKAGE_NAME, $PACKAGE_VERSION)
 
+if test "`expr milter_manager_version_minor % 2`" = "1"; then
+  DEVELOPMENT_RELEASE=yes
+else
+  DEVELOPMENT_RELEASE=no
+fi
+AC_SUBST(DEVELOPMENT_RELEASE)
+
 PACKAGE_TITLE="milter manager"
+if test "$DEVELOPMENT_RELEASE" = "yes"; then
+   PACKAGE_TITLE="$PACKAGE_TITLE (dev)"
+fi
 AC_SUBST(PACKAGE_TITLE)
 
 MILTER_MANAGER_VERSION_MAJOR=milter_manager_version_major

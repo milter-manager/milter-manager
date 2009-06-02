@@ -1,5 +1,10 @@
 2009-06-02  Kouhei Sutou  <kou@clear-code.com>
 
+	* configure.ac: detect development release.
+
+	* doc/reference/Makefile.am: change reference manual position for
+	development release.
+
 	* milter-manager.spec.in: add a 1.1.0-1 entry.
 
 	* NEWS*: update.

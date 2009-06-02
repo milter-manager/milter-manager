@@ -306,4 +306,8 @@ upload: docs
 	ruby $(top_srcdir)/misc/prepare-gtk-doc-html-for-publishing.rb	\
 	  --template-directory=$(srcdir) --title "$(PACKAGE_TITLE)"	\
 	  --language=ja tmp/reference/ja/*.html
-	rsync -avz --delete tmp/reference/ $(SF_HTDOCS)/reference/
+	if test "$(DEVELOPMENT_RELEASE)" = "yes"; then				\
+	  rsync -avz --delete tmp/reference/ $(SF_HTDOCS)/dev/reference/;	\
+	else									\
+	  rsync -avz --delete tmp/reference/ $(SF_HTDOCS)/reference/;		\
+	fi
