@@ -12,7 +12,7 @@ milter-performance-check - MTAのパフォーマンスを計るプログラム
 
 milter-performance-checkはMTAの性能を計測するSMTPクライアント
 です。milter-test-serverでmilterのみの性能を計測し、
-milter-performance-checkでMTAとMILTERを合わせた性能を計測する
+milter-performance-checkでMTAとmilterを合わせた性能を計測する
 という住み分けです。
 
 同様のツールにはPostfix付属のsmtp-sourceがあります。どちらも、
