@@ -1,5 +1,10 @@
 2009-06-05  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/client/milter-client-context.[ch],
+	test/client/test-client-context-callback.c: don't emit abort
+	outsize message processing.
+	case: e.g. HELO -> ABORT -> StartTLS -> HELO
+
 	* html/milter-manager.css: support table in GTK-Doc.
 
 	* doc/performance.rd.ja, doc/reference/milter-manager-docs.sgml:

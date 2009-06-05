@@ -56,6 +56,7 @@ void data_feed_end_of_message (void);
 void test_feed_end_of_message (gconstpointer data);
 void test_feed_quit (void);
 void test_feed_abort (void);
+void test_feed_abort_outsize_message_processing (void);
 void test_write_error (void);
 void test_timeout (void);
 
@@ -1510,6 +1511,24 @@ test_feed_abort (void)
     cut_assert_equal_int(1, n_aborts);
     cut_assert_equal_int(1, n_abort_responses);
     milter_assert_equal_state(ABORT_REPLIED);
+
+    milter_utils_merge_hash_string_string(expected_available_macros,
+                                          expected_macros);
+    gcut_assert_equal_hash_table_string_string(expected_available_macros,
+                                               available_macros);
+}
+
+void
+test_feed_abort_outsize_message_processing (void)
+{
+    test_feed_helo(feed_helo_pre_hook_with_macro);
+    clear_reuse_data();
+
+    milter_command_encoder_encode_abort(encoder, &packet, &packet_size);
+    gcut_assert_error(feed());
+    cut_assert_equal_int(0, n_aborts);
+    cut_assert_equal_int(0, n_abort_responses);
+    milter_assert_equal_state(CONNECT_REPLIED);
 
     milter_utils_merge_hash_string_string(expected_available_macros,
                                           expected_macros);

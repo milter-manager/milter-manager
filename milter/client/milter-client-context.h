@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -317,6 +317,10 @@ typedef enum
     MILTER_CLIENT_CONTEXT_STATE_ABORT_REPLIED,
     MILTER_CLIENT_CONTEXT_STATE_FINISHED
 } MilterClientContextState;
+
+#define MILTER_CLIENT_CONTEXT_STATE_IN_MESSAGE_PROCESSING(state)        \
+    (MILTER_CLIENT_CONTEXT_STATE_ENVELOPE_FROM <= (state) &&            \
+     (state) < MILTER_CLIENT_CONTEXT_STATE_END_OF_MESSAGE)
 
 typedef struct _MilterClientContext         MilterClientContext;
 typedef struct _MilterClientContextClass    MilterClientContextClass;

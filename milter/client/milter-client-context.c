@@ -2917,16 +2917,26 @@ cb_decoder_abort (MilterDecoder *decoder, gpointer user_data)
     MilterClientContext *context = MILTER_CLIENT_CONTEXT(user_data);
     MilterClientContextPrivate *priv;
     MilterStatus status;
+    gboolean message_processing;
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
-    /* FIXME: should check the previous state */
-    priv->state = MILTER_CLIENT_CONTEXT_STATE_ABORT;
+    message_processing =
+        MILTER_CLIENT_CONTEXT_STATE_IN_MESSAGE_PROCESSING(priv->state);
+
+    if (message_processing) {
+        priv->state = MILTER_CLIENT_CONTEXT_STATE_ABORT;
+    } else {
+        priv->state = MILTER_CLIENT_CONTEXT_STATE_CONNECT_REPLIED;
+    }
 
     disable_timeout(context);
-    g_signal_emit(context, signals[ABORT], 0, &status);
-    if (status == MILTER_STATUS_PROGRESS)
-        return;
-    g_signal_emit(context, signals[ABORT_RESPONSE], 0, status);
+
+    if (message_processing) {
+        g_signal_emit(context, signals[ABORT], 0, &status);
+        if (status == MILTER_STATUS_PROGRESS)
+            return;
+        g_signal_emit(context, signals[ABORT_RESPONSE], 0, status);
+    }
 }
 
 static MilterDecoder *
