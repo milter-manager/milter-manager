@@ -1,5 +1,7 @@
 2009-06-05  Kouhei Sutou  <kou@clear-code.com>
 
+	* html/milter-manager.css: support table in GTK-Doc.
+
 	* doc/performance.rd.ja, doc/reference/milter-manager-docs.sgml:
 	add a document for performance.
 

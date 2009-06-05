@@ -310,4 +310,18 @@ em
     padding-top: 0px;
     padding-bottom: 1em;
   }
+
+  div.refsect1 table,
+  div.refsect1 table tr,
+  div.refsect1 table th,
+  div.refsect1 table td
+  {
+    border: 1px solid black;
+  }
+
+  div.refsect1 table th,
+  div.refsect1 table td
+  {
+    padding: 5px;
+  }
 }
