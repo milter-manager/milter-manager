@@ -21,6 +21,7 @@
       <xi:include href="milter-manager-log-analyzer.xml"/>
     </chapter>
     <xi:include href="introduction.xml"/>
+    <xi:include href="performance.xml"/>
     <xi:include href="install.xml"/>
     <chapter id="install-to">
       <title>Install milter manager to your platform</title>

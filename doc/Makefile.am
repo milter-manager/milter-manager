@@ -4,6 +4,8 @@ SUBDIRS =		\
 EXTRA_DIST =						\
 	configuration.rd				\
 	configuration.rd.ja				\
+	performance.rd					\
+	performance.rd.ja				\
 	introduction.rd					\
 	introduction.rd.ja				\
 	install.rd					\

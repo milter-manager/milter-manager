@@ -66,6 +66,7 @@ content_files =					\
 	news.xml				\
 	introduction.xml			\
 	configuration.xml			\
+	performance.xml				\
 	install.xml				\
 	install-to-ubuntu.xml			\
 	install-to-centos.xml			\
@@ -97,6 +98,8 @@ generated_xml_files =				\
 	introduction.xml.ja			\
 	configuration.xml			\
 	configuration.xml.ja			\
+	performance.xml				\
+	performance.xml.ja			\
 	install.xml				\
 	install.xml.ja				\
 	install-to-ubuntu.xml			\
@@ -160,8 +163,10 @@ update-po: Makefile sgml.stamp
 	done
 
 EXPAND_RD2_SNIPPET = $(top_srcdir)/misc/expand-rd2-snippet.rb
-RD2REFENTRY_LIB = $(top_srcdir)/misc/rd2refentry-lib.rb
-RD2DOCBOOK = $(RD2) -r $(RD2REFENTRY_LIB) --name=MILTER-MANAGER
+RD2LIB_DIR = $(top_srcdir)/misc
+RD2REFENTRY_LIB_FILE = rd2refentry-lib.rb
+RD2REFENTRY_LIB = $(RD2LIB_DIR)/$(RD2REFENTRY_LIB_FILE)
+RD2DOCBOOK = $(RUBY) -I $(RD2LIB_DIR) $(RD2) -r $(RD2REFENTRY_LIB_FILE) --name=MILTER-MANAGER
 RD2DOCBOOK_JA = $(RD2DOCBOOK) --po=$(srcdir)/ja.po
 SVG2PNG = inkscape --export-dpi=60 --export-background=white --export-png
 
@@ -189,6 +194,12 @@ configuration.xml: $(top_srcdir)/doc/configuration.rd $(RD2REFENTRY_LIB) configu
 
 configuration.xml.ja: $(top_srcdir)/doc/configuration.rd.ja $(RD2REFENTRY_LIB) ja.po
 	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/configuration.rd.ja > configuration.xml.ja
+
+performance.xml: $(top_srcdir)/doc/performance.rd $(RD2REFENTRY_LIB) performance.xml.ja
+	$(RD2DOCBOOK) $(top_srcdir)/doc/performance.rd > performance.xml
+
+performance.xml.ja: $(top_srcdir)/doc/performance.rd.ja $(RD2REFENTRY_LIB) ja.po
+	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/performance.rd.ja > performance.xml.ja
 
 install.xml: $(top_srcdir)/doc/install.rd $(RD2REFENTRY_LIB) install.xml.ja
 	$(RD2DOCBOOK) $(top_srcdir)/doc/install.rd > install.xml

@@ -1,3 +1,8 @@
+2009-06-05  Kouhei Sutou  <kou@clear-code.com>
+
+	* doc/performance.rd.ja, doc/reference/milter-manager-docs.sgml:
+	add a document for performance.
+
 2009-06-02  Kouhei Sutou  <kou@clear-code.com>
 
 	* html/: format.
