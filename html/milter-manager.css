@@ -260,6 +260,11 @@ pre.command
   padding: 5px 10px;
 }
 
+dl
+{
+  margin-left: 1em;
+}
+
 dt
 {
   margin-bottom: 0.25em;
