@@ -2407,7 +2407,7 @@ gboolean
 milter_manager_children_helo (MilterManagerChildren *children,
                               const gchar           *fqdn)
 {
-    GList *child;
+    GList *child, *targets;
     MilterManagerChildrenPrivate *priv;
     gboolean success = FALSE;
     gint n_milters = 0, n_queued_milters;
@@ -2439,10 +2439,16 @@ milter_manager_children_helo (MilterManagerChildren *children,
         }
 
         g_queue_push_tail(priv->reply_queue, context);
-        n_queued_milters++;
+    }
+
+    n_queued_milters = priv->reply_queue->length;
+    targets = g_list_copy(priv->reply_queue->head);
+    for (child = targets; child; child = g_list_next(child)) {
+        MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
         if (milter_server_context_helo(context, fqdn))
             success = TRUE;
     }
+    g_list_free(targets);
     milter_debug("[%u] [children][helo][sent] all: %d; queued: %d",
                  priv->tag, n_milters, n_queued_milters);
 
@@ -2453,7 +2459,7 @@ gboolean
 milter_manager_children_envelope_from (MilterManagerChildren *children,
                                        const gchar           *from)
 {
-    GList *child;
+    GList *child, *targets;
     MilterManagerChildrenPrivate *priv;
     gboolean success = FALSE;
     gint n_milters = 0, n_queued_milters;
@@ -2486,10 +2492,16 @@ milter_manager_children_envelope_from (MilterManagerChildren *children,
         }
 
         g_queue_push_tail(priv->reply_queue, context);
-        n_queued_milters++;
+    }
+
+    n_queued_milters = priv->reply_queue->length;
+    targets = g_list_copy(priv->reply_queue->head);
+    for (child = targets; child; child = g_list_next(child)) {
+        MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
         if (milter_server_context_envelope_from(context, from))
             success = TRUE;
     }
+    g_list_free(targets);
     milter_debug("[%u] [children][envelope-from][sent] all: %d; queued: %d",
                  priv->tag, n_milters, n_queued_milters);
 
@@ -2500,7 +2512,7 @@ gboolean
 milter_manager_children_envelope_recipient (MilterManagerChildren *children,
                                             const gchar           *recipient)
 {
-    GList *child;
+    GList *child, *targets;
     MilterManagerChildrenPrivate *priv;
     gboolean success = FALSE;
     gint n_milters = 0, n_queued_milters;
@@ -2531,10 +2543,16 @@ milter_manager_children_envelope_recipient (MilterManagerChildren *children,
         }
 
         g_queue_push_tail(priv->reply_queue, context);
-        n_queued_milters++;
+    }
+
+    n_queued_milters = priv->reply_queue->length;
+    targets = g_list_copy(priv->reply_queue->head);
+    for (child = targets; child; child = g_list_next(child)) {
+        MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
         if (milter_server_context_envelope_recipient(context, recipient))
             success = TRUE;
     }
+    g_list_free(targets);
     milter_debug("[%u] [children][envelope-recipient][sent] all: %d; queued: %d",
                  priv->tag, n_milters, n_queued_milters);
 

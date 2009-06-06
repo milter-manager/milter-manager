@@ -1,5 +1,8 @@
 2009-06-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.c: avoid race conditions
+	on sending a command to milters.
+
 	* milter/manager/milter-manager-children.c: log how many milters
 	are used.
 
