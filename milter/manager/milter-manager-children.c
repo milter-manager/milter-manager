@@ -2353,6 +2353,7 @@ milter_manager_children_connect (MilterManagerChildren *children,
     GList *child, *targets;
     MilterManagerChildrenPrivate *priv;
     gboolean success = FALSE;
+    gint n_milters = 0, n_queued_milters;
 
     if (!milter_manager_children_check_alive(children))
         return FALSE;
@@ -2369,6 +2370,8 @@ milter_manager_children_connect (MilterManagerChildren *children,
     for (child = priv->milters; child; child = g_list_next(child)) {
         MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
 
+        n_milters++;
+
         if (milter_server_context_is_enable_step(context,
                                                  MILTER_STEP_NO_CONNECT)) {
             milter_debug("[%u] [children][connect][skip] [%u] %s",
@@ -2382,6 +2385,7 @@ milter_manager_children_connect (MilterManagerChildren *children,
         g_queue_push_tail(priv->reply_queue, context);
     }
 
+    n_queued_milters = priv->reply_queue->length;
     targets = g_list_copy(priv->reply_queue->head);
     for (child = targets; child; child = g_list_next(child)) {
         MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
@@ -2393,6 +2397,8 @@ milter_manager_children_connect (MilterManagerChildren *children,
         }
     }
     g_list_free(targets);
+    milter_debug("[%u] [children][connect][sent] all: %d; queued: %d",
+                 priv->tag, n_milters, n_queued_milters);
 
     return success;
 }
@@ -2404,6 +2410,7 @@ milter_manager_children_helo (MilterManagerChildren *children,
     GList *child;
     MilterManagerChildrenPrivate *priv;
     gboolean success = FALSE;
+    gint n_milters = 0, n_queued_milters;
 
     if (!milter_manager_children_check_alive(children))
         return FALSE;
@@ -2420,6 +2427,8 @@ milter_manager_children_helo (MilterManagerChildren *children,
     for (child = priv->milters; child; child = g_list_next(child)) {
         MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
 
+        n_milters++;
+
         if (milter_server_context_is_enable_step(context, MILTER_STEP_NO_HELO)) {
             milter_debug("[%u] [children][helo][skip] [%u] %s",
                          priv->tag,
@@ -2430,9 +2439,12 @@ milter_manager_children_helo (MilterManagerChildren *children,
         }
 
         g_queue_push_tail(priv->reply_queue, context);
+        n_queued_milters++;
         if (milter_server_context_helo(context, fqdn))
             success = TRUE;
     }
+    milter_debug("[%u] [children][helo][sent] all: %d; queued: %d",
+                 priv->tag, n_milters, n_queued_milters);
 
     return success;
 }
@@ -2444,6 +2456,7 @@ milter_manager_children_envelope_from (MilterManagerChildren *children,
     GList *child;
     MilterManagerChildrenPrivate *priv;
     gboolean success = FALSE;
+    gint n_milters = 0, n_queued_milters;
 
     if (!milter_manager_children_check_alive(children))
         return FALSE;
@@ -2460,6 +2473,8 @@ milter_manager_children_envelope_from (MilterManagerChildren *children,
     for (child = priv->milters; child; child = g_list_next(child)) {
         MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
 
+        n_milters++;
+
         if (milter_server_context_is_enable_step(context,
                                                  MILTER_STEP_NO_ENVELOPE_FROM)) {
             milter_debug("[%u] [children][envelope-from][skip] [%u] %s",
@@ -2471,9 +2486,12 @@ milter_manager_children_envelope_from (MilterManagerChildren *children,
         }
 
         g_queue_push_tail(priv->reply_queue, context);
+        n_queued_milters++;
         if (milter_server_context_envelope_from(context, from))
             success = TRUE;
     }
+    milter_debug("[%u] [children][envelope-from][sent] all: %d; queued: %d",
+                 priv->tag, n_milters, n_queued_milters);
 
     return success;
 }
@@ -2485,6 +2503,7 @@ milter_manager_children_envelope_recipient (MilterManagerChildren *children,
     GList *child;
     MilterManagerChildrenPrivate *priv;
     gboolean success = FALSE;
+    gint n_milters = 0, n_queued_milters;
 
     if (!milter_manager_children_check_alive(children))
         return FALSE;
@@ -2500,6 +2519,8 @@ milter_manager_children_envelope_recipient (MilterManagerChildren *children,
     for (child = priv->milters; child; child = g_list_next(child)) {
         MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
 
+        n_milters++;
+
         if (milter_server_context_is_enable_step(context, MILTER_STEP_NO_ENVELOPE_RECIPIENT)) {
             milter_debug("[%u] [children][envelope-recipient][skip] [%u] %s",
                          priv->tag,
@@ -2510,9 +2531,12 @@ milter_manager_children_envelope_recipient (MilterManagerChildren *children,
         }
 
         g_queue_push_tail(priv->reply_queue, context);
+        n_queued_milters++;
         if (milter_server_context_envelope_recipient(context, recipient))
             success = TRUE;
     }
+    milter_debug("[%u] [children][envelope-recipient][sent] all: %d; queued: %d",
+                 priv->tag, n_milters, n_queued_milters);
 
     return success;
 }
@@ -2571,6 +2595,7 @@ milter_manager_children_unknown (MilterManagerChildren *children,
     GList *child;
     MilterManagerChildrenPrivate *priv;
     gboolean success = FALSE;
+    gint n_milters = 0, n_queued_milters;
 
     if (!milter_manager_children_check_alive(children))
         return FALSE;
@@ -2587,6 +2612,8 @@ milter_manager_children_unknown (MilterManagerChildren *children,
     for (child = priv->milters; child; child = g_list_next(child)) {
         MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
 
+        n_milters++;
+
         if (milter_server_context_is_enable_step(context,
                                                  MILTER_STEP_NO_UNKNOWN)) {
             milter_debug("[%u] [children][unknown][skip] [%u] %s",
@@ -2598,11 +2625,14 @@ milter_manager_children_unknown (MilterManagerChildren *children,
         }
 
         g_queue_push_tail(priv->reply_queue, context);
+        n_queued_milters++;
         if (milter_server_context_unknown(MILTER_SERVER_CONTEXT(child->data),
                                           command)) {
             success = TRUE;
         }
     }
+    milter_debug("[%u] [children][unknown][sent] all: %d; queued: %d",
+                 priv->tag, n_milters, n_queued_milters);
 
     return success;
 }

@@ -1,5 +1,8 @@
 2009-06-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.c: log how many milters
+	are used.
+
 	* milter/client/milter-client-context.[ch],
 	test/client/test-client-context-callback.c: emit abort with state
 	even if outside message processing. Determining whether user's
