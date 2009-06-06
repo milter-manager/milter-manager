@@ -147,7 +147,8 @@ cb_end_of_message (MilterClientContext *context, gpointer user_data)
 }
 
 static MilterStatus
-cb_abort (MilterClientContext *context, gpointer user_data)
+cb_abort (MilterClientContext *context, MilterClientContextState state,
+          gpointer user_data)
 {
     return MILTER_STATUS_CONTINUE;
 }

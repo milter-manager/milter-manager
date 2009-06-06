@@ -203,7 +203,8 @@ cb_end_of_message (MilterClientContext *context, gpointer user_data)
 }
 
 static void
-cb_abort (MilterClientContext *context, gpointer user_data)
+cb_abort (MilterClientContext *context, MilterClientContextState state,
+          gpointer user_data)
 {
     n_aborts++;
 }

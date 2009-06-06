@@ -346,12 +346,19 @@ cb_client_end_of_message (MilterClientContext *context, gpointer user_data)
 }
 
 static MilterStatus
-cb_client_abort (MilterClientContext *context, gpointer user_data)
+cb_client_abort (MilterClientContext *context, MilterClientContextState state,
+                 gpointer user_data)
 {
     MilterManagerLeader *leader = user_data;
+    gchar *state_name;
 
-    milter_debug("[%u] [manager][receive][abort]",
-                 milter_agent_get_tag(MILTER_AGENT(context)));
+    state_name =
+        milter_utils_get_enum_nick_name(MILTER_TYPE_CLIENT_CONTEXT_STATE,
+                                        state);
+    milter_debug("[%u] [manager][receive][abort][%s]",
+                 milter_agent_get_tag(MILTER_AGENT(context)),
+                 state_name);
+    g_free(state_name);
 
     return milter_manager_leader_abort(leader);
 }

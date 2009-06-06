@@ -138,7 +138,8 @@ static MilterStatus default_body       (MilterClientContext *context,
                                         gsize          size);
 static MilterStatus default_end_of_message
                                        (MilterClientContext *context);
-static MilterStatus default_abort      (MilterClientContext *context);
+static MilterStatus default_abort      (MilterClientContext *context,
+                                        MilterClientContextState state);
 static void         negotiate_response (MilterClientContext *context,
                                         MilterOption        *option,
                                         MilterMacrosRequests *macros_requests,
@@ -1398,8 +1399,8 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientContextClass, abort),
                      status_accumulator, NULL,
-                     _milter_marshal_ENUM__VOID,
-                     MILTER_TYPE_STATUS, 0);
+                     _milter_marshal_ENUM__ENUM,
+                     MILTER_TYPE_STATUS, 1, MILTER_TYPE_CLIENT_CONTEXT_STATE);
 
     /**
      * MilterClientContext::abort-response:
@@ -2329,7 +2330,8 @@ default_end_of_message (MilterClientContext *context)
 }
 
 static MilterStatus
-default_abort (MilterClientContext *context)
+default_abort (MilterClientContext *context,
+               MilterClientContextState state)
 {
     return MILTER_STATUS_NOT_CHANGE;
 }
@@ -2917,26 +2919,19 @@ cb_decoder_abort (MilterDecoder *decoder, gpointer user_data)
     MilterClientContext *context = MILTER_CLIENT_CONTEXT(user_data);
     MilterClientContextPrivate *priv;
     MilterStatus status;
-    gboolean message_processing;
+    MilterClientContextState state;
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
-    message_processing =
-        MILTER_CLIENT_CONTEXT_STATE_IN_MESSAGE_PROCESSING(priv->state);
 
-    if (message_processing) {
-        priv->state = MILTER_CLIENT_CONTEXT_STATE_ABORT;
-    } else {
-        priv->state = MILTER_CLIENT_CONTEXT_STATE_CONNECT_REPLIED;
-    }
+    state = priv->state;
+    priv->state = MILTER_CLIENT_CONTEXT_STATE_ABORT;
 
     disable_timeout(context);
 
-    if (message_processing) {
-        g_signal_emit(context, signals[ABORT], 0, &status);
-        if (status == MILTER_STATUS_PROGRESS)
-            return;
-        g_signal_emit(context, signals[ABORT_RESPONSE], 0, status);
-    }
+    g_signal_emit(context, signals[ABORT], 0, state, &status);
+    if (status == MILTER_STATUS_PROGRESS)
+        return;
+    g_signal_emit(context, signals[ABORT_RESPONSE], 0, status);
 }
 
 static MilterDecoder *

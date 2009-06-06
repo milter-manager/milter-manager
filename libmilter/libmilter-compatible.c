@@ -437,12 +437,16 @@ cb_end_of_message (MilterClientContext *context, gpointer user_data)
 }
 
 static MilterStatus
-cb_abort (MilterClientContext *context, gpointer user_data)
+cb_abort (MilterClientContext *context, MilterClientContextState state,
+          gpointer user_data)
 {
     SmfiContext *smfi_context = user_data;
     sfsistat status;
 
     if (!filter_description->xxfi_abort)
+        return MILTER_STATUS_DEFAULT;
+
+    if (!MILTER_CLIENT_CONTEXT_STATE_IN_MESSAGE_PROCESSING(state))
         return MILTER_STATUS_DEFAULT;
 
     status = filter_description->xxfi_abort(smfi_context);

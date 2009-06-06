@@ -64,7 +64,11 @@ G_BEGIN_DECLS
  * : ((<xxfi_eom|URL:https://www.milter.org/developers/api/xxfi_eom>))
  *    #MilterClientContext::end-of-message
  * : ((<xxfi_abort|URL:https://www.milter.org/developers/api/xxfi_abort>))
- *    #MilterClientContext::abort
+ *    #MilterClientContext::abort.
+ *
+ *    NOTE: You will need to check whether the current state is
+ *    message processing or not. You can use
+ *    %MILTER_CLIENT_CONTEXT_STATE_IN_MESSAGE_PROCESSING for it.
  * : ((<xxfi_close|URL:https://www.milter.org/developers/api/xxfi_close>))
  *    #MilterFinishedEmittable::finished
  * </rd>
@@ -152,7 +156,8 @@ G_BEGIN_DECLS
  * }
  * 
  * static MilterStatus
- * cb_abort (MilterClientContext *context, gpointer user_data)
+ * cb_abort (MilterClientContext *context, MilterClientContextState state,
+ *           gpointer user_data)
  * {
  *     g_print("abort\n");
  *     return MILTER_STATUS_CONTINUE;
@@ -389,7 +394,8 @@ struct _MilterClientContextClass
     void         (*end_of_message_response)
                                        (MilterClientContext *context,
                                         MilterStatus         status);
-    MilterStatus (*abort)              (MilterClientContext *context);
+    MilterStatus (*abort)              (MilterClientContext *context,
+                                        MilterClientContextState state);
     void         (*abort_response)     (MilterClientContext *context,
                                         MilterStatus         status);
     void         (*timeout)            (MilterClientContext *context);

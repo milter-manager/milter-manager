@@ -131,6 +131,8 @@ static gsize body_chunk_test_data_size;
 static gchar *unknown_command;
 static gsize unknown_command_size;
 
+static MilterClientContextState abort_state;
+
 static GList *timeout_ids;
 
 static GError *actual_error;
@@ -416,9 +418,11 @@ cb_end_of_message_response (MilterClientContext *context,
 }
 
 static MilterStatus
-cb_abort (MilterClientContext *context, gpointer user_data)
+cb_abort (MilterClientContext *context, MilterClientContextState state,
+          gpointer user_data)
 {
     n_aborts++;
+    abort_state = state;
 
     retrieve_context_info(context);
 
@@ -579,6 +583,8 @@ setup (void)
 
     unknown_command = NULL;
     unknown_command_size = 0;
+
+    abort_state = MILTER_CLIENT_CONTEXT_STATE_INVALID;
 
     timeout_ids = NULL;
 
@@ -1512,6 +1518,10 @@ test_feed_abort (void)
     cut_assert_equal_int(1, n_abort_responses);
     milter_assert_equal_state(ABORT_REPLIED);
 
+    gcut_assert_equal_enum(MILTER_TYPE_CLIENT_CONTEXT_STATE,
+                           MILTER_CLIENT_CONTEXT_STATE_BODY_REPLIED,
+                           abort_state);
+
     milter_utils_merge_hash_string_string(expected_available_macros,
                                           expected_macros);
     gcut_assert_equal_hash_table_string_string(expected_available_macros,
@@ -1526,9 +1536,13 @@ test_feed_abort_outsize_message_processing (void)
 
     milter_command_encoder_encode_abort(encoder, &packet, &packet_size);
     gcut_assert_error(feed());
-    cut_assert_equal_int(0, n_aborts);
-    cut_assert_equal_int(0, n_abort_responses);
-    milter_assert_equal_state(CONNECT_REPLIED);
+    cut_assert_equal_int(1, n_aborts);
+    cut_assert_equal_int(1, n_abort_responses);
+    milter_assert_equal_state(ABORT_REPLIED);
+
+    gcut_assert_equal_enum(MILTER_TYPE_CLIENT_CONTEXT_STATE,
+                           MILTER_CLIENT_CONTEXT_STATE_HELO_REPLIED,
+                           abort_state);
 
     milter_utils_merge_hash_string_string(expected_available_macros,
                                           expected_macros);

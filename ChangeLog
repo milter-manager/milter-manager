@@ -1,8 +1,22 @@
+2009-06-06  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/client/milter-client-context.[ch],
+	test/client/test-client-context-callback.c: emit abort with state
+	even if outside message processing. Determining whether user's
+	abort callback is called or not is upper layer's work.
+
+	* milter/core/milter-marshalers.list,
+	milter/manager/milter-manager.c, test/client/,
+	tool/milter-test-client.c: follow the above changes.
+
+	* libmilter/libmilter-compatible.c: don't call user's abort
+	callback when outside message processing.
+
 2009-06-05  Kouhei Sutou  <kou@clear-code.com>
 
 	* milter/client/milter-client-context.[ch],
 	test/client/test-client-context-callback.c: don't emit abort
-	outsize message processing.
+	outside message processing.
 	case: e.g. HELO -> ABORT -> StartTLS -> HELO
 
 	* html/milter-manager.css: support table in GTK-Doc.
