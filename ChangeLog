@@ -1,3 +1,9 @@
+2009-06-07  Kouhei Sutou  <kou@cozmixng.org>
+
+	* TODO: add: [1.1.1] support a configration for max file
+	descriptor number that can be opened. (ref. setrlimit() and
+	RLIMIT_NOFILE)
+
 2009-06-06  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/manager/milter-manager-children.c: avoid race conditions

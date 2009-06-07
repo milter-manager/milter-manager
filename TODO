@@ -1,3 +1,5 @@
+* [1.1.1] support a configration for max file descriptor
+  number that can be opened. (ref. setrlimit() and RLIMIT_NOFILE)
 * [1.1.1] make suspend_on_unacceptable customizable.
 * [1.1.1] support max connections by MilterClient.
 * [1.1.1] support Postfix access(5) and cidr_table(5) format
