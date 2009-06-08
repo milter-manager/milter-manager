@@ -430,9 +430,8 @@ cb_idle_free_data (gpointer _data)
     guint n_processing_data;
     GString *rest_process;
 
-    milter_debug("[%u] [client][finish] %p",
-                 milter_agent_get_tag(MILTER_AGENT(data->context)),
-                 data);
+    milter_debug("[%u] [client][finish]",
+                 milter_agent_get_tag(MILTER_AGENT(data->context)));
     data->priv->processing_data =
         g_list_remove(data->priv->processing_data, data);
     data->priv->n_processing_data--;
