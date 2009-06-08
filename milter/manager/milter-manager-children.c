@@ -653,7 +653,7 @@ cb_ready (MilterServerContext *context, gpointer user_data)
         milter_debug("[%u] [children][milter][start] [%u] %s",
                      priv->tag, tag, child_name);
         milter_statistics("[milter][start](%u): %s",
-                          priv->tag, tag, child_name);
+                          tag, child_name);
     }
 
     setup_server_context_signals(negotiate_data->children, context);
