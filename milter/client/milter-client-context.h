@@ -764,6 +764,38 @@ void                 milter_client_context_set_state         (MilterClientContex
 MilterClientContextState milter_client_context_get_state     (MilterClientContext *context);
 
 /**
+ * milter_client_context_get_last_state:
+ * @context: a %MilterClientContext.
+ *
+ * Gets the last state. It's one of start, negotiate,
+ * connect, helo, envelope-from, envelope-recipient, data,
+ * unknown, header, end-of-header, body and end-of-message.
+ *
+ * Returns: the last state.
+ */
+MilterClientContextState milter_client_context_get_last_state(MilterClientContext *context);
+
+/**
+ * milter_client_context_set_status:
+ * @context: a %MilterClientContext.
+ * @status: a %MilterStatus.
+ *
+ * Sets the current status.
+ */
+void                 milter_client_context_set_status        (MilterClientContext *context,
+                                                              MilterStatus status);
+
+/**
+ * milter_client_context_get_status:
+ * @context: a %MilterClientContext.
+ *
+ * Gets the current status.
+ *
+ * Returns: the current status.
+ */
+MilterStatus             milter_client_context_get_status    (MilterClientContext *context);
+
+/**
  * milter_client_context_set_option:
  * @context: a %MilterClientContext.
  * @option: a %MilterOption.

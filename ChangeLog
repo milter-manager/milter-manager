@@ -1,5 +1,13 @@
 2009-06-08  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client-context.[ch]: keep status and the
+	last state.
+
+	* milter/manager/milter-manager.c: log status and the last state
+	as statistics.
+
+	* tool/milter-manager-log-analyzer: follow the above changes.
+
 	* milter/manager/milter-manager-children.c:
 	use the last server context state for statistics.
 

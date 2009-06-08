@@ -79,7 +79,9 @@ struct _MilterClientContextPrivate
 {
     gpointer private_data;
     GDestroyNotify private_data_destroy;
+    MilterStatus status;
     MilterClientContextState state;
+    MilterClientContextState last_state;
     MilterOption *option;
     guint reply_code;
     gchar *extended_reply_code;
@@ -1459,7 +1461,9 @@ milter_client_context_init (MilterClientContext *context)
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
     priv->private_data = NULL;
     priv->private_data_destroy = NULL;
+    priv->status = MILTER_STATUS_NOT_CHANGE;
     priv->state = MILTER_CLIENT_CONTEXT_STATE_START;
+    priv->last_state = MILTER_CLIENT_CONTEXT_STATE_START;
     priv->option = NULL;
     priv->reply_code = 0;
     priv->extended_reply_code = NULL;
@@ -2360,8 +2364,10 @@ negotiate_response (MilterClientContext *context,
         status = MILTER_STATUS_ALL_OPTIONS;
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    priv->status = status;
     /* FIXME: should check the previous state */
-    priv->state = MILTER_CLIENT_CONTEXT_STATE_NEGOTIATE_REPLIED;
+    milter_client_context_set_state(
+        context, MILTER_CLIENT_CONTEXT_STATE_NEGOTIATE_REPLIED);
 
     switch (status) {
     case MILTER_STATUS_CONTINUE:
@@ -2412,8 +2418,10 @@ connect_response (MilterClientContext *context, MilterStatus status)
         status = MILTER_STATUS_CONTINUE;
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    priv->status = status;
     /* FIXME: should check the previous state */
-    priv->state = MILTER_CLIENT_CONTEXT_STATE_CONNECT_REPLIED;
+    milter_client_context_set_state(
+        context, MILTER_CLIENT_CONTEXT_STATE_CONNECT_REPLIED);
 
     reply(context, status);
     status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
@@ -2433,8 +2441,10 @@ helo_response (MilterClientContext *context, MilterStatus status)
         status = MILTER_STATUS_CONTINUE;
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    priv->status = status;
     /* FIXME: should check the previous state */
-    priv->state = MILTER_CLIENT_CONTEXT_STATE_HELO_REPLIED;
+    milter_client_context_set_state(
+        context, MILTER_CLIENT_CONTEXT_STATE_HELO_REPLIED);
 
     reply(context, status);
     status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
@@ -2454,8 +2464,10 @@ envelope_from_response (MilterClientContext *context, MilterStatus status)
         status = MILTER_STATUS_CONTINUE;
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    priv->status = status;
     /* FIXME: should check the previous state */
-    priv->state = MILTER_CLIENT_CONTEXT_STATE_ENVELOPE_FROM_REPLIED;
+    milter_client_context_set_state(
+        context, MILTER_CLIENT_CONTEXT_STATE_ENVELOPE_FROM_REPLIED);
 
     reply(context, status);
 
@@ -2476,8 +2488,10 @@ envelope_recipient_response (MilterClientContext *context, MilterStatus status)
         status = MILTER_STATUS_CONTINUE;
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    priv->status = status;
     /* FIXME: should check the previous state */
-    priv->state = MILTER_CLIENT_CONTEXT_STATE_ENVELOPE_RECIPIENT_REPLIED;
+    milter_client_context_set_state(
+        context, MILTER_CLIENT_CONTEXT_STATE_ENVELOPE_RECIPIENT_REPLIED);
 
     reply(context, status);
     status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
@@ -2497,8 +2511,10 @@ unknown_response (MilterClientContext *context, MilterStatus status)
         status = MILTER_STATUS_CONTINUE;
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    priv->status = status;
     /* FIXME: should check the previous state */
-    priv->state = MILTER_CLIENT_CONTEXT_STATE_UNKNOWN_REPLIED;
+    milter_client_context_set_state(
+        context, MILTER_CLIENT_CONTEXT_STATE_UNKNOWN_REPLIED);
 
     reply(context, status);
     status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
@@ -2518,8 +2534,10 @@ data_response (MilterClientContext *context, MilterStatus status)
         status = MILTER_STATUS_CONTINUE;
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    priv->status = status;
     /* FIXME: should check the previous state */
-    priv->state = MILTER_CLIENT_CONTEXT_STATE_DATA_REPLIED;
+    milter_client_context_set_state(
+        context, MILTER_CLIENT_CONTEXT_STATE_DATA_REPLIED);
 
     reply(context, status);
     status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
@@ -2539,8 +2557,10 @@ header_response (MilterClientContext *context, MilterStatus status)
         status = MILTER_STATUS_CONTINUE;
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    priv->status = status;
     /* FIXME: should check the previous state */
-    priv->state = MILTER_CLIENT_CONTEXT_STATE_HEADER_REPLIED;
+    milter_client_context_set_state(
+        context, MILTER_CLIENT_CONTEXT_STATE_HEADER_REPLIED);
 
     reply(context, status);
     status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
@@ -2560,8 +2580,10 @@ end_of_header_response (MilterClientContext *context, MilterStatus status)
         status = MILTER_STATUS_CONTINUE;
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    priv->status = status;
     /* FIXME: should check the previous state */
-    priv->state = MILTER_CLIENT_CONTEXT_STATE_END_OF_HEADER_REPLIED;
+    milter_client_context_set_state(
+        context, MILTER_CLIENT_CONTEXT_STATE_END_OF_HEADER_REPLIED);
 
     reply(context, status);
     status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
@@ -2581,8 +2603,10 @@ body_response (MilterClientContext *context, MilterStatus status)
         status = MILTER_STATUS_CONTINUE;
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    priv->status = status;
     /* FIXME: should check the previous state */
-    priv->state = MILTER_CLIENT_CONTEXT_STATE_BODY_REPLIED;
+    milter_client_context_set_state(
+        context, MILTER_CLIENT_CONTEXT_STATE_BODY_REPLIED);
 
     reply(context, status);
     status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
@@ -2602,8 +2626,10 @@ end_of_message_response (MilterClientContext *context, MilterStatus status)
         status = MILTER_STATUS_CONTINUE;
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    priv->status = status;
     /* FIXME: should check the previous state */
-    priv->state = MILTER_CLIENT_CONTEXT_STATE_END_OF_MESSAGE_REPLIED;
+    milter_client_context_set_state(
+        context, MILTER_CLIENT_CONTEXT_STATE_END_OF_MESSAGE_REPLIED);
 
     reply(context, status);
     status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
@@ -2623,7 +2649,8 @@ abort_response (MilterClientContext *context, MilterStatus status)
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
     /* FIXME: should check the previous state */
-    priv->state = MILTER_CLIENT_CONTEXT_STATE_ABORT_REPLIED;
+    milter_client_context_set_state(
+        context, MILTER_CLIENT_CONTEXT_STATE_ABORT_REPLIED);
 }
 
 static void
@@ -2635,7 +2662,8 @@ finished (MilterFinishedEmittable *emittable)
     context = MILTER_CLIENT_CONTEXT(emittable);
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
     /* FIXME: should check the previous state */
-    priv->state = MILTER_CLIENT_CONTEXT_STATE_FINISHED;
+    milter_client_context_set_state(
+        context, MILTER_CLIENT_CONTEXT_STATE_FINISHED);
 
     if (finished_emittable_parent->finished)
         finished_emittable_parent->finished(emittable);
@@ -2653,7 +2681,8 @@ cb_decoder_negotiate (MilterDecoder *decoder, MilterOption *option,
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
     /* FIXME: should check the previous state */
-    priv->state = MILTER_CLIENT_CONTEXT_STATE_NEGOTIATE;
+    milter_client_context_set_state(
+        context, MILTER_CLIENT_CONTEXT_STATE_NEGOTIATE);
 
     disable_timeout(context);
     copied_option = milter_option_copy(option);
@@ -2691,7 +2720,8 @@ cb_decoder_connect (MilterDecoder *decoder, const gchar *host_name,
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
     /* FIXME: should check the previous state */
-    priv->state = MILTER_CLIENT_CONTEXT_STATE_CONNECT;
+    milter_client_context_set_state(
+        context, MILTER_CLIENT_CONTEXT_STATE_CONNECT);
 
     disable_timeout(context);
     set_macro_context(context, MILTER_COMMAND_CONNECT);
@@ -2711,7 +2741,8 @@ cb_decoder_helo (MilterDecoder *decoder, const gchar *fqdn, gpointer user_data)
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
     /* FIXME: should check the previous state */
-    priv->state = MILTER_CLIENT_CONTEXT_STATE_HELO;
+    milter_client_context_set_state(
+        context, MILTER_CLIENT_CONTEXT_STATE_HELO);
 
     disable_timeout(context);
     set_macro_context(context, MILTER_COMMAND_HELO);
@@ -2731,7 +2762,8 @@ cb_decoder_envelope_from (MilterDecoder *decoder,
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
     /* FIXME: should check the previous state */
-    priv->state = MILTER_CLIENT_CONTEXT_STATE_ENVELOPE_FROM;
+    milter_client_context_set_state(
+        context, MILTER_CLIENT_CONTEXT_STATE_ENVELOPE_FROM);
 
     disable_timeout(context);
     set_macro_context(context, MILTER_COMMAND_ENVELOPE_FROM);
@@ -2751,7 +2783,8 @@ cb_decoder_envelope_recipient (MilterDecoder *decoder,
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
     /* FIXME: should check the previous state */
-    priv->state = MILTER_CLIENT_CONTEXT_STATE_ENVELOPE_RECIPIENT;
+    milter_client_context_set_state(
+        context, MILTER_CLIENT_CONTEXT_STATE_ENVELOPE_RECIPIENT);
 
     disable_timeout(context);
     set_macro_context(context, MILTER_COMMAND_ENVELOPE_RECIPIENT);
@@ -2771,7 +2804,8 @@ cb_decoder_unknown (MilterDecoder *decoder,
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
     /* FIXME: should check the previous state */
-    priv->state = MILTER_CLIENT_CONTEXT_STATE_UNKNOWN;
+    milter_client_context_set_state(
+        context, MILTER_CLIENT_CONTEXT_STATE_UNKNOWN);
 
     disable_timeout(context);
     g_signal_emit(context, signals[UNKNOWN], 0, command, &status);
@@ -2789,7 +2823,8 @@ cb_decoder_data (MilterDecoder *decoder, gpointer user_data)
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
     /* FIXME: should check the previous state */
-    priv->state = MILTER_CLIENT_CONTEXT_STATE_DATA;
+    milter_client_context_set_state(
+        context, MILTER_CLIENT_CONTEXT_STATE_DATA);
 
     disable_timeout(context);
     set_macro_context(context, MILTER_COMMAND_DATA);
@@ -2810,7 +2845,8 @@ cb_decoder_header (MilterDecoder *decoder,
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
     /* FIXME: should check the previous state */
-    priv->state = MILTER_CLIENT_CONTEXT_STATE_HEADER;
+    milter_client_context_set_state(
+        context, MILTER_CLIENT_CONTEXT_STATE_HEADER);
 
     disable_timeout(context);
     set_macro_context(context, MILTER_COMMAND_HEADER);
@@ -2829,7 +2865,8 @@ cb_decoder_end_of_header (MilterDecoder *decoder, gpointer user_data)
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
     /* FIXME: should check the previous state */
-    priv->state = MILTER_CLIENT_CONTEXT_STATE_END_OF_HEADER;
+    milter_client_context_set_state(
+        context, MILTER_CLIENT_CONTEXT_STATE_END_OF_HEADER);
 
     disable_timeout(context);
     set_macro_context(context, MILTER_COMMAND_END_OF_HEADER);
@@ -2849,7 +2886,8 @@ cb_decoder_body (MilterDecoder *decoder, const gchar *chunk, gsize chunk_size,
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
     /* FIXME: should check the previous state */
-    priv->state = MILTER_CLIENT_CONTEXT_STATE_BODY;
+    milter_client_context_set_state(
+        context, MILTER_CLIENT_CONTEXT_STATE_BODY);
 
     disable_timeout(context);
     set_macro_context(context, MILTER_COMMAND_BODY);
@@ -2872,7 +2910,8 @@ cb_decoder_end_of_message (MilterDecoder *decoder, const gchar *chunk,
     disable_timeout(context);
     if (chunk && chunk_size > 0) {
         /* FIXME: should check the previous state */
-        priv->state = MILTER_CLIENT_CONTEXT_STATE_BODY;
+        milter_client_context_set_state(
+            context, MILTER_CLIENT_CONTEXT_STATE_BODY);
         set_macro_context(context, MILTER_COMMAND_BODY);
         g_signal_emit(context, signals[BODY], 0, chunk, chunk_size, &status);
         if (status != MILTER_STATUS_PROGRESS)
@@ -2882,7 +2921,8 @@ cb_decoder_end_of_message (MilterDecoder *decoder, const gchar *chunk,
     }
 
     /* FIXME: should check the previous state */
-    priv->state = MILTER_CLIENT_CONTEXT_STATE_END_OF_MESSAGE;
+    milter_client_context_set_state(
+        context, MILTER_CLIENT_CONTEXT_STATE_END_OF_MESSAGE);
     set_macro_context(context, MILTER_COMMAND_END_OF_MESSAGE);
     g_signal_emit(context, signals[END_OF_MESSAGE], 0, &status);
     if (status == MILTER_STATUS_PROGRESS)
@@ -2900,7 +2940,8 @@ cb_decoder_quit (MilterDecoder *decoder, gpointer user_data)
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
     /* FIXME: should check the previous state */
-    priv->state = MILTER_CLIENT_CONTEXT_STATE_QUIT;
+    milter_client_context_set_state(
+        context, MILTER_CLIENT_CONTEXT_STATE_QUIT);
 
     milter_agent_shutdown(MILTER_AGENT(context));
 }
@@ -2916,7 +2957,8 @@ cb_decoder_abort (MilterDecoder *decoder, gpointer user_data)
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
 
     state = priv->state;
-    priv->state = MILTER_CLIENT_CONTEXT_STATE_ABORT;
+    milter_client_context_set_state(
+        context, MILTER_CLIENT_CONTEXT_STATE_ABORT);
 
     disable_timeout(context);
 
@@ -3009,13 +3051,52 @@ void
 milter_client_context_set_state (MilterClientContext *context,
                                  MilterClientContextState state)
 {
-    MILTER_CLIENT_CONTEXT_GET_PRIVATE(context)->state = state;
+    MilterClientContextPrivate *priv;
+
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    switch (state) {
+    case MILTER_CLIENT_CONTEXT_STATE_NEGOTIATE:
+    case MILTER_CLIENT_CONTEXT_STATE_CONNECT:
+    case MILTER_CLIENT_CONTEXT_STATE_HELO:
+    case MILTER_CLIENT_CONTEXT_STATE_ENVELOPE_FROM:
+    case MILTER_CLIENT_CONTEXT_STATE_ENVELOPE_RECIPIENT:
+    case MILTER_CLIENT_CONTEXT_STATE_DATA:
+    case MILTER_CLIENT_CONTEXT_STATE_UNKNOWN:
+    case MILTER_CLIENT_CONTEXT_STATE_HEADER:
+    case MILTER_CLIENT_CONTEXT_STATE_END_OF_HEADER:
+    case MILTER_CLIENT_CONTEXT_STATE_BODY:
+    case MILTER_CLIENT_CONTEXT_STATE_END_OF_MESSAGE:
+        priv->last_state = state;
+        break;
+    default:
+        break;
+    }
+    priv->state = state;
 }
 
 MilterClientContextState
 milter_client_context_get_state (MilterClientContext *context)
 {
     return MILTER_CLIENT_CONTEXT_GET_PRIVATE(context)->state;
+}
+
+MilterClientContextState
+milter_client_context_get_last_state (MilterClientContext *context)
+{
+    return MILTER_CLIENT_CONTEXT_GET_PRIVATE(context)->last_state;
+}
+
+void
+milter_client_context_set_status (MilterClientContext *context,
+                                  MilterStatus status)
+{
+    MILTER_CLIENT_CONTEXT_GET_PRIVATE(context)->status = status;
+}
+
+MilterStatus
+milter_client_context_get_status (MilterClientContext *context)
+{
+    return MILTER_CLIENT_CONTEXT_GET_PRIVATE(context)->status;
 }
 
 void

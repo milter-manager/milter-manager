@@ -460,6 +460,10 @@ cb_leader_finished (MilterFinishedEmittable *emittable, gpointer user_data)
     GTimer *timer;
     MilterManagerLeader *leader;
     MilterManagerConfiguration *config;
+    MilterClientContextState state, last_state;
+    MilterStatus status;
+    gchar *state_name, *last_state_name;
+    gchar *status_name, *statistics_status_name;
     gdouble elapsed;
 
     timer = milter_client_context_get_private_data(client_context);
@@ -468,10 +472,33 @@ cb_leader_finished (MilterFinishedEmittable *emittable, gpointer user_data)
 
     leader = MILTER_MANAGER_LEADER(emittable);
     teardown_client_context_signals(client_context, leader);
-    milter_debug("[%u] [manager][session][end][%g]",
+
+    state = milter_client_context_get_state(client_context);
+    state_name =
+        milter_utils_get_enum_nick_name(MILTER_TYPE_CLIENT_CONTEXT_STATE,
+                                        state);
+    last_state = milter_client_context_get_last_state(client_context);
+    last_state_name =
+        milter_utils_get_enum_nick_name(MILTER_TYPE_CLIENT_CONTEXT_STATE,
+                                        last_state);
+    status = milter_client_context_get_status(client_context);
+    status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
+    milter_debug("[%u] [manager][session][end][%s][%s][%g]",
                  milter_agent_get_tag(MILTER_AGENT(client_context)),
-                 elapsed);
-    milter_statistics("[session][end][%g](%p)", elapsed, client_context);
+                 state_name, status_name, elapsed);
+    if (status == MILTER_STATUS_NOT_CHANGE ||
+        status == MILTER_STATUS_DEFAULT ||
+        status == MILTER_STATUS_CONTINUE) {
+        statistics_status_name = "pass";
+    } else {
+        statistics_status_name = status_name;
+    }
+    milter_statistics("[session][end][%s][%s][%g](%p)",
+                      last_state_name, statistics_status_name,
+                      elapsed, client_context);
+    g_free(status_name);
+    g_free(state_name);
+    g_free(last_state_name);
 
     config = milter_manager_leader_get_configuration(leader);
     g_idle_add(cb_idle_notify_finish_session_to_configuration, config);
