@@ -81,6 +81,7 @@ struct _MilterServerContextPrivate
     socklen_t address_size;
     MilterStatus status;
     MilterServerContextState state;
+    MilterServerContextState last_state;
     gchar *reply_code;
     MilterOption *option;
 
@@ -408,6 +409,7 @@ milter_server_context_init (MilterServerContext *context)
 
     priv->status = MILTER_STATUS_NOT_CHANGE;
     priv->state = MILTER_SERVER_CONTEXT_STATE_START;
+    priv->last_state = MILTER_SERVER_CONTEXT_STATE_START;
 
     priv->option = NULL;
     priv->name = NULL;
@@ -601,9 +603,20 @@ void
 milter_server_context_set_state (MilterServerContext *context,
                                  MilterServerContextState state)
 {
-    MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->state = state;
+    MilterServerContextPrivate *priv;
+
+    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+    if (MILTER_SERVER_CONTEXT_STATE_NEGOTIATE <= state &&
+        state <= MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
+        priv->last_state = state;
+    priv->state = state;
 }
 
+MilterServerContextState
+milter_server_context_get_last_state (MilterServerContext *context)
+{
+    return MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->last_state;
+}
 
 static gboolean
 stop_on_connect (MilterServerContext *context,
@@ -879,27 +892,27 @@ write_packet (MilterServerContext *context, gchar *packet, gsize packet_size,
     }
 
     switch (next_state) {
-      case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
+    case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
         if (priv->process_body_count == 0)
-            priv->state = next_state;
+            milter_server_context_set_state(context, next_state);
         else
             priv->sent_end_of_message = TRUE;
         priv->timeout_id = milter_utils_timeout_add(priv->end_of_message_timeout,
                                                     cb_end_of_message_timeout,
                                                     context);
         break;
-      case MILTER_SERVER_CONTEXT_STATE_BODY:
-        priv->state = next_state;
+    case MILTER_SERVER_CONTEXT_STATE_BODY:
+        milter_server_context_set_state(context, next_state);
         disable_timeout(priv);
         break;
-      case MILTER_SERVER_CONTEXT_STATE_QUIT:
+    case MILTER_SERVER_CONTEXT_STATE_QUIT:
         milter_agent_shutdown(MILTER_AGENT(context));
-      case MILTER_SERVER_CONTEXT_STATE_ABORT:
-          /* FIXME: should shutdown on ABORT? */
-        priv->state = next_state;
+    case MILTER_SERVER_CONTEXT_STATE_ABORT:
+        /* FIXME: should shutdown on ABORT? */
+        milter_server_context_set_state(context, next_state);
         break;
-      default:
-        priv->state = next_state;
+    default:
+        milter_server_context_set_state(context, next_state);
         priv->timeout_id = milter_utils_timeout_add(priv->reading_timeout,
                                                     cb_reading_timeout,
                                                     context);
@@ -913,10 +926,10 @@ static void
 stop_on_state (MilterServerContext *context, MilterServerContextState state)
 {
     gchar *inspected_state;
-    MilterServerContextPrivate *priv;
 
-    inspected_state = milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
-                                                      state);
+    inspected_state =
+        milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                                        state);
     milter_debug("[%u] [server][stop][%s] %s",
                  milter_agent_get_tag(MILTER_AGENT(context)),
                  inspected_state,
@@ -925,8 +938,8 @@ stop_on_state (MilterServerContext *context, MilterServerContextState state)
                       inspected_state,
                       milter_server_context_get_name(context));
     g_free(inspected_state);
-    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
-    priv->state = state;
+    milter_server_context_set_state(context, state);
+
     g_signal_emit_by_name(context, "stopped");
 }
 
@@ -1437,7 +1450,8 @@ clear_process_body_count (MilterServerContext *context)
     priv->body_response_queue = NULL;
 
     if (priv->sent_end_of_message)
-        priv->state = MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE;
+        milter_server_context_set_state(
+            context, MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE);
 }
 
 static void
@@ -1463,7 +1477,8 @@ decrement_process_body_count (MilterServerContext *context)
             g_list_delete_link(priv->body_response_queue, first_node);
         g_signal_emit_by_name(context, "continue");
         if (priv->sent_end_of_message)
-            priv->state = MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE;
+            milter_server_context_set_state(
+                context, MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE);
     } else {
         first_node->data = GUINT_TO_POINTER(process_body_count);
     }

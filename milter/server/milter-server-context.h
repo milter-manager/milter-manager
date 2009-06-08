@@ -348,6 +348,18 @@ void                 milter_server_context_set_state   (MilterServerContext *con
                                                         MilterServerContextState state);
 
 /**
+ * milter_server_context_get_last_state:
+ * @context: a %MilterServerContext.
+ *
+ * Gets the last state. It's one of start, negotiate,
+ * connect, helo, envelope-from, envelope-recipient, data,
+ * unknown, header, end-of-header, body and end-of-message.
+ *
+ * Returns: the last state.
+ */
+MilterServerContextState milter_server_context_get_last_state (MilterServerContext *context);
+
+/**
  * milter_server_context_is_processing:
  * @context: a %MilterServerContext.
  *

@@ -38,6 +38,7 @@ void test_helo (void);
 void test_envelope_from (void);
 void test_status (void);
 void test_state (void);
+void test_last_state (void);
 
 static MilterServerContext *context;
 static MilterTestClient *client;
@@ -309,6 +310,19 @@ test_envelope_from (void)
 }
 
 void
+test_status (void)
+{
+    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
+                           MILTER_STATUS_NOT_CHANGE,
+                           milter_server_context_get_status(context));
+
+    milter_server_context_set_status(context, MILTER_STATUS_ACCEPT);
+    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
+                           MILTER_STATUS_ACCEPT,
+                           milter_server_context_get_status(context));
+}
+
+void
 test_state (void)
 {
     gcut_assert_equal_enum(MILTER_TYPE_SERVER_CONTEXT_STATE,
@@ -322,18 +336,22 @@ test_state (void)
 }
 
 void
-test_status (void)
+test_last_state (void)
 {
-    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
-                           MILTER_STATUS_NOT_CHANGE,
-                           milter_server_context_get_status(context));
+    gcut_assert_equal_enum(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                           MILTER_SERVER_CONTEXT_STATE_START,
+                           milter_server_context_get_last_state(context));
 
-    milter_server_context_set_status(context, MILTER_STATUS_ACCEPT);
-    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
-                           MILTER_STATUS_ACCEPT,
-                           milter_server_context_get_status(context));
+    milter_server_context_set_state(context, MILTER_SERVER_CONTEXT_STATE_DATA);
+    gcut_assert_equal_enum(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                           MILTER_SERVER_CONTEXT_STATE_DATA,
+                           milter_server_context_get_last_state(context));
+
+    milter_server_context_set_state(context, MILTER_SERVER_CONTEXT_STATE_QUIT);
+    gcut_assert_equal_enum(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                           MILTER_SERVER_CONTEXT_STATE_DATA,
+                           milter_server_context_get_last_state(context));
 }
-
 
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
