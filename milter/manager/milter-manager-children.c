@@ -681,9 +681,9 @@ expire_child (MilterManagerChildren *children,
 {
     MilterManagerChildrenPrivate *priv;
     MilterStatus status;
-    MilterServerContextState state;
+    MilterServerContextState state, last_state;
     gchar *status_name, *statistic_status_name;
-    gchar *state_name;
+    gchar *state_name, *last_state_name;
     const gchar *child_name;
     GTimer *timer;
     gdouble elapsed = 0.0;
@@ -697,14 +697,19 @@ expire_child (MilterManagerChildren *children,
         elapsed = g_timer_elapsed(timer, NULL);
     }
 
-    status = milter_server_context_get_status(context);
-    status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
     state = milter_server_context_get_state(context);
     state_name =
         milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE, state);
-    milter_debug("[%u] [children][milter][end][%s][%s][%g] [%u] %s",
+    last_state = milter_server_context_get_last_state(context);
+    last_state_name =
+        milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                                        last_state);
+    status = milter_server_context_get_status(context);
+    status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
+    milter_debug("[%u] [children][milter][end][%s][%s][%s][%g] [%u] %s",
                  priv->tag,
                  state_name,
+                 last_state_name,
                  status_name,
                  elapsed,
                  milter_agent_get_tag(MILTER_AGENT(context)),
@@ -717,10 +722,11 @@ expire_child (MilterManagerChildren *children,
         statistic_status_name = status_name;
     }
     milter_statistics("[milter][end][%s][%s][%g](%p): %s",
-                      state_name, statistic_status_name,
+                      last_state_name, statistic_status_name,
                       elapsed, context, child_name);
     g_free(status_name);
     g_free(state_name);
+    g_free(last_state_name);
 
     teardown_server_context_signals(MILTER_MANAGER_CHILD(context), children);
     priv->milters = g_list_remove(priv->milters, context);
