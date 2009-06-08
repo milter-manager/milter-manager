@@ -448,9 +448,17 @@ class MilterManagerLogAnalyzer
     def find_key(content)
       key = nil
       case content
+      when /\A\[milter\]\[end\]\[(.+)\]\[(.+)\]\[(.+)\]\(.+\): (.+)\z/
+        state = $1
+        status = $2
+        elapsed = $3
+        id = $4
+        name = $5
+        key = "child"
       when /\A\[milter\]\[end\]\[(.+)\]\(.+\): (.+)\z/
         elapsed = $1
-        name = $2
+        id = $2
+        name = $3
         key = "child"
       when /\A\[session\]\[end\]\[(.+)\]\(.+\)\z/
         elapsed = $1
@@ -533,6 +541,13 @@ class MilterManagerLogAnalyzer
     def find_key(content)
       key = nil
       case content
+      when /\A\[milter\]\[end\]\[(.+)\]\[(.+)\]\[(.+)\]\(.+\): (.+)\z/
+        state = $1
+        status = $2
+        elapsed = $3
+        id = $4
+        name = $5
+        key = status
       when /\A\[reply\]\[(.+)\]\[(.+)\]\z/
         state = $1
         status = $2

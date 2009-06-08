@@ -680,6 +680,10 @@ expire_child (MilterManagerChildren *children,
               MilterServerContext *context)
 {
     MilterManagerChildrenPrivate *priv;
+    MilterStatus status;
+    MilterServerContextState state;
+    gchar *status_name, *statistic_status_name;
+    gchar *state_name;
     const gchar *child_name;
     GTimer *timer;
     gdouble elapsed = 0.0;
@@ -692,12 +696,31 @@ expire_child (MilterManagerChildren *children,
         g_timer_stop(timer);
         elapsed = g_timer_elapsed(timer, NULL);
     }
-    milter_debug("[%u] [children][milter][end][%g] [%u] %s",
+
+    status = milter_server_context_get_status(context);
+    status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
+    state = milter_server_context_get_state(context);
+    state_name =
+        milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE, state);
+    milter_debug("[%u] [children][milter][end][%s][%s][%g] [%u] %s",
                  priv->tag,
+                 state_name,
+                 status_name,
                  elapsed,
                  milter_agent_get_tag(MILTER_AGENT(context)),
                  child_name);
-    milter_statistics("[milter][end][%g](%p): %s", elapsed, context, child_name);
+    if (status == MILTER_STATUS_NOT_CHANGE ||
+        status == MILTER_STATUS_DEFAULT ||
+        status == MILTER_STATUS_CONTINUE) {
+        statistic_status_name = "pass";
+    } else {
+        statistic_status_name = status_name;
+    }
+    milter_statistics("[milter][end][%s][%s][%g](%p): %s",
+                      state_name, statistic_status_name,
+                      elapsed, context, child_name);
+    g_free(status_name);
+    g_free(state_name);
 
     teardown_server_context_signals(MILTER_MANAGER_CHILD(context), children);
     priv->milters = g_list_remove(priv->milters, context);

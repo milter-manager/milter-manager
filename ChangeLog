@@ -1,3 +1,10 @@
+2009-06-08  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/client/milter-client-context.c,
+	milter/manager/milter-manager-children.c: reduce statistics log.
+
+	* tool/milter-manager-log-analyzer: follow the above changes.
+
 2009-06-07  Kouhei Sutou  <kou@cozmixng.org>
 
 	* TODO: add: [1.1.1] support a configration for max file
