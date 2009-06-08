@@ -643,12 +643,19 @@ cb_ready (MilterServerContext *context, gpointer user_data)
     timer = g_timer_new();
     g_object_set_data_full(G_OBJECT(context), TIMER_KEY, timer,
                            (GDestroyNotify)g_timer_destroy);
-    milter_debug("[%u] [children][milter][start] [%u] %s",
-                 priv->tag,
-                 milter_agent_get_tag(MILTER_AGENT(context)),
-                 milter_server_context_get_name(context));
-    milter_statistics("[milter][start](%u): %s",
-                      priv->tag, milter_server_context_get_name(context));
+
+    {
+        guint tag;
+        const gchar *child_name;
+
+        tag = milter_agent_get_tag(MILTER_AGENT(context));
+        child_name = milter_server_context_get_name(context);
+        milter_debug("[%u] [children][milter][start] [%u] %s",
+                     priv->tag, tag, child_name);
+        milter_statistics("[milter][start](%u): %s",
+                          priv->tag, tag, child_name);
+    }
+
     setup_server_context_signals(negotiate_data->children, context);
     milter_server_context_negotiate(context, negotiate_data->option);
     g_hash_table_remove(priv->try_negotiate_ids, negotiate_data);
@@ -1439,6 +1446,17 @@ cb_add_header (MilterServerContext *context,
     normalized_value = normalize_header_value(children, context, value);
     milter_headers_add_header(priv->headers, name,
                               normalized_value ? normalized_value : value);
+
+    if (value) {
+        guint tag;
+        const gchar *child_name;
+
+        tag = milter_agent_get_tag(MILTER_AGENT(context));
+        child_name = milter_server_context_get_name(context);
+        milter_statistics("[milter][header][add](%u): <%s>=<%s>: %s",
+                          tag, name, value, child_name);
+    }
+
     if (normalized_value)
         g_free(normalized_value);
 }
@@ -1457,6 +1475,17 @@ cb_insert_header (MilterServerContext *context,
     normalized_value = normalize_header_value(children, context, value);
     milter_headers_insert_header(priv->headers, index, name,
                                  normalized_value ? normalized_value : value);
+
+    if (value) {
+        guint tag;
+        const gchar *child_name;
+
+        tag = milter_agent_get_tag(MILTER_AGENT(context));
+        child_name = milter_server_context_get_name(context);
+        milter_statistics("[milter][header][add](%u): <%s>=<%s>: %s",
+                          tag, name, value, child_name);
+    }
+
     if (normalized_value)
         g_free(normalized_value);
 }
@@ -1476,6 +1505,17 @@ cb_change_header (MilterServerContext *context,
     milter_headers_change_header(priv->headers,
                                  name, index,
                                  normalized_value ? normalized_value : value);
+
+    if (value) {
+        guint tag;
+        const gchar *child_name;
+
+        tag = milter_agent_get_tag(MILTER_AGENT(context));
+        child_name = milter_server_context_get_name(context);
+        milter_statistics("[milter][header][add](%u): <%s>=<%s>: %s",
+                          tag, name, value, child_name);
+    }
+
     if (normalized_value)
         g_free(normalized_value);
 }
@@ -1550,10 +1590,11 @@ cb_progress (MilterServerContext *context, gpointer user_data)
     if (state != MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) {
         gchar *state_name;
 
-        state_name = milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
-                                                     state);
-        milter_error("[%u] [children][error][invalid-state][progress][%s] [%u] "
-                     "only allowed in end of message session: %s",
+        state_name =
+            milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                                            state);
+        milter_error("[%u] [children][error][invalid-state][progress][%s] "
+                     "[%u] only allowed in end of message session: %s",
                      priv->tag,
                      state_name,
                      milter_agent_get_tag(MILTER_AGENT(context)),
@@ -1581,10 +1622,11 @@ cb_quarantine (MilterServerContext *context,
     if (state != MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) {
         gchar *state_name;
 
-        state_name = milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
-                                                     state);
-        milter_error("[%u] [children][error][invalid-state][quarantine][%s] [%u] "
-                     "only allowed in end of message session: %s",
+        state_name =
+            milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                                            state);
+        milter_error("[%u] [children][error][invalid-state][quarantine][%s] "
+                     "[%u] only allowed in end of message session: %s",
                      priv->tag,
                      state_name,
                      milter_agent_get_tag(MILTER_AGENT(context)),

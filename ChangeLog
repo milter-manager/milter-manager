@@ -1,5 +1,8 @@
 2009-06-08  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.c: log added headers for
+	statistics.
+
 	* milter/client/milter-client.c: don't use pointer for log.
 
 	* milter/manager/milter-manager.c,
