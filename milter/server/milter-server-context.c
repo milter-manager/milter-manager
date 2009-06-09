@@ -957,9 +957,6 @@ stop_on_state (MilterServerContext *context, MilterServerContextState state)
                  milter_agent_get_tag(MILTER_AGENT(context)),
                  inspected_state,
                  milter_server_context_get_name(context));
-    milter_statistics("[stop][%s]: %s",
-                      inspected_state,
-                      milter_server_context_get_name(context));
     g_free(inspected_state);
 
     priv->status = MILTER_STATUS_STOP;

@@ -1,5 +1,8 @@
 2009-06-09  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/server/milter-server-context.c: remove needless
+	statistics log.
+
 	* tool/milter-manager-log-analyzer: escape ':' for URI.
 
 	* tool/milter-manager-log-analyzer: add each milter's report.
