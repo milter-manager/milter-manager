@@ -1,5 +1,9 @@
 2009-06-09  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/server/milter-server-context.c,
+	test/tool/test-server.c: fix status on envelope recipient for
+	milter that already sent reply for envelope recipient.
+
 	* milter/server/milter-server-context.c: use status for the last
 	envelope recipient status when connection is terminated on
 	envelope recipient.

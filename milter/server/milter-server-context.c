@@ -409,7 +409,7 @@ milter_server_context_init (MilterServerContext *context)
     priv->address_size = 0;
 
     priv->status = MILTER_STATUS_NOT_CHANGE;
-    priv->envelope_recipient_status = MILTER_STATUS_NOT_CHANGE;
+    priv->envelope_recipient_status = MILTER_STATUS_DEFAULT;
     priv->state = MILTER_SERVER_CONTEXT_STATE_START;
     priv->last_state = MILTER_SERVER_CONTEXT_STATE_START;
 
@@ -922,7 +922,8 @@ write_packet (MilterServerContext *context, gchar *packet, gsize packet_size,
              priv->status == MILTER_STATUS_CONTINUE) &&
             (MILTER_SERVER_CONTEXT_STATE_DEFINE_MACRO <= priv->state &&
              priv->state < MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)) {
-            if (priv->state == MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT) {
+            if (priv->state == MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT &&
+                priv->envelope_recipient_status != MILTER_STATUS_DEFAULT) {
                 priv->status = priv->envelope_recipient_status;
             } else {
                 priv->status = MILTER_STATUS_ABORT;

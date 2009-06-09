@@ -952,7 +952,7 @@ test_result (gconstpointer data)
     cut_assert_equal_int(EXIT_SUCCESS, exit_status);
 
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
-                           actual_status, test_data->expected_status);
+                           test_data->expected_status, actual_status);
 
     cut_trace(milter_assert_equal_n_received(test_data->expected_command_receives));
 }
@@ -1523,8 +1523,8 @@ test_end_of_message_action (gconstpointer data)
     cut_assert_equal_int(EXIT_SUCCESS, exit_status);
 
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
-                           actual_status,
-                           action_test_data->test_data->expected_status);
+                           action_test_data->test_data->expected_status,
+                           actual_status);
 
     action_test_data->assert_func();
 }
