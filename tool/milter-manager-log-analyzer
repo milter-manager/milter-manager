@@ -527,7 +527,7 @@ EODS
 
     def find_keys(content)
       case content
-      when /\A\[milter\]\[end\]\[(.+)\]\[(.+)\]\[(.+)\]\(.+\): (.+)\z/
+      when /\A\[milter\]\[end\]\[(.+?)\]\[(.+?)\]\[(.+?)\]\((.+?)\): (.+)\z/
         state = $1
         status = $2
         elapsed = $3
@@ -978,11 +978,15 @@ EOF
     end
 
     def label_to_id(label)
-      label.downcase.gsub(/ +/, '-')
+      normalize_value(label)
     end
 
     def graph_title_to_id(label, title)
-      [label.downcase.gsub(/ +/, '-'), title.downcase.gsub(/ +/, '-')].join("-")
+      [normalize_value(label), normalize_value(title)].join("-")
+    end
+
+    def normalize_value(value)
+      value.downcase.gsub(/[ :]+/, '-')
     end
   end
 

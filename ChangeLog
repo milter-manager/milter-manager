@@ -1,5 +1,7 @@
 2009-06-09  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-manager-log-analyzer: escape ':' for URI.
+
 	* tool/milter-manager-log-analyzer: add each milter's report.
 
 	* tool/milter-manager-log-analyzer: add milter manager's milter
