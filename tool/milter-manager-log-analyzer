@@ -716,11 +716,11 @@ EODS
         name = $2
         value = $3
         milter_name = $4
-        report_key(name, value, &block)
+        report_key(name, value, milter_name, &block)
       end
     end
 
-    def report_key(header_name, header_value, &block)
+    def report_key(header_name, header_value, milter_name, &block)
       case header_name
       when /\AX-Spam-Flag\z/i
         parse_x_spam_flag(header_value, &block)
@@ -798,11 +798,14 @@ EODS
         id = $4
         name = $5
         unless @generators.find {|generator| generator.name == name}
-          generator = MilterStatusGraphGenerator.new(name,
-                                                     @output_directory,
-                                                     @update_time)
-          generator.prepare
-          @generators << generator
+          [MilterStatusGraphGenerator,
+           MilterReportGraphGenerator].each do |generator_class|
+            generator = generator_class.new(name,
+                                            @output_directory,
+                                            @update_time)
+            generator.prepare
+            @generators << generator
+          end
         end
       end
 
@@ -846,8 +849,7 @@ EODS
     end
 
     private
-    def find_key(content)
-      key = nil
+    def find_keys(content)
       case content
       when /\A\[milter\]\[end\]\[(.+?)\]\[(.+?)\]\[(.+?)\]\((.+?)\): (.+)\z/
         state = $1
@@ -855,16 +857,38 @@ EODS
         elapsed = $3
         id = $4
         name = $5
-        key = status if name == @name
+        yield(status) if name == @name
       end
-
-      key
     end
 
     def graph_entries
       entries = super
       entries << ["STACK", "stop", "#99ffff", "Stop"]
       entries
+    end
+  end
+
+  class MilterReportGraphGenerator < MilterManagerReportGraphGenerator
+    attr_reader :name
+    def initialize(name, output_directory, update_time)
+      super(output_directory, update_time)
+      @name = name
+      @title = "milter: report: #{@name}"
+      @old_base_rrd_file_names = []
+    end
+
+    def rrd_file
+      build_path("milter.report.#{@name}.rrd")
+    end
+
+    def graph_name(tag)
+      build_path("milter.report.#{@name}.#{tag}.png")
+    end
+
+    private
+    def report_key(header_name, header_value, milter_name, &block)
+      return if @name != milter_name
+      super(header_name, header_value, milter_name, &block)
     end
   end
 
