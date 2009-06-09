@@ -560,17 +560,17 @@ EODS
     end
   end
 
-  class MilterManagerGraphGenerator < GraphGenerator
+  class MilterManagerStatusGraphGenerator < GraphGenerator
     class << self
       def base_rrd_file_name
-        "milter-manager.rrd"
+        "milter-manager.status.rrd"
       end
     end
 
     def initialize(output_directory, update_time)
       super(output_directory, update_time)
       @vertical_label = "sessions"
-      @title = 'milter manager'
+      @title = 'milter manager: status'
       @items = ["pass",
                 "accept",
                 "reject",
@@ -579,11 +579,11 @@ EODS
                 "quarantine",
                 "abort",
                 "error"]
-      @old_base_rrd_file_names = ["milter-log.mail.rrd"]
+      @old_base_rrd_file_names = ["milter-log.mail.rrd", "milter-manager.rrd"]
     end
 
     def graph_name(tag)
-      build_path("mail.#{tag}.png")
+      build_path("milter-manager.status.#{tag}.png")
     end
 
     def output_graph(range_class, options={})
@@ -669,9 +669,9 @@ EODS
         id = $4
         name = $5
         unless @generators.find {|generator| generator.name == name}
-          generator = MilterGraphGenerator.new(name,
-                                               @output_directory,
-                                               @update_time)
+          generator = MilterStatusGraphGenerator.new(name,
+                                                     @output_directory,
+                                                     @update_time)
           generator.prepare
           @generators << generator
         end
@@ -695,22 +695,25 @@ EODS
     end
   end
 
-  class MilterGraphGenerator < MilterManagerGraphGenerator
+  class MilterStatusGraphGenerator < MilterManagerStatusGraphGenerator
     attr_reader :name
     def initialize(name, output_directory, update_time)
       super(output_directory, update_time)
       @name = name
-      @title = "milter: #{@name}"
+      @title = "milter: status: #{@name}"
       @items << "stop"
-      @old_base_rrd_file_names = ["milter-log.milter.#{@name}.rrd"]
+      @old_base_rrd_file_names = [
+        "milter-log.milter.#{@name}.rrd",
+        "milter.#{@name}.rrd",
+      ]
     end
 
     def rrd_file
-      build_path("milter.#{@name}.rrd")
+      build_path("milter.status.#{@name}.rrd")
     end
 
     def graph_name(tag)
-      build_path("milter.#{@name}.#{tag}.png")
+      build_path("milter.status.#{@name}.#{tag}.png")
     end
 
     private
@@ -931,7 +934,8 @@ EOF
   end
 
   def milter_manager
-    @milter_manager ||= MilterManagerGraphGenerator.new(@output_directory, now)
+    @milter_manager ||=
+      MilterManagerStatusGraphGenerator.new(@output_directory, now)
   end
 
   def milters
