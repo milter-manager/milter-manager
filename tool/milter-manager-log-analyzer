@@ -341,7 +341,7 @@ class MilterManagerLogAnalyzer
                 "--alt-y-grid",
                 "--units-exponent", "0",
                 *data)
-      name
+      [name, @title]
     end
 
     private
@@ -604,9 +604,9 @@ EODS
       items = []
       entries.each do |type, name, color, label|
         items << "#{type}:#{name}#{color}:#{label.ljust(max_label_size)}"
-        items << "GPRINT:total_#{name}:MAX:total\\: %11.0lf sessions"
-        items << "GPRINT:#{name}:AVERAGE:avg\\: %9.2lf sessions/#{unit}"
-        items << "GPRINT:max_#{name}:MAX:max\\: %7.0lf sessions/#{unit}\\l"
+        items << "GPRINT:total_#{name}:MAX:total\\: %8.0lf sessions"
+        items << "GPRINT:#{name}:AVERAGE:avg\\: %6.2lf sessions/#{unit}"
+        items << "GPRINT:max_#{name}:MAX:max\\: %4.0lf sessions/#{unit}\\l"
       end
 
       range = range_class.new(@step, rows)
@@ -748,6 +748,20 @@ EODS
     <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
     <meta http-equiv="Refresh" content="300" />
     <meta http-equiv="Pragma" content="no-cache" />
+    <style>
+ul.index li.range
+{
+  display: block;
+  float: left;
+  margin-bottom: 1em;
+  margin-right: 1em;
+}
+
+h2
+{
+  clear: both;
+}
+    </style>
     <title>milter-manager statistics</title>
   </head>
 
@@ -757,11 +771,18 @@ EOH
     end
 
     def index
-      result = "<ul>\n"
+      result = "<ul class=\"index\">\n"
       @graph_info.each do |label, graphs|
         next if graphs.empty?
         id = label_to_id(label)
-        result << %Q[  <li><a href="\##{h(id)}">#{h(label)}</a></li>\n]
+        result << %Q[  <li class="range"><a href="\##{h(id)}">#{h(label)}</a>\n]
+        result << %Q[    <ul class="graph-index">\n]
+        graphs.each do |file_name, title|
+          graph_id = graph_title_to_id(label, title)
+          result << %Q[      <li><a href="\##{h(graph_id)}">#{h(title)}</a>\n]
+        end
+        result << %Q[    </ul>\n]
+        result << %Q[  </li>\n]
       end
       result << "</ul>\n"
       result
@@ -773,8 +794,11 @@ EOH
         next if graphs.empty?
         id = label_to_id(label)
         result << %Q[<h2 id=\"#{h(id)}\">#{h(label)}</h2>\n]
-        graphs.each do |graph|
-          result << %Q[  <p><img src="#{h(File.basename(graph))}" /></p>\n]
+        graphs.each do |file_name, title|
+          graph_id = graph_title_to_id(label, title)
+          result << %Q[  <p id="#{graph_id}">\n]
+          result << %Q[    <img src="#{h(File.basename(file_name))}" />\n]
+          result << %Q[  </p>\n]
         end
         result << "\n"
       end
@@ -790,6 +814,10 @@ EOF
 
     def label_to_id(label)
       label.downcase.gsub(/ +/, '-')
+    end
+
+    def graph_title_to_id(label, title)
+      [label.downcase.gsub(/ +/, '-'), title.downcase.gsub(/ +/, '-')].join("-")
     end
   end
 
@@ -861,13 +889,13 @@ EOF
   end
 
   def output_graph(range, label, options={})
-    output_graphs = []
+    output_graph_info = []
     [milter_manager].each do |generator|
-      file_name = generator.output_graph(range, options)
-      output_graphs << file_name if file_name
+      info = generator.output_graph(range, options)
+      output_graph_info << info if info
     end
-    output_graphs.concat(milters.output_graphs(range, options))
-    @output_graphs << [label, output_graphs]
+    output_graph_info.concat(milters.output_graphs(range, options))
+    @output_graphs << [label, output_graph_info]
   end
 
   def output_all_graph
