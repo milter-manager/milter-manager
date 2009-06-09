@@ -270,16 +270,21 @@ class MilterManagerLogAnalyzer
       return if time_stamp >= @update_time
 
       time_stamp = time_stamp.to_i
-      key = find_key(content)
-      return if key.nil?
+      keys = []
+      find_keys(content) do |key|
+        keys << key
+      end
+      return if keys.empty?
 
       @current_time ||= time_stamp
       if time_stamp and @current_time > time_stamp
         @data = {}
       else
         flush(time_stamp)
-        @data[key] ||= 0
-        @data[key] += 1
+        keys.each do |key|
+          @data[key] ||= 0
+          @data[key] += 1
+        end
       end
     end
 
@@ -451,8 +456,10 @@ EODS
         end
       end
       data_names = data_names.uniq
-      unless data_names.size == @items.size
+      if data_names.size < @items.size
         recreate_rrd(*@items[(data_names.size)..-1])
+      elsif data_names.size > @items.size
+        raise "data source can't be removed!"
       end
     end
 
@@ -518,8 +525,7 @@ EODS
       build_path("session.#{tag}.png")
     end
 
-    def find_key(content)
-      key = nil
+    def find_keys(content)
       case content
       when /\A\[milter\]\[end\]\[(.+)\]\[(.+)\]\[(.+)\]\(.+\): (.+)\z/
         state = $1
@@ -527,24 +533,23 @@ EODS
         elapsed = $3
         id = $4
         name = $5
-        key = "child"
+        yield("child")
       when /\A\[milter\]\[end\]\[(.+)\]\(.+\): (.+)\z/
         elapsed = $1
         id = $2
         name = $3
-        key = "child"
+        yield("child")
       when /\A\[session\]\[end\]\[(.+)\]\[(.+)\]\[(.+)\]\(.+\)\z/
         state = $1
         status = $2
         elapsed = $3
         id = $4
-        key = "smtp"
+        yield("smtp")
       when /\A\[session\]\[end\]\[(.+)\]\(.+\)\z/
         elapsed = $1
         id = $2
-        key = "smtp"
+        yield("smtp")
       end
-      key
     end
 
     def output_graph(range_class, options={})
@@ -611,29 +616,25 @@ EODS
     end
 
     private
-    def find_key(content)
-      key = nil
+    def find_keys(content)
       case content
-      when /\A\[session\]\[end\]\[(.+)\]\[(.+)\]\[(.+)\]\(.+\)\z/
+      when /\A\[session\]\[end\]\[(.+)\]\[(.+)\]\[(.+)\]\((.+)\)\z/
         state = $1
         status = $2
         elapsed = $3
         id = $4
-        name = $5
-        key = status
+        yield(status)
       when /\A\[reply\]\[(.+)\]\[(.+)\]\z/
         state = $1
         status = $2
-        return nil if status == "continue" and state != "end-of-message"
+        return if status == "continue" and state != "end-of-message"
         status = "pass" if status == "continue"
-        key = status
+        yield(status)
       when /\A\[abort\]\[(.+)\]\z/
         state = $1
         status = "abort"
-        key = status
+        yield(status)
       end
-
-      key
     end
 
     def graph_entries
@@ -647,6 +648,134 @@ EODS
        ["STACK", "abort", "#ff9999", "Abort"],
        ["STACK", "error", "#ff00ff", "Error"],
       ]
+    end
+  end
+
+  class MilterManagerReportGraphGenerator < GraphGenerator
+    class << self
+      def base_rrd_file_name
+        "milter-manager.report.rrd"
+      end
+    end
+
+    def initialize(output_directory, update_time)
+      super(output_directory, update_time)
+      @vertical_label = "mails"
+      @title = 'milter manager: report'
+      @items = ["spam",
+                "virus",
+                "uribl",
+                "greylisting-pass",
+                "spf-pass",
+                "spf-fail",
+                "sender-id-pass",
+                "sender-id-fail",
+                "dkim-pass",
+                "dkim-fail",
+                "dkim-adsp-pass",
+                "dkim-adsp-fail"]
+      @old_base_rrd_file_names = []
+    end
+
+    def graph_name(tag)
+      build_path("milter-manager.report.#{tag}.png")
+    end
+
+    def output_graph(range_class, options={})
+      entries = [
+                 ["AREA", "spam", "#ff0000", "spam"],
+                 ["LINE", "virus", "#ddbb00", "Virus"],
+                 ["LINE", "uribl", "#dd00bb", "URIBL"],
+                 ["LINE", "greylisting-pass", "#dd00bb", "Greylisting (pass)"],
+                 ["LINE", "spf-pass", "#33cc33", "SPF (pass)"],
+                 ["LINE", "spf-fail", "#cc3333", "SPF (fail)"],
+                 ["LINE", "sender-id-pass", "#33cccc", "Sender ID (pass)"],
+                 ["LINE", "sender-id-fail", "#cccc33", "Sender ID (fail)"],
+                 ["LINE", "dkim-pass", "#3366cc", "DKIM (pass)"],
+                 ["LINE", "dkim-fail", "#cc6633", "DKIM (fail)"],
+                 ["LINE", "dkim-adsp-pass", "#3399cc", "DKIM ADSP (pass)"],
+                 ["LINE", "dkim-adsp-fail", "#cc9933", "DKIM ADSP (fail)"],
+                ]
+      max_label_size = entries.collect {|_, _, _, label| label.size}.max
+
+      items = []
+      entries.each do |type, name, color, label|
+        items << "#{type}:#{name}#{color}:#{label.ljust(max_label_size)}"
+        items << "GPRINT:total_#{name}:MAX:total\\: %8.0lf mails"
+        items << "GPRINT:#{name}:AVERAGE:avg\\: %6.2lf mails/#{unit}"
+        items << "GPRINT:max_#{name}:MAX:max\\: %4.0lf mails/#{unit}\\l"
+      end
+      super(range_class, options, *items)
+    end
+
+    private
+    def find_keys(content, &block)
+      case content
+      when /\A\[milter\]\[header\]\[add\]\((.+)\): <(.+?)>=<(.+?)>: (.+)\z/
+        id = $1
+        name = $2
+        value = $3
+        milter_name = $4
+        report_key(name, value, &block)
+      end
+    end
+
+    def report_key(header_name, header_value, &block)
+      case header_name
+      when /\AX-Spam-Flag\z/i
+        parse_x_spam_flag(header_value, &block)
+      when /\AX-Spam-Status\z/i
+        parse_x_spam_status(header_value, &block)
+      when /\AAuthentication-Results\z/i
+        parse_authentication_results(header_value, &block)
+      when /\AX-Greylist\z/i
+        parse_x_greylist(header_value, &block)
+      end
+    end
+
+    def parse_x_spam_flag(value)
+      case value
+      when /\Ayes\z/i
+        yield("spam")
+      end
+    end
+
+    def parse_x_spam_status(value)
+      return unless /tests=/ =~ value
+      uribl_used = false
+      results = $POSTMATCH.split(/\s*\S+=/, 2)[0].split(/\s*,\s*/)
+      results.each do |result|
+        case result
+        when /\AURIBL_/i
+          unless uribl_used
+            yield("uribl")
+            uribl_used = true
+          end
+        end
+      end
+    end
+
+    def parse_authentication_results(value)
+      id, *results = value.split(/;\s*/)
+      results.each do |result|
+        if /\A(.+?)=(.+?)\s/ =~ result
+          type = $1
+          result = $2
+          case result
+          when "pass"
+            yield("#{type}-pass")
+          when "fail"
+            yield("#{type}-fail")
+          end
+        end
+      end
+    end
+
+    def parse_x_greylist(value)
+      case value
+      when /\ADelayed for/i
+        yield("greylisting-pass")
+      end
     end
   end
 
@@ -870,7 +999,7 @@ EOF
   def update
     return unless @update_db
 
-    listeners = [sessions, milter_manager, milters]
+    listeners = [sessions, milter_manager_status, milter_manager_report, milters]
     listeners.each do |listener|
       listener.prepare
     end
@@ -902,7 +1031,7 @@ EOF
 
   def output_graph(range, label, options={})
     output_graph_info = []
-    [milter_manager].each do |generator|
+    [milter_manager_status, milter_manager_report].each do |generator|
       info = generator.output_graph(range, options)
       output_graph_info << info if info
     end
@@ -933,9 +1062,14 @@ EOF
     @sessions ||= SessionGraphGenerator.new(@output_directory, now)
   end
 
-  def milter_manager
-    @milter_manager ||=
+  def milter_manager_status
+    @milter_manager_status ||=
       MilterManagerStatusGraphGenerator.new(@output_directory, now)
+  end
+
+  def milter_manager_report
+    @milter_manager_report ||=
+      MilterManagerReportGraphGenerator.new(@output_directory, now)
   end
 
   def milters

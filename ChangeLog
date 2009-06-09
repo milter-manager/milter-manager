@@ -1,5 +1,8 @@
 2009-06-09  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-manager-log-analyzer: add milter manager's milter
+	applied report.
+
 	* tool/milter-manager-log-analyzer: add 'status' to name.
 
 	* tool/milter-manager-log-analyzer: milter manager's status log
