@@ -36,6 +36,15 @@ rescue LoadError
       Time.at(Integer(run("last", file)))
     end
 
+    def info(file)
+      _info = {}
+      run("info", file).each_line do |line|
+        key, value = line.split(/\s*=\s*/)
+        _info[key] = value.strip
+      end
+      _info
+    end
+
     def run(command, *args)
       command_line = ["rrdtool", command] + args.collect {|arg| arg.to_s}
 

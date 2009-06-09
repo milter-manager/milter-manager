@@ -1,5 +1,8 @@
 2009-06-09  Kouhei Sutou  <kou@clear-code.com>
 
+	* tool/milter-manager-log-analyzer: support no RRDtool binding
+	environment.
+
 	* tool/milter-manager-log-analyzer: support migration.
 
 2009-06-09  Kouhei Sutou  <kou@cozmixng.org>
