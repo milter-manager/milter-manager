@@ -80,6 +80,7 @@ struct _MilterServerContextPrivate
     struct sockaddr *address;
     socklen_t address_size;
     MilterStatus status;
+    MilterStatus envelope_recipient_status;
     MilterServerContextState state;
     MilterServerContextState last_state;
     gchar *reply_code;
@@ -408,6 +409,7 @@ milter_server_context_init (MilterServerContext *context)
     priv->address_size = 0;
 
     priv->status = MILTER_STATUS_NOT_CHANGE;
+    priv->envelope_recipient_status = MILTER_STATUS_NOT_CHANGE;
     priv->state = MILTER_SERVER_CONTEXT_STATE_START;
     priv->last_state = MILTER_SERVER_CONTEXT_STATE_START;
 
@@ -919,8 +921,13 @@ write_packet (MilterServerContext *context, gchar *packet, gsize packet_size,
              priv->status == MILTER_STATUS_NOT_CHANGE ||
              priv->status == MILTER_STATUS_CONTINUE) &&
             (MILTER_SERVER_CONTEXT_STATE_DEFINE_MACRO <= priv->state &&
-             priv->state < MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE))
-            priv->status = MILTER_STATUS_ABORT;
+             priv->state < MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)) {
+            if (priv->state == MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT) {
+                priv->status = priv->envelope_recipient_status;
+            } else {
+                priv->status = MILTER_STATUS_ABORT;
+            }
+        }
         milter_server_context_set_state(context, next_state);
         break;
     default:
@@ -1551,14 +1558,18 @@ cb_decoder_reply_code (MilterReplyDecoder *decoder,
     MilterServerContext *context = user_data;
     MilterServerContextState state;
     MilterServerContextPrivate *priv;
+    MilterStatus status;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
-    if (priv->state != MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT) {
-        if (400 <= code && code < 500)
-            priv->status = MILTER_STATUS_TEMPORARY_FAILURE;
-        else
-            priv->status = MILTER_STATUS_REJECT;
-    }
+
+    if (400 <= code && code < 500)
+        status = MILTER_STATUS_TEMPORARY_FAILURE;
+    else
+        status = MILTER_STATUS_REJECT;
+    if (priv->state == MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT)
+        priv->envelope_recipient_status = status;
+    else
+        priv->status = status;
 
     disable_timeout(priv);
 
@@ -1595,7 +1606,9 @@ cb_decoder_temporary_failure (MilterReplyDecoder *decoder, gpointer user_data)
     gchar *state_name;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
-    if (priv->state != MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT)
+    if (priv->state == MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT)
+        priv->envelope_recipient_status = MILTER_STATUS_TEMPORARY_FAILURE;
+    else
         priv->status = MILTER_STATUS_TEMPORARY_FAILURE;
 
     disable_timeout(priv);
@@ -1628,7 +1641,9 @@ cb_decoder_reject (MilterReplyDecoder *decoder, gpointer user_data)
     gchar *state_name;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
-    if (priv->state != MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT)
+    if (priv->state == MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT)
+        priv->envelope_recipient_status = MILTER_STATUS_REJECT;
+    else
         priv->status = MILTER_STATUS_REJECT;
 
     disable_timeout(priv);
@@ -1694,7 +1709,9 @@ cb_decoder_discard (MilterReplyDecoder *decoder, gpointer user_data)
     gchar *state_name;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(user_data);
-    if (priv->state != MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT)
+    if (priv->state == MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT)
+        priv->envelope_recipient_status = MILTER_STATUS_DISCARD;
+    else
         priv->status = MILTER_STATUS_DISCARD;
 
     disable_timeout(priv);

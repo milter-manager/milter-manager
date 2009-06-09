@@ -1,5 +1,9 @@
 2009-06-09  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/server/milter-server-context.c: use status for the last
+	envelope recipient status when connection is terminated on
+	envelope recipient.
+
 	* tool/milter-manager-log-analyzer: add error status.
 
 	* milter/server/milter-server-context.c: use quarantine, stop and
