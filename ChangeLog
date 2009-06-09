@@ -1,5 +1,7 @@
 2009-06-09  Kouhei Sutou  <kou@clear-code.com>
 
+	* tool/milter-manager-log-analyzer: unify duplicated codes.
+
 	* tool/milter-manager-log-analyzer: remove needless codes.
 
 	* tool/milter-manager-log-analyzer: change RRD file name to

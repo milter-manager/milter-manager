@@ -252,6 +252,8 @@ class MilterManagerLogAnalyzer
     end
 
     def prepare
+      migrate_if_needed
+
       if File.exist?(rrd_file)
         @last_update_time = normalize_time(RRD.last_update_time(rrd_file))
         @current_time = @last_update_time.to_i + @step
@@ -510,7 +512,6 @@ EODS
       @vertical_label = "sessions"
       @items = ["smtp", "child"]
       @old_base_rrd_file_names = ["milter-log.session.rrd"]
-      migrate_if_needed
     end
 
     def graph_name(tag)
@@ -580,7 +581,6 @@ EODS
                 "stop",
                 "error"]
       @old_base_rrd_file_names = ["milter-log.mail.rrd"]
-      migrate_if_needed
     end
 
     def graph_name(tag)
@@ -693,24 +693,13 @@ EODS
     end
   end
 
-  class MilterGraphGenerator < GraphGenerator
+  class MilterGraphGenerator < MilterManagerGraphGenerator
     attr_reader :name
     def initialize(name, output_directory, update_time)
       super(output_directory, update_time)
       @name = name
-      @vertical_label = "sessions"
       @title = "milter: #{@name}"
-      @items = ["pass",
-                "accept",
-                "reject",
-                "discard",
-                "temporary-failure",
-                "quarantine",
-                "abort",
-                "stop",
-                "error"]
       @old_base_rrd_file_names = ["milter-log.milter.#{@name}.rrd"]
-      migrate_if_needed
     end
 
     def rrd_file
@@ -719,40 +708,6 @@ EODS
 
     def graph_name(tag)
       build_path("milter.#{@name}.#{tag}.png")
-    end
-
-    def output_graph(range_class, options={})
-      entries = [
-                 ["AREA", "pass", "#0000ff", "Pass"],
-                 ["STACK", "accept", "#00ff00", "Accept"],
-                 ["STACK", "reject", "#ff0000", "Reject"],
-                 ["STACK", "discard", "#ffd400", "Discard"],
-                 ["STACK", "temporary-failure", "#888888", "Temp-Fail"],
-                 ["STACK", "quarantine", "#a52a2a", "Quarantine"],
-                 ["STACK", "abort", "#ff9999", "Abort"],
-                 ["STACK", "stop", "#99ffff", "Stop"],
-                 ["STACK", "error", "#ff00ff", "Error"],
-                ]
-      max_label_size = entries.collect {|_, _, _, label| label.size}.max
-
-      items = []
-      entries.each do |type, name, color, label|
-        items << "#{type}:#{name}#{color}:#{label.ljust(max_label_size)}"
-        items << "GPRINT:total_#{name}:MAX:total\\: %11.0lf sessions"
-        items << "GPRINT:#{name}:AVERAGE:avg\\: %9.2lf sessions/#{unit}"
-        items << "GPRINT:max_#{name}:MAX:max\\: %7.0lf sessions/#{unit}\\l"
-      end
-
-      range = range_class.new(@step, rows)
-      path = build_path(SessionGraphGenerator.base_rrd_file_name)
-      items += generate_definitions(path, range, "smtp")
-
-      label = "SMTP".ljust(max_label_size)
-      items << "LINE2:n_smtp#000000:#{label}"
-      items << "GPRINT:total_smtp:MAX:total\\: %8.0lf sessions"
-      items << "GPRINT:smtp:AVERAGE:avg\\: %6.2lf sessions/#{unit}"
-      items << "GPRINT:max_smtp:MAX:max\\: %4.0lf sessions/#{unit}\\l"
-      super(range_class, options, *items)
     end
 
     private
