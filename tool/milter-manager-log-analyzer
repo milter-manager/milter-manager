@@ -21,6 +21,7 @@ require 'fileutils'
 require 'time'
 require 'optparse'
 require 'erb'
+require 'tempfile'
 
 begin
   require 'RRD' unless Object.const_defined?(:RRD)
@@ -268,6 +269,10 @@ class MilterManagerLogAnalyzer
       build_path(self.class.base_rrd_file_name)
     end
 
+    def build_path(*paths)
+      File.join(*([@output_directory, *paths].compact))
+    end
+
     def prepare
       if File.exist?(rrd_file)
         @last_update_time = normalize_time(RRD.last_update_time(rrd_file))
@@ -300,7 +305,7 @@ class MilterManagerLogAnalyzer
 
     def flush(next_time_stamp=nil)
       return if @current_time == next_time_stamp
-      create_rrd(@current_time, *@items) unless File.exist?(rrd_file)
+      create_rrd(rrd_file, @current_time, *@items) unless File.exist?(rrd_file)
 
       start_time = @current_time
       unless @data.empty?
@@ -314,12 +319,16 @@ class MilterManagerLogAnalyzer
       @data = {}
 
       if next_time_stamp
-        start_time.step(next_time_stamp - @step, @step) do |time|
-          counts = ":" * (@items.size - 1)
-          RRD.update(rrd_file, "#{time}:#{counts}")
-        end
+        fill_no_data_span(rrd_file, start_time, next_time_stamp, @items.size)
       end
       @current_time = next_time_stamp || @current_time
+    end
+
+    def fill_no_data_span(file, start_time_stamp, end_time_stamp, n_items)
+      start_time_stamp.step(end_time_stamp - @step, @step) do |time_stamp|
+        empty_data = ([nil] * n_items).join(":")
+        RRD.update(file, "#{time_stamp}:#{empty_data}")
+      end
     end
 
     def output_graph(range_class, options={}, *args)
@@ -356,7 +365,7 @@ class MilterManagerLogAnalyzer
     end
 
     private
-    def create_rrd(start_time, *sources)
+    def create_rrd(file, start_time, *sources)
       ranges = [
                 GraphData::DayRange.new(@step, rows),
                 GraphData::WeekRange.new(@step, rows),
@@ -371,17 +380,87 @@ class MilterManagerLogAnalyzer
       end
 
       data_sources = sources.collect do |source|
-        "DS:#{source}:GAUGE:#{@step * 3}:0:U"
+        "DS:#{source}:GAUGE:#{heartbeat}:0:U"
       end
 
-      RRD.create(rrd_file,
+      RRD.create(file,
                  "--start", (start_time - 1).to_i.to_s,
                  "--step", @step,
                  *(rra + data_sources))
     end
 
-    def build_path(*paths)
-      File.join(*([@output_directory, *paths].compact))
+    def heartbeat
+      @step * 3
+    end
+
+    def recreate_rrd(*new_items)
+      dump_file = Tempfile.new("milter-manager-log-analyzer")
+      RRD.dump(rrd_file, dump_file.path)
+      data = dump_file.read
+      data.sub!(/<!-- Round Robin Archives -->/) do |text|
+        ds = ""
+        new_items.each do |item|
+          ds << <<-EODS
+       <ds>
+               <name> #{item} </name>
+               <type> GAUGE </type>
+               <minimal_heartbeat> #{@step * 3} </minimal_heartbeat>
+               <min> 0.0000000000e+00 </min>
+               <max> NaN </max>
+
+               <!-- PDP Status -->
+               <last_ds>  </last_ds>
+               <value> 0.0000000000e+00 </value>
+               <unknown_sec> 0 </unknown_sec>
+       </ds>
+EODS
+        end
+        ds + text
+      end
+
+      data.gsub!(/<\/cdp_prep>/) do |text|
+        ds = ""
+        new_items.each do |item|
+          ds << <<-EODS
+                        <ds>
+                        <primary_value> 0.0000000000e+00 </primary_value>
+                        <secondary_value> 0.0000000000e+00 </secondary_value>
+                        <value> 0.0000000000e+00 </value>
+                        <unknown_datapoints> 0 </unknown_datapoints>
+                        </ds>
+EODS
+        end
+        ds + text
+      end
+
+      data.gsub!(/(<\/row>)/, "<v> NaN </v>\\1")
+
+      dump_file.open
+      dump_file.rewind
+      dump_file.print(data)
+      dump_file.close
+
+      new_rrd_file = rrd_file + ".new"
+      FileUtils.rm_f(new_rrd_file)
+      RRD.restore(dump_file.path, new_rrd_file)
+      FileUtils.mv(new_rrd_file, rrd_file)
+    end
+
+    def migrate_if_needed
+      return unless File.exist?(rrd_file)
+
+      data_names = []
+      RRD.info(rrd_file).each do |key, value|
+        main, = key.split(/\./)
+        case main
+        when /\Ads\[(.+?)\]\z/
+          data_names << $1
+        end
+      end
+      data_names = data_names.uniq
+      unless data_names.size == @items.size
+        recreate_rrd(*@items[(data_names.size)..-1])
+      end
     end
 
     def guess_end_time(start_time)
@@ -439,6 +518,7 @@ class MilterManagerLogAnalyzer
       @title = 'Sessions'
       @vertical_label = "sessions"
       @items = ["smtp", "child"]
+      migrate_if_needed
     end
 
     def graph_name(tag)
@@ -504,7 +584,9 @@ class MilterManagerLogAnalyzer
                 "discard",
                 "temporary-failure",
                 "quarantine",
-                "abort"]
+                "abort",
+                "stop"]
+      migrate_if_needed
     end
 
     def graph_name(tag)
@@ -520,6 +602,7 @@ class MilterManagerLogAnalyzer
                  ["STACK", "temporary-failure", "#888888", "Temp-Fail"],
                  ["STACK", "quarantine", "#a52a2a", "Quarantine"],
                  ["STACK", "abort", "#ff9999", "Abort"],
+                 ["STACK", "stop", "#99ffff", "Stop"],
                 ]
       max_label_size = entries.collect {|_, _, _, label| label.size}.max
 
@@ -588,6 +671,7 @@ class MilterManagerLogAnalyzer
                 "header",
                 "body",
                 "end-of-message"]
+      migrate_if_needed
     end
 
     def graph_name(tag)
