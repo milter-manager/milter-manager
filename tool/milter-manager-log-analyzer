@@ -268,6 +268,8 @@ class MilterManagerLogAnalyzer
       @points_per_sample = 3
 
       @update_time = normalize_time(update_time)
+
+      @old_base_rrd_file_names = []
     end
 
     def rows
@@ -458,6 +460,17 @@ EODS
     end
 
     def migrate_if_needed
+      history = @old_base_rrd_file_names.collect do |base_rrd_file_name|
+        build_path(base_rrd_file_name)
+      end + [rrd_file]
+      history.each_with_index do |file_name, i|
+        next unless File.exist?(file_name)
+        next_file_name = history[i + 1]
+        if next_file_name and !File.exist?(next_file_name)
+          FileUtils.mv(file_name, next_file_name)
+        end
+      end
+
       return unless File.exist?(rrd_file)
 
       data_names = []
@@ -520,7 +533,7 @@ EODS
   class SessionGraphGenerator < GraphGenerator
     class << self
       def base_rrd_file_name
-        "milter-log.session.rrd"
+        "session.rrd"
       end
     end
 
@@ -529,6 +542,7 @@ EODS
       @title = 'Sessions'
       @vertical_label = "sessions"
       @items = ["smtp", "child"]
+      @old_base_rrd_file_names = ["milter-log.session.rrd"]
       migrate_if_needed
     end
 
@@ -578,17 +592,17 @@ EODS
     end
   end
 
-  class MailStatusGraphGenerator < GraphGenerator
+  class MilterManagerGraphGenerator < GraphGenerator
     class << self
       def base_rrd_file_name
-        "milter-log.mail.rrd"
+        "milter-manager.rrd"
       end
     end
 
     def initialize(output_directory, update_time)
       super(output_directory, update_time)
       @vertical_label = "sessions"
-      @title = 'Sessions'
+      @title = 'milter manager'
       @items = ["pass",
                 "accept",
                 "reject",
@@ -598,6 +612,7 @@ EODS
                 "abort",
                 "stop",
                 "error"]
+      @old_base_rrd_file_names = ["milter-log.mail.rrd"]
       migrate_if_needed
     end
 
@@ -727,11 +742,12 @@ EODS
                 "abort",
                 "stop",
                 "error"]
+      @old_base_rrd_file_names = ["milter-log.milter.#{@name}.rrd"]
       migrate_if_needed
     end
 
     def rrd_file
-      build_path("milter-log.milter.#{@name}.rrd")
+      build_path("milter.#{@name}.rrd")
     end
 
     def graph_name(tag)
@@ -792,7 +808,7 @@ EODS
   class StopGraphGenerator < GraphGenerator
     class << self
       def base_rrd_file_name
-        "milter-log.stop.rrd"
+        "stop.rrd"
       end
     end
 
@@ -807,6 +823,7 @@ EODS
                 "header",
                 "body",
                 "end-of-message"]
+      @old_base_rrd_file_names = ["milter-log.stop.rrd"]
       migrate_if_needed
     end
 
@@ -965,7 +982,7 @@ EOF
   def update
     return unless @update_db
 
-    listeners = [sessions, mail_status, milters, stops]
+    listeners = [sessions, milter_manager, milters, stops]
     listeners.each do |listener|
       listener.prepare
     end
@@ -997,7 +1014,7 @@ EOF
 
   def output_graph(range, label, options={})
     output_graphs = []
-    [sessions, mail_status, stops].each do |generator|
+    [sessions, milter_manager, stops].each do |generator|
       file_name = generator.output_graph(range, options)
       output_graphs << file_name if file_name
     end
@@ -1028,8 +1045,8 @@ EOF
     @sessions ||= SessionGraphGenerator.new(@output_directory, now)
   end
 
-  def mail_status
-    @mail_status ||= MailStatusGraphGenerator.new(@output_directory, now)
+  def milter_manager
+    @milter_manager ||= MilterManagerGraphGenerator.new(@output_directory, now)
   end
 
   def milters
