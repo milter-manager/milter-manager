@@ -442,7 +442,9 @@ EODS
         ds + text
       end
 
-      data.gsub!(/(<\/row>)/, "<v> NaN </v>\\1")
+      data.gsub!(/<\/row>/) do |text|
+        ("<v> NaN </v>" * new_items.size) + text
+      end
 
       dump_file.open
       dump_file.rewind
@@ -594,7 +596,8 @@ EODS
                 "temporary-failure",
                 "quarantine",
                 "abort",
-                "stop"]
+                "stop",
+                "error"]
       migrate_if_needed
     end
 
@@ -612,6 +615,7 @@ EODS
                  ["STACK", "quarantine", "#a52a2a", "Quarantine"],
                  ["STACK", "abort", "#ff9999", "Abort"],
                  ["STACK", "stop", "#99ffff", "Stop"],
+                 ["STACK", "error", "#ff00ff", "Error"],
                 ]
       max_label_size = entries.collect {|_, _, _, label| label.size}.max
 

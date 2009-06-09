@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -100,7 +100,11 @@ typedef enum
     MILTER_STATUS_NO_REPLY,
     MILTER_STATUS_SKIP,
     MILTER_STATUS_ALL_OPTIONS,
-    MILTER_STATUS_PROGRESS
+    MILTER_STATUS_PROGRESS,
+    MILTER_STATUS_ABORT,
+    MILTER_STATUS_QUARANTINE,
+    MILTER_STATUS_STOP,
+    MILTER_STATUS_ERROR
 } MilterStatus;
 
 typedef enum

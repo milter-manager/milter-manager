@@ -820,7 +820,7 @@ test_quarantine (void)
     write_data(packet, packet_size);
     cut_assert_equal_int(1, n_quarantines);
     cut_assert_equal_string(reason, actual_quarantine_reason);
-    milter_assert_status(MILTER_STATUS_NOT_CHANGE);
+    milter_assert_status(MILTER_STATUS_QUARANTINE);
 }
 
 void
@@ -829,7 +829,7 @@ test_connection_failure (void)
     milter_reply_encoder_encode_connection_failure(encoder, &packet, &packet_size);
     write_data(packet, packet_size);
     cut_assert_equal_int(1, n_connection_failures);
-    milter_assert_status(MILTER_STATUS_NOT_CHANGE);
+    milter_assert_status(MILTER_STATUS_ERROR);
 }
 
 void

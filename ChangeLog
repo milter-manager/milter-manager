@@ -1,5 +1,16 @@
 2009-06-09  Kouhei Sutou  <kou@clear-code.com>
 
+	* tool/milter-manager-log-analyzer: add error status.
+
+	* milter/server/milter-server-context.c: use quarantine, stop and
+	error status.
+
+	* test/server/test-server-context-signals.c,
+	test/tool/test-server.c: follow the above changes.
+
+	* milter/core/milter-protocol.h: add quarantine, stop and error
+	status.
+
 	* tool/milter-manager-log-analyzer: support no RRDtool binding
 	environment.
 
