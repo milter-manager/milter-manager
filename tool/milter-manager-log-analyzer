@@ -578,7 +578,6 @@ EODS
                 "temporary-failure",
                 "quarantine",
                 "abort",
-                "stop",
                 "error"]
       @old_base_rrd_file_names = ["milter-log.mail.rrd"]
     end
@@ -588,17 +587,7 @@ EODS
     end
 
     def output_graph(range_class, options={})
-      entries = [
-                 ["AREA", "pass", "#0000ff", "Pass"],
-                 ["STACK", "accept", "#00ff00", "Accept"],
-                 ["STACK", "reject", "#ff0000", "Reject"],
-                 ["STACK", "discard", "#ffd400", "Discard"],
-                 ["STACK", "temporary-failure", "#888888", "Temp-Fail"],
-                 ["STACK", "quarantine", "#a52a2a", "Quarantine"],
-                 ["STACK", "abort", "#ff9999", "Abort"],
-                 ["STACK", "stop", "#99ffff", "Stop"],
-                 ["STACK", "error", "#ff00ff", "Error"],
-                ]
+      entries = graph_entries
       max_label_size = entries.collect {|_, _, _, label| label.size}.max
 
       items = []
@@ -645,6 +634,19 @@ EODS
       end
 
       key
+    end
+
+    def graph_entries
+      [
+       ["AREA", "pass", "#0000ff", "Pass"],
+       ["STACK", "accept", "#00ff00", "Accept"],
+       ["STACK", "reject", "#ff0000", "Reject"],
+       ["STACK", "discard", "#ffd400", "Discard"],
+       ["STACK", "temporary-failure", "#888888", "Temp-Fail"],
+       ["STACK", "quarantine", "#a52a2a", "Quarantine"],
+       ["STACK", "abort", "#ff9999", "Abort"],
+       ["STACK", "error", "#ff00ff", "Error"],
+      ]
     end
   end
 
@@ -699,6 +701,7 @@ EODS
       super(output_directory, update_time)
       @name = name
       @title = "milter: #{@name}"
+      @items << "stop"
       @old_base_rrd_file_names = ["milter-log.milter.#{@name}.rrd"]
     end
 
@@ -724,6 +727,12 @@ EODS
       end
 
       key
+    end
+
+    def graph_entries
+      entries = super
+      entries << ["STACK", "stop", "#99ffff", "Stop"]
+      entries
     end
   end
 
