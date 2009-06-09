@@ -1,6 +1,8 @@
 2009-06-09  Kouhei Sutou  <kou@clear-code.com>
 
-	* tool/milter-manager-log-analyzer: change RBD file name to
+	* tool/milter-manager-log-analyzer: remove needless codes.
+
+	* tool/milter-manager-log-analyzer: change RRD file name to
 	#{type}.rrd from milter-log.#{type}.rrd.
 
 	* tool/milter-manager-log-analyzer: fix unit.
