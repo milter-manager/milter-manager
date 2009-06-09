@@ -587,8 +587,8 @@ EODS
 
     def initialize(output_directory, update_time)
       super(output_directory, update_time)
-      @vertical_label = "mails"
-      @title = 'Processed mails'
+      @vertical_label = "sessions"
+      @title = 'Sessions'
       @items = ["pass",
                 "accept",
                 "reject",
@@ -622,9 +622,9 @@ EODS
       items = []
       entries.each do |type, name, color, label|
         items << "#{type}:#{name}#{color}:#{label.ljust(max_label_size)}"
-        items << "GPRINT:total_#{name}:MAX:total\\: %11.0lf mails"
-        items << "GPRINT:#{name}:AVERAGE:avg\\: %9.2lf mails/#{unit}"
-        items << "GPRINT:max_#{name}:MAX:max\\: %7.0lf mails/#{unit}\\l"
+        items << "GPRINT:total_#{name}:MAX:total\\: %11.0lf sessions"
+        items << "GPRINT:#{name}:AVERAGE:avg\\: %9.2lf sessions/#{unit}"
+        items << "GPRINT:max_#{name}:MAX:max\\: %7.0lf sessions/#{unit}\\l"
       end
 
       range = range_class.new(@step, rows)
@@ -716,7 +716,7 @@ EODS
     def initialize(name, output_directory, update_time)
       super(output_directory, update_time)
       @name = name
-      @vertical_label = "milters"
+      @vertical_label = "sessions"
       @title = "milter: #{@name}"
       @items = ["pass",
                 "accept",
@@ -755,9 +755,9 @@ EODS
       items = []
       entries.each do |type, name, color, label|
         items << "#{type}:#{name}#{color}:#{label.ljust(max_label_size)}"
-        items << "GPRINT:total_#{name}:MAX:total\\: %11.0lf mails"
-        items << "GPRINT:#{name}:AVERAGE:avg\\: %9.2lf mails/#{unit}"
-        items << "GPRINT:max_#{name}:MAX:max\\: %7.0lf mails/#{unit}\\l"
+        items << "GPRINT:total_#{name}:MAX:total\\: %11.0lf sessions"
+        items << "GPRINT:#{name}:AVERAGE:avg\\: %9.2lf sessions/#{unit}"
+        items << "GPRINT:max_#{name}:MAX:max\\: %7.0lf sessions/#{unit}\\l"
       end
 
       range = range_class.new(@step, rows)

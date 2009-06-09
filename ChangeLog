@@ -1,5 +1,7 @@
 2009-06-09  Kouhei Sutou  <kou@clear-code.com>
 
+	* tool/milter-manager-log-analyzer: fix unit.
+
 	* tool/milter-manager-log-analyzer: support per milter graph.
 
 	* milter/server/milter-server-context.c,
