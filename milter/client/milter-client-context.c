@@ -2643,27 +2643,27 @@ static void
 abort_response (MilterClientContext *context, MilterStatus status)
 {
     MilterClientContextPrivate *priv;
-    gchar *state_name, *status_name;
+    gchar *last_state_name, *status_name;
 
     if (status == MILTER_STATUS_DEFAULT || status == MILTER_STATUS_NOT_CHANGE)
         status = MILTER_STATUS_ABORT;
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
 
-    state_name =
+    last_state_name =
         milter_utils_get_enum_nick_name(MILTER_TYPE_CLIENT_CONTEXT_STATE,
-                                        priv->state);
+                                        priv->last_state);
     status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
     milter_debug("[%u] [client][reply][abort][%s][%s]",
                  milter_agent_get_tag(MILTER_AGENT(context)),
-                 state_name,
+                 last_state_name,
                  status_name);
     g_free(status_name);
-    g_free(state_name);
+    g_free(last_state_name);
 
     if (MILTER_STATUS_IS_PASS(priv->status) &&
-        (MILTER_CLIENT_CONTEXT_STATE_NEGOTIATE <= priv->state &&
-         priv->state < MILTER_CLIENT_CONTEXT_STATE_END_OF_MESSAGE)) {
+        (MILTER_CLIENT_CONTEXT_STATE_NEGOTIATE <= priv->last_state &&
+         priv->last_state < MILTER_CLIENT_CONTEXT_STATE_END_OF_MESSAGE)) {
         priv->status = status;
     }
     /* FIXME: should check the previous state */

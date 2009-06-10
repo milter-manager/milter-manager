@@ -1,5 +1,7 @@
 2009-06-10  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/client/milter-client-context.c: use last_state instead of state.
+
 	* milter/manager/milter-manager.c: log session end on client is
 	finished not leader is finished.
 
