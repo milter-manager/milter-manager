@@ -647,14 +647,19 @@ cb_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
     milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(leader),
                                 error);
 
-    /* If all milters do not response on negotiation, send "reject" */
     if (error->domain != MILTER_MANAGER_CHILDREN_ERROR)
         return;
 
-    if (error->code == MILTER_MANAGER_CHILDREN_ERROR_NO_NEGOTIATION_RESPONSE)
+    /* If all milters do not response on negotiation, send "reject" */
+    if (error->code == MILTER_MANAGER_CHILDREN_ERROR_NO_NEGOTIATION_RESPONSE) {
         reply(leader, MILTER_STATUS_REJECT);
-    else
-        reply(leader, MILTER_STATUS_TEMPORARY_FAILURE);
+    } else {
+        MilterStatus fallback_status;
+
+        fallback_status =
+            milter_manager_configuration_get_fallback_status(priv->configuration);
+        reply(leader, fallback_status);
+    }
 }
 
 static void
