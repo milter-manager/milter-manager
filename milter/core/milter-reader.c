@@ -145,6 +145,7 @@ read_from_channel (MilterReader *reader, GIOChannel *channel)
         status = g_io_channel_read_chars(channel, stream, BUFFER_SIZE,
                                          &length, &io_error);
         if (status == G_IO_STATUS_EOF) {
+            milter_debug("[%u] [reader][eof]", priv->tag);
             eof = TRUE;
         }
         if (io_error) {
