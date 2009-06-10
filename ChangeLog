@@ -1,5 +1,8 @@
 2009-06-10  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/manager/milter-manager-leader.c: remove needless
+	statistics log.
+
 	* milter/core/milter-protocol.h, test/core/test-protocol.c: add
 	MILTER_STATUS_IS_PASS().
 

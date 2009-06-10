@@ -629,7 +629,6 @@ cb_abort (MilterReplySignals *_reply, gpointer user_data)
     milter_debug("[%u] [leader][abort][%s]",
                  milter_agent_get_tag(MILTER_AGENT(priv->client_context)),
                  state_name);
-    milter_statistics("[abort][%s]", state_name);
     g_free(state_name);
     milter_agent_shutdown(MILTER_AGENT(priv->client_context));
     milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(leader));
