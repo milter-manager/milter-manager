@@ -1,5 +1,7 @@
 2009-06-10  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/client/milter-client-context.c: log abort response.
+
 	* milter/manager/milter-manager-leader.c (cb_error): use fallback
 	status instead of fixed temporary failure status.
 
