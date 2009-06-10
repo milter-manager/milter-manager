@@ -1,5 +1,11 @@
 2009-06-10  Kouhei Sutou  <kou@clear-code.com>
 
+	* TODO:
+	- add: support elapsed time per milter. (don't count time between
+	other milter is working but the milter isn't working)
+	- delete: support munin?
+	- delete:  generates a result status graph for each milter.
+
 	* milter/client/milter-client-context.c: use last_state instead of state.
 
 	* milter/manager/milter-manager.c: log session end on client is

@@ -1,3 +1,5 @@
+* support elapsed time per milter. (don't count time between
+  other milter is working but the milter isn't working)
 * [1.1.1] support a configration for max file descriptor
   number that can be opened. (ref. setrlimit() and RLIMIT_NOFILE)
 * [1.1.1] make suspend_on_unacceptable customizable.
@@ -11,8 +13,6 @@
 * write a test for over max body chunk size (65535) and skip case.
   It's a case for dkim-filter.
 * support Postfix SMTP Access Policy Delegation protocol.
-* support munin?
-* generates a result status graph for each milter.
 * MilterCommandDecoder: support ESMTP parameters on MAIL FROM and RCPT TO.
 -----
 Index: milter/core/milter-command-decoder.c
