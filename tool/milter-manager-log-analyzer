@@ -683,7 +683,7 @@ EODS
 
     def output_graph(range_class, options={})
       entries = [
-                 ["AREA", "spam", "#ff0000", "spam"],
+                 ["LINE", "spam", "#ff0000", "spam"],
                  ["LINE", "virus", "#ddbb00", "Virus"],
                  ["LINE", "uribl", "#dd00bb", "URIBL"],
                  ["LINE", "greylisting-pass", "#888888", "Greylisting (pass)"],
@@ -758,14 +758,17 @@ EODS
     def parse_authentication_results(value)
       id, *results = value.split(/;\s*/)
       results.each do |result|
-        if /\A(.+?)=(.+?)\s/ =~ result
+        if /\A(.+?)=(.+?)\s+/ =~ result
           type = $1
           result = $2
+          other_info = $POSTMATCH
           case result
           when "pass"
             yield("#{type}-pass")
           when "fail", "hardfail"
             yield("#{type}-fail")
+          when "neutral"
+            yield("#{type}-fail") if /\A\(verification failed\)/ =~ other_info
           end
         end
       end

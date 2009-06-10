@@ -1,5 +1,8 @@
 2009-06-10  Kouhei Sutou  <kou@clear-code.com>
 
+	* tool/milter-manager-log-analyzer: milter-dkim uses
+	"dkim=neutral (verification failed)" not "fail".
+
 	* tool/milter-manager-log-analyzer: ENMA uses "hardfail" not "fail".
 
 	* TODO:
