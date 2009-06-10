@@ -1,5 +1,8 @@
 2009-06-10  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/manager/milter-manager.c: log session end on client is
+	finished not leader is finished.
+
 	* milter/manager/milter-manager-leader.c: no-reply actions, abort
 	and quite, returns response immediately.
 
