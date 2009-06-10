@@ -1,5 +1,7 @@
 2009-06-10  Kouhei Sutou  <kou@clear-code.com>
 
+	* tool/milter-manager-log-analyzer: ENMA uses "hardfail" not "fail".
+
 	* TODO:
 	- add: support elapsed time per milter. (don't count time between
 	other milter is working but the milter isn't working)

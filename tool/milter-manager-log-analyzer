@@ -764,7 +764,7 @@ EODS
           case result
           when "pass"
             yield("#{type}-pass")
-          when "fail"
+          when "fail", "hardfail"
             yield("#{type}-fail")
           end
         end
