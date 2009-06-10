@@ -2337,7 +2337,7 @@ static MilterStatus
 default_abort (MilterClientContext *context,
                MilterClientContextState state)
 {
-    return MILTER_STATUS_NOT_CHANGE;
+    return MILTER_STATUS_DEFAULT;
 }
 
 static void
@@ -2644,10 +2644,15 @@ abort_response (MilterClientContext *context, MilterStatus status)
 {
     MilterClientContextPrivate *priv;
 
-    if (status == MILTER_STATUS_DEFAULT)
-        status = MILTER_STATUS_CONTINUE;
+    if (status == MILTER_STATUS_DEFAULT || status == MILTER_STATUS_NOT_CHANGE)
+        status = MILTER_STATUS_ABORT;
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    if (MILTER_STATUS_IS_PASS(priv->status) &&
+        (MILTER_CLIENT_CONTEXT_STATE_NEGOTIATE <= priv->state &&
+         priv->state < MILTER_CLIENT_CONTEXT_STATE_END_OF_MESSAGE)) {
+        priv->status = status;
+    }
     /* FIXME: should check the previous state */
     milter_client_context_set_state(
         context, MILTER_CLIENT_CONTEXT_STATE_ABORT_REPLIED);

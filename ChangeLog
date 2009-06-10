@@ -1,5 +1,7 @@
 2009-06-10  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/client/milter-client-context.c: set abort status.
+
 	* milter/server/milter-server-context.c: use
 	MILTER_STATUS_IS_PASS().
 
