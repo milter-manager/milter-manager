@@ -917,9 +917,7 @@ write_packet (MilterServerContext *context, gchar *packet, gsize packet_size,
         milter_agent_shutdown(MILTER_AGENT(context));
     case MILTER_SERVER_CONTEXT_STATE_ABORT:
         /* FIXME: should shutdown on ABORT? */
-        if ((priv->status == MILTER_STATUS_DEFAULT ||
-             priv->status == MILTER_STATUS_NOT_CHANGE ||
-             priv->status == MILTER_STATUS_CONTINUE) &&
+        if (MILTER_STATUS_IS_PASS(priv->status) &&
             (MILTER_SERVER_CONTEXT_STATE_DEFINE_MACRO <= priv->state &&
              priv->state < MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)) {
             if (priv->state == MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT &&
