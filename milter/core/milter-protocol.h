@@ -107,6 +107,10 @@ typedef enum
     MILTER_STATUS_ERROR
 } MilterStatus;
 
+#define MILTER_STATUS_IS_PASS(status)           \
+    (MILTER_STATUS_DEFAULT <= (status) &&       \
+     (status) <= MILTER_STATUS_CONTINUE)
+
 typedef enum
 {
     MILTER_MACRO_STAGE_CONNECT = 0,

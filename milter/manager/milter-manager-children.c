@@ -725,9 +725,7 @@ expire_child (MilterManagerChildren *children,
                      status_name,
                      elapsed,
                      tag, child_name);
-        if (status == MILTER_STATUS_NOT_CHANGE ||
-            status == MILTER_STATUS_DEFAULT ||
-            status == MILTER_STATUS_CONTINUE) {
+        if (MILTER_STATUS_IS_PASS(status)) {
             statistic_status_name = "pass";
         } else {
             statistic_status_name = status_name;

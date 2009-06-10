@@ -1352,7 +1352,7 @@ print_status (MilterServerContext *context, ProcessData *data)
     const gchar *status_name;
 
     status = milter_server_context_get_status(context);
-    if (status == MILTER_STATUS_NOT_CHANGE) {
+    if (MILTER_STATUS_IS_PASS(status)) {
         status_name = "pass";
     } else {
         GEnumValue *value;

@@ -490,9 +490,7 @@ cb_leader_finished (MilterFinishedEmittable *emittable, gpointer user_data)
         tag = milter_agent_get_tag(MILTER_AGENT(client_context));
         milter_debug("[%u] [manager][session][end][%s][%s][%g]",
                      tag, state_name, status_name, elapsed);
-        if (status == MILTER_STATUS_NOT_CHANGE ||
-            status == MILTER_STATUS_DEFAULT ||
-            status == MILTER_STATUS_CONTINUE) {
+        if (MILTER_STATUS_IS_PASS(status)) {
             statistics_status_name = "pass";
         } else {
             statistics_status_name = status_name;

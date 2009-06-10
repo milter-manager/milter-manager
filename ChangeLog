@@ -1,5 +1,12 @@
 2009-06-10  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/core/milter-protocol.h, test/core/test-protocol.c: add
+	MILTER_STATUS_IS_PASS().
+
+	* milter/manager/milter-manager-children.c,
+	milter/manager/milter-manager.c, tool/milter-test-server.c: use
+	MILTER_STATUS_IS_PASS().
+
 	* tool/milter-manager-log-analyzer: use grey for Greylisting.
 
 2009-06-09  Kouhei Sutou  <kou@cozmixng.org>
