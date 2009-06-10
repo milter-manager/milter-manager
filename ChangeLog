@@ -1,3 +1,7 @@
+2009-06-10  Kouhei Sutou  <kou@clear-code.com>
+
+	* tool/milter-manager-log-analyzer: use grey for Greylisting.
+
 2009-06-09  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/server/milter-server-context.c: remove needless
