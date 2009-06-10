@@ -686,7 +686,7 @@ EODS
                  ["AREA", "spam", "#ff0000", "spam"],
                  ["LINE", "virus", "#ddbb00", "Virus"],
                  ["LINE", "uribl", "#dd00bb", "URIBL"],
-                 ["LINE", "greylisting-pass", "#dd00bb", "Greylisting (pass)"],
+                 ["LINE", "greylisting-pass", "#888888", "Greylisting (pass)"],
                  ["LINE", "spf-pass", "#33cc33", "SPF (pass)"],
                  ["LINE", "spf-fail", "#cc3333", "SPF (fail)"],
                  ["LINE", "sender-id-pass", "#33cccc", "Sender ID (pass)"],
