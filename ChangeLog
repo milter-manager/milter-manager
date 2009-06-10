@@ -1,5 +1,8 @@
 2009-06-10  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/manager/milter-manager-leader.c: no-reply actions, abort
+	and quite, returns response immediately.
+
 	* milter/core/milter-reader.c (read_from_channel): log EOF.
 
 	* milter/client/milter-client-context.c: log abort response.

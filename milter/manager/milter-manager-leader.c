@@ -988,13 +988,9 @@ milter_manager_leader_quit (MilterManagerLeader *leader)
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
     priv->state = MILTER_MANAGER_LEADER_STATE_QUIT;
 
-    if (!priv->children)
-        return MILTER_STATUS_NOT_CHANGE;
-
-    if (milter_manager_children_quit(priv->children))
-        return MILTER_STATUS_PROGRESS;
-    else
-        return MILTER_STATUS_NOT_CHANGE; /* FIXME: reject or accept */
+    if (priv->children)
+        milter_manager_children_quit(priv->children);
+    return MILTER_STATUS_DEFAULT;
 }
 
 MilterStatus
@@ -1005,13 +1001,9 @@ milter_manager_leader_abort (MilterManagerLeader *leader)
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
     priv->state = MILTER_MANAGER_LEADER_STATE_ABORT;
 
-    if (!priv->children)
-        return MILTER_STATUS_NOT_CHANGE;
-
-    if (milter_manager_children_abort(priv->children))
-        return MILTER_STATUS_PROGRESS;
-    else
-        return MILTER_STATUS_NOT_CHANGE; /* FIXME: reject or accept */
+    if (priv->children)
+        milter_manager_children_abort(priv->children);
+    return MILTER_STATUS_DEFAULT;
 }
 
 void
