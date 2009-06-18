@@ -683,18 +683,18 @@ EODS
 
     def output_graph(range_class, options={})
       entries = [
-                 ["LINE", "spam", "#ff0000", "spam"],
-                 ["LINE", "virus", "#ddbb00", "Virus"],
-                 ["LINE", "uribl", "#dd00bb", "URIBL"],
-                 ["LINE", "greylisting-pass", "#888888", "Greylisting (pass)"],
-                 ["LINE", "spf-pass", "#33cc33", "SPF (pass)"],
-                 ["LINE", "spf-fail", "#cc3333", "SPF (fail)"],
-                 ["LINE", "sender-id-pass", "#33cccc", "Sender ID (pass)"],
-                 ["LINE", "sender-id-fail", "#cccc33", "Sender ID (fail)"],
-                 ["LINE", "dkim-pass", "#3366cc", "DKIM (pass)"],
-                 ["LINE", "dkim-fail", "#cc6633", "DKIM (fail)"],
-                 ["LINE", "dkim-adsp-pass", "#3399cc", "DKIM ADSP (pass)"],
-                 ["LINE", "dkim-adsp-fail", "#cc9933", "DKIM ADSP (fail)"],
+                 ["AREA", "spam", "#ff0000", "spam"],
+                 ["STACK", "virus", "#ddbb00", "Virus"],
+                 ["STACK", "uribl", "#dd00bb", "URIBL"],
+                 ["STACK", "greylisting-pass", "#888888", "Greylisting (pass)"],
+                 ["STACK", "spf-pass", "#33cc33", "SPF (pass)"],
+                 ["STACK", "spf-fail", "#cc3333", "SPF (fail)"],
+                 ["STACK", "sender-id-pass", "#33cccc", "Sender ID (pass)"],
+                 ["STACK", "sender-id-fail", "#cccc33", "Sender ID (fail)"],
+                 ["STACK", "dkim-pass", "#3366cc", "DKIM (pass)"],
+                 ["STACK", "dkim-fail", "#cc6633", "DKIM (fail)"],
+                 ["STACK", "dkim-adsp-pass", "#3399cc", "DKIM ADSP (pass)"],
+                 ["STACK", "dkim-adsp-fail", "#cc9933", "DKIM ADSP (fail)"],
                 ]
       max_label_size = entries.collect {|_, _, _, label| label.size}.max
 

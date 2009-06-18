@@ -1,3 +1,7 @@
+2009-06-18  Kouhei Sutou  <kou@cozmixng.org>
+
+	* tool/milter-manager-log-analyzer: use AREA and STACK.
+
 2009-06-12  Kouhei Sutou  <kou@clear-code.com>
 
 	* TODO: add: milter-manager-log-analyzer: <X-Greylist>=<Sender is
