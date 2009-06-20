@@ -312,6 +312,7 @@ watch_io_channel (MilterWriter *writer)
     priv->channel_watch_id = g_io_add_watch(priv->io_channel,
                                             G_IO_ERR | G_IO_HUP | G_IO_NVAL,
                                             channel_watch_func, writer);
+    milter_debug("[%u] [writer][watch] %u", priv->tag, priv->channel_watch_id);
 }
 
 void
@@ -347,6 +348,7 @@ milter_writer_shutdown (MilterWriter *writer)
     if (!g_io_channel_get_close_on_unref(priv->io_channel))
         return;
 
+    milter_debug("[%u] [writer][shutdown]", priv->tag);
     g_io_channel_shutdown(priv->io_channel, TRUE, &channel_error);
     if (channel_error) {
         GError *error = NULL;

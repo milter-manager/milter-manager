@@ -1,5 +1,8 @@
 2009-06-20  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/core/milter-agent.c, milter/core/milter-reader.c,
+	milter/core/milter-writer.c: add more logs.
+
 	* test/server/test-server-context-signals.c: add needed pipe-mode set.
 
 	* test/libmilter/test-libmilter-compatible.c: ensure re-initialize.

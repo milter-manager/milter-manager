@@ -513,7 +513,9 @@ milter_agent_shutdown (MilterAgent *agent)
 
     priv = MILTER_AGENT_GET_PRIVATE(agent);
 
+    milter_debug("[%u] [agent][shutdown]", priv->tag);
     if (priv->reader) {
+        milter_debug("[%u] [agent][shutdown][reader]", priv->tag);
         milter_reader_shutdown(priv->reader);
     } else {
         if (!priv->finished)

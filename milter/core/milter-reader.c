@@ -274,6 +274,7 @@ watch_io_channel (MilterReader *reader)
                                             G_IO_IN | G_IO_PRI |
                                             G_IO_ERR | G_IO_HUP | G_IO_NVAL,
                                             channel_watch_func, reader);
+    milter_debug("[%u] [reader][watch] %u", priv->tag, priv->channel_watch_id);
 }
 
 static void
@@ -387,6 +388,7 @@ milter_reader_shutdown (MilterReader *reader)
     if (priv->processing)
         return;
 
+    milter_debug("[%u] [reader][shutdown]", priv->tag);
     g_io_channel_shutdown(priv->io_channel, TRUE, &channel_error);
     if (channel_error) {
         GError *error = NULL;
