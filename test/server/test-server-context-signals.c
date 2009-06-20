@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -926,6 +926,7 @@ test_writing_timeout (void)
 
     g_io_channel_set_buffered(channel, FALSE);
     gcut_string_io_channel_set_buffer_limit(channel, 1);
+    gcut_string_io_channel_set_pipe_mode(channel, TRUE);
 
     milter_server_context_helo(context, "delian");
     while (!timed_out_writing && !timed_out_after)

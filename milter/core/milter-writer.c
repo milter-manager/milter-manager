@@ -344,6 +344,9 @@ milter_writer_shutdown (MilterWriter *writer)
     g_source_remove(priv->channel_watch_id);
     priv->channel_watch_id = 0;
 
+    if (!g_io_channel_get_close_on_unref(priv->io_channel))
+        return;
+
     g_io_channel_shutdown(priv->io_channel, TRUE, &channel_error);
     if (channel_error) {
         GError *error = NULL;

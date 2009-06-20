@@ -43,6 +43,7 @@ void test_convert_status_from (void);
 void test_mi_stop (void);
 
 static gchar *tmp_dir;
+static guint idle_id;
 
 static struct smfiDesc smfilter = {
     "test milter",
@@ -72,6 +73,8 @@ setup (void)
     cut_remove_path(tmp_dir, NULL);
     if (g_mkdir_with_parents(tmp_dir, 0700) == -1)
         cut_assert_errno();
+
+    idle_id = 0;
 }
 
 void
@@ -83,6 +86,9 @@ teardown (void)
         cut_remove_path(tmp_dir, NULL);
         g_free(tmp_dir);
     }
+
+    if (idle_id > 0)
+        g_source_remove(idle_id);
 }
 
 #define milter_assert_success(expression)               \
@@ -204,6 +210,8 @@ cb_idle_stop (gpointer data)
     milter_assert_success(smfi_stop());
     *stopped = TRUE;
 
+    idle_id = 0;
+
     return FALSE;
 }
 
@@ -218,9 +226,10 @@ test_stop (void)
     socket_path = cut_take_printf("unix:%s/sock", tmp_dir);
     milter_assert_success(smfi_setconn((gchar *)socket_path));
 
-    g_idle_add(cb_idle_stop, &stopped);
+    idle_id = g_idle_add(cb_idle_stop, &stopped);
 
     milter_assert_success(smfi_main());
+    milter_init();
     cut_assert_true(stopped);
 }
 

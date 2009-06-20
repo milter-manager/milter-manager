@@ -503,7 +503,7 @@ milter_agent_start (MilterAgent *agent)
     if (priv->reader)
         milter_reader_start(priv->reader);
     if (priv->writer)
-        milter_reader_start(priv->reader);
+        milter_writer_start(priv->writer);
 }
 
 void

@@ -1,3 +1,13 @@
+2009-06-20  Kouhei Sutou  <kou@clear-code.com>
+
+	* test/server/test-server-context-signals.c: add needed pipe-mode set.
+
+	* test/libmilter/test-libmilter-compatible.c: ensure re-initialize.
+
+	* milter/core/milter-writer.c: guard from double close.
+
+	* milter/core/milter-agent.c: fix a typo.
+
 2009-06-19  Kouhei Sutou  <kou@clear-code.com>
 
 	* doc/Makefile.am: add misc/ to include path.
