@@ -1,3 +1,7 @@
+2009-06-19  Kouhei Sutou  <kou@clear-code.com>
+
+	* doc/Makefile.am: add misc/ to include path.
+
 2009-06-18  Kouhei Sutou  <kou@cozmixng.org>
 
 	* tool/milter-manager-log-analyzer: use AREA and STACK.
