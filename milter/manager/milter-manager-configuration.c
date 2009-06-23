@@ -66,7 +66,7 @@ struct _MilterManagerConfigurationPrivate
     gchar *pid_file;
     guint maintenance_interval;
     guint processed_sessions;
-    gchar *custom_configuration_path;
+    gchar *custom_configuration_directory;
 };
 
 enum
@@ -92,7 +92,7 @@ enum
     PROP_PID_FILE,
     PROP_MAINTENANCE_INTERVAL,
     PROP_PROCESSED_SESSIONS,
-    PROP_CUSTOM_CONFIGURATION_PATH
+    PROP_CUSTOM_CONFIGURATION_DIRECTORY
 };
 
 enum
@@ -305,13 +305,13 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
                                     PROP_MAINTENANCE_INTERVAL,
                                     spec);
 
-    spec = g_param_spec_string("custom-configuration-path",
-                               "Path for custom configuration",
-                               "The path for custom configuration",
+    spec = g_param_spec_string("custom-configuration-directory",
+                               "Directory for custom configuration",
+                               "The directory for custom configuration",
                                NULL,
                                G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
     g_object_class_install_property(gobject_class,
-                                    PROP_CUSTOM_CONFIGURATION_PATH,
+                                    PROP_CUSTOM_CONFIGURATION_DIRECTORY,
                                     spec);
 
 
@@ -345,7 +345,7 @@ milter_manager_configuration_init (MilterManagerConfiguration *configuration)
     priv->pid_file = NULL;
     priv->maintenance_interval = DEFAULT_MAINTENANCE_INTERVAL;
     priv->processed_sessions = 0;
-    priv->custom_configuration_path = NULL;
+    priv->custom_configuration_directory = NULL;
 
     config_dir_env = g_getenv("MILTER_MANAGER_CONFIG_DIR");
     if (config_dir_env)
@@ -463,8 +463,8 @@ set_property (GObject      *object,
         milter_manager_configuration_set_maintenance_interval(
             config, g_value_get_uint(value));
         break;
-    case PROP_CUSTOM_CONFIGURATION_PATH:
-        milter_manager_configuration_set_custom_configuration_path(
+    case PROP_CUSTOM_CONFIGURATION_DIRECTORY:
+        milter_manager_configuration_set_custom_configuration_directory(
             config, g_value_get_string(value));
         break;
     default:
@@ -540,8 +540,8 @@ get_property (GObject    *object,
     case PROP_MAINTENANCE_INTERVAL:
         g_value_set_uint(value, priv->maintenance_interval);
         break;
-    case PROP_CUSTOM_CONFIGURATION_PATH:
-        g_value_set_string(value, priv->custom_configuration_path);
+    case PROP_CUSTOM_CONFIGURATION_DIRECTORY:
+        g_value_set_string(value, priv->custom_configuration_directory);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -1191,21 +1191,21 @@ milter_manager_configuration_set_maintenance_interval (MilterManagerConfiguratio
 }
 
 const gchar *
-milter_manager_configuration_get_custom_configuration_path (MilterManagerConfiguration *configuration)
+milter_manager_configuration_get_custom_configuration_directory (MilterManagerConfiguration *configuration)
 {
-    return MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration)->custom_configuration_path;
+    return MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration)->custom_configuration_directory;
 }
 
 void
-milter_manager_configuration_set_custom_configuration_path (MilterManagerConfiguration *configuration,
-                                           const gchar *custom_configuration_path)
+milter_manager_configuration_set_custom_configuration_directory (MilterManagerConfiguration *configuration,
+                                                                 const gchar *custom_configuration_directory)
 {
     MilterManagerConfigurationPrivate *priv;
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
-    if (priv->custom_configuration_path)
-        g_free(priv->custom_configuration_path);
-    priv->custom_configuration_path = g_strdup(custom_configuration_path);
+    if (priv->custom_configuration_directory)
+        g_free(priv->custom_configuration_directory);
+    priv->custom_configuration_directory = g_strdup(custom_configuration_directory);
 }
 
 void
@@ -1526,9 +1526,9 @@ milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
         priv->pid_file = NULL;
     }
 
-    if (priv->custom_configuration_path) {
-        g_free(priv->custom_configuration_path);
-        priv->custom_configuration_path = NULL;
+    if (priv->custom_configuration_directory) {
+        g_free(priv->custom_configuration_directory);
+        priv->custom_configuration_directory = NULL;
     }
 
     priv->privilege_mode = FALSE;

@@ -40,7 +40,7 @@ void test_remove_manager_unix_socket_on_create (void);
 void test_remove_controller_unix_socket_on_create (void);
 void test_daemon (void);
 void test_pid_file (void);
-void test_custom_configuration_path (void);
+void test_custom_configuration_directory (void);
 void test_controller_connection_spec (void);
 void test_manager_connection_spec (void);
 void test_fallback_status (void);
@@ -332,18 +332,18 @@ test_pid_file (void)
 }
 
 void
-test_custom_configuration_path (void)
+test_custom_configuration_directory (void)
 {
-    const gchar custom_configuration_path[] = "/tmp/milter-manager/";
+    const gchar custom_configuration_directory[] = "/tmp/milter-manager/";
 
     cut_assert_equal_string(
         NULL,
-        milter_manager_configuration_get_custom_configuration_path(config));
-    milter_manager_configuration_set_custom_configuration_path(
-        config, custom_configuration_path);
+        milter_manager_configuration_get_custom_configuration_directory(config));
+    milter_manager_configuration_set_custom_configuration_directory(
+        config, custom_configuration_directory);
     cut_assert_equal_string(
-        custom_configuration_path,
-        milter_manager_configuration_get_custom_configuration_path(config));
+        custom_configuration_directory,
+        milter_manager_configuration_get_custom_configuration_directory(config));
 }
 
 void
@@ -455,7 +455,7 @@ milter_assert_default_configuration_helper (MilterManagerConfiguration *config)
         milter_manager_configuration_get_pid_file(config));
     cut_assert_equal_string(
         NULL,
-        milter_manager_configuration_get_custom_configuration_path(config));
+        milter_manager_configuration_get_custom_configuration_directory(config));
 
     cut_assert_equal_uint(
         0660,

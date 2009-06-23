@@ -622,11 +622,11 @@ apply_command_line_options (MilterManagerConfiguration *config)
 }
 
 static void
-append_custom_configuration_path (MilterManagerConfiguration *config)
+append_custom_configuration_directory (MilterManagerConfiguration *config)
 {
     uid_t uid;
     struct passwd *password;
-    gchar *custom_config_path;
+    gchar *custom_config_directory;
 
     uid = geteuid();
     if (uid == 0)
@@ -634,24 +634,25 @@ append_custom_configuration_path (MilterManagerConfiguration *config)
 
     password = getpwuid(uid);
 
-    custom_config_path =
-        g_strdup(milter_manager_configuration_get_custom_configuration_path(config));
-    if (!custom_config_path)
-        custom_config_path = g_build_filename(password->pw_dir,
-                                              ".milter-manager",
-                                              NULL);
-    if (!g_file_test(custom_config_path, G_FILE_TEST_EXISTS)) {
-        if (g_mkdir(custom_config_path, 0700) == -1) {
+    custom_config_directory =
+        g_strdup(milter_manager_configuration_get_custom_configuration_directory(config));
+    if (!custom_config_directory)
+        custom_config_directory = g_build_filename(password->pw_dir,
+                                                   ".milter-manager",
+                                                   NULL);
+    if (!g_file_test(custom_config_directory, G_FILE_TEST_EXISTS)) {
+        if (g_mkdir(custom_config_directory, 0700) == -1) {
             milter_manager_error("failed to create custom "
                                  "configuration directory: %s: %s",
-                                 custom_config_path,
+                                 custom_config_directory,
                                  g_strerror(errno));
             return;
         }
     }
 
-    milter_manager_configuration_append_load_path(config, custom_config_path);
-    g_free(custom_config_path);
+    milter_manager_configuration_append_load_path(config,
+                                                  custom_config_directory);
+    g_free(custom_config_directory);
 
     milter_manager_configuration_reload(config);
     apply_command_line_options(config);
@@ -761,7 +762,7 @@ milter_manager_main (void)
         return FALSE;
     }
 
-    append_custom_configuration_path(config);
+    append_custom_configuration_directory(config);
 
     if (option_show_config) {
         gchar *dumped_config;
