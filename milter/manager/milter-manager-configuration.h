@@ -217,6 +217,12 @@ void          milter_manager_configuration_set_maintenance_interval
                                      (MilterManagerConfiguration *configuration,
                                       guint                       n_sessions);
 
+const gchar  *milter_manager_configuration_get_custom_configuration_path
+                                     (MilterManagerConfiguration *configuration);
+void          milter_manager_configuration_set_custom_configuration_path
+                                     (MilterManagerConfiguration *configuration,
+                                      const gchar                *path);
+
 void          milter_manager_configuration_add_egg
                                      (MilterManagerConfiguration *configuration,
                                       MilterManagerEgg *egg);

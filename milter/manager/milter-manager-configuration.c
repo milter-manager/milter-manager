@@ -66,6 +66,7 @@ struct _MilterManagerConfigurationPrivate
     gchar *pid_file;
     guint maintenance_interval;
     guint processed_sessions;
+    gchar *custom_configuration_path;
 };
 
 enum
@@ -90,7 +91,8 @@ enum
     PROP_DAEMON,
     PROP_PID_FILE,
     PROP_MAINTENANCE_INTERVAL,
-    PROP_PROCESSED_SESSIONS
+    PROP_PROCESSED_SESSIONS,
+    PROP_CUSTOM_CONFIGURATION_PATH
 };
 
 enum
@@ -303,6 +305,16 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
                                     PROP_MAINTENANCE_INTERVAL,
                                     spec);
 
+    spec = g_param_spec_string("custom-configuration-path",
+                               "Path for custom configuration",
+                               "The path for custom configuration",
+                               NULL,
+                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+    g_object_class_install_property(gobject_class,
+                                    PROP_CUSTOM_CONFIGURATION_PATH,
+                                    spec);
+
+
     signals[TO_XML] =
         g_signal_new("to-xml",
                      G_TYPE_FROM_CLASS(klass),
@@ -333,6 +345,7 @@ milter_manager_configuration_init (MilterManagerConfiguration *configuration)
     priv->pid_file = NULL;
     priv->maintenance_interval = DEFAULT_MAINTENANCE_INTERVAL;
     priv->processed_sessions = 0;
+    priv->custom_configuration_path = NULL;
 
     config_dir_env = g_getenv("MILTER_MANAGER_CONFIG_DIR");
     if (config_dir_env)
@@ -450,6 +463,10 @@ set_property (GObject      *object,
         milter_manager_configuration_set_maintenance_interval(
             config, g_value_get_uint(value));
         break;
+    case PROP_CUSTOM_CONFIGURATION_PATH:
+        milter_manager_configuration_set_custom_configuration_path(
+            config, g_value_get_string(value));
+        break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -522,6 +539,9 @@ get_property (GObject    *object,
         break;
     case PROP_MAINTENANCE_INTERVAL:
         g_value_set_uint(value, priv->maintenance_interval);
+        break;
+    case PROP_CUSTOM_CONFIGURATION_PATH:
+        g_value_set_string(value, priv->custom_configuration_path);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -1170,6 +1190,24 @@ milter_manager_configuration_set_maintenance_interval (MilterManagerConfiguratio
     priv->maintenance_interval = n_sessions;
 }
 
+const gchar *
+milter_manager_configuration_get_custom_configuration_path (MilterManagerConfiguration *configuration)
+{
+    return MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration)->custom_configuration_path;
+}
+
+void
+milter_manager_configuration_set_custom_configuration_path (MilterManagerConfiguration *configuration,
+                                           const gchar *custom_configuration_path)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    if (priv->custom_configuration_path)
+        g_free(priv->custom_configuration_path);
+    priv->custom_configuration_path = g_strdup(custom_configuration_path);
+}
+
 void
 milter_manager_configuration_add_egg (MilterManagerConfiguration *configuration,
                                       MilterManagerEgg         *egg)
@@ -1486,6 +1524,11 @@ milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
     if (priv->pid_file) {
         g_free(priv->pid_file);
         priv->pid_file = NULL;
+    }
+
+    if (priv->custom_configuration_path) {
+        g_free(priv->custom_configuration_path);
+        priv->custom_configuration_path = NULL;
     }
 
     priv->privilege_mode = FALSE;

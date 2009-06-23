@@ -1,5 +1,8 @@
 2009-06-23  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/manager/milter-manager-configuration.[ch],
+	test/manager/test-configuration.c: add custom_configuration_path.
+
 	* src/Makefile.am (milter_manager_LDADD): add missing
 	libmilter-server.
 	Reported by Fumihisa Tonaka. Thanks!!!
