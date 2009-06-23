@@ -21,4 +21,5 @@ milter_manager_SOURCES =		\
 milter_manager_LDADD =						\
 	$(top_builddir)/milter/core/libmilter-core.la		\
 	$(top_builddir)/milter/client/libmilter-client.la	\
+	$(top_builddir)/milter/server/libmilter-server.la	\
 	$(top_builddir)/milter/manager/libmilter-manager.la

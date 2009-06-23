@@ -1,3 +1,9 @@
+2009-06-23  Kouhei Sutou  <kou@clear-code.com>
+
+	* src/Makefile.am (milter_manager_LDADD): add missing
+	libmilter-server.
+	Reported by Fumihisa Tonaka. Thanks!!!
+
 2009-06-20  Kouhei Sutou  <kou@clear-code.com>
 
 	* milter/core/milter-agent.c, milter/core/milter-reader.c,
