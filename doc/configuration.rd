@@ -369,6 +369,25 @@ Here are descriptions of configuration items.
    Default:
      manager.maintenance_interval = 100
 
+: manager.custom_configuration_directory
+
+   Specifies a directory to save custom configuration via Web
+   interface.
+
+   Directory name is specified like
+   "/tmp/milter-manager". Directory name should be
+   surround with '"' (double quote).
+
+   If you specify 'nil', milter-manager creates
+   ".milter-manager" directory under effective user's home
+   directory and use it for custom configuration directory.
+
+   Example:
+     manager.custom_configuration_directory = "/tmp/milter-manager/"
+
+   Default:
+     manager.custom_configuration_directory = nil
+
 == Controller
 
 : controller.connection_spec

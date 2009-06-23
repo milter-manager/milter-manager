@@ -365,6 +365,24 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
    既定値:
      manager.maintenance_interval = 100
 
+: manager.custom_configuration_directory
+
+   Webインターフェイスから変更した設定内容を保存するディレク
+   トリを指定します。
+
+   ディレクトリのパスは「"」で囲んで"/tmp/milter-manager/"と
+   いうように指定します。
+
+   nilを指定した場合は実効ユーザのホームディレクトリ直下に
+   ".milter-manager"というディレクトリを作成し、そのディレク
+   トリを利用します。
+
+   例:
+     manager.custom_configuration_directory = "/tmp/milter-manager/"
+
+   既定値:
+     manager.custom_configuration_directory = nil
+
 == コントローラ関連
 
 : controller.connection_spec

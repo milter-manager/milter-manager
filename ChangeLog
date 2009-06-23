@@ -1,5 +1,10 @@
 2009-06-23  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/configuration.rd{,.ja},
+	binding/ruby/lib/milter/manager.rb,
+	binding/ruby/test/manager/test-configuration-loader.rb: add
+	manager.custom_configuration_directory.
+
 	* milter/manager/milter-manager-main.c,
 	milter/manager/milter-manager-configuration.[ch],
 	test/manager/test-configuration.c: path -> directory.

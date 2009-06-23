@@ -131,6 +131,15 @@ class TestConfigurationLoader < Test::Unit::TestCase
     assert_equal(10, @configuration.maintenance_interval)
   end
 
+  def test_manager_configuration_directory
+    assert_nil(@configuration.custom_configuration_directory)
+    @loader.manager.custom_configuration_directory = "/tmp/milter-manager/"
+    assert_equal("/tmp/milter-manager/",
+                 @configuration.custom_configuration_directory)
+    assert_equal(@configuration.custom_configuration_directory,
+                 @loader.manager.custom_configuration_directory)
+  end
+
   def test_to_xml
     assert_equal(<<-EOX, @configuration.to_xml)
 <configuration>

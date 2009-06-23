@@ -628,6 +628,14 @@ module Milter::Manager
       def maintenance_interval
         @configuration.maintenance_interval
       end
+
+      def custom_configuration_directory=(directory)
+        @configuration.custom_configuration_directory = directory
+      end
+
+      def custom_configuration_directory
+        @configuration.custom_configuration_directory
+      end
     end
 
     class EggConfiguration
