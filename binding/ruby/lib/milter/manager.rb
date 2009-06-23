@@ -58,6 +58,7 @@ module Milter::Manager
       _maintenance_interval = maintenance_interval
       _maintenance_interval = nil if _maintenance_interval.zero?
       result << "manager.maintenance_interval = #{_maintenance_interval.inspect}\n"
+      result << "manager.custom_configuration_directory = #{custom_configuration_directory.inspect}\n"
       result << "\n"
 
       result << "controller.connection_spec = #{controller_connection_spec.inspect}\n"

@@ -193,6 +193,7 @@ manager.remove_unix_socket_on_close = true
 manager.daemon = false
 manager.pid_file = nil
 manager.maintenance_interval = 100
+manager.custom_configuration_directory = nil
 
 controller.connection_spec = nil
 controller.unix_socket_mode = 0660
@@ -240,6 +241,7 @@ manager.remove_unix_socket_on_close = true
 manager.daemon = false
 manager.pid_file = nil
 manager.maintenance_interval = 100
+manager.custom_configuration_directory = nil
 
 controller.connection_spec = nil
 controller.unix_socket_mode = 0660
