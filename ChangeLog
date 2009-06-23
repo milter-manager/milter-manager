@@ -1,5 +1,7 @@
 2009-06-23  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/manager/milter-manager-main.c: use custom_configuration_path.
+
 	* milter/manager/milter-manager-configuration.[ch],
 	test/manager/test-configuration.c: add custom_configuration_path.
 
