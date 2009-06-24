@@ -221,9 +221,9 @@ EOC
                   "inet:10025@localhost"]])
   end
 
-  def test_apply_clamav_milter_style
+  def test_apply_clamav_milter_before_0_95_style
     (@init_d + "clamav-milter").open("w") do |file|
-      file << clamav_milter_init_header
+      file << clamav_milter_before_0_95_init_header
     end
 
     detector = redhat_init_detector("clamav-milter")
@@ -239,9 +239,9 @@ EOC
   end
 
 
-  def test_apply_clamav_milter_style_with_config
+  def test_apply_clamav_milter_before_0_95_style_with_config
     (@init_d + "clamav-milter").open("w") do |file|
-      file << clamav_milter_init_header
+      file << clamav_milter_before_0_95_init_header
     end
     create_rc_files("clamav-milter")
     (@sysconfig_dir + "clamav-milter").open("w") do |file|
@@ -261,6 +261,47 @@ EOC
                   (@init_d + "clamav-milter").to_s,
                   "start",
                   "inet:11121@[127.0.0.1]"]])
+  end
+
+  def test_apply_clamav_milter_style
+    (@init_d + "clamav-milter").open("w") do |file|
+      file << clamav_milter_init_header
+    end
+    create_rc_files("clamav-milter")
+
+    clamav_milter_conf = @tmp_dir + "clamav-milter.conf"
+    (@sysconfig_dir + "clamav-milter").open("w") do |file|
+      file << <<-EOC
+### Simple config file for clamav-milter, you should
+### read the documentation and tweak it as you wish.
+
+CLAMAV_FLAGS="--config-file=#{clamav_milter_conf}"
+EOC
+    end
+    clamav_milter_conf.open("w") do |file|
+      file << <<-'EOC'
+# Define the interface through which we communicate with sendmail
+# This option is mandatory! Possible formats are:
+# [[unix|local]:]/path/to/file - to specify a unix domain socket
+# inet:port@[hostname|ip-address] - to specify an ipv4 socket
+# inet6:port@[hostname|ip-address] - to specify an ipv6 socket
+#
+# Default: no default
+MilterSocket unix:/var/clamav/clmilter.socket
+#MilterSocket inet:7357
+EOC
+    end
+
+    detector = redhat_init_detector("clamav-milter")
+    detector.detect
+    detector.apply(@loader)
+    assert_eggs([["clamav-milter",
+                  "clamav-milter is a daemon which hooks into sendmail " +
+                  "and routes email messages to clamav.",
+                  true,
+                  (@init_d + "clamav-milter").to_s,
+                  "start",
+                  "unix:/var/clamav/clmilter.socket"]])
   end
 
 
@@ -425,6 +466,33 @@ CONFIG_FILE="/etc/amavisd.conf"
 MILTER_SOCKET=""
 MILTER_FLAGS=""
 SYSCONFIG="/etc/sysconfig/amavisd"
+EOS
+  end
+
+  def clamav_milter_before_0_95_init_header
+    <<-'EOS'
+#!/bin/sh
+#
+# Startup script for the Clamav Milter Daemon
+#
+# chkconfig: 2345 77 23
+# description: clamav-milter is a daemon which hooks into sendmail \
+#              and routes email messages to clamav.
+# processname: clamav-milter
+# pidfile: /var/run/clamav/clamav-milter.pid
+# config: /etc/sysconfig/clamav-milter
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+# Source networking configuration.
+. /etc/sysconfig/network
+
+[ -x /usr/sbin/clamav-milter ] || exit 0
+
+# Local clamav-milter config
+CLAMAV_FLAGS=
+test -f /etc/sysconfig/clamav-milter && . /etc/sysconfig/clamav-milter
 EOS
   end
 

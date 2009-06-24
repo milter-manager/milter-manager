@@ -15,6 +15,7 @@
 
 require 'milter/manager/init-detector'
 require 'milter/manager/enma-socket-detector'
+require 'milter/manager/clamav-milter-socket-detector'
 
 module Milter::Manager
   class RedHatInitDetector
@@ -35,6 +36,19 @@ module Milter::Manager
 
     def enma?
       @script_name == "enma"
+    end
+
+    def detect_clamav_milter_connection_spec
+      conf = clamav_milter_conf || "/etc/clamav-milter.conf"
+      Milter::Manager::ClamAVMilterSocketDetector.new(conf).detect
+    end
+
+    def clamav_milter?
+      @script_name == "clamav-milter"
+    end
+
+    def clamav_milter_0_95_or_later?
+      clamav_milter? and !@variables["SOCKET_ADDRESS"]
     end
 
     private
@@ -96,14 +110,18 @@ module Milter::Manager
       super(output, content, :accept_lower_case => true)
     end
 
+    def clamav_milter_conf
+      extract_parameter_from_flags(@variables["CLAMAV_FLAGS"], "--config-file")
+    end
+
     def guess_spec
       spec = nil
+      spec ||= guess_application_specific_spec
       spec ||= normalize_spec(@variables["SOCKET"])
       spec ||= normalize_spec(@variables["SOCKET_ADDRESS"])
       spec ||= normalize_spec(@variables["MILTER_SOCKET"])
       spec ||= normalize_spec(@variables["CONNECTION_SPEC"])
       spec ||= extract_spec_parameter_from_flags(@variables["OPTIONS"])
-      spec ||= guess_application_specific_spec
       if @connection_spec_detector
         spec = normalize_spec(@connection_spec_detector.call(self, spec)) || spec
       end
@@ -113,6 +131,9 @@ module Milter::Manager
     def guess_application_specific_spec
       spec = nil
       spec ||= detect_enma_connection_spec if enma?
+      if clamav_milter_0_95_or_later?
+        spec ||= detect_clamav_milter_connection_spec
+      end
       spec
     end
 

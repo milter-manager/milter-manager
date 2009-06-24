@@ -54,7 +54,7 @@ module Milter::Manager
       else
         options.each do |_option|
           if /\A#{Regexp.escape(option)}/ =~ _option
-            _parameter = $POSTMATCH
+            _parameter = $POSTMATCH.sub(/\A=/, '')
             parameter = _parameter unless shell_variable?(_parameter)
           end
         end

@@ -1,5 +1,10 @@
 2009-06-24  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/lib/milter/manager/detector.rb,
+	binding/ruby/lib/milter/manager/redhat-init-detector.rb,
+	binding/ruby/test/manager/test-redhat-init-detector.rb: support
+	ClamAV 0.95 or later on RedHat.
+
 	* binding/ruby/lib/milter/manager.rb,
 	binding/ruby/test/manager/test-configuration.rb: dump
 	manager.custom_configuration_directory.
