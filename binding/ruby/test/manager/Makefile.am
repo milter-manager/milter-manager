@@ -4,7 +4,9 @@ test_files =					\
 	test-freebsd-rc-detector.rb		\
 	test-pkgsrc-rc-detector.rb		\
 	test-debian-init-detector.rb		\
+	test-redhat-detector.rb			\
 	test-redhat-init-detector.rb		\
+	test-redhat-upstart-detector.rb		\
 	test-configuration.rb			\
 	test-configuration-loader.rb		\
 	test-control-command-decoder.rb		\

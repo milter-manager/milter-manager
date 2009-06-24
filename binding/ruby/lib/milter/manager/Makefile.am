@@ -9,4 +9,6 @@ dist_binding_lib_milter_DATA =			\
 	pkgsrc-rc-detector.rb			\
 	init-detector.rb			\
 	debian-init-detector.rb			\
-	redhat-init-detector.rb
+	redhat-detector.rb			\
+	redhat-init-detector.rb			\
+	redhat-upstart-detector.rb

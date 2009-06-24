@@ -13,14 +13,19 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
-require 'socket'
-require 'tempfile'
-require 'fileutils'
-require 'pathname'
+module MilterDetectorTestUtils
+  include MilterTestUtils
 
-module MilterTestUtils
+  private
+  def assert_eggs(expected_eggs)
+    egg_info = @configuration.eggs.collect do |egg|
+      [egg.name,
+       egg.description,
+       egg.enabled?,
+       egg.command,
+       egg.command_options,
+       egg.connection_spec]
+    end
+    assert_equal(expected_eggs, egg_info)
+  end
 end
-
-require 'milter-encoder-test-utils'
-require 'milter-manager-encoder-test-utils'
-require 'milter-detector-test-utils'

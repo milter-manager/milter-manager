@@ -1,5 +1,10 @@
 2009-06-24  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/lib/milter/manager/,
+	binding/ruby/test/manager/,
+	data/defaults/redhat.conf: support upstart version ClamAV milter.
+	Suggested by Fumihisa Tonaka. Thanks!!!
+
 	* binding/ruby/lib/milter/manager/detector.rb,
 	binding/ruby/lib/milter/manager/redhat-init-detector.rb,
 	binding/ruby/test/manager/test-redhat-init-detector.rb: support

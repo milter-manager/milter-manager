@@ -21,7 +21,6 @@ module Milter::Manager
 
     attr_reader :info
     def detect
-      init_variables
       return unless init_script_readable?
 
       parse_init_script

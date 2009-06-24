@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
+# Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -16,7 +16,7 @@
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 class TestDebianInitDetector < Test::Unit::TestCase
-  include MilterTestUtils
+  include MilterDetectorTestUtils
 
   def setup
     @configuration = Milter::Manager::Configuration.new
@@ -602,17 +602,5 @@ case "$SOCKET" in
   ;;
 esac
 EOS
-  end
-
-  def assert_eggs(expected_eggs)
-    egg_info = @configuration.eggs.collect do |egg|
-      [egg.name,
-       egg.description,
-       egg.enabled?,
-       egg.command,
-       egg.command_options,
-       egg.connection_spec]
-    end
-    assert_equal(expected_eggs, egg_info)
   end
 end

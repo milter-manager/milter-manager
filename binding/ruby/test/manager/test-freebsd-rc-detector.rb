@@ -1,4 +1,4 @@
-# Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+# Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -14,7 +14,7 @@
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 class TestFreeBSDRCDetector < Test::Unit::TestCase
-  include MilterTestUtils
+  include MilterDetectorTestUtils
 
   def setup
     @configuration = Milter::Manager::Configuration.new
@@ -109,6 +109,7 @@ EOC
     detector.detect
     detector.apply(@loader)
     assert_eggs([["milter-manager",
+                  nil,
                   true,
                   (@rc_d + "milter-manager").to_s,
                   "start",
@@ -132,6 +133,7 @@ EOM
     detector.apply(@loader)
     assert_equal("amavis_milter", detector.name)
     assert_eggs([["amavis-milter",
+                  nil,
                   true,
                   (@rc_d + "amavis-milter").to_s,
                   "start",
@@ -152,6 +154,7 @@ EOM
     detector.apply(@loader)
     assert_equal("clamav_milter", detector.name)
     assert_eggs([["clamav-milter",
+                  nil,
                   false,
                   (@rc_d + "clamav-milter").to_s,
                   "start",
@@ -197,6 +200,7 @@ EOC
     detector.apply(@loader)
     assert_equal("clamav_milter", detector.name)
     assert_eggs([["clamav-milter",
+                  nil,
                   false,
                   (@rc_d + "clamav-milter").to_s,
                   "start",
@@ -223,6 +227,7 @@ EOC
     detector.apply(@loader)
     assert_equal("milterdkim", detector.name)
     assert_eggs([["milter-dkim",
+                  nil,
                   true,
                   (@rc_d + "milter-dkim").to_s,
                   "start",
@@ -244,6 +249,7 @@ EOM
     detector.apply(@loader)
     assert_equal("miltergreylist", detector.name)
     assert_eggs([["milter-greylist",
+                  nil,
                   false,
                   (@rc_d + "milter-greylist").to_s,
                   "start",
@@ -299,6 +305,7 @@ EOC
     detector.apply(@loader)
     assert_equal("milterenma", detector.name)
     assert_eggs([["milter-enma",
+                  nil,
                   false,
                   (@rc_d + "milter-enma").to_s,
                   "start",
@@ -331,16 +338,5 @@ EOC
   def milter_manager_rc_script
     top = Pathname(File.dirname(__FILE__)) + ".." + ".." + ".." + ".."
     (top + "data" + "rc.d" + "milter-manager").read
-  end
-
-  def assert_eggs(expected_eggs)
-    egg_info = @configuration.eggs.collect do |egg|
-      [egg.name,
-       egg.enabled?,
-       egg.command,
-       egg.command_options,
-       egg.connection_spec]
-    end
-    assert_equal(expected_eggs, egg_info)
   end
 end

@@ -31,7 +31,7 @@ module Milter::Manager
         milter.enabled = enabled?
         milter.description = description
         milter.command = command
-        milter.command_options = "start"
+        milter.command_options = command_options
         if spec
           spec = "unix:#{spec}" if /\A\// =~ spec
           spec = spec.gsub(/\A(?:(unix|local):)+/, '\\1:')
@@ -39,6 +39,24 @@ module Milter::Manager
         end
         yield(milter) if block_given?
       end
+    end
+
+    def package_options
+      @package_options ||= @configuration.parsed_package_options || {}
+    end
+
+    def command_options
+      "start"
+    end
+
+    private
+    def init_variables
+      @name = nil
+      @variables = {}
+    end
+
+    def set_variable(name, unnormalized_value)
+      @variables[name] = normalize_variable_value(unnormalized_value)
     end
 
     def extract_parameter_from_flags(flags, option)
@@ -61,20 +79,6 @@ module Milter::Manager
       end
 
       parameter
-    end
-
-    def package_options
-      @package_options ||= @configuration.parsed_package_options || {}
-    end
-
-    private
-    def init_variables
-      @name = nil
-      @variables = {}
-    end
-
-    def set_variable(name, unnormalized_value)
-      @variables[name] = normalize_variable_value(unnormalized_value)
     end
 
     def extract_variables(output, content, options={})

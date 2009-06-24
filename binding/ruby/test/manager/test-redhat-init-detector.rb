@@ -16,7 +16,7 @@
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 class TestRedHatInitDetector < Test::Unit::TestCase
-  include MilterTestUtils
+  include MilterDetectorTestUtils
 
   def setup
     @configuration = Milter::Manager::Configuration.new
@@ -614,17 +614,5 @@ ENMA=/usr/libexec/enma
 CONF_FILE=#{enma_conf}
 LOCK_FILE=/var/lock/subsys/enma
 EOS
-  end
-
-  def assert_eggs(expected_eggs)
-    egg_info = @configuration.eggs.collect do |egg|
-      [egg.name,
-       egg.description,
-       egg.enabled?,
-       egg.command,
-       egg.command_options,
-       egg.connection_spec]
-    end
-    assert_equal(expected_eggs, egg_info)
   end
 end

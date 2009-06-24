@@ -14,7 +14,7 @@
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 class TestPkgsrcRCDetector < Test::Unit::TestCase
-  include MilterTestUtils
+  include MilterDetectorTestUtils
 
   def setup
     @configuration = Milter::Manager::Configuration.new
@@ -104,6 +104,7 @@ EOC
     detector.detect
     detector.apply(@loader)
     assert_eggs([["milter-manager",
+                  nil,
                   true,
                   (@rc_d + "milter-manager").to_s,
                   "start",
@@ -130,6 +131,7 @@ EOM
     detector.apply(@loader)
     assert_equal("amavismilter", detector.name)
     assert_eggs([["amavismilter",
+                  nil,
                   true,
                   (@rc_d + "amavismilter").to_s,
                   "start",
@@ -159,6 +161,7 @@ EOC
     detector.apply(@loader)
     assert_equal("dkimfilter", detector.name)
     assert_eggs([["dkim-filter",
+                  nil,
                   true,
                   (@rc_d + "dkim-filter").to_s,
                   "start",
@@ -180,6 +183,7 @@ EOM
     detector.apply(@loader)
     assert_equal("miltergreylist", detector.name)
     assert_eggs([["milter-greylist",
+                  nil,
                   false,
                   (@rc_d + "milter-greylist").to_s,
                   "start",
@@ -214,6 +218,7 @@ EOM
     detector.apply(@loader)
     assert_equal("spamass_milter", detector.name)
     assert_eggs([["spamass-milter",
+                  nil,
                   false,
                   (@rc_d + "spamass-milter").to_s,
                   "start",
@@ -242,6 +247,7 @@ EOM
     detector.apply(@loader)
     assert_equal("dkmilter", detector.name)
     assert_eggs([["dk-milter",
+                  nil,
                   false,
                   (@rc_d + "dk-milter").to_s,
                   "start",
@@ -274,6 +280,7 @@ EOM
     detector.apply(@loader)
     assert_equal("mimedefang", detector.name)
     assert_eggs([["mimedefang",
+                  nil,
                   false,
                   (@rc_d + "mimedefang").to_s,
                   "start",
@@ -297,6 +304,7 @@ EOM
     detector.apply(@loader)
     assert_equal("milterregex", detector.name)
     assert_eggs([["milter-regex",
+                  nil,
                   false,
                   (@rc_d + "milter-regex").to_s,
                   "start",
@@ -334,6 +342,7 @@ EOC
     detector.apply(@loader)
     assert_equal("enma", detector.name)
     assert_eggs([["enma",
+                  nil,
                   false,
                   (@rc_d + "enma").to_s,
                   "start",
@@ -404,16 +413,5 @@ fi
 
 run_rc_command "$1"
 EOS
-  end
-
-  def assert_eggs(expected_eggs)
-    egg_info = @configuration.eggs.collect do |egg|
-      [egg.name,
-       egg.enabled?,
-       egg.command,
-       egg.command_options,
-       egg.connection_spec]
-    end
-    assert_equal(expected_eggs, egg_info)
   end
 end
