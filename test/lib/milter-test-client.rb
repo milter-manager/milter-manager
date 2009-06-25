@@ -13,7 +13,6 @@ class MilterTestClient
     @helo_fqdn = nil
     @envelope_from = nil
     @envelope_recipient = nil
-    @headers = []
     @content = ""
     @socket = nil
     initialize_options
@@ -166,6 +165,11 @@ class MilterTestClient
         @senders << [@current_action, from]
       end
 
+      opts.on("--header=NAME,VALUE", Array,
+              "Add NAME=VALUE targets to be applied ACTION") do |name, value,|
+        @headers << [@current_action, [name, value]]
+      end
+
       opts.on("--body=CHUNK",
               "Add CHUNK targets to be applied ACTION") do |chunk|
         @body_chunks << [@current_action, chunk]
@@ -207,6 +211,7 @@ class MilterTestClient
     @hosts = []
     @recipients = []
     @senders = []
+    @headers = []
     @body_chunks = []
     @end_of_message_chunks = []
     @negotiate_flags = ["none"]
@@ -412,7 +417,12 @@ class MilterTestClient
 
   def do_header(name, value)
     invalid_state(:header) unless valid_state?(:header)
-    @headers << [name, value]
+    @headers.reverse_each do |action, (_name, _value)|
+      if [name, value] == [_name, _value]
+        write_action(:header, action)
+        return
+      end
+    end
 
     write(:header, :continue)
   end

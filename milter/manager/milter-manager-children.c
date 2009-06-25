@@ -1209,10 +1209,10 @@ cb_temporary_failure (MilterServerContext *context, gpointer user_data)
         milter_server_context_quit(context);
         break;
     case MILTER_SERVER_CONTEXT_STATE_DATA:
-    case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
     case MILTER_SERVER_CONTEXT_STATE_HEADER:
+    case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
     case MILTER_SERVER_CONTEXT_STATE_BODY:
-        /* FIXME: should expire all children? */
+        emit_reply_for_message_oriented_command(children, state);
         milter_server_context_quit(context);
         break;
     default:
@@ -1254,10 +1254,10 @@ cb_reject (MilterServerContext *context, gpointer user_data)
         milter_server_context_quit(context);
         break;
     case MILTER_SERVER_CONTEXT_STATE_DATA:
-    case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
     case MILTER_SERVER_CONTEXT_STATE_HEADER:
+    case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
     case MILTER_SERVER_CONTEXT_STATE_BODY:
-        /* FIXME: should expire all children? */
+        emit_reply_for_message_oriented_command(children, state);
         milter_server_context_quit(context);
         break;
     default:

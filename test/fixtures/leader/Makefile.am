@@ -48,6 +48,8 @@ EXTRA_DIST =								\
 	header-from.txt							\
 	header-with-leading-space.txt					\
 	header-with-leading-space-no-space.txt				\
+	header-tempoprary-failure.txt					\
+	header-reject.txt						\
 	helo.txt							\
 	insert-header.txt						\
 	insert-header-with-leading-space.txt				\

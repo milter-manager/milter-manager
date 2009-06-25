@@ -1,3 +1,15 @@
+2009-06-25  Kouhei Sutou  <kou@clear-code.com>
+
+	* milter/manager/milter-manager-children.c,
+	test/fixtures/leader/header-reject.txt,
+	test/fixtures/leader/header-temporary-failure.txt,
+	test/manager/test-leader.c: fix a bug that failure
+	response from child milter while message oriented processing
+	isn't returned.
+	Suggested by Fumihisa Tonaka. Thanks!!!
+
+	* test/lib/milter-test-client.rb: support header condition.
+
 2009-06-24  Kouhei Sutou  <kou@clear-code.com>
 
 	* binding/ruby/lib/milter/manager/,
