@@ -1799,10 +1799,10 @@ cb_finished (MilterAgent *agent, gpointer user_data)
                          milter_agent_get_tag(MILTER_AGENT(context)),
                          milter_server_context_get_name(context));
             if (priv->milters) {
-                MilterCommand command;
+                MilterServerContextState state;
 
-                command = state_to_command(priv->current_state);
-                send_first_command_to_next_child(children, context, command);
+                state = milter_server_context_get_state(context);
+                send_first_command_to_next_child(children, context, state);
             } else {
                 MilterStatus fallback_status;
 

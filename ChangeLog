@@ -1,5 +1,7 @@
 2009-06-25  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/manager/milter-manager-children.c: fix wrong argument.
+
 	* milter/manager/milter-manager-children.c,
 	test/fixtures/leader/header-reject.txt,
 	test/fixtures/leader/header-temporary-failure.txt,
