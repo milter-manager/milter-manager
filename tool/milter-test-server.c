@@ -49,6 +49,7 @@ static socklen_t connect_address_length = 0;
 static gchar *helo_host = NULL;
 static gchar *envelope_from = NULL;
 static gchar **recipients = NULL;
+static gint current_recipient = 0;
 static gchar **body_chunks = NULL;
 static gchar *unknown_command = NULL;
 static gchar *authenticated_name = NULL;
@@ -68,7 +69,7 @@ typedef enum
     MILTER_TEST_SERVER_ERROR_TIMEOUT
 } MilterTestServerError;
 
-typedef struct Message
+typedef struct _Message
 {
     MilterHeaders *headers;
     MilterHeaders *original_headers;
@@ -105,6 +106,21 @@ typedef struct _ProcessData
 #define NORMAL_COLOR "\033[00m"
 
 static void
+remove_recipient (GList **recipients, const gchar *recipient)
+{
+    GList *node;
+
+    for (node = *recipients; node; node = g_list_next(node)) {
+        const gchar *_recipient = node->data;
+
+        if (g_str_equal(_recipient, recipient)) {
+            *recipients = g_list_remove_link(*recipients, node);
+            return;
+        }
+    }
+}
+
+static void
 send_quit (MilterServerContext *context, ProcessData *data)
 {
     milter_server_context_quit(context);
@@ -136,8 +152,9 @@ set_macro (gpointer key, gpointer value, gpointer user_data)
 static void
 send_recipient (MilterServerContext *context)
 {
-    milter_server_context_envelope_recipient(context, *recipients);
-    recipients++;
+    milter_server_context_envelope_recipient(context,
+                                             *(recipients + current_recipient));
+    current_recipient++;
 }
 
 static void
@@ -196,7 +213,7 @@ cb_continue (MilterServerContext *context, gpointer user_data)
         }
     case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT:
         if (!(step & MILTER_STEP_NO_ENVELOPE_RECIPIENT) &&
-            *recipients) {
+            *(recipients + current_recipient)) {
             send_recipient(context);
             break;
         }
@@ -284,8 +301,12 @@ cb_temporary_failure (MilterServerContext *context, gpointer user_data)
 
     switch (state) {
     case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT:
-        cb_continue(context, user_data);
-        break;
+        remove_recipient(&(data->message->recipients),
+                         *(recipients + current_recipient - 1));
+        if (data->message->recipients) {
+            cb_continue(context, user_data);
+            break;
+        }
     default:
         send_abort(context, data);
         data->success = FALSE;
@@ -303,8 +324,12 @@ cb_reject (MilterServerContext *context, gpointer user_data)
 
     switch (state) {
     case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT:
-        cb_continue(context, user_data);
-        break;
+        remove_recipient(&(data->message->recipients),
+                         *(recipients + current_recipient - 1));
+        if (data->message->recipients) {
+            cb_continue(context, user_data);
+            break;
+        }
     default:
         send_abort(context, data);
         data->success = FALSE;
@@ -438,9 +463,8 @@ cb_delete_recipient (MilterServerContext *context, const gchar *recipient,
     ProcessData *data = user_data;
     MilterHeader *header;
     gchar *old_value;
-    
-    data->message->recipients = g_list_remove(data->message->recipients,
-                                              recipient);
+
+    remove_recipient(&(data->message->recipients), recipient);
 
     header = milter_headers_lookup_by_name(data->message->headers, "To");
     if (!header)

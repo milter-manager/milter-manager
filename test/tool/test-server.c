@@ -100,7 +100,8 @@ typedef void (*EndOfMessageActionFunc) (void);
 
 typedef struct _TestData
 {
-    GHashTable *replies;
+    gchar *option_string;
+    GList *replies;
     GHashTable *expected_command_receives;
     MilterStatus expected_status;
     MilterActionFlags actions;
@@ -173,14 +174,19 @@ send_reply (MilterCommand command, TestData *test_data)
 {
     MilterReply reply;
     gint additional_flag;
-    gpointer hash_value;
+    GList *reply_pair;
 
-    hash_value = g_hash_table_lookup(test_data->replies,
-                                     GINT_TO_POINTER(command));
-    if (!hash_value)
+    reply_pair = g_list_find(test_data->replies, GINT_TO_POINTER(command));
+    if (reply_pair) {
+        GList *reply_value;
+
+        reply_value = g_list_next(reply_pair);
+        reply = GPOINTER_TO_INT(reply_value->data);
+        test_data->replies = g_list_remove_link(test_data->replies, reply_pair);
+        test_data->replies = g_list_remove_link(test_data->replies, reply_value);
+    } else {
         reply = MILTER_REPLY_CONTINUE;
-    else
-        reply = GPOINTER_TO_INT(hash_value);
+    }
 
     additional_flag = reply & ADDITIONAL_FLAG_MASK;
     reply = reply & ~ADDITIONAL_FLAG_MASK;
@@ -549,10 +555,11 @@ wait_for_reaping (gboolean check_success)
 }
 
 static TestData *
-result_test_data_new (MilterActionFlags actions,
+result_test_data_new (const gchar *option_string,
+                      MilterActionFlags actions,
                       MilterStepFlags steps,
                       MilterStatus status,
-                      GHashTable *replies,
+                      GList *replies,
                       GHashTable *expected_command_receives,
                       MilterMacrosRequests *macros_requests,
                       EndOfMessageActionFunc action_func)
@@ -560,13 +567,14 @@ result_test_data_new (MilterActionFlags actions,
     TestData *test_data;
 
     test_data = g_new0(TestData, 1);
+    test_data->option_string = g_strdup(option_string);
     test_data->actions = actions;
     test_data->steps = steps;
     test_data->expected_status = status;
     if (replies)
         test_data->replies = replies;
     else
-        test_data->replies = g_hash_table_new(g_direct_hash, g_direct_equal);
+        test_data->replies = NULL;
     test_data->expected_command_receives = expected_command_receives;
     test_data->macros_requests = macros_requests;
     test_data->action_func = action_func;
@@ -577,7 +585,9 @@ result_test_data_new (MilterActionFlags actions,
 static void
 result_test_data_free (TestData *test_data)
 {
-    g_hash_table_unref(test_data->replies);
+    if (test_data->option_string)
+        g_free(test_data->option_string);
+    g_list_free(test_data->replies);
     if (test_data->expected_command_receives)
         g_hash_table_unref(test_data->expected_command_receives);
     if (test_data->macros_requests)
@@ -585,22 +595,21 @@ result_test_data_free (TestData *test_data)
     g_free(test_data);
 }
 
-static GHashTable *
+static GList *
 create_replies (MilterCommand first_command, ...)
 {
     va_list var_args;
     MilterCommand command;
-    GHashTable *replies;
-
-    replies = g_hash_table_new(g_direct_hash, g_direct_equal);
+    GList *replies = NULL;
 
     va_start(var_args, first_command);
     command = first_command;
     while (command) {
         MilterReply reply;
+
         reply = va_arg(var_args, gint);
-        g_hash_table_insert(replies,
-                            GINT_TO_POINTER(command), GINT_TO_POINTER(reply));
+        replies = g_list_append(replies, GINT_TO_POINTER(command));
+        replies = g_list_append(replies,  GINT_TO_POINTER(reply));
         command = va_arg(var_args, gint);
     }
     va_end(var_args);
@@ -635,10 +644,11 @@ create_expected_command_receives (MilterCommand first_command, ...)
 void
 data_result (void)
 {
-#define ADD(label, actions, steps, status, replies,                     \
+#define ADD(label, option_string, actions, steps, status, replies,      \
             expected_command_receives, macros_requests, action_func)    \
     cut_add_data(label,                                                 \
-                 result_test_data_new(actions,                          \
+                 result_test_data_new(option_string,                    \
+                                      actions,                          \
                                       steps,                            \
                                       status,                           \
                                       replies,                          \
@@ -649,6 +659,7 @@ data_result (void)
                  NULL)
 
     ADD("all continue",
+        NULL,
         MILTER_ACTION_NONE,
         MILTER_STEP_NONE,
         MILTER_STATUS_NOT_CHANGE,
@@ -657,6 +668,7 @@ data_result (void)
         NULL,
         NULL);
     ADD("no helo",
+        NULL,
         MILTER_ACTION_NONE,
         MILTER_STEP_NO_HELO,
         MILTER_STATUS_NOT_CHANGE,
@@ -666,6 +678,7 @@ data_result (void)
         NULL,
         NULL);
     ADD("no connect",
+        NULL,
         MILTER_ACTION_NONE,
         MILTER_STEP_NO_CONNECT,
         MILTER_STATUS_NOT_CHANGE,
@@ -675,6 +688,7 @@ data_result (void)
         NULL,
         NULL);
     ADD("no envelope-from",
+        NULL,
         MILTER_ACTION_NONE,
         MILTER_STEP_NO_ENVELOPE_FROM,
         MILTER_STATUS_NOT_CHANGE,
@@ -684,6 +698,7 @@ data_result (void)
         NULL,
         NULL);
     ADD("no envelope-recipient",
+        NULL,
         MILTER_ACTION_NONE,
         MILTER_STEP_NO_ENVELOPE_RECIPIENT,
         MILTER_STATUS_NOT_CHANGE,
@@ -693,6 +708,7 @@ data_result (void)
         NULL,
         NULL);
     ADD("no unknown",
+        NULL,
         MILTER_ACTION_NONE,
         MILTER_STEP_NO_UNKNOWN,
         MILTER_STATUS_NOT_CHANGE,
@@ -702,6 +718,7 @@ data_result (void)
         NULL,
         NULL);
     ADD("no header",
+        NULL,
         MILTER_ACTION_NONE,
         MILTER_STEP_NO_HEADERS,
         MILTER_STATUS_NOT_CHANGE,
@@ -711,6 +728,7 @@ data_result (void)
         NULL,
         NULL);
     ADD("no end-of-header",
+        NULL,
         MILTER_ACTION_NONE,
         MILTER_STEP_NO_END_OF_HEADER,
         MILTER_STATUS_NOT_CHANGE,
@@ -720,6 +738,7 @@ data_result (void)
         NULL,
         NULL);
     ADD("no data",
+        NULL,
         MILTER_ACTION_NONE,
         MILTER_STEP_NO_DATA,
         MILTER_STATUS_NOT_CHANGE,
@@ -729,6 +748,7 @@ data_result (void)
         NULL,
         NULL);
     ADD("no body",
+        NULL,
         MILTER_ACTION_NONE,
         MILTER_STEP_NO_BODY,
         MILTER_STATUS_NOT_CHANGE,
@@ -738,6 +758,7 @@ data_result (void)
         NULL,
         NULL);
     ADD("helo accept",
+        NULL,
         MILTER_ACTION_NONE,
         MILTER_STEP_NONE,
         MILTER_STATUS_ACCEPT,
@@ -750,6 +771,7 @@ data_result (void)
         NULL,
         NULL);
     ADD("envelope-from discard",
+        NULL,
         MILTER_ACTION_NONE,
         MILTER_STEP_NONE,
         MILTER_STATUS_DISCARD,
@@ -762,6 +784,7 @@ data_result (void)
         NULL,
         NULL);
     ADD("data temporary-failure",
+        NULL,
         MILTER_ACTION_NONE,
         MILTER_STEP_NONE,
         MILTER_STATUS_TEMPORARY_FAILURE,
@@ -774,6 +797,7 @@ data_result (void)
         NULL,
         NULL);
     ADD("body quarantine",
+        NULL,
         MILTER_ACTION_NONE,
         MILTER_STEP_NONE,
         MILTER_STATUS_QUARANTINE,
@@ -786,6 +810,7 @@ data_result (void)
         NULL,
         NULL);
     ADD("connect reject",
+        NULL,
         MILTER_ACTION_NONE,
         MILTER_STEP_NONE,
         MILTER_STATUS_REJECT,
@@ -798,30 +823,144 @@ data_result (void)
         NULL,
         NULL);
     ADD("envelope-recipient reject",
+        NULL,
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NONE,
+        MILTER_STATUS_REJECT,
+        create_replies(MILTER_COMMAND_ENVELOPE_RECIPIENT, MILTER_REPLY_REJECT,
+                       NULL),
+        create_expected_command_receives(MILTER_COMMAND_ENVELOPE_RECIPIENT, 1,
+                                         MILTER_COMMAND_DATA, 0,
+                                         NULL),
+        NULL,
+        NULL);
+    ADD("envelope-recipient reject/continue",
+        "-r recipient1@example.com -r recipient2@example.com",
         MILTER_ACTION_NONE,
         MILTER_STEP_NONE,
         MILTER_STATUS_NOT_CHANGE,
-        create_replies(MILTER_COMMAND_ENVELOPE_RECIPIENT,
-                       MILTER_REPLY_REJECT,
+        create_replies(MILTER_COMMAND_ENVELOPE_RECIPIENT, MILTER_REPLY_REJECT,
+                       MILTER_COMMAND_ENVELOPE_RECIPIENT, MILTER_REPLY_CONTINUE,
                        NULL),
-        create_expected_command_receives(MILTER_COMMAND_ENVELOPE_RECIPIENT, 1,
+        create_expected_command_receives(MILTER_COMMAND_ENVELOPE_RECIPIENT, 2,
                                          MILTER_COMMAND_DATA, 1,
                                          NULL),
         NULL,
         NULL);
+    ADD("envelope-recipient continue/reject",
+        "-r recipient1@example.com -r recipient2@example.com",
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NONE,
+        MILTER_STATUS_NOT_CHANGE,
+        create_replies(MILTER_COMMAND_ENVELOPE_RECIPIENT, MILTER_REPLY_CONTINUE,
+                       MILTER_COMMAND_ENVELOPE_RECIPIENT, MILTER_REPLY_REJECT,
+                       NULL),
+        create_expected_command_receives(MILTER_COMMAND_ENVELOPE_RECIPIENT, 2,
+                                         MILTER_COMMAND_DATA, 1,
+                                         NULL),
+        NULL,
+        NULL);
+    ADD("envelope-recipient reject/reject",
+        "-r recipient1@example.com -r recipient2@example.com",
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NONE,
+        MILTER_STATUS_REJECT,
+        create_replies(MILTER_COMMAND_ENVELOPE_RECIPIENT, MILTER_REPLY_REJECT,
+                       MILTER_COMMAND_ENVELOPE_RECIPIENT, MILTER_REPLY_REJECT,
+                       NULL),
+        create_expected_command_receives(MILTER_COMMAND_ENVELOPE_RECIPIENT, 2,
+                                         MILTER_COMMAND_DATA, 0,
+                                         NULL),
+        NULL,
+        NULL);
     ADD("envelope-recipient temporary-failure",
+        NULL,
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NONE,
+        MILTER_STATUS_TEMPORARY_FAILURE,
+        create_replies(MILTER_COMMAND_ENVELOPE_RECIPIENT,
+                       MILTER_REPLY_TEMPORARY_FAILURE,
+                       NULL),
+        create_expected_command_receives(MILTER_COMMAND_ENVELOPE_RECIPIENT, 1,
+                                         MILTER_COMMAND_DATA, 0,
+                                         NULL),
+        NULL,
+        NULL);
+    ADD("envelope-recipient temporary-failure/continue",
+        "-r recipient1@example.com -r recipient2@example.com",
         MILTER_ACTION_NONE,
         MILTER_STEP_NONE,
         MILTER_STATUS_NOT_CHANGE,
         create_replies(MILTER_COMMAND_ENVELOPE_RECIPIENT,
                        MILTER_REPLY_TEMPORARY_FAILURE,
+                       MILTER_COMMAND_ENVELOPE_RECIPIENT,
+                       MILTER_REPLY_CONTINUE,
                        NULL),
-        create_expected_command_receives(MILTER_COMMAND_ENVELOPE_RECIPIENT, 1,
+        create_expected_command_receives(MILTER_COMMAND_ENVELOPE_RECIPIENT, 2,
                                          MILTER_COMMAND_DATA, 1,
                                          NULL),
         NULL,
         NULL);
+    ADD("envelope-recipient continue/temporary-failure",
+        "-r recipient1@example.com -r recipient2@example.com",
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NONE,
+        MILTER_STATUS_NOT_CHANGE,
+        create_replies(MILTER_COMMAND_ENVELOPE_RECIPIENT,
+                       MILTER_REPLY_CONTINUE,
+                       MILTER_COMMAND_ENVELOPE_RECIPIENT,
+                       MILTER_REPLY_TEMPORARY_FAILURE,
+                       NULL),
+        create_expected_command_receives(MILTER_COMMAND_ENVELOPE_RECIPIENT, 2,
+                                         MILTER_COMMAND_DATA, 1,
+                                         NULL),
+        NULL,
+        NULL);
+    ADD("envelope-recipient temporary-failure/temporary-failure",
+        "-r recipient1@example.com -r recipient2@example.com",
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NONE,
+        MILTER_STATUS_TEMPORARY_FAILURE,
+        create_replies(MILTER_COMMAND_ENVELOPE_RECIPIENT,
+                       MILTER_REPLY_TEMPORARY_FAILURE,
+                       MILTER_COMMAND_ENVELOPE_RECIPIENT,
+                       MILTER_REPLY_TEMPORARY_FAILURE,
+                       NULL),
+        create_expected_command_receives(MILTER_COMMAND_ENVELOPE_RECIPIENT, 2,
+                                         MILTER_COMMAND_DATA, 0,
+                                         NULL),
+        NULL,
+        NULL);
+    ADD("envelope-recipient reject/temporary-failure",
+        "-r recipient1@example.com -r recipient2@example.com",
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NONE,
+        MILTER_STATUS_TEMPORARY_FAILURE,
+        create_replies(MILTER_COMMAND_ENVELOPE_RECIPIENT, MILTER_REPLY_REJECT,
+                       MILTER_COMMAND_ENVELOPE_RECIPIENT,
+                       MILTER_REPLY_TEMPORARY_FAILURE,
+                       NULL),
+        create_expected_command_receives(MILTER_COMMAND_ENVELOPE_RECIPIENT, 2,
+                                         MILTER_COMMAND_DATA, 0,
+                                         NULL),
+        NULL,
+        NULL);
+    ADD("envelope-recipient temporary-failure/reject",
+        "-r recipient1@example.com -r recipient2@example.com",
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NONE,
+        MILTER_STATUS_REJECT,
+        create_replies(MILTER_COMMAND_ENVELOPE_RECIPIENT,
+                       MILTER_REPLY_TEMPORARY_FAILURE,
+                       MILTER_COMMAND_ENVELOPE_RECIPIENT, MILTER_REPLY_REJECT,
+                       NULL),
+        create_expected_command_receives(MILTER_COMMAND_ENVELOPE_RECIPIENT, 2,
+                                         MILTER_COMMAND_DATA, 0,
+                                         NULL),
+        NULL,
+        NULL);
     ADD("reply-code - reject",
+        NULL,
         MILTER_ACTION_NONE,
         MILTER_STEP_NONE,
         MILTER_STATUS_REJECT,
@@ -834,6 +973,7 @@ data_result (void)
         NULL,
         NULL);
     ADD("reply-code - temporary failure",
+        NULL,
         MILTER_ACTION_NONE,
         MILTER_STEP_NONE,
         MILTER_STATUS_TEMPORARY_FAILURE,
@@ -846,6 +986,7 @@ data_result (void)
         NULL,
         NULL);
     ADD("connection-failure",
+        NULL,
         MILTER_ACTION_NONE,
         MILTER_STEP_NONE,
         MILTER_STATUS_ERROR,
@@ -858,6 +999,7 @@ data_result (void)
         NULL,
         NULL);
     ADD("shutdown",
+        NULL,
         MILTER_ACTION_NONE,
         MILTER_STEP_NONE,
         MILTER_STATUS_ABORT,
@@ -922,10 +1064,10 @@ assert_each_command_received (gpointer key, gpointer value, gpointer user_data)
     gint n_expected = GPOINTER_TO_INT(value);
     gint n_actual = get_n_command_received(command);
 
-    cut_assert_equal_int(n_expected, n_actual,
-                         "%s should be received %d times but %d times received",
-                         gcut_enum_inspect(MILTER_TYPE_COMMAND, command),
-                         n_expected, n_actual);
+    cut_set_message("%s should be received %d times but %d times received",
+                    gcut_enum_inspect(MILTER_TYPE_COMMAND, command),
+                    n_expected, n_actual);
+    cut_assert_equal_int(n_expected, n_actual);
 }
 
 static void
@@ -940,10 +1082,10 @@ milter_assert_equal_n_received (GHashTable *expected_command_receives)
 void
 test_result (gconstpointer data)
 {
-    TestData *test_data = (TestData*)data;
+    TestData *test_data = (TestData *)data;
 
     setup_test_client("inet:9999@localhost", test_data);
-    setup_server("inet:9999@localhost", NULL);
+    setup_server("inet:9999@localhost", test_data->option_string);
 
     gcut_egg_hatch(server, &error);
     gcut_assert_error(error);
@@ -962,7 +1104,6 @@ typedef void (*AssertOptionValueFunc) (void);
 typedef struct _OptionTestData
 {
     TestData *test_data;
-    gchar *option_string;
     AssertOptionValueFunc assert_func;
 } OptionTestData;
 
@@ -973,14 +1114,14 @@ option_test_data_new (const gchar *option_string,
     OptionTestData *option_test_data;
 
     option_test_data = g_new0(OptionTestData, 1);
-    option_test_data->test_data = result_test_data_new(MILTER_ACTION_NONE,
+    option_test_data->test_data = result_test_data_new(option_string,
+                                                       MILTER_ACTION_NONE,
                                                        MILTER_STEP_NONE,
                                                        MILTER_STATUS_NOT_CHANGE,
                                                        NULL,
                                                        NULL,
                                                        NULL,
                                                        NULL);
-    option_test_data->option_string = g_strdup(option_string);
     option_test_data->assert_func = assert_func;
 
     return option_test_data;
@@ -989,7 +1130,6 @@ option_test_data_new (const gchar *option_string,
 static void
 option_test_data_free (OptionTestData *option_test_data)
 {
-    g_free(option_test_data->option_string);
     result_test_data_free(option_test_data->test_data);
     g_free(option_test_data);
 }
@@ -1265,7 +1405,8 @@ test_option (gconstpointer data)
     OptionTestData *option_test_data = (OptionTestData*)data;
 
     setup_test_client("inet:9999@localhost", option_test_data->test_data);
-    setup_server("inet:9999@localhost", option_test_data->option_string);
+    setup_server("inet:9999@localhost",
+                 option_test_data->test_data->option_string);
 
     gcut_egg_hatch(server, &error);
     gcut_assert_error(error);
@@ -1295,7 +1436,8 @@ end_of_message_action_test_data_new (EndOfMessageActionFunc action_func,
     EndOfMessageActionTestData *test_data;
 
     test_data = g_new0(EndOfMessageActionTestData, 1);
-    test_data->test_data = result_test_data_new(MILTER_ACTION_NONE,
+    test_data->test_data = result_test_data_new(NULL,
+                                                MILTER_ACTION_NONE,
                                                 MILTER_STEP_NONE,
                                                 MILTER_STATUS_NOT_CHANGE,
                                                 NULL,
@@ -1546,7 +1688,8 @@ macro_test_data_new (GHashTable *expected_macros_table,
     MacroTestData *test_data;
 
     test_data = g_new0(MacroTestData, 1);
-    test_data->test_data = result_test_data_new(MILTER_ACTION_NONE,
+    test_data->test_data = result_test_data_new(NULL,
+                                                MILTER_ACTION_NONE,
                                                 MILTER_STEP_NONE,
                                                 MILTER_STATUS_NOT_CHANGE,
                                                 NULL,

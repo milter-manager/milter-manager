@@ -1,3 +1,9 @@
+2009-06-27  Kouhei Sutou  <kou@clear-code.com>
+
+	* tool/milter-test-server.c, test/tool/test-server.c: treat
+	reject/temporary failure if all recipients are reject/temporary
+	failure.
+
 2009-06-25  Kouhei Sutou  <kou@clear-code.com>
 
 	* milter/manager/milter-manager-children.c: fix wrong argument.
