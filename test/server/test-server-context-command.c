@@ -79,7 +79,22 @@ cb_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
 void
 setup (void)
 {
+    MilterOption *option;
+
     context = milter_server_context_new();
+    option = milter_option_new(8,
+                               MILTER_ACTION_ADD_HEADERS |
+                               MILTER_ACTION_CHANGE_BODY |
+                               MILTER_ACTION_ADD_ENVELOPE_RECIPIENT |
+                               MILTER_ACTION_DELETE_ENVELOPE_RECIPIENT |
+                               MILTER_ACTION_CHANGE_HEADERS |
+                               MILTER_ACTION_QUARANTINE |
+                               MILTER_ACTION_CHANGE_ENVELOPE_FROM |
+                               MILTER_ACTION_ADD_ENVELOPE_RECIPIENT_WITH_PARAMETERS |
+                               MILTER_ACTION_SET_SYMBOL_LIST,
+                               MILTER_STEP_SKIP);
+    milter_server_context_set_option(context, option);
+    g_object_unref(option);
 
     g_signal_connect(context, "error", G_CALLBACK(cb_error), NULL);
 

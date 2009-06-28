@@ -1,5 +1,13 @@
 2009-06-28  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/manager/milter-manager-children.c,
+	milter/server/milter-server-context.[ch],
+	test/server/test-server-context.c,
+	test/server/test-server-context-signals.c,
+	test/server/test-server-context-command.c: move MILTER_STEP_NO_XXX
+	check to MilterServer from MilterManagerChildren to run stopper
+	callback for skipped event.
+
 	* milter/core/milter-option.[ch], test/core/test-option.c: add
 	convenience functions to get categorized step flags.
 

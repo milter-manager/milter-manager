@@ -395,6 +395,23 @@ setup (void)
     context = milter_server_context_new();
     setup_signals(context);
 
+    {
+        MilterOption *option;
+        option = milter_option_new(8,
+                                   MILTER_ACTION_ADD_HEADERS |
+                                   MILTER_ACTION_CHANGE_BODY |
+                                   MILTER_ACTION_ADD_ENVELOPE_RECIPIENT |
+                                   MILTER_ACTION_DELETE_ENVELOPE_RECIPIENT |
+                                   MILTER_ACTION_CHANGE_HEADERS |
+                                   MILTER_ACTION_QUARANTINE |
+                                   MILTER_ACTION_CHANGE_ENVELOPE_FROM |
+                                   MILTER_ACTION_ADD_ENVELOPE_RECIPIENT_WITH_PARAMETERS |
+                                   MILTER_ACTION_SET_SYMBOL_LIST,
+                                   MILTER_STEP_SKIP);
+        milter_server_context_set_option(context, option);
+        g_object_unref(option);
+    }
+
     channel = gcut_string_io_channel_new(NULL);
     g_io_channel_set_encoding(channel, NULL, NULL);
     reader = milter_reader_io_channel_new(channel);

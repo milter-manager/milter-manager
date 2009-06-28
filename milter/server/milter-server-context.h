@@ -535,6 +535,16 @@ gboolean             milter_server_context_quit        (MilterServerContext *con
 gboolean             milter_server_context_abort       (MilterServerContext *context);
 
 /**
+ * milter_server_context_set_option:
+ * @context: a %MilterServerContext.
+ * @option: the negotiate option.
+ *
+ * Set option.
+ */
+void                 milter_server_context_set_option  (MilterServerContext *context,
+                                                        MilterOption        *option);
+
+/**
  * milter_server_context_is_enable_step:
  * @context: a %MilterServerContext.
  * @step: the step flag.

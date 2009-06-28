@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -140,8 +140,24 @@ setup_command_signals (MilterDecoder *decoder)
 void
 setup (void)
 {
+    MilterOption *option;
+
     context = milter_server_context_new();
     setup_server_context_signals(context);
+
+    option = milter_option_new(8,
+                               MILTER_ACTION_ADD_HEADERS |
+                               MILTER_ACTION_CHANGE_BODY |
+                               MILTER_ACTION_ADD_ENVELOPE_RECIPIENT |
+                               MILTER_ACTION_DELETE_ENVELOPE_RECIPIENT |
+                               MILTER_ACTION_CHANGE_HEADERS |
+                               MILTER_ACTION_QUARANTINE |
+                               MILTER_ACTION_CHANGE_ENVELOPE_FROM |
+                               MILTER_ACTION_ADD_ENVELOPE_RECIPIENT_WITH_PARAMETERS |
+                               MILTER_ACTION_SET_SYMBOL_LIST,
+                               MILTER_STEP_SKIP);
+    milter_server_context_set_option(context, option);
+    g_object_unref(option);
 
     client = NULL;
 
