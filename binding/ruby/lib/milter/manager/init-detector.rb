@@ -69,7 +69,15 @@ module Milter::Manager
     end
 
     def init_base_dir
-      "/etc"
+      etc_dir
+    end
+
+    def etc_dir
+      File.join("", "etc")
+    end
+
+    def etc_file(*paths)
+      File.join(etc_dir, *paths)
     end
   end
 end

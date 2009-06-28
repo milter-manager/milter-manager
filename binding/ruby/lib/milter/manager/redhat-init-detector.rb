@@ -16,6 +16,7 @@
 require 'milter/manager/init-detector'
 require 'milter/manager/enma-socket-detector'
 require 'milter/manager/clamav-milter-socket-detector'
+require 'milter/manager/milter-greylist-socket-detector'
 
 module Milter::Manager
   class RedHatInitDetector
@@ -30,7 +31,7 @@ module Milter::Manager
     end
 
     def detect_enma_connection_spec
-      conf_file = @variables["CONF_FILE"] || "/etc/enma.conf"
+      conf_file = @variables["CONF_FILE"] || etc_file("enma.conf")
       Milter::Manager::EnmaSocketDetector.new(conf_file).detect
     end
 
@@ -39,7 +40,7 @@ module Milter::Manager
     end
 
     def detect_clamav_milter_connection_spec
-      conf = clamav_milter_conf || "/etc/clamav-milter.conf"
+      conf = clamav_milter_conf || etc_file("clamav-milter.conf")
       Milter::Manager::ClamAVMilterSocketDetector.new(conf).detect
     end
 
@@ -49,6 +50,15 @@ module Milter::Manager
 
     def clamav_milter_0_95_or_later?
       clamav_milter? and !@variables["SOCKET_ADDRESS"]
+    end
+
+    def detect_milter_greylist_connection_spec
+      conf = milter_greylist_conf || etc_file("mail", "greylist.conf")
+      Milter::Manager::MilterGreylistSocketDetector.new(conf).detect
+    end
+
+    def milter_greylist?
+      @script_name == "milter-greylist"
     end
 
     private
@@ -114,21 +124,27 @@ module Milter::Manager
       extract_parameter_from_flags(@variables["CLAMAV_FLAGS"], "--config-file")
     end
 
+    def milter_greylist_conf
+      extract_parameter_from_flags(@variables["OPTIONS"], "-f") ||
+        @info["config"]
+    end
+
     def guess_spec
       spec = nil
-      spec ||= guess_application_specific_spec
+      spec ||= guess_application_specific_spec_before
       spec ||= normalize_spec(@variables["SOCKET"])
       spec ||= normalize_spec(@variables["SOCKET_ADDRESS"])
       spec ||= normalize_spec(@variables["MILTER_SOCKET"])
       spec ||= normalize_spec(@variables["CONNECTION_SPEC"])
       spec ||= extract_spec_parameter_from_flags(@variables["OPTIONS"])
+      spec ||= guess_application_specific_spec_after
       if @connection_spec_detector
         spec = normalize_spec(@connection_spec_detector.call(self, spec)) || spec
       end
       spec
     end
 
-    def guess_application_specific_spec
+    def guess_application_specific_spec_before
       spec = nil
       spec ||= detect_enma_connection_spec if enma?
       if clamav_milter_0_95_or_later?
@@ -137,12 +153,18 @@ module Milter::Manager
       spec
     end
 
+    def guess_application_specific_spec_after
+      spec = nil
+      spec ||= detect_milter_greylist_connection_spec if milter_greylist?
+      spec
+    end
+
     def sysconfig
       File.join(sysconfig_dir, @script_name)
     end
 
     def sysconfig_dir
-      "/etc/sysconfig"
+      File.join(etc_dir, "sysconfig")
     end
 
     def rc_files

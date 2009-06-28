@@ -22,7 +22,8 @@ class TestRedHatUpstartDetector < Test::Unit::TestCase
     @configuration = Milter::Manager::Configuration.new
     @loader = Milter::Manager::ConfigurationLoader.new(@configuration)
     @tmp_dir = Pathname(File.dirname(__FILE__)) + ".." + "tmp"
-    @event_d = @tmp_dir + "event.d"
+    @etc_dir = @tmp_dir + "etc"
+    @event_d = @etc_dir + "event.d"
     @event_d.mkpath
   end
 
@@ -61,14 +62,51 @@ EOC
                   "unix:/var/clamav/clmilter.socket"]])
   end
 
+  def test_apply_milter_greylist_style
+    (@event_d + "milter-greylist").open("w") do |file|
+      file << milter_greylist_upstart
+    end
+
+    etc_mail_dir = @etc_dir + "mail"
+    etc_mail_dir.mkpath
+    greylist_conf = etc_mail_dir + "greylist.conf"
+    greylist_conf.open("w") do |file|
+      file << <<-'EOC'
+#
+# Simple greylisting config file using the new features
+# See greylist2.conf for a more detailed list of available options
+#
+# $Id: greylist.conf,v 1.45.2.1 2009/02/12 22:39:01 manu Exp $
+#
+
+#pidfile "/var/run/milter-greylist.pid"
+socket "/var/run/milter-greylist/milter-greylist.sock"
+dumpfile "/var/lib/milter-greylist/db/greylist.db" 600
+geoipdb "/usr/share/GeoIP/GeoIP.dat"
+dumpfreq 1
+user "grmilter"
+EOC
+    end
+
+    detector = redhat_upstart_detector("milter-greylist")
+    detector.detect
+    detector.apply(@loader)
+    assert_eggs([["milter-greylist",
+                  nil,
+                  true,
+                  "/sbin/start",
+                  "milter-greylist",
+                  "unix:/var/run/milter-greylist/milter-greylist.sock"]])
+  end
+
   private
   def redhat_upstart_detector(name)
     detector = Milter::Manager::RedHatUpstartDetector.new(@configuration, name)
 
-    _event_d = @event_d
+    _etc_dir = @etc_dir
     singleton_object = class << detector; self; end
-    singleton_object.send(:define_method, :event_d) do
-      _event_d.to_s
+    singleton_object.send(:define_method, :etc_dir) do
+      _etc_dir.to_s
     end
 
     detector
@@ -94,6 +132,23 @@ stop  on runlevel 6
 
 respawn
 exec /usr/sbin/clamav-milter -c #{config} --nofork=yes
+EOS
+  end
+
+  def milter_greylist_upstart
+    <<-EOS
+### Uncomment this line when you run want milter-greylist to be a
+### milter for postfix on the current machine
+
+start on starting postfix
+
+
+stop  on runlevel 0
+stop  on runlevel 1
+stop  on runlevel 6
+
+respawn
+exec /usr/sbin/milter-greylist -D
 EOS
   end
 end

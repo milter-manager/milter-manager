@@ -1,5 +1,14 @@
 2009-06-28  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/lib/milter/manager/Makefile.am,
+	binding/ruby/lib/milter/manager/init-detector.rb,
+	binding/ruby/lib/milter/manager/milter-greylist-socket-detector.rb,
+	binding/ruby/lib/milter/manager/redhat-init-detector.rb,
+	binding/ruby/lib/milter/manager/redhat-upstart-detector.rb,
+	binding/ruby/test/manager/test-redhat-init-detector.rb,
+	binding/ruby/test/manager/test-redhat-upstart-detector.rb:
+	support Fedora style milter-greylist detection.
+
 	* binding/ruby/lib/milter/manager/redhat-upstart-detector.rb:
 	remove a garbage.
 

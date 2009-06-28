@@ -14,6 +14,7 @@
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 require 'milter/manager/clamav-milter-socket-detector'
+require 'milter/manager/milter-greylist-socket-detector'
 
 module Milter::Manager
   class RedHatUpstartDetector
@@ -46,12 +47,21 @@ module Milter::Manager
     end
 
     def detect_clamav_milter_connection_spec
-      conf = clamav_milter_conf || "/etc/clamav-milter.conf"
+      conf = clamav_milter_conf || etc_file("clamav-milter.conf")
       Milter::Manager::ClamAVMilterSocketDetector.new(conf).detect
+    end
+
+    def detect_milter_greylist_connection_spec
+      conf = milter_greylist_conf || etc_file("mail", "greylist.conf")
+      Milter::Manager::MilterGreylistSocketDetector.new(conf).detect
     end
 
     def clamav_milter?
       @script_name == "clamav-milter"
+    end
+
+    def milter_greylist?
+      @script_name == "milter-greylist"
     end
 
     private
@@ -96,6 +106,10 @@ module Milter::Manager
       extract_parameter_from_flags(@exec, "-c")
     end
 
+    def milter_greylist_conf
+      extract_parameter_from_flags(@exec, "-f")
+    end
+
     def guess_spec
       spec = nil
       spec ||= guess_application_specific_spec
@@ -107,9 +121,8 @@ module Milter::Manager
 
     def guess_application_specific_spec
       spec = nil
-      if clamav_milter?
-        spec ||= detect_clamav_milter_connection_spec
-      end
+      spec ||= detect_clamav_milter_connection_spec if clamav_milter?
+      spec ||= detect_milter_greylist_connection_spec if milter_greylist?
       spec
     end
 
@@ -118,7 +131,15 @@ module Milter::Manager
     end
 
     def event_d
-      "/etc/event.d"
+      File.join(etc_dir, "event.d")
+    end
+
+    def etc_dir
+      File.join("", "etc")
+    end
+
+    def etc_file(*paths)
+      File.join(etc_dir, *paths)
     end
   end
 end

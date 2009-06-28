@@ -4,6 +4,7 @@ dist_binding_lib_milter_DATA =			\
 	detector.rb				\
 	enma-socket-detector.rb			\
 	clamav-milter-socket-detector.rb	\
+	milter-greylist-socket-detector.rb	\
 	rcng-detector.rb			\
 	freebsd-rc-detector.rb			\
 	pkgsrc-rc-detector.rb			\
