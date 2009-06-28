@@ -663,7 +663,11 @@ module Milter::Manager
       def applicable_conditions=(condition_names)
         configuration = @loader.configuration
         conditions = (condition_names || []).collect do |name|
-          condition = configuration.find_applicable_condition(name)
+          if name.is_a?(Milter::Manager::ApplicableCondition)
+            condition = name
+          else
+            condition = configuration.find_applicable_condition(name)
+          end
           if condition.nil?
             available_conditions = configuration.applicable_conditions
             available_condition_names =
