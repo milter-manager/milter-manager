@@ -1616,10 +1616,10 @@ cb_decoder_negotiate_reply (MilterDecoder *decoder,
         priv->option = milter_option_copy(option);
     }
 
-    g_timer_stop(priv->elapsed);
-    milter_debug("[%u] [server][timer][stop] %g: %s",
-                 tag, g_timer_elapsed(priv->elapsed, NULL), name);
     if (state == MILTER_SERVER_CONTEXT_STATE_NEGOTIATE) {
+        g_timer_stop(priv->elapsed);
+        milter_debug("[%u] [server][timer][stop] %g: %s",
+                     tag, g_timer_elapsed(priv->elapsed, NULL), name);
         g_signal_emit_by_name(context, "negotiate-reply",
                               option, macros_requests);
         milter_protocol_agent_set_macros_requests(MILTER_PROTOCOL_AGENT(context),
@@ -1641,12 +1641,6 @@ clear_process_body_count (MilterServerContext *context)
     if (priv->sent_end_of_message)
         milter_server_context_set_state(
             context, MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE);
-
-    g_timer_stop(priv->elapsed);
-    milter_debug("[%u] [server][timer][stop] %g: %s",
-                 milter_agent_get_tag(MILTER_AGENT(context)),
-                 g_timer_elapsed(priv->elapsed, NULL),
-                 milter_server_context_get_name(context));
 }
 
 static void
