@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -40,6 +40,8 @@ void test_remove_manager_unix_socket_on_create (void);
 void test_remove_controller_unix_socket_on_create (void);
 void test_daemon (void);
 void test_pid_file (void);
+void test_maintenance_interval (void);
+void test_suspend_time_on_unacceptable (void);
 void test_custom_configuration_directory (void);
 void test_controller_connection_spec (void);
 void test_manager_connection_spec (void);
@@ -333,6 +335,30 @@ test_pid_file (void)
 }
 
 void
+test_maintenance_interval (void)
+{
+    cut_assert_equal_uint(
+        100,
+        milter_manager_configuration_get_maintenance_interval(config));
+    milter_manager_configuration_set_maintenance_interval(config, 1000);
+    cut_assert_equal_uint(
+        1000,
+        milter_manager_configuration_get_maintenance_interval(config));
+}
+
+void
+test_suspend_time_on_unacceptable (void)
+{
+    cut_assert_equal_uint(
+        MILTER_CLIENT_DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE,
+        milter_manager_configuration_get_suspend_time_on_unacceptable(config));
+    milter_manager_configuration_set_suspend_time_on_unacceptable(config, 10);
+    cut_assert_equal_uint(
+        10,
+        milter_manager_configuration_get_suspend_time_on_unacceptable(config));
+}
+
+void
 test_custom_configuration_directory (void)
 {
     const gchar custom_configuration_directory[] = "/tmp/milter-manager/";
@@ -476,6 +502,13 @@ milter_assert_default_configuration_helper (MilterManagerConfiguration *config)
     cut_assert_true(milter_manager_configuration_is_remove_manager_unix_socket_on_create(config));
     cut_assert_true(milter_manager_configuration_is_remove_controller_unix_socket_on_create(config));
     cut_assert_false(milter_manager_configuration_is_daemon(config));
+
+    cut_assert_equal_uint(
+        100,
+        milter_manager_configuration_get_maintenance_interval(config));
+    cut_assert_equal_uint(
+        MILTER_CLIENT_DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE,
+        milter_manager_configuration_get_suspend_time_on_unacceptable(config));
 
     gcut_assert_equal_enum(
         MILTER_TYPE_STATUS,
@@ -688,6 +721,9 @@ test_clear (void)
     test_controller_connection_spec();
     test_fallback_status();
     test_children();
+    test_daemon();
+    test_maintenance_interval();
+    test_suspend_time_on_unacceptable();
 
     milter_manager_configuration_clear(config);
     milter_assert_default_configuration(config);

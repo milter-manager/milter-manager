@@ -65,6 +65,7 @@ struct _MilterManagerConfigurationPrivate
     gboolean daemon;
     gchar *pid_file;
     guint maintenance_interval;
+    guint suspend_time_on_unacceptable;
     guint processed_sessions;
     gchar *custom_configuration_directory;
 };
@@ -91,6 +92,7 @@ enum
     PROP_DAEMON,
     PROP_PID_FILE,
     PROP_MAINTENANCE_INTERVAL,
+    PROP_SUSPEND_TIME_ON_UNACCEPTABLE,
     PROP_PROCESSED_SESSIONS,
     PROP_CUSTOM_CONFIGURATION_DIRECTORY
 };
@@ -305,6 +307,17 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
                                     PROP_MAINTENANCE_INTERVAL,
                                     spec);
 
+    spec = g_param_spec_uint("suspend-time-on-unacceptable",
+                             "Suspend time in sessions",
+                             "Suspend time on unacceptable.",
+                             0,
+                             G_MAXUINT,
+                             MILTER_CLIENT_DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE,
+                             G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+    g_object_class_install_property(gobject_class,
+                                    PROP_SUSPEND_TIME_ON_UNACCEPTABLE,
+                                    spec);
+
     spec = g_param_spec_string("custom-configuration-directory",
                                "Directory for custom configuration",
                                "The directory for custom configuration",
@@ -344,6 +357,8 @@ milter_manager_configuration_init (MilterManagerConfiguration *configuration)
     priv->effective_group = NULL;
     priv->pid_file = NULL;
     priv->maintenance_interval = DEFAULT_MAINTENANCE_INTERVAL;
+    priv->suspend_time_on_unacceptable =
+        MILTER_CLIENT_DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE;
     priv->processed_sessions = 0;
     priv->custom_configuration_directory = NULL;
 
@@ -463,6 +478,10 @@ set_property (GObject      *object,
         milter_manager_configuration_set_maintenance_interval(
             config, g_value_get_uint(value));
         break;
+    case PROP_SUSPEND_TIME_ON_UNACCEPTABLE:
+        milter_manager_configuration_set_suspend_time_on_unacceptable(
+            config, g_value_get_uint(value));
+        break;
     case PROP_CUSTOM_CONFIGURATION_DIRECTORY:
         milter_manager_configuration_set_custom_configuration_directory(
             config, g_value_get_string(value));
@@ -539,6 +558,9 @@ get_property (GObject    *object,
         break;
     case PROP_MAINTENANCE_INTERVAL:
         g_value_set_uint(value, priv->maintenance_interval);
+        break;
+    case PROP_SUSPEND_TIME_ON_UNACCEPTABLE:
+        g_value_set_uint(value, priv->suspend_time_on_unacceptable);
         break;
     case PROP_CUSTOM_CONFIGURATION_DIRECTORY:
         g_value_set_string(value, priv->custom_configuration_directory);
@@ -1194,6 +1216,25 @@ milter_manager_configuration_set_maintenance_interval (MilterManagerConfiguratio
     priv->maintenance_interval = n_sessions;
 }
 
+guint
+milter_manager_configuration_get_suspend_time_on_unacceptable (MilterManagerConfiguration *configuration)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    return priv->suspend_time_on_unacceptable;
+}
+
+void
+milter_manager_configuration_set_suspend_time_on_unacceptable (MilterManagerConfiguration *configuration,
+                                                               guint suspend_time)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    priv->suspend_time_on_unacceptable = suspend_time;
+}
+
 const gchar *
 milter_manager_configuration_get_custom_configuration_directory (MilterManagerConfiguration *configuration)
 {
@@ -1545,6 +1586,8 @@ milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
     priv->daemon = FALSE;
     priv->fallback_status = MILTER_STATUS_ACCEPT;
     priv->maintenance_interval = DEFAULT_MAINTENANCE_INTERVAL;
+    priv->suspend_time_on_unacceptable =
+        MILTER_CLIENT_DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE;
 }
 
 void
