@@ -1,4 +1,10 @@
-2009-06-28  Kouhei Sutou  <kou@clear-code.com>
+2009-06-28  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/manager/milter-manager.c: get/set suspend time on
+	unacceptable from configuration.
+
+	* milter/manager/milter-manager-configuration.[ch],
+	test/manager/test-configuration.c: add suspend time on unacceptable.
 
 	* milter/client.h, milter/client/milter-client.c: make suspend
 	time on unacceptable customizable.
