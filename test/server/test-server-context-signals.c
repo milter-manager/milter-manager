@@ -933,7 +933,17 @@ test_reading_timeout (void)
 void
 test_writing_timeout (void)
 {
+    GIOChannel *read_channel;
     gboolean timed_out_writing = FALSE;
+
+    read_channel = gcut_string_io_channel_new(NULL);
+    cut_take(read_channel, (CutDestroyFunction)g_io_channel_unref);
+    g_io_channel_set_encoding(read_channel, NULL, NULL);
+    gcut_string_io_channel_set_pipe_mode(read_channel, TRUE);
+    g_object_unref(reader);
+    reader = milter_reader_io_channel_new(read_channel);
+    milter_agent_set_reader(MILTER_AGENT(context), reader);
+    milter_agent_start(MILTER_AGENT(context));
 
     milter_server_context_set_writing_timeout(context, 1);
     g_signal_connect(context, "writing-timeout",

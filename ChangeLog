@@ -1,4 +1,6 @@
-2009-06-28  Kouhei Sutou  <kou@cozmixng.org>
+2009-06-28  Kouhei Sutou  <kou@clear-code.com>
+
+	* test/server/test-server-context-signals.c: suppress warnings.
 
 	* binding/ruby/lib/milter/manager.rb,
 	binding/ruby/src/toolkit/rb-milter-client.c,
