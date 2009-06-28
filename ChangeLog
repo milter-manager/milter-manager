@@ -1,3 +1,10 @@
+2009-06-29  Kouhei Sutou  <kou@clear-code.com>
+
+	* data/applicable-conditions/Makefile.am,
+	data/applicable-conditions/restrict-accounts.conf: add
+	experimental applicable conditions to restrict milters by
+	accounts.
+
 2009-06-28  Kouhei Sutou  <kou@clear-code.com>
 
 	* milter/server/milter-server-context.c: measure elapsed time.
