@@ -67,6 +67,8 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
   manager.daemon = false
   manager.pid_file = nil
   manager.maintenance_interval = 100
+  manager.suspend_time_on_unacceptable = 5
+  manager.custom_configuration_directory = nil
 
   controller.connection_spec = nil
   controller.unix_socket_mode = 0660
@@ -364,6 +366,19 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
 
    既定値:
      manager.maintenance_interval = 100
+
+: manager.suspend_time_on_unacceptable
+
+   同時に多数の接続があり、MTAからの接続を受け付けることがで
+   きないときに何秒待つかを指定します。ulimitやlimitで同時に
+   開くことができるファイルディスクリプタ数を増やすことも検
+   討してください。
+
+   例:
+     manager.suspend_time_on_unacceptable = 10
+
+   既定値:
+     manager.suspend_time_on_unacceptable = 5
 
 : manager.custom_configuration_directory
 

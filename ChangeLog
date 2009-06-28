@@ -1,5 +1,15 @@
 2009-06-28  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager.rb,
+	binding/ruby/src/toolkit/rb-milter-client.c,
+	binding/ruby/src/toolkit/rb-milter.h,
+	binding/ruby/test/manager/test-configuration-loader.rb,
+	binding/ruby/test/manager/test-configuration.rb,
+	doc/configuration.rd{,.ja}: make suspend_time_on_unacceptable
+	customizable.
+
+	* TODO: remove: [1.1.1] make suspend_on_unacceptable customizable.
+
 	* milter/manager/milter-manager.c: get/set suspend time on
 	unacceptable from configuration.
 

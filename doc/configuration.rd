@@ -62,6 +62,8 @@ current configuration is shown.
   manager.daemon = false
   manager.pid_file = nil
   manager.maintenance_interval = 100
+  manager.suspend_time_on_unacceptable = 5
+  manager.custom_configuration_directory = nil
 
   controller.connection_spec = nil
   controller.unix_socket_mode = 0660
@@ -368,6 +370,19 @@ Here are descriptions of configuration items.
 
    Default:
      manager.maintenance_interval = 100
+
+: manager.suspend_time_on_unacceptable
+
+   Specifies how many seconds are suspended on
+   milter-manager can't accept a connection from MTA. In the
+   case, milter-manager has many connections. Please
+   consider that you increment number of openable file
+   descriptors by ulimit or limit in the case.
+
+   Example:
+     manager.suspend_time_on_unacceptable = 10
+   Default:
+     manager.suspend_time_on_unacceptable = 5
 
 : manager.custom_configuration_directory
 

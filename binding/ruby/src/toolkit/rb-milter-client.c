@@ -19,10 +19,16 @@
 
 #include "rb-milter-client-private.h"
 
+VALUE rb_cMilterClient;
+
 void
 Init_milter_client (void)
 {
-    rb_mMilterClient = rb_define_module_under(rb_mMilter, "Client");
+    rb_cMilterClient = G_DEF_CLASS(MILTER_TYPE_CLIENT, "Client", rb_mMilter);
+
+    rb_define_const(rb_cMilterClient,
+		    "DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE",
+		    UINT2NUM(MILTER_CLIENT_DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE));
 
     Init_milter_client_context();
 }

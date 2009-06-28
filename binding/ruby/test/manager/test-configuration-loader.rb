@@ -131,6 +131,19 @@ class TestConfigurationLoader < Test::Unit::TestCase
     assert_equal(10, @configuration.maintenance_interval)
   end
 
+  def test_manager_suspend_time_on_unacceptable
+    assert_equal(5, @configuration.suspend_time_on_unacceptable)
+
+    @loader.manager.suspend_time_on_unacceptable = 0
+    assert_equal(0, @configuration.suspend_time_on_unacceptable)
+
+    @loader.manager.suspend_time_on_unacceptable = nil
+    assert_equal(5, @configuration.suspend_time_on_unacceptable)
+
+    @loader.manager.suspend_time_on_unacceptable = 10
+    assert_equal(10, @configuration.suspend_time_on_unacceptable)
+  end
+
   def test_manager_configuration_directory
     assert_nil(@configuration.custom_configuration_directory)
     @loader.manager.custom_configuration_directory = "/tmp/milter-manager/"

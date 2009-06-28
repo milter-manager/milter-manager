@@ -39,6 +39,12 @@ class TestConfiguration < Test::Unit::TestCase
     assert_equal(0, @configuration.maintenance_interval)
   end
 
+  def test_suspend_time_on_unacceptable
+    assert_equal(5, @configuration.suspend_time_on_unacceptable)
+    @configuration.suspend_time_on_unacceptable = 10
+    assert_equal(10, @configuration.suspend_time_on_unacceptable)
+  end
+
   def test_package
     @configuration.package_platform = "pkgsrc"
     assert_equal("pkgsrc", @configuration.package_platform)
@@ -193,6 +199,7 @@ manager.remove_unix_socket_on_close = true
 manager.daemon = false
 manager.pid_file = nil
 manager.maintenance_interval = 100
+manager.suspend_time_on_unacceptable = 5
 manager.custom_configuration_directory = nil
 
 controller.connection_spec = nil
@@ -241,6 +248,7 @@ manager.remove_unix_socket_on_close = true
 manager.daemon = false
 manager.pid_file = nil
 manager.maintenance_interval = 100
+manager.suspend_time_on_unacceptable = 5
 manager.custom_configuration_directory = nil
 
 controller.connection_spec = nil

@@ -58,6 +58,7 @@ module Milter::Manager
       _maintenance_interval = maintenance_interval
       _maintenance_interval = nil if _maintenance_interval.zero?
       result << "manager.maintenance_interval = #{_maintenance_interval.inspect}\n"
+      result << "manager.suspend_time_on_unacceptable = #{suspend_time_on_unacceptable.inspect}\n"
       result << "manager.custom_configuration_directory = #{custom_configuration_directory.inspect}\n"
       result << "\n"
 
@@ -628,6 +629,15 @@ module Milter::Manager
 
       def maintenance_interval
         @configuration.maintenance_interval
+      end
+
+      def suspend_time_on_unacceptable=(seconds)
+        seconds ||= Milter::Client::DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE
+        @configuration.suspend_time_on_unacceptable = seconds
+      end
+
+      def suspend_time_on_unacceptable
+        @configuration.suspend_time_on_unacceptable
       end
 
       def custom_configuration_directory=(directory)

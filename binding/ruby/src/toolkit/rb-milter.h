@@ -29,7 +29,7 @@
 
 VALUE rb_mMilter;
 VALUE rb_mMilterCore;
-VALUE rb_mMilterClient;
+VALUE rb_cMilterClient;
 VALUE rb_mMilterServer;
 VALUE rb_eMilterError;
 VALUE rb_cMilterSocketAddressIPv4;
