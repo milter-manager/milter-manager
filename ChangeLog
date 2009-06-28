@@ -1,3 +1,8 @@
+2009-06-28  Kouhei Sutou  <kou@clear-code.com>
+
+	* binding/ruby/lib/milter/manager/redhat-upstart-detector.rb:
+	remove a garbage.
+
 2009-06-27  Kouhei Sutou  <kou@clear-code.com>
 
 	* tool/milter-test-server.c, test/tool/test-server.c: treat

@@ -73,7 +73,6 @@ module Milter::Manager
         when /^# /
           comment = $POSTMATCH.strip
           if first_comment_block and /^\s*$/ !~ comment
-            p comment
             first_comment_content << comment
             next
           end
