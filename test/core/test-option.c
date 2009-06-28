@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -29,6 +29,7 @@ void test_equal (void);
 void test_version (void);
 void test_action (void);
 void test_step (void);
+void test_get_step_convenience (void);
 void test_combine (void);
 void test_combine_older_version (void);
 void test_combine_newer_version (void);
@@ -222,6 +223,39 @@ test_step (void)
                             MILTER_STEP_NO_REPLY_HELO |
                             MILTER_STEP_NO_HELO,
                             milter_option_get_step(option));
+}
+
+void
+test_get_step_convenience (void)
+{
+    option = milter_option_new_empty();
+
+    milter_option_set_step(option,
+                           MILTER_STEP_SKIP |
+                           MILTER_STEP_HEADER_VALUE_WITH_LEADING_SPACE |
+                           MILTER_STEP_NO_HELO |
+                           MILTER_STEP_NO_DATA |
+                           MILTER_STEP_NO_REPLY_HELO |
+                           MILTER_STEP_NO_REPLY_DATA);
+
+    gcut_assert_equal_flags(MILTER_TYPE_STEP_FLAGS,
+                            MILTER_STEP_NO_HELO |
+                            MILTER_STEP_NO_DATA,
+                            milter_option_get_step_no_event(option));
+    gcut_assert_equal_flags(MILTER_TYPE_STEP_FLAGS,
+                            MILTER_STEP_NO_REPLY_HELO |
+                            MILTER_STEP_NO_REPLY_DATA,
+                            milter_option_get_step_no_reply(option));
+    gcut_assert_equal_flags(MILTER_TYPE_STEP_FLAGS,
+                            MILTER_STEP_NO_HELO |
+                            MILTER_STEP_NO_DATA |
+                            MILTER_STEP_NO_REPLY_HELO |
+                            MILTER_STEP_NO_REPLY_DATA,
+                            milter_option_get_step_no(option));
+    gcut_assert_equal_flags(MILTER_TYPE_STEP_FLAGS,
+                            MILTER_STEP_SKIP |
+                            MILTER_STEP_HEADER_VALUE_WITH_LEADING_SPACE,
+                            milter_option_get_step_yes(option));
 }
 
 void

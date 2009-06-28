@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -102,6 +102,37 @@ typedef enum
     MILTER_STEP_HEADER_VALUE_WITH_LEADING_SPACE = 0x00100000L
 } MilterStepFlags;
 
+#define MILTER_STEP_NO_EVENT_MASK               \
+    (MILTER_STEP_NO_CONNECT |                   \
+     MILTER_STEP_NO_HELO |                      \
+     MILTER_STEP_NO_ENVELOPE_FROM |             \
+     MILTER_STEP_NO_ENVELOPE_RECIPIENT |        \
+     MILTER_STEP_NO_BODY |                      \
+     MILTER_STEP_NO_HEADERS |                   \
+     MILTER_STEP_NO_END_OF_HEADER |             \
+     MILTER_STEP_NO_REPLY_HEADER |              \
+     MILTER_STEP_NO_UNKNOWN |                   \
+     MILTER_STEP_NO_DATA)
+
+#define MILTER_STEP_NO_REPLY_MASK               \
+    (MILTER_STEP_NO_REPLY_CONNECT |             \
+     MILTER_STEP_NO_REPLY_HELO |                \
+     MILTER_STEP_NO_REPLY_ENVELOPE_FROM |       \
+     MILTER_STEP_NO_REPLY_ENVELOPE_RECIPIENT |  \
+     MILTER_STEP_NO_REPLY_DATA |                \
+     MILTER_STEP_NO_REPLY_UNKNOWN |             \
+     MILTER_STEP_NO_REPLY_END_OF_HEADER |       \
+     MILTER_STEP_NO_REPLY_BODY)
+
+#define MILTER_STEP_NO_MASK                                     \
+    (MILTER_STEP_NO_EVENT_MASK | MILTER_STEP_NO_REPLY_MASK)
+
+#define MILTER_STEP_YES_MASK                            \
+    (MILTER_STEP_SKIP |                                 \
+     MILTER_STEP_ENVELOPE_RECIPIENT_REJECTED |          \
+     MILTER_STEP_HEADER_VALUE_WITH_LEADING_SPACE)
+
+
 MilterStepFlags milter_step_flags_merge (MilterStepFlags a, MilterStepFlags b);
 
 typedef struct _MilterOption         MilterOption;
@@ -141,6 +172,10 @@ void               milter_option_remove_action     (MilterOption      *option,
                                                     MilterActionFlags  action);
 
 MilterStepFlags    milter_option_get_step          (MilterOption      *option);
+MilterStepFlags    milter_option_get_step_no_event (MilterOption      *option);
+MilterStepFlags    milter_option_get_step_no_reply (MilterOption      *option);
+MilterStepFlags    milter_option_get_step_no       (MilterOption      *option);
+MilterStepFlags    milter_option_get_step_yes      (MilterOption      *option);
 void               milter_option_set_step          (MilterOption      *option,
                                                     MilterStepFlags    step);
 void               milter_option_add_step          (MilterOption      *option,

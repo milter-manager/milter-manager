@@ -1,5 +1,8 @@
 2009-06-28  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/core/milter-option.[ch], test/core/test-option.c: add
+	convenience functions to get categorized step flags.
+
 	* milter/manager/milter-manager-children.c,
 	test/manager/test-leader.c,
 	test/fixtures/leader/envelope-recipient-stop.conf,
