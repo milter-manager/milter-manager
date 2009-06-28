@@ -1,5 +1,9 @@
 2009-06-28  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/server/milter-server-context.c: measure elapsed time.
+	* milter/manager/milter-manager-children.c: log elapsed time
+	measured by server context for debugging.
+
 	* test/server/test-server-context-signals.c: suppress warnings.
 
 	* binding/ruby/lib/milter/manager.rb,

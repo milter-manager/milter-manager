@@ -680,11 +680,12 @@ expire_child (MilterManagerChildren *children,
         status_name =
             milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
         tag = milter_agent_get_tag(MILTER_AGENT(context));
-        milter_debug("[%u] [children][milter][end][%s][%s][%s][%g] [%u] %s",
+        milter_debug("[%u] [children][milter][end][%s][%s][%s][%g][%g] [%u] %s",
                      priv->tag,
                      state_name, last_state_name,
                      status_name,
                      elapsed,
+                     milter_server_context_get_elapsed(context),
                      tag, child_name);
         if (MILTER_STATUS_IS_PASS(status)) {
             statistic_status_name = "pass";

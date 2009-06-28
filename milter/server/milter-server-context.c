@@ -99,6 +99,8 @@ struct _MilterServerContextPrivate
     GList *body_response_queue;
     guint process_body_count;
     gboolean sent_end_of_message;
+
+    GTimer *elapsed;
 };
 
 enum
@@ -427,6 +429,10 @@ milter_server_context_init (MilterServerContext *context)
         MILTER_SERVER_CONTEXT_DEFAULT_END_OF_MESSAGE_TIMEOUT;
 
     priv->skip_body = FALSE;
+
+    priv->elapsed = g_timer_new();
+    g_timer_stop(priv->elapsed);
+    g_timer_reset(priv->elapsed);
 }
 
 static void
@@ -491,6 +497,12 @@ dispose (GObject *object)
         g_list_free(priv->body_response_queue);
         priv->body_response_queue = NULL;
     }
+
+    if (priv->elapsed) {
+        g_timer_destroy(priv->elapsed);
+        priv->elapsed = NULL;
+    }
+
     G_OBJECT_CLASS(milter_server_context_parent_class)->dispose(object);
 }
 
@@ -837,6 +849,9 @@ write_packet (MilterServerContext *context, gchar *packet, gsize packet_size,
             g_free(inspected_next_state);
             return FALSE;
         }
+        if (next_state != MILTER_SERVER_CONTEXT_STATE_NEGOTIATE &&
+            next_state != MILTER_SERVER_CONTEXT_STATE_BODY)
+            g_timer_continue(priv->elapsed);
         priv->timeout_id = milter_utils_timeout_add(priv->writing_timeout,
                                                     cb_writing_timeout,
                                                     context);
@@ -895,6 +910,7 @@ write_packet (MilterServerContext *context, gchar *packet, gsize packet_size,
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(context),
                                     error);
         g_error_free(error);
+        g_timer_stop(priv->elapsed);
 
         return FALSE;
     }
@@ -916,6 +932,7 @@ write_packet (MilterServerContext *context, gchar *packet, gsize packet_size,
     case MILTER_SERVER_CONTEXT_STATE_QUIT:
         milter_agent_shutdown(MILTER_AGENT(context));
         milter_server_context_set_state(context, next_state);
+        g_timer_stop(priv->elapsed);
         break;
     case MILTER_SERVER_CONTEXT_STATE_ABORT:
         /* FIXME: should shutdown on ABORT? */
@@ -930,6 +947,7 @@ write_packet (MilterServerContext *context, gchar *packet, gsize packet_size,
             }
         }
         milter_server_context_set_state(context, next_state);
+        g_timer_stop(priv->elapsed);
         break;
     default:
         milter_server_context_set_state(context, next_state);
@@ -975,6 +993,7 @@ milter_server_context_negotiate (MilterServerContext *context,
     MilterServerContextPrivate *priv;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+    g_timer_start(priv->elapsed);
 
     {
         gchar *inspected_option;
@@ -1060,7 +1079,6 @@ milter_server_context_is_enable_step (MilterServerContext *context,
     MilterServerContextPrivate *priv;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
-
 
     return priv->option ? (milter_option_get_step(priv->option) & step) : TRUE;
 }
@@ -1402,6 +1420,7 @@ milter_server_context_body (MilterServerContext *context,
         return TRUE;
     }
 
+    g_timer_continue(MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->elapsed);
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     command_encoder = MILTER_COMMAND_ENCODER(encoder);
     append_body_response_queue(context);
@@ -1501,6 +1520,8 @@ invalid_state (MilterServerContext *context,
     GError *error = NULL;
     gchar *state_name;
 
+    g_timer_stop(MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->elapsed);
+
     state_name = milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
                                                  state);
     g_set_error(&error,
@@ -1561,6 +1582,7 @@ cb_decoder_negotiate_reply (MilterDecoder *decoder,
         priv->option = milter_option_copy(option);
     }
 
+    g_timer_stop(priv->elapsed);
     if (state == MILTER_SERVER_CONTEXT_STATE_NEGOTIATE) {
         g_signal_emit_by_name(context, "negotiate-reply",
                               option, macros_requests);
@@ -1583,6 +1605,8 @@ clear_process_body_count (MilterServerContext *context)
     if (priv->sent_end_of_message)
         milter_server_context_set_state(
             context, MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE);
+
+    g_timer_stop(priv->elapsed);
 }
 
 static void
@@ -1606,6 +1630,7 @@ decrement_process_body_count (MilterServerContext *context)
     if (process_body_count == 0) {
         priv->body_response_queue =
             g_list_delete_link(priv->body_response_queue, first_node);
+        g_timer_stop(priv->elapsed);
         g_signal_emit_by_name(context, "continue");
         if (priv->sent_end_of_message)
             milter_server_context_set_state(
@@ -1647,6 +1672,7 @@ cb_decoder_continue (MilterReplyDecoder *decoder, gpointer user_data)
       case MILTER_SERVER_CONTEXT_STATE_HEADER:
       case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
       case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
+        g_timer_stop(priv->elapsed);
         g_signal_emit_by_name(context, "continue");
         break;
       default:
@@ -1687,20 +1713,15 @@ cb_decoder_reply_code (MilterReplyDecoder *decoder,
 
     state = priv->state;
 
+    g_timer_stop(priv->elapsed);
     switch (state) {
-      case MILTER_SERVER_CONTEXT_STATE_CONNECT: /* more? */
+    case MILTER_SERVER_CONTEXT_STATE_CONNECT: /* more? */
         invalid_state(context, state);
         break;
-      default:
-        g_signal_emit_by_name(context, "reply-code", code, extended_code, message);
-        break;
-    }
-
-    switch (state) {
-      case MILTER_SERVER_CONTEXT_STATE_BODY:
+    case MILTER_SERVER_CONTEXT_STATE_BODY:
         clear_process_body_count(context);
-        break;
-      default:
+    default:
+        g_signal_emit_by_name(context, "reply-code", code, extended_code, message);
         break;
     }
 }
@@ -1729,6 +1750,7 @@ cb_decoder_temporary_failure (MilterReplyDecoder *decoder, gpointer user_data)
                  milter_server_context_get_name(context));
     g_free(state_name);
 
+    g_timer_stop(priv->elapsed);
     g_signal_emit_by_name(context, "temporary-failure");
 
     switch (priv->state) {
@@ -1764,6 +1786,7 @@ cb_decoder_reject (MilterReplyDecoder *decoder, gpointer user_data)
                  milter_server_context_get_name(context));
     g_free(state_name);
 
+    g_timer_stop(priv->elapsed);
     g_signal_emit_by_name(context, "reject");
 
     switch (priv->state) {
@@ -1797,6 +1820,7 @@ cb_decoder_accept (MilterReplyDecoder *decoder, gpointer user_data)
                  milter_server_context_get_name(context));
     g_free(state_name);
 
+    g_timer_stop(priv->elapsed);
     g_signal_emit_by_name(context, "accept");
 
     switch (state) {
@@ -1831,6 +1855,7 @@ cb_decoder_discard (MilterReplyDecoder *decoder, gpointer user_data)
                  milter_server_context_get_name(context));
     g_free(state_name);
 
+    g_timer_stop(priv->elapsed);
     g_signal_emit_by_name(context, "discard");
 
     switch (priv->state) {
@@ -2085,6 +2110,7 @@ cb_decoder_connection_failure (MilterReplyDecoder *decoder, gpointer user_data)
                  milter_agent_get_tag(MILTER_AGENT(context)),
                  milter_server_context_get_name(context));
 
+    g_timer_stop(priv->elapsed);
     g_signal_emit_by_name(user_data, "connection-failure");
 }
 
@@ -2102,6 +2128,7 @@ cb_decoder_shutdown (MilterReplyDecoder *decoder, gpointer user_data)
                  milter_agent_get_tag(MILTER_AGENT(context)),
                  milter_server_context_get_name(context));
 
+    g_timer_stop(priv->elapsed);
     g_signal_emit_by_name(user_data, "shutdown");
 }
 
@@ -2119,6 +2146,7 @@ cb_decoder_skip (MilterReplyDecoder *decoder, gpointer user_data)
                  milter_agent_get_tag(MILTER_AGENT(context)),
                  milter_server_context_get_name(context));
 
+    g_timer_stop(priv->elapsed);
     if (priv->state == MILTER_SERVER_CONTEXT_STATE_BODY) {
         g_signal_emit_by_name(context, "skip");
         clear_process_body_count(context);
@@ -2449,6 +2477,13 @@ stop_on_accumulator (GSignalInvocationHint *hint,
     g_value_set_boolean(return_accumulator, stop);
 
     return !stop;
+}
+
+gdouble
+milter_server_context_get_elapsed (MilterServerContext *context)
+{
+    return g_timer_elapsed(MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->elapsed,
+                           NULL);
 }
 
 /*

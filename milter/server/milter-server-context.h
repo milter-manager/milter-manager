@@ -590,6 +590,15 @@ const gchar         *milter_server_context_get_name    (MilterServerContext *con
  */
 void                 milter_server_context_set_name    (MilterServerContext *context,
                                                         const gchar *name);
+
+/**
+ * milter_server_context_get_elapsed:
+ * @context: a %MilterServerContext.
+ *
+ * Gets the elapsed time.
+ */
+gdouble              milter_server_context_get_elapsed (MilterServerContext *context);
+
 G_END_DECLS
 
 #endif /* __MILTER_SERVER_CONTEXT_H__ */
