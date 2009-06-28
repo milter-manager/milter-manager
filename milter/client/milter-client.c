@@ -429,9 +429,10 @@ cb_idle_free_data (gpointer _data)
     GList *processing_data, *process_data;
     guint n_processing_data;
     GString *rest_process;
+    guint tag;
 
-    milter_debug("[%u] [client][finish]",
-                 milter_agent_get_tag(MILTER_AGENT(data->context)));
+    tag = milter_agent_get_tag(MILTER_AGENT(data->context));
+    milter_debug("[%u] [client][finish]", tag);
     data->priv->processing_data =
         g_list_remove(data->priv->processing_data, data);
     data->priv->n_processing_data--;
@@ -441,8 +442,7 @@ cb_idle_free_data (gpointer _data)
     n_processing_data = data->priv->n_processing_data;
     g_mutex_lock(data->priv->quit_mutex);
     if (data->priv->quitting && n_processing_data == 0) {
-        milter_debug("[%u] [client][loop][quit]",
-                     milter_agent_get_tag(MILTER_AGENT(data->context)));
+        milter_debug("[%u] [client][loop][quit]", tag);
         g_main_loop_quit(data->priv->main_loop);
     }
     g_mutex_unlock(data->priv->quit_mutex);
@@ -462,7 +462,7 @@ cb_idle_free_data (gpointer _data)
         g_string_truncate(rest_process, rest_process->len - 2);
     g_string_append(rest_process, "]");
     g_list_free(processing_data);
-    milter_debug("[client][rest] %s", rest_process->str);
+    milter_debug("[%u] [client][rest] %s", tag, rest_process->str);
     g_string_free(rest_process, TRUE);
 
     return FALSE;
@@ -569,11 +569,15 @@ accept_client (gint server_fd, MilterClient *client)
         g_error_free(error);
 
         if (errno == EMFILE) {
+            guint suspend_time;
+
+            suspend_time =
+                milter_client_get_suspend_time_on_unacceptable(client);
             milter_warning("[client][accept][suspend] "
                            "too many file is opened. "
                            "suspend accepting connection in %d seconds",
-                           priv->suspend_time_on_unacceptable);
-            g_usleep(priv->suspend_time_on_unacceptable * G_USEC_PER_SEC);
+                           suspend_time);
+            g_usleep(suspend_time * G_USEC_PER_SEC);
             milter_warning("[client][accept][resume] "
                            "resume accepting connection.");
         }
@@ -911,14 +915,26 @@ milter_client_set_default_remove_unix_socket_on_close (MilterClient *client,
 guint
 milter_client_get_suspend_time_on_unacceptable (MilterClient *client)
 {
-    return MILTER_CLIENT_GET_PRIVATE(client)->suspend_time_on_unacceptable;
+    MilterClientClass *klass;
+
+    klass = MILTER_CLIENT_GET_CLASS(client);
+    if (klass->get_suspend_time_on_unacceptable)
+        return klass->get_suspend_time_on_unacceptable(client);
+    else
+        return MILTER_CLIENT_GET_PRIVATE(client)->suspend_time_on_unacceptable;
 }
 
 void
 milter_client_set_suspend_time_on_unacceptable (MilterClient *client,
                                                 guint suspend_time)
 {
-    MILTER_CLIENT_GET_PRIVATE(client)->suspend_time_on_unacceptable = suspend_time;
+    MilterClientClass *klass;
+
+    klass = MILTER_CLIENT_GET_CLASS(client);
+    if (klass->set_suspend_time_on_unacceptable)
+        klass->set_suspend_time_on_unacceptable(client, suspend_time);
+    else
+        MILTER_CLIENT_GET_PRIVATE(client)->suspend_time_on_unacceptable = suspend_time;
 }
 
 /*

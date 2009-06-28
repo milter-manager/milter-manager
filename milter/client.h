@@ -218,6 +218,11 @@ struct _MilterClientClass
     const gchar *(*get_unix_socket_group) (MilterClient *client);
     gboolean (*is_remove_unix_socket_on_close)
                                           (MilterClient *client);
+    guint  (*get_suspend_time_on_unacceptable)
+                                          (MilterClient *client);
+    void   (*set_suspend_time_on_unacceptable)
+                                          (MilterClient *client,
+                                           guint         suspend_time);
 };
 
 GQuark               milter_client_error_quark       (void);
