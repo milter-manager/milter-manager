@@ -1660,12 +1660,18 @@ cb_stopped (MilterServerContext *context, gpointer user_data)
     MilterServerContextState state;
 
     state = milter_server_context_get_state(context);
-    compile_reply_status(children, state, MILTER_STATUS_ACCEPT);
-    remove_child_from_queue(children, context);
 
-    expire_child(children, context);
-    milter_server_context_abort(context);
-    milter_server_context_quit(context);
+    if (state == MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT) {
+        milter_server_context_set_status(context, MILTER_STATUS_NOT_CHANGE);
+        cb_continue(context, user_data);
+    } else {
+        compile_reply_status(children, state, MILTER_STATUS_ACCEPT);
+        remove_child_from_queue(children, context);
+
+        expire_child(children, context);
+        milter_server_context_abort(context);
+        milter_server_context_quit(context);
+    }
 }
 
 static void

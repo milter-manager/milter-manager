@@ -1363,7 +1363,9 @@ data_scenario_envelope_recipient (void)
         "envelope-recipient - temporary-failure",
         g_strdup("envelope-recipient-temporary-failure.txt"), g_free,
         "envelope-recipient - temporary-failure - all",
-        g_strdup("envelope-recipient-temporary-failure-all.txt"), g_free);
+        g_strdup("envelope-recipient-temporary-failure-all.txt"), g_free,
+        "envelope-recipient - stop",
+        g_strdup("envelope-recipient-stop.txt"), g_free);
 }
 
 static void
@@ -1397,6 +1399,7 @@ test_scenario (gconstpointer data)
 {
     const gchar *scenario_name = data;
     const gchar omit_key[] = "omit";
+    const gchar configuration_key[] = "configuration";
 
     main_scenario = milter_manager_test_scenario_new();
     cut_trace(milter_manager_test_scenario_load(main_scenario,
@@ -1408,6 +1411,21 @@ test_scenario (gconstpointer data)
         cut_omit("%s", get_string(main_scenario,
                                   MILTER_MANAGER_TEST_SCENARIO_GROUP_NAME,
                                   omit_key));
+
+    if (has_key(main_scenario,
+                MILTER_MANAGER_TEST_SCENARIO_GROUP_NAME, configuration_key)) {
+        GError *error = NULL;
+        const gchar *config_file;
+
+        config_file =
+            cut_build_path(scenario_dir,
+                           get_string(main_scenario,
+                                      MILTER_MANAGER_TEST_SCENARIO_GROUP_NAME,
+                                      configuration_key),
+                           NULL);
+        milter_manager_configuration_load(config, config_file, &error);
+        gcut_assert_error(error);
+    }
 
     cut_trace(milter_manager_test_scenario_start_clients(main_scenario));
     cut_trace(do_actions(main_scenario));

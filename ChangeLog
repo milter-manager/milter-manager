@@ -1,5 +1,11 @@
 2009-06-28  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/manager/milter-manager-children.c,
+	test/manager/test-leader.c,
+	test/fixtures/leader/envelope-recipient-stop.conf,
+	test/fixtures/leader/envelope-recipient-stop.txt: treat stop on
+	envelope recipient as continue.
+
 	* milter/manager/milter-manager-configuration.c,
 	test/manager/test-configuration.c: support absolute configuration
 	path loading.
