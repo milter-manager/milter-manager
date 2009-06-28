@@ -1182,7 +1182,7 @@ cb_continue (MilterServerContext *context, gpointer user_data)
         break;
     }
 
-    return handle_status(children, status);
+    handle_status(children, status);
 }
 
 static void
