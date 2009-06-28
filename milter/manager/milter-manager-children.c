@@ -1919,6 +1919,7 @@ remove_queue_in_negotiate (MilterManagerChildren *children,
     g_queue_remove(priv->reply_queue, child);
     if (g_queue_is_empty(priv->reply_queue)) {
         if (priv->option) {
+            milter_option_remove_step(priv->option, MILTER_STEP_NO_EVENT_MASK);
             g_signal_emit_by_name(children, "negotiate-reply",
                                   priv->option, priv->macros_requests);
         } else {

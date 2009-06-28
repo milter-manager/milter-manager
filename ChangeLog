@@ -1,5 +1,9 @@
 2009-06-28  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/manager/milter-manager-children.c
+	(remove_queue_in_negotiate): receive all event to run stopper
+	callback on all events.
+
 	* milter/manager/milter-manager-children.c,
 	milter/server/milter-server-context.[ch],
 	test/server/test-server-context.c,
