@@ -692,15 +692,19 @@ find_file (MilterManagerConfiguration *configuration,
     GList *node;
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
-    for (node = priv->load_paths; node; node = g_list_next(node)) {
-        const gchar *dir = node->data;
+    if (g_path_is_absolute(file_name)) {
+        full_path = g_strdup(file_name);
+    } else {
+        for (node = priv->load_paths; node; node = g_list_next(node)) {
+            const gchar *dir = node->data;
 
-        full_path = g_build_filename(dir, file_name, NULL);
-        if (g_file_test(full_path, G_FILE_TEST_IS_REGULAR)) {
-            break;
-        } else {
-            g_free(full_path);
-            full_path = NULL;
+            full_path = g_build_filename(dir, file_name, NULL);
+            if (g_file_test(full_path, G_FILE_TEST_IS_REGULAR)) {
+                break;
+            } else {
+                g_free(full_path);
+                full_path = NULL;
+            }
         }
     }
 

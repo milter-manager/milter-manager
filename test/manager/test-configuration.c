@@ -54,6 +54,7 @@ void test_find_applicable_condition (void);
 void test_remove_applicable_condition (void);
 void test_clear (void);
 void test_load_paths (void);
+void test_load_absolute_path (void);
 void test_save_custom (void);
 void test_to_xml_full (void);
 void test_to_xml_signal (void);
@@ -726,6 +727,20 @@ test_load_paths (void)
     gcut_assert_equal_list_string(
         NULL,
         milter_manager_configuration_get_load_paths(config));
+}
+
+void
+test_load_absolute_path (void)
+{
+    const gchar *config_file;
+    GError *error = NULL;
+
+    config_file = cut_build_path(tmp_dir, "temporary.conf", NULL);
+    g_file_set_contents(config_file, "", 0, &error);
+    gcut_assert_error(error);
+
+    milter_manager_configuration_load(config, config_file, &error);
+    gcut_assert_error(error);
 }
 
 void
