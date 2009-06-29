@@ -1,6 +1,9 @@
 2009-06-29  Kouhei Sutou  <kou@clear-code.com>
 
 	* binding/ruby/src/toolkit/rb-milter-option.c,
+	binding/ruby/test/toolkit/test-option.rb: bind remove step.
+
+	* binding/ruby/src/toolkit/rb-milter-option.c,
 	binding/ruby/test/toolkit/test-option.rb: bind step merge.
 
 	* binding/ruby/src/toolkit/rb-milter-option.c,

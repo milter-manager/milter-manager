@@ -88,4 +88,20 @@ class TestOption < Test::Unit::TestCase
                  Milter::StepFlags::HEADER_VALUE_WITH_LEADING_SPACE,
                  Milter::StepFlags::YES_MASK)
   end
+
+  def test_remove_step
+    option = Milter::Option.new
+    option.step = Milter::StepFlags::NO_EVENT_MASK
+    option.remove_step(Milter::StepFlags::NO_HELO |
+                       Milter::StepFlags::NO_ENVELOPE_FROM |
+                       Milter::StepFlags::NO_ENVELOPE_RECIPIENT)
+    assert_equal(Milter::StepFlags::NO_CONNECT |
+                 Milter::StepFlags::NO_BODY |
+                 Milter::StepFlags::NO_HEADERS |
+                 Milter::StepFlags::NO_END_OF_HEADER |
+                 Milter::StepFlags::NO_REPLY_HEADER |
+                 Milter::StepFlags::NO_UNKNOWN |
+                 Milter::StepFlags::NO_DATA,
+                 option.step)
+  end
 end
