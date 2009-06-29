@@ -22,6 +22,16 @@
 #define SELF(self) RVAL2OPTION(self)
 
 static VALUE
+step_flags_merge (VALUE self, VALUE other)
+{
+    MilterStepFlags merged;
+
+    merged = milter_step_flags_merge(RVAL2STEP_FLAGS(self),
+				     RVAL2STEP_FLAGS(other));
+    return STEP_FLAGS2RVAL(merged);
+}
+
+static VALUE
 initialize (int argc, VALUE *argv, VALUE self)
 {
     VALUE rb_version, rb_action, rb_step;
@@ -85,6 +95,8 @@ Init_milter_option (void)
 		    STEP_FLAGS2RVAL(MILTER_STEP_NO_MASK));
     rb_define_const(rb_cMilterStepFlags, "YES_MASK",
 		    STEP_FLAGS2RVAL(MILTER_STEP_YES_MASK));
+
+    rb_define_method(rb_cMilterStepFlags, "merge", step_flags_merge, 1);
 
     rb_define_method(rb_cMilterOption, "initialize", initialize, -1);
     rb_define_method(rb_cMilterOption, "==", equal, 1);

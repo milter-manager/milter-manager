@@ -26,6 +26,30 @@ class TestOption < Test::Unit::TestCase
     assert_const_defined(Milter, :STEP_NONE)
   end
 
+  def test_step_flags_merge
+    flags1 =
+      Milter::StepFlags::SKIP |
+      Milter::StepFlags::NO_CONNECT |
+      Milter::StepFlags::NO_HELO |
+      Milter::StepFlags::NO_DATA |
+      Milter::StepFlags::NO_REPLY_DATA |
+      Milter::StepFlags::NO_REPLY_END_OF_HEADER
+    flags2 =
+      Milter::StepFlags::HEADER_VALUE_WITH_LEADING_SPACE |
+      Milter::StepFlags::NO_CONNECT |
+      Milter::StepFlags::NO_HELO |
+      Milter::StepFlags::NO_ENVELOPE_FROM |
+      Milter::StepFlags::NO_ENVELOPE_RECIPIENT |
+      Milter::StepFlags::NO_REPLY_DATA |
+      Milter::StepFlags::NO_REPLY_UNKNOWN
+    assert_equal(Milter::StepFlags::SKIP |
+                 Milter::StepFlags::HEADER_VALUE_WITH_LEADING_SPACE |
+                 Milter::StepFlags::NO_CONNECT |
+                 Milter::StepFlags::NO_HELO |
+                 Milter::StepFlags::NO_REPLY_DATA,
+                 flags1.merge(flags2))
+  end
+
   def test_step_no_event_mask
     assert_equal(Milter::StepFlags::NO_CONNECT |
                  Milter::StepFlags::NO_HELO |
