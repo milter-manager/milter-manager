@@ -1,5 +1,7 @@
 2009-06-29  Kouhei Sutou  <kou@clear-code.com>
 
+	* test/server/test-server-context-command.c: add tests for status.
+
 	* data/applicable-conditions/Makefile.am,
 	data/applicable-conditions/restrict-accounts.conf: add
 	experimental applicable conditions to restrict milters by
