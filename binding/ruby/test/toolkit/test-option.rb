@@ -1,4 +1,4 @@
-# Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+# Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -24,5 +24,44 @@ class TestOption < Test::Unit::TestCase
   def test_step_flags
     assert_const_defined(Milter, :StepFlags)
     assert_const_defined(Milter, :STEP_NONE)
+  end
+
+  def test_step_no_event_mask
+    assert_equal(Milter::StepFlags::NO_CONNECT |
+                 Milter::StepFlags::NO_HELO |
+                 Milter::StepFlags::NO_ENVELOPE_FROM |
+                 Milter::StepFlags::NO_ENVELOPE_RECIPIENT |
+                 Milter::StepFlags::NO_BODY |
+                 Milter::StepFlags::NO_HEADERS |
+                 Milter::StepFlags::NO_END_OF_HEADER |
+                 Milter::StepFlags::NO_REPLY_HEADER |
+                 Milter::StepFlags::NO_UNKNOWN |
+                 Milter::StepFlags::NO_DATA,
+                 Milter::StepFlags::NO_EVENT_MASK)
+  end
+
+  def test_step_no_reply_mask
+    assert_equal(Milter::StepFlags::NO_REPLY_CONNECT |
+                 Milter::StepFlags::NO_REPLY_HELO |
+                 Milter::StepFlags::NO_REPLY_ENVELOPE_FROM |
+                 Milter::StepFlags::NO_REPLY_ENVELOPE_RECIPIENT |
+                 Milter::StepFlags::NO_REPLY_DATA |
+                 Milter::StepFlags::NO_REPLY_UNKNOWN |
+                 Milter::StepFlags::NO_REPLY_END_OF_HEADER |
+                 Milter::StepFlags::NO_REPLY_BODY,
+                 Milter::StepFlags::NO_REPLY_MASK)
+  end
+
+  def test_step_no_mask
+    assert_equal(Milter::StepFlags::NO_EVENT_MASK |
+                 Milter::StepFlags::NO_REPLY_MASK,
+                 Milter::StepFlags::NO_MASK)
+  end
+
+  def test_step_yes_mask
+    assert_equal(Milter::StepFlags::SKIP |
+                 Milter::StepFlags::ENVELOPE_RECIPIENT_REJECTED |
+                 Milter::StepFlags::HEADER_VALUE_WITH_LEADING_SPACE,
+                 Milter::StepFlags::YES_MASK)
   end
 end

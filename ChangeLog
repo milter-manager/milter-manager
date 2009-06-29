@@ -1,5 +1,9 @@
 2009-06-29  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/src/toolkit/rb-milter-option.c,
+	binding/ruby/src/toolkit/rb-milter-core-private.h,
+	binding/ruby/test/toolkit/test-option.rb: bind masks.
+
 	* binding/ruby/src/toolkit/rb-milter-client.c: bind
 	Milter::Client#main and Milter::Client#shutdown.
 

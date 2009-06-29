@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -64,15 +64,27 @@ equal (VALUE self, VALUE other)
 void
 Init_milter_option (void)
 {
+    VALUE rb_cMilterActionFlags, rb_cMilterStepFlags;
     VALUE rb_cMilterOption;
 
     rb_cMilterOption = G_DEF_CLASS(MILTER_TYPE_OPTION, "Option", rb_mMilter);
 
-    G_DEF_CLASS(MILTER_TYPE_ACTION_FLAGS, "ActionFlags", rb_mMilter);
-    G_DEF_CLASS(MILTER_TYPE_STEP_FLAGS, "StepFlags", rb_mMilter);
+    rb_cMilterActionFlags =
+	G_DEF_CLASS(MILTER_TYPE_ACTION_FLAGS, "ActionFlags", rb_mMilter);
+    rb_cMilterStepFlags =
+	G_DEF_CLASS(MILTER_TYPE_STEP_FLAGS, "StepFlags", rb_mMilter);
 
     G_DEF_CONSTANTS(rb_mMilter, MILTER_TYPE_ACTION_FLAGS, "MILTER_");
     G_DEF_CONSTANTS(rb_mMilter, MILTER_TYPE_STEP_FLAGS, "MILTER_");
+
+    rb_define_const(rb_cMilterStepFlags, "NO_EVENT_MASK",
+		    STEP_FLAGS2RVAL(MILTER_STEP_NO_EVENT_MASK));
+    rb_define_const(rb_cMilterStepFlags, "NO_REPLY_MASK",
+		    STEP_FLAGS2RVAL(MILTER_STEP_NO_REPLY_MASK));
+    rb_define_const(rb_cMilterStepFlags, "NO_MASK",
+		    STEP_FLAGS2RVAL(MILTER_STEP_NO_MASK));
+    rb_define_const(rb_cMilterStepFlags, "YES_MASK",
+		    STEP_FLAGS2RVAL(MILTER_STEP_YES_MASK));
 
     rb_define_method(rb_cMilterOption, "initialize", initialize, -1);
     rb_define_method(rb_cMilterOption, "==", equal, 1);
