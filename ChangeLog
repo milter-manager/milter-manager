@@ -1,5 +1,8 @@
 2009-06-29  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/src/toolkit/rb-milter-client.c: bind
+	Milter::Client#main and Milter::Client#shutdown.
+
 	* test/server/test-server-context-command.c: add tests for status.
 
 	* data/applicable-conditions/Makefile.am,

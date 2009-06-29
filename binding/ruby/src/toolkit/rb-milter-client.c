@@ -19,7 +19,23 @@
 
 #include "rb-milter-client-private.h"
 
+#define SELF(self) RVAL2GOBJ(self)
+
 VALUE rb_cMilterClient;
+
+static VALUE
+client_main (VALUE self)
+{
+    milter_client_main(SELF(self));
+    return Qnil;
+}
+
+static VALUE
+client_shutdown (VALUE self)
+{
+    milter_client_shutdown(SELF(self));
+    return Qnil;
+}
 
 void
 Init_milter_client (void)
@@ -29,6 +45,9 @@ Init_milter_client (void)
     rb_define_const(rb_cMilterClient,
 		    "DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE",
 		    UINT2NUM(MILTER_CLIENT_DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE));
+
+    rb_define_method(rb_cMilterClient, "main", client_main, 0);
+    rb_define_method(rb_cMilterClient, "shutdown", client_shutdown, 0);
 
     Init_milter_client_context();
 }
