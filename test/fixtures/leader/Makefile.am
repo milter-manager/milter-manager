@@ -27,8 +27,6 @@ EXTRA_DIST =								\
 	end-of-message-temporary-failure.txt				\
 	end-of-message-reply-code-reject.txt				\
 	end-of-message-reply-code-temporary-failure.txt			\
-	end-of-message-stop.txt						\
-	end-of-message-stop.conf					\
 	end-of-message.txt						\
 	envelope-from-accept-all.txt					\
 	envelope-from-accept.txt					\
@@ -45,12 +43,14 @@ EXTRA_DIST =								\
 	envelope-recipient-reject.txt					\
 	envelope-recipient-temporary-failure-all.txt			\
 	envelope-recipient-temporary-failure.txt			\
+	envelope-recipient-stop.txt					\
+	envelope-recipient-stop.conf					\
 	envelope-recipient.txt						\
 	header-from-and-mailer.txt					\
 	header-from.txt							\
 	header-with-leading-space.txt					\
 	header-with-leading-space-no-space.txt				\
-	header-tempoprary-failure.txt					\
+	header-temporary-failure.txt					\
 	header-reject.txt						\
 	helo.txt							\
 	insert-header.txt						\
