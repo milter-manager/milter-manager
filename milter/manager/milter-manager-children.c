@@ -28,8 +28,6 @@
 #include "milter/core.h"
 #include "milter-manager-launch-command-encoder.h"
 
-#define TIMER_KEY "timer"
-
 #define MAX_ON_MEMORY_BODY_SIZE 5242880 /* 5Mbyte */
 
 #define MILTER_MANAGER_CHILDREN_GET_PRIVATE(obj)                    \
@@ -597,25 +595,16 @@ cb_ready (MilterServerContext *context, gpointer user_data)
 {
     NegotiateData *negotiate_data = (NegotiateData*)user_data;
     MilterManagerChildrenPrivate *priv;
-    GTimer *timer;
+    guint tag;
+    const gchar *child_name;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(negotiate_data->children);
 
-    timer = g_timer_new();
-    g_object_set_data_full(G_OBJECT(context), TIMER_KEY, timer,
-                           (GDestroyNotify)g_timer_destroy);
-
-    {
-        guint tag;
-        const gchar *child_name;
-
-        tag = milter_agent_get_tag(MILTER_AGENT(context));
-        child_name = milter_server_context_get_name(context);
-        milter_debug("[%u] [children][milter][start] [%u] %s",
-                     priv->tag, tag, child_name);
-        milter_statistics("[milter][start](%u): %s",
-                          tag, child_name);
-    }
+    tag = milter_agent_get_tag(MILTER_AGENT(context));
+    child_name = milter_server_context_get_name(context);
+    milter_debug("[%u] [children][milter][start] [%u] %s",
+                 priv->tag, tag, child_name);
+    milter_statistics("[milter][start](%u): %s", tag, child_name);
 
     setup_server_context_signals(negotiate_data->children, context);
     milter_server_context_negotiate(context, negotiate_data->option);
@@ -647,58 +636,47 @@ expire_child (MilterManagerChildren *children,
               MilterServerContext *context)
 {
     MilterManagerChildrenPrivate *priv;
-    GTimer *timer;
-    gdouble elapsed = 0.0;
+    MilterStatus status;
+    gdouble elapsed;
+    MilterServerContextState state, last_state;
+    gchar *status_name, *statistic_status_name;
+    gchar *state_name, *last_state_name;
+    const gchar *child_name;
+    guint tag;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    timer = g_object_get_data(G_OBJECT(context), TIMER_KEY);
-    if (timer) {
-        g_timer_stop(timer);
-        elapsed = g_timer_elapsed(timer, NULL);
+
+    child_name = milter_server_context_get_name(context);
+
+    state = milter_server_context_get_state(context);
+    state_name = milter_utils_get_enum_nick_name(
+        MILTER_TYPE_SERVER_CONTEXT_STATE, state);
+    last_state = milter_server_context_get_last_state(context);
+    last_state_name =
+        milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                                        last_state);
+    status = milter_server_context_get_status(context);
+    status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
+    tag = milter_agent_get_tag(MILTER_AGENT(context));
+    elapsed = milter_server_context_get_elapsed(context);
+    milter_debug("[%u] [children][milter][end][%s][%s][%s][%g] [%u] %s",
+                 priv->tag,
+                 state_name, last_state_name,
+                 status_name,
+                 elapsed,
+                 tag, child_name);
+    if (MILTER_STATUS_IS_PASS(status)) {
+        statistic_status_name = "pass";
+    } else {
+        statistic_status_name = status_name;
     }
-
-    {
-        MilterStatus status;
-        MilterServerContextState state, last_state;
-        gchar *status_name, *statistic_status_name;
-        gchar *state_name, *last_state_name;
-        const gchar *child_name;
-        guint tag;
-
-        child_name = milter_server_context_get_name(context);
-
-        state = milter_server_context_get_state(context);
-        state_name =
-            milter_utils_get_enum_nick_name(
-                MILTER_TYPE_SERVER_CONTEXT_STATE, state);
-        last_state = milter_server_context_get_last_state(context);
-        last_state_name =
-            milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
-                                            last_state);
-        status = milter_server_context_get_status(context);
-        status_name =
-            milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
-        tag = milter_agent_get_tag(MILTER_AGENT(context));
-        milter_debug("[%u] [children][milter][end][%s][%s][%s][%g][%g] [%u] %s",
-                     priv->tag,
-                     state_name, last_state_name,
-                     status_name,
-                     elapsed,
-                     milter_server_context_get_elapsed(context),
-                     tag, child_name);
-        if (MILTER_STATUS_IS_PASS(status)) {
-            statistic_status_name = "pass";
-        } else {
-            statistic_status_name = status_name;
-        }
-        milter_statistics("[milter][end][%s][%s][%g](%u): %s",
-                          last_state_name, statistic_status_name,
-                          elapsed, tag, child_name);
-        g_free(status_name);
-        g_free(state_name);
-        g_free(last_state_name);
-    }
+    milter_statistics("[milter][end][%s][%s][%g](%u): %s",
+                      last_state_name, statistic_status_name,
+                      elapsed, tag, child_name);
+    g_free(status_name);
+    g_free(state_name);
+    g_free(last_state_name);
 
     teardown_server_context_signals(MILTER_MANAGER_CHILD(context), children);
     priv->milters = g_list_remove(priv->milters, context);
