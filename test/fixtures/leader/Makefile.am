@@ -52,6 +52,7 @@ EXTRA_DIST =								\
 	header-with-leading-space-no-space.txt				\
 	header-temporary-failure.txt					\
 	header-reject.txt						\
+	header-stop.txt							\
 	helo.txt							\
 	insert-header.txt						\
 	insert-header-with-leading-space.txt				\

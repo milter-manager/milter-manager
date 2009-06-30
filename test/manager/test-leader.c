@@ -653,9 +653,14 @@ assert_response_common (MilterManagerTestScenario *scenario, const gchar *group)
                             "response: <%s>(%s)", response, group);
 
         n_received = get_integer(scenario, group, "n_received");
-        if (n_received >= g_list_length((GList *)started_clients))
+        if (n_received > g_list_length((GList *)started_clients)) {
             milter_manager_test_clients_wait_reply(started_clients,
                                                    get_n_received);
+        } else if (n_received > 0) {
+            milter_manager_test_clients_wait_n_replies(started_clients,
+                                                       get_n_received,
+                                                       n_received);
+        }
 
         actual_n_received =
             milter_manager_test_clients_collect_n_received(started_clients,
@@ -680,12 +685,36 @@ assert_response_reply_code (MilterManagerTestScenario *scenario, const gchar *gr
         milter_manager_test_server_get_received_reply_codes(server));
 }
 
+#define assert_response(scenario, group)                \
+    cut_trace_with_info_expression(                     \
+        assert_response_helper(scenario, group),        \
+        assert_response(scenario, group))
+
 static void
-assert_response (MilterManagerTestScenario *scenario, const gchar *group)
+assert_response_helper (MilterManagerTestScenario *scenario, const gchar *group)
 {
     cut_trace(assert_response_error(scenario, group));
     cut_trace(assert_response_common(scenario, group));
     cut_trace(assert_response_reply_code(scenario, group));
+}
+
+#define assert_alive(scenario, group)           \
+    cut_trace_with_info_expression(             \
+        assert_alive_helper(scenario, group),   \
+        assert_alive(scenario, group))
+
+static void
+assert_alive_helper (MilterManagerTestScenario *scenario, const gchar *group)
+{
+    guint expected_n_alive, actual_n_alive;
+
+    if (!has_key(scenario, group, "n_alive"))
+        return;
+
+    expected_n_alive = get_integer(scenario, group, "n_alive");
+    actual_n_alive =
+        milter_manager_test_clients_collect_n_alive(started_clients);
+    cut_assert_equal_uint(expected_n_alive, actual_n_alive);
 }
 
 static void
@@ -701,7 +730,8 @@ do_negotiate (MilterManagerTestScenario *scenario, const gchar *group)
     gcut_take_object(G_OBJECT(option));
     milter_server_context_negotiate(MILTER_SERVER_CONTEXT(server), option);
     milter_manager_leader_negotiate(leader, option, NULL);
-    cut_trace(assert_response(scenario, group));
+    assert_response(scenario, group);
+    assert_alive(scenario, group);
 
     if (milter_manager_test_scenario_has_group(main_scenario, group) &&
         milter_manager_test_scenario_has_key(main_scenario, group, "options")) {
@@ -747,7 +777,8 @@ do_connect (MilterManagerTestScenario *scenario, const gchar *group)
     milter_manager_leader_connect(leader, host, address, address_size);
     g_free(address);
 
-    cut_trace(assert_response(scenario, group));
+    assert_response(scenario, group);
+    assert_alive(scenario, group);
 
     expected_connect_infos = get_pair_list(scenario, group, "infos");
     actual_connect_infos = collect_received_pairs(connect_host, connect_address);
@@ -779,7 +810,8 @@ do_helo (MilterManagerTestScenario *scenario, const gchar *group)
     fqdn = get_string(scenario, group, "fqdn");
     milter_manager_leader_helo(leader, fqdn);
 
-    cut_trace(assert_response(scenario, group));
+    assert_response(scenario, group);
+    assert_alive(scenario, group);
 
     expected_fqdns = get_string_g_list(scenario, group, "fqdns");
     gcut_assert_equal_list_string(expected_fqdns,
@@ -798,7 +830,8 @@ do_envelope_from (MilterManagerTestScenario *scenario, const gchar *group)
     from = get_string(scenario, group, "from");
     milter_manager_leader_envelope_from(leader, from);
 
-    cut_trace(assert_response(scenario, group));
+    assert_response(scenario, group);
+    assert_alive(scenario, group);
 
     expected_froms = get_string_g_list(scenario, group, "froms");
     gcut_assert_equal_list_string(expected_froms,
@@ -818,7 +851,8 @@ do_envelope_recipient (MilterManagerTestScenario *scenario, const gchar *group)
     n_envelope_recipient_responses = 0;
     milter_manager_leader_envelope_recipient(leader, recipient);
 
-    cut_trace(assert_response(scenario, group));
+    assert_response(scenario, group);
+    assert_alive(scenario, group);
 
     expected_recipients = get_string_g_list(scenario, group, "recipients");
     gcut_assert_equal_list_string(expected_recipients,
@@ -852,7 +886,8 @@ do_header (MilterManagerTestScenario *scenario, const gchar *group)
 
     milter_manager_test_server_add_header(server, name, value);
 
-    cut_trace(assert_response(scenario, group));
+    assert_response(scenario, group);
+    assert_alive(scenario, group);
 
     expected_headers = get_pair_list(scenario, group, "headers");
     actual_headers =
@@ -872,7 +907,8 @@ do_end_of_header (MilterManagerTestScenario *scenario, const gchar *group)
                                     MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER);
     milter_manager_leader_end_of_header(leader);
 
-    cut_trace(assert_response(scenario, group));
+    assert_response(scenario, group);
+    assert_alive(scenario, group);
 }
 
 static void
@@ -950,7 +986,8 @@ do_body (MilterManagerTestScenario *scenario, const gchar *group)
     n_body_responses = 0;
     milter_manager_leader_body(leader, chunk, chunk_size);
 
-    cut_trace(assert_response(scenario, group));
+    assert_response(scenario, group);
+    assert_alive(scenario, group);
 
     expected_chunks = get_chunks(scenario, group);
     actual_chunks = collect_received_strings(body_chunk);
@@ -972,7 +1009,8 @@ do_end_of_message (MilterManagerTestScenario *scenario, const gchar *group)
                                     MILTER_CLIENT_CONTEXT_STATE_END_OF_MESSAGE);
     milter_manager_leader_end_of_message(leader, chunk, chunk_size);
 
-    cut_trace(assert_response(scenario, group));
+    assert_response(scenario, group);
+    assert_alive(scenario, group);
 
     gcut_assert_equal_list_string(get_chunks(scenario, group),
                                   collect_received_strings(body_chunk));
@@ -1257,6 +1295,8 @@ data_scenario_basic (void)
                  g_strdup("header-temporary-failure.txt"), g_free,
                  "header - reject",
                  g_strdup("header-reject.txt"), g_free,
+                 "header - stop",
+                 g_strdup("header-stop.txt"), g_free,
                  "end-of-header",
                  g_strdup("end-of-header.txt"), g_free,
                  "body",

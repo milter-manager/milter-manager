@@ -931,6 +931,12 @@ milter_manager_test_client_get_unknown_command (MilterManagerTestClient *client)
     return MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client)->unknown_command;
 }
 
+gboolean
+milter_manager_test_client_is_reaped (MilterManagerTestClient *client)
+{
+    return MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client)->reaped;
+}
+
 static gboolean
 cb_timeout_waiting (gpointer data)
 {
@@ -949,7 +955,7 @@ milter_manager_test_client_wait_reply (MilterManagerTestClient *client,
 
     timeout_waiting_id = g_timeout_add(100, cb_timeout_waiting,
                                        &timeout_waiting);
-    while (timeout_waiting && !getter(client))
+    while (timeout_waiting && getter(client) == 0)
         g_main_context_iteration(NULL, TRUE);
     g_source_remove(timeout_waiting_id);
 
@@ -960,22 +966,29 @@ void
 milter_manager_test_clients_wait_reply (const GList *clients,
                                         MilterManagerTestClientGetNReceived getter)
 {
+    milter_manager_test_clients_wait_n_replies(clients, getter,
+                                               g_list_length((GList *)clients));
+}
+
+void
+milter_manager_test_clients_wait_n_replies(const GList *clients,
+                                           MilterManagerTestClientGetNReceived getter,
+                                           guint n_replies)
+{
     gboolean timeout_waiting = TRUE;
     guint timeout_waiting_id;
-    guint n_clients;
 
-    n_clients = g_list_length((GList *)clients);
     timeout_waiting_id = g_timeout_add(1000, cb_timeout_waiting,
                                        &timeout_waiting);
     while (timeout_waiting &&
-           n_clients > milter_manager_test_clients_collect_n_received(clients,
+           n_replies > milter_manager_test_clients_collect_n_received(clients,
                                                                       getter)) {
         g_main_context_iteration(NULL, TRUE);
     }
     g_source_remove(timeout_waiting_id);
 
     cut_assert_true(timeout_waiting, "timeout");
-    cut_assert_equal_uint(n_clients,
+    cut_assert_equal_uint(n_replies,
                           milter_manager_test_clients_collect_n_received(clients,
                                                                          getter));
 }
@@ -1031,6 +1044,22 @@ milter_manager_test_clients_collect_n_received (const GList *clients,
     }
 
     return n_received;
+}
+
+guint
+milter_manager_test_clients_collect_n_alive (const GList *clients)
+{
+    guint n_alive = 0;
+    const GList *node;
+
+    for (node = clients; node; node = g_list_next(node)) {
+        MilterManagerTestClient *client = node->data;
+
+        if (!milter_manager_test_client_is_reaped(client))
+            n_alive++;
+    }
+
+    return n_alive;
 }
 
 const GList *

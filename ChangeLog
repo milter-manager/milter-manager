@@ -1,5 +1,16 @@
 2009-06-30  Kouhei Sutou  <kou@clear-code.com>
 
+	* README*: add sgyk. Thanks!!!
+
+	* milter/manager/milter-manager-children.[ch],
+	test/lib/milter-manager-test-client.[ch],
+	test/manager/test-leader.c,
+	test/fixtures/leader/Makefile.am,
+	test/fixtures/leader/header-stop.{conf,txt},
+	test/fixtures/leader/data.txt: fix stop handling on message
+	oriented event.
+	Reported by sgyk. Thanks!!!
+
 	* test/fixtures/leader/Makefile.am: fix typos.
 
 	* milter/server/milter-server-context.c: log around stopper.

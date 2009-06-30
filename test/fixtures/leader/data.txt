@@ -15,3 +15,5 @@ command=data
 response=data
 n_received=1
 status=continue
+
+n_alive=2

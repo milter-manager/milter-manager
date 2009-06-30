@@ -125,6 +125,9 @@ guint                    milter_manager_test_client_get_n_unknown_received
 const gchar             *milter_manager_test_client_get_unknown_command
                                               (MilterManagerTestClient *client);
 
+gboolean                 milter_manager_test_client_is_reaped
+                                              (MilterManagerTestClient *client);
+
 void                     milter_manager_test_client_clear_data
                                               (MilterManagerTestClient *client);
 void                     milter_manager_test_client_wait_reply
@@ -140,9 +143,15 @@ MilterManagerTestClient *milter_manager_test_clients_find
 void                     milter_manager_test_clients_wait_reply
                                               (const GList *clients,
                                                MilterManagerTestClientGetNReceived getter);
+void                     milter_manager_test_clients_wait_n_replies
+                                              (const GList *clients,
+                                               MilterManagerTestClientGetNReceived getter,
+                                               guint n_replies);
 guint                    milter_manager_test_clients_collect_n_received
                                               (const GList *clients,
                                                MilterManagerTestClientGetNReceived getter);
+guint                    milter_manager_test_clients_collect_n_alive
+                                              (const GList *clients);
 const GList             *milter_manager_test_clients_collect_strings
                                               (const GList *clients,
                                                MilterManagerTestClientGetString getter);

@@ -123,7 +123,7 @@ void                   milter_manager_children_set_status  (MilterManagerChildre
                                                             MilterServerContextState state,
                                                             MilterStatus status);
 MilterServerContextState
-                       milter_manager_children_get_current_state
+                       milter_manager_children_get_processing_state
                                                            (MilterManagerChildren *children);
 void                   milter_manager_children_set_launcher_channel
                                                            (MilterManagerChildren *children,
