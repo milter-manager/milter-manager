@@ -1,5 +1,7 @@
 2009-06-30  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/manager/milter-manager-children.c: avoid double quit.
+
 	* README*: add sgyk. Thanks!!!
 
 	* milter/manager/milter-manager-children.[ch],

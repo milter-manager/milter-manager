@@ -2240,6 +2240,18 @@ queue_clear (GQueue *queue)
 }
 
 static void
+set_state (MilterManagerChildren *children,
+           MilterServerContextState state)
+{
+    MilterManagerChildrenPrivate *priv;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    priv->state = state;
+    priv->processing_state = priv->state;
+}
+
+static void
 init_reply_queue (MilterManagerChildren *children,
                   MilterServerContextState state)
 {
@@ -2247,9 +2259,8 @@ init_reply_queue (MilterManagerChildren *children,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
+    set_state(children, state);
     queue_clear(priv->reply_queue);
-    priv->state = state;
-    priv->processing_state = priv->state;
     g_hash_table_insert(priv->reply_statuses,
                         GINT_TO_POINTER(state),
                         GINT_TO_POINTER(MILTER_STATUS_NOT_CHANGE));
@@ -3003,11 +3014,15 @@ milter_manager_children_quit (MilterManagerChildren *children)
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    init_reply_queue(children, MILTER_SERVER_CONTEXT_STATE_QUIT);
+    set_state(children, MILTER_SERVER_CONTEXT_STATE_QUIT);
     for (child = priv->milters; child; child = g_list_next(child)) {
-        MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
-        g_queue_push_tail(priv->reply_queue, context);
-        if (milter_server_context_quit(context))
+        MilterServerContext *context;
+        MilterServerContextState state;
+
+        context = MILTER_SERVER_CONTEXT(child->data);
+        state = milter_server_context_get_state(context);
+        if (state == MILTER_SERVER_CONTEXT_STATE_QUIT ||
+            milter_server_context_quit(context))
             success = TRUE;
     }
 
@@ -3026,10 +3041,9 @@ milter_manager_children_abort (MilterManagerChildren *children)
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    init_reply_queue(children, MILTER_SERVER_CONTEXT_STATE_ABORT);
+    set_state(children, MILTER_SERVER_CONTEXT_STATE_ABORT);
     for (child = priv->milters; child; child = g_list_next(child)) {
         MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
-        g_queue_push_tail(priv->reply_queue, context);
         if (milter_server_context_abort(context))
             success = TRUE;
     }
