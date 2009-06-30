@@ -1586,6 +1586,7 @@ cb_stopped (MilterServerContext *context, gpointer user_data)
     case MILTER_SERVER_CONTEXT_STATE_HELO:
     case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM:
         compile_reply_status(children, state, MILTER_STATUS_ACCEPT);
+        remove_child_from_queue(children, context);
         milter_server_context_abort(context);
         milter_server_context_quit(context);
         break;
