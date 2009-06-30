@@ -1,5 +1,8 @@
 2009-07-01  Kouhei Sutou  <kou@clear-code.com>
 
+	* TODO: remove: support elapsed time per milter. (don't count time
+	between other milter is working but the milter isn't working)
+
 	* doc/reference/milter-manager-docs.sgml: don't include
 	performance related document in gtk-doc. It should be revised for
 	publishing.

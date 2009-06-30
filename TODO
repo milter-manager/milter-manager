@@ -1,7 +1,5 @@
 * milter-manager-log-analyzer: <X-Greylist>=<Sender is SPF-compliant ...> should
   be counted as SPF pass.
-* support elapsed time per milter. (don't count time between
-  other milter is working but the milter isn't working)
 * [1.1.1] support a configration for max file descriptor
   number that can be opened. (ref. setrlimit() and RLIMIT_NOFILE)
 * [1.1.1] support max connections by MilterClient.
