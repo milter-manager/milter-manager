@@ -1,3 +1,7 @@
+2009-06-30  Kouhei Sutou  <kou@clear-code.com>
+
+	* milter/server/milter-server-context.c: log around stopper.
+
 2009-06-29  Kouhei Sutou  <kou@clear-code.com>
 
 	* binding/ruby/src/toolkit/rb-milter-option.c,

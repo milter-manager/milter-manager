@@ -1118,8 +1118,11 @@ milter_server_context_connect (MilterServerContext *context,
 
     milter_protocol_agent_set_macro_context(MILTER_PROTOCOL_AGENT(context),
                                             MILTER_COMMAND_CONNECT);
+    milter_debug("[%u] [server][stop-on-connect][start] %s", tag, name);
     g_signal_emit(context, signals[STOP_ON_CONNECT], 0,
                   host_name, address, address_length, &stop);
+    milter_debug("[%u] [server][stop-on-connect][end] %s: stop=<%s>",
+                 tag, name, stop ? "true" : "false");
     if (stop) {
         stop_on_state(context, MILTER_SERVER_CONTEXT_STATE_CONNECT);
         return TRUE;
@@ -1159,7 +1162,10 @@ milter_server_context_envelope_from (MilterServerContext *context,
 
     milter_protocol_agent_set_macro_context(MILTER_PROTOCOL_AGENT(context),
                                             MILTER_COMMAND_ENVELOPE_FROM);
+    milter_debug("[%u] [server][stop-on-envelope-from][start] %s", tag, name);
     g_signal_emit(context, signals[STOP_ON_ENVELOPE_FROM], 0, from, &stop);
+    milter_debug("[%u] [server][stop-on-envelope-from][end] %s: stop=<%s>",
+                 tag, name, stop ? "true" : "false");
     if (stop) {
         stop_on_state(context, MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM);
         return TRUE;
@@ -1201,8 +1207,12 @@ milter_server_context_envelope_recipient (MilterServerContext *context,
 
     milter_protocol_agent_set_macro_context(MILTER_PROTOCOL_AGENT(context),
                                             MILTER_COMMAND_ENVELOPE_RECIPIENT);
+    milter_debug("[%u] [server][stop-on-envelope-recipient][start] %s",
+                 tag, name);
     g_signal_emit(context, signals[STOP_ON_ENVELOPE_RECIPIENT], 0,
                   recipient, &stop);
+    milter_debug("[%u] [server][stop-on-envelope-recipient][end] %s: stop=<%s>",
+                 tag, name, stop ? "true" : "false");
     if (stop) {
         stop_on_state(context, MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT);
         return TRUE;
@@ -1243,7 +1253,10 @@ milter_server_context_data (MilterServerContext *context)
 
     milter_protocol_agent_set_macro_context(MILTER_PROTOCOL_AGENT(context),
                                             MILTER_COMMAND_DATA);
+    milter_debug("[%u] [server][stop-on-data][start] %s", tag, name);
     g_signal_emit(context, signals[STOP_ON_DATA], 0, &stop);
+    milter_debug("[%u] [server][stop-on-data][end] %s: stop=<%s>",
+                 tag, name, stop ? "true" : "false");
     if (stop) {
         stop_on_state(context, MILTER_SERVER_CONTEXT_STATE_DATA);
         return TRUE;
@@ -1314,8 +1327,11 @@ milter_server_context_header (MilterServerContext *context,
 
     milter_protocol_agent_set_macro_context(MILTER_PROTOCOL_AGENT(context),
                                             MILTER_COMMAND_HEADER);
+    milter_debug("[%u] [server][stop-on-header][start] %s", tag, name);
     g_signal_emit(context, signals[STOP_ON_HEADER], 0,
                   header_name, header_value, &stop);
+    milter_debug("[%u] [server][stop-on-header][end] %s: stop=<%s>",
+                 tag, name, stop ? "true" : "false");
     if (stop) {
         stop_on_state(context, MILTER_SERVER_CONTEXT_STATE_HEADER);
         return TRUE;
@@ -1354,7 +1370,10 @@ milter_server_context_end_of_header (MilterServerContext *context)
 
     milter_protocol_agent_set_macro_context(MILTER_PROTOCOL_AGENT(context),
                                             MILTER_COMMAND_END_OF_HEADER);
+    milter_debug("[%u] [server][stop-on-end-of-header][start] %s", tag, name);
     g_signal_emit(context, signals[STOP_ON_END_OF_HEADER], 0, &stop);
+    milter_debug("[%u] [server][stop-on-end-of-header][end] %s: stop=<%s>",
+                 tag, name, stop ? "true" : "false");
     if (stop) {
         stop_on_state(context, MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER);
         return TRUE;
@@ -1425,7 +1444,10 @@ milter_server_context_body (MilterServerContext *context,
 
     milter_protocol_agent_set_macro_context(MILTER_PROTOCOL_AGENT(context),
                                             MILTER_COMMAND_BODY);
+    milter_debug("[%u] [server][stop-on-body][start] %s", tag, name);
     g_signal_emit(context, signals[STOP_ON_BODY], 0, chunk, size, &stop);
+    milter_debug("[%u] [server][stop-on-body][end] %s: stop=<%s>",
+                 tag, name, stop ? "true" : "false");
     if (stop) {
         stop_on_state(context, MILTER_SERVER_CONTEXT_STATE_BODY);
         return TRUE;
@@ -1474,15 +1496,20 @@ milter_server_context_end_of_message (MilterServerContext *context,
     gsize packet_size;
     MilterEncoder *encoder;
     gboolean stop = FALSE;
+    guint tag;
+    const gchar *name;
 
-    milter_debug("[%u] [server][send][end-of-message] %s",
-                 milter_agent_get_tag(MILTER_AGENT(context)),
-                 milter_server_context_get_name(context));
+    tag = milter_agent_get_tag(MILTER_AGENT(context));
+    name = milter_server_context_get_name(context);
+    milter_debug("[%u] [server][send][end-of-message] %s", tag, name);
 
     milter_protocol_agent_set_macro_context(MILTER_PROTOCOL_AGENT(context),
                                             MILTER_COMMAND_END_OF_MESSAGE);
+    milter_debug("[%u] [server][stop-on-end-of-message][start] %s", tag, name);
     g_signal_emit(context, signals[STOP_ON_END_OF_MESSAGE], 0,
                   chunk, size, &stop);
+    milter_debug("[%u] [server][stop-on-end-of-message][end] %s: stop=<%s>",
+                 tag, name, stop ? "true" : "false");
     if (stop) {
         stop_on_state(context, MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE);
         return TRUE;
