@@ -1,5 +1,9 @@
 2009-07-01  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/lib/milter/manager.rb,
+	module/configuration/ruby/milter-manager-ruby-configuration.c: run
+	Ruby's GC on Ruby level not C level.
+
 	* milter/manager/milter-manager-children.c: remove needless timer.
 
 	* TODO: 1.1.1 -> 1.3.0.

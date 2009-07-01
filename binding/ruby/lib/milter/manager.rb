@@ -144,6 +144,7 @@ module Milter::Manager
         guard do
           new(configuration).load_configuration(file)
         end
+        GC.start
       end
 
       def load_custom(configuration, file)
@@ -151,6 +152,7 @@ module Milter::Manager
         guard do
           new(configuration).load_custom_configuration(file)
         end
+        GC.start
       end
 
       def guard(fallback_value=nil)
