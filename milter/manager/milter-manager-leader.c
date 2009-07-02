@@ -268,7 +268,10 @@ static MilterManagerLeaderState
 next_state (MilterManagerLeader *leader,
             MilterManagerLeaderState state)
 {
+    MilterManagerLeaderPrivate *priv;
     MilterManagerLeaderState next_state;
+
+    priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
 
     switch (state) {
       case MILTER_MANAGER_LEADER_STATE_NEGOTIATE:
@@ -300,15 +303,11 @@ next_state (MilterManagerLeader *leader,
         break;
       case MILTER_MANAGER_LEADER_STATE_BODY:
       case MILTER_MANAGER_LEADER_STATE_BODY_REPLIED:
-      {
-        MilterManagerLeaderPrivate *priv;
-        priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
         if (!priv->sent_end_of_message)
             next_state = MILTER_MANAGER_LEADER_STATE_BODY_REPLIED;
         else
             next_state = MILTER_MANAGER_LEADER_STATE_END_OF_MESSAGE;
         break;
-      }
       case MILTER_MANAGER_LEADER_STATE_END_OF_MESSAGE:
         next_state = MILTER_MANAGER_LEADER_STATE_END_OF_MESSAGE_REPLIED;
         break;
@@ -325,7 +324,8 @@ next_state (MilterManagerLeader *leader,
             inspected_state =
                 milter_utils_inspect_enum(MILTER_TYPE_MANAGER_LEADER_STATE,
                                           state);
-            g_print("ERROR! - invalid state: %s|FIXME\n", inspected_state);
+            milter_error("[%u] [leader][error][invalid-state] %s",
+                         priv->tag, inspected_state);
             g_free(inspected_state);
         }
         next_state = MILTER_MANAGER_LEADER_STATE_INVALID;
@@ -377,9 +377,8 @@ reply (MilterManagerLeader *leader, MilterStatus status)
                                 "invalid state to reply: %s",
                                 state_name);
             g_free(state_name);
-            milter_error("[leader][error] %s", error->message);
-            milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(priv->children),
-                                        error);
+            milter_error("[%u] [leader][error] %s", priv->tag, error->message);
+            milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(leader), error);
             g_error_free(error);
             return;
         }
