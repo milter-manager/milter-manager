@@ -1,0 +1,17 @@
+[scenario]
+clients=client10026;client10027
+import=header-again.txt
+actions=end-of-header
+
+[client10026]
+port=10026
+
+[client10027]
+port=10027
+
+[end-of-header]
+command=end-of-header
+
+response=end-of-header
+n_received=1
+status=continue

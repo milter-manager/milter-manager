@@ -139,7 +139,6 @@ static void remove_queue_in_negotiate
                             MilterManagerChild *child);
 static MilterServerContext *get_first_child_in_command_waiting_child_queue
                            (MilterManagerChildren *children);
-static void     clear_body (MilterManagerChildren *children);
 static gboolean write_body (MilterManagerChildren *children,
                             const gchar *chunk,
                             gsize size);
@@ -228,9 +227,9 @@ milter_manager_children_init (MilterManagerChildren *milter)
     priv->reply_statuses = g_hash_table_new(g_direct_hash, g_direct_equal);
 
     priv->original_headers = NULL;
-    priv->headers = milter_headers_new();
+    priv->headers = NULL;
     priv->processing_header_index = 0;
-    priv->body = g_string_new(NULL);
+    priv->body = NULL;
     priv->body_file = NULL;
     priv->body_file_name = NULL;
     priv->end_of_message_chunk = NULL;
@@ -258,8 +257,13 @@ milter_manager_children_init (MilterManagerChildren *milter)
 }
 
 static void
-body_file_free (MilterManagerChildrenPrivate *priv)
+dispose_body_related_data (MilterManagerChildrenPrivate *priv)
 {
+    if (priv->body) {
+        g_string_free(priv->body, TRUE);
+        priv->body = NULL;
+    }
+
     if (priv->body_file) {
         g_io_channel_unref(priv->body_file);
         priv->body_file = NULL;
@@ -273,7 +277,7 @@ body_file_free (MilterManagerChildrenPrivate *priv)
 }
 
 static void
-dispose_reply (MilterManagerChildrenPrivate *priv)
+dispose_reply_related_data (MilterManagerChildrenPrivate *priv)
 {
     priv->reply_code = 0;
 
@@ -289,6 +293,37 @@ dispose_reply (MilterManagerChildrenPrivate *priv)
 }
 
 static void
+dispose_message_related_data (MilterManagerChildrenPrivate *priv)
+{
+    if (priv->command_waiting_child_queue) {
+        g_list_free(priv->command_waiting_child_queue);
+        priv->command_waiting_child_queue = NULL;
+    }
+
+    if (priv->command_queue) {
+        g_list_free(priv->command_queue);
+        priv->command_queue = NULL;
+    }
+
+    if (priv->original_headers) {
+        g_object_unref(priv->original_headers);
+        priv->original_headers = NULL;
+    }
+
+    if (priv->headers) {
+        g_object_unref(priv->headers);
+        priv->headers = NULL;
+    }
+
+    dispose_body_related_data(priv);
+
+    if (priv->end_of_message_chunk) {
+        g_free(priv->end_of_message_chunk);
+        priv->end_of_message_chunk = NULL;
+    }
+}
+
+static void
 dispose (GObject *object)
 {
     MilterManagerChildrenPrivate *priv;
@@ -298,16 +333,6 @@ dispose (GObject *object)
     if (priv->reply_queue) {
         g_queue_free(priv->reply_queue);
         priv->reply_queue = NULL;
-    }
-
-    if (priv->command_waiting_child_queue) {
-        g_list_free(priv->command_waiting_child_queue);
-        priv->command_waiting_child_queue = NULL;
-    }
-
-    if (priv->command_queue) {
-        g_list_free(priv->command_queue);
-        priv->command_queue = NULL;
     }
 
     if (priv->try_negotiate_ids) {
@@ -349,31 +374,11 @@ dispose (GObject *object)
         priv->reply_statuses = NULL;
     }
 
-    if (priv->original_headers) {
-        g_object_unref(priv->original_headers);
-        priv->original_headers = NULL;
-    }
+    dispose_reply_related_data(priv);
+    dispose_message_related_data(priv);
 
-    if (priv->headers) {
-        g_object_unref(priv->headers);
-        priv->headers = NULL;
-    }
-
-    if (priv->body) {
-        g_string_free(priv->body, TRUE);
-        priv->body = NULL;
-    }
-
-    body_file_free(priv);
-
-    if (priv->end_of_message_chunk) {
-        g_free(priv->end_of_message_chunk);
-        priv->end_of_message_chunk = NULL;
-    }
-
-    dispose_reply(priv);
-
-    milter_manager_children_set_launcher_channel(MILTER_MANAGER_CHILDREN(object), NULL, NULL);
+    milter_manager_children_set_launcher_channel(MILTER_MANAGER_CHILDREN(object),
+                                                 NULL, NULL);
 
     G_OBJECT_CLASS(milter_manager_children_parent_class)->dispose(object);
 }
@@ -729,7 +734,7 @@ remove_child_from_queue (MilterManagerChildren *children,
             g_signal_emit_by_name(children, "reply-code",
                                   priv->reply_code, priv->reply_extended_code,
                                   priv->reply_message);
-            dispose_reply(priv);
+            dispose_reply_related_data(priv);
         } else {
             if (status != MILTER_STATUS_NOT_CHANGE &&
                 priv->processing_state != MILTER_SERVER_CONTEXT_STATE_BODY) {
@@ -765,6 +770,14 @@ emit_reply_status_of_state (MilterManagerChildren *children,
 
     status = get_reply_status_for_state(children, state);
     g_signal_emit_by_name(children, status_to_signal_name(status));
+
+    if (state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) {
+        MilterManagerChildrenPrivate *priv;
+
+        /* FIXME: emit message-processed signal for logging */
+        priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+        dispose_message_related_data(priv);
+    }
 }
 
 static gboolean
@@ -1179,7 +1192,7 @@ cb_reply_code (MilterServerContext *context,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    dispose_reply(priv);
+    dispose_reply_related_data(priv);
     priv->reply_code = code;
     priv->reply_extended_code = g_strdup(extended_code);
     priv->reply_message = g_strdup(message);
@@ -1459,7 +1472,7 @@ cb_replace_body (MilterServerContext *context,
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     if (!priv->replaced_body_for_each_child)
-        clear_body(children);
+        dispose_body_related_data(priv);
 
     if (!write_body(children, chunk, chunk_size))
         return;
@@ -2577,6 +2590,8 @@ milter_manager_children_header (MilterManagerChildren *children,
 
     priv->state = MILTER_SERVER_CONTEXT_STATE_HEADER;
     priv->processing_state = priv->state;
+    if (!priv->headers)
+        priv->headers = milter_headers_new();
     milter_headers_add_header(priv->headers, name, value);
     init_command_waiting_child_queue(children, MILTER_COMMAND_HEADER);
 
@@ -2634,38 +2649,6 @@ open_body_file (MilterManagerChildren *children)
     return TRUE;
 }
 
-static void
-clear_body_file (MilterManagerChildren *children)
-{
-    MilterManagerChildrenPrivate *priv;
-
-    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
-    body_file_free(priv);
-    priv->body = g_string_new(NULL);
-}
-
-static void
-clear_body_string (MilterManagerChildren *children)
-{
-    MilterManagerChildrenPrivate *priv;
-
-    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
-    g_string_truncate(priv->body, 0);
-}
-
-static void
-clear_body (MilterManagerChildren *children)
-{
-    MilterManagerChildrenPrivate *priv;
-
-    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
-
-    if (priv->body)
-        return clear_body_string(children);
-    else
-        return clear_body_file(children);
-}
-
 static gboolean
 write_body_to_file (MilterManagerChildren *children,
                     const gchar *chunk,
@@ -2709,7 +2692,10 @@ write_body_to_string (MilterManagerChildren *children,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    g_string_append_len(priv->body, chunk, size);
+    if (!priv->body)
+        priv->body = g_string_new_len(chunk, size);
+    else
+        g_string_append_len(priv->body, chunk, size);
 
     if (priv->body->len > MAX_ON_MEMORY_BODY_SIZE) {
         gboolean success;
@@ -2732,10 +2718,10 @@ write_body (MilterManagerChildren *children,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    if (priv->body)
-        return write_body_to_string(children, chunk, size);
-    else
+    if (priv->body_file)
         return write_body_to_file(children, chunk, size);
+    else
+        return write_body_to_string(children, chunk, size);
 }
 
 gboolean
@@ -3024,6 +3010,9 @@ milter_manager_children_abort (MilterManagerChildren *children)
         if (milter_server_context_abort(context))
             success = TRUE;
     }
+
+    /* FIXME: should emit some signal for logging? */
+    dispose_message_related_data(priv);
 
     return success;
 }

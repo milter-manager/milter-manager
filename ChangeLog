@@ -1,5 +1,9 @@
 2009-07-02  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/manager/milter-manager-children.c,
+	test/fixtures/leader/, test/manager/test-leader.c: clear message
+	oriented data after mail transaction is finished.
+
 	* milter/manager/milter-manager-children.c (cb_stopped): remove
 	needless code.
 

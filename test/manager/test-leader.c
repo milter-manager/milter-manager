@@ -1279,55 +1279,16 @@ data_scenario_basic (void)
                  g_strdup("envelope-recipient.txt"), g_free,
                  "data",
                  g_strdup("data.txt"), g_free,
-                 "data - no data flag on second client",
-                 g_strdup("no-data-second-client.txt"), g_free,
-                 "data - close without reply",
-                 g_strdup("data-close-without-reply.txt"), g_free,
                  "header - from",
                  g_strdup("header-from.txt"), g_free,
                  "header - from-and-mailer",
                  g_strdup("header-from-and-mailer.txt"), g_free,
-                 "header - with-leading-space",
-                 g_strdup("header-with-leading-space.txt"), g_free,
-                 "header - with-leading-space - no space",
-                 g_strdup("header-with-leading-space-no-space.txt"), g_free,
-                 "header - temporary failure",
-                 g_strdup("header-temporary-failure.txt"), g_free,
-                 "header - reject",
-                 g_strdup("header-reject.txt"), g_free,
-                 "header - stop",
-                 g_strdup("header-stop.txt"), g_free,
                  "end-of-header",
                  g_strdup("end-of-header.txt"), g_free,
                  "body",
                  g_strdup("body.txt"), g_free,
-                 "body - larger than milter chunk size",
-                 g_strdup("body-larger-than-milter-chunk-size.txt"), g_free,
-                 "body - no body flag on both client",
-                 g_strdup("no-body-flag-on-both-client.txt"), g_free,
-                 "end-of-message - no body flag",
-                 g_strdup("no-body-flag.txt"), g_free,
-                 "end-of-message - no body flag on second client",
-                 g_strdup("no-body-flag-on-second-client.txt"), g_free,
                  "end-of-message",
                  g_strdup("end-of-message.txt"), g_free,
-                 "end-of-message - chunk",
-                 g_strdup("end-of-message-chunk.txt"), g_free,
-                 "end-of-message - reject",
-                 g_strdup("end-of-message-reject.txt"), g_free,
-                 "end-of-message - discard",
-                 g_strdup("end-of-message-discard.txt"), g_free,
-                 "end-of-message - temporary-failure",
-                 g_strdup("end-of-message-temporary-failure.txt"), g_free,
-                 "end-of-message - accept",
-                 g_strdup("end-of-message-accept.txt"), g_free,
-                 "end-of-message - replaced",
-                 g_strdup("end-of-message-replaced.txt"), g_free,
-                 "end-of-message - reply code - reject",
-                 g_strdup("end-of-message-reply-code-reject.txt"), g_free,
-                 "end-of-message - reply code - temporary failure",
-                 g_strdup("end-of-message-reply-code-temporary-failure.txt"),
-                 g_free,
                  "quit",
                  g_strdup("quit.txt"), g_free,
                  "abort - on envelope-from",
@@ -1407,15 +1368,92 @@ data_scenario_envelope_recipient (void)
         "envelope-recipient - temporary-failure - all",
         g_strdup("envelope-recipient-temporary-failure-all.txt"), g_free,
         "envelope-recipient - stop",
-        g_strdup("envelope-recipient-stop.txt"), g_free);
+        g_strdup("envelope-recipient-stop.txt"), g_free,
+        "envelope-recipient - again",
+        g_strdup("envelope-recipient-again.txt"), g_free);
+}
+
+static void
+data_scenario_data (void)
+{
+    cut_add_data("data - no data flag on second client",
+                 g_strdup("no-data-second-client.txt"), g_free,
+                 "data - close without reply",
+                 g_strdup("data-close-without-reply.txt"), g_free,
+                 NULL);
+}
+
+static void
+data_scenario_header (void)
+{
+    cut_add_data("header - with-leading-space",
+                 g_strdup("header-with-leading-space.txt"), g_free,
+                 "header - with-leading-space - no space",
+                 g_strdup("header-with-leading-space-no-space.txt"), g_free,
+                 "header - temporary failure",
+                 g_strdup("header-temporary-failure.txt"), g_free,
+                 "header - reject",
+                 g_strdup("header-reject.txt"), g_free,
+                 "header - stop",
+                 g_strdup("header-stop.txt"), g_free,
+                 "header - again",
+                 g_strdup("header-again.txt"), g_free,
+                 NULL);
+}
+
+static void
+data_scenario_end_of_header (void)
+{
+    cut_add_data("end-of-header - again",
+                 g_strdup("end-of-header-again.txt"), g_free,
+                 NULL);
 }
 
 static void
 data_scenario_body (void)
 {
-    cut_add_data("body - skip", g_strdup("body-skip.txt"), g_free,
-                 "body - skip all", g_strdup("body-skip-all.txt"), g_free,
-                 "body - accept", g_strdup("body-accept.txt"), g_free);
+    cut_add_data("body - larger than milter chunk size",
+                 g_strdup("body-larger-than-milter-chunk-size.txt"), g_free,
+                 "body - no body flag on both client",
+                 g_strdup("no-body-flag-on-both-client.txt"), g_free,
+                 "body - skip",
+                 g_strdup("body-skip.txt"), g_free,
+                 "body - skip all",
+                 g_strdup("body-skip-all.txt"), g_free,
+                 "body - accept",
+                 g_strdup("body-accept.txt"), g_free,
+                 "body - again",
+                 g_strdup("body-again.txt"), g_free,
+                 NULL);
+}
+
+static void
+data_scenario_end_of_message (void)
+{
+    cut_add_data("end-of-message - no body flag",
+                 g_strdup("no-body-flag.txt"), g_free,
+                 "end-of-message - no body flag on second client",
+                 g_strdup("no-body-flag-on-second-client.txt"), g_free,
+                 "end-of-message - chunk",
+                 g_strdup("end-of-message-chunk.txt"), g_free,
+                 "end-of-message - reject",
+                 g_strdup("end-of-message-reject.txt"), g_free,
+                 "end-of-message - discard",
+                 g_strdup("end-of-message-discard.txt"), g_free,
+                 "end-of-message - temporary-failure",
+                 g_strdup("end-of-message-temporary-failure.txt"), g_free,
+                 "end-of-message - accept",
+                 g_strdup("end-of-message-accept.txt"), g_free,
+                 "end-of-message - replaced",
+                 g_strdup("end-of-message-replaced.txt"), g_free,
+                 "end-of-message - reply code - reject",
+                 g_strdup("end-of-message-reply-code-reject.txt"), g_free,
+                 "end-of-message - reply code - temporary failure",
+                 g_strdup("end-of-message-reply-code-temporary-failure.txt"),
+                 g_free,
+                 "end-of-message - again",
+                 g_strdup("end-of-message-again.txt"), g_free,
+                 NULL);
 }
 
 static void
@@ -1432,7 +1470,11 @@ data_scenario (void)
     data_scenario_end_of_message_action();
     data_scenario_envelope_from();
     data_scenario_envelope_recipient();
+    data_scenario_data();
+    data_scenario_header();
+    data_scenario_end_of_header();
     data_scenario_body();
+    data_scenario_end_of_message();
     data_scenario_reply_code();
 }
 

@@ -1,0 +1,22 @@
+[scenario]
+clients=client10026;client10027
+import=body-again.txt
+actions=end-of-message
+
+[client10026]
+port=10026
+
+[client10027]
+port=10027
+
+[end-of-message]
+command=end-of-message
+
+response=end-of-message
+n_received=2
+status=continue
+
+chunks=;Hi, Hi,;
+end_of_message_chunks=;;
+
+headers=From:kou+sender@example.com;From:kou+sender2@example.com;X-mailer:milter-mailer

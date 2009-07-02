@@ -1,0 +1,21 @@
+[scenario]
+clients=client10026;client10027
+import=end-of-header-again.txt
+actions=body
+
+[client10026]
+port=10026
+
+[client10027]
+port=10027
+
+[body]
+command=body
+
+chunk=Hi, Hi,
+
+response=body
+n_received=1
+status=continue
+
+chunks=Hi, Hi,;;

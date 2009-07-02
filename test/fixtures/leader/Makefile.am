@@ -9,6 +9,7 @@ EXTRA_DIST =								\
 	body-skip-all.txt						\
 	body-skip.txt							\
 	body.txt							\
+	body-again.txt							\
 	change-from.txt							\
 	change-header.txt						\
 	change-header-with-leading-space.txt				\
@@ -16,9 +17,11 @@ EXTRA_DIST =								\
 	connect.txt							\
 	data.txt							\
 	data-close-without-reply.txt					\
+	data-again.txt							\
 	delete-header.txt						\
 	delete-recipient.txt						\
 	end-of-header.txt						\
+	end-of-header-again.txt						\
 	end-of-message-accept.txt					\
 	end-of-message-chunk.txt					\
 	end-of-message-discard.txt					\
@@ -28,6 +31,7 @@ EXTRA_DIST =								\
 	end-of-message-reply-code-reject.txt				\
 	end-of-message-reply-code-temporary-failure.txt			\
 	end-of-message.txt						\
+	end-of-message-again.txt					\
 	envelope-from-accept-all.txt					\
 	envelope-from-accept.txt					\
 	envelope-from-discard.txt					\
@@ -47,6 +51,7 @@ EXTRA_DIST =								\
 	envelope-recipient-stop.txt					\
 	envelope-recipient-stop.conf					\
 	envelope-recipient.txt						\
+	envelope-recipient-again.txt					\
 	header-from-and-mailer.txt					\
 	header-from.txt							\
 	header-with-leading-space.txt					\
@@ -54,6 +59,7 @@ EXTRA_DIST =								\
 	header-temporary-failure.txt					\
 	header-reject.txt						\
 	header-stop.txt							\
+	header-again.txt						\
 	helo.txt							\
 	insert-header.txt						\
 	insert-header-with-leading-space.txt				\
