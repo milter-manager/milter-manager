@@ -1,5 +1,7 @@
 2009-07-02  Kouhei Sutou  <kou@clear-code.com>
 
+	* html/milter-manager.css: don't show outline for other language link.
+
 	* milter-manager.spec.in: add 1.1.0 entry.
 
 	* html/index.html*, doc/reference/header-dev*.html: 1.1.0 -> 1.1.1.
