@@ -320,12 +320,14 @@ next_state (MilterManagerLeader *leader,
       default:
         {
             gchar *inspected_state;
+            guint tag;
 
+            tag = milter_agent_get_tag(MILTER_AGENT(priv->client_context));
             inspected_state =
                 milter_utils_inspect_enum(MILTER_TYPE_MANAGER_LEADER_STATE,
                                           state);
             milter_error("[%u] [leader][error][invalid-state] %s",
-                         priv->tag, inspected_state);
+                         tag, inspected_state);
             g_free(inspected_state);
         }
         next_state = MILTER_MANAGER_LEADER_STATE_INVALID;
@@ -367,17 +369,22 @@ reply (MilterManagerLeader *leader, MilterStatus status)
             g_signal_emit_by_name(priv->client_context, signal_name, status);
         } else {
             GError *error;
-            gchar *state_name;
+            guint tag;
+            gchar *state_name, *status_name;
 
+            tag = milter_agent_get_tag(MILTER_AGENT(priv->client_context));
             state_name =
                 milter_utils_get_enum_nick_name(MILTER_TYPE_MANAGER_LEADER_STATE,
                                                 priv->state);
+            status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS,
+                                                          status);
             error = g_error_new(MILTER_MANAGER_LEADER_ERROR,
                                 MILTER_MANAGER_LEADER_ERROR_INVALID_STATE,
-                                "invalid state to reply: %s",
-                                state_name);
+                                "invalid state to reply: %s: %s",
+                                state_name, status_name);
             g_free(state_name);
-            milter_error("[%u] [leader][error] %s", priv->tag, error->message);
+            g_free(status_name);
+            milter_error("[%u] [leader][error] %s", tag, error->message);
             milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(leader), error);
             g_error_free(error);
             return;
