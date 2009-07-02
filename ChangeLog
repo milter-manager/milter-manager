@@ -1,5 +1,9 @@
 2009-07-02  Kouhei Sutou  <kou@clear-code.com>
 
+	* TODO: add: * [1.3.0] add signals for logging. (each mail transaction
+	finished for each milter and milter-manager, SMTP session
+	finished for each milter and milter-manager)
+
 	* NEWS*: set release day.
 
 	* html/milter-manager.css: don't show outline for other language link.
