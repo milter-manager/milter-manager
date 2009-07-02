@@ -1000,8 +1000,6 @@ send_first_command_to_next_child (MilterManagerChildren *children,
     priv->command_waiting_child_queue =
         g_list_remove(priv->command_waiting_child_queue, context);
 
-    milter_server_context_quit(context);
-
     next_child = get_first_child_in_command_waiting_child_queue(children);
     if (!next_child) {
         emit_reply_for_message_oriented_command(children, priv->state);
@@ -1580,6 +1578,7 @@ cb_stopped (MilterServerContext *context, gpointer user_data)
         compile_reply_status(children, state, MILTER_STATUS_NOT_CHANGE);
         milter_server_context_abort(context);
         send_first_command_to_next_child(children, context);
+        milter_server_context_quit(context);
         break;
     default:
         state_name = milter_utils_get_enum_name(MILTER_TYPE_SERVER_CONTEXT_STATE,

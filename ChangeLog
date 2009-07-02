@@ -1,5 +1,13 @@
 2009-07-02  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/manager/milter-manager-children.c,
+	test/fixtures/leader/abort-on-end-of-message.txt,
+	test/fixtures/leader/envelope-from-again.txt,
+	test/manager/test-leader.c,
+	test/manager/test-leader.c,
+	NEWS*: support multi mail transactions.
+	Reported by sgyk. Thanks!!!
+
 	* NEWS*: add a name.
 
 	* NEWS*: add an entry for 1.1.1.

@@ -35,6 +35,7 @@ EXTRA_DIST =								\
 	envelope-from-reject-and-discard.txt				\
 	envelope-from-reject.txt					\
 	envelope-from.txt						\
+	envelope-from-again.txt						\
 	envelope-recipient-accept-all.txt				\
 	envelope-recipient-accept.txt					\
 	envelope-recipient-discard.txt					\

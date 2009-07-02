@@ -25,6 +25,7 @@ A development release to be the next stable release 1.2.0.
     process for other recipients are not effected.
   * Supported stopper callback on all events even if an
     event is ignored by milter. (events marked as SMFIP_NO*)
+  * Supported multi mail transactions [Reported by sgyk]
   * [experimental] Added a sample to only apply a milter to
     restricted users.
 
@@ -35,7 +36,7 @@ A development release to be the next stable release 1.2.0.
     [Reported by Fumihisa Tonaka]
   * Fixed a problem that a milter application stopped
     effects other milter application stopped.
-    [sgykさんによる報告]
+    [Reported by sgyk]
 
 === milter-test-server
 
@@ -46,6 +47,11 @@ A development release to be the next stable release 1.2.0.
 
   * Supported application result graphs for each milter.
   * Supported statistics graphs for each method.
+
+=== Thanks
+
+  * Fumihisa Tonaka
+  * sgyk
 
 == 1.1.0: 2009-06-02
 

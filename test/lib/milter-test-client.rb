@@ -307,7 +307,7 @@ class MilterTestClient
     when :helo
       @state == :connected
     when :envelope_from
-      @state == :greeted
+      [:greeted, :end_of_message].include?(@state)
     when :envelope_recipient
       [:envelope_from_received, :envelope_recipient_received].include?(@state)
     when :data
