@@ -1,5 +1,8 @@
 2009-07-02  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/manager/milter-manager-children.c (cb_stopped): remove
+	needless code.
+
 	* milter/manager/milter-manager-leader.c: improve error log.
 
 	* data/milter-manager.conf: add default values.
