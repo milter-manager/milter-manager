@@ -5,7 +5,7 @@ actions=end-of-message-reply-code-reject
 
 [client10026]
 port=10026
-arguments=--reply-code;554 5.7.1 virus Email.Trojan-2 detected by ClamAV - http://www.clamav.net;--end-of-message-regexp;Reply code
+arguments=--reply-code;554 5.7.1 virus Email.Trojan-2 detected by ClamAV - http://www.clamav.net;--end-of-message-chunk-regexp;Reply code
 
 [client10027]
 port=10027

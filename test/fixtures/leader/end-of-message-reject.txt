@@ -5,7 +5,7 @@ actions=end-of-message-reject
 
 [client10026]
 port=10026
-arguments=--action;reject;--end-of-message-regexp;Reject
+arguments=--action;reject;--end-of-message-chunk-regexp;Reject
 
 [client10027]
 port=10027

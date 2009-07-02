@@ -5,7 +5,7 @@ actions=end-of-message-discard
 
 [client10026]
 port=10026
-arguments=--action;discard;--end-of-message-regexp;Discard
+arguments=--action;discard;--end-of-message-chunk-regexp;Discard
 
 [client10027]
 port=10027

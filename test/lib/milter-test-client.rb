@@ -180,13 +180,19 @@ class MilterTestClient
         @body_chunks << [@current_action, Regexp.new(chunk_regexp)]
       end
 
-      opts.on("--end-of-message=CHUNK",
-              "Add CHUNK targets to be applied ACTION") do |chunk|
+      opts.on("--end-of-message",
+              "Apply ACTION on end-of-message") do
+        @end_of_message_actions << [@current_action]
+      end
+
+      opts.on("--end-of-message-chunk=CHUNK",
+              "Add end-of-message CHUNK targets to be applied ACTION") do |chunk|
         @end_of_message_chunks << [@current_action, chunk]
       end
 
-      opts.on("--end-of-message-regexp=CHUNK_REGEXP",
-              "Add CHUNK_REGEXP targets to be applied ACTION") do |chunk_regexp|
+      opts.on("--end-of-message-chunk-regexp=CHUNK_REGEXP",
+              "Add end-of-message CHUNK_REGEXP " \
+              "targets to be applied ACTION") do |chunk_regexp|
         @end_of_message_chunks << [@current_action, Regexp.new(chunk_regexp)]
       end
 

@@ -1,5 +1,10 @@
 2009-07-02  Kouhei Sutou  <kou@clear-code.com>
 
+	* test/lib/milter-test-client.rb:
+	- add --end-of-message.
+	- --end-of-message{,-regexp} -> --end-of-message-chunk{,-regexp}
+	* test/fixtures/leader/: follow the above changes.
+
 	* milter/manager/milter-manager-children.c,
 	test/fixtures/leader/, test/manager/test-leader.c: clear message
 	oriented data after mail transaction is finished.

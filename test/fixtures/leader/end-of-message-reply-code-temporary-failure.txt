@@ -5,7 +5,7 @@ actions=end-of-message-reply-code-temporary-failure
 
 [client10026]
 port=10026
-arguments=--reply-code;451 4.7.0 DNS timeout;--end-of-message-regexp;Reply code
+arguments=--reply-code;451 4.7.0 DNS timeout;--end-of-message-chunk-regexp;Reply code
 
 [client10027]
 port=10027
