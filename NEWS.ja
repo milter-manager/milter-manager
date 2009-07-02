@@ -2,6 +2,50 @@
 
 = お知らせ --- milter managerの歴史
 
+== 1.1.1: 2009-07-0X
+
+次期安定版1.2.0になる予定の開発版です。
+
+=== milter-manager
+
+==== 改善
+
+  * 不必要なabortコールバック呼び出しを削減
+  * 統計ログの削減
+  * 複数インスタンスのサポート
+    * ((<manager.custom_configuration_directory|"doc/configuration.rd.ja#manager.custom_configuration_directory">))
+  * MTAからの接続を受け付けられない状態のときに接続受付を何
+    秒待つかの設定項目を追加
+    * ((<manager.suspend_time_on_unacceptable|"doc/configuration.rd.ja#manager.suspend_time_on_unacceptable">))
+  * Momonga Linuxのサポート [となかさんによる提案]
+  * 絶対パス指定による設定ファイル読み込みのサポート
+  * RCPT TOのときにmilter適用を中止した場合、メッセージ全体
+    の処理を中止するのではなく、その宛先の処理だけ中止するよ
+    うに変更
+  * milterがイベントを処理しない場合（SMFIP_NO*を指定してい
+    るイベント）でも、すべてのイベントで中止判断処理を実行す
+    るように変更
+  * [実験的] 特定のユーザだけmilterを適用するサンプルを追加
+
+==== バグ修正
+
+  * 複数milter実行時の競合条件を修正
+  * milterがメッセージ本文処理中にエラーステータスを返したと
+    き、MTAにレスポンスを返さない問題の修正 [となかさんによる報告]
+  * メッセージ本文処理中にmilter適用を中止した場合に他の
+    milterも中止されてしまう問題を修正 [sgykさんによる報告]
+
+=== milter-test-server
+
+  * すべての宛先が拒否または一時障害ステータスを返されたと
+    きは、セッション全体のステータスとして拒否または一時障害
+    と報告するように変更
+
+=== milter-manager-log-analyzer
+
+  * milter毎の適用結果グラフの生成
+  * 迷惑メール対策手法の統計グラフの生成
+
 == 1.1.0: 2009-06-02
 
 次期安定版1.2.0に向けた開発版です。

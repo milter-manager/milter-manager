@@ -2,6 +2,51 @@
 
 = NEWS --- The history of milter manager
 
+== 1.1.1: 2009-07-0X
+
+A development release to be the next stable release 1.2.0.
+
+=== milter-manager
+
+==== Improvements
+
+  * Reduced needless abort calls.
+  * Reduced statistics logs.
+  * Supported multiple instances.
+    * ((<manager.custom_configuration_directory|"doc/configuration.rd.ja#manager.custom_configuration_directory">))
+  * Added a configuration item that milter-manager waits how
+    many seconds when milter-manager can't accept
+    connections from MTA.
+    * ((<manager.suspend_time_on_unacceptable|"doc/configuration.rd.ja#manager.suspend_time_on_unacceptable">))
+  * Supported Momonga Linux [Suggested by Fumihisa Tonaka]
+  * Supported absolute configuration file path.
+  * Changed milter stop behavior on RCPT TO. A milter
+    process for a stopped recipient is skipped. A milter
+    process for other recipients are not effected.
+  * Supported stopper callback on all events even if an
+    event is ignored by milter. (events marked as SMFIP_NO*)
+  * [experimental] Added a sample to only apply a milter to
+    restricted users.
+
+==== Bug fixes
+
+  * Fixed a race condition on multiple milters running.
+  * Fixed a problem that error status isn't replied to MTA.
+    [Reported by Fumihisa Tonaka]
+  * Fixed a problem that a milter application stopped
+    effects other milter application stopped.
+    [sgykさんによる報告]
+
+=== milter-test-server
+
+  * Changed to report a message is rejected or temporary
+    failed if all recipients are rejected or temporary failed.
+
+=== milter-manager-log-analyzer
+
+  * Supported application result graphs for each milter.
+  * Supported statistics graphs for each method.
+
 == 1.1.0: 2009-06-02
 
 A development release leading up to the next stable release 1.2.0.
