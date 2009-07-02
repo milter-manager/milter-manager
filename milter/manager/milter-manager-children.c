@@ -259,6 +259,8 @@ milter_manager_children_init (MilterManagerChildren *milter)
 static void
 dispose_body_related_data (MilterManagerChildrenPrivate *priv)
 {
+    priv->emitted_reply_for_message_oriented_command = FALSE;
+
     if (priv->body) {
         g_string_free(priv->body, TRUE);
         priv->body = NULL;

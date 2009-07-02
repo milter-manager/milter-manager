@@ -1,5 +1,8 @@
 2009-07-02  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/manager/milter-manager-children.c: clear message oriented
+	data missing in the recent commit.
+
 	* test/lib/milter-test-client.rb:
 	- add --end-of-message.
 	- --end-of-message{,-regexp} -> --end-of-message-chunk{,-regexp}
