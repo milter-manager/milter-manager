@@ -1,5 +1,9 @@
 2009-07-03  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/Makefile.am, doc/upgrade-options-on-*,
+	doc/reference/Makefile.am, doc/reference/milter-manager-docs.sgml:
+	add documents for upgrading.
+
 	* doc/install.rd*, doc/install-options-to-*: update Rails and
 	Passenger versions.
 

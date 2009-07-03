@@ -1,0 +1,66 @@
+# -*- rd -*-
+
+= CentOSで更新（任意） --- CentOSでのmilter manager関連ソフトウェアの更新方法
+
+== このドキュメントについて
+
+CentOSに特化したmilter manager関連ソフトウェアの更新方
+法について説明します。新規にインストールする方法は((<CentOSへ
+インストール（任意）|install-options-to-centos.rd.ja>))を見て
+ください。
+
+== milter-manager-log-analyzerの更新
+
+milter managerパッケージを更新するだけです。
+
+32bit環境の場合:
+
+  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-1.1.1-0.i386.rpm
+  % sudo rpm -Uvh milter-manager-1.1.1-0.i386.rpm
+
+64bit環境の場合:
+
+  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-1.1.1-0.x86_64.rpm
+  % sudo rpm -Uvh milter-manager-1.1.1-0.x86_64.rpm
+
+== milter manager adminの更新
+
+=== gemの更新
+
+  % sudo gem install rails -v '2.3.2'
+  % sudo gem install passenger -v '2.2.4'
+
+=== Passengerの更新
+
+以下のコマンドを実行し、Passengerをビルドします。
+
+  % (echo 1; echo) | sudo passenger-install-apache2-module
+
+/etc/httpd/conf.d/milter-manager.confに記述されている
+Passengerのバージョンを2.2.4にします。
+
+/etc/httpd/conf.d/milter-manager.conf:
+  LoadModule passenger_module /usr/lib/ruby/gems/1.8/gems/passenger-2.2.4/ext/apache2/mod_passenger.so
+  PassengerRoot /usr/lib/ruby/gems/1.8/gems/passenger-2.2.4
+  PassengerRuby /usr/bin/ruby
+
+  RailsBaseURI /milter-manager
+
+Apacheを再起動します。
+
+  % sudo /sbin/service httpd reload
+
+=== milter manager adminの更新
+
+milter manager admin本体とデータベーススキーマを更新します。
+
+  % tar cf - -C /usr/share/milter-manager admin | sudo -u milter-manager -H tar xf - -C ~milter-manager
+  % cd ~milter-manager/admin
+  % sudo -u milter-manager -H rake gems:install
+  % sudo -u milter-manager -H rake RAILS_ENV=production db:migrate
+
+== まとめ
+
+milter manager本体同様にmilter manager関連ソフトウェアも簡単
+に更新することができます。新しいバージョンで行われている様々
+な改善を利用したい場合は更新を検討してください。

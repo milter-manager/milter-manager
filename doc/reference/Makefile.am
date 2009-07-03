@@ -75,6 +75,9 @@ content_files =					\
 	install-options-to-ubuntu.xml		\
 	install-options-to-centos.xml		\
 	install-options-to-freebsd.xml		\
+	upgrade-options-on-ubuntu.xml		\
+	upgrade-options-on-centos.xml		\
+	upgrade-options-on-freebsd.xml		\
 	milter-manager.xml			\
 	milter-test-server.xml			\
 	milter-test-client.xml			\
@@ -116,6 +119,12 @@ generated_xml_files =				\
 	install-options-to-centos.xml.ja	\
 	install-options-to-freebsd.xml		\
 	install-options-to-freebsd.xml.ja	\
+	upgrade-options-on-ubuntu.xml		\
+	upgrade-options-on-ubuntu.xml.ja	\
+	upgrade-options-on-centos.xml		\
+	upgrade-options-on-centos.xml.ja	\
+	upgrade-options-on-freebsd.xml		\
+	upgrade-options-on-freebsd.xml.ja	\
 	milter-manager.xml			\
 	milter-manager.xml.ja			\
 	milter-test-server.xml			\
@@ -248,6 +257,24 @@ install-options-to-freebsd.xml: $(top_srcdir)/doc/install-options-to-freebsd.rd 
 
 install-options-to-freebsd.xml.ja: $(top_srcdir)/doc/install-options-to-freebsd.rd.ja $(RD2REFENTRY_LIB) ja.po
 	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/install-options-to-freebsd.rd.ja > install-options-to-freebsd.xml.ja
+
+upgrade-options-on-ubuntu.xml: $(top_srcdir)/doc/upgrade-options-on-ubuntu.rd $(RD2REFENTRY_LIB) upgrade-options-on-ubuntu.xml.ja
+	$(RD2DOCBOOK) $(top_srcdir)/doc/upgrade-options-on-ubuntu.rd > upgrade-options-on-ubuntu.xml
+
+upgrade-options-on-ubuntu.xml.ja: $(top_srcdir)/doc/upgrade-options-on-ubuntu.rd.ja $(RD2REFENTRY_LIB) ja.po
+	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/upgrade-options-on-ubuntu.rd.ja > upgrade-options-on-ubuntu.xml.ja
+
+upgrade-options-on-centos.xml: $(top_srcdir)/doc/upgrade-options-on-centos.rd $(RD2REFENTRY_LIB) upgrade-options-on-centos.xml.ja
+	$(RD2DOCBOOK) $(top_srcdir)/doc/upgrade-options-on-centos.rd > upgrade-options-on-centos.xml
+
+upgrade-options-on-centos.xml.ja: $(top_srcdir)/doc/upgrade-options-on-centos.rd.ja $(RD2REFENTRY_LIB) ja.po
+	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/upgrade-options-on-centos.rd.ja > upgrade-options-on-centos.xml.ja
+
+upgrade-options-on-freebsd.xml: $(top_srcdir)/doc/upgrade-options-on-freebsd.rd $(RD2REFENTRY_LIB) upgrade-options-on-freebsd.xml.ja
+	$(RD2DOCBOOK) $(top_srcdir)/doc/upgrade-options-on-freebsd.rd > upgrade-options-on-freebsd.xml
+
+upgrade-options-on-freebsd.xml.ja: $(top_srcdir)/doc/upgrade-options-on-freebsd.rd.ja $(RD2REFENTRY_LIB) ja.po
+	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/upgrade-options-on-freebsd.rd.ja > upgrade-options-on-freebsd.xml.ja
 
 milter-manager.xml: $(top_srcdir)/doc/milter-manager.rd $(RD2REFENTRY_LIB) milter-manager.xml.ja
 	$(RD2DOCBOOK) $(top_srcdir)/doc/milter-manager.rd > milter-manager.xml

@@ -24,6 +24,12 @@ EXTRA_DIST =						\
 	install-options-to-centos.rd.ja			\
 	install-options-to-freebsd.rd			\
 	install-options-to-freebsd.rd.ja		\
+	upgrade-options-on-ubuntu.rd			\
+	upgrade-options-on-ubuntu.rd.ja			\
+	upgrade-options-on-centos.rd			\
+	upgrade-options-on-centos.rd.ja			\
+	upgrade-options-on-freebsd.rd			\
+	upgrade-options-on-freebsd.rd.ja		\
 	admin-applicable-condition-ja.png		\
 	admin-applicable-condition.png			\
 	admin-milters-ja.png				\

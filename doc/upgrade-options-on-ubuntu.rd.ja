@@ -1,0 +1,61 @@
+# -*- rd -*-
+
+= Ubuntuで更新（任意） --- Ubuntuでのmilter manager関連ソフトウェアの更新方法
+
+== このドキュメントについて
+
+Ubuntu Linuxに特化したmilter manager関連ソフトウェアの更新方
+法について説明します。新規にインストールする方法は((<Ubuntuへ
+インストール（任意）|install-options-to-ubuntu.rd.ja>))を見て
+ください。
+
+== milter-manager-log-analyzerの更新
+
+パッケージを更新するだけです。
+
+  % sudo aptitude -V -D -y safe-upgrade
+
+== milter manager adminの更新
+
+=== gemの更新
+
+  % sudo gem install rails -v '2.3.2'
+  % sudo gem install passenger -v '2.2.4'
+
+=== Passengerの更新
+
+以下のコマンドを実行し、Passengerをビルドします。
+
+  % (echo 1; echo) | sudo passenger-install-apache2-module
+
+/etc/apache2/mods-available/以下のpassenger.loadと
+passenger.conf内に記述されているPassengerのバージョンを2.2.4
+に更新します。
+
+/etc/apache2/mods-available/passenger.load:
+  LoadModule passenger_module /usr/lib/ruby/gems/1.8/gems/passenger-2.2.4/ext/apache2/mod_passenger.so
+
+/etc/apache2/mods-available/passenger.conf:
+  PassengerRoot /usr/lib/ruby/gems/1.8/gems/passenger-2.2.4
+  PassengerRuby /usr/bin/ruby1.8
+
+  RailsBaseURI /milter-manager
+
+Apacheを再起動します。
+
+  % sudo /etc/init.d/apache2 restart
+
+=== milter manager adminの更新
+
+milter manager admin本体とデータベーススキーマを更新します。
+
+  % tar cf - -C /usr/share/milter-manager admin | sudo -u milter-manager -H tar xf - -C ~milter-manager
+  % cd ~milter-manager/admin
+  % sudo -u milter-manager -H rake gems:install
+  % sudo -u milter-manager -H rake RAILS_ENV=production db:migrate
+
+== まとめ
+
+milter manager本体同様にmilter manager関連ソフトウェアも簡単
+に更新することができます。新しいバージョンで行われている様々
+な改善を利用したい場合は更新を検討してください。
