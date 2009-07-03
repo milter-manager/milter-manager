@@ -64,6 +64,7 @@ Rails::Initializer.run do |config|
   # no regular words or you'll be exposed to dictionary attacks.
   secret_file = File.join(RAILS_ROOT, "config", "secret")
   unless File.exist?(secret_file)
+    require 'activesupport'
     secret = ActiveSupport::SecureRandom.hex(64)
     File.open(secret_file, "w") do |output|
       output.puts(secret)

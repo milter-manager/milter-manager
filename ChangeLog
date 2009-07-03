@@ -1,5 +1,9 @@
 2009-07-03  Kouhei Sutou  <kou@clear-code.com>
 
+	* admin/config/environment.rb: add missing require.
+
+	* admin/Makefile.am: add missing migration files.
+
 	* NEWS*, html/index.html*, milter-manager.spec.in: 2009-07-02 ->
 	2009-07-03.
 
