@@ -23,7 +23,7 @@ nobase_dist_admin_SCRIPTS =			\
 	script/performance/profiler		\
 	script/generate
 
-# find . -name '.svn' -prune -o -path './log' -prune -o -not -name '*.sqlite3' -not -name 'Makefile*' -not -name 'schema.rb' -type f -not -perm +111 -print | sed -e 's,^\./,	,' | sort
+# find . -name '.svn' -prune -o -path './log' -prune -o -path './config/secret' -prune -o -not -name '*.sqlite3' -not -name 'Makefile*' -not -name 'schema.rb' -type f -not -perm +111 -print | sed -e 's,^\./,	,' | sort
 nobase_dist_admin_DATA =							\
 	.autotest								\
 	README									\
@@ -85,7 +85,6 @@ nobase_dist_admin_DATA =							\
 	config/locales/ja.yml							\
 	config/locales/rails/ja.yml						\
 	config/routes.rb							\
-	config/secret								\
 	db/.gitignore								\
 	db/migrate/20081125042659_create_milters.rb				\
 	db/migrate/20081126000659_create_connections.rb				\
