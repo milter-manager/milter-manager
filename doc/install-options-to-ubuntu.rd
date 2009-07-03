@@ -62,8 +62,8 @@ installed:
 
 === Instal gems
 
-  % sudo gem install rails -v '2.2.2'
-  % sudo gem install passenger -v '2.0.6'
+  % sudo gem install rails -v '2.3.2'
+  % sudo gem install passenger -v '2.2.4'
 
 === Install Passenger
 
@@ -75,10 +75,10 @@ We create passenger.load and passenger.conf under
 /etc/apache2/mods-available/.
 
 /etc/apache2/mods-available/passenger.load:
-  LoadModule passenger_module /usr/lib/ruby/gems/1.8/gems/passenger-2.0.6/ext/apache2/mod_passenger.so
+  LoadModule passenger_module /usr/lib/ruby/gems/1.8/gems/passenger-2.2.4/ext/apache2/mod_passenger.so
 
 /etc/apache2/mods-available/passenger.conf:
-  PassengerRoot /usr/lib/ruby/gems/1.8/gems/passenger-2.0.6
+  PassengerRoot /usr/lib/ruby/gems/1.8/gems/passenger-2.2.4
   PassengerRuby /usr/bin/ruby1.8
 
   RailsBaseURI /milter-manager
