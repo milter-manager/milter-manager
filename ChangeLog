@@ -1,5 +1,7 @@
 2009-07-03  Kouhei Sutou  <kou@clear-code.com>
 
+	* configure.ac: 1.1.1 -> 1.2.0.
+
 	* html/index.html: add missing class.
 
 	* admin/Makefile.am: remove config/secret.
