@@ -81,8 +81,8 @@
 	<h3>Ubuntu 8.04 LTS Hardy Heron用開発版パッケージ</h3>
 	<p>
 	  apt-line:
-	  <pre class="file">deb http://milter-manager.sourceforge.net/ubuntu/ hardy main
-deb-src http://milter-manager.sourceforge.net/ubuntu/ hardy main</pre>
+	  <pre class="file">deb http://milter-manager.sourceforge.net/ubuntu/ hardy universe
+deb-src http://milter-manager.sourceforge.net/ubuntu/ hardy universe</pre>
 	</p>
 	<p>
 	  パッケージはkou@clear-code.comの鍵でサインされています。信用する場合は鍵を登録します。
