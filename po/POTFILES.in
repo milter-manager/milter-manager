@@ -10,6 +10,7 @@ milter/core/milter-decoder.c
 milter/core/milter-encoder.c
 milter/core/milter-enum-types.c
 milter/core/milter-error-emittable.c
+milter/core/milter-esmtp.c
 milter/core/milter-finished-emittable.c
 milter/core/milter-headers.c
 milter/core/milter-logger.c
@@ -32,6 +33,7 @@ milter/manager/milter-manager-control-command-decoder.c
 milter/manager/milter-manager-control-command-encoder.c
 milter/manager/milter-manager-control-reply-decoder.c
 milter/manager/milter-manager-control-reply-encoder.c
+milter/manager/milter-manager-controller-context.c
 milter/manager/milter-manager-controller.c
 milter/manager/milter-manager-egg.c
 milter/manager/milter-manager-enum-types.c
@@ -46,6 +48,7 @@ milter/manager/milter-manager-reply-encoder.c
 milter/manager/milter-manager.c
 milter/server/milter-server-context.c
 milter/server/milter-server-enum-types.c
+milter/server/milter-server.c
 module/configuration/ruby/milter-manager-ruby-configuration.c
 tool/milter-test-client.c
 tool/milter-test-server.c
