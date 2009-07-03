@@ -1,0 +1,23 @@
+# -*- rd -*-
+
+= Ubuntuで更新 --- Ubuntuでのmilter managerの更新方法
+
+== このドキュメントについて
+
+Ubuntu Linuxに特化したmilter managerの更新方法について説明し
+ます。新規にインストールする方法は((<Ubuntuへインストール
+|install-to-ubuntu.rd.ja>))を見てください。
+
+== 更新
+
+パッケージを更新するだけで、追加の作業は必要ありません。
+
+  % sudo aptitude -V -D -y safe-upgrade
+
+== まとめ
+
+milter managerは簡単に更新することができる、メンテナンスコス
+トが低いソフトウェアです。
+
+新しいバージョンで行われている様々な改善を利用したい場合は更
+新を検討してください。

@@ -35,11 +35,11 @@
     </chapter>
     <chapter id="upgrade">
       <title>Upgrade milter manager on your platform</title>
-      <!--xi:include href="upgrade-on-ubuntu.xml"/-->
+      <xi:include href="upgrade-on-ubuntu.xml"/>
       <xi:include href="upgrade-options-on-ubuntu.xml"/>
-      <!--xi:include href="upgrade-on-centos.xml"/-->
+      <xi:include href="upgrade-on-centos.xml"/>
       <xi:include href="upgrade-options-on-centos.xml"/>
-      <!--xi:include href="upgrade-on-freebsd.xml"/-->
+      <xi:include href="upgrade-on-freebsd.xml"/>
       <xi:include href="upgrade-options-on-freebsd.xml"/>
       <!--xi:include href="upgrade-on-others.xml"/-->
     </chapter>

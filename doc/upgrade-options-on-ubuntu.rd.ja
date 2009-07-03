@@ -9,11 +9,13 @@ Ubuntu Linuxに特化したmilter manager関連ソフトウェアの更新方
 インストール（任意）|install-options-to-ubuntu.rd.ja>))を見て
 ください。
 
+まず、milter manager本体を更新する必要があるので、まだの場合
+は((<Ubuntuで更新|upgrade-on-ubuntu.rd.ja>))を見てください。
+
 == milter-manager-log-analyzerの更新
 
-パッケージを更新するだけです。
-
-  % sudo aptitude -V -D -y safe-upgrade
+パッケージを更新した時点で作業は完了しているので、追加の作業
+は必要ありません。
 
 == milter manager adminの更新
 

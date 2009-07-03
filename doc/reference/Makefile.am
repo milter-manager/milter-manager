@@ -75,6 +75,9 @@ content_files =					\
 	install-options-to-ubuntu.xml		\
 	install-options-to-centos.xml		\
 	install-options-to-freebsd.xml		\
+	upgrade-on-ubuntu.xml			\
+	upgrade-on-centos.xml			\
+	upgrade-on-freebsd.xml			\
 	upgrade-options-on-ubuntu.xml		\
 	upgrade-options-on-centos.xml		\
 	upgrade-options-on-freebsd.xml		\
@@ -119,6 +122,12 @@ generated_xml_files =				\
 	install-options-to-centos.xml.ja	\
 	install-options-to-freebsd.xml		\
 	install-options-to-freebsd.xml.ja	\
+	upgrade-on-ubuntu.xml			\
+	upgrade-on-ubuntu.xml.ja		\
+	upgrade-on-centos.xml			\
+	upgrade-on-centos.xml.ja		\
+	upgrade-on-freebsd.xml			\
+	upgrade-on-freebsd.xml.ja		\
 	upgrade-options-on-ubuntu.xml		\
 	upgrade-options-on-ubuntu.xml.ja	\
 	upgrade-options-on-centos.xml		\
@@ -257,6 +266,24 @@ install-options-to-freebsd.xml: $(top_srcdir)/doc/install-options-to-freebsd.rd 
 
 install-options-to-freebsd.xml.ja: $(top_srcdir)/doc/install-options-to-freebsd.rd.ja $(RD2REFENTRY_LIB) ja.po
 	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/install-options-to-freebsd.rd.ja > install-options-to-freebsd.xml.ja
+
+upgrade-on-ubuntu.xml: $(top_srcdir)/doc/upgrade-on-ubuntu.rd $(RD2REFENTRY_LIB) upgrade-on-ubuntu.xml.ja
+	$(RD2DOCBOOK) $(top_srcdir)/doc/upgrade-on-ubuntu.rd > upgrade-on-ubuntu.xml
+
+upgrade-on-ubuntu.xml.ja: $(top_srcdir)/doc/upgrade-on-ubuntu.rd.ja $(RD2REFENTRY_LIB) ja.po
+	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/upgrade-on-ubuntu.rd.ja > upgrade-on-ubuntu.xml.ja
+
+upgrade-on-centos.xml: $(top_srcdir)/doc/upgrade-on-centos.rd $(RD2REFENTRY_LIB) upgrade-on-centos.xml.ja
+	$(RD2DOCBOOK) $(top_srcdir)/doc/upgrade-on-centos.rd > upgrade-on-centos.xml
+
+upgrade-on-centos.xml.ja: $(top_srcdir)/doc/upgrade-on-centos.rd.ja $(RD2REFENTRY_LIB) ja.po
+	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/upgrade-on-centos.rd.ja > upgrade-on-centos.xml.ja
+
+upgrade-on-freebsd.xml: $(top_srcdir)/doc/upgrade-on-freebsd.rd $(RD2REFENTRY_LIB) upgrade-on-freebsd.xml.ja
+	$(RD2DOCBOOK) $(top_srcdir)/doc/upgrade-on-freebsd.rd > upgrade-on-freebsd.xml
+
+upgrade-on-freebsd.xml.ja: $(top_srcdir)/doc/upgrade-on-freebsd.rd.ja $(RD2REFENTRY_LIB) ja.po
+	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/upgrade-on-freebsd.rd.ja > upgrade-on-freebsd.xml.ja
 
 upgrade-options-on-ubuntu.xml: $(top_srcdir)/doc/upgrade-options-on-ubuntu.rd $(RD2REFENTRY_LIB) upgrade-options-on-ubuntu.xml.ja
 	$(RD2DOCBOOK) $(top_srcdir)/doc/upgrade-options-on-ubuntu.rd > upgrade-options-on-ubuntu.xml

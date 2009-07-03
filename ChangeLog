@@ -1,5 +1,9 @@
 2009-07-03  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/Makefile.am, doc/upgrade-on-*,
+	doc/reference/Makefile.am, doc/reference/milter-manager-docs.sgml:
+	add documents for upgrading.
+
 	* NEWS*: add local configuration file.
 
 	* data/milter-manager.conf: load local configuration file

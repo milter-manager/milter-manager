@@ -1,0 +1,36 @@
+# -*- rd -*-
+
+= FreeBSDで更新 --- FreeBSDでのmilter managerの更新方法
+
+== このドキュメントについて
+
+FreeBSDに特化したmilter managerの更新方法について説明します。
+新規にインストールする方法は((<FreeBSDへインストール
+|install-to-freebsd.rd.ja>))を見てください。
+
+== ビルドと更新
+
+上書きインストールで更新できます。ただし、
+/usr/local/etc/milter-manager/milter-manager.confが上書きさ
+れてしまうので、milter-manager.confを変更している場合は事前
+にバックアップをとってください。
+
+milter-manager.confではなくmilter-manager.local.confを利用し
+ている場合はバックアップをとる必要はありません。
+
+  % cd ~/src/
+  % fetch http://downloads.sourceforge.net/milter-manager/milter-manager-1.1.1.tar.gz
+  % tar xvzf milter-manager-1.1.1.tar.gz
+  % cd milter-manager-1.1.1
+  % ./configure CFLAGS="-I/usr/local/include"
+  % gmake
+  % sudo cp /usr/local/etc/milter-manager/milter-manager.conf{,.`date +%Y%m%d`}
+  % sudo gmake install
+
+== まとめ
+
+milter managerは簡単に更新することができる、メンテナンスコス
+トが低いソフトウェアです。
+
+新しいバージョンで行われている様々な改善を利用したい場合は更
+新を検討してください。
