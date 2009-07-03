@@ -72,7 +72,7 @@
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="812"
+     inkscape:window-width="859"
      inkscape:window-height="655"
      inkscape:window-x="63"
      inkscape:window-y="76" />
@@ -107,7 +107,7 @@
        height="129.71248"
        width="299.36948"
        sodipodi:absref="/home/kou/work/c/milter-manager/doc/session.day.png"
-       xlink:href="session.day.png" />
+       xlink:href="milter.status.milter-greylist.day.png" />
     <rect
        y="733.69672"
        x="94.598572"
@@ -123,7 +123,7 @@
        height="165.79141"
        width="299.36948"
        sodipodi:absref="/home/kou/work/c/milter-manager/doc/stop.day.png"
-       xlink:href="stop.day.png" />
+       xlink:href="milter-manager.report.day.png" />
     <rect
        style="opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter3344)"
        id="rect2572"
@@ -138,7 +138,7 @@
        id="image2566"
        height="159.77826"
        width="299.36948"
-       xlink:href="mail.day.png"
+       xlink:href="milter-manager.status.day.png"
        sodipodi:absref="/home/kou/work/c/milter-manager/doc/mail.day.png" />
   </g>
 </svg>
