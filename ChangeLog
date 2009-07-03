@@ -1,5 +1,8 @@
 2009-07-03  Kouhei Sutou  <kou@clear-code.com>
 
+	* NEWS*, html/index.html*, milter-manager.spec.in: 2009-07-02 ->
+	2009-07-03.
+
 	* admin/config/environment.rb: specify locale_rails version.
 
 2009-07-02  Kouhei Sutou  <kou@clear-code.com>
