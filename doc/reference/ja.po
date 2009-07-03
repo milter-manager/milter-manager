@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: milter-manager 1.1.1\n"
 "POT-Creation-Date: 2009-07-03 12:10+0900\n"
-"PO-Revision-Date: 2009-07-03 12:16+0900\n"
+"PO-Revision-Date: 2009-07-03 12:18+0900\n"
 "Last-Translator: Kouhei Sutou <kou@clear-code.com>\n"
 "Language-Team: Japanese\n"
 "MIME-Version: 1.0\n"
@@ -23951,27 +23951,3 @@ msgstr ""
 #: xml/milter-writer.xml:0(None)
 msgid "translator-credits"
 msgstr ""
-
-#~ msgid "Reference"
-#~ msgstr "リファレンス"
-
-#~ msgid "milter-core"
-#~ msgstr "milter-core"
-
-#~ msgid "milter-client"
-#~ msgstr "milter-client"
-
-#~ msgid "milter-server"
-#~ msgstr "milter-server"
-
-#~ msgid "Index of all symbols"
-#~ msgstr "すべてのシンボル一覧"
-
-#~ msgid "Index of deprecated symbols"
-#~ msgstr "すべての非推奨のシンボル一覧"
-
-#~ msgid "Index of new symbols in 1.0.0"
-#~ msgstr "1.0.0での新しいシンボル一覧"
-
-#~ msgid "milter-manager-ruby-internal"
-#~ msgstr "milter-manager-ruby-internal"
