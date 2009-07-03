@@ -74,3 +74,13 @@ ul.categories li
   padding: 0;
   margin: 0;
 }
+
+img.photo
+{
+  float: none;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0.5em;
+  border: 1px solid #AAA;
+}

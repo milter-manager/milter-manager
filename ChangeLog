@@ -1,5 +1,8 @@
 2009-07-03  Kouhei Sutou  <kou@clear-code.com>
 
+	* html/blog/theme/milter-manager/milter-manager.css: add a style
+	for image.photo.
+
 	* doc/milter*.day.png: add the recent generated graphs.
 
 	* html/index.html*: fix typos.
