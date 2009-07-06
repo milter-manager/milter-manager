@@ -134,16 +134,14 @@ We start clamd.
 
   % sudo /sbin/service clamd start
 
-We edit /etc/sysconfig/clamav-milter to change
-clamav-milter's socket address and disable Sendmail
-configuration file check.
+We edit /etc/clamav-milter.conf to change clamav-milter's
+socket address.
 
 Before:
-  SOCKET_ADDRESS="local:/var/clamav/clmilter.socket"
+  MilterSocket unix:/var/clamav/clmilter.socket
 
 After:
-  SOCKET_ADDRESS="inet:11121@[127.0.0.1]"
-  CLAMAV_FLAGS="$CLAMAV_FLAGS --no-check-cf"
+  MilterSocket inet:11121@[127.0.0.1]
 
 We start clamav-milter:
 

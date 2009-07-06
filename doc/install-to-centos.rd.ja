@@ -139,17 +139,15 @@ clamdを起動します。
 
   % sudo /sbin/service clamd start
 
-clamav-milterはソケットを変更します。また、Sendmailの設定ファ
-イルチェックを省略します。
+clamav-milterのソケットを変更します。
 
-/etc/sysconfig/clamav-milterを以下のように変更します。
+/etc/clamav-milter.confを以下のように変更します。
 
 変更前:
-  SOCKET_ADDRESS="local:/var/clamav/clmilter.socket"
+  MilterSocket unix:/var/clamav/clmilter.socket
 
 変更後:
-  SOCKET_ADDRESS="inet:11121@[127.0.0.1]"
-  CLAMAV_FLAGS="$CLAMAV_FLAGS --no-check-cf"
+  MilterSocket inet:11121@[127.0.0.1]
 
 clamav-milterを起動します。
 
