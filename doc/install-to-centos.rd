@@ -21,6 +21,8 @@ installed:
 
 We use Sendmail as MTA because it's installed by default.
 
+  % sudo yum install -y sendmail-cf
+
 We use spamass-milter, clamav-milter and milter-greylist as
 milters. We use milter packages registered in RPMforge.
 

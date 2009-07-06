@@ -1,3 +1,7 @@
+2009-07-06  Kouhei Sutou  <kou@clear-code.com>
+
+	* doc/install-to-centos.rd*: install sendmail-cf.
+
 2009-07-03  Kouhei Sutou  <kou@clear-code.com>
 
 	* html/blog/theme/milter-manager/milter-manager.css: add a style
