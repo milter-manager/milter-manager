@@ -342,7 +342,7 @@ milter_option_merge (MilterOption *dest, MilterOption *src)
 {
     MilterOptionPrivate *priv;
 
-    if (milter_option_get_version(dest) !=
+    if (milter_option_get_version(dest) <
         milter_option_get_version(src))
         return FALSE;
 

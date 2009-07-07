@@ -30,6 +30,8 @@
 
 #define MAX_ON_MEMORY_BODY_SIZE 5242880 /* 5Mbyte */
 
+#define MAX_SUPPORTED_MILTER_PROTOCOL_VERSION 8
+
 #define MILTER_MANAGER_CHILDREN_GET_PRIVATE(obj)                    \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                             \
                                  MILTER_TYPE_MANAGER_CHILDREN,      \
@@ -47,6 +49,7 @@ struct _MilterManagerChildrenPrivate
     MilterManagerConfiguration *configuration;
     MilterMacrosRequests *macros_requests;
     MilterOption *option;
+    gboolean negotiated;
     MilterServerContextState state;
     MilterServerContextState processing_state;
     GHashTable *reply_statuses;
@@ -224,6 +227,7 @@ milter_manager_children_init (MilterManagerChildren *milter)
     priv->quitted_milters = NULL;
     priv->macros_requests = milter_macros_requests_new();
     priv->option = NULL;
+    priv->negotiated = FALSE;
     priv->reply_statuses = g_hash_table_new(g_direct_hash, g_direct_equal);
 
     priv->original_headers = NULL;
@@ -630,10 +634,23 @@ cb_negotiate_reply (MilterServerContext *context, MilterOption *option,
     if (macros_requests)
         milter_macros_requests_merge(priv->macros_requests, macros_requests);
 
-    if (!priv->option)
-        priv->option = milter_option_copy(option);
-    else
+    if (priv->option) {
         milter_option_merge(priv->option, option);
+        priv->negotiated = TRUE;
+    } else {
+        GError *error;
+
+        error = g_error_new(MILTER_MANAGER_CHILDREN_ERROR,
+                            MILTER_MANAGER_CHILDREN_ERROR_NO_NEGOTIATION,
+                            "[%u] negotiation isn't started but "
+                            "negotiation response is arrived: %s",
+                            milter_agent_get_tag(MILTER_AGENT(context)),
+                            milter_server_context_get_name(context));
+        milter_error("[%u] [children][error][negotiate] %s",
+                     priv->tag, error->message);
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children), error);
+        g_error_free(error);
+    }
 
     remove_queue_in_negotiate(children, MILTER_MANAGER_CHILD(context));
 }
@@ -1924,7 +1941,7 @@ remove_queue_in_negotiate (MilterManagerChildren *children,
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
     g_queue_remove(priv->reply_queue, child);
     if (g_queue_is_empty(priv->reply_queue)) {
-        if (priv->option) {
+        if (priv->option && priv->negotiated) {
             milter_option_remove_step(priv->option, MILTER_STEP_NO_EVENT_MASK);
             g_signal_emit_by_name(children, "negotiate-reply",
                                   priv->option, priv->macros_requests);
@@ -2269,6 +2286,18 @@ milter_manager_children_negotiate (MilterManagerChildren *children,
     gboolean privilege;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    if (priv->option)
+        g_object_unref(priv->option);
+    priv->option = option;
+    if (priv->option) {
+        g_object_ref(priv->option);
+        if (milter_option_get_version(priv->option) >
+            MAX_SUPPORTED_MILTER_PROTOCOL_VERSION) {
+            milter_option_set_version(priv->option,
+                                      MAX_SUPPORTED_MILTER_PROTOCOL_VERSION);
+        }
+    }
 
     privilege =
         milter_manager_configuration_is_privilege_mode(priv->configuration);
