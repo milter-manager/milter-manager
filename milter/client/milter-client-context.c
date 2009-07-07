@@ -1302,10 +1302,10 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_STRUCT_OFFSET(MilterClientContextClass, end_of_message),
                      status_accumulator, NULL,
 #if GLIB_SIZEOF_SIZE_T == 8
-                     _milter_marshal_VOID__STRING_UINT64,
+                     _milter_marshal_ENUM__STRING_UINT64,
                      MILTER_TYPE_STATUS, 2, G_TYPE_STRING, G_TYPE_UINT64
 #else
-                     _milter_marshal_VOID__STRING_UINT,
+                     _milter_marshal_ENUM__STRING_UINT,
                      MILTER_TYPE_STATUS, 2, G_TYPE_STRING, G_TYPE_UINT
 #endif
                      );

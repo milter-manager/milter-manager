@@ -1,5 +1,8 @@
 2009-07-07  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/client/milter-client-context.c
+	(milter_client_context_class_init): fix typos.
+
 	* milter/client/milter-client-context.[ch],
 	milter/manager/milter-manager.c,
 	libmilter/libmilter-compatible.c,
