@@ -91,6 +91,12 @@ class MilterTestClient
         @current_action = action # FIXME: validate
       end
 
+      opts.on("--negotiate-version=VERSION",
+              Integer,
+              "Set negotiate protocol version") do |version|
+        @negotiate_version = version
+      end
+
       opts.on("--negotiate-flags=FLAG1|FLAG2|..",
               "Add step flags of negotiate option") do |flag|
         @negotiate_flags += flag.split(/\|/)
@@ -235,6 +241,7 @@ class MilterTestClient
     @headers = []
     @body_chunks = []
     @end_of_message_chunks = []
+    @negotiate_version = nil
     @negotiate_flags = ["none"]
     @quit_without_reply_action = nil
   end
@@ -350,6 +357,7 @@ class MilterTestClient
   def do_negotiate(option)
     invalid_state(:negotiate) unless valid_state?(:negotiate)
     @option = option
+    @option.version = @negotiate_version || @option.version
     @option.step = resolve_flags(Milter::StepFlags, @negotiate_flags)
 
     write(:negotiated, :negotiate, @option)

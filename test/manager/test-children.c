@@ -50,6 +50,7 @@ void test_envelope_from (void);
 void test_envelope_recipient (void);
 void test_data (void);
 void test_header (void);
+void test_header_with_protocol_version2 (void);
 void test_end_of_header (void);
 void data_important_status (void);
 void test_important_status (gconstpointer data);
@@ -1293,6 +1294,22 @@ test_header (void)
     const gchar value[] = "Test Header Value";
 
     cut_trace(test_data());
+
+    milter_manager_children_header(children, name, value);
+    wait_reply(6, n_continue_emitted);
+}
+
+void
+test_header_with_protocol_version2 (void)
+{
+    const gchar name[] = "X-Test-Header";
+    const gchar value[] = "Test Header Value";
+
+    arguments_append(arguments1,
+                     "--negotiate-version", "2",
+                     NULL);
+
+    cut_trace(test_envelope_recipient());
 
     milter_manager_children_header(children, name, value);
     wait_reply(6, n_continue_emitted);

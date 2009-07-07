@@ -2619,6 +2619,11 @@ milter_manager_children_header (MilterManagerChildren *children,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
+    if (priv->state == MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT &&
+        milter_option_get_version(priv->option) >= 4) {
+        milter_manager_children_data(children);
+    }
+
     priv->state = MILTER_SERVER_CONTEXT_STATE_HEADER;
     priv->processing_state = priv->state;
     if (!priv->headers)

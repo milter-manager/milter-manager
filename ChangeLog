@@ -1,5 +1,10 @@
 2009-07-07  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/manager/milter-manager-children.c,
+	test/lib/milter-test-client.rb,
+	test/manager/test-children.c: call stopper on DATA even if MTA's
+	milter protocol version (e.g. 2) doesn't support it.
+
 	* milter/server/milter-server-context.[ch],
 	test/server/test-server-context-command.c: add protocol version
 	check on DATA.
