@@ -37,6 +37,7 @@ void test_helo (void);
 void test_envelope_from (void);
 void test_envelope_recipient (void);
 void test_data (void);
+void test_data_with_protocol_version2 (void);
 void test_unknown (void);
 void test_header (void);
 void test_end_of_header (void);
@@ -48,6 +49,8 @@ void test_quit_after_connect (void);
 void test_abort (void);
 void test_abort_and_quit (void);
 void test_reading_timeout (void);
+
+static guint32 protocol_version;
 
 static MilterServerContext *context;
 
@@ -82,9 +85,11 @@ setup (void)
 {
     MilterOption *option;
 
+    protocol_version = 8;
+
     context = milter_server_context_new();
     milter_server_context_set_name(context, "test-server");
-    option = milter_option_new(8,
+    option = milter_option_new(protocol_version,
                                MILTER_ACTION_ADD_HEADERS |
                                MILTER_ACTION_CHANGE_BODY |
                                MILTER_ACTION_ADD_ENVELOPE_RECIPIENT |
@@ -200,7 +205,9 @@ test_negotiate (void)
 {
     MilterOption *option;
 
-    option = milter_option_new(8, MILTER_ACTION_ADD_HEADERS, MILTER_STEP_NONE);
+    option = milter_option_new(protocol_version,
+                               MILTER_ACTION_ADD_HEADERS,
+                               MILTER_STEP_NONE);
     gcut_take_object(G_OBJECT(option));
     cut_assert_true(milter_server_context_negotiate(context, option));
     milter_test_assert_state(NEGOTIATE);
@@ -252,7 +259,7 @@ reply_negotiate (void)
     MilterMacrosRequests *macros_requests;
     GError *error = NULL;
 
-    reply_option = milter_option_new(8,
+    reply_option = milter_option_new(protocol_version,
                                      MILTER_ACTION_ADD_HEADERS,
                                      MILTER_STEP_NONE);
     gcut_take_object(G_OBJECT(reply_option));
@@ -433,6 +440,24 @@ test_data (void)
 
     milter_command_encoder_encode_data(encoder, &packet, &packet_size);
     milter_test_assert_packet(channel, packet, packet_size);
+}
+
+void
+test_data_with_protocol_version2 (void)
+{
+    protocol_version = 2;
+
+    test_envelope_recipient();
+    packet_free();
+    channel_free();
+
+    reply_continue();
+
+    cut_assert_true(milter_server_context_data(context));
+    milter_test_assert_state(DATA);
+    milter_test_assert_status(NOT_CHANGE);
+
+    milter_test_assert_packet(channel, NULL, 0);
 }
 
 void

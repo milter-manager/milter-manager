@@ -593,7 +593,9 @@ write_data (const gchar *data, gsize data_size)
 void
 test_negotiate_reply (void)
 {
-    option = milter_option_new(2, MILTER_ACTION_ADD_HEADERS, MILTER_STEP_NO_HEADERS);
+    option = milter_option_new(2,
+                               MILTER_ACTION_ADD_HEADERS,
+                               MILTER_STEP_NO_HEADERS);
     requests = milter_macros_requests_new();
     milter_macros_requests_set_symbols(requests,
                                        MILTER_COMMAND_HELO,

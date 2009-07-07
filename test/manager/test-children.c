@@ -1086,7 +1086,7 @@ test_scenario (gconstpointer data)
 void
 test_negotiate (void)
 {
-    option = milter_option_new(2,
+    option = milter_option_new(8,
                                MILTER_ACTION_ADD_HEADERS |
                                MILTER_ACTION_CHANGE_BODY,
                                MILTER_STEP_NONE);

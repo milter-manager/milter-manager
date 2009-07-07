@@ -11,7 +11,7 @@ port=10027
 [negotiate]
 command=negotiate
 
-version=2
+version=8
 action=add-headers|change-body|quarantine
 step=no-connect|no-helo|no-envelope-from|no-envelope-recipient|no-body|no-headers|no-end-of-header
 
@@ -19,4 +19,4 @@ response=negotiate
 n_received=2
 status=continue
 
-options=2;add-headers|change-body|quarantine;no-connect|no-helo|no-envelope-from|no-envelope-recipient|no-body|no-headers|no-end-of-header;2;add-headers|change-body|quarantine;no-connect|no-helo|no-envelope-from|no-envelope-recipient|no-body|no-headers|no-end-of-header;
+options=8;add-headers|change-body|quarantine;no-connect|no-helo|no-envelope-from|no-envelope-recipient|no-body|no-headers|no-end-of-header;8;add-headers|change-body|quarantine;no-connect|no-helo|no-envelope-from|no-envelope-recipient|no-body|no-headers|no-end-of-header;

@@ -1088,6 +1088,12 @@ milter_server_context_set_option (MilterServerContext *context,
         priv->option = NULL;
 }
 
+MilterOption *
+milter_server_context_get_option (MilterServerContext *context)
+{
+    return MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->option;
+}
+
 gboolean
 milter_server_context_is_enable_step (MilterServerContext *context,
                                       MilterStepFlags step)
@@ -1240,12 +1246,15 @@ milter_server_context_envelope_recipient (MilterServerContext *context,
 gboolean
 milter_server_context_data (MilterServerContext *context)
 {
+    MilterServerContextPrivate *priv;
     gchar *packet = NULL;
     gsize packet_size;
     MilterEncoder *encoder;
     gboolean stop = FALSE;
     guint tag;
     const gchar *name;
+
+    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
 
     tag = milter_agent_get_tag(MILTER_AGENT(context));
     name = milter_server_context_get_name(context);
@@ -1262,7 +1271,8 @@ milter_server_context_data (MilterServerContext *context)
         return TRUE;
     }
 
-    if (milter_server_context_is_enable_step(context, MILTER_STEP_NO_DATA)) {
+    if (milter_option_get_version(priv->option) < 4 ||
+        milter_server_context_is_enable_step(context, MILTER_STEP_NO_DATA)) {
         milter_debug("[%u] [server][data][skip] %s", tag, name);
         milter_server_context_set_state(context,
                                         MILTER_SERVER_CONTEXT_STATE_DATA);

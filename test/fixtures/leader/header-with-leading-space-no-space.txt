@@ -14,7 +14,7 @@ arguments=--negotiate-flags=header-value-with-leading-space
 
 step=header-value-with-leading-space
 
-options=2;add-headers|change-body|quarantine;header-value-with-leading-space;2;add-headers|change-body|quarantine;header-value-with-leading-space
+options=8;add-headers|change-body|quarantine;header-value-with-leading-space;8;add-headers|change-body|quarantine;header-value-with-leading-space
 
 [header]
 command=header

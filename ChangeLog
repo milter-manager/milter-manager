@@ -1,5 +1,23 @@
 2009-07-07  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/server/milter-server-context.[ch],
+	test/server/test-server-context-command.c: add protocol version
+	check on DATA.
+
+	* test/fixtures/children/negotiate-retry-fail.txt,
+	test/fixtures/children/negotiate-retry.txt,
+	test/fixtures/children/negotiate.txt,
+	test/fixtures/leader/add-header-with-leading-space.txt,
+	test/fixtures/leader/change-header-with-leading-space.txt,
+	test/fixtures/leader/header-with-leading-space-no-space.txt,
+	test/fixtures/leader/header-with-leading-space.txt,
+	test/fixtures/leader/insert-header-with-leading-space.txt,
+	test/fixtures/leader/negotiate.txt,
+	test/lib/milter-test-client.rb,
+	test/lib/milter-test-server.rb,
+	test/manager/test-children.c,
+	test/server/test-server-context-signals.c: follow the above change.
+
 	* milter/client/milter-client-context.c
 	(milter_client_context_class_init): fix typos.
 

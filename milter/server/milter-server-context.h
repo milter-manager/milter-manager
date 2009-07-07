@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -539,10 +539,18 @@ gboolean             milter_server_context_abort       (MilterServerContext *con
  * @context: a %MilterServerContext.
  * @option: the negotiate option.
  *
- * Set option.
+ * Set negotiate option.
  */
 void                 milter_server_context_set_option  (MilterServerContext *context,
                                                         MilterOption        *option);
+
+/**
+ * milter_server_context_get_option:
+ * @context: a %MilterServerContext.
+ *
+ * Get negotiate option.
+ */
+MilterOption        *milter_server_context_get_option  (MilterServerContext *context);
 
 /**
  * milter_server_context_is_enable_step:

@@ -18,7 +18,7 @@ arguments=--exit
 [negotiate-retry-fail]
 command=negotiate
 
-version=2
+version=8
 action=add-headers|change-body|quarantine
 step=none
 
