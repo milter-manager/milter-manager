@@ -994,6 +994,25 @@ milter_manager_test_clients_wait_n_replies(const GList *clients,
 }
 
 void
+milter_manager_test_clients_wait_n_alive(const GList *clients, guint n_alive)
+{
+    gboolean timeout_waiting = TRUE;
+    guint timeout_waiting_id;
+
+    timeout_waiting_id = g_timeout_add(1000, cb_timeout_waiting,
+                                       &timeout_waiting);
+    while (timeout_waiting &&
+           n_alive != milter_manager_test_clients_collect_n_alive(clients)) {
+        g_main_context_iteration(NULL, TRUE);
+    }
+    g_source_remove(timeout_waiting_id);
+
+    cut_assert_true(timeout_waiting, "timeout");
+    cut_assert_equal_uint(n_alive,
+                          milter_manager_test_clients_collect_n_alive(clients));
+}
+
+void
 milter_manager_test_client_assert_nothing_output (MilterManagerTestClient *client)
 {
     MilterManagerTestClientPrivate *priv;

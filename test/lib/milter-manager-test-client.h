@@ -147,6 +147,9 @@ void                     milter_manager_test_clients_wait_n_replies
                                               (const GList *clients,
                                                MilterManagerTestClientGetNReceived getter,
                                                guint n_replies);
+void                     milter_manager_test_clients_wait_n_alive
+                                              (const GList *clients,
+                                               guint n_alive);
 guint                    milter_manager_test_clients_collect_n_received
                                               (const GList *clients,
                                                MilterManagerTestClientGetNReceived getter);

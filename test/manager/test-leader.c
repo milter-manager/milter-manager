@@ -712,6 +712,7 @@ assert_alive_helper (MilterManagerTestScenario *scenario, const gchar *group)
         return;
 
     expected_n_alive = get_integer(scenario, group, "n_alive");
+    milter_manager_test_clients_wait_n_alive(started_clients, expected_n_alive);
     actual_n_alive =
         milter_manager_test_clients_collect_n_alive(started_clients);
     cut_assert_equal_uint(expected_n_alive, actual_n_alive);
@@ -1396,6 +1397,8 @@ data_scenario_header (void)
                  g_strdup("header-reject.txt"), g_free,
                  "header - stop",
                  g_strdup("header-stop.txt"), g_free,
+                 "header - stop - all",
+                 g_strdup("header-stop-all.txt"), g_free,
                  "header - again",
                  g_strdup("header-again.txt"), g_free,
                  NULL);

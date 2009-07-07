@@ -1589,7 +1589,7 @@ cb_stopped (MilterServerContext *context, gpointer user_data)
     case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
     case MILTER_SERVER_CONTEXT_STATE_BODY:
     case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
-        compile_reply_status(children, state, MILTER_STATUS_NOT_CHANGE);
+        compile_reply_status(children, state, MILTER_STATUS_ACCEPT);
         milter_server_context_abort(context);
         send_first_command_to_next_child(children, context);
         milter_server_context_quit(context);

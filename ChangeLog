@@ -1,5 +1,14 @@
 2009-07-07  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/manager/milter-manager-children.c,
+	test/fixtures/leader/header-stop-all.conf,
+	test/fixtures/leader/header-stop-all.txt,
+	test/lib/milter-manager-test-client.[ch],
+	test/manager/test-leader.c,
+	README: returns ACCEPT not CONTINUE when all
+	milters are stopped on message oriented events.
+	Reported by sgyk. Thanks!!!
+
 	* doc/install-to-centos.rd*:
 	- fix a typo.
 	- update versions.
