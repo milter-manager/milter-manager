@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -147,9 +147,7 @@ milter_headers_copy (MilterHeaders *headers)
     for (node = priv->header_list; node; node = g_list_next(node)) {
         MilterHeader *header = node->data;
 
-        milter_headers_add_header(copied_headers,
-                                          header->name,
-                                          header->value);
+        milter_headers_add_header(copied_headers, header->name, header->value);
     }
 
     return copied_headers;
