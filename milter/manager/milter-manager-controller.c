@@ -343,12 +343,12 @@ change_unix_socket_group (MilterManagerController *controller,
         if (errno == 0) {
             milter_error("[controller][error][unix] "
                          "failed to find group entry for UNIX socket group: "
-                         "%s: %s",
+                         "<%s>: <%s>",
                          address_un->sun_path, socket_group);
         } else {
             milter_error("[controller][error][unix] "
                          "failed to get group entry for UNIX socket group: "
-                         "%s: %s: %s",
+                         "<%s>: <%s>: %s",
                          address_un->sun_path, socket_group, g_strerror(errno));
         }
         return;
@@ -356,7 +356,7 @@ change_unix_socket_group (MilterManagerController *controller,
 
     if (chown(address_un->sun_path, -1, group->gr_gid) == -1) {
         milter_error("[controller][error][unix] "
-                     "failed to change UNIX socket group: %s: %s: %s",
+                     "failed to change UNIX socket group: <%s>: <%s>: %s",
                      address_un->sun_path, socket_group, g_strerror(errno));
     }
 }

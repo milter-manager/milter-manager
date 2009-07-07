@@ -310,20 +310,24 @@ change_unix_socket_group (MilterClient *client, struct sockaddr_un *address_un)
     if (!group) {
         if (errno == 0) {
             milter_error(
-                "failed to find group entry for UNIX socket group: %s",
-                socket_group);
+                "[client][error][unix] "
+                "failed to find group entry for UNIX socket group: <%s>: <%s>",
+                address_un->sun_path, socket_group);
         } else {
             milter_error(
-                "failed to get group entry for UNIX socket group: %s: %s",
-                socket_group, g_strerror(errno));
+                "[client][error][unix] "
+                "failed to get group entry for UNIX socket group: "
+                "<%s>: <%s>: %s",
+                address_un->sun_path, socket_group, g_strerror(errno));
         }
         return;
     }
 
     if (chown(address_un->sun_path, -1, group->gr_gid) == -1) {
         milter_error(
-            "failed to change UNIX socket group: %s: <%s>: %s",
-            socket_group, address_un->sun_path, g_strerror(errno));
+            "[client][error][unix] "
+            "failed to change UNIX socket group: <%s>: <%s>: %s",
+            address_un->sun_path, socket_group, g_strerror(errno));
     }
 }
 
