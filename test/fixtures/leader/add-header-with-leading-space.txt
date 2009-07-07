@@ -15,7 +15,7 @@ arguments=--add-header;X-Test-Header2:Test Header2 Value
 
 step=header-value-with-leading-space
 
-options=8;add-headers|change-body|quarantine;header-value-with-leading-space;8;add-headers|change-body|quarantine;header-value-with-leading-space
+options=6;add-headers|change-body|quarantine;header-value-with-leading-space;6;add-headers|change-body|quarantine;header-value-with-leading-space
 
 [end-of-message-add-header]
 command=end-of-message

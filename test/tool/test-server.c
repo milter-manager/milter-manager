@@ -147,7 +147,7 @@ cb_negotiate (MilterCommandDecoder *decoder, MilterOption *option,
 {
     MilterOption *reply_option;
 
-    reply_option = milter_option_new(8, test_data->actions, test_data->steps);
+    reply_option = milter_option_new(6, test_data->actions, test_data->steps);
     milter_reply_encoder_encode_negotiate(encoder,
                                           &packet, &packet_size,
                                           reply_option,

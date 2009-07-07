@@ -68,7 +68,7 @@ test_new (void)
     MilterActionFlags action;
     MilterStepFlags step;
 
-    version = 8;
+    version = 6;
     action = MILTER_ACTION_ADD_HEADERS | MILTER_ACTION_CHANGE_BODY;
     step = MILTER_STEP_NO_ENVELOPE_FROM | MILTER_STEP_NO_REPLY_CONNECT;
 
@@ -94,7 +94,7 @@ test_copy (void)
     MilterActionFlags action;
     MilterStepFlags step;
 
-    version = 8;
+    version = 6;
     action = MILTER_ACTION_ADD_HEADERS | MILTER_ACTION_CHANGE_BODY;
     step = MILTER_STEP_NO_ENVELOPE_FROM | MILTER_STEP_NO_REPLY_CONNECT;
 
@@ -112,7 +112,7 @@ test_equal (void)
     MilterActionFlags action;
     MilterStepFlags step;
 
-    version = 8;
+    version = 6;
     action = MILTER_ACTION_ADD_HEADERS | MILTER_ACTION_CHANGE_BODY;
     step = MILTER_STEP_NO_ENVELOPE_FROM | MILTER_STEP_NO_REPLY_CONNECT;
 
@@ -142,8 +142,8 @@ test_version (void)
     option = milter_option_new_empty();
 
     cut_assert_equal_uint(6, milter_option_get_version(option));
-    milter_option_set_version(option, 8);
-    cut_assert_equal_uint(8, milter_option_get_version(option));
+    milter_option_set_version(option, 4);
+    cut_assert_equal_uint(4, milter_option_get_version(option));
 }
 
 void
@@ -267,7 +267,7 @@ test_combine (void)
     MilterActionFlags action;
     MilterStepFlags step;
 
-    version = 8;
+    version = 6;
     action = MILTER_ACTION_ADD_HEADERS | MILTER_ACTION_CHANGE_BODY;
     step = MILTER_STEP_NO_ENVELOPE_FROM | MILTER_STEP_NO_REPLY_CONNECT;
 
@@ -297,8 +297,8 @@ test_combine_older_version (void)
     MilterActionFlags action;
     MilterStepFlags step;
 
-    version = 8;
-    older_version = 6;
+    version = 6;
+    older_version = 4;
     action = MILTER_ACTION_ADD_HEADERS | MILTER_ACTION_CHANGE_BODY;
     step = MILTER_STEP_NO_ENVELOPE_FROM | MILTER_STEP_NO_REPLY_CONNECT;
 
@@ -328,8 +328,8 @@ test_combine_newer_version (void)
     MilterActionFlags action;
     MilterStepFlags step;
 
-    version = 6;
-    newer_version = 8;
+    version = 4;
+    newer_version = 6;
     action = MILTER_ACTION_ADD_HEADERS | MILTER_ACTION_CHANGE_BODY;
     step = MILTER_STEP_NO_ENVELOPE_FROM | MILTER_STEP_NO_REPLY_CONNECT;
 
@@ -359,7 +359,7 @@ test_merge (void)
     MilterActionFlags action;
     MilterStepFlags step;
 
-    version = 8;
+    version = 6;
     action = MILTER_ACTION_ADD_HEADERS | MILTER_ACTION_CHANGE_BODY;
     step = MILTER_STEP_NO_ENVELOPE_FROM | MILTER_STEP_NO_REPLY_CONNECT;
 
@@ -391,7 +391,7 @@ test_merge_older_version (void)
     MilterActionFlags action;
     MilterStepFlags step;
 
-    version = 8;
+    version = 6;
     action = MILTER_ACTION_ADD_HEADERS | MILTER_ACTION_CHANGE_BODY;
     step = MILTER_STEP_NO_ENVELOPE_FROM | MILTER_STEP_NO_REPLY_CONNECT;
 
@@ -427,7 +427,7 @@ test_merge_newer_version (void)
     step = MILTER_STEP_NO_ENVELOPE_FROM | MILTER_STEP_NO_REPLY_CONNECT;
 
     option = milter_option_new(version, action, step);
-    copied_option = milter_option_new(8,
+    copied_option = milter_option_new(6,
                                       MILTER_ACTION_ADD_HEADERS |
                                       MILTER_ACTION_CHANGE_HEADERS,
                                       MILTER_STEP_NO_ENVELOPE_FROM |
@@ -443,13 +443,13 @@ test_inspect (void)
     MilterActionFlags action;
     MilterStepFlags step;
 
-    version = 8;
+    version = 6;
     action = MILTER_ACTION_ADD_HEADERS | MILTER_ACTION_CHANGE_BODY;
     step = MILTER_STEP_NO_ENVELOPE_FROM | MILTER_STEP_NO_REPLY_CONNECT;
 
     option = milter_option_new(version, action, step);
     cut_assert_equal_string_with_free(
-        "#<MilterOption version=<8> action=<add-headers|change-body> "
+        "#<MilterOption version=<6> action=<add-headers|change-body> "
         "step=<no-envelope-from|no-reply-connect>>",
         milter_option_inspect(option));
 }

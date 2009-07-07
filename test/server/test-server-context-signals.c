@@ -397,7 +397,7 @@ setup (void)
 
     {
         MilterOption *option;
-        option = milter_option_new(8,
+        option = milter_option_new(6,
                                    MILTER_ACTION_ADD_HEADERS |
                                    MILTER_ACTION_CHANGE_BODY |
                                    MILTER_ACTION_ADD_ENVELOPE_RECIPIENT |

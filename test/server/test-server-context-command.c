@@ -85,7 +85,7 @@ setup (void)
 {
     MilterOption *option;
 
-    protocol_version = 8;
+    protocol_version = 6;
 
     context = milter_server_context_new();
     milter_server_context_set_name(context, "test-server");

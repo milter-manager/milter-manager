@@ -30,7 +30,7 @@
 
 #define MAX_ON_MEMORY_BODY_SIZE 5242880 /* 5Mbyte */
 
-#define MAX_SUPPORTED_MILTER_PROTOCOL_VERSION 8
+#define MAX_SUPPORTED_MILTER_PROTOCOL_VERSION 6
 
 #define MILTER_MANAGER_CHILDREN_GET_PRIVATE(obj)                    \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                             \

@@ -11,7 +11,7 @@ port=10027
 [negotiate]
 command=negotiate
 
-version=8
+version=6
 action=add-headers|change-body|quarantine
 step=none
 

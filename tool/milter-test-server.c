@@ -37,7 +37,7 @@
 #include <milter/server.h>
 #include <milter/core.h>
 
-#define DEFAULT_NEGOTIATE_VERSION 8
+#define DEFAULT_NEGOTIATE_VERSION 6
 
 static gboolean verbose = FALSE;
 static gboolean output_message = FALSE;
@@ -217,13 +217,15 @@ cb_continue (MilterServerContext *context, gpointer user_data)
             send_recipient(context);
             break;
         }
-        if (!(step & MILTER_STEP_NO_UNKNOWN) && unknown_command) {
+        if (!(step & MILTER_STEP_NO_UNKNOWN) &&
+            unknown_command &&
+            milter_option_get_version(data->option) >= 3) {
             milter_server_context_unknown(context, unknown_command);
             break;
         }
     case MILTER_SERVER_CONTEXT_STATE_UNKNOWN:
         if (!(step & MILTER_STEP_NO_DATA) &&
-            milter_option_get_version(data->option) > 2) {
+            milter_option_get_version(data->option) >= 4) {
             milter_server_context_data(context);
             break;
         }
