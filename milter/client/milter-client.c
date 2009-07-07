@@ -322,8 +322,8 @@ change_unix_socket_group (MilterClient *client, struct sockaddr_un *address_un)
 
     if (chown(address_un->sun_path, -1, group->gr_gid) == -1) {
         milter_error(
-            "failed to change UNIX socket group: %s: %s",
-            socket_group, g_strerror(errno));
+            "failed to change UNIX socket group: %s: <%s>: %s",
+            socket_group, address_un->sun_path, g_strerror(errno));
     }
 }
 
