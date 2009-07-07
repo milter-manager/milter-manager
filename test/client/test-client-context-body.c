@@ -45,7 +45,9 @@ static GString *expected_packet;
 static GString *body;
 
 static MilterStatus
-cb_end_of_message (MilterClientContext *context, gpointer user_data)
+cb_end_of_message (MilterClientContext *context,
+                   const gchar *chunk, gsize size,
+                   gpointer user_data)
 {
     milter_client_context_replace_body(context, body->str, body->len);
     milter_agent_set_writer(MILTER_AGENT(context), NULL);

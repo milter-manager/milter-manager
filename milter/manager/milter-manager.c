@@ -342,14 +342,18 @@ cb_client_body (MilterClientContext *context, const gchar *chunk, gsize size,
 }
 
 static MilterStatus
-cb_client_end_of_message (MilterClientContext *context, gpointer user_data)
+cb_client_end_of_message (MilterClientContext *context,
+                          const gchar *chunk, gsize size,
+                          gpointer user_data)
 {
     MilterManagerLeader *leader = user_data;
 
-    milter_debug("[%u] [manager][receive][end-of-message]",
-                 milter_agent_get_tag(MILTER_AGENT(context)));
+    milter_debug("[%u] [manager][receive][end-of-message] "
+                 "<%" G_GSIZE_FORMAT ">",
+                 milter_agent_get_tag(MILTER_AGENT(context)),
+                 size);
 
-    return milter_manager_leader_end_of_message(leader, NULL, 0);
+    return milter_manager_leader_end_of_message(leader, chunk, size);
 }
 
 static MilterStatus

@@ -424,10 +424,27 @@ cb_body (MilterClientContext *context, const guchar *chunk, gsize size,
 }
 
 static MilterStatus
-cb_end_of_message (MilterClientContext *context, gpointer user_data)
+cb_end_of_message (MilterClientContext *context,
+                   const gchar *chunk, gsize size,
+                   gpointer user_data)
 {
     SmfiContext *smfi_context = user_data;
     sfsistat status;
+
+    if (chunk && size > 0 && filter_description->xxfi_body) {
+        status = filter_description->xxfi_body(smfi_context,
+                                               (guchar *)chunk, size);
+        switch (status) {
+        case SMFIS_REJECT:
+        case SMFIS_DISCARD:
+        case SMFIS_ACCEPT:
+        case SMFIS_TEMPFAIL:
+            return libmilter_compatible_convert_status_to(status);
+            break;
+        default:
+            break;
+        }
+    }
 
     if (!filter_description->xxfi_eom)
         return MILTER_STATUS_DEFAULT;

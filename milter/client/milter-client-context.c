@@ -139,7 +139,9 @@ static MilterStatus default_body       (MilterClientContext *context,
                                         const gchar   *chunk,
                                         gsize          size);
 static MilterStatus default_end_of_message
-                                       (MilterClientContext *context);
+                                       (MilterClientContext *context,
+                                        const gchar   *chunk,
+                                        gsize          size);
 static MilterStatus default_abort      (MilterClientContext *context,
                                         MilterClientContextState state);
 static void         negotiate_response (MilterClientContext *context,
@@ -1299,8 +1301,14 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientContextClass, end_of_message),
                      status_accumulator, NULL,
-                     _milter_marshal_ENUM__VOID,
-                     MILTER_TYPE_STATUS, 0);
+#if GLIB_SIZEOF_SIZE_T == 8
+                     _milter_marshal_VOID__STRING_UINT64,
+                     MILTER_TYPE_STATUS, 2, G_TYPE_STRING, G_TYPE_UINT64
+#else
+                     _milter_marshal_VOID__STRING_UINT,
+                     MILTER_TYPE_STATUS, 2, G_TYPE_STRING, G_TYPE_UINT
+#endif
+                     );
 
     /**
      * MilterClientContext::end-of-message-response:
@@ -2328,7 +2336,8 @@ default_body (MilterClientContext *context, const gchar *chunk, gsize size)
 }
 
 static MilterStatus
-default_end_of_message (MilterClientContext *context)
+default_end_of_message (MilterClientContext *context,
+                        const gchar *chunk, gsize size)
 {
     return MILTER_STATUS_NOT_CHANGE;
 }
@@ -2924,25 +2933,14 @@ cb_decoder_end_of_message (MilterDecoder *decoder, const gchar *chunk,
     MilterStatus status;
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
-
-    disable_timeout(context);
-    if (chunk && chunk_size > 0) {
-        /* FIXME: should check the previous state */
-        milter_client_context_set_state(
-            context, MILTER_CLIENT_CONTEXT_STATE_BODY);
-        set_macro_context(context, MILTER_COMMAND_BODY);
-        g_signal_emit(context, signals[BODY], 0, chunk, chunk_size, &status);
-        if (status != MILTER_STATUS_PROGRESS)
-            g_signal_emit(context, signals[BODY_RESPONSE], 0, status);
-        else
-            /* FIXME: how handle this situation? */;
-    }
-
     /* FIXME: should check the previous state */
     milter_client_context_set_state(
         context, MILTER_CLIENT_CONTEXT_STATE_END_OF_MESSAGE);
+
+    disable_timeout(context);
     set_macro_context(context, MILTER_COMMAND_END_OF_MESSAGE);
-    g_signal_emit(context, signals[END_OF_MESSAGE], 0, &status);
+    g_signal_emit(context, signals[END_OF_MESSAGE], 0,
+                  chunk, chunk_size, &status);
     if (status == MILTER_STATUS_PROGRESS)
         return;
     g_signal_emit(context, signals[END_OF_MESSAGE_RESPONSE], 0, status);

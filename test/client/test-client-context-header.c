@@ -115,7 +115,9 @@ cb_body (MilterClientContext *context, const gchar *chunk, gsize size,
 }
 
 static MilterStatus
-cb_end_of_message (MilterClientContext *context, gpointer user_data)
+cb_end_of_message (MilterClientContext *context,
+                   const gchar *chunk, gsize size,
+                   gpointer user_data)
 {
     if (add_header) {
         milter_client_context_add_header(context, header_name, header_value,

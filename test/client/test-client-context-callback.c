@@ -128,6 +128,11 @@ static gsize body_chunk_size;
 static gchar *body_chunk_test_data;
 static gsize body_chunk_test_data_size;
 
+static gchar *end_of_message_chunk;
+static gsize end_of_message_chunk_size;
+static gchar *end_of_message_chunk_test_data;
+static gsize end_of_message_chunk_test_data_size;
+
 static gchar *unknown_command;
 static gsize unknown_command_size;
 
@@ -399,9 +404,16 @@ cb_body_response (MilterClientContext *context,
 }
 
 static MilterStatus
-cb_end_of_message (MilterClientContext *context, gpointer user_data)
+cb_end_of_message (MilterClientContext *context,
+                   const gchar *chunk, gsize size,
+                   gpointer user_data)
 {
     n_end_of_messages++;
+
+    if (end_of_message_chunk)
+        g_free(end_of_message_chunk);
+    end_of_message_chunk = g_strndup(chunk, size);
+    end_of_message_chunk_size = size;
 
     retrieve_context_info(context);
 
@@ -581,6 +593,11 @@ setup (void)
     body_chunk_test_data = NULL;
     body_chunk_test_data_size = 0;
 
+    end_of_message_chunk = NULL;
+    end_of_message_chunk_size = 0;
+    end_of_message_chunk_test_data = NULL;
+    end_of_message_chunk_test_data_size = 0;
+
     unknown_command = NULL;
     unknown_command_size = 0;
 
@@ -704,6 +721,11 @@ teardown (void)
         g_free(body_chunk);
     if (body_chunk_test_data)
         g_free(body_chunk_test_data);
+
+    if (end_of_message_chunk)
+        g_free(end_of_message_chunk);
+    if (end_of_message_chunk_test_data)
+        g_free(end_of_message_chunk_test_data);
 
     if (unknown_command)
         g_free(unknown_command);
@@ -1407,13 +1429,13 @@ test_feed_body (gconstpointer data)
 }
 
 static void
-feed_end_of_message_pre_hook_with_body (void)
+feed_end_of_message_pre_hook_with_chunk (void)
 {
-    body_chunk_test_data = g_strdup("La de da de da 1.\n"
-                                    "La de da de da 2.\n"
-                                    "La de da de da 3.\n"
-                                    "La de da de da 4.");
-    body_chunk_test_data_size = strlen(body_chunk_test_data);
+    end_of_message_chunk_test_data = g_strdup("La de da de da 1.\n"
+                                              "La de da de da 2.\n"
+                                              "La de da de da 3.\n"
+                                              "La de da de da 4.");
+    end_of_message_chunk_test_data_size = strlen(end_of_message_chunk_test_data);
 }
 
 static void
@@ -1432,23 +1454,23 @@ feed_end_of_message_pre_hook_with_macro (void)
 }
 
 static void
-feed_end_of_message_pre_hook_with_body_and_macro (void)
+feed_end_of_message_pre_hook_with_chunk_and_macro (void)
 {
-    feed_end_of_message_pre_hook_with_body();
+    feed_end_of_message_pre_hook_with_chunk();
     feed_end_of_message_pre_hook_with_macro();
 }
 
 void
 data_feed_end_of_message (void)
 {
-    cut_add_data("without body",
+    cut_add_data("without chunk",
                  NULL, NULL,
-                 "without body - with macro",
+                 "without chunk - with macro",
                  feed_end_of_message_pre_hook_with_macro, NULL,
-                 "with body",
-                 feed_end_of_message_pre_hook_with_body, NULL,
-                 "with body - with macro",
-                 feed_end_of_message_pre_hook_with_body_and_macro, NULL);
+                 "with chunk",
+                 feed_end_of_message_pre_hook_with_chunk, NULL,
+                 "with chunk - with macro",
+                 feed_end_of_message_pre_hook_with_chunk_and_macro, NULL);
 }
 
 void
@@ -1463,20 +1485,22 @@ test_feed_end_of_message (gconstpointer data)
         pre_hook();
 
     milter_command_encoder_encode_end_of_message(encoder, &packet, &packet_size,
-                                                 body_chunk_test_data,
-                                                 body_chunk_test_data_size);
+                                                 end_of_message_chunk_test_data,
+                                                 end_of_message_chunk_test_data_size);
     gcut_assert_error(feed());
-    if (body_chunk_test_data) {
-        cut_assert_equal_int(2, n_bodies);
-        cut_assert_equal_int(2, n_body_responses);
-        cut_assert_equal_string(body_chunk_test_data, body_chunk);
-        cut_assert_equal_int(body_chunk_test_data_size, body_chunk_size);
-    } else {
-        cut_assert_equal_int(1, n_bodies);
-        cut_assert_equal_int(1, n_body_responses);
-    }
+
+    cut_assert_equal_int(1, n_bodies);
+    cut_assert_equal_int(1, n_body_responses);
     cut_assert_equal_int(1, n_end_of_messages);
     cut_assert_equal_int(1, n_end_of_message_responses);
+
+    if (end_of_message_chunk_test_data) {
+        cut_assert_equal_string(end_of_message_chunk_test_data,
+                                end_of_message_chunk);
+        cut_assert_equal_int(end_of_message_chunk_test_data_size,
+                             end_of_message_chunk_size);
+    }
+
     milter_assert_equal_state(END_OF_MESSAGE_REPLIED);
 
     gcut_assert_equal_hash_table_string_string(expected_macros, defined_macros);

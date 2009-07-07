@@ -57,7 +57,9 @@ static gchar *add_recipient_parameters;
 static gchar *delete_recipient;
 
 static MilterStatus
-cb_end_of_message (MilterClientContext *context, gpointer user_data)
+cb_end_of_message (MilterClientContext *context,
+                   const gchar *chunk, gsize size,
+                   gpointer user_data)
 {
     if (do_change_from) {
         milter_client_context_change_from(context,

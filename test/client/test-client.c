@@ -197,7 +197,9 @@ cb_body (MilterClientContext *context, const gchar *chunk, gsize length,
 }
 
 static void
-cb_end_of_message (MilterClientContext *context, gpointer user_data)
+cb_end_of_message (MilterClientContext *context,
+                   const gchar *chunk, gsize size,
+                   gpointer user_data)
 {
     n_end_of_messages++;
 }

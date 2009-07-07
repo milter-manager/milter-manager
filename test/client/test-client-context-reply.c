@@ -126,7 +126,9 @@ cb_body (MilterClientContext *context, const gchar *chunk, gsize size,
 }
 
 static MilterStatus
-cb_end_of_message (MilterClientContext *context, gpointer user_data)
+cb_end_of_message (MilterClientContext *context,
+                   const gchar *gchar, gsize size,
+                   gpointer user_data)
 {
     if (quarantine_reason) {
         milter_client_context_quarantine(context, quarantine_reason);

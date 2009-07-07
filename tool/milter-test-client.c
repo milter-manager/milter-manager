@@ -240,9 +240,19 @@ cb_body (MilterClientContext *context, const gchar *chunk, gsize length,
 }
 
 static MilterStatus
-cb_end_of_message (MilterClientContext *context, gpointer user_data)
+cb_end_of_message (MilterClientContext *context,
+                   const gchar *chunk, gsize size,
+                   gpointer user_data)
 {
-    g_print("end-of-message\n");
+    if (chunk && size > 0) {
+        GString *null_terminated_chunk;
+
+        null_terminated_chunk = g_string_new_len(chunk, size);
+        g_print("end-of-message: <%s>\n", null_terminated_chunk->str);
+        g_string_free(null_terminated_chunk, TRUE);
+    } else {
+        g_print("end-of-message\n");
+    }
 
     print_macros(context);
 

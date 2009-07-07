@@ -149,7 +149,9 @@ G_BEGIN_DECLS
  * }
  * 
  * static MilterStatus
- * cb_end_of_message (MilterClientContext *context, gpointer user_data)
+ * cb_end_of_message (MilterClientContext *context,
+ *                    const gchar *chunk, gsize length,
+ *                    gpointer user_data)
  * {
  *     g_print("end-of-message\n");
  *     return MILTER_STATUS_CONTINUE;
@@ -390,7 +392,9 @@ struct _MilterClientContextClass
                                         gsize                size);
     void         (*body_response)      (MilterClientContext *context,
                                         MilterStatus         status);
-    MilterStatus (*end_of_message)     (MilterClientContext *context);
+    MilterStatus (*end_of_message)     (MilterClientContext *context,
+                                        const gchar         *chunk,
+                                        gsize                size);
     void         (*end_of_message_response)
                                        (MilterClientContext *context,
                                         MilterStatus         status);
