@@ -260,9 +260,14 @@ We add the following milter configuration to
 /etc/postfix/main.cf.
 
   milter_default_action = accept
+  milter_protocol = 6
   milter_mail_macros = {auth_author} {auth_type} {auth_authen}
 
 Here are descriptions of the configuration.
+
+: milter_protocol = 6
+
+   Postfix uses milter protocol version 6.
 
 : milter_default_action = accept
 

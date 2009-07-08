@@ -263,10 +263,15 @@ OPTION_ARGSをコメントアウトし、デーモンプロセスで起動する
 
 /etc/postfix/main.cfに以下を追加します。
 
+  milter_protocol = 6
   milter_default_action = accept
   milter_mail_macros = {auth_author} {auth_type} {auth_authen}
 
 それぞれ以下のような設定です。
+
+: milter_protocol = 6
+
+   milterプロトコルバージョン6を使います。
 
 : milter_default_action = accept
 
