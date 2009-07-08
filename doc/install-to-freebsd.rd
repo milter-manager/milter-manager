@@ -304,11 +304,18 @@ We start milter's configuration.
 We add the following milter configuration to
 /usr/local/etc/postfix/main.cf:
 
-  milter_default_action = accept
   milter_protocol = 6 # if Postfix >= 2.5
+  milter_default_action = accept
   milter_mail_macros = {auth_author} {auth_type} {auth_authen}
 
 Here are descriptions of the configuration.
+
+: milter_protocol = 6
+
+   Postfix uses milter protocol version 6. This version is
+   default for Sendmail 8.14. But version 6 is supported
+   since Postfix 2.5. If you use Postfix <= 2.4, don't use
+   the option.
 
 : milter_default_action = accept
 
@@ -320,13 +327,6 @@ Here are descriptions of the configuration.
 
    If you can recover milter, 'tempfail' will be better
    choice rather than 'accept'. Default is 'tempfail'.
-
-: milter_protocol = 6
-
-   Postfix uses milter protocol version 6. This version is
-   default for Sendmail 8.14. But version 6 is supported
-   since Postfix 2.5. If you use Postfix <= 2.4, don't use
-   the option.
 
 : milter_mail_macros = {auth_author} {auth_type} {auth_authen}
 
