@@ -1,5 +1,8 @@
 2009-07-14  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/reverse-dictionary.rd*,
+	doc/reference/milter-manager-docs.sgml: add reverse dictionary.
+
 	* doc/configuration.rd*: add a description for
 	milter-manager.local.conf.
 

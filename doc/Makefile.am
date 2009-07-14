@@ -56,7 +56,9 @@ EXTRA_DIST =						\
 	milter-manager-log-analyzer.rd			\
 	milter-manager-log-analyzer.rd.ja		\
 	milter-manager.rd				\
-	milter-manager.rd.ja
+	milter-manager.rd.ja				\
+	reverse-dictionary.rd				\
+	reverse-dictionary.rd.ja
 
 dist_man1_MANS =			\
 	milter-manager.man		\

@@ -44,6 +44,7 @@
       <!--xi:include href="upgrade-on-others.xml"/-->
     </chapter>
     <xi:include href="configuration.xml"/>
+    <xi:include href="reverse-dictionary.xml"/>
   </part>
 
   <!--part id="reference">

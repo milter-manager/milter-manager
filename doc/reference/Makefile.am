@@ -85,7 +85,8 @@ content_files =					\
 	milter-test-server.xml			\
 	milter-test-client.xml			\
 	milter-performance-check.xml		\
-	milter-manager-log-analyzer.xml
+	milter-manager-log-analyzer.xml		\
+	reverse-dictionary.xml
 
 # Extra options to supply to gtkdoc-fixxref
 FIXXREF_OPTIONS=
@@ -143,7 +144,9 @@ generated_xml_files =				\
 	milter-performance-check.xml		\
 	milter-performance-check.xml.ja		\
 	milter-manager-log-analyzer.xml		\
-	milter-manager-log-analyzer.xml.ja
+	milter-manager-log-analyzer.xml.ja	\
+	reverse-dictionary.xml			\
+	reverse-dictionary.xml.ja
 
 MAINTAINERCLEANFILES +=			\
 	$(generated_xml_files)		\
@@ -332,6 +335,12 @@ milter-manager-log-analyzer.xml: $(top_srcdir)/doc/milter-manager-log-analyzer.r
 
 milter-manager-log-analyzer.xml.ja: $(top_srcdir)/doc/milter-manager-log-analyzer.rd.ja $(RD2REFENTRY_LIB) ja.po
 	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/milter-manager-log-analyzer.rd.ja > milter-manager-log-analyzer.xml.ja
+
+reverse-dictionary.xml: $(top_srcdir)/doc/reverse-dictionary.rd $(RD2REFENTRY_LIB) reverse-dictionary.xml.ja
+	$(RD2DOCBOOK) $(top_srcdir)/doc/reverse-dictionary.rd > reverse-dictionary.xml
+
+reverse-dictionary.xml.ja: $(top_srcdir)/doc/reverse-dictionary.rd.ja $(RD2REFENTRY_LIB) ja.po
+	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/reverse-dictionary.rd.ja > reverse-dictionary.xml.ja
 
 ### SVG -> PNG
 mta-and-milter-manager-and-child-milter.png: $(top_srcdir)/doc/mta-and-milter-manager-and-child-milter.svg
