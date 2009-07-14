@@ -25,7 +25,9 @@
       <ul class="menu">
 	<li id="menu-introduction"><a href="reference/ja/introduction.html">はじめに</a></li>
 	<li id="menu-install"><a href="reference/ja/install.html">インストール</a></li>
-	<li id="menu-download"><a href="http://downloads.sourceforge.net/milter-manager/milter-manager-1.0.1.tar.gz">ダウンロード</a></li>
+        <li id="menu-upgrade"><a href="upgrade.html">アップグレード</a></li>
+        <li id="menu-reverse-dictionary"><a href="reverse-dictionary.html">逆引きリファレンス</a></li>
+	<li id="menu-download"><a href="http://downloads.sourceforge.net/milter-manager/milter-manager-1.2.0.tar.gz">ダウンロード</a></li>
 	<li id="menu-blog"><a href="blog/ja/">ブログ</a></li>
       </ul>
     </div>
@@ -34,7 +36,7 @@
       <div class="main">
 	<h2 id="latest">最新リリース</h2>
 	<p>
-	  2009-05-14にリリースされた1.0.1が最新安定版リリースです。
+	  2009-07-17にリリースされた1.2.0が最新安定版リリースです。
         </p>
 	<p>
           [<a href="reference/ja/news.html">変更点</a>]
@@ -54,6 +56,23 @@
 	  </li>
 	  <li>
 	    <a href="reference/ja/install-to-others.html">上記以外</a>
+	  </li>
+	</ul>
+	<p>
+	  環境毎にアップグレード方法を説明しています。
+	</p>
+	<ul>
+	  <li>
+	    <a href="reference/ja/upgrade-on-ubuntu.html">Ubuntu</a>
+	  </li>
+	  <li>
+	    <a href="reference/ja/upgrade-on-centos.html">CentOS</a>
+	  </li>
+	  <li>
+	    <a href="reference/ja/upgrade-on-freebsd.html">FreeBSD</a>
+	  </li>
+	  <li>
+	    <a href="reference/ja/upgrade-on-others.html">上記以外</a>
 	  </li>
 	</ul>
 
@@ -132,6 +151,20 @@ deb-src http://milter-manager.sourceforge.net/debian/ lenny main</pre>
 	      </li>
 	      <li>
 		<a href="reference/ja/install-to-freebsd.html">FreeBSD</a>
+	      </li>
+	    </ul>
+	  </li>
+	  <li>
+	    <a href="reference/ja/upgrade.html">アップグレード</a>
+	    <ul class="sidebar-upgrade">
+	      <li>
+		<a href="reference/ja/upgrade-on-ubuntu.html">Ubuntu</a>
+	      </li>
+	      <li>
+		<a href="reference/ja/upgrade-on-centos.html">CentOS</a>
+	      </li>
+	      <li>
+		<a href="reference/ja/upgrade-on-freebsd.html">FreeBSD</a>
 	      </li>
 	    </ul>
 	  </li>
