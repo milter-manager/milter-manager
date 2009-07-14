@@ -10,7 +10,7 @@ Ubuntu Linuxに特化したmilter manager関連ソフトウェアのインス
 Ubuntu Linuxに依存しない一般的なインストール情報は((<インストー
 ル|install.rd.ja>))を見てください。
 
-== milter-manager-log-analyzerのインストール
+== [ubuntu-milter-manager-log-analyzer] milter-manager-log-analyzerのインストール
 
 milter-manager-log-analyzerはmilter-managerパッケージに含ま
 れているので、すでにインストールされています。ここでは、
@@ -43,7 +43,7 @@ WebサーバとしてApacheを使います。
 これでhttp://localhost/milter-manager-log/でグラフを閲覧で
 きるようになります。
 
-== milter manager adminのインストール
+== [ubuntu-milter-manager-admin] milter manager adminのインストール
 
 === パッケージのインストール
 

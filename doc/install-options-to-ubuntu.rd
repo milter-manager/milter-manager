@@ -10,7 +10,7 @@ Linux|install-to-ubuntu.rd>)) for milter manager install
 information and ((<Install|install.rd>)) for general install
 information.
 
-== Install milter-manager-log-analyzer
+== [ubuntu-milter-manager-log-analyzer] Install milter-manager-log-analyzer
 
 milter-manager-log-analyzer is already installed because it
 is included in milter manager's package. We will configure
@@ -43,7 +43,7 @@ We need to reload configuration after editing:
 
 Now, we can see graphs at http://localhost/milter-manager-log/.
 
-== Install milter manager admin
+== [ubuntu-milter-manager-admin] Install milter manager admin
 
 === Install packages
 

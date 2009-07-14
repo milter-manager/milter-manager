@@ -10,7 +10,7 @@ FreeBSD|install-to-freebsd.rd>)) for milter manager install
 information and ((<Install|install.rd>)) for general install
 information.
 
-== Install milter-manager-log-analyzer
+== [freebsd-milter-manager-log-analyzer] Install milter-manager-log-analyzer
 
 === Install packages
 
@@ -56,7 +56,7 @@ information from log file and generates graphs regularly.
 milter-manager-log-analyzer is invoked every 5 minutes. We
 can confirm it is invoked at /var/log/cron.
 
-== Install milter manager admin
+== [freebsd-milter-manager-admin] Install milter manager admin
 
 === Install packages
 
