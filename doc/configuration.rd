@@ -26,10 +26,12 @@ The beginning milter-manager.conf is the following:
 
   load("applicable-conditions/*.conf")
   load_default
+  load_if_exist("milter-manager.local.conf")
 
 Normally, the part should not be changed. If you need to
-change your configuration, you should append your
-configuration below the part.
+change your configuration, you should write your
+configurations to "milter-manager.local.conf" file in the
+same directory of "milter-manager.conf".
 
 Configuration items are categorized as the followings:
 

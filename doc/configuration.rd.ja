@@ -27,9 +27,11 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
 
   load("applicable-conditions/*.conf")
   load_default
+  load_if_exist("milter-manager.local.conf")
 
-通常は、この部分はそのままにしておき、それより下の部分に設定
-を追記します。
+通常は、この部分はそのままにしておき、milter-manager.confと
+同じディレクトリにmilter-manager.local.confというファイルを
+作成し、そのファイルに設定を記述します。
 
 設定項目は以下のように分類されています。
 

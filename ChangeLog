@@ -1,3 +1,8 @@
+2009-07-14  Kouhei Sutou  <kou@clear-code.com>
+
+	* doc/configuration.rd*: add a description for
+	milter-manager.local.conf.
+
 2009-07-08  Kouhei Sutou  <kou@clear-code.com>
 
 	* doc/install-to-freebsd.rd*: 7.1 -> 7.2.
