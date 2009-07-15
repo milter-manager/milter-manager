@@ -25,7 +25,6 @@
       <ul class="menu">
 	<li id="menu-introduction"><a href="reference/ja/introduction.html">はじめに</a></li>
 	<li id="menu-install"><a href="reference/ja/install.html">インストール</a></li>
-        <li id="menu-upgrade"><a href="upgrade.html">アップグレード</a></li>
         <li id="menu-reverse-dictionary"><a href="reverse-dictionary.html">逆引きリファレンス</a></li>
 	<li id="menu-download"><a href="http://downloads.sourceforge.net/milter-manager/milter-manager-1.2.0.tar.gz">ダウンロード</a></li>
 	<li id="menu-blog"><a href="blog/ja/">ブログ</a></li>
@@ -38,12 +37,12 @@
 	<p>
 	  2009-07-17にリリースされた1.2.0が最新安定版リリースです。
         </p>
-	<p>
-          [<a href="reference/ja/news.html">変更点</a>]
-	</p>
-	<p>
-	  環境毎にインストール方法を説明しています。
-	</p>
+	<ul>
+          <li><a href="reference/ja/news.html#release-1-2-0">変更点</a></li>
+          <li><a href="http://downloads.sourceforge.net/milter-manager/milter-manager-1.2.0.tar.gz">ダウンロード</a></li>
+	</ul>
+
+	<p>環境毎のインストール方法です。</p>
 	<ul>
 	  <li>
 	    <a href="reference/ja/install-to-ubuntu.html">Ubuntu</a>
@@ -55,13 +54,12 @@
 	    <a href="reference/ja/install-to-freebsd.html">FreeBSD</a>
 	  </li>
 	  <li>
-	    <a href="reference/ja/install-to-others.html">上記以外</a>
+	    <a href="reference/ja/install-to-others.html">それ以外</a>
 	  </li>
 	</ul>
-	<p>
-	  環境毎にアップグレード方法を説明しています。
-	</p>
-	<ul>
+
+	<p>環境毎のアップグレード方法です。</p>
+	<ul class="upgrade-on">
 	  <li>
 	    <a href="reference/ja/upgrade-on-ubuntu.html">Ubuntu</a>
 	  </li>
@@ -70,9 +68,6 @@
 	  </li>
 	  <li>
 	    <a href="reference/ja/upgrade-on-freebsd.html">FreeBSD</a>
-	  </li>
-	  <li>
-	    <a href="reference/ja/upgrade-on-others.html">上記以外</a>
 	  </li>
 	</ul>
 
@@ -83,19 +78,20 @@
 	<p>
 	  milter managerはmilterをサポートしているSendmailやPostfixといったMTAと一緒に使うことができます。Ubuntu、CentOS、FreeBSDなどのプラットフォーム上で動作します。
 	</p>
-        <p>
-          [<a href="reference/ja/introduction.html">milter managerの紹介</a>]
-        </p>
+        <ul>
+          <li><a href="reference/ja/introduction.html">milter managerの紹介</a></li>
+          <li><a href="reference/ja/readme.html">README</a></li>
+        </ul>
 
 	<h2 id="development">開発版リリース</h2>
 	<p>
 	  2009-07-03に開発版1.1.1がリリースされました。開発版には多くの新機能が含まれていますが、安定して動作しない可能性があります。実運用には安定版を利用してください。
         </p>
-	<p>
-          [<a href="http://downloads.sourceforge.net/milter-manager/milter-manager-1.1.1.tar.gz">ダウンロード</a>]
-          [<a href="dev/reference/ja/news.html">変更点</a>]
-          [<a href="dev/reference/ja/">ドキュメント</a>]
-	</p>
+	<ul>
+          <li><a href="http://downloads.sourceforge.net/milter-manager/milter-manager-1.1.1.tar.gz">ダウンロード</a></li>
+          <li><a href="dev/reference/ja/news.html">変更点</a></li>
+          <li><a href="dev/reference/ja/">ドキュメント</a></li>
+	</ul>
 
 	<h3>Ubuntu 8.04 LTS Hardy Heron用開発版パッケージ</h3>
 	<p>
@@ -129,52 +125,70 @@ deb-src http://milter-manager.sourceforge.net/debian/ lenny main</pre>
       </div>
 
       <div class="sidebar">
-	<ul>
-	  <li><a href="http://sourceforge.net/projects/milter-manager/">プロジェクトページ</a></li>
-	  <li>
-	    <a href="reference/ja/news.html">お知らせ</a>
-	  </li>
-	  <li>
-	    <a href="reference/ja/readme.html">README</a>
-	  </li>
-	  <li>
-	    <a href="reference/ja/introduction.html">はじめに</a>
-	  </li>
-	  <li>
-	    <a href="reference/ja/install.html">インストール</a>
-	    <ul class="sidebar-install">
-	      <li>
-		<a href="reference/ja/install-to-ubuntu.html">Ubuntu</a>
-	      </li>
-	      <li>
-		<a href="reference/ja/install-to-centos.html">CentOS</a>
-	      </li>
-	      <li>
-		<a href="reference/ja/install-to-freebsd.html">FreeBSD</a>
-	      </li>
-	    </ul>
-	  </li>
-	  <li>
-	    <a href="reference/ja/upgrade.html">アップグレード</a>
-	    <ul class="sidebar-upgrade">
-	      <li>
-		<a href="reference/ja/upgrade-on-ubuntu.html">Ubuntu</a>
-	      </li>
-	      <li>
-		<a href="reference/ja/upgrade-on-centos.html">CentOS</a>
-	      </li>
-	      <li>
-		<a href="reference/ja/upgrade-on-freebsd.html">FreeBSD</a>
-	      </li>
-	    </ul>
-	  </li>
-	  <li>
-	    <a href="https://lists.sourceforge.net/lists/listinfo/milter-manager-users-ja">メーリングリスト</a>
-	  </li>
-	  <li>
-	    <a href="coverage/">カバレッジ</a>
-	  </li>
-	</ul>
+        <div class="sidebar-item">
+	  <h2>導入</h2>
+	  <ul>
+	    <li class="sidebar-install">
+	      <a href="reference/ja/install.html">インストール</a>
+	      <ul>
+		<li>
+		  <a href="reference/ja/install-to-ubuntu.html">Ubuntu</a>
+		</li>
+		<li>
+		  <a href="reference/ja/install-to-centos.html">CentOS</a>
+		</li>
+		<li>
+		  <a href="reference/ja/install-to-freebsd.html">FreeBSD</a>
+		</li>
+	      </ul>
+	    </li>
+	    <li class="sidebar-upgrade">
+	      <a href="reference/ja/upgrade.html">アップグレード</a>
+	      <ul>
+		<li>
+		  <a href="reference/ja/upgrade-on-ubuntu.html">Ubuntu</a>
+		</li>
+		<li>
+		  <a href="reference/ja/upgrade-on-centos.html">CentOS</a>
+		</li>
+		<li>
+		  <a href="reference/ja/upgrade-on-freebsd.html">FreeBSD</a>
+		</li>
+	      </ul>
+	    </li>
+	  </ul>
+        </div>
+
+        <div class="sidebar-item">
+	  <h2>ドキュメント</h2>
+	  <ul>
+	    <li>
+	      <a href="reference/ja/news.html">お知らせ</a>
+	    </li>
+	    <li>
+	      <a href="reference/ja/readme.html">README</a>
+	    </li>
+	    <li>
+	      <a href="reference/ja/introduction.html">はじめに</a>
+	    </li>
+	    <li>
+	      <a href="reference/ja/reverse-dictionary.html">逆引きリファレンス</a>
+	    </li>
+	  </ul>
+        </div>
+
+        <div class="sidebar-item">
+	  <h2>プロジェクト情報</h2>
+	  <ul>
+	    <li><a href="http://sourceforge.net/projects/milter-manager/">プロジェクトページ</a></li>
+	    <li>
+	      <a href="https://lists.sourceforge.net/lists/listinfo/milter-manager-users-ja">メーリングリスト</a>
+	    </li>
+	    <li>
+	      <a href="coverage/">カバレッジ</a>
+	    </li>
+	  </ul>
+        </div>
       </div>
     </div>
 

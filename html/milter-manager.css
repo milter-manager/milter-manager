@@ -132,9 +132,9 @@ ul.menu li#menu-install
   background: url(install.png) no-repeat;
 }
 
-ul.menu li#menu-upgrade
+ul.menu li#menu-reverse-dictionary
 {
-  /* background: url(upgrade.png) no-repeat; */
+  background: url(reference.png) no-repeat;
 }
 
 ul.menu li#menu-download
@@ -156,7 +156,7 @@ div.content
 
 div.main
 {
-  margin-right: 170px;
+  margin-right: 180px;
 }
 
 div.main p
@@ -170,8 +170,15 @@ div.day h3
   margin-left: -45px;
   text-indent: 45px;
   height: 36px;
-  background: url(heading-mark.png) no-repeat ;
+  background: url(heading-mark.png) no-repeat;
 }
+
+div.main ul li
+{
+  display: inline;
+  margin-right: 5px;
+}
+
 
 div.sidebar
 {
@@ -179,9 +186,23 @@ div.sidebar
   position: absolute;
   top: 0px;
   right: 0px;
-  width: 150px;
-  text-align: right;
+  width: 175px;
   background-color: white;
+}
+
+div.sidebar div.sidebar-item
+{
+  background: url(mini-heading-mark.png) no-repeat;
+  padding-left: 22px;
+  margin-bottom: 15px;
+}
+
+div.sidebar div.sidebar-item h2
+{
+  font-size: 1em;
+  margin: 0px;
+  padding: 0px;
+  padding-bottom: 5px;
 }
 
 div.sidebar ul
@@ -196,16 +217,26 @@ div.sidebar ul li
   margin-bottom: 5px;
 }
 
-div.sidebar ul li ul.sidebar-install
+div.sidebar ul li ul
 {
   margin-top: 5px;
 }
 
-div.sidebar ul li ul.sidebar-install li
+div.sidebar ul li ul li
 {
-  list-style-image: url(mini-install.png);
   padding: 0;
   margin: 0;
+  margin-left: 24px;
+}
+
+div.sidebar ul li.sidebar-install ul li
+{
+  list-style-image: url(mini-install.png);
+}
+
+div.sidebar ul li.sidebar-upgrade ul li
+{
+  list-style-image: url(mini-upgrade.png);
 }
 
 div.sponsors

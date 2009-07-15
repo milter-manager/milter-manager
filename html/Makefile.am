@@ -15,7 +15,9 @@ svg_images =					\
 	blog.svg				\
 	download.svg				\
 	heading-mark.svg			\
+	mini-heading-mark.svg			\
 	install.svg				\
+	upgrade.svg				\
 	introduction.svg			\
 	favicon.svg
 
@@ -31,8 +33,11 @@ generated_images =				\
 	blog.png				\
 	download.png				\
 	heading-mark.png			\
+	mini-heading-mark.png			\
 	install.png				\
 	mini-install.png			\
+	upgrade.png				\
+	mini-upgrade.png			\
 	introduction.png			\
 	logo.png				\
 	what-is-milter-manager.png		\
@@ -51,3 +56,9 @@ SUFFIXES = .svg .png
 
 mini-install.png: install.png
 	convert install.png -resize 12x12 mini-install.png
+
+mini-upgrade.png: upgrade.png
+	convert upgrade.png -resize 12x12 mini-upgrade.png
+
+mini-heading-mark.png: heading-mark.png
+	convert heading-mark.png -resize 19x19 mini-heading-mark.png
