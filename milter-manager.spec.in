@@ -113,6 +113,10 @@ fi
 %dir %{_localstatedir}/run/milter-manager/
 
 %changelog
+* Fri Jul 17 2009 Kouhei Sutou <kou@clear-code.com>
+- (1.2.0-0)
+- new upstream release
+
 * Fri Jul 03 2009 Kouhei Sutou <kou@clear-code.com>
 - (1.1.1-0)
 - new upstream release
