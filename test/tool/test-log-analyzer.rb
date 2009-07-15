@@ -44,30 +44,40 @@ class TestLogAnalyzer < Test::Unit::TestCase
   priority :must
   def test_update
     @analyzer.output_directory = @tmp_dir.to_s
+    @analyzer.prepare
 
-    input = (@data_dir + "mail-20090521-1.log").open
+    input = (@data_dir + "mail-20090715-1.log").open
     @analyzer.log = input
 
-    session_rrd = (@tmp_dir + "milter-log.session.rrd").to_s
-    mail_rrd = (@tmp_dir + "milter-log.mail.rrd").to_s
-    stop_rrd = (@tmp_dir + "milter-log.stop.rrd").to_s
+    session_rrd = (@tmp_dir + "session.rrd").to_s
+    status_rrd = (@tmp_dir + "milter-manager.status.rrd").to_s
+    report_rrd = (@tmp_dir + "milter-manager.report.rrd").to_s
+    milter_status_rrd = (@tmp_dir + "milter.status.milter-greylist.rrd").to_s
+    milter_report_rrd = (@tmp_dir + "milter.report.milter-greylist.rrd").to_s
 
     @analyzer.update
 
-    assert_equal((@data_dir + "milter-log-20090521-1.session.dump").read,
+    prefix = "mail-log-20090715-1"
+    assert_equal((@data_dir + "#{prefix}.session.dump").read,
                  dump(session_rrd))
-    assert_equal((@data_dir + "milter-log-20090521-1.mail.dump").read,
-                 dump(mail_rrd))
-    assert_equal((@data_dir + "milter-log-20090521-1.stop.dump").read,
-                 dump(stop_rrd))
+    assert_equal((@data_dir + "#{prefix}.milter-manager.status.dump").read,
+                 dump(status_rrd))
+    assert_equal((@data_dir + "#{prefix}.milter-manager.report.dump").read,
+                 dump(report_rrd))
+    assert_equal((@data_dir + "#{prefix}.milter.status.milter-greylist.dump").read,
+                 dump(milter_status_rrd))
+    assert_equal((@data_dir + "#{prefix}.milter.report.milter-greylist.dump").read,
+                 dump(milter_report_rrd))
   end
 
   def test_update_incrementally
-    session_rrd = (@tmp_dir + "milter-log.session.rrd").to_s
-    mail_rrd = (@tmp_dir + "milter-log.mail.rrd").to_s
-    stop_rrd = (@tmp_dir + "milter-log.stop.rrd").to_s
+    session_rrd = (@tmp_dir + "session.rrd").to_s
+    status_rrd = (@tmp_dir + "milter-manager.status.rrd").to_s
+    report_rrd = (@tmp_dir + "milter-manager.report.rrd").to_s
+    milter_status_rrd = (@tmp_dir + "milter.status.milter-greylist.rrd").to_s
+    milter_report_rrd = (@tmp_dir + "milter.report.milter-greylist.rrd").to_s
 
-    (@data_dir + "mail-20090521-1.log").open do |log|
+    (@data_dir + "mail-20090715-1.log").open do |log|
       lines = ""
       i = 0
       log.each_line do |line|
@@ -76,6 +86,7 @@ class TestLogAnalyzer < Test::Unit::TestCase
         if (i % 1000).zero?
           analyzer = MilterManagerLogAnalyzer.new
           analyzer.output_directory = @tmp_dir.to_s
+          analyzer.prepare
           analyzer.log = StringIO.new(lines)
           analyzer.update
           lines = ""
@@ -85,42 +96,57 @@ class TestLogAnalyzer < Test::Unit::TestCase
       unless lines.empty?
         analyzer = MilterManagerLogAnalyzer.new
         analyzer.output_directory = @tmp_dir.to_s
+        analyzer.prepare
         analyzer.log = StringIO.new(lines)
         analyzer.update
       end
     end
 
-    assert_equal((@data_dir + "milter-log-20090521-1-incrementally.session.dump").read,
+    prefix = "mail-log-20090715-1-incrementally"
+    assert_equal((@data_dir + "#{prefix}.session.dump").read,
                  dump(session_rrd))
-    assert_equal((@data_dir + "milter-log-20090521-1-incrementally.mail.dump").read,
-                 dump(mail_rrd))
-    assert_equal((@data_dir + "milter-log-20090521-1-incrementally.stop.dump").read,
-                 dump(stop_rrd))
+    assert_equal((@data_dir + "#{prefix}.milter-manager.status.dump").read,
+                 dump(status_rrd))
+    assert_equal((@data_dir + "#{prefix}.milter-manager.report.dump").read,
+                 dump(report_rrd))
+    assert_equal((@data_dir + "#{prefix}.milter.status.milter-greylist.dump").read,
+                 dump(milter_status_rrd))
+    assert_equal((@data_dir + "#{prefix}.milter.report.milter-greylist.dump").read,
+                 dump(milter_report_rrd))
   end
 
   def test_update_with_distance
     @analyzer.output_directory = @tmp_dir.to_s
+    @analyzer.prepare
     FileUtils.cp(Dir.glob((@data_dir + "*.rrd").to_s), @tmp_dir)
 
-    input = (@data_dir + "mail-20090521-2.log").open
+    input = (@data_dir + "mail-20090715-2.log").open
     @analyzer.log = input
 
-    session_rrd = (@tmp_dir + "milter-log.session.rrd").to_s
-    mail_rrd = (@tmp_dir + "milter-log.mail.rrd").to_s
-    stop_rrd = (@tmp_dir + "milter-log.stop.rrd").to_s
+    session_rrd = (@tmp_dir + "session.rrd").to_s
+    status_rrd = (@tmp_dir + "milter-manager.status.rrd").to_s
+    report_rrd = (@tmp_dir + "milter-manager.report.rrd").to_s
+    milter_status_rrd = (@tmp_dir + "milter.status.milter-greylist.rrd").to_s
+    milter_report_rrd = (@tmp_dir + "milter.report.milter-greylist.rrd").to_s
 
     @analyzer.update
 
-    assert_equal((@data_dir + "milter-log-20090521.session.dump").read,
+    prefix = "mail-log-20090715-2"
+    assert_equal((@data_dir + "#{prefix}.session.dump").read,
                  dump(session_rrd))
-    assert_equal((@data_dir + "milter-log-20090521.mail.dump").read,
-                 dump(mail_rrd))
-    assert_equal((@data_dir + "milter-log-20090521.stop.dump").read,
-                 dump(stop_rrd))
+    assert_equal((@data_dir + "#{prefix}.milter-manager.status.dump").read,
+                 dump(status_rrd))
+    assert_equal((@data_dir + "#{prefix}.milter-manager.report.dump").read,
+                 dump(report_rrd))
+    assert_equal((@data_dir + "#{prefix}.milter.status.milter-greylist.dump").read,
+                 dump(milter_status_rrd))
+    assert_equal((@data_dir + "#{prefix}.milter.report.milter-greylist.dump").read,
+                 dump(milter_report_rrd))
   end
 
   def test_output_all_graph
     @analyzer.output_directory = @tmp_dir.to_s
+    @analyzer.prepare
 
     FileUtils.cp(Dir.glob((@data_dir + "*.rrd").to_s), @tmp_dir)
 
@@ -139,23 +165,23 @@ class TestLogAnalyzer < Test::Unit::TestCase
     year_start_time = month_start_time * 12
     year_end_time = now - (now % (year_start_time.abs * rows).to_i)
 
-    session_rrd = (@tmp_dir + "milter-log.session.rrd").to_s
+    session_rrd = (@tmp_dir + "session.rrd").to_s
     session_day_png = (@tmp_dir + "session.day.png").to_s
     session_week_png = (@tmp_dir + "session.week.png").to_s
     session_month_png = (@tmp_dir + "session.month.png").to_s
     session_year_png = (@tmp_dir + "session.year.png").to_s
 
-    mail_rrd = (@tmp_dir + "milter-log.mail.rrd").to_s
-    mail_day_png = (@tmp_dir + "mail.day.png").to_s
-    mail_week_png = (@tmp_dir + "mail.week.png").to_s
-    mail_month_png = (@tmp_dir + "mail.month.png").to_s
-    mail_year_png = (@tmp_dir + "mail.year.png").to_s
+    status_rrd = (@tmp_dir + "milter-manager.status.rrd").to_s
+    status_day_png = (@tmp_dir + "status.day.png").to_s
+    status_week_png = (@tmp_dir + "status.week.png").to_s
+    status_month_png = (@tmp_dir + "status.month.png").to_s
+    status_year_png = (@tmp_dir + "status.year.png").to_s
 
-    stop_rrd = (@tmp_dir + "milter-log.stop.rrd").to_s
-    stop_day_png = (@tmp_dir + "stop.day.png").to_s
-    stop_week_png = (@tmp_dir + "stop.week.png").to_s
-    stop_month_png = (@tmp_dir + "stop.month.png").to_s
-    stop_year_png = (@tmp_dir + "stop.year.png").to_s
+    report_rrd = (@tmp_dir + "milter-manager.report.rrd").to_s
+    report_day_png = (@tmp_dir + "report.day.png").to_s
+    report_week_png = (@tmp_dir + "report.week.png").to_s
+    report_month_png = (@tmp_dir + "report.month.png").to_s
+    report_year_png = (@tmp_dir + "report.year.png").to_s
 
     mock(RRD).last(session_rrd) {Time.at(1242837060)}
     mock(RRD).graph(session_day_png,
@@ -191,8 +217,8 @@ class TestLogAnalyzer < Test::Unit::TestCase
                     "GPRINT:max_child:MAX:max\\: %4.0lf sessions/min\\l",
                     "COMMENT:[2009-05-21T01\\:31\\:00+09\\:00]\\r")
 
-    mock(RRD).last(mail_rrd) {Time.at(1242837060)}
-    mock(RRD).graph(mail_day_png,
+    mock(RRD).last(status_rrd) {Time.at(1242837060)}
+    mock(RRD).graph(status_day_png,
                     "--title", "Processed mails",
                     "--vertical-label", "mails/min",
                     "--start", "-86400",
@@ -201,50 +227,50 @@ class TestLogAnalyzer < Test::Unit::TestCase
                     "--height", "200",
                     "--alt-y-grid",
                     "--units-exponent", "0",
-                    "DEF:pass=#{mail_rrd}:pass:AVERAGE",
-                    "DEF:max_pass=#{mail_rrd}:pass:MAX",
+                    "DEF:pass=#{status_rrd}:pass:AVERAGE",
+                    "DEF:max_pass=#{status_rrd}:pass:MAX",
                     "CDEF:n_pass=pass",
                     "CDEF:real_pass=pass",
                     "CDEF:real_max_pass=max_pass",
                     "CDEF:real_n_pass=n_pass,8,*",
                     "CDEF:total_pass=PREV,UN,real_n_pass,PREV,IF,real_n_pass,+",
-                    "DEF:accept=#{mail_rrd}:accept:AVERAGE",
-                    "DEF:max_accept=#{mail_rrd}:accept:MAX",
+                    "DEF:accept=#{status_rrd}:accept:AVERAGE",
+                    "DEF:max_accept=#{status_rrd}:accept:MAX",
                     "CDEF:n_accept=accept",
                     "CDEF:real_accept=accept",
                     "CDEF:real_max_accept=max_accept",
                     "CDEF:real_n_accept=n_accept,8,*",
                     "CDEF:total_accept=PREV,UN,real_n_accept,PREV,IF,real_n_accept,+",
-                    "DEF:reject=#{mail_rrd}:reject:AVERAGE",
-                    "DEF:max_reject=#{mail_rrd}:reject:MAX",
+                    "DEF:reject=#{status_rrd}:reject:AVERAGE",
+                    "DEF:max_reject=#{status_rrd}:reject:MAX",
                     "CDEF:n_reject=reject",
                     "CDEF:real_reject=reject",
                     "CDEF:real_max_reject=max_reject",
                     "CDEF:real_n_reject=n_reject,8,*",
                     "CDEF:total_reject=PREV,UN,real_n_reject,PREV,IF,real_n_reject,+",
-                    "DEF:discard=#{mail_rrd}:discard:AVERAGE",
-                    "DEF:max_discard=#{mail_rrd}:discard:MAX",
+                    "DEF:discard=#{status_rrd}:discard:AVERAGE",
+                    "DEF:max_discard=#{status_rrd}:discard:MAX",
                     "CDEF:n_discard=discard",
                     "CDEF:real_discard=discard",
                     "CDEF:real_max_discard=max_discard",
                     "CDEF:real_n_discard=n_discard,8,*",
                     "CDEF:total_discard=PREV,UN,real_n_discard,PREV,IF,real_n_discard,+",
-                    "DEF:temporary-failure=#{mail_rrd}:temporary-failure:AVERAGE",
-                    "DEF:max_temporary-failure=#{mail_rrd}:temporary-failure:MAX",
+                    "DEF:temporary-failure=#{status_rrd}:temporary-failure:AVERAGE",
+                    "DEF:max_temporary-failure=#{status_rrd}:temporary-failure:MAX",
                     "CDEF:n_temporary-failure=temporary-failure",
                     "CDEF:real_temporary-failure=temporary-failure",
                     "CDEF:real_max_temporary-failure=max_temporary-failure",
                     "CDEF:real_n_temporary-failure=n_temporary-failure,8,*",
                     "CDEF:total_temporary-failure=PREV,UN,real_n_temporary-failure,PREV,IF,real_n_temporary-failure,+",
-                    "DEF:quarantine=#{mail_rrd}:quarantine:AVERAGE",
-                    "DEF:max_quarantine=#{mail_rrd}:quarantine:MAX",
+                    "DEF:quarantine=#{status_rrd}:quarantine:AVERAGE",
+                    "DEF:max_quarantine=#{status_rrd}:quarantine:MAX",
                     "CDEF:n_quarantine=quarantine",
                     "CDEF:real_quarantine=quarantine",
                     "CDEF:real_max_quarantine=max_quarantine",
                     "CDEF:real_n_quarantine=n_quarantine,8,*",
                     "CDEF:total_quarantine=PREV,UN,real_n_quarantine,PREV,IF,real_n_quarantine,+",
-                    "DEF:abort=#{mail_rrd}:abort:AVERAGE",
-                    "DEF:max_abort=#{mail_rrd}:abort:MAX",
+                    "DEF:abort=#{status_rrd}:abort:AVERAGE",
+                    "DEF:max_abort=#{status_rrd}:abort:MAX",
                     "CDEF:n_abort=abort",
                     "CDEF:real_abort=abort",
                     "CDEF:real_max_abort=max_abort",
@@ -291,8 +317,8 @@ class TestLogAnalyzer < Test::Unit::TestCase
                     "GPRINT:max_smtp:MAX:max\\: %4.0lf sessions/min\\l",
                     "COMMENT:[2009-05-21T01\\:31\\:00+09\\:00]\\r")
 
-    mock(RRD).last(stop_rrd) {Time.at(1242837060)}
-    mock(RRD).graph(stop_day_png,
+    mock(RRD).last(report_rrd) {Time.at(1242837060)}
+    mock(RRD).graph(report_day_png,
                     "--title", "Stopped milters",
                     "--vertical-label", "milters/min",
                     "--start", "-86400",
@@ -301,50 +327,50 @@ class TestLogAnalyzer < Test::Unit::TestCase
                     "--height", "200",
                     "--alt-y-grid",
                     "--units-exponent", "0",
-                    "DEF:connect=#{stop_rrd}:connect:AVERAGE",
-                    "DEF:max_connect=#{stop_rrd}:connect:MAX",
+                    "DEF:connect=#{report_rrd}:connect:AVERAGE",
+                    "DEF:max_connect=#{report_rrd}:connect:MAX",
                     "CDEF:n_connect=connect",
                     "CDEF:real_connect=connect",
                     "CDEF:real_max_connect=max_connect",
                     "CDEF:real_n_connect=n_connect,8,*",
                     "CDEF:total_connect=PREV,UN,real_n_connect,PREV,IF,real_n_connect,+",
-                    "DEF:helo=#{stop_rrd}:helo:AVERAGE",
-                    "DEF:max_helo=#{stop_rrd}:helo:MAX",
+                    "DEF:helo=#{report_rrd}:helo:AVERAGE",
+                    "DEF:max_helo=#{report_rrd}:helo:MAX",
                     "CDEF:n_helo=helo",
                     "CDEF:real_helo=helo",
                     "CDEF:real_max_helo=max_helo",
                     "CDEF:real_n_helo=n_helo,8,*",
                     "CDEF:total_helo=PREV,UN,real_n_helo,PREV,IF,real_n_helo,+",
-                    "DEF:envelope-from=#{stop_rrd}:envelope-from:AVERAGE",
-                    "DEF:max_envelope-from=#{stop_rrd}:envelope-from:MAX",
+                    "DEF:envelope-from=#{report_rrd}:envelope-from:AVERAGE",
+                    "DEF:max_envelope-from=#{report_rrd}:envelope-from:MAX",
                     "CDEF:n_envelope-from=envelope-from",
                     "CDEF:real_envelope-from=envelope-from",
                     "CDEF:real_max_envelope-from=max_envelope-from",
                     "CDEF:real_n_envelope-from=n_envelope-from,8,*",
                     "CDEF:total_envelope-from=PREV,UN,real_n_envelope-from,PREV,IF,real_n_envelope-from,+",
-                    "DEF:envelope-recipient=#{stop_rrd}:envelope-recipient:AVERAGE",
-                    "DEF:max_envelope-recipient=#{stop_rrd}:envelope-recipient:MAX",
+                    "DEF:envelope-recipient=#{report_rrd}:envelope-recipient:AVERAGE",
+                    "DEF:max_envelope-recipient=#{report_rrd}:envelope-recipient:MAX",
                     "CDEF:n_envelope-recipient=envelope-recipient",
                     "CDEF:real_envelope-recipient=envelope-recipient",
                     "CDEF:real_max_envelope-recipient=max_envelope-recipient",
                     "CDEF:real_n_envelope-recipient=n_envelope-recipient,8,*",
                     "CDEF:total_envelope-recipient=PREV,UN,real_n_envelope-recipient,PREV,IF,real_n_envelope-recipient,+",
-                     "DEF:header=#{stop_rrd}:header:AVERAGE",
-                     "DEF:max_header=#{stop_rrd}:header:MAX",
+                     "DEF:header=#{report_rrd}:header:AVERAGE",
+                     "DEF:max_header=#{report_rrd}:header:MAX",
                      "CDEF:n_header=header",
                      "CDEF:real_header=header",
                      "CDEF:real_max_header=max_header",
                      "CDEF:real_n_header=n_header,8,*",
                      "CDEF:total_header=PREV,UN,real_n_header,PREV,IF,real_n_header,+",
-                     "DEF:body=#{stop_rrd}:body:AVERAGE",
-                     "DEF:max_body=#{stop_rrd}:body:MAX",
+                     "DEF:body=#{report_rrd}:body:AVERAGE",
+                     "DEF:max_body=#{report_rrd}:body:MAX",
                      "CDEF:n_body=body",
                      "CDEF:real_body=body",
                      "CDEF:real_max_body=max_body",
                      "CDEF:real_n_body=n_body,8,*",
                      "CDEF:total_body=PREV,UN,real_n_body,PREV,IF,real_n_body,+",
-                     "DEF:end-of-message=#{stop_rrd}:end-of-message:AVERAGE",
-                     "DEF:max_end-of-message=#{stop_rrd}:end-of-message:MAX",
+                     "DEF:end-of-message=#{report_rrd}:end-of-message:AVERAGE",
+                     "DEF:max_end-of-message=#{report_rrd}:end-of-message:MAX",
                      "CDEF:n_end-of-message=end-of-message",
                      "CDEF:real_end-of-message=end-of-message",
                      "CDEF:real_max_end-of-message=max_end-of-message",
@@ -425,8 +451,8 @@ class TestLogAnalyzer < Test::Unit::TestCase
                     "GPRINT:max_child:MAX:max\\: %4.0lf sessions/min\\l",
                     "COMMENT:[2009-05-21T01\\:31\\:00+09\\:00]\\r")
 
-    mock(RRD).last(mail_rrd) {Time.at(1242837060)}
-    mock(RRD).graph(mail_week_png,
+    mock(RRD).last(status_rrd) {Time.at(1242837060)}
+    mock(RRD).graph(status_week_png,
                     "--title", "Processed mails",
                     "--vertical-label", "mails/min",
                     "--start", "-604800",
@@ -435,50 +461,50 @@ class TestLogAnalyzer < Test::Unit::TestCase
                     "--height", "200",
                     "--alt-y-grid",
                     "--units-exponent", "0",
-                    "DEF:pass=#{mail_rrd}:pass:AVERAGE",
-                    "DEF:max_pass=#{mail_rrd}:pass:MAX",
+                    "DEF:pass=#{status_rrd}:pass:AVERAGE",
+                    "DEF:max_pass=#{status_rrd}:pass:MAX",
                     "CDEF:n_pass=pass",
                     "CDEF:real_pass=pass",
                     "CDEF:real_max_pass=max_pass",
                     "CDEF:real_n_pass=n_pass,56,*",
                     "CDEF:total_pass=PREV,UN,real_n_pass,PREV,IF,real_n_pass,+",
-                    "DEF:accept=#{mail_rrd}:accept:AVERAGE",
-                    "DEF:max_accept=#{mail_rrd}:accept:MAX",
+                    "DEF:accept=#{status_rrd}:accept:AVERAGE",
+                    "DEF:max_accept=#{status_rrd}:accept:MAX",
                     "CDEF:n_accept=accept",
                     "CDEF:real_accept=accept",
                     "CDEF:real_max_accept=max_accept",
                     "CDEF:real_n_accept=n_accept,56,*",
                     "CDEF:total_accept=PREV,UN,real_n_accept,PREV,IF,real_n_accept,+",
-                    "DEF:reject=#{mail_rrd}:reject:AVERAGE",
-                    "DEF:max_reject=#{mail_rrd}:reject:MAX",
+                    "DEF:reject=#{status_rrd}:reject:AVERAGE",
+                    "DEF:max_reject=#{status_rrd}:reject:MAX",
                     "CDEF:n_reject=reject",
                     "CDEF:real_reject=reject",
                     "CDEF:real_max_reject=max_reject",
                     "CDEF:real_n_reject=n_reject,56,*",
                     "CDEF:total_reject=PREV,UN,real_n_reject,PREV,IF,real_n_reject,+",
-                    "DEF:discard=#{mail_rrd}:discard:AVERAGE",
-                    "DEF:max_discard=#{mail_rrd}:discard:MAX",
+                    "DEF:discard=#{status_rrd}:discard:AVERAGE",
+                    "DEF:max_discard=#{status_rrd}:discard:MAX",
                     "CDEF:n_discard=discard",
                     "CDEF:real_discard=discard",
                     "CDEF:real_max_discard=max_discard",
                     "CDEF:real_n_discard=n_discard,56,*",
                     "CDEF:total_discard=PREV,UN,real_n_discard,PREV,IF,real_n_discard,+",
-                    "DEF:temporary-failure=#{mail_rrd}:temporary-failure:AVERAGE",
-                    "DEF:max_temporary-failure=#{mail_rrd}:temporary-failure:MAX",
+                    "DEF:temporary-failure=#{status_rrd}:temporary-failure:AVERAGE",
+                    "DEF:max_temporary-failure=#{status_rrd}:temporary-failure:MAX",
                     "CDEF:n_temporary-failure=temporary-failure",
                     "CDEF:real_temporary-failure=temporary-failure",
                     "CDEF:real_max_temporary-failure=max_temporary-failure",
                     "CDEF:real_n_temporary-failure=n_temporary-failure,56,*",
                     "CDEF:total_temporary-failure=PREV,UN,real_n_temporary-failure,PREV,IF,real_n_temporary-failure,+",
-                    "DEF:quarantine=#{mail_rrd}:quarantine:AVERAGE",
-                    "DEF:max_quarantine=#{mail_rrd}:quarantine:MAX",
+                    "DEF:quarantine=#{status_rrd}:quarantine:AVERAGE",
+                    "DEF:max_quarantine=#{status_rrd}:quarantine:MAX",
                     "CDEF:n_quarantine=quarantine",
                     "CDEF:real_quarantine=quarantine",
                     "CDEF:real_max_quarantine=max_quarantine",
                     "CDEF:real_n_quarantine=n_quarantine,56,*",
                     "CDEF:total_quarantine=PREV,UN,real_n_quarantine,PREV,IF,real_n_quarantine,+",
-                    "DEF:abort=#{mail_rrd}:abort:AVERAGE",
-                    "DEF:max_abort=#{mail_rrd}:abort:MAX",
+                    "DEF:abort=#{status_rrd}:abort:AVERAGE",
+                    "DEF:max_abort=#{status_rrd}:abort:MAX",
                     "CDEF:n_abort=abort",
                     "CDEF:real_abort=abort",
                     "CDEF:real_max_abort=max_abort",
@@ -525,8 +551,8 @@ class TestLogAnalyzer < Test::Unit::TestCase
                     "GPRINT:max_smtp:MAX:max\\: %4.0lf sessions/min\\l",
                     "COMMENT:[2009-05-21T01\\:31\\:00+09\\:00]\\r")
 
-    mock(RRD).last(stop_rrd) {Time.at(1242837060)}
-    mock(RRD).graph(stop_week_png,
+    mock(RRD).last(report_rrd) {Time.at(1242837060)}
+    mock(RRD).graph(report_week_png,
                     "--title", "Stopped milters",
                     "--vertical-label", "milters/min",
                     "--start", "-604800",
@@ -535,50 +561,50 @@ class TestLogAnalyzer < Test::Unit::TestCase
                     "--height", "200",
                     "--alt-y-grid",
                     "--units-exponent", "0",
-                    "DEF:connect=#{stop_rrd}:connect:AVERAGE",
-                    "DEF:max_connect=#{stop_rrd}:connect:MAX",
+                    "DEF:connect=#{report_rrd}:connect:AVERAGE",
+                    "DEF:max_connect=#{report_rrd}:connect:MAX",
                     "CDEF:n_connect=connect",
                     "CDEF:real_connect=connect",
                     "CDEF:real_max_connect=max_connect",
                     "CDEF:real_n_connect=n_connect,56,*",
                     "CDEF:total_connect=PREV,UN,real_n_connect,PREV,IF,real_n_connect,+",
-                    "DEF:helo=#{stop_rrd}:helo:AVERAGE",
-                    "DEF:max_helo=#{stop_rrd}:helo:MAX",
+                    "DEF:helo=#{report_rrd}:helo:AVERAGE",
+                    "DEF:max_helo=#{report_rrd}:helo:MAX",
                     "CDEF:n_helo=helo",
                     "CDEF:real_helo=helo",
                     "CDEF:real_max_helo=max_helo",
                     "CDEF:real_n_helo=n_helo,56,*",
                     "CDEF:total_helo=PREV,UN,real_n_helo,PREV,IF,real_n_helo,+",
-                    "DEF:envelope-from=#{stop_rrd}:envelope-from:AVERAGE",
-                    "DEF:max_envelope-from=#{stop_rrd}:envelope-from:MAX",
+                    "DEF:envelope-from=#{report_rrd}:envelope-from:AVERAGE",
+                    "DEF:max_envelope-from=#{report_rrd}:envelope-from:MAX",
                     "CDEF:n_envelope-from=envelope-from",
                     "CDEF:real_envelope-from=envelope-from",
                     "CDEF:real_max_envelope-from=max_envelope-from",
                     "CDEF:real_n_envelope-from=n_envelope-from,56,*",
                     "CDEF:total_envelope-from=PREV,UN,real_n_envelope-from,PREV,IF,real_n_envelope-from,+",
-                    "DEF:envelope-recipient=#{stop_rrd}:envelope-recipient:AVERAGE",
-                    "DEF:max_envelope-recipient=#{stop_rrd}:envelope-recipient:MAX",
+                    "DEF:envelope-recipient=#{report_rrd}:envelope-recipient:AVERAGE",
+                    "DEF:max_envelope-recipient=#{report_rrd}:envelope-recipient:MAX",
                     "CDEF:n_envelope-recipient=envelope-recipient",
                     "CDEF:real_envelope-recipient=envelope-recipient",
                     "CDEF:real_max_envelope-recipient=max_envelope-recipient",
                     "CDEF:real_n_envelope-recipient=n_envelope-recipient,56,*",
                     "CDEF:total_envelope-recipient=PREV,UN,real_n_envelope-recipient,PREV,IF,real_n_envelope-recipient,+",
-                    "DEF:header=#{stop_rrd}:header:AVERAGE",
-                    "DEF:max_header=#{stop_rrd}:header:MAX",
+                    "DEF:header=#{report_rrd}:header:AVERAGE",
+                    "DEF:max_header=#{report_rrd}:header:MAX",
                     "CDEF:n_header=header",
                     "CDEF:real_header=header",
                     "CDEF:real_max_header=max_header",
                     "CDEF:real_n_header=n_header,56,*",
                     "CDEF:total_header=PREV,UN,real_n_header,PREV,IF,real_n_header,+",
-                    "DEF:body=#{stop_rrd}:body:AVERAGE",
-                    "DEF:max_body=#{stop_rrd}:body:MAX",
+                    "DEF:body=#{report_rrd}:body:AVERAGE",
+                    "DEF:max_body=#{report_rrd}:body:MAX",
                     "CDEF:n_body=body",
                     "CDEF:real_body=body",
                     "CDEF:real_max_body=max_body",
                     "CDEF:real_n_body=n_body,56,*",
                     "CDEF:total_body=PREV,UN,real_n_body,PREV,IF,real_n_body,+",
-                    "DEF:end-of-message=#{stop_rrd}:end-of-message:AVERAGE",
-                    "DEF:max_end-of-message=#{stop_rrd}:end-of-message:MAX",
+                    "DEF:end-of-message=#{report_rrd}:end-of-message:AVERAGE",
+                    "DEF:max_end-of-message=#{report_rrd}:end-of-message:MAX",
                     "CDEF:n_end-of-message=end-of-message",
                     "CDEF:real_end-of-message=end-of-message",
                     "CDEF:real_max_end-of-message=max_end-of-message",
@@ -659,8 +685,8 @@ class TestLogAnalyzer < Test::Unit::TestCase
                     "GPRINT:max_child:MAX:max\\: %4.0lf sessions/min\\l",
                     "COMMENT:[2009-05-21T01\\:31\\:00+09\\:00]\\r")
 
-    mock(RRD).last(mail_rrd) {Time.at(1242837060)}
-    mock(RRD).graph(mail_month_png,
+    mock(RRD).last(status_rrd) {Time.at(1242837060)}
+    mock(RRD).graph(status_month_png,
                     "--title", "Processed mails",
                     "--vertical-label", "mails/min",
                     "--start", "-3024000",
@@ -669,50 +695,50 @@ class TestLogAnalyzer < Test::Unit::TestCase
                     "--height", "200",
                     "--alt-y-grid",
                     "--units-exponent", "0",
-                    "DEF:pass=#{mail_rrd}:pass:AVERAGE",
-                    "DEF:max_pass=#{mail_rrd}:pass:MAX",
+                    "DEF:pass=#{status_rrd}:pass:AVERAGE",
+                    "DEF:max_pass=#{status_rrd}:pass:MAX",
                     "CDEF:n_pass=pass",
                     "CDEF:real_pass=pass",
                     "CDEF:real_max_pass=max_pass",
                     "CDEF:real_n_pass=n_pass,280,*",
                     "CDEF:total_pass=PREV,UN,real_n_pass,PREV,IF,real_n_pass,+",
-                    "DEF:accept=#{mail_rrd}:accept:AVERAGE",
-                    "DEF:max_accept=#{mail_rrd}:accept:MAX",
+                    "DEF:accept=#{status_rrd}:accept:AVERAGE",
+                    "DEF:max_accept=#{status_rrd}:accept:MAX",
                     "CDEF:n_accept=accept",
                     "CDEF:real_accept=accept",
                     "CDEF:real_max_accept=max_accept",
                     "CDEF:real_n_accept=n_accept,280,*",
                     "CDEF:total_accept=PREV,UN,real_n_accept,PREV,IF,real_n_accept,+",
-                    "DEF:reject=#{mail_rrd}:reject:AVERAGE",
-                    "DEF:max_reject=#{mail_rrd}:reject:MAX",
+                    "DEF:reject=#{status_rrd}:reject:AVERAGE",
+                    "DEF:max_reject=#{status_rrd}:reject:MAX",
                     "CDEF:n_reject=reject",
                     "CDEF:real_reject=reject",
                     "CDEF:real_max_reject=max_reject",
                     "CDEF:real_n_reject=n_reject,280,*",
                     "CDEF:total_reject=PREV,UN,real_n_reject,PREV,IF,real_n_reject,+",
-                    "DEF:discard=#{mail_rrd}:discard:AVERAGE",
-                    "DEF:max_discard=#{mail_rrd}:discard:MAX",
+                    "DEF:discard=#{status_rrd}:discard:AVERAGE",
+                    "DEF:max_discard=#{status_rrd}:discard:MAX",
                     "CDEF:n_discard=discard",
                     "CDEF:real_discard=discard",
                     "CDEF:real_max_discard=max_discard",
                     "CDEF:real_n_discard=n_discard,280,*",
                     "CDEF:total_discard=PREV,UN,real_n_discard,PREV,IF,real_n_discard,+",
-                    "DEF:temporary-failure=#{mail_rrd}:temporary-failure:AVERAGE",
-                    "DEF:max_temporary-failure=#{mail_rrd}:temporary-failure:MAX",
+                    "DEF:temporary-failure=#{status_rrd}:temporary-failure:AVERAGE",
+                    "DEF:max_temporary-failure=#{status_rrd}:temporary-failure:MAX",
                     "CDEF:n_temporary-failure=temporary-failure",
                     "CDEF:real_temporary-failure=temporary-failure",
                     "CDEF:real_max_temporary-failure=max_temporary-failure",
                     "CDEF:real_n_temporary-failure=n_temporary-failure,280,*",
                     "CDEF:total_temporary-failure=PREV,UN,real_n_temporary-failure,PREV,IF,real_n_temporary-failure,+",
-                    "DEF:quarantine=#{mail_rrd}:quarantine:AVERAGE",
-                    "DEF:max_quarantine=#{mail_rrd}:quarantine:MAX",
+                    "DEF:quarantine=#{status_rrd}:quarantine:AVERAGE",
+                    "DEF:max_quarantine=#{status_rrd}:quarantine:MAX",
                     "CDEF:n_quarantine=quarantine",
                     "CDEF:real_quarantine=quarantine",
                     "CDEF:real_max_quarantine=max_quarantine",
                     "CDEF:real_n_quarantine=n_quarantine,280,*",
                     "CDEF:total_quarantine=PREV,UN,real_n_quarantine,PREV,IF,real_n_quarantine,+",
-                    "DEF:abort=#{mail_rrd}:abort:AVERAGE",
-                    "DEF:max_abort=#{mail_rrd}:abort:MAX",
+                    "DEF:abort=#{status_rrd}:abort:AVERAGE",
+                    "DEF:max_abort=#{status_rrd}:abort:MAX",
                     "CDEF:n_abort=abort",
                     "CDEF:real_abort=abort",
                     "CDEF:real_max_abort=max_abort",
@@ -759,8 +785,8 @@ class TestLogAnalyzer < Test::Unit::TestCase
                     "GPRINT:max_smtp:MAX:max\\: %4.0lf sessions/min\\l",
                     "COMMENT:[2009-05-21T01\\:31\\:00+09\\:00]\\r")
 
-    mock(RRD).last(stop_rrd) {Time.at(1242837060)}
-    mock(RRD).graph(stop_month_png,
+    mock(RRD).last(report_rrd) {Time.at(1242837060)}
+    mock(RRD).graph(report_month_png,
                     "--title", "Stopped milters",
                     "--vertical-label", "milters/min",
                     "--start", "-3024000",
@@ -769,50 +795,50 @@ class TestLogAnalyzer < Test::Unit::TestCase
                     "--height", "200",
                     "--alt-y-grid",
                     "--units-exponent", "0",
-                    "DEF:connect=#{stop_rrd}:connect:AVERAGE",
-                    "DEF:max_connect=#{stop_rrd}:connect:MAX",
+                    "DEF:connect=#{report_rrd}:connect:AVERAGE",
+                    "DEF:max_connect=#{report_rrd}:connect:MAX",
                     "CDEF:n_connect=connect",
                     "CDEF:real_connect=connect",
                     "CDEF:real_max_connect=max_connect",
                     "CDEF:real_n_connect=n_connect,280,*",
                     "CDEF:total_connect=PREV,UN,real_n_connect,PREV,IF,real_n_connect,+",
-                    "DEF:helo=#{stop_rrd}:helo:AVERAGE",
-                    "DEF:max_helo=#{stop_rrd}:helo:MAX",
+                    "DEF:helo=#{report_rrd}:helo:AVERAGE",
+                    "DEF:max_helo=#{report_rrd}:helo:MAX",
                     "CDEF:n_helo=helo",
                     "CDEF:real_helo=helo",
                     "CDEF:real_max_helo=max_helo",
                     "CDEF:real_n_helo=n_helo,280,*",
                     "CDEF:total_helo=PREV,UN,real_n_helo,PREV,IF,real_n_helo,+",
-                    "DEF:envelope-from=#{stop_rrd}:envelope-from:AVERAGE",
-                    "DEF:max_envelope-from=#{stop_rrd}:envelope-from:MAX",
+                    "DEF:envelope-from=#{report_rrd}:envelope-from:AVERAGE",
+                    "DEF:max_envelope-from=#{report_rrd}:envelope-from:MAX",
                     "CDEF:n_envelope-from=envelope-from",
                     "CDEF:real_envelope-from=envelope-from",
                     "CDEF:real_max_envelope-from=max_envelope-from",
                     "CDEF:real_n_envelope-from=n_envelope-from,280,*",
                     "CDEF:total_envelope-from=PREV,UN,real_n_envelope-from,PREV,IF,real_n_envelope-from,+",
-                    "DEF:envelope-recipient=#{stop_rrd}:envelope-recipient:AVERAGE",
-                    "DEF:max_envelope-recipient=#{stop_rrd}:envelope-recipient:MAX",
+                    "DEF:envelope-recipient=#{report_rrd}:envelope-recipient:AVERAGE",
+                    "DEF:max_envelope-recipient=#{report_rrd}:envelope-recipient:MAX",
                     "CDEF:n_envelope-recipient=envelope-recipient",
                     "CDEF:real_envelope-recipient=envelope-recipient",
                     "CDEF:real_max_envelope-recipient=max_envelope-recipient",
                     "CDEF:real_n_envelope-recipient=n_envelope-recipient,280,*",
                     "CDEF:total_envelope-recipient=PREV,UN,real_n_envelope-recipient,PREV,IF,real_n_envelope-recipient,+",
-                    "DEF:header=#{stop_rrd}:header:AVERAGE",
-                    "DEF:max_header=#{stop_rrd}:header:MAX",
+                    "DEF:header=#{report_rrd}:header:AVERAGE",
+                    "DEF:max_header=#{report_rrd}:header:MAX",
                     "CDEF:n_header=header",
                     "CDEF:real_header=header",
                     "CDEF:real_max_header=max_header",
                     "CDEF:real_n_header=n_header,280,*",
                     "CDEF:total_header=PREV,UN,real_n_header,PREV,IF,real_n_header,+",
-                    "DEF:body=#{stop_rrd}:body:AVERAGE",
-                    "DEF:max_body=#{stop_rrd}:body:MAX",
+                    "DEF:body=#{report_rrd}:body:AVERAGE",
+                    "DEF:max_body=#{report_rrd}:body:MAX",
                     "CDEF:n_body=body",
                     "CDEF:real_body=body",
                     "CDEF:real_max_body=max_body",
                     "CDEF:real_n_body=n_body,280,*",
                     "CDEF:total_body=PREV,UN,real_n_body,PREV,IF,real_n_body,+",
-                    "DEF:end-of-message=#{stop_rrd}:end-of-message:AVERAGE",
-                    "DEF:max_end-of-message=#{stop_rrd}:end-of-message:MAX",
+                    "DEF:end-of-message=#{report_rrd}:end-of-message:AVERAGE",
+                    "DEF:max_end-of-message=#{report_rrd}:end-of-message:MAX",
                     "CDEF:n_end-of-message=end-of-message",
                     "CDEF:real_end-of-message=end-of-message",
                     "CDEF:real_max_end-of-message=max_end-of-message",
@@ -893,8 +919,8 @@ class TestLogAnalyzer < Test::Unit::TestCase
                     "GPRINT:max_child:MAX:max\\: %4.0lf sessions/min\\l",
                     "COMMENT:[2009-05-21T01\\:31\\:00+09\\:00]\\r")
 
-    mock(RRD).last(mail_rrd) {Time.at(1242837060)}
-    mock(RRD).graph(mail_year_png,
+    mock(RRD).last(status_rrd) {Time.at(1242837060)}
+    mock(RRD).graph(status_year_png,
                     "--title", "Processed mails",
                     "--vertical-label", "mails/min",
                     "--start", "-36288000",
@@ -903,50 +929,50 @@ class TestLogAnalyzer < Test::Unit::TestCase
                     "--height", "200",
                     "--alt-y-grid",
                     "--units-exponent", "0",
-                    "DEF:pass=#{mail_rrd}:pass:AVERAGE",
-                    "DEF:max_pass=#{mail_rrd}:pass:MAX",
+                    "DEF:pass=#{status_rrd}:pass:AVERAGE",
+                    "DEF:max_pass=#{status_rrd}:pass:MAX",
                     "CDEF:n_pass=pass",
                     "CDEF:real_pass=pass",
                     "CDEF:real_max_pass=max_pass",
                     "CDEF:real_n_pass=n_pass,3360,*",
                     "CDEF:total_pass=PREV,UN,real_n_pass,PREV,IF,real_n_pass,+",
-                    "DEF:accept=#{mail_rrd}:accept:AVERAGE",
-                    "DEF:max_accept=#{mail_rrd}:accept:MAX",
+                    "DEF:accept=#{status_rrd}:accept:AVERAGE",
+                    "DEF:max_accept=#{status_rrd}:accept:MAX",
                     "CDEF:n_accept=accept",
                     "CDEF:real_accept=accept",
                     "CDEF:real_max_accept=max_accept",
                     "CDEF:real_n_accept=n_accept,3360,*",
                     "CDEF:total_accept=PREV,UN,real_n_accept,PREV,IF,real_n_accept,+",
-                    "DEF:reject=#{mail_rrd}:reject:AVERAGE",
-                    "DEF:max_reject=#{mail_rrd}:reject:MAX",
+                    "DEF:reject=#{status_rrd}:reject:AVERAGE",
+                    "DEF:max_reject=#{status_rrd}:reject:MAX",
                     "CDEF:n_reject=reject",
                     "CDEF:real_reject=reject",
                     "CDEF:real_max_reject=max_reject",
                     "CDEF:real_n_reject=n_reject,3360,*",
                     "CDEF:total_reject=PREV,UN,real_n_reject,PREV,IF,real_n_reject,+",
-                    "DEF:discard=#{mail_rrd}:discard:AVERAGE",
-                    "DEF:max_discard=#{mail_rrd}:discard:MAX",
+                    "DEF:discard=#{status_rrd}:discard:AVERAGE",
+                    "DEF:max_discard=#{status_rrd}:discard:MAX",
                     "CDEF:n_discard=discard",
                     "CDEF:real_discard=discard",
                     "CDEF:real_max_discard=max_discard",
                     "CDEF:real_n_discard=n_discard,3360,*",
                     "CDEF:total_discard=PREV,UN,real_n_discard,PREV,IF,real_n_discard,+",
-                    "DEF:temporary-failure=#{mail_rrd}:temporary-failure:AVERAGE",
-                    "DEF:max_temporary-failure=#{mail_rrd}:temporary-failure:MAX",
+                    "DEF:temporary-failure=#{status_rrd}:temporary-failure:AVERAGE",
+                    "DEF:max_temporary-failure=#{status_rrd}:temporary-failure:MAX",
                     "CDEF:n_temporary-failure=temporary-failure",
                     "CDEF:real_temporary-failure=temporary-failure",
                     "CDEF:real_max_temporary-failure=max_temporary-failure",
                     "CDEF:real_n_temporary-failure=n_temporary-failure,3360,*",
                     "CDEF:total_temporary-failure=PREV,UN,real_n_temporary-failure,PREV,IF,real_n_temporary-failure,+",
-                    "DEF:quarantine=#{mail_rrd}:quarantine:AVERAGE",
-                    "DEF:max_quarantine=#{mail_rrd}:quarantine:MAX",
+                    "DEF:quarantine=#{status_rrd}:quarantine:AVERAGE",
+                    "DEF:max_quarantine=#{status_rrd}:quarantine:MAX",
                     "CDEF:n_quarantine=quarantine",
                     "CDEF:real_quarantine=quarantine",
                     "CDEF:real_max_quarantine=max_quarantine",
                     "CDEF:real_n_quarantine=n_quarantine,3360,*",
                     "CDEF:total_quarantine=PREV,UN,real_n_quarantine,PREV,IF,real_n_quarantine,+",
-                    "DEF:abort=#{mail_rrd}:abort:AVERAGE",
-                    "DEF:max_abort=#{mail_rrd}:abort:MAX",
+                    "DEF:abort=#{status_rrd}:abort:AVERAGE",
+                    "DEF:max_abort=#{status_rrd}:abort:MAX",
                     "CDEF:n_abort=abort",
                     "CDEF:real_abort=abort",
                     "CDEF:real_max_abort=max_abort",
@@ -993,8 +1019,8 @@ class TestLogAnalyzer < Test::Unit::TestCase
                     "GPRINT:max_smtp:MAX:max\\: %4.0lf sessions/min\\l",
                     "COMMENT:[2009-05-21T01\\:31\\:00+09\\:00]\\r")
 
-    mock(RRD).last(stop_rrd) {Time.at(1242837060)}
-    mock(RRD).graph(stop_year_png,
+    mock(RRD).last(report_rrd) {Time.at(1242837060)}
+    mock(RRD).graph(report_year_png,
                     "--title", "Stopped milters",
                     "--vertical-label", "milters/min",
                     "--start", "-36288000",
@@ -1003,50 +1029,50 @@ class TestLogAnalyzer < Test::Unit::TestCase
                     "--height", "200",
                     "--alt-y-grid",
                     "--units-exponent", "0",
-                    "DEF:connect=#{stop_rrd}:connect:AVERAGE",
-                    "DEF:max_connect=#{stop_rrd}:connect:MAX",
+                    "DEF:connect=#{report_rrd}:connect:AVERAGE",
+                    "DEF:max_connect=#{report_rrd}:connect:MAX",
                     "CDEF:n_connect=connect",
                     "CDEF:real_connect=connect",
                     "CDEF:real_max_connect=max_connect",
                     "CDEF:real_n_connect=n_connect,3360,*",
                     "CDEF:total_connect=PREV,UN,real_n_connect,PREV,IF,real_n_connect,+",
-                    "DEF:helo=#{stop_rrd}:helo:AVERAGE",
-                    "DEF:max_helo=#{stop_rrd}:helo:MAX",
+                    "DEF:helo=#{report_rrd}:helo:AVERAGE",
+                    "DEF:max_helo=#{report_rrd}:helo:MAX",
                     "CDEF:n_helo=helo",
                     "CDEF:real_helo=helo",
                     "CDEF:real_max_helo=max_helo",
                     "CDEF:real_n_helo=n_helo,3360,*",
                     "CDEF:total_helo=PREV,UN,real_n_helo,PREV,IF,real_n_helo,+",
-                    "DEF:envelope-from=#{stop_rrd}:envelope-from:AVERAGE",
-                    "DEF:max_envelope-from=#{stop_rrd}:envelope-from:MAX",
+                    "DEF:envelope-from=#{report_rrd}:envelope-from:AVERAGE",
+                    "DEF:max_envelope-from=#{report_rrd}:envelope-from:MAX",
                     "CDEF:n_envelope-from=envelope-from",
                     "CDEF:real_envelope-from=envelope-from",
                     "CDEF:real_max_envelope-from=max_envelope-from",
                     "CDEF:real_n_envelope-from=n_envelope-from,3360,*",
                     "CDEF:total_envelope-from=PREV,UN,real_n_envelope-from,PREV,IF,real_n_envelope-from,+",
-                    "DEF:envelope-recipient=#{stop_rrd}:envelope-recipient:AVERAGE",
-                    "DEF:max_envelope-recipient=#{stop_rrd}:envelope-recipient:MAX",
+                    "DEF:envelope-recipient=#{report_rrd}:envelope-recipient:AVERAGE",
+                    "DEF:max_envelope-recipient=#{report_rrd}:envelope-recipient:MAX",
                     "CDEF:n_envelope-recipient=envelope-recipient",
                     "CDEF:real_envelope-recipient=envelope-recipient",
                     "CDEF:real_max_envelope-recipient=max_envelope-recipient",
                     "CDEF:real_n_envelope-recipient=n_envelope-recipient,3360,*",
                     "CDEF:total_envelope-recipient=PREV,UN,real_n_envelope-recipient,PREV,IF,real_n_envelope-recipient,+",
-                    "DEF:header=#{stop_rrd}:header:AVERAGE",
-                    "DEF:max_header=#{stop_rrd}:header:MAX",
+                    "DEF:header=#{report_rrd}:header:AVERAGE",
+                    "DEF:max_header=#{report_rrd}:header:MAX",
                     "CDEF:n_header=header",
                     "CDEF:real_header=header",
                     "CDEF:real_max_header=max_header",
                     "CDEF:real_n_header=n_header,3360,*",
                     "CDEF:total_header=PREV,UN,real_n_header,PREV,IF,real_n_header,+",
-                    "DEF:body=#{stop_rrd}:body:AVERAGE",
-                    "DEF:max_body=#{stop_rrd}:body:MAX",
+                    "DEF:body=#{report_rrd}:body:AVERAGE",
+                    "DEF:max_body=#{report_rrd}:body:MAX",
                     "CDEF:n_body=body",
                     "CDEF:real_body=body",
                     "CDEF:real_max_body=max_body",
                     "CDEF:real_n_body=n_body,3360,*",
                     "CDEF:total_body=PREV,UN,real_n_body,PREV,IF,real_n_body,+",
-                    "DEF:end-of-message=#{stop_rrd}:end-of-message:AVERAGE",
-                    "DEF:max_end-of-message=#{stop_rrd}:end-of-message:MAX",
+                    "DEF:end-of-message=#{report_rrd}:end-of-message:AVERAGE",
+                    "DEF:max_end-of-message=#{report_rrd}:end-of-message:MAX",
                     "CDEF:n_end-of-message=end-of-message",
                     "CDEF:real_end-of-message=end-of-message",
                     "CDEF:real_max_end-of-message=max_end-of-message",

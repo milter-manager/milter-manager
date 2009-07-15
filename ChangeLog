@@ -1,5 +1,8 @@
 2009-07-15  Kouhei Sutou  <kou@clear-code.com>
 
+	* test/tool/test-log-analyzer.rb, test/tool/fixtures/: follow the
+	implementation changes.
+
 	* admin/test/functional/sessions_controller_test.rb: remove a garbage.
 
 	* NEWS*: add an entry for 1.2.0.

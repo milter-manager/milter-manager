@@ -1027,13 +1027,16 @@ EOF
     opts.parse!(argv)
   end
 
+  def prepare
+    all_listeners.each do |listener|
+      listener.prepare
+    end
+  end
+
   def update
     return unless @update_db
 
-    listeners = [sessions, milter_manager_status, milter_manager_report, milters]
-    listeners.each do |listener|
-      listener.prepare
-    end
+    listeners = all_listeners
 
     @log.each_line do |line|
       case line
@@ -1058,6 +1061,10 @@ EOF
     listeners.each do |listener|
       listener.flush
     end
+  end
+
+  def all_listeners
+    [sessions, milter_manager_status, milter_manager_report, milters]
   end
 
   def output_graph(range, label, options={})
@@ -1111,6 +1118,7 @@ end
 if __FILE__ == $0
   milter_log_tool = MilterManagerLogAnalyzer.new
   milter_log_tool.parse_options(ARGV)
+  milter_log_tool.prepare
   milter_log_tool.update
   milter_log_tool.output_all_graph
   milter_log_tool.output_html
