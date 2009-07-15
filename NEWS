@@ -2,6 +2,29 @@
 
 = NEWS --- The history of milter manager
 
+== [release-1-2-0] 1.2.0: 2009-07-17
+
+A stable release.
+
+=== milter-manager
+
+==== Improvements
+
+  * Supported DATA stopper independently of MTA's milter
+    protocol.
+
+==== Bug fixes
+
+  * Fixed a timeout problem when all milters are stopped on
+    message processing. [Reported by sgyk]
+  * Fixed a problem that milter-manager doesn't work with
+    Postfix 2.3.3. [Reported by Fumihisa Tonaka]
+
+=== Thanks
+
+  * sgyk
+  * Fumihisa Tonaka
+
 == [release-1-1-1] 1.1.1: 2009-07-03
 
 A release to be the next stable release 1.2.0.
