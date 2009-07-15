@@ -57,16 +57,16 @@ class TestLogAnalyzer < Test::Unit::TestCase
 
     @analyzer.update
 
-    prefix = "mail-log-20090715-1"
-    assert_equal((@data_dir + "#{prefix}.session.dump").read,
+    suffix = "1"
+    assert_equal((@data_dir + "session-#{suffix}.dump").read,
                  dump(session_rrd))
-    assert_equal((@data_dir + "#{prefix}.milter-manager.status.dump").read,
+    assert_equal((@data_dir + "milter-manager.status-#{suffix}.dump").read,
                  dump(status_rrd))
-    assert_equal((@data_dir + "#{prefix}.milter-manager.report.dump").read,
+    assert_equal((@data_dir + "milter-manager.report-#{suffix}.dump").read,
                  dump(report_rrd))
-    assert_equal((@data_dir + "#{prefix}.milter.status.milter-greylist.dump").read,
+    assert_equal((@data_dir + "milter.status.milter-greylist-#{suffix}.dump").read,
                  dump(milter_status_rrd))
-    assert_equal((@data_dir + "#{prefix}.milter.report.milter-greylist.dump").read,
+    assert_equal((@data_dir + "milter.report.milter-greylist-#{suffix}.dump").read,
                  dump(milter_report_rrd))
   end
 
@@ -102,16 +102,16 @@ class TestLogAnalyzer < Test::Unit::TestCase
       end
     end
 
-    prefix = "mail-log-20090715-1-incrementally"
-    assert_equal((@data_dir + "#{prefix}.session.dump").read,
+    suffix = "1-incrementally"
+    assert_equal((@data_dir + "session-#{suffix}.dump").read,
                  dump(session_rrd))
-    assert_equal((@data_dir + "#{prefix}.milter-manager.status.dump").read,
+    assert_equal((@data_dir + "milter-manager.status-#{suffix}.dump").read,
                  dump(status_rrd))
-    assert_equal((@data_dir + "#{prefix}.milter-manager.report.dump").read,
+    assert_equal((@data_dir + "milter-manager.report-#{suffix}.dump").read,
                  dump(report_rrd))
-    assert_equal((@data_dir + "#{prefix}.milter.status.milter-greylist.dump").read,
+    assert_equal((@data_dir + "milter.status.milter-greylist-#{suffix}.dump").read,
                  dump(milter_status_rrd))
-    assert_equal((@data_dir + "#{prefix}.milter.report.milter-greylist.dump").read,
+    assert_equal((@data_dir + "milter.report.milter-greylist-#{suffix}.dump").read,
                  dump(milter_report_rrd))
   end
 
@@ -131,16 +131,16 @@ class TestLogAnalyzer < Test::Unit::TestCase
 
     @analyzer.update
 
-    prefix = "mail-log-20090715-2"
-    assert_equal((@data_dir + "#{prefix}.session.dump").read,
+    suffix = "2"
+    assert_equal((@data_dir + "session-#{suffix}.dump").read,
                  dump(session_rrd))
-    assert_equal((@data_dir + "#{prefix}.milter-manager.status.dump").read,
+    assert_equal((@data_dir + "milter-manager.status-#{suffix}.dump").read,
                  dump(status_rrd))
-    assert_equal((@data_dir + "#{prefix}.milter-manager.report.dump").read,
+    assert_equal((@data_dir + "milter-manager.report-#{suffix}.dump").read,
                  dump(report_rrd))
-    assert_equal((@data_dir + "#{prefix}.milter.status.milter-greylist.dump").read,
+    assert_equal((@data_dir + "milter.status.milter-greylist-#{suffix}.dump").read,
                  dump(milter_status_rrd))
-    assert_equal((@data_dir + "#{prefix}.milter.report.milter-greylist.dump").read,
+    assert_equal((@data_dir + "milter.report.milter-greylist-#{suffix}.dump").read,
                  dump(milter_report_rrd))
   end
 
