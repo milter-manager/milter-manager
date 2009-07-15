@@ -15,7 +15,6 @@ svg_images =					\
 	blog.svg				\
 	download.svg				\
 	heading-mark.svg			\
-	mini-heading-mark.svg			\
 	install.svg				\
 	upgrade.svg				\
 	introduction.svg			\
