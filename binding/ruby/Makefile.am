@@ -73,10 +73,10 @@ EXTRA_DIST =							\
 	test-unit/test/test-omission.rb				\
 	test-unit/test/test-pending.rb				\
 	test-unit/test/test-priority.rb				\
+	test-unit/test/test-testcase.rb				\
 	test-unit/test/test_assertions.rb			\
 	test-unit/test/test_error.rb				\
 	test-unit/test/test_failure.rb				\
-	test-unit/test/test_testcase.rb				\
 	test-unit/test/test_testresult.rb			\
 	test-unit/test/test_testsuite.rb			\
 	test-unit/test/testunit-test-util.rb			\

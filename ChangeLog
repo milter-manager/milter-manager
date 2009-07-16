@@ -1,3 +1,8 @@
+2009-07-17  Kouhei Sutou  <kou@clear-code.com>
+
+	* binding/ruby/Makefile.am (EXTRA_DIST): follow the recent
+	test-unit change.
+
 2009-07-15  Kouhei Sutou  <kou@clear-code.com>
 
 	* milter-manager.spec.in: add an entry for 1.2.0.
