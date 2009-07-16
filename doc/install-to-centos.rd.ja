@@ -71,13 +71,13 @@ Ruby/GLib2 0.16.0を使います。((<電脳Rubyプロジェクト
 
 32bit環境の場合:
 
-  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-1.1.1-0.i386.rpm
-  % sudo rpm -Uvh milter-manager-1.1.1-0.i386.rpm
+  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-1.2.0-0.i386.rpm
+  % sudo rpm -Uvh milter-manager-1.2.0-0.i386.rpm
 
 64bit環境の場合:
 
-  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-1.1.1-0.x86_64.rpm
-  % sudo rpm -Uvh milter-manager-1.1.1-0.x86_64.rpm
+  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-1.2.0-0.x86_64.rpm
+  % sudo rpm -Uvh milter-manager-1.2.0-0.x86_64.rpm
 
 == 設定
 
