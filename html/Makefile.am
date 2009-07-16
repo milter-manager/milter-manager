@@ -25,6 +25,7 @@ images =					\
 	tango-logo.png				\
 	jp.png					\
 	us.png					\
+	reference.png				\
 	$(generated_images)
 
 generated_images =				\
