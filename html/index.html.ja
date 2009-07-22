@@ -83,6 +83,14 @@
           <li><a href="reference/ja/readme.html">README</a></li>
         </ul>
 
+	<h2 id="support">サポート</h2>
+	<p>
+	  <a href="https://lists.sourceforge.net/lists/listinfo/milter-manager-users-ja">メーリングリスト</a>で質問・バグレポートを受け付けています。新バージョンのアナウンスもメーリングリストに告知されるので、milter managerを利用している場合はメーリングリストの購読を検討してください。
+	</p>
+	<p>
+	  企業導入など有償でのサポートや導入支援が必要な場合は<a href="http://www.clear-code.com/services/milter-manager.html">クリアコードが提供するmilter manager関連サービス</a>を検討してください。
+	</p>
+
 	<h2 id="development">開発版リリース</h2>
 	<p>
 	  2009-07-03に開発版1.1.1がリリースされました。開発版には多くの新機能が含まれていますが、安定して動作しない可能性があります。実運用には安定版を利用してください。
