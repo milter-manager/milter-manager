@@ -609,7 +609,7 @@ create_replies (MilterCommand first_command, ...)
 
         reply = va_arg(var_args, gint);
         replies = g_list_append(replies, GINT_TO_POINTER(command));
-        replies = g_list_append(replies,  GINT_TO_POINTER(reply));
+        replies = g_list_append(replies, GINT_TO_POINTER(reply));
         command = va_arg(var_args, gint);
     }
     va_end(var_args);
