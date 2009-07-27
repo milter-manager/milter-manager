@@ -192,24 +192,20 @@ send_reply (MilterCommand command, TestData *test_data)
     reply = reply & ~ADDITIONAL_FLAG_MASK;
 
     switch (reply) {
-      case MILTER_REPLY_QUARANTINE:
-        milter_reply_encoder_encode_quarantine(encoder, &packet, &packet_size,
-                                               "virus");
-        break;
-      case MILTER_REPLY_ACCEPT:
+    case MILTER_REPLY_ACCEPT:
         milter_reply_encoder_encode_accept(encoder, &packet, &packet_size);
         break;
-      case MILTER_REPLY_TEMPORARY_FAILURE:
+    case MILTER_REPLY_TEMPORARY_FAILURE:
         milter_reply_encoder_encode_temporary_failure(encoder,
                                                       &packet, &packet_size);
         break;
-      case MILTER_REPLY_REJECT:
+    case MILTER_REPLY_REJECT:
         milter_reply_encoder_encode_reject(encoder, &packet, &packet_size);
         break;
-      case MILTER_REPLY_DISCARD:
+    case MILTER_REPLY_DISCARD:
         milter_reply_encoder_encode_discard(encoder, &packet, &packet_size);
         break;
-      case MILTER_REPLY_REPLY_CODE:
+    case MILTER_REPLY_REPLY_CODE:
         if (additional_flag == TEMPORARY_FAILURE_FLAG)
             milter_reply_encoder_encode_reply_code(encoder,
                                                    &packet, &packet_size,
@@ -219,14 +215,19 @@ send_reply (MilterCommand command, TestData *test_data)
                                                    &packet, &packet_size,
                                                    "554 5.7.1 1% 2%% 3%%%");
         break;
-      case MILTER_REPLY_SHUTDOWN:
+    case MILTER_REPLY_SHUTDOWN:
         milter_reply_encoder_encode_shutdown(encoder, &packet, &packet_size);
         break;
-      case MILTER_REPLY_CONNECTION_FAILURE:
+    case MILTER_REPLY_CONNECTION_FAILURE:
         milter_reply_encoder_encode_connection_failure(encoder, &packet, &packet_size);
         break;
-      case MILTER_REPLY_CONTINUE:
-      default:
+    case MILTER_REPLY_QUARANTINE:
+        milter_reply_encoder_encode_quarantine(encoder, &packet, &packet_size,
+                                               "virus");
+        write_data(packet, packet_size);
+        g_free(packet);
+    case MILTER_REPLY_CONTINUE:
+    default:
         milter_reply_encoder_encode_continue(encoder, &packet, &packet_size);
         break;
     }
@@ -801,11 +802,10 @@ data_result (void)
         MILTER_ACTION_NONE,
         MILTER_STEP_NONE,
         MILTER_STATUS_QUARANTINE,
-        create_replies(MILTER_COMMAND_BODY,
-                       MILTER_REPLY_QUARANTINE,
+        create_replies(MILTER_COMMAND_BODY, MILTER_REPLY_QUARANTINE,
                        NULL),
         create_expected_command_receives(MILTER_COMMAND_BODY, 1,
-                                         MILTER_COMMAND_END_OF_MESSAGE, 0,
+                                         MILTER_COMMAND_END_OF_MESSAGE, 1,
                                          NULL),
         NULL,
         NULL);
