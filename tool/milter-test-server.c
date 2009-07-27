@@ -516,12 +516,11 @@ cb_progress (MilterServerContext *context, gpointer user_data)
 
 static void
 cb_quarantine (MilterServerContext *context, const gchar *reason,
-              gpointer user_data)
+               gpointer user_data)
 {
     ProcessData *data = user_data;
 
     data->quarantine_reason = g_strdup(reason);
-    send_abort(context, data);
 }
 
 static void
