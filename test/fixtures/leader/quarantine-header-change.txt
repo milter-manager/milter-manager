@@ -1,0 +1,25 @@
+[scenario]
+clients=client10026;client10027
+import=body.txt
+actions=end-of-message-quarantine
+
+[client10026]
+port=10026
+arguments=--action=accept;--end-of-message
+
+[client10027]
+port=10027
+arguments=--add-header=NAME:VALUE;--quarantine;MAYBE VIRUS;--action=accept;--end-of-message
+
+[end-of-message-quarantine]
+command=end-of-message
+
+response=end-of-message
+n_received=2
+status=accept
+
+quarantine_reasons=MAYBE VIRUS
+
+chunks=;Hi,;
+end_of_message_chunks=;;
+headers=From:kou+sender@example.com;NAME:VALUE

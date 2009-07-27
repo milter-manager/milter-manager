@@ -203,7 +203,7 @@ class MilterTestClient
 
       opts.on("--end-of-message",
               "Apply ACTION on end-of-message") do
-        @end_of_message_actions << [@current_action]
+        @end_of_message_action = @current_action
       end
 
       opts.on("--end-of-message-chunk=CHUNK",
@@ -234,6 +234,7 @@ class MilterTestClient
     @wait_second = 0
     @debug = false
     @current_action = "reject"
+    @end_of_message_action = nil
     @end_of_message_actions = []
     @hosts = []
     @recipients = []
@@ -497,7 +498,7 @@ class MilterTestClient
       end
     end
 
-    write(:end_of_message, :continue)
+    write(:end_of_message, @end_of_message_action || :continue)
   end
 
   def info_end_of_message(chunk)

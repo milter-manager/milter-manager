@@ -1197,43 +1197,43 @@ do_action (MilterManagerTestScenario *scenario, const gchar *group)
     case MILTER_COMMAND_NEGOTIATE:
         cut_trace(do_negotiate(scenario, group));
         break;
-      case MILTER_COMMAND_CONNECT:
+    case MILTER_COMMAND_CONNECT:
         cut_trace(do_connect(scenario, group));
         break;
-      case MILTER_COMMAND_HELO:
+    case MILTER_COMMAND_HELO:
         cut_trace(do_helo(scenario, group));
         break;
-      case MILTER_COMMAND_ENVELOPE_FROM:
+    case MILTER_COMMAND_ENVELOPE_FROM:
         cut_trace(do_envelope_from(scenario, group));
         break;
-      case MILTER_COMMAND_ENVELOPE_RECIPIENT:
+    case MILTER_COMMAND_ENVELOPE_RECIPIENT:
         cut_trace(do_envelope_recipient(scenario, group));
         break;
-      case MILTER_COMMAND_DATA:
+    case MILTER_COMMAND_DATA:
         cut_trace(do_data(scenario, group));
         break;
-      case MILTER_COMMAND_HEADER:
+    case MILTER_COMMAND_HEADER:
         cut_trace(do_header(scenario, group));
         break;
-      case MILTER_COMMAND_END_OF_HEADER:
+    case MILTER_COMMAND_END_OF_HEADER:
         cut_trace(do_end_of_header(scenario, group));
         break;
-      case MILTER_COMMAND_BODY:
+    case MILTER_COMMAND_BODY:
         cut_trace(do_body(scenario, group));
         break;
-      case MILTER_COMMAND_END_OF_MESSAGE:
+    case MILTER_COMMAND_END_OF_MESSAGE:
         cut_trace(do_end_of_message_full(scenario, group));
         break;
-      case MILTER_COMMAND_QUIT:
+    case MILTER_COMMAND_QUIT:
         cut_trace(do_quit(scenario, group));
         break;
-      case MILTER_COMMAND_ABORT:
+    case MILTER_COMMAND_ABORT:
         cut_trace(do_abort(scenario, group));
         break;
-      case MILTER_COMMAND_UNKNOWN:
+    case MILTER_COMMAND_UNKNOWN:
         cut_trace(do_unknown(scenario, group));
         break;
-      default:
+    default:
         cut_error("unknown command: <%c>(<%s>)", command, group);
         break;
     }
@@ -1258,6 +1258,8 @@ do_actions (MilterManagerTestScenario *scenario)
                               "actions", &length);
     for (i = 0; i < length; i++) {
         cut_trace(do_action(scenario, actions[i]));
+        cut_assert_equal_string(
+            NULL, milter_manager_test_server_get_last_error(server));
     }
 }
 
@@ -1306,6 +1308,8 @@ static void
 data_scenario_end_of_message_action (void)
 {
     cut_add_data("quarantine", g_strdup("quarantine.txt"), g_free,
+                 "quarantine - header-change",
+                 g_strdup("quarantine-header-change.txt"), g_free,
                  "add-header", g_strdup("add-header.txt"), g_free,
                  "add-header - with-leading-space",
                  g_strdup("add-header-with-leading-space.txt"), g_free,

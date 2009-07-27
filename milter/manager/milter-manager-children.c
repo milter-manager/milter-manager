@@ -70,6 +70,7 @@ struct _MilterManagerChildrenPrivate
     guint sent_body_offset;
     gboolean replaced_body_for_each_child;
     gboolean replaced_body;
+    gchar *quarantine_reason;
     MilterWriter *launcher_writer;
     MilterReader *launcher_reader;
 
@@ -242,6 +243,7 @@ milter_manager_children_init (MilterManagerChildren *milter)
     priv->sent_body_offset = 0;
     priv->replaced_body = FALSE;
     priv->replaced_body_for_each_child = FALSE;
+    priv->quarantine_reason = NULL;
 
     priv->state = MILTER_SERVER_CONTEXT_STATE_START;
     priv->processing_state = MILTER_SERVER_CONTEXT_STATE_START;
@@ -326,6 +328,11 @@ dispose_message_related_data (MilterManagerChildrenPrivate *priv)
     if (priv->end_of_message_chunk) {
         g_free(priv->end_of_message_chunk);
         priv->end_of_message_chunk = NULL;
+    }
+
+    if (priv->quarantine_reason) {
+        g_free(priv->quarantine_reason);
+        priv->quarantine_reason = NULL;
     }
 }
 
@@ -980,6 +987,9 @@ emit_signals_on_end_of_message (MilterManagerChildren *children)
     }
 
     g_object_unref(processing_headers);
+
+    if (priv->quarantine_reason)
+        g_signal_emit_by_name(children, "quarantine", priv->quarantine_reason);
 }
 
 static void
@@ -1561,7 +1571,9 @@ cb_quarantine (MilterServerContext *context,
         return;
     }
 
-    g_signal_emit_by_name(children, "quarantine", reason);
+    if (priv->quarantine_reason)
+        g_free(priv->quarantine_reason);
+    priv->quarantine_reason = g_strdup(reason);
 }
 
 static void

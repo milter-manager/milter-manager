@@ -1,3 +1,18 @@
+2009-07-27  Kouhei Sutou  <kou@cozmixng.org>
+
+	* README*: add Tsuchiya to thanks list. Thanks!!!
+
+	* milter/manager/milter-manager-children.c,
+	test/fixtures/leader/quarantine-header-change.txt,
+	test/manager/test-leader.c: delay quarantine request after header
+	changes.
+	Reported by Tsuchiya. Thanks!!!
+
+	* test/lib/milter-manager-test-server.[ch]: add invalid header
+	change request check.
+
+	* test/lib/milter-test-client.rb: work --end-of-message.
+
 2009-07-22  Kouhei Sutou  <kou@clear-code.com>
 
 	* html/index.html*: add support information.

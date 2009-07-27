@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -97,6 +97,8 @@ const GList          *milter_manager_test_server_get_received_replace_bodies
 const GList          *milter_manager_test_server_get_received_quarantine_reasons
                                                             (MilterManagerTestServer *server);
 const GList          *milter_manager_test_server_get_received_reply_codes
+                                                            (MilterManagerTestServer *server);
+const gchar          *milter_manager_test_server_get_last_error
                                                             (MilterManagerTestServer *server);
 
 #endif /* __MILTER_MANAGER_TEST_SERVER_H__ */

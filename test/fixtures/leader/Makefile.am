@@ -71,6 +71,7 @@ EXTRA_DIST =								\
 	no-data-second-client.txt					\
 	progress.txt							\
 	quarantine.txt							\
+	quarantine-header-change.txt					\
 	quit.txt							\
 	replace-body-overwrite.txt					\
 	replace-body.txt						\

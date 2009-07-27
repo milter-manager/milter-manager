@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -52,6 +52,8 @@ struct _MilterManagerTestServerPrivate
     GList *received_change_froms;
     GList *received_quarantine_reasons;
     GList *received_reply_codes;
+
+    gchar *last_error;
 };
 
 enum
@@ -170,6 +172,8 @@ milter_manager_test_server_init (MilterManagerTestServer *milter)
     priv->n_progresses = 0;
     priv->n_quarantines = 0;
     priv->n_reply_codes = 0;
+
+    priv->last_error = NULL;
 }
 
 static void
@@ -224,6 +228,11 @@ dispose (GObject *object)
         priv->received_reply_codes = NULL;
     }
 
+    if (priv->last_error) {
+        g_free(priv->last_error);
+        priv->last_error = NULL;
+    }
+
     G_OBJECT_CLASS(milter_manager_test_server_parent_class)->dispose(object);
 }
 
@@ -262,9 +271,21 @@ get_property (GObject    *object,
 MilterManagerTestServer *
 milter_manager_test_server_new (void)
 {
-    return  g_object_new(MILTER_TYPE_MANAGER_TEST_SERVER,
-                         "name", "MilterManagerTestServer",
-                         NULL);
+    return g_object_new(MILTER_TYPE_MANAGER_TEST_SERVER,
+                        "name", "MilterManagerTestServer",
+                        NULL);
+}
+
+static void
+check_header_change_state (MilterManagerTestServerPrivate *priv,
+                           const gchar *action_description)
+{
+    if (priv->n_quarantines > 0) {
+        if (priv->last_error)
+            g_free(priv->last_error);
+        priv->last_error = g_strdup_printf("header change after quarantine: %s",
+                                           action_description);
+    }
 }
 
 static void
@@ -275,6 +296,7 @@ add_header (MilterReplySignals *reply,
     MilterManagerTestServerPrivate *priv;
 
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
+    check_header_change_state(priv, "add-header");
     priv->n_add_headers++;
     milter_headers_add_header(priv->headers, name, value);
 }
@@ -288,6 +310,7 @@ insert_header (MilterReplySignals *reply,
     MilterManagerTestServerPrivate *priv;
 
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
+    check_header_change_state(priv, "insert-header");
     priv->n_insert_headers++;
     milter_headers_insert_header(priv->headers, index, name, value);
 }
@@ -301,6 +324,7 @@ change_header (MilterReplySignals *reply,
     MilterManagerTestServerPrivate *priv;
 
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
+    check_header_change_state(priv, "change-header");
     priv->n_change_headers++;
     milter_headers_change_header(priv->headers, name, index, value);
 }
@@ -313,6 +337,7 @@ delete_header (MilterReplySignals *reply,
     MilterManagerTestServerPrivate *priv;
 
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(reply);
+    check_header_change_state(priv, "delete-header");
     priv->n_delete_headers++;
     milter_headers_delete_header(priv->headers, name, index);
 }
@@ -535,6 +560,13 @@ milter_manager_test_server_add_header (MilterManagerTestServer *server,
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server);
 
     milter_headers_add_header(priv->headers, name, value);
+}
+
+const gchar *
+milter_manager_test_server_get_last_error (MilterManagerTestServer *server)
+{
+
+    return MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server)->last_error;
 }
 
 /*
