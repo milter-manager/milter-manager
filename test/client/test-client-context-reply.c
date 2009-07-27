@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -130,10 +130,8 @@ cb_end_of_message (MilterClientContext *context,
                    const gchar *gchar, gsize size,
                    gpointer user_data)
 {
-    if (quarantine_reason) {
+    if (quarantine_reason)
         milter_client_context_quarantine(context, quarantine_reason);
-        milter_agent_set_writer(MILTER_AGENT(context), NULL);
-    }
 
     return MILTER_STATUS_CONTINUE;
 }
@@ -267,7 +265,10 @@ test_progress (void)
 void
 test_quarantine (void)
 {
+    GString *expected_data;
     GString *actual_data;
+    gchar *continue_packet = NULL;
+    gsize continue_packet_size;
 
     quarantine_reason = g_strdup("virus mail!");
     milter_command_encoder_encode_end_of_message(command_encoder,
@@ -276,8 +277,19 @@ test_quarantine (void)
     gcut_assert_error(feed());
 
     packet_free();
+
     milter_reply_encoder_encode_quarantine(reply_encoder, &packet, &packet_size,
                                            quarantine_reason);
+    milter_reply_encoder_encode_continue(reply_encoder,
+                                         &continue_packet,
+                                         &continue_packet_size);
+    expected_data = g_string_new_len(packet, packet_size);
+    g_string_append_len(expected_data, continue_packet, continue_packet_size);
+    g_free(packet);
+    g_free(continue_packet);
+    packet_size = expected_data->len;
+    packet = g_string_free(expected_data, FALSE);
+
     actual_data = gcut_string_io_channel_get_string(channel);
     cut_assert_equal_memory(packet, packet_size,
                             actual_data->str, actual_data->len);

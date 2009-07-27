@@ -1,3 +1,10 @@
+2009-07-28  Kouhei Sutou  <kou@clear-code.com>
+
+	* milter/client/milter-client-context.c,
+	test/client/test-client-context-reply.c: send quarantine packet
+	with the following action packet (e.g. accept) to avoid Postfix's
+	rough quarantine implementation. :<
+
 2009-07-27  Kouhei Sutou  <kou@clear-code.com>
 
 	* test/tool/test-server.c: send continue after quarantine.

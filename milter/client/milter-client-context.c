@@ -88,6 +88,7 @@ struct _MilterClientContextPrivate
     gchar *reply_message;
     guint timeout;
     guint timeout_id;
+    gchar *quarantine_reason;
 };
 
 static void         finished           (MilterFinishedEmittable *emittable);
@@ -1478,6 +1479,7 @@ milter_client_context_init (MilterClientContext *context)
     priv->reply_message = NULL;
     priv->timeout = 7210;
     priv->timeout_id = 0;
+    priv->quarantine_reason = NULL;
 }
 
 static void
@@ -1522,6 +1524,11 @@ dispose (GObject *object)
     if (priv->reply_message) {
         g_free(priv->reply_message);
         priv->reply_message = NULL;
+    }
+
+    if (priv->quarantine_reason) {
+        g_free(priv->quarantine_reason);
+        priv->quarantine_reason = NULL;
     }
 
     G_OBJECT_CLASS(milter_client_context_parent_class)->dispose(object);
@@ -2196,9 +2203,7 @@ gboolean
 milter_client_context_quarantine (MilterClientContext *context,
                                   const gchar *reason)
 {
-    MilterEncoder *encoder;
-    gchar *packet = NULL;
-    gsize packet_size;
+    MilterClientContextPrivate *priv;
 
     milter_debug("[%u] [client][reply][quarantine] <%s>",
                  milter_agent_get_tag(MILTER_AGENT(context)),
@@ -2207,19 +2212,18 @@ milter_client_context_quarantine (MilterClientContext *context,
     /* quarantine allows only on end-of-message. */
     milter_statistics("[reply][end-of-message][quarantine]");
 
-    encoder = milter_agent_get_encoder(MILTER_AGENT(context));
-    milter_reply_encoder_encode_quarantine(MILTER_REPLY_ENCODER(encoder),
-                                           &packet, &packet_size,
-                                           reason);
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    if (priv->quarantine_reason)
+        g_free(priv->quarantine_reason);
+    priv->quarantine_reason = g_strdup(reason);
 
-    return write_packet(context, packet, packet_size);
+    return TRUE;
 }
 
-static gboolean
-reply (MilterClientContext *context, MilterStatus status)
+static void
+create_reply_packet (MilterClientContext *context, MilterStatus status,
+                     gchar **packet, gsize *packet_size)
 {
-    gchar *packet = NULL;
-    gsize packet_size;
     MilterEncoder *encoder;
     MilterReplyEncoder *reply_encoder;
 
@@ -2229,49 +2233,104 @@ reply (MilterClientContext *context, MilterStatus status)
     switch (status) {
     case MILTER_STATUS_CONTINUE:
         milter_reply_encoder_encode_continue(reply_encoder,
-                                             &packet, &packet_size);
+                                             packet, packet_size);
         break;
     case MILTER_STATUS_TEMPORARY_FAILURE:
     case MILTER_STATUS_REJECT:
     {
-            gchar *code;
+        gchar *code;
 
-            code = milter_client_context_format_reply(context);
-            if (code) {
-                milter_reply_encoder_encode_reply_code(reply_encoder,
-                                                       &packet, &packet_size,
-                                                       code);
-                g_free(code);
-            } else {
-                if (status == MILTER_STATUS_TEMPORARY_FAILURE)
-                    milter_reply_encoder_encode_temporary_failure(reply_encoder,
-                                                                  &packet,
-                                                                  &packet_size);
-                else
-                    milter_reply_encoder_encode_reject(reply_encoder,
-                                                       &packet, &packet_size);
-            }
-            break;
+        code = milter_client_context_format_reply(context);
+        if (code) {
+            milter_reply_encoder_encode_reply_code(reply_encoder,
+                                                   packet, packet_size,
+                                                   code);
+            g_free(code);
+        } else {
+            if (status == MILTER_STATUS_TEMPORARY_FAILURE)
+                milter_reply_encoder_encode_temporary_failure(reply_encoder,
+                                                              packet,
+                                                              packet_size);
+            else
+                milter_reply_encoder_encode_reject(reply_encoder,
+                                                   packet, packet_size);
+        }
+        break;
     }
     case MILTER_STATUS_ACCEPT:
-        milter_reply_encoder_encode_accept(reply_encoder, &packet, &packet_size);
+        milter_reply_encoder_encode_accept(reply_encoder, packet, packet_size);
         break;
     case MILTER_STATUS_DISCARD:
         milter_reply_encoder_encode_discard(reply_encoder,
-                                            &packet, &packet_size);
+                                            packet, packet_size);
         break;
     case MILTER_STATUS_SKIP:
-        milter_reply_encoder_encode_skip(reply_encoder, &packet, &packet_size);
+        milter_reply_encoder_encode_skip(reply_encoder, packet, packet_size);
         break;
     default:
         break;
     }
+}
+
+static gboolean
+reply (MilterClientContext *context, MilterStatus status)
+{
+    gchar *packet = NULL;
+    gsize packet_size;
+
+    create_reply_packet(context, status, &packet, &packet_size);
 
     if (!packet)
         return TRUE;
 
     return write_packet(context, packet, packet_size);
 }
+
+static gboolean
+reply_on_end_of_message (MilterClientContext *context, MilterStatus status)
+{
+    MilterClientContextPrivate *priv;
+    gchar *packet = NULL;
+    gsize packet_size;
+    gboolean success;
+
+    create_reply_packet(context, status, &packet, &packet_size);
+
+    if (!packet)
+        return TRUE;
+
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    if (priv->quarantine_reason) {
+        MilterEncoder *encoder;
+        MilterReplyEncoder *reply_encoder;
+        gchar *quarantine_packet;
+        gsize quarantine_packet_size;
+        GString *concatenated_packet;
+        gsize concatenated_packet_size;
+
+        encoder = milter_agent_get_encoder(MILTER_AGENT(context));
+        reply_encoder = MILTER_REPLY_ENCODER(encoder);
+
+        milter_reply_encoder_encode_quarantine(reply_encoder,
+                                               &quarantine_packet,
+                                               &quarantine_packet_size,
+                                               priv->quarantine_reason);
+        concatenated_packet = g_string_new_len(quarantine_packet,
+                                               quarantine_packet_size);
+        g_string_append_len(concatenated_packet, packet, packet_size);
+        concatenated_packet_size = concatenated_packet->len;
+        success = write_packet(context,
+                               g_string_free(concatenated_packet, FALSE),
+                               concatenated_packet_size);
+        g_free(packet);
+        g_free(quarantine_packet);
+    } else {
+        success = write_packet(context, packet, packet_size);
+    }
+
+    return success;
+}
+
 
 static MilterStatus
 default_negotiate (MilterClientContext *context, MilterOption *option,
@@ -2640,7 +2699,7 @@ end_of_message_response (MilterClientContext *context, MilterStatus status)
     milter_client_context_set_state(
         context, MILTER_CLIENT_CONTEXT_STATE_END_OF_MESSAGE_REPLIED);
 
-    reply(context, status);
+    reply_on_end_of_message(context, status);
     status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, status);
     milter_debug("[%u] [client][reply][end-of-message][%s]",
                  milter_agent_get_tag(MILTER_AGENT(context)),
@@ -2939,6 +2998,10 @@ cb_decoder_end_of_message (MilterDecoder *decoder, const gchar *chunk,
 
     disable_timeout(context);
     set_macro_context(context, MILTER_COMMAND_END_OF_MESSAGE);
+    if (priv->quarantine_reason) {
+        g_free(priv->quarantine_reason);
+        priv->quarantine_reason = NULL;
+    }
     g_signal_emit(context, signals[END_OF_MESSAGE], 0,
                   chunk, chunk_size, &status);
     if (status == MILTER_STATUS_PROGRESS)
