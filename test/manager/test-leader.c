@@ -1346,7 +1346,9 @@ data_scenario_envelope_from (void)
                  "envelope-from - accept all",
                  g_strdup("envelope-from-accept-all.txt"), g_free,
                  "envelope-from - again",
-                 g_strdup("envelope-from-again.txt"), g_free);
+                 g_strdup("envelope-from-again.txt"), g_free,
+                 "envelope-from - discarded - again",
+                 g_strdup("envelope-from-discarded-again.txt"), g_free);
 }
 
 static void
@@ -1447,6 +1449,8 @@ data_scenario_end_of_message (void)
                  g_strdup("end-of-message-reject.txt"), g_free,
                  "end-of-message - discard",
                  g_strdup("end-of-message-discard.txt"), g_free,
+                 "end-of-message - discard - again",
+                 g_strdup("end-of-message-discard-again.txt"), g_free,
                  "end-of-message - temporary-failure",
                  g_strdup("end-of-message-temporary-failure.txt"), g_free,
                  "end-of-message - accept",

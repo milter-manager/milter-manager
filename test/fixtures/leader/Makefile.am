@@ -25,6 +25,7 @@ EXTRA_DIST =								\
 	end-of-message-accept.txt					\
 	end-of-message-chunk.txt					\
 	end-of-message-discard.txt					\
+	end-of-message-discard-agin.txt					\
 	end-of-message-reject.txt					\
 	end-of-message-replaced.txt					\
 	end-of-message-temporary-failure.txt				\
@@ -40,6 +41,7 @@ EXTRA_DIST =								\
 	envelope-from-reject.txt					\
 	envelope-from.txt						\
 	envelope-from-again.txt						\
+	envelope-from-discarded-again.txt				\
 	envelope-recipient-accept-all.txt				\
 	envelope-recipient-accept.txt					\
 	envelope-recipient-discard.txt					\
