@@ -1,7 +1,7 @@
 [scenario]
 clients=client10026;client10027
 import=envelope-from.txt
-actions=envelope-recipient-accept;envelope-recipient-ok
+actions=envelope-recipient-accept;envelope-recipient-other
 
 [client10026]
 port=10026
@@ -22,10 +22,10 @@ status=accept
 
 recipients=accept@example.com;accept@example.com
 
-[envelope-recipient-ok]
+[envelope-recipient-other]
 command=envelope-recipient
 
-recipient=ok@example.com
+recipient=other@example.com
 
 error_domain=milter-manager-children-error-quark
 error_type=MilterManagerChildrenError

@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -74,6 +74,8 @@ const gchar         *milter_protocol_agent_get_macro(MilterProtocolAgent *agent,
 void                 milter_protocol_agent_clear_macros
                                                     (MilterProtocolAgent *agent,
                                                      MilterCommand  macro_context);
+void                 milter_protocol_agent_clear_message_related_macros
+                                                    (MilterProtocolAgent *agent);
 
 void                 milter_protocol_agent_set_macros_requests
                                                     (MilterProtocolAgent *agent,

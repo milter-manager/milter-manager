@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -255,6 +255,28 @@ milter_protocol_agent_clear_macros (MilterProtocolAgent *agent,
 
     priv = MILTER_PROTOCOL_AGENT_GET_PRIVATE(agent);
     g_hash_table_remove(priv->macros, GINT_TO_POINTER(macro_context));
+    clear_available_macros(priv);
+}
+
+void
+milter_protocol_agent_clear_message_related_macros (MilterProtocolAgent *agent)
+{
+    MilterProtocolAgentPrivate *priv;
+
+    priv = MILTER_PROTOCOL_AGENT_GET_PRIVATE(agent);
+#define CLEAR_MACRO(command)                                            \
+    g_hash_table_remove(priv->macros,                                   \
+                        GINT_TO_POINTER(MILTER_COMMAND_ ## command))
+
+    CLEAR_MACRO(ENVELOPE_FROM);
+    CLEAR_MACRO(ENVELOPE_RECIPIENT);
+    CLEAR_MACRO(DATA);
+    CLEAR_MACRO(HEADER);
+    CLEAR_MACRO(END_OF_HEADER);
+    CLEAR_MACRO(BODY);
+    CLEAR_MACRO(END_OF_MESSAGE);
+
+#undef CLEAR_MACRO
     clear_available_macros(priv);
 }
 

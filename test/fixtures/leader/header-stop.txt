@@ -20,7 +20,8 @@ response=header
 n_received=1
 status=continue
 
-n_alive=1
+n_alive=2
+n_abort=1
 
 headers=;;From;kou+sender@example.com
 
@@ -31,4 +32,4 @@ response=end-of-header
 n_received=1
 status=continue
 
-n_alive=1
+n_alive=2

@@ -605,10 +605,46 @@ assert_response_error (MilterManagerTestScenario *scenario, const gchar *group)
         cut_return();
 }
 
+#define assert_n_received(scenario, group, n_received_key, response_name) \
+    cut_trace_with_info_expression(                                     \
+        assert_n_received_helper(scenario, group,                       \
+                                 n_received_key, response_name),        \
+        assert_n_received(scenario, group, n_received_key, response_name))
+
+static void
+assert_n_received_helper (MilterManagerTestScenario *scenario,
+                          const gchar *group,
+                          const gchar *n_received_key,
+                          const gchar *response_name)
+{
+    MilterManagerTestClientGetNReceived get_n_received;
+    guint n_received, actual_n_received;
+
+    get_n_received = response_to_get_n_received(response_name);
+    cut_set_message("response: <%s>(%s)", response_name, group);
+    cut_assert_not_null(get_n_received);
+
+    n_received = get_integer(scenario, group, n_received_key);
+    if (n_received > g_list_length((GList *)started_clients)) {
+        milter_manager_test_clients_wait_reply(started_clients,
+                                               get_n_received);
+    } else if (n_received > 0) {
+        milter_manager_test_clients_wait_n_replies(started_clients,
+                                                   get_n_received,
+                                                   n_received);
+    }
+
+    actual_n_received =
+        milter_manager_test_clients_collect_n_received(started_clients,
+                                                       get_n_received);
+    cut_set_message("[%s]<%s>: <%s>=<%u>",
+                    group, response_name, n_received_key, n_received);
+    cut_assert_equal_uint(n_received, actual_n_received);
+}
+
 static void
 assert_response_common (MilterManagerTestScenario *scenario, const gchar *group)
 {
-    MilterManagerTestClientGetNReceived get_n_received;
     const gchar *response = NULL;
     MilterStatus status;
 
@@ -624,6 +660,7 @@ assert_response_common (MilterManagerTestScenario *scenario, const gchar *group)
             if (g_str_equal(response, "none")) {
                 assert_nothing_output(client);
             } else {
+                MilterManagerTestClientGetNReceived get_n_received;
                 get_n_received = response_to_get_n_received(response);
                 wait_reply_from_client(client, get_n_received);
             }
@@ -646,26 +683,11 @@ assert_response_common (MilterManagerTestScenario *scenario, const gchar *group)
     }
 
     if (!g_str_equal(response, "quit") && !g_str_equal(response, "none")) {
-        guint n_received, actual_n_received;
+        assert_n_received(scenario, group, "n_received", response);
+    }
 
-        get_n_received = response_to_get_n_received(response);
-        cut_assert_not_null(get_n_received,
-                            "response: <%s>(%s)", response, group);
-
-        n_received = get_integer(scenario, group, "n_received");
-        if (n_received > g_list_length((GList *)started_clients)) {
-            milter_manager_test_clients_wait_reply(started_clients,
-                                                   get_n_received);
-        } else if (n_received > 0) {
-            milter_manager_test_clients_wait_n_replies(started_clients,
-                                                       get_n_received,
-                                                       n_received);
-        }
-
-        actual_n_received =
-            milter_manager_test_clients_collect_n_received(started_clients,
-                                                           get_n_received);
-        cut_assert_equal_uint(n_received, actual_n_received, "[%s]", group);
+    if (has_key(scenario, group, "n_abort")) {
+        assert_n_received(scenario, group, "n_abort", "abort");
     }
 
     gcut_assert_equal_enum(MILTER_TYPE_STATUS, status, response_status,
@@ -868,7 +890,7 @@ do_data (MilterManagerTestScenario *scenario, const gchar *group)
                                     MILTER_SERVER_CONTEXT_STATE_DATA);
     milter_manager_leader_data(leader);
 
-    cut_trace(assert_response(scenario, group));
+    assert_response(scenario, group);
 }
 
 static void
@@ -1162,14 +1184,14 @@ static void
 do_quit (MilterManagerTestScenario *scenario, const gchar *group)
 {
     milter_manager_leader_quit(leader);
-    cut_trace(assert_response(scenario, group));
+    assert_response(scenario, group);
 }
 
 static void
 do_abort (MilterManagerTestScenario *scenario, const gchar *group)
 {
     milter_manager_leader_abort(leader);
-    cut_trace(assert_response(scenario, group));
+    assert_response(scenario, group);
 }
 
 static void
@@ -1180,7 +1202,7 @@ do_unknown (MilterManagerTestScenario *scenario, const gchar *group)
     command = get_string(scenario, group, "unknown_command");
 
     milter_manager_leader_unknown(leader, command);
-    cut_trace(assert_response(scenario, group));
+    assert_response(scenario, group);
 
     gcut_assert_equal_list_string(get_string_g_list(scenario, group,
                                                     "unknown_commands"),

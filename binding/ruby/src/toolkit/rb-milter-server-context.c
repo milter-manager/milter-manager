@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -152,6 +152,24 @@ context_end_of_message (int argc, VALUE *argv, VALUE self)
 }
 
 static VALUE
+context_is_negotiated (VALUE self)
+{
+    return CBOOL2RVAL(milter_server_context_is_negotiated(SELF(self)));
+}
+
+static VALUE
+context_is_processing_message (VALUE self)
+{
+    return CBOOL2RVAL(milter_server_context_is_processing_message(SELF(self)));
+}
+
+static VALUE
+context_is_quitted (VALUE self)
+{
+    return CBOOL2RVAL(milter_server_context_is_quitted(SELF(self)));
+}
+
+static VALUE
 stop_body_signal_convert (guint num, const GValue *values)
 {
     return rb_ary_new3(2,
@@ -212,6 +230,13 @@ Init_milter_server_context (void)
     rb_define_method(rb_cMilterServerContext, "body", context_body, 1);
     rb_define_method(rb_cMilterServerContext, "end_of_message",
 		     context_end_of_message, -1);
+
+    rb_define_method(rb_cMilterServerContext, "negotiated?",
+		     context_is_negotiated, 0);
+    rb_define_method(rb_cMilterServerContext, "processing_message?",
+		     context_is_processing_message, 0);
+    rb_define_method(rb_cMilterServerContext, "quitted?",
+		     context_is_quitted, 0);
 
     G_DEF_SIGNAL_FUNC(rb_cMilterServerContext, "stop-on-connect",
 		      rb_milter__connect_signal_convert);

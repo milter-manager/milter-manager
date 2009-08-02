@@ -158,16 +158,114 @@ send_recipient (MilterServerContext *context)
 }
 
 static void
+set_macros_for_connect (MilterProtocolAgent *agent)
+{
+    milter_protocol_agent_set_macros(agent, MILTER_COMMAND_CONNECT,
+                                     "{daemon_name}", PROGRAM_NAME,
+                                     "{if_name}", "localhost",
+                                     "{if_addr}", "127.0.0.1",
+                                     "j", "milter-test-server",
+                                     NULL);
+}
+
+static void
+set_macros_for_helo (MilterProtocolAgent *agent)
+{
+    milter_protocol_agent_set_macros(agent, MILTER_COMMAND_HELO,
+                                     "{tls_version}", "0",
+                                     "{cipher}", "0",
+                                     "{cipher_bits}", "0",
+                                     "{cert_subject}", "cert_subject",
+                                     "{cert_issuer}", "cert_issuer",
+                                     NULL);
+}
+
+static void
+set_macros_for_envelope_from (MilterProtocolAgent *agent)
+{
+    milter_protocol_agent_set_macros(agent, MILTER_COMMAND_ENVELOPE_FROM,
+                                     "i", "i",
+                                     "{mail_mailer}", "mail_mailer",
+                                     "{mail_host}", "mail_host",
+                                     "{mail_addr}", "mail_addr",
+                                     NULL);
+
+    if (authenticated_name)
+        milter_protocol_agent_set_macros(agent, MILTER_COMMAND_ENVELOPE_FROM,
+                                         "{auth_authen}", authenticated_name,
+                                         NULL);
+    if (authenticated_type)
+        milter_protocol_agent_set_macros(agent, MILTER_COMMAND_ENVELOPE_FROM,
+                                         "{auth_type}", authenticated_type,
+                                         NULL);
+    if (authenticated_author)
+        milter_protocol_agent_set_macros(agent, MILTER_COMMAND_ENVELOPE_FROM,
+                                         "{auth_author}", authenticated_author,
+                                         NULL);
+}
+
+static void
+set_macros_for_envelope_recipient (MilterProtocolAgent *agent)
+{
+    gchar *recipients_address;
+
+    recipients_address = g_strjoinv(",", recipients);
+    milter_protocol_agent_set_macros(agent, MILTER_COMMAND_ENVELOPE_RECIPIENT,
+                                     "{rcpt_mailer}", "rcpt_mailer",
+                                     "{rcpt_host}", "rcpt_host",
+                                     "{rcpt_addr}", recipients_address,
+                                     NULL);
+    g_free(recipients_address);
+}
+
+static void
+set_macros_for_data (MilterProtocolAgent *agent)
+{
+}
+
+static void
+set_macros_for_header (MilterProtocolAgent *agent)
+{
+}
+
+static void
+set_macros_for_end_of_header (MilterProtocolAgent *agent)
+{
+}
+
+static void
+set_macros_for_body (MilterProtocolAgent *agent)
+{
+}
+
+static void
+set_macros_for_end_of_message (MilterProtocolAgent *agent)
+{
+    milter_protocol_agent_set_macros(agent, MILTER_COMMAND_END_OF_MESSAGE,
+                                     "{msg-id}", "msg-id",
+                                     NULL);
+}
+
+static void
+set_macros_for_unknown (MilterProtocolAgent *agent)
+{
+}
+
+static void
 cb_continue (MilterServerContext *context, gpointer user_data)
 {
     ProcessData *data = user_data;
     MilterStepFlags step = MILTER_STEP_NONE;
+    MilterProtocolAgent *agent;
+
+    agent = MILTER_PROTOCOL_AGENT(context);
 
     if (data->option)
         step = milter_option_get_step(data->option);
 
     switch (milter_server_context_get_state(context)) {
     case MILTER_SERVER_CONTEXT_STATE_NEGOTIATE:
+        set_macros_for_connect(agent);
         if (!(step & MILTER_STEP_NO_CONNECT)) {
             const gchar *host_name;
 
@@ -197,16 +295,20 @@ cb_continue (MilterServerContext *context, gpointer user_data)
             break;
         }
     case MILTER_SERVER_CONTEXT_STATE_CONNECT:
+        set_macros_for_helo(agent);
         if (!(step & MILTER_STEP_NO_HELO)) {
             milter_server_context_helo(context, helo_host);
             break;
         }
     case MILTER_SERVER_CONTEXT_STATE_HELO:
+        milter_server_context_reset_message_related_data(context);
+        set_macros_for_envelope_from(agent);
         if (!(step & MILTER_STEP_NO_ENVELOPE_FROM)) {
             milter_server_context_envelope_from(context, envelope_from);
             break;
         }
     case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM:
+        set_macros_for_envelope_recipient(agent);
         if (!(step & MILTER_STEP_NO_ENVELOPE_RECIPIENT)) {
             send_recipient(context);
             break;
@@ -214,22 +316,26 @@ cb_continue (MilterServerContext *context, gpointer user_data)
     case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT:
         if (!(step & MILTER_STEP_NO_ENVELOPE_RECIPIENT) &&
             *(recipients + current_recipient)) {
+            set_macros_for_envelope_recipient(agent);
             send_recipient(context);
             break;
         }
         if (!(step & MILTER_STEP_NO_UNKNOWN) &&
             unknown_command &&
             milter_option_get_version(data->option) >= 3) {
+            set_macros_for_unknown(agent);
             milter_server_context_unknown(context, unknown_command);
             break;
         }
     case MILTER_SERVER_CONTEXT_STATE_UNKNOWN:
+        set_macros_for_data(agent);
         if (!(step & MILTER_STEP_NO_DATA) &&
             milter_option_get_version(data->option) >= 4) {
             milter_server_context_data(context);
             break;
         }
     case MILTER_SERVER_CONTEXT_STATE_DATA:
+        set_macros_for_header(agent);
         if (!(step & MILTER_STEP_NO_HEADERS)) {
             MilterHeader *header;
             header = milter_headers_get_nth_header(option_headers, 1);
@@ -241,16 +347,20 @@ cb_continue (MilterServerContext *context, gpointer user_data)
         if (!(step & MILTER_STEP_NO_HEADERS) &&
             milter_headers_length(option_headers) > 0) {
             MilterHeader *header;
+
+            set_macros_for_header(agent);
             header = milter_headers_get_nth_header(option_headers, 1);
             milter_server_context_header(context, header->name, header->value);
             milter_headers_remove(option_headers, header);
             break;
         }
+        set_macros_for_end_of_header(agent);
         if (!(step & MILTER_STEP_NO_END_OF_HEADER)) {
             milter_server_context_end_of_header(context);
             break;
         }
     case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
+        set_macros_for_body(agent);
         if (!(step & MILTER_STEP_NO_BODY)) {
             milter_server_context_body(context, *body_chunks, strlen(*body_chunks));
             body_chunks++;
@@ -259,10 +369,12 @@ cb_continue (MilterServerContext *context, gpointer user_data)
     case MILTER_SERVER_CONTEXT_STATE_BODY:
         if (!(step & MILTER_STEP_NO_BODY) &&
             *body_chunks) {
+            set_macros_for_body(agent);
             milter_server_context_body(context, *body_chunks, strlen(*body_chunks));
             body_chunks++;
             break;
         }
+        set_macros_for_end_of_message(agent);
         milter_server_context_end_of_message(context, NULL, 0);
         break;
     case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
@@ -1416,60 +1528,8 @@ print_result (MilterServerContext *context, ProcessData *data)
 }
 
 static void
-setup_default_macros (MilterServerContext *context)
-{
-    MilterProtocolAgent *agent = MILTER_PROTOCOL_AGENT(context);
-    gchar *recipients_address;
-
-    milter_protocol_agent_set_macros(agent, MILTER_COMMAND_CONNECT,
-                                     "{daemon_name}", PROGRAM_NAME,
-                                     "{if_name}", "localhost",
-                                     "{if_addr}", "127.0.0.1",
-                                     "j", "milter-test-server",
-                                     NULL);
-    milter_protocol_agent_set_macros(agent, MILTER_COMMAND_HELO,
-                                     "{tls_version}", "0",
-                                     "{cipher}", "0",
-                                     "{cipher_bits}", "0",
-                                     "{cert_subject}", "cert_subject",
-                                     "{cert_issuer}", "cert_issuer",
-                                     NULL);
-
-    milter_protocol_agent_set_macros(agent, MILTER_COMMAND_ENVELOPE_FROM,
-                                     "i", "i",
-                                     "{mail_mailer}", "mail_mailer",
-                                     "{mail_host}", "mail_host",
-                                     "{mail_addr}", "mail_addr",
-                                     NULL);
-    if (authenticated_name)
-        milter_protocol_agent_set_macros(agent, MILTER_COMMAND_ENVELOPE_FROM,
-                                         "{auth_authen}", authenticated_name,
-                                         NULL);
-    if (authenticated_type)
-        milter_protocol_agent_set_macros(agent, MILTER_COMMAND_ENVELOPE_FROM,
-                                         "{auth_type}", authenticated_type,
-                                         NULL);
-    if (authenticated_author)
-        milter_protocol_agent_set_macros(agent, MILTER_COMMAND_ENVELOPE_FROM,
-                                         "{auth_author}", authenticated_author,
-                                         NULL);
-
-    recipients_address = g_strjoinv(",", recipients);
-    milter_protocol_agent_set_macros(agent, MILTER_COMMAND_ENVELOPE_RECIPIENT,
-                                     "{rcpt_mailer}", "rcpt_mailer",
-                                     "{rcpt_host}", "rcpt_host",
-                                     "{rcpt_addr}", recipients_address,
-                                     NULL);
-    g_free(recipients_address);
-    milter_protocol_agent_set_macros(agent, MILTER_COMMAND_END_OF_MESSAGE,
-                                     "{msg-id}", "msg-id",
-                                     NULL);
-}
-
-static void
 setup_context (MilterServerContext *context, ProcessData *process_data)
 {
-    setup_default_macros(context);
     milter_server_context_set_name(context, PROGRAM_NAME);
 
     g_signal_connect(context, "ready", G_CALLBACK(cb_ready), process_data);

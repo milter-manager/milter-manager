@@ -20,6 +20,7 @@ response=header
 n_received=0
 status=accept
 
-n_alive=0
+n_alive=2
+n_abort=2
 
 headers=;;;;

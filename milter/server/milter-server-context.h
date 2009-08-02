@@ -607,6 +607,65 @@ void                 milter_server_context_set_name    (MilterServerContext *con
  */
 gdouble              milter_server_context_get_elapsed (MilterServerContext *context);
 
+/**
+ * milter_server_context_is_negotiated:
+ * @context: a %MilterServerContext.
+ *
+ * Gets whether negotiation is succeeded.
+ */
+gboolean             milter_server_context_is_negotiated
+                                                       (MilterServerContext *context);
+
+/**
+ * milter_server_context_is_processing_message:
+ * @context: a %MilterServerContext.
+ *
+ * Gets whether the context is processing message.
+ */
+gboolean             milter_server_context_is_processing_message
+                                                       (MilterServerContext *context);
+
+/**
+ * milter_server_context_set_processing_message:
+ * @context: a %MilterServerContext.
+ * @processing: whether the context is processing message.
+ *
+ * Sets whether the context is processing message.
+ */
+void                 milter_server_context_set_processing_message
+                                                       (MilterServerContext *context,
+                                                        gboolean processing_message);
+
+/**
+ * milter_server_context_is_quitted:
+ * @context: a %MilterServerContext.
+ *
+ * Gets whether the context is quitted.
+ */
+gboolean             milter_server_context_is_quitted  (MilterServerContext *context);
+
+/**
+ * milter_server_context_set_quitted:
+ * @context: a %MilterServerContext.
+ * @quitted: whether the context is quitted.
+ *
+ * Sets whether the context is quitted.
+ */
+void                 milter_server_context_set_quitted (MilterServerContext *context,
+                                                        gboolean quitted);
+
+/**
+ * milter_server_context_reset_message_related_data:
+ * @context: a %MilterServerContext.
+ *
+ * Resets message related data in the context. It should be
+ * called before each 2nd or later messages in the same
+ * milter session. There are no bad effects if it is called
+ * before 1st message.
+ */
+void                 milter_server_context_reset_message_related_data
+                                                       (MilterServerContext *context);
+
 G_END_DECLS
 
 #endif /* __MILTER_SERVER_CONTEXT_H__ */

@@ -1219,6 +1219,21 @@ test_connect_stop (void)
     wait_reply(1, n_accept_emitted);
 }
 
+static gboolean
+have_quitted_context (GList *child_list)
+{
+    GList *node;
+
+    for (node = child_list; node; node = g_list_next(node)) {
+        MilterServerContext *context;
+
+        context = MILTER_SERVER_CONTEXT(node->data);
+        if (milter_server_context_is_quitted(context))
+            return TRUE;
+    }
+    return FALSE;
+}
+
 void
 test_connect_half_stop (void)
 {
@@ -1236,13 +1251,13 @@ test_connect_half_stop (void)
     address.sin_port = g_htons(50443);
     inet_aton(ip_address, &(address.sin_addr));
 
-    cut_assert_null(milter_manager_children_get_quitted_children(children));
+    cut_assert_false(have_quitted_context(child_list));
     milter_manager_children_connect(children,
                                     host_name,
                                     (struct sockaddr *)(&address),
                                     sizeof(address));
     wait_reply(1, n_continue_emitted);
-    cut_assert_not_null(milter_manager_children_get_quitted_children(children));
+    cut_assert_true(have_quitted_context(child_list));
 }
 
 void

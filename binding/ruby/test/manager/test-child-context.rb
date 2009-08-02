@@ -81,8 +81,8 @@ class TestChildContext < Test::Unit::TestCase
     assert_equal("milter-greylist", @context.children["milter-greylist"].name)
   end
 
-  def test_quitted
-    assert_false(@context.quitted?)
+  def test_quitted?
+    assert_predicate(@context, :quitted?)
   end
 
   def test_postfix?

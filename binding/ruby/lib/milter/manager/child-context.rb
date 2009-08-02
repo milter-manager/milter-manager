@@ -15,10 +15,9 @@
 
 module Milter::Manager
   class ChildContext
-    def initialize(child, children, quitted=false)
+    def initialize(child, children)
       @child = child
       @children = children
-      @quitted = quitted
     end
 
     def name
@@ -52,7 +51,7 @@ module Milter::Manager
     end
 
     def quitted?
-      @quitted
+      @child.quitted?
     end
 
     def children
@@ -79,10 +78,7 @@ module Milter::Manager
     def create_child_contexts
       contexts = {}
       @children.children.each do |child|
-        contexts[child.name] = self.class.new(child, @children, false)
-      end
-      @children.quitted_children.each do |child|
-        contexts[child.name] = self.class.new(child, @children, true)
+        contexts[child.name] = self.class.new(child, @children)
       end
       contexts
     end

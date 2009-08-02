@@ -101,6 +101,10 @@ struct _MilterServerContextPrivate
     gboolean sent_end_of_message;
 
     GTimer *elapsed;
+
+    gboolean negotiated;
+    gboolean processing_message;
+    gboolean quitted;
 };
 
 enum
@@ -433,6 +437,10 @@ milter_server_context_init (MilterServerContext *context)
     priv->elapsed = g_timer_new();
     g_timer_stop(priv->elapsed);
     g_timer_reset(priv->elapsed);
+
+    priv->negotiated = FALSE;
+    priv->processing_message = FALSE;
+    priv->quitted = FALSE;
 }
 
 static void
@@ -992,6 +1000,26 @@ stop_on_state (MilterServerContext *context, MilterServerContextState state)
     milter_server_context_set_state(context, state);
 
     g_signal_emit_by_name(context, "stopped");
+
+#if 0
+    switch (state) {
+    case MILTER_SERVER_CONTEXT_STATE_CONNECT:
+    case MILTER_SERVER_CONTEXT_STATE_HELO:
+        priv->quitted = TRUE;
+        break;
+    case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM:
+    case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT:
+    case MILTER_SERVER_CONTEXT_STATE_DATA:
+    case MILTER_SERVER_CONTEXT_STATE_HEADER:
+    case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
+    case MILTER_SERVER_CONTEXT_STATE_BODY:
+    case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
+        priv->processing_message = FALSE;
+        break;
+    default:
+        break;
+    }
+#endif
 }
 
 gboolean
@@ -1151,16 +1179,43 @@ milter_server_context_connect (MilterServerContext *context,
                         MILTER_SERVER_CONTEXT_STATE_CONNECT);
 }
 
+void
+milter_server_context_reset_message_related_data (MilterServerContext *context)
+{
+    MilterServerContextPrivate *priv;
+    MilterProtocolAgent *agent;
+
+    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+
+    agent = MILTER_PROTOCOL_AGENT(context);
+    milter_protocol_agent_clear_message_related_macros(agent);
+
+    priv->skip_body = FALSE;
+    priv->processing_message = FALSE;
+    priv->status = MILTER_STATUS_NOT_CHANGE;
+    priv->envelope_recipient_status = MILTER_STATUS_DEFAULT;
+
+    if (priv->body_response_queue) {
+        g_list_free(priv->body_response_queue);
+        priv->body_response_queue = NULL;
+    }
+    priv->process_body_count = 0;
+    priv->sent_end_of_message = FALSE;
+}
+
 gboolean
 milter_server_context_envelope_from (MilterServerContext *context,
                                      const gchar         *from)
 {
+    MilterServerContextPrivate *priv;
     gchar *packet = NULL;
     gsize packet_size;
     MilterEncoder *encoder;
     gboolean stop = FALSE;
     guint tag;
     const gchar *name;
+
+    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
 
     tag = milter_agent_get_tag(MILTER_AGENT(context));
     name = milter_server_context_get_name(context);
@@ -1177,6 +1232,7 @@ milter_server_context_envelope_from (MilterServerContext *context,
         return TRUE;
     }
 
+    priv->processing_message = TRUE;
     if (milter_server_context_is_enable_step(context,
                                              MILTER_STEP_NO_ENVELOPE_FROM)) {
         milter_debug("[%u] [server][envelope-from][skip] %s", tag, name);
@@ -1537,9 +1593,13 @@ milter_server_context_end_of_message (MilterServerContext *context,
 gboolean
 milter_server_context_quit (MilterServerContext *context)
 {
+    MilterServerContextPrivate *priv;
     gchar *packet = NULL;
     gsize packet_size;
     MilterEncoder *encoder;
+
+    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+    priv->quitted = TRUE;
 
     milter_debug("[%u] [server][send][quit] %s",
                  milter_agent_get_tag(MILTER_AGENT(context)),
@@ -1556,9 +1616,13 @@ milter_server_context_quit (MilterServerContext *context)
 gboolean
 milter_server_context_abort (MilterServerContext *context)
 {
+    MilterServerContextPrivate *priv;
     gchar *packet = NULL;
     gsize packet_size;
     MilterEncoder *encoder;
+    gboolean success;
+
+    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
 
     milter_debug("[%u] [server][send][abort] %s",
                  milter_agent_get_tag(MILTER_AGENT(context)),
@@ -1567,8 +1631,11 @@ milter_server_context_abort (MilterServerContext *context)
     milter_command_encoder_encode_abort(MILTER_COMMAND_ENCODER(encoder),
                                         &packet, &packet_size);
 
-    return write_packet(context, packet, packet_size,
-                        MILTER_SERVER_CONTEXT_STATE_ABORT);
+    success = write_packet(context, packet, packet_size,
+                           MILTER_SERVER_CONTEXT_STATE_ABORT);
+    if (success)
+        priv->processing_message = FALSE;
+    return success;
 }
 
 static void
@@ -1661,6 +1728,7 @@ cb_decoder_negotiate_reply (MilterDecoder *decoder,
                               option, macros_requests);
         milter_protocol_agent_set_macros_requests(MILTER_PROTOCOL_AGENT(context),
                                                   macros_requests);
+        priv->negotiated = TRUE;
     } else {
         invalid_state(context, state);
     }
@@ -1672,8 +1740,10 @@ clear_process_body_count (MilterServerContext *context)
     MilterServerContextPrivate *priv;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
-    g_list_free(priv->body_response_queue);
-    priv->body_response_queue = NULL;
+    if (priv->body_response_queue) {
+        g_list_free(priv->body_response_queue);
+        priv->body_response_queue = NULL;
+    }
 
     if (priv->sent_end_of_message)
         milter_server_context_set_state(
@@ -2610,6 +2680,50 @@ milter_server_context_get_elapsed (MilterServerContext *context)
 {
     return g_timer_elapsed(MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->elapsed,
                            NULL);
+}
+
+gboolean
+milter_server_context_is_negotiated (MilterServerContext *context)
+{
+    return MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->negotiated;
+}
+
+gboolean
+milter_server_context_is_processing_message (MilterServerContext *context)
+{
+    MilterServerContextPrivate *priv;
+
+    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+    if (!priv->negotiated)
+        return FALSE;
+    if (priv->quitted)
+        return FALSE;
+    return priv->processing_message;
+}
+
+void
+milter_server_context_set_processing_message (MilterServerContext *context,
+                                              gboolean processing_message)
+{
+    MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->processing_message = processing_message;
+}
+
+gboolean
+milter_server_context_is_quitted (MilterServerContext *context)
+{
+    MilterServerContextPrivate *priv;
+
+    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+    if (!priv->negotiated)
+        return TRUE;
+    return priv->quitted;
+}
+
+void
+milter_server_context_set_quitted (MilterServerContext *context,
+                                   gboolean quitted)
+{
+    MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->quitted = quitted;
 }
 
 /*
