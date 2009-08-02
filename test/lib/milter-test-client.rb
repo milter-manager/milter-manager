@@ -221,6 +221,14 @@ class MilterTestClient
               "Quit without reply on ACTION") do |action|
         @quit_without_reply_action = action
       end
+
+      opts.on("--quiet", "Be quiet") do
+        ENV["MILTER_LOG_LEVEL"] = "none"
+      end
+
+      opts.on("--verbose", "Be verbose") do
+        ENV["MILTER_LOG_LEVEL"] = "all"
+      end
     end
     opts.parse!(argv)
   end
@@ -539,6 +547,7 @@ class MilterTestClient
   end
 end
 
+ENV["MILTER_LOG_LEVEL"] = "none"
 client = MilterTestClient.new
 client.parse_options(ARGV)
 client.run
