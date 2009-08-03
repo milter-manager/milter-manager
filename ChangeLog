@@ -1,5 +1,8 @@
 2009-08-03  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/server/milter-server-context.c: don't reset status for
+	statistics. :<
+
 	* test/manager/test-leader.c: run main loop once to handle client
 	response.
 
