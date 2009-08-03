@@ -1025,7 +1025,6 @@ send_first_command_to_next_child (MilterManagerChildren *children,
 
     next_child = get_first_child_in_command_waiting_child_queue(children);
     if (!next_child) {
-        milter_error("z");
         emit_reply_for_message_oriented_command(children, priv->state);
         return MILTER_STATUS_PROGRESS;
     }
