@@ -730,6 +730,8 @@ EODS
         parse_authentication_results(header_value, &block)
       when /\AX-Greylist\z/i
         parse_x_greylist(header_value, &block)
+      when /\AX-Virus-Status\z/i
+        parse_x_virus_status(header_value, &block)
       end
     end
 
@@ -778,6 +780,13 @@ EODS
       case value
       when /\ADelayed for/i
         yield("greylisting-pass")
+      end
+    end
+
+    def parse_x_virus_status(value)
+      case value
+      when /\AInfected/i
+        yield("virus")
       end
     end
   end

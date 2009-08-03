@@ -1,5 +1,9 @@
 2009-08-03  Kouhei Sutou  <kou@clear-code.com>
 
+	* test/tool/test-log-analyzer.rb: parse X-Virus-Status for
+	detecting virus.
+
+
 	* milter/manager/milter-manager-children.c: use server context's status.
 
 	* milter/server/milter-server-context.[ch]: keep its status.
