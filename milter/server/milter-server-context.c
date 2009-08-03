@@ -1192,7 +1192,6 @@ milter_server_context_reset_message_related_data (MilterServerContext *context)
 
     priv->skip_body = FALSE;
     priv->processing_message = FALSE;
-    priv->status = MILTER_STATUS_NOT_CHANGE;
     priv->envelope_recipient_status = MILTER_STATUS_DEFAULT;
 
     if (priv->body_response_queue) {
@@ -1216,6 +1215,7 @@ milter_server_context_envelope_from (MilterServerContext *context,
     const gchar *name;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+    priv->status = MILTER_STATUS_NOT_CHANGE;
 
     tag = milter_agent_get_tag(MILTER_AGENT(context));
     name = milter_server_context_get_name(context);
