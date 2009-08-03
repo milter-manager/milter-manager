@@ -690,6 +690,7 @@ assert_response_common (MilterManagerTestScenario *scenario, const gchar *group)
         assert_n_received(scenario, group, "n_abort", "abort");
     }
 
+    g_main_context_iteration(NULL, FALSE);
     gcut_assert_equal_enum(MILTER_TYPE_STATUS, status, response_status,
                            "[%s]", group);
 
