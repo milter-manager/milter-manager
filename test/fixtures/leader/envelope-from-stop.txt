@@ -6,7 +6,7 @@ actions=envelope-from-stop;envelope-recipient
 
 [client10026]
 port=10026
-arguments=--action;accept;--envelope-from;stop@example.com
+arguments=--action;reject;--envelope-from;stop@example.com
 
 [client10027]
 port=10027

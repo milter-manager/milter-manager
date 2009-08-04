@@ -31,6 +31,7 @@ EXTRA_DIST =								\
 	end-of-message-temporary-failure.txt				\
 	end-of-message-reply-code-reject.txt				\
 	end-of-message-reply-code-temporary-failure.txt			\
+	end-of-message-with-macro.txt					\
 	end-of-message.txt						\
 	end-of-message-again.txt					\
 	envelope-from-accept-all.txt					\

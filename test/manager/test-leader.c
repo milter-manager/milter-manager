@@ -741,6 +741,29 @@ assert_alive_helper (MilterManagerTestScenario *scenario, const gchar *group)
     cut_assert_equal_uint(expected_n_alive, actual_n_alive);
 }
 
+#define assert_macros(scenario, group, command)         \
+    cut_trace_with_info_expression(                     \
+        assert_macros_helper(scenario, group, command), \
+        assert_macros(scenario, group, command))
+
+static void
+assert_macros_helper (MilterManagerTestScenario *scenario, const gchar *group,
+                      MilterCommand command)
+{
+    const GList *expected_macros;
+    const GList *actual_macros;
+
+    expected_macros = get_pair_list_without_sort(scenario, group, "macros");
+    if (expected_macros) {
+        actual_macros = collect_received_macros(command);
+        gcut_assert_equal_list(
+            expected_macros, actual_macros,
+            milter_manager_test_pair_equal,
+            (GCutInspectFunction)milter_manager_test_pair_inspect,
+            NULL);
+    }
+}
+
 static void
 do_negotiate (MilterManagerTestScenario *scenario, const gchar *group)
 {
@@ -771,6 +794,17 @@ do_negotiate (MilterManagerTestScenario *scenario, const gchar *group)
 }
 
 static void
+define_macro (MilterManagerTestScenario *scenario, const gchar *group,
+              MilterCommand command)
+{
+    const GHashTable *macros;
+
+    macros = get_hash_table(scenario, group, "macro");
+    if (macros)
+        milter_manager_leader_define_macro(leader, command, (GHashTable *)macros);
+}
+
+static void
 do_connect (MilterManagerTestScenario *scenario, const gchar *group)
 {
     GError *error = NULL;
@@ -781,9 +815,6 @@ do_connect (MilterManagerTestScenario *scenario, const gchar *group)
     socklen_t address_size;
     const GList *expected_connect_infos;
     const GList *actual_connect_infos;
-    const GHashTable *macros;
-    const GList *expected_macros;
-    const GList *actual_macros;
 
     milter_server_context_set_state(MILTER_SERVER_CONTEXT(server),
                                     MILTER_SERVER_CONTEXT_STATE_CONNECT);
@@ -795,9 +826,7 @@ do_connect (MilterManagerTestScenario *scenario, const gchar *group)
                                  &error);
     gcut_assert_error(error);
 
-    macros = get_hash_table(scenario, group, "macro");
-    if (macros)
-        milter_manager_leader_define_macro(leader, MILTER_COMMAND_CONNECT, (GHashTable*)macros);
+    define_macro(scenario, group, MILTER_COMMAND_CONNECT);
     milter_manager_leader_connect(leader, host, address, address_size);
     g_free(address);
 
@@ -812,15 +841,7 @@ do_connect (MilterManagerTestScenario *scenario, const gchar *group)
         (GCutInspectFunction)milter_manager_test_pair_inspect,
         NULL);
 
-    expected_macros = get_pair_list_without_sort(scenario, group, "macros");
-    if (expected_macros) {
-        actual_macros = collect_received_macros(MILTER_COMMAND_CONNECT);
-        gcut_assert_equal_list(
-            expected_macros, actual_macros,
-            milter_manager_test_pair_equal,
-            (GCutInspectFunction)milter_manager_test_pair_inspect,
-            NULL);
-    }
+    assert_macros(scenario, group, MILTER_COMMAND_CONNECT);
 }
 
 static void
@@ -852,6 +873,7 @@ do_envelope_from (MilterManagerTestScenario *scenario, const gchar *group)
     milter_server_context_set_state(MILTER_SERVER_CONTEXT(server),
                                     MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM);
     from = get_string(scenario, group, "from");
+    define_macro(scenario, group, MILTER_COMMAND_ENVELOPE_FROM);
     milter_manager_leader_envelope_from(leader, from);
 
     assert_response(scenario, group);
@@ -861,6 +883,8 @@ do_envelope_from (MilterManagerTestScenario *scenario, const gchar *group)
     gcut_assert_equal_list_string(expected_froms,
                                   collect_received_strings(envelope_from),
                                   "[%s]", group);
+
+    assert_macros(scenario, group, MILTER_COMMAND_ENVELOPE_FROM);
 }
 
 static void
@@ -1295,12 +1319,14 @@ data_scenario_basic (void)
                  g_strdup("negotiate-failure.txt"), g_free,
                  "connect",
                  g_strdup("connect.txt"), g_free,
-                 "connect-with-macro",
+                 "connect - macro",
                  g_strdup("connect-with-macro.txt"), g_free,
                  "helo",
                  g_strdup("helo.txt"), g_free,
                  "envelope-from",
                  g_strdup("envelope-from.txt"), g_free,
+                 "envelope-from - macro",
+                 g_strdup("envelope-from-with-macro.txt"), g_free,
                  "envelope-recipient",
                  g_strdup("envelope-recipient.txt"), g_free,
                  "data",
@@ -1357,6 +1383,8 @@ static void
 data_scenario_envelope_from (void)
 {
     cut_add_data("envelope-from - reject",
+                 g_strdup("envelope-from-reject.txt"), g_free,
+                 "envelope-from - reject",
                  g_strdup("envelope-from-reject.txt"), g_free,
                  "envelope-from - discard",
                  g_strdup("envelope-from-discard.txt"), g_free,

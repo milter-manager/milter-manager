@@ -2372,11 +2372,11 @@ milter_manager_children_define_macro (MilterManagerChildren *children,
                 continue;
             break;
         case MILTER_COMMAND_ENVELOPE_FROM:
-            if (!milter_server_context_is_quitted(context))
+            if (milter_server_context_is_quitted(context))
                 continue;
             break;
         case MILTER_COMMAND_UNKNOWN:
-            if (!milter_server_context_is_quitted(context))
+            if (milter_server_context_is_quitted(context))
                 continue;
             break;
         case MILTER_COMMAND_ENVELOPE_RECIPIENT:
