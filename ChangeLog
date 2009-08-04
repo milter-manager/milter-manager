@@ -1,5 +1,10 @@
 2009-08-04  Kouhei Sutou  <kou@clear-code.com>
 
+	* test/fixtures/leader/envelope-from-stop.{txt,conf},
+	test/manager/test-leader.c,
+	test/fixtures/leader/Makefile.am (EXTRA_DIST): add a test for stop
+	on envelope from.
+
 	* test/fixtures/leader/Makefile.am (EXTRA_DIST): fix a typo.
 
 2009-08-03  Kouhei Sutou  <kou@clear-code.com>

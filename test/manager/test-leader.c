@@ -1368,6 +1368,8 @@ data_scenario_envelope_from (void)
                  g_strdup("envelope-from-accept.txt"), g_free,
                  "envelope-from - accept all",
                  g_strdup("envelope-from-accept-all.txt"), g_free,
+                 "envelope-from - stop",
+                 g_strdup("envelope-from-stop.txt"), g_free,
                  "envelope-from - again",
                  g_strdup("envelope-from-again.txt"), g_free,
                  "envelope-from - discarded - again",
