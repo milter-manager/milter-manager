@@ -25,7 +25,7 @@ EXTRA_DIST =								\
 	end-of-message-accept.txt					\
 	end-of-message-chunk.txt					\
 	end-of-message-discard.txt					\
-	end-of-message-discard-agin.txt					\
+	end-of-message-discard-again.txt				\
 	end-of-message-reject.txt					\
 	end-of-message-replaced.txt					\
 	end-of-message-temporary-failure.txt				\
