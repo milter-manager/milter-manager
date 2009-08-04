@@ -1517,6 +1517,8 @@ data_scenario_end_of_message (void)
                  g_free,
                  "end-of-message - again",
                  g_strdup("end-of-message-again.txt"), g_free,
+                 "end-of-message - without header",
+                 g_strdup("end-of-message-without-header.txt"), g_free,
                  NULL);
 }
 

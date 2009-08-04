@@ -33,6 +33,7 @@ EXTRA_DIST =								\
 	end-of-message-reply-code-temporary-failure.txt			\
 	end-of-message.txt						\
 	end-of-message-again.txt					\
+	end-of-message-without-header.txt				\
 	envelope-from-accept-all.txt					\
 	envelope-from-accept.txt					\
 	envelope-from-discard.txt					\

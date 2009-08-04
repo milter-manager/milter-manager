@@ -3084,6 +3084,8 @@ milter_manager_children_end_of_message (MilterManagerChildren *children,
     init_command_waiting_child_queue(children, MILTER_COMMAND_END_OF_MESSAGE);
 
     priv->processing_header_index = 0;
+    if (!priv->headers)
+        priv->headers = milter_headers_new();
     if (!priv->original_headers)
         priv->original_headers = milter_headers_copy(priv->headers);
 

@@ -1,4 +1,10 @@
-2009-08-04  Kouhei Sutou  <kou@clear-code.com>
+2009-08-04  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/manager/milter-manager-children.c,
+	test/fixtures/leader/end-of-message-without-header.txt,
+	test/manager/test-leader.c,
+	test/fixtures/leader/Makefile.am: fix SEGV on end-of-message
+	without header event.
 
 	* milter/manager/milter-manager-children.c,
 	test/fixtures/leader/envelope-from-with-macro.txt,
