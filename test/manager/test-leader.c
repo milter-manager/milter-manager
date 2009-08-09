@@ -1440,6 +1440,8 @@ data_scenario_data (void)
                  g_strdup("no-data-second-client.txt"), g_free,
                  "data - close without reply",
                  g_strdup("data-close-without-reply.txt"), g_free,
+                 "data - reply code reject",
+                 g_strdup("data-reply-code-reject.txt"), g_free,
                  NULL);
 }
 

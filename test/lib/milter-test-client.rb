@@ -176,14 +176,18 @@ class MilterTestClient
         @hosts << [@current_action, host]
       end
 
+      opts.on("--envelope-from=FROM",
+              "Add FROM targets to be applied ACTION") do |from|
+        @senders << [@current_action, from]
+      end
+
       opts.on("--envelope-recipient=RECIPIENT",
               "Add RECIPIENT targets to be applied ACTION") do |recipient|
         @recipients << [@current_action, recipient]
       end
 
-      opts.on("--envelope-from=FROM",
-              "Add FROM targets to be applied ACTION") do |from|
-        @senders << [@current_action, from]
+      opts.on("--data", "Apply ACTION on DATA") do
+        @data_actions = [@current_action]
       end
 
       opts.on("--header=NAME,VALUE", Array,
@@ -245,8 +249,9 @@ class MilterTestClient
     @end_of_message_action = nil
     @end_of_message_actions = []
     @hosts = []
-    @recipients = []
     @senders = []
+    @recipients = []
+    @data_actions = []
     @headers = []
     @body_chunks = []
     @end_of_message_chunks = []
@@ -449,6 +454,11 @@ class MilterTestClient
 
   def do_data
     invalid_state(:data) unless valid_state?(:data)
+
+    @data_actions.reverse_each do |action|
+      write_action(:data, action)
+      return
+    end
 
     write(:data, :continue)
   end

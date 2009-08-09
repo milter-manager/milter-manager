@@ -1,0 +1,21 @@
+[scenario]
+clients=client10026;client10027
+import=envelope-recipient.txt
+actions=data-reply-code-reject
+
+[client10026]
+port=10026
+arguments=--reply-code;554 5.5.4 Spam: pgrishin;--data
+
+[client10027]
+port=10027
+
+[data-reply-code-reject]
+command=data
+
+response=data
+n_received=1
+status=reject
+reply_codes=554 5.5.4 Spam: pgrishin
+
+n_alive=1

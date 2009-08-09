@@ -1,4 +1,13 @@
-2009-08-04  Kouhei Sutou  <kou@cozmixng.org>
+2009-08-09  Kouhei Sutou  <kou@clear-code.com>
+
+	* test/lib/milter-test-client.rb: support action on DATA.
+
+	* test/manager/test-leader.c,
+	test/fixtures/leader/data-reply-code-reject.txt,
+	test/fixtures/leader/Makefile.am: add a test for reply-code on
+	DATA.
+
+2009-08-04  Kouhei Sutou  <kou@clear-code.com>
 
 	* milter/manager/milter-manager-children.c,
 	test/fixtures/leader/end-of-message-without-header.txt,

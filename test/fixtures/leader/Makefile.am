@@ -18,6 +18,7 @@ EXTRA_DIST =								\
 	data.txt							\
 	data-close-without-reply.txt					\
 	data-again.txt							\
+	data-reply-code-reject.txt					\
 	delete-header.txt						\
 	delete-recipient.txt						\
 	end-of-header.txt						\
