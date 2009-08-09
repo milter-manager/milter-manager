@@ -1,5 +1,8 @@
 2009-08-09  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/manager/milter-manager-children.[ch],
+	test/fixtures/leader/: improve error message.
+
 	* test/lib/milter-test-client.rb: support action on DATA.
 
 	* test/manager/test-leader.c,

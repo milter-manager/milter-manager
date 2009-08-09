@@ -1132,8 +1132,6 @@ cb_temporary_failure (MilterServerContext *context, gpointer user_data)
     case MILTER_SERVER_CONTEXT_STATE_BODY:
     case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
         milter_server_context_set_processing_message(context, FALSE);
-        /* TODO: rewrite to:
-           send_first_command_to_next_child(children, child) */
         emit_reply_status_of_state(children, state);
         milter_manager_children_abort(children);
         break;
@@ -1183,8 +1181,6 @@ cb_reject (MilterServerContext *context, gpointer user_data)
     case MILTER_SERVER_CONTEXT_STATE_BODY:
     case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
         milter_server_context_set_processing_message(context, FALSE);
-        /* TODO: rewrite to:
-           send_first_command_to_next_child(children, child) */
         emit_reply_status_of_state(children, state);
         milter_manager_children_abort(children);
         break;
@@ -2441,12 +2437,11 @@ milter_manager_children_check_processing_message (MilterManagerChildren *childre
             return TRUE;
     }
 
-    /* TODO: fix error message */
     g_set_error(&error,
                 MILTER_MANAGER_CHILDREN_ERROR,
-                MILTER_MANAGER_CHILDREN_ERROR_NO_ALIVE_MILTER,
-                "All milters are no longer alive.");
-    milter_error("[%u] [children][error][alive] %s",
+                MILTER_MANAGER_CHILDREN_ERROR_NO_MESSAGE_PROCESSING_MILTER,
+                "None of milters are processing message.");
+    milter_error("[%u] [children][error][message-processing] %s",
                  priv->tag, error->message);
     milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
                                 error);

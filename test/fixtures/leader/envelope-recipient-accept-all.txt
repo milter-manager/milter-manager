@@ -29,5 +29,5 @@ recipient=other@example.com
 
 error_domain=milter-manager-children-error-quark
 error_type=MilterManagerChildrenError
-error_code=no-alive-milter
-error_message=All milters are no longer alive.
+error_code=no-message-processing-milter
+error_message=None of milters are processing message.
