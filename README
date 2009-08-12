@@ -84,14 +84,6 @@ See ((<Introduction|"doc/introduction.rd">)) for more details.
 
     ((<RRDtool|URL:http://oss.oetiker.ch/rrdtool/>))
 
-== Get
-
-tar.gz:
-((<URL:http://downloads.sourceforge.net/milter-manager/milter-manager-1.0.0.tar.gz>))
-
-Subversion:
-  % svn co https://milter-manager.svn.sourceforge.net/svnroot/milter-manager/milter-manager/trunk milter-manager
-
 == Install
 
 See ((<Install|"doc/install.rd">)).
@@ -131,6 +123,21 @@ installed into bin/.
   * ((<milter-manager-log-analyzer|"doc/milter-manager-log-analyzer.rd">)):
     It analyzes log of milter-manager and visualizes
     behavior of milters registered to milter-manager.
+
+== Mailing list
+
+There is
+((<milter-manager-users-en|URL:https://lists.sourceforge.net/lists/listinfo/milter-manager-users-en>))
+mailing list. Questions and bug reports are accepted on
+it. New release announce is also done on the mailing
+list. If you are using milter manager, it's a good idea that
+you subscribe the mailling list.
+
+== Source code
+
+The latest source is available from the Subversion repository:
+
+  % svn co https://milter-manager.svn.sourceforge.net/svnroot/milter-manager/milter-manager/trunk milter-manager
 
 == Thanks
 
