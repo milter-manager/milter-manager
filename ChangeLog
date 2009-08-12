@@ -1,5 +1,7 @@
 2009-08-12  Kouhei Sutou  <kou@clear-code.com>
 
+	* test/manager/test-configuration.c: follow the recent changes.
+
 	* milter/manager/milter-manager-egg.c,
 	test/manager/test-egg.c: support reputation mode serialization.
 
