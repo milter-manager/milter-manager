@@ -30,6 +30,7 @@
 void test_get_command_line_string (void);
 void test_get_user_name (void);
 void test_get_fallback_status (void);
+void test_reputation_mode (void);
 
 static MilterManagerChild *milter;
 
@@ -84,6 +85,14 @@ test_get_fallback_status (void)
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
                            MILTER_STATUS_TEMPORARY_FAILURE,
                            milter_manager_child_get_fallback_status(milter));
+}
+
+void
+test_reputation_mode (void)
+{
+    cut_assert_false(milter_manager_child_is_reputation_mode(milter));
+    milter_manager_child_set_reputation_mode(milter, TRUE);
+    cut_assert_true(milter_manager_child_is_reputation_mode(milter));
 }
 
 /*

@@ -43,6 +43,7 @@ struct _MilterManagerChildPrivate
     gchar *command_options;
     gboolean search_path;
     MilterStatus fallback_status;
+    gboolean reputation_mode;
 };
 
 enum
@@ -53,7 +54,8 @@ enum
     PROP_COMMAND_OPTIONS,
     PROP_WORKING_DIRECTORY,
     PROP_SEARCH_PATH,
-    PROP_FALLBACK_STATUS
+    PROP_FALLBACK_STATUS,
+    PROP_REPUTATION_MODE
 };
 
 MILTER_DEFINE_ERROR_EMITTABLE_TYPE(MilterManagerChild,
@@ -126,6 +128,13 @@ milter_manager_child_class_init (MilterManagerChildClass *klass)
                              G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_FALLBACK_STATUS, spec);
 
+    spec = g_param_spec_boolean("reputation-mode",
+                                "Whether the result is used",
+                                "Whether the result of the child is used or not",
+                                FALSE,
+                                G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_REPUTATION_MODE, spec);
+
     g_type_class_add_private(gobject_class,
                              sizeof(MilterManagerChildPrivate));
 }
@@ -142,6 +151,7 @@ milter_manager_child_init (MilterManagerChild *milter)
     priv->command_options = NULL;
     priv->search_path = TRUE;
     priv->fallback_status = MILTER_STATUS_ACCEPT;
+    priv->reputation_mode = FALSE;
 }
 
 static void
@@ -212,6 +222,9 @@ set_property (GObject      *object,
     case PROP_FALLBACK_STATUS:
         priv->fallback_status = g_value_get_enum(value);
         break;
+    case PROP_REPUTATION_MODE:
+        priv->reputation_mode = g_value_get_boolean(value);
+        break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -245,6 +258,9 @@ get_property (GObject    *object,
         break;
     case PROP_FALLBACK_STATUS:
         g_value_set_enum(value, priv->fallback_status);
+        break;
+    case PROP_REPUTATION_MODE:
+        g_value_set_boolean(value, priv->reputation_mode);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -303,6 +319,19 @@ MilterStatus
 milter_manager_child_get_fallback_status (MilterManagerChild *milter)
 {
     return MILTER_MANAGER_CHILD_GET_PRIVATE(milter)->fallback_status;
+}
+
+void
+milter_manager_child_set_reputation_mode (MilterManagerChild *milter,
+                                          gboolean reputation_mode)
+{
+    MILTER_MANAGER_CHILD_GET_PRIVATE(milter)->reputation_mode = reputation_mode;
+}
+
+gboolean
+milter_manager_child_is_reputation_mode (MilterManagerChild *milter)
+{
+    return MILTER_MANAGER_CHILD_GET_PRIVATE(milter)->reputation_mode;
 }
 
 /*
