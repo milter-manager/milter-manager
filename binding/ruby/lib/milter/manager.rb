@@ -83,6 +83,7 @@ module Milter::Manager
         result << "  milter.enabled = #{egg.enabled?}\n"
         fallback_status = egg.fallback_status.nick
         result << "  milter.fallback_status = #{fallback_status.inspect}\n"
+        result << "  milter.reputation_mode = #{egg.reputation_mode?}\n"
         condition_names = egg.applicable_conditions.collect do |condition|
           condition.name
         end

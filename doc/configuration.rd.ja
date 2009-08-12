@@ -545,6 +545,28 @@ define_milter do ... end内で設定できる項目は以下の通りです。
    既定値:
      milter.fallback_status = "accept"
 
+: milter.reputation_mode
+
+   子milterの結果をMTAに返さず、適用条件内だけで利用するかど
+   うかを指定します。
+
+   適用条件内だけで利用する場合はtrueを指定します。MTAに結果
+   を返す場合はfalseを指定します。既定値はMTAに結果を返しま
+   す。
+
+   false（既定値）の場合は、子milterがrejectを返すとMTAに
+   rejectと返し、処理が終了してしまいます。trueの場合は子
+   milterがrejectを返してもMTAにはrejectを返さず、処理が継続
+   します。継続している処理の中では「子milterがrejectを返し
+   た」という情報を利用できます。その情報を利用して適用条件
+   を記述することができます。
+
+   例:
+     milter.reputation_mode = true
+
+   既定値:
+     milter.reputation_mode = false
+
 : milter.applicable_conditions
 
    子milterを適用する条件を指定します。

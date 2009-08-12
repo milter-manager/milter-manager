@@ -548,6 +548,29 @@ Required item is just only milter.connection_spec.
    Default:
      milter.fallback_status = "accept"
 
+: milter.reputation_mode
+
+   Whether return the child milter result to MTA or not. If
+   the result isn't returned to MTA, the result can be used
+   in applicable conditions.
+
+   True if return, false otherwise.
+
+   On false (default) case, message handling in milter
+   session is aborted when a child milter returns "reject"
+   because milter manager returns "reject" to MTA. On true
+   case, message handling in milter session is continued
+   when a child milter returns "reject" because milter
+   manager doesn't return "reject" to MTA. We can use a
+   condition that "a child milter returns 'reject'" in
+   applicable conditions.
+
+   Example:
+     milter.reputation_mode = true
+
+   Default:
+     milter.reputation_mode = false
+
 : milter.applicable_conditions
 
    Specifies applicable conditions for the child milter. The
