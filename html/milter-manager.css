@@ -132,6 +132,11 @@ ul.menu li#menu-install
   background: url(install.png) no-repeat;
 }
 
+ul.menu li#menu-upgrade
+{
+  background: url(upgrade.png) no-repeat;
+}
+
 ul.menu li#menu-reverse-dictionary
 {
   background: url(reference.png) no-repeat;
