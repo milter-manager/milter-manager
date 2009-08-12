@@ -129,7 +129,7 @@ milter_manager_child_class_init (MilterManagerChildClass *klass)
     g_object_class_install_property(gobject_class, PROP_FALLBACK_STATUS, spec);
 
     spec = g_param_spec_boolean("reputation-mode",
-                                "Whether the result is used",
+                                "Reputation mode",
                                 "Whether the result of the child is used or not",
                                 FALSE,
                                 G_PARAM_READWRITE);
