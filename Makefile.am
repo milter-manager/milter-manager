@@ -37,8 +37,11 @@ upload: upload-doc upload-coverage
 release: dist
 	$(srcdir)/misc/release.rb				\
 	  $(SF_USER) '$(SF_PROJECT_NAME)' '$(PACKAGE_TITLE)'	\
-	  $(VERSION) $(PACKAGE)-$(VERSION).tar.gz       	\
-	  README NEWS
+	  $(VERSION) README NEWS				\
+	  $(PACKAGE)-$(VERSION).tar.gz				\
+	  $(PACKAGE)-$(VERSION)-0.src.rpm			\
+	  $(PACKAGE)-$(VERSION)-0.i386.rpm			\
+	  $(PACKAGE)-$(VERSION)-0.x86_64.rpm
 
 upload-doc:
 	cd html && $(MAKE) $(AM_MAKEFLAGS) upload
