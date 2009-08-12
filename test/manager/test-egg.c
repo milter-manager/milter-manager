@@ -511,6 +511,7 @@ test_to_xml (void)
                             "  <name>child-milter</name>\n"
                             "  <enabled>true</enabled>\n"
                             "  <fallback-status>accept</fallback-status>\n"
+                            "  <reputation-mode>false</reputation-mode>\n"
                             "</milter>\n",
                             actual_xml);
 
@@ -521,6 +522,7 @@ test_to_xml (void)
                             "  <name>child-milter</name>\n"
                             "  <enabled>true</enabled>\n"
                             "  <fallback-status>accept</fallback-status>\n"
+                            "  <reputation-mode>false</reputation-mode>\n"
                             "  <additional-field>VALUE</additional-field>\n"
                             "</milter>\n",
                             actual_xml);

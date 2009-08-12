@@ -865,6 +865,10 @@ milter_manager_egg_to_xml_string (MilterManagerEgg *egg,
                                          MILTER_TYPE_STATUS,
                                          priv->fallback_status,
                                          indent + 2);
+    milter_utils_xml_append_boolean_element(string,
+                                            "reputation-mode",
+                                            priv->reputation_mode,
+                                            indent + 2);
     if (priv->connection_spec)
         milter_utils_xml_append_text_element(string,
                                              "connection-spec",
