@@ -2,6 +2,39 @@
 
 = NEWS --- The history of milter manager
 
+== [release-1-3-0] 1.3.0: 2009-08-12
+
+A development release.
+
+=== milter-manager
+
+==== Improvements
+
+  * Improved a process for multi messages in a SMTP session.
+
+==== Bug fixes
+
+  * Fixed a bug that quarantine is ignored.
+    [Reported by Tsuchiya]
+  * Fixed a bug that discard is ignored.
+    [Reported by Tsuchiya]
+  * Fixed a bug that SEGV on non header mail.
+    [Reported by Павел Гришин]
+
+=== milter-test-server
+
+  * Suppressed needless abort.
+  * Changed to send 'continue' on 'quarantine'.
+
+=== milter-manager-log-analyzer
+
+  * Supported virus detection result of clamav-milter.
+
+=== Thanks
+
+  * Tsuchiya
+  * Павел Гришин
+
 == [release-1-2-0] 1.2.0: 2009-07-17
 
 A stable release.
