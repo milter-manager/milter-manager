@@ -67,12 +67,12 @@ On 64bit environment:
 === Install milter manager
 
 On 32bit environment:
-  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-1.2.0-0.i386.rpm
-  % sudo rpm -Uvh milter-manager-1.2.0-0.i386.rpm
+  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-1.3.0-0.i386.rpm
+  % sudo rpm -Uvh milter-manager-1.3.0-0.i386.rpm
 
 On 64bit environment:
-  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-1.2.0-0.x86_64.rpm
-  % sudo rpm -Uvh milter-manager-1.2.0-0.x86_64.rpm
+  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-1.3.0-0.x86_64.rpm
+  % sudo rpm -Uvh milter-manager-1.3.0-0.x86_64.rpm
 
 == Configuration
 
