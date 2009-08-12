@@ -40,6 +40,7 @@ void test_user_name (void);
 void test_command (void);
 void test_command_options (void);
 void test_fallback_status (void);
+void test_reputation_mode (void);
 void test_merge (void);
 void test_applicable_condition (void);
 void test_attach_applicable_conditions (void);
@@ -355,6 +356,30 @@ test_fallback_status (void)
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
                            MILTER_STATUS_TEMPORARY_FAILURE,
                            milter_manager_egg_get_fallback_status(egg));
+}
+
+void
+test_reputation_mode (void)
+{
+    const gchar spec[] = "inet:9999@127.0.0.1";
+    GError *error = NULL;
+
+    egg = milter_manager_egg_new("child-milter");
+    milter_manager_egg_set_connection_spec(egg, spec, &error);
+    gcut_assert_error(error);
+
+    cut_assert_false(milter_manager_egg_is_reputation_mode(egg));
+    child = milter_manager_egg_hatch(egg);
+    cut_assert_not_null(child);
+    cut_assert_false(milter_manager_child_is_reputation_mode(child));
+
+    milter_manager_egg_set_reputation_mode(egg, TRUE);
+    cut_assert_true(milter_manager_egg_is_reputation_mode(egg));
+
+    g_object_unref(child);
+    child = milter_manager_egg_hatch(egg);
+    cut_assert_not_null(child);
+    cut_assert_true(milter_manager_child_is_reputation_mode(child));
 }
 
 void

@@ -129,6 +129,11 @@ void                milter_manager_egg_set_fallback_status
                                                  MilterStatus      status);
 MilterStatus        milter_manager_egg_get_fallback_status
                                                 (MilterManagerEgg *egg);
+void                milter_manager_egg_set_reputation_mode
+                                                (MilterManagerEgg *egg,
+                                                 gboolean          reputation_mode);
+gboolean            milter_manager_egg_is_reputation_mode
+                                                (MilterManagerEgg *egg);
 
 void                milter_manager_egg_add_applicable_condition
                                                 (MilterManagerEgg *egg,

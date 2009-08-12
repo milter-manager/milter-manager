@@ -46,6 +46,7 @@ struct _MilterManagerEggPrivate
     gchar *command_options;
     GList *applicable_conditions;
     MilterStatus fallback_status;
+    gboolean reputation_mode;
 };
 
 enum
@@ -62,7 +63,8 @@ enum
     PROP_USER_NAME,
     PROP_COMMAND,
     PROP_COMMAND_OPTIONS,
-    PROP_FALLBACK_STATUS
+    PROP_FALLBACK_STATUS,
+    PROP_REPUTATION_MODE
 };
 
 enum
@@ -197,6 +199,12 @@ milter_manager_egg_class_init (MilterManagerEggClass *klass)
                              G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_FALLBACK_STATUS, spec);
 
+    spec = g_param_spec_boolean("reputation-mode",
+                                "Reputation mode",
+                                "Whether the milter's result is ignored or not",
+                                FALSE,
+                                G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_REPUTATION_MODE, spec);
 
     signals[HATCHED] =
         g_signal_new("hatched",
@@ -241,6 +249,7 @@ milter_manager_egg_init (MilterManagerEgg *egg)
     priv->command_options = NULL;
     priv->applicable_conditions = NULL;
     priv->fallback_status = MILTER_STATUS_ACCEPT;
+    priv->reputation_mode = FALSE;
 }
 
 static void
@@ -335,6 +344,9 @@ set_property (GObject      *object,
     case PROP_FALLBACK_STATUS:
         milter_manager_egg_set_fallback_status(egg, g_value_get_enum(value));
         break;
+    case PROP_REPUTATION_MODE:
+        milter_manager_egg_set_reputation_mode(egg, g_value_get_boolean(value));
+        break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -387,6 +399,9 @@ get_property (GObject    *object,
     case PROP_FALLBACK_STATUS:
         g_value_set_enum(value, priv->fallback_status);
         break;
+    case PROP_REPUTATION_MODE:
+        g_value_set_boolean(value, priv->reputation_mode);
+        break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -437,6 +452,7 @@ milter_manager_egg_hatch (MilterManagerEgg *egg)
                   "command", priv->command,
                   "command-options", priv->command_options,
                   "fallback-status", priv->fallback_status,
+                  "reputation-mode", priv->reputation_mode,
                   NULL);
 
     if (priv->connection_spec) {
@@ -692,6 +708,19 @@ MilterStatus
 milter_manager_egg_get_fallback_status (MilterManagerEgg *egg)
 {
     return MILTER_MANAGER_EGG_GET_PRIVATE(egg)->fallback_status;
+}
+
+void
+milter_manager_egg_set_reputation_mode (MilterManagerEgg *egg,
+                                        gboolean          reputation_mode)
+{
+    MILTER_MANAGER_EGG_GET_PRIVATE(egg)->reputation_mode = reputation_mode;
+}
+
+gboolean
+milter_manager_egg_is_reputation_mode (MilterManagerEgg *egg)
+{
+    return MILTER_MANAGER_EGG_GET_PRIVATE(egg)->reputation_mode;
 }
 
 void

@@ -1,5 +1,8 @@
 2009-08-12  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/manager/milter-manager-egg.[ch],
+	test/manager/test-egg.c: add reputation mode.
+
 	* milter/manager/milter-manager-child.c: simply description.
 
 	* milter/manager/milter-manager-child.[ch],
