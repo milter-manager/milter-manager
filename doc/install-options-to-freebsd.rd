@@ -22,6 +22,9 @@ series. (www/apache22)
 We use RRDtool for generating graphs. We also install Ruby
 bindings to RRDtool.
 
+((*NOTE: The Ruby bindings in RRDtool 1.3.8 has a bug. Don't
+specify "-M'WITH_RUBY_MODULE=yes'" when you use 1.3.8.*))
+
   % sudo /usr/local/sbin/portupgrade -NRr -M'WITH_RUBY_MODULE=yes' rrdtool
 
 === Configure milter-manager-log-analyzer
