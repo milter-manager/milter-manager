@@ -133,6 +133,7 @@ class TestEgg < Test::Unit::TestCase
                   "  <name>#{@name}</name>",
                   "  <enabled>true</enabled>",
                   "  <fallback-status>accept</fallback-status>",
+                  "  <reputation-mode>false</reputation-mode>",
                   "</milter>"].join("\n") + "\n",
                  @egg.to_xml)
 
@@ -144,6 +145,7 @@ class TestEgg < Test::Unit::TestCase
                   "  <name>#{@name}</name>",
                   "  <enabled>true</enabled>",
                   "  <fallback-status>accept</fallback-status>",
+                  "  <reputation-mode>false</reputation-mode>",
                   "  <additional-info>INFO</additional-info>",
                   "</milter>"].join("\n") + "\n",
                  @egg.to_xml)

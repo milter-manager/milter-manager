@@ -197,6 +197,7 @@ EOX
       <name>child-milter</name>
       <enabled>true</enabled>
       <fallback-status>accept</fallback-status>
+      <reputation-mode>false</reputation-mode>
       <connection-spec>unix:/tmp/socket</connection-spec>
       <applicable-conditions>
         <applicable-condition>remote-network</applicable-condition>

@@ -68,6 +68,7 @@ EOC
       <name>milter-greylist</name>
       <enabled>false</enabled>
       <fallback-status>accept</fallback-status>
+      <reputation-mode>false</reputation-mode>
       <connection-spec>inet:10026@localhost</connection-spec>
       <command>/etc/init.d/milter-greylist</command>
       <command-options>start</command-options>
@@ -103,6 +104,7 @@ EOC
       <name>milter-greylist</name>
       <enabled>false</enabled>
       <fallback-status>reject</fallback-status>
+      <reputation-mode>false</reputation-mode>
       <connection-spec>inet:10026@localhost</connection-spec>
       <command>/etc/init.d/milter-greylist</command>
       <command-options>start</command-options>
@@ -155,6 +157,7 @@ EOC
       <name>milter-greylist</name>
       <enabled>true</enabled>
       <fallback-status>accept</fallback-status>
+      <reputation-mode>false</reputation-mode>
       <connection-spec>inet:10026</connection-spec>
       <applicable-conditions>
         <applicable-condition>S25R</applicable-condition>
@@ -205,6 +208,7 @@ EOC
       <name>milter-greylist</name>
       <enabled>true</enabled>
       <fallback-status>accept</fallback-status>
+      <reputation-mode>false</reputation-mode>
       <connection-spec>inet:10026</connection-spec>
     </milter>
   </milters>

@@ -1,5 +1,8 @@
 2009-08-12  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/test/manager/: follow the recent reputation mode
+	changes.
+
 	* test/manager/test-configuration.c: follow the recent changes.
 
 	* milter/manager/milter-manager-egg.c,
