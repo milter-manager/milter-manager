@@ -1,5 +1,9 @@
 2009-08-13  Kouhei Sutou  <kou@clear-code.com>
 
+	* TODO:
+	- [1.3.0] support max connections by MilterClient.
+	+ [1.3.0] support a configuration for max connections.
+
 	* milter/client.h, milter/client/milter-client.c: add
 	max_connections parameters. It restricts max number of concurrent
 	connections.

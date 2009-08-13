@@ -3,7 +3,7 @@
   finished for each milter and milter-manager)
 * [1.3.0] support a configration for max file descriptor
   number that can be opened. (ref. setrlimit() and RLIMIT_NOFILE)
-* [1.3.0] support max connections by MilterClient.
+* [1.3.0] support a configuration for max connections.
 * [1.3.0] support Postfix access(5) and cidr_table(5) format
   for whitelist applicable condition.
 * Exim local_scan support.
