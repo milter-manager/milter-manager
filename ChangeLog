@@ -1,3 +1,13 @@
+2009-08-13  Kouhei Sutou  <kou@clear-code.com>
+
+	* test/lib/milter-test-client.rb: support conditional action on
+	HELO.
+
+	* milter/manager/milter-manager-children.c,
+	test/manager/test-leader.c,
+	test/fixtures/leader/helo-reject-reputation.{txt,conf}: treat
+	reject as accept for reputation mode milter.
+
 2009-08-12  Kouhei Sutou  <kou@clear-code.com>
 
 	* binding/ruby/lib/milter/manager.rb,

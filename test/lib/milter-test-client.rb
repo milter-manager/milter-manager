@@ -171,6 +171,11 @@ class MilterTestClient
         @current_action = ["reply_code", reply_code]
       end
 
+      opts.on("--helo=FQDN",
+              "Add FQDN targets to be applied ACTION") do |fqdn|
+        @helo_fqdns << [@current_action, fqdn]
+      end
+
       opts.on("--connect-host=HOST",
               "Add HOST targets to be applied ACTION") do |host|
         @hosts << [@current_action, host]
@@ -249,6 +254,7 @@ class MilterTestClient
     @end_of_message_action = nil
     @end_of_message_actions = []
     @hosts = []
+    @helo_fqdns = []
     @senders = []
     @recipients = []
     @data_actions = []
@@ -410,6 +416,13 @@ class MilterTestClient
   def do_helo(fqdn)
     invalid_state(:helo) unless valid_state?(:helo)
     @hello_fqdn = fqdn
+
+    @helo_fqdns.reverse_each do |action, _fqdn|
+      if fqdn == _fqdn
+        write_action(:greeted, action)
+        return
+      end
+    end
 
     write(:greeted, :continue)
   end

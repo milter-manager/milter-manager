@@ -1380,6 +1380,14 @@ data_scenario_end_of_message_action (void)
 }
 
 static void
+data_scenario_helo (void)
+{
+    cut_add_data("helo - reject - reputation",
+                 g_strdup("helo-reject-reputation.txt"), g_free,
+                 NULL);
+}
+
+static void
 data_scenario_envelope_from (void)
 {
     cut_add_data("envelope-from - reject",
@@ -1536,6 +1544,7 @@ data_scenario (void)
 {
     data_scenario_basic();
     data_scenario_end_of_message_action();
+    data_scenario_helo();
     data_scenario_envelope_from();
     data_scenario_envelope_recipient();
     data_scenario_data();

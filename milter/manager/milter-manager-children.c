@@ -1156,12 +1156,26 @@ cb_reject (MilterServerContext *context, gpointer user_data)
     MilterManagerChildren *children = user_data;
     MilterManagerChildrenPrivate *priv;
     MilterServerContextState state;
+    MilterStatus status;
     gchar *state_name;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
     state = milter_server_context_get_state(context);
 
-    compile_reply_status(children, state, MILTER_STATUS_REJECT);
+    status = MILTER_STATUS_REJECT;
+    if (milter_manager_child_is_reputation_mode(MILTER_MANAGER_CHILD(context))) {
+        status = MILTER_STATUS_ACCEPT;
+        state_name = milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                                                     state);
+        milter_debug("[%u] [children][reputation][reject][%s] [%u] %s",
+                     priv->tag,
+                     state_name,
+                     milter_agent_get_tag(MILTER_AGENT(context)),
+                     milter_server_context_get_name(context));
+        g_free(state_name);
+    }
+    compile_reply_status(children, state, status);
+
     switch (state) {
     case MILTER_SERVER_CONTEXT_STATE_CONNECT:
     case MILTER_SERVER_CONTEXT_STATE_HELO:
