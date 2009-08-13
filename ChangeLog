@@ -1,5 +1,10 @@
 2009-08-13  Kouhei Sutou  <kou@clear-code.com>
 
+	* tool/milter-test-client.c,
+	doc/milter-test-client.rd*:
+	- verbose option really verbose.
+	- add --syslog option for supporting Syslog.
+
 	* TOOD: remove: milter-manager-log-analyzer: <X-Greylist>=<Sender
 	is SPF-compliant ...> should be counted as SPF pass.
 

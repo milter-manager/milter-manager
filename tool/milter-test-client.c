@@ -29,6 +29,7 @@
 
 static gchar *spec = NULL;
 static gboolean verbose = FALSE;
+static gboolean use_syslog = FALSE;
 static MilterSyslogLogger *logger = NULL;
 static MilterClient *client = NULL;
 
@@ -73,6 +74,8 @@ static const GOptionEntry option_entries[] =
      "SPEC"},
     {"verbose", 'v', G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_NONE, &verbose,
      N_("Be verbose"), NULL},
+    {"syslog", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_NONE, &use_syslog,
+     N_("Use Syslog"), NULL},
     {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, print_version,
      N_("Show version"), NULL},
     {NULL}
@@ -369,6 +372,8 @@ main (int argc, char *argv[])
     }
 
     if (verbose)
+        g_setenv("MILTER_LOG_LEVEL", "all", FALSE);
+    if (use_syslog)
         logger = milter_syslog_logger_new("milter-test-client");
     client = milter_client_new();
 

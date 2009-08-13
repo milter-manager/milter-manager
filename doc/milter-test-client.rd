@@ -56,6 +56,10 @@ tool for looking into the problems.
    "MILTER_LOG_LEVEL=all" environment variable configuration
    has the same effect.
 
+: --syslog
+
+   Logs Syslog too.
+
 : --version
 
    Shows version and exits.

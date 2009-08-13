@@ -56,6 +56,10 @@ milter-test-clientが役立つでしょう。
    「milter_log_level=all」というように環境変数を設定している
    場合と同じ効果があります。
 
+: --syslog
+
+   Syslogにもログを出力します。
+
 : --version
 
    バージョンを表示して終了します。
