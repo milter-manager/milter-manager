@@ -70,6 +70,8 @@ EXTRA_DIST =								\
 	helo.txt							\
 	helo-reject-reputation.txt					\
 	helo-reject-reputation.conf					\
+	helo-temporary-failure-reputation.txt				\
+	helo-temporary-failure-reputation.conf				\
 	insert-header.txt						\
 	insert-header-with-leading-space.txt				\
 	negotiate.txt							\

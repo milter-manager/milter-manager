@@ -1384,6 +1384,8 @@ data_scenario_helo (void)
 {
     cut_add_data("helo - reject - reputation",
                  g_strdup("helo-reject-reputation.txt"), g_free,
+                 "helo - temporary-failure - reputation",
+                 g_strdup("helo-temporary-failure-reputation.txt"), g_free,
                  NULL);
 }
 
