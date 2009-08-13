@@ -5,7 +5,8 @@ TESTS = run-test.rb
 EXTRA_DIST =					\
 	run-test.rb				\
 	tool-test-utils.rb			\
-	test-log-analyzer.rb
+	test-log-analyzer.rb			\
+	test-report-graph-generator.rb
 
 if WITH_CUTTER
 noinst_LTLIBRARIES =				\

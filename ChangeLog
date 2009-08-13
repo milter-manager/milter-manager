@@ -1,5 +1,13 @@
 2009-08-13  Kouhei Sutou  <kou@clear-code.com>
 
+	* TOOD: remove: milter-manager-log-analyzer: <X-Greylist>=<Sender
+	is SPF-compliant ...> should be counted as SPF pass.
+
+	* tool/milter-manager-log-analyzer,
+	test/tool/Makefile.am,
+	test/tool/test-report-graph-generator.rb: find spf-pass result
+	from X-Greylist.
+
 	* TODO: remove: child milter: reputation mode.
 
 	* milter/manager/milter-manager-children.c,

@@ -780,6 +780,8 @@ EODS
       case value
       when /\ADelayed for/i
         yield("greylisting-pass")
+      when /\ASender is SPF-compliant/i
+        yield("spf-pass")
       end
     end
 
