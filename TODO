@@ -11,7 +11,6 @@
 * Exim local_scan support.
 * milter-test-server: stop processing if all recipients are rejected.
 * XMail support.
-* child milter: reputation mode.
 * write a test for over max body chunk size (65535) and skip case.
   It's a case for dkim-filter.
 * support Postfix SMTP Access Policy Delegation protocol.

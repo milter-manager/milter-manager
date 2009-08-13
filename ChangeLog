@@ -1,5 +1,7 @@
 2009-08-13  Kouhei Sutou  <kou@clear-code.com>
 
+	* TODO: remove: child milter: reputation mode.
+
 	* milter/manager/milter-manager-children.c,
 	test/manager/test-leader.c,
 	test/fixtures/leader/envelope-from-temporary-discard.{txt,conf}: treat
