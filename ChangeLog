@@ -2,6 +2,11 @@
 
 	* milter/manager/milter-manager-children.c,
 	test/manager/test-leader.c,
+	test/fixtures/leader/envelope-from-temporary-discard.{txt,conf}: treat
+	discard as accept for reputation mode milter.
+
+	* milter/manager/milter-manager-children.c,
+	test/manager/test-leader.c,
 	test/fixtures/leader/helo-temporary-failure-reputation.{txt,conf}: treat
 	temporary-failure as accept for reputation mode milter.
 

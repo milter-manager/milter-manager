@@ -38,6 +38,8 @@ EXTRA_DIST =								\
 	envelope-from-accept-all.txt					\
 	envelope-from-accept.txt					\
 	envelope-from-discard.txt					\
+	envelope-from-discard-reputation.txt				\
+	envelope-from-discard-reputation.conf				\
 	envelope-from-reject-and-accept.txt				\
 	envelope-from-reject-and-discard.txt				\
 	envelope-from-reject.txt					\

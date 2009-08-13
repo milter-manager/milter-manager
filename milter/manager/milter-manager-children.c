@@ -1302,12 +1302,25 @@ cb_discard (MilterServerContext *context, gpointer user_data)
     MilterManagerChildren *children = user_data;
     MilterManagerChildrenPrivate *priv;
     MilterServerContextState state;
+    MilterStatus status = MILTER_STATUS_DISCARD;
     gchar *state_name;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
     state = milter_server_context_get_state(context);
 
-    compile_reply_status(children, state, MILTER_STATUS_DISCARD);
+    if (milter_manager_child_is_reputation_mode(MILTER_MANAGER_CHILD(context))) {
+        status = MILTER_STATUS_ACCEPT;
+        state_name = milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                                                     state);
+        milter_debug("[%u] [children][reputation][discard][%s] [%u] %s",
+                     priv->tag,
+                     state_name,
+                     milter_agent_get_tag(MILTER_AGENT(context)),
+                     milter_server_context_get_name(context));
+        g_free(state_name);
+    }
+    compile_reply_status(children, state, status);
+
     switch (state) {
     case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM:
         milter_server_context_set_processing_message(context, FALSE);
