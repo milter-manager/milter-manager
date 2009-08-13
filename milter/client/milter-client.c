@@ -71,7 +71,7 @@ struct _MilterClientPrivate
     guint server_watch_id;
     gchar *connection_spec;
     GList *processing_data;
-    guint n_processing_data;
+    guint n_connections;
     guint timeout;
     GIOChannel *listen_channel;
     gint listen_backlog;
@@ -82,6 +82,7 @@ struct _MilterClientPrivate
     gboolean default_remove_unix_socket_on_close;
     gboolean remove_unix_socket_on_create;
     guint suspend_time_on_unacceptable;
+    guint max_connections;
 };
 
 typedef struct _MilterClientProcessData
@@ -170,7 +171,7 @@ _milter_client_init (MilterClient *client)
     priv->server_watch_id = 0;
     priv->connection_spec = NULL;
     priv->processing_data = NULL;
-    priv->n_processing_data = 0;
+    priv->n_connections = 0;
     priv->timeout = 7210;
     priv->listen_channel = NULL;
     priv->listen_backlog = -1;
@@ -182,6 +183,7 @@ _milter_client_init (MilterClient *client)
     priv->remove_unix_socket_on_create = TRUE;
     priv->suspend_time_on_unacceptable =
         MILTER_CLIENT_DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE;
+    priv->max_connections = MILTER_CLIENT_DEFAULT_MAX_CONNECTIONS;
 }
 
 static void
@@ -229,7 +231,6 @@ dispose (GObject *object)
         g_list_foreach(priv->processing_data, (GFunc)process_data_free, NULL);
         g_list_free(priv->processing_data);
         priv->processing_data = NULL;
-        priv->n_processing_data = 0;
     }
 
     if (priv->listen_channel) {
@@ -431,7 +432,7 @@ cb_idle_free_data (gpointer _data)
 {
     MilterClientProcessData *data = _data;
     GList *processing_data, *process_data;
-    guint n_processing_data;
+    guint n_connections;
     GString *rest_process;
     guint tag;
 
@@ -439,13 +440,13 @@ cb_idle_free_data (gpointer _data)
     milter_debug("[%u] [client][finish]", tag);
     data->priv->processing_data =
         g_list_remove(data->priv->processing_data, data);
-    data->priv->n_processing_data--;
+    data->priv->n_connections--;
 
     processing_data = g_list_copy(data->priv->processing_data);
 
-    n_processing_data = data->priv->n_processing_data;
+    n_connections = data->priv->n_connections;
     g_mutex_lock(data->priv->quit_mutex);
-    if (data->priv->quitting && n_processing_data == 0) {
+    if (data->priv->quitting && n_connections == 0) {
         milter_debug("[%u] [client][loop][quit]", tag);
         g_main_loop_quit(data->priv->main_loop);
     }
@@ -522,7 +523,6 @@ cb_timeout_client_channel_setup (gpointer user_data)
     g_signal_connect(context, "finished", G_CALLBACK(cb_finished), data);
 
     priv->processing_data = g_list_prepend(priv->processing_data, data);
-    priv->n_processing_data++;
 
     g_signal_emit(client, signals[CONNECTION_ESTABLISHED], 0, context);
     milter_agent_start(MILTER_AGENT(context));
@@ -555,8 +555,26 @@ accept_client (gint server_fd, MilterClient *client)
     MilterGenericSocketAddress address;
     gchar *spec;
     socklen_t address_size;
+    guint n_suspend, suspend_time, max_connections;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
+
+    suspend_time = milter_client_get_suspend_time_on_unacceptable(client);
+    max_connections = milter_client_get_max_connections(client);
+    for (n_suspend = 0;
+         0 < max_connections && max_connections <= priv->n_connections;
+         n_suspend++) {
+        milter_warning("[client][accept][suspend] "
+                       "too many processing connection: %u, max: %u; "
+                       "suspend accepting connection in %d seconds: #%u",
+                       priv->n_connections,
+                       max_connections,
+                       suspend_time,
+                       n_suspend);
+        g_usleep(suspend_time * G_USEC_PER_SEC);
+        milter_warning("[client][accept][resume] "
+                       "resume accepting connection: #%u", n_suspend);
+    }
 
     address_size = sizeof(address);
     memset(&address, '\0', address_size);
@@ -573,10 +591,6 @@ accept_client (gint server_fd, MilterClient *client)
         g_error_free(error);
 
         if (errno == EMFILE) {
-            guint suspend_time;
-
-            suspend_time =
-                milter_client_get_suspend_time_on_unacceptable(client);
             milter_warning("[client][accept][suspend] "
                            "too many file is opened. "
                            "suspend accepting connection in %d seconds",
@@ -589,6 +603,7 @@ accept_client (gint server_fd, MilterClient *client)
         return TRUE;
     }
 
+    priv->n_connections++;
     spec = milter_connection_address_to_spec(&(address.address.base));
     milter_debug("[client][accept] %d:%s", client_fd, spec);
     g_free(spec);
@@ -691,7 +706,7 @@ milter_client_main (MilterClient *client)
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
-    if (priv->listening_channel || priv->n_processing_data > 0) {
+    if (priv->listening_channel || priv->n_connections > 0) {
         GError *error;
 
         error = g_error_new(MILTER_CLIENT_ERROR,
@@ -806,7 +821,7 @@ milter_client_shutdown (MilterClient *client)
         g_io_channel_unref(priv->listening_channel);
         priv->listening_channel = NULL;
 
-        if (priv->n_processing_data == 0)
+        if (priv->n_connections == 0)
             g_main_loop_quit(priv->main_loop);
     }
     g_mutex_unlock(priv->quit_mutex);
@@ -939,6 +954,30 @@ milter_client_set_suspend_time_on_unacceptable (MilterClient *client,
         klass->set_suspend_time_on_unacceptable(client, suspend_time);
     else
         MILTER_CLIENT_GET_PRIVATE(client)->suspend_time_on_unacceptable = suspend_time;
+}
+
+guint
+milter_client_get_max_connections (MilterClient *client)
+{
+    MilterClientClass *klass;
+
+    klass = MILTER_CLIENT_GET_CLASS(client);
+    if (klass->get_max_connections)
+        return klass->get_max_connections(client);
+    else
+        return MILTER_CLIENT_GET_PRIVATE(client)->max_connections;
+}
+
+void
+milter_client_set_max_connections (MilterClient *client, guint max_connections)
+{
+    MilterClientClass *klass;
+
+    klass = MILTER_CLIENT_GET_CLASS(client);
+    if (klass->set_max_connections)
+        klass->set_max_connections(client, max_connections);
+    else
+        MILTER_CLIENT_GET_PRIVATE(client)->max_connections = max_connections;
 }
 
 /*

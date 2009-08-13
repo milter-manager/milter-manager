@@ -1,5 +1,9 @@
 2009-08-13  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/client.h, milter/client/milter-client.c: add
+	max_connections parameters. It restricts max number of concurrent
+	connections.
+
 	* tool/milter-test-client.c,
 	doc/milter-test-client.rd*:
 	- verbose option really verbose.

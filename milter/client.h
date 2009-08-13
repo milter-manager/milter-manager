@@ -158,6 +158,17 @@ void milter_client_quit (void);
 #define MILTER_CLIENT_DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE 5
 
 /**
+ * MILTER_CLIENT_DEFAULT_MAX_CONNECTIONS:
+ *
+ * The default max connections. See
+ * milter_client_get_max_connections() for more
+ * details of the situation.
+ *
+ * No limit by default.
+ */
+#define MILTER_CLIENT_DEFAULT_MAX_CONNECTIONS 0
+
+/**
  * MILTER_CLIENT_ERROR:
  *
  * Used to get the #GError quark for #MilterClient errors.
@@ -223,6 +234,9 @@ struct _MilterClientClass
     void   (*set_suspend_time_on_unacceptable)
                                           (MilterClient *client,
                                            guint         suspend_time);
+    guint  (*get_max_connections)         (MilterClient *client);
+    void   (*set_max_connections)         (MilterClient *client,
+                                           guint         max_connections);
 };
 
 GQuark               milter_client_error_quark       (void);
@@ -459,7 +473,7 @@ guint                milter_client_get_suspend_time_on_unacceptable
                                                      (MilterClient  *client);
 
 /**
- * milter_client_get_suspend_time_on_unacceptable:
+ * milter_client_set_suspend_time_on_unacceptable:
  * @client: a %MilterClient.
  * @suspend_time: suspend time in seconds.
  *
@@ -470,6 +484,35 @@ guint                milter_client_get_suspend_time_on_unacceptable
 void                 milter_client_set_suspend_time_on_unacceptable
                                                      (MilterClient  *client,
                                                       guint          suspend_time);
+
+/**
+ * milter_client_get_max_connections:
+ * @client: a %MilterClient.
+ *
+ * Gets the maximum number of connections. If the current
+ * processing connections are over the max connections,
+ * accepting a new connection is suspend in
+ * milter_client_get_suspend_time_on_unacceptable() seconds.
+ *
+ * 0 means 'no limit'.
+ *
+ * Returns: the maximum number of connections.
+ */
+guint                milter_client_get_max_connections
+                                                     (MilterClient  *client);
+
+/**
+ * milter_client_set_max_connections:
+ * @client: a %MilterClient.
+ * @max_connections: the maximum number of connections.
+ *
+ * Sets the maximum number of connections. 0 means 'no
+ * limit'. See milter_client_get_max_connections() for more
+ * details.
+ */
+void                 milter_client_set_max_connections
+                                                     (MilterClient  *client,
+                                                      guint          max_connections);
 
 /**
  * milter_client_main:
