@@ -1,6 +1,10 @@
 2009-08-14  Kouhei Sutou  <kou@clear-code.com>
 
 	* milter/manager/milter-manager-children.c,
+	test/fixtures/leader/insert-header-evaluation.{txt,conf},
+	test/manager/test-leader.c: ignore insert-header on evaluation mode.
+
+	* milter/manager/milter-manager-children.c,
 	test/fixtures/leader/quarantine-evaluation.{txt,conf},
 	test/manager/test-leader.c: ignore quarantine on evaluation mode.
 

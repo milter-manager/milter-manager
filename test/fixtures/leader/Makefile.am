@@ -78,6 +78,8 @@ EXTRA_DIST =								\
 	helo-temporary-failure-evaluation.conf				\
 	insert-header.txt						\
 	insert-header-with-leading-space.txt				\
+	insert-header-evaluation.txt					\
+	insert-header-evaluation.conf					\
 	negotiate.txt							\
 	negotiate-failure.txt						\
 	no-body-flag-on-both-client.txt					\
