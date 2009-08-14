@@ -70,6 +70,7 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
   manager.pid_file = nil
   manager.maintenance_interval = 100
   manager.suspend_time_on_unacceptable = 5
+  manager.max_connections = 0
   manager.custom_configuration_directory = nil
 
   controller.connection_spec = nil
@@ -382,6 +383,23 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
    既定値:
      manager.suspend_time_on_unacceptable = 5
 
+: manager.max_connections
+
+   最大同時接続数を指定します。0を指定すると無制限になります。
+   既定値では無制限です。
+
+   最大同時接続数の処理を行っているときに新しく接続要求があ
+   ると、処理中の接続が終了するのを待ちます。処理中の接続が
+   終了したかどうかは
+   ((<manager.suspend_time_on_unacceptable|#manager.suspend_time_on_unacceptable>))
+   で指定した秒数毎に確認します。
+
+   例:
+     manager.max_connections = 10 # 同時に最大10接続のみ受け付ける
+
+   既定値:
+     manager.max_connections = 5
+
 : manager.custom_configuration_directory
 
    Webインターフェイスから変更した設定内容を保存するディレク
@@ -584,8 +602,9 @@ define_milter do ... end内で設定できる項目は以下の通りです。
    この場合は"S25R"と"Remote Network"が利用可能です。
 
    適用条件は標準で提供されているだけではなく、独自に定義す
-   ることもできます。定義方法については((<適用条件関連>))を
-   見てください。ただし、独自に定義する場合にはRubyの知識が
+   ることもできます。定義方法については
+   ((<適用条件関連|#applicable-conditions>))
+   を見てください。ただし、独自に定義する場合にはRubyの知識が
    必要になります。
 
    適用条件は以下のように「,」でくぎって複数指定できます。
@@ -744,7 +763,7 @@ define_milter do ... end内で設定できる項目は以下の通りです。
    例:
      defined_milters # => ["milter1", "milter2"]
 
-== 適用条件関連
+== [applicable-condition] 適用条件関連
 
 ここからは本格的にRubyの知識が必要になります。標準でS25Rなど
 の有用な適用条件は用意されています。それらで十分ではない場合
@@ -1070,7 +1089,7 @@ define_applicable_condition do ... end内で設定できる項目は以
 
    子milterがrejectを返したときにtrueを返します。
    子milterは
-   ((<milter.evaluation_mode|configuration.rd.ja#milter.evaluation_mode>))
+   ((<milter.evaluation_mode|#milter.evaluation_mode>))
    を有効にしてください。
 
    引数として渡ってくるcontextは処理中のため、
@@ -1086,7 +1105,7 @@ define_applicable_condition do ... end内で設定できる項目は以
 
    子milterがtemporary failureを返したときにtrueを返します。
    子milterは
-   ((<milter.evaluation_mode|configuration.rd.ja#milter.evaluation_mode>))
+   ((<milter.evaluation_mode|#milter.evaluation_mode>))
    を有効にしてください。
 
    引数として渡ってくるcontextは処理中のため、
@@ -1115,7 +1134,7 @@ define_applicable_condition do ... end内で設定できる項目は以
 
    子milterがdiscardを返したときにtrueを返します。
    子milterは
-   ((<milter.evaluation_mode|configuration.rd.ja#milter.evaluation_mode>))
+   ((<milter.evaluation_mode|#milter.evaluation_mode>))
    を有効にしてください。
 
    引数として渡ってくるcontextは処理中のため、

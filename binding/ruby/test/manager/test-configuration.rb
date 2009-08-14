@@ -45,6 +45,12 @@ class TestConfiguration < Test::Unit::TestCase
     assert_equal(10, @configuration.suspend_time_on_unacceptable)
   end
 
+  def test_max_connections
+    assert_equal(0, @configuration.max_connections)
+    @configuration.max_connections = 10
+    assert_equal(10, @configuration.max_connections)
+  end
+
   def test_package
     @configuration.package_platform = "pkgsrc"
     assert_equal("pkgsrc", @configuration.package_platform)
@@ -202,6 +208,7 @@ manager.daemon = false
 manager.pid_file = nil
 manager.maintenance_interval = 100
 manager.suspend_time_on_unacceptable = 5
+manager.max_connections = 0
 manager.custom_configuration_directory = nil
 
 controller.connection_spec = nil
@@ -252,6 +259,7 @@ manager.daemon = false
 manager.pid_file = nil
 manager.maintenance_interval = 100
 manager.suspend_time_on_unacceptable = 5
+manager.max_connections = 0
 manager.custom_configuration_directory = nil
 
 controller.connection_spec = nil

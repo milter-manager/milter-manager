@@ -65,6 +65,7 @@ current configuration is shown.
   manager.pid_file = nil
   manager.maintenance_interval = 100
   manager.suspend_time_on_unacceptable = 5
+  manager.max_connections = 0
   manager.custom_configuration_directory = nil
 
   controller.connection_spec = nil
@@ -385,6 +386,24 @@ Here are descriptions of configuration items.
      manager.suspend_time_on_unacceptable = 10
    Default:
      manager.suspend_time_on_unacceptable = 5
+
+: manager.max_connections
+
+   Specifies max concurrent connections. 0 means no
+   limit. It's the default value.
+
+   A newly connection is waited until an existing connection
+   is closed when there are max concurrent
+   connections. Number of the current existing connections
+   are confirmed each 
+   ((<manager.suspend_time_on_unacceptable|#manager.suspend_time_on_unacceptable>))
+   seconds.
+
+   Example:
+     manager.max_connections = 10 # accepts only 10 connections concurrency
+
+   Default:
+     manager.max_connections = 5
 
 : manager.custom_configuration_directory
 

@@ -1,4 +1,4 @@
-# Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+# Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -142,6 +142,19 @@ class TestConfigurationLoader < Test::Unit::TestCase
 
     @loader.manager.suspend_time_on_unacceptable = 10
     assert_equal(10, @configuration.suspend_time_on_unacceptable)
+  end
+
+  def test_manager_max_connections
+    assert_equal(0, @configuration.max_connections)
+
+    @loader.manager.max_connections = 5
+    assert_equal(5, @configuration.max_connections)
+
+    @loader.manager.max_connections = nil
+    assert_equal(0, @configuration.max_connections)
+
+    @loader.manager.max_connections = 10
+    assert_equal(10, @configuration.max_connections)
   end
 
   def test_manager_configuration_directory

@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -45,6 +45,9 @@ Init_milter_client (void)
     rb_define_const(rb_cMilterClient,
 		    "DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE",
 		    UINT2NUM(MILTER_CLIENT_DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE));
+    rb_define_const(rb_cMilterClient,
+		    "DEFAULT_MAX_CONNECTIONS",
+		    UINT2NUM(MILTER_CLIENT_DEFAULT_MAX_CONNECTIONS));
 
     rb_define_method(rb_cMilterClient, "main", client_main, 0);
     rb_define_method(rb_cMilterClient, "shutdown", client_shutdown, 0);

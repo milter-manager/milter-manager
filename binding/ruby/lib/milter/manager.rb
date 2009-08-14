@@ -59,6 +59,7 @@ module Milter::Manager
       _maintenance_interval = nil if _maintenance_interval.zero?
       result << "manager.maintenance_interval = #{_maintenance_interval.inspect}\n"
       result << "manager.suspend_time_on_unacceptable = #{suspend_time_on_unacceptable.inspect}\n"
+      result << "manager.max_connections = #{max_connections.inspect}\n"
       result << "manager.custom_configuration_directory = #{custom_configuration_directory.inspect}\n"
       result << "\n"
 
@@ -641,6 +642,15 @@ module Milter::Manager
 
       def suspend_time_on_unacceptable
         @configuration.suspend_time_on_unacceptable
+      end
+
+      def max_connections=(n_connections)
+        n_connections ||= Milter::Client::DEFAULT_MAX_CONNECTIONS
+        @configuration.max_connections = n_connections
+      end
+
+      def max_connections
+        @configuration.max_connections
       end
 
       def custom_configuration_directory=(directory)
