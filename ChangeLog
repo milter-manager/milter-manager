@@ -1,5 +1,12 @@
 2009-08-14  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/manager/milter-manager.c: bind max connections to
+	configuration item.
+
+	* milter/manager/milter-manager-configuration.[ch],
+	test/manager/test-configuration.c: add max connections
+	configuration item.
+
 	* ./: reputation -> evaluation.
 
 2009-08-13  Kouhei Sutou  <kou@clear-code.com>

@@ -76,6 +76,11 @@ static guint  get_suspend_time_on_unacceptable
 static void   set_suspend_time_on_unacceptable
                                           (MilterClient *client,
                                            guint         suspend_time);
+static guint  get_max_connections
+                                          (MilterClient *client);
+static void   set_max_connections
+                                          (MilterClient *client,
+                                           guint         max_connections);
 static void   cb_leader_finished          (MilterFinishedEmittable *emittable,
                                            gpointer user_data);
 
@@ -100,6 +105,8 @@ milter_manager_class_init (MilterManagerClass *klass)
     client_class->is_remove_unix_socket_on_close = is_remove_unix_socket_on_close;
     client_class->get_suspend_time_on_unacceptable = get_suspend_time_on_unacceptable;
     client_class->set_suspend_time_on_unacceptable = set_suspend_time_on_unacceptable;
+    client_class->get_max_connections = get_max_connections;
+    client_class->set_max_connections = set_max_connections;
 
     spec = g_param_spec_object("configuration",
                                "Configuration",
@@ -662,6 +669,33 @@ set_suspend_time_on_unacceptable (MilterClient *client, guint suspend_time)
     configuration = priv->configuration;
     milter_manager_configuration_set_suspend_time_on_unacceptable(configuration,
                                                                   suspend_time);
+}
+
+static guint
+get_max_connections (MilterClient *client)
+{
+    MilterManager *manager;
+    MilterManagerPrivate *priv;
+    MilterManagerConfiguration *configuration;
+
+    manager = MILTER_MANAGER(client);
+    priv = MILTER_MANAGER_GET_PRIVATE(manager);
+    configuration = priv->configuration;
+    return milter_manager_configuration_get_max_connections(configuration);
+}
+
+static void
+set_max_connections (MilterClient *client, guint max_connections)
+{
+    MilterManager *manager;
+    MilterManagerPrivate *priv;
+    MilterManagerConfiguration *configuration;
+
+    manager = MILTER_MANAGER(client);
+    priv = MILTER_MANAGER_GET_PRIVATE(manager);
+    configuration = priv->configuration;
+    milter_manager_configuration_set_max_connections(configuration,
+                                                     max_connections);
 }
 
 MilterManagerConfiguration *
