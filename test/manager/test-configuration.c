@@ -43,6 +43,7 @@ void test_pid_file (void);
 void test_maintenance_interval (void);
 void test_suspend_time_on_unacceptable (void);
 void test_max_connections (void);
+void test_max_file_descriptors (void);
 void test_custom_configuration_directory (void);
 void test_controller_connection_spec (void);
 void test_manager_connection_spec (void);
@@ -372,6 +373,18 @@ test_max_connections (void)
 }
 
 void
+test_max_file_descriptors (void)
+{
+    cut_assert_equal_uint(
+        0,
+        milter_manager_configuration_get_max_file_descriptors(config));
+    milter_manager_configuration_set_max_file_descriptors(config, 1024);
+    cut_assert_equal_uint(
+        1024,
+        milter_manager_configuration_get_max_file_descriptors(config));
+}
+
+void
 test_custom_configuration_directory (void)
 {
     const gchar custom_configuration_directory[] = "/tmp/milter-manager/";
@@ -525,6 +538,9 @@ milter_assert_default_configuration_helper (MilterManagerConfiguration *config)
     cut_assert_equal_uint(
         MILTER_CLIENT_DEFAULT_MAX_CONNECTIONS,
         milter_manager_configuration_get_max_connections(config));
+    cut_assert_equal_uint(
+        0,
+        milter_manager_configuration_get_max_file_descriptors(config));
 
     gcut_assert_equal_enum(
         MILTER_TYPE_STATUS,
@@ -741,6 +757,7 @@ test_clear (void)
     test_maintenance_interval();
     test_suspend_time_on_unacceptable();
     test_max_connections();
+    test_max_file_descriptors();
 
     milter_manager_configuration_clear(config);
     milter_assert_default_configuration(config);

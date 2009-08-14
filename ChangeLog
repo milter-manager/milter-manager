@@ -1,5 +1,9 @@
 2009-08-14  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/manager/milter-manager-configuration.[ch],
+	test/manager/test-configuration.c: add max file descriptors
+	configuration item.
+
 	* binding/ruby/lib/milter/manager.rb,
 	binding/ruby/src/toolkit/rb-milter-client.c,
 	binding/ruby/test/manager/test-configuration-loader.rb,

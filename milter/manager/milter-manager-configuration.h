@@ -229,6 +229,12 @@ void          milter_manager_configuration_set_max_connections
                                      (MilterManagerConfiguration *configuration,
                                       guint                       max_connections);
 
+guint         milter_manager_configuration_get_max_file_descriptors
+                                     (MilterManagerConfiguration *configuration);
+void          milter_manager_configuration_set_max_file_descriptors
+                                     (MilterManagerConfiguration *configuration,
+                                      guint                       max_file_descriptors);
+
 const gchar  *milter_manager_configuration_get_custom_configuration_directory
                                      (MilterManagerConfiguration *configuration);
 void          milter_manager_configuration_set_custom_configuration_directory
