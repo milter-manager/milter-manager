@@ -395,7 +395,7 @@ Here are descriptions of configuration items.
    A newly connection is waited until an existing connection
    is closed when there are max concurrent
    connections. Number of the current existing connections
-   are confirmed each 
+   are confirmed each
    ((<manager.suspend_time_on_unacceptable|.#manager.suspend_time_on_unacceptable>))
    seconds.
 
@@ -404,6 +404,30 @@ Here are descriptions of configuration items.
 
    Default:
      manager.max_connections = 5
+
+: manager.max_file_descriptors
+
+   Specifies max number of file descriptors that can be
+   opened by a milter-manager process. 0 means that the
+   system default is used. The system is used by default
+   because the default value is 0.
+
+   milter-manager opens "number of child milters + 1 (for
+   MTA)" file descriptors for each
+   connection. milter-manager also opens a few file
+   descriptors for its internal usage. milter-manager should
+   be able to open number of file descriptors computed by
+   the following expression:
+     (number of child milters + 1) * max concurrent connections +
+       10（milter-manager internal usage + alpha）
+
+   This value is used as soft limit by setrlimit(2).
+
+   Example:
+     manager.max_file_descriptors = 65535
+
+   Default:
+     manager.max_file_descriptors = 0
 
 : manager.custom_configuration_directory
 
@@ -776,7 +800,7 @@ to all child milters.
    Example:
      defined_milters # => ["milter1", "milter2"]
 
-== Applicable condition
+== [applicable-condition] Applicable condition
 
 We need knowledge about Ruby from this section. Some useful
 applicable conditions are provided by default. We can define

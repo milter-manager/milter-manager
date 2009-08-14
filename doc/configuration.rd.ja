@@ -400,6 +400,28 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
    既定値:
      manager.max_connections = 5
 
+: manager.max_file_descriptors
+
+   プロセスが開くことができるファイルディスクリプタ数を指定
+   します。0を指定するとシステムの既定値を変更しません。
+   既定値は0なので、システムの既定値をそのまま使います。
+
+   milter-managerは1つのリクエストに対して「子milter数 +
+   1（MTAとの接続用）」個のファイルディスクリプタを開きます。
+   milter-manager内部でも数個のファイルディスクリプタを開く
+   ので少なくとも以下の個数のファイルディスクリプタが開ける
+   ようにしてください。
+     (子milter数 + 1) * 最大同時接続数 + 10（milter-manager内部で使用 + α）
+
+   プロセスが開くことができるファイルディスクリプタ数は
+   setrlimit(2)でソフトリミットを変更します。
+
+   例:
+     manager.max_file_descriptors = 65535
+
+   既定値:
+     manager.max_file_descriptors = 0
+
 : manager.custom_configuration_directory
 
    Webインターフェイスから変更した設定内容を保存するディレク
@@ -603,7 +625,7 @@ define_milter do ... end内で設定できる項目は以下の通りです。
 
    適用条件は標準で提供されているだけではなく、独自に定義す
    ることもできます。定義方法については
-   ((<適用条件関連|#applicable-conditions>))
+   ((<適用条件関連|#applicable-condition>))
    を見てください。ただし、独自に定義する場合にはRubyの知識が
    必要になります。
 

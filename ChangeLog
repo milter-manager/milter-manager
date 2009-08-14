@@ -1,5 +1,14 @@
 2009-08-14  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/lib/milter/manager.rb,
+	binding/ruby/test/manager/test-configuration-loader.rb,
+	binding/ruby/test/manager/test-configuration.rb,
+	doc/configuration.rd*: add manager.max_file_descriptors
+	configuration item.
+
+	* TODO: remove: [1.3.0] support a configration for max file descriptor
+	number that can be opened. (ref. setrlimit() and RLIMIT_NOFILE)
+
 	* milter/manager/milter-manager-main.c: set limit for max number
 	of file descriptor.
 

@@ -157,6 +157,19 @@ class TestConfigurationLoader < Test::Unit::TestCase
     assert_equal(10, @configuration.max_connections)
   end
 
+  def test_manager_max_file_descriptors
+    assert_equal(0, @configuration.max_file_descriptors)
+
+    @loader.manager.max_file_descriptors = 5
+    assert_equal(5, @configuration.max_file_descriptors)
+
+    @loader.manager.max_file_descriptors = nil
+    assert_equal(0, @configuration.max_file_descriptors)
+
+    @loader.manager.max_file_descriptors = 10
+    assert_equal(10, @configuration.max_file_descriptors)
+  end
+
   def test_manager_configuration_directory
     assert_nil(@configuration.custom_configuration_directory)
     @loader.manager.custom_configuration_directory = "/tmp/milter-manager/"

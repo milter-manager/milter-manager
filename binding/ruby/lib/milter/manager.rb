@@ -60,6 +60,7 @@ module Milter::Manager
       result << "manager.maintenance_interval = #{_maintenance_interval.inspect}\n"
       result << "manager.suspend_time_on_unacceptable = #{suspend_time_on_unacceptable.inspect}\n"
       result << "manager.max_connections = #{max_connections.inspect}\n"
+      result << "manager.max_file_descriptors = #{max_file_descriptors.inspect}\n"
       result << "manager.custom_configuration_directory = #{custom_configuration_directory.inspect}\n"
       result << "\n"
 
@@ -651,6 +652,15 @@ module Milter::Manager
 
       def max_connections
         @configuration.max_connections
+      end
+
+      def max_file_descriptors=(n_descriptors)
+        n_descriptors ||= 0
+        @configuration.max_file_descriptors = n_descriptors
+      end
+
+      def max_descriptors
+        @configuration.max_descriptors
       end
 
       def custom_configuration_directory=(directory)
