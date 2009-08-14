@@ -87,6 +87,8 @@ EXTRA_DIST =								\
 	progress.txt							\
 	quarantine.txt							\
 	quarantine-header-change.txt					\
+	quarantine-evaluation.txt					\
+	quarantine-evaluation.conf					\
 	quit.txt							\
 	replace-body-overwrite.txt					\
 	replace-body.txt						\

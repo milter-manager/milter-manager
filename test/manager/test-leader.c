@@ -1359,6 +1359,8 @@ data_scenario_end_of_message_action (void)
     cut_add_data("quarantine", g_strdup("quarantine.txt"), g_free,
                  "quarantine - header-change",
                  g_strdup("quarantine-header-change.txt"), g_free,
+                 "quarantine - evaluation",
+                 g_strdup("quarantine-evaluation.txt"), g_free,
                  "add-header", g_strdup("add-header.txt"), g_free,
                  "add-header - with-leading-space",
                  g_strdup("add-header-with-leading-space.txt"), g_free,

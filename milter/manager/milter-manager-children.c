@@ -1617,6 +1617,15 @@ cb_quarantine (MilterServerContext *context,
         return;
     }
 
+    if (milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context))) {
+        milter_debug("[%u] [children][evaluation][quarantine] <%s> [%u] %s",
+                     priv->tag,
+                     reason ? reason : "NULL",
+                     milter_agent_get_tag(MILTER_AGENT(context)),
+                     milter_server_context_get_name(context));
+        return;
+    }
+
     if (priv->quarantine_reason)
         g_free(priv->quarantine_reason);
     priv->quarantine_reason = g_strdup(reason);
