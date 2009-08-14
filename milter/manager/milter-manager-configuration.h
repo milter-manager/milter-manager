@@ -223,6 +223,12 @@ void          milter_manager_configuration_set_suspend_time_on_unacceptable
                                      (MilterManagerConfiguration *configuration,
                                       guint                       suspend_time);
 
+guint         milter_manager_configuration_get_max_connections
+                                     (MilterManagerConfiguration *configuration);
+void          milter_manager_configuration_set_max_connections
+                                     (MilterManagerConfiguration *configuration,
+                                      guint                       max_connections);
+
 const gchar  *milter_manager_configuration_get_custom_configuration_directory
                                      (MilterManagerConfiguration *configuration);
 void          milter_manager_configuration_set_custom_configuration_directory

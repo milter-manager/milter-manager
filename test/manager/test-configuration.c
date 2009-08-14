@@ -42,6 +42,7 @@ void test_daemon (void);
 void test_pid_file (void);
 void test_maintenance_interval (void);
 void test_suspend_time_on_unacceptable (void);
+void test_max_connections (void);
 void test_custom_configuration_directory (void);
 void test_controller_connection_spec (void);
 void test_manager_connection_spec (void);
@@ -359,6 +360,18 @@ test_suspend_time_on_unacceptable (void)
 }
 
 void
+test_max_connections (void)
+{
+    cut_assert_equal_uint(
+        MILTER_CLIENT_DEFAULT_MAX_CONNECTIONS,
+        milter_manager_configuration_get_max_connections(config));
+    milter_manager_configuration_set_max_connections(config, 10);
+    cut_assert_equal_uint(
+        10,
+        milter_manager_configuration_get_max_connections(config));
+}
+
+void
 test_custom_configuration_directory (void)
 {
     const gchar custom_configuration_directory[] = "/tmp/milter-manager/";
@@ -509,6 +522,9 @@ milter_assert_default_configuration_helper (MilterManagerConfiguration *config)
     cut_assert_equal_uint(
         MILTER_CLIENT_DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE,
         milter_manager_configuration_get_suspend_time_on_unacceptable(config));
+    cut_assert_equal_uint(
+        MILTER_CLIENT_DEFAULT_MAX_CONNECTIONS,
+        milter_manager_configuration_get_max_connections(config));
 
     gcut_assert_equal_enum(
         MILTER_TYPE_STATUS,
@@ -724,6 +740,7 @@ test_clear (void)
     test_daemon();
     test_maintenance_interval();
     test_suspend_time_on_unacceptable();
+    test_max_connections();
 
     milter_manager_configuration_clear(config);
     milter_assert_default_configuration(config);

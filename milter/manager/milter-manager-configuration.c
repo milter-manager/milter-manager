@@ -66,6 +66,7 @@ struct _MilterManagerConfigurationPrivate
     gchar *pid_file;
     guint maintenance_interval;
     guint suspend_time_on_unacceptable;
+    guint max_connections;
     guint processed_sessions;
     gchar *custom_configuration_directory;
 };
@@ -93,6 +94,7 @@ enum
     PROP_PID_FILE,
     PROP_MAINTENANCE_INTERVAL,
     PROP_SUSPEND_TIME_ON_UNACCEPTABLE,
+    PROP_MAX_CONNECTIONS,
     PROP_PROCESSED_SESSIONS,
     PROP_CUSTOM_CONFIGURATION_DIRECTORY
 };
@@ -318,6 +320,17 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
                                     PROP_SUSPEND_TIME_ON_UNACCEPTABLE,
                                     spec);
 
+    spec = g_param_spec_uint("max-connections",
+                             "Max connections",
+                             "Max number of concurrent connections.",
+                             0,
+                             G_MAXUINT,
+                             MILTER_CLIENT_DEFAULT_MAX_CONNECTIONS,
+                             G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+    g_object_class_install_property(gobject_class,
+                                    PROP_MAX_CONNECTIONS,
+                                    spec);
+
     spec = g_param_spec_string("custom-configuration-directory",
                                "Directory for custom configuration",
                                "The directory for custom configuration",
@@ -359,6 +372,8 @@ milter_manager_configuration_init (MilterManagerConfiguration *configuration)
     priv->maintenance_interval = DEFAULT_MAINTENANCE_INTERVAL;
     priv->suspend_time_on_unacceptable =
         MILTER_CLIENT_DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE;
+    priv->max_connections =
+        MILTER_CLIENT_DEFAULT_MAX_CONNECTIONS;
     priv->processed_sessions = 0;
     priv->custom_configuration_directory = NULL;
 
@@ -482,6 +497,10 @@ set_property (GObject      *object,
         milter_manager_configuration_set_suspend_time_on_unacceptable(
             config, g_value_get_uint(value));
         break;
+    case PROP_MAX_CONNECTIONS:
+        milter_manager_configuration_set_max_connections(
+            config, g_value_get_uint(value));
+        break;
     case PROP_CUSTOM_CONFIGURATION_DIRECTORY:
         milter_manager_configuration_set_custom_configuration_directory(
             config, g_value_get_string(value));
@@ -561,6 +580,9 @@ get_property (GObject    *object,
         break;
     case PROP_SUSPEND_TIME_ON_UNACCEPTABLE:
         g_value_set_uint(value, priv->suspend_time_on_unacceptable);
+        break;
+    case PROP_MAX_CONNECTIONS:
+        g_value_set_uint(value, priv->max_connections);
         break;
     case PROP_CUSTOM_CONFIGURATION_DIRECTORY:
         g_value_set_string(value, priv->custom_configuration_directory);
@@ -1235,6 +1257,25 @@ milter_manager_configuration_set_suspend_time_on_unacceptable (MilterManagerConf
     priv->suspend_time_on_unacceptable = suspend_time;
 }
 
+guint
+milter_manager_configuration_get_max_connections (MilterManagerConfiguration *configuration)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    return priv->max_connections;
+}
+
+void
+milter_manager_configuration_set_max_connections (MilterManagerConfiguration *configuration,
+                                                               guint suspend_time)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    priv->max_connections = suspend_time;
+}
+
 const gchar *
 milter_manager_configuration_get_custom_configuration_directory (MilterManagerConfiguration *configuration)
 {
@@ -1588,6 +1629,8 @@ milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
     priv->maintenance_interval = DEFAULT_MAINTENANCE_INTERVAL;
     priv->suspend_time_on_unacceptable =
         MILTER_CLIENT_DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE;
+    priv->max_connections =
+        MILTER_CLIENT_DEFAULT_MAX_CONNECTIONS;
 }
 
 void
