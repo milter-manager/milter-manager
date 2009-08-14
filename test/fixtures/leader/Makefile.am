@@ -3,6 +3,8 @@ EXTRA_DIST =								\
 	abort-on-envelope-from.txt					\
 	add-header.txt							\
 	add-header-with-leading-space.txt				\
+	add-header-evaluation.txt					\
+	add-header-evaluation.conf					\
 	add-recipient.txt						\
 	body-accept.txt							\
 	body-larger-than-milter-chunk-size.txt				\

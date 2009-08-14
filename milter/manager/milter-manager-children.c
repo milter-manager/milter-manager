@@ -1412,6 +1412,16 @@ cb_add_header (MilterServerContext *context,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
+    if (milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context))) {
+        milter_debug("[%u] [children][evaluation][add-header] <%s>=<%s> [%u] %s",
+                     priv->tag,
+                     name,
+                     value ? value : "NULL",
+                     milter_agent_get_tag(MILTER_AGENT(context)),
+                     milter_server_context_get_name(context));
+        return;
+    }
+
     normalized_value = normalize_header_value(children, context, value);
     milter_headers_add_header(priv->headers, name,
                               normalized_value ? normalized_value : value);

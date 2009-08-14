@@ -1362,6 +1362,8 @@ data_scenario_end_of_message_action (void)
                  "add-header", g_strdup("add-header.txt"), g_free,
                  "add-header - with-leading-space",
                  g_strdup("add-header-with-leading-space.txt"), g_free,
+                 "add-header - evaluation",
+                 g_strdup("add-header-evaluation.txt"), g_free,
                  "insert-header", g_strdup("insert-header.txt"), g_free,
                  "insert-header - with-leading-space",
                  g_strdup("insert-header-with-leading-space.txt"), g_free,

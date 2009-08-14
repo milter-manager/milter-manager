@@ -1,5 +1,9 @@
 2009-08-14  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/manager/milter-manager-children.c,
+	test/fixtures/leader/add-header-evaluation.{txt,conf},
+	test/manager/test-leader.c: ignore add-header on evaluation mode.
+
 	* TODO: add a specification draft for logging signal.
 
 	* milter/manager/milter-manager-main.c: use G_GINT64_FORMAT for
