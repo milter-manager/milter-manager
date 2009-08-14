@@ -40,7 +40,7 @@ void test_user_name (void);
 void test_command (void);
 void test_command_options (void);
 void test_fallback_status (void);
-void test_reputation_mode (void);
+void test_evaluation_mode (void);
 void test_merge (void);
 void test_applicable_condition (void);
 void test_attach_applicable_conditions (void);
@@ -359,7 +359,7 @@ test_fallback_status (void)
 }
 
 void
-test_reputation_mode (void)
+test_evaluation_mode (void)
 {
     const gchar spec[] = "inet:9999@127.0.0.1";
     GError *error = NULL;
@@ -368,18 +368,18 @@ test_reputation_mode (void)
     milter_manager_egg_set_connection_spec(egg, spec, &error);
     gcut_assert_error(error);
 
-    cut_assert_false(milter_manager_egg_is_reputation_mode(egg));
+    cut_assert_false(milter_manager_egg_is_evaluation_mode(egg));
     child = milter_manager_egg_hatch(egg);
     cut_assert_not_null(child);
-    cut_assert_false(milter_manager_child_is_reputation_mode(child));
+    cut_assert_false(milter_manager_child_is_evaluation_mode(child));
 
-    milter_manager_egg_set_reputation_mode(egg, TRUE);
-    cut_assert_true(milter_manager_egg_is_reputation_mode(egg));
+    milter_manager_egg_set_evaluation_mode(egg, TRUE);
+    cut_assert_true(milter_manager_egg_is_evaluation_mode(egg));
 
     g_object_unref(child);
     child = milter_manager_egg_hatch(egg);
     cut_assert_not_null(child);
-    cut_assert_true(milter_manager_child_is_reputation_mode(child));
+    cut_assert_true(milter_manager_child_is_evaluation_mode(child));
 }
 
 void
@@ -511,7 +511,7 @@ test_to_xml (void)
                             "  <name>child-milter</name>\n"
                             "  <enabled>true</enabled>\n"
                             "  <fallback-status>accept</fallback-status>\n"
-                            "  <reputation-mode>false</reputation-mode>\n"
+                            "  <evaluation-mode>false</evaluation-mode>\n"
                             "</milter>\n",
                             actual_xml);
 
@@ -522,7 +522,7 @@ test_to_xml (void)
                             "  <name>child-milter</name>\n"
                             "  <enabled>true</enabled>\n"
                             "  <fallback-status>accept</fallback-status>\n"
-                            "  <reputation-mode>false</reputation-mode>\n"
+                            "  <evaluation-mode>false</evaluation-mode>\n"
                             "  <additional-field>VALUE</additional-field>\n"
                             "</milter>\n",
                             actual_xml);

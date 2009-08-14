@@ -141,7 +141,7 @@ class TestConfiguration < Test::Unit::TestCase
                   "      <name>#{name}</name>",
                   "      <enabled>true</enabled>",
                   "      <fallback-status>accept</fallback-status>",
-                  "      <reputation-mode>false</reputation-mode>",
+                  "      <evaluation-mode>false</evaluation-mode>",
                   "      <connection-spec>#{spec}</connection-spec>",
                   "    </milter>",
                   "  </milters>",
@@ -158,7 +158,7 @@ class TestConfiguration < Test::Unit::TestCase
                   "      <name>#{name}</name>",
                   "      <enabled>true</enabled>",
                   "      <fallback-status>accept</fallback-status>",
-                  "      <reputation-mode>false</reputation-mode>",
+                  "      <evaluation-mode>false</evaluation-mode>",
                   "      <connection-spec>#{spec}</connection-spec>",
                   "    </milter>",
                   "  </milters>",
@@ -232,7 +232,7 @@ EOD
       milter.description = "The second milter"
       milter.connection_spec = "inet:2929"
       milter.enabled = false
-      milter.reputation_mode = true
+      milter.evaluation_mode = true
     end
 
     assert_equal(<<-EOD.strip,
@@ -269,7 +269,7 @@ define_milter("milter1") do |milter|
   milter.description = "The first milter"
   milter.enabled = true
   milter.fallback_status = "accept"
-  milter.reputation_mode = false
+  milter.evaluation_mode = false
   milter.applicable_conditions = ["S25R"]
   milter.command = nil
   milter.command_options = nil
@@ -285,7 +285,7 @@ define_milter("milter2") do |milter|
   milter.description = "The second milter"
   milter.enabled = false
   milter.fallback_status = "accept"
-  milter.reputation_mode = true
+  milter.evaluation_mode = true
   milter.applicable_conditions = []
   milter.command = nil
   milter.command_options = nil

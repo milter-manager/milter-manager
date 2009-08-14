@@ -548,13 +548,16 @@ Required item is just only milter.connection_spec.
    Default:
      milter.fallback_status = "accept"
 
-: milter.reputation_mode
+: milter.evaluation_mode
 
-   Whether return the child milter result to MTA or not. If
-   the result isn't returned to MTA, the result can be used
-   in applicable conditions.
+   Whether turn on evaluation mode or not. The child milter
+   doesn't return its result on evaluation mode. It means
+   the child milter doesn't affect the existing mail system.
 
-   True if return, false otherwise.
+   Graphs are still generated on evaluation mode because
+   statistics are logged.
+
+   True if evaluation mode is turned on, false otherwise.
 
    On false (default) case, message handling in milter
    session is aborted when a child milter returns "reject"
@@ -566,10 +569,10 @@ Required item is just only milter.connection_spec.
    applicable conditions.
 
    Example:
-     milter.reputation_mode = true
+     milter.evaluation_mode = true
 
    Default:
-     milter.reputation_mode = false
+     milter.evaluation_mode = false
 
 : milter.applicable_conditions
 
@@ -1086,6 +1089,8 @@ It has the following information.
 : context.reject?
 
    Returns true if the child milter returns 'reject'.
+   The child milter must be enabled
+   ((<milter.evaluation_mode|configuration.rd#milter.evaluation_mode>)).
 
    Passed context should be always processing. So,
    context.reject? never return true. It's usuful when we
@@ -1099,6 +1104,8 @@ It has the following information.
 : context.temporary_failure?
 
    Returns true if the child milter returns 'temporary failure'.
+   The child milter must be enabled
+   ((<milter.evaluation_mode|configuration.rd#milter.evaluation_mode>)).
 
    Passed context should be always processing. So,
    context.temporay_failure? never return true. It's usuful
@@ -1125,6 +1132,8 @@ It has the following information.
 : context.discard?
 
    Returns true if the child milter returns 'discard'.
+   The child milter must be enabled
+   ((<milter.evaluation_mode|configuration.rd#milter.evaluation_mode>)).
 
    Passed context should be always processing. So,
    context.discard? never return true. It's usuful

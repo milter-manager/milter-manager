@@ -30,7 +30,7 @@
 void test_get_command_line_string (void);
 void test_get_user_name (void);
 void test_get_fallback_status (void);
-void test_reputation_mode (void);
+void test_evaluation_mode (void);
 
 static MilterManagerChild *milter;
 
@@ -88,11 +88,11 @@ test_get_fallback_status (void)
 }
 
 void
-test_reputation_mode (void)
+test_evaluation_mode (void)
 {
-    cut_assert_false(milter_manager_child_is_reputation_mode(milter));
-    milter_manager_child_set_reputation_mode(milter, TRUE);
-    cut_assert_true(milter_manager_child_is_reputation_mode(milter));
+    cut_assert_false(milter_manager_child_is_evaluation_mode(milter));
+    milter_manager_child_set_evaluation_mode(milter, TRUE);
+    cut_assert_true(milter_manager_child_is_evaluation_mode(milter));
 }
 
 /*

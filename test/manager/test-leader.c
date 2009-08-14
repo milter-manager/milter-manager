@@ -1382,10 +1382,10 @@ data_scenario_end_of_message_action (void)
 static void
 data_scenario_helo (void)
 {
-    cut_add_data("helo - reject - reputation",
-                 g_strdup("helo-reject-reputation.txt"), g_free,
-                 "helo - temporary-failure - reputation",
-                 g_strdup("helo-temporary-failure-reputation.txt"), g_free,
+    cut_add_data("helo - reject - evaluation",
+                 g_strdup("helo-reject-evaluation.txt"), g_free,
+                 "helo - temporary-failure - evaluation",
+                 g_strdup("helo-temporary-failure-evaluation.txt"), g_free,
                  NULL);
 }
 
@@ -1398,8 +1398,8 @@ data_scenario_envelope_from (void)
                  g_strdup("envelope-from-reject.txt"), g_free,
                  "envelope-from - discard",
                  g_strdup("envelope-from-discard.txt"), g_free,
-                 "envelope-from - discard - reputation",
-                 g_strdup("envelope-from-discard-reputation.txt"), g_free,
+                 "envelope-from - discard - evaluation",
+                 g_strdup("envelope-from-discard-evaluation.txt"), g_free,
                  "envelope-from - reject & discard",
                  g_strdup("envelope-from-reject-and-discard.txt"), g_free,
                  "envelope-from - reject & accept",

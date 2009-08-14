@@ -1113,11 +1113,11 @@ cb_temporary_failure (MilterServerContext *context, gpointer user_data)
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
     state = milter_server_context_get_state(context);
 
-    if (milter_manager_child_is_reputation_mode(MILTER_MANAGER_CHILD(context))) {
+    if (milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context))) {
         status = MILTER_STATUS_ACCEPT;
         state_name = milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
                                                      state);
-        milter_debug("[%u] [children][reputation][temporary-failure][%s] [%u] %s",
+        milter_debug("[%u] [children][evaluation][temporary-failure][%s] [%u] %s",
                      priv->tag,
                      state_name,
                      milter_agent_get_tag(MILTER_AGENT(context)),
@@ -1175,11 +1175,11 @@ cb_reject (MilterServerContext *context, gpointer user_data)
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
     state = milter_server_context_get_state(context);
 
-    if (milter_manager_child_is_reputation_mode(MILTER_MANAGER_CHILD(context))) {
+    if (milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context))) {
         status = MILTER_STATUS_ACCEPT;
         state_name = milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
                                                      state);
-        milter_debug("[%u] [children][reputation][reject][%s] [%u] %s",
+        milter_debug("[%u] [children][evaluation][reject][%s] [%u] %s",
                      priv->tag,
                      state_name,
                      milter_agent_get_tag(MILTER_AGENT(context)),
@@ -1308,11 +1308,11 @@ cb_discard (MilterServerContext *context, gpointer user_data)
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
     state = milter_server_context_get_state(context);
 
-    if (milter_manager_child_is_reputation_mode(MILTER_MANAGER_CHILD(context))) {
+    if (milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context))) {
         status = MILTER_STATUS_ACCEPT;
         state_name = milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
                                                      state);
-        milter_debug("[%u] [children][reputation][discard][%s] [%u] %s",
+        milter_debug("[%u] [children][evaluation][discard][%s] [%u] %s",
                      priv->tag,
                      state_name,
                      milter_agent_get_tag(MILTER_AGENT(context)),

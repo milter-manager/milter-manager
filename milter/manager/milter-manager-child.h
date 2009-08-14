@@ -77,10 +77,10 @@ gchar                *milter_manager_child_get_user_name
 MilterStatus          milter_manager_child_get_fallback_status
                                                        (MilterManagerChild *milter);
 
-void                  milter_manager_child_set_reputation_mode
+void                  milter_manager_child_set_evaluation_mode
                                                        (MilterManagerChild *milter,
-                                                        gboolean reputation_mode);
-gboolean              milter_manager_child_is_reputation_mode
+                                                        gboolean evaluation_mode);
+gboolean              milter_manager_child_is_evaluation_mode
                                                        (MilterManagerChild *milter);
 
 #endif /* __MILTER_MANAGER_CHILD_H__ */

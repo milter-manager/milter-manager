@@ -1,7 +1,7 @@
 [scenario]
 clients=client10026;client10027
 import=helo.txt
-configuration=envelope-from-discard-reputation.conf
+configuration=envelope-from-discard-evaluation.conf
 actions=envelope-from;envelope-recipient
 
 [client10026]

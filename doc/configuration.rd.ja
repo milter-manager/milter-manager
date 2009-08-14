@@ -545,27 +545,29 @@ define_milter do ... end内で設定できる項目は以下の通りです。
    既定値:
      milter.fallback_status = "accept"
 
-: milter.reputation_mode
+: milter.evaluation_mode
 
-   子milterの結果をMTAに返さず、適用条件内だけで利用するかど
-   うかを指定します。
+   評価モードにするかどうかを指定します。評価モードでは子
+   milterの結果をMTAに返さないので、既存のメールシステムには
+   影響を与えません。
 
-   適用条件内だけで利用する場合はtrueを指定します。MTAに結果
-   を返す場合はfalseを指定します。既定値はMTAに結果を返しま
-   す。
+   評価モードでも統計用のログが出力されるため、本来なら子
+   milterがMTAにどのような結果を返していたかを視覚化できます。
+
+   評価モードにする場合はtrueを指定します。
 
    false（既定値）の場合は、子milterがrejectを返すとMTAに
-   rejectと返し、処理が終了してしまいます。trueの場合は子
-   milterがrejectを返してもMTAにはrejectを返さず、処理が継続
-   します。継続している処理の中では「子milterがrejectを返し
-   た」という情報を利用できます。その情報を利用して適用条件
-   を記述することができます。
+   rejectと返し、処理が終了してします。trueの場合は子milterが
+   rejectを返してもMTAにはrejectを返さず、処理が継続します。
+   継続している処理の中では「子milterがrejectを返した」とい
+   う情報を利用できます。その情報を利用して適用条件を記述する
+   ことができます。
 
    例:
-     milter.reputation_mode = true
+     milter.evaluation_mode = true
 
    既定値:
-     milter.reputation_mode = false
+     milter.evaluation_mode = false
 
 : milter.applicable_conditions
 
@@ -1067,6 +1069,9 @@ define_applicable_condition do ... end内で設定できる項目は以
 : context.reject?
 
    子milterがrejectを返したときにtrueを返します。
+   子milterは
+   ((<milter.evaluation_mode|configuration.rd.ja#milter.evaluation_mode>))
+   を有効にしてください。
 
    引数として渡ってくるcontextは処理中のため、
    context.reject?がtrueを返すことはありません。
@@ -1080,6 +1085,9 @@ define_applicable_condition do ... end内で設定できる項目は以
 : context.temporary_failure?
 
    子milterがtemporary failureを返したときにtrueを返します。
+   子milterは
+   ((<milter.evaluation_mode|configuration.rd.ja#milter.evaluation_mode>))
+   を有効にしてください。
 
    引数として渡ってくるcontextは処理中のため、
    context.temporary_failure?がtrueを返すことはありません。
@@ -1106,6 +1114,9 @@ define_applicable_condition do ... end内で設定できる項目は以
 : context.discard?
 
    子milterがdiscardを返したときにtrueを返します。
+   子milterは
+   ((<milter.evaluation_mode|configuration.rd.ja#milter.evaluation_mode>))
+   を有効にしてください。
 
    引数として渡ってくるcontextは処理中のため、
    context.discard?がtrueを返すことはありません。

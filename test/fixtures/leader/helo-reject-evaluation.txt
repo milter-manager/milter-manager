@@ -1,12 +1,12 @@
 [scenario]
 clients=client10026;client10027
 import=connect.txt
-configuration=helo-temporary-failure-reputation.conf
+configuration=helo-reject-evaluation.conf
 actions=helo;envelope-from
 
 [client10026]
 port=10026
-arguments=--action;temporary-failure;--helo=mail.example.com
+arguments=--action;reject;--helo=mail.example.com
 
 [client10027]
 port=10027

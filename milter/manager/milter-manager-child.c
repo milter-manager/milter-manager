@@ -43,7 +43,7 @@ struct _MilterManagerChildPrivate
     gchar *command_options;
     gboolean search_path;
     MilterStatus fallback_status;
-    gboolean reputation_mode;
+    gboolean evaluation_mode;
 };
 
 enum
@@ -128,7 +128,7 @@ milter_manager_child_class_init (MilterManagerChildClass *klass)
                              G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_FALLBACK_STATUS, spec);
 
-    spec = g_param_spec_boolean("reputation-mode",
+    spec = g_param_spec_boolean("evaluation-mode",
                                 "Reputation mode",
                                 "Whether the result of the child is used or not",
                                 FALSE,
@@ -151,7 +151,7 @@ milter_manager_child_init (MilterManagerChild *milter)
     priv->command_options = NULL;
     priv->search_path = TRUE;
     priv->fallback_status = MILTER_STATUS_ACCEPT;
-    priv->reputation_mode = FALSE;
+    priv->evaluation_mode = FALSE;
 }
 
 static void
@@ -223,7 +223,7 @@ set_property (GObject      *object,
         priv->fallback_status = g_value_get_enum(value);
         break;
     case PROP_REPUTATION_MODE:
-        priv->reputation_mode = g_value_get_boolean(value);
+        priv->evaluation_mode = g_value_get_boolean(value);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -260,7 +260,7 @@ get_property (GObject    *object,
         g_value_set_enum(value, priv->fallback_status);
         break;
     case PROP_REPUTATION_MODE:
-        g_value_set_boolean(value, priv->reputation_mode);
+        g_value_set_boolean(value, priv->evaluation_mode);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -322,16 +322,16 @@ milter_manager_child_get_fallback_status (MilterManagerChild *milter)
 }
 
 void
-milter_manager_child_set_reputation_mode (MilterManagerChild *milter,
-                                          gboolean reputation_mode)
+milter_manager_child_set_evaluation_mode (MilterManagerChild *milter,
+                                          gboolean evaluation_mode)
 {
-    MILTER_MANAGER_CHILD_GET_PRIVATE(milter)->reputation_mode = reputation_mode;
+    MILTER_MANAGER_CHILD_GET_PRIVATE(milter)->evaluation_mode = evaluation_mode;
 }
 
 gboolean
-milter_manager_child_is_reputation_mode (MilterManagerChild *milter)
+milter_manager_child_is_evaluation_mode (MilterManagerChild *milter)
 {
-    return MILTER_MANAGER_CHILD_GET_PRIVATE(milter)->reputation_mode;
+    return MILTER_MANAGER_CHILD_GET_PRIVATE(milter)->evaluation_mode;
 }
 
 /*

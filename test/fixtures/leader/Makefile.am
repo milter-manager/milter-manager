@@ -38,8 +38,8 @@ EXTRA_DIST =								\
 	envelope-from-accept-all.txt					\
 	envelope-from-accept.txt					\
 	envelope-from-discard.txt					\
-	envelope-from-discard-reputation.txt				\
-	envelope-from-discard-reputation.conf				\
+	envelope-from-discard-evaluation.txt				\
+	envelope-from-discard-evaluation.conf				\
 	envelope-from-reject-and-accept.txt				\
 	envelope-from-reject-and-discard.txt				\
 	envelope-from-reject.txt					\
@@ -70,10 +70,10 @@ EXTRA_DIST =								\
 	header-stop.txt							\
 	header-again.txt						\
 	helo.txt							\
-	helo-reject-reputation.txt					\
-	helo-reject-reputation.conf					\
-	helo-temporary-failure-reputation.txt				\
-	helo-temporary-failure-reputation.conf				\
+	helo-reject-evaluation.txt					\
+	helo-reject-evaluation.conf					\
+	helo-temporary-failure-evaluation.txt				\
+	helo-temporary-failure-evaluation.conf				\
 	insert-header.txt						\
 	insert-header-with-leading-space.txt				\
 	negotiate.txt							\
