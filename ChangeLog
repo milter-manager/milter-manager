@@ -1,5 +1,7 @@
 2009-08-14  Kouhei Sutou  <kou@clear-code.com>
 
+	* TODO: add a specification draft for logging signal.
+
 	* milter/manager/milter-manager-main.c: use G_GINT64_FORMAT for
 	32bit environment.
 
