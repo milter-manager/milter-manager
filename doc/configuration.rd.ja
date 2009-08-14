@@ -391,7 +391,7 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
    最大同時接続数の処理を行っているときに新しく接続要求があ
    ると、処理中の接続が終了するのを待ちます。処理中の接続が
    終了したかどうかは
-   ((<manager.suspend_time_on_unacceptable|#manager.suspend_time_on_unacceptable>))
+   ((<manager.suspend_time_on_unacceptable|.#manager.suspend_time_on_unacceptable>))
    で指定した秒数毎に確認します。
 
    例:
@@ -1089,7 +1089,7 @@ define_applicable_condition do ... end内で設定できる項目は以
 
    子milterがrejectを返したときにtrueを返します。
    子milterは
-   ((<milter.evaluation_mode|#milter.evaluation_mode>))
+   ((<milter.evaluation_mode|.#milter.evaluation_mode>))
    を有効にしてください。
 
    引数として渡ってくるcontextは処理中のため、
@@ -1105,7 +1105,7 @@ define_applicable_condition do ... end内で設定できる項目は以
 
    子milterがtemporary failureを返したときにtrueを返します。
    子milterは
-   ((<milter.evaluation_mode|#milter.evaluation_mode>))
+   ((<milter.evaluation_mode|.#milter.evaluation_mode>))
    を有効にしてください。
 
    引数として渡ってくるcontextは処理中のため、
@@ -1134,7 +1134,7 @@ define_applicable_condition do ... end内で設定できる項目は以
 
    子milterがdiscardを返したときにtrueを返します。
    子milterは
-   ((<milter.evaluation_mode|#milter.evaluation_mode>))
+   ((<milter.evaluation_mode|.#milter.evaluation_mode>))
    を有効にしてください。
 
    引数として渡ってくるcontextは処理中のため、

@@ -396,7 +396,7 @@ Here are descriptions of configuration items.
    is closed when there are max concurrent
    connections. Number of the current existing connections
    are confirmed each 
-   ((<manager.suspend_time_on_unacceptable|#manager.suspend_time_on_unacceptable>))
+   ((<manager.suspend_time_on_unacceptable|.#manager.suspend_time_on_unacceptable>))
    seconds.
 
    Example:
@@ -610,7 +610,8 @@ Required item is just only milter.connection_spec.
 
    Some applicable conditions are available in default
    configuration. You can also define your original
-   applicable condition. See ((<Applicable condition>))
+   applicable condition. See
+   ((<Applicable condition|#applicable-condition>))
    about how to define applicable condition. But defining
    applicable condition requires Ruby's knowledge.
 
@@ -1109,7 +1110,7 @@ It has the following information.
 
    Returns true if the child milter returns 'reject'.
    The child milter must be enabled
-   ((<milter.evaluation_mode|configuration.rd#milter.evaluation_mode>)).
+   ((<milter.evaluation_mode|.#milter.evaluation_mode>)).
 
    Passed context should be always processing. So,
    context.reject? never return true. It's usuful when we
@@ -1124,7 +1125,7 @@ It has the following information.
 
    Returns true if the child milter returns 'temporary failure'.
    The child milter must be enabled
-   ((<milter.evaluation_mode|configuration.rd#milter.evaluation_mode>)).
+   ((<milter.evaluation_mode|.#milter.evaluation_mode>)).
 
    Passed context should be always processing. So,
    context.temporay_failure? never return true. It's usuful
@@ -1152,7 +1153,7 @@ It has the following information.
 
    Returns true if the child milter returns 'discard'.
    The child milter must be enabled
-   ((<milter.evaluation_mode|configuration.rd#milter.evaluation_mode>)).
+   ((<milter.evaluation_mode|.#milter.evaluation_mode>)).
 
    Passed context should be always processing. So,
    context.discard? never return true. It's usuful
