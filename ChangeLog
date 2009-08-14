@@ -1,6 +1,6 @@
 2009-08-14  Kouhei Sutou  <kou@clear-code.com>
 
-	* milter/manager/milter-manager-main.c: use G_GSIZE_MODIFIER for
+	* milter/manager/milter-manager-main.c: use G_GINT64_FORMAT for
 	32bit environment.
 
 	* binding/ruby/lib/milter/manager.rb,
