@@ -27,6 +27,8 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/un.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 #include <pwd.h>
 #include <grp.h>
 #include <unistd.h>
@@ -556,6 +558,34 @@ cleanup:
     return success;
 }
 
+static void
+update_max_file_descriptors (MilterManager *manager)
+{
+    MilterManagerConfiguration *configuration;
+    guint max_file_descriptors;
+    struct rlimit rlimit;
+
+    configuration = milter_manager_get_configuration(manager);
+
+    max_file_descriptors =
+        milter_manager_configuration_get_max_file_descriptors(configuration);
+    if (max_file_descriptors == 0)
+        return;
+
+    if (getrlimit(RLIMIT_NOFILE, &rlimit) != 0) {
+        milter_manager_error("failed to get limit for RLIMIT_NOFILE: %s",
+                             g_strerror(errno));
+        return;
+    }
+
+    rlimit.rlim_cur = MAX(max_file_descriptors, rlimit.rlim_max);
+    if (setrlimit(RLIMIT_NOFILE, &rlimit) != 0) {
+        milter_manager_error("failed to set limit for RLIMIT_NOFILE: %ld: %s",
+                             rlimit.rlim_max, g_strerror(errno));
+        return;
+    }
+}
+
 static gboolean
 daemonize (void)
 {
@@ -742,6 +772,8 @@ milter_manager_main (void)
 
     client = MILTER_CLIENT(manager);
     g_signal_connect(client, "error", G_CALLBACK(cb_error), NULL);
+
+    update_max_file_descriptors(manager);
 
     daemon = milter_manager_configuration_is_daemon(config);
     if (!option_show_config && daemon && !daemonize()) {
