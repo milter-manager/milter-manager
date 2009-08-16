@@ -1695,10 +1695,23 @@ cb_delete_recipient (MilterServerContext *context,
                      gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
+    MilterManagerChildrenPrivate *priv;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     if (!is_end_of_message_state(children, context, "delete-recipient",
                                  "<%s>", recipient))
         return;
+
+    if (milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context))) {
+        milter_debug("[%u] [children][evaluation][delete-recipient] "
+                     "<%s> [%u] %s",
+                     priv->tag,
+                     recipient,
+                     milter_agent_get_tag(MILTER_AGENT(context)),
+                     milter_server_context_get_name(context));
+        return;
+    }
 
     g_signal_emit_by_name(children, "delete-recipient", recipient);
 }

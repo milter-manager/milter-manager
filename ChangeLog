@@ -1,6 +1,10 @@
 2009-08-16  Kouhei Sutou  <kou@clear-code.com>
 
 	* milter/manager/milter-manager-children.c,
+	test/fixtures/leader/delete-recipient-evaluation.{txt,conf},
+	test/manager/test-leader.c: ignore delete-recipient on evaluation mode.
+
+	* milter/manager/milter-manager-children.c,
 	test/fixtures/leader/add-recipient-evaluation.{txt,conf},
 	test/manager/test-leader.c: ignore add-recipient on evaluation mode.
 

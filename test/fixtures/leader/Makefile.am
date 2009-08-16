@@ -31,6 +31,8 @@ EXTRA_DIST =								\
 	delete-header-evaluation.txt					\
 	delete-header-evaluation.conf					\
 	delete-recipient.txt						\
+	delete-recipient-evaluation.txt					\
+	delete-recipient-evaluation.conf				\
 	end-of-header.txt						\
 	end-of-header-again.txt						\
 	end-of-message-accept.txt					\
