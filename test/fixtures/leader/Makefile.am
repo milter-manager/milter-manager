@@ -6,6 +6,8 @@ EXTRA_DIST =								\
 	add-header-evaluation.txt					\
 	add-header-evaluation.conf					\
 	add-recipient.txt						\
+	add-recipient-evaluation.txt					\
+	add-recipient-evaluation.conf					\
 	body-accept.txt							\
 	body-larger-than-milter-chunk-size.txt				\
 	body-skip-all.txt						\

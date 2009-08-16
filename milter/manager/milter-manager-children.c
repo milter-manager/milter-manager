@@ -1633,10 +1633,8 @@ cb_change_from (MilterServerContext *context,
 {
     MilterManagerChildren *children = user_data;
     MilterManagerChildrenPrivate *priv;
-    MilterServerContextState state;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
-    state = milter_server_context_get_state(context);
 
     if (!is_end_of_message_state(children, context, "change-from",
                                  "<<%s> <%s>>",
@@ -1668,11 +1666,25 @@ cb_add_recipient (MilterServerContext *context,
                   gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
+    MilterManagerChildrenPrivate *priv;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     if (!is_end_of_message_state(children, context, "add-recipient",
                                  "<<%s> <%s>>",
                                  recipient, parameters ? parameters : "(null)"))
         return;
+
+    if (milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context))) {
+        milter_debug("[%u] [children][evaluation][add-recipient] "
+                     "<<%s> <%s>> [%u] %s",
+                     priv->tag,
+                     recipient,
+                     parameters ? parameters : "(null)",
+                     milter_agent_get_tag(MILTER_AGENT(context)),
+                     milter_server_context_get_name(context));
+        return;
+    }
 
     g_signal_emit_by_name(children, "add-recipient", recipient, parameters);
 }
