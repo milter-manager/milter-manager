@@ -69,6 +69,8 @@ struct _MilterManagerChildrenPrivate
     guint sent_body_offset;
     gboolean replaced_body_for_each_child;
     gboolean replaced_body;
+    gchar *change_from;
+    gchar *change_from_parameters;
     gchar *quarantine_reason;
     MilterWriter *launcher_writer;
     MilterReader *launcher_reader;
@@ -241,6 +243,8 @@ milter_manager_children_init (MilterManagerChildren *milter)
     priv->sent_body_offset = 0;
     priv->replaced_body = FALSE;
     priv->replaced_body_for_each_child = FALSE;
+    priv->change_from = NULL;
+    priv->change_from_parameters = NULL;
     priv->quarantine_reason = NULL;
 
     priv->state = MILTER_SERVER_CONTEXT_STATE_START;
@@ -326,6 +330,16 @@ dispose_message_related_data (MilterManagerChildrenPrivate *priv)
     if (priv->end_of_message_chunk) {
         g_free(priv->end_of_message_chunk);
         priv->end_of_message_chunk = NULL;
+    }
+
+    if (priv->change_from) {
+        g_free(priv->change_from);
+        priv->change_from = NULL;
+    }
+
+    if (priv->change_from_parameters) {
+        g_free(priv->change_from_parameters);
+        priv->change_from_parameters = NULL;
     }
 
     if (priv->quarantine_reason) {
@@ -969,6 +983,9 @@ emit_signals_on_end_of_message (MilterManagerChildren *children)
 
     g_object_unref(processing_headers);
 
+    if (priv->change_from)
+        g_signal_emit_by_name(children, "change-from",
+                              priv->change_from, priv->change_from_parameters);
     if (priv->quarantine_reason)
         g_signal_emit_by_name(children, "quarantine", priv->quarantine_reason);
 }
@@ -1401,6 +1418,37 @@ normalize_header_value (MilterManagerChildren *children,
     return NULL;
 }
 
+static gboolean
+is_end_of_message_state (MilterManagerChildren *children,
+                         MilterServerContext *context,
+                         const gchar *requested_action_name)
+{
+    MilterManagerChildrenPrivate *priv;
+    MilterServerContextState state;
+    gchar *state_name;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+    state = milter_server_context_get_state(context);
+
+    if (state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
+        return TRUE;
+
+    state_name =
+        milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                                        state);
+    milter_error("[%u] [children][error][invalid-state][%s][%s] "
+                 "[%u] only allowed in end of message session: %s",
+                 priv->tag,
+                 requested_action_name,
+                 state_name,
+                 milter_agent_get_tag(MILTER_AGENT(context)),
+                 milter_server_context_get_name(context));
+    g_free(state_name);
+
+    milter_server_context_quit(context);
+    return FALSE;
+}
+
 static void
 cb_add_header (MilterServerContext *context,
                const gchar *name, const gchar *value,
@@ -1411,6 +1459,9 @@ cb_add_header (MilterServerContext *context,
     gchar *normalized_value = NULL;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    if (!is_end_of_message_state(children, context, "add-header"))
+        return;
 
     if (milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context))) {
         milter_debug("[%u] [children][evaluation][add-header] <%s>=<%s> [%u] %s",
@@ -1450,6 +1501,9 @@ cb_insert_header (MilterServerContext *context,
     gchar *normalized_value = NULL;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    if (!is_end_of_message_state(children, context, "insert-header"))
+        return;
 
     if (milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context))) {
         milter_debug("[%u] [children][evaluation][insert-header] "
@@ -1492,6 +1546,9 @@ cb_change_header (MilterServerContext *context,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
+    if (!is_end_of_message_state(children, context, "change-header"))
+        return;
+
     if (milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context))) {
         milter_debug("[%u] [children][evaluation][change-header] "
                      "<%s>[%u]=<%s> [%u] %s",
@@ -1533,6 +1590,9 @@ cb_delete_header (MilterServerContext *context,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
+    if (!is_end_of_message_state(children, context, "delete-header"))
+        return;
+
     if (milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context))) {
         milter_debug("[%u] [children][evaluation][delete-header] "
                      "<%s>[%u] [%u] %s",
@@ -1554,8 +1614,14 @@ cb_change_from (MilterServerContext *context,
 {
     MilterManagerChildren *children = user_data;
     MilterManagerChildrenPrivate *priv;
+    MilterServerContextState state;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+    state = milter_server_context_get_state(context);
+
+    if (!is_end_of_message_state(children, context, "change-from"))
+        return;
+
     if (milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context))) {
         milter_debug("[%u] [children][evaluation][change-from] "
                      "<%s> <%s> [%u] %s",
@@ -1567,7 +1633,12 @@ cb_change_from (MilterServerContext *context,
         return;
     }
 
-    g_signal_emit_by_name(children, "change-from", from, parameters);
+    if (priv->change_from)
+        g_free(priv->change_from);
+    if (priv->change_from_parameters)
+        g_free(priv->change_from_parameters);
+    priv->change_from = g_strdup(from);
+    priv->change_from_parameters = g_strdup(parameters);
 }
 
 static void
@@ -1575,7 +1646,12 @@ cb_add_recipient (MilterServerContext *context,
                   const gchar *recipient, const gchar *parameters,
                   gpointer user_data)
 {
-    g_signal_emit_by_name(user_data, "add-recipient", recipient, parameters);
+    MilterManagerChildren *children = user_data;
+
+    if (!is_end_of_message_state(children, context, "add-recipient"))
+        return;
+
+    g_signal_emit_by_name(children, "add-recipient", recipient, parameters);
 }
 
 static void
@@ -1583,7 +1659,12 @@ cb_delete_recipient (MilterServerContext *context,
                      const gchar *recipient,
                      gpointer user_data)
 {
-    g_signal_emit_by_name(user_data, "delete-recipient", recipient);
+    MilterManagerChildren *children = user_data;
+
+    if (!is_end_of_message_state(children, context, "delete-recipient"))
+        return;
+
+    g_signal_emit_by_name(children, "delete-recipient", recipient);
 }
 
 static void
@@ -1595,6 +1676,9 @@ cb_replace_body (MilterServerContext *context,
     MilterManagerChildrenPrivate *priv;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    if (!is_end_of_message_state(children, context, "replace-body"))
+        return;
 
     if (!priv->replaced_body_for_each_child)
         dispose_body_related_data(priv);
@@ -1610,28 +1694,9 @@ static void
 cb_progress (MilterServerContext *context, gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
-    MilterManagerChildrenPrivate *priv;
-    MilterServerContextState state;
 
-    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
-    state = milter_server_context_get_state(context);
-
-    if (state != MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) {
-        gchar *state_name;
-
-        state_name =
-            milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
-                                            state);
-        milter_error("[%u] [children][error][invalid-state][progress][%s] "
-                     "[%u] only allowed in end of message session: %s",
-                     priv->tag,
-                     state_name,
-                     milter_agent_get_tag(MILTER_AGENT(context)),
-                     milter_server_context_get_name(context));
-        g_free(state_name);
-
+    if (!is_end_of_message_state(children, context, "progress"))
         return;
-    }
 
     g_signal_emit_by_name(user_data, "progress");
 }
@@ -1643,29 +1708,11 @@ cb_quarantine (MilterServerContext *context,
 {
     MilterManagerChildren *children = user_data;
     MilterManagerChildrenPrivate *priv;
-    MilterServerContextState state;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
-    state = milter_server_context_get_state(context);
 
-    if (state != MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) {
-        gchar *state_name;
-
-        state_name =
-            milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
-                                            state);
-        milter_error("[%u] [children][error][invalid-state][quarantine][%s] "
-                     "[%u] only allowed in end of message session: %s",
-                     priv->tag,
-                     state_name,
-                     milter_agent_get_tag(MILTER_AGENT(context)),
-                     milter_server_context_get_name(context));
-        g_free(state_name);
-
-        milter_server_context_quit(context);
-
+    if (!is_end_of_message_state(children, context, "quarantine"))
         return;
-    }
 
     if (milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context))) {
         milter_debug("[%u] [children][evaluation][quarantine] <%s> [%u] %s",
