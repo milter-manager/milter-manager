@@ -1,0 +1,25 @@
+[scenario]
+clients=client10026;client10027
+import=body.txt
+configuration=replace-body-evaluation.conf
+actions=end-of-message-replace-body
+
+[client10026]
+port=10026
+arguments=--replace-body;This is the first line from client1.;--replace-body;This is the second line from client1.;--replace-body;This is the third line from client1.
+
+[client10027]
+port=10027
+
+[end-of-message-replace-body]
+command=end-of-message
+
+response=end-of-message
+n_received=2
+status=continue
+
+replace_bodies=
+
+chunks=;Hi,
+end_of_message_chunks=;;
+headers=From:kou+sender@example.com

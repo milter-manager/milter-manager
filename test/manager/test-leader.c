@@ -1413,10 +1413,12 @@ data_scenario_end_of_message_action (void)
                  g_strdup("delete-recipient-evaluation.txt"), g_free,
                  NULL);
 
-    cut_add_data("replace-body - overwrite",
-                 g_strdup("replace-body-overwrite.txt"), g_free,
-                 "replace-body",
+    cut_add_data("replace-body",
                  g_strdup("replace-body.txt"), g_free,
+                 "replace-body - overwrite",
+                 g_strdup("replace-body-overwrite.txt"), g_free,
+                 "replace-body - evaluation",
+                 g_strdup("replace-body-evaluation.txt"), g_free,
                  NULL);
 
     cut_add_data("progress", g_strdup("progress.txt"), g_free,

@@ -1730,6 +1730,16 @@ cb_replace_body (MilterServerContext *context,
                                  "<%" G_GSIZE_FORMAT ">", chunk_size))
         return;
 
+    if (milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context))) {
+        milter_debug("[%u] [children][evaluation][replace-body] "
+                     "<%" G_GSIZE_FORMAT "> [%u] %s",
+                     priv->tag,
+                     chunk_size,
+                     milter_agent_get_tag(MILTER_AGENT(context)),
+                     milter_server_context_get_name(context));
+        return;
+    }
+
     if (!priv->replaced_body_for_each_child)
         dispose_body_related_data(priv);
 

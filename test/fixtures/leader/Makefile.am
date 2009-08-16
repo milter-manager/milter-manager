@@ -104,6 +104,8 @@ EXTRA_DIST =								\
 	quit.txt							\
 	replace-body-overwrite.txt					\
 	replace-body.txt						\
+	replace-body-evaluation.txt					\
+	replace-body-evaluation.conf					\
 	reply-code-invalid.txt						\
 	reply-code.txt							\
 	unknown.txt
