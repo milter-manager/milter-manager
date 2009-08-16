@@ -1456,10 +1456,46 @@ is_end_of_message_state (MilterManagerChildren *children,
                  milter_agent_get_tag(MILTER_AGENT(context)),
                  milter_server_context_get_name(context));
     g_free(state_name);
-    g_string_free(additional_info, TRUE);
+    if (additional_info)
+        g_string_free(additional_info, TRUE);
 
     milter_server_context_quit(context);
     return FALSE;
+}
+
+static gboolean
+is_evaluation_mode (MilterManagerChildren *children,
+                    MilterServerContext *context,
+                    const gchar *requested_action_name,
+                    const gchar *format,
+                    ...)
+{
+    MilterManagerChildrenPrivate *priv;
+    va_list args;
+    GString *additional_info = NULL;
+
+    if (!milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context)))
+        return FALSE;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    if (format) {
+        additional_info = g_string_new(" ");
+        va_start(args, format);
+        g_string_append_vprintf(additional_info, format, args);
+        va_end(args);
+    }
+
+    milter_debug("[%u] [children][evaluation][%s]%s [%u] %s",
+                 priv->tag,
+                 requested_action_name,
+                 additional_info ? additional_info->str : "",
+                 milter_agent_get_tag(MILTER_AGENT(context)),
+                 milter_server_context_get_name(context));
+    if (additional_info)
+        g_string_free(additional_info, TRUE);
+
+    return TRUE;
 }
 
 static void
@@ -1477,15 +1513,9 @@ cb_add_header (MilterServerContext *context,
                                  "<%s>=<%s>", name, value ? value : "(null)"))
         return;
 
-    if (milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context))) {
-        milter_debug("[%u] [children][evaluation][add-header] <%s>=<%s> [%u] %s",
-                     priv->tag,
-                     name,
-                     value ? value : "(null)",
-                     milter_agent_get_tag(MILTER_AGENT(context)),
-                     milter_server_context_get_name(context));
+    if (is_evaluation_mode(children, context, "add-header",
+                           "<%s>=<%s>", name, value ? value : "(null)"))
         return;
-    }
 
     normalized_value = normalize_header_value(children, context, value);
     milter_headers_add_header(priv->headers, name,
@@ -1520,18 +1550,10 @@ cb_insert_header (MilterServerContext *context,
                                  "[%u]<%s>=<%s>",
                                  index, name, value ? value : "(null)"))
         return;
-
-    if (milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context))) {
-        milter_debug("[%u] [children][evaluation][insert-header] "
-                     "[%u]<%s>=<%s> [%u] %s",
-                     priv->tag,
-                     index,
-                     name,
-                     value ? value : "(null)",
-                     milter_agent_get_tag(MILTER_AGENT(context)),
-                     milter_server_context_get_name(context));
+    if (is_evaluation_mode(children, context, "insert-header",
+                           "[%u]<%s>=<%s>",
+                           index, name, value ? value : "(null)"))
         return;
-    }
 
     normalized_value = normalize_header_value(children, context, value);
     milter_headers_insert_header(priv->headers, index, name,
@@ -1567,17 +1589,10 @@ cb_change_header (MilterServerContext *context,
                                  name, index, value ? value : "(null)"))
         return;
 
-    if (milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context))) {
-        milter_debug("[%u] [children][evaluation][change-header] "
-                     "<%s>[%u]=<%s> [%u] %s",
-                     priv->tag,
-                     name,
-                     index,
-                     value ? value : "(null)",
-                     milter_agent_get_tag(MILTER_AGENT(context)),
-                     milter_server_context_get_name(context));
+    if (is_evaluation_mode(children, context, "change-header",
+                           "<%s>[%u]=<%s>",
+                           name, index, value ? value : "(null)"))
         return;
-    }
 
     normalized_value = normalize_header_value(children, context, value);
     milter_headers_change_header(priv->headers,
@@ -1612,16 +1627,9 @@ cb_delete_header (MilterServerContext *context,
                                  "<%s>[%u]", name, index))
         return;
 
-    if (milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context))) {
-        milter_debug("[%u] [children][evaluation][delete-header] "
-                     "<%s>[%u] [%u] %s",
-                     priv->tag,
-                     name,
-                     index,
-                     milter_agent_get_tag(MILTER_AGENT(context)),
-                     milter_server_context_get_name(context));
+    if (is_evaluation_mode(children, context, "delete-header",
+                           "<%s>[%u]", name, index))
         return;
-    }
 
     milter_headers_delete_header(priv->headers, name, index);
 }
@@ -1641,16 +1649,10 @@ cb_change_from (MilterServerContext *context,
                                  from, parameters ? parameters : "(null)"))
         return;
 
-    if (milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context))) {
-        milter_debug("[%u] [children][evaluation][change-from] "
-                     "<<%s> <%s>> [%u] %s",
-                     priv->tag,
-                     from,
-                     parameters ? parameters : "(null)",
-                     milter_agent_get_tag(MILTER_AGENT(context)),
-                     milter_server_context_get_name(context));
+    if (is_evaluation_mode(children, context, "change-from",
+                           "<<%s> <%s>>",
+                           from, parameters ? parameters : "(null)"))
         return;
-    }
 
     if (priv->change_from)
         g_free(priv->change_from);
@@ -1666,25 +1668,16 @@ cb_add_recipient (MilterServerContext *context,
                   gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
-    MilterManagerChildrenPrivate *priv;
-
-    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     if (!is_end_of_message_state(children, context, "add-recipient",
                                  "<<%s> <%s>>",
                                  recipient, parameters ? parameters : "(null)"))
         return;
 
-    if (milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context))) {
-        milter_debug("[%u] [children][evaluation][add-recipient] "
-                     "<<%s> <%s>> [%u] %s",
-                     priv->tag,
-                     recipient,
-                     parameters ? parameters : "(null)",
-                     milter_agent_get_tag(MILTER_AGENT(context)),
-                     milter_server_context_get_name(context));
+    if (is_evaluation_mode(children, context, "add-recipient",
+                           "<<%s> <%s>>",
+                           recipient, parameters ? parameters : "(null)"))
         return;
-    }
 
     g_signal_emit_by_name(children, "add-recipient", recipient, parameters);
 }
@@ -1695,23 +1688,14 @@ cb_delete_recipient (MilterServerContext *context,
                      gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
-    MilterManagerChildrenPrivate *priv;
-
-    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     if (!is_end_of_message_state(children, context, "delete-recipient",
                                  "<%s>", recipient))
         return;
 
-    if (milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context))) {
-        milter_debug("[%u] [children][evaluation][delete-recipient] "
-                     "<%s> [%u] %s",
-                     priv->tag,
-                     recipient,
-                     milter_agent_get_tag(MILTER_AGENT(context)),
-                     milter_server_context_get_name(context));
+    if (is_evaluation_mode(children, context, "delete-recipient",
+                           "<%s>", recipient))
         return;
-    }
 
     g_signal_emit_by_name(children, "delete-recipient", recipient);
 }
@@ -1730,15 +1714,9 @@ cb_replace_body (MilterServerContext *context,
                                  "<%" G_GSIZE_FORMAT ">", chunk_size))
         return;
 
-    if (milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context))) {
-        milter_debug("[%u] [children][evaluation][replace-body] "
-                     "<%" G_GSIZE_FORMAT "> [%u] %s",
-                     priv->tag,
-                     chunk_size,
-                     milter_agent_get_tag(MILTER_AGENT(context)),
-                     milter_server_context_get_name(context));
+    if (is_evaluation_mode(children, context, "replace-body",
+                           "<%" G_GSIZE_FORMAT ">", chunk_size))
         return;
-    }
 
     if (!priv->replaced_body_for_each_child)
         dispose_body_related_data(priv);
@@ -1775,14 +1753,9 @@ cb_quarantine (MilterServerContext *context,
                                  "<%s>", reason))
         return;
 
-    if (milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context))) {
-        milter_debug("[%u] [children][evaluation][quarantine] <%s> [%u] %s",
-                     priv->tag,
-                     reason ? reason : "(null)",
-                     milter_agent_get_tag(MILTER_AGENT(context)),
-                     milter_server_context_get_name(context));
+    if (is_evaluation_mode(children, context, "quarantine",
+                           "<%s>", reason))
         return;
-    }
 
     if (priv->quarantine_reason)
         g_free(priv->quarantine_reason);

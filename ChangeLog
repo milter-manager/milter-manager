@@ -1,5 +1,7 @@
 2009-08-16  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/manager/milter-manager-children.c: cleanup.
+
 	* milter/manager/milter-manager-children.c,
 	test/fixtures/leader/replace-body-evaluation.{txt,conf},
 	test/manager/test-leader.c: ignore replace-body on evaluation mode.
