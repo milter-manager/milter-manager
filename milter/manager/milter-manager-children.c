@@ -1533,6 +1533,17 @@ cb_delete_header (MilterServerContext *context,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
+    if (milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context))) {
+        milter_debug("[%u] [children][evaluation][delete-header] "
+                     "<%s>[%u] [%u] %s",
+                     priv->tag,
+                     name,
+                     index,
+                     milter_agent_get_tag(MILTER_AGENT(context)),
+                     milter_server_context_get_name(context));
+        return;
+    }
+
     milter_headers_delete_header(priv->headers, name, index);
 }
 

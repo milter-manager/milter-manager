@@ -24,6 +24,8 @@ EXTRA_DIST =								\
 	data-again.txt							\
 	data-reply-code-reject.txt					\
 	delete-header.txt						\
+	delete-header-evaluation.txt					\
+	delete-header-evaluation.conf					\
 	delete-recipient.txt						\
 	end-of-header.txt						\
 	end-of-header-again.txt						\

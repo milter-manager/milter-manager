@@ -1,6 +1,7 @@
 [scenario]
 clients=client10026;client10027
 import=data.txt
+configuration=delete-header-evaluation.conf
 actions=header;end-of-header;body;end-of-message-delete-header
 
 [client10026]
@@ -48,7 +49,7 @@ response=end-of-message
 n_received=2
 status=continue
 
-headers=X-Test-Header2:Test-Header2-Value1
+headers=X-Test-Header1:Test-Header1-Value1;X-Test-Header2:Test-Header2-Value1
 
 chunks=;Hi,;
 end_of_message_chunks=;;
