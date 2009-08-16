@@ -1421,11 +1421,15 @@ normalize_header_value (MilterManagerChildren *children,
 static gboolean
 is_end_of_message_state (MilterManagerChildren *children,
                          MilterServerContext *context,
-                         const gchar *requested_action_name)
+                         const gchar *requested_action_name,
+                         const gchar *format,
+                         ...)
 {
     MilterManagerChildrenPrivate *priv;
     MilterServerContextState state;
     gchar *state_name;
+    va_list args;
+    GString *additional_info = NULL;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
     state = milter_server_context_get_state(context);
@@ -1433,17 +1437,26 @@ is_end_of_message_state (MilterManagerChildren *children,
     if (state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
         return TRUE;
 
+    if (format) {
+        additional_info = g_string_new(" ");
+        va_start(args, format);
+        g_string_append_vprintf(additional_info, format, args);
+        va_end(args);
+    }
+
     state_name =
         milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
                                         state);
-    milter_error("[%u] [children][error][invalid-state][%s][%s] "
+    milter_error("[%u] [children][error][invalid-state][%s][%s]%s "
                  "[%u] only allowed in end of message session: %s",
                  priv->tag,
                  requested_action_name,
                  state_name,
+                 additional_info ? additional_info->str : "",
                  milter_agent_get_tag(MILTER_AGENT(context)),
                  milter_server_context_get_name(context));
     g_free(state_name);
+    g_string_free(additional_info, TRUE);
 
     milter_server_context_quit(context);
     return FALSE;
@@ -1460,7 +1473,8 @@ cb_add_header (MilterServerContext *context,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    if (!is_end_of_message_state(children, context, "add-header"))
+    if (!is_end_of_message_state(children, context, "add-header",
+                                 "<%s>=<%s>", name, value ? value : "(null)"))
         return;
 
     if (milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context))) {
@@ -1502,7 +1516,9 @@ cb_insert_header (MilterServerContext *context,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    if (!is_end_of_message_state(children, context, "insert-header"))
+    if (!is_end_of_message_state(children, context, "insert-header",
+                                 "[%u]<%s>=<%s>",
+                                 index, name, value ? value : "(null)"))
         return;
 
     if (milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context))) {
@@ -1546,7 +1562,9 @@ cb_change_header (MilterServerContext *context,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    if (!is_end_of_message_state(children, context, "change-header"))
+    if (!is_end_of_message_state(children, context, "change-header",
+                                 "<%s>[%u]=<%s>",
+                                 name, index, value ? value : "(null)"))
         return;
 
     if (milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context))) {
@@ -1590,7 +1608,8 @@ cb_delete_header (MilterServerContext *context,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    if (!is_end_of_message_state(children, context, "delete-header"))
+    if (!is_end_of_message_state(children, context, "delete-header",
+                                 "<%s>[%u]", name, index))
         return;
 
     if (milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context))) {
@@ -1619,12 +1638,14 @@ cb_change_from (MilterServerContext *context,
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
     state = milter_server_context_get_state(context);
 
-    if (!is_end_of_message_state(children, context, "change-from"))
+    if (!is_end_of_message_state(children, context, "change-from",
+                                 "<<%s> <%s>>",
+                                 from, parameters ? parameters : "(null)"))
         return;
 
     if (milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context))) {
         milter_debug("[%u] [children][evaluation][change-from] "
-                     "<%s> <%s> [%u] %s",
+                     "<<%s> <%s>> [%u] %s",
                      priv->tag,
                      from,
                      parameters ? parameters : "(null)",
@@ -1648,7 +1669,9 @@ cb_add_recipient (MilterServerContext *context,
 {
     MilterManagerChildren *children = user_data;
 
-    if (!is_end_of_message_state(children, context, "add-recipient"))
+    if (!is_end_of_message_state(children, context, "add-recipient",
+                                 "<<%s> <%s>>",
+                                 recipient, parameters ? parameters : "(null)"))
         return;
 
     g_signal_emit_by_name(children, "add-recipient", recipient, parameters);
@@ -1661,7 +1684,8 @@ cb_delete_recipient (MilterServerContext *context,
 {
     MilterManagerChildren *children = user_data;
 
-    if (!is_end_of_message_state(children, context, "delete-recipient"))
+    if (!is_end_of_message_state(children, context, "delete-recipient",
+                                 "<%s>", recipient))
         return;
 
     g_signal_emit_by_name(children, "delete-recipient", recipient);
@@ -1677,7 +1701,8 @@ cb_replace_body (MilterServerContext *context,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    if (!is_end_of_message_state(children, context, "replace-body"))
+    if (!is_end_of_message_state(children, context, "replace-body",
+                                 "<%" G_GSIZE_FORMAT ">", chunk_size))
         return;
 
     if (!priv->replaced_body_for_each_child)
@@ -1695,7 +1720,7 @@ cb_progress (MilterServerContext *context, gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
 
-    if (!is_end_of_message_state(children, context, "progress"))
+    if (!is_end_of_message_state(children, context, "progress", NULL))
         return;
 
     g_signal_emit_by_name(user_data, "progress");
@@ -1711,7 +1736,8 @@ cb_quarantine (MilterServerContext *context,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    if (!is_end_of_message_state(children, context, "quarantine"))
+    if (!is_end_of_message_state(children, context, "quarantine",
+                                 "<%s>", reason))
         return;
 
     if (milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context))) {

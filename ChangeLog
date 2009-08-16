@@ -1,5 +1,8 @@
 2009-08-16  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/manager/milter-manager-children.c: support additional
+	information on invalid state.
+
 	* milter/manager/milter-manager-children.c: check end-of-message
 	state.
 
