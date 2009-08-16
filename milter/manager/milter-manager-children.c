@@ -1416,7 +1416,7 @@ cb_add_header (MilterServerContext *context,
         milter_debug("[%u] [children][evaluation][add-header] <%s>=<%s> [%u] %s",
                      priv->tag,
                      name,
-                     value ? value : "NULL",
+                     value ? value : "(null)",
                      milter_agent_get_tag(MILTER_AGENT(context)),
                      milter_server_context_get_name(context));
         return;
@@ -1457,7 +1457,7 @@ cb_insert_header (MilterServerContext *context,
                      priv->tag,
                      index,
                      name,
-                     value ? value : "NULL",
+                     value ? value : "(null)",
                      milter_agent_get_tag(MILTER_AGENT(context)),
                      milter_server_context_get_name(context));
         return;
@@ -1498,7 +1498,7 @@ cb_change_header (MilterServerContext *context,
                      priv->tag,
                      name,
                      index,
-                     value ? value : "NULL",
+                     value ? value : "(null)",
                      milter_agent_get_tag(MILTER_AGENT(context)),
                      milter_server_context_get_name(context));
         return;
@@ -1552,7 +1552,22 @@ cb_change_from (MilterServerContext *context,
                 const gchar *from, const gchar *parameters,
                 gpointer user_data)
 {
-    g_signal_emit_by_name(user_data, "change-from", from, parameters);
+    MilterManagerChildren *children = user_data;
+    MilterManagerChildrenPrivate *priv;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+    if (milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context))) {
+        milter_debug("[%u] [children][evaluation][change-from] "
+                     "<%s> <%s> [%u] %s",
+                     priv->tag,
+                     from,
+                     parameters ? parameters : "(null)",
+                     milter_agent_get_tag(MILTER_AGENT(context)),
+                     milter_server_context_get_name(context));
+        return;
+    }
+
+    g_signal_emit_by_name(children, "change-from", from, parameters);
 }
 
 static void
@@ -1655,7 +1670,7 @@ cb_quarantine (MilterServerContext *context,
     if (milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context))) {
         milter_debug("[%u] [children][evaluation][quarantine] <%s> [%u] %s",
                      priv->tag,
-                     reason ? reason : "NULL",
+                     reason ? reason : "(null)",
                      milter_agent_get_tag(MILTER_AGENT(context)),
                      milter_server_context_get_name(context));
         return;

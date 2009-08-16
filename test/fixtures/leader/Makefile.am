@@ -13,6 +13,8 @@ EXTRA_DIST =								\
 	body.txt							\
 	body-again.txt							\
 	change-from.txt							\
+	change-from-evaluation.txt					\
+	change-from-evaluation.conf					\
 	change-header.txt						\
 	change-header-with-leading-space.txt				\
 	change-header-evaluation.txt					\

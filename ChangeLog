@@ -1,6 +1,10 @@
 2009-08-16  Kouhei Sutou  <kou@clear-code.com>
 
 	* milter/manager/milter-manager-children.c,
+	test/fixtures/leader/change-from-evaluation.{txt,conf},
+	test/manager/test-leader.c: ignore change-from on evaluation mode.
+
+	* milter/manager/milter-manager-children.c,
 	test/fixtures/leader/delete-header-evaluation.{txt,conf},
 	test/manager/test-leader.c: ignore delete-header on evaluation mode.
 
