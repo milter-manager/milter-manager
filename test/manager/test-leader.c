@@ -1111,6 +1111,7 @@ do_end_of_message_header (MilterManagerTestScenario *scenario,
     cut_assert(actual_headers);
     actual_header_list = milter_headers_get_list(actual_headers);
 
+    cut_set_message("[%s]", group);
     gcut_assert_equal_list(
         expected_headers, actual_header_list,
         (GEqualFunc)milter_header_equal,
@@ -1356,33 +1357,52 @@ data_scenario_basic (void)
 static void
 data_scenario_end_of_message_action (void)
 {
-    cut_add_data("quarantine", g_strdup("quarantine.txt"), g_free,
+    cut_add_data("quarantine",
+                 g_strdup("quarantine.txt"), g_free,
                  "quarantine - header-change",
                  g_strdup("quarantine-header-change.txt"), g_free,
                  "quarantine - evaluation",
                  g_strdup("quarantine-evaluation.txt"), g_free,
-                 "add-header", g_strdup("add-header.txt"), g_free,
+                 NULL);
+
+    cut_add_data("add-header",
+                 g_strdup("add-header.txt"), g_free,
                  "add-header - with-leading-space",
                  g_strdup("add-header-with-leading-space.txt"), g_free,
                  "add-header - evaluation",
                  g_strdup("add-header-evaluation.txt"), g_free,
-                 "insert-header", g_strdup("insert-header.txt"), g_free,
+                 NULL);
+
+    cut_add_data("insert-header",
+                 g_strdup("insert-header.txt"), g_free,
                  "insert-header - with-leading-space",
                  g_strdup("insert-header-with-leading-space.txt"), g_free,
                  "insert-header - evaluation",
                  g_strdup("insert-header-evaluation.txt"), g_free,
-                 "change-header", g_strdup("change-header.txt"), g_free,
+                 NULL);
+
+    cut_add_data("change-header",
+                 g_strdup("change-header.txt"), g_free,
                  "change-header - with-leading-space",
                  g_strdup("change-header-with-leading-space.txt"), g_free,
-                 "delete-header", g_strdup("delete-header.txt"), g_free,
+                 "change-header - evaluation",
+                 g_strdup("change-header-evaluation.txt"), g_free,
+                 NULL);
+
+    cut_add_data("delete-header", g_strdup("delete-header.txt"), g_free,
                  "change-from", g_strdup("change-from.txt"), g_free,
                  "add-recipient", g_strdup("add-recipient.txt"), g_free,
                  "delete-recipient", g_strdup("delete-recipient.txt"), g_free,
-                 "replace-body", g_strdup("replace-body.txt"), g_free,
-                 "progress", g_strdup("progress.txt"), g_free);
+                 NULL);
 
     cut_add_data("replace-body - overwrite",
-                 g_strdup("replace-body-overwrite.txt"), g_free);
+                 g_strdup("replace-body-overwrite.txt"), g_free,
+                 "replace-body",
+                 g_strdup("replace-body.txt"), g_free,
+                 NULL);
+
+    cut_add_data("progress", g_strdup("progress.txt"), g_free,
+                 NULL);
 }
 
 static void

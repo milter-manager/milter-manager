@@ -1492,6 +1492,18 @@ cb_change_header (MilterServerContext *context,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
+    if (milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context))) {
+        milter_debug("[%u] [children][evaluation][change-header] "
+                     "<%s>[%u]=<%s> [%u] %s",
+                     priv->tag,
+                     name,
+                     index,
+                     value ? value : "NULL",
+                     milter_agent_get_tag(MILTER_AGENT(context)),
+                     milter_server_context_get_name(context));
+        return;
+    }
+
     normalized_value = normalize_header_value(children, context, value);
     milter_headers_change_header(priv->headers,
                                  name, index,

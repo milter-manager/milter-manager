@@ -1,3 +1,9 @@
+2009-08-16  Kouhei Sutou  <kou@clear-code.com>
+
+	* milter/manager/milter-manager-children.c,
+	test/fixtures/leader/change-header-evaluation.{txt,conf},
+	test/manager/test-leader.c: ignore change-header on evaluation mode.
+
 2009-08-14  Kouhei Sutou  <kou@clear-code.com>
 
 	* milter/manager/milter-manager-children.c,

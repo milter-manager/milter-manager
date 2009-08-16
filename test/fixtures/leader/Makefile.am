@@ -15,6 +15,8 @@ EXTRA_DIST =								\
 	change-from.txt							\
 	change-header.txt						\
 	change-header-with-leading-space.txt				\
+	change-header-evaluation.txt					\
+	change-header-evaluation.conf					\
 	connect-with-macro.txt						\
 	connect.txt							\
 	data.txt							\
