@@ -1,3 +1,7 @@
+2009-08-20  Kouhei Sutou  <kou@clear-code.com>
+
+	* TODO: add an investigation.
+
 2009-08-16  Kouhei Sutou  <kou@clear-code.com>
 
 	* milter/manager/milter-manager-children.c: cleanup.
