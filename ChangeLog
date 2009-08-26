@@ -1,5 +1,9 @@
 2009-08-26  Yuto Hayamizu  <y.hayamizu@gmail.com>
 
+	* binding/ruby/src/toolkit/rb-milter-client-context.c (progress): add
+
+	* binding/ruby/test/toolkit/test-client-context.rb (TestClientContext#test_progress): add
+
 	* milter/manager/milter-manager-leader.c (cb_add_header,
 	cb_insert_header, cb_change_header): add milter_statistic of sessions
 

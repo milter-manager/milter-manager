@@ -34,6 +34,12 @@ feed (VALUE self, VALUE chunk)
     return self;
 }
 
+static VALUE
+progress (VALUE self)
+{
+    return CBOOL2RVAL(milter_client_context_progress(SELF(self)));
+}
+
 void
 Init_milter_client_context (void)
 {
@@ -45,6 +51,7 @@ Init_milter_client_context (void)
 		 "ClientContextError", rb_mMilter, rb_eMilterError);
 
     rb_define_method(rb_cMilterClientContext, "feed", feed, 1);
+    rb_define_method(rb_cMilterClientContext, "progress", progress, 0);
 
     G_DEF_SETTERS(rb_cMilterClientContext);
 }

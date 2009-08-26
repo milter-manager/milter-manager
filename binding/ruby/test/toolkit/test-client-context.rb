@@ -31,4 +31,8 @@ class TestClientContext < Test::Unit::TestCase
     @context.feed(encoder.encode_negotiate(option))
     assert_equal(option, received_option)
   end
+
+  def test_progress
+    assert_true(@context.progress)
+  end
 end
