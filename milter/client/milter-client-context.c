@@ -65,7 +65,8 @@ enum
 enum
 {
     PROP_0,
-    PROP_STATE
+    PROP_STATE,
+    PROP_OPTION
 };
 
 static gint signals[LAST_SIGNAL] = {0};
@@ -232,6 +233,13 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                              MILTER_CLIENT_CONTEXT_STATE_INVALID,
                              G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_STATE, spec);
+
+    spec = g_param_spec_object("option",
+                               "Option",
+                               "The option of client context",
+                               MILTER_TYPE_OPTION,
+                               G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_OPTION, spec);
 
     /**
      * MilterClientContext::negotiate:
@@ -1563,6 +1571,10 @@ set_property (GObject      *object,
         milter_client_context_set_state(MILTER_CLIENT_CONTEXT(object),
                                         g_value_get_enum(value));
         break;
+    case PROP_OPTION:
+        milter_client_context_set_option(MILTER_CLIENT_CONTEXT(object),
+                                         g_value_get_object(value));
+        break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -1581,6 +1593,9 @@ get_property (GObject    *object,
     switch (prop_id) {
     case PROP_STATE:
         g_value_set_enum(value, priv->state);
+        break;
+    case PROP_OPTION:
+        g_value_set_object(value, priv->option);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);

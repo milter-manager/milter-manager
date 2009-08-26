@@ -1,5 +1,7 @@
 2009-08-26  Yuto Hayamizu  <y.hayamizu@gmail.com>
 
+	* milter/client/milter-client-context.c: add OPTION property to MilterClientContext
+
 	* milter/client/milter-client-context.c: add STATE property to MilterClientContext
 
 	* binding/ruby/src/toolkit/rb-milter-client-context.c (progress): add
