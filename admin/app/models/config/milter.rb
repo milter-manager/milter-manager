@@ -115,8 +115,9 @@ class Config::Milter < ActiveRecord::Base
         xml = content_tag("name", @milter.name)
         xml << content_tag("connection-spec", @milter.connection_spec)
         xml << content_tag("description", @milter.description)
-        xml << content_boolean_tag("enabled", @milter.enabled)
+        xml << content_boolean_tag("enabled", @milter.enabled?)
         xml << content_tag("fallback-status", @milter.fallback_status)
+        xml << content_boolean_tag("evaluation-mode", @milter.evaluation_mode?)
         xml << content_timeout_tag("connection-timeout",
                                    @milter.connection_timeout)
         xml << content_timeout_tag("writing-timeout",

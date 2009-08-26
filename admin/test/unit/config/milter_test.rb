@@ -91,6 +91,8 @@ class Config::MilterTest < ActiveSupport::TestCase
     <milter>
       <name>virus scanner</name>
       <connection-spec>inet:10028@localhost</connection-spec>
+      <enabled>false</enabled>
+      <evaluation-mode>false</evaluation-mode>
       <command>virus-scan-milter</command>
       <applicable-conditions>
         <applicable-condition>S25R</applicable-condition>
@@ -104,6 +106,8 @@ EOX
     milter.description = "virus scan milter"
     milter.enabled = true
     milter.connection_timeout = 300
+    milter.fallback_status = "accept"
+    milter.evaluation_mode = false
     milter.writing_timeout = 30
     milter.reading_timeout = 20
     milter.end_of_message_timeout = 900
@@ -114,6 +118,8 @@ EOX
       <connection-spec>inet:10028@localhost</connection-spec>
       <description>virus scan milter</description>
       <enabled>true</enabled>
+      <fallback-status>accept</fallback-status>
+      <evaluation-mode>false</evaluation-mode>
       <connection-timeout>300.0</connection-timeout>
       <writing-timeout>30.0</writing-timeout>
       <reading-timeout>20.0</reading-timeout>

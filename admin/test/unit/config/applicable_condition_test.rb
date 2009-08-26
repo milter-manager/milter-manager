@@ -5,7 +5,8 @@ class Config::ApplicableConditionTest < ActiveSupport::TestCase
     s25r = applicable_conditions(:s25r)
     remote_network = applicable_conditions(:remote_network)
     conditions = [s25r, remote_network]
-    assert_equal(conditions, Config::ApplicableCondition.find(:all))
+    assert_equal(conditions.sort_by(&:id),
+                 Config::ApplicableCondition.find(:all).sort_by(&:id))
 
     new_condition_config = {
       "name" => "my condition",
@@ -33,7 +34,8 @@ class Config::ApplicableConditionTest < ActiveSupport::TestCase
 
     virus_scanner = milters(:virus_scanner)
     greylist = milters(:greylist)
-    assert_equal([virus_scanner, greylist], s25r.milters)
+    assert_equal([virus_scanner, greylist].sort_by(&:id),
+                 s25r.milters.sort_by(&:id))
 
     anti_spam = milters(:anti_spam)
     s25r.milters.delete(greylist)
