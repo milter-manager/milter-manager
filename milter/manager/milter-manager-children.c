@@ -1438,10 +1438,14 @@ is_end_of_message_state (MilterManagerChildren *children,
         return TRUE;
 
     if (format) {
+        gchar *additional_info_content;
+        
         additional_info = g_string_new(" ");
         va_start(args, format);
-        g_string_append_vprintf(additional_info, format, args);
+        additional_info_content = g_strdup_vprintf(format, args);
         va_end(args);
+        g_string_append(additional_info, additional_info_content);
+        g_free(additional_info_content);
     }
 
     state_name =
@@ -1480,10 +1484,14 @@ is_evaluation_mode (MilterManagerChildren *children,
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     if (format) {
+        gchar *additional_info_content;
+        
         additional_info = g_string_new(" ");
         va_start(args, format);
-        g_string_append_vprintf(additional_info, format, args);
+        additional_info_content = g_strdup_vprintf(format, args);
         va_end(args);
+        g_string_append(additional_info, additional_info_content);
+        g_free(additional_info_content);
     }
 
     milter_debug("[%u] [children][evaluation][%s]%s [%u] %s",

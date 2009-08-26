@@ -1,5 +1,8 @@
 2009-08-26  Yuto Hayamizu  <y.hayamizu@gmail.com>
 
+	* milter/manager/milter-manager-children.c (is_end_of_message_state)
+	(is_evaluation_mode): removed use of g_string_append_vprintf, which requires glib >= 2.14
+
 	* test/manager/test-leader.c (cut_startup, cut_teardown): renamed from startup, teardown
 
 	* test/manager/test-children.c (cut_startup, cut_teardown): renamed from startup, teardown
