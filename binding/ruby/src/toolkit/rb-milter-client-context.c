@@ -54,6 +54,27 @@ add_header (VALUE self, VALUE name, VALUE value)
     return Qnil;
 }
 
+static VALUE
+set_reply (VALUE self, VALUE code, VALUE extended_code, VALUE message)
+{
+    GError *error = NULL;
+
+    if (!milter_client_context_set_reply(SELF(self),
+                                         NUM2UINT(code),
+                                         StringValueCStr(extended_code),
+                                         StringValueCStr(message),
+                                         &error))
+        RAISE_GERROR(error);
+
+    return Qnil;
+}
+
+static VALUE
+format_reply (VALUE self)
+{
+    return CSTR2RVAL_FREE(milter_client_context_format_reply(SELF(self)));
+}
+
 void
 Init_milter_client_context (void)
 {
@@ -71,6 +92,8 @@ Init_milter_client_context (void)
     rb_define_method(rb_cMilterClientContext, "feed", feed, 1);
     rb_define_method(rb_cMilterClientContext, "progress", progress, 0);
     rb_define_method(rb_cMilterClientContext, "add_header", add_header, 2);
+    rb_define_method(rb_cMilterClientContext, "set_reply", set_reply, 3);
+    rb_define_method(rb_cMilterClientContext, "format_reply", format_reply, 0);
 
     G_DEF_SETTERS(rb_cMilterClientContext);
 }

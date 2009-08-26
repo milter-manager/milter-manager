@@ -37,6 +37,24 @@ client_shutdown (VALUE self)
     return Qnil;
 }
 
+static VALUE
+client_get_connection_spec (VALUE self)
+{
+    return CSTR2RVAL(milter_client_get_connection_spec(SELF(self)));
+}
+
+static VALUE
+client_set_connection_spec (VALUE self, VALUE spec)
+{
+    GError *error = NULL;
+
+    if (!milter_client_set_connection_spec(SELF(self),
+                                           StringValueCStr(spec), &error))
+        RAISE_GERROR(error);
+
+    return Qnil;
+}
+
 void
 Init_milter_client (void)
 {
@@ -51,6 +69,12 @@ Init_milter_client (void)
 
     rb_define_method(rb_cMilterClient, "main", client_main, 0);
     rb_define_method(rb_cMilterClient, "shutdown", client_shutdown, 0);
+    rb_define_method(rb_cMilterClient, "connection_spec",
+                     client_get_connection_spec, 0);
+    rb_define_method(rb_cMilterClient, "set_connection_spec",
+                     client_set_connection_spec, 1);
 
+    G_DEF_SETTERS(rb_cMilterClient);
+    
     Init_milter_client_context();
 }
