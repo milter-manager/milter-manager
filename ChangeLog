@@ -1,5 +1,8 @@
 2009-08-26  Yuto Hayamizu  <y.hayamizu@gmail.com>
 
+	* milter/manager/milter-manager-leader.c (cb_add_header,
+	cb_insert_header, cb_change_header): add milter_statistic of sessions
+
 	* milter/manager/milter-manager-children.c (is_end_of_message_state)
 	(is_evaluation_mode): removed use of g_string_append_vprintf, which requires glib >= 2.14
 
