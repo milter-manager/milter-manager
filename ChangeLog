@@ -1,5 +1,8 @@
 2009-08-26  Yuto Hayamizu  <y.hayamizu@gmail.com>
 
+	* tmp/send-mail.rb, tmp/milter-progress.rb,
+	tmp/milter-add-header.rb: add scripts for reproducing the bug (actions on end-of-message are ignored)
+
 	* milter/manager/milter-manager-children.c (cb_progress): add debug print.
 
 	* binding/ruby/test/toolkit/test-client.rb: add test of (get|set)_connection_spec.
