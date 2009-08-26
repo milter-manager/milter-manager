@@ -47,6 +47,7 @@ void test_remove_unix_socket_on_create_accessor (void);
 void test_remove_unix_socket_on_create (void);
 void test_not_remove_unix_socket_on_create (void);
 void test_suspend_time_on_unacceptable (void);
+void test_connection_spec (void);
 
 static MilterClient *client;
 static MilterTestServer *server;
@@ -738,6 +739,18 @@ test_suspend_time_on_unacceptable (void)
     milter_client_set_suspend_time_on_unacceptable(client, 1);
     cut_assert_equal_uint(
         1, milter_client_get_suspend_time_on_unacceptable(client));
+}
+
+void
+test_connection_spec (void)
+{
+    GError *error = NULL;
+    cut_assert_equal_string(NULL,
+                            milter_client_get_connection_spec(client));
+    milter_client_set_connection_spec(client, "inet:12345", &error);
+    gcut_assert_error(error);
+    cut_assert_equal_string("inet:12345",
+                            milter_client_get_connection_spec(client));
 }
 
 /*

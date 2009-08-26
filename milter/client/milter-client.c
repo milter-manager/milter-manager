@@ -385,6 +385,12 @@ milter_client_get_default_connection_spec (MilterClient *client)
         return NULL;
 }
 
+const gchar *
+milter_client_get_connection_spec (MilterClient *client)
+{
+    return MILTER_CLIENT_GET_PRIVATE(client)->connection_spec;
+}
+
 gboolean
 milter_client_set_connection_spec (MilterClient *client, const gchar *spec,
                                    GError **error)

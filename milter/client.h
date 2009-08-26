@@ -267,6 +267,18 @@ gchar               *milter_client_get_default_connection_spec
                                                      (MilterClient  *client);
 
 /**
+ * milter_client_get_connection_spec:
+ * @client: a %MilterClient.
+ *
+ * Gets the connection specification. The connection specification
+ * should not be freed.
+ *
+ * Returns: the connection specification.
+ */
+const gchar         *milter_client_get_connection_spec
+                                                     (MilterClient  *client);
+
+/**
  * milter_client_set_connection_spec:
  * @client: a %MilterClient.
  * @spec: a connection specification like inet:10025.
