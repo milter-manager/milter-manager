@@ -352,12 +352,17 @@ module Milter::Manager
               if @egg_config.has_key?("fallback_status")
                 milter.fallback_status = @egg_config["fallback_status"]
               end
+              if @egg_config.has_key?("evaluation_mode")
+                milter.evaluation_mode = @egg_config["evaluation_mode"]
+              end
             end
             @egg_config = nil
           when "milter_applicable_condition"
             @egg_config["applicable_conditions"] << text
           when "milter_enabled"
             @egg_config["enabled"] = text == "true"
+          when "milter_evaluation_mode"
+            @egg_config["evaluation_mode"] = text == "true"
           when /\Amilter_/
             @egg_config[$POSTMATCH] = text
           else
@@ -413,7 +418,7 @@ module Milter::Manager
             available_locals = ["name", "description",
                                 "enabled", "connection_spec",
                                 "command", "command_options",
-                                "fallback_status"]
+                                "fallback_status", "evaluation_mode"]
             case local
             when "applicable_conditions"
               @egg_config["applicable_conditions"] = []
