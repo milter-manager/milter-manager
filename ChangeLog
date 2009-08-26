@@ -1,5 +1,22 @@
 2009-08-26  Yuto Hayamizu  <y.hayamizu@gmail.com>
 
+	* milter/manager/milter-manager-children.c (cb_progress): add debug print.
+
+	* binding/ruby/test/toolkit/test-client.rb: add test of (get|set)_connection_spec.
+
+	* binding/ruby/test/toolkit/test-client-context.rb (TestClientContext#test_set_reply): add test of set_reply.
+
+	* binding/ruby/src/toolkit/rb-milter-client.c (client_get_connection_spec,
+	client_set_connection_spec): add bindings of
+	milter_client_(get|set)_connection_spec.
+
+	* binding/ruby/src/toolkit/rb-milter-client-context.c (set_reply, format_reply): add bindings of milter_client_context_(set_reply|format_reply).
+
+	* test/client/test-client.c (test_connection_spec): test of
+	milter_client_get_connection_spec.
+
+	* milter/client/milter-client.c	(milter_client_get_connection_spec): add.
+
 	* binding/ruby/test/toolkit/test-option.rb: add test of add_action.
 
 	* binding/ruby/test/toolkit/test-client-context.rb: add test of add_header.

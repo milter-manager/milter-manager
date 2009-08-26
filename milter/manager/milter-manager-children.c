@@ -1740,10 +1740,19 @@ static void
 cb_progress (MilterServerContext *context, gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
+    MilterManagerChildrenPrivate *priv;
+    guint tag;
+    const gchar *child_name;
 
     if (!is_end_of_message_state(children, context, "progress", NULL))
         return;
 
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+    tag = milter_agent_get_tag(MILTER_AGENT(context));
+    child_name = milter_server_context_get_name(context);
+
+    milter_debug("[%u] [children][progress] [%u] %s",
+                 priv->tag, tag, child_name);
     g_signal_emit_by_name(user_data, "progress");
 }
 
