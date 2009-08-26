@@ -62,6 +62,12 @@ enum
     LAST_SIGNAL
 };
 
+enum
+{
+    PROP_0,
+    PROP_STATE
+};
+
 static gint signals[LAST_SIGNAL] = {0};
 
 static gboolean    status_accumulator  (GSignalInvocationHint *hint,
@@ -181,6 +187,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
 {
     GObjectClass *gobject_class;
     MilterAgentClass *agent_class;
+    GParamSpec *spec;
 
     gobject_class = G_OBJECT_CLASS(klass);
     agent_class = MILTER_AGENT_CLASS(klass);
@@ -217,6 +224,14 @@ milter_client_context_class_init (MilterClientContextClass *klass)
     klass->body_response = body_response;
     klass->end_of_message_response = end_of_message_response;
     klass->abort_response = abort_response;
+
+    spec = g_param_spec_enum("state",
+                             "State",
+                             "The state of client context",
+                             MILTER_TYPE_CLIENT_CONTEXT_STATE,
+                             MILTER_CLIENT_CONTEXT_STATE_INVALID,
+                             G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_STATE, spec);
 
     /**
      * MilterClientContext::negotiate:
@@ -1544,7 +1559,11 @@ set_property (GObject      *object,
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(object);
     switch (prop_id) {
-      default:
+    case PROP_STATE:
+        milter_client_context_set_state(MILTER_CLIENT_CONTEXT(object),
+                                        g_value_get_enum(value));
+        break;
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
@@ -1560,7 +1579,10 @@ get_property (GObject    *object,
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(object);
     switch (prop_id) {
-      default:
+    case PROP_STATE:
+        g_value_set_enum(value, priv->state);
+        break;
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
