@@ -40,6 +40,20 @@ progress (VALUE self)
     return CBOOL2RVAL(milter_client_context_progress(SELF(self)));
 }
 
+static VALUE
+add_header (VALUE self, VALUE name, VALUE value)
+{
+    GError *error = NULL;
+
+    if (!milter_client_context_add_header(SELF(self),
+                                          StringValueCStr(name),
+                                          StringValueCStr(value),
+                                          &error))
+        RAISE_GERROR(error);
+
+    return Qnil;
+}
+
 void
 Init_milter_client_context (void)
 {
@@ -49,9 +63,15 @@ Init_milter_client_context (void)
                                           "ClientContext", rb_mMilter);
     G_DEF_ERROR2(MILTER_CLIENT_CONTEXT_ERROR,
 		 "ClientContextError", rb_mMilter, rb_eMilterError);
+    
+    G_DEF_CLASS(MILTER_TYPE_CLIENT_CONTEXT_STATE, "ClientContextState", rb_mMilter);
+    G_DEF_CONSTANTS(rb_cMilterClientContext, MILTER_TYPE_CLIENT_CONTEXT_STATE,
+                    "MILTER_CLIENT_CONTEXT_");
 
     rb_define_method(rb_cMilterClientContext, "feed", feed, 1);
     rb_define_method(rb_cMilterClientContext, "progress", progress, 0);
+    rb_define_method(rb_cMilterClientContext, "add_header", add_header, 2);
 
     G_DEF_SETTERS(rb_cMilterClientContext);
 }
+

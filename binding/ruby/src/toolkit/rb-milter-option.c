@@ -72,6 +72,13 @@ equal (VALUE self, VALUE other)
 }
 
 static VALUE
+add_action (VALUE self, VALUE action)
+{
+    milter_option_add_action(SELF(self), RVAL2ACTION_FLAGS(action));
+    return Qnil;
+}
+
+static VALUE
 remove_step (VALUE self, VALUE step)
 {
     milter_option_remove_step(SELF(self), RVAL2STEP_FLAGS(step));
@@ -107,6 +114,7 @@ Init_milter_option (void)
 
     rb_define_method(rb_cMilterOption, "initialize", initialize, -1);
     rb_define_method(rb_cMilterOption, "==", equal, 1);
+    rb_define_method(rb_cMilterOption, "add_action", add_action, 1);
     rb_define_method(rb_cMilterOption, "remove_step", remove_step, 1);
 
     G_DEF_SETTERS(rb_cMilterOption);

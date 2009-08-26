@@ -35,4 +35,13 @@ class TestClientContext < Test::Unit::TestCase
   def test_progress
     assert_true(@context.progress)
   end
+
+  def test_add_header
+    @context.option = Milter::Option.new
+    @context.option.add_action(Milter::ACTION_ADD_HEADERS)
+    @context.state = Milter::ClientContext::STATE_END_OF_MESSAGE
+    assert_nothing_raised do
+      @context.add_header("foo", "bar")
+    end
+  end
 end

@@ -1,5 +1,13 @@
 2009-08-26  Yuto Hayamizu  <y.hayamizu@gmail.com>
 
+	* binding/ruby/test/toolkit/test-option.rb: add test of add_action.
+
+	* binding/ruby/test/toolkit/test-client-context.rb: add test of add_header.
+
+	* binding/ruby/src/toolkit/rb-milter-option.c: add add_action method.
+
+	* binding/ruby/src/toolkit/rb-milter-client-context.c: add add_header method.
+
 	* milter/client/milter-client-context.c: add OPTION property to MilterClientContext
 
 	* milter/client/milter-client-context.c: add STATE property to MilterClientContext

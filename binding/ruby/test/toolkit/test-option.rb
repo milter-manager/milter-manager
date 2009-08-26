@@ -21,6 +21,14 @@ class TestOption < Test::Unit::TestCase
     assert_const_defined(Milter, :ACTION_NONE)
   end
 
+  def test_add_action
+    option = Milter::Option.new
+    assert_equal(Milter::ACTION_NONE, option.action)
+    
+    option.add_action(Milter::ACTION_ADD_HEADERS)
+    assert_equal(Milter::ACTION_ADD_HEADERS, option.action)
+  end
+
   def test_step_flags
     assert_const_defined(Milter, :StepFlags)
     assert_const_defined(Milter, :STEP_NONE)
