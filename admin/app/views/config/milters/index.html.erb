@@ -4,20 +4,29 @@
   <tr>
     <th><%= t("label.name") %></th>
     <th><%= t("label.description") %></th>
-    <th><%= t("label.enabled") %></th>
+    <th><%= t("label.enabled") %></td>
+    <th><%= t("label.evaluation-mode") %></th>
     <th><%= t("label.operations") %></th>
   </tr>
 <% @milters.each do |milter| -%>
   <tr <%= enabled_class(milter.enabled?) %>>
     <td><%= link_to(h(milter.name), config_milter_path(milter)) %></td>
     <td><p><%= h(milter.description) %></p></td>
-    <td><%= check_box_tag("milter-enabled-#{milter.id}",
-	                  "1",
-                          milter.enabled?,
-                          :disabled => true) %>
+    <td class="checkbox-cell">
+      <%= check_box_tag("milter-enabled-#{milter.id}",
+	                "1",
+                        milter.enabled?,
+                        :disabled => true) %>
+     <%= toggle_enabled_link(milter) %>
+    </td>
+    <td class="checkbox-cell">
+      <%= check_box_tag("milter-evaluation-mode-#{milter.id}",
+	                "1",
+                        milter.evaluation_mode?,
+                        :disabled => true) %>
+     <%= toggle_evaluation_mode_link(milter) %>
     </td>
     <td>
-     [<%= toggle_enabled_link(milter) %>]
      [<%= link_to(t("action.edit"), edit_config_milter_path(milter)) %>]
      [<%= link_to(t("action.destroy"), milter,
                   :confirm => t("message.confirm.delete"),

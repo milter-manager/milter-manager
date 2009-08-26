@@ -57,4 +57,16 @@ module Config::MiltersHelper
               :method => :put)
     end
   end
+
+  def toggle_evaluation_mode_link(milter)
+    if milter.evaluation_mode?
+      link_to(t("action.disable"),
+              {:id => milter, :action => "disable_evaluation_mode"},
+              :method => :put)
+    else
+      link_to(t("action.enable"),
+              {:id => milter, :action => "enable_evaluation_mode"},
+              :method => :put)
+    end
+  end
 end

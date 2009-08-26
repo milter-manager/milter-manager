@@ -126,6 +126,17 @@ tr.concatenated
   text-align: right;
 }
 
+td.checkbox-cell
+{
+  text-align: center;
+}
+
+td.checkbox-cell input
+{
+  display: block;
+  margin: auto;
+}
+
 p.disabled
 {
   color: red;

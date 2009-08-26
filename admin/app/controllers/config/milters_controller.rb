@@ -76,6 +76,22 @@ class Config::MiltersController < ApplicationController
                              :target => t("target.milter")))
   end
 
+  def enable_evaluation_mode
+    milter = Config::Milter.find(params[:id])
+    milter.evaluation_mode = true
+    save_and_back_to_index(milter,
+                           t("notice.success.enable-evaluation-mode",
+                             :target => t("target.milter")))
+  end
+
+  def disable_evaluation_mode
+    milter = Config::Milter.find(params[:id])
+    milter.evaluation_mode = false
+    save_and_back_to_index(milter,
+                           t("notice.success.disable-evaluation-mode",
+                             :target => t("target.milter")))
+  end
+
   private
   def save_milter(milter)
     begin

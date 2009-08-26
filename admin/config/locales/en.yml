@@ -50,6 +50,7 @@ en:
       accept: "Accept"
       temporary-failure: "Temporary failure"
       reject: "Reject"
+    evaluation-mode: "Evaluation mode"
   action:
     edit: "Edit"
     update: "Update"

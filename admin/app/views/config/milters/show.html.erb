@@ -25,6 +25,10 @@
     <th><%= t("label.fallback-status.description") %></th>
     <td><%= t("label.fallback-status.#{@milter.fallback_status}") %></td>
   </tr>
+  <tr>
+    <th><%= t("label.evaluation-mode") %></th>
+    <td><%= enabled_label(@milter.evaluation_mode?) %></td>
+  </tr>
 </table>
 
 <h3><%= t("title.applicable-conditions") %></h3>

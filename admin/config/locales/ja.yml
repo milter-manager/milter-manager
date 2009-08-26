@@ -57,6 +57,7 @@ ja:
       accept: "受信"
       temporary-failure: "一時的に拒否"
       reject: "拒否"
+    evaluation-mode: "評価モード"
   action:
     add: "追加"
     show: "表示"
@@ -65,8 +66,8 @@ ja:
     create: "作成"
     destroy: "削除"
     list: "一覧"
-    enable: "有効にする"
-    disable: "無効にする"
+    enable: "有効"
+    disable: "無効"
     login: "ログイン"
   notice:
     success:
@@ -74,6 +75,8 @@ ja:
       update: "{{target}}を正常に更新しました。"
       enable: "{{target}}を有効にしました。"
       disable: "{{target}}を無効にしました。"
+      enable-evaluation-mode: "{{target}}を評価モードにしました。"
+      disable-evaluation-mode: "{{target}}の評価モードを解除しました。"
       signup: "登録しました。"
       login: "ログインしました。"
       logout: "ログアウトしました。"

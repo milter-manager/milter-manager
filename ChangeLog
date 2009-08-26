@@ -1,5 +1,7 @@
 2009-08-26  Kouhei Sutou  <kou@clear-code.com>
 
+	* admin/: support evaluation-mode changes.
+
 	* binding/ruby/lib/milter/manager.rb: support evaluation-mode.
 
 	* admin/: accept evaluation-mode value.
