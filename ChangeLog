@@ -1,5 +1,7 @@
 2009-08-26  Kouhei Sutou  <kou@clear-code.com>
 
+	* admin/config/environment.rb: Rails: 2.3.2 -> 2.3.3.
+
 	* admin/config/environment.rb: jeremyevans-exception_notification:
 	1.0.20081208 -> 1.0.20090728.
 
