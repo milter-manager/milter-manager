@@ -113,7 +113,7 @@ static GList *test_clients;
 static MilterOption *actual_option;
 
 void
-startup (void)
+cut_startup (void)
 {
     MILTER_TYPE_MANAGER_CHILD_ERROR;
     MILTER_TYPE_SERVER_CONTEXT_ERROR;
@@ -425,7 +425,7 @@ arguments_free (GArray *arguments)
 }
 
 void
-teardown (void)
+cut_teardown (void)
 {
     if (config)
         g_object_unref(config);

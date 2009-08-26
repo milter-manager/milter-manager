@@ -67,7 +67,7 @@ static gint n_unknown_responses;
 static MilterStatus response_status;
 
 void
-startup (void)
+cut_startup (void)
 {
     MILTER_TYPE_CLIENT_CONTEXT_ERROR;
     MILTER_TYPE_MANAGER_CHILDREN_ERROR;
@@ -308,7 +308,7 @@ setup (void)
 }
 
 void
-teardown (void)
+cut_teardown (void)
 {
     if (config)
         g_object_unref(config);

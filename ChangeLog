@@ -1,3 +1,11 @@
+2009-08-26  Yuto Hayamizu  <y.hayamizu@gmail.com>
+
+	* test/manager/test-leader.c (cut_startup, cut_teardown): renamed from startup, teardown
+
+	* test/manager/test-children.c (cut_startup, cut_teardown): renamed from startup, teardown
+
+	* milter/manager/milter-manager-main.c (update_max_file_descriptors): cast rlimit_max to gint64
+
 2009-08-20  Kouhei Sutou  <kou@clear-code.com>
 
 	* TODO: add an investigation.
