@@ -582,7 +582,7 @@ update_max_file_descriptors (MilterManager *manager)
     if (setrlimit(RLIMIT_NOFILE, &rlimit) != 0) {
         milter_manager_error("failed to set limit for RLIMIT_NOFILE: "
                              "%" G_GINT64_FORMAT ": %s",
-                             rlimit.rlim_max, g_strerror(errno));
+                             (gint64)rlimit.rlim_max, g_strerror(errno));
         return;
     }
 }
