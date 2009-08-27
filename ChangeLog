@@ -1,3 +1,7 @@
+2009-08-27  Kouhei Sutou  <kou@clear-code.com>
+
+	* NEWS.ja: fix a typo. I'm so sorry...
+
 2009-08-26  Kouhei Sutou  <kou@clear-code.com>
 
 	* admin/: support evaluation-mode changes.
