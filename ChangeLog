@@ -1,3 +1,10 @@
+2009-08-28  Kouhei Sutou  <kou@clear-code.com>
+
+	* test/fixtures/leader/add-header-evaluation-temporary-failure.{txt,conf},
+	test/manager/test-leader.c: add a test for a bug that add-header
+	is ignored by evaluation mode milter's temporary failure.  This is
+	not fixed yet...
+
 2009-08-27  Kouhei Sutou  <kou@clear-code.com>
 
 	* NEWS.ja: fix a typo. I'm so sorry...

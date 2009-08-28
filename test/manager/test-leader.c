@@ -1371,6 +1371,8 @@ data_scenario_end_of_message_action (void)
                  g_strdup("add-header-with-leading-space.txt"), g_free,
                  "add-header - evaluation",
                  g_strdup("add-header-evaluation.txt"), g_free,
+                 "add-header - evaluation - temporary failure",
+                 g_strdup("add-header-evaluation-temporary-failure.txt"), g_free,
                  NULL);
 
     cut_add_data("insert-header",

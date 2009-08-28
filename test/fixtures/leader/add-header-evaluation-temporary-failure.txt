@@ -1,0 +1,25 @@
+[scenario]
+clients=client10026;client10027
+import=body.txt
+configuration=add-header-evaluation-temporary-failure.conf
+actions=end-of-message-add-header
+
+[client10026]
+port=10026
+arguments=--add-header;X-Test-Header1:Test Header1 Value
+
+[client10027]
+port=10027
+arguments=--action;temporary-failure;--end-of-message
+
+[end-of-message-add-header]
+command=end-of-message
+
+response=end-of-message
+n_received=2
+status=continue
+
+headers=From:kou+sender@example.com;X-Test-Header1:Test Header1 Value
+
+chunks=;Hi,;
+end_of_message_chunks=;;

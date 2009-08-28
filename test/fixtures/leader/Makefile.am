@@ -5,6 +5,8 @@ EXTRA_DIST =								\
 	add-header-with-leading-space.txt				\
 	add-header-evaluation.txt					\
 	add-header-evaluation.conf					\
+	add-header-evaluation-temporary-failure.txt			\
+	add-header-evaluation-temporary-failure.conf			\
 	add-recipient.txt						\
 	add-recipient-evaluation.txt					\
 	add-recipient-evaluation.conf					\
