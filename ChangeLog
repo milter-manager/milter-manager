@@ -1,5 +1,7 @@
 2009-08-31  Kouhei Sutou  <kou@clear-code.com>
 
+	* test/manager/test-manager.c: pass with GLib 2.21.0.
+
 	* test/fixtures/leader/add-header-evaluation-discard.{txt,conf},
 	test/manager/test-leader.c: add a test for evaluation mode,
 	message modification signals and discard.

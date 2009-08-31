@@ -404,7 +404,11 @@ test_unknown_option (void)
             "  %s [OPTION...]\n"
             "\n"
             "Help Options:\n"
+#if GLIB_CHECK_VERSION(2, 21, 0)
+            "  -h, --help                     Show help options\n"
+#else
             "  -?, --help                     Show help options\n"
+#endif
             "\n"
             "Application Options:\n"
             "  -s, --connection-spec=SPEC     The spec of socket. (unix:PATH|inet:PORT[@HOST]|inet6:PORT[@HOST])\n"
