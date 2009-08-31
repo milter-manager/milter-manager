@@ -1,5 +1,9 @@
 2009-08-31  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/manager/milter-manager-children.c: fix a bug that message
+	modification signals are ignored when the last child is evaluation
+	mode and returns temporary failure, reject or discard.
+
 	* README: add Syunsuke Komma. Thanks!!!
 
 	* binding/ruby/lib/milter/manager/,

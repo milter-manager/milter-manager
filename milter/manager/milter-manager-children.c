@@ -1162,7 +1162,7 @@ cb_temporary_failure (MilterServerContext *context, gpointer user_data)
     case MILTER_SERVER_CONTEXT_STATE_BODY:
     case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
         milter_server_context_set_processing_message(context, FALSE);
-        emit_reply_status_of_state(children, state);
+        emit_reply_for_message_oriented_command(children, state);
         milter_manager_children_abort(children);
         break;
     default:
@@ -1224,7 +1224,7 @@ cb_reject (MilterServerContext *context, gpointer user_data)
     case MILTER_SERVER_CONTEXT_STATE_BODY:
     case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
         milter_server_context_set_processing_message(context, FALSE);
-        emit_reply_status_of_state(children, state);
+        emit_reply_for_message_oriented_command(children, state);
         milter_manager_children_abort(children);
         break;
     default:
@@ -1352,7 +1352,7 @@ cb_discard (MilterServerContext *context, gpointer user_data)
     case MILTER_SERVER_CONTEXT_STATE_BODY:
     case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
         milter_server_context_set_processing_message(context, FALSE);
-        emit_reply_status_of_state(children, state);
+        emit_reply_for_message_oriented_command(children, state);
         milter_manager_children_abort(children);
         break;
     default:
