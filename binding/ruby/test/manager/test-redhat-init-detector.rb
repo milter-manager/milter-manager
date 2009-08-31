@@ -239,7 +239,6 @@ EOC
                   nil]])
   end
 
-
   def test_apply_clamav_milter_before_0_95_style_with_config
     (@init_d + "clamav-milter").open("w") do |file|
       file << clamav_milter_before_0_95_init_header
@@ -305,6 +304,39 @@ EOC
                   "unix:/var/clamav/clmilter.socket"]])
   end
 
+  def test_apply_clamav_milter_epel_style
+    (@init_d + "clamav-milter").open("w") do |file|
+      file << clamav_milter_epel_init_header
+    end
+    create_rc_files("clamav-milter")
+
+    clamav_milter_conf = @tmp_dir + "clamav-milter.conf"
+    (@sysconfig_dir + "clamav-milter").open("w") do |file|
+      file << <<-EOC
+CLAMAV_FLAGS='-lo -c #{clamav_milter_conf} local:/var/run/clamav-milter/clamav.sock'
+EOC
+    end
+
+    clamav_milter_conf.open("w") do |file|
+      file << <<-'EOC'
+# Comment or remove the line below.
+# Example
+
+MilterSocket inet:7357
+EOC
+    end
+
+    detector = redhat_init_detector("clamav-milter")
+    detector.detect
+    detector.apply(@loader)
+    assert_eggs([["clamav-milter",
+                  "clamav-milter is a daemon which hooks into sendmail " +
+                  "and routes email messages for virus scanning with ClamAV",
+                  true,
+                  (@init_d + "clamav-milter").to_s,
+                  "start",
+                  "inet:7357"]])
+  end
 
   def test_apply_milter_greylist_style
     (@init_d + "milter-greylist").open("w") do |file|
@@ -595,6 +627,31 @@ EOS
 . /etc/sysconfig/network
 
 [ -x /usr/sbin/clamav-milter ] || exit 0
+
+# Local clamav-milter config
+CLAMAV_FLAGS=
+test -f /etc/sysconfig/clamav-milter && . /etc/sysconfig/clamav-milter
+EOS
+  end
+
+  def clamav_milter_epel_init_header
+    <<-'EOS'
+#!/bin/sh
+#
+# clamav-milter This script starts and stops the clamav-milter daemon
+#
+# chkconfig: - 79 40
+#
+# description: clamav-milter is a daemon which hooks into sendmail and routes \
+#              email messages for virus scanning with ClamAV
+# processname: clamav-milter
+# pidfile: /var/lock/subsys/clamav-milter
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+# Source networking configuration.
+. /etc/sysconfig/network
 
 # Local clamav-milter config
 CLAMAV_FLAGS=

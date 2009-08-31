@@ -121,7 +121,9 @@ module Milter::Manager
     end
 
     def clamav_milter_conf
-      extract_parameter_from_flags(@variables["CLAMAV_FLAGS"], "--config-file")
+      flags = @variables["CLAMAV_FLAGS"]
+      extract_parameter_from_flags(flags, "--config-file") ||
+        extract_parameter_from_flags(flags, "-c")
     end
 
     def milter_greylist_conf

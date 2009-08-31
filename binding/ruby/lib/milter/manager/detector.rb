@@ -83,9 +83,9 @@ module Milter::Manager
 
     def extract_variables(output, content, options={})
       if options[:accept_lower_case]
-        variable_definition_re = /\b([A-Za-z\d_]+)=(".*?"|\S*)/
+        variable_definition_re = /\b([A-Za-z\d_]+)=(".*?"|'.*?'|\S*)/
       else
-        variable_definition_re = /\b([A-Z\d_]+)=(".*?"|\S*)/
+        variable_definition_re = /\b([A-Z\d_]+)=(".*?"|'.*?'|\S*)/
       end
 
       content.each_line do |line|
@@ -99,7 +99,7 @@ module Milter::Manager
     end
 
     def normalize_variable_value(value)
-      value = value.sub(/\A"(.*)"\z/, '\\1')
+      value = value.sub(/\A([\"\'])(.*)\1\z/, '\2')
       return nil if /\A\$\d+\z/ =~ value
       variable_expand_re = /\$(\{?)([a-zA-Z\d_]+)(\}?)/
       value.gsub(variable_expand_re) do |matched|
