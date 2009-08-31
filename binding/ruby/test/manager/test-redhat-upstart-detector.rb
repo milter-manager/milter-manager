@@ -62,6 +62,39 @@ EOC
                   "unix:/var/clamav/clmilter.socket"]])
   end
 
+  def test_apply_clamav_milter_style_example
+    clamav_milter_conf = @tmp_dir + "clamav-milter.conf"
+    (@event_d + "clamav-milter").open("w") do |file|
+      file << clamav_milter_upstart(clamav_milter_conf)
+    end
+
+    clamav_milter_conf.open("w") do |file|
+      file << <<-'EOC'
+# Define the interface through which we communicate with sendmail
+# This option is mandatory! Possible formats are:
+# [[unix|local]:]/path/to/file - to specify a unix domain socket
+# inet:port@[hostname|ip-address] - to specify an ipv4 socket
+# inet6:port@[hostname|ip-address] - to specify an ipv6 socket
+#
+# Default: no default
+MilterSocket unix:/var/clamav/clmilter.socket
+#MilterSocket inet:7357
+
+Example
+EOC
+    end
+
+    detector = redhat_upstart_detector("clamav-milter")
+    detector.detect
+    detector.apply(@loader)
+    assert_eggs([["clamav-milter",
+                  nil,
+                  false,
+                  "/sbin/start",
+                  "clamav-milter",
+                  "unix:/var/clamav/clmilter.socket"]])
+  end
+
   def test_apply_milter_greylist_style
     (@event_d + "milter-greylist").open("w") do |file|
       file << milter_greylist_upstart

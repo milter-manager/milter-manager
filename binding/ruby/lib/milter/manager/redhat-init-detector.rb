@@ -27,7 +27,8 @@ module Milter::Manager
     end
 
     def enabled?
-      !guess_spec.nil? and !rc_files.empty? and !clamav_milter_example?
+      !guess_spec.nil? and !rc_files.empty? and
+        !(clamav_milter_0_95_or_later? and clamav_milter_example?)
     end
 
     def detect_enma_connection_spec
@@ -49,11 +50,6 @@ module Milter::Manager
 
     def clamav_milter_0_95_or_later?
       clamav_milter? and !@variables["SOCKET_ADDRESS"]
-    end
-
-    def clamav_milter_example?
-      clamav_milter_0_95_or_later? and
-        clamav_milter_config_parser.example?
     end
 
     def detect_milter_greylist_connection_spec

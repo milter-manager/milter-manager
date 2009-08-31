@@ -25,7 +25,8 @@ module Milter::Manager
     end
 
     def enabled?
-      @variables["ENABLED"] != "0"
+      @variables["ENABLED"] != "0" and
+        !(clamav_milter_0_95_or_later? and clamav_milter_example?)
     end
 
     def detect_clamav_milter_connection_spec

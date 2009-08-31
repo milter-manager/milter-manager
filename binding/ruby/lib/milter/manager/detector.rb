@@ -49,6 +49,14 @@ module Milter::Manager
       "start"
     end
 
+    def detect_clamav_milter_connection_spec
+      clamav_milter_config_parser.milter_socket
+    end
+
+    def clamav_milter_example?
+      clamav_milter_config_parser.example?
+    end
+
     private
     def init_variables
       @name = nil

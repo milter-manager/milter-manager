@@ -43,11 +43,8 @@ module Milter::Manager
     end
 
     def enabled?
-      !guess_spec.nil? and @enabled
-    end
-
-    def detect_clamav_milter_connection_spec
-      clamav_milter_config_parser.milter_socket
+      !guess_spec.nil? and @enabled and
+        !(clamav_milter? and clamav_milter_example?)
     end
 
     def detect_milter_greylist_connection_spec

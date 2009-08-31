@@ -1,6 +1,9 @@
 2009-08-31  Kouhei Sutou  <kou@clear-code.com>
 
 	* binding/ruby/lib/milter/manager/,
+	binding/ruby/test/manager/: consider Example in clamav-milter config.
+
+	* binding/ruby/lib/milter/manager/,
 	binding/ruby/test/manager/: ClamAVMilterSocketDetector ->
 	ClamAVMilterConfigParser.
 
