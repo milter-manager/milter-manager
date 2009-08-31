@@ -1,5 +1,7 @@
 2009-08-31  Kouhei Sutou  <kou@clear-code.com>
 
+	* README: add Syunsuke Komma. Thanks!!!
+
 	* binding/ruby/lib/milter/manager/,
 	binding/ruby/test/manager/: consider Example in clamav-milter config.
 
@@ -11,6 +13,7 @@
 	binding/ruby/lib/milter/manager/redhat-init-detector.rb,
 	binding/ruby/test/manager/test-redhat-init-detector.rb: support
 	EPEL style clamav-milter.
+	Reported by Syunsuke Komma. Thanks!!!
 
 2009-08-28  Kouhei Sutou  <kou@clear-code.com>
 
