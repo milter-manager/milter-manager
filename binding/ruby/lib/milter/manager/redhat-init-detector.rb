@@ -15,7 +15,7 @@
 
 require 'milter/manager/init-detector'
 require 'milter/manager/enma-socket-detector'
-require 'milter/manager/clamav-milter-socket-detector'
+require 'milter/manager/clamav-milter-config-parser'
 require 'milter/manager/milter-greylist-socket-detector'
 
 module Milter::Manager
@@ -27,7 +27,7 @@ module Milter::Manager
     end
 
     def enabled?
-      !guess_spec.nil? and !rc_files.empty?
+      !guess_spec.nil? and !rc_files.empty? and !clamav_milter_example?
     end
 
     def detect_enma_connection_spec
@@ -40,8 +40,7 @@ module Milter::Manager
     end
 
     def detect_clamav_milter_connection_spec
-      conf = clamav_milter_conf || etc_file("clamav-milter.conf")
-      Milter::Manager::ClamAVMilterSocketDetector.new(conf).detect
+      clamav_milter_config_parser.milter_socket
     end
 
     def clamav_milter?
@@ -50,6 +49,11 @@ module Milter::Manager
 
     def clamav_milter_0_95_or_later?
       clamav_milter? and !@variables["SOCKET_ADDRESS"]
+    end
+
+    def clamav_milter_example?
+      clamav_milter_0_95_or_later? and
+        clamav_milter_config_parser.example?
     end
 
     def detect_milter_greylist_connection_spec
@@ -173,6 +177,21 @@ module Milter::Manager
       Dir.glob(File.join(init_base_dir,
                          "rc[0-6].d",
                          "[SK][0-9][0-9]#{@script_name}"))
+    end
+
+    def init_variables
+      super
+      @clamav_milter_config_parser = nil
+    end
+
+    def clamav_milter_config_parser
+      if @clamav_milter_config_parser.nil?
+        conf = clamav_milter_conf || etc_file("clamav-milter.conf")
+        @clamav_milter_config_parser =
+          Milter::Manager::ClamAVMilterConfigParser.new
+        @clamav_milter_config_parser.parse(conf)
+      end
+      @clamav_milter_config_parser
     end
   end
 end

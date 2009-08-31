@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
-require 'milter/manager/clamav-milter-socket-detector'
+require 'milter/manager/clamav-milter-config-parser'
 require 'milter/manager/milter-greylist-socket-detector'
 
 module Milter::Manager
@@ -47,8 +47,7 @@ module Milter::Manager
     end
 
     def detect_clamav_milter_connection_spec
-      conf = clamav_milter_conf || etc_file("clamav-milter.conf")
-      Milter::Manager::ClamAVMilterSocketDetector.new(conf).detect
+      clamav_milter_config_parser.milter_socket
     end
 
     def detect_milter_greylist_connection_spec
@@ -70,6 +69,7 @@ module Milter::Manager
       @description = nil
       @enabled = false
       @exec = nil
+      @clamav_milter_config_parser = nil
     end
 
     def parse_upstart_script
@@ -140,6 +140,16 @@ module Milter::Manager
 
     def etc_file(*paths)
       File.join(etc_dir, *paths)
+    end
+
+    def clamav_milter_config_parser
+      if @clamav_milter_config_parser.nil?
+        conf = clamav_milter_conf || etc_file("clamav-milter.conf")
+        @clamav_milter_config_parser =
+          Milter::Manager::ClamAVMilterConfigParser.new
+        @clamav_milter_config_parser.parse(conf)
+      end
+      @clamav_milter_config_parser
     end
   end
 end

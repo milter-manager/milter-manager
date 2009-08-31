@@ -338,6 +338,40 @@ EOC
                   "inet:7357"]])
   end
 
+  def test_apply_clamav_milter_epel_style_example
+    (@init_d + "clamav-milter").open("w") do |file|
+      file << clamav_milter_epel_init_header
+    end
+    create_rc_files("clamav-milter")
+
+    clamav_milter_conf = @tmp_dir + "clamav-milter.conf"
+    (@sysconfig_dir + "clamav-milter").open("w") do |file|
+      file << <<-EOC
+CLAMAV_FLAGS='-lo -c #{clamav_milter_conf} local:/var/run/clamav-milter/clamav.sock'
+EOC
+    end
+
+    clamav_milter_conf.open("w") do |file|
+      file << <<-'EOC'
+# Comment or remove the line below.
+Example
+
+MilterSocket inet:7357@[127.0.0.1]
+EOC
+    end
+
+    detector = redhat_init_detector("clamav-milter")
+    detector.detect
+    detector.apply(@loader)
+    assert_eggs([["clamav-milter",
+                  "clamav-milter is a daemon which hooks into sendmail " +
+                  "and routes email messages for virus scanning with ClamAV",
+                  false,
+                  (@init_d + "clamav-milter").to_s,
+                  "start",
+                  "inet:7357@[127.0.0.1]"]])
+  end
+
   def test_apply_milter_greylist_style
     (@init_d + "milter-greylist").open("w") do |file|
       file << milter_greylist_init_header

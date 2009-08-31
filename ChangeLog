@@ -1,5 +1,9 @@
 2009-08-31  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/lib/milter/manager/,
+	binding/ruby/test/manager/: ClamAVMilterSocketDetector ->
+	ClamAVMilterConfigParser.
+
 	* binding/ruby/lib/milter/manager/detector.rb,
 	binding/ruby/lib/milter/manager/redhat-init-detector.rb,
 	binding/ruby/test/manager/test-redhat-init-detector.rb: support

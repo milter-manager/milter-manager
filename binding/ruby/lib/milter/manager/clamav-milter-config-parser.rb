@@ -14,23 +14,29 @@
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 module Milter::Manager
-  class ClamAVMilterSocketDetector
-    def initialize(conf_file)
-      @conf_file = conf_file
+  class ClamAVMilterConfigParser
+    def initialize
+      @variables = {}
     end
 
-    def detect
-      return nil unless File.readable?(@conf_file)
+    def milter_socket
+      @variables["MilterSocket"]
+    end
 
-      connection_spec = nil
-      File.open(@conf_file) do |conf|
+    def example?
+      @variables.has_key?("Example")
+    end
+
+    def parse(conf_file)
+      return unless File.readable?(conf_file)
+
+      File.open(conf_file) do |conf|
         conf.each_line do |line|
-          if /\A\s*MilterSocket\s*(.+)/ =~ line
-            connection_spec = $1
+          if /\A\s*(\w+)(?:\s+(.+))?\s*\z/ =~ line
+            @variables[$1] = $2
           end
         end
       end
-      connection_spec
     end
   end
 end

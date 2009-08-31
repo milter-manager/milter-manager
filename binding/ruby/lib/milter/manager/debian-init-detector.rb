@@ -14,7 +14,7 @@
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 require 'milter/manager/init-detector'
-require 'milter/manager/clamav-milter-socket-detector'
+require 'milter/manager/clamav-milter-config-parser'
 
 module Milter::Manager
   class DebianInitDetector
@@ -29,8 +29,7 @@ module Milter::Manager
     end
 
     def detect_clamav_milter_connection_spec
-      conf = clamav_milter_conf || "/etc/clamav/clamav-milter.conf"
-      Milter::Manager::ClamAVMilterSocketDetector.new(conf).detect
+      clamav_milter_config_parser.milter_socket
     end
 
     def clamav_milter?
@@ -100,6 +99,21 @@ module Milter::Manager
 
     def default_dir
       "/etc/default"
+    end
+
+    def init_variables
+      super
+      @clamav_milter_config_parser = nil
+    end
+
+    def clamav_milter_config_parser
+      if @clamav_milter_config_parser.nil?
+        conf = clamav_milter_conf || "/etc/clamav/clamav-milter.conf"
+        @clamav_milter_config_parser =
+          Milter::Manager::ClamAVMilterConfigParser.new
+        @clamav_milter_config_parser.parse(conf)
+      end
+      @clamav_milter_config_parser
     end
   end
 end
