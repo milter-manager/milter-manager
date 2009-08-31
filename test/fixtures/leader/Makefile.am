@@ -7,6 +7,8 @@ EXTRA_DIST =								\
 	add-header-evaluation.conf					\
 	add-header-evaluation-temporary-failure.txt			\
 	add-header-evaluation-temporary-failure.conf			\
+	add-header-evaluation-reject.txt				\
+	add-header-evaluation-reject.conf				\
 	add-recipient.txt						\
 	add-recipient-evaluation.txt					\
 	add-recipient-evaluation.conf					\
