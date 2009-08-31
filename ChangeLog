@@ -1,5 +1,9 @@
 2009-08-31  Kouhei Sutou  <kou@clear-code.com>
 
+	* test/fixtures/leader/add-header-evaluation-discard.{txt,conf},
+	test/manager/test-leader.c: add a test for evaluation mode,
+	message modification signals and discard.
+
 	* test/fixtures/leader/add-header-evaluation-reject.{txt,conf},
 	test/manager/test-leader.c: add a test for evaluation mode,
 	message modification signals and reject.
