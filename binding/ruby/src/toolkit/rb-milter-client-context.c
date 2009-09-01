@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -94,6 +94,13 @@ Init_milter_client_context (void)
     rb_define_method(rb_cMilterClientContext, "add_header", add_header, 2);
     rb_define_method(rb_cMilterClientContext, "set_reply", set_reply, 3);
     rb_define_method(rb_cMilterClientContext, "format_reply", format_reply, 0);
+
+    G_DEF_SIGNAL_FUNC(rb_cMilterClientContext, "connect",
+		      rb_milter__connect_signal_convert);
+    G_DEF_SIGNAL_FUNC(rb_cMilterClientContext, "body",
+		      rb_milter__body_signal_convert);
+    G_DEF_SIGNAL_FUNC(rb_cMilterClientContext, "end-of-message",
+		      rb_milter__end_of_message_signal_convert);
 
     G_DEF_SETTERS(rb_cMilterClientContext);
 }

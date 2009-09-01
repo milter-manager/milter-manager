@@ -169,40 +169,6 @@ context_is_quitted (VALUE self)
     return CBOOL2RVAL(milter_server_context_is_quitted(SELF(self)));
 }
 
-static VALUE
-stop_body_signal_convert (guint num, const GValue *values)
-{
-    return rb_ary_new3(2,
-		       GVAL2RVAL(&values[0]),
-		       rb_str_new(g_value_get_string(&values[1]),
-#if GLIB_SIZEOF_SIZE_T == 8
-				  g_value_get_uint64(&values[2])
-#else
-				  g_value_get_uint(&values[2])
-#endif
-			   ));
-}
-
-static VALUE
-stop_end_of_message_signal_convert (guint num, const GValue *values)
-{
-    VALUE rb_chunk = Qnil;
-    const gchar *chunk;
-    gsize size;
-
-    chunk = g_value_get_string(&values[1]);
-#if GLIB_SIZEOF_SIZE_T == 8
-    size = g_value_get_uint64(&values[2]);
-#else
-    size = g_value_get_uint(&values[2]);
-#endif
-
-    if (chunk && size > 0)
-	rb_chunk = rb_str_new(chunk, size);
-
-    return rb_ary_new3(2, GVAL2RVAL(&values[0]), rb_chunk);
-}
-
 void
 Init_milter_server_context (void)
 {
@@ -241,9 +207,9 @@ Init_milter_server_context (void)
     G_DEF_SIGNAL_FUNC(rb_cMilterServerContext, "stop-on-connect",
 		      rb_milter__connect_signal_convert);
     G_DEF_SIGNAL_FUNC(rb_cMilterServerContext, "stop-on-body",
-		      stop_body_signal_convert);
+		      rb_milter__body_signal_convert);
     G_DEF_SIGNAL_FUNC(rb_cMilterServerContext, "stop-on-end-of-message",
-		      stop_end_of_message_signal_convert);
+		      rb_milter__end_of_message_signal_convert);
 
     G_DEF_SETTERS(rb_cMilterServerContext);
 }

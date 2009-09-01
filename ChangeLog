@@ -1,3 +1,12 @@
+2009-09-01  Kouhei Sutou  <kou@clear-code.com>
+
+	* binding/ruby/src/toolkit/rb-milter-server-context.c:
+	move signal converters to ...
+	* binding/ruby/src/toolkit/rb-milter-core-private.[ch]: ... here.
+
+	* binding/ruby/src/toolkit/rb-milter-client-context.c: use shared
+	signal converters.
+
 2009-08-31  Kouhei Sutou  <kou@clear-code.com>
 
 	* test/manager/test-manager.c: pass with GLib 2.21.0.

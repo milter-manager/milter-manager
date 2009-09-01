@@ -143,3 +143,37 @@ rb_milter__connect_signal_convert (guint num, const GValue *values)
 		       GVAL2RVAL(&values[1]),
 		       rb_address);
 }
+
+VALUE
+rb_milter__body_signal_convert (guint num, const GValue *values)
+{
+    return rb_ary_new3(2,
+		       GVAL2RVAL(&values[0]),
+		       rb_str_new(g_value_get_string(&values[1]),
+#if GLIB_SIZEOF_SIZE_T == 8
+				  g_value_get_uint64(&values[2])
+#else
+				  g_value_get_uint(&values[2])
+#endif
+			   ));
+}
+
+VALUE
+rb_milter__end_of_message_signal_convert (guint num, const GValue *values)
+{
+    VALUE rb_chunk = Qnil;
+    const gchar *chunk;
+    gsize size;
+
+    chunk = g_value_get_string(&values[1]);
+#if GLIB_SIZEOF_SIZE_T == 8
+    size = g_value_get_uint64(&values[2]);
+#else
+    size = g_value_get_uint(&values[2]);
+#endif
+
+    if (chunk && size > 0)
+	rb_chunk = rb_str_new(chunk, size);
+
+    return rb_ary_new3(2, GVAL2RVAL(&values[0]), rb_chunk);
+}

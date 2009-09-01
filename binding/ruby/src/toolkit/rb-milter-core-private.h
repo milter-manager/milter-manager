@@ -62,6 +62,11 @@ void Init_milter_protocol_agent (void);
 GHashTable *rb_milter__rval2macros(VALUE rb_macros);
 VALUE       rb_milter__macros2rval(GHashTable *macros);
 
-VALUE rb_milter__connect_signal_convert(guint num, const GValue *values);
+VALUE rb_milter__connect_signal_convert        (guint num,
+						const GValue *values);
+VALUE rb_milter__body_signal_convert           (guint num,
+						const GValue *values);
+VALUE rb_milter__end_of_message_signal_convert (guint num,
+						const GValue *values);
 
 #endif
