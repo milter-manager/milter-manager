@@ -1,5 +1,8 @@
 2009-09-01  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/lib/milter/Makefile.am
+	(dist_binding_lib_milter_DATA): add missing client.rb.
+
 	* binding/ruby/lib/milter/client.rb: a convenience class to make a
 	milter by Ruby.
 
