@@ -34,7 +34,8 @@ milter_core_public_headers =		\
 	milter-reply-signals.h		\
 	milter-utils.h			\
 	milter-connection.h		\
-	milter-esmtp.h
+	milter-esmtp.h			\
+	milter-message-result.h
 
 enum_source_prefix = milter-enum-types
 enum_sources_h =			\
@@ -77,7 +78,8 @@ libmilter_core_la_SOURCES =		\
 	milter-reply-signals.c		\
 	milter-utils.c			\
 	milter-connection.c		\
-	milter-esmtp.c
+	milter-esmtp.c			\
+	milter-message-result.c
 
 libmilter_core_la_LIBADD =		\
 	$(GLIB_LIBS)

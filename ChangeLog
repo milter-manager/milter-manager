@@ -1,3 +1,8 @@
+2009-09-02  Kouhei Sutou  <kou@clear-code.com>
+
+	* milter/core/milter-message-result.[ch],
+	test/core/test-message-result.c: add MilterMessageResult for logging.
+
 2009-09-01  Kouhei Sutou  <kou@clear-code.com>
 
 	* binding/ruby/lib/milter/Makefile.am
