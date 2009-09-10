@@ -26,7 +26,8 @@ LIBS =								\
 	$(top_builddir)/test/lib/libmilter-test.la		\
 	$(GCUTTER_LIBS)
 
-test_server_context_la_SOURCES = test-server-context.c
-test_server_context_command_la_SOURCES = test-server-context-command.c
-test_server_context_signals_la_SOURCES = test-server-context-signals.c
-test_server_context_stop_signals_la_SOURCES = test-server-context-stop-signals.c
+test_server_context_la_SOURCES			= test-server-context.c
+test_server_context_command_la_SOURCES		= test-server-context-command.c
+test_server_context_signals_la_SOURCES		= test-server-context-signals.c
+test_server_context_stop_signals_la_SOURCES	= \
+	test-server-context-stop-signals.c

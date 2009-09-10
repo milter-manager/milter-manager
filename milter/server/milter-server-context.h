@@ -200,6 +200,9 @@ struct _MilterServerContextClass
     void (*reading_timeout)     (MilterServerContext *context);
     void (*end_of_message_timeout)
                                 (MilterServerContext *context);
+
+    void (*message_processed)   (MilterServerContext *context,
+                                 MilterMessageResult *result);
 };
 
 GQuark               milter_server_context_error_quark (void);

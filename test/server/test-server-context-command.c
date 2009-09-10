@@ -72,12 +72,40 @@ static guint timeout_id;
 
 static GError *expected_error, *actual_error;
 
+static MilterMessageResult *expected_result, *actual_result;
+
+static guint n_message_processed;
+
 static void
 cb_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
 {
     if (actual_error)
         g_error_free(actual_error);
     actual_error = g_error_copy(error);
+}
+
+static void
+cb_message_processed (MilterServerContext *context,
+                      MilterMessageResult *result,
+                      gpointer user_data)
+{
+    if (actual_result)
+        g_object_unref(actual_result);
+    actual_result = result;
+    g_object_ref(actual_result);
+
+    n_message_processed++;
+}
+
+static void
+setup_signals (MilterServerContext *context)
+{
+#define CONNECT(name)                                                   \
+    g_signal_connect(context, #name, G_CALLBACK(cb_ ## name), NULL)
+
+    CONNECT(message_processed);
+    CONNECT(error);
+#undef CONNECT
 }
 
 void
@@ -103,7 +131,7 @@ setup (void)
     milter_server_context_set_option(context, option);
     g_object_unref(option);
 
-    g_signal_connect(context, "error", G_CALLBACK(cb_error), NULL);
+    setup_signals(context);
 
     channel = gcut_string_io_channel_new(NULL);
     g_io_channel_set_encoding(channel, NULL, NULL);
@@ -126,6 +154,10 @@ setup (void)
 
     expected_error = NULL;
     actual_error = NULL;
+
+    n_message_processed = 0;
+    actual_result = NULL;
+    expected_result = NULL;
 }
 
 static void
@@ -173,6 +205,11 @@ teardown (void)
         g_error_free(expected_error);
     if (actual_error)
         g_error_free(actual_error);
+
+    if (actual_result)
+        g_object_unref(actual_result);
+    if (expected_result)
+        g_object_unref(expected_result);
 }
 
 #define milter_test_assert_packet(channel, packet, packet_size)         \
@@ -200,6 +237,98 @@ milter_test_assert_packet_helper (GIOChannel *channel,
                                MILTER_STATUS_ ## status,                \
                                milter_server_context_get_status(context)))
 
+#define milter_test_assert_result(from, recipients, headers,            \
+                                  body_size, state, status,             \
+                                  added_headers, removed_headers,       \
+                                  is_quarantine)                        \
+    cut_trace(milter_test_assert_result_helper(from, recipients,        \
+                                               headers, body_size,      \
+                                               state, status,           \
+                                               added_headers,           \
+                                               removed_headers,         \
+                                               is_quarantine))
+
+static gboolean
+result_equal (gconstpointer data1, gconstpointer data2)
+{
+    MilterMessageResult *result1, *result2;
+
+    result1 = MILTER_MESSAGE_RESULT(data1);
+    result2 = MILTER_MESSAGE_RESULT(data2);
+
+    /* FIXME: need more check! */
+    return
+        g_str_equal(milter_message_result_get_from(result1),
+                    milter_message_result_get_from(result2)) &&
+        (gcut_list_equal_string(
+            milter_message_result_get_recipients(result1),
+            milter_message_result_get_recipients(result2))) &&
+        (milter_message_result_get_body_size(result1) ==
+         milter_message_result_get_body_size(result1));
+}
+
+static void
+milter_test_assert_result_helper (const gchar *from,
+                                  GList *recipients,
+                                  MilterHeaders *headers,
+                                  guint64 body_size,
+                                  MilterState state,
+                                  MilterStatus status,
+                                  MilterHeaders *added_headers,
+                                  MilterHeaders *removed_headers,
+                                  gboolean is_quarantine)
+{
+    if (expected_result)
+        g_object_unref(expected_result);
+
+    expected_result = milter_message_result_new();
+    milter_message_result_set_from(expected_result, from);
+    milter_message_result_set_recipients(expected_result, recipients);
+    milter_message_result_set_headers(expected_result, headers);
+    milter_message_result_set_body_size(expected_result, body_size);
+    milter_message_result_set_state(expected_result, state);
+    milter_message_result_set_status(expected_result, status);
+    milter_message_result_set_added_headers(expected_result, added_headers);
+    milter_message_result_set_removed_headers(expected_result, removed_headers);
+    milter_message_result_set_quarantine(expected_result, is_quarantine);
+
+    gcut_assert_equal_object_custom(expected_result, actual_result,
+                                    result_equal);
+}
+
+#define RECIPIENTS(...)                                 \
+    (GList *)(gcut_take_new_list_string(__VA_ARGS__))
+
+#define HEADERS(...)                            \
+    milter_test_take_new_headers(__VA_ARGS__)
+
+#define STATE(name)                             \
+    MILTER_STATE_ ## name
+
+#define STATUS(name)                            \
+    MILTER_STATUS_ ## name
+
+static MilterHeaders *
+milter_test_take_new_headers (const gchar *name, ...)
+{
+    MilterHeaders *headers;
+    va_list args;
+
+    headers = milter_headers_new();
+
+    va_start(args, name);
+    for (; name; name = va_arg(args, const gchar *)) {
+        const gchar *value;
+
+        value = va_arg(args, const gchar *);
+        milter_headers_add_header(headers, name, value);
+    }
+    va_end(args);
+
+    gcut_take_object(G_OBJECT(headers));
+    return headers;
+}
+
 void
 test_negotiate (void)
 {
@@ -217,6 +346,8 @@ test_negotiate (void)
                                             &packet, &packet_size,
                                             option);
     milter_test_assert_packet(channel, packet, packet_size);
+
+    cut_assert_equal_uint(0, n_message_processed);
 }
 
 void
@@ -250,6 +381,8 @@ test_negotiated_newer_version (void)
                     MILTER_SERVER_CONTEXT_ERROR_NEWER_VERSION_REQUESTED,
                     "unsupported newer version is requested: 2 < 6");
     gcut_assert_equal_error(expected_error, actual_error);
+
+    cut_assert_equal_uint(0, n_message_processed);
 }
 
 static void
@@ -316,6 +449,8 @@ test_connect (void)
                                           (const struct sockaddr *)&address,
                                           sizeof(address));
     milter_test_assert_packet(channel, packet, packet_size);
+
+    cut_assert_equal_uint(0, n_message_processed);
 }
 
 void
@@ -363,6 +498,8 @@ test_connect_with_macro (void)
                                           sizeof(address));
     g_string_append_len(packet_string, packet, packet_size);
     milter_test_assert_packet(channel, packet_string->str, packet_string->len);
+
+    cut_assert_equal_uint(0, n_message_processed);
 }
 
 void
@@ -382,12 +519,14 @@ test_helo (void)
 
     milter_command_encoder_encode_helo(encoder, &packet, &packet_size, fqdn);
     milter_test_assert_packet(channel, packet, packet_size);
+
+    cut_assert_equal_uint(0, n_message_processed);
 }
 
 void
 test_envelope_from (void)
 {
-    const gchar from[] = "example@example.com";
+    const gchar from[] = "sender@example.com";
 
     test_helo();
     packet_free();
@@ -402,12 +541,14 @@ test_envelope_from (void)
     milter_command_encoder_encode_envelope_from(encoder,
                                                 &packet, &packet_size, from);
     milter_test_assert_packet(channel, packet, packet_size);
+
+    cut_assert_equal_uint(0, n_message_processed);
 }
 
 void
 test_envelope_recipient (void)
 {
-    const gchar recipient[] = "example@example.com";
+    const gchar recipient[] = "receiver@example.com";
 
     test_envelope_from();
     packet_free();
@@ -423,6 +564,8 @@ test_envelope_recipient (void)
                                                      &packet, &packet_size,
                                                      recipient);
     milter_test_assert_packet(channel, packet, packet_size);
+
+    cut_assert_equal_uint(0, n_message_processed);
 }
 
 void
@@ -440,6 +583,8 @@ test_data (void)
 
     milter_command_encoder_encode_data(encoder, &packet, &packet_size);
     milter_test_assert_packet(channel, packet, packet_size);
+
+    cut_assert_equal_uint(0, n_message_processed);
 }
 
 void
@@ -458,6 +603,8 @@ test_data_with_protocol_version2 (void)
     milter_test_assert_status(NOT_CHANGE);
 
     milter_test_assert_packet(channel, NULL, 0);
+
+    cut_assert_equal_uint(0, n_message_processed);
 }
 
 void
@@ -501,6 +648,8 @@ test_header (void)
                                          &packet, &packet_size,
                                          name, value);
     milter_test_assert_packet(channel, packet, packet_size);
+
+    cut_assert_equal_uint(0, n_message_processed);
 }
 
 void
@@ -518,6 +667,8 @@ test_end_of_header (void)
 
     milter_command_encoder_encode_end_of_header(encoder, &packet, &packet_size);
     milter_test_assert_packet(channel, packet, packet_size);
+
+    cut_assert_equal_uint(0, n_message_processed);
 }
 
 void
@@ -540,6 +691,8 @@ test_body (void)
                                        chunk, strlen(chunk), &packed_size);
     milter_test_assert_packet(channel, packet, packet_size);
     cut_assert_equal_uint(strlen(chunk), packed_size);
+
+    cut_assert_equal_uint(0, n_message_processed);
 }
 
 void
@@ -561,6 +714,8 @@ test_end_of_message (void)
     milter_command_encoder_encode_end_of_message(encoder, &packet, &packet_size,
                                                  chunk, strlen(chunk));
     milter_test_assert_packet(channel, packet, packet_size);
+
+    cut_assert_equal_uint(0, n_message_processed);
 }
 
 void
@@ -579,6 +734,8 @@ test_end_of_message_without_chunk (void)
     milter_command_encoder_encode_end_of_message(encoder, &packet, &packet_size,
                                                  NULL, 0);
     milter_test_assert_packet(channel, packet, packet_size);
+
+    cut_assert_equal_uint(0, n_message_processed);
 }
 
 void
@@ -596,6 +753,19 @@ test_quit (void)
 
     milter_command_encoder_encode_quit(encoder, &packet, &packet_size);
     milter_test_assert_packet(channel, packet, packet_size);
+
+    cut_assert_equal_uint(1, n_message_processed);
+    milter_test_assert_result("sender@example.com",
+                              RECIPIENTS("receiver@example.com", NULL),
+                              HEADERS("X-HEADER-NAME",
+                                      "MilterServerContext test",
+                                      NULL),
+                              20,
+                              STATE(END_OF_MESSAGE_REPLIED),
+                              STATUS(NOT_CHANGE),
+                              HEADERS(NULL),
+                              HEADERS(NULL),
+                              FALSE);
 }
 
 void

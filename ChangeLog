@@ -1,3 +1,12 @@
+2009-09-10  Kouhei Sutou  <kou@clear-code.com>
+
+	* milter/core.h,
+	milter/core/milter-message-result.[ch]: add MilterMessageResult.
+
+	* milter/server/milter-server-context.[ch],
+	test/server/test-server-context-command.c: emit message processed
+	signal. (work in progress. need more test.)
+
 2009-09-02  Kouhei Sutou  <kou@clear-code.com>
 
 	* milter/core/milter-message-result.[ch],

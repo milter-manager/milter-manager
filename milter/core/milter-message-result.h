@@ -108,6 +108,9 @@ guint64        milter_message_result_get_body_size
 void           milter_message_result_set_body_size
                                                  (MilterMessageResult *result,
                                                   guint64              body_size);
+void           milter_message_result_add_body_size
+                                                 (MilterMessageResult *result,
+                                                  guint64              body_size);
 
 MilterState    milter_message_result_get_state   (MilterMessageResult *result);
 void           milter_message_result_set_state   (MilterMessageResult *result,

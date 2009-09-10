@@ -267,6 +267,14 @@ set_property (GObject      *object,
     case PROP_STATUS:
         milter_message_result_set_status(result, g_value_get_enum(value));
         break;
+    case PROP_ADDED_HEADERS:
+        milter_message_result_set_added_headers(result,
+                                                g_value_get_object(value));
+        break;
+    case PROP_REMOVED_HEADERS:
+        milter_message_result_set_removed_headers(result,
+                                                  g_value_get_object(value));
+        break;
     case PROP_QUARANTINE:
         milter_message_result_set_quarantine(result,
                                              g_value_get_boolean(value));
@@ -305,6 +313,12 @@ get_property (GObject    *object,
         break;
     case PROP_STATUS:
         g_value_set_enum(value, priv->status);
+        break;
+    case PROP_ADDED_HEADERS:
+        g_value_set_object(value, priv->added_headers);
+        break;
+    case PROP_REMOVED_HEADERS:
+        g_value_set_object(value, priv->removed_headers);
         break;
     case PROP_QUARANTINE:
         g_value_set_boolean(value, priv->quarantine);
@@ -427,6 +441,16 @@ milter_message_result_set_body_size (MilterMessageResult *result,
 
     priv = MILTER_MESSAGE_RESULT_GET_PRIVATE(result);
     priv->body_size = body_size;
+}
+
+void
+milter_message_result_add_body_size (MilterMessageResult *result,
+                                     guint64 body_size)
+{
+    MilterMessageResultPrivate *priv;
+
+    priv = MILTER_MESSAGE_RESULT_GET_PRIVATE(result);
+    priv->body_size += body_size;
 }
 
 MilterState
