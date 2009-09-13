@@ -13,8 +13,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
-require 'milter/manager/clamav-milter-config-parser'
-require 'milter/manager/milter-greylist-socket-detector'
+require 'milter/manager/detector'
 
 module Milter::Manager
   class RedHatUpstartDetector
@@ -48,8 +47,7 @@ module Milter::Manager
     end
 
     def detect_milter_greylist_connection_spec
-      conf = milter_greylist_conf || etc_file("mail", "greylist.conf")
-      Milter::Manager::MilterGreylistSocketDetector.new(conf).detect
+      milter_greylist_config_parser.socket
     end
 
     def clamav_milter?
@@ -66,7 +64,6 @@ module Milter::Manager
       @description = nil
       @enabled = false
       @exec = nil
-      @clamav_milter_config_parser = nil
     end
 
     def parse_upstart_script
@@ -100,11 +97,13 @@ module Milter::Manager
     end
 
     def clamav_milter_conf
-      extract_parameter_from_flags(@exec, "-c")
+      extract_parameter_from_flags(@exec, "-c") ||
+        etc_file("clamav-milter.conf")
     end
 
     def milter_greylist_conf
-      extract_parameter_from_flags(@exec, "-f")
+      extract_parameter_from_flags(@exec, "-f") ||
+        etc_file("mail", "greylist.conf")
     end
 
     def guess_spec
@@ -137,16 +136,6 @@ module Milter::Manager
 
     def etc_file(*paths)
       File.join(etc_dir, *paths)
-    end
-
-    def clamav_milter_config_parser
-      if @clamav_milter_config_parser.nil?
-        conf = clamav_milter_conf || etc_file("clamav-milter.conf")
-        @clamav_milter_config_parser =
-          Milter::Manager::ClamAVMilterConfigParser.new
-        @clamav_milter_config_parser.parse(conf)
-      end
-      @clamav_milter_config_parser
     end
   end
 end

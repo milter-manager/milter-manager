@@ -13,6 +13,9 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
+require 'milter/manager/clamav-milter-config-parser'
+require 'milter/manager/milter-greylist-config-parser'
+
 module Milter::Manager
   module Detector
     attr_reader :name, :variables
@@ -37,7 +40,9 @@ module Milter::Manager
           spec = spec.gsub(/\A(?:(unix|local):)+/, '\\1:')
           milter.connection_spec = spec
         end
+        apply_before_block(milter)
         yield(milter) if block_given?
+        apply_after_block(milter)
       end
     end
 
@@ -61,6 +66,8 @@ module Milter::Manager
     def init_variables
       @name = nil
       @variables = {}
+      @clamav_milter_config_parser = nil
+      @milter_greylist_config_parser = nil
     end
 
     def set_variable(name, unnormalized_value)
@@ -144,6 +151,30 @@ module Milter::Manager
 
     def shell_variable?(string)
       /\A\$/ =~ string
+    end
+
+    def apply_before_block(milter)
+    end
+
+    def apply_after_block(milter)
+    end
+
+    def clamav_milter_config_parser
+      if @clamav_milter_config_parser.nil?
+        @clamav_milter_config_parser =
+          Milter::Manager::ClamAVMilterConfigParser.new
+        @clamav_milter_config_parser.parse(clamav_milter_conf)
+      end
+      @clamav_milter_config_parser
+    end
+
+    def milter_greylist_config_parser
+      if @milter_greylist_config_parser.nil?
+        @milter_greylist_config_parser =
+          Milter::Manager::MilterGreylistConfigParser.new
+        @milter_greylist_config_parser.parse(milter_greylist_conf)
+      end
+      @milter_greylist_config_parser
     end
   end
 end

@@ -15,8 +15,6 @@
 
 require 'milter/manager/init-detector'
 require 'milter/manager/enma-socket-detector'
-require 'milter/manager/clamav-milter-config-parser'
-require 'milter/manager/milter-greylist-socket-detector'
 
 module Milter::Manager
   class RedHatInitDetector
@@ -53,8 +51,7 @@ module Milter::Manager
     end
 
     def detect_milter_greylist_connection_spec
-      conf = milter_greylist_conf || etc_file("mail", "greylist.conf")
-      Milter::Manager::MilterGreylistSocketDetector.new(conf).detect
+      milter_greylist_config_parser.socket
     end
 
     def milter_greylist?
@@ -123,12 +120,14 @@ module Milter::Manager
     def clamav_milter_conf
       flags = @variables["CLAMAV_FLAGS"]
       extract_parameter_from_flags(flags, "--config-file") ||
-        extract_parameter_from_flags(flags, "-c")
+        extract_parameter_from_flags(flags, "-c") ||
+        etc_file("clamav-milter.conf")
     end
 
     def milter_greylist_conf
       extract_parameter_from_flags(@variables["OPTIONS"], "-f") ||
-        @info["config"]
+        @info["config"] ||
+        etc_file("mail", "greylist.conf")
     end
 
     def guess_spec
@@ -173,21 +172,6 @@ module Milter::Manager
       Dir.glob(File.join(init_base_dir,
                          "rc[0-6].d",
                          "[SK][0-9][0-9]#{@script_name}"))
-    end
-
-    def init_variables
-      super
-      @clamav_milter_config_parser = nil
-    end
-
-    def clamav_milter_config_parser
-      if @clamav_milter_config_parser.nil?
-        conf = clamav_milter_conf || etc_file("clamav-milter.conf")
-        @clamav_milter_config_parser =
-          Milter::Manager::ClamAVMilterConfigParser.new
-        @clamav_milter_config_parser.parse(conf)
-      end
-      @clamav_milter_config_parser
     end
   end
 end

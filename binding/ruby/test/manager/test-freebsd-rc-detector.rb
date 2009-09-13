@@ -254,6 +254,52 @@ EOM
                   (@rc_d + "milter-greylist").to_s,
                   "start",
                   "unix:/var/milter-greylist/milter-greylist.sock"]])
+
+    milter_greylist_egg = @configuration.eggs[0]
+    assert_equal([10, 10],
+                 [milter_greylist_egg.writing_timeout,
+                  milter_greylist_egg.reading_timeout])
+  end
+
+  def test_apply_milter_greylist_tarpit_style
+    milter_greylist_conf = @tmp_dir + "greylist.conf"
+    (@rc_d + "milter-greylist").open("w") do |file|
+      file << <<-EOM
+name="miltergreylist"
+
+miltergreylist_enable=${miltergreylist_enable-"NO"}
+miltergreylist_sockfile=${miltergreylist_sockfile-"/var/milter-greylist/milter-greylist.sock"}
+miltergreylist_cfgfile=${miltergreylist_cfgfile-"#{milter_greylist_conf}"}
+EOM
+    end
+
+    milter_greylist_conf.open("w") do |conf|
+      conf << <<-EOC
+pidfile "/var/run/milter-greylist.pid"
+socket "/var/milter-greylist/milter-greylist.sock"
+dumpfile "/var/milter-greylist/greylist.db"
+
+racl whitelist tarpit 125s
+#racl whitelist default
+racl greylist default
+EOC
+    end
+
+    detector = freebsd_rc_detector("milter-greylist")
+    detector.detect
+    detector.apply(@loader)
+    assert_equal("miltergreylist", detector.name)
+    assert_eggs([["milter-greylist",
+                  nil,
+                  false,
+                  (@rc_d + "milter-greylist").to_s,
+                  "start",
+                  "unix:/var/milter-greylist/milter-greylist.sock"]])
+
+    milter_greylist_egg = @configuration.eggs[0]
+    assert_equal([135, 135],
+                 [milter_greylist_egg.writing_timeout,
+                  milter_greylist_egg.reading_timeout])
   end
 
   def test_apply_enma_style

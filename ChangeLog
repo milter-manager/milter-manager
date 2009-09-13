@@ -1,3 +1,17 @@
+2009-09-13  Kouhei Sutou  <kou@cozmixng.org>
+
+	* bindings/ruby/lib/milter/manager/milter-greylist-socket-detector.rb:
+	rename to ...
+	* bindings/ruby/lib/milter/manager/milter-greylist-config-parser.rb:
+	... this.
+
+	* bindings/ruby/lib/milter/manager/redhat-*: follow the above changes.
+
+	* bindings/ruby/lib/milter/manager/freebsd-rc-detector.rb,
+	binding/ruby/test/manager/test-freebsd-rc-detector.rb: detect
+	tarpit time and apply them to the default writing_timeout and
+	reading_timeout.
+
 2009-09-10  Kouhei Sutou  <kou@clear-code.com>
 
 	* milter/core.h,

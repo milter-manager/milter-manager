@@ -15,7 +15,6 @@
 
 require 'milter/manager/rcng-detector'
 require 'milter/manager/enma-socket-detector'
-require 'milter/manager/clamav-milter-config-parser'
 
 module Milter::Manager
   class FreeBSDRCDetector
@@ -30,10 +29,7 @@ module Milter::Manager
     end
 
     def detect_enma_connection_spec
-      conf_file = @variables["cfgfile"]
-      conf_file ||= extract_parameter_from_flags(command_args, "-c")
-      conf_file ||= "/usr/local/etc/enma.conf"
-      Milter::Manager::EnmaSocketDetector.new(conf_file).detect
+      Milter::Manager::EnmaSocketDetector.new(enma_conf).detect
     end
 
     def enma?
@@ -48,7 +44,29 @@ module Milter::Manager
       @script_name == "clamav-milter" or @name == "clamav_milter"
     end
 
+    def milter_greylist?
+      @script_name == "milter-greylist" or @name == "miltergreylist"
+    end
+
     private
+    def enma_conf
+      @variables["cfgfile"] ||
+        extract_parameter_from_flags(command_args, "-c") ||
+        "/usr/local/etc/enma.conf"
+    end
+
+    def clamav_milter_conf
+      @other_variables["conf_file"] ||
+        extract_parameter_from_flags(command_args, "-c") ||
+        "/usr/local/etc/clamav-milter.conf"
+    end
+
+    def milter_greylist_conf
+      @variables["cfgfile"] ||
+        extract_parameter_from_flags(@variables["flags"], "-f") ||
+        "/usr/local/etc/mail/greylist.conf"
+    end
+
     def parse_rc_conf_unknown_line(line)
       case line
       when /\Arcvar=`set_rcvar`/
@@ -73,21 +91,14 @@ module Milter::Manager
       spec
     end
 
-    def init_variables
-      super
-      @clamav_milter_config_parser = nil
-    end
-
-    def clamav_milter_config_parser
-      if @clamav_milter_config_parser.nil?
-        conf_file = @other_variables["conf_file"]
-        conf_file ||= extract_parameter_from_flags(command_args, "-c")
-        conf_file ||= "/usr/local/etc/clamav-milter.conf"
-        @clamav_milter_config_parser =
-          Milter::Manager::ClamAVMilterConfigParser.new
-        @clamav_milter_config_parser.parse(conf_file)
+    def apply_before_block(milter)
+      if milter_greylist?
+        max_tarpit_time = milter_greylist_config_parser.max_tarpit_time
+        if max_tarpit_time
+          milter.writing_timeout += max_tarpit_time
+          milter.reading_timeout += max_tarpit_time
+        end
       end
-      @clamav_milter_config_parser
     end
   end
 end
