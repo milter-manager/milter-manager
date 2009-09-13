@@ -1,7 +1,10 @@
 2009-09-13  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/test/manager/test-freebsd-rc-detector.rb: use
+	empty configuration file for testing.
+
 	* binding/ruby/lib/milter/manager/: apply milter-greylist tarpit
-	configuration detection to all platform.
+	configuration detection to all platform.w
 
 	* data/defaults/*.conf: apply milter-greylist at the first.
 

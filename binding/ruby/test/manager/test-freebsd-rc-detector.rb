@@ -235,12 +235,14 @@ EOC
   end
 
   def test_apply_milter_greylist_style
+    milter_greylist_conf = @tmp_dir + "greylist.conf"
     (@rc_d + "milter-greylist").open("w") do |file|
       file << <<-EOM
 name="miltergreylist"
 
 miltergreylist_enable=${miltergreylist_enable-"NO"}
 miltergreylist_sockfile=${miltergreylist_sockfile-"/var/milter-greylist/milter-greylist.sock"}
+miltergreylist_cfgfile=${miltergreylist_cfgfile-"#{milter_greylist_conf}"}
 EOM
     end
 
