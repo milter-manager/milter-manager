@@ -154,6 +154,9 @@ module Milter::Manager
     end
 
     def apply_before_block(milter)
+      if respond_to?(:milter_greylist?) and milter_greylist?
+        milter_greylist_config_parser.apply(milter)
+      end
     end
 
     def apply_after_block(milter)

@@ -38,6 +38,10 @@ module Milter::Manager
       @script_name == "enma" or @name == "enma"
     end
 
+    def milter_greylist?
+      @script_name == "milter-greylist" or @name == "miltergreylist"
+    end
+
     private
     def parse_rc_conf_unknown_line(line)
       case line
@@ -60,6 +64,11 @@ module Milter::Manager
       spec = nil
       spec ||= detect_enma_connection_spec if enma?
       spec
+    end
+
+    def milter_greylist_conf
+      extract_parameter_from_flags(command_args, "-f") ||
+        File.join(package_prefix, "mail", "greylist.conf")
     end
   end
 end

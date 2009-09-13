@@ -14,7 +14,6 @@
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 require 'milter/manager/init-detector'
-require 'milter/manager/clamav-milter-config-parser'
 
 module Milter::Manager
   class DebianInitDetector
@@ -43,6 +42,10 @@ module Milter::Manager
          @variables["CLAMAVMILTERCONF"])
     end
 
+    def milter_greylist?
+      @script_name == "milter-greylist"
+    end
+
     private
     def parse_custom_conf
       parse_default_conf(default_conf)
@@ -68,7 +71,9 @@ module Milter::Manager
     end
 
     def clamav_milter_conf
-      @variables["CLAMAVCONF"] || @variables["CLAMAVMILTERCONF"]
+      @variables["CLAMAVCONF"] ||
+        @variables["CLAMAVMILTERCONF"] ||
+        "/etc/clamav/clamav-milter.conf"
     end
 
     def guess_spec
@@ -102,19 +107,9 @@ module Milter::Manager
       "/etc/default"
     end
 
-    def init_variables
-      super
-      @clamav_milter_config_parser = nil
-    end
-
-    def clamav_milter_config_parser
-      if @clamav_milter_config_parser.nil?
-        conf = clamav_milter_conf || "/etc/clamav/clamav-milter.conf"
-        @clamav_milter_config_parser =
-          Milter::Manager::ClamAVMilterConfigParser.new
-        @clamav_milter_config_parser.parse(conf)
-      end
-      @clamav_milter_config_parser
+    def milter_greylist_conf
+      extract_parameter_from_flags(@variables["OPTIONS"], "-f") ||
+        "/etc/milter-greylist/greylist.conf"
     end
   end
 end

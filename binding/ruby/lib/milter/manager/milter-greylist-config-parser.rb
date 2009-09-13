@@ -47,6 +47,13 @@ module Milter::Manager
       end
     end
 
+    def apply(milter)
+      if @max_tarpit_time
+        milter.writing_timeout += @max_tarpit_time
+        milter.reading_timeout += @max_tarpit_time
+      end
+    end
+
     private
     def normalize_lines(conf_file)
       lines = []

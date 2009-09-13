@@ -90,15 +90,5 @@ module Milter::Manager
       spec ||= detect_clamav_milter_connection_spec if clamav_milter?
       spec
     end
-
-    def apply_before_block(milter)
-      if milter_greylist?
-        max_tarpit_time = milter_greylist_config_parser.max_tarpit_time
-        if max_tarpit_time
-          milter.writing_timeout += max_tarpit_time
-          milter.reading_timeout += max_tarpit_time
-        end
-      end
-    end
   end
 end

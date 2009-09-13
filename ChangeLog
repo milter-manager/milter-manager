@@ -1,5 +1,8 @@
 2009-09-13  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager/: apply milter-greylist tarpit
+	configuration detection to all platform.
+
 	* data/defaults/*.conf: apply milter-greylist at the first.
 
 	* bindings/ruby/lib/milter/manager/milter-greylist-socket-detector.rb:
