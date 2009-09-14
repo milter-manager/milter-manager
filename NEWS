@@ -2,6 +2,47 @@
 
 = NEWS --- The history of milter manager
 
+== [release-1-3-1] 1.3.1: 2009-09-XX
+
+A development release. Evaluation mode was added.
+
+=== milter-manager
+
+==== Improvements
+
+  * Added ((<evaluation
+    mode|"doc/configuration.rd#milter.evaluation_mode">))
+    that ignores a result of child milter.
+  * Added configuration items:
+    * max number of concurrent connections:
+      ((<manager.max_connections|"doc/configuration.rd#manager.max_connections">))
+    * max number of file descriptors:
+      ((<manager.max_file_descriptors|"doc/configuration.rd#manager.max_file_descriptors">))
+  * Supported EPEL [Reported by Syunsuke Komma]
+  * Supported timeout configuration based on
+    milter-greylist's tarpit configuration.
+
+=== milter-toolkit
+
+  * Added more the Ruby bindings [Yuto Hayamizu]
+
+=== milter manager admin
+
+  * Supported Rails 2.3.4
+
+=== milter-test-client
+
+  * Added --syslog options that logs to syslog.
+
+=== milter-manager-log-analyzer
+
+  * Supported milter-greylist's SPF result.
+
+=== Thanks
+
+  * Yuto Hayamizu
+  * Syunsuke Komma
+
 == [release-1-3-0] 1.3.0: 2009-08-12
 
 A development release.

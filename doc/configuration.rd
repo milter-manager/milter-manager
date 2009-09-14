@@ -389,6 +389,8 @@ Here are descriptions of configuration items.
 
 : manager.max_connections
 
+   Since 1.3.1.
+
    Specifies max concurrent connections. 0 means no
    limit. It's the default value.
 
@@ -406,6 +408,8 @@ Here are descriptions of configuration items.
      manager.max_connections = 5
 
 : manager.max_file_descriptors
+
+   Since 1.3.1.
 
    Specifies max number of file descriptors that can be
    opened by a milter-manager process. 0 means that the
@@ -592,6 +596,8 @@ Required item is just only milter.connection_spec.
      milter.fallback_status = "accept"
 
 : milter.evaluation_mode
+
+   Since 1.3.1.
 
    Whether turn on evaluation mode or not. The child milter
    doesn't return its result on evaluation mode. It means
