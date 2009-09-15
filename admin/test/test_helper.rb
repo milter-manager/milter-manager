@@ -57,8 +57,12 @@ class ActiveSupport::TestCase
 
   def assert_invalid_model(expected_errors, model)
     model.save
-    assert_equal(expected_errors,
-                 model.errors.instance_variable_get("@errors"))
+    actual_errors = {}
+    model.errors.each do |name, message|
+      actual_errors[name] ||= []
+      actual_errors[name] << message
+    end
+    assert_equal(expected_errors, actual_errors)
   end
 
   def t(key, options=nil)
