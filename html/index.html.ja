@@ -93,11 +93,11 @@
 
 	<h2 id="development">開発版リリース</h2>
 	<p>
-	  2009-08-12に開発版1.3.0がリリースされました。開発版には多くの新機能が含まれていますが、安定して動作しない可能性があります。実運用には安定版を利用してください。
+	  2009-09-16に開発版1.3.1がリリースされました。開発版には多くの新機能が含まれていますが、安定して動作しない可能性があります。実運用には安定版を利用してください。
         </p>
 	<ul>
-          <li><a href="http://downloads.sourceforge.net/milter-manager/milter-manager-1.3.0.tar.gz">ダウンロード</a></li>
-          <li><a href="dev/reference/ja/news.html#release-1-3-0">変更点</a></li>
+          <li><a href="http://downloads.sourceforge.net/milter-manager/milter-manager-1.3.1.tar.gz">ダウンロード</a></li>
+          <li><a href="dev/reference/ja/news.html#release-1-3-1">変更点</a></li>
           <li><a href="dev/reference/ja/">ドキュメント</a></li>
 	</ul>
 
@@ -127,8 +127,8 @@ deb-src http://milter-manager.sourceforge.net/debian/ lenny main</pre>
 
 	<h3>CentOS 5.3用開発版パッケージ</h3>
 	<ul>
-	  <li><a href="http://downloads.sourceforge.net/milter-manager/milter-manager-1.3.0-0.i386.rpm">i386</a></li>
-	  <li><a href="http://downloads.sourceforge.net/milter-manager/milter-manager-1.3.0-0.x86_64.rpm">x86_64</a></li>
+	  <li><a href="http://downloads.sourceforge.net/milter-manager/milter-manager-1.3.1-0.i386.rpm">i386</a></li>
+	  <li><a href="http://downloads.sourceforge.net/milter-manager/milter-manager-1.3.1-0.x86_64.rpm">x86_64</a></li>
 	</ul>
       </div>
 
