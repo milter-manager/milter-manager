@@ -54,7 +54,7 @@ file. The following softwares are required for the Web
 interface.
 
   * RubyGems >= 1.3.1
-  * Ruby on Rails 2.3.2
+  * Ruby on Rails 2.3.4
   * SQLite3
   * SQLite3's Ruby bindings
   * Ruby-Locale for Ruby on Rails
