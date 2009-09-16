@@ -1,5 +1,7 @@
 2009-09-16  Kouhei Sutou  <kou@clear-code.com>
 
+	* admin/Makefile.am: add missing migration file.
+
 	* doc/install.rd*: Rails 2.3.2 -> 2.3.4.
 
 2009-09-15  Kouhei Sutou  <kou@clear-code.com>

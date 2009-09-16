@@ -102,6 +102,7 @@ nobase_dist_admin_DATA =							\
 	db/migrate/20090107013320_add_command_options_to_milters.rb		\
 	db/migrate/20090116065917_create_users.rb				\
 	db/migrate/20090512123747_add_fallback_status_to_milters.rb		\
+	db/migrate/20090826132057_add_evaluation_mode_to_milters.rb		\
 	doc/README_FOR_APP							\
 	lib/authenticated_system.rb						\
 	lib/authenticated_test_helper.rb					\
