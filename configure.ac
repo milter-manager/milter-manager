@@ -371,6 +371,8 @@ dnl **************************************************************
 dnl Check for SF.net.
 dnl **************************************************************
 
+SF_PROJECT_ID="milter- manager"
+AC_SUBST(SF_PROJECT_ID)
 SF_PROJECT_NAME="milter manager"
 AC_SUBST(SF_PROJECT_NAME)
 
