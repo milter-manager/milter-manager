@@ -10,6 +10,8 @@ EXTRA_DIST =						\
 	introduction.rd.ja				\
 	install.rd					\
 	install.rd.ja					\
+	install-to-debian.rd				\
+	install-to-debian.rd.ja				\
 	install-to-ubuntu.rd				\
 	install-to-ubuntu.rd.ja				\
 	install-to-centos.rd				\

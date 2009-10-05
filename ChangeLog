@@ -1,5 +1,8 @@
 2009-10-05  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/install-to-debian.rd*: add a document to install milter
+	manager to Debian.
+
 	* doc/install-to-ubuntu.rd*: don't need to create home directory
 	manually.
 

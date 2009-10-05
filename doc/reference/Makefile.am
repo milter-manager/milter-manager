@@ -68,6 +68,7 @@ content_files =					\
 	configuration.xml			\
 	performance.xml				\
 	install.xml				\
+	install-to-debian.xml			\
 	install-to-ubuntu.xml			\
 	install-to-centos.xml			\
 	install-to-freebsd.xml			\
@@ -109,6 +110,8 @@ generated_xml_files =				\
 	performance.xml.ja			\
 	install.xml				\
 	install.xml.ja				\
+	install-to-debian.xml			\
+	install-to-debian.xml.ja		\
 	install-to-ubuntu.xml			\
 	install-to-ubuntu.xml.ja		\
 	install-to-centos.xml			\
@@ -227,6 +230,12 @@ install.xml: $(top_srcdir)/doc/install.rd $(RD2REFENTRY_LIB) install.xml.ja
 
 install.xml.ja: $(top_srcdir)/doc/install.rd.ja $(RD2REFENTRY_LIB) ja.po
 	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/install.rd.ja > install.xml.ja
+
+install-to-debian.xml: $(top_srcdir)/doc/install-to-debian.rd $(RD2REFENTRY_LIB) install-to-debian.xml.ja
+	$(RD2DOCBOOK) $(top_srcdir)/doc/install-to-debian.rd > install-to-debian.xml
+
+install-to-debian.xml.ja: $(top_srcdir)/doc/install-to-debian.rd.ja $(RD2REFENTRY_LIB) ja.po
+	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/install-to-debian.rd.ja > install-to-debian.xml.ja
 
 install-to-ubuntu.xml: $(top_srcdir)/doc/install-to-ubuntu.rd $(RD2REFENTRY_LIB) install-to-ubuntu.xml.ja
 	$(RD2DOCBOOK) $(top_srcdir)/doc/install-to-ubuntu.rd > install-to-ubuntu.xml
