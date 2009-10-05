@@ -28,10 +28,6 @@ module Milter::Manager
         !(clamav_milter_0_95_or_later? and clamav_milter_example?)
     end
 
-    def detect_clamav_milter_connection_spec
-      clamav_milter_config_parser.milter_socket
-    end
-
     def clamav_milter?
       @script_name == "clamav-milter"
     end
@@ -44,6 +40,10 @@ module Milter::Manager
 
     def milter_greylist?
       @script_name == "milter-greylist"
+    end
+
+    def opendkim?
+      @script_name == "opendkim"
     end
 
     private
@@ -76,6 +76,10 @@ module Milter::Manager
         "/etc/clamav/clamav-milter.conf"
     end
 
+    def opendkim_conf
+      "/etc/opendkim.conf"
+    end
+
     def guess_spec
       spec = nil
       spec ||= guess_application_specific_spec
@@ -95,6 +99,9 @@ module Milter::Manager
       spec = nil
       if clamav_milter_0_95_or_later?
         spec ||= detect_clamav_milter_connection_spec
+      end
+      if opendkim?
+        spec ||= detect_opendkim_connection_spec
       end
       spec
     end

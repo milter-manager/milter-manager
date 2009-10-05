@@ -15,6 +15,7 @@
 
 require 'milter/manager/clamav-milter-config-parser'
 require 'milter/manager/milter-greylist-config-parser'
+require 'milter/manager/opendkim-config-parser'
 
 module Milter::Manager
   module Detector
@@ -62,12 +63,17 @@ module Milter::Manager
       clamav_milter_config_parser.example?
     end
 
+    def detect_opendkim_connection_spec
+      opendkim_config_parser.socket
+    end
+
     private
     def init_variables
       @name = nil
       @variables = {}
       @clamav_milter_config_parser = nil
       @milter_greylist_config_parser = nil
+      @opendkim_config_parser = nil
     end
 
     def set_variable(name, unnormalized_value)
@@ -178,6 +184,14 @@ module Milter::Manager
         @milter_greylist_config_parser.parse(milter_greylist_conf)
       end
       @milter_greylist_config_parser
+    end
+
+    def opendkim_config_parser
+      if @opendkim_config_parser.nil?
+        @opendkim_config_parser = Milter::Manager::OpenDKIMConfigParser.new
+        @opendkim_config_parser.parse(opendkim_conf)
+      end
+      @opendkim_config_parser
     end
   end
 end

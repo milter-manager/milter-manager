@@ -364,6 +364,81 @@ EOC
                   "inet:12345@192.0.2.1"]])
   end
 
+  def test_apply_opendkim_style
+    opendkim_conf = @tmp_dir + "opendkim.conf"
+    (@init_d + "opendkim").open("w") do |file|
+      file << opendkim_init_header(opendkim_conf)
+    end
+    (@default_dir + "opendkim").open("w") do |file|
+      file << <<-EOC
+# SOCKET="inet:12345@192.0.2.1" # listen on 192.0.2.1 on port 12345
+EOC
+    end
+
+    detector = debain_init_detector("opendkim")
+    detector.detect
+    detector.apply(@loader)
+    assert_eggs([["opendkim",
+                  "OpenDKIM",
+                  true,
+                  (@init_d + "opendkim").to_s,
+                  "start",
+                  "local:/var/run/opendkim/opendkim.sock"]])
+  end
+
+  def test_apply_opendkim_style_with_socket_in_default
+    opendkim_conf = @tmp_dir + "opendkim.conf"
+    (@init_d + "opendkim").open("w") do |file|
+      file << opendkim_init_header(opendkim_conf)
+    end
+    (@default_dir + "opendkim").open("w") do |file|
+      file << <<-EOC
+SOCKET="inet:12345@192.0.2.1" # listen on 192.0.2.1 on port 12345
+EOC
+    end
+
+    detector = debain_init_detector("opendkim")
+    detector.detect
+    detector.apply(@loader)
+    assert_eggs([["opendkim",
+                  "OpenDKIM",
+                  true,
+                  (@init_d + "opendkim").to_s,
+                  "start",
+                  "inet:12345@192.0.2.1"]])
+  end
+
+  def test_apply_opendkim_style_with_socket_in_conf
+    opendkim_conf = @tmp_dir + "opendkim.conf"
+    (@init_d + "opendkim").open("w") do |file|
+      file << opendkim_init_header(opendkim_conf)
+    end
+    (@default_dir + "opendkim").open("w") do |file|
+      file << <<-EOC
+# SOCKET="inet:12345@192.0.2.1" # listen on 192.0.2.1 on port 12345
+EOC
+    end
+    opendkim_conf.open("w") do |file|
+      file << <<-EOC
+Socket inet:54321@127.0.0.2
+EOC
+    end
+
+    detector = debain_init_detector("opendkim")
+    singleton_object = class << detector; self; end
+    singleton_object.send(:define_method, :opendkim_conf) do
+      opendkim_conf.to_s
+    end
+    detector.detect
+    detector.apply(@loader)
+    assert_eggs([["opendkim",
+                  "OpenDKIM",
+                  true,
+                  (@init_d + "opendkim").to_s,
+                  "start",
+                  "inet:54321@127.0.0.2"]])
+  end
+
   def test_apply_milter_greylist_style
     (@init_d + "milter-greylist").open("w") do |file|
       file << <<-EOM
@@ -601,6 +676,52 @@ case "$SOCKET" in
   # If the socket is type inet: we don't care - we can't rm -f that later :)
   ;;
 esac
+EOS
+  end
+
+  def opendkim_init_header(opendkim_conf)
+    <<-EOS
+#! /bin/sh
+#
+### BEGIN INIT INFO
+# Provides:             opendkim
+# Required-Start:       $syslog $time $local_fs $remote_fs $named $network
+# Required-Stop:        $syslog $time $local_fs $remote_fs
+# Default-Start:        2 3 4 5
+# Default-Stop:         0 1 6
+# Short-Description:    Start the OpenDKIM service
+### END INIT INFO
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+DAEMON=/usr/sbin/opendkim
+NAME=opendkim
+DESC="OpenDKIM"
+RUNDIR=/var/run/$NAME
+USER=opendkim
+GROUP=opendkim
+SOCKET=local:$RUNDIR/$NAME.sock
+PIDFILE=$RUNDIR/$NAME.pid
+
+# How long to wait for the process to die on stop/restart
+stoptimeout=5
+
+test -x $DAEMON || exit 0
+
+# Include opendkim defaults if available
+if [ -f /etc/default/opendkim ] ; then
+        . /etc/default/opendkim
+fi
+
+if [ -f #{opendkim_conf} ]; then
+        CONFIG_SOCKET=`awk '$1 == "Socket" { print $2 }' #{opendkim_conf}`
+fi
+
+# This can be set via Socket option in config file, so it's not required
+if [ -n "$SOCKET" -a -z "$CONFIG_SOCKET" ]; then
+        DAEMON_OPTS="-p $SOCKET $DAEMON_OPTS"
+fi
+
+DAEMON_OPTS="-x #{opendkim_conf} -u $USER -P $PIDFILE $DAEMON_OPTS"
 EOS
   end
 end

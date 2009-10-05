@@ -5,6 +5,7 @@ dist_binding_lib_milter_DATA =			\
 	enma-socket-detector.rb			\
 	clamav-milter-config-parser.rb		\
 	milter-greylist-config-parser.rb	\
+	opendkim-config-parser.rb		\
 	rcng-detector.rb			\
 	freebsd-rc-detector.rb			\
 	pkgsrc-rc-detector.rb			\

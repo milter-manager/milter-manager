@@ -1,5 +1,12 @@
 2009-10-05  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager/opendkim-config-parser.rb: add.
+
+	* binding/ruby/lib/milter/manager/detector.rb,
+	binding/ruby/lib/milter/manager/debian-init-detector.rb,
+	binding/ruby/test/manager/test-debian-init-detector.rb: support
+	OpenDKIM on Debian.
+
 	* doc/install-to-ubuntu.rd*: fix typos.
 
 	* doc/install-to-debian.rd*: add a document to install milter
