@@ -1,3 +1,8 @@
+2009-10-05  Kouhei Sutou  <kou@cozmixng.org>
+
+	* doc/install-to-ubuntu.rd*: don't need to create home directory
+	manually.
+
 2009-10-05  Kouhei Sutou  <kou@clear-code.com>
 
 	* TODO: add: [1.4.0] add install documents for Debian.

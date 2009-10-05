@@ -40,8 +40,6 @@ milter managerをインストールします。
 
   % sudo aptitude update
   % sudo aptitude -V -D -y install milter-manager
-  % sudo mkdir -p ~milter-manager
-  % sudo chown milter-manager:milter-manager ~milter-manager
 
 MTAはPostfixを利用することとします。
 

@@ -35,8 +35,6 @@ We install milter manager package:
 
   % sudo aptitude update
   % sudo aptitude -V -D -y install milter-manager
-  % sudo mkdir -p ~milter-manager
-  % sudo chown milter-manager:milter-manager ~milter-manager
 
 We use Postfix as MTA:
 
