@@ -1,5 +1,7 @@
 2009-10-05  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/install-to-ubuntu.rd*: fix typos.
+
 	* doc/install-to-debian.rd*: add a document to install milter
 	manager to Debian.
 

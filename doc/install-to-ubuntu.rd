@@ -1,6 +1,6 @@
 # -*- rd -*-
 
-= Install to Ubuntu Linux --- How to install milter manager to Ubuntu Linux
+= Install to Ubuntu --- How to install milter manager to Ubuntu Linux
 
 == About this document
 
@@ -145,7 +145,7 @@ After:
 
 We need to specify not only SOCKET but also DOPTIONS because
 /etc/init.d/milter-greylist has a problem in 8.04 LTS Hardy
-Heron. The problem was fixed in 8.10 Intrepid Ibex. We
+Heron. The problem had been fixed in 8.10 Intrepid Ibex. We
 doesn't need to specify DOPTIONS if we use 8.10.
 
 milter-greylist should be started:

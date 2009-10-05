@@ -1,6 +1,6 @@
 # -*- rd -*-
 
-= Ubuntuへインストール --- Ubuntuへのmilter managerのインストール方法
+= Ubuntuへインストール --- Ubuntu Linuxへのmilter managerのインストール方法
 
 == このドキュメントについて
 
@@ -109,7 +109,7 @@ clamav-milterの設定は以下のように変更します。
   * clamav-milterと通信するためのソケットはpostfixグループに
     読み書き権限を与える
 
-このように変更すするため、以下のように
+このように変更するため、以下のように
 /etc/default/clamav-milterを変更します。
 
 変更前:
