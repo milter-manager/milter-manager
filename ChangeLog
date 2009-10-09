@@ -1,3 +1,7 @@
+2009-10-09  Kouhei Sutou  <kou@cozmixng.org>
+
+	* TODO: add: [1.5.x] output CVS for statistics.
+
 2009-10-05  Kouhei Sutou  <kou@cozmixng.org>
 
 	* binding/ruby/lib/milter/manager/opendkim-config-parser.rb: add.
