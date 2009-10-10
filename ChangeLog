@@ -1,5 +1,7 @@
 2009-10-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/, html/: 1.2.0 -> 1.4.0.
+
 	* doc/install-*, doc/upgrade-*: update versions.
 
 	* doc/install-options-to-debian.rd*: add install documents for

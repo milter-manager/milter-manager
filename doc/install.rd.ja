@@ -67,6 +67,7 @@ milter-managerはmilter managerパッケージの中核となるプログラ
 milter-managerのインストール方法はプラットフォーム毎に解説し
 ています。
 
+  * ((<Debian|install-to-debian.rd.ja>))
   * ((<Ubuntu|install-to-ubuntu.rd.ja>))
   * ((<CentOS|install-to-centos.rd.ja>))
   * ((<FreeBSD|install-to-freebsd.rd.ja>))
@@ -93,6 +94,7 @@ milter-manager-log-analyzerのインストール方法はプラットフォー
 ム毎に解説しています。管理用Webインターフェイスのインストール
 方法も一緒に解説しています。
 
+  * ((<Debian|install-options-to-debian.rd.ja>))
   * ((<Ubuntu|install-options-to-ubuntu.rd.ja>))
   * ((<CentOS|install-options-to-centos.rd.ja>))
   * ((<FreeBSD|install-options-to-freebsd.rd.ja>))
@@ -125,6 +127,7 @@ milter manager adminのインストール方法はプラットフォーム毎に
 解説しています。milter-manager-log-analyzerのインストール方法
 も一緒に解説しています。
 
+  * ((<Debian|install-options-to-debian.rd.ja>))
   * ((<Ubuntu|install-options-to-ubuntu.rd.ja>))
   * ((<CentOS|install-options-to-centos.rd.ja>))
   * ((<FreeBSD|install-options-to-freebsd.rd.ja>))

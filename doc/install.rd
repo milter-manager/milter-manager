@@ -69,6 +69,7 @@ MTA and child miltres.
 Here are documents about how to install milter-manager to
 your platform:
 
+  * ((<Debian|install-to-debian.rd>))
   * ((<Ubuntu|install-to-ubuntu.rd>))
   * ((<CentOS|install-to-centos.rd>))
   * ((<FreeBSD|install-to-freebsd.rd>))
@@ -97,6 +98,7 @@ Here are documents about how to install
 milter-manager-log-analyzer. They also describes about how
 to install Web interface for administration.
 
+  * ((<Debian|install-options-to-debian.rd>))
   * ((<Ubuntu|install-options-to-ubuntu.rd>))
   * ((<CentOS|install-options-to-centos.rd>))
   * ((<FreeBSD|install-options-to-freebsd.rd>))
@@ -123,6 +125,7 @@ Here are documents about how to install milter manager
 admin. They also describes about how to install
 milter-manager-log-analyzer.
 
+  * ((<Debian|install-options-to-debian.rd>))
   * ((<Ubuntu|install-options-to-ubuntu.rd>))
   * ((<CentOS|install-options-to-centos.rd>))
   * ((<FreeBSD|install-options-to-freebsd.rd>))

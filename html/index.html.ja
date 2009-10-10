@@ -26,7 +26,7 @@
 	<li id="menu-introduction"><a href="reference/ja/introduction.html">はじめに</a></li>
 	<li id="menu-install"><a href="reference/ja/install.html">インストール</a></li>
         <li id="menu-reverse-dictionary"><a href="reference/ja/reverse-dictionary.html">逆引きリファレンス</a></li>
-	<li id="menu-download"><a href="http://downloads.sourceforge.net/milter-manager/milter-manager-1.2.0.tar.gz">ダウンロード</a></li>
+	<li id="menu-download"><a href="http://downloads.sourceforge.net/milter-manager/milter-manager-1.4.0.tar.gz">ダウンロード</a></li>
 	<li id="menu-blog"><a href="blog/ja/">ブログ</a></li>
       </ul>
     </div>
@@ -35,15 +35,18 @@
       <div class="main">
 	<h2 id="latest">最新リリース</h2>
 	<p>
-	  2009-07-17にリリースされた1.2.0が最新安定版リリースです。
+	  2009-10-13にリリースされた1.4.0が最新安定版リリースです。
         </p>
 	<ul>
-          <li><a href="reference/ja/news.html#release-1-2-0">変更点</a></li>
-          <li><a href="http://downloads.sourceforge.net/milter-manager/milter-manager-1.2.0.tar.gz">ダウンロード</a></li>
+          <li><a href="reference/ja/news.html#release-1-4-0">変更点</a></li>
+          <li><a href="http://downloads.sourceforge.net/milter-manager/milter-manager-1.4.0.tar.gz">ダウンロード</a></li>
 	</ul>
 
 	<p>環境毎のインストール方法です。</p>
 	<ul>
+	  <li>
+	    <a href="reference/ja/install-to-debian.html">Debian</a>
+	  </li>
 	  <li>
 	    <a href="reference/ja/install-to-ubuntu.html">Ubuntu</a>
 	  </li>
@@ -60,6 +63,9 @@
 
 	<p>環境毎のアップグレード方法です。</p>
 	<ul class="upgrade-on">
+	  <li>
+	    <a href="reference/ja/upgrade-on-debian.html">Debian</a>
+	  </li>
 	  <li>
 	    <a href="reference/ja/upgrade-on-ubuntu.html">Ubuntu</a>
 	  </li>
@@ -140,6 +146,9 @@ deb-src http://milter-manager.sourceforge.net/debian/ lenny main</pre>
 	      <a href="reference/ja/install.html">インストール</a>
 	      <ul>
 		<li>
+		  <a href="reference/ja/install-to-debian.html">Debian</a>
+		</li>
+		<li>
 		  <a href="reference/ja/install-to-ubuntu.html">Ubuntu</a>
 		</li>
 		<li>
@@ -153,6 +162,9 @@ deb-src http://milter-manager.sourceforge.net/debian/ lenny main</pre>
 	    <li class="sidebar-upgrade">
 	      <a href="reference/ja/upgrade.html">アップグレード</a>
 	      <ul>
+		<li>
+		  <a href="reference/ja/upgrade-on-debian.html">Debian</a>
+		</li>
 		<li>
 		  <a href="reference/ja/upgrade-on-ubuntu.html">Ubuntu</a>
 		</li>
