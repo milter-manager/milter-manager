@@ -1,5 +1,7 @@
 2009-10-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: remove: [1.4.0] add install documents for Debian.
+
 	* doc/users*: add.
 
 	* doc/reference/Makefile.am: add documents for Debian.
