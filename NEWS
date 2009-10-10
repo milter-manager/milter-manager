@@ -2,6 +2,20 @@
 
 = NEWS --- The history of milter manager
 
+== [release-1-4-0] 1.4.0: 2009-10-13
+
+A stable release.
+
+=== Document
+
+  * Added install documents for Debian.
+
+=== milter-manager
+
+==== Improvements
+
+  * Supported OpenDKIM detection on Debian/Ubuntu/FreeBSD.
+
 == [release-1-3-1] 1.3.1: 2009-09-16
 
 A development release. Evaluation mode was added.
