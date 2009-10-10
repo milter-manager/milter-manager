@@ -41,7 +41,7 @@ lenny-volatileアーカイブは、簡単に言うと、新しいバージョン
 使う必要のある一部のパッケージのみを提供するアーカイブです。
 例えば、clamav-milterは常に最新のウィルスデータベースと、その
 データベースに対応したバージョンが必要です。そのため、
-lenny-volatileを仕様します。volatileアーカイブの詳しい説明は
+lenny-volatileを使用します。volatileアーカイブの詳しい説明は
 ((<debian-volatileプロジェクト
 |URL:http://www.debian.org/volatile/>))を参照してください。
 
