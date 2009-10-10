@@ -1,5 +1,8 @@
 2009-10-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* data/defaults/debian.conf, data/defaults/freebsd.conf: enables
+	OpenDKIM detection on Debian and FreeBSD.
+
 	* binding/ruby/lib/milter/manager/detector.rb,
 	binding/ruby/lib/milter/manager/freebsd-rc-detector.rb,
 	binding/ruby/lib/milter/manager/pkgsrc-rc-detector.rb,
