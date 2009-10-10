@@ -71,8 +71,8 @@ milter-manager-log-analyzerは5分おきに実行されます。
 
 === gemのインストール
 
-  % sudo gem install rails -v '2.3.2'
-  % sudo gem install passenger -v '2.2.4'
+  % sudo gem install rails -v '2.3.4'
+  % sudo gem install passenger -v '2.2.5'
 
 === Passengerのインストール
 
@@ -83,8 +83,8 @@ milter-manager-log-analyzerは5分おきに実行されます。
 以下の内容の/usr/local/etc/apache22/Includes/passenger.conf
 を作成します。
 
-  LoadModule passenger_module /usr/local/lib/ruby/gems/1.8/gems/passenger-2.2.4/ext/apache2/mod_passenger.so
-  PassengerRoot /usr/local/lib/ruby/gems/1.8/gems/passenger-2.2.4
+  LoadModule passenger_module /usr/local/lib/ruby/gems/1.8/gems/passenger-2.2.5/ext/apache2/mod_passenger.so
+  PassengerRoot /usr/local/lib/ruby/gems/1.8/gems/passenger-2.2.5
   PassengerRuby /usr/local/bin/ruby18
 
   RailsBaseURI /milter-manager

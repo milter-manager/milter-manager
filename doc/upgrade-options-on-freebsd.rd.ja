@@ -18,8 +18,8 @@ milter managerを上書きインストールするだけなので、追加の作
 
 === gemの更新
 
-  % sudo gem install rails -v '2.3.2'
-  % sudo gem install passenger -v '2.2.4'
+  % sudo gem install rails -v '2.3.4'
+  % sudo gem install passenger -v '2.2.5'
 
 === Passengerの更新
 
@@ -28,11 +28,11 @@ milter managerを上書きインストールするだけなので、追加の作
   % (echo 1; echo) | sudo passenger-install-apache2-module
 
 /usr/local/etc/apache22/Includes/passenger.confに記述してあ
-るPassengerのバージョンを2.2.4にします。
+るPassengerのバージョンを2.2.5にします。
 
 /usr/local/etc/apache22/Includes/passenger.conf:
-  LoadModule passenger_module /usr/local/lib/ruby/gems/1.8/gems/passenger-2.2.4/ext/apache2/mod_passenger.so
-  PassengerRoot /usr/local/lib/ruby/gems/1.8/gems/passenger-2.2.4
+  LoadModule passenger_module /usr/local/lib/ruby/gems/1.8/gems/passenger-2.2.5/ext/apache2/mod_passenger.so
+  PassengerRoot /usr/local/lib/ruby/gems/1.8/gems/passenger-2.2.5
   PassengerRuby /usr/local/bin/ruby18
 
   RailsBaseURI /milter-manager

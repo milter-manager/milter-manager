@@ -1,5 +1,7 @@
 2009-10-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/install-*, doc/upgrade-*: update versions.
+
 	* doc/install-options-to-debian.rd*: add install documents for
 	optinal packages on Debian.
 

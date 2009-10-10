@@ -14,13 +14,13 @@ We just upgrade milter manager package.
 
 On 32bit environment:
 
-  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-1.3.1-0.i386.rpm
-  % sudo rpm -Uvh milter-manager-1.3.1-0.i386.rpm
+  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-1.4.0-0.i386.rpm
+  % sudo rpm -Uvh milter-manager-1.4.0-0.i386.rpm
 
 On 64bit environment:
 
-  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-1.3.1-0.x86_64.rpm
-  % sudo rpm -Uvh milter-manager-1.3.1-0.x86_64.rpm
+  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-1.4.0-0.x86_64.rpm
+  % sudo rpm -Uvh milter-manager-1.4.0-0.x86_64.rpm
 
 == Conclusion
 

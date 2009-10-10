@@ -1,12 +1,12 @@
 # -*- rd -*-
 
-= Install to Ubuntu Linux (optional) --- How to install milter manager related softwares to Ubuntu Linux
+= Install to Ubuntu (optional) --- How to install milter manager related softwares to Ubuntu Linux
 
 == About this document
 
 This document describes how to install milter manager
-related softwares to Ubuntu Linux. See ((<Install to Ubuntu
-Linux|install-to-ubuntu.rd>)) for milter manager install
+related softwares to Ubuntu Linux. See ((<Install to
+Ubuntu|install-to-ubuntu.rd>)) for milter manager install
 information and ((<Install|install.rd>)) for general install
 information.
 
@@ -55,15 +55,15 @@ installed:
 === Install RubyGems
 
   % cd ~/src/
-  % wget http://rubyforge.org/frs/download.php/45905/rubygems-1.3.1.tgz
-  % tar xvzf rubygems-1.3.1.tgz
-  % cd rubygems-1.3.1
+  % wget http://rubyforge.org/frs/download.php/60718/rubygems-1.3.5.tgz
+  % tar xvzf rubygems-1.3.5.tgz
+  % cd rubygems-1.3.5
   % sudo ruby setup.rb --no-format-executable
 
 === Instal gems
 
-  % sudo gem install rails -v '2.3.2'
-  % sudo gem install passenger -v '2.2.4'
+  % sudo gem install rails -v '2.3.4'
+  % sudo gem install passenger -v '2.2.5'
 
 === Install Passenger
 
@@ -75,10 +75,10 @@ We create passenger.load and passenger.conf under
 /etc/apache2/mods-available/.
 
 /etc/apache2/mods-available/passenger.load:
-  LoadModule passenger_module /usr/lib/ruby/gems/1.8/gems/passenger-2.2.4/ext/apache2/mod_passenger.so
+  LoadModule passenger_module /usr/lib/ruby/gems/1.8/gems/passenger-2.2.5/ext/apache2/mod_passenger.so
 
 /etc/apache2/mods-available/passenger.conf:
-  PassengerRoot /usr/lib/ruby/gems/1.8/gems/passenger-2.2.4
+  PassengerRoot /usr/lib/ruby/gems/1.8/gems/passenger-2.2.5
   PassengerRuby /usr/bin/ruby1.8
 
   RailsBaseURI /milter-manager
