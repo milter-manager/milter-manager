@@ -77,7 +77,7 @@ content_files =					\
 	install-options-to-ubuntu.xml		\
 	install-options-to-centos.xml		\
 	install-options-to-freebsd.xml		\
-	upgrade-on-debianu.xml			\
+	upgrade-on-debian.xml			\
 	upgrade-on-ubuntu.xml			\
 	upgrade-on-centos.xml			\
 	upgrade-on-freebsd.xml			\
@@ -300,8 +300,8 @@ install-options-to-freebsd.xml.ja: $(top_srcdir)/doc/install-options-to-freebsd.
 upgrade-on-debian.xml: $(top_srcdir)/doc/upgrade-on-debian.rd $(RD2REFENTRY_LIB) upgrade-on-debian.xml.ja
 	$(RD2DOCBOOK) $(top_srcdir)/doc/upgrade-on-debian.rd > upgrade-on-debian.xml
 
-upgrade-on-ubuntu.xml.ja: $(top_srcdir)/doc/upgrade-on-ubuntu.rd.ja $(RD2REFENTRY_LIB) ja.po
-	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/upgrade-on-ubuntu.rd.ja > upgrade-on-ubuntu.xml.ja
+upgrade-on-debian.xml.ja: $(top_srcdir)/doc/upgrade-on-debian.rd.ja $(RD2REFENTRY_LIB) ja.po
+	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/upgrade-on-debian.rd.ja > upgrade-on-debian.xml.ja
 
 upgrade-on-ubuntu.xml: $(top_srcdir)/doc/upgrade-on-ubuntu.rd $(RD2REFENTRY_LIB) upgrade-on-ubuntu.xml.ja
 	$(RD2DOCBOOK) $(top_srcdir)/doc/upgrade-on-ubuntu.rd > upgrade-on-ubuntu.xml
