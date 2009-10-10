@@ -1,5 +1,7 @@
 2009-10-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/reference/milter-manager-docs.sgml: add documents for Debian.
+
 	* doc/upgrade-*-debian*: add upgrade documents on Debian.
 
 	* doc/upgrade-*.rd: write you.
