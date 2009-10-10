@@ -90,7 +90,8 @@ content_files =					\
 	milter-test-client.xml			\
 	milter-performance-check.xml		\
 	milter-manager-log-analyzer.xml		\
-	reverse-dictionary.xml
+	reverse-dictionary.xml			\
+	users.xml
 
 # Extra options to supply to gtkdoc-fixxref
 FIXXREF_OPTIONS=
@@ -158,7 +159,9 @@ generated_xml_files =				\
 	milter-manager-log-analyzer.xml		\
 	milter-manager-log-analyzer.xml.ja	\
 	reverse-dictionary.xml			\
-	reverse-dictionary.xml.ja
+	reverse-dictionary.xml.ja		\
+	users.xml				\
+	users.xml.ja
 
 MAINTAINERCLEANFILES +=			\
 	$(generated_xml_files)		\
@@ -377,6 +380,12 @@ reverse-dictionary.xml: $(top_srcdir)/doc/reverse-dictionary.rd $(RD2REFENTRY_LI
 
 reverse-dictionary.xml.ja: $(top_srcdir)/doc/reverse-dictionary.rd.ja $(RD2REFENTRY_LIB) ja.po
 	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/reverse-dictionary.rd.ja > reverse-dictionary.xml.ja
+
+users.xml: $(top_srcdir)/doc/users.rd $(RD2REFENTRY_LIB) users.xml.ja
+	$(RD2DOCBOOK) $(top_srcdir)/doc/users.rd > users.xml
+
+users.xml.ja: $(top_srcdir)/doc/users.rd.ja $(RD2REFENTRY_LIB) ja.po
+	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/users.rd.ja > users.xml.ja
 
 ### SVG -> PNG
 mta-and-milter-manager-and-child-milter.png: $(top_srcdir)/doc/mta-and-milter-manager-and-child-milter.svg

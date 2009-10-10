@@ -20,12 +20,24 @@ EXTRA_DIST =						\
 	install-to-freebsd.rd.ja			\
 	install-to-others.rd				\
 	install-to-others.rd.ja				\
+	install-options-to-debian.rd			\
+	install-options-to-debian.rd.ja			\
 	install-options-to-ubuntu.rd			\
 	install-options-to-ubuntu.rd.ja			\
 	install-options-to-centos.rd			\
 	install-options-to-centos.rd.ja			\
 	install-options-to-freebsd.rd			\
 	install-options-to-freebsd.rd.ja		\
+	upgrade-on-debian.rd				\
+	upgrade-on-debian.rd.ja				\
+	upgrade-on-ubuntu.rd				\
+	upgrade-on-ubuntu.rd.ja				\
+	upgrade-on-centos.rd				\
+	upgrade-on-centos.rd.ja				\
+	upgrade-on-freebsd.rd				\
+	upgrade-on-freebsd.rd.ja			\
+	upgrade-options-on-debian.rd			\
+	upgrade-options-on-debian.rd.ja			\
 	upgrade-options-on-ubuntu.rd			\
 	upgrade-options-on-ubuntu.rd.ja			\
 	upgrade-options-on-centos.rd			\
@@ -60,7 +72,9 @@ EXTRA_DIST =						\
 	milter-manager.rd				\
 	milter-manager.rd.ja				\
 	reverse-dictionary.rd				\
-	reverse-dictionary.rd.ja
+	reverse-dictionary.rd.ja			\
+	users.rd					\
+	users.rd.ja
 
 dist_man1_MANS =			\
 	milter-manager.man		\

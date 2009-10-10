@@ -49,6 +49,7 @@
     </chapter>
     <xi:include href="configuration.xml"/>
     <xi:include href="reverse-dictionary.xml"/>
+    <xi:include href="users.xml"/>
   </part>
 
   <!--part id="reference">
