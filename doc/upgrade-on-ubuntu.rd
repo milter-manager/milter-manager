@@ -1,6 +1,6 @@
 # -*- rd -*-
 
-= Upgrade on Ubuntu --- How to upgrade milter manager on Ubuntu
+= Upgrade on Ubuntu --- How to upgrade milter manager on Ubuntu Linux
 
 == About this document
 

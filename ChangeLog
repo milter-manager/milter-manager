@@ -1,5 +1,8 @@
 2009-10-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/upgrade-*.rd: write you.
+	* doc/upgrade-*.rd.ja: fix typos.
+
 	* doc/, html/: 1.2.0 -> 1.4.0.
 
 	* doc/install-*, doc/upgrade-*: update versions.

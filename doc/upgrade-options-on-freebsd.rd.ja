@@ -6,8 +6,11 @@
 
 FreeBSDに特化したmilter manager関連ソフトウェアの更新方法につ
 いて説明します。新規にインストールする方法は((<FreeBSDへインス
-トール（任意）|install-options-to-ubuntu.rd.ja>))を見てくださ
+トール（任意）|install-options-to-freebsd.rd.ja>))を見てくださ
 い。
+
+まず、milter manager本体を更新する必要があるので、まだの場合
+は((<FreeBSDで更新|upgrade-on-freebsd.rd.ja>))を見てください。
 
 == milter-manager-log-analyzerの更新
 
