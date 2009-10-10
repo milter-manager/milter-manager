@@ -73,12 +73,15 @@ content_files =					\
 	install-to-centos.xml			\
 	install-to-freebsd.xml			\
 	install-to-others.xml			\
+	install-options-to-debian.xml		\
 	install-options-to-ubuntu.xml		\
 	install-options-to-centos.xml		\
 	install-options-to-freebsd.xml		\
+	upgrade-on-debianu.xml			\
 	upgrade-on-ubuntu.xml			\
 	upgrade-on-centos.xml			\
 	upgrade-on-freebsd.xml			\
+	upgrade-options-on-debian.xml		\
 	upgrade-options-on-ubuntu.xml		\
 	upgrade-options-on-centos.xml		\
 	upgrade-options-on-freebsd.xml		\
@@ -120,18 +123,24 @@ generated_xml_files =				\
 	install-to-freebsd.xml.ja		\
 	install-to-others.xml			\
 	install-to-others.xml.ja		\
+	install-options-to-debian.xml		\
+	install-options-to-debian.xml.ja	\
 	install-options-to-ubuntu.xml		\
 	install-options-to-ubuntu.xml.ja	\
 	install-options-to-centos.xml		\
 	install-options-to-centos.xml.ja	\
 	install-options-to-freebsd.xml		\
 	install-options-to-freebsd.xml.ja	\
+	upgrade-on-debian.xml			\
+	upgrade-on-debian.xml.ja		\
 	upgrade-on-ubuntu.xml			\
 	upgrade-on-ubuntu.xml.ja		\
 	upgrade-on-centos.xml			\
 	upgrade-on-centos.xml.ja		\
 	upgrade-on-freebsd.xml			\
 	upgrade-on-freebsd.xml.ja		\
+	upgrade-options-on-debian.xml		\
+	upgrade-options-on-debian.xml.ja	\
 	upgrade-options-on-ubuntu.xml		\
 	upgrade-options-on-ubuntu.xml.ja	\
 	upgrade-options-on-centos.xml		\
@@ -267,6 +276,12 @@ install-options-to-ubuntu.xml: $(top_srcdir)/doc/install-options-to-ubuntu.rd $(
 install-options-to-ubuntu.xml.ja: $(top_srcdir)/doc/install-options-to-ubuntu.rd.ja $(RD2REFENTRY_LIB) ja.po
 	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/install-options-to-ubuntu.rd.ja > install-options-to-ubuntu.xml.ja
 
+install-options-to-debian.xml: $(top_srcdir)/doc/install-options-to-debian.rd $(RD2REFENTRY_LIB) install-options-to-debian.xml.ja
+	$(RD2DOCBOOK) $(top_srcdir)/doc/install-options-to-debian.rd > install-options-to-debian.xml
+
+install-options-to-debian.xml.ja: $(top_srcdir)/doc/install-options-to-debian.rd.ja $(RD2REFENTRY_LIB) ja.po
+	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/install-options-to-debian.rd.ja > install-options-to-debian.xml.ja
+
 install-options-to-centos.xml: $(top_srcdir)/doc/install-options-to-centos.rd $(RD2REFENTRY_LIB) install-options-to-centos.xml.ja
 	$(RD2DOCBOOK) $(top_srcdir)/doc/install-options-to-centos.rd > install-options-to-centos.xml
 
@@ -278,6 +293,12 @@ install-options-to-freebsd.xml: $(top_srcdir)/doc/install-options-to-freebsd.rd 
 
 install-options-to-freebsd.xml.ja: $(top_srcdir)/doc/install-options-to-freebsd.rd.ja $(RD2REFENTRY_LIB) ja.po
 	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/install-options-to-freebsd.rd.ja > install-options-to-freebsd.xml.ja
+
+upgrade-on-debian.xml: $(top_srcdir)/doc/upgrade-on-debian.rd $(RD2REFENTRY_LIB) upgrade-on-debian.xml.ja
+	$(RD2DOCBOOK) $(top_srcdir)/doc/upgrade-on-debian.rd > upgrade-on-debian.xml
+
+upgrade-on-ubuntu.xml.ja: $(top_srcdir)/doc/upgrade-on-ubuntu.rd.ja $(RD2REFENTRY_LIB) ja.po
+	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/upgrade-on-ubuntu.rd.ja > upgrade-on-ubuntu.xml.ja
 
 upgrade-on-ubuntu.xml: $(top_srcdir)/doc/upgrade-on-ubuntu.rd $(RD2REFENTRY_LIB) upgrade-on-ubuntu.xml.ja
 	$(RD2DOCBOOK) $(top_srcdir)/doc/upgrade-on-ubuntu.rd > upgrade-on-ubuntu.xml
@@ -296,6 +317,12 @@ upgrade-on-freebsd.xml: $(top_srcdir)/doc/upgrade-on-freebsd.rd $(RD2REFENTRY_LI
 
 upgrade-on-freebsd.xml.ja: $(top_srcdir)/doc/upgrade-on-freebsd.rd.ja $(RD2REFENTRY_LIB) ja.po
 	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/upgrade-on-freebsd.rd.ja > upgrade-on-freebsd.xml.ja
+
+upgrade-options-on-debian.xml: $(top_srcdir)/doc/upgrade-options-on-debian.rd $(RD2REFENTRY_LIB) upgrade-options-on-debian.xml.ja
+	$(RD2DOCBOOK) $(top_srcdir)/doc/upgrade-options-on-debian.rd > upgrade-options-on-debian.xml
+
+upgrade-options-on-debian.xml.ja: $(top_srcdir)/doc/upgrade-options-on-debian.rd.ja $(RD2REFENTRY_LIB) ja.po
+	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/upgrade-options-on-debian.rd.ja > upgrade-options-on-debian.xml.ja
 
 upgrade-options-on-ubuntu.xml: $(top_srcdir)/doc/upgrade-options-on-ubuntu.rd $(RD2REFENTRY_LIB) upgrade-options-on-ubuntu.xml.ja
 	$(RD2DOCBOOK) $(top_srcdir)/doc/upgrade-options-on-ubuntu.rd > upgrade-options-on-ubuntu.xml
