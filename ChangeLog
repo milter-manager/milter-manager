@@ -1,5 +1,8 @@
 2009-10-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/install-options-to-debian.rd*: add install documents for
+	optinal packages on Debian.
+
 	* data/defaults/debian.conf, data/defaults/freebsd.conf: enables
 	OpenDKIM detection on Debian and FreeBSD.
 

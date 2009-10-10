@@ -1,0 +1,190 @@
+# -*- rd -*-
+
+= Debianへインストール（任意） --- Debian GNU/Linuxへのmilter manager関連ソフトウェアのインストール方法
+
+== このドキュメントについて
+
+Debian GNU/Linuxに特化したmilter manager関連ソフトウェアのイ
+ンストール方法について説明します。milter manager本体のインス
+トール情報は((<Debianへインストール
+|install-to-debian.rd.ja>))、Debianに依存しない一般的なインス
+トール情報は((<インストール|install.rd.ja>))を見てください。
+
+== [debian-milter-manager-log-analyzer] milter-manager-log-analyzerのインストール
+
+milter-manager-log-analyzerはmilter-managerパッケージに含ま
+れているので、すでにインストールされています。ここでは、
+milter-manager-log-analyzerが出力するグラフを閲覧するための
+設定を行います。
+
+=== パッケージのインストール
+
+WebサーバとしてApacheを使います。
+
+  % sudo aptitude -V -D -y install apache2
+
+=== milter-manager-log-analyzerの設定
+
+グラフはインストール時に作成したmilter-managerユーザのホーム
+ディレクトリ（/var/lib/milter-manager/）以下に出力されていま
+す。このグラフをhttp://localhost/milter-manager-log/で閲覧で
+きるようにします。
+
+以下の内容の/etc/apache2/conf.d/milter-manager-logを作成しま
+す。
+
+/etc/apache2/conf.d/milter-manager-log:
+  Alias /milter-manager-log/ /var/lib/milter-manager/public_html/log/
+
+作成したら、再読み込みします。
+
+  % sudo /etc/init.d/apache2 force-reload
+
+これでhttp://localhost/milter-manager-log/でグラフを閲覧で
+きるようになります。
+
+== [debian-milter-manager-admin] milter manager adminのインストール
+
+=== パッケージのインストール
+
+以下のパッケージをインストールすることにより、関連するパッケー
+ジもインストールされます。
+
+  % sudo aptitude -V -D -y install build-essential rdoc libopenssl-ruby apache2-threaded-dev libsqlite3-ruby milter-manager-admin
+
+=== RubyGemsのインストール
+
+lenny標準のRubyGemsは古いので、Debian Backportsを使います。
+以下の内容の/etc/apt/sources.list.d/backports.listを作成しま
+す。
+
+/etc/apt/sources.list.d/backports.list:
+  deb http://www.jp.backports.org lenny-backports main contrib non-free
+  deb-src http://www.jp.backports.org lenny-backports main contrib non-free
+
+まず、backports用のGPG鍵を入手します。
+
+  % sudo aptitude update
+  % sudo aptitude -V -D install debian-backports-keyring
+
+この時点ではまだbackports用の鍵がないので、
+debian-backports-keyringは信用されていないパッケージ扱いにな
+ります。そのため、以下のように本当にインストールするか確認さ
+れます。
+
+  WARNING: untrusted versions of the following packages will be installed!
+
+  Untrusted packages could compromise your system's security.
+  You should only proceed with the installation if you are certain that
+  this is what you want to do.
+
+    debian-backports-keyring
+
+  Do you want to ignore this warning and proceed anyway?
+  To continue, enter "Yes"; to abort, enter "No":
+
+信用できるのであれば「Yes」と入力してインストールしてくださ
+い。
+
+信用した場合はaptitudeでRubyGemsをインストールします。
+
+  % sudo aptitude -V -D -y install -t lenny-backports rubygems
+
+=== gemのインストール
+
+  % sudo gem install rails -v '2.3.4'
+  % sudo gem install passenger -v '2.2.5'
+
+=== Passengerのインストール
+
+以下のコマンドを実行し、Passengerをビルドします。
+
+  % (echo 1; echo) | sudo passenger-install-apache2-module
+
+以下の内容のpassenger.loadとpassenger.confを
+/etc/apache2/mods-available/に作成します。
+
+/etc/apache2/mods-available/passenger.load:
+  LoadModule passenger_module /var/lib/gems/1.8/gems/passenger-2.2.5/ext/apache2/mod_passenger.so
+
+/etc/apache2/mods-available/passenger.conf:
+  PassengerRoot /var/lib/gems/1.8/gems/passenger-2.2.5
+  PassengerRuby /usr/bin/ruby1.8
+
+  RailsBaseURI /milter-manager
+
+設定を有効にして、再読み込みします。
+
+  % sudo /usr/sbin/a2enmod passenger
+  % sudo /etc/init.d/apache2 force-reload
+
+milter manager adminはパスワード認証がついていますが、可能で
+あれば信頼できるホストからのみ接続を受け付ける方がセキュリティ
+上は好ましいです。例えば、ローカルホストのみ信頼できるのであ
+れば、以下の設定を/etc/apache2/mods-available/passenger.conf
+に追記してください。
+
+  <Location /milter-manager>
+    Allow from 127.0.0.1
+    Deny from ALL
+  </Location>
+
+追記した場合は設定ファイルを再読み込みするのを忘れないでくだ
+さい。
+
+  % sudo /etc/init.d/apache2 force-reload
+
+=== milter manager adminの設定
+
+milter manager adminは/usr/share/milter-manager/admin/以下に
+インストールされています。これをmilter-managerユーザ権限で動
+かし、http://localhost/milter-manager/でアクセスできるように
+します。
+
+  % tar cf - -C /usr/share/milter-manager admin | sudo -u milter-manager -H tar xf - -C ~milter-manager
+  % sudo ln -s ~milter-manager/admin/public /var/www/milter-manager
+  % cd ~milter-manager/admin
+  % sudo -u milter-manager -H rake gems:install
+  % sudo -u milter-manager -H rake RAILS_ENV=production db:migrate
+
+最後に以下の内容の
+~milter-manager/admin/config/initializers/relative_url_root.rb
+を作成します。
+
+~milter-manager/admin/config/initializers/relative_url_root.rb
+  ActionController::Base.relative_url_root = "/milter-manager"
+
+http://localhost/milter-manager/にアクセスしてユーザを登録し
+てください。ユーザを登録したら、milter-managerと接続するため
+の情報を設定するページへ移動します。milter-managerがどこで接
+続を受け付けているかは以下で確認可能です。
+
+  % sudo -u milter-manager -H /usr/sbin/milter-manager --show-config | grep controller.connection_spec
+  controller.connection_spec = "unix:/var/run/milter-manager/milter-manager-controller.sock"
+
+確認した値をブラウザから登録してください。上記の場合だと、
+まず、「種類」から「unix」を選びます。これで編集フォームに
+「パス」がでてきます。「パス」には
+「/var/run/milter-manager/milter-manager-controller.sock」を
+指定してください。
+
+登録すると、milter-managerに登録されている子milterやその設定
+状況をブラウザから確認することができます。
+
+== まとめ
+
+milter-manager-log-analyzerを利用することによりmilterを導入し
+た効果を視覚的に確認することができます。MTAとしてPostfixを使
+用しているのであれば、
+((<Mailgraph|URL:http://mailgraph.schweikert.ch/>))のグラフと
+見くらべてmilter導入の効果を確認することができます。milterを
+試験的に導入している場合などに有効に活用できます。
+
+milter manager adminを利用することで設定ファイルを変更せずに
+運用できる領域が広がり、メールシステムの管理コストを下げるこ
+とができます。
+
+また、Webブラウザからmilterの有効・無効を切り替えることもでき
+るため、milterの効果を試行錯誤する場合に便利です。
+milter-manager-log-analyzerのグラフとあわせて、それぞれのメー
+ルシステムに適した迷惑メール対策の適用を支援します。
