@@ -29,9 +29,9 @@ module Milter::Manager
     end
 
     def apply(loader)
-      return if @name.nil?
+      return unless need_apply?
       spec = guess_spec
-      loader.define_milter(@script_name) do |milter|
+      loader.define_milter(milter_name) do |milter|
         milter.enabled = enabled?
         milter.description = description
         milter.command = command
@@ -157,6 +157,14 @@ module Milter::Manager
 
     def shell_variable?(string)
       /\A\$/ =~ string
+    end
+
+    def milter_name
+      @script_name
+    end
+
+    def need_apply?
+      not @name.nil?
     end
 
     def apply_before_block(milter)

@@ -234,6 +234,102 @@ EOC
                   "unix:/var/run/milter/milter-dkim.sock"]])
   end
 
+  def test_apply_opendkim_style
+    opendkim_conf = @tmp_dir + "opendkim.conf"
+    (@rc_d + "milter-opendkim").open("w") do |file|
+      file << <<-EOM
+name=milteropendkim
+: ${milteropendkim_enable="NO"}
+: ${milteropendkim_uid="mailnull"}
+: ${milteropendkim_profiles=""}
+: ${milteropendkim_cfgfile="#{opendkim_conf}"}
+
+: ${milteropendkim_socket=""}
+: ${milteropendkim_domain=""}
+: ${milteropendkim_key=""}
+: ${milteropendkim_selector=""}
+: ${milteropendkim_alg=""}
+EOM
+    end
+    @rc_conf.open("w") do |file|
+      file << <<-EOC
+milteropendkim_enable=YES
+milteropendkim_socket="/var/run/milter/milter-opendkim.sock"
+EOC
+    end
+
+    detector = freebsd_rc_detector("milter-opendkim")
+    detector.detect
+    detector.apply(@loader)
+    assert_equal("milteropendkim", detector.name)
+    assert_eggs([["milter-opendkim",
+                  nil,
+                  true,
+                  (@rc_d + "milter-opendkim").to_s,
+                  "start",
+                  "unix:/var/run/milter/milter-opendkim.sock"]])
+  end
+
+  def test_apply_opendkim_style_profile
+    opendkim_conf = @tmp_dir + "opendkim.conf"
+    opendkim_test_conf = @tmp_dir + "opendkim-test.conf"
+    (@rc_d + "milter-opendkim").open("w") do |file|
+      file << <<-EOM
+name=milteropendkim
+: ${milteropendkim_enable="NO"}
+: ${milteropendkim_uid="mailnull"}
+: ${milteropendkim_profiles=""}
+: ${milteropendkim_cfgfile="#{opendkim_conf}"}
+
+: ${milteropendkim_socket=""}
+: ${milteropendkim_domain=""}
+: ${milteropendkim_key=""}
+: ${milteropendkim_selector=""}
+: ${milteropendkim_alg=""}
+EOM
+    end
+    @rc_conf.open("w") do |file|
+      file << <<-EOC
+milteropendkim_enable=YES
+milteropendkim_socket="/var/run/milter/milter-opendkim.sock"
+
+milteropendkim_profiles="inner outer test"
+
+milteropendkim_inner_enable=NO
+milteropendkim_outer_socket="/var/run/milter/milter-opendkim-outer.sock"
+milteropendkim_test_cfgfile="#{opendkim_test_conf}"
+EOC
+    end
+    opendkim_test_conf.open("w") do |file|
+      file << <<-EOC
+Socket inet:12345
+EOC
+    end
+
+    detector = freebsd_rc_detector("milter-opendkim")
+    detector.detect
+    detector.apply(@loader)
+    assert_equal("milteropendkim", detector.name)
+    assert_eggs([["milter-opendkim-inner",
+                  nil,
+                  false,
+                  (@rc_d + "milter-opendkim").to_s,
+                  "start inner",
+                  "unix:/var/run/milter/milter-opendkim.sock"],
+                 ["milter-opendkim-outer",
+                  nil,
+                  true,
+                  (@rc_d + "milter-opendkim").to_s,
+                  "start outer",
+                  "unix:/var/run/milter/milter-opendkim.sock"],
+                 ["milter-opendkim-test",
+                  nil,
+                  true,
+                  (@rc_d + "milter-opendkim").to_s,
+                  "start test",
+                  "inet:12345"]])
+  end
+
   def test_apply_milter_greylist_style
     milter_greylist_conf = @tmp_dir + "greylist.conf"
     (@rc_d + "milter-greylist").open("w") do |file|

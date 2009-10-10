@@ -60,7 +60,7 @@ module Milter::Manager
       package_options["prefix"] || "/usr/pkg/etc"
     end
 
-    def guess_application_specific_spec(guessed_spec)
+    def guess_application_specific_spec
       spec = nil
       spec ||= detect_enma_connection_spec if enma?
       spec

@@ -59,6 +59,11 @@ module Milter::Manager
       end
     end
 
+    protected
+    def rcvar_prefix
+      @name
+    end
+
     private
     def init_variables
       super
@@ -78,13 +83,14 @@ module Milter::Manager
                         :accept_lower_case => true)
 
       before_load_rc_conf = true
+      _rcvar_prefix = Regexp.escape(rcvar_prefix)
       rc_script_content.each_line do |line|
         case line
         when /\A\s*load_rc_conf /
           before_load_rc_conf = false
-        when /\$\{#{Regexp.escape(@name)}_(.+?)(?::?-|=)(.*)\}/
+        when /\$\{#{_rcvar_prefix}_(.+?)(?::?-|=)(.*)\}/
           set_variable($1, $2)
-        when /\A#{Regexp.escape(@name)}_(.+?)=(.*)/
+        when /\A#{_rcvar_prefix}_(.+?)=(.*)/
           set_variable($1, $2) if before_load_rc_conf
         when /\Acommand_args=(.+)/
           @command_args = normalize_variable_value($1)
@@ -95,9 +101,10 @@ module Milter::Manager
     def parse_rc_conf(file)
       return unless File.readable?(file)
       File.open(file) do |conf|
+        _rcvar_prefix = Regexp.escape(rcvar_prefix)
         conf.each_line do |line|
           case line
-          when /\A#{Regexp.escape(@name)}_(.+)=(.+)/
+          when /\A#{_rcvar_prefix}_(.+)=(.+)/
             variable_name = $1
             variable_value = $2
             variable_value = normalize_variable_value(variable_value)
@@ -118,12 +125,12 @@ module Milter::Manager
 
     def guess_spec
       spec = nil
+      spec ||= guess_application_specific_spec
       spec ||= normalize_spec(@variables["socket"])
       spec ||= normalize_spec(@variables["sockfile"])
       spec ||= normalize_spec(@variables["connection_spec"])
       spec ||= extract_spec_parameter_from_flags(@variables["flags"])
       spec ||= extract_spec_parameter_from_flags(@command_args)
-      spec = guess_application_specific_spec(spec) || spec
       if @connection_spec_detector
         spec = normalize_spec(@connection_spec_detector.call(self, spec)) || spec
       end

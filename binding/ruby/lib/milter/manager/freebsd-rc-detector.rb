@@ -17,15 +17,17 @@ require 'milter/manager/rcng-detector'
 require 'milter/manager/enma-socket-detector'
 
 module Milter::Manager
-  class FreeBSDRCDetector
+  module FreeBSDRCBaseDetector
     include RCNGDetector
 
     def rcvar
-      @rcvar || "#{@name}_enable"
+      @rcvar || "#{rcvar_prefix}_enable"
     end
 
     def rcvar_value
-      @rcvar_value || @variables[rcvar_variable_name] || "NO"
+      @rcvar_value ||
+        @variables[rcvar.gsub(/\A#{Regexp.escape(rcvar_prefix)}_/, '')] ||
+        default_rcvar_value
     end
 
     def detect_enma_connection_spec
@@ -48,6 +50,10 @@ module Milter::Manager
       @script_name == "milter-greylist" or @name == "miltergreylist"
     end
 
+    def opendkim?
+      @script_name == "milter-opendkim" or @name == "milteropendkim"
+    end
+
     private
     def enma_conf
       @variables["cfgfile"] ||
@@ -67,28 +73,131 @@ module Milter::Manager
         "/usr/local/etc/mail/greylist.conf"
     end
 
+    def opendkim_conf
+      @variables["cfgfile"] ||
+        extract_parameter_from_flags(command_args, "-C") ||
+        "/usr/local/etc/opendkim.conf"
+    end
+
     def parse_rc_conf_unknown_line(line)
       case line
       when /\Arcvar=`set_rcvar`/
-        @rcvar = "#{@name}_enable"
+        @rcvar = "#{rcvar_prefix}_enable"
       when /\A#{Regexp.escape(rcvar)}=(.+)/
         @rcvar_value = normalize_variable_value($1)
       end
     end
 
-    def rcvar_variable_name
-      rcvar.gsub(/\A#{Regexp.escape(@name)}_/, '')
+    def guess_application_specific_spec
+      spec = nil
+      spec ||= detect_enma_connection_spec if enma?
+      spec ||= detect_clamav_milter_connection_spec if clamav_milter?
+      spec ||= detect_opendkim_connection_spec if opendkim?
+      spec
+    end
+  end
+
+  class FreeBSDRCDetector
+    include FreeBSDRCBaseDetector
+
+    def profiles
+      _profiles = @variables["profiles"]
+      if _profiles.nil?
+        nil
+      else
+        _profiles.split
+      end
+    end
+
+    def apply(loader)
+      if opendkim? and !profiles.empty?
+        profiles.each do |profile|
+          detector = FreeBSDRCProfileDetector.new(@configuration,
+                                                  @script_name,
+                                                  profile,
+                                                  self,
+                                                  &@connection_spec_detector)
+          detector.detect
+          detector.apply(loader)
+        end
+      else
+        super
+      end
+    end
+
+    private
+    def default_rcvar_value
+      "NO"
     end
 
     def rc_d
       "/usr/local/etc/rc.d"
     end
+  end
 
-    def guess_application_specific_spec(guessed_spec)
-      spec = nil
-      spec ||= detect_enma_connection_spec if enma?
-      spec ||= detect_clamav_milter_connection_spec if clamav_milter?
-      spec
+  class FreeBSDRCProfileDetector
+    include FreeBSDRCBaseDetector
+
+    def initialize(configuration, script_name, profile_name, base_detector,
+                   &connection_spec_detector)
+      super(configuration, script_name, &connection_spec_detector)
+      @profile_name = profile_name
+      @base_detector = base_detector
+    end
+
+    protected
+    def rcvar_prefix
+      "#{@name}_#{@profile_name}"
+    end
+
+    private
+    def init_variables
+      super
+      @base_variables = {}
+    end
+
+    def need_apply?
+      super and not @profile_name.nil?
+    end
+
+    def milter_name
+      [super, @profile_name].join("-")
+    end
+
+    def command_options
+      "#{super} #{@profile_name}"
+    end
+
+    def rc_d
+      @base_detector.rc_d
+    end
+
+    def rc_conf
+      @base_detector.rc_conf
+    end
+
+    def rc_conf_d
+      @base_detector.rc_conf_d
+    end
+
+    def detect_opendkim_connection_spec
+      super || @base_variables["socket"]
+    end
+
+    def parse_rc_conf_unknown_line(line)
+      case line
+      when /\A#{Regexp.escape(@base_detector.rcvar_prefix)}_(.+)=(.+)/
+        variable_name = $1
+        variable_value = $2
+        variable_value = normalize_variable_value(variable_value)
+        @base_variables[variable_name] = variable_value
+      else
+        super
+      end
+    end
+
+    def default_rcvar_value
+      @base_variables["enable"] || super
     end
   end
 end
