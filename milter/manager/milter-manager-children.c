@@ -1521,14 +1521,6 @@ cb_add_header (MilterServerContext *context,
                                  "<%s>=<%s>", name, value ? value : "(null)"))
         return;
 
-    if (is_evaluation_mode(children, context, "add-header",
-                           "<%s>=<%s>", name, value ? value : "(null)"))
-        return;
-
-    normalized_value = normalize_header_value(children, context, value);
-    milter_headers_add_header(priv->headers, name,
-                              normalized_value ? normalized_value : value);
-
     if (value) {
         guint tag;
         const gchar *child_name;
@@ -1538,6 +1530,14 @@ cb_add_header (MilterServerContext *context,
         milter_statistics("[milter][header][add](%u): <%s>=<%s>: %s",
                           tag, name, value, child_name);
     }
+
+    if (is_evaluation_mode(children, context, "add-header",
+                           "<%s>=<%s>", name, value ? value : "(null)"))
+        return;
+
+    normalized_value = normalize_header_value(children, context, value);
+    milter_headers_add_header(priv->headers, name,
+                              normalized_value ? normalized_value : value);
 
     if (normalized_value)
         g_free(normalized_value);
@@ -1558,14 +1558,6 @@ cb_insert_header (MilterServerContext *context,
                                  "[%u]<%s>=<%s>",
                                  index, name, value ? value : "(null)"))
         return;
-    if (is_evaluation_mode(children, context, "insert-header",
-                           "[%u]<%s>=<%s>",
-                           index, name, value ? value : "(null)"))
-        return;
-
-    normalized_value = normalize_header_value(children, context, value);
-    milter_headers_insert_header(priv->headers, index, name,
-                                 normalized_value ? normalized_value : value);
 
     if (value) {
         guint tag;
@@ -1576,6 +1568,15 @@ cb_insert_header (MilterServerContext *context,
         milter_statistics("[milter][header][add](%u): <%s>=<%s>: %s",
                           tag, name, value, child_name);
     }
+
+    if (is_evaluation_mode(children, context, "insert-header",
+                           "[%u]<%s>=<%s>",
+                           index, name, value ? value : "(null)"))
+        return;
+
+    normalized_value = normalize_header_value(children, context, value);
+    milter_headers_insert_header(priv->headers, index, name,
+                                 normalized_value ? normalized_value : value);
 
     if (normalized_value)
         g_free(normalized_value);
@@ -1597,16 +1598,6 @@ cb_change_header (MilterServerContext *context,
                                  name, index, value ? value : "(null)"))
         return;
 
-    if (is_evaluation_mode(children, context, "change-header",
-                           "<%s>[%u]=<%s>",
-                           name, index, value ? value : "(null)"))
-        return;
-
-    normalized_value = normalize_header_value(children, context, value);
-    milter_headers_change_header(priv->headers,
-                                 name, index,
-                                 normalized_value ? normalized_value : value);
-
     if (value) {
         guint tag;
         const gchar *child_name;
@@ -1616,6 +1607,16 @@ cb_change_header (MilterServerContext *context,
         milter_statistics("[milter][header][add](%u): <%s>=<%s>: %s",
                           tag, name, value, child_name);
     }
+
+    if (is_evaluation_mode(children, context, "change-header",
+                           "<%s>[%u]=<%s>",
+                           name, index, value ? value : "(null)"))
+        return;
+
+    normalized_value = normalize_header_value(children, context, value);
+    milter_headers_change_header(priv->headers,
+                                 name, index,
+                                 normalized_value ? normalized_value : value);
 
     if (normalized_value)
         g_free(normalized_value);
