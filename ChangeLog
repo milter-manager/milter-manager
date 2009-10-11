@@ -1,5 +1,8 @@
 2009-10-11  Kouhei Sutou  <kou@cozmixng.org>
 
+	* NEWS: add a new bug fix entry showed at the below ChangeLog
+	entry.
+
 	* milter/manager/milter-manager-children.c: log add header
 	statistics on evaluation mode.
 
