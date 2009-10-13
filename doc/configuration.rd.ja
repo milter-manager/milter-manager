@@ -769,7 +769,7 @@ define_milter do ... end内で設定できる項目は以下の通りです。
 
 以下はすべての子milterを無効にする例です。
 
-  define_milters.each do |name|
+  defined_milters.each do |name|
     define_milter(name) do |milter|
       milter.enabled = false
     end
@@ -777,7 +777,7 @@ define_milter do ... end内で設定できる項目は以下の通りです。
 
 以下はすべての子milterの適用条件にS25Rを追加する例です。
 
-  define_milters.each do |name|
+  defined_milters.each do |name|
     define_milter(name) do |milter|
       milter.add_applicable_condition("S25R")
     end

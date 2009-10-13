@@ -783,7 +783,7 @@ this feature.
 
 Here is an example that disabling all child milters:
 
-  define_milters.each do |name|
+  defined_milters.each do |name|
     define_milter(name) do |milter|
       milter.enabled = false
     end
@@ -792,7 +792,7 @@ Here is an example that disabling all child milters:
 Here is an example that adding "S25R" applicable condition
 to all child milters.
 
-  define_milters.each do |name|
+  defined_milters.each do |name|
     define_milter(name) do |milter|
       milter.add_applicable_condition("S25R")
     end
