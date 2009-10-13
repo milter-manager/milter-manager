@@ -100,7 +100,7 @@ package:
 
 To build Passenger we run the following command:
 
-  % (echo 1; echo) | sudo passenger-install-apache2-module
+  % (echo 1; echo) | sudo /var/lib/gems/1.8/bin/passenger-install-apache2-module
 
 We create passenger.load and passenger.conf under
 /etc/apache2/mods-available/.
@@ -146,8 +146,8 @@ http://localhost/milter-manager/.
   % tar cf - -C /usr/share/milter-manager admin | sudo -u milter-manager -H tar xf - -C ~milter-manager
   % sudo ln -s ~milter-manager/admin/public /var/www/apache22/data/milter-manager
   % cd ~milter-manager/admin
-  % sudo -u milter-manager -H rake gems:install
-  % sudo -u milter-manager -H rake RAILS_ENV=production db:migrate
+  % sudo -u milter-manager -H /var/lib/gems/1.8/bin/rake gems:install
+  % sudo -u milter-manager -H /var/lib/gems/1.8/bin/rake RAILS_ENV=production db:migrate
 
 Then we create a file to
 ~milter-manager/admin/config/initializers/relative_url_root.rb

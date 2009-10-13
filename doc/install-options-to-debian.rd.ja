@@ -99,7 +99,7 @@ debian-backports-keyringは信用されていないパッケージ扱いにな
 
 以下のコマンドを実行し、Passengerをビルドします。
 
-  % (echo 1; echo) | sudo passenger-install-apache2-module
+  % (echo 1; echo) | sudo /var/lib/gems/1.8/bin/passenger-install-apache2-module
 
 以下の内容のpassenger.loadとpassenger.confを
 /etc/apache2/mods-available/に作成します。
@@ -144,8 +144,8 @@ milter manager adminは/usr/share/milter-manager/admin/以下に
   % tar cf - -C /usr/share/milter-manager admin | sudo -u milter-manager -H tar xf - -C ~milter-manager
   % sudo ln -s ~milter-manager/admin/public /var/www/milter-manager
   % cd ~milter-manager/admin
-  % sudo -u milter-manager -H rake gems:install
-  % sudo -u milter-manager -H rake RAILS_ENV=production db:migrate
+  % sudo -u milter-manager -H /var/lib/gems/1.8/bin/rake gems:install
+  % sudo -u milter-manager -H /var/lib/gems/1.8/bin/rake RAILS_ENV=production db:migrate
 
 最後に以下の内容の
 ~milter-manager/admin/config/initializers/relative_url_root.rb

@@ -54,8 +54,8 @@ We upgrade milter manager admin and its database schema:
 
   % tar cf - -C /usr/share/milter-manager admin | sudo -u milter-manager -H tar xf - -C ~milter-manager
   % cd ~milter-manager/admin
-  % sudo -u milter-manager -H rake gems:install
-  % sudo -u milter-manager -H rake RAILS_ENV=production db:migrate
+  % sudo -u milter-manager -H /var/lib/gems/1.8/bin/rake gems:install
+  % sudo -u milter-manager -H /var/lib/gems/1.8/bin/rake RAILS_ENV=production db:migrate
 
 == Conclusion
 
