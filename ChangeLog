@@ -1,5 +1,8 @@
 2009-10-13  Kouhei Sutou  <kou@clear-code.com>
 
+	* html/blog/tdiary.conf: use section_footer2.rb instead of
+	section_footer.rb.
+
 	* doc/*-options-*debian.rd:* fix path.
 
 	* configure.ac: 1.4.0 -> 1.5.0.
