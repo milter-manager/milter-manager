@@ -284,7 +284,7 @@ OPTION_ARGSをコメントアウトし、デーモンプロセスで起動する
    SMTP Auth関連の情報をmilterに渡します。milter-greylistな
    どが使用します。
 
-続いて、Postfixにmilter-milterを登録します。spamass-milter、
+続いて、Postfixにmilter-managerを登録します。spamass-milter、
 clamav-milter、milter-greylistはmilter-manager経由で利用する
 ので、Postfixにはmilter-managerだけを登録すればよいことに注
 意してください。
