@@ -28,7 +28,7 @@ install-options-to-debian.rd.ja>))を見てください。
 
 以下のコマンドを実行し、Passengerをビルドします。
 
-  % (echo 1; echo) | sudo passenger-install-apache2-module
+  % (echo 1; echo) | sudo /var/lib/gems/bin/passenger-install-apache2-module
 
 /etc/apache2/mods-available/以下のpassenger.loadと
 passenger.conf内に記述されているPassengerのバージョンを2.2.5

@@ -30,7 +30,7 @@ upgrade milter-manager package.
 
 To build Passenger we run the following command:
 
-  % (echo 1; echo) | sudo passenger-install-apache2-module
+  % (echo 1; echo) | sudo /var/lib/gems/bin/passenger-install-apache2-module
 
 We upgrade Passenger version in
 /etc/apache2/mod-available/passenger.{load,conf} to 2.2.5:
