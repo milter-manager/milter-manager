@@ -1,3 +1,7 @@
+2009-10-13  Yuto Hayamizu  <y.hayamizu@gmail.com>
+
+	* doc/configuration.rd*: fixed typo
+
 2009-10-13  Kouhei Sutou  <kou@clear-code.com>
 
 	* html/blog/tdiary.conf: use section_footer2.rb instead of
