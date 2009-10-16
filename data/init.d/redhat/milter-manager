@@ -22,18 +22,20 @@
 name="milter manager"
 prog="milter-manager"
 milter_manager=/usr/sbin/milter-manager
-USER="milter-manager"
-GROUP="milter-manager"
-SOCKET_GROUP="smmsp"
-PIDFILE=/var/run/milter-manager/$prog.pid
-CONNECTION_SPEC=unix:/var/run/milter-manager/milter-manager.sock
+USER=
+GROUP=
+SOCKET_GROUP=
+PIDFILE=
+CONNECTION_SPEC=
 OPTION_ARGS=""
 
 if [ -f /etc/sysconfig/milter-manager ]; then
 	. /etc/sysconfig/milter-manager
 fi
 
-DAEMON_ARGS="--daemon --pid-file ${PIDFILE}"
+if [ -n "${PIDFILE}" ]; then
+  DAEMON_ARGS="--daemon --pid-file ${PIDFILE}"
+fi
 if [ -n "${CONNECTION_SPEC}" ]; then
 	DAEMON_ARGS="${DAEMON_ARGS} --connection-spec ${CONNECTION_SPEC}"
 fi
@@ -42,8 +44,10 @@ if [ -n "${USER}" ]; then
 	        echo "$0: user for running $prog doesn't exist: ${USER}" >&2
 		exit 1
 	fi
-	mkdir -p `dirname ${PIDFILE}`
-	chown -R ${USER} `dirname ${PIDFILE}`
+	if [ -n "${PIDFILE}" ]; then
+		mkdir -p `dirname ${PIDFILE}`
+		chown -R ${USER} `dirname ${PIDFILE}`
+	fi
 	DAEMON_ARGS="${DAEMON_ARGS} --user-name ${USER}"
 fi
 if [ -n "${GROUP}" ]; then

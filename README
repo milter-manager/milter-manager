@@ -152,3 +152,4 @@ The latest source is available from the Subversion repository:
   * Yuto Hayamizu:
     * cleaned test.
     * added useful features for creating milter by Ruby.
+  * gorimaru: suggested usage improvements.

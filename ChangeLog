@@ -1,3 +1,11 @@
+2009-10-16  Kouhei Sutou  <kou@cozmixng.org>
+
+	* data/init.d/redhat/milter-manager: don't set command line
+	options (USER, GROUP and so on) by default.
+	Suggested by gorimaru. Thanks!!!
+
+	* data/init.d/redhat/sysconfig/milter-manager: add PIDFILE.
+
 2009-10-13  Yuto Hayamizu  <y.hayamizu@gmail.com>
 
 	* doc/install-to-*.rd.ja: fixed typo
