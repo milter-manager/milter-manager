@@ -41,6 +41,7 @@ void test_envelope_recipient_again (void);
 void test_envelope_recipient_temporary_failure (void);
 void test_envelope_recipient_reject (void);
 void test_envelope_recipient_discard (void);
+void test_envelope_recipient_accept (void);
 void test_status (void);
 void test_state (void);
 void test_last_state (void);
@@ -115,6 +116,17 @@ send_discard (void)
 }
 
 static void
+send_accept (void)
+{
+    gsize packet_size;
+
+    if (packet)
+        g_free(packet);
+    milter_reply_encoder_encode_accept(encoder, &packet, &packet_size);
+    write_data(packet, packet_size);
+}
+
+static void
 cb_command_received (MilterDecoder *decoder, gpointer user_data)
 {
     command_received = TRUE;
@@ -127,6 +139,9 @@ cb_command_received (MilterDecoder *decoder, gpointer user_data)
         break;
     case MILTER_STATUS_DISCARD:
         send_discard();
+        break;
+    case MILTER_STATUS_ACCEPT:
+        send_accept();
         break;
     default:
         send_continue();
@@ -175,6 +190,7 @@ setup_server_context_signals (MilterServerContext *context)
     CONNECT(temporary_failure);
     CONNECT(reject);
     CONNECT(discard);
+    CONNECT(accept);
 
 #undef CONNECT
 
@@ -575,6 +591,36 @@ test_envelope_recipient_discard (void)
         milter_message_result_get_recipients(message_result));
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
                            MILTER_STATUS_DISCARD,
+                           milter_message_result_get_status(message_result));
+}
+
+void
+test_envelope_recipient_accept (void)
+{
+    const gchar recipient[] = "receiver-accept@example.com";
+
+    cut_trace(test_envelope_recipient());
+
+    milter_server_context_envelope_recipient(context, recipient);
+    reply_status = MILTER_STATUS_ACCEPT;
+    wait_for_receiving_command();
+
+    wait_for_receiving_reply();
+
+    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
+                           MILTER_STATUS_ACCEPT,
+                           milter_server_context_get_status(context));
+
+    gcut_assert_equal_object(NULL,
+                             milter_server_context_get_message_result(context));
+
+    gcut_assert_equal_list_string(
+        gcut_take_new_list_string("receiver1@example.com",
+                                  recipient,
+                                  NULL),
+        milter_message_result_get_recipients(message_result));
+    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
+                           MILTER_STATUS_ACCEPT,
                            milter_message_result_get_status(message_result));
 }
 
