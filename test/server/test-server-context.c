@@ -519,7 +519,6 @@ test_envelope_recipient_temporary_failure (void)
     result = milter_server_context_get_message_result(context);
     gcut_assert_equal_list_string(
         gcut_take_new_list_string("receiver1@example.com",
-                                  recipient,
                                   NULL),
         milter_message_result_get_recipients(result));
     gcut_assert_equal_list_string(
@@ -552,7 +551,6 @@ test_envelope_recipient_reject (void)
     result = milter_server_context_get_message_result(context);
     gcut_assert_equal_list_string(
         gcut_take_new_list_string("receiver1@example.com",
-                                  recipient,
                                   NULL),
         milter_message_result_get_recipients(result));
     gcut_assert_equal_list_string(

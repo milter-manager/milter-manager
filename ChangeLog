@@ -1,5 +1,9 @@
 2009-10-18  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/server/milter-server-context.c,
+	test/server/test-server-context.c: remove temporary
+	failed/rejected recipients from recipients list.
+
 	* test/lib/milter-manager-test-client.c
 	(milter_manager_test_client_clear_data): fix a memory leak.
 

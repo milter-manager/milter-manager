@@ -2071,6 +2071,8 @@ cb_decoder_temporary_failure (MilterReplyDecoder *decoder, gpointer user_data)
         ensure_message_result(priv);
         milter_message_result_add_temporary_failed_recipient(
             priv->message_result, priv->current_recipient);
+        milter_message_result_remove_recipient(
+            priv->message_result, priv->current_recipient);
         g_free(priv->current_recipient);
         priv->current_recipient = NULL;
     } else {
@@ -2123,6 +2125,8 @@ cb_decoder_reject (MilterReplyDecoder *decoder, gpointer user_data)
         ensure_message_result(priv);
         milter_message_result_add_rejected_recipient(priv->message_result,
                                                      priv->current_recipient);
+        milter_message_result_remove_recipient(
+            priv->message_result, priv->current_recipient);
         g_free(priv->current_recipient);
         priv->current_recipient = NULL;
     } else {
