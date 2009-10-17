@@ -669,6 +669,30 @@ void                 milter_server_context_set_quitted (MilterServerContext *con
 void                 milter_server_context_reset_message_related_data
                                                        (MilterServerContext *context);
 
+/**
+ * milter_server_context_get_message_result:
+ * @context: a %MilterServerContext.
+ *
+ * Gets the message result of @context.
+ *
+ * Returns: the message result of @context.
+ */
+MilterMessageResult *milter_server_context_get_message_result
+                                                       (MilterServerContext *context);
+
+
+/**
+ * milter_server_context_set_message_result:
+ * @context: a %MilterServerContext.
+ * @result: the message result.
+ *
+ * Sets the message result of @context.
+ */
+void                 milter_server_context_set_message_result
+                                                       (MilterServerContext *context,
+                                                        MilterMessageResult *result);
+
+
 G_END_DECLS
 
 #endif /* __MILTER_SERVER_CONTEXT_H__ */

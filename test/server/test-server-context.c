@@ -36,6 +36,10 @@ void test_establish_connection (void);
 void test_establish_connection_failure (void);
 void test_helo (void);
 void test_envelope_from (void);
+void test_envelope_recipient (void);
+void test_envelope_recipient_again (void);
+void test_envelope_recipient_temporary_failure (void);
+void test_envelope_recipient_reject (void);
 void test_status (void);
 void test_state (void);
 void test_last_state (void);
@@ -46,6 +50,7 @@ static MilterTestClient *client;
 static MilterReplyEncoder *encoder;
 static MilterDecoder *decoder;
 
+static MilterStatus reply_status;
 static gboolean command_received;
 static gboolean reply_received;
 static gboolean ready_received;
@@ -74,14 +79,46 @@ send_continue (void)
 }
 
 static void
-cb_command_received (MilterDecoder *decoder, gpointer user_data)
+send_temporary_failure (void)
 {
-    command_received = TRUE;
-    send_continue();
+    gsize packet_size;
+
+    if (packet)
+        g_free(packet);
+    milter_reply_encoder_encode_temporary_failure(encoder, &packet, &packet_size);
+    write_data(packet, packet_size);
 }
 
 static void
-cb_continue_received (MilterServerContext *context, gpointer user_data)
+send_reject (void)
+{
+    gsize packet_size;
+
+    if (packet)
+        g_free(packet);
+    milter_reply_encoder_encode_reject(encoder, &packet, &packet_size);
+    write_data(packet, packet_size);
+}
+
+static void
+cb_command_received (MilterDecoder *decoder, gpointer user_data)
+{
+    command_received = TRUE;
+    switch (reply_status) {
+    case MILTER_STATUS_TEMPORARY_FAILURE:
+        send_temporary_failure();
+        break;
+    case MILTER_STATUS_REJECT:
+        send_reject();
+        break;
+    default:
+        send_continue();
+        break;
+    }
+}
+
+static void
+cb_reply_received (MilterServerContext *context, gpointer user_data)
 {
     reply_received = TRUE;
 }
@@ -107,9 +144,17 @@ setup_server_context_signals (MilterServerContext *context)
 #define CONNECT(name)                                                   \
     g_signal_connect(context, #name, G_CALLBACK(cb_ ## name ## _received), NULL)
 
-    CONNECT(continue);
     CONNECT(ready);
     CONNECT(error);
+
+#undef CONNECT
+
+#define CONNECT(name)                                                   \
+    g_signal_connect(context, #name, G_CALLBACK(cb_reply_received), NULL)
+
+    CONNECT(continue);
+    CONNECT(temporary_failure);
+    CONNECT(reject);
 
 #undef CONNECT
 }
@@ -169,6 +214,7 @@ setup (void)
     actual_error = NULL;
     expected_error = NULL;
 
+    reply_status = MILTER_STATUS_CONTINUE;
     ready_received = FALSE;
     connection_timeout_received = FALSE;
 }
@@ -316,6 +362,7 @@ void
 test_envelope_from (void)
 {
     const gchar from[] = "example@example.com";
+    MilterMessageResult *result;
 
     cut_trace(test_helo());
 
@@ -323,6 +370,102 @@ test_envelope_from (void)
     wait_for_receiving_command();
 
     wait_for_receiving_reply();
+
+    result = milter_server_context_get_message_result(context);
+    cut_assert_equal_string(from,
+                            milter_message_result_get_from(result));
+}
+
+void
+test_envelope_recipient (void)
+{
+    const gchar recipient[] = "receiver1@example.com";
+    MilterMessageResult *result;
+
+    cut_trace(test_envelope_from());
+
+    milter_server_context_envelope_recipient(context, recipient);
+    wait_for_receiving_command();
+
+    wait_for_receiving_reply();
+
+    result = milter_server_context_get_message_result(context);
+    gcut_assert_equal_list_string(gcut_take_new_list_string(recipient,
+                                                            NULL),
+                                  milter_message_result_get_recipients(result));
+}
+
+void
+test_envelope_recipient_again (void)
+{
+    const gchar recipient[] = "receiver2@example.com";
+    MilterMessageResult *result;
+
+    cut_trace(test_envelope_recipient());
+
+    milter_server_context_envelope_recipient(context, recipient);
+    wait_for_receiving_command();
+
+    wait_for_receiving_reply();
+
+    result = milter_server_context_get_message_result(context);
+    gcut_assert_equal_list_string(
+        gcut_take_new_list_string("receiver1@example.com",
+                                  recipient,
+                                  NULL),
+        milter_message_result_get_recipients(result));
+}
+
+void
+test_envelope_recipient_temporary_failure (void)
+{
+    const gchar recipient[] = "receiver-temporary-failure@example.com";
+    MilterMessageResult *result;
+
+    cut_trace(test_envelope_recipient());
+
+    milter_server_context_envelope_recipient(context, recipient);
+    reply_status = MILTER_STATUS_TEMPORARY_FAILURE;
+    wait_for_receiving_command();
+
+    wait_for_receiving_reply();
+
+    result = milter_server_context_get_message_result(context);
+    gcut_assert_equal_list_string(
+        gcut_take_new_list_string("receiver1@example.com",
+                                  recipient,
+                                  NULL),
+        milter_message_result_get_recipients(result));
+    gcut_assert_equal_list_string(
+        gcut_take_new_list_string(recipient,
+                                  NULL),
+        milter_message_result_get_temporary_failed_recipients(result));
+}
+
+void
+test_envelope_recipient_reject (void)
+{
+    const gchar recipient[] = "receiver-reject@example.com";
+    MilterMessageResult *result;
+
+    cut_trace(test_envelope_recipient());
+
+    milter_server_context_envelope_recipient(context, recipient);
+    reply_status = MILTER_STATUS_REJECT;
+    wait_for_receiving_command();
+
+    wait_for_receiving_reply();
+
+    result = milter_server_context_get_message_result(context);
+    gcut_assert_equal_list_string(
+        gcut_take_new_list_string("receiver1@example.com",
+                                  recipient,
+                                  NULL),
+        milter_message_result_get_recipients(result));
+    gcut_assert_equal_list_string(
+        gcut_take_new_list_string(recipient,
+                                  NULL),
+        milter_message_result_get_rejected_recipients(result));
 }
 
 void

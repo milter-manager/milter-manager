@@ -1,7 +1,11 @@
 2009-10-17  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/server/milter-server-context.[ch],
+	test/server/test-server-context.c: record temporary
+	failed/rejected recipients.
+
 	* milter/core/milter-message-result.[ch],
-	test/core/test-message-result.c: added temporary failed/rejected
+	test/core/test-message-result.c: add temporary failed/rejected
 	recipients.
 
 2009-10-16  Kouhei Sutou  <kou@cozmixng.org>
