@@ -1,5 +1,9 @@
 2009-10-17  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/server/milter-server-context.c,
+	test/server/test-server-context.c: fix a bug discard doesn't finish
+	processing.
+
 	* milter/server/milter-server-context.[ch],
 	test/server/test-server-context.c: record temporary
 	failed/rejected recipients.

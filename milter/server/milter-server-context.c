@@ -2216,10 +2216,7 @@ cb_decoder_discard (MilterReplyDecoder *decoder, gpointer user_data)
     tag = milter_agent_get_tag(MILTER_AGENT(context));
     name = milter_server_context_get_name(context);
 
-    if (priv->state == MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT)
-        priv->envelope_recipient_status = MILTER_STATUS_DISCARD;
-    else
-        priv->status = MILTER_STATUS_DISCARD;
+    priv->status = MILTER_STATUS_DISCARD;
 
     disable_timeout(priv);
 
@@ -2234,8 +2231,7 @@ cb_decoder_discard (MilterReplyDecoder *decoder, gpointer user_data)
                  tag, g_timer_elapsed(priv->elapsed, NULL), name);
     g_signal_emit_by_name(context, "discard");
     if (MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM <= priv->state &&
-        priv->state <= MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE &&
-        priv->state != MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT) {
+        priv->state <= MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) {
         emit_message_processed_signal(context);
     }
 
