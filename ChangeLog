@@ -1,5 +1,13 @@
 2009-10-18  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.c,
+	test/fixtures/leader/envelope-recipient-temporary-failure-evaluation.{txt,conf},
+	test/manager/test-leader.c: abort milters that doesn't have
+	available recipients on DATA.
+
+	* milter/server/milter-server-context.c: emit message-processed
+	signal on abort.
+
 	* milter/server/milter-server-context.c,
 	test/server/test-server-context.c: remove temporary
 	failed/rejected recipients from recipients list.

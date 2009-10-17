@@ -75,6 +75,8 @@ EXTRA_DIST =								\
 	envelope-recipient-reject.txt					\
 	envelope-recipient-temporary-failure-all.txt			\
 	envelope-recipient-temporary-failure.txt			\
+	envelope-recipient-temporary-failure-evaluation.txt		\
+	envelope-recipient-temporary-failure-evaluation.conf		\
 	envelope-recipient-stop.txt					\
 	envelope-recipient-stop.conf					\
 	envelope-recipient.txt						\

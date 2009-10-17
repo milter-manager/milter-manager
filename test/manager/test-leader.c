@@ -691,8 +691,8 @@ assert_response_common (MilterManagerTestScenario *scenario, const gchar *group)
     }
 
     g_main_context_iteration(NULL, FALSE);
-    gcut_assert_equal_enum(MILTER_TYPE_STATUS, status, response_status,
-                           "[%s]", group);
+    cut_set_message("[%s]", group);
+    gcut_assert_equal_enum(MILTER_TYPE_STATUS, status, response_status);
 
 }
 
@@ -1048,6 +1048,7 @@ do_end_of_message (MilterManagerTestScenario *scenario, const gchar *group)
 {
     const gchar *chunk = NULL;
     gsize chunk_size = 0;
+    const GList *expected_chunks, *actual_chunks;
 
     milter_server_context_set_state(MILTER_SERVER_CONTEXT(server),
                                     MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE);
@@ -1060,11 +1061,16 @@ do_end_of_message (MilterManagerTestScenario *scenario, const gchar *group)
     assert_response(scenario, group);
     assert_alive(scenario, group);
 
-    gcut_assert_equal_list_string(get_chunks(scenario, group),
-                                  collect_received_strings(body_chunk));
-    gcut_assert_equal_list_string(
-        get_string_g_list(scenario, group, "end_of_message_chunks"),
-        collect_received_strings(end_of_message_chunk));
+    expected_chunks = get_chunks(scenario, group);
+    actual_chunks = collect_received_strings(body_chunk);
+    cut_set_message("[%s]", group);
+    gcut_assert_equal_list_string(expected_chunks, actual_chunks);
+
+    expected_chunks = get_string_g_list(scenario, group,
+                                        "end_of_message_chunks");
+    actual_chunks = collect_received_strings(end_of_message_chunk);
+    cut_set_message("[%s]", group);
+    gcut_assert_equal_list_string(expected_chunks, actual_chunks);
 }
 
 static const GList *
@@ -1494,7 +1500,10 @@ data_scenario_envelope_recipient (void)
         "envelope-recipient - stop",
         g_strdup("envelope-recipient-stop.txt"), g_free,
         "envelope-recipient - again",
-        g_strdup("envelope-recipient-again.txt"), g_free);
+        g_strdup("envelope-recipient-again.txt"), g_free,
+        "envelope-recipient - temporary-failure - evaluation",
+        g_strdup("envelope-recipient-temporary-failure-evaluation.txt"),
+        g_free);
 }
 
 static void

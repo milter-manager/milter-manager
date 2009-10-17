@@ -2429,7 +2429,8 @@ init_command_waiting_child_queue (MilterManagerChildren *children, MilterCommand
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     if (!g_list_find(priv->command_queue, GINT_TO_POINTER(command)))
-        priv->command_queue = g_list_append(priv->command_queue, GINT_TO_POINTER(command));
+        priv->command_queue = g_list_append(priv->command_queue,
+                                            GINT_TO_POINTER(command));
 
     if (priv->command_waiting_child_queue)
         return;
@@ -2438,9 +2439,17 @@ init_command_waiting_child_queue (MilterManagerChildren *children, MilterCommand
         MilterServerContext *context;
 
         context = MILTER_SERVER_CONTEXT(node->data);
-        if (milter_server_context_is_processing_message(context))
-            priv->command_waiting_child_queue =
-                g_list_append(priv->command_waiting_child_queue, context);
+        if (milter_server_context_is_processing_message(context)) {
+            MilterMessageResult *result;
+
+            result = milter_server_context_get_message_result(context);
+            if (milter_message_result_get_recipients(result)) {
+                priv->command_waiting_child_queue =
+                    g_list_append(priv->command_waiting_child_queue, context);
+            } else {
+                milter_server_context_abort(context);
+            }
+        }
     }
 }
 

@@ -892,6 +892,55 @@ prepend_macro (MilterServerContext *context, GString *packed_packet,
     g_free(packet);
 }
 
+static void
+emit_message_processed_signal (MilterServerContext *context)
+{
+    MilterServerContextPrivate *priv;
+    MilterState next_state = MILTER_STATE_INVALID;
+    GTimeVal current_time;
+
+    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+    if (!priv->message_result)
+        return;
+
+    switch (priv->state) {
+    case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM:
+        next_state = MILTER_STATE_ENVELOPE_FROM_REPLIED;
+        break;
+    case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT:
+        next_state = MILTER_STATE_ENVELOPE_RECIPIENT_REPLIED;
+        break;
+    case MILTER_SERVER_CONTEXT_STATE_DATA:
+        next_state = MILTER_STATE_DATA_REPLIED;
+        break;
+    case MILTER_SERVER_CONTEXT_STATE_HEADER:
+        next_state = MILTER_STATE_HEADER_REPLIED;
+        break;
+    case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
+        next_state = MILTER_STATE_END_OF_HEADER_REPLIED;
+        break;
+    case MILTER_SERVER_CONTEXT_STATE_BODY:
+        next_state = MILTER_STATE_BODY_REPLIED;
+        break;
+    case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
+        next_state = MILTER_STATE_END_OF_MESSAGE_REPLIED;
+        break;
+    default:
+        break;
+    }
+
+    if (next_state != MILTER_STATE_INVALID)
+        milter_message_result_set_state(priv->message_result, next_state);
+    milter_message_result_set_status(priv->message_result, priv->status);
+    milter_message_result_set_elapsed_time(priv->message_result,
+                                           g_timer_elapsed(priv->elapsed, NULL));
+    g_get_current_time(&current_time);
+    milter_message_result_set_end_time(priv->message_result, &current_time);
+    g_signal_emit_by_name(context, "message-processed", priv->message_result);
+    g_object_unref(priv->message_result);
+    priv->message_result = NULL;
+}
+
 static gboolean
 write_packet (MilterServerContext *context, gchar *packet, gsize packet_size,
               MilterServerContextState next_state)
@@ -1032,7 +1081,6 @@ write_packet (MilterServerContext *context, gchar *packet, gsize packet_size,
         milter_server_context_set_state(context, next_state);
         break;
     case MILTER_SERVER_CONTEXT_STATE_ABORT:
-        /* FIXME: should shutdown on ABORT? */
         if (MILTER_STATUS_IS_PASS(priv->status) &&
             (MILTER_SERVER_CONTEXT_STATE_DEFINE_MACRO <= priv->state &&
              priv->state < MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)) {
@@ -1044,6 +1092,7 @@ write_packet (MilterServerContext *context, gchar *packet, gsize packet_size,
             }
         }
         milter_server_context_set_state(context, next_state);
+        emit_message_processed_signal(context);
         break;
     default:
         milter_server_context_set_state(context, next_state);
@@ -1054,55 +1103,6 @@ write_packet (MilterServerContext *context, gchar *packet, gsize packet_size,
     }
 
     return TRUE;
-}
-
-static void
-emit_message_processed_signal (MilterServerContext *context)
-{
-    MilterServerContextPrivate *priv;
-    MilterState next_state = MILTER_STATE_INVALID;
-    GTimeVal current_time;
-
-    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
-    if (!priv->message_result)
-        return;
-
-    switch (priv->state) {
-    case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM:
-        next_state = MILTER_STATE_ENVELOPE_FROM_REPLIED;
-        break;
-    case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT:
-        next_state = MILTER_STATE_ENVELOPE_RECIPIENT_REPLIED;
-        break;
-    case MILTER_SERVER_CONTEXT_STATE_DATA:
-        next_state = MILTER_STATE_DATA_REPLIED;
-        break;
-    case MILTER_SERVER_CONTEXT_STATE_HEADER:
-        next_state = MILTER_STATE_HEADER_REPLIED;
-        break;
-    case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
-        next_state = MILTER_STATE_END_OF_HEADER_REPLIED;
-        break;
-    case MILTER_SERVER_CONTEXT_STATE_BODY:
-        next_state = MILTER_STATE_BODY_REPLIED;
-        break;
-    case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
-        next_state = MILTER_STATE_END_OF_MESSAGE_REPLIED;
-        break;
-    default:
-        break;
-    }
-
-    if (next_state != MILTER_STATE_INVALID)
-        milter_message_result_set_state(priv->message_result, next_state);
-    milter_message_result_set_status(priv->message_result, priv->status);
-    milter_message_result_set_elapsed_time(priv->message_result,
-                                           g_timer_elapsed(priv->elapsed, NULL));
-    g_get_current_time(&current_time);
-    milter_message_result_set_end_time(priv->message_result, &current_time);
-    g_signal_emit_by_name(context, "message-processed", priv->message_result);
-    g_object_unref(priv->message_result);
-    priv->message_result = NULL;
 }
 
 static void
@@ -1795,7 +1795,7 @@ milter_server_context_abort (MilterServerContext *context)
     success = write_packet(context, packet, packet_size,
                            MILTER_SERVER_CONTEXT_STATE_ABORT);
     if (success)
-        priv->processing_message = FALSE;
+        milter_server_context_reset_message_related_data(context);
     return success;
 }
 
@@ -2125,8 +2125,8 @@ cb_decoder_reject (MilterReplyDecoder *decoder, gpointer user_data)
         ensure_message_result(priv);
         milter_message_result_add_rejected_recipient(priv->message_result,
                                                      priv->current_recipient);
-        milter_message_result_remove_recipient(
-            priv->message_result, priv->current_recipient);
+        milter_message_result_remove_recipient(priv->message_result,
+                                               priv->current_recipient);
         g_free(priv->current_recipient);
         priv->current_recipient = NULL;
     } else {
