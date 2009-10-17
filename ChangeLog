@@ -1,3 +1,8 @@
+2009-10-18  Kouhei Sutou  <kou@cozmixng.org>
+
+	* test/lib/milter-manager-test-client.c
+	(milter_manager_test_client_clear_data): fix a memory leak.
+
 2009-10-17  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/server/milter-server-context.c,

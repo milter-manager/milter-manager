@@ -295,10 +295,13 @@ static void
 parse_body_info (MilterManagerTestClientPrivate *priv,
                  const gchar *chunk, gsize size)
 {
+    gchar *body;
+
     if (!priv->body_chunk)
         priv->body_chunk = g_string_new(NULL);
-    g_string_append(priv->body_chunk,
-                    receive_additional_info(chunk, size, "receive: body: "));
+    body = receive_additional_info(chunk, size, "receive: body: ");
+    g_string_append(priv->body_chunk, body);
+    g_free(body);
 }
 
 static void
