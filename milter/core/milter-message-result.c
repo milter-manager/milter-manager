@@ -37,6 +37,8 @@ struct _MilterMessageResultPrivate
 {
     gchar *from;
     GList *recipients;
+    GList *temporary_failed_recipients;
+    GList *rejected_recipients;
     MilterHeaders *headers;
     guint64 body_size;
     MilterState state;
@@ -169,6 +171,8 @@ milter_message_result_init (MilterMessageResult *headers)
     priv = MILTER_MESSAGE_RESULT_GET_PRIVATE(headers);
     priv->from = NULL;
     priv->recipients = NULL;
+    priv->temporary_failed_recipients = NULL;
+    priv->rejected_recipients = NULL;
     priv->headers = NULL;
     priv->body_size = 0;
     priv->state = MILTER_STATE_INVALID;
@@ -184,12 +188,36 @@ milter_message_result_init (MilterMessageResult *headers)
 }
 
 static void
+free_recipients (GList *recipients)
+{
+    g_list_foreach(recipients, (GFunc)g_free, NULL);
+    g_list_free(recipients);
+}
+
+static void
 dispose_recipients (MilterMessageResultPrivate *priv)
 {
     if (priv->recipients) {
-        g_list_foreach(priv->recipients, (GFunc)g_free, NULL);
-        g_list_free(priv->recipients);
+        free_recipients(priv->recipients);
         priv->recipients = NULL;
+    }
+}
+
+static void
+dispose_temporary_failed_recipients (MilterMessageResultPrivate *priv)
+{
+    if (priv->temporary_failed_recipients) {
+        free_recipients(priv->temporary_failed_recipients);
+        priv->temporary_failed_recipients = NULL;
+    }
+}
+
+static void
+dispose_rejected_recipients (MilterMessageResultPrivate *priv)
+{
+    if (priv->rejected_recipients) {
+        free_recipients(priv->rejected_recipients);
+        priv->rejected_recipients = NULL;
     }
 }
 
@@ -233,6 +261,8 @@ dispose (GObject *object)
     }
 
     dispose_recipients(priv);
+    dispose_temporary_failed_recipients(priv);
+    dispose_rejected_recipients(priv);
     dispose_headers(priv);
     dispose_added_headers(priv);
     dispose_removed_headers(priv);
@@ -365,10 +395,10 @@ milter_message_result_get_recipients (MilterMessageResult *result)
 
 void
 milter_message_result_set_recipients (MilterMessageResult *result,
-                                      GList *recipients)
+                                      const GList *recipients)
 {
     MilterMessageResultPrivate *priv;
-    GList *node;
+    const GList *node;
 
     priv = MILTER_MESSAGE_RESULT_GET_PRIVATE(result);
     dispose_recipients(priv);
@@ -406,6 +436,77 @@ milter_message_result_remove_recipient (MilterMessageResult *result,
             priv->recipients = g_list_remove_link(priv->recipients, node);
         }
     }
+}
+
+GList *
+milter_message_result_get_temporary_failed_recipients (MilterMessageResult *result)
+{
+    return MILTER_MESSAGE_RESULT_GET_PRIVATE(result)->temporary_failed_recipients;
+}
+
+void
+milter_message_result_set_temporary_failed_recipients (MilterMessageResult *result,
+                                                       const GList *recipients)
+{
+    MilterMessageResultPrivate *priv;
+    const GList *node;
+
+    priv = MILTER_MESSAGE_RESULT_GET_PRIVATE(result);
+    dispose_temporary_failed_recipients(priv);
+
+    for (node = recipients; node; node = g_list_next(node)) {
+        const gchar *recipient = node->data;
+
+        priv->temporary_failed_recipients =
+            g_list_append(priv->temporary_failed_recipients,
+                          g_strdup(recipient));
+    }
+}
+
+void
+milter_message_result_add_temporary_failed_recipient (MilterMessageResult *result,
+                                                      const gchar *recipient)
+{
+    MilterMessageResultPrivate *priv;
+
+    priv = MILTER_MESSAGE_RESULT_GET_PRIVATE(result);
+    priv->temporary_failed_recipients =
+        g_list_append(priv->temporary_failed_recipients, g_strdup(recipient));
+}
+
+GList *
+milter_message_result_get_rejected_recipients (MilterMessageResult *result)
+{
+    return MILTER_MESSAGE_RESULT_GET_PRIVATE(result)->rejected_recipients;
+}
+
+void
+milter_message_result_set_rejected_recipients (MilterMessageResult *result,
+                                               const GList *recipients)
+{
+    MilterMessageResultPrivate *priv;
+    const GList *node;
+
+    priv = MILTER_MESSAGE_RESULT_GET_PRIVATE(result);
+    dispose_rejected_recipients(priv);
+
+    for (node = recipients; node; node = g_list_next(node)) {
+        const gchar *recipient = node->data;
+
+        priv->rejected_recipients =
+            g_list_append(priv->rejected_recipients, g_strdup(recipient));
+    }
+}
+
+void
+milter_message_result_add_rejected_recipient (MilterMessageResult *result,
+                                              const gchar *recipient)
+{
+    MilterMessageResultPrivate *priv;
+
+    priv = MILTER_MESSAGE_RESULT_GET_PRIVATE(result);
+    priv->rejected_recipients =
+        g_list_append(priv->rejected_recipients, g_strdup(recipient));
 }
 
 MilterHeaders *

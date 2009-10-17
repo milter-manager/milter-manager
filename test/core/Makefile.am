@@ -58,4 +58,4 @@ test_headers_la_SOURCES			= test-headers.c
 test_syslog_logger_la_SOURCES		= test-syslog-logger.c
 test_esmtp_la_SOURCES			= test-esmtp.c
 test_protocol_la_SOURCES		= test-protocol.c
-test_message_result_la_SOURCES		= test-protocol.c
+test_message_result_la_SOURCES		= test-message-result.c

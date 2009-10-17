@@ -1,3 +1,9 @@
+2009-10-17  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/core/milter-message-result.[ch],
+	test/core/test-message-result.c: added temporary failed/rejected
+	recipients.
+
 2009-10-16  Kouhei Sutou  <kou@cozmixng.org>
 
 	* data/init.d/redhat/milter-manager: don't set command line

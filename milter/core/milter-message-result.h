@@ -91,11 +91,29 @@ GList         *milter_message_result_get_recipients
                                                  (MilterMessageResult *result);
 void           milter_message_result_set_recipients
                                                  (MilterMessageResult *result,
-                                                  GList               *recipients);
+                                                  const GList         *recipients);
 void           milter_message_result_add_recipient
                                                  (MilterMessageResult *result,
                                                   const gchar         *recipient);
 void           milter_message_result_remove_recipient
+                                                 (MilterMessageResult *result,
+                                                  const gchar         *recipient);
+
+GList         *milter_message_result_get_temporary_failed_recipients
+                                                 (MilterMessageResult *result);
+void           milter_message_result_set_temporary_failed_recipients
+                                                 (MilterMessageResult *result,
+                                                  const GList         *recipients);
+void           milter_message_result_add_temporary_failed_recipient
+                                                 (MilterMessageResult *result,
+                                                  const gchar         *recipient);
+
+GList         *milter_message_result_get_rejected_recipients
+                                                 (MilterMessageResult *result);
+void           milter_message_result_set_rejected_recipients
+                                                 (MilterMessageResult *result,
+                                                  const GList         *recipients);
+void           milter_message_result_add_rejected_recipient
                                                  (MilterMessageResult *result,
                                                   const gchar         *recipient);
 

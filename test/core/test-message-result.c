@@ -24,21 +24,21 @@
 
 #include <gcutter.h>
 
-#if defined(CUTTER_CHECK_VERSION)
-#  if CUTTER_CHECK_VERSION(1, 0, 7)
-
 void test_from (void);
+void test_recipients (void);
+void test_temporary_failed_recipients (void);
+void test_rejected_recipients (void);
 
 static MilterMessageResult *result;
 
 void
-setup (void)
+cut_setup (void)
 {
     result = milter_message_result_new();
 }
 
 void
-teardown (void)
+cut_teardown (void)
 {
     if (result)
         g_object_unref(result);
@@ -48,8 +48,108 @@ void
 test_from (void)
 {
     cut_assert_equal_string(NULL,
-                            milter_masagge_result_get_from(result));
-    milter_masagge_result_set_from(result, "sender@example.com");
+                            milter_message_result_get_from(result));
+    milter_message_result_set_from(result, "sender@example.com");
     cut_assert_equal_string("sender@example.com",
-                            milter_masagge_result_get_from(result));
+                            milter_message_result_get_from(result));
+}
+
+void
+test_recipients (void)
+{
+    gcut_assert_equal_list_string(
+        NULL,
+        milter_message_result_get_recipients(result));
+
+    milter_message_result_add_recipient(result, "receiver1@example.com");
+    milter_message_result_add_recipient(result, "receiver2@example.com");
+    milter_message_result_add_recipient(result, "receiver3@example.com");
+    gcut_assert_equal_list_string(
+        gcut_take_new_list_string("receiver1@example.com",
+                                  "receiver2@example.com",
+                                  "receiver3@example.com",
+                                  NULL),
+        milter_message_result_get_recipients(result));
+
+    milter_message_result_remove_recipient(result, "receiver2@example.com");
+    gcut_assert_equal_list_string(
+        gcut_take_new_list_string("receiver1@example.com",
+                                  "receiver3@example.com",
+                                  NULL),
+        milter_message_result_get_recipients(result));
+
+    milter_message_result_set_recipients(
+        result,
+        gcut_take_new_list_string("receiver4@example.com",
+                                  "receiver5@example.com",
+                                  NULL));
+    gcut_assert_equal_list_string(
+        gcut_take_new_list_string("receiver4@example.com",
+                                  "receiver5@example.com",
+                                  NULL),
+        milter_message_result_get_recipients(result));
+}
+
+void
+test_temporary_failed_recipients (void)
+{
+    gcut_assert_equal_list_string(
+        NULL,
+        milter_message_result_get_temporary_failed_recipients(result));
+
+    milter_message_result_add_temporary_failed_recipient(
+        result, "receiver1@example.com");
+    milter_message_result_add_temporary_failed_recipient(
+        result, "receiver2@example.com");
+    milter_message_result_add_temporary_failed_recipient(
+        result, "receiver3@example.com");
+    gcut_assert_equal_list_string(
+        gcut_take_new_list_string("receiver1@example.com",
+                                  "receiver2@example.com",
+                                  "receiver3@example.com",
+                                  NULL),
+        milter_message_result_get_temporary_failed_recipients(result));
+
+    milter_message_result_set_temporary_failed_recipients(
+        result,
+        gcut_take_new_list_string("receiver4@example.com",
+                                  "receiver5@example.com",
+                                  NULL));
+    gcut_assert_equal_list_string(
+        gcut_take_new_list_string("receiver4@example.com",
+                                  "receiver5@example.com",
+                                  NULL),
+        milter_message_result_get_temporary_failed_recipients(result));
+}
+
+void
+test_rejected_recipients (void)
+{
+    gcut_assert_equal_list_string(
+        NULL,
+        milter_message_result_get_rejected_recipients(result));
+
+    milter_message_result_add_rejected_recipient(result,
+                                                 "receiver1@example.com");
+    milter_message_result_add_rejected_recipient(result,
+                                                 "receiver2@example.com");
+    milter_message_result_add_rejected_recipient(result,
+                                                 "receiver3@example.com");
+    gcut_assert_equal_list_string(
+        gcut_take_new_list_string("receiver1@example.com",
+                                  "receiver2@example.com",
+                                  "receiver3@example.com",
+                                  NULL),
+        milter_message_result_get_rejected_recipients(result));
+
+    milter_message_result_set_rejected_recipients(
+        result,
+        gcut_take_new_list_string("receiver4@example.com",
+                                  "receiver5@example.com",
+                                  NULL));
+    gcut_assert_equal_list_string(
+        gcut_take_new_list_string("receiver4@example.com",
+                                  "receiver5@example.com",
+                                  NULL),
+        milter_message_result_get_rejected_recipients(result));
 }
