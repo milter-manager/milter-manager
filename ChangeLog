@@ -1,5 +1,12 @@
 2009-10-18  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/server/milter-server-context.c,
+	test/fixtures/leader/envelope-recipient-reject-evaluation.{txt,conf},
+	test/fixtures/leader/envelope-recipient-reply-code-4xx-evaluation.{txt,conf},
+	test/fixtures/leader/envelope-recipient-reply-code-5xx-evaluation.{txt,conf},
+	test/manager/test-leader.c: fix a bug that temporary
+	failed/rejected recipient isn't recorded on reply-code.
+
 	* milter/manager/milter-manager-children.c,
 	test/fixtures/leader/envelope-recipient-temporary-failure-evaluation.{txt,conf},
 	test/manager/test-leader.c: abort milters that doesn't have

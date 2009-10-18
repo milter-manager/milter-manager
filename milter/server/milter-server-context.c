@@ -2016,14 +2016,29 @@ cb_decoder_reply_code (MilterReplyDecoder *decoder,
     tag = milter_agent_get_tag(MILTER_AGENT(context));
     name = milter_server_context_get_name(context);
 
-    if (400 <= code && code < 500)
+    if (400 <= code && code < 500) {
         status = MILTER_STATUS_TEMPORARY_FAILURE;
-    else
+    } else {
         status = MILTER_STATUS_REJECT;
-    if (priv->state == MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT)
+    }
+
+    if (priv->state == MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT) {
         priv->envelope_recipient_status = status;
-    else
+        ensure_message_result(priv);
+        if (status == MILTER_STATUS_TEMPORARY_FAILURE) {
+            milter_message_result_add_temporary_failed_recipient(
+                priv->message_result, priv->current_recipient);
+        } else {
+            milter_message_result_add_rejected_recipient(
+                priv->message_result, priv->current_recipient);
+        }
+        milter_message_result_remove_recipient(
+            priv->message_result, priv->current_recipient);
+        g_free(priv->current_recipient);
+        priv->current_recipient = NULL;
+    } else {
         priv->status = status;
+    }
 
     disable_timeout(priv);
 

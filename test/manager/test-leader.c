@@ -1503,7 +1503,17 @@ data_scenario_envelope_recipient (void)
         g_strdup("envelope-recipient-again.txt"), g_free,
         "envelope-recipient - temporary-failure - evaluation",
         g_strdup("envelope-recipient-temporary-failure-evaluation.txt"),
-        g_free);
+        g_free,
+        "envelope-recipient - reject - evaluation",
+        g_strdup("envelope-recipient-reject-evaluation.txt"),
+        g_free,
+        "envelope-recipient - reply-code 4xx - evaluation",
+        g_strdup("envelope-recipient-reply-code-4xx-evaluation.txt"),
+        g_free,
+        "envelope-recipient - reply-code 5xx - evaluation",
+        g_strdup("envelope-recipient-reply-code-5xx-evaluation.txt"),
+        g_free,
+        NULL);
 }
 
 static void
