@@ -572,6 +572,7 @@ static void
 write_data (const gchar *data, gsize data_size)
 {
     gsize bytes_written;
+    gint64 read_offset;
     GError *error = NULL;
 
     g_io_channel_write_chars(channel, data, data_size,
@@ -579,7 +580,8 @@ write_data (const gchar *data, gsize data_size)
     gcut_assert_error(error);
     cut_assert_equal_int(data_size, bytes_written);
 
-    g_io_channel_seek_position(channel, -bytes_written, G_SEEK_CUR, &error);
+    read_offset = -(gsize)bytes_written;
+    g_io_channel_seek_position(channel, read_offset, G_SEEK_CUR, &error);
     gcut_assert_error(error);
 
     wait_for_written();
