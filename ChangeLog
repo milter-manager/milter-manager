@@ -1,3 +1,15 @@
+2009-10-27  Kouhei Sutou  <kou@clear-code.com>
+
+	* TODO: add:
+	  * [1.5.x] multiply connection based anti-spam result as score.
+	    e.g. SFP fail -> 2.3, S25R match -> 7.8, ...;
+		 score = SPF fail * 0.3 + S25R match * 0.9 + ...
+	               = 0.69 + 7.02 + ...;
+		 threshold = 5;
+		 score < threshold -> pass, score > threshold -> tarpit, ...
+	  * [1.5.x] detete client connection disconnected by netstat for
+	  tarpitting.
+
 2009-10-18  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/server/milter-server-context.c,

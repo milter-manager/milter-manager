@@ -155,7 +155,6 @@ gboolean       milter_message_result_is_quarantine
 void           milter_message_result_set_quarantine
                                                  (MilterMessageResult *result,
                                                   gboolean             quarantine);
-
 GTimeVal      *milter_message_result_get_start_time
                                                  (MilterMessageResult *result);
 void           milter_message_result_set_start_time

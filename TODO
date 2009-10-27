@@ -1,3 +1,9 @@
+* [1.5.x] multiply connection based anti-spam result as score.
+  e.g. SFP fail -> 2.3, S25R match -> 7.8, ...;
+       score = SPF fail * 0.3 + S25R match * 0.9 + ... = 0.69 + 7.02 + ...;
+       threshold = 5;
+       score < threshold -> pass, score > threshold -> tarpit, ...
+* [1.5.x] detete client connection disconnected by netstat for tarpitting.
 * [1.5.x] output CVS for statistics.
 * [1.5.x] add signals for logging. (each mail transaction
   finished for each milter and milter-manager, SMTP session
