@@ -1,5 +1,7 @@
 2009-10-28  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/core/test-reader.c: fix overflow.
+
 	* test/server/test-server-context-signals.c: fix overflow.
 
 2009-10-27  Kouhei Sutou  <kou@clear-code.com>

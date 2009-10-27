@@ -118,12 +118,14 @@ static void
 write_data (GIOChannel *channel, const gchar *data, gsize size)
 {
     gsize bytes_written;
+    gint64 read_offset;
     GError *error = NULL;
 
     g_io_channel_write_chars(channel, data, size, &bytes_written, &error);
     gcut_assert_error(error);
 
-    g_io_channel_seek_position(channel, -bytes_written, G_SEEK_CUR, &error);
+    read_offset = -(gint64)bytes_written;
+    g_io_channel_seek_position(channel, read_offset, G_SEEK_CUR, &error);
     gcut_assert_error(error);
 
     g_main_context_iteration(NULL, FALSE);
