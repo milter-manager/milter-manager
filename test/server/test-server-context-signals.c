@@ -580,7 +580,7 @@ write_data (const gchar *data, gsize data_size)
     gcut_assert_error(error);
     cut_assert_equal_int(data_size, bytes_written);
 
-    read_offset = -(gsize)bytes_written;
+    read_offset = -(gint64)bytes_written;
     g_io_channel_seek_position(channel, read_offset, G_SEEK_CUR, &error);
     gcut_assert_error(error);
 
