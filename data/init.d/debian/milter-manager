@@ -9,7 +9,7 @@
 # Description:       The milter that manages milters to combine them flexibly.
 ### END INIT INFO
 
-# Author: Kouhei Sutou <kou@cozmixng.org>
+# Author: Kouhei Sutou <kou@clear-code.com>
 
 # Do NOT "set -e"
 
@@ -18,11 +18,11 @@ PATH=/sbin:/usr/sbin:/bin:/usr/bin
 DESC="flexible milter management daemon"
 NAME=milter-manager
 DAEMON=/usr/sbin/$NAME
-USER="milter-manager"
-GROUP="mail"
-SOCKET_GROUP="mail"
+USER=
+GROUP=
+SOCKET_GROUP=
+CONNECTION_SPEC=
 PIDFILE=/var/run/milter-manager/$NAME.pid
-CONNECTION_SPEC=unix:/var/run/milter-manager/milter-manager.sock
 SCRIPTNAME=/etc/init.d/$NAME
 OPTION_ARGS=""
 

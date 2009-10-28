@@ -1,5 +1,14 @@
 2009-10-28  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: add:
+	- [1.5.x] add --with-default-user, --with-default-group,
+	  --with-default-socket-group, --with-default-connection-spec and
+	  --with-default-pidfile configure options.
+
+	* data/init.d/debian/milter-manager,
+	data/init.d/debian/default/milter-manager: don't set default
+	values in init script.
+
 	* binding/ruby/glib/extconf.rb: ignore distdir target.
 
 	* binding/ruby/src/toolkit/rb-milter.h (CSTR2RVAL_FREE): define if
