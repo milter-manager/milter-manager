@@ -15,6 +15,7 @@ EXTRA_DIST =							\
 	test-unit/html/index.html				\
 	test-unit/html/index.html.ja				\
 	test-unit/html/test-unit-classic.png			\
+	test-unit/images/color-diff.png				\
 	test-unit/lib/test/unit.rb				\
 	test-unit/lib/test/unit/assertionfailederror.rb		\
 	test-unit/lib/test/unit/assertions.rb			\
@@ -38,12 +39,14 @@ EXTRA_DIST =							\
 	test-unit/lib/test/unit/priority.rb			\
 	test-unit/lib/test/unit/runner/console.rb		\
 	test-unit/lib/test/unit/runner/emacs.rb			\
+	test-unit/lib/test/unit/runner/tap.rb			\
 	test-unit/lib/test/unit/testcase.rb			\
 	test-unit/lib/test/unit/testresult.rb			\
 	test-unit/lib/test/unit/testsuite.rb			\
 	test-unit/lib/test/unit/ui/console/outputlevel.rb	\
 	test-unit/lib/test/unit/ui/console/testrunner.rb	\
 	test-unit/lib/test/unit/ui/emacs/testrunner.rb		\
+	test-unit/lib/test/unit/ui/tap/testrunner.rb		\
 	test-unit/lib/test/unit/ui/testrunner.rb		\
 	test-unit/lib/test/unit/ui/testrunnermediator.rb	\
 	test-unit/lib/test/unit/ui/testrunnerutilities.rb	\
@@ -54,10 +57,9 @@ EXTRA_DIST =							\
 	test-unit/lib/test/unit/version.rb			\
 	test-unit/sample/adder.rb				\
 	test-unit/sample/subtracter.rb				\
-	test-unit/sample/tc_adder.rb				\
-	test-unit/sample/tc_subtracter.rb			\
+	test-unit/sample/test_adder.rb				\
+	test-unit/sample/test_subtracter.rb			\
 	test-unit/sample/test_user.rb				\
-	test-unit/sample/ts_examples.rb				\
 	test-unit/test/collector/test-descendant.rb		\
 	test-unit/test/collector/test-load.rb			\
 	test-unit/test/collector/test_dir.rb			\
