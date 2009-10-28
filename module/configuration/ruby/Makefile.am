@@ -7,7 +7,7 @@ INCLUDES =						\
 AM_CFLAGS = 								\
 	-DMILTER_LOG_DOMAIN=\""milter-manager-ruby-configuration"\"	\
 	$(MILTER_MANAGER_CFLAGS)					\
-	$(RUBY_CFLAGS)
+	$(MILTER_RUBY_CFLAGS)
 #	$(COVERAGE_CFLAGS)
 
 LIBS =					\

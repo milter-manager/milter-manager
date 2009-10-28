@@ -3,8 +3,91 @@ SUBDIRS =	\
 	lib	\
 	test
 
+if WITH_BUNDLED_RUBY_GLIB2
+SUBDIRS += glib
+endif
+
+EXTRA_DIST =					\
+	$(ruby_glib2_files)			\
+	$(test_unit_files)
+
+# find glib -type f | sort
+ruby_glib2_files =				\
+	glib/COPYING.LIB			\
+	glib/ChangeLog				\
+	glib/README				\
+	glib/extconf.rb				\
+	glib/sample/bookmarkfile.rb		\
+	glib/sample/completion.rb		\
+	glib/sample/idle.rb			\
+	glib/sample/iochannel.rb		\
+	glib/sample/keyfile.rb			\
+	glib/sample/shell.rb			\
+	glib/sample/spawn.rb			\
+	glib/sample/timeout.rb			\
+	glib/sample/timeout2.rb			\
+	glib/sample/timer.rb			\
+	glib/sample/type-register.rb		\
+	glib/sample/type-register2.rb		\
+	glib/sample/utils.rb			\
+	glib/src/depend				\
+	glib/src/glib2.def			\
+	glib/src/global.h			\
+	glib/src/lib/glib-mkenums.rb		\
+	glib/src/lib/glib2.rb			\
+	glib/src/lib/mkmf-gnome2.rb		\
+	glib/src/lib/pkg-config.rb		\
+	glib/src/rbglib.c			\
+	glib/src/rbglib.h			\
+	glib/src/rbglib_bookmarkfile.c		\
+	glib/src/rbglib_completion.c		\
+	glib/src/rbglib_convert.c		\
+	glib/src/rbglib_error.c			\
+	glib/src/rbglib_fileutils.c		\
+	glib/src/rbglib_i18n.c			\
+	glib/src/rbglib_iochannel.c		\
+	glib/src/rbglib_keyfile.c		\
+	glib/src/rbglib_maincontext.c		\
+	glib/src/rbglib_mainloop.c		\
+	glib/src/rbglib_messages.c		\
+	glib/src/rbglib_pollfd.c		\
+	glib/src/rbglib_shell.c			\
+	glib/src/rbglib_source.c		\
+	glib/src/rbglib_spawn.c			\
+	glib/src/rbglib_threads.c		\
+	glib/src/rbglib_timer.c			\
+	glib/src/rbglib_unicode.c		\
+	glib/src/rbglib_utils.c			\
+	glib/src/rbglib_win32.c			\
+	glib/src/rbgobj_boxed.c			\
+	glib/src/rbgobj_closure.c		\
+	glib/src/rbgobj_enums.c			\
+	glib/src/rbgobj_fundamental.c		\
+	glib/src/rbgobj_object.c		\
+	glib/src/rbgobj_param.c			\
+	glib/src/rbgobj_paramspecs.c		\
+	glib/src/rbgobj_signal.c		\
+	glib/src/rbgobj_strv.c			\
+	glib/src/rbgobj_type.c			\
+	glib/src/rbgobj_typeinstance.c		\
+	glib/src/rbgobj_typeinterface.c		\
+	glib/src/rbgobj_typemodule.c		\
+	glib/src/rbgobj_typeplugin.c		\
+	glib/src/rbgobj_value.c			\
+	glib/src/rbgobj_valuearray.c		\
+	glib/src/rbgobj_valuetypes.c		\
+	glib/src/rbgobject.c			\
+	glib/src/rbgobject.h			\
+	glib/src/rbgutil.c			\
+	glib/src/rbgutil.h			\
+	glib/src/utils_int64.c			\
+	glib/tests/runner.rb			\
+	glib/tests/test_glib2.rb		\
+	glib/tests/test_iochannel.rb		\
+	glib/tests/test_unicode.rb
+
 # used test-unit/Manifest.txt content.
-EXTRA_DIST =							\
+test_unit_files =						\
 	test-unit/History.txt					\
 	test-unit/Manifest.txt					\
 	test-unit/README.txt					\

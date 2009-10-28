@@ -1,5 +1,12 @@
 2009-10-28  Kouhei Sutou  <kou@cozmixng.org>
 
+	* configure.ac, binding/ruby/Makefile.am: support bundled
+	Ruby/GLib2.
+
+	* configure.ac, binding/ruby/src/toolkit/Makefile.am,
+	module/configuration/ruby/Makefile.am: separate Ruby related
+	include path.
+
 	* binding/ruby/glib/extconf.rb: make install paths customizable.
 
 	* binding/ruby/glib/src/depend: backport from 0.19.3 and remove

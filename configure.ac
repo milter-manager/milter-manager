@@ -157,6 +157,33 @@ m4_ifdef([AC_CHECK_COVERAGE], [AC_CHECK_COVERAGE])
 GENHTML_OPTIONS="--title 'milter manager Code Coverage'"
 
 dnl **************************************************************
+dnl Check for path.
+dnl **************************************************************
+
+moduledir='$(pkglibdir)/module'
+module_configurationdir='$(moduledir)/configuration'
+AC_SUBST(moduledir)
+AC_SUBST(module_configurationdir)
+
+bindingdir='$(pkglibdir)/binding'
+binding_extdir='$(bindingdir)/ext'
+binding_libdir='$(bindingdir)/lib'
+AC_SUBST(bindingdir)
+AC_SUBST(binding_extdir)
+AC_SUBST(binding_libdir)
+
+tool_libdir='$(pkglibdir)/tool'
+AC_SUBST(tool_libdir)
+
+pkgsysconfdir="\$(sysconfdir)/$PACKAGE_NAME"
+AC_SUBST(pkgsysconfdir)
+
+CONFIG_FILE_NAME="milter-manager.conf"
+CUSTOM_CONFIG_FILE_NAME="milter-manager.custom.conf"
+AC_SUBST(CONFIG_FILE_NAME)
+AC_SUBST(CUSTOM_CONFIG_FILE_NAME)
+
+dnl **************************************************************
 dnl Check for Ruby
 dnl **************************************************************
 ruby_available="no"
@@ -178,6 +205,7 @@ else
                 [AC_MSG_WARN([$RUBY is not found. Disable milter manager.])])
 fi
 
+use_bundled_ruby_glib2=no
 if test "$ruby_available" = "yes"; then
   rbconfig="$RUBY -rrbconfig -e "
 
@@ -223,6 +251,7 @@ if test "$ruby_available" = "yes"; then
     AC_MSG_ERROR([Ruby is required.])
   fi
 
+  RUBY_GLIB2_CFLAGS=""
   if test "x$ruby_available" = "xyes"; then
     CFLAGS="$CFLAGS $GLIB_CFLAGS"
     AC_CHECK_HEADERS(rbgobject.h, [],
@@ -230,8 +259,28 @@ if test "$ruby_available" = "yes"; then
 		     [$ruby_undef_package_macros])
   fi
   if test "x$ruby_available" != "xyes"; then
-    AC_MSG_ERROR([Ruby/GLib2 is required.])
+    AC_MSG_NOTICE([checking bundled Ruby/GLib2])
+    if test "$exec_prefix" = "NONE"; then
+      ac_ruby_glib2_exec_prefix='$(prefix)'
+    else
+      ac_ruby_glib2_exec_prefix=$exec_prefix
+    fi
+    if $mkdir_p binding/ruby/glib && \
+       (cd binding/ruby/glib && \
+        $RUBY ../../../$srcdir/binding/ruby/glib/extconf.rb \
+	  --with-prefix=$prefix \
+	  --with-exec-prefix=$ac_ruby_glib2_exec_prefix \
+	  --with-pkglibdir=$libdir/$PACKAGE_NAME \
+	  --with-bindingdir=$bindingdir \
+	  --with-sitearchdir=$binding_extdir \
+	  --with-sitelibdir=$binding_libdir); then
+      use_bundled_ruby_glib2=yes
+      RUBY_GLIB2_CFLAGS="-I \$(top_srcdir)/binding/ruby/glib/src"
+    else
+      AC_MSG_ERROR([Ruby/GLib2 is required.])
+    fi
   fi
+  AC_SUBST(RUBY_GLIB2_CFLAGS)
 
   AC_CHECK_FUNC(rb_errinfo)
   CFLAGS=$_SAVE_CFLAGS
@@ -239,6 +288,8 @@ if test "$ruby_available" = "yes"; then
 fi
 
 AM_CONDITIONAL([WITH_RUBY], [test "$ruby_available" = "yes"])
+AM_CONDITIONAL([WITH_BUNDLED_RUBY_GLIB2],
+               [test "$use_bundled_ruby_glib2" = "yes"])
 
 dnl **************************************************************
 dnl Checks for RD2
@@ -344,33 +395,6 @@ AC_SUBST(MILTER_MANAGER_PACKAGE_OPTIONS)
 AC_SUBST(MILTER_MANAGER_PACKAGE_OPTIONS_C_STRING)
 
 dnl **************************************************************
-dnl Check for path.
-dnl **************************************************************
-
-moduledir='$(pkglibdir)/module'
-module_configurationdir='$(moduledir)/configuration'
-AC_SUBST(moduledir)
-AC_SUBST(module_configurationdir)
-
-bindingdir='$(pkglibdir)/binding'
-binding_extdir='$(bindingdir)/ext'
-binding_libdir='$(bindingdir)/lib'
-AC_SUBST(bindingdir)
-AC_SUBST(binding_extdir)
-AC_SUBST(binding_libdir)
-
-tool_libdir='$(pkglibdir)/tool'
-AC_SUBST(tool_libdir)
-
-pkgsysconfdir="\$(sysconfdir)/$PACKAGE_NAME"
-AC_SUBST(pkgsysconfdir)
-
-CONFIG_FILE_NAME="milter-manager.conf"
-CUSTOM_CONFIG_FILE_NAME="milter-manager.custom.conf"
-AC_SUBST(CONFIG_FILE_NAME)
-AC_SUBST(CUSTOM_CONFIG_FILE_NAME)
-
-dnl **************************************************************
 dnl Check for SF.net.
 dnl **************************************************************
 
@@ -407,7 +431,7 @@ SF_REPOS="https://milter-manager.svn.sourceforge.net/svnroot/milter-manager/milt
 AC_SUBST(SF_REPOS)
 
 MILTER_TOOLKIT_CFLAGS="\$(GLIB_CFLAGS) -DG_DISABLE_DEPRECATED"
-MILTER_RUBY_CFLAGS="\$(MILTER_TOOLKIT_CFLAGS) \$(RUBY_CFLAGS)"
+MILTER_RUBY_CFLAGS="\$(RUBY_CFLAGS) \$(RUBY_GLIB2_CFLAGS)"
 MILTER_MANAGER_CFLAGS="\$(MILTER_TOOLKIT_CFLAGS)"
 MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DCONFIGURATION_MODULE_DIR=\\\"\$(module_configurationdir)\\\""
 MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DBINDING_EXT_DIR=\\\"\$(binding_extdir)\\\""
