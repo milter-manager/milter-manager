@@ -1,5 +1,7 @@
 2009-10-28  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/glib/extconf.rb: ignore distdir target.
+
 	* binding/ruby/src/toolkit/rb-milter.h (CSTR2RVAL_FREE): define if
 	it's not defined.
 

@@ -50,3 +50,8 @@ create_makefile_at_srcdir(PACKAGE_NAME, SRCDIR, "-DRUBY_GLIB2_COMPILATION") do
 end
 
 create_top_makefile
+File.open("Makefile", "a") do |makefile|
+  makefile.puts
+  makefile.puts("distdir:")
+  makefile.puts("\t:")
+end
