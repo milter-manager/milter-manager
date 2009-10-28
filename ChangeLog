@@ -1,5 +1,7 @@
 2009-10-28  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/glib/extconf.rb: make install paths customizable.
+
 	* binding/ruby/glib/src/depend: backport from 0.19.3 and remove
 	needless codes.
 

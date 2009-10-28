@@ -26,6 +26,18 @@ have_func("rb_check_array_type")
 have_func("rb_exec_recursive")
 have_header('yarv.h')
 
+def parse_config_override_option(name, config_name)
+  value = with_config(name)
+  CONFIG[config_name] = value if value
+end
+parse_config_override_option("prefix", "prefix")
+parse_config_override_option("exec-prefix", "exec_prefix")
+parse_config_override_option("libdir", "libdir")
+parse_config_override_option("pkglibdir", "pkglibdir")
+parse_config_override_option("bindingdir", "bindingdir")
+parse_config_override_option("sitelibdir", "sitelibdir")
+parse_config_override_option("sitearchdir", "sitearchdir")
+
 create_makefile_at_srcdir(PACKAGE_NAME, SRCDIR, "-DRUBY_GLIB2_COMPILATION") do
   enum_type_prefix = "glib-enum-types"
   include_paths = PKGConfig.cflags_only_I("glib-2.0")
