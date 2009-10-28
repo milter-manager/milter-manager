@@ -1,5 +1,7 @@
 2009-10-28  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/, html/, milter-manager.spec.in: update the latest release.
+
 	* Makefile.am, configure.ac: use misc/update-latest-release.rb to
 	update the latest release automatically.
 
