@@ -4,9 +4,10 @@ INCLUDES =						\
 
 AM_CFLAGS = 				\
 	$(MILTER_MANAGER_CFLAGS)	\
-	$(RUBY_CFLAGS)
+	$(MILTER_RUBY_CFLAGS)
 
-LIBS =			\
+LIBS =								\
+	$(top_builddir)/milter/manager/libmilter-manager.la	\
 	$(RUBY_LIBS)
 
 AM_LDFLAGS =			\

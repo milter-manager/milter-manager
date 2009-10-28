@@ -1,5 +1,9 @@
 2009-10-28  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/glib/src/rbglib_unicode.c (rbglib_m_unichar_get_script),
+	binding/ruby/glib/src/rbglib_maincontext.c (timeout_add_seconds),
+	binding/ruby/glib/src/lib/glib-mkenums.rb: backport from 0.19.3.
+
 	* binding/ruby/glib/: import for using fallback on CentOS.
 
 2009-10-28  Kouhei Sutou  <kou@clear-code.com>

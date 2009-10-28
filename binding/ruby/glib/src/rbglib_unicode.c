@@ -140,7 +140,7 @@ static VALUE
 rbglib_m_unichar_get_script(VALUE self, VALUE unichar)
 {
     return GENUM2RVAL(g_unichar_get_script(NUM2UINT(unichar)),
-                      G_TYPE_UNICODE_SCRIPT_TYPE);
+                      G_TYPE_UNICODE_SCRIPT);
 }
 #endif
 
