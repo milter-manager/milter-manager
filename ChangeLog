@@ -1,5 +1,10 @@
 2009-10-28  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/install-to-centos.rd*: CentOS 5.3 -> 5.4.
+
+	* doc/install-to-centos.rd*, milter-manager.spec.in: use bundled
+	Ruby/GLib2.
+
 	* configure.ac, binding/ruby/Makefile.am: support bundled
 	Ruby/GLib2.
 

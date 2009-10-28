@@ -8,7 +8,7 @@ This document describes how to install milter manager to
 CentOS. See ((<Install|install.rd>)) for general install
 information.
 
-We assume that CentOS version is 5.3. We also assume that we
+We assume that CentOS version is 5.4. We also assume that we
 use sudo to run a command with root authority. If you don't
 use sudo, use su instead.
 
@@ -17,7 +17,7 @@ use sudo, use su instead.
 To install the following packages, related packages are also
 installed:
 
-  % sudo yum install -y libtool intltool gcc glib2-devel ruby ruby-devel
+  % sudo yum install -y glib2 ruby
 
 We use Sendmail as MTA because it's installed by default.
 
@@ -48,21 +48,6 @@ And we install RRDtool for generating graphs:
 
 milter manager has its RPM package but it can't be installed
 with yum. We will install it by hand.
-
-=== Install Ruby/GLib2
-
-We use Ruby/GLib2 0.16.0 because Ruby/GLib2 0.17 or later
-doesn't support Ruby 1.8.5. We use Ruby/GLib2 package
-provided by ((<Dennou Ruby
-Project|URL:http://dennou-k.kugi.kyoto-u.ac.jp/library/ruby/>)):
-
-On 32bit environment:
-  % wget http://dennou-k.kugi.kyoto-u.ac.jp/arch/ruby/products/rpm/RPMS/CentOS/5/i386/ruby-glib2-0.16.0-1dc.i386.rpm
-  % sudo rpm -Uvh ruby-glib2-0.16.0-1dc.i386.rpm
-
-On 64bit environment:
-  % wget http://dennou-k.kugi.kyoto-u.ac.jp/arch/ruby/products/rpm/RPMS/CentOS/5/x86_64/ruby-glib2-0.16.0-1dc.x86_64.rpm
-  % sudo rpm -Uvh ruby-glib2-0.16.0-1dc.x86_64.rpm
 
 === Install milter manager
 

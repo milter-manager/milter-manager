@@ -12,10 +12,8 @@ BuildRequires: gcc
 BuildRequires: glib2-devel
 BuildRequires: ruby
 BuildRequires: ruby-devel
-BuildRequires: ruby-glib2-devel
 Requires: glib2
 Requires: ruby
-Requires: ruby-glib2
 Requires: ruby-rrdtool
 Requires(pre): /usr/bin/getent, /usr/sbin/useradd
 Requires(pre): /usr/bin/id, /usr/sbin/groupadd
