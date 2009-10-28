@@ -1,5 +1,8 @@
 2009-10-28  Kouhei Sutou  <kou@clear-code.com>
 
+	* Makefile.am, configure.ac: use misc/update-latest-release.rb to
+	update the latest release automatically.
+
 	* binding/ruby/Makefile.am: update test-unit files.
 
 	* configure.ac: 1.5.0 -> 1.4.1.
