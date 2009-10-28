@@ -1,3 +1,7 @@
+2009-10-28  Kouhei Sutou  <kou@cozmixng.org>
+
+	* binding/ruby/glib/: import for using fallback on CentOS.
+
 2009-10-28  Kouhei Sutou  <kou@clear-code.com>
 
 	* doc/, html/, milter-manager.spec.in: update the latest release.
