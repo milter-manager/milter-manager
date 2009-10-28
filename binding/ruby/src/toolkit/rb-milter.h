@@ -37,6 +37,10 @@ VALUE rb_cMilterSocketAddressIPv6;
 VALUE rb_cMilterSocketAddressUnix;
 VALUE rb_cMilterSocketAddressUnknown;
 
+#ifndef CSTR2RVAL_FREE
+#  define CSTR2RVAL_FREE(string) CSTR2RVAL2(string)
+#endif
+
 #define CSTR2RVAL_SIZE_FREE(string, size)		\
     (rb_milter_cstr2rval_size_free(string, size))
 

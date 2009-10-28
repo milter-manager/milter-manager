@@ -1,5 +1,8 @@
 2009-10-28  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/src/toolkit/rb-milter.h (CSTR2RVAL_FREE): define if
+	it's not defined.
+
 	* doc/install-to-centos.rd*: CentOS 5.3 -> 5.4.
 
 	* doc/install-to-centos.rd*, milter-manager.spec.in: use bundled
