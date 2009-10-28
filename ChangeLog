@@ -1,5 +1,9 @@
 2009-10-28  Kouhei Sutou  <kou@cozmixng.org>
 
+	* html/index.html*: 1-4-0 -> 1-4-1.
+
+	* NEWS.ja: add.
+
 	* TODO: add:
 	- [1.5.x] add --with-default-user, --with-default-group,
 	  --with-default-socket-group, --with-default-connection-spec and
