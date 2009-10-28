@@ -1,5 +1,7 @@
 2009-10-28  Kouhei Sutou  <kou@clear-code.com>
 
+	* configure.ac: 1.5.0 -> 1.4.1.
+
 	* milter/manager/milter-manager-configuration.c
 	(milter_manager_configuration_to_xml_string): time_t is always
 	long int.
