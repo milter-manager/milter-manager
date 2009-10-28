@@ -16,6 +16,7 @@ milter/core/milter-headers.c
 milter/core/milter-logger.c
 milter/core/milter-macros-requests.c
 milter/core/milter-marshalers.c
+milter/core/milter-message-result.c
 milter/core/milter-option.c
 milter/core/milter-protocol-agent.c
 milter/core/milter-reader.c
