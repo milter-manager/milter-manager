@@ -8,7 +8,8 @@ A bug fix release for 1.4.0.
 
 === Document
 
-  * Upgrade target CentOS version: 5.3 -> 5.4.
+  * Upgraded target CentOS version: 5.3 -> 5.4.
+  * Fixed types. [Yuto Hayamizu]
   * Fixed typos. [ZnZ]
 
 === milter manager
@@ -16,6 +17,12 @@ A bug fix release for 1.4.0.
 ==== Improvements
 
   * Bundled Ruby/GLib2 for CentOS.
+  * add configure options for default configuration value:
+    * --with-default-effective-user: effective user
+    * --with-default-effective-group: effective group
+    * --with-default-socket-group: group of UNIX domain socket
+    * --with-default-pid-file: PID file
+    * --with-default-connection-spec: listen address
 
 ==== Bug fixes
 
@@ -26,6 +33,7 @@ A bug fix release for 1.4.0.
 
 === Thanks
 
+  * Yuto Hayamizu
   * gorimaru
   * ZnZ
 
