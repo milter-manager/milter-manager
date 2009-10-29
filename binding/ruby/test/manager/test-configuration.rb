@@ -1,4 +1,4 @@
-# Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+# Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -205,7 +205,7 @@ security.privilege_mode = false
 security.effective_user = nil
 security.effective_group = nil
 
-manager.connection_spec = "inet:10025@[127.0.0.1]"
+manager.connection_spec = #{@configuration.manager_connection_spec.inspect}
 manager.unix_socket_mode = 0660
 manager.unix_socket_group = nil
 manager.remove_unix_socket_on_create = true
@@ -257,7 +257,7 @@ security.privilege_mode = false
 security.effective_user = "nobody"
 security.effective_group = "nogroup"
 
-manager.connection_spec = "inet:10025@[127.0.0.1]"
+manager.connection_spec = #{@configuration.manager_connection_spec.inspect}
 manager.unix_socket_mode = 0660
 manager.unix_socket_group = nil
 manager.remove_unix_socket_on_create = true

@@ -1,5 +1,8 @@
 2009-10-29  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/test/manager/: follow init scripts for Debian and
+	CentOS changes.
+
 	* NEWS*, README*: add znz to thanks list. Thanks!!!
 
 2009-10-29  Kazuhiro NISHIYAMA <zn@mbf.nifty.com>

@@ -60,20 +60,17 @@ class TestRedHatInitDetector < Test::Unit::TestCase
                    "name" => "milter manager",
                    "prog" => "milter-manager",
                    "milter_manager" => "/usr/sbin/milter-manager",
-                   "USER" => "milter-manager",
-                   "GROUP" => "milter-manager",
-                   "SOCKET_GROUP" => "smmsp",
-                   "PIDFILE" => "/var/run/milter-manager/milter-manager.pid",
-                   "CONNECTION_SPEC" => "unix:/var/run/milter-manager/milter-manager.sock",
+                   "USER" => "",
+                   "GROUP" => "",
+                   "SOCKET_GROUP" => "",
+                   "PIDFILE" => "",
+                   "CONNECTION_SPEC" => "",
                    "DAEMON_ARGS" => ["--daemon",
-                                     "--pid-file",
-                                     "/var/run/milter-manager/milter-manager.pid",
-                                     "--connection-spec",
-                                     "unix:/var/run/milter-manager/milter-manager.sock",
-                                     "--user-name",
-                                     "milter-manager",
-                                     "--group-name", "milter-manager",
-                                     "--socket-group-name", "smmsp",
+                                     "--pid-file", "",
+                                     "--connection-spec", "",
+                                     "--user-name", "",
+                                     "--group-name", "",
+                                     "--socket-group-name", "",
                                     ].join(" ") + " ",
                    "OPTION_ARGS" => "",
                    "RETVAL" => "$?",
@@ -123,20 +120,17 @@ EOC
                    "name" => "milter manager",
                    "prog" => "milter-manager",
                    "milter_manager" => "/usr/sbin/milter-manager",
-                   "USER" => "milter-manager",
-                   "GROUP" => "milter-manager",
-                   "SOCKET_GROUP" => "smmsp",
-                   "PIDFILE" => "/var/run/milter-manager/milter-manager.pid",
+                   "USER" => "",
+                   "GROUP" => "",
+                   "SOCKET_GROUP" => "",
+                   "PIDFILE" => "",
                    "CONNECTION_SPEC" => "inet:10025@localhost",
                    "DAEMON_ARGS" => ["--daemon",
-                                     "--pid-file",
-                                     "/var/run/milter-manager/milter-manager.pid",
-                                     "--connection-spec",
-                                     "unix:/var/run/milter-manager/milter-manager.sock",
-                                     "--user-name",
-                                     "milter-manager",
-                                     "--group-name", "milter-manager",
-                                     "--socket-group-name", "smmsp",
+                                     "--pid-file", "",
+                                     "--connection-spec", "",
+                                     "--user-name", "",
+                                     "--group-name", "",
+                                     "--socket-group-name", "",
                                     ].join(" ") + " ",
                    "OPTION_ARGS" => "",
                    "RETVAL" => "$?",
@@ -155,6 +149,15 @@ EOC
     assert_false(detector.enabled?)
 
     create_rc_files("milter-manager")
+    detector = redhat_init_detector("milter-manager")
+    detector.detect
+    assert_false(detector.enabled?)
+
+    (@sysconfig_dir + "milter-manager").open("w") do |file|
+      file << <<-EOC
+CONNECTION_SPEC=inet:10025@localhost
+EOC
+    end
     detector = redhat_init_detector("milter-manager")
     detector.detect
     assert_true(detector.enabled?)
