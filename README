@@ -153,4 +153,6 @@ The latest source is available from the Subversion repository:
     * cleaned test.
     * added useful features for creating milter by Ruby.
   * gorimaru: suggested usage improvements.
-  * ZnZ: fixed typos.
+  * ZnZ:
+    * fixed typos.
+    * reported useful advises.
