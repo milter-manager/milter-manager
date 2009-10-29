@@ -124,10 +124,10 @@ We change /etc/milter-greylist/greylist.conf to use greylist
 by default:
 
 Before:
-  racl whitelist default
+  acl whitelist default
 
 After:
-  racl greylist default
+  acl greylist default
 
 We change /etc/default/milter-greylist to enable
 milter-greylist. milter-greylist uses IPv4 socket because

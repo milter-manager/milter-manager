@@ -130,10 +130,10 @@ clamav-milterを再起動します。
 Greylistを使うようにします。
 
 変更前:
-  racl whitelist default
+  acl whitelist default
 
 変更後:
-  racl greylist default
+  acl greylist default
 
 次に、/etc/default/milter-greylistを変更し、milter-greylist
 を有効にします。milter-greylistの起動ファイルではソケットファ

@@ -1,5 +1,9 @@
 2009-10-29  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/install-to-debian.rd*: milter-greylist on lenny doesn't have
+	racl.
+	Reported by ZnZ. Thanks!!!
+
 	* README*: update ZnZ entry. Thanks!!!
 
 	* milter/manager/milter-manager-main.c (switch_group): use
