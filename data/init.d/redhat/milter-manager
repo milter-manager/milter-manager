@@ -33,8 +33,9 @@ if [ -f /etc/sysconfig/milter-manager ]; then
 	. /etc/sysconfig/milter-manager
 fi
 
+DAEMON_ARGS="--daemon"
 if [ -n "${PIDFILE}" ]; then
-  DAEMON_ARGS="--daemon --pid-file ${PIDFILE}"
+  DAEMON_ARGS="${DAEMON_ARGS} --pid-file ${PIDFILE}"
 fi
 if [ -n "${CONNECTION_SPEC}" ]; then
 	DAEMON_ARGS="${DAEMON_ARGS} --connection-spec ${CONNECTION_SPEC}"

@@ -1,5 +1,8 @@
 2009-10-29  Kouhei Sutou  <kou@clear-code.com>
 
+	* data/init.d/redhat/milter-manager (DAEMON_ARGS): always specify
+	--daemon option.
+
 	* milter-manager.spec.in: create pid file directory on post install.
 
 	* configure.ac: create dummy binding/ruby/glib/Makefile for make dist.
