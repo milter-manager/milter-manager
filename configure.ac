@@ -258,7 +258,13 @@ if test "$ruby_available" = "yes"; then
 		     [ruby_available="no"],
 		     [$ruby_undef_package_macros])
   fi
-  if test "x$ruby_available" != "xyes"; then
+  if test "$ruby_available" = "yes"; then
+    $mkdir_p binding/ruby/glib
+    cat <<EOM > binding/ruby/glib/Makefile
+all:
+distdir:
+EOM
+  else
     AC_MSG_NOTICE([checking bundled Ruby/GLib2])
     if test "$exec_prefix" = "NONE"; then
       ac_ruby_glib2_exec_prefix='$(prefix)'
