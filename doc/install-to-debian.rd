@@ -131,7 +131,7 @@ After:
 
 We change /etc/default/milter-greylist to enable
 milter-greylist. milter-greylist uses IPv4 socket because
-milter-gresylist's run script doesn't support changing
+milter-greylist's run script doesn't support changing
 socket's group permission:
 
 Before:
@@ -213,7 +213,7 @@ milter-manager:
 
   % sudo /etc/init.d/milter-manager restart
 
-/usr/bin/milter-test-server is usuful to confirm
+/usr/bin/milter-test-server is useful to confirm
 milter-manager was ran:
 
   % sudo -u postfix milter-test-server -s unix:/var/spool/postfix/milter-manager/milter-manager.sock
@@ -229,7 +229,7 @@ be shown:
   Failed to connect to unix:/var/spool/postfix/milter-manager/milter-manager.sock: No such file or directory
 
 In this case, we can use log to solve the
-problem. milter-manager is verbosily if --verbose option is
+problem. milter-manager is verbosely if --verbose option is
 specified. milter-manager outputs logs to standard output if
 milter-manager isn't daemon process.
 
@@ -244,7 +244,7 @@ We start milter-manager again:
   % sudo /etc/init.d/milter-manager restart
 
 Some logs are output if there is a problem. Running
-milter-manager can be exitted by Ctrl+c.
+milter-manager can be exited by Ctrl+c.
 
 OPTION_ARGS configuration in /etc/default/milter-manager
 should be commented out after the problem is solved to run
@@ -279,7 +279,7 @@ Here are descriptions of the configuration.
 
 : milter_mail_macros = {auth_author} {auth_type} {auth_authen}
 
-   Postfix passes SMTP Auth related infomation to
+   Postfix passes SMTP Auth related information to
    milter. Some milters like milter-greylist use it.
 
 We need to register milter-manager to Postfix. It's
@@ -300,7 +300,7 @@ We reload Postfix configuration:
 Postfix's milter configuration is completed.
 
 milter-manager logs to syslog. If milter-manager works well,
-some logs can be showen in /var/log/mail.info. We need to
+some logs can be shown in /var/log/mail.info. We need to
 sent a test mail for confirming.
 
 == Conclusion
@@ -315,7 +315,7 @@ specify sockets of them, just specify a socket of
 milter-manager. They are detected automatically. We doesn't
 need to take care some small mistakes like typo.
 
-milter-manager also supports ENABELD configuration used in
+milter-manager also supports ENABLED configuration used in
 /etc/default/milter-greylist. If we disable a milter, we
 use the following steps:
 
@@ -329,5 +329,5 @@ We need to reload milter-manager after we disable a milter.
 milter-manager detects a milter is disabled and doesn't use
 it. We doesn't need to change Postfix's main.cf.
 
-We can reduce maintainance cost by introducing
+We can reduce maintenance cost by introducing
 milter-manager if we use some milters on Debian GNU/Linux.

@@ -157,12 +157,12 @@ technique by combine each techniques.
 
 === MTA configuration problems
 
-Many anti-spam tequniques are implemented as milter. How to
+Many anti-spam techniques are implemented as milter. How to
 configure Sendmail or Postfix to use milters effectively.
 
 Both Sendmail and Postfix apply registered milters to all
 mails. We cannot apply milters only if some condition is
-true as metioned above. ((-We can use ((<SMTP Access Policy
+true as mentioned above. ((-We can use ((<SMTP Access Policy
 Delegation|URL:http://www.postfix.org/SMTPD_POLICY_README.html>))
 for Postfix for combining S25R and Greylisting.-))
 
@@ -179,13 +179,13 @@ effectively.
 === milter manager
 
 milter manager is a milter that manages multiple milters.
-We can register multiple milteres to milter managers and
-a milter session for milter manager is transfered to
+We can register multiple milters to milter managers and
+a milter session for milter manager is transferred to
 registered milters. Registered milter is called "child
 milter".
 
 milter manager works as a proxy. milter manager looks like a
-milter from MTA side. milter manager looks like a MTA from
+milter from MTA side. milter manager looks like an MTA from
 child milter.
 
 ((<MTA, milter manager and child milter|mta-and-milter-manager-and-child-milter.svg>))
@@ -197,7 +197,7 @@ that improve milter management:
   (1) milter detection feature
   (2) flexible milter apply feature
 
-The formor is for "reduce milter administration cost" advantage,
+The former is for "reduce milter administration cost" advantage,
 the the latter is for "combine milters flexibly" advantage.
 
 We can use milters effectively by milter manager's those
@@ -239,7 +239,7 @@ It's almost same as Postfix's configuration syntax.
 milter manager will also provide Web interface for
 configuration since the next release.
 
-==== Advantage: flexibile milter apply feature
+==== Advantage: flexible milter apply feature
 
 In MTA configuration, each milter always applies or not. It
 can't be done that a milter applies only when some
@@ -278,10 +278,10 @@ of whole milters.
       * can be used with other MTA
       * there are many implementations
     * weakness:
-      * it's hard to maintaine configuration of MTA and
+      * it's hard to maintain configuration of MTA and
         milter because configurations for MTA and milter are
         separated
-      * MTA doesn't provide configuratioin for combining
+      * MTA doesn't provide configuration for combining
         milters effectively
   * we can use milters effectively and cover milters'
     weakness by using milter manager
