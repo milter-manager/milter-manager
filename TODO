@@ -1,6 +1,3 @@
-* [1.5.x] add --with-default-user, --with-default-group,
-  --with-default-socket-group, --with-default-connection-spec and
-  --with-default-pidfile configure options.
 * [1.5.x] multiply connection based anti-spam result as score.
   e.g. SFP fail -> 2.3, S25R match -> 7.8, ...;
        score = SPF fail * 0.3 + S25R match * 0.9 + ... = 0.69 + 7.02 + ...;

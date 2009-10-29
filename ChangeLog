@@ -1,5 +1,15 @@
 2009-10-29  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/manager/milter-manager-configuration.c, configure.ac: add
+	--with-default-effective-user, --with-default-effective-group,
+	--with-default-socket-group, --with-default-connection-spec and
+	--with-default-pid-file options.
+
+	* TODO: remove:
+	- [1.5.x] add --with-default-user, --with-default-group,
+	  --with-default-socket-group, --with-default-connection-spec and
+	  --with-default-pidfile configure options.
+
 	* binding/ruby/test/manager/: follow init scripts for Debian and
 	CentOS changes.
 

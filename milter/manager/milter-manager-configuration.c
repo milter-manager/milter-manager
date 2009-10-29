@@ -32,7 +32,6 @@
 #include "milter-manager-children.h"
 #include <milter/core/milter-marshalers.h>
 
-#define DEFAULT_MANAGER_CONNECTION_SPEC "inet:10025@[127.0.0.1]"
 #define DEFAULT_MAINTENANCE_INTERVAL 100
 
 #define MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(obj)                   \
@@ -158,7 +157,7 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
                                "Manager connection spec",
                                "The manager connection spec "
                                "of the milter-manager",
-                               DEFAULT_MANAGER_CONNECTION_SPEC,
+                               MILTER_MANAGER_DEFAULT_CONNECTION_SPEC,
                                G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
     g_object_class_install_property(gobject_class, PROP_MANAGER_CONNECTION_SPEC,
                                     spec);
@@ -190,7 +189,7 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
     spec = g_param_spec_string("effective-user",
                                "Effective user name",
                                "The effective user name of the milter-manager",
-                               NULL,
+                               MILTER_MANAGER_DEFAULT_EFFECTIVE_USER,
                                G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
     g_object_class_install_property(gobject_class, PROP_EFFECTIVE_USER,
                                     spec);
@@ -198,7 +197,7 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
     spec = g_param_spec_string("effective-group",
                                "Effective group name",
                                "The effective group name of the milter-manager",
-                               NULL,
+                               MILTER_MANAGER_DEFAULT_EFFECTIVE_GROUP,
                                G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
     g_object_class_install_property(gobject_class, PROP_EFFECTIVE_GROUP,
                                     spec);
@@ -228,7 +227,7 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
     spec = g_param_spec_string("manager-unix-socket-group",
                                "milter-manager's UNIX socket group",
                                "The milter-manager's UNIX socket group",
-                               NULL,
+                               MILTER_MANAGER_DEFAULT_SOCKET_GROUP,
                                G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
     g_object_class_install_property(gobject_class,
                                     PROP_MANAGER_UNIX_SOCKET_GROUP,
@@ -293,7 +292,7 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
     spec = g_param_spec_string("pid-file",
                                "File name to be saved process ID",
                                "The file name to be saved process ID",
-                               NULL,
+                               MILTER_MANAGER_DEFAULT_PID_FILE,
                                G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
     g_object_class_install_property(gobject_class, PROP_PID_FILE,
                                     spec);
@@ -1615,7 +1614,8 @@ milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
         g_free(priv->manager_connection_spec);
         priv->manager_connection_spec = NULL;
     }
-    priv->manager_connection_spec = g_strdup(DEFAULT_MANAGER_CONNECTION_SPEC);
+    priv->manager_connection_spec =
+        g_strdup(MILTER_MANAGER_DEFAULT_CONNECTION_SPEC);
 
     if (priv->package_platform) {
         g_free(priv->package_platform);
@@ -1631,16 +1631,20 @@ milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
         g_free(priv->effective_user);
         priv->effective_user = NULL;
     }
+    priv->effective_user = g_strdup(MILTER_MANAGER_DEFAULT_EFFECTIVE_USER);
 
     if (priv->effective_group) {
         g_free(priv->effective_group);
         priv->effective_group = NULL;
     }
+    priv->effective_group = g_strdup(MILTER_MANAGER_DEFAULT_EFFECTIVE_GROUP);
 
     if (priv->manager_unix_socket_group) {
         g_free(priv->manager_unix_socket_group);
         priv->manager_unix_socket_group = NULL;
     }
+    priv->manager_unix_socket_group =
+        g_strdup(MILTER_MANAGER_DEFAULT_SOCKET_GROUP);
 
     if (priv->controller_unix_socket_group) {
         g_free(priv->controller_unix_socket_group);
@@ -1651,6 +1655,7 @@ milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
         g_free(priv->pid_file);
         priv->pid_file = NULL;
     }
+    priv->pid_file = g_strdup(MILTER_MANAGER_DEFAULT_PID_FILE);
 
     if (priv->custom_configuration_directory) {
         g_free(priv->custom_configuration_directory);
