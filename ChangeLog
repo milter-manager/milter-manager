@@ -1,5 +1,7 @@
 2009-10-29  Kouhei Sutou  <kou@clear-code.com>
 
+	* NEWS: add 1.4.1 entry.
+
 	* milter/manager/milter-manager-configuration.c, configure.ac: add
 	--with-default-effective-user, --with-default-effective-group,
 	--with-default-socket-group, --with-default-connection-spec and

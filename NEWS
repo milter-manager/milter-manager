@@ -2,6 +2,33 @@
 
 = NEWS --- The history of milter manager
 
+== [release-1-4-1] 1.4.1: 2009-10-29
+
+A bug fix release for 1.4.0.
+
+=== Document
+
+  * Upgrade target CentOS version: 5.3 -> 5.4.
+  * Fixed typos. [ZnZ]
+
+=== milter manager
+
+==== Improvements
+
+  * Bundled Ruby/GLib2 for CentOS.
+
+==== Bug fixes
+
+  * Fixed a bug that init script overwrites default
+    configuration value on CentOS. [Reported by gorimaru]
+  * Fixed a bug that needless commands are sent to finished
+    child milter on evaluation mode.
+
+=== Thanks
+
+  * gorimaru
+  * ZnZ
+
 == [release-1-4-0] 1.4.0: 2009-10-13
 
 A stable release.
@@ -9,7 +36,6 @@ A stable release.
 === Document
 
   * Added install documents for Debian.
-  * Fixed typos. [ZnZ]
 
 === milter-manager
 
@@ -21,10 +47,6 @@ A stable release.
 
   * Fixed a bug that adding header statistics isn't logged
     on evaluation mode.
-
-=== Thanks
-
-  * ZnZ
 
 == [release-1-3-1] 1.3.1: 2009-09-16
 
