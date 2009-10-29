@@ -425,16 +425,11 @@ start_process_launcher_process (MilterManager *manager)
     return TRUE;
 }
 
-static gboolean
-switch_user (MilterManager *manager)
+static struct passwd *
+find_password (const gchar *effective_user)
 {
-    MilterManagerConfiguration *configuration;
-    const gchar *effective_user;
     struct passwd *password;
 
-    configuration = milter_manager_get_configuration(manager);
-
-    effective_user = milter_manager_configuration_get_effective_user(configuration);
     if (!effective_user)
         effective_user = "nobody";
 
@@ -450,13 +445,29 @@ switch_user (MilterManager *manager)
                 "failed to get password entry for effective user: %s: %s",
                 effective_user, g_strerror(errno));
         }
-        return FALSE;
     }
 
+    return password;
+}
+
+static gboolean
+switch_user (MilterManager *manager)
+{
+    MilterManagerConfiguration *configuration;
+    const gchar *effective_user;
+    struct passwd *password;
+
+    configuration = milter_manager_get_configuration(manager);
+
+    effective_user = milter_manager_configuration_get_effective_user(configuration);
+
+    password = find_password(effective_user);
+    if (!password)
+        return FALSE;
 
     if (setuid(password->pw_uid) == -1) {
         milter_manager_error("failed to change effective user: %s: %s",
-                             effective_user, g_strerror(errno));
+                             password->pw_name, g_strerror(errno));
         return FALSE;
     }
 
@@ -467,11 +478,14 @@ static gboolean
 switch_group (MilterManager *manager)
 {
     MilterManagerConfiguration *configuration;
+    const gchar *effective_user;
     const gchar *effective_group;
+    struct passwd *password;
     struct group *group;
 
     configuration = milter_manager_get_configuration(manager);
 
+    effective_user = milter_manager_configuration_get_effective_user(configuration);
     effective_group = milter_manager_configuration_get_effective_group(configuration);
     if (!effective_group)
         return TRUE;
@@ -495,6 +509,17 @@ switch_group (MilterManager *manager)
     if (setgid(group->gr_gid) == -1) {
         milter_manager_error("failed to change effective group: %s: %s",
                              effective_group, g_strerror(errno));
+        return FALSE;
+    }
+
+    password = find_password(effective_user);
+    if (!password)
+        return FALSE;
+
+    if (initgroups(password->pw_name, group->gr_gid) == -1) {
+        milter_manager_error("failed to initialize groups: %s: %s: %s",
+                             password->pw_name, group->gr_name,
+                             g_strerror(errno));
         return FALSE;
     }
 

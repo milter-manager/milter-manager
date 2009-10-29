@@ -1,5 +1,11 @@
 2009-10-29  Kouhei Sutou  <kou@clear-code.com>
 
+	* README*: update ZnZ entry. Thanks!!!
+
+	* milter/manager/milter-manager-main.c (switch_group): use
+	initgroups() to ensure apply switched user's groups.
+	Suggested by ZnZ. Thanks!!!
+
 	* configure.ac: 1.4.1 -> 1.5.0.
 
 	* NEWS*: add missing news and fix wrong place.
