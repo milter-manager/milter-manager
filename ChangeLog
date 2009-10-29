@@ -1,5 +1,7 @@
 2009-10-29  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter-manager.spec.in: create pid file directory on post install.
+
 	* configure.ac: create dummy binding/ruby/glib/Makefile for make dist.
 
 	* NEWS: add 1.4.1 entry.

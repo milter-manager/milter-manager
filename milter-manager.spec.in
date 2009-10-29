@@ -29,7 +29,12 @@ administration cost and combine milters flexibly.
 %setup -q
 
 %build
-%configure
+%configure								\
+    --with-default-effective-user=milter-manager			\
+    --with-default-effective-group=milter-manager			\
+    --with-default-socket-group=smmsp					\
+    --with-default-pid-file=/var/run/milter-manager/milter-manager.sock	\
+    --with-default-connection-spec=unix:/var/run/milter-manager/milter-manager.sock
 make %{?_smp_mflags}
 
 %install
@@ -69,6 +74,8 @@ fi
 
 %post
 /sbin/chkconfig --add milter-manager
+mkdir -p /var/run/milter-manager
+/bin/chown -R milter-manager:milter-manager /var/run/milter-manager
 
 %preun
 if [ $1 = 0 ] ; then
