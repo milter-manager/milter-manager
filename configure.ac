@@ -395,6 +395,71 @@ AC_SUBST(MILTER_MANAGER_PACKAGE_OPTIONS)
 AC_SUBST(MILTER_MANAGER_PACKAGE_OPTIONS_C_STRING)
 
 dnl **************************************************************
+dnl Check for default configuration.
+dnl **************************************************************
+AC_ARG_WITH([default-effective-user],
+            AS_HELP_STRING([--with-default-effective-user=USER],
+                           [Default effective user. (default: none)]),
+            [MILTER_MANAGER_DEFAULT_EFFECTIVE_USER="$withval"])
+
+AC_ARG_WITH([default-effective-group],
+            AS_HELP_STRING([--with-default-effective-group=GROUP],
+                           [Default effective group. (default: none)]),
+            [MILTER_MANAGER_DEFAULT_EFFECTIVE_GROUP="$withval"])
+
+AC_ARG_WITH([default-socket-group],
+            AS_HELP_STRING([--with-default-socket-group=GROUP],
+                           [Default UNIX socket group. (default: none)]),
+            [MILTER_MANAGER_DEFAULT_SOCKET_GROUP="$withval"])
+
+AC_ARG_WITH([default-connection-spec],
+            AS_HELP_STRING([--with-default-connection-spec=SPEC],
+                           [Default connection spec. (default: none)]),
+            [MILTER_MANAGER_DEFAULT_CONNECTION_SPEC="$withval"])
+
+AC_ARG_WITH([default-pid-file],
+            AS_HELP_STRING([--with-default-pid-file=FILE],
+                           [Default PID file. (default: none)]),
+            [MILTER_MANAGER_DEFAULT_PID_FILE="$withval"])
+
+AC_SUBST(MILTER_MANAGER_DEFAULT_EFFECTIVE_USER)
+AC_SUBST(MILTER_MANAGER_DEFAULT_EFFECTIVE_GROUP)
+AC_SUBST(MILTER_MANAGER_DEFAULT_SOCKET_GROUP)
+AC_SUBST(MILTER_MANAGER_DEFAULT_CONNECTION_SPEC)
+AC_SUBST(MILTER_MANAGER_DEFAULT_PID_FILE)
+
+if test -z "$MILTER_MANAGER_DEFAULT_EFFECTIVE_USER"; then
+  MILTER_MANAGER_DEFAULT_EFFECTIVE_USER_C_STRING=NULL
+else
+  MILTER_MANAGER_DEFAULT_EFFECTIVE_USER_C_STRING="\\\"\$(MILTER_MANAGER_DEFAULT_EFFECTIVE_USER)\\\""
+fi
+if test -z "$MILTER_MANAGER_DEFAULT_EFFECTIVE_GROUP"; then
+  MILTER_MANAGER_DEFAULT_EFFECTIVE_GROUP_C_STRING=NULL
+else
+  MILTER_MANAGER_DEFAULT_EFFECTIVE_GROUP_C_STRING="\\\"\$(MILTER_MANAGER_DEFAULT_EFFECTIVE_GROUP)\\\""
+fi
+if test -z "$MILTER_MANAGER_DEFAULT_SOCKET_GROUP"; then
+  MILTER_MANAGER_DEFAULT_SOCKET_GROUP_C_STRING=NULL
+else
+  MILTER_MANAGER_DEFAULT_SOCKET_GROUP_C_STRING="\\\"\$(MILTER_MANAGER_DEFAULT_SOCKET_GROUP)\\\""
+fi
+if test -z "$MILTER_MANAGER_DEFAULT_CONNECTION_SPEC"; then
+  MILTER_MANAGER_DEFAULT_CONNECTION_SPEC=['inet:10025@[127.0.0.1]']
+fi
+MILTER_MANAGER_DEFAULT_CONNECTION_SPEC_C_STRING="\\\"\$(MILTER_MANAGER_DEFAULT_CONNECTION_SPEC)\\\""
+if test -z "$MILTER_MANAGER_DEFAULT_PID_FILE"; then
+  MILTER_MANAGER_DEFAULT_PID_FILE_C_STRING=NULL
+else
+  MILTER_MANAGER_DEFAULT_PID_FILE_C_STRING="\\\"\$(MILTER_MANAGER_DEFAULT_PID_FILE)\\\""
+fi
+
+AC_SUBST(MILTER_MANAGER_DEFAULT_EFFECTIVE_USER_C_STRING)
+AC_SUBST(MILTER_MANAGER_DEFAULT_EFFECTIVE_GROUP_C_STRING)
+AC_SUBST(MILTER_MANAGER_DEFAULT_SOCKET_GROUP_C_STRING)
+AC_SUBST(MILTER_MANAGER_DEFAULT_CONNECTION_SPEC_C_STRING)
+AC_SUBST(MILTER_MANAGER_DEFAULT_PID_FILE_C_STRING)
+
+dnl **************************************************************
 dnl Check for SF.net.
 dnl **************************************************************
 
@@ -441,6 +506,11 @@ MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DCONFIG_FILE_NAME=\\\"\$(CONFIG_F
 MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DCUSTOM_CONFIG_FILE_NAME=\\\"\$(CUSTOM_CONFIG_FILE_NAME)\\\""
 MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DMILTER_MANAGER_PACKAGE_PLATFORM=\$(MILTER_MANAGER_PACKAGE_PLATFORM_C_STRING)"
 MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DMILTER_MANAGER_PACKAGE_OPTIONS=\$(MILTER_MANAGER_PACKAGE_OPTIONS_C_STRING)"
+MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DMILTER_MANAGER_DEFAULT_EFFECTIVE_USER=\$(MILTER_MANAGER_DEFAULT_EFFECTIVE_USER_C_STRING)"
+MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DMILTER_MANAGER_DEFAULT_EFFECTIVE_GROUP=\$(MILTER_MANAGER_DEFAULT_EFFECTIVE_GROUP_C_STRING)"
+MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DMILTER_MANAGER_DEFAULT_SOCKET_GROUP=\$(MILTER_MANAGER_DEFAULT_SOCKET_GROUP_C_STRING)"
+MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DMILTER_MANAGER_DEFAULT_CONNECTION_SPEC=\$(MILTER_MANAGER_DEFAULT_CONNECTION_SPEC_C_STRING)"
+MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DMILTER_MANAGER_DEFAULT_PID_FILE=\$(MILTER_MANAGER_DEFAULT_PID_FILE_C_STRING)"
 AC_SUBST(MILTER_TOOLKIT_CFLAGS)
 AC_SUBST(MILTER_RUBY_CFLAGS)
 AC_SUBST(MILTER_MANAGER_CFLAGS)
@@ -527,13 +597,19 @@ glib_version="$glib_config_major_version.$glib_config_minor_version.$glib_config
 echo
 echo "Configure Result:"
 echo
-echo "  Package Platform : $MILTER_MANAGER_PACKAGE_PLATFORM"
-echo "  Package Options  : $MILTER_MANAGER_PACKAGE_OPTIONS"
+echo "  Package Platform        : $MILTER_MANAGER_PACKAGE_PLATFORM"
+echo "  Package Options         : $MILTER_MANAGER_PACKAGE_OPTIONS"
 echo
-echo "  GLib             : $glib_version"
-echo "  Ruby             : $RUBY"
+echo "  Default Effective User  : $MILTER_MANAGER_DEFAULT_EFFECTIVE_USER"
+echo "  Default Effective Group : $MILTER_MANAGER_DEFAULT_EFFECTIVE_GROUP"
+echo "  Default Socket Group    : $MILTER_MANAGER_DEFAULT_SOCKET_GROUP"
+echo "  Default Connection Spec : $MILTER_MANAGER_DEFAULT_CONNECTION_SPEC"
+echo "  Default PID File        : $MILTER_MANAGER_DEFAULT_PID_FILE"
 echo
-echo "  GTK-Doc          : $enable_gtk_doc"
+echo "  GLib                    : $glib_version"
+echo "  Ruby                    : $RUBY"
 echo
-echo "  Cutter           : $CUTTER"
-echo "  LCOV             : $LCOV"
+echo "  GTK-Doc                 : $enable_gtk_doc"
+echo
+echo "  Cutter                  : $CUTTER"
+echo "  LCOV                    : $LCOV"
