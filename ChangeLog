@@ -1,3 +1,9 @@
+2009-10-30  Kouhei Sutou  <kou@clear-code.com>
+
+	* TODO: add: [1.5.x] use UNIX domain socket rather than inet in
+	document.
+	Suggested by ZnZ.
+
 2009-10-29  Kouhei Sutou  <kou@clear-code.com>
 
 	* doc/install-to-debian.rd*: milter-greylist on lenny doesn't have
