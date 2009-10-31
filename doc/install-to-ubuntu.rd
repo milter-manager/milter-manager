@@ -200,12 +200,10 @@ improve detect method.
 We change /etc/default/milter-manager to work with Postfix:
 
 Before:
-  #GROUP=postfix
-  #SOCKET_GROUP=postfix
-  #CONNECTION_SPEC=unix:/var/spool/postfix/milter-manager/milter-manager.sock
+  # SOCKET_GROUP=postfix
+  # CONNECTION_SPEC=unix:/var/spool/postfix/milter-manager/milter-manager.sock
 
 After:
-  GROUP=postfix
   SOCKET_GROUP=postfix
   CONNECTION_SPEC=unix:/var/spool/postfix/milter-manager/milter-manager.sock
 

@@ -1,5 +1,10 @@
 2009-10-31  Kouhei Sutou  <kou@cozmixng.org>
 
+	* data/init.d/debian/default/milter-manager,
+	doc/install-to-ubuntu.rd*, doc/install-to-debian.rd*: remove
+	needless group change.
+	Suggested by ZnZ. Thanks!!!
+
 	* data/init.d/debian/milter-manager: remove needless $local_fs
 	dependency.
 	Suggested by ZnZ. Thanks!!!
