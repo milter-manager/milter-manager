@@ -1,3 +1,8 @@
+2009-10-31  Kouhei Sutou  <kou@cozmixng.org>
+
+	* data/init.d/debian/milter-manager: support status.
+	Suggested by ZnZ. Thanks!!!
+
 2009-10-30  Kouhei Sutou  <kou@clear-code.com>
 
 	* TODO: add: [1.5.x] use UNIX domain socket rather than inet in
