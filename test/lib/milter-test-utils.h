@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -24,13 +24,10 @@
 #include <errno.h>
 
 #include <gcutter.h>
+#include "milter-test-compatible.h"
 #include "milter-assertions.h"
 #include "milter-test-client.h"
 #include "milter-test-server.h"
-
-#ifndef cut_message
-#  define cut_message(...) __VA_ARGS__
-#endif
 
 G_BEGIN_DECLS
 

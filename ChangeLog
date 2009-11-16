@@ -1,5 +1,8 @@
 2009-11-16  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/lib/milter-test-compatible.h: add for older Cutter support.
+	* test/lib/: use milter-test-compatible.h.
+
 	* admin/app/models/configuration.rb (Configuration#latest): check
 	also updated_at for the same modified_at configurations.
 
