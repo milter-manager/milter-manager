@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -28,6 +28,7 @@
 void test_new (void);
 void test_name (void);
 void test_description (void);
+void test_data (void);
 void test_merge (void);
 
 static MilterManagerApplicableCondition *condition;
@@ -95,6 +96,23 @@ test_description (void)
 }
 
 void
+test_data (void)
+{
+    const gchar data[] =
+        "- /example\\.com$/"
+        "- 192.168.1.100\n";
+
+    condition = milter_manager_applicable_condition_new("Whitelist");
+    cut_assert_equal_string(
+        NULL,
+        milter_manager_applicable_condition_get_data(condition));
+    milter_manager_applicable_condition_set_data(condition, data);
+    cut_assert_equal_string(
+        data,
+        milter_manager_applicable_condition_get_data(condition));
+}
+
+void
 test_merge (void)
 {
     condition = milter_manager_applicable_condition_new("S25R");
@@ -103,31 +121,45 @@ test_merge (void)
     cut_assert_equal_string(
         NULL,
         milter_manager_applicable_condition_get_description(merged_condition));
-    milter_manager_applicable_condition_merge(merged_condition,
-                                              condition);
+    cut_assert_equal_string(
+        NULL,
+        milter_manager_applicable_condition_get_data(merged_condition));
+    milter_manager_applicable_condition_merge(merged_condition, condition);
     cut_assert_equal_string(
         "Merged",
         milter_manager_applicable_condition_get_name(merged_condition));
     cut_assert_equal_string(
         NULL,
         milter_manager_applicable_condition_get_description(merged_condition));
+    cut_assert_equal_string(
+        NULL,
+        milter_manager_applicable_condition_get_data(merged_condition));
 
     milter_manager_applicable_condition_set_description(
         condition, "Selective SMTP Rejection");
-    milter_manager_applicable_condition_merge(merged_condition,
-                                              condition);
+    milter_manager_applicable_condition_set_data(
+        condition, "DATA");
+    milter_manager_applicable_condition_merge(merged_condition, condition);
     cut_assert_equal_string(
         "Selective SMTP Rejection",
         milter_manager_applicable_condition_get_description(merged_condition));
+    cut_assert_equal_string(
+        "DATA",
+        milter_manager_applicable_condition_get_data(merged_condition));
 
     milter_manager_applicable_condition_set_description(merged_condition,
                                                         "Description");
+    milter_manager_applicable_condition_set_data(merged_condition,
+                                                 "New DATA");
     milter_manager_applicable_condition_set_description(condition, NULL);
-    milter_manager_applicable_condition_merge(merged_condition,
-                                              condition);
+    milter_manager_applicable_condition_set_data(condition, NULL);
+    milter_manager_applicable_condition_merge(merged_condition, condition);
     cut_assert_equal_string(
         "Description",
         milter_manager_applicable_condition_get_description(merged_condition));
+    cut_assert_equal_string(
+        "New DATA",
+        milter_manager_applicable_condition_get_data(merged_condition));
 }
 
 /*

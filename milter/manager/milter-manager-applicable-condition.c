@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -35,13 +35,15 @@ struct _MilterManagerApplicableConditionPrivate
 {
     gchar *name;
     gchar *description;
+    gchar *data;
 };
 
 enum
 {
     PROP_0,
     PROP_NAME,
-    PROP_DESCRIPTION
+    PROP_DESCRIPTION,
+    PROP_DATA
 };
 
 enum
@@ -92,6 +94,13 @@ milter_manager_applicable_condition_class_init (MilterManagerApplicableCondition
                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_DESCRIPTION, spec);
 
+    spec = g_param_spec_string("data",
+                               "Data",
+                               "The data of the applicable condition",
+                               NULL,
+                               G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_DATA, spec);
+
     signals[ATTACH_TO] =
         g_signal_new("attach-to",
                      G_TYPE_FROM_CLASS(klass),
@@ -115,6 +124,7 @@ milter_manager_applicable_condition_init (MilterManagerApplicableCondition *appl
     priv = MILTER_MANAGER_APPLICABLE_CONDITION_GET_PRIVATE(applicable_condition);
     priv->name = NULL;
     priv->description = NULL;
+    priv->data = NULL;
 }
 
 static void
@@ -134,6 +144,11 @@ dispose (GObject *object)
         priv->description = NULL;
     }
 
+    if (priv->data) {
+        g_free(priv->data);
+        priv->data = NULL;
+    }
+
     G_OBJECT_CLASS(milter_manager_applicable_condition_parent_class)->dispose(object);
 }
 
@@ -150,15 +165,19 @@ set_property (GObject      *object,
     priv = MILTER_MANAGER_APPLICABLE_CONDITION_GET_PRIVATE(object);
 
     switch (prop_id) {
-      case PROP_NAME:
+    case PROP_NAME:
         milter_manager_applicable_condition_set_name(applicable_condition,
                                                      g_value_get_string(value));
         break;
-      case PROP_DESCRIPTION:
+    case PROP_DESCRIPTION:
         milter_manager_applicable_condition_set_description(applicable_condition,
                                                             g_value_get_string(value));
         break;
-      default:
+    case PROP_DATA:
+        milter_manager_applicable_condition_set_data(applicable_condition,
+                                                     g_value_get_string(value));
+        break;
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
@@ -174,13 +193,16 @@ get_property (GObject    *object,
 
     priv = MILTER_MANAGER_APPLICABLE_CONDITION_GET_PRIVATE(object);
     switch (prop_id) {
-      case PROP_NAME:
+    case PROP_NAME:
         g_value_set_string(value, priv->name);
         break;
-      case PROP_DESCRIPTION:
+    case PROP_DESCRIPTION:
         g_value_set_string(value, priv->description);
         break;
-      default:
+    case PROP_DATA:
+        g_value_set_string(value, priv->data);
+        break;
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
@@ -231,14 +253,36 @@ milter_manager_applicable_condition_get_description (MilterManagerApplicableCond
 }
 
 void
+milter_manager_applicable_condition_set_data (MilterManagerApplicableCondition *condition,
+                                              const gchar *data)
+{
+    MilterManagerApplicableConditionPrivate *priv;
+
+    priv = MILTER_MANAGER_APPLICABLE_CONDITION_GET_PRIVATE(condition);
+    if (priv->data)
+        g_free(priv->data);
+    priv->data = g_strdup(data);
+}
+
+const gchar *
+milter_manager_applicable_condition_get_data (MilterManagerApplicableCondition *condition)
+{
+    return MILTER_MANAGER_APPLICABLE_CONDITION_GET_PRIVATE(condition)->data;
+}
+
+void
 milter_manager_applicable_condition_merge (MilterManagerApplicableCondition *condition,
                                            MilterManagerApplicableCondition *other_condition)
 {
     const gchar *description;
+    const gchar *data;
 
     description = milter_manager_applicable_condition_get_description(other_condition);
     if (description)
         milter_manager_applicable_condition_set_description(condition, description);
+    data = milter_manager_applicable_condition_get_data(other_condition);
+    if (data)
+        milter_manager_applicable_condition_set_data(condition, data);
 }
 
 void
