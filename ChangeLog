@@ -1,3 +1,8 @@
+2009-11-16  Kouhei Sutou  <kou@clear-code.com>
+
+	* milter/manager/milter-manager-controller-context.c: cleanup log
+	message.
+
 2009-10-31  Kouhei Sutou  <kou@cozmixng.org>
 
 	* data/init.d/debian/default/milter-manager,

@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -117,8 +117,7 @@ cb_decoder_set_configuration (MilterManagerControlCommandDecoder *decoder,
                                                             &packet,
                                                             &packet_size);
         if (!milter_agent_write_packet(agent, packet, packet_size, &error)) {
-            milter_error("[controller] "
-                         "failed to write control reply success packet: %s",
+            milter_error("[controller][error][write][success] %s",
                          error->message);
             g_error_free(error);
         }
@@ -130,14 +129,13 @@ cb_decoder_set_configuration (MilterManagerControlCommandDecoder *decoder,
         g_error_free(error);
         error = NULL;
 
-        milter_error("[controller] %s", message);
+        milter_error("[controller][error][save] %s", message);
         milter_manager_control_reply_encoder_encode_error(encoder,
                                                           &packet,
                                                           &packet_size,
                                                           message);
         if (!milter_agent_write_packet(agent, packet, packet_size, &error)) {
-            milter_error("[controller] "
-                         "failed to write control reply error packet: %s",
+            milter_error("[controller][error][write][error] %s",
                          error->message);
             g_error_free(error);
         }
