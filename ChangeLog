@@ -1,3 +1,7 @@
+2009-11-16  Kouhei Sutou  <kou@cozmixng.org>
+
+	* test/: support Cutter 1.1.0.
+
 2009-11-16  Kouhei Sutou  <kou@clear-code.com>
 
 	* milter/manager/milter-manager-controller-context.c: cleanup log

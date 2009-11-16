@@ -27,58 +27,60 @@
 
 G_BEGIN_DECLS
 
+#ifndef cut_test_with_user_message
+#  define cut_test_with_user_message(assertion, set_user_message) (assertion)
+#endif
+
 #define milter_assert_equal_option(expected, actual, ...)               \
     cut_trace_with_info_expression(                                     \
-        milter_assert_equal_option_helper(expected, actual,             \
-                                          #expected, #actual,           \
-                                          ## __VA_ARGS__, NULL),        \
+        cut_test_with_user_message(                                     \
+            milter_assert_equal_option_helper(expected, actual,         \
+                                              #expected, #actual),      \
+            __VA_ARGS__),                                               \
         milter_assert_equal_option(expected, actual, __VA_ARGS__))
 
 void milter_assert_equal_option_helper (MilterOption *expected,
                                         MilterOption *actual,
                                         const gchar  *expression_expected,
-                                        const gchar  *expression_actual,
-                                        const gchar  *user_message_format,
-                                        ...);
+                                        const gchar  *expression_actual);
 
 #define milter_assert_equal_list_string_with_sort(expected, actual, ...) \
     cut_trace_with_info_expression(                                     \
-        milter_assert_equal_list_string_with_sort_helper(               \
-            expected, actual,                                           \
-            #expected, #actual,                                         \
-            ## __VA_ARGS__, NULL),                                      \
+        cut_test_with_user_message(                                     \
+            milter_assert_equal_list_string_with_sort_helper(           \
+                expected, actual,                                       \
+                #expected, #actual),                                    \
+            __VA_ARGS__),                                               \
         milter_assert_equal_list_string_with_sort(expected, actual,     \
                                                   __VA_ARGS__))
 
 void milter_assert_equal_list_string_with_sort_helper
                                        (GList *expected, GList *actual,
                                         const gchar  *expression_expected,
-                                        const gchar  *expression_actual,
-                                        const gchar  *user_message_format,
-                                        ...);
+                                        const gchar  *expression_actual);
 
 #define milter_assert_equal_symbols_table(expected, actual, ...)        \
     cut_trace_with_info_expression(                                     \
-        milter_assert_equal_symbols_table_helper(                       \
-            expected, actual,                                           \
-            #expected, #actual,                                         \
-            ## __VA_ARGS__, NULL),                                      \
+        cut_test_with_user_message(                                     \
+            milter_assert_equal_symbols_table_helper(                   \
+                expected, actual,                                       \
+                #expected, #actual),                                    \
+            __VA_ARGS__),                                               \
         milter_assert_equal_symbols_table(expected, actual, __VA_ARGS__))
 
 void milter_assert_equal_symbols_table_helper
                                        (GHashTable  *expected,
                                         GHashTable  *actual,
                                         const gchar *expression_expected,
-                                        const gchar *expression_actual,
-                                        const gchar *user_message_format,
-                                        ...);
+                                        const gchar *expression_actual);
 
 #define milter_assert_equal_macros_requests(expected, actual, ...)      \
     cut_trace_with_info_expression(                                     \
-        milter_assert_equal_macros_requests_helper(                     \
-            expected, actual,                                           \
-            #expected, #actual,                                         \
-            ## __VA_ARGS__, NULL),                                      \
+        cut_test_with_user_message(                                     \
+            milter_assert_equal_macros_requests_helper(\
+                expected, actual,                                       \
+                #expected, #actual),                                    \
+            __VA_ARGS__),                                               \
         milter_assert_equal_macros_requests(expected, actual,           \
                                             __VA_ARGS__))
 
@@ -86,26 +88,21 @@ void milter_assert_equal_macros_requests_helper
                                        (MilterMacrosRequests *expected,
                                         MilterMacrosRequests *actual,
                                         const gchar *expression_expected,
-                                        const gchar *expression_actual,
-                                        const gchar *user_message_format,
-                                        ...);
+                                        const gchar *expression_actual);
 
 #define milter_assert_equal_header(expected, actual, ...)               \
     cut_trace_with_info_expression(                                     \
-        milter_assert_equal_header_helper(                              \
-            expected, actual,                                           \
-            #expected, #actual,                                         \
-            ## __VA_ARGS__, NULL),                                      \
-        milter_assert_equal_header(expected, actual,                    \
-                                            __VA_ARGS__))
+        cut_test_with_user_message(                                     \
+            milter_assert_equal_header_helper(expected, actual,         \
+                                              #expected, #actual),      \
+            __VA_ARGS__),                                               \
+        milter_assert_equal_header(expected, actual, __VA_ARGS__))
 
 void milter_assert_equal_header_helper
                                        (MilterHeader *expected,
                                         MilterHeader *actual,
                                         const gchar *expression_expected,
-                                        const gchar *expression_actual,
-                                        const gchar *user_message_format,
-                                        ...);
+                                        const gchar *expression_actual);
 
 G_END_DECLS
 

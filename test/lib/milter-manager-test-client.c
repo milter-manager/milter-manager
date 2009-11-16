@@ -962,7 +962,7 @@ milter_manager_test_client_wait_reply (MilterManagerTestClient *client,
         g_main_context_iteration(NULL, TRUE);
     g_source_remove(timeout_waiting_id);
 
-    cut_assert_true(timeout_waiting, "timeout");
+    cut_assert_true(timeout_waiting, cut_message("timeout"));
 }
 
 void
@@ -990,7 +990,7 @@ milter_manager_test_clients_wait_n_replies(const GList *clients,
     }
     g_source_remove(timeout_waiting_id);
 
-    cut_assert_true(timeout_waiting, "timeout");
+    cut_assert_true(timeout_waiting, cut_message("timeout"));
     cut_assert_equal_uint(n_replies,
                           milter_manager_test_clients_collect_n_received(clients,
                                                                          getter));
@@ -1010,7 +1010,7 @@ milter_manager_test_clients_wait_n_alive(const GList *clients, guint n_alive)
     }
     g_source_remove(timeout_waiting_id);
 
-    cut_assert_true(timeout_waiting, "timeout");
+    cut_assert_true(timeout_waiting, cut_message("timeout"));
     cut_assert_equal_uint(n_alive,
                           milter_manager_test_clients_collect_n_alive(clients));
 }

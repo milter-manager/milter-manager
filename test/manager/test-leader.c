@@ -592,7 +592,8 @@ assert_response_error (MilterManagerTestScenario *scenario, const gchar *group)
 
         type_name = get_string(scenario, group, "error_type");
         type = g_type_from_name(type_name);
-        cut_assert_operator_uint(0, <, type, "name: <%s>", type_name);
+        cut_assert_operator_uint(0, <, type,
+                                 cut_message("name: <%s>", type_name));
         code = get_enum(scenario, group, "error_code", type);
 
         message = get_string(scenario, group, "error_message");
@@ -861,7 +862,7 @@ do_helo (MilterManagerTestScenario *scenario, const gchar *group)
     expected_fqdns = get_string_g_list(scenario, group, "fqdns");
     gcut_assert_equal_list_string(expected_fqdns,
                                   collect_received_strings(helo_fqdn),
-                                  "[%s]", group);
+                                  cut_message("[%s]", group));
 }
 
 static void
@@ -882,7 +883,7 @@ do_envelope_from (MilterManagerTestScenario *scenario, const gchar *group)
     expected_froms = get_string_g_list(scenario, group, "froms");
     gcut_assert_equal_list_string(expected_froms,
                                   collect_received_strings(envelope_from),
-                                  "[%s]", group);
+                                  cut_message("[%s]", group));
 
     assert_macros(scenario, group, MILTER_COMMAND_ENVELOPE_FROM);
 }
@@ -905,7 +906,7 @@ do_envelope_recipient (MilterManagerTestScenario *scenario, const gchar *group)
     expected_recipients = get_string_g_list(scenario, group, "recipients");
     gcut_assert_equal_list_string(expected_recipients,
                                   collect_received_strings(envelope_recipient),
-                                  "[%s]", group);
+                                  cut_message("[%s]", group));
 }
 
 static void

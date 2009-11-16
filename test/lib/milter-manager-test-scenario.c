@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -165,8 +165,8 @@ load_scenario (MilterManagerTestScenario *scenario,
         g_key_file_free(priv->key_file);
         priv->key_file = NULL;
     }
-    cut_take_string(scenario_path);
-    gcut_assert_error(error, "<%s>", scenario_path);
+    gcut_assert_error(error,
+                      cut_message("<%s>", cut_take_string(scenario_path)));
 
     cut_trace(import_scenarios(scenario, base_dir));
 }
@@ -295,7 +295,7 @@ milter_manager_test_scenario_has_key (MilterManagerTestScenario *scenario,
 
     priv = MILTER_MANAGER_TEST_SCENARIO_GET_PRIVATE(scenario);
     result = g_key_file_has_key(priv->key_file, group, key, &error);
-    gcut_assert_error(error, "[%s]:[%s]", group, key);
+    gcut_assert_error(error, cut_message("[%s]:[%s]", group, key));
     return result;
 }
 
@@ -368,8 +368,7 @@ milter_manager_test_scenario_get_integer (MilterManagerTestScenario *scenario,
 
     priv = MILTER_MANAGER_TEST_SCENARIO_GET_PRIVATE(scenario);
     value = g_key_file_get_integer(priv->key_file, group, key, &error);
-    cut_set_message("[%s][%s]", group, key);
-    gcut_assert_error(error);
+    gcut_assert_error(error, cut_message("[%s][%s]", group, key));
     return value;
 }
 
@@ -383,7 +382,7 @@ milter_manager_test_scenario_get_double (MilterManagerTestScenario *scenario,
 
     priv = MILTER_MANAGER_TEST_SCENARIO_GET_PRIVATE(scenario);
     value = g_key_file_get_double(priv->key_file, group, key, &error);
-    gcut_assert_error(error, "[%s]", group);
+    gcut_assert_error(error, cut_message("[%s]", group));
     return value;
 }
 
@@ -397,7 +396,7 @@ milter_manager_test_scenario_get_boolean (MilterManagerTestScenario *scenario,
 
     priv = MILTER_MANAGER_TEST_SCENARIO_GET_PRIVATE(scenario);
     value = g_key_file_get_boolean(priv->key_file, group, key, &error);
-    gcut_assert_error(error, "[%s]", group);
+    gcut_assert_error(error, cut_message("[%s]", group));
     return value;
 }
 
@@ -411,7 +410,7 @@ milter_manager_test_scenario_get_string (MilterManagerTestScenario *scenario,
 
     priv = MILTER_MANAGER_TEST_SCENARIO_GET_PRIVATE(scenario);
     value = g_key_file_get_string(priv->key_file, group, key, &error);
-    gcut_assert_error(error, "[%s]", group);
+    gcut_assert_error(error, cut_message("[%s]", group));
     return cut_take_string(value);
 }
 
@@ -427,7 +426,7 @@ milter_manager_test_scenario_get_string_with_sub_key (MilterManagerTestScenario 
 
     priv = MILTER_MANAGER_TEST_SCENARIO_GET_PRIVATE(scenario);
     value = g_key_file_get_locale_string(priv->key_file, group, key, sub_key, &error);
-    gcut_assert_error(error, "[%s]", group);
+    gcut_assert_error(error, cut_message("[%s]", group));
     return cut_take_string(value);
 }
 
@@ -444,7 +443,7 @@ milter_manager_test_scenario_get_string_list (MilterManagerTestScenario *scenari
     priv = MILTER_MANAGER_TEST_SCENARIO_GET_PRIVATE(scenario);
     value = g_key_file_get_string_list(priv->key_file, group, key, length,
                                        &error);
-    gcut_assert_error(error, "[%s]", group);
+    gcut_assert_error(error, cut_message("[%s]", group));
     return cut_take_string_array(value);
 }
 
@@ -487,7 +486,7 @@ milter_manager_test_scenario_get_enum (MilterManagerTestScenario *scenario,
     priv = MILTER_MANAGER_TEST_SCENARIO_GET_PRIVATE(scenario);
     value = gcut_key_file_get_enum(priv->key_file, group, key, enum_type,
                                    &error);
-    gcut_assert_error(error, "[%s]:[%s]", group, key);
+    gcut_assert_error(error, cut_message("[%s]:[%s]", group, key));
     return value;
 }
 
@@ -504,7 +503,7 @@ milter_manager_test_scenario_get_flags (MilterManagerTestScenario *scenario,
     priv = MILTER_MANAGER_TEST_SCENARIO_GET_PRIVATE(scenario);
     value = gcut_key_file_get_flags(priv->key_file, group, key, flags_type,
                                     &error);
-    gcut_assert_error(error, "[%s]", group);
+    gcut_assert_error(error, cut_message("[%s]", group));
     return value;
 }
 
@@ -514,7 +513,7 @@ milter_manager_test_scenario_get_pair_list (MilterManagerTestScenario *scenario,
                                             const gchar *key)
 {
     const GList *pairs;
-    
+
     pairs = milter_manager_test_scenario_get_pair_list_without_sort(scenario, group, key);
 
     return g_list_sort((GList*)pairs, milter_manager_test_pair_compare);

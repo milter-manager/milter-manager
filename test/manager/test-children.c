@@ -594,7 +594,7 @@ wait_finished_helper (void)
     }
     g_source_remove(timeout_waiting_id);
 
-    cut_assert_true(timeout_waiting, "timeout");
+    cut_assert_true(timeout_waiting, cut_message("timeout"));
     cut_assert_operator_uint(n_finished_emitted, > , n_finished_emitted_before);
 }
 
@@ -616,7 +616,7 @@ wait_children_error_helper (void)
     }
     g_source_remove(timeout_waiting_id);
 
-    cut_assert_true(timeout_waiting, "timeout");
+    cut_assert_true(timeout_waiting, cut_message("timeout"));
     cut_assert_not_null(actual_error);
 }
 
@@ -795,7 +795,8 @@ assert_response_error (MilterManagerTestScenario *scenario, const gchar *group)
 
         type_name = get_string(scenario, group, "error_type");
         type = g_type_from_name(type_name);
-        cut_assert_operator_uint(0, <, type, "name: <%s>", type_name);
+        cut_assert_operator_uint(0, <, type,
+                                 cut_message("name: <%s>", type_name));
         code = get_enum(scenario, group, "error_code", type);
 
         message = get_string(scenario, group, "error_message");
@@ -852,7 +853,7 @@ assert_response_common (MilterManagerTestScenario *scenario, const gchar *group)
 
     actual_n_emitted = get_n_emitted(response);
     cut_assert_equal_uint(n_emitted, actual_n_emitted,
-                          "[%s](%s)", group, response);
+                          cut_message("[%s](%s)", group, response));
 }
 
 static void

@@ -28,6 +28,10 @@
 #include "milter-test-client.h"
 #include "milter-test-server.h"
 
+#ifndef cut_message
+#  define cut_message(...) __VA_ARGS__
+#endif
+
 G_BEGIN_DECLS
 
 typedef enum

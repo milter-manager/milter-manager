@@ -320,7 +320,7 @@ wait_ready (void)
         g_main_context_iteration(NULL, TRUE);
     }
     g_source_remove(timeout_waiting_id);
-    cut_assert_true(timeout_waiting, "timeout");
+    cut_assert_true(timeout_waiting, cut_message("timeout"));
 }
 
 static void
@@ -335,7 +335,7 @@ wait_error (void)
         g_main_context_iteration(NULL, TRUE);
     }
     g_source_remove(timeout_waiting_id);
-    cut_assert_true(timeout_waiting, "timeout");
+    cut_assert_true(timeout_waiting, cut_message("timeout"));
 }
 
 void

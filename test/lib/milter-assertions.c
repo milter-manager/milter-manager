@@ -26,9 +26,7 @@ void
 milter_assert_equal_option_helper (MilterOption *expected,
                                    MilterOption *actual,
                                    const gchar  *expression_expected,
-                                   const gchar  *expression_actual,
-                                   const gchar  *user_message_format,
-                                   ...)
+                                   const gchar  *expression_actual)
 {
     if (gcut_object_equal(G_OBJECT(expected), G_OBJECT(actual),
                           (GEqualFunc)milter_option_equal)) {
@@ -46,7 +44,7 @@ milter_assert_equal_option_helper (MilterOption *expected,
                                   inspected_expected, inspected_actual);
         message = cut_append_diff(message,
                                   inspected_expected, inspected_actual);
-        cut_test_fail_va_list(message, user_message_format);
+        cut_test_fail(message);
     }
 }
 
@@ -54,9 +52,7 @@ void
 milter_assert_equal_list_string_with_sort_helper (GList *expected,
                                                   GList *actual,
                                                   const gchar  *expression_expected,
-                                                  const gchar  *expression_actual,
-                                                  const gchar  *user_message_format,
-                                                  ...)
+                                                  const gchar  *expression_actual)
 {
     GList *sorted_expected, *sorted_actual;
     sorted_expected = g_list_sort(expected, (GCompareFunc)strcmp);
@@ -78,7 +74,7 @@ milter_assert_equal_list_string_with_sort_helper (GList *expected,
                 inspected_expected,
                 inspected_actual);
         message = cut_append_diff(message, inspected_expected, inspected_actual);
-        cut_test_fail_va_list(message, user_message_format);
+        cut_test_fail(message);
     }
 }
 
@@ -86,9 +82,7 @@ void
 milter_assert_equal_symbols_table_helper (GHashTable *expected,
                                           GHashTable *actual,
                                           const gchar *expression_expected,
-                                          const gchar *expression_actual,
-                                          const gchar *user_message_format,
-                                          ...)
+                                          const gchar *expression_actual)
 {
     if (milter_test_equal_symbols_table(expected, actual)) {
         cut_test_pass();
@@ -109,7 +103,7 @@ milter_assert_equal_symbols_table_helper (GHashTable *expected,
                                       inspected_expected, inspected_actual);
         g_free(inspected_expected);
         g_free(inspected_actual);
-        cut_test_fail_va_list(message, user_message_format);
+        cut_test_fail(message);
     }
 }
 
@@ -117,9 +111,7 @@ void
 milter_assert_equal_macros_requests_helper (MilterMacrosRequests *expected,
                                             MilterMacrosRequests *actual,
                                             const gchar *expression_expected,
-                                            const gchar *expression_actual,
-                                            const gchar *user_message_format,
-                                            ...)
+                                            const gchar *expression_actual)
 {
     GHashTable *expected_symbols_table = NULL, *actual_symbols_table = NULL;
 
@@ -135,9 +127,7 @@ void
 milter_assert_equal_header_helper (MilterHeader *expected,
                                    MilterHeader *actual,
                                    const gchar *expression_expected,
-                                   const gchar *expression_actual,
-                                   const gchar *user_message_format,
-                                   ...)
+                                   const gchar *expression_actual)
 {
     cut_assert_equal_string(expected->name, actual->name);
     cut_assert_equal_string(expected->value, actual->value);
