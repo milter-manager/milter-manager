@@ -1,5 +1,8 @@
 2009-11-16  Kouhei Sutou  <kou@cozmixng.org>
 
+	* admin/app/models/configuration.rb (Configuration#latest): check
+	also updated_at for the same modified_at configurations.
+
 	* test/: support Cutter 1.1.0.
 
 2009-11-16  Kouhei Sutou  <kou@clear-code.com>

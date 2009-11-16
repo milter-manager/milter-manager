@@ -1,7 +1,7 @@
 class Configuration < ActiveRecord::Base
   class << self
     def latest
-      find(:first, :order => "modified_at DESC") ||
+      find(:first, :order => "modified_at DESC, updated_at DESC") ||
         create(:modified_at => Time.at(0))
     end
 
