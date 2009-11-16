@@ -8,7 +8,7 @@ class Configuration < ActiveRecord::Base
     def sync
       client = Config::Connection.default.control_client
       manager_config = client.configuration
-      last_modified = manager_config["last_modified"]
+      last_modified = manager_config["last_modified"] || Time.now
       config = find_by_modified_at(last_modified)
       return if config and config.content == manager_config
 

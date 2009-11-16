@@ -1,5 +1,8 @@
 2009-11-16  Kouhei Sutou  <kou@cozmixng.org>
 
+	* admin/app/models/configuration.rb (Configuration#sync): treat
+	non last-modified means 'now'.
+
 	* test/lib/milter-test-compatible.h: add for older Cutter support.
 	* test/lib/: use milter-test-compatible.h.
 
