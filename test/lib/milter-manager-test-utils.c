@@ -51,9 +51,9 @@ milter_manager_test_wait_signal (gboolean should_timeout)
     g_source_remove(timeout_id);
 
     if (should_timeout)
-        cut_assert_true(timeout_emitted, "should timeout");
+        cut_assert_true(timeout_emitted, cut_message("should timeout"));
     else
-        cut_assert_false(timeout_emitted, "timeout");
+        cut_assert_false(timeout_emitted, cut_message("timeout"));
 }
 
 void

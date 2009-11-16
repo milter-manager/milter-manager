@@ -1,5 +1,7 @@
 2009-11-16  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/lib/milter-manager-test-utils.c: use cut_message().
+
 	* admin/app/models/configuration.rb (Configuration#sync): treat
 	non last-modified means 'now'.
 
