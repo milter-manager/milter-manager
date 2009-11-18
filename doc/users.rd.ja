@@ -11,6 +11,13 @@ milter managerのユーザを紹介します。
 milter managerを導入している企業です。
 
   * ((<株式会社クリアコード|URL:http://www.clear-code.com/>))
+    * 使用milter: milter-greylist, spamass-milter, clamav-milter, ENMA
+    * プラットフォーム: Debian GNU/Linux, CentOS
+  * コンピュータ関連用品販売会社様
+    * 従業員数: 約35名
+    * 使用milter: milter-greylist, spamass-milter,
+      clamav-milter, 商用アンチウィルスmilter
+    * プラットフォーム: FreeBSD
   * ...（リストに載せてもよい企業の方は((<メーリングリスト
     |URL:https://lists.sourceforge.net/lists/listinfo/milter-manager-users-ja>))
     またはkou@clear-code.comへのメールでお知らせください。）

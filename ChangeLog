@@ -1,3 +1,7 @@
+2009-11-18  Kouhei Sutou  <kou@clear-code.com>
+
+	* doc/users.rd.ja: add a user company. Thanks!!!
+
 2009-11-16  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/manager/milter-manager-applicable-condition.[ch],
