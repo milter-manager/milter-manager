@@ -1,5 +1,9 @@
 2009-11-19  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/test/manager/test-debian-init-detector.rb
+	(TestDebianInitDetector#test_info): follow the Debian's init file
+	change.
+
 	* binding/ruby/lib/milter/manager/freebsd-rc-detector.rb
 	(Milter::FreeBSDRCDetector#apply): add missing nil check.
 	Reported by Tsuchiya. Thanks!!!
