@@ -110,8 +110,9 @@ module Milter::Manager
     end
 
     def apply(loader)
-      if opendkim? and !profiles.empty?
-        profiles.each do |profile|
+      _profiles = profiles
+      if opendkim? and _profiles and !_profiles.empty?
+        _profiles.each do |profile|
           detector = FreeBSDRCProfileDetector.new(@configuration,
                                                   @script_name,
                                                   profile,

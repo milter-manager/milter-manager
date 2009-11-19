@@ -1,3 +1,9 @@
+2009-11-19  Kouhei Sutou  <kou@clear-code.com>
+
+	* binding/ruby/lib/milter/manager/freebsd-rc-detector.rb
+	(Milter::FreeBSDRCDetector#apply): add missing nil check.
+	Reported by Tsuchiya. Thanks!!!
+
 2009-11-18  Kouhei Sutou  <kou@clear-code.com>
 
 	* doc/users.rd.ja: add a user company. Thanks!!!
