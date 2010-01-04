@@ -111,8 +111,8 @@ module Milter::Manager
       return nil if _package_options.nil?
 
       options = {}
-      _package_options.split(/,/).each do |option|
-        name, value = option.split(/=/, 2)
+      _package_options.split(/\s*,\s*/).each do |option|
+        name, value = option.split(/\s*=\s*/, 2)
         options[name] = value
       end
       options

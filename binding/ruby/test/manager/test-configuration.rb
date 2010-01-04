@@ -62,6 +62,15 @@ class TestConfiguration < Test::Unit::TestCase
     assert_equal("pkgsrc", @configuration.package_platform)
     @configuration.package_options = "prefix=/etc"
     assert_equal("prefix=/etc", @configuration.package_options)
+    assert_equal({"prefix" => "/etc"}, @configuration.parsed_package_options)
+  end
+
+  def test_package_options_with_spaces
+    @configuration.package_options = "prefix = /etc , DESTDIR = /tmp/local"
+    assert_equal("prefix = /etc , DESTDIR = /tmp/local",
+                 @configuration.package_options)
+    assert_equal({"prefix" => "/etc", "DESTDIR" => "/tmp/local"},
+                 @configuration.parsed_package_options)
   end
 
   def test_add_egg

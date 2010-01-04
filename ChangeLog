@@ -1,3 +1,9 @@
+2010-01-04  Kouhei Sutou  <kou@cozmixng.org>
+
+	* binding/ruby/lib/milter/manager.rb,
+	binding/ruby/test/manager/test-configuration.rb: accept spaces
+	around ',' and '=' in package options.
+
 2009-11-19  Kouhei Sutou  <kou@clear-code.com>
 
 	* binding/ruby/test/manager/test-debian-init-detector.rb
