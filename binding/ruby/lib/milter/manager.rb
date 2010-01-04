@@ -177,7 +177,9 @@ module Milter::Manager
 
     def load_configuration(file)
       begin
-        instance_eval(File.read(file), file)
+        content = File.read(file)
+        Milter::Logger.debug("loading configuration file: '#{file}'")
+        instance_eval(content, file)
       rescue InvalidValue
         backtrace = $!.backtrace.collect do |info|
           if /\A#{Regexp.escape(file)}:/ =~ info
@@ -279,6 +281,7 @@ module Milter::Manager
       def load(file)
         listener = Listener.new(@loader)
         File.open(file) do |input|
+          Milter::Logger.debug("loading XML configuration file: '#{file}'")
           parser = REXML::Parsers::StreamParser.new(input, listener)
           begin
             parser.parse
@@ -286,7 +289,7 @@ module Milter::Manager
             source = parser.source
             info = "#{file}:#{source.line}:#{source.position}"
             info << ":#{source.current_line}: #{$!.message}"
-            Logger.error(info)
+            Milter::Logger.error(info)
           end
         end
       end
