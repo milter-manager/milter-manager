@@ -295,6 +295,20 @@ void          milter_manager_configuration_to_xml_string
 gchar        *milter_manager_configuration_dump
                                      (MilterManagerConfiguration *configuration);
 
+void          milter_manager_configuration_set_location
+                                    (MilterManagerConfiguration *configuration,
+                                     const gchar                *key,
+                                     const gchar                *file,
+                                     gint                        line);
+void          milter_manager_configuration_reset_location
+                                    (MilterManagerConfiguration *configuration,
+                                     const gchar                *key);
+gconstpointer milter_manager_configuration_get_location
+                                    (MilterManagerConfiguration *configuration,
+                                     const gchar                *key);
+GHashTable   *milter_manager_configuration_get_locations
+                                    (MilterManagerConfiguration *configuration);
+
 G_END_DECLS
 
 #endif /* __MILTER_MANAGER_CONFIGURATION_H__ */

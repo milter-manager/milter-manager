@@ -69,6 +69,7 @@ struct _MilterManagerConfigurationPrivate
     guint max_file_descriptors;
     guint processed_sessions;
     gchar *custom_configuration_directory;
+    GHashTable *locations;
 };
 
 enum
@@ -389,6 +390,10 @@ milter_manager_configuration_init (MilterManagerConfiguration *configuration)
     priv->max_file_descriptors = 0;
     priv->processed_sessions = 0;
     priv->custom_configuration_directory = NULL;
+    priv->locations = g_hash_table_new_full(g_str_hash,
+                                            g_str_equal,
+                                            g_free,
+                                            (GDestroyNotify)g_dataset_destroy);
 
     config_dir_env = g_getenv("MILTER_MANAGER_CONFIG_DIR");
     if (config_dir_env)
@@ -415,6 +420,11 @@ dispose (GObject *object)
     if (priv->manager_connection_spec) {
         g_free(priv->manager_connection_spec);
         priv->manager_connection_spec = NULL;
+    }
+
+    if (priv->locations) {
+        g_hash_table_unref(priv->locations);
+        priv->locations = NULL;
     }
 
     G_OBJECT_CLASS(milter_manager_configuration_parent_class)->dispose(object);
@@ -1676,6 +1686,9 @@ milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
         MILTER_CLIENT_DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE;
     priv->max_connections = 0;
     priv->max_file_descriptors = 0;
+
+    if (priv->locations)
+        g_hash_table_remove_all(priv->locations);
 }
 
 void
@@ -1796,6 +1809,60 @@ milter_manager_configuration_dump (MilterManagerConfiguration *configuration)
     }
 }
 
+void
+milter_manager_configuration_set_location (MilterManagerConfiguration *configuration,
+                                           const gchar *key,
+                                           const gchar *file,
+                                           gint line)
+{
+    MilterManagerConfigurationPrivate *priv;
+    gconstpointer location;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    if (!priv->locations)
+        return;
+
+    if (!file) {
+        g_hash_table_remove(priv->locations, key);
+        return;
+    }
+
+    location = g_hash_table_lookup(priv->locations, key);
+    if (!location) {
+        gchar *duped_key;
+        duped_key = g_strdup(key);
+        location = duped_key;
+        g_hash_table_insert(priv->locations, duped_key, (gpointer)location);
+    }
+    g_dataset_set_data_full(location, "file", g_strdup(file), g_free);
+    g_dataset_set_data(location, "line", GINT_TO_POINTER(line));
+}
+
+void
+milter_manager_configuration_reset_location (MilterManagerConfiguration *configuration,
+                                             const gchar *key)
+{
+    milter_manager_configuration_set_location(configuration, key, NULL, -1);
+}
+
+gconstpointer
+milter_manager_configuration_get_location (MilterManagerConfiguration *configuration,
+                                           const gchar *key)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    if (!priv->locations)
+        return NULL;
+
+    return g_hash_table_lookup(priv->locations, key);
+}
+
+GHashTable *
+milter_manager_configuration_get_locations (MilterManagerConfiguration *configuration)
+{
+    return MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration)->locations;
+}
 
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4

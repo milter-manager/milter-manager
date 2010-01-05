@@ -62,6 +62,7 @@ void test_load_absolute_path (void);
 void test_save_custom (void);
 void test_to_xml_full (void);
 void test_to_xml_signal (void);
+void test_location (void);
 
 static MilterManagerConfiguration *config;
 static MilterManagerEgg *egg;
@@ -932,6 +933,43 @@ test_to_xml_signal (void)
         "  <additional-field>VALUE</additional-field>\n"
         "</configuration>\n",
         actual_xml);
+}
+
+#define milter_assert_equal_location_keys(expected)             \
+    cut_trace_with_info_expression(                             \
+        milter_assert_equal_location_keys_helper(expected),     \
+        milter_assert_equal_location_keys(expected))
+
+static void
+milter_assert_equal_location_keys_helper (const GList *expected)
+{
+    GHashTable *locations;
+    GList *keys;
+
+    locations = milter_manager_configuration_get_locations(config);
+    keys = g_list_sort(g_hash_table_get_keys(locations), (GCompareFunc)strcmp);
+    gcut_assert_equal_list_string(expected, gcut_take_list(keys, NULL));
+}
+
+void
+test_location (void)
+{
+    const gchar key[] = "package.platform";
+    gconstpointer location;
+
+    milter_assert_equal_location_keys(NULL);
+
+    milter_manager_configuration_set_location(config, key,
+                                              "milter-manager.local.conf", 29);
+    milter_assert_equal_location_keys(gcut_take_new_list_string(key, NULL));
+    location = milter_manager_configuration_get_location(config, key);
+    cut_assert_equal_string("milter-manager.local.conf",
+                            g_dataset_get_data(location, "file"));
+    cut_assert_equal_int(29,
+                         GPOINTER_TO_INT(g_dataset_get_data(location, "line")));
+
+    milter_manager_configuration_reset_location(config, "package.platform");
+    milter_assert_equal_location_keys(NULL);
 }
 
 /*

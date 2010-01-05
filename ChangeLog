@@ -1,3 +1,8 @@
+2010-01-05  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/manager/milter-manager-configuration.[ch],
+	test/manager/test-configuration.c: add location keeper.
+
 2010-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
 	* README*: add Antuan Avdioukhine to thanks list. Thanks!!!
