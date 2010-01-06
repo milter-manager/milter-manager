@@ -433,6 +433,7 @@ static gboolean
 cb_idle_shutdown (gpointer user_data)
 {
     shutdown_count--;
+    g_usleep(1);
     if (shutdown_count == 0) {
         milter_client_shutdown(client);
         if (server) {

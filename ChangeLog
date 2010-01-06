@@ -1,3 +1,8 @@
+2010-01-06  Kouhei Sutou  <kou@cozmixng.org>
+
+	* test/client/test-client.c (cb_idle_shutdown): sleep 1
+	microsecond for waiting server up.
+
 2010-01-05  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/manager/milter-manager-configuration.[ch],
