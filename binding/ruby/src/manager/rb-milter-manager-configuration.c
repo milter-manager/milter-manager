@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -184,6 +184,79 @@ to_xml (int argc, VALUE *argv, VALUE self)
     return rb_xml;
 }
 
+static VALUE
+set_location (VALUE self, VALUE key, VALUE file, VALUE line)
+{
+    milter_manager_configuration_set_location(SELF(self),
+					      RVAL2CSTR(key),
+					      RVAL2CSTR_ACCEPT_NIL(file),
+					      NUM2INT(line));
+
+    return Qnil;
+}
+
+static VALUE
+reset_location (VALUE self, VALUE key)
+{
+    milter_manager_configuration_reset_location(SELF(self),
+						RVAL2CSTR(key));
+
+    return Qnil;
+}
+
+static VALUE
+location_to_ruby_object (gconstpointer location)
+{
+    VALUE rb_location;
+
+    rb_location = rb_hash_new();
+    rb_hash_aset(rb_location,
+		 CSTR2RVAL("file"),
+		 CSTR2RVAL(g_dataset_get_data(location, "file")));
+    rb_hash_aset(rb_location,
+		 CSTR2RVAL("line"),
+		 INT2NUM(GPOINTER_TO_INT(g_dataset_get_data(location, "line"))));
+
+    return rb_location;
+}
+
+static VALUE
+get_location (VALUE self, VALUE key)
+{
+    gconstpointer location;
+
+    location = milter_manager_configuration_get_location(SELF(self),
+							 RVAL2CSTR(key));
+    if (!location)
+	return Qnil;
+
+    return location_to_ruby_object(location);
+}
+
+static void
+collect_location (gpointer key, gpointer value, gpointer user_data)
+{
+    gchar *key_ = key;
+    VALUE *rb_locations = user_data;
+
+    rb_hash_aset(*rb_locations, CSTR2RVAL(key_), location_to_ruby_object(value));
+}
+
+static VALUE
+get_locations (VALUE self)
+{
+    GHashTable *locations;
+    VALUE rb_locations;
+
+    locations = milter_manager_configuration_get_locations(SELF(self));
+    if (!locations)
+	return Qnil;
+
+    rb_locations = rb_hash_new();
+    g_hash_table_foreach(locations, collect_location, &rb_locations);
+    return rb_locations;
+}
+
 static void
 mark (gpointer data)
 {
@@ -243,4 +316,12 @@ Init_milter_manager_configuration (void)
 		     "create_children", create_children, 0);
     rb_define_method(rb_cMilterManagerConfiguration,
 		     "to_xml", to_xml, -1);
+    rb_define_method(rb_cMilterManagerConfiguration,
+		     "set_location", set_location, 3);
+    rb_define_method(rb_cMilterManagerConfiguration,
+		     "reset_location", reset_location, 1);
+    rb_define_method(rb_cMilterManagerConfiguration,
+		     "get_location", get_location, 1);
+    rb_define_method(rb_cMilterManagerConfiguration,
+		     "locations", get_locations, 0);
 }

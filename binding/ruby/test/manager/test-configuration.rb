@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -322,5 +322,26 @@ define_milter("milter2") do |milter|
 end
 EOD
                  @configuration.dump)
+  end
+
+  def test_locations
+    assert_equal({}, @configuration.locations)
+    @configuration.set_location("security.privilege_mode",
+                                "milter-manager.conf", 29)
+    assert_equal({
+                   "file" => "milter-manager.conf",
+                   "line" => 29
+                 },
+                 @configuration.get_location("security.privilege_mode"))
+    assert_equal({
+                   "security.privilege_mode" => {
+                     "file" => "milter-manager.conf",
+                     "line" => 29
+                   }
+                 },
+                 @configuration.locations)
+
+    @configuration.reset_location("security.privilege_mode")
+    assert_equal({}, @configuration.locations)
   end
 end
