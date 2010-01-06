@@ -226,6 +226,15 @@ module Milter::Manager
         Milter::Logger.error(error)
         fallback_value
       end
+
+      def update_location(configuration, key, reset, deep_level)
+        if reset
+          configuration.reset_location(key)
+        else
+          file, line, _ = caller[deep_level].split(/:/, 3)
+          configuration.set_location(key, file, line.to_i)
+        end
+      end
     end
 
     attr_reader :package, :security, :controller, :manager, :configuration
@@ -301,12 +310,18 @@ module Milter::Manager
     end
 
     def define_milter(name, &block)
+      ConfigurationLoader.update_location(@configuration,
+                                          "milter[#{name}]",
+                                          false, 1)
       egg_configuration = EggConfiguration.new(name, self)
       yield(egg_configuration)
       egg_configuration.apply
     end
 
     def define_applicable_condition(name)
+      ConfigurationLoader.update_location(@configuration,
+                                          "applicable_condition[#{name}]",
+                                          false, 1)
       condition_configuration = ApplicableConditionConfiguration.new(name, self)
       yield(condition_configuration)
       condition_configuration.apply
@@ -600,12 +615,8 @@ module Milter::Manager
       private
       def update_location(key, reset, deep_level=2)
         full_key = "security.#{key}"
-        if reset
-          @configuration.reset_location(full_key)
-        else
-          file, line, _ = caller(deep_level)[0].split(/:/, 3)
-          @configuration.set_location(full_key, file, line.to_i)
-        end
+        ConfigurationLoader.update_location(@configuration, full_key, reset,
+                                            deep_level)
       end
     end
 

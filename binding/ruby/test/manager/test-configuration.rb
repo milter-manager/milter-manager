@@ -268,12 +268,14 @@ EOD
       condition.description = "Selective SMTP Rejection"
     end
 
+    milter1_line = __LINE__ + 1
     loader.define_milter("milter1") do |milter|
       milter.description = "The first milter"
       milter.connection_spec = "unix:/tmp/xxx"
       milter.add_applicable_condition("S25R")
     end
 
+    milter2_line = __LINE__ + 1
     loader.define_milter("milter2") do |milter|
       milter.description = "The second milter"
       milter.connection_spec = "inet:2929"
@@ -336,7 +338,7 @@ define_applicable_condition("S25R") do |condition|
   condition.description = "Selective SMTP Rejection"
 end
 
-# default
+# #{__FILE__}:#{milter1_line}
 define_milter("milter1") do |milter|
   # default
   milter.connection_spec = "unix:/tmp/xxx"
@@ -366,7 +368,7 @@ define_milter("milter1") do |milter|
   milter.end_of_message_timeout = 300.0
 end
 
-# default
+# #{__FILE__}:#{milter2_line}
 define_milter("milter2") do |milter|
   # default
   milter.connection_spec = "inet:2929"
