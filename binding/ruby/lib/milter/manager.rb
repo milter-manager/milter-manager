@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
+# Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -37,71 +37,7 @@ require 'milter/manager/pkgsrc-rc-detector'
 module Milter::Manager
   class Configuration
     def dump
-      result = ''
-
-      result << "package.platform = #{package_platform.inspect}\n"
-      result << "package.options = #{package_options.inspect}\n"
-      result << "\n"
-
-      result << "security.privilege_mode = #{privilege_mode?}\n"
-      result << "security.effective_user = #{effective_user.inspect}\n"
-      result << "security.effective_group = #{effective_group.inspect}\n"
-      result << "\n"
-
-      result << "manager.connection_spec = #{manager_connection_spec.inspect}\n"
-      result << "manager.unix_socket_mode = 0%o\n" % manager_unix_socket_mode
-      result << "manager.unix_socket_group = #{manager_unix_socket_group.inspect}\n"
-      result << "manager.remove_unix_socket_on_create = #{remove_manager_unix_socket_on_create?}\n"
-      result << "manager.remove_unix_socket_on_close = #{remove_manager_unix_socket_on_close?}\n"
-      result << "manager.daemon = #{daemon?}\n"
-      result << "manager.pid_file = #{pid_file.inspect}\n"
-      _maintenance_interval = maintenance_interval
-      _maintenance_interval = nil if _maintenance_interval.zero?
-      result << "manager.maintenance_interval = #{_maintenance_interval.inspect}\n"
-      result << "manager.suspend_time_on_unacceptable = #{suspend_time_on_unacceptable.inspect}\n"
-      result << "manager.max_connections = #{max_connections.inspect}\n"
-      result << "manager.max_file_descriptors = #{max_file_descriptors.inspect}\n"
-      result << "manager.custom_configuration_directory = #{custom_configuration_directory.inspect}\n"
-      result << "\n"
-
-      result << "controller.connection_spec = #{controller_connection_spec.inspect}\n"
-      result << "controller.unix_socket_mode = 0%o\n" % controller_unix_socket_mode
-      result << "controller.unix_socket_group = #{@controller_unix_socket_group.inspect}\n"
-      result << "controller.remove_unix_socket_on_create = #{remove_controller_unix_socket_on_create?}\n"
-      result << "controller.remove_unix_socket_on_close = #{remove_controller_unix_socket_on_close?}\n"
-      result << "\n"
-
-      applicable_conditions.each do |condition|
-        result << "define_applicable_condition(#{condition.name.inspect}) do |condition|\n"
-        result << "  condition.description = #{condition.description.inspect}\n"
-        result << "end\n"
-        result << "\n"
-      end
-
-      eggs.each do |egg|
-        result << "define_milter(#{egg.name.inspect}) do |milter|\n"
-        result << "  milter.connection_spec = #{egg.connection_spec.inspect}\n"
-        result << "  milter.description = #{egg.description.inspect}\n"
-        result << "  milter.enabled = #{egg.enabled?}\n"
-        fallback_status = egg.fallback_status.nick
-        result << "  milter.fallback_status = #{fallback_status.inspect}\n"
-        result << "  milter.evaluation_mode = #{egg.evaluation_mode?}\n"
-        condition_names = egg.applicable_conditions.collect do |condition|
-          condition.name
-        end
-        result << "  milter.applicable_conditions = #{condition_names.inspect}\n"
-        result << "  milter.command = #{egg.command.inspect}\n"
-        result << "  milter.command_options = #{egg.command_options.inspect}\n"
-        result << "  milter.user_name = #{egg.user_name.inspect}\n"
-        result << "  milter.connection_timeout = #{egg.connection_timeout}\n"
-        result << "  milter.writing_timeout = #{egg.writing_timeout}\n"
-        result << "  milter.reading_timeout = #{egg.reading_timeout}\n"
-        result << "  milter.end_of_message_timeout = #{egg.end_of_message_timeout}\n"
-        result << "end\n"
-        result << "\n"
-      end
-
-      result.strip
+      ConfigurationDumper.new(self).dump
     rescue Exception
       [$!.message, $@].join("\n")
     end
@@ -116,6 +52,132 @@ module Milter::Manager
         options[name] = value
       end
       options
+    end
+  end
+
+  class ConfigurationDumper
+    def initialize(configuration)
+      @configuration = configuration
+      @locations = configuration.locations
+    end
+
+    def dump
+      @result = ''
+
+      c = @configuration
+      dump_item("package.platform", c.package_platform.inspect)
+      dump_item("package.options", c.package_options.inspect)
+      @result << "\n"
+
+      dump_item("security.privilege_mode", c.privilege_mode?)
+      dump_item("security.effective_user", c.effective_user.inspect)
+      dump_item("security.effective_group", c.effective_group.inspect)
+      @result << "\n"
+
+      dump_item("manager.connection_spec", c.manager_connection_spec.inspect)
+      dump_item("manager.unix_socket_mode", "0%o" % c.manager_unix_socket_mode)
+      dump_item("manager.unix_socket_group", c.manager_unix_socket_group.inspect)
+      dump_item("manager.remove_unix_socket_on_create",
+                c.remove_manager_unix_socket_on_create?)
+      dump_item("manager.remove_unix_socket_on_close",
+                c.remove_manager_unix_socket_on_close?)
+      dump_item("manager.daemon", c.daemon?)
+      dump_item("manager.pid_file", c.pid_file.inspect)
+      _maintenance_interval = c.maintenance_interval
+      _maintenance_interval = nil if _maintenance_interval.zero?
+      dump_item("manager.maintenance_interval", _maintenance_interval.inspect)
+      dump_item("manager.suspend_time_on_unacceptable",
+                c.suspend_time_on_unacceptable.inspect)
+      dump_item("manager.max_connections", c.max_connections.inspect)
+      dump_item("manager.max_file_descriptors", c.max_file_descriptors.inspect)
+      dump_item("manager.custom_configuration_directory",
+                c.custom_configuration_directory.inspect)
+      @result << "\n"
+
+      dump_item("controller.connection_spec",
+                c.controller_connection_spec.inspect)
+      dump_item("controller.unix_socket_mode",
+                "0%o" % c.controller_unix_socket_mode)
+      dump_item("controller.unix_socket_group",
+                c.controller_unix_socket_group.inspect)
+      dump_item("controller.remove_unix_socket_on_create",
+                c.remove_controller_unix_socket_on_create?)
+      dump_item("controller.remove_unix_socket_on_close",
+                c.remove_controller_unix_socket_on_close?)
+      @result << "\n"
+
+      c.applicable_conditions.each do |condition|
+        dump_applicable_condition(condition)
+        @result << "\n"
+      end
+
+      c.eggs.each do |egg|
+        dump_egg(egg)
+        @result << "\n"
+      end
+
+      @result.strip
+    end
+
+    private
+    def dump_location(key, indent="")
+      location = @locations[key]
+      if location
+        @result << "#{indent}# #{location['file']}:#{location['line']}\n"
+      else
+        @result << "#{indent}# default\n"
+      end
+    end
+
+    def dump_item(key, value, indent="", location_key=nil)
+      dump_location(location_key || key, indent)
+      @result << "#{indent}#{key} = #{value}\n"
+    end
+
+    def dump_applicable_condition_item(name, key, value)
+      dump_item("condition.#{key}",
+                value,
+                "  ",
+                "applicable_condition[#{name}].#{key}")
+    end
+
+    def dump_applicable_condition(condition)
+      name = condition.name
+      dump_location("applicable_condition[#{name}]")
+      @result << "define_applicable_condition(#{name.inspect}) do |condition|\n"
+      dump_applicable_condition_item(name, "description",
+                                     condition.description.inspect)
+      @result << "end\n"
+    end
+
+    def dump_egg_item(name, key, value)
+      dump_item("milter.#{key}",
+                value,
+                "  ",
+                "milter[#{name}].#{key}")
+    end
+
+    def dump_egg(egg)
+      name = egg.name
+      dump_location("milter[#{name}]")
+      @result << "define_milter(#{name.inspect}) do |milter|\n"
+      dump_egg_item(name, "connection_spec", egg.connection_spec.inspect)
+      dump_egg_item(name, "description", egg.description.inspect)
+      dump_egg_item(name, "enabled", egg.enabled?)
+      dump_egg_item(name, "fallback_status", egg.fallback_status.nick.inspect)
+      dump_egg_item(name, "evaluation_mode", egg.evaluation_mode?)
+      condition_names = egg.applicable_conditions.collect do |condition|
+        condition.name
+      end
+      dump_egg_item(name, "applicable_conditions", condition_names.inspect)
+      dump_egg_item(name, "command", egg.command.inspect)
+      dump_egg_item(name, "command_options", egg.command_options.inspect)
+      dump_egg_item(name, "user_name", egg.user_name.inspect)
+      dump_egg_item(name, "connection_timeout", egg.connection_timeout)
+      dump_egg_item(name, "writing_timeout", egg.writing_timeout)
+      dump_egg_item(name, "reading_timeout", egg.reading_timeout)
+      dump_egg_item(name, "end_of_message_timeout", egg.end_of_message_timeout)
+      @result << "end\n"
     end
   end
 
@@ -252,7 +314,7 @@ module Milter::Manager
 
     def defined_milters
       @configuration.eggs.collect do |egg|
-         egg.name
+        egg.name
       end
     end
 
@@ -522,6 +584,7 @@ module Milter::Manager
       end
 
       def effective_user=(user_name)
+        update_location("effective_user", user_name.nil?)
         @configuration.effective_user = user_name
       end
 
@@ -530,7 +593,19 @@ module Milter::Manager
       end
 
       def effective_group=(group_name)
+        update_location("effective_group", group_name.nil?)
         @configuration.effective_group = group_name
+      end
+
+      private
+      def update_location(key, reset, deep_level=2)
+        full_key = "security.#{key}"
+        if reset
+          @configuration.reset_location(full_key)
+        else
+          file, line, _ = caller(deep_level)[0].split(/:/, 3)
+          @configuration.set_location(full_key, file, line.to_i)
+        end
       end
     end
 

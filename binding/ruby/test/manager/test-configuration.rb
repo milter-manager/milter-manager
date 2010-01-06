@@ -207,30 +207,52 @@ class TestConfiguration < Test::Unit::TestCase
 
   def test_dump
     assert_equal(<<-EOD.strip,
+# default
 package.platform = #{@configuration.package_platform.inspect}
+# default
 package.options = #{@configuration.package_options.inspect}
 
+# default
 security.privilege_mode = false
+# default
 security.effective_user = nil
+# default
 security.effective_group = nil
 
+# default
 manager.connection_spec = #{@configuration.manager_connection_spec.inspect}
+# default
 manager.unix_socket_mode = 0660
+# default
 manager.unix_socket_group = nil
+# default
 manager.remove_unix_socket_on_create = true
+# default
 manager.remove_unix_socket_on_close = true
+# default
 manager.daemon = false
+# default
 manager.pid_file = nil
+# default
 manager.maintenance_interval = 100
+# default
 manager.suspend_time_on_unacceptable = 5
+# default
 manager.max_connections = 0
+# default
 manager.max_file_descriptors = 0
+# default
 manager.custom_configuration_directory = nil
 
+# default
 controller.connection_spec = nil
+# default
 controller.unix_socket_mode = 0660
+# default
 controller.unix_socket_group = nil
+# default
 controller.remove_unix_socket_on_create = true
+# default
 controller.remove_unix_socket_on_close = true
 EOD
                  @configuration.dump)
@@ -238,9 +260,10 @@ EOD
 
   def test_dump_full
     loader = Milter::Manager::ConfigurationLoader.new(@configuration)
-    loader.security.effective_user = "nobody"
-    loader.security.effective_group = "nogroup"
+    loader.security.effective_user = "nobody"; effective_user_line = __LINE__
+    loader.security.effective_group = "nogroup"; effective_group_line = __LINE__
 
+    s25r_line = __LINE__ + 1
     loader.define_applicable_condition("S25R") do |condition|
       condition.description = "Selective SMTP Rejection"
     end
@@ -259,65 +282,117 @@ EOD
     end
 
     assert_equal(<<-EOD.strip,
+# default
 package.platform = #{@configuration.package_platform.inspect}
+# default
 package.options = #{@configuration.package_options.inspect}
 
+# default
 security.privilege_mode = false
+# #{__FILE__}:#{effective_user_line}
 security.effective_user = "nobody"
+# #{__FILE__}:#{effective_group_line}
 security.effective_group = "nogroup"
 
+# default
 manager.connection_spec = #{@configuration.manager_connection_spec.inspect}
+# default
 manager.unix_socket_mode = 0660
+# default
 manager.unix_socket_group = nil
+# default
 manager.remove_unix_socket_on_create = true
+# default
 manager.remove_unix_socket_on_close = true
+# default
 manager.daemon = false
+# default
 manager.pid_file = nil
+# default
 manager.maintenance_interval = 100
+# default
 manager.suspend_time_on_unacceptable = 5
+# default
 manager.max_connections = 0
+# default
 manager.max_file_descriptors = 0
+# default
 manager.custom_configuration_directory = nil
 
+# default
 controller.connection_spec = nil
+# default
 controller.unix_socket_mode = 0660
+# default
 controller.unix_socket_group = nil
+# default
 controller.remove_unix_socket_on_create = true
+# default
 controller.remove_unix_socket_on_close = true
 
+# #{__FILE__}:#{s25r_line}
 define_applicable_condition("S25R") do |condition|
+  # default
   condition.description = "Selective SMTP Rejection"
 end
 
+# default
 define_milter("milter1") do |milter|
+  # default
   milter.connection_spec = "unix:/tmp/xxx"
+  # default
   milter.description = "The first milter"
+  # default
   milter.enabled = true
+  # default
   milter.fallback_status = "accept"
+  # default
   milter.evaluation_mode = false
+  # default
   milter.applicable_conditions = ["S25R"]
+  # default
   milter.command = nil
+  # default
   milter.command_options = nil
+  # default
   milter.user_name = nil
+  # default
   milter.connection_timeout = 300.0
+  # default
   milter.writing_timeout = 10.0
+  # default
   milter.reading_timeout = 10.0
+  # default
   milter.end_of_message_timeout = 300.0
 end
 
+# default
 define_milter("milter2") do |milter|
+  # default
   milter.connection_spec = "inet:2929"
+  # default
   milter.description = "The second milter"
+  # default
   milter.enabled = false
+  # default
   milter.fallback_status = "accept"
+  # default
   milter.evaluation_mode = true
+  # default
   milter.applicable_conditions = []
+  # default
   milter.command = nil
+  # default
   milter.command_options = nil
+  # default
   milter.user_name = nil
+  # default
   milter.connection_timeout = 300.0
+  # default
   milter.writing_timeout = 10.0
+  # default
   milter.reading_timeout = 10.0
+  # default
   milter.end_of_message_timeout = 300.0
 end
 EOD
