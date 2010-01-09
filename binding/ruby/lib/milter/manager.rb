@@ -826,7 +826,7 @@ module Milter::Manager
           condition
         end
         @egg.applicable_conditions.each do |condition|
-          update_location("applicable_condition[#{conditions.name}]", true)
+          update_location("applicable_condition[#{condition.name}]", true)
         end
         @egg.clear_applicable_conditions
         conditions.each do |condition|
