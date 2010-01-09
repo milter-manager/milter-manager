@@ -1439,6 +1439,22 @@ data_scenario_end_of_message_action (void)
 }
 
 static void
+data_scenario_negotiate (void)
+{
+    cut_add_data("negotiate - no child",
+                 g_strdup("negotiate-no-child.txt"), g_free,
+                 NULL);
+}
+
+static void
+data_scenario_connect (void)
+{
+    cut_add_data("connect - no child",
+                 g_strdup("connect-no-child.txt"), g_free,
+                 NULL);
+}
+
+static void
 data_scenario_helo (void)
 {
     cut_add_data("helo - reject - evaluation",
@@ -1620,6 +1636,8 @@ data_scenario (void)
 {
     data_scenario_basic();
     data_scenario_end_of_message_action();
+    data_scenario_negotiate();
+    data_scenario_connect();
     data_scenario_helo();
     data_scenario_envelope_from();
     data_scenario_envelope_recipient();

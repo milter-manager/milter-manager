@@ -2151,6 +2151,35 @@ milter_manager_children_start_child (MilterManagerChildren *children,
 }
 
 static void
+reply_negotiate (MilterManagerChildren *children,
+                 MilterManagerChild *last_child)
+{
+    MilterManagerChildrenPrivate *priv;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+    if (priv->option && priv->negotiated) {
+        milter_option_remove_step(priv->option, MILTER_STEP_NO_EVENT_MASK);
+        g_signal_emit_by_name(children, "negotiate-reply",
+                              priv->option, priv->macros_requests);
+    } else {
+        if (last_child) {
+            MilterServerContext *context;
+
+            context = MILTER_SERVER_CONTEXT(last_child);
+            milter_error("[%u] [children][error][negotiate][no-response] "
+                         "[%u] %s",
+                         priv->tag,
+                         milter_agent_get_tag(MILTER_AGENT(context)),
+                         milter_server_context_get_name(context));
+        } else {
+            milter_error("[%u] [children][error][negotiate][no-response]",
+                         priv->tag);
+        }
+        g_signal_emit_by_name(children, "abort");
+    }
+}
+
+static void
 remove_queue_in_negotiate (MilterManagerChildren *children,
                            MilterManagerChild *child)
 {
@@ -2159,21 +2188,7 @@ remove_queue_in_negotiate (MilterManagerChildren *children,
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
     g_queue_remove(priv->reply_queue, child);
     if (g_queue_is_empty(priv->reply_queue)) {
-        if (priv->option && priv->negotiated) {
-            milter_option_remove_step(priv->option, MILTER_STEP_NO_EVENT_MASK);
-            g_signal_emit_by_name(children, "negotiate-reply",
-                                  priv->option, priv->macros_requests);
-        } else {
-            MilterServerContext *context;
-
-            context = MILTER_SERVER_CONTEXT(child);
-            milter_error("[%u] [children][error][negotiate][no-response] "
-                         "[%u] %s",
-                         priv->tag,
-                         milter_agent_get_tag(MILTER_AGENT(context)),
-                         milter_server_context_get_name(context));
-            g_signal_emit_by_name(children, "abort");
-        }
+        reply_negotiate(children, child);
     }
 }
 
@@ -2510,6 +2525,15 @@ init_reply_queue (MilterManagerChildren *children,
                         GINT_TO_POINTER(MILTER_STATUS_NOT_CHANGE));
 }
 
+static gboolean
+cb_idle_reply_negotiate_on_no_child (gpointer user_data)
+{
+    MilterManagerChildren *children = user_data;
+
+    reply_negotiate(children, NULL);
+    return FALSE;
+}
+
 gboolean
 milter_manager_children_negotiate (MilterManagerChildren *children,
                                    MilterOption          *option,
@@ -2532,6 +2556,12 @@ milter_manager_children_negotiate (MilterManagerChildren *children,
             milter_option_set_version(priv->option,
                                       MAX_SUPPORTED_MILTER_PROTOCOL_VERSION);
         }
+    }
+
+    if (!priv->milters) {
+        priv->negotiated = TRUE;
+        g_idle_add(cb_idle_reply_negotiate_on_no_child, children);
+        return success;
     }
 
     privilege =

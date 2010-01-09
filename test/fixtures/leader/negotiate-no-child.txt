@@ -1,0 +1,17 @@
+[scenario]
+clients=
+configuration=negotiate-no-child.conf
+actions=negotiate
+
+[negotiate]
+command=negotiate
+
+version=6
+action=add-headers|change-body|quarantine
+step=no-connect|no-helo|no-envelope-from|no-envelope-recipient|no-body|no-headers|no-end-of-header
+
+response=negotiate
+n_received=0
+status=continue
+
+options=

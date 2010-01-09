@@ -29,6 +29,8 @@ EXTRA_DIST =								\
 	change-header-evaluation.conf					\
 	connect-with-macro.txt						\
 	connect.txt							\
+	connect-no-child.txt						\
+	connect-no-child.conf						\
 	data.txt							\
 	data-close-without-reply.txt					\
 	data-again.txt							\
@@ -106,6 +108,8 @@ EXTRA_DIST =								\
 	insert-header-evaluation.conf					\
 	negotiate.txt							\
 	negotiate-failure.txt						\
+	negotiate-no-child.txt						\
+	negotiate-no-child.conf						\
 	no-body-flag-on-both-client.txt					\
 	no-body-flag-on-second-client.txt				\
 	no-body-flag.txt						\

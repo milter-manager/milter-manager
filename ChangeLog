@@ -1,5 +1,11 @@
 2010-01-09  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.c,
+	test/fixtures/leader/connect-no-child.{txt,conf},
+	test/fixtures/leader/negotiate-no-child.{txt,conf},
+	test/manager/test-leader.c: work with no child milters.
+	TODO: also work with no enabled child miters.
+
 	* binding/ruby/lib/milter/manager.rb,
 	binding/ruby/test/manager/test-configuration-loader.rb,
 	doc/configuration.rd*: add "remove_milter" to configuration API.
