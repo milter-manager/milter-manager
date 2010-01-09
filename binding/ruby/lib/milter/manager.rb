@@ -121,7 +121,11 @@ module Milter::Manager
 
     private
     def dump_location(key, indent="")
-      location = @locations[key]
+      if key.nil?
+        location = nil
+      else
+        location = @locations[key]
+      end
       if location
         @result << "#{indent}# #{location['file']}:#{location['line']}\n"
       else
@@ -157,6 +161,24 @@ module Milter::Manager
                 "milter[#{name}].#{key}")
     end
 
+    def dump_egg_applicable_conditions(egg)
+      conditions = egg.applicable_conditions
+      if conditions.empty?
+        dump_location(nil, "  ")
+        @result << "  milter.applicable_conditions = []\n"
+      else
+        egg_name = egg.name
+        @result << "  milter.applicable_conditions = [\n"
+        conditions.each do |condition|
+          name = condition.name
+          dump_location("milter[#{egg.name}].applicable_condition[#{name}]",
+                        "    ")
+          @result << "    #{name.inspect},\n"
+        end
+        @result << "  ]\n"
+      end
+    end
+
     def dump_egg(egg)
       name = egg.name
       dump_location("milter[#{name}]")
@@ -166,10 +188,7 @@ module Milter::Manager
       dump_egg_item(name, "enabled", egg.enabled?)
       dump_egg_item(name, "fallback_status", egg.fallback_status.nick.inspect)
       dump_egg_item(name, "evaluation_mode", egg.evaluation_mode?)
-      condition_names = egg.applicable_conditions.collect do |condition|
-        condition.name
-      end
-      dump_egg_item(name, "applicable_conditions", condition_names.inspect)
+      dump_egg_applicable_conditions(egg)
       dump_egg_item(name, "command", egg.command.inspect)
       dump_egg_item(name, "command_options", egg.command_options.inspect)
       dump_egg_item(name, "user_name", egg.user_name.inspect)
@@ -784,6 +803,7 @@ module Milter::Manager
                                  conditions.collect {|cond| cond.name},
                                  name)
         end
+        update_location("applicable_condition[#{name}]", false)
         @egg.add_applicable_condition(condition)
       end
 
@@ -805,6 +825,9 @@ module Milter::Manager
           end
           condition
         end
+        @egg.applicable_conditions.each do |condition|
+          update_location("applicable_condition[#{conditions.name}]", true)
+        end
         @egg.clear_applicable_conditions
         conditions.each do |condition|
           @egg.add_applicable_condition(condition)
@@ -817,7 +840,7 @@ module Milter::Manager
             Shellwords.escape(option)
           end.join(' ')
         end
-        update_location("command_options", 2)
+        update_location("command_options", options.empty?)
         @egg.command_options = options
       end
 
@@ -844,7 +867,7 @@ module Milter::Manager
                                  available_values.keys,
                                  status)
         end
-        update_location("fallback_status", 2)
+        update_location("fallback_status", false)
         @egg.fallback_status = value
       end
 

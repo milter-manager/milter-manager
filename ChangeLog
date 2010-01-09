@@ -1,6 +1,12 @@
 2010-01-09  Kouhei Sutou  <kou@cozmixng.org>
 
 	* binding/ruby/lib/milter/manager.rb,
+	binding/ruby/test/manager/test-configuration.rb: show applicable
+	condition configuration specified position in milter definition.
+	 (completed) [#2921072]
+	Suggested by Antuan Avdioukhine. Thanks!!!
+
+	* binding/ruby/lib/milter/manager.rb,
 	binding/ruby/test/manager/test-configuration.rb: show
 	configuration specified position in milter definition.
 

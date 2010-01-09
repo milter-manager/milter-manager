@@ -277,6 +277,7 @@ EOD
       milter.description = "The first milter"
       milter1_lines[:connection_spec] = __LINE__ + 1
       milter.connection_spec = "unix:/tmp/xxx"
+      milter1_lines[:applicable_condition_s25r] = __LINE__ + 1
       milter.add_applicable_condition("S25R")
     end
 
@@ -360,8 +361,10 @@ define_milter("milter1") do |milter|
   milter.fallback_status = "accept"
   # default
   milter.evaluation_mode = false
-  # default
-  milter.applicable_conditions = ["S25R"]
+  milter.applicable_conditions = [
+    # #{__FILE__}:#{milter1_lines[:applicable_condition_s25r]}
+    "S25R",
+  ]
   # default
   milter.command = nil
   # default
