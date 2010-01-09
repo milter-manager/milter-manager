@@ -789,6 +789,15 @@ Here is an example that disabling all child milters:
     end
   end
 
+Here is an example that removing all child milters:
+
+  defined_milters.each do |name|
+    remove_milter(name)
+  end
+
+Removing differs from disabling. You need to redefine a
+milter again when you want to use a removed milter again.
+
 Here is an example that adding "S25R" applicable condition
 to all child milters.
 
@@ -805,6 +814,15 @@ to all child milters.
 
    Example:
      defined_milters # => ["milter1", "milter2"]
+
+: remove_milter(name)
+   Removes a child milter that is named as 'name'. You
+   should use ((<milter.enabled|.#milter.enabled>)) when you
+   may reuse the child milter.
+
+   Example:
+     # Removes a milter that is defined as "milter1".
+     remove_milter("milter1")
 
 == [applicable-condition] Applicable condition
 

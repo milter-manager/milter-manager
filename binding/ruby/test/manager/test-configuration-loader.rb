@@ -292,6 +292,14 @@ EOX
                  end)
   end
 
+  def test_remove_milter
+    assert_equal([], @loader.defined_milters)
+    @loader.define_milter("milter1") {}
+    assert_equal(["milter1"], @loader.defined_milters)
+    @loader.remove_milter("milter1")
+    assert_equal([], @loader.defined_milters)
+  end
+
   def test_defined_milters
     @loader.define_milter("milter1") do |milter|
       milter.description = "description1"

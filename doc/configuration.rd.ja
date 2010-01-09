@@ -775,6 +775,14 @@ define_milter do ... end内で設定できる項目は以下の通りです。
     end
   end
 
+以下はすべての子milterの定義を削除にする例です。無効にした場
+合と違い、再び子milterを使いたい場合は一から定義しなおす必要
+があります。
+
+  defined_milters.each do |name|
+    remove_milter(name)
+  end
+
 以下はすべての子milterの適用条件にS25Rを追加する例です。
 
   defined_milters.each do |name|
@@ -783,13 +791,21 @@ define_milter do ... end内で設定できる項目は以下の通りです。
     end
   end
 
-
 : defined_milters
    定義されている子milterの名前の一覧を返します。返される値
    は文字列の配列です。
 
    例:
      defined_milters # => ["milter1", "milter2"]
+
+: remove_milter(name)
+   定義されているnameという名前のmilterを削除します。milter
+   定義を削除せずに、単に無効にするだけでよいなら
+   ((<milter.enabled|.#milter.enabled>))を使ってください。
+
+   例:
+     # "milter1"という名前で定義されたmilterの定義を削除
+     remove_milter("milter1")
 
 == [applicable-condition] 適用条件関連
 

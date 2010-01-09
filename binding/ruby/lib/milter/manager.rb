@@ -337,6 +337,11 @@ module Milter::Manager
       egg_configuration.apply
     end
 
+    # more better name is needed?
+    def remove_milter(name)
+      @configuration.remove_egg(name)
+    end
+
     def define_applicable_condition(name)
       ConfigurationLoader.update_location(@configuration,
                                           "applicable_condition[#{name}]",
