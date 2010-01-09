@@ -817,6 +817,7 @@ module Milter::Manager
             Shellwords.escape(option)
           end.join(' ')
         end
+        update_location("command_options", 2)
         @egg.command_options = options
       end
 
@@ -843,16 +844,28 @@ module Milter::Manager
                                  available_values.keys,
                                  status)
         end
+        update_location("fallback_status", 2)
         @egg.fallback_status = value
       end
 
       def method_missing(name, *args, &block)
-        @egg.send(name, *args, &block)
+        result = @egg.send(name, *args, &block)
+        if /=\z/ =~ name.to_s
+          update_location($PREMATCH, args[0].nil?)
+        end
+        result
       end
 
       def apply
         @loader.configuration.remove_egg(@egg.name)
         @loader.configuration.add_egg(@egg)
+      end
+
+      private
+      def update_location(name, reset, deep_level=2)
+        full_key = "milter[#{@egg.name}].#{name}"
+        ConfigurationLoader.update_location(@loader.configuration,
+                                            full_key, reset, deep_level)
       end
     end
 

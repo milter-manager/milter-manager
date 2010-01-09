@@ -270,18 +270,26 @@ EOD
       condition.description = "Selective SMTP Rejection"
     end
 
-    milter1_line = __LINE__ + 1
+    milter1_lines = {}
+    milter1_lines[:define] = __LINE__ + 1
     loader.define_milter("milter1") do |milter|
+      milter1_lines[:description] = __LINE__ + 1
       milter.description = "The first milter"
+      milter1_lines[:connection_spec] = __LINE__ + 1
       milter.connection_spec = "unix:/tmp/xxx"
       milter.add_applicable_condition("S25R")
     end
 
-    milter2_line = __LINE__ + 1
+    milter2_lines = {}
+    milter2_lines[:define] = __LINE__ + 1
     loader.define_milter("milter2") do |milter|
+      milter2_lines[:description] = __LINE__ + 1
       milter.description = "The second milter"
+      milter2_lines[:connection_spec] = __LINE__ + 1
       milter.connection_spec = "inet:2929"
+      milter2_lines[:enabled] = __LINE__ + 1
       milter.enabled = false
+      milter2_lines[:evaluation_mode] = __LINE__ + 1
       milter.evaluation_mode = true
     end
 
@@ -340,11 +348,11 @@ define_applicable_condition("S25R") do |condition|
   condition.description = "Selective SMTP Rejection"
 end
 
-# #{__FILE__}:#{milter1_line}
+# #{__FILE__}:#{milter1_lines[:define]}
 define_milter("milter1") do |milter|
-  # default
+  # #{__FILE__}:#{milter1_lines[:connection_spec]}
   milter.connection_spec = "unix:/tmp/xxx"
-  # default
+  # #{__FILE__}:#{milter1_lines[:description]}
   milter.description = "The first milter"
   # default
   milter.enabled = true
@@ -370,17 +378,17 @@ define_milter("milter1") do |milter|
   milter.end_of_message_timeout = 300.0
 end
 
-# #{__FILE__}:#{milter2_line}
+# #{__FILE__}:#{milter2_lines[:define]}
 define_milter("milter2") do |milter|
-  # default
+  # #{__FILE__}:#{milter2_lines[:connection_spec]}
   milter.connection_spec = "inet:2929"
-  # default
+  # #{__FILE__}:#{milter2_lines[:description]}
   milter.description = "The second milter"
-  # default
+  # #{__FILE__}:#{milter2_lines[:enabled]}
   milter.enabled = false
   # default
   milter.fallback_status = "accept"
-  # default
+  # #{__FILE__}:#{milter2_lines[:evaluation_mode]}
   milter.evaluation_mode = true
   # default
   milter.applicable_conditions = []
