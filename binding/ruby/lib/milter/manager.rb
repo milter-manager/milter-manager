@@ -926,7 +926,11 @@ module Milter::Manager
       end
 
       def method_missing(name, *args, &block)
-        @condition.send(name, *args, &block)
+        result = @condition.send(name, *args, &block)
+        if /=\z/ =~ name.to_s
+          update_location($PREMATCH, args[0].nil?, 2)
+        end
+        result
       end
 
       def apply
@@ -1039,6 +1043,12 @@ module Milter::Manager
             end
           end
         end
+      end
+
+      def update_location(name, reset, deep_level=2)
+        full_key = "applicable_condition[#{@condition.name}].#{name}"
+        ConfigurationLoader.update_location(@loader.configuration,
+                                            full_key, reset, deep_level)
       end
     end
   end

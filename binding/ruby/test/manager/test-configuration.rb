@@ -263,8 +263,10 @@ EOD
     loader.security.effective_user = "nobody"; effective_user_line = __LINE__
     loader.security.effective_group = "nogroup"; effective_group_line = __LINE__
 
-    s25r_line = __LINE__ + 1
+    s25r_lines = {}
+    s25r_lines[:define] = __LINE__ + 1
     loader.define_applicable_condition("S25R") do |condition|
+      s25r_lines[:description] = __LINE__ + 1
       condition.description = "Selective SMTP Rejection"
     end
 
@@ -332,9 +334,9 @@ controller.remove_unix_socket_on_create = true
 # default
 controller.remove_unix_socket_on_close = true
 
-# #{__FILE__}:#{s25r_line}
+# #{__FILE__}:#{s25r_lines[:define]}
 define_applicable_condition("S25R") do |condition|
-  # default
+  # #{__FILE__}:#{s25r_lines[:description]}
   condition.description = "Selective SMTP Rejection"
 end
 
