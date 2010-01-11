@@ -2151,32 +2151,27 @@ milter_manager_children_start_child (MilterManagerChildren *children,
 }
 
 static void
-reply_negotiate (MilterManagerChildren *children,
-                 MilterManagerChild *last_child)
+reply_negotiate (MilterManagerChildren *children)
 {
     MilterManagerChildrenPrivate *priv;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
-    if (priv->option && priv->negotiated) {
-        milter_option_remove_step(priv->option, MILTER_STEP_NO_EVENT_MASK);
-        g_signal_emit_by_name(children, "negotiate-reply",
-                              priv->option, priv->macros_requests);
-    } else {
-        if (last_child) {
-            MilterServerContext *context;
 
-            context = MILTER_SERVER_CONTEXT(last_child);
-            milter_error("[%u] [children][error][negotiate][no-response] "
-                         "[%u] %s",
-                         priv->tag,
-                         milter_agent_get_tag(MILTER_AGENT(context)),
-                         milter_server_context_get_name(context));
-        } else {
-            milter_error("[%u] [children][error][negotiate][no-response]",
-                         priv->tag);
-        }
+    if (!priv->option) {
+        milter_error("[%u] [children][error][negotiate][not-started]",
+                     priv->tag);
         g_signal_emit_by_name(children, "abort");
+        return;
     }
+
+    if (!priv->negotiated) {
+        milter_error("[%u] [children][error][negotiate][no-response]",
+                     priv->tag);
+    }
+
+    milter_option_remove_step(priv->option, MILTER_STEP_NO_EVENT_MASK);
+    g_signal_emit_by_name(children, "negotiate-reply",
+                          priv->option, priv->macros_requests);
 }
 
 static void
@@ -2184,11 +2179,17 @@ remove_queue_in_negotiate (MilterManagerChildren *children,
                            MilterManagerChild *child)
 {
     MilterManagerChildrenPrivate *priv;
+    MilterServerContext *context;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+    context = MILTER_SERVER_CONTEXT(child);
+    milter_debug("[%u] [children][negotiate][done] [%u] %s",
+                 priv->tag,
+                 milter_agent_get_tag(MILTER_AGENT(context)),
+                 milter_server_context_get_name(context));
     g_queue_remove(priv->reply_queue, child);
     if (g_queue_is_empty(priv->reply_queue)) {
-        reply_negotiate(children, child);
+        reply_negotiate(children);
     }
 }
 
@@ -2530,7 +2531,7 @@ cb_idle_reply_negotiate_on_no_child (gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
 
-    reply_negotiate(children, NULL);
+    reply_negotiate(children);
     return FALSE;
 }
 

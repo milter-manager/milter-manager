@@ -107,11 +107,12 @@ EXTRA_DIST =								\
 	insert-header-evaluation.txt					\
 	insert-header-evaluation.conf					\
 	negotiate.txt							\
-	negotiate-failure.txt						\
 	negotiate-no-child.txt						\
 	negotiate-no-child.conf						\
 	negotiate-no-enabled-child.txt					\
 	negotiate-no-enabled-child.conf					\
+	negotiate-no-available-child.txt				\
+	negotiate-no-available-child.conf				\
 	no-body-flag-on-both-client.txt					\
 	no-body-flag-on-second-client.txt				\
 	no-body-flag.txt						\

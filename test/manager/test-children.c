@@ -1630,14 +1630,12 @@ test_no_negotiation (void)
                         "[%u] [children][error][connection] [%u] "
                         "Failed to connect to inet:10027@localhost: "
                         "Connection refused: milter@10027\n"
-                        "[%u] [children][error][negotiate][no-response] [%u] "
-                        "milter@10027\n",
+                        "[%u] [children][error][negotiate][no-response]\n",
                         milter_manager_children_get_tag(children),
                         milter_agent_get_tag(MILTER_AGENT(child10026)),
                         milter_manager_children_get_tag(children),
                         milter_agent_get_tag(MILTER_AGENT(child10027)),
-                        milter_manager_children_get_tag(children),
-                        milter_agent_get_tag(MILTER_AGENT(child10027))),
+                        milter_manager_children_get_tag(children)),
         error_message->str);
 }
 

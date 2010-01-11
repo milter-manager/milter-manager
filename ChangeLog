@@ -1,5 +1,10 @@
 2010-01-11  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/fixtures/leader/connect-no-available-child.{txt,conf},
+	test/fixtures/leader/negotiate-no-available-child.{txt,conf},
+	test/manager/test-children.c, test/manager/test-leader.c:
+	return negotiate response even if no child milters response.
+
 	* test/fixtures/leader/connect-no-enabled-child.{txt,conf},
 	test/fixtures/leader/negotiate-no-enabled-child.{txt,conf},
 	test/lib/milter-manager-test-scenario.c,

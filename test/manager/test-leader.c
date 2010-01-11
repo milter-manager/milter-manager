@@ -1340,8 +1340,6 @@ data_scenario_basic (void)
 {
     cut_add_data("negotiate",
                  g_strdup("negotiate.txt"), g_free,
-                 "negotiate - failure",
-                 g_strdup("negotiate-failure.txt"), g_free,
                  "connect",
                  g_strdup("connect.txt"), g_free,
                  "connect - macro",
@@ -1462,6 +1460,8 @@ data_scenario_negotiate (void)
                  g_strdup("negotiate-no-child.txt"), g_free,
                  "negotiate - no enabled child",
                  g_strdup("negotiate-no-enabled-child.txt"), g_free,
+                 "negotiate - no available child",
+                 g_strdup("negotiate-no-available-child.txt"), g_free,
                  NULL);
 }
 
@@ -1472,6 +1472,8 @@ data_scenario_connect (void)
                  g_strdup("connect-no-child.txt"), g_free,
                  "connect - no enabled child",
                  g_strdup("connect-no-enabled-child.txt"), g_free,
+                 "connect - no available child",
+                 g_strdup("connect-no-available-child.txt"), g_free,
                  NULL);
 }
 
