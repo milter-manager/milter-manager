@@ -578,18 +578,22 @@ milter_manager_test_scenario_get_option_list (MilterManagerTestScenario *scenari
             MilterActionFlags action;
             MilterStepFlags step;
 
-            version = atoi(option_strings[i]);
-            action = gcut_flags_parse(MILTER_TYPE_ACTION_FLAGS,
-                                      option_strings[i + 1],
-                                      &error);
-            if (error)
-                break;
-            step = gcut_flags_parse(MILTER_TYPE_STEP_FLAGS,
-                                    option_strings[i + 2],
-                                    &error);
-            if (error)
-                break;
-            option = milter_option_new(version, action, step);
+            if (option_strings[i][0] == '\0') {
+                option = NULL;
+            } else {
+                version = atoi(option_strings[i]);
+                action = gcut_flags_parse(MILTER_TYPE_ACTION_FLAGS,
+                                          option_strings[i + 1],
+                                          &error);
+                if (error)
+                    break;
+                step = gcut_flags_parse(MILTER_TYPE_STEP_FLAGS,
+                                        option_strings[i + 2],
+                                        &error);
+                if (error)
+                    break;
+                option = milter_option_new(version, action, step);
+            }
             options = g_list_append(options, option);
         }
         option_list = gcut_take_list(options,

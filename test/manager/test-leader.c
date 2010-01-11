@@ -765,6 +765,23 @@ assert_macros_helper (MilterManagerTestScenario *scenario, const gchar *group,
     }
 }
 
+static gboolean
+option_equal (gconstpointer value1, gconstpointer value2)
+{
+    MilterOption *option1, *option2;
+
+    option1 = MILTER_OPTION(value1);
+    option2 = MILTER_OPTION(value2);
+
+    if (option1 == option2) {
+        return TRUE;
+    } else if (option1 == NULL || option2 == NULL) {
+        return FALSE;
+    } else {
+        return milter_option_equal(option1, option2);
+    }
+}
+
 static void
 do_negotiate (MilterManagerTestScenario *scenario, const gchar *group)
 {
@@ -791,7 +808,7 @@ do_negotiate (MilterManagerTestScenario *scenario, const gchar *group)
     gcut_assert_equal_list_object_custom(
         options,
         milter_manager_test_clients_collect_negotiate_options(started_clients),
-        (GEqualFunc)milter_option_equal);
+        option_equal);
 }
 
 static void
@@ -1443,6 +1460,8 @@ data_scenario_negotiate (void)
 {
     cut_add_data("negotiate - no child",
                  g_strdup("negotiate-no-child.txt"), g_free,
+                 "negotiate - no enabled child",
+                 g_strdup("negotiate-no-enabled-child.txt"), g_free,
                  NULL);
 }
 
@@ -1451,6 +1470,8 @@ data_scenario_connect (void)
 {
     cut_add_data("connect - no child",
                  g_strdup("connect-no-child.txt"), g_free,
+                 "connect - no enabled child",
+                 g_strdup("connect-no-enabled-child.txt"), g_free,
                  NULL);
 }
 
