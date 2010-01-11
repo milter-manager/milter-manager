@@ -662,6 +662,7 @@ cb_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
 {
     MilterManagerLeader *leader = user_data;
     MilterManagerLeaderPrivate *priv;
+    MilterStatus fallback_status;
 
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
     milter_error("[%u] [leader][error] %s",
@@ -673,16 +674,9 @@ cb_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
     if (error->domain != MILTER_MANAGER_CHILDREN_ERROR)
         return;
 
-    /* If all milters do not response on negotiation, send "reject" */
-    if (error->code == MILTER_MANAGER_CHILDREN_ERROR_NO_NEGOTIATION_RESPONSE) {
-        reply(leader, MILTER_STATUS_REJECT);
-    } else {
-        MilterStatus fallback_status;
-
-        fallback_status =
-            milter_manager_configuration_get_fallback_status(priv->configuration);
-        reply(leader, fallback_status);
-    }
+    fallback_status =
+        milter_manager_configuration_get_fallback_status(priv->configuration);
+    reply(leader, fallback_status);
 }
 
 static void

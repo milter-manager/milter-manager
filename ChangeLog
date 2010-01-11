@@ -1,5 +1,10 @@
 2010-01-11  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.h
+	(MILTER_MANAGER_CHILDREN_ERROR_NO_NEGOTIATION_RESPONSE): remove
+	unused constant.
+	* milter/manager/milter-manager-leader.c: follow the above change.
+
 	* test/fixtures/leader/connect-no-available-child.{txt,conf},
 	test/fixtures/leader/negotiate-no-available-child.{txt,conf},
 	test/manager/test-children.c, test/manager/test-leader.c:
