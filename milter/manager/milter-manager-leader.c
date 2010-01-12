@@ -763,15 +763,17 @@ milter_manager_leader_negotiate (MilterManagerLeader *leader,
 {
     MilterManagerLeaderPrivate *priv;
     guint tag;
+    MilterStatus fallback_status;
 
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
     priv->state = MILTER_MANAGER_LEADER_STATE_NEGOTIATE;
 
     priv->children =
         milter_manager_configuration_create_children(priv->configuration);
-
+    fallback_status =
+        milter_manager_configuration_get_fallback_status(priv->configuration);
     if (!priv->children)
-        return MILTER_STATUS_NOT_CHANGE;
+        return fallback_status;
 
     tag = milter_agent_get_tag(MILTER_AGENT(priv->client_context));
     milter_manager_children_set_tag(priv->children, tag);
@@ -785,7 +787,7 @@ milter_manager_leader_negotiate (MilterManagerLeader *leader,
                                           macros_requests))
         return MILTER_STATUS_PROGRESS;
     else
-        return MILTER_STATUS_NOT_CHANGE; /* FIXME: reject or accept */
+        return fallback_status;
 }
 
 MilterStatus
@@ -795,35 +797,41 @@ milter_manager_leader_connect (MilterManagerLeader *leader,
                                socklen_t            address_length)
 {
     MilterManagerLeaderPrivate *priv;
+    MilterStatus fallback_status;
 
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
     priv->state = MILTER_MANAGER_LEADER_STATE_CONNECT;
 
+    fallback_status =
+        milter_manager_configuration_get_fallback_status(priv->configuration);
     if (!priv->children)
-        return MILTER_STATUS_NOT_CHANGE;
+        return fallback_status;
 
     if (milter_manager_children_connect(priv->children, host_name,
                                         address, address_length))
         return MILTER_STATUS_PROGRESS;
     else
-        return MILTER_STATUS_NOT_CHANGE; /* FIXME: reject or accept */
+        return fallback_status;
 }
 
 MilterStatus
 milter_manager_leader_helo (MilterManagerLeader *leader, const gchar *fqdn)
 {
     MilterManagerLeaderPrivate *priv;
+    MilterStatus fallback_status;
 
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
     priv->state = MILTER_MANAGER_LEADER_STATE_HELO;
 
+    fallback_status =
+        milter_manager_configuration_get_fallback_status(priv->configuration);
     if (!priv->children)
-        return MILTER_STATUS_NOT_CHANGE;
+        return fallback_status;
 
     if (milter_manager_children_helo(priv->children, fqdn))
         return MILTER_STATUS_PROGRESS;
     else
-        return MILTER_STATUS_NOT_CHANGE; /* FIXME: reject or accept */
+        return fallback_status;
 }
 
 MilterStatus
@@ -831,17 +839,20 @@ milter_manager_leader_envelope_from (MilterManagerLeader *leader,
                                      const gchar *from)
 {
     MilterManagerLeaderPrivate *priv;
+    MilterStatus fallback_status;
 
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
     priv->state = MILTER_MANAGER_LEADER_STATE_ENVELOPE_FROM;
 
+    fallback_status =
+        milter_manager_configuration_get_fallback_status(priv->configuration);
     if (!priv->children)
-        return MILTER_STATUS_NOT_CHANGE;
+        return fallback_status;
 
     if (milter_manager_children_envelope_from(priv->children, from))
         return MILTER_STATUS_PROGRESS;
     else
-        return MILTER_STATUS_NOT_CHANGE; /* FIXME: reject or accept */
+        return fallback_status;
 }
 
 MilterStatus
@@ -849,34 +860,40 @@ milter_manager_leader_envelope_recipient (MilterManagerLeader *leader,
                                           const gchar *recipient)
 {
     MilterManagerLeaderPrivate *priv;
+    MilterStatus fallback_status;
 
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
     priv->state = MILTER_MANAGER_LEADER_STATE_ENVELOPE_RECIPIENT;
 
+    fallback_status =
+        milter_manager_configuration_get_fallback_status(priv->configuration);
     if (!priv->children)
-        return MILTER_STATUS_NOT_CHANGE;
+        return fallback_status;
 
     if (milter_manager_children_envelope_recipient(priv->children, recipient))
         return MILTER_STATUS_PROGRESS;
     else
-        return MILTER_STATUS_NOT_CHANGE; /* FIXME: reject or accept */
+        return fallback_status;
 }
 
 MilterStatus
 milter_manager_leader_data (MilterManagerLeader *leader)
 {
     MilterManagerLeaderPrivate *priv;
+    MilterStatus fallback_status;
 
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
     priv->state = MILTER_MANAGER_LEADER_STATE_DATA;
 
+    fallback_status =
+        milter_manager_configuration_get_fallback_status(priv->configuration);
     if (!priv->children)
-        return MILTER_STATUS_NOT_CHANGE;
+        return fallback_status;
 
     if (milter_manager_children_data(priv->children))
         return MILTER_STATUS_PROGRESS;
     else
-        return MILTER_STATUS_NOT_CHANGE; /* FIXME: reject or accept */
+        return fallback_status;
 }
 
 MilterStatus
@@ -884,17 +901,20 @@ milter_manager_leader_unknown (MilterManagerLeader *leader,
                                const gchar *command)
 {
     MilterManagerLeaderPrivate *priv;
+    MilterStatus fallback_status;
 
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
     priv->state = MILTER_MANAGER_LEADER_STATE_UNKNOWN;
 
+    fallback_status =
+        milter_manager_configuration_get_fallback_status(priv->configuration);
     if (!priv->children)
-        return MILTER_STATUS_NOT_CHANGE;
+        return fallback_status;
 
     if (milter_manager_children_unknown(priv->children, command))
         return MILTER_STATUS_PROGRESS;
     else
-        return MILTER_STATUS_NOT_CHANGE; /* FIXME: reject or accept */
+        return fallback_status;
 }
 
 MilterStatus
@@ -902,34 +922,40 @@ milter_manager_leader_header (MilterManagerLeader *leader,
                               const gchar *name, const gchar *value)
 {
     MilterManagerLeaderPrivate *priv;
+    MilterStatus fallback_status;
 
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
     priv->state = MILTER_MANAGER_LEADER_STATE_HEADER;
 
+    fallback_status =
+        milter_manager_configuration_get_fallback_status(priv->configuration);
     if (!priv->children)
-        return MILTER_STATUS_NOT_CHANGE;
+        return fallback_status;
 
     if (milter_manager_children_header(priv->children, name, value))
         return MILTER_STATUS_PROGRESS;
     else
-        return MILTER_STATUS_NOT_CHANGE; /* FIXME: reject or accept */
+        return fallback_status;
 }
 
 MilterStatus
 milter_manager_leader_end_of_header (MilterManagerLeader *leader)
 {
     MilterManagerLeaderPrivate *priv;
+    MilterStatus fallback_status;
 
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
     priv->state = MILTER_MANAGER_LEADER_STATE_END_OF_HEADER;
 
+    fallback_status =
+        milter_manager_configuration_get_fallback_status(priv->configuration);
     if (!priv->children)
-        return MILTER_STATUS_NOT_CHANGE;
+        return fallback_status;
 
     if (milter_manager_children_end_of_header(priv->children))
         return MILTER_STATUS_PROGRESS;
     else
-        return MILTER_STATUS_NOT_CHANGE; /* FIXME: reject or accept */
+        return fallback_status;
 }
 
 MilterStatus
@@ -937,17 +963,20 @@ milter_manager_leader_body (MilterManagerLeader *leader,
                             const gchar *chunk, gsize size)
 {
     MilterManagerLeaderPrivate *priv;
+    MilterStatus fallback_status;
 
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
     priv->state = MILTER_MANAGER_LEADER_STATE_BODY;
 
+    fallback_status =
+        milter_manager_configuration_get_fallback_status(priv->configuration);
     if (!priv->children)
-        return MILTER_STATUS_NOT_CHANGE;
+        return fallback_status;
 
     if (milter_manager_children_body(priv->children, chunk, size))
         return MILTER_STATUS_PROGRESS;
     else
-        return MILTER_STATUS_NOT_CHANGE; /* FIXME: reject or accept */
+        return fallback_status;
 }
 
 static gboolean
@@ -980,6 +1009,7 @@ milter_manager_leader_end_of_message (MilterManagerLeader *leader,
                                       gsize                size)
 {
     MilterManagerLeaderPrivate *priv;
+    MilterStatus fallback_status;
 
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
     if (is_replied_state(priv->state)) {
@@ -988,25 +1018,32 @@ milter_manager_leader_end_of_message (MilterManagerLeader *leader,
         priv->sent_end_of_message = TRUE;
     }
 
+    fallback_status =
+        milter_manager_configuration_get_fallback_status(priv->configuration);
     if (!priv->children)
-        return MILTER_STATUS_NOT_CHANGE;
+        return fallback_status;
 
     if (milter_manager_children_end_of_message(priv->children, chunk, size))
         return MILTER_STATUS_PROGRESS;
     else
-        return MILTER_STATUS_NOT_CHANGE; /* FIXME: reject or accept */
+        return fallback_status;
 }
 
 MilterStatus
 milter_manager_leader_quit (MilterManagerLeader *leader)
 {
     MilterManagerLeaderPrivate *priv;
+    MilterStatus fallback_status;
 
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
     priv->state = MILTER_MANAGER_LEADER_STATE_QUIT;
 
-    if (priv->children)
-        milter_manager_children_quit(priv->children);
+    fallback_status =
+        milter_manager_configuration_get_fallback_status(priv->configuration);
+    if (!priv->children)
+        return fallback_status;
+
+    milter_manager_children_quit(priv->children);
     return MILTER_STATUS_DEFAULT;
 }
 
@@ -1014,12 +1051,17 @@ MilterStatus
 milter_manager_leader_abort (MilterManagerLeader *leader)
 {
     MilterManagerLeaderPrivate *priv;
+    MilterStatus fallback_status;
 
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
     priv->state = MILTER_MANAGER_LEADER_STATE_ABORT;
 
-    if (priv->children)
-        milter_manager_children_abort(priv->children);
+    fallback_status =
+        milter_manager_configuration_get_fallback_status(priv->configuration);
+    if (!priv->children)
+        return fallback_status;
+
+    milter_manager_children_abort(priv->children);
     return MILTER_STATUS_DEFAULT;
 }
 

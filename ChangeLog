@@ -1,3 +1,8 @@
+2010-01-12  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/manager/milter-manager-leader.c: use fallback status of
+	configuration instead of default status.
+
 2010-01-11  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/manager/milter-manager-children.h
