@@ -1,3 +1,14 @@
+2010-01-13  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/manager/milter-manager-leader.[ch]: implement periodical
+	connection check hook but it's not usable from configuration.
+	NEEDED WORK:
+	- add configuration items:
+	-- connection_check_interval
+	-- define_connection_checker
+	- leader should emit configuration's leader-connected signal for
+	  connecting leader's connection-check signal from configuration.
+
 2010-01-12  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/manager/milter-manager-leader.c: use fallback status of

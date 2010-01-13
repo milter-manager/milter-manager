@@ -53,6 +53,8 @@ struct _MilterManagerLeader
 struct _MilterManagerLeaderClass
 {
     GObjectClass parent_class;
+
+    gboolean (*connection_check) (MilterManagerLeader *leader);
 };
 
 typedef enum

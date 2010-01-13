@@ -21,6 +21,7 @@
 #  include "../../config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include <milter/core/milter-marshalers.h>
 #include "milter-manager-leader.h"
 #include "milter-manager-enum-types.h"
 #include "milter-manager-children.h"
@@ -40,6 +41,14 @@ struct _MilterManagerLeaderPrivate
     gboolean sent_end_of_message;
     GIOChannel *launcher_read_channel;
     GIOChannel *launcher_write_channel;
+    guint periodical_connection_checker_id;
+    gboolean processing;
+};
+
+enum
+{
+    CONNECTION_CHECK,
+    LAST_SIGNAL
 };
 
 enum
@@ -49,8 +58,13 @@ enum
     PROP_CLIENT_CONTEXT
 };
 
+static gint signals[LAST_SIGNAL] = {0};
+
+static void         finished           (MilterFinishedEmittable *emittable);
+
 MILTER_IMPLEMENT_ERROR_EMITTABLE(error_emittable_init);
-MILTER_IMPLEMENT_FINISHED_EMITTABLE(finished_emittable_init);
+MILTER_IMPLEMENT_FINISHED_EMITTABLE_WITH_CODE(finished_emittable_init,
+                                              iface->finished = finished)
 G_DEFINE_TYPE_WITH_CODE(MilterManagerLeader, milter_manager_leader, G_TYPE_OBJECT,
     G_IMPLEMENT_INTERFACE(MILTER_TYPE_ERROR_EMITTABLE, error_emittable_init)
     G_IMPLEMENT_INTERFACE(MILTER_TYPE_FINISHED_EMITTABLE, finished_emittable_init))
@@ -64,9 +78,18 @@ static void get_property   (GObject         *object,
                             guint            prop_id,
                             GValue          *value,
                             GParamSpec      *pspec);
+static gboolean connection_check_default
+                           (MilterManagerLeader *leader);
 static void teardown_children_signals
                            (MilterManagerLeader *leader,
                             MilterManagerChildren *children);
+static void reply          (MilterManagerLeader *leader,
+                            MilterStatus         status);
+static gboolean boolean_handled_accumulator
+                           (GSignalInvocationHint *hint,
+                            GValue                *return_accumulator,
+                            const GValue          *handler_return,
+                            gpointer               data);
 
 static void
 milter_manager_leader_class_init (MilterManagerLeaderClass *klass)
@@ -79,6 +102,8 @@ milter_manager_leader_class_init (MilterManagerLeaderClass *klass)
     gobject_class->dispose      = dispose;
     gobject_class->set_property = set_property;
     gobject_class->get_property = get_property;
+
+    klass->connection_check = connection_check_default;
 
     spec = g_param_spec_object("configuration",
                                "Configuration",
@@ -93,6 +118,15 @@ milter_manager_leader_class_init (MilterManagerLeaderClass *klass)
                                MILTER_TYPE_CLIENT_CONTEXT,
                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_CLIENT_CONTEXT, spec);
+
+    signals[CONNECTION_CHECK] =
+        g_signal_new("connection-check",
+                     MILTER_TYPE_MANAGER_LEADER,
+                     G_SIGNAL_RUN_LAST,
+                     G_STRUCT_OFFSET(MilterManagerLeaderClass, connection_check),
+                     boolean_handled_accumulator, NULL,
+                     _milter_marshal_BOOLEAN__VOID,
+                     G_TYPE_BOOLEAN, 0, G_TYPE_NONE);
 
     g_type_class_add_private(gobject_class,
                              sizeof(MilterManagerLeaderPrivate));
@@ -111,6 +145,74 @@ milter_manager_leader_init (MilterManagerLeader *leader)
     priv->sent_end_of_message = FALSE;
     priv->launcher_read_channel = NULL;
     priv->launcher_write_channel = NULL;
+    priv->periodical_connection_checker_id = 0;
+    priv->processing = FALSE;
+}
+
+static void
+dispose_periodical_connection_checker (MilterManagerLeaderPrivate *priv)
+{
+    if (priv->periodical_connection_checker_id == 0)
+        return;
+
+    g_source_remove(priv->periodical_connection_checker_id);
+    priv->periodical_connection_checker_id = 0;
+}
+
+static gboolean
+connection_check (gpointer data)
+{
+    MilterManagerLeader *leader = data;
+    MilterManagerLeaderPrivate *priv;
+    gboolean connected = TRUE;
+    guint tag;
+    gchar *state_nick;
+
+    priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
+    tag = milter_agent_get_tag(MILTER_AGENT(priv->client_context));
+    state_nick =
+        milter_utils_get_enum_nick_name(MILTER_TYPE_MANAGER_LEADER_STATE,
+                                        priv->state);
+    milter_debug("[%u] [leader][connection-check][%s][start] %d",
+                 tag, state_nick, priv->processing);
+    if (priv->processing) {
+        g_signal_emit(leader, signals[CONNECTION_CHECK], 0, &connected);
+    } else {
+        connected = FALSE;
+    }
+    milter_debug("[%u] [leader][connection-check][%s][end] %d",
+                 tag, state_nick, connected);
+
+    if (!connected) {
+        MilterStatus fallback_status;
+        gchar *fallback_status_nick;
+
+        fallback_status =
+            milter_manager_configuration_get_fallback_status(priv->configuration);
+        fallback_status_nick = milter_utils_get_enum_name(MILTER_TYPE_STATUS,
+                                                          fallback_status);
+        priv->periodical_connection_checker_id = 0;
+        milter_manager_leader_abort(leader);
+        reply(leader, fallback_status);
+        milter_debug("[%u] [leader][connection-check][%s][reply][%s]",
+                     tag, state_nick, fallback_status_nick);
+        g_free(fallback_status_nick);
+    }
+    g_free(state_nick);
+
+    return connected;
+}
+
+static void
+start_periodical_connection_checker (MilterManagerLeader *leader)
+{
+    MilterManagerLeaderPrivate *priv;
+
+    priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
+    dispose_periodical_connection_checker(priv);
+
+    priv->periodical_connection_checker_id =
+        g_timeout_add_seconds(5, connection_check, leader);
 }
 
 static void
@@ -121,6 +223,8 @@ dispose (GObject *object)
 
     leader = MILTER_MANAGER_LEADER(object);
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(object);
+
+    dispose_periodical_connection_checker(priv);
 
     if (priv->configuration) {
         g_object_unref(priv->configuration);
@@ -138,6 +242,7 @@ dispose (GObject *object)
         priv->children = NULL;
     }
     milter_manager_leader_set_launcher_channel(leader, NULL, NULL);
+
 
     G_OBJECT_CLASS(milter_manager_leader_parent_class)->dispose(object);
 }
@@ -194,6 +299,13 @@ get_property (GObject    *object,
     }
 }
 
+static gboolean
+connection_check_default (MilterManagerLeader *leader)
+{
+    gboolean connecting = TRUE;
+    return connecting;
+}
+
 GQuark
 milter_manager_leader_error_quark (void)
 {
@@ -208,6 +320,32 @@ milter_manager_leader_new (MilterManagerConfiguration *configuration,
                         "configuration", configuration,
                         "client-context", client_context,
                         NULL);
+}
+
+static gboolean
+boolean_handled_accumulator (GSignalInvocationHint *ihint,
+                             GValue *return_accu,
+                             const GValue *handler_return,
+                             gpointer data)
+{
+    gboolean continue_emission;
+    gboolean signal_handled;
+
+    signal_handled = g_value_get_boolean(handler_return);
+    g_value_set_boolean(return_accu, signal_handled);
+    continue_emission = !signal_handled;
+
+    return continue_emission;
+}
+
+static void
+finished (MilterFinishedEmittable *emittable)
+{
+    MilterManagerLeaderPrivate *priv;
+
+    priv = MILTER_MANAGER_LEADER_GET_PRIVATE(emittable);
+    priv->processing = FALSE;
+    dispose_periodical_connection_checker(priv);
 }
 
 static const gchar *
@@ -346,9 +484,11 @@ cb_negotiate_reply (MilterServerContext *context, MilterOption *option,
     MilterManagerLeaderPrivate *priv;
 
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
+    priv->processing = TRUE;
 
     g_signal_emit_by_name(priv->client_context, "negotiate-response",
                           option, macros_requests, MILTER_STATUS_CONTINUE);
+    start_periodical_connection_checker(leader);
 }
 
 static void
@@ -653,6 +793,7 @@ cb_abort (MilterReplySignals *_reply, gpointer user_data)
                  milter_agent_get_tag(MILTER_AGENT(priv->client_context)),
                  state_name);
     g_free(state_name);
+    priv->processing = FALSE;
     milter_agent_shutdown(MILTER_AGENT(priv->client_context));
     milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(leader));
 }
