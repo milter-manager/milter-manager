@@ -73,7 +73,7 @@ static gint signals[LAST_SIGNAL] = {0};
 
 static gboolean    status_accumulator  (GSignalInvocationHint *hint,
                                         GValue *return_accumulator,
-                                        const GValue *context_return,
+                                        const GValue *handler_return,
                                         gpointer data);
 
 #define MILTER_CLIENT_CONTEXT_GET_PRIVATE(obj)                          \
@@ -3124,12 +3124,12 @@ encoder_new (MilterAgent *agent)
 static gboolean
 status_accumulator (GSignalInvocationHint *hint,
                     GValue *return_accumulator,
-                    const GValue *context_return,
+                    const GValue *handler_return,
                     gpointer data)
 {
     MilterStatus status;
 
-    status = g_value_get_enum(context_return);
+    status = g_value_get_enum(handler_return);
     if (status != MILTER_STATUS_NOT_CHANGE)
         g_value_set_enum(return_accumulator, status);
     status = g_value_get_enum(return_accumulator);

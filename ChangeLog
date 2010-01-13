@@ -1,5 +1,8 @@
 2010-01-13  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client-context.c: use the same name as
+	GObject's function prototype declaration.
+
 	* milter/manager/milter-manager-leader.[ch]: implement periodical
 	connection check hook but it's not usable from configuration.
 	NEEDED WORK:
