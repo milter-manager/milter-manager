@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -33,6 +33,7 @@
 #include <milter/core/milter-marshalers.h>
 
 #define DEFAULT_MAINTENANCE_INTERVAL 100
+#define DEFAULT_CONNECTION_CHECK_INTERVAL 0
 
 #define MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(obj)                   \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                                 \
@@ -70,6 +71,7 @@ struct _MilterManagerConfigurationPrivate
     guint processed_sessions;
     gchar *custom_configuration_directory;
     GHashTable *locations;
+    guint connection_check_interval;
 };
 
 enum
@@ -98,7 +100,8 @@ enum
     PROP_MAX_CONNECTIONS,
     PROP_MAX_FILE_DESCRIPTORS,
     PROP_PROCESSED_SESSIONS,
-    PROP_CUSTOM_CONFIGURATION_DIRECTORY
+    PROP_CUSTOM_CONFIGURATION_DIRECTORY,
+    PROP_CONNECTION_CHECK_INTERVAL
 };
 
 enum
@@ -353,6 +356,20 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
                                     PROP_CUSTOM_CONFIGURATION_DIRECTORY,
                                     spec);
 
+    spec = g_param_spec_uint("connection-check-interval",
+                             "Connection check interval",
+                             "The interval in seconds for checking whether "
+                             "SMTP connection between SMTP client and server "
+                             "is still connected or disconnected from "
+                             "SMTP client.",
+                             0,
+                             G_MAXUINT,
+                             DEFAULT_CONNECTION_CHECK_INTERVAL,
+                             G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+    g_object_class_install_property(gobject_class,
+                                    PROP_CONNECTION_CHECK_INTERVAL,
+                                    spec);
+
 
     signals[TO_XML] =
         g_signal_new("to-xml",
@@ -394,6 +411,7 @@ milter_manager_configuration_init (MilterManagerConfiguration *configuration)
                                             g_str_equal,
                                             g_free,
                                             (GDestroyNotify)g_dataset_destroy);
+    priv->connection_check_interval = DEFAULT_CONNECTION_CHECK_INTERVAL;
 
     config_dir_env = g_getenv("MILTER_MANAGER_CONFIG_DIR");
     if (config_dir_env)
@@ -532,6 +550,10 @@ set_property (GObject      *object,
         milter_manager_configuration_set_custom_configuration_directory(
             config, g_value_get_string(value));
         break;
+    case PROP_CONNECTION_CHECK_INTERVAL:
+        milter_manager_configuration_set_connection_check_interval(
+            config, g_value_get_uint(value));
+        break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -616,6 +638,9 @@ get_property (GObject    *object,
         break;
     case PROP_CUSTOM_CONFIGURATION_DIRECTORY:
         g_value_set_string(value, priv->custom_configuration_directory);
+        break;
+    case PROP_CONNECTION_CHECK_INTERVAL:
+        g_value_set_uint(value, priv->connection_check_interval);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -1686,6 +1711,7 @@ milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
         MILTER_CLIENT_DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE;
     priv->max_connections = 0;
     priv->max_file_descriptors = 0;
+    priv->connection_check_interval = DEFAULT_CONNECTION_CHECK_INTERVAL;
 
     if (priv->locations)
         g_hash_table_remove_all(priv->locations);
@@ -1863,6 +1889,26 @@ milter_manager_configuration_get_locations (MilterManagerConfiguration *configur
 {
     return MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration)->locations;
 }
+
+guint
+milter_manager_configuration_get_connection_check_interval (MilterManagerConfiguration *configuration)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    return priv->connection_check_interval;
+}
+
+void
+milter_manager_configuration_set_connection_check_interval (MilterManagerConfiguration *configuration,
+                                                            guint                       interval_in_seconds)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    priv->connection_check_interval = interval_in_seconds;
+}
+
 
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4

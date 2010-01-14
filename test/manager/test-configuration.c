@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -50,6 +50,7 @@ void test_manager_connection_spec (void);
 void test_fallback_status (void);
 void test_package_platform (void);
 void test_package_options (void);
+void test_connection_check_interval (void);
 void test_egg (void);
 void test_find_egg (void);
 void test_remove_egg (void);
@@ -487,6 +488,18 @@ test_package_options (void)
                             actual_package_options);
 }
 
+void
+test_connection_check_interval (void)
+{
+    cut_assert_equal_uint(
+        0,
+        milter_manager_configuration_get_connection_check_interval(config));
+    milter_manager_configuration_set_connection_check_interval(config, 5);
+    cut_assert_equal_uint(
+        5,
+        milter_manager_configuration_get_connection_check_interval(config));
+}
+
 static void
 milter_assert_default_configuration_helper (MilterManagerConfiguration *config)
 {
@@ -554,6 +567,10 @@ milter_assert_default_configuration_helper (MilterManagerConfiguration *config)
     cut_assert_equal_string(
         MILTER_MANAGER_PACKAGE_OPTIONS,
         milter_manager_configuration_get_package_options(config));
+
+    cut_assert_equal_uint(
+        0,
+        milter_manager_configuration_get_connection_check_interval(config));
 
     if (expected_children)
         g_object_unref(expected_children);
@@ -759,6 +776,7 @@ test_clear (void)
     test_suspend_time_on_unacceptable();
     test_max_connections();
     test_max_file_descriptors();
+    test_connection_check_interval();
 
     milter_manager_configuration_clear(config);
     milter_assert_default_configuration(config);

@@ -1,3 +1,10 @@
+2010-01-15  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/manager/milter-manager-configuration.[ch],
+	test/manager/test-configuration.c: add
+	milter_manager_configuration_get_connection_check_interval() and
+	milter_manager_configuration_set_connection_check_interval().
+
 2010-01-13  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/client/milter-client-context.c: use the same name as

@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -308,6 +308,11 @@ gconstpointer milter_manager_configuration_get_location
                                      const gchar                *key);
 GHashTable   *milter_manager_configuration_get_locations
                                     (MilterManagerConfiguration *configuration);
+guint         milter_manager_configuration_get_connection_check_interval
+                                     (MilterManagerConfiguration *configuration);
+void          milter_manager_configuration_set_connection_check_interval
+                                     (MilterManagerConfiguration *configuration,
+                                      guint                       interval_in_seconds);
 
 G_END_DECLS
 
