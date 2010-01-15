@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -563,6 +563,8 @@ setup_context_signals (MilterClientContext *context,
     milter_manager_leader_set_launcher_channel(leader,
                                                priv->launcher_read_channel,
                                                priv->launcher_write_channel);
+
+    g_signal_emit_by_name(priv->configuration, "connected", leader);
 }
 
 static void

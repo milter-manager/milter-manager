@@ -1,5 +1,8 @@
 2010-01-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager.c: emit configuration's
+	'connected' with leader when milter server is connected.
+
 	* milter/manager/milter-manager-configuration.[ch],
 	milter/manager/milter-manager-leader.h,
 	milter/manager/milter-manager-objects.h: add 'connected' signal to
