@@ -1,5 +1,9 @@
 2010-01-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.[ch],
+	test/manager/test-children.c: add SMTP client address passed on
+	'connect' event getter.
+
 	* test/manager/test-configuration.c (test_clear): add a test for
 	connected handler is disconnected by clear().
 

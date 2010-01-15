@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -57,6 +57,8 @@ struct _MilterManagerChildrenPrivate
     gchar *reply_message;
     gdouble retry_connect_time;
 
+    struct sockaddr *smtp_client_address;
+    socklen_t smtp_client_address_length;
     MilterHeaders *original_headers;
     MilterHeaders *headers;
     gint processing_header_index;
@@ -231,6 +233,8 @@ milter_manager_children_init (MilterManagerChildren *milter)
     priv->negotiated = FALSE;
     priv->reply_statuses = g_hash_table_new(g_direct_hash, g_direct_equal);
 
+    priv->smtp_client_address = NULL;
+    priv->smtp_client_address_length = 0;
     priv->original_headers = NULL;
     priv->headers = NULL;
     priv->processing_header_index = 0;
@@ -349,6 +353,16 @@ dispose_message_related_data (MilterManagerChildrenPrivate *priv)
 }
 
 static void
+dispose_smtp_client_address (MilterManagerChildrenPrivate *priv)
+{
+    if (priv->smtp_client_address) {
+        g_free(priv->smtp_client_address);
+        priv->smtp_client_address = NULL;
+    }
+    priv->smtp_client_address_length = 0;
+}
+
+static void
 dispose (GObject *object)
 {
     MilterManagerChildrenPrivate *priv;
@@ -364,6 +378,8 @@ dispose (GObject *object)
         g_hash_table_unref(priv->try_negotiate_ids);
         priv->try_negotiate_ids = NULL;
     }
+
+    dispose_smtp_client_address(priv);
 
     if (priv->configuration) {
         g_object_unref(priv->configuration);
@@ -2708,10 +2724,14 @@ milter_manager_children_connect (MilterManagerChildren *children,
     gboolean success = FALSE;
     gint n_queued_milters;
 
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    dispose_smtp_client_address(priv);
+    priv->smtp_client_address = g_memdup(address, address_length);
+    priv->smtp_client_address_length = address_length;
+
     if (!milter_manager_children_check_alive(children))
         return FALSE;
-
-    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     init_reply_queue(children, MILTER_SERVER_CONTEXT_STATE_CONNECT);
     for (child = priv->milters; child; child = g_list_next(child)) {
@@ -3545,6 +3565,23 @@ void
 milter_manager_children_set_tag (MilterManagerChildren *children, guint tag)
 {
     MILTER_MANAGER_CHILDREN_GET_PRIVATE(children)->tag = tag;
+}
+
+gboolean
+milter_manager_children_get_smtp_client_address (MilterManagerChildren *children,
+                                                 struct sockaddr       **address,
+                                                 socklen_t             *address_length)
+{
+    MilterManagerChildrenPrivate *priv;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+    if (!priv->smtp_client_address)
+        return FALSE;
+
+    *address_length = priv->smtp_client_address_length;
+    *address = g_memdup(priv->smtp_client_address, *address_length);
+
+    return TRUE;
 }
 
 /*

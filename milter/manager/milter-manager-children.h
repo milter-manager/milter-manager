@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -135,6 +135,11 @@ guint                  milter_manager_children_get_tag     (MilterManagerChildre
 void                   milter_manager_children_set_tag     (MilterManagerChildren *children,
                                                             guint                  tag);
 
+
+gboolean               milter_manager_children_get_smtp_client_address
+                                                           (MilterManagerChildren *children,
+                                                            struct sockaddr       **address,
+                                                            socklen_t             *address_length);
 
 #endif /* __MILTER_MANAGER_CHILDREN_H__ */
 

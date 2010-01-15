@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -111,6 +111,8 @@ static GArray *arguments2;
 static GList *test_clients;
 
 static MilterOption *actual_option;
+
+static struct sockaddr *actual_address;
 
 void
 cut_startup (void)
@@ -394,6 +396,8 @@ setup (void)
     test_clients = NULL;
 
     actual_option = NULL;
+
+    actual_address = NULL;
 }
 
 static void
@@ -474,6 +478,9 @@ cut_teardown (void)
 
     if (actual_option)
         g_object_unref(actual_option);
+
+    if (actual_address)
+        g_free(actual_address);
 }
 
 static void
@@ -1159,6 +1166,7 @@ void
 test_connect (void)
 {
     struct sockaddr_in address;
+    socklen_t actual_address_length = 0;
     const gchar host_name[] = "mx.local.net";
     const gchar ip_address[] = "192.168.123.123";
 
@@ -1168,11 +1176,21 @@ test_connect (void)
     address.sin_port = g_htons(50443);
     inet_aton(ip_address, &(address.sin_addr));
 
+    cut_assert_false(milter_manager_children_get_smtp_client_address(
+                         children, &actual_address, &actual_address_length));
+    cut_assert_equal_memory(NULL, 0, actual_address, actual_address_length);
+
     milter_manager_children_connect(children,
                                     host_name,
                                     (struct sockaddr *)(&address),
                                     sizeof(address));
     wait_reply(1, n_continue_emitted);
+
+    cut_assert_true(milter_manager_children_get_smtp_client_address(
+                        children, &actual_address, &actual_address_length));
+    cut_assert_equal_uint(sizeof(address), actual_address_length);
+    cut_assert_equal_memory(&address, sizeof(address),
+                            actual_address, actual_address_length);
 }
 
 static gboolean
