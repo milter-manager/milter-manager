@@ -67,6 +67,7 @@ current configuration is shown.
   manager.suspend_time_on_unacceptable = 5
   manager.max_connections = 0
   manager.custom_configuration_directory = nil
+  manager.connection_check_interval = 0
 
   controller.connection_spec = nil
   controller.unix_socket_mode = 0660
@@ -451,6 +452,32 @@ Here are descriptions of configuration items.
 
    Default:
      manager.custom_configuration_directory = nil
+
+: manager.connection_check_interval
+
+   Since 1.5.0.
+
+   Specifies an interval in seconds to check whether a
+   connection between SMTP client and SMTP server is still
+   connected.
+
+   0 means 'no check'.
+
+   ((<manager.define_connection_checker|.#manager.define_connection_checker>))
+   defines how to check whether a connection is still
+   connected.
+
+   Example:
+     manager.connection_check_interval = 5 # Check in 5 seconds.
+
+   Default:
+     manager.connection_check_interval = 0
+
+: manager.define_connection_checker(name) {|context| ... # -> true/false}
+
+   Since 1.5.0.
+
+   TODO
 
 == Controller
 

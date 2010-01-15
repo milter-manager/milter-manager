@@ -72,6 +72,7 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
   manager.suspend_time_on_unacceptable = 5
   manager.max_connections = 0
   manager.custom_configuration_directory = nil
+  manager.connection_check_interval = 0
 
   controller.connection_spec = nil
   controller.unix_socket_mode = 0660
@@ -443,6 +444,34 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
 
    既定値:
      manager.custom_configuration_directory = nil
+
+: manager.connection_check_interval
+
+   1.5.0から使用可能。
+
+   SMTPクライアントがまだSMTPサーバと接続しているかどうかを
+   確認する間隔を秒単位で指定します。
+
+   0を指定すると確認しません。
+
+   どのようにして接続しているかどうかを確認するかは
+   ((<manager.define_connection_checker|.#manager.define_connection_checker>))
+   で定義します。
+
+   例:
+     manager.connection_check_interval = 5 # 5秒間隔で確認
+
+   既定値:
+     manager.connection_check_interval = 0
+
+: manager.define_connection_checker(name) {|context| ... # -> true/false}
+
+   1.5.0から使用可能。
+
+   TODO
+
+   trueを返したときはまだ接続している。falseを返したときは接
+   続が切れたことを示す。
 
 == コントローラ関連
 

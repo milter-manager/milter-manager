@@ -1,5 +1,12 @@
 2010-01-16  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager.rb,
+	binding/ruby/lib/milter/manager/Makefile.am,
+	binding/ruby/lib/milter/manager/connection-check-context.rb,
+	binding/ruby/test/manager/test-configuration.rb,
+	doc/configuration.rd*: add manager.connection_check_interval and
+	manager.define_connection_checker configuration items.
+
 	* binding/ruby/src/toolkit/rb-milter-core-private.[ch],
 	binding/ruby/src/manager/rb-milter-manager-children.c: bind
 	milter_manager_children_get_smtp_client_address().

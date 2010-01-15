@@ -28,6 +28,7 @@ require 'milter_manager.so'
 require 'milter/compatible'
 
 require 'milter/manager/child-context'
+require 'milter/manager/connection-check-context'
 
 require 'milter/manager/debian-init-detector'
 require 'milter/manager/redhat-detector'
@@ -92,6 +93,8 @@ module Milter::Manager
       dump_item("manager.max_file_descriptors", c.max_file_descriptors.inspect)
       dump_item("manager.custom_configuration_directory",
                 c.custom_configuration_directory.inspect)
+      dump_item("manager.connection_check_interval",
+                c.connection_check_interval.inspect)
       @result << "\n"
 
       dump_item("controller.connection_spec",
@@ -787,6 +790,20 @@ module Milter::Manager
 
       def custom_configuration_directory
         @configuration.custom_configuration_directory
+      end
+
+      def connection_check_interval=(interval)
+        @configuration.connection_check_interval = interval
+      end
+
+      def define_connection_checker(name, &block)
+        @configuration.signal_connect('connected') do |_config, leader|
+          leader.signal_connect('connection-check') do |_leader|
+            ConfigurationLoader.guard(true) do
+              block.call(ConnectionCheckContext.new(leader))
+            end
+          end
+        end
       end
     end
 

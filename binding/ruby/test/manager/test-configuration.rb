@@ -57,6 +57,12 @@ class TestConfiguration < Test::Unit::TestCase
     assert_equal(10, @configuration.max_file_descriptors)
   end
 
+  def test_max_connection_check_interval
+    assert_equal(0, @configuration.connection_check_interval)
+    @configuration.connection_check_interval = 10
+    assert_equal(10, @configuration.connection_check_interval)
+  end
+
   def test_package
     @configuration.package_platform = "pkgsrc"
     assert_equal("pkgsrc", @configuration.package_platform)
@@ -243,6 +249,8 @@ manager.max_connections = 0
 manager.max_file_descriptors = 0
 # default
 manager.custom_configuration_directory = nil
+# default
+manager.connection_check_interval = 0
 
 # default
 controller.connection_spec = nil
@@ -331,6 +339,8 @@ manager.max_connections = 0
 manager.max_file_descriptors = 0
 # default
 manager.custom_configuration_directory = nil
+# default
+manager.connection_check_interval = 0
 
 # default
 controller.connection_spec = nil
