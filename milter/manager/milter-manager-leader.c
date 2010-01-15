@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -207,12 +207,16 @@ static void
 start_periodical_connection_checker (MilterManagerLeader *leader)
 {
     MilterManagerLeaderPrivate *priv;
+    guint interval;
 
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
     dispose_periodical_connection_checker(priv);
 
-    priv->periodical_connection_checker_id =
-        g_timeout_add_seconds(5, connection_check, leader);
+    interval = milter_manager_configuration_get_connection_check_interval(priv->configuration);
+    if (interval > 0) {
+        priv->periodical_connection_checker_id =
+            g_timeout_add(interval * 1000, connection_check, leader);
+    }
 }
 
 static void
@@ -333,7 +337,7 @@ boolean_handled_accumulator (GSignalInvocationHint *ihint,
 
     signal_handled = g_value_get_boolean(handler_return);
     g_value_set_boolean(return_accu, signal_handled);
-    continue_emission = !signal_handled;
+    continue_emission = signal_handled;
 
     return continue_emission;
 }
