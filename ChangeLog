@@ -1,3 +1,7 @@
+2010-01-16  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/manager/milter-manager-leader.c: make children property.
+
 2010-01-15  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/manager/milter-manager-children.[ch],

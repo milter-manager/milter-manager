@@ -55,7 +55,8 @@ enum
 {
     PROP_0,
     PROP_CONFIGURATION,
-    PROP_CLIENT_CONTEXT
+    PROP_CLIENT_CONTEXT,
+    PROP_CHILDREN
 };
 
 static gint signals[LAST_SIGNAL] = {0};
@@ -118,6 +119,13 @@ milter_manager_leader_class_init (MilterManagerLeaderClass *klass)
                                MILTER_TYPE_CLIENT_CONTEXT,
                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_CLIENT_CONTEXT, spec);
+
+    spec = g_param_spec_object("children",
+                               "Children",
+                               "The object manages child milters.",
+                               MILTER_TYPE_MANAGER_CHILDREN,
+                               G_PARAM_READABLE);
+    g_object_class_install_property(gobject_class, PROP_CHILDREN, spec);
 
     signals[CONNECTION_CHECK] =
         g_signal_new("connection-check",
@@ -296,6 +304,9 @@ get_property (GObject    *object,
         break;
       case PROP_CLIENT_CONTEXT:
         g_value_set_object(value, priv->client_context);
+        break;
+      case PROP_CHILDREN:
+        g_value_set_object(value, priv->children);
         break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
