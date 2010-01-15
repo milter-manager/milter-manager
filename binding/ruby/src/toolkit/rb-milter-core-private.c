@@ -72,18 +72,13 @@ rb_milter__macros2rval (GHashTable *macros)
 }
 
 VALUE
-rb_milter__connect_signal_convert (guint num, const GValue *values)
+rb_milter__address2rval (struct sockaddr *address, socklen_t address_length)
 {
     static ID id_new = 0;
-    struct sockaddr *address;
-    socklen_t address_length;
     VALUE rb_address = Qnil;
 
     if (id_new == 0)
 	id_new = rb_intern("new");
-
-    address = g_value_get_pointer(&values[2]);
-    address_length = g_value_get_uint(&values[3]);
 
     switch (address->sa_family) {
       case AF_INET:
@@ -137,6 +132,20 @@ rb_milter__connect_signal_convert (guint num, const GValue *values)
 	rb_address = rb_str_new((char *)address, address_length);
 	break;
     }
+
+    return rb_address;
+}
+
+VALUE
+rb_milter__connect_signal_convert (guint num, const GValue *values)
+{
+    struct sockaddr *address;
+    socklen_t address_length;
+    VALUE rb_address = Qnil;
+
+    address = g_value_get_pointer(&values[2]);
+    address_length = g_value_get_uint(&values[3]);
+    rb_address = ADDRESS2RVAL(address, address_length);
 
     return rb_ary_new3(3,
 		       GVAL2RVAL(&values[0]),

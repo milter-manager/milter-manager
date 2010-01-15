@@ -53,6 +53,7 @@ void Init_milter_protocol_agent (void);
 
 #define RVAL2MACROS(hash)   (rb_milter__rval2macros(hash))
 #define MACROS2RVAL(macros) (rb_milter__macros2rval(macros))
+#define ADDRESS2RVAL(address, length) (rb_milter__address2rval(address, length))
 
 #ifndef RVAL2CSTR_ACCEPT_NIL
 #  define RVAL2CSTR_ACCEPT_NIL(string) RVAL2CSTR2(string)
@@ -61,6 +62,8 @@ void Init_milter_protocol_agent (void);
 
 GHashTable *rb_milter__rval2macros(VALUE rb_macros);
 VALUE       rb_milter__macros2rval(GHashTable *macros);
+VALUE       rb_milter__address2rval(struct sockaddr *address,
+				    socklen_t address_length);
 
 VALUE rb_milter__connect_signal_convert        (guint num,
 						const GValue *values);

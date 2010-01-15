@@ -1,5 +1,9 @@
 2010-01-16  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/src/toolkit/rb-milter-core-private.[ch],
+	binding/ruby/src/manager/rb-milter-manager-children.c: bind
+	milter_manager_children_get_smtp_client_address().
+
 	* milter/manager/milter-manager-leader.c: make children property.
 
 2010-01-15  Kouhei Sutou  <kou@cozmixng.org>

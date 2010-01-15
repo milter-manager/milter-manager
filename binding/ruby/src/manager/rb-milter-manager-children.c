@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -17,6 +17,7 @@
  *
  */
 
+#include "../toolkit/rb-milter-core-private.h"
 #include "rb-milter-manager-private.h"
 
 #define SELF(self) (MILTER_MANAGER_CHILDREN(RVAL2GOBJ(self)))
@@ -74,6 +75,21 @@ get_quitted_children (VALUE self)
     return GLIST2ARY(milter_manager_children_get_quitted_children(SELF(self)));
 }
 
+static VALUE
+get_smtp_client_address (VALUE self)
+{
+    struct sockaddr *address;
+    socklen_t address_length;
+
+    if (milter_manager_children_get_smtp_client_address(SELF(self),
+							&address,
+							&address_length)) {
+	return ADDRESS2RVAL(address, address_length);
+    } else {
+	return Qnil;
+    }
+}
+
 static void
 mark (gpointer data)
 {
@@ -104,4 +120,6 @@ Init_milter_manager_children (void)
     rb_define_method(rb_cMilterManagerChildren, "children", get_children, 0);
     rb_define_method(rb_cMilterManagerChildren, "quitted_children",
 		     get_quitted_children, 0);
+    rb_define_method(rb_cMilterManagerChildren, "smtp_client_address",
+		     get_smtp_client_address, 0);
 }
