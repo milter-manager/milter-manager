@@ -1,5 +1,8 @@
 2010-01-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/test-configuration.c (test_clear): add a test for
+	connected handler is disconnected by clear().
+
 	* milter/manager/milter-manager-leader.c: use configured
 	connection check interval.
 

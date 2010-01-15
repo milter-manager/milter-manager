@@ -757,9 +757,19 @@ test_remove_applicable_condition (void)
         milter_assert_default_configuration_helper(config),     \
         milter_assert_default_configuration(config))
 
+static gboolean
+cb_connected (MilterManagerConfiguration *configuration,
+              MilterManagerLeader *leader,
+              gpointer user_data)
+{
+    return TRUE;
+}
+
 void
 test_clear (void)
 {
+    gulong handler_id;
+
     milter_assert_default_configuration(config);
 
     test_privilege_mode();
@@ -778,8 +788,14 @@ test_clear (void)
     test_max_file_descriptors();
     test_connection_check_interval();
 
+    handler_id = g_signal_connect(config, "connected",
+                                  G_CALLBACK(cb_connected), NULL);
+    cut_assert_true(g_signal_handler_is_connected(config, handler_id));
+
     milter_manager_configuration_clear(config);
     milter_assert_default_configuration(config);
+
+    cut_assert_false(g_signal_handler_is_connected(config, handler_id));
 }
 
 void
