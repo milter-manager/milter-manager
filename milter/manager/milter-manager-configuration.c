@@ -29,6 +29,7 @@
 
 #include "milter-manager-module.h"
 #include "milter-manager-configuration.h"
+#include "milter-manager-leader.h"
 #include "milter-manager-children.h"
 #include <milter/core/milter-marshalers.h>
 
@@ -106,6 +107,7 @@ enum
 
 enum
 {
+    CONNECTED,
     TO_XML,
     LAST_SIGNAL,
 };
@@ -370,6 +372,15 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
                                     PROP_CONNECTION_CHECK_INTERVAL,
                                     spec);
 
+
+    signals[CONNECTED] =
+        g_signal_new("connected",
+                     G_TYPE_FROM_CLASS(klass),
+                     G_SIGNAL_RUN_LAST,
+                     G_STRUCT_OFFSET(MilterManagerConfigurationClass, connected),
+                     NULL, NULL,
+                     g_cclosure_marshal_VOID__OBJECT,
+                     G_TYPE_NONE, 1, MILTER_TYPE_MANAGER_LEADER);
 
     signals[TO_XML] =
         g_signal_new("to-xml",
@@ -1368,6 +1379,44 @@ milter_manager_configuration_set_custom_configuration_directory (MilterManagerCo
     priv->custom_configuration_directory = g_strdup(custom_configuration_directory);
 }
 
+static gboolean
+cb_connected_dummy (MilterManagerConfiguration *configuration,
+                    MilterManagerLeader *leader,
+                    gpointer user_data)
+{
+    return TRUE;
+}
+
+void
+milter_manager_configuration_clear_signal_handlers (MilterManagerConfiguration *configuration)
+{
+    MilterManagerConfigurationPrivate *priv;
+    gulong i, max_id;
+    gboolean handler_id_overflowed;
+    static gulong previous_max_id = 0;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+
+    max_id = g_signal_connect(configuration, "connected",
+                              G_CALLBACK(cb_connected_dummy), NULL);
+
+    handler_id_overflowed = previous_max_id > max_id;
+    if (handler_id_overflowed) {
+        for (i = previous_max_id + 1; i <= G_MAXULONG; i++) {
+            if (g_signal_handler_is_connected(configuration, i)) {
+                g_signal_handler_disconnect(configuration, i);
+            }
+        }
+    }
+    previous_max_id = max_id;
+
+    for (i = 0; i <= max_id; i++) {
+        if (g_signal_handler_is_connected(configuration, i)) {
+            g_signal_handler_disconnect(configuration, i);
+        }
+    }
+}
+
 void
 milter_manager_configuration_add_egg (MilterManagerConfiguration *configuration,
                                       MilterManagerEgg         *egg)
@@ -1637,6 +1686,7 @@ milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
 
+    milter_manager_configuration_clear_signal_handlers(configuration);
     milter_manager_configuration_clear_eggs(configuration);
     milter_manager_configuration_clear_applicable_conditions(configuration);
 

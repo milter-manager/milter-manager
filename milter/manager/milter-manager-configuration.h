@@ -63,6 +63,8 @@ struct _MilterManagerConfigurationClass
                                    const gchar                *file_name,
                                    GError                    **error);
     void         (*maintain)      (MilterManagerConfiguration *configuration);
+    void         (*connected)     (MilterManagerConfiguration *configuration,
+                                   MilterManagerLeader        *leader);
     void         (*to_xml)        (MilterManagerConfiguration *configuration,
                                    GString                    *xml,
                                    guint                       indent);
@@ -240,6 +242,9 @@ const gchar  *milter_manager_configuration_get_custom_configuration_directory
 void          milter_manager_configuration_set_custom_configuration_directory
                                      (MilterManagerConfiguration *configuration,
                                       const gchar                *directory);
+
+void          milter_manager_configuration_clear_signal_handlers
+                                     (MilterManagerConfiguration *configuration);
 
 void          milter_manager_configuration_add_egg
                                      (MilterManagerConfiguration *configuration,

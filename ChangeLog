@@ -1,6 +1,11 @@
 2010-01-15  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/manager/milter-manager-configuration.[ch],
+	milter/manager/milter-manager-leader.h,
+	milter/manager/milter-manager-objects.h: add 'connected' signal to
+	configuration.
+
+	* milter/manager/milter-manager-configuration.[ch],
 	test/manager/test-configuration.c: add
 	milter_manager_configuration_get_connection_check_interval() and
 	milter_manager_configuration_set_connection_check_interval().
