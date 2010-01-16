@@ -1,5 +1,9 @@
 2010-01-16  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-leader.c: use
+	milter_manager_children_abort() instead of
+	milter_manager_leader_abort() to avoid leader state is changed.
+
 	* milter/manager/milter-manager-leader.c: use nick name instead of
 	full name.
 

@@ -210,11 +210,12 @@ connection_check (gpointer data)
         fallback_status_nick =
             milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, fallback_status);
         priv->periodical_connection_checker_id = 0;
-        milter_manager_leader_abort(leader);
         reply(leader, fallback_status);
         milter_debug("[%u] [leader][connection-check][%s][reply][%s]",
                      tag, state_nick, fallback_status_nick);
         g_free(fallback_status_nick);
+        if (priv->children)
+            milter_manager_children_abort(priv->children);
     }
     g_free(state_nick);
 
