@@ -1,5 +1,8 @@
 2010-01-16  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-leader.c: don't call connection
+	checker when milter manager isn't processing a request from MTA.
+
 	* binding/ruby/src/toolkit/rb-milter-client-context.c,
 	binding/ruby/lib/milter/manager/connection-check-context.rb:
 	export MTA socket address to connection checker.
