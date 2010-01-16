@@ -1713,7 +1713,8 @@ test_end_of_message_timeout (void)
     wait_reply(1, n_end_of_message_timeout_emitted);
 
     cut_assert_equal_string(
-        cut_take_printf("[%u] [children][timeout][end-of-message] [%u] "
+        cut_take_printf("[%u] [children][timeout][end-of-message]"
+                        "[end-of-message][accept] [%u] "
                         "milter@10026\n",
                         milter_manager_children_get_tag(children),
                         milter_agent_get_tag(MILTER_AGENT(child))),
@@ -1762,7 +1763,8 @@ test_writing_timeout (void)
     wait_reply(1, n_continue_emitted);
 
     cut_assert_equal_string(
-        cut_take_printf("[%u] [children][timeout][writing] [%u] milter@10027\n",
+        cut_take_printf("[%u] [children][timeout][writing][negotiate][accept] "
+                        "[%u] milter@10027\n",
                         milter_manager_children_get_tag(children),
                         milter_agent_get_tag(MILTER_AGENT(child))),
         error_message->str);
@@ -1804,7 +1806,8 @@ test_reading_timeout (void)
     wait_reply(1, n_reading_timeout_emitted);
 
     cut_assert_equal_string(
-        cut_take_printf("[%u] [children][timeout][reading] [%u] milter@10027\n",
+        cut_take_printf("[%u] [children][timeout][reading][connect][accept] "
+                        "[%u] milter@10027\n",
                         milter_manager_children_get_tag(children),
                         milter_agent_get_tag(MILTER_AGENT(child))),
         error_message->str);

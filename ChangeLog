@@ -1,5 +1,11 @@
 2010-01-16  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.c,
+	test/manager/test-children.c: return fallback status on timeout
+	and error cases.
+
+	* milter/manager/milter-manager-children.c: use fallback status on
+
 	* milter/manager/milter-manager-leader.c: use
 	milter_manager_children_abort() instead of
 	milter_manager_leader_abort() to avoid leader state is changed.
