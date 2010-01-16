@@ -23,9 +23,17 @@ module Milter::Manager
       children.smtp_client_address
     end
 
+    def smtp_server_address
+      client_context.socket_address
+    end
+
     private
     def children
       @children ||= @leader.children
+    end
+
+    def client_context
+      @client_context ||= @leader.client_context
     end
   end
 end

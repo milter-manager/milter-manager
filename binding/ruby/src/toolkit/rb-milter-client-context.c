@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -75,6 +75,34 @@ format_reply (VALUE self)
     return CSTR2RVAL_FREE(milter_client_context_format_reply(SELF(self)));
 }
 
+static VALUE
+get_socket_address (VALUE self)
+{
+    MilterGenericSocketAddress *address;
+    socklen_t address_length;
+
+    address = milter_client_context_get_socket_address(SELF(self));
+    if (!address)
+	return Qnil;
+
+    switch (address->address.base.sa_family) {
+      case AF_UNIX:
+	address_length = sizeof(struct sockaddr_un);
+	break;
+      case AF_INET:
+	address_length = sizeof(struct sockaddr_in);
+	break;
+      case AF_INET6:
+	address_length = sizeof(struct sockaddr_in6);
+	break;
+      default:
+	return Qnil;
+	break;
+    }
+
+    return ADDRESS2RVAL(&(address->address.base), address_length);
+}
+
 void
 Init_milter_client_context (void)
 {
@@ -94,6 +122,8 @@ Init_milter_client_context (void)
     rb_define_method(rb_cMilterClientContext, "add_header", add_header, 2);
     rb_define_method(rb_cMilterClientContext, "set_reply", set_reply, 3);
     rb_define_method(rb_cMilterClientContext, "format_reply", format_reply, 0);
+    rb_define_method(rb_cMilterClientContext, "socket_address",
+		     get_socket_address, 0);
 
     G_DEF_SIGNAL_FUNC(rb_cMilterClientContext, "connect",
 		      rb_milter__connect_signal_convert);

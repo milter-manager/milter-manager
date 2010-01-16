@@ -1,6 +1,10 @@
 2010-01-16  Kouhei Sutou  <kou@cozmixng.org>
 
-	* milter/client/milter-client.c: set MTA server socket address to
+	* binding/ruby/src/toolkit/rb-milter-client-context.c,
+	binding/ruby/lib/milter/manager/connection-check-context.rb:
+	export MTA socket address to connection checker.
+
+	* milter/client/milter-client.c: set MTA socket address to
 	context.
 
 	* milter/client/milter-client-context.[ch],
