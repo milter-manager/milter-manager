@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2009-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -30,6 +30,7 @@
 #undef shutdown
 
 void test_tag (void);
+void test_socket_address (void);
 
 static MilterClientContext *context;
 
@@ -110,6 +111,23 @@ test_tag (void)
     cut_assert_equal_uint(29, milter_reader_get_tag(reader));
     milter_agent_set_writer(agent, writer);
     cut_assert_equal_uint(29, milter_writer_get_tag(writer));
+}
+
+void
+test_socket_address (void)
+{
+    MilterGenericSocketAddress address;
+    MilterGenericSocketAddress *actual_address;
+
+    cut_assert_null(milter_client_context_get_socket_address(context));
+
+    address.address.un.sun_family = AF_UNIX;
+    strcpy(address.address.un.sun_path, "/tmp/socket");
+    milter_client_context_set_socket_address(context, &address);
+
+    actual_address = milter_client_context_get_socket_address(context);
+    cut_assert_equal_memory(&address, sizeof(address),
+                            actual_address, sizeof(*actual_address));
 }
 
 /*

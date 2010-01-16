@@ -96,6 +96,7 @@ struct _MilterClientContextPrivate
     guint timeout;
     guint timeout_id;
     gchar *quarantine_reason;
+    MilterGenericSocketAddress address;
 };
 
 static void         finished           (MilterFinishedEmittable *emittable);
@@ -1503,6 +1504,7 @@ milter_client_context_init (MilterClientContext *context)
     priv->timeout = 7210;
     priv->timeout_id = 0;
     priv->quarantine_reason = NULL;
+    memset(&(priv->address), '\0', sizeof(priv->address));
 }
 
 static void
@@ -3233,6 +3235,35 @@ MilterOption *
 milter_client_context_get_option (MilterClientContext *context)
 {
     return MILTER_CLIENT_CONTEXT_GET_PRIVATE(context)->option;
+}
+
+void
+milter_client_context_set_socket_address (MilterClientContext *context,
+                                          MilterGenericSocketAddress *address)
+{
+    MilterClientContextPrivate *priv;
+
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    if (address) {
+        memcpy(&(priv->address), address, sizeof(priv->address));
+    } else {
+        memset(&(priv->address), '\0', sizeof(priv->address));
+    }
+}
+
+MilterGenericSocketAddress *
+milter_client_context_get_socket_address (MilterClientContext *context)
+{
+    MilterClientContextPrivate *priv;
+    MilterGenericSocketAddress address;
+
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    memset(&address, '\0', sizeof(address));
+    if (memcmp(&(priv->address), &address, sizeof(address)) == 0) {
+        return NULL;
+    } else {
+        return &(priv->address);
+    }
 }
 
 

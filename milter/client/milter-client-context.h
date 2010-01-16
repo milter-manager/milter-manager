@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -818,6 +818,27 @@ void                 milter_client_context_set_option        (MilterClientContex
  * Returns: the option for the context.
  */
 MilterOption        *milter_client_context_get_option        (MilterClientContext *context);
+
+/**
+ * milter_client_context_set_socket_address:
+ * @context: a %MilterClientContext.
+ * @address: a %MilterGenericSocketAddress.
+ *
+ * Sets the socket address of connected server for the context.
+ */
+void                 milter_client_context_set_socket_address(MilterClientContext *context,
+                                                              MilterGenericSocketAddress *address);
+
+/**
+ * milter_client_context_get_option:
+ * @context: a %MilterClientContext.
+ *
+ * Gets the socket address of connected server for the context.
+ *
+ * Returns: the socket address of connected server for the context.
+ */
+MilterGenericSocketAddress *milter_client_context_get_socket_address
+                                                             (MilterClientContext *context);
 
 
 

@@ -1,5 +1,9 @@
 2010-01-16  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client-context.[ch],
+	test/client/test-client-context-base.c: add
+	milter_client_context_{set,get}_socket_address().
+
 	* binding/ruby/lib/milter/manager.rb,
 	binding/ruby/lib/milter/manager/Makefile.am,
 	binding/ruby/lib/milter/manager/connection-check-context.rb,
