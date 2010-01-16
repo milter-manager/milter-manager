@@ -207,8 +207,8 @@ connection_check (gpointer data)
 
         fallback_status =
             milter_manager_configuration_get_fallback_status(priv->configuration);
-        fallback_status_nick = milter_utils_get_enum_name(MILTER_TYPE_STATUS,
-                                                          fallback_status);
+        fallback_status_nick =
+            milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, fallback_status);
         priv->periodical_connection_checker_id = 0;
         milter_manager_leader_abort(leader);
         reply(leader, fallback_status);
