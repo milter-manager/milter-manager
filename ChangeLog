@@ -1,5 +1,8 @@
 2010-01-16  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client.c: set MTA server socket address to
+	context.
+
 	* milter/client/milter-client-context.[ch],
 	test/client/test-client-context-base.c: add
 	milter_client_context_{set,get}_socket_address().

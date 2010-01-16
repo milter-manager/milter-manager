@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -491,6 +491,7 @@ typedef struct _ClientChannelSetupData
 {
     MilterClient *client;
     GIOChannel *channel;
+    MilterGenericSocketAddress address;
 } ClientChannelSetupData;
 
 static gboolean
@@ -518,6 +519,8 @@ cb_timeout_client_channel_setup (gpointer user_data)
 
     milter_client_context_set_timeout(context, priv->timeout);
 
+    milter_client_context_set_socket_address(context, &(setup_data->address));
+
     data = g_new(MilterClientProcessData, 1);
     data->priv = priv;
     data->client = client;
@@ -540,13 +543,16 @@ cb_timeout_client_channel_setup (gpointer user_data)
 }
 
 static void
-process_client_channel (MilterClient *client, GIOChannel *channel)
+process_client_channel (MilterClient *client, GIOChannel *channel,
+                        MilterGenericSocketAddress *address,
+                        socklen_t address_size)
 {
     ClientChannelSetupData *data;
 
     data = g_new(ClientChannelSetupData, 1);
     data->client = client;
     data->channel = channel;
+    memcpy(&(data->address), address, address_size);
     g_io_channel_ref(channel);
 
     g_timeout_add(0, cb_timeout_client_channel_setup, data);
@@ -618,7 +624,7 @@ accept_client (gint server_fd, MilterClient *client)
     g_io_channel_set_encoding(client_channel, NULL, NULL);
     g_io_channel_set_flags(client_channel, G_IO_FLAG_NONBLOCK, NULL);
     g_io_channel_set_close_on_unref(client_channel, TRUE);
-    process_client_channel(client, client_channel);
+    process_client_channel(client, client_channel, &address, address_size);
     g_io_channel_unref(client_channel);
 
     return TRUE;
