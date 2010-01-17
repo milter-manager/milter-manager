@@ -1,5 +1,9 @@
 2010-01-17  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager.rb: fix a typo.
+	* binding/ruby/test/manager/test-configuration.rb: add tests for
+	configured location.
+
 	* binding/ruby/lib/milter/manager.rb: don't define duplicated name
 	connection checker.
 

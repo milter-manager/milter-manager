@@ -271,6 +271,18 @@ EOD
     loader.security.effective_user = "nobody"; effective_user_line = __LINE__
     loader.security.effective_group = "nogroup"; effective_group_line = __LINE__
 
+    manager_unix_socket_group = __LINE__ + 1
+    loader.manager.unix_socket_group = "nogroup"
+    manager_pid_file = __LINE__ + 1
+    loader.manager.pid_file = "/tmp/milter-manager.pid"
+    manager_custom_configuration_directory = __LINE__ + 1
+    loader.manager.custom_configuration_directory = "/tmp/milter-manager/"
+
+    controller_connection_spec = __LINE__ + 1
+    loader.controller.connection_spec = "inet:10025"
+    controller_unix_socket_group = __LINE__ + 1
+    loader.controller.unix_socket_group = "nogroup"
+
     s25r_lines = {}
     s25r_lines[:define] = __LINE__ + 1
     loader.define_applicable_condition("S25R") do |condition|
@@ -319,16 +331,16 @@ security.effective_group = "nogroup"
 manager.connection_spec = #{@configuration.manager_connection_spec.inspect}
 # default
 manager.unix_socket_mode = 0660
-# default
-manager.unix_socket_group = nil
+# #{__FILE__}:#{manager_unix_socket_group}
+manager.unix_socket_group = "nogroup"
 # default
 manager.remove_unix_socket_on_create = true
 # default
 manager.remove_unix_socket_on_close = true
 # default
 manager.daemon = false
-# default
-manager.pid_file = nil
+# #{__FILE__}:#{manager_pid_file}
+manager.pid_file = "/tmp/milter-manager.pid"
 # default
 manager.maintenance_interval = 100
 # default
@@ -337,17 +349,17 @@ manager.suspend_time_on_unacceptable = 5
 manager.max_connections = 0
 # default
 manager.max_file_descriptors = 0
-# default
-manager.custom_configuration_directory = nil
+# #{__FILE__}:#{manager_custom_configuration_directory}
+manager.custom_configuration_directory = "/tmp/milter-manager/"
 # default
 manager.connection_check_interval = 0
 
-# default
-controller.connection_spec = nil
+# #{__FILE__}:#{controller_connection_spec}
+controller.connection_spec = "inet:10025"
 # default
 controller.unix_socket_mode = 0660
-# default
-controller.unix_socket_group = nil
+# #{__FILE__}:#{controller_unix_socket_group}
+controller.unix_socket_group = "nogroup"
 # default
 controller.remove_unix_socket_on_create = true
 # default

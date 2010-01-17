@@ -840,7 +840,7 @@ module Milter::Manager
 
       private
       def update_location(key, reset, deep_level=2)
-        full_key = "controller.#{key}"
+        full_key = "manager.#{key}"
         ConfigurationLoader.update_location(@configuration, full_key, reset,
                                             deep_level)
       end
