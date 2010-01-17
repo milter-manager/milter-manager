@@ -15,7 +15,8 @@ test_files =					\
 	test-control-reply-encoder.rb		\
 	test-custom-xml-loader.rb		\
 	test-egg.rb				\
-	test-child-context.rb
+	test-child-context.rb			\
+	test-netstat-connection-checker.rb
 
 EXTRA_DIST =		\
 	$(test_files)

@@ -1,3 +1,12 @@
+2010-01-17  Kouhei Sutou  <kou@cozmixng.org>
+
+	* binding/ruby/lib/milter/manager/netstat-connection-checker.rb,
+	binding/ruby/test/manager/test-netstat-connection-checker.rb,
+	binding/ruby/lib/milter/manager.rb,
+	binding/ruby/lib/milter/manager/Makefile.am,
+	binding/ruby/test/manager/Makefile.am: add connection checker
+	based on netstat command.
+
 2010-01-16  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/manager/milter-manager-children.c,

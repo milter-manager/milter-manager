@@ -29,6 +29,7 @@ require 'milter/compatible'
 
 require 'milter/manager/child-context'
 require 'milter/manager/connection-check-context'
+require 'milter/manager/netstat-connection-checker'
 
 require 'milter/manager/debian-init-detector'
 require 'milter/manager/redhat-detector'
