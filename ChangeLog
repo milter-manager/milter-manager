@@ -1,5 +1,11 @@
 2010-01-17  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO:
+	- add:
+	[1.5.x] show elapsed time in connection check log when disconnected.
+	- remove:
+	[1.5.x] detete client connection disconnected by netstat for tarpitting.
+
 	* milter/manager/milter-manager-leader.c (connection_check):
 	improve log message.
 
