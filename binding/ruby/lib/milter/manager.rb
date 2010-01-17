@@ -707,6 +707,7 @@ module Milter::Manager
     class ManagerConfiguration
       def initialize(configuration)
         @configuration = configuration
+        @connection_checker_ids = {}
       end
 
       def connection_spec=(spec)
@@ -825,13 +826,16 @@ module Milter::Manager
       end
 
       def define_connection_checker(name, &block)
-        @configuration.signal_connect('connected') do |_config, leader|
+        old_id = @connection_checker_ids[name]
+        @configuration.signal_handler_disconnect(old_id) if old_id
+        id = @configuration.signal_connect('connected') do |_config, leader|
           leader.signal_connect('connection-check') do |_leader|
             ConfigurationLoader.guard(true) do
               block.call(ConnectionCheckContext.new(leader))
             end
           end
         end
+        @connection_checker_ids[name] = id
       end
 
       private
