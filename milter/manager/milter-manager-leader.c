@@ -191,15 +191,16 @@ connection_check (gpointer data)
         return TRUE;
     }
 
-    milter_debug("[%u] [leader][connection-check][%s][start] %d",
-                 tag, state_nick, priv->processing);
+    milter_debug("[%u] [leader][connection-check][%s][start]",
+                 tag, state_nick);
     if (priv->processing) {
         g_signal_emit(leader, signals[CONNECTION_CHECK], 0, &connected);
     } else {
         connected = FALSE;
     }
-    milter_debug("[%u] [leader][connection-check][%s][end] %d",
-                 tag, state_nick, connected);
+    milter_debug("[%u] [leader][connection-check][%s][end][%s]",
+                 tag, state_nick,
+                 connected ? "connected", "disconnected");
 
     if (!connected) {
         MilterStatus fallback_status;
