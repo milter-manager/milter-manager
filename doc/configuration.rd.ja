@@ -445,7 +445,35 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
    既定値:
      manager.custom_configuration_directory = nil
 
+: manager.user_netstat_connection_checker
+
+   1.5.0から使用可能。
+
+   ((%netstat%))コマンドの出力を解析してSMTPクライアントがま
+   だSMTPサーバと接続しているかを確認します。
+
+   この機能はmilter（milter-greylist）を用いた
+   ((<taRgrey|http://k2net.hakuba.jp/targrey/>))を
+   実現しているときなど、SMTPクライアントが自発的に切断した
+   ことを検出して途中で処理を止めたい場合に有用です。この機
+   能を用いることによりtaRgreyの問題点の1つであるSMTPサーバ
+   のプロセス数増大を抑えることができます。プロセス数が増大
+   するとメモリ使用量が増えるため、プロセス数増大を抑えるこ
+   とはメモリ使用量を抑えることにつながります。
+
+   接続は5秒毎に確認します。この間隔は変更することも可能です
+   が、通常は変更する必要はありません。
+
+   例:
+     manager.use_netstat_connection_checker    # 5秒間隔で確認
+     manager.use_netstat_connection_checker(1) # 1秒間隔で確認
+
+   初期値:
+     確認しない
+
 : manager.connection_check_interval
+
+   ((*この項目は通常は直接使用する必要はありません。*))
 
    1.5.0から使用可能。
 
@@ -465,6 +493,8 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
      manager.connection_check_interval = 0
 
 : manager.define_connection_checker(name) {|context| ... # -> true/false}
+
+   ((*この項目は通常は直接使用する必要はありません。*))
 
    1.5.0から使用可能。
 

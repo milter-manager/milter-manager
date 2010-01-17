@@ -838,6 +838,14 @@ module Milter::Manager
         @connection_checker_ids[name] = id
       end
 
+      def use_netstat_connection_checker(interval=5)
+        self.connection_check_interval = interval
+        checker = NetstatConnectionChecker.new
+        self.define_connection_checker("netstat") do |context|
+          checker.connected?(context)
+        end
+      end
+
       private
       def update_location(key, reset, deep_level=2)
         full_key = "manager.#{key}"

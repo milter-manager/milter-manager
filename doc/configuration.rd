@@ -453,7 +453,35 @@ Here are descriptions of configuration items.
    Default:
      manager.custom_configuration_directory = nil
 
+: manager.user_netstat_connection_checker
+
+   Since 1.5.0.
+
+   Checks SMTP client and SMTP server are still connected by
+   parsing ((%netstat%)) command result.
+
+   This feature is useful for aborting SMTP session when
+   SMTP client disconnects SMTP session. e.g. Using
+   ((<taRgrey|http://k2net.hakuba.jp/targrey/index.en.html>))
+   with milter (milter-greylist). This feature resolves a
+   problem of taRgrey that SMTP server process is
+   grown. SMTP server process growth means memory usage
+   growth. i.e. This feature reduces memory usage caused by
+   taRgrey.
+
+   SMTP session is checked in 5 seconds. The interval time
+   can be changed but it's not needed normally.
+
+   Example:
+     manager.use_netstat_connection_checker    # check in 5 seconds.
+     manager.use_netstat_connection_checker(1) # check in 1 seconds.
+
+   Default:
+     Don't check.
+
 : manager.connection_check_interval
+
+   ((*Normally, this item doesn't need to be used directly.*))
 
    Since 1.5.0.
 
@@ -474,6 +502,8 @@ Here are descriptions of configuration items.
      manager.connection_check_interval = 0
 
 : manager.define_connection_checker(name) {|context| ... # -> true/false}
+
+   ((*Normally, this item doesn't need to be used directly.*))
 
    Since 1.5.0.
 
