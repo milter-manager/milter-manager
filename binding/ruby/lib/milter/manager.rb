@@ -619,6 +619,7 @@ module Milter::Manager
                                  available_values,
                                  mode)
         end
+        update_location("privilege_mode", false)
         @configuration.privilege_mode = mode
       end
 
@@ -655,6 +656,7 @@ module Milter::Manager
 
       def connection_spec=(spec)
         Milter::Connection.parse_spec(spec) unless spec.nil?
+        update_location("connection_spec", spec.nil?)
         @configuration.controller_connection_spec = spec
       end
 
@@ -663,6 +665,7 @@ module Milter::Manager
       end
 
       def unix_socket_mode=(mode)
+        update_location("unix_socket_mode", false)
         @configuration.controller_unix_socket_mode = mode
       end
 
@@ -671,6 +674,7 @@ module Milter::Manager
       end
 
       def unix_socket_group=(group)
+        update_location("unix_socket_group", group.nil?)
         @configuration.controller_unix_socket_group = group
       end
 
@@ -679,6 +683,7 @@ module Milter::Manager
       end
 
       def remove_unix_socket_on_create=(remove)
+        update_location("remove_unix_socket_on_create", false)
         @configuration.remove_controller_unix_socket_on_create = remove
       end
 
@@ -687,7 +692,15 @@ module Milter::Manager
       end
 
       def remove_unix_socket_on_close=(remove)
+        update_location("remove_unix_socket_on_close", false)
         @configuration.remove_controller_unix_socket_on_close = remove
+      end
+
+      private
+      def update_location(key, reset, deep_level=2)
+        full_key = "controller.#{key}"
+        ConfigurationLoader.update_location(@configuration, full_key, reset,
+                                            deep_level)
       end
     end
 
@@ -698,6 +711,7 @@ module Milter::Manager
 
       def connection_spec=(spec)
         Milter::Connection.parse_spec(spec) unless spec.nil?
+        update_location("connection_spec", spec.nil?)
         @configuration.manager_connection_spec = spec
       end
 
@@ -706,6 +720,7 @@ module Milter::Manager
       end
 
       def unix_socket_mode=(mode)
+        update_location("unix_socket_mode", false)
         @configuration.manager_unix_socket_mode = mode
       end
 
@@ -714,6 +729,7 @@ module Milter::Manager
       end
 
       def unix_socket_group=(group)
+        update_location("unix_socket_group", group.nil?)
         @configuration.manager_unix_socket_group = group
       end
 
@@ -722,6 +738,7 @@ module Milter::Manager
       end
 
       def remove_unix_socket_on_create=(remove)
+        update_location("remove_unix_socket_on_create", false)
         @configuration.remove_manager_unix_socket_on_create = remove
       end
 
@@ -730,10 +747,12 @@ module Milter::Manager
       end
 
       def remove_unix_socket_on_close=(remove)
+        update_location("remove_unix_socket_on_close", false)
         @configuration.remove_manager_unix_socket_on_close = remove
       end
 
       def daemon=(boolean)
+        update_location("daemon", false)
         @configuration.daemon = boolean
       end
 
@@ -742,6 +761,7 @@ module Milter::Manager
       end
 
       def pid_file=(pid_file)
+        update_location("pid_file", pid_file.nil?)
         @configuration.pid_file = pid_file
       end
 
@@ -750,6 +770,7 @@ module Milter::Manager
       end
 
       def maintenance_interval=(n_sessions)
+        update_location("maintenance_interval", n_sessions.nil?)
         n_sessions ||= 0
         @configuration.maintenance_interval = n_sessions
       end
@@ -759,6 +780,7 @@ module Milter::Manager
       end
 
       def suspend_time_on_unacceptable=(seconds)
+        update_location("suspend_time_on_unacceptable", seconds.nil?)
         seconds ||= Milter::Client::DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE
         @configuration.suspend_time_on_unacceptable = seconds
       end
@@ -768,6 +790,7 @@ module Milter::Manager
       end
 
       def max_connections=(n_connections)
+        update_location("max_connections", n_connections.nil?)
         n_connections ||= Milter::Client::DEFAULT_MAX_CONNECTIONS
         @configuration.max_connections = n_connections
       end
@@ -777,6 +800,7 @@ module Milter::Manager
       end
 
       def max_file_descriptors=(n_descriptors)
+        update_location("max_file_descriptors", n_descriptors.nil?)
         n_descriptors ||= 0
         @configuration.max_file_descriptors = n_descriptors
       end
@@ -786,6 +810,7 @@ module Milter::Manager
       end
 
       def custom_configuration_directory=(directory)
+        update_location("custom_configuration_directory", directory.nil?)
         @configuration.custom_configuration_directory = directory
       end
 
@@ -794,6 +819,8 @@ module Milter::Manager
       end
 
       def connection_check_interval=(interval)
+        update_location("connection_check_interval", interval.nil?)
+        interval ||= 0
         @configuration.connection_check_interval = interval
       end
 
@@ -805,6 +832,13 @@ module Milter::Manager
             end
           end
         end
+      end
+
+      private
+      def update_location(key, reset, deep_level=2)
+        full_key = "controller.#{key}"
+        ConfigurationLoader.update_location(@configuration, full_key, reset,
+                                            deep_level)
       end
     end
 
