@@ -200,7 +200,7 @@ connection_check (gpointer data)
     }
     milter_debug("[%u] [leader][connection-check][%s][end][%s]",
                  tag, state_nick,
-                 connected ? "connected", "disconnected");
+                 connected ? "connected" : "disconnected");
 
     if (!connected) {
         MilterStatus fallback_status;
