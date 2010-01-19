@@ -155,7 +155,6 @@ dispose (GObject *object)
     }
 
     if (priv->leaders) {
-        g_list_foreach(priv->leaders, (GFunc)g_object_unref, NULL);
         g_list_free(priv->leaders);
         priv->leaders = NULL;
     }
@@ -519,23 +518,37 @@ cb_idle_unref_leader (gpointer data)
     return FALSE;
 }
 
+typedef struct _LeaderFinishData
+{
+    MilterManager *manager;
+    MilterClientContext *client_context;
+} LeaderFinishData;
+
 static void
 cb_leader_finished (MilterFinishedEmittable *emittable, gpointer user_data)
 {
-    MilterClientContext *client_context = user_data;
+    LeaderFinishData *finish_data = user_data;
+    MilterClientContext *client_context;
     GTimer *timer;
     MilterManagerLeader *leader;
     MilterManagerConfiguration *config;
+    MilterManagerPrivate *priv;
 
+    client_context = finish_data->client_context;
     timer = milter_client_context_get_private_data(client_context);
     g_timer_stop(timer);
 
     leader = MILTER_MANAGER_LEADER(emittable);
     teardown_client_context_signals(client_context, leader);
 
+    priv = MILTER_MANAGER_GET_PRIVATE(finish_data->manager);
+    priv->leaders = g_list_remove(priv->leaders, leader);
+
     config = milter_manager_leader_get_configuration(leader);
     g_idle_add(cb_idle_notify_finish_session_to_configuration, config);
     g_idle_add(cb_idle_unref_leader, leader);
+
+    g_free(finish_data);
 }
 
 static void
@@ -544,10 +557,12 @@ setup_context_signals (MilterClientContext *context,
 {
     MilterManagerLeader *leader;
     MilterManagerPrivate *priv;
+    LeaderFinishData *finish_data;
 
     priv = MILTER_MANAGER_GET_PRIVATE(manager);
 
     leader = milter_manager_leader_new(priv->configuration, context);
+    priv->leaders = g_list_prepend(priv->leaders, leader);
 
 #define CONNECT(name)                                   \
     g_signal_connect(context, #name,                    \
@@ -572,8 +587,12 @@ setup_context_signals (MilterClientContext *context,
     CONNECT(finished);
 
 #undef CONNECT
+
+    finish_data = g_new(LeaderFinishData, 1);
+    finish_data->manager = manager;
+    finish_data->client_context = context;
     g_signal_connect(leader, "finished",
-                     G_CALLBACK(cb_leader_finished), context);
+                     G_CALLBACK(cb_leader_finished), finish_data);
     milter_manager_leader_set_launcher_channel(leader,
                                                priv->launcher_read_channel,
                                                priv->launcher_write_channel);

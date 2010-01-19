@@ -1,5 +1,7 @@
 2010-01-19  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager.c: keep the current processing leaders.
+
 	* milter/manager/milter-manager.c: associates configuration with
 	its manager.
 
