@@ -739,7 +739,7 @@ milter_manager_get_configuration (MilterManager *manager)
     return MILTER_MANAGER_GET_PRIVATE(manager)->configuration;
 }
 
-GList *
+const GList *
 milter_manager_get_leaders (MilterManager *manager)
 {
     return MILTER_MANAGER_GET_PRIVATE(manager)->leaders;

@@ -54,7 +54,7 @@ GType                 milter_manager_get_type    (void) G_GNUC_CONST;
 MilterManager        *milter_manager_new         (MilterManagerConfiguration *configuration);
 
 MilterManagerConfiguration *milter_manager_get_configuration (MilterManager *manager);
-GList                *milter_manager_get_leaders (MilterManager *manager);
+const GList          *milter_manager_get_leaders (MilterManager *manager);
 
 gboolean              milter_manager_reload      (MilterManager *manager);
 void                  milter_manager_set_launcher_channel
