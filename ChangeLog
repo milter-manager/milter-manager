@@ -1,5 +1,8 @@
 2010-01-19  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/src/manager/rb-milter-manager-configuration.c:
+	mark the current processing leader on GC.
+
 	* milter/manager/milter-manager.[ch] (milter_manager_get_leaders):
 	add const.
 

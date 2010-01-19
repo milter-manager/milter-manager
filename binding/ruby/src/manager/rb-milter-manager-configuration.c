@@ -261,11 +261,18 @@ static void
 mark (gpointer data)
 {
     MilterManagerConfiguration *configuration = data;
+    MilterManager *manager;
 
     g_list_foreach((GList *)milter_manager_configuration_get_eggs(configuration),
 		   (GFunc)rbgobj_gc_mark_instance, NULL);
     g_list_foreach((GList *)milter_manager_configuration_get_applicable_conditions(configuration),
 		   (GFunc)rbgobj_gc_mark_instance, NULL);
+
+    manager = g_object_get_data(G_OBJECT(configuration), "manager");
+    if (manager) {
+	g_list_foreach((GList *)milter_manager_get_leaders(manager),
+		       (GFunc)rbgobj_gc_mark_instance, NULL);
+    }
 }
 
 void
