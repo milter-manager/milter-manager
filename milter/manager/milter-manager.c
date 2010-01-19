@@ -135,6 +135,13 @@ milter_manager_init (MilterManager *manager)
 }
 
 static void
+configuration_set_manager (MilterManagerConfiguration *configuration,
+                           MilterManager *manager)
+{
+    g_object_set_data(G_OBJECT(configuration), "manager", manager);
+}
+
+static void
 dispose (GObject *object)
 {
     MilterManagerPrivate *priv;
@@ -142,6 +149,7 @@ dispose (GObject *object)
     priv = MILTER_MANAGER_GET_PRIVATE(object);
 
     if (priv->configuration) {
+        configuration_set_manager(priv->configuration, NULL);
         g_object_unref(priv->configuration);
         priv->configuration = NULL;
     }
@@ -167,18 +175,24 @@ set_property (GObject      *object,
               const GValue *value,
               GParamSpec   *pspec)
 {
+    MilterManager *manager;
     MilterManagerPrivate *priv;
 
-    priv = MILTER_MANAGER_GET_PRIVATE(object);
+    manager = MILTER_MANAGER(object);
+    priv = MILTER_MANAGER_GET_PRIVATE(manager);
     switch (prop_id) {
-      case PROP_CONFIGURATION:
-        if (priv->configuration)
+    case PROP_CONFIGURATION:
+        if (priv->configuration) {
+            configuration_set_manager(priv->configuration, NULL);
             g_object_unref(priv->configuration);
+        }
         priv->configuration = g_value_get_object(value);
-        if (priv->configuration)
+        if (priv->configuration) {
             g_object_ref(priv->configuration);
+            configuration_set_manager(priv->configuration, manager);
+        }
         break;
-      default:
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }

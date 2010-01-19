@@ -1,3 +1,8 @@
+2010-01-19  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/manager/milter-manager.c: associates configuration with
+	its manager.
+
 2010-01-18  Kouhei Sutou  <kou@clear-code.com>
 
 	* milter-manager.spec.in (Group):
