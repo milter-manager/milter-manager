@@ -260,8 +260,8 @@ if test "$ruby_available" = "yes"; then
 		     [$ruby_undef_package_macros])
   fi
   if test "$ruby_available" = "yes"; then
-    $mkdir_p binding/ruby/glib
-    cat <<EOM > binding/ruby/glib/Makefile
+    $mkdir_p binding/ruby/glib-0.16.0
+    cat <<EOM > binding/ruby/glib-0.16.0/Makefile
 all:
 distdir:
 EOM
@@ -272,8 +272,8 @@ EOM
     else
       ac_ruby_glib2_exec_prefix=$exec_prefix
     fi
-    if $mkdir_p binding/ruby/glib && \
-       (cd binding/ruby/glib && \
+    if $mkdir_p binding/ruby/glib-0.16.0 && \
+       (cd binding/ruby/glib-0.16.0 && \
         $RUBY ../../../$srcdir/binding/ruby/glib/extconf.rb \
 	  --with-prefix=$prefix \
 	  --with-exec-prefix=$ac_ruby_glib2_exec_prefix \
@@ -281,8 +281,8 @@ EOM
 	  --with-bindingdir=$bindingdir \
 	  --with-sitearchdir=$binding_extdir \
 	  --with-sitelibdir=$binding_libdir); then
-      use_bundled_ruby_glib2=yes
-      RUBY_GLIB2_CFLAGS="-I \$(top_srcdir)/binding/ruby/glib/src"
+      use_bundled_ruby_glib2_0_16_0=yes
+      RUBY_GLIB2_CFLAGS="-I \$(top_srcdir)/binding/ruby/glib-0.16.0/src"
     else
       AC_MSG_ERROR([Ruby/GLib2 is required.])
     fi
@@ -295,8 +295,8 @@ EOM
 fi
 
 AM_CONDITIONAL([WITH_RUBY], [test "$ruby_available" = "yes"])
-AM_CONDITIONAL([WITH_BUNDLED_RUBY_GLIB2],
-               [test "$use_bundled_ruby_glib2" = "yes"])
+AM_CONDITIONAL([WITH_BUNDLED_RUBY_GLIB2_0_16_0],
+               [test "$use_bundled_ruby_glib2_0_16_0" = "yes"])
 
 dnl **************************************************************
 dnl Checks for RD2

@@ -3,88 +3,88 @@ SUBDIRS =	\
 	lib	\
 	test
 
-if WITH_BUNDLED_RUBY_GLIB2
-SUBDIRS += glib
+if WITH_BUNDLED_RUBY_GLIB2_0_16_0
+SUBDIRS += glib-0.16.0
 endif
 
 EXTRA_DIST =					\
 	$(ruby_glib2_files)			\
 	$(test_unit_files)
 
-# find glib -type f | sort
+# find glib-0.16.0 -type f | sort
 ruby_glib2_files =				\
-	glib/COPYING.LIB			\
-	glib/ChangeLog				\
-	glib/README				\
-	glib/extconf.rb				\
-	glib/sample/bookmarkfile.rb		\
-	glib/sample/completion.rb		\
-	glib/sample/idle.rb			\
-	glib/sample/iochannel.rb		\
-	glib/sample/keyfile.rb			\
-	glib/sample/shell.rb			\
-	glib/sample/spawn.rb			\
-	glib/sample/timeout.rb			\
-	glib/sample/timeout2.rb			\
-	glib/sample/timer.rb			\
-	glib/sample/type-register.rb		\
-	glib/sample/type-register2.rb		\
-	glib/sample/utils.rb			\
-	glib/src/depend				\
-	glib/src/glib2.def			\
-	glib/src/global.h			\
-	glib/src/lib/glib-mkenums.rb		\
-	glib/src/lib/glib2.rb			\
-	glib/src/lib/mkmf-gnome2.rb		\
-	glib/src/lib/pkg-config.rb		\
-	glib/src/rbglib.c			\
-	glib/src/rbglib.h			\
-	glib/src/rbglib_bookmarkfile.c		\
-	glib/src/rbglib_completion.c		\
-	glib/src/rbglib_convert.c		\
-	glib/src/rbglib_error.c			\
-	glib/src/rbglib_fileutils.c		\
-	glib/src/rbglib_i18n.c			\
-	glib/src/rbglib_iochannel.c		\
-	glib/src/rbglib_keyfile.c		\
-	glib/src/rbglib_maincontext.c		\
-	glib/src/rbglib_mainloop.c		\
-	glib/src/rbglib_messages.c		\
-	glib/src/rbglib_pollfd.c		\
-	glib/src/rbglib_shell.c			\
-	glib/src/rbglib_source.c		\
-	glib/src/rbglib_spawn.c			\
-	glib/src/rbglib_threads.c		\
-	glib/src/rbglib_timer.c			\
-	glib/src/rbglib_unicode.c		\
-	glib/src/rbglib_utils.c			\
-	glib/src/rbglib_win32.c			\
-	glib/src/rbgobj_boxed.c			\
-	glib/src/rbgobj_closure.c		\
-	glib/src/rbgobj_enums.c			\
-	glib/src/rbgobj_fundamental.c		\
-	glib/src/rbgobj_object.c		\
-	glib/src/rbgobj_param.c			\
-	glib/src/rbgobj_paramspecs.c		\
-	glib/src/rbgobj_signal.c		\
-	glib/src/rbgobj_strv.c			\
-	glib/src/rbgobj_type.c			\
-	glib/src/rbgobj_typeinstance.c		\
-	glib/src/rbgobj_typeinterface.c		\
-	glib/src/rbgobj_typemodule.c		\
-	glib/src/rbgobj_typeplugin.c		\
-	glib/src/rbgobj_value.c			\
-	glib/src/rbgobj_valuearray.c		\
-	glib/src/rbgobj_valuetypes.c		\
-	glib/src/rbgobject.c			\
-	glib/src/rbgobject.h			\
-	glib/src/rbgutil.c			\
-	glib/src/rbgutil.h			\
-	glib/src/utils_int64.c			\
-	glib/tests/runner.rb			\
-	glib/tests/test_glib2.rb		\
-	glib/tests/test_iochannel.rb		\
-	glib/tests/test_unicode.rb
+	glib-0.16.0/COPYING.LIB			\
+	glib-0.16.0/ChangeLog			\
+	glib-0.16.0/README			\
+	glib-0.16.0/extconf.rb			\
+	glib-0.16.0/sample/bookmarkfile.rb	\
+	glib-0.16.0/sample/completion.rb	\
+	glib-0.16.0/sample/idle.rb		\
+	glib-0.16.0/sample/iochannel.rb		\
+	glib-0.16.0/sample/keyfile.rb		\
+	glib-0.16.0/sample/shell.rb		\
+	glib-0.16.0/sample/spawn.rb		\
+	glib-0.16.0/sample/timeout.rb		\
+	glib-0.16.0/sample/timeout2.rb		\
+	glib-0.16.0/sample/timer.rb		\
+	glib-0.16.0/sample/type-register.rb	\
+	glib-0.16.0/sample/type-register2.rb	\
+	glib-0.16.0/sample/utils.rb		\
+	glib-0.16.0/src/depend			\
+	glib-0.16.0/src/glib2.def		\
+	glib-0.16.0/src/global.h		\
+	glib-0.16.0/src/lib/glib-mkenums.rb	\
+	glib-0.16.0/src/lib/glib2.rb		\
+	glib-0.16.0/src/lib/mkmf-gnome2.rb	\
+	glib-0.16.0/src/lib/pkg-config.rb	\
+	glib-0.16.0/src/rbglib.c		\
+	glib-0.16.0/src/rbglib.h		\
+	glib-0.16.0/src/rbglib_bookmarkfile.c	\
+	glib-0.16.0/src/rbglib_completion.c	\
+	glib-0.16.0/src/rbglib_convert.c	\
+	glib-0.16.0/src/rbglib_error.c		\
+	glib-0.16.0/src/rbglib_fileutils.c	\
+	glib-0.16.0/src/rbglib_i18n.c		\
+	glib-0.16.0/src/rbglib_iochannel.c	\
+	glib-0.16.0/src/rbglib_keyfile.c	\
+	glib-0.16.0/src/rbglib_maincontext.c	\
+	glib-0.16.0/src/rbglib_mainloop.c	\
+	glib-0.16.0/src/rbglib_messages.c	\
+	glib-0.16.0/src/rbglib_pollfd.c		\
+	glib-0.16.0/src/rbglib_shell.c		\
+	glib-0.16.0/src/rbglib_source.c		\
+	glib-0.16.0/src/rbglib_spawn.c		\
+	glib-0.16.0/src/rbglib_threads.c	\
+	glib-0.16.0/src/rbglib_timer.c		\
+	glib-0.16.0/src/rbglib_unicode.c	\
+	glib-0.16.0/src/rbglib_utils.c		\
+	glib-0.16.0/src/rbglib_win32.c		\
+	glib-0.16.0/src/rbgobj_boxed.c		\
+	glib-0.16.0/src/rbgobj_closure.c	\
+	glib-0.16.0/src/rbgobj_enums.c		\
+	glib-0.16.0/src/rbgobj_fundamental.c	\
+	glib-0.16.0/src/rbgobj_object.c		\
+	glib-0.16.0/src/rbgobj_param.c		\
+	glib-0.16.0/src/rbgobj_paramspecs.c	\
+	glib-0.16.0/src/rbgobj_signal.c		\
+	glib-0.16.0/src/rbgobj_strv.c		\
+	glib-0.16.0/src/rbgobj_type.c		\
+	glib-0.16.0/src/rbgobj_typeinstance.c	\
+	glib-0.16.0/src/rbgobj_typeinterface.c	\
+	glib-0.16.0/src/rbgobj_typemodule.c	\
+	glib-0.16.0/src/rbgobj_typeplugin.c	\
+	glib-0.16.0/src/rbgobj_value.c		\
+	glib-0.16.0/src/rbgobj_valuearray.c	\
+	glib-0.16.0/src/rbgobj_valuetypes.c	\
+	glib-0.16.0/src/rbgobject.c		\
+	glib-0.16.0/src/rbgobject.h		\
+	glib-0.16.0/src/rbgutil.c		\
+	glib-0.16.0/src/rbgutil.h		\
+	glib-0.16.0/src/utils_int64.c		\
+	glib-0.16.0/tests/runner.rb		\
+	glib-0.16.0/tests/test_glib2.rb		\
+	glib-0.16.0/tests/test_iochannel.rb	\
+	glib-0.16.0/tests/test_unicode.rb
 
 # used test-unit/Manifest.txt content.
 test_unit_files =						\

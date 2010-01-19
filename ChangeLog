@@ -1,5 +1,9 @@
 2010-01-19  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/glib/: move to ...
+	* binding/ruby/glib-0.16.0/: ... here.
+	* configure.ac, binding/ruby/Makefile.am: follow the above change.
+
 	* configure.ac: also undef PACKAGE_BUGREPORT in Ruby's config.h.
 
 	* binding/ruby/src/manager/rb-milter-manager-configuration.c:
