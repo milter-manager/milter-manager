@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -54,6 +54,7 @@ GType                 milter_manager_get_type    (void) G_GNUC_CONST;
 MilterManager        *milter_manager_new         (MilterManagerConfiguration *configuration);
 
 MilterManagerConfiguration *milter_manager_get_configuration (MilterManager *manager);
+GList                *milter_manager_get_leaders (MilterManager *manager);
 
 gboolean              milter_manager_reload      (MilterManager *manager);
 void                  milter_manager_set_launcher_channel

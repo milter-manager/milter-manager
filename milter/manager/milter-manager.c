@@ -739,6 +739,12 @@ milter_manager_get_configuration (MilterManager *manager)
     return MILTER_MANAGER_GET_PRIVATE(manager)->configuration;
 }
 
+GList *
+milter_manager_get_leaders (MilterManager *manager)
+{
+    return MILTER_MANAGER_GET_PRIVATE(manager)->leaders;
+}
+
 void
 milter_manager_set_launcher_channel (MilterManager *manager,
                                      GIOChannel *read_channel,
