@@ -1,5 +1,9 @@
 2010-01-19  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/glib-0.19.3/: bundle Ruby/GLib 0.19.3.
+	* configure.ac, binding/ruby/Makefile.am: use Ruby/GLib 0.19.3 if
+	system Ruby/GLib2 is 0.17.0. (e.g. FreeBSD port)
+
 	* binding/ruby/glib/: move to ...
 	* binding/ruby/glib-0.16.0/: ... here.
 	* configure.ac, binding/ruby/Makefile.am: follow the above change.

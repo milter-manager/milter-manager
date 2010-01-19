@@ -7,12 +7,17 @@ if WITH_BUNDLED_RUBY_GLIB2_0_16_0
 SUBDIRS += glib-0.16.0
 endif
 
+if WITH_BUNDLED_RUBY_GLIB2_0_19_3
+SUBDIRS += glib-0.19.3
+endif
+
 EXTRA_DIST =					\
-	$(ruby_glib2_files)			\
+	$(ruby_glib2_0_16_0_files)		\
+	$(ruby_glib2_0_19_3_files)		\
 	$(test_unit_files)
 
 # find glib-0.16.0 -type f | sort
-ruby_glib2_files =				\
+ruby_glib2_0_16_0files =			\
 	glib-0.16.0/COPYING.LIB			\
 	glib-0.16.0/ChangeLog			\
 	glib-0.16.0/README			\
@@ -85,6 +90,182 @@ ruby_glib2_files =				\
 	glib-0.16.0/tests/test_glib2.rb		\
 	glib-0.16.0/tests/test_iochannel.rb	\
 	glib-0.16.0/tests/test_unicode.rb
+
+# find glib-0.19.3 -type f | sort
+ruby_glib2_0_19_3_files =						\
+	glib-0.19.3/COPYING.LIB						\
+	glib-0.19.3/ChangeLog						\
+	glib-0.19.3/Makefile						\
+	glib-0.19.3/README						\
+	glib-0.19.3/TODO						\
+	glib-0.19.3/extconf.rb						\
+	glib-0.19.3/ruby-glib2.pc					\
+	glib-0.19.3/sample/bookmarkfile.rb				\
+	glib-0.19.3/sample/completion.rb				\
+	glib-0.19.3/sample/idle.rb					\
+	glib-0.19.3/sample/iochannel.rb					\
+	glib-0.19.3/sample/keyfile.rb					\
+	glib-0.19.3/sample/shell.rb					\
+	glib-0.19.3/sample/spawn.rb					\
+	glib-0.19.3/sample/timeout.rb					\
+	glib-0.19.3/sample/timeout2.rb					\
+	glib-0.19.3/sample/timer.rb					\
+	glib-0.19.3/sample/type-register.rb				\
+	glib-0.19.3/sample/type-register2.rb				\
+	glib-0.19.3/sample/utils.rb					\
+	glib-0.19.3/src/Makefile					\
+	glib-0.19.3/src/depend						\
+	glib-0.19.3/src/glib-enum-types.c				\
+	glib-0.19.3/src/glib-enum-types.h				\
+	glib-0.19.3/src/glib2.def					\
+	glib-0.19.3/src/lib/glib-mkenums.rb				\
+	glib-0.19.3/src/lib/glib2.rb					\
+	glib-0.19.3/src/lib/mkmf-gnome2.rb				\
+	glib-0.19.3/src/lib/pkg-config.rb				\
+	glib-0.19.3/src/rbgcompat.h					\
+	glib-0.19.3/src/rbglib.c					\
+	glib-0.19.3/src/rbglib.h					\
+	glib-0.19.3/src/rbglib_bookmarkfile.c				\
+	glib-0.19.3/src/rbglib_completion.c				\
+	glib-0.19.3/src/rbglib_convert.c				\
+	glib-0.19.3/src/rbglib_error.c					\
+	glib-0.19.3/src/rbglib_fileutils.c				\
+	glib-0.19.3/src/rbglib_i18n.c					\
+	glib-0.19.3/src/rbglib_int64.c					\
+	glib-0.19.3/src/rbglib_iochannel.c				\
+	glib-0.19.3/src/rbglib_keyfile.c				\
+	glib-0.19.3/src/rbglib_maincontext.c				\
+	glib-0.19.3/src/rbglib_mainloop.c				\
+	glib-0.19.3/src/rbglib_messages.c				\
+	glib-0.19.3/src/rbglib_pollfd.c					\
+	glib-0.19.3/src/rbglib_shell.c					\
+	glib-0.19.3/src/rbglib_source.c					\
+	glib-0.19.3/src/rbglib_spawn.c					\
+	glib-0.19.3/src/rbglib_threads.c				\
+	glib-0.19.3/src/rbglib_timer.c					\
+	glib-0.19.3/src/rbglib_unicode.c				\
+	glib-0.19.3/src/rbglib_utils.c					\
+	glib-0.19.3/src/rbglib_win32.c					\
+	glib-0.19.3/src/rbgobj_boxed.c					\
+	glib-0.19.3/src/rbgobj_closure.c				\
+	glib-0.19.3/src/rbgobj_convert.c				\
+	glib-0.19.3/src/rbgobj_enums.c					\
+	glib-0.19.3/src/rbgobj_fundamental.c				\
+	glib-0.19.3/src/rbgobj_object.c					\
+	glib-0.19.3/src/rbgobj_param.c					\
+	glib-0.19.3/src/rbgobj_paramspecs.c				\
+	glib-0.19.3/src/rbgobj_signal.c					\
+	glib-0.19.3/src/rbgobj_strv.c					\
+	glib-0.19.3/src/rbgobj_type.c					\
+	glib-0.19.3/src/rbgobj_typeinstance.c				\
+	glib-0.19.3/src/rbgobj_typeinterface.c				\
+	glib-0.19.3/src/rbgobj_typemodule.c				\
+	glib-0.19.3/src/rbgobj_typeplugin.c				\
+	glib-0.19.3/src/rbgobj_value.c					\
+	glib-0.19.3/src/rbgobj_valuearray.c				\
+	glib-0.19.3/src/rbgobj_valuetypes.c				\
+	glib-0.19.3/src/rbgobject.c					\
+	glib-0.19.3/src/rbgobject.h					\
+	glib-0.19.3/src/rbgprivate.h					\
+	glib-0.19.3/src/rbgutil.c					\
+	glib-0.19.3/src/rbgutil.h					\
+	glib-0.19.3/src/rbgutil_callback.c				\
+	glib-0.19.3/test-unit/History.txt				\
+	glib-0.19.3/test-unit/Manifest.txt				\
+	glib-0.19.3/test-unit/README.txt				\
+	glib-0.19.3/test-unit/Rakefile					\
+	glib-0.19.3/test-unit/TODO					\
+	glib-0.19.3/test-unit/bin/testrb				\
+	glib-0.19.3/test-unit/html/classic.html				\
+	glib-0.19.3/test-unit/html/index.html				\
+	glib-0.19.3/test-unit/html/index.html.ja			\
+	glib-0.19.3/test-unit/html/test-unit-classic.png		\
+	glib-0.19.3/test-unit/lib/test/unit.rb				\
+	glib-0.19.3/test-unit/lib/test/unit/assertionfailederror.rb	\
+	glib-0.19.3/test-unit/lib/test/unit/assertions.rb		\
+	glib-0.19.3/test-unit/lib/test/unit/attribute.rb		\
+	glib-0.19.3/test-unit/lib/test/unit/autorunner.rb		\
+	glib-0.19.3/test-unit/lib/test/unit/collector.rb		\
+	glib-0.19.3/test-unit/lib/test/unit/collector/descendant.rb	\
+	glib-0.19.3/test-unit/lib/test/unit/collector/dir.rb		\
+	glib-0.19.3/test-unit/lib/test/unit/collector/load.rb		\
+	glib-0.19.3/test-unit/lib/test/unit/collector/objectspace.rb	\
+	glib-0.19.3/test-unit/lib/test/unit/color-scheme.rb		\
+	glib-0.19.3/test-unit/lib/test/unit/color.rb			\
+	glib-0.19.3/test-unit/lib/test/unit/diff.rb			\
+	glib-0.19.3/test-unit/lib/test/unit/error.rb			\
+	glib-0.19.3/test-unit/lib/test/unit/exceptionhandler.rb		\
+	glib-0.19.3/test-unit/lib/test/unit/failure.rb			\
+	glib-0.19.3/test-unit/lib/test/unit/fixture.rb			\
+	glib-0.19.3/test-unit/lib/test/unit/notification.rb		\
+	glib-0.19.3/test-unit/lib/test/unit/omission.rb			\
+	glib-0.19.3/test-unit/lib/test/unit/pending.rb			\
+	glib-0.19.3/test-unit/lib/test/unit/priority.rb			\
+	glib-0.19.3/test-unit/lib/test/unit/runner/console.rb		\
+	glib-0.19.3/test-unit/lib/test/unit/runner/emacs.rb		\
+	glib-0.19.3/test-unit/lib/test/unit/runner/tap.rb		\
+	glib-0.19.3/test-unit/lib/test/unit/testcase.rb			\
+	glib-0.19.3/test-unit/lib/test/unit/testresult.rb		\
+	glib-0.19.3/test-unit/lib/test/unit/testsuite.rb		\
+	glib-0.19.3/test-unit/lib/test/unit/ui/console/outputlevel.rb	\
+	glib-0.19.3/test-unit/lib/test/unit/ui/console/testrunner.rb	\
+	glib-0.19.3/test-unit/lib/test/unit/ui/emacs/testrunner.rb	\
+	glib-0.19.3/test-unit/lib/test/unit/ui/tap/testrunner.rb	\
+	glib-0.19.3/test-unit/lib/test/unit/ui/testrunner.rb		\
+	glib-0.19.3/test-unit/lib/test/unit/ui/testrunnermediator.rb	\
+	glib-0.19.3/test-unit/lib/test/unit/ui/testrunnerutilities.rb	\
+	glib-0.19.3/test-unit/lib/test/unit/util/backtracefilter.rb	\
+	glib-0.19.3/test-unit/lib/test/unit/util/method-owner-finder.rb	\
+	glib-0.19.3/test-unit/lib/test/unit/util/observable.rb		\
+	glib-0.19.3/test-unit/lib/test/unit/util/procwrapper.rb		\
+	glib-0.19.3/test-unit/lib/test/unit/version.rb			\
+	glib-0.19.3/test-unit/sample/adder.rb				\
+	glib-0.19.3/test-unit/sample/subtracter.rb			\
+	glib-0.19.3/test-unit/sample/tc_adder.rb			\
+	glib-0.19.3/test-unit/sample/tc_subtracter.rb			\
+	glib-0.19.3/test-unit/sample/test_user.rb			\
+	glib-0.19.3/test-unit/sample/ts_examples.rb			\
+	glib-0.19.3/test-unit/test/collector/test-descendant.rb		\
+	glib-0.19.3/test-unit/test/collector/test-load.rb		\
+	glib-0.19.3/test-unit/test/collector/test_dir.rb		\
+	glib-0.19.3/test-unit/test/collector/test_objectspace.rb	\
+	glib-0.19.3/test-unit/test/run-test.rb				\
+	glib-0.19.3/test-unit/test/test-attribute.rb			\
+	glib-0.19.3/test-unit/test/test-color-scheme.rb			\
+	glib-0.19.3/test-unit/test/test-color.rb			\
+	glib-0.19.3/test-unit/test/test-diff.rb				\
+	glib-0.19.3/test-unit/test/test-emacs-runner.rb			\
+	glib-0.19.3/test-unit/test/test-fixture.rb			\
+	glib-0.19.3/test-unit/test/test-notification.rb			\
+	glib-0.19.3/test-unit/test/test-omission.rb			\
+	glib-0.19.3/test-unit/test/test-pending.rb			\
+	glib-0.19.3/test-unit/test/test-priority.rb			\
+	glib-0.19.3/test-unit/test/test-testcase.rb			\
+	glib-0.19.3/test-unit/test/test_assertions.rb			\
+	glib-0.19.3/test-unit/test/test_error.rb			\
+	glib-0.19.3/test-unit/test/test_failure.rb			\
+	glib-0.19.3/test-unit/test/test_testresult.rb			\
+	glib-0.19.3/test-unit/test/test_testsuite.rb			\
+	glib-0.19.3/test-unit/test/testunit-test-util.rb		\
+	glib-0.19.3/test-unit/test/ui/test_testrunmediator.rb		\
+	glib-0.19.3/test-unit/test/util/test-method-owner-finder.rb	\
+	glib-0.19.3/test-unit/test/util/test_backtracefilter.rb		\
+	glib-0.19.3/test-unit/test/util/test_observable.rb		\
+	glib-0.19.3/test-unit/test/util/test_procwrapper.rb		\
+	glib-0.19.3/test/glib-test-init.rb				\
+	glib-0.19.3/test/glib-test-utils.rb				\
+	glib-0.19.3/test/run-test.rb					\
+	glib-0.19.3/test/test_enum.rb					\
+	glib-0.19.3/test/test_file_utils.rb				\
+	glib-0.19.3/test/test_glib2.rb					\
+	glib-0.19.3/test/test_iochannel.rb				\
+	glib-0.19.3/test/test_key_file.rb				\
+	glib-0.19.3/test/test_mkenums.rb				\
+	glib-0.19.3/test/test_signal.rb					\
+	glib-0.19.3/test/test_timeout.rb				\
+	glib-0.19.3/test/test_unicode.rb				\
+	glib-0.19.3/test/test_utils.rb					\
+	glib-0.19.3/test/test_win32.rb
 
 # used test-unit/Manifest.txt content.
 test_unit_files =						\
