@@ -235,6 +235,7 @@ if test "$ruby_available" = "yes"; then
 #undef PACKAGE_TARNAME
 #undef PACKAGE_STRING
 #undef PACKAGE_VERSION
+#undef PACKAGE_BUGREPORT
 "
   CFLAGS="$CFLAGS $RUBY_CFLAGS"
   AC_CHECK_HEADERS(ruby.h, [],

@@ -1,5 +1,7 @@
 2010-01-19  Kouhei Sutou  <kou@cozmixng.org>
 
+	* configure.ac: also undef PACKAGE_BUGREPORT in Ruby's config.h.
+
 	* binding/ruby/src/manager/rb-milter-manager-configuration.c:
 	mark the current processing leader on GC.
 
