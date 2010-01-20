@@ -212,9 +212,11 @@ if test "$ruby_available" = "yes"; then
   changequote(<<, >>)
   for var_name in archdir sitearchdir vendorarchdir arch \
       	       	  CFLAGS LIBRUBYARG LIBS RUBY_SO_NAME libdir; do
-    rbconfig_tmp=`$rbconfig "print Config::CONFIG['$var_name']"`
-    eval "rbconfig_$var_name=\"$rbconfig_tmp\""
+    rbconfig_value=`$rbconfig "print Config::CONFIG['$var_name']"`
+    eval "rbconfig_$var_name=\"$rbconfig_value\""
   done
+  ruby_minor_version="`$RUBY -e 'print RUBY_VERSION.split(/\\./)[1]'`"
+  ruby_micro_version="`$RUBY -e 'print RUBY_VERSION.split(/\\./)[2]'`"
   changequote([, ])
 
   RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_sitearchdir "
@@ -272,19 +274,12 @@ if test "$ruby_available" = "yes"; then
                    [],
 		   [ruby_available="no"
                     try_to_use_bundled_ruby_glib2_0_19_3="yes"])
-  fi
-  if test "$ruby_available" = "yes"; then
-    $mkdir_p binding/ruby/glib-0.16.0
-    cat <<EOM > binding/ruby/glib-0.16.0/Makefile
-all:
-distdir:
-EOM
-    $mkdir_p binding/ruby/glib-0.19.3
-    cat <<EOM > binding/ruby/glib-0.19.3/Makefile
-all:
-distdir:
-EOM
   else
+    if test $ruby_minor_version -eq 8 -a $ruby_micro_version -gt 5; then
+      try_to_use_bundled_ruby_glib2_0_19_3="yes"
+    fi
+  fi
+  if test "$ruby_available" != "yes"; then
     if test "$exec_prefix" = "NONE"; then
       ac_ruby_glib2_exec_prefix='$(prefix)'
     else
@@ -316,6 +311,17 @@ EOM
       RUBY_GLIB2_CFLAGS="-I \$(top_srcdir)/$ac_ruby_glib2_dir/src"
     fi
   fi
+
+    $mkdir_p binding/ruby/glib-0.16.0
+    cat <<EOM > binding/ruby/glib-0.16.0/Makefile
+all:
+distdir:
+EOM
+    $mkdir_p binding/ruby/glib-0.19.3
+    cat <<EOM > binding/ruby/glib-0.19.3/Makefile
+all:
+distdir:
+EOM
 
   if test "$ruby_available" != "yes"; then
     AC_MSG_ERROR([Ruby/GLib2 is required.])
