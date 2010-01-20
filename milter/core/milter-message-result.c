@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2009-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -49,6 +49,7 @@ struct _MilterMessageResultPrivate
     GTimeVal start_time;
     GTimeVal end_time;
     gdouble elapsed_time;
+    gboolean elapsed_time_set;
 };
 
 enum
@@ -185,6 +186,7 @@ milter_message_result_init (MilterMessageResult *headers)
     priv->end_time.tv_sec = 0;
     priv->end_time.tv_usec = 0;
     priv->elapsed_time = 0.0;
+    priv->elapsed_time_set = FALSE;
 }
 
 static void
@@ -325,9 +327,11 @@ get_property (GObject    *object,
               GValue     *value,
               GParamSpec *pspec)
 {
+    MilterMessageResult *result;
     MilterMessageResultPrivate *priv;
 
-    priv = MILTER_MESSAGE_RESULT_GET_PRIVATE(object);
+    result = MILTER_MESSAGE_RESULT(object);
+    priv = MILTER_MESSAGE_RESULT_GET_PRIVATE(result);
     switch (prop_id) {
     case PROP_FROM:
         g_value_set_string(value, priv->from);
@@ -354,7 +358,8 @@ get_property (GObject    *object,
         g_value_set_boolean(value, priv->quarantine);
         break;
     case PROP_ELAPSED_TIME:
-        g_value_set_double(value, priv->elapsed_time);
+        g_value_set_double(value,
+                           milter_message_result_get_elapsed_time(result));
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -366,6 +371,53 @@ MilterMessageResult *
 milter_message_result_new (void)
 {
     return g_object_new(MILTER_TYPE_MESSAGE_RESULT, NULL);
+}
+
+void
+milter_message_result_start (MilterMessageResult *result)
+{
+    GTimeVal current_time;
+    MilterHeaders *headers, *added_headers, *removed_headers;
+
+    g_get_current_time(&current_time);
+    milter_message_result_set_start_time(result, &current_time);
+
+    headers = milter_headers_new();
+    milter_message_result_set_headers(result, headers);
+    g_object_unref(headers);
+
+    added_headers = milter_headers_new();
+    milter_message_result_set_added_headers(result, added_headers);
+    g_object_unref(added_headers);
+
+    removed_headers = milter_headers_new();
+    milter_message_result_set_removed_headers(result, removed_headers);
+    g_object_unref(removed_headers);
+}
+
+static gdouble
+compute_elapsed (GTimeVal *start_time, GTimeVal *end_time)
+{
+    return (end_time->tv_sec - start_time->tv_sec) +
+        (end_time->tv_usec - start_time->tv_usec) / 1000000.0;
+}
+
+void
+milter_message_result_stop (MilterMessageResult *result)
+{
+    GTimeVal current_time;
+    GTimeVal *start_time;
+
+    g_get_current_time(&current_time);
+    milter_message_result_set_end_time(result, &current_time);
+
+    start_time = milter_message_result_get_start_time(result);
+    if (start_time->tv_sec > 0) {
+        gdouble elapsed;
+
+        elapsed = compute_elapsed(start_time, &current_time);
+        milter_message_result_set_elapsed_time(result, elapsed);
+    }
 }
 
 const gchar *
@@ -682,14 +734,26 @@ milter_message_result_set_end_time (MilterMessageResult *result,
 gdouble
 milter_message_result_get_elapsed_time (MilterMessageResult *result)
 {
-    return MILTER_MESSAGE_RESULT_GET_PRIVATE(result)->elapsed_time;
+    MilterMessageResultPrivate *priv;
+
+    priv = MILTER_MESSAGE_RESULT_GET_PRIVATE(result);
+    if (!priv->elapsed_time_set &&
+        priv->start_time.tv_sec > 0 && priv->end_time.tv_sec > 0) {
+        return compute_elapsed(&(priv->start_time), &(priv->end_time));
+    } else {
+        return priv->elapsed_time;
+    }
 }
 
 void
 milter_message_result_set_elapsed_time (MilterMessageResult *result,
                                         gdouble elapsed_time)
 {
-    MILTER_MESSAGE_RESULT_GET_PRIVATE(result)->elapsed_time = elapsed_time;
+    MilterMessageResultPrivate *priv;
+
+    priv = MILTER_MESSAGE_RESULT_GET_PRIVATE(result);
+    priv->elapsed_time = elapsed_time;
+    priv->elapsed_time_set = TRUE;
 }
 
 /*

@@ -83,6 +83,9 @@ GType          milter_message_result_get_type    (void) G_GNUC_CONST;
 
 MilterMessageResult *milter_message_result_new   (void);
 
+void           milter_message_result_start       (MilterMessageResult *result);
+void           milter_message_result_stop        (MilterMessageResult *result);
+
 const gchar   *milter_message_result_get_from    (MilterMessageResult *result);
 void           milter_message_result_set_from    (MilterMessageResult *result,
                                                   const gchar         *from);

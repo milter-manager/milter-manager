@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2009-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -28,6 +28,7 @@ void test_from (void);
 void test_recipients (void);
 void test_temporary_failed_recipients (void);
 void test_rejected_recipients (void);
+void test_start_stop (void);
 
 static MilterMessageResult *result;
 
@@ -152,4 +153,51 @@ test_rejected_recipients (void)
                                   "receiver5@example.com",
                                   NULL),
         milter_message_result_get_rejected_recipients(result));
+}
+
+void
+test_start_stop (void)
+{
+    GTimeVal *start_time, *start_time_after_stop;
+    GTimeVal *end_time;
+    gdouble elapsed, elapsed_after_stop;
+
+    start_time = milter_message_result_get_start_time(result);
+    cut_assert_equal_int(0, start_time->tv_sec);
+    cut_assert_equal_int(0, start_time->tv_usec);
+    end_time = milter_message_result_get_end_time(result);
+    cut_assert_equal_int(0, end_time->tv_sec);
+    cut_assert_equal_int(0, end_time->tv_usec);
+    cut_assert_equal_double(0.0,
+                            0.0001,
+                            milter_message_result_get_elapsed_time(result));
+
+    milter_message_result_start(result);
+    start_time = milter_message_result_get_start_time(result);
+    cut_assert_operator_int(0, <, start_time->tv_sec);
+    cut_assert_operator_int(0, <, start_time->tv_usec);
+
+    end_time = milter_message_result_get_end_time(result);
+    cut_assert_equal_int(0, end_time->tv_sec);
+    cut_assert_equal_int(0, end_time->tv_usec);
+
+    elapsed = milter_message_result_get_elapsed_time(result);
+    cut_assert_equal_double(0.0, 0.0001, elapsed);
+
+    g_usleep(1);
+
+    milter_message_result_stop(result);
+    start_time_after_stop = milter_message_result_get_start_time(result);
+    cut_assert_equal_int(start_time->tv_sec, start_time_after_stop->tv_sec);
+    cut_assert_equal_int(start_time->tv_usec, start_time_after_stop->tv_usec);
+
+    end_time = milter_message_result_get_end_time(result);
+    cut_assert_operator_int(0, <, end_time->tv_sec);
+    cut_assert_operator_int(0, <, end_time->tv_usec);
+
+    elapsed_after_stop = milter_message_result_get_elapsed_time(result);
+    cut_assert_operator_double(elapsed, <, elapsed_after_stop);
+    cut_assert_equal_double(elapsed_after_stop,
+                            0.0001,
+                            milter_message_result_get_elapsed_time(result));
 }
