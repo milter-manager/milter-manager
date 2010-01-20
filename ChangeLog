@@ -1,5 +1,9 @@
 2010-01-20  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client-context.[ch]: support
+	MilterMessageResult partially. (maybe not work correctly. It's not
+	well tested.)
+
 	* milter/server/milter-server-context.[ch]: use
 	milter_message_result_start() and milter_message_result_stop().
 

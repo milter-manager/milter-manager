@@ -403,6 +403,9 @@ struct _MilterClientContextClass
     void         (*abort_response)     (MilterClientContext *context,
                                         MilterStatus         status);
     void         (*timeout)            (MilterClientContext *context);
+
+    void         (*message_processed)  (MilterClientContext *context,
+                                        MilterMessageResult *result);
 };
 
 GQuark               milter_client_context_error_quark       (void);
@@ -840,7 +843,39 @@ void                 milter_client_context_set_socket_address(MilterClientContex
 MilterGenericSocketAddress *milter_client_context_get_socket_address
                                                              (MilterClientContext *context);
 
+/**
+ * milter_client_context_get_message_result:
+ * @context: a %MilterClientContext.
+ *
+ * Gets the message result of @context.
+ *
+ * Returns: the message result of @context.
+ */
+MilterMessageResult *milter_client_context_get_message_result
+                                                       (MilterClientContext *context);
 
+
+/**
+ * milter_client_context_set_message_result:
+ * @context: a %MilterClientContext.
+ * @result: the message result.
+ *
+ * Sets the message result of @context.
+ */
+void                 milter_client_context_set_message_result
+                                                       (MilterClientContext *context,
+                                                        MilterMessageResult *result);
+
+/**
+ * milter_client_context_reset_message_related_data:
+ * @context: a %MilterClientContext.
+ *
+ * Resets message related data of @context.
+ *
+ * Normally, you don't need to call this function.
+ */
+void                 milter_client_context_reset_message_related_data
+                                                       (MilterClientContext *context);
 
 G_END_DECLS
 

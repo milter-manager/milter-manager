@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -59,6 +59,9 @@ enum
     DEFINE_MACRO,
 
     TIMEOUT,
+
+    MESSAGE_PROCESSED,
+
     LAST_SIGNAL
 };
 
@@ -66,7 +69,8 @@ enum
 {
     PROP_0,
     PROP_STATE,
-    PROP_OPTION
+    PROP_OPTION,
+    PROP_MESSAGE_RESULT
 };
 
 static gint signals[LAST_SIGNAL] = {0};
@@ -97,6 +101,7 @@ struct _MilterClientContextPrivate
     guint timeout_id;
     gchar *quarantine_reason;
     MilterGenericSocketAddress address;
+    MilterMessageResult *message_result;
 };
 
 static void         finished           (MilterFinishedEmittable *emittable);
@@ -241,6 +246,13 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                                MILTER_TYPE_OPTION,
                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_OPTION, spec);
+
+    spec = g_param_spec_object("message-result",
+                               "Message result",
+                               "The message result of client context",
+                               MILTER_TYPE_MESSAGE_RESULT,
+                               G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_MESSAGE_RESULT, spec);
 
     /**
      * MilterClientContext::negotiate:
@@ -1483,6 +1495,16 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      g_cclosure_marshal_VOID__VOID,
                      G_TYPE_NONE, 0);
 
+    signals[MESSAGE_PROCESSED] =
+        g_signal_new("message-processed",
+                     G_TYPE_FROM_CLASS(klass),
+                     G_SIGNAL_RUN_LAST,
+                     G_STRUCT_OFFSET(MilterClientContextClass,
+                                     message_processed),
+                     NULL, NULL,
+                     g_cclosure_marshal_VOID__OBJECT,
+                     G_TYPE_NONE, 1, MILTER_TYPE_MESSAGE_RESULT);
+
     g_type_class_add_private(gobject_class, sizeof(MilterClientContextPrivate));
 }
 
@@ -1505,6 +1527,8 @@ milter_client_context_init (MilterClientContext *context)
     priv->timeout_id = 0;
     priv->quarantine_reason = NULL;
     memset(&(priv->address), '\0', sizeof(priv->address));
+
+    priv->message_result = NULL;
 }
 
 static void
@@ -1517,6 +1541,24 @@ disable_timeout (MilterClientContext *context)
     if (priv->timeout_id > 0) {
         g_source_remove(priv->timeout_id);
         priv->timeout_id = 0;
+    }
+}
+
+static void
+ensure_message_result (MilterClientContextPrivate *priv)
+{
+    if (!priv->message_result) {
+        priv->message_result = milter_message_result_new();
+        milter_message_result_start(priv->message_result);
+    }
+}
+
+static void
+dispose_message_result (MilterClientContextPrivate *priv)
+{
+    if (priv->message_result) {
+        g_object_unref(priv->message_result);
+        priv->message_result = NULL;
     }
 }
 
@@ -1556,6 +1598,8 @@ dispose (GObject *object)
         priv->quarantine_reason = NULL;
     }
 
+    dispose_message_result(priv);
+
     G_OBJECT_CLASS(milter_client_context_parent_class)->dispose(object);
 }
 
@@ -1565,17 +1609,21 @@ set_property (GObject      *object,
               const GValue *value,
               GParamSpec   *pspec)
 {
+    MilterClientContext *context;
     MilterClientContextPrivate *priv;
 
-    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(object);
+    context = MILTER_CLIENT_CONTEXT(object);
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
     switch (prop_id) {
     case PROP_STATE:
-        milter_client_context_set_state(MILTER_CLIENT_CONTEXT(object),
-                                        g_value_get_enum(value));
+        milter_client_context_set_state(context, g_value_get_enum(value));
         break;
     case PROP_OPTION:
-        milter_client_context_set_option(MILTER_CLIENT_CONTEXT(object),
-                                         g_value_get_object(value));
+        milter_client_context_set_option(context, g_value_get_object(value));
+        break;
+    case PROP_MESSAGE_RESULT:
+        milter_client_context_set_message_result(context,
+                                                 g_value_get_object(value));
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -1598,6 +1646,9 @@ get_property (GObject    *object,
         break;
     case PROP_OPTION:
         g_value_set_object(value, priv->option);
+        break;
+    case PROP_MESSAGE_RESULT:
+        g_value_set_object(value, priv->message_result);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -2259,6 +2310,20 @@ milter_client_context_quarantine (MilterClientContext *context,
     return TRUE;
 }
 
+void
+milter_client_context_reset_message_related_data (MilterClientContext *context)
+{
+    MilterClientContextPrivate *priv;
+    MilterProtocolAgent *agent;
+
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+
+    agent = MILTER_PROTOCOL_AGENT(context);
+    milter_protocol_agent_clear_message_related_macros(agent);
+
+    dispose_message_result(priv);
+}
+
 static void
 create_reply_packet (MilterClientContext *context, MilterStatus status,
                      gchar **packet, gsize *packet_size)
@@ -2724,6 +2789,51 @@ body_response (MilterClientContext *context, MilterStatus status)
 }
 
 static void
+emit_message_processed_signal (MilterClientContext *context)
+{
+    MilterClientContextPrivate *priv;
+    MilterState next_state = MILTER_STATE_INVALID;
+
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    if (!priv->message_result)
+        return;
+
+    switch (priv->state) {
+    case MILTER_CLIENT_CONTEXT_STATE_ENVELOPE_FROM:
+        next_state = MILTER_STATE_ENVELOPE_FROM_REPLIED;
+        break;
+    case MILTER_CLIENT_CONTEXT_STATE_ENVELOPE_RECIPIENT:
+        next_state = MILTER_STATE_ENVELOPE_RECIPIENT_REPLIED;
+        break;
+    case MILTER_CLIENT_CONTEXT_STATE_DATA:
+        next_state = MILTER_STATE_DATA_REPLIED;
+        break;
+    case MILTER_CLIENT_CONTEXT_STATE_HEADER:
+        next_state = MILTER_STATE_HEADER_REPLIED;
+        break;
+    case MILTER_CLIENT_CONTEXT_STATE_END_OF_HEADER:
+        next_state = MILTER_STATE_END_OF_HEADER_REPLIED;
+        break;
+    case MILTER_CLIENT_CONTEXT_STATE_BODY:
+        next_state = MILTER_STATE_BODY_REPLIED;
+        break;
+    case MILTER_CLIENT_CONTEXT_STATE_END_OF_MESSAGE:
+        next_state = MILTER_STATE_END_OF_MESSAGE_REPLIED;
+        break;
+    default:
+        break;
+    }
+
+    if (next_state != MILTER_STATE_INVALID)
+        milter_message_result_set_state(priv->message_result, next_state);
+    milter_message_result_set_status(priv->message_result, priv->status);
+    milter_message_result_stop(priv->message_result);
+    g_signal_emit_by_name(context, "message-processed", priv->message_result);
+    g_object_unref(priv->message_result);
+    priv->message_result = NULL;
+}
+
+static void
 end_of_message_response (MilterClientContext *context, MilterStatus status)
 {
     MilterClientContextPrivate *priv;
@@ -2744,6 +2854,8 @@ end_of_message_response (MilterClientContext *context, MilterStatus status)
                  milter_agent_get_tag(MILTER_AGENT(context)),
                  status_name);
     g_free(status_name);
+
+    emit_message_processed_signal(context);
 }
 
 static void
@@ -2790,6 +2902,9 @@ finished (MilterFinishedEmittable *emittable)
     milter_client_context_set_state(
         context, MILTER_CLIENT_CONTEXT_STATE_FINISHED);
 
+    if (priv->message_result)
+        milter_message_result_stop(priv->message_result);
+
     if (finished_emittable_parent->finished)
         finished_emittable_parent->finished(emittable);
 }
@@ -2809,6 +2924,7 @@ cb_decoder_negotiate (MilterDecoder *decoder, MilterOption *option,
     milter_client_context_set_state(
         context, MILTER_CLIENT_CONTEXT_STATE_NEGOTIATE);
 
+    ensure_message_result(priv);
     disable_timeout(context);
     copied_option = milter_option_copy(option);
     milter_client_context_set_option(context, copied_option);
@@ -2848,6 +2964,7 @@ cb_decoder_connect (MilterDecoder *decoder, const gchar *host_name,
     milter_client_context_set_state(
         context, MILTER_CLIENT_CONTEXT_STATE_CONNECT);
 
+    ensure_message_result(priv);
     disable_timeout(context);
     set_macro_context(context, MILTER_COMMAND_CONNECT);
     g_signal_emit(context, signals[CONNECT], 0,
@@ -2869,6 +2986,7 @@ cb_decoder_helo (MilterDecoder *decoder, const gchar *fqdn, gpointer user_data)
     milter_client_context_set_state(
         context, MILTER_CLIENT_CONTEXT_STATE_HELO);
 
+    ensure_message_result(priv);
     disable_timeout(context);
     set_macro_context(context, MILTER_COMMAND_HELO);
     g_signal_emit(context, signals[HELO], 0, fqdn, &status);
@@ -2890,6 +3008,7 @@ cb_decoder_envelope_from (MilterDecoder *decoder,
     milter_client_context_set_state(
         context, MILTER_CLIENT_CONTEXT_STATE_ENVELOPE_FROM);
 
+    ensure_message_result(priv);
     disable_timeout(context);
     set_macro_context(context, MILTER_COMMAND_ENVELOPE_FROM);
     g_signal_emit(context, signals[ENVELOPE_FROM], 0, from, &status);
@@ -2911,6 +3030,7 @@ cb_decoder_envelope_recipient (MilterDecoder *decoder,
     milter_client_context_set_state(
         context, MILTER_CLIENT_CONTEXT_STATE_ENVELOPE_RECIPIENT);
 
+    ensure_message_result(priv);
     disable_timeout(context);
     set_macro_context(context, MILTER_COMMAND_ENVELOPE_RECIPIENT);
     g_signal_emit(context, signals[ENVELOPE_RECIPIENT], 0, to, &status);
@@ -2932,6 +3052,7 @@ cb_decoder_unknown (MilterDecoder *decoder,
     milter_client_context_set_state(
         context, MILTER_CLIENT_CONTEXT_STATE_UNKNOWN);
 
+    ensure_message_result(priv);
     disable_timeout(context);
     g_signal_emit(context, signals[UNKNOWN], 0, command, &status);
     if (status == MILTER_STATUS_PROGRESS)
@@ -2951,6 +3072,7 @@ cb_decoder_data (MilterDecoder *decoder, gpointer user_data)
     milter_client_context_set_state(
         context, MILTER_CLIENT_CONTEXT_STATE_DATA);
 
+    ensure_message_result(priv);
     disable_timeout(context);
     set_macro_context(context, MILTER_COMMAND_DATA);
     g_signal_emit(context, signals[DATA], 0, &status);
@@ -2973,6 +3095,7 @@ cb_decoder_header (MilterDecoder *decoder,
     milter_client_context_set_state(
         context, MILTER_CLIENT_CONTEXT_STATE_HEADER);
 
+    ensure_message_result(priv);
     disable_timeout(context);
     set_macro_context(context, MILTER_COMMAND_HEADER);
     g_signal_emit(context, signals[HEADER], 0, name, value, &status);
@@ -2993,6 +3116,7 @@ cb_decoder_end_of_header (MilterDecoder *decoder, gpointer user_data)
     milter_client_context_set_state(
         context, MILTER_CLIENT_CONTEXT_STATE_END_OF_HEADER);
 
+    ensure_message_result(priv);
     disable_timeout(context);
     set_macro_context(context, MILTER_COMMAND_END_OF_HEADER);
     g_signal_emit(context, signals[END_OF_HEADER], 0, &status);
@@ -3014,6 +3138,7 @@ cb_decoder_body (MilterDecoder *decoder, const gchar *chunk, gsize chunk_size,
     milter_client_context_set_state(
         context, MILTER_CLIENT_CONTEXT_STATE_BODY);
 
+    ensure_message_result(priv);
     disable_timeout(context);
     set_macro_context(context, MILTER_COMMAND_BODY);
     g_signal_emit(context, signals[BODY], 0, chunk, chunk_size, &status);
@@ -3035,6 +3160,7 @@ cb_decoder_end_of_message (MilterDecoder *decoder, const gchar *chunk,
     milter_client_context_set_state(
         context, MILTER_CLIENT_CONTEXT_STATE_END_OF_MESSAGE);
 
+    ensure_message_result(priv);
     disable_timeout(context);
     set_macro_context(context, MILTER_COMMAND_END_OF_MESSAGE);
     if (priv->quarantine_reason) {
@@ -3081,6 +3207,7 @@ cb_decoder_abort (MilterDecoder *decoder, gpointer user_data)
     disable_timeout(context);
 
     g_signal_emit(context, signals[ABORT], 0, state, &status);
+    milter_client_context_reset_message_related_data(context);
     if (status == MILTER_STATUS_PROGRESS)
         return;
     g_signal_emit(context, signals[ABORT_RESPONSE], 0, status);
@@ -3266,6 +3393,28 @@ milter_client_context_get_socket_address (MilterClientContext *context)
     }
 }
 
+MilterMessageResult *
+milter_client_context_get_message_result (MilterClientContext *context)
+{
+    return MILTER_CLIENT_CONTEXT_GET_PRIVATE(context)->message_result;
+}
+
+void
+milter_client_context_set_message_result (MilterClientContext *context,
+                                          MilterMessageResult *result)
+{
+    MilterClientContextPrivate *priv;
+
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    if (priv->message_result == result)
+        return;
+
+    if (priv->message_result)
+        g_object_unref(priv->message_result);
+    priv->message_result = result;
+    if (priv->message_result)
+        g_object_ref(priv->message_result);
+}
 
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
