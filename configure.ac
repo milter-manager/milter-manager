@@ -312,16 +312,20 @@ if test "$ruby_available" = "yes"; then
     fi
   fi
 
+  if test "$ac_use_bundled_ruby_glib2_0_16_0" != "yes"; then
     $mkdir_p binding/ruby/glib-0.16.0
     cat <<EOM > binding/ruby/glib-0.16.0/Makefile
 all:
 distdir:
 EOM
+  fi
+  if test "$ac_use_bundled_ruby_glib2_0_19_3" != "yes"; then
     $mkdir_p binding/ruby/glib-0.19.3
     cat <<EOM > binding/ruby/glib-0.19.3/Makefile
 all:
 distdir:
 EOM
+  fi
 
   if test "$ruby_available" != "yes"; then
     AC_MSG_ERROR([Ruby/GLib2 is required.])
