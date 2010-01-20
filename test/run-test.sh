@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+# Copyright (C) 2008-2010  Kouhei Sutou <kou@claer-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -57,9 +57,22 @@ if test x"$USE_GTK" = x"yes"; then
     CUTTER_ARGS="-u gtk $CUTTER_ARGS"
 fi
 
-export MILTER_MANAGER_CONFIGURATION_MODULE_DIR=$top_dir/module/configuration/ruby/.libs
 ruby_dir=$top_dir/binding/ruby
-export RUBYLIB=$RUBYLIB:$ruby_dir/lib:$ruby_dir/src/toolkit/.libs:$ruby_dir/src/manager/.libs
+RUBYLIB=$RUBYLIB:$ruby_dir/lib
+RUBYLIB=$RUBYLIB:$ruby_dir/src/toolkit/.libs
+RUBYLIB=$RUBYLIB:$ruby_dir/src/manager/.libs
+ruby_glib2_dir=
+if [ -f $ruby_dir/glib-0.19.3/src/glib2.so ]; then
+    ruby_glib2_dir=$ruby_dir/glib-0.19.3
+elif [ -f $ruby_dir/glib-0.16.0/src/glib2.so ]; then
+    ruby_glib2_dir=$ruby_dir/glib-0.16.0
+fi
+if [ "$ruby_glib_dir" != "" ]; then
+    RUBYLIB=$RUBYLIB:$ruby_glib2_dir/src/lib
+    RUBYLIB=$RUBYLIB:$ruby_glib2_dir/src
+fi
+export RUBYLIB
+export MILTER_MANAGER_CONFIGURATION_MODULE_DIR=$top_dir/module/configuration/ruby/.libs
 export MILTER_MANAGER_CONFIG_DIR=$top_dir/test/fixtures/configuration
 
 $CUTTER_WRAPPER $CUTTER $CUTTER_ARGS "$@" $BASE_DIR

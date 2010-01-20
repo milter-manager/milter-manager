@@ -1,3 +1,7 @@
+2010-01-20  Kouhei Sutou  <kou@cozmixng.org>
+
+	* test/run-test.sh: use bundled Ruby/GLib2 if it's built.
+
 2010-01-19  Kouhei Sutou  <kou@cozmixng.org>
 
 	* binding/ruby/glib-0.16.0/, binding/ruby/glib-0.19.3/: add
