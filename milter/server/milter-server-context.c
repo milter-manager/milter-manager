@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -502,25 +502,8 @@ static void
 ensure_message_result (MilterServerContextPrivate *priv)
 {
     if (!priv->message_result) {
-        GTimeVal current_time;
-        MilterHeaders *headers, *added_headers, *removed_headers;
-
         priv->message_result = milter_message_result_new();
-
-        g_get_current_time(&current_time);
-        milter_message_result_set_start_time(priv->message_result, &current_time);
-
-        headers = milter_headers_new();
-        milter_message_result_set_headers(priv->message_result, headers);
-        g_object_unref(headers);
-
-        added_headers = milter_headers_new();
-        milter_message_result_set_added_headers(priv->message_result, added_headers);
-        g_object_unref(added_headers);
-
-        removed_headers = milter_headers_new();
-        milter_message_result_set_removed_headers(priv->message_result, removed_headers);
-        g_object_unref(removed_headers);
+        milter_message_result_start(priv->message_result);
     }
 }
 
@@ -897,7 +880,6 @@ emit_message_processed_signal (MilterServerContext *context)
 {
     MilterServerContextPrivate *priv;
     MilterState next_state = MILTER_STATE_INVALID;
-    GTimeVal current_time;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
     if (!priv->message_result)
@@ -932,10 +914,9 @@ emit_message_processed_signal (MilterServerContext *context)
     if (next_state != MILTER_STATE_INVALID)
         milter_message_result_set_state(priv->message_result, next_state);
     milter_message_result_set_status(priv->message_result, priv->status);
+    milter_message_result_stop(priv->message_result);
     milter_message_result_set_elapsed_time(priv->message_result,
                                            g_timer_elapsed(priv->elapsed, NULL));
-    g_get_current_time(&current_time);
-    milter_message_result_set_end_time(priv->message_result, &current_time);
     g_signal_emit_by_name(context, "message-processed", priv->message_result);
     g_object_unref(priv->message_result);
     priv->message_result = NULL;
