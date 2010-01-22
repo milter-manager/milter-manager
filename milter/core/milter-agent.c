@@ -568,6 +568,19 @@ milter_agent_set_tag (MilterAgent *agent, guint tag)
     apply_tag(priv);
 }
 
+gdouble
+milter_agent_get_elapsed (MilterAgent *agent)
+{
+    MilterAgentPrivate *priv;
+
+    priv = MILTER_AGENT_GET_PRIVATE(agent);
+    if (priv->timer) {
+        return g_timer_elapsed(priv->timer, NULL);
+    } else {
+        return 0.0;
+    }
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */
