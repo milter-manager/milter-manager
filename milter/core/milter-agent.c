@@ -123,7 +123,7 @@ milter_agent_class_init (MilterAgentClass *klass)
     spec = g_param_spec_double("elapsed",
                                "Elapsed",
                                "The elapsed time of the agent",
-                               G_MINDOUBLE, G_MAXDOUBLE, 0.0,
+                               0.0, G_MAXDOUBLE, 0.0,
                                G_PARAM_READABLE);
     g_object_class_install_property(gobject_class, PROP_ELAPSED, spec);
 
