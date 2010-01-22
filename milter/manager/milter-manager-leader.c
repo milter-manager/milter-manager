@@ -174,12 +174,15 @@ connection_check (gpointer data)
 {
     MilterManagerLeader *leader = data;
     MilterManagerLeaderPrivate *priv;
+    MilterAgent *agent;
     gboolean connected = TRUE;
     guint tag;
+    gdouble elapsed;
     gchar *state_nick;
 
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
-    tag = milter_agent_get_tag(MILTER_AGENT(priv->client_context));
+    agent = MILTER_AGENT(priv->client_context);
+    tag = milter_agent_get_tag(agent);
     state_nick =
         milter_utils_get_enum_nick_name(MILTER_TYPE_MANAGER_LEADER_STATE,
                                         priv->state);
@@ -191,20 +194,24 @@ connection_check (gpointer data)
         return TRUE;
     }
 
-    milter_debug("[%u] [leader][connection-check][%s][start]",
-                 tag, state_nick);
+    elapsed = milter_agent_get_elapsed(agent);
+    milter_debug("[%u] [leader][connection-check][%s][start][%g]",
+                 tag, state_nick, elapsed);
     if (priv->processing) {
         g_signal_emit(leader, signals[CONNECTION_CHECK], 0, &connected);
     } else {
         connected = FALSE;
     }
-    milter_debug("[%u] [leader][connection-check][%s][end][%s]",
+    milter_debug("[%u] [leader][connection-check][%s][end][%s][%g]",
                  tag, state_nick,
-                 connected ? "connected" : "disconnected");
+                 connected ? "connected" : "disconnected",
+                 elapsed);
 
     if (!connected) {
         MilterStatus fallback_status;
         gchar *fallback_status_nick;
+
+        milter_statistics("[session][disconnected][%g](%u)", elapsed, tag);
 
         fallback_status =
             milter_manager_configuration_get_fallback_status(priv->configuration);
