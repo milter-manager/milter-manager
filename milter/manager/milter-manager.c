@@ -425,7 +425,7 @@ static void
 cb_client_finished (MilterClientContext *context, gpointer user_data)
 {
     MilterManagerLeader *leader = user_data;
-    GTimer *timer;
+    MilterAgent *agent;
     gdouble elapsed;
     MilterClientContextState state, last_state;
     MilterStatus status;
@@ -433,10 +433,8 @@ cb_client_finished (MilterClientContext *context, gpointer user_data)
     gchar *status_name, *statistics_status_name;
     guint tag;
 
-    timer = milter_client_context_get_private_data(context);
-    g_timer_stop(timer);
-    elapsed = g_timer_elapsed(timer, NULL);
-
+    agent = MILTER_AGENT(context);
+    elapsed = milter_agent_get_elapsed(agent);
 
     state = milter_client_context_get_state(context);
     state_name =
@@ -449,7 +447,7 @@ cb_client_finished (MilterClientContext *context, gpointer user_data)
     status = milter_client_context_get_status(context);
     status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS,
                                                   status);
-    tag = milter_agent_get_tag(MILTER_AGENT(context));
+    tag = milter_agent_get_tag(agent);
     milter_debug("[%u] [manager][finish][%s][%s][%g]",
                  tag, state_name, status_name, elapsed);
     if (MILTER_STATUS_IS_PASS(status)) {
@@ -529,14 +527,11 @@ cb_leader_finished (MilterFinishedEmittable *emittable, gpointer user_data)
 {
     LeaderFinishData *finish_data = user_data;
     MilterClientContext *client_context;
-    GTimer *timer;
     MilterManagerLeader *leader;
     MilterManagerConfiguration *config;
     MilterManagerPrivate *priv;
 
     client_context = finish_data->client_context;
-    timer = milter_client_context_get_private_data(client_context);
-    g_timer_stop(timer);
 
     leader = MILTER_MANAGER_LEADER(emittable);
     teardown_client_context_signals(client_context, leader);
@@ -603,14 +598,9 @@ setup_context_signals (MilterClientContext *context,
 static void
 connection_established (MilterClient *client, MilterClientContext *context)
 {
-    GTimer *timer;
     guint tag;
 
     setup_context_signals(context, MILTER_MANAGER(client));
-
-    timer = g_timer_new();
-    milter_client_context_set_private_data(context, timer,
-                                           (GDestroyNotify)g_timer_destroy);
 
     tag = milter_agent_get_tag(MILTER_AGENT(context));
     milter_debug("[%u] [manager][session][start]", tag),

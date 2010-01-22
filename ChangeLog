@@ -1,5 +1,7 @@
 2010-01-22  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager.c: remove needless timer.
+
 	* milter/manager/milter-manager-leader.c: show elapsed time on
 	connection-check.
 
