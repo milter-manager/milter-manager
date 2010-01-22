@@ -1,3 +1,7 @@
+2010-01-22  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/core/milter-agent.[ch] (milter_agent_get_elapsed): add.
+
 2010-01-20  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/client/milter-client-context.[ch]: support

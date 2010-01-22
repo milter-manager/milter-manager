@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -44,6 +44,7 @@ struct _MilterAgentPrivate
     MilterWriter *writer;
     gboolean finished;
     guint tag;
+    GTimer *timer;
 };
 
 enum
@@ -51,7 +52,8 @@ enum
     PROP_0,
     PROP_READER,
     PROP_DECODER,
-    PROP_TAG
+    PROP_TAG,
+    PROP_ELAPSED
 };
 
 static GStaticMutex auto_tag_mutex = G_STATIC_MUTEX_INIT;
@@ -115,8 +117,15 @@ milter_agent_class_init (MilterAgentClass *klass)
                              "Tag",
                              "The tag of the agent",
                              0, G_MAXUINT, 0,
-                             G_PARAM_READABLE);
+                             G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_TAG, spec);
+
+    spec = g_param_spec_double("elapsed",
+                               "Elapsed",
+                               "The elapsed time of the agent",
+                               G_MINDOUBLE, G_MAXDOUBLE, 0.0,
+                               G_PARAM_READABLE);
+    g_object_class_install_property(gobject_class, PROP_ELAPSED, spec);
 
     g_type_class_add_private(gobject_class, sizeof(MilterAgentPrivate));
 }
@@ -178,6 +187,7 @@ milter_agent_init (MilterAgent *agent)
     priv->reader = NULL;
     priv->tag = 0;
     priv->finished = FALSE;
+    priv->timer = NULL;
 }
 
 static void
@@ -186,6 +196,11 @@ dispose (GObject *object)
     MilterAgentPrivate *priv;
 
     priv = MILTER_AGENT_GET_PRIVATE(object);
+
+    if (priv->timer) {
+        g_timer_destroy(priv->timer);
+        priv->timer = NULL;
+    }
 
     if (priv->reader) {
         g_object_unref(priv->reader);
@@ -238,9 +253,11 @@ get_property (GObject    *object,
               GValue     *value,
               GParamSpec *pspec)
 {
+    MilterAgent *agent;
     MilterAgentPrivate *priv;
 
-    priv = MILTER_AGENT_GET_PRIVATE(object);
+    agent = MILTER_AGENT(object);
+    priv = MILTER_AGENT_GET_PRIVATE(agent);
     switch (prop_id) {
     case PROP_READER:
         g_value_set_object(value, priv->reader);
@@ -250,6 +267,9 @@ get_property (GObject    *object,
         break;
     case PROP_TAG:
         g_value_set_uint(value, priv->tag);
+        break;
+    case PROP_ELAPSED:
+        g_value_set_double(value, milter_agent_get_elapsed(agent));
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -265,6 +285,9 @@ finished (MilterFinishedEmittable *emittable)
 
     agent = MILTER_AGENT(emittable);
     priv = MILTER_AGENT_GET_PRIVATE(agent);
+
+    if (priv->timer)
+        g_timer_stop(priv->timer);
 
     priv->finished = TRUE;
     if (priv->reader)
@@ -499,6 +522,12 @@ milter_agent_start (MilterAgent *agent)
     MilterAgentPrivate *priv;
 
     priv = MILTER_AGENT_GET_PRIVATE(agent);
+
+    if (priv->timer) {
+        g_timer_start(priv->timer);
+    } else {
+        priv->timer = g_timer_new();
+    }
 
     if (priv->reader)
         milter_reader_start(priv->reader);
