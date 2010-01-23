@@ -1,5 +1,10 @@
 2010-01-23  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager.rb
+	(Milter::ConfigurationLoader::ManagerConfiguration#use_netstat_connection_checker):
+	use the same time for netstat result lifetime as check interval
+	time.
+
 	* configure.ac: also pass $(libdir) to bundled Ruby/GLib2 for
 	ruby-glib2.pc.
 

@@ -840,7 +840,7 @@ module Milter::Manager
 
       def use_netstat_connection_checker(interval=5)
         self.connection_check_interval = interval
-        checker = NetstatConnectionChecker.new
+        checker = NetstatConnectionChecker.new(:database_lifetime => interval)
         self.define_connection_checker("netstat") do |context|
           checker.connected?(context)
         end
