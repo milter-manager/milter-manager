@@ -281,7 +281,11 @@ if test "$ruby_available" = "yes"; then
   fi
   if test "$ruby_available" != "yes"; then
     if test "$exec_prefix" = "NONE"; then
-      ac_ruby_glib2_exec_prefix='$(prefix)'
+      if test "$prefix" = "NONE"; then
+        ac_ruby_glib2_exec_prefix=$ac_default_prefix
+      else
+        ac_ruby_glib2_exec_prefix=$prefix
+      fi
     else
       ac_ruby_glib2_exec_prefix=$exec_prefix
     fi
@@ -295,13 +299,7 @@ if test "$ruby_available" = "yes"; then
     ac_ruby_glib2_dir="binding/ruby/glib-$ac_ruby_glib2_version"
     if $mkdir_p $ac_ruby_glib2_dir && \
        (cd $ac_ruby_glib2_dir && \
-        $RUBY ../../../$srcdir/$ac_ruby_glib2_dir/extconf.rb \
-	  --with-prefix=$prefix \
-	  --with-exec-prefix=$ac_ruby_glib2_exec_prefix \
-	  --with-pkglibdir=$libdir/$PACKAGE_NAME \
-	  --with-bindingdir=$bindingdir \
-	  --with-sitearchdir=$binding_extdir \
-	  --with-sitelibdir=$binding_libdir); then
+        $RUBY ../../../$srcdir/$ac_ruby_glib2_dir/extconf.rb); then
       ruby_available=yes
       if test "$try_to_use_bundled_ruby_glib2_0_19_3" = "yes"; then
         ac_use_bundled_ruby_glib2_0_19_3=yes
@@ -309,6 +307,18 @@ if test "$ruby_available" = "yes"; then
         ac_use_bundled_ruby_glib2_0_16_0=yes
       fi
       RUBY_GLIB2_CFLAGS="-I \$(top_srcdir)/$ac_ruby_glib2_dir/src"
+      sed -i'' \
+      	  -e 's/ install/ RUBYARCHDIR=$(binding_extdir) RUBYLIBDIR=$(binding_libdir) install/' \
+      	  $ac_ruby_glib2_dir/Makefile
+      cat <<EOM >> $ac_ruby_glib2_dir/Makefile
+
+exec_prefix = $ac_ruby_glib2_exec_prefix
+libdir = $libdir
+pkglibdir = \$(libdir)/$PACKAGE_NAME
+bindingdir = $bindingdir
+binding_extdir = $binding_extdir
+binding_libdir = $binding_libdir
+EOM
     fi
   fi
 

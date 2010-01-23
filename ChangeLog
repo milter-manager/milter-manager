@@ -1,5 +1,8 @@
 2010-01-23  Kouhei Sutou  <kou@cozmixng.org>
 
+	* configure.ac: install bundled Ruby/GLib2 to milter manager
+	directory instead of Ruby's library directory.
+
 	* milter/core/milter-session-result.[ch],
 	test/core/test-session-result.c: add MilterSessionResult.
 
