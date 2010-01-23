@@ -19,7 +19,8 @@ noinst_LTLIBRARIES =			\
 	test-headers.la			\
 	test-esmtp.la			\
 	test-protocol.la		\
-	test-message-result.la
+	test-message-result.la		\
+	test-session-result.la
 endif
 
 INCLUDES =				\
@@ -59,3 +60,4 @@ test_syslog_logger_la_SOURCES		= test-syslog-logger.c
 test_esmtp_la_SOURCES			= test-esmtp.c
 test_protocol_la_SOURCES		= test-protocol.c
 test_message_result_la_SOURCES		= test-message-result.c
+test_session_result_la_SOURCES		= test-session-result.c
