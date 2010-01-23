@@ -67,7 +67,7 @@ if [ -f $ruby_dir/glib-0.19.3/src/glib2.so ]; then
 elif [ -f $ruby_dir/glib-0.16.0/src/glib2.so ]; then
     ruby_glib2_dir=$ruby_dir/glib-0.16.0
 fi
-if [ "$ruby_glib_dir" != "" ]; then
+if [ "$ruby_glib2_dir" != "" ]; then
     RUBYLIB=$RUBYLIB:$ruby_glib2_dir/src/lib
     RUBYLIB=$RUBYLIB:$ruby_glib2_dir/src
 fi
