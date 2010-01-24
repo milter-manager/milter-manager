@@ -1,3 +1,11 @@
+2010-01-24  Kouhei Sutou  <kou@cozmixng.org>
+
+	* binding/ruby/lib/milter/manager.rb,
+	binding/ruby/lib/milter/manager/policy-manager.rb,
+	test/manager/test-leader.c,
+	test/fixtures/leader/connect-policy.{txt,conf}: add experimental
+	policy framework.
+
 2010-01-23  Kouhei Sutou  <kou@cozmixng.org>
 
 	* binding/ruby/lib/milter/manager.rb

@@ -3,6 +3,7 @@ dist_binding_lib_milter_DATA =			\
 	child-context.rb			\
 	connection-check-context.rb		\
 	netstat-connection-checker.rb		\
+	policy-manager.rb			\
 	detector.rb				\
 	enma-socket-detector.rb			\
 	clamav-milter-config-parser.rb		\

@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -851,7 +851,8 @@ do_connect (MilterManagerTestScenario *scenario, const gchar *group)
     assert_response(scenario, group);
     assert_alive(scenario, group);
 
-    expected_connect_infos = get_pair_list(scenario, group, "infos");
+    expected_connect_infos =
+        get_pair_list_without_sort(scenario, group, "infos");
     actual_connect_infos = collect_received_pairs(connect_host, connect_address);
     gcut_assert_equal_list(
         expected_connect_infos, actual_connect_infos,
@@ -1474,6 +1475,8 @@ data_scenario_connect (void)
                  g_strdup("connect-no-enabled-child.txt"), g_free,
                  "connect - no available child",
                  g_strdup("connect-no-available-child.txt"), g_free,
+                 "connect - policy",
+                 g_strdup("connect-policy.txt"), g_free,
                  NULL);
 }
 

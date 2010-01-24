@@ -31,6 +31,8 @@ EXTRA_DIST =								\
 	connect.txt							\
 	connect-no-child.txt						\
 	connect-no-child.conf						\
+	connect-policy.txt						\
+	connect-policy.conf						\
 	data.txt							\
 	data-close-without-reply.txt					\
 	data-again.txt							\

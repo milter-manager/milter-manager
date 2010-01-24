@@ -31,6 +31,8 @@ require 'milter/manager/child-context'
 require 'milter/manager/connection-check-context'
 require 'milter/manager/netstat-connection-checker'
 
+require 'milter/manager/policy-manager'
+
 require 'milter/manager/debian-init-detector'
 require 'milter/manager/redhat-detector'
 require 'milter/manager/freebsd-rc-detector'
@@ -262,18 +264,22 @@ module Milter::Manager
 
     attr_reader :package, :security, :controller, :manager, :configuration
     def initialize(configuration)
+      @load_level = 0
       @configuration = configuration
       @package = PackageConfiguration.new(configuration)
       @security = SecurityConfiguration.new(configuration)
       @controller = ControllerConfiguration.new(configuration)
       @manager = ManagerConfiguration.new(configuration)
+      @policy_manager = Milter::Manager::PolicyManager.new(self)
     end
 
     def load_configuration(file)
       begin
+        @load_level += 1
         content = File.read(file)
         Milter::Logger.debug("loading configuration file: '#{file}'")
         instance_eval(content, file)
+        apply_policies if @load_level == 1
       rescue InvalidValue
         backtrace = $!.backtrace.collect do |info|
           if /\A#{Regexp.escape(file)}:/ =~ info
@@ -284,6 +290,8 @@ module Milter::Manager
         end.compact
         Milter::Logger.error("#{backtrace[0]}: #{$!.message}")
         Milter::Logger.error(backtrace[1..-1].join("\n"))
+      ensure
+        @load_level -= 1
       end
     end
 
@@ -361,6 +369,12 @@ module Milter::Manager
       end
     end
 
+    def define_policy(name)
+      policy = Policy.new(name)
+      yield(policy)
+      @policy_manager << policy
+    end
+
     private
     def resolve_path(path)
       return [path] if Pathname(path).absolute?
@@ -376,6 +390,10 @@ module Milter::Manager
       end.flatten.compact
       raise NonexistentPath.new(path) if resolved_paths.empty?
       resolved_paths
+    end
+
+    def apply_policies
+      @policy_manager.apply
     end
 
     class XMLConfigurationLoader
