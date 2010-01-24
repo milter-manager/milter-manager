@@ -1,4 +1,4 @@
-# Copyright (C) 2009  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2009-2010  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -44,7 +44,7 @@ module Milter
     def negotiate(context, option, macros_requests)
       [:connect, :helo, :envelope_from, :envelope_recipient,
        :body, :unknown, [:header, :headers], :end_of_header,
-       :body].each do |method_name, step_name|
+      ].each do |method_name, step_name|
         if respond_to?(method_name)
           step_name ||= method_name
           step = Milter::Step.const_get("NO_#{step_name.to_s.upcase}")

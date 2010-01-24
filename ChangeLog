@@ -1,5 +1,8 @@
 2010-01-24  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/client.rb
+	(Milter::ClientSession#negotiate): remove duplicated item.
+
 	* binding/ruby/lib/milter/manager.rb,
 	binding/ruby/lib/milter/manager/policy-manager.rb,
 	test/manager/test-leader.c,
