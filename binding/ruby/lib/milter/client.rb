@@ -15,15 +15,15 @@
 
 module Milter
   class Client
-    def register(session_class)
+    def register(session_class, *new_arguments)
       signal_connect("connection-established") do |_client, context|
-        setup_session(context, session_class)
+        setup_session(context, session_class, new_arguments)
       end
     end
 
     private
-    def setup_session(context, session_class)
-      session = session_class.new
+    def setup_session(context, session_class, session_new_arguments)
+      session = session_class.new(*session_new_arguments)
       context.instance_variable_set("@session", session)
 
       [:negotiate, :connect, :helo, :envelope_from, :envelope_recipient,
@@ -32,7 +32,11 @@ module Milter
         if session.respond_to?(event)
           context.signal_connect(event) do |_context, *args|
             session_context = ClientSessionContext.new(_context)
-            session.send(event, session_context, *args)
+            if event == :end_of_message
+              session.send(event, session_context)
+            else
+              session.send(event, session_context, *args)
+            end
             session_context.status
           end
         end
@@ -47,8 +51,8 @@ module Milter
       ].each do |method_name, step_name|
         if respond_to?(method_name)
           step_name ||= method_name
-          step = Milter::Step.const_get("NO_#{step_name.to_s.upcase}")
-          option.remove_action(step)
+          step = Milter::StepFlags.const_get("NO_#{step_name.to_s.upcase}")
+          option.remove_step(step)
         end
       end
       context.status = :continue
