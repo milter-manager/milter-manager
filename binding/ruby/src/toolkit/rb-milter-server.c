@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -22,6 +22,8 @@
 void
 Init_milter_server (void)
 {
+    milter_server_init();
+
     rb_mMilterServer = rb_define_module_under(rb_mMilter, "Server");
     Init_milter_server_context();
 }

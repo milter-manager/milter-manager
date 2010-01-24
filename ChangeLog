@@ -1,5 +1,13 @@
 2010-01-24  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client.c, milter/server/milter-server.c:
+	guard from duplicated initialization.
+
+	* binding/ruby/src/toolkit/rb-milter-core.c,
+	binding/ruby/src/toolkit/rb-milter-client.c,
+	binding/ruby/src/toolkit/rb-milter-server.c: initialize milter
+	library on load.
+
 	* binding/ruby/lib/milter/client.rb: follow the recent API changes.
 
 	* milter/client/milter-client-context.c

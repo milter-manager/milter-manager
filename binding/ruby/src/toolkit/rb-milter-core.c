@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -22,6 +22,8 @@
 void
 Init_milter_core (void)
 {
+    milter_init();
+
     rb_mMilterCore = rb_define_module_under(rb_mMilter, "Core");
 
     Init_milter_logger();

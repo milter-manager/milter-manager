@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2009-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -23,18 +23,30 @@
 
 #include <milter/server.h>
 
+static gboolean initialized = FALSE;
 static guint milter_server_log_handler_id = 0;
 
 void
 milter_server_init (void)
 {
+    if (initialized)
+        return;
+
+    initialized = TRUE;
+
     milter_server_log_handler_id = MILTER_GLIB_LOG_DELEGATE("milter-server");
 }
 
 void
 milter_server_quit (void)
 {
+    if (!initialized)
+        return;
+
     g_log_remove_handler("milter-server", milter_server_log_handler_id);
+
+    milter_server_log_handler_id = 0;
+    initialized = FALSE;
 }
 
 /*
