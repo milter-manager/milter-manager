@@ -1,3 +1,7 @@
+2010-01-25  Kouhei Sutou  <kou@clear-code.com>
+
+	* milter-manager.spec.in: add missing BuildRequires.
+
 2010-01-24  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/client/milter-client.c, milter/server/milter-server.c:
