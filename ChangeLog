@@ -1,3 +1,9 @@
+2010-01-29  Kouhei Sutou  <kou@clear-code.com>
+
+	* milter/manager/milter-manager-children.c
+	(init_command_waiting_child_queue): add NULL check for
+	no-{envelope-from,envelope-recipient} case.
+
 2010-01-25  Kouhei Sutou  <kou@clear-code.com>
 
 	* milter-manager.spec.in: add missing BuildRequires.

@@ -2541,7 +2541,7 @@ init_command_waiting_child_queue (MilterManagerChildren *children, MilterCommand
             MilterMessageResult *result;
 
             result = milter_server_context_get_message_result(context);
-            if (milter_message_result_get_recipients(result)) {
+            if (result && milter_message_result_get_recipients(result)) {
                 priv->command_waiting_child_queue =
                     g_list_append(priv->command_waiting_child_queue, context);
             } else {
