@@ -1,5 +1,9 @@
 2010-01-29  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/lib/milter/client.rb
+	(Milter::ClientSession#negotiate): don't request header value with
+	leading space by default.
+
 	* milter/manager/milter-manager-children.c
 	(init_command_waiting_child_queue): add NULL check for
 	no-{envelope-from,envelope-recipient} case.

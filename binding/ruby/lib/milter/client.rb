@@ -55,7 +55,15 @@ module Milter
           option.remove_step(step)
         end
       end
+      unless need_header_value_with_leading_space?
+        option.remove_step(Milter::StepFlags::HEADER_VALUE_WITH_LEADING_SPACE)
+      end
       context.status = :continue
+    end
+
+    private
+    def need_header_value_with_leading_space?
+      false
     end
   end
 
