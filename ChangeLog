@@ -1,6 +1,9 @@
 2010-01-29  Kouhei Sutou  <kou@clear-code.com>
 
 	* binding/ruby/lib/milter/client.rb
+	(Milter::ClientSession#negotiate): don't request no-reply by default.
+
+	* binding/ruby/lib/milter/client.rb
 	(Milter::ClientSession#negotiate): don't request header value with
 	leading space by default.
 
