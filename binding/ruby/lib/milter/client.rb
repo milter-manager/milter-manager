@@ -58,7 +58,7 @@ module Milter
       unless need_header_value_with_leading_space?
         option.remove_step(Milter::StepFlags::HEADER_VALUE_WITH_LEADING_SPACE)
       end
-      options.remove_step(Milter::StepFlags::NO_REPLY_MASK)
+      option.remove_step(Milter::StepFlags::NO_REPLY_MASK)
       context.status = :continue
     end
 
