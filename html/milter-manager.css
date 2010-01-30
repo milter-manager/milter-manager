@@ -91,8 +91,9 @@ ul.menu
 {
   background: url(bar.png) repeat-x;
   height: 38px;
-  padding-top: 12px;
+  padding-top: 8px;
   padding-left: 50px;
+  margin-top: 0px;
   margin-left: 0px;
   margin-bottom: 0px;
   padding-bottom: 0px;
