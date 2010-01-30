@@ -55,12 +55,26 @@ client_set_connection_spec (VALUE self, VALUE spec)
     return Qnil;
 }
 
+static void
+mark (gpointer data)
+{
+    MilterClient *client = data;
+
+    milter_client_processing_context_foreach(client,
+					     (GFunc)rbgobj_gc_mark_instance,
+					     NULL);
+}
+
 void
 Init_milter_client (void)
 {
     milter_client_init();
 
-    rb_cMilterClient = G_DEF_CLASS(MILTER_TYPE_CLIENT, "Client", rb_mMilter);
+    rb_cMilterClient = G_DEF_CLASS_WITH_GC_FUNC(MILTER_TYPE_CLIENT,
+						"Client",
+						rb_mMilter,
+						mark,
+						NULL);
 
     rb_define_const(rb_cMilterClient,
 		    "DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE",

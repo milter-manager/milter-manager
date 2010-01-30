@@ -1,5 +1,8 @@
 2010-01-30  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/src/toolkit/rb-milter-client.c: mark processing
+	MilterClientContext.
+
 	* milter/client.h, milter/client/milter-client.c
 	(milter_client_processing_context_foreach): add for the Ruby bindings.
 
