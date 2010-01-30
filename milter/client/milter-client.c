@@ -1004,6 +1004,20 @@ milter_client_set_max_connections (MilterClient *client, guint max_connections)
         MILTER_CLIENT_GET_PRIVATE(client)->max_connections = max_connections;
 }
 
+void
+milter_client_processing_context_foreach (MilterClient *client,
+                                          GFunc func, gpointer user_data)
+{
+    MilterClientPrivate *priv;
+    GList *node;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    for (node = priv->processing_data; node; node = g_list_next(node)) {
+        MilterClientProcessData *data = node->data;
+        func(data->context, user_data);
+    }
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */

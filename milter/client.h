@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -544,6 +544,20 @@ gboolean             milter_client_main              (MilterClient  *client);
  * Shuts main loop down.
  */
 void                 milter_client_shutdown          (MilterClient  *client);
+
+/**
+ * milter_client_processing_context_foreach:
+ * @client: a %MilterClient.
+ * @func: the function to call with each processing %MilterClientContext.
+ * @user_data: user data to pass to the function.
+ *
+ * Calls a function for each processing
+ * %MilterClientContext.
+ */
+void                 milter_client_processing_context_foreach
+                                                     (MilterClient  *client,
+                                                      GFunc          func,
+                                                      gpointer       user_data);
 
 
 G_END_DECLS

@@ -1,5 +1,8 @@
 2010-01-30  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client.h, milter/client/milter-client.c
+	(milter_client_processing_context_foreach): add for the Ruby bindings.
+
 	* html/milter-manager.css: fix menu bar spaces.
 
 2010-01-29  Kouhei Sutou  <kou@clear-code.com>
