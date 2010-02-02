@@ -15,12 +15,12 @@
 
 module Milter
   class Client
-    def default_status
-      @default_status ||= :accept
+    def status_on_error
+      @status_on_error ||= :accept
     end
 
-    def default_status=(status)
-      @default_status = status
+    def status_on_error=(status)
+      @status_on_error = status
     end
 
     def register(session_class, *new_arguments)
@@ -48,7 +48,7 @@ module Milter
               end
             rescue Exception
               Milter::Logger.error($!)
-              session_context.status = default_status
+              session_context.status = status_on_error
             end
             session_context.status
           end
