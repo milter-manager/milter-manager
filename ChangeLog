@@ -1,3 +1,7 @@
+2010-02-02  Kouhei Sutou  <kou@cozmixng.org>
+
+	* binding/ruby/lib/milter/client.rb: make status on error customizable.
+
 2010-01-30  Kouhei Sutou  <kou@cozmixng.org>
 
 	* binding/ruby/src/toolkit/rb-milter-client.c: mark processing

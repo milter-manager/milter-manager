@@ -15,6 +15,14 @@
 
 module Milter
   class Client
+    def default_status
+      @default_status ||= :accept
+    end
+
+    def default_status=(status)
+      @default_status = status
+    end
+
     def register(session_class, *new_arguments)
       signal_connect("connection-established") do |_client, context|
         setup_session(context, session_class, new_arguments)
@@ -32,10 +40,15 @@ module Milter
         if session.respond_to?(event)
           context.signal_connect(event) do |_context, *args|
             session_context = ClientSessionContext.new(_context)
-            if event == :end_of_message
-              session.send(event, session_context)
-            else
-              session.send(event, session_context, *args)
+            begin
+              if event == :end_of_message
+                session.send(event, session_context)
+              else
+                session.send(event, session_context, *args)
+              end
+            rescue Exception
+              Milter::Logger.error($!)
+              session_context.status = default_status
             end
             session_context.status
           end
