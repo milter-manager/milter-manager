@@ -1,3 +1,4 @@
+* [1.5.x] use /usr/sbin/service XXX start instead of /etc/init.d/XXX start.
 * [1.5.x] use UNIX domain socket rather than inet in document.
   Suggested by ZnZ.
 * [1.5.x] multiply connection based anti-spam result as score.
