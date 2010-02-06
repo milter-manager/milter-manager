@@ -131,11 +131,22 @@ deb-src http://milter-manager.sourceforge.net/debian/ lenny main</pre>
 % gpg --export 1C837F31 | sudo apt-key add -</pre>
 	</p>
 
-	<h3>CentOS 5.3用開発版パッケージ</h3>
-	<ul>
-	  <li><a href="http://downloads.sourceforge.net/milter-manager/milter-manager-1.3.1-0.i386.rpm">i386</a></li>
-	  <li><a href="http://downloads.sourceforge.net/milter-manager/milter-manager-1.3.1-0.x86_64.rpm">x86_64</a></li>
-	</ul>
+	<h3>CentOS 5.4用開発版パッケージ</h3>
+	<p>
+	  yumでインストールできます。まず、milter managerのyumリポジトリを登録します。これは最初の1度だけ行います。
+	</p>
+	<p>
+	  32bit環境の場合:
+	  <pre class="command">% sudo rpm -Uvh http://milter-manager.sourceforge.net/centos/5/milter-manager-repository-1.0.0-0.i386.rpm</pre>
+	</p>
+	<p>
+	  64bit環境の場合:
+	  <pre class="command">% sudo rpm -Uvh http://milter-manager.sourceforge.net/centos/5/milter-manager-repository-1.0.0-0.x86_64.rpm</pre>
+	</p>
+	<p>
+	  yumリポジトリを登録したら以下のコマンドでインストールできます。
+	  <pre class="command">% sudo yum install --enablerepo=milter-manager-development -y milter-manager</pre>
+	</p>
       </div>
 
       <div class="sidebar">

@@ -12,15 +12,7 @@ CentOSに特化したmilter managerの更新方法について説明します。
 
 パッケージを更新するだけで、追加の作業は必要ありません。
 
-32bit環境の場合:
-
-  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-1.4.1-0.i386.rpm
-  % sudo rpm -Uvh milter-manager-1.4.1-0.i386.rpm
-
-64bit環境の場合:
-
-  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-1.4.1-0.x86_64.rpm
-  % sudo rpm -Uvh milter-manager-1.4.1-0.x86_64.rpm
+  % sudo yum update -y milter-manager
 
 == まとめ
 

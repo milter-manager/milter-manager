@@ -29,12 +29,10 @@ milters. We use milter packages registered in RPMforge.
 We register RPMforge like the following.
 
 On 32bit environment:
-  % wget http://packages.sw.be/rpmforge-release/rpmforge-release-0.3.6-1.el5.rf.i386.rpm
-  % sudo rpm -Uhv rpmforge-release-0.3.6-1.el5.rf.i386.rpm
+  % sudo rpm -Uhv http://packages.sw.be/rpmforge-release/rpmforge-release-0.3.6-1.el5.rf.i386.rpm
 
 On 64bit environment:
-  % wget http://packages.sw.be/rpmforge-release/rpmforge-release-0.3.6-1.el5.rf.x86_64.rpm
-  % sudo rpm -Uhv rpmforge-release-0.3.6-1.el5.rf.x86_64.rpm
+  % sudo rpm -Uhv http://packages.sw.be/rpmforge-release/rpmforge-release-0.3.6-1.el5.rf.x86_64.rpm
 
 Now, we can install milters:
 
@@ -46,18 +44,18 @@ And we install RRDtool for generating graphs:
 
 == Build and Install
 
-milter manager has its RPM package but it can't be installed
-with yum. We will install it by hand.
+milter manager can be installed by yum.
 
-=== Install milter manager
+We register milter manager yum repository like the following:
 
 On 32bit environment:
-  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-1.4.1-0.i386.rpm
-  % sudo rpm -Uvh milter-manager-1.4.1-0.i386.rpm
+  % sudo rpm -Uvh http://milter-manager.sourceforge.net/centos/5/milter-manager-repository-1.0.0-0.i386.rpm
 
 On 64bit environment:
-  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-1.4.1-0.x86_64.rpm
-  % sudo rpm -Uvh milter-manager-1.4.1-0.x86_64.rpm
+  % sudo rpm -Uvh http://milter-manager.sourceforge.net/centos/5/milter-manager-repository-1.0.0-0.x86_64.rpm
+
+Now, we can install milter manager:
+  % sudo yum install -y milter-manager
 
 == Configuration
 

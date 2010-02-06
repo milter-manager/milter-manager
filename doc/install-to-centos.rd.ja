@@ -28,13 +28,11 @@ milterはspamass-milter、clamav-milter、milter-greylistを使用
 
 32bit環境の場合は以下のようにRPMforgeを登録します。
 
-  % wget http://packages.sw.be/rpmforge-release/rpmforge-release-0.3.6-1.el5.rf.i386.rpm
-  % sudo rpm -Uhv rpmforge-release-0.3.6-1.el5.rf.i386.rpm
+  % sudo rpm -Uhv http://packages.sw.be/rpmforge-release/rpmforge-release-0.3.6-1.el5.rf.i386.rpm
 
 64bit環境の場合は以下のようにRPMforgeを登録します。
 
-  % wget http://packages.sw.be/rpmforge-release/rpmforge-release-0.3.6-1.el5.rf.x86_64.rpm
-  % sudo rpm -Uhv rpmforge-release-0.3.6-1.el5.rf.x86_64.rpm
+  % sudo rpm -Uhv http://packages.sw.be/rpmforge-release/rpmforge-release-0.3.6-1.el5.rf.x86_64.rpm
 
 RPMforgeを登録したらmilterをインストールします。
 
@@ -46,21 +44,19 @@ RPMforgeを登録したらmilterをインストールします。
 
 == milter managerパッケージのインストール
 
-milter managerはRPMパッケージが用意されていますが、依存関係
-の問題でyumではインストールできません。そのため、手動でRPMパッ
-ケージをインストールします。
+milter managerはyumでインストールできます。
 
-=== milter managerのインストール
+まず、yumリポジトリを登録します。
 
 32bit環境の場合:
-
-  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-1.4.1-0.i386.rpm
-  % sudo rpm -Uvh milter-manager-1.4.1-0.i386.rpm
+  % sudo rpm -Uvh http://milter-manager.sourceforge.net/centos/5/milter-manager-repository-1.0.0-0.i386.rpm
 
 64bit環境の場合:
+  % sudo rpm -Uvh http://milter-manager.sourceforge.net/centos/5/milter-manager-repository-1.0.0-0.x86_64.rpm
 
-  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-1.4.1-0.x86_64.rpm
-  % sudo rpm -Uvh milter-manager-1.4.1-0.x86_64.rpm
+登録が完了したらmilter managerをインストールできます。
+
+  % sudo yum install -y milter-manager
 
 == 設定
 

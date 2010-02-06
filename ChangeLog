@@ -1,5 +1,8 @@
 2010-02-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* html/index.html*, doc/install-to-centos.rd*,
+	doc/upgrade-on-centos.rd*: use yum instead of RPM directly.
+
 	* milter-manager.spec.in: remove home directory if milter manager
 	is uninstalled.
 
