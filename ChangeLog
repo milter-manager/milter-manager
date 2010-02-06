@@ -1,3 +1,8 @@
+2010-02-07  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/manager/milter-manager-children.c
+	(milter_manager_children_start_child): log start-child.
+
 2010-02-06  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/manager/milter-manager-leader.[ch]

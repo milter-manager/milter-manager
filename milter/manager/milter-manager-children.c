@@ -2206,8 +2206,11 @@ milter_manager_children_start_child (MilterManagerChildren *children,
         return FALSE;
     }
 
+    milter_debug("[%u] [children][start-child] [%u] %s",
+                 priv->tag,
+                 milter_agent_get_tag(MILTER_AGENT(context)),
+                 command);
     encoder = MILTER_MANAGER_LAUNCH_COMMAND_ENCODER(milter_manager_launch_command_encoder_new());
-
     milter_manager_launch_command_encoder_encode_launch(encoder,
                                                         &packet, &packet_size,
                                                         command,
