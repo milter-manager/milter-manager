@@ -2206,7 +2206,7 @@ milter_manager_children_start_child (MilterManagerChildren *children,
         return FALSE;
     }
 
-    milter_debug("[%u] [children][start-child] [%u] <%s> (%s)",
+    milter_debug("[%u] [children][start-child] [%u] <%s>@<%s>",
                  priv->tag,
                  milter_agent_get_tag(MILTER_AGENT(context)),
                  command,
