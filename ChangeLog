@@ -1,5 +1,12 @@
 2010-02-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-leader.[ch]
+	(milter_manager_leader_get_children): add.
+
+	* binding/ruby/src/manager/rb-milter-manager-children.c,
+	binding/ruby/src/manager/rb-milter-manager-configuration.c: fix
+	a bug that stop-* signal callback is destroyed by GC.
+
 	* milter/manager/milter-manager-children.c
 	(remove_queue_in_negotiate): add finished check.
 

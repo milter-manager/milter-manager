@@ -90,26 +90,13 @@ get_smtp_client_address (VALUE self)
     }
 }
 
-static void
-mark (gpointer data)
-{
-    MilterManagerChildren *children = data;
-
-    g_list_foreach((GList *)milter_manager_children_get_children(children),
-		   (GFunc)rbgobj_gc_mark_instance, NULL);
-}
-
 void
 Init_milter_manager_children (void)
 {
     VALUE rb_cMilterManagerChildren;
 
     rb_cMilterManagerChildren =
-	G_DEF_CLASS_WITH_GC_FUNC(MILTER_TYPE_MANAGER_CHILDREN,
-				 "Children",
-				 rb_mMilterManager,
-				 mark,
-				 NULL);
+	G_DEF_CLASS(MILTER_TYPE_MANAGER_CHILDREN, "Children", rb_mMilterManager);
 
     rb_define_method(rb_cMilterManagerChildren, "initialize",
                      initialize, 1);

@@ -262,6 +262,7 @@ mark (gpointer data)
 {
     MilterManagerConfiguration *configuration = data;
     MilterManager *manager;
+    const GList *node;
 
     g_list_foreach((GList *)milter_manager_configuration_get_eggs(configuration),
 		   (GFunc)rbgobj_gc_mark_instance, NULL);
@@ -269,8 +270,19 @@ mark (gpointer data)
 		   (GFunc)rbgobj_gc_mark_instance, NULL);
 
     manager = g_object_get_data(G_OBJECT(configuration), "manager");
-    if (manager) {
-	g_list_foreach((GList *)milter_manager_get_leaders(manager),
+    if (!manager)
+	return;
+
+    for (node = milter_manager_get_leaders(manager);
+	 node;
+	 node = g_list_next(node)) {
+	MilterManagerLeader *leader = node->data;
+	MilterManagerChildren *children;
+
+	children = milter_manager_leader_get_children(leader);
+	if (!children)
+	    continue;
+	g_list_foreach((GList *)milter_manager_children_get_children(children),
 		       (GFunc)rbgobj_gc_mark_instance, NULL);
     }
 }

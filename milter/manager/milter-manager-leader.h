@@ -158,6 +158,9 @@ void                  milter_manager_leader_set_tag
                                           (MilterManagerLeader *leader,
                                            guint                tag);
 
+MilterManagerChildren *milter_manager_leader_get_children
+                                          (MilterManagerLeader *leader);
+
 G_END_DECLS
 
 #endif /* __MILTER_MANAGER_LEADER_H__ */

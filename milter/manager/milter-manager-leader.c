@@ -1314,6 +1314,12 @@ milter_manager_leader_set_launcher_channel (MilterManagerLeader *leader,
         g_io_channel_ref(priv->launcher_read_channel);
 }
 
+MilterManagerChildren *
+milter_manager_leader_get_children (MilterManagerLeader *leader)
+{
+    return MILTER_MANAGER_LEADER_GET_PRIVATE(leader)->children;
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */
