@@ -2270,7 +2270,7 @@ remove_queue_in_negotiate (MilterManagerChildren *children,
                  milter_agent_get_tag(MILTER_AGENT(context)),
                  milter_server_context_get_name(context));
     g_queue_remove(priv->reply_queue, child);
-    if (g_queue_is_empty(priv->reply_queue)) {
+    if (!priv->finished && g_queue_is_empty(priv->reply_queue)) {
         reply_negotiate(children);
     }
 }

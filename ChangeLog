@@ -1,5 +1,8 @@
 2010-02-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.c
+	(remove_queue_in_negotiate): add finished check.
+
 	* milter/core/milter-writer.[ch]: add start/shutdown check.
 	* milter/client/milter-client.c,
 	milter/manager/milter-manager-children.c,
