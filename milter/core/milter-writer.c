@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -239,10 +239,22 @@ milter_writer_write (MilterWriter *writer, const gchar *chunk, gsize chunk_size,
 
     if (written_size)
         *written_size = 0;
+
     if (!priv->io_channel) {
+        const gchar message[] = "no write channel";
         g_set_error(error,
                     MILTER_WRITER_ERROR, MILTER_WRITER_ERROR_NO_CHANNEL,
-                    "GIOChannel is NULL");
+                    "write: %s", message);
+        milter_error("[%u] [writer][write][error] %s", priv->tag, message);
+        return FALSE;
+    }
+
+    if (priv->channel_watch_id == 0) {
+        const gchar message[] = "can't write to not started or shutdown channel";
+        g_set_error(error,
+                    MILTER_WRITER_ERROR, MILTER_WRITER_ERROR_NOT_READY,
+                    "write: %s", message);
+        milter_error("[%u] [writer][write][error] %s", priv->tag, message);
         return FALSE;
     }
 
@@ -257,9 +269,20 @@ milter_writer_flush (MilterWriter *writer, GError **error)
     priv = MILTER_WRITER_GET_PRIVATE(writer);
 
     if (!priv->io_channel) {
+        const gchar message[] = "no write channel";
         g_set_error(error,
                     MILTER_WRITER_ERROR, MILTER_WRITER_ERROR_NO_CHANNEL,
-                    "GIOChannel is NULL");
+                    "flush: %s", message);
+        milter_error("[%u] [writer][flush][error] %s", priv->tag, message);
+        return FALSE;
+    }
+
+    if (priv->channel_watch_id == 0) {
+        const gchar message[] = "can't flush not started or shutdown channel";
+        g_set_error(error,
+                    MILTER_WRITER_ERROR, MILTER_WRITER_ERROR_NOT_READY,
+                    "flush: %s", message);
+        milter_error("[%u] [writer][flush][error] %s", priv->tag, message);
         return FALSE;
     }
 
@@ -321,8 +344,9 @@ milter_writer_start (MilterWriter *writer)
     MilterWriterPrivate *priv;
 
     priv = MILTER_WRITER_GET_PRIVATE(writer);
-    if (priv->io_channel && priv->channel_watch_id == 0)
+    if (priv->io_channel && priv->channel_watch_id == 0) {
         watch_io_channel(writer);
+    }
 }
 
 gboolean

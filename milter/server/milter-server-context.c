@@ -2745,8 +2745,8 @@ connect_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
         dispose_client_channel(priv);
     } else {
         if (prepare_reader(context) && prepare_writer(context)) {
-            g_signal_emit(context, signals[READY], 0);
             milter_agent_start(MILTER_AGENT(context));
+            g_signal_emit(context, signals[READY], 0);
         } else {
             dispose_client_channel(priv);
         }

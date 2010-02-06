@@ -545,8 +545,8 @@ cb_timeout_client_channel_setup (gpointer user_data)
 
     priv->processing_data = g_list_prepend(priv->processing_data, data);
 
-    g_signal_emit(client, signals[CONNECTION_ESTABLISHED], 0, context);
     milter_agent_start(MILTER_AGENT(context));
+    g_signal_emit(client, signals[CONNECTION_ESTABLISHED], 0, context);
 
     g_io_channel_unref(setup_data->channel);
     g_free(setup_data);

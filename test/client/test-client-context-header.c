@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -194,6 +194,7 @@ setup (void)
     writer = milter_writer_io_channel_new(channel);
 
     milter_agent_set_writer(MILTER_AGENT(context), writer);
+    milter_agent_start(MILTER_AGENT(context));
     setup_signals(context);
 
     command_encoder = MILTER_COMMAND_ENCODER(milter_command_encoder_new());

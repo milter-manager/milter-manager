@@ -275,11 +275,11 @@ setup (void)
     client_context = milter_client_context_new();
     milter_agent_set_writer(MILTER_AGENT(client_context), writer);
     g_object_unref(writer);
+    milter_agent_start(MILTER_AGENT(client_context));
 
     server = milter_manager_test_server_new();
     milter_agent_set_reader(MILTER_AGENT(server), reader);
     g_object_unref(reader);
-
     milter_agent_start(MILTER_AGENT(server));
 
     leader = milter_manager_leader_new(config, client_context);

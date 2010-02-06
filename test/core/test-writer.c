@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 20080-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -74,6 +74,7 @@ test_writer (void)
     GString *actual_data;
 
     writer = milter_writer_io_channel_new(channel);
+    milter_writer_start(writer);
 
     milter_writer_write(writer, first_chunk, sizeof(first_chunk) - 1,
                         &written_size, &actual_error);
@@ -115,6 +116,7 @@ test_writer_huge_data (void)
     GString *actual_data;
 
     writer = milter_writer_io_channel_new(channel);
+    milter_writer_start(writer);
 
     data_size = 192 * 8192;
     binary_data = g_new(gchar, data_size);
@@ -143,6 +145,7 @@ test_writer_error (void)
     gcut_assert_error(error);
     gcut_string_io_channel_set_limit(channel, 1);
     writer = milter_writer_io_channel_new(channel);
+    milter_writer_start(writer);
 
     expected_error = g_error_new(G_IO_CHANNEL_ERROR,
                                  G_IO_CHANNEL_ERROR_NOSPC,

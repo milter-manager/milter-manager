@@ -3604,8 +3604,10 @@ milter_manager_children_set_launcher_channel (MilterManagerChildren *children,
         g_object_unref(priv->launcher_writer);
         priv->launcher_writer = NULL;
     }
-    if (write_channel)
+    if (write_channel) {
         priv->launcher_writer = milter_writer_io_channel_new(write_channel);
+        milter_writer_start(priv->launcher_writer);
+    }
 
     if (priv->launcher_reader) {
         g_signal_handlers_disconnect_by_func(priv->launcher_reader,
