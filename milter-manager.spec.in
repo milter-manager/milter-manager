@@ -91,7 +91,7 @@ if [ $1 -ge 1 ] ; then
 fi
 
 if [ $1 -eq 0 ]; then
-    /usr/sbin/userdel milter-manager || %logmsg "User \"milter-manager\" could not be deleted."
+    /usr/sbin/userdel -r milter-manager || %logmsg "User \"milter-manager\" could not be deleted."
 fi
 
 

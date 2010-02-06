@@ -1,3 +1,8 @@
+2010-02-06  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter-manager.spec.in: remove home directory if milter manager
+	is uninstalled.
+
 2010-02-04  Kouhei Sutou  <kou@cozmixng.org>
 
 	* TODO: add: [1.5.x] use /usr/sbin/service XXX start instead of
