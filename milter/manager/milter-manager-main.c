@@ -673,8 +673,6 @@ apply_command_line_options (MilterManagerConfiguration *config)
             config, option_socket_group_name);
     if (option_daemon)
         milter_manager_configuration_set_daemon(config, TRUE);
-    if (getuid() != 0)
-        milter_manager_configuration_set_privilege_mode(config, FALSE);
 }
 
 static void
@@ -792,6 +790,8 @@ milter_manager_main (void)
                                                        option_config_dir);
     milter_manager_configuration_reload(config);
     apply_command_line_options(config);
+    if (getuid() != 0)
+        milter_manager_configuration_set_privilege_mode(config, FALSE);
 
     manager = milter_manager_new(config);
     g_object_unref(config);
