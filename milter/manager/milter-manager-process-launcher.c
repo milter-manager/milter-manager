@@ -244,6 +244,8 @@ launch (MilterManagerProcessLauncher *launcher,
     guint watch_id;
     MilterManagerProcessLauncherPrivate *priv;
 
+    milter_debug("[launcher][launch] <%s> (%s)", command_line, user_name);
+
     if (is_already_launched(launcher, command_line, error))
         return FALSE;
 
