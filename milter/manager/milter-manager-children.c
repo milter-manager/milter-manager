@@ -2332,6 +2332,11 @@ cb_connection_error (MilterErrorEmittable *emittable, GError *error, gpointer us
     privilege =
         milter_manager_configuration_is_privilege_mode(priv->configuration);
     if (!privilege) {
+        milter_debug("[%u] [children][connection][not-retry] [%u] "
+                     "not privilege mode: %s",
+                     priv->tag,
+                     milter_agent_get_tag(MILTER_AGENT(context)),
+                     milter_server_context_get_name(context));
         clear_try_negotiate_data(data);
         return;
     }
