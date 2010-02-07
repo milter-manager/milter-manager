@@ -143,7 +143,7 @@ encode_connect_inet6 (GString *buffer, const struct sockaddr_in6 *address)
 
     g_string_append_c(buffer, MILTER_SOCKET_FAMILY_INET6);
     g_string_append_len(buffer, port_string, sizeof(port_string));
-    g_string_append(buffer, inet6_address);
+    g_string_append_printf(buffer, "IPv6:%s", inet6_address);
 }
 
 static void

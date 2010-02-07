@@ -1,5 +1,11 @@
 2010-02-07  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-command-decoder.c,
+	milter/core/milter-command-encoder.c,
+	test/core/test-command-decoder.c,
+	test/core/test-command-encoder.c: fix IPv6 connect address
+	parsing. It has "IPv6:" prefix.
+
 	* milter/core/milter-protocol-agent.c,
 	test/server/test-server-context.c: remove NULL value macro.
 

@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -362,7 +362,7 @@ test_encode_connect_ipv6 (void)
     g_string_append_c(expected, '\0');
     g_string_append(expected, "6");
     g_string_append_len(expected, port_string, sizeof(port_string));
-    g_string_append(expected, ipv6_address);
+    g_string_append_printf(expected, "IPv6:%s", ipv6_address);
     g_string_append_c(expected, '\0');
     pack(expected);
 

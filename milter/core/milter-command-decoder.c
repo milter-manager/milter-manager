@@ -449,8 +449,14 @@ decode_connect_inet6_address (const gchar *buffer,
 {
     struct sockaddr_in6 *address_in6;
     struct in6_addr ipv6_address;
+    const gchar ipv6_prefix[] = "IPv6:";
+    size_t address_offset = 0;
 
-    if (inet_pton(AF_INET6, buffer, &ipv6_address) == 0) {
+    if (g_str_has_prefix(buffer, ipv6_prefix)) {
+        address_offset = strlen(ipv6_prefix);
+    }
+
+    if (inet_pton(AF_INET6, buffer + address_offset, &ipv6_address) == 0) {
         g_set_error(error,
                     MILTER_COMMAND_DECODER_ERROR,
                     MILTER_COMMAND_DECODER_ERROR_INVALID_FORMAT,

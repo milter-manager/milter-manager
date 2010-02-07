@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -980,7 +980,7 @@ test_decode_connect_ipv6 (void)
     g_string_append_c(buffer, '\0');
     g_string_append(buffer, "6");
     g_string_append_len(buffer, port_string, sizeof(port_string));
-    g_string_append(buffer, ipv6_address);
+    g_string_append_printf(buffer, "IPv6:%s", ipv6_address);
     g_string_append_c(buffer, '\0');
 
     gcut_assert_error(decode());
@@ -1202,7 +1202,7 @@ test_decode_connect_with_invalid_ipv6_address (void)
     g_string_append_c(buffer, '\0');
     g_string_append(buffer, "6");
     g_string_append_len(buffer, port_string, sizeof(port));
-    g_string_append(buffer, ipv6_address);
+    g_string_append_printf(buffer, "IPv6:%s", ipv6_address);
     g_string_append_c(buffer, '\0');
 
     expected_error =
@@ -1210,7 +1210,7 @@ test_decode_connect_with_invalid_ipv6_address (void)
                     MILTER_COMMAND_DECODER_ERROR_INVALID_FORMAT,
                     "invalid IPv6 address on connect command: "
                     "<mx.local.net>: <6>: <2929>: "
-                    "<2001:c90:625:12e8:290:ccff:fee2:80c5x>");
+                    "<IPv6:2001:c90:625:12e8:290:ccff:fee2:80c5x>");
     actual_error = decode();
     gcut_assert_equal_error(expected_error, actual_error);
 }
