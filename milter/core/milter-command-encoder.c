@@ -95,7 +95,8 @@ encode_each_macro (gpointer _key, gpointer _value, gpointer user_data)
     else
         g_string_append_printf(buffer, "{%s}", key);
     g_string_append_c(buffer, '\0');
-    g_string_append(buffer, value);
+    if (value)
+        g_string_append(buffer, value);
     g_string_append_c(buffer, '\0');
 }
 

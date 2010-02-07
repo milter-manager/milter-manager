@@ -1,5 +1,8 @@
 2010-02-07  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-command-encoder.c (encode_each_macro): add
+	NULL check. (Postfix sends "if_addr" == NULL macro)
+
 	* binding/ruby/glib-0.19.3/: backport GRClosure tag from
 	Ruby/GLib2 trunk (r3741).
 
