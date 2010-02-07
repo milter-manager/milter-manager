@@ -102,27 +102,6 @@ milter_manager_process_launcher_class_init (MilterManagerProcessLauncherClass *k
                              sizeof(MilterManagerProcessLauncherPrivate));
 }
 
-static gboolean
-is_valid_user (const gchar *user_name, GError **error)
-{
-    struct passwd *password;
-
-    errno = 0;
-    password = getpwnam(user_name);
-    if (!password) {
-        g_set_error(error,
-                    MILTER_MANAGER_CHILD_ERROR,
-                    MILTER_MANAGER_CHILD_ERROR_INVALID_USER_NAME,
-                    "No password entry: <%s>%s%s",
-                    user_name,
-                    errno == 0 ? "" : ": ",
-                    errno == 0 ? "" : g_strerror(errno));
-        return FALSE;
-    }
-
-    return TRUE;
-}
-
 static ProcessData *
 process_data_new (GPid pid, guint watch_id,
                   const gchar *command_line, const gchar *user_name)
@@ -218,21 +197,10 @@ is_already_launched (MilterManagerProcessLauncher *launcher,
 static void
 setup_child (gpointer user_data)
 {
-    const gchar *user_name = user_data;
-    struct passwd *password;
+    struct passwd *password = user_data;
 
-    if (!user_name)
+    if (!password)
         return;
-
-    errno = 0;
-    password = getpwnam(user_name);
-    if (!password) {
-        milter_error("No password entry: <%s>%s%s",
-                     user_name,
-                     errno == 0 ? "" : ": ",
-                     errno == 0 ? "" : g_strerror(errno));
-        return;
-    }
 
     if (setgid(password->pw_gid) == -1) {
         milter_error("failed to change GID: %s", g_strerror(errno));
@@ -250,6 +218,8 @@ setup_child (gpointer user_data)
     }
 }
 
+#define PASSWORD_DATA_BUFFER_SIZE 512
+
 static gboolean
 launch (MilterManagerProcessLauncher *launcher,
         const gchar *command_line, const gchar *user_name,
@@ -263,14 +233,31 @@ launch (MilterManagerProcessLauncher *launcher,
     GPid pid;
     guint watch_id;
     MilterManagerProcessLauncherPrivate *priv;
+    struct passwd password;
+    struct passwd *password_p = NULL;
+    gchar password_data_buffer[PASSWORD_DATA_BUFFER_SIZE];
 
     milter_debug("[launcher][launch] <%s>@<%s>", command_line, user_name);
 
     if (is_already_launched(launcher, command_line, error))
         return FALSE;
 
-    if (user_name && !is_valid_user(user_name, error))
-        return FALSE;
+    if (user_name) {
+        int result;
+        result = getpwnam_r(user_name, &password,
+                            password_data_buffer, PASSWORD_DATA_BUFFER_SIZE,
+                            &password_p);
+        if (!password_p) {
+            g_set_error(error,
+                        MILTER_MANAGER_CHILD_ERROR,
+                        MILTER_MANAGER_CHILD_ERROR_INVALID_USER_NAME,
+                        "No password entry: <%s>%s%s",
+                        user_name,
+                        result == 0 ? "" : ": ",
+                        result == 0 ? "" : g_strerror(result));
+            return FALSE;
+        }
+    }
 
     success = g_shell_parse_argv(command_line,
                                  &argc, &argv,
@@ -296,7 +283,7 @@ launch (MilterManagerProcessLauncher *launcher,
                             NULL,
                             flags,
                             setup_child,
-                            (gpointer)user_name,
+                            password_p,
                             &pid,
                             &internal_error);
     g_strfreev(argv);

@@ -1,5 +1,8 @@
 2010-02-07  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-process-launcher.c (launch): use
+	getpwnam_r() instead of getpwnam().
+
 	* milter/manager/milter-manager-children.c: set tag to launcher
 	reader/writer.
 
