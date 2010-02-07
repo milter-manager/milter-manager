@@ -1,5 +1,8 @@
 2010-02-07  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-configuration.c: fix printf format
+	warning on 32bit FreeBSD.
+
 	* milter/manager/milter-manager-leader.c,
 	milter/manager/milter-manager-configuration.[ch]: separate
 	children setup function to avoid GC destroys unexpected children.
