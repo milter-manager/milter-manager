@@ -1,5 +1,8 @@
 2010-02-07  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-protocol-agent.c,
+	test/server/test-server-context.c: remove NULL value macro.
+
 	* binding/ruby/src/manager/rb-milter-manager-configuration.c: mark
 	leader.
 

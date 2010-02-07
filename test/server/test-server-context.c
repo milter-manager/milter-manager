@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -45,6 +45,8 @@ void test_envelope_recipient_accept (void);
 void test_status (void);
 void test_state (void);
 void test_last_state (void);
+void test_macro (void);
+void test_macros_hash_table (void);
 
 static MilterServerContext *context;
 static MilterTestClient *client;
@@ -664,6 +666,60 @@ test_last_state (void)
     gcut_assert_equal_enum(MILTER_TYPE_SERVER_CONTEXT_STATE,
                            MILTER_SERVER_CONTEXT_STATE_DATA,
                            milter_server_context_get_last_state(context));
+}
+
+void
+test_macro (void)
+{
+    MilterProtocolAgent *agent;
+
+    agent = MILTER_PROTOCOL_AGENT(context);
+    milter_protocol_agent_set_macro_context(agent, MILTER_COMMAND_CONNECT);
+
+    gcut_assert_equal_hash_table_string_string(
+        gcut_hash_table_string_string_new(NULL, NULL,
+                                          NULL),
+        milter_protocol_agent_get_available_macros(agent));
+
+    milter_protocol_agent_set_macro(agent, MILTER_COMMAND_CONNECT,
+                                    "if_name", "localhost");
+    gcut_assert_equal_hash_table_string_string(
+        gcut_hash_table_string_string_new("if_name", "localhost",
+                                          NULL),
+        milter_protocol_agent_get_available_macros(agent));
+
+    milter_protocol_agent_set_macro(agent, MILTER_COMMAND_CONNECT,
+                                    "if_name", NULL);
+    gcut_assert_equal_hash_table_string_string(
+        gcut_hash_table_string_string_new(NULL, NULL,
+                                          NULL),
+        milter_protocol_agent_get_available_macros(agent));
+}
+
+void
+test_macros_hash_table (void)
+{
+    MilterProtocolAgent *agent;
+
+    agent = MILTER_PROTOCOL_AGENT(context);
+    milter_protocol_agent_set_macro_context(agent, MILTER_COMMAND_CONNECT);
+
+    gcut_assert_equal_hash_table_string_string(
+        gcut_hash_table_string_string_new(NULL, NULL,
+                                          NULL),
+        milter_protocol_agent_get_available_macros(agent));
+
+    milter_protocol_agent_set_macros_hash_table(
+        agent, MILTER_COMMAND_CONNECT,
+        gcut_hash_table_string_string_new("if_name", "localhost",
+                                          "daemon_name", NULL,
+                                          "if_addr", "IPv6:::1",
+                                          NULL));
+    gcut_assert_equal_hash_table_string_string(
+        gcut_hash_table_string_string_new("if_name", "localhost",
+                                          "if_addr", "IPv6:::1",
+                                          NULL),
+        milter_protocol_agent_get_available_macros(agent));
 }
 
 /*

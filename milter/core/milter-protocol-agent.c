@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -281,11 +281,29 @@ milter_protocol_agent_clear_message_related_macros (MilterProtocolAgent *agent)
 }
 
 static void
-update_macro (gpointer key, gpointer value, gpointer user_data)
+update_macro (GHashTable *macros, const gchar *name, const gchar *value)
 {
-    GHashTable *macros = user_data;
+    if (value) {
+        g_hash_table_replace(macros, g_strdup(name), g_strdup(value));
+    } else {
+        g_hash_table_remove(macros, name);
+    }
+}
 
-    g_hash_table_replace(macros, g_strdup(key), g_strdup(value));
+static GHashTable *
+ensure_macros (MilterProtocolAgentPrivate *priv, MilterCommand macro_context)
+{
+    GHashTable *macros;
+
+    macros = g_hash_table_lookup(priv->macros, GINT_TO_POINTER(macro_context));
+    if (!macros) {
+        macros = g_hash_table_new_full(g_str_hash, g_str_equal,
+                                       g_free, g_free);
+        g_hash_table_insert(priv->macros,
+                            GINT_TO_POINTER(macro_context),
+                            macros);
+    }
+    return macros;
 }
 
 void
@@ -306,15 +324,17 @@ milter_protocol_agent_set_macros_valist (MilterProtocolAgent *agent,
                                          va_list var_args)
 {
     const gchar *name;
+    GHashTable *macros;
+    MilterProtocolAgentPrivate *priv;
 
+    priv = MILTER_PROTOCOL_AGENT_GET_PRIVATE(agent);
+    macros = ensure_macros(priv, macro_context);
     name = macro_name;
     while (name) {
         const gchar *value;
-        value = va_arg(var_args, gchar*);
-        if (!value)
-            break;
-        milter_protocol_agent_set_macro(agent, macro_context, name, value);
-        name = va_arg(var_args, gchar*);
+        value = va_arg(var_args, gchar *);
+        update_macro(macros, name, value);
+        name = va_arg(var_args, gchar *);
     }
 }
 
@@ -332,21 +352,35 @@ milter_protocol_agent_set_macros (MilterProtocolAgent *agent,
     va_end(var_args);
 }
 
+static void
+cb_copy_macro (gpointer key, gpointer value, gpointer user_data)
+{
+    GHashTable *macros = user_data;
+    const gchar *macro_name = key;
+    const gchar *macro_value = value;
+
+    if (!macro_value)
+        return;
+
+    g_hash_table_replace(macros, g_strdup(macro_name), g_strdup(macro_value));
+}
+
 void
 milter_protocol_agent_set_macros_hash_table (MilterProtocolAgent *agent,
                                              MilterCommand macro_context,
                                              GHashTable *macros)
 {
     MilterProtocolAgentPrivate *priv;
-    GHashTable *copied_macros;
+    GHashTable *new_macros;
 
     priv = MILTER_PROTOCOL_AGENT_GET_PRIVATE(agent);
-    copied_macros = g_hash_table_new_full(g_str_hash, g_str_equal,
-                                          g_free, g_free);
+    new_macros = g_hash_table_new_full(g_str_hash, g_str_equal,
+                                       g_free, g_free);
     g_hash_table_insert(priv->macros,
                         GINT_TO_POINTER(macro_context),
-                        copied_macros);
-    g_hash_table_foreach(macros, update_macro, copied_macros);
+                        new_macros);
+    g_hash_table_foreach(macros, cb_copy_macro, new_macros);
+    clear_available_macros(priv);
 }
 
 void
@@ -360,17 +394,8 @@ milter_protocol_agent_set_macro (MilterProtocolAgent *agent,
 
     priv = MILTER_PROTOCOL_AGENT_GET_PRIVATE(agent);
 
-    macros = g_hash_table_lookup(priv->macros, GINT_TO_POINTER(macro_context));
-    if (!macros) {
-        macros = g_hash_table_new_full(g_str_hash, g_str_equal,
-                                       g_free, g_free);
-        g_hash_table_insert(priv->macros,
-                            GINT_TO_POINTER(macro_context),
-                            macros);
-    }
-
-    g_hash_table_replace(macros,
-                         g_strdup(macro_name), g_strdup(macro_value));
+    macros = ensure_macros(priv, macro_context);
+    update_macro(macros, macro_name, macro_value);
     clear_available_macros(priv);
 }
 
