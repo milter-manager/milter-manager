@@ -1,5 +1,8 @@
 2010-02-07  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.c: set tag to launcher
+	reader/writer.
+
 	* milter/manager/milter-manager-process-launcher.c: reduce user
 	privilege in forked process.
 

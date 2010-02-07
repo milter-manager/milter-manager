@@ -3615,6 +3615,7 @@ milter_manager_children_set_launcher_channel (MilterManagerChildren *children,
     }
     if (write_channel) {
         priv->launcher_writer = milter_writer_io_channel_new(write_channel);
+        milter_writer_set_tag(priv->launcher_writer, priv->tag);
         milter_writer_start(priv->launcher_writer);
     }
 
@@ -3629,6 +3630,8 @@ milter_manager_children_set_launcher_channel (MilterManagerChildren *children,
         priv->launcher_reader = milter_reader_io_channel_new(read_channel);
         g_signal_connect(priv->launcher_reader, "flow",
                          G_CALLBACK(cb_launcher_reader_flow), children);
+        milter_reader_set_tag(priv->launcher_reader, priv->tag);
+        milter_reader_start(priv->launcher_reader);
     }
 }
 
