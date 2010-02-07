@@ -1,3 +1,6 @@
+* [1.x.x] improve netstat performance.
+  use net.inet.tcp.pcblist and net.inet6.ip6.stats
+  on FreeBSD and /proc/net/tcp and /proc/net/tcp6 on Linux directly.
 * [1.5.x] use /usr/sbin/service XXX start instead of /etc/init.d/XXX start.
 * [1.5.x] use UNIX domain socket rather than inet in document.
   Suggested by ZnZ.
