@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -26,6 +26,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <pwd.h>
+#include <grp.h>
 #include <errno.h>
 
 #include "milter-manager-process-launcher.h"
@@ -102,7 +103,7 @@ milter_manager_process_launcher_class_init (MilterManagerProcessLauncherClass *k
 }
 
 static gboolean
-set_user (const gchar *user_name, GError **error)
+is_valid_user (const gchar *user_name, GError **error)
 {
     struct passwd *password;
 
@@ -116,22 +117,6 @@ set_user (const gchar *user_name, GError **error)
                     user_name,
                     errno == 0 ? "" : ": ",
                     errno == 0 ? "" : g_strerror(errno));
-        return FALSE;
-    }
-
-    if (setregid(-1, password->pw_gid) == -1) {
-        g_set_error(error,
-                    MILTER_MANAGER_CHILD_ERROR,
-                    MILTER_MANAGER_CHILD_ERROR_NO_PRIVILEGE_MODE,
-                    "failed to change GID: %s", g_strerror(errno));
-        return FALSE;
-    }
-
-    if (setreuid(password->pw_uid, -1) == -1) {
-        g_set_error(error,
-                    MILTER_MANAGER_CHILD_ERROR,
-                    MILTER_MANAGER_CHILD_ERROR_NO_PRIVILEGE_MODE,
-                    "failed to change UID: %s", g_strerror(errno));
         return FALSE;
     }
 
@@ -230,6 +215,41 @@ is_already_launched (MilterManagerProcessLauncher *launcher,
     return TRUE;
 }
 
+static void
+setup_child (gpointer user_data)
+{
+    const gchar *user_name = user_data;
+    struct passwd *password;
+
+    if (!user_name)
+        return;
+
+    errno = 0;
+    password = getpwnam(user_name);
+    if (!password) {
+        milter_error("No password entry: <%s>%s%s",
+                     user_name,
+                     errno == 0 ? "" : ": ",
+                     errno == 0 ? "" : g_strerror(errno));
+        return;
+    }
+
+    if (setgid(password->pw_gid) == -1) {
+        milter_error("failed to change GID: %s", g_strerror(errno));
+        return;
+    }
+
+    if (initgroups(password->pw_name, password->pw_gid) == -1) {
+        milter_error("failed to initialize group access: %s", g_strerror(errno));
+        return;
+    }
+
+    if (setuid(password->pw_uid) == -1) {
+        milter_error("failed to change UID: %s", g_strerror(errno));
+        return;
+    }
+}
+
 static gboolean
 launch (MilterManagerProcessLauncher *launcher,
         const gchar *command_line, const gchar *user_name,
@@ -249,7 +269,7 @@ launch (MilterManagerProcessLauncher *launcher,
     if (is_already_launched(launcher, command_line, error))
         return FALSE;
 
-    if (user_name && !set_user(user_name, error))
+    if (user_name && !is_valid_user(user_name, error))
         return FALSE;
 
     success = g_shell_parse_argv(command_line,
@@ -275,8 +295,8 @@ launch (MilterManagerProcessLauncher *launcher,
                             argv,
                             NULL,
                             flags,
-                            NULL,
-                            NULL,
+                            setup_child,
+                            (gpointer)user_name,
                             &pid,
                             &internal_error);
     g_strfreev(argv);

@@ -1,5 +1,8 @@
 2010-02-07  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-process-launcher.c: reduce user
+	privilege in forked process.
+
 	* milter/core/milter-command-decoder.c,
 	milter/core/milter-command-encoder.c,
 	test/core/test-command-decoder.c,
