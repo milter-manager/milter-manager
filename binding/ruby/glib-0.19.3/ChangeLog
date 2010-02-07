@@ -1,3 +1,8 @@
+2010-02-06  Kouhei Sutou  <kou@cozmixng.org>
+
+	* src/rbgobj_closure.c, src/rbgobj_signal.c, src/rbgobject.h,
+	srb/glib2.def: set tag to GRClosure for debugging.
+
 2009-09-24  Kouhei Sutou  <kou@cozmixng.org>
 
 	* src/lib/mkmf-gnome2.rb: add missing nil check.

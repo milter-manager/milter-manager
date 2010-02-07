@@ -1,5 +1,8 @@
 2010-02-07  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/glib-0.19.3/: backport GRClosure tag from
+	Ruby/GLib2 trunk (r3741).
+
 	* milter/manager/milter-manager-children.c,
 	milter/manager/milter-manager-process-launcher.c: log launch user name.
 
