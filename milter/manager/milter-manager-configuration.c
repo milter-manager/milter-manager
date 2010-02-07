@@ -1500,14 +1500,13 @@ milter_manager_configuration_clear_eggs (MilterManagerConfiguration *configurati
     }
 }
 
-MilterManagerChildren *
-milter_manager_configuration_create_children (MilterManagerConfiguration *configuration)
+void
+milter_manager_configuration_setup_children (MilterManagerConfiguration *configuration,
+                                             MilterManagerChildren *children)
 {
     GList *node;
-    MilterManagerChildren *children;
     MilterManagerConfigurationPrivate *priv;
 
-    children = milter_manager_children_new(configuration);
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
 
     for (node = priv->eggs; node; node = g_list_next(node)) {
@@ -1524,8 +1523,6 @@ milter_manager_configuration_create_children (MilterManagerConfiguration *config
             g_object_unref(child);
         }
     }
-
-    return children;
 }
 
 MilterStatus

@@ -157,12 +157,13 @@ get_load_paths (VALUE self)
 }
 
 static VALUE
-create_children (VALUE self)
+setup_children (VALUE self, VALUE rb_children)
 {
     MilterManagerChildren *children;
 
-    children = milter_manager_configuration_create_children(SELF(self));
-    return GOBJ2RVAL_UNREF(children);
+    children = MILTER_MANAGER_CHILDREN(RVAL2GOBJ(rb_children));
+    milter_manager_configuration_setup_children(SELF(self), children);
+    return Qnil;
 }
 
 static VALUE
@@ -333,7 +334,7 @@ Init_milter_manager_configuration (void)
     rb_define_method(rb_cMilterManagerConfiguration,
 		     "load_paths", get_load_paths, 0);
     rb_define_method(rb_cMilterManagerConfiguration,
-		     "create_children", create_children, 0);
+		     "setup_children", setup_children, 1);
     rb_define_method(rb_cMilterManagerConfiguration,
 		     "to_xml", to_xml, -1);
     rb_define_method(rb_cMilterManagerConfiguration,

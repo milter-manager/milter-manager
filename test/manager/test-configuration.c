@@ -201,7 +201,8 @@ test_children (void)
     milter_manager_children_add_child(expected_children, child);
 
     cut_assert_false(attached_to);
-    actual_children = milter_manager_configuration_create_children(config);
+    actual_children = milter_manager_children_new(config);
+    milter_manager_configuration_setup_children(config, actual_children);
     milter_assert_equal_children(expected_children, actual_children);
     cut_assert_true(attached_to);
 }
@@ -577,7 +578,8 @@ milter_assert_default_configuration_helper (MilterManagerConfiguration *config)
     expected_children = milter_manager_children_new(config);
     if (actual_children)
         g_object_unref(actual_children);
-    actual_children = milter_manager_configuration_create_children(config);
+    actual_children = milter_manager_children_new(config);
+    milter_manager_configuration_setup_children(config, actual_children);
     milter_assert_equal_children(expected_children, actual_children);
     g_object_unref(actual_children);
     actual_children = NULL;
