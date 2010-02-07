@@ -1,5 +1,8 @@
 2010-02-07  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/src/manager/rb-milter-manager-configuration.c: mark
+	leader.
+
 	* milter/core/milter-command-encoder.c (encode_each_macro): add
 	NULL check. (Postfix sends "if_addr" == NULL macro)
 

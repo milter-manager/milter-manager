@@ -279,6 +279,7 @@ mark (gpointer data)
 	MilterManagerLeader *leader = node->data;
 	MilterManagerChildren *children;
 
+	rbgobj_gc_mark_instance(leader);
 	children = milter_manager_leader_get_children(leader);
 	if (!children)
 	    continue;
