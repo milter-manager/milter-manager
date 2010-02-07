@@ -80,17 +80,17 @@ class TestConfiguration < Test::Unit::TestCase
   end
 
   def test_add_egg
-    assert_equal(0, @configuration.create_children.length)
+    assert_equal(0, create_children.length)
 
     name = "child-milter"
     egg = Milter::Manager::Egg.new(name)
     egg.connection_spec = "unix:/tmp/socket"
     @configuration.add_egg(egg)
-    assert_equal(1, @configuration.create_children.length)
+    assert_equal(1, create_children.length)
 
     @configuration.clear_eggs
     assert_equal([], @configuration.eggs)
-    assert_equal(0, @configuration.create_children.length)
+    assert_equal(0, create_children.length)
   end
 
   def test_find_egg
@@ -455,5 +455,12 @@ EOD
 
     @configuration.reset_location("security.privilege_mode")
     assert_equal({}, @configuration.locations)
+  end
+
+  private
+  def create_children
+    children = Milter::Manager::Children.new(@configuration)
+    @configuration.setup_children(children)
+    children
   end
 end
