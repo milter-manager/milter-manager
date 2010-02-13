@@ -1,3 +1,7 @@
+2010-02-13  Kouhei Sutou  <kou@clear-code.com>
+
+	* binding/ruby/lib/milter/client/command-line.rb: add.
+
 2010-02-07  Kouhei Sutou  <kou@cozmixng.org>
 
 	* TODO: add:
