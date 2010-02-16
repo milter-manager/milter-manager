@@ -1,5 +1,7 @@
 2010-02-16  Kouhei Sutou  <kou@clear-code.com>
 
+	* data/defaults/redhat.conf: detect OpenDKIM on CentOS.
+
 	* binding/ruby/lib/milter/manager/redhat-init-detector.rb,
 	binding/ruby/test/manager/test-redhat-init-detector.rb: support
 	OpenDKIM detection.
