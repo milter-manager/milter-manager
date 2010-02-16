@@ -112,7 +112,6 @@ ruby_glib2_0_19_3_files =						\
 	glib-0.19.3/sample/type-register.rb				\
 	glib-0.19.3/sample/type-register2.rb				\
 	glib-0.19.3/sample/utils.rb					\
-	glib-0.19.3/src/Makefile					\
 	glib-0.19.3/src/depend						\
 	glib-0.19.3/src/glib-enum-types.c				\
 	glib-0.19.3/src/glib-enum-types.h				\
