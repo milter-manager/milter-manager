@@ -1,5 +1,8 @@
 2010-02-16  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/manager/milter-manager-main.c: make default
+	log level ERROR.
+
 	* binding/ruby/lib/milter/client/Makefile.am: install
 	milter/client/command-line.rb.
 

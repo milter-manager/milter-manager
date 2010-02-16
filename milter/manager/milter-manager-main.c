@@ -171,6 +171,8 @@ milter_manager_init (int *argc, char ***argv)
     milter_server_init();
     milter_manager_log_handler_id = MILTER_GLIB_LOG_DELEGATE("milter-manager");
 
+    milter_logger_set_target_level(milter_logger(), MILTER_LOG_LEVEL_ERROR);
+
     option_context = g_option_context_new(NULL);
     g_option_context_add_main_entries(option_context, option_entries, NULL);
     main_group = g_option_context_get_main_group(option_context);
