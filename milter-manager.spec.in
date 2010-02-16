@@ -145,7 +145,9 @@ fi
 %{_libdir}/milter-manager/module/
 %{_libdir}/pkgconfig/milter-manager.pc
 %{_mandir}/man1/milter-manager.*
+%{_mandir}/man1/milter-manager-log-analyzer.*
 %{_mandir}/ja/man1/milter-manager.*
+%{_mandir}/ja/man1/milter-manager-log-analyzer.*
 %{_initrddir}/milter-manager
 %{_datadir}/milter-manager/
 %{_sysconfdir}/milter-manager/cron.d/
