@@ -16,7 +16,7 @@ BuildRequires: ruby
 BuildRequires: ruby-devel
 Requires: glib2
 Requires: ruby
-Requires: ruby-rrdtool
+Requires: libmilter-toolkit
 Requires(pre): /usr/bin/getent, /usr/sbin/useradd
 Requires(pre): /usr/bin/id, /usr/sbin/groupadd
 Requires(post): /sbin/chkconfig
@@ -26,6 +26,43 @@ Requires(postun): /sbin/service, /sbin/chkconfig, /usr/sbin/userdel
 %description
 milter manager administrates milters instead of MTA to reduce milter
 administration cost and combine milters flexibly.
+
+%package -n libmilter-toolkit
+Summary: A milter protocol library
+Group: System Environment/Libraries
+
+%description -n libmilter-toolkit
+Both of client-side and server-side milter protocol are implemented.
+This package contains the library files required for running services
+built using libmilter-toolkit.
+
+%package -n libmilter-toolkit-devel
+Summary: Development files for libmilter-toolkit
+Group: Development/Libraries
+Requires: libmilter-toolkit
+
+%description -n libmilter-toolkit-devel
+This package contains the headers, and other support files
+required for developing applications against libmilter-toolkit.
+
+%package -n libmilter-compatible
+Summary: libmilter API and ABI compatible milter library
+Group: System Environment/Libraries
+Requires: libmilter-toolkit
+
+%description -n libmilter-compatible
+A libmilter API and ABI compatible library based on libmilter-toolkit.
+This package contains the library files required for running services
+built using Sendmail libmilter or libmilter-compatible.
+
+%package -n libmilter-compatible-devel
+Summary: Development files for libmilter-compatible
+Group: Development/Libraries
+Requires: libmilter-compatible, libmilter-toolkit-devel
+
+%description -n libmilter-compatible-devel
+This package contains the headers, and other support files
+required for developing applications against libmilter-compatible.
 
 %prep
 %setup -q
@@ -99,11 +136,16 @@ fi
 %defattr(-, root, root, -)
 %doc ChangeLog ChangeLog.toolkit README README.ja NEWS NEWS.ja TODO license/*.txt
 %doc %{_datadir}/gtk-doc/html/milter-manager/
-%{_bindir}/
-%{_sbindir}/
-%{_includedir}/milter-manager/
-%{_libdir}/
-%{_mandir}/
+%{_bindir}/milter-manager-log-analyzer
+%{_sbindir}/milter-manager
+%{_includedir}/milter-manager/milter/manager.h
+%{_includedir}/milter-manager/milter/manager/
+%{_libdir}/libmilter-manager.*
+%{_libdir}/milter-manager/binding/
+%{_libdir}/milter-manager/module/
+%{_libdir}/pkgconfig/milter-manager.pc
+%{_mandir}/man1/milter-manager.*
+%{_mandir}/ja/man1/milter-manager.*
 %{_initrddir}/milter-manager
 %{_datadir}/milter-manager/
 %{_sysconfdir}/milter-manager/cron.d/
@@ -119,7 +161,61 @@ fi
 %defattr(-, milter-manager, milter-manager, 0755)
 %dir %{_localstatedir}/run/milter-manager/
 
+%files -n libmilter-toolkit
+%defattr(-,root,root)
+%doc ChangeLog ChangeLog.toolkit README README.ja NEWS NEWS.ja TODO license/*.txt
+%{_bindir}/milter-test-client
+%{_bindir}/milter-test-server
+%{_bindir}/milter-performance-check
+%{_libdir}/libmilter-core.so.*
+%{_libdir}/libmilter-client.so.*
+%{_libdir}/libmilter-server.so.*
+%{_mandir}/man1/milter-test-client.*
+%{_mandir}/man1/milter-test-server.*
+%{_mandir}/man1/milter-performance-check.*
+%{_mandir}/ja/man1/milter-test-client.*
+%{_mandir}/ja/man1/milter-test-server.*
+%{_mandir}/ja/man1/milter-performance-check.*
+
+%files -n libmilter-toolkit-devel
+%defattr(-,root,root)
+%doc ChangeLog ChangeLog.toolkit README README.ja NEWS NEWS.ja TODO license/*.txt
+%doc %{_datadir}/gtk-doc/html/milter-manager/
+%{_includedir}/milter-manager/milter/core.h
+%{_includedir}/milter-manager/milter/core/
+%{_includedir}/milter-manager/milter/client.h
+%{_includedir}/milter-manager/milter/client/
+%{_includedir}/milter-manager/milter/server.h
+%{_includedir}/milter-manager/milter/server/
+%{_libdir}/libmilter-core.so
+%{_libdir}/libmilter-core.la
+%{_libdir}/libmilter-client.so
+%{_libdir}/libmilter-client.la
+%{_libdir}/libmilter-server.so
+%{_libdir}/libmilter-server.la
+%{_libdir}/pkgconfig/milter-core.pc
+%{_libdir}/pkgconfig/milter-client.pc
+%{_libdir}/pkgconfig/milter-server.pc
+
+%files -n libmilter-compatible
+%defattr(-,root,root)
+%doc ChangeLog ChangeLog.toolkit README README.ja NEWS NEWS.ja TODO license/*.txt
+%{_libdir}/milter-manager/libmilter.so.*
+
+%files -n libmilter-compatible-devel
+%defattr(-,root,root)
+%doc ChangeLog ChangeLog.toolkit README README.ja NEWS NEWS.ja TODO license/*.txt
+%doc %{_datadir}/gtk-doc/html/milter-manager/
+%{_includedir}/milter-manager/libmilter/
+%{_libdir}/milter-manager/libmilter.so
+%{_libdir}/milter-manager/libmilter.la
+%{_libdir}/pkgconfig/libmilter.pc
+
 %changelog
+* Thu Feb 17 2010 Kouhei Sutou <kou@clear-code.com>
+- (1.5.0-1)
+- new upstream release
+
 * Thu Oct 29 2009 Kouhei Sutou <kou@clear-code.com>
 - (1.4.1-0)
 - new upstream release
