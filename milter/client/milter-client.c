@@ -1074,7 +1074,7 @@ switch_user (MilterClient *client, GError **error)
 
     if (priv->address && priv->address->sa_family == AF_UNIX) {
         struct sockaddr_un *address_un;
-        address_un = (struct sockaddr_un *)address;
+        address_un = (struct sockaddr_un *)priv->address;
         if (chown(address_un->sun_path, password->pw_uid, -1) == -1) {
             g_set_error(error,
                         MILTER_CLIENT_ERROR,
