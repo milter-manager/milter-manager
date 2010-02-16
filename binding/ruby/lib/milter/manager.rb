@@ -300,10 +300,10 @@ module Milter::Manager
       case first_line
       when /\A\s*</m
         XMLConfigurationLoader.new(self).load(file)
-#       when /\A#\s*-\*-\s*yaml\s*-\*-/i
-#         YAMLConfigurationLoader.new(self).load(file)
-      else
-        load_configuration(file)
+      # when /\A#\s*-\*-\s*yaml\s*-\*-/i
+      #   YAMLConfigurationLoader.new(self).load(file)
+      # else
+      #   load_configuration(file)
       end
     end
 

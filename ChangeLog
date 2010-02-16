@@ -1,5 +1,8 @@
 2010-02-16  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/lib/milter/manager.rb: disable Ruby configuration
+	in custom configuration because of security reason.
+
 	* milter/manager/milter-manager-main.c: make default
 	log level ERROR.
 
