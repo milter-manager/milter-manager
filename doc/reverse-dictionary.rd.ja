@@ -59,7 +59,7 @@ milter-manager.local.confがあると自動的に読み込みます。
 
 === TCP/IPでmilter-managerに接続する
 
-((<manager.connection_spec|configuration.rd.ja#configuration.manager-connection-spec>))
+((<manager.connection_spec|configuration.rd.ja#configuration.manager.connection-spec>))
 で"inet:"を指定します。
 
   # 10025番ポートで待ち受ける。自ホストからのみ接続可。
@@ -67,21 +67,21 @@ milter-manager.local.confがあると自動的に読み込みます。
 
 === UNIXドメインソケットでmilter-managerに接続する
 
-((<manager.connection_spec|configuration.rd.ja#configuration.manager-connection-spec>))
+((<manager.connection_spec|configuration.rd.ja#configuration.manager.connection-spec>))
 で"unix:"を指定します。
 
   # /var/run/milter/milter-manager.sockで待ち受ける
   manager.connection_spec = "unix://var/run/milter/milter-manager.sock"
 
 ソケットファイルのパーミッションは
-((<manager.unix_socket_mode|configuration.rd.ja#configuration.manager-unix-socket-mode>))
+((<manager.unix_socket_mode|configuration.rd.ja#configuration.manager.unix-socket-mode>))
 で指定できます。
 
   # 同じグループのユーザは接続可能。
   manager.unix_socket_mode = 0660
 
 ソケットファイルのグループは
-((<manager.unix_socket_group|configuration.rd.ja#configuration.manager-unix-socket-group>))
+((<manager.unix_socket_group|configuration.rd.ja#configuration.manager.unix-socket-group>))
 で指定できます。
 
   # ソケットファイルは"milter"グループが所有する
@@ -101,8 +101,8 @@ UNIXドメインソケット作成時に同名のファイルがある場合、�
 
 もし、無効にする場合は、それぞれ、以下の設定を変更します。
 
-  (1) ((<manager.remove_unix_socket_on_create|configuration.rd.ja#configuration.manager-remove-unix-socket-on-create>))
-  (2) ((<manager.remove_unix_socket_on_close|configuration.rd.ja#configuration.manager-remove-unix-on-close>))
+  (1) ((<manager.remove_unix_socket_on_create|configuration.rd.ja#configuration.manager.remove-unix-socket-on-create>))
+  (2) ((<manager.remove_unix_socket_on_close|configuration.rd.ja#configuration.manager.remove-unix-on-close>))
 
 以下は、両方を無効にする設定例です。
 

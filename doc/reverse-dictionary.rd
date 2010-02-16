@@ -57,27 +57,27 @@ in the same directory by default.
 
 === Connect milter-manager via TCP/IP
 
-"inet:" is used for ((<manager.connection_spec|configuration.rd#configuration.manager-connection-spec>)).
+"inet:" is used for ((<manager.connection_spec|configuration.rd#configuration.manager.connection-spec>)).
 
   # Listen on 10025 port. milter-manager accepts a connection from localhost
   manager.connection_spec = "inet:10025@localhost"
 
 === Connect milter-manager via UNIX domain socket
 
-"unix:" is used for ((<manager.connection_spec|configuration.rd.ja#configuration.manager-connection-spec>)).
+"unix:" is used for ((<manager.connection_spec|configuration.rd.ja#configuration.manager.connection-spec>)).
 
   # Listen on /var/run/milter/milter-manager.sock.
   manager.connection_spec = "unix://var/run/milter/milter-manager.sock"
 
 A socket file permission can be specified by
-((<manager.unix_socket_mode|configuration.rd.ja#configuration.manager-unix-socket-mode>)).
+((<manager.unix_socket_mode|configuration.rd.ja#configuration.manager.unix-socket-mode>)).
 
   # Users who belongs to the same group that owns the socket
   # can connect to milter-manager.
   manager.unix_socket_mode = 0660
 
 A group for socket file can be specified by
-((<manager.unix_socket_group|configuration.rd.ja#configuration.manager-unix-socket-group>)).
+((<manager.unix_socket_group|configuration.rd.ja#configuration.manager.unix-socket-group>)).
 
   # Socket file is belongs to "milter" group.
   manager.unix_socket_group = "milter"
@@ -99,8 +99,8 @@ enables both of them by default.
 If you want to disable the features, change the following
 configuration respectively:
 
-  (1) ((<manager.remove_unix_socket_on_create|configuration.rd#configuration.manager-remove-unix-socket-on-create>))
-  (2) ((<manager.remove_unix_socket_on_close|configuration.rd#configuration.manager-remove-unix-on-close>))
+  (1) ((<manager.remove_unix_socket_on_create|configuration.rd#configuration.manager.remove-unix-socket-on-create>))
+  (2) ((<manager.remove_unix_socket_on_close|configuration.rd#configuration.manager.remove-unix-on-close>))
 
 Here is an configuration to disable both of them:
 
