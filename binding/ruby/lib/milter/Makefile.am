@@ -1,4 +1,5 @@
 SUBDIRS =	\
+	client	\
 	manager
 
 binding_lib_milterdir = $(binding_libdir)/milter
