@@ -1,5 +1,8 @@
 2010-02-17  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter-manager.spec.in: increment release version: 1.5.0-0 ->
+	1.5.0-1.
+
 	* doc/reverse-dictionary.rd*: fix typo in ID.
 
 2010-02-16  Kouhei Sutou  <kou@clear-code.com>
