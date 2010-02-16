@@ -1,5 +1,8 @@
 2010-02-16  Kouhei Sutou  <kou@clear-code.com>
 
+	* data/cron.d/redhat/milter-manager-log: add rrdtool availability
+	check.
+
 	* milter-manager.spec.in: split packages.
 
 	* milter/client/milter-client.c, milter/client.h,
