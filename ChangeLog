@@ -1,5 +1,7 @@
 2010-02-16  Kouhei Sutou  <kou@clear-code.com>
 
+	* configure.ac: add missing $(DESTDIR).
+
 	* binding/ruby/Makefile.am: remove an auto-generated file from
 	dist files.
 	(ruby_glib2_0_16_0_files): fix a typp.

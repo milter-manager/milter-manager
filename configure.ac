@@ -313,7 +313,7 @@ if test "$ruby_available" = "yes"; then
       cat <<EOM >> $ac_ruby_glib2_dir/Makefile
 
 exec_prefix = $ac_ruby_glib2_exec_prefix
-libdir = $libdir
+libdir = \$(DESTDIR)$libdir
 pkglibdir = \$(libdir)/$PACKAGE_NAME
 bindingdir = $bindingdir
 binding_extdir = $binding_extdir
