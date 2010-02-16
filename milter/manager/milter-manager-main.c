@@ -452,139 +452,6 @@ find_password (const gchar *effective_user)
     return password;
 }
 
-static gboolean
-switch_user (MilterManager *manager)
-{
-    MilterManagerConfiguration *configuration;
-    const gchar *effective_user;
-    struct passwd *password;
-
-    configuration = milter_manager_get_configuration(manager);
-
-    effective_user = milter_manager_configuration_get_effective_user(configuration);
-
-    password = find_password(effective_user);
-    if (!password)
-        return FALSE;
-
-    if (setuid(password->pw_uid) == -1) {
-        milter_manager_error("failed to change effective user: %s: %s",
-                             password->pw_name, g_strerror(errno));
-        return FALSE;
-    }
-
-    return TRUE;
-}
-
-static gboolean
-switch_group (MilterManager *manager)
-{
-    MilterManagerConfiguration *configuration;
-    const gchar *effective_user;
-    const gchar *effective_group;
-    struct passwd *password;
-    struct group *group;
-
-    configuration = milter_manager_get_configuration(manager);
-
-    effective_user = milter_manager_configuration_get_effective_user(configuration);
-    effective_group = milter_manager_configuration_get_effective_group(configuration);
-    if (!effective_group)
-        return TRUE;
-
-    errno = 0;
-    group = getgrnam(effective_group);
-    if (!group) {
-        if (errno == 0) {
-            milter_manager_error(
-                "failed to find group entry for effective group: %s",
-                effective_group);
-        } else {
-            milter_manager_error(
-                "failed to get group entry for effective group: %s: %s",
-                effective_group, g_strerror(errno));
-        }
-        return FALSE;
-    }
-
-
-    if (setgid(group->gr_gid) == -1) {
-        milter_manager_error("failed to change effective group: %s: %s",
-                             effective_group, g_strerror(errno));
-        return FALSE;
-    }
-
-    password = find_password(effective_user);
-    if (!password)
-        return FALSE;
-
-    if (initgroups(password->pw_name, group->gr_gid) == -1) {
-        milter_manager_error("failed to initialize groups: %s: %s: %s",
-                             password->pw_name, group->gr_name,
-                             g_strerror(errno));
-        return FALSE;
-    }
-
-    return TRUE;
-}
-
-static gboolean
-detach_io (void)
-{
-    gboolean success = FALSE;
-    int null_stdin_fd = -1;
-    int null_stdout_fd = -1;
-    int null_stderr_fd = -1;
-
-    null_stdin_fd = open("/dev/null", O_RDONLY);
-    if (null_stdin_fd == -1) {
-        g_print("failed to open /dev/null for STDIN: %s\n", g_strerror(errno));
-        goto cleanup;
-    }
-
-    null_stdout_fd = open("/dev/null", O_WRONLY);
-    if (null_stdout_fd == -1) {
-        g_print("failed to open /dev/null for STDOUT: %s\n", g_strerror(errno));
-        goto cleanup;
-    }
-
-    null_stderr_fd = open("/dev/null", O_WRONLY);
-    if (null_stderr_fd == -1) {
-        g_print("failed to open /dev/null for STDERR: %s\n", g_strerror(errno));
-        goto cleanup;
-    }
-
-    if (dup2(null_stdin_fd, STDIN_FILENO) == -1) {
-        g_print("failed to detach STDIN: %s\n", g_strerror(errno));
-        goto cleanup;
-    }
-
-    if (dup2(null_stdout_fd, STDOUT_FILENO) == -1) {
-        g_print("failed to detach STDOUT: %s\n", g_strerror(errno));
-        goto cleanup;
-    }
-
-    if (dup2(null_stderr_fd, STDERR_FILENO) == -1) {
-        g_printerr("failed to detach STDERR: %s\n", g_strerror(errno));
-        goto cleanup;
-    }
-
-    success = TRUE;
-
-cleanup:
-    if (null_stdin_fd == -1)
-        close(null_stdin_fd);
-    if (null_stdout_fd == -1)
-        close(null_stdout_fd);
-    if (null_stderr_fd == -1)
-        close(null_stderr_fd);
-
-    if (success)
-        io_detached = TRUE;
-
-    return success;
-}
-
 static void
 update_max_file_descriptors (MilterManager *manager)
 {
@@ -614,48 +481,6 @@ update_max_file_descriptors (MilterManager *manager)
     }
 }
 
-static gboolean
-daemonize (void)
-{
-    switch (fork()) {
-    case 0:
-        break;
-    case -1:
-        g_print("failed to fork child process: %s\n", g_strerror(errno));
-        return FALSE;
-    default:
-        _exit(EXIT_SUCCESS);
-        break;
-    }
-
-    if (setsid() == -1) {
-        g_print("failed to create session: %s\n", g_strerror(errno));
-        return FALSE;
-    }
-
-    switch (fork()) {
-    case 0:
-        break;
-    case -1:
-        g_print("failed to fork grandchild process: %s\n", g_strerror(errno));
-        return FALSE;
-    default:
-        _exit(EXIT_SUCCESS);
-        break;
-    }
-
-    if (g_chdir("/") == -1) {
-        g_print("failed to change working directory to '/': %s\n",
-                g_strerror(errno));
-        return FALSE;
-    }
-
-    if (!detach_io())
-        return FALSE;
-
-    return TRUE;
-}
-
 static void
 apply_command_line_options (MilterManagerConfiguration *config)
 {
@@ -680,15 +505,17 @@ apply_command_line_options (MilterManagerConfiguration *config)
 static void
 append_custom_configuration_directory (MilterManagerConfiguration *config)
 {
-    uid_t uid;
     struct passwd *password;
+    const gchar *effective_user;
     gchar *custom_config_directory;
 
-    uid = geteuid();
-    if (uid == 0)
+    effective_user = milter_manager_configuration_get_effective_user(config);
+    if (!effective_user)
         return;
 
-    password = getpwuid(uid);
+    password = find_password(effective_user);
+    if (!password)
+        return;
 
     custom_config_directory =
         g_strdup(milter_manager_configuration_get_custom_configuration_directory(config));
@@ -780,8 +607,9 @@ milter_manager_main (void)
     MilterManager *manager;
     MilterManagerController *controller;
     MilterManagerConfiguration *config;
-    gboolean daemon;
+    gboolean remove_socket, daemon;
     gchar *pid_file = NULL;
+    GError *error = NULL;
     struct sigaction report_stack_trace_action;
     struct sigaction shutdown_client_action;
     struct sigaction reload_configuration_action;
@@ -801,27 +629,6 @@ milter_manager_main (void)
     client = MILTER_CLIENT(manager);
     g_signal_connect(client, "error", G_CALLBACK(cb_error), NULL);
 
-    update_max_file_descriptors(manager);
-
-    daemon = milter_manager_configuration_is_daemon(config);
-    if (!option_show_config && daemon && !daemonize()) {
-        g_object_unref(manager);
-        return FALSE;
-    }
-
-    if (!option_show_config &&
-        milter_manager_configuration_is_privilege_mode(config) &&
-        !start_process_launcher_process(manager)) {
-        g_object_unref(manager);
-        return FALSE;
-    }
-
-    if (geteuid() == 0 &&
-        (!switch_group(manager) || !switch_user(manager))) {
-        g_object_unref(manager);
-        return FALSE;
-    }
-
     append_custom_configuration_directory(config);
 
     if (option_show_config) {
@@ -838,9 +645,13 @@ milter_manager_main (void)
         return TRUE;
     }
 
-    controller = milter_manager_controller_new(manager);
-    if (controller)
-        milter_manager_controller_listen(controller, NULL);
+    update_max_file_descriptors(manager);
+
+    if (milter_manager_configuration_is_privilege_mode(config) &&
+        !start_process_launcher_process(manager)) {
+        g_object_unref(manager);
+        return FALSE;
+    }
 
     pid_file = g_strdup(milter_manager_configuration_get_pid_file(config));
     if (pid_file) {
@@ -857,10 +668,37 @@ milter_manager_main (void)
         }
     }
 
-    {
-        gboolean remove;
-        remove = milter_manager_configuration_is_remove_manager_unix_socket_on_create(config);
-        milter_client_set_remove_unix_socket_on_create(client, remove);
+    remove_socket = milter_manager_configuration_is_remove_manager_unix_socket_on_create(config);
+    milter_client_set_remove_unix_socket_on_create(client, remove_socket);
+
+    if (!milter_client_listen(client, &error)) {
+        milter_manager_error("failed to listen: %s", error->message);
+        g_error_free(error);
+        g_object_unref(manager);
+        return FALSE;
+    }
+
+    if (!milter_client_drop_privilege(client, &error)) {
+        milter_manager_error("failed to drop privilege: %s", error->message);
+        g_error_free(error);
+        g_object_unref(manager);
+        return FALSE;
+    }
+
+    controller = milter_manager_controller_new(manager);
+    if (controller)
+        milter_manager_controller_listen(controller, NULL);
+
+    daemon = milter_manager_configuration_is_daemon(config);
+    if (daemon) {
+        if (milter_client_daemonize(client, &error)) {
+            io_detached = TRUE;
+        } else {
+            milter_manager_error("failed to daemonize: %s", error->message);
+            g_error_free(error);
+            g_object_unref(manager);
+            return FALSE;
+        }
     }
 
     the_manager = manager;

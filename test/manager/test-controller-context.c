@@ -253,7 +253,13 @@ test_reload (void)
     config = milter_manager_get_configuration(manager);
     cut_assert_false(milter_manager_configuration_is_privilege_mode(config));
     g_file_set_contents(custom_config_path,
-                        "security.privilege_mode = true", -1,
+                        "<?xml version='1.0' encoding='utf-8'?>\n"
+                        "<configuration>\n"
+                        "  <security>\n"
+                        "    <privilege-mode>true</privilege-mode>\n"
+                        "  </security>\n"
+                        "</configuration>",
+                        -1,
                         &error);
     gcut_assert_error(error);
 

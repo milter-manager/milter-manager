@@ -24,7 +24,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <pwd.h>
 #include <grp.h>
+#include <fcntl.h>
 
 #include <errno.h>
 
@@ -97,6 +99,10 @@ struct _MilterClientPrivate
     guint max_connections;
     gboolean multi_workers_mode;
     GThreadPool *worker_threads;
+    struct sockaddr *address;
+    socklen_t address_size;
+    gchar *effective_user;
+    gchar *effective_group;
 };
 
 typedef struct _MilterClientProcessData
@@ -201,6 +207,10 @@ _milter_client_init (MilterClient *client)
     priv->max_connections = MILTER_CLIENT_DEFAULT_MAX_CONNECTIONS;
     priv->multi_workers_mode = FALSE;
     priv->worker_threads = NULL;
+    priv->address = NULL;
+    priv->address_size = 0;
+    priv->effective_user = NULL;
+    priv->effective_group = NULL;
 }
 
 static void
@@ -212,6 +222,16 @@ process_data_free (MilterClientProcessData *data)
     }
     g_object_unref(data->context);
     g_free(data);
+}
+
+static void
+dispose_address (MilterClientPrivate *priv)
+{
+    if (priv->address) {
+        g_free(priv->address);
+        priv->address = NULL;
+        priv->address_size = 0;
+    }
 }
 
 static void
@@ -270,6 +290,18 @@ dispose (GObject *object)
     if (priv->worker_threads) {
         g_thread_pool_free(priv->worker_threads, TRUE, FALSE);
         priv->worker_threads = NULL;
+    }
+
+    dispose_address(priv);
+
+    if (priv->effective_user) {
+        g_free(priv->effective_user);
+        priv->effective_user = NULL;
+    }
+
+    if (priv->effective_group) {
+        g_free(priv->effective_group);
+        priv->effective_group = NULL;
     }
 
     G_OBJECT_CLASS(_milter_client_parent_class)->dispose(object);
@@ -948,14 +980,335 @@ multi_workers_start_accept (MilterClient *client)
     return TRUE;
 }
 
+
+static GIOChannel *
+milter_client_listen_channel (MilterClient  *client, GError **error)
+{
+    MilterClientPrivate *priv;
+    GIOChannel *channel;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+
+    dispose_address(priv);
+
+    if (!priv->connection_spec) {
+        gchar *default_connection_spec;
+
+        default_connection_spec =
+            milter_client_get_default_connection_spec(client);
+        milter_client_set_connection_spec(client, default_connection_spec,
+                                          NULL);
+        g_free(default_connection_spec);
+    }
+
+    channel = milter_connection_listen(priv->connection_spec,
+                                       priv->listen_backlog,
+                                       &(priv->address),
+                                       &(priv->address_size),
+                                       priv->remove_unix_socket_on_create,
+                                       error);
+    if (priv->address_size > 0) {
+        g_signal_emit(client, signals[LISTEN_STARTED], 0,
+                      priv->address, priv->address_size);
+    }
+
+    return channel;
+}
+
+gboolean
+milter_client_listen (MilterClient  *client, GError **error)
+{
+    GIOChannel *channel;
+
+    channel = milter_client_listen_channel(client, error);
+    if (!channel)
+        return FALSE;
+
+    milter_client_set_listen_channel(client, channel);
+    return TRUE;
+}
+
+static struct passwd *
+find_password (const gchar *effective_user, GError **error)
+{
+    struct passwd *password;
+
+    if (!effective_user)
+        effective_user = "nobody";
+
+    errno = 0;
+    password = getpwnam(effective_user);
+    if (!password) {
+        if (errno == 0) {
+            g_set_error(
+                error,
+                MILTER_CLIENT_ERROR,
+                MILTER_CLIENT_ERROR_PASSWORD_ENTRY,
+                "failed to find password entry for effective user: %s",
+                effective_user);
+        } else {
+            g_set_error(
+                error,
+                MILTER_CLIENT_ERROR,
+                MILTER_CLIENT_ERROR_PASSWORD_ENTRY,
+                "failed to get password entry for effective user: %s: %s",
+                effective_user, g_strerror(errno));
+        }
+    }
+
+    return password;
+}
+
+static gboolean
+switch_user (MilterClient *client, GError **error)
+{
+    MilterClientPrivate *priv;
+    const gchar *effective_user;
+    struct passwd *password;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    effective_user = milter_client_get_effective_user(client);
+    password = find_password(effective_user, error);
+    if (!password)
+        return FALSE;
+
+    if (priv->address && priv->address->sa_family == AF_UNIX) {
+        struct sockaddr_un *address_un;
+        address_un = (struct sockaddr_un *)address;
+        if (chown(address_un->sun_path, password->pw_uid, -1) == -1) {
+            g_set_error(error,
+                        MILTER_CLIENT_ERROR,
+                        MILTER_CLIENT_ERROR_DROP_PRIVILEGE,
+                        "failed to change UNIX socket owner: "
+                        "<%s>: <%s>: %s",
+                        address_un->sun_path, password->pw_name,
+                        g_strerror(errno));
+        }
+    }
+
+    if (setuid(password->pw_uid) == -1) {
+        g_set_error(error,
+                    MILTER_CLIENT_ERROR,
+                    MILTER_CLIENT_ERROR_DROP_PRIVILEGE,
+                    "failed to change effective user: %s: %s",
+                    password->pw_name, g_strerror(errno));
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
+static gboolean
+switch_group (MilterClient *client, GError **error)
+{
+    const gchar *effective_user;
+    const gchar *effective_group;
+    struct passwd *password;
+    struct group *group;
+
+    effective_group = milter_client_get_effective_group(client);
+    if (!effective_group)
+        return TRUE;
+
+    errno = 0;
+    group = getgrnam(effective_group);
+    if (!group) {
+        if (errno == 0) {
+            g_set_error(
+                error,
+                MILTER_CLIENT_ERROR,
+                MILTER_CLIENT_ERROR_GROUP_ENTRY,
+                "failed to find group entry for effective group: %s",
+                effective_group);
+        } else {
+            g_set_error(
+                error,
+                MILTER_CLIENT_ERROR,
+                MILTER_CLIENT_ERROR_GROUP_ENTRY,
+                "failed to get group entry for effective group: %s: %s",
+                effective_group, g_strerror(errno));
+        }
+        return FALSE;
+    }
+
+
+    if (setgid(group->gr_gid) == -1) {
+            g_set_error(error,
+                        MILTER_CLIENT_ERROR,
+                        MILTER_CLIENT_ERROR_GROUP_ENTRY,
+                        "failed to change effective group: %s: %s",
+                        effective_group, g_strerror(errno));
+        return FALSE;
+    }
+
+    effective_user = milter_client_get_effective_user(client);
+    password = find_password(effective_user, error);
+    if (!password)
+        return FALSE;
+
+    if (initgroups(password->pw_name, group->gr_gid) == -1) {
+        g_set_error(error,
+                    MILTER_CLIENT_ERROR,
+                    MILTER_CLIENT_ERROR_GROUP_ENTRY,
+                    "failed to initialize groups: %s: %s: %s",
+                    password->pw_name, group->gr_name,
+                    g_strerror(errno));
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
+gboolean
+milter_client_drop_privilege (MilterClient *client, GError **error)
+{
+    if (geteuid() != 0)
+        return TRUE;
+
+    return switch_group(client, error) && switch_user(client, error);
+}
+
+static gboolean
+detach_io (MilterClient *client, GError **error)
+{
+    gboolean success = FALSE;
+    int null_stdin_fd = -1;
+    int null_stdout_fd = -1;
+    int null_stderr_fd = -1;
+
+    null_stdin_fd = open("/dev/null", O_RDONLY);
+    if (null_stdin_fd == -1) {
+        g_set_error(error,
+                    MILTER_CLIENT_ERROR,
+                    MILTER_CLIENT_ERROR_DETACH_IO,
+                    "failed to open /dev/null for STDIN: %s",
+                    g_strerror(errno));
+        goto cleanup;
+    }
+
+    null_stdout_fd = open("/dev/null", O_WRONLY);
+    if (null_stdout_fd == -1) {
+        g_set_error(error,
+                    MILTER_CLIENT_ERROR,
+                    MILTER_CLIENT_ERROR_DETACH_IO,
+                    "failed to open /dev/null for STDOUT: %s",
+                    g_strerror(errno));
+        goto cleanup;
+    }
+
+    null_stderr_fd = open("/dev/null", O_WRONLY);
+    if (null_stderr_fd == -1) {
+        g_set_error(error,
+                    MILTER_CLIENT_ERROR,
+                    MILTER_CLIENT_ERROR_DETACH_IO,
+                    "failed to open /dev/null for STDERR: %s",
+                    g_strerror(errno));
+        goto cleanup;
+    }
+
+    if (dup2(null_stdin_fd, STDIN_FILENO) == -1) {
+        g_set_error(error,
+                    MILTER_CLIENT_ERROR,
+                    MILTER_CLIENT_ERROR_DETACH_IO,
+                    "failed to detach STDIN: %s",
+                    g_strerror(errno));
+        goto cleanup;
+    }
+
+    if (dup2(null_stdout_fd, STDOUT_FILENO) == -1) {
+        g_set_error(error,
+                    MILTER_CLIENT_ERROR,
+                    MILTER_CLIENT_ERROR_DETACH_IO,
+                    "failed to detach STDOUT: %s",
+                    g_strerror(errno));
+        goto cleanup;
+    }
+
+    if (dup2(null_stderr_fd, STDERR_FILENO) == -1) {
+        g_set_error(error,
+                    MILTER_CLIENT_ERROR,
+                    MILTER_CLIENT_ERROR_DETACH_IO,
+                    "failed to detach STDERR: %s",
+                    g_strerror(errno));
+        goto cleanup;
+    }
+
+    success = TRUE;
+
+cleanup:
+    if (null_stdin_fd == -1)
+        close(null_stdin_fd);
+    if (null_stdout_fd == -1)
+        close(null_stdout_fd);
+    if (null_stderr_fd == -1)
+        close(null_stderr_fd);
+
+    return success;
+}
+
+gboolean
+milter_client_daemonize (MilterClient *client, GError **error)
+{
+    switch (fork()) {
+    case 0:
+        break;
+    case -1:
+        g_set_error(error,
+                    MILTER_CLIENT_ERROR,
+                    MILTER_CLIENT_ERROR_DAEMONIZE,
+                    "failed to fork child process: %s",
+                    g_strerror(errno));
+        return FALSE;
+    default:
+        _exit(EXIT_SUCCESS);
+        break;
+    }
+
+    if (setsid() == -1) {
+        g_set_error(error,
+                    MILTER_CLIENT_ERROR,
+                    MILTER_CLIENT_ERROR_DAEMONIZE,
+                    "failed to create session: %s",
+                    g_strerror(errno));
+        return FALSE;
+    }
+
+    switch (fork()) {
+    case 0:
+        break;
+    case -1:
+        g_set_error(error,
+                    MILTER_CLIENT_ERROR,
+                    MILTER_CLIENT_ERROR_DAEMONIZE,
+                    "failed to fork grandchild process: %s",
+                    g_strerror(errno));
+        return FALSE;
+    default:
+        _exit(EXIT_SUCCESS);
+        break;
+    }
+
+    if (g_chdir("/") == -1) {
+        g_set_error(error,
+                    MILTER_CLIENT_ERROR,
+                    MILTER_CLIENT_ERROR_DAEMONIZE,
+                    "failed to change working directory to '/': %s",
+                    g_strerror(errno));
+        return FALSE;
+    }
+
+    if (!detach_io(client, error))
+        return FALSE;
+
+    return TRUE;
+}
+
 gboolean
 milter_client_main (MilterClient *client)
 {
     MilterClientPrivate *priv;
     GError *error = NULL;
     GSource *watch_source;
-    struct sockaddr *address = NULL;
-    socklen_t address_size = 0;
     gboolean success;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
@@ -974,29 +1327,12 @@ milter_client_main (MilterClient *client)
     }
 
     priv->quitting = FALSE;
-    if (!priv->connection_spec) {
-        gchar *default_connection_spec;
-
-        default_connection_spec =
-            milter_client_get_default_connection_spec(client);
-        milter_client_set_connection_spec(client, default_connection_spec, NULL);
-        g_free(default_connection_spec);
-    }
 
     if (priv->listen_channel) {
         g_io_channel_ref(priv->listen_channel);
         priv->listening_channel = priv->listen_channel;
     } else {
-        priv->listening_channel =
-            milter_connection_listen(priv->connection_spec,
-                                     priv->listen_backlog,
-                                     &address,
-                                     &address_size,
-                                     priv->remove_unix_socket_on_create,
-                                     &error);
-        if (address_size > 0)
-            g_signal_emit(client, signals[LISTEN_STARTED], 0,
-                          address, address_size);
+        priv->listening_channel = milter_client_listen_channel(client, &error);
     }
 
     if (!priv->listening_channel) {
@@ -1034,12 +1370,12 @@ milter_client_main (MilterClient *client)
         priv->listening_channel = NULL;
     }
 
-    if (address) {
-        if (address->sa_family == AF_UNIX &&
+    if (priv->address) {
+        if (priv->address->sa_family == AF_UNIX &&
             milter_client_is_remove_unix_socket_on_close(client)) {
             struct sockaddr_un *address_un;
 
-            address_un = (struct sockaddr_un *)address;
+            address_un = (struct sockaddr_un *)priv->address;
             if (g_unlink(address_un->sun_path) == -1) {
                 GError *error;
 
@@ -1053,7 +1389,6 @@ milter_client_main (MilterClient *client)
                 g_error_free(error);
             }
         }
-        g_free(address);
     }
 
     return TRUE;
@@ -1234,6 +1569,66 @@ milter_client_set_max_connections (MilterClient *client, guint max_connections)
         klass->set_max_connections(client, max_connections);
     else
         MILTER_CLIENT_GET_PRIVATE(client)->max_connections = max_connections;
+}
+
+const gchar *
+milter_client_get_effective_user (MilterClient *client)
+{
+    MilterClientClass *klass;
+
+    klass = MILTER_CLIENT_GET_CLASS(client);
+    if (klass->get_effective_user)
+        return klass->get_effective_user(client);
+    else
+        return MILTER_CLIENT_GET_PRIVATE(client)->effective_user;
+}
+
+void
+milter_client_set_effective_user (MilterClient *client,
+                                  const gchar *effective_user)
+{
+    MilterClientClass *klass;
+
+    klass = MILTER_CLIENT_GET_CLASS(client);
+    if (klass->set_effective_user) {
+        klass->set_effective_user(client, effective_user);
+    } else {
+        MilterClientPrivate *priv;
+
+        priv = MILTER_CLIENT_GET_PRIVATE(client);
+        g_free(priv->effective_user);
+        priv->effective_user = g_strdup(effective_user);
+    }
+}
+
+const gchar *
+milter_client_get_effective_group (MilterClient *client)
+{
+    MilterClientClass *klass;
+
+    klass = MILTER_CLIENT_GET_CLASS(client);
+    if (klass->get_effective_group)
+        return klass->get_effective_group(client);
+    else
+        return MILTER_CLIENT_GET_PRIVATE(client)->effective_group;
+}
+
+void
+milter_client_set_effective_group (MilterClient *client,
+                                   const gchar *effective_group)
+{
+    MilterClientClass *klass;
+
+    klass = MILTER_CLIENT_GET_CLASS(client);
+    if (klass->set_effective_group) {
+        klass->set_effective_group(client, effective_group);
+    } else {
+        MilterClientPrivate *priv;
+
+        priv = MILTER_CLIENT_GET_PRIVATE(client);
+        g_free(priv->effective_group);
+        priv->effective_group = g_strdup(effective_group);
+    }
 }
 
 void

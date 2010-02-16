@@ -76,11 +76,15 @@ static guint  get_suspend_time_on_unacceptable
 static void   set_suspend_time_on_unacceptable
                                           (MilterClient *client,
                                            guint         suspend_time);
-static guint  get_max_connections
-                                          (MilterClient *client);
-static void   set_max_connections
-                                          (MilterClient *client,
+static guint  get_max_connections         (MilterClient *client);
+static void   set_max_connections         (MilterClient *client,
                                            guint         max_connections);
+static const gchar *get_effective_user    (MilterClient *client);
+static void   set_effective_user          (MilterClient *client,
+                                           const gchar  *effective_user);
+static const gchar *get_effective_group   (MilterClient *client);
+static void   set_effective_group         (MilterClient *client,
+                                           const gchar  *effective_group);
 static void   cb_leader_finished          (MilterFinishedEmittable *emittable,
                                            gpointer user_data);
 
@@ -107,6 +111,10 @@ milter_manager_class_init (MilterManagerClass *klass)
     client_class->set_suspend_time_on_unacceptable = set_suspend_time_on_unacceptable;
     client_class->get_max_connections = get_max_connections;
     client_class->set_max_connections = set_max_connections;
+    client_class->get_effective_user = get_effective_user;
+    client_class->set_effective_user = set_effective_user;
+    client_class->get_effective_group = get_effective_group;
+    client_class->set_effective_group = set_effective_group;
 
     spec = g_param_spec_object("configuration",
                                "Configuration",
@@ -721,6 +729,60 @@ set_max_connections (MilterClient *client, guint max_connections)
     configuration = priv->configuration;
     milter_manager_configuration_set_max_connections(configuration,
                                                      max_connections);
+}
+
+static const gchar *
+get_effective_user (MilterClient *client)
+{
+    MilterManager *manager;
+    MilterManagerPrivate *priv;
+    MilterManagerConfiguration *configuration;
+
+    manager = MILTER_MANAGER(client);
+    priv = MILTER_MANAGER_GET_PRIVATE(manager);
+    configuration = priv->configuration;
+    return milter_manager_configuration_get_effective_user(configuration);
+}
+
+static void
+set_effective_user (MilterClient *client, const gchar *effective_user)
+{
+    MilterManager *manager;
+    MilterManagerPrivate *priv;
+    MilterManagerConfiguration *configuration;
+
+    manager = MILTER_MANAGER(client);
+    priv = MILTER_MANAGER_GET_PRIVATE(manager);
+    configuration = priv->configuration;
+    milter_manager_configuration_set_effective_user(configuration,
+                                                    effective_user);
+}
+
+static const gchar *
+get_effective_group (MilterClient *client)
+{
+    MilterManager *manager;
+    MilterManagerPrivate *priv;
+    MilterManagerConfiguration *configuration;
+
+    manager = MILTER_MANAGER(client);
+    priv = MILTER_MANAGER_GET_PRIVATE(manager);
+    configuration = priv->configuration;
+    return milter_manager_configuration_get_effective_group(configuration);
+}
+
+static void
+set_effective_group (MilterClient *client, const gchar *effective_group)
+{
+    MilterManager *manager;
+    MilterManagerPrivate *priv;
+    MilterManagerConfiguration *configuration;
+
+    manager = MILTER_MANAGER(client);
+    priv = MILTER_MANAGER_GET_PRIVATE(manager);
+    configuration = priv->configuration;
+    milter_manager_configuration_set_effective_group(configuration,
+                                                     effective_group);
 }
 
 MilterManagerConfiguration *

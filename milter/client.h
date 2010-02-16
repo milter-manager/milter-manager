@@ -199,7 +199,12 @@ typedef enum
     MILTER_CLIENT_ERROR_RUNNING,
     MILTER_CLIENT_ERROR_UNIX_SOCKET,
     MILTER_CLIENT_ERROR_IO_ERROR,
-    MILTER_CLIENT_ERROR_THREAD
+    MILTER_CLIENT_ERROR_THREAD,
+    MILTER_CLIENT_ERROR_PASSWORD_ENTRY,
+    MILTER_CLIENT_ERROR_GROUP_ENTRY,
+    MILTER_CLIENT_ERROR_DROP_PRIVILEGE,
+    MILTER_CLIENT_ERROR_DETACH_IO,
+    MILTER_CLIENT_ERROR_DAEMONIZE
 } MilterClientError;
 
 typedef struct _MilterClient         MilterClient;
@@ -238,6 +243,12 @@ struct _MilterClientClass
     guint  (*get_max_connections)         (MilterClient *client);
     void   (*set_max_connections)         (MilterClient *client,
                                            guint         max_connections);
+    const gchar *(*get_effective_user)    (MilterClient *client);
+    void   (*set_effective_user)          (MilterClient *client,
+                                           const gchar  *effective_user);
+    const gchar *(*get_effective_group)   (MilterClient *client);
+    void   (*set_effective_group)         (MilterClient *client,
+                                           const gchar  *effective_group);
 };
 
 GQuark               milter_client_error_quark       (void);
@@ -325,6 +336,19 @@ void                 milter_client_set_listen_channel(MilterClient  *client,
  */
 void                 milter_client_set_listen_backlog(MilterClient  *client,
                                                       gint           backlog);
+
+/**
+ * milter_client_listen:
+ * @client: a %MilterClient.
+ * @error: return location for an error, or %NULL.
+ *
+ * Listens with configured parameters: connection spec and
+ * backlog.
+ *
+ * Returns: %TRUE if listen successfully.
+ */
+gboolean             milter_client_listen            (MilterClient  *client,
+                                                      GError       **error);
 
 /**
  * milter_client_is_remove_unix_socket_on_create:
@@ -528,6 +552,48 @@ void                 milter_client_set_max_connections
                                                       guint          max_connections);
 
 /**
+ * milter_client_get_effective_user:
+ * @client: a %MilterClient.
+ *
+ * Gets the effective user.
+ *
+ * Returns: the effective user.
+ */
+const gchar         *milter_client_get_effective_user(MilterClient  *client);
+
+/**
+ * milter_client_set_effective_user:
+ * @client: a %MilterClient.
+ * @effective_user: the effective user.
+ *
+ * Sets the effective user of this process.
+ */
+void                 milter_client_set_effective_user(MilterClient  *client,
+                                                      const gchar   *effective_group);
+
+/**
+ * milter_client_get_effective_group:
+ * @client: a %MilterClient.
+ *
+ * Gets the effective group.
+ *
+ * Returns: the effective group.
+ */
+const gchar         *milter_client_get_effective_group
+                                                     (MilterClient  *client);
+
+/**
+ * milter_client_set_effective_group:
+ * @client: a %MilterClient.
+ * @effective_group: the effective group.
+ *
+ * Sets the effective group of this process.
+ */
+void                 milter_client_set_effective_group
+                                                     (MilterClient  *client,
+                                                      const gchar   *effective_group);
+
+/**
  * milter_client_main:
  * @client: a %MilterClient.
  *
@@ -560,6 +626,30 @@ void                 milter_client_processing_context_foreach
                                                       GFunc          func,
                                                       gpointer       user_data);
 
+
+/**
+ * milter_client_drop_privilege:
+ * @client: a %MilterClient.
+ * @error: return location for an error, or %NULL.
+ *
+ * Drops privilege of this process.
+ *
+ * Returns: %TRUE if drop privilege successfully.
+ */
+gboolean             milter_client_drop_privilege    (MilterClient  *client,
+                                                      GError       **error);
+
+/**
+ * milter_client_daemonize:
+ * @client: a %MilterClient.
+ * @error: return location for an error, or %NULL.
+ *
+ * Daemonizes this process.
+ *
+ * Returns: %TRUE if daemonize successfully.
+ */
+gboolean             milter_client_daemonize         (MilterClient  *client,
+                                                      GError       **error);
 
 G_END_DECLS
 

@@ -317,7 +317,6 @@ wait_for_manager_ready (const gchar *spec)
         g_main_context_iteration(NULL, FALSE);
     } while (!timeout_emitted);
     g_source_remove(timeout_waiting_id);
-
     if (socket_fd != -1)
         close(socket_fd);
 
