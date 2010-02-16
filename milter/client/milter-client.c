@@ -33,6 +33,8 @@
 #include <milter/core/milter-marshalers.h>
 #include "../client.h"
 
+typedef gboolean (*AcceptConnectionFunction) (MilterClient *client, gint fd);
+
 static gboolean initialized = FALSE;
 static guint milter_client_log_handler_id = 0;
 
@@ -571,7 +573,7 @@ process_client_channel (MilterClient *client, GIOChannel *channel,
 }
 
 static gboolean
-accept_client (gint server_fd, MilterClient *client)
+single_worker_accept_connection (MilterClient *client, gint server_fd)
 {
     MilterClientPrivate *priv;
     gint client_fd;
@@ -643,16 +645,19 @@ accept_client (gint server_fd, MilterClient *client)
 }
 
 static gboolean
-server_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
+cb_server_status_changed (MilterClient *client,
+                          GIOChannel *channel, GIOCondition condition,
+                          AcceptConnectionFunction accept_connection)
 {
-    MilterClient *client = data;
     MilterClientPrivate *priv;
     gboolean keep_callback = TRUE;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
     if (condition & G_IO_IN ||
         condition & G_IO_PRI) {
-        keep_callback = accept_client(g_io_channel_unix_get_fd(channel), client);
+        gint fd;
+        fd = g_io_channel_unix_get_fd(channel);
+        keep_callback = accept_connection(client, fd);
     }
 
     if (condition & G_IO_ERR ||
@@ -681,7 +686,17 @@ server_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
 }
 
 static gboolean
-cb_timeout_unlock_quit_mutex (gpointer data)
+single_worker_server_watch_func (GIOChannel *channel, GIOCondition condition,
+                                 gpointer data)
+{
+    MilterClient *client = data;
+
+    return cb_server_status_changed(client, channel, condition,
+                                    single_worker_accept_connection);
+}
+
+static gboolean
+single_worker_cb_timeout_unlock_quit_mutex (gpointer data)
 {
     MilterClientPrivate *priv;
 
@@ -703,7 +718,7 @@ single_worker_accept_thread (gpointer data)
 
     timeout_source = g_timeout_source_new(0);
     g_source_set_callback(timeout_source,
-                          cb_timeout_unlock_quit_mutex,
+                          single_worker_cb_timeout_unlock_quit_mutex,
                           client, NULL);
     g_source_attach(timeout_source, g_main_loop_get_context(priv->accept_loop));
     g_source_unref(timeout_source);
@@ -730,7 +745,7 @@ single_worker_start_accept (MilterClient *client)
     if (priv->quitting) {
         g_mutex_unlock(priv->quit_mutex);
     } else {
-        g_timeout_add(0, cb_timeout_unlock_quit_mutex, client);
+        g_timeout_add(0, single_worker_cb_timeout_unlock_quit_mutex, client);
         g_main_loop_run(priv->main_loop);
     }
     g_thread_join(thread);
@@ -804,7 +819,8 @@ milter_client_main (MilterClient *client)
     watch_source = g_io_create_watch(priv->listening_channel,
                                      G_IO_IN | G_IO_PRI |
                                      G_IO_ERR | G_IO_HUP | G_IO_NVAL);
-    g_source_set_callback(watch_source, (GSourceFunc)server_watch_func,
+    g_source_set_callback(watch_source,
+                          (GSourceFunc)single_worker_server_watch_func,
                           client, NULL);
     priv->server_watch_id =
         g_source_attach(watch_source,
