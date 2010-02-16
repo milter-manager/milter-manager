@@ -453,7 +453,7 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
    だSMTPサーバと接続しているかを確認します。
 
    この機能はmilter（milter-greylist）を用いた
-   ((<taRgrey|http://k2net.hakuba.jp/targrey/>))を
+   ((<taRgrey|URL:http://k2net.hakuba.jp/targrey/>))を
    実現しているときなど、SMTPクライアントが自発的に切断した
    ことを検出して途中で処理を止めたい場合に有用です。この機
    能を用いることによりtaRgreyの問題点の1つであるSMTPサーバ

@@ -462,7 +462,7 @@ Here are descriptions of configuration items.
 
    This feature is useful for aborting SMTP session when
    SMTP client disconnects SMTP session. e.g. Using
-   ((<taRgrey|http://k2net.hakuba.jp/targrey/index.en.html>))
+   ((<taRgrey|URL:http://k2net.hakuba.jp/targrey/index.en.html>))
    with milter (milter-greylist). This feature resolves a
    problem of taRgrey that SMTP server process is
    grown. SMTP server process growth means memory usage
