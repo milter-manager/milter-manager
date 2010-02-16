@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -264,16 +264,19 @@ channel_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
 }
 
 static void
-watch_io_channel (MilterReader *reader)
+watch_io_channel (MilterReader *reader, GMainContext *context)
 {
     MilterReaderPrivate *priv;
+    GSource *source;
 
     priv = MILTER_READER_GET_PRIVATE(reader);
 
-    priv->channel_watch_id = g_io_add_watch(priv->io_channel,
-                                            G_IO_IN | G_IO_PRI |
-                                            G_IO_ERR | G_IO_HUP | G_IO_NVAL,
-                                            channel_watch_func, reader);
+    source = g_io_create_watch(priv->io_channel,
+                               G_IO_IN | G_IO_PRI |
+                               G_IO_ERR | G_IO_HUP | G_IO_NVAL);
+    g_source_set_callback(source, channel_watch_func, reader, NULL);
+    priv->channel_watch_id = g_source_attach(source, context);
+    g_source_unref(source);
     milter_debug("[%u] [reader][watch] %u", priv->tag, priv->channel_watch_id);
 }
 
@@ -361,7 +364,7 @@ milter_reader_start (MilterReader *reader)
 
     priv = MILTER_READER_GET_PRIVATE(reader);
     if (priv->io_channel && priv->channel_watch_id == 0)
-        watch_io_channel(reader);
+        watch_io_channel(reader, NULL);
 }
 
 gboolean
