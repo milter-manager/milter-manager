@@ -104,6 +104,7 @@ typedef struct _MilterClientProcessData
     MilterClientPrivate *priv;
     MilterClient *client;
     MilterClientContext *context;
+    gulong finished_handler_id;
 } MilterClientProcessData;
 
 #define _milter_client_get_type milter_client_get_type
@@ -126,8 +127,6 @@ static void   listen_started
                            (MilterClient    *client,
                             struct sockaddr *address,
                             socklen_t        address_size);
-static void   cb_finished  (MilterClientContext *context,
-                            gpointer _data);
 
 static void
 _milter_client_class_init (MilterClientClass *klass)
@@ -203,8 +202,8 @@ _milter_client_init (MilterClient *client)
 static void
 process_data_free (MilterClientProcessData *data)
 {
-    g_signal_handlers_disconnect_by_func(data->context,
-                                         G_CALLBACK(cb_finished), data);
+    g_signal_handler_disconnect(data->context,
+                                data->finished_handler_id);
     g_object_unref(data->context);
     g_free(data);
 }
@@ -448,7 +447,7 @@ milter_client_set_listen_channel (MilterClient *client, GIOChannel *channel)
 }
 
 static gboolean
-cb_idle_free_data (gpointer _data)
+single_worker_cb_idle_free_data (gpointer _data)
 {
     MilterClientProcessData *data = _data;
     GList *processing_data, *process_data;
@@ -494,11 +493,11 @@ cb_idle_free_data (gpointer _data)
 }
 
 static void
-cb_finished (MilterClientContext *context, gpointer _data)
+single_worker_cb_finished (MilterClientContext *context, gpointer _data)
 {
     MilterClientProcessData *data = _data;
 
-    g_idle_add(cb_idle_free_data, data);
+    g_idle_add(single_worker_cb_idle_free_data, data);
 }
 
 typedef struct _ClientChannelSetupData
@@ -509,7 +508,7 @@ typedef struct _ClientChannelSetupData
 } ClientChannelSetupData;
 
 static gboolean
-cb_timeout_client_channel_setup (gpointer user_data)
+single_worker_cb_timeout_client_channel_setup (gpointer user_data)
 {
     ClientChannelSetupData *setup_data = user_data;
     MilterClient *client;
@@ -543,7 +542,9 @@ cb_timeout_client_channel_setup (gpointer user_data)
     milter_debug("[%u] [client][start]",
                  milter_agent_get_tag(MILTER_AGENT(data->context)));
 
-    g_signal_connect(context, "finished", G_CALLBACK(cb_finished), data);
+    data->finished_handler_id =
+        g_signal_connect(context, "finished",
+                         G_CALLBACK(single_worker_cb_finished), data);
 
     priv->processing_data = g_list_prepend(priv->processing_data, data);
 
@@ -557,9 +558,9 @@ cb_timeout_client_channel_setup (gpointer user_data)
 }
 
 static void
-process_client_channel (MilterClient *client, GIOChannel *channel,
-                        MilterGenericSocketAddress *address,
-                        socklen_t address_size)
+single_worker_process_client_channel (MilterClient *client, GIOChannel *channel,
+                                      MilterGenericSocketAddress *address,
+                                      socklen_t address_size)
 {
     ClientChannelSetupData *data;
 
@@ -569,7 +570,7 @@ process_client_channel (MilterClient *client, GIOChannel *channel,
     memcpy(&(data->address), address, address_size);
     g_io_channel_ref(channel);
 
-    g_timeout_add(0, cb_timeout_client_channel_setup, data);
+    g_timeout_add(0, single_worker_cb_timeout_client_channel_setup, data);
 }
 
 static gboolean
@@ -638,7 +639,8 @@ single_worker_accept_connection (MilterClient *client, gint server_fd)
     g_io_channel_set_encoding(client_channel, NULL, NULL);
     g_io_channel_set_flags(client_channel, G_IO_FLAG_NONBLOCK, NULL);
     g_io_channel_set_close_on_unref(client_channel, TRUE);
-    process_client_channel(client, client_channel, &address, address_size);
+    single_worker_process_client_channel(client, client_channel,
+                                         &address, address_size);
     g_io_channel_unref(client_channel);
 
     return TRUE;
