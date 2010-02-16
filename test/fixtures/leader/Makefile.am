@@ -114,7 +114,6 @@ EXTRA_DIST =								\
 	negotiate-no-enabled-child.txt					\
 	negotiate-no-enabled-child.conf					\
 	negotiate-no-available-child.txt				\
-	negotiate-no-available-child.conf				\
 	no-body-flag-on-both-client.txt					\
 	no-body-flag-on-second-client.txt				\
 	no-body-flag.txt						\
