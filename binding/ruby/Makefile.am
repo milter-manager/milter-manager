@@ -99,7 +99,6 @@ ruby_glib2_0_19_3_files =						\
 	glib-0.19.3/README						\
 	glib-0.19.3/TODO						\
 	glib-0.19.3/extconf.rb						\
-	glib-0.19.3/ruby-glib2.pc					\
 	glib-0.19.3/sample/bookmarkfile.rb				\
 	glib-0.19.3/sample/completion.rb				\
 	glib-0.19.3/sample/idle.rb					\
