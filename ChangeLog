@@ -2,6 +2,7 @@
 
 	* binding/ruby/Makefile.am: remove an auto-generated file from
 	dist files.
+	(ruby_glib2_0_16_0_files): fix a typp.
 
 	* data/defaults/redhat.conf: detect OpenDKIM on CentOS.
 

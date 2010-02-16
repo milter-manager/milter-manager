@@ -17,7 +17,7 @@ EXTRA_DIST =					\
 	$(test_unit_files)
 
 # find glib-0.16.0 -type f | sort
-ruby_glib2_0_16_0files =			\
+ruby_glib2_0_16_0_files =			\
 	glib-0.16.0/COPYING.LIB			\
 	glib-0.16.0/ChangeLog			\
 	glib-0.16.0/README			\
