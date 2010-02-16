@@ -33,8 +33,6 @@
 #include <milter/core/milter-marshalers.h>
 #include "../client.h"
 
-typedef gboolean (*AcceptConnectionFunction) (MilterClient *client, gint fd);
-
 static gboolean initialized = FALSE;
 static guint milter_client_log_handler_id = 0;
 
@@ -109,6 +107,8 @@ typedef struct _MilterClientProcessData
     gulong finished_handler_id;
 } MilterClientProcessData;
 
+typedef gboolean (*AcceptConnectionFunction) (MilterClient *client, gint fd);
+
 #define _milter_client_get_type milter_client_get_type
 MILTER_DEFINE_ERROR_EMITTABLE_TYPE(MilterClient, _milter_client, G_TYPE_OBJECT)
 #undef _milter_client_get_type
@@ -181,7 +181,7 @@ _milter_client_init (MilterClient *client)
     priv->accept_loop = g_main_loop_new(main_context, FALSE);
     g_main_context_unref(main_context);
 
-    priv->main_loop = g_main_loop_new(NULL, FALSE);
+    priv->main_loop = NULL;
 
     priv->server_watch_id = 0;
     priv->connection_spec = NULL;
@@ -206,8 +206,10 @@ _milter_client_init (MilterClient *client)
 static void
 process_data_free (MilterClientProcessData *data)
 {
-    g_signal_handler_disconnect(data->context,
-                                data->finished_handler_id);
+    if (data->finished_handler_id > 0) {
+        g_signal_handler_disconnect(data->context,
+                                    data->finished_handler_id);
+    }
     g_object_unref(data->context);
     g_free(data);
 }
@@ -455,10 +457,9 @@ milter_client_set_listen_channel (MilterClient *client, GIOChannel *channel)
         g_io_channel_ref(priv->listen_channel);
 }
 
-static gboolean
-single_worker_cb_idle_free_data (gpointer _data)
+static void
+finish_processing (MilterClientProcessData *data)
 {
-    MilterClientProcessData *data = _data;
     GList *processing_data, *process_data;
     guint n_connections;
     GString *rest_process;
@@ -472,13 +473,15 @@ single_worker_cb_idle_free_data (gpointer _data)
 
     processing_data = g_list_copy(data->priv->processing_data);
 
-    n_connections = data->priv->n_connections;
-    g_mutex_lock(data->priv->quit_mutex);
-    if (data->priv->quitting && n_connections == 0) {
-        milter_debug("[%u] [client][loop][quit]", tag);
-        g_main_loop_quit(data->priv->main_loop);
+    if (data->priv->main_loop) {
+        n_connections = data->priv->n_connections;
+        g_mutex_lock(data->priv->quit_mutex);
+        if (data->priv->quitting && n_connections == 0) {
+            milter_debug("[%u] [client][loop][quit]", tag);
+            g_main_loop_quit(data->priv->main_loop);
+        }
+        g_mutex_unlock(data->priv->quit_mutex);
     }
-    g_mutex_unlock(data->priv->quit_mutex);
 
     process_data_free(data);
 
@@ -497,7 +500,14 @@ single_worker_cb_idle_free_data (gpointer _data)
     g_list_free(processing_data);
     milter_debug("[%u] [client][rest] %s", tag, rest_process->str);
     g_string_free(rest_process, TRUE);
+}
 
+static gboolean
+single_worker_cb_idle_free_data (gpointer _data)
+{
+    MilterClientProcessData *data = _data;
+
+    finish_processing(data);
     return FALSE;
 }
 
@@ -530,8 +540,9 @@ single_worker_cb_timeout_client_channel_setup (gpointer user_data)
     client = setup_data->client;
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
-    writer = milter_writer_io_channel_new(setup_data->channel);
     context = milter_client_context_new();
+
+    writer = milter_writer_io_channel_new(setup_data->channel);
     milter_agent_set_writer(MILTER_AGENT(context), writer);
     g_object_unref(writer);
 
@@ -766,6 +777,7 @@ single_worker_start_accept (MilterClient *client)
     GThread *thread;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
+    priv->main_loop = g_main_loop_new(NULL, FALSE);
     thread = g_thread_create(single_worker_accept_thread, client, TRUE, NULL);
 
     g_mutex_lock(priv->quit_mutex);
@@ -776,22 +788,80 @@ single_worker_start_accept (MilterClient *client)
         g_main_loop_run(priv->main_loop);
     }
     g_thread_join(thread);
+    g_main_loop_unref(priv->main_loop);
+    priv->main_loop = NULL;
 
     return TRUE;
+}
+
+static void
+multi_workers_process_client_channel (MilterClient *client, GIOChannel *channel,
+                                      MilterGenericSocketAddress *address,
+                                      socklen_t address_size)
+{
+    MilterClientPrivate *priv;
+    MilterClientContext *context;
+    MilterClientProcessData *data;
+    MilterWriter *writer;
+    MilterReader *reader;
+    GError *error = NULL;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+
+    context = milter_client_context_new();
+
+    writer = milter_writer_io_channel_new(channel);
+    milter_agent_set_writer(MILTER_AGENT(context), writer);
+    g_object_unref(writer);
+
+    reader = milter_reader_io_channel_new(channel);
+    milter_agent_set_reader(MILTER_AGENT(context), reader);
+    g_object_unref(reader);
+
+    milter_client_context_set_timeout(context, priv->timeout);
+
+    milter_client_context_set_socket_address(context, address);
+
+    data = g_new(MilterClientProcessData, 1);
+    data->priv = priv;
+    data->client = client;
+    data->context = context;
+    data->finished_handler_id = 0;
+
+    priv->processing_data = g_list_prepend(priv->processing_data, data);
+    g_thread_pool_push(priv->worker_threads, data, &error);
+    if (error) {
+        GError *client_error;
+
+        client_error = g_error_new(MILTER_CLIENT_ERROR,
+                                   MILTER_CLIENT_ERROR_THREAD,
+                                   "[client][error][thread] "
+                                   "failed to push a data to thread pool: %s",
+                                   error->message);
+        g_error_free(error);
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client),
+                                    client_error);
+        g_error_free(client_error);
+
+        single_worker_cb_idle_free_data(data);
+    }
 }
 
 static gboolean
 multi_workers_accept_connection (MilterClient *client, gint server_fd)
 {
+    MilterClientPrivate *priv;
     gboolean accepted;
     GIOChannel *client_channel;
     MilterGenericSocketAddress address;
     socklen_t address_size;
 
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
     accepted = accept_connection(client, server_fd, &client_channel,
                                  &address, &address_size);
     if (accepted) {
-        /* TODO */
+        multi_workers_process_client_channel(client, client_channel,
+                                             &address, address_size);
         g_io_channel_unref(client_channel);
     }
 
@@ -809,13 +879,36 @@ multi_workers_server_watch_func (GIOChannel *channel, GIOCondition condition,
 }
 
 static void
+multi_workers_cb_finished (MilterClientContext *context, gpointer _data)
+{
+    MilterClientProcessData *data = _data;
+
+    finish_processing(data);
+}
+
+static void
 multi_workers_process_client_channel_thread (gpointer data_, gpointer user_data)
 {
     MilterClient *client = data_;
     MilterClientProcessData *data = user_data;
-    MilterClientContext *context;
+    GMainContext *main_context;
+    GMainLoop *main_loop;
 
-    /* TODO */
+    main_context = g_main_context_new();
+    main_loop = g_main_loop_new(main_context, FALSE);
+
+    milter_debug("[%u] [client][start]",
+                 milter_agent_get_tag(MILTER_AGENT(data->context)));
+
+    data->finished_handler_id =
+        g_signal_connect(data->context, "finished",
+                         G_CALLBACK(multi_workers_cb_finished), data);
+
+    milter_agent_start(MILTER_AGENT(data->context), main_context);
+    g_signal_emit(client, signals[CONNECTION_ESTABLISHED], 0, data->context);
+
+    g_main_loop_run(main_loop);
+    g_main_context_unref(main_context);
 }
 
 static gboolean
