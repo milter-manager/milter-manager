@@ -1,5 +1,7 @@
 2010-02-15  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/client/milter-client.c: add skeleton for multi workers mode.
+
 	* milter/client/milter-client.c: add single_worker prefix for
 	preparing multi workers support.
 

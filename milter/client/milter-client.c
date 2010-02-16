@@ -97,6 +97,8 @@ struct _MilterClientPrivate
     gboolean remove_unix_socket_on_create;
     guint suspend_time_on_unacceptable;
     guint max_connections;
+    gboolean multi_workers_mode;
+    GThreadPool *worker_threads;
 };
 
 typedef struct _MilterClientProcessData
@@ -197,6 +199,8 @@ _milter_client_init (MilterClient *client)
     priv->suspend_time_on_unacceptable =
         MILTER_CLIENT_DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE;
     priv->max_connections = MILTER_CLIENT_DEFAULT_MAX_CONNECTIONS;
+    priv->multi_workers_mode = FALSE;
+    priv->worker_threads = NULL;
 }
 
 static void
@@ -259,6 +263,11 @@ dispose (GObject *object)
     if (priv->default_unix_socket_group) {
         g_free(priv->default_unix_socket_group);
         priv->default_unix_socket_group = NULL;
+    }
+
+    if (priv->worker_threads) {
+        g_thread_pool_free(priv->worker_threads, TRUE, FALSE);
+        priv->worker_threads = NULL;
     }
 
     G_OBJECT_CLASS(_milter_client_parent_class)->dispose(object);
@@ -574,14 +583,14 @@ single_worker_process_client_channel (MilterClient *client, GIOChannel *channel,
 }
 
 static gboolean
-single_worker_accept_connection (MilterClient *client, gint server_fd)
+accept_connection (MilterClient *client, gint server_fd,
+                   GIOChannel **client_channel,
+                   MilterGenericSocketAddress *address,
+                   socklen_t *address_size)
 {
     MilterClientPrivate *priv;
     gint client_fd;
-    GIOChannel *client_channel;
-    MilterGenericSocketAddress address;
     gchar *spec;
-    socklen_t address_size;
     guint n_suspend, suspend_time, max_connections;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
@@ -603,9 +612,9 @@ single_worker_accept_connection (MilterClient *client, gint server_fd)
                        "resume accepting connection: #%u", n_suspend);
     }
 
-    address_size = sizeof(address);
-    memset(&address, '\0', address_size);
-    client_fd = accept(server_fd, (struct sockaddr *)(&address), &address_size);
+    *address_size = sizeof(*address);
+    memset(address, '\0', *address_size);
+    client_fd = accept(server_fd, (struct sockaddr *)(address), address_size);
     if (client_fd == -1) {
         GError *error = NULL;
         g_set_error(&error,
@@ -627,21 +636,37 @@ single_worker_accept_connection (MilterClient *client, gint server_fd)
                            "resume accepting connection.");
         }
 
-        return TRUE;
+        return FALSE;
     }
 
     priv->n_connections++;
-    spec = milter_connection_address_to_spec(&(address.address.base));
+    spec = milter_connection_address_to_spec(&(address->address.base));
     milter_debug("[client][accept] %d:%s", client_fd, spec);
     g_free(spec);
 
-    client_channel = g_io_channel_unix_new(client_fd);
-    g_io_channel_set_encoding(client_channel, NULL, NULL);
-    g_io_channel_set_flags(client_channel, G_IO_FLAG_NONBLOCK, NULL);
-    g_io_channel_set_close_on_unref(client_channel, TRUE);
-    single_worker_process_client_channel(client, client_channel,
-                                         &address, address_size);
-    g_io_channel_unref(client_channel);
+    *client_channel = g_io_channel_unix_new(client_fd);
+    g_io_channel_set_encoding(*client_channel, NULL, NULL);
+    g_io_channel_set_flags(*client_channel, G_IO_FLAG_NONBLOCK, NULL);
+    g_io_channel_set_close_on_unref(*client_channel, TRUE);
+
+    return TRUE;
+}
+
+static gboolean
+single_worker_accept_connection (MilterClient *client, gint server_fd)
+{
+    gboolean accepted;
+    GIOChannel *client_channel;
+    MilterGenericSocketAddress address;
+    socklen_t address_size;
+
+    accepted = accept_connection(client, server_fd, &client_channel,
+                                 &address, &address_size);
+    if (accepted) {
+        single_worker_process_client_channel(client, client_channel,
+                                             &address, address_size);
+        g_io_channel_unref(client_channel);
+    }
 
     return TRUE;
 }
@@ -752,10 +777,80 @@ single_worker_start_accept (MilterClient *client)
     }
     g_thread_join(thread);
 
-    if (priv->listening_channel) {
-        g_io_channel_unref(priv->listening_channel);
-        priv->listening_channel = NULL;
+    return TRUE;
+}
+
+static gboolean
+multi_workers_accept_connection (MilterClient *client, gint server_fd)
+{
+    gboolean accepted;
+    GIOChannel *client_channel;
+    MilterGenericSocketAddress address;
+    socklen_t address_size;
+
+    accepted = accept_connection(client, server_fd, &client_channel,
+                                 &address, &address_size);
+    if (accepted) {
+        /* TODO */
+        g_io_channel_unref(client_channel);
     }
+
+    return TRUE;
+}
+
+static gboolean
+multi_workers_server_watch_func (GIOChannel *channel, GIOCondition condition,
+                                 gpointer data)
+{
+    MilterClient *client = data;
+
+    return cb_server_status_changed(client, channel, condition,
+                                    multi_workers_accept_connection);
+}
+
+static void
+multi_workers_process_client_channel_thread (gpointer data_, gpointer user_data)
+{
+    MilterClient *client = data_;
+    MilterClientProcessData *data = user_data;
+    MilterClientContext *context;
+
+    /* TODO */
+}
+
+static gboolean
+multi_workers_start_accept (MilterClient *client)
+{
+    MilterClientPrivate *priv;
+    gint max_threads = 10;
+    GError *error = NULL;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    priv->worker_threads =
+        g_thread_pool_new(multi_workers_process_client_channel_thread,
+                          client,
+                          max_threads,
+                          FALSE,
+                          &error);
+    if (!priv->worker_threads) {
+        GError *client_error;
+        client_error = g_error_new(MILTER_CLIENT_ERROR,
+                                   MILTER_CLIENT_ERROR_THREAD,
+                                   "[client][error][accept] "
+                                   "failed to create a thread pool "
+                                   "for processing accepted connection: %s",
+                                   error->message);
+        g_error_free(error);
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client),
+                                    client_error);
+        g_error_free(client_error);
+        return FALSE;
+    }
+
+    g_main_loop_run(priv->accept_loop);
+
+    g_thread_pool_free(priv->worker_threads, TRUE, TRUE);
+    priv->worker_threads = NULL;
 
     return TRUE;
 }
@@ -821,15 +916,30 @@ milter_client_main (MilterClient *client)
     watch_source = g_io_create_watch(priv->listening_channel,
                                      G_IO_IN | G_IO_PRI |
                                      G_IO_ERR | G_IO_HUP | G_IO_NVAL);
-    g_source_set_callback(watch_source,
-                          (GSourceFunc)single_worker_server_watch_func,
-                          client, NULL);
+    if (priv->multi_workers_mode) {
+        g_source_set_callback(watch_source,
+                              (GSourceFunc)multi_workers_server_watch_func,
+                              client, NULL);
+    } else {
+        g_source_set_callback(watch_source,
+                              (GSourceFunc)single_worker_server_watch_func,
+                              client, NULL);
+    }
     priv->server_watch_id =
         g_source_attach(watch_source,
                         g_main_loop_get_context(priv->accept_loop));
     g_source_unref(watch_source);
 
-    success = single_worker_start_accept(client);
+    if (priv->multi_workers_mode) {
+        success = multi_workers_start_accept(client);
+    } else {
+        success = single_worker_start_accept(client);
+    }
+
+    if (priv->listening_channel) {
+        g_io_channel_unref(priv->listening_channel);
+        priv->listening_channel = NULL;
+    }
 
     if (address) {
         if (address->sa_family == AF_UNIX &&

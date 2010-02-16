@@ -198,7 +198,8 @@ typedef enum
 {
     MILTER_CLIENT_ERROR_RUNNING,
     MILTER_CLIENT_ERROR_UNIX_SOCKET,
-    MILTER_CLIENT_ERROR_IO_ERROR
+    MILTER_CLIENT_ERROR_IO_ERROR,
+    MILTER_CLIENT_ERROR_THREAD
 } MilterClientError;
 
 typedef struct _MilterClient         MilterClient;
