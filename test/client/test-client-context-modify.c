@@ -61,7 +61,7 @@ setup (void)
     g_io_channel_set_encoding(channel, NULL, NULL);
     writer = milter_writer_io_channel_new(channel);
     milter_agent_set_writer(MILTER_AGENT(context), writer);
-    milter_agent_start(MILTER_AGENT(context));
+    milter_agent_start(MILTER_AGENT(context), NULL);
     g_object_unref(writer);
 }
 

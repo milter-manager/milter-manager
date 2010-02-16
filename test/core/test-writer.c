@@ -74,7 +74,7 @@ test_writer (void)
     GString *actual_data;
 
     writer = milter_writer_io_channel_new(channel);
-    milter_writer_start(writer);
+    milter_writer_start(writer, NULL);
 
     milter_writer_write(writer, first_chunk, sizeof(first_chunk) - 1,
                         &written_size, &actual_error);
@@ -116,7 +116,7 @@ test_writer_huge_data (void)
     GString *actual_data;
 
     writer = milter_writer_io_channel_new(channel);
-    milter_writer_start(writer);
+    milter_writer_start(writer, NULL);
 
     data_size = 192 * 8192;
     binary_data = g_new(gchar, data_size);
@@ -145,7 +145,7 @@ test_writer_error (void)
     gcut_assert_error(error);
     gcut_string_io_channel_set_limit(channel, 1);
     writer = milter_writer_io_channel_new(channel);
-    milter_writer_start(writer);
+    milter_writer_start(writer, NULL);
 
     expected_error = g_error_new(G_IO_CHANNEL_ERROR,
                                  G_IO_CHANNEL_ERROR_NOSPC,

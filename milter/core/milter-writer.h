@@ -70,7 +70,8 @@ gboolean         milter_writer_write          (MilterWriter     *writer,
 gboolean         milter_writer_flush          (MilterWriter     *writer,
                                                GError          **error);
 
-void             milter_writer_start          (MilterWriter     *writer);
+void             milter_writer_start          (MilterWriter     *writer,
+                                               GMainContext     *context);
 gboolean         milter_writer_is_watching    (MilterWriter     *writer);
 void             milter_writer_shutdown       (MilterWriter     *writer);
 

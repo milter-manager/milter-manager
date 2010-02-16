@@ -255,7 +255,8 @@ process_connection(MilterManagerController *controller,
     g_signal_connect(reader, "finished",
                      G_CALLBACK(cb_context_reader_finished), context);
 
-    milter_agent_start(MILTER_AGENT(context));
+    /* FIXME: correct GMainContext */
+    milter_agent_start(MILTER_AGENT(context), NULL);
 }
 
 static gboolean

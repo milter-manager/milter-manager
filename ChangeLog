@@ -1,5 +1,7 @@
 2010-02-16  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/, test/: pass NULL to agent, reader and writer as a context.
+
 	* milter/core/milter-reader.c,
 	milter/core/milter-writer.c: start to make source context customizable.
 

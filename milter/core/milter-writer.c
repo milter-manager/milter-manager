@@ -343,13 +343,13 @@ watch_io_channel (MilterWriter *writer, GMainContext *context)
 }
 
 void
-milter_writer_start (MilterWriter *writer)
+milter_writer_start (MilterWriter *writer, GMainContext *context)
 {
     MilterWriterPrivate *priv;
 
     priv = MILTER_WRITER_GET_PRIVATE(writer);
     if (priv->io_channel && priv->channel_watch_id == 0) {
-        watch_io_channel(writer, NULL);
+        watch_io_channel(writer, context);
     }
 }
 

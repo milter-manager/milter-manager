@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -67,7 +67,8 @@ GType            milter_reader_get_type       (void) G_GNUC_CONST;
 
 MilterReader    *milter_reader_io_channel_new (GIOChannel       *channel);
 
-void             milter_reader_start          (MilterReader     *reader);
+void             milter_reader_start          (MilterReader     *reader,
+                                               GMainContext     *context);
 gboolean         milter_reader_is_watching    (MilterReader     *reader);
 void             milter_reader_shutdown       (MilterReader     *reader);
 

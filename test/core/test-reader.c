@@ -61,7 +61,7 @@ cut_setup (void)
     g_io_channel_set_encoding(channel, NULL, NULL);
 
     reader = milter_reader_io_channel_new(channel);
-    milter_reader_start(reader);
+    milter_reader_start(reader, NULL);
 
     actual_read_string = g_string_new(NULL);
     actual_read_size = 0;

@@ -82,7 +82,8 @@ gboolean             milter_agent_write_packet      (MilterAgent *agent,
 gboolean             milter_agent_flush             (MilterAgent *agent,
                                                      GError **error);
 
-void                 milter_agent_start             (MilterAgent *agent);
+void                 milter_agent_start             (MilterAgent *agent,
+                                                     GMainContext *context);
 void                 milter_agent_shutdown          (MilterAgent *agent);
 
 guint                milter_agent_get_tag           (MilterAgent *agent);

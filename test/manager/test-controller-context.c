@@ -70,7 +70,7 @@ setup_input_io (void)
     g_object_unref(input_reader);
 
     writer = milter_writer_io_channel_new(channel);
-    milter_writer_start(writer);
+    milter_writer_start(writer, NULL);
 
     g_io_channel_unref(channel);
 }
@@ -94,7 +94,7 @@ setup_io (void)
 {
     setup_input_io();
     setup_output_io();
-    milter_agent_start(MILTER_AGENT(context));
+    milter_agent_start(MILTER_AGENT(context), NULL);
 }
 
 void

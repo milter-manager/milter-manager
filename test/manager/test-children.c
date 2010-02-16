@@ -701,7 +701,7 @@ setup_process_launcher (MilterManagerChildren *children)
     g_io_channel_unref(read_channel);
     g_io_channel_unref(write_channel);
 
-    milter_agent_start(MILTER_AGENT(launcher));
+    milter_agent_start(MILTER_AGENT(launcher), NULL);
 }
 
 static void
@@ -1746,7 +1746,7 @@ test_writing_timeout (void)
     g_io_channel_unref(channel);
     child = milter_manager_children_get_children(children)->next->data;
     milter_agent_set_writer(MILTER_AGENT(child), writer);
-    milter_writer_start(writer);
+    milter_writer_start(writer, NULL);
     g_object_unref(writer);
 
     prepare_timeout_test(child, channel);

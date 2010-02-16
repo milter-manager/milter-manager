@@ -371,7 +371,7 @@ start_process_launcher (GIOChannel *read_channel, GIOChannel *write_channel)
     g_object_unref(reader);
     g_object_unref(writer);
 
-    milter_agent_start(MILTER_AGENT(launcher));
+    milter_agent_start(MILTER_AGENT(launcher), NULL);
 
     milter_manager_process_launcher_run(launcher);
 

@@ -420,7 +420,7 @@ setup (void)
     writer = milter_writer_io_channel_new(channel);
     milter_agent_set_writer(MILTER_AGENT(context), writer);
 
-    milter_agent_start(MILTER_AGENT(context));
+    milter_agent_start(MILTER_AGENT(context), NULL);
 
     encoder = MILTER_REPLY_ENCODER(milter_reply_encoder_new());
     packet = NULL;
@@ -947,7 +947,7 @@ test_writing_timeout (void)
     g_object_unref(reader);
     reader = milter_reader_io_channel_new(read_channel);
     milter_agent_set_reader(MILTER_AGENT(context), reader);
-    milter_agent_start(MILTER_AGENT(context));
+    milter_agent_start(MILTER_AGENT(context), NULL);
 
     milter_server_context_set_writing_timeout(context, 1);
     g_signal_connect(context, "writing-timeout",

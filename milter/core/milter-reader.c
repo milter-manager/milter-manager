@@ -274,7 +274,8 @@ watch_io_channel (MilterReader *reader, GMainContext *context)
     source = g_io_create_watch(priv->io_channel,
                                G_IO_IN | G_IO_PRI |
                                G_IO_ERR | G_IO_HUP | G_IO_NVAL);
-    g_source_set_callback(source, channel_watch_func, reader, NULL);
+    g_source_set_callback(source, (GSourceFunc)channel_watch_func, reader,
+                          NULL);
     priv->channel_watch_id = g_source_attach(source, context);
     g_source_unref(source);
     milter_debug("[%u] [reader][watch] %u", priv->tag, priv->channel_watch_id);
@@ -358,13 +359,13 @@ milter_reader_io_channel_new (GIOChannel *channel)
 }
 
 void
-milter_reader_start (MilterReader *reader)
+milter_reader_start (MilterReader *reader, GMainContext *context)
 {
     MilterReaderPrivate *priv;
 
     priv = MILTER_READER_GET_PRIVATE(reader);
     if (priv->io_channel && priv->channel_watch_id == 0)
-        watch_io_channel(reader, NULL);
+        watch_io_channel(reader, context);
 }
 
 gboolean
