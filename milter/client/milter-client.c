@@ -693,7 +693,7 @@ cb_timeout_unlock_quit_mutex (gpointer data)
 }
 
 static gpointer
-server_accept_thread (gpointer data)
+single_worker_accept_thread (gpointer data)
 {
     MilterClient *client = data;
     MilterClientPrivate *priv;
@@ -717,6 +717,31 @@ server_accept_thread (gpointer data)
     return NULL;
 }
 
+static gboolean
+single_worker_start_accept (MilterClient *client)
+{
+    MilterClientPrivate *priv;
+    GThread *thread;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    thread = g_thread_create(single_worker_accept_thread, client, TRUE, NULL);
+
+    g_mutex_lock(priv->quit_mutex);
+    if (priv->quitting) {
+        g_mutex_unlock(priv->quit_mutex);
+    } else {
+        g_timeout_add(0, cb_timeout_unlock_quit_mutex, client);
+        g_main_loop_run(priv->main_loop);
+    }
+    g_thread_join(thread);
+
+    if (priv->listening_channel) {
+        g_io_channel_unref(priv->listening_channel);
+        priv->listening_channel = NULL;
+    }
+
+    return TRUE;
+}
 
 gboolean
 milter_client_main (MilterClient *client)
@@ -724,9 +749,9 @@ milter_client_main (MilterClient *client)
     MilterClientPrivate *priv;
     GError *error = NULL;
     GSource *watch_source;
-    GThread *thread;
     struct sockaddr *address = NULL;
     socklen_t address_size = 0;
+    gboolean success;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
@@ -786,21 +811,7 @@ milter_client_main (MilterClient *client)
                         g_main_loop_get_context(priv->accept_loop));
     g_source_unref(watch_source);
 
-    thread = g_thread_create(server_accept_thread, client, TRUE, NULL);
-
-    g_mutex_lock(priv->quit_mutex);
-    if (priv->quitting) {
-        g_mutex_unlock(priv->quit_mutex);
-    } else {
-        g_timeout_add(0, cb_timeout_unlock_quit_mutex, client);
-        g_main_loop_run(priv->main_loop);
-    }
-    g_thread_join(thread);
-
-    if (priv->listening_channel) {
-        g_io_channel_unref(priv->listening_channel);
-        priv->listening_channel = NULL;
-    }
+    success = single_worker_start_accept(client);
 
     if (address) {
         if (address->sa_family == AF_UNIX &&
