@@ -58,6 +58,10 @@ module Milter::Manager
       @script_name == "milter-greylist"
     end
 
+    def opendkim?
+      @script_name == "opendkim"
+    end
+
     private
     def parse_custom_conf
       parse_sysconfig(sysconfig)
@@ -130,6 +134,10 @@ module Milter::Manager
         etc_file("mail", "greylist.conf")
     end
 
+    def opendkim_conf
+      @variables["CONFIG"] || etc_file("opendkim.conf")
+    end
+
     def guess_spec
       spec = nil
       spec ||= guess_application_specific_spec_before
@@ -151,6 +159,7 @@ module Milter::Manager
       if clamav_milter_0_95_or_later?
         spec ||= detect_clamav_milter_connection_spec
       end
+      spec ||= detect_opendkim_connection_spec if opendkim?
       spec
     end
 

@@ -512,7 +512,6 @@ EOC
                   "unix:/var/run/spamass.sock"]])
   end
 
-
   def test_apply_enma_style
     enma_conf = @tmp_dir + "enma.conf"
     (@init_d + "enma").open("w") do |file|
@@ -543,6 +542,34 @@ EOC
                   (@init_d + "enma").to_s,
                   "start",
                   "inet:10025@127.0.0.1"]])
+  end
+
+  def test_apply_opendkim_style
+    opendkim_conf = @tmp_dir + "opendkim.conf"
+    (@init_d + "opendkim").open("w") do |file|
+      file << opendkim_init_header(opendkim_conf.to_s)
+    end
+
+    opendkim_conf.open("w") do |conf|
+      conf << <<-EOC
+# Basic OpenDKIM config file
+# See opendkim.conf(5) or /usr/share/doc/opendkim/opendkim.conf.sample for more
+Mode   v
+Syslog  yes
+Socket local:/var/run/opendkim/opendkim.socket
+EOC
+    end
+
+    detector = redhat_init_detector("opendkim")
+    detector.detect
+    detector.apply(@loader)
+    assert_equal("opendkim", detector.name)
+    assert_eggs([["opendkim",
+                  "OpenDKIM milter for signing and verifying email",
+                  false,
+                  (@init_d + "opendkim").to_s,
+                  "start",
+                  "local:/var/run/opendkim/opendkim.socket"]])
   end
 
   private
@@ -813,6 +840,40 @@ prog=enma
 ENMA=/usr/libexec/enma
 CONF_FILE=#{enma_conf}
 LOCK_FILE=/var/lock/subsys/enma
+EOS
+  end
+
+  def opendkim_init_header(opendkim_conf)
+    <<-EOS
+#!/bin/sh
+#
+# $Id: opendkim.init,v 1.1 2009/08/13 08:54:09 mmarkley Exp $
+#
+#### BEGIN INIT INFO
+# Provides:          opendkim
+# Required-Start:    $syslog $time $local_fs $remote_fs $named $network
+# Required-Stop:     $syslog $time $local_fs $remote_fs $named
+# Default-Start:     2 3 4 5
+# Default-Stop:      S 0 1 6
+# Short-Description: OpenDKIM Milter
+# Description:       The OpenDKIM milter for signing and verifying email
+#                    messages using the DomainKeys Identified Mail protocol
+### END INIT INFO
+#
+# chkconfig: 345 20 80
+# description: OpenDKIM milter for signing and verifying email
+# processname: opendkim
+#
+# This script should run successfully on any LSB-compliant system. It will
+# attempt to fall back to RedHatisms if LSB isn't available, or to
+# commonly-available utilities if it's not even RedHat.
+
+NAME=opendkim
+PATH=/bin:/usr/bin:/sbin:/usr/sbin
+DAEMON=/usr/sbin/$NAME
+PIDFILE=/var/run/$NAME/$NAME.pid
+CONFIG=#{opendkim_conf}
+USER=opendkim
 EOS
   end
 end
