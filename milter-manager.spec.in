@@ -1,7 +1,7 @@
 Summary: A milter to use milters effectively
 Name: milter-manager
 Version: @VERSION@
-Release: 1
+Release: 2
 License: GPLv3+, LGPL3+, AGPL3+, GFDL, Public Domain
 URL: http://milter-manager.sourceforge.net/
 Group: System Environment/Daemons
@@ -16,7 +16,7 @@ BuildRequires: ruby
 BuildRequires: ruby-devel
 Requires: glib2
 Requires: ruby
-Requires: libmilter-toolkit
+Requires: libmilter-toolkit = %{version}-${release}
 Requires(pre): /usr/bin/getent, /usr/sbin/useradd
 Requires(pre): /usr/bin/id, /usr/sbin/groupadd
 Requires(post): /sbin/chkconfig
@@ -39,7 +39,7 @@ built using libmilter-toolkit.
 %package -n libmilter-toolkit-devel
 Summary: Development files for libmilter-toolkit
 Group: Development/Libraries
-Requires: libmilter-toolkit
+Requires: libmilter-toolkit = %{version}-${release}
 
 %description -n libmilter-toolkit-devel
 This package contains the headers, and other support files
@@ -48,7 +48,7 @@ required for developing applications against libmilter-toolkit.
 %package -n libmilter-compatible
 Summary: libmilter API and ABI compatible milter library
 Group: System Environment/Libraries
-Requires: libmilter-toolkit
+Requires: libmilter-toolkit = %{version}-${release}
 
 %description -n libmilter-compatible
 A libmilter API and ABI compatible library based on libmilter-toolkit.
@@ -58,7 +58,8 @@ built using Sendmail libmilter or libmilter-compatible.
 %package -n libmilter-compatible-devel
 Summary: Development files for libmilter-compatible
 Group: Development/Libraries
-Requires: libmilter-compatible, libmilter-toolkit-devel
+Requires: libmilter-compatible = %{version}-${release}
+Requires: libmilter-toolkit-devel = %{version}-${release}
 
 %description -n libmilter-compatible-devel
 This package contains the headers, and other support files
@@ -215,7 +216,7 @@ fi
 
 %changelog
 * Thu Feb 17 2010 Kouhei Sutou <kou@clear-code.com>
-- (1.5.0-1)
+- (1.5.0-2)
 - new upstream release
 
 * Thu Oct 29 2009 Kouhei Sutou <kou@clear-code.com>

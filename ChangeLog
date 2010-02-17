@@ -1,5 +1,9 @@
 2010-02-17  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter-manager.spec.in:
+	- specify the same version explicitly.
+	- 1.5.0-1 -> 1.5.0-2.
+
 	* milter-manager.spec.in: increment release version: 1.5.0-0 ->
 	1.5.0-1.
 
