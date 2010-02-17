@@ -458,6 +458,7 @@ update_max_file_descriptors (MilterManager *manager)
 {
     MilterManagerConfiguration *configuration;
     guint max_file_descriptors;
+    struct rlimit original_rlimit;
     struct rlimit rlimit;
 
     configuration = milter_manager_get_configuration(manager);
@@ -467,22 +468,24 @@ update_max_file_descriptors (MilterManager *manager)
     if (max_file_descriptors == 0)
         return;
 
-    if (getrlimit(RLIMIT_NOFILE, &rlimit) != 0) {
+    if (getrlimit(RLIMIT_NOFILE, &original_rlimit) != 0) {
         milter_manager_error("failed to get limit for RLIMIT_NOFILE: %s",
                              g_strerror(errno));
         return;
     }
 
-    rlimit.rlim_cur = MAX(max_file_descriptors, rlimit.rlim_max);
+    memcpy(&rlimit, &original_rlimit, sizeof(original_rlimit));
+    rlimit.rlim_cur = max_file_descriptors;
+    rlimit.rlim_max = max_file_descriptors;
     if (setrlimit(RLIMIT_NOFILE, &rlimit) != 0) {
         milter_manager_error("failed to set limit for RLIMIT_NOFILE: "
-                             "%" G_GINT64_FORMAT " "
-                             "request: %u "
-                             "max: %" G_GINT64_FORMAT " "
+                             "%u "
+                             "original soft limit: %" G_GINT64_FORMAT " "
+                             "original hard limit: %" G_GINT64_FORMAT " "
                              ": %s",
-                             (gint64)rlimit.rlim_cur,
                              max_file_descriptors,
-                             (gint64)rlimit.rlim_max,
+                             (gint64)original_rlimit.rlim_cur,
+                             (gint64)original_rlimit.rlim_max,
                              g_strerror(errno));
         return;
     }
