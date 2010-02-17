@@ -1,2 +1,2 @@
 PATH=/bin:/usr/local/bin:/usr/bin
-*/5 * * * * [ -x /usr/bin/rrdtool -o "`ruby -rrrdtool -e 'print :yes' 2>&1`" = "yes" ] && root cat /var/log/maillog | su milter-manager -s /bin/sh -c "milter-manager-log-analyzer --output-directory ~milter-manager/public_html/log"
+*/5 * * * * root [ -x /usr/bin/rrdtool -o "`ruby -rrrdtool -e 'print :yes' 2>&1`" = "yes" ] && cat /var/log/maillog | su milter-manager -s /bin/sh -c "milter-manager-log-analyzer --output-directory ~milter-manager/public_html/log"
