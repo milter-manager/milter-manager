@@ -1,5 +1,9 @@
 2010-02-17  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/manager/milter-manager-main.c: add TODO:
+	find_password() should be unified with find_password() in
+	milter_client.c.
+
 	* milter/core/milter-syslog-logger.c: syslog facility can be
 	changed by MILER_LOG_SYSLOG_FACILITY environment variable.
 

@@ -427,13 +427,14 @@ start_process_launcher_process (MilterManager *manager)
     return TRUE;
 }
 
+/* TODO: unify with find_password() in milter_client.c */
 static struct passwd *
 find_password (const gchar *effective_user)
 {
     struct passwd *password;
 
     if (!effective_user)
-        effective_user = "nobody";
+        return NULL;
 
     errno = 0;
     password = getpwnam(effective_user);
