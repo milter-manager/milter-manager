@@ -1,2 +1,2 @@
 PATH=/bin:/usr/local/bin:/usr/bin
-*/5 * * * * milter-manager-log-analyzer --output-directory ~/public_html/log /var/log/maillog
+*/5 * * * * nice milter-manager-log-analyzer --output-directory ~/public_html/log /var/log/maillog

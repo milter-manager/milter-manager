@@ -1,5 +1,7 @@
 2010-02-17  Kouhei Sutou  <kou@clear-code.com>
 
+	* data/cron.d/*/milter-manager-log: add nice.
+
 	* data/cron.d/redhat/milter-manager-log: fix target user position.
 
 	* milter/manager/milter-manager-main.c: add TODO:
