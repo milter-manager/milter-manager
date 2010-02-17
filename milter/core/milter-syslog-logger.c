@@ -135,10 +135,61 @@ cb_log (MilterLogger *logger, const gchar *domain,
     g_string_free(log, TRUE);
 }
 
+static gint
+resolve_syslog_facility (const gchar *facility)
+{
+    if (g_strcasecmp(facility, "auth") == 0 ||
+        g_strcasecmp(facility, "authpriv") == 0) {
+        return LOG_AUTHPRIV;
+    } else if (g_strcasecmp(facility, "cron") == 0) {
+        return LOG_CRON;
+    } else if (g_strcasecmp(facility, "daemon") == 0) {
+        return LOG_DAEMON;
+    } else if (g_strcasecmp(facility, "ftp") == 0) {
+        return LOG_FTP;
+    } else if (g_strcasecmp(facility, "kern") == 0) {
+        return LOG_KERN;
+    } else if (g_strcasecmp(facility, "local0") == 0) {
+        return LOG_LOCAL0;
+    } else if (g_strcasecmp(facility, "local1") == 0) {
+        return LOG_LOCAL1;
+    } else if (g_strcasecmp(facility, "local2") == 0) {
+        return LOG_LOCAL2;
+    } else if (g_strcasecmp(facility, "local3") == 0) {
+        return LOG_LOCAL3;
+    } else if (g_strcasecmp(facility, "local4") == 0) {
+        return LOG_LOCAL4;
+    } else if (g_strcasecmp(facility, "local5") == 0) {
+        return LOG_LOCAL5;
+    } else if (g_strcasecmp(facility, "local6") == 0) {
+        return LOG_LOCAL6;
+    } else if (g_strcasecmp(facility, "local7") == 0) {
+        return LOG_LOCAL7;
+    } else if (g_strcasecmp(facility, "lpr") == 0) {
+        return LOG_LPR;
+    } else if (g_strcasecmp(facility, "mail") == 0) {
+        return LOG_MAIL;
+    } else if (g_strcasecmp(facility, "news") == 0) {
+        return LOG_NEWS;
+    } else if (g_strcasecmp(facility, "user") == 0) {
+        return LOG_USER;
+    } else if (g_strcasecmp(facility, "uucp") == 0) {
+        return LOG_UUCP;
+    }
+
+    return LOG_MAIL;
+}
+
 static void
 setup_logger (MilterLogger *logger, const gchar *identity)
 {
-    openlog(identity, LOG_PID, LOG_MAIL);
+    gint facility = LOG_MAIL;
+    const gchar *facility_env;
+
+    facility_env = g_getenv("MILTER_LOG_SYSLOG_FACILITY");
+    if (facility_env)
+        facility = resolve_syslog_facility(facility_env);
+    openlog(identity, LOG_PID, facility);
     g_object_ref(logger);
     g_signal_connect(logger, "log", G_CALLBACK(cb_log), NULL);
 }

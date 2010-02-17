@@ -1,5 +1,8 @@
 2010-02-17  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/core/milter-syslog-logger.c: syslog facility can be
+	changed by MILER_LOG_SYSLOG_FACILITY environment variable.
+
 	* milter-manager.spec.in:
 	- specify the same version explicitly.
 	- 1.5.0-1 -> 1.5.0-2.
