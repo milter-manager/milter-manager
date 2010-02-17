@@ -1,5 +1,9 @@
 2010-02-17  Kouhei Sutou  <kou@clear-code.com>
 
+	* data/munin/milter_manager: start Munin support.
+	* configure.ac, data/munin/Makefile.am, milter-manager.spec.in:
+	follow the above change.
+
 	* milter/manager/milter-manager-main.c: set both soft and hard
 	limit.
 

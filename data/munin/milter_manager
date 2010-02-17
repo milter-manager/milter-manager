@@ -1,0 +1,140 @@
+#!/usr/bin/env ruby
+
+#%# family=auto
+#%# capabilities=autoconf
+
+mode = ARGV[0]
+
+log_dir = ENV["logdir"] || File.expand_path("~milter-manager/public_html/log")
+
+def rrdtool(command, *arguments)
+  command_line = "rrdtool #{command} #{arguments.join(' ')}"
+  result = `#{command_line}`
+  if $?.success?
+    result
+  else
+    $stderr.puts("failed to run rrdtool: <#{command_line}>: <#{result}>")
+    nil
+  end
+end
+
+def fetch(log_dir, path)
+  result = rrdtool("fetch", "#{log_dir}/#{path} AVERAGE -e -5m")
+  return [[], []] if result.nil?
+  lines = result.lines.to_a
+  header = lines[0].split
+  time, *values = lines[2].split
+  [header, values]
+end
+
+def data_sets(log_dir, path)
+  result = rrdtool("info", "#{log_dir}/#{path}")
+  return result if result.nil?
+  sets = {}
+  name_order = []
+  result.each_line do |line|
+    case line
+    when /\Ads\[(.+)\].(.+) = (.+)$/
+      name, attribute, value = $1, $2, $3
+      name_order << name
+      sets[name] ||= {}
+      sets[name][attribute] = value
+    end
+  end
+  ordered_sets = []
+  name_order.uniq.each do |name|
+    ordered_sets << [name, sets[name]]
+  end
+  ordered_sets
+end
+
+def config(graph_id, log_dir, rrd, parameters)
+  sets = data_sets(log_dir, rrd)
+  return if sets.nil? or sets.empty?
+  title = parameters[:title]
+  vlabel = parameters[:vlabel]
+  category = parameters[:category]
+  info = parameters[:info]
+  labels = parameters[:labels]
+  print(<<-EOM)
+multigraph #{graph_id}
+graph_title #{title}
+graph_order #{sets.collect {|key,| key}.join(' ')}
+graph_vlabel #{vlabel}
+graph_category #{category}
+graph_info #{info}
+
+EOM
+
+  sets.each do |key, attributes|
+    puts("#{key}.label #{labels[key] || key}")
+    attributes.each do |name, value|
+      if ["min", "max", "type"].include?(name)
+        if /\A\"(.*)\"\z/ =~ value
+          value = $1
+        end
+        puts("#{key}.#{name} #{value}")
+      end
+    end
+  end
+  puts
+end
+
+def report(graph_id, log_dir, rrd)
+  header, values = fetch(log_dir, rrd)
+  return if header.empty?
+  puts("multigraph #{graph_id}")
+  header.each_with_index do |name, index|
+    puts("#{name}.value #{values[index]}")
+  end
+end
+
+case mode
+when "autoconf", "detect"
+  if File.exist?(log_dir)
+    puts "yes"
+  else
+    puts "no (log directory not found: #{log_dir})"
+  end
+  exit(true)
+when "config"
+  config("milter-manager.status", log_dir, "milter-manager.status.rrd",
+         :title => "milter manager: status",
+         :vlabel => "sessions/min",
+         :category => "milter-manager",
+         :info => "This graph shows returned statuses",
+         :labels => {
+           "pass" => "Pass",
+           "accept" => "Accept",
+           "reject" => "Reject",
+           "discard" => "Discard",
+           "temporary-failure" => "Temp-Fail",
+           "quarantine" => "Quarantine",
+           "abort" => "Abort",
+           "error" => "Error",
+         })
+
+  config("milter-manager.report", log_dir, "milter-manager.report.rrd",
+         :title => "milter manager: report",
+         :vlabel => "mails/min",
+         :category => "milter-manager",
+         :info => "This graph reports mail kind",
+         :labels => {
+           "spam" => "spam",
+           "virus" => "Virus",
+           "uribl" => "URIBL",
+           "greylisting-pass" => "Greylisting (pass)",
+           "spf-pass" => "SPF (pass)",
+           "spf-fail" => "SPF (fail)",
+           "sender-id-pass" => "Sender ID (pass)",
+           "sender-id-fail" => "Sender ID (fail)",
+           "dkim-pass" => "DKIM (pass)",
+           "dkim-fail" => "DKIM (fail)",
+           "dkim-adsp-pass" => "DKIM ADSP (pass)",
+           "dkim-adsp-fail" => "DKIM ADSP (fail)",
+         })
+  exit(true)
+end
+
+report("milter-manager.status", log_dir, "milter-manager.status.rrd")
+report("milter-manager.report", log_dir, "milter-manager.report.rrd")
