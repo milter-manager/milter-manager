@@ -1,3 +1,9 @@
+2010-02-19  Kouhei Sutou  <kou@clear-code.com>
+
+	* tool/milter-manager-log-analyzer: speed up. ignore older lines.
+
+	* test/tool/test-log-analyzer.rb: still failed by 2010 problem...
+
 2010-02-18  Kouhei Sutou  <kou@clear-code.com>
 
 	* tool/milter-manager-log-analyzer: speed up. don't use Time.parse.

@@ -224,6 +224,7 @@ class MilterManagerLogAnalyzer
   end
 
   class GraphGenerator
+    attr_reader :last_update_time
     def initialize(output_directory, update_time=nil)
       @output_directory = output_directory
       @data = []
@@ -237,6 +238,8 @@ class MilterManagerLogAnalyzer
       @update_time = normalize_time(update_time)
 
       @old_base_rrd_file_names = []
+
+      @last_update_time = nil
     end
 
     def rows
@@ -794,13 +797,21 @@ EODS
   end
 
   class MiltersGraphGenerator
+    attr_reader :last_update_time
     def initialize(output_directory, update_time)
       @output_directory = output_directory
       @update_time = update_time
+      @last_update_time = nil
     end
 
     def prepare
       @generators = []
+      last_update_times = []
+      glob = File.join(@output_directory, "milter.{status,report}.*.rrd")
+      Dir.glob(glob).each do |rrd|
+        last_update_times << RRD.last_update_time(rrd)
+      end
+      @last_update_time = last_update_times.min
     end
 
     def feed(time_stamp, content)
@@ -1004,7 +1015,7 @@ EOF
     end
   end
 
-  attr_accessor :log, :output_directory
+  attr_accessor :log, :output_directory, :now
   def initialize
     @log = ARGF
     @update_db = true
@@ -1048,6 +1059,11 @@ EOF
     return unless @update_db
 
     listeners = all_listeners
+    last_update_times = []
+    listeners.each do |listener|
+      last_update_times << (listener.last_update_time || Time.at(0))
+    end
+    last_update_time = last_update_times.max || Time.at(0)
 
     now = Time.now
     year = now.year
@@ -1069,8 +1085,9 @@ EOF
         end
         month = Time::RFC2822_MONTH_NAME.index(month_name)
         next if month.nil?
-        time_stamp = Time.utc(year, month + 1, day.to_i,
-                              hour.to_i, minute.to_i, second.to_i)
+        time_stamp = Time.local(year, month + 1, day.to_i,
+                                hour.to_i, minute.to_i, second.to_i)
+        next if time_stamp < last_update_time
         listeners.each do |listener|
           listener.feed(time_stamp, content)
         end

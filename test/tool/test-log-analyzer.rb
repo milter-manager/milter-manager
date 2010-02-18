@@ -35,6 +35,7 @@ class TestLogAnalyzer < Test::Unit::TestCase
     FileUtils.mkdir_p(@tmp_dir.to_s)
 
     @analyzer = MilterManagerLogAnalyzer.new
+    @analyzer.now = Time.parse("#{Time.now.year}/09/29 15:48:12")
   end
 
   def teardown
