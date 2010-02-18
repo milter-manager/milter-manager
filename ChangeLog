@@ -1,5 +1,7 @@
 2010-02-19  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter-manager.spec.in: include munin plugin.
+
 	* tool/milter-manager-log-analyzer: speed up. ignore older lines.
 
 	* test/tool/test-log-analyzer.rb: still failed by 2010 problem...

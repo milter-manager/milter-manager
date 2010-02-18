@@ -1,7 +1,7 @@
 Summary: A milter to use milters effectively
 Name: milter-manager
 Version: @VERSION@
-Release: 3
+Release: 4
 License: GPLv3+, LGPL3+, AGPL3+, GFDL, Public Domain
 URL: http://milter-manager.sourceforge.net/
 Group: System Environment/Daemons
@@ -154,6 +154,7 @@ fi
 %{_sysconfdir}/milter-manager/cron.d/
 %{_sysconfdir}/milter-manager/init.d/
 %{_sysconfdir}/milter-manager/rc.d/
+%{_sysconfdir}/milter-manager/munin/
 %{_sysconfdir}/cron.d/
 %config %{_sysconfdir}/sysconfig/milter-manager
 %config %{_sysconfdir}/milter-manager/milter-manager.conf
@@ -216,7 +217,7 @@ fi
 
 %changelog
 * Thu Feb 17 2010 Kouhei Sutou <kou@clear-code.com>
-- (1.5.0-3)
+- (1.5.0-4)
 - new upstream release
 
 * Thu Oct 29 2009 Kouhei Sutou <kou@clear-code.com>
