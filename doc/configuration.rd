@@ -426,7 +426,7 @@ Here are descriptions of configuration items.
      (number of child milters + 1) * max concurrent connections +
        10（milter-manager internal usage + alpha）
 
-   This value is used as soft limit by setrlimit(2).
+   This value is used as soft limit and hard limit by setrlimit(2).
 
    Example:
      manager.max_file_descriptors = 65535

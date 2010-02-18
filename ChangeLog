@@ -1,3 +1,8 @@
+2010-02-18  Kouhei Sutou  <kou@clear-code.com>
+
+	* doc/configuration.rd*: manager.max_file_descriptors changes both
+	of soft and hard limit.
+
 2010-02-17  Kouhei Sutou  <kou@clear-code.com>
 
 	* data/munin/milter_manager: start Munin support.

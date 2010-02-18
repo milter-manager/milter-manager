@@ -419,7 +419,7 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
      (子milter数 + 1) * 最大同時接続数 + 10（milter-manager内部で使用 + α）
 
    プロセスが開くことができるファイルディスクリプタ数は
-   setrlimit(2)でソフトリミットを変更します。
+   setrlimit(2)でソフトリミットとハードリミットを変更します。
 
    例:
      manager.max_file_descriptors = 65535
