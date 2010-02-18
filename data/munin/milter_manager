@@ -19,9 +19,9 @@ def rrdtool(command, *arguments)
 end
 
 def fetch(log_dir, path)
-  result = rrdtool("fetch", "#{log_dir}/#{path} AVERAGE -e -5m")
+  result = rrdtool("fetch", "#{log_dir}/#{path} AVERAGE -e -6m")
   return [[], []] if result.nil?
-  lines = result.lines.to_a
+  lines = result.split(/\r?\n/)
   header = lines[0].split
   time, *values = lines[2].split
   [header, values]

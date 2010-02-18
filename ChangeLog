@@ -1,5 +1,8 @@
 2010-02-18  Kouhei Sutou  <kou@clear-code.com>
 
+	* data/munin/milter_manager: work with Ruby 1.8.5 bundled with
+	CentOS 5.4.
+
 	* doc/configuration.rd*: manager.max_file_descriptors changes both
 	of soft and hard limit.
 
