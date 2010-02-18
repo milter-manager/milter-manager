@@ -1049,11 +1049,17 @@ EOF
 
     listeners = all_listeners
 
+    now = Time.now
+    year = now.year
     @log.each_line do |line|
       case line
-      when /\A(\w{3} +\d+ \d+:\d+:\d+) [\w\-]+ ([\w\-]+)\[\d+\]: /
-        time_stamp = $1
-        name = $2
+      when /\A(\w{3}) +(\d+) (\d+):(\d+):(\d+) [\w\-]+ ([\w\-]+)\[\d+\]: /
+        month_name = $1
+        day = $2
+        hour = $3
+        minute = $4
+        second = $5
+        name = $6
         content = $POSTMATCH
         next unless name == "milter-manager"
         if /\A\[statistics\] / =~ content
@@ -1061,7 +1067,10 @@ EOF
         else
           next
         end
-        time_stamp = Time.parse(time_stamp).utc
+        month = Time::RFC2822_MONTH_NAME.index(month_name)
+        next if month.nil?
+        time_stamp = Time.utc(year, month + 1, day.to_i,
+                              hour.to_i, minute.to_i, second.to_i)
         listeners.each do |listener|
           listener.feed(time_stamp, content)
         end

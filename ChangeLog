@@ -1,5 +1,7 @@
 2010-02-18  Kouhei Sutou  <kou@clear-code.com>
 
+	* tool/milter-manager-log-analyzer: speed up. don't use Time.parse.
+
 	* data/munin/milter_manager: work with Ruby 1.8.5 bundled with
 	CentOS 5.4.
 
