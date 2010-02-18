@@ -154,7 +154,6 @@ fi
 %{_sysconfdir}/milter-manager/cron.d/
 %{_sysconfdir}/milter-manager/init.d/
 %{_sysconfdir}/milter-manager/rc.d/
-%{_sysconfdir}/milter-manager/munin/
 %{_sysconfdir}/cron.d/
 %config %{_sysconfdir}/sysconfig/milter-manager
 %config %{_sysconfdir}/milter-manager/milter-manager.conf
