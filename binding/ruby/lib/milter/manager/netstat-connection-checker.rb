@@ -19,9 +19,11 @@ module Milter::Manager
       @options = options || {}
       @database = nil
       @last_update = nil
+      detect_netstat_command
     end
 
     def connected?(context)
+      return true if @netstat_command.nil?
       return true unless context.smtp_server_address.local?
       address = context.smtp_client_address
       type = nil
@@ -41,8 +43,7 @@ module Milter::Manager
 
     private
     def netstat
-      command = "env LANG=C netstat -n -W 2>&1"
-      result = `#{command}`
+      result = `#{@netstat_command}`
       status = $?
       if status.success?
         result
@@ -84,6 +85,27 @@ module Milter::Manager
           target_address = components.join(".")
         end
         @database[type]["#{target_address}:#{target_port}"] = state
+      end
+    end
+
+    def detect_netstat_command
+      @netstat_command = nil
+      commands = ["env LANG=C netstat -n -W 2>&1",
+                  "env LANG=C netstat -n 2>&1"]
+      commands.each do |command|
+        result = `#{command}`
+        if $?.success?
+          @netstat_command = command
+          break
+        end
+      end
+      if @netstat_command
+        Milter::Logger.info("[netstat][detect]: <#{@netstat_command}>")
+      else
+        inspected_commands = commands.collect do |command|
+          "<#{command}>"
+        end.join(" ")
+        Milter::Logger.error("[netstat][not-available]: #{inspected_commands}")
       end
     end
   end

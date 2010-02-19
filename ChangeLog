@@ -1,5 +1,8 @@
 2010-02-19  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/lib/milter/manager/netstat-connection-checker.rb:
+	detect available netstat command line.
+
 	* milter-manager.spec.in: include munin plugin.
 
 	* tool/milter-manager-log-analyzer: speed up. ignore older lines.
