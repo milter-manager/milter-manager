@@ -1,0 +1,191 @@
+#!/usr/bin/env ruby
+
+#%# family=auto
+#%# capabilities=autoconf suggest
+
+type, milter = File.basename($0).gsub(/milter_manager_/, '').split(/_/, 2)
+
+mode = ARGV[0]
+
+log_dir = ENV["logdir"] || File.expand_path("~milter-manager/public_html/log")
+
+def rrdtool(command, *arguments)
+  command_line = "rrdtool #{command} #{arguments.join(' ')}"
+  result = `#{command_line}`
+  if $?.success?
+    result
+  else
+    $stderr.puts("failed to run rrdtool: <#{command_line}>: <#{result}>")
+    nil
+  end
+end
+
+def fetch(rrd)
+  result = rrdtool("fetch", "#{rrd} AVERAGE -e -6m")
+  return [[], []] if result.nil?
+  lines = result.split(/\r?\n/)
+  header = lines[0].split
+  time, *values = lines[2].split
+  [header, values]
+end
+
+def data_sets(rrd)
+  result = rrdtool("info", rrd)
+  return result if result.nil?
+  sets = {}
+  name_order = []
+  result.each_line do |line|
+    case line
+    when /\Ads\[(.+)\].(.+) = (.+)$/
+      name, attribute, value = $1, $2, $3
+      name_order << name
+      sets[name] ||= {}
+      sets[name][attribute] = value
+    end
+  end
+  ordered_sets = []
+  name_order.uniq.each do |name|
+    ordered_sets << [name, sets[name]]
+  end
+  ordered_sets
+end
+
+def rrd_path(log_dir, type, milter)
+  if milter.empty?
+    base_name = "milter-manager.#{type}.rrd"
+  else
+    base_name = "milter.#{type}.#{name}.rrd"
+  end
+  File.join(log_dir, base_name)
+end
+
+def config(log_dir, type, name, parameters)
+  sets = data_sets(rrd_path(log_dir, type, milter))
+  return if sets.nil? or sets.empty?
+  title = parameters[:title]
+  vlabel = parameters[:vlabel]
+  category = parameters[:category]
+  info = parameters[:info]
+  labels = parameters[:labels]
+  print(<<-EOM)
+graph_title #{title}
+graph_order #{sets.collect {|key,| key}.join(' ')}
+graph_vlabel #{vlabel}
+graph_category #{category}
+graph_info #{info}
+
+EOM
+
+  sets.each do |key, attributes|
+    puts("#{key}.label #{labels[key] || key}")
+    attributes.each do |name, value|
+      if ["min", "max", "type"].include?(name)
+        if /\A\"(.*)\"\z/ =~ value
+          value = $1
+        end
+        puts("#{key}.#{name} #{value}")
+      end
+    end
+  end
+  puts
+end
+
+def report(log_dir, type, milter)
+  header, values = fetch(rrd_path(log_dir, type, milter))
+  return if header.empty?
+  header.each_with_index do |name, index|
+    puts("#{name}.value #{values[index]}")
+  end
+end
+
+def invalid_file_name_message
+  "must be 'milter_manager_status_XXX' or " +
+    "'milter_manager_report_XXX': #{File.basename($0)}"
+end
+
+case mode
+when "autoconf", "detect"
+  if File.exist?(log_dir)
+    puts "yes"
+  else
+    puts "no (log directory not found: #{log_dir})"
+  end
+  exit(true)
+when "suggest"
+  type_order = ["status", "report"]
+  milters = []
+  Dir.glob(File.join(log_dir, "milter.{status,report}.*.rrd")) do |path|
+    if /\Amilter\.(status|report)\.(.+?).rrd\z/ =~ File.basename(path)
+      type, name = $1, $2
+      milters << [name, type]
+    end
+  end
+  type_order.each do |type|
+    puts type
+  end
+  milters.sort_by do |name, type|
+    [name, type_order.index(type)]
+  end.each do |name, type|
+    puts "#{type}_#{name}"
+  end
+  exit(true)
+when "config"
+  if milter.empty?
+    target = "milter manager"
+    title_prefix = target
+  else
+    target = milter
+    title_prefix = "milter: #{target}"
+  end
+
+  case type
+  when "status"
+    config(log_dir, type, milter,
+           :title => "#{title_prefix}: status",
+           :vlabel => "sessions/min",
+           :category => "milter-manager",
+           :info => "This graph shows returned statuses by #{target}",
+           :labels => {
+             "pass" => "Pass",
+             "accept" => "Accept",
+             "reject" => "Reject",
+             "discard" => "Discard",
+             "temporary-failure" => "Temp-Fail",
+             "quarantine" => "Quarantine",
+             "abort" => "Abort",
+             "error" => "Error",
+           })
+  when "report"
+    config(log_dir, type, milter,
+           :title => "#{title_prefix}: report",
+           :vlabel => "mails/min",
+           :category => "milter-manager",
+           :info => "This graph reports mail kind of #{target}",
+           :labels => {
+             "spam" => "spam",
+             "virus" => "Virus",
+             "uribl" => "URIBL",
+             "greylisting-pass" => "Greylisting (pass)",
+             "spf-pass" => "SPF (pass)",
+             "spf-fail" => "SPF (fail)",
+             "sender-id-pass" => "Sender ID (pass)",
+             "sender-id-fail" => "Sender ID (fail)",
+             "dkim-pass" => "DKIM (pass)",
+             "dkim-fail" => "DKIM (fail)",
+             "dkim-adsp-pass" => "DKIM ADSP (pass)",
+             "dkim-adsp-fail" => "DKIM ADSP (fail)",
+           })
+  else
+    puts invalid_file_name_message
+    exit(false)
+  end
+  exit(true)
+end
+
+case type
+when "status", "report"
+  report(log_dir, type, milter)
+else
+  puts invalid_file_name_message
+  exit(false)
+end
