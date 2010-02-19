@@ -48,6 +48,8 @@ struct _MilterManagerChildrenPrivate
     MilterManagerConfiguration *configuration;
     MilterMacrosRequests *macros_requests;
     MilterOption *option;
+    MilterStepFlags initial_yes_steps;
+    MilterStepFlags requested_yes_steps;
     gboolean negotiated;
     MilterServerContextState state;
     MilterServerContextState processing_state;
@@ -230,6 +232,8 @@ milter_manager_children_init (MilterManagerChildren *milter)
     priv->milters = NULL;
     priv->macros_requests = milter_macros_requests_new();
     priv->option = NULL;
+    priv->initial_yes_steps = MILTER_STEP_NONE;
+    priv->requested_yes_steps = MILTER_STEP_NONE;
     priv->negotiated = FALSE;
     priv->reply_statuses = g_hash_table_new(g_direct_hash, g_direct_equal);
 
@@ -659,6 +663,7 @@ cb_negotiate_reply (MilterServerContext *context, MilterOption *option,
 
     if (priv->option) {
         milter_option_merge(priv->option, option);
+        priv->requested_yes_steps |= milter_option_get_step_yes(option);
         priv->negotiated = TRUE;
     } else {
         GError *error;
@@ -2255,7 +2260,11 @@ reply_negotiate (MilterManagerChildren *children)
                      priv->tag);
     }
 
-    milter_option_remove_step(priv->option, MILTER_STEP_NO_EVENT_MASK);
+    milter_option_remove_step(priv->option,
+                              MILTER_STEP_NO_EVENT_MASK |
+                              (MILTER_STEP_YES_MASK &
+                               ~(priv->initial_yes_steps &
+                                 priv->requested_yes_steps)));
     g_signal_emit_by_name(children, "negotiate-reply",
                           priv->option, priv->macros_requests);
 }
@@ -2648,6 +2657,7 @@ milter_manager_children_negotiate (MilterManagerChildren *children,
             milter_option_set_version(priv->option,
                                       MAX_SUPPORTED_MILTER_PROTOCOL_VERSION);
         }
+        priv->initial_yes_steps = milter_option_get_step_yes(priv->option);
     }
 
     if (!priv->milters) {
@@ -3664,6 +3674,12 @@ milter_manager_children_get_smtp_client_address (MilterManagerChildren *children
     *address = g_memdup(priv->smtp_client_address, *address_length);
 
     return TRUE;
+}
+
+MilterOption *
+milter_manager_children_get_option (MilterManagerChildren *children)
+{
+    return MILTER_MANAGER_CHILDREN_GET_PRIVATE(children)->option;
 }
 
 /*

@@ -4,6 +4,7 @@ actions=negotiate
 
 [client10026]
 port=10026
+arguments=--negotiate-flags=skip
 
 [client10027]
 port=10027
@@ -13,10 +14,12 @@ command=negotiate
 
 version=6
 action=add-headers|change-body|quarantine
-step=no-connect|no-helo|no-envelope-from|no-envelope-recipient|no-body|no-headers|no-end-of-header
+step=no-connect|no-helo|no-envelope-from|no-envelope-recipient|no-body|no-headers|no-end-of-header|skip|envelope-recipient-rejected|header-value-with-leading-space
 
 response=negotiate
 n_received=2
 status=continue
 
-options=6;add-headers|change-body|quarantine;no-connect|no-helo|no-envelope-from|no-envelope-recipient|no-body|no-headers|no-end-of-header;6;add-headers|change-body|quarantine;no-connect|no-helo|no-envelope-from|no-envelope-recipient|no-body|no-headers|no-end-of-header;
+options=6;add-headers|change-body|quarantine;no-connect|no-helo|no-envelope-from|no-envelope-recipient|no-body|no-headers|no-end-of-header|skip|envelope-recipient-rejected|header-value-with-leading-space;6;add-headers|change-body|quarantine;no-connect|no-helo|no-envelope-from|no-envelope-recipient|no-body|no-headers|no-end-of-header|skip|envelope-recipient-rejected|header-value-with-leading-space;
+
+option=6;add-headers|change-body|quarantine;skip

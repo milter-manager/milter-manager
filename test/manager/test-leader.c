@@ -809,6 +809,17 @@ do_negotiate (MilterManagerTestScenario *scenario, const gchar *group)
         options,
         milter_manager_test_clients_collect_negotiate_options(started_clients),
         option_equal);
+
+    if (milter_manager_test_scenario_has_group(main_scenario, group) &&
+        milter_manager_test_scenario_has_key(main_scenario, group, "option")) {
+        MilterManagerChildren *children;
+        options = get_option_list(main_scenario, group, "option");
+        children = milter_manager_leader_get_children(leader);
+        gcut_assert_equal_object_custom(
+            options->data,
+            milter_manager_children_get_option(children),
+            option_equal);
+    }
 }
 
 static void

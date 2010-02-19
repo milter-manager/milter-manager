@@ -1,5 +1,10 @@
 2010-02-19  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/manager/milter-manager/children.[ch],
+	test/manager/test-leader.c,
+	test/fixtures/leader/negotiate.txt: don't request steps that any
+	children not-requested.
+
 	* binding/ruby/lib/milter/manager/netstat-connection-checker.rb:
 	detect available netstat command line.
 

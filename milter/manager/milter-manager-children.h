@@ -141,6 +141,11 @@ gboolean               milter_manager_children_get_smtp_client_address
                                                             struct sockaddr       **address,
                                                             socklen_t             *address_length);
 
+
+MilterOption          *milter_manager_children_get_option
+                                          (MilterManagerChildren *children);
+
+
 #endif /* __MILTER_MANAGER_CHILDREN_H__ */
 
 /*
