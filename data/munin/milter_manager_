@@ -55,7 +55,7 @@ def rrd_path(log_dir, type, milter)
   if milter.nil?
     base_name = "milter-manager.#{type}.rrd"
   else
-    base_name = "milter.#{type}.#{name}.rrd"
+    base_name = "milter.#{type}.#{milter}.rrd"
   end
   File.join(log_dir, base_name)
 end
