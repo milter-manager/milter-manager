@@ -4,6 +4,7 @@
 #%# capabilities=autoconf suggest
 
 type, milter = File.basename($0).gsub(/milter_manager_/, '').split(/_/, 2)
+milter = nil if milter and milter.empty?
 
 mode = ARGV[0]
 
@@ -51,7 +52,7 @@ def data_sets(rrd)
 end
 
 def rrd_path(log_dir, type, milter)
-  if milter.empty?
+  if milter.nil?
     base_name = "milter-manager.#{type}.rrd"
   else
     base_name = "milter.#{type}.#{name}.rrd"
@@ -59,7 +60,7 @@ def rrd_path(log_dir, type, milter)
   File.join(log_dir, base_name)
 end
 
-def config(log_dir, type, name, parameters)
+def config(log_dir, type, milter, parameters)
   sets = data_sets(rrd_path(log_dir, type, milter))
   return if sets.nil? or sets.empty?
   title = parameters[:title]
@@ -120,6 +121,7 @@ when "suggest"
       milters << [name, type]
     end
   end
+
   type_order.each do |type|
     puts type
   end
@@ -130,7 +132,7 @@ when "suggest"
   end
   exit(true)
 when "config"
-  if milter.empty?
+  if milter.nil?
     target = "milter manager"
     title_prefix = target
   else
