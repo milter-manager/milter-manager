@@ -16,7 +16,7 @@ BuildRequires: ruby
 BuildRequires: ruby-devel
 Requires: glib2
 Requires: ruby
-Requires: libmilter-toolkit = %{version}-${release}
+Requires: libmilter-toolkit = %{version}-%{release}
 Requires(pre): /usr/bin/getent, /usr/sbin/useradd
 Requires(pre): /usr/bin/id, /usr/sbin/groupadd
 Requires(post): /sbin/chkconfig
@@ -39,7 +39,7 @@ built using libmilter-toolkit.
 %package -n libmilter-toolkit-devel
 Summary: Development files for libmilter-toolkit
 Group: Development/Libraries
-Requires: libmilter-toolkit = %{version}-${release}
+Requires: libmilter-toolkit = %{version}-%{release}
 
 %description -n libmilter-toolkit-devel
 This package contains the headers, and other support files
@@ -48,7 +48,7 @@ required for developing applications against libmilter-toolkit.
 %package -n libmilter-compatible
 Summary: libmilter API and ABI compatible milter library
 Group: System Environment/Libraries
-Requires: libmilter-toolkit = %{version}-${release}
+Requires: libmilter-toolkit = %{version}-%{release}
 
 %description -n libmilter-compatible
 A libmilter API and ABI compatible library based on libmilter-toolkit.
@@ -58,8 +58,8 @@ built using Sendmail libmilter or libmilter-compatible.
 %package -n libmilter-compatible-devel
 Summary: Development files for libmilter-compatible
 Group: Development/Libraries
-Requires: libmilter-compatible = %{version}-${release}
-Requires: libmilter-toolkit-devel = %{version}-${release}
+Requires: libmilter-compatible = %{version}-%{release}
+Requires: libmilter-toolkit-devel = %{version}-%{release}
 
 %description -n libmilter-compatible-devel
 This package contains the headers, and other support files
