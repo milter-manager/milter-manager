@@ -1,5 +1,8 @@
 2010-02-20  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/manager/milter-manager-main.c (milter_manager_init): set
+	default log level as critical|error|warning|statistics.
+
 	* binding/ruby/lib/milter/manager/netstat-connection-checker.rb
 	(Milter::NetstatConnectionChecker#netstat): fix a typo.
 

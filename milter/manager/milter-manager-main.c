@@ -171,7 +171,12 @@ milter_manager_init (int *argc, char ***argv)
     milter_server_init();
     milter_manager_log_handler_id = MILTER_GLIB_LOG_DELEGATE("milter-manager");
 
-    milter_logger_set_target_level(milter_logger(), MILTER_LOG_LEVEL_ERROR);
+    if (milter_get_log_level() == MILTER_LOG_LEVEL_DEFAULT) {
+        milter_set_log_level(MILTER_LOG_LEVEL_CRITICAL |
+                             MILTER_LOG_LEVEL_ERROR |
+                             MILTER_LOG_LEVEL_WARNING |
+                             MILTER_LOG_LEVEL_STATISTICS);
+    }
 
     option_context = g_option_context_new(NULL);
     g_option_context_add_main_entries(option_context, option_entries, NULL);
@@ -198,7 +203,7 @@ milter_manager_init (int *argc, char ***argv)
     }
 
     if (option_verbose)
-        g_setenv("MILTER_LOG_LEVEL", "all", TRUE);
+        milter_set_log_level(MILTER_LOG_LEVEL_ALL);
 
     _milter_manager_configuration_init();
     g_option_context_free(option_context);
