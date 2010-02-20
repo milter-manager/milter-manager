@@ -1,6 +1,9 @@
 2010-02-20  Kouhei Sutou  <kou@clear-code.com>
 
 	* milter/manager/milter-manager-main.c: PID file should be written
+	after daemonized.
+
+	* milter/manager/milter-manager-main.c: PID file should be written
 	after privilege is dropped.
 
 	* milter/manager/milter-manager-children.c: remove needless
