@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -112,12 +112,11 @@ cb_log (MilterLogger *logger, const gchar *domain,
 {
     GString *log;
     gint syslog_level;
-    const gchar *target_level_flags;
-    MilterLogLevelFlags target_level = MILTER_LOG_LEVEL_STATISTICS;
+    MilterLogLevelFlags target_level;
 
-    target_level_flags = g_getenv("MILTER_LOG_LEVEL");
-    if (target_level_flags)
-        target_level = milter_log_level_flags_from_string(target_level_flags);
+    target_level = milter_logger_get_target_level(logger);
+    if (target_level == MILTER_LOG_LEVEL_DEFAULT)
+        target_level = MILTER_LOG_LEVEL_STATISTICS;
     if (!(level & target_level))
         return;
 

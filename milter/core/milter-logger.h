@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -51,6 +51,28 @@ G_BEGIN_DECLS
 #define milter_statistics(format, ...)                                  \
     milter_log(MILTER_LOG_LEVEL_STATISTICS, format, ## __VA_ARGS__)
 
+#define milter_set_log_level(level)                             \
+    milter_logger_set_target_level(milter_logger(), (level))
+#define milter_get_log_level()                          \
+    milter_logger_get_target_level(milter_logger())
+
+#define milter_need_log(level) \
+    (milter_get_log_level() & (level))
+#define milter_need_critical_log() \
+    (milter_get_log_level() & MILTER_LOG_LEVEL_CRITICAL)
+#define milter_need_error_log() \
+    (milter_get_log_level() & MILTER_LOG_LEVEL_ERROR)
+#define milter_need_warning_log() \
+    (milter_get_log_level() & MILTER_LOG_LEVEL_WARNING)
+#define milter_need_message_log() \
+    (milter_get_log_level() & MILTER_LOG_LEVEL_MESSAGE)
+#define milter_need_info_log() \
+    (milter_get_log_level() & MILTER_LOG_LEVEL_INFO)
+#define milter_need_debug_log() \
+    (milter_get_log_level() & MILTER_LOG_LEVEL_DEBUG)
+#define milter_need_statistics_log() \
+    (milter_get_log_level() & MILTER_LOG_LEVEL_STATISTICS)
+
 #define MILTER_TYPE_LOGGER            (milter_logger_get_type())
 #define MILTER_LOGGER(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), MILTER_TYPE_LOGGER, MilterLogger))
 #define MILTER_LOGGER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), MILTER_TYPE_LOGGER, MilterLoggerClass))
@@ -60,13 +82,15 @@ G_BEGIN_DECLS
 
 typedef enum
 {
-    MILTER_LOG_LEVEL_CRITICAL   = 1 << 0,
-    MILTER_LOG_LEVEL_ERROR      = 1 << 1,
-    MILTER_LOG_LEVEL_WARNING    = 1 << 2,
-    MILTER_LOG_LEVEL_MESSAGE    = 1 << 3,
-    MILTER_LOG_LEVEL_INFO       = 1 << 4,
-    MILTER_LOG_LEVEL_DEBUG      = 1 << 5,
-    MILTER_LOG_LEVEL_STATISTICS = 1 << 6
+    MILTER_LOG_LEVEL_DEFAULT    = 0,
+    MILTER_LOG_LEVEL_NONE       = 1 << 0,
+    MILTER_LOG_LEVEL_CRITICAL   = 1 << 1,
+    MILTER_LOG_LEVEL_ERROR      = 1 << 2,
+    MILTER_LOG_LEVEL_WARNING    = 1 << 3,
+    MILTER_LOG_LEVEL_MESSAGE    = 1 << 4,
+    MILTER_LOG_LEVEL_INFO       = 1 << 5,
+    MILTER_LOG_LEVEL_DEBUG      = 1 << 6,
+    MILTER_LOG_LEVEL_STATISTICS = 1 << 7
 } MilterLogLevelFlags;
 
 #define MILTER_LOG_LEVEL_ALL (MILTER_LOG_LEVEL_CRITICAL |       \
@@ -80,10 +104,11 @@ typedef enum
 typedef enum
 {
     MILTER_LOG_ITEM_DEFAULT     = 0,
-    MILTER_LOG_ITEM_DOMAIN      = 1 << 0,
-    MILTER_LOG_ITEM_LEVEL       = 1 << 1,
-    MILTER_LOG_ITEM_LOCATION    = 1 << 2,
-    MILTER_LOG_ITEM_TIME        = 1 << 3
+    MILTER_LOG_ITEM_NONE        = 1 << 0,
+    MILTER_LOG_ITEM_DOMAIN      = 1 << 1,
+    MILTER_LOG_ITEM_LEVEL       = 1 << 2,
+    MILTER_LOG_ITEM_LOCATION    = 1 << 3,
+    MILTER_LOG_ITEM_TIME        = 1 << 4
 } MilterLogItemFlags;
 
 #define MILTER_LOG_ITEM_ALL (MILTER_LOG_ITEM_DOMAIN |   \
@@ -125,6 +150,7 @@ GQuark           milter_logger_error_quark    (void);
 GType            milter_logger_get_type       (void) G_GNUC_CONST;
 
 MilterLogLevelFlags milter_log_level_flags_from_string (const gchar *level_name);
+MilterLogItemFlags  milter_log_item_flags_from_string  (const gchar *item_name);
 
 MilterLogger    *milter_logger                (void);
 void             milter_logger_default_log_handler
@@ -160,6 +186,18 @@ MilterLogLevelFlags
 void             milter_logger_set_target_level
                                               (MilterLogger        *logger,
                                                MilterLogLevelFlags  level);
+void             milter_logger_set_target_level_by_string
+                                              (MilterLogger        *logger,
+                                               const gchar         *level_name);
+MilterLogItemFlags
+                 milter_logger_get_target_item
+                                              (MilterLogger        *logger);
+void             milter_logger_set_target_item
+                                              (MilterLogger        *logger,
+                                               MilterLogItemFlags   item);
+void             milter_logger_set_target_item_by_string
+                                              (MilterLogger        *logger,
+                                               const gchar         *item_name);
 
 #define MILTER_GLIB_LOG_DELEGATE(domain)        \
     g_log_set_handler(domain,                   \

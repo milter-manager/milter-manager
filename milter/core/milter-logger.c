@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -41,12 +41,14 @@ typedef struct _MilterLoggerPrivate	MilterLoggerPrivate;
 struct _MilterLoggerPrivate
 {
     MilterLogLevelFlags target_level;
+    MilterLogItemFlags target_item;
 };
 
 enum
 {
     PROP_0,
-    PROP_TARGET_LEVEL
+    PROP_TARGET_LEVEL,
+    PROP_TARGET_ITEM
 };
 
 enum
@@ -87,9 +89,17 @@ milter_logger_class_init (MilterLoggerClass *klass)
                               "Target log level",
                               "The target log level",
                               MILTER_TYPE_LOG_LEVEL_FLAGS,
-                              0,
+                              MILTER_LOG_LEVEL_DEFAULT,
                               G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_TARGET_LEVEL, spec);
+
+    spec = g_param_spec_flags("target-item",
+                              "Target log item",
+                              "The target log item",
+                              MILTER_TYPE_LOG_ITEM_FLAGS,
+                              MILTER_LOG_ITEM_DEFAULT,
+                              G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_TARGET_ITEM, spec);
 
     signals[LOG] =
         g_signal_new("log",
@@ -111,7 +121,7 @@ milter_logger_init (MilterLogger *logger)
     MilterLoggerPrivate *priv;
 
     priv = MILTER_LOGGER_GET_PRIVATE(logger);
-    priv->target_level = 0;
+    priv->target_level = MILTER_LOG_LEVEL_DEFAULT;
 }
 
 static void
@@ -133,6 +143,9 @@ set_property (GObject      *object,
     case PROP_TARGET_LEVEL:
         priv->target_level = g_value_get_flags(value);
         break;
+    case PROP_TARGET_ITEM:
+        priv->target_item = g_value_get_flags(value);
+        break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -152,6 +165,9 @@ get_property (GObject    *object,
     case PROP_TARGET_LEVEL:
         g_value_set_flags(value, priv->target_level);
         break;
+    case PROP_TARGET_ITEM:
+        g_value_set_flags(value, priv->target_item);
+        break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -161,8 +177,19 @@ get_property (GObject    *object,
 MilterLogLevelFlags
 milter_log_level_flags_from_string (const gchar *level_name)
 {
-    return milter_utils_flags_from_string(MILTER_TYPE_LOG_LEVEL_FLAGS,
-                                          level_name);
+    if (g_str_equal(level_name, "all")) {
+        return MILTER_LOG_LEVEL_ALL;
+    } else {
+        return milter_utils_flags_from_string(MILTER_TYPE_LOG_LEVEL_FLAGS,
+                                              level_name);
+    }
+}
+
+MilterLogItemFlags
+milter_log_item_flags_from_string (const gchar *item_name)
+{
+    return milter_utils_flags_from_string(MILTER_TYPE_LOG_ITEM_FLAGS,
+                                          item_name);
 }
 
 #define BLACK_COLOR "\033[01;30m"
@@ -267,26 +294,16 @@ milter_logger_default_log_handler (MilterLogger *logger, const gchar *domain,
                                    gpointer user_data)
 {
     MilterLoggerPrivate *priv;
-    const gchar *target_level_flags;
-    MilterLogLevelFlags target_level;
-    const gchar *target_item_flags;
-    MilterLogItemFlags target_item = MILTER_LOG_ITEM_DEFAULT;
+    MilterLogItemFlags target_item;
     GString *log;
 
     priv = MILTER_LOGGER_GET_PRIVATE(logger);
-    target_level = priv->target_level;
-    target_level_flags = g_getenv("MILTER_LOG_LEVEL");
-    if (target_level_flags)
-        target_level = milter_log_level_flags_from_string(target_level_flags);
-    if (!(level & target_level))
+    if (!(level & priv->target_level))
         return;
 
     log = g_string_new(NULL);
 
-    target_item_flags = g_getenv("MILTER_LOG_ITEM");
-    if (target_item_flags)
-        target_item = milter_utils_flags_from_string(MILTER_TYPE_LOG_ITEM_FLAGS,
-                                                     target_item_flags);
+    target_item = priv->target_item;
     if (target_item == MILTER_LOG_ITEM_DEFAULT)
         target_item = MILTER_LOG_ITEM_TIME;
 
@@ -340,6 +357,10 @@ milter_logger (void)
 {
     if (!singleton_milter_logger) {
         singleton_milter_logger = milter_logger_new();
+        milter_logger_set_target_level_by_string(singleton_milter_logger,
+                                                 g_getenv("MILTER_LOG_LEVEL"));
+        milter_logger_set_target_item_by_string(singleton_milter_logger,
+                                                g_getenv("MILTER_LOG_ITEM"));
         g_signal_connect(singleton_milter_logger, "log",
                          G_CALLBACK(milter_logger_default_log_handler), NULL);
     }
@@ -380,7 +401,8 @@ milter_logger_log_va_list (MilterLogger *logger,
     g_get_current_time(&time_value);
 
     message = g_strdup_vprintf(format, args);
-    g_signal_emit(logger, signals[LOG], 0, domain, level, file, line, function, &time_value, message);
+    g_signal_emit(logger, signals[LOG], 0,
+                  domain, level, file, line, function, &time_value, message);
     g_free(message);
 }
 
@@ -396,6 +418,50 @@ milter_logger_set_target_level (MilterLogger *logger,
                                 MilterLogLevelFlags level)
 {
     MILTER_LOGGER_GET_PRIVATE(logger)->target_level = level;
+}
+
+void
+milter_logger_set_target_level_by_string (MilterLogger *logger,
+                                          const gchar *level_name)
+{
+    MilterLogLevelFlags level;
+
+    if (level_name) {
+        level = milter_log_level_flags_from_string(level_name);
+    } else {
+        level = MILTER_LOG_LEVEL_DEFAULT;
+    }
+    milter_logger_set_target_level(logger, level);
+
+}
+
+MilterLogItemFlags
+milter_logger_get_target_item (MilterLogger *logger)
+{
+    return MILTER_LOGGER_GET_PRIVATE(logger)->target_item;
+}
+
+
+void
+milter_logger_set_target_item (MilterLogger *logger,
+                               MilterLogItemFlags item)
+{
+    MILTER_LOGGER_GET_PRIVATE(logger)->target_item = item;
+}
+
+void
+milter_logger_set_target_item_by_string (MilterLogger *logger,
+                                         const gchar *item_name)
+{
+    MilterLogItemFlags item;
+
+    if (item_name) {
+        item = milter_log_item_flags_from_string(item_name);
+    } else {
+        item = MILTER_LOG_ITEM_DEFAULT;
+    }
+    milter_logger_set_target_item(logger, item);
+
 }
 
 void

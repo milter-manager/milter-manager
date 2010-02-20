@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -399,11 +399,13 @@ data_flags_from_string (void)
     ADD("one", "error", MILTER_LOG_LEVEL_ERROR);
     ADD("none", "", 0);
     ADD("multi", "error|info", MILTER_LOG_LEVEL_ERROR | MILTER_LOG_LEVEL_INFO);
-    ADD("all", "all", MILTER_LOG_LEVEL_ALL);
-    ADD("multi - all", "error|all|info", MILTER_LOG_LEVEL_ALL);
+    ADD("all", "all", MILTER_LOG_LEVEL_ALL | MILTER_LOG_LEVEL_NONE);
+    ADD("multi - all", "error|all|info",
+        MILTER_LOG_LEVEL_ALL | MILTER_LOG_LEVEL_NONE);
 
 #undef ADD
-}
+};
+
 
 void
 test_flags_from_string (gconstpointer data)
@@ -465,7 +467,7 @@ data_flags_names (void)
     ADD("all", MILTER_LOG_LEVEL_ALL,
         "critical|error|warning|message|info|debug|statistics");
     ADD("unknown", MILTER_LOG_LEVEL_STATISTICS << 1,
-        "(unknown flags: MilterLogLevelFlags:0x80)");
+        "(unknown flags: MilterLogLevelFlags:0x100)");
 
 #undef ADD
 }

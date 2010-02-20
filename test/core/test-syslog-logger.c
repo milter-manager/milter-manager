@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -35,7 +35,7 @@ static gchar *actual;
 static gchar *syslog_file_name;
 static gsize first_log_file_size;
 
-static gchar *env_log_level;
+static MilterLogLevelFlags original_log_level;
 static GPrintFunc original_print_hander;
 
 static void
@@ -68,7 +68,7 @@ setup_syslog (void)
 void
 setup (void)
 {
-    env_log_level = g_strdup(g_getenv("MILTER_LOG_LEVEL"));
+    original_log_level = milter_get_log_level();
     original_print_hander = NULL;
 
     logger = milter_syslog_logger_new(MILTER_LOG_DOMAIN);
@@ -95,12 +95,7 @@ teardown (void)
     if (original_print_hander)
         g_set_print_handler(original_print_hander);
 
-    if (env_log_level) {
-        g_setenv("MILTER_LOG_LEVEL", env_log_level, TRUE);
-        g_free(env_log_level);
-    } else {
-        g_unsetenv("MILTER_LOG_LEVEL");
-    }
+    milter_set_log_level(original_log_level);
 }
 
 static void
@@ -128,7 +123,7 @@ void
 test_info (void)
 {
     original_print_hander = g_set_print_handler(print_handler);
-    g_setenv("MILTER_LOG_LEVEL", "info", TRUE);
+    milter_set_log_level(MILTER_LOG_LEVEL_INFO);
     milter_info("This is informative message.");
     g_set_print_handler(original_print_hander);
     original_print_hander = NULL;

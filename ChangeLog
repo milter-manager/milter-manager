@@ -1,5 +1,11 @@
 2010-02-20  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/core/milter-logger.[ch], milter/core/milter-syslog-logger.c,
+	test/core/test-logger.c, test/core/test-syslog-logger.c,
+	test/core/test-utils.c: don't parse MILTER_LOG_LEVEL environment
+	variable on every logging. MILTER_LOG_LEVEL environment variable
+	is just evaluated at the first time.
+
 	* data/munin/milter_manager_: show also SMTP value.
 
 	* tool/milter-manager-log-analyzer: add LAST consolidation
