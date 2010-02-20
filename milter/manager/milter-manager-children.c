@@ -636,16 +636,10 @@ cb_ready (MilterServerContext *context, gpointer user_data)
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(negotiate_data->children);
 
-    if (milter_need_log(MILTER_LOG_LEVEL_DEBUG | MILTER_LOG_LEVEL_STATISTICS)) {
-        guint tag;
-        const gchar *child_name;
-
-        tag = milter_agent_get_tag(MILTER_AGENT(context));
-        child_name = milter_server_context_get_name(context);
-        milter_debug("[%u] [children][milter][start] [%u] %s",
-                     priv->tag, tag, child_name);
-        milter_statistics("[milter][start](%u): %s", tag, child_name);
-    }
+    milter_debug("[%u] [children][milter][start] [%u] %s",
+                 priv->tag,
+                 milter_agent_get_tag(MILTER_AGENT(context)),
+                 milter_server_context_get_name(context));
 
     setup_server_context_signals(negotiate_data->children, context);
     milter_server_context_negotiate(context, negotiate_data->option);
