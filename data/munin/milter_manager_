@@ -84,7 +84,7 @@ EOM
     puts("#{key}.label #{labels[key] || key}")
     draw_type = i.zero? ? "AREA" : "STACK"
     puts("#{key}.draw #{draw_type}")
-    attributes do |name, value|
+    attributes.each do |name, value|
       if ["min", "max", "type"].include?(name)
         if /\A\"(.*)\"\z/ =~ value
           value = $1
