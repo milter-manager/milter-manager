@@ -365,6 +365,7 @@ class MilterManagerLogAnalyzer
       ranges.each do |range|
         rra << "RRA:MAX:0.5:#{range.steps}:#{rows}"
         rra << "RRA:AVERAGE:0.5:#{range.steps}:#{rows}"
+        rra << "RRA:LAST:0.5:#{range.steps}:#{rows}"
       end
 
       data_sources = sources.collect do |source|

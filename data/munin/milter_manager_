@@ -22,11 +22,14 @@ def rrdtool(command, *arguments)
 end
 
 def fetch(rrd)
-  result = rrdtool("fetch", "#{rrd} AVERAGE -e -6m")
+  result = rrdtool("fetch", "#{rrd} LAST -s -15min")
   return [[], []] if result.nil?
   lines = result.split(/\r?\n/)
   header = lines[0].split
-  time, *values = lines[2].split
+  lines[2..-1].reverse_each do |line|
+    time, *values = lines[2].split
+    break if values[0] != "nan"
+  end
   [header, values]
 end
 
