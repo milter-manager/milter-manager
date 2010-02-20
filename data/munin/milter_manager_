@@ -77,9 +77,11 @@ graph_info #{info}
 
 EOM
 
-  sets.each do |key, attributes|
+  sets.each_with_index do |(key, attributes), i|
     puts("#{key}.label #{labels[key] || key}")
-    attributes.each do |name, value|
+    draw_type = i.zero? ? "AREA" : "STACK"
+    puts("#{key}.draw #{draw_type}")
+    attributes do |name, value|
       if ["min", "max", "type"].include?(name)
         if /\A\"(.*)\"\z/ =~ value
           value = $1
