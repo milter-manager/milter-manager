@@ -26,6 +26,7 @@ def fetch(rrd)
   return [[], []] if result.nil?
   lines = result.split(/\r?\n/)
   header = lines[0].split
+  values = []
   lines[2..-1].reverse_each do |line|
     time, *values = lines[2].split
     break if values[0] != "nan"
