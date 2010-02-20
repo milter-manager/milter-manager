@@ -1,5 +1,7 @@
 2010-02-20  Kouhei Sutou  <kou@clear-code.com>
 
+	* data/munin/milter_manager_: show also SMTP value.
+
 	* tool/milter-manager-log-analyzer: add LAST consolidation
 	function.
 	* data/munin/milter_manager_: use LAST value.
