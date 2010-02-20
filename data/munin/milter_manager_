@@ -78,7 +78,6 @@ graph_order #{sets.collect {|key,| key}.join(' ')}
 graph_vlabel #{vlabel}
 graph_category #{category}
 graph_info #{info}
-graph_total total
 
 EOM
 
