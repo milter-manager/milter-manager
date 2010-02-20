@@ -633,16 +633,19 @@ cb_ready (MilterServerContext *context, gpointer user_data)
 {
     NegotiateData *negotiate_data = (NegotiateData*)user_data;
     MilterManagerChildrenPrivate *priv;
-    guint tag;
-    const gchar *child_name;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(negotiate_data->children);
 
-    tag = milter_agent_get_tag(MILTER_AGENT(context));
-    child_name = milter_server_context_get_name(context);
-    milter_debug("[%u] [children][milter][start] [%u] %s",
-                 priv->tag, tag, child_name);
-    milter_statistics("[milter][start](%u): %s", tag, child_name);
+    if (milter_need_log(MILTER_LOG_LEVEL_DEBUG | MILTER_LOG_LEVEL_STATISTICS)) {
+        guint tag;
+        const gchar *child_name;
+
+        tag = milter_agent_get_tag(MILTER_AGENT(context));
+        child_name = milter_server_context_get_name(context);
+        milter_debug("[%u] [children][milter][start] [%u] %s",
+                     priv->tag, tag, child_name);
+        milter_statistics("[milter][start](%u): %s", tag, child_name);
+    }
 
     setup_server_context_signals(negotiate_data->children, context);
     milter_server_context_negotiate(context, negotiate_data->option);
@@ -685,7 +688,7 @@ cb_negotiate_reply (MilterServerContext *context, MilterOption *option,
 
 static void
 report_result (MilterManagerChildren *children,
-              MilterServerContext *context)
+               MilterServerContext *context)
 {
     MilterManagerChildrenPrivate *priv;
     MilterStatus status;
@@ -695,6 +698,9 @@ report_result (MilterManagerChildren *children,
     gchar *state_name, *last_state_name;
     const gchar *child_name;
     guint tag;
+
+    if (!(milter_need_debug_log() || milter_need_statistics_log()))
+        return;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
@@ -1145,21 +1151,27 @@ cb_temporary_failure (MilterServerContext *context, gpointer user_data)
     MilterManagerChildrenPrivate *priv;
     MilterServerContextState state;
     MilterStatus status = MILTER_STATUS_TEMPORARY_FAILURE;
-    gchar *state_name;
+    gboolean evaluation_mode;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
     state = milter_server_context_get_state(context);
 
-    if (milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context))) {
+    evaluation_mode =
+        milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context));
+    if (evaluation_mode) {
         status = MILTER_STATUS_ACCEPT;
-        state_name = milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
-                                                     state);
-        milter_debug("[%u] [children][evaluation][temporary-failure][%s] [%u] %s",
-                     priv->tag,
-                     state_name,
-                     milter_agent_get_tag(MILTER_AGENT(context)),
-                     milter_server_context_get_name(context));
-        g_free(state_name);
+        if (milter_need_debug_log()) {
+            gchar *state_name;
+            state_name = milter_utils_get_enum_nick_name(
+                MILTER_TYPE_SERVER_CONTEXT_STATE, state);
+            milter_debug("[%u] [children][evaluation][temporary-failure][%s] "
+                         "[%u] %s",
+                         priv->tag,
+                         state_name,
+                         milter_agent_get_tag(MILTER_AGENT(context)),
+                         milter_server_context_get_name(context));
+            g_free(state_name);
+        }
     }
     compile_reply_status(children, state, status);
 
@@ -1186,15 +1198,18 @@ cb_temporary_failure (MilterServerContext *context, gpointer user_data)
         milter_manager_children_abort(children);
         break;
     default:
-        state_name = milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
-                                                     state);
-        milter_error("[%u] [children][error][invalid-state]"
-                     "[temporary-failure][%s] [%u] %s",
-                     priv->tag,
-                     state_name,
-                     milter_agent_get_tag(MILTER_AGENT(context)),
-                     milter_server_context_get_name(context));
-        g_free(state_name);
+        if (milter_need_error_log()) {
+            gchar *state_name;
+            state_name = milter_utils_get_enum_nick_name(
+                MILTER_TYPE_SERVER_CONTEXT_STATE, state);
+            milter_error("[%u] [children][error][invalid-state]"
+                         "[temporary-failure][%s] [%u] %s",
+                         priv->tag,
+                         state_name,
+                         milter_agent_get_tag(MILTER_AGENT(context)),
+                         milter_server_context_get_name(context));
+            g_free(state_name);
+        }
         milter_server_context_quit(context);
         break;
     }
@@ -1207,21 +1222,26 @@ cb_reject (MilterServerContext *context, gpointer user_data)
     MilterManagerChildrenPrivate *priv;
     MilterServerContextState state;
     MilterStatus status = MILTER_STATUS_REJECT;
-    gchar *state_name;
+    gboolean evaluation_mode;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
     state = milter_server_context_get_state(context);
 
-    if (milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context))) {
+    evaluation_mode =
+        milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context));
+    if (evaluation_mode) {
         status = MILTER_STATUS_ACCEPT;
-        state_name = milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
-                                                     state);
-        milter_debug("[%u] [children][evaluation][reject][%s] [%u] %s",
-                     priv->tag,
-                     state_name,
-                     milter_agent_get_tag(MILTER_AGENT(context)),
-                     milter_server_context_get_name(context));
-        g_free(state_name);
+        if (milter_need_debug_log()) {
+            gchar *state_name;
+            state_name = milter_utils_get_enum_nick_name(
+                MILTER_TYPE_SERVER_CONTEXT_STATE, state);
+            milter_debug("[%u] [children][evaluation][reject][%s] [%u] %s",
+                         priv->tag,
+                         state_name,
+                         milter_agent_get_tag(MILTER_AGENT(context)),
+                         milter_server_context_get_name(context));
+            g_free(state_name);
+        }
     }
     compile_reply_status(children, state, status);
 
@@ -1248,14 +1268,18 @@ cb_reject (MilterServerContext *context, gpointer user_data)
         milter_manager_children_abort(children);
         break;
     default:
-        state_name = milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
-                                                     state);
-        milter_error("[%u] [children][error][invalid-state][reject][%s] [%u] %s",
-                     priv->tag,
-                     state_name,
-                     milter_agent_get_tag(MILTER_AGENT(context)),
-                     milter_server_context_get_name(context));
-        g_free(state_name);
+        if (milter_need_debug_log()) {
+            gchar *state_name;
+            state_name = milter_utils_get_enum_nick_name(
+                MILTER_TYPE_SERVER_CONTEXT_STATE, state);
+            milter_error("[%u] [children][error][invalid-state][reject][%s] "
+                         "[%u] %s",
+                         priv->tag,
+                         state_name,
+                         milter_agent_get_tag(MILTER_AGENT(context)),
+                         milter_server_context_get_name(context));
+            g_free(state_name);
+        }
         milter_server_context_quit(context);
         break;
     }
@@ -1341,21 +1365,27 @@ cb_discard (MilterServerContext *context, gpointer user_data)
     MilterManagerChildrenPrivate *priv;
     MilterServerContextState state;
     MilterStatus status = MILTER_STATUS_DISCARD;
-    gchar *state_name;
+    gboolean evaluation_mode;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
     state = milter_server_context_get_state(context);
 
-    if (milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context))) {
+    evaluation_mode =
+        milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context));
+    if (evaluation_mode) {
         status = MILTER_STATUS_ACCEPT;
-        state_name = milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
-                                                     state);
-        milter_debug("[%u] [children][evaluation][discard][%s] [%u] %s",
-                     priv->tag,
-                     state_name,
-                     milter_agent_get_tag(MILTER_AGENT(context)),
-                     milter_server_context_get_name(context));
-        g_free(state_name);
+        if (milter_need_debug_log()) {
+            gchar *state_name;
+            state_name =
+                milter_utils_get_enum_nick_name(
+                    MILTER_TYPE_SERVER_CONTEXT_STATE, state);
+            milter_debug("[%u] [children][evaluation][discard][%s] [%u] %s",
+                         priv->tag,
+                         state_name,
+                         milter_agent_get_tag(MILTER_AGENT(context)),
+                         milter_server_context_get_name(context));
+            g_free(state_name);
+        }
     }
     compile_reply_status(children, state, status);
 
@@ -1377,14 +1407,18 @@ cb_discard (MilterServerContext *context, gpointer user_data)
         milter_manager_children_abort(children);
         break;
     default:
-        state_name = milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
-                                                     state);
-        milter_error("[%u] [children][error][invalid-state][discard][%s] [%u] %s",
-                     priv->tag,
-                     state_name,
-                     milter_agent_get_tag(MILTER_AGENT(context)),
-                     milter_server_context_get_name(context));
-        g_free(state_name);
+        if (milter_need_error_log()) {
+            gchar *state_name;
+            state_name = milter_utils_get_enum_nick_name(
+                MILTER_TYPE_SERVER_CONTEXT_STATE, state);
+            milter_error("[%u] [children][error][invalid-state][discard][%s] "
+                         "[%u] %s",
+                         priv->tag,
+                         state_name,
+                         milter_agent_get_tag(MILTER_AGENT(context)),
+                         milter_server_context_get_name(context));
+            g_free(state_name);
+        }
         milter_server_context_quit(context);
         break;
     }
@@ -1502,11 +1536,14 @@ is_evaluation_mode (MilterManagerChildren *children,
     if (!milter_manager_child_is_evaluation_mode(MILTER_MANAGER_CHILD(context)))
         return FALSE;
 
+    if (!milter_need_debug_log())
+        return TRUE;
+
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     if (format) {
         gchar *additional_info_content;
-        
+
         additional_info = g_string_new(" ");
         va_start(args, format);
         additional_info_content = g_strdup_vprintf(format, args);
@@ -1762,19 +1799,22 @@ static void
 cb_progress (MilterServerContext *context, gpointer user_data)
 {
     MilterManagerChildren *children = user_data;
-    MilterManagerChildrenPrivate *priv;
-    guint tag;
-    const gchar *child_name;
 
     if (!is_end_of_message_state(children, context, "progress", NULL))
         return;
 
-    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
-    tag = milter_agent_get_tag(MILTER_AGENT(context));
-    child_name = milter_server_context_get_name(context);
+    if (milter_need_debug_log()) {
+        MilterManagerChildrenPrivate *priv;
+        guint tag;
+        const gchar *child_name;
 
-    milter_debug("[%u] [children][progress] [%u] %s",
-                 priv->tag, tag, child_name);
+        priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+        tag = milter_agent_get_tag(MILTER_AGENT(context));
+        child_name = milter_server_context_get_name(context);
+
+        milter_debug("[%u] [children][progress] [%u] %s",
+                     priv->tag, tag, child_name);
+    }
     g_signal_emit_by_name(user_data, "progress");
 }
 
@@ -2023,7 +2063,6 @@ cb_finished (MilterAgent *agent, gpointer user_data)
     MilterManagerChildren *children;
     MilterManagerChildrenPrivate *priv;
     MilterServerContext *context = MILTER_SERVER_CONTEXT(agent);
-    gchar *state_name;
 
     children = MILTER_MANAGER_CHILDREN(user_data);
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
@@ -2042,16 +2081,20 @@ cb_finished (MilterAgent *agent, gpointer user_data)
 
     expire_child(children, context);
 
-    state_name =
-        milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
-                                        /* FIXME: use server's status */
-                                        priv->processing_state);
-    milter_debug("[%u] [children][end][%s] [%u] %s",
-                 priv->tag,
-                 state_name,
-                 milter_agent_get_tag(MILTER_AGENT(context)),
-                 milter_server_context_get_name(context));
-    g_free(state_name);
+    if (milter_need_debug_log()) {
+        gchar *state_name;
+
+        state_name =
+            milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                                            /* FIXME: use server's status */
+                                            priv->processing_state);
+        milter_debug("[%u] [children][end][%s] [%u] %s",
+                     priv->tag,
+                     state_name,
+                     milter_agent_get_tag(MILTER_AGENT(context)),
+                     milter_server_context_get_name(context));
+        g_free(state_name);
+    }
 
     switch (priv->processing_state) {
     case MILTER_SERVER_CONTEXT_STATE_DATA:
@@ -2874,7 +2917,8 @@ milter_manager_children_helo (MilterManagerChildren *children,
             success = TRUE;
     }
     g_list_free(targets);
-    milter_debug("[%u] [children][helo][sent] %d", priv->tag, n_queued_milters);
+    milter_debug("[%u] [children][helo][sent] %d",
+                 priv->tag, n_queued_milters);
 
     return success;
 }

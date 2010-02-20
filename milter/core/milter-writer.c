@@ -250,7 +250,7 @@ milter_writer_write (MilterWriter *writer, const gchar *chunk, gsize chunk_size,
     }
 
     if (priv->channel_watch_id == 0) {
-        const gchar message[] = "can't write to not started or shutdown channel";
+        const gchar *message = "can't write to not started or shutdown channel";
         g_set_error(error,
                     MILTER_WRITER_ERROR, MILTER_WRITER_ERROR_NOT_READY,
                     "write: %s", message);
@@ -269,7 +269,7 @@ milter_writer_flush (MilterWriter *writer, GError **error)
     priv = MILTER_WRITER_GET_PRIVATE(writer);
 
     if (!priv->io_channel) {
-        const gchar message[] = "no write channel";
+        const gchar *message = "no write channel";
         g_set_error(error,
                     MILTER_WRITER_ERROR, MILTER_WRITER_ERROR_NO_CHANNEL,
                     "flush: %s", message);
@@ -278,7 +278,7 @@ milter_writer_flush (MilterWriter *writer, GError **error)
     }
 
     if (priv->channel_watch_id == 0) {
-        const gchar message[] = "can't flush not started or shutdown channel";
+        const gchar *message = "can't flush not started or shutdown channel";
         g_set_error(error,
                     MILTER_WRITER_ERROR, MILTER_WRITER_ERROR_NOT_READY,
                     "flush: %s", message);

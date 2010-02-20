@@ -1,5 +1,7 @@
 2010-02-20  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/: avoid needless memory allocation for logging.
+
 	* milter/core/milter-logger.[ch],
 	test/core/test-logger.c,
 	test/core/test-syslog-logger.c,

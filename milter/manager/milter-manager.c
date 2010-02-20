@@ -237,15 +237,19 @@ cb_client_negotiate (MilterClientContext *context, MilterOption *option,
                      MilterMacrosRequests *macros_requests, gpointer user_data)
 {
     MilterManagerLeader *leader = user_data;
-    gchar *inspected_option, *inspected_macros_requests;
 
-    inspected_option = milter_option_inspect(option);
-    inspected_macros_requests = milter_utils_inspect_object(G_OBJECT(macros_requests));
-    milter_debug("[%u] [manager][receive][negotiate] <%s>:<%s>",
-                 milter_agent_get_tag(MILTER_AGENT(context)),
-                 inspected_option, inspected_macros_requests);
-    g_free(inspected_option);
-    g_free(inspected_macros_requests);
+    if (milter_need_debug_log()) {
+        gchar *inspected_option, *inspected_macros_requests;
+
+        inspected_option = milter_option_inspect(option);
+        inspected_macros_requests =
+            milter_utils_inspect_object(G_OBJECT(macros_requests));
+        milter_debug("[%u] [manager][receive][negotiate] <%s>:<%s>",
+                     milter_agent_get_tag(MILTER_AGENT(context)),
+                     inspected_option, inspected_macros_requests);
+        g_free(inspected_option);
+        g_free(inspected_macros_requests);
+    }
 
     return milter_manager_leader_negotiate(leader, option, macros_requests);
 }
@@ -256,13 +260,16 @@ cb_client_connect (MilterClientContext *context, const gchar *host_name,
                    gpointer user_data)
 {
     MilterManagerLeader *leader = user_data;
-    gchar *spec;
 
-    spec = milter_connection_address_to_spec(address);
-    milter_debug("[%u] [manager][receive][connect] <%s>:<%s>",
-                 milter_agent_get_tag(MILTER_AGENT(context)),
-                 host_name, spec);
-    g_free(spec);
+    if (milter_need_debug_log()) {
+        gchar *spec;
+
+        spec = milter_connection_address_to_spec(address);
+        milter_debug("[%u] [manager][receive][connect] <%s>:<%s>",
+                     milter_agent_get_tag(MILTER_AGENT(context)),
+                     host_name, spec);
+        g_free(spec);
+    }
 
     return milter_manager_leader_connect(leader, host_name,
                                          address, address_length);
@@ -389,15 +396,18 @@ cb_client_abort (MilterClientContext *context, MilterClientContextState state,
                  gpointer user_data)
 {
     MilterManagerLeader *leader = user_data;
-    gchar *state_name;
 
-    state_name =
-        milter_utils_get_enum_nick_name(MILTER_TYPE_CLIENT_CONTEXT_STATE,
-                                        state);
-    milter_debug("[%u] [manager][receive][abort][%s]",
-                 milter_agent_get_tag(MILTER_AGENT(context)),
-                 state_name);
-    g_free(state_name);
+    if (milter_need_debug_log()) {
+        gchar *state_name;
+
+        state_name =
+            milter_utils_get_enum_nick_name(MILTER_TYPE_CLIENT_CONTEXT_STATE,
+                                            state);
+        milter_debug("[%u] [manager][receive][abort][%s]",
+                     milter_agent_get_tag(MILTER_AGENT(context)),
+                     state_name);
+        g_free(state_name);
+    }
 
     return milter_manager_leader_abort(leader);
 }
@@ -407,13 +417,16 @@ cb_client_define_macro (MilterClientContext *context, MilterCommand command,
                         GHashTable *macros, gpointer user_data)
 {
     MilterManagerLeader *leader = user_data;
-    gchar *inspected_macros;
 
-    inspected_macros = milter_utils_inspect_hash_string_string(macros);
-    milter_debug("[%u] [manager][receive][define-macro] <%s>",
-                 milter_agent_get_tag(MILTER_AGENT(context)),
-                 inspected_macros);
-    g_free(inspected_macros);
+    if (milter_need_debug_log()) {
+        gchar *inspected_macros;
+
+        inspected_macros = milter_utils_inspect_hash_string_string(macros);
+        milter_debug("[%u] [manager][receive][define-macro] <%s>",
+                     milter_agent_get_tag(MILTER_AGENT(context)),
+                     inspected_macros);
+        g_free(inspected_macros);
+    }
 
     milter_manager_leader_define_macro(leader, command, macros);
 }
@@ -433,41 +446,51 @@ static void
 cb_client_finished (MilterClientContext *context, gpointer user_data)
 {
     MilterManagerLeader *leader = user_data;
-    MilterAgent *agent;
-    gdouble elapsed;
-    MilterClientContextState state, last_state;
-    MilterStatus status;
-    gchar *state_name, *last_state_name;
-    gchar *status_name, *statistics_status_name;
-    guint tag;
 
-    agent = MILTER_AGENT(context);
-    elapsed = milter_agent_get_elapsed(agent);
+    if (milter_need_log(MILTER_LOG_LEVEL_DEBUG |
+                        MILTER_LOG_LEVEL_STATISTICS)) {
+        MilterAgent *agent;
+        guint tag;
+        gdouble elapsed;
+        MilterClientContextState last_state;
+        gchar *last_state_name;
+        MilterStatus status;
+        gchar *status_name, *statistics_status_name;
 
-    state = milter_client_context_get_state(context);
-    state_name =
-        milter_utils_get_enum_nick_name(MILTER_TYPE_CLIENT_CONTEXT_STATE,
-                                        state);
-    last_state = milter_client_context_get_last_state(context);
-    last_state_name =
-        milter_utils_get_enum_nick_name(MILTER_TYPE_CLIENT_CONTEXT_STATE,
-                                        last_state);
-    status = milter_client_context_get_status(context);
-    status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS,
-                                                  status);
-    tag = milter_agent_get_tag(agent);
-    milter_debug("[%u] [manager][finish][%s][%s][%g]",
-                 tag, state_name, status_name, elapsed);
-    if (MILTER_STATUS_IS_PASS(status)) {
-        statistics_status_name = "pass";
-    } else {
-        statistics_status_name = status_name;
+        agent = MILTER_AGENT(context);
+        tag = milter_agent_get_tag(agent);
+        elapsed = milter_agent_get_elapsed(agent);
+
+        status = milter_client_context_get_status(context);
+        status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS,
+                                                      status);
+
+        if (milter_need_debug_log()) {
+            MilterClientContextState state;
+            gchar *state_name;
+            state = milter_client_context_get_state(context);
+            state_name = milter_utils_get_enum_nick_name(
+                MILTER_TYPE_CLIENT_CONTEXT_STATE, state);
+            milter_debug("[%u] [manager][finish][%s][%s][%g]",
+                         tag, state_name, status_name, elapsed);
+            g_free(state_name);
+        }
+
+        last_state = milter_client_context_get_last_state(context);
+        last_state_name =
+            milter_utils_get_enum_nick_name(MILTER_TYPE_CLIENT_CONTEXT_STATE,
+                                            last_state);
+        if (MILTER_STATUS_IS_PASS(status)) {
+            statistics_status_name = "pass";
+        } else {
+            statistics_status_name = status_name;
+        }
+        milter_statistics("[session][end][%s][%s][%g](%u)",
+                          last_state_name, statistics_status_name,
+                          elapsed, tag);
+        g_free(status_name);
+        g_free(last_state_name);
     }
-    milter_statistics("[session][end][%s][%s][%g](%u)",
-                      last_state_name, statistics_status_name, elapsed, tag);
-    g_free(status_name);
-    g_free(state_name);
-    g_free(last_state_name);
 
     milter_manager_leader_quit(leader);
 }
@@ -606,13 +629,16 @@ setup_context_signals (MilterClientContext *context,
 static void
 connection_established (MilterClient *client, MilterClientContext *context)
 {
-    guint tag;
-
     setup_context_signals(context, MILTER_MANAGER(client));
 
-    tag = milter_agent_get_tag(MILTER_AGENT(context));
-    milter_debug("[%u] [manager][session][start]", tag),
-    milter_statistics("[session][start](%u)", tag);
+    if (milter_need_log(MILTER_LOG_LEVEL_DEBUG |
+                        MILTER_LOG_LEVEL_STATISTICS)) {
+        guint tag;
+
+        tag = milter_agent_get_tag(MILTER_AGENT(context));
+        milter_debug("[%u] [manager][session][start]", tag);
+        milter_statistics("[session][start](%u)", tag); /* TOOD: remove it */
+    }
 }
 
 static gchar *

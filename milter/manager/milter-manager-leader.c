@@ -174,27 +174,36 @@ connection_check (gpointer data)
 {
     MilterManagerLeader *leader = data;
     MilterManagerLeaderPrivate *priv;
-    MilterAgent *agent;
     gboolean connected = TRUE;
-    guint tag;
-    gdouble elapsed;
-    gchar *state_nick;
+    guint tag = 0;
+    gdouble elapsed = 0.0;
+    gchar *state_nick = NULL;
 
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
-    agent = MILTER_AGENT(priv->client_context);
-    tag = milter_agent_get_tag(agent);
-    state_nick =
-        milter_utils_get_enum_nick_name(MILTER_TYPE_MANAGER_LEADER_STATE,
-                                        priv->state);
+
+    if (milter_need_log(MILTER_LOG_LEVEL_DEBUG |
+                        MILTER_LOG_LEVEL_STATISTICS)) {
+        MilterAgent *agent;
+        agent = MILTER_AGENT(priv->client_context);
+        tag = milter_agent_get_tag(agent);
+        elapsed = milter_agent_get_elapsed(agent);
+    }
+
+    if (milter_need_debug_log()) {
+        state_nick =
+            milter_utils_get_enum_nick_name(MILTER_TYPE_MANAGER_LEADER_STATE,
+                                            priv->state);
+    }
 
     if (!priv->requesting_to_children) {
-        milter_debug("[%u] [leader][connection-check][%s][skip] not milter turn",
+        milter_debug("[%u] [leader][connection-check][%s][skip] "
+                     "not milter turn",
                      tag, state_nick);
-        g_free(state_nick);
+        if (state_nick)
+            g_free(state_nick);
         return TRUE;
     }
 
-    elapsed = milter_agent_get_elapsed(agent);
     milter_debug("[%u] [leader][connection-check][%s][start][%g]",
                  tag, state_nick, elapsed);
     if (priv->processing) {
@@ -209,23 +218,30 @@ connection_check (gpointer data)
 
     if (!connected) {
         MilterStatus fallback_status;
-        gchar *fallback_status_nick;
 
         milter_statistics("[session][disconnected][%g](%u)", elapsed, tag);
 
         fallback_status =
-            milter_manager_configuration_get_fallback_status(priv->configuration);
-        fallback_status_nick =
-            milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS, fallback_status);
+            milter_manager_configuration_get_fallback_status(
+                priv->configuration);
+        if (milter_need_debug_log()) {
+            gchar *fallback_status_nick;
+
+            fallback_status_nick =
+                milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS,
+                                                fallback_status);
+            milter_debug("[%u] [leader][connection-check][%s][reply][%s]",
+                         tag, state_nick, fallback_status_nick);
+            g_free(fallback_status_nick);
+        }
         priv->periodical_connection_checker_id = 0;
         reply(leader, fallback_status);
-        milter_debug("[%u] [leader][connection-check][%s][reply][%s]",
-                     tag, state_nick, fallback_status_nick);
-        g_free(fallback_status_nick);
         if (priv->children)
             milter_manager_children_abort(priv->children);
     }
-    g_free(state_nick);
+
+    if (state_nick)
+        g_free(state_nick);
 
     return connected;
 }
@@ -791,6 +807,9 @@ cb_connection_failure (MilterReplySignals *_reply, gpointer user_data)
     MilterManagerLeader *leader = user_data;
     MilterManagerLeaderPrivate *priv;
 
+    if (!milter_need_debug_log())
+        return;
+
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
     milter_debug("[%u] [leader][unsupported][connection-failure]",
                  milter_agent_get_tag(MILTER_AGENT(priv->client_context)));
@@ -801,6 +820,9 @@ cb_shutdown (MilterReplySignals *_reply, gpointer user_data)
 {
     MilterManagerLeader *leader = user_data;
     MilterManagerLeaderPrivate *priv;
+
+    if (!milter_need_debug_log())
+        return;
 
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
     milter_debug("[%u] [leader][unsupported][shutdown]",
@@ -819,17 +841,20 @@ cb_abort (MilterReplySignals *_reply, gpointer user_data)
 {
     MilterManagerLeader *leader = user_data;
     MilterManagerLeaderPrivate *priv;
-    gchar *state_name;
 
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
 
-    state_name =
-        milter_utils_get_enum_nick_name(MILTER_TYPE_MANAGER_LEADER_STATE,
-                                        priv->state);
-    milter_debug("[%u] [leader][abort][%s]",
-                 milter_agent_get_tag(MILTER_AGENT(priv->client_context)),
-                 state_name);
-    g_free(state_name);
+    if (milter_need_debug_log()) {
+        gchar *state_name;
+
+        state_name =
+            milter_utils_get_enum_nick_name(MILTER_TYPE_MANAGER_LEADER_STATE,
+                                            priv->state);
+        milter_debug("[%u] [leader][abort][%s]",
+                     milter_agent_get_tag(MILTER_AGENT(priv->client_context)),
+                     state_name);
+        g_free(state_name);
+    }
     milter_agent_shutdown(MILTER_AGENT(priv->client_context));
     milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(leader));
 }

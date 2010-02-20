@@ -495,10 +495,13 @@ finish_processing (MilterClientProcessData *data)
     GList *processing_data, *process_data;
     guint n_connections;
     GString *rest_process;
-    guint tag;
+    guint tag = 0;
 
-    tag = milter_agent_get_tag(MILTER_AGENT(data->context));
-    milter_debug("[%u] [client][finish]", tag);
+    if (milter_need_debug_log()) {
+        tag = milter_agent_get_tag(MILTER_AGENT(data->context));
+        milter_debug("[%u] [client][finish]", tag);
+    }
+
     data->priv->processing_data =
         g_list_remove(data->priv->processing_data, data);
     data->priv->n_connections--;
@@ -516,6 +519,9 @@ finish_processing (MilterClientProcessData *data)
     }
 
     process_data_free(data);
+
+    if (!milter_need_debug_log())
+        return;
 
     rest_process = g_string_new("[");
     for (process_data = processing_data;
@@ -633,7 +639,6 @@ accept_connection (MilterClient *client, gint server_fd,
 {
     MilterClientPrivate *priv;
     gint client_fd;
-    gchar *spec;
     guint n_suspend, suspend_time, max_connections;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
@@ -683,9 +688,12 @@ accept_connection (MilterClient *client, gint server_fd,
     }
 
     priv->n_connections++;
-    spec = milter_connection_address_to_spec(&(address->address.base));
-    milter_debug("[client][accept] %d:%s", client_fd, spec);
-    g_free(spec);
+    if (milter_need_debug_log()) {
+        gchar *spec;
+        spec = milter_connection_address_to_spec(&(address->address.base));
+        milter_debug("[client][accept] %d:%s", client_fd, spec);
+        g_free(spec);
+    }
 
     *client_channel = g_io_channel_unix_new(client_fd);
     g_io_channel_set_encoding(*client_channel, NULL, NULL);

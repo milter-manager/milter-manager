@@ -265,7 +265,6 @@ accept_connection (gint controller_fd, MilterManagerController *controller)
     gint agent_fd;
     MilterGenericSocketAddress address;
     socklen_t address_size;
-    gchar *spec;
     GIOChannel *agent_channel;
 
     address_size = sizeof(address);
@@ -277,9 +276,12 @@ accept_connection (gint controller_fd, MilterManagerController *controller)
         return TRUE;
     }
 
-    spec = milter_connection_address_to_spec(&(address.address.base));
-    milter_debug("[controller][accept] %d: %s", agent_fd, spec);
-    g_free(spec);
+    if (milter_need_debug_log()) {
+        gchar *spec;
+        spec = milter_connection_address_to_spec(&(address.address.base));
+        milter_debug("[controller][accept] %d: %s", agent_fd, spec);
+        g_free(spec);
+    }
 
     agent_channel = g_io_channel_unix_new(agent_fd);
     g_io_channel_set_encoding(agent_channel, NULL, NULL);
