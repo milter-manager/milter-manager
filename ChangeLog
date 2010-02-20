@@ -1,5 +1,8 @@
 2010-02-20  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/lib/milter/manager/netstat-connection-checker.rb
+	(Milter::NetstatConnectionChecker#netstat): fix a typo.
+
 	* milter/: avoid needless memory allocation for logging.
 
 	* milter/core/milter-logger.[ch],

@@ -48,7 +48,8 @@ module Milter::Manager
       if status.success?
         result
       else
-        Milter::Logger.error("failed to run netstat: <#{command}>: <#{result}>")
+        Milter::Logger.error("failed to run netstat: " +
+                             "<#{@netstat_command}>: <#{result}>")
         ""
       end
     end
