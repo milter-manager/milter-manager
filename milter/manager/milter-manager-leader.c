@@ -463,51 +463,51 @@ next_state (MilterManagerLeader *leader,
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
 
     switch (state) {
-      case MILTER_MANAGER_LEADER_STATE_NEGOTIATE:
+    case MILTER_MANAGER_LEADER_STATE_NEGOTIATE:
         next_state = MILTER_MANAGER_LEADER_STATE_NEGOTIATE_REPLIED;
         break;
-      case MILTER_MANAGER_LEADER_STATE_CONNECT:
+    case MILTER_MANAGER_LEADER_STATE_CONNECT:
         next_state = MILTER_MANAGER_LEADER_STATE_CONNECT_REPLIED;
         break;
-      case MILTER_MANAGER_LEADER_STATE_HELO:
+    case MILTER_MANAGER_LEADER_STATE_HELO:
         next_state = MILTER_MANAGER_LEADER_STATE_HELO_REPLIED;
         break;
-      case MILTER_MANAGER_LEADER_STATE_ENVELOPE_FROM:
+    case MILTER_MANAGER_LEADER_STATE_ENVELOPE_FROM:
         next_state = MILTER_MANAGER_LEADER_STATE_ENVELOPE_FROM_REPLIED;
         break;
-      case MILTER_MANAGER_LEADER_STATE_ENVELOPE_RECIPIENT:
+    case MILTER_MANAGER_LEADER_STATE_ENVELOPE_RECIPIENT:
         next_state = MILTER_MANAGER_LEADER_STATE_ENVELOPE_RECIPIENT_REPLIED;
         break;
-      case MILTER_MANAGER_LEADER_STATE_DATA:
+    case MILTER_MANAGER_LEADER_STATE_DATA:
         next_state = MILTER_MANAGER_LEADER_STATE_DATA_REPLIED;
         break;
-      case MILTER_MANAGER_LEADER_STATE_UNKNOWN:
+    case MILTER_MANAGER_LEADER_STATE_UNKNOWN:
         next_state = MILTER_MANAGER_LEADER_STATE_UNKNOWN_REPLIED;
         break;
-      case MILTER_MANAGER_LEADER_STATE_HEADER:
+    case MILTER_MANAGER_LEADER_STATE_HEADER:
         next_state = MILTER_MANAGER_LEADER_STATE_HEADER_REPLIED;
         break;
-      case MILTER_MANAGER_LEADER_STATE_END_OF_HEADER:
+    case MILTER_MANAGER_LEADER_STATE_END_OF_HEADER:
         next_state = MILTER_MANAGER_LEADER_STATE_END_OF_HEADER_REPLIED;
         break;
-      case MILTER_MANAGER_LEADER_STATE_BODY:
-      case MILTER_MANAGER_LEADER_STATE_BODY_REPLIED:
+    case MILTER_MANAGER_LEADER_STATE_BODY:
+    case MILTER_MANAGER_LEADER_STATE_BODY_REPLIED:
         if (!priv->sent_end_of_message)
             next_state = MILTER_MANAGER_LEADER_STATE_BODY_REPLIED;
         else
             next_state = MILTER_MANAGER_LEADER_STATE_END_OF_MESSAGE;
         break;
-      case MILTER_MANAGER_LEADER_STATE_END_OF_MESSAGE:
+    case MILTER_MANAGER_LEADER_STATE_END_OF_MESSAGE:
         next_state = MILTER_MANAGER_LEADER_STATE_END_OF_MESSAGE_REPLIED;
         break;
-      case MILTER_MANAGER_LEADER_STATE_QUIT:
+    case MILTER_MANAGER_LEADER_STATE_QUIT:
         next_state = MILTER_MANAGER_LEADER_STATE_QUIT_REPLIED;
         break;
-      case MILTER_MANAGER_LEADER_STATE_ABORT:
+    case MILTER_MANAGER_LEADER_STATE_ABORT:
         next_state = MILTER_MANAGER_LEADER_STATE_ABORT_REPLIED;
         break;
-      default:
-        {
+    default:
+        if (milter_need_error_log()) {
             gchar *inspected_state;
             guint tag;
 
@@ -609,7 +609,9 @@ cb_reply_code (MilterReplySignals *_reply,
                                     code, extended_code, message,
                                     &error);
     if (error) {
-        milter_error("[leader][error][reply-code] %s", error->message);
+        milter_error("[%u] [leader][error][reply-code] %s",
+                     milter_agent_get_tag(MILTER_AGENT(priv->client_context)),
+                     error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(leader),
                                     error);
         g_error_free(error);
@@ -663,14 +665,16 @@ cb_add_header (MilterReplySignals *_reply,
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
     milter_client_context_add_header(priv->client_context, name, value, &error);
     if (error) {
-        milter_error("[leader][error][add-header] %s", error->message);
+        milter_error("[%u] [leader][error][add-header] %s",
+                     milter_agent_get_tag(MILTER_AGENT(priv->client_context)),
+                     error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(leader), error);
         g_error_free(error);
     } else {
-        guint tag;
-        tag = milter_agent_get_tag(MILTER_AGENT(priv->client_context));
-        milter_statistics("[session][header][add](%u): <%s>=<%s>",
-                          tag, name, value);
+        milter_statistics(
+            "[session][header][add](%u): <%s>=<%s>",
+            milter_agent_get_tag(MILTER_AGENT(priv->client_context)),
+            name, value);
     }
 }
 
@@ -687,14 +691,16 @@ cb_insert_header (MilterReplySignals *_reply,
     milter_client_context_insert_header(priv->client_context,
                                         index, name, value, &error);
     if (error) {
-        milter_error("[leader][error][insert-header] %s", error->message);
+        milter_error("[%u] [leader][error][insert-header] %s",
+                     milter_agent_get_tag(MILTER_AGENT(priv->client_context)),
+                     error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(leader), error);
         g_error_free(error);
     } else {
-        guint tag;
-        tag = milter_agent_get_tag(MILTER_AGENT(priv->client_context));
-        milter_statistics("[session][header][add](%u): <%s>=<%s>",
-                          tag, name, value);
+        milter_statistics(
+            "[session][header][add](%u): <%s>=<%s>",
+            milter_agent_get_tag(MILTER_AGENT(priv->client_context)),
+            name, value);
     }
 }
 
@@ -711,10 +717,10 @@ cb_change_header (MilterReplySignals *_reply,
                                         name, index, value);
 
     if (value) {
-        guint tag;
-        tag = milter_agent_get_tag(MILTER_AGENT(priv->client_context));
-        milter_statistics("[session][header][add](%u): <%s>=<%s>",
-                          tag, name, value);
+        milter_statistics(
+            "[session][header][add](%u): <%s>=<%s>",
+            milter_agent_get_tag(MILTER_AGENT(priv->client_context)),
+            name, value);
     }
 }
 

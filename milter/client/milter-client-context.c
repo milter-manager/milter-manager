@@ -2306,7 +2306,8 @@ milter_client_context_quarantine (MilterClientContext *context,
                  reason);
 
     /* quarantine allows only on end-of-message. */
-    milter_statistics("[reply][end-of-message][quarantine]");
+    milter_statistics("[reply][end-of-message][quarantine](%u)",
+                      milter_agent_get_tag(MILTER_AGENT(context)));
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
     if (priv->quarantine_reason)

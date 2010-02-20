@@ -699,7 +699,8 @@ report_result (MilterManagerChildren *children,
     const gchar *child_name;
     guint tag;
 
-    if (!(milter_need_debug_log() || milter_need_statistics_log()))
+    if (!(milter_need_log(MILTER_LOG_LEVEL_DEBUG |
+                          MILTER_LOG_LEVEL_STATISTICS)))
         return;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
@@ -1268,7 +1269,7 @@ cb_reject (MilterServerContext *context, gpointer user_data)
         milter_manager_children_abort(children);
         break;
     default:
-        if (milter_need_debug_log()) {
+        if (milter_need_error_log()) {
             gchar *state_name;
             state_name = milter_utils_get_enum_nick_name(
                 MILTER_TYPE_SERVER_CONTEXT_STATE, state);
@@ -1315,7 +1316,6 @@ cb_accept (MilterServerContext *context, gpointer user_data)
     MilterManagerChildren *children = user_data;
     MilterManagerChildrenPrivate *priv;
     MilterServerContextState state;
-    gchar *state_name;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
     state = milter_server_context_get_state(context);
@@ -1344,15 +1344,17 @@ cb_accept (MilterServerContext *context, gpointer user_data)
         send_first_command_to_next_child(children, context);
         break;
     default:
-        state_name =
-            milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
-                                            state);
-        milter_error("[%u] [children][error][invalid-state][accept][%s] [%u] %s",
-                     priv->tag,
-                     state_name,
-                     milter_agent_get_tag(MILTER_AGENT(context)),
-                     milter_server_context_get_name(context));
-        g_free(state_name);
+        if (milter_need_error_log()) {
+            gchar *state_name;
+            state_name = milter_utils_get_enum_nick_name(
+                MILTER_TYPE_SERVER_CONTEXT_STATE, state);
+            milter_error("[%u] [children][error][invalid-state][accept][%s] [%u] %s",
+                         priv->tag,
+                         state_name,
+                         milter_agent_get_tag(MILTER_AGENT(context)),
+                         milter_server_context_get_name(context));
+            g_free(state_name);
+        }
         milter_server_context_quit(context);
         break;
     }
@@ -1482,9 +1484,7 @@ is_end_of_message_state (MilterManagerChildren *children,
 {
     MilterManagerChildrenPrivate *priv;
     MilterServerContextState state;
-    gchar *state_name;
     va_list args;
-    GString *additional_info = NULL;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
     state = milter_server_context_get_state(context);
@@ -1492,31 +1492,33 @@ is_end_of_message_state (MilterManagerChildren *children,
     if (state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
         return TRUE;
 
-    if (format) {
-        gchar *additional_info_content;
-        
-        additional_info = g_string_new(" ");
-        va_start(args, format);
-        additional_info_content = g_strdup_vprintf(format, args);
-        va_end(args);
-        g_string_append(additional_info, additional_info_content);
-        g_free(additional_info_content);
-    }
+    if (milter_need_error_log()) {
+        gchar *state_name;
+        gchar *additional_info = NULL;
 
-    state_name =
-        milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
-                                        state);
-    milter_error("[%u] [children][error][invalid-state][%s][%s]%s "
-                 "[%u] only allowed in end of message session: %s",
-                 priv->tag,
-                 requested_action_name,
-                 state_name,
-                 additional_info ? additional_info->str : "",
-                 milter_agent_get_tag(MILTER_AGENT(context)),
-                 milter_server_context_get_name(context));
-    g_free(state_name);
-    if (additional_info)
-        g_string_free(additional_info, TRUE);
+        if (format) {
+            va_start(args, format);
+            additional_info = g_strdup_vprintf(format, args);
+            va_end(args);
+        }
+
+        state_name =
+            milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                                            state);
+        milter_error("[%u] [children][error][invalid-state][%s][%s]%s "
+                     "[%u] only allowed in end of message session: %s",
+                     priv->tag,
+                     requested_action_name,
+                     state_name,
+                     additional_info ? additional_info : "",
+                     milter_agent_get_tag(MILTER_AGENT(context)),
+                     milter_server_context_get_name(context));
+        g_free(state_name);
+
+        if (additional_info)
+            g_free(additional_info);
+
+    }
 
     milter_server_context_quit(context);
     return FALSE;
@@ -1580,13 +1582,11 @@ cb_add_header (MilterServerContext *context,
         return;
 
     if (value) {
-        guint tag;
-        const gchar *child_name;
-
-        tag = milter_agent_get_tag(MILTER_AGENT(context));
-        child_name = milter_server_context_get_name(context);
         milter_statistics("[milter][header][add](%u): <%s>=<%s>: %s",
-                          tag, name, value, child_name);
+                          milter_agent_get_tag(MILTER_AGENT(context)),
+                          name,
+                          value,
+                          milter_server_context_get_name(context));
     }
 
     if (is_evaluation_mode(children, context, "add-header",
@@ -1618,13 +1618,11 @@ cb_insert_header (MilterServerContext *context,
         return;
 
     if (value) {
-        guint tag;
-        const gchar *child_name;
-
-        tag = milter_agent_get_tag(MILTER_AGENT(context));
-        child_name = milter_server_context_get_name(context);
         milter_statistics("[milter][header][add](%u): <%s>=<%s>: %s",
-                          tag, name, value, child_name);
+                          milter_agent_get_tag(MILTER_AGENT(context)),
+                          name,
+                          value,
+                          milter_server_context_get_name(context));
     }
 
     if (is_evaluation_mode(children, context, "insert-header",
@@ -1657,13 +1655,11 @@ cb_change_header (MilterServerContext *context,
         return;
 
     if (value) {
-        guint tag;
-        const gchar *child_name;
-
-        tag = milter_agent_get_tag(MILTER_AGENT(context));
-        child_name = milter_server_context_get_name(context);
         milter_statistics("[milter][header][add](%u): <%s>=<%s>: %s",
-                          tag, name, value, child_name);
+                          milter_agent_get_tag(MILTER_AGENT(context)),
+                          name,
+                          value,
+                          milter_server_context_get_name(context));
     }
 
     if (is_evaluation_mode(children, context, "change-header",
@@ -1861,7 +1857,6 @@ cb_stopped (MilterServerContext *context, gpointer user_data)
     MilterManagerChildren *children = user_data;
     MilterServerContextState state;
     MilterManagerChildrenPrivate *priv;
-    gchar *state_name;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
     state = milter_server_context_get_state(context);
@@ -1891,16 +1886,18 @@ cb_stopped (MilterServerContext *context, gpointer user_data)
         send_first_command_to_next_child(children, context);
         break;
     default:
-        state_name =
-            milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
-                                            state);
-        milter_error("[%u] [children][error][invalid-state][stopped][%s] "
-                     "[%u] %s",
-                     priv->tag,
-                     state_name,
-                     milter_agent_get_tag(MILTER_AGENT(context)),
-                     milter_server_context_get_name(context));
-        g_free(state_name);
+        if (milter_need_error_log()) {
+            gchar *state_name;
+            state_name = milter_utils_get_enum_nick_name(
+                MILTER_TYPE_SERVER_CONTEXT_STATE, state);
+            milter_error("[%u] [children][error][invalid-state][stopped][%s] "
+                         "[%u] %s",
+                         priv->tag,
+                         state_name,
+                         milter_agent_get_tag(MILTER_AGENT(context)),
+                         milter_server_context_get_name(context));
+            g_free(state_name);
+        }
 
         compile_reply_status(children, state, MILTER_STATUS_TEMPORARY_FAILURE);
         milter_server_context_abort(context);
@@ -1918,8 +1915,6 @@ cb_writing_timeout (MilterServerContext *context, gpointer user_data)
     MilterManagerChild *child;
     MilterServerContextState state;
     MilterStatus fallback_status;
-    gchar *state_name;
-    gchar *fallback_status_name;
 
     children = MILTER_MANAGER_CHILDREN(user_data);
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
@@ -1927,19 +1922,25 @@ cb_writing_timeout (MilterServerContext *context, gpointer user_data)
     child = MILTER_MANAGER_CHILD(context);
     fallback_status = milter_manager_child_get_fallback_status(child);
 
-    state_name =
-        milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
-                                        state);
-    fallback_status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS,
-                                                           fallback_status);
-    milter_error("[%u] [children][timeout][writing][%s][%s] [%u] %s",
-                 priv->tag,
-                 state_name,
-                 fallback_status_name,
-                 milter_agent_get_tag(MILTER_AGENT(context)),
-                 milter_server_context_get_name(context));
-    g_free(state_name);
-    g_free(fallback_status_name);
+    if (milter_need_error_log()) {
+        gchar *state_name;
+        gchar *fallback_status_name;
+
+        state_name =
+            milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                                            state);
+        fallback_status_name =
+            milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS,
+                                            fallback_status);
+        milter_error("[%u] [children][timeout][writing][%s][%s] [%u] %s",
+                     priv->tag,
+                     state_name,
+                     fallback_status_name,
+                     milter_agent_get_tag(MILTER_AGENT(context)),
+                     milter_server_context_get_name(context));
+        g_free(state_name);
+        g_free(fallback_status_name);
+    }
 
     compile_reply_status(children, state, fallback_status);
     expire_child(children, context);
@@ -1954,8 +1955,6 @@ cb_reading_timeout (MilterServerContext *context, gpointer user_data)
     MilterManagerChild *child;
     MilterServerContextState state;
     MilterStatus fallback_status;
-    gchar *state_name;
-    gchar *fallback_status_name;
 
     children = MILTER_MANAGER_CHILDREN(user_data);
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
@@ -1963,19 +1962,25 @@ cb_reading_timeout (MilterServerContext *context, gpointer user_data)
     child = MILTER_MANAGER_CHILD(context);
     fallback_status = milter_manager_child_get_fallback_status(child);
 
-    state_name =
-        milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
-                                        state);
-    fallback_status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS,
-                                                           fallback_status);
-    milter_error("[%u] [children][timeout][reading][%s][%s] [%u] %s",
-                 priv->tag,
-                 state_name,
-                 fallback_status_name,
-                 milter_agent_get_tag(MILTER_AGENT(context)),
-                 milter_server_context_get_name(context));
-    g_free(state_name);
-    g_free(fallback_status_name);
+    if (milter_need_error_log()) {
+        gchar *state_name;
+        gchar *fallback_status_name;
+
+        state_name =
+            milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                                            state);
+        fallback_status_name =
+            milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS,
+                                            fallback_status);
+        milter_error("[%u] [children][timeout][reading][%s][%s] [%u] %s",
+                     priv->tag,
+                     state_name,
+                     fallback_status_name,
+                     milter_agent_get_tag(MILTER_AGENT(context)),
+                     milter_server_context_get_name(context));
+        g_free(state_name);
+        g_free(fallback_status_name);
+    }
 
     compile_reply_status(children, state, fallback_status);
     expire_child(children, context);
@@ -1990,8 +1995,6 @@ cb_end_of_message_timeout (MilterServerContext *context, gpointer user_data)
     MilterManagerChild *child;
     MilterServerContextState state;
     MilterStatus fallback_status;
-    gchar *state_name;
-    gchar *fallback_status_name;
 
     children = MILTER_MANAGER_CHILDREN(user_data);
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
@@ -1999,19 +2002,26 @@ cb_end_of_message_timeout (MilterServerContext *context, gpointer user_data)
     child = MILTER_MANAGER_CHILD(context);
     fallback_status = milter_manager_child_get_fallback_status(child);
 
-    state_name =
-        milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
-                                        state);
-    fallback_status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS,
-                                                           fallback_status);
-    milter_error("[%u] [children][timeout][end-of-message][%s][%s] [%u] %s",
-                 priv->tag,
-                 state_name,
-                 fallback_status_name,
-                 milter_agent_get_tag(MILTER_AGENT(context)),
-                 milter_server_context_get_name(context));
-    g_free(state_name);
-    g_free(fallback_status_name);
+    if (milter_need_error_log()) {
+        gchar *state_name;
+        gchar *fallback_status_name;
+
+        state_name =
+            milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                                            state);
+        fallback_status_name =
+            milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS,
+                                            fallback_status);
+        milter_error("[%u] [children][timeout][end-of-message][%s][%s] "
+                     "[%u] %s",
+                     priv->tag,
+                     state_name,
+                     fallback_status_name,
+                     milter_agent_get_tag(MILTER_AGENT(context)),
+                     milter_server_context_get_name(context));
+        g_free(state_name);
+        g_free(fallback_status_name);
+    }
 
     compile_reply_status(children, state, fallback_status);
     expire_child(children, context);
@@ -2027,8 +2037,6 @@ cb_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
     MilterManagerChild *child;
     MilterServerContextState state;
     MilterStatus fallback_status;
-    gchar *state_name;
-    gchar *fallback_status_name;
 
     context = MILTER_SERVER_CONTEXT(emittable);
     children = MILTER_MANAGER_CHILDREN(user_data);
@@ -2037,20 +2045,26 @@ cb_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
     child = MILTER_MANAGER_CHILD(context);
     fallback_status = milter_manager_child_get_fallback_status(child);
 
-    state_name =
-        milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
-                                        state);
-    fallback_status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS,
-                                                           fallback_status);
-    milter_error("[%u] [children][error][%s][%s] [%u] %s: %s",
-                 priv->tag,
-                 state_name,
-                 fallback_status_name,
-                 milter_agent_get_tag(MILTER_AGENT(context)),
-                 error->message,
-                 milter_server_context_get_name(context));
-    g_free(state_name);
-    g_free(fallback_status_name);
+    if (milter_need_error_log()) {
+        gchar *state_name;
+        gchar *fallback_status_name;
+
+        state_name =
+            milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                                            state);
+        fallback_status_name =
+            milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS,
+                                            fallback_status);
+        milter_error("[%u] [children][error][%s][%s] [%u] %s: %s",
+                     priv->tag,
+                     state_name,
+                     fallback_status_name,
+                     milter_agent_get_tag(MILTER_AGENT(context)),
+                     error->message,
+                     milter_server_context_get_name(context));
+        g_free(state_name);
+        g_free(fallback_status_name);
+    }
 
     compile_reply_status(children, state, fallback_status);
     expire_child(children, context);
@@ -2509,7 +2523,6 @@ child_establish_connection (MilterManagerChild *child,
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     if (!milter_server_context_establish_connection(context, &error)) {
-
         milter_error("[%u] [children][error][connection] [%u] %s: %s",
                      priv->tag,
                      milter_agent_get_tag(MILTER_AGENT(context)),
@@ -3154,7 +3167,8 @@ open_body_file (MilterManagerChildren *children)
     fd = g_file_open_tmp(NULL, &priv->body_file_name, &error);
     priv->body_file = g_io_channel_unix_new(fd);
     if (error) {
-        milter_error("[children][error][body][open] %s", error->message);
+        milter_error("[%u] [children][error][body][open] %s",
+                     priv->tag, error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
                                     error);
         g_error_free(error);
@@ -3163,7 +3177,8 @@ open_body_file (MilterManagerChildren *children)
 
     g_io_channel_set_encoding(priv->body_file, NULL, &error);
     if (error) {
-        milter_error("[children][error][body][encoding] %s", error->message);
+        milter_error("[%u] [children][error][body][encoding] %s",
+                     priv->tag, error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
                                     error);
         g_error_free(error);

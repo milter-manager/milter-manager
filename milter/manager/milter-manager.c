@@ -452,8 +452,6 @@ cb_client_finished (MilterClientContext *context, gpointer user_data)
         MilterAgent *agent;
         guint tag;
         gdouble elapsed;
-        MilterClientContextState last_state;
-        gchar *last_state_name;
         MilterStatus status;
         gchar *status_name, *statistics_status_name;
 
@@ -476,20 +474,25 @@ cb_client_finished (MilterClientContext *context, gpointer user_data)
             g_free(state_name);
         }
 
-        last_state = milter_client_context_get_last_state(context);
-        last_state_name =
-            milter_utils_get_enum_nick_name(MILTER_TYPE_CLIENT_CONTEXT_STATE,
-                                            last_state);
-        if (MILTER_STATUS_IS_PASS(status)) {
-            statistics_status_name = "pass";
-        } else {
-            statistics_status_name = status_name;
+        if (milter_need_statistics_log()) {
+            MilterClientContextState last_state;
+            gchar *last_state_name;
+
+            last_state = milter_client_context_get_last_state(context);
+            last_state_name =
+                milter_utils_get_enum_nick_name(
+                    MILTER_TYPE_CLIENT_CONTEXT_STATE, last_state);
+            if (MILTER_STATUS_IS_PASS(status)) {
+                statistics_status_name = "pass";
+            } else {
+                statistics_status_name = status_name;
+            }
+            milter_statistics("[session][end][%s][%s][%g](%u)",
+                              last_state_name, statistics_status_name,
+                              elapsed, tag);
+            g_free(last_state_name);
         }
-        milter_statistics("[session][end][%s][%s][%g](%u)",
-                          last_state_name, statistics_status_name,
-                          elapsed, tag);
         g_free(status_name);
-        g_free(last_state_name);
     }
 
     milter_manager_leader_quit(leader);
@@ -631,14 +634,8 @@ connection_established (MilterClient *client, MilterClientContext *context)
 {
     setup_context_signals(context, MILTER_MANAGER(client));
 
-    if (milter_need_log(MILTER_LOG_LEVEL_DEBUG |
-                        MILTER_LOG_LEVEL_STATISTICS)) {
-        guint tag;
-
-        tag = milter_agent_get_tag(MILTER_AGENT(context));
-        milter_debug("[%u] [manager][session][start]", tag);
-        milter_statistics("[session][start](%u)", tag); /* TOOD: remove it */
-    }
+    milter_debug("[%u] [manager][session][start]",
+                 milter_agent_get_tag(MILTER_AGENT(context)));
 }
 
 static gchar *
