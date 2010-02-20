@@ -1,5 +1,11 @@
 2010-02-20  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/core/milter-logger.[ch],
+	test/core/test-logger.c,
+	test/core/test-syslog-logger.c,
+	test/manager/test-children.c: don't evaluate log message arguments
+	if log level isn't matched.
+
 	* milter/core/milter-logger.[ch], milter/core/milter-syslog-logger.c,
 	test/core/test-logger.c, test/core/test-syslog-logger.c,
 	test/core/test-utils.c: don't parse MILTER_LOG_LEVEL environment
