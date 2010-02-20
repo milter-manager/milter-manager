@@ -668,21 +668,6 @@ milter_manager_main (void)
         return FALSE;
     }
 
-    pid_file = g_strdup(milter_manager_configuration_get_pid_file(config));
-    if (pid_file) {
-        gchar *content;
-        GError *error = NULL;
-
-        content = g_strdup_printf("%u\n", getpid());
-        if (!g_file_set_contents(pid_file, content, -1, &error)) {
-            milter_error("[manager][error][pid][save] %s: %s",
-                         pid_file, error->message);
-            g_error_free(error);
-            g_free(pid_file);
-            pid_file = NULL;
-        }
-    }
-
     remove_socket = milter_manager_configuration_is_remove_manager_unix_socket_on_create(config);
     milter_client_set_remove_unix_socket_on_create(client, remove_socket);
 
@@ -698,6 +683,21 @@ milter_manager_main (void)
         g_error_free(error);
         g_object_unref(manager);
         return FALSE;
+    }
+
+    pid_file = g_strdup(milter_manager_configuration_get_pid_file(config));
+    if (pid_file) {
+        gchar *content;
+        GError *error = NULL;
+
+        content = g_strdup_printf("%u\n", getpid());
+        if (!g_file_set_contents(pid_file, content, -1, &error)) {
+            milter_error("[manager][error][pid][save] %s: %s",
+                         pid_file, error->message);
+            g_error_free(error);
+            g_free(pid_file);
+            pid_file = NULL;
+        }
     }
 
     controller = milter_manager_controller_new(manager);
