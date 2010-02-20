@@ -52,6 +52,8 @@ static gboolean end_of_log;
 static MilterLogLevelFlags original_log_level;
 static GPrintFunc original_print_hander;
 
+static gboolean default_handler_disconnected;
+
 static void
 cb_log (MilterLogger *logger,
         const gchar *domain, MilterLogLevelFlags level,
@@ -81,8 +83,11 @@ setup (void)
     stdout_string = g_string_new(NULL);
     end_of_log = FALSE;
 
-    original_log_level = milter_get_log_level();
     original_print_hander = NULL;
+
+    original_log_level = milter_get_log_level();
+    milter_set_log_level(MILTER_LOG_LEVEL_ALL);
+    default_handler_disconnected = FALSE;
 
     g_signal_connect(milter_logger(), "log", G_CALLBACK(cb_log), NULL);
 }
@@ -94,6 +99,8 @@ teardown (void)
         g_object_unref(logger);
 
     milter_set_log_level(original_log_level);
+    if (default_handler_disconnected)
+        milter_logger_connect_default_handler(milter_logger());
 
     if (original_print_hander)
         g_set_print_handler(original_print_hander);
@@ -128,11 +135,19 @@ test_level_from_string (void)
     cut_assert_equal_uint(line, logged_line);                       \
     cut_assert_equal_string(message, logged_message);
 
+static void
+disconnect_default_handler (void)
+{
+    milter_logger_disconnect_default_handler(milter_logger());
+    default_handler_disconnected = TRUE;
+}
+
 void
 test_error (void)
 {
     guint line;
 
+    disconnect_default_handler();
     milter_error("error"); line = __LINE__;
     milter_assert_equal_log(MILTER_LOG_LEVEL_ERROR, "error");
 }
@@ -142,6 +157,7 @@ test_critical (void)
 {
     guint line;
 
+    disconnect_default_handler();
     milter_critical("critical"); line = __LINE__;
     milter_assert_equal_log(MILTER_LOG_LEVEL_CRITICAL, "critical");
 }
@@ -151,6 +167,7 @@ test_message (void)
 {
     guint line;
 
+    disconnect_default_handler();
     milter_message("message"); line = __LINE__;
     milter_assert_equal_log(MILTER_LOG_LEVEL_MESSAGE, "message");
 }
@@ -160,6 +177,7 @@ test_warning (void)
 {
     guint line;
 
+    disconnect_default_handler();
     milter_warning("warning"); line = __LINE__;
     milter_assert_equal_log(MILTER_LOG_LEVEL_WARNING, "warning");
 }
@@ -169,6 +187,7 @@ test_debug (void)
 {
     guint line;
 
+    disconnect_default_handler();
     milter_debug("debug"); line = __LINE__;
     milter_assert_equal_log(MILTER_LOG_LEVEL_DEBUG, "debug");
 }
@@ -178,6 +197,7 @@ test_info (void)
 {
     guint line;
 
+    disconnect_default_handler();
     milter_info("info"); line = __LINE__;
     milter_assert_equal_log(MILTER_LOG_LEVEL_INFO, "info");
 }

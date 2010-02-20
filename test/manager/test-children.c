@@ -114,6 +114,9 @@ static MilterOption *actual_option;
 
 static struct sockaddr *actual_address;
 
+static MilterLogLevelFlags original_log_level;
+static gboolean default_handler_disconnected;
+
 void
 cut_startup (void)
 {
@@ -361,7 +364,7 @@ clear_n_emitted (void)
 }
 
 void
-setup (void)
+cut_setup (void)
 {
     scenario_dir = g_build_filename(milter_test_get_base_dir(),
                                     "fixtures",
@@ -398,6 +401,9 @@ setup (void)
     actual_option = NULL;
 
     actual_address = NULL;
+
+    original_log_level = milter_get_log_level();
+    default_handler_disconnected = FALSE;
 }
 
 static void
@@ -431,6 +437,10 @@ arguments_free (GArray *arguments)
 void
 cut_teardown (void)
 {
+    milter_set_log_level(original_log_level);
+    if (default_handler_disconnected)
+        milter_logger_connect_default_handler(milter_logger());
+
     if (config)
         g_object_unref(config);
     if (children)
@@ -481,6 +491,14 @@ cut_teardown (void)
 
     if (actual_address)
         g_free(actual_address);
+}
+
+static void
+disconnect_default_handler (void)
+{
+    milter_set_log_level(MILTER_LOG_LEVEL_ALL);
+    milter_logger_disconnect_default_handler(milter_logger());
+    default_handler_disconnected = TRUE;
 }
 
 static void
@@ -1625,6 +1643,7 @@ test_no_negotiation (void)
     MilterLogger *logger;
     MilterManagerChild *child10026, *child10027;
 
+    disconnect_default_handler();
     logger = milter_logger();
     log_signal_id = g_signal_connect(logger, "log", G_CALLBACK(cb_log), NULL);
 
@@ -1701,6 +1720,7 @@ test_end_of_message_timeout (void)
 
     cut_trace(test_end_of_header());
 
+    disconnect_default_handler();
     logger = milter_logger();
     log_signal_id = g_signal_connect(logger, "log", G_CALLBACK(cb_log), NULL);
 
@@ -1734,6 +1754,7 @@ test_writing_timeout (void)
 
     cut_trace(test_negotiate());
 
+    disconnect_default_handler();
     logger = milter_logger();
     log_signal_id = g_signal_connect(logger, "log", G_CALLBACK(cb_log), NULL);
 
@@ -1788,6 +1809,7 @@ test_reading_timeout (void)
 
     cut_trace(test_negotiate());
 
+    disconnect_default_handler();
     logger = milter_logger();
     log_signal_id = g_signal_connect(logger, "log", G_CALLBACK(cb_log), NULL);
 

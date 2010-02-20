@@ -361,8 +361,7 @@ milter_logger (void)
                                                  g_getenv("MILTER_LOG_LEVEL"));
         milter_logger_set_target_item_by_string(singleton_milter_logger,
                                                 g_getenv("MILTER_LOG_ITEM"));
-        g_signal_connect(singleton_milter_logger, "log",
-                         G_CALLBACK(milter_logger_default_log_handler), NULL);
+        milter_logger_connect_default_handler(singleton_milter_logger);
     }
 
     return singleton_milter_logger;
@@ -462,6 +461,20 @@ milter_logger_set_target_item_by_string (MilterLogger *logger,
     }
     milter_logger_set_target_item(logger, item);
 
+}
+
+void
+milter_logger_connect_default_handler (MilterLogger *logger)
+{
+    g_signal_connect(logger, "log",
+                     G_CALLBACK(milter_logger_default_log_handler), NULL);
+}
+
+void
+milter_logger_disconnect_default_handler (MilterLogger *logger)
+{
+    g_signal_handlers_disconnect_by_func(
+        logger, G_CALLBACK(milter_logger_default_log_handler), NULL);
 }
 
 void

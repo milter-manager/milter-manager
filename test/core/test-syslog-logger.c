@@ -139,7 +139,12 @@ test_info (void)
 void
 test_statistics (void)
 {
+    original_print_hander = g_set_print_handler(print_handler);
+    milter_set_log_level(MILTER_LOG_LEVEL_STATISTICS);
     milter_statistics("This is statistics message.");
+    g_set_print_handler(original_print_hander);
+    original_print_hander = NULL;
+
     cut_trace(collect_log_message());
 
     cut_assert_match(".* " MILTER_LOG_DOMAIN "\\[\\d+\\]: "

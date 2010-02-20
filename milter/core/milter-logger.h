@@ -27,14 +27,18 @@
 
 G_BEGIN_DECLS
 
-#define milter_log(level, format, ...)          \
-    (milter_logger_log(milter_logger(),         \
-                       MILTER_LOG_DOMAIN,       \
-                       level,                   \
-                       __FILE__,                \
-                       __LINE__,                \
-                       __PRETTY_FUNCTION__,     \
-                       format, ## __VA_ARGS__))
+#define milter_log(level, format, ...)                          \
+    do {                                                        \
+        if (milter_get_log_level() & (level)) {                 \
+            (milter_logger_log(milter_logger(),                 \
+                               MILTER_LOG_DOMAIN,               \
+                               (level),                         \
+                               __FILE__,                        \
+                               __LINE__,                        \
+                               __PRETTY_FUNCTION__,             \
+                               format, ## __VA_ARGS__));        \
+        }                                                       \
+    } while (0)
 
 #define milter_critical(format, ...)                            \
     milter_log(MILTER_LOG_LEVEL_CRITICAL, format, ## __VA_ARGS__)
@@ -198,6 +202,11 @@ void             milter_logger_set_target_item
 void             milter_logger_set_target_item_by_string
                                               (MilterLogger        *logger,
                                                const gchar         *item_name);
+
+void             milter_logger_connect_default_handler
+                                              (MilterLogger        *logger);
+void             milter_logger_disconnect_default_handler
+                                              (MilterLogger        *logger);
 
 #define MILTER_GLIB_LOG_DELEGATE(domain)        \
     g_log_set_handler(domain,                   \
