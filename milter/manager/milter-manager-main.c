@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -366,6 +366,7 @@ start_process_launcher (GIOChannel *read_channel, GIOChannel *write_channel)
     MilterManagerProcessLauncher *launcher;
     MilterReader *reader;
     MilterWriter *writer;
+    gchar *error_message = NULL;
 
     reader = milter_reader_io_channel_new(read_channel);
     g_io_channel_unref(read_channel);
@@ -379,6 +380,12 @@ start_process_launcher (GIOChannel *read_channel, GIOChannel *write_channel)
     g_object_unref(writer);
 
     milter_agent_start(MILTER_AGENT(launcher), NULL);
+
+    if (!milter_utils_detach_io(&error_message)) {
+        milter_error("[process-launcher][error] failed to detach IO: %s",
+                     error_message);
+        g_free(error_message);
+    }
 
     milter_manager_process_launcher_run(launcher);
 

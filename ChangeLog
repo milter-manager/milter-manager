@@ -1,5 +1,10 @@
 2010-02-20  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/client/milter-client.c: move detach_io() to ...
+	* milter/core/milter-utils.[ch]: ... here.
+	* milter/manager/milter-manager-main.c: use
+	milter_utils_detach_io() for process launcher.
+
 	* milter/manager/milter-manager-main.c: PID file should be written
 	after daemonized.
 

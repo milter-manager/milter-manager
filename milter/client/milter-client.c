@@ -1176,87 +1176,11 @@ milter_client_drop_privilege (MilterClient *client, GError **error)
     return switch_group(client, error) && switch_user(client, error);
 }
 
-static gboolean
-detach_io (MilterClient *client, GError **error)
-{
-    gboolean success = FALSE;
-    int null_stdin_fd = -1;
-    int null_stdout_fd = -1;
-    int null_stderr_fd = -1;
-
-    null_stdin_fd = open("/dev/null", O_RDONLY);
-    if (null_stdin_fd == -1) {
-        g_set_error(error,
-                    MILTER_CLIENT_ERROR,
-                    MILTER_CLIENT_ERROR_DETACH_IO,
-                    "failed to open /dev/null for STDIN: %s",
-                    g_strerror(errno));
-        goto cleanup;
-    }
-
-    null_stdout_fd = open("/dev/null", O_WRONLY);
-    if (null_stdout_fd == -1) {
-        g_set_error(error,
-                    MILTER_CLIENT_ERROR,
-                    MILTER_CLIENT_ERROR_DETACH_IO,
-                    "failed to open /dev/null for STDOUT: %s",
-                    g_strerror(errno));
-        goto cleanup;
-    }
-
-    null_stderr_fd = open("/dev/null", O_WRONLY);
-    if (null_stderr_fd == -1) {
-        g_set_error(error,
-                    MILTER_CLIENT_ERROR,
-                    MILTER_CLIENT_ERROR_DETACH_IO,
-                    "failed to open /dev/null for STDERR: %s",
-                    g_strerror(errno));
-        goto cleanup;
-    }
-
-    if (dup2(null_stdin_fd, STDIN_FILENO) == -1) {
-        g_set_error(error,
-                    MILTER_CLIENT_ERROR,
-                    MILTER_CLIENT_ERROR_DETACH_IO,
-                    "failed to detach STDIN: %s",
-                    g_strerror(errno));
-        goto cleanup;
-    }
-
-    if (dup2(null_stdout_fd, STDOUT_FILENO) == -1) {
-        g_set_error(error,
-                    MILTER_CLIENT_ERROR,
-                    MILTER_CLIENT_ERROR_DETACH_IO,
-                    "failed to detach STDOUT: %s",
-                    g_strerror(errno));
-        goto cleanup;
-    }
-
-    if (dup2(null_stderr_fd, STDERR_FILENO) == -1) {
-        g_set_error(error,
-                    MILTER_CLIENT_ERROR,
-                    MILTER_CLIENT_ERROR_DETACH_IO,
-                    "failed to detach STDERR: %s",
-                    g_strerror(errno));
-        goto cleanup;
-    }
-
-    success = TRUE;
-
-cleanup:
-    if (null_stdin_fd == -1)
-        close(null_stdin_fd);
-    if (null_stdout_fd == -1)
-        close(null_stdout_fd);
-    if (null_stderr_fd == -1)
-        close(null_stderr_fd);
-
-    return success;
-}
-
 gboolean
 milter_client_daemonize (MilterClient *client, GError **error)
 {
+    gchar *error_message = NULL;
+
     switch (fork()) {
     case 0:
         break;
@@ -1305,8 +1229,15 @@ milter_client_daemonize (MilterClient *client, GError **error)
         return FALSE;
     }
 
-    if (!detach_io(client, error))
+    if (!milter_utils_detach_io(&error_message)) {
+        g_set_error(error,
+                    MILTER_CLIENT_ERROR,
+                    MILTER_CLIENT_ERROR_DETACH_IO,
+                    "%s",
+                    error_message);
+        g_free(error_message);
         return FALSE;
+    }
 
     return TRUE;
 }

@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -142,6 +142,8 @@ void             milter_utils_xml_append_enum_element
                                               guint indent);
 gint             milter_utils_strcmp0        (const gchar *str1,
                                               const gchar *str2);
+
+gboolean         milter_utils_detach_io      (gchar **message);
 
 G_END_DECLS
 

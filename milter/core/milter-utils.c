@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -22,6 +22,10 @@
 #endif /* HAVE_CONFIG_H */
 
 #include <string.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <errno.h>
+
 #include <glib/gprintf.h>
 
 #include "milter-utils.h"
@@ -602,6 +606,66 @@ milter_utils_strcmp0 (const char *str1,
     if (!str2)
         return str1 != str2;
     return strcmp(str1, str2);
+}
+
+gboolean
+milter_utils_detach_io (gchar **message)
+{
+    gboolean success = FALSE;
+    int null_stdin_fd = -1;
+    int null_stdout_fd = -1;
+    int null_stderr_fd = -1;
+
+    null_stdin_fd = open("/dev/null", O_RDONLY);
+    if (null_stdin_fd == -1) {
+        *message = g_strdup_printf("failed to open /dev/null for STDIN: %s",
+                                   g_strerror(errno));
+        goto cleanup;
+    }
+
+    null_stdout_fd = open("/dev/null", O_WRONLY);
+    if (null_stdout_fd == -1) {
+        *message = g_strdup_printf("failed to open /dev/null for STDOUT: %s",
+                                   g_strerror(errno));
+        goto cleanup;
+    }
+
+    null_stderr_fd = open("/dev/null", O_WRONLY);
+    if (null_stderr_fd == -1) {
+        *message = g_strdup_printf("failed to open /dev/null for STDERR: %s",
+                                   g_strerror(errno));
+        goto cleanup;
+    }
+
+    if (dup2(null_stdin_fd, STDIN_FILENO) == -1) {
+        *message = g_strdup_printf("failed to detach STDIN: %s",
+                                   g_strerror(errno));
+        goto cleanup;
+    }
+
+    if (dup2(null_stdout_fd, STDOUT_FILENO) == -1) {
+        *message = g_strdup_printf("failed to detach STDOUT: %s",
+                                   g_strerror(errno));
+        goto cleanup;
+    }
+
+    if (dup2(null_stderr_fd, STDERR_FILENO) == -1) {
+        *message = g_strdup_printf("failed to detach STDERR: %s",
+                                   g_strerror(errno));
+        goto cleanup;
+    }
+
+    success = TRUE;
+
+cleanup:
+    if (null_stdin_fd == -1)
+        close(null_stdin_fd);
+    if (null_stdout_fd == -1)
+        close(null_stdout_fd);
+    if (null_stderr_fd == -1)
+        close(null_stderr_fd);
+
+    return success;
 }
 
 /*
