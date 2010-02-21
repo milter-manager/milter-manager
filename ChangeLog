@@ -1,5 +1,7 @@
 2010-02-21  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter-manager.spec.in: create milter-manager-munin-plugin package.
+
 	* data/munin/milter_manager_ : add missing "Stop" label.
 
 	* data/munin/milter_manager_ : add missing "smtp" to order.

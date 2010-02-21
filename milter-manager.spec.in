@@ -65,6 +65,15 @@ Requires: libmilter-toolkit-devel = %{version}-%{release}
 This package contains the headers, and other support files
 required for developing applications against libmilter-compatible.
 
+%package -n milter-manager-munin-plugin
+Summary: Munin plugin for milter manager
+Group: System Environment/Libraries
+Requires: milter-manager = %{version}-%{release}
+Requires: munin-node
+
+%description -n milter-manager-munin-plugin
+This package contains the munin plugin for munin-node.
+
 %prep
 %setup -q
 
@@ -97,6 +106,14 @@ cat <<EOC > %{buildroot}%{_sysconfdir}/httpd/conf.d/milter-manager-log.conf
 Alias /milter-manager-log/ /var/lib/milter-manager/public_html/log/
 EOC
 
+mv %{buildroot}%{_datadir}/milter-manager/munin/ %{buildroot}%{_datadir}/
+mkdir -p %{buildroot}%{_sysconfdir}/munin/plugin-conf.d/
+cat <<EOC > %{buildroot}%{_sysconfdir}/munin/plugin-conf.d/milter-manager
+[milter_manager_*]
+  user milter-manager
+  env.logdir /var/lib/milter-manager/public_html/log
+EOC
+
 %clean
 rm -rf %{buildroot}
 
@@ -117,6 +134,9 @@ fi
 mkdir -p /var/run/milter-manager
 /bin/chown -R milter-manager:milter-manager /var/run/milter-manager
 
+%post -n milter-manager-munin-plugin
+/usr/sbin/munin-node-configure --shell | sh
+
 %preun
 if [ $1 -eq 0 ] ; then
     /sbin/service milter-manager stop > /dev/null 2>&1
@@ -129,13 +149,22 @@ if [ $1 -ge 1 ] ; then
 fi
 
 if [ $1 -eq 0 ]; then
-    /usr/sbin/userdel -r milter-manager || %logmsg "User \"milter-manager\" could not be deleted."
+    /usr/sbin/userdel -r milter-manager || \
+	%logmsg "User \"milter-manager\" could not be deleted."
 fi
 
+%postun -n milter-manager-munin-plugin
+if [ $1 -eq 0 ]; then
+    rm %{_sysconfdir}/munin/plugins/milter_manager_* > /dev/null 2>&1
+    [ -f /var/lock/subsys/munin-node ] && \
+	/sbin/service munin-node restart > /dev/null 2>&1
+    :
+fi
 
 %files
 %defattr(-, root, root, -)
-%doc ChangeLog ChangeLog.toolkit README README.ja NEWS NEWS.ja TODO license/*.txt
+%doc ChangeLog ChangeLog.toolkit README README.ja NEWS NEWS.ja TODO
+%doc %{_datadir}/milter-manager/license/
 %doc %{_datadir}/gtk-doc/html/milter-manager/
 %{_bindir}/milter-manager-log-analyzer
 %{_sbindir}/milter-manager
@@ -150,7 +179,7 @@ fi
 %{_mandir}/ja/man1/milter-manager.*
 %{_mandir}/ja/man1/milter-manager-log-analyzer.*
 %{_initrddir}/milter-manager
-%{_datadir}/milter-manager/
+%{_datadir}/milter-manager/admin/
 %{_sysconfdir}/milter-manager/cron.d/
 %{_sysconfdir}/milter-manager/init.d/
 %{_sysconfdir}/milter-manager/rc.d/
@@ -166,7 +195,8 @@ fi
 
 %files -n libmilter-toolkit
 %defattr(-,root,root)
-%doc ChangeLog ChangeLog.toolkit README README.ja NEWS NEWS.ja TODO license/*.txt
+%doc ChangeLog ChangeLog.toolkit README README.ja NEWS NEWS.ja TODO
+%doc %{_datadir}/milter-manager/license/
 %{_bindir}/milter-test-client
 %{_bindir}/milter-test-server
 %{_bindir}/milter-performance-check
@@ -182,7 +212,8 @@ fi
 
 %files -n libmilter-toolkit-devel
 %defattr(-,root,root)
-%doc ChangeLog ChangeLog.toolkit README README.ja NEWS NEWS.ja TODO license/*.txt
+%doc ChangeLog ChangeLog.toolkit README README.ja NEWS NEWS.ja TODO
+%doc %{_datadir}/milter-manager/license/
 %doc %{_datadir}/gtk-doc/html/milter-manager/
 %{_includedir}/milter-manager/milter/core.h
 %{_includedir}/milter-manager/milter/core/
@@ -202,17 +233,26 @@ fi
 
 %files -n libmilter-compatible
 %defattr(-,root,root)
-%doc ChangeLog ChangeLog.toolkit README README.ja NEWS NEWS.ja TODO license/*.txt
+%doc ChangeLog ChangeLog.toolkit README README.ja NEWS NEWS.ja TODO
+%doc %{_datadir}/milter-manager/license/
 %{_libdir}/milter-manager/libmilter.so.*
 
 %files -n libmilter-compatible-devel
 %defattr(-,root,root)
-%doc ChangeLog ChangeLog.toolkit README README.ja NEWS NEWS.ja TODO license/*.txt
+%doc ChangeLog ChangeLog.toolkit README README.ja NEWS NEWS.ja TODO
+%doc %{_datadir}/milter-manager/license/
 %doc %{_datadir}/gtk-doc/html/milter-manager/
 %{_includedir}/milter-manager/libmilter/
 %{_libdir}/milter-manager/libmilter.so
 %{_libdir}/milter-manager/libmilter.la
 %{_libdir}/pkgconfig/libmilter.pc
+
+%files -n milter-manager-munin-plugin
+%defattr(-,root,root)
+%doc ChangeLog ChangeLog.toolkit README README.ja NEWS NEWS.ja TODO
+%doc %{_datadir}/milter-manager/license/
+%{_datadir}/munin/
+%config %{_sysconfdir}/munin/plugin-conf.d/
 
 %changelog
 * Thu Feb 17 2010 Kouhei Sutou <kou@clear-code.com>
