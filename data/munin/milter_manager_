@@ -179,6 +179,7 @@ when "config"
              "quarantine" => "Quarantine",
              "abort" => "Abort",
              "error" => "Error",
+             "stop" => "Stop",
            })
   when "report"
     config(log_dir, type, milter,
