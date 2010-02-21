@@ -118,7 +118,7 @@ mkdir -p /var/run/milter-manager
 /bin/chown -R milter-manager:milter-manager /var/run/milter-manager
 
 %preun
-if [ $1 = 0 ] ; then
+if [ $1 -eq 0 ] ; then
     /sbin/service milter-manager stop > /dev/null 2>&1
     /sbin/chkconfig --del milter-manager
 fi
