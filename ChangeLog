@@ -1,5 +1,7 @@
 2010-02-21  Kouhei Sutou  <kou@clear-code.com>
 
+	* data/munin/milter_manager_ : add missing "smtp" to order.
+
 	* milter-manager.spec.in: use -eq instead of =.
 
 	* data/munin/milter_manager_: number of SMTP isn't needed for report.

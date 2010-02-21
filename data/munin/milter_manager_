@@ -72,9 +72,14 @@ def config(log_dir, type, milter, parameters)
   category = parameters[:category]
   info = parameters[:info]
   labels = parameters[:labels]
+  order = sets.collect {|key,| key}
+  case type
+  when "status"
+    order << "smtp"
+  end
   print(<<-EOM)
 graph_title #{title}
-graph_order #{sets.collect {|key,| key}.join(' ')}
+graph_order #{order.join(' ')}
 graph_vlabel #{vlabel}
 graph_category #{category}
 graph_info #{info}
