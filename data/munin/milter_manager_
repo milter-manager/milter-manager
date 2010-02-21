@@ -21,11 +21,15 @@ def rrdtool(command, *arguments)
   end
 end
 
+def normalize_name(name)
+  name.gsub(/-/, "_")
+end
+
 def fetch(rrd)
   result = rrdtool("fetch", "#{rrd} LAST -s -15min")
   return [[], []] if result.nil?
   lines = result.split(/\r?\n/)
-  header = lines[0].split
+  header = lines[0].split.collect {|name| normalize_name(name)}
   values = []
   lines[2..-1].reverse_each do |line|
     time, *values = lines[2].split
@@ -43,6 +47,7 @@ def data_sets(rrd)
     case line
     when /\Ads\[(.+)\].(.+) = (.+)$/
       name, attribute, value = $1, $2, $3
+      name = normalize_name(name)
       name_order << name
       sets[name] ||= {}
       sets[name][attribute] = value
@@ -175,7 +180,7 @@ when "config"
              "accept" => "Accept",
              "reject" => "Reject",
              "discard" => "Discard",
-             "temporary-failure" => "Temp-Fail",
+             "temporary_failure" => "Temp-Fail",
              "quarantine" => "Quarantine",
              "abort" => "Abort",
              "error" => "Error",
@@ -191,15 +196,15 @@ when "config"
              "spam" => "spam",
              "virus" => "Virus",
              "uribl" => "URIBL",
-             "greylisting-pass" => "Greylisting (pass)",
-             "spf-pass" => "SPF (pass)",
-             "spf-fail" => "SPF (fail)",
-             "sender-id-pass" => "Sender ID (pass)",
-             "sender-id-fail" => "Sender ID (fail)",
-             "dkim-pass" => "DKIM (pass)",
-             "dkim-fail" => "DKIM (fail)",
-             "dkim-adsp-pass" => "DKIM ADSP (pass)",
-             "dkim-adsp-fail" => "DKIM ADSP (fail)",
+             "greylisting_pass" => "Greylisting (pass)",
+             "spf_pass" => "SPF (pass)",
+             "spf_fail" => "SPF (fail)",
+             "sender_id_pass" => "Sender ID (pass)",
+             "sender_id_fail" => "Sender ID (fail)",
+             "dkim_pass" => "DKIM (pass)",
+             "dkim_fail" => "DKIM (fail)",
+             "dkim_adsp_pass" => "DKIM ADSP (pass)",
+             "dkim_adsp_fail" => "DKIM ADSP (fail)",
            })
   else
     puts invalid_file_name_message

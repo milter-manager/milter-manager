@@ -1,5 +1,8 @@
 2010-02-21  Kouhei Sutou  <kou@clear-code.com>
 
+	* data/munin/milter_manager_: use '_' instead of '-' in name
+	because munin 1.4.x can't handle '-' correctly.
+
 	* milter-manager.spec.in: just install milter manager related
 	munin plugins.
 
