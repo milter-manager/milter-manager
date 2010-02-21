@@ -287,13 +287,15 @@ g_rclosure_new(VALUE callback_proc, VALUE extra_args, GValToRValSignalFunc g2r_f
 {
     GRClosure* closure;
     GRClosureHolder *holder;
+    VALUE rb_holder;
+
+    rb_holder = Data_Make_Struct(rb_cData, GRClosureHolder, 0,
+                                 gr_closure_holder_free, holder);
 
     closure = (GRClosure*)g_closure_new_simple(sizeof(GRClosure), NULL);
-
     closure->count      = 1;
     closure->g2r_func   = g2r_func;
-    closure->rb_holder  = Data_Make_Struct(rb_cData, GRClosureHolder, 0,
-                                           gr_closure_holder_free, holder);
+    closure->rb_holder  = rb_holder;
     closure->objects    = NULL;
 
     holder->closure = closure;
