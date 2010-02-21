@@ -1,7 +1,7 @@
 2010-02-21  Kouhei Sutou  <kou@clear-code.com>
 
-	* src/rbgobj_closure.c (g_rclosure_new): assign Ruby object to
-	local variable to avoid GCed.
+	* src/rbgobj_closure.c: backport GC mark by mark function instead
+	of reference hash from Ruby/GLib 0.19.3.
 
 2006-12-29  Masao Mutoh  <mutoh@highway.ne.jp>
 

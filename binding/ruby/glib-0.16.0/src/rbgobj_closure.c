@@ -24,28 +24,15 @@
 #undef HAVE_NATIVETHREAD /* FIXME */
 #endif
 
-static ID id_call;
-static ID id_holder;
+static ID id_call, id_closures;
 static gboolean rclosure_initialized = FALSE;
 
-#define CALLBACK_KEY       rb_str_new2("callback")
-#define EXTRA_ARGS_KEY     rb_str_new2("extra_args")
-
-#define HOLDER(closure)       \
-  (rb_ivar_get((closure)->rb_holder, id_holder))
-#define SETUP_HOLDER(closure) \
-  (rb_ivar_set((closure)->rb_holder, id_holder, rb_hash_new()))
-
 typedef struct _GRClosure GRClosure;
-
-typedef struct _GRClosureHolder
-{
-    GRClosure *closure;
-} GRClosureHolder;
-
 struct _GRClosure
 {
     GClosure closure;
+    VALUE callback;
+    VALUE extra_args;
     VALUE rb_holder;
     gint count;
     GList *objects;
@@ -112,8 +99,8 @@ rclosure_marshal_do(VALUE arg_)
 
     if (rclosure_alive_p(rclosure)) {
         VALUE callback, extra_args;
-        callback = rb_hash_aref(HOLDER(rclosure), CALLBACK_KEY);
-        extra_args = rb_hash_aref(HOLDER(rclosure), EXTRA_ARGS_KEY);
+        callback = rclosure->callback;
+        extra_args = rclosure->extra_args;
 
         if (!NIL_P(extra_args)) {
             args = rb_ary_concat(args, extra_args);
@@ -249,11 +236,9 @@ rclosure_unref(GRClosure *rclosure)
         }
         g_list_free(rclosure->objects);
         rclosure->objects = NULL;
-
         if (!NIL_P(rclosure->rb_holder)) {
-            GRClosureHolder *holder;
-            Data_Get_Struct(rclosure->rb_holder, GRClosureHolder, holder);
-            holder->closure = NULL;
+            RDATA(rclosure->rb_holder)->dmark = NULL;
+            RDATA(rclosure->rb_holder)->dfree = NULL;
             rclosure->rb_holder = Qnil;
         }
     }
@@ -265,20 +250,36 @@ rclosure_invalidate(gpointer data, GClosure* closure)
     GRClosure *rclosure = (GRClosure*)closure;
 
     if (rclosure->count > 0) {
+        GList *next;
+
         rclosure->count = 1;
+        for (next = rclosure->objects; next; next = next->next) {
+            GObject *object = G_OBJECT(next->data);
+            VALUE obj = rbgobj_ruby_object_from_instance2(object, FALSE);
+            if (!NIL_P(rclosure->rb_holder) && !NIL_P(obj))
+                G_REMOVE_RELATIVE(obj, id_closures, rclosure->rb_holder);
+        }
+
         rclosure_unref(rclosure);
     }
 }
 
 static void
-gr_closure_holder_free(GRClosureHolder *holder)
+gr_closure_holder_mark(GRClosure *rclosure)
 {
-    if (holder) {
-        if (holder->closure) {
-            holder->closure->rb_holder = Qnil;
-            rclosure_invalidate(NULL, (GClosure *)(holder->closure));
-        }
-        free(holder);
+    rb_gc_mark(rclosure->callback);
+    rb_gc_mark(rclosure->extra_args);
+}
+
+static void
+gr_closure_holder_free(GRClosure *rclosure)
+{
+    if (rclosure->count > 0) {
+        rclosure->count = 1;
+
+        /* No need to remove us from the relatives hash of our objects, as
+         * those aren't alive anymore anyway */
+        rclosure_unref(rclosure);
     }
 }
 
@@ -286,23 +287,18 @@ GClosure*
 g_rclosure_new(VALUE callback_proc, VALUE extra_args, GValToRValSignalFunc g2r_func)
 {
     GRClosure* closure;
-    GRClosureHolder *holder;
-    VALUE rb_holder;
-
-    rb_holder = Data_Make_Struct(rb_cData, GRClosureHolder, 0,
-                                 gr_closure_holder_free, holder);
 
     closure = (GRClosure*)g_closure_new_simple(sizeof(GRClosure), NULL);
+
     closure->count      = 1;
     closure->g2r_func   = g2r_func;
-    closure->rb_holder  = rb_holder;
     closure->objects    = NULL;
-
-    holder->closure = closure;
-    SETUP_HOLDER(closure);
-
-    rb_hash_aset(HOLDER(closure), CALLBACK_KEY, callback_proc);
-    rb_hash_aset(HOLDER(closure), EXTRA_ARGS_KEY, extra_args);
+    closure->callback   = callback_proc;
+    closure->extra_args = extra_args;
+    closure->rb_holder  = Data_Wrap_Struct(rb_cData,
+                                           gr_closure_holder_mark,
+                                           gr_closure_holder_free,
+                                           closure);
 
     g_closure_set_marshal((GClosure*)closure, &rclosure_marshal);
     g_closure_add_invalidate_notifier((GClosure*)closure, NULL,
@@ -328,7 +324,7 @@ g_rclosure_attach(GClosure *closure, VALUE object)
     static VALUE mGLibObject = (VALUE)NULL;
     GRClosure *rclosure = (GRClosure *)closure;
 
-    G_CHILD_ADD(object, rclosure->rb_holder);
+    G_RELATIVE2(object, Qnil, id_closures, rclosure->rb_holder);
 
     if (!mGLibObject) {
         mGLibObject = rb_const_get(mGLib, rb_intern("Object"));
@@ -352,7 +348,7 @@ static void
 Init_rclosure()
 {
     id_call = rb_intern("call");
-    id_holder = rb_intern("holder");
+    id_closures = rb_intern("closures");
 
 #ifdef HAVE_NATIVETHREAD
     /* startup the ruby thread to pull callbacks from other threads */
