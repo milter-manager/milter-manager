@@ -45,6 +45,9 @@ struct _MilterManagerPrivate
 
     GIOChannel *launcher_read_channel;
     GIOChannel *launcher_write_channel;
+
+    guint periodical_connection_checker_id;
+    guint current_periodical_connection_check_interval;
 };
 
 enum
@@ -140,6 +143,9 @@ milter_manager_init (MilterManager *manager)
 
     priv->launcher_read_channel = NULL;
     priv->launcher_write_channel = NULL;
+
+    priv->periodical_connection_checker_id = 0;
+    priv->current_periodical_connection_check_interval = 0;
 }
 
 static void
@@ -150,11 +156,25 @@ configuration_set_manager (MilterManagerConfiguration *configuration,
 }
 
 static void
+dispose_periodical_connection_checker (MilterManagerPrivate *priv)
+{
+    priv->current_periodical_connection_check_interval = 0;
+
+    if (priv->periodical_connection_checker_id == 0)
+        return;
+
+    g_source_remove(priv->periodical_connection_checker_id);
+    priv->periodical_connection_checker_id = 0;
+}
+
+static void
 dispose (GObject *object)
 {
     MilterManagerPrivate *priv;
 
     priv = MILTER_MANAGER_GET_PRIVATE(object);
+
+    dispose_periodical_connection_checker(priv);
 
     if (priv->configuration) {
         configuration_set_manager(priv->configuration, NULL);
@@ -171,6 +191,7 @@ dispose (GObject *object)
         g_object_unref(priv->logger);
         priv->logger = NULL;
     }
+
     milter_manager_set_launcher_channel(MILTER_MANAGER(object), NULL, NULL);
 
     G_OBJECT_CLASS(milter_manager_parent_class)->dispose(object);
@@ -230,6 +251,51 @@ milter_manager_new (MilterManagerConfiguration *configuration)
     return g_object_new(MILTER_TYPE_MANAGER,
                         "configuration", configuration,
                         NULL);
+}
+
+static gboolean
+connection_check (gpointer data)
+{
+    MilterManager *manager = data;
+    MilterManagerPrivate *priv;
+    GList *node;
+
+    priv = MILTER_MANAGER_GET_PRIVATE(manager);
+
+    for (node = priv->leaders; node; node = g_list_next(node)) {
+        MilterManagerLeader *leader = node->data;
+        milter_manager_leader_check_connection(leader);
+    }
+
+    return priv->leaders != NULL;
+}
+
+static void
+start_periodical_connection_checker (MilterManager *manager)
+{
+    MilterManagerPrivate *priv;
+    guint interval;
+
+    priv = MILTER_MANAGER_GET_PRIVATE(manager);
+
+    interval = milter_manager_configuration_get_connection_check_interval(priv->configuration);
+
+    if (interval > 0) {
+        if (priv->periodical_connection_checker_id == 0 ||
+            interval != priv->current_periodical_connection_check_interval) {
+            milter_debug("[manager][connection-check][start] <%u> -> <%u>: %s",
+                         priv->current_periodical_connection_check_interval,
+                         interval,
+                         priv->periodical_connection_checker_id == 0 ?
+                         "initial" : "update");
+            dispose_periodical_connection_checker(priv);
+            priv->current_periodical_connection_check_interval = interval;
+            priv->periodical_connection_checker_id =
+                g_timeout_add(interval * 1000, connection_check, manager);
+        }
+    } else {
+        dispose_periodical_connection_checker(priv);
+    }
 }
 
 static MilterStatus
@@ -572,6 +638,10 @@ cb_leader_finished (MilterFinishedEmittable *emittable, gpointer user_data)
 
     priv = MILTER_MANAGER_GET_PRIVATE(finish_data->manager);
     priv->leaders = g_list_remove(priv->leaders, leader);
+    if (!priv->leaders) {
+        milter_debug("[manager][connection-check][dispose] no leaders");
+        dispose_periodical_connection_checker(priv);
+    }
 
     config = milter_manager_leader_get_configuration(leader);
     g_idle_add(cb_idle_notify_finish_session_to_configuration, config);
@@ -632,10 +702,15 @@ setup_context_signals (MilterClientContext *context,
 static void
 connection_established (MilterClient *client, MilterClientContext *context)
 {
+    MilterManager *manager;
+
+    manager = MILTER_MANAGER(client);
     setup_context_signals(context, MILTER_MANAGER(client));
 
     milter_debug("[%u] [manager][session][start]",
                  milter_agent_get_tag(MILTER_AGENT(context)));
+
+    start_periodical_connection_checker(manager);
 }
 
 static gchar *

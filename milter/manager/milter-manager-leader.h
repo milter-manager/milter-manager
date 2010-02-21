@@ -104,6 +104,9 @@ void                  milter_manager_leader_set_launcher_channel
                                            GIOChannel *read_channel,
                                            GIOChannel *write_channel);
 
+gboolean              milter_manager_leader_check_connection
+                                          (MilterManagerLeader *leader);
+
 MilterStatus          milter_manager_leader_negotiate
                                           (MilterManagerLeader *leader,
                                            MilterOption        *option,

@@ -41,7 +41,6 @@ struct _MilterManagerLeaderPrivate
     gboolean sent_end_of_message;
     GIOChannel *launcher_read_channel;
     GIOChannel *launcher_write_channel;
-    guint periodical_connection_checker_id;
     gboolean processing;
     gboolean requesting_to_children;
 };
@@ -154,25 +153,13 @@ milter_manager_leader_init (MilterManagerLeader *leader)
     priv->sent_end_of_message = FALSE;
     priv->launcher_read_channel = NULL;
     priv->launcher_write_channel = NULL;
-    priv->periodical_connection_checker_id = 0;
     priv->processing = FALSE;
     priv->requesting_to_children = FALSE;
 }
 
-static void
-dispose_periodical_connection_checker (MilterManagerLeaderPrivate *priv)
+gboolean
+milter_manager_leader_check_connection (MilterManagerLeader *leader)
 {
-    if (priv->periodical_connection_checker_id == 0)
-        return;
-
-    g_source_remove(priv->periodical_connection_checker_id);
-    priv->periodical_connection_checker_id = 0;
-}
-
-static gboolean
-connection_check (gpointer data)
-{
-    MilterManagerLeader *leader = data;
     MilterManagerLeaderPrivate *priv;
     gboolean connected = TRUE;
     guint tag = 0;
@@ -234,7 +221,6 @@ connection_check (gpointer data)
                          tag, state_nick, fallback_status_nick);
             g_free(fallback_status_nick);
         }
-        priv->periodical_connection_checker_id = 0;
         reply(leader, fallback_status);
         if (priv->children)
             milter_manager_children_abort(priv->children);
@@ -247,22 +233,6 @@ connection_check (gpointer data)
 }
 
 static void
-start_periodical_connection_checker (MilterManagerLeader *leader)
-{
-    MilterManagerLeaderPrivate *priv;
-    guint interval;
-
-    priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
-    dispose_periodical_connection_checker(priv);
-
-    interval = milter_manager_configuration_get_connection_check_interval(priv->configuration);
-    if (interval > 0) {
-        priv->periodical_connection_checker_id =
-            g_timeout_add(interval * 1000, connection_check, leader);
-    }
-}
-
-static void
 dispose (GObject *object)
 {
     MilterManagerLeader *leader;
@@ -270,8 +240,6 @@ dispose (GObject *object)
 
     leader = MILTER_MANAGER_LEADER(object);
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(object);
-
-    dispose_periodical_connection_checker(priv);
 
     if (priv->configuration) {
         g_object_unref(priv->configuration);
@@ -396,7 +364,6 @@ finished (MilterFinishedEmittable *emittable)
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(emittable);
     priv->processing = FALSE;
     priv->requesting_to_children = FALSE;
-    dispose_periodical_connection_checker(priv);
 }
 
 static const gchar *
@@ -540,7 +507,6 @@ cb_negotiate_reply (MilterServerContext *context, MilterOption *option,
 
     g_signal_emit_by_name(priv->client_context, "negotiate-response",
                           option, macros_requests, MILTER_STATUS_CONTINUE);
-    start_periodical_connection_checker(leader);
 }
 
 static void
