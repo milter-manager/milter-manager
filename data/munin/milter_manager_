@@ -95,10 +95,13 @@ EOM
     end
   end
   puts
-  puts("smtp.label SMTP")
-  puts("smtp.draw LINE2")
-  puts("smtp.type GAUGE")
-  puts
+  case type
+  when "status"
+    puts("smtp.label SMTP")
+    puts("smtp.draw LINE2")
+    puts("smtp.type GAUGE")
+    puts
+  end
 end
 
 def report(log_dir, type, milter)
@@ -107,8 +110,11 @@ def report(log_dir, type, milter)
   header.each_with_index do |name, index|
     puts("#{name}.value #{values[index]}")
   end
-  header, values = fetch(File.join(log_dir, "session.rrd"))
-  puts("smtp.value #{values[header.index('smtp')]}")
+  case type
+  when "status"
+    header, values = fetch(File.join(log_dir, "session.rrd"))
+    puts("smtp.value #{values[header.index('smtp')]}")
+  end
 end
 
 def invalid_file_name_message

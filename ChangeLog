@@ -1,5 +1,7 @@
 2010-02-21  Kouhei Sutou  <kou@clear-code.com>
 
+	* data/munin/milter_manager_: number of SMTP isn't needed for report.
+
 	* milter/manager/milter-manager-leader.[ch]: move connection check
 	callback to ...
 	* milter/manager/milter-manager.c: ... here.
