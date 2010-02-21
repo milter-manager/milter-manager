@@ -1,5 +1,8 @@
 2010-02-21  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter-manager.spec.in: just install milter manager related
+	munin plugins.
+
 	* milter-manager.spec.in: create milter-manager-munin-plugin package.
 
 	* data/munin/milter_manager_ : add missing "Stop" label.
