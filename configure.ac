@@ -297,7 +297,7 @@ if test "$ruby_available" = "yes"; then
     fi
     AC_MSG_NOTICE([checking bundled Ruby/GLib2 $ac_ruby_glib2_version])
     ac_ruby_glib2_dir="binding/ruby/glib-$ac_ruby_glib2_version"
-    if $mkdir_p $ac_ruby_glib2_dir && \
+    if $RUBY -run -e mkdir -- -p $ac_ruby_glib2_dir && \
        (cd $ac_ruby_glib2_dir && \
         $RUBY ../../../$srcdir/$ac_ruby_glib2_dir/extconf.rb); then
       ruby_available=yes
@@ -323,14 +323,14 @@ EOM
   fi
 
   if test "$ac_use_bundled_ruby_glib2_0_16_0" != "yes"; then
-    $mkdir_p binding/ruby/glib-0.16.0
+    $RUBY -run -e mkdir -- -p binding/ruby/glib-0.16.0
     cat <<EOM > binding/ruby/glib-0.16.0/Makefile
 all:
 distdir:
 EOM
   fi
   if test "$ac_use_bundled_ruby_glib2_0_19_3" != "yes"; then
-    $mkdir_p binding/ruby/glib-0.19.3
+    $RUBY -run -e mkdir -- -p binding/ruby/glib-0.19.3
     cat <<EOM > binding/ruby/glib-0.19.3/Makefile
 all:
 distdir:
