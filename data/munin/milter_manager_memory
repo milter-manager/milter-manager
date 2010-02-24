@@ -1,0 +1,34 @@
+#!/bin/sh
+
+#%# family=auto
+#%# capabilities=autoconf
+
+pid_file=${pidfile:/var/run/milter-manager/milter-manager.pid}
+
+case "$1" in
+    autoconf|detect)
+	if [ -f $pid_file ]; then
+	    echo "yes"
+	else
+	    echo "no (PID file doesn't exist: ${pid_file})"
+	fi
+	exit 0
+	;;
+    config)
+	cat <<EOF
+graph_title milter manager: memory usage
+graph_vlabel memory usage in B"
+graph_category milter-manager
+graph_info milter manager memory usage in B"
+
+memory.label Memory
+memory.type GAUGE
+EOF
+	exit 0
+	;;
+    *)
+esac
+
+milter_manager_pid=$(cat ${pid_file})
+memory_in_kb=$(ps -o rss -p ${milter_manager_pid} | tail -1)
+echo "memory.value ${memory_in_kb}000"

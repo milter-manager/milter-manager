@@ -1,5 +1,7 @@
 2010-02-24  Kouhei Sutou  <kou@clear-code.com>
 
+	* data/munin/milter_manager_memory: add.
+
 	* configure.ac: use "ruby -run -e mkdir -- -p" instead of
 	"$mkdir_p" for portability.
 
