@@ -1,5 +1,7 @@
 2010-02-24  Kouhei Sutou  <kou@clear-code.com>
 
+	* data/munin/milter_manager_memory: add missing "-".
+
 	* configure.ac: pass CPPFLAGS to bundled Ruby/GLib2 but ","
 	can't be included in CPPFLAGS.
 

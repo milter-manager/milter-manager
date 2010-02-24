@@ -3,7 +3,7 @@
 #%# family=auto
 #%# capabilities=autoconf
 
-pid_file=${pidfile:/var/run/milter-manager/milter-manager.pid}
+pid_file=${pidfile:-/var/run/milter-manager/milter-manager.pid}
 
 case "$1" in
     autoconf|detect)
