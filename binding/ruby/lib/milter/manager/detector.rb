@@ -1,4 +1,4 @@
-# Copyright (C) 2009  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2009-2010  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -51,8 +51,20 @@ module Milter::Manager
       @package_options ||= @configuration.parsed_package_options || {}
     end
 
+    def command
+      if have_service_command?
+        service_command
+      else
+        run_command
+      end
+    end
+
     def command_options
-      "start"
+      if have_service_command?
+        [@script_name, "start"]
+      else
+        ["start"]
+      end
     end
 
     def detect_clamav_milter_connection_spec
@@ -65,6 +77,20 @@ module Milter::Manager
 
     def detect_opendkim_connection_spec
       opendkim_config_parser.socket
+    end
+
+    def have_service_command?
+      service_command and File.exist?(service_command)
+    end
+
+    def service_command
+      @service_command ||= candidate_service_commands.find do |command|
+        File.executable?(command)
+      end
+    end
+
+    def candidate_service_commands
+      ["/sbin/service", "/usr/sbin/service"]
     end
 
     private

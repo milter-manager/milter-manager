@@ -1,4 +1,4 @@
-# Copyright (C) 2009  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2009-2010  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -25,12 +25,16 @@ module Milter::Manager
       parse_upstart_script
     end
 
-    def command
+    def run_command
       "/sbin/start"
     end
 
     def command_options
-      @script_name
+      if have_service_command?
+        super
+      else
+        [@script_name]
+      end
     end
 
     def upstart_script_readable?

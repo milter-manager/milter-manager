@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2009  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2009-2010  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -158,12 +158,13 @@ EOC
   end
 
   private
-  def redhat_detector(name)
+  def redhat_detector(name, options={})
     detector = Milter::Manager::RedHatDetector.new(@configuration, name)
 
     _init_base_dir = @init_base_dir
     _sysconfig_dir = @sysconfig_dir
     _event_d = @event_d
+    _candidate_service_commands = options[:candidate_service_commands] || []
 
     init_detector = detector.instance_variable_get("@init_detector")
     singleton_init_detector = class << init_detector; self; end
@@ -175,10 +176,20 @@ EOC
       _sysconfig_dir.to_s
     end
 
+    singleton_init_detector.send(:define_method,
+                                 :candidate_service_commands) do
+      _candidate_service_commands
+    end
+
     upstart_detector = detector.instance_variable_get("@upstart_detector")
     singleton_upstart_detector = class << upstart_detector; self; end
     singleton_upstart_detector.send(:define_method, :event_d) do
       _event_d.to_s
+    end
+
+    singleton_upstart_detector.send(:define_method,
+                                    :candidate_service_commands) do
+      _candidate_service_commands
     end
 
     detector

@@ -1,3 +1,10 @@
+2010-02-24  Kouhei Sutou  <kou@clear-code.com>
+
+	* binding/ruby/lib/milter/manager/*-detector.rb,
+	binding/ruby/test/manager/test-debian-init-detector.rb: use
+	service command instead of init or rc script for starting milter
+	when service command is available.
+
 2010-02-21  Kouhei Sutou  <kou@clear-code.com>
 
 	* data/munin/milter_manager_: use '_' instead of '-' in name

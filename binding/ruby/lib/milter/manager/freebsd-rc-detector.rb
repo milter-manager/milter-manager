@@ -1,4 +1,4 @@
-# Copyright (C) 2009  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2009-2010  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -166,7 +166,7 @@ module Milter::Manager
     end
 
     def command_options
-      "#{super} #{@profile_name}"
+      super + [@profile_name]
     end
 
     def rc_d
@@ -179,6 +179,10 @@ module Milter::Manager
 
     def rc_conf_d
       @base_detector.rc_conf_d
+    end
+
+    def candidate_service_commands
+      @base_detector.candidate_service_commands
     end
 
     def detect_opendkim_connection_spec

@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -457,12 +457,13 @@ EOC
   end
 
   private
-  def freebsd_rc_detector(name)
+  def freebsd_rc_detector(name, options={})
     detector = Milter::Manager::FreeBSDRCDetector.new(@configuration, name)
 
     _rc_d = @rc_d
     _rc_conf = @rc_conf
     _rc_conf_d = @rc_conf_d
+    _candidate_service_commands = options[:candidate_service_commands] || []
     singleton_object = class << detector; self; end
     singleton_object.send(:define_method, :rc_d) do
       _rc_d.to_s
@@ -474,6 +475,10 @@ EOC
 
     singleton_object.send(:define_method, :rc_conf_d) do
       _rc_conf_d.to_s
+    end
+
+    singleton_object.send(:define_method, :candidate_service_commands) do
+      _candidate_service_commands
     end
 
     detector

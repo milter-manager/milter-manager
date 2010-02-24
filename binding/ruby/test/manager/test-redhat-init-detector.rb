@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2009  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2009-2010  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -573,11 +573,13 @@ EOC
   end
 
   private
-  def redhat_init_detector(name)
+  def redhat_init_detector(name, options={})
     detector = Milter::Manager::RedHatInitDetector.new(@configuration, name)
 
     _init_base_dir = @init_base_dir
     _etc_dir = @etc_dir
+    _candidate_service_commands = options[:candidate_service_commands] || []
+
     singleton_object = class << detector; self; end
     singleton_object.send(:define_method, :init_base_dir) do
       _init_base_dir.to_s
@@ -585,6 +587,10 @@ EOC
 
     singleton_object.send(:define_method, :etc_dir) do
       _etc_dir.to_s
+    end
+
+    singleton_object.send(:define_method, :candidate_service_commands) do
+      _candidate_service_commands
     end
 
     detector
