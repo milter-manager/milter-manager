@@ -308,6 +308,9 @@ if test "$ruby_available" = "yes"; then
       fi
       RUBY_GLIB2_CFLAGS="-I \$(top_srcdir)/$ac_ruby_glib2_dir/src"
       sed -i '' \
+      	  -e "s,^CPPFLAGS = ,CPPFLAGS = ${CPPFLAGS} ," \
+      	  $ac_ruby_glib2_dir/src/Makefile
+      sed -i '' \
       	  -e 's/ install/ RUBYARCHDIR=$(binding_extdir) RUBYLIBDIR=$(binding_libdir) libdir=$(libdir) install/' \
       	  $ac_ruby_glib2_dir/Makefile
       cat <<EOM >> $ac_ruby_glib2_dir/Makefile
