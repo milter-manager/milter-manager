@@ -1,3 +1,7 @@
+2010-02-25  Kouhei Sutou  <kou@clear-code.com>
+
+	* data/munin/milter_manager_ : use "nan" for no-available value case.
+
 2010-02-24  Kouhei Sutou  <kou@clear-code.com>
 
 	* data/munin/milter_manager_memory: add missing "-".

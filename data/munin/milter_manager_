@@ -30,11 +30,15 @@ def fetch(rrd)
   return [[], []] if result.nil?
   lines = result.split(/\r?\n/)
   header = lines[0].split.collect {|name| normalize_name(name)}
-  values = []
+  values = nil
   lines[2..-1].reverse_each do |line|
-    time, *values = lines[2].split
-    break if values[0] != "nan"
+    time, *_values = lines[2].split
+    if _values[0] != "nan"
+      values = _values
+      break
+    end
   end
+  values ||= header.collect {"nan"}
   [header, values]
 end
 
