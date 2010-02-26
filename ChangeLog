@@ -1,3 +1,8 @@
+2010-02-26  Kouhei Sutou  <kou@cozmixng.org>
+
+	* binding/ruby/lib/milter/compatible.rb (Shellwords#escape): fix
+	variable name.
+
 2010-02-25  Kouhei Sutou  <kou@clear-code.com>
 
 	* milter-manager.spec.in: add %{?dist} in release name.

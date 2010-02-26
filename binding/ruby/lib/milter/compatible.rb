@@ -15,7 +15,7 @@ module Shellwords
     # backported from ruby 1.8.7
     #
     # Author: Akinori MUSHA <knu@iDaemons.org>
-    def escape(string)
+    def escape(str)
       # An empty argument will be skipped, so return empty quotes.
       return "''" if str.empty?
 
