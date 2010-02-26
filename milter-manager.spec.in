@@ -1,7 +1,7 @@
 Summary: A milter to use milters effectively
 Name: milter-manager
 Version: @VERSION@
-Release: 8%{?dist}
+Release: 10%{?dist}
 License: GPLv3+, LGPL3+, AGPL3+, GFDL, Public Domain
 URL: http://milter-manager.sourceforge.net/
 Group: System Environment/Daemons
@@ -131,11 +131,14 @@ fi
 
 %post
 /sbin/chkconfig --add milter-manager
-mkdir -p /var/run/milter-manager
+/bin/mkdir -p /var/run/milter-manager
 /bin/chown -R milter-manager:milter-manager /var/run/milter-manager
 
 %post -n milter-manager-munin-plugin
 /usr/sbin/munin-node-configure --shell | grep milter_manager_ | sh
+[ -f /var/lock/subsys/munin-node ] && \
+    /sbin/service munin-node restart > /dev/null 2>&1
+:
 
 %preun
 if [ $1 -eq 0 ] ; then
@@ -256,7 +259,7 @@ fi
 
 %changelog
 * Thu Feb 17 2010 Kouhei Sutou <kou@clear-code.com>
-- (1.5.0-8)
+- (1.5.0-10)
 - new upstream release
 
 * Thu Oct 29 2009 Kouhei Sutou <kou@clear-code.com>

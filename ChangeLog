@@ -1,5 +1,7 @@
 2010-02-26  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-manager.spec.in: ensure restarting munin-node.
+
 	* binding/ruby/lib/milter/compatible.rb (Shellwords#escape): fix
 	variable name.
 
