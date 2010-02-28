@@ -506,8 +506,6 @@ finish_processing (MilterClientProcessData *data)
         g_list_remove(data->priv->processing_data, data);
     data->priv->n_connections--;
 
-    processing_data = g_list_copy(data->priv->processing_data);
-
     if (data->priv->main_loop) {
         n_connections = data->priv->n_connections;
         g_mutex_lock(data->priv->quit_mutex);
@@ -518,11 +516,10 @@ finish_processing (MilterClientProcessData *data)
         g_mutex_unlock(data->priv->quit_mutex);
     }
 
-    process_data_free(data);
-
     if (!milter_need_debug_log())
         return;
 
+    processing_data = g_list_copy(data->priv->processing_data);
     rest_process = g_string_new("[");
     for (process_data = processing_data;
          process_data;
