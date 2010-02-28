@@ -17,9 +17,9 @@ case "$1" in
     config)
 	cat <<EOF
 graph_title milter manager: memory usage
-graph_vlabel memory usage in B"
+graph_vlabel memory usage in B
 graph_category milter-manager
-graph_info milter manager memory usage in B"
+graph_info milter manager memory usage in B
 
 memory.label Memory
 memory.type GAUGE

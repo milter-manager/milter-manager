@@ -1,3 +1,7 @@
+2010-02-28  Kouhei Sutou  <kou@cozmixng.org>
+
+	* data/munin/milter_manager_memory: remove garbages.
+
 2010-02-26  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter-manager.spec.in: ensure restarting munin-node.
