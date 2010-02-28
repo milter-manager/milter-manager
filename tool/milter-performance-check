@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 #
-# Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
+# Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@ class MilterPerformanceTool
     @force_recipients = nil
     @default_recipients = ["to@example.com"]
     @n_mails = 100
+    @n_concurrent_connections = 10
     @mails = []
     @period = nil
     @interval = nil
@@ -116,6 +117,13 @@ class MilterPerformanceTool
               "This option is ignored when mail files are specified",
               "(#{@n_mails})") do |n_mails|
         @n_mails = n_mails
+      end
+
+      opts.on("--n-concurrent-connections=N", Integer,
+              "Send test mails with N concurrent connections",
+              "This option is ignored when mail files are specified",
+              "(#{@n_concurrent_connections})") do |n_concurrent_connections|
+        @n_concurrent_connections = n_concurrent_connections
       end
 
       opts.on("--period=PERIOD",
@@ -253,11 +261,20 @@ class MilterPerformanceTool
   end
 
   def send_mails_in_parallel(mails)
-    mails.collect do |mail|
-      Thread.start do
-        send_mail(mail)
+    queue = Queue.new
+    mails.each do |mail|
+      queue.push(Proc.new {send_mail(mail)})
+    end
+    threads = []
+    @n_concurrent_connections.times do |i|
+      threads << Thread.new do
+        while (work = queue.pop)
+          work.call
+          break if queue.empty?
+        end
       end
     end
+    threads
   end
 
   def prepare_send_mail(mail_source_file)
