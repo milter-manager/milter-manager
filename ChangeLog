@@ -1,5 +1,7 @@
 2010-02-28  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-manager.spec.in: support postfix_processes.
+
 	* data/munin/postfix_processes: add.
 
 	* data/munin/milter_manager_memory: remove garbages.

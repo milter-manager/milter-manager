@@ -135,7 +135,9 @@ fi
 /bin/chown -R milter-manager:milter-manager /var/run/milter-manager
 
 %post -n milter-manager-munin-plugin
-/usr/sbin/munin-node-configure --shell | grep milter_manager_ | sh
+/usr/sbin/munin-node-configure --shell | \
+    grep -e '\(milter_manager_\|postfix_processes\)' | \
+    sh
 [ -f /var/lock/subsys/munin-node ] && \
     /sbin/service munin-node restart > /dev/null 2>&1
 :
@@ -159,6 +161,7 @@ fi
 %postun -n milter-manager-munin-plugin
 if [ $1 -eq 0 ]; then
     rm %{_sysconfdir}/munin/plugins/milter_manager_* > /dev/null 2>&1
+    rm %{_sysconfdir}/munin/plugins/postfix_processes > /dev/null 2>&1
     [ -f /var/lock/subsys/munin-node ] && \
 	/sbin/service munin-node restart > /dev/null 2>&1
     :
