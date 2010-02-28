@@ -1,0 +1,35 @@
+#!/bin/sh
+
+#%# family=auto
+#%# capabilities=autoconf
+
+if [ "$1" = "config" ]; then
+	cat <<EOF
+graph_title Postfix Processes
+graph_vlabel smtpd processes
+graph_category postfix
+graph_info Number of smtpd processes
+
+processes.label Processes
+processes.type GAUGE
+EOF
+	exit 0
+fi
+
+n_processes=$(ps ax | grep smtpd | grep -v 'grep smtpd' | wc -l)
+
+case "$1" in
+    autoconf|detect)
+    	if [ $n_processes -gt 0 ]; then
+	    echo "yes"
+	else
+	    echo "no (no smtpd is running)"
+	fi
+	exit 0
+	;;
+    *)
+	echo "processes.value ${n_processes}"
+	exit 0
+	;;
+esac
+
