@@ -78,13 +78,16 @@ get_quitted_children (VALUE self)
 static VALUE
 get_smtp_client_address (VALUE self)
 {
+    VALUE rb_address;
     struct sockaddr *address;
     socklen_t address_length;
 
     if (milter_manager_children_get_smtp_client_address(SELF(self),
 							&address,
 							&address_length)) {
-	return ADDRESS2RVAL(address, address_length);
+	rb_address = ADDRESS2RVAL(address, address_length);
+	g_free(address);
+	return rb_address;
     } else {
 	return Qnil;
     }
