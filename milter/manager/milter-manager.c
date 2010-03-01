@@ -564,9 +564,16 @@ cb_client_finished (MilterClientContext *context, gpointer user_data)
     milter_manager_leader_quit(leader);
 }
 
+typedef struct _LeaderFinishData
+{
+    MilterManager *manager;
+    MilterClientContext *client_context;
+} LeaderFinishData;
+
 static void
 teardown_client_context_signals (MilterClientContext *context,
-                                 MilterManagerLeader *leader)
+                                 MilterManagerLeader *leader,
+                                 LeaderFinishData *finished_data)
 {
 #define DISCONNECT(name)                                                \
     g_signal_handlers_disconnect_by_func(context,                       \
@@ -593,7 +600,7 @@ teardown_client_context_signals (MilterClientContext *context,
 #undef DISCONNECT
     g_signal_handlers_disconnect_by_func(leader,
                                          G_CALLBACK(cb_leader_finished),
-                                         context);
+                                         finished_data);
 }
 
 static gboolean
@@ -616,12 +623,6 @@ cb_idle_unref_leader (gpointer data)
     return FALSE;
 }
 
-typedef struct _LeaderFinishData
-{
-    MilterManager *manager;
-    MilterClientContext *client_context;
-} LeaderFinishData;
-
 static void
 cb_leader_finished (MilterFinishedEmittable *emittable, gpointer user_data)
 {
@@ -634,7 +635,7 @@ cb_leader_finished (MilterFinishedEmittable *emittable, gpointer user_data)
     client_context = finish_data->client_context;
 
     leader = MILTER_MANAGER_LEADER(emittable);
-    teardown_client_context_signals(client_context, leader);
+    teardown_client_context_signals(client_context, leader, finish_data);
 
     priv = MILTER_MANAGER_GET_PRIVATE(finish_data->manager);
     priv->leaders = g_list_remove(priv->leaders, leader);

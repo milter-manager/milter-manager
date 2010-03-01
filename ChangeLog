@@ -1,3 +1,7 @@
+2010-03-01  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/manager/milter-manager.c: fix wrong signal disconnected.
+
 2010-02-28  Kouhei Sutou  <kou@cozmixng.org>
 
 	* tool/milter-performance-check: add --n-concurrent-connections option.
