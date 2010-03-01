@@ -1,5 +1,7 @@
 2010-03-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client.c: fix a memory leak.
+
 	* milter/manager/milter-manager.c: fix wrong signal disconnected.
 
 2010-02-28  Kouhei Sutou  <kou@cozmixng.org>

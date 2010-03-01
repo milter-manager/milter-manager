@@ -492,7 +492,6 @@ milter_client_set_listen_channel (MilterClient *client, GIOChannel *channel)
 static void
 finish_processing (MilterClientProcessData *data)
 {
-    GList *processing_data, *process_data;
     guint n_connections;
     GString *rest_process;
     guint tag = 0;
@@ -516,25 +515,28 @@ finish_processing (MilterClientProcessData *data)
         g_mutex_unlock(data->priv->quit_mutex);
     }
 
-    if (!milter_need_debug_log())
-        return;
+    if (milter_need_debug_log()) {
+        GList *processing_data, *process_data;
 
-    processing_data = g_list_copy(data->priv->processing_data);
-    rest_process = g_string_new("[");
-    for (process_data = processing_data;
-         process_data;
-         process_data = g_list_next(process_data)) {
-        MilterClientProcessData *_process_data = process_data->data;
-        g_string_append_printf(
-            rest_process, "<%u>, ",
-            milter_agent_get_tag(MILTER_AGENT(_process_data->context)));
+        processing_data = g_list_copy(data->priv->processing_data);
+        rest_process = g_string_new("[");
+        for (process_data = processing_data;
+             process_data;
+             process_data = g_list_next(process_data)) {
+            MilterClientProcessData *_process_data = process_data->data;
+            g_string_append_printf(
+                rest_process, "<%u>, ",
+                milter_agent_get_tag(MILTER_AGENT(_process_data->context)));
+        }
+        if (processing_data)
+            g_string_truncate(rest_process, rest_process->len - 2);
+        g_string_append(rest_process, "]");
+        g_list_free(processing_data);
+        milter_debug("[%u] [client][rest] %s", tag, rest_process->str);
+        g_string_free(rest_process, TRUE);
     }
-    if (processing_data)
-        g_string_truncate(rest_process, rest_process->len - 2);
-    g_string_append(rest_process, "]");
-    g_list_free(processing_data);
-    milter_debug("[%u] [client][rest] %s", tag, rest_process->str);
-    g_string_free(rest_process, TRUE);
+
+    process_data_free(data);
 }
 
 static gboolean
