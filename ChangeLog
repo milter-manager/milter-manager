@@ -1,5 +1,7 @@
 2010-03-02  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/install-to-freebsd.rd*: remove a needless argument.
+
 	* doc/upgrade-on-freebsd.rd*: use CPPFLAGS for -I instead of CFLAGS.
 
 	* data/munin/*: add license headers.

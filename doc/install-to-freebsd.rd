@@ -297,7 +297,7 @@ restarted.
 
 We add 'postfix' user to 'mail' group:
 
-  % sudo /usr/sbin/pw groupmod postfix mail -m postfix
+  % sudo /usr/sbin/pw groupmod mail -m postfix
 
 We start milter's configuration.
 

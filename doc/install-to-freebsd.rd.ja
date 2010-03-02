@@ -290,7 +290,7 @@ milter_manager_debugをコメントアウトし、デーモンプロセスで起
 
 まず、postfixユーザをmailグループに追加します。
 
-  % sudo /usr/sbin/pw groupmod postfix mail -m postfix
+  % sudo /usr/sbin/pw groupmod mail -m postfix
 
 次に、milterの設定をします。
 
