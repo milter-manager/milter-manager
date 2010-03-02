@@ -1,3 +1,7 @@
+2010-03-02  Kouhei Sutou  <kou@clear-code.com>
+
+	* doc/install-to-freebsd.rd*: use CPPFLAGS for -I instead of CFLAGS.
+
 2010-03-02  Kouhei Sutou  <kou@cozmixng.org>
 
 	* binding/ruby/src/manager/rb-milter-manager-children.c: fix a
