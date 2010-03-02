@@ -1,5 +1,7 @@
 2010-03-02  Kouhei Sutou  <kou@clear-code.com>
 
+	* data/munin/*: add license headers.
+
 	* doc/install-to-freebsd.rd*: use CPPFLAGS for -I instead of CFLAGS.
 
 2010-03-02  Kouhei Sutou  <kou@cozmixng.org>
