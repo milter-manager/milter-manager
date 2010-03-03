@@ -1,7 +1,7 @@
 Summary: A milter to use milters effectively
 Name: milter-manager
 Version: @VERSION@
-Release: 10%{?dist}
+Release: 11%{?dist}
 License: GPLv3+, LGPL3+, AGPL3+, GFDL, Public Domain
 URL: http://milter-manager.sourceforge.net/
 Group: System Environment/Daemons
@@ -136,7 +136,7 @@ fi
 
 %post -n milter-manager-munin-plugin
 /usr/sbin/munin-node-configure --shell | \
-    grep -e '\(milter_manager_\|postfix_processes\)' | \
+    grep -e '\(milter_manager_\|\(postfix\|sendmail\)_processes\)' | \
     sh
 [ -f /var/lock/subsys/munin-node ] && \
     /sbin/service munin-node restart > /dev/null 2>&1
@@ -162,6 +162,7 @@ fi
 if [ $1 -eq 0 ]; then
     rm %{_sysconfdir}/munin/plugins/milter_manager_* > /dev/null 2>&1
     rm %{_sysconfdir}/munin/plugins/postfix_processes > /dev/null 2>&1
+    rm %{_sysconfdir}/munin/plugins/sendmail_processes > /dev/null 2>&1
     [ -f /var/lock/subsys/munin-node ] && \
 	/sbin/service munin-node restart > /dev/null 2>&1
     :
@@ -262,7 +263,7 @@ fi
 
 %changelog
 * Thu Feb 17 2010 Kouhei Sutou <kou@clear-code.com>
-- (1.5.0-10)
+- (1.5.0-11)
 - new upstream release
 
 * Thu Oct 29 2009 Kouhei Sutou <kou@clear-code.com>
