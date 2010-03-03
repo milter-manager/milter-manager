@@ -1,5 +1,7 @@
 2010-03-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* data/munin/sendmail_processes: remove needless grep.
+
 	* milter-manager.spec.in: support sendmail_processes Munin plugin.
 
 	* data/munin/sendmail_processes: add.

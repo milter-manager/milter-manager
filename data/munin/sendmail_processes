@@ -31,7 +31,7 @@ EOF
 	exit 0
 fi
 
-n_processes=$(ps ax | grep sendmail | grep 'sendmail: server' | wc -l)
+n_processes=$(ps ax | grep 'sendmail: server' | wc -l)
 
 case "$1" in
     autoconf|detect)
