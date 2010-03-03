@@ -20,10 +20,10 @@
 
 if [ "$1" = "config" ]; then
 	cat <<EOF
-graph_title Postfix Processes
+graph_title Sendmail Processes
 graph_vlabel processes
-graph_category postfix
-graph_info Number of smtpd processes
+graph_category sendmail
+graph_info Number of sendmail server processes
 
 processes.label Processes
 processes.type GAUGE
@@ -31,14 +31,14 @@ EOF
 	exit 0
 fi
 
-n_processes=$(ps ax | grep smtpd | grep -v 'grep smtpd' | wc -l)
+n_processes=$(ps ax | grep sendmail | grep 'sendmail: server' | wc -l)
 
 case "$1" in
     autoconf|detect)
     	if [ $n_processes -gt 0 ]; then
 	    echo "yes"
 	else
-	    echo "no (no smtpd is running)"
+	    echo "no (no sendmail server is running)"
 	fi
 	exit 0
 	;;
