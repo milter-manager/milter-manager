@@ -1,5 +1,7 @@
 2010-03-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-test-client.c: use G_OPTION_FLAG_REVERSE.
+
 	* tool/milter-test-client.c: add --user, --group, --socket-group options.
 
 	* tool/milter-test-client.c: add --daemon option.

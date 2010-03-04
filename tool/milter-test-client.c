@@ -30,7 +30,6 @@
 static gchar *spec = NULL;
 static gboolean verbose = FALSE;
 static gboolean report_request = TRUE;
-static gboolean no_report_request = FALSE;
 static gboolean use_syslog = FALSE;
 static gboolean daemon = FALSE;
 static gchar *user = FALSE;
@@ -82,8 +81,9 @@ static const GOptionEntry option_entries[] =
      N_("Be verbose"), NULL},
     {"syslog", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_NONE, &use_syslog,
      N_("Use Syslog"), NULL},
-    {"no-report-request", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_NONE,
-     &no_report_request, N_("Don't report request values"), NULL},
+    {"no-report-request", 0, G_OPTION_FLAG_NO_ARG | G_OPTION_FLAG_REVERSE,
+     G_OPTION_ARG_NONE, &report_request,
+     N_("Don't report request values"), NULL},
     {"daemon", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_NONE, &daemon,
      N_("Run as a daemon"), NULL},
     {"user", 0, 0, G_OPTION_ARG_STRING, &user,
@@ -392,7 +392,6 @@ main (int argc, char *argv[])
 
     if (verbose)
         g_setenv("MILTER_LOG_LEVEL", "all", FALSE);
-    report_request = !no_report_request;
     if (use_syslog)
         logger = milter_syslog_logger_new("milter-test-client");
     client = milter_client_new();
