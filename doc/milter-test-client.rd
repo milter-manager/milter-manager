@@ -60,6 +60,27 @@ tool for looking into the problems.
 
    Logs Syslog too.
 
+: --no-report-request
+
+   Doesn't show any information received from MTA.
+
+: --daemon
+
+   Runs as daemon process.
+
+: --user=USER
+
+   Runs as USER's process. root privilege is needed.
+
+: --group=GROUP
+
+   Runs as GROUP's process. root privilege is needed.
+
+: --socket-group=GROUP
+
+   Changes UNIX domain socket group to GROUP when
+   "unix:PATH" format SPEC is used.
+
 : --version
 
    Shows version and exits.

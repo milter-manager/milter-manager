@@ -60,6 +60,27 @@ milter-test-clientが役立つでしょう。
 
    Syslogにもログを出力します。
 
+: --no-report-request
+
+   MTAから受け取った情報を表示しません。
+
+: --daemon
+
+   デーモンプロセスとして起動します。
+
+: --user=USER
+
+   実効ユーザをUSERとします。root権限が必要です。
+
+: --group=GROUP
+
+   実効グループをGROUPとします。root権限が必要です。
+
+: --socket-group=GROUP
+
+   SPECで「unix:パス」を指定したときにUNIXドメインソケットの
+   グループを変更します。
+
 : --version
 
    バージョンを表示して終了します。
