@@ -222,8 +222,10 @@ milter_manager_leader_check_connection (MilterManagerLeader *leader)
             g_free(fallback_status_nick);
         }
         reply(leader, fallback_status);
-        if (priv->children)
+        if (priv->children) {
             milter_manager_children_abort(priv->children);
+            milter_manager_children_quit(priv->children);
+        }
     }
 
     if (state_nick)

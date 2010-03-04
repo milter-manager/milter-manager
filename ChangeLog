@@ -1,5 +1,8 @@
 2010-03-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-leader.c: send abort and quit to
+	children on disconnected.
+
 	* tool/milter-performance-check: don't use more connections over mails.
 
 	* doc/milter-test-client.rd*: add new options.
