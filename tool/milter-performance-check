@@ -266,7 +266,8 @@ class MilterPerformanceTool
       queue.push(Proc.new {send_mail(mail)})
     end
     threads = []
-    @n_concurrent_connections.times do |i|
+    n_concurrent_connections = [queue.size, @n_concurrent_connections].min
+    n_concurrent_connections.times do |i|
       threads << Thread.new do
         while (work = queue.pop)
           work.call
