@@ -1,3 +1,7 @@
+2010-03-04  Kouhei Sutou  <kou@cozmixng.org>
+
+	* tool/milter-test-client.c: add --no-report-request option.
+
 2010-03-03  Kouhei Sutou  <kou@cozmixng.org>
 
 	* data/munin/sendmail_processes: remove needless grep.
