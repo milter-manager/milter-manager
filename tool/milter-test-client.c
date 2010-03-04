@@ -31,7 +31,7 @@ static gchar *spec = NULL;
 static gboolean verbose = FALSE;
 static gboolean report_request = TRUE;
 static gboolean use_syslog = FALSE;
-static gboolean daemon = FALSE;
+static gboolean run_as_daemon = FALSE;
 static gchar *user = FALSE;
 static gchar *group = FALSE;
 static gchar *socket_group = FALSE;
@@ -84,7 +84,7 @@ static const GOptionEntry option_entries[] =
     {"no-report-request", 0, G_OPTION_FLAG_NO_ARG | G_OPTION_FLAG_REVERSE,
      G_OPTION_ARG_NONE, &report_request,
      N_("Don't report request values"), NULL},
-    {"daemon", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_NONE, &daemon,
+    {"daemon", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_NONE, &run_as_daemon,
      N_("Run as a daemon"), NULL},
     {"user", 0, 0, G_OPTION_ARG_STRING, &user,
      N_("Run as USER's process (need root privilege)"), "USER"},
@@ -405,7 +405,7 @@ main (int argc, char *argv[])
         success = milter_client_listen(client, &error);
     if (success)
         success = milter_client_drop_privilege(client, &error);
-    if (success && daemon)
+    if (success && run_as_daemon)
         success = milter_client_daemonize(client, &error);
     if (success) {
         void (*sigint_handler) (int signum);

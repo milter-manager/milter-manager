@@ -1,5 +1,8 @@
 2010-03-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-test-client.c: daemon -> run_as_daemon to avoid
+	symbol collision on FreeBSD.
+
 	* milter/manager/milter-manager-leader.c: send abort and quit to
 	children on disconnected.
 
