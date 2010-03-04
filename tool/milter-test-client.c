@@ -32,6 +32,7 @@ static gboolean verbose = FALSE;
 static gboolean report_request = TRUE;
 static gboolean no_report_request = FALSE;
 static gboolean use_syslog = FALSE;
+static gboolean daemon = FALSE;
 static MilterSyslogLogger *logger = NULL;
 static MilterClient *client = NULL;
 
@@ -80,6 +81,8 @@ static const GOptionEntry option_entries[] =
      N_("Use Syslog"), NULL},
     {"no-report-request", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_NONE,
      &no_report_request, N_("Don't report request values"), NULL},
+    {"daemon", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_NONE, &daemon,
+     N_("Run as a daemon"), NULL},
     {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, print_version,
      N_("Show version"), NULL},
     {NULL}
@@ -387,6 +390,8 @@ main (int argc, char *argv[])
 
     if (spec)
         success = milter_client_set_connection_spec(client, spec, &error);
+    if (success && daemon)
+        milter_client_daemonize(client, &error);
     if (success) {
         void (*sigint_handler) (int signum);
 
