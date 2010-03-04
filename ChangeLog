@@ -1,5 +1,7 @@
 2010-03-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-test-client.c: add --user, --group, --socket-group options.
+
 	* tool/milter-test-client.c: add --daemon option.
 
 	* tool/milter-test-client.c: add --no-report-request option.

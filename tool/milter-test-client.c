@@ -33,6 +33,9 @@ static gboolean report_request = TRUE;
 static gboolean no_report_request = FALSE;
 static gboolean use_syslog = FALSE;
 static gboolean daemon = FALSE;
+static gchar *user = FALSE;
+static gchar *group = FALSE;
+static gchar *socket_group = FALSE;
 static MilterSyslogLogger *logger = NULL;
 static MilterClient *client = NULL;
 
@@ -83,6 +86,12 @@ static const GOptionEntry option_entries[] =
      &no_report_request, N_("Don't report request values"), NULL},
     {"daemon", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_NONE, &daemon,
      N_("Run as a daemon"), NULL},
+    {"user", 0, 0, G_OPTION_ARG_STRING, &user,
+     N_("Run as USER's process (need root privilege)"), "USER"},
+    {"group", 0, 0, G_OPTION_ARG_STRING, &group,
+     N_("Run as GROUP's process (need root privilege)"), "GROUP"},
+    {"socket-group", 0, 0, G_OPTION_ARG_STRING, &socket_group,
+     N_("Change UNIX domain socket group to GROUP"), "GROUP"},
     {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, print_version,
      N_("Show version"), NULL},
     {NULL}
@@ -388,10 +397,17 @@ main (int argc, char *argv[])
         logger = milter_syslog_logger_new("milter-test-client");
     client = milter_client_new();
 
+    milter_client_set_effective_user(client, user);
+    milter_client_set_effective_group(client, group);
+    milter_client_set_default_unix_socket_group(client, socket_group);
     if (spec)
         success = milter_client_set_connection_spec(client, spec, &error);
+    if (success)
+        success = milter_client_listen(client, &error);
+    if (success)
+        success = milter_client_drop_privilege(client, &error);
     if (success && daemon)
-        milter_client_daemonize(client, &error);
+        success = milter_client_daemonize(client, &error);
     if (success) {
         void (*sigint_handler) (int signum);
 
