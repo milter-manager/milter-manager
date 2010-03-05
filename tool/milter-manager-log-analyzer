@@ -398,7 +398,7 @@ class MilterManagerLogAnalyzer
                <max> NaN </max>
 
                <!-- PDP Status -->
-               <last_ds>  </last_ds>
+               <last_ds> NaN </last_ds>
                <value> 0.0000000000e+00 </value>
                <unknown_sec> 0 </unknown_sec>
        </ds>
@@ -562,15 +562,15 @@ EODS
 
     def output_graph(range_class, options={})
       super(range_class, options,
-            "AREA:n_smtp#0000ff:SMTP  ",
+            "AREA:n_smtp#0000ff:SMTP        ",
             "GPRINT:total_smtp:MAX:total\\: %8.0lf sessions",
             "GPRINT:smtp:AVERAGE:avg\\: %6.2lf sessions/#{unit}",
             "GPRINT:max_smtp:MAX:max\\: %4.0lf sessions/#{unit}\\l",
-            "LINE2:n_child#00ff00:milter",
+            "LINE2:n_child#00ff00:milter      ",
             "GPRINT:total_child:MAX:total\\: %8.0lf sessions",
             "GPRINT:child:AVERAGE:avg\\: %6.2lf sessions/#{unit}",
             "GPRINT:max_child:MAX:max\\: %4.0lf sessions/#{unit}\\l",
-            "LINE2:n_disconnected#ff0000:milter",
+            "LINE2:n_disconnected#ff0000:Disconnected",
             "GPRINT:total_disconnected:MAX:total\\: %8.0lf sessions",
             "GPRINT:disconnected:AVERAGE:avg\\: %6.2lf sessions/#{unit}",
             "GPRINT:max_disconnected:MAX:max\\: %4.0lf sessions/#{unit}\\l")
@@ -609,7 +609,7 @@ EODS
       disconnected_label = "Disconnected"
       labels = entries.collect {|_, _, _, label| label}
       labels << smtp_label << disconnected_label
-      max_label_size = labels {|label| label.size}.max
+      max_label_size = labels.collect {|label| label.size}.max
 
       items = []
       entries.each do |type, name, color, label|
@@ -622,6 +622,7 @@ EODS
       range = range_class.new(@step, rows)
       path = build_path(SessionGraphGenerator.base_rrd_file_name)
       items += generate_definitions(path, range, "smtp")
+      items += generate_definitions(path, range, "disconnected")
 
       label = smtp_label.ljust(max_label_size)
       items << "LINE2:n_smtp#000000:#{label}"
@@ -630,7 +631,7 @@ EODS
       items << "GPRINT:max_smtp:MAX:max\\: %4.0lf sessions/#{unit}\\l"
 
       label = disconnected_label.ljust(max_label_size)
-      items << "LINE2:n_disconnected#000000:#{label}"
+      items << "LINE2:n_disconnected#999999:#{label}"
       items << "GPRINT:total_disconnected:MAX:total\\: %8.0lf sessions"
       items << "GPRINT:disconnected:AVERAGE:avg\\: %6.2lf sessions/#{unit}"
       items << "GPRINT:max_disconnected:MAX:max\\: %4.0lf sessions/#{unit}\\l"
