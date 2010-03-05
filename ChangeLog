@@ -1,5 +1,7 @@
 2010-03-05  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-manager-log-analyzer: support disconnected statistics.
+
 	* tool/milter-performance-check: randomly sleep before each
 	concurrent connection.
 
