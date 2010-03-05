@@ -1,3 +1,5 @@
+* [1.5.x] make make number of leaders to be checked per
+  connection check customizable.
 * [1.x.x] improve netstat performance.
   use net.inet.tcp.pcblist and net.inet6.ip6.stats
   on FreeBSD and /proc/net/tcp and /proc/net/tcp6 on Linux directly.

@@ -1,3 +1,9 @@
+2010-03-05  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/manager/milter-manager.c: restrict number of leaders to
+	be checked per connection check to 30.
+	TODO: make 30 customizable.
+
 2010-03-04  Kouhei Sutou  <kou@cozmixng.org>
 
 	* tool/milter-test-client.c: daemon -> run_as_daemon to avoid

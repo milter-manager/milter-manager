@@ -42,6 +42,8 @@ struct _MilterManagerPrivate
     MilterManagerConfiguration *configuration;
     MilterSyslogLogger *logger;
     GList *leaders;
+    GList *next_connection_checked_leader;
+    gboolean connection_checking;
 
     GIOChannel *launcher_read_channel;
     GIOChannel *launcher_write_channel;
@@ -139,6 +141,8 @@ milter_manager_init (MilterManager *manager)
 
     priv->configuration = NULL;
     priv->leaders = NULL;
+    priv->next_connection_checked_leader = NULL;
+    priv->connection_checking = FALSE;
     priv->logger = milter_syslog_logger_new("milter-manager");
 
     priv->launcher_read_channel = NULL;
@@ -186,6 +190,7 @@ dispose (GObject *object)
         g_list_free(priv->leaders);
         priv->leaders = NULL;
     }
+    priv->next_connection_checked_leader = NULL;
 
     if (priv->logger) {
         g_object_unref(priv->logger);
@@ -258,14 +263,30 @@ connection_check (gpointer data)
 {
     MilterManager *manager = data;
     MilterManagerPrivate *priv;
-    GList *node;
+    GList *node, *next_node;
+    guint i;
+    guint n_leaders_per_connection_check = 30; /* FIXME: make customizable */
 
     priv = MILTER_MANAGER_GET_PRIVATE(manager);
 
-    for (node = priv->leaders; node; node = g_list_next(node)) {
+    priv->connection_checking = TRUE;
+
+    if (!priv->next_connection_checked_leader)
+        priv->next_connection_checked_leader = priv->leaders;
+    node = priv->next_connection_checked_leader;
+    i = 0;
+    while (node && i < n_leaders_per_connection_check) {
         MilterManagerLeader *leader = node->data;
-        milter_manager_leader_check_connection(leader);
+        next_node = g_list_next(node);
+        if (!milter_manager_leader_check_connection(leader)) {
+            priv->leaders = g_list_delete_link(priv->leaders, node);
+        }
+        node = next_node;
+        i++;
     }
+    priv->next_connection_checked_leader = node;
+
+    priv->connection_checking = FALSE;
 
     return priv->leaders != NULL;
 }
@@ -638,10 +659,18 @@ cb_leader_finished (MilterFinishedEmittable *emittable, gpointer user_data)
     teardown_client_context_signals(client_context, leader, finish_data);
 
     priv = MILTER_MANAGER_GET_PRIVATE(finish_data->manager);
-    priv->leaders = g_list_remove(priv->leaders, leader);
-    if (!priv->leaders) {
-        milter_debug("[manager][connection-check][dispose] no leaders");
-        dispose_periodical_connection_checker(priv);
+    if (!priv->connection_checking) {
+        GList *node;
+        node = g_list_find(priv->leaders, leader);
+        if (node) {
+            if (priv->next_connection_checked_leader == node)
+                priv->next_connection_checked_leader = g_list_next(node);
+            priv->leaders = g_list_delete_link(priv->leaders, node);
+        }
+        if (!priv->leaders) {
+            milter_debug("[manager][connection-check][dispose] no leaders");
+            dispose_periodical_connection_checker(priv);
+        }
     }
 
     config = milter_manager_leader_get_configuration(leader);
