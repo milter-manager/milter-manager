@@ -1,5 +1,8 @@
 2010-03-05  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-performance-check: randomly sleep before each
+	concurrent connection.
+
 	* milter/manager/milter-manager.c: restrict number of leaders to
 	be checked per connection check to 30.
 	TODO: make 30 customizable.

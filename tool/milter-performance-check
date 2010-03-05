@@ -270,6 +270,7 @@ class MilterPerformanceTool
     n_concurrent_connections.times do |i|
       threads << Thread.new do
         while (work = queue.pop)
+          sleep(rand(1))
           work.call
           break if queue.empty?
         end
