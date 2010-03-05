@@ -100,6 +100,7 @@ def config(log_dir, type, milter, parameters)
   case type
   when "status"
     order << "smtp"
+    order << "disconnected"
   end
   print(<<-EOM)
 graph_title #{title}
@@ -130,6 +131,10 @@ EOM
     puts("smtp.draw LINE2")
     puts("smtp.type GAUGE")
     puts
+    puts("disconnected.label Disconnected")
+    puts("disconnected.draw LINE2")
+    puts("disconnected.type GAUGE")
+    puts
   end
 end
 
@@ -142,7 +147,9 @@ def report(log_dir, type, milter)
   case type
   when "status"
     header, values = fetch(File.join(log_dir, "session.rrd"))
-    puts("smtp.value #{values[header.index('smtp')]}")
+    ["smtp", "disconnected"].each do |key|
+      puts("#{key}.value #{values[header.index(key)]}")
+    end
   end
 end
 
