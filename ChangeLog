@@ -1,5 +1,8 @@
 2010-03-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.c: use default priority
+	idle for lazy negotiate response.
+
 	* milter/manager/milter-manager-configuration.[ch]
 	(milter_manager_configuration_n_sessions_finished): add.
 
