@@ -103,6 +103,9 @@ struct _MilterClientPrivate
     socklen_t address_size;
     gchar *effective_user;
     gchar *effective_group;
+
+    guint finisher_id;
+    GList *finished_list;
 };
 
 typedef struct _MilterClientProcessData
@@ -211,15 +214,25 @@ _milter_client_init (MilterClient *client)
     priv->address_size = 0;
     priv->effective_user = NULL;
     priv->effective_group = NULL;
+
+    priv->finisher_id = 0;
+    priv->finished_list = NULL;
+}
+
+static void
+dispose_process_data_finished_handler (MilterClientProcessData *data)
+{
+    if (data->finished_handler_id > 0) {
+        g_signal_handler_disconnect(data->context,
+                                    data->finished_handler_id);
+        data->finished_handler_id = 0;
+    }
 }
 
 static void
 process_data_free (MilterClientProcessData *data)
 {
-    if (data->finished_handler_id > 0) {
-        g_signal_handler_disconnect(data->context,
-                                    data->finished_handler_id);
-    }
+    dispose_process_data_finished_handler(data);
     g_object_unref(data->context);
     g_free(data);
 }
@@ -232,6 +245,73 @@ dispose_address (MilterClientPrivate *priv)
         priv->address = NULL;
         priv->address_size = 0;
     }
+}
+
+static void
+dispose_finisher (MilterClientPrivate *priv)
+{
+    if (priv->finisher_id > 0) {
+        g_source_remove(priv->finisher_id);
+        priv->finisher_id = 0;
+    }
+}
+
+static void
+finish_processing (MilterClientProcessData *data)
+{
+    guint n_connections;
+    GString *rest_process;
+    guint tag = 0;
+
+    if (milter_need_debug_log()) {
+        tag = milter_agent_get_tag(MILTER_AGENT(data->context));
+        milter_debug("[%u] [client][finish]", tag);
+    }
+
+    data->priv->processing_data =
+        g_list_remove(data->priv->processing_data, data);
+    data->priv->n_connections--;
+
+    if (data->priv->quitting && data->priv->main_loop) {
+        n_connections = data->priv->n_connections;
+        g_mutex_lock(data->priv->quit_mutex);
+        if (data->priv->quitting && n_connections == 0) {
+            milter_debug("[%u] [client][loop][quit]", tag);
+            g_main_loop_quit(data->priv->main_loop);
+        }
+        g_mutex_unlock(data->priv->quit_mutex);
+    }
+
+    if (milter_need_debug_log()) {
+        GList *processing_data, *process_data;
+
+        processing_data = g_list_copy(data->priv->processing_data);
+        rest_process = g_string_new("[");
+        for (process_data = processing_data;
+             process_data;
+             process_data = g_list_next(process_data)) {
+            MilterClientProcessData *_process_data = process_data->data;
+            g_string_append_printf(
+                rest_process, "<%u>, ",
+                milter_agent_get_tag(MILTER_AGENT(_process_data->context)));
+        }
+        if (processing_data)
+            g_string_truncate(rest_process, rest_process->len - 2);
+        g_string_append(rest_process, "]");
+        g_list_free(processing_data);
+        milter_debug("[%u] [client][rest] %s", tag, rest_process->str);
+        g_string_free(rest_process, TRUE);
+    }
+
+    process_data_free(data);
+}
+
+static void
+dispose_finished_data (MilterClientPrivate *priv)
+{
+    g_list_foreach(priv->finished_list, (GFunc)finish_processing, NULL);
+    g_list_free(priv->finished_list);
+    priv->finished_list = NULL;
 }
 
 static void
@@ -303,6 +383,9 @@ dispose (GObject *object)
         g_free(priv->effective_group);
         priv->effective_group = NULL;
     }
+
+    dispose_finisher(priv);
+    dispose_finished_data(priv);
 
     G_OBJECT_CLASS(_milter_client_parent_class)->dispose(object);
 }
@@ -489,71 +572,28 @@ milter_client_set_listen_channel (MilterClient *client, GIOChannel *channel)
         g_io_channel_ref(priv->listen_channel);
 }
 
-static void
-finish_processing (MilterClientProcessData *data)
-{
-    guint n_connections;
-    GString *rest_process;
-    guint tag = 0;
-
-    if (milter_need_debug_log()) {
-        tag = milter_agent_get_tag(MILTER_AGENT(data->context));
-        milter_debug("[%u] [client][finish]", tag);
-    }
-
-    data->priv->processing_data =
-        g_list_remove(data->priv->processing_data, data);
-    data->priv->n_connections--;
-
-    if (data->priv->main_loop) {
-        n_connections = data->priv->n_connections;
-        g_mutex_lock(data->priv->quit_mutex);
-        if (data->priv->quitting && n_connections == 0) {
-            milter_debug("[%u] [client][loop][quit]", tag);
-            g_main_loop_quit(data->priv->main_loop);
-        }
-        g_mutex_unlock(data->priv->quit_mutex);
-    }
-
-    if (milter_need_debug_log()) {
-        GList *processing_data, *process_data;
-
-        processing_data = g_list_copy(data->priv->processing_data);
-        rest_process = g_string_new("[");
-        for (process_data = processing_data;
-             process_data;
-             process_data = g_list_next(process_data)) {
-            MilterClientProcessData *_process_data = process_data->data;
-            g_string_append_printf(
-                rest_process, "<%u>, ",
-                milter_agent_get_tag(MILTER_AGENT(_process_data->context)));
-        }
-        if (processing_data)
-            g_string_truncate(rest_process, rest_process->len - 2);
-        g_string_append(rest_process, "]");
-        g_list_free(processing_data);
-        milter_debug("[%u] [client][rest] %s", tag, rest_process->str);
-        g_string_free(rest_process, TRUE);
-    }
-
-    process_data_free(data);
-}
-
 static gboolean
-single_worker_cb_idle_free_data (gpointer _data)
+single_worker_finisher (gpointer data)
 {
-    MilterClientProcessData *data = _data;
+    MilterClientPrivate *priv = data;
 
-    finish_processing(data);
+    priv->finisher_id = 0;
+    dispose_finished_data(priv);
+
     return FALSE;
 }
 
 static void
 single_worker_cb_finished (MilterClientContext *context, gpointer _data)
 {
+    MilterClientPrivate *priv;
     MilterClientProcessData *data = _data;
 
-    g_idle_add(single_worker_cb_idle_free_data, data);
+    dispose_process_data_finished_handler(data);
+    priv = data->priv;
+    priv->finished_list = g_list_prepend(priv->finished_list, data);
+    if (priv->finisher_id == 0)
+        priv->finisher_id = g_timeout_add(0, single_worker_finisher, priv);
 }
 
 typedef struct _ClientChannelSetupData
@@ -882,7 +922,7 @@ multi_workers_process_client_channel (MilterClient *client, GIOChannel *channel,
                                     client_error);
         g_error_free(client_error);
 
-        single_worker_cb_idle_free_data(data);
+        process_data_free(data);
     }
 }
 
