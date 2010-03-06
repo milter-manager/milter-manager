@@ -1,5 +1,10 @@
 2010-03-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-configuration.[ch],
+	milter/manager/milter-manager.c: move lazy finisher and maintain
+	checker to ...
+	* milter/client/milter-client.c, milter/client.h: ... here.
+
 	* TODO: remove: [1.5.x] use /usr/sbin/service XXX start instead
 	of /etc/init.d/XXX start.
 

@@ -69,7 +69,6 @@ struct _MilterManagerConfigurationPrivate
     guint suspend_time_on_unacceptable;
     guint max_connections;
     guint max_file_descriptors;
-    guint processed_sessions;
     gchar *custom_configuration_directory;
     GHashTable *locations;
     guint connection_check_interval;
@@ -100,7 +99,6 @@ enum
     PROP_SUSPEND_TIME_ON_UNACCEPTABLE,
     PROP_MAX_CONNECTIONS,
     PROP_MAX_FILE_DESCRIPTORS,
-    PROP_PROCESSED_SESSIONS,
     PROP_CUSTOM_CONFIGURATION_DIRECTORY,
     PROP_CONNECTION_CHECK_INTERVAL
 };
@@ -416,7 +414,6 @@ milter_manager_configuration_init (MilterManagerConfiguration *configuration)
     priv->max_connections =
         MILTER_CLIENT_DEFAULT_MAX_CONNECTIONS;
     priv->max_file_descriptors = 0;
-    priv->processed_sessions = 0;
     priv->custom_configuration_directory = NULL;
     priv->locations = g_hash_table_new_full(g_str_hash,
                                             g_str_equal,
@@ -1765,28 +1762,9 @@ milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
 }
 
 void
-milter_manager_configuration_session_finished (MilterManagerConfiguration *configuration)
+milter_manager_configuration_maintain (MilterManagerConfiguration *configuration)
 {
-    milter_manager_configuration_n_sessions_finished(configuration, 1);
-}
-
-void
-milter_manager_configuration_n_sessions_finished (MilterManagerConfiguration *configuration,
-                                                  guint n_sessions)
-{
-    MilterManagerConfigurationPrivate *priv;
     MilterManagerConfigurationClass *configuration_class;
-
-    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
-    priv->processed_sessions += n_sessions;
-    milter_statistics("[sessions][finished] %u(+%u)",
-                      priv->processed_sessions, n_sessions);
-
-    if (priv->maintenance_interval == 0)
-        return;
-
-    if ((priv->processed_sessions % priv->maintenance_interval) >= n_sessions)
-        return;
 
     configuration_class = MILTER_MANAGER_CONFIGURATION_GET_CLASS(configuration);
     if (configuration_class->maintain) {

@@ -66,6 +66,8 @@ enum
 {
     CONNECTION_ESTABLISHED,
     LISTEN_STARTED,
+    MAINTAIN,
+    SESSIONS_FINISHED,
     LAST_SIGNAL
 };
 
@@ -85,7 +87,9 @@ struct _MilterClientPrivate
     guint server_watch_id;
     gchar *connection_spec;
     GList *processing_data;
-    guint n_connections;
+    guint n_processing_sessions;
+    guint n_processed_sessions;
+    guint maintenance_interval;
     guint timeout;
     GIOChannel *listen_channel;
     gint listen_backlog;
@@ -173,6 +177,24 @@ _milter_client_class_init (MilterClientClass *klass)
                      _milter_marshal_VOID__POINTER_UINT,
                      G_TYPE_NONE, 2, G_TYPE_POINTER, G_TYPE_UINT);
 
+    signals[MAINTAIN] =
+        g_signal_new("maintain",
+                     MILTER_TYPE_CLIENT,
+                     G_SIGNAL_RUN_LAST,
+                     G_STRUCT_OFFSET(MilterClientClass, maintain),
+                     NULL, NULL,
+                     g_cclosure_marshal_VOID__VOID,
+                     G_TYPE_NONE, 0);
+
+    signals[SESSIONS_FINISHED] =
+        g_signal_new("sessions-finished",
+                     MILTER_TYPE_CLIENT,
+                     G_SIGNAL_RUN_LAST,
+                     G_STRUCT_OFFSET(MilterClientClass, sessions_finished),
+                     NULL, NULL,
+                     g_cclosure_marshal_VOID__UINT,
+                     G_TYPE_NONE, 0, G_TYPE_UINT);
+
     g_type_class_add_private(gobject_class, sizeof(MilterClientPrivate));
 }
 
@@ -195,7 +217,9 @@ _milter_client_init (MilterClient *client)
     priv->server_watch_id = 0;
     priv->connection_spec = NULL;
     priv->processing_data = NULL;
-    priv->n_connections = 0;
+    priv->n_processing_sessions = 0;
+    priv->n_processed_sessions = 0;
+    priv->maintenance_interval = 0;
     priv->timeout = 7210;
     priv->listen_channel = NULL;
     priv->listen_backlog = -1;
@@ -259,7 +283,7 @@ dispose_finisher (MilterClientPrivate *priv)
 static void
 finish_processing (MilterClientProcessData *data)
 {
-    guint n_connections;
+    guint n_processing_sessions;
     GString *rest_process;
     guint tag = 0;
 
@@ -270,12 +294,13 @@ finish_processing (MilterClientProcessData *data)
 
     data->priv->processing_data =
         g_list_remove(data->priv->processing_data, data);
-    data->priv->n_connections--;
+    data->priv->n_processing_sessions--;
+    data->priv->n_processed_sessions++;
 
     if (data->priv->quitting && data->priv->main_loop) {
-        n_connections = data->priv->n_connections;
+        n_processing_sessions = data->priv->n_processing_sessions;
         g_mutex_lock(data->priv->quit_mutex);
-        if (data->priv->quitting && n_connections == 0) {
+        if (data->priv->quitting && n_processing_sessions == 0) {
             milter_debug("[%u] [client][loop][quit]", tag);
             g_main_loop_quit(data->priv->main_loop);
         }
@@ -307,13 +332,36 @@ finish_processing (MilterClientProcessData *data)
 }
 
 static void
-dispose_finished_data (MilterClientPrivate *priv)
+dispose_finished_data (MilterClient *client)
 {
-    if (priv->finished_data) {
-        g_list_foreach(priv->finished_data, (GFunc)finish_processing, NULL);
-        g_list_free(priv->finished_data);
-        priv->finished_data = NULL;
+    MilterClientPrivate *priv;
+    guint n_processed_sessions_before, n_finished_sessions;
+    guint maintenance_interval;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    if (!priv->finished_data)
+        return;
+
+    n_processed_sessions_before = priv->n_processed_sessions;
+    g_list_foreach(priv->finished_data, (GFunc)finish_processing, NULL);
+    g_list_free(priv->finished_data);
+    priv->finished_data = NULL;
+    n_finished_sessions =
+        priv->n_processed_sessions - n_processed_sessions_before;
+    g_signal_emit(client, signals[SESSIONS_FINISHED], 0, n_finished_sessions);
+
+    milter_statistics("[sessions][finished] %u(+%u) %u",
+                      priv->n_processed_sessions,
+                      n_finished_sessions,
+                      priv->n_processing_sessions);
+
+    maintenance_interval = milter_client_get_maintenance_interval(client);
+    if ((maintenance_interval == 0) ||
+        ((priv->n_processed_sessions % maintenance_interval) >=
+         n_finished_sessions)) {
+        return;
     }
+    g_signal_emit(client, signals[MAINTAIN], 0);
 }
 
 static void
@@ -387,7 +435,7 @@ dispose (GObject *object)
     }
 
     dispose_finisher(priv);
-    dispose_finished_data(priv);
+    dispose_finished_data(MILTER_CLIENT(object));
 
     G_OBJECT_CLASS(_milter_client_parent_class)->dispose(object);
 }
@@ -575,12 +623,14 @@ milter_client_set_listen_channel (MilterClient *client, GIOChannel *channel)
 }
 
 static gboolean
-single_worker_finisher (gpointer data)
+single_worker_finisher (gpointer _data)
 {
-    MilterClientPrivate *priv = data;
+    MilterClientProcessData *data = _data;
 
-    priv->finisher_id = 0;
-    dispose_finished_data(priv);
+    milter_debug("[client][finisher][run]");
+
+    data->priv->finisher_id = 0;
+    dispose_finished_data(data->client);
 
     return FALSE;
 }
@@ -597,7 +647,7 @@ single_worker_cb_finished (MilterClientContext *context, gpointer _data)
     if (priv->finisher_id == 0) {
         priv->finisher_id = g_idle_add_full(G_PRIORITY_DEFAULT,
                                             single_worker_finisher,
-                                            priv,
+                                            data,
                                             NULL);
     }
 }
@@ -694,12 +744,12 @@ accept_connection (MilterClient *client, gint server_fd,
     suspend_time = milter_client_get_suspend_time_on_unacceptable(client);
     max_connections = milter_client_get_max_connections(client);
     for (n_suspend = 0;
-         0 < max_connections && max_connections <= priv->n_connections;
+         0 < max_connections && max_connections <= priv->n_processing_sessions;
          n_suspend++) {
         milter_warning("[client][accept][suspend] "
                        "too many processing connection: %u, max: %u; "
                        "suspend accepting connection in %d seconds: #%u",
-                       priv->n_connections,
+                       priv->n_processing_sessions,
                        max_connections,
                        suspend_time,
                        n_suspend);
@@ -735,7 +785,7 @@ accept_connection (MilterClient *client, gint server_fd,
         return FALSE;
     }
 
-    priv->n_connections++;
+    priv->n_processing_sessions++;
     if (milter_need_debug_log()) {
         gchar *spec;
         spec = milter_connection_address_to_spec(&(address->address.base));
@@ -1304,7 +1354,7 @@ milter_client_main (MilterClient *client)
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
-    if (priv->listening_channel || priv->n_connections > 0) {
+    if (priv->listening_channel || priv->n_processing_sessions > 0) {
         GError *error;
 
         error = g_error_new(MILTER_CLIENT_ERROR,
@@ -1403,7 +1453,7 @@ milter_client_shutdown (MilterClient *client)
         g_io_channel_unref(priv->listening_channel);
         priv->listening_channel = NULL;
 
-        if (priv->n_connections == 0)
+        if (priv->n_processing_sessions == 0)
             g_main_loop_quit(priv->main_loop);
     }
     g_mutex_unlock(priv->quit_mutex);
@@ -1620,6 +1670,30 @@ milter_client_set_effective_group (MilterClient *client,
         g_free(priv->effective_group);
         priv->effective_group = g_strdup(effective_group);
     }
+}
+
+guint
+milter_client_get_maintenance_interval (MilterClient *client)
+{
+    MilterClientClass *klass;
+
+    klass = MILTER_CLIENT_GET_CLASS(client);
+    if (klass->get_maintenance_interval)
+        return klass->get_maintenance_interval(client);
+    else
+        return MILTER_CLIENT_GET_PRIVATE(client)->maintenance_interval;
+}
+
+void
+milter_client_set_maintenance_interval (MilterClient *client, guint n_sessions)
+{
+    MilterClientClass *klass;
+
+    klass = MILTER_CLIENT_GET_CLASS(client);
+    if (klass->set_maintenance_interval)
+        klass->set_maintenance_interval(client, n_sessions);
+    else
+        MILTER_CLIENT_GET_PRIVATE(client)->maintenance_interval = n_sessions;
 }
 
 void

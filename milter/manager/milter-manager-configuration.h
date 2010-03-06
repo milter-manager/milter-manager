@@ -218,6 +218,8 @@ guint         milter_manager_configuration_get_maintenance_interval
 void          milter_manager_configuration_set_maintenance_interval
                                      (MilterManagerConfiguration *configuration,
                                       guint                       n_sessions);
+void          milter_manager_configuration_maintain
+                                     (MilterManagerConfiguration *configuration);
 
 guint         milter_manager_configuration_get_suspend_time_on_unacceptable
                                      (MilterManagerConfiguration *configuration);

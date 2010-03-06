@@ -249,6 +249,12 @@ struct _MilterClientClass
     const gchar *(*get_effective_group)   (MilterClient *client);
     void   (*set_effective_group)         (MilterClient *client,
                                            const gchar  *effective_group);
+    guint  (*get_maintenance_interval)    (MilterClient *client);
+    void   (*set_maintenance_interval)    (MilterClient *client,
+                                           guint         maintenance_interval);
+    void   (*maintain)                    (MilterClient *client);
+    void   (*sessions_finished)           (MilterClient *client,
+                                           guint         n_finished_sessions);
 };
 
 GQuark               milter_client_error_quark       (void);
@@ -592,6 +598,35 @@ const gchar         *milter_client_get_effective_group
 void                 milter_client_set_effective_group
                                                      (MilterClient  *client,
                                                       const gchar   *effective_group);
+
+/**
+ * milter_client_get_maintenance_interval:
+ * @client: a %MilterClient.
+ *
+ * Gets the maintenance interval. #MilterClient::maintain
+ * signal is emitted each 'maintenance interval' sessions
+ * finished.
+ *
+ * 0 means 'maintain signal isn't needed'.
+ *
+ * Returns: the maintenance interval.
+ */
+guint                milter_client_get_maintenance_interval
+                                                     (MilterClient  *client);
+
+/**
+ * milter_client_set_maintenance_interval:
+ * @client: a %MilterClient.
+ * @maintenance_interval: the maintenance interval.
+ *
+ * Sets the maintenance interval. 0 means 'maintain
+ * signal isn't needed'. See
+ * milter_client_get_maintenance_interval() for more
+ * details.
+ */
+void                 milter_client_set_maintenance_interval
+                                                     (MilterClient  *client,
+                                                      guint          n_sessions);
 
 /**
  * milter_client_main:
