@@ -2,6 +2,114 @@
 
 = NEWS --- The history of milter manager
 
+== [release-1-5-0] 1.5.0: 2010-03-08
+
+A development release.
+
+=== Document
+
+==== Improvements
+
+  * For Debian GNU/Linux・Ubuntu:
+    * Removed needless group change description [Suggested by ZnZ]
+  * For CentOS:
+    * Used Yum instead of RPM directly.
+
+=== milter manager
+
+==== Improvements
+
+  * init script for Debian GNU/Linux用:
+    * Supported 'status'. [Suggested by ZnZ]
+    * Delayed parameter checks until they are needed.
+      [Suggested by ZnZ]
+    * Removed needless dependencies. [Suggested by ZnZ]
+
+  * [#2921072] Showed loaded configuration file path on
+    verbose mode. [Suggested by Antuan Avdioukhine]
+  * [#2921072] Showed file and line that are changed the
+    configuration item. [Suggested by Antuan Avdioukhine]
+  * [#2921078] Supported no child milter work.
+    [Suggested by Antuan Avdioukhine]
+
+  * Added configuration items:
+    * ((<remove_milter|"doc/configuration.rd#remove_milter">))
+    * ((<manager.connection_check_interval|"doc/configuration.rd#manager.connection_check_interval">))
+    * ((<manager.define_connection_checker|"doc/configuration.rd#manager.define_connection_checker">))
+    * ((<manager.use_netstat_connection_checker|"doc/configuration.rd#manager.use_netstat_connection_checker">))
+
+  * Bundled Ruby/GLib 0.19.3. (For FreeBSD)
+  * Changed to use /usr/sbin/service or /sbin/service if it
+    is available.
+
+  * Supported OpenDKIM detection on CentOS.
+
+  * Supported Syslog facility change:
+    MILTER_LOG_SYSLOG_FACILITY environment variable is used.
+
+  * ((<manager.max_file_descriptors|"doc/configuration.rd.ja#manager.max_file_descriptors">)):
+    Changed both of soft and hard limit not only soft limit.
+
+  * Supported ((<Munin|URL:http://munin-monitoring.org/>)).
+
+  * Speed up and effective memory usage.
+
+==== Bug fixes
+
+  * FreeBSD: Fixed OpenDKIM detection when any profiles
+    aren't used in /etc/rc.conf. [Reported by Tsuchiya]
+  * Fixed a bug that applicable condition is ignored by
+    Ruby's GC.
+
+==== Experimental
+
+  * Introduced policy framework to specify condition and
+    milter all together.
+
+=== milter-toolkit
+
+  * Supported milter development by Ruby bindings.
+
+=== milter-manager-log-analyzer
+
+  * Speed up (almost 2 times faster)
+  * Supported visualization about number connections that is
+    disconnection from SMTP clients.
+
+=== milter-performance-check
+
+  * New options
+    * ((<--n-concurrent-connections|"doc/milter-performance-check#--n-concurrent-connections">)):
+      Specifies maximum number of concurrency connections.
+
+=== milter-test-client
+
+  * New options:
+    * ((<--no-report-request|"doc/milter-test-client#--no-report-request">)):
+      Doesn't dump requests from MTA.
+    * ((<--user|"doc/milter-test-client#--user">)):
+      Specifies effective user.
+    * ((<--group|"doc/milter-test-client#--group">)):
+      Specifies effective group.
+    * ((<--socket-group|"doc/milter-test-client#--socket-group">)):
+      Specifies UNIX domain socket's group.
+
+=== Package
+
+==== CentOS
+
+  * Split to some packages.
+
+=== Ttest
+
+  * Supported ((<Cutter|URL:http://cutter.sourceforge.net/>)) 1.1.0
+
+=== Thanks
+
+  * ZnZ
+  * Tsuchiya
+  * Antuan Avdioukhine
+
 == [release-1-4-1] 1.4.1: 2009-10-29
 
 A bug fix release for 1.4.0.

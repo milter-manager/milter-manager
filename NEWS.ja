@@ -2,6 +2,109 @@
 
 = お知らせ --- milter managerの歴史
 
+== [release-1-5-0] 1.5.0: 2010-03-08
+
+開発版リリースです。
+
+=== ドキュメント
+
+==== 改善
+
+  * Debian GNU/Linux・Ubuntu用ドキュメント
+    * 不必要なグループ変更の記述を削除 [西山さんが提案]
+  * CentOS用ドキュメント
+    * よりインストールの簡単なYumを利用した記述へ変更
+
+=== milter manager
+
+==== 改善
+
+  * Debian GNU/Linux用のinitスクリプト
+    * statusをサポート [西山さんが提案]
+    * 必要になるまでパラメータチェックを遅延 [西山さんが提案]
+    * 不必要な依存関係を削除 [西山さんが提案]
+
+  * [#2921072] 冗長ログモード時に読み込んだ設定ファイルのパ
+    スを表示 [Antuan Avdioukhineさんが提案]
+  * [#2921072] 設定を変更したファイルと行を表示
+    [Antuan Avdioukhineさんが提案]
+  * [#2921078] 子milterなしの動作をサポート
+    [Antuan Avdioukhineさんが提案]
+
+  * 設定項目追加
+    * ((<remove_milter|"doc/configuration.rd.ja#remove_milter">))
+    * ((<manager.connection_check_interval|"doc/configuration.rd.ja#manager.connection_check_interval">))
+    * ((<manager.define_connection_checker|"doc/configuration.rd.ja#manager.define_connection_checker">))
+    * ((<manager.use_netstat_connection_checker|"doc/configuration.rd.ja#manager.use_netstat_connection_checker">))
+
+  * Ruby/GLib 0.19.3を同梱（FreeBSD用）
+  * /usr/sbin/serviceまたは/sbin/serviceがある場合はそれを利
+    用するように変更
+
+  * CentOSでのOpenDKIM検出に対応
+
+  * Syslogのfacility変更に対応: MILTER_LOG_SYSLOG_FACILITY環境変数を指定
+
+  * ((<manager.max_file_descriptors|"doc/configuration.rd.ja#manager.max_file_descriptors">)):
+    ソフトリミットだけではなく、ソフトリミットとハードリミットの両方を変更
+
+  * ((<Munin|URL:http://munin-monitoring.org/>))対応
+
+  * 高速化・メモリ使用法の改善
+
+==== バグ修正
+
+  * FreeBSD: /etc/rc.confでプロファイルを指定していなかった
+    場合にOpenDKIMの検出に失敗する問題の修正 [土谷さんが報告]
+  * RubyのGCにより適用条件が実行されないことがある問題の修正
+
+==== 実験的
+
+  * 条件とmilterを一度に指定できるポリシーフレームワークを追加
+
+=== milter-toolkit
+
+  * Rubyバインディングによるmilter作成をサポート
+
+=== milter-manager-log-analyzer
+
+  * 高速化（約2倍）
+  * SMTPクライアントの途中切断数のグラフ化をサポート
+
+=== milter-performance-check
+
+  * オプション追加
+    * ((<--n-concurrent-connections|"doc/milter-performance-check#--n-concurrent-connections">)):
+      最大同時接続数を指定
+
+=== milter-test-client
+
+  * オプション追加
+    * ((<--no-report-request|"doc/milter-test-client#--no-report-request">)):
+      MTAからのリクエストをダンプしない
+    * ((<--user|"doc/milter-test-client#--user">)):
+      実効ユーザを指定
+    * ((<--group|"doc/milter-test-client#--group">)):
+      実効グループを指定
+    * ((<--socket-group|"doc/milter-test-client#--socket-group">)):
+      ソケットの所有グループを指定
+
+=== パッケージ
+
+==== CentOS
+
+  * パッケージを分割
+
+=== テスト
+
+  * ((<Cutter|URL:http://cutter.sourceforge.net/index.html.ja>)) 1.1.0対応
+
+=== 感謝
+
+  * 西山さん
+  * 土谷さん
+  * Antuan Avdioukhineさん
+
 == [release-1-4-1] 1.4.1: 2009-10-29
 
 1.4.0のバグフィックスリリースです。
