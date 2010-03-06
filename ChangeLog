@@ -1,5 +1,8 @@
 2010-03-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client.c: use idle with default priority
+	instead of timeout.
+
 	* milter/client/milter-client.c: use timeout instead of idle.
 
 2010-03-05  Kouhei Sutou  <kou@cozmixng.org>

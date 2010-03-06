@@ -592,8 +592,12 @@ single_worker_cb_finished (MilterClientContext *context, gpointer _data)
     dispose_process_data_finished_handler(data);
     priv = data->priv;
     priv->finished_list = g_list_prepend(priv->finished_list, data);
-    if (priv->finisher_id == 0)
-        priv->finisher_id = g_timeout_add(0, single_worker_finisher, priv);
+    if (priv->finisher_id == 0) {
+        priv->finisher_id = g_idle_add_full(G_PRIORITY_DEFAULT,
+                                            single_worker_finisher,
+                                            priv,
+                                            NULL);
+    }
 }
 
 typedef struct _ClientChannelSetupData
@@ -667,7 +671,10 @@ single_worker_process_client_channel (MilterClient *client, GIOChannel *channel,
     memcpy(&(data->address), address, address_size);
     g_io_channel_ref(channel);
 
-    g_timeout_add(0, single_worker_cb_timeout_client_channel_setup, data);
+    g_idle_add_full(G_PRIORITY_DEFAULT,
+                    single_worker_cb_timeout_client_channel_setup,
+                    data,
+                    NULL);
 }
 
 static gboolean
@@ -829,16 +836,17 @@ single_worker_accept_thread (gpointer data)
 {
     MilterClient *client = data;
     MilterClientPrivate *priv;
-    GSource *timeout_source;
+    GSource *source;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
-    timeout_source = g_timeout_source_new(0);
-    g_source_set_callback(timeout_source,
+    source = g_timeout_source_new(0);
+    g_source_set_priority(source, G_PRIORITY_DEFAULT);
+    g_source_set_callback(source,
                           single_worker_cb_timeout_unlock_quit_mutex,
                           client, NULL);
-    g_source_attach(timeout_source, g_main_loop_get_context(priv->accept_loop));
-    g_source_unref(timeout_source);
+    g_source_attach(source, g_main_loop_get_context(priv->accept_loop));
+    g_source_unref(source);
 
     g_mutex_lock(priv->quit_mutex);
     if (priv->quitting)
@@ -863,7 +871,10 @@ single_worker_start_accept (MilterClient *client)
     if (priv->quitting) {
         g_mutex_unlock(priv->quit_mutex);
     } else {
-        g_timeout_add(0, single_worker_cb_timeout_unlock_quit_mutex, client);
+        g_idle_add_full(G_PRIORITY_DEFAULT,
+                        single_worker_cb_timeout_unlock_quit_mutex,
+                        client,
+                        NULL);
         g_main_loop_run(priv->main_loop);
     }
     g_thread_join(thread);
