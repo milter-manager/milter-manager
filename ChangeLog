@@ -1,5 +1,11 @@
 2010-03-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-configuration.[ch]
+	(milter_manager_configuration_n_sessions_finished): add.
+
+	* milter/manager/milter-manager.c: use default priority idle for
+	dispose leaders.
+
 	* milter/client/milter-client.c: use idle with default priority
 	instead of timeout.
 

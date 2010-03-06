@@ -289,6 +289,9 @@ void          milter_manager_configuration_clear
 
 void          milter_manager_configuration_session_finished
                                      (MilterManagerConfiguration *configuration);
+void          milter_manager_configuration_n_sessions_finished
+                                     (MilterManagerConfiguration *configuration,
+                                      guint                       n_sessions);
 
 
 gchar        *milter_manager_configuration_to_xml

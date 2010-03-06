@@ -50,6 +50,9 @@ struct _MilterManagerPrivate
 
     guint periodical_connection_checker_id;
     guint current_periodical_connection_check_interval;
+
+    guint finisher_id;
+    GList *finished_leaders;
 };
 
 enum
@@ -150,6 +153,9 @@ milter_manager_init (MilterManager *manager)
 
     priv->periodical_connection_checker_id = 0;
     priv->current_periodical_connection_check_interval = 0;
+
+    priv->finisher_id = 0;
+    priv->finished_leaders = NULL;
 }
 
 static void
@@ -172,6 +178,41 @@ dispose_periodical_connection_checker (MilterManagerPrivate *priv)
 }
 
 static void
+dispose_finished_leaders (MilterManagerPrivate *priv)
+{
+    guint n_sessions = 0;
+    GList *node;
+
+    if (!priv->finished_leaders)
+        return;
+
+    for (node = priv->finished_leaders; node; node = g_list_next(node)) {
+        MilterManagerLeader *leader = node->data;
+
+        g_object_unref(leader);
+        n_sessions++;
+    }
+    g_list_free(priv->finished_leaders);
+    priv->finished_leaders = NULL;
+
+    milter_debug("[manager][sessions][finished] %u", n_sessions);
+
+    if (priv->configuration)
+        milter_manager_configuration_n_sessions_finished(priv->configuration,
+                                                         n_sessions);
+}
+
+static void
+dispose_finisher (MilterManagerPrivate *priv)
+{
+    if (priv->finisher_id > 0) {
+        g_source_remove(priv->finisher_id);
+        priv->finisher_id = 0;
+    }
+    dispose_finished_leaders(priv);
+}
+
+static void
 dispose (GObject *object)
 {
     MilterManagerPrivate *priv;
@@ -179,6 +220,7 @@ dispose (GObject *object)
     priv = MILTER_MANAGER_GET_PRIVATE(object);
 
     dispose_periodical_connection_checker(priv);
+    dispose_finisher(priv);
 
     if (priv->configuration) {
         configuration_set_manager(priv->configuration, NULL);
@@ -625,21 +667,13 @@ teardown_client_context_signals (MilterClientContext *context,
 }
 
 static gboolean
-cb_idle_notify_finish_session_to_configuration (gpointer data)
+cb_idle_finisher (gpointer data)
 {
-    MilterManagerConfiguration *config = data;
+    MilterManagerPrivate *priv = data;
 
-    milter_manager_configuration_session_finished(config);
-
-    return FALSE;
-}
-
-static gboolean
-cb_idle_unref_leader (gpointer data)
-{
-    MilterManagerLeader *leader = data;
-
-    g_object_unref(leader);
+    milter_debug("[manager][finisher][run]");
+    priv->finisher_id = 0;
+    dispose_finished_leaders(priv);
 
     return FALSE;
 }
@@ -650,7 +684,6 @@ cb_leader_finished (MilterFinishedEmittable *emittable, gpointer user_data)
     LeaderFinishData *finish_data = user_data;
     MilterClientContext *client_context;
     MilterManagerLeader *leader;
-    MilterManagerConfiguration *config;
     MilterManagerPrivate *priv;
 
     client_context = finish_data->client_context;
@@ -673,9 +706,13 @@ cb_leader_finished (MilterFinishedEmittable *emittable, gpointer user_data)
         }
     }
 
-    config = milter_manager_leader_get_configuration(leader);
-    g_idle_add(cb_idle_notify_finish_session_to_configuration, config);
-    g_idle_add(cb_idle_unref_leader, leader);
+    priv->finished_leaders = g_list_prepend(priv->finished_leaders, leader);
+    if (priv->finisher_id == 0) {
+        priv->finisher_id = g_idle_add_full(G_PRIORITY_DEFAULT,
+                                            cb_idle_finisher,
+                                            priv,
+                                            NULL);
+    }
 
     g_free(finish_data);
 }

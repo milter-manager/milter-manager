@@ -1767,21 +1767,32 @@ milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
 void
 milter_manager_configuration_session_finished (MilterManagerConfiguration *configuration)
 {
+    milter_manager_configuration_n_sessions_finished(configuration, 1);
+}
+
+void
+milter_manager_configuration_n_sessions_finished (MilterManagerConfiguration *configuration,
+                                                  guint n_sessions)
+{
     MilterManagerConfigurationPrivate *priv;
     MilterManagerConfigurationClass *configuration_class;
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
-    priv->processed_sessions++;
+    priv->processed_sessions += n_sessions;
+    milter_statistics("[sessions][finished] %u(+%u)",
+                      priv->processed_sessions, n_sessions);
 
     if (priv->maintenance_interval == 0)
         return;
 
-    if ((priv->processed_sessions % priv->maintenance_interval) != 0)
+    if ((priv->processed_sessions % priv->maintenance_interval) >= n_sessions)
         return;
 
     configuration_class = MILTER_MANAGER_CONFIGURATION_GET_CLASS(configuration);
-    if (configuration_class->maintain)
+    if (configuration_class->maintain) {
+        milter_debug("[configuration][maintain]");
         configuration_class->maintain(configuration);
+    }
 }
 
 gchar *
