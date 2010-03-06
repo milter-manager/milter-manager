@@ -608,7 +608,7 @@ typedef struct _ClientChannelSetupData
 } ClientChannelSetupData;
 
 static gboolean
-single_worker_cb_timeout_client_channel_setup (gpointer user_data)
+single_worker_cb_idle_client_channel_setup (gpointer user_data)
 {
     ClientChannelSetupData *setup_data = user_data;
     MilterClient *client;
@@ -672,7 +672,7 @@ single_worker_process_client_channel (MilterClient *client, GIOChannel *channel,
     g_io_channel_ref(channel);
 
     g_idle_add_full(G_PRIORITY_DEFAULT,
-                    single_worker_cb_timeout_client_channel_setup,
+                    single_worker_cb_idle_client_channel_setup,
                     data,
                     NULL);
 }
@@ -820,7 +820,7 @@ single_worker_server_watch_func (GIOChannel *channel, GIOCondition condition,
 }
 
 static gboolean
-single_worker_cb_timeout_unlock_quit_mutex (gpointer data)
+single_worker_cb_idle_unlock_quit_mutex (gpointer data)
 {
     MilterClientPrivate *priv;
 
@@ -840,10 +840,10 @@ single_worker_accept_thread (gpointer data)
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
-    source = g_timeout_source_new(0);
+    source = g_idle_source_new();
     g_source_set_priority(source, G_PRIORITY_DEFAULT);
     g_source_set_callback(source,
-                          single_worker_cb_timeout_unlock_quit_mutex,
+                          single_worker_cb_idle_unlock_quit_mutex,
                           client, NULL);
     g_source_attach(source, g_main_loop_get_context(priv->accept_loop));
     g_source_unref(source);
@@ -872,7 +872,7 @@ single_worker_start_accept (MilterClient *client)
         g_mutex_unlock(priv->quit_mutex);
     } else {
         g_idle_add_full(G_PRIORITY_DEFAULT,
-                        single_worker_cb_timeout_unlock_quit_mutex,
+                        single_worker_cb_idle_unlock_quit_mutex,
                         client,
                         NULL);
         g_main_loop_run(priv->main_loop);
