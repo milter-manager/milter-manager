@@ -1,6 +1,8 @@
 * [1.5.0] milter manager admin: Rails 2.3.4 -> 2.3.5
 * [1.5.0] Debian package: support Munin plugins
 * [1.5.0] Ruby bindings: write a document for creating milter
+* [1.5.0] support Postfix access(5) and cidr_table(5) format
+  for whitelist applicable condition.
 --
 * [1.5.x] make number of leaders to be checked per
   connection check customizable.
@@ -39,8 +41,6 @@
     * elapsed time
   * session log signal passes MilterSessionResult
   * message log signal passes MilterSessionResult and MilterMessageResult
-* [1.5.0] support Postfix access(5) and cidr_table(5) format
-  for whitelist applicable condition.
 * Exim local_scan support.
 * milter-test-server: stop processing if all recipients are rejected.
 * XMail support.
