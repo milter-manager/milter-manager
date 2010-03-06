@@ -1,5 +1,7 @@
 2010-03-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/client/test-client.c: add tests for effective user and group.
+
 	* test/client/test-client.c: add a test for max_connections.
 
 	* test/client/test-client.c: add a test for maintenance_interval.

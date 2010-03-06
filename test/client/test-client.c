@@ -769,6 +769,26 @@ test_max_connections (void)
 }
 
 void
+test_effective_user (void)
+{
+    cut_assert_equal_string(
+        NULL, milter_client_get_effective_user(client));
+    milter_client_set_effective_user(client, "nobody");
+    cut_assert_equal_string(
+        "nobody", milter_client_get_effective_user(client));
+}
+
+void
+test_effective_group (void)
+{
+    cut_assert_equal_string(
+        NULL, milter_client_get_effective_group(client));
+    milter_client_set_effective_group(client, "nogroup");
+    cut_assert_equal_string(
+        "nogroup", milter_client_get_effective_group(client));
+}
+
+void
 test_maintenance_interval (void)
 {
     cut_assert_equal_uint(
