@@ -1,5 +1,7 @@
 2010-03-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: add items for 1.5.0 release.
+
 	* NEWS*: add 1.5.0 entry.
 
 	* doc/install-options-to-centos.rd.ja: fix a typo.

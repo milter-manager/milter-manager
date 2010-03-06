@@ -1,4 +1,8 @@
-* [1.5.x] make make number of leaders to be checked per
+* [1.5.0] milter manager admin: Rails 2.3.4 -> 2.3.5
+* [1.5.0] Debian package: support Munin plugins
+* [1.5.0] Ruby bindings: write a document for creating milter
+--
+* [1.5.x] make number of leaders to be checked per
   connection check customizable.
 * [1.x.x] improve netstat performance.
   use net.inet.tcp.pcblist and net.inet6.ip6.stats
