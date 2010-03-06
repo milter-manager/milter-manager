@@ -105,7 +105,7 @@ struct _MilterClientPrivate
     gchar *effective_group;
 
     guint finisher_id;
-    GList *finished_list;
+    GList *finished_data;
 };
 
 typedef struct _MilterClientProcessData
@@ -216,7 +216,7 @@ _milter_client_init (MilterClient *client)
     priv->effective_group = NULL;
 
     priv->finisher_id = 0;
-    priv->finished_list = NULL;
+    priv->finished_data = NULL;
 }
 
 static void
@@ -309,9 +309,11 @@ finish_processing (MilterClientProcessData *data)
 static void
 dispose_finished_data (MilterClientPrivate *priv)
 {
-    g_list_foreach(priv->finished_list, (GFunc)finish_processing, NULL);
-    g_list_free(priv->finished_list);
-    priv->finished_list = NULL;
+    if (priv->finished_data) {
+        g_list_foreach(priv->finished_data, (GFunc)finish_processing, NULL);
+        g_list_free(priv->finished_data);
+        priv->finished_data = NULL;
+    }
 }
 
 static void
@@ -591,7 +593,7 @@ single_worker_cb_finished (MilterClientContext *context, gpointer _data)
 
     dispose_process_data_finished_handler(data);
     priv = data->priv;
-    priv->finished_list = g_list_prepend(priv->finished_list, data);
+    priv->finished_data = g_list_prepend(priv->finished_data, data);
     if (priv->finisher_id == 0) {
         priv->finisher_id = g_idle_add_full(G_PRIORITY_DEFAULT,
                                             single_worker_finisher,
