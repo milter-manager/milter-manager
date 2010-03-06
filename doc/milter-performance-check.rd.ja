@@ -88,9 +88,18 @@ smtp-sourceを利用するとよいでしょう。
 
 : --n-mails=N
 
-   合計でN個のメールを送信します。各メールは一斉に送信を開始します。
+   合計でN個のメールを送信します。複数のメールが同時に送信さ
+   れます。同時に最大で何通送るかは
+   ((<--n-concurrent-connections|.#--n-concurrent-connections>))
+   で指定します。
 
    既定値は100です。
+
+: --n-concurrent-connections=N
+
+   同時に最大N接続でメールを送信します。
+
+   既定値は10です。
 
 : --period=PERIOD
 

@@ -85,9 +85,17 @@ smtp-source is more better tool for you.
 
 : --n-mails=N
 
-   Sends N mails. All mails are sent concurrently.
+   Sends N mails. Some mails are sent concurrently.
+   Maximum concurrency can be specified by
+   ((<--n-concurrent-connections|.#--n-concurrent-connections>)).
 
    The default is 100.
+
+: --n-concurrent-connections=N
+
+   Sends mails with N connections concurrently.
+
+   The default is 10.
 
 : --period=PERIOD
 

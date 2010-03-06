@@ -1,5 +1,8 @@
 2010-03-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/milter-performance-check.rd*: add --n-concurrent-connections
+	option document.
+
 	* milter-manager.spec.in: split Ruby bindings for milter-toolkit.
 
 	* milter/manager/milter-manager-controller.c: use default priority
@@ -274,7 +277,7 @@
 
 	* binding/ruby/Makefile.am: remove an auto-generated file from
 	dist files.
-	(ruby_glib2_0_16_0_files): fix a typp.
+	(ruby_glib2_0_16_0_files): fix a typo.
 
 	* data/defaults/redhat.conf: detect OpenDKIM on CentOS.
 
