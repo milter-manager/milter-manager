@@ -47,8 +47,11 @@ void test_remove_unix_socket_on_create_accessor (void);
 void test_remove_unix_socket_on_create (void);
 void test_not_remove_unix_socket_on_create (void);
 void test_suspend_time_on_unacceptable (void);
-void test_connection_spec (void);
+void test_max_connections (void);
+void test_effective_user (void);
+void test_effective_group (void);
 void test_maintenance_interval (void);
+void test_connection_spec (void);
 
 static MilterClient *client;
 static MilterTestServer *server;
@@ -753,6 +756,16 @@ test_connection_spec (void)
     gcut_assert_error(error);
     cut_assert_equal_string("inet:12345",
                             milter_client_get_connection_spec(client));
+}
+
+void
+test_max_connections (void)
+{
+    cut_assert_equal_uint(
+        0, milter_client_get_max_connections(client));
+    milter_client_set_max_connections(client, 10);
+    cut_assert_equal_uint(
+        10, milter_client_get_max_connections(client));
 }
 
 void
