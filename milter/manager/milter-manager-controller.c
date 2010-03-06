@@ -229,7 +229,7 @@ cb_context_reader_finished (MilterReader *reader, gpointer data)
 {
     MilterManagerControllerContext *context = data;
 
-    g_idle_add(cb_free_context, context);
+    g_idle_add_full(G_PRIORITY_DEFAULT, cb_free_context, context, NULL);
 }
 
 static void

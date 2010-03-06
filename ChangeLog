@@ -1,5 +1,8 @@
 2010-03-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-controller.c: use default priority
+	idle for lazy context unref.
+
 	* milter/manager/milter-manager-children.c: use default priority
 	idle for lazy negotiate response.
 
