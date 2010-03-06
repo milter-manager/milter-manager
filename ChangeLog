@@ -1,5 +1,7 @@
 2010-03-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/configuration.rd*: fix a typo.
+
 	* doc/milter-performance-check.rd*: add --n-concurrent-connections
 	option document.
 

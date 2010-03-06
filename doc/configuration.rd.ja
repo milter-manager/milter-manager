@@ -445,7 +445,7 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
    既定値:
      manager.custom_configuration_directory = nil
 
-: manager.user_netstat_connection_checker
+: manager.use_netstat_connection_checker
 
    1.5.0から使用可能。
 

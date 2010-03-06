@@ -453,7 +453,7 @@ Here are descriptions of configuration items.
    Default:
      manager.custom_configuration_directory = nil
 
-: manager.user_netstat_connection_checker
+: manager.use_netstat_connection_checker
 
    Since 1.5.0.
 
