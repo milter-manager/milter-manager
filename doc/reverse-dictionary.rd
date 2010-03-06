@@ -8,6 +8,12 @@ This is a document to find how to do by want to do as key.
 
 == Install
 
+=== Install to Debian GNU/Linux
+
+((<"Install to Debian GNU/Linux"|install-to-debian.rd>))
+describes it. You can maintain milter manager package easily
+because milter manager can be installed with aptitude.
+
 === Install to Ubuntu Linux
 
 ((<Install to Ubuntu Linux|install-to-ubuntu.rd>)) describes
@@ -28,6 +34,7 @@ milter manager can be installed as RPM package.
 
 There are documents for each platform:
 
+  * ((<For Debian|install-options-to-debian.rd#debian-milter-manager-log-analyzer>))
   * ((<For Ubuntu|install-options-to-ubuntu.rd#ubuntu-milter-manager-log-analyzer>))
   * ((<For CentOS|install-options-to-centos.rd#centos-milter-manager-log-analyzer>))
   * ((<For FreeBSD|install-options-to-freebsd.rd#freebsd-milter-manager-log-analyzer>))
@@ -36,6 +43,7 @@ There are documents for each platform:
 
 There are documents for each platform:
 
+  * ((<For Debian|install-options-to-debian.rd#debian-milter-manager-admin>))
   * ((<For Ubuntu|install-options-to-ubuntu.rd#ubuntu-milter-manager-admin>))
   * ((<For CentOS|install-options-to-centos.rd#centos-milter-manager-admin>))
   * ((<For FreeBSD|install-options-to-freebsd.rd#freebsd-milter-manager-admin>))
