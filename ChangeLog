@@ -1,5 +1,7 @@
 2010-03-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-manager.spec.in: split Ruby bindings for milter-toolkit.
+
 	* milter/manager/milter-manager-controller.c: use default priority
 	idle for lazy context unref.
 

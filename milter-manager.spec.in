@@ -1,7 +1,7 @@
 Summary: A milter to use milters effectively
 Name: milter-manager
 Version: @VERSION@
-Release: 11%{?dist}
+Release: 12%{?dist}
 License: GPLv3+, LGPL3+, AGPL3+, GFDL, Public Domain
 URL: http://milter-manager.sourceforge.net/
 Group: System Environment/Daemons
@@ -14,9 +14,7 @@ BuildRequires: make
 BuildRequires: glib2-devel
 BuildRequires: ruby
 BuildRequires: ruby-devel
-Requires: glib2
-Requires: ruby
-Requires: libmilter-toolkit = %{version}-%{release}
+Requires: ruby-milter-toolkit = %{version}-%{release}
 Requires(pre): /usr/bin/getent, /usr/sbin/useradd
 Requires(pre): /usr/bin/id, /usr/sbin/groupadd
 Requires(post): /sbin/chkconfig
@@ -30,6 +28,7 @@ administration cost and combine milters flexibly.
 %package -n libmilter-toolkit
 Summary: A milter protocol library
 Group: System Environment/Libraries
+Requires: glib2
 
 %description -n libmilter-toolkit
 Both of client-side and server-side milter protocol are implemented.
@@ -44,6 +43,15 @@ Requires: libmilter-toolkit = %{version}-%{release}
 %description -n libmilter-toolkit-devel
 This package contains the headers, and other support files
 required for developing applications against libmilter-toolkit.
+
+%package -n ruby-milter-toolkit
+Summary: Ruby bindings for libmilter-toolkit
+Group: Development/Libraries
+Requires: ruby
+Requires: libmilter-toolkit = %{version}-%{release}
+
+%description -n ruby-milter-toolkit
+This package contains the Ruby bindings for libmilter-toolkit.
 
 %package -n libmilter-compatible
 Summary: libmilter API and ABI compatible milter library
@@ -178,7 +186,9 @@ fi
 %{_includedir}/milter-manager/milter/manager.h
 %{_includedir}/milter-manager/milter/manager/
 %{_libdir}/libmilter-manager.*
-%{_libdir}/milter-manager/binding/
+%{_libdir}/milter-manager/binding/ext/milter_manager.*
+%{_libdir}/milter-manager/binding/lib/milter/manager.rb
+%{_libdir}/milter-manager/binding/lib/milter/manager/
 %{_libdir}/milter-manager/module/
 %{_libdir}/pkgconfig/milter-manager.pc
 %{_mandir}/man1/milter-manager.*
@@ -238,6 +248,18 @@ fi
 %{_libdir}/pkgconfig/milter-client.pc
 %{_libdir}/pkgconfig/milter-server.pc
 
+%files -n ruby-milter-toolkit
+%defattr(-,root,root)
+%doc ChangeLog ChangeLog.toolkit README README.ja NEWS NEWS.ja TODO
+%doc %{_datadir}/milter-manager/license/
+%doc %{_datadir}/gtk-doc/html/milter-manager/
+%{_libdir}/milter-manager/binding/ext/milter_toolkit.*
+%{_libdir}/milter-manager/binding/lib/milter.rb
+%{_libdir}/milter-manager/binding/lib/milter/compatible
+%{_libdir}/milter-manager/binding/lib/milter/toolkit.rb
+%{_libdir}/milter-manager/binding/lib/milter/client.rb
+%{_libdir}/milter-manager/binding/lib/milter/client/
+
 %files -n libmilter-compatible
 %defattr(-,root,root)
 %doc ChangeLog ChangeLog.toolkit README README.ja NEWS NEWS.ja TODO
@@ -263,7 +285,7 @@ fi
 
 %changelog
 * Thu Feb 17 2010 Kouhei Sutou <kou@clear-code.com>
-- (1.5.0-11)
+- (1.5.0-12)
 - new upstream release
 
 * Thu Oct 29 2009 Kouhei Sutou <kou@clear-code.com>
