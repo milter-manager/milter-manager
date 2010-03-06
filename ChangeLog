@@ -1,5 +1,7 @@
 2010-03-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/install-options-to-centos.rd.ja: fix a typo.
+
 	* doc/reverse-dictionary.rd*: add references to Debian.
 
 	* doc/configuration.rd*: fix a typo.

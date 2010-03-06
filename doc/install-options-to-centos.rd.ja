@@ -10,7 +10,7 @@ CentOSに特化したmilter manager関連ソフトウェアのインストール
 に依存しない一般的なインストール情報は((<インストール
 |install.rd.ja>))を見てください。
 
-== [ubuntu-milter-manager-log-analyzer] milter-manager-log-analyzerのインストール
+== [centos-milter-manager-log-analyzer] milter-manager-log-analyzerのインストール
 
 milter-manager-log-analyzerはmilter-manager RPMパッケージに含
 まれているので、すでにインストールされています。ここでは、
