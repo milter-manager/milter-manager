@@ -1,5 +1,7 @@
 2010-03-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/client/test-client.c: add a test for maintenance_interval.
+
 	* milter/manager/milter-manager-configuration.[ch],
 	milter/manager/milter-manager.c: move lazy finisher and maintain
 	checker to ...

@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -48,6 +48,7 @@ void test_remove_unix_socket_on_create (void);
 void test_not_remove_unix_socket_on_create (void);
 void test_suspend_time_on_unacceptable (void);
 void test_connection_spec (void);
+void test_maintenance_interval (void);
 
 static MilterClient *client;
 static MilterTestServer *server;
@@ -752,6 +753,16 @@ test_connection_spec (void)
     gcut_assert_error(error);
     cut_assert_equal_string("inet:12345",
                             milter_client_get_connection_spec(client));
+}
+
+void
+test_maintenance_interval (void)
+{
+    cut_assert_equal_uint(
+        0, milter_client_get_maintenance_interval(client));
+    milter_client_set_maintenance_interval(client, 10);
+    cut_assert_equal_uint(
+        10, milter_client_get_maintenance_interval(client));
 }
 
 /*
