@@ -68,6 +68,13 @@ milter-manager-log-analyzerが収集した統計情報をMuninに提供す
 
   % sudo aptitude -V -D -y install milter-manager-munin-plugins
 
+((*注: Muninに統計情報を提供する場合はmilter manager 1.5.0以
+降のmilter-manager-log-analyzerが生成したデータベースを使う
+必要があります。1.5.0より前のバージョンからアップデートして
+いる場合は~milter-manager/public_html/log/以下を削除してくだ
+さい。削除すると5分後に新しく統計情報データベースが作成され
+ます。*))
+
 ==== munin-nodeの設定
 
 Muninサーバからの接続を許可します。Muninサーバが
