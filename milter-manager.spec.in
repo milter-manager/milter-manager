@@ -73,14 +73,14 @@ Requires: libmilter-toolkit-devel = %{version}-%{release}
 This package contains the headers, and other support files
 required for developing applications against libmilter-compatible.
 
-%package -n milter-manager-munin-plugin
-Summary: Munin plugin for milter manager
+%package -n milter-manager-munin-plugins
+Summary: Munin plugins for milter manager
 Group: System Environment/Libraries
 Requires: milter-manager = %{version}-%{release}
 Requires: munin-node
 
-%description -n milter-manager-munin-plugin
-This package contains the munin plugin for munin-node.
+%description -n milter-manager-munin-plugins
+This package contains the munin plugins for munin-node.
 
 %prep
 %setup -q
@@ -167,7 +167,7 @@ if [ $1 -eq 0 ]; then
 	%logmsg "User \"milter-manager\" could not be deleted."
 fi
 
-%postun -n milter-manager-munin-plugin
+%postun -n milter-manager-munin-plugins
 if [ $1 -eq 0 ]; then
     rm %{_sysconfdir}/munin/plugins/milter_manager_* > /dev/null 2>&1
     rm %{_sysconfdir}/munin/plugins/postfix_processes > /dev/null 2>&1
@@ -283,7 +283,7 @@ fi
 %{_libdir}/milter-manager/libmilter.la
 %{_libdir}/pkgconfig/libmilter.pc
 
-%files -n milter-manager-munin-plugin
+%files -n milter-manager-munin-plugins
 %defattr(-,root,root)
 %doc ChangeLog ChangeLog.toolkit README README.ja NEWS NEWS.ja TODO
 %doc %{_datadir}/milter-manager/license/
