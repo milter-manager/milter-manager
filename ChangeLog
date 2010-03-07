@@ -1,5 +1,8 @@
 2010-03-07  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-manager.spec.in: remove existing munin plugins before
+	installing plugins.
+
 	* doc/install-options-to-*.rd*: update "how to install milter
 	manager admin".
 

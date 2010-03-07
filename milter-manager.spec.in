@@ -144,6 +144,9 @@ fi
 /bin/chown -R milter-manager:milter-manager /var/run/milter-manager
 
 %post -n milter-manager-munin-plugin
+rm %{_sysconfdir}/munin/plugins/milter_manager_* > /dev/null 2>&1
+rm %{_sysconfdir}/munin/plugins/postfix_processes > /dev/null 2>&1
+rm %{_sysconfdir}/munin/plugins/sendmail_processes > /dev/null 2>&1
 /usr/sbin/munin-node-configure --shell | \
     grep -e '\(milter_manager_\|\(postfix\|sendmail\)_processes\)' | \
     sh
