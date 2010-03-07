@@ -193,7 +193,7 @@ _milter_client_class_init (MilterClientClass *klass)
                      G_STRUCT_OFFSET(MilterClientClass, sessions_finished),
                      NULL, NULL,
                      g_cclosure_marshal_VOID__UINT,
-                     G_TYPE_NONE, 0, G_TYPE_UINT);
+                     G_TYPE_NONE, 1, G_TYPE_UINT);
 
     g_type_class_add_private(gobject_class, sizeof(MilterClientPrivate));
 }

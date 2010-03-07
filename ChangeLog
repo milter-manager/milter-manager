@@ -1,5 +1,7 @@
 2010-03-07  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/client/milter-client.c: fix a typo.
+
 	* milter/manager/milter-manager.c: add a debug message.
 
 2010-03-07  Kouhei Sutou  <kou@cozmixng.org>
