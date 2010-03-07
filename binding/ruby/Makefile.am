@@ -1,6 +1,7 @@
-SUBDIRS =	\
-	src	\
-	lib	\
+SUBDIRS =					\
+	src					\
+	lib					\
+	ruby-milter				\
 	test
 
 if WITH_BUNDLED_RUBY_GLIB2_0_16_0

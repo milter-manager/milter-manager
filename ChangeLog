@@ -1,5 +1,7 @@
 2010-03-07  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/Makefile.am (SUBDIRS): add missing ruby-milter directory.
+
 	* configure.ac, binding/ruby/ruby-milter: add --enable-ruby-milter
 	to use Ruby bindings with 'require "milter"'.
 
