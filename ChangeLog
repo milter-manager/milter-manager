@@ -1,5 +1,8 @@
 2010-03-07  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/core/milter-logger.h: use G_LOG_LEVEL_MASK instead of
+	enumerating all log level.
+
 	* milter/core/milter-core.c: re-delegate GLib log handler in
 	reinit to avoid Ruby/GLib log handler is used.
 

@@ -210,14 +210,9 @@ void             milter_logger_disconnect_default_handler
 
 #define MILTER_GLIB_LOG_DELEGATE(domain)        \
     g_log_set_handler(domain,                   \
+                      G_LOG_LEVEL_MASK |        \
                       G_LOG_FLAG_RECURSION |    \
-                      G_LOG_FLAG_FATAL |        \
-                      G_LOG_LEVEL_ERROR |       \
-                      G_LOG_LEVEL_CRITICAL |    \
-                      G_LOG_LEVEL_WARNING |     \
-                      G_LOG_LEVEL_MESSAGE |     \
-                      G_LOG_LEVEL_INFO |        \
-                      G_LOG_LEVEL_DEBUG,        \
+                      G_LOG_FLAG_FATAL,         \
                       milter_glib_log_handler,  \
                       NULL)
 
