@@ -361,7 +361,7 @@ AC_ARG_ENABLE([ruby-milter],
               [ruby_milterdir="no"])
 
 if test "$ruby_available" = "yes" -a "$ruby_milterdir" != "no"; then
-  AC_MSG_CHECKING([Ruby milter install directory])
+  AC_MSG_CHECKING([where to Ruby milter install])
   if test "$ruby_milterdir" = "yes" ; then
      if test -n "$rbconfig_vendorlibdir"; then
        ruby_milterdir="$rbconfig_vendorlibdir"
