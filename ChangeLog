@@ -1,5 +1,7 @@
 2010-03-07  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/install-to-freebsd.rd*: 7.x-RELEASE -> 8.0-RELEASE.
+
 	* TODO: remove [1.5.0] Debian package: support Munin plugins
 
 	* module/configuration/ruby/milter-manager-ruby-configuration.c:

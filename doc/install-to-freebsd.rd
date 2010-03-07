@@ -8,7 +8,7 @@ This document describes how to install milter manager to
 FreeBSD. See ((<Install|install.rd>)) for general install
 information.
 
-This document assumes that FreeBSD 7.1-RELEASE is used.
+This document assumes that FreeBSD 8.0-RELEASE is used.
 
 == Install packages
 
