@@ -1,5 +1,7 @@
 2010-03-08  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/ruby-milter-tutorial.rd*: add but not completed yet...
+
 	* binding/ruby/lib/milter/client/command-line.rb: remove a garbage.
 
 	* binding/ruby/lib/milter/client.rb: pass context to session

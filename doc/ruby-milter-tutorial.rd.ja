@@ -1,0 +1,58 @@
+# -*- rd -*-
+
+= Rubyでmilter開発 --- Rubyバインディングのチュートリアル
+
+== このドキュメントについて
+
+milter managerが提供するライブラリを用いてRubyでmilterを開発
+する方法を説明します。
+
+== インストール
+
+Rubyでmilterを開発する場合はconfigure時に--enable-ruby-milterオ
+プションを指定します。Debian GNU/Linux、Ubuntu、CentOS用のパッ
+ケージでは専用のパッケージがあるのでそれをインストールします。
+
+Debian GNU/Linux、Ubuntuの場合:
+
+  % sudo aptitude -V -D -y install libmilter-toolkit-ruby1.8
+
+CentOSの場合:
+
+  % sudo yum install -y ruby-milter-toolkit
+
+パッケージがない環境では以下のように
+configureに--enable-ruby-milterオプションを指定してください。
+
+  % ./configure --enable-ruby-milter
+
+インストールが成功しているかは以下のコマンドで確認できます。
+
+  % ruby -r milter -e 'p Milter::TOOLKIT_VERSION'
+  [1, 5, 0]
+
+バージョン情報が出力されればインストールは成功しています。
+
+== 概要
+
+Rubyで開発したmilterは以下のようになります。
+
+  require 'milter'
+
+  class Session < Milter::ClientSession
+    def initialize(context)
+      super(context)
+      # 初期化処理
+    end
+
+    def connect(host, address)
+      # ...
+    end
+
+    # その他のコールバック定義
+  end
+
+  command_line = Milter::Client::CommandLine.new
+  command_line.run do |client, _options|
+    client.register(Session)
+  end
