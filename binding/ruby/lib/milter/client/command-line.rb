@@ -113,7 +113,7 @@ module Milter
 
       def setup_logger_options
         @option_parser.separator ""
-        @option_parser.separator "Logging @options"
+        @option_parser.separator "Logging options"
 
         level_names = Milter::LogLevelFlags.values.collect {|value| value.nick}
         level_names << "all"
