@@ -30,7 +30,7 @@ class SessionsController < ApplicationController
   def destroy
     logout_killing_session!
     flash[:notice] = t("notice.success.logout")
-    redirect_back_or_default('/')
+    redirect_back_or_default(root_url)
   end
 
   protected
