@@ -23,8 +23,8 @@ upgrade milter-manager package.
 
 === Upgrade gems
 
-  % sudo gem install rails -v '2.3.4'
-  % sudo gem install passenger -v '2.2.5'
+  % sudo gem install rails -v '2.3.5'
+  % sudo gem install passenger -v '2.2.11'
 
 === Upgrade Passenger
 
@@ -33,11 +33,11 @@ To build Passenger we run the following command:
   % (echo 1; echo) | sudo passenger-install-apache2-module
 
 We upgrade Passenger version in
-/etc/httpd/conf.d/milter-manager.conf to 2.2.5:
+/etc/httpd/conf.d/milter-manager.conf to 2.2.11:
 
 /etc/httpd/conf.d/milter-manager.conf:
-  LoadModule passenger_module /usr/lib/ruby/gems/1.8/gems/passenger-2.2.5/ext/apache2/mod_passenger.so
-  PassengerRoot /usr/lib/ruby/gems/1.8/gems/passenger-2.2.5
+  LoadModule passenger_module /usr/lib/ruby/gems/1.8/gems/passenger-2.2.11/ext/apache2/mod_passenger.so
+  PassengerRoot /usr/lib/ruby/gems/1.8/gems/passenger-2.2.11
   PassengerRuby /usr/bin/ruby
 
   RailsBaseURI /milter-manager
@@ -54,6 +54,7 @@ We upgrade milter manager admin and its database schema:
   % cd ~milter-manager/admin
   % sudo -u milter-manager -H rake gems:install
   % sudo -u milter-manager -H rake RAILS_ENV=production db:migrate
+  % sudo -u milter-manager -H touch tmp/restart.txt
 
 == Conclusion
 

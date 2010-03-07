@@ -21,8 +21,8 @@ CentOSに特化したmilter manager関連ソフトウェアの更新方
 
 === gemの更新
 
-  % sudo gem install rails -v '2.3.4'
-  % sudo gem install passenger -v '2.2.5'
+  % sudo gem install rails -v '2.3.5'
+  % sudo gem install passenger -v '2.2.11'
 
 === Passengerの更新
 
@@ -31,11 +31,11 @@ CentOSに特化したmilter manager関連ソフトウェアの更新方
   % (echo 1; echo) | sudo passenger-install-apache2-module
 
 /etc/httpd/conf.d/milter-manager.confに記述されている
-Passengerのバージョンを2.2.5にします。
+Passengerのバージョンを2.2.11にします。
 
 /etc/httpd/conf.d/milter-manager.conf:
-  LoadModule passenger_module /usr/lib/ruby/gems/1.8/gems/passenger-2.2.5/ext/apache2/mod_passenger.so
-  PassengerRoot /usr/lib/ruby/gems/1.8/gems/passenger-2.2.5
+  LoadModule passenger_module /usr/lib/ruby/gems/1.8/gems/passenger-2.2.11/ext/apache2/mod_passenger.so
+  PassengerRoot /usr/lib/ruby/gems/1.8/gems/passenger-2.2.11
   PassengerRuby /usr/bin/ruby
 
   RailsBaseURI /milter-manager
@@ -52,6 +52,7 @@ milter manager admin本体とデータベーススキーマを更新します。
   % cd ~milter-manager/admin
   % sudo -u milter-manager -H rake gems:install
   % sudo -u milter-manager -H rake RAILS_ENV=production db:migrate
+  % sudo -u milter-manager -H touch tmp/restart.txt
 
 == まとめ
 

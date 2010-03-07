@@ -1,5 +1,8 @@
 2010-03-07  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/upgrade-options-on-*.rd*: update "how to upgrade milter
+	manager admin".
+
 	* admin/app/controllers/sessions_controller.rb: use root_url
 	instead of '/'.
 
