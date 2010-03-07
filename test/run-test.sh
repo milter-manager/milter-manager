@@ -58,9 +58,9 @@ if test x"$USE_GTK" = x"yes"; then
 fi
 
 ruby_dir=$top_dir/binding/ruby
-RUBYLIB=$RUBYLIB:$ruby_dir/lib
-RUBYLIB=$RUBYLIB:$ruby_dir/src/toolkit/.libs
-RUBYLIB=$RUBYLIB:$ruby_dir/src/manager/.libs
+MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_dir/lib
+MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_dir/src/toolkit/.libs
+MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_dir/src/manager/.libs
 ruby_glib2_dir=
 if [ -f $ruby_dir/glib-0.19.3/src/glib2.so ]; then
     ruby_glib2_dir=$ruby_dir/glib-0.19.3
@@ -68,10 +68,10 @@ elif [ -f $ruby_dir/glib-0.16.0/src/glib2.so ]; then
     ruby_glib2_dir=$ruby_dir/glib-0.16.0
 fi
 if [ "$ruby_glib2_dir" != "" ]; then
-    RUBYLIB=$RUBYLIB:$ruby_glib2_dir/src/lib
-    RUBYLIB=$RUBYLIB:$ruby_glib2_dir/src
+    MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_glib2_dir/src/lib
+    MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_glib2_dir/src
 fi
-export RUBYLIB
+export MILTER_MANAGER_RUBYLIB
 export MILTER_MANAGER_CONFIGURATION_MODULE_DIR=$top_dir/module/configuration/ruby/.libs
 export MILTER_MANAGER_CONFIG_DIR=$top_dir/test/fixtures/configuration
 

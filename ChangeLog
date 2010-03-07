@@ -1,5 +1,10 @@
 2010-03-07  Kouhei Sutou  <kou@clear-code.com>
 
+	* module/configuration/ruby/milter-manager-ruby-configuration.c:
+	prepend MILTER_MANAGER_RUBYLIB environment variable to include
+	path for testing.
+	* test/run-test.sh: use MILTER_MANAGER_RUBYLIB instead of RUBYLIB.
+
 	* milter/core/milter-logger.h: use G_LOG_LEVEL_MASK instead of
 	enumerating all log level.
 

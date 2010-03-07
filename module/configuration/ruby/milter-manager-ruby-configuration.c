@@ -312,12 +312,17 @@ init_ruby (void)
 {
     int argc;
     char *argv[] = {"milter-manager"};
+    const gchar *milter_manager_rubylib;
 
     argc = sizeof(argv) / sizeof(*argv);
     ruby_init_without_signal_change();
     ruby_script(argv[0]);
     ruby_set_argv(argc, argv);
     rb_argv0 = rb_gv_get("$PROGRAM_NAME");
+    milter_manager_rubylib = g_getenv("MILTER_MANAGER_RUBYLIB");
+    if (milter_manager_rubylib) {
+        ruby_incpush(milter_manager_rubylib);
+    }
     ruby_incpush(BINDING_LIB_DIR);
     ruby_incpush(BINDING_EXT_DIR);
     ruby_init_loadpath();
