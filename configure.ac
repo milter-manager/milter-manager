@@ -360,7 +360,7 @@ AC_ARG_ENABLE([ruby-milter],
               [ruby_milterdir="$enableval"],
               [ruby_milterdir="no"])
 
-if test "$ruby_available" = "yes" -o "$ruby_milterdir" = "no"; then
+if test "$ruby_available" = "yes" -a "$ruby_milterdir" != "no"; then
   if test "$ruby_milterdir" = "yes" ; then
      if test -n "$rbconfig_vendorlibdir"; then
        ruby_milterdir="$rbconfig_vendorlibdir"

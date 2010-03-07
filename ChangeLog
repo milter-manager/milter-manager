@@ -1,5 +1,7 @@
 2010-03-07  Kouhei Sutou  <kou@cozmixng.org>
 
+	* configure.ac: Ruby milter is disabled by default.
+
 	* milter-manager.spec.in: add missing installed files.
 
 	* milter-manager.spec.in: support --enable-ruby-milter.
