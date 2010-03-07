@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -33,9 +33,18 @@ rb_milter_cstr2rval_size_free (gchar *string, gsize size)
 void
 Init_milter_toolkit (void)
 {
+    VALUE cMilterToolkitVersion;
+
     rb_mMilter = rb_define_module("Milter");
     rb_eMilterError = rb_define_class_under(rb_mMilter, "Error",
 					    rb_eStandardError);
+
+    cMilterToolkitVersion = rb_ary_new3(3,
+					INT2NUM(MILTER_TOOLKIT_VERSION_MAJOR),
+					INT2NUM(MILTER_TOOLKIT_VERSION_MINOR),
+					INT2NUM(MILTER_TOOLKIT_VERSION_MICRO));
+    rb_obj_freeze(cMilterToolkitVersion);
+    rb_define_const(rb_mMilter, "TOOLKIT_VERSION", cMilterToolkitVersion);
 
     Init_milter_core();
     Init_milter_client();
