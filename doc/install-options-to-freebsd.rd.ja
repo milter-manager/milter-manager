@@ -25,7 +25,7 @@ milter-manager-log-analyzerが出力するグラフは同じホストにWeb
 バが必要になります。-))。
 
 まずは、milter-manager-log-analyzerのインストール方法を説明
-します。次に、グラフを閲覧する環境を設定します。
+します。次に、グラフを閲覧する環境を説明します。
 
 グラフを閲覧する環境の設定方法は、まず、同じホストにWebサーバ
 を設置する方法を説明し、次に別ホストにあるMuninから閲覧する方
@@ -51,8 +51,8 @@ milter-manager-log-analyzerはcronで定期的にログを解析し、グ
 ラフを生成します。そのためのcronの設定をするファイルが
 /usr/local/etc/milter-manager/cron.d/freebsd/milter-manager-log
 にインストールされています。このファイルを使うと、5分毎にロ
-グを解析し、インストール時に作成したmilter-managerユーザのホー
-ムディレクトリ以下にグラフを生成します。
+グを解析し、~milter-manager/public_html/log/以下にグラフを生
+成します。
 
   % sudo -u milter-manager -H crontab /usr/local/etc/milter-manager/cron.d/freebsd/milter-manager-log
 
@@ -73,7 +73,7 @@ WebサーバとしてApacheを使います。ここでは、Apache 2.2系列
 
   % sudo /usr/local/sbin/portupgrade -NRr www/apache22
 
-==== milter-manager-log-analyzerの設定
+==== Apacheの設定
 
 グラフは~milter-manager/public_html/log/以下に生成しているの
 で、http://localhost/~milter-manager/log/で閲覧できるように
