@@ -31,20 +31,19 @@ module Milter
 
     private
     def setup_session(context, session_class, session_new_arguments)
-      session = session_class.new(*session_new_arguments)
-      context.instance_variable_set("@session", session)
+      session_context = ClientSessionContext.new(context)
+      session = session_class.new(session_context, *session_new_arguments)
 
       [:negotiate, :connect, :helo, :envelope_from, :envelope_recipient,
        :data, :unknown, :header, :end_of_header, :body, :end_of_message,
        :abort].each do |event|
         if session.respond_to?(event)
           context.signal_connect(event) do |_context, *args|
-            session_context = ClientSessionContext.new(_context)
             begin
               if event == :end_of_message
-                session.send(event, session_context)
+                session.send(event)
               else
-                session.send(event, session_context, *args)
+                session.send(event, *args)
               end
             rescue Exception
               Milter::Logger.error($!)
@@ -58,7 +57,11 @@ module Milter
   end
 
   class ClientSession
-    def negotiate(context, option, macros_requests)
+    def initialize(context)
+      @context = context
+    end
+
+    def negotiate(option, macros_requests)
       [:connect, :helo, :envelope_from, :envelope_recipient,
        :body, :unknown, [:header, :headers], :end_of_header,
       ].each do |method_name, step_name|
@@ -72,12 +75,48 @@ module Milter
         option.remove_step(Milter::StepFlags::HEADER_VALUE_WITH_LEADING_SPACE)
       end
       option.remove_step(Milter::StepFlags::NO_REPLY_MASK)
-      context.status = :continue
+      @context.status = :continue
     end
 
     private
     def need_header_value_with_leading_space?
       false
+    end
+
+    def accept
+      @context.status = :accept
+    end
+
+    def discard
+      @context.status = :discard
+    end
+
+    def reject(options={})
+      code = options[:code]
+      extended_code = options[:extended_code]
+      reason = options[:reason]
+      if code
+	# TODO: validate parameters.
+        @context.set_reply(code, extended_code, reason)
+      else
+        @context.status = :reject
+      end
+    end
+
+    def temporary_failure(options={})
+      code = options[:code]
+      extended_code = options[:extended_code]
+      reason = options[:reason]
+      if code
+	# TODO: validate parameters.
+        @context.set_reply(code, extended_code, reason)
+      else
+        @context.status = :temporary_failure
+      end
+    end
+
+    def quarantine
+      @context.status = :quarantine
     end
   end
 
