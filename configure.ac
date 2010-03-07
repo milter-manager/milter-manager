@@ -211,7 +211,8 @@ if test "$ruby_available" = "yes"; then
 
   changequote(<<, >>)
   for var_name in archdir sitearchdir vendorarchdir arch \
-      	       	  CFLAGS LIBRUBYARG LIBS RUBY_SO_NAME libdir; do
+      	       	  libdir sitelibdir vendorlibdir \
+      	       	  CFLAGS LIBRUBYARG LIBS RUBY_SO_NAME; do
     rbconfig_value=`$rbconfig "print Config::CONFIG['$var_name']"`
     eval "rbconfig_$var_name=\"$rbconfig_value\""
   done
@@ -351,11 +352,33 @@ EOM
   LIBS=$_SAVE_LIBS
 fi
 
+AC_ARG_ENABLE([ruby-milter],
+              AS_HELP_STRING([--enable-ruby-milter[=PATH]],
+                             [Enable milter development with Ruby.
+                              PATH should be one of the Ruby's LOAD_PATH.
+                              (default: vendor_ruby or site_ruby directoy)]),
+              [ruby_milterdir="$enableval"],
+              [ruby_milterdir="no"])
+
+if test "$ruby_available" = "yes" -o "$ruby_milterdir" = "no"; then
+  if test "$ruby_milterdir" = "yes" ; then
+     if test -n "$rbconfig_vendorlibdir"; then
+       ruby_milterdir="$rbconfig_vendorlibdir"
+     else
+       ruby_milterdir="$rbconfig_sitelibdir"
+     fi
+  fi
+else
+  ruby_milterdir=""
+fi
+AC_SUBST(ruby_milterdir)
+
 AM_CONDITIONAL([WITH_RUBY], [test "$ruby_available" = "yes"])
 AM_CONDITIONAL([WITH_BUNDLED_RUBY_GLIB2_0_16_0],
                [test "$ac_use_bundled_ruby_glib2_0_16_0" = "yes"])
 AM_CONDITIONAL([WITH_BUNDLED_RUBY_GLIB2_0_19_3],
                [test "$ac_use_bundled_ruby_glib2_0_19_3" = "yes"])
+AM_CONDITIONAL([WITH_RUBY_MILTER], [test -n "$ruby_milterdir"])
 
 dnl **************************************************************
 dnl Checks for RD2
@@ -611,6 +634,7 @@ AC_CONFIG_FILES([Makefile
 		 binding/ruby/lib/milter/Makefile
 		 binding/ruby/lib/milter/client/Makefile
 		 binding/ruby/lib/milter/manager/Makefile
+		 binding/ruby/ruby-milter/Makefile
 		 binding/ruby/test/Makefile
 		 binding/ruby/test/toolkit/Makefile
 		 binding/ruby/test/manager/Makefile
@@ -676,6 +700,7 @@ echo "  Default PID File        : $MILTER_MANAGER_DEFAULT_PID_FILE"
 echo
 echo "  GLib                    : $glib_version"
 echo "  Ruby                    : $RUBY"
+echo "  Ruby milter PATH        : $ruby_milterdir"
 echo
 echo "  GTK-Doc                 : $enable_gtk_doc"
 echo
