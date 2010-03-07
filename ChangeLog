@@ -1,5 +1,7 @@
 2010-03-07  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-manager.spec.in: add missing installed files.
+
 	* milter-manager.spec.in: support --enable-ruby-milter.
 
 	* configure.ac: remove a needless space after 'sed -i'.

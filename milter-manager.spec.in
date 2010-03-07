@@ -255,12 +255,17 @@ fi
 %doc %{_datadir}/milter-manager/license/
 %doc %{_datadir}/gtk-doc/html/milter-manager/
 %{_libdir}/milter-manager/binding/ext/milter_toolkit.*
+%{_libdir}/milter-manager/binding/ext/glib*
+%{_libdir}/milter-manager/binding/ext/*.h
 %{_libdir}/milter-manager/binding/lib/milter.rb
-%{_libdir}/milter-manager/binding/lib/milter/compatible
+%{_libdir}/milter-manager/binding/lib/milter/compatible.rb
 %{_libdir}/milter-manager/binding/lib/milter/toolkit.rb
 %{_libdir}/milter-manager/binding/lib/milter/client.rb
 %{_libdir}/milter-manager/binding/lib/milter/client/
-%{_libdir}/ruby
+%{_libdir}/milter-manager/binding/lib/glib*.rb
+%{_libdir}/milter-manager/binding/lib/mkmf-gnome2.rb
+%{_libdir}/milter-manager/binding/lib/pkg-config.rb
+%{_libdir}/ruby/
 
 %files -n libmilter-compatible
 %defattr(-,root,root)
