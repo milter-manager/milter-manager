@@ -265,7 +265,7 @@ fi
 %{_libdir}/milter-manager/binding/lib/glib*.rb
 %{_libdir}/milter-manager/binding/lib/mkmf-gnome2.rb
 %{_libdir}/milter-manager/binding/lib/pkg-config.rb
-%{_libdir}/ruby/
+/usr/lib/ruby/
 
 %files -n libmilter-compatible
 %defattr(-,root,root)
