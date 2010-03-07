@@ -31,11 +31,37 @@ static guint gthread_log_handler_id = 0;
 static guint gmodule_log_handler_id = 0;
 static guint milter_core_log_handler_id = 0;
 
+static void
+remove_glib_log_handlers (void)
+{
+#define REMOVE(domain, prefix)                                          \
+    g_log_remove_handler(domain, prefix ## _log_handler_id)
+
+    REMOVE("GLib", glib);
+    REMOVE("GLib-GObject", gobject);
+    REMOVE("GThread", gthread);
+    REMOVE("GModule", gmodule);
+
+#undef REMOVE
+}
+
+static void
+delegate_glib_log_handlers (void)
+{
+    glib_log_handler_id = MILTER_GLIB_LOG_DELEGATE("GLib");
+    gobject_log_handler_id = MILTER_GLIB_LOG_DELEGATE("GLib-GObject");
+    gthread_log_handler_id = MILTER_GLIB_LOG_DELEGATE("GThread");
+    gmodule_log_handler_id = MILTER_GLIB_LOG_DELEGATE("GModule");
+}
+
 void
 milter_init (void)
 {
-    if (initialized)
+    if (initialized) {
+        remove_glib_log_handlers();
+        delegate_glib_log_handlers();
         return;
+    }
 
     initialized = TRUE;
 
@@ -44,10 +70,7 @@ milter_init (void)
     if (!g_thread_supported())
         g_thread_init(NULL);
 
-    glib_log_handler_id = MILTER_GLIB_LOG_DELEGATE("GLib");
-    gobject_log_handler_id = MILTER_GLIB_LOG_DELEGATE("GLib-GObject");
-    gthread_log_handler_id = MILTER_GLIB_LOG_DELEGATE("GThread");
-    gmodule_log_handler_id = MILTER_GLIB_LOG_DELEGATE("GModule");
+    delegate_glib_log_handlers();
     milter_core_log_handler_id = MILTER_GLIB_LOG_DELEGATE("milter-core");
 }
 
@@ -57,10 +80,7 @@ milter_quit (void)
     if (!initialized)
         return;
 
-    g_log_remove_handler("GLib", glib_log_handler_id);
-    g_log_remove_handler("GLib-GObject", gobject_log_handler_id);
-    g_log_remove_handler("GThread", gthread_log_handler_id);
-    g_log_remove_handler("GModule", gmodule_log_handler_id);
+    remove_glib_log_handlers();
     g_log_remove_handler("milter-core", milter_core_log_handler_id);
 
     initialized = FALSE;
