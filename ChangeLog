@@ -1,3 +1,7 @@
+2010-03-07  Kouhei Sutou  <kou@clear-code.com>
+
+	* doc/install.rd*: update dependencies.
+
 2010-03-07  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter-manager.spec.in: remove existing munin plugins before

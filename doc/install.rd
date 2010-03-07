@@ -39,6 +39,11 @@ are not required for running milter manager.
  * RRDtool
  * RRDtool's Ruby bindings
 
+The following software is also needed to integrate with
+((<Munin|URL:http://munin-monitoring.org/>)):
+
+  * munin-node
+
 === Optional: Web interface for administration
 
 milter manager can be ran without editing configuration if
@@ -54,7 +59,7 @@ file. The following softwares are required for the Web
 interface.
 
   * RubyGems >= 1.3.1
-  * Ruby on Rails 2.3.4
+  * Ruby on Rails 2.3.5
   * SQLite3
   * SQLite3's Ruby bindings
   * Ruby-Locale for Ruby on Rails
