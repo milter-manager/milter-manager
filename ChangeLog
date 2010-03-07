@@ -1,5 +1,7 @@
 2010-03-07  Kouhei Sutou  <kou@cozmixng.org>
 
+	* configure.ac: add checking message for Ruby milter install directory.
+
 	* milter-manager.spec.in: use /usr/lib instead of %{_libdir} for
 	x86_64 environment.
 

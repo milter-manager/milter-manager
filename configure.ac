@@ -353,14 +353,15 @@ EOM
 fi
 
 AC_ARG_ENABLE([ruby-milter],
-              AS_HELP_STRING([--enable-ruby-milter[=PATH]],
+              AS_HELP_STRING([--enable-ruby-milter[=DIR]],
                              [Enable milter development with Ruby.
-                              PATH should be one of the Ruby's LOAD_PATH.
+                              DIR should be one of the Ruby's LOAD_PATH.
                               (default: vendor_ruby or site_ruby directoy)]),
               [ruby_milterdir="$enableval"],
               [ruby_milterdir="no"])
 
 if test "$ruby_available" = "yes" -a "$ruby_milterdir" != "no"; then
+  AC_MSG_CHECKING([Ruby milter install directory])
   if test "$ruby_milterdir" = "yes" ; then
      if test -n "$rbconfig_vendorlibdir"; then
        ruby_milterdir="$rbconfig_vendorlibdir"
@@ -368,6 +369,7 @@ if test "$ruby_available" = "yes" -a "$ruby_milterdir" != "no"; then
        ruby_milterdir="$rbconfig_sitelibdir"
      fi
   fi
+  AC_MSG_RESULT([$ruby_milterdir])
 else
   ruby_milterdir=""
 fi
