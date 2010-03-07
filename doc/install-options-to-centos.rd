@@ -139,8 +139,8 @@ installed:
 === Instal gems
 
   % sudo gem install sqlite3-ruby
-  % sudo gem install rails -v '2.3.4'
-  % sudo gem install passenger -v '2.2.5'
+  % sudo gem install rails -v '2.3.5'
+  % sudo gem install passenger -v '2.2.11'
 
 === Install Passenger
 
@@ -158,8 +158,8 @@ update this section when we know better other solution.
 We create milter-manager.conf under /etc/httpd/conf.d/.
 
 /etc/httpd/conf.d/milter-manager.conf:
-  LoadModule passenger_module /usr/lib/ruby/gems/1.8/gems/passenger-2.2.5/ext/apache2/mod_passenger.so
-  PassengerRoot /usr/lib/ruby/gems/1.8/gems/passenger-2.2.5
+  LoadModule passenger_module /usr/lib/ruby/gems/1.8/gems/passenger-2.2.11/ext/apache2/mod_passenger.so
+  PassengerRoot /usr/lib/ruby/gems/1.8/gems/passenger-2.2.11
   PassengerRuby /usr/bin/ruby
 
   RailsBaseURI /milter-manager
