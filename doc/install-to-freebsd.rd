@@ -34,9 +34,9 @@ We work at ~/src/. We will install milter manager into /usr/local/.
 
   % mkdir -p ~/src/
   % cd ~/src/
-  % fetch http://downloads.sourceforge.net/milter-manager/milter-manager-1.4.1.tar.gz
-  % tar xvzf milter-manager-1.4.1.tar.gz
-  % cd milter-manager-1.4.1
+  % fetch http://downloads.sourceforge.net/milter-manager/milter-manager-1.5.0.tar.gz
+  % tar xvzf milter-manager-1.5.0.tar.gz
+  % cd milter-manager-1.5.0
   % ./configure CPPFLAGS="-I/usr/local/include"
   % gmake
   % sudo gmake install

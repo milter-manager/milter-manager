@@ -99,20 +99,20 @@
 
 	<h2 id="development">Development release</h2>
 	<p>
-	  1.3.1 is the latest development release. It had been released at 2009-09-16.
+	  1.5.0 is the latest development release. It had been released at 2010-03-10.
 	  Development seriese includes many new features but it may not work stably. You should use the latest stable release for production.
         </p>
 	<ul>
-          <li><a href="http://downloads.sourceforge.net/milter-manager/milter-manager-1.3.1.tar.gz">Download</a></li>
-          <li><a href="dev/reference/news.html#release-1-3-1">Changes</a></li>
+          <li><a href="http://downloads.sourceforge.net/milter-manager/milter-manager-1.5.0.tar.gz">Download</a></li>
+          <li><a href="dev/reference/news.html#release-1-5-0">Changes</a></li>
           <li><a href="dev/reference/">Documents</a></li>
 	</ul>
 
 	<h3>Packages of development releases for Ubuntu 8.04 LTS Hardy Heron</h3>
 	<p>
 	  apt-line for:
-	  <pre class="file">deb http://milter-manager.sourceforge.net/ubuntu/ hardy universe
-deb-src http://milter-manager.sourceforge.net/ubuntu/ hardy universe</pre>
+	  <pre class="file">deb http://milter-manager.sourceforge.net/ubuntu/development hardy universe
+deb-src http://milter-manager.sourceforge.net/ubuntu/development hardy universe</pre>
 	</p>
 	<p>
 	  Packages are signed by key of kou@clear-code.com. If you trust the key, you can register the key:
@@ -123,8 +123,8 @@ deb-src http://milter-manager.sourceforge.net/ubuntu/ hardy universe</pre>
 	<h3>Packages of development releases for Debian GNU/Linux lenny</h3>
 	<p>
 	  apt-line:
-	  <pre class="file">deb http://milter-manager.sourceforge.net/debian/ lenny main
-deb-src http://milter-manager.sourceforge.net/debian/ lenny main</pre>
+	  <pre class="file">deb http://milter-manager.sourceforge.net/debian/development lenny main
+deb-src http://milter-manager.sourceforge.net/debian/development lenny main</pre>
 	</p>
 	<p>
 	  Packages are signed by key of kou@clear-code.com. If you trust the key, you can register the key:
@@ -132,17 +132,10 @@ deb-src http://milter-manager.sourceforge.net/debian/ lenny main</pre>
 % gpg --export 1C837F31 | sudo apt-key add -</pre>
 	</p>
 
-	<h3>Packages of development releases for CentOS 5.3</h3>
+	<h3>Packages of development releases for CentOS 5.4</h3>
 	<p>
 	  Packages are provided as yum repository. You need to register milter manager yum repository at the first time:
-	</p>
-	<p>
-	  On 32bit environment:
-	  <pre class="command">% sudo rpm -Uvh http://milter-manager.sourceforge.net/centos/5/milter-manager-repository-1.0.0-0.i386.rpm</pre>
-	</p>
-	<p>
-	  On 64 bit environment:
-	  <pre class="command">% sudo rpm -Uvh http://milter-manager.sourceforge.net/centos/5/milter-manager-repository-1.0.0-0.x86_64.rpm</pre>
+	  <pre class="command">% sudo rpm -Uvh http://milter-manager.sourceforge.net/centos/5/milter-manager-repository-1.0.0-0.noarch.rpm</pre>
 	</p>
 	<p>
 	  You can install milter manager from the yum repository by the following command:
