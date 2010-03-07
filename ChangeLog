@@ -1,3 +1,7 @@
+2010-03-07  Kouhei Sutou  <kou@cozmixng.org>
+
+	* admin/config/environment.rb: Rails 2.3.4 -> 2.3.5.
+
 2010-03-07  Kouhei Sutou  <kou@clear-code.com>
 
 	* doc/install-options-to-*.rd: add milter-manager-log-analyzer
