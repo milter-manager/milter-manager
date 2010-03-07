@@ -162,10 +162,11 @@ case mode
 when "auto", "autoconf", "detect"
   if File.exist?(log_dir)
     puts "yes"
+    exit(true)
   else
     puts "no (log directory not found: #{log_dir})"
+    exit(false)
   end
-  exit(true)
 when "suggest"
   type_order = ["status", "report"]
   milters = []

@@ -37,10 +37,11 @@ case "$1" in
     auto|autoconf|detect)
     	if [ $n_processes -gt 0 ]; then
 	    echo "yes"
+	    exit 0
 	else
 	    echo "no (no sendmail server is running)"
+	    exit 1
 	fi
-	exit 0
 	;;
     *)
 	echo "processes.value ${n_processes}"

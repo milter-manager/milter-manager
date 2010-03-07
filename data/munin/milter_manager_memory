@@ -24,10 +24,11 @@ case "$1" in
     auto|autoconf|detect)
 	if [ -f $pid_file ]; then
 	    echo "yes"
+	    exit 0
 	else
 	    echo "no (PID file doesn't exist: ${pid_file})"
+	    exit 1
 	fi
-	exit 0
 	;;
     config)
 	cat <<EOF

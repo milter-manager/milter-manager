@@ -1,5 +1,7 @@
 2010-03-07  Kouhei Sutou  <kou@cozmixng.org>
 
+	* data/munin/*: return non-0 exit status when auto config returns 'no'.
+
 	* data/munin/*: accept auto command.
 
 	* NEWS*: add --enable-ruby-milter option.
