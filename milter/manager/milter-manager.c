@@ -188,12 +188,21 @@ dispose_periodical_connection_checker (MilterManagerPrivate *priv)
 static void
 dispose_finished_leaders (MilterManagerPrivate *priv)
 {
+    GList *node;
+    guint n_leaders = 0;
+
     if (!priv->finished_leaders)
         return;
 
-    g_list_foreach(priv->finished_leaders, (GFunc)g_object_unref, NULL);
+    for (node = priv->finished_leaders; node; node = g_list_next(node)) {
+        MilterManagerLeader *leader = node->data;
+        g_object_unref(leader);
+        n_leaders++;
+    }
     g_list_free(priv->finished_leaders);
     priv->finished_leaders = NULL;
+
+    milter_debug("[manager][dispose][leaders] %u", n_leaders);
 }
 
 static void
