@@ -12,7 +12,21 @@ FreeBSDに依存しない一般的なインストール情報は((<インスト�
 
 == [freebsd-milter-manager-log-analyzer] milter-manager-log-analyzerのインストール
 
-=== パッケージのインストール
+milter-manager-log-analyzerが出力するグラフは同じホストにWeb
+サーバを設置して閲覧する方法と
+((<Munin|URL:http://munin-monitoring.org/>))を利用して別ホス
+トで閲覧する方法があります。すでにMuninを導入していたり、メー
+ルサーバとは別にシステム監視用のサーバがある場合はMuninを利用
+するとよいでしょう。そうでない場合は同じホストにWebサーバを設
+置するのがよいでしょう((-同じホストでMuninを動かす場合もWebサー
+バが必要になります。-))。
+
+まずは、同じホストにWebサーバを設置する方法を説明し、次に別
+ホストにあるMuninから閲覧する方法を説明します。
+
+=== 同じホストにWebサーバを設置する場合
+
+==== パッケージのインストール
 
 WebサーバとしてApacheを使います。ここでは、Apache 2.2系列
 （www/apache22）をインストールします。
@@ -28,7 +42,7 @@ WebサーバとしてApacheを使います。ここでは、Apache 2.2系列
 
   % sudo /usr/local/sbin/portupgrade -NRr -M'WITH_RUBY_MODULE=yes' rrdtool
 
-=== milter-manager-log-analyzerの設定
+==== milter-manager-log-analyzerの設定
 
 グラフはインストール時に作成したmilter-managerユーザのホーム
 ディレクトリ以下に出力し、
@@ -59,6 +73,84 @@ milter-manager-log-analyzerがログからmilter-managerの情報を抜
 
 milter-manager-log-analyzerは5分おきに実行されます。
 /var/log/cronで実行されたかどうかを確認することができます。
+
+=== 別ホストにあるMuninを利用する方法
+
+次は、別ホストにあるMunin上でグラフを閲覧する方法です。
+
+==== パッケージのインストール
+
+Muninサーバに統計情報を送るmunin-nodeをインストールします。
+
+  % sudo /usr/local/sbin/portupgrade -NRr munin-node
+
+==== munin-nodeの設定
+
+milter-manager-log-analyzerが収集した統計情報をMuninに提供す
+るMuninプラグインをインストールします。プラグインは
+/usr/local/share/munin/plugins/以下にインストールされている
+ので、まずは、それらをmunin-nodeのプラグインディレクトリにイ
+ンストールします。
+
+  % sudo ln -s /usr/local/share/milter-manager/munin/plugins/* /usr/local/share/munin/plugins
+
+これらのプラグインの設定を書いた
+/usr/local/etc/munin/plugin-conf.d/milter-manager.confを作成
+します。
+
+/usr/local/etc/munin/plugin-conf.d/milter-manager.conf:
+  [milter_manager_*]
+    user milter-manager
+    env.PATH /bin:/usr/local/bin:/usr/bin
+    env.logdir /home/milter-manager/public_html/log
+    env.pidfile /var/run/milter-manager/milter-manager.pid
+
+最後にインストールしたプラグインのうち必要なものだけ有効にし
+ます。
+
+  % sudo /usr/local/sbin/munin-node-configure --shell | grep -e '\(milter_manager_\|postfix_processes\|sendmail_processes\)' | sudo sh
+
+プラグインのインストールはこれで完了です。
+
+次に、Muninサーバからの接続を許可します。Muninサーバが
+192.168.1.254の場合は以下の行を
+/usr/local/etc/munin/munin-node.confに追加します。
+
+/usr/local/etc/munin/munin-node.conf:
+  allow ^192\.168\.1\.254$
+
+munin-nodeを再起動し設定を反映させます。
+
+  % sudo /usr/local/etc/rc.d/munin-node.sh restart
+
+==== Muninサーバの設定
+
+ここからは監視用サーバでの設定です。監視用サーバもFreeBSDで動
+いているとします。
+
+まず、muninをインストールします。
+
+  monitoring-server% sudo /usr/local/sbin/portupgrade -NRr munin-main
+
+muninの監視対象にmunin-nodeが動いているメールサーバを追加しま
+す。メールサーバが以下の場合の/usr/local/etc/munin/munin.confへ追加する
+設定項目を示します。
+
+: ホスト名
+    mail.example.com
+: IPアドレス
+    192.168.1.2
+
+このメールサーバを登録するには、以下の内容を
+/usr/local/etc/munin/munin.confに追記します。
+
+/usr/local/etc/munin/munin.conf:
+  [mail.example.com]
+      address 192.168.1.2
+      use_node_name yes
+
+5分後にはhttp://monitoring-server/munin/でグラフを閲覧できる
+ようになります。
 
 == [freebsd-milter-manager-admin] milter manager adminのインストール
 

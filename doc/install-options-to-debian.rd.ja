@@ -17,13 +17,27 @@ milter-manager-log-analyzerはmilter-managerパッケージに含ま
 milter-manager-log-analyzerが出力するグラフを閲覧するための
 設定を行います。
 
-=== パッケージのインストール
+milter-manager-log-analyzerが出力するグラフは同じホストにWeb
+サーバを設置して閲覧する方法と
+((<Munin|URL:http://munin-monitoring.org/>))を利用して別ホス
+トで閲覧する方法があります。すでにMuninを導入していたり、メー
+ルサーバとは別にシステム監視用のサーバがある場合はMuninを利用
+するとよいでしょう。そうでない場合は同じホストにWebサーバを設
+置するのがよいでしょう((-同じホストでMuninを動かす場合もWebサー
+バが必要になります。-))。
+
+まずは、同じホストにWebサーバを設置する方法を説明し、次に別
+ホストにあるMuninから閲覧する方法を説明します。
+
+=== 同じホストにWebサーバを設置する場合
+
+==== パッケージのインストール
 
 WebサーバとしてApacheを使います。
 
   % sudo aptitude -V -D -y install apache2
 
-=== milter-manager-log-analyzerの設定
+==== milter-manager-log-analyzerの設定
 
 グラフはインストール時に作成したmilter-managerユーザのホーム
 ディレクトリ（/var/lib/milter-manager/）以下に出力されていま
@@ -42,6 +56,59 @@ WebサーバとしてApacheを使います。
 
 これでhttp://localhost/milter-manager-log/でグラフを閲覧で
 きるようになります。
+
+=== 別ホストにあるMuninを利用する方法
+
+次は、別ホストにあるMunin上でグラフを閲覧する方法です。
+
+==== パッケージのインストール
+
+milter-manager-log-analyzerが収集した統計情報をMuninに提供す
+るmilter-manager-munin-pluginsパッケージをインストールします。
+
+  % sudo aptitude -V -D -y install milter-manager-munin-plugins
+
+==== munin-nodeの設定
+
+Muninサーバからの接続を許可します。Muninサーバが
+192.168.1.254の場合は以下の行を/etc/munin/munin-node.confに
+追加します。
+
+/etc/munin/munin-node.conf:
+  allow ^192\.168\.1\.254$
+
+munin-nodeを再起動し設定を反映させます。
+
+  % sudo /usr/sbin/service munin-node restart
+
+==== Muninサーバの設定
+
+ここからは監視用サーバでの設定です。監視用サーバもDebian
+GNU/Linuxで動いているとします。
+
+まず、muninをインストールします。
+
+  monitoring-server% sudo aptitude -V -D -y install munin
+
+muninの監視対象にmunin-nodeが動いているメールサーバを追加しま
+す。メールサーバが以下の場合の/etc/munin/munin.confへ追加する
+設定項目を示します。
+
+: ホスト名
+    mail.example.com
+: IPアドレス
+    192.168.1.2
+
+このメールサーバを登録するには、以下の内容を
+/etc/munin/munin.confに追記します。
+
+/etc/munin/munin.conf:
+  [mail.example.com]
+      address 192.168.1.2
+      use_node_name yes
+
+5分後にはhttp://monitoring-server/munin/でグラフを閲覧できる
+ようになります。
 
 == [debian-milter-manager-admin] milter manager adminのインストール
 

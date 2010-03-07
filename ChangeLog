@@ -1,5 +1,8 @@
 2010-03-07  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/install-options-to-*.rd.ja: add milter-manager-log-analyzer
+	and Munin integration.
+
 	* milter-manager.spec.in: munin-plugin -> munin-plugins.
 
 	* doc/install-to-freebsd.rd*: 7.x-RELEASE -> 8.0-RELEASE.
