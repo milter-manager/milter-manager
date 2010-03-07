@@ -1,5 +1,7 @@
 2010-03-07  Kouhei Sutou  <kou@cozmixng.org>
 
+	* data/munin/*: accept auto command.
+
 	* NEWS*: add --enable-ruby-milter option.
 
 	* configure.ac: add checking message for Ruby milter install directory.

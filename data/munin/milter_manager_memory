@@ -21,7 +21,7 @@
 pid_file=${pidfile:-/var/run/milter-manager/milter-manager.pid}
 
 case "$1" in
-    autoconf|detect)
+    auto|autoconf|detect)
 	if [ -f $pid_file ]; then
 	    echo "yes"
 	else

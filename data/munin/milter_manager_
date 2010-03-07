@@ -159,7 +159,7 @@ def invalid_file_name_message
 end
 
 case mode
-when "autoconf", "detect"
+when "auto", "autoconf", "detect"
   if File.exist?(log_dir)
     puts "yes"
   else

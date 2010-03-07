@@ -34,7 +34,7 @@ fi
 n_processes=$(ps ax | grep smtpd | grep -v 'grep smtpd' | wc -l)
 
 case "$1" in
-    autoconf|detect)
+    auto|autoconf|detect)
     	if [ $n_processes -gt 0 ]; then
 	    echo "yes"
 	else
