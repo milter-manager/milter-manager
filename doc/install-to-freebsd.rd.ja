@@ -172,6 +172,12 @@ Greylistを使うように変更します。
     /usr/bin/chgrp mail $miltergreylist_sockfile
   }
 
+milter-greylistはmailnullユーザで動かすので、
+/var/milter-greylist/ディレクトリはmailnullユーザで読み書き
+できるようにします。
+
+  % sudo /usr/sbin/chown mailnull:mailnull /var/milter-greylist/
+
 milter-greylistを起動します。
 
   % sudo /usr/local/etc/rc.d/milter-greylist start

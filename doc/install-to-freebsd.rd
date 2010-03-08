@@ -173,6 +173,11 @@ ran. If 1 second is small, we can improve it like
     /usr/bin/chgrp mail $miltergreylist_sockfile
   }
 
+We change /var/milter-greylist/ owner to mailnull because
+milter-greylist is ran as mailnull user:
+
+  % sudo /usr/sbin/chown mailnull:mailnull /var/milter-greylist/
+
 milter-greylist should be started:
 
   % sudo /usr/local/etc/rc.d/milter-greylist start
