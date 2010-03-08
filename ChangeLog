@@ -1,5 +1,9 @@
 2010-03-08  Kouhei Sutou  <kou@clear-code.com>
 
+	* TODO: add:
+	[1.5.0] milter-performance-check: document for --connect-host
+	and --connect-address options.
+
 	* tool/milter-performance-check: support support XCLIENT: add
 	--connect-host and --connect-address option.
 
