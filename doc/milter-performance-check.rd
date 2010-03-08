@@ -150,9 +150,9 @@ smtp-source is more better tool for you.
 
 : --reading-timeout=SECONDS
 
-    Specifies timeout on reading a response from a SMTP server.
-    An error is occurred when the SMTP server doesn't
-    respond to a request in ((|SECONDS|)) seconds.
+   Specifies timeout on reading a response from a SMTP server.
+   An error is occurred when the SMTP server doesn't
+   respond to a request in ((|SECONDS|)) seconds.
 
    The default is 60 seconds.
 
