@@ -41,7 +41,7 @@ class MilterPerformanceTool
     @period = nil
     @interval = nil
     @shuffle = false
-    @reading_timeout = Net::SMTP.new("localhost").reading_timeout
+    @reading_timeout = Net::SMTP.new("localhost").read_timeout
     @mail_source_from_stdin = nil
     @mutex = Mutex.new
   end
@@ -333,7 +333,7 @@ class MilterPerformanceTool
     start_time = Time.now
     begin
       smtp = Net::SMTP.new(@smtp_server, @port)
-      smtp.reading_timeout = @reading_timeout
+      smtp.read_timeout = @reading_timeout
       smtp.start(helo_fqdn) do |_smtp|
         xclient_parameters = []
         xclient_parameters << "NAME=#{@connect_host}" if @connect_host
