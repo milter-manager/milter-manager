@@ -145,7 +145,7 @@ automated unit tests.
 
 : --mail-file=PATH
 
-    Uses file exists at PATH as mail content. If the file
+    Uses file exists at ((|PATH|)) as mail content. If the file
     has 'From:' and/or 'To:', they are used for from and/or
     recipient addresses.
 
@@ -154,6 +154,40 @@ automated unit tests.
     Shows a message applied a milter. If you want to
     check milter's operation that may change header and/or
     body, specify this option.
+
+: --connection-timeout=SECONDS
+
+    Specifies timeout on connecting to a milter.
+    An error is occurred when a connection can't be
+    established in ((|SECONDS|)) seconds.
+
+    The default is 300 seconds. (5 minutes)
+
+: --reading-timeout=SECONDS
+
+    Specifies timeout on reading a response from a milter.
+    An error is occurred when the milter doesn't respond to a
+    request in ((|SECONDS|)) seconds.
+
+    The default is 10 seconds.
+
+: --writing-timeout=SECONDS
+
+    Specifies timeout on writing a request to a milter.
+    An error is occurred when request to the milter isn't
+    completed in ((|SECONDS|)) seconds.
+
+    The default is 10 seconds.
+
+: --end-of-message-timeout=SECONDS
+
+    Specifies timeout on reading a response of
+    end-of-message command from a milter.
+    An error is occurred when the milter doesn't complete its
+    response to the end-of-message command in ((|SECONDS|))
+    seconds.
+
+    The default is 300 seconds. (5 minutes)
 
 : --verbose
 
