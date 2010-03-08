@@ -1,5 +1,8 @@
 2010-03-08  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/install-options-to-freebsd.rd.ja: add missing munin and
+	Apache integration.
+
 	* doc/configuration.rd*: fix default manager.max_connections value.
 
 	* tool/milter-performance-check: add --reading-timeout option.

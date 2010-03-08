@@ -158,13 +158,13 @@ munin-nodeを再起動し設定を反映させます。
 ここからは監視用サーバでの設定です。監視用サーバもFreeBSDで動
 いているとします。
 
-まず、muninをインストールします。
+まず、muninとApacheをインストールします。
 
-  monitoring-server% sudo /usr/local/sbin/portupgrade -NRr munin-main
+  monitoring-server% sudo /usr/local/sbin/portupgrade -NRr munin-main www/apache22
 
 muninの監視対象にmunin-nodeが動いているメールサーバを追加しま
-す。メールサーバが以下の場合の/usr/local/etc/munin/munin.confへ追加する
-設定項目を示します。
+す。メールサーバが以下の場合の
+/usr/local/etc/munin/munin.confへ追加する設定項目を示します。
 
 : ホスト名
     mail.example.com
@@ -178,6 +178,11 @@ muninの監視対象にmunin-nodeが動いているメールサーバを追加�
   [mail.example.com]
       address 192.168.1.2
       use_node_name yes
+
+Muninは/usr/local/www/munin/以下にグラフを生成するので、それ
+をhttp://monitoring-server/munin/で閲覧できるようにします。
+
+  % sudo ln -s /usr/local/www/munin/ /usr/local/www/apache22/data/
 
 5分後にはhttp://monitoring-server/munin/でグラフを閲覧できる
 ようになります。
