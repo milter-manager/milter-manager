@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -56,6 +56,10 @@ static gchar *authenticated_name = NULL;
 static gchar *authenticated_type = NULL;
 static gchar *authenticated_author = NULL;
 static MilterHeaders *option_headers = NULL;
+static gdouble connection_timeout = MILTER_SERVER_CONTEXT_DEFAULT_CONNECTION_TIMEOUT;
+static gdouble writing_timeout = MILTER_SERVER_CONTEXT_DEFAULT_WRITING_TIMEOUT;
+static gdouble reading_timeout = MILTER_SERVER_CONTEXT_DEFAULT_READING_TIMEOUT;
+static gdouble end_of_message_timeout = MILTER_SERVER_CONTEXT_DEFAULT_END_OF_MESSAGE_TIMEOUT;
 
 #define PROGRAM_NAME "milter-test-server"
 
@@ -1193,6 +1197,14 @@ static const GOptionEntry option_entries[] =
     {"output-message", 0,
      G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_NONE, &output_message,
      N_("Output modified message"), NULL},
+    {"connection-timeout", 0, 0, G_OPTION_ARG_DOUBLE, &connection_timeout,
+     N_("Timeout after SECONDS seconds on connecting to a milter."), "SECONDS"},
+    {"reading-timeout", 0, 0, G_OPTION_ARG_DOUBLE, &reading_timeout,
+     N_("Timeout after SECONDS seconds on reading a command."), "SECONDS"},
+    {"writing-timeout", 0, 0, G_OPTION_ARG_DOUBLE, &writing_timeout,
+     N_("Timeout after SECONDS seconds on writing a command."), "SECONDS"},
+    {"end-of-message-timeout", 0, 0, G_OPTION_ARG_DOUBLE, &writing_timeout,
+     N_("Timeout after SECONDS seconds on end-of-message command."), "SECONDS"},
     {"verbose", 'v', G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_NONE, &verbose,
      N_("Be verbose"), NULL},
     {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, print_version,
@@ -1531,6 +1543,12 @@ static void
 setup_context (MilterServerContext *context, ProcessData *process_data)
 {
     milter_server_context_set_name(context, PROGRAM_NAME);
+
+    milter_server_context_set_connection_timeout(context, connection_timeout);
+    milter_server_context_set_reading_timeout(context, reading_timeout);
+    milter_server_context_set_writing_timeout(context, writing_timeout);
+    milter_server_context_set_end_of_message_timeout(context,
+                                                     end_of_message_timeout);
 
     g_signal_connect(context, "ready", G_CALLBACK(cb_ready), process_data);
     g_signal_connect(context, "error", G_CALLBACK(cb_connection_error), process_data);
