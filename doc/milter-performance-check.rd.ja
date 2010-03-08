@@ -50,6 +50,26 @@ smtp-sourceを利用するとよいでしょう。
 
    既定値は25です。
 
+: --connect-host=HOST
+
+   接続元のホスト名を指定します。
+
+   ((<PostfixのXCLIENT SMTP拡張
+   |URL:http://www.postfix-jp.info/trans-2.3/jhtml/XCLIENT_README.html>))
+   のNAMEを利用するので
+   ((<smtpd_authorized_xclient_hosts|http://www.postfix-jp.info/trans-2.3/jhtml/postconf.5.html#smtpd_authorized_xclient_hosts>))
+   を適切に設定する必要があります。
+
+: --connect-address=ADDRESS
+
+   接続元のアドレスを指定します。
+
+   ((<PostfixのXCLIENT SMTP拡張
+   |URL:http://www.postfix-jp.info/trans-2.3/jhtml/XCLIENT_README.html>))
+   のADDRを利用するので
+   ((<smtpd_authorized_xclient_hosts|URL:http://www.postfix-jp.info/trans-2.3/jhtml/postconf.5.html#smtpd_authorized_xclient_hosts>))
+   を適切に設定する必要があります。
+
 : --helo-fqdn=FQDN
 
    HELOコマンドでFQDNを使います。
@@ -133,6 +153,14 @@ smtp-sourceを利用するとよいでしょう。
    送信予定のメールを無作為に並び替えてから送信します。
 
    既定値はfalseです。（並び替えません。）
+
+: --reading-timeout=SECONDS
+
+   SMTPサーバからのレスポンスを待つ時間を指定します。
+   ((|SECONDS|))秒経ってもレスポンスが返ってこない場合はエラー
+   になります。
+
+   既定値は60秒です。
 
 == 終了ステータス
 

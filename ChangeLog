@@ -1,5 +1,8 @@
 2010-03-08  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/milter-performance-check.rd*, TODO: add document for
+	--reading-timeout, --connect-host and --connect-address options.
+
 	* doc/milter-test-server.rd*, TODO: add document for --*-timeout
 	option of milter-test-server.
 

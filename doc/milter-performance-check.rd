@@ -49,6 +49,24 @@ smtp-source is more better tool for you.
 
    The default is 25.
 
+: --connect-host=HOST
+
+   Specifies connected SMTP client host.
+
+   This uses NAME of ((<Postfix's XCLIENT SMTP
+   extension|URL:http://www.postfix.com/XCLIENT_README.html>)).
+   ((<smtpd_authorized_xclient_hosts|URL:http://www.postfix.org/postconf.5.html#smtpd_authorized_xclient_hosts>))
+   should be configured appropriately.
+
+: --connect-address=ADDRESS
+
+   Specifies connected SMTP client address.
+
+   This uses ADDR of ((<Postfix's XCLIENT SMTP
+   extension|URL:http://www.postfix.com/XCLIENT_README.html>)).
+   ((<smtpd_authorized_xclient_hosts|URL:http://www.postfix.org/postconf.5.html#smtpd_authorized_xclient_hosts>))
+   should be configured appropriately.
+
 : --helo-fqdn=FQDN
 
    Uses FQDN as HELO SMTP command.
@@ -129,6 +147,14 @@ smtp-source is more better tool for you.
    Shuffles target mails before sending.
 
    The default is false. (don't shuffle.)
+
+: --reading-timeout=SECONDS
+
+    Specifies timeout on reading a response from a SMTP server.
+    An error is occurred when the SMTP server doesn't
+    respond to a request in ((|SECONDS|)) seconds.
+
+   The default is 60 seconds.
 
 == EXIT STATUS
 
