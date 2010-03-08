@@ -41,6 +41,7 @@ class MilterPerformanceTool
     @period = nil
     @interval = nil
     @shuffle = false
+    @reading_timeout = Net::SMTP.new("localhost").reading_timeout
     @mail_source_from_stdin = nil
     @mutex = Mutex.new
   end
@@ -168,6 +169,12 @@ class MilterPerformanceTool
               "Shuffle target mails",
               "(#{@shuffle})") do |shuffle|
         @shuffle = shuffle
+      end
+
+      opts.on("--reading-timeout=SECONDS", Integer,
+              "Timeout after SECONDS seconds on reading a command.",
+              "(#{@reading_timeout})") do |timeout|
+        @reading_timeout = timeout
       end
     end
     @mails = opts.parse!(argv)
@@ -325,19 +332,21 @@ class MilterPerformanceTool
     error_message = nil
     start_time = Time.now
     begin
-      Net::SMTP.start(@smtp_server, @port, helo_fqdn) do |smtp|
+      smtp = Net::SMTP.new(@smtp_server, @port)
+      smtp.reading_timeout = @reading_timeout
+      smtp.start(helo_fqdn) do |_smtp|
         xclient_parameters = []
         xclient_parameters << "NAME=#{@connect_host}" if @connect_host
         xclient_parameters << "ADDR=#{@connect_address}" if @connect_address
         unless xclient_parameters.empty?
-          unless smtp.send(:capable?, "XCLIENT")
+          unless _smtp.send(:capable?, "XCLIENT")
             raise "XCLIENT isn't enabled. " +
               "See smtpd_authorized_xclient_hosts parameter for Postfix."
           end
-          smtp.send(:getok, "XCLIENT #{xclient_parameters.join(' ')}")
-          smtp.send(:do_helo, helo_fqdn)
+          _smtp.send(:getok, "XCLIENT #{xclient_parameters.join(' ')}")
+          _smtp.send(:do_helo, helo_fqdn)
         end
-        smtp.send_mail(source, from, *recipients)
+        _smtp.send_mail(source, from, *recipients)
       end
     rescue Net::SMTPServerBusy
       temporary_failure = true
