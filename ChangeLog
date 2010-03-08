@@ -1,5 +1,8 @@
 2010-03-08  Kouhei Sutou  <kou@clear-code.com>
 
+	* tool/milter-performance-check: support support XCLIENT: add
+	--connect-host and --connect-address option.
+
 	* TODO: add:
 	[1.5.0] milter-test-server: document for --*-timeout options.
 

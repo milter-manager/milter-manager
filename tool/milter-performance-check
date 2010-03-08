@@ -27,6 +27,8 @@ class MilterPerformanceTool
   def initialize
     @smtp_server = "localhost"
     @smtp_port = 25
+    @connect_host = nil
+    @connect_address = nil
     @helo_fqdn = "localhost.localdomain"
     @from = "from@example.com"
     @recipients = []
@@ -66,6 +68,20 @@ class MilterPerformanceTool
               "Use PORT as SMTP port",
               "(#{@smtp_port})") do |smtp_port|
         @smtp_port = smtp_port
+      end
+
+      opts.on("--connect-host=HOST",
+              "Use HOST for XCLIENT NAME value.",
+              "See smtpd_authorized_xclient_hosts parameter for Postfix.",
+              "(none)") do |connect_host|
+        @connect_host = connect_host
+      end
+
+      opts.on("--connect-address=ADDRESS",
+              "Use ADDRESS for XCLIENT ADDR value.",
+              "See smtpd_authorized_xclient_hosts parameter for Postfix.",
+              "(none)") do |connect_address|
+        @connect_address = connect_address
       end
 
       opts.on("--helo-fqdn=FQDN",
@@ -310,6 +326,17 @@ class MilterPerformanceTool
     start_time = Time.now
     begin
       Net::SMTP.start(@smtp_server, @port, helo_fqdn) do |smtp|
+        xclient_parameters = []
+        xclient_parameters << "NAME=#{@connect_host}" if @connect_host
+        xclient_parameters << "ADDR=#{@connect_address}" if @connect_address
+        unless xclient_parameters.empty?
+          unless smtp.send(:capable?, "XCLIENT")
+            raise "XCLIENT isn't enabled. " +
+              "See smtpd_authorized_xclient_hosts parameter for Postfix."
+          end
+          smtp.send(:getok, "XCLIENT #{xclient_parameters.join(' ')}")
+          smtp.send(:do_helo, helo_fqdn)
+        end
         smtp.send_mail(source, from, *recipients)
       end
     rescue Net::SMTPServerBusy
