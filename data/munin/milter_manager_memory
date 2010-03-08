@@ -43,6 +43,7 @@ EOF
 	exit 0
 	;;
     *)
+	;;
 esac
 
 milter_manager_pid=$(cat ${pid_file})
