@@ -401,7 +401,7 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
      manager.max_connections = 10 # 同時に最大10接続のみ受け付ける
 
    既定値:
-     manager.max_connections = 5
+     manager.max_connections = 0 # 制限無し
 
 : manager.max_file_descriptors
 

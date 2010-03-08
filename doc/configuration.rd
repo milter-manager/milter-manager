@@ -406,7 +406,7 @@ Here are descriptions of configuration items.
      manager.max_connections = 10 # accepts only 10 connections concurrency
 
    Default:
-     manager.max_connections = 5
+     manager.max_connections = 0 # no limit
 
 : manager.max_file_descriptors
 
