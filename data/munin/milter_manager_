@@ -173,7 +173,7 @@ when "suggest"
   Dir.glob(File.join(log_dir, "milter.{status,report}.*.rrd")) do |path|
     if /\Amilter\.(status|report)\.(.+?).rrd\z/ =~ File.basename(path)
       type, name = $1, $2
-      milters << [normalize_name(name), type]
+      milters << [name, type]
     end
   end
 
