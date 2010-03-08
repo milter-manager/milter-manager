@@ -1,5 +1,8 @@
 2010-03-08  Kouhei Sutou  <kou@clear-code.com>
 
+	* TODO: add:
+	[1.5.0] milter-test-server: document for --*-timeout options.
+
 	* tool/milter-test-server.c: add --connection-timeout,
 	--reading-timeout, --writing-timeout and --end-of-message-timeout
 	option.
