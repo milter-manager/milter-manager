@@ -1,0 +1,11 @@
+# -*- rd -*-
+
+= Ruby用milter APIリファレンス --- Rubyバインディングのリファレンス
+
+== このドキュメントについて
+
+Rubyでmilterを開発するためのAPIリファレンスです。はじめて
+Rubyでmilterを開発する場合は、まず((<チュートリアル
+|ruby-milter-tutorial.rd.ja>))を読んでください。
+
+TODO...

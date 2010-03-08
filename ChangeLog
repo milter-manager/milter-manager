@@ -1,5 +1,9 @@
 2010-03-08  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/ruby-milter-reference.rd*, doc/ruby-milter-tutorial.rd*,
+	doc/reference/: add placeholder.
+	* NEWS*: link to Ruby integration part.
+
 	* doc/milter-performance-check.rd*, TODO: add document for
 	--reading-timeout, --connect-host and --connect-address options.
 

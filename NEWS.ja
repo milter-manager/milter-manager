@@ -64,7 +64,7 @@
 
 === milter-toolkit
 
-  * Rubyバインディングによるmilter作成をサポート
+  * Rubyバインディングによるmilter作成をサポート: ((<Ruby連携|ruby>))
     * configureで--enable-ruby-milterオプションを指定。
 
 === milter-manager-log-analyzer

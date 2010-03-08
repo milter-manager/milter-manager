@@ -74,7 +74,11 @@ EXTRA_DIST =						\
 	reverse-dictionary.rd				\
 	reverse-dictionary.rd.ja			\
 	users.rd					\
-	users.rd.ja
+	users.rd.ja					\
+	ruby-milter-tutorial.rd				\
+	ruby-milter-tutorial.rd.ja			\
+	ruby-milter-reference.rd			\
+	ruby-milter-reference.rd.ja
 
 dist_man1_MANS =			\
 	milter-manager.man		\

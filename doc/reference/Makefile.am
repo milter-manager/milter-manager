@@ -91,7 +91,9 @@ content_files =					\
 	milter-performance-check.xml		\
 	milter-manager-log-analyzer.xml		\
 	reverse-dictionary.xml			\
-	users.xml
+	users.xml				\
+	ruby-milter-tutorial.xml		\
+	ruby-milter-reference.xml
 
 # Extra options to supply to gtkdoc-fixxref
 FIXXREF_OPTIONS=
@@ -161,7 +163,11 @@ generated_xml_files =				\
 	reverse-dictionary.xml			\
 	reverse-dictionary.xml.ja		\
 	users.xml				\
-	users.xml.ja
+	users.xml.ja				\
+	ruby-milter-tutorial.xml		\
+	ruby-milter-tutorial.xml.ja		\
+	ruby-milter-reference.xml		\
+	ruby-milter-reference.xml.ja
 
 MAINTAINERCLEANFILES +=			\
 	$(generated_xml_files)		\
@@ -386,6 +392,18 @@ users.xml: $(top_srcdir)/doc/users.rd $(RD2REFENTRY_LIB) users.xml.ja
 
 users.xml.ja: $(top_srcdir)/doc/users.rd.ja $(RD2REFENTRY_LIB) ja.po
 	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/users.rd.ja > users.xml.ja
+
+ruby-milter-tutorial.xml: $(top_srcdir)/doc/ruby-milter-tutorial.rd $(RD2REFENTRY_LIB) ruby-milter-tutorial.xml.ja
+	$(RD2DOCBOOK) $(top_srcdir)/doc/ruby-milter-tutorial.rd > ruby-milter-tutorial.xml
+
+ruby-milter-tutorial.xml.ja: $(top_srcdir)/doc/ruby-milter-tutorial.rd.ja $(RD2REFENTRY_LIB) ja.po
+	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/ruby-milter-tutorial.rd.ja > ruby-milter-tutorial.xml.ja
+
+ruby-milter-reference.xml: $(top_srcdir)/doc/ruby-milter-reference.rd $(RD2REFENTRY_LIB) ruby-milter-reference.xml.ja
+	$(RD2DOCBOOK) $(top_srcdir)/doc/ruby-milter-reference.rd > ruby-milter-reference.xml
+
+ruby-milter-reference.xml.ja: $(top_srcdir)/doc/ruby-milter-reference.rd.ja $(RD2REFENTRY_LIB) ja.po
+	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/ruby-milter-reference.rd.ja > ruby-milter-reference.xml.ja
 
 ### SVG -> PNG
 mta-and-milter-manager-and-child-milter.png: $(top_srcdir)/doc/mta-and-milter-manager-and-child-milter.svg

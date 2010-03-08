@@ -68,7 +68,7 @@ A development release.
 
 === milter-toolkit
 
-  * Supported milter development by Ruby bindings.
+  * Supported milter development by Ruby bindings: ((<Ruby integration|ruby>))
     * Specify --enable-ruby-milter option in configure.
 
 === milter-manager-log-analyzer
