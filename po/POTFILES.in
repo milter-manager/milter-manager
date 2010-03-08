@@ -23,6 +23,7 @@ milter/core/milter-reader.c
 milter/core/milter-reply-decoder.c
 milter/core/milter-reply-encoder.c
 milter/core/milter-reply-signals.c
+milter/core/milter-session-result.c
 milter/core/milter-syslog-logger.c
 milter/core/milter-utils.c
 milter/core/milter-writer.c
@@ -42,6 +43,7 @@ milter/manager/milter-manager-launch-command-decoder.c
 milter/manager/milter-manager-launch-command-encoder.c
 milter/manager/milter-manager-leader.c
 milter/manager/milter-manager-main.c
+milter/manager/milter-manager-marshalers.c
 milter/manager/milter-manager-module.c
 milter/manager/milter-manager-process-launcher.c
 milter/manager/milter-manager-reply-decoder.c
