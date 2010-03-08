@@ -1,5 +1,7 @@
 2010-03-08  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-manager.spec.in: use --remove-also.
+
 	* data/munin/sendmail_processes: remove grep itself from statistics.
 
 	* data/munin/milter_manager_: replace '-' with '_' in data name.
