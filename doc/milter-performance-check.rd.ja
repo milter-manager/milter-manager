@@ -57,7 +57,7 @@ smtp-sourceを利用するとよいでしょう。
    ((<PostfixのXCLIENT SMTP拡張
    |URL:http://www.postfix-jp.info/trans-2.3/jhtml/XCLIENT_README.html>))
    のNAMEを利用するので
-   ((<smtpd_authorized_xclient_hosts|http://www.postfix-jp.info/trans-2.3/jhtml/postconf.5.html#smtpd_authorized_xclient_hosts>))
+   ((<smtpd_authorized_xclient_hosts|URL:http://www.postfix-jp.info/trans-2.3/jhtml/postconf.5.html#smtpd_authorized_xclient_hosts>))
    を適切に設定する必要があります。
 
 : --connect-address=ADDRESS
