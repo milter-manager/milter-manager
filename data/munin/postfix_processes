@@ -18,7 +18,8 @@
 #%# family=auto
 #%# capabilities=autoconf
 
-if [ "$1" = "config" ]; then
+case "$1" in
+    config)
 	cat <<EOF
 graph_title Postfix Processes
 graph_vlabel processes
@@ -29,21 +30,19 @@ processes.label Processes
 processes.type GAUGE
 EOF
 	exit 0
-fi
-
-n_processes=$(ps ax | grep smtpd | grep -v 'grep' | wc -l)
-
-case "$1" in
+	;;
     auto|autoconf|detect)
-    	if [ $n_processes -gt 0 ]; then
+	master_proces=$(ps ax | grep master | grep -i postfix | grep -v 'grep')
+    	if [ -n "$master_process" ]; then
 	    echo "yes"
 	    exit 0
 	else
-	    echo "no (no smtpd is running)"
+	    echo "no (no Postifx master process is running)"
 	    exit 1
 	fi
 	;;
     *)
+	n_processes=$(ps ax | grep smtpd | grep -v 'grep' | wc -l)
 	echo "processes.value ${n_processes}"
 	exit 0
 	;;
