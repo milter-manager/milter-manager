@@ -373,6 +373,8 @@ dispose (GObject *object)
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(object);
 
+    milter_debug("[%u] [children][dispose]", priv->tag);
+
     if (priv->reply_queue) {
         g_queue_free(priv->reply_queue);
         priv->reply_queue = NULL;

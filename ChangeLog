@@ -1,5 +1,7 @@
 2010-03-11  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/: log on dispose.
+
 	* test/run-test.sh: also export RUBYLIB for test-milter-client.rb.
 
 2010-03-09  Kouhei Sutou  <kou@clear-code.com>

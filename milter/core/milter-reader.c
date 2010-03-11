@@ -288,6 +288,8 @@ dispose (GObject *object)
 
     priv = MILTER_READER_GET_PRIVATE(object);
 
+    milter_debug("[%u] [reader][dispose]", priv->tag);
+
     clear_watch_id(priv);
 
     if (priv->io_channel) {

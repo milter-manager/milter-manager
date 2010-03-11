@@ -43,6 +43,7 @@ struct _MilterManagerLeaderPrivate
     GIOChannel *launcher_write_channel;
     gboolean processing;
     gboolean requesting_to_children;
+    guint tag;
 };
 
 enum
@@ -155,6 +156,7 @@ milter_manager_leader_init (MilterManagerLeader *leader)
     priv->launcher_write_channel = NULL;
     priv->processing = FALSE;
     priv->requesting_to_children = FALSE;
+    priv->tag = 0;
 }
 
 gboolean
@@ -162,7 +164,6 @@ milter_manager_leader_check_connection (MilterManagerLeader *leader)
 {
     MilterManagerLeaderPrivate *priv;
     gboolean connected = TRUE;
-    guint tag = 0;
     gdouble elapsed = 0.0;
     gchar *state_nick = NULL;
 
@@ -172,7 +173,6 @@ milter_manager_leader_check_connection (MilterManagerLeader *leader)
                         MILTER_LOG_LEVEL_STATISTICS)) {
         MilterAgent *agent;
         agent = MILTER_AGENT(priv->client_context);
-        tag = milter_agent_get_tag(agent);
         elapsed = milter_agent_get_elapsed(agent);
     }
 
@@ -185,28 +185,28 @@ milter_manager_leader_check_connection (MilterManagerLeader *leader)
     if (!priv->requesting_to_children) {
         milter_debug("[%u] [leader][connection-check][%s][skip] "
                      "not milter turn",
-                     tag, state_nick);
+                     priv->tag, state_nick);
         if (state_nick)
             g_free(state_nick);
         return TRUE;
     }
 
     milter_debug("[%u] [leader][connection-check][%s][start][%g]",
-                 tag, state_nick, elapsed);
+                 priv->tag, state_nick, elapsed);
     if (priv->processing) {
         g_signal_emit(leader, signals[CONNECTION_CHECK], 0, &connected);
     } else {
         connected = FALSE;
     }
     milter_debug("[%u] [leader][connection-check][%s][end][%s][%g]",
-                 tag, state_nick,
+                 priv->tag, state_nick,
                  connected ? "connected" : "disconnected",
                  elapsed);
 
     if (!connected) {
         MilterStatus fallback_status;
 
-        milter_statistics("[session][disconnected][%g](%u)", elapsed, tag);
+        milter_statistics("[session][disconnected][%g](%u)", elapsed, priv->tag);
 
         fallback_status =
             milter_manager_configuration_get_fallback_status(
@@ -218,7 +218,7 @@ milter_manager_leader_check_connection (MilterManagerLeader *leader)
                 milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS,
                                                 fallback_status);
             milter_debug("[%u] [leader][connection-check][%s][reply][%s]",
-                         tag, state_nick, fallback_status_nick);
+                         priv->tag, state_nick, fallback_status_nick);
             g_free(fallback_status_nick);
         }
         reply(leader, fallback_status);
@@ -242,6 +242,8 @@ dispose (GObject *object)
 
     leader = MILTER_MANAGER_LEADER(object);
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(object);
+
+    milter_debug("[%u] [leader][dispose]", priv->tag);
 
     if (priv->configuration) {
         g_object_unref(priv->configuration);
@@ -274,19 +276,22 @@ set_property (GObject      *object,
 
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(object);
     switch (prop_id) {
-      case PROP_CONFIGURATION:
+    case PROP_CONFIGURATION:
         if (priv->configuration)
             g_object_unref(priv->configuration);
         priv->configuration = g_value_get_object(value);
         if (priv->configuration)
             g_object_ref(priv->configuration);
         break;
-      case PROP_CLIENT_CONTEXT:
+    case PROP_CLIENT_CONTEXT:
+        priv->tag = 0;
         if (priv->client_context)
             g_object_unref(priv->client_context);
         priv->client_context = g_value_get_object(value);
-        if (priv->client_context)
+        if (priv->client_context) {
             g_object_ref(priv->client_context);
+            priv->tag = milter_agent_get_tag(MILTER_AGENT(priv->client_context));
+        }
         break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -478,14 +483,12 @@ next_state (MilterManagerLeader *leader,
     default:
         if (milter_need_error_log()) {
             gchar *inspected_state;
-            guint tag;
 
-            tag = milter_agent_get_tag(MILTER_AGENT(priv->client_context));
             inspected_state =
                 milter_utils_inspect_enum(MILTER_TYPE_MANAGER_LEADER_STATE,
                                           state);
             milter_error("[%u] [leader][error][invalid-state] %s",
-                         tag, inspected_state);
+                         priv->tag, inspected_state);
             g_free(inspected_state);
         }
         next_state = MILTER_MANAGER_LEADER_STATE_INVALID;
@@ -530,10 +533,8 @@ reply (MilterManagerLeader *leader, MilterStatus status)
             g_signal_emit_by_name(priv->client_context, signal_name, status);
         } else {
             GError *error;
-            guint tag;
             gchar *state_name, *status_name;
 
-            tag = milter_agent_get_tag(MILTER_AGENT(priv->client_context));
             state_name =
                 milter_utils_get_enum_nick_name(MILTER_TYPE_MANAGER_LEADER_STATE,
                                                 priv->state);
@@ -545,7 +546,7 @@ reply (MilterManagerLeader *leader, MilterStatus status)
                                 state_name, status_name);
             g_free(state_name);
             g_free(status_name);
-            milter_error("[%u] [leader][error] %s", tag, error->message);
+            milter_error("[%u] [leader][error] %s", priv->tag, error->message);
             milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(leader), error);
             g_error_free(error);
             return;
@@ -578,8 +579,7 @@ cb_reply_code (MilterReplySignals *_reply,
                                     &error);
     if (error) {
         milter_error("[%u] [leader][error][reply-code] %s",
-                     milter_agent_get_tag(MILTER_AGENT(priv->client_context)),
-                     error->message);
+                     priv->tag, error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(leader),
                                     error);
         g_error_free(error);
@@ -634,15 +634,12 @@ cb_add_header (MilterReplySignals *_reply,
     milter_client_context_add_header(priv->client_context, name, value, &error);
     if (error) {
         milter_error("[%u] [leader][error][add-header] %s",
-                     milter_agent_get_tag(MILTER_AGENT(priv->client_context)),
-                     error->message);
+                     priv->tag, error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(leader), error);
         g_error_free(error);
     } else {
         milter_statistics(
-            "[session][header][add](%u): <%s>=<%s>",
-            milter_agent_get_tag(MILTER_AGENT(priv->client_context)),
-            name, value);
+            "[session][header][add](%u): <%s>=<%s>", priv->tag, name, value);
     }
 }
 
@@ -660,15 +657,12 @@ cb_insert_header (MilterReplySignals *_reply,
                                         index, name, value, &error);
     if (error) {
         milter_error("[%u] [leader][error][insert-header] %s",
-                     milter_agent_get_tag(MILTER_AGENT(priv->client_context)),
-                     error->message);
+                     priv->tag, error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(leader), error);
         g_error_free(error);
     } else {
         milter_statistics(
-            "[session][header][add](%u): <%s>=<%s>",
-            milter_agent_get_tag(MILTER_AGENT(priv->client_context)),
-            name, value);
+            "[session][header][add](%u): <%s>=<%s>", priv->tag, name, value);
     }
 }
 
@@ -686,9 +680,7 @@ cb_change_header (MilterReplySignals *_reply,
 
     if (value) {
         milter_statistics(
-            "[session][header][add](%u): <%s>=<%s>",
-            milter_agent_get_tag(MILTER_AGENT(priv->client_context)),
-            name, value);
+            "[session][header][add](%u): <%s>=<%s>", priv->tag, name, value);
     }
 }
 
@@ -785,8 +777,7 @@ cb_connection_failure (MilterReplySignals *_reply, gpointer user_data)
         return;
 
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
-    milter_debug("[%u] [leader][unsupported][connection-failure]",
-                 milter_agent_get_tag(MILTER_AGENT(priv->client_context)));
+    milter_debug("[%u] [leader][unsupported][connection-failure]", priv->tag);
 }
 
 static void
@@ -799,8 +790,7 @@ cb_shutdown (MilterReplySignals *_reply, gpointer user_data)
         return;
 
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
-    milter_debug("[%u] [leader][unsupported][shutdown]",
-                 milter_agent_get_tag(MILTER_AGENT(priv->client_context)));
+    milter_debug("[%u] [leader][unsupported][shutdown]", priv->tag);
 }
 
 static void
@@ -824,9 +814,7 @@ cb_abort (MilterReplySignals *_reply, gpointer user_data)
         state_name =
             milter_utils_get_enum_nick_name(MILTER_TYPE_MANAGER_LEADER_STATE,
                                             priv->state);
-        milter_debug("[%u] [leader][abort][%s]",
-                     milter_agent_get_tag(MILTER_AGENT(priv->client_context)),
-                     state_name);
+        milter_debug("[%u] [leader][abort][%s]", priv->tag, state_name);
         g_free(state_name);
     }
     milter_agent_shutdown(MILTER_AGENT(priv->client_context));
@@ -841,9 +829,7 @@ cb_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
     MilterStatus fallback_status;
 
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
-    milter_error("[%u] [leader][error] %s",
-                 milter_agent_get_tag(MILTER_AGENT(priv->client_context)),
-                 error->message);
+    milter_error("[%u] [leader][error] %s", priv->tag, error->message);
     milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(leader),
                                 error);
 
@@ -938,7 +924,6 @@ milter_manager_leader_negotiate (MilterManagerLeader *leader,
                                  MilterMacrosRequests *macros_requests)
 {
     MilterManagerLeaderPrivate *priv;
-    guint tag;
     MilterStatus fallback_status;
 
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
@@ -952,13 +937,12 @@ milter_manager_leader_negotiate (MilterManagerLeader *leader,
     if (!priv->children)
         return fallback_status;
 
-    tag = milter_agent_get_tag(MILTER_AGENT(priv->client_context));
-    milter_manager_children_set_tag(priv->children, tag);
+    milter_manager_children_set_tag(priv->children, priv->tag);
     setup_children_signals(leader, priv->children);
     milter_manager_children_set_launcher_channel(priv->children,
                                                  priv->launcher_read_channel,
                                                  priv->launcher_write_channel);
-    milter_debug("[%u] [leader][setup][children]", tag);
+    milter_debug("[%u] [leader][setup][children]", priv->tag);
 
     if (milter_manager_children_negotiate(priv->children, option,
                                           macros_requests)) {

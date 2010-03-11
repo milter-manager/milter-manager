@@ -114,6 +114,8 @@ dispose (GObject *object)
 
     priv = MILTER_WRITER_GET_PRIVATE(object);
 
+    milter_debug("[%u] [writer][dispose]", priv->tag);
+
     if (priv->channel_watch_id > 0) {
         g_source_remove(priv->channel_watch_id);
         priv->channel_watch_id = 0;

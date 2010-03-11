@@ -1575,6 +1575,9 @@ dispose (GObject *object)
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(object);
 
+    milter_debug("[%u] [client-context][dispose]",
+                 milter_agent_get_tag(MILTER_AGENT(object)));
+
     disable_timeout(MILTER_CLIENT_CONTEXT(object));
 
     if (priv->private_data) {
