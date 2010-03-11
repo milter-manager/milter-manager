@@ -71,7 +71,9 @@ if [ "$ruby_glib2_dir" != "" ]; then
     MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_glib2_dir/src/lib
     MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_glib2_dir/src
 fi
+RUBYLIB=$MILTER_MANAGER_RUBYLIB:$RUBYLIB
 export MILTER_MANAGER_RUBYLIB
+export RUBYLIB
 export MILTER_MANAGER_CONFIGURATION_MODULE_DIR=$top_dir/module/configuration/ruby/.libs
 export MILTER_MANAGER_CONFIG_DIR=$top_dir/test/fixtures/configuration
 
