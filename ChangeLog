@@ -1,3 +1,8 @@
+2010-03-12  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/manager/milter-manager-leader.c: add negotiated check to
+	avoid negotiation failure.
+
 2010-03-11  Kouhei Sutou  <kou@clear-code.com>
 
 	* milter-manager.spec.in: fix a typo.

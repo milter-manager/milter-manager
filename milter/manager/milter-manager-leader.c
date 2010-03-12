@@ -164,6 +164,7 @@ milter_manager_leader_check_connection (MilterManagerLeader *leader)
 {
     MilterManagerLeaderPrivate *priv;
     gboolean connected = TRUE;
+    gboolean skip = FALSE;
     gdouble elapsed = 0.0;
     gchar *state_nick = NULL;
 
@@ -182,10 +183,21 @@ milter_manager_leader_check_connection (MilterManagerLeader *leader)
                                             priv->state);
     }
 
+    if (!priv->processing) {
+        milter_debug("[%u] [leader][connection-check][%s][skip] "
+                     "not negotiated yet",
+                     priv->tag, state_nick);
+        skip = TRUE;
+    }
+
     if (!priv->requesting_to_children) {
         milter_debug("[%u] [leader][connection-check][%s][skip] "
                      "not milter turn",
                      priv->tag, state_nick);
+        skip = TRUE;
+    }
+
+    if (skip) {
         if (state_nick)
             g_free(state_nick);
         return TRUE;
