@@ -34,6 +34,7 @@
 
 #include <milter/core/milter-marshalers.h>
 #include "../client.h"
+#include "milter-client-private.h"
 
 static gboolean initialized = FALSE;
 static guint milter_client_log_handler_id = 0;
@@ -331,12 +332,37 @@ finish_processing (MilterClientProcessData *data)
     process_data_free(data);
 }
 
+void
+milter_client_set_n_processed_sessions (MilterClient *client,
+                                        guint n_processed_sessions)
+{
+    MilterClientPrivate *priv;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    priv->n_processed_sessions = n_processed_sessions;
+}
+
+gboolean
+milter_client_need_maintain (MilterClient *client, guint n_finished_sessions)
+{
+    MilterClientPrivate *priv;
+    guint maintenance_interval, n_finished_sessions_in_interval;
+
+    maintenance_interval = milter_client_get_maintenance_interval(client);
+    if (maintenance_interval == 0)
+        return FALSE;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    n_finished_sessions_in_interval =
+        priv->n_processed_sessions % maintenance_interval;
+    return n_finished_sessions_in_interval < n_finished_sessions;
+}
+
 static void
 dispose_finished_data (MilterClient *client)
 {
     MilterClientPrivate *priv;
     guint n_processed_sessions_before, n_finished_sessions;
-    guint maintenance_interval;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
     if (!priv->finished_data)
@@ -354,14 +380,9 @@ dispose_finished_data (MilterClient *client)
                       priv->n_processed_sessions,
                       n_finished_sessions,
                       priv->n_processing_sessions);
-
-    maintenance_interval = milter_client_get_maintenance_interval(client);
-    if ((maintenance_interval == 0) ||
-        ((priv->n_processed_sessions % maintenance_interval) >=
-         n_finished_sessions)) {
-        return;
+    if (milter_client_need_maintain(client, n_finished_sessions)) {
+        g_signal_emit(client, signals[MAINTAIN], 0);
     }
-    g_signal_emit(client, signals[MAINTAIN], 0);
 }
 
 static void

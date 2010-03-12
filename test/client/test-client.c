@@ -30,6 +30,7 @@
 #include <glib/gstdio.h>
 
 #include <milter/client.h>
+#include <milter/client/milter-client-private.h>
 #include <milter-test-utils.h>
 
 #include <gcutter.h>
@@ -52,6 +53,10 @@ void test_effective_user (void);
 void test_effective_group (void);
 void test_maintenance_interval (void);
 void test_connection_spec (void);
+void test_need_maintain (void);
+void test_need_maintain_over (void);
+void test_need_maintain_over_interval (void);
+void test_need_maintain_never (void);
 
 static MilterClient *client;
 static MilterTestServer *server;
@@ -796,6 +801,47 @@ test_maintenance_interval (void)
     milter_client_set_maintenance_interval(client, 10);
     cut_assert_equal_uint(
         10, milter_client_get_maintenance_interval(client));
+}
+
+void
+test_need_maintain (void)
+{
+    milter_client_set_maintenance_interval(client, 10);
+    milter_client_set_n_processed_sessions(client, 10);
+    cut_assert_false(milter_client_need_maintain(client, 0));
+    cut_assert_true(milter_client_need_maintain(client, 1));
+
+    milter_client_set_n_processed_sessions(client, 11);
+    cut_assert_false(milter_client_need_maintain(client, 1));
+    cut_assert_true(milter_client_need_maintain(client, 2));
+}
+
+void
+test_need_maintain_over (void)
+{
+    milter_client_set_maintenance_interval(client, 10);
+    milter_client_set_n_processed_sessions(client, 21);
+    cut_assert_false(milter_client_need_maintain(client, 1));
+    cut_assert_true(milter_client_need_maintain(client, 2));
+}
+
+void
+test_need_maintain_over_interval (void)
+{
+    milter_client_set_maintenance_interval(client, 2);
+    milter_client_set_n_processed_sessions(client, 4);
+    cut_assert_true(milter_client_need_maintain(client, 3));
+}
+
+void
+test_need_maintain_never (void)
+{
+    milter_client_set_maintenance_interval(client, 0);
+    cut_assert_false(milter_client_need_maintain(client, 0));
+    cut_assert_false(milter_client_need_maintain(client, 1));
+
+    milter_client_set_n_processed_sessions(client, 100);
+    cut_assert_false(milter_client_need_maintain(client, 1));
 }
 
 /*

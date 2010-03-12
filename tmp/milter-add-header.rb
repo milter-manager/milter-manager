@@ -15,12 +15,24 @@ client.signal_connect("connection-established") do |_client, context|
     option.step = 0
     Milter::Status::CONTINUE
   end
-  
-  context.signal_connect("end-of-message") do |*args|
+
+  require 'time'
+  context.signal_connect("helo") do |*args|
     p args
-    context.add_header "hayamiZ", "X hayamiZ"
-    p context.progress
-    context.add_header "hayamiZ-final", "X hayamiZ extreme"
+    object_id = Object.new.object_id
+    timeouted = false
+    GLib::Timeout.add(60 * 1000) do
+      p [Time.now.iso8601, :here, object_id]
+      timeouted = true
+      false
+    end
+    context = GLib::MainContext.default
+    until timeouted
+      p [Time.now.iso8601, :loop, object_id]
+      context.iteration(true)
+      p [Time.now.iso8601, timeouted, object_id]
+    end
+    p [Time.now, :done, object_id]
     Milter::Status::CONTINUE
   end
 end

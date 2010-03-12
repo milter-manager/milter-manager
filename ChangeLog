@@ -1,5 +1,9 @@
 2010-03-12  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client.c,
+	milter/client/milter-client-private.h,
+	test/client/test-client.c: add a test for maintenance configuration.
+
 	* milter/manager/milter-manager-leader.c: add negotiated check to
 	avoid negotiation failure.
 

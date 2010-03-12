@@ -22,6 +22,7 @@ enum_sources_h =			\
 milter_client_includedir=$(pkgincludedir)/milter/client
 milter_client_include_HEADERS =		\
 	milter-client-enum-types.h	\
+	milter-client-private.h		\
 	$(milter_client_public_headers)
 
 lib_LTLIBRARIES =		\
