@@ -13,6 +13,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
+require 'ipaddr'
+
 module Milter
   class Logger
     @@domain = "milter-manager"
@@ -91,6 +93,10 @@ module Milter
         return true if bit1 == 192 and bit2 == 168
         false
       end
+
+      def to_ip_address
+        IPAddr.new(address)
+      end
     end
 
     class IPv6
@@ -105,17 +111,29 @@ module Milter
         return true if bits[0] == 0xfe80
         false
       end
+
+      def to_ip_address
+        IPAddr.new(address)
+      end
     end
 
     class Unix
       def local?
         true
       end
-    end
+
+      def to_ip_address
+        nil
+      end
+   end
 
     class Unknown
       def local?
         false
+      end
+
+      def to_ip_address
+        nil
       end
     end
   end

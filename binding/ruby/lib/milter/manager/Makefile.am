@@ -16,4 +16,5 @@ dist_binding_lib_milter_DATA =			\
 	debian-init-detector.rb			\
 	redhat-detector.rb			\
 	redhat-init-detector.rb			\
-	redhat-upstart-detector.rb
+	redhat-upstart-detector.rb		\
+	local-address-matcher.rb
