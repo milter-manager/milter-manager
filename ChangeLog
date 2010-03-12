@@ -2,6 +2,11 @@
 
 	* milter/client/milter-client.c,
 	milter/client/milter-client-private.h,
+	test/client/test-client.c: maintain on no processing sessions even
+	if maintenance_interval is 0.
+
+	* milter/client/milter-client.c,
+	milter/client/milter-client-private.h,
 	test/client/test-client.c: add a test for maintenance configuration.
 
 	* milter/manager/milter-manager-leader.c: add negotiated check to

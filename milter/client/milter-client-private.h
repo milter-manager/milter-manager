@@ -24,6 +24,9 @@
 
 G_BEGIN_DECLS
 
+void                 milter_client_set_n_processing_sessions
+                                                     (MilterClient *client,
+                                                      guint n_processing_sessions);
 void                 milter_client_set_n_processed_sessions
                                                      (MilterClient *client,
                                                       guint n_processed_sessions);

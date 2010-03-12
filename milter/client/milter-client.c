@@ -333,6 +333,16 @@ finish_processing (MilterClientProcessData *data)
 }
 
 void
+milter_client_set_n_processing_sessions (MilterClient *client,
+                                         guint n_processing_sessions)
+{
+    MilterClientPrivate *priv;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    priv->n_processing_sessions = n_processing_sessions;
+}
+
+void
 milter_client_set_n_processed_sessions (MilterClient *client,
                                         guint n_processed_sessions)
 {
@@ -348,11 +358,14 @@ milter_client_need_maintain (MilterClient *client, guint n_finished_sessions)
     MilterClientPrivate *priv;
     guint maintenance_interval, n_finished_sessions_in_interval;
 
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    if (priv->n_processing_sessions == 0 && n_finished_sessions > 0)
+        return TRUE;
+
     maintenance_interval = milter_client_get_maintenance_interval(client);
     if (maintenance_interval == 0)
         return FALSE;
 
-    priv = MILTER_CLIENT_GET_PRIVATE(client);
     n_finished_sessions_in_interval =
         priv->n_processed_sessions % maintenance_interval;
     return n_finished_sessions_in_interval < n_finished_sessions;
