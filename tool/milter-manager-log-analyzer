@@ -383,6 +383,7 @@ class MilterManagerLogAnalyzer
       dump_file = Tempfile.new("milter-manager-log-analyzer")
       RRD.dump(rrd_file, dump_file.path)
       data = dump_file.read
+      data.gsub!(/<last_ds><\/last_ds>/, "<last_ds>NaN</last_ds>")
       data.sub!(/<!-- Round Robin Archives -->/) do |text|
         ds = ""
         new_items.each do |item|
