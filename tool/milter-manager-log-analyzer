@@ -274,7 +274,7 @@ class MilterManagerLogAnalyzer
 
       time_stamp = time_stamp.to_i
       data = []
-      find_data(content) do |key, type, *options|
+      find_data(content) do |key, type, options|
         data << [key, type, options]
       end
       return if data.empty?
@@ -508,7 +508,7 @@ EODS
     end
 
     def update_data(data)
-      data.each do |key, type, *options|
+      data.each do |key, type, options|
         type ||= :count
         options ||= {}
         count = options[:count] || 1
