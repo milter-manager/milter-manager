@@ -136,9 +136,9 @@ EOM
     puts("disconnected.draw LINE2")
     puts("disconnected.type GAUGE")
     puts
-    puts("disconnected.label Concurrent")
-    puts("disconnected.draw LINE2")
-    puts("disconnected.type GAUGE")
+    puts("concurrent.label Concurrent")
+    puts("concurrent.draw LINE2")
+    puts("concurrent.type GAUGE")
   end
 end
 
@@ -151,7 +151,7 @@ def report(log_dir, type, milter)
   case type
   when "status"
     header, values = fetch(File.join(log_dir, "session.rrd"))
-    ["smtp", "disconnected"].each do |key|
+    ["smtp", "disconnected", "concurrent"].each do |key|
       puts("#{key}.value #{values[header.index(key)]}")
     end
   end

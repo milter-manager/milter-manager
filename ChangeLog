@@ -1,5 +1,7 @@
 2010-03-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* data/munin/milter_manager_: fix typos.
+
 	* tool/milter-manager-log-analyzer, data/munin/milter_manager_:
 	collect n concurrent connections.
 
