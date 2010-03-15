@@ -1,5 +1,8 @@
 2010-03-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-manager-log-analyzer, data/munin/milter_manager_:
+	collect n concurrent connections.
+
 	* doc/install-to-freebsd.rd*: add recommended configurations.
 
 2010-03-13  Kouhei Sutou  <kou@cozmixng.org>

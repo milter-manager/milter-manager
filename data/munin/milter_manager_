@@ -101,6 +101,7 @@ def config(log_dir, type, milter, parameters)
   when "status"
     order << "smtp"
     order << "disconnected"
+    order << "concurrent"
   end
   print(<<-EOM)
 graph_title #{title}
@@ -135,6 +136,9 @@ EOM
     puts("disconnected.draw LINE2")
     puts("disconnected.type GAUGE")
     puts
+    puts("disconnected.label Concurrent")
+    puts("disconnected.draw LINE2")
+    puts("disconnected.type GAUGE")
   end
 end
 

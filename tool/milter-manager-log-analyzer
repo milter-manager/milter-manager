@@ -273,21 +273,18 @@ class MilterManagerLogAnalyzer
       return if time_stamp >= @update_time
 
       time_stamp = time_stamp.to_i
-      keys = []
-      find_keys(content) do |key|
-        keys << key
+      data = []
+      find_data(content) do |key, type, *options|
+        data << [key, type, options]
       end
-      return if keys.empty?
+      return if data.empty?
 
       @current_time ||= time_stamp
       if time_stamp and @current_time > time_stamp
         @data = {}
       else
         flush(time_stamp)
-        keys.each do |key|
-          @data[key] ||= 0
-          @data[key] += 1
-        end
+        update_data(data)
       end
     end
 
@@ -508,6 +505,21 @@ EODS
         "unknown"
       end
     end
+
+    def update_data(data)
+      data.each do |key, type, *options|
+        type ||= :count
+        options ||= {}
+        count = options[:count] || 1
+        @data[key] ||= 0
+        case type
+        when :count
+          @data[key] += count
+        when :max
+          @data[key] = [@data[key], count].max
+        end
+      end
+    end
   end
 
   class SessionGraphGenerator < GraphGenerator
@@ -521,7 +533,7 @@ EODS
       super(output_directory, update_time)
       @title = 'Sessions'
       @vertical_label = "sessions"
-      @items = ["smtp", "child", "disconnected"]
+      @items = ["smtp", "child", "disconnected", "concurrent"]
       @old_base_rrd_file_names = ["milter-log.session.rrd"]
     end
 
@@ -529,7 +541,7 @@ EODS
       build_path("session.#{tag}.png")
     end
 
-    def find_keys(content)
+    def find_data(content)
       case content
       when /\A\[milter\]\[end\]\[(.+?)\]\[(.+?)\]\[(.+?)\]\((.+?)\): (.+)\z/
         state = $1
@@ -557,6 +569,11 @@ EODS
         elapsed = $1
         id = $2
         yield("disconnected")
+      when /\A\[sessions\]\[finished\] (\d+)\(\+(\d+)\) (\d+)\z/
+        n_processed = $1
+        n_finished = $2
+        n_rest = $3
+        yield("concurrent", :max, :count => n_rest.to_i)
       end
     end
 
@@ -573,7 +590,11 @@ EODS
             "LINE2:n_disconnected#ff0000:Disconnected",
             "GPRINT:total_disconnected:MAX:total\\: %8.0lf sessions",
             "GPRINT:disconnected:AVERAGE:avg\\: %6.2lf sessions/#{unit}",
-            "GPRINT:max_disconnected:MAX:max\\: %4.0lf sessions/#{unit}\\l")
+            "GPRINT:max_disconnected:MAX:max\\: %4.0lf sessions/#{unit}\\l",
+            "LINE2:n_concurrent#cc00cc:Concurrent",
+            "GPRINT:total_concurrent:MAX:total\\: %8.0lf sessions",
+            "GPRINT:concurrent:AVERAGE:avg\\: %6.2lf sessions/#{unit}",
+            "GPRINT:max_concurrent:MAX:max\\: %4.0lf sessions/#{unit}\\l")
     end
   end
 
@@ -639,7 +660,7 @@ EODS
     end
 
     private
-    def find_keys(content)
+    def find_data(content)
       case content
       when /\A\[session\]\[end\]\[(.+)\]\[(.+)\]\[(.+)\]\((.+)\)\z/
         state = $1
@@ -732,7 +753,7 @@ EODS
     end
 
     private
-    def find_keys(content, &block)
+    def find_data(content, &block)
       case content
       when /\A\[milter\]\[header\]\[add\]\((.+)\): <(.+?)>=<(.+?)>: (.+)\z/
         id = $1
@@ -894,7 +915,7 @@ EODS
     end
 
     private
-    def find_keys(content)
+    def find_data(content)
       case content
       when /\A\[milter\]\[end\]\[(.+?)\]\[(.+?)\]\[(.+?)\]\((.+?)\): (.+)\z/
         state = $1
