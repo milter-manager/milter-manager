@@ -25,7 +25,8 @@ We use Postfix as MTA:
 We use spamass-milter, clamav-milter and milter-greylist as
 milters:
 
-  % sudo /usr/local/sbin/portupgrade -NRr spamass-milter milter-greylist
+  % sudo /usr/local/sbin/portupgrade -NRr spamass-milter
+  % sudo /usr/local/sbin/portupgrade -NRr -m 'WITH_POSTFIX=true' milter-greylist
   % sudo /usr/local/sbin/portupgrade -NRr -m 'WITH_MILTER=true' clamav
 
 == Build and Install
@@ -52,17 +53,6 @@ We use general user for milter's effective user. This is
 also for security. 'mail' group has permission of read/write
 UNIX domain socket. 'postfix' user is joined to 'mail' group.
 
-milter works as 'mailnull' user. It's better that each
-milter works as other user but we use 'mailnull' user for
-all milter because of the following reasons:
-
-  * don't need to add because 'mailnull' user is created by
-    default
-  * 'mailnull' user isn't used because we use Postfix
-    instead of Sendmail
-
-Exception: milter-manager is ran as 'milter-manager' user.
-
 milter-greylist should be applied only if
 ((<S25R|URL:http://gabacho.reto.jp/en/anti-spam/>))
 condition is matched to reduce needless delivery delay.
@@ -85,28 +75,43 @@ spamd:
 
   spamd_enable=YES
 
+If our SMTP server has many concurrent connections, we
+should increase max concurrent connections. It is 5 by
+default. It's a good first value that about 1/3 of the max
+SMTP connections. e.g. about 30 for about 100 connections
+SMTP server:
+
+  spamd_flags="-c --max-children=30 "
+
+We can adjust apposite value after operation. We can see
+milter manager's statistics graphs at the time.
+
 spamd should be started:
 
   % sudo /usr/local/etc/rc.d/sa-spamd start
 
+Next, we configure spamass-milter. We run spamass-milter
+with 'spamd' user and 'spamd' group.
+
 spamass-milter creates a socket file
 as /var/run/spamass-milter.sock by default. But general user
 can't create a new file in /var/run/. We create
-/var/run/milter/ directory owned by 'mailnull'
+/var/run/spamass-milter/ directory owned by 'spamd'
 user. spamass-milter creates a socket file in the directory:
 
-  % sudo mkdir /var/run/milter/
-  % sudo /usr/sbin/chown mailnull:mailnull /var/run/milter
+  % sudo mkdir /var/run/spamass-milter/
+  % sudo /usr/sbin/chown spamd:spamd /var/run/spamass-milter
 
 We add the following to /etc/rc.conf:
 
   spamass_milter_enable="YES"
-  spamass_milter_user="mailnull"
-  spamass_milter_group="mailnull"
-  spamass_milter_socket="/var/run/milter/spamass-milter.sock"
-  spamass_milter_socket_owner="mailnull"
+  spamass_milter_user="spamd"
+  spamass_milter_group="spamd"
+  spamass_milter_socket="/var/run/spamss-milter/spamass-milter.sock"
+  spamass_milter_socket_owner="spamd"
   spamass_milter_socket_group="mail"
   spamass_milter_socket_mode="660"
+  spamass_milter_localflags="-u spamd -- -u spamd"
 
 spamass-milter should be started:
 
@@ -137,11 +142,55 @@ We add the following to /etc/rc.conf:
   clamav_milter_socket_mode="660"
   clamav_milter_socket_group="mail"
 
+We may need to configure /usr/local/etc/clamav-milter.conf.
+e.g.:
+
+/usr/local/etc/clamav-milter.conf
+
+Before:
+  #OnInfected Quarantine
+  #AddHeader Replace
+  #LogSyslog yes
+  #LogFacility LOG_MAIL
+  #LogInfected Basic
+
+After:
+  OnInfected Reject
+  AddHeader Replace
+  LogSyslog yes
+  LogFacility LOG_MAIL
+  LogInfected Full
+
+Here are explanations of the above configurations:
+
+: OnInfected Reject
+   Rejects infected mails. The default value is
+   Quarantine. It puts infected mails into Postfix's hold
+   queue. If we don't want to confirm hold queue
+   periodically, Reject is a good way for easy maintenance.
+
+: AddHeader Replace
+  Replaces X-Virus-Scanned header even if it's existed.
+
+: LogSyslog yes
+   Logs to syslog.
+
+: LogFacility LOG_MAIL
+   Logs to syslog with LOG_MAIL facility. /var/log/maillog
+   is the default LOG_MAIL log file.
+
+: LogInfected Full
+   Logs verbosity on finding infected mails.
+
 clamav-milter should be started:
 
   % sudo /usr/local/etc/rc.d/clamav-milter start
 
 === Configure milter-greylist
+
+We run milter-greylist as 'smmsp' user and 'mail' group.
+'smmsp' user is the default configuration and it is unused
+user on Postfix environment.
 
 We copy /usr/local/etc/mail/greylist.conf.sample to
 /usr/local/etc/mail/greylist.conf and change it like the
@@ -156,7 +205,7 @@ After:
 We add the following to /etc/rc.conf:
 
   miltergreylist_enable="YES"
-  miltergreylist_runas="mailnull:mailnull"
+  miltergreylist_runas="smmsp:mail"
 
 We create /etc/rc.conf.d/miltergreylist to set socket file's
 permission. 'sleep 1' is just for waiting milter-greylist is
@@ -172,11 +221,6 @@ ran. If 1 second is small, we can improve it like
     /bin/chmod g+w $miltergreylist_sockfile
     /usr/bin/chgrp mail $miltergreylist_sockfile
   }
-
-We change /var/milter-greylist/ owner to mailnull because
-milter-greylist is ran as mailnull user:
-
-  % sudo /usr/sbin/chown mailnull:mailnull /var/milter-greylist/
 
 milter-greylist should be started:
 
@@ -214,7 +258,7 @@ The following output shows milters are detected:
   end
   ..
   define_milter("spamass-milter") do |milter|
-    milter.connection_spec = "unix:/var/run/milter/spamass-milter.sock"
+    milter.connection_spec = "unix:/var/run/spamss-milter/spamass-milter.sock"
     ...
     milter.enabled = true
     ...

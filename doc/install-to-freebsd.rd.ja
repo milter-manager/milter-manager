@@ -24,7 +24,11 @@ MTAはPostfixを利用することとします。
 milterはspamass-milter、clamav-milter、milter-greylistを使用
 することとします。
 
-  % sudo /usr/local/sbin/portupgrade -NRr spamass-milter milter-greylist
+  % sudo /usr/local/sbin/portupgrade -NRr -m "WITH_CHARSET=utf-8" ja-mecab ja-mecab-ipadic
+  % sudo /usr/local/sbin/portupgrade -NRr -m "ENCODING=utf-8" ja-p5-Text-MeCab
+  % sudo /usr/local/sbin/portupgrade -NRr ja-p5-Mail-SpamAssassin
+  % sudo /usr/local/sbin/portupgrade -NRr spamass-milter
+  % sudo /usr/local/sbin/portupgrade -NRr -m 'WITH_POSTFIX=true' milter-greylist
   % sudo /usr/local/sbin/portupgrade -NRr -m 'WITH_MILTER=true' clamav
 
 == ビルドとインストール
@@ -53,16 +57,6 @@ milterの実効ユーザも一般ユーザにします。これもセキュリ�
 限を設定します。読み書き権限のあるグループとしてmailグループ
 を使用し、postfixユーザはmailグループに所属させます。
 
-ここでは、milterはmailnullユーザで動かします。milter毎に異な
-るユーザを作成した方がよいのですが、以下の理由からmailnullユー
-ザで動かすこととしました。
-
-  * デフォルトで作成されているユーザなので追加の設定が必要ない
-  * SendmailではなくPostfixを使用しているため、mailnullユー
-    ザは使用されていない
-
-ただし、milter-managerはmilter-managerユーザで動かします。
-
 必要のない配送遅延をできるだけ抑えるため、milter-greylistは
 ((<S25R|URL:http://gabacho.reto.jp/anti-spam/>))にマッチする
 ときのみ適用します。しかし、これはmilter-managerが自動で行う
@@ -83,29 +77,47 @@ spamdを有効にするため、/etc/rc.confに以下を追加します。
 
   spamd_enable=YES
 
+SMTPクライアントの同時接続数が多い場合は、最大同時接続数を増
+やします。デフォルトでは5接続になっています。迷惑メールを送る
+多くのSMTPクライアントはmilter-greylistでブロックされて、
+SpamAssassinまでは処理がまわってきません。まずは、SMTPクライ
+アントの同時接続数の1/3程度にしておき、運用後に調整するとよい
+でしょう。例えば、同時に最大で約100接続ほどのSMTP接続がある
+場合は以下のように同時に30接続受け付けるようにするとよいでしょ
+う。
+
+  spamd_flags="-c --max-children=30 "
+
+運用後はmilter managerの統計情報をグラフ化し、調整してくださ
+い。
+
 spamdを起動します。
 
   % sudo /usr/local/etc/rc.d/sa-spamd start
 
+次にspamass-milterの設定をします。spamass-milterはspamdユー
+ザ・spamdグループで動かすことにします。
+
 デフォルトではspamass-milterは/var/run/spamass-milter.sockに
 ソケットファイルを作成します。しかし、/var/run/以下にはroot権
 限がないと新しくファイルを作成することができません。そのため、
-/var/run/milter/ディレクトリを作成し、そのディレクトリの所有
-者をmailnullユーザにします。ソケットファイルはそのディレクト
-リ以下に作成することにします。
+/var/run/spamass-milter/ディレクトリを作成し、そのディレクト
+リの所有者をspamdユーザにします。ソケットファイルはそのディレ
+クトリ以下に作成することにします。
 
-  % sudo mkdir /var/run/milter/
-  % sudo /usr/sbin/chown mailnull:mailnull /var/run/milter
+  % sudo mkdir /var/run/spamss-milter/
+  % sudo /usr/sbin/chown spamd:spamd /var/run/spamss-milter
 
 /etc/rc.confに以下を追加します。
 
   spamass_milter_enable="YES"
-  spamass_milter_user="mailnull"
-  spamass_milter_group="mailnull"
-  spamass_milter_socket="/var/run/milter/spamass-milter.sock"
-  spamass_milter_socket_owner="mailnull"
+  spamass_milter_user="spamd"
+  spamass_milter_group="spamd"
+  spamass_milter_socket="/var/run/spamss-milter/spamass-milter.sock"
+  spamass_milter_socket_owner="spamd"
   spamass_milter_socket_group="mail"
   spamass_milter_socket_mode="660"
+  spamass_milter_localflags="-u spamd -- -u spamd"
 
 spamass-milterを起動します。
 
@@ -135,11 +147,62 @@ clamav-milterはデフォルトではclamavユーザ・clamavグループで
   clamav_milter_socket_mode="660"
   clamav_milter_socket_group="mail"
 
+必要であれば/usr/local/etc/clamav-milter.confを変更します。
+例えば、以下のように変更します。
+
+/usr/local/etc/clamav-milter.conf
+
+変更前:
+  #OnInfected Quarantine
+  #AddHeader Replace
+  #LogSyslog yes
+  #LogFacility LOG_MAIL
+  #LogInfected Basic
+
+変更後:
+  OnInfected Reject
+  AddHeader Replace
+  LogSyslog yes
+  LogFacility LOG_MAIL
+  LogInfected Full
+
+それぞれ以下のような設定です。
+
+: OnInfected Reject
+   ウィルスに感染したメールを受信拒否します。
+   デフォルトではQuarantineでPostfixのholdキューに溜まりま
+   すが、定期的にholdキューを確認するのでなければ受信拒否し
+   た方がメンテナンスが楽になります。
+
+: AddHeader Replace
+  既存のX-Virus-Scannedヘッダがあっても上書きするようになり
+  ます。この設定を有効にすることにより受信側でのウィルスチェッ
+  クの結果がヘッダに入ることになります。通常、送信側より受信
+  側の方のチェックの方が信頼できるはずなので（送信側が正しく
+  報告しているかどうかは確かめられない）、この設定を有効にし
+  ておくとよいでしょう。
+
+: LogSyslog yes
+   syslogにログを出力します。
+   負荷が大きい場合は無効にするとよいでしょう。
+
+: LogFacility LOG_MAIL
+   syslogのfacilityをLOG_MAILにして、/var/log/maillogにログ
+   を出力します。
+
+: LogInfected Full
+   ウィルスメールを見つけたときに詳細なログを出力します。
+
 clamav-milterを起動します。
 
   % sudo /usr/local/etc/rc.d/clamav-milter start
 
 === milter-greylistの設定
+
+milter-greylistはsmmspユーザ・mailグループで実行します。
+smmspユーザはデフォルト設定のユーザであり、Postfixを使ってい
+る環境では使用されていないユーザなので、そのまま使うことにし
+ます。
 
 /usr/local/etc/mail/greylist.conf.sampleを
 /usr/local/etc/mail/greylist.confにコピーし、デフォルトで
@@ -154,7 +217,7 @@ Greylistを使うように変更します。
 /etc/rc.confに以下を追加します。
 
   miltergreylist_enable="YES"
-  miltergreylist_runas="mailnull:mailnull"
+  miltergreylist_runas="smmsp:mail"
 
 また、/etc/rc.conf.d/miltergreylistを作成し、ソケットファイル
 のパーミッションを設定します。sleep 1はmilter-greylistの起動
@@ -171,12 +234,6 @@ Greylistを使うように変更します。
     /bin/chmod g+w $miltergreylist_sockfile
     /usr/bin/chgrp mail $miltergreylist_sockfile
   }
-
-milter-greylistはmailnullユーザで動かすので、
-/var/milter-greylist/ディレクトリはmailnullユーザで読み書き
-できるようにします。
-
-  % sudo /usr/sbin/chown mailnull:mailnull /var/milter-greylist/
 
 milter-greylistを起動します。
 
@@ -214,7 +271,7 @@ milter-greylistを検出していることを確認してください。
   end
   ..
   define_milter("spamass-milter") do |milter|
-    milter.connection_spec = "unix:/var/run/milter/spamass-milter.sock"
+    milter.connection_spec = "unix:/var/run/spamass-milter/spamass-milter.sock"
     ...
     milter.enabled = true
     ...
