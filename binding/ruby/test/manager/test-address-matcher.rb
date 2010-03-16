@@ -13,9 +13,9 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
-class TestLocalAddressMatcher < Test::Unit::TestCase
+class TestAddressMatcher < Test::Unit::TestCase
   def setup
-    @matcher = Milter::Manager::LocalAddressMatcher.new
+    @matcher = Milter::Manager::AddressMatcher.new
   end
 
   def test_default_ipv4_local_address
@@ -34,15 +34,15 @@ class TestLocalAddressMatcher < Test::Unit::TestCase
     assert_not_local_address(unknown)
   end
 
-  def test_add_ipv4
-    @matcher.add("160.29.167.0/24")
+  def test_add_local_address_ipv4
+    @matcher.add_local_address("160.29.167.0/24")
     assert_local_address(ipv4("160.29.167.10"))
     assert_not_local_address(ipv4("160.29.168.10"))
     assert_not_local_address(unknown)
   end
 
-  def test_add_ipv6
-    @matcher.add("2001:2f8:c2:201::0/64")
+  def test_add_local_address_ipv6
+    @matcher.add_local_address("2001:2f8:c2:201::0/64")
     assert_local_address(ipv6("2001:2f8:c2:201::fff0"))
     assert_not_local_address(ipv6("2001:2f8:c2:202::fff0"))
     assert_not_local_address(unknown)

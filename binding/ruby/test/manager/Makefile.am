@@ -17,7 +17,7 @@ test_files =					\
 	test-egg.rb				\
 	test-child-context.rb			\
 	test-netstat-connection-checker.rb	\
-	test-local-address-matcher.rb
+	test-address-matcher.rb
 
 EXTRA_DIST =		\
 	$(test_files)

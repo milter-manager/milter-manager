@@ -14,9 +14,10 @@
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 module Milter::Manager
-  class LocalAddressMatcher
+  class AddressMatcher
     def initialize
       @local_addresses = []
+      @remote_addresses = []
     end
 
     def local_address?(address)
@@ -25,7 +26,7 @@ module Milter::Manager
       false
     end
 
-    def add(address)
+    def add_local_address(address)
       address = IPAddr.new(address) unless address.is_a?(IPAddr)
       @local_addresses << address
     end
