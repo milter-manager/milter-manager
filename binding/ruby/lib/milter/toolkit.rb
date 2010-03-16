@@ -94,8 +94,12 @@ module Milter
         false
       end
 
+      def unknown?
+        false
+      end
+
       def to_ip_address
-        IPAddr.new(address)
+        @ip_address ||= IPAddr.new(address)
       end
     end
 
@@ -112,14 +116,22 @@ module Milter
         false
       end
 
+      def unknown?
+        false
+      end
+
       def to_ip_address
-        IPAddr.new(address)
+        @ip_address ||= IPAddr.new(address)
       end
     end
 
     class Unix
       def local?
         true
+      end
+
+      def unknown?
+        false
       end
 
       def to_ip_address
@@ -130,6 +142,10 @@ module Milter
     class Unknown
       def local?
         false
+      end
+
+      def unknown?
+        true
       end
 
       def to_ip_address

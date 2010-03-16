@@ -1,10 +1,14 @@
 2010-03-16  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager/address-matcher.rb,
+	binding/ruby/test/manager/test-address-matcher.rb: support remote
+	address.
+
 	* binding/ruby/lib/milter/manager/local-address-matcher.rb,
 	binding/ruby/test/manager/test-address-matcher.rb: rename
 	to ...
 	* binding/ruby/lib/milter/manager/address-matcher.rb,
-	binding/ruby/test/manager/test-local-address-matcher.rb: ... them.
+	binding/ruby/test/manager/test-address-matcher.rb: ... them.
 
 2010-03-15  Kouhei Sutou  <kou@cozmixng.org>
 

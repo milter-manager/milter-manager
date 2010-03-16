@@ -21,23 +21,47 @@ module Milter::Manager
     end
 
     def local_address?(address)
+      return false if unknown_address?(address)
+      ip_address = address.to_ip_address
+      return false if ip_address and custom_remote_address?(ip_address)
       return true if address.local?
-      return true if custom_local_address?(address)
+      return true if ip_address and custom_local_address?(ip_address)
       false
     end
 
+    def remote_address?(address)
+      return false if unknown_address?(address)
+      not local_address?(address)
+    end
+
+    def unknown_address?(address)
+      address.unknown?
+    end
+
     def add_local_address(address)
-      address = IPAddr.new(address) unless address.is_a?(IPAddr)
-      @local_addresses << address
+      @local_addresses << ensure_address(address)
+    end
+
+    def add_remote_address(address)
+      @remote_addresses << ensure_address(address)
     end
 
     private
-    def custom_local_address?(address)
-      ip_address = address.to_ip_address
-      return false if ip_address.nil?
+    def custom_local_address?(ip_address)
       @local_addresses.any? do |local_address|
         local_address.include?(ip_address)
       end
+    end
+
+    def custom_remote_address?(ip_address)
+      @remote_addresses.any? do |remote_address|
+        remote_address.include?(ip_address)
+      end
+    end
+
+    def ensure_address(address)
+      address = IPAddr.new(address) unless address.is_a?(IPAddr)
+      address
     end
   end
 end

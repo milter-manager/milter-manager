@@ -31,21 +31,35 @@ class TestAddressMatcher < Test::Unit::TestCase
   end
 
   def test_unknown
-    assert_not_local_address(unknown)
+    assert_unknown_address(unknown)
   end
 
   def test_add_local_address_ipv4
     @matcher.add_local_address("160.29.167.0/24")
     assert_local_address(ipv4("160.29.167.10"))
-    assert_not_local_address(ipv4("160.29.168.10"))
-    assert_not_local_address(unknown)
+    assert_remote_address(ipv4("160.29.168.10"))
+    assert_unknown_address(unknown)
   end
 
   def test_add_local_address_ipv6
     @matcher.add_local_address("2001:2f8:c2:201::0/64")
     assert_local_address(ipv6("2001:2f8:c2:201::fff0"))
-    assert_not_local_address(ipv6("2001:2f8:c2:202::fff0"))
-    assert_not_local_address(unknown)
+    assert_remote_address(ipv6("2001:2f8:c2:202::fff0"))
+    assert_unknown_address(unknown)
+  end
+
+  def test_add_remote_address_ipv4
+    @matcher.add_remote_address("192.168.1.0/24")
+    assert_remote_address(ipv4("192.168.1.10"))
+    assert_local_address(ipv4("192.168.2.10"))
+    assert_unknown_address(unknown)
+  end
+
+  def test_add_remote_address_ipv6
+    @matcher.add_remote_address("fe80:0:0:0:ffff::/96")
+    assert_remote_address(ipv6("fe80:0:0:0:ffff::1"))
+    assert_local_address(ipv6("fe80:0:0:0:fffe::1"))
+    assert_unknown_address(unknown)
   end
 
   private
@@ -66,10 +80,29 @@ class TestAddressMatcher < Test::Unit::TestCase
   end
 
   def assert_local_address(address)
-    assert_true(@matcher.local_address?(address), address)
+    assert_equal({:local? => true, :remote? => false},
+                 {
+                   :local? => @matcher.local_address?(address),
+                   :remote? => @matcher.remote_address?(address)
+                 },
+                 address)
   end
 
-  def assert_not_local_address(address)
-    assert_false(@matcher.local_address?(address), address)
+  def assert_remote_address(address)
+    assert_equal({:local? => false, :remote? => true},
+                 {
+                   :local? => @matcher.local_address?(address),
+                   :remote? => @matcher.remote_address?(address),
+                 },
+                 address)
+  end
+
+  def assert_unknown_address(address)
+    assert_equal({:local? => false, :remote? => false},
+                 {
+                   :local? => @matcher.local_address?(address),
+                   :remote? => @matcher.remote_address?(address),
+                 },
+                 address)
   end
 end
