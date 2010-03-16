@@ -1,5 +1,10 @@
 2010-03-16  Kouhei Sutou  <kou@cozmixng.org>
 
+	* data/applicable-conditions/remote-network.conf,
+	test/manager/test-leader.c,
+	test/fixtures/leader/applicable-condition-remote-network.*: add
+	'remote_network.add_local_address' configuration.
+
 	* binding/ruby/lib/milter/manager/address-matcher.rb,
 	binding/ruby/test/manager/test-address-matcher.rb: support remote
 	address.

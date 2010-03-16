@@ -1668,6 +1668,13 @@ data_scenario_reply_code (void)
                  g_strdup("reply-code-invalid.txt"), g_free);
 }
 
+static void
+data_scenario_applicable_condition (void)
+{
+    cut_add_data("applicable condition - Remote Network",
+                 g_strdup("applicable-condition-remote-network.txt"), g_free);
+}
+
 void
 data_scenario (void)
 {
@@ -1684,6 +1691,7 @@ data_scenario (void)
     data_scenario_body();
     data_scenario_end_of_message();
     data_scenario_reply_code();
+    data_scenario_applicable_condition();
 }
 
 void

@@ -130,4 +130,6 @@ EXTRA_DIST =								\
 	replace-body-evaluation.conf					\
 	reply-code-invalid.txt						\
 	reply-code.txt							\
-	unknown.txt
+	unknown.txt							\
+	applicable-condition-remote-network.txt				\
+	applicable-condition-remote-network.conf
