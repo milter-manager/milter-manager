@@ -690,7 +690,7 @@ define_milter do ... end内で設定できる項目は以下の通りです。
 
    適用条件は標準で提供されているだけではなく、独自に定義す
    ることもできます。定義方法については
-   ((<適用条件関連|#applicable-condition>))
+   ((<適用条件定義|#applicable-condition>))
    を見てください。ただし、独自に定義する場合にはRubyの知識が
    必要になります。
 
@@ -866,7 +866,50 @@ define_milter do ... end内で設定できる項目は以下の通りです。
      # "milter1"という名前で定義されたmilterの定義を削除
      remove_milter("milter1")
 
-== [applicable-condition] 適用条件関連
+== 組み込み適用条件
+
+組み込みの適用条件を説明します。
+
+=== S25R
+
+この適用条件を使うと、MTAっぽいSMTPクライアントには子milter
+を適用せず、一般PCっぽいSMTPクライアントにのみ子milterを適用
+します。
+
+使用例:
+
+  define_milter("milter-greylist") do |milter|
+    milter.add_applicable_condition("S25R")
+  end
+
+SMTPクライアントが一般PCっぽいかどうかは
+((<S25R|http://www.gabacho-net.jp/anti-spam/>))の一般規則を
+用います。
+
+ただし、google.comドメインのホストはホワイトリストに入ってい
+るので、S25Rの一般規則にマッチしても子milterは適用されません。
+
+=== Remote Network
+
+TODO
+
+==== remote_network.add_local_address(address)
+
+TODO
+
+=== Authentication
+
+TODO
+
+=== Sendmail Compatible
+
+TODO
+
+=== Restrict Accounts
+
+TODO
+
+== [applicable-condition] 適用条件定義
 
 ここからは本格的にRubyの知識が必要になります。標準でS25Rなど
 の有用な適用条件は用意されています。それらで十分ではない場合

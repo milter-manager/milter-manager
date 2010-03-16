@@ -698,7 +698,7 @@ Required item is just only milter.connection_spec.
    Some applicable conditions are available in default
    configuration. You can also define your original
    applicable condition. See
-   ((<Applicable condition|#applicable-condition>))
+   ((<Define applicable condition|#applicable-condition>))
    about how to define applicable condition. But defining
    applicable condition requires Ruby's knowledge.
 
@@ -881,7 +881,35 @@ to all child milters.
      # Removes a milter that is defined as "milter1".
      remove_milter("milter1")
 
-== [applicable-condition] Applicable condition
+== Built-in applicable conditions
+
+TODO
+
+=== S25R
+
+TODO
+
+=== Remote Network
+
+TODO
+
+==== remote_network.add_local_address(address)
+
+TODO
+
+=== Authentication
+
+TODO
+
+=== Sendmail Compatible
+
+TODO
+
+=== Restrict Accounts
+
+TODO
+
+== [applicable-condition] Define applicable condition
 
 We need knowledge about Ruby from this section. Some useful
 applicable conditions are provided by default. We can define
