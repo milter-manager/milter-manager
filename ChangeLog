@@ -1,3 +1,7 @@
+2010-03-18  Kouhei Sutou  <kou@cozmixng.org>
+
+	* doc/configuration.rd.ja: add documents for applicable conditions.
+
 2010-03-17  Kouhei Sutou  <kou@cozmixng.org>
 
 	* doc/configuration.rd*: add place-holders for applicable

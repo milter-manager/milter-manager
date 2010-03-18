@@ -876,6 +876,12 @@ define_milter do ... end内で設定できる項目は以下の通りです。
 を適用せず、一般PCっぽいSMTPクライアントにのみ子milterを適用
 します。
 
+以下の例では一般PCっぽいSMTPクライアントにのみGreylistingを
+適用することで、Greylistingによる遅延の悪影響を軽減していま
+す。これは((<Rgrey|URL:http://k2net.hakuba.jp/rgrey/>))と呼
+ばれる手法です。（milter-greylistで"racl greylist default"と
+設定している場合）
+
 使用例:
 
   define_milter("milter-greylist") do |milter|
@@ -891,19 +897,101 @@ SMTPクライアントが一般PCっぽいかどうかは
 
 === Remote Network
 
-TODO
+この適用条件を使うと、外部ネットワークからアクセスしてきた
+SMTPクライアントにのみ子milterを適用します。
+
+以下の例ではローカルネットワークからのメールにはスパムチェッ
+クを行わない事で誤検出を回避しています。
+
+使用例:
+
+  define_milter("spamass-milter") do |milter|
+    milter.add_applicable_condition("Remote Network")
+  end
+
+192.168.0.0/24などのプライベートIPアドレス以外を外部ネットワー
+クとして扱います。プライベートIPアドレス以外もローカルネット
+ワークとして扱いたい場合は以下の設定で追加することができます。
 
 ==== remote_network.add_local_address(address)
 
-TODO
+指定したIPv4/IPv6アドレスまたはIPv4/IPv6ネットワークをローカ
+ルネットワークに追加します。ローカルネットワークに追加したア
+ドレス・ネットワークには子milterを適用しません。
 
-=== Authentication
+使用例:
 
-TODO
+  # 160.29.167.10からのアクセスは子milterを適用しない
+  remote_network.add_local_address("160.29.167.10")
+  # 160.29.167.0/24のネットワークからのアクセスは子milterを適用しない
+  remote_network.add_local_address("160.29.167.0/24")
+  # 2001:2f8:c2:201::fff0からのアクセスは子milterを適用しない
+  remote_network.add_local_address("2001:2f8:c2:201::fff0")
+  # 2001:2f8:c2:201::/64からのアクセスは子milterを適用しない
+  remote_network.add_local_address("2001:2f8:c2:201::/64")
+
+=== [authentication] Authentication
+
+SMTP Authで認証済みのSMTPクライアントにのみ子milterを適用しま
+す。この適用条件を利用する場合は、MTAが認証関連のマクロを
+milterに渡すようにしなければいけません。Sendmailは特に設定を
+する必要はありません。Postfixの場合は以下の設定を追加する必
+要があります。
+
+main.cf:
+  milter_mail_macros = {auth_author} {auth_type} {auth_authen}
+
+以下の例は認証済みのSMTPクライアントが送ったメール（内部から
+送信したメール）を監査用にBccする設定です。
+
+使用例:
+
+  define_milter("milter-bcc") do |milter|
+    milter.add_applicable_condition("Authentication")
+  end
+
+=== [unauthentication] Unauthentication
+
+SMTP Authで認証されていないSMTPクライアントにのみ子milterを適
+用します。((<Authentication|.#authentication>))と同様に、MTAが
+認証関連のマクロをmilterに渡すようにしなければいけません。
+
+以下の例は認証されていないSMTPクライアントからのメールにのみ
+スパムチェックを行い、誤検出を回避する設定です。
+
+使用例:
+
+  define_milter("spamass-milter") do |milter|
+    milter.add_applicable_condition("Unauthentication")
+  end
 
 === Sendmail Compatible
 
-TODO
+この適用条件は少し変わっています。この適用条件を設定してもす
+べての子milterを適用します。では何をするのかというと、
+SendmailとPostfixのmilter実装の非互換を吸収し、Sendmailでし
+か動かないmilterをPostfixでも動くようにします。
+
+SendmailとPostfixではmilterの実装に互換性がない部分があります。
+例えば、マクロ名が異なったり、マクロを渡すタイミングが異なっ
+たりします。
+
+この適用条件を設定すると、それらの差異を吸収し、同じmilterが
+SendmailでもPostfixでも動作するようになります。ただし、最近
+のmilterはどちらでも動くように作られているのでこの適用条件が
+必要なくなる日は近いでしょう。これはとてもよいことです。
+
+MTAがPostfixの場合にこの適用条件を設定しても悪影響はないので、
+安心してください。
+
+以下の例はSendmail用にビルドしたmilter-greylistをPostfixでも
+使えるようにする設定です。
+
+使用例:
+
+  define_milter("milter-greylist") do |milter|
+    milter.add_applicable_condition("Sendmail Compatible")
+  end
 
 === Restrict Accounts
 
