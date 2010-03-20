@@ -1,5 +1,8 @@
 2010-03-20  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-configuration.c: split a large
+	function to small functions.
+
 	* binding/ruby/lib/milter/manager.rb: add 'manager.maintained' and
 	'manager.report_memory_statistics' configuration APIs.
 	TODO: document them.

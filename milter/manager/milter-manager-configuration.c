@@ -1673,22 +1673,23 @@ milter_manager_configuration_clear_applicable_conditions (MilterManagerConfigura
     }
 }
 
-void
-milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
+static void
+clear_controller (MilterManagerConfigurationPrivate *priv)
 {
-    MilterManagerConfigurationPrivate *priv;
-
-    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
-
-    milter_manager_configuration_clear_signal_handlers(configuration);
-    milter_manager_configuration_clear_eggs(configuration);
-    milter_manager_configuration_clear_applicable_conditions(configuration);
-
     if (priv->controller_connection_spec) {
         g_free(priv->controller_connection_spec);
         priv->controller_connection_spec = NULL;
     }
 
+    if (priv->controller_unix_socket_group) {
+        g_free(priv->controller_unix_socket_group);
+        priv->controller_unix_socket_group = NULL;
+    }
+}
+
+static void
+clear_manager (MilterManagerConfigurationPrivate *priv)
+{
     if (priv->manager_connection_spec) {
         g_free(priv->manager_connection_spec);
         priv->manager_connection_spec = NULL;
@@ -1696,6 +1697,20 @@ milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
     priv->manager_connection_spec =
         g_strdup(MILTER_MANAGER_DEFAULT_CONNECTION_SPEC);
 
+    priv->privilege_mode = FALSE;
+    priv->daemon = FALSE;
+    priv->fallback_status = MILTER_STATUS_ACCEPT;
+    priv->maintenance_interval = DEFAULT_MAINTENANCE_INTERVAL;
+    priv->suspend_time_on_unacceptable =
+        MILTER_CLIENT_DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE;
+    priv->max_connections = 0;
+    priv->max_file_descriptors = 0;
+    priv->connection_check_interval = DEFAULT_CONNECTION_CHECK_INTERVAL;
+}
+
+static void
+clear_package (MilterManagerConfigurationPrivate *priv)
+{
     if (priv->package_platform) {
         g_free(priv->package_platform);
         priv->package_platform = g_strdup(MILTER_MANAGER_PACKAGE_PLATFORM);
@@ -1705,7 +1720,11 @@ milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
         g_free(priv->package_options);
         priv->package_options = g_strdup(MILTER_MANAGER_PACKAGE_OPTIONS);
     }
+}
 
+static void
+clear_account (MilterManagerConfigurationPrivate *priv)
+{
     if (priv->effective_user) {
         g_free(priv->effective_user);
         priv->effective_user = NULL;
@@ -1717,7 +1736,33 @@ milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
         priv->effective_group = NULL;
     }
     priv->effective_group = g_strdup(MILTER_MANAGER_DEFAULT_EFFECTIVE_GROUP);
+}
 
+static void
+clear_process (MilterManagerConfigurationPrivate *priv)
+{
+    if (priv->pid_file) {
+        g_free(priv->pid_file);
+        priv->pid_file = NULL;
+    }
+    priv->pid_file = g_strdup(MILTER_MANAGER_DEFAULT_PID_FILE);
+}
+
+static void
+clear_configuration (MilterManagerConfigurationPrivate *priv)
+{
+    if (priv->custom_configuration_directory) {
+        g_free(priv->custom_configuration_directory);
+        priv->custom_configuration_directory = NULL;
+    }
+
+    if (priv->locations)
+        g_hash_table_remove_all(priv->locations);
+}
+
+static void
+clear_socket (MilterManagerConfigurationPrivate *priv)
+{
     if (priv->manager_unix_socket_group) {
         g_free(priv->manager_unix_socket_group);
         priv->manager_unix_socket_group = NULL;
@@ -1725,40 +1770,31 @@ milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
     priv->manager_unix_socket_group =
         g_strdup(MILTER_MANAGER_DEFAULT_SOCKET_GROUP);
 
-    if (priv->controller_unix_socket_group) {
-        g_free(priv->controller_unix_socket_group);
-        priv->controller_unix_socket_group = NULL;
-    }
-
-    if (priv->pid_file) {
-        g_free(priv->pid_file);
-        priv->pid_file = NULL;
-    }
-    priv->pid_file = g_strdup(MILTER_MANAGER_DEFAULT_PID_FILE);
-
-    if (priv->custom_configuration_directory) {
-        g_free(priv->custom_configuration_directory);
-        priv->custom_configuration_directory = NULL;
-    }
-
-    priv->privilege_mode = FALSE;
     priv->manager_unix_socket_mode = 0660;
     priv->controller_unix_socket_mode = 0660;
     priv->remove_manager_unix_socket_on_close = TRUE;
     priv->remove_controller_unix_socket_on_close = TRUE;
     priv->remove_manager_unix_socket_on_create = TRUE;
     priv->remove_controller_unix_socket_on_create = TRUE;
-    priv->daemon = FALSE;
-    priv->fallback_status = MILTER_STATUS_ACCEPT;
-    priv->maintenance_interval = DEFAULT_MAINTENANCE_INTERVAL;
-    priv->suspend_time_on_unacceptable =
-        MILTER_CLIENT_DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE;
-    priv->max_connections = 0;
-    priv->max_file_descriptors = 0;
-    priv->connection_check_interval = DEFAULT_CONNECTION_CHECK_INTERVAL;
+}
 
-    if (priv->locations)
-        g_hash_table_remove_all(priv->locations);
+void
+milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+
+    milter_manager_configuration_clear_signal_handlers(configuration);
+    milter_manager_configuration_clear_eggs(configuration);
+    milter_manager_configuration_clear_applicable_conditions(configuration);
+    clear_controller(priv);
+    clear_manager(priv);
+    clear_package(priv);
+    clear_account(priv);
+    clear_process(priv);
+    clear_configuration(priv);
+    clear_socket(priv);
 }
 
 void
