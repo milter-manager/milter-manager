@@ -1,5 +1,8 @@
 2010-03-20  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/toolkit.rb: accept nil as optional
+	backtrace information.
+
 	* binding/ruby/lib/milter/toolkit.rb: remove a garbage argument.
 
 2010-03-18  Kouhei Sutou  <kou@cozmixng.org>

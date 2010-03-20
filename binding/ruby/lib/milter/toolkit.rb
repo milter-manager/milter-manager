@@ -63,7 +63,7 @@ module Milter
       n_call_depth ||= 0
       file, line, info = caller[n_call_depth].split(/:(\d+):/, 3)
       ensure_message(message).each_line do |one_line_message|
-        log_full(self.class.domain, level, file, line.to_i, info,
+        log_full(self.class.domain, level, file, line.to_i, info.to_s,
                  one_line_message.chomp)
       end
     end
