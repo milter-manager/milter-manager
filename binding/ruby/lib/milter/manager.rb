@@ -905,7 +905,7 @@ module Milter::Manager
       class MemoryReporter
         def report
           n_objects = count_alive_objects
-          message = "[maintained][memory] (#{memory_usage_in_kb}KB) "
+          message = "[maintain][memory] (#{memory_usage_in_kb}KB) "
           message << "total:#{n_objects[:total]} "
           message << "Proc:#{n_objects[:proc]} "
           message << "GLib::Object:#{n_objects[:glib_object]}"
