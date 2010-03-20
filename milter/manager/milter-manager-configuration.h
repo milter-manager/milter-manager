@@ -62,7 +62,8 @@ struct _MilterManagerConfigurationClass
     gboolean     (*load_custom)   (MilterManagerConfiguration *configuration,
                                    const gchar                *file_name,
                                    GError                    **error);
-    void         (*maintain)      (MilterManagerConfiguration *configuration);
+    gboolean     (*maintain)      (MilterManagerConfiguration *configuration,
+                                   GError                    **error);
     void         (*connected)     (MilterManagerConfiguration *configuration,
                                    MilterManagerLeader        *leader);
     void         (*to_xml)        (MilterManagerConfiguration *configuration,

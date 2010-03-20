@@ -1,5 +1,9 @@
 2010-03-20  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-configuration.[ch],
+	module/configuration/ruby/milter-manager-ruby-configuration.c:
+	support 'maintain' hook.
+
 	* binding/ruby/lib/milter/toolkit.rb: accept nil as optional
 	backtrace information.
 

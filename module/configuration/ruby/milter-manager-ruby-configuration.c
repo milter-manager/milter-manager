@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -78,7 +78,8 @@ static gboolean real_load         (MilterManagerConfiguration *configuration,
 static gboolean real_load_custom  (MilterManagerConfiguration *configuration,
                                    const gchar                *file_name,
                                    GError                    **error);
-static void     real_maintain     (MilterManagerConfiguration *configuration);
+static gboolean real_maintain     (MilterManagerConfiguration *configuration,
+                                   GError                    **error);
 static gchar   *real_dump         (MilterManagerConfiguration *configuration);
 
 static gpointer milter_manager_ruby_configuration_parent_class = NULL;
@@ -416,27 +417,27 @@ get_property (GObject    *object,
 }
 
 static gboolean
-load (MilterManagerConfiguration *_configuration, ID method_name,
+load (MilterManagerConfiguration *_configuration, const gchar *method_name,
       const gchar *file_name, GError **error)
 {
     MilterManagerRubyConfiguration *configuration;
     GError *local_error = NULL;
-    gboolean success;
+    gboolean success = TRUE;
 
     configuration = MILTER_MANAGER_RUBY_CONFIGURATION(_configuration);
     rb_funcall_protect(&local_error,
                        rb_mMilterManagerConfigurationLoader,
-                       method_name, 2,
+                       rb_intern(method_name), 2,
                        GOBJ2RVAL(configuration),
                        rb_str_new2(file_name));
 
     if (local_error) {
         success = FALSE;
-        if (!error)
-            milter_error("%s", local_error->message);
+        if (!error) {
+            milter_error("[ruby-configuration][error][%s] <%s>: %s",
+                         method_name, file_name, local_error->message);
+        }
         g_propagate_error(error, local_error);
-    } else {
-        success = TRUE;
     }
 
     return success;
@@ -446,20 +447,40 @@ static gboolean
 real_load (MilterManagerConfiguration *_configuration, const gchar *file_name,
            GError **error)
 {
-    return load(_configuration, rb_intern("load"), file_name, error);
+    return load(_configuration, "load", file_name, error);
 }
 
 static gboolean
 real_load_custom (MilterManagerConfiguration *_configuration,
                   const gchar *file_name, GError **error)
 {
-    return load(_configuration, rb_intern("load_custom"), file_name, error);
+    return load(_configuration, "load_custom", file_name, error);
 }
 
-static void
-real_maintain (MilterManagerConfiguration *_configuration)
+static gboolean
+real_maintain (MilterManagerConfiguration *_configuration, GError **error)
 {
+    MilterManagerRubyConfiguration *configuration;
+    GError *local_error = NULL;
+    gboolean success = TRUE;
+
     rb_gc_start();
+
+    configuration = MILTER_MANAGER_RUBY_CONFIGURATION(_configuration);
+    rb_funcall_protect(&local_error,
+                       GOBJ2RVAL(configuration),
+                       rb_intern("maintained"),
+                       0);
+    if (local_error) {
+        success = FALSE;
+        if (!error) {
+            milter_error("[ruby-configuration][error][maintain] %s",
+                         local_error->message);
+        }
+        g_propagate_error(error, local_error);
+    }
+
+    return success;
 }
 
 static gchar *

@@ -1768,8 +1768,13 @@ milter_manager_configuration_maintain (MilterManagerConfiguration *configuration
 
     configuration_class = MILTER_MANAGER_CONFIGURATION_GET_CLASS(configuration);
     if (configuration_class->maintain) {
+        GError *error = NULL;
+
         milter_debug("[configuration][maintain]");
-        configuration_class->maintain(configuration);
+        if (!configuration_class->maintain(configuration, &error)) {
+            milter_error("[configuration][error][maintain] %s", error->message);
+            g_error_free(error);
+        }
     }
 }
 
