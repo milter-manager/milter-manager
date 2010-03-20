@@ -1,5 +1,8 @@
 2010-03-20  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager.rb: also show memory usage in
+	statistics log.
+
 	* binding/ruby/lib/milter/manager.rb: cleared maintained hook on
 	configuration is cleared.
 

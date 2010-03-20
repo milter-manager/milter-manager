@@ -890,6 +890,7 @@ module Milter::Manager
 
       def report_memory_statistics
         maintained do
+          n_memory_usage = `ps -o rss -p #{Process.pid}`.lines.last.to_a.to_i
           n_procs = 0
           n_glib_objects = 0
           n_objects = ObjectSpace.each_object do |object|
@@ -900,7 +901,7 @@ module Milter::Manager
               n_glib_objects += 1
             end
           end
-          report = "[maintained][objects] "
+          report = "[maintained][memory] (#{n_memory_usage}KB) "
           report << "total:#{n_objects} "
           report << "Proc:#{n_procs} "
           report << "GLib::Object:#{n_glib_objects}"
