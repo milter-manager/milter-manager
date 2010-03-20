@@ -58,6 +58,16 @@ module Milter::Manager
       end
       options
     end
+
+    def maintained
+      maintained_hooks.each do |hook|
+        hook.call(self)
+      end
+    end
+
+    def maintained_hooks
+      @maintained_hooks ||= []
+    end
   end
 
   class ConfigurationDumper
@@ -862,6 +872,35 @@ module Milter::Manager
         checker = NetstatConnectionChecker.new(:database_lifetime => interval)
         self.define_connection_checker("netstat") do |context|
           checker.connected?(context)
+        end
+      end
+
+      def maintained(hook=Proc.new)
+        guarded_hook = Proc.new do |configuration|
+          ConfigurationLoader.guard do
+            hook.call
+          end
+        end
+        @configuration.maintained_hooks << guarded_hook
+      end
+
+      def report_memory_statistics
+        maintained do
+          n_procs = 0
+          n_glib_objects = 0
+          n_objects = ObjectSpace.each_object do |object|
+            case object
+            when Proc
+              n_procs += 1
+            when GLib::Object
+              n_glib_objects += 1
+            end
+          end
+          report = "[maintained][objects] "
+          report << "total:#{n_objects} "
+          report << "Proc:#{n_procs} "
+          report << "GLib::Object:#{n_glib_objects}"
+          Milter::Logger.statistics(report)
         end
       end
 
