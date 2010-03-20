@@ -51,7 +51,7 @@ module Milter
         default.log(:info, message, 1)
       end
 
-      def statistics(message, n_call_depth=nil)
+      def statistics(message)
         default.log(:statistics, message, 1)
       end
     end
