@@ -33,7 +33,7 @@
 #include "milter-manager-children.h"
 #include <milter/core/milter-marshalers.h>
 
-#define DEFAULT_MAINTENANCE_INTERVAL 100
+#define DEFAULT_MAINTENANCE_INTERVAL 10
 #define DEFAULT_CONNECTION_CHECK_INTERVAL 0
 
 #define MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(obj)                   \

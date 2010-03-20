@@ -343,11 +343,11 @@ void
 test_maintenance_interval (void)
 {
     cut_assert_equal_uint(
-        100,
+        10,
         milter_manager_configuration_get_maintenance_interval(config));
-    milter_manager_configuration_set_maintenance_interval(config, 1000);
+    milter_manager_configuration_set_maintenance_interval(config, 100);
     cut_assert_equal_uint(
-        1000,
+        100,
         milter_manager_configuration_get_maintenance_interval(config));
 }
 
@@ -545,7 +545,7 @@ milter_assert_default_configuration_helper (MilterManagerConfiguration *config)
     cut_assert_false(milter_manager_configuration_is_daemon(config));
 
     cut_assert_equal_uint(
-        100,
+        10,
         milter_manager_configuration_get_maintenance_interval(config));
     cut_assert_equal_uint(
         MILTER_CLIENT_DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE,

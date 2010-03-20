@@ -1,5 +1,8 @@
 2010-03-20  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-configuration.c
+	(DEFAULT_MAINTENANCE_INTERVAL): 100 -> 10.
+
 	* binding/ruby/lib/milter/manager.rb: add memory reporter object.
 
 	* binding/ruby/lib/milter/manager.rb: also show memory usage in
