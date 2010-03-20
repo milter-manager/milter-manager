@@ -70,6 +70,8 @@ struct _MilterManagerConfigurationClass
                                    GString                    *xml,
                                    guint                       indent);
     gchar       *(*dump)          (MilterManagerConfiguration *configuration);
+    gboolean     (*clear)         (MilterManagerConfiguration *configuration,
+                                   GError                    **error);
 };
 
 GQuark        milter_manager_configuration_error_quark (void);

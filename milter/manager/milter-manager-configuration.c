@@ -1782,6 +1782,7 @@ void
 milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
 {
     MilterManagerConfigurationPrivate *priv;
+    MilterManagerConfigurationClass *configuration_class;
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
 
@@ -1795,6 +1796,17 @@ milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
     clear_process(priv);
     clear_configuration(priv);
     clear_socket(priv);
+
+    configuration_class = MILTER_MANAGER_CONFIGURATION_GET_CLASS(configuration);
+    if (configuration_class->clear) {
+        GError *error = NULL;
+
+        milter_debug("[configuration][clear]");
+        if (!configuration_class->clear(configuration, &error)) {
+            milter_error("[configuration][error][clear] %s", error->message);
+            g_error_free(error);
+        }
+    }
 }
 
 void

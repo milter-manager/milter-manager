@@ -1,5 +1,12 @@
 2010-03-20  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager.rb: cleared maintained hook on
+	configuration is cleared.
+
+	* milter/manager/milter-manager-configuration.[ch],
+	module/configuration/ruby/milter-manager-ruby-configuration.c: add
+	callback on configuration is cleared.
+
 	* milter/manager/milter-manager-configuration.c: split a large
 	function to small functions.
 

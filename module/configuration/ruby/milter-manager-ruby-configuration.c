@@ -81,6 +81,8 @@ static gboolean real_load_custom  (MilterManagerConfiguration *configuration,
 static gboolean real_maintain     (MilterManagerConfiguration *configuration,
                                    GError                    **error);
 static gchar   *real_dump         (MilterManagerConfiguration *configuration);
+static gboolean real_clear        (MilterManagerConfiguration *configuration,
+                                   GError                    **error);
 
 static gpointer milter_manager_ruby_configuration_parent_class = NULL;
 static GType    milter_manager_ruby_configuration_type_id = 0;
@@ -108,6 +110,7 @@ milter_manager_ruby_configuration_class_init (MilterManagerRubyConfigurationClas
     configuration_class->load_custom = real_load_custom;
     configuration_class->maintain = real_maintain;
     configuration_class->dump = real_dump;
+    configuration_class->clear = real_clear;
 }
 
 static void
@@ -501,6 +504,30 @@ real_dump (MilterManagerConfiguration *_configuration)
     } else {
         return g_strdup(RVAL2CSTR(result));
     }
+}
+
+static gboolean
+real_clear (MilterManagerConfiguration *_configuration, GError **error)
+{
+    MilterManagerRubyConfiguration *configuration;
+    GError *local_error = NULL;
+    gboolean success = TRUE;
+
+    configuration = MILTER_MANAGER_RUBY_CONFIGURATION(_configuration);
+    rb_funcall_protect(&local_error,
+                       GOBJ2RVAL(configuration),
+                       rb_intern("clear"),
+                       0);
+    if (local_error) {
+        success = FALSE;
+        if (!error) {
+            milter_error("[ruby-configuration][error][clear] %s",
+                         local_error->message);
+        }
+        g_propagate_error(error, local_error);
+    }
+
+    return success;
 }
 
 /*

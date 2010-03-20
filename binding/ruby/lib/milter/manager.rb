@@ -68,6 +68,10 @@ module Milter::Manager
     def maintained_hooks
       @maintained_hooks ||= []
     end
+
+    def clear
+      @maintained_hooks = nil
+    end
   end
 
   class ConfigurationDumper
