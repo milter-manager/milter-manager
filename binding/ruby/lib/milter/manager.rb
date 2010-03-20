@@ -889,8 +889,31 @@ module Milter::Manager
       end
 
       def report_memory_statistics
+        memory_reporter = MemoryReporter.new
         maintained do
-          n_memory_usage = `ps -o rss -p #{Process.pid}`.lines.last.to_a.to_i
+          memory_reporter.report
+        end
+      end
+
+      private
+      def update_location(key, reset, deep_level=2)
+        full_key = "manager.#{key}"
+        ConfigurationLoader.update_location(@configuration, full_key, reset,
+                                            deep_level)
+      end
+
+      class MemoryReporter
+        def report
+          n_objects = count_alive_objects
+          message = "[maintained][memory] (#{memory_usage_in_kb}KB) "
+          message << "total:#{n_objects[:total]} "
+          message << "Proc:#{n_objects[:proc]} "
+          message << "GLib::Object:#{n_objects[:glib_object]}"
+          Milter::Logger.statistics(message)
+        end
+
+        private
+        def count_alive_objects
           n_procs = 0
           n_glib_objects = 0
           n_objects = ObjectSpace.each_object do |object|
@@ -901,19 +924,16 @@ module Milter::Manager
               n_glib_objects += 1
             end
           end
-          report = "[maintained][memory] (#{n_memory_usage}KB) "
-          report << "total:#{n_objects} "
-          report << "Proc:#{n_procs} "
-          report << "GLib::Object:#{n_glib_objects}"
-          Milter::Logger.statistics(report)
+          {
+            :total => n_objects,
+            :proc => n_procs,
+            :glib_object => n_glib_objects,
+          }
         end
-      end
 
-      private
-      def update_location(key, reset, deep_level=2)
-        full_key = "manager.#{key}"
-        ConfigurationLoader.update_location(@configuration, full_key, reset,
-                                            deep_level)
+        def memory_usage_in_kb
+          `ps -o rss -p #{Process.pid}`.split(/\n/).last.to_i
+        end
       end
     end
 
