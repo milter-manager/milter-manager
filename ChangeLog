@@ -1,5 +1,7 @@
 2010-03-21  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.h: remove needless #include.
+
 	* data/munin/postfix_processes: fix a typo.
 
 	* data/munin/milter_manager_: fetch more interesting value.

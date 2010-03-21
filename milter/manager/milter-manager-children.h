@@ -23,7 +23,6 @@
 #include <glib-object.h>
 
 #include <milter/manager/milter-manager-objects.h>
-#include <milter/manager/milter-manager-configuration.h>
 #include <milter/manager/milter-manager-child.h>
 #include <milter/core/milter-reply-signals.h>
 
