@@ -51,7 +51,7 @@ class TestChildContext < Test::Unit::TestCase
                        })
     assert_equal("Postfix 2.5.5", @context["v"])
 
-    @context = Milter::Manager::ChildContext.new(@clamav, @children)
+    @context = create_context
     assert_equal("mail.example.com", @context["j"])
     assert_equal("Sendmail", @context["v"])
   end
@@ -62,7 +62,7 @@ class TestChildContext < Test::Unit::TestCase
     @context["j"] = "mail.example.com"
     assert_equal("mail.example.com", @context["j"])
 
-    @context = Milter::Manager::ChildContext.new(@clamav, @children)
+    @context = create_context
     assert_equal("mail.example.com", @context["j"])
   end
 
@@ -112,6 +112,6 @@ class TestChildContext < Test::Unit::TestCase
 
   private
   def create_context
-    Milter::Manager::ChildContext.new(@clamav, @children)
+    Milter::Manager::ChildContext.new(@clamav, @children, nil)
   end
 end

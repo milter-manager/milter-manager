@@ -1,5 +1,10 @@
 2010-03-21  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager/child-context.rb,
+	binding/ruby/test/manager/test-child-context.rb,
+	binding/ruby/test/manager/test-configuration-loader.rb,
+	binding/ruby/test/manager/test-configuration.rb: work tests again!
+
 	* binding/ruby/lib/milter/manager.rb,
 	binding/ruby/lib/milter/manager/child-context.rb: export
 	n_processing_sessions to applicable condition callback.

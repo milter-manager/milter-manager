@@ -34,7 +34,7 @@ class TestConfiguration < Test::Unit::TestCase
   end
 
   def test_maintenance_interval
-    assert_equal(100, @configuration.maintenance_interval)
+    assert_equal(10, @configuration.maintenance_interval)
     @configuration.maintenance_interval = 0
     assert_equal(0, @configuration.maintenance_interval)
   end
@@ -240,7 +240,7 @@ manager.daemon = false
 # default
 manager.pid_file = nil
 # default
-manager.maintenance_interval = 100
+manager.maintenance_interval = 10
 # default
 manager.suspend_time_on_unacceptable = 5
 # default
@@ -342,7 +342,7 @@ manager.daemon = false
 # #{__FILE__}:#{manager_pid_file}
 manager.pid_file = "/tmp/milter-manager.pid"
 # default
-manager.maintenance_interval = 100
+manager.maintenance_interval = 10
 # default
 manager.suspend_time_on_unacceptable = 5
 # default
@@ -460,7 +460,7 @@ EOD
   private
   def create_children
     children = Milter::Manager::Children.new(@configuration)
-    client_context = Milter::Client::Context.new(nil)
+    client_context = Milter::ClientContext.new
     @configuration.setup_children(children, client_context)
     children
   end

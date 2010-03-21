@@ -83,7 +83,7 @@ module Milter::Manager
     def create_child_contexts
       contexts = {}
       @children.children.each do |child|
-        contexts[child.name] = self.class.new(child, @children)
+        contexts[child.name] = self.class.new(child, @children, @client_context)
       end
       contexts
     end
