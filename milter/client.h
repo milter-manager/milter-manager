@@ -21,6 +21,7 @@
 #define __MILTER_CLIENT_H__
 
 #include <milter/core.h>
+#include <milter/client/milter-client-objects.h>
 #include <milter/client/milter-client-context.h>
 #include <milter/client/milter-client-enum-types.h>
 
@@ -207,7 +208,6 @@ typedef enum
     MILTER_CLIENT_ERROR_DAEMONIZE
 } MilterClientError;
 
-typedef struct _MilterClient         MilterClient;
 typedef struct _MilterClientClass    MilterClientClass;
 
 /**
@@ -685,6 +685,17 @@ gboolean             milter_client_drop_privilege    (MilterClient  *client,
  */
 gboolean             milter_client_daemonize         (MilterClient  *client,
                                                       GError       **error);
+
+/**
+ * milter_client_get_n_processing_sessions:
+ * @client: a %MilterClient.
+ *
+ * Returns number of the current processing sessions.
+ *
+ * Returns: number of the current processing sessions.
+ */
+guint                milter_client_get_n_processing_sessions
+                                                     (MilterClient  *client);
 
 G_END_DECLS
 

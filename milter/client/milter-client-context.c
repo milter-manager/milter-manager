@@ -68,6 +68,7 @@ enum
 enum
 {
     PROP_0,
+    PROP_CLIENT,
     PROP_STATE,
     PROP_OPTION,
     PROP_MESSAGE_RESULT
@@ -88,6 +89,7 @@ static gboolean    status_accumulator  (GSignalInvocationHint *hint,
 typedef struct _MilterClientContextPrivate	MilterClientContextPrivate;
 struct _MilterClientContextPrivate
 {
+    MilterClient *client;
     gpointer private_data;
     GDestroyNotify private_data_destroy;
     MilterStatus status;
@@ -231,6 +233,13 @@ milter_client_context_class_init (MilterClientContextClass *klass)
     klass->body_response = body_response;
     klass->end_of_message_response = end_of_message_response;
     klass->abort_response = abort_response;
+
+    spec = g_param_spec_object("client",
+                               "Client",
+                               "The client of the context",
+                               MILTER_TYPE_CLIENT,
+                               G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_CLIENT, spec);
 
     spec = g_param_spec_enum("state",
                              "State",
@@ -1624,6 +1633,9 @@ set_property (GObject      *object,
     context = MILTER_CLIENT_CONTEXT(object);
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
     switch (prop_id) {
+    case PROP_CLIENT:
+        priv->client = g_value_get_object(value);
+        break;
     case PROP_STATE:
         milter_client_context_set_state(context, g_value_get_enum(value));
         break;
@@ -1650,6 +1662,9 @@ get_property (GObject    *object,
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(object);
     switch (prop_id) {
+    case PROP_CLIENT:
+        g_value_set_object(value, priv->client);
+        break;
     case PROP_STATE:
         g_value_set_enum(value, priv->state);
         break;
@@ -1672,9 +1687,11 @@ milter_client_context_error_quark (void)
 }
 
 MilterClientContext *
-milter_client_context_new (void)
+milter_client_context_new (MilterClient *client)
 {
-    return g_object_new(MILTER_TYPE_CLIENT_CONTEXT, NULL);
+    return g_object_new(MILTER_TYPE_CLIENT_CONTEXT,
+                        "client", client,
+                        NULL);
 }
 
 gpointer
@@ -3470,6 +3487,17 @@ milter_client_context_set_message_result (MilterClientContext *context,
     priv->message_result = result;
     if (priv->message_result)
         g_object_ref(priv->message_result);
+}
+
+guint
+milter_client_context_get_n_processing_sessions (MilterClientContext *context)
+{
+    MilterClientContextPrivate *priv;
+
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    if (!priv->client)
+        return 0;
+    return milter_client_get_n_processing_sessions(priv->client);
 }
 
 /*

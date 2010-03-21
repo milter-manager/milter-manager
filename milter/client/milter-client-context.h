@@ -23,6 +23,7 @@
 #include <glib-object.h>
 
 #include <milter/core.h>
+#include <milter/client/milter-client-objects.h>
 
 G_BEGIN_DECLS
 
@@ -329,7 +330,6 @@ typedef enum
     (MILTER_CLIENT_CONTEXT_STATE_ENVELOPE_FROM <= (state) &&            \
      (state) < MILTER_CLIENT_CONTEXT_STATE_END_OF_MESSAGE)
 
-typedef struct _MilterClientContext         MilterClientContext;
 typedef struct _MilterClientContextClass    MilterClientContextClass;
 
 struct _MilterClientContext
@@ -414,6 +414,7 @@ GType                milter_client_context_get_type          (void) G_GNUC_CONST
 
 /**
  * milter_client_context_new:
+ * @client: a %MilterClient for the context.
  *
  * Creates a new context object. Normally, context object is
  * created by %MilterClient and passed by
@@ -421,7 +422,7 @@ GType                milter_client_context_get_type          (void) G_GNUC_CONST
  *
  * Returns: a new %MilterClientContext object.
  */
-MilterClientContext *milter_client_context_new               (void);
+MilterClientContext *milter_client_context_new               (MilterClient *client);
 
 /**
  * milter_client_context_feed:
@@ -876,6 +877,17 @@ void                 milter_client_context_set_message_result
  */
 void                 milter_client_context_reset_message_related_data
                                                        (MilterClientContext *context);
+
+/**
+ * milter_client_context_get_n_processing_sessions:
+ * @context: a %MilterClientContext.
+ *
+ * Returns number of the current processing sessions.
+ *
+ * Returns: number of the current processing sessions.
+ */
+guint                milter_client_context_get_n_processing_sessions
+                                                       (MilterClientContext  *context);
 
 G_END_DECLS
 

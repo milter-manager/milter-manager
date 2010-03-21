@@ -272,7 +272,7 @@ setup (void)
     reader = milter_reader_io_channel_new(channel);
     g_io_channel_unref(channel);
 
-    client_context = milter_client_context_new();
+    client_context = milter_client_context_new(NULL);
     milter_agent_set_writer(MILTER_AGENT(client_context), writer);
     g_object_unref(writer);
     milter_agent_start(MILTER_AGENT(client_context), NULL);

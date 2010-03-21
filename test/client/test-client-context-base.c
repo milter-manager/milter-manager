@@ -31,6 +31,7 @@
 
 void test_tag (void);
 void test_socket_address (void);
+void test_n_processing_sessions (void);
 
 static MilterClientContext *context;
 
@@ -42,7 +43,7 @@ static MilterReader *reader;
 void
 cut_setup (void)
 {
-    context = milter_client_context_new();
+    context = milter_client_context_new(NULL);
 
     output_channel = gcut_string_io_channel_new(NULL);
     g_io_channel_set_encoding(output_channel, NULL, NULL);
@@ -128,6 +129,13 @@ test_socket_address (void)
     actual_address = milter_client_context_get_socket_address(context);
     cut_assert_equal_memory(&address, sizeof(address),
                             actual_address, sizeof(*actual_address));
+}
+
+void
+test_n_processing_sessions (void)
+{
+    cut_assert_equal_uint(
+        0, milter_client_context_get_n_processing_sessions(context));
 }
 
 /*

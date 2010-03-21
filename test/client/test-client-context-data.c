@@ -221,7 +221,7 @@ setup_signals (MilterClientContext *context)
 void
 setup (void)
 {
-    context = milter_client_context_new();
+    context = milter_client_context_new(NULL);
     setup_signals(context);
 
     encoder = MILTER_COMMAND_ENCODER(milter_command_encoder_new());

@@ -1,5 +1,9 @@
 2010-03-21  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client.h, milter/client/milter-client.c,
+	milter/client/milter-client-context.[ch], test/: pass client to
+	client context and add reader for n_processing_sessions.
+
 	* milter/manager/milter-manager-children.h: remove needless #include.
 
 	* data/munin/postfix_processes: fix a typo.

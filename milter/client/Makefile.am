@@ -13,7 +13,8 @@ MAINTAINERCLEANFILES =
 BUILT_SOURCES =
 
 milter_client_public_headers =		\
-	milter-client-context.h
+	milter-client-context.h		\
+	milter-client-objects.h
 
 enum_source_prefix = milter-client-enum-types
 enum_sources_h =			\

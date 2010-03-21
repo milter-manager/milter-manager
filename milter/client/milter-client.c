@@ -707,7 +707,7 @@ single_worker_cb_idle_client_channel_setup (gpointer user_data)
     client = setup_data->client;
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
-    context = milter_client_context_new();
+    context = milter_client_context_new(client);
 
     writer = milter_writer_io_channel_new(setup_data->channel);
     milter_agent_set_writer(MILTER_AGENT(context), writer);
@@ -984,7 +984,7 @@ multi_workers_process_client_channel (MilterClient *client, GIOChannel *channel,
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
-    context = milter_client_context_new();
+    context = milter_client_context_new(client);
 
     writer = milter_writer_io_channel_new(channel);
     milter_agent_set_writer(MILTER_AGENT(context), writer);
@@ -1742,6 +1742,12 @@ milter_client_processing_context_foreach (MilterClient *client,
         MilterClientProcessData *data = node->data;
         func(data->context, user_data);
     }
+}
+
+guint
+milter_client_get_n_processing_sessions (MilterClient *client)
+{
+    return MILTER_CLIENT_GET_PRIVATE(client)->n_processing_sessions;
 }
 
 /*

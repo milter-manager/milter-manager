@@ -255,7 +255,7 @@ setup (void)
 {
     smfi_register(smfilter);
 
-    client_context = milter_client_context_new();
+    client_context = milter_client_context_new(NULL);
     expected_output = NULL;
 
     context = smfi_context_new(client_context);

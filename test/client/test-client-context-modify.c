@@ -55,7 +55,7 @@ setup (void)
 {
     MilterWriter *writer;
 
-    context = milter_client_context_new();
+    context = milter_client_context_new(NULL);
 
     channel = gcut_string_io_channel_new(NULL);
     g_io_channel_set_encoding(channel, NULL, NULL);
