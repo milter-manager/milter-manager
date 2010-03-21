@@ -1,5 +1,7 @@
 2010-03-21  Kouhei Sutou  <kou@cozmixng.org>
 
+	* data/munin/postfix_processes: fix a typo.
+
 	* data/munin/milter_manager_: fetch more interesting value.
 
 2010-03-20  Kouhei Sutou  <kou@cozmixng.org>

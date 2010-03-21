@@ -32,7 +32,7 @@ EOF
 	exit 0
 	;;
     auto|autoconf|detect)
-	master_proces=$(ps ax | grep master | grep -i postfix | grep -v 'grep')
+	master_process=$(ps ax | grep master | grep -i postfix | grep -v 'grep')
     	if [ -n "$master_process" ]; then
 	    echo "yes"
 	    exit 0
