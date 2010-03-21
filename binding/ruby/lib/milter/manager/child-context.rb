@@ -15,9 +15,10 @@
 
 module Milter::Manager
   class ChildContext
-    def initialize(child, children)
+    def initialize(child, children, client_context)
       @child = child
       @children = children
+      @client_context = client_context
     end
 
     def name
@@ -72,6 +73,10 @@ module Milter::Manager
       else
         false
       end
+    end
+
+    def n_processing_sessions
+      @client_context.n_processing_sessions
     end
 
     private

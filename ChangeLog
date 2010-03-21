@@ -1,5 +1,9 @@
 2010-03-21  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager.rb,
+	binding/ruby/lib/milter/manager/child-context.rb: export
+	n_processing_sessions to applicable condition callback.
+
 	* milter/core/milter-marshalers.list,
 	milter/manager/milter-manager-applicable-condition.[ch],
 	milter/manager/milter-manager-configuration.[ch],
