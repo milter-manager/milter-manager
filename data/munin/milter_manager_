@@ -41,7 +41,7 @@ def normalize_name(name)
 end
 
 def fetch(rrd)
-  result = rrdtool("fetch", "#{rrd} LAST -s -15min")
+  result = rrdtool("fetch", "#{rrd} MAX -r 1 -s -15min")
   return [[], []] if result.nil?
   lines = result.split(/\r?\n/)
   header = lines[0].split.collect {|name| normalize_name(name)}
