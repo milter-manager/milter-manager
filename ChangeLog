@@ -15,6 +15,7 @@
 	context to MilterManagerApplicableCondition::attach-to signal.
 
 	* milter/client.h, milter/client/milter-client.c,
+	milter/client/milter-client-objects.h,
 	milter/client/milter-client-context.[ch], test/: pass client to
 	client context and add reader for n_processing_sessions.
 
