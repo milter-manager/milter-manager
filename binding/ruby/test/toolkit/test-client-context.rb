@@ -50,4 +50,8 @@ class TestClientContext < Test::Unit::TestCase
     @context.set_reply(451, "4.7.0", "DNS timeout")
     assert_equal("451 4.7.0 DNS timeout", @context.format_reply)
   end
+
+  def test_n_processing_sessions
+    assert_equal(0, @context.n_processing_sessions)
+  end
 end

@@ -103,6 +103,16 @@ get_socket_address (VALUE self)
     return ADDRESS2RVAL(&(address->address.base), address_length);
 }
 
+static VALUE
+get_n_processing_sessions (VALUE self)
+{
+    guint n_processing_sessions;
+
+    n_processing_sessions =
+	milter_client_context_get_n_processing_sessions(SELF(self));
+    return UINT2NUM(n_processing_sessions);
+}
+
 void
 Init_milter_client_context (void)
 {
@@ -112,8 +122,9 @@ Init_milter_client_context (void)
                                           "ClientContext", rb_mMilter);
     G_DEF_ERROR2(MILTER_CLIENT_CONTEXT_ERROR,
 		 "ClientContextError", rb_mMilter, rb_eMilterError);
-    
-    G_DEF_CLASS(MILTER_TYPE_CLIENT_CONTEXT_STATE, "ClientContextState", rb_mMilter);
+
+    G_DEF_CLASS(MILTER_TYPE_CLIENT_CONTEXT_STATE, "ClientContextState",
+		rb_mMilter);
     G_DEF_CONSTANTS(rb_cMilterClientContext, MILTER_TYPE_CLIENT_CONTEXT_STATE,
                     "MILTER_CLIENT_CONTEXT_");
 
@@ -124,6 +135,8 @@ Init_milter_client_context (void)
     rb_define_method(rb_cMilterClientContext, "format_reply", format_reply, 0);
     rb_define_method(rb_cMilterClientContext, "socket_address",
 		     get_socket_address, 0);
+    rb_define_method(rb_cMilterClientContext, "n_processing_sessions",
+		     get_n_processing_sessions, 0);
 
     G_DEF_SIGNAL_FUNC(rb_cMilterClientContext, "connect",
 		      rb_milter__connect_signal_convert);
