@@ -165,7 +165,7 @@ child_equal (gconstpointer a, gconstpointer b)
 static void
 cb_attach_to (MilterManagerApplicableCondition *condition,
               MilterManagerChild *child, MilterManagerChildren *children,
-              gpointer user_data)
+              MilterClientContext *client_context, gpointer user_data)
 {
     gboolean *attached_to = user_data;
 
@@ -202,7 +202,7 @@ test_children (void)
 
     cut_assert_false(attached_to);
     actual_children = milter_manager_children_new(config);
-    milter_manager_configuration_setup_children(config, actual_children);
+    milter_manager_configuration_setup_children(config, actual_children, NULL);
     milter_assert_equal_children(expected_children, actual_children);
     cut_assert_true(attached_to);
 }
@@ -579,7 +579,7 @@ milter_assert_default_configuration_helper (MilterManagerConfiguration *config)
     if (actual_children)
         g_object_unref(actual_children);
     actual_children = milter_manager_children_new(config);
-    milter_manager_configuration_setup_children(config, actual_children);
+    milter_manager_configuration_setup_children(config, actual_children, NULL);
     milter_assert_equal_children(expected_children, actual_children);
     g_object_unref(actual_children);
     actual_children = NULL;

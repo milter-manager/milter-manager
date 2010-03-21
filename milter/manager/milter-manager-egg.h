@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -145,7 +145,8 @@ void                milter_manager_egg_clear_applicable_conditions
 void                milter_manager_egg_attach_applicable_conditions
                                                 (MilterManagerEgg      *egg,
                                                  MilterManagerChild    *child,
-                                                 MilterManagerChildren *children);
+                                                 MilterManagerChildren *children,
+                                                 MilterClientContext   *context);
 
 gboolean            milter_manager_egg_merge    (MilterManagerEgg *egg,
                                                  MilterManagerEgg *other_egg,

@@ -460,7 +460,8 @@ EOD
   private
   def create_children
     children = Milter::Manager::Children.new(@configuration)
-    @configuration.setup_children(children)
+    client_context = Milter::Client::Context.new(nil)
+    @configuration.setup_children(children, client_context)
     children
   end
 end

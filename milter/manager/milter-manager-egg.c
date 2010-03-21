@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -21,9 +21,9 @@
 #  include "../../config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include <milter/core/milter-marshalers.h>
 #include "milter-manager-egg.h"
 #include "milter-manager-enum-types.h"
-#include <milter/core/milter-marshalers.h>
 
 #define MILTER_MANAGER_EGG_GET_PRIVATE(obj)                     \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                         \
@@ -758,7 +758,8 @@ milter_manager_egg_clear_applicable_conditions (MilterManagerEgg *egg)
 void
 milter_manager_egg_attach_applicable_conditions (MilterManagerEgg      *egg,
                                                  MilterManagerChild    *child,
-                                                 MilterManagerChildren *children)
+                                                 MilterManagerChildren *children,
+                                                 MilterClientContext   *context)
 {
     MilterManagerEggPrivate *priv;
     GList *node;
@@ -766,7 +767,8 @@ milter_manager_egg_attach_applicable_conditions (MilterManagerEgg      *egg,
     priv = MILTER_MANAGER_EGG_GET_PRIVATE(egg);
     for (node = priv->applicable_conditions; node; node = g_list_next(node)) {
         MilterManagerApplicableCondition *condition = node->data;
-        milter_manager_applicable_condition_attach_to(condition, child, children);
+        milter_manager_applicable_condition_attach_to(condition,
+                                                      child, children, context);
     }
 }
 

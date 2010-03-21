@@ -48,9 +48,10 @@ struct _MilterManagerApplicableConditionClass
 {
     GObjectClass parent_class;
 
-    void (*attach_to) (MilterManagerApplicableCondition   *applicable_condition,
-                       MilterManagerChild *child,
-                       MilterManagerChildren *children);
+    void (*attach_to) (MilterManagerApplicableCondition *applicable_condition,
+                       MilterManagerChild               *child,
+                       MilterManagerChildren            *children,
+                       MilterClientContext              *context);
 };
 
 GType        milter_manager_applicable_condition_get_type (void) G_GNUC_CONST;
@@ -81,7 +82,8 @@ void         milter_manager_applicable_condition_merge
 void         milter_manager_applicable_condition_attach_to
                                    (MilterManagerApplicableCondition *condition,
                                     MilterManagerChild               *child,
-                                    MilterManagerChildren            *children);
+                                    MilterManagerChildren            *children,
+                                    MilterClientContext              *context);
 
 G_END_DECLS
 

@@ -270,7 +270,8 @@ void          milter_manager_configuration_clear_eggs
                                      (MilterManagerConfiguration *configuration);
 void          milter_manager_configuration_setup_children
                                      (MilterManagerConfiguration *configuration,
-                                      MilterManagerChildren      *children);
+                                      MilterManagerChildren      *children,
+                                      MilterClientContext        *context);
 void          milter_manager_configuration_add_applicable_condition
                                      (MilterManagerConfiguration *configuration,
                                       MilterManagerApplicableCondition *condition);

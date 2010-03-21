@@ -1499,7 +1499,8 @@ milter_manager_configuration_clear_eggs (MilterManagerConfiguration *configurati
 
 void
 milter_manager_configuration_setup_children (MilterManagerConfiguration *configuration,
-                                             MilterManagerChildren *children)
+                                             MilterManagerChildren *children,
+                                             MilterClientContext *context)
 {
     GList *node;
     MilterManagerConfigurationPrivate *priv;
@@ -1516,7 +1517,9 @@ milter_manager_configuration_setup_children (MilterManagerConfiguration *configu
         child = milter_manager_egg_hatch(egg);
         if (child) {
             milter_manager_children_add_child(children, child);
-            milter_manager_egg_attach_applicable_conditions(egg, child, children);
+            milter_manager_egg_attach_applicable_conditions(egg,
+                                                            child, children,
+                                                            context);
             g_object_unref(child);
         }
     }

@@ -1,5 +1,15 @@
 2010-03-21  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-marshalers.list,
+	milter/manager/milter-manager-applicable-condition.[ch],
+	milter/manager/milter-manager-configuration.[ch],
+	milter/manager/milter-manager-egg.[ch],
+	milter/manager/milter-manager-leader.c,
+	test/manager/,
+	binding/ruby/src/manager/rb-milter-manager-configuration.c,
+	binding/ruby/test/manager/test-configuration.rb: pass client
+	context to MilterManagerApplicableCondition::attach-to signal.
+
 	* milter/client.h, milter/client/milter-client.c,
 	milter/client/milter-client-context.[ch], test/: pass client to
 	client context and add reader for n_processing_sessions.

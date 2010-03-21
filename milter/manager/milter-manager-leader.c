@@ -943,7 +943,8 @@ milter_manager_leader_negotiate (MilterManagerLeader *leader,
 
     priv->children = milter_manager_children_new(priv->configuration);
     milter_manager_configuration_setup_children(priv->configuration,
-                                                priv->children);
+                                                priv->children,
+                                                priv->client_context);
     fallback_status =
         milter_manager_configuration_get_fallback_status(priv->configuration);
     if (!priv->children)

@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -151,7 +151,7 @@ cb_hatched (MilterManagerEgg *egg, MilterManagerChild *child, gpointer user_data
 static void
 cb_attach_to (MilterManagerApplicableCondition *condition,
               MilterManagerChild *child, MilterManagerChildren *children,
-              gpointer user_data)
+              MilterClientContext *client_context, gpointer user_data)
 {
     gboolean *attached_to = user_data;
 
@@ -424,7 +424,7 @@ test_attach_applicable_conditions (void)
     child = milter_manager_child_new("child-milter");
     children = milter_manager_children_new(NULL);
 
-    milter_manager_egg_attach_applicable_conditions(egg, child, children);
+    milter_manager_egg_attach_applicable_conditions(egg, child, children, NULL);
     cut_assert_true(attached_to);
 }
 
