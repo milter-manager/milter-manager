@@ -48,7 +48,7 @@ module Milter::Manager
       if status.success?
         result
       else
-        Milter::Logger.error("failed to run netstat: " +
+        Milter::Logger.error("[netstat][error] failed to run netstat: " +
                              "<#{@netstat_command}>: <#{result}>")
         ""
       end
@@ -101,12 +101,12 @@ module Milter::Manager
         end
       end
       if @netstat_command
-        Milter::Logger.info("[netstat][detect]: <#{@netstat_command}>")
+        Milter::Logger.info("[netstat][detect] <#{@netstat_command}>")
       else
         inspected_commands = commands.collect do |command|
           "<#{command}>"
         end.join(" ")
-        Milter::Logger.error("[netstat][not-available]: #{inspected_commands}")
+        Milter::Logger.error("[netstat][not-available] #{inspected_commands}")
       end
     end
   end

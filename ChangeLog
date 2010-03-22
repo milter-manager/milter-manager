@@ -1,3 +1,8 @@
+2010-03-22  Kouhei Sutou  <kou@cozmixng.org>
+
+	* binding/ruby/lib/milter/manager/netstat-connection-checker.rb:
+	improve log format.
+
 2010-03-21  Kouhei Sutou  <kou@cozmixng.org>
 
 	* binding/ruby/src/toolkit/rb-milter-client-context.c,
