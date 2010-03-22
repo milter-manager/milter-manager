@@ -33,6 +33,7 @@ require 'milter/manager/netstat-connection-checker'
 
 require 'milter/manager/policy-manager'
 require 'milter/manager/address-matcher'
+require 'milter/manager/breaker'
 
 require 'milter/manager/debian-init-detector'
 require 'milter/manager/redhat-detector'
