@@ -5,4 +5,5 @@ dist_conditions_DATA =			\
 	remote-network.conf		\
 	sendmail-compatible.conf	\
 	authentication.conf		\
-	restrict-accounts.conf
+	restrict-accounts.conf		\
+	stress.conf
