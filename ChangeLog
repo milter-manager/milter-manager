@@ -1,5 +1,8 @@
 2010-03-22  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager/breaker.rb,
+	binding/ruby/test/manager/test-breaker.rb: fix inverted condition.
+
 	* data/defaults/: apply "Stress Notify" and "No Stress" applicable
 	conditions by default.
 

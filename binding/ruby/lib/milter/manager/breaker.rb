@@ -23,7 +23,7 @@ module Milter::Manager
     def stressing?(context)
       threshold = threshold_n_connections
       return false if threshold.zero?
-      threshold > context.n_processing_sessions
+      threshold <= context.n_processing_sessions
     end
 
     def threshold_n_connections
