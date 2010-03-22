@@ -1,5 +1,8 @@
 2010-03-22  Kouhei Sutou  <kou@cozmixng.org>
 
+	* data/defaults/: apply "Stress Notify" and "No Stress" applicable
+	conditions by default.
+
 	* data/applicable-conditions/stress.conf: add "Stress Notify" and
 	"No Stress" applicable conditions.
 
