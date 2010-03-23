@@ -1,5 +1,8 @@
 2010-03-22  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/configuration.rd*: add "Stress Notify" and "No Stress" place
+	holder with TODO. :P
+
 	* binding/ruby/lib/milter/manager/breaker.rb,
 	binding/ruby/test/manager/test-breaker.rb: fix inverted condition.
 

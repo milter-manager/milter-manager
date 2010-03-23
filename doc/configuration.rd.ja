@@ -993,6 +993,14 @@ MTAがPostfixの場合にこの適用条件を設定しても悪影響はない�
     milter.add_applicable_condition("Sendmail Compatible")
   end
 
+=== No Stress
+
+TODO
+
+=== Stress Notify
+
+TODO
+
 === Restrict Accounts
 
 TODO
