@@ -1,5 +1,12 @@
 2010-03-25  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client.c, milter/client.h,
+	milter/manager/milter-manager.c,
+	milter/manager/milter-manager-main.c,
+	test/manager/test-manager.c,
+	test/manager/test-controller-context.c: fixed --socket-group-name
+	doesn't work.
+
 	* test/client/test-client.c (cb_idle_shutdown): add g_usleep(1) to
 	work on slow machine.
 
