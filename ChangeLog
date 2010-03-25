@@ -1,3 +1,7 @@
+2010-03-25  Kouhei Sutou  <kou@cozmixng.org>
+
+	* configure.ac: 1.4.1 -> 1.4.2.
+
 2009-10-29  Kouhei Sutou  <kou@clear-code.com>
 
 	* data/init.d/redhat/milter-manager (DAEMON_ARGS): always specify
