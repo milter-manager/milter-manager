@@ -1,5 +1,8 @@
 2010-03-27  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-main.c: fix a bug that incorrect
+	PID is stored into pid file.
+
 	* milter/manager/milter-manager.c: bind configuration to client.
 
 	* NEWS*: add a document fix about pw -m option on FreeBSD.
