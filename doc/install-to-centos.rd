@@ -52,12 +52,12 @@ with yum. We will install it by hand.
 === Install milter manager
 
 On 32bit environment:
-  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-1.4.1-0.i386.rpm
-  % sudo rpm -Uvh milter-manager-1.4.1-0.i386.rpm
+  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-1.4.2-0.i386.rpm
+  % sudo rpm -Uvh milter-manager-1.4.2-0.i386.rpm
 
 On 64bit environment:
-  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-1.4.1-0.x86_64.rpm
-  % sudo rpm -Uvh milter-manager-1.4.1-0.x86_64.rpm
+  % wget http://downloads.sourceforge.net/milter-manager/milter-manager-1.4.2-0.x86_64.rpm
+  % sudo rpm -Uvh milter-manager-1.4.2-0.x86_64.rpm
 
 == Configuration
 
