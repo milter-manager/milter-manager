@@ -1,5 +1,7 @@
 2010-03-26  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/*-freebsd.rd*: CFLAGS -> CPPFLAGS.
+
 	* NEWS*: add a 1.4.2 entry.
 
 2010-03-25  Kouhei Sutou  <kou@cozmixng.org>

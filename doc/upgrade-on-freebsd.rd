@@ -23,7 +23,7 @@ milter-manager.conf.
   % fetch http://downloads.sourceforge.net/milter-manager/milter-manager-1.4.2.tar.gz
   % tar xvzf milter-manager-1.4.2.tar.gz
   % cd milter-manager-1.4.2
-  % ./configure CFLAGS="-I/usr/local/include"
+  % ./configure CPPFLAGS="-I/usr/local/include"
   % gmake
   % sudo cp /usr/local/etc/milter-manager/milter-manager.conf{,.`date +%Y%m%d`}
   % sudo gmake install
