@@ -25,7 +25,11 @@ if getent passwd milter-manager > /dev/null; then
 else
     : ${milter_manager_user_name="mailnull"}
 fi
-: ${milter_manager_group_name="mail"}
+if getent group milter-manager > /dev/null; then
+    : ${milter_manager_group_name="milter-manager"}
+else
+    : ${milter_manager_group_name="mail"}
+fi
 : ${milter_manager_socket_group_name="mail"}
 : ${milter_manager_connection_spec=""}
 : ${milter_manager_debug="NO"}
