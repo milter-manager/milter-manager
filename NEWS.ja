@@ -6,6 +6,11 @@
 
 1.4.1のバグフィックスリリースです。
 
+=== ドキュメント
+
+  * FreeBSDのビルド時にCFLAGSではなくCPPFLAGSを使うように変更
+  * FreeBSDの対象バージョンを7.2-RELEASEから8.0-RELEASEに変更
+
 === milter manager
 
 ==== バグ修正
