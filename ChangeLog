@@ -1,5 +1,8 @@
 2010-03-27  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-main.c: fix custom
+	configuration directory owner and group.
+
 	* data/rc.d/milter-manager: use milter-manager group if available.
 
 	* doc/install-to-freebsd.rd*: use milter-manager group for

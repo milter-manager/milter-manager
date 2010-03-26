@@ -548,8 +548,17 @@ append_custom_configuration_directory (MilterManagerConfiguration *config)
     if (!g_file_test(custom_config_directory, G_FILE_TEST_EXISTS)) {
         if (g_mkdir(custom_config_directory, 0700) == -1) {
             milter_manager_error("failed to create custom "
-                                 "configuration directory: %s: %s",
+                                 "configuration directory: <%s>: %s",
                                  custom_config_directory,
+                                 g_strerror(errno));
+            return;
+        }
+        if (chown(custom_config_directory,
+                  password->pw_uid, password->pw_gid) == -1) {
+            milter_manager_error("failed to change owner and group of "
+                                 "configuration directory: <%s>: <%u:%u>: %s",
+                                 custom_config_directory,
+                                 password->pw_uid, password->pw_gid,
                                  g_strerror(errno));
             return;
         }
