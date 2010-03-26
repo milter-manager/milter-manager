@@ -11,6 +11,7 @@ A bug fix release for 1.4.1.
   * Upgraded target FreeBSD version: 7.2-RELEASE -> 8.0-RELEASE
   * Changed to use CPPFLAGS instead of CFLAGS for configure
     on FreeBSD.
+  * Fixed pw command options on FreeBSD.
 
 === milter manager
 

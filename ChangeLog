@@ -1,5 +1,7 @@
 2010-03-27  Kouhei Sutou  <kou@cozmixng.org>
 
+	* NEWS*: add a document fix about pw -m option on FreeBSD.
+
 	* doc/install-to-freebsd.rd*: add missing -m option of pw.
 
 	* NEWS*: add a bug fix about OpenDKIM on FreeBSD.

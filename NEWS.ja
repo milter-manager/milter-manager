@@ -10,6 +10,7 @@
 
   * FreeBSDのビルド時にCFLAGSではなくCPPFLAGSを使うように変更
   * FreeBSDの対象バージョンを7.2-RELEASEから8.0-RELEASEに変更
+  * FreeBSDのpwコマンドのオプションを修正
 
 === milter manager
 
