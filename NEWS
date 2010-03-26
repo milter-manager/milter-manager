@@ -18,6 +18,8 @@ A bug fix release for 1.4.1.
 
   * Fixed a bug that socket group isn't effected when
     both effective user and socket group are specified.
+  * Fixed a bug that auto milter detection is failed on no
+    OpenDKIM installed FreeBSD environment.
 
 == [release-1-4-1] 1.4.1: 2009-10-29
 
