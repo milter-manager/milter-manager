@@ -532,6 +532,15 @@ append_custom_configuration_directory (MilterManagerConfiguration *config)
                                  g_strerror(errno));
             return;
         }
+        if (chown(custom_config_directory,
+                  password->pw_uid, password->pw_gid) == -1) {
+            milter_manager_error("failed to change owner and group of "
+                                 "configuration directory: <%s>: <%u:%u>: %s",
+                                 custom_config_directory,
+                                 password->pw_uid, password->pw_gid,
+                                 g_strerror(errno));
+            return;
+        }
     }
 
     milter_manager_configuration_append_load_path(config,

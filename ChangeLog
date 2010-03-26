@@ -1,5 +1,8 @@
 2010-03-27  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-main.c: fix custom
+	configuration directory owner and group.
+
 	* milter/manager/milter-manager-main.c: fix a bug that incorrect
 	PID is stored into pid file.
 
