@@ -1,5 +1,7 @@
 2010-03-26  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/install-to-freebsd.rd*: FreeBSD 7.x -> FreeBSD 8.0.
+
 	* doc/*-freebsd.rd*: CFLAGS -> CPPFLAGS.
 
 	* NEWS*: add a 1.4.2 entry.

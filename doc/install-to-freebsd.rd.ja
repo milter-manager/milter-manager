@@ -8,7 +8,7 @@ FreeBSDに特化したmilter managerのインストール方法について説�
 します。FreeBSDに依存しない一般的なインストール情報は((<イン
 ストール|install.rd.ja>))を見てください。
 
-FreeBSD 7.2-RELEASEを想定しています。
+FreeBSD 8.0-RELEASEを想定しています。
 
 == パッケージのインストール
 
