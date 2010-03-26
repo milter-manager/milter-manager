@@ -232,7 +232,7 @@ We create 'milter-manager' user because we run
 milter-manager as 'milter-manager' user:
 
   % sudo /usr/sbin/pw groupadd milter-manager
-  % sudo /usr/sbin/pw useradd milter-manager -g milter-manager -G mail
+  % sudo /usr/sbin/pw useradd milter-manager -g milter-manager -G mail -m
 
 milter-manager detects milters that installed in system.
 We can confirm spamass-milter, clamav-milter and
