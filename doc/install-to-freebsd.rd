@@ -283,7 +283,7 @@ FreeBSD. We need to create /var/run/milter-manager directory
 before running milter-manager:
 
   % sudo mkdir -p /var/run/milter-manager
-  % sudo /usr/sbin/chown -R milter-manager:mail /var/run/milter-manager
+  % sudo /usr/sbin/chown -R milter-manager:milter-manager /var/run/milter-manager
 
 milter-manager's configuration is completed. We start to
 setup running milter-manager.

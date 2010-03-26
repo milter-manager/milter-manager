@@ -293,7 +293,7 @@ FreeBSD上ではデフォルトでは
 レクトリを作成しておく必要があります。
 
   % sudo mkdir -p /var/run/milter-manager
-  % sudo /usr/sbin/chown -R milter-manager:mail /var/run/milter-manager
+  % sudo /usr/sbin/chown -R milter-manager:milter-manager /var/run/milter-manager
 
 milter-managerの設定が完了したので、起動の設定をします。
 

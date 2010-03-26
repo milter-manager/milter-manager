@@ -1,5 +1,8 @@
 2010-03-27  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/install-to-freebsd.rd*: use milter-manager group for
+	effective group.
+
 	* doc/install-to-freebsd.rd*: add missing -m option.
 
 2010-03-22  Kouhei Sutou  <kou@cozmixng.org>
