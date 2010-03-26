@@ -183,7 +183,7 @@ milter-managerはmilter-managerユーザで動作させるので、
 milter-managerユーザを作成します。
 
   % sudo /usr/sbin/pw groupadd milter-manager
-  % sudo /usr/sbin/pw useradd milter-manager -g milter-manager -G mail
+  % sudo /usr/sbin/pw useradd milter-manager -g milter-manager -G mail -m
 
 milter-managerはシステムにインストールされているmilterを検出
 します。以下のコマンドでspamass-milter、clamav-milter、

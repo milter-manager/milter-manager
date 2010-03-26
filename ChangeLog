@@ -1,5 +1,7 @@
 2010-03-27  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/install-to-freebsd.rd*: add missing -m option of pw.
+
 	* NEWS*: add a bug fix about OpenDKIM on FreeBSD.
 
 	* binding/ruby/lib/milter/manager/freebsd-rc-detector.rb: fix a
