@@ -10,26 +10,39 @@ install information.
 
 == Install packages
 
-((<Jun Kobayashi|URL:https://launchpad.net/~jkbys/>)), the
-leader of Ubuntu Japanese Team, provides milter manager
-package. We use the package.
+Packages for Hardy Heron, the current LTS release, and
+Packages for Karmic Koara, the latest release are
+distributed on the milter manager site. We put the following
+content to /etc/apt/sources.list.d/milter-manager.list:
 
-If we are on Hardy Heron, we put the following content to
+=== For Hardy Heron
+
 /etc/apt/sources.list.d/milter-manager.list:
+  deb http://milter-manager.sourceforge.net/ubuntu/stable/ hardy universe
+  deb-src http://milter-manager.sourceforge.net/ubuntu/stable/ hardy universe
+  # deb http://milter-manager.sourceforge.net/ubuntu/development/ hardy universe
+  # deb-src http://milter-manager.sourceforge.net/ubuntu/development/ hardy universe
 
-  deb http://ppa.launchpad.net/jkbys/ppa/ubuntu hardy main
-  deb-src http://ppa.launchpad.net/jkbys/ppa/ubuntu hardy main
+If we use development series, we need to comment the first 2
+lines out and enable comment outed the 2 lines.
 
-If we are on Intrepid Ibex, we put the following content to
+=== For Hardy Heron
+
 /etc/apt/sources.list.d/milter-manager.list:
+  deb http://milter-manager.sourceforge.net/ubuntu/stable/ karmic universe
+  deb-src http://milter-manager.sourceforge.net/ubuntu/stable/ karmic universe
+  # deb http://milter-manager.sourceforge.net/ubuntu/development/ karmic universe
+  # deb-src http://milter-manager.sourceforge.net/ubuntu/development/ karmic universe
 
-  deb http://ppa.launchpad.net/jkbys/ppa/ubuntu intrepid main
-  deb-src http://ppa.launchpad.net/jkbys/ppa/ubuntu intrepid main
+If we use development series, we need to comment the first 2
+lines out and enable comment outed the 2 lines.
+
+=== Install
 
 We register the key of the package repository:
 
-  % gpg --keyserver wwwkeys.eu.pgp.net --recv-keys E1124067
-  % gpg --armor --export E1124067 | sudo apt-key add -
+  % gpg --keyserver hkp://subkeys.pgp.net --recv-keys 1C837F31
+  % gpg --export 1C837F31 | sudo apt-key add -
 
 We install milter manager package:
 

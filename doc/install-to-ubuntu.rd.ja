@@ -10,31 +10,39 @@ Ubuntu Linuxに特化したmilter managerのインストール方法につい
 
 == パッケージのインストール
 
-((<Ubuntu Japanese Team|URL:http://www.ubuntulinux.jp>))の
-((<小林さん|URL:http://www.junkobayashi.jp/>))さんが、milter
-managerのパッケージを作成してくれているので、それを利用しま
-す。
+milter managerのサイトで現在のLTS Hardy Heronと最新版Karmic
+Koara用のパッケージを配布しています。まず、以下の内容の
+/etc/apt/sources.list.d/milter-manager.listを作成します。
 
-Hardy Heronを利用している場合は以下の内容の
-/etc/apt/sources.list.d/milter-manager.listを作成してくださ
-い。
+=== Hardy Heronの場合
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://ppa.launchpad.net/jkbys/ppa/ubuntu hardy main
-  deb-src http://ppa.launchpad.net/jkbys/ppa/ubuntu hardy main
+  deb http://milter-manager.sourceforge.net/ubuntu/stable/ hardy universe
+  deb-src http://milter-manager.sourceforge.net/ubuntu/stable/ hardy universe
+  # deb http://milter-manager.sourceforge.net/ubuntu/development/ hardy universe
+  # deb-src http://milter-manager.sourceforge.net/ubuntu/development/ hardy universe
 
-Intrepid Ibexを利用している場合は以下の内容の
-/etc/apt/sources.list.d/milter-manager.listを作成してくださ
-い。
+開発版を利用する場合は最初の2行をコメントアウトし、すでにコ
+メントアウトされている2行のコメントを外します。
+
+=== Karmic Koaraの場合
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://ppa.launchpad.net/jkbys/ppa/ubuntu intrepid main
-  deb-src http://ppa.launchpad.net/jkbys/ppa/ubuntu intrepid main
+  deb http://milter-manager.sourceforge.net/ubuntu/stable/ karmic universe
+  deb-src http://milter-manager.sourceforge.net/ubuntu/stable/ karmic universe
+  # deb http://milter-manager.sourceforge.net/ubuntu/development/ karmic universe
+  # deb-src http://milter-manager.sourceforge.net/ubuntu/development/ karmic universe
 
-パッケージリポジトリの鍵を登録します。
+開発版を利用する場合は最初の2行をコメントアウトし、すでにコ
+メントアウトされている2行のコメントを外します。
 
-  % gpg --keyserver wwwkeys.eu.pgp.net --recv-keys E1124067
-  % gpg --armor --export E1124067 | sudo apt-key add -
+=== インストール
+
+パッケージはkou@clear-code.comの鍵でサインされています。信用
+する場合は鍵を登録します。
+
+  % gpg --keyserver hkp://subkeys.pgp.net --recv-keys 1C837F31
+  % gpg --export 1C837F31 | sudo apt-key add -
 
 milter managerをインストールします。
 

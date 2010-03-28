@@ -54,6 +54,11 @@ milter managerはyumでインストールできます。
 
   % sudo yum install -y milter-manager
 
+開発版を利用する場合は明示的に開発版用のリポジトリを指定しま
+す。
+
+  % sudo yum install --enablerepo=milter-manager-development -y milter-manager
+
 == 設定
 
 milterの基本的な設定方針は以下の通りです。

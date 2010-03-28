@@ -1,5 +1,7 @@
 2010-03-28  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/install-to-*: add development series installation guide.
+
 	* NEWS: remove a garbage.
 
 	* doc/: use more stylish name for internal links.

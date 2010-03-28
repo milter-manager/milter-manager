@@ -51,7 +51,13 @@ We register milter manager yum repository like the following:
   % sudo rpm -Uvh http://milter-manager.sourceforge.net/centos/5/milter-manager-repository-1.0.0-0.noarch.rpm
 
 Now, we can install milter manager:
+
   % sudo yum install -y milter-manager
+
+If we use development series, we need to specify the Yum
+repository for development series explicitly:
+
+  % sudo yum install --enablerepo=milter-manager-development -y milter-manager
 
 == Configuration
 

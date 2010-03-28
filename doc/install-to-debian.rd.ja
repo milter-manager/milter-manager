@@ -15,8 +15,13 @@ milter managerのサイトで現在の安定版lenny用のパッケージを配�
 /etc/apt/sources.list.d/milter-manager.listを作成します。
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://milter-manager.sourceforge.net/debian/ lenny main
-  deb-src http://milter-manager.sourceforge.net/debian/ lenny main
+  deb http://milter-manager.sourceforge.net/debian/stable/ lenny main
+  deb-src http://milter-manager.sourceforge.net/debian/stable/ lenny main
+  # deb http://milter-manager.sourceforge.net/debian/development/ lenny main
+  # deb-src http://milter-manager.sourceforge.net/debian/development/ lenny main
+
+開発版を利用する場合は最初の2行をコメントアウトし、すでにコ
+メントアウトされている2行のコメントを外します。
 
 パッケージはkou@clear-code.comの鍵でサインされています。信用
 する場合は鍵を登録します。
