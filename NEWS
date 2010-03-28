@@ -2,7 +2,7 @@
 
 = NEWS --- The history of milter manager
 
-== [release-1-5-0] 1.5.0: 2010-03-08
+== [release-1-5-0] 1.5.0: 2010-03-29
 
 A development release.
 
@@ -14,6 +14,14 @@ A development release.
     * Removed needless group change description [Suggested by ZnZ]
   * For CentOS:
     * Used Yum instead of RPM directly.
+  * For FreeBSD:
+    * Upgraded target version: 7.2-RELEASE -> 8.0-RELEASE
+    * Changed to use CPPFLAGS instead of CFLAGS for configure.
+
+==== Bug fixes
+
+  * For FreeBSD:
+    * Fixed pw command options.
 
 === milter manager
 
@@ -37,6 +45,15 @@ A development release.
     * ((<manager.connection_check_interval|"doc/configuration.rd#manager.connection_check_interval">))
     * ((<manager.define_connection_checker|"doc/configuration.rd#manager.define_connection_checker">))
     * ((<manager.use_netstat_connection_checker|"doc/configuration.rd#manager.use_netstat_connection_checker">))
+    * ((<manager.report_memory_statistics|"doc/configuration.rd#manager.report_memory_statistics">))
+    * ((<manager.maintained|"doc/configuration.rd#manager.maintained">))
+    * ((<stress.threshold_n_connections|"doc/configuration.rd#stress.threshold_n_connections">))
+    * ((<stress.threshold_n_connections=|"doc/configuration.rd#stress.threshold_n_connections=">))
+    * ((<remote_network.add_local_address|"doc/configuration.rd#remote_network.add_local_address">))
+
+  * Added new applicable conditions
+    * ((<No Stress|"doc/configuration.rd#no-stress">))
+    * ((<Stress Notify|"doc/configuration.rd#stress-notify">))
 
   * Bundled Ruby/GLib 0.19.3. (For FreeBSD)
   * Changed to use /usr/sbin/service or /sbin/service if it

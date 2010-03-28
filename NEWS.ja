@@ -2,7 +2,7 @@
 
 = お知らせ --- milter managerの歴史
 
-== [release-1-5-0] 1.5.0: 2010-03-08
+== [release-1-5-0] 1.5.0: 2010-03-29
 
 開発版リリースです。
 
@@ -14,6 +14,14 @@
     * 不必要なグループ変更の記述を削除 [西山さんが提案]
   * CentOS用ドキュメント
     * よりインストールの簡単なYumを利用した記述へ変更
+  * FreeBSD用ドキュメント
+    * CFLAGSではなくCPPFLAGSを使うように変更
+    * の対象バージョンを7.2-RELEASEから8.0-RELEASEに変更
+
+==== 修正
+
+  * FreeBSD用ドキュメント
+    * pwコマンドのオプションを修正
 
 === milter manager
 
@@ -36,6 +44,15 @@
     * ((<manager.connection_check_interval|"doc/configuration.rd.ja#manager.connection_check_interval">))
     * ((<manager.define_connection_checker|"doc/configuration.rd.ja#manager.define_connection_checker">))
     * ((<manager.use_netstat_connection_checker|"doc/configuration.rd.ja#manager.use_netstat_connection_checker">))
+    * ((<manager.report_memory_statistics|"doc/configuration.rd.ja#manager.report_memory_statistics">))
+    * ((<manager.maintained|"doc/configuration.rd.ja#manager.maintained">))
+    * ((<stress.threshold_n_connections|"doc/configuration.rd.ja#stress.threshold_n_connections">))
+    * ((<stress.threshold_n_connections=|"doc/configuration.rd.ja#stress.threshold_n_connections=">))
+    * ((<remote_network.add_local_address|"doc/configuration.rd.ja#remote_network.add_local_address">))
+
+  * 適用条件追加
+    * ((<No Stress|"doc/configuration.rd.ja#no-stress">))
+    * ((<Stress Notify|"doc/configuration.rd.ja#stress-notify">))
 
   * Ruby/GLib 0.19.3を同梱（FreeBSD用）
   * /usr/sbin/serviceまたは/sbin/serviceがある場合はそれを利

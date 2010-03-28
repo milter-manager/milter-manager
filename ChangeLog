@@ -1,5 +1,7 @@
 2010-03-28  Kouhei Sutou  <kou@cozmixng.org>
 
+	* NEWS*: update.
+
 	* doc/configuration.rd*: add "Since 1.5.0" marks.
 
 	* doc/configuration.rd.ja: fill in stress related applicable
