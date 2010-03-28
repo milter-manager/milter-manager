@@ -993,13 +993,72 @@ MTAがPostfixの場合にこの適用条件を設定しても悪影響はない�
     milter.add_applicable_condition("Sendmail Compatible")
   end
 
-=== No Stress
+=== stress
 
-TODO
+負荷に応じて動的に処理を変更する適用条件をいくつか提供してい
+ます。負荷は同時接続数で判断します。
 
-=== Stress Notify
+: stress.threshold_n_connections
 
-TODO
+   負荷が高いと判断する同時接続数を返します。
+
+   Postfixを利用している場合はsmtpdの最大プロセス数を自動検出し、
+   自動検出した最大プロセス数の3/4以上の同時接続数がある場合に負
+   荷が高いと判断します。
+
+   Sendmailの場合意は自動検出されないので、
+   ((<stress.threshold_n_connections=|./#stress.threshold_n_connections=>))
+   で手動で設定する必要があります。
+
+   例:
+     # Postfixのデフォルト設定の場合（環境によって異なる）
+     stress.threshold_n_connections # => 75
+
+: stress.threshold_n_connections=(n)
+
+負荷が高いと判断する同時接続数を設定します。
+
+0を指定すると常に負荷が低いと判断します。
+
+   例:
+     # 同時接続数が75以上の場合、負荷が高いと判断
+     stress.threshold_n_connections = 75
+
+==== No Stress
+
+負荷が小さいときのみ、子milterを適用する適用条件です。
+
+以下の例は負荷が高いときはspamass-milterを適用しない設定です。
+
+使用例:
+
+  define_milter("spamass-milter") do |milter|
+    milter.add_applicable_condition("No Stress")
+  end
+
+==== Stress Notify
+
+負荷が高いときに"{stress}=yes"マクロを設定し、子milterに負荷
+が高いことを通知する適用条件です。この適用条件は通知するだけ
+なので、設定しても常にすべての子milterは適用されます。
+
+以下の例は負荷が高いときはmilter-greylistにマクロで通知をす
+る設定です。
+
+使用例:
+
+  define_milter("milter-greylist") do |milter|
+    milter.add_applicable_condition("Stress Notify")
+  end
+
+milter-greylist側で「負荷が高いときはGreylisting、負荷が低い
+ときはTarpittingを使う」設定は以下のようになります。この設定
+を使う場合はmilter-greylist 4.3.4以降が必要です。
+
+greylist.conf:
+  sm_macro "no_stress" "{stress}" unset
+  racl whitelist sm_macro "no_stress" tarpit 125s
+  racl greylist default
 
 === Restrict Accounts
 

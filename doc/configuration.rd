@@ -905,11 +905,23 @@ TODO
 
 TODO
 
-=== No Stress
+=== stress
 
 TODO
 
-=== Stress Notify
+: stress.threshold_n_connections
+
+   TODO
+
+: stress.threshold_n_connections=(n)
+
+   TODO
+
+==== No Stress
+
+TODO
+
+==== Stress Notify
 
 TODO
 
