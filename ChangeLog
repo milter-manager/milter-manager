@@ -1,5 +1,7 @@
 2010-03-28  Kouhei Sutou  <kou@cozmixng.org>
 
+	* NEWS: remove a garbage.
+
 	* doc/: use more stylish name for internal links.
 
 	* configure.ac: 1.5.0 -> 1.5.1.

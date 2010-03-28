@@ -27,7 +27,7 @@ A development release.
 
 ==== Improvements
 
-  * init script for Debian GNU/Linux用:
+  * init script for Debian GNU/Linux:
     * Supported 'status'. [Suggested by ZnZ]
     * Delayed parameter checks until they are needed.
       [Suggested by ZnZ]
