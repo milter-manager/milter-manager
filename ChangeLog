@@ -1,3 +1,7 @@
+2010-03-28  Kouhei Sutou  <kou@cozmixng.org>
+
+	* Makefile.am: don't upload RPM.
+
 2010-03-27  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/manager/milter-manager-main.c: fix custom
