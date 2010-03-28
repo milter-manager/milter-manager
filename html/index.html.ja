@@ -24,7 +24,7 @@
       </ul>
       <ul class="menu">
 	<li id="menu-introduction"><a href="reference/ja/introduction.html">はじめに</a></li>
-	<li id="menu-install"><a href="reference/ja/install.html">インストール</a></li>
+	<li id="menu-install"><a href="reference/ja/install-to.html">インストール</a></li>
         <li id="menu-reverse-dictionary"><a href="reference/ja/reverse-dictionary.html">逆引きリファレンス</a></li>
 	<li id="menu-download"><a href="http://downloads.sourceforge.net/milter-manager/milter-manager-1.4.2.tar.gz">ダウンロード</a></li>
 	<li id="menu-blog"><a href="blog/ja/">ブログ</a></li>
@@ -147,7 +147,7 @@ deb-src http://milter-manager.sourceforge.net/debian/development lenny main</pre
 	  <h2>導入</h2>
 	  <ul>
 	    <li class="sidebar-install">
-	      <a href="reference/ja/install.html">インストール</a>
+	      <a href="reference/ja/install-to.html">インストール</a>
 	      <ul>
 		<li>
 		  <a href="reference/ja/install-to-debian.html">Debian</a>

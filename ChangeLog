@@ -1,5 +1,9 @@
 2010-03-28  Kouhei Sutou  <kou@cozmixng.org>
 
+	* html/index.html*, doc/reference/header*.html: use
+	install-to.html instead of install.html for installation guide
+	index page.
+
 	* doc/upgrade-on-*: add a link to optional package upgrade guide.
 
 	* doc/install-to-*: add a link to optional package installation.
