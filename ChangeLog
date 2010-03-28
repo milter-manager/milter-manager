@@ -1,3 +1,8 @@
+2010-03-28  Kouhei Sutou  <kou@cozmixng.org>
+
+	* binding/ruby/lib/milter/toolkit.rb: use const_get instead of
+	from_string.
+
 2010-03-27  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/manager/milter-manager-main.c: fix custom

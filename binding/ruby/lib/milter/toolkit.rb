@@ -58,7 +58,7 @@ module Milter
 
     def log(level, message, n_call_depth=nil)
       unless level.is_a?(Milter::LogLevelFlags)
-        level = Milter::LogLevelFlags.from_string(level.to_s)
+        level = Milter::LogLevelFlags.const_get(level.to_s.upcase)
       end
       n_call_depth ||= 0
       file, line, info = caller[n_call_depth].split(/:(\d+):/, 3)
