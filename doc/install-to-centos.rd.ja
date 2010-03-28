@@ -293,3 +293,9 @@ Sendmailのsendmail.mcを変更する必要はありません。
 
 CentOS上でmilterを複数使っている場合は、milter-managerを導入
 して、管理コストを削減することができます。
+
+milter managerは運用を支援するツールも提供しています。インス
+トールは必須ではありませんが、それらを導入することで運用コス
+トを削減することができます。それらのツールもインストールする
+場合は((<CentOSへインストール（任
+意）|install-options-to-centos.rd.ja>))を参照してください。

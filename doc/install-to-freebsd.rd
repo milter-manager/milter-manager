@@ -429,3 +429,9 @@ it. We doesn't need to change Postfix's main.cf.
 
 We can reduce maintainance cost by introducing
 milter-manager if we use some milters on FreeBSD.
+
+milter manager also provides tools to help
+operation. Installing them is optional but we can reduce
+operation cost too. If we also install them, we will go to
+((<Install to FreeBSD
+(optional)|install-options-to-freebsd.rd>)).

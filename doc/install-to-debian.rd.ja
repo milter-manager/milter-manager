@@ -339,3 +339,9 @@ Postfixのmain.cfを変更する必要はありません。
 
 Debian GNU/Linux上でmilterを複数使っている場合は、
 milter-managerを導入して、管理コストを削減することができます。
+
+milter managerは運用を支援するツールも提供しています。インス
+トールは必須ではありませんが、それらを導入することで運用コス
+トを削減することができます。それらのツールもインストールする
+場合は((<Debianへインストール（任
+意）|install-options-to-debian.rd.ja>))を参照してください。

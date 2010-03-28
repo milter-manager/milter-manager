@@ -298,3 +298,9 @@ it. We doesn't need to change Sendmail's sendmail.mc.
 
 We can reduce maintainance cost by introducing
 milter-manager if we use some milters on CentOS.
+
+milter manager also provides tools to help
+operation. Installing them is optional but we can reduce
+operation cost too. If we also install them, we will go to
+((<Install to CentOS
+(optional)|install-options-to-centos.rd>)).
