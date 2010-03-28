@@ -10,7 +10,7 @@ FreeBSDに特化したmilter manager関連ソフトウェアのインストー�
 FreeBSDに依存しない一般的なインストール情報は((<インストール
 |install.rd.ja>))を見てください。
 
-== [freebsd-milter-manager-log-analyzer] milter-manager-log-analyzerのインストール
+== [milter-manager-log-analyzer] milter-manager-log-analyzerのインストール
 
 milter-manager-log-analyzerはmilter managerのログを解析して
 統計情報をグラフ化します。
@@ -97,7 +97,7 @@ Apacheで各ユーザ毎にファイルを公開できるようにします。
 これでhttp://localhost/~milter-manager/log/でグラフを閲覧でき
 るようになります。
 
-=== 別ホストにあるMuninを利用する方法
+=== [munin] 別ホストにあるMuninを利用する方法
 
 次は、別ホストにあるMunin上でグラフを閲覧する方法です。
 
@@ -187,7 +187,7 @@ Muninは/usr/local/www/munin/以下にグラフを生成するので、それ
 5分後にはhttp://monitoring-server/munin/でグラフを閲覧できる
 ようになります。
 
-== [freebsd-milter-manager-admin] milter manager adminのインストール
+== [milter-manager-admin] milter manager adminのインストール
 
 === パッケージのインストール
 

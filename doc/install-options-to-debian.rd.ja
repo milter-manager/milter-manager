@@ -10,7 +10,7 @@ Debian GNU/Linuxに特化したmilter manager関連ソフトウェアのイ
 |install-to-debian.rd.ja>))、Debianに依存しない一般的なインス
 トール情報は((<インストール|install.rd.ja>))を見てください。
 
-== [debian-milter-manager-log-analyzer] milter-manager-log-analyzerのインストール
+== [milter-manager-log-analyzer] milter-manager-log-analyzerのインストール
 
 milter-manager-log-analyzerはmilter-managerパッケージに含ま
 れているので、すでにインストールされています。ここでは、
@@ -57,7 +57,7 @@ WebサーバとしてApacheを使います。
 これでhttp://localhost/milter-manager-log/でグラフを閲覧で
 きるようになります。
 
-=== 別ホストにあるMuninを利用する方法
+=== [munin] 別ホストにあるMuninを利用する方法
 
 次は、別ホストにあるMunin上でグラフを閲覧する方法です。
 
@@ -117,7 +117,7 @@ muninの監視対象にmunin-nodeが動いているメールサーバを追加�
 5分後にはhttp://monitoring-server/munin/でグラフを閲覧できる
 ようになります。
 
-== [debian-milter-manager-admin] milter manager adminのインストール
+== [milter-manager-admin] milter manager adminのインストール
 
 === パッケージのインストール
 

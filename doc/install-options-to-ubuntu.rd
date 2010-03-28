@@ -10,7 +10,7 @@ Ubuntu|install-to-ubuntu.rd>)) for milter manager install
 information and ((<Install|install.rd>)) for general install
 information.
 
-== [ubuntu-milter-manager-log-analyzer] Install milter-manager-log-analyzer
+== [milter-manager-log-analyzer] Install milter-manager-log-analyzer
 
 milter-manager-log-analyzer is already installed because it
 is included in milter manager's package. We will configure
@@ -60,7 +60,7 @@ We need to reload configuration after editing:
 
 Now, we can see graphs at http://localhost/milter-manager-log/.
 
-=== Way 2: View via Munin at other host
+=== [munin] Way 2: View via Munin at other host
 
 Next way is using Munin at other host.
 
@@ -123,7 +123,7 @@ to add the mail server:
 We will be able to view graphs at
 http://monitoring-server/munin/ 5 minutes later.
 
-== [ubuntu-milter-manager-admin] Install milter manager admin
+== [milter-manager-admin] Install milter manager admin
 
 === Install packages
 

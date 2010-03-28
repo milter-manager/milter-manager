@@ -34,19 +34,19 @@ milter manager can be installed as RPM package.
 
 There are documents for each platform:
 
-  * ((<For Debian|install-options-to-debian.rd#debian-milter-manager-log-analyzer>))
-  * ((<For Ubuntu|install-options-to-ubuntu.rd#ubuntu-milter-manager-log-analyzer>))
-  * ((<For CentOS|install-options-to-centos.rd#centos-milter-manager-log-analyzer>))
-  * ((<For FreeBSD|install-options-to-freebsd.rd#freebsd-milter-manager-log-analyzer>))
+  * ((<For Debian|install-options-to-debian.rd#milter-manager-log-analyzer>))
+  * ((<For Ubuntu|install-options-to-ubuntu.rd#milter-manager-log-analyzer>))
+  * ((<For CentOS|install-options-to-centos.rd#milter-manager-log-analyzer>))
+  * ((<For FreeBSD|install-options-to-freebsd.rd#milter-manager-log-analyzer>))
 
 === Use Web administration interface
 
 There are documents for each platform:
 
-  * ((<For Debian|install-options-to-debian.rd#debian-milter-manager-admin>))
-  * ((<For Ubuntu|install-options-to-ubuntu.rd#ubuntu-milter-manager-admin>))
-  * ((<For CentOS|install-options-to-centos.rd#centos-milter-manager-admin>))
-  * ((<For FreeBSD|install-options-to-freebsd.rd#freebsd-milter-manager-admin>))
+  * ((<For Debian|install-options-to-debian.rd#milter-manager-admin>))
+  * ((<For Ubuntu|install-options-to-ubuntu.rd#milter-manager-admin>))
+  * ((<For CentOS|install-options-to-centos.rd#milter-manager-admin>))
+  * ((<For FreeBSD|install-options-to-freebsd.rd#milter-manager-admin>))
 
 == Configuration: Basic
 

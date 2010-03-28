@@ -36,19 +36,19 @@
 
 プラットフォーム毎にドキュメントが用意されています。
 
-  * ((<Debian用|install-options-to-debian.rd.ja#debian-milter-manager-log-analyzer>))
-  * ((<Ubuntu用|install-options-to-ubuntu.rd.ja#ubuntu-milter-manager-log-analyzer>))
-  * ((<CentOS用|install-options-to-centos.rd.ja#centos-milter-manager-log-analyzer>))
-  * ((<FreeBSD用|install-options-to-freebsd.rd.ja#freebsd-milter-manager-log-analyzer>))
+  * ((<Debian用|install-options-to-debian.rd.ja#milter-manager-log-analyzer>))
+  * ((<Ubuntu用|install-options-to-ubuntu.rd.ja#milter-manager-log-analyzer>))
+  * ((<CentOS用|install-options-to-centos.rd.ja#milter-manager-log-analyzer>))
+  * ((<FreeBSD用|install-options-to-freebsd.rd.ja#milter-manager-log-analyzer>))
 
 === Webの管理画面を使う
 
 プラットフォーム毎にドキュメントが用意されています。
 
-  * ((<Debian用|install-options-to-debian.rd.ja#debian-milter-manager-admin>))
-  * ((<Ubuntu用|install-options-to-ubuntu.rd.ja#ubuntu-milter-manager-admin>))
-  * ((<CentOS用|install-options-to-centos.rd.ja#centos-milter-manager-admin>))
-  * ((<FreeBSD用|install-options-to-freebsd.rd.ja#freebsd-milter-manager-admin>))
+  * ((<Debian用|install-options-to-debian.rd.ja#milter-manager-admin>))
+  * ((<Ubuntu用|install-options-to-ubuntu.rd.ja#milter-manager-admin>))
+  * ((<CentOS用|install-options-to-centos.rd.ja#milter-manager-admin>))
+  * ((<FreeBSD用|install-options-to-freebsd.rd.ja#milter-manager-admin>))
 
 == 設定: 基本編
 
