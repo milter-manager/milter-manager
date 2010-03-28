@@ -38,7 +38,7 @@
 	  2010-03-29にリリースされた1.4.2が最新安定版リリースです。
         </p>
 	<ul>
-          <li><a href="reference/ja/news.html#release-1-4-2">変更点</a></li>
+          <li><a href="reference/ja/news.html#news.release-1-4-2">変更点</a></li>
           <li><a href="http://downloads.sourceforge.net/milter-manager/milter-manager-1.4.2.tar.gz">ダウンロード</a></li>
 	</ul>
 
@@ -103,7 +103,7 @@
         </p>
 	<ul>
           <li><a href="http://downloads.sourceforge.net/milter-manager/milter-manager-1.3.1.tar.gz">ダウンロード</a></li>
-          <li><a href="dev/reference/ja/news.html#release-1-3-1">変更点</a></li>
+          <li><a href="dev/reference/ja/news.html#news.release-1-3-1">変更点</a></li>
           <li><a href="dev/reference/ja/">ドキュメント</a></li>
 	</ul>
 
