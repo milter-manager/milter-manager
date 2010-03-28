@@ -18,5 +18,9 @@ We just upgrade milter manager package.
 milter manager can be upgraded easily. It means that milter
 manager is a low maintenance cost software.
 
-If you want to use improvements in a new version, please
+If we want to use improvements in a new version, please
 upgrade your milter manager.
+
+If we've also installed optional packages, we will go to
+((<Upgrade on CentOS
+(optional)|upgrade-options-on-centos.rd>)).

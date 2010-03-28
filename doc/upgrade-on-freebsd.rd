@@ -33,5 +33,9 @@ milter-manager.conf.
 milter manager can be upgraded easily. It means that milter
 manager is a low maintenance cost software.
 
-If you want to use improvements in a new version, please
+If we want to use improvements in a new version, please
 upgrade your milter manager.
+
+If we've also installed optional packages, we will go to
+((<Upgrade on FreeBSD
+(optional)|upgrade-options-on-freebsd.rd>)).

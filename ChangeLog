@@ -1,5 +1,7 @@
 2010-03-28  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/upgrade-on-*: add a link to optional package upgrade guide.
+
 	* doc/install-to-*: add a link to optional package installation.
 
 	* doc/install-to-*: add development series installation guide.
