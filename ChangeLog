@@ -1,5 +1,7 @@
 2010-03-28  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/install-to-centos.rd*: fix repository PRM file.
+
 	* doc/: fix link paths.
 
 	* Makefile.am: don't upload RPM.
