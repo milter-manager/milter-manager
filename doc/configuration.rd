@@ -949,13 +949,13 @@ TODO
 
    TODO
 
-==== No Stress
+==== [no-stress] No Stress
 
 Since 1.5.0.
 
 TODO
 
-==== Stress Notify
+==== [stress-notify] Stress Notify
 
 Since 1.5.0.
 
