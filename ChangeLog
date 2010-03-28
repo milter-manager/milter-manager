@@ -1,5 +1,7 @@
 2010-03-28  Kouhei Sutou  <kou@cozmixng.org>
 
+	* html/index.html*: use news.release-X-X-X as fragment.
+
 	* doc/configuration.rd*: fix markup.
 
 	* html/: update stable release date.
