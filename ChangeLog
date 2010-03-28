@@ -1,5 +1,8 @@
 2010-03-28  Kouhei Sutou  <kou@cozmixng.org>
 
+	* html/index.html*: add install guide for development series for
+	Karmic.
+
 	* html/index.html*, doc/reference/header*.html: use
 	install-to.html instead of install.html for installation guide
 	index page.

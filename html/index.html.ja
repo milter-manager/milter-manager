@@ -119,6 +119,18 @@ deb-src http://milter-manager.sourceforge.net/ubuntu/development hardy universe<
 % gpg --export 1C837F31 | sudo apt-key add -</pre>
 	</p>
 
+	<h3>Ubuntu 9.10 Karmic Koara用開発版パッケージ</h3>
+	<p>
+	  apt-line:
+	  <pre class="file">deb http://milter-manager.sourceforge.net/ubuntu/development karmic universe
+deb-src http://milter-manager.sourceforge.net/ubuntu/development karmic universe</pre>
+	</p>
+	<p>
+	  パッケージはkou@clear-code.comの鍵でサインされています。信用する場合は鍵を登録します。
+	  <pre class="command">% gpg --keyserver hkp://subkeys.pgp.net --recv-keys 1C837F31
+% gpg --export 1C837F31 | sudo apt-key add -</pre>
+	</p>
+
 	<h3>Debian GNU/Linux lenny用開発版パッケージ</h3>
 	<p>
 	  apt-line:
