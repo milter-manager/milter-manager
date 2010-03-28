@@ -85,8 +85,8 @@ module Milter::Manager
       File.open(master_cf) do |file|
         file.each_line do |line|
           next if /\A#/ =~ line
-          service, _private, unpriv, chroot, wakeup, maxproc, command =
-            line.split(/\s+/, 7)
+          service, type, _private, unpriv, chroot, wakeup, maxproc, command =
+            line.split(/\s+/, 8)
           next if service != "smtp"
           return nil if maxproc == "-"
           return maxproc.to_i

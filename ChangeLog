@@ -1,5 +1,7 @@
 2010-03-28  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager/breaker.rb: add missing 'type' field.
+
 	* binding/ruby/lib/milter/toolkit.rb: use const_get instead of
 	from_string.
 
