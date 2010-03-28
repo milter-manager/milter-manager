@@ -1,5 +1,7 @@
 2010-03-28  Kouhei Sutou  <kou@cozmixng.org>
 
+	* html/: update stable release date.
+
 	* NEWS*: update.
 
 	* doc/configuration.rd*: add "Since 1.5.0" marks.
