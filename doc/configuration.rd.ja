@@ -721,7 +721,7 @@ define_milter do ... end内で設定できる項目は以下の通りです。
 
    適用条件は標準で提供されているだけではなく、独自に定義す
    ることもできます。定義方法については
-   ((<適用条件定義|#applicable-condition>))
+   ((<適用条件定義|.#applicable-condition>))
    を見てください。ただし、独自に定義する場合にはRubyの知識が
    必要になります。
 
@@ -1044,7 +1044,7 @@ MTAがPostfixの場合にこの適用条件を設定しても悪影響はない�
    荷が高いと判断します。
 
    Sendmailの場合意は自動検出されないので、
-   ((<stress.threshold_n_connections=|./#stress.threshold_n_connections=>))
+   ((<stress.threshold_n_connections=|.#stress.threshold_n_connections=>))
    で手動で設定する必要があります。
 
    例:
