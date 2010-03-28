@@ -509,6 +509,30 @@ Here are descriptions of configuration items.
 
    TODO
 
+: manager.report_memory_statistics
+
+   Since 1.5.0.
+
+   TODO
+
+     Mar 28 15:16:58 mail milter-manager[19026]: [statistics] [maintain][memory] (28048KB) total:6979 Proc:44 GLib::Object:18
+
+   Example:
+     manager.report_memory_statistics
+
+: manager.maintained {...}
+
+   ((*Normally, this item doesn't need to be used directly.*))
+
+   Since 1.5.0.
+
+   TODO
+
+   Example:
+     manager.maintained do
+       Milter::Logger.info("maintained!")
+     end
+
 == Controller
 
 : controller.connection_spec
@@ -893,9 +917,11 @@ TODO
 
 TODO
 
-==== remote_network.add_local_address(address)
+: remote_network.add_local_address(address)
 
-TODO
+   Since 1.5.0.
+
+   TODO
 
 === Authentication
 
@@ -907,21 +933,31 @@ TODO
 
 === stress
 
+Since 1.5.0.
+
 TODO
 
 : stress.threshold_n_connections
+
+   Since 1.5.0.
 
    TODO
 
 : stress.threshold_n_connections=(n)
 
+   Since 1.5.0.
+
    TODO
 
 ==== No Stress
 
+Since 1.5.0.
+
 TODO
 
 ==== Stress Notify
+
+Since 1.5.0.
 
 TODO
 

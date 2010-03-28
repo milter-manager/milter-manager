@@ -503,6 +503,37 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
    trueを返したときはまだ接続している。falseを返したときは接
    続が切れたことを示す。
 
+: manager.report_memory_statistics
+
+   1.5.0から使用可能。
+
+   メンテナンス処理が実行される度にメモリ使用量をログに出力
+   します。
+
+   現在は以下のようなフォーマットで出力されますが、変更され
+   る可能性があります。
+
+     Mar 28 15:16:58 mail milter-manager[19026]: [statistics] [maintain][memory] (28048KB) total:6979 Proc:44 GLib::Object:18
+
+   使用例:
+     manager.report_memory_statistics
+
+: manager.maintained {...}
+
+   ((*この項目は通常は直接使用する必要はありません。*))
+
+   1.5.0から使用可能。
+
+   メンテナンス処理が実行される度に指定した処理を実行します。
+
+   以下の例はメンテナンス処理が実行する度にログを出力する設
+   定です。
+
+   使用例:
+     manager.maintained do
+       Milter::Logger.info("maintained!")
+     end
+
 == コントローラ関連
 
 : controller.connection_spec
@@ -913,22 +944,24 @@ SMTPクライアントにのみ子milterを適用します。
 クとして扱います。プライベートIPアドレス以外もローカルネット
 ワークとして扱いたい場合は以下の設定で追加することができます。
 
-==== remote_network.add_local_address(address)
+: remote_network.add_local_address(address)
 
-指定したIPv4/IPv6アドレスまたはIPv4/IPv6ネットワークをローカ
-ルネットワークに追加します。ローカルネットワークに追加したア
-ドレス・ネットワークには子milterを適用しません。
+   1.5.0から使用可能。
 
-使用例:
+   指定したIPv4/IPv6アドレスまたはIPv4/IPv6ネットワークをローカ
+   ルネットワークに追加します。ローカルネットワークに追加したア
+   ドレス・ネットワークには子milterを適用しません。
 
-  # 160.29.167.10からのアクセスは子milterを適用しない
-  remote_network.add_local_address("160.29.167.10")
-  # 160.29.167.0/24のネットワークからのアクセスは子milterを適用しない
-  remote_network.add_local_address("160.29.167.0/24")
-  # 2001:2f8:c2:201::fff0からのアクセスは子milterを適用しない
-  remote_network.add_local_address("2001:2f8:c2:201::fff0")
-  # 2001:2f8:c2:201::/64からのアクセスは子milterを適用しない
-  remote_network.add_local_address("2001:2f8:c2:201::/64")
+   使用例:
+
+     # 160.29.167.10からのアクセスは子milterを適用しない
+     remote_network.add_local_address("160.29.167.10")
+     # 160.29.167.0/24のネットワークからのアクセスは子milterを適用しない
+     remote_network.add_local_address("160.29.167.0/24")
+     # 2001:2f8:c2:201::fff0からのアクセスは子milterを適用しない
+     remote_network.add_local_address("2001:2f8:c2:201::fff0")
+     # 2001:2f8:c2:201::/64からのアクセスは子milterを適用しない
+     remote_network.add_local_address("2001:2f8:c2:201::/64")
 
 === [authentication] Authentication
 
@@ -995,10 +1028,14 @@ MTAがPostfixの場合にこの適用条件を設定しても悪影響はない�
 
 === stress
 
+1.5.0から使用可能。
+
 負荷に応じて動的に処理を変更する適用条件をいくつか提供してい
 ます。負荷は同時接続数で判断します。
 
 : stress.threshold_n_connections
+
+   1.5.0から使用可能。
 
    負荷が高いと判断する同時接続数を返します。
 
@@ -1016,15 +1053,19 @@ MTAがPostfixの場合にこの適用条件を設定しても悪影響はない�
 
 : stress.threshold_n_connections=(n)
 
-負荷が高いと判断する同時接続数を設定します。
+   1.5.0から使用可能。
 
-0を指定すると常に負荷が低いと判断します。
+   負荷が高いと判断する同時接続数を設定します。
+
+   0を指定すると常に負荷が低いと判断します。
 
    例:
      # 同時接続数が75以上の場合、負荷が高いと判断
      stress.threshold_n_connections = 75
 
-==== No Stress
+==== [no-stress] No Stress
+
+1.5.0から使用可能。
 
 負荷が小さいときのみ、子milterを適用する適用条件です。
 
@@ -1036,7 +1077,9 @@ MTAがPostfixの場合にこの適用条件を設定しても悪影響はない�
     milter.add_applicable_condition("No Stress")
   end
 
-==== Stress Notify
+==== [stress-notify] Stress Notify
+
+1.5.0から使用可能。
 
 負荷が高いときに"{stress}=yes"マクロを設定し、子milterに負荷
 が高いことを通知する適用条件です。この適用条件は通知するだけ
