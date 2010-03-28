@@ -1,5 +1,7 @@
 2010-03-28  Kouhei Sutou  <kou@cozmixng.org>
 
+	* NEWS*: import 1.4.2 release.
+
 	* doc/install-to-centos.rd*: fix repository PRM file.
 
 	* doc/: fix link paths.

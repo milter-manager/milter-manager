@@ -128,6 +128,26 @@ A development release.
   * Tsuchiya
   * Antuan Avdioukhine
 
+== [release-1-4-2] 1.4.2: 2010-03-29
+
+A bug fix release for 1.4.1.
+
+=== Document
+
+  * Upgraded target FreeBSD version: 7.2-RELEASE -> 8.0-RELEASE
+  * Changed to use CPPFLAGS instead of CFLAGS for configure
+    on FreeBSD.
+  * Fixed pw command options on FreeBSD.
+
+=== milter manager
+
+==== Bug fixes
+
+  * Fixed a bug that socket group isn't effected when
+    both effective user and socket group are specified.
+  * Fixed a bug that auto milter detection is failed on no
+    OpenDKIM installed FreeBSD environment.
+
 == [release-1-4-1] 1.4.1: 2009-10-29
 
 A bug fix release for 1.4.0.
