@@ -35,12 +35,14 @@ struct _MilterSyslogLoggerPrivate
 {
     MilterLogger *logger;
     gchar *identity;
+    MilterLogLevelFlags target_level;
 };
 
 enum
 {
     PROP_0,
-    PROP_IDENTITY
+    PROP_IDENTITY,
+    PROP_TARGET_LEVEL
 };
 
 G_DEFINE_TYPE(MilterSyslogLogger, milter_syslog_logger, G_TYPE_OBJECT)
@@ -80,6 +82,14 @@ milter_syslog_logger_class_init (MilterSyslogLoggerClass *klass)
                                G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
     g_object_class_install_property(gobject_class, PROP_IDENTITY, spec);
 
+    spec = g_param_spec_flags("target-level",
+                              "Target log level",
+                              "The target log level",
+                              MILTER_TYPE_LOG_LEVEL_FLAGS,
+                              MILTER_LOG_LEVEL_DEFAULT,
+                              G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_TARGET_LEVEL, spec);
+
     g_type_class_add_private(gobject_class,
                              sizeof(MilterSyslogLoggerPrivate));
 }
@@ -110,11 +120,12 @@ cb_log (MilterLogger *logger, const gchar *domain,
         const gchar *function, GTimeVal *time_value, const gchar *message,
         gpointer user_data)
 {
+    MilterSyslogLoggerPrivate *priv = user_data;
     GString *log;
     gint syslog_level;
     MilterLogLevelFlags target_level;
 
-    target_level = milter_logger_get_target_level(logger);
+    target_level = priv->target_level;
     if (target_level == MILTER_LOG_LEVEL_DEFAULT)
         target_level = MILTER_LOG_LEVEL_STATISTICS;
     if (!(level & target_level))
@@ -180,7 +191,7 @@ resolve_syslog_facility (const gchar *facility)
 }
 
 static void
-setup_logger (MilterLogger *logger, const gchar *identity)
+setup_logger (MilterSyslogLoggerPrivate *priv)
 {
     gint facility = LOG_MAIL;
     const gchar *facility_env;
@@ -188,17 +199,17 @@ setup_logger (MilterLogger *logger, const gchar *identity)
     facility_env = g_getenv("MILTER_LOG_SYSLOG_FACILITY");
     if (facility_env)
         facility = resolve_syslog_facility(facility_env);
-    openlog(identity, LOG_PID, facility);
-    g_object_ref(logger);
-    g_signal_connect(logger, "log", G_CALLBACK(cb_log), NULL);
+    openlog(priv->identity, LOG_PID, facility);
+    g_object_ref(priv->logger);
+    g_signal_connect(priv->logger, "log", G_CALLBACK(cb_log), priv);
 }
 
 static void
-teardown_logger (MilterLogger *logger)
+teardown_logger (MilterSyslogLoggerPrivate *priv)
 {
-    g_object_unref(logger);
-    g_signal_handlers_disconnect_by_func(logger,
-                                         G_CALLBACK(cb_log), NULL);
+    g_object_unref(priv->logger);
+    g_signal_handlers_disconnect_by_func(priv->logger,
+                                         G_CALLBACK(cb_log), priv);
     closelog();
 }
 
@@ -214,7 +225,14 @@ constructor (GType type, guint n_props, GObjectConstructParam *props)
 
     priv = MILTER_SYSLOG_LOGGER_GET_PRIVATE(object);
     priv->logger = milter_logger();
-    setup_logger(priv->logger, priv->identity);
+    if (priv->target_level == MILTER_LOG_LEVEL_DEFAULT) {
+        const gchar *level_env;
+        level_env = g_getenv("MILTER_LOG_SYSLOG_LEVEL");
+        if (level_env) {
+            priv->target_level = milter_log_level_flags_from_string(level_env);
+        }
+    }
+    setup_logger(priv);
 
     return object;
 }
@@ -242,7 +260,7 @@ dispose (GObject *object)
     }
 
     if (priv->logger) {
-        teardown_logger(priv->logger);
+        teardown_logger(priv);
         priv->logger = NULL;
     }
 
@@ -259,12 +277,15 @@ set_property (GObject      *object,
 
     priv = MILTER_SYSLOG_LOGGER_GET_PRIVATE(object);
     switch (prop_id) {
-      case PROP_IDENTITY:
+    case PROP_IDENTITY:
         if (priv->identity)
             g_free(priv->identity);
         priv->identity = g_strdup(g_value_get_string(value));
         break;
-      default:
+    case PROP_TARGET_LEVEL:
+        priv->target_level = g_value_get_flags(value);
+        break;
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
@@ -280,10 +301,13 @@ get_property (GObject    *object,
 
     priv = MILTER_SYSLOG_LOGGER_GET_PRIVATE(object);
     switch (prop_id) {
-      case PROP_IDENTITY:
+    case PROP_IDENTITY:
         g_value_set_string(value, priv->identity);
         break;
-      default:
+    case PROP_TARGET_LEVEL:
+        g_value_set_flags(value, priv->target_level);
+        break;
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
