@@ -1,5 +1,8 @@
 2010-04-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-main.c: reload configuration in
+	main event loop not signal handler.
+
 	* milter/core/milter-syslog-logger.c: use MILTER_LOG_SYSLOG_LEVEL
 	environment variable to set log level for syslog logger.
 

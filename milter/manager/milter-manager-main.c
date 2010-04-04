@@ -254,19 +254,27 @@ shutdown_client (int signum)
     }
 }
 
-static void
-reload_configuration (int signum)
+static gboolean
+cb_idle_reload_configuration (gpointer user_data)
 {
-    MilterManagerConfiguration *config;
+    if (the_manager) {
+        MilterManagerConfiguration *config;
 
-    if (!the_manager)
-        return;
+        config = milter_manager_get_configuration(the_manager);
+        if (config)
+            milter_manager_configuration_reload(config);
+    }
 
-    config = milter_manager_get_configuration(the_manager);
-    if (!config)
-        return;
+    return FALSE;
+}
 
-    milter_manager_configuration_reload(config);
+static void
+reload_configuration_request (int signum)
+{
+    g_idle_add_full(G_PRIORITY_DEFAULT,
+                    cb_idle_reload_configuration,
+                    NULL,
+                    NULL);
 }
 
 static void
@@ -643,7 +651,7 @@ milter_manager_main (void)
     GError *error = NULL;
     struct sigaction report_stack_trace_action;
     struct sigaction shutdown_client_action;
-    struct sigaction reload_configuration_action;
+    struct sigaction reload_configuration_request_action;
 
     config = milter_manager_configuration_new(NULL);
     if (option_config_dir)
@@ -741,7 +749,7 @@ milter_manager_main (void)
 
     SETUP_SIGNAL_ACTION(report_stack_trace);
     SETUP_SIGNAL_ACTION(shutdown_client);
-    SETUP_SIGNAL_ACTION(reload_configuration);
+    SETUP_SIGNAL_ACTION(reload_configuration_request);
 #undef SETUP_SIGNAL_ACTION
 
 #define SET_SIGNAL_ACTION(SIGNAL, signal, action)               \
@@ -754,7 +762,7 @@ milter_manager_main (void)
     SET_SIGNAL_ACTION(ABRT, abort, report_stack_trace_action);
     SET_SIGNAL_ACTION(INT, int, shutdown_client_action);
     SET_SIGNAL_ACTION(TERM, term, shutdown_client_action);
-    SET_SIGNAL_ACTION(HUP, hup, reload_configuration_action);
+    SET_SIGNAL_ACTION(HUP, hup, reload_configuration_request_action);
 #undef SET_SIGNAL_ACTION
 
     if (!milter_client_main(client))
