@@ -26,6 +26,24 @@ s_report (VALUE klass)
     return Qnil;
 }
 
+static VALUE
+s_data (VALUE klass)
+{
+    gboolean success;
+    gsize n_allocates, n_zero_initializes, n_frees;
+
+    success = milter_memory_profile_get_data(&n_allocates,
+                                             &n_zero_initializes,
+                                             &n_frees);
+    if (!success)
+        return Qnil;
+
+    return rb_ary_new3(3,
+                       UINT2NUM(n_allocates),
+                       UINT2NUM(n_zero_initializes),
+                       UINT2NUM(n_frees));
+}
+
 void
 Init_milter_memory_profile (void)
 {
@@ -36,4 +54,6 @@ Init_milter_memory_profile (void)
 
     rb_define_singleton_method(rb_mMilterMemoryProfile, "report",
 			       s_report, 0);
+    rb_define_singleton_method(rb_mMilterMemoryProfile, "data",
+			       s_data, 0);
 }

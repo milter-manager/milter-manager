@@ -1,5 +1,9 @@
 2010-04-05  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager.rb,
+	binding/ruby/src/toolkit/rb-milter-memory-profile.c: report
+	profile data as statistics.
+
 	* milter/core/milter-memory-profile.[ch]: also provide profile data.
 
 	* milter/core/milter-logger.c: use black background color instead
