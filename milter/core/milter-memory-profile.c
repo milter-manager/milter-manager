@@ -36,6 +36,7 @@
 #define MEM_PROFILE_TABLE_SIZE 4096
 #define	PROFILE_TABLE(f1, f2, f3) \
     ((((f3) << 2) | ((f2) << 1) | (f1)) * (MEM_PROFILE_TABLE_SIZE + 1))
+#define N_PROFILE_DATA (MEM_PROFILE_TABLE_SIZE + 1) * 8 * sizeof(guint)
 
 typedef enum {
   PROFILER_FREE		= 0,
@@ -46,7 +47,7 @@ typedef enum {
 
 static gboolean profile_enabled = FALSE;
 static gboolean profile_verbose = FALSE;
-static guint profile_data[(MEM_PROFILE_TABLE_SIZE + 1) * 8 * sizeof(guint)];
+static guint profile_data[N_PROFILE_DATA];
 static gsize profile_allocs = 0;
 static gsize profile_zinit = 0;
 static gsize profile_frees = 0;
@@ -123,7 +124,7 @@ profile_print_locked (guint   *local_data,
 void
 milter_memory_profile_report (void)
 {
-    guint local_data[sizeof(profile_data)];
+    guint local_data[N_PROFILE_DATA];
     gsize local_allocs;
     gsize local_zinit;
     gsize local_frees;
@@ -135,7 +136,7 @@ milter_memory_profile_report (void)
     local_allocs = profile_allocs;
     local_zinit = profile_zinit;
     local_frees = profile_frees;
-    memcpy(local_data, profile_data, sizeof(profile_data));
+    memcpy(local_data, profile_data, N_PROFILE_DATA);
     g_static_mutex_unlock(&profile_mutex);
 
     if (profile_verbose) {
@@ -280,7 +281,7 @@ static GMemVTable profiler_table = {
 void
 milter_memory_profile_init (void)
 {
-    memset(profile_data, 0, sizeof(profile_data));
+    memset(profile_data, 0, N_PROFILE_DATA);
 }
 
 void

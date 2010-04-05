@@ -1,5 +1,7 @@
 2010-04-05  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-memory-profile.c: fix data size.
+
 	* binding/ruby/lib/milter/manager.rb,
 	binding/ruby/src/toolkit/rb-milter-memory-profile.c: report
 	profile data as statistics.
