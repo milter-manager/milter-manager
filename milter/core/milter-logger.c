@@ -193,6 +193,7 @@ milter_log_item_flags_from_string (const gchar *item_name)
 }
 
 #define BLACK_COLOR "\033[01;30m"
+#define BLACK_BACK_COLOR "\033[40m"
 #define RED_COLOR "\033[01;31m"
 #define RED_BACK_COLOR "\033[41m"
 #define GREEN_COLOR "\033[01;32m"
@@ -239,7 +240,7 @@ log_message_colorize_console (GString *log,
         color = BLUE_COLOR WHITE_BACK_COLOR;
         break;
       case MILTER_LOG_LEVEL_PROFILE:
-        color = GREEN_COLOR WHITE_BACK_COLOR;
+        color = GREEN_COLOR BLACK_BACK_COLOR;
         break;
       default:
         color = NULL;
