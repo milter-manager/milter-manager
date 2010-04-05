@@ -1,5 +1,7 @@
 2010-04-05  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-core.c: init memory profiler before GLib init.
+
 	* binding/ruby/lib/milter/manager.rb: add
 	manager.report_memory_profile for debugging.
 
