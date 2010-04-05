@@ -1,5 +1,9 @@
 2010-04-05  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/toolkit.rb,
+	binding/ruby/lib/milter/manager.rb: use 'milter' not
+	'milter-manager' as the default log domain.
+
 	* binding/ruby/src/toolkit/rb-milter-memory-profile.c,
 	binding/ruby/src/toolkit/rb-milter-core.c,
 	binding/ruby/src/toolkit/rb-milter-core-private.h: bind memory

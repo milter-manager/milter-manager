@@ -40,6 +40,8 @@ require 'milter/manager/redhat-detector'
 require 'milter/manager/freebsd-rc-detector'
 require 'milter/manager/pkgsrc-rc-detector'
 
+Milter::Logger.domain = "milter-manager"
+
 module Milter::Manager
   class Configuration
     def dump
