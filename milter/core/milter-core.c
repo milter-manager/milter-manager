@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -57,6 +57,8 @@ delegate_glib_log_handlers (void)
 void
 milter_init (void)
 {
+    const gchar *memory_profile_env;
+
     if (initialized) {
         remove_glib_log_handlers();
         delegate_glib_log_handlers();
@@ -70,6 +72,13 @@ milter_init (void)
     if (!g_thread_supported())
         g_thread_init(NULL);
 
+    milter_memory_profile_init();
+
+    memory_profile_env = g_getenv("MILTER_MEMORY_PROFILE");
+    if (memory_profile_env && g_str_equal(memory_profile_env, "yes")) {
+        milter_memory_profile_enable();
+    }
+
     delegate_glib_log_handlers();
     milter_core_log_handler_id = MILTER_GLIB_LOG_DELEGATE("milter-core");
 }
@@ -82,6 +91,8 @@ milter_quit (void)
 
     remove_glib_log_handlers();
     g_log_remove_handler("milter-core", milter_core_log_handler_id);
+
+    milter_memory_profile_quit();
 
     initialized = FALSE;
 }

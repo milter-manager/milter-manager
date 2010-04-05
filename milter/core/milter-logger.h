@@ -54,6 +54,8 @@ G_BEGIN_DECLS
     milter_log(MILTER_LOG_LEVEL_DEBUG, format, ## __VA_ARGS__)
 #define milter_statistics(format, ...)                                  \
     milter_log(MILTER_LOG_LEVEL_STATISTICS, format, ## __VA_ARGS__)
+#define milter_profile(format, ...)                                  \
+    milter_log(MILTER_LOG_LEVEL_PROFILE, format, ## __VA_ARGS__)
 
 #define milter_set_log_level(level)                             \
     milter_logger_set_target_level(milter_logger(), (level))
@@ -76,6 +78,8 @@ G_BEGIN_DECLS
     (milter_get_log_level() & MILTER_LOG_LEVEL_DEBUG)
 #define milter_need_statistics_log() \
     (milter_get_log_level() & MILTER_LOG_LEVEL_STATISTICS)
+#define milter_need_profile_log() \
+    (milter_get_log_level() & MILTER_LOG_LEVEL_PROFILE)
 
 #define MILTER_TYPE_LOGGER            (milter_logger_get_type())
 #define MILTER_LOGGER(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), MILTER_TYPE_LOGGER, MilterLogger))
@@ -94,7 +98,8 @@ typedef enum
     MILTER_LOG_LEVEL_MESSAGE    = 1 << 4,
     MILTER_LOG_LEVEL_INFO       = 1 << 5,
     MILTER_LOG_LEVEL_DEBUG      = 1 << 6,
-    MILTER_LOG_LEVEL_STATISTICS = 1 << 7
+    MILTER_LOG_LEVEL_STATISTICS = 1 << 7,
+    MILTER_LOG_LEVEL_PROFILE    = 1 << 8
 } MilterLogLevelFlags;
 
 #define MILTER_LOG_LEVEL_ALL (MILTER_LOG_LEVEL_CRITICAL |       \
@@ -103,7 +108,8 @@ typedef enum
                               MILTER_LOG_LEVEL_MESSAGE |        \
                               MILTER_LOG_LEVEL_INFO |           \
                               MILTER_LOG_LEVEL_DEBUG |          \
-                              MILTER_LOG_LEVEL_STATISTICS)
+                              MILTER_LOG_LEVEL_STATISTICS |     \
+                              MILTER_LOG_LEVEL_PROFILE)
 
 typedef enum
 {

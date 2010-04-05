@@ -24,6 +24,7 @@ Use the following rules:
 Here is a concrete list:
 
   * Files that describe their license:
+    * milter/core/milter-memory-profile.c: LGPL2+
     * binding/ruby/lib/milter/compatible.rb: Ruby's
     * admin/vendor/plugins/restful-auth/: MIT
   * Commands: GPL3

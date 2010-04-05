@@ -24,6 +24,7 @@ milter manager
 具体的には以下の通りです。
 
   * ライセンスが明記してあるファイル:
+    * milter/core/milter-memory-profile.c: LGPL2+
     * binding/ruby/lib/milter/compatible.rb: Ruby's
     * admin/vendor/plugins/restful-auth/: MIT
   * コマンド: GPL3

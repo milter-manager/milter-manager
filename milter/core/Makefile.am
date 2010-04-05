@@ -36,7 +36,8 @@ milter_core_public_headers =		\
 	milter-connection.h		\
 	milter-esmtp.h			\
 	milter-message-result.h		\
-	milter-session-result.h
+	milter-session-result.h		\
+	milter-memory-profile.h
 
 enum_source_prefix = milter-enum-types
 enum_sources_h =			\
@@ -81,7 +82,8 @@ libmilter_core_la_SOURCES =		\
 	milter-connection.c		\
 	milter-esmtp.c			\
 	milter-message-result.c		\
-	milter-session-result.c
+	milter-session-result.c		\
+	milter-memory-profile.c
 
 libmilter_core_la_LIBADD =		\
 	$(GLIB_LIBS)

@@ -1,3 +1,10 @@
+2010-04-05  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/core/milter-memory-profile.[ch]: add memory profiler
+	based on GLib's gmem.c.
+
+	* milter/core/, test/core/: use memory profiler.
+
 2010-04-04  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/manager/milter-manager-main.c: reload configuration in

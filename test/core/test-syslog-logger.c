@@ -124,6 +124,7 @@ test_info (void)
 {
     original_print_hander = g_set_print_handler(print_handler);
     milter_set_log_level(MILTER_LOG_LEVEL_INFO);
+    milter_syslog_logger_set_target_level(logger, MILTER_LOG_LEVEL_INFO);
     milter_info("This is informative message.");
     g_set_print_handler(original_print_hander);
     original_print_hander = NULL;
@@ -141,6 +142,7 @@ test_statistics (void)
 {
     original_print_hander = g_set_print_handler(print_handler);
     milter_set_log_level(MILTER_LOG_LEVEL_STATISTICS);
+    milter_syslog_logger_set_target_level(logger, MILTER_LOG_LEVEL_STATISTICS);
     milter_statistics("This is statistics message.");
     g_set_print_handler(original_print_hander);
     original_print_hander = NULL;

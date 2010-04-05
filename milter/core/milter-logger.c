@@ -238,6 +238,9 @@ log_message_colorize_console (GString *log,
       case MILTER_LOG_LEVEL_STATISTICS:
         color = BLUE_COLOR WHITE_BACK_COLOR;
         break;
+      case MILTER_LOG_LEVEL_PROFILE:
+        color = GREEN_COLOR WHITE_BACK_COLOR;
+        break;
       default:
         color = NULL;
         break;
@@ -431,7 +434,6 @@ milter_logger_set_target_level_by_string (MilterLogger *logger,
         level = MILTER_LOG_LEVEL_DEFAULT;
     }
     milter_logger_set_target_level(logger, level);
-
 }
 
 MilterLogItemFlags

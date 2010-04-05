@@ -50,6 +50,14 @@ GType               milter_syslog_logger_get_type (void) G_GNUC_CONST;
 
 MilterSyslogLogger *milter_syslog_logger_new      (const gchar *identity);
 
+MilterLogLevelFlags milter_syslog_logger_get_target_level
+                                              (MilterSyslogLogger  *logger);
+void                milter_syslog_logger_set_target_level
+                                              (MilterSyslogLogger  *logger,
+                                               MilterLogLevelFlags  level);
+void                milter_syslog_logger_set_target_level_by_string
+                                              (MilterSyslogLogger  *logger,
+                                               const gchar         *level_name);
 
 G_END_DECLS
 

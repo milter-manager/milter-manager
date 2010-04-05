@@ -111,6 +111,8 @@ milter_log_level_to_syslog_level (MilterLogLevelFlags milter_log_level)
         return LOG_DEBUG;
     else if (milter_log_level & MILTER_LOG_LEVEL_STATISTICS)
         return LOG_INFO;
+    else if (milter_log_level & MILTER_LOG_LEVEL_PROFILE)
+        return LOG_DEBUG;
     return LOG_DEBUG;
 }
 
@@ -218,19 +220,24 @@ constructor (GType type, guint n_props, GObjectConstructParam *props)
 {
     GObject *object;
     GObjectClass *klass;
+    MilterSyslogLogger *syslog_logger;
     MilterSyslogLoggerPrivate *priv;
+    const gchar *log_level_env;
 
     klass = G_OBJECT_CLASS(milter_syslog_logger_parent_class);
     object = klass->constructor(type, n_props, props);
+    syslog_logger = MILTER_SYSLOG_LOGGER(object);
 
-    priv = MILTER_SYSLOG_LOGGER_GET_PRIVATE(object);
+    priv = MILTER_SYSLOG_LOGGER_GET_PRIVATE(syslog_logger);
     priv->logger = milter_logger();
-    if (priv->target_level == MILTER_LOG_LEVEL_DEFAULT) {
-        const gchar *level_env;
-        level_env = g_getenv("MILTER_LOG_SYSLOG_LEVEL");
-        if (level_env) {
-            priv->target_level = milter_log_level_flags_from_string(level_env);
-        }
+    log_level_env = g_getenv("MILTER_LOG_SYSLOG_LEVEL");
+    if (log_level_env) {
+        milter_syslog_logger_set_target_level_by_string(syslog_logger,
+                                                        log_level_env);
+    } else {
+        MilterLogLevelFlags log_level;
+        log_level = milter_logger_get_target_level(priv->logger);
+        milter_syslog_logger_set_target_level(syslog_logger, log_level);
     }
     setup_logger(priv);
 
@@ -319,6 +326,34 @@ milter_syslog_logger_new (const gchar *identity)
     return g_object_new(MILTER_TYPE_SYSLOG_LOGGER,
                         "identity", identity,
                         NULL);
+}
+
+MilterLogLevelFlags
+milter_syslog_logger_get_target_level (MilterSyslogLogger *logger)
+{
+    return MILTER_SYSLOG_LOGGER_GET_PRIVATE(logger)->target_level;
+}
+
+
+void
+milter_syslog_logger_set_target_level (MilterSyslogLogger *logger,
+                                       MilterLogLevelFlags level)
+{
+    MILTER_SYSLOG_LOGGER_GET_PRIVATE(logger)->target_level = level;
+}
+
+void
+milter_syslog_logger_set_target_level_by_string (MilterSyslogLogger *logger,
+                                                 const gchar *level_name)
+{
+    MilterLogLevelFlags level;
+
+    if (level_name) {
+        level = milter_log_level_flags_from_string(level_name);
+    } else {
+        level = MILTER_LOG_LEVEL_DEFAULT;
+    }
+    milter_syslog_logger_set_target_level(logger, level);
 }
 
 /*
