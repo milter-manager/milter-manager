@@ -898,6 +898,12 @@ module Milter::Manager
         end
       end
 
+      def report_memory_profile
+        maintained do
+          Milter::MemoryProfile.report
+        end
+      end
+
       private
       def update_location(key, reset, deep_level=2)
         full_key = "manager.#{key}"
