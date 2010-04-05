@@ -26,10 +26,13 @@
 
 G_BEGIN_DECLS
 
-void             milter_memory_profile_init   (void);
-void             milter_memory_profile_quit   (void);
-void             milter_memory_profile_enable (void);
-void             milter_memory_profile_report (void);
+void             milter_memory_profile_init     (void);
+void             milter_memory_profile_quit     (void);
+void             milter_memory_profile_enable   (void);
+void             milter_memory_profile_report   (void);
+gboolean         milter_memory_profile_get_data (gsize *n_allocates,
+                                                 gsize *n_zero_initializes,
+                                                 gsize *n_frees);
 
 G_END_DECLS
 

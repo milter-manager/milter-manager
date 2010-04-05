@@ -1,5 +1,7 @@
 2010-04-05  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-memory-profile.[ch]: also provide profile data.
+
 	* milter/core/milter-logger.c: use black background color instead
 	of white.
 

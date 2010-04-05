@@ -26,6 +26,7 @@
 #  include "../../config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -44,18 +45,19 @@ typedef enum {
 } ProfilerJob;
 
 static gboolean profile_enabled = FALSE;
+static gboolean profile_verbose = FALSE;
 static guint profile_data[(MEM_PROFILE_TABLE_SIZE + 1) * 8 * sizeof(guint)];
 static gsize profile_allocs = 0;
 static gsize profile_zinit = 0;
 static gsize profile_frees = 0;
-static GMutex *profile_mutex = NULL;
+static GStaticMutex profile_mutex = G_STATIC_MUTEX_INIT;
 
 static void
 profiler_log (ProfilerJob job,
 	      gsize       n_bytes,
 	      gboolean    success)
 {
-    g_mutex_lock (profile_mutex);
+    g_static_mutex_lock(&profile_mutex);
 
     if (n_bytes < MEM_PROFILE_TABLE_SIZE) {
         profile_data[n_bytes + PROFILE_TABLE((job & PROFILER_ALLOC) != 0,
@@ -78,7 +80,7 @@ profiler_log (ProfilerJob job,
         }
     }
 
-    g_mutex_unlock (profile_mutex);
+    g_static_mutex_unlock(&profile_mutex);
 }
 
 static void
@@ -129,17 +131,19 @@ milter_memory_profile_report (void)
     if (!profile_enabled)
         return;
 
-    g_mutex_lock(profile_mutex);
+    g_static_mutex_lock(&profile_mutex);
     local_allocs = profile_allocs;
     local_zinit = profile_zinit;
     local_frees = profile_frees;
     memcpy(local_data, profile_data, sizeof(profile_data));
-    g_mutex_unlock(profile_mutex);
+    g_static_mutex_unlock(&profile_mutex);
 
-    milter_profile("Memory statistics (successful operations):");
-    profile_print_locked(local_data, TRUE);
-    milter_profile("Memory statistics (failing operations):");
-    profile_print_locked(local_data, FALSE);
+    if (profile_verbose) {
+        milter_profile("Memory statistics (successful operations):");
+        profile_print_locked(local_data, TRUE);
+        milter_profile("Memory statistics (failing operations):");
+        profile_print_locked(local_data, FALSE);
+    }
     milter_profile("Total bytes: allocated=%"G_GSIZE_FORMAT", "
                    "zero-initialized=%"G_GSIZE_FORMAT" (%.2f%%), "
                    "freed=%"G_GSIZE_FORMAT" (%.2f%%), "
@@ -150,6 +154,23 @@ milter_memory_profile_report (void)
                    local_frees,
                    ((gdouble)local_frees) / local_allocs * 100.0,
                    local_allocs - local_frees);
+}
+
+gboolean
+milter_memory_profile_get_data (gsize *n_allocates,
+                                gsize *n_zero_initializes,
+                                gsize *n_frees)
+{
+    if (!profile_enabled)
+        return FALSE;
+
+    g_static_mutex_lock(&profile_mutex);
+    *n_allocates = profile_allocs;
+    *n_zero_initializes = profile_zinit;
+    *n_frees = profile_frees;
+    g_static_mutex_unlock(&profile_mutex);
+
+    return TRUE;
 }
 
 static gpointer
@@ -220,8 +241,7 @@ profiler_try_realloc (gpointer mem,
 {
     gsize *p = mem;
 
-    p -= 1;
-    p = realloc(mem ? p : NULL, sizeof(gsize) * 1 + n_bytes);
+    p = realloc(mem ? p - 1: NULL, sizeof(gsize) * 1 + n_bytes);
 
     if (p) {
         if (mem)
@@ -261,24 +281,25 @@ void
 milter_memory_profile_init (void)
 {
     memset(profile_data, 0, sizeof(profile_data));
-    if (!profile_mutex)
-        profile_mutex = g_mutex_new();
 }
 
 void
 milter_memory_profile_quit (void)
 {
-    if (profile_mutex) {
-        g_mutex_free(profile_mutex);
-        profile_mutex = NULL;
-    }
 }
 
 void
 milter_memory_profile_enable (void)
 {
+    const gchar *memory_profile_verbose_env;
+
     g_mem_set_vtable(&profiler_table);
     profile_enabled = TRUE;
+    memory_profile_verbose_env = g_getenv("MILTER_MEMORY_PROFILE_VERBOSE");
+    if (memory_profile_verbose_env &&
+        g_str_equal(memory_profile_verbose_env, "yes")) {
+        profile_verbose = TRUE;
+    }
 }
 
 /*
