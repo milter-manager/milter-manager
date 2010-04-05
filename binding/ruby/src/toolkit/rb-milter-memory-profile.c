@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -19,25 +19,21 @@
 
 #include "rb-milter-core-private.h"
 
-void
-Init_milter_core (void)
+static VALUE
+s_report (VALUE klass)
 {
-    milter_init();
+    milter_memory_profile_report();
+    return Qnil;
+}
 
-    rb_mMilterCore = rb_define_module_under(rb_mMilter, "Core");
+void
+Init_milter_memory_profile (void)
+{
+    VALUE rb_mMilterMemoryProfile;
 
-    Init_milter_logger();
-    Init_milter_memory_profile();
-    Init_milter_socket_address();
-    Init_milter_utils();
-    Init_milter_connection();
-    Init_milter_protocol();
-    Init_milter_option();
-    Init_milter_macros_requests();
-    Init_milter_encoder();
-    Init_milter_command_encoder();
-    Init_milter_reply_encoder();
-    Init_milter_decoder();
-    Init_milter_agent();
-    Init_milter_protocol_agent();
+    rb_mMilterMemoryProfile =
+        rb_define_module_under(rb_mMilter, "MemoryProfile");
+
+    rb_define_singleton_method(rb_mMilterMemoryProfile, "report",
+			       s_report, 0);
 }

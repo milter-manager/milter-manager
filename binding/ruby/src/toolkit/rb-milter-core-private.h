@@ -23,6 +23,7 @@
 #include "rb-milter-private.h"
 
 void Init_milter_logger (void);
+void Init_milter_memory_profile (void);
 void Init_milter_socket_address (void);
 void Init_milter_utils (void);
 void Init_milter_connection (void);

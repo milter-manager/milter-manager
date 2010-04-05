@@ -1,5 +1,10 @@
 2010-04-05  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/src/toolkit/rb-milter-memory-profile.c,
+	binding/ruby/src/toolkit/rb-milter-core.c,
+	binding/ruby/src/toolkit/rb-milter-core-private.h: bind memory
+	profiler.
+
 	* milter/core/milter-memory-profile.[ch]: add memory profiler
 	based on GLib's gmem.c.
 
