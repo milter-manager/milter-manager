@@ -1,3 +1,7 @@
+2010-04-07  Kouhei Sutou  <kou@cozmixng.org>
+
+	* src/rbgobj_typeinstance.c (each_cinfo): fix a memory leak.
+
 2010-02-06  Kouhei Sutou  <kou@cozmixng.org>
 
 	* src/rbgobj_closure.c, src/rbgobj_signal.c, src/rbgobject.h,
