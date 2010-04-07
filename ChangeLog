@@ -1,3 +1,10 @@
+2010-04-07  Kouhei Sutou  <kou@cozmixng.org>
+
+	* tool/milter-test-client.c: add --report-memory-profile option.
+
+	* doc/milter-test-client.rd*: add place holder for
+	--report-memory-profile option. TOOD: document it.
+
 2010-04-05  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/core/milter-memory-profile.c: fix data size.

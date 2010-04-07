@@ -64,6 +64,10 @@ tool for looking into the problems.
 
    Doesn't show any information received from MTA.
 
+: --report-memory-profile
+
+   TODO
+
 : --daemon
 
    Runs as daemon process.

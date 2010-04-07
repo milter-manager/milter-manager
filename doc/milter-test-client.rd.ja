@@ -64,6 +64,10 @@ milter-test-clientが役立つでしょう。
 
    MTAから受け取った情報を表示しません。
 
+: --report-memory-profile
+
+   TODO
+
 : --daemon
 
    デーモンプロセスとして起動します。
