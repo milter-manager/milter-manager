@@ -183,7 +183,7 @@ http://monitoring-server/munin/ 5 minutes later.
 To install the following packages, related packages are also
 installed:
 
-  % sudo /usr/local/sbin/portupgrade -NRr rubygem-sqlite3
+  % sudo /usr/local/sbin/portupgrade -NRr rubygem-sqlite3 ruby-iconv
 
 === Instal gems
 

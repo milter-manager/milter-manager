@@ -1,5 +1,9 @@
 2010-04-07  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/install-options-to-freebsd.rd*: add missing ruby-iconv
+	dependency.
+	Reported by Tsuchiya. Thanks!!!
+
 	* doc/install-to-freebsd.rd*, doc/install-options-to-freebsd.rd*:
 	fix wrong portupgrade arguments.
 	Reported by Tsuchiya. Thanks!!!
