@@ -54,6 +54,7 @@ each_cinfo(gpointer instance,
         for (i = 0; i < n_interfaces; i++)
             func(instance, GTYPE2CINFO(interfaces[i]), user_data);
     }
+    g_free(interfaces);
 
     {
         GType i;
