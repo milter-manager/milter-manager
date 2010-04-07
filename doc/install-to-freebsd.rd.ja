@@ -15,7 +15,7 @@ FreeBSD 8.0-RELEASEを想定しています。
 以下のパッケージをインストールすることにより、関連するパッケー
 ジもインストールされます。
 
-  % sudo /usr/local/sbin/portupgrade -NRr ruby glib2
+  % sudo /usr/local/sbin/portupgrade -NRr lang/ruby18 glib20
 
 MTAはPostfixを利用することとします。
 

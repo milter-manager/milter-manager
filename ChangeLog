@@ -1,3 +1,9 @@
+2010-04-07  Kouhei Sutou  <kou@clear-code.com>
+
+	* doc/install-to-freebsd.rd*, doc/install-options-to-freebsd.rd*:
+	fix wrong portupgrade arguments.
+	Reported by Tsuchiya. Thanks!!!
+
 2010-04-07  Kouhei Sutou  <kou@cozmixng.org>
 
 	* tool/milter-test-client.c: add --report-memory-profile option.

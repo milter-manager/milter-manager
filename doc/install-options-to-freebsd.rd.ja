@@ -43,7 +43,7 @@ milter-manager-log-analyzerが出力するグラフは同じホストにWeb
 1.3.8を使うときは"-M'WITH_RUBY_MODULE=yes'"オプションは指定
 しないでください。*))
 
-  % sudo /usr/local/sbin/portupgrade -NRr -M'WITH_RUBY_MODULE=yes' rrdtool
+  % sudo /usr/local/sbin/portupgrade -NRr -m 'WITH_RUBY_MODULE=true' databases/rrdtool
 
 === milter-manager-log-analyzerの設定
 
@@ -194,7 +194,7 @@ Muninは/usr/local/www/munin/以下にグラフを生成するので、それ
 以下のパッケージをインストールすることにより、関連するパッケー
 ジもインストールされます。
 
-  % sudo /usr/local/sbin/portupgrade -NRr rubygem-sqlite3
+  % sudo /usr/local/sbin/portupgrade -NRr rubygem-sqlite3 ruby-iconv
 
 === gemのインストール
 

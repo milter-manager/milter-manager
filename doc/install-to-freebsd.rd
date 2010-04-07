@@ -15,8 +15,7 @@ This document assumes that FreeBSD 8.0-RELEASE is used.
 To install the following packages, related packages are also
 installed:
 
-  % sudo /usr/local/sbin/portupgrade -NRr ruby18-glib2
-  % sudo /usr/local/sbin/portupgrade -NRr -m 'WITH_RUBY_MODULE=true' rrdtool
+  % sudo /usr/local/sbin/portupgrade -NRr lang/ruby18 glib20
 
 We use Postfix as MTA:
 

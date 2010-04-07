@@ -35,7 +35,7 @@ bindings to RRDtool.
 ((*NOTE: The Ruby bindings in RRDtool 1.3.8 has a bug. Don't
 specify "-M'WITH_RUBY_MODULE=yes'" when you use 1.3.8.*))
 
-  % sudo /usr/local/sbin/portupgrade -NRr -M'WITH_RUBY_MODULE=yes' rrdtool
+  % sudo /usr/local/sbin/portupgrade -NRr -m 'WITH_RUBY_MODULE=true' databases/rrdtool
 
 === Configure milter-manager-log-analyzer
 
