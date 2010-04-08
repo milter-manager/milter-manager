@@ -170,6 +170,7 @@ package:
 
 === Instal gems
 
+  % sudo gem install rack -v '1.0.1'
   % sudo gem install rails -v '2.3.5'
   % sudo gem install passenger -v '2.2.11'
 
