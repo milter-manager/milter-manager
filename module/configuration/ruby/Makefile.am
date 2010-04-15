@@ -15,8 +15,7 @@ LIBS =					\
 
 AM_LDFLAGS =				\
 	-module				\
-	-avoid-version			\
-	-no-undefined
+	-avoid-version
 
 CLEANFILES = *.gcno *.gcda
 

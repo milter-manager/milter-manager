@@ -1,5 +1,11 @@
 2010-04-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* module/configuration/ruby/Makefile.am,
+	binding/ruby/src/toolkit/Makefile.am,
+	binding/ruby/src/manager/Makefile.am: remove -no-undefined from
+	Ruby related shared libraries for Solaris.
+	Patch by SATOH Fumiyasu. Thanks!!!
+
 	* milter/core/milter-logger.h: use G_STRFUNC instead of
 	__PRETTY_FUNCTION__ for Solaris.
 	Reported by SATOH Fumiyasu. Thanks!!!
