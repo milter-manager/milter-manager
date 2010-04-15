@@ -131,6 +131,17 @@ AC_CHECK_HEADER(sys/un.h,
                            [Define to 1 if you have <sys/un.h>.])])
 
 dnl **************************************************************
+dnl Check for network libraries.
+dnl **************************************************************
+NETWORK_LIBS=
+AC_CHECK_FUNC(socket, [],
+              [AC_SEARCH_LIBS(socket, nsl,
+                              [NETWORK_LIBS="-lsocket -lnsl"],
+                              [AC_MSG_ERROR([socket() required.])],
+                              [-lsocket])])
+AC_SUBST(NETWORK_LIBS)
+
+dnl **************************************************************
 dnl Check for GLib.
 dnl **************************************************************
 GLIB_REQUIRED=2.12.3
@@ -606,10 +617,14 @@ AC_SUBST(MILTER_TOOLKIT_CFLAGS)
 AC_SUBST(MILTER_RUBY_CFLAGS)
 AC_SUBST(MILTER_MANAGER_CFLAGS)
 
-MILTER_TOOLKIT_LIBS="\$(GLIB_LIBS)"
-MILTER_RUBY_LIBS="\$(MILTER_TOOLKIT_LIBS) \$(RUBY_LIBS)"
-MILTER_MANAGER_LIBS="\$(MILTER_TOOLKIT_LIBS)"
-AC_SUBST(MILTER_TOOLKIT_LIBS)
+MILTER_CORE_LIBS="\$(NETWORK_LIBS) \$(GLIB_LIBS)"
+MILTER_CLIENT_LIBS="\$(GLIB_LIBS)"
+MILTER_SERVER_LIBS="\$(NETWORK_LIBS) \$(GLIB_LIBS)"
+MILTER_RUBY_LIBS="\$(GLIB_LIBS) \$(RUBY_LIBS)"
+MILTER_MANAGER_LIBS="\$(GLIB_LIBS)"
+AC_SUBST(MILTER_CORE_LIBS)
+AC_SUBST(MILTER_CLIENT_LIBS)
+AC_SUBST(MILTER_SERVER_LIBS)
 AC_SUBST(MILTER_RUBY_LIBS)
 AC_SUBST(MILTER_MANAGER_LIBS)
 

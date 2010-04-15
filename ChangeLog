@@ -1,5 +1,10 @@
 2010-04-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* configure.ac, milter/core/Makefile.am,
+	milter/client/Makefile.am, milter/manager/Makefile.am,
+	milter/server/Makefile.am: detect -lsocket and -lnsl for Solaris.
+	Reported by SATOH Fumiyasu. Thanks!!!
+
 	* binding/ruby/src/manager/Makefile.am: use MILTER_RUBY_LIBS
 	instead of RUBY_LIBS for GLib.
 	Patch by SATOH Fumiyasu. Thanks!!!

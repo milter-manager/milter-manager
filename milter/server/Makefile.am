@@ -33,7 +33,7 @@ libmilter_server_la_SOURCES =		\
 	milter-server.c
 
 libmilter_server_la_LIBADD =					\
-	$(top_builddir)/milter/core/libmilter-core.la
-
+	$(top_builddir)/milter/core/libmilter-core.la		\
+	$(MILTER_SERVER_LIBS)
 
 include $(top_srcdir)/build/enum-types.mk

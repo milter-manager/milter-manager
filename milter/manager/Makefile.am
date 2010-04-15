@@ -80,6 +80,7 @@ libmilter_manager_la_SOURCES =				\
 
 libmilter_manager_la_LIBADD =					\
 	$(top_builddir)/milter/client/libmilter-client.la	\
-	$(top_builddir)/milter/server/libmilter-server.la
+	$(top_builddir)/milter/server/libmilter-server.la	\
+	$(MILTER_MANAGER_LIBS)
 
 include $(top_srcdir)/build/enum-types.mk

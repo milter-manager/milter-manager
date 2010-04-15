@@ -35,6 +35,7 @@ libmilter_client_la_SOURCES =		\
 	milter-client-context.c
 
 libmilter_client_la_LIBADD =				\
-	$(top_builddir)/milter/core/libmilter-core.la
+	$(top_builddir)/milter/core/libmilter-core.la	\
+	$(MILTER_CLIENT_LIBS)
 
 include $(top_srcdir)/build/enum-types.mk

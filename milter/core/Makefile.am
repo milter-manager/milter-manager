@@ -86,7 +86,7 @@ libmilter_core_la_SOURCES =		\
 	milter-memory-profile.c
 
 libmilter_core_la_LIBADD =		\
-	$(GLIB_LIBS)
+	$(MILTER_CORE_LIBS)
 
 include $(top_srcdir)/build/enum-types.mk
 include $(top_srcdir)/build/marshal.mk
