@@ -35,7 +35,7 @@ G_BEGIN_DECLS
                                (level),                         \
                                __FILE__,                        \
                                __LINE__,                        \
-                               __PRETTY_FUNCTION__,             \
+                               G_STRFUNC,                       \
                                format, ## __VA_ARGS__));        \
         }                                                       \
     } while (0)
