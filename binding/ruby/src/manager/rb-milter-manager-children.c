@@ -70,12 +70,6 @@ get_children (VALUE self)
 }
 
 static VALUE
-get_quitted_children (VALUE self)
-{
-    return GLIST2ARY(milter_manager_children_get_quitted_children(SELF(self)));
-}
-
-static VALUE
 get_smtp_client_address (VALUE self)
 {
     VALUE rb_address;
@@ -108,8 +102,6 @@ Init_milter_manager_children (void)
     rb_define_method(rb_cMilterManagerChildren, "<<", add_child_less_than, 1);
     rb_define_method(rb_cMilterManagerChildren, "each", each, 0);
     rb_define_method(rb_cMilterManagerChildren, "children", get_children, 0);
-    rb_define_method(rb_cMilterManagerChildren, "quitted_children",
-		     get_quitted_children, 0);
     rb_define_method(rb_cMilterManagerChildren, "smtp_client_address",
 		     get_smtp_client_address, 0);
 }
