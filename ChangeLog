@@ -1,5 +1,9 @@
 2010-04-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/src/manager/Makefile.am: use MILTER_RUBY_LIBS
+	instead of RUBY_LIBS for GLib.
+	Patch by SATOH Fumiyasu. Thanks!!!
+
 	* README*: add SATOH Fumiyasu to thanks list. Thanks!!!
 
 	* milter/manager/milter-manager-children.h,

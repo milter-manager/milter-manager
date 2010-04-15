@@ -8,7 +8,7 @@ AM_CFLAGS = 				\
 
 LIBS =								\
 	$(top_builddir)/milter/manager/libmilter-manager.la	\
-	$(RUBY_LIBS)
+	$(MILTER_RUBY_LIBS)
 
 AM_LDFLAGS =			\
 	-module			\
