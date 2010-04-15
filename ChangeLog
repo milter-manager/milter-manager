@@ -1,3 +1,12 @@
+2010-04-15  Kouhei Sutou  <kou@cozmixng.org>
+
+	* README*: add SATOH Fumiyasu to thanks list. Thanks!!!
+
+	* milter/manager/milter-manager-children.h,
+	binding/ruby/src/manager/rb-milter-manager-children.c: remove
+	needless milter_manager_children_get_quitted_children() codes.
+	Reported by SATOH Fumiyasu. Thanks!!!
+
 2010-04-08  Kouhei Sutou  <kou@clear-code.com>
 
 	* doc/*-options-*: install rack explicitly.
