@@ -1,5 +1,8 @@
 2010-04-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* README*: add contribution for Solaris by SATOH Fumiyasu to
+	thanks list. Thanks!!!
+
 	* gtk-doc.make: work without gtkdoc-rebase.
 	Reported by SATOH Fumiyasu. Thanks!!!
 
