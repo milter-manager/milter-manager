@@ -208,14 +208,12 @@ install-data-local:
 	    echo "-- Installing $$dir/index.sgml";			\
 	    $(INSTALL_DATA) $$dir/index.sgml				\
 	      $(DESTDIR)$(TARGET_DIR)$$target_dir || :;			\
-	    if which gtkdoc-rebase > /dev/null 2>&1; then		\
-	      if test "$(DESTDIR)" = ""; then				\
-	        gtkdoc-rebase --relative 				\
-	          --html-dir=$(DESTDIR)$(TARGET_DIR)$$target_dir;	\
-	      else							\
-	        gtkdoc-rebase --relative --dest-dir=$(DESTDIR)		\
-	          --html-dir=$(DESTDIR)$(TARGET_DIR)$$target_dir;	\
-	      fi;							\
+	    if test "$(DESTDIR)" = ""; then				\
+	      $(GTKDOC_REBASE) --relative 				\
+	        --html-dir=$(DESTDIR)$(TARGET_DIR)$$target_dir;		\
+	    else							\
+	      $(GTKDOC_REBASE) --relative --dest-dir=$(DESTDIR)		\
+	        --html-dir=$(DESTDIR)$(TARGET_DIR)$$target_dir;		\
 	    fi;								\
 	  fi;								\
 	done
@@ -252,6 +250,6 @@ dist-hook: dist-check-gtkdoc dist-hook-local
 	cp $(DOC_MODULE).types $(distdir)/
 	cp $(DOC_MODULE)-sections.txt $(distdir)/
 	cd $(distdir) && rm -f $(DISTCLEANFILES)
-	-gtkdoc-rebase --online --relative --html-dir=$(distdir)/html
+	-$(GTKDOC_REBASE) --online --relative --html-dir=$(distdir)/html
 
 .PHONY : dist-hook-local docs

@@ -1,5 +1,8 @@
 2010-04-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* gtk-doc.make: work without gtkdoc-rebase.
+	Reported by SATOH Fumiyasu. Thanks!!!
+
 	* module/configuration/ruby/Makefile.am,
 	binding/ruby/src/toolkit/Makefile.am,
 	binding/ruby/src/manager/Makefile.am: remove -no-undefined from
