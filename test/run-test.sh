@@ -62,11 +62,12 @@ MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_dir/lib
 MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_dir/src/toolkit/.libs
 MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_dir/src/manager/.libs
 ruby_glib2_dir=
-if [ -f $ruby_dir/glib-0.19.4/src/glib2.so ]; then
-    ruby_glib2_dir=$ruby_dir/glib-0.19.4
-elif [ -f $ruby_dir/glib-0.16.0/src/glib2.so ]; then
-    ruby_glib2_dir=$ruby_dir/glib-0.16.0
-fi
+for dir in $(for dir in $ruby_dir/glib-*; do echo $dir; done | sort -r); do
+    if [ -f $dir/src/glib2.so ]; then
+	ruby_glib2_dir=$dir
+	break
+    fi
+done
 if [ "$ruby_glib2_dir" != "" ]; then
     MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_glib2_dir/src/lib
     MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_glib2_dir/src
