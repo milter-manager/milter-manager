@@ -285,10 +285,10 @@ if test "$ruby_available" = "yes"; then
                    ],
                    [],
 		   [ruby_available="no"
-                    try_to_use_bundled_ruby_glib2_0_19_3="yes"])
+                    try_to_use_bundled_ruby_glib2_0_19_4="yes"])
   else
     if test $ruby_minor_version -eq 8 -a $ruby_micro_version -gt 5; then
-      try_to_use_bundled_ruby_glib2_0_19_3="yes"
+      try_to_use_bundled_ruby_glib2_0_19_4="yes"
     fi
   fi
   if test "$ruby_available" != "yes"; then
@@ -302,8 +302,8 @@ if test "$ruby_available" = "yes"; then
       ac_ruby_glib2_exec_prefix=$exec_prefix
     fi
 
-    if test "$try_to_use_bundled_ruby_glib2_0_19_3" = "yes"; then
-      ac_ruby_glib2_version=0.19.3
+    if test "$try_to_use_bundled_ruby_glib2_0_19_4" = "yes"; then
+      ac_ruby_glib2_version=0.19.4
     else
       ac_ruby_glib2_version=0.16.0
     fi
@@ -313,8 +313,8 @@ if test "$ruby_available" = "yes"; then
        (cd $ac_ruby_glib2_dir && \
         $RUBY ../../../$srcdir/$ac_ruby_glib2_dir/extconf.rb); then
       ruby_available=yes
-      if test "$try_to_use_bundled_ruby_glib2_0_19_3" = "yes"; then
-        ac_use_bundled_ruby_glib2_0_19_3=yes
+      if test "$try_to_use_bundled_ruby_glib2_0_19_4" = "yes"; then
+        ac_use_bundled_ruby_glib2_0_19_4=yes
       else
         ac_use_bundled_ruby_glib2_0_16_0=yes
       fi
@@ -344,9 +344,9 @@ all:
 distdir:
 EOM
   fi
-  if test "$ac_use_bundled_ruby_glib2_0_19_3" != "yes"; then
-    $RUBY -run -e mkdir -- -p binding/ruby/glib-0.19.3
-    cat <<EOM > binding/ruby/glib-0.19.3/Makefile
+  if test "$ac_use_bundled_ruby_glib2_0_19_4" != "yes"; then
+    $RUBY -run -e mkdir -- -p binding/ruby/glib-0.19.4
+    cat <<EOM > binding/ruby/glib-0.19.4/Makefile
 all:
 distdir:
 EOM
@@ -389,8 +389,8 @@ AC_SUBST(ruby_milterdir)
 AM_CONDITIONAL([WITH_RUBY], [test "$ruby_available" = "yes"])
 AM_CONDITIONAL([WITH_BUNDLED_RUBY_GLIB2_0_16_0],
                [test "$ac_use_bundled_ruby_glib2_0_16_0" = "yes"])
-AM_CONDITIONAL([WITH_BUNDLED_RUBY_GLIB2_0_19_3],
-               [test "$ac_use_bundled_ruby_glib2_0_19_3" = "yes"])
+AM_CONDITIONAL([WITH_BUNDLED_RUBY_GLIB2_0_19_4],
+               [test "$ac_use_bundled_ruby_glib2_0_19_4" = "yes"])
 AM_CONDITIONAL([WITH_RUBY_MILTER], [test -n "$ruby_milterdir"])
 
 dnl **************************************************************
