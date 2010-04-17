@@ -1,5 +1,7 @@
 2010-04-17  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/glib-0.19.4/extconf.rb: don't embed version number.
+
 	* binding/ruby/glib-0.19.4/extconf.rb: 0.19.3 -> 0.19.4.
 
 	* configure.ac: use bundled Ruby/GLib 0.19.4 if system Ruby/GLib
