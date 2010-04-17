@@ -13,8 +13,9 @@ class TestUnitCollectorLoad < Test::Unit::TestCase
     ::Object.const_set(@temporary_test_cases_module_name, Module.new)
 
     @test_dir = Pathname(Dir.tmpdir) + "test-unit"
-    @test_dir.rmtree if @test_dir.exist?
-    @test_dir.mkpath
+    @extra_test_dir = Pathname(Dir.tmpdir) + "test-unit-extra"
+    ensure_clean_directory(@test_dir)
+    ensure_clean_directory(@extra_test_dir)
   end
 
   setup
@@ -196,6 +197,72 @@ EOT
     end
   end
 
+  setup
+  def setup_sub_git_test_cases
+    @sub_git_test_dir = @sub_test_dir + ".git"
+    @sub_git_test_dir.mkpath
+
+    @sub_git_test_case11 = @sub_git_test_dir + "test_case11.rb"
+
+    @sub_git_test_case11.open("w") do |test_case|
+      test_case.puts(<<-EOT)
+module #{@temporary_test_cases_module_name}
+  class SubGitTestCase11 < Test::Unit::TestCase
+    def test11
+    end
+  end
+end
+EOT
+    end
+  end
+
+  setup
+  def setup_extra_top_level_test_cases
+    @test_cases12 = @extra_test_dir + "test_cases12.rb"
+    @test_cases12.open("w") do |test_case|
+      test_case.puts(<<-EOT)
+module #{@temporary_test_cases_module_name}
+  class TestCase121 < Test::Unit::TestCase
+    def test121_1
+    end
+
+    def test121_2
+    end
+  end
+
+  class TestCase122 < Test::Unit::TestCase
+    def test122_1
+    end
+
+    def test122_2
+    end
+  end
+end
+EOT
+    end
+  end
+
+  setup
+  def setup_sub_level_extra_test_cases
+    @sub_extra_test_dir = @extra_test_dir + "sub"
+    @sub_extra_test_dir.mkpath
+
+    @cases13_test = @sub_extra_test_dir + "13cases_test.rb"
+    @cases13_test.open("w") do |test_case|
+      test_case.puts(<<-EOT)
+module #{@temporary_test_cases_module_name}
+  class SubTestCase13 < Test::Unit::TestCase
+    def test13_1
+    end
+
+    def test13_2
+    end
+  end
+end
+EOT
+    end
+  end
+
   def teardown
     @test_dir.rmtree if @test_dir.exist?
     ::Object.send(:remove_const, @temporary_test_cases_module_name)
@@ -210,6 +277,21 @@ EOT
                     [:suite, {:name => _test_case_name("SubTestCase6")},
                      [:test, {:name => "test6"}]]],
                    @sub_test_dir.to_s)
+  end
+
+  def test_simple_collect_test_suffix
+    assert_collect([:suite, {:name => @extra_test_dir.basename.to_s},
+                    [:suite, {:name => _test_case_name("TestCase121")},
+                     [:test, {:name => "test121_1"}],
+                     [:test, {:name => "test121_2"}]],
+                    [:suite, {:name => _test_case_name("TestCase122")},
+                     [:test, {:name => "test122_1"}],
+                     [:test, {:name => "test122_2"}]],
+                    [:suite, {:name => @sub_extra_test_dir.basename.to_s},
+                     [:suite, {:name => _test_case_name("SubTestCase13")},
+                      [:test, {:name => "test13_1"}],
+                      [:test, {:name => "test13_2"}]]]],
+                   @extra_test_dir.to_s)
   end
 
   def test_multilevel_collect
@@ -234,13 +316,39 @@ EOT
   end
 
   def test_collect_file
-    assert_collect([:suite, {:name => @test_case1.basename.to_s},
+    assert_collect([:suite, {:name => _test_case_name("TestCase1")},
+                    [:test, {:name => "test1_1"}],
+                    [:test, {:name => "test1_2"}]],
+                   @test_case1.to_s)
+  end
+
+  def test_collect_file_no_pattern_match_file_name
+    assert_collect([:suite, {:name => _test_case_name("NoLoadSubTestCase5")},
+                    [:test, {:name => "test5_1"}],
+                    [:test, {:name => "test5_2"}]],
+                   @no_load_sub_test_case5.to_s)
+  end
+
+  def test_collect_file_test_cases
+    assert_collect([:suite, {:name => "[#{@test_cases12}]"},
+                    [:suite, {:name => _test_case_name("TestCase121")},
+                     [:test, {:name => "test121_1"}],
+                     [:test, {:name => "test121_2"}]],
+                    [:suite, {:name => _test_case_name("TestCase122")},
+                     [:test, {:name => "test122_1"}],
+                     [:test, {:name => "test122_2"}]]],
+                   @test_cases12.to_s)
+  end
+
+  def test_collect_files
+    assert_collect([:suite,
+                    {:name => "[#{@test_case1}, #{@test_case2}]"},
                     [:suite, {:name => _test_case_name("TestCase1")},
                      [:test, {:name => "test1_1"}],
-                     [:test, {:name => "test1_2"}]]],
-                   @test_case1.to_s)
-
-    assert_collect(nil, @no_load_sub_test_case5.to_s)
+                     [:test, {:name => "test1_2"}]],
+                    [:suite, {:name => _test_case_name("TestCase2")},
+                     [:test, {:name => "test2"}]]],
+                   @test_case1.to_s, @test_case2.to_s)
   end
 
   def test_nil_pattern
@@ -278,7 +386,7 @@ EOT
                       [:test, {:name => "test4_2"}]],
                      [:suite, {:name => _test_case_name("SubTestCase6")},
                       [:test, {:name => "test6"}]]],
-                   [:suite, {:name => @sub2_test_dir.basename.to_s},
+                    [:suite, {:name => @sub2_test_dir.basename.to_s},
                      [:suite, {:name => _test_case_name("Sub2TestCase8")},
                       [:test, {:name => "test8_1"}],
                       [:test, {:name => "test8_2"}]],
@@ -297,6 +405,11 @@ EOT
         assert_equal(expected, actual)
       end
     end
+  end
+
+  def ensure_clean_directory(directory)
+    directory.rmtree if directory.exist?
+    directory.mkpath
   end
 
   def keep_required_files

@@ -84,7 +84,16 @@ module Test
 <?> expected but was
 <?>.?
 EOT
-        assert_block(full_message) { expected == actual }
+        begin
+          assert_block(full_message) { expected == actual }
+        rescue AssertionFailedError => failure
+          failure.expected = expected
+          failure.actual = actual
+          failure.inspected_expected = AssertionMessage.convert(expected)
+          failure.inspected_actual = AssertionMessage.convert(actual)
+          failure.user_message = message
+          raise
+        end
       end
 
       ##
@@ -790,6 +799,54 @@ EOT
       end
 
       ##
+      # Passes if +object+#+alias_name+ is an alias method of
+      # +object+#+original_name+.
+      #
+      # Example:
+      #   assert_alias_method([], :length, :size)  # -> pass
+      #   assert_alias_method([], :size, :length)  # -> pass
+      #   assert_alias_method([], :each, :size)    # -> fail
+      def assert_alias_method(object, alias_name, original_name, message=nil)
+        _wrap_assertion do
+          find_method_failure_message = Proc.new do |method_name|
+            build_message(message,
+                          "<?>.? doesn't exist\n" +
+                          "(Class: <?>)",
+                          object,
+                          AssertionMessage.literal(method_name),
+                          object.class)
+          end
+
+          alias_method = original_method = nil
+          assert_block(find_method_failure_message.call(alias_name)) do
+            begin
+              alias_method = object.method(alias_name)
+              true
+            rescue NameError
+              false
+            end
+          end
+          assert_block(find_method_failure_message.call(original_name)) do
+            begin
+              original_method = object.method(original_name)
+              true
+            rescue NameError
+              false
+            end
+          end
+
+          full_message = build_message(message,
+                                       "<?> is alias of\n" +
+                                       "<?> expected",
+                                       alias_method,
+                                       original_method)
+          assert_block(full_message) do
+            alias_method == original_method
+          end
+        end
+      end
+
+      ##
       # Builds a failure message.  +head+ is added before the +template+ and
       # +arguments+ replaces the '?'s positionally in the template.
 
@@ -881,23 +938,44 @@ EOT
           end
 
           MAX_DIFF_TARGET_STRING_SIZE = 1000
+          def max_diff_target_string_size
+            size = ENV["TEST_UNIT_MAX_DIFF_TARGET_STRING_SIZE"]
+            if size
+              begin
+                size = Integer(size)
+              rescue ArgumentError
+                size = nil
+              end
+            end
+            size || MAX_DIFF_TARGET_STRING_SIZE
+          end
+
           def diff_target_string?(string)
             if string.respond_to?(:bytesize)
-              string.bytesize < MAX_DIFF_TARGET_STRING_SIZE
+              string.bytesize < max_diff_target_string_size
             else
-              string.size < MAX_DIFF_TARGET_STRING_SIZE
+              string.size < max_diff_target_string_size
+            end
+          end
+
+          def prepare_for_diff(from, to)
+            if !from.is_a?(String) or !to.is_a?(String)
+              from = convert(from)
+              to = convert(to)
+            end
+
+            if diff_target_string?(from) and diff_target_string?(to)
+              [from, to]
+            else
+              [nil, nil]
             end
           end
 
           def delayed_diff(from, to)
             delayed_literal do
-              if !from.is_a?(String) or !to.is_a?(String)
-                from = convert(from)
-                to = convert(to)
-              end
+              from, to = prepare_for_diff(from, to)
 
-              diff = nil
-              diff = "" if !diff_target_string?(from) or !diff_target_string?(to)
+              diff = "" if from.nil? or to.nil?
               diff ||= Diff.readable(from, to)
               if /^[-+]/ !~ diff
                 diff = ""
@@ -930,7 +1008,10 @@ EOM
               if use_pp
                 begin
                   require 'pp' unless defined?(PP)
-                  return PP.pp(object, '').chomp
+                  begin
+                    return PP.pp(object, '').chomp
+                  rescue NameError
+                  end
                 rescue LoadError
                   self.use_pp = false
                 end

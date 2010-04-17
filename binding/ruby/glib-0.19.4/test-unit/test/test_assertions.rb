@@ -248,32 +248,66 @@ EOM
 
       def test_assert_equal_with_large_string
         message = <<-EOM.chomp
-<#{("a\n" + "x" * 297).inspect}> expected but was
+<#{("a\n" + "x" * 997).inspect}> expected but was
 <#{"x".inspect}>.
 
 diff:
 + x
 - a
-- #{"x" * 297}
+- #{"x" * 997}
 
 folded diff:
 + x
 - a
-- #{"x" * 78}
-- #{"x" * 78}
-- #{"x" * 78}
-- #{"x" * 63}
+#{(["- " + ("x" * 78)] * 12).join("\n")}
+- #{"x" * 61}
 EOM
         check_fails(message) do
-          assert_equal("a\n" + "x" * 297, "x")
+          assert_equal("a\n" + "x" * 997, "x")
         end
 
         message = <<-EOM.chomp
-<#{("a\n" + "x" * 298).inspect}> expected but was
+<#{("a\n" + "x" * 998).inspect}> expected but was
 <#{"x".inspect}>.
 EOM
         check_fails(message) do
-          assert_equal("a\n" + "x" * 298, "x")
+          assert_equal("a\n" + "x" * 998, "x")
+        end
+      end
+
+      def test_assert_equal_with_max_diff_target_string_size
+        key = "TEST_UNIT_MAX_DIFF_TARGET_STRING_SIZE"
+        before_value = ENV[key]
+        ENV[key] = "100"
+        begin
+          message = <<-EOM.chomp
+<#{("a\n" + "x" * 97).inspect}> expected but was
+<#{"x".inspect}>.
+
+diff:
++ x
+- a
+- #{"x" * 97}
+
+folded diff:
++ x
+- a
+#{(["- " + ("x" * 78)]).join("\n")}
+- #{"x" * 19}
+EOM
+          check_fails(message) do
+            assert_equal("a\n" + "x" * 97, "x")
+          end
+
+          message = <<-EOM.chomp
+<#{("a\n" + "x" * 98).inspect}> expected but was
+<#{"x".inspect}>.
+EOM
+          check_fails(message) do
+            assert_equal("a\n" + "x" * 98, "x")
+          end
+        ensure
+          ENV[key] = before_value
         end
       end
 
@@ -1063,8 +1097,43 @@ EOM
         end
       end
 
+      def test_assert_alias_method
+        object = Object.new
+        class << object
+          def original_method
+          end
+          alias_method :alias_method, :original_method
+
+          def other
+          end
+        end
+
+        check_nothing_fails do
+          assert_alias_method(object, :alias_method, :original_method)
+        end
+
+        check_nothing_fails do
+          assert_alias_method(object, :original_method, :alias_method)
+        end
+
+        check_fails("<#{object.method(:other).inspect}> is alias of\n" +
+                    "<#{object.method(:original_method).inspect}> expected") do
+          assert_alias_method(object, :other, :original_method)
+        end
+
+        check_fails("<#{object.inspect}>.nonexistent doesn't exist\n" +
+                    "(Class: <Object>)") do
+          assert_alias_method(object, :nonexistent, :original_method)
+        end
+
+        check_fails("<#{object.inspect}>.nonexistent doesn't exist\n" +
+                    "(Class: <Object>)") do
+          assert_alias_method(object, :alias_method, :nonexistent)
+        end
+      end
+
       private
-      def add_failure(message, location=caller)
+      def add_failure(message, location=caller, options=nil)
         unless @catch_assertions
           super
         end

@@ -18,6 +18,15 @@ module Test
           RUNNERS[id.to_s]
         end
 
+        @@default_runner = nil
+        def default_runner
+          runner(@@default_runner)
+        end
+
+        def default_runner=(id)
+          @@default_runner = id
+        end
+
         def register_collector(id, collector_builder=Proc.new)
           COLLECTORS[id] = collector_builder
           COLLECTORS[id.to_s] = collector_builder
@@ -108,27 +117,21 @@ module Test
         if File.exist?(config_file)
           load_config(config_file)
         else
-          global_config_file = File.expand_path("~/.test-unit.xml")
-          load_config(global_config_file) if File.exist?(global_config_file)
+          load_global_config
         end
         yield(self) if block_given?
       end
 
       def process_args(args = ARGV)
-        default_arguments = @default_arguments.dup
         begin
-          @default_arguments.concat(args)
-          options.order!(@default_arguments) {|arg| @to_run << arg}
+          args.unshift(*@default_arguments)
+          options.order!(args) {|arg| @to_run << arg}
         rescue OptionParser::ParseError => e
           puts e
           puts options
           exit(false)
-        else
-          @filters << proc{false} unless(@filters.empty?)
         end
         not @to_run.empty?
-      ensure
-        @default_arguments = default_arguments
       end
 
       def options
@@ -177,9 +180,9 @@ module Test
             n = (%r{\A/(.*)/\Z} =~ n ? Regexp.new($1) : n)
             case n
             when Regexp
-              @filters << proc{|t| n =~ t.method_name ? true : nil}
+              @filters << proc{|t| n =~ t.method_name ? true : false}
             else
-              @filters << proc{|t| n == t.method_name ? true : nil}
+              @filters << proc{|t| n == t.method_name}
             end
           end
 
@@ -189,17 +192,17 @@ module Test
             n = (%r{\A/(.*)/\Z} =~ n ? Regexp.new($1) : n)
             case n
             when Regexp
-              @filters << proc{|t| n =~ t.class.name ? true : nil}
+              @filters << proc{|t| n =~ t.class.name ? true : false}
             else
-              @filters << proc{|t| n == t.class.name ? true : nil}
+              @filters << proc{|t| n == t.class.name}
             end
           end
 
           priority_filter = Proc.new do |test|
-            if @filters.size > 2
-              nil
+            if @filters == [priority_filter]
+              Priority::Checker.new(test).need_to_run?
             else
-              Priority::Checker.new(test).need_to_run? or nil
+              nil
             end
           end
           o.on("--[no-]priority-mode",
@@ -325,15 +328,28 @@ module Test
 
       private
       def default_runner
+        runner = self.class.default_runner
         if ENV["EMACS"] == "t"
-          self.class.runner(:emacs)
+          runner ||= self.class.runner(:emacs)
         else
-          self.class.runner(:console)
+          runner ||= self.class.runner(:console)
         end
+        runner
       end
 
       def default_collector
         self.class.collector(@standalone ? :load : :descendant)
+      end
+
+      def global_config_file
+        File.expand_path("~/.test-unit.xml")
+      rescue ArgumentError
+        nil
+      end
+
+      def load_global_config
+        file = global_config_file
+        load_config(file) if file and File.exist?(file)
       end
     end
   end

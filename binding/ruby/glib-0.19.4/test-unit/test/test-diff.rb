@@ -1,4 +1,9 @@
 class TestUnitDiff < Test::Unit::TestCase
+  def test_binary_search_ranges
+    assert_found_binary_search_ranges(5, [1..2, 4..5, 7..9])
+    assert_not_found_binary_search_ranges(3, [1..2, 4..5, 7..9])
+  end
+
   def test_to_indexes
     assert_to_indexes({"abc def" => [0, 2], "abc" => [1]},
                       ["abc def", "abc", "abc def"])
@@ -187,6 +192,21 @@ class TestUnitDiff < Test::Unit::TestCase
   def test_ratio
     assert_ratio(0.75, "abcd", "bcde")
     assert_ratio(0.80, "efg", "eg")
+  end
+
+  def test_1_length_readable_diff
+    differ = Test::Unit::Diff::ReadableDiffer.new(["0"], ["1"])
+    def differ.cut_off_ratio
+      0
+    end
+    def differ.default_ratio
+      0
+    end
+    assert_equal("- 0\n" +
+                 "? ^\n" +
+                 "+ 1\n" +
+                 "? ^",
+                 differ.diff.join("\n"))
   end
 
   def test_same_contents_readable_diff
@@ -387,6 +407,18 @@ class TestUnitDiff < Test::Unit::TestCase
   end
 
   private
+  def assert_found_binary_search_ranges(numeric, ranges)
+    assert_true(Test::Unit::Diff::UTF8Line.send(:binary_search_ranges,
+                                                numeric,
+                                                ranges))
+  end
+
+  def assert_not_found_binary_search_ranges(numeric, ranges)
+    assert_false(Test::Unit::Diff::UTF8Line.send(:binary_search_ranges,
+                                                 numeric,
+                                                 ranges))
+  end
+
   def assert_to_indexes(expected, to, &junk_predicate)
     matcher = Test::Unit::Diff::SequenceMatcher.new([""], to, &junk_predicate)
     assert_equal(expected, matcher.instance_variable_get("@to_indexes"))
@@ -451,21 +483,30 @@ class TestUnitDiff < Test::Unit::TestCase
                         from_start, from_end,
                         to_start, to_end)
     differ = Test::Unit::Diff::ReadableDiffer.new(from, to)
-    assert_equal(expected, differ.send(:diff_lines,
-                                       from_start, from_end,
-                                       to_start, to_end))
+    result = []
+    differ.instance_variable_set("@result", result)
+    differ.send(:diff_lines,
+                from_start, from_end,
+                to_start, to_end)
+    assert_equal(expected, result)
   end
 
   def assert_diff_line(expected, from_line, to_line)
     differ = Test::Unit::Diff::ReadableDiffer.new([""], [""])
-    assert_equal(expected, differ.send(:diff_line, from_line, to_line))
+    result = []
+    differ.instance_variable_set("@result", result)
+    differ.send(:diff_line, from_line, to_line)
+    assert_equal(expected, result)
   end
 
   def assert_format_diff_point(expected, from_line, to_line, from_tags, to_tags)
     differ = Test::Unit::Diff::ReadableDiffer.new([""], [""])
-    assert_equal(expected, differ.send(:format_diff_point,
-                                       from_line, to_line,
-                                       from_tags, to_tags))
+    result = []
+    differ.instance_variable_set("@result", result)
+    differ.send(:format_diff_point,
+                from_line, to_line,
+                from_tags, to_tags)
+    assert_equal(expected, result)
   end
 
   def assert_interesting_line(expected, from, to, from_start, to_start)

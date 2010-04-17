@@ -41,6 +41,10 @@ module Test
       def to_s
         long_display
       end
+
+      def critical?
+        false
+      end
     end
 
     class NotifiedError < StandardError
@@ -79,16 +83,16 @@ module Test
     module NotificationHandler
       class << self
         def included(base)
-          base.exception_handler(:handle_Notified_error)
+          base.exception_handler(:handle_notified_error)
         end
       end
 
       private
-      def handle_Notified_error(exception)
+      def handle_notified_error(exception)
         return false unless exception.is_a?(NotifiedError)
         notification = Notification.new(name,
-                                filter_backtrace(exception.backtrace),
-                                exception.message)
+                                        filter_backtrace(exception.backtrace),
+                                        exception.message)
         add_notification(notification)
         true
       end

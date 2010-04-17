@@ -46,7 +46,12 @@ This software is distributed under the same terms as ruby.
 
 * Daniel Berger: Suggestions and bug reports.
 * Designing Patterns: Suggestions.
-* Erik Hollensbe: Suggestions.
+* Erik Hollensbe: Suggestions and bug reports.
 * Bill Lear: A suggestion.
 * Diego Pettenò: A bug report.
 * Angelo Lakra: A bug report.
+* Mike Pomraning: A bug report.
+* David MARCHALAND: Suggestions and bug reports.
+* Andrew Grimm: A bug report.
+* Champak Ch: A bug report.
+* Florian Frank: A bug report.

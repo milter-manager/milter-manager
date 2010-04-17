@@ -11,16 +11,23 @@ module Test
     # when an assertion fails.
     class Failure
       attr_reader :test_name, :location, :message
-      
+      attr_reader :expected, :actual, :user_message
+      attr_reader :inspected_expected, :inspected_actual
+
       SINGLE_CHARACTER = 'F'
       LABEL = "Failure"
 
       # Creates a new Failure with the given location and
       # message.
-      def initialize(test_name, location, message)
+      def initialize(test_name, location, message, options={})
         @test_name = test_name
         @location = location
         @message = message
+        @expected = options[:expected]
+        @actual = options[:actual]
+        @inspected_expected = options[:inspected_expected]
+        @inspected_actual = options[:inspected_actual]
+        @user_message = options[:user_message]
       end
       
       # Returns a single character representation of a failure.
@@ -51,6 +58,19 @@ module Test
       def to_s
         long_display
       end
+
+      def critical?
+        true
+      end
+
+      def diff
+        @diff ||= compute_diff
+      end
+
+      private
+      def compute_diff
+        Assertions::AssertionMessage.delayed_diff(@expected, @actual).inspect
+      end
     end
 
     module FailureHandler
@@ -64,12 +84,18 @@ module Test
       def handle_assertion_failed_error(exception)
         return false unless exception.is_a?(AssertionFailedError)
         problem_occurred
-        add_failure(exception.message, exception.backtrace)
+        add_failure(exception.message, exception.backtrace,
+                    :expected => exception.expected,
+                    :actual => exception.actual,
+                    :inspected_expected => exception.inspected_expected,
+                    :inspected_actual => exception.inspected_actual,
+                    :user_message => exception.user_message)
         true
       end
 
-      def add_failure(message, backtrace)
-        failure = Failure.new(name, filter_backtrace(backtrace), message)
+      def add_failure(message, backtrace, options={})
+        failure = Failure.new(name, filter_backtrace(backtrace), message,
+                              options)
         current_result.add_failure(failure)
       end
     end

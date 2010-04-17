@@ -39,6 +39,7 @@ module Test
             @progress_row_max ||= guess_progress_row_max
             @already_outputted = false
             @n_successes = 0
+            @n_omissions = 0
             @indent = 0
             @top_level = true
             @faults = []
@@ -84,7 +85,8 @@ module Test
           def add_fault(fault)
             @faults << fault
             output_progress(fault.single_character_display, fault_color(fault))
-            @already_outputted = true
+            @n_omissions += 1 if fault.is_a?(Omission)
+            @already_outputted = true if fault.critical?
           end
           
           def started(result)
@@ -101,21 +103,78 @@ module Test
             @faults.each_with_index do |fault, index|
               nl
               output_single("%3d) " % (index + 1))
-              label, detail = format_fault(fault).split(/\r?\n/, 2)
-              output(label, fault_color(fault))
-              output(detail)
+              output_fault(fault)
             end
             nl
             output("Finished in #{elapsed_time} seconds.")
             nl
             output(@result, result_color)
-            n_tests = @result.run_count
+            n_tests = @result.run_count - @n_omissions
             if n_tests.zero?
               pass_percentage = 0
             else
               pass_percentage = 100.0 * (@n_successes / n_tests.to_f)
             end
             output("%g%% passed" % pass_percentage, result_color)
+          end
+
+          def output_fault(fault)
+            if @use_color and fault.is_a?(Failure) and
+                fault.inspected_expected and fault.inspected_actual
+              output_single(fault.label, fault_color(fault))
+              output(":")
+              output_fault_backtrace(fault)
+              output_fault_message(fault)
+            else
+              label, detail = format_fault(fault).split(/\r?\n/, 2)
+              output(label, fault_color(fault))
+              output(detail)
+            end
+          end
+
+          def output_fault_backtrace(fault)
+            backtrace = fault.location
+            if backtrace.size == 1
+              output(fault.test_name +
+                     backtrace[0].sub(/\A(.+:\d+).*/, ' [\\1]') +
+                     ":")
+            else
+              output(fault.test_name)
+              backtrace.each_with_index do |entry, i|
+                if i.zero?
+                  prefix = "["
+                  postfix = ""
+                elsif i == backtrace.size - 1
+                  prefix = " "
+                  postfix = "]:"
+                else
+                  prefix = " "
+                  postfix = ""
+                end
+                output("    #{prefix}#{entry}#{postfix}")
+              end
+            end
+          end
+
+          def output_fault_message(fault)
+            output(fault.user_message) if fault.user_message
+            output_single("<")
+            output_single(fault.inspected_expected, color("success"))
+            output("> expected but was")
+            output_single("<")
+            output_single(fault.inspected_actual, color("failure"))
+            output(">")
+            from, to = prepare_for_diff(fault.expected, fault.actual)
+            if from and to
+              differ = ColorizedReadableDiffer.new(from.split(/\r?\n/),
+                                                   to.split(/\r?\n/),
+                                                   self)
+              if differ.need_diff?
+                output("")
+                output("diff:")
+                differ.diff
+              end
+            end
           end
 
           def format_fault(fault)
@@ -129,7 +188,7 @@ module Test
             right_space = 8 * 2
             left_space = @progress_row_max - right_space
             left_space = left_space - indent.size - name.size
-            tab_stop = "\t" * ((left_space - 1) / 8)
+            tab_stop = "\t" * ([left_space - 1, 0].max / 8)
             output_single("#{indent}#{name}:#{tab_stop}", nil, VERBOSE)
             @test_start = Time.now
           end
@@ -266,6 +325,135 @@ module Test
             Integer(ENV["TERM_WIDTH"] || 0)
           rescue ArgumentError
             0
+          end
+        end
+
+        class ColorizedReadableDiffer < Diff::ReadableDiffer
+          def initialize(from, to, runner)
+            @runner = runner
+            super(from, to)
+          end
+
+          def need_diff?(options={})
+            operations.each do |tag,|
+              return true if [:replace, :equal].include?(tag)
+            end
+            false
+          end
+
+          private
+          def output_single(something, color=nil)
+            @runner.send(:output_single, something, color)
+          end
+
+          def output(something, color=nil)
+            @runner.send(:output, something, color)
+          end
+
+          def color(name)
+            @runner.send(:color, name)
+          end
+
+          def cut_off_ratio
+            0
+          end
+
+          def default_ratio
+            0
+          end
+
+          def tag(mark, color_name, contents)
+            _color = color(color_name)
+            contents.each do |content|
+              output_single(mark, _color)
+              output_single(" ")
+              output(content)
+            end
+          end
+
+          def tag_deleted(contents)
+            tag("-", "diff-deleted-tag", contents)
+          end
+
+          def tag_inserted(contents)
+            tag("+", "diff-inserted-tag", contents)
+          end
+
+          def tag_equal(contents)
+            tag(" ", "normal", contents)
+          end
+
+          def tag_difference(contents)
+            tag("?", "diff-difference-tag", contents)
+          end
+
+          def diff_line(from_line, to_line)
+            to_operations = []
+            from_line, to_line, _operations = line_operations(from_line, to_line)
+
+            no_replace = true
+            _operations.each do |tag,|
+              if tag == :replace
+                no_replace = false
+                break
+              end
+            end
+
+            output_single("?", color("diff-difference-tag"))
+            output_single(" ")
+            _operations.each do |tag, from_start, from_end, to_start, to_end|
+              from_width = compute_width(from_line, from_start, from_end)
+              to_width = compute_width(to_line, to_start, to_end)
+              case tag
+              when :replace
+                output_single(from_line[from_start...from_end],
+                              color("diff-deleted"))
+                if (from_width < to_width)
+                  output_single(" " * (to_width - from_width))
+                end
+                to_operations << Proc.new do
+                  output_single(to_line[to_start...to_end],
+                                color("diff-inserted"))
+                  if (to_width < from_width)
+                    output_single(" " * (from_width - to_width))
+                  end
+                end
+              when :delete
+                output_single(from_line[from_start...from_end],
+                              color("diff-deleted"))
+                unless no_replace
+                  to_operations << Proc.new {output_single(" " * from_width)}
+                end
+              when :insert
+                if no_replace
+                  output_single(to_line[to_start...to_end],
+                                color("diff-inserted"))
+                else
+                  output_single(" " * to_width)
+                  to_operations << Proc.new do
+                    output_single(to_line[to_start...to_end],
+                                  color("diff-inserted"))
+                  end
+                end
+              when :equal
+                output_single(from_line[from_start...from_end])
+                unless no_replace
+                  to_operations << Proc.new {output_single(" " * to_width)}
+                end
+              else
+                raise "unknown tag: #{tag}"
+              end
+            end
+            output("")
+
+            unless to_operations.empty?
+              output_single("?", color("diff-difference-tag"))
+              output_single(" ")
+              to_operations.each do |operation|
+                operation.call
+              end
+              output("")
+            end
           end
         end
       end

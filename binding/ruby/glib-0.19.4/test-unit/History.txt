@@ -1,3 +1,87 @@
+=== 2.0.7 / 2010-03-09
+
+* 4 major enhancements
+  * detect redefined test methods.
+  * [INTERFACE IMCOMPATIBLE] multiple --name and --testcase
+    options narrow down targets instead of adding targets.
+  * [#27764] accept custom test_order for each test case.
+    [Suggested by David MARCHALAND]
+  * [#27790] ignore omitted tests from 'n% passed' report.
+    [Suggested by Daniel Berger]
+
+* 2 minor enchancements
+  * [#27832] ignore .git directory. [Suggested by Daniel Berger]
+  * [#27792] require 'fileutils' and 'tmpdir' lazily for non-priority
+    mode users. [Suggested by David MARCHALAND]
+
+* 2n bug fixes
+  * [#27892] modify processed arguments array destructively.
+    [Reported by Bob Saveland]
+  * work without HOME environment variable.
+    [Reported by Champak Ch]
+
+* Thanks
+  * David MARCHALAND
+  * Daniel Berger
+  * Bob Saveland
+  * Champak Ch
+
+=== 2.0.6 / 2010-01-09
+
+* 3 major enhancements
+  * [#27380] Declarative syntax? [Daniel Berger]
+    support declarative syntax:
+
+      test "test description in natural language" do
+         ...
+      end
+  * support test description:
+      description "test description in natural language"
+      def test_my_test
+         ...
+      end
+  * make max diff target string size customizable by
+    TEST_UNIT_MAX_DIFF_TARGET_STRING_SIZE environment variable.
+
+* 2 bug fixes
+  * [#27374] omit_if unexpected behavior [David MARCHALAND]
+  * fix a bug that tests in sub directories aren't load with --basedir.
+    [Daniel Berger]
+
+* Thanks
+  * David MARCHALAND
+  * Daniel Berger
+
+=== 2.0.5 / 2009-10-18
+
+* 1 bug fixes
+  * [#27314] fix diff may raise an exception. [Erik Hollensbe]
+
+* Thanks
+  * Erik Hollensbe
+
+=== 2.0.4 / 2009-10-17
+
+* 4 major enhancements
+  * use ~/.test-unit.yml as global configuration file.
+  * add TAP runner. (--runner tap)
+  * support colorized diff:
+    http://test-unit.rubyforge.org/svn/trunk/images/color-diff.png
+  * add Test::Unit::AutoRunner.default_runner= to specify default test runner.
+
+* 4 minor enhancements
+  * improve verbose mode output format. (use indent)
+  * support NOT_PASS_THROUGH_EXCEPTIONS.
+  * support arguments option in #{runner}_options.
+  * TC_ -> Test in sample test case name.
+
+* 1 bug fixes
+  * [#27195] test-unit-2.0.3 + ruby-1.9.1 cannot properly test
+    DelegateClass subclasses [Mike Pomraning]
+
+* Thanks
+  * Mike Pomraning
+
 === 2.0.3 / 2009-07-19
 
 * 6 major enhancements

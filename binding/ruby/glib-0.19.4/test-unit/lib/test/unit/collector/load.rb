@@ -14,8 +14,8 @@ module Test
         def initialize
           super
           @system_excludes = [/~\z/, /\A\.\#/]
-          @system_directory_excludes = [/\A(?:CVS|\.svn)\z/]
-          @patterns = [/\Atest[_\-].+\.rb\z/m]
+          @system_directory_excludes = [/\A(?:CVS|\.svn|\.git)\z/]
+          @patterns = [/\Atest[_\-].+\.rb\z/m, /[_\-]test\.rb\z/]
           @excludes = []
           @base = nil
         end
@@ -28,11 +28,17 @@ module Test
         def collect(*froms)
           add_load_path(@base) do
             froms = ["."] if froms.empty?
-            test_suites = froms.collect do |from|
-              test_suite = collect_recursive(from, find_test_cases)
-              test_suite = nil if test_suite.tests.empty?
-              test_suite
-            end.compact
+            test_suites = []
+            already_gathered = find_test_cases
+            froms.each do |from|
+              from = resolve_path(from)
+              if from.directory?
+                test_suite = collect_recursive(from, already_gathered)
+                test_suites << test_suite unless test_suite.tests.empty?
+              else
+                collect_file(from, test_suites, already_gathered)
+              end
+            end
 
             if test_suites.size > 1
               test_suite = TestSuite.new("[#{froms.join(', ')}]")
@@ -56,10 +62,9 @@ module Test
         end
 
         private
-        def collect_recursive(name, already_gathered)
+        def collect_recursive(path, already_gathered)
           sub_test_suites = []
 
-          path = resolve_path(name)
           if path.directory?
             directories, files = path.children.partition do |child|
               child.directory?
@@ -89,6 +94,8 @@ module Test
         end
 
         def collect_file(path, test_suites, already_gathered)
+          @program_file ||= File.expand_path($0)
+          return if @program_file == path.to_s
           add_load_path(path.expand_path.dirname) do
             require(path.to_s)
             find_test_cases(already_gathered).each do |test_case|
