@@ -1,5 +1,7 @@
 2010-04-17  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/run-test.sh: don't depend on Ruby/GLib version number.
+
 	* binding/ruby/test/toolkit/test-logger.rb: add profile log level.
 
 	* test/run-test.sh: 0.19.3 -> 0.19.4.

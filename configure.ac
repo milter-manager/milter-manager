@@ -339,6 +339,10 @@ pkglibdir = \$(libdir)/$PACKAGE_NAME
 bindingdir = $bindingdir
 binding_extdir = $binding_extdir
 binding_libdir = $binding_libdir
+RUBY = $RUBY
+
+check:
+	\$(RUBY) test/run-test.rb
 EOM
     fi
   fi
