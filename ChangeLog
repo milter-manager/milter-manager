@@ -1,5 +1,7 @@
 2010-04-17  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/run-test.sh: 0.19.3 -> 0.19.4.
+
 	* binding/ruby/glib-0.19.3/: removed.
 
 	* binding/ruby/glib-0.19.4/extconf.rb: don't embed version number.
