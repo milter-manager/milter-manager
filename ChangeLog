@@ -1,3 +1,7 @@
+2010-04-17  Kouhei Sutou  <kou@cozmixng.org>
+
+	* binding/ruby/glib-0.19.4/: copy from glib-0.19.3/.
+
 2010-04-15  Kouhei Sutou  <kou@cozmixng.org>
 
 	* README*: add contribution for Solaris by SATOH Fumiyasu to
