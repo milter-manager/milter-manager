@@ -282,6 +282,12 @@ if test "$ruby_available" = "yes"; then
                     #if RBGLIB_MINOR_VERSION == 17
                     #  error "Ruby/GLib2 0.17.0 has GC related bug."
                     #endif
+                    #if RBGLIB_MINOR_VERSION == 18
+                    #  error "Ruby/GLib2 0.18.x has memory leak bugs."
+                    #endif
+                    #if RBGLIB_MINOR_VERSION == 19 && RBGLIB_MICRO_VERSION < 4
+                    #  error "Ruby/GLib2 0.19.[0123] have memory leak bugs."
+                    #endif
                    ],
                    [],
 		   [ruby_available="no"
