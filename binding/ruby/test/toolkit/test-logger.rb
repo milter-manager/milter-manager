@@ -1,4 +1,4 @@
-# Copyright (C) 2009  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2009-2010  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -27,7 +27,8 @@ class TestLogger < Test::Unit::TestCase
                  Milter::LogLevelFlags::MESSAGE |
                  Milter::LogLevelFlags::INFO |
                  Milter::LogLevelFlags::DEBUG |
-                 Milter::LogLevelFlags::STATISTICS,
+                 Milter::LogLevelFlags::STATISTICS |
+                 Milter::LogLevelFlags::PROFILE,
                  Milter::LogLevelFlags::ALL)
     assert_equal(Milter::LOG_LEVEL_ALL,
                  Milter::LogLevelFlags::ALL)
