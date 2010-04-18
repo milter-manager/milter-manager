@@ -1,4 +1,4 @@
-# Copyright (C) 2009  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2009-2010  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -34,8 +34,7 @@ class TestLogAnalyzer < Test::Unit::TestCase
     FileUtils.rm_rf(@tmp_dir.to_s)
     FileUtils.mkdir_p(@tmp_dir.to_s)
 
-    @analyzer = MilterManagerLogAnalyzer.new
-    @analyzer.now = Time.parse("#{Time.now.year}/09/29 15:48:12")
+    @analyzer = analyzer
   end
 
   def teardown
@@ -59,16 +58,18 @@ class TestLogAnalyzer < Test::Unit::TestCase
     @analyzer.update
 
     suffix = "1"
-    assert_equal((@data_dir + "session-#{suffix}.dump").read,
-                 dump(session_rrd))
-    assert_equal((@data_dir + "milter-manager.status-#{suffix}.dump").read,
-                 dump(status_rrd))
-    assert_equal((@data_dir + "milter-manager.report-#{suffix}.dump").read,
-                 dump(report_rrd))
-    assert_equal((@data_dir + "milter.status.milter-greylist-#{suffix}.dump").read,
-                 dump(milter_status_rrd))
-    assert_equal((@data_dir + "milter.report.milter-greylist-#{suffix}.dump").read,
-                 dump(milter_report_rrd))
+    start_time = Time.parse("#{Time.now.year}/07/15 00:00:00")
+    end_time = Time.parse("#{Time.now.year}/07/15 02:00:00")
+    assert_equal(read_fetch_file("session-#{suffix}.fetch"),
+                 fetch(session_rrd, start_time, end_time))
+    assert_equal(read_fetch_file("milter-manager.status-#{suffix}.fetch"),
+                 fetch(status_rrd, start_time, end_time))
+    assert_equal(read_fetch_file("milter-manager.report-#{suffix}.fetch"),
+                 fetch(report_rrd, start_time, end_time))
+    assert_equal(read_fetch_file("milter.status.milter-greylist-#{suffix}.fetch"),
+                 fetch(milter_status_rrd, start_time, end_time))
+    assert_equal(read_fetch_file("milter.report.milter-greylist-#{suffix}.fetch"),
+                 fetch(milter_report_rrd, start_time, end_time))
   end
 
   def test_update_incrementally
@@ -85,41 +86,44 @@ class TestLogAnalyzer < Test::Unit::TestCase
         i += 1
         lines << line
         if (i % 1000).zero?
-          analyzer = MilterManagerLogAnalyzer.new
-          analyzer.output_directory = @tmp_dir.to_s
-          analyzer.prepare
-          analyzer.log = StringIO.new(lines)
-          analyzer.update
+          _analyzer = analyzer
+          _analyzer.output_directory = @tmp_dir.to_s
+          _analyzer.prepare
+          _analyzer.log = StringIO.new(lines)
+          _analyzer.update
           lines = ""
         end
       end
 
       unless lines.empty?
-        analyzer = MilterManagerLogAnalyzer.new
-        analyzer.output_directory = @tmp_dir.to_s
-        analyzer.prepare
-        analyzer.log = StringIO.new(lines)
-        analyzer.update
+        _analyzer = analyzer
+        _analyzer.output_directory = @tmp_dir.to_s
+        _analyzer.prepare
+        _analyzer.log = StringIO.new(lines)
+        _analyzer.update
       end
     end
 
     suffix = "1-incrementally"
-    assert_equal((@data_dir + "session-#{suffix}.dump").read,
-                 dump(session_rrd))
-    assert_equal((@data_dir + "milter-manager.status-#{suffix}.dump").read,
-                 dump(status_rrd))
-    assert_equal((@data_dir + "milter-manager.report-#{suffix}.dump").read,
-                 dump(report_rrd))
-    assert_equal((@data_dir + "milter.status.milter-greylist-#{suffix}.dump").read,
-                 dump(milter_status_rrd))
-    assert_equal((@data_dir + "milter.report.milter-greylist-#{suffix}.dump").read,
-                 dump(milter_report_rrd))
+    start_time = Time.parse("#{Time.now.year}/07/15 00:00:00")
+    end_time = Time.parse("#{Time.now.year}/07/15 02:00:00")
+    assert_equal(read_fetch_file("session-#{suffix}.fetch"),
+                 fetch(session_rrd, start_time, end_time))
+    assert_equal(read_fetch_file("milter-manager.status-#{suffix}.fetch"),
+                 fetch(status_rrd, start_time, end_time))
+    assert_equal(read_fetch_file("milter-manager.report-#{suffix}.fetch"),
+                 fetch(report_rrd, start_time, end_time))
+    assert_equal(read_fetch_file("milter.status.milter-greylist-#{suffix}.fetch"),
+                 fetch(milter_status_rrd, start_time, end_time))
+    assert_equal(read_fetch_file("milter.report.milter-greylist-#{suffix}.fetch"),
+                 fetch(milter_report_rrd, start_time, end_time))
   end
 
   def test_update_with_distance
+    FileUtils.cp(Dir.glob((@data_dir + "*.rrd").to_s), @tmp_dir)
+
     @analyzer.output_directory = @tmp_dir.to_s
     @analyzer.prepare
-    FileUtils.cp(Dir.glob((@data_dir + "*.rrd").to_s), @tmp_dir)
 
     input = (@data_dir + "mail-20090715-2.log").open
     @analyzer.log = input
@@ -133,16 +137,18 @@ class TestLogAnalyzer < Test::Unit::TestCase
     @analyzer.update
 
     suffix = "2"
-    assert_equal((@data_dir + "session-#{suffix}.dump").read,
-                 dump(session_rrd))
-    assert_equal((@data_dir + "milter-manager.status-#{suffix}.dump").read,
-                 dump(status_rrd))
-    assert_equal((@data_dir + "milter-manager.report-#{suffix}.dump").read,
-                 dump(report_rrd))
-    assert_equal((@data_dir + "milter.status.milter-greylist-#{suffix}.dump").read,
-                 dump(milter_status_rrd))
-    assert_equal((@data_dir + "milter.report.milter-greylist-#{suffix}.dump").read,
-                 dump(milter_report_rrd))
+    start_time = Time.parse("#{Time.now.year}/07/15 06:40:00")
+    end_time = Time.parse("#{Time.now.year}/07/15 09:40:00")
+    assert_equal(read_fetch_file("session-#{suffix}.fetch"),
+                 fetch(session_rrd, start_time, end_time))
+    assert_equal(read_fetch_file("milter-manager.status-#{suffix}.fetch"),
+                 fetch(status_rrd, start_time, end_time))
+    assert_equal(read_fetch_file("milter-manager.report-#{suffix}.fetch"),
+                 fetch(report_rrd, start_time, end_time))
+    assert_equal(read_fetch_file("milter.status.milter-greylist-#{suffix}.fetch"),
+                 fetch(milter_status_rrd, start_time, end_time))
+    assert_equal(read_fetch_file("milter.report.milter-greylist-#{suffix}.fetch"),
+                 fetch(milter_report_rrd, start_time, end_time))
   end
 
   private
@@ -150,7 +156,46 @@ class TestLogAnalyzer < Test::Unit::TestCase
     block.call(received(subject)).call
   end
 
-  def dump(path)
-    `rrdtool dump '#{path}'`
+  def fetch(path, start_time, end_time)
+    start_time = rrdtool_time_format(start_time)
+    end_time = rrdtool_time_format(end_time)
+    result = `rrdtool fetch '#{path}' MAX -s '#{start_time}' -e '#{end_time}'`
+    parse_fetched_data(result)
+  end
+
+  def parse_fetched_data(raw_data)
+    raw_data = StringIO.new(raw_data)
+    headers = raw_data.gets.split
+    raw_data.gets
+    fetched_data = []
+    raw_data.each_line do |line|
+      case line
+      when /\A(\d+): /
+        row = {}
+        time = $1
+        $POSTMATCH.split.each_with_index do |data, i|
+          row[headers[i]] = data
+        end
+        row["time"] = Time.at(time.to_i).strftime("%m/%d %H:%M:%S")
+        fetched_data << row
+      else
+        raise "invalid line: <#{line}>: <#{raw_data}>"
+      end
+    end
+    fetched_data
+  end
+
+  def rrdtool_time_format(time)
+    time.strftime("%Y%m%d %H:%M")
+  end
+
+  def read_fetch_file(base_name)
+    parse_fetched_data((@data_dir + base_name).read)
+  end
+
+  def analyzer
+    _analyzer = MilterManagerLogAnalyzer.new
+    _analyzer.now = Time.parse("#{Time.now.year}/09/29 15:48:12")
+    _analyzer
   end
 end

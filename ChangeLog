@@ -1,5 +1,8 @@
 2010-04-17  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/tool/test-log-analyzer.rb,
+	test/tool/fixtures/: work again with more robustness.
+
 	* tool/milter-manager-log-analyzer: fix variable name.
 
 	* test/run-test.sh: don't depend on Ruby/GLib version number.
