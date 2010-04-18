@@ -1203,12 +1203,12 @@ EOF
 end
 
 if __FILE__ == $0
-  milter_log_tool = MilterManagerLogAnalyzer.new
-  milter_log_tool.parse_options(ARGV)
-  milter_log_tool.prepare
-  milter_log_tool.update
-  milter_log_tool.output_all_graph
-  milter_log_tool.output_html
+  milter_log_analyzer = MilterManagerLogAnalyzer.new
+  milter_log_analyzer.parse_options(ARGV)
+  milter_log_analyzer.prepare
+  milter_log_analyzer.update
+  milter_log_analyzer.output_all_graph
+  milter_log_analyzer.output_html
 end
 
 # vi:ts=2:nowrap:ai:expandtab:sw=2
