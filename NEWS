@@ -2,6 +2,54 @@
 
 = NEWS --- The history of milter manager
 
+== [release-1-5-1] 1.5.1: 2010-04-XX
+
+A bug fix release of 1.5.1.
+
+It includes a memory leak fix derived from Ruby/GLib2
+because bundled Ruby/GLib2 is updated. If bundled Ruby/GLib2
+is used, upgrade is recommended.
+
+=== Document
+
+==== Improvements
+
+  * Added install document for development release on Ubuntu
+    Karmic Koara.
+  * Added a description that installs Rack
+    explicitly. [Reported by Tsuchiya]
+
+==== Fixes
+
+  * FreeBSD: Fixed package name [Reported by Tsuchiya]
+
+=== libmilter-core
+
+==== Improvements
+
+  * Supported syslog level change by MILTER_LOG_SYSLOG_LEVEL
+    environment variable.
+  * Added memory profiler.
+
+=== milter manager
+
+==== Improvements
+
+  * Supported Solaris. [Reported and patched by SATOH Fumiyasu]
+  * Bundled Ruby/GLib2 0.19.4.
+
+=== milter-test-client
+
+==== Improvements
+
+  * Added
+    ((<--report-memory-profile|milter-test-client.html#milter-test-client.--help>)) option.
+
+=== Thanks
+
+  * Tsuchiya
+  * SATOH Fumiyasu
+
 == [release-1-5-0] 1.5.0: 2010-03-29
 
 A development release.

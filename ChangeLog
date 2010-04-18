@@ -1,7 +1,8 @@
-2010-04-17  Kouhei Sutou  <kou@cozmixng.org>
+2010-04-18  Kouhei Sutou  <kou@cozmixng.org>
 
-	* test/tool/test-log-analyzer.rb,
-	test/tool/fixtures/: work again with more robustness.
+	* NEWS*: add 1.5.1 entry.
+
+2010-04-17  Kouhei Sutou  <kou@cozmixng.org>
 
 	* tool/milter-manager-log-analyzer: fix variable name.
 

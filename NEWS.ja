@@ -2,6 +2,53 @@
 
 = お知らせ --- milter managerの歴史
 
+== [release-1-5-1] 1.5.1: 2010-04-XX
+
+1.5.1のバグフィックスリリースです。
+
+同梱しているRuby/GLib2を更新したので、Ruby/GLib2内で起こって
+いたメモリリークが修正されています。同梱しているRuby/GLib2を
+使っている場合はアップデートを推奨します。
+
+=== ドキュメント
+
+==== 改善
+
+  * Ubuntu Karmic Koara用の開発版インストールドキュメントを
+    追加
+  * 明示的にRackをインストールする記述を追加 [土谷さんが報告]
+
+==== 修正
+
+  * FreeBSD: パッケージ名の修正 [土谷さんが報告]
+
+=== libmilter-core
+
+==== 改善
+
+  * MILTER_LOG_SYSLOG_LEVEL環境変数でsyslogに出力するログの
+    種類を変更可能にした
+  * メモリプロファイラを追加
+
+=== milter manager
+
+==== 改善
+
+  * Solaris対応 [さとうふみやすさんが報告・パッチ提供]
+  * Ruby/GLib2 0.19.4を同梱
+
+=== milter-test-client
+
+==== 改善
+
+  * ((<--report-memory-profile|milter-test-client.html#milter-test-client.--help>))
+    オプションの追加。
+
+=== 感謝
+
+  * 土谷さん
+  * さとうふみやすさん
+
 == [release-1-5-0] 1.5.0: 2010-03-29
 
 開発版リリースです。
