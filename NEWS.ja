@@ -41,7 +41,7 @@
 
 ==== 改善
 
-  * ((<--report-memory-profile|milter-test-client.html#milter-test-client.--help>))
+  * ((<--report-memory-profile|milter-test-client#--report-memory-profile>))
     オプションの追加。
 
 === 感謝

@@ -43,7 +43,7 @@ is used, upgrade is recommended.
 ==== Improvements
 
   * Added
-    ((<--report-memory-profile|milter-test-client.html#milter-test-client.--help>)) option.
+    ((<--report-memory-profile|milter-test-client#--report-memory-profile>)) option.
 
 === Thanks
 
