@@ -1,5 +1,7 @@
 2010-04-19  Kouhei Sutou  <kou@clear-code.com>
 
+	* test/tool/fixtures/Makefile.am: .dump -> .fetch.
+
 	* configure.ac: add do-nothing distdir and dist targets to
 	Ruby/GLib2 makefile.
 
