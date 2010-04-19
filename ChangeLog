@@ -1,5 +1,7 @@
 2010-04-19  Kouhei Sutou  <kou@clear-code.com>
 
+	* ./: update the latest development release information.
+
 	* test/tool/fixtures/Makefile.am: .dump -> .fetch.
 
 	* configure.ac: add do-nothing distdir and dist targets to
