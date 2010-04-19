@@ -507,13 +507,45 @@ Here are descriptions of configuration items.
 
    Since 1.5.0.
 
-   TODO
+   Checks a SMTP client is still connected to a SMTP
+   server each
+   ((<manager.define_connection_check_interval|.#manager.define_connection_check_interval>))
+   seconds. If given block returns true value, it means that
+   the connection is still alive, otherwise it means that
+   the connection had been closed.
+
+   : name
+      The name of the check process.
+
+   : context
+      The object passed to the block that knows the current
+      situation. It has the following information:
+
+   : context.smtp_client_address
+      Is the IP address of the check target SMTP client.
+      It is the same object as
+      ((<socket_address|.#socket-address>)).
+
+   : context.smtp_server_address
+      Is the IP address of the accepted SMTP server socket.
+      It is the same object as
+      ((<socket_address|.#socket-address>)).
+
+   Example:
+     # It assumes that a connection from non local network
+     # is always closed.
+     manager.define_connection_checker("netstat-check") do |context|
+       context.smtp_client_address.local?
+     end
 
 : manager.report_memory_statistics
 
    Since 1.5.0.
 
-   TODO
+   Logs memory usage each maintenance process.
+
+   Here is the output format but it may be changed in the
+   feature:
 
      Mar 28 15:16:58 mail milter-manager[19026]: [statistics] [maintain][memory] (28048KB) total:6979 Proc:44 GLib::Object:18
 
@@ -526,7 +558,10 @@ Here are descriptions of configuration items.
 
    Since 1.5.0.
 
-   TODO
+   Executes a custom process each maintenance process.
+
+   Here is an example that logs a message each maintenance
+   process.
 
    Example:
      manager.maintained do
@@ -907,59 +942,208 @@ to all child milters.
 
 == Built-in applicable conditions
 
-TODO
+Here are descriptions about built-in applicable conditions.
 
 === S25R
 
-TODO
+This applicable condition applies a child milter to only
+normal PC like SMTP client. A child milter isn't applied to
+MTA like SMTP client.
+
+Here is an example that uses
+((<Rgrey|URL:http://lists.ee.ethz.ch/postgrey/msg01214.html>))
+technique. (NOTE: milter-greylist should have "racl greylist
+default" configuration.)
+
+Example:
+  define_milter("milter-greylist") do |milter|
+    milter.add_applicable_condition("S25R")
+  end
+
+See ((<S25R|URL:http://www.gabacho-net.jp/en/anti-spam/>))
+how to determine a SMTP client is MTA or normal PC.
+
+NOTE: google.com domain is whitelisted.
 
 === Remote Network
 
-TODO
+This applicable condition applies a child milter to only
+SMTP client that is connected from remote network.
+
+Here is an example that mails from local network are skipped
+spam-check to avoid false detection:
+
+Example:
+  define_milter("spamass-milter") do |milter|
+    milter.add_applicable_condition("Remote Network")
+  end
+
+Local network means that not private IP
+address. e.g. 192.168.0.0/24. We can customize local network
+by the following configurations.
 
 : remote_network.add_local_address(address)
 
    Since 1.5.0.
 
-   TODO
+   Adds the specified IPv4/IPv6 address or IPv4/IPv6 network
+   to local network. Child milter isn't applied to SMTP
+   clients connected from local network.
 
-=== Authentication
+   Example:
 
-TODO
+     # Don't apply child milters connections from 160.29.167.10.
+     remote_network.add_local_address("160.29.167.10")
+     # Don't apply child milters connections from
+     # 160.29.167.0/24 network.
+     remote_network.add_local_address("160.29.167.0/24")
+     # Don't apply child milters connections from
+     # 2001:2f8:c2:201::fff0.
+     remote_network.add_local_address("2001:2f8:c2:201::fff0")
+     # Don't apply child milters connections from
+     # 2001:2f8:c2:201::/64 network.
+     remote_network.add_local_address("2001:2f8:c2:201::/64")
+
+=== [authentication] Authentication
+
+This applicable condition applies a child milter to
+authenticated SMTP client by SMTP Auth. MTA should send
+authentication related macros to a milter. Sendmail isn't
+needed additional configuration. Postfix needs the following
+additional configuration:
+
+main.cf:
+  milter_mail_macros = {auth_author} {auth_type} {auth_authen}
+
+Here is an example that authenticated SMTP client's mail,
+inner to outer mail, is Bcc-ed to be audited:
+
+Example:
+
+  define_milter("milter-bcc") do |milter|
+    milter.add_applicable_condition("Authentication")
+  end
+
+=== [unauthentication] Unauthentication
+
+This applicable condition applies a child miter to
+non-authenticated SMTP client by SMTP Auth. MTA should send
+authentication related macros to a milter. See also
+((<Authentication|.#authentication>)).
+
+Here is an example that only non-authentication SMTP client
+is applied spam-check to avoid false detection.
+
+Example:
+
+  define_milter("spamass-milter") do |milter|
+    milter.add_applicable_condition("Unauthentication")
+  end
 
 === Sendmail Compatible
 
-TODO
+This applicable condition is a bit strange. This always
+applies a child milter. This substitute different macros
+between Sendmail and Postfix. A milter that depends on
+Sendmail specific macros can be worked with this applicable
+condition and Postfix.
+
+This applicable condition will be needless in the near
+feature because milters are fixing to be work with both
+Sendmail and Postfix. It's good things.
+
+We can use this applicable condition with Postfix, it
+doesn't have adverse affect for Postfix.
+
+Here is an example that we use milter-greylist built for
+Sendmail with Postfix.
+
+Example:
+
+  define_milter("milter-greylist") do |milter|
+    milter.add_applicable_condition("Sendmail Compatible")
+  end
 
 === stress
 
 Since 1.5.0.
 
-TODO
+Those applicable conditions changes process depends on
+stress dynamically. Stress is determine by number of
+concurrent connections.
 
 : stress.threshold_n_connections
 
    Since 1.5.0.
 
-   TODO
+   Returns number of concurrent connections to determine
+   stressed.
+
+   With Postfix, number of max smtpd processes are detected
+   automatically and 3/4 of it is set.
+
+   With Sendmail, it's not detected automatically. We need
+   to set it with
+   ((<stress.threshold_n_connections=|.#stress.threshold_n_connections=>))
+   by hand.
+
+   Example:
+     # Postfix's default. (depends on our environment)
+     stress.threshold_n_connections # => 75
 
 : stress.threshold_n_connections=(n)
 
    Since 1.5.0.
 
-   TODO
+   Sets number of connections to determine stressed.
+
+   0 means that always non-stressed.
+
+   Example:
+     # Number of concurrent connections is higher or equal
+     # 75 means stressed.
+     stress.threshold_n_connections = 75
 
 ==== [no-stress] No Stress
 
 Since 1.5.0.
 
-TODO
+This applies a child milter only when non-stressed.
+
+Here is an example that spamass-milter isn't applied when
+stressed:
+
+Example:
+
+  define_milter("spamass-milter") do |milter|
+    milter.add_applicable_condition("No Stress")
+  end
 
 ==== [stress-notify] Stress Notify
 
 Since 1.5.0.
 
-TODO
+This notifies stressed to a child milter by "{stress}=yes"
+macro. This just notifies. It means that a child milter is
+always applied.
+
+Here is an example that milter-greylist is notified stressed
+by macro.
+
+Example:
+
+  define_milter("milter-greylist") do |milter|
+    milter.add_applicable_condition("Stress Notify")
+  end
+
+Here is an example configuration for milter-greylist to use
+tarpitting on non-stress and greylisting on stress. This
+configuration requires milter-greylist 4.3.4 or later.
+
+greylist.conf:
+  sm_macro "no_stress" "{stress}" unset
+  racl whitelist sm_macro "no_stress" tarpit 125s
+  racl greylist default
 
 === Restrict Accounts
 

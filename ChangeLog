@@ -1,5 +1,7 @@
 2010-04-19  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/configuration.rd, doc/milter-test-client.rd: fill TODO.
+
 	* doc/configuration.rd.ja, doc/milter-test-client.rd.ja: fill TODO.
 
 2010-04-19  Kouhei Sutou  <kou@clear-code.com>

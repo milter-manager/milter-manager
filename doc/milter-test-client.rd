@@ -66,7 +66,13 @@ tool for looking into the problems.
 
 : --report-memory-profile
 
-   TODO
+   Reports memory usage each milter session finished.
+
+   When MILTER_MEMORY_PROFILE environment variable is set to
+   'yes', details are reported.
+
+   Example:
+     % MILTER_MEMORY_PROFILE=yes milter-test-client -s inet:10025
 
 : --daemon
 

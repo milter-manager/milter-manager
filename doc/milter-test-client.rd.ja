@@ -68,6 +68,12 @@ milter-test-clientが役立つでしょう。
 
    milterセッションが終了する毎にメモリ使用量を表示します。
 
+   MILTER_MEMORY_PROFILE環境変数をyesに設定するとより詳細な
+   情報を表示します。
+
+   例:
+     % MILTER_MEMORY_PROFILE=yes milter-test-client -s inet:10025
+
 : --daemon
 
    デーモンプロセスとして起動します。

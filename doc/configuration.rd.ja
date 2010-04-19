@@ -1067,7 +1067,7 @@ MTAがPostfixの場合にこの適用条件を設定しても悪影響はない�
    自動検出した最大プロセス数の3/4以上の同時接続数がある場合に負
    荷が高いと判断します。
 
-   Sendmailの場合意は自動検出されないので、
+   Sendmailの場合は自動検出されないので、
    ((<stress.threshold_n_connections=|.#stress.threshold_n_connections=>))
    で手動で設定する必要があります。
 
