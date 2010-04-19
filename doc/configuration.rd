@@ -509,7 +509,7 @@ Here are descriptions of configuration items.
 
    Checks a SMTP client is still connected to a SMTP
    server each
-   ((<manager.define_connection_check_interval|.#manager.define_connection_check_interval>))
+   ((<manager.connection_check_interval|.#manager.connection_check_interval>))
    seconds. If given block returns true value, it means that
    the connection is still alive, otherwise it means that
    the connection had been closed.
@@ -1232,7 +1232,7 @@ There is no required item.
       ADDRESS]" string when name resolution is failed. For
       example, "[1.2.3.4]".
 
-   : socket_address
+   : [] socket_address
       The object that describes connected IP
       address. Details are said later.
 

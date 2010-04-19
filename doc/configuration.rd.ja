@@ -498,7 +498,7 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
 
    1.5.0から使用可能。
 
-   ((<manager.define_connection_check_interval|.#manager.define_connection_check_interval>))
+   ((<manager.connection_check_interval|.#manager.connection_check_interval>))
    で指定した秒毎にSMTPクライアントがまだSMTPサーバと接続し
    ているかを確認します。ブロックがtrueを返したときはまだ接
    続していることを示し、falseを返したときは接続が切れたこと
@@ -1212,7 +1212,7 @@ define_applicable_condition do ... end内で設定できる項目は以
       「[]」で囲まれた文字列になります。例えば、"[1.2.3.4]"
       となります。
 
-   : socket_address
+   : [] socket_address
       接続してきたIPアドレスを表すオブジェクトです。詳細は後述
       します。
 
