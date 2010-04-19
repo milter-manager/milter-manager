@@ -1609,7 +1609,7 @@ It has the following information.
      context["auth_authen"] # -> "sender"
      context.authenticated? # -> true
 
-=== socket_address
+=== [socket-address] socket_address
 
 The object that describes socket address. Socket is one of
 IPv4 socket, IPv6 socket and UNIX domain socket. Socket
