@@ -498,10 +498,34 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
 
    1.5.0から使用可能。
 
-   TODO
+   ((<manager.define_connection_check_interval|.#manager.define_connection_check_interval>))
+   で指定した秒毎にSMTPクライアントがまだSMTPサーバと接続し
+   ているかを確認します。ブロックがtrueを返したときはまだ接
+   続していることを示し、falseを返したときは接続が切れたこと
+   を示します。
 
-   trueを返したときはまだ接続している。falseを返したときは接
-   続が切れたことを示す。
+   : name
+      確認処理につける名前です。
+
+   : context
+      ブロックに渡される現在の状況を知っているオブジェクトで
+      す。以下の情報を取得できます。
+
+   : context.smtp_client_address
+      接続確認対象のSMTPクライアントのIPアドレスです。
+      ((<socket_address|.#socket-address>))と同じオブジェ
+      クトです。
+
+   : context.smtp_server_address
+      SMTPクライアントの接続を受け付けたSMTPサーバ側のIPアド
+      レスです。((<socket_address|.#socket-address>))と同じ
+      オブジェクトです。
+
+   例:
+     # ローカルネットワーク以外からの接続は強制的に切断したとみなす
+     manager.define_connection_checker("netstat-check") do |context|
+       context.smtp_client_address.local?
+     end
 
 : manager.report_memory_statistics
 
@@ -1560,7 +1584,7 @@ define_applicable_condition do ... end内で設定できる項目は以
      context["auth_authen"] # -> "sender"
      context.authenticated? # -> true
 
-=== socket_address
+=== [socket-address] socket_address
 
 ソケットのアドレスを表現しているオブジェクトです。IPv4ソケッ
 ト、IPv6ソケット、UNIXドメインソケットそれぞれで別々のオブジェ
