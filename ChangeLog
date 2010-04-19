@@ -1,3 +1,8 @@
+2010-04-19  Kouhei Sutou  <kou@clear-code.com>
+
+	* configure.ac: add do-nothing distdir and dist targets to
+	Ruby/GLib2 makefile.
+
 2010-04-18  Kouhei Sutou  <kou@cozmixng.org>
 
 	* NEWS*: add 1.5.1 entry.

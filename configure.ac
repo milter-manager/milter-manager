@@ -343,6 +343,10 @@ RUBY = $RUBY
 
 check:
 	\$(RUBY) test/run-test.rb
+
+distdir:
+
+dist:
 EOM
     fi
   fi
