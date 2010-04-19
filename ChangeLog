@@ -1,5 +1,7 @@
 2010-04-19  Kouhei Sutou  <kou@cozmixng.org>
 
+	* NEWS*: fill 1.5.1 release date.
+
 	* doc/configuration.rd, doc/milter-test-client.rd: fill TODO.
 
 	* doc/configuration.rd.ja, doc/milter-test-client.rd.ja: fill TODO.
