@@ -4,7 +4,7 @@
 
 == [release-1-5-1] 1.5.1: 2010-04-20
 
-A bug fix release of 1.5.1.
+A bug fix release of 1.5.0.
 
 It includes a memory leak fix derived from Ruby/GLib2
 because bundled Ruby/GLib2 is updated. If bundled Ruby/GLib2

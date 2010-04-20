@@ -1,5 +1,7 @@
 2010-04-20  Kouhei Sutou  <kou@clear-code.com>
 
+	* NEWS*: fix typos.
+
 	* configure.ac: 1.5.1 -> 1.5.2.
 
 2010-04-19  Kouhei Sutou  <kou@cozmixng.org>
