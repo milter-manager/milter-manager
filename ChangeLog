@@ -1,3 +1,7 @@
+2010-04-21  Kouhei Sutou  <kou@clear-code.com>
+
+	* binding/ruby/Makefile.am (EXTRA_DIST): add test-unit files again.
+
 2010-04-20  Kouhei Sutou  <kou@clear-code.com>
 
 	* NEWS*: fix typos.
