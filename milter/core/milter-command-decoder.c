@@ -418,7 +418,7 @@ decode_connect_inet_address (const gchar *buffer,
     struct sockaddr_in *address_in;
     struct in_addr ip_address;
 
-    if (inet_aton(buffer, &ip_address) == 0) {
+    if (inet_pton(AF_INET, buffer, &ip_address) == 0) {
         g_set_error(error,
                     MILTER_COMMAND_DECODER_ERROR,
                     MILTER_COMMAND_DECODER_ERROR_INVALID_FORMAT,

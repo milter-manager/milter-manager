@@ -334,7 +334,7 @@ test_encode_connect_ipv4 (void)
 
     address.sin_family = AF_INET;
     address.sin_port = port;
-    inet_aton(ip_address, &(address.sin_addr));
+    inet_pton(AF_INET, ip_address, &(address.sin_addr));
 
     milter_command_encoder_encode_connect(encoder,
                                           &actual, &actual_size,

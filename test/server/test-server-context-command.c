@@ -436,7 +436,7 @@ test_connect (void)
     port = g_htons(50443);
     address.sin_family = AF_INET;
     address.sin_port = port;
-    inet_aton(ip_address, &(address.sin_addr));
+    inet_pton(AF_INET, ip_address, &(address.sin_addr));
 
     cut_assert_true(milter_server_context_connect(context, host_name,
                                                   (struct sockaddr *)&address,
@@ -471,7 +471,7 @@ test_connect_with_macro (void)
     port = g_htons(50443);
     address.sin_family = AF_INET;
     address.sin_port = port;
-    inet_aton(ip_address, &(address.sin_addr));
+    inet_pton(AF_INET, ip_address, &(address.sin_addr));
 
     macros = gcut_hash_table_string_string_new("G", "g",
                                                "N", "n",

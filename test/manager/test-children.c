@@ -1141,7 +1141,7 @@ test_connect_with_macro (void)
 
     address.sin_family = AF_INET;
     address.sin_port = g_htons(50443);
-    inet_aton(ip_address, &(address.sin_addr));
+    inet_pton(AF_INET, ip_address, &(address.sin_addr));
 
     connect_macros =
         gcut_hash_table_string_string_new("j", "debian.example.com",
@@ -1192,7 +1192,7 @@ test_connect (void)
 
     address.sin_family = AF_INET;
     address.sin_port = g_htons(50443);
-    inet_aton(ip_address, &(address.sin_addr));
+    inet_pton(AF_INET, ip_address, &(address.sin_addr));
 
     cut_assert_false(milter_manager_children_get_smtp_client_address(
                          children, &actual_address, &actual_address_length));
@@ -1247,7 +1247,7 @@ test_connect_stop (void)
 
     address.sin_family = AF_INET;
     address.sin_port = g_htons(50443);
-    inet_aton(ip_address, &(address.sin_addr));
+    inet_pton(AF_INET, ip_address, &(address.sin_addr));
 
     milter_manager_children_connect(children,
                                     host_name,
@@ -1286,7 +1286,7 @@ test_connect_half_stop (void)
 
     address.sin_family = AF_INET;
     address.sin_port = g_htons(50443);
-    inet_aton(ip_address, &(address.sin_addr));
+    inet_pton(AF_INET, ip_address, &(address.sin_addr));
 
     cut_assert_false(have_quitted_context(child_list));
     milter_manager_children_connect(children,
@@ -1774,7 +1774,7 @@ test_writing_timeout (void)
 
     address.sin_family = AF_INET;
     address.sin_port = g_htons(50443);
-    inet_aton(ip_address, &(address.sin_addr));
+    inet_pton(AF_INET, ip_address, &(address.sin_addr));
 
     milter_manager_children_connect(children,
                                     host_name,
@@ -1818,7 +1818,7 @@ test_reading_timeout (void)
 
     address.sin_family = AF_INET;
     address.sin_port = g_htons(50443);
-    inet_aton(ip_address, &(address.sin_addr));
+    inet_pton(AF_INET, ip_address, &(address.sin_addr));
 
     milter_manager_children_connect(children,
                                     host_name,

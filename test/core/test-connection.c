@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -115,7 +115,7 @@ sockaddr_in_new (guint16 port, const gchar *host)
     struct in_addr ip_address;
 
     if (host) {
-        if (inet_aton(host, &ip_address) == 0)
+        if (inet_pton(AF_INET, host, &ip_address) == 0)
             cut_error("invalid host address: <%s>", host);
     } else {
         ip_address.s_addr = INADDR_ANY;
@@ -313,6 +313,8 @@ test_parse_connection_spec_inet (gconstpointer data)
     const TestData *test_data = data;
     gint domain;
     struct sockaddr_in *expected_in, *actual_in;
+    gchar expected_address_string[INET6_ADDRSTRLEN];
+    gchar actual_address_string[INET6_ADDRSTRLEN];
     GError *error = NULL;
 
     milter_connection_parse_spec(test_data->spec,
@@ -334,8 +336,11 @@ test_parse_connection_spec_inet (gconstpointer data)
                          actual_in->sin_family);
     cut_assert_equal_uint(g_ntohs(expected_in->sin_port),
                           g_ntohs(actual_in->sin_port));
-    cut_assert_equal_string(cut_take_strdup(inet_ntoa(expected_in->sin_addr)),
-                            cut_take_strdup(inet_ntoa(actual_in->sin_addr)));
+    cut_assert_equal_string(
+        inet_ntop(AF_INET, &(expected_in->sin_addr),
+                  expected_address_string, sizeof(expected_address_string)),
+        inet_ntop(AF_INET, &(actual_in->sin_addr),
+                  actual_address_string, sizeof(actual_address_string)));
 }
 
 

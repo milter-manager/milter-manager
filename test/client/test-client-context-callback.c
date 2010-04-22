@@ -855,12 +855,13 @@ test_feed_connect_ipv4 (void)
     struct sockaddr_in *connected_address;
     const gchar host_name[] = "mx.local.net";
     const gchar ip_address[] = "192.168.123.123";
+    gchar actual_address_string[INET6_ADDRSTRLEN];
     guint16 port;
 
     port = g_htons(50443);
     address.sin_family = AF_INET;
     address.sin_port = port;
-    inet_aton(ip_address, &(address.sin_addr));
+    inet_pton(AF_INET, ip_address, &(address.sin_addr));
 
     milter_command_encoder_encode_connect(encoder,
                                           &packet, &packet_size,
@@ -877,7 +878,10 @@ test_feed_connect_ipv4 (void)
     connected_address = (struct sockaddr_in *)connect_address;
     cut_assert_equal_int(AF_INET, connected_address->sin_family);
     cut_assert_equal_uint(port, connected_address->sin_port);
-    cut_assert_equal_string(ip_address, inet_ntoa(connected_address->sin_addr));
+    cut_assert_equal_string(ip_address,
+                            inet_ntop(AF_INET, &(connected_address->sin_addr),
+                                      actual_address_string,
+                                      sizeof(actual_address_string)));
 
     gcut_assert_equal_hash_table_string_string(NULL, defined_macros);
     gcut_assert_equal_hash_table_string_string(expected_available_macros,
@@ -966,6 +970,7 @@ test_feed_connect_with_macro (void)
     struct sockaddr_in *connected_address;
     const gchar host_name[] = "mx.local.net";
     const gchar ip_address[] = "192.168.123.123";
+    gchar actual_address_string[INET6_ADDRSTRLEN];
     guint16 port;
 
     test_feed_negotiate();
@@ -986,7 +991,7 @@ test_feed_connect_with_macro (void)
     port = g_htons(50443);
     address.sin_family = AF_INET;
     address.sin_port = port;
-    inet_aton(ip_address, &(address.sin_addr));
+    inet_pton(AF_INET, ip_address, &(address.sin_addr));
 
     milter_command_encoder_encode_connect(encoder,
                                           &packet, &packet_size,
@@ -1004,7 +1009,10 @@ test_feed_connect_with_macro (void)
     connected_address = (struct sockaddr_in *)connect_address;
     cut_assert_equal_int(AF_INET, connected_address->sin_family);
     cut_assert_equal_uint(port, connected_address->sin_port);
-    cut_assert_equal_string(ip_address, inet_ntoa(connected_address->sin_addr));
+    cut_assert_equal_string(ip_address,
+                            inet_ntop(AF_INET, &(connected_address->sin_addr),
+                                      actual_address_string,
+                                      sizeof(actual_address_string)));
 
     cut_assert_equal_int(1, n_define_macros);
     gcut_assert_equal_hash_table_string_string(expected_macros, defined_macros);

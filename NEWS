@@ -2,6 +2,23 @@
 
 = NEWS --- The history of milter manager
 
+== [release-1-5-2] 1.5.2: 2010-XX-XX
+
+A bug fix release of 1.5.1.
+
+WRITE ME
+
+=== libmilter-core
+
+==== Improvements
+
+  * Used inet_pton()/inet_pton() instead of
+    inet_aton()/inet_ntoa(). [Suggested by SATOH Fumiyasu]
+
+=== Thanks
+
+  * SATOH Fumiyasu
+
 == [release-1-5-1] 1.5.1: 2010-04-20
 
 A bug fix release of 1.5.0.

@@ -938,6 +938,7 @@ test_decode_connect_ipv4 (void)
     const gchar host_name[] = "mx.local.net";
     const gchar ip_address[] = "192.168.123.123";
     gchar port_string[sizeof(uint16_t)];
+    gchar actual_address_string[INET6_ADDRSTRLEN];
     uint16_t port;
 
     port = g_htons(50443);
@@ -959,7 +960,10 @@ test_decode_connect_ipv4 (void)
     address = (struct sockaddr_in *)connect_address;
     cut_assert_equal_int(AF_INET, address->sin_family);
     cut_assert_equal_uint(port, address->sin_port);
-    cut_assert_equal_string(ip_address, inet_ntoa(address->sin_addr));
+    cut_assert_equal_string(ip_address,
+                            inet_ntop(AF_INET, &(address->sin_addr),
+                                      actual_address_string,
+                                      sizeof(actual_address_string)));
 }
 
 void

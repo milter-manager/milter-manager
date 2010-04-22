@@ -2,6 +2,23 @@
 
 = お知らせ --- milter managerの歴史
 
+== [release-1-5-2] 1.5.2: 2010-XX-XX
+
+1.5.1のバグフィックスリリースです。
+
+WRITE ME
+
+=== libmilter-core
+
+==== 改善
+
+  * inet_aton()/inet_ntoa()の代わりにinet_pton()/inet_pton()
+    を使用。[さとうふみやすさんが提案]
+
+=== 感謝
+
+  * さとうふみやすさん
+
 == [release-1-5-1] 1.5.1: 2010-04-20
 
 1.5.0のバグフィックスリリースです。

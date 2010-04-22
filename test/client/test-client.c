@@ -554,6 +554,7 @@ void
 test_listen_started (void)
 {
     struct sockaddr_in *address_inet;
+    gchar actual_address_string[INET6_ADDRSTRLEN];
 
     cut_trace(setup_client());
     if (!milter_client_main(client))
@@ -564,7 +565,10 @@ test_listen_started (void)
     address_inet = (struct sockaddr_in *)actual_address;
     cut_assert_equal_uint(AF_INET, address_inet->sin_family);
     cut_assert_equal_uint(9999, g_ntohs(address_inet->sin_port));
-    cut_assert_equal_string("127.0.0.1", inet_ntoa(address_inet->sin_addr));
+    cut_assert_equal_string("127.0.0.1",
+                            inet_ntop(AF_INET, &(address_inet->sin_addr),
+                                      actual_address_string,
+                                      sizeof(actual_address_string)));
     cut_assert_equal_uint(sizeof(*address_inet), actual_address_size);
 }
 

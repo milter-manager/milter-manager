@@ -1,3 +1,11 @@
+2010-04-22  Kouhei Sutou  <kou@cozmixng.org>
+
+	* NEWS*: add 1.5.2 entry.
+
+	* milter/, test/: use inet_pton() and inet_ntop() instead of
+	inet_aton() and inet_ntoa().
+	Suggested by SATOH Fumiyasu. Thanks!!!
+
 2010-04-21  Kouhei Sutou  <kou@clear-code.com>
 
 	* binding/ruby/Makefile.am (EXTRA_DIST): add test-unit files again.
