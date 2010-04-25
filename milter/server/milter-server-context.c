@@ -984,6 +984,7 @@ write_packet (MilterServerContext *context, gchar *packet, gsize packet_size,
                          tag, g_timer_elapsed(priv->elapsed, NULL), name);
             g_timer_continue(priv->elapsed);
         }
+        disable_timeout(priv);
         priv->timeout_id = milter_utils_timeout_add(priv->writing_timeout,
                                                     cb_writing_timeout,
                                                     context);
@@ -1063,7 +1064,6 @@ write_packet (MilterServerContext *context, gchar *packet, gsize packet_size,
         break;
     case MILTER_SERVER_CONTEXT_STATE_BODY:
         milter_server_context_set_state(context, next_state);
-        disable_timeout(priv);
         break;
     case MILTER_SERVER_CONTEXT_STATE_QUIT:
         milter_agent_shutdown(MILTER_AGENT(context));
@@ -2896,6 +2896,7 @@ milter_server_context_establish_connection (MilterServerContext *context,
                                             G_IO_ERR | G_IO_HUP | G_IO_NVAL,
                                             connect_watch_func, context);
 
+    disable_timeout(priv);
     priv->timeout_id = milter_utils_timeout_add(priv->connection_timeout,
                                                 cb_connection_timeout, context);
 

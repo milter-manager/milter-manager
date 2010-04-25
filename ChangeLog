@@ -1,3 +1,8 @@
+2010-04-25  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/server/milter-server-context.c: ensure disabling timeout
+	callback before set new timeout.
+
 2010-04-22  Kouhei Sutou  <kou@cozmixng.org>
 
 	* NEWS*: add 1.5.2 entry.
