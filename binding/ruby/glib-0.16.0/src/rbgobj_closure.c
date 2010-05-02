@@ -24,6 +24,10 @@
 #undef HAVE_NATIVETHREAD /* FIXME */
 #endif
 
+#ifdef HAVE_NATIVETHREAD
+#  undef HAVE_NATIVETHREAD /* force disable thread support. */
+#endif
+
 static ID id_call, id_closures;
 static gboolean rclosure_initialized = FALSE;
 
