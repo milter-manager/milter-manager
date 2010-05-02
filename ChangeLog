@@ -1,5 +1,7 @@
 2010-05-02  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/Makefile.am: fix test-unit files path.
+
 	* binding/ruby/glib-0.16.0/: disable thread support.
 
 2010-04-25  Kouhei Sutou  <kou@cozmixng.org>
