@@ -1,3 +1,7 @@
+2010-05-07  Kouhei Sutou  <kou@cozmixng.org>
+
+	* tool/milter-test-client-libmilter.c: add a test client with libmilter.
+
 2010-05-07  Kouhei Sutou  <kou@clear-code.com>
 
 	* TODO: add: [1.7.x] use epoll/kqueue or libev/libevent.
