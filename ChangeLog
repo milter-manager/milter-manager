@@ -1,3 +1,7 @@
+2010-05-07  Kouhei Sutou  <kou@clear-code.com>
+
+	* TODO: add: [1.7.x] use epoll/kqueue or libev/libevent.
+
 2010-05-02  Kouhei Sutou  <kou@clear-code.com>
 
 	* milter-manager.spec.in: add 1.5.2 entry.

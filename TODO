@@ -1,3 +1,4 @@
+* [1.7.x] use epoll/kqueue or libev/libevent.
 * [1.5.0] Ruby bindings: write a document for creating milter
 * [1.5.0] support Postfix access(5) and cidr_table(5) format
   for whitelist applicable condition.
