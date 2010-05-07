@@ -296,47 +296,61 @@ cb_continue (MilterServerContext *context, gpointer user_data)
                                               (struct sockaddr *)(&address),
                                               sizeof(address));
             }
-            break;
+            if (!(step & MILTER_STEP_NO_REPLY_CONNECT)) {
+                break;
+            }
         }
     case MILTER_SERVER_CONTEXT_STATE_CONNECT:
         set_macros_for_helo(agent);
         if (!(step & MILTER_STEP_NO_HELO)) {
             milter_server_context_helo(context, helo_host);
-            break;
+            if (!(step & MILTER_STEP_NO_REPLY_HELO)) {
+                break;
+            }
         }
     case MILTER_SERVER_CONTEXT_STATE_HELO:
         milter_server_context_reset_message_related_data(context);
         set_macros_for_envelope_from(agent);
         if (!(step & MILTER_STEP_NO_ENVELOPE_FROM)) {
             milter_server_context_envelope_from(context, envelope_from);
-            break;
+            if (!(step & MILTER_STEP_NO_REPLY_ENVELOPE_FROM)) {
+                break;
+            }
         }
     case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM:
         set_macros_for_envelope_recipient(agent);
         if (!(step & MILTER_STEP_NO_ENVELOPE_RECIPIENT)) {
             send_recipient(context);
-            break;
+            if (!(step & MILTER_STEP_NO_REPLY_ENVELOPE_RECIPIENT)) {
+                break;
+            }
         }
     case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT:
         if (!(step & MILTER_STEP_NO_ENVELOPE_RECIPIENT) &&
             *(recipients + current_recipient)) {
             set_macros_for_envelope_recipient(agent);
             send_recipient(context);
-            break;
+            if (!(step & MILTER_STEP_NO_REPLY_ENVELOPE_RECIPIENT)) {
+                break;
+            }
         }
         if (!(step & MILTER_STEP_NO_UNKNOWN) &&
             unknown_command &&
             milter_option_get_version(data->option) >= 3) {
             set_macros_for_unknown(agent);
             milter_server_context_unknown(context, unknown_command);
-            break;
+            if (!(step & MILTER_STEP_NO_REPLY_UNKNOWN)) {
+                break;
+            }
         }
     case MILTER_SERVER_CONTEXT_STATE_UNKNOWN:
         set_macros_for_data(agent);
         if (!(step & MILTER_STEP_NO_DATA) &&
             milter_option_get_version(data->option) >= 4) {
             milter_server_context_data(context);
-            break;
+            if (!(step & MILTER_STEP_NO_REPLY_DATA)) {
+                break;
+            }
         }
     case MILTER_SERVER_CONTEXT_STATE_DATA:
         set_macros_for_header(agent);
@@ -345,7 +359,9 @@ cb_continue (MilterServerContext *context, gpointer user_data)
             header = milter_headers_get_nth_header(option_headers, 1);
             milter_server_context_header(context, header->name, header->value);
             milter_headers_remove(option_headers, header);
-            break;
+            if (!(step & MILTER_STEP_NO_REPLY_HEADER)) {
+                break;
+            }
         }
     case MILTER_SERVER_CONTEXT_STATE_HEADER:
         if (!(step & MILTER_STEP_NO_HEADERS) &&
@@ -356,19 +372,25 @@ cb_continue (MilterServerContext *context, gpointer user_data)
             header = milter_headers_get_nth_header(option_headers, 1);
             milter_server_context_header(context, header->name, header->value);
             milter_headers_remove(option_headers, header);
-            break;
+            if (!(step & MILTER_STEP_NO_REPLY_HEADER)) {
+                break;
+            }
         }
         set_macros_for_end_of_header(agent);
         if (!(step & MILTER_STEP_NO_END_OF_HEADER)) {
             milter_server_context_end_of_header(context);
-            break;
+            if (!(step & MILTER_STEP_NO_REPLY_END_OF_HEADER)) {
+                break;
+            }
         }
     case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
         set_macros_for_body(agent);
         if (!(step & MILTER_STEP_NO_BODY)) {
             milter_server_context_body(context, *body_chunks, strlen(*body_chunks));
             body_chunks++;
-            break;
+            if (!(step & MILTER_STEP_NO_REPLY_BODY)) {
+                break;
+            }
         }
     case MILTER_SERVER_CONTEXT_STATE_BODY:
         if (!(step & MILTER_STEP_NO_BODY) &&
@@ -376,7 +398,9 @@ cb_continue (MilterServerContext *context, gpointer user_data)
             set_macros_for_body(agent);
             milter_server_context_body(context, *body_chunks, strlen(*body_chunks));
             body_chunks++;
-            break;
+            if (!(step & MILTER_STEP_NO_REPLY_BODY)) {
+                break;
+            }
         }
         set_macros_for_end_of_message(agent);
         milter_server_context_end_of_message(context, NULL, 0);

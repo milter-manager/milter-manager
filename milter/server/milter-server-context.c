@@ -931,6 +931,49 @@ emit_message_processed_signal (MilterServerContext *context)
 }
 
 static gboolean
+need_reply (MilterServerContext *context, MilterServerContextState next_state)
+{
+    MilterServerContextPrivate *priv;
+    MilterStepFlags step;
+
+    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+    step = milter_option_get_step(priv->option);
+
+    switch (next_state) {
+    case MILTER_SERVER_CONTEXT_STATE_CONNECT:
+        return !(step & MILTER_STEP_NO_REPLY_CONNECT);
+        break;
+    case MILTER_SERVER_CONTEXT_STATE_HELO:
+        return !(step & MILTER_STEP_NO_REPLY_HELO);
+        break;
+    case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM:
+        return !(step & MILTER_STEP_NO_REPLY_ENVELOPE_FROM);
+        break;
+    case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT:
+        return !(step & MILTER_STEP_NO_REPLY_ENVELOPE_RECIPIENT);
+        break;
+    case MILTER_SERVER_CONTEXT_STATE_DATA:
+        return !(step & MILTER_STEP_NO_REPLY_DATA);
+        break;
+    case MILTER_SERVER_CONTEXT_STATE_HEADER:
+        return !(step & MILTER_STEP_NO_REPLY_HEADER);
+        break;
+    case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
+        return !(step & MILTER_STEP_NO_REPLY_END_OF_HEADER);
+        break;
+    case MILTER_SERVER_CONTEXT_STATE_BODY:
+        return !(step & MILTER_STEP_NO_REPLY_BODY);
+        break;
+    case MILTER_SERVER_CONTEXT_STATE_UNKNOWN:
+        return !(step & MILTER_STEP_NO_REPLY_UNKNOWN);
+        break;
+    default:
+        return TRUE;
+        break;
+    }
+}
+
+static gboolean
 write_packet (MilterServerContext *context, gchar *packet, gsize packet_size,
               MilterServerContextState next_state)
 {
@@ -1085,9 +1128,13 @@ write_packet (MilterServerContext *context, gchar *packet, gsize packet_size,
         break;
     default:
         milter_server_context_set_state(context, next_state);
-        priv->timeout_id = milter_utils_timeout_add(priv->reading_timeout,
-                                                    cb_reading_timeout,
-                                                    context);
+        if (need_reply(context, next_state)) {
+            priv->timeout_id = milter_utils_timeout_add(priv->reading_timeout,
+                                                        cb_reading_timeout,
+                                                        context);
+        } else {
+            g_timer_stop(priv->elapsed);
+        }
         break;
     }
 

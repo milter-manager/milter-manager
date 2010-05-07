@@ -537,15 +537,31 @@ setup_test_client (const gchar *spec, TestData *test_data)
     setup_command_signals(decoder, test_data);
 }
 
+static gboolean
+cb_timeout_waiting (gpointer data)
+{
+    gboolean *waiting = data;
+
+    *waiting = FALSE;
+    return FALSE;
+}
+
 static void
 wait_for_reaping (gboolean check_success)
 {
     GError *error = NULL;
     gchar *status_string;
     gchar *begin_pos, *end_pos;
+    gboolean timeout_waiting = TRUE;
+    guint timeout_waiting_id;
 
-    while (!reaped)
+    timeout_waiting_id = g_timeout_add_seconds(1, cb_timeout_waiting,
+                                               &timeout_waiting);
+    while (timeout_waiting && !reaped) {
         g_main_context_iteration(NULL, TRUE);
+    }
+    g_source_remove(timeout_waiting_id);
+    cut_assert_true(timeout_waiting, cut_message("timeout"));
 
     if (!check_success)
         return;
@@ -681,16 +697,6 @@ all_data_result (void)
 static void
 no_data_result (void)
 {
-    ADD("no helo",
-        NULL,
-        MILTER_ACTION_NONE,
-        MILTER_STEP_NO_HELO,
-        MILTER_STATUS_NOT_CHANGE,
-        NULL,
-        create_expected_command_receives(MILTER_COMMAND_HELO, 0,
-                                         NULL),
-        NULL,
-        NULL);
     ADD("no connect",
         NULL,
         MILTER_ACTION_NONE,
@@ -698,6 +704,16 @@ no_data_result (void)
         MILTER_STATUS_NOT_CHANGE,
         NULL,
         create_expected_command_receives(MILTER_COMMAND_CONNECT, 0,
+                                         NULL),
+        NULL,
+        NULL);
+    ADD("no helo",
+        NULL,
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NO_HELO,
+        MILTER_STATUS_NOT_CHANGE,
+        NULL,
+        create_expected_command_receives(MILTER_COMMAND_HELO, 0,
                                          NULL),
         NULL,
         NULL);
@@ -1071,6 +1087,92 @@ shutdown_data_result (void)
         NULL);
 }
 
+static void
+no_reply_data_result (void)
+{
+    ADD("no reply connect",
+        NULL,
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NO_REPLY_CONNECT,
+        MILTER_STATUS_NOT_CHANGE,
+        NULL,
+        NULL,
+        NULL,
+        NULL);
+    ADD("no reply helo",
+        NULL,
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NO_REPLY_HELO,
+        MILTER_STATUS_NOT_CHANGE,
+        NULL,
+        NULL,
+        NULL,
+        NULL);
+    ADD("no reply envelope-from",
+        NULL,
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NO_REPLY_ENVELOPE_FROM,
+        MILTER_STATUS_NOT_CHANGE,
+        NULL,
+        NULL,
+        NULL,
+        NULL);
+    ADD("no reply envelope-recipient",
+        NULL,
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NO_REPLY_ENVELOPE_RECIPIENT,
+        MILTER_STATUS_NOT_CHANGE,
+        NULL,
+        NULL,
+        NULL,
+        NULL);
+    ADD("no reply unknown",
+        NULL,
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NO_REPLY_UNKNOWN,
+        MILTER_STATUS_NOT_CHANGE,
+        NULL,
+        NULL,
+        NULL,
+        NULL);
+    ADD("no reply header",
+        NULL,
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NO_REPLY_HEADER,
+        MILTER_STATUS_NOT_CHANGE,
+        NULL,
+        NULL,
+        NULL,
+        NULL);
+    ADD("no reply end-of-header",
+        NULL,
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NO_REPLY_END_OF_HEADER,
+        MILTER_STATUS_NOT_CHANGE,
+        NULL,
+        NULL,
+        NULL,
+        NULL);
+    ADD("no reply data",
+        NULL,
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NO_REPLY_DATA,
+        MILTER_STATUS_NOT_CHANGE,
+        NULL,
+        NULL,
+        NULL,
+        NULL);
+    ADD("no reply body",
+        NULL,
+        MILTER_ACTION_NONE,
+        MILTER_STEP_NO_REPLY_BODY,
+        MILTER_STATUS_NOT_CHANGE,
+        NULL,
+        NULL,
+        NULL,
+        NULL);
+}
+
 void
 data_result (void)
 {
@@ -1085,6 +1187,7 @@ data_result (void)
     reply_code_data_result();
     connection_failure_data_result();
     shutdown_data_result();
+    no_reply_data_result();
 }
 #undef ADD
 

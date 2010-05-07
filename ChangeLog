@@ -1,5 +1,11 @@
 2010-05-07  Kouhei Sutou  <kou@cozmixng.org>
 
+	* README*: add ROSSO to thanks list. Thanks!!!
+
+	* milter/server/milter-server-context.c, test/tool/test-server.c,
+	tool/milter-test-server.c: support NO_REPLY steps.
+	Reported by ROSSO. Thanks!!!
+
 	* test/tool/test-server.c: cleanup.
 
 	* tool/milter-test-client-libmilter.c: add a test client with libmilter.
