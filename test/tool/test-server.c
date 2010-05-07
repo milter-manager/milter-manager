@@ -239,7 +239,8 @@ cb_connect (MilterCommandDecoder *decoder, const gchar *host_name,
             const struct sockaddr *address, socklen_t address_size,
             TestData *test_data)
 {
-    send_reply(MILTER_COMMAND_CONNECT, test_data);
+    if (!(test_data->steps & MILTER_STEP_NO_REPLY_CONNECT))
+        send_reply(MILTER_COMMAND_CONNECT, test_data);
 
     n_connects++;
     actual_connect_host = g_strdup(host_name);
@@ -249,7 +250,8 @@ cb_connect (MilterCommandDecoder *decoder, const gchar *host_name,
 static void
 cb_helo (MilterCommandDecoder *decoder, const gchar *fqdn, TestData *test_data)
 {
-    send_reply(MILTER_COMMAND_HELO, test_data);
+    if (!(test_data->steps & MILTER_STEP_NO_REPLY_HELO))
+        send_reply(MILTER_COMMAND_HELO, test_data);
 
     n_helos++;
     actual_helo_fqdn = g_strdup(fqdn);
@@ -259,7 +261,8 @@ static void
 cb_envelope_from (MilterCommandDecoder *decoder, const gchar *from,
                   TestData *test_data)
 {
-    send_reply(MILTER_COMMAND_ENVELOPE_FROM, test_data);
+    if (!(test_data->steps & MILTER_STEP_NO_REPLY_ENVELOPE_FROM))
+        send_reply(MILTER_COMMAND_ENVELOPE_FROM, test_data);
 
     n_envelope_froms++;
     actual_envelope_from = g_strdup(from);
@@ -269,7 +272,8 @@ static void
 cb_envelope_recipient (MilterCommandDecoder *decoder, const gchar *to,
                        TestData *test_data)
 {
-    send_reply(MILTER_COMMAND_ENVELOPE_RECIPIENT, test_data);
+    if (!(test_data->steps & MILTER_STEP_NO_REPLY_ENVELOPE_RECIPIENT))
+        send_reply(MILTER_COMMAND_ENVELOPE_RECIPIENT, test_data);
 
     n_envelope_recipients++;
     actual_recipients = g_list_append(actual_recipients, g_strdup(to));
@@ -278,7 +282,8 @@ cb_envelope_recipient (MilterCommandDecoder *decoder, const gchar *to,
 static void
 cb_data (MilterCommandDecoder *decoder, TestData *test_data)
 {
-    send_reply(MILTER_COMMAND_DATA, test_data);
+    if (!(test_data->steps & MILTER_STEP_NO_REPLY_DATA))
+        send_reply(MILTER_COMMAND_DATA, test_data);
 
     n_datas++;
 }
@@ -287,7 +292,8 @@ static void
 cb_header (MilterCommandDecoder *decoder, const gchar *name, const gchar *value,
            TestData *test_data)
 {
-    send_reply(MILTER_COMMAND_HEADER, test_data);
+    if (!(test_data->steps & MILTER_STEP_NO_REPLY_HEADER))
+        send_reply(MILTER_COMMAND_HEADER, test_data);
 
     n_headers++;
     milter_headers_add_header(actual_headers, name, value);
@@ -296,7 +302,8 @@ cb_header (MilterCommandDecoder *decoder, const gchar *name, const gchar *value,
 static void
 cb_end_of_header (MilterCommandDecoder *decoder, TestData *test_data)
 {
-    send_reply(MILTER_COMMAND_END_OF_HEADER, test_data);
+    if (!(test_data->steps & MILTER_STEP_NO_REPLY_END_OF_HEADER))
+        send_reply(MILTER_COMMAND_END_OF_HEADER, test_data);
 
     n_end_of_headers++;
 }
@@ -305,7 +312,8 @@ static void
 cb_body (MilterCommandDecoder *decoder, const gchar *chunk, gsize size,
          TestData *test_data)
 {
-    send_reply(MILTER_COMMAND_BODY, test_data);
+    if (!(test_data->steps & MILTER_STEP_NO_REPLY_BODY))
+        send_reply(MILTER_COMMAND_BODY, test_data);
 
     n_bodies++;
     g_string_append_len(actual_body_string, chunk, size);
@@ -642,9 +650,6 @@ create_expected_command_receives (MilterCommand first_command, ...)
     return expected_command_receives;
 }
 
-void
-data_result (void)
-{
 #define ADD(label, option_string, actions, steps, status, replies,      \
             expected_command_receives, macros_requests, action_func)    \
     cut_add_data(label,                                                 \
@@ -659,6 +664,9 @@ data_result (void)
                  result_test_data_free,                                 \
                  NULL)
 
+static void
+all_data_result (void)
+{
     ADD("all continue",
         NULL,
         MILTER_ACTION_NONE,
@@ -668,6 +676,11 @@ data_result (void)
         NULL,
         NULL,
         NULL);
+}
+
+static void
+no_data_result (void)
+{
     ADD("no helo",
         NULL,
         MILTER_ACTION_NONE,
@@ -758,6 +771,11 @@ data_result (void)
                                          NULL),
         NULL,
         NULL);
+}
+
+static void
+accept_data_result (void)
+{
     ADD("helo accept",
         NULL,
         MILTER_ACTION_NONE,
@@ -771,6 +789,11 @@ data_result (void)
                                          NULL),
         NULL,
         NULL);
+}
+
+static void
+discard_data_result (void)
+{
     ADD("envelope-from discard",
         NULL,
         MILTER_ACTION_NONE,
@@ -784,6 +807,11 @@ data_result (void)
                                          NULL),
         NULL,
         NULL);
+}
+
+static void
+temporary_failure_data_result (void)
+{
     ADD("data temporary-failure",
         NULL,
         MILTER_ACTION_NONE,
@@ -797,6 +825,11 @@ data_result (void)
                                          NULL),
         NULL,
         NULL);
+}
+
+static void
+quarantine_data_result (void)
+{
     ADD("body quarantine",
         NULL,
         MILTER_ACTION_NONE,
@@ -809,6 +842,11 @@ data_result (void)
                                          NULL),
         NULL,
         NULL);
+}
+
+static void
+reject_data_result (void)
+{
     ADD("connect reject",
         NULL,
         MILTER_ACTION_NONE,
@@ -834,6 +872,11 @@ data_result (void)
                                          NULL),
         NULL,
         NULL);
+}
+
+static void
+combined_data_result (void)
+{
     ADD("envelope-recipient reject/continue",
         "-r recipient1@example.com -r recipient2@example.com",
         MILTER_ACTION_NONE,
@@ -959,6 +1002,11 @@ data_result (void)
                                          NULL),
         NULL,
         NULL);
+}
+
+static void
+reply_code_data_result (void)
+{
     ADD("reply-code - reject",
         NULL,
         MILTER_ACTION_NONE,
@@ -985,6 +1033,11 @@ data_result (void)
                                          NULL),
         NULL,
         NULL);
+}
+
+static void
+connection_failure_data_result (void)
+{
     ADD("connection-failure",
         NULL,
         MILTER_ACTION_NONE,
@@ -998,6 +1051,11 @@ data_result (void)
                                          NULL),
         NULL,
         NULL);
+}
+
+static void
+shutdown_data_result (void)
+{
     ADD("shutdown",
         NULL,
         MILTER_ACTION_NONE,
@@ -1011,8 +1069,24 @@ data_result (void)
                                          NULL),
         NULL,
         NULL);
-#undef ADD
 }
+
+void
+data_result (void)
+{
+    all_data_result();
+    no_data_result();
+    accept_data_result();
+    discard_data_result();
+    temporary_failure_data_result();
+    quarantine_data_result();
+    reject_data_result();
+    combined_data_result();
+    reply_code_data_result();
+    connection_failure_data_result();
+    shutdown_data_result();
+}
+#undef ADD
 
 static gint
 get_n_command_received (MilterCommand command)

@@ -1,5 +1,7 @@
 2010-05-07  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/tool/test-server.c: cleanup.
+
 	* tool/milter-test-client-libmilter.c: add a test client with libmilter.
 
 2010-05-07  Kouhei Sutou  <kou@clear-code.com>
