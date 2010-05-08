@@ -110,7 +110,6 @@ typedef enum
      MILTER_STEP_NO_BODY |                      \
      MILTER_STEP_NO_HEADERS |                   \
      MILTER_STEP_NO_END_OF_HEADER |             \
-     MILTER_STEP_NO_REPLY_HEADER |              \
      MILTER_STEP_NO_UNKNOWN |                   \
      MILTER_STEP_NO_DATA)
 
@@ -120,6 +119,7 @@ typedef enum
      MILTER_STEP_NO_REPLY_ENVELOPE_FROM |       \
      MILTER_STEP_NO_REPLY_ENVELOPE_RECIPIENT |  \
      MILTER_STEP_NO_REPLY_DATA |                \
+     MILTER_STEP_NO_REPLY_HEADER |              \
      MILTER_STEP_NO_REPLY_UNKNOWN |             \
      MILTER_STEP_NO_REPLY_END_OF_HEADER |       \
      MILTER_STEP_NO_REPLY_BODY)

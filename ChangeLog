@@ -1,5 +1,8 @@
 2010-05-08  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-option.h: no-reply-header should be
+	no-reply-mask not no-event-mask.
+
 	* milter/manager/milter-manager-children.c: suppress a warning.
 
 	* milter/manager/milter-manager-children.c,
