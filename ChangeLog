@@ -1,5 +1,7 @@
 2010-05-08  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-test-client-libmilter.c: body reply is also omitted.
+
 	* milter/server/milter-server-context.c: set reading timeout on body.
 
 	* milter/server/milter-server-context.[ch],

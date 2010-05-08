@@ -302,7 +302,7 @@ mlfi_negotiate (SMFICTX *context,
          SMFIF_ADDRCPT_PAR |
          SMFIF_SETSYMLIST);
 
-    *steps_output = steps & (SMFIP_NR_HELO | SMFIP_NR_MAIL);
+    *steps_output = steps & (SMFIP_NR_HELO | SMFIP_NR_MAIL | SMFIP_NR_BODY);
 
     return SMFIS_CONTINUE;
 }
