@@ -1,5 +1,7 @@
 2010-05-08  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-manager.spec.in: 1.5.2-0 -> 1.5.2-1.
+
 	* milter/manager/milter-manager-children.c: add NULL check.
 
 	* milter/core/milter-option.h: no-reply-header should be
