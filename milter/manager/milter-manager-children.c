@@ -811,13 +811,11 @@ milter_manager_children_is_waiting_reply (MilterManagerChildren *children)
     case MILTER_SERVER_CONTEXT_STATE_HEADER:
     case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
     case MILTER_SERVER_CONTEXT_STATE_BODY:
+    case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
         current_child = get_first_child_in_command_waiting_child_queue(children);
         if (!current_child)
             return FALSE;
         return milter_server_context_is_processing(current_child);
-        break;
-    case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
-        return TRUE;
         break;
     default:
         return FALSE;
@@ -935,55 +933,6 @@ emit_replace_body_signal (MilterManagerChildren *children)
 }
 
 static MilterStatus
-do_next_action (MilterManagerChildren *children, MilterServerContext *context)
-{
-    MilterManagerChildrenPrivate *priv;
-    MilterServerContextState state;
-    MilterStatus status = MILTER_STATUS_NOT_CHANGE;
-
-    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
-    state = milter_server_context_get_state(context);
-
-    switch (state) {
-    case MILTER_SERVER_CONTEXT_STATE_DATA:
-    case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
-        status = send_next_command(children, context, state);
-        break;
-    case MILTER_SERVER_CONTEXT_STATE_HEADER:
-        if (priv->state < state) {
-            status = MILTER_STATUS_NOT_CHANGE;
-        } else {
-            if (priv->processing_header_index <
-                milter_headers_length(priv->headers)) {
-                status = send_next_header_to_child(children, context);
-            } else {
-                status = send_next_command(children, context, state);
-            }
-        }
-        break;
-    case MILTER_SERVER_CONTEXT_STATE_BODY:
-        if (priv->state < state) {
-            status = MILTER_STATUS_NOT_CHANGE;
-        } else {
-            if (priv->sending_body)
-                status = send_body_to_child(children, context);
-            if (status == MILTER_STATUS_NOT_CHANGE)
-                status = send_next_command(children, context, state);
-        }
-        break;
-    case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
-        status = send_first_command_to_next_child(children, context);
-        break;
-    default:
-        remove_child_from_queue(children, context);
-        status = MILTER_STATUS_PROGRESS;
-        break;
-    }
-
-    return status;
-}
-
-static MilterStatus
 send_command_to_child (MilterManagerChildren *children,
                        MilterServerContext *context,
                        MilterCommand command)
@@ -1000,11 +949,10 @@ send_command_to_child (MilterManagerChildren *children,
     case MILTER_COMMAND_DATA:
         priv->processing_state = MILTER_SERVER_CONTEXT_STATE_DATA;
         if (milter_server_context_data(context)) {
-            if (milter_server_context_need_reply(context,
-                                                 priv->processing_state)) {
-                status = MILTER_STATUS_PROGRESS;
-            } else {
-                status = do_next_action(children, context);
+            status = MILTER_STATUS_PROGRESS;
+            if (!milter_server_context_need_reply(context,
+                                                  priv->processing_state)) {
+                g_signal_emit_by_name(context, "continue");
             }
         }
         break;
@@ -1014,11 +962,10 @@ send_command_to_child (MilterManagerChildren *children,
     case MILTER_COMMAND_END_OF_HEADER:
         priv->processing_state = MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER;
         if (milter_server_context_end_of_header(context)) {
-            if (milter_server_context_need_reply(context,
+            status = MILTER_STATUS_PROGRESS;
+            if (!milter_server_context_need_reply(context,
                                                  priv->processing_state)) {
-                status = MILTER_STATUS_PROGRESS;
-            } else {
-                status = do_next_action(children, context);
+                g_signal_emit_by_name(context, "continue");
             }
         }
         break;
@@ -1198,7 +1145,42 @@ cb_continue (MilterServerContext *context, gpointer user_data)
 
     state = milter_server_context_get_state(context);
     compile_reply_status(children, state, MILTER_STATUS_CONTINUE);
-    status = do_next_action(children, context);
+
+    switch (state) {
+    case MILTER_SERVER_CONTEXT_STATE_DATA:
+    case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
+        status = send_next_command(children, context, state);
+        break;
+    case MILTER_SERVER_CONTEXT_STATE_HEADER:
+        if (priv->state < state) {
+            status = MILTER_STATUS_NOT_CHANGE;
+        } else {
+            if (priv->processing_header_index <
+                milter_headers_length(priv->headers)) {
+                status = send_next_header_to_child(children, context);
+            } else {
+                status = send_next_command(children, context, state);
+            }
+        }
+        break;
+    case MILTER_SERVER_CONTEXT_STATE_BODY:
+        if (priv->state < state) {
+            status = MILTER_STATUS_NOT_CHANGE;
+        } else {
+            if (priv->sending_body)
+                status = send_body_to_child(children, context);
+            if (status == MILTER_STATUS_NOT_CHANGE)
+                status = send_next_command(children, context, state);
+        }
+        break;
+    case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
+        status = send_first_command_to_next_child(children, context);
+        break;
+    default:
+        remove_child_from_queue(children, context);
+        status = MILTER_STATUS_PROGRESS;
+        break;
+    }
     handle_status(children, status);
 }
 
@@ -3195,11 +3177,9 @@ send_next_header_to_child (MilterManagerChildren *children, MilterServerContext 
     if (milter_server_context_header(context,
                                      header->name,
                                      header->value + value_offset)) {
-        MilterStatus status;
-        if (milter_server_context_need_reply(context, priv->processing_state)) {
-            status = MILTER_STATUS_PROGRESS;
-        } else {
-            status = do_next_action(children, context);
+        MilterStatus status = MILTER_STATUS_PROGRESS;
+        if (!milter_server_context_need_reply(context, priv->processing_state)) {
+            g_signal_emit_by_name(context, "continue");
         }
         return status;
     } else {
@@ -3372,6 +3352,7 @@ milter_manager_children_body (MilterManagerChildren *children,
 {
     MilterManagerChildrenPrivate *priv;
     MilterServerContext *first_child;
+    MilterServerContextState state = MILTER_SERVER_CONTEXT_STATE_BODY;
 
     if (!milter_manager_children_check_processing_message(children))
         return FALSE;
@@ -3386,13 +3367,20 @@ milter_manager_children_body (MilterManagerChildren *children,
         return FALSE;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
-    priv->state = MILTER_SERVER_CONTEXT_STATE_BODY;
-    priv->processing_state = priv->state;
+    priv->state = state;
+    priv->processing_state = state;
     priv->replaced_body_for_each_child = FALSE;
     priv->sending_body = FALSE;
 
-    if (!milter_server_context_get_skip_body(first_child))
-        return milter_server_context_body(first_child, chunk, size);
+    if (!milter_server_context_get_skip_body(first_child)) {
+        gboolean success;
+        success = milter_server_context_body(first_child, chunk, size);
+        if (success &&
+            !milter_server_context_need_reply(first_child, state)) {
+            g_signal_emit_by_name(first_child, "continue");
+        }
+        return success;
+    }
 
     /*
      * If the first child is not needed the command,
@@ -3574,7 +3562,7 @@ send_body_to_child (MilterManagerChildren *children, MilterServerContext *contex
 
     if (status == MILTER_STATUS_PROGRESS &&
         !milter_server_context_need_reply(context, priv->processing_state)) {
-        status = do_next_action(children, context);
+        g_signal_emit_by_name(context, "continue");
     }
 
     if (status != MILTER_STATUS_PROGRESS)

@@ -42,7 +42,6 @@ struct _MilterManagerLeaderPrivate
     GIOChannel *launcher_read_channel;
     GIOChannel *launcher_write_channel;
     gboolean processing;
-    gboolean requesting_to_children;
     guint tag;
 };
 
@@ -155,7 +154,6 @@ milter_manager_leader_init (MilterManagerLeader *leader)
     priv->launcher_read_channel = NULL;
     priv->launcher_write_channel = NULL;
     priv->processing = FALSE;
-    priv->requesting_to_children = FALSE;
     priv->tag = 0;
 }
 
@@ -190,7 +188,8 @@ milter_manager_leader_check_connection (MilterManagerLeader *leader)
         skip = TRUE;
     }
 
-    if (!priv->requesting_to_children) {
+    if (priv->children &&
+        milter_manager_children_is_waiting_reply(priv->children)) {
         milter_debug("[%u] [leader][connection-check][%s][skip] "
                      "not milter turn",
                      priv->tag, state_nick);
@@ -382,7 +381,6 @@ finished (MilterFinishedEmittable *emittable)
 
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(emittable);
     priv->processing = FALSE;
-    priv->requesting_to_children = FALSE;
 }
 
 static const gchar *
@@ -520,7 +518,6 @@ cb_negotiate_reply (MilterServerContext *context, MilterOption *option,
 
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
     priv->processing = TRUE;
-    priv->requesting_to_children = FALSE;
 
     g_signal_emit_by_name(priv->client_context, "negotiate-response",
                           option, macros_requests, MILTER_STATUS_CONTINUE);
@@ -532,7 +529,6 @@ reply (MilterManagerLeader *leader, MilterStatus status)
     MilterManagerLeaderPrivate *priv;
 
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
-    priv->requesting_to_children = FALSE;
     if (priv->state == MILTER_MANAGER_LEADER_STATE_NEGOTIATE) {
         /* FIXME: should pass option and macros requests. */
         g_signal_emit_by_name(priv->client_context, "negotiate-response",
@@ -959,7 +955,6 @@ milter_manager_leader_negotiate (MilterManagerLeader *leader,
 
     if (milter_manager_children_negotiate(priv->children, option,
                                           macros_requests)) {
-        priv->requesting_to_children = TRUE;
         return MILTER_STATUS_PROGRESS;
     } else {
         return fallback_status;
@@ -985,7 +980,6 @@ milter_manager_leader_connect (MilterManagerLeader *leader,
 
     if (milter_manager_children_connect(priv->children, host_name,
                                         address, address_length)) {
-        priv->requesting_to_children = TRUE;
         return MILTER_STATUS_PROGRESS;
     } else {
         return fallback_status;
@@ -1007,7 +1001,6 @@ milter_manager_leader_helo (MilterManagerLeader *leader, const gchar *fqdn)
         return fallback_status;
 
     if (milter_manager_children_helo(priv->children, fqdn)) {
-        priv->requesting_to_children = TRUE;
         return MILTER_STATUS_PROGRESS;
     } else {
         return fallback_status;
@@ -1030,7 +1023,6 @@ milter_manager_leader_envelope_from (MilterManagerLeader *leader,
         return fallback_status;
 
     if (milter_manager_children_envelope_from(priv->children, from)) {
-        priv->requesting_to_children = TRUE;
         return MILTER_STATUS_PROGRESS;
     } else {
         return fallback_status;
@@ -1053,7 +1045,6 @@ milter_manager_leader_envelope_recipient (MilterManagerLeader *leader,
         return fallback_status;
 
     if (milter_manager_children_envelope_recipient(priv->children, recipient)) {
-        priv->requesting_to_children = TRUE;
         return MILTER_STATUS_PROGRESS;
     } else {
         return fallback_status;
@@ -1075,7 +1066,6 @@ milter_manager_leader_data (MilterManagerLeader *leader)
         return fallback_status;
 
     if (milter_manager_children_data(priv->children)) {
-        priv->requesting_to_children = TRUE;
         return MILTER_STATUS_PROGRESS;
     } else {
         return fallback_status;
@@ -1098,7 +1088,6 @@ milter_manager_leader_unknown (MilterManagerLeader *leader,
         return fallback_status;
 
     if (milter_manager_children_unknown(priv->children, command)) {
-        priv->requesting_to_children = TRUE;
         return MILTER_STATUS_PROGRESS;
     } else {
         return fallback_status;
@@ -1121,7 +1110,6 @@ milter_manager_leader_header (MilterManagerLeader *leader,
         return fallback_status;
 
     if (milter_manager_children_header(priv->children, name, value)) {
-        priv->requesting_to_children = TRUE;
         return MILTER_STATUS_PROGRESS;
     } else {
         return fallback_status;
@@ -1143,7 +1131,6 @@ milter_manager_leader_end_of_header (MilterManagerLeader *leader)
         return fallback_status;
 
     if (milter_manager_children_end_of_header(priv->children)) {
-        priv->requesting_to_children = TRUE;
         return MILTER_STATUS_PROGRESS;
     } else {
         return fallback_status;
@@ -1166,7 +1153,6 @@ milter_manager_leader_body (MilterManagerLeader *leader,
         return fallback_status;
 
     if (milter_manager_children_body(priv->children, chunk, size)) {
-        priv->requesting_to_children = TRUE;
         return MILTER_STATUS_PROGRESS;
     } else {
         return fallback_status;
@@ -1218,7 +1204,6 @@ milter_manager_leader_end_of_message (MilterManagerLeader *leader,
         return fallback_status;
 
     if (milter_manager_children_end_of_message(priv->children, chunk, size)) {
-        priv->requesting_to_children = TRUE;
         return MILTER_STATUS_PROGRESS;
     } else {
         return fallback_status;

@@ -1,5 +1,10 @@
 2010-05-08  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.c,
+	milter/manager/milter-manager-leader.c: also work with
+	no reply {data,header,end-of-header,body}.
+	Reported by ROSSO. Thanks!!!
+
 	* milter/manager/milter-manager-children.[ch],
 	test/lib/milter-test-client.rb, test/manager/test-children.c:
 	work with no reply {connect,hello,envelope-from,envelope-recipient}.
