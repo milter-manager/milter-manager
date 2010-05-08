@@ -215,17 +215,14 @@ fi
 %defattr(-,root,root)
 %doc ChangeLog ChangeLog.toolkit README README.ja NEWS NEWS.ja TODO
 %doc %{_datadir}/milter-manager/license/
-%{_bindir}/milter-test-client
-%{_bindir}/milter-test-server
+%{_bindir}/milter-test-*
 %{_bindir}/milter-performance-check
 %{_libdir}/libmilter-core.so.*
 %{_libdir}/libmilter-client.so.*
 %{_libdir}/libmilter-server.so.*
-%{_mandir}/man1/milter-test-client.*
-%{_mandir}/man1/milter-test-server.*
+%{_mandir}/man1/milter-test-*
 %{_mandir}/man1/milter-performance-check.*
-%{_mandir}/ja/man1/milter-test-client.*
-%{_mandir}/ja/man1/milter-test-server.*
+%{_mandir}/ja/man1/milter-test-*
 %{_mandir}/ja/man1/milter-performance-check.*
 
 %files -n libmilter-toolkit-devel
