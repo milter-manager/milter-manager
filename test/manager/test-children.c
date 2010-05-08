@@ -45,13 +45,22 @@ void test_connect (void);
 void test_connect_with_macro (void);
 void test_connect_stop (void);
 void test_connect_half_stop (void);
+void test_connect_no_reply (void);
 void test_helo (void);
+void test_helo_no_reply (void);
 void test_envelope_from (void);
+void test_envelope_from_no_reply (void);
 void test_envelope_recipient (void);
+void test_envelope_recipient_no_reply (void);
 void test_data (void);
+void test_data_no_reply (void);
 void test_header (void);
 void test_header_with_protocol_version2 (void);
+void test_header_no_reply (void);
 void test_end_of_header (void);
+void test_end_of_header_no_reply (void);
+void test_body (void);
+void test_body_no_reply (void);
 void data_important_status (void);
 void test_important_status (gconstpointer data);
 void data_not_important_status (void);
@@ -67,6 +76,7 @@ static MilterManagerTestScenario *main_scenario;
 static MilterManagerConfiguration *config;
 static MilterManagerChildren *children;
 static MilterOption *option;
+static MilterStepFlags step;
 static MilterManagerProcessLauncher *launcher;
 
 static GError *actual_error;
@@ -378,6 +388,7 @@ cut_setup (void)
 
     launcher = NULL;
     option = NULL;
+    step = MILTER_STEP_NONE;
 
     actual_error = NULL;
     expected_error = NULL;
@@ -555,6 +566,7 @@ wait_reply_helper (guint expected, guint *actual)
     gboolean timeout_waiting = TRUE;
     guint timeout_waiting_id;
 
+    cut_assert_true(milter_manager_children_is_waiting_reply(children));
     timeout_waiting_id = g_timeout_add(500, cb_timeout_waiting,
                                        &timeout_waiting);
     while (timeout_waiting && expected > *actual) {
@@ -1116,7 +1128,7 @@ test_negotiate (void)
     option = milter_option_new(6,
                                MILTER_ACTION_ADD_HEADERS |
                                MILTER_ACTION_CHANGE_BODY,
-                               MILTER_STEP_NONE);
+                               step);
 
     start_client(10026, arguments1);
     start_client(10027, arguments2);
@@ -1298,6 +1310,44 @@ test_connect_half_stop (void)
 }
 
 void
+test_connect_no_reply (void)
+{
+    struct sockaddr_in address;
+    socklen_t actual_address_length = 0;
+    const gchar host_name[] = "mx.local.net";
+    const gchar ip_address[] = "192.168.123.123";
+
+    step |= MILTER_STEP_NO_REPLY_CONNECT;
+    arguments_append(arguments1,
+                     "--negotiate-flags", "no-reply-connect",
+                     NULL);
+    arguments_append(arguments2,
+                     "--negotiate-flags", "no-reply-connect",
+                     NULL);
+    cut_trace(test_negotiate());
+
+    address.sin_family = AF_INET;
+    address.sin_port = g_htons(50443);
+    inet_pton(AF_INET, ip_address, &(address.sin_addr));
+
+    cut_assert_false(milter_manager_children_get_smtp_client_address(
+                         children, &actual_address, &actual_address_length));
+    cut_assert_equal_memory(NULL, 0, actual_address, actual_address_length);
+
+    milter_manager_children_connect(children,
+                                    host_name,
+                                    (struct sockaddr *)(&address),
+                                    sizeof(address));
+    cut_assert_false(milter_manager_children_is_waiting_reply(children));
+
+    cut_assert_true(milter_manager_children_get_smtp_client_address(
+                        children, &actual_address, &actual_address_length));
+    cut_assert_equal_uint(sizeof(address), actual_address_length);
+    cut_assert_equal_memory(&address, sizeof(address),
+                            actual_address, actual_address_length);
+}
+
+void
 test_helo (void)
 {
     const gchar fqdn[] = "delian";
@@ -1306,6 +1356,24 @@ test_helo (void)
 
     milter_manager_children_helo(children, fqdn);
     wait_reply(2, n_continue_emitted);
+}
+
+void
+test_helo_no_reply (void)
+{
+    const gchar fqdn[] = "delian";
+
+    step |= MILTER_STEP_NO_REPLY_HELO;
+    arguments_append(arguments1,
+                     "--negotiate-flags", "no-reply-helo",
+                     NULL);
+    arguments_append(arguments2,
+                     "--negotiate-flags", "no-reply-helo",
+                     NULL);
+    cut_trace(test_connect());
+
+    milter_manager_children_helo(children, fqdn);
+    cut_assert_false(milter_manager_children_is_waiting_reply(children));
 }
 
 void
@@ -1320,6 +1388,24 @@ test_envelope_from (void)
 }
 
 void
+test_envelope_from_no_reply (void)
+{
+    const gchar from[] = "example@example.com";
+
+    step |= MILTER_STEP_NO_REPLY_ENVELOPE_FROM;
+    arguments_append(arguments1,
+                     "--negotiate-flags", "no-reply-envelope-from",
+                     NULL);
+    arguments_append(arguments2,
+                     "--negotiate-flags", "no-reply-envelope-from",
+                     NULL);
+    cut_trace(test_helo());
+
+    milter_manager_children_envelope_from(children, from);
+    cut_assert_false(milter_manager_children_is_waiting_reply(children));
+}
+
+void
 test_envelope_recipient (void)
 {
     const gchar recipient[] = "example@example.com";
@@ -1331,12 +1417,46 @@ test_envelope_recipient (void)
 }
 
 void
+test_envelope_recipient_no_reply (void)
+{
+    const gchar recipient[] = "example@example.com";
+
+    step |= MILTER_STEP_NO_REPLY_ENVELOPE_RECIPIENT;
+    arguments_append(arguments1,
+                     "--negotiate-flags", "no-reply-envelope-recipient",
+                     NULL);
+    arguments_append(arguments2,
+                     "--negotiate-flags", "no-reply-envelope-recipient",
+                     NULL);
+    cut_trace(test_envelope_from());
+
+    milter_manager_children_envelope_recipient(children, recipient);
+    cut_assert_false(milter_manager_children_is_waiting_reply(children));
+}
+
+void
 test_data (void)
 {
     cut_trace(test_envelope_recipient());
 
     milter_manager_children_data(children);
     wait_reply(5, n_continue_emitted);
+}
+
+void
+test_data_no_reply (void)
+{
+    step |= MILTER_STEP_NO_REPLY_DATA;
+    arguments_append(arguments1,
+                     "--negotiate-flags", "no-reply-data",
+                     NULL);
+    arguments_append(arguments2,
+                     "--negotiate-flags", "no-reply-data",
+                     NULL);
+    cut_trace(test_envelope_recipient());
+
+    milter_manager_children_data(children);
+    cut_assert_false(milter_manager_children_is_waiting_reply(children));
 }
 
 void
@@ -1368,12 +1488,76 @@ test_header_with_protocol_version2 (void)
 }
 
 void
+test_header_no_reply (void)
+{
+    const gchar name[] = "X-Test-Header";
+    const gchar value[] = "Test Header Value";
+
+    step |= MILTER_STEP_NO_REPLY_HEADER;
+    arguments_append(arguments1,
+                     "--negotiate-flags", "no-reply-header",
+                     NULL);
+    arguments_append(arguments2,
+                     "--negotiate-flags", "no-reply-header",
+                     NULL);
+    cut_trace(test_data());
+
+    milter_manager_children_header(children, name, value);
+    cut_assert_false(milter_manager_children_is_waiting_reply(children));
+}
+
+void
 test_end_of_header (void)
 {
     cut_trace(test_header());
 
     milter_manager_children_end_of_header(children);
     wait_reply(7, n_continue_emitted);
+}
+
+void
+test_end_of_header_no_reply (void)
+{
+    step |= MILTER_STEP_NO_REPLY_END_OF_HEADER;
+    arguments_append(arguments1,
+                     "--negotiate-flags", "no-reply-end-of-header",
+                     NULL);
+    arguments_append(arguments2,
+                     "--negotiate-flags", "no-reply-end-of-header",
+                     NULL);
+    cut_trace(test_header());
+
+    milter_manager_children_end_of_header(children);
+    cut_assert_false(milter_manager_children_is_waiting_reply(children));
+}
+
+void
+test_body (void)
+{
+    const gchar chunk[] = "message body";
+
+    cut_trace(test_end_of_header());
+
+    milter_manager_children_body(children, chunk, strlen(chunk));
+    wait_reply(8, n_continue_emitted);
+}
+
+void
+test_body_no_reply (void)
+{
+    const gchar chunk[] = "message body";
+
+    step |= MILTER_STEP_NO_REPLY_BODY;
+    arguments_append(arguments1,
+                     "--negotiate-flags", "no-reply-body",
+                     NULL);
+    arguments_append(arguments2,
+                     "--negotiate-flags", "no-reply-body",
+                     NULL);
+    cut_trace(test_end_of_header());
+
+    milter_manager_children_body(children, chunk, strlen(chunk));
+    cut_assert_false(milter_manager_children_is_waiting_reply(children));
 }
 
 #define is_important_status(children, state, next_status)                    \
@@ -1824,9 +2008,8 @@ test_reading_timeout (void)
                                     host_name,
                                     (struct sockaddr *)(&address),
                                     sizeof(address));
-
     wait_reply(1, n_continue_emitted);
-    wait_reply(1, n_reading_timeout_emitted);
+    cut_assert_equal_uint(1, n_reading_timeout_emitted);
 
     cut_assert_equal_string(
         cut_take_printf("[%u] [children][timeout][reading][connect][accept] "

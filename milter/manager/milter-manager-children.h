@@ -139,8 +139,10 @@ gboolean               milter_manager_children_get_smtp_client_address
                                                             socklen_t             *address_length);
 
 
-MilterOption          *milter_manager_children_get_option
-                                          (MilterManagerChildren *children);
+MilterOption          *milter_manager_children_get_option   (MilterManagerChildren *children);
+
+gboolean              milter_manager_children_is_waiting_reply
+                                                            (MilterManagerChildren *children);
 
 
 #endif /* __MILTER_MANAGER_CHILDREN_H__ */

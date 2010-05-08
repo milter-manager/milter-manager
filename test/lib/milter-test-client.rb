@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 #
-# Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -289,7 +289,7 @@ class MilterTestClient
     if encode_type == "no_response"
       next_state = :abort
       sleep(@wait_second)
-    else
+    elsif need_reply(next_state)
       packet, packed_size = @encoder.send("encode_#{encode_type}", *args)
       while packet
         written_size = @socket.write(packet)
@@ -299,6 +299,29 @@ class MilterTestClient
     info("#{@state}(#{encode_type}) -> #{next_state}")
     @state = next_state
     packed_size
+  end
+
+  def need_reply(state)
+    case state
+    when :connected
+      not @option.step.no_reply_connect?
+    when :greeted
+      not @option.step.no_reply_helo?
+    when :envelope_from_received
+      not @option.step.no_reply_envelope_from?
+    when :envelope_recipient_received
+      not @option.step.no_reply_envelope_recipient?
+    when :data
+      not @option.step.no_reply_data?
+    when :header
+      not @option.step.no_reply_header?
+    when :end_of_header
+      not @option.step.no_reply_end_of_header?
+    when :body
+      not @option.step.no_reply_body?
+    else
+      true
+    end
   end
 
   def write_action(next_state, action)
@@ -378,7 +401,7 @@ class MilterTestClient
     invalid_state(:negotiate) unless valid_state?(:negotiate)
     @option = option
     @option.version = @negotiate_version || @option.version
-    @option.step = resolve_flags(Milter::StepFlags, @negotiate_flags)
+    @option.step &= resolve_flags(Milter::StepFlags, @negotiate_flags)
 
     write(:negotiated, :negotiate, @option)
   end
