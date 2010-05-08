@@ -80,11 +80,6 @@ extern "C" {
  */
 #define SM_LM_VRS_PLVL(version)		((version) & 0x0000007f)
 
-#include <sys/types.h>
-#include <sys/socket.h>
-
-#include "mfdef.h"
-
 /**
  * _SOCK_ADDR:
  *

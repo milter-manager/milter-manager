@@ -1,5 +1,7 @@
 2010-05-08  Kouhei Sutou  <kou@cozmixng.org>
 
+	* libmilter/mfapi.h: remove duplicated includes.
+
 	* tool/milter-test-client-libmilter.c: add missing include <glib.h>.
 
 	* milter-manager.spec.in: 1.5.2-0 -> 1.5.2-1.
