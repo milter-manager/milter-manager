@@ -988,7 +988,7 @@ send_command_to_child (MilterManagerChildren *children,
 }
 
 static void
-emit_signals_on_end_of_message (MilterManagerChildren *children)
+emit_header_signals (MilterManagerChildren *children)
 {
     MilterManagerChildrenPrivate *priv;
     const GList *header_list, *node;
@@ -996,8 +996,6 @@ emit_signals_on_end_of_message (MilterManagerChildren *children)
     gint i;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
-    if (priv->replaced_body)
-        emit_replace_body_signal(children);
 
     processing_headers = milter_headers_copy(priv->original_headers);
     header_list = milter_headers_get_list(priv->headers);
@@ -1049,6 +1047,19 @@ emit_signals_on_end_of_message (MilterManagerChildren *children)
     }
 
     g_object_unref(processing_headers);
+}
+
+static void
+emit_signals_on_end_of_message (MilterManagerChildren *children)
+{
+    MilterManagerChildrenPrivate *priv;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+    if (priv->replaced_body)
+        emit_replace_body_signal(children);
+
+    if (priv->original_headers)
+        emit_header_signals(children);
 
     if (priv->change_from)
         g_signal_emit_by_name(children, "change-from",
