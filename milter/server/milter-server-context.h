@@ -607,6 +607,8 @@ void                 milter_server_context_set_name    (MilterServerContext *con
  * @context: a %MilterServerContext.
  *
  * Gets the elapsed time.
+ *
+ * Returns: the elapsed time of @context.
  */
 gdouble              milter_server_context_get_elapsed (MilterServerContext *context);
 
@@ -615,6 +617,8 @@ gdouble              milter_server_context_get_elapsed (MilterServerContext *con
  * @context: a %MilterServerContext.
  *
  * Gets whether negotiation is succeeded.
+ *
+ * Returns: %TRUE if @context is negotiated, %FALSE otherwise.
  */
 gboolean             milter_server_context_is_negotiated
                                                        (MilterServerContext *context);
@@ -624,6 +628,8 @@ gboolean             milter_server_context_is_negotiated
  * @context: a %MilterServerContext.
  *
  * Gets whether the context is processing message.
+ *
+ * Returns: %TRUE if @context is processing message, %FALSE otherwise.
  */
 gboolean             milter_server_context_is_processing_message
                                                        (MilterServerContext *context);
@@ -644,6 +650,8 @@ void                 milter_server_context_set_processing_message
  * @context: a %MilterServerContext.
  *
  * Gets whether the context is quitted.
+ *
+ * Returns: %TRUE if @context is quitted, %FALSE otherwise.
  */
 gboolean             milter_server_context_is_quitted  (MilterServerContext *context);
 
@@ -692,6 +700,17 @@ void                 milter_server_context_set_message_result
                                                        (MilterServerContext *context,
                                                         MilterMessageResult *result);
 
+/**
+ * milter_server_context_need_reply:
+ * @context: a %MilterServerContext.
+ * @state: a %MilterServerContextState.
+ *
+ * Gets whether the context needs to reply on @state.
+ *
+ * Returns: %TRUE if @context needs to reply on @state, %FALSE otherwise.
+ */
+gboolean             milter_server_context_need_reply (MilterServerContext *context,
+                                                       MilterServerContextState state);
 
 G_END_DECLS
 

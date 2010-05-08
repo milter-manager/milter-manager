@@ -930,8 +930,9 @@ emit_message_processed_signal (MilterServerContext *context)
     priv->message_result = NULL;
 }
 
-static gboolean
-need_reply (MilterServerContext *context, MilterServerContextState next_state)
+gboolean
+milter_server_context_need_reply (MilterServerContext *context,
+                                  MilterServerContextState state)
 {
     MilterServerContextPrivate *priv;
     MilterStepFlags step;
@@ -939,7 +940,7 @@ need_reply (MilterServerContext *context, MilterServerContextState next_state)
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
     step = milter_option_get_step(priv->option);
 
-    switch (next_state) {
+    switch (state) {
     case MILTER_SERVER_CONTEXT_STATE_CONNECT:
         return !(step & MILTER_STEP_NO_REPLY_CONNECT);
         break;
@@ -1128,7 +1129,7 @@ write_packet (MilterServerContext *context, gchar *packet, gsize packet_size,
         break;
     default:
         milter_server_context_set_state(context, next_state);
-        if (need_reply(context, next_state)) {
+        if (milter_server_context_need_reply(context, next_state)) {
             priv->timeout_id = milter_utils_timeout_add(priv->reading_timeout,
                                                         cb_reading_timeout,
                                                         context);
