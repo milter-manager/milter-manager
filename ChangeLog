@@ -1,5 +1,7 @@
 2010-05-08  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/server/milter-server-context.c: set reading timeout on body.
+
 	* milter/server/milter-server-context.[ch],
 	test/server/test-server-context-step.c: make
 	milter_server_context_need_reply() public.

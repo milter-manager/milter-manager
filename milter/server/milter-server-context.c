@@ -1707,6 +1707,7 @@ milter_server_context_body (MilterServerContext *context,
     gsize packet_size;
     MilterEncoder *encoder;
     MilterCommandEncoder *command_encoder;
+    MilterServerContextState state = MILTER_SERVER_CONTEXT_STATE_BODY;
     gboolean stop = FALSE;
     MilterServerContextPrivate *priv;
     guint tag = 0;
@@ -1733,14 +1734,13 @@ milter_server_context_body (MilterServerContext *context,
     milter_debug("[%u] [server][stop-on-body][end] %s: stop=<%s>",
                  tag, name, stop ? "true" : "false");
     if (stop) {
-        stop_on_state(context, MILTER_SERVER_CONTEXT_STATE_BODY);
+        stop_on_state(context, state);
         return TRUE;
     }
 
     if (milter_server_context_is_enable_step(context, MILTER_STEP_NO_BODY)) {
         milter_debug("[%u] [server][body][skip] %s", tag, name);
-        milter_server_context_set_state(context,
-                                        MILTER_SERVER_CONTEXT_STATE_BODY);
+        milter_server_context_set_state(context, state);
         g_signal_emit_by_name(context, "skip");
         return TRUE;
     }
@@ -1766,6 +1766,14 @@ milter_server_context_body (MilterServerContext *context,
         chunk += packed_size;
         size -= packed_size;
         increment_process_body_count(context);
+    }
+
+    if (milter_server_context_need_reply(context, state)) {
+        priv->timeout_id = milter_utils_timeout_add(priv->reading_timeout,
+                                                    cb_reading_timeout,
+                                                    context);
+    } else {
+        g_timer_stop(priv->elapsed);
     }
 
     return TRUE;
