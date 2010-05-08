@@ -1,5 +1,7 @@
 2010-05-08  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.c: suppress a warning.
+
 	* milter/manager/milter-manager-children.c,
 	milter/manager/milter-manager-leader.c: also work with
 	no reply {data,header,end-of-header,body}.

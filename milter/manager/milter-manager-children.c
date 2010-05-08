@@ -1139,7 +1139,7 @@ cb_continue (MilterServerContext *context, gpointer user_data)
     MilterManagerChildren *children = user_data;
     MilterServerContextState state;
     MilterManagerChildrenPrivate *priv;
-    MilterStatus status;
+    MilterStatus status = MILTER_STATUS_NOT_CHANGE;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
