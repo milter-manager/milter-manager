@@ -78,7 +78,9 @@ EXTRA_DIST =						\
 	ruby-milter-tutorial.rd				\
 	ruby-milter-tutorial.rd.ja			\
 	ruby-milter-reference.rd			\
-	ruby-milter-reference.rd.ja
+	ruby-milter-reference.rd.ja			\
+	available-milters.rd				\
+	available-milters.rd.ja
 
 dist_man1_MANS =			\
 	milter-manager.man		\
