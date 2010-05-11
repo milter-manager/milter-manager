@@ -94,7 +94,7 @@ content_files =					\
 	users.xml				\
 	ruby-milter-tutorial.xml		\
 	ruby-milter-reference.xml		\
-	available-mitlers.xml
+	available-milters.xml
 
 # Extra options to supply to gtkdoc-fixxref
 FIXXREF_OPTIONS=
@@ -169,8 +169,8 @@ generated_xml_files =				\
 	ruby-milter-tutorial.xml.ja		\
 	ruby-milter-reference.xml		\
 	ruby-milter-reference.xml.ja		\
-	available-mitlers.xml			\
-	available-mitlers.xml.ja
+	available-milters.xml			\
+	available-milters.xml.ja
 
 MAINTAINERCLEANFILES +=			\
 	$(generated_xml_files)		\
@@ -408,11 +408,11 @@ ruby-milter-reference.xml: $(top_srcdir)/doc/ruby-milter-reference.rd $(RD2REFEN
 ruby-milter-reference.xml.ja: $(top_srcdir)/doc/ruby-milter-reference.rd.ja $(RD2REFENTRY_LIB) ja.po
 	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/ruby-milter-reference.rd.ja > ruby-milter-reference.xml.ja
 
-available-mitlers.xml: $(top_srcdir)/doc/available-mitlers.rd $(RD2REFENTRY_LIB) available-mitlers.xml.ja
-	$(RD2DOCBOOK) $(top_srcdir)/doc/available-mitlers.rd > available-mitlers.xml
+available-milters.xml: $(top_srcdir)/doc/available-milters.rd $(RD2REFENTRY_LIB) available-milters.xml.ja
+	$(RD2DOCBOOK) $(top_srcdir)/doc/available-milters.rd > available-milters.xml
 
-available-mitlers.xml.ja: $(top_srcdir)/doc/available-mitlers.rd.ja $(RD2REFENTRY_LIB) ja.po
-	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/available-mitlers.rd.ja > available-mitlers.xml.ja
+available-milters.xml.ja: $(top_srcdir)/doc/available-milters.rd.ja $(RD2REFENTRY_LIB) ja.po
+	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/available-milters.rd.ja > available-milters.xml.ja
 
 ### SVG -> PNG
 mta-and-milter-manager-and-child-milter.png: $(top_srcdir)/doc/mta-and-milter-manager-and-child-milter.svg

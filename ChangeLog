@@ -1,5 +1,7 @@
 2010-05-11  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/reference/Makefile.am: fix typos.
+
 	* doc/available-milters.rd*: add Cloudmark Authority.
 
 2010-05-11  Kouhei Sutou  <kou@clear-code.com>
