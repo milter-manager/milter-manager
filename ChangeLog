@@ -1,5 +1,8 @@
 2010-05-11  Kouhei Sutou  <kou@cozmixng.org>
 
+	* html/index.html*: use dev page for link of available milters
+	page for now.
+
 	* doc/reference/Makefile.am: fix typos.
 
 	* doc/available-milters.rd*: add Cloudmark Authority.
