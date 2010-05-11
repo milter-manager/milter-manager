@@ -17,6 +17,9 @@ list|URL:https://lists.sourceforge.net/lists/listinfo/milter-manager-users-en>))
 
   * ((<milter-greylist|URL:http://hcpnet.free.fr/milter-greylist/>))
   * ((<spamass-milter|URL:http://savannah.nongnu.org/projects/spamass-milt/>))
+  * ((<Cloudmark
+    Authority|URL:http://www.cloudmark.com/en/serviceproviders/authority.html>)):
+    also supports anti-virus.
 
 == Anti virus
 

@@ -16,6 +16,9 @@ milter managerと一緒に利用できたことが報告されているmilterを
 
   * ((<milter-greylist|URL:http://hcpnet.free.fr/milter-greylist/>))
   * ((<spamass-milter|URL:http://savannah.nongnu.org/projects/spamass-milt/>))
+  * ((<Cloudmark
+    Authority|URL:http://www.cloudmark.com/ja/serviceproviders/authority.html>)):
+    アンチウイルス機能付き。
 
 == アンチウイルス
 
