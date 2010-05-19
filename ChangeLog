@@ -1,3 +1,8 @@
+2010-05-19  Kouhei Sutou  <kou@clear-code.com>
+
+	* data/applicable-conditions/s25r.conf: add obsmtp.com to
+	whitelist.
+
 2010-05-11  Kouhei Sutou  <kou@cozmixng.org>
 
 	* html/index.html*: use dev page for link of available milters
