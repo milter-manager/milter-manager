@@ -1,3 +1,9 @@
+2010-05-20  Kouhei Sutou  <kou@clear-code.com>
+
+	* doc/available-milters.rd*: add Kaspersky Anti-Virus Linux Mail
+	Server 5.6 and Kaspersky Anti-Spam 3.0.
+	Reported by ROSSO. Thanks!!!
+
 2010-05-19  Kouhei Sutou  <kou@clear-code.com>
 
 	* data/applicable-conditions/s25r.conf: add obsmtp.com to

@@ -20,6 +20,7 @@ list|URL:https://lists.sourceforge.net/lists/listinfo/milter-manager-users-en>))
   * ((<Cloudmark
     Authority|URL:http://www.cloudmark.com/en/serviceproviders/authority.html>)):
     also supports anti-virus.
+  * ((<Kaspersky Anti-Spam 3.0|URL:http://www.kaspersky.com/anti-spam>))
 
 == Anti virus
 
@@ -27,6 +28,7 @@ list|URL:https://lists.sourceforge.net/lists/listinfo/milter-manager-users-en>))
     also supports anti-spam.
   * ((<clamav-milter|URL:http://www.clamav.net/>))
   * ((<ProScan|URL:http://www.promark-inc.com/products/mailserver.html>))
+  * ((<Kaspersky Anti-Virus Linux Mail Server 5.6|URL:http://www.kaspersky.com/anti-virus_linux_mail_server>))
 
 == Domain authentication
 
