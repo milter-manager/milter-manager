@@ -1,5 +1,9 @@
 2010-05-22  Kouhei Sutou  <kou@cozmixng.org>
 
+	* data/applicable-conditions/s25r.conf,
+	doc/configuration.rd*: make S25R whitelist and blacklist are
+	customizable.
+
 	* tmp/milter-report-port.rb: add a sample milter.
 
 	* binding/ruby/lib/milter/client.rb: add missing :data.

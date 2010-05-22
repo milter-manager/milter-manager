@@ -963,7 +963,85 @@ Example:
 See ((<S25R|URL:http://www.gabacho-net.jp/en/anti-spam/>))
 how to determine a SMTP client is MTA or normal PC.
 
-NOTE: google.com domain is whitelisted.
+S25R rules will also match non normal PC host name. To avoid
+this false positive, you can create whitelist. google.com
+domain and obsmtp.com domain are in whitelist by default.
+
+You can also create blacklist for normal PC host name that
+isn't matched to S25R rules.
+
+You can customize S25R applicable condition by the following
+configurations:
+
+: s25r.add_whitelist(matcher)
+
+   Since 1.5.2.
+
+   S25R applicable condition treats a host name that
+   ((|matcher|)) matches the host name as MTA host and adds
+   the host name to whitelist. If a
+   host name is listed in whitelist, child milter isn't
+   applied.
+
+   ((|matcher|)) is a regular expression or a host name as
+   string.
+
+   For example, the following configuration adds google.com
+   domain to whitelist:
+
+     s25r.add_whitelist(/\.google\.com\z/)
+
+   The following configuration adds mx.example.com host to
+   whitelist:
+
+     s25r.add_whitelist("mx.example.com")
+
+   [For power user] You can specify complex condition by
+   block. S25R applicable condition passes a host name to
+   the block. For example, the following configuration adds
+   .jp top level domain while 8:00 a.m. to 7:59 p.m. to
+   whitelist:
+
+     s25r.add_whitelist do |host|
+       (8..19).include?(Time.now.hour) and /\.jp\z/ === host
+     end
+
+: s25r.add_blacklist(matcher)
+
+   Since 1.5.2.
+
+   S25R applicable condition treats a host name that
+   ((|matcher|)) matches the host name as normal PC host and
+   adds the host to blacklist. If a host name is listed in
+   blacklist, child milter is applied.
+
+   NOTE: If a host is listed both whitelist and blacklist,
+   S25R applicable condition give preference to whitelist
+   over blacklist. That is, child milter isn't applied in
+   the case.
+
+   ((|matcher|)) is a regular expression or a host name as
+   string.
+
+   For example, the following configuration adds
+   evil.example.com domain to blacklist:
+
+     s25r.add_blacklist(/\.evil\.example\.com\z/)
+
+   The following configuration adds black.example.com host to
+   blacklist:
+
+     s25r.add_blacklist("black.example.com")
+
+   [For power user] You can specify complex condition by
+   block. S25R applicable condition passes a host name to
+   the block. For example, the following configuration adds
+   .jp top level domain while 8:00 p.m. to 7:59 a.m. to
+   blacklist:
+
+     s25r.add_blacklist do |host|
+       !(8..19).include?(Time.now.hour) and /\.jp\z/ === host
+     end
 
 === Remote Network
 
