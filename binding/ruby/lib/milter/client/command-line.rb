@@ -103,12 +103,6 @@ module Milter
                 "(#{@options.status_on_error})") do |status|
           @options.status_on_error = status
         end
-
-        @option_parser.on("--database-path=PATH",
-                "Specify database path to store messages as [PATH].",
-                "(#{@options.database_path})") do |path|
-          @options.database_path = path
-        end
       end
 
       def setup_logger_options

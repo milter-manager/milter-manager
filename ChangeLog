@@ -1,3 +1,8 @@
+2010-05-22  Kouhei Sutou  <kou@cozmixng.org>
+
+	* binding/ruby/lib/milter/client/command-line.rb: remove a garbage
+	option: --database-path.
+
 2010-05-20  Kouhei Sutou  <kou@clear-code.com>
 
 	* doc/available-milters.rd*: add Kaspersky Anti-Virus Linux Mail
