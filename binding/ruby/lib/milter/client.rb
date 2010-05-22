@@ -63,7 +63,7 @@ module Milter
 
     def negotiate(option, macros_requests)
       [:connect, :helo, :envelope_from, :envelope_recipient,
-       :body, :unknown, [:header, :headers], :end_of_header,
+       :body, :unknown, [:header, :headers], :end_of_header, :data,
       ].each do |method_name, step_name|
         if respond_to?(method_name)
           step_name ||= method_name
