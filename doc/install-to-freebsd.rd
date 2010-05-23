@@ -192,10 +192,15 @@ We run milter-greylist as 'smmsp' user and 'mail' group.
 user on Postfix environment.
 
 We copy /usr/local/etc/mail/greylist.conf.sample to
-/usr/local/etc/mail/greylist.conf and change it like the
-following to use greylist by default:
+/usr/local/etc/mail/greylist.conf and change it for the
+following configurations:
+
+  * increase auto whitelist period to a week instead of 1
+    day (default value) to avoid Greylist adverse effect.
+  * use Greylist by default.
 
 Before:
+  autowhite 1w
   racl whitelist default
 
 After:

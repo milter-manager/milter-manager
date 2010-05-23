@@ -205,13 +205,18 @@ smmspユーザはデフォルト設定のユーザであり、Postfixを使っ�
 ます。
 
 /usr/local/etc/mail/greylist.conf.sampleを
-/usr/local/etc/mail/greylist.confにコピーし、デフォルトで
-Greylistを使うように変更します。
+/usr/local/etc/mail/greylist.confにコピーし、以下のような設
+定にします。
+
+  * オートホワイトリストの期間を1日（デフォルト）から1週間に
+    伸ばす（Greylistの悪影響を抑えるため）
+  * デフォルトでGreylistを使う
 
 変更前:
   racl whitelist default
 
 変更後:
+  autowhite 1w
   racl greylist default
 
 /etc/rc.confに以下を追加します。

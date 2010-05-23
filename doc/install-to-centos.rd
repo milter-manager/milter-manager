@@ -134,12 +134,18 @@ We start clamav-milter:
 
 === Configure milter-greylist
 
-We edit /etc/mail/greylist.conf to use Greylist by default.
+We change /etc/mail/greylist.conf for the following
+configurations:
+
+  * increase auto whitelist period to a week instead of 1
+    day (default value) to avoid Greylist adverse effect.
+  * use Greylist by default.
 
 Before:
   racl whitelist default
 
 After:
+  autowhite 1w
   racl greylist default
 
 We create /etc/sysconfig/milter-greylist with the following

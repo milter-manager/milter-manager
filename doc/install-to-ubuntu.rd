@@ -134,13 +134,18 @@ clamav-milter should be restarted:
 
 === Configure milter-greylist
 
-We change /etc/milter-greylist/greylist.conf to use greylist
-by default:
+We change /etc/milter-greylist/greylist.conf for the following
+configurations:
+
+  * increase auto whitelist period to a week instead of 1
+    day (default value) to avoid Greylist adverse effect.
+  * use Greylist by default.
 
 Before:
   racl whitelist default
 
 After:
+  autowhite 1w
   racl greylist default
 
 We change /etc/default/milter-greylist to enable

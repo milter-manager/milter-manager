@@ -1,3 +1,8 @@
+2010-05-23  Kouhei Sutou  <kou@cozmixng.org>
+
+	* doc/install-to-*.rd*: add 'autowhite 1w' to milter-greylist
+	configuration.
+
 2010-05-22  Kouhei Sutou  <kou@cozmixng.org>
 
 	* data/applicable-conditions/s25r.conf,

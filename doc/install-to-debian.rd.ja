@@ -131,13 +131,18 @@ clamav-milterを再起動します。
 
 === milter-greylistの設定
 
-/etc/milter-greylist/greylist.confを編集し、デフォルトで
-Greylistを使うようにします。
+/etc/milter-greylist/greylist.confを編集し、以下のような設定
+にします。
+
+  * オートホワイトリストの期間を1日（デフォルト）から1週間に
+    伸ばす（Greylistの悪影響を抑えるため）
+  * デフォルトでGreylistを使う
 
 変更前:
   acl whitelist default
 
 変更後:
+  autowhite 1w
   acl greylist default
 
 次に、/etc/default/milter-greylistを変更し、milter-greylist

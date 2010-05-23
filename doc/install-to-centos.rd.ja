@@ -135,13 +135,17 @@ clamav-milterを起動します。
 
 === milter-greylistの設定
 
-/etc/mail/greylist.confを編集し、デフォルトでGreylistを使うよ
-うにします。
+/etc/mail/greylist.confを編集し、以下のような設定にします。
+
+  * オートホワイトリストの期間を1日（デフォルト）から1週間に
+    伸ばす（Greylistの悪影響を抑えるため）
+  * デフォルトでGreylistを使う
 
 変更前:
   racl whitelist default
 
 変更後:
+  autowhite 1w
   racl greylist default
 
 次に、以下の内容の/etc/sysconfig/milter-greylistを作成します。
