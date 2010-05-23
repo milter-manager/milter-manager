@@ -96,10 +96,12 @@ def config(log_dir, type, milter, parameters)
   category = parameters[:category]
   info = parameters[:info]
   labels = parameters[:labels]
-  order = parameters[:order] || sets.collect {|key,| key}
+  order = (parameters[:order] || sets.collect {|key,| key}).reject do |key|
+    sets.assoc(key).nil?
+  end
   unordered_keys = []
   sets.each do |key,|
-    unordered_keys << key unless order.include?(order)
+    unordered_keys << key unless order.include?(key)
   end
   order.concat(unordered_keys)
   case type
