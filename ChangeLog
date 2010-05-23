@@ -1,5 +1,7 @@
 2010-05-23  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-manager-log-analyzer: support tarpit status.
+
 	* doc/install-to-*.rd*: add 'autowhite 1w' to milter-greylist
 	configuration.
 

@@ -726,7 +726,8 @@ EODS
                 "dkim-pass",
                 "dkim-fail",
                 "dkim-adsp-pass",
-                "dkim-adsp-fail"]
+                "dkim-adsp-fail",
+                "tarpitting-pass"]
       @old_base_rrd_file_names = []
     end
 
@@ -740,6 +741,7 @@ EODS
                  ["STACK", "virus", "#ddbb00", "Virus"],
                  ["STACK", "uribl", "#dd00bb", "URIBL"],
                  ["STACK", "greylisting-pass", "#888888", "Greylisting (pass)"],
+                 ["STACK", "tarpitting-pass", "#000088", "Tarpitting (pass)"],
                  ["STACK", "spf-pass", "#33cc33", "SPF (pass)"],
                  ["STACK", "spf-fail", "#cc3333", "SPF (fail)"],
                  ["STACK", "sender-id-pass", "#33cccc", "Sender ID (pass)"],
@@ -831,6 +833,9 @@ EODS
 
     def parse_x_greylist(value)
       case value
+      when /whitelisted by tarpit (%d)s/i
+        tarpit_second = $1.to_i
+        yield("tarpitting-pass")
       when /\ADelayed for/i
         yield("greylisting-pass")
       when /\ASender is SPF-compliant/i
