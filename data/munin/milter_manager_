@@ -96,7 +96,12 @@ def config(log_dir, type, milter, parameters)
   category = parameters[:category]
   info = parameters[:info]
   labels = parameters[:labels]
-  order = sets.collect {|key,| key}
+  order = parameters[:order] || sets.collect {|key,| key}
+  unordered_keys = []
+  sets.each do |key,|
+    unordered_keys << key unless order.include?(order)
+  end
+  order.concat(unordered_keys)
   case type
   when "status"
     order << "smtp"
@@ -228,6 +233,7 @@ when "config"
              "virus" => "Virus",
              "uribl" => "URIBL",
              "greylisting_pass" => "Greylisting (pass)",
+             "tarpitting_pass" => "Tarpitting (pass)",
              "spf_pass" => "SPF (pass)",
              "spf_fail" => "SPF (fail)",
              "sender_id_pass" => "Sender ID (pass)",
@@ -236,7 +242,21 @@ when "config"
              "dkim_fail" => "DKIM (fail)",
              "dkim_adsp_pass" => "DKIM ADSP (pass)",
              "dkim_adsp_fail" => "DKIM ADSP (fail)",
-           })
+           },
+           :order => ["spam",
+                      "virus",
+                      "uribl",
+                      "greylisting_pass",
+                      "tarpitting_pass",
+                      "spf_pass",
+                      "spf_fail",
+                      "sender_id_pass",
+                      "sender_id_fail",
+                      "dkim_pass",
+                      "dkim_fail",
+                      "dkim_adsp_pass",
+                      "dkim_adsp_fail",
+                     ])
   else
     puts invalid_file_name_message
     exit(false)
