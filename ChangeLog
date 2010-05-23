@@ -1,5 +1,8 @@
 2010-05-23  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-manager-log-analyzer: support milter-greylist 4.x
+	SPF test format.
+
 	* tool/milter-manager-log-analyzer: add missing '+'.
 
 	* data/munin/milter_manager_: support item order customize.

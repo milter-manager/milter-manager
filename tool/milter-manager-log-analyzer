@@ -833,12 +833,12 @@ EODS
 
     def parse_x_greylist(value)
       case value
-      when /whitelisted by tarpit (%d+)s/i
+      when /Message whitelisted by tarpit (\d+)s/i
         tarpit_second = $1.to_i
         yield("tarpitting-pass")
       when /\ADelayed for/i
         yield("greylisting-pass")
-      when /\ASender is SPF-compliant/i
+      when /Sender is SPF-compliant/i, /Sender passed SPF test/i
         yield("spf-pass")
       end
     end
