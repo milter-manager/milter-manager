@@ -833,7 +833,7 @@ EODS
 
     def parse_x_greylist(value)
       case value
-      when /whitelisted by tarpit (%d)s/i
+      when /whitelisted by tarpit (%d+)s/i
         tarpit_second = $1.to_i
         yield("tarpitting-pass")
       when /\ADelayed for/i
