@@ -1,3 +1,7 @@
+2010-05-24  Kouhei Sutou  <kou@clear-code.com>
+
+	* test/manager/test-children.c, test/run-test.sh: don't unset LANG.
+
 2010-05-23  Kouhei Sutou  <kou@cozmixng.org>
 
 	* tool/milter-manager-log-analyzer: support milter-greylist 4.x

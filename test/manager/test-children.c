@@ -1847,15 +1847,17 @@ test_no_negotiation (void)
     cut_assert_equal_string(
         cut_take_printf("[%u] [children][error][connection] [%u] "
                         "Failed to connect to inet:10026@localhost: "
-                        "Connection refused: milter@10026\n"
+                        "%s: milter@10026\n"
                         "[%u] [children][error][connection] [%u] "
                         "Failed to connect to inet:10027@localhost: "
-                        "Connection refused: milter@10027\n"
+                        "%s: milter@10027\n"
                         "[%u] [children][error][negotiate][no-response]\n",
                         milter_manager_children_get_tag(children),
                         milter_agent_get_tag(MILTER_AGENT(child10026)),
+                        g_strerror(ECONNREFUSED),
                         milter_manager_children_get_tag(children),
                         milter_agent_get_tag(MILTER_AGENT(child10027)),
+                        g_strerror(ECONNREFUSED),
                         milter_manager_children_get_tag(children)),
         error_message->str);
 }

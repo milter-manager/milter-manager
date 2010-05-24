@@ -15,8 +15,6 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
-unset LANG
-
 export BASE_DIR="`dirname $0`"
 top_dir="$BASE_DIR/.."
 top_dir="`cd $top_dir; pwd`"
