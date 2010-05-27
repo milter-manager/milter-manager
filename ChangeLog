@@ -1,5 +1,8 @@
 2010-05-27  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/install-to-debian.rd.ja: add more recommended
+	milter-greylist configurations.
+
 	* NEWS*: add 1.5.2 entry.
 
 2010-05-24  Kouhei Sutou  <kou@clear-code.com>
