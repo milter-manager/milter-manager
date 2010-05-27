@@ -2,22 +2,47 @@
 
 = お知らせ --- milter managerの歴史
 
-== [release-1-5-2] 1.5.2: 2010-XX-XX
+== [release-1-5-2] 1.5.2: 2010-05-27
 
 1.5.1のバグフィックスリリースです。
 
-WRITE ME
+NO_REPLY_*を利用するmilterやmilter-greylist 4.3.xと一緒に使っ
+ている開発版ユーザはアップデートすることをおすすめします。
 
-=== libmilter-core
+=== ドキュメント
+
+==== 改善
+
+  * ((<利用可能なmilter|available-milters>))の一覧を作成。
+  * milter-greylistのおすすめ設定を更新
+
+=== milter manager
+
+==== 改善
+
+  * S25Rの((<ホワイトリストのカスタマイズ
+    |"doc/configuration.rd.ja#s25r.add_whitelist">))・((<ブラッ
+    クリストのカスタマイズ|"doc/configuration.rd.ja#s25r.add_whitelist">))
+    をサポート。
+
+=== milter-manager-log-analyzer
+
+==== 改善
+
+  * milter-greylist 4.3.xに対応
+
+=== milter-toolkit
 
 ==== 改善
 
   * inet_aton()/inet_ntoa()の代わりにinet_pton()/inet_pton()
     を使用。[さとうふみやすさんが提案]
+  * NO_REPLY_*のサポート。 [ROSSOさんが報告]
 
 === 感謝
 
   * さとうふみやすさん
+  * ROSSOさん
 
 == [release-1-5-1] 1.5.1: 2010-04-20
 

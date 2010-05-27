@@ -1,3 +1,7 @@
+2010-05-27  Kouhei Sutou  <kou@clear-code.com>
+
+	* NEWS*: add 1.5.2 entry.
+
 2010-05-24  Kouhei Sutou  <kou@clear-code.com>
 
 	* test/manager/test-children.c, test/run-test.sh: don't unset LANG.

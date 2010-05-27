@@ -2,13 +2,36 @@
 
 = NEWS --- The history of milter manager
 
-== [release-1-5-2] 1.5.2: 2010-XX-XX
+== [release-1-5-2] 1.5.2: 2010-05-27
 
 A bug fix release of 1.5.1.
 
-WRITE ME
+We recommend development version users who use a milter that uses
+NO_REPLY_* or milter-greylist 4.3.x upgrade to this version.
 
-=== libmilter-core
+=== Document
+
+==== Improvements
+
+  * Created ((<available milters|available-milters>)) list.
+  * Updated recommended milter-greylist configuration.
+
+=== milter manager
+
+==== Improvements
+
+  * Supported S25R ((<whitelist customize
+    |"doc/configuration.rd#s25r.add_whitelist">)) and
+    ((<blacklist
+    customize|"doc/configuration.rd#s25r.add_whitelist">)).
+
+=== milter-manager-log-analyzer
+
+==== Improvements
+
+  * Supported milter-greylist 4.3.x.
+
+=== milter-toolkit
 
 ==== Improvements
 
@@ -18,6 +41,7 @@ WRITE ME
 === Thanks
 
   * SATOH Fumiyasu
+  * ROSSO
 
 == [release-1-5-1] 1.5.1: 2010-04-20
 
