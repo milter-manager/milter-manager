@@ -1,7 +1,7 @@
 Summary: A milter to use milters effectively
 Name: milter-manager
 Version: @VERSION@
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: GPLv3+, LGPL3+, AGPL3+, GFDL, Public Domain
 URL: http://milter-manager.sourceforge.net/
 Group: System Environment/Daemons
@@ -288,8 +288,8 @@ fi
 %config %{_sysconfdir}/munin/plugin-conf.d/
 
 %changelog
-* Wed May 08 2010 Kouhei Sutou <kou@clear-code.com>
-- (1.5.2-1)
+* Wed May 28 2010 Kouhei Sutou <kou@clear-code.com>
+- (1.5.2-2)
 - new upstream release
 
 * Wed Apr 20 2010 Kouhei Sutou <kou@clear-code.com>
