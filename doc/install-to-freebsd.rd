@@ -195,15 +195,31 @@ We copy /usr/local/etc/mail/greylist.conf.sample to
 /usr/local/etc/mail/greylist.conf and change it for the
 following configurations:
 
-  * increase auto whitelist period to a week instead of 1
-    day (default value) to avoid Greylist adverse effect.
+  * use the leading 24bits for IP address match to avoid
+    Greylist adverse effect for sender uses some MTA case.
+  * decrease retransmit check time to 10 minutes from 30
+    minutes (default value) to avoid Greylist adverse effect.
+  * increase auto whitelist period to a week from 1 day
+    (default value) to avoid Greylist adverse effect.
   * use Greylist by default.
 
+  # tip
+  The configuration relaxes Greylist check to avoid Greylist
+  adverse effect. It increases received spam mails but we
+  should give priority to avoid false positive rather than
+  false negative. We should not consider that we blocks all
+  spam mails by Greylist. We can blocks spam mails that
+  isn't blocked by Greylist by other anti-spam technique
+  such as SpamAssassin. milter manager helps constructing
+  mail system that combines some anti-spam techniques.
+
 Before:
-  autowhite 1w
   racl whitelist default
 
 After:
+  subnetmatch /24
+  greylist 10m
+  autowhite 1w
   racl greylist default
 
 We add the following to /etc/rc.conf:

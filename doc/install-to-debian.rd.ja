@@ -142,6 +142,15 @@ clamav-milterを再起動します。
     伸ばす（Greylistの悪影響を抑えるため）
   * デフォルトでGreylistを使う
 
+  # tip
+  Greylistの悪影響を抑えるために制限を緩めているため、迷惑
+  メールが通過する確率がやや高くなりますが、誤判定時の悪影響を
+  抑える方を重視するべきです。Greylistですべての迷惑メールをブ
+  ロックしようとするのではなく、Greylistで検出できない迷惑メー
+  ルはSpamAssassinなど他の手法で対応します。milter managerはそ
+  のように複数のmilterを組み合わせた迷惑メール対策システムの構
+  築を支援します。
+
 変更前:
   acl whitelist default
 
@@ -150,15 +159,6 @@ clamav-milterを再起動します。
   greylist 10m
   autowhite 1w
   acl greylist default
-
-: [tag:tip]
-   Greylistの悪影響を抑えるために制限を緩めているため、迷惑
-   メールが通過する確率がやや高くなりますが、誤判定時の悪影響を
-   抑える方を重視するべきです。Greylistですべての迷惑メールをブ
-   ロックしようとするのではなく、Greylistで検出できない迷惑メー
-   ルはSpamAssassinなど他の手法で対応します。milter managerはそ
-   のように複数のmilterを組み合わせた迷惑メール対策システムの構
-   築を支援します。
 
 次に、/etc/default/milter-greylistを変更し、milter-greylist
 を有効にします。milter-greylistの起動ファイルではソケットファ
