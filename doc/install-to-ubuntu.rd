@@ -11,7 +11,7 @@ install information.
 == Install packages
 
 Packages for Hardy Heron, the current LTS release, and
-Packages for Karmic Koara, the latest release are
+Packages for Lucid Lynx, the latest release are
 distributed on the milter manager site. We put the following
 content to /etc/apt/sources.list.d/milter-manager.list:
 
@@ -26,13 +26,13 @@ content to /etc/apt/sources.list.d/milter-manager.list:
 If we use development series, we need to comment the first 2
 lines out and enable comment outed the 2 lines.
 
-=== For Hardy Heron
+=== For Lucid Lynx
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://milter-manager.sourceforge.net/ubuntu/stable/ karmic universe
-  deb-src http://milter-manager.sourceforge.net/ubuntu/stable/ karmic universe
-  # deb http://milter-manager.sourceforge.net/ubuntu/development/ karmic universe
-  # deb-src http://milter-manager.sourceforge.net/ubuntu/development/ karmic universe
+  deb http://milter-manager.sourceforge.net/ubuntu/stable/ lucid universe
+  deb-src http://milter-manager.sourceforge.net/ubuntu/stable/ lucid universe
+  # deb http://milter-manager.sourceforge.net/ubuntu/development/ lucid universe
+  # deb-src http://milter-manager.sourceforge.net/ubuntu/development/ lucid universe
 
 If we use development series, we need to comment the first 2
 lines out and enable comment outed the 2 lines.

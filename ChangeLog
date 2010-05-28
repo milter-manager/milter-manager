@@ -1,5 +1,7 @@
 2010-05-28  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/install-to-ubuntu.rd*: Karmic Koara -> Lucid Lynx.
+
 	* doc/install-to-centos.rd*: 5.4 -> 5.5.
 
 	* doc/install-to-*.rd*: use 'note' instead of 'tip'.
