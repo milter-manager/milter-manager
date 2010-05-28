@@ -145,7 +145,7 @@ configurations:
     (default value) to avoid Greylist adverse effect.
   * use Greylist by default.
 
-  # tip
+  # note
   The configuration relaxes Greylist check to avoid Greylist
   adverse effect. It increases received spam mails but we
   should give priority to avoid false positive rather than

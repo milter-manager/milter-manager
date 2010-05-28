@@ -1,5 +1,7 @@
 2010-05-28  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/install-to-*.rd*: use 'note' instead of 'tip'.
+
 	* doc/install-to-*.rd*: add more recommended
 	milter-greylist configurations.
 
