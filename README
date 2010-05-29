@@ -61,10 +61,10 @@ See ((<Introduction|"doc/introduction.rd">)) for more details.
     * Postfix >= 2.3.3
   * GLib >= 2.12.3
   * Ruby >= 1.8.5
-  * Ruby/GLib2 (Ruby-GNOME2) >= 0.16.0
   * UN*X OS
-    * Linux >= 2.6.18
-    * FreeBSD
+    * Linux（Debian GNU/Linux, Ubuntu, CentOS）
+    * FreeBSD, NetBSD
+    * Solaris
 
 === Optional dependencies
 

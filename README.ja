@@ -65,13 +65,9 @@ milter managerを導入することにより、MTAが行っていたmilter管理
   * Ruby >= 1.8.5
   * Ruby/GLib2 (Ruby-GNOME2) >= 0.16.0
   * UNIX系OS
-    * Linux >= 2.6.18
-    * FreeBSD
-
-LinuxではUbuntu 8.04 TLS、CentOS 5.2上で動作することを想定し
-ています。そのため、各ディストリビューションに含まれているソ
-フトウェアに関しては、そのバージョンのソフトウェアで動作する
-ことを想定しています。
+    * Linux（Debian GNU/Linux, Ubuntu, CentOS）
+    * FreeBSD, NetBSD
+    * Solaris
 
 === あるとよいソフトウェア
 

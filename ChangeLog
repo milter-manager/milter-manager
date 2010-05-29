@@ -1,5 +1,7 @@
 2010-05-29  Kouhei Sutou  <kou@clear-code.com>
 
+	* README*: fix dependency OS.
+
 	* html/index.html*: CentOS 5.4 -> 5.5.
 
 2010-05-28  Kouhei Sutou  <kou@clear-code.com>
