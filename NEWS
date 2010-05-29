@@ -23,7 +23,7 @@ NO_REPLY_* or milter-greylist 4.3.x upgrade to this version.
   * Supported S25R ((<whitelist customize
     |"doc/configuration.rd#s25r.add_whitelist">)) and
     ((<blacklist
-    customize|"doc/configuration.rd#s25r.add_whitelist">)).
+    customize|"doc/configuration.rd#s25r.add_blacklist">)).
 
 === milter-manager-log-analyzer
 

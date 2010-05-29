@@ -22,7 +22,7 @@ NO_REPLY_*を利用するmilterやmilter-greylist 4.3.xと一緒に使っ
 
   * S25Rの((<ホワイトリストのカスタマイズ
     |"doc/configuration.rd.ja#s25r.add_whitelist">))・((<ブラッ
-    クリストのカスタマイズ|"doc/configuration.rd.ja#s25r.add_whitelist">))
+    クリストのカスタマイズ|"doc/configuration.rd.ja#s25r.add_blacklist">))
     をサポート。
 
 === milter-manager-log-analyzer
