@@ -119,11 +119,11 @@ deb-src http://milter-manager.sourceforge.net/ubuntu/development hardy universe<
 % gpg --export 1C837F31 | sudo apt-key add -</pre>
 	</p>
 
-	<h3>Ubuntu 9.10 Karmic Koara用開発版パッケージ</h3>
+	<h3>Ubuntu 10.04 LTS Lucid Lynx用開発版パッケージ</h3>
 	<p>
 	  apt-line:
-	  <pre class="file">deb http://milter-manager.sourceforge.net/ubuntu/development karmic universe
-deb-src http://milter-manager.sourceforge.net/ubuntu/development karmic universe</pre>
+	  <pre class="file">deb http://milter-manager.sourceforge.net/ubuntu/development lucid universe
+deb-src http://milter-manager.sourceforge.net/ubuntu/development lucid universe</pre>
 	</p>
 	<p>
 	  パッケージはkou@clear-code.comの鍵でサインされています。信用する場合は鍵を登録します。
@@ -143,7 +143,7 @@ deb-src http://milter-manager.sourceforge.net/debian/development lenny main</pre
 % gpg --export 1C837F31 | sudo apt-key add -</pre>
 	</p>
 
-	<h3>CentOS 5.4用開発版パッケージ</h3>
+	<h3>CentOS 5.5用開発版パッケージ</h3>
 	<p>
 	  yumでインストールできます。まず、milter managerのyumリポジトリを登録します。これは最初の1度だけ行います。
 	  <pre class="command">% sudo rpm -Uvh http://milter-manager.sourceforge.net/centos/5/milter-manager-repository-1.0.0-0.noarch.rpm</pre>

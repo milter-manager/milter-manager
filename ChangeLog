@@ -1,5 +1,7 @@
 2010-05-29  Kouhei Sutou  <kou@clear-code.com>
 
+	* html/index.html*: Ubuntu Karmic Koara -> Ubuntu Lucid Lynx.
+
 	* README*: fix dependency OS.
 
 	* html/index.html*: CentOS 5.4 -> 5.5.
