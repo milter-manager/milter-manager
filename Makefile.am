@@ -44,7 +44,7 @@ upload-doc:
 	cd html && $(MAKE) $(AM_MAKEFLAGS) upload
 	cd doc/reference && $(MAKE) $(AM_MAKEFLAGS) upload
 
-upload-coverage: coverage
+upload-coverage: coverage-force
 	rsync -avz coverage/ $(SF_HTDOCS)/coverage/
 
 update-po:
