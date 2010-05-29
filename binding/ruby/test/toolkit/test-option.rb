@@ -66,7 +66,6 @@ class TestOption < Test::Unit::TestCase
                  Milter::StepFlags::NO_BODY |
                  Milter::StepFlags::NO_HEADERS |
                  Milter::StepFlags::NO_END_OF_HEADER |
-                 Milter::StepFlags::NO_REPLY_HEADER |
                  Milter::StepFlags::NO_UNKNOWN |
                  Milter::StepFlags::NO_DATA,
                  Milter::StepFlags::NO_EVENT_MASK)
@@ -79,6 +78,7 @@ class TestOption < Test::Unit::TestCase
                  Milter::StepFlags::NO_REPLY_ENVELOPE_RECIPIENT |
                  Milter::StepFlags::NO_REPLY_DATA |
                  Milter::StepFlags::NO_REPLY_UNKNOWN |
+                 Milter::StepFlags::NO_REPLY_HEADER |
                  Milter::StepFlags::NO_REPLY_END_OF_HEADER |
                  Milter::StepFlags::NO_REPLY_BODY,
                  Milter::StepFlags::NO_REPLY_MASK)
@@ -107,7 +107,6 @@ class TestOption < Test::Unit::TestCase
                  Milter::StepFlags::NO_BODY |
                  Milter::StepFlags::NO_HEADERS |
                  Milter::StepFlags::NO_END_OF_HEADER |
-                 Milter::StepFlags::NO_REPLY_HEADER |
                  Milter::StepFlags::NO_UNKNOWN |
                  Milter::StepFlags::NO_DATA,
                  option.step)
