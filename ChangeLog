@@ -1,5 +1,8 @@
 2010-05-29  Kouhei Sutou  <kou@clear-code.com>
 
+	* admin/: don't use locale_rails because it's not work with the
+	latest I18n.
+
 	* binding/ruby/test/toolkit/test-option.rb: fix expected value.
 
 	* configure.ac: 1.5.2 -> 1.5.3.

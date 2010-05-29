@@ -20,9 +20,25 @@ class ApplicationController < ActionController::Base
   # from your application log (in this case, all fields with names like "password"). 
   filter_parameter_logging :password, :password_confirmation
 
-  before_filter :login_required
+  before_filter :set_locale, :login_required
 
   private
+  def set_locale
+    I18n.locale = guess_locale || I18n.locale
+  end
+
+  def guess_locale
+    (request.accept_language || '').split(/,/).collect do |item|
+      language, quality = item.split(/;/, 2)
+      quality ||= 1
+      [language, quality.to_i]
+    end.sort_by do |language, quality|
+      -quality
+    end.collect do |language, quality|
+      language
+    end[0]
+  end
+
   def sync_configuration
     configuration = nil
     begin
@@ -42,7 +58,6 @@ class ApplicationController < ActionController::Base
   end
 
   def render_404(exception)
-    init_locale
     render(:file => "/rescues/404",
            :layout => "application",
            :status => "404 Not Found",
@@ -50,7 +65,6 @@ class ApplicationController < ActionController::Base
   end
 
   def render_500(exception)
-    init_locale
     render(:file => "/rescues/500",
            :layout => "application",
            :status => "500 Error",
