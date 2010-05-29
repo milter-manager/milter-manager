@@ -1,5 +1,7 @@
 2010-05-29  Kouhei Sutou  <kou@clear-code.com>
 
+	* *: 1.5.1 -> 1.5.2.
+
 	* html/index.html*: Ubuntu Karmic Koara -> Ubuntu Lucid Lynx.
 
 	* README*: fix dependency OS.

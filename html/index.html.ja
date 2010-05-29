@@ -99,11 +99,11 @@
 
 	<h2 id="development">開発版リリース</h2>
 	<p>
-	  2010-04-20に開発版1.5.1がリリースされました。開発版には多くの新機能が含まれていますが、安定して動作しない可能性があります。実運用には安定版を利用してください。
+	  2010-05-29に開発版1.5.2がリリースされました。開発版には多くの新機能が含まれていますが、安定して動作しない可能性があります。実運用には安定版を利用してください。
         </p>
 	<ul>
-          <li><a href="http://downloads.sourceforge.net/milter-manager/milter-manager-1.5.1.tar.gz">ダウンロード</a></li>
-          <li><a href="dev/reference/ja/news.html#news.release-1-5-1">変更点</a></li>
+          <li><a href="http://downloads.sourceforge.net/milter-manager/milter-manager-1.5.2.tar.gz">ダウンロード</a></li>
+          <li><a href="dev/reference/ja/news.html#news.release-1-5-2">変更点</a></li>
           <li><a href="dev/reference/ja/">ドキュメント</a></li>
 	</ul>
 
