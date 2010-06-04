@@ -2161,6 +2161,9 @@ cb_finished (MilterAgent *agent, gpointer user_data)
     }
 
     switch (priv->processing_state) {
+    case MILTER_SERVER_CONTEXT_STATE_NEGOTIATE:
+        remove_queue_in_negotiate(children, MILTER_MANAGER_CHILD(context));
+        break;
     case MILTER_SERVER_CONTEXT_STATE_DATA:
     case MILTER_SERVER_CONTEXT_STATE_HEADER:
     case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:

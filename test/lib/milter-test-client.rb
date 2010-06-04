@@ -30,11 +30,21 @@ class MilterTestClient
     @envelope_recipient = nil
     @content = ""
     @socket = nil
+    @bind = true
     initialize_options
     setup_decoder
   end
 
   def run
+    if @bind
+      accept_request
+    else
+      print_status("ready")
+      sleep(@timeout)
+    end
+  end
+
+  def accept_request
     TCPServer.open(@host, @port) do |socket|
       print_status("ready")
 
@@ -229,6 +239,11 @@ class MilterTestClient
       opts.on("--quit-without-reply=ACTION",
               "Quit without reply on ACTION") do |action|
         @quit_without_reply_action = action
+      end
+
+      opts.on("--no-bind",
+              "Don't bind socket") do |boolean|
+        @bind = boolean
       end
 
       opts.on("--quiet", "Be quiet") do

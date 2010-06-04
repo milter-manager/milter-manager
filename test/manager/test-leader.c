@@ -415,7 +415,7 @@ assert_have_response_helper (const gchar *name)
     gboolean timeout_emitted = FALSE;
     guint timeout_emitted_id;
 
-    timeout_emitted_id = g_timeout_add(1000, cb_timeout_emitted,
+    timeout_emitted_id = g_timeout_add(3000, cb_timeout_emitted,
                                        &timeout_emitted);
     while (!timeout_emitted &&
            get_response_count(name) == 0) {
@@ -1474,6 +1474,8 @@ data_scenario_negotiate (void)
                  g_strdup("negotiate-no-enabled-child.txt"), g_free,
                  "negotiate - no available child",
                  g_strdup("negotiate-no-available-child.txt"), g_free,
+                 "negotiate - no bind",
+                 g_strdup("negotiate-no-bind.txt"), g_free,
                  NULL);
 }
 

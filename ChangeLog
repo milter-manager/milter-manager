@@ -1,3 +1,11 @@
+2010-06-04  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/manager/milter-manager-children.c,
+	test/fixtures/leader/negotiate-no-bind.conf,
+	test/fixtures/leader/negotiate-no-bind.txt,
+	test/lib/milter-test-client.rb, test/manager/test-leader.c:
+	ensure returning negotiate reply on negotiation failure.
+
 2010-05-29  Kouhei Sutou  <kou@clear-code.com>
 
 	* NEWS*: fix typos.
