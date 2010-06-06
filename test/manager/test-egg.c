@@ -25,6 +25,16 @@
 
 #include <gcutter.h>
 
+#define TIMEOUT_LEEWAY 3
+#define DEFAULT_CONNECTION_TIMEOUT \
+    (MILTER_SERVER_CONTEXT_DEFAULT_CONNECTION_TIMEOUT - TIMEOUT_LEEWAY)
+#define DEFAULT_WRITING_TIMEOUT \
+    (MILTER_SERVER_CONTEXT_DEFAULT_WRITING_TIMEOUT - TIMEOUT_LEEWAY)
+#define DEFAULT_READING_TIMEOUT \
+    (MILTER_SERVER_CONTEXT_DEFAULT_READING_TIMEOUT - TIMEOUT_LEEWAY)
+#define DEFAULT_END_OF_MESSAGE_TIMEOUT \
+    (MILTER_SERVER_CONTEXT_DEFAULT_END_OF_MESSAGE_TIMEOUT - TIMEOUT_LEEWAY)
+
 void test_new (void);
 void test_hatch (void);
 void test_name (void);
@@ -124,13 +134,13 @@ test_new (void)
 
     egg = milter_manager_egg_new(name);
     cut_assert_equal_string(name, milter_manager_egg_get_name(egg));
-    cut_assert_equal_double(MILTER_SERVER_CONTEXT_DEFAULT_CONNECTION_TIMEOUT, 0.0,
+    cut_assert_equal_double(DEFAULT_CONNECTION_TIMEOUT, 0.0,
                             milter_manager_egg_get_connection_timeout(egg));
-    cut_assert_equal_double(MILTER_SERVER_CONTEXT_DEFAULT_WRITING_TIMEOUT, 0.0,
+    cut_assert_equal_double(DEFAULT_WRITING_TIMEOUT, 0.0,
                             milter_manager_egg_get_writing_timeout(egg));
-    cut_assert_equal_double(MILTER_SERVER_CONTEXT_DEFAULT_READING_TIMEOUT, 0.0,
+    cut_assert_equal_double(DEFAULT_READING_TIMEOUT, 0.0,
                             milter_manager_egg_get_reading_timeout(egg));
-    cut_assert_equal_double(MILTER_SERVER_CONTEXT_DEFAULT_END_OF_MESSAGE_TIMEOUT, 0.0,
+    cut_assert_equal_double(DEFAULT_END_OF_MESSAGE_TIMEOUT, 0.0,
                             milter_manager_egg_get_end_of_message_timeout(egg));
 }
 

@@ -841,7 +841,7 @@ Required item is just only milter.connection_spec.
      milter.connection_timeout = 60
 
    Default:
-     milter.connection_timeout = 300.0
+     milter.connection_timeout = 297.0
 
 : milter.writing_timeout
 
@@ -852,7 +852,7 @@ Required item is just only milter.connection_spec.
      milter.writing_timeout = 15
 
    Default:
-     milter.writing_timeout = 10.0
+     milter.writing_timeout = 7.0
 
 : milter.reading_timeout
 
@@ -863,7 +863,7 @@ Required item is just only milter.connection_spec.
      milter.reading_timeout = 15
 
    Default:
-     milter.reading_timeout = 10.0
+     milter.reading_timeout = 7.0
 
 : milter.end_of_message_timeout
 
@@ -871,10 +871,10 @@ Required item is just only milter.connection_spec.
    of xxfi_eom() from child milter.
 
    Example:
-     milter.end_of_message_timeout = 300
+     milter.end_of_message_timeout = 60
 
    Default:
-     milter.end_of_message_timeout = 200.0
+     milter.end_of_message_timeout = 297.0
 
 === Operate child milter
 

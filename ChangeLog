@@ -1,3 +1,9 @@
+2010-06-06  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/manager/milter-manager-egg.c, test/manager/test-egg.c,
+	doc/configuration.rd*:subtract 3 seconds from default timeout for
+	ensuring response to MTA on timeout.
+
 2010-06-04  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/manager/milter-manager-children.c,

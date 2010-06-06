@@ -826,7 +826,7 @@ define_milter do ... end内で設定できる項目は以下の通りです。
      milter.connection_timeout = 60
 
    既定値:
-     milter.connection_timeout = 300.0
+     milter.connection_timeout = 297.0
 
 : milter.writing_timeout
 
@@ -837,7 +837,7 @@ define_milter do ... end内で設定できる項目は以下の通りです。
      milter.writing_timeout = 15
 
    既定値:
-     milter.writing_timeout = 10.0
+     milter.writing_timeout = 7.0
 
 : milter.reading_timeout
 
@@ -848,7 +848,7 @@ define_milter do ... end内で設定できる項目は以下の通りです。
      milter.reading_timeout = 15
 
    既定値:
-     milter.reading_timeout = 10.0
+     milter.reading_timeout = 7.0
 
 : milter.end_of_message_timeout
 
@@ -856,10 +856,10 @@ define_milter do ... end内で設定できる項目は以下の通りです。
    アウト時間を秒単位で指定します。
 
    例:
-     milter.end_of_message_timeout = 300
+     milter.end_of_message_timeout = 60
 
    既定値:
-     milter.end_of_message_timeout = 200.0
+     milter.end_of_message_timeout = 297.0
 
 === 子milter操作
 

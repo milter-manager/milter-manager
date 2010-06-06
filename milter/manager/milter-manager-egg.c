@@ -25,6 +25,16 @@
 #include "milter-manager-egg.h"
 #include "milter-manager-enum-types.h"
 
+#define TIMEOUT_LEEWAY 3
+#define DEFAULT_CONNECTION_TIMEOUT \
+    (MILTER_SERVER_CONTEXT_DEFAULT_CONNECTION_TIMEOUT - TIMEOUT_LEEWAY)
+#define DEFAULT_WRITING_TIMEOUT \
+    (MILTER_SERVER_CONTEXT_DEFAULT_WRITING_TIMEOUT - TIMEOUT_LEEWAY)
+#define DEFAULT_READING_TIMEOUT \
+    (MILTER_SERVER_CONTEXT_DEFAULT_READING_TIMEOUT - TIMEOUT_LEEWAY)
+#define DEFAULT_END_OF_MESSAGE_TIMEOUT \
+    (MILTER_SERVER_CONTEXT_DEFAULT_END_OF_MESSAGE_TIMEOUT - TIMEOUT_LEEWAY)
+
 #define MILTER_MANAGER_EGG_GET_PRIVATE(obj)                     \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                         \
                                  MILTER_TYPE_MANAGER_EGG,       \
@@ -135,7 +145,7 @@ milter_manager_egg_class_init (MilterManagerEggClass *klass)
                                "The connection timeout of the milter egg",
                                0,
                                G_MAXDOUBLE,
-                               MILTER_SERVER_CONTEXT_DEFAULT_CONNECTION_TIMEOUT,
+                               DEFAULT_CONNECTION_TIMEOUT,
                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_CONNECTION_TIMEOUT,
                                     spec);
@@ -145,7 +155,7 @@ milter_manager_egg_class_init (MilterManagerEggClass *klass)
                                "The writing timeout of the milter egg",
                                0,
                                G_MAXDOUBLE,
-                               MILTER_SERVER_CONTEXT_DEFAULT_WRITING_TIMEOUT,
+                               DEFAULT_WRITING_TIMEOUT,
                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_WRITING_TIMEOUT,
                                     spec);
@@ -155,7 +165,7 @@ milter_manager_egg_class_init (MilterManagerEggClass *klass)
                                "The reading timeout of the milter egg",
                                0,
                                G_MAXDOUBLE,
-                               MILTER_SERVER_CONTEXT_DEFAULT_READING_TIMEOUT,
+                               DEFAULT_READING_TIMEOUT,
                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_READING_TIMEOUT,
                                     spec);
@@ -165,7 +175,7 @@ milter_manager_egg_class_init (MilterManagerEggClass *klass)
                                "The end-of-message timeout of the milter egg",
                                0,
                                G_MAXDOUBLE,
-                               MILTER_SERVER_CONTEXT_DEFAULT_END_OF_MESSAGE_TIMEOUT,
+                               DEFAULT_END_OF_MESSAGE_TIMEOUT,
                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_END_OF_MESSAGE_TIMEOUT,
                                     spec);
@@ -239,11 +249,10 @@ milter_manager_egg_init (MilterManagerEgg *egg)
     priv->description = NULL;
     priv->enabled = TRUE;
     priv->connection_spec = NULL;
-    priv->connection_timeout = MILTER_SERVER_CONTEXT_DEFAULT_CONNECTION_TIMEOUT;
-    priv->writing_timeout = MILTER_SERVER_CONTEXT_DEFAULT_WRITING_TIMEOUT;
-    priv->reading_timeout = MILTER_SERVER_CONTEXT_DEFAULT_READING_TIMEOUT;
-    priv->end_of_message_timeout =
-        MILTER_SERVER_CONTEXT_DEFAULT_END_OF_MESSAGE_TIMEOUT;
+    priv->connection_timeout = DEFAULT_CONNECTION_TIMEOUT;
+    priv->writing_timeout = DEFAULT_WRITING_TIMEOUT;
+    priv->reading_timeout = DEFAULT_READING_TIMEOUT;
+    priv->end_of_message_timeout = DEFAULT_END_OF_MESSAGE_TIMEOUT;
     priv->user_name = NULL;
     priv->command = NULL;
     priv->command_options = NULL;
