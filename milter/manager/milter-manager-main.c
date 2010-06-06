@@ -369,12 +369,16 @@ prepare_process_launcher_pipes_for_manager (gint *command_pipe,
 }
 
 static void
-start_process_launcher (GIOChannel *read_channel, GIOChannel *write_channel)
+start_process_launcher (GIOChannel *read_channel, GIOChannel *write_channel,
+                        gboolean daemon)
 {
     MilterManagerProcessLauncher *launcher;
     MilterReader *reader;
     MilterWriter *writer;
     gchar *error_message = NULL;
+    MilterSyslogLogger *logger;
+
+    logger = milter_syslog_logger_new("milter-manager-process-launcher");
 
     reader = milter_reader_io_channel_new(read_channel);
     g_io_channel_unref(read_channel);
@@ -389,7 +393,7 @@ start_process_launcher (GIOChannel *read_channel, GIOChannel *write_channel)
 
     milter_agent_start(MILTER_AGENT(launcher), NULL);
 
-    if (!milter_utils_detach_io(&error_message)) {
+    if (daemon && !milter_utils_detach_io(&error_message)) {
         milter_error("[process-launcher][error] failed to detach IO: %s",
                      error_message);
         g_free(error_message);
@@ -398,6 +402,8 @@ start_process_launcher (GIOChannel *read_channel, GIOChannel *write_channel)
     milter_manager_process_launcher_run(launcher);
 
     g_object_unref(launcher);
+
+    g_object_unref(logger);
 }
 
 static gboolean
@@ -409,6 +415,8 @@ start_process_launcher_process (MilterManager *manager)
     gint *reply_pipe_p;
     GIOChannel *read_channel = NULL;
     GIOChannel *write_channel = NULL;
+    MilterManagerConfiguration *config;
+    gboolean daemon;
 
     command_pipe_p = command_pipe;
     reply_pipe_p = reply_pipe;
@@ -421,12 +429,14 @@ start_process_launcher_process (MilterManager *manager)
            'milter-manager: process-launcher' by
            setproctitle() on *BSD, memcpy() argv on Linux or
            spawning another process. */
+        config = milter_manager_get_configuration(manager);
+        daemon = milter_manager_configuration_is_daemon(config);
         g_object_unref(manager);
         prepare_process_launcher_pipes_for_process_launcher(command_pipe_p,
                                                             reply_pipe_p,
                                                             &read_channel,
                                                             &write_channel);
-        start_process_launcher(read_channel, write_channel);
+        start_process_launcher(read_channel, write_channel, daemon);
         _exit(EXIT_FAILURE);
         break;
     case -1:
@@ -710,8 +720,14 @@ milter_manager_main (void)
     }
 
     controller = milter_manager_controller_new(manager);
-    if (controller)
-        milter_manager_controller_listen(controller, NULL);
+    if (controller && !milter_manager_controller_listen(controller, &error)) {
+        milter_manager_error("failed to listen controller socket: %s",
+                             error->message);
+        g_error_free(error);
+        g_object_unref(controller);
+        g_object_unref(manager);
+        return FALSE;
+    }
 
     daemon = milter_manager_configuration_is_daemon(config);
     if (daemon) {
@@ -720,6 +736,8 @@ milter_manager_main (void)
         } else {
             milter_manager_error("failed to daemonize: %s", error->message);
             g_error_free(error);
+            if (controller)
+                g_object_unref(controller);
             g_object_unref(manager);
             return FALSE;
         }

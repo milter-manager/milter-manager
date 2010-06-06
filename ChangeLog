@@ -1,5 +1,7 @@
 2010-06-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-main.c: support syslog in launcher.
+
 	* binding/ruby/Makefile.am: update test-unit files.
 
 	* milter/manager/milter-manager-egg.c, test/manager/test-egg.c,
