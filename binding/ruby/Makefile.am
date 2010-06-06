@@ -19,8 +19,11 @@ EXTRA_DIST =					\
 
 # cat test-unit/Manifest.txt | sed -e 's,^,\ttest-unit/,g'
 test_unit_files =						\
+	test-unit/COPYING					\
+	test-unit/GPL						\
 	test-unit/History.txt					\
 	test-unit/Manifest.txt					\
+	test-unit/PSFL						\
 	test-unit/README.txt					\
 	test-unit/Rakefile					\
 	test-unit/TODO						\
@@ -67,6 +70,7 @@ test_unit_files =						\
 	test-unit/lib/test/unit/util/backtracefilter.rb		\
 	test-unit/lib/test/unit/util/method-owner-finder.rb	\
 	test-unit/lib/test/unit/util/observable.rb		\
+	test-unit/lib/test/unit/util/output.rb			\
 	test-unit/lib/test/unit/util/procwrapper.rb		\
 	test-unit/lib/test/unit/version.rb			\
 	test-unit/sample/adder.rb				\
@@ -98,6 +102,7 @@ test_unit_files =						\
 	test-unit/test/testunit-test-util.rb			\
 	test-unit/test/ui/test_testrunmediator.rb		\
 	test-unit/test/util/test-method-owner-finder.rb		\
+	test-unit/test/util/test-output.rb			\
 	test-unit/test/util/test_backtracefilter.rb		\
 	test-unit/test/util/test_observable.rb			\
 	test-unit/test/util/test_procwrapper.rb
