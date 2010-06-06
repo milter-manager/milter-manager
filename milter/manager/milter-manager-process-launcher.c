@@ -67,6 +67,8 @@ typedef struct _ProcessData
     guint watch_id;
     gchar *command_line;
     gchar *user_name;
+    MilterReader *standard_output;
+    MilterReader *standard_error;
 } ProcessData;
 
 static void dispose        (GObject         *object);
@@ -102,9 +104,49 @@ milter_manager_process_launcher_class_init (MilterManagerProcessLauncherClass *k
                              sizeof(MilterManagerProcessLauncherPrivate));
 }
 
+static MilterReader *
+create_reader (GPid pid ,gint fd)
+{
+    MilterReader *reader;
+    GIOChannel *channel;
+
+    channel = g_io_channel_unix_new(fd);
+    g_io_channel_set_encoding(channel, NULL, NULL);
+    g_io_channel_set_flags(channel, G_IO_FLAG_NONBLOCK, NULL);
+    g_io_channel_set_close_on_unref(channel, TRUE);
+    reader = milter_reader_io_channel_new(channel);
+    g_io_channel_unref(channel);
+
+    milter_reader_set_tag(reader, (gint)pid);
+    return reader;
+}
+
+static void
+cb_flow_error (MilterReader *reader,
+               const gchar *data, gsize data_size,
+               gpointer user_data)
+{
+    ProcessData *process_data = user_data;
+
+    milter_debug("[%d] [launcher][error] <%.*s>",
+                 process_data->pid, (gint)data_size, data);
+}
+
+static void
+cb_flow_output (MilterReader *reader,
+                const gchar *data, gsize data_size,
+                gpointer user_data)
+{
+    ProcessData *process_data = user_data;
+
+    milter_debug("[%d] [launcher][output] <%.*s>",
+                 process_data->pid, (gint)data_size, data);
+}
+
 static ProcessData *
 process_data_new (GPid pid, guint watch_id,
-                  const gchar *command_line, const gchar *user_name)
+                  const gchar *command_line, const gchar *user_name,
+                  gint standard_output_fd, gint standard_error_fd)
 {
     ProcessData *data;
 
@@ -115,6 +157,15 @@ process_data_new (GPid pid, guint watch_id,
     data->command_line = g_strdup(command_line);
     data->user_name = g_strdup(user_name);
 
+    data->standard_output = create_reader(pid, standard_output_fd);
+    data->standard_error = create_reader(pid, standard_error_fd);
+    g_signal_connect(data->standard_output, "flow",
+                     G_CALLBACK(cb_flow_output), data);
+    g_signal_connect(data->standard_error, "flow",
+                     G_CALLBACK(cb_flow_error), data);
+    milter_reader_start(data->standard_output, NULL);
+    milter_reader_start(data->standard_error, NULL);
+
     return data;
 }
 
@@ -122,6 +173,8 @@ static void
 process_data_free (ProcessData *data)
 {
     g_source_remove(data->watch_id);
+    g_object_unref(data->standard_output);
+    g_object_unref(data->standard_error);
     g_spawn_close_pid(data->pid);
     g_free(data->command_line);
     g_free(data->user_name);
@@ -231,6 +284,8 @@ launch (MilterManagerProcessLauncher *launcher,
     GError *internal_error = NULL;
     GSpawnFlags flags;
     GPid pid;
+    gint standard_output_fd;
+    gint standard_error_fd;
     guint watch_id;
     MilterManagerProcessLauncherPrivate *priv;
     struct passwd password;
@@ -274,18 +329,19 @@ launch (MilterManagerProcessLauncher *launcher,
         return FALSE;
     }
 
-    flags = G_SPAWN_DO_NOT_REAP_CHILD |
-        G_SPAWN_STDOUT_TO_DEV_NULL |
-        G_SPAWN_STDERR_TO_DEV_NULL;
+    flags = G_SPAWN_DO_NOT_REAP_CHILD;
 
-    success = g_spawn_async(NULL,
-                            argv,
-                            NULL,
-                            flags,
-                            setup_child,
-                            password_p,
-                            &pid,
-                            &internal_error);
+    success = g_spawn_async_with_pipes(NULL,
+                                       argv,
+                                       NULL,
+                                       flags,
+                                       setup_child,
+                                       password_p,
+                                       &pid,
+                                       NULL,
+                                       &standard_output_fd,
+                                       &standard_error_fd,
+                                       &internal_error);
     g_strfreev(argv);
 
     if (!success) {
@@ -306,7 +362,8 @@ launch (MilterManagerProcessLauncher *launcher,
                                  (GChildWatchFunc)child_watch_func, launcher);
     priv->processes =
         g_list_prepend(priv->processes,
-                       process_data_new(pid, watch_id, command_line, user_name));
+                       process_data_new(pid, watch_id, command_line, user_name,
+                                        standard_output_fd, standard_error_fd));
 
     return TRUE;
 }

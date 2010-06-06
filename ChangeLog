@@ -1,5 +1,8 @@
 2010-06-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-process-launcher.c: redirect
+	launched outputs to logger.
+
 	* milter/manager/milter-manager-main.c: support syslog in launcher.
 
 	* binding/ruby/Makefile.am: update test-unit files.
