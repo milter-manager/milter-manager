@@ -1223,6 +1223,52 @@ greylist.conf:
   racl whitelist sm_macro "no_stress" tarpit 125s
   racl greylist default
 
+=== Trust
+
+Since 1.6.0.
+
+This sets "trusted_XXX=yes" macros for trusted session. Here
+is a list of macros:
+
+: trusted_domain
+
+   This is set to "yes" when envelope-from domain is trusted.
+
+Here is an example that we receive a SPF passed mail but
+apply greylist SPF not-passed mail for trusted domains:
+
+milter-manager.local.conf:
+
+  define_milter("milter-greylist") do |milter|
+    milter.add_applicable_condition("Trust")
+  end
+
+greylist.conf:
+
+  sm_macro "trusted_domain" "{trusted_domain}" "yes"
+  racl whitelist sm_macro "trusted_domain" spf pass
+  racl greylist sm_macro "trusted_domain" not spf pass
+
+We can customize how to trust a session by the following
+configurations:
+
+: trust.add_envelope_from_domain(domain)
+
+   Since 1.6.0.
+
+   This adds a trusted envelope-from domain.
+
+   Here is a list of trusted domain by default:
+
+     * gmail.com
+     * hotmail.com
+     * msn.com
+     * yahoo.co.jp
+     * clear-code.com
+
+   Example:
+     trust.add_envelope_from_domain("example.com")
+
 === Restrict Accounts
 
 TODO

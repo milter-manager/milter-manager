@@ -1198,6 +1198,53 @@ greylist.conf:
   racl whitelist sm_macro "no_stress" tarpit 125s
   racl greylist default
 
+=== Trust
+
+1.6.0から使用可能。
+
+信用できるセッションには「trusted_XXX=yes」というマクロを設
+定します。設定されるマクロの一覧は以下の通りです。
+
+: trusted_domain
+
+   envelope-fromのドメインが信用できる場合は「yes」になりま
+   す。
+
+以下は信用するドメインに対しては、SPFの検証が成功したらそのま
+ま受信し、失敗したらGreylistを適用する例です。
+
+milter-manager.local.conf:
+
+  define_milter("milter-greylist") do |milter|
+    milter.add_applicable_condition("Trust")
+  end
+
+greylist.conf:
+
+  sm_macro "trusted_domain" "{trusted_domain}" "yes"
+  racl whitelist sm_macro "trusted_domain" spf pass
+  racl greylist sm_macro "trusted_domain" not spf pass
+
+どの情報を使って信用するかどうかを判断するかは、以下の設定を
+使ってカスタマイズできます。
+
+: trust.add_envelope_from_domain(domain)
+
+   1.6.0から使用可能。
+
+   信用できるenvelope-fromのドメインを追加します。
+
+   デフォルトでは、以下のドメインを信用しています。
+
+     * gmail.com
+     * hotmail.com
+     * msn.com
+     * yahoo.co.jp
+     * clear-code.com
+
+   例:
+     trust.add_envelope_from_domain("example.com")
+
 === Restrict Accounts
 
 TODO
