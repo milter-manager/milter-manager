@@ -1,5 +1,8 @@
 2010-06-07  Kouhei Sutou  <kou@clear-code.com>
 
+	* data/applicable-conditions/trust.conf: add softbank.ne.jp to
+	trusted domains.
+
 	* milter-manager.spec.in: add a 1.5.3 entry.
 
 	* data/applicable-conditions/Makefile.am (dist_conditions_DATA):

@@ -1264,6 +1264,7 @@ configurations:
      * hotmail.com
      * msn.com
      * yahoo.co.jp
+     * softbank.ne.jp
      * clear-code.com
 
    Example:
