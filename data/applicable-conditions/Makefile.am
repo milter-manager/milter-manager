@@ -6,4 +6,5 @@ dist_conditions_DATA =			\
 	sendmail-compatible.conf	\
 	authentication.conf		\
 	restrict-accounts.conf		\
-	stress.conf
+	stress.conf			\
+	trust.conf

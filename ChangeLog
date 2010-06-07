@@ -1,5 +1,8 @@
 2010-06-07  Kouhei Sutou  <kou@clear-code.com>
 
+	* data/applicable-conditions/Makefile.am (dist_conditions_DATA):
+	add missing trust.conf.
+
 	* data/applicable-conditions/trust.conf, data/defaults/*.conf,
 	doc/configuration.rd*: add a new Trust applicable condition.
 
