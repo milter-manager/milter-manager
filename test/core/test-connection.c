@@ -115,8 +115,9 @@ sockaddr_in_new (guint16 port, const gchar *host)
     struct in_addr ip_address;
 
     if (host) {
-        if (inet_pton(AF_INET, host, &ip_address) == 0)
+        if (inet_pton(AF_INET, host, &ip_address) == 0) {
             cut_error("invalid host address: <%s>", host);
+        }
     } else {
         ip_address.s_addr = INADDR_ANY;
     }
@@ -242,7 +243,8 @@ data_parse_connection_spec_unix (void)
                                    MILTER_CONNECTION_ERROR,
                                    MILTER_CONNECTION_ERROR_INVALID_FORMAT,
                                    "spec doesn't have content: <local:>")),
-                 test_data_free);
+                 test_data_free,
+                 NULL);
 }
 
 void
@@ -304,7 +306,8 @@ data_parse_connection_spec_inet (void)
                                    MILTER_CONNECTION_ERROR,
                                    MILTER_CONNECTION_ERROR_INVALID_FORMAT,
                                    "spec doesn't have content: <inet:>")),
-                 test_data_free);
+                 test_data_free,
+                 NULL);
 }
 
 void
@@ -434,7 +437,7 @@ data_address_to_spec (void)
                  test_data_free,
                  "inet no host",
                  test_data_new("inet:9999@0.0.0.0",
-                               sockaddr_in_new(9999, "0"),
+                               sockaddr_in_new(9999, NULL),
                                NULL),
                  test_data_free,
                  "unix",
@@ -456,7 +459,8 @@ data_address_to_spec (void)
                  test_data_new(NULL,
                                NULL,
                                NULL),
-                 test_data_free);
+                 test_data_free,
+                 NULL);
 }
 
 void
