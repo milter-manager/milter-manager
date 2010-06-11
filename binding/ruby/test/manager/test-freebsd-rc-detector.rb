@@ -354,7 +354,7 @@ EOM
                   "unix:/var/milter-greylist/milter-greylist.sock"]])
 
     milter_greylist_egg = @configuration.eggs[0]
-    assert_equal([10, 10],
+    assert_equal([7.0, 7.0],
                  [milter_greylist_egg.writing_timeout,
                   milter_greylist_egg.reading_timeout])
   end
@@ -395,7 +395,7 @@ EOC
                   "unix:/var/milter-greylist/milter-greylist.sock"]])
 
     milter_greylist_egg = @configuration.eggs[0]
-    assert_equal([135, 135],
+    assert_equal([132.0, 132.0],
                  [milter_greylist_egg.writing_timeout,
                   milter_greylist_egg.reading_timeout])
   end

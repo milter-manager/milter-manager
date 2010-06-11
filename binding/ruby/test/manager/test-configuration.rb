@@ -394,13 +394,13 @@ define_milter("milter1") do |milter|
   # default
   milter.user_name = nil
   # default
-  milter.connection_timeout = 300.0
+  milter.connection_timeout = 297.0
   # default
-  milter.writing_timeout = 10.0
+  milter.writing_timeout = 7.0
   # default
-  milter.reading_timeout = 10.0
+  milter.reading_timeout = 7.0
   # default
-  milter.end_of_message_timeout = 300.0
+  milter.end_of_message_timeout = 297.0
 end
 
 # #{__FILE__}:#{milter2_lines[:define]}
@@ -424,13 +424,13 @@ define_milter("milter2") do |milter|
   # default
   milter.user_name = nil
   # default
-  milter.connection_timeout = 300.0
+  milter.connection_timeout = 297.0
   # default
-  milter.writing_timeout = 10.0
+  milter.writing_timeout = 7.0
   # default
-  milter.reading_timeout = 10.0
+  milter.reading_timeout = 7.0
   # default
-  milter.end_of_message_timeout = 300.0
+  milter.end_of_message_timeout = 297.0
 end
 EOD
                  @configuration.dump)

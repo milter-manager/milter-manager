@@ -1,5 +1,10 @@
 2010-06-11  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/test/manager/test-configuration.rb,
+	binding/ruby/test/manager/test-egg.rb,
+	binding/ruby/test/manager/test-freebsd-rc-detector.rb: follow the
+	recent default timeout value changes.
+
 	* tool/milter-manager-log-analyzer: remove needless Time.now.
 
 	* test/tool/test-log-analyzer.rb, test/tool/fixtures/: always use 2009.
