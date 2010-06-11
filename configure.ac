@@ -93,6 +93,12 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
 
+case "$host_os" in
+solaris*)
+  CPPFLAGS="$CPPFLAGS -D_REENTRANT -D_POSIX_PTHREAD_SEMANTICS"
+  ;;
+esac
+
 if test "x$GCC" = "xyes"; then
   case " $CFLAGS " in
   *[\ \	]-Wall[\ \	]*) ;;
