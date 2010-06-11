@@ -725,8 +725,7 @@ milter_manager_main (void)
                              error->message);
         g_error_free(error);
         g_object_unref(controller);
-        g_object_unref(manager);
-        return FALSE;
+        controller = NULL;
     }
 
     daemon = milter_manager_configuration_is_daemon(config);

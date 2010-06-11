@@ -1,5 +1,8 @@
 2010-06-11  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/manager/milter-manager-main.c,
+	test/manager/test-manager.c: ignore controller socket listening failure.
+
 	* tool/milter-test-server.c: use inet_pton() instead of inet_aton().
 	Patch by SATOH Fumiyasu. Thanks!!!
 
