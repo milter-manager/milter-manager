@@ -1,5 +1,8 @@
 2010-06-11  Kouhei Sutou  <kou@clear-code.com>
 
+	* tool/milter-test-server.c: use inet_pton() instead of inet_aton().
+	Patch by SATOH Fumiyasu. Thanks!!!
+
 	* tool/milter-manager-log-analyzer: support Solaris syslog message
 	with message ID.
 	Patch by SATOH Fumiyasu. Thanks!!!

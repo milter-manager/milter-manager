@@ -290,7 +290,7 @@ cb_continue (MilterServerContext *context, gpointer user_data)
 
                 address.sin_family = AF_INET;
                 address.sin_port = g_htons(port);
-                inet_aton(ip_address, &(address.sin_addr));
+                inet_pton(AF_INET, ip_address, &(address.sin_addr));
                 milter_server_context_connect(context,
                                               host_name,
                                               (struct sockaddr *)(&address),
