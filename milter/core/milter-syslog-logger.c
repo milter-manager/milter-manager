@@ -152,13 +152,19 @@ resolve_syslog_facility (const gchar *facility)
 {
     if (g_strcasecmp(facility, "auth") == 0 ||
         g_strcasecmp(facility, "authpriv") == 0) {
+#ifdef LOG_AUTHPRIV
         return LOG_AUTHPRIV;
+#else
+        return LOG_AUTH;
+#endif
     } else if (g_strcasecmp(facility, "cron") == 0) {
         return LOG_CRON;
     } else if (g_strcasecmp(facility, "daemon") == 0) {
         return LOG_DAEMON;
+#ifdef LOG_FTP
     } else if (g_strcasecmp(facility, "ftp") == 0) {
         return LOG_FTP;
+#endif
     } else if (g_strcasecmp(facility, "kern") == 0) {
         return LOG_KERN;
     } else if (g_strcasecmp(facility, "local0") == 0) {

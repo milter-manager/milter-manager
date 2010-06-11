@@ -1,5 +1,9 @@
 2010-06-11  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/core/milter-syslog-logger.c: don't use LOG_AUTHPRIV and
+	LOG_FTP when they aren't existed. (e.g. Solaris)
+	Patch by SATOH Fumiyasu. Thanks!!!
+
 	* configure.ac: add "-D_REENTRANT -D_POSIX_PTHREAD_SEMANTICS" to
 	cpp flags for supporting Solaris.
 	Patch by SATOH Fumiyasu. Thanks!!!
