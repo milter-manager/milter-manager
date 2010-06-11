@@ -16,6 +16,7 @@ milter/core/milter-headers.c
 milter/core/milter-logger.c
 milter/core/milter-macros-requests.c
 milter/core/milter-marshalers.c
+milter/core/milter-memory-profile.c
 milter/core/milter-message-result.c
 milter/core/milter-option.c
 milter/core/milter-protocol-agent.c
@@ -43,7 +44,6 @@ milter/manager/milter-manager-launch-command-decoder.c
 milter/manager/milter-manager-launch-command-encoder.c
 milter/manager/milter-manager-leader.c
 milter/manager/milter-manager-main.c
-milter/manager/milter-manager-marshalers.c
 milter/manager/milter-manager-module.c
 milter/manager/milter-manager-process-launcher.c
 milter/manager/milter-manager-reply-decoder.c
@@ -53,5 +53,6 @@ milter/server/milter-server-context.c
 milter/server/milter-server-enum-types.c
 milter/server/milter-server.c
 module/configuration/ruby/milter-manager-ruby-configuration.c
+tool/milter-test-client-libmilter.c
 tool/milter-test-client.c
 tool/milter-test-server.c

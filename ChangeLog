@@ -1,5 +1,7 @@
 2010-06-11  Kouhei Sutou  <kou@clear-code.com>
 
+	* po/POTFILES.in: update.
+
 	* test/core/test-connection.c: use NULL instead of "0" for any
 	host name.
 
