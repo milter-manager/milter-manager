@@ -1133,7 +1133,7 @@ EOF
         name = $6
         content = $POSTMATCH
         next unless name == "milter-manager"
-        if /\A\[statistics\] / =~ content
+        if /\A\[statistics\] / =~ remove_message_id(content)
           content = $POSTMATCH.chomp
         else
           next
@@ -1153,6 +1153,10 @@ EOF
     listeners.each do |listener|
       listener.flush
     end
+  end
+
+  def remove_message_id(log)
+    log.sub(/\A\[ID \d+ \w+\.\w+\] /, '')
   end
 
   def all_listeners
