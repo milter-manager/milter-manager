@@ -58,8 +58,8 @@ class TestLogAnalyzer < Test::Unit::TestCase
     @analyzer.update
 
     suffix = "1"
-    start_time = Time.parse("#{Time.now.year}/07/15 00:00:00")
-    end_time = Time.parse("#{Time.now.year}/07/15 02:00:00")
+    start_time = Time.parse("2009/07/15 00:00:00")
+    end_time = Time.parse("2009/07/15 02:00:00")
     assert_equal(read_fetch_file("session-#{suffix}.fetch"),
                  fetch(session_rrd, start_time, end_time))
     assert_equal(read_fetch_file("milter-manager.status-#{suffix}.fetch"),
@@ -105,8 +105,8 @@ class TestLogAnalyzer < Test::Unit::TestCase
     end
 
     suffix = "1-incrementally"
-    start_time = Time.parse("#{Time.now.year}/07/15 00:00:00")
-    end_time = Time.parse("#{Time.now.year}/07/15 02:00:00")
+    start_time = Time.parse("2009/07/15 00:00:00")
+    end_time = Time.parse("2009/07/15 02:00:00")
     assert_equal(read_fetch_file("session-#{suffix}.fetch"),
                  fetch(session_rrd, start_time, end_time))
     assert_equal(read_fetch_file("milter-manager.status-#{suffix}.fetch"),
@@ -137,8 +137,8 @@ class TestLogAnalyzer < Test::Unit::TestCase
     @analyzer.update
 
     suffix = "2"
-    start_time = Time.parse("#{Time.now.year}/07/15 06:40:00")
-    end_time = Time.parse("#{Time.now.year}/07/15 09:40:00")
+    start_time = Time.parse("2009/07/15 06:40:00")
+    end_time = Time.parse("2009/07/15 09:40:00")
     assert_equal(read_fetch_file("session-#{suffix}.fetch"),
                  fetch(session_rrd, start_time, end_time))
     assert_equal(read_fetch_file("milter-manager.status-#{suffix}.fetch"),
@@ -195,7 +195,7 @@ class TestLogAnalyzer < Test::Unit::TestCase
 
   def analyzer
     _analyzer = MilterManagerLogAnalyzer.new
-    _analyzer.now = Time.parse("#{Time.now.year}/09/29 15:48:12")
+    _analyzer.now = Time.parse("2009/09/29 15:48:12")
     _analyzer
   end
 end

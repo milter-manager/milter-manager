@@ -1,5 +1,9 @@
 2010-06-11  Kouhei Sutou  <kou@clear-code.com>
 
+	* tool/milter-manager-log-analyzer: remove needless Time.now.
+
+	* test/tool/test-log-analyzer.rb, test/tool/fixtures/: always use 2009.
+
 	* milter/manager/milter-manager-main.c,
 	test/manager/test-manager.c: ignore controller socket listening failure.
 

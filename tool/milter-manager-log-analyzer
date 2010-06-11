@@ -1120,7 +1120,6 @@ EOF
     end
     last_update_time = last_update_times.max || Time.at(0)
 
-    now = Time.now
     year = now.year
     @log.each_line do |line|
       case line
