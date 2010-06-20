@@ -1,8 +1,3 @@
-2010-06-20  Kouhei Sutou  <kou@cozmixng.org>
-
-	* data/applicable-conditions/s25r.conf: add no domain FQDN to a
-	black list.
-
 2010-06-11  Kouhei Sutou  <kou@clear-code.com>
 
 	* po/POTFILES.in: update.
