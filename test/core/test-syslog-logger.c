@@ -18,6 +18,7 @@
  */
 
 #include <string.h>
+#include <unistd.h>
 
 #include <milter/core/milter-syslog-logger.h>
 
@@ -119,9 +120,17 @@ print_handler (const gchar *string)
 {
 }
 
+static void
+check_syslog_permission (void)
+{
+    if (g_access(syslog_file_name, R_OK) != 0)
+        cut_omit("You do not have read-permission of %s", syslog_file_name);
+}
+
 void
 test_info (void)
 {
+    cut_trace(check_syslog_permission());
     original_print_hander = g_set_print_handler(print_handler);
     milter_set_log_level(MILTER_LOG_LEVEL_INFO);
     milter_syslog_logger_set_target_level(logger, MILTER_LOG_LEVEL_INFO);
@@ -140,6 +149,7 @@ test_info (void)
 void
 test_statistics (void)
 {
+    cut_trace(check_syslog_permission());
     original_print_hander = g_set_print_handler(print_handler);
     milter_set_log_level(MILTER_LOG_LEVEL_STATISTICS);
     milter_syslog_logger_set_target_level(logger, MILTER_LOG_LEVEL_STATISTICS);
