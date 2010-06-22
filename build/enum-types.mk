@@ -16,7 +16,8 @@ $(enum_source_prefix).c: stamp-$(enum_source_prefix)-c $(enum_source_prefix).h
 	@true
 
 stamp-$(enum_source_prefix)-c: $(enum_sources_h) Makefile
-	$(AM_V_GEN) (cd $(srcdir) && \
+	$(AM_V_GEN) \
+	(cd $(srcdir) && \
 	  include_headers="" && \
 	  for h in $(enum_sources_h); do \
 	    include_headers="$${include_headers}#include \"$${h}\"\n"; \
