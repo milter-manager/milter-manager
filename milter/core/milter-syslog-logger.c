@@ -150,48 +150,48 @@ cb_log (MilterLogger *logger, const gchar *domain,
 static gint
 resolve_syslog_facility (const gchar *facility)
 {
-    if (g_strcasecmp(facility, "auth") == 0 ||
-        g_strcasecmp(facility, "authpriv") == 0) {
+    if (g_ascii_strcasecmp(facility, "auth") == 0 ||
+        g_ascii_strcasecmp(facility, "authpriv") == 0) {
 #ifdef LOG_AUTHPRIV
         return LOG_AUTHPRIV;
 #else
         return LOG_AUTH;
 #endif
-    } else if (g_strcasecmp(facility, "cron") == 0) {
+    } else if (g_ascii_strcasecmp(facility, "cron") == 0) {
         return LOG_CRON;
-    } else if (g_strcasecmp(facility, "daemon") == 0) {
+    } else if (g_ascii_strcasecmp(facility, "daemon") == 0) {
         return LOG_DAEMON;
 #ifdef LOG_FTP
-    } else if (g_strcasecmp(facility, "ftp") == 0) {
+    } else if (g_ascii_strcasecmp(facility, "ftp") == 0) {
         return LOG_FTP;
 #endif
-    } else if (g_strcasecmp(facility, "kern") == 0) {
+    } else if (g_ascii_strcasecmp(facility, "kern") == 0) {
         return LOG_KERN;
-    } else if (g_strcasecmp(facility, "local0") == 0) {
+    } else if (g_ascii_strcasecmp(facility, "local0") == 0) {
         return LOG_LOCAL0;
-    } else if (g_strcasecmp(facility, "local1") == 0) {
+    } else if (g_ascii_strcasecmp(facility, "local1") == 0) {
         return LOG_LOCAL1;
-    } else if (g_strcasecmp(facility, "local2") == 0) {
+    } else if (g_ascii_strcasecmp(facility, "local2") == 0) {
         return LOG_LOCAL2;
-    } else if (g_strcasecmp(facility, "local3") == 0) {
+    } else if (g_ascii_strcasecmp(facility, "local3") == 0) {
         return LOG_LOCAL3;
-    } else if (g_strcasecmp(facility, "local4") == 0) {
+    } else if (g_ascii_strcasecmp(facility, "local4") == 0) {
         return LOG_LOCAL4;
-    } else if (g_strcasecmp(facility, "local5") == 0) {
+    } else if (g_ascii_strcasecmp(facility, "local5") == 0) {
         return LOG_LOCAL5;
-    } else if (g_strcasecmp(facility, "local6") == 0) {
+    } else if (g_ascii_strcasecmp(facility, "local6") == 0) {
         return LOG_LOCAL6;
-    } else if (g_strcasecmp(facility, "local7") == 0) {
+    } else if (g_ascii_strcasecmp(facility, "local7") == 0) {
         return LOG_LOCAL7;
-    } else if (g_strcasecmp(facility, "lpr") == 0) {
+    } else if (g_ascii_strcasecmp(facility, "lpr") == 0) {
         return LOG_LPR;
-    } else if (g_strcasecmp(facility, "mail") == 0) {
+    } else if (g_ascii_strcasecmp(facility, "mail") == 0) {
         return LOG_MAIL;
-    } else if (g_strcasecmp(facility, "news") == 0) {
+    } else if (g_ascii_strcasecmp(facility, "news") == 0) {
         return LOG_NEWS;
-    } else if (g_strcasecmp(facility, "user") == 0) {
+    } else if (g_ascii_strcasecmp(facility, "user") == 0) {
         return LOG_USER;
-    } else if (g_strcasecmp(facility, "uucp") == 0) {
+    } else if (g_ascii_strcasecmp(facility, "uucp") == 0) {
         return LOG_UUCP;
     }
 
