@@ -16,7 +16,7 @@ $(enum_source_prefix).c: stamp-$(enum_source_prefix)-c $(enum_source_prefix).h
 	@true
 
 stamp-$(enum_source_prefix)-c: $(enum_sources_h) Makefile
-	(cd $(srcdir) && \
+	$(AM_V_GEN) (cd $(srcdir) && \
 	  include_headers="" && \
 	  for h in $(enum_sources_h); do \
 	    include_headers="$${include_headers}#include \"$${h}\"\n"; \
@@ -37,7 +37,7 @@ $(enum_source_prefix).h: stamp-$(enum_source_prefix)-h
 	@true
 
 stamp-$(enum_source_prefix)-h: $(enum_sources_h) Makefile
-	(cd $(srcdir) && \
+	$(AM_V_GEN) (cd $(srcdir) && \
 	  mark="__`echo $(enum_source_prefix) | sed -e 's/-/_/g' | tr a-z A-Z`_H__" && \
 	  $(GLIB_MKENUMS) \
 	    --fhead "#ifndef $${mark}\n#define $${mark}\n\n#include <glib-object.h>\n\nG_BEGIN_DECLS\n" \
