@@ -199,7 +199,7 @@ test_setconn (void)
     milter_assert_fail(smfi_setconn("unknown:/path"));
     milter_assert_success(smfi_setconn("unix:/tmp/nonexistent"));
     milter_assert_success(smfi_setconn("inet:12345"));
-    milter_assert_success(smfi_setconn("inet6:12345@localhost"));
+    milter_assert_success(smfi_setconn("inet6:12345@::1"));
 }
 
 static gboolean
