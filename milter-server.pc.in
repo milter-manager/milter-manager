@@ -4,7 +4,7 @@ bindir=@bindir@
 libdir=@libdir@
 includedir=@includedir@
 pkgincludedir=${includedir}/@PACKAGE_NAME@
-milter-test-server=${bindir}/milter-test-server
+milter_test_server=${bindir}/milter-test-server
 
 Name: milter server library
 Description: milter server API
