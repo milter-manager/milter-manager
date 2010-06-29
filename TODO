@@ -47,6 +47,10 @@
   It's a case for dkim-filter.
 * support Postfix SMTP Access Policy Delegation protocol.
 * MilterCommandDecoder: support ESMTP parameters on MAIL FROM and RCPT TO.
+* Move some signals (SIGINT, SIGHUP, SIGTERM) handling from milter-manager-main
+  into milter_client_main since libmilter in sendmail handles those signals in
+  smfi_main().
+  And SIGPIPE should handle in libmilter-compatible.
 -----
 Index: milter/core/milter-command-decoder.c
 ===================================================================
