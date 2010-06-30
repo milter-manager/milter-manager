@@ -668,6 +668,21 @@ cleanup:
     return success;
 }
 
+gboolean
+milter_utils_guess_console_color_usability (void)
+{
+    const gchar *term;
+
+    term = g_getenv("TERM");
+    if (term && (g_str_has_suffix(term, "term") ||
+                 g_str_has_suffix(term, "term-color") ||
+                 g_str_equal(term, "screen") ||
+                 g_str_equal(term, "linux")))
+        return TRUE;
+
+    return FALSE;
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */

@@ -145,6 +145,9 @@ gint             milter_utils_strcmp0        (const gchar *str1,
 
 gboolean         milter_utils_detach_io      (gchar **message);
 
+gboolean         milter_utils_guess_console_color_usability
+                                             (void);
+
 G_END_DECLS
 
 #endif /* __MILTER_UTILS_H__ */

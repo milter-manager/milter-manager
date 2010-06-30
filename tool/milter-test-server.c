@@ -55,6 +55,7 @@ static gchar *unknown_command = NULL;
 static gchar *authenticated_name = NULL;
 static gchar *authenticated_type = NULL;
 static gchar *authenticated_author = NULL;
+static gboolean use_color = FALSE;
 static MilterHeaders *option_headers = NULL;
 static gdouble connection_timeout = MILTER_SERVER_CONTEXT_DEFAULT_CONNECTION_TIMEOUT;
 static gdouble writing_timeout = MILTER_SERVER_CONTEXT_DEFAULT_WRITING_TIMEOUT;
@@ -108,6 +109,7 @@ typedef struct _ProcessData
 #define CYAN_COLOR "\033[01;36m"
 #define WHITE_COLOR "\033[01;37m"
 #define NORMAL_COLOR "\033[00m"
+#define NO_COLOR ""
 
 static void
 remove_recipient (GList **recipients, const gchar *recipient)
@@ -1175,6 +1177,30 @@ parse_mail_file_arg (const gchar *option_name,
     return TRUE;
 }
 
+static gboolean
+parse_color_arg (const gchar *option_name, const gchar *value,
+                 gpointer data, GError **error)
+{
+    if (value == NULL ||
+        g_utf8_collate(value, "yes") == 0 ||
+        g_utf8_collate(value, "true") == 0) {
+        use_color = TRUE;
+    } else if (g_utf8_collate(value, "no") == 0 ||
+               g_utf8_collate(value, "false") == 0) {
+        use_color = FALSE;
+    } else if (g_utf8_collate(value, "auto") == 0) {
+        use_color = milter_utils_guess_console_color_usability();
+    } else {
+        g_set_error(error,
+                    G_OPTION_ERROR,
+                    G_OPTION_ERROR_BAD_VALUE,
+                    _("Invalid color value: %s"), value);
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
 static const GOptionEntry option_entries[] =
 {
     {"connection-spec", 's', 0, G_OPTION_ARG_CALLBACK, parse_spec_arg,
@@ -1221,6 +1247,8 @@ static const GOptionEntry option_entries[] =
     {"output-message", 0,
      G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_NONE, &output_message,
      N_("Output modified message"), NULL},
+    {"color", 'c', G_OPTION_FLAG_OPTIONAL_ARG, G_OPTION_ARG_CALLBACK, parse_color_arg,
+     N_("Output modified message with colors"), "[yes|true|no|false|auto]"},
     {"connection-timeout", 0, 0, G_OPTION_ARG_DOUBLE, &connection_timeout,
      N_("Timeout after SECONDS seconds on connecting to a milter."), "SECONDS"},
     {"reading-timeout", 0, 0, G_OPTION_ARG_DOUBLE, &reading_timeout,
@@ -1317,6 +1345,7 @@ pre_option_parse (GOptionContext *option_context,
                   GError **error)
 {
     option_headers = milter_headers_new();
+    use_color = milter_utils_guess_console_color_usability();
 
     return TRUE;
 }
@@ -1360,28 +1389,42 @@ static void
 print_header (const gchar *prefix, MilterHeader *header)
 {
     gchar **value_lines, **first_line;
-    const gchar *color = NORMAL_COLOR;
+    const gchar *color_starter = NO_COLOR;
+    const gchar *color_finisher = NO_COLOR;
 
-    if (g_str_has_prefix(prefix, "+"))
-        color = GREEN_COLOR;
-    else if (g_str_has_prefix(prefix, "-"))
-        color = RED_COLOR;
+    if (use_color) {
+        if (g_str_has_prefix(prefix, "+"))
+            color_starter = GREEN_COLOR;
+        else if (g_str_has_prefix(prefix, "-"))
+            color_starter = RED_COLOR;
+        else
+            color_starter = NORMAL_COLOR;
+        color_finisher = NORMAL_COLOR;
+    }
 
     value_lines = g_strsplit(header->value, "\n", -1);
     first_line = value_lines;
 
     if (!*value_lines) {
-        g_printf("%s%s %s:%s\n", color, prefix, header->name, NORMAL_COLOR);
+        g_printf("%s%s %s:%s\n",
+                 color_starter,
+                 prefix, header->name,
+                 color_finisher);
         g_strfreev(value_lines);
         return;
     }
 
-    g_printf("%s%s %s: %s%s\n", color, prefix, header->name, *value_lines,
-             NORMAL_COLOR);
+    g_printf("%s%s %s: %s%s\n",
+             color_starter,
+             prefix, header->name, *value_lines,
+             color_finisher);
     value_lines++;
 
     while (*value_lines) {
-        g_printf("%s%s %s%s\n", color, prefix, *value_lines, NORMAL_COLOR);
+        g_printf("%s%s %s%s\n",
+                 color_starter,
+                 prefix, *value_lines,
+                 color_finisher);
         value_lines++;
     }
 
