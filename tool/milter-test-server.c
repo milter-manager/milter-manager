@@ -262,6 +262,28 @@ set_macros_for_unknown (MilterProtocolAgent *agent)
 }
 
 static void
+send_header (MilterServerContext *context, MilterProtocolAgent *agent, ProcessData *data)
+{
+
+    MilterHeader *header;
+
+    set_macros_for_header(agent);
+    header = milter_headers_get_nth_header(data->option_headers, 1);
+    milter_server_context_header(context, header->name, header->value);
+    milter_headers_remove(data->option_headers, header);
+}
+static void
+send_body_chunk (MilterServerContext *context, MilterProtocolAgent *agent, ProcessData *data)
+{
+    set_macros_for_body(agent);
+
+    milter_server_context_body(context,
+                               data->body_chunks[data->current_body_chunk],
+                               strlen(data->body_chunks[data->current_body_chunk]));
+    data->current_body_chunk++;
+}
+
+static void
 cb_continue (MilterServerContext *context, gpointer user_data)
 {
     ProcessData *data = user_data;
@@ -372,14 +394,13 @@ cb_continue (MilterServerContext *context, gpointer user_data)
     case MILTER_SERVER_CONTEXT_STATE_HEADER:
         if (!(step & MILTER_STEP_NO_HEADERS) &&
             milter_headers_length(data->option_headers) > 0) {
-            MilterHeader *header;
-
-            set_macros_for_header(agent);
-            header = milter_headers_get_nth_header(data->option_headers, 1);
-            milter_server_context_header(context, header->name, header->value);
-            milter_headers_remove(data->option_headers, header);
+            send_header(context, agent, data);
             if (!(step & MILTER_STEP_NO_REPLY_HEADER)) {
                 break;
+            }
+
+            while (milter_headers_length(data->option_headers) > 0) {
+                send_header(context, agent, data);
             }
         }
         set_macros_for_end_of_header(agent);
@@ -390,12 +411,8 @@ cb_continue (MilterServerContext *context, gpointer user_data)
             }
         }
     case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
-        set_macros_for_body(agent);
         if (!(step & MILTER_STEP_NO_BODY)) {
-            milter_server_context_body(context,
-                                       data->body_chunks[data->current_body_chunk],
-                                       strlen(data->body_chunks[data->current_body_chunk]));
-            data->current_body_chunk++;
+            send_body_chunk(context, agent, data);
             if (!(step & MILTER_STEP_NO_REPLY_BODY)) {
                 break;
             }
@@ -403,13 +420,12 @@ cb_continue (MilterServerContext *context, gpointer user_data)
     case MILTER_SERVER_CONTEXT_STATE_BODY:
         if (!(step & MILTER_STEP_NO_BODY) &&
             data->body_chunks[data->current_body_chunk]) {
-            set_macros_for_body(agent);
-            milter_server_context_body(context,
-                                       data->body_chunks[data->current_body_chunk],
-                                       strlen(data->body_chunks[data->current_body_chunk]));
-            data->current_body_chunk++;
+            send_body_chunk(context, agent, data);
             if (!(step & MILTER_STEP_NO_REPLY_BODY)) {
                 break;
+            }
+            while(data->body_chunks[data->current_body_chunk]) {
+                send_body_chunk(context, agent, data);
             }
         }
         set_macros_for_end_of_message(agent);
