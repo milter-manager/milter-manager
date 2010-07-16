@@ -351,7 +351,7 @@ main (int argc, char *argv[])
     if (verbose)
         smfi_setdbg(6);
 
-    status = smfi_setconn(spec);;
+    status = smfi_setconn(spec);
     if (status == MI_SUCCESS)
         status = smfi_register(smfilter);
     if (status == MI_SUCCESS)
