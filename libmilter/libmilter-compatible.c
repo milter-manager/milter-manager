@@ -629,6 +629,8 @@ smfi_setdbg (int level)
 int
 smfi_settimeout (int timeout)
 {
+    libmilter_compatible_initialize();
+
     timeout = timeout;
 
     return MI_SUCCESS;

@@ -337,6 +337,14 @@ main (int argc, char *argv[])
     GOptionContext *option_context;
     GOptionGroup *main_group;
 
+    /*
+     * workaround for memory profiler
+     * for GLib memory profiler, we need to call g_mem_set_vtable
+     * prior to any other GLib functions.
+     * smfi_settimeout() calls g_mem_set_vtable().
+     */
+    smfi_settimeout(7210);
+
     option_context = g_option_context_new(NULL);
     g_option_context_add_main_entries(option_context, option_entries, NULL);
     main_group = g_option_context_get_main_group(option_context);
@@ -361,5 +369,5 @@ main (int argc, char *argv[])
 }
 
 /*
-vi:nowrap:ai:expandtab:sw=4
+vi:ts=4:nowrap:ai:expandtab:sw=4
 */
