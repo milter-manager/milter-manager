@@ -276,11 +276,12 @@ send_header (MilterServerContext *context, MilterProtocolAgent *agent, ProcessDa
 static void
 send_body_chunk (MilterServerContext *context, MilterProtocolAgent *agent, ProcessData *data)
 {
+    gchar *body_chunk;
+
     set_macros_for_body(agent);
 
-    milter_server_context_body(context,
-                               data->body_chunks[data->current_body_chunk],
-                               strlen(data->body_chunks[data->current_body_chunk]));
+    body_chunk = data->body_chunks[data->current_body_chunk];
+    milter_server_context_body(context, body_chunk, strlen(body_chunk));
     data->current_body_chunk++;
 }
 
