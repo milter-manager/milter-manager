@@ -1,5 +1,9 @@
 2010-07-16  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-test-client-libmilter.c,
+	libmilter/libmilter-compatible.c: use smfi_version() for memory
+	profile workaround.
+
 	* tool/milter-test-server.c (send_body_chunk): add a missing blank line.
 
 2010-06-11  Kouhei Sutou  <kou@clear-code.com>

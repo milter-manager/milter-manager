@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -595,6 +595,8 @@ smfi_main (void)
 int
 smfi_setbacklog (int backlog)
 {
+    libmilter_compatible_initialize();
+
     if (backlog <= 0)
         return MI_FAILURE;
 
@@ -672,6 +674,8 @@ smfi_setconn (char *spec)
 int
 smfi_stop (void)
 {
+    libmilter_compatible_initialize();
+
     if (client)
         milter_client_shutdown(client);
     return MI_SUCCESS;
@@ -681,6 +685,8 @@ int
 smfi_version (unsigned int *major, unsigned int *minor,
               unsigned int *patch_level)
 {
+    libmilter_compatible_initialize();
+
     if (major)
         *major = SM_LM_VRS_MAJOR(SMFI_VERSION);
     if (minor)
