@@ -272,6 +272,7 @@ send_header (MilterServerContext *context, MilterProtocolAgent *agent, ProcessDa
     milter_server_context_header(context, header->name, header->value);
     milter_headers_remove(data->option_headers, header);
 }
+
 static void
 send_body_chunk (MilterServerContext *context, MilterProtocolAgent *agent, ProcessData *data)
 {
