@@ -43,13 +43,13 @@ static gboolean verbose = FALSE;
 static gboolean output_message = FALSE;
 static gchar *spec = NULL;
 static gint negotiate_version = DEFAULT_NEGOTIATE_VERSION;
+static gint n_threads = 0;
 static gchar *connect_host = NULL;
 static struct sockaddr *connect_address = NULL;
 static socklen_t connect_address_length = 0;
 static gchar *helo_host = NULL;
 static gchar *envelope_from = NULL;
 static gchar **recipients = NULL;
-static gint current_recipient = 0;
 static gchar **body_chunks = NULL;
 static gchar *unknown_command = NULL;
 static gchar *authenticated_name = NULL;
@@ -94,6 +94,10 @@ typedef struct _ProcessData
     gchar *reply_message;
     gchar *quarantine_reason;
     MilterOption *option;
+    MilterHeaders *option_headers;
+    gint current_recipient;
+    gchar **body_chunks;
+    gint current_body_chunk;
     Message *message;
     GError *error;
 } ProcessData;
@@ -156,11 +160,11 @@ set_macro (gpointer key, gpointer value, gpointer user_data)
 }
 
 static void
-send_recipient (MilterServerContext *context)
+send_recipient (MilterServerContext *context, ProcessData *data)
 {
     milter_server_context_envelope_recipient(context,
-                                             *(recipients + current_recipient));
-    current_recipient++;
+                                             *(recipients + data->current_recipient));
+    data->current_recipient++;
 }
 
 static void
@@ -322,16 +326,16 @@ cb_continue (MilterServerContext *context, gpointer user_data)
     case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM:
         set_macros_for_envelope_recipient(agent);
         if (!(step & MILTER_STEP_NO_ENVELOPE_RECIPIENT)) {
-            send_recipient(context);
+            send_recipient(context, data);
             if (!(step & MILTER_STEP_NO_REPLY_ENVELOPE_RECIPIENT)) {
                 break;
             }
         }
     case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT:
         if (!(step & MILTER_STEP_NO_ENVELOPE_RECIPIENT) &&
-            *(recipients + current_recipient)) {
+            *(recipients + data->current_recipient)) {
             set_macros_for_envelope_recipient(agent);
-            send_recipient(context);
+            send_recipient(context, data);
             if (!(step & MILTER_STEP_NO_REPLY_ENVELOPE_RECIPIENT)) {
                 break;
             }
@@ -358,22 +362,22 @@ cb_continue (MilterServerContext *context, gpointer user_data)
         set_macros_for_header(agent);
         if (!(step & MILTER_STEP_NO_HEADERS)) {
             MilterHeader *header;
-            header = milter_headers_get_nth_header(option_headers, 1);
+            header = milter_headers_get_nth_header(data->option_headers, 1);
             milter_server_context_header(context, header->name, header->value);
-            milter_headers_remove(option_headers, header);
+            milter_headers_remove(data->option_headers, header);
             if (!(step & MILTER_STEP_NO_REPLY_HEADER)) {
                 break;
             }
         }
     case MILTER_SERVER_CONTEXT_STATE_HEADER:
         if (!(step & MILTER_STEP_NO_HEADERS) &&
-            milter_headers_length(option_headers) > 0) {
+            milter_headers_length(data->option_headers) > 0) {
             MilterHeader *header;
 
             set_macros_for_header(agent);
-            header = milter_headers_get_nth_header(option_headers, 1);
+            header = milter_headers_get_nth_header(data->option_headers, 1);
             milter_server_context_header(context, header->name, header->value);
-            milter_headers_remove(option_headers, header);
+            milter_headers_remove(data->option_headers, header);
             if (!(step & MILTER_STEP_NO_REPLY_HEADER)) {
                 break;
             }
@@ -388,18 +392,22 @@ cb_continue (MilterServerContext *context, gpointer user_data)
     case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
         set_macros_for_body(agent);
         if (!(step & MILTER_STEP_NO_BODY)) {
-            milter_server_context_body(context, *body_chunks, strlen(*body_chunks));
-            body_chunks++;
+            milter_server_context_body(context,
+                                       data->body_chunks[data->current_body_chunk],
+                                       strlen(data->body_chunks[data->current_body_chunk]));
+            data->current_body_chunk++;
             if (!(step & MILTER_STEP_NO_REPLY_BODY)) {
                 break;
             }
         }
     case MILTER_SERVER_CONTEXT_STATE_BODY:
         if (!(step & MILTER_STEP_NO_BODY) &&
-            *body_chunks) {
+            data->body_chunks[data->current_body_chunk]) {
             set_macros_for_body(agent);
-            milter_server_context_body(context, *body_chunks, strlen(*body_chunks));
-            body_chunks++;
+            milter_server_context_body(context,
+                                       data->body_chunks[data->current_body_chunk],
+                                       strlen(data->body_chunks[data->current_body_chunk]));
+            data->current_body_chunk++;
             if (!(step & MILTER_STEP_NO_REPLY_BODY)) {
                 break;
             }
@@ -446,7 +454,7 @@ cb_temporary_failure (MilterServerContext *context, gpointer user_data)
     switch (state) {
     case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT:
         remove_recipient(&(data->message->recipients),
-                         *(recipients + current_recipient - 1));
+                         *(recipients + data->current_recipient - 1));
         if (data->message->recipients) {
             cb_continue(context, user_data);
             break;
@@ -469,7 +477,7 @@ cb_reject (MilterServerContext *context, gpointer user_data)
     switch (state) {
     case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT:
         remove_recipient(&(data->message->recipients),
-                         *(recipients + current_recipient - 1));
+                         *(recipients + data->current_recipient - 1));
         if (data->message->recipients) {
             cb_continue(context, user_data);
             break;
@@ -684,8 +692,9 @@ cb_shutdown (MilterServerContext *context, gpointer user_data)
 static void
 cb_skip (MilterServerContext *context, gpointer user_data)
 {
-    while (*body_chunks)
-        body_chunks++;
+    ProcessData *data = user_data;
+    while (data->body_chunks[data->current_body_chunk])
+        data->current_body_chunk++;
 
     cb_continue(context, user_data);
 }
@@ -1257,6 +1266,8 @@ static const GOptionEntry option_entries[] =
      N_("Timeout after SECONDS seconds on writing a command."), "SECONDS"},
     {"end-of-message-timeout", 0, 0, G_OPTION_ARG_DOUBLE, &writing_timeout,
      N_("Timeout after SECONDS seconds on end-of-message command."), "SECONDS"},
+    {"threads", 't', 0, G_OPTION_ARG_INT, &n_threads,
+     N_("Create N threads."), "N"},
     {"verbose", 'v', G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_NONE, &verbose,
      N_("Be verbose"), NULL},
     {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, print_version,
@@ -1312,6 +1323,10 @@ init_process_data (ProcessData *data)
     data->success = TRUE;
     data->quarantine_reason = NULL;
     data->option = NULL;
+    data->option_headers = milter_headers_copy(option_headers);
+    data->body_chunks = g_strdupv(body_chunks);
+    data->current_body_chunk = 0;
+    data->current_recipient = 0;
     data->reply_code = 0;
     data->reply_extended_code = NULL;
     data->reply_message = NULL;
@@ -1326,6 +1341,10 @@ free_process_data (ProcessData *data)
         g_timer_destroy(data->timer);
     if (data->option)
         g_object_unref(data->option);
+    if (data->option_headers)
+        g_object_unref(data->option_headers);
+    if (data->body_chunks)
+        g_strfreev(data->body_chunks);
     if (data->reply_extended_code)
         g_free(data->reply_extended_code);
     if (data->reply_message)
@@ -1644,15 +1663,30 @@ start_process (MilterServerContext *context, ProcessData *process_data)
     return TRUE;
 }
 
+static gpointer
+test_server_thread (gpointer data)
+{
+    gboolean success;
+    ProcessData *process_data = data;
+    MilterServerContext *context;
+
+    context = milter_server_context_new();
+    setup_context(context, process_data);
+
+    success = start_process(context, process_data);
+
+    g_object_unref(context);
+
+    return GINT_TO_POINTER(success);
+}
+
 int
 main (int argc, char *argv[])
 {
     gboolean success = TRUE;
-    MilterServerContext *context;
     GError *error = NULL;
     GOptionContext *option_context;
     GOptionGroup *main_group;
-    ProcessData process_data;
 
     milter_init();
     milter_server_init();
@@ -1675,14 +1709,32 @@ main (int argc, char *argv[])
     if (verbose)
         g_setenv("MILTER_LOG_LEVEL", "all", FALSE);
 
-    context = milter_server_context_new();
-    init_process_data(&process_data);
-    setup_context(context, &process_data);
+    if (n_threads > 0) {
+        GThread **threads;
+        ProcessData *process_data;
+        gint i;
 
-    success = start_process(context, &process_data);
+        threads = g_new0(GThread*, n_threads);
+        process_data = g_new0(ProcessData, n_threads);
+        for (i = 0; i < n_threads; i++) {
+            init_process_data(&process_data[i]);
+            threads[i] = g_thread_create(test_server_thread, &process_data[i], TRUE, NULL);
+        }
 
-    g_object_unref(context);
-    free_process_data(&process_data);
+        for (i = 0; i < n_threads; i++) {
+            success &= GPOINTER_TO_INT(g_thread_join(threads[i]));
+            free_process_data(&process_data[i]);
+        }
+
+        g_free(process_data);
+        g_free(threads);
+    } else {
+        ProcessData process_data;
+        init_process_data(&process_data);
+        success = GPOINTER_TO_INT(test_server_thread(&process_data));
+        free_process_data(&process_data);
+    }
+
 
     milter_server_quit();
     milter_quit();
