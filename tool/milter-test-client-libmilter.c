@@ -143,7 +143,7 @@ mlfi_helo (SMFICTX *context, char *fqdn)
         g_print("helo: <%s>\n", fqdn);
     }
 
-    return SMFIS_CONTINUE;
+    return SMFIS_NOREPLY;
 }
 
 static sfsistat
@@ -153,7 +153,7 @@ mlfi_envfrom (SMFICTX *context, char **arguments)
         g_print("envelope-from: <%s>\n", arguments[0]);
     }
 
-    return SMFIS_CONTINUE;
+    return SMFIS_NOREPLY;
 }
 
 static sfsistat
@@ -193,7 +193,7 @@ mlfi_body (SMFICTX *context, unsigned char *data, size_t data_size)
         g_print("body: <%.*s>\n", (gint)data_size, data);
     }
 
-    return SMFIS_CONTINUE;
+    return SMFIS_NOREPLY;
 }
 
 
