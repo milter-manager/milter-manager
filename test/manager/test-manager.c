@@ -269,6 +269,9 @@ setup_egg (EggData *data, const gchar *first_arg, ...)
         g_list_free(strings);
 
     data->egg = gcut_egg_new_argv(argc, argv);
+    gcut_egg_set_env(data->egg,
+                     "LANG", "C",
+                     NULL);
     g_strfreev(argv);
 
 #define CONNECT(name)                                                   \
