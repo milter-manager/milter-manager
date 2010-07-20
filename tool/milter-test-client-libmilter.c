@@ -336,14 +336,15 @@ main (int argc, char *argv[])
     GError *error = NULL;
     GOptionContext *option_context;
     GOptionGroup *main_group;
+    unsigned int major, minor, patch_level;
 
     /*
-     * workaround for memory profiler
-     * for GLib memory profiler, we need to call g_mem_set_vtable
-     * prior to any other GLib functions.
-     * smfi_settimeout() calls g_mem_set_vtable().
+     * workaround for memory profiler for GLib memory
+     * profiler, we need to call g_mem_set_vtable prior to
+     * any other GLib functions. smfi_version() calls
+     * g_mem_set_vtable() internally.
      */
-    smfi_settimeout(7210);
+    smfi_version(&major, &minor, &patch_level);
 
     option_context = g_option_context_new(NULL);
     g_option_context_add_main_entries(option_context, option_entries, NULL);
