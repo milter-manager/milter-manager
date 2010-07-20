@@ -473,13 +473,11 @@ cb_abort (MilterClientContext *context, MilterClientContextState state,
 static void
 cb_finished (MilterFinishedEmittable *emittable, gpointer user_data)
 {
-    MilterClientContext *context;
     SmfiContext *smfi_context = user_data;
 
     if (filter_description->xxfi_close)
         filter_description->xxfi_close(smfi_context);
 
-    context = MILTER_CLIENT_CONTEXT(emittable);
     g_object_unref(smfi_context);
 }
 
