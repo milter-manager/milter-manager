@@ -565,7 +565,9 @@ test_remove_manager_unix_socket_on_close (void)
     cut_assert_false(g_file_test(path, G_FILE_TEST_EXISTS));
 
     spec = cut_take_printf("unix:%s", path);
-    setup_egg(manager_data, "-s", spec, NULL);
+    setup_egg(manager_data,
+              "-s", spec,
+              "--config-dir", scenario_dir, NULL);
     gcut_egg_hatch(manager_egg, &error);
     gcut_assert_error(error);
 
