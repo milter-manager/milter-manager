@@ -35,9 +35,9 @@ static gboolean report_request = TRUE;
 static gboolean report_memory_profile = FALSE;
 static gboolean use_syslog = FALSE;
 static gboolean run_as_daemon = FALSE;
-static gchar *user = FALSE;
-static gchar *group = FALSE;
-static gchar *socket_group = FALSE;
+static gchar *user = NULL;
+static gchar *group = NULL;
+static gchar *socket_group = NULL;
 static MilterSyslogLogger *logger = NULL;
 static MilterClient *client = NULL;
 
