@@ -232,6 +232,8 @@ struct _MilterClientClass
                                            socklen_t        address_size);
     gchar *(*get_default_connection_spec) (MilterClient *client);
     guint  (*get_unix_socket_mode)        (MilterClient *client);
+    void   (*set_unix_socket_mode)        (MilterClient *client,
+                                           guint         mode);
     const gchar *(*get_unix_socket_group) (MilterClient *client);
     void   (*set_unix_socket_group)       (MilterClient *client,
                                            const gchar  *group);
@@ -405,6 +407,18 @@ void                 milter_client_set_timeout       (MilterClient  *client,
  */
 guint                milter_client_get_unix_socket_mode
                                                      (MilterClient  *client);
+
+/**
+ * milter_client_set_unix_socket_mode:
+ * @client: a %MilterClient.
+ * @mode: the UNIX domain socket mode.
+ *
+ * Sets the UNIX domain socket mode. @mode == '0' means that
+ * the default UNIX domain socket mode will be used.
+ */
+void                 milter_client_set_unix_socket_mode
+                                                     (MilterClient  *client,
+                                                      guint          mode);
 
 /**
  * milter_client_get_default_unix_socket_mode:

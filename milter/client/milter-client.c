@@ -96,6 +96,7 @@ struct _MilterClientPrivate
     gint listen_backlog;
     GMutex *quit_mutex;
     gboolean quitting;
+    guint unix_socket_mode;
     guint default_unix_socket_mode;
     gchar *unix_socket_group;
     gchar *default_unix_socket_group;
@@ -227,7 +228,9 @@ _milter_client_init (MilterClient *client)
     priv->listen_backlog = -1;
     priv->quit_mutex = g_mutex_new();
     priv->quitting = FALSE;
+    priv->unix_socket_mode = 0;
     priv->default_unix_socket_mode = 0660;
+    priv->unix_socket_group = NULL;
     priv->default_unix_socket_group = NULL;
     priv->default_remove_unix_socket_on_close = TRUE;
     priv->remove_unix_socket_on_create = TRUE;
@@ -1530,10 +1533,34 @@ milter_client_get_unix_socket_mode (MilterClient *client)
     MilterClientClass *klass;
 
     klass = MILTER_CLIENT_GET_CLASS(client);
-    if (klass->get_unix_socket_mode)
+    if (klass->get_unix_socket_mode) {
         return klass->get_unix_socket_mode(client);
-    else
-        return milter_client_get_default_unix_socket_mode(client);
+    } else {
+        MilterClientPrivate *priv;
+
+        priv = MILTER_CLIENT_GET_PRIVATE(client);
+        if (priv->unix_socket_mode != 0) {
+            return priv->unix_socket_mode;
+        } else {
+            return milter_client_get_default_unix_socket_mode(client);
+        }
+    }
+}
+
+void
+milter_client_set_unix_socket_mode (MilterClient *client, guint mode)
+{
+    MilterClientClass *klass;
+
+    klass = MILTER_CLIENT_GET_CLASS(client);
+    if (klass->set_unix_socket_mode) {
+        klass->set_unix_socket_mode(client, mode);
+    } else {
+        MilterClientPrivate *priv;
+
+        priv = MILTER_CLIENT_GET_PRIVATE(client);
+        priv->unix_socket_mode = mode;
+    }
 }
 
 guint

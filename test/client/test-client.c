@@ -579,7 +579,20 @@ test_unix_socket_mode (void)
                           milter_client_get_default_unix_socket_mode(client));
     cut_assert_equal_uint(0660,
                           milter_client_get_unix_socket_mode(client));
+
     milter_client_set_default_unix_socket_mode(client, 0600);
+    cut_assert_equal_uint(0600,
+                          milter_client_get_default_unix_socket_mode(client));
+    cut_assert_equal_uint(0600,
+                          milter_client_get_unix_socket_mode(client));
+
+    milter_client_set_unix_socket_mode(client, 0666);
+    cut_assert_equal_uint(0600,
+                          milter_client_get_default_unix_socket_mode(client));
+    cut_assert_equal_uint(0666,
+                          milter_client_get_unix_socket_mode(client));
+
+    milter_client_set_unix_socket_mode(client, 0);
     cut_assert_equal_uint(0600,
                           milter_client_get_default_unix_socket_mode(client));
     cut_assert_equal_uint(0600,
