@@ -86,7 +86,7 @@ tool for looking into the problems.
 
    Runs as GROUP's process. root privilege is needed.
 
-: --socket-group=GROUP
+: --unix-socket-group=GROUP
 
    Changes UNIX domain socket group to GROUP when
    "unix:PATH" format SPEC is used.

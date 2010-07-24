@@ -86,7 +86,7 @@ milter-test-clientが役立つでしょう。
 
    実効グループをGROUPとします。root権限が必要です。
 
-: --socket-group=GROUP
+: --unix-socket-group=GROUP
 
    SPECで「unix:パス」を指定したときにUNIXドメインソケットの
    グループを変更します。

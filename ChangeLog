@@ -1,5 +1,8 @@
 2010-07-24  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-test-client.c, doc/milter-test-client.rd*:
+	--socket-group -> --unix-socket-group.
+
 	* binding/ruby/lib/milter/client/command-line.rb: add --user,
 	--group and --unix-socket-group option.
 
