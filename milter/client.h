@@ -233,6 +233,8 @@ struct _MilterClientClass
     gchar *(*get_default_connection_spec) (MilterClient *client);
     guint  (*get_unix_socket_mode)        (MilterClient *client);
     const gchar *(*get_unix_socket_group) (MilterClient *client);
+    void   (*set_unix_socket_group)       (MilterClient *client,
+                                           const gchar  *group);
     gboolean (*is_remove_unix_socket_on_close)
                                           (MilterClient *client);
     guint  (*get_suspend_time_on_unacceptable)
@@ -436,6 +438,17 @@ void                 milter_client_set_default_unix_socket_mode
  */
 const gchar         *milter_client_get_unix_socket_group
                                                      (MilterClient  *client);
+
+/**
+ * milter_client_set_unix_socket_group:
+ * @client: a %MilterClient.
+ * @group: the UNIX domain socket group.
+ *
+ * Sets the group of UNIX domain socket.
+ */
+void                 milter_client_set_unix_socket_group
+                                                     (MilterClient  *client,
+                                                      const gchar   *group);
 
 /**
  * milter_client_get_default_unix_socket_group:

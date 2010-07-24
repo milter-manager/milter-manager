@@ -97,6 +97,7 @@ struct _MilterClientPrivate
     GMutex *quit_mutex;
     gboolean quitting;
     guint default_unix_socket_mode;
+    gchar *unix_socket_group;
     gchar *default_unix_socket_group;
     gboolean default_remove_unix_socket_on_close;
     gboolean remove_unix_socket_on_create;
@@ -444,6 +445,11 @@ dispose (GObject *object)
     if (priv->quit_mutex) {
         g_mutex_free(priv->quit_mutex);
         priv->quit_mutex = NULL;
+    }
+
+    if (priv->unix_socket_group) {
+        g_free(priv->unix_socket_group);
+        priv->unix_socket_group = NULL;
     }
 
     if (priv->default_unix_socket_group) {
@@ -1548,10 +1554,35 @@ milter_client_get_unix_socket_group (MilterClient *client)
     MilterClientClass *klass;
 
     klass = MILTER_CLIENT_GET_CLASS(client);
-    if (klass->get_unix_socket_group)
+    if (klass->get_unix_socket_group) {
         return klass->get_unix_socket_group(client);
-    else
-        return milter_client_get_default_unix_socket_group(client);
+    } else {
+        MilterClientPrivate *priv;
+
+        priv = MILTER_CLIENT_GET_PRIVATE(client);
+        if (priv->unix_socket_group) {
+            return priv->unix_socket_group;
+        } else {
+            return milter_client_get_default_unix_socket_group(client);
+        }
+    }
+}
+
+void
+milter_client_set_unix_socket_group (MilterClient *client, const gchar *group)
+{
+    MilterClientClass *klass;
+
+    klass = MILTER_CLIENT_GET_CLASS(client);
+    if (klass->set_unix_socket_group) {
+        klass->set_unix_socket_group(client, group);
+    } else {
+        MilterClientPrivate *priv;
+
+        priv = MILTER_CLIENT_GET_PRIVATE(client);
+        g_free(priv->unix_socket_group);
+        priv->unix_socket_group = g_strdup(group);
+    }
 }
 
 const gchar *

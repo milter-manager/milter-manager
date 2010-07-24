@@ -593,11 +593,25 @@ test_unix_socket_group (void)
                             milter_client_get_default_unix_socket_group(client));
     cut_assert_equal_string(NULL,
                             milter_client_get_unix_socket_group(client));
+
     milter_client_set_default_unix_socket_group(client, "nogroup");
     cut_assert_equal_string("nogroup",
                             milter_client_get_default_unix_socket_group(client));
     cut_assert_equal_string("nogroup",
                             milter_client_get_unix_socket_group(client));
+
+    milter_client_set_default_unix_socket_group(client, NULL);
+    cut_assert_equal_string(NULL,
+                            milter_client_get_default_unix_socket_group(client));
+    cut_assert_equal_string(NULL,
+                            milter_client_get_unix_socket_group(client));
+
+    milter_client_set_unix_socket_group(client, "nogroup");
+    cut_assert_equal_string(NULL,
+                            milter_client_get_default_unix_socket_group(client));
+    cut_assert_equal_string("nogroup",
+                            milter_client_get_unix_socket_group(client));
+
 }
 
 void

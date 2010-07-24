@@ -77,6 +77,8 @@ static void   connection_established      (MilterClient *client,
 static gchar *get_default_connection_spec (MilterClient *client);
 static guint  get_unix_socket_mode        (MilterClient *client);
 static const gchar *get_unix_socket_group (MilterClient *client);
+static void     set_unix_socket_group     (MilterClient *client,
+                                           const gchar  *group);
 static gboolean is_remove_unix_socket_on_close (MilterClient *client);
 static guint  get_suspend_time_on_unacceptable
                                           (MilterClient *client);
@@ -119,6 +121,7 @@ milter_manager_class_init (MilterManagerClass *klass)
     client_class->get_default_connection_spec = get_default_connection_spec;
     client_class->get_unix_socket_mode        = get_unix_socket_mode;
     client_class->get_unix_socket_group       = get_unix_socket_group;
+    client_class->set_unix_socket_group       = set_unix_socket_group;
     client_class->is_remove_unix_socket_on_close = is_remove_unix_socket_on_close;
     client_class->get_suspend_time_on_unacceptable = get_suspend_time_on_unacceptable;
     client_class->set_suspend_time_on_unacceptable = set_suspend_time_on_unacceptable;
@@ -802,6 +805,20 @@ get_unix_socket_group (MilterClient *client)
     priv = MILTER_MANAGER_GET_PRIVATE(manager);
     configuration = priv->configuration;
     return milter_manager_configuration_get_manager_unix_socket_group(configuration);
+}
+
+static void
+set_unix_socket_group (MilterClient *client, const gchar *group)
+{
+    MilterManager *manager;
+    MilterManagerPrivate *priv;
+    MilterManagerConfiguration *configuration;
+
+    manager = MILTER_MANAGER(client);
+    priv = MILTER_MANAGER_GET_PRIVATE(manager);
+    configuration = priv->configuration;
+    return milter_manager_configuration_set_manager_unix_socket_group(configuration,
+                                                                      group);
 }
 
 static gboolean
