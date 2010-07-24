@@ -624,8 +624,8 @@ main (int argc, char *argv[])
 
     milter_client_set_effective_user(client, user);
     milter_client_set_effective_group(client, group);
-    milter_client_set_default_unix_socket_mode(client, unix_socket_mode);
-    milter_client_set_default_unix_socket_group(client, unix_socket_group);
+    milter_client_set_unix_socket_mode(client, unix_socket_mode);
+    milter_client_set_unix_socket_group(client, unix_socket_group);
     if (spec)
         success = milter_client_set_connection_spec(client, spec, &error);
     if (success)

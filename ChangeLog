@@ -1,5 +1,8 @@
 2010-07-24  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-test-client.c: set_default_unix_socket_XXX() ->
+	set_unix_socket_XXX().
+
 	* milter/client.h, milter/client/milter-client.c,
 	milter/manager/milter-manager.c, test/client/test-client.c: add a
 	setter for UNIX domain socket mode.
