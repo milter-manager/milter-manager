@@ -39,4 +39,9 @@ class TestClient < Test::Unit::TestCase
     @client.unix_socket_group = "nogroup"
     assert_equal("nogroup", @client.unix_socket_group)
   end
+
+  def test_unix_socket_mode
+    @client.unix_socket_mode = 0666
+    assert_equal(0666, @client.unix_socket_mode)
+  end
 end

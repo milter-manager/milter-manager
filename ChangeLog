@@ -1,5 +1,8 @@
 2010-07-24  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/src/toolkit/rb-milter-client.c,
+	binding/ruby/test/toolkit/test-client.rb: bind unix_socket_mode.
+
 	* tool/milter-test-client.c: set_default_unix_socket_XXX() ->
 	set_unix_socket_XXX().
 

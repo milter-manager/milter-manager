@@ -94,6 +94,19 @@ client_set_unix_socket_group (VALUE self, VALUE group)
     return Qnil;
 }
 
+static VALUE
+client_get_unix_socket_mode (VALUE self)
+{
+    return UINT2NUM(milter_client_get_unix_socket_mode(SELF(self)));
+}
+
+static VALUE
+client_set_unix_socket_mode (VALUE self, VALUE mode)
+{
+    milter_client_set_unix_socket_mode(SELF(self), NUM2UINT(mode));
+    return Qnil;
+}
+
 static void
 mark (gpointer data)
 {
@@ -140,6 +153,10 @@ Init_milter_client (void)
                      client_get_unix_socket_group, 0);
     rb_define_method(rb_cMilterClient, "set_unix_socket_group",
                      client_set_unix_socket_group, 1);
+    rb_define_method(rb_cMilterClient, "unix_socket_mode",
+                     client_get_unix_socket_mode, 0);
+    rb_define_method(rb_cMilterClient, "set_unix_socket_mode",
+                     client_set_unix_socket_mode, 1);
 
     G_DEF_SETTERS(rb_cMilterClient);
 
