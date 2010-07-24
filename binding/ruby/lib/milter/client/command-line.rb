@@ -37,6 +37,9 @@ module Milter
         client = Milter::Client.new
         client.status_on_error = @options.status_on_error
         client.connection_spec = @options.connection_spec
+        client.effective_user = @options.user
+        client.effective_group = @options.group
+        client.unix_socket_group = @options.unix_socket_group
         yield(client, options) if block_given?
         daemonize if @options.run_as_daemon
         client.main
@@ -48,6 +51,9 @@ module Milter
         @options.connection_spec = "inet:20025"
 	@options.status_on_error = "accept"
         @options.run_as_daemon = false
+        @options.user = nil
+        @options.group = nil
+        @options.socket_group = nil
       end
 
       def setup_option_parser
@@ -103,6 +109,24 @@ module Milter
                           "Specify status on error.",
                           "(#{@options.status_on_error})") do |status|
           @options.status_on_error = status
+        end
+
+        @option_parser.on("--user=USER",
+                          "Run as USER's process (need root privilege)",
+                          "(#{@options.user})") do |user|
+          @options.user = user
+        end
+
+        @option_parser.on("--group=GROUP",
+                          "Run as GROUP's process (need root privilege)",
+                          "(#{@options.group})") do |gorup|
+          @options.group = group
+        end
+
+        @option_parser.on("--unix-socket-group=GROUP",
+                          "Change UNIX domain socket group to GROUP",
+                          "(#{@options.unix_socket_group})") do |gorup|
+          @options.unix_socket_group = group
         end
       end
 
