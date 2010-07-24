@@ -74,8 +74,9 @@ module Milter
           exit(true)
         end
 
-        @option_parser.on("--version", "Show version.") do
-          puts VERSION
+        @option_parser.on("--library-version",
+                          "Show milter library version.") do
+          puts Milter::TOOLKIT_VERSION.join(".")
           exit(true)
         end
       end
@@ -85,22 +86,22 @@ module Milter
         @option_parser.separator "milter options"
 
         @option_parser.on("-s", "--connection-spec=SPEC",
-                "Specify connection spec as [SPEC].",
-                "(#{@options.connection_spec})") do |spec|
+                          "Specify connection spec as [SPEC].",
+                          "(#{@options.connection_spec})") do |spec|
           @options.connection_spec = spec
         end
 
         @option_parser.on("--[no-]daemon",
-                "Run as a daemon process.",
-                "(#{@options.run_as_daemon})") do |run_as_daemon|
+                          "Run as a daemon process.",
+                          "(#{@options.run_as_daemon})") do |run_as_daemon|
           @options.run_as_daemon = run_as_daemon
         end
 
         statuses = ["accept", "reject", "temporary_failure"]
         @option_parser.on("--status-on-error=STATUS",
-                statuses,
-                "Specify status on error.",
-                "(#{@options.status_on_error})") do |status|
+                          statuses,
+                          "Specify status on error.",
+                          "(#{@options.status_on_error})") do |status|
           @options.status_on_error = status
         end
       end
@@ -112,9 +113,9 @@ module Milter
         level_names = Milter::LogLevelFlags.values.collect {|value| value.nick}
         level_names << "all"
         @option_parser.on("--log-level=LEVEL",
-                "Specify log level as [LEVEL].",
-                "Select from [%s]." % level_names.join(', '),
-                "(#{ENV['MILTER_LOG_LEVEL'] || 'none'})") do |level|
+                          "Specify log level as [LEVEL].",
+                          "Select from [%s]." % level_names.join(', '),
+                          "(#{ENV['MILTER_LOG_LEVEL'] || 'none'})") do |level|
           if level.empty?
             ENV["MILTER_LOG_LEVEL"] = nil
           else
@@ -123,8 +124,8 @@ module Milter
         end
 
         @option_parser.on("--verbose",
-                "Show messages verbosely.",
-                "Alias of --log-level=all.") do
+                          "Show messages verbosely.",
+                          "Alias of --log-level=all.") do
           ENV["MILTER_LOG_LEVEL"] = "all"
         end
       end

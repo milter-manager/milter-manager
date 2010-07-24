@@ -1,5 +1,9 @@
 2010-07-24  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/client/command-line.rb
+	(Milter::Client::CommandLine#setup_basic_options): --version ->
+	--library-version.
+
 	* tool/milter-test-client.c: fix typos.
 
 2010-07-20  Kouhei Sutou  <kou@clear-code.com>
