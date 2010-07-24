@@ -38,6 +38,7 @@ static gboolean run_as_daemon = FALSE;
 static gchar *user = NULL;
 static gchar *group = NULL;
 static gchar *unix_socket_group = NULL;
+static guint unix_socket_mode = 0660;
 static MilterSyslogLogger *logger = NULL;
 static MilterClient *client = NULL;
 
@@ -75,6 +76,159 @@ parse_spec_arg (const gchar *option_name,
     return success;
 }
 
+static gboolean
+parse_unix_socket_mode_symbol (const gchar *value,
+                               GError **error)
+{
+    guint target = 0;
+    guint mode = 0;
+    gint i;
+
+    for (i = 0; value[i]; i++) {
+        gboolean break_loop = FALSE;
+        switch (value[i]) {
+        case 'a':
+            target |= 0777;
+            break;
+        case 'u':
+            target |= 0700;
+            break;
+        case 'g':
+            target |= 0070;
+            break;
+        case 'o':
+            target |= 0007;
+            break;
+        default:
+            if (i == 0) {
+                g_set_error(error,
+                            G_OPTION_ERROR,
+                            G_OPTION_ERROR_BAD_VALUE,
+                            _("invalid target: '%c': <%s>"),
+                            value[i], value);
+                return FALSE;
+            }
+            break_loop = TRUE;
+            break;
+        }
+        if (break_loop)
+            break;
+    }
+
+    if (!value[i]) {
+        g_set_error(error,
+                    G_OPTION_ERROR,
+                    G_OPTION_ERROR_BAD_VALUE,
+                    _("set mode '=' is missing: <%s>"),
+                    value);
+        return FALSE;
+    }
+
+    if (value[i] == '=') {
+        i++;
+    } else {
+        g_set_error(error,
+                    G_OPTION_ERROR,
+                    G_OPTION_ERROR_BAD_VALUE,
+                    _("set mode must be '=': '%c': <%s>"),
+                    value[i], value);
+        return FALSE;
+    }
+
+    if (!value[i]) {
+        g_set_error(error,
+                    G_OPTION_ERROR,
+                    G_OPTION_ERROR_BAD_VALUE,
+                    _("mode 'r', 'w' or 'x' is missing: <%s>"),
+                    value);
+        return FALSE;
+    }
+
+    for (; value[i]; i++) {
+        switch (value[i]) {
+        case 'r':
+            mode |= target & 0111;
+            break;
+        case 'w':
+            mode |= target & 0222;
+            break;
+        case 'x':
+            mode |= target & 0444;
+            break;
+        default:
+            g_set_error(error,
+                        G_OPTION_ERROR,
+                        G_OPTION_ERROR_BAD_VALUE,
+                        _("mode must be 'r', 'w' or 'x': '%c': <%s>"),
+                        value[i], value);
+            return FALSE;
+            break;
+        }
+    }
+
+    unix_socket_mode = mode;
+    return TRUE;
+}
+
+static gboolean
+parse_unix_socket_mode_numeric (const gchar *value,
+                                GError **error)
+{
+    guint mode = 0;
+    gint i;
+
+    for (i = 0; value[i]; i++) {
+        if (i > 2) {
+            g_set_error(error,
+                        G_OPTION_ERROR,
+                        G_OPTION_ERROR_BAD_VALUE,
+                        _("must be at most 3 digits: <%s>"),
+                        value);
+            return FALSE;
+        }
+
+        if ('0' <= value[i] && value[i] <= '7') {
+            mode <<= 3;
+            mode |= value[i] - '0';
+        } else {
+            g_set_error(error,
+                        G_OPTION_ERROR,
+                        G_OPTION_ERROR_BAD_VALUE,
+                        _("must be 0-7: '%c': <%s>"),
+                        value[i], value);
+            return FALSE;
+        }
+    }
+
+    unix_socket_mode = mode;
+    return TRUE;
+}
+
+static gboolean
+parse_unix_socket_mode (const gchar *option_name,
+                        const gchar *value,
+                        gpointer data,
+                        GError **error)
+{
+    gboolean success = TRUE;
+
+    if (value[0] == 'a' || value[0] == 'u' ||
+        value[0] == 'g' || value[0] == 'o') {
+        success = parse_unix_socket_mode_symbol(value, error);
+    } else if ('0' <= value[0] && value[0] <= '7') {
+        success = parse_unix_socket_mode_numeric(value, error);
+    } else {
+        g_set_error(error,
+                    G_OPTION_ERROR,
+                    G_OPTION_ERROR_BAD_VALUE,
+                    _("invalid character: '%c': <%s>"),
+                    value[0], value);
+        success = FALSE;
+    }
+
+    return success;
+}
+
 static const GOptionEntry option_entries[] =
 {
     {"connection-spec", 's', 0, G_OPTION_ARG_CALLBACK, parse_spec_arg,
@@ -99,6 +253,8 @@ static const GOptionEntry option_entries[] =
      N_("Run as GROUP's process (need root privilege)"), "GROUP"},
     {"unix-socket-group", 0, 0, G_OPTION_ARG_STRING, &unix_socket_group,
      N_("Change UNIX domain socket group to GROUP"), "GROUP"},
+    {"unix-socket-mode", 0, 0, G_OPTION_ARG_CALLBACK, parse_unix_socket_mode,
+     N_("Change UNIX domain socket group to MODE (default: 0660)"), "MODE"},
     {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, print_version,
      N_("Show version"), NULL},
     {NULL}
@@ -468,6 +624,7 @@ main (int argc, char *argv[])
 
     milter_client_set_effective_user(client, user);
     milter_client_set_effective_group(client, group);
+    milter_client_set_default_unix_socket_mode(client, unix_socket_mode);
     milter_client_set_default_unix_socket_group(client, unix_socket_group);
     if (spec)
         success = milter_client_set_connection_spec(client, spec, &error);

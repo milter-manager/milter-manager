@@ -1,5 +1,7 @@
 2010-07-24  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-test-client.c: add --unix-socket-mode option.
+
 	* tool/milter-test-client.c, doc/milter-test-client.rd*:
 	--socket-group -> --unix-socket-group.
 
