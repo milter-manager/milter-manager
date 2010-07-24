@@ -1,5 +1,9 @@
 2010-07-24  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/src/toolkit/rb-milter-client.c,
+	binding/ruby/test/toolkit/test-client.rb: bind effective_user,
+	effective_group and unix_socket_group accessor.
+
 	* milter/client.h, milter/client/milter-client.c,
 	milter/manager/milter-manager.c, test/client/test-client.c: add a
 	setter for UNIX domain socket group.

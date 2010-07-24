@@ -24,4 +24,19 @@ class TestClient < Test::Unit::TestCase
     @client.connection_spec = "inet:12345"
     assert_equal("inet:12345", @client.connection_spec)
   end
+
+  def test_effective_user
+    @client.effective_user = "nobody"
+    assert_equal("nobody", @client.effective_user)
+  end
+
+  def test_effective_group
+    @client.effective_group = "nogroup"
+    assert_equal("nogroup", @client.effective_group)
+  end
+
+  def test_unix_socket_group
+    @client.unix_socket_group = "nogroup"
+    assert_equal("nogroup", @client.unix_socket_group)
+  end
 end

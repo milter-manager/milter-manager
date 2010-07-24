@@ -55,6 +55,45 @@ client_set_connection_spec (VALUE self, VALUE spec)
     return Qnil;
 }
 
+static VALUE
+client_get_effective_user (VALUE self)
+{
+    return CSTR2RVAL(milter_client_get_effective_user(SELF(self)));
+}
+
+static VALUE
+client_set_effective_user (VALUE self, VALUE user)
+{
+    milter_client_set_effective_user(SELF(self), RVAL2CSTR_ACCEPT_NIL(user));
+    return Qnil;
+}
+
+static VALUE
+client_get_effective_group (VALUE self)
+{
+    return CSTR2RVAL(milter_client_get_effective_group(SELF(self)));
+}
+
+static VALUE
+client_set_effective_group (VALUE self, VALUE group)
+{
+    milter_client_set_effective_group(SELF(self), RVAL2CSTR_ACCEPT_NIL(group));
+    return Qnil;
+}
+
+static VALUE
+client_get_unix_socket_group (VALUE self)
+{
+    return CSTR2RVAL(milter_client_get_unix_socket_group(SELF(self)));
+}
+
+static VALUE
+client_set_unix_socket_group (VALUE self, VALUE group)
+{
+    milter_client_set_unix_socket_group(SELF(self), RVAL2CSTR_ACCEPT_NIL(group));
+    return Qnil;
+}
+
 static void
 mark (gpointer data)
 {
@@ -89,8 +128,20 @@ Init_milter_client (void)
                      client_get_connection_spec, 0);
     rb_define_method(rb_cMilterClient, "set_connection_spec",
                      client_set_connection_spec, 1);
+    rb_define_method(rb_cMilterClient, "effective_user",
+                     client_get_effective_user, 0);
+    rb_define_method(rb_cMilterClient, "set_effective_user",
+                     client_set_effective_user, 1);
+    rb_define_method(rb_cMilterClient, "effective_group",
+                     client_get_effective_group, 0);
+    rb_define_method(rb_cMilterClient, "set_effective_group",
+                     client_set_effective_group, 1);
+    rb_define_method(rb_cMilterClient, "unix_socket_group",
+                     client_get_unix_socket_group, 0);
+    rb_define_method(rb_cMilterClient, "set_unix_socket_group",
+                     client_set_unix_socket_group, 1);
 
     G_DEF_SETTERS(rb_cMilterClient);
-    
+
     Init_milter_client_context();
 }
