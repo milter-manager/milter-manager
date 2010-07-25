@@ -1,5 +1,8 @@
 2010-07-25  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/client/command-line.rb: add
+	--unix-socket-mode option.
+
 	* binding/ruby/src/toolkit/rb-milter-client.c,
 	binding/ruby/test/toolkit/test-client.rb: accept string as file mode.
 

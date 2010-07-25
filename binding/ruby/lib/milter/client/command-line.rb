@@ -40,6 +40,9 @@ module Milter
         client.effective_user = @options.user
         client.effective_group = @options.group
         client.unix_socket_group = @options.unix_socket_group
+        if @options.unix_socket_mode
+          client.unix_socket_mode = @options.unix_socket_mode
+        end
         yield(client, options) if block_given?
         daemonize if @options.run_as_daemon
         client.main
@@ -53,7 +56,8 @@ module Milter
         @options.run_as_daemon = false
         @options.user = nil
         @options.group = nil
-        @options.socket_group = nil
+        @options.unix_socket_group = nil
+        @options.unix_socket_mode = nil
       end
 
       def setup_option_parser
@@ -127,6 +131,14 @@ module Milter
                           "Change UNIX domain socket group to GROUP",
                           "(#{@options.unix_socket_group})") do |gorup|
           @options.unix_socket_group = group
+        end
+
+        client = Milter::Client.new
+        @option_parser.on("--unix-socket-mode=MODE",
+                          "Change UNIX domain socket mode to MODE",
+                          "(#{client.default_unix_socket_mode})") do |mode|
+          client.unix_socket_mode = mode
+          @options.unix_socket_mode = mode
         end
       end
 
