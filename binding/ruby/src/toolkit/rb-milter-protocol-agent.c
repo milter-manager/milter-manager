@@ -66,13 +66,14 @@ get_macros (VALUE self)
 {
     MilterProtocolAgent *agent;
     GHashTable *macros;
-    VALUE rb_macros;
+    VALUE rb_macros = Qnil;
 
     agent = SELF(self);
     macros = milter_protocol_agent_get_macros(agent);
-    rb_macros = rb_hash_new();
-
-    g_hash_table_foreach(macros, cb_get_macros, &rb_macros);
+    if (macros) {
+	rb_macros = rb_hash_new();
+	g_hash_table_foreach(macros, cb_get_macros, &rb_macros);
+    }
 
     return rb_macros;
 }

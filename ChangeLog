@@ -1,5 +1,8 @@
 2010-07-25  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/src/toolkit/rb-milter-protocol-agent.c
+	(Milter::ProtocolAgent#macros): returns nil for NULL macros.
+
 	* binding/ruby/lib/milter/client/command-line.rb: ---use-syslog ->
 	--syslog.
 
