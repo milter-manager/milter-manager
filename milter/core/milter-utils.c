@@ -683,6 +683,153 @@ milter_utils_guess_console_color_usability (void)
     return FALSE;
 }
 
+static gboolean
+parse_file_mode_symbol (const gchar *string, guint *mode, gchar **error_message)
+{
+    guint target = 0;
+    guint parsed_mode = 0;
+    gint i;
+
+    for (i = 0; string[i]; i++) {
+        gboolean break_loop = FALSE;
+        switch (string[i]) {
+        case 'a':
+            target |= 0777;
+            break;
+        case 'u':
+            target |= 0700;
+            break;
+        case 'g':
+            target |= 0070;
+            break;
+        case 'o':
+            target |= 0007;
+            break;
+        default:
+            if (i == 0) {
+                if (error_message) {
+                    *error_message =
+                        g_strdup_printf("invalid target: '%c': <%s>",
+                                        string[i], string);
+                }
+                return FALSE;
+            }
+            break_loop = TRUE;
+            break;
+        }
+        if (break_loop)
+            break;
+    }
+
+    if (!string[i]) {
+        if (error_message) {
+            *error_message = g_strdup_printf("set mode '=' is missing: <%s>",
+                                             string);
+        }
+        return FALSE;
+    }
+
+    if (string[i] == '=') {
+        i++;
+    } else {
+        if (error_message) {
+            *error_message = g_strdup_printf("set mode must be '=': '%c': <%s>",
+                                             string[i], string);
+        }
+        return FALSE;
+    }
+
+    if (!string[i]) {
+        if (error_message) {
+            *error_message =
+                g_strdup_printf("mode 'r', 'w' or 'x' is missing: <%s>",
+                                string);
+        }
+        return FALSE;
+    }
+
+    for (; string[i]; i++) {
+        switch (string[i]) {
+        case 'r':
+            parsed_mode |= target & 0444;
+            break;
+        case 'w':
+            parsed_mode |= target & 0222;
+            break;
+        case 'x':
+            parsed_mode |= target & 0111;
+            break;
+        default:
+            if (error_message) {
+                *error_message =
+                    g_strdup_printf("mode must be 'r', 'w' or 'x': '%c': <%s>",
+                                    string[i], string);
+            }
+            return FALSE;
+            break;
+        }
+    }
+
+    *mode = parsed_mode;
+    return TRUE;
+}
+
+static gboolean
+parse_file_mode_numeric (const gchar *string, guint *mode, gchar **error_message)
+{
+    guint parsed_mode = 0;
+    gint i;
+
+    for (i = 0; string[i]; i++) {
+        if (i > 2) {
+            if (error_message) {
+                *error_message =
+                    g_strdup_printf("must be at most 3 digits: <%s>",
+                                    string);
+            }
+            return FALSE;
+        }
+
+        if ('0' <= string[i] && string[i] <= '7') {
+            parsed_mode <<= 3;
+            parsed_mode |= string[i] - '0';
+        } else {
+            if (error_message) {
+                *error_message = g_strdup_printf("must be 0-7: '%c': <%s>",
+                                                 string[i], string);
+            }
+            return FALSE;
+        }
+    }
+
+    *mode = parsed_mode;
+    return TRUE;
+}
+
+gboolean
+milter_utils_parse_file_mode (const gchar *string,
+                              guint *mode, gchar **error_message)
+{
+    gboolean success = TRUE;
+
+    if (!string[0]) {
+        *mode = 0;
+    } else if (string[0] == 'a' || string[0] == 'u' ||
+               string[0] == 'g' || string[0] == 'o') {
+        success = parse_file_mode_symbol(string, mode, error_message);
+    } else if ('0' <= string[0] && string[0] <= '7') {
+        success = parse_file_mode_numeric(string, mode, error_message);
+    } else {
+        if (error_message) {
+            *error_message = g_strdup_printf("invalid character: '%c': <%s>",
+                                             string[0], string);
+        }
+        success = FALSE;
+    }
+
+    return success;
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */

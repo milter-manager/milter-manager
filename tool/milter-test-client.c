@@ -77,153 +77,24 @@ parse_spec_arg (const gchar *option_name,
 }
 
 static gboolean
-parse_unix_socket_mode_symbol (const gchar *value,
-                               GError **error)
-{
-    guint target = 0;
-    guint mode = 0;
-    gint i;
-
-    for (i = 0; value[i]; i++) {
-        gboolean break_loop = FALSE;
-        switch (value[i]) {
-        case 'a':
-            target |= 0777;
-            break;
-        case 'u':
-            target |= 0700;
-            break;
-        case 'g':
-            target |= 0070;
-            break;
-        case 'o':
-            target |= 0007;
-            break;
-        default:
-            if (i == 0) {
-                g_set_error(error,
-                            G_OPTION_ERROR,
-                            G_OPTION_ERROR_BAD_VALUE,
-                            _("invalid target: '%c': <%s>"),
-                            value[i], value);
-                return FALSE;
-            }
-            break_loop = TRUE;
-            break;
-        }
-        if (break_loop)
-            break;
-    }
-
-    if (!value[i]) {
-        g_set_error(error,
-                    G_OPTION_ERROR,
-                    G_OPTION_ERROR_BAD_VALUE,
-                    _("set mode '=' is missing: <%s>"),
-                    value);
-        return FALSE;
-    }
-
-    if (value[i] == '=') {
-        i++;
-    } else {
-        g_set_error(error,
-                    G_OPTION_ERROR,
-                    G_OPTION_ERROR_BAD_VALUE,
-                    _("set mode must be '=': '%c': <%s>"),
-                    value[i], value);
-        return FALSE;
-    }
-
-    if (!value[i]) {
-        g_set_error(error,
-                    G_OPTION_ERROR,
-                    G_OPTION_ERROR_BAD_VALUE,
-                    _("mode 'r', 'w' or 'x' is missing: <%s>"),
-                    value);
-        return FALSE;
-    }
-
-    for (; value[i]; i++) {
-        switch (value[i]) {
-        case 'r':
-            mode |= target & 0111;
-            break;
-        case 'w':
-            mode |= target & 0222;
-            break;
-        case 'x':
-            mode |= target & 0444;
-            break;
-        default:
-            g_set_error(error,
-                        G_OPTION_ERROR,
-                        G_OPTION_ERROR_BAD_VALUE,
-                        _("mode must be 'r', 'w' or 'x': '%c': <%s>"),
-                        value[i], value);
-            return FALSE;
-            break;
-        }
-    }
-
-    unix_socket_mode = mode;
-    return TRUE;
-}
-
-static gboolean
-parse_unix_socket_mode_numeric (const gchar *value,
-                                GError **error)
-{
-    guint mode = 0;
-    gint i;
-
-    for (i = 0; value[i]; i++) {
-        if (i > 2) {
-            g_set_error(error,
-                        G_OPTION_ERROR,
-                        G_OPTION_ERROR_BAD_VALUE,
-                        _("must be at most 3 digits: <%s>"),
-                        value);
-            return FALSE;
-        }
-
-        if ('0' <= value[i] && value[i] <= '7') {
-            mode <<= 3;
-            mode |= value[i] - '0';
-        } else {
-            g_set_error(error,
-                        G_OPTION_ERROR,
-                        G_OPTION_ERROR_BAD_VALUE,
-                        _("must be 0-7: '%c': <%s>"),
-                        value[i], value);
-            return FALSE;
-        }
-    }
-
-    unix_socket_mode = mode;
-    return TRUE;
-}
-
-static gboolean
 parse_unix_socket_mode (const gchar *option_name,
                         const gchar *value,
                         gpointer data,
                         GError **error)
 {
-    gboolean success = TRUE;
+    gboolean success;
+    gchar *error_message = NULL;
 
-    if (value[0] == 'a' || value[0] == 'u' ||
-        value[0] == 'g' || value[0] == 'o') {
-        success = parse_unix_socket_mode_symbol(value, error);
-    } else if ('0' <= value[0] && value[0] <= '7') {
-        success = parse_unix_socket_mode_numeric(value, error);
-    } else {
+    success = milter_utils_parse_file_mode(value,
+                                           &unix_socket_mode,
+                                           &error_message);
+    if (!success) {
         g_set_error(error,
                     G_OPTION_ERROR,
                     G_OPTION_ERROR_BAD_VALUE,
-                    _("invalid character: '%c': <%s>"),
-                    value[0], value);
-        success = FALSE;
+                    _("%s"),
+                    error_message);
+        g_free(error_message);
     }
 
     return success;

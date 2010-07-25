@@ -147,6 +147,9 @@ gboolean         milter_utils_detach_io      (gchar **message);
 
 gboolean         milter_utils_guess_console_color_usability
                                              (void);
+gboolean         milter_utils_parse_file_mode(const gchar  *string,
+                                              guint        *mode,
+                                              gchar       **error_message);
 
 G_END_DECLS
 
