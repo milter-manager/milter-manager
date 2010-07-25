@@ -254,7 +254,7 @@ static const GOptionEntry option_entries[] =
     {"unix-socket-group", 0, 0, G_OPTION_ARG_STRING, &unix_socket_group,
      N_("Change UNIX domain socket group to GROUP"), "GROUP"},
     {"unix-socket-mode", 0, 0, G_OPTION_ARG_CALLBACK, parse_unix_socket_mode,
-     N_("Change UNIX domain socket group to MODE (default: 0660)"), "MODE"},
+     N_("Change UNIX domain socket mode to MODE (default: 0660)"), "MODE"},
     {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, print_version,
      N_("Show version"), NULL},
     {NULL}

@@ -1,3 +1,7 @@
+2010-07-25  Kouhei Sutou  <kou@cozmixng.org>
+
+	* tool/milter-test-client.c: fix a typo.
+
 2010-07-24  Kouhei Sutou  <kou@cozmixng.org>
 
 	* binding/ruby/src/toolkit/rb-milter-client.c,
