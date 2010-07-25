@@ -37,6 +37,9 @@ module Milter
           exit(false)
         end
         client = Milter::Client.new
+        client.on_error do |_client, error|
+          Milter::Logger.error("[client][error] #{error.message}")
+        end
         client.start_syslog(@name) if @options.syslog
         client.status_on_error = @options.status_on_error
         client.connection_spec = @options.connection_spec

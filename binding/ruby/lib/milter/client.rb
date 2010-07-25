@@ -29,6 +29,18 @@ module Milter
       end
     end
 
+    def on_error
+      signal_connect("error") do |_client, error|
+        yield(_client, error)
+      end
+    end
+
+    def on_maintain
+      signal_connect("maintain") do |_client|
+        yield(_client)
+      end
+    end
+
     private
     def setup_session(context, session_class, session_new_arguments)
       session_context = ClientSessionContext.new(context)
@@ -36,7 +48,7 @@ module Milter
 
       [:negotiate, :connect, :helo, :envelope_from, :envelope_recipient,
        :data, :unknown, :header, :end_of_header, :body, :end_of_message,
-       :abort].each do |event|
+       :abort, :finished].each do |event|
         if session.respond_to?(event)
           context.signal_connect(event) do |_context, *args|
             begin

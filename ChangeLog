@@ -1,5 +1,9 @@
 2010-07-25  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/client.rb,
+	binding/ruby/lib/milter/client/command-line.rb: log error by
+	default.
+
 	* binding/ruby/src/toolkit/rb-milter-error-emittable.c,
 	binding/ruby/src/toolkit/rb-milter-core.c,
 	binding/ruby/src/toolkit/rb-milter-core-private.h,
