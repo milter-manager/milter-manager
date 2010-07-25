@@ -1,5 +1,8 @@
 2010-07-25  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/client/command-line.rb: add --use-syslog
+	option.
+
 	* binding/ruby/src/toolkit/rb-milter-client.c: bind
 	milter_client_start_syslog().
 

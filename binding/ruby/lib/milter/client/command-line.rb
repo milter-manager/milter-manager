@@ -21,7 +21,9 @@ module Milter
   class Client
     class CommandLine
       attr_reader :options, :option_parser
-      def initialize
+      attr_accessor :name
+      def initialize(options={})
+        @name = options[:name] || File.basename($0, '.*')
         setup_options
         setup_option_parser
       end
@@ -35,6 +37,7 @@ module Milter
           exit(false)
         end
         client = Milter::Client.new
+        client.start_syslog(@name) if @options.use_syslog
         client.status_on_error = @options.status_on_error
         client.connection_spec = @options.connection_spec
         client.effective_user = @options.user
@@ -58,6 +61,7 @@ module Milter
         @options.group = nil
         @options.unix_socket_group = nil
         @options.unix_socket_mode = nil
+        @options.use_syslog = false
       end
 
       def setup_option_parser
@@ -157,6 +161,12 @@ module Milter
           else
             ENV["MILTER_LOG_LEVEL"] = level
           end
+        end
+
+        @option_parser.on("--[no-]use-syslog",
+                          "Use syslog",
+                          "(#{@options.use_syslog})") do |bool|
+          @options.use_syslog = bool
         end
 
         @option_parser.on("--verbose",
