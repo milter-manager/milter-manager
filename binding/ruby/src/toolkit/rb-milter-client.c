@@ -101,9 +101,56 @@ client_get_unix_socket_mode (VALUE self)
 }
 
 static VALUE
-client_set_unix_socket_mode (VALUE self, VALUE mode)
+client_set_unix_socket_mode (VALUE self, VALUE rb_mode)
 {
-    milter_client_set_unix_socket_mode(SELF(self), NUM2UINT(mode));
+    guint mode;
+
+    if (NIL_P(rb_mode)) {
+	mode = 0;
+    } else if (RVAL2CBOOL(rb_obj_is_kind_of(rb_mode, rb_cString))) {
+	gchar *error_message = NULL;
+	if (!milter_utils_parse_file_mode(RVAL2CSTR(rb_mode),
+					  &mode, &error_message)) {
+	    VALUE rb_error_message;
+	    rb_error_message = CSTR2RVAL(error_message);
+	    g_free(error_message);
+	    rb_raise(rb_eArgError, "%s", RSTRING_PTR(rb_error_message));
+	}
+    } else {
+	mode = NUM2UINT(rb_mode);
+    }
+
+    milter_client_set_unix_socket_mode(SELF(self), mode);
+    return Qnil;
+}
+
+static VALUE
+client_get_default_unix_socket_mode (VALUE self)
+{
+    return UINT2NUM(milter_client_get_default_unix_socket_mode(SELF(self)));
+}
+
+static VALUE
+client_set_default_unix_socket_mode (VALUE self, VALUE rb_mode)
+{
+    guint mode;
+
+    if (NIL_P(rb_mode)) {
+	mode = 0;
+    } else if (RVAL2CBOOL(rb_obj_is_kind_of(rb_mode, rb_cString))) {
+	gchar *error_message = NULL;
+	if (!milter_utils_parse_file_mode(RVAL2CSTR(rb_mode),
+					  &mode, &error_message)) {
+	    VALUE rb_error_message;
+	    rb_error_message = CSTR2RVAL(error_message);
+	    g_free(error_message);
+	    rb_raise(rb_eArgError, "%s", RSTRING_PTR(rb_error_message));
+	}
+    } else {
+	mode = NUM2UINT(rb_mode);
+    }
+
+    milter_client_set_default_unix_socket_mode(SELF(self), mode);
     return Qnil;
 }
 
@@ -157,6 +204,10 @@ Init_milter_client (void)
                      client_get_unix_socket_mode, 0);
     rb_define_method(rb_cMilterClient, "set_unix_socket_mode",
                      client_set_unix_socket_mode, 1);
+    rb_define_method(rb_cMilterClient, "default_unix_socket_mode",
+                     client_get_default_unix_socket_mode, 0);
+    rb_define_method(rb_cMilterClient, "set_default_unix_socket_mode",
+                     client_set_default_unix_socket_mode, 1);
 
     G_DEF_SETTERS(rb_cMilterClient);
 

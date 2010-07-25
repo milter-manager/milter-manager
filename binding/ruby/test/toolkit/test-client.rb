@@ -1,4 +1,5 @@
 # Copyright (C) 2009  Yuto Hayamizu <y.hayamizu@gmail.com>
+# Copyright (C) 2010  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -43,5 +44,17 @@ class TestClient < Test::Unit::TestCase
   def test_unix_socket_mode
     @client.unix_socket_mode = 0666
     assert_equal(0666, @client.unix_socket_mode)
+  end
+
+  def test_unix_socket_mode_string
+    @client.unix_socket_mode = "666"
+    assert_equal(0666, @client.unix_socket_mode)
+  end
+
+  def test_unix_socket_mode_invalid
+    exception = ArgumentError.new("mode must be 'r', 'w' or 'x': 'Z': <a=rwZ>")
+    assert_raise(exception) do
+      @client.unix_socket_mode = "a=rwZ"
+    end
   end
 end
