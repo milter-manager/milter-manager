@@ -113,6 +113,8 @@ struct _MilterClientPrivate
 
     guint finisher_id;
     GList *finished_data;
+
+    MilterSyslogLogger *syslog_logger;
 };
 
 typedef struct _MilterClientProcessData
@@ -246,6 +248,8 @@ _milter_client_init (MilterClient *client)
 
     priv->finisher_id = 0;
     priv->finished_data = NULL;
+
+    priv->syslog_logger = NULL;
 }
 
 static void
@@ -479,6 +483,11 @@ dispose (GObject *object)
 
     dispose_finisher(priv);
     dispose_finished_data(MILTER_CLIENT(object));
+
+    if (priv->syslog_logger) {
+        g_object_unref(priv->syslog_logger);
+        priv->syslog_logger = NULL;
+    }
 
     G_OBJECT_CLASS(_milter_client_parent_class)->dispose(object);
 }
@@ -1806,6 +1815,19 @@ guint
 milter_client_get_n_processing_sessions (MilterClient *client)
 {
     return MILTER_CLIENT_GET_PRIVATE(client)->n_processing_sessions;
+}
+
+void
+milter_client_start_syslog (MilterClient *client, const gchar *identify)
+{
+    MilterClientPrivate *priv;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+
+    if (priv->syslog_logger) {
+        g_object_unref(priv->syslog_logger);
+    }
+    priv->syslog_logger = milter_syslog_logger_new(identify);
 }
 
 /*

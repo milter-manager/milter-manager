@@ -1,5 +1,10 @@
 2010-07-25  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-test-client.c: use client managed syslog.
+
+	* milter/client.h, milter/client/milter-client.c: manager syslog
+	logger in client.
+
 	* binding/ruby/lib/milter/client/command-line.rb: add
 	--unix-socket-mode option.
 

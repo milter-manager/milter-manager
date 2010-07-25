@@ -39,7 +39,6 @@ static gchar *user = NULL;
 static gchar *group = NULL;
 static gchar *unix_socket_group = NULL;
 static guint unix_socket_mode = 0660;
-static MilterSyslogLogger *logger = NULL;
 static MilterClient *client = NULL;
 
 static gboolean
@@ -489,9 +488,9 @@ main (int argc, char *argv[])
 
     if (verbose)
         g_setenv("MILTER_LOG_LEVEL", "all", FALSE);
-    if (use_syslog)
-        logger = milter_syslog_logger_new("milter-test-client");
     client = milter_client_new();
+    if (use_syslog)
+        milter_client_start_syslog(client, "milter-test-client");
 
     milter_client_set_effective_user(client, user);
     milter_client_set_effective_group(client, group);
@@ -517,8 +516,6 @@ main (int argc, char *argv[])
         g_error_free(error);
     }
     g_object_unref(client);
-    if (logger)
-        g_object_unref(logger);
 
     milter_client_quit();
     milter_quit();

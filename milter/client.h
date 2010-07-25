@@ -724,6 +724,16 @@ gboolean             milter_client_daemonize         (MilterClient  *client,
 guint                milter_client_get_n_processing_sessions
                                                      (MilterClient  *client);
 
+/**
+ * milter_client_start_syslog:
+ * @client: a %MilterClient.
+ * @identify: the identify name in syslog.
+ *
+ * Starts logging by syslog with @identify name.
+ */
+void                 milter_client_start_syslog      (MilterClient  *client,
+                                                      const gchar   *identify);
+
 G_END_DECLS
 
 #endif /* __MILTER_CLIENT_H__ */
