@@ -2,7 +2,8 @@ SUBDIRS =					\
 	src					\
 	lib					\
 	ruby-milter				\
-	test
+	test					\
+	sample
 
 if WITH_BUNDLED_RUBY_GLIB2_0_16_0
 SUBDIRS += glib-0.16.0

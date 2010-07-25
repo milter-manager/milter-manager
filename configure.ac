@@ -407,6 +407,9 @@ else
 fi
 AC_SUBST(ruby_milterdir)
 
+sample_rubydir="\$(pkgdatadir)/sample/ruby"
+AC_SUBST(sample_rubydir)
+
 AM_CONDITIONAL([WITH_RUBY], [test "$ruby_available" = "yes"])
 AM_CONDITIONAL([WITH_BUNDLED_RUBY_GLIB2_0_16_0],
                [test "$ac_use_bundled_ruby_glib2_0_16_0" = "yes"])
@@ -676,6 +679,7 @@ AC_CONFIG_FILES([Makefile
 		 binding/ruby/test/Makefile
 		 binding/ruby/test/toolkit/Makefile
 		 binding/ruby/test/manager/Makefile
+		 binding/ruby/sample/Makefile
 		 module/Makefile
 		 module/configuration/Makefile
 		 module/configuration/ruby/Makefile
