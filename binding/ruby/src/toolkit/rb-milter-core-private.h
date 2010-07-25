@@ -35,6 +35,7 @@ void Init_milter_encoder (void);
 void Init_milter_command_encoder (void);
 void Init_milter_reply_encoder (void);
 void Init_milter_decoder (void);
+void Init_milter_error_emittable (void);
 void Init_milter_agent (void);
 void Init_milter_protocol_agent (void);
 

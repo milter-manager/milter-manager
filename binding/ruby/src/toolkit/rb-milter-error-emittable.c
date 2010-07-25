@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -19,26 +19,24 @@
 
 #include "rb-milter-core-private.h"
 
-void
-Init_milter_core (void)
+#define SELF(self) (MILTER_ERROR_EMITTABLE(RVAL2GOBJ(self)))
+
+static VALUE
+error_convert (guint num, const GValue *values)
 {
-    milter_init();
+    GError *error;
+    error = g_value_get_pointer(&values[1]);
+    return rb_ary_new3(2, GVAL2RVAL(&values[0]), GERROR2RVAL(error));
+}
 
-    rb_mMilterCore = rb_define_module_under(rb_mMilter, "Core");
+void
+Init_milter_error_emittable (void)
+{
+    VALUE rb_mMilterErrorEmittable;
 
-    Init_milter_logger();
-    Init_milter_memory_profile();
-    Init_milter_socket_address();
-    Init_milter_utils();
-    Init_milter_connection();
-    Init_milter_protocol();
-    Init_milter_option();
-    Init_milter_macros_requests();
-    Init_milter_encoder();
-    Init_milter_command_encoder();
-    Init_milter_reply_encoder();
-    Init_milter_decoder();
-    Init_milter_error_emittable();
-    Init_milter_agent();
-    Init_milter_protocol_agent();
+    rb_mMilterErrorEmittable = G_DEF_INTERFACE(MILTER_TYPE_ERROR_EMITTABLE,
+                                               "ErrorEmittable", rb_mMilter);
+
+    G_DEF_SIGNAL_FUNC(rb_mMilterErrorEmittable, "error",
+                      error_convert);
 }

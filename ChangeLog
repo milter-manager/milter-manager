@@ -1,5 +1,10 @@
 2010-07-25  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/src/toolkit/rb-milter-error-emittable.c,
+	binding/ruby/src/toolkit/rb-milter-core.c,
+	binding/ruby/src/toolkit/rb-milter-core-private.h,
+	binding/ruby/src/toolkit/Makefile.am: support error signal.
+
 	* milter/core/milter-logger.[ch],
 	test/suite-milter-manager-test.c,
 	test/libmilter/test-libmilter-compatible.c: log critical and error
