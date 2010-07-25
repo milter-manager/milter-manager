@@ -32,7 +32,7 @@ milter_manager_test_warmup (void)
     argc = sizeof(argv) / sizeof(*argv);
     argvp = argv;
     milter_manager_init(&argc, &argvp);
-    milter_logger_set_target_level(milter_logger(), 0);
+    milter_set_log_level(MILTER_LOG_LEVEL_NONE);
 }
 
 void

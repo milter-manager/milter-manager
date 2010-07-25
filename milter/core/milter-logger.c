@@ -293,11 +293,13 @@ milter_logger_default_log_handler (MilterLogger *logger, const gchar *domain,
                                    gpointer user_data)
 {
     MilterLoggerPrivate *priv;
+    MilterLogLevelFlags target_level;
     MilterLogItemFlags target_item;
     GString *log;
 
     priv = MILTER_LOGGER_GET_PRIVATE(logger);
-    if (!(level & priv->target_level))
+    target_level = milter_logger_get_resolved_target_level(logger);
+    if (!(level & target_level))
         return;
 
     log = g_string_new(NULL);
@@ -410,6 +412,17 @@ milter_logger_get_target_level (MilterLogger *logger)
     return MILTER_LOGGER_GET_PRIVATE(logger)->target_level;
 }
 
+MilterLogLevelFlags
+milter_logger_get_resolved_target_level (MilterLogger *logger)
+{
+    MilterLogLevelFlags target_level;
+
+    target_level = MILTER_LOGGER_GET_PRIVATE(logger)->target_level;
+    if (target_level == MILTER_LOG_LEVEL_DEFAULT)
+        target_level = (MILTER_LOG_LEVEL_CRITICAL |
+                        MILTER_LOG_LEVEL_ERROR);
+    return target_level;
+}
 
 void
 milter_logger_set_target_level (MilterLogger *logger,

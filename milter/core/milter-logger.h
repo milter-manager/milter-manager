@@ -60,26 +60,26 @@ G_BEGIN_DECLS
 #define milter_set_log_level(level)                             \
     milter_logger_set_target_level(milter_logger(), (level))
 #define milter_get_log_level()                          \
-    milter_logger_get_target_level(milter_logger())
+    milter_logger_get_resolved_target_level(milter_logger())
 
 #define milter_need_log(level) \
     (milter_get_log_level() & (level))
 #define milter_need_critical_log() \
-    (milter_get_log_level() & MILTER_LOG_LEVEL_CRITICAL)
+    (milter_need_log(MILTER_LOG_LEVEL_CRITICAL))
 #define milter_need_error_log() \
-    (milter_get_log_level() & MILTER_LOG_LEVEL_ERROR)
+    (milter_need_log(MILTER_LOG_LEVEL_ERROR))
 #define milter_need_warning_log() \
-    (milter_get_log_level() & MILTER_LOG_LEVEL_WARNING)
+    (milter_need_log(MILTER_LOG_LEVEL_WARNING))
 #define milter_need_message_log() \
-    (milter_get_log_level() & MILTER_LOG_LEVEL_MESSAGE)
+    (milter_need_log(MILTER_LOG_LEVEL_MESSAGE))
 #define milter_need_info_log() \
-    (milter_get_log_level() & MILTER_LOG_LEVEL_INFO)
+    (milter_need_log(MILTER_LOG_LEVEL_INFO))
 #define milter_need_debug_log() \
-    (milter_get_log_level() & MILTER_LOG_LEVEL_DEBUG)
+    (milter_need_log(MILTER_LOG_LEVEL_DEBUG))
 #define milter_need_statistics_log() \
-    (milter_get_log_level() & MILTER_LOG_LEVEL_STATISTICS)
+    (milter_need_log(MILTER_LOG_LEVEL_STATISTICS))
 #define milter_need_profile_log() \
-    (milter_get_log_level() & MILTER_LOG_LEVEL_PROFILE)
+    (milter_need_log(MILTER_LOG_LEVEL_PROFILE))
 
 #define MILTER_TYPE_LOGGER            (milter_logger_get_type())
 #define MILTER_LOGGER(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), MILTER_TYPE_LOGGER, MilterLogger))
@@ -192,6 +192,9 @@ void             milter_logger_log_va_list    (MilterLogger        *logger,
                                                va_list              args);
 MilterLogLevelFlags
                  milter_logger_get_target_level
+                                              (MilterLogger        *logger);
+MilterLogLevelFlags
+                 milter_logger_get_resolved_target_level
                                               (MilterLogger        *logger);
 void             milter_logger_set_target_level
                                               (MilterLogger        *logger,

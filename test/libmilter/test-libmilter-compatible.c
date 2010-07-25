@@ -147,7 +147,7 @@ test_setbacklog (void)
 void
 test_setdbg (void)
 {
-    milter_assert_equal_target_level(0);
+    milter_assert_equal_target_level(MILTER_LOG_LEVEL_NONE);
 
     milter_assert_success(smfi_setdbg(1));
     milter_assert_equal_target_level(MILTER_LOG_LEVEL_CRITICAL);
