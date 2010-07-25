@@ -37,7 +37,7 @@ module Milter
           exit(false)
         end
         client = Milter::Client.new
-        client.start_syslog(@name) if @options.use_syslog
+        client.start_syslog(@name) if @options.syslog
         client.status_on_error = @options.status_on_error
         client.connection_spec = @options.connection_spec
         client.effective_user = @options.user
@@ -61,7 +61,7 @@ module Milter
         @options.group = nil
         @options.unix_socket_group = nil
         @options.unix_socket_mode = nil
-        @options.use_syslog = false
+        @options.syslog = false
       end
 
       def setup_option_parser
@@ -163,10 +163,10 @@ module Milter
           end
         end
 
-        @option_parser.on("--[no-]use-syslog",
+        @option_parser.on("--[no-]syslog",
                           "Use syslog",
-                          "(#{@options.use_syslog})") do |bool|
-          @options.use_syslog = bool
+                          "(#{@options.syslog})") do |bool|
+          @options.syslog = bool
         end
 
         @option_parser.on("--verbose",
