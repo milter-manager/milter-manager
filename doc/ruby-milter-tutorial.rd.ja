@@ -57,4 +57,115 @@ Rubyで開発したmilterは以下のようになります。
     client.register(Session)
   end
 
+それでは、指定された正規表現を含むメールを拒否するmilterを作っ
+てみましょう。
+
+== コールバック
+
+イベントが発生する毎にmilterのコールバックメソッドが呼び出さ
+れます。ほとんどのイベントには付加情報があります。イベントの
+付加情報の受け渡し方法は2種類あります。1つはコールバックの引
+数として渡される方法で、もう1つはマクロとして渡される方法です。
+マクロについては後述します。ここではコールバックの引数として
+渡される情報についてだけ説明します。
+
+以下がコールバックメソッドとその引数の一覧です。一覧を見た後
+に、今回のmilterで必要なコールバックを選びます。
+
+: connect(host, address)
+
+   SMTPクライアントがSMTPサーバに接続したときに呼ばれます。
+
+   ((|host|))は接続してきたSMTPクライアントのホスト名で、
+   ((|address|))はアドレスです。
+
+   例えば、localhostから接続した場合は以下のようになります。
+
+   : host
+       "localhost"
+   : address
+       (({inet:45875@[127.0.0.1]}))を表している
+       (({Milter::SocketAddress::IPv4}))オブジェクト。
+
+: helo(fqdn)
+
+   SMTPクライアントがHELOまたはEHLOコマンドを送ったときに呼
+   ばれます。
+
+   ((|fqdn|))はHELO/EHLOで報告したFQDNです。
+
+   例えば、「EHLO mail.example.com」とした場合は以下のように
+   なります。
+
+   : fqdn
+      "mail.example.com"
+
+: envelope_from(from)
+
+   SMTPクライアントがMAIL FROMコマンドを送ったときに呼ばれま
+   す。
+
+   ((|from|))はMAIL FROMで報告した送信元アドレスです。
+
+   例えば、「MAIL FROM: <user@example.com>」とした場合は以下
+   のようになります。
+
+   : from
+      "<user@example.com>"
+
+: envelope_recipient(to)
+
+   SMTPクライアントがRCPT TOコマンドを送ったときに呼ばれます。
+   複数回RCPT TOコマンドを送った場合は複数回呼ばれます。
+
+   ((|to|))はRCPT TOで報告した送信先アドレスです。
+
+   例えば、「RCPT TO: <user@example.com>」とした場合は以下
+   のようになります。
+
+   : to
+      "<user@example.com>"
+
+: data
+
+   SMTPクライアントがDATAコマンドを送ったときに呼ばれます。
+
+: header(name, value)
+
+   送信するメールの中にあるヘッダーの数だけ呼ばれます。
+
+   ((|name|))はヘッダーの名前で、((|value|))は値です。
+
+   例えば、「Subject: Hello!」というヘッダーがあった場合は以
+   下のようになります。
+
+   : name
+      "Subject"
+
+   : value
+      "Hello!"
+
+: end_of_header
+
+   送信するメールのヘッダー部分が終わったら呼ばれます。
+
+: body(chunk)
+
+   送信するメールの本文が送られてきたら呼ばれます。本文が小
+   さいときは1回だけ呼ばれますが、大きい場合はいくつかの塊に
+   分割されて複数回呼ばれます。
+
+   ((|chunk|))は分割された本文です。
+
+   例えば、本文が「Hi!」だけであれば、1回だけ呼ばれて、以下
+   のような値になります。
+
+   : chunk
+      "Hi!"
+
+: end_of_message
+
+   SMTPクライアントがデータ終了を表す「<CR><LF>.<CR><LF>」を
+   送ったときに呼ばれます。
+
 TODO...

@@ -1,5 +1,7 @@
 2010-07-25  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/ruby-milter-tutorial.rd.ja: add callback list.
+
 	* binding/ruby/sample/milter-test-client.rb, configure.ac: add
 	milter-test-client implementation in Ruby.
 
