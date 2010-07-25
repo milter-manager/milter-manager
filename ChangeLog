@@ -1,5 +1,8 @@
 2010-07-25  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/src/toolkit/rb-milter-client.c: bind
+	milter_client_start_syslog().
+
 	* tool/milter-test-client.c: use client managed syslog.
 
 	* milter/client.h, milter/client/milter-client.c: manager syslog
