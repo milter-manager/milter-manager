@@ -1,3 +1,7 @@
+2010-07-31  Kouhei Sutou  <kou@cozmixng.org>
+
+	* doc/configuration.rd*: add to_ip_address methods.
+
 2010-07-25  Kouhei Sutou  <kou@cozmixng.org>
 
 	* doc/ruby-milter-tutorial.rd.ja: add callback list.

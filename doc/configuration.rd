@@ -1776,6 +1776,13 @@ It describes IPv4 socket address. It has the following methods.
      socket_address.to_s   # -> "inet:12345@[160.XXX.XXX.XXX]"
      socket_address.local? # -> false
 
+: to_ip_address
+   Returnes corresponding IPAddr object.
+
+   Example:
+     socket_address.to_s          # -> "inet:12345@[127.0.0.1]"
+     socket_address.to_ip_address # -> #<IPAddr: IPv4:127.0.0.1/255.255.255.255>
+
 ==== Milter::SocketAddress::IPv6
 
 It describes IPv6 socket address. It has the following methods.
@@ -1812,6 +1819,13 @@ It describes IPv6 socket address. It has the following methods.
      socket_address.to_s   # -> "inet6:12345@[2001::XXXX]"
      socket_address.local? # -> false
 
+: to_ip_address
+   Returnes corresponding IPAddr object.
+
+   Example:
+     socket_address.to_s          # -> "inet6:12345@[::1]"
+     socket_address.to_ip_address # -> #<IPAddr: IPv6:0000:0000:0000:0000:0000:0000:0000:0001/ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff>
+
 ==== Milter::SocketAddress::Unix
 
 It describes UNIX domain ssocket address. It has the following methods.
@@ -1834,3 +1848,10 @@ It describes UNIX domain ssocket address. It has the following methods.
 
    Example:
      socket_address.local? # -> true
+
+: to_ip_address
+   Always returnes nil.
+
+   Example:
+     socket_address.to_s          # -> "unix:/tmp/local.sock"
+     socket_address.to_ip_address # -> nil
