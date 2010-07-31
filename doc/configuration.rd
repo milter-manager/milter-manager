@@ -641,7 +641,7 @@ Required item is just only milter.connection_spec.
    Some applicable conditions are available in default
    configuration. You can also define your original
    applicable condition. See
-   ((<Applicable condition|#applicable-condition>))
+   ((<Applicable condition|.#applicable-condition>))
    about how to define applicable condition. But defining
    applicable condition requires Ruby's knowledge.
 

@@ -1,3 +1,8 @@
+2010-07-31  Kouhei Sutou  <kou@cozmixng.org>
+
+	* doc/configuration.rd*: fix internal link.
+	Reported by Mitsuru Ogino. Thanks!!!
+
 2010-03-28  Kouhei Sutou  <kou@cozmixng.org>
 
 	* html/index.html*: fix link paths.
