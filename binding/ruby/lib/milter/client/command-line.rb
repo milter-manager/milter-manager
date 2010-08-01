@@ -25,6 +25,8 @@ module Milter
       def initialize(options={})
         @name = options[:name] || File.basename($0, '.*')
         setup_options
+        @option_parser = OptionParser.new(banner)
+        yield(self) if block_given?
         setup_option_parser
       end
 
@@ -68,7 +70,6 @@ module Milter
       end
 
       def setup_option_parser
-        @option_parser = OptionParser.new(banner)
         setup_common_options
       end
 

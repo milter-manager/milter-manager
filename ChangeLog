@@ -1,5 +1,8 @@
 2010-08-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/client/command-line.rb: make default
+	options customizable.
+
 	* doc/ruby-milter-tutorial.rd.ja: complete.
 
 	* binding/ruby/sample/milter-regexp.rb: add. An example milter.
