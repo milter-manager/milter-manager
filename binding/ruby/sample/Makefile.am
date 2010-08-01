@@ -1,2 +1,3 @@
 dist_sample_ruby_DATA =		\
-	milter-test-client.rb
+	milter-test-client.rb	\
+	milter-regexp.rb

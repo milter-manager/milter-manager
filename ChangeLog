@@ -1,5 +1,9 @@
 2010-08-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/ruby-milter-tutorial.rd.ja: complete.
+
+	* binding/ruby/sample/milter-regexp.rb: add. An example milter.
+
 	* test/libmilter/test-libmilter-compatible.c: restore log level
 	changed in test.
 

@@ -168,4 +168,283 @@ Rubyで開発したmilterは以下のようになります。
    SMTPクライアントがデータ終了を表す「<CR><LF>.<CR><LF>」を
    送ったときに呼ばれます。
 
-TODO...
+== 利用するコールバック
+
+今回作るmilterは定された正規表現を含むメールを拒否するmilter
+です。正規表現はSubjectまたはメッセージ本文にマッチさせるこ
+とにします。とすると、必要になるコールバックはヘッダー毎に呼
+び出されるheaderとメッセージ本文毎に呼び出されるbodyです。雛
+形は以下のようになります。
+
+  require 'milter'
+
+  class MilterRegexp < Milter::ClientSession
+    def initialize(context, regexp)
+      super(context)
+      @regexp = regexp
+    end
+
+    def header(name, value)
+      # ... Subjectをチェック
+    end
+
+    def body(chunk)
+      # chunkをチェック
+    end
+  end
+
+  command_line = Milter::Client::CommandLine.new
+  command_line.run do |client, _options|
+    # バイアグラを含むメールを拒否
+    client.register(MilterRegexp, /viagra/i)
+  end
+
+== Subjectのチェック
+
+まず、Subjectをチェックしましょう。
+
+  class MilterRegexp < Milter::ClientSession
+    # ...
+    def header(name, value)
+      case name
+      when /\ASubject\z/i
+        if @regexp =~ value
+          reject
+        end
+      end
+    end
+    # ...
+  end
+
+ヘッダー名（name）がSubjectのときに、ヘッダーの値（value）が
+指定された正規表現（@regexp）にマッチしていれば拒否
+（reject）しています。自然に書けていますね。
+
+== 動作確認
+
+それでは、実際に動かして試してみましょう。
+
+現在は、以下のようになっているはずです。
+
+  require 'milter'
+
+  class MilterRegexp < Milter::ClientSession
+    def initialize(context, regexp)
+      super(context)
+      @regexp = regexp
+    end
+
+    def header(name, value)
+      case name
+      when /\ASubject\z/i
+        if @regexp =~ value
+          reject
+        end
+      end
+    end
+
+    def body(chunk)
+      # chunkをチェック
+    end
+  end
+
+  command_line = Milter::Client::CommandLine.new
+  command_line.run do |client, _options|
+    # バイアグラを含むメールを拒否
+    client.register(MilterRegexp, /viagra/i)
+  end
+
+この状態ですでにmilterとして実行可能です。milter-regexp.rbと
+いうファイル名で保存した場合、以下のように実行します。-vオプ
+ションは詳細なログを出力するためのオプションで、動作を確認し
+やすいようにつけています。
+
+  % ruby milter-regexp.rb -v
+
+milterはデフォルトではフォアグラウンドで動作します。別の端末
+からアクセスして動作を確認しましょう。
+
+milterのテストには((<milter-test-client>))が便利です。Rubyで
+実装されたmilterはデフォルトで「inet:20025@localhost」で起動
+するので、そのアドレスに接続します。
+
+  % milter-test-server -s inet:20025
+  status: pass
+  elapsed-time: 0.00254348 seconds
+
+正常に接続できた場合は以上のように「status: pass」と表示され
+ます。milterを起動している端末も確認してみましょう。以下のよ
+うに表示されているはずです。
+
+  [2010-08-01T05:44:34.157419Z]: [client][accept] 10:inet:55651@127.0.0.1
+  [2010-08-01T05:44:34.157748Z]: [1] [client][start]
+  [2010-08-01T05:44:34.157812Z]: [1] [reader][watch] 4
+  [2010-08-01T05:44:34.157839Z]: [1] [writer][watch] 5
+  [2010-08-01T05:44:34.158050Z]: [1] [reader] reading from io channel...
+  [2010-08-01T05:44:34.158140Z]: [1] [command-decoder][negotiate]
+  [2010-08-01T05:44:34.158485Z]: [1] [client][reply][negotiate] #<MilterOption version=<6> action=<add-headers|change-body|add-envelope-recipient|delete-envelope-recipient|change-headers|quarantine|change-envelope-from|add-envelope-recipient-with-parameters|set-symbol-list> step=<no-connect|no-helo|no-envelope-from|no-envelope-recipient|no-end-of-header|no-unknown|no-data|skip|envelope-recipient-rejected>>
+  [2010-08-01T05:44:34.158605Z]: [1] [client][reply][negotiate][continue]
+  [2010-08-01T05:44:34.158895Z]: [1] [reader] reading from io channel...
+  [2010-08-01T05:44:34.158970Z]: [1] [command-decoder][header] <From>=<<kou+send@example.com>>
+  [2010-08-01T05:44:34.159092Z]: [1] [client][reply][header][continue]
+  [2010-08-01T05:44:34.159207Z]: [1] [reader] reading from io channel...
+  [2010-08-01T05:44:34.159269Z]: [1] [command-decoder][header] <To>=<<kou+receive@example.com>>
+  [2010-08-01T05:44:34.159373Z]: [1] [client][reply][header][continue]
+  [2010-08-01T05:44:34.159485Z]: [1] [reader] reading from io channel...
+  [2010-08-01T05:44:34.159544Z]: [1] [command-decoder][body] <71>
+  [2010-08-01T05:44:34.159656Z]: [1] [client][reply][body][continue]
+  [2010-08-01T05:44:34.159774Z]: [1] [reader] reading from io channel...
+  [2010-08-01T05:44:34.159842Z]: [1] [command-decoder][define-macro] <E>
+  [2010-08-01T05:44:34.159882Z]: [1] [command-decoder][end-of-message] <0>
+  [2010-08-01T05:44:34.159941Z]: [1] [client][reply][end-of-message][continue]
+  [2010-08-01T05:44:34.160034Z]: [1] [command-decoder][quit]
+  [2010-08-01T05:44:34.160081Z]: [1] [agent][shutdown]
+  [2010-08-01T05:44:34.160118Z]: [1] [agent][shutdown][reader]
+  [2010-08-01T05:44:34.160162Z]: [1] [reader][eof]
+  [2010-08-01T05:44:34.160199Z]: [1] [reader] shutdown requested.
+  [2010-08-01T05:44:34.160231Z]: [1] [reader] removing reader watcher.
+  [2010-08-01T05:44:34.160299Z]: [1] [writer][shutdown]
+  [2010-08-01T05:44:34.160393Z]: [0] [reader][dispose]
+  [2010-08-01T05:44:34.160452Z]: [client][finisher][run]
+  [2010-08-01T05:44:34.160492Z]: [1] [client][finish]
+  [2010-08-01T05:44:34.160536Z]: [1] [client][rest] []
+  [2010-08-01T05:44:34.160578Z]: [sessions][finished] 1(+1) 0
+
+何も出力されていない場合はそもそもmilterに接続できていません。
+milterが起動しているか、milter-test-serverに正しいアドレスを
+指定しているかを確認してください。
+
+それでは、Subjectに「viagra」と含んだメールの場合の動作を確
+認しましょう。「--header 'Subject:Buy viagra!!!'」というオプ
+ションを指定することでそのようなメールの動作を再現します。
+
+  % milter-test-server -s inet:20025 --header 'Subject:Buy viagra!!!'
+  status: reject
+  elapsed-time: 0.00144477 seconds
+
+「status: reject」とでているので、期待通り拒否していることが
+確認できます。
+
+milterの端末の方にも以下のようなログがでているはずです。
+
+  ...
+  [2010-08-01T05:49:49.275257Z]: [2] [command-decoder][header] <Subject>=<Buy viagra!!!>
+  [2010-08-01T05:49:49.275405Z]: [2] [client][reply][header][reject]
+  ...
+
+Subjectヘッダーのときにrejectしていることがわかります。
+
+MTAなしでmilterをテストできるコマンドや詳細なログ出力など、
+milter managerはmilterの開発に便利なツール・ライブラリを提供
+しています。
+
+== メッセージ本体のチェック
+
+次にメッセージ本体をチェックしましょう。
+
+  class MilterRegexp < Milter::ClientSession
+    def body(chunk)
+      if @regexp =~ chunk
+        reject
+      end
+    end
+  end
+
+メッセージ本文の一部（chunk）が指定された正規表現（@regexp）
+にマッチしていれば拒否（reject）しています。こちらも自然に書
+けていますね。
+
+試してみましょう。milter-test-serverは「--body」オプションで
+メッセージ本文を指定できます。
+
+  % tool/milter-test-server -s inet:20025 --body 'Buy viagra!!!'
+  status: reject
+  elapsed-time: 0.00195496 seconds
+
+「status: reject」となっているので、期待通り動作しています。
+
+== 問題点
+
+このmilterは説明のために簡略化されているため、いくつか問題点
+があります。例えば、以下のようなメールに対しては期待通り動き
+ません。
+
+  (1) ヘッダーの値がMIMEエンコードされている場合。例えば、
+      「=?ISO-2022-JP?B?GyRCJVAlJCUiJTAlaRsoQnZpYWdyYQ==?=」は
+      デコードすると「バイアグラviagra」になるが、この場合は正
+      規表現にマッチしないため、拒否しない。
+
+  (2) メッセージ本体で単語が複数のチャンクにまたがった場合。
+      例えば、1つめのチャンクで「via」がきて2つめのチャンク
+      で「gra」がきた場合は正規表現にマッチしないため、拒否
+      しない。
+
+ヘッダーの値に関しては以下のようにNKFなどを使ってMIMEエンコー
+ドをデコードすれば解決できます。
+
+  require 'nkf'
+
+  class MilterRegexp < Milter::ClientSession
+    # ...
+    def header(name, value)
+      case name
+      when /\ASubject\z/i
+        if @regexp =~ NKF.nkf("-w", value)
+          reject
+        end
+      end
+    end
+    # ...
+  end
+
+メッセージ本体に関しては、メッセージ本文を全部受信した後にも
+チェックする方法があります。
+
+  class MilterRegexp < Milter::ClientSession
+    ...
+    def initialize(context, regexp)
+      super(context)
+      @regexp = regexp
+      @body = ""
+    end
+
+    def body(chunk)
+      if @regexp =~ chunk
+        reject
+      end
+      @body << chunk
+    end
+
+    def end_of_mesasge
+      if @regexp =~ @body
+        reject
+      end
+    end
+    ...
+  end
+
+複数のチャンクにわかれた状態をテストするためには以下のように
+複数回「--body」オプションを指定します。
+
+  % milter-test-server -s inet:20025 --body 'Buy via' --body 'gra!!!'
+  status: reject
+  elapsed-time: 0.00379063 seconds
+
+このように複数のチャンクにわかれてしまった場合でも期待通りに
+動きます。
+
+ただし、これではすべてのメッセージをメモリ上に置いてしまうな
+ど、効率の問題があります。また、メッセージ本文がBASE64でエン
+コードされている場合も動作しないという問題があります。これら
+は、ストリームとして処理したり、Content-Typeヘッダーの値など
+を確認した上でメッセージ本文を処理したりする必要があります。
+
+メールを解析するライブラリとして
+((<Mail|URL:http://github.com/mikel/mail>))があるので、それ
+を使うとよいでしょう。
+
+== まとめ
+
+Rubyでmilterを作る方法について、実際にmilterを作りながら説明
+しました。Rubyを使うと簡単にmilterを実装できるので、ぜひ使っ
+てみてください。
