@@ -45,6 +45,8 @@ void test_mi_stop (void);
 static gchar *tmp_dir;
 static guint idle_id;
 
+static MilterLogLevelFlags original_log_level;
+
 static struct smfiDesc smfilter = {
     "test milter",
     SMFI_VERSION,
@@ -65,8 +67,10 @@ static struct smfiDesc smfilter = {
 };
 
 void
-setup (void)
+cut_setup (void)
 {
+    original_log_level = milter_get_log_level();
+
     tmp_dir = g_build_filename(milter_test_get_base_dir(),
                                "tmp",
                                NULL);
@@ -78,8 +82,10 @@ setup (void)
 }
 
 void
-teardown (void)
+cut_teardown (void)
 {
+    milter_set_log_level(original_log_level);
+
     libmilter_compatible_reset();
 
     if (tmp_dir) {

@@ -1,3 +1,8 @@
+2010-08-01  Kouhei Sutou  <kou@cozmixng.org>
+
+	* test/libmilter/test-libmilter-compatible.c: restore log level
+	changed in test.
+
 2010-07-31  Kouhei Sutou  <kou@cozmixng.org>
 
 	* doc/configuration.rd*: add to_ip_address methods.
