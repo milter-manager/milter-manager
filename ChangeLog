@@ -1,5 +1,7 @@
 2010-08-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/ruby-milter-reference.rd.ja: add abstract.
+
 	* binding/ruby/lib/milter/client/command-line.rb: make default
 	options customizable.
 

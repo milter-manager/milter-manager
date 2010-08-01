@@ -8,4 +8,44 @@ Rubyでmilterを開発するためのAPIリファレンスです。はじめて
 Rubyでmilterを開発する場合は、まず((<チュートリアル
 |ruby-milter-tutorial.rd.ja>))を読んでください。
 
+== 概要
+
+Rubyでmilterを開発するに当たって重要なクラスは以下の3つです。
+
+  * Milter::Client::CommandLine
+  * Milter::ClientSession
+  * Milter::ClientSessionContext
+
+このAPIリファレンスでは、まず、この重要なクラスから記述しま
+す。
+
+知っておいた方がよいクラスは以下の通りです。
+
+  * Milter::Client
+  * Milter::Logger
+  * Milter::SocketAddress::*
+
+このうち、Milter::SocketAddress::*は((<設定
+|configuration.rd.ja#socket-address>))の方に記述してあるので、
+そちらを参照してください。ここでは触れません。その他のクラス
+は重要なクラスの後に記述します。
+
+== Milter::Client::CommandLine
+
+TODO...
+
+== Milter::ClientSession
+
+TODO...
+
+== Milter::ClientSessionContext
+
+TODO...
+
+== Milter::Client
+
+TODO...
+
+== Milter::Logger
+
 TODO...
