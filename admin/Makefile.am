@@ -2,26 +2,26 @@ TESTS = test/run-test.sh
 
 admindir = $(pkgdatadir)/admin
 
-# find . -type f -perm +111
+# find . -type f -perm +111 | sed -e 's,^\./,	,' | sort
 nobase_dist_admin_SCRIPTS =			\
+	public/dispatch.cgi			\
 	public/dispatch.fcgi			\
 	public/dispatch.rb			\
-	public/dispatch.cgi			\
-	test/run-test.sh			\
-	script/plugin				\
-	script/process/spawner			\
-	script/process/inspector		\
-	script/process/reaper			\
-	script/destroy				\
 	script/about				\
 	script/console				\
-	script/server				\
-	script/runner				\
 	script/dbconsole			\
-	script/performance/request		\
+	script/destroy				\
+	script/generate				\
 	script/performance/benchmarker		\
 	script/performance/profiler		\
-	script/generate
+	script/performance/request		\
+	script/plugin				\
+	script/process/inspector		\
+	script/process/reaper			\
+	script/process/spawner			\
+	script/runner				\
+	script/server				\
+	test/run-test.sh
 
 # find . -name '.svn' -prune -o -path './log' -prune -o -path './config/secret' -prune -o -not -name '*.sqlite3' -not -name 'Makefile*' -not -name 'schema.rb' -type f -not -perm +111 -print | sed -e 's,^\./,	,' | sort
 nobase_dist_admin_DATA =							\
@@ -166,6 +166,7 @@ nobase_dist_admin_DATA =							\
 	vendor/plugins/restful-auth/lib/authorization.rb			\
 	vendor/plugins/restful-auth/lib/authorization/aasm_roles.rb		\
 	vendor/plugins/restful-auth/lib/authorization/stateful_roles.rb		\
+	vendor/plugins/restful-auth/lib/tasks/auth.rake				\
 	vendor/plugins/restful-auth/lib/trustification.rb			\
 	vendor/plugins/restful-auth/lib/trustification/email_validation.rb	\
 	vendor/plugins/restful-auth/notes/AccessControl.txt			\
@@ -178,5 +179,4 @@ nobase_dist_admin_DATA =							\
 	vendor/plugins/restful-auth/notes/Tradeoffs.txt				\
 	vendor/plugins/restful-auth/notes/Trustification.txt			\
 	vendor/plugins/restful-auth/rails/init.rb				\
-	vendor/plugins/restful-auth/restful-authentication.gemspec		\
-	vendor/plugins/restful-auth/tasks/auth.rake
+	vendor/plugins/restful-auth/restful-authentication.gemspec

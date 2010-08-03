@@ -1,5 +1,7 @@
 2010-08-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* admin/Makefile.am: update.
+
 	* binding/ruby/Makefile.am (test_unit_files): update.
 
 	* admin/, doc/: Rails 2.3.5 -> Rails 2.3.8.
