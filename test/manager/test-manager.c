@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@cozmixng.org>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -52,6 +52,8 @@ static gchar *scenario_dir;
 static MilterManagerTestScenario *main_scenario;
 
 static gchar *milter_manager_program_name;
+
+static gchar *original_lang;
 
 static gchar *tmp_dir;
 
@@ -162,9 +164,12 @@ egg_data_free (EggData *data)
 }
 
 void
-setup (void)
+cut_setup (void)
 {
     gchar *lt_milter_manager;
+
+    original_lang = g_strdup(g_getenv("LANG"));
+    g_setenv("LANG", "C", TRUE);
 
     scenario_dir = g_build_filename(milter_test_get_base_dir(),
                                     "fixtures",
@@ -197,7 +202,7 @@ setup (void)
 }
 
 void
-teardown (void)
+cut_teardown (void)
 {
     if (scenario_dir)
         g_free(scenario_dir);
@@ -215,6 +220,13 @@ teardown (void)
     if (tmp_dir) {
         cut_remove_path(tmp_dir, NULL);
         g_free(tmp_dir);
+    }
+
+    if (original_lang) {
+        g_setenv("LANG", original_lang, TRUE);
+        g_free(original_lang);
+    } else {
+        g_unsetenv("LANG");
     }
 }
 
@@ -269,9 +281,6 @@ setup_egg (EggData *data, const gchar *first_arg, ...)
         g_list_free(strings);
 
     data->egg = gcut_egg_new_argv(argc, argv);
-    gcut_egg_set_env(data->egg,
-                     "LANG", "C",
-                     NULL);
     g_strfreev(argv);
 
 #define CONNECT(name)                                                   \
@@ -309,7 +318,7 @@ wait_for_manager_ready (const gchar *spec)
             close(socket_fd);
         socket_fd = socket(domain, SOCK_STREAM, 0);
         if (socket_fd == -1)
-            break;
+            continue;
 
         if (connect(socket_fd, address, address_size) == 0) {
             errno_keep = 0;
