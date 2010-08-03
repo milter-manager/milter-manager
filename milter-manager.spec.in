@@ -251,7 +251,7 @@ fi
 %doc ChangeLog ChangeLog.toolkit README README.ja NEWS NEWS.ja TODO
 %doc %{_datadir}/milter-manager/license/
 %doc %{_datadir}/gtk-doc/html/milter-manager/
-%{_libdir}/ruby/1.8/*.rb
+%{_exec_prefix}/lib/ruby/1.8/*.rb
 %{_libdir}/milter-manager/binding/ext/*.so
 %{_libdir}/milter-manager/binding/ext/*.la
 %{_libdir}/milter-manager/binding/ext/*.h
