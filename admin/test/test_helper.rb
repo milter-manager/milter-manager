@@ -91,6 +91,16 @@ module ActionController
       I18n.translate(*args)
     end
 
+    def open_session(&block)
+      session = super(&block)
+      def session.process(method, path, parameters=nil, headers=nil)
+        headers = (headers || {}).dup
+        headers["HTTP_ACCEPT_LANGUAGE"] ||= "ja,en;q=0.5"
+        super(method, path, parameters, headers)
+      end
+      session
+    end
+
     private
     def login
       user = users(:aaron)

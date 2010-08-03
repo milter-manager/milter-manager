@@ -187,9 +187,9 @@ installed:
 
 === Instal gems
 
-  % sudo gem install rack -v '1.0.1'
-  % sudo gem install rails -v '2.3.5'
-  % sudo gem install passenger -v '2.2.11'
+  % sudo gem install rack -v '1.1.0'
+  % sudo gem install rails -v '2.3.8'
+  % sudo gem install passenger -v '2.2.15'
 
 === Install Passenger
 
@@ -200,8 +200,8 @@ To build Passenger we run the following command:
 Then we create /usr/local/etc/apache22/Includes/passenger.conf
 with the following content:
 
-  LoadModule passenger_module /usr/local/lib/ruby/gems/1.8/gems/passenger-2.2.11/ext/apache2/mod_passenger.so
-  PassengerRoot /usr/local/lib/ruby/gems/1.8/gems/passenger-2.2.11
+  LoadModule passenger_module /usr/local/lib/ruby/gems/1.8/gems/passenger-2.2.15/ext/apache2/mod_passenger.so
+  PassengerRoot /usr/local/lib/ruby/gems/1.8/gems/passenger-2.2.15
   PassengerRuby /usr/local/bin/ruby18
 
   RailsBaseURI /milter-manager
