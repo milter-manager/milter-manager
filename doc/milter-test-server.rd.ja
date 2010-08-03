@@ -163,6 +163,12 @@ milter-test-serverはヘッダや本文が変更された場合は、変更さ�
     したり、本文を置換するmilterの動作を確認したい場合はこの
     オプションを指定してください。
 
+: --color=[yes|true|no|false|auto]
+
+    --colorのみ、またはyes、trueを指定した場合はmilter適用後
+    のメッセージを色付きで表示します。autoを指定した場合は、
+    ターミナル上で実行していそうなら色を付けます。
+
 : --connection-timeout=SECONDS
 
     milterとの接続確立に使える時間を指定します。

@@ -155,6 +155,13 @@ automated unit tests.
     check milter's operation that may change header and/or
     body, specify this option.
 
+: --color=[yes|true|no|false|auto]
+
+    Shows a messaged applied a milter with colorization if
+    --color, --color=yes or --color=true is specified. If
+    --color=auto is specified, colorization is enabled on
+    terminal environment.
+
 : --connection-timeout=SECONDS
 
     Specifies timeout on connecting to a milter.
