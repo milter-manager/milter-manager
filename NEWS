@@ -2,6 +2,63 @@
 
 = NEWS --- The history of milter manager
 
+== [release-1-5-3] 1.5.3: 2010-08-03
+
+The last release of 1.5.x series. (plan)
+
+=== Document
+
+==== Improvements
+
+  * Added a description for
+    ((<SocketAddress#to_ip_address|configuration#to-ip-address>)).
+
+=== milter manager
+
+==== Improvements
+
+  * Ensured to reply for negotiation on negotiation failure.
+  * Reduced the default timeout for reporting timeout error
+    to MTA. The previous default timeout is the same as MTA
+    default. With the value, we can't have a time to report
+    timeout error to MTA.
+  * command launcher: Supported syslog.
+  * Added an applicable condition:
+    * ((<Trust|"doc/configuration.rd.ja#trust">))
+  * Supported Solaris. [Patched by SATOH Fumiyasu]
+
+=== milter manager admin
+
+==== Improvements
+
+  * Supported Rails 2.3.8.
+
+=== milter-test-server
+
+==== Improvements
+
+  * Added ((<--color|milter-test-server#--color>)) option.
+  * Added ((<--threads|milter-test-server#--threads>)) option.
+
+=== milter-core
+
+==== Improvements
+
+  * Chanaged default log level to output error and critical message.
+
+=== Ruby milter
+
+==== Improvements
+
+  * Added --user, --gorup, --unix-socket-group,
+    --unix-socket-mode, --syslog, --library-version options.
+  * Added milter-test-client implemented by Ruby as a sample.
+  * Added milter-regexp.rb as a sample.
+
+=== Thanks
+
+  * SATOH Fumiyasu
+
 == [release-1-5-2] 1.5.2: 2010-05-29
 
 A bug fix release of 1.5.1.

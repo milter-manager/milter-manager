@@ -1,5 +1,7 @@
 2010-08-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* NEWS*: add 1.5.3 entry.
+
 	* doc/milter-test-server.rd*: add --threads option.
 
 	* doc/configuration.rd*: add a tag name for "Trust" section.

@@ -2,6 +2,65 @@
 
 = お知らせ --- milter managerの歴史
 
+== [release-1-5-3] 1.5.3: 2010-08-03
+
+1.5.x最後のリリースです。（予定）
+
+=== ドキュメント
+
+==== 改善
+
+  * ((<Rubyでmilterを開発するためのチュートリアル
+    |ruby-milter-tutorial>))を追加。
+  * ((<SocketAddress#to_ip_address|configuration#to-ip-address>))
+    の説明を追加。
+
+=== milter manager
+
+==== 改善
+
+  * ネゴシエーションに失敗した場合にも結果を返すようにした。
+  * デフォルトのタイムアウト時間を短くした。これまではMTAと
+    同じ時間になっていたが、それではタイムアウト時にMTAに結
+    果を返せないため。
+  * コマンドランチャーをsyslogに対応させた。
+  * 適用条件追加
+    * ((<Trust|"doc/configuration.rd.ja#trust">))
+  * Solaris対応。[さとうふみやすさんがパッチ提供]
+
+=== milter manager admin
+
+==== 改善
+
+  * Rails 2.3.8対応
+
+=== milter-test-server
+
+==== 改善
+
+  * ((<--color|milter-test-server#--color>))オプションの追加。
+  * ((<--threads|milter-test-server#--threads>))オプションの追加。
+
+=== milter-core
+
+==== 改善
+
+  * デフォルトでエラーと致命的なログを出力するように変更。
+
+=== Ruby milter
+
+==== 改善
+
+  * --user, --gorup, --unix-socket-group,
+    --unix-socket-mode, --syslog, --library-version オプショ
+    ンを追加。
+  * サンプルとしてmilter-test-clientのRuby実装を追加。
+  * サンプルとしてmilter-regexp.rbを追加。
+
+=== 感謝
+
+  * さとうふみやすさん
+
 == [release-1-5-2] 1.5.2: 2010-05-29
 
 1.5.1のバグフィックスリリースです。
