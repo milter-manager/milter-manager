@@ -1,3 +1,7 @@
+2010-08-04  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter-manager.spec.in: follow file list changes.
+
 2010-08-03  Kouhei Sutou  <kou@cozmixng.org>
 
 	* test/manager/test-manager.c: reset LANG on test process not egg
