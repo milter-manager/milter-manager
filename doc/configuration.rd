@@ -1223,7 +1223,7 @@ greylist.conf:
   racl whitelist sm_macro "no_stress" tarpit 125s
   racl greylist default
 
-=== Trust
+=== [trust] Trust
 
 Since 1.6.0.
 

@@ -1,5 +1,7 @@
 2010-08-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/configuration.rd*: add a tag name for "Trust" section.
+
 	* doc/milter-test-server.rd*: add --color option.
 
 	* tool/milter-test-server.c: remove '-c' short option for --color
