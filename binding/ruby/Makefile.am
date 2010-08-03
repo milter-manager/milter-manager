@@ -29,10 +29,32 @@ test_unit_files =						\
 	test-unit/Rakefile					\
 	test-unit/TODO						\
 	test-unit/bin/testrb					\
-	test-unit/html/classic.html				\
+	test-unit/html/bar.png					\
+	test-unit/html/bar.svg					\
+	test-unit/html/developer.png				\
+	test-unit/html/developer.svg				\
+	test-unit/html/famfamfam-logo.png			\
+	test-unit/html/favicon.ico				\
+	test-unit/html/favicon.png				\
+	test-unit/html/favicon.svg				\
+	test-unit/html/heading-mark.png				\
+	test-unit/html/heading-mark.svg				\
 	test-unit/html/index.html				\
 	test-unit/html/index.html.ja				\
-	test-unit/html/test-unit-classic.png			\
+	test-unit/html/install.png				\
+	test-unit/html/install.svg				\
+	test-unit/html/jp.png					\
+	test-unit/html/kinotan-failure.png			\
+	test-unit/html/kinotan-pass.png				\
+	test-unit/html/logo.png					\
+	test-unit/html/logo.svg					\
+	test-unit/html/reference.png				\
+	test-unit/html/rubyforge.png				\
+	test-unit/html/tango-logo.png				\
+	test-unit/html/test-unit.css				\
+	test-unit/html/tutorial.png				\
+	test-unit/html/tutorial.svg				\
+	test-unit/html/us.png					\
 	test-unit/images/color-diff.png				\
 	test-unit/lib/test/unit.rb				\
 	test-unit/lib/test/unit/assertionfailederror.rb		\
@@ -101,6 +123,7 @@ test_unit_files =						\
 	test-unit/test/test_testresult.rb			\
 	test-unit/test/test_testsuite.rb			\
 	test-unit/test/testunit-test-util.rb			\
+	test-unit/test/ui/test_tap.rb				\
 	test-unit/test/ui/test_testrunmediator.rb		\
 	test-unit/test/util/test-method-owner-finder.rb		\
 	test-unit/test/util/test-output.rb			\
