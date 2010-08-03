@@ -19,9 +19,9 @@ milter-manager.confではなくmilter-manager.local.confを利用し
 ている場合はバックアップをとる必要はありません。
 
   % cd ~/src/
-  % fetch http://downloads.sourceforge.net/milter-manager/milter-manager-1.5.2.tar.gz
-  % tar xvzf milter-manager-1.5.2.tar.gz
-  % cd milter-manager-1.5.2
+  % fetch http://downloads.sourceforge.net/milter-manager/milter-manager-1.5.3.tar.gz
+  % tar xvzf milter-manager-1.5.3.tar.gz
+  % cd milter-manager-1.5.3
   % ./configure CPPFLAGS="-I/usr/local/include"
   % gmake
   % sudo cp /usr/local/etc/milter-manager/milter-manager.conf{,.`date +%Y%m%d`}

@@ -1,5 +1,7 @@
 2010-08-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* html/, doc/: 1.5.2 -> 1.5.3.
+
 	* milter-manager.spec.in: update 1.5.3 entry.
 
 	* admin/Makefile.am: update.
