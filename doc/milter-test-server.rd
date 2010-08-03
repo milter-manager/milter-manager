@@ -162,6 +162,8 @@ automated unit tests.
     --color=auto is specified, colorization is enabled on
     terminal environment.
 
+    The default is off.
+
 : --connection-timeout=SECONDS
 
     Specifies timeout on connecting to a milter.
@@ -195,6 +197,12 @@ automated unit tests.
     seconds.
 
     The default is 300 seconds. (5 minutes)
+
+: --threads=N
+
+   Use N threads to request a milter.
+
+   The default is 0. (main thread only)
 
 : --verbose
 
