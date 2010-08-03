@@ -1,5 +1,7 @@
 2010-08-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-manager.spec.in: update 1.5.3 entry.
+
 	* admin/Makefile.am: update.
 
 	* binding/ruby/Makefile.am (test_unit_files): update.

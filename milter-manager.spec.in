@@ -288,8 +288,8 @@ fi
 %config %{_sysconfdir}/munin/plugin-conf.d/
 
 %changelog
-* Mon Jun 07 2010 Kouhei Sutou <kou@clear-code.com>
-- (1.5.3-0)
+* Tue Aug 03 2010 Kouhei Sutou <kou@clear-code.com>
+- (1.5.3-1)
 - new upstream release
 
 * Sat May 29 2010 Kouhei Sutou <kou@clear-code.com>
