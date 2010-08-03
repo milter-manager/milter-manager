@@ -1,3 +1,8 @@
+2010-08-03  Kouhei Sutou  <kou@cozmixng.org>
+
+	* tool/milter-test-server.c: remove '-c' short option for --color
+	option.
+
 2010-08-01  Kouhei Sutou  <kou@cozmixng.org>
 
 	* doc/ruby-milter-reference.rd.ja: add abstract.
