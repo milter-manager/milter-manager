@@ -18,7 +18,8 @@ test_files =					\
 	test-child-context.rb			\
 	test-netstat-connection-checker.rb	\
 	test-address-matcher.rb			\
-	test-breaker.rb
+	test-breaker.rb				\
+	test-cidr-table.rb
 
 EXTRA_DIST =		\
 	$(test_files)

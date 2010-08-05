@@ -1,3 +1,11 @@
+2010-08-05  Kouhei Sutou  <kou@cozmixng.org>
+
+	* binding/ruby/lib/milter/manager.rb,
+	binding/ruby/lib/milter/manager/cidr-table.rb,
+	binding/ruby/lib/milter/manager/exception.rb,
+	binding/ruby/test/manager/test-cidr-table.rb: add Postfix
+	cidr_table(5) parser.
+
 2010-08-04  Kouhei Sutou  <kou@cozmixng.org>
 
 	* configure.ac: 1.5.3 -> 1.6.0.
