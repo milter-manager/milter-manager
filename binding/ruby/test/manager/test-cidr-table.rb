@@ -150,6 +150,14 @@ EOC
     assert_nil(@table.find(ipv4("192.168.1.1")))
   end
 
+  def test_result_with_spaces
+    @table.parse(StringIO.new(<<-EOC))
+192.168.1.1 550 mail fromo black is rejected
+EOC
+    assert_equal("550 mail fromo black is rejected",
+                 @table.find(ipv4("192.168.1.1")))
+  end
+
   private
   def ipv4(address, port=2929)
     Milter::SocketAddress::IPv4.new(address, port)

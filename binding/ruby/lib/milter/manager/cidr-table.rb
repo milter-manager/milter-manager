@@ -46,7 +46,7 @@ module Milter::Manager
     def parse(io)
       each_line(io) do |line|
         case line
-        when /\A\s*([\d\.]+|[\da-fA-F:]+)(?:\/(\d+))?\s+([\da-zA-Z]+)\s*$/
+        when /\A\s*([\d\.]+|[\da-fA-F:]+)(?:\/(\d+))?\s+(.+)\s*$/
           address = $1
           network = $2
           action = $3
