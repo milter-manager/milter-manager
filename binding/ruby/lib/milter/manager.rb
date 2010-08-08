@@ -43,6 +43,7 @@ require 'milter/manager/freebsd-rc-detector'
 require 'milter/manager/pkgsrc-rc-detector'
 
 require 'milter/manager/postfix-cidr-table'
+require 'milter/manager/postfix-regexp-table'
 
 Milter::Logger.domain = "milter-manager"
 

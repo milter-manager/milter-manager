@@ -1,5 +1,9 @@
 2010-08-08  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager/postfix-regexp.rb,
+	binding/ruby/test/test-postfix-regexp.rb: add partial Postfix
+	regexp_table(5) support.
+
 	* binding/ruby/test/milter-test-utils.rb,
 	binding/ruby/test/run-test.rb: suppress log.
 
