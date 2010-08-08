@@ -1,5 +1,8 @@
 2010-08-08  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/test/milter-test-utils.rb,
+	binding/ruby/test/run-test.rb: suppress log.
+
 	* binding/ruby/lib/milter/manager/,
 	binding/ruby/test/manager/: CIDRTable -> PostfixCIDRTable.
 

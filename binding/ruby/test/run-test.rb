@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 #
-# Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+# Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -34,10 +34,10 @@ $LOAD_PATH.unshift((top + "src" + "toolkit" + ".libs").to_s)
 $LOAD_PATH.unshift((top + "src" + "manager" + ".libs").to_s)
 $LOAD_PATH.unshift((top + "lib").to_s)
 
+require 'milter/manager'
+
 $LOAD_PATH.unshift(base.to_s)
 require 'milter-test-utils'
-
-require 'milter/manager'
 
 ARGV.unshift("--priority-mode")
 exit Test::Unit::AutoRunner.run(true, base)
