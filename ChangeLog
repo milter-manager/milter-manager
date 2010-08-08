@@ -1,5 +1,9 @@
 2010-08-08  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager/condition-table.rb,
+	binding/ruby/lib/milter/manager/postfix-condition-table-parser.rb: add.
+	* binding/ruby/lib/milter/manager/cidr-table.rb: use the above files.
+
 	* html/blog/tdiary.conf: follow tDiary path change.
 
 2010-08-05  Kouhei Sutou  <kou@cozmixng.org>

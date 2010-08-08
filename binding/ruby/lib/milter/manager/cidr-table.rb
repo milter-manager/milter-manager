@@ -14,30 +14,13 @@
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 require 'English'
+require 'milter/manager/condition-table'
+require 'milter/manager/postfix-condition-table-parser'
 
 module Milter::Manager
   class CIDRTable
-    class InvalidValueError < ParseError
-      attr_reader :value, :detail, :line, :path, :line_no
-      def initialize(value, detail, line, path, line_no)
-        @value = value
-        @detail = detail
-        @line = line
-        @path = path
-        @line_no = line_no
-        super("#{@path}:#{@line_no}: #{detail}: <#{value}>: <#{line}>")
-      end
-    end
-
-    class InvalidFormatError < ParseError
-      attr_reader :line, :path, :line_no
-      def initialize(line, path, line_no)
-        @line = line
-        @path = path
-        @line_no = line_no
-        super("#{@path}:#{@line_no}: invalid format <#{line}>")
-      end
-    end
+    include ConditionTable
+    include PostfixConditionTableParser
 
     def initialize
       @table = []
@@ -71,28 +54,6 @@ module Milter::Manager
         return action if match_address === address
       end
       nil
-    end
-
-    private
-    def each_line(io)
-      current_line = nil
-      io.each_line do |line|
-        case line
-        when /\A\s*#/, /\A\s*$/
-        when /\A\s+/
-          target_line = $POSTMATCH.chomp
-          if current_line
-            current_line << " "
-          else
-            current_line = ""
-          end
-          current_line << target_line
-        else
-          yield(current_line) if current_line
-          current_line = line.chomp
-        end
-      end
-      yield(current_line) if current_line
     end
   end
 end

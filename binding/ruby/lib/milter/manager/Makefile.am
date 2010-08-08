@@ -20,4 +20,6 @@ dist_binding_lib_milter_DATA =			\
 	address-matcher.rb			\
 	breaker.rb				\
 	exception.rb				\
+	condition-table.rb			\
+	postfix-condition-table-parser.rb	\
 	cidr-table.rb
