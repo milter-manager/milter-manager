@@ -1,3 +1,7 @@
+2010-08-08  Kouhei Sutou  <kou@cozmixng.org>
+
+	* html/blog/tdiary.conf: follow tDiary path change.
+
 2010-08-05  Kouhei Sutou  <kou@cozmixng.org>
 
 	* binding/ruby/lib/milter/manager/cidr-table.rb,
