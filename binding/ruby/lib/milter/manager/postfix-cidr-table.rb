@@ -18,7 +18,7 @@ require 'milter/manager/condition-table'
 require 'milter/manager/postfix-condition-table-parser'
 
 module Milter::Manager
-  class CIDRTable
+  class PostfixCIDRTable
     include ConditionTable
     include PostfixConditionTableParser
 

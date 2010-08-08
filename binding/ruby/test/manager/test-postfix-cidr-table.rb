@@ -13,9 +13,9 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
-class TestCIDRTable < Test::Unit::TestCase
+class TestPostfixCIDRTable < Test::Unit::TestCase
   def setup
-    @table = Milter::Manager::CIDRTable.new
+    @table = Milter::Manager::PostfixCIDRTable.new
   end
 
   def test_empty
@@ -111,11 +111,11 @@ EOC
   end
 
   def test_invalid_address_ipv4
-    error = Milter::Manager::CIDRTable::InvalidValueError.new("192.168.1",
-                                                              "invalid address",
-                                                              "192.168.1 OK",
-                                                              nil,
-                                                              1)
+    error = invalid_value_error("192.168.1",
+                                "invalid address",
+                                "192.168.1 OK",
+                                nil,
+                                1)
     assert_raise(error) do
       @table.parse(StringIO.new(<<-EOC))
 192.168.1 OK
@@ -125,11 +125,11 @@ EOC
   end
 
   def test_invalid_address_ipv6
-    error = Milter::Manager::CIDRTable::InvalidValueError.new("f:",
-                                                              "invalid address",
-                                                              "f: OK",
-                                                              nil,
-                                                              1)
+    error = invalid_value_error("f:",
+                                "invalid address",
+                                "f: OK",
+                                nil,
+                                1)
     assert_raise(error) do
       @table.parse(StringIO.new(<<-EOC))
 f: OK
@@ -139,9 +139,9 @@ EOC
   end
 
   def test_invalid_format
-    error = Milter::Manager::CIDRTable::InvalidFormatError.new("x:: OK",
-                                                               nil,
-                                                               1)
+    error = invalid_format_error("x:: OK",
+                                 nil,
+                                 1)
     assert_raise(error) do
       @table.parse(StringIO.new(<<-EOC))
 x:: OK
@@ -165,5 +165,17 @@ EOC
 
   def ipv6(address, port=2929)
     Milter::SocketAddress::IPv6.new(address, port)
+  end
+
+  def invalid_value_error(value, detail, line, path, line_no)
+    Milter::Manager::ConditionTable::InvalidValueError.new(value,
+                                                           detail,
+                                                           line,
+                                                           path,
+                                                           line_no)
+  end
+
+  def invalid_format_error(line, path, line_no)
+    Milter::Manager::ConditionTable::InvalidFormatError.new(line, path, line_no)
   end
 end

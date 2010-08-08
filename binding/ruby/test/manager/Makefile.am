@@ -19,7 +19,7 @@ test_files =					\
 	test-netstat-connection-checker.rb	\
 	test-address-matcher.rb			\
 	test-breaker.rb				\
-	test-cidr-table.rb
+	test-postfix-cidr-table.rb
 
 EXTRA_DIST =		\
 	$(test_files)
