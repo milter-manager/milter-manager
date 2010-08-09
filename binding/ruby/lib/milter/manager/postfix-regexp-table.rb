@@ -87,19 +87,34 @@ module Milter::Manager
     private
     def find_action(table, text)
       table.each do |negative, regexp, table_or_action|
+        match_data = nil
         if negative
           next if regexp =~ text
         else
-          next if regexp !~ text
+          match_data = regexp.match(text)
+          next unless match_data
         end
         if table_or_action.is_a?(Array)
           action = find_action(table_or_action, text)
-          return action if action
+          return expand_variables(action, match_data) if action
         else
-          return table_or_action
+          return expand_variables(table_or_action, match_data)
         end
       end
       nil
+    end
+
+    def expand_variables(action, match_data)
+      return action if match_data.nil?
+      action.gsub(/\$(?:(\$)|(\d+)|\((\d+)\)|\{(\d+)\})/) do |string|
+        doller = $1
+        n = $2 || $3 || $4
+        if doller
+          "$"
+        else
+          match_data[n.to_i]
+        end
+      end
     end
   end
 end

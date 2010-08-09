@@ -1,3 +1,9 @@
+2010-08-09  Kouhei Sutou  <kou@cozmixng.org>
+
+	* binding/ruby/lib/milter/manager/postfix-regexp-table.rb,
+	binding/ruby/test/manager/test-postfix-regexp-table.rb: support
+	variable expansion.
+
 2010-08-08  Kouhei Sutou  <kou@cozmixng.org>
 
 	* binding/ruby/lib/milter/manager/postfix-regexp.rb,

@@ -38,6 +38,35 @@ EOC
     assert_equal("OK", @table.find("%xxx%"))
   end
 
+  def test_expand
+    @table.parse(StringIO.new(<<-EOC))
+/^(.*)-outgoing\\+(.*)@(.*)$/   550 Use ${1}+$(2)@$3 $$ instead
+EOC
+    assert_equal("550 Use user+ml@example.com $ instead",
+                 @table.find("user-outgoing+ml@example.com"))
+  end
+
+  def test_if_positive_pattern
+    @table.parse(StringIO.new(<<-EOC))
+if /^owner/
+/@(.*)$/   OK
+endif
+EOC
+    assert_equal("OK", @table.find("owner@example.com"))
+    assert_nil(@table.find("user@example.com"))
+  end
+
+  def test_else_negative_pattern
+    @table.parse(StringIO.new(<<-EOC))
+if !/^owner-/
+/^(.*)-outgoing@(.*)$/   550 Use ${1}@${2} instead
+endif
+EOC
+    assert_equal("550 Use user@example.com instead",
+                 @table.find("user-outgoing@example.com"))
+    assert_nil(@table.find("owner-outgoing@example.com"))
+  end
+
   private
   def invalid_value_error(value, detail, line, path, line_no)
     Milter::Manager::ConditionTable::InvalidValueError.new(value,
