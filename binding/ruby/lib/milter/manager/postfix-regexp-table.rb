@@ -35,18 +35,7 @@ module Milter::Manager
           not_flag = $1
           pattern = $2
           flag = $3
-          regexp_flag = Regexp::IGNORECASE
-          if flag
-            regexp_flag &= Regexp::IGNORECASE if flag.index("i")
-            regexp_flag |= Regexp::MULTILINE if flag.index("m")
-          end
-          regexp = nil
-          begin
-            regexp = Regexp.new(pattern, regexp_flag)
-          rescue RegexpError
-            raise InvalidValueError.new(pattern, $!.message, line,
-                                        io.path, io.lineno)
-          end
+          regexp = create_regexp(pattern, flag)
           new_table = []
           current_table << [not_flag == "!", regexp, new_table]
           current_table = new_table
@@ -56,18 +45,7 @@ module Milter::Manager
           pattern = $2
           flag = $3
           action = $4
-          regexp_flag = Regexp::IGNORECASE
-          if flag
-            regexp_flag &= Regexp::IGNORECASE if flag.index("i")
-            regexp_flag |= Regexp::MULTILINE if flag.index("m")
-          end
-          regexp = nil
-          begin
-            regexp = Regexp.new(pattern, regexp_flag)
-          rescue RegexpError
-            raise InvalidValueError.new(pattern, $!.message, line,
-                                        io.path, io.lineno)
-          end
+          regexp = create_regexp(pattern, flag)
           current_table << [not_flag == "!", regexp, action]
         when /\Aendif\s*$/
           current_table = tables.pop
@@ -85,6 +63,20 @@ module Milter::Manager
      end
 
     private
+    def create_regexp(pattern, flag)
+      regexp_flag = Regexp::IGNORECASE
+      if flag
+        regexp_flag &= Regexp::IGNORECASE if flag.index("i")
+        regexp_flag |= Regexp::MULTILINE if flag.index("m")
+      end
+      begin
+        Regexp.new(pattern, regexp_flag)
+      rescue RegexpError
+        raise InvalidValueError.new(pattern, $!.message, line,
+                                    io.path, io.lineno)
+      end
+    end
+
     def find_action(table, text)
       table.each do |negative, regexp, table_or_action|
         match_data = nil
