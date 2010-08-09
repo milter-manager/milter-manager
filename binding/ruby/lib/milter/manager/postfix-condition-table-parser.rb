@@ -32,11 +32,11 @@ module Milter::Manager
           end
           current_line << target_line
         else
-          yield(current_line) if current_line
+          yield(current_line, io.lineno - 1) if current_line
           current_line = line.chomp
         end
       end
-      yield(current_line) if current_line
+      yield(current_line, io.lineno) if current_line
     end
   end
 end

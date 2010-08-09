@@ -67,6 +67,33 @@ EOC
     assert_nil(@table.find("owner-outgoing@example.com"))
   end
 
+  def test_invalid_pattern
+    error = invalid_value_error("left-(paren only",
+                                "unmatched (: /left-(paren only/",
+                                "/left-(paren only/ REJECT",
+                                nil,
+                                1)
+    assert_raise(error) do
+      @table.parse(StringIO.new(<<-EOC))
+/left-(paren only/ REJECT
+/left-paren/ OK
+EOC
+    end
+    assert_nil(@table.find("left-paren"))
+  end
+
+  def test_invalid_format
+    error = invalid_format_error("left-paren OK",
+                                 nil,
+                                 1)
+    assert_raise(error) do
+      @table.parse(StringIO.new(<<-EOC))
+left-paren OK
+EOC
+    end
+    assert_nil(@table.find("left-paren"))
+  end
+
   private
   def invalid_value_error(value, detail, line, path, line_no)
     Milter::Manager::ConditionTable::InvalidValueError.new(value,

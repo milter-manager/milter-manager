@@ -29,13 +29,13 @@ module Milter::Manager
     def parse(io)
       current_table = @table
       tables = []
-      each_line(io) do |line|
+      each_line(io) do |line, line_no|
         case line
         when /\A\s*if\s+(!)?\/(.*)\/([imx]+)?$/
           not_flag = $1
           pattern = $2
           flag = $3
-          regexp = create_regexp(pattern, flag)
+          regexp = create_regexp(pattern, flag, io, line, line_no)
           new_table = []
           current_table << [not_flag == "!", regexp, new_table]
           current_table = new_table
@@ -45,7 +45,7 @@ module Milter::Manager
           pattern = $2
           flag = $3
           action = $4
-          regexp = create_regexp(pattern, flag)
+          regexp = create_regexp(pattern, flag, io, line, line_no)
           current_table << [not_flag == "!", regexp, action]
         when /\Aendif\s*$/
           current_table = tables.pop
@@ -63,7 +63,7 @@ module Milter::Manager
      end
 
     private
-    def create_regexp(pattern, flag)
+    def create_regexp(pattern, flag, io, line, line_no)
       regexp_flag = Regexp::IGNORECASE
       if flag
         regexp_flag &= Regexp::IGNORECASE if flag.index("i")
@@ -73,7 +73,7 @@ module Milter::Manager
         Regexp.new(pattern, regexp_flag)
       rescue RegexpError
         raise InvalidValueError.new(pattern, $!.message, line,
-                                    io.path, io.lineno)
+                                    io.path, line_no)
       end
     end
 

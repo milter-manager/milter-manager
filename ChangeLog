@@ -1,6 +1,12 @@
 2010-08-09  Kouhei Sutou  <kou@cozmixng.org>
 
 	* binding/ruby/lib/milter/manager/postfix-regexp-table.rb,
+	binding/ruby/lib/milter/manager/postfix-cidr-table.rb,
+	binding/ruby/lib/milter/manager/postfix-condition-table-parser.rb,
+	binding/ruby/test/manager/test-postfix-regexp-table.rb: fix
+	reported error line number.
+
+	* binding/ruby/lib/milter/manager/postfix-regexp-table.rb,
 	binding/ruby/test/manager/test-postfix-regexp-table.rb: support
 	variable expansion.
 

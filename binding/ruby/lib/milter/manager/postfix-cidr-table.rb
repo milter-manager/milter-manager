@@ -27,7 +27,7 @@ module Milter::Manager
     end
 
     def parse(io)
-      each_line(io) do |line|
+      each_line(io) do |line, line_no|
         case line
         when /\A\s*([\d\.]+|[\da-fA-F:]+)(?:\/(\d+))?\s+(.+)\s*$/
           address = $1
@@ -39,11 +39,11 @@ module Milter::Manager
             ip_address = IPAddr.new(address)
           rescue ArgumentError
             raise InvalidValueError.new(address, $!.message, line,
-                                        io.path, io.lineno)
+                                        io.path, line_no)
           end
           @table << [ip_address, action]
         else
-          raise InvalidFormatError.new(line, io.path, io.lineno)
+          raise InvalidFormatError.new(line, io.path, line_no)
         end
       end
     end
