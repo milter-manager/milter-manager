@@ -21,6 +21,7 @@ noinst_LTLIBRARIES =				\
 endif
 
 INCLUDES =				\
+	-I../lib			\
 	-I$(srcdir)			\
 	-I$(top_srcdir)/test/lib	\
 	-I$(top_srcdir)

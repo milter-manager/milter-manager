@@ -1,3 +1,8 @@
+2010-08-10  Nobuyoshi Nakada  <nobu@elm.clear-code.com>
+
+	* test/manager/Makefile.am (INCLUDES): needs
+	test/lib/milter-test-enum-types.h under builddir.
+
 2010-08-09  Kouhei Sutou  <kou@cozmixng.org>
 
 	* binding/ruby/lib/milter/manager/postfix-regexp-table.rb,
