@@ -2,6 +2,17 @@
 
 = NEWS --- The history of milter manager
 
+== [release-1-6-0] 1.6.0: 2010-08-11
+
+The first release of stable 1.6.x series.
+
+=== milter manager
+
+==== Improvements
+
+  * Added parsers for Postfix cidr_table(5) and regexp_table(5):
+    PostfixCIDRTable, PostfixRegexpTable
+
 == [release-1-5-3] 1.5.3: 2010-08-03
 
 The last release of 1.5.x series. (plan)

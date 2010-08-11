@@ -2,6 +2,17 @@
 
 = お知らせ --- milter managerの歴史
 
+== [release-1-6-0] 1.6.0: 2010-08-11
+
+安定版1.6.x系最初のリリースです。
+
+=== milter manager
+
+==== 改善
+
+  * Postfixのcidr_table(5)とregexp_table(5)のパーサを追加:
+    PostfixCIDRTable, PostfixRegexpTable
+
 == [release-1-5-3] 1.5.3: 2010-08-03
 
 1.5.x最後のリリースです。（予定）
