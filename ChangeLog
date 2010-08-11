@@ -1,5 +1,7 @@
 2010-08-11  Kouhei Sutou  <kou@clear-code.com>
 
+	* configure.ac: 1.6.0 -> 1.6.1.
+
 	* /: 1.4.2 -> 1.6.0.
 
 	* NEWS*: add 1.6.0 entry.
