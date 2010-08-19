@@ -32,6 +32,10 @@
 #include "milter-marshalers.h"
 #include "milter-enum-types.h"
 
+#define DEFAULT_KEY "default"
+#define DEFAULT_LEVEL                                           \
+    (MILTER_LOG_LEVEL_CRITICAL | MILTER_LOG_LEVEL_ERROR)
+
 #define MILTER_LOGGER_GET_PRIVATE(obj)                  \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                 \
                                  MILTER_TYPE_LOGGER,    \
@@ -42,13 +46,16 @@ struct _MilterLoggerPrivate
 {
     MilterLogLevelFlags target_level;
     MilterLogItemFlags target_item;
+    GHashTable *interesting_levels;
+    MilterLogLevelFlags interesting_level;
 };
 
 enum
 {
     PROP_0,
     PROP_TARGET_LEVEL,
-    PROP_TARGET_ITEM
+    PROP_TARGET_ITEM,
+    PROP_INTERESTING_LEVEL
 };
 
 enum
@@ -101,6 +108,14 @@ milter_logger_class_init (MilterLoggerClass *klass)
                               G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_TARGET_ITEM, spec);
 
+    spec = g_param_spec_flags("interesting-level",
+                              "Interesting log level",
+                              "The interesting log level",
+                              MILTER_TYPE_LOG_LEVEL_FLAGS,
+                              DEFAULT_LEVEL,
+                              G_PARAM_READABLE);
+    g_object_class_install_property(gobject_class, PROP_INTERESTING_LEVEL, spec);
+
     signals[LOG] =
         g_signal_new("log",
                      G_TYPE_FROM_CLASS(klass),
@@ -122,11 +137,26 @@ milter_logger_init (MilterLogger *logger)
 
     priv = MILTER_LOGGER_GET_PRIVATE(logger);
     priv->target_level = MILTER_LOG_LEVEL_DEFAULT;
+    priv->interesting_levels = g_hash_table_new_full(g_str_hash, g_str_equal,
+                                                     g_free, NULL);
+    priv->interesting_level = DEFAULT_LEVEL;
+    g_hash_table_insert(priv->interesting_levels,
+                        g_strdup(DEFAULT_KEY),
+                        GUINT_TO_POINTER(priv->interesting_level));
 }
 
 static void
 dispose (GObject *object)
 {
+    MilterLoggerPrivate *priv;
+
+    priv = MILTER_LOGGER_GET_PRIVATE(object);
+
+    if (priv->interesting_levels) {
+        g_hash_table_unref(priv->interesting_levels);
+        priv->interesting_levels = NULL;
+    }
+
     G_OBJECT_CLASS(milter_logger_parent_class)->dispose(object);
 }
 
@@ -167,6 +197,9 @@ get_property (GObject    *object,
         break;
     case PROP_TARGET_ITEM:
         g_value_set_flags(value, priv->target_item);
+        break;
+    case PROP_INTERESTING_LEVEL:
+        g_value_set_flags(value, priv->interesting_level);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -419,8 +452,7 @@ milter_logger_get_resolved_target_level (MilterLogger *logger)
 
     target_level = MILTER_LOGGER_GET_PRIVATE(logger)->target_level;
     if (target_level == MILTER_LOG_LEVEL_DEFAULT)
-        target_level = (MILTER_LOG_LEVEL_CRITICAL |
-                        MILTER_LOG_LEVEL_ERROR);
+        target_level = DEFAULT_LEVEL;
     return target_level;
 }
 
@@ -428,7 +460,12 @@ void
 milter_logger_set_target_level (MilterLogger *logger,
                                 MilterLogLevelFlags level)
 {
+    MilterLogLevelFlags interesting_level = level;
+
     MILTER_LOGGER_GET_PRIVATE(logger)->target_level = level;
+    if (interesting_level == MILTER_LOG_LEVEL_DEFAULT)
+        interesting_level = DEFAULT_LEVEL;
+    milter_logger_set_interesting_level(logger, DEFAULT_KEY, interesting_level);
 }
 
 void
@@ -443,6 +480,38 @@ milter_logger_set_target_level_by_string (MilterLogger *logger,
         level = MILTER_LOG_LEVEL_DEFAULT;
     }
     milter_logger_set_target_level(logger, level);
+}
+
+static void
+update_interesting_level (gpointer key, gpointer value, gpointer user_data)
+{
+    MilterLogLevelFlags *level = user_data;
+
+    *level |= GPOINTER_TO_UINT(value);
+}
+
+void
+milter_logger_set_interesting_level (MilterLogger *logger,
+                                     const gchar *name,
+                                     MilterLogLevelFlags level)
+{
+    MilterLoggerPrivate *priv;
+
+    priv = MILTER_LOGGER_GET_PRIVATE(logger);
+
+    g_hash_table_insert(priv->interesting_levels,
+                        g_strdup(name),
+                        GUINT_TO_POINTER(level));
+    priv->interesting_level = 0;
+    g_hash_table_foreach(priv->interesting_levels,
+                         update_interesting_level,
+                         &(priv->interesting_level));
+}
+
+MilterLogLevelFlags
+milter_logger_get_interesting_level (MilterLogger *logger)
+{
+    return MILTER_LOGGER_GET_PRIVATE(logger)->interesting_level;
 }
 
 MilterLogItemFlags

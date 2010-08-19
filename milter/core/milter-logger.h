@@ -61,9 +61,11 @@ G_BEGIN_DECLS
     milter_logger_set_target_level(milter_logger(), (level))
 #define milter_get_log_level()                          \
     milter_logger_get_resolved_target_level(milter_logger())
+#define milter_get_interesting_log_level()                      \
+    milter_logger_get_interesting_level(milter_logger())
 
 #define milter_need_log(level) \
-    (milter_get_log_level() & (level))
+    (milter_get_interesting_log_level() & (level))
 #define milter_need_critical_log() \
     (milter_need_log(MILTER_LOG_LEVEL_CRITICAL))
 #define milter_need_error_log() \
@@ -202,6 +204,13 @@ void             milter_logger_set_target_level
 void             milter_logger_set_target_level_by_string
                                               (MilterLogger        *logger,
                                                const gchar         *level_name);
+void             milter_logger_set_interesting_level
+                                              (MilterLogger        *logger,
+                                               const gchar         *key,
+                                               MilterLogLevelFlags  level);
+MilterLogLevelFlags
+                 milter_logger_get_interesting_level
+                                              (MilterLogger        *logger);
 MilterLogItemFlags
                  milter_logger_get_target_item
                                               (MilterLogger        *logger);

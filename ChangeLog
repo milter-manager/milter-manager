@@ -1,5 +1,13 @@
 2010-08-19  Kouhei Sutou  <kou@cozmixng.org>
 
+	* README*: add akira yamada to thanks list. Thanks!!!
+
+	* milter/core/milter-logger.[ch],
+	milter/core/milter-syslog-logger.c,
+	test/core/test-logger.c, test/core/test-syslog-logger.c: fix
+	statistics log ins't sysloged bug.
+	Reported by akira yamada. Thanks!!!
+
 	* milter/core/milter-logger.h (milter_log): use milter_need_log().
 
 2010-08-11  Kouhei Sutou  <kou@clear-code.com>

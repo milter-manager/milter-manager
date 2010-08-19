@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -37,6 +37,7 @@ void test_debug (void);
 void test_info (void);
 void test_console_output (void);
 void test_target_level (void);
+void test_interesing_level (void);
 
 static MilterLogger *logger;
 
@@ -251,6 +252,31 @@ test_target_level (void)
     g_set_print_handler(original_print_hander);
     original_print_hander = NULL;
     cut_assert_match("message", stdout_string->str);
+}
+
+void
+test_interesting_level (void)
+{
+    logger = milter_logger_new();
+    gcut_assert_equal_flags(MILTER_TYPE_LOG_LEVEL_FLAGS,
+                            MILTER_LOG_LEVEL_ERROR | MILTER_LOG_LEVEL_CRITICAL,
+                            milter_logger_get_interesting_level(logger));
+
+    milter_logger_set_target_level(logger,
+                                   MILTER_LOG_LEVEL_INFO |
+                                   MILTER_LOG_LEVEL_STATISTICS);
+    gcut_assert_equal_flags(MILTER_TYPE_LOG_LEVEL_FLAGS,
+                            MILTER_LOG_LEVEL_INFO | MILTER_LOG_LEVEL_STATISTICS,
+                            milter_logger_get_interesting_level(logger));
+
+    milter_logger_set_interesting_level(logger,
+                                        "syslog",
+                                        MILTER_LOG_LEVEL_DEBUG);
+    gcut_assert_equal_flags(MILTER_TYPE_LOG_LEVEL_FLAGS,
+                            MILTER_LOG_LEVEL_INFO |
+                            MILTER_LOG_LEVEL_DEBUG |
+                            MILTER_LOG_LEVEL_STATISTICS,
+                            milter_logger_get_interesting_level(logger));
 }
 
 /*

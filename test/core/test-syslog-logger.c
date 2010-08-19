@@ -29,6 +29,7 @@
 
 void test_info (void);
 void test_statistics (void);
+void test_interesing_level (void);
 
 static MilterSyslogLogger *logger;
 static GIOChannel *syslog;
@@ -73,6 +74,7 @@ setup (void)
     original_print_hander = NULL;
 
     logger = milter_syslog_logger_new(MILTER_LOG_DOMAIN);
+    syslog = NULL;
     actual = NULL;
     syslog_file_name = NULL;
     cut_trace(setup_syslog());
@@ -164,6 +166,26 @@ test_statistics (void)
                      "This is statistics message.$",
                      actual);
 
+}
+
+void
+test_interesing_level (void)
+{
+    gcut_assert_equal_flags(MILTER_TYPE_LOG_LEVEL_FLAGS,
+                            MILTER_LOG_LEVEL_NONE,
+                            milter_get_interesting_log_level());
+
+    milter_syslog_logger_set_target_level(logger, MILTER_LOG_LEVEL_STATISTICS);
+    gcut_assert_equal_flags(MILTER_TYPE_LOG_LEVEL_FLAGS,
+                            MILTER_LOG_LEVEL_NONE |
+                            MILTER_LOG_LEVEL_STATISTICS,
+                            milter_get_interesting_log_level());
+
+    g_object_unref(logger);
+    logger = NULL;
+    gcut_assert_equal_flags(MILTER_TYPE_LOG_LEVEL_FLAGS,
+                            MILTER_LOG_LEVEL_NONE,
+                            milter_get_interesting_log_level());
 }
 
 /*

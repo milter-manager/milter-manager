@@ -162,3 +162,6 @@ The latest source is available from the Subversion repository:
     * reported bugs.
     * improved Solaris support.
   * ROSSO: reported a bug.
+  * akira yamada:
+    * reported a bug.
+    * suggested about Debian package.
