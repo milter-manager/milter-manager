@@ -29,7 +29,7 @@ G_BEGIN_DECLS
 
 #define milter_log(level, format, ...)                          \
     do {                                                        \
-        if (milter_get_log_level() & (level)) {                 \
+        if (milter_need_log(level)) {                           \
             (milter_logger_log(milter_logger(),                 \
                                MILTER_LOG_DOMAIN,               \
                                (level),                         \
