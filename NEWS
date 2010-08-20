@@ -281,7 +281,7 @@ A development release.
       Specifies effective user.
     * ((<--group|"doc/milter-test-client#--group">)):
       Specifies effective group.
-    * ((<--socket-group|"doc/milter-test-client#--socket-group">)):
+    * ((<--unix-socket-group|"doc/milter-test-client#--unix-socket-group">)):
       Specifies UNIX domain socket's group.
 
 === Package

@@ -278,7 +278,7 @@ NO_REPLY_*を利用するmilterやmilter-greylist 4.3.xと一緒に使っ
       実効ユーザを指定
     * ((<--group|"doc/milter-test-client#--group">)):
       実効グループを指定
-    * ((<--socket-group|"doc/milter-test-client#--socket-group">)):
+    * ((<--unix-socket-group|"doc/milter-test-client#--unix-socket-group">)):
       ソケットの所有グループを指定
 
 === パッケージ
