@@ -2,6 +2,21 @@
 
 = NEWS --- The history of milter manager
 
+== [release-1-6-1] 1.6.1: 2010-08-21
+
+A bug fix release of 1.6.0.
+
+=== milter manager
+
+==== Fixes
+
+  * Fixed a bug that no statistics information isn't logged to syslog.
+    [Reported by akira yamada]
+
+=== Thanks
+
+  * akira yamada
+
 == [release-1-6-0] 1.6.0: 2010-08-11
 
 The first release of stable 1.6.x series.
