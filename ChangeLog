@@ -1,3 +1,7 @@
+2010-09-02  Kouhei Sutou  <kou@clear-code.com>
+
+	* doc/*-freebsd.rd*: 1.5.3 -> 1.6.1.
+
 2010-08-20  Kouhei Sutou  <kou@cozmixng.org>
 
 	* configure.ac: 1.6.1 -> 1.6.2.
