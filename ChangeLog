@@ -1,3 +1,7 @@
+2010-09-14  Kouhei Sutou  <kou@cozmixng.org>
+
+	* binding/ruby/sample/milter-tarpit.rb: add a sample tarpitting milter.
+
 2010-09-02  Kouhei Sutou  <kou@clear-code.com>
 
 	* doc/*-freebsd.rd*: 1.5.3 -> 1.6.1.
