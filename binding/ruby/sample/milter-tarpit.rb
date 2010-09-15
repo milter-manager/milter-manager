@@ -19,15 +19,12 @@ require 'milter'
 
 class MilterTarpit < Milter::ClientSession
   def helo(fqdn)
-    tarpitting = true
     GLib::Timeout.add(5000) do
-      tarpitting = false
+      accept
+      @context.signal_emit("helo_response", @context.status)
       false
     end
-    main_context = GLib::MainContext.default
-    while tarpitting
-      main_context.iteration(true)
-    end
+    @context.status = :progress
   end
 end
 
