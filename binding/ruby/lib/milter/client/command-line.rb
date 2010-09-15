@@ -131,13 +131,13 @@ module Milter
 
         @option_parser.on("--group=GROUP",
                           "Run as GROUP's process (need root privilege)",
-                          "(#{@options.group})") do |gorup|
+                          "(#{@options.group})") do |group|
           @options.group = group
         end
 
         @option_parser.on("--unix-socket-group=GROUP",
                           "Change UNIX domain socket group to GROUP",
-                          "(#{@options.unix_socket_group})") do |gorup|
+                          "(#{@options.unix_socket_group})") do |group|
           @options.unix_socket_group = group
         end
 

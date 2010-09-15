@@ -1,3 +1,8 @@
+2010-09-15  Kouhei Sutou  <kou@clear-code.com>
+
+	* binding/ruby/lib/milter/client/command-line.rb: fix typos.
+	Reported by Kenji Shiono. Thanks!!!
+
 2010-09-14  Kouhei Sutou  <kou@cozmixng.org>
 
 	* binding/ruby/sample/milter-tarpit.rb: add a sample tarpitting milter.
