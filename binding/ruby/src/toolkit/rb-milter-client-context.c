@@ -61,6 +61,28 @@ add_header (VALUE self, VALUE name, VALUE value)
 }
 
 static VALUE
+change_header (VALUE self, VALUE name, VALUE index, VALUE value)
+{
+    GError *error = NULL;
+
+    milter_client_context_change_header(SELF(self),
+                                        StringValueCStr(name),
+                                        NUM2UINT(index),
+                                        StringValueCStr(value));
+/*
+  FIXME: support gerror.
+    if (!milter_client_context_change_header(SELF(self),
+                                             StringValueCStr(name),
+                                             NUM2UINT(index),
+                                             StringValueCStr(value),
+                                             &error))
+        RAISE_GERROR(error);
+*/
+
+    return Qnil;
+}
+
+static VALUE
 set_reply (VALUE self, VALUE code, VALUE extended_code, VALUE message)
 {
     GError *error = NULL;
@@ -138,6 +160,8 @@ Init_milter_client_context (void)
     rb_define_method(rb_cMilterClientContext, "progress", progress, 0);
     rb_define_method(rb_cMilterClientContext, "quarantine", quarantine, 1);
     rb_define_method(rb_cMilterClientContext, "add_header", add_header, 2);
+    rb_define_method(rb_cMilterClientContext, "change_header",
+		     change_header, 3);
     rb_define_method(rb_cMilterClientContext, "set_reply", set_reply, 3);
     rb_define_method(rb_cMilterClientContext, "format_reply", format_reply, 0);
     rb_define_method(rb_cMilterClientContext, "socket_address",

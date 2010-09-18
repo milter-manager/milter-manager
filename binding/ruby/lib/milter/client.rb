@@ -150,6 +150,10 @@ module Milter
       @context.add_header(name, value)
     end
 
+    def change_header(name, index, value)
+      @context.change_header(name, index, value)
+    end
+
     def postfix?
       @context.postfix?
     end
