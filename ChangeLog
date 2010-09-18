@@ -1,3 +1,7 @@
+2010-09-18  Kouhei Sutou  <kou@cozmixng.org>
+
+	* test/core/test-logger.c: fix a typo.
+
 2010-09-15  Kouhei Sutou  <kou@cozmixng.org>
 
 	* binding/ruby/sample/milter-tarpit.rb: don't use internal main

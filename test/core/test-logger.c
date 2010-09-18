@@ -37,7 +37,7 @@ void test_debug (void);
 void test_info (void);
 void test_console_output (void);
 void test_target_level (void);
-void test_interesing_level (void);
+void test_interesting_level (void);
 
 static MilterLogger *logger;
 
