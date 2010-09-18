@@ -138,7 +138,7 @@ module Milter
     end
 
     def quarantine(reason)
-      if @context.qurantine(reason)
+      if @context.quarantine(reason)
         accept
         true
       else
