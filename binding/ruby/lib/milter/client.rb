@@ -62,7 +62,7 @@ module Milter
               session_context.status = status_on_error
             end
             status = session_context.status
-            session_context.status = :continue
+            session_context.continue
             status
           end
         end
@@ -89,7 +89,7 @@ module Milter
         option.remove_step(Milter::StepFlags::HEADER_VALUE_WITH_LEADING_SPACE)
       end
       option.remove_step(Milter::StepFlags::NO_REPLY_MASK)
-      @context.status = :continue
+      continue
     end
 
     private
@@ -139,6 +139,8 @@ module Milter
   end
 
   class ClientSessionContext
+    include MacroPredicates
+
     def initialize(context)
       @context = context
       @status = nil
@@ -175,6 +177,10 @@ module Milter
       elsif 500 <= code and code < 600
         self.status = :reject
       end
+    end
+
+    def [](name)
+      @context.macros[name]
     end
 
     def method_missing(*args, &block)

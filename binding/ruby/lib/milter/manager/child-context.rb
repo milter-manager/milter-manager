@@ -15,6 +15,8 @@
 
 module Milter::Manager
   class ChildContext
+    include Milter::MacroPredicates
+
     def initialize(child, children, client_context)
       @child = child
       @children = children
@@ -57,22 +59,6 @@ module Milter::Manager
 
     def children
       @child_contexts ||= create_child_contexts
-    end
-
-    def postfix?
-      if /\bPostfix\b/i =~ (self["v"] || '')
-        true
-      else
-        false
-      end
-    end
-
-    def authenticated?
-      if self["auth_type"] || self["auth_authen"]
-        true
-      else
-        false
-      end
     end
 
     def n_processing_sessions

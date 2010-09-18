@@ -161,4 +161,14 @@ module Milter
       end
     end
   end
+
+  module MacroPredicates
+    def authenticated?
+      (self["auth_type"] or self["auth_authen"]) ? true : false
+    end
+
+    def postfix?
+      (/\bPostfix\b/i =~ (self["v"] || '')) ? true : false
+    end
+  end
 end
