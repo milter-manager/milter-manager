@@ -1,5 +1,8 @@
 2010-09-18  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/lib/milter/client.rb: add convenience continue and
+	progress methods to set response status.
+
 	* binding/ruby/lib/milter/client.rb,
 	binding/ruby/lib/milter/manager/child-context.rb,
 	binding/ruby/lib/milter/toolkit.rb: share convenience macro

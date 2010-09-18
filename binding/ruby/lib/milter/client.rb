@@ -105,6 +105,10 @@ module Milter
       @context.status = :continue
     end
 
+    def progress
+      @context.status = :progress
+    end
+
     def discard
       @context.status = :discard
     end
