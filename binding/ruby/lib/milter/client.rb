@@ -137,8 +137,17 @@ module Milter
       end
     end
 
-    def quarantine
-      @context.status = :quarantine
+    def quarantine(reason)
+      @context.qurantine(reason)
+      accept
+    end
+
+    def postfix?
+      @context.postfix?
+    end
+
+    def authenticated?
+      @context.authenticated?
     end
   end
 

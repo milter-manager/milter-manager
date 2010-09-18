@@ -41,6 +41,12 @@ progress (VALUE self)
 }
 
 static VALUE
+quarantine (VALUE self, VALUE reason)
+{
+    return CBOOL2RVAL(milter_client_context_quarantine(SELF(self), StringValueCStr(reason)));
+}
+
+static VALUE
 add_header (VALUE self, VALUE name, VALUE value)
 {
     GError *error = NULL;
@@ -130,6 +136,7 @@ Init_milter_client_context (void)
 
     rb_define_method(rb_cMilterClientContext, "feed", feed, 1);
     rb_define_method(rb_cMilterClientContext, "progress", progress, 0);
+    rb_define_method(rb_cMilterClientContext, "quarantine", quarantine, 1);
     rb_define_method(rb_cMilterClientContext, "add_header", add_header, 2);
     rb_define_method(rb_cMilterClientContext, "set_reply", set_reply, 3);
     rb_define_method(rb_cMilterClientContext, "format_reply", format_reply, 0);
