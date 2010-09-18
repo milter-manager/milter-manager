@@ -62,7 +62,7 @@ module Milter
               session_context.status = status_on_error
             end
             status = session_context.status
-            session_context.continue
+            session_context.status = :continue
             status
           end
         end
