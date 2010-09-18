@@ -1,5 +1,8 @@
 2010-09-18  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/lib/milter/client.rb: improve error check for
+	qurantine.
+
 	* binding/ruby/src/toolkit/rb-milter-client-context.c,
 	binding/ruby/lib/milter/client.rb: bind quarantine.
 

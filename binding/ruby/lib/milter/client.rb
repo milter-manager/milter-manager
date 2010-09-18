@@ -138,8 +138,12 @@ module Milter
     end
 
     def quarantine(reason)
-      @context.qurantine(reason)
-      accept
+      if @context.qurantine(reason)
+        accept
+        true
+      else
+        false
+      end
     end
 
     def postfix?
