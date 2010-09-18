@@ -146,6 +146,10 @@ module Milter
       end
     end
 
+    def add_header(name, value)
+      @context.add_header(name, value)
+    end
+
     def postfix?
       @context.postfix?
     end
