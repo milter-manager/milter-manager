@@ -136,7 +136,8 @@ cb_end_of_message (MilterClientContext *context,
         milter_client_context_change_header(context,
                                             header_name,
                                             header_index,
-                                            header_value);
+                                            header_value,
+                                            &error_in_callback);
         milter_agent_set_writer(MILTER_AGENT(context), NULL);
     }
 

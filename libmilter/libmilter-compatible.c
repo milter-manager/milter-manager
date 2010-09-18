@@ -806,16 +806,22 @@ int
 smfi_chgheader (SMFICTX *context, char *name, int index, char *value)
 {
     SmfiContextPrivate *priv;
+    GError *error = NULL;
 
     priv = SMFI_CONTEXT_GET_PRIVATE(context);
     if (!priv->client_context)
         return MI_FAILURE;
 
     if (milter_client_context_change_header(priv->client_context,
-                                            name, index, value))
+                                            name, index, value, &error)) {
         return MI_SUCCESS;
-    else
+    } else {
+        if (error) {
+            milter_error("failed to change header: %s", error->message);
+            g_error_free(error);
+        }
         return MI_FAILURE;
+    }
 }
 
 int

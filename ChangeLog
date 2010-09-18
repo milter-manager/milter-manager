@@ -1,5 +1,13 @@
 2010-09-18  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/client/milter-client-context.[ch]
+	(milter_client_context_change_header): support GError.
+
+	* binding/ruby/src/toolkit/rb-milter-client-context.c,
+	libmilter/libmilter-compatible.c,
+	milter/manager/milter-manager-leader.c,
+	test/: follow the above changes.
+
 	* binding/ruby/src/toolkit/rb-milter-client-context.c,
 	binding/ruby/lib/milter/client.rb: bind change header.
 	TODO: milter_client_context_change_header() should support GError.

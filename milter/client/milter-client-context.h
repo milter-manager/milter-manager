@@ -561,6 +561,7 @@ gboolean             milter_client_context_insert_header     (MilterClientContex
  *         @name. (1-based) FIXME: should change 0-based?
  * @value: the header value. Use %NULL to delete the target
  *         header.
+ * @error: return location for an error, or %NULL.
  *
  * Changes a header that is located at @index in headers
  * that all of them are named @name. If @value is %NULL, the
@@ -578,7 +579,8 @@ gboolean             milter_client_context_insert_header     (MilterClientContex
 gboolean             milter_client_context_change_header     (MilterClientContext *context,
                                                               const gchar *name,
                                                               guint32      index,
-                                                              const gchar *value);
+                                                              const gchar *value,
+                                                              GError     **error);
 
 /**
  * milter_client_context_delete_header:

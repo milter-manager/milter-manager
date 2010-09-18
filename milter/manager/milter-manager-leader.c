@@ -668,7 +668,7 @@ cb_insert_header (MilterReplySignals *_reply,
                      priv->tag, error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(leader), error);
         g_error_free(error);
-    } else {
+    } else if (value) {
         milter_statistics(
             "[session][header][add](%u): <%s>=<%s>", priv->tag, name, value);
     }
@@ -681,12 +681,18 @@ cb_change_header (MilterReplySignals *_reply,
 {
     MilterManagerLeader *leader = user_data;
     MilterManagerLeaderPrivate *priv;
+    GError *error = NULL;
 
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
     milter_client_context_change_header(priv->client_context,
-                                        name, index, value);
+                                        name, index, value, &error);
 
-    if (value) {
+    if (error) {
+        milter_error("[%u] [leader][error][insert-header] %s",
+                     priv->tag, error->message);
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(leader), error);
+        g_error_free(error);
+    } else if (value) {
         milter_statistics(
             "[session][header][add](%u): <%s>=<%s>", priv->tag, name, value);
     }

@@ -65,19 +65,12 @@ change_header (VALUE self, VALUE name, VALUE index, VALUE value)
 {
     GError *error = NULL;
 
-    milter_client_context_change_header(SELF(self),
-                                        StringValueCStr(name),
-                                        NUM2UINT(index),
-                                        StringValueCStr(value));
-/*
-  FIXME: support gerror.
     if (!milter_client_context_change_header(SELF(self),
                                              StringValueCStr(name),
                                              NUM2UINT(index),
                                              StringValueCStr(value),
                                              &error))
         RAISE_GERROR(error);
-*/
 
     return Qnil;
 }
