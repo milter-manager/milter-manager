@@ -61,7 +61,9 @@ module Milter
               Milter::Logger.error($!)
               session_context.status = status_on_error
             end
-            session_context.status
+            status = session_context.status
+            session_context.status = :continue
+            status
           end
         end
       end
@@ -97,6 +99,10 @@ module Milter
 
     def accept
       @context.status = :accept
+    end
+
+    def continue
+      @context.status = :continue
     end
 
     def discard
