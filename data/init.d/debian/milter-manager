@@ -50,12 +50,12 @@ do_setup()
     if [ -n "${CONNECTION_SPEC}" ]; then
 	DAEMON_ARGS="${DAEMON_ARGS} --connection-spec ${CONNECTION_SPEC}"
     fi
+    mkdir -p `dirname ${PIDFILE}`
     if [ -n "${USER}" ]; then
 	if ! getent passwd | grep -q "^${USER}:"; then
 	    echo "$0: user for running milter-manager doesn't exist: ${USER}" >&2
 	    exit 1
 	fi
-	mkdir -p `dirname ${PIDFILE}`
 	chown -R ${USER} `dirname ${PIDFILE}`
 	DAEMON_ARGS="${DAEMON_ARGS} --user-name ${USER}"
     fi
@@ -64,6 +64,7 @@ do_setup()
 	    echo "$0: group for running milter-manager doesn't exist: ${GROUP}" >&2
 	    exit 1
 	fi
+	chgrp -R ${GROUP} `dirname ${PIDFILE}`
 	DAEMON_ARGS="${DAEMON_ARGS} --group-name ${GROUP}"
     fi
     if [ -n "${SOCKET_GROUP}" ]; then

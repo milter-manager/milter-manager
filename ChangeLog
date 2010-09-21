@@ -1,3 +1,10 @@
+2010-09-21  Kouhei Sutou  <kou@cozmixng.org>
+
+	* data/init.d/debian/milter-manager: ensure creating PID file
+	directory.
+
+	Reported by Kenji Shiono. Thanks!!!
+
 2010-09-18  Kouhei Sutou  <kou@clear-code.com>
 
 	* milter/client/milter-client-context.[ch]
