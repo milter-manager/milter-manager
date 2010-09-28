@@ -1,3 +1,8 @@
+2010-09-28  Kouhei Sutou  <kou@clear-code.com>
+
+	* module/configuration/ruby/milter-manager-ruby-configuration.c
+	(rb_funcall_protect): fix a memory leak.
+
 2010-09-21  Kouhei Sutou  <kou@cozmixng.org>
 
 	* data/init.d/debian/milter-manager: ensure changing PID file

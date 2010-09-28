@@ -244,6 +244,7 @@ rb_funcall_protect (GError **g_error, VALUE receiver, ID name, guint argc, ...)
                         (VALUE)&arguments_data,
                         &state);
     va_end(args);
+    xfree(argv);
 
     error = rb_errinfo();
     if (state && !NIL_P(error)) {
