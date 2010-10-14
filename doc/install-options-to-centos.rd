@@ -138,7 +138,7 @@ installed:
 
 === Instal gems
 
-  % sudo gem install sqlite3-ruby
+  % sudo gem install sqlite3-ruby -v '1.2.1'
   % sudo gem install rack -v '1.1.0'
   % sudo gem install rails -v '2.3.8'
   % sudo gem install passenger -v '2.2.15'

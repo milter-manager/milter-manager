@@ -1,3 +1,9 @@
+2010-10-14  Kouhei Sutou  <kou@cozmixng.org>
+
+	* doc/install-options-to-centos.rd*: Use sqlite3-ruby 1.2.1 on
+	CentOS.
+	Reported by Kenji Shiono. Thanks!!!
+
 2010-09-28  Kouhei Sutou  <kou@clear-code.com>
 
 	* module/configuration/ruby/milter-manager-ruby-configuration.c
