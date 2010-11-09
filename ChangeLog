@@ -1,5 +1,7 @@
 2010-11-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* text/fixtures/leader/: follow the change_from change.
+
 	* milter/client/milter-client-context.[ch],
 	milter/manager/milter-manager-leader.c,
 	test/client/test-client-context-address.c,
