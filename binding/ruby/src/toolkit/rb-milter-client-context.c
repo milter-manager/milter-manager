@@ -91,6 +91,20 @@ change_header (VALUE self, VALUE name, VALUE index, VALUE value)
 }
 
 static VALUE
+delete_header (VALUE self, VALUE name, VALUE index)
+{
+    GError *error = NULL;
+
+    if (!milter_client_context_delete_header(SELF(self),
+                                             RVAL2CSTR(name),
+                                             NUM2UINT(index),
+                                             &error))
+        RAISE_GERROR(error);
+
+    return Qnil;
+}
+
+static VALUE
 set_reply (VALUE self, VALUE code, VALUE extended_code, VALUE message)
 {
     GError *error = NULL;
@@ -211,8 +225,8 @@ Init_milter_client_context (void)
     rb_define_method(rb_cMilterClientContext, "quarantine", quarantine, 1);
     rb_define_method(rb_cMilterClientContext, "add_header", add_header, 2);
     rb_define_method(rb_cMilterClientContext, "insert_header", insert_header, 3);
-    rb_define_method(rb_cMilterClientContext, "change_header",
-		     change_header, 3);
+    rb_define_method(rb_cMilterClientContext, "change_header", change_header, 3);
+    rb_define_method(rb_cMilterClientContext, "delete_header", delete_header, 2);
     rb_define_method(rb_cMilterClientContext, "set_reply", set_reply, 3);
     rb_define_method(rb_cMilterClientContext, "format_reply", format_reply, 0);
     rb_define_method(rb_cMilterClientContext, "change_from", change_from, -1);

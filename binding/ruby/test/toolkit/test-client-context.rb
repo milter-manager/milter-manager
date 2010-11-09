@@ -63,6 +63,15 @@ class TestClientContext < Test::Unit::TestCase
     end
   end
 
+  def test_delete_header
+    @context.option = Milter::Option.new
+    @context.option.add_action(Milter::ACTION_CHANGE_HEADERS)
+    @context.state = Milter::ClientContext::STATE_END_OF_MESSAGE
+    assert_nothing_raised do
+      @context.delete_header("X-Tag", 1)
+    end
+  end
+
   def test_change_from
     @context.option = Milter::Option.new
     @context.option.add_action(Milter::ACTION_CHANGE_ENVELOPE_FROM)
