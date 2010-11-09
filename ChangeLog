@@ -2,6 +2,10 @@
 
 	* binding/ruby/src/toolkit/rb-milter-client-context.c,
 	binding/ruby/test/toolkit/test-client-context.rb: bind
+	Milter::ClientContext#insert_header.
+
+	* binding/ruby/src/toolkit/rb-milter-client-context.c,
+	binding/ruby/test/toolkit/test-client-context.rb: bind
 	Milter::ClientContext#change_from.
 
 	* binding/ruby/test/toolkit/test-client-context.rb: add tests for

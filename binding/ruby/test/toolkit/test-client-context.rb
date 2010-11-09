@@ -45,6 +45,15 @@ class TestClientContext < Test::Unit::TestCase
     end
   end
 
+  def test_insert_header
+    @context.option = Milter::Option.new
+    @context.option.add_action(Milter::ACTION_ADD_HEADERS)
+    @context.state = Milter::ClientContext::STATE_END_OF_MESSAGE
+    assert_nothing_raised do
+      @context.insert_header(0, "X-Tag", "Ruby")
+    end
+  end
+
   def test_change_from
     @context.option = Milter::Option.new
     @context.option.add_action(Milter::ACTION_CHANGE_ENVELOPE_FROM)

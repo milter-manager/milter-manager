@@ -61,6 +61,21 @@ add_header (VALUE self, VALUE name, VALUE value)
 }
 
 static VALUE
+insert_header (VALUE self, VALUE index, VALUE name, VALUE value)
+{
+    GError *error = NULL;
+
+    if (!milter_client_context_insert_header(SELF(self),
+					     NUM2UINT(index),
+					     RVAL2CSTR(name),
+					     RVAL2CSTR(value),
+					     &error))
+        RAISE_GERROR(error);
+
+    return Qnil;
+}
+
+static VALUE
 change_header (VALUE self, VALUE name, VALUE index, VALUE value)
 {
     GError *error = NULL;
@@ -195,6 +210,7 @@ Init_milter_client_context (void)
     rb_define_method(rb_cMilterClientContext, "progress", progress, 0);
     rb_define_method(rb_cMilterClientContext, "quarantine", quarantine, 1);
     rb_define_method(rb_cMilterClientContext, "add_header", add_header, 2);
+    rb_define_method(rb_cMilterClientContext, "insert_header", insert_header, 3);
     rb_define_method(rb_cMilterClientContext, "change_header",
 		     change_header, 3);
     rb_define_method(rb_cMilterClientContext, "set_reply", set_reply, 3);
