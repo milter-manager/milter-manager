@@ -97,6 +97,21 @@ format_reply (VALUE self)
 }
 
 static VALUE
+change_from (int argc, VALUE *argv, VALUE self)
+{
+    VALUE rb_from, rb_parameters;
+    const gchar *from, *parameters = NULL;
+    gboolean success;
+
+    rb_scan_args(argc, argv, "11", &rb_from, &rb_parameters);
+    from = RVAL2CSTR(rb_from);
+    if (!NIL_P(rb_parameters))
+	parameters = RVAL2CSTR(rb_parameters);
+    success = milter_client_context_change_from(SELF(self), from, parameters);
+    return CBOOL2RVAL(success);
+}
+
+static VALUE
 add_recipient (int argc, VALUE *argv, VALUE self)
 {
     VALUE rb_recipient, rb_parameters;
@@ -184,6 +199,7 @@ Init_milter_client_context (void)
 		     change_header, 3);
     rb_define_method(rb_cMilterClientContext, "set_reply", set_reply, 3);
     rb_define_method(rb_cMilterClientContext, "format_reply", format_reply, 0);
+    rb_define_method(rb_cMilterClientContext, "change_from", change_from, -1);
     rb_define_method(rb_cMilterClientContext, "add_recipient",
 		     add_recipient, -1);
     rb_define_method(rb_cMilterClientContext, "delete_recipient",
