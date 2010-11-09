@@ -81,9 +81,9 @@ change_header (VALUE self, VALUE name, VALUE index, VALUE value)
     GError *error = NULL;
 
     if (!milter_client_context_change_header(SELF(self),
-                                             StringValueCStr(name),
+                                             RVAL2CSTR(name),
                                              NUM2UINT(index),
-                                             StringValueCStr(value),
+                                             RVAL2CSTR(value),
                                              &error))
         RAISE_GERROR(error);
 
