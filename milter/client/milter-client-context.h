@@ -588,6 +588,7 @@ gboolean             milter_client_context_change_header     (MilterClientContex
  * @name: the header name.
  * @index: the index of headers that all of them are named
  * @name. (1-based) FIXME: should change 0-based?
+ * @error: return location for an error, or %NULL.
  *
  * Deletes a header that is located at @index in headers
  * that all of them are named @name. This function can be
@@ -602,7 +603,8 @@ gboolean             milter_client_context_change_header     (MilterClientContex
  */
 gboolean             milter_client_context_delete_header     (MilterClientContext *context,
                                                               const gchar *name,
-                                                              guint32      index);
+                                                              guint32      index,
+                                                              GError     **error);
 
 /**
  * milter_client_context_change_from:

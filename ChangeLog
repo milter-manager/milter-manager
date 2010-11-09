@@ -1,7 +1,9 @@
 2010-11-09  Kouhei Sutou  <kou@cozmixng.org>
 
-	* milter/client/milter-client-context.[ch]
-	(milter_client_context_delete_header): support GError.
+	* milter/client/milter-client-context.[ch],
+	milter/manager/milter-manager-leader.c,
+	test/client/test-client-context-header.c:
+	milter_client_context_delete_header() supports GError.
 
 	* binding/ruby/src/toolkit/rb-milter-client-context.c,
 	binding/ruby/test/toolkit/test-client-context.rb: bind

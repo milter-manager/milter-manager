@@ -705,9 +705,19 @@ cb_delete_header (MilterReplySignals *_reply,
 {
     MilterManagerLeader *leader = user_data;
     MilterManagerLeaderPrivate *priv;
+    GError *error = NULL;
 
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
-    milter_client_context_delete_header(priv->client_context, name, index);
+    if (milter_client_context_delete_header(priv->client_context, name, index,
+                                            &error)) {
+        milter_debug(
+            "[%u] [leader][header][delete] <%s>[%u]", priv->tag, name, index);
+    } else {
+        milter_error("[%u] [leader][error][delete-header] %s",
+                     priv->tag, error->message);
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(leader), error);
+        g_error_free(error);
+    }
 }
 
 static void

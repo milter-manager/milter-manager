@@ -142,7 +142,8 @@ cb_end_of_message (MilterClientContext *context,
     }
 
     if (delete_header) {
-        milter_client_context_delete_header(context, header_name, header_index);
+        milter_client_context_delete_header(context, header_name, header_index,
+                                            &error_in_callback);
         milter_agent_set_writer(MILTER_AGENT(context), NULL);
     }
 

@@ -2209,11 +2209,35 @@ milter_client_context_change_header (MilterClientContext *context,
 
 gboolean
 milter_client_context_delete_header (MilterClientContext *context,
-                                     const gchar *name, guint32 index)
+                                     const gchar *name, guint32 index,
+                                     GError **error)
 {
+    MilterClientContextPrivate *priv;
     gchar *packet = NULL;
     gsize packet_size;
     MilterEncoder *encoder;
+
+    if (!name) {
+        g_set_error(error,
+                    MILTER_CLIENT_CONTEXT_ERROR,
+                    MILTER_CLIENT_CONTEXT_ERROR_NULL,
+                    "header name should not be NULL: index=<%u>",
+                    index);
+        return FALSE;
+    }
+
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    if (!validate_state("change-header",
+                        MILTER_CLIENT_CONTEXT_STATE_END_OF_MESSAGE,
+                        priv->state,
+                        error))
+        return FALSE;
+
+    if (!validate_action("change-header",
+                         MILTER_ACTION_CHANGE_HEADERS,
+                         priv->option,
+                         error))
+        return FALSE;
 
     milter_debug("[%u] [client][send][delete-header] <%s>[%u]",
                  milter_agent_get_tag(MILTER_AGENT(context)),
