@@ -31,6 +31,8 @@
 
 void data_change_from (void);
 void test_change_from (gconstpointer data);
+void data_change_from_error_no_from (void);
+void test_change_from_error_no_from (gconstpointer data);
 void data_add_recipient (void);
 void test_add_recipient (gconstpointer data);
 void data_delete_recipient (void);
@@ -42,6 +44,9 @@ static MilterReplyEncoder *reply_encoder;
 
 static GIOChannel *channel;
 static MilterWriter *writer;
+
+static GError *error_in_callback;
+static GError *expected_error_in_callback;
 
 static gchar *packet;
 static gsize packet_size;
@@ -63,7 +68,8 @@ cb_end_of_message (MilterClientContext *context,
 {
     if (do_change_from) {
         milter_client_context_change_from(context,
-                                          change_from, change_from_parameters);
+                                          change_from, change_from_parameters,
+                                          &error_in_callback);
         milter_agent_set_writer(MILTER_AGENT(context), NULL);
     }
 
@@ -94,6 +100,20 @@ setup_signals (MilterClientContext *context)
 #undef CONNECT
 }
 
+static void
+setup_option (MilterClientContext *context)
+{
+    MilterOption *option;
+    MilterActionFlags action;
+    GError *error = NULL;
+
+    action = gcut_flags_get_all(MILTER_TYPE_ACTION_FLAGS, &error);
+    gcut_assert_error(error);
+    option = milter_option_new(2, action, 0);
+    milter_client_context_set_option(context, option);
+    g_object_unref(option);
+}
+
 void
 setup (void)
 {
@@ -107,10 +127,15 @@ setup (void)
     milter_agent_start(MILTER_AGENT(context), NULL);
     setup_signals(context);
 
+    setup_option(context);
+
     command_encoder = MILTER_COMMAND_ENCODER(milter_command_encoder_new());
     reply_encoder = MILTER_REPLY_ENCODER(milter_reply_encoder_new());
     packet = NULL;
     packet_size = 0;
+
+    error_in_callback = NULL;
+    expected_error_in_callback = NULL;
 
     do_change_from = FALSE;
     do_add_recipient = FALSE;
@@ -168,7 +193,13 @@ feed (void)
 {
     GError *error = NULL;
 
+    gcut_assert_error(error_in_callback);
     milter_client_context_feed(context, packet, packet_size, &error);
+    if (expected_error_in_callback) {
+        gcut_assert_equal_error(expected_error_in_callback, error_in_callback);
+    } else {
+        gcut_assert_error(error_in_callback);
+    }
 
     return error;
 }
@@ -208,12 +239,7 @@ data_change_from (void)
                  "from - parameters",
                  address_test_data_new("kou@localhost", "XXX"),
                  address_test_data_free,
-                 "no from",
-                 address_test_data_new(NULL, NULL),
-                 address_test_data_free,
-                 "no from - parameters",
-                 address_test_data_new(NULL, "XXX"),
-                 address_test_data_free);
+                 NULL);
 }
 
 void
@@ -240,6 +266,38 @@ test_change_from (gconstpointer data)
     actual_data = gcut_string_io_channel_get_string(channel);
     cut_assert_equal_memory(packet, packet_size,
                             actual_data->str, actual_data->len);
+}
+
+void
+data_change_from_error_no_from (void)
+{
+    cut_add_data("parameters",
+                 address_test_data_new(NULL, "XXX"),
+                 address_test_data_free,
+                 "no parameters",
+                 address_test_data_new(NULL, NULL),
+                 address_test_data_free,
+                 NULL);
+}
+
+void
+test_change_from_error_no_from (gconstpointer data)
+{
+    const AddressTestData *test_data = data;
+
+    do_change_from = TRUE;
+
+    change_from = g_strdup(test_data->address);
+    change_from_parameters = g_strdup(test_data->parameters);
+    milter_command_encoder_encode_end_of_message(command_encoder,
+                                                 &packet, &packet_size,
+                                                 NULL, 0);
+    g_set_error(&expected_error_in_callback,
+                MILTER_CLIENT_CONTEXT_ERROR,
+                MILTER_CLIENT_CONTEXT_ERROR_NULL,
+                "from should not be NULL: parameters=<%s>",
+                test_data->parameters ? test_data->parameters : "NULL");
+    gcut_assert_error(feed());
 }
 
 void

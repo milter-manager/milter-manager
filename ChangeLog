@@ -1,3 +1,12 @@
+2010-11-10  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/client/milter-client-context.[ch],
+	milter/manager/milter-manager-leader.c,
+	test/client/test-client-context-address.c,
+	libmilter/libmilter-compatible.c,
+	binding/ruby/src/toolkit/rb-milter-client-context.c:
+	milter_client_context_change_from() supports GError.
+
 2010-11-09  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/client/milter-client-context.[ch],

@@ -2054,6 +2054,15 @@ validate_action (const gchar *operation,
     gchar *expected_action_names;
     gchar *actual_action_names;
 
+    if (!option) {
+        g_set_error(error,
+                    MILTER_CLIENT_CONTEXT_ERROR,
+                    MILTER_CLIENT_CONTEXT_ERROR_NULL,
+                    "%s should be called with option",
+                    operation);
+        return FALSE;
+    }
+
     actual_action = milter_option_get_action(option);
     if ((actual_action & expected_action) == expected_action)
         return TRUE;
@@ -2253,11 +2262,35 @@ milter_client_context_delete_header (MilterClientContext *context,
 gboolean
 milter_client_context_change_from (MilterClientContext *context,
                                    const gchar *from,
-                                   const gchar *parameters)
+                                   const gchar *parameters,
+                                   GError **error)
 {
+    MilterClientContextPrivate *priv;
     MilterEncoder *encoder;
     gchar *packet = NULL;
     gsize packet_size;
+
+    if (!from) {
+        g_set_error(error,
+                    MILTER_CLIENT_CONTEXT_ERROR,
+                    MILTER_CLIENT_CONTEXT_ERROR_NULL,
+                    "from should not be NULL: parameters=<%s>",
+                    parameters ? parameters : "NULL");
+        return FALSE;
+    }
+
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    if (!validate_state("change-from",
+                        MILTER_CLIENT_CONTEXT_STATE_END_OF_MESSAGE,
+                        priv->state,
+                        error))
+        return FALSE;
+
+    if (!validate_action("change-from",
+                         MILTER_ACTION_CHANGE_ENVELOPE_FROM,
+                         priv->option,
+                         error))
+        return FALSE;
 
     milter_debug("[%u] [client][send][change-from] <%s>:<%s>",
                  milter_agent_get_tag(MILTER_AGENT(context)),

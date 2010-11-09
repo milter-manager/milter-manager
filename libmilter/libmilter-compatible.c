@@ -850,15 +850,22 @@ int
 smfi_chgfrom (SMFICTX *context, char *mail, char *arguments)
 {
     SmfiContextPrivate *priv;
+    GError *error = NULL;
 
     priv = SMFI_CONTEXT_GET_PRIVATE(context);
     if (!priv->client_context)
         return MI_FAILURE;
 
-    if (milter_client_context_change_from(priv->client_context, mail, arguments))
+    if (milter_client_context_change_from(priv->client_context, mail, arguments,
+                                          &error)) {
         return MI_SUCCESS;
-    else
+    } else {
+        if (error) {
+            milter_error("failed to change from: %s", error->message);
+            g_error_free(error);
+        }
         return MI_FAILURE;
+    }
 }
 
 int

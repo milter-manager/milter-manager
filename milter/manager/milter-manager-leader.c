@@ -727,9 +727,20 @@ cb_change_from (MilterReplySignals *_reply,
 {
     MilterManagerLeader *leader = user_data;
     MilterManagerLeaderPrivate *priv;
+    GError *error = NULL;
 
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
-    milter_client_context_change_from(priv->client_context, from, parameters);
+    if (milter_client_context_change_from(priv->client_context, from, parameters,
+                                          &error)) {
+        milter_debug(
+            "[%u] [leader][from][change] <%s>(%s)",
+            priv->tag, from, parameters ? parameters : "NULL");
+    } else {
+        milter_error("[%u] [leader][error][change-from] %s",
+                     priv->tag, error->message);
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(leader), error);
+        g_error_free(error);
+    }
 }
 
 static void

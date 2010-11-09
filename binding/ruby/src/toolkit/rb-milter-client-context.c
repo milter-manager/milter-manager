@@ -130,14 +130,16 @@ change_from (int argc, VALUE *argv, VALUE self)
 {
     VALUE rb_from, rb_parameters;
     const gchar *from, *parameters = NULL;
-    gboolean success;
+    GError *error = NULL;
 
     rb_scan_args(argc, argv, "11", &rb_from, &rb_parameters);
     from = RVAL2CSTR(rb_from);
     if (!NIL_P(rb_parameters))
 	parameters = RVAL2CSTR(rb_parameters);
-    success = milter_client_context_change_from(SELF(self), from, parameters);
-    return CBOOL2RVAL(success);
+    if (!milter_client_context_change_from(SELF(self), from, parameters, &error))
+        RAISE_GERROR(error);
+
+    return Qnil;
 }
 
 static VALUE
