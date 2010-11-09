@@ -97,6 +97,33 @@ format_reply (VALUE self)
 }
 
 static VALUE
+add_recipient (int argc, VALUE *argv, VALUE self)
+{
+    VALUE rb_recipient, rb_parameters;
+    const gchar *recipient, *parameters = NULL;
+    gboolean success;
+
+    rb_scan_args(argc, argv, "11", &rb_recipient, &rb_parameters);
+    recipient = RVAL2CSTR(rb_recipient);
+    if (!NIL_P(rb_parameters))
+	parameters = RVAL2CSTR(rb_parameters);
+    success = milter_client_context_add_recipient(SELF(self),
+						  recipient,
+						  parameters);
+    return CBOOL2RVAL(success);
+}
+
+static VALUE
+delete_recipient (VALUE self, VALUE recipient)
+{
+    gboolean success;
+
+    success = milter_client_context_delete_recipient(SELF(self),
+						     RVAL2CSTR(recipient));
+    return CBOOL2RVAL(success);
+}
+
+static VALUE
 get_socket_address (VALUE self)
 {
     MilterGenericSocketAddress *address;
@@ -157,6 +184,10 @@ Init_milter_client_context (void)
 		     change_header, 3);
     rb_define_method(rb_cMilterClientContext, "set_reply", set_reply, 3);
     rb_define_method(rb_cMilterClientContext, "format_reply", format_reply, 0);
+    rb_define_method(rb_cMilterClientContext, "add_recipient",
+		     add_recipient, -1);
+    rb_define_method(rb_cMilterClientContext, "delete_recipient",
+		     delete_recipient, 1);
     rb_define_method(rb_cMilterClientContext, "socket_address",
 		     get_socket_address, 0);
     rb_define_method(rb_cMilterClientContext, "n_processing_sessions",
