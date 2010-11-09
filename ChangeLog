@@ -1,3 +1,8 @@
+2010-11-09  Kouhei Sutou  <kou@cozmixng.org>
+
+	* binding/ruby/test/toolkit/test-client-context.rb: add tests for
+	Milter::ClientContext#add_recipient and #delete_recipient.
+
 2010-11-09  Kouhei Sutou  <kou@clear-code.com>
 
 	* binding/ruby/src/toolkit/rb-milter-client-context.c:

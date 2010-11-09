@@ -1,4 +1,4 @@
-# Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+# Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -42,6 +42,24 @@ class TestClientContext < Test::Unit::TestCase
     @context.state = Milter::ClientContext::STATE_END_OF_MESSAGE
     assert_nothing_raised do
       @context.add_header("foo", "bar")
+    end
+  end
+
+  def test_add_recipient
+    @context.option = Milter::Option.new
+    @context.option.add_action(Milter::ACTION_ADD_ENVELOPE_RECIPIENT)
+    @context.state = Milter::ClientContext::STATE_END_OF_MESSAGE
+    assert_nothing_raised do
+      @context.add_recipient("<kou@clear-code.com>")
+    end
+  end
+
+  def test_delete_recipient
+    @context.option = Milter::Option.new
+    @context.option.add_action(Milter::ACTION_DELETE_ENVELOPE_RECIPIENT)
+    @context.state = Milter::ClientContext::STATE_END_OF_MESSAGE
+    assert_nothing_raised do
+      @context.delete_recipient("<kou@clear-code.com>")
     end
   end
 
