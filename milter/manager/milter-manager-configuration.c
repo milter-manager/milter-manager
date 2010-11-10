@@ -1857,7 +1857,8 @@ milter_manager_configuration_to_xml_string (MilterManagerConfiguration *configur
         if (g_stat(full_path, &status) == 0) {
             gchar *content;
 
-            content = g_strdup_printf("%" G_GSSIZE_FORMAT, status.st_mtime);
+            content = g_strdup_printf("%" G_GINT64_FORMAT,
+                                      (gint64)status.st_mtime);
             milter_utils_xml_append_text_element(string,
                                                  "last-modified", content,
                                                  indent + 2);

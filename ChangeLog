@@ -1,5 +1,9 @@
 2010-11-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-configuration.c: use gint64 for
+	time_t not gssize.
+	Suggested by OBATA Akio. Thanks!!!
+
 	* text/fixtures/leader/: follow the change_from change.
 
 	* milter/client/milter-client-context.[ch],
