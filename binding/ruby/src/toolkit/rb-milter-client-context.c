@@ -175,6 +175,21 @@ delete_recipient (VALUE self, VALUE recipient)
 }
 
 static VALUE
+replace_body (VALUE self, VALUE rb_chunk)
+{
+    GError *error = NULL;
+    const gchar *chunk;
+
+    chunk = RVAL2CSTR(rb_chunk);
+    if (!milter_client_context_replace_body(SELF(self),
+					    chunk, RSTRING_LEN(rb_chunk),
+					    &error))
+	RAISE_GERROR(error);
+
+    return Qnil;
+}
+
+static VALUE
 get_socket_address (VALUE self)
 {
     MilterGenericSocketAddress *address;
@@ -241,6 +256,7 @@ Init_milter_client_context (void)
 		     add_recipient, -1);
     rb_define_method(rb_cMilterClientContext, "delete_recipient",
 		     delete_recipient, 1);
+    rb_define_method(rb_cMilterClientContext, "replace_body", replace_body, 1);
     rb_define_method(rb_cMilterClientContext, "socket_address",
 		     get_socket_address, 0);
     rb_define_method(rb_cMilterClientContext, "n_processing_sessions",

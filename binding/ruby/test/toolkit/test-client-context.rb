@@ -72,6 +72,15 @@ class TestClientContext < Test::Unit::TestCase
     end
   end
 
+  def test_replace_body
+    @context.option = Milter::Option.new
+    @context.option.add_action(Milter::ACTION_CHANGE_BODY)
+    @context.state = Milter::ClientContext::STATE_END_OF_MESSAGE
+    assert_nothing_raised do
+      @context.replace_body("Hello")
+    end
+  end
+
   def test_change_from
     @context.option = Milter::Option.new
     @context.option.add_action(Milter::ACTION_CHANGE_ENVELOPE_FROM)
