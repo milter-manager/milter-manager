@@ -759,7 +759,7 @@ cb_add_recipient (MilterReplySignals *_reply,
         milter_debug("[%u] [leader][recipient][add] <%s>(%s)",
                      priv->tag, recipient, parameters ? parameters : "NULL");
     } else {
-        milter_error("[%u] [leader][error][add] %s",
+        milter_error("[%u] [leader][error][add-recipient] %s",
                      priv->tag, error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(leader), error);
         g_error_free(error);
@@ -781,7 +781,7 @@ cb_delete_recipient (MilterReplySignals *_reply,
         milter_debug("[%u] [leader][recipient][delete] <%s>",
                      priv->tag, recipient);
     } else {
-        milter_error("[%u] [leader][error][delete] %s",
+        milter_error("[%u] [leader][error][delete-recipient] %s",
                      priv->tag, error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(leader), error);
         g_error_free(error);
@@ -795,9 +795,21 @@ cb_replace_body (MilterReplySignals *_reply,
 {
     MilterManagerLeader *leader = user_data;
     MilterManagerLeaderPrivate *priv;
+    GError *error = NULL;
 
     priv = MILTER_MANAGER_LEADER_GET_PRIVATE(leader);
-    milter_client_context_replace_body(priv->client_context, chunk, chunk_size);
+    if (milter_client_context_replace_body(priv->client_context,
+                                           chunk, chunk_size, &error)) {
+        milter_debug("[%u] [leader][body][replace] <%.10s%s>(%zd)>",
+                     priv->tag,
+                     chunk, chunk_size > 10 ? "..." : "",
+                     chunk_size);
+    } else {
+        milter_error("[%u] [leader][error][replace-body] %s",
+                     priv->tag, error->message);
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(leader), error);
+        g_error_free(error);
+    }
 }
 
 static void

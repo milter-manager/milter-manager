@@ -38,6 +38,8 @@ static MilterReplyEncoder *reply_encoder;
 static GIOChannel *channel;
 static MilterWriter *writer;
 
+static GError *error_in_callback;
+
 static gchar *packet;
 static gsize packet_size;
 static GString *expected_packet;
@@ -49,7 +51,8 @@ cb_end_of_message (MilterClientContext *context,
                    const gchar *chunk, gsize size,
                    gpointer user_data)
 {
-    milter_client_context_replace_body(context, body->str, body->len);
+    milter_client_context_replace_body(context, body->str, body->len,
+                                       &error_in_callback);
     milter_agent_set_writer(MILTER_AGENT(context), NULL);
 
     return MILTER_STATUS_CONTINUE;
@@ -66,6 +69,16 @@ setup_signals (MilterClientContext *context)
 #undef CONNECT
 }
 
+static void
+setup_option (MilterClientContext *context)
+{
+    MilterOption *option;
+
+    option = milter_option_new(2, MILTER_ACTION_CHANGE_BODY, 0);
+    milter_client_context_set_option(context, option);
+    g_object_unref(option);
+}
+
 void
 setup (void)
 {
@@ -78,6 +91,10 @@ setup (void)
     milter_agent_set_writer(MILTER_AGENT(context), writer);
     milter_agent_start(MILTER_AGENT(context), NULL);
     setup_signals(context);
+
+    setup_option(context);
+
+    error_in_callback = NULL;
 
     command_encoder = MILTER_COMMAND_ENCODER(milter_command_encoder_new());
     reply_encoder = MILTER_REPLY_ENCODER(milter_reply_encoder_new());
@@ -130,7 +147,9 @@ feed (void)
 {
     GError *error = NULL;
 
+    gcut_assert_error(error_in_callback);
     milter_client_context_feed(context, packet, packet_size, &error);
+    gcut_assert_error(error_in_callback);
 
     return error;
 }

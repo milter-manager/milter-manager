@@ -953,16 +953,23 @@ int
 smfi_replacebody (SMFICTX *context, unsigned char *new_body, int new_body_size)
 {
     SmfiContextPrivate *priv;
+    GError *error = NULL;
 
     priv = SMFI_CONTEXT_GET_PRIVATE(context);
     if (!priv->client_context)
         return MI_FAILURE;
 
     if (milter_client_context_replace_body(priv->client_context,
-                                           (char *)new_body, new_body_size))
+                                           (char *)new_body, new_body_size,
+                                           &error)) {
         return MI_SUCCESS;
-    else
+    } else {
+        if (error) {
+            milter_error("failed to replace body: %s", error->message);
+            g_error_free(error);
+        }
         return MI_FAILURE;
+    }
 }
 
 int

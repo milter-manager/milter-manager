@@ -2394,11 +2394,26 @@ milter_client_context_delete_recipient (MilterClientContext *context,
 
 gboolean
 milter_client_context_replace_body (MilterClientContext *context,
-                                    const gchar *body, gsize body_size)
+                                    const gchar *body, gsize body_size,
+                                    GError **error)
 {
+    MilterClientContextPrivate *priv;
     gsize rest_size, packed_size = 0;
     MilterEncoder *encoder;
     MilterReplyEncoder *reply_encoder;
+
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    if (!validate_state("replace-body",
+                        MILTER_CLIENT_CONTEXT_STATE_END_OF_MESSAGE,
+                        priv->state,
+                        error))
+        return FALSE;
+
+    if (!validate_action("replace-body",
+                         MILTER_ACTION_CHANGE_BODY,
+                         priv->option,
+                         error))
+        return FALSE;
 
     milter_debug("[%u] [client][send][replace-body] <%" G_GSIZE_FORMAT ">",
                  milter_agent_get_tag(MILTER_AGENT(context)),

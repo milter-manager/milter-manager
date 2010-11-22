@@ -1,6 +1,14 @@
 2010-11-22  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/client/milter-client-context.[ch]
+	(milter_client_context_replace_body): add error check.
+
+	* libmilter/libmilter-compatible.c,
+	binding/ruby/src/toolkit/rb-milter-client-context.c,
+	milter/manager/milter-manager-leader.c,
+	test/client/test-client-context-body.c: follow the above change.
+
+	* milter/client/milter-client-context.[ch]
 	(milter_client_context_delete_recipient): add error check.
 
 	* libmilter/libmilter-compatible.c,

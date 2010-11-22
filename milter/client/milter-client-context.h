@@ -686,6 +686,7 @@ gboolean             milter_client_context_delete_recipient  (MilterClientContex
  * @context: a %MilterClientContext.
  * @body: the new body.
  * @body_size: the size of @body.
+ * @error: return location for an error, or %NULL.
  *
  * Replaces the body of the current message with @body. This
  * function can be called in
@@ -700,7 +701,8 @@ gboolean             milter_client_context_delete_recipient  (MilterClientContex
  */
 gboolean             milter_client_context_replace_body      (MilterClientContext *context,
                                                               const gchar *body,
-                                                              gsize        body_size);
+                                                              gsize        body_size,
+                                                              GError     **error);
 
 /**
  * milter_client_context_progress:
