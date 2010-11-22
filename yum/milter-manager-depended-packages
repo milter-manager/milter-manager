@@ -1,0 +1,8 @@
+intltool
+gettext
+gtk-doc
+gcc
+make
+glib2-devel
+ruby
+ruby-devel

@@ -1,5 +1,7 @@
 2010-11-22  Kouhei Sutou  <kou@cozmixng.org>
 
+	* yum/milter-manager-depended-packages: add.
+
 	* milter-manager.spec.in: move to ...
 	* rpm/centos/milter-manager.spec.in: ... here.
 
