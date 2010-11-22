@@ -722,7 +722,9 @@ AC_CONFIG_FILES([Makefile
 		 misc/Makefile
 		 html/Makefile
 		 license/Makefile
-		 build/Makefile])
+		 build/Makefile
+		 apt/Makefile
+		 yum/Makefile])
 
 AC_OUTPUT
 

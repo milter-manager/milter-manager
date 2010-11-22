@@ -1,0 +1,10 @@
+# Default
+#USER=milter-manager
+#GROUP=mail
+#SOCKET_GROUP=mail
+#CONNECTION_SPEC=unix:/var/run/milter-manager/milter-manager.sock
+
+# For postfix, you might want these settings:
+#GROUP=postfix
+#SOCKET_GROUP=postfix
+#CONNECTION_SPEC=unix:/var/spool/postfix/milter-manager/milter-manager.sock

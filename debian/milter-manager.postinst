@@ -1,0 +1,35 @@
+#! /bin/sh
+
+set -e
+
+prevver="$2"
+
+add_system_user() {
+        if ! getent passwd milter-manager >/dev/null; then
+                adduser --group --system \
+                        --home /var/lib/milter-manager milter-manager;
+        fi
+}
+
+fixperms() {
+        dpkg-statoverride --list /var/run/milter-manager >/dev/null || \
+                dpkg-statoverride --update --add milter-manager milter-manager 0755 /var/run/milter-manager
+        dpkg-statoverride --list /var/spool/postfix/milter-manager >/dev/null || \
+                dpkg-statoverride --update --add milter-manager milter-manager 0755 /var/spool/postfix/milter-manager
+}
+
+case "$1" in
+        configure)
+                add_system_user
+                fixperms
+                ;;
+        abort-upgrade|abort-deconfigure|abort-remove)
+                :
+                ;;
+        *)
+                echo "Called with unknown argument $1, bailing out."
+                exit 1
+                ;;
+esac
+
+#DEBHELPER#

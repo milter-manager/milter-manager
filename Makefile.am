@@ -13,7 +13,9 @@ SUBDIRS =		\
 	misc		\
 	doc		\
 	html		\
-	license
+	license		\
+	apt		\
+	yum
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA =				\

@@ -1,0 +1,150 @@
+#!/usr/bin/make -f
+
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/class/autotools.mk
+
+DEB_CONFIGURE_USER_FLAGS =							\
+	--with-default-effective-user=milter-manager				\
+	--with-default-effective-group=mail					\
+	--with-default-socket-group=mail					\
+	--with-default-pid-file=/var/run/milter-manager/milter-manager.pid	\
+	--with-default-connection-spec=unix:/var/run/milter-manager/milter-manager.sock \
+	--enable-ruby-milter=$$(ruby -rrbconfig -e 'print Config::CONFIG["rubylibdir"]')
+
+DEB_INSTALL_DIRS_milter-manager =			\
+	/usr/lib/milter-manager/binding/ext		\
+	/usr/lib/milter-manager/binding/lib/milter	\
+	/usr/lib/milter-manager/module/configuration	\
+	/usr/bin					\
+	/usr/sbin					\
+	/usr/share/man/man1				\
+	/usr/share/man/ja/man1				\
+	/etc/milter-manager/applicable-conditions	\
+	/etc/milter-manager/defaults			\
+	/var/run/milter-manager				\
+	/var/spool/postfix/milter-manager
+
+DEB_INSTALL_DIRS_milter-manager-dev =			\
+	/usr/include/milter-manager/milter/manager
+
+DEB_INSTALL_DIRS_milter-manager-admin =			\
+	/usr/share/milter-manager/admin
+
+DEB_INSTALL_DIRS_milter-manager-munin-plugins =		\
+	/usr/share/munin/plugins			\
+	/etc/munin/plugin-conf.d
+
+DEB_INSTALL_DIRS_libmilter-toolkit =			\
+	/usr/bin					\
+	/usr/lib					\
+	/usr/share/man/man1				\
+	/usr/share/man/ja/man1
+
+DEB_INSTALL_DIRS_libmilter-toolkit-dev =		\
+	/usr/include/milter-manager/milter/core		\
+	/usr/include/milter-manager/milter/client	\
+	/usr/include/milter-manager/milter/server
+
+DEB_INSTALL_DIRS_libmilter-toolkit-ruby1.8 =		\
+	/usr/lib/ruby					\
+	/usr/lib/milter-manager/binding/ext		\
+	/usr/lib/milter-manager/binding/lib/milter
+
+DEB_INSTALL_DIRS_libmilter-compatible =			\
+	/usr/lib/milter-manager
+
+DEB_INSTALL_DIRS_libmilter-compatible-dev =		\
+	/usr/include/milter-manager/libmilter/libmilter
+
+DEB_INSTALL_DOCS_ALL = NEWS NEWS.ja README.ja TODO debian/README.Debian
+#DEB_INSTALL_DOCS_milter-manager = doc/reference/
+DEB_INSTALL_DOCS_libmilter-toolkit = ChangeLog.toolkit
+DEB_INSTALL_DOCS_libmilter-toolkit-dev = ChangeLog.toolkit
+
+DEB_SHLIBDEPS_INCLUDE_milter-manager =: libmilter-toolkit
+DEB_SHLIBDEPS_INCLUDE_libmilter-compatible =: libmilter-toolkit
+
+install/milter-manager::
+	cp -ar debian/tmp/usr/lib/libmilter-manager.* debian/milter-manager/usr/lib/
+	cp -ar debian/tmp/usr/lib/milter-manager/binding/ext/milter_manager.* \
+		debian/milter-manager/usr/lib/milter-manager/binding/ext
+	cp -ar debian/tmp/usr/lib/milter-manager/binding/lib/milter/manager* \
+		debian/milter-manager/usr/lib/milter-manager/binding/lib/milter/
+	cp -ar debian/tmp/usr/lib/milter-manager/module/configuration/* \
+		debian/milter-manager/usr/lib/milter-manager/module/configuration/
+	cp -ar debian/tmp/usr/bin/milter-performance-check debian/milter-manager/usr/bin/
+	cp -ar debian/tmp/usr/bin/milter-manager-* debian/milter-manager/usr/bin/
+	cp -ar debian/tmp/usr/sbin/* debian/milter-manager/usr/sbin/
+	cp -ar debian/tmp/usr/share/man/man1/milter-manager* \
+		debian/milter-manager/usr/share/man/man1/
+	cp -ar debian/tmp/usr/share/man/man1/milter-performance-check* \
+		debian/milter-manager/usr/share/man/man1/
+	cp -ar debian/tmp/usr/share/man/ja/man1/milter-manager* \
+		debian/milter-manager/usr/share/man/ja/man1/
+	cp -ar debian/tmp/usr/share/man/ja/man1/milter-performance-check* \
+		debian/milter-manager/usr/share/man/ja/man1/
+	cp -ar debian/tmp/etc/milter-manager/applicable-conditions/ debian/milter-manager/etc/milter-manager/
+	cp -ar debian/tmp/etc/milter-manager/defaults/ debian/milter-manager/etc/milter-manager/
+	cp -ar debian/tmp/etc/milter-manager/milter-manager.conf debian/milter-manager/etc/milter-manager/
+
+install/milter-manager-dev::
+	cp -ar debian/tmp/usr/include/milter-manager/milter/manager.h \
+		debian/milter-manager-dev/usr/include/milter-manager/milter/
+	cp -ar debian/tmp/usr/include/milter-manager/milter/manager/* \
+		debian/milter-manager-dev/usr/include/milter-manager/milter/manager/
+
+install/milter-manager-admin::
+	cp -ar debian/tmp/usr/share/milter-manager/admin/* \
+		debian/milter-manager-admin/usr/share/milter-manager/admin/
+
+install/milter-manager-munin-plugins::
+	cp -ar debian/milter-manager-munin-plugin.conf \
+		debian/milter-manager-munin-plugins/etc/munin/plugin-conf.d/milter-manager
+	cp -ar debian/tmp/usr/share/milter-manager/munin/plugins/* \
+		debian/milter-manager-munin-plugins/usr/share/munin/plugins/
+
+install/libmilter-toolkit::
+	cp -ar debian/tmp/usr/bin/milter-test-* debian/libmilter-toolkit/usr/bin/
+	cp -ar debian/tmp/usr/lib/libmilter-core.* debian/libmilter-toolkit/usr/lib/
+	cp -ar debian/tmp/usr/lib/libmilter-client.* debian/libmilter-toolkit/usr/lib/
+	cp -ar debian/tmp/usr/lib/libmilter-server.* debian/libmilter-toolkit/usr/lib/
+	cp -ar debian/tmp/usr/share/man/man1/milter-test-* \
+		debian/libmilter-toolkit/usr/share/man/man1/
+	cp -ar debian/tmp/usr/share/man/ja/man1/milter-test-* \
+		debian/libmilter-toolkit/usr/share/man/ja/man1/
+
+install/libmilter-toolkit-dev::
+	cp -ar debian/tmp/usr/include/milter-manager/milter/core.h \
+		debian/libmilter-toolkit-dev/usr/include/milter-manager/milter/
+	cp -ar debian/tmp/usr/include/milter-manager/milter/client.h \
+		debian/libmilter-toolkit-dev/usr/include/milter-manager/milter/
+	cp -ar debian/tmp/usr/include/milter-manager/milter/server.h \
+		debian/libmilter-toolkit-dev/usr/include/milter-manager/milter/
+	cp -ar debian/tmp/usr/include/milter-manager/milter/core/* \
+		debian/libmilter-toolkit-dev/usr/include/milter-manager/milter/core/
+	cp -ar debian/tmp/usr/include/milter-manager/milter/client/* \
+		debian/libmilter-toolkit-dev/usr/include/milter-manager/milter/client/
+	cp -ar debian/tmp/usr/include/milter-manager/milter/server/* \
+		debian/libmilter-toolkit-dev/usr/include/milter-manager/milter/server/
+
+install/libmilter-toolkit-ruby1.8::
+	cp -ar debian/tmp/usr/lib/ruby/* \
+		debian/libmilter-toolkit-ruby1.8/usr/lib/ruby/
+	cp -ar debian/tmp/usr/lib/milter-manager/binding/ext/milter_toolkit.* \
+		debian/libmilter-toolkit-ruby1.8/usr/lib/milter-manager/binding/ext
+	cp -ar debian/tmp/usr/lib/milter-manager/binding/lib/milter.rb \
+		debian/libmilter-toolkit-ruby1.8/usr/lib/milter-manager/binding/lib/
+	cp -ar debian/tmp/usr/lib/milter-manager/binding/lib/milter/compatible.rb \
+		debian/libmilter-toolkit-ruby1.8/usr/lib/milter-manager/binding/lib/milter/
+	cp -ar debian/tmp/usr/lib/milter-manager/binding/lib/milter/toolkit.rb \
+		debian/libmilter-toolkit-ruby1.8/usr/lib/milter-manager/binding/lib/milter/
+	cp -ar debian/tmp/usr/lib/milter-manager/binding/lib/milter/client* \
+		debian/libmilter-toolkit-ruby1.8/usr/lib/milter-manager/binding/lib/milter/
+
+install/libmilter-compatible::
+	cp -ar debian/tmp/usr/lib/milter-manager/libmilter* \
+		debian/libmilter-compatible/usr/lib/milter-manager/
+
+install/libmilter-compatible-dev::
+	cp -ar debian/tmp/usr/include/milter-manager/libmilter/libmilter/* \
+		debian/libmilter-compatible-dev/usr/include/milter-manager/libmilter/libmilter/

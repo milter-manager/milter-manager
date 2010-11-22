@@ -1,0 +1,60 @@
+milter-manager (1.6.1-1) hardy; urgency=low
+
+  * New upstream release.
+
+ -- Kouhei Sutou <kou@clear-code.com>  Sat, 21 Aug 2010 10:33:15 +0900
+
+milter-manager (1.6.0-0) hardy; urgency=low
+
+  * New upstream release.
+
+ -- Kouhei Sutou <kou@clear-code.com>  Wed, 11 Aug 2010 10:33:15 +0900
+
+milter-manager (1.4.2-0~test1) hardy; urgency=low
+
+  * New upstream release.
+
+ -- Jun Kobayashi <jkbys@ubuntu.com>  Sun, 29 Mar 2010 04:19:59 +0900
+
+milter-manager (1.4.1-0~test1) hardy; urgency=low
+
+  * New upstream release.
+
+ -- Jun Kobayashi <jkbys@ubuntu.com>  Tue, 29 Oct 2009 04:19:59 +0900
+
+milter-manager (1.4.0-0~test1) hardy; urgency=low
+
+  * New upstream release.
+
+ -- Jun Kobayashi <jkbys@ubuntu.com>  Tue, 13 Oct 2009 04:19:59 +0900
+
+milter-manager (1.2.0-0~test1) hardy; urgency=low
+
+  * New upstream release.
+
+ -- Jun Kobayashi <jkbys@ubuntu.com>  Fri, 17 Jul 2009 04:19:59 +0900
+
+milter-manager (1.0.1-0~test1) hardy; urgency=low
+
+  * New upstream release.
+
+ -- Jun Kobayashi <jkbys@ubuntu.com>  Thu, 19 Apr 2009 04:19:59 +0900
+
+milter-manager (1.0.0-0~test1) hardy; urgency=low
+
+  * New upstream release.
+
+ -- Jun Kobayashi <jkbys@ubuntu.com>  Thu, 16 Apr 2009 04:19:59 +0900
+
+milter-manager (0.9.0-0~test1) hardy; urgency=low
+
+  * New upstream release.
+
+ -- Jun Kobayashi <jkbys@ubuntu.com>  Wed, 18 Mar 2009 04:19:59 +0900
+
+milter-manager (0.8.0-0~test5) hardy; urgency=low
+
+  * Initial release (Closes: #nnnn)
+
+ -- Jun Kobayashi <jkbys@ubuntu.com>  Mon, 02 Feb 2009 11:21:28 +0900
+
