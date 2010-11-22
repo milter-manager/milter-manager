@@ -1084,6 +1084,7 @@ parse_mail_contents (const gchar *contents, GError **error)
     gchar **lines, **first_lines;
     GList *recipient_list = NULL;
     GString *body_string;
+    GPtrArray *chunks;
 
     lines = g_strsplit(contents, "\n", -1);
     first_lines = lines;
@@ -1114,10 +1115,25 @@ parse_mail_contents (const gchar *contents, GError **error)
         }
     }
 
+    chunks = g_ptr_array_new();
     body_string = g_string_new(NULL);
     for (; *lines; lines++) {
-        g_string_append_printf(body_string, "%s\r\n", *lines);
+        gsize chunk_length;
+        chunk_length = body_string->len + strlen(*lines) + strlen("\r\n");
+        if (chunk_length > MILTER_CHUNK_SIZE) {
+            g_ptr_array_add(chunks, g_strdup(body_string->str));
+            g_string_truncate(body_string, 0);
+        }
+        g_string_append(body_string, *lines);
+        g_string_append(body_string, "\r\n");
     }
+    if (body_string->len > 0) {
+        g_ptr_array_add(chunks,
+                        g_strndup(body_string->str,
+                                  body_string->len - strlen("\r\n")));
+    }
+    g_string_free(body_string, TRUE);
+    body_chunks = (gchar **)g_ptr_array_free(chunks, FALSE);
 
     if (recipient_list) {
         gint i, length;
@@ -1131,14 +1147,6 @@ parse_mail_contents (const gchar *contents, GError **error)
         recipients[length] = NULL;
         g_list_free(recipient_list);
     }
-
-    if (body_string->len > 0) {
-        g_string_truncate(body_string, body_string->len - strlen("\r\n"));
-        body_chunks = g_new0(gchar *, 2);
-        body_chunks[0] = g_strdup(body_string->str);
-        body_chunks[1] = NULL;
-    }
-    g_string_free(body_string, TRUE);
 
     g_strfreev(first_lines);
 

@@ -1,5 +1,7 @@
 2010-11-22  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-test-server.c: break body down to as large as chunks.
+
 	* tool/milter-test-server.c: add missing spaces.
 
 2010-11-10  Kouhei Sutou  <kou@cozmixng.org>
