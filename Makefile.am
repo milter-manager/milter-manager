@@ -1,3 +1,5 @@
+ACLOCAL_AMFLAGS = $$ACLOCAL_OPTIONS
+
 SUBDIRS =		\
 	milter		\
 	libmilter	\

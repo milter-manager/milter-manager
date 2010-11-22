@@ -1,5 +1,7 @@
 2010-11-22  Kouhei Sutou  <kou@cozmixng.org>
 
+	* Makefile.am (ACLOCAL_AMFLAGS): use the same value with autogen.sh.
+
 	* Makefile.am (update-latest-release): also update debian/changelog.
 
 	* apt/, debian/, yum/: add.
