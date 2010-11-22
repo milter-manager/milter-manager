@@ -75,6 +75,7 @@ update-latest-release:
 	  $(OLD_RELEASE) $(OLD_RELEASE_DATE)			\
 	  $(VERSION) $(NEW_RELEASE_DATE)			\
 	  milter-manager.spec.in				\
+	  debian/changelog					\
 	  html/index.html					\
 	  html/index.html.ja					\
 	  html/blog/tdiary.conf					\

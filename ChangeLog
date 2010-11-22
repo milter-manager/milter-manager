@@ -1,5 +1,7 @@
 2010-11-22  Kouhei Sutou  <kou@cozmixng.org>
 
+	* Makefile.am (update-latest-release): also update debian/changelog.
+
 	* apt/, debian/, yum/: add.
 
 	* binding/ruby/lib/milter/client.rb: check method responsibility.
