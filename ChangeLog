@@ -1,5 +1,9 @@
 2010-11-22  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.c: ensure closing opened
+	temporary file for large body message.
+	Reported by Kenji Shiono. Thanks!!!
+
 	* tool/milter-test-server.c: break body down to as large as chunks.
 
 	* tool/milter-test-server.c: add missing spaces.

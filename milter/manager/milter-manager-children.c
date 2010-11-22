@@ -3261,7 +3261,6 @@ open_body_file (MilterManagerChildren *children)
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     fd = g_file_open_tmp(NULL, &priv->body_file_name, &error);
-    priv->body_file = g_io_channel_unix_new(fd);
     if (error) {
         milter_error("[%u] [children][error][body][open] %s",
                      priv->tag, error->message);
@@ -3270,6 +3269,8 @@ open_body_file (MilterManagerChildren *children)
         g_error_free(error);
         return FALSE;
     }
+    priv->body_file = g_io_channel_unix_new(fd);
+    g_io_channel_set_close_on_unref(priv->body_file, TRUE);
 
     g_io_channel_set_encoding(priv->body_file, NULL, &error);
     if (error) {
