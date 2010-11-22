@@ -1,5 +1,7 @@
 2010-11-23  Kouhei Sutou  <kou@cozmixng.org>
 
+	* debian/control: use correct section.
+
 	* apt/build-in-chroot.sh: remove .svn/ in debian/.
 
 	* yum/build-rpm.sh: update.

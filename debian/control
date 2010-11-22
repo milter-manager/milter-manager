@@ -1,12 +1,12 @@
 Source: milter-manager
-Section: universe/mail
-Priority: extra
+Priority: optional
 Maintainer: Kouhei Sutou <kou@clear-code.com>, Jun Kobayashi <jkbys@ubuntu.com>
 Build-Depends: debhelper (>= 5), autotools-dev, libglib2.0-dev, ruby, ruby1.8-dev, libglib2-ruby1.8, cdbs, intltool
 Standards-Version: 3.7.3.0
 Homepage: http://milter-manager.sourceforge.net/
 
 Package: milter-manager
+Section: mail
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, ruby, libmilter-toolkit-ruby1.8 (= ${binary:Version}), librrd-ruby1.8, adduser
 Suggests: postfix | sendmail, spamass-milter, clamav-milter, milter-greylist
