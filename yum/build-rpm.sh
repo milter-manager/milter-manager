@@ -1,16 +1,37 @@
 #!/bin/sh
 
-USER_NAME=milter-manager-build
-BUILD_SCRIPT=/tmp/build-milter-manager.sh
-VERSION=`cat /tmp/milter-manager-version`
+LANG=C
 
-yum update -y
-yum install -y rpm-build \
-    intltool gettext gtk-doc gcc make glib2-devel ruby ruby-devel
-yum clean packages
+PACKAGE=$(cat /tmp/build-package)
+USER_NAME=$(cat /tmp/build-user)
+VERSION=$(cat /tmp/build-version)
+DEPENDED_PACKAGES=$(cat /tmp/depended-packages)
+BUILD_SCRIPT=/tmp/build-${PACKAGE}.sh
+
+run()
+{
+    "$@"
+    if test $? -ne 0; then
+	echo "Failed $@"
+	exit 1
+    fi
+}
+
+distribution=$(cut -d ' ' -f 1 /etc/redhat-release | tr 'A-Z' 'a-z')
+distribution_version=$(cut -d ' ' -f 3 /etc/redhat-release)
+if ! rpm -q ${distribution}-release > /dev/null 2>&1; then
+    packages_dir=/var/cache/yum/core/packages
+    release_rpm=${distribution}-release-${distribution_version}-*.rpm
+    run rpm -Uvh --force ${packages_dir}/${release_rpm}
+    run rpm -Uvh --force ${packages_dir}/ca-certificates-*.rpm
+fi
+
+run yum update -y
+run yum install -y rpm-build tar ${DEPENDED_PACKAGES}
+run yum clean packages
 
 if ! id $USER_NAME >/dev/null 2>&1; then
-    useradd -m $USER_NAME
+    run useradd -m $USER_NAME
 fi
 
 cat <<EOF > $BUILD_SCRIPT
@@ -28,13 +49,13 @@ mkdir -p rpm/BUILD
 mkdir -p rpm/RPMS
 mkdir -p rpm/SRPMS
 
-cp /tmp/milter-manager-$VERSION.tar.gz rpm/SOURCES/
-cp /tmp/milter-manager.spec rpm/SPECS/
+cp /tmp/${PACKAGE}-$VERSION.tar.gz rpm/SOURCES/
+cp /tmp/${PACKAGE}.spec rpm/SPECS/
 
 chmod o+rx . rpm rpm/RPMS rpm/SRPMS
 
-rpmbuild -ba rpm/SPECS/milter-manager.spec
+rpmbuild -ba rpm/SPECS/${PACKAGE}.spec
 EOF
 
-chmod +x $BUILD_SCRIPT
-su - $USER_NAME $BUILD_SCRIPT
+run chmod +x $BUILD_SCRIPT
+run su - $USER_NAME $BUILD_SCRIPT
