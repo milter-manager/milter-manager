@@ -7,6 +7,7 @@ Standards-Version: 3.7.3.0
 Homepage: http://milter-manager.sourceforge.net/
 
 Package: milter-manager
+Section: mail
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, ruby, libmilter-toolkit-ruby1.8 (= ${binary:Version}), librrd-ruby1.8, adduser
 Suggests: postfix | sendmail, spamass-milter, clamav-milter, milter-greylist
