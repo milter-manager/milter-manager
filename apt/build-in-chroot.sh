@@ -95,7 +95,7 @@ build()
     run cp $source_dir/${PACKAGE}-${VERSION}.tar.gz \
 	${CHROOT_BASE}/$target/tmp/
     run rm -rf ${CHROOT_BASE}/$target/tmp/${PACKAGE}-debian
-    run cp -rp $source_dir/debian/${status} \
+    run cp -rp $source_dir/debian/ \
 	${CHROOT_BASE}/$target/tmp/${PACKAGE}-debian
     run echo $PACKAGE > ${CHROOT_BASE}/$target/tmp/build-package
     run echo $VERSION > ${CHROOT_BASE}/$target/tmp/build-version
