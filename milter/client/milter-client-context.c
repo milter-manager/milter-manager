@@ -2319,7 +2319,7 @@ milter_client_context_add_recipient (MilterClientContext *context,
         g_set_error(error,
                     MILTER_CLIENT_CONTEXT_ERROR,
                     MILTER_CLIENT_CONTEXT_ERROR_NULL,
-                    "recipient should not be NULL: parameters=<%s>",
+                    "added recipient should not be NULL: parameters=<%s>",
                     parameters ? parameters : "NULL");
         return FALSE;
     }
@@ -2352,11 +2352,34 @@ milter_client_context_add_recipient (MilterClientContext *context,
 
 gboolean
 milter_client_context_delete_recipient (MilterClientContext *context,
-                                        const gchar *recipient)
+                                        const gchar *recipient,
+                                        GError **error)
 {
+    MilterClientContextPrivate *priv;
     MilterEncoder *encoder;
     gchar *packet = NULL;
     gsize packet_size;
+
+    if (!recipient) {
+        g_set_error(error,
+                    MILTER_CLIENT_CONTEXT_ERROR,
+                    MILTER_CLIENT_CONTEXT_ERROR_NULL,
+                    "deleted recipient should not be NULL");
+        return FALSE;
+    }
+
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    if (!validate_state("delete-recipient",
+                        MILTER_CLIENT_CONTEXT_STATE_END_OF_MESSAGE,
+                        priv->state,
+                        error))
+        return FALSE;
+
+    if (!validate_action("delete-recipient",
+                         MILTER_ACTION_DELETE_ENVELOPE_RECIPIENT,
+                         priv->option,
+                         error))
+        return FALSE;
 
     milter_debug("[%u] [client][send][delete-recipient] <%s>",
                  milter_agent_get_tag(MILTER_AGENT(context)),

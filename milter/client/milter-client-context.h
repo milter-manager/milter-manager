@@ -663,6 +663,7 @@ gboolean             milter_client_context_add_recipient     (MilterClientContex
  * milter_client_context_delete_recipient:
  * @context: a %MilterClientContext.
  * @recipient: the envelope recipient address to be removed.
+ * @error: return location for an error, or %NULL.
  *
  * Removes a envelope recipient that named @recipient. This
  * function can be called in
@@ -676,7 +677,8 @@ gboolean             milter_client_context_add_recipient     (MilterClientContex
  * Returns: %TRUE on success.
  */
 gboolean             milter_client_context_delete_recipient  (MilterClientContext *context,
-                                                              const gchar *recipient);
+                                                              const gchar *recipient,
+                                                              GError     **error);
 
 
 /**

@@ -39,6 +39,8 @@ void data_add_recipient_error_no_recipient (void);
 void test_add_recipient_error_no_recipient (gconstpointer data);
 void data_delete_recipient (void);
 void test_delete_recipient (gconstpointer data);
+void data_delete_recipient_error_no_recipient (void);
+void test_delete_recipient_error_no_recipient (gconstpointer data);
 
 static MilterClientContext *context;
 static MilterCommandEncoder *command_encoder;
@@ -84,7 +86,8 @@ cb_end_of_message (MilterClientContext *context,
     }
 
     if (do_delete_recipient) {
-        milter_client_context_delete_recipient(context, delete_recipient);
+        milter_client_context_delete_recipient(context, delete_recipient,
+                                               &error_in_callback);
         milter_agent_set_writer(MILTER_AGENT(context), NULL);
     }
 
@@ -369,7 +372,7 @@ test_add_recipient_error_no_recipient (gconstpointer data)
     g_set_error(&expected_error_in_callback,
                 MILTER_CLIENT_CONTEXT_ERROR,
                 MILTER_CLIENT_CONTEXT_ERROR_NULL,
-                "recipient should not be NULL: parameters=<%s>",
+                "added recipient should not be NULL: parameters=<%s>",
                 test_data->parameters ? test_data->parameters : "NULL");
     gcut_assert_error(feed());
 }
@@ -377,15 +380,9 @@ test_add_recipient_error_no_recipient (gconstpointer data)
 void
 data_delete_recipient (void)
 {
-    cut_add_data("valid",
-                 g_strdup("kou@localhost"),
-                 g_free,
-                 "NULL",
-                 NULL,
-                 NULL,
-                 "empty",
-                 g_strdup(""),
-                 g_free);
+    cut_add_data("valid", g_strdup("kou@localhost"), g_free,
+                 "empty", g_strdup(""), g_free,
+                 NULL);
 }
 
 void
@@ -410,6 +407,32 @@ test_delete_recipient (gconstpointer data)
     actual_data = gcut_string_io_channel_get_string(channel);
     cut_assert_equal_memory(packet, packet_size,
                             actual_data->str, actual_data->len);
+}
+
+void
+data_delete_recipient_error_no_recipient (void)
+{
+    cut_add_data("NULL", NULL, NULL,
+                 NULL);
+}
+
+void
+test_delete_recipient_error_no_recipient (gconstpointer data)
+{
+    const gchar *recipient = data;
+
+    do_delete_recipient = TRUE;
+
+    delete_recipient = g_strdup(recipient);
+    milter_command_encoder_encode_end_of_message(command_encoder,
+                                                 &packet, &packet_size,
+                                                 NULL, 0);
+
+    g_set_error(&expected_error_in_callback,
+                MILTER_CLIENT_CONTEXT_ERROR,
+                MILTER_CLIENT_CONTEXT_ERROR_NULL,
+                "deleted recipient should not be NULL");
+    gcut_assert_error(feed());
 }
 
 /*

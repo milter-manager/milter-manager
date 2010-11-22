@@ -164,11 +164,14 @@ add_recipient (int argc, VALUE *argv, VALUE self)
 static VALUE
 delete_recipient (VALUE self, VALUE recipient)
 {
-    gboolean success;
+    GError *error = NULL;
 
-    success = milter_client_context_delete_recipient(SELF(self),
-						     RVAL2CSTR(recipient));
-    return CBOOL2RVAL(success);
+    if (!milter_client_context_delete_recipient(SELF(self),
+						RVAL2CSTR(recipient),
+						&error))
+	RAISE_GERROR(error);
+
+    return Qnil;
 }
 
 static VALUE

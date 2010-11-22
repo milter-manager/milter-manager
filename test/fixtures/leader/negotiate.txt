@@ -13,13 +13,13 @@ port=10027
 command=negotiate
 
 version=6
-action=add-headers|add-envelope-recipient|change-headers|change-envelope-from|change-body|quarantine
+action=add-headers|add-envelope-recipient|delete-envelope-recipient|change-headers|change-envelope-from|change-body|quarantine
 step=no-connect|no-helo|no-envelope-from|no-envelope-recipient|no-body|no-headers|no-end-of-header|skip|envelope-recipient-rejected|header-value-with-leading-space
 
 response=negotiate
 n_received=2
 status=continue
 
-options=6;add-headers|add-envelope-recipient|change-headers|change-envelope-from|change-body|quarantine;no-connect|no-helo|no-envelope-from|no-envelope-recipient|no-body|no-headers|no-end-of-header|skip|envelope-recipient-rejected|header-value-with-leading-space;6;add-headers|add-envelope-recipient|change-headers|change-envelope-from|change-body|quarantine;no-connect|no-helo|no-envelope-from|no-envelope-recipient|no-body|no-headers|no-end-of-header|skip|envelope-recipient-rejected|header-value-with-leading-space;
+options=6;add-headers|add-envelope-recipient|delete-envelope-recipient|change-headers|change-envelope-from|change-body|quarantine;no-connect|no-helo|no-envelope-from|no-envelope-recipient|no-body|no-headers|no-end-of-header|skip|envelope-recipient-rejected|header-value-with-leading-space;6;add-headers|add-envelope-recipient|delete-envelope-recipient|change-headers|change-envelope-from|change-body|quarantine;no-connect|no-helo|no-envelope-from|no-envelope-recipient|no-body|no-headers|no-end-of-header|skip|envelope-recipient-rejected|header-value-with-leading-space;
 
-option=6;add-headers|add-envelope-recipient|change-headers|change-envelope-from|change-body|quarantine;skip
+option=6;add-headers|add-envelope-recipient|delete-envelope-recipient|change-headers|change-envelope-from|change-body|quarantine;skip
