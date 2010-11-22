@@ -35,6 +35,8 @@ void data_change_from_error_no_from (void);
 void test_change_from_error_no_from (gconstpointer data);
 void data_add_recipient (void);
 void test_add_recipient (gconstpointer data);
+void data_add_recipient_error_no_recipient (void);
+void test_add_recipient_error_no_recipient (gconstpointer data);
 void data_delete_recipient (void);
 void test_delete_recipient (gconstpointer data);
 
@@ -76,7 +78,8 @@ cb_end_of_message (MilterClientContext *context,
     if (do_add_recipient) {
         milter_client_context_add_recipient(context,
                                             add_recipient,
-                                            add_recipient_parameters);
+                                            add_recipient_parameters,
+                                            &error_in_callback);
         milter_agent_set_writer(MILTER_AGENT(context), NULL);
     }
 
@@ -309,12 +312,7 @@ data_add_recipient (void)
                  "recipient - parameters",
                  address_test_data_new("kou@localhost", "XXX"),
                  address_test_data_free,
-                 "no recipient",
-                 address_test_data_new(NULL, NULL),
-                 address_test_data_free,
-                 "no recipient - parameters",
-                 address_test_data_new(NULL, "XXX"),
-                 address_test_data_free);
+                 NULL);
 }
 
 void
@@ -341,6 +339,39 @@ test_add_recipient (gconstpointer data)
     actual_data = gcut_string_io_channel_get_string(channel);
     cut_assert_equal_memory(packet, packet_size,
                             actual_data->str, actual_data->len);
+}
+
+void
+data_add_recipient_error_no_recipient (void)
+{
+    cut_add_data("no recipient",
+                 address_test_data_new(NULL, NULL),
+                 address_test_data_free,
+                 "no recipient - parameters",
+                 address_test_data_new(NULL, "XXX"),
+                 address_test_data_free,
+                 NULL);
+}
+
+void
+test_add_recipient_error_no_recipient (gconstpointer data)
+{
+    const AddressTestData *test_data = data;
+
+    do_add_recipient = TRUE;
+
+    add_recipient = g_strdup(test_data->address);
+    add_recipient_parameters = g_strdup(test_data->parameters);
+    milter_command_encoder_encode_end_of_message(command_encoder,
+                                                 &packet, &packet_size,
+                                                 NULL, 0);
+
+    g_set_error(&expected_error_in_callback,
+                MILTER_CLIENT_CONTEXT_ERROR,
+                MILTER_CLIENT_CONTEXT_ERROR_NULL,
+                "recipient should not be NULL: parameters=<%s>",
+                test_data->parameters ? test_data->parameters : "NULL");
+    gcut_assert_error(feed());
 }
 
 void

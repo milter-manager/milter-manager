@@ -147,16 +147,18 @@ add_recipient (int argc, VALUE *argv, VALUE self)
 {
     VALUE rb_recipient, rb_parameters;
     const gchar *recipient, *parameters = NULL;
-    gboolean success;
+    GError *error = NULL;
 
     rb_scan_args(argc, argv, "11", &rb_recipient, &rb_parameters);
     recipient = RVAL2CSTR(rb_recipient);
     if (!NIL_P(rb_parameters))
 	parameters = RVAL2CSTR(rb_parameters);
-    success = milter_client_context_add_recipient(SELF(self),
-						  recipient,
-						  parameters);
-    return CBOOL2RVAL(success);
+    if (!milter_client_context_add_recipient(SELF(self),
+					     recipient, parameters,
+					     &error))
+	RAISE_GERROR(error);
+
+    return Qnil;
 }
 
 static VALUE

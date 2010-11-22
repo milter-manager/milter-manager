@@ -872,30 +872,44 @@ int
 smfi_addrcpt (SMFICTX *context, char *recipient)
 {
     SmfiContextPrivate *priv;
+    GError *error = NULL;
 
     priv = SMFI_CONTEXT_GET_PRIVATE(context);
     if (!priv->client_context)
         return MI_FAILURE;
 
-    if (milter_client_context_add_recipient(priv->client_context, recipient, NULL))
+    if (milter_client_context_add_recipient(priv->client_context,
+                                            recipient, NULL, &error)) {
         return MI_SUCCESS;
-    else
+    } else {
+        if (error) {
+            milter_error("failed to add recipient: %s", error->message);
+            g_error_free(error);
+        }
         return MI_FAILURE;
+    }
 }
 
 int
 smfi_addrcpt_par (SMFICTX *context, char *recipient, char *args)
 {
     SmfiContextPrivate *priv;
+    GError *error = NULL;
 
     priv = SMFI_CONTEXT_GET_PRIVATE(context);
     if (!priv->client_context)
         return MI_FAILURE;
 
-    if (milter_client_context_add_recipient(priv->client_context, recipient, args))
+    if (milter_client_context_add_recipient(priv->client_context,
+                                            recipient, args, &error)) {
         return MI_SUCCESS;
-    else
+    } else {
+        if (error) {
+            milter_error("failed to add recipient: %s", error->message);
+            g_error_free(error);
+        }
         return MI_FAILURE;
+    }
 }
 
 int
