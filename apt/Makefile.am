@@ -21,7 +21,7 @@ sign:
 
 upload:
 	for distribution in $(DISTRIBUTIONS); do		\
-	  (cd $${distribution};					\
+	  (cd $${distribution} &&				\
 	   rsync -avz --exclude .svn --delete			\
 	     .htaccess dists pool				\
 	     $(SERVER_PATH)/$${distribution};			\
@@ -30,7 +30,8 @@ upload:
 
 download:
 	for distribution in $(DISTRIBUTIONS); do			\
-	  (cd $${distribution};						\
+	  (mkdir -p $${distribution} &&					\
+	   cd $${distribution} &&					\
 	   rsync -avz $(SERVER_PATH)/$${distribution}/pool/ pool;	\
 	  );								\
 	done
