@@ -29,10 +29,10 @@ milters. We use milter packages registered in RPMforge.
 We register RPMforge like the following.
 
 On 32bit environment:
-  % sudo rpm -Uhv http://packages.sw.be/rpmforge-release/rpmforge-release-0.3.6-1.el5.rf.i386.rpm
+  % sudo rpm -Uhv http://packages.sw.be/rpmforge-release/rpmforge-release-0.5.2-2.el5.rf.i386.rpm
 
 On 64bit environment:
-  % sudo rpm -Uhv http://packages.sw.be/rpmforge-release/rpmforge-release-0.3.6-1.el5.rf.x86_64.rpm
+  % sudo rpm -Uhv http://packages.sw.be/rpmforge-release/rpmforge-release-0.5.2-2.el5.rf.x86_64.rpm
 
 Now, we can install milters:
 

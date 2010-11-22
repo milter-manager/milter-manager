@@ -15,13 +15,8 @@ distributed on the milter manager site. We put the following
 content to /etc/apt/sources.list.d/milter-manager.list:
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://milter-manager.sourceforge.net/debian/stable/ lenny main
-  deb-src http://milter-manager.sourceforge.net/debian/stable/ lenny main
-  # deb http://milter-manager.sourceforge.net/debian/development/ lenny main
-  # deb-src http://milter-manager.sourceforge.net/debian/development/ lenny main
-
-If we use development series, we need to comment the first 2
-lines out and enable comment outed the 2 lines.
+  deb http://milter-manager.sourceforge.net/debian/ lenny main
+  deb-src http://milter-manager.sourceforge.net/debian/ lenny main
 
 We register the key of the package repository:
 

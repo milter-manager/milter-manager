@@ -17,24 +17,20 @@ Lynx用のパッケージを配布しています。まず、以下の内容の
 === Hardy Heronの場合
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://milter-manager.sourceforge.net/ubuntu/stable/ hardy universe
-  deb-src http://milter-manager.sourceforge.net/ubuntu/stable/ hardy universe
-  # deb http://milter-manager.sourceforge.net/ubuntu/development/ hardy universe
-  # deb-src http://milter-manager.sourceforge.net/ubuntu/development/ hardy universe
-
-開発版を利用する場合は最初の2行をコメントアウトし、すでにコ
-メントアウトされている2行のコメントを外します。
+  deb http://milter-manager.sourceforge.net/ubuntu/ hardy universe
+  deb-src http://milter-manager.sourceforge.net/ubuntu/ hardy universe
 
 === Lucid Lynxの場合
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://milter-manager.sourceforge.net/ubuntu/stable/ lucid universe
-  deb-src http://milter-manager.sourceforge.net/ubuntu/stable/ lucid universe
-  # deb http://milter-manager.sourceforge.net/ubuntu/development/ lucid universe
-  # deb-src http://milter-manager.sourceforge.net/ubuntu/development/ lucid universe
+  deb http://milter-manager.sourceforge.net/ubuntu/ lucid universe
+  deb-src http://milter-manager.sourceforge.net/ubuntu/ lucid universe
 
-開発版を利用する場合は最初の2行をコメントアウトし、すでにコ
-メントアウトされている2行のコメントを外します。
+=== Maverick Meerkaの場合
+
+/etc/apt/sources.list.d/milter-manager.list:
+  deb http://milter-manager.sourceforge.net/ubuntu/ maverick universe
+  deb-src http://milter-manager.sourceforge.net/ubuntu/ maverick universe
 
 === インストール
 

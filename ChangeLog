@@ -1,3 +1,7 @@
+2010-11-23  Kouhei Sutou  <kou@cozmixng.org>
+
+	* doc/install-to-*: update package URLs.
+
 2010-11-22  Kouhei Sutou  <kou@cozmixng.org>
 
 	* yum/milter-manager-depended-packages: add.

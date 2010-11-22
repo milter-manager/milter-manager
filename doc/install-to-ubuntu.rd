@@ -18,24 +18,20 @@ content to /etc/apt/sources.list.d/milter-manager.list:
 === For Hardy Heron
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://milter-manager.sourceforge.net/ubuntu/stable/ hardy universe
-  deb-src http://milter-manager.sourceforge.net/ubuntu/stable/ hardy universe
-  # deb http://milter-manager.sourceforge.net/ubuntu/development/ hardy universe
-  # deb-src http://milter-manager.sourceforge.net/ubuntu/development/ hardy universe
-
-If we use development series, we need to comment the first 2
-lines out and enable comment outed the 2 lines.
+  deb http://milter-manager.sourceforge.net/ubuntu/ hardy universe
+  deb-src http://milter-manager.sourceforge.net/ubuntu/ hardy universe
 
 === For Lucid Lynx
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://milter-manager.sourceforge.net/ubuntu/stable/ lucid universe
-  deb-src http://milter-manager.sourceforge.net/ubuntu/stable/ lucid universe
-  # deb http://milter-manager.sourceforge.net/ubuntu/development/ lucid universe
-  # deb-src http://milter-manager.sourceforge.net/ubuntu/development/ lucid universe
+  deb http://milter-manager.sourceforge.net/ubuntu/ lucid universe
+  deb-src http://milter-manager.sourceforge.net/ubuntu/ lucid universe
 
-If we use development series, we need to comment the first 2
-lines out and enable comment outed the 2 lines.
+=== For Maverick Meerka
+
+/etc/apt/sources.list.d/milter-manager.list:
+  deb http://milter-manager.sourceforge.net/ubuntu/ maverick universe
+  deb-src http://milter-manager.sourceforge.net/ubuntu/ maverick universe
 
 === Install
 
