@@ -2,7 +2,7 @@
 
 script_base_dir=`dirname $0`
 
-if [ $# != 2 ]; then
+if [ $# != 3 ]; then
     echo "Usage: $0 PACKAGE PACKAGE_TITLE DISTRIBUTIONS"
     echo " e.g.: $0 milter-manager 'milter manager' 'fedora centos'"
     exit 1
