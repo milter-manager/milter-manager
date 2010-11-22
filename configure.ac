@@ -658,7 +658,7 @@ AC_CONFIG_FILES([Makefile
 		 libmilter.pc
 		 milter-server.pc
 		 milter-manager.pc
-		 milter-manager.spec
+		 rpm/centos/milter-manager.spec
 		 milter/Makefile
 		 milter/core/Makefile
 		 milter/core/milter-version.h

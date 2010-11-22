@@ -17,6 +17,7 @@ SUBDIRS =		\
 	html		\
 	license		\
 	apt		\
+	rpm		\
 	yum
 
 pkgconfigdir = $(libdir)/pkgconfig
@@ -33,8 +34,7 @@ EXTRA_DIST =					\
 	README					\
 	README.ja				\
 	NEWS					\
-	NEWS.ja					\
-	milter-manager.spec
+	NEWS.ja
 
 upload: upload-doc upload-coverage
 
@@ -76,7 +76,7 @@ update-latest-release:
 	  misc/update-latest-release.rb				\
 	  $(OLD_RELEASE) $(OLD_RELEASE_DATE)			\
 	  $(VERSION) $(NEW_RELEASE_DATE)			\
-	  milter-manager.spec.in				\
+	  rpm/centos/milter-manager.spec.in			\
 	  debian/changelog					\
 	  html/index.html					\
 	  html/index.html.ja					\

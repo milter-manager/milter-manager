@@ -1,5 +1,8 @@
 2010-11-22  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter-manager.spec.in: move to ...
+	* rpm/centos/milter-manager.spec.in: ... here.
+
 	* apt/Makefile.am: ensure creating distribution directory.
 
 	* Makefile.am (ACLOCAL_AMFLAGS): use the same value with autogen.sh.
