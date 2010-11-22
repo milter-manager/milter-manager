@@ -1,5 +1,7 @@
 2010-11-22  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/client.rb: check method responsibility.
+
 	* binding/ruby/src/toolkit/rb-milter-client-context.c,
 	binding/ruby/test/toolkit/test-client-context.rb: bind replace_body.
 

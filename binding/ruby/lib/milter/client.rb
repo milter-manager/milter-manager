@@ -208,8 +208,12 @@ module Milter
       @context.macros[name]
     end
 
-    def method_missing(*args, &block)
-      @context.send(*args, &block)
+    def method_missing(name, *args, &block)
+      if @context.respond_to?(name)
+        @context.send(name, *args, &block)
+      else
+        super
+      end
     end
   end
 end
