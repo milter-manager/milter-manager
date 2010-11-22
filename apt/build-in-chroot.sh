@@ -97,6 +97,8 @@ build()
     run rm -rf ${CHROOT_BASE}/$target/tmp/${PACKAGE}-debian
     run cp -rp $source_dir/debian/ \
 	${CHROOT_BASE}/$target/tmp/${PACKAGE}-debian
+    run find ${CHROOT_BASE}/$target/tmp/${PACKAGE}-debian/ \
+	-name ".svn" -print0 | xargs -0 -r rm -rf \{\} \;
     run echo $PACKAGE > ${CHROOT_BASE}/$target/tmp/build-package
     run echo $VERSION > ${CHROOT_BASE}/$target/tmp/build-version
     run echo $build_user > ${CHROOT_BASE}/$target/tmp/build-user

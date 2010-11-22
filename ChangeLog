@@ -1,5 +1,7 @@
 2010-11-23  Kouhei Sutou  <kou@cozmixng.org>
 
+	* apt/build-in-chroot.sh: remove .svn/ in debian/.
+
 	* yum/build-rpm.sh: update.
 
 	* debian/changelog: fix package name.
