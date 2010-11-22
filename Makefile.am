@@ -74,6 +74,7 @@ update-latest-release:
 	fi
 	cd $(top_srcdir) &&					\
 	  misc/update-latest-release.rb				\
+	  $(PACKAGE)						\
 	  $(OLD_RELEASE) $(OLD_RELEASE_DATE)			\
 	  $(VERSION) $(NEW_RELEASE_DATE)			\
 	  rpm/centos/milter-manager.spec.in			\
