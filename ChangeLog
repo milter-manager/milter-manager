@@ -1,5 +1,7 @@
 2010-11-23  Kouhei Sutou  <kou@cozmixng.org>
 
+	* debian/changelog: fix package name.
+
 	* Makefile.am: parameterize package name.
 
 	* */: update release version.
