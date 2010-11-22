@@ -426,7 +426,7 @@ cb_continue (MilterServerContext *context, gpointer user_data)
             if (!(step & MILTER_STEP_NO_REPLY_BODY)) {
                 break;
             }
-            while(data->body_chunks[data->current_body_chunk]) {
+            while (data->body_chunks[data->current_body_chunk]) {
                 send_body_chunk(context, agent, data);
             }
         }
@@ -646,7 +646,7 @@ cb_delete_recipient (MilterServerContext *context, const gchar *recipient,
 
         recipients = g_strsplit(header->value, ", ", -1);
         n_recipients = g_strv_length(recipients);
-        new_recipients = g_new0(gchar*, n_recipients);
+        new_recipients = g_new0(gchar *, n_recipients);
 
         for (i = 0, new_pos = 0; i < n_recipients; i++) {
             if (!strcmp(recipients[i], recipient))
@@ -1134,7 +1134,7 @@ parse_mail_contents (const gchar *contents, GError **error)
 
     if (body_string->len > 0) {
         g_string_truncate(body_string, body_string->len - strlen("\r\n"));
-        body_chunks = g_new0(gchar*, 2);
+        body_chunks = g_new0(gchar *, 2);
         body_chunks[0] = g_strdup(body_string->str);
         body_chunks[1] = NULL;
     }
@@ -1733,7 +1733,7 @@ main (int argc, char *argv[])
         ProcessData *process_data;
         gint i;
 
-        threads = g_new0(GThread*, n_threads);
+        threads = g_new0(GThread *, n_threads);
         process_data = g_new0(ProcessData, n_threads);
         for (i = 0; i < n_threads; i++) {
             init_process_data(&process_data[i]);

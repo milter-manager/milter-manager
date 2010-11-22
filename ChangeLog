@@ -1,3 +1,7 @@
+2010-11-22  Kouhei Sutou  <kou@cozmixng.org>
+
+	* tool/milter-test-server.c: add missing spaces.
+
 2010-11-10  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/manager/milter-manager-configuration.c: use gint64 for
