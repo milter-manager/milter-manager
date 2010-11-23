@@ -196,7 +196,7 @@ deb-src http://milter-manager.sourceforge.net/debian/development/ lenny main</pr
 	      <a href="reference/ja/users.html">ユーザ</a>
 	    </li>
 	    <li>
-	      <a href="dev/reference/ja/available-milters.html">利用可能なmilter</a>
+	      <a href="reference/ja/available-milters.html">利用可能なmilter</a>
 	    </li>
 	  </ul>
         </div>

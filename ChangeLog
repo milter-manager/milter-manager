@@ -1,5 +1,7 @@
 2010-11-23  Kouhei Sutou  <kou@cozmixng.org>
 
+	* html/index.html*: use stable page link for available milters.
+
 	* configure.ac: 1.6.2 -> 1.6.3.
 
 	* doc/install-to-ubuntu.rd*, doc/install-to-debian.rd*: use stable
