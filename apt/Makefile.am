@@ -6,6 +6,9 @@ CODE_NAMES = lenny squeeze unstable hardy lucid maverick
 
 release: build update sign upload
 
+dist:
+	cd ${top_builddir} && $(MAKE) dist
+
 remove-existing-packages:
 	for distribution in $(DISTRIBUTIONS); do	\
 	  find $${distribution}/pool -not		\

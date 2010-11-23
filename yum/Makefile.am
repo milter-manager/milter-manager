@@ -6,6 +6,9 @@ CHROOT_BASE = /var/lib/chroot
 
 release: remove-existing-packages build sign update upload
 
+dist:
+	cd ${top_builddir} && $(MAKE) dist
+
 remove-existing-packages:
 	for distribution in $(DISTRIBUTIONS); do	\
 	  find $${distribution} -not -path '*/.svn/*'	\
