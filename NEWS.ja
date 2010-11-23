@@ -2,6 +2,51 @@
 
 = お知らせ --- milter managerの歴史
 
+== [release-1-6-2] 1.6.2: 2010-11-23
+
+1.6.1のバグフィックスリリースです。
+
+=== milter manager
+
+==== 改良
+
+  * Debianの起動スクリプトでのPIDファイル保存用ディレクトリ
+    の準備処理を堅牢化。
+    [Kenji Shionoさんが報告]
+
+  * time_tが必要なところではgint64を使用。
+    [OBATA Akioさんが提案]
+
+==== 修正
+
+  * 一時ファイルをclose忘れを修正。
+    [Kenji Shionoさんが報告]
+
+=== milter manager admin
+
+==== 修正
+
+  * CentOSで使用するsqlite3-rubyのバージョンを指定。（ドキュメント）
+    [Kenji Shionoさんが報告]
+
+=== Ruby milter
+
+==== 改良
+
+  * milter-tarpit.rb（サンプルmilter）を非同期化。
+    [Kenji Shionoさんが報告]
+  * milter作成APIをすべて提供。
+
+==== 修正
+
+  * コマンドラインオプションのtypoを修正。
+    [Kenji Shionoさんが報告]
+
+=== 感謝
+
+  * Kenji Shionoさん
+  * OBATA Akioさん
+
 == [release-1-6-1] 1.6.1: 2010-08-21
 
 1.6.0のバグフィックスリリースです。

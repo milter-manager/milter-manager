@@ -2,6 +2,51 @@
 
 = NEWS --- The history of milter manager
 
+== [release-1-6-2] 1.6.2: 2010-11-23
+
+A bug fix release of 1.6.1.
+
+=== milter manager
+
+==== Improvements
+
+  * Made PID file directory prepareing process in init
+    script on Debian robust.
+    [Reported by Kenji Shiono]
+
+  * Used gint64 for time_t.
+    [Suggested by OBATA Akio]
+
+==== Fixes
+
+  * Fixed missing temporary file close.
+    [Reported by Kenji Shiono]
+
+=== milter manager admin
+
+==== Improvements
+
+  * Documented required sqlite3-ruby version on CentOS.
+    [Reported by Kenji Shiono]
+
+=== Ruby milter
+
+==== Improvements
+
+  * Made milter-tarpit.rb, a sample milter, asynchronous.
+    [Reported by Kenji Shiono]
+  * Provided all milter API.
+
+==== Fixes
+
+  * Fixed a typo in command line option.
+    [Reported by Kenji Shiono]
+
+=== Thanks
+
+  * Kenji Shiono
+  * OBATA Akio
+
 == [release-1-6-1] 1.6.1: 2010-08-21
 
 A bug fix release of 1.6.0.
