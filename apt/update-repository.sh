@@ -116,7 +116,9 @@ for code_name in ${CODE_NAMES}; do
 	    component=main
 	    ;;
     esac
-    mkdir -p ${distribution}
-    (cd ${distribution}
-	update_repository $distribution $code_name $component)
+    for status in stable development; do
+	mkdir -p ${distribution}/${status}
+	(cd ${distribution}/${status} &&
+	    update_repository $distribution $code_name $component)
+    done
 done

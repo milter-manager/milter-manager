@@ -23,7 +23,7 @@ upload:
 	for distribution in $(DISTRIBUTIONS); do		\
 	  (cd $${distribution} &&				\
 	   rsync -avz --exclude .svn --delete			\
-	     --dry-run .htaccess dists pool			\
+	     --dry-run .htaccess dists pool stable development	\
 	     $(SERVER_PATH)/$${distribution};			\
 	  );							\
 	done
@@ -32,9 +32,13 @@ download:
 	for distribution in $(DISTRIBUTIONS); do			\
 	  (mkdir -p $${distribution} &&					\
 	   cd $${distribution} &&					\
-	   rsync -avz $(SERVER_PATH)/$${distribution}/pool/ pool &&	\
-	   rsync -avz $(SERVER_PATH)/$${distribution}/stable/ stable &&	\
-	   rsync -avz $(SERVER_PATH)/$${distribution}/development development;	\
+	   rm -rf pool dists &&						\
+	   ln -fs stable/pool pool &&					\
+	   ln -fs stable/dists dists &&					\
+	   rsync -avz $(SERVER_PATH)/$${distribution}/stable/		\
+	     stable &&							\
+	   rsync -avz $(SERVER_PATH)/$${distribution}/development/	\
+	     development;						\
 	  );								\
 	done
 
