@@ -56,7 +56,7 @@ DEB_INSTALL_DIRS_libmilter-compatible =			\
 DEB_INSTALL_DIRS_libmilter-compatible-dev =		\
 	/usr/include/milter-manager/libmilter/libmilter
 
-DEB_INSTALL_DOCS_ALL = NEWS NEWS.ja README.ja TODO debian/README.Debian
+DEB_INSTALL_DOCS_ALL = NEWS NEWS.ja README.ja TODO
 #DEB_INSTALL_DOCS_milter-manager = doc/reference/
 DEB_INSTALL_DOCS_libmilter-toolkit = ChangeLog.toolkit
 DEB_INSTALL_DOCS_libmilter-toolkit-dev = ChangeLog.toolkit

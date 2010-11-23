@@ -1,5 +1,7 @@
 2010-11-23  Kouhei Sutou  <kou@cozmixng.org>
 
+	* debian/rules, debian/README.Debian: remove needless README.Debian.
+
 	* debian/changelog: remove invalid mnu.
 
 	* debian/control: use correct section.
