@@ -10,13 +10,49 @@ install information.
 
 == Install packages
 
-Packages for lenny, the current stable release, are
-distributed on the milter manager site. We put the following
-content to /etc/apt/sources.list.d/milter-manager.list:
+Packages for lenny, the current stable release, for squeeze,
+the current testing release, and for sid, the eternal
+unstable,are distributed on the milter manager site. The
+following description is for lenny. We need to adjust the
+description if we use squeeze or sid.
+
+We put the following content to
+/etc/apt/sources.list.d/milter-manager.list:
+
+=== For lenny
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://milter-manager.sourceforge.net/debian/ lenny main
-  deb-src http://milter-manager.sourceforge.net/debian/ lenny main
+  deb http://milter-manager.sourceforge.net/debian/stable/ lenny main
+  deb-src http://milter-manager.sourceforge.net/debian/stable/ lenny main
+  # deb http://milter-manager.sourceforge.net/debian/development/ lenny main
+  # deb-src http://milter-manager.sourceforge.net/debian/development/ lenny main
+
+If we use development series, we need to comment the first 2
+lines out and enable comment outed the 2 lines.
+
+=== For squeeze
+
+/etc/apt/sources.list.d/milter-manager.list:
+  deb http://milter-manager.sourceforge.net/debian/stable/ squeeze main
+  deb-src http://milter-manager.sourceforge.net/debian/stable/ squeeze main
+  # deb http://milter-manager.sourceforge.net/debian/development/ squeeze main
+  # deb-src http://milter-manager.sourceforge.net/debian/development/ squeeze main
+
+If we use development series, we need to comment the first 2
+lines out and enable comment outed the 2 lines.
+
+=== For sid
+
+/etc/apt/sources.list.d/milter-manager.list:
+  deb http://milter-manager.sourceforge.net/debian/stable/ unstable main
+  deb-src http://milter-manager.sourceforge.net/debian/stable/ unstable main
+  # deb http://milter-manager.sourceforge.net/debian/development/ unstable main
+  # deb-src http://milter-manager.sourceforge.net/debian/development/ unstable main
+
+If we use development series, we need to comment the first 2
+lines out and enable comment outed the 2 lines.
+
+=== Install
 
 We register the key of the package repository:
 

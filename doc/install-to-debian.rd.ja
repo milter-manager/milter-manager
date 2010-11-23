@@ -10,13 +10,48 @@ Debian GNU/Linuxに特化したmilter managerのインストール方法に
 
 == パッケージのインストール
 
-milter managerのサイトで現在の安定版lenny用のパッケージを配布
-しています。まず、以下の内容の
+milter managerのサイトで現在の安定版lennyと開発版squeezeと不
+安定版sid用のパッケージを配布しています。以下の記述はlennyを
+利用している場合のものです。squeezeやsidを利用している場合は
+適宜読み替えてください。
+
+まず、以下の内容の
 /etc/apt/sources.list.d/milter-manager.listを作成します。
 
+=== lennyの場合
+
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://milter-manager.sourceforge.net/debian/ lenny main
-  deb-src http://milter-manager.sourceforge.net/debian/ lenny main
+  deb http://milter-manager.sourceforge.net/debian/stable/ lenny main
+  deb-src http://milter-manager.sourceforge.net/debian/stable/ lenny main
+  # deb http://milter-manager.sourceforge.net/debian/development/ lenny main
+  # deb-src http://milter-manager.sourceforge.net/debian/development/ lenny main
+
+開発版を利用する場合は最初の2行をコメントアウトし、すでにコメ
+ントアウトされている2行のコメントを外します。
+
+=== squeezeの場合
+
+/etc/apt/sources.list.d/milter-manager.list:
+  deb http://milter-manager.sourceforge.net/debian/stable/ squeeze main
+  deb-src http://milter-manager.sourceforge.net/debian/stable/ squeeze main
+  # deb http://milter-manager.sourceforge.net/debian/development/ squeeze main
+  # deb-src http://milter-manager.sourceforge.net/debian/development/ squeeze main
+
+開発版を利用する場合は最初の2行をコメントアウトし、すでにコメ
+ントアウトされている2行のコメントを外します。
+
+=== sidの場合
+
+/etc/apt/sources.list.d/milter-manager.list:
+  deb http://milter-manager.sourceforge.net/debian/stable/ unstable main
+  deb-src http://milter-manager.sourceforge.net/debian/stable/ unstable main
+  # deb http://milter-manager.sourceforge.net/debian/development/ unstable main
+  # deb-src http://milter-manager.sourceforge.net/debian/development/ unstable main
+
+開発版を利用する場合は最初の2行をコメントアウトし、すでにコメ
+ントアウトされている2行のコメントを外します。
+
+=== インストール
 
 パッケージはkou@clear-code.comの鍵でサインされています。信用
 する場合は鍵を登録します。

@@ -1,5 +1,8 @@
 2010-11-23  Kouhei Sutou  <kou@cozmixng.org>
 
+	* doc/install-to-ubuntu.rd*, doc/install-to-debian.rd*: use stable
+	list again.
+
 	* apt/build-in-chroot.sh: support Debian code names.
 
 	* yum/milter-manager.repo: remove because it's generated automatically.
