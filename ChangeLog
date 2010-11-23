@@ -1,5 +1,7 @@
 2010-11-23  Kouhei Sutou  <kou@cozmixng.org>
 
+	* yum/milter-manager.repo: remove because it's generated automatically.
+
 	* NEWS*: add 1.6.2 entry.
 
 	* debian/: add milter-manager-doc package.
