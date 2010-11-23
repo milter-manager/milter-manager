@@ -724,6 +724,8 @@ AC_CONFIG_FILES([Makefile
 		 license/Makefile
 		 build/Makefile
 		 apt/Makefile
+		 rpm/Makefile
+		 rpm/centos/Makefile
 		 yum/Makefile])
 
 AC_OUTPUT
