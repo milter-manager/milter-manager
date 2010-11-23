@@ -24,6 +24,9 @@ DEB_INSTALL_DIRS_milter-manager =			\
 	/var/run/milter-manager				\
 	/var/spool/postfix/milter-manager
 
+DEB_INSTALL_DIRS_milter-manager-doc =			\
+	/usr/share/gtk-doc/html/milter-manager
+
 DEB_INSTALL_DIRS_milter-manager-dev =			\
 	/usr/include/milter-manager/milter/manager
 
@@ -56,7 +59,7 @@ DEB_INSTALL_DIRS_libmilter-compatible =			\
 DEB_INSTALL_DIRS_libmilter-compatible-dev =		\
 	/usr/include/milter-manager/libmilter/libmilter
 
-DEB_INSTALL_DOCS_ALL = NEWS NEWS.ja README.ja TODO
+DEB_INSTALL_DOCS_ALL = NEWS NEWS.ja README.ja TODO license/
 #DEB_INSTALL_DOCS_milter-manager = doc/reference/
 DEB_INSTALL_DOCS_libmilter-toolkit = ChangeLog.toolkit
 DEB_INSTALL_DOCS_libmilter-toolkit-dev = ChangeLog.toolkit
@@ -86,6 +89,10 @@ install/milter-manager::
 	cp -ar debian/tmp/etc/milter-manager/applicable-conditions/ debian/milter-manager/etc/milter-manager/
 	cp -ar debian/tmp/etc/milter-manager/defaults/ debian/milter-manager/etc/milter-manager/
 	cp -ar debian/tmp/etc/milter-manager/milter-manager.conf debian/milter-manager/etc/milter-manager/
+
+install/milter-manager-doc::
+	cp -ar debian/tmp/usr/share/gtk-doc/html/milter-manager/* \
+		debian/milter-manager-doc/usr/share/gtk-doc/html/milter-manager/
 
 install/milter-manager-dev::
 	cp -ar debian/tmp/usr/include/milter-manager/milter/manager.h \

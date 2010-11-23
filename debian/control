@@ -15,6 +15,16 @@ Description: A milter to use milters effectively
  milter manager administrates milters instead of MTA to reduce milter
  administration cost and combine milters flexibly.
 
+Package: milter-manager-doc
+Section: doc
+Architecture: any
+Depends: ${misc:Depends}
+Description: Documentation of milter manager
+ milter manager administrates milters instead of MTA to reduce milter
+ administration cost and combine milters flexibly.
+ .
+ This provides reference manual of milter manager.
+
 Package: milter-manager-dev
 Section: libdevel
 Architecture: any
