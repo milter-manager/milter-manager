@@ -26,7 +26,7 @@ upload:
 	for distribution in $(DISTRIBUTIONS); do		\
 	  (cd $${distribution} &&				\
 	   rsync -avz --exclude .svn --delete			\
-	     --dry-run .htaccess dists pool stable development	\
+	     .htaccess dists pool stable development	\
 	     $(SERVER_PATH)/$${distribution};			\
 	  );							\
 	done

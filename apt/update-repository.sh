@@ -31,7 +31,7 @@ update_repository()
     mkdir -p dists/${code_name}/${component}/binary-amd64/
     mkdir -p dists/${code_name}/${component}/source/
 
-    cat <<EOF > dists/.htaccess
+    cat <<EOF > .htaccess
 Options +Indexes
 EOF
 

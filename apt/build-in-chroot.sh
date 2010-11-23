@@ -109,6 +109,7 @@ build()
     run_sudo rm -rf $build_dir
     run_sudo su -c "/usr/sbin/chroot ${CHROOT_BASE}/$target /tmp/build-deb.sh"
     run mkdir -p $pool_dir
+    run echo 'Options +Indexes' > ${script_base_dir}/${distribution}/.htaccess
     for path in $build_dir/*; do
 	[ -f $path ] && run cp -p $path $pool_dir/
     done
