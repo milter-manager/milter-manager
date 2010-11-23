@@ -48,11 +48,17 @@ for distribution in ${DISTRIBUTIONS}; do
     run cat <<EOR > $repo
 [$PACKAGE]
 name=$PACKAGE_TITLE for $distribution_label \$releasever - \$basearch
-baseurl=http://$PACKAGE.sourceforge.net/$distribution/\$releasever/\$basearch/
+baseurl=http://$PACKAGE.sourceforge.net/$distribution/\$releasever/stable/\$basearch/
 gpgcheck=1
 enabled=1
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-$PACKAGE
-metadata_expire=7d
+
+[$PACKAGE]
+name=$PACKAGE_TITLE for $distribution_label \$releasever - development - \$basearch
+baseurl=http://$PACKAGE.sourceforge.net/$distribution/\$releasever/development/\$basearch/
+gpgcheck=1
+enabled=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-$PACKAGE
 EOR
     run tar cfz $rpm_base_dir/SOURCES/${PACKAGE}-repository.tar.gz \
 	-C ${script_base_dir} ${repo} RPM-GPG-KEY-${PACKAGE}

@@ -1,3 +1,7 @@
+2010-11-24  Kouhei Sutou  <kou@cozmixng.org>
+
+	* yum/build-repository-rpm.sh: re-support stable/development.
+
 2010-11-23  Kouhei Sutou  <kou@cozmixng.org>
 
 	* html/index.html*: use stable page link for available milters.
