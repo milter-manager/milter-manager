@@ -1,3 +1,11 @@
+2010-12-01  Yuto HAYAMIZU  <y.hayamizu@gmail.com>
+
+	* tool/milter-performance-check (MilterPerformanceTool#update_statistics): specify fractional_seconds of Time#iso8601
+
+2010-11-30  Yuto HAYAMIZU  <y.hayamizu@gmail.com>
+
+	* tool/milter-performance-check: add flood-mode and performance report of each mail.
+
 2010-11-24  Kouhei Sutou  <kou@cozmixng.org>
 
 	* yum/build-repository-rpm.sh: re-support stable/development.

@@ -430,7 +430,7 @@ class MilterPerformanceTool
       @n_error_mails += 1 if error
 
       if @report_file
-        @report_file.puts([wallclock_time.iso8601,response_time,source_size].join(","))
+        @report_file.puts([wallclock_time.iso8601(6),response_time,source_size].join(","))
       end
     end
   end
