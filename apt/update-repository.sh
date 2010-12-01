@@ -113,7 +113,7 @@ for code_name in ${CODE_NAMES}; do
 	    ;;
 	*)
 	    distribution=ubuntu
-	    component=main
+	    component=universe
 	    ;;
     esac
     for status in stable development; do

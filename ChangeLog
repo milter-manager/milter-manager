@@ -1,3 +1,7 @@
+2010-12-01  Kouhei Sutou  <kou@clear-code.com>
+
+	* apt/update-repository.sh: fix wrong Ubuntu component name.
+
 2010-12-01  Yuto HAYAMIZU  <y.hayamizu@gmail.com>
 
 	* tool/milter-performance-check (MilterPerformanceTool#update_statistics): specify fractional_seconds of Time#iso8601
