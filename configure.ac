@@ -242,8 +242,10 @@ if test "$ruby_available" = "yes"; then
   RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_sitearchdir "
   RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_vendorarchdir "
   RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_archdir "
-  RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_rubyhdrdir "
-  RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_rubyhdrdir/$arch "
+  if test "$rbconfig_rubyhdrdir" != "nil"; then
+    RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_rubyhdrdir "
+    RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_rubyhdrdir/$arch "
+  fi
   RUBY_CFLAGS="$RUBY_CFLAGS $rbconfig_CFLAGS "
   RUBY_LIBS="$rbconfig_LIBRUBYARG $rbconfig_LIBS"
   RUBY_LDFLAGS="-L$rbconfig_libdir"

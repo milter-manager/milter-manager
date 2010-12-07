@@ -1,3 +1,7 @@
+2010-12-07  Kouhei Sutou  <kou@clear-code.com>
+
+	* configure.ac: work again with Ruby 1.8.
+
 2010-12-07  Haruka Yoshihara  <yoshihara@clear-code.com>
 
 	* configure.ac: add ruby1.9-header path.
