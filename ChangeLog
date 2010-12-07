@@ -1,3 +1,7 @@
+2010-12-07  Haruka Yoshihara  <yoshihara@clear-code.com>
+
+	* configure.ac: add ruby1.9-header path.
+
 2010-12-01  Kouhei Sutou  <kou@clear-code.com>
 
 	* apt/update-repository.sh: fix wrong Ubuntu component name.
