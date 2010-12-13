@@ -1,3 +1,8 @@
+2010-12-13  Kouhei Sutou  <kou@clear-code.com>
+
+	* binding/ruby/sample/milter-test-client.rb (Session#abort): add
+	missing state argument.
+
 2010-12-07  Kouhei Sutou  <kou@clear-code.com>
 
 	* configure.ac: work again with Ruby 1.8.
