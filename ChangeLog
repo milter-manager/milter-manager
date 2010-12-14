@@ -1,3 +1,7 @@
+2010-12-14  Haruka Yoshihara  <yoshihara@clear-code.com>
+
+	* configure.ac: fix include path for Ruby/GLib2 0.90.05.
+
 2010-12-14  Kouhei Sutou  <kou@clear-code.com>
 
 	* configure.ac: fix include path for Ruby 1.9.
