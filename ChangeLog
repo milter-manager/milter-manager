@@ -1,3 +1,7 @@
+2010-12-14  Haruka Yoshihara  <yoshihara@clear-code.com>
+
+	* configure.ac: fix a typo($rbconfig_arch).
+
 2010-12-13  Kouhei Sutou  <kou@clear-code.com>
 
 	* binding/ruby/sample/milter-test-client.rb (Session#abort): show
