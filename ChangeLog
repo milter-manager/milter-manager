@@ -4,6 +4,8 @@
 
 2010-12-14  Haruka Yoshihara  <yoshihara@clear-code.com>
 
+	* binding/ruby/glib-0.90.5: deleted no-used file.
+
 	* binding/ruby: upgrade ruby/glib2 0.19.4 to 0.90.5.
 
 	* configure.ac: fix a typo($rbconfig_arch).
