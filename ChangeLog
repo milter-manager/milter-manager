@@ -1,5 +1,7 @@
 2010-12-14  Haruka Yoshihara  <yoshihara@clear-code.com>
 
+	* binding/ruby: upgrade ruby/glib2 0.19.4 to 0.90.5.
+
 	* configure.ac: fix a typo($rbconfig_arch).
 
 2010-12-13  Kouhei Sutou  <kou@clear-code.com>
