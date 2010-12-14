@@ -239,13 +239,17 @@ if test "$ruby_available" = "yes"; then
   ruby_micro_version="`$RUBY -e 'print RUBY_VERSION.split(/\\./)[2]'`"
   changequote([, ])
 
-  RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_sitearchdir "
-  RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_vendorarchdir "
-  RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_archdir "
-
-  if test "$rbconfig_rubyhdrdir" != "nil"; then
-    RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_rubyhdrdir "
+  if test "$rbconfig_rubyhdrdir" = "nil"; then
+    RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_sitearchdir "
+    RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_vendorarchdir "
+    RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_archdir "
+  else
+    RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_sitearchdir/$rbconfig_arch "
+    RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_sitearchdir "
+    RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_vendorarchdir/$rbconfig_arch "
+    RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_vendorarchdir "
     RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_rubyhdrdir/$rbconfig_arch "
+    RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_rubyhdrdir "
   fi
 
   RUBY_CFLAGS="$RUBY_CFLAGS $rbconfig_CFLAGS "

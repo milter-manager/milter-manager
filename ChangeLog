@@ -4,6 +4,8 @@
 
 2010-12-14  Kouhei Sutou  <kou@clear-code.com>
 
+	* configure.ac: use more strict include path order.
+
 	* configure.ac: update Ruby/GLib2 version: 0.19.4 -> 0.90.5.
 
 2010-12-14  Haruka Yoshihara  <yoshihara@clear-code.com>
