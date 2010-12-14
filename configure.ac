@@ -339,14 +339,15 @@ if test "$ruby_available" = "yes"; then
       ruby_available=yes
       if test "$try_to_use_bundled_ruby_glib2_0_90_5" = "yes"; then
         ac_use_bundled_ruby_glib2_0_90_5=yes
-        RUBY_GLIB2_CFLAGS="-I \$(top_srcdir)/$ac_ruby_glib2_dir/ext/glib2"
+	ac_ruby_glib2_source_dir="$ac_ruby_glib2_dir/ext/glib2"
       else
         ac_use_bundled_ruby_glib2_0_16_0=yes
-        RUBY_GLIB2_CFLAGS="-I \$(top_srcdir)/$ac_ruby_glib2_dir/src"
+        ac_ruby_glib2_source_dir="$ac_ruby_glib2_dir/src"
       fi
+      RUBY_GLIB2_CFLAGS="-I \$(top_srcdir)/$ac_ruby_glib2_source_dir"
       sed -i'' \
       	  -e "s,^CPPFLAGS = ,CPPFLAGS = ${CPPFLAGS} ," \
-      	  $ac_ruby_glib2_dir/src/Makefile
+      	  $ac_ruby_glib2_source_dir/Makefile
       sed -i'' \
       	  -e 's/ install/ RUBYARCHDIR=$(binding_extdir) RUBYLIBDIR=$(binding_libdir) libdir=$(libdir) install/' \
       	  $ac_ruby_glib2_dir/Makefile
