@@ -241,7 +241,7 @@ if test "$ruby_available" = "yes"; then
 
   if test "$rbconfig_rubyhdrdir" = "nil"; then
     RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_sitearchdir "
-    RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_vendorarchdir "
+    test "$rbconfig_vendorarchdir" = "nil" || RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_vendorarchdir "
     RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_archdir "
   else
     RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_sitehdrdir/$rbconfig_arch "

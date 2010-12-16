@@ -1,3 +1,10 @@
+2010-12-16  Nobuyoshi Nakada  <nobu@ruby-lang.org>
+
+	* configure.ac: vendorarchdir is not defined in older ruby.
+
+	* binding/ruby/glib-0.90.5/lib/pkg-config.rb: import from
+	pkg-config 1.0.8.
+
 2010-12-14  Haruka Yoshihara  <yoshihara@clear-code.com>
 
 	* configure.ac: fix include path for Ruby/GLib2 0.90.05.
