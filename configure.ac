@@ -151,6 +151,14 @@ AC_CHECK_FUNC(socket, [],
                               [-lsocket])])
 AC_SUBST(NETWORK_LIBS)
 
+AC_CHECK_FUNCS(sendmsg recvmsg)
+if test "$ac_cv_func_sendmsg" = yes -o "$ac_cv_func_recvmsg" = yes; then
+    includes="AC_INCLUDES_DEFAULT([@%:@include <sys/types.h>
+@%:@include <sys/socket.h>])"
+    AC_CHECK_MEMBERS([struct msghdr.msg_control], [], [], $includes)
+    AC_CHECK_MEMBERS([struct msghdr.msg_accrights], [], [], $includes)
+fi
+
 dnl **************************************************************
 dnl Check for GLib.
 dnl **************************************************************
