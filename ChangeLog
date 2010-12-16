@@ -1,8 +1,5 @@
 2010-12-16  Nobuyoshi Nakada  <nakada@clear-code.com>
 
-	* misc/rd2man-lib.rb (RD::RD2MANVisitor#apply_to_DescListItem):
-	.BR needs to be placed at beginning of the line.
-
 	* binding/ruby/src/toolkit/rb-milter.h: use extern linkage to get
 	rid of duplicate symbols.
 
