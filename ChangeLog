@@ -1,5 +1,9 @@
 2010-12-16  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* configure.ac (RC_ARCHS): ignore other archs than currently
+	running on, since libtool does not deal with multiple -arch
+	options.
+
 	* configure.ac: vendorarchdir is not defined in older ruby.
 
 	* binding/ruby/glib-0.90.5/lib/pkg-config.rb: import from

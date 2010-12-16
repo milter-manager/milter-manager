@@ -98,6 +98,9 @@ case "$host_os" in
 solaris*)
   CPPFLAGS="$CPPFLAGS -D_REENTRANT -D_POSIX_PTHREAD_SEMANTICS"
   ;;
+darwin*)
+  : ${RC_ARCHS=`arch`}
+  export RC_ARCHS
 esac
 
 if test "x$GCC" = "xyes"; then
