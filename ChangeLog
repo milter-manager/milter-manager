@@ -1,5 +1,7 @@
 2010-12-16  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* binding/ruby/test/run-test.rb: need ruby-glib2.
+
 	* binding/ruby/test/run-test.rb: use build directories, not source
 	directories.
 

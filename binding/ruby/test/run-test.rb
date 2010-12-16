@@ -30,6 +30,8 @@ if ENV["NO_MAKE"] != "yes"
   system("#{make} -C #{top.to_s.dump} > /dev/null") or exit(1)
 end
 
+$LOAD_PATH.unshift(File.expand_path("../glib-0.90.5/ext/glib2"))
+$LOAD_PATH.unshift((top + "glib-0.90.5" + "lib").to_s)
 $LOAD_PATH.unshift(File.expand_path("../src/toolkit/.libs"))
 $LOAD_PATH.unshift(File.expand_path("../src/manager/.libs"))
 $LOAD_PATH.unshift((top + "lib").to_s)
