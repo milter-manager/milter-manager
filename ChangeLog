@@ -1,5 +1,8 @@
 2010-12-16  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* milter/client/milter-client.c (milter_client_send_io)
+	(milter_client_recv_io): functions to pass fd.
+
 	* configure.ac: checks for send/receive IO descriptor.
 
 	* configure.ac: use positive test condition.
