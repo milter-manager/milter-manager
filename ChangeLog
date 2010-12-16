@@ -1,10 +1,13 @@
 2010-12-16  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* tool/Makefile.am (milter_test_{client,libmilter,server}_LDADD):
+	need gobject and glib.
+
 	* binding/ruby/src/toolkit/rb-milter-client.c (rb_cMilterClient):
-	  define variable.
+	define variable.
 
 	* binding/ruby/src/toolkit/rb-milter-server.c (rb_mMilterServer):
-	  ditto.
+	ditto.
 
 	* binding/ruby/src/toolkit/rb-milter-socket-address.c (rb_cMilterSocketAddressIPv4)
 	(rb_cMilterSocketAddressIPv6, rb_cMilterSocketAddressUnix)
