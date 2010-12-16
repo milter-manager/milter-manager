@@ -1,5 +1,7 @@
 2010-12-16  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* configure.ac: use positive test condition.
+
 	* binding/ruby/src/toolkit/rb-milter.h: use extern linkage to get
 	rid of duplicate symbols.
 
