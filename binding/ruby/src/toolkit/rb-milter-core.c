@@ -19,6 +19,8 @@
 
 #include "rb-milter-core-private.h"
 
+VALUE rb_mMilterCore;
+
 void
 Init_milter_core (void)
 {

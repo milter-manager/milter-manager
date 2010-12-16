@@ -1,5 +1,18 @@
 2010-12-16  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* binding/ruby/src/toolkit/rb-milter-client.c (rb_cMilterClient):
+	  define variable.
+
+	* binding/ruby/src/toolkit/rb-milter-server.c (rb_mMilterServer):
+	  ditto.
+
+	* binding/ruby/src/toolkit/rb-milter-socket-address.c (rb_cMilterSocketAddressIPv4)
+	(rb_cMilterSocketAddressIPv6, rb_cMilterSocketAddressUnix)
+	(rb_cMilterSocketAddressUnknown): ditto.
+
+	* binding/ruby/src/toolkit/rb-milter.c (rb_mMilter)
+	(rb_eMilterError): ditto.
+
 	* milter/client/milter-client.c (milter_client_send_io)
 	(milter_client_recv_io): functions to pass fd.
 

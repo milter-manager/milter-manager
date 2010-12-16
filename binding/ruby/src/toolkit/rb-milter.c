@@ -30,6 +30,8 @@ rb_milter_cstr2rval_size_free (gchar *string, gsize size)
     return rb_string;
 }
 
+VALUE rb_mMilter, rb_eMilterError;
+
 void
 Init_milter_toolkit (void)
 {

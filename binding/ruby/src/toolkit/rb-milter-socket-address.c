@@ -209,6 +209,9 @@ unknown_to_s (VALUE self)
     return rb_str_new2("unknown");
 }
 
+VALUE rb_cMilterSocketAddressIPv4, rb_cMilterSocketAddressIPv6;
+VALUE rb_cMilterSocketAddressUnix, rb_cMilterSocketAddressUnknown;
+
 void
 Init_milter_socket_address (void)
 {

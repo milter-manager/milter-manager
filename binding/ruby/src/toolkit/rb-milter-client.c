@@ -171,6 +171,8 @@ mark (gpointer data)
 					     NULL);
 }
 
+VALUE rb_cMilterClient;
+
 void
 Init_milter_client (void)
 {

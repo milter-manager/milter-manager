@@ -19,6 +19,8 @@
 
 #include "rb-milter-server-private.h"
 
+VALUE rb_mMilterServer;
+
 void
 Init_milter_server (void)
 {
