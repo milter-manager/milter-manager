@@ -27,15 +27,15 @@
 
 #include <rb-milter-compat.h>
 
-VALUE rb_mMilter;
-VALUE rb_mMilterCore;
-VALUE rb_cMilterClient;
-VALUE rb_mMilterServer;
-VALUE rb_eMilterError;
-VALUE rb_cMilterSocketAddressIPv4;
-VALUE rb_cMilterSocketAddressIPv6;
-VALUE rb_cMilterSocketAddressUnix;
-VALUE rb_cMilterSocketAddressUnknown;
+extern VALUE rb_mMilter;
+extern VALUE rb_mMilterCore;
+extern VALUE rb_cMilterClient;
+extern VALUE rb_mMilterServer;
+extern VALUE rb_eMilterError;
+extern VALUE rb_cMilterSocketAddressIPv4;
+extern VALUE rb_cMilterSocketAddressIPv6;
+extern VALUE rb_cMilterSocketAddressUnix;
+extern VALUE rb_cMilterSocketAddressUnknown;
 
 #ifndef CSTR2RVAL_FREE
 #  define CSTR2RVAL_FREE(string) CSTR2RVAL2(string)
