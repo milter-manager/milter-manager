@@ -30,8 +30,8 @@ if ENV["NO_MAKE"] != "yes"
   system("#{make} -C #{top.to_s.dump} > /dev/null") or exit(1)
 end
 
-$LOAD_PATH.unshift((top + "src" + "toolkit" + ".libs").to_s)
-$LOAD_PATH.unshift((top + "src" + "manager" + ".libs").to_s)
+$LOAD_PATH.unshift(File.expand_path("../src/toolkit/.libs"))
+$LOAD_PATH.unshift(File.expand_path("../src/manager/.libs"))
 $LOAD_PATH.unshift((top + "lib").to_s)
 
 require 'milter/manager'
