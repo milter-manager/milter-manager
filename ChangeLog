@@ -1,5 +1,7 @@
 2010-12-17  Kouhei Sutou  <kou@clear-code.com>
 
+	* test/run-test.sh: support bundled Ruby/GLib2 0.90.5.
+
 	* milter/client/milter-client.c (accept_connection_fd): return
 	client FD instead of returning via return address.
 

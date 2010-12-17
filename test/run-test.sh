@@ -59,16 +59,24 @@ ruby_dir=$top_dir/binding/ruby
 MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_dir/lib
 MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_dir/src/toolkit/.libs
 MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_dir/src/manager/.libs
-ruby_glib2_dir=
+ruby_glib2_lib_dir=
+ruby_glib2_ext_dir=
 for dir in $(for dir in $ruby_dir/glib-*; do echo $dir; done | sort -r); do
-    if [ -f $dir/src/glib2.so ]; then
-	ruby_glib2_dir=$dir
+    if [ -f $dir/ext/glib2/glib2.so ]; then
+	ruby_glib2_lib_dir=$dir/lib
+	ruby_glib2_ext_dir=$dir/ext/glib2
+	break
+    elif [ -f $dir/src/glib2.so ]; then
+	ruby_glib2_lib_dir=$dir/src/lib
+	ruby_glib2_ext_dir=$dir/src
 	break
     fi
 done
-if [ "$ruby_glib2_dir" != "" ]; then
-    MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_glib2_dir/src/lib
-    MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_glib2_dir/src
+if [ "$ruby_glib2_lib_dir" != "" ]; then
+    MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_glib2_lib_dir
+fi
+if [ "$ruby_glib2_ext_dir" != "" ]; then
+    MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_glib2_ext_dir
 fi
 RUBYLIB=$MILTER_MANAGER_RUBYLIB:$RUBYLIB
 export MILTER_MANAGER_RUBYLIB
