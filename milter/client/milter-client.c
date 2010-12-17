@@ -781,13 +781,13 @@ single_worker_process_client_channel (MilterClient *client, GIOChannel *channel,
                     NULL);
 }
 
-static gboolean
+static gint
 accept_connection_fd (MilterClient *client, gint server_fd,
-                      gint *client_fd,
                       MilterGenericSocketAddress *address,
                       socklen_t *address_size)
 {
     MilterClientPrivate *priv;
+    gint client_fd;
     guint n_suspend, suspend_time, max_connections;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
@@ -811,8 +811,8 @@ accept_connection_fd (MilterClient *client, gint server_fd,
 
     *address_size = sizeof(*address);
     memset(address, '\0', *address_size);
-    *client_fd = accept(server_fd, (struct sockaddr *)(address), address_size);
-    if (*client_fd == -1) {
+    client_fd = accept(server_fd, (struct sockaddr *)(address), address_size);
+    if (client_fd == -1) {
         GError *error = NULL;
         g_set_error(&error,
                     MILTER_CONNECTION_ERROR,
@@ -833,18 +833,18 @@ accept_connection_fd (MilterClient *client, gint server_fd,
                            "resume accepting connection.");
         }
 
-        return FALSE;
+        return client_fd;
     }
 
     priv->n_processing_sessions++;
     if (milter_need_debug_log()) {
         gchar *spec;
         spec = milter_connection_address_to_spec(&(address->address.base));
-        milter_debug("[client][accept] %d:%s", *client_fd, spec);
+        milter_debug("[client][accept] %d:%s", client_fd, spec);
         g_free(spec);
     }
 
-    return TRUE;
+    return client_fd;
 }
 
 static gboolean
@@ -855,7 +855,8 @@ accept_connection (MilterClient *client, gint server_fd,
 {
     gint client_fd;
 
-    if (accept_connection_fd(client, server_fd, &client_fd, address, address_size))
+    client_fd = accept_connection_fd(client, server_fd, address, address_size);
+    if (client_fd == -1)
         return FALSE;
 
     *client_channel = g_io_channel_unix_new(client_fd);
