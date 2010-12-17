@@ -53,6 +53,7 @@ typedef struct _MilterManagerRubyConfigurationClass MilterManagerRubyConfigurati
 struct _MilterManagerRubyConfiguration
 {
     MilterManagerConfiguration object;
+    gboolean disposing;
 };
 
 struct _MilterManagerRubyConfigurationClass
@@ -121,6 +122,7 @@ milter_manager_ruby_configuration_class_finalize (MilterManagerRubyConfiguration
 static void
 milter_manager_ruby_configuration_init (MilterManagerRubyConfiguration *configuration)
 {
+    configuration->disposing = FALSE;
 }
 
 static void
@@ -384,6 +386,7 @@ dispose (GObject *object)
     MilterManagerRubyConfiguration *configuration;
 
     configuration = MILTER_MANAGER_RUBY_CONFIGURATION(object);
+    configuration->disposing = TRUE;
 
     G_OBJECT_CLASS(milter_manager_ruby_configuration_parent_class)->dispose(object);
 }
@@ -398,7 +401,7 @@ set_property (GObject      *object,
 
     configuration = MILTER_MANAGER_RUBY_CONFIGURATION(object);
     switch (prop_id) {
-      default:
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
@@ -414,7 +417,7 @@ get_property (GObject    *object,
 
     configuration = MILTER_MANAGER_RUBY_CONFIGURATION(object);
     switch (prop_id) {
-      default:
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
@@ -511,21 +514,23 @@ static gboolean
 real_clear (MilterManagerConfiguration *_configuration, GError **error)
 {
     MilterManagerRubyConfiguration *configuration;
-    GError *local_error = NULL;
     gboolean success = TRUE;
 
     configuration = MILTER_MANAGER_RUBY_CONFIGURATION(_configuration);
-    rb_funcall_protect(&local_error,
-                       GOBJ2RVAL(configuration),
-                       rb_intern("clear"),
-                       0);
-    if (local_error) {
-        success = FALSE;
-        if (!error) {
-            milter_error("[ruby-configuration][error][clear] %s",
-                         local_error->message);
+    if (!configuration->disposing) {
+        GError *local_error = NULL;
+        rb_funcall_protect(&local_error,
+                           GOBJ2RVAL(configuration),
+                           rb_intern("clear"),
+                           0);
+        if (local_error) {
+            success = FALSE;
+            if (!error) {
+                milter_error("[ruby-configuration][error][clear] %s",
+                             local_error->message);
+            }
+            g_propagate_error(error, local_error);
         }
-        g_propagate_error(error, local_error);
     }
 
     return success;
