@@ -1,3 +1,8 @@
+2010-12-17  Kouhei Sutou  <kou@clear-code.com>
+
+	* milter/client/milter-client.c (accept_connection_fd): remove
+	a needless variable.
+
 Fri Dec 17 11:14:19 2010  Nobuyoshi Nakada  <nakada@clear-code.com>
 
 	* milter/client/milter-client.c (accept_connection_fd): split from
