@@ -1,4 +1,7 @@
-2010-12-17  Nobuyoshi Nakada  <nakada@clear-code.com>
+Fri Dec 17 11:14:19 2010  Nobuyoshi Nakada  <nakada@clear-code.com>
+
+	* milter/client/milter-client.c (accept_connection_fd): split from
+	accept_connection.
 
 	* milter/client/milter-client.c (milter_client_send_io)
 	(milter_client_recv_io): removed.  use GUnixConnection instead.

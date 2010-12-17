@@ -782,10 +782,10 @@ single_worker_process_client_channel (MilterClient *client, GIOChannel *channel,
 }
 
 static gboolean
-accept_connection (MilterClient *client, gint server_fd,
-                   GIOChannel **client_channel,
-                   MilterGenericSocketAddress *address,
-                   socklen_t *address_size)
+accept_connection_fd (MilterClient *client, gint server_fd,
+                      gint *client_fd_return,
+                      MilterGenericSocketAddress *address,
+                      socklen_t *address_size)
 {
     MilterClientPrivate *priv;
     gint client_fd;
@@ -793,6 +793,7 @@ accept_connection (MilterClient *client, gint server_fd,
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
+    *client_fd_return = -1;
     suspend_time = milter_client_get_suspend_time_on_unacceptable(client);
     max_connections = milter_client_get_max_connections(client);
     for (n_suspend = 0;
@@ -844,6 +845,21 @@ accept_connection (MilterClient *client, gint server_fd,
         milter_debug("[client][accept] %d:%s", client_fd, spec);
         g_free(spec);
     }
+
+    *client_fd_return = client_fd;
+    return TRUE;
+}
+
+static gboolean
+accept_connection (MilterClient *client, gint server_fd,
+                   GIOChannel **client_channel,
+                   MilterGenericSocketAddress *address,
+                   socklen_t *address_size)
+{
+    gint client_fd;
+
+    if (accept_connection_fd(client, server_fd, &client_fd, address, address_size))
+        return FALSE;
 
     *client_channel = g_io_channel_unix_new(client_fd);
     g_io_channel_set_encoding(*client_channel, NULL, NULL);
