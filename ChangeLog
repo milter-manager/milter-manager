@@ -1,3 +1,7 @@
+2010-12-17  Kouhei Sutou  <kou@clear-code.com>
+
+	* configure.ac: prior bundled Ruby/GLib2.
+
 2010-12-17  Nobuyoshi Nakada  <nakada@clear-code.com>
 
 	* configure.ac: needs gio-unix for GUnixConnection.
