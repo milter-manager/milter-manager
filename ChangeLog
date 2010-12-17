@@ -4,6 +4,8 @@
 
 2010-12-17  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* configure.ac: check gio-unix separately.
+
 	* configure.ac: needs gio-unix for GUnixConnection.
 
 2010-12-17  Kouhei Sutou  <kou@clear-code.com>
