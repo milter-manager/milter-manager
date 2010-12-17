@@ -1,3 +1,8 @@
+2010-12-17  Nobuyoshi Nakada  <nakada@clear-code.com>
+
+	* milter/client/milter-client.c (milter_client_send_io)
+	(milter_client_recv_io): removed.  use GUnixConnection instead.
+
 2010-12-16  Nobuyoshi Nakada  <nakada@clear-code.com>
 
 	* binding/ruby/test/run-test.rb: need ruby-glib2.
