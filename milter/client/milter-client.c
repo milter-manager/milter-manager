@@ -31,6 +31,7 @@
 #include <errno.h>
 
 #include <glib/gstdio.h>
+#include <gio/gunixconnection.h>
 
 #include <milter/core/milter-marshalers.h>
 #include "../client.h"
@@ -106,6 +107,12 @@ struct _MilterClientPrivate
     guint max_connections;
     gboolean multi_workers_mode;
     GThreadPool *worker_threads;
+    gboolean multi_process_mode;
+    struct {
+        guint number;
+        GUnixConnection *control;
+        GPid *pid;
+    } children;
     struct sockaddr *address;
     socklen_t address_size;
     gchar *effective_user;
@@ -241,6 +248,8 @@ _milter_client_init (MilterClient *client)
     priv->max_connections = MILTER_CLIENT_DEFAULT_MAX_CONNECTIONS;
     priv->multi_workers_mode = FALSE;
     priv->worker_threads = NULL;
+    priv->multi_process_mode = FALSE;
+    priv->children.number = 0;
     priv->address = NULL;
     priv->address_size = 0;
     priv->effective_user = NULL;
@@ -887,6 +896,33 @@ single_worker_accept_connection (MilterClient *client, gint server_fd)
 }
 
 static gboolean
+parent_worker_accept_connection (MilterClient *client, gint server_fd)
+{
+    gboolean result;
+    gint client_fd;
+    MilterGenericSocketAddress address;
+    socklen_t address_size;
+    MilterClientPrivate *priv;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    client_fd = accept_connection_fd(client, server_fd,
+                                     &address, &address_size);
+    if (client_fd != -1) {
+        GError *error = NULL;
+        result = g_unix_connection_send_fd(priv->children.control,
+                                         client_fd, NULL, &error);
+        close(client_fd);
+        if (!result) {
+            milter_error("[client][error][send_fd] %s", error->message);
+            milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client),
+                                        error);
+        }
+    }
+
+    return result;
+}
+
+static gboolean
 cb_server_status_changed (MilterClient *client,
                           GIOChannel *channel, GIOCondition condition,
                           AcceptConnectionFunction accept_connection)
@@ -935,6 +971,16 @@ single_worker_server_watch_func (GIOChannel *channel, GIOCondition condition,
 
     return cb_server_status_changed(client, channel, condition,
                                     single_worker_accept_connection);
+}
+
+static gboolean
+parent_worker_server_watch_func (GIOChannel *channel, GIOCondition condition,
+                                 gpointer data)
+{
+    MilterClient *client = data;
+
+    return cb_server_status_changed(client, channel, condition,
+                                    parent_worker_accept_connection);
 }
 
 static gboolean
@@ -1452,7 +1498,11 @@ milter_client_main (MilterClient *client)
     watch_source = g_io_create_watch(priv->listening_channel,
                                      G_IO_IN | G_IO_PRI |
                                      G_IO_ERR | G_IO_HUP | G_IO_NVAL);
-    if (priv->multi_workers_mode) {
+    if (priv->multi_process_mode) {
+        g_source_set_callback(watch_source,
+                              (GSourceFunc)parent_worker_server_watch_func,
+                              client, NULL);
+    } else if (priv->multi_workers_mode) {
         g_source_set_callback(watch_source,
                               (GSourceFunc)multi_workers_server_watch_func,
                               client, NULL);

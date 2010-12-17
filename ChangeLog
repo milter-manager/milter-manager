@@ -1,5 +1,8 @@
 2010-12-17  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* milter/client/milter-client.c (MilterClientPrivate): add
+	fields for multi-process mode
+
 	* configure.ac: use RbConfig instead of obsolete Config.
 
 2010-12-17  Kouhei Sutou  <kou@clear-code.com>
