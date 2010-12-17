@@ -1,3 +1,7 @@
+2010-12-17  Nobuyoshi Nakada  <nakada@clear-code.com>
+
+	* configure.ac: needs gio-unix for GUnixConnection.
+
 2010-12-17  Kouhei Sutou  <kou@clear-code.com>
 
 	* test/run-test.sh: support bundled Ruby/GLib2 0.90.5.
@@ -8,7 +12,7 @@
 	* milter/client/milter-client.c (accept_connection_fd): remove
 	a needless variable.
 
-Fri Dec 17 11:14:19 2010  Nobuyoshi Nakada  <nakada@clear-code.com>
+2010-12-17  Nobuyoshi Nakada  <nakada@clear-code.com>
 
 	* milter/client/milter-client.c (accept_connection_fd): split from
 	accept_connection.

@@ -167,7 +167,7 @@ AC_SUBST(GLIB_REQUIRED)
 AM_PATH_GLIB_2_0($GLIB_REQUIRED,
                  [],
                  [AC_MSG_ERROR([GLib >= $GLIB_REQUIRED required.])],
-                 [gobject gmodule gthread])
+                 [gobject gmodule gthread gio-unix])
 
 dnl **************************************************************
 dnl Check for Cutter
