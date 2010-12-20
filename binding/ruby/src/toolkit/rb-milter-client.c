@@ -258,8 +258,6 @@ Init_milter_client (void)
                      client_set_default_unix_socket_mode, 1);
     rb_define_method(rb_cMilterClient, "set_fd_passing_io",
                      client_set_fd_passing_io, 1);
-    rb_define_method(rb_cMilterClient, "fd_passing_io=",
-                     client_set_fd_passing_io, 1);
 
     G_DEF_SETTERS(rb_cMilterClient);
 

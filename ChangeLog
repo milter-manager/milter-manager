@@ -1,5 +1,8 @@
 2010-12-20  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/src/toolkit/rb-milter-client.c: remove needless
+	fd_passing_io=. It's automatically generated.
+
 	* binding/ruby/src/toolkit/rb-milter-client.c: indent nested #ifdef.
 
 2010-12-20  Nobuyoshi Nakada  <nakada@clear-code.com>
