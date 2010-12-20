@@ -241,14 +241,14 @@ fi
 
 use_bundled_ruby_glib2=no
 if test "$ruby_available" = "yes"; then
-  rbconfig="$RUBY -rrbconfig -e "
+  rbconfig="$RUBY -rrbconfig -rshellwords -e "
 
   changequote(<<, >>)
   for var_name in archdir sitearchdir vendorarchdir arch \
       	       	  libdir sitelibdir vendorlibdir \
       	       	  CFLAGS LIBRUBYARG LIBS RUBY_SO_NAME \
                   rubyhdrdir sitehdrdir vendorhdrdir; do
-    rbconfig_value=`$rbconfig "print RbConfig::CONFIG['$var_name']"`
+    rbconfig_value=`$rbconfig "print Shellwords.split(RbConfig::CONFIG['$var_name']").join(' ')`
     eval "rbconfig_$var_name=\"$rbconfig_value\""
   done
   ruby_minor_version="`$RUBY -e 'print RUBY_VERSION.split(/\\./)[1]'`"

@@ -1,3 +1,7 @@
+2010-12-20  Nobuyoshi Nakada  <nobu@clear-code.com>
+
+	* configure.ac (rbconfig): remove quotes.
+
 2010-12-17  Kouhei Sutou  <kou@clear-code.com>
 
 	* module/configuration/ruby/milter-manager-ruby-configuration.c:
