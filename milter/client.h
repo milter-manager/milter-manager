@@ -667,7 +667,7 @@ void                 milter_client_set_maintenance_interval
 gboolean             milter_client_main              (MilterClient  *client);
 
 /**
- * milter_client_master_main:
+ * milter_client_run_master:
  * @client: a %MilterClient.
  *
  * Starts main loop in parent process.
@@ -675,15 +675,15 @@ gboolean             milter_client_main              (MilterClient  *client);
  * Returns: %TRUE if main loop is quitted successfully,
  * %FALSE otherwise.
  */
-gboolean             milter_client_master_main       (MilterClient *client);
+gboolean             milter_client_run_master        (MilterClient *client);
 
 /**
- * milter_client_worker_main:
+ * milter_client_run_worker:
  * @client: a %MilterClient.
  *
  * Starts main loop in child process.
  */
-void                 milter_client_worker_main       (MilterClient *client);
+void                 milter_client_run_worker        (MilterClient *client);
 
 /**
  * milter_client_shutdown:

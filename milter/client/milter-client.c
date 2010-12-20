@@ -1581,7 +1581,7 @@ milter_client_main (MilterClient *client)
 }
 
 gboolean
-milter_client_master_main (MilterClient *client)
+milter_client_run_master (MilterClient *client)
 {
     gboolean success;
 
@@ -1596,7 +1596,7 @@ milter_client_master_main (MilterClient *client)
 }
 
 void
-milter_client_worker_main (MilterClient *client)
+milter_client_run_worker (MilterClient *client)
 {
     MilterClientPrivate *priv;
     GError *error = NULL;
