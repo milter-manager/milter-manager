@@ -111,7 +111,6 @@ struct _MilterClientPrivate
     struct {
         guint number;
         GUnixConnection *control;
-        GPid *pid;
     } children;
     struct sockaddr *address;
     socklen_t address_size;
@@ -250,6 +249,7 @@ _milter_client_init (MilterClient *client)
     priv->worker_threads = NULL;
     priv->multi_process_mode = FALSE;
     priv->children.number = 0;
+    priv->children.control = NULL;
     priv->address = NULL;
     priv->address_size = 0;
     priv->effective_user = NULL;
@@ -476,6 +476,11 @@ dispose (GObject *object)
     if (priv->worker_threads) {
         g_thread_pool_free(priv->worker_threads, TRUE, FALSE);
         priv->worker_threads = NULL;
+    }
+
+    if (priv->children.control) {
+        g_object_unref(priv->children.control);
+        priv->children.control = NULL;
     }
 
     dispose_address(priv);

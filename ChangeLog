@@ -1,5 +1,8 @@
 2010-12-20  Nobuyoshi Nakada  <nobu@clear-code.com>
 
+	* milter/client/milter-client.c (_milter_client_init, dispose):
+	initialize and dispose control connection.
+
 	* configure.ac (rbconfig): remove quotes.
 
 2010-12-17  Kouhei Sutou  <kou@clear-code.com>
