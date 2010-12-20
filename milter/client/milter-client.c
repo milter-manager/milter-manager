@@ -109,7 +109,6 @@ struct _MilterClientPrivate
     GThreadPool *worker_threads;
     gboolean multi_process_mode;
     struct {
-        guint number;
         GUnixConnection *control;
     } children;
     struct sockaddr *address;
@@ -248,7 +247,6 @@ _milter_client_init (MilterClient *client)
     priv->multi_workers_mode = FALSE;
     priv->worker_threads = NULL;
     priv->multi_process_mode = FALSE;
-    priv->children.number = 0;
     priv->children.control = NULL;
     priv->address = NULL;
     priv->address_size = 0;

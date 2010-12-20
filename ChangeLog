@@ -1,5 +1,9 @@
 2010-12-20  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* milter/client/milter-client.c (MilterClientPrivate):
+	children.number is not used.  MilterClient does not take care of
+	child processes.
+
 	* binding/ruby/src/toolkit/rb-milter-client.c
 	(client_run_master, client_run_worker): add wrapper methods.
 
