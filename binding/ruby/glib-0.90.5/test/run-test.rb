@@ -7,7 +7,7 @@ $LOAD_PATH.unshift(top)
 require 'test/glib-test-init'
 
 if system("which make > /dev/null")
-  system("cd #{top.dump} && make > /dev/null") or exit(1)
+  system("cd .. && make > /dev/null") or exit(1)
 end
 
 $LOAD_PATH.unshift(File.join(top, "ext", "glib2"))
