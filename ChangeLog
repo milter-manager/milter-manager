@@ -1,5 +1,8 @@
 2010-12-20  Nobuyoshi Nakada  <nobu@clear-code.com>
 
+	* milter/client.h (milter_client_send_io, milter_client_recv_io):
+	removed stale declarations.
+
 	* milter/client/milter-client.c (_milter_client_init, dispose):
 	initialize and dispose control connection.
 

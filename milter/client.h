@@ -735,16 +735,6 @@ void                 milter_client_start_syslog      (MilterClient  *client,
                                                       const gchar   *identify);
 
 
-gboolean             milter_client_send_io           (MilterClient *client,
-                                                      gint msg_fd,
-                                                      GIOChannel *channel,
-                                                      GError **error);
-
-GIOChannel          *milter_client_recv_io           (MilterClient *client,
-                                                      gint msg_fd,
-                                                      GError **error);
-
-
 G_END_DECLS
 
 #endif /* __MILTER_CLIENT_H__ */
