@@ -1,5 +1,9 @@
 2010-12-20  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* milter/client/milter-client.c (milter_client_master_main)
+	(milter_client_worker_main): add new main loop for multi process
+	mode.
+
 	* milter/client/milter-client.c (milter_client_set_fd_passing_fd):
 	add new setter.
 

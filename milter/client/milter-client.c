@@ -861,6 +861,16 @@ accept_connection_fd (MilterClient *client, gint server_fd,
     return client_fd;
 }
 
+static GIOChannel *
+setup_client_channel(gint client_fd)
+{
+    GIOChannel *client_channel = g_io_channel_unix_new(client_fd);
+    g_io_channel_set_encoding(client_channel, NULL, NULL);
+    g_io_channel_set_flags(client_channel, G_IO_FLAG_NONBLOCK, NULL);
+    g_io_channel_set_close_on_unref(client_channel, TRUE);
+    return client_channel;
+}
+
 static gboolean
 accept_connection (MilterClient *client, gint server_fd,
                    GIOChannel **client_channel,
@@ -873,10 +883,7 @@ accept_connection (MilterClient *client, gint server_fd,
     if (client_fd == -1)
         return FALSE;
 
-    *client_channel = g_io_channel_unix_new(client_fd);
-    g_io_channel_set_encoding(*client_channel, NULL, NULL);
-    g_io_channel_set_flags(*client_channel, G_IO_FLAG_NONBLOCK, NULL);
-    g_io_channel_set_close_on_unref(*client_channel, TRUE);
+    *client_channel = setup_client_channel(client_fd);
 
     return TRUE;
 }
@@ -1461,13 +1468,15 @@ milter_client_daemonize (MilterClient *client, GError **error)
     return TRUE;
 }
 
-gboolean
-milter_client_main (MilterClient *client)
+static gboolean milter_client_prepare (MilterClient *client, GSourceFunc func);
+static void milter_client_cleanup (MilterClient *client);
+
+static gboolean
+milter_client_prepare (MilterClient *client, GSourceFunc func)
 {
     MilterClientPrivate *priv;
     GError *error = NULL;
     GSource *watch_source;
-    gboolean success;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
@@ -1503,29 +1512,23 @@ milter_client_main (MilterClient *client)
     watch_source = g_io_create_watch(priv->listening_channel,
                                      G_IO_IN | G_IO_PRI |
                                      G_IO_ERR | G_IO_HUP | G_IO_NVAL);
-    if (priv->multi_process_mode) {
-        g_source_set_callback(watch_source,
-                              (GSourceFunc)parent_worker_server_watch_func,
-                              client, NULL);
-    } else if (priv->multi_workers_mode) {
-        g_source_set_callback(watch_source,
-                              (GSourceFunc)multi_workers_server_watch_func,
-                              client, NULL);
-    } else {
-        g_source_set_callback(watch_source,
-                              (GSourceFunc)single_worker_server_watch_func,
-                              client, NULL);
-    }
+
+    g_source_set_callback(watch_source, func, client, NULL);
+
     priv->server_watch_id =
         g_source_attach(watch_source,
                         g_main_loop_get_context(priv->accept_loop));
     g_source_unref(watch_source);
 
-    if (priv->multi_workers_mode) {
-        success = multi_workers_start_accept(client);
-    } else {
-        success = single_worker_start_accept(client);
-    }
+    return TRUE;
+}
+
+static void
+milter_client_cleanup (MilterClient *client)
+{
+    MilterClientPrivate *priv;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
 
     if (priv->listening_channel) {
         g_io_channel_unref(priv->listening_channel);
@@ -1552,8 +1555,67 @@ milter_client_main (MilterClient *client)
             }
         }
     }
+}
 
-    return TRUE;
+gboolean
+milter_client_main (MilterClient *client)
+{
+    MilterClientPrivate *priv;
+    gboolean success;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+
+    if (priv->multi_workers_mode) {
+        if (!milter_client_prepare(client, (GSourceFunc)multi_workers_server_watch_func))
+            return FALSE;
+        success = multi_workers_start_accept(client);
+    } else {
+        if (!milter_client_prepare(client, (GSourceFunc)single_worker_server_watch_func))
+            return FALSE;
+        success = single_worker_start_accept(client);
+    }
+
+    milter_client_cleanup(client);
+
+    return success;
+}
+
+gboolean
+milter_client_master_main (MilterClient *client)
+{
+    gboolean success;
+
+    if (!milter_client_prepare(client, (GSourceFunc)parent_worker_server_watch_func))
+        return FALSE;
+
+    success = single_worker_start_accept(client);
+
+    milter_client_cleanup(client);
+
+    return success;
+}
+
+void
+milter_client_worker_main (MilterClient *client)
+{
+    MilterClientPrivate *priv;
+    GError *error = NULL;
+    gint client_fd;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+
+    while ((client_fd = g_unix_connection_receive_fd(priv->children.control, NULL, &error))
+           != -1) {
+        MilterGenericSocketAddress address;
+        socklen_t address_size;
+        GIOChannel *client_channel;
+
+        getpeername(client_fd, &address.address.base, &address_size);
+        client_channel = setup_client_channel(client_fd);
+        single_worker_process_client_channel(client, client_channel,
+                                             &address, address_size);
+        g_io_channel_unref(client_channel);
+    }
 }
 
 void
