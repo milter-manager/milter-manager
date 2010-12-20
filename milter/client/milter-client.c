@@ -903,7 +903,7 @@ single_worker_accept_connection (MilterClient *client, gint server_fd)
 static gboolean
 parent_worker_accept_connection (MilterClient *client, gint server_fd)
 {
-    gboolean result;
+    gboolean result = FALSE;
     gint client_fd;
     MilterGenericSocketAddress address;
     socklen_t address_size;
@@ -915,7 +915,7 @@ parent_worker_accept_connection (MilterClient *client, gint server_fd)
     if (client_fd != -1) {
         GError *error = NULL;
         result = g_unix_connection_send_fd(priv->children.control,
-                                         client_fd, NULL, &error);
+                                           client_fd, NULL, &error);
         close(client_fd);
         if (!result) {
             milter_error("[client][error][send_fd] %s", error->message);
