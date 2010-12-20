@@ -1,5 +1,11 @@
 2010-12-20  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* milter/client/milter-client.c (parent_worker_accept_connection):
+	  workaround for a bug g_unix_connection_send_fd fails wrongly.
+
+	* binding/ruby/lib/milter/client/command-line.rb
+	(Milter::Client::CommandLine#setup_milter_options):
+
 	* binding/ruby/src/toolkit/rb-milter-client.c (client_set_fd_passing_io):
 	add setter method.
 

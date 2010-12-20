@@ -923,7 +923,8 @@ parent_worker_accept_connection (MilterClient *client, gint server_fd)
                                            client_fd, NULL, &error);
         close(client_fd);
         if (!result) {
-            milter_error("[client][error][send_fd] %s", error->message);
+            milter_error("[client][error][send_fd] %s",
+                         error ? error->message : "unknown");
             milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client),
                                         error);
         }
