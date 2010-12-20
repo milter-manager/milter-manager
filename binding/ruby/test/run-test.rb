@@ -27,7 +27,7 @@ require 'test/unit'
 if ENV["NO_MAKE"] != "yes"
   make = "make"
   make = "gmake" if system("which gmake > /dev/null")
-  system("#{make} -C #{top.to_s.dump} > /dev/null") or exit(1)
+  system("#{make} -C .. > /dev/null") or exit(1)
 end
 
 $LOAD_PATH.unshift(File.expand_path("../glib-0.90.5/ext/glib2"))
