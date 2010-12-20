@@ -1,5 +1,8 @@
 2010-12-20  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* binding/ruby/src/toolkit/rb-milter-client.c (client_set_fd_passing_io):
+	add setter method.
+
 	* binding/ruby/test/run-test.rb: separate build directory from
 	source directory.
 

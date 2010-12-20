@@ -18,6 +18,11 @@
  */
 
 #include "rb-milter-client-private.h"
+#ifdef HAVE_RUBY_IO_H
+#include <ruby/io.h>
+#else
+#include <rubyio.h>
+#endif
 
 #define SELF(self) RVAL2GOBJ(self)
 
@@ -175,6 +180,23 @@ client_set_default_unix_socket_mode (VALUE self, VALUE rb_mode)
     return Qnil;
 }
 
+static VALUE
+client_set_fd_passing_io (VALUE self, VALUE io)
+{
+    MilterClient *client = SELF(self);
+    rb_io_t *fptr;
+    gint fd;
+
+    GetOpenFile(io, fptr);
+#ifdef GetReadFile
+    fd = fileno(GetReadFile(fptr));
+#else
+    fd = fptr->fd;
+#endif
+    milter_client_set_fd_passing_fd(client, fd);
+    return self;
+}
+
 static void
 mark (gpointer data)
 {
@@ -234,6 +256,10 @@ Init_milter_client (void)
                      client_get_default_unix_socket_mode, 0);
     rb_define_method(rb_cMilterClient, "set_default_unix_socket_mode",
                      client_set_default_unix_socket_mode, 1);
+    rb_define_method(rb_cMilterClient, "set_fd_passing_io",
+                     client_set_fd_passing_io, 1);
+    rb_define_method(rb_cMilterClient, "fd_passing_io=",
+                     client_set_fd_passing_io, 1);
 
     G_DEF_SETTERS(rb_cMilterClient);
 
