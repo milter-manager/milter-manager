@@ -1,3 +1,8 @@
+2010-12-20  Nobuyoshi Nakada  <nakada@clear-code.com>
+
+	* test/run-test.rb: separate build directory from source
+	directory.
+
 2010-12-14  Haruka Yoshihara  <yoshihara@clear-code.com>
 
 	* ext/glib2/Makefile: fixed CFLAGS for Ruby/GLib2 0.90.5.
