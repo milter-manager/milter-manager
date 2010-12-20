@@ -1974,7 +1974,7 @@ milter_client_start_syslog (MilterClient *client, const gchar *identify)
 }
 
 void
-milter_client_set_fd_passing_fd (MilterClient *client, guint fd)
+milter_client_set_fd_passing_fd (MilterClient *client, gint fd)
 {
     MilterClientPrivate *priv;
 

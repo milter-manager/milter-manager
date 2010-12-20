@@ -760,7 +760,7 @@ void                 milter_client_start_syslog      (MilterClient  *client,
  *
  * Sets fd for fd passing between parent and children processes.
  */
-void                 milter_client_set_fd_passing_fd (MilterClient *client, guint fd);
+void                 milter_client_set_fd_passing_fd (MilterClient *client, gint fd);
 
 G_END_DECLS
 
