@@ -19,9 +19,9 @@
 
 #include "rb-milter-client-private.h"
 #ifdef HAVE_RUBY_IO_H
-#include <ruby/io.h>
+#  include <ruby/io.h>
 #else
-#include <rubyio.h>
+#  include <rubyio.h>
 #endif
 
 #define SELF(self) RVAL2GOBJ(self)

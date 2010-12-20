@@ -1,3 +1,7 @@
+2010-12-20  Kouhei Sutou  <kou@cozmixng.org>
+
+	* binding/ruby/src/toolkit/rb-milter-client.c: indent nested #ifdef.
+
 2010-12-20  Nobuyoshi Nakada  <nakada@clear-code.com>
 
 	* milter/client/milter-client.c (parent_worker_accept_connection):
