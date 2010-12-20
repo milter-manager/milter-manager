@@ -1,4 +1,7 @@
-2010-12-20  Nobuyoshi Nakada  <nobu@clear-code.com>
+2010-12-20  Nobuyoshi Nakada  <nakada@clear-code.com>
+
+	* milter/client/milter-client.c (milter_client_set_fd_passing_fd):
+	add new setter.
 
 	* milter/client/milter-client.c (parent_worker_accept_connection):
 	initialize a local variable.

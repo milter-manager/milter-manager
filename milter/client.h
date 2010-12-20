@@ -667,6 +667,25 @@ void                 milter_client_set_maintenance_interval
 gboolean             milter_client_main              (MilterClient  *client);
 
 /**
+ * milter_client_master_main:
+ * @client: a %MilterClient.
+ *
+ * Starts main loop in parent process.
+ *
+ * Returns: %TRUE if main loop is quitted successfully,
+ * %FALSE otherwise.
+ */
+gboolean             milter_client_master_main       (MilterClient *client);
+
+/**
+ * milter_client_worker_main:
+ * @client: a %MilterClient.
+ *
+ * Starts main loop in child process.
+ */
+void                 milter_client_worker_main       (MilterClient *client);
+
+/**
  * milter_client_shutdown:
  * @client: a %MilterClient.
  *
@@ -734,6 +753,14 @@ guint                milter_client_get_n_processing_sessions
 void                 milter_client_start_syslog      (MilterClient  *client,
                                                       const gchar   *identify);
 
+/**
+ * milter_client_set_fd_passing_fd:
+ * @client: a %MilterClient.
+ * @fd: UNIX domain socket.
+ *
+ * Sets fd for fd passing between parent and children processes.
+ */
+void                 milter_client_set_fd_passing_fd (MilterClient *client, guint fd);
 
 G_END_DECLS
 

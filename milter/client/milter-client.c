@@ -1886,6 +1886,18 @@ milter_client_get_n_processing_sessions (MilterClient *client)
     return MILTER_CLIENT_GET_PRIVATE(client)->n_processing_sessions;
 }
 
+static GUnixConnection *
+unix_connection_from_fd(gint fd, GError **error)
+{
+    GSocket *socket;
+    GUnixConnection *connection;
+    socket = g_socket_new_from_fd(fd, error);
+    if (!socket) return FALSE;
+    connection = G_UNIX_CONNECTION(g_socket_connection_factory_create_connection(socket));
+    g_object_unref(socket);
+    return connection;
+}
+
 void
 milter_client_start_syslog (MilterClient *client, const gchar *identify)
 {
@@ -1897,6 +1909,22 @@ milter_client_start_syslog (MilterClient *client, const gchar *identify)
         g_object_unref(priv->syslog_logger);
     }
     priv->syslog_logger = milter_syslog_logger_new(identify);
+}
+
+void
+milter_client_set_fd_passing_fd (MilterClient *client, guint fd)
+{
+    MilterClientPrivate *priv;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+
+    if (priv->children.control) {
+        g_object_unref(priv->children.control);
+        priv->children.control = NULL;
+    }
+    if (fd != -1) {
+        priv->children.control = unix_connection_from_fd(fd, NULL);
+    }
 }
 
 /*
