@@ -13,7 +13,7 @@ AM_CFLAGS +=					\
 	$(GIO_UNIX_CFLAGS)
 else
 AM_CFLAGS +=					\
-	-I$(top_builddir)/gio-unix-compatible
+	-I$(top_srcdir)/gio-unix-compatible
 endif
 
 EXTRA_DIST =

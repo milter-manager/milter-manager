@@ -1,3 +1,7 @@
+2010-12-21  Nobuyoshi Nakada  <nakada@clear-code.com>
+
+	* milter/client/Makefile.am (AM_CFLAGS): refer top_srcdir.
+
 2010-12-21  Kouhei Sutou  <kou@clear-code.com>
 
 	* gio-unix-compatible/gio/gunixfdmessage.c
