@@ -55,12 +55,13 @@ module Milter
         daemonize if @options.run_as_daemon
         if @options.multi_process_mode
           i, o = UNIXSocket.pair
-          (1..@options.multi_process_mode).map do
-            fork do
+          @options.multi_process_mode.times do
+            child = fork do
               i.close
               client.fd_passing_io = o
               client.run_worker
             end
+            Process.detach(child)
           end
           o.close
           client.fd_passing_io = i
