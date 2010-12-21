@@ -1,5 +1,10 @@
 2010-12-21  Kouhei Sutou  <kou@clear-code.com>
 
+	* gio-unix-compatible/gio/gunixfdmessage.c
+	(g_unix_fd_message_append_fd):
+	fix "Bug 637696 - g_unix_connection_send_fd() doesn't work".
+	https://bugzilla.gnome.org/show_bug.cgi?id=637696
+
 	* Makefile.am, configure.ac, milter/client/Makefile.am,
 	gio-unix-compatible/: import GIO UNIX.
 
