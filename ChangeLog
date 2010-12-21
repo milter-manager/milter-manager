@@ -1,5 +1,9 @@
 2010-12-21  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/core/milter-version.h.in,
+	module/configuration/ruby/milter-manager-ruby-configuration.c:
+	"this program" -> "this library".
+
 	* configure.ac: "nil" -> "" for Ruby 1.8.7.
 
 2010-12-21  Nobuyoshi Nakada  <nobu@ruby-lang.org>
