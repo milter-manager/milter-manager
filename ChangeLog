@@ -1,5 +1,9 @@
 2010-12-21  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* binding/ruby/lib/milter/client/command-line.rb (Milter::Client::CommandLine#run):
+	ignore signals in child processes, while deliver to children in
+	parent process.
+
 	* milter/client/milter-client.c: renamed multi_workers and
 	single_worker as multi_threads and single_thread respectively.
 	renamed parent and child workers as master and workers.

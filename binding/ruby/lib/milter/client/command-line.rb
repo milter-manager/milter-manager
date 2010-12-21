@@ -55,17 +55,30 @@ module Milter
         daemonize if @options.run_as_daemon
         if @options.n_workers
           i, o = UNIXSocket.pair
-          @options.n_workers.times do
+          children = (1..@options.n_workers).map do
             child = fork do
               i.close
               client.fd_passing_io = o
-              client.run_worker
+              begin
+                client.run_worker
+              rescue SignalException
+              end
             end
             Process.detach(child)
+            child
           end
           o.close
           client.fd_passing_io = i
-          client.run_master
+          begin
+            signal = "SIGTERM"
+            client.run_master
+          rescue SignalException => e
+            signal = e.signm
+            signal = "SIGINT" if signal.empty?
+            raise
+          ensure
+            Process.kill(signal, *children)
+          end
         else
           client.main
         end
