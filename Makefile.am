@@ -1,23 +1,24 @@
 ACLOCAL_AMFLAGS = $$ACLOCAL_OPTIONS
 
-SUBDIRS =		\
-	milter		\
-	libmilter	\
-	binding		\
-	module		\
-	src		\
-	tool		\
-	data		\
-	admin		\
-	test		\
-	po		\
-	build		\
-	misc		\
-	doc		\
-	html		\
-	license		\
-	apt		\
-	rpm		\
+SUBDIRS =					\
+	gio-unix-compatible			\
+	milter					\
+	libmilter				\
+	binding					\
+	module					\
+	src					\
+	tool					\
+	data					\
+	admin					\
+	test					\
+	po					\
+	build					\
+	misc					\
+	doc					\
+	html					\
+	license					\
+	apt					\
+	rpm					\
 	yum
 
 pkgconfigdir = $(libdir)/pkgconfig

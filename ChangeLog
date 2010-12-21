@@ -1,3 +1,8 @@
+2010-12-21  Kouhei Sutou  <kou@clear-code.com>
+
+	* Makefile.am, configure.ac, milter/client/Makefile.am,
+	gio-unix-compatible/: import GIO UNIX.
+
 2010-12-21  Nobuyoshi Nakada  <nakada@clear-code.com>
 
 	* binding/ruby/lib/milter/client/command-line.rb

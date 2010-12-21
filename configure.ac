@@ -169,10 +169,13 @@ AM_PATH_GLIB_2_0($GLIB_REQUIRED,
                  [AC_MSG_ERROR([GLib >= $GLIB_REQUIRED required.])],
                  [gobject gmodule gthread])
 
-PKG_CHECK_MODULES(GIO_UNIX, gio-unix-2.0 >= 2.22,
-		  [gio_unix_2_22=yes], [gio_unix_2_22=no])
-GLIB_CFLAGS="$GLIB_CFLAGS $GIO_UNIX_CFLAGS"
-GLIB_LIBS="$GLIB_LIBS $GIO_UNIX_LIBS"
+PKG_CHECK_MODULES(GIO_UNIX, gio-unix-2.0 >= 2.28,
+		  [gio_unix_2_28=yes], [gio_unix_2_28=no])
+AM_CONDITIONAL([GIO_UNIX_2_28], [test "$gio_unix_2_28" = "yes"])
+if test "$gio_unix_2_28" = "yes"; then
+  AC_DEFINE(HAVE_GIO_UNIX_2_28, 1,
+            [Define to 1 if you have gio-unix-2.0 >= 2.28.])
+fi
 
 dnl **************************************************************
 dnl Check for Cutter
@@ -690,6 +693,8 @@ AC_CONFIG_FILES([Makefile
 		 milter-server.pc
 		 milter-manager.pc
 		 rpm/centos/milter-manager.spec
+		 gio-unix-compatible/Makefile
+		 gio-unix-compatible/gio/Makefile
 		 milter/Makefile
 		 milter/core/Makefile
 		 milter/core/milter-version.h

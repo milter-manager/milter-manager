@@ -8,6 +8,14 @@ AM_CFLAGS =					\
 	$(GLIB_CFLAGS)				\
 	$(COVERAGE_CFLAGS)
 
+if GIO_UNIX_2_28
+AM_CFLAGS +=					\
+	$(GIO_UNIX_CFLAGS)
+else
+AM_CFLAGS +=					\
+	-I$(top_builddir)/gio-unix-compatible
+endif
+
 EXTRA_DIST =
 MAINTAINERCLEANFILES =
 BUILT_SOURCES =
@@ -34,8 +42,17 @@ libmilter_client_la_SOURCES =		\
 	milter-client.c			\
 	milter-client-context.c
 
-libmilter_client_la_LIBADD =				\
-	$(top_builddir)/milter/core/libmilter-core.la	\
+libmilter_client_la_LIBADD =					\
+	$(top_builddir)/milter/core/libmilter-core.la		\
 	$(MILTER_CLIENT_LIBS)
+
+if GIO_UNIX_2_28
+libmilter_client_la_LIBADD +=			\
+	$(GIO_UNIX_LIBS)
+else
+libmilter_client_la_LIBADD +=							\
+	$(top_builddir)/gio-unix-compatible/gio/libgio-unix-compatible.la
+endif
+
 
 include $(top_srcdir)/build/enum-types.mk
