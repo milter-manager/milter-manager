@@ -53,9 +53,9 @@ module Milter
         end
         yield(client, options) if block_given?
         daemonize if @options.run_as_daemon
-        if @options.multi_process_mode
+        if @options.number_of_process
           i, o = UNIXSocket.pair
-          @options.multi_process_mode.times do
+          @options.number_of_process.times do
             child = fork do
               i.close
               client.fd_passing_io = o
@@ -164,10 +164,10 @@ module Milter
           @options.unix_socket_mode = mode
         end
 
-        @option_parser.on("--multi-process-mode[=<NUMBER-OF-CHILDREN>]",
+        @option_parser.on("--number-of-processes=<NUMBER-OF-CHILDREN>",
                           Integer,
                           "Run in multi process mode") do |num|
-          @options.multi_process_mode = num || 4
+          @options.number_of_process = num || 4
         end
       end
 
