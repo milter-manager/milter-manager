@@ -6,6 +6,8 @@
 	(Milter::Client::CommandLine#run): detach child processes.
 	(Milter::Client::CommandLine#setup_milter_options): renamed as
 	--number-of-processes.
+	(Milter::Client::CommandLine#setup_milter_options): check the
+	argument.
 
 2010-12-21  Kouhei Sutou  <kou@clear-code.com>
 

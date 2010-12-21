@@ -167,7 +167,10 @@ module Milter
         @option_parser.on("--number-of-processes=<NUMBER-OF-CHILDREN>",
                           Integer,
                           "Run in multi process mode") do |num|
-          @options.number_of_process = num || 4
+          if num <= 0
+            raise OptionParser::InvalidArgument
+          end
+          @options.number_of_process = num
         end
       end
 
