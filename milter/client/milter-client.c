@@ -723,33 +723,32 @@ typedef struct _ClientChannelSetupData
     MilterGenericSocketAddress address;
 } ClientChannelSetupData;
 
-static gboolean
-single_worker_cb_idle_client_channel_setup (gpointer user_data)
+static void
+single_worker_client_channel_setup (MilterClient *client,
+                                    GIOChannel *channel,
+                                    MilterGenericSocketAddress *address)
 {
-    ClientChannelSetupData *setup_data = user_data;
-    MilterClient *client;
     MilterClientPrivate *priv;
     MilterClientContext *context;
     MilterWriter *writer;
     MilterReader *reader;
     MilterClientProcessData *data;
 
-    client = setup_data->client;
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
     context = milter_client_context_new(client);
 
-    writer = milter_writer_io_channel_new(setup_data->channel);
+    writer = milter_writer_io_channel_new(channel);
     milter_agent_set_writer(MILTER_AGENT(context), writer);
     g_object_unref(writer);
 
-    reader = milter_reader_io_channel_new(setup_data->channel);
+    reader = milter_reader_io_channel_new(channel);
     milter_agent_set_reader(MILTER_AGENT(context), reader);
     g_object_unref(reader);
 
     milter_client_context_set_timeout(context, priv->timeout);
 
-    milter_client_context_set_socket_address(context, &(setup_data->address));
+    milter_client_context_set_socket_address(context, address);
 
     data = g_new(MilterClientProcessData, 1);
     data->priv = priv;
@@ -768,7 +767,17 @@ single_worker_cb_idle_client_channel_setup (gpointer user_data)
     milter_agent_start(MILTER_AGENT(context), NULL);
     g_signal_emit(client, signals[CONNECTION_ESTABLISHED], 0, context);
 
-    g_io_channel_unref(setup_data->channel);
+    g_io_channel_unref(channel);
+}
+
+static gboolean
+single_worker_cb_idle_client_channel_setup (gpointer user_data)
+{
+    ClientChannelSetupData *setup_data = user_data;
+
+    single_worker_client_channel_setup(setup_data->client,
+                                       setup_data->channel,
+                                       &setup_data->address);
     g_free(setup_data);
 
     return FALSE;
@@ -1582,16 +1591,14 @@ milter_client_main (MilterClient *client)
 gboolean
 milter_client_run_master (MilterClient *client)
 {
-    gboolean success;
-
     if (!milter_client_prepare(client, (GSourceFunc)parent_worker_server_watch_func))
         return FALSE;
 
-    success = single_worker_start_accept(client);
+    single_worker_accept_thread(client);
 
     milter_client_cleanup(client);
 
-    return success;
+    return TRUE;
 }
 
 void
@@ -1611,9 +1618,7 @@ milter_client_run_worker (MilterClient *client)
 
         getpeername(client_fd, &address.address.base, &address_size);
         client_channel = setup_client_channel(client_fd);
-        single_worker_process_client_channel(client, client_channel,
-                                             &address, address_size);
-        g_io_channel_unref(client_channel);
+        single_worker_client_channel_setup(client, client_channel, &address);
     }
 }
 
