@@ -1049,6 +1049,45 @@ single_thread_accept_thread (gpointer data)
     return NULL;
 }
 
+static gpointer
+worker_accept_thread (gpointer data)
+{
+    MilterClient *client = data;
+    MilterClientPrivate *priv;
+    GError *error = NULL;
+    gint client_fd;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+
+    while ((client_fd = g_unix_connection_receive_fd(priv->workers.control, NULL, &error))
+           != -1) {
+        MilterGenericSocketAddress address;
+        socklen_t address_size;
+        GIOChannel *client_channel;
+
+        if (getpeername(client_fd, &address.address.base, &address_size) != 0) {
+            error = g_error_new(MILTER_CLIENT_ERROR,
+                                MILTER_CLIENT_ERROR_IO_ERROR,
+                                "[client][error][getpeername] "
+                                "failed to get a peername: %s",
+                                g_strerror(errno));
+            milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client),
+                                        error);
+            g_error_free(error);
+            memset(&address, 0, sizeof(address));
+            address_size = 0;
+        }
+        client_channel = setup_client_channel(client_fd);
+        single_thread_process_client_channel(client, client_channel,
+                                             &address, address_size);
+        g_io_channel_unref(client_channel);
+    }
+
+    milter_client_shutdown(client);
+
+    return NULL;
+}
+
 static gboolean
 single_thread_start_accept (MilterClient *client)
 {
@@ -1631,34 +1670,23 @@ void
 milter_client_run_worker (MilterClient *client)
 {
     MilterClientPrivate *priv;
-    GError *error = NULL;
-    gint client_fd;
+    GThread *thread;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
+    thread = g_thread_create(worker_accept_thread, client, TRUE, NULL);
 
-    priv->main_loop = g_main_loop_new(NULL, FALSE);
-    g_idle_add_full(G_PRIORITY_DEFAULT,
-                    single_thread_cb_idle_unlock_quit_mutex,
-                    client,
-                    NULL);
-
-    while ((client_fd = g_unix_connection_receive_fd(priv->workers.control, NULL, &error))
-           != -1) {
-        MilterGenericSocketAddress address;
-        socklen_t address_size;
-        GIOChannel *client_channel;
-
-        getpeername(client_fd, &address.address.base, &address_size);
-        client_channel = setup_client_channel(client_fd);
-        single_thread_client_channel_setup(client, client_channel, &address);
-
-        g_mutex_lock(priv->quit_mutex);
-        if (priv->quitting) {
-            g_mutex_unlock(priv->quit_mutex);
-        } else {
-            g_main_loop_run(priv->main_loop);
-        }
+    g_mutex_lock(priv->quit_mutex);
+    if (priv->quitting) {
+        g_mutex_unlock(priv->quit_mutex);
+    } else {
+        priv->main_loop = g_main_loop_new(NULL, FALSE);
+        g_idle_add_full(G_PRIORITY_DEFAULT,
+                        single_thread_cb_idle_unlock_quit_mutex,
+                        client,
+                        NULL);
+        g_main_loop_run(priv->main_loop);
     }
+    g_thread_join(thread);
     g_main_loop_unref(priv->main_loop);
     priv->main_loop = NULL;
 }

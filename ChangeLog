@@ -1,3 +1,9 @@
+2010-12-22  Nobuyoshi Nakada  <nakada@clear-code.com>
+
+	* milter/client/milter-client.c (worker_accept_thread)
+	(milter_client_run_worker): receive fd from the master process in
+	a separated thread.
+
 2010-12-21  Kouhei Sutou  <kou@clear-code.com>
 
 	* module/configuration/ruby/milter-manager-ruby-configuration.c:
