@@ -2,6 +2,7 @@
 
 	* module/configuration/ruby/milter-manager-ruby-configuration.c:
 	added config.h include.
+	(rb_funcall_protect): used RARRAY_LEN/PTR instead RARRY->LEN/PTR for Ruby 1.9.
 
 	* configure.ac: used AC_CHECK_FUNCS for rb_errinfo.
 

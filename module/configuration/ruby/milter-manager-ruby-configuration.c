@@ -29,20 +29,15 @@
 #undef PACKAGE_STRING
 #undef PACKAGE_BUGREPORT
 
-#ifndef HAVE_RB_ERRINFO
-#  define rb_errinfo() (ruby_errinfo)
-#endif
-
-
-#ifdef HAVE_CONFIG_H
-#  include <config.h>
-#endif /* HAVE_CONFIG_H */
-
 #include <signal.h>
 #include <gmodule.h>
 
 #include <milter/manager/milter-manager-configuration.h>
 #include <milter/manager/milter-manager-module-impl.h>
+
+#ifndef HAVE_RB_ERRINFO
+#  define rb_errinfo() (ruby_errinfo)
+#endif
 
 #define MILTER_TYPE_MANAGER_RUBY_CONFIGURATION            (milter_manager_ruby_configuration_get_type())
 #define MILTER_MANAGER_RUBY_CONFIGURATION(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), MILTER_TYPE_MANAGER_RUBY_CONFIGURATION, MilterManagerRubyConfiguration))
@@ -263,9 +258,9 @@ rb_funcall_protect (GError **g_error, VALUE receiver, ID name, guint argc, ...)
         g_string_append_printf(error_message, "%s (%s)\n",
                                RVAL2CSTR(message), RVAL2CSTR(class_name));
         backtrace = rb_funcall(error, rb_intern("backtrace"), 0);
-        for (i = 0; i < RARRAY(backtrace)->len; i++) {
+        for (i = 0; i < RARRAY_LEN(backtrace); i++) {
             g_string_append_printf(error_message, "%s\n",
-                                   RVAL2CSTR(RARRAY(backtrace)->ptr[i]));
+                                   RVAL2CSTR(RARRAY_PTR(backtrace)[i]));
         }
         g_set_error(g_error,
                     MILTER_MANAGER_CONFIGURATION_ERROR,
