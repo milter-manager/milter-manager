@@ -5,6 +5,8 @@
 
 2010-12-21  Haruka Yoshihara  <yoshihara@clear-code.com>
 
+	* test/lib/milter-manager-test-client.c (milter_manager_test_client_set_arguments): added ruby_path in test-client command.
+
 	* test/run-test.sh: used Ruby1.9.1 for run-test.sh.
 
 	* binding/ruby/test/manager/test-postfix-regexp-table.rb (TestPostfixRegexpTable#test_invalid_pattern): changed message of Regexp for IGNORECASE.

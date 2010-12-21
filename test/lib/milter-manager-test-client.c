@@ -719,7 +719,7 @@ milter_manager_test_client_set_arguments (MilterManagerTestClient *client,
                                           GArray *arguments)
 {
     MilterManagerTestClientPrivate *priv;
-    gchar *test_client_path, *port;
+    gchar *ruby_path, *test_client_path, *port;
     guint i;
 
     priv = MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client);
@@ -729,6 +729,8 @@ milter_manager_test_client_set_arguments (MilterManagerTestClient *client,
 
     priv->command = g_array_new(TRUE, TRUE, sizeof(gchar *));
 
+    ruby_path = g_strdup(g_getenv("RUBY"));
+    g_array_append_val(priv->command, ruby_path);
     test_client_path = g_build_filename(milter_test_get_base_dir(),
                                         "lib",
                                         "milter-test-client.rb",
