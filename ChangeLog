@@ -1,5 +1,8 @@
 2010-12-21  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* milter/client/milter-client.c: renamed multi_workers and
+	single_worker as multi_threads and single_thread respectively.
+
 	* milter/client/milter-client.c (single_worker_client_channel_setup)
 	(milter_client_run_worker, milter_client_run_master): run in
 	single thread.
