@@ -17,10 +17,6 @@
  *
  */
 
-#ifdef HAVE_CONFIG_H
-#  include "../../../config.h"
-#endif /* HAVE_CONFIG_H */
-
 #include <rb-milter-manager.h>
 
 #undef PACKAGE_NAME
@@ -28,6 +24,11 @@
 #undef PACKAGE_VERSION
 #undef PACKAGE_STRING
 #undef PACKAGE_BUGREPORT
+
+#ifdef HAVE_CONFIG_H
+#  include "../../../config.h"
+#endif /* HAVE_CONFIG_H */
+
 
 #include <signal.h>
 #include <gmodule.h>

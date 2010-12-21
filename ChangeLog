@@ -1,3 +1,8 @@
+2010-12-21  Kouhei Sutou  <kou@clear-code.com>
+
+	* module/configuration/ruby/milter-manager-ruby-configuration.c:
+	remove PACKAGE_* macros defined in Ruby.
+
 2010-12-21  Haruka Yoshihara  <yoshihara@clear-code.com>
 
 	* test/run-test.sh: used Ruby1.9.1 for run-test.sh.
