@@ -2,12 +2,14 @@
 
 	* binding/ruby/lib/milter/client/command-line.rb
 	(Milter::Client::CommandLine#run): add --multi-process-mode
-	  option.
+	option.
 	(Milter::Client::CommandLine#run): detach child processes.
 	(Milter::Client::CommandLine#setup_milter_options): renamed as
 	--number-of-processes.
 	(Milter::Client::CommandLine#setup_milter_options): check the
 	argument.
+	(Milter::Client::CommandLine#setup_milter_options): renamed as
+	--n-workers.
 
 2010-12-21  Kouhei Sutou  <kou@clear-code.com>
 
