@@ -54,31 +54,7 @@ module Milter
         yield(client, options) if block_given?
         daemonize if @options.run_as_daemon
         if @options.n_workers
-          i, o = UNIXSocket.pair
-          children = (1..@options.n_workers).map do
-            child = fork do
-              i.close
-              client.fd_passing_io = o
-              begin
-                client.run_worker
-              rescue SignalException
-              end
-            end
-            Process.detach(child)
-            child
-          end
-          o.close
-          client.fd_passing_io = i
-          begin
-            signal = "SIGTERM"
-            client.run_master
-          rescue SignalException => e
-            signal = e.signm
-            signal = "SIGINT" if signal.empty?
-            raise
-          ensure
-            Process.kill(signal, *children)
-          end
+          run_worker(client, @options.n_workers)
         else
           client.main
         end
@@ -219,6 +195,34 @@ module Milter
 
       def daemonize
         WEBrick::Daemon.start
+      end
+
+      def run_worker(client, n)
+        i, o = UNIXSocket.pair
+        children = (1..n).map do
+          child = fork do
+            i.close
+            client.fd_passing_io = o
+            begin
+              client.run_worker
+            rescue SignalException
+            end
+          end
+          Process.detach(child)
+          child
+        end
+        o.close
+        client.fd_passing_io = i
+        begin
+          signal = "SIGTERM"
+          client.run_master
+        rescue SignalException => e
+          signal = e.signm
+          signal = "SIGINT" if signal.empty?
+          raise
+        ensure
+          Process.kill(signal, *children)
+        end
       end
     end
   end

@@ -1,5 +1,8 @@
 2010-12-22  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* binding/ruby/lib/milter/client/command-line.rb
+	(Milter::Client::CommandLine#run_worker): split from run.
+
 	* milter/client/milter-client.c (worker_accept_thread)
 	(milter_client_run_worker): receive fd from the master process in
 	a separated thread.
