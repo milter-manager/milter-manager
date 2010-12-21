@@ -71,8 +71,14 @@ EOC
   end
 
   def test_invalid_pattern
+    message = nil
+    begin
+      Regexp.new("left-(paren only", Regexp::IGNORECASE)
+    rescue
+      message = $!.message
+    end
     error = invalid_value_error("left-(paren only",
-                                "unmatched (: /left-(paren only/",
+                                message,
                                 "/left-(paren only/ REJECT",
                                 nil,
                                 1)

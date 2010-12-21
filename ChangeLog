@@ -1,5 +1,7 @@
 2010-12-21  Haruka Yoshihara  <yoshihara@clear-code.com>
 
+	* binding/ruby/test/manager/test-postfix-regexp-table.rb (TestPostfixRegexpTable#test_invalid_pattern): changed message of Regexp for IGNORECASE.
+
 	* binding/ruby/test/manager/test-postfix-{cidr/regexp}-table.rb:
 	  changed StringIO.new to create_input.
 	  created milter-parse-test-utils.rb for create_input.
