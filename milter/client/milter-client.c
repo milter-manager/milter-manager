@@ -110,7 +110,7 @@ struct _MilterClientPrivate
     gboolean multi_process_mode;
     struct {
         GUnixConnection *control;
-    } children;
+    } workers;
     struct sockaddr *address;
     socklen_t address_size;
     gchar *effective_user;
@@ -247,7 +247,7 @@ _milter_client_init (MilterClient *client)
     priv->multi_threads_mode = FALSE;
     priv->worker_threads = NULL;
     priv->multi_process_mode = FALSE;
-    priv->children.control = NULL;
+    priv->workers.control = NULL;
     priv->address = NULL;
     priv->address_size = 0;
     priv->effective_user = NULL;
@@ -476,9 +476,9 @@ dispose (GObject *object)
         priv->worker_threads = NULL;
     }
 
-    if (priv->children.control) {
-        g_object_unref(priv->children.control);
-        priv->children.control = NULL;
+    if (priv->workers.control) {
+        g_object_unref(priv->workers.control);
+        priv->workers.control = NULL;
     }
 
     dispose_address(priv);
@@ -915,7 +915,7 @@ single_thread_accept_connection (MilterClient *client, gint server_fd)
 }
 
 static gboolean
-parent_worker_accept_connection (MilterClient *client, gint server_fd)
+master_accept_connection (MilterClient *client, gint server_fd)
 {
     gboolean result = FALSE;
     gint client_fd;
@@ -928,7 +928,7 @@ parent_worker_accept_connection (MilterClient *client, gint server_fd)
                                      &address, &address_size);
     if (client_fd != -1) {
         GError *error = NULL;
-        result = g_unix_connection_send_fd(priv->children.control,
+        result = g_unix_connection_send_fd(priv->workers.control,
                                            client_fd, NULL, &error);
         close(client_fd);
         if (!result) {
@@ -994,13 +994,13 @@ single_thread_server_watch_func (GIOChannel *channel, GIOCondition condition,
 }
 
 static gboolean
-parent_worker_server_watch_func (GIOChannel *channel, GIOCondition condition,
+master_server_watch_func (GIOChannel *channel, GIOCondition condition,
                                  gpointer data)
 {
     MilterClient *client = data;
 
     return cb_server_status_changed(client, channel, condition,
-                                    parent_worker_accept_connection);
+                                    master_accept_connection);
 }
 
 static gboolean
@@ -1591,7 +1591,7 @@ milter_client_main (MilterClient *client)
 gboolean
 milter_client_run_master (MilterClient *client)
 {
-    if (!milter_client_prepare(client, (GSourceFunc)parent_worker_server_watch_func))
+    if (!milter_client_prepare(client, (GSourceFunc)master_server_watch_func))
         return FALSE;
 
     single_thread_accept_thread(client);
@@ -1616,7 +1616,7 @@ milter_client_run_worker (MilterClient *client)
                     client,
                     NULL);
 
-    while ((client_fd = g_unix_connection_receive_fd(priv->children.control, NULL, &error))
+    while ((client_fd = g_unix_connection_receive_fd(priv->workers.control, NULL, &error))
            != -1) {
         MilterGenericSocketAddress address;
         socklen_t address_size;
@@ -1999,12 +1999,12 @@ milter_client_set_fd_passing_fd (MilterClient *client, gint fd)
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
-    if (priv->children.control) {
-        g_object_unref(priv->children.control);
-        priv->children.control = NULL;
+    if (priv->workers.control) {
+        g_object_unref(priv->workers.control);
+        priv->workers.control = NULL;
     }
     if (fd != -1) {
-        priv->children.control = unix_connection_from_fd(fd, NULL);
+        priv->workers.control = unix_connection_from_fd(fd, NULL);
     }
 }
 

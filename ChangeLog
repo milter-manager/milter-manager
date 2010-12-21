@@ -2,6 +2,7 @@
 
 	* milter/client/milter-client.c: renamed multi_workers and
 	single_worker as multi_threads and single_thread respectively.
+	renamed parent and child workers as master and workers.
 
 	* milter/client/milter-client.c (single_worker_client_channel_setup)
 	(milter_client_run_worker, milter_client_run_master): run in
