@@ -1610,6 +1610,12 @@ milter_client_run_worker (MilterClient *client)
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
+    priv->main_loop = g_main_loop_new(NULL, FALSE);
+    g_idle_add_full(G_PRIORITY_DEFAULT,
+                    single_worker_cb_idle_unlock_quit_mutex,
+                    client,
+                    NULL);
+
     while ((client_fd = g_unix_connection_receive_fd(priv->children.control, NULL, &error))
            != -1) {
         MilterGenericSocketAddress address;
@@ -1619,7 +1625,16 @@ milter_client_run_worker (MilterClient *client)
         getpeername(client_fd, &address.address.base, &address_size);
         client_channel = setup_client_channel(client_fd);
         single_worker_client_channel_setup(client, client_channel, &address);
+
+        g_mutex_lock(priv->quit_mutex);
+        if (priv->quitting) {
+            g_mutex_unlock(priv->quit_mutex);
+        } else {
+            g_main_loop_run(priv->main_loop);
+        }
     }
+    g_main_loop_unref(priv->main_loop);
+    priv->main_loop = NULL;
 }
 
 void

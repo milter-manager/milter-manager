@@ -3,6 +3,7 @@
 	* milter/client/milter-client.c (single_worker_client_channel_setup)
 	(milter_client_run_worker, milter_client_run_master): run in
 	single thread.
+	(milter_client_run_worker): run main loop.
 
 	* milter/client/Makefile.am (AM_CFLAGS): refer top_srcdir.
 
