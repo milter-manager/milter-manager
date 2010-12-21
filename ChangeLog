@@ -1,3 +1,7 @@
+2010-12-21  Kouhei Sutou  <kou@clear-code.com>
+
+	* configure.ac: "nil" -> "" for Ruby 1.8.7.
+
 2010-12-21  Nobuyoshi Nakada  <nobu@ruby-lang.org>
 
 	* configure.ac: fixed typo, and use empty string in place of nil.

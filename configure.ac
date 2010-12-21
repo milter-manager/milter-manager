@@ -248,7 +248,7 @@ if test "$ruby_available" = "yes"; then
       	       	  libdir sitelibdir vendorlibdir \
       	       	  CFLAGS LIBRUBYARG LIBS RUBY_SO_NAME \
                   rubyhdrdir sitehdrdir vendorhdrdir; do
-    rbconfig_value=`$rbconfig "print Shellwords.split(RbConfig::CONFIG['$var_name']||'').join(' ')"`
+    rbconfig_value=`$rbconfig "print Shellwords.split(RbConfig::CONFIG['$var_name'] || '').join(' ')"`
     eval "rbconfig_$var_name=\"$rbconfig_value\""
   done
   ruby_minor_version="`$RUBY -e 'print RUBY_VERSION.split(/\\./)[1]'`"
@@ -257,7 +257,7 @@ if test "$ruby_available" = "yes"; then
 
   if test "$rbconfig_rubyhdrdir" = ""; then
     RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_sitearchdir "
-    if test "$rbconfig_vendorarchdir" != "nil"; then
+    if test "$rbconfig_vendorarchdir" != ""; then
       RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_vendorarchdir "
     fi
     RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_archdir "
