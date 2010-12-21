@@ -374,6 +374,7 @@ if test "$ruby_available" = "yes"; then
       	  $ac_ruby_glib2_dir/Makefile
       cat <<EOM >> $ac_ruby_glib2_dir/Makefile
 
+srcdir_prefix = `test "${srcdir}" = . || echo "../../../$srcdir/$ac_ruby_glib2_dir/"`
 exec_prefix = $ac_ruby_glib2_exec_prefix
 libdir = \$(DESTDIR)$libdir
 pkglibdir = \$(libdir)/$PACKAGE_NAME
@@ -383,7 +384,7 @@ binding_libdir = $binding_libdir
 RUBY = $RUBY
 
 check:
-	\$(RUBY) test/run-test.rb
+	\$(RUBY) \$(srcdir_prefix)test/run-test.rb
 
 distdir:
 

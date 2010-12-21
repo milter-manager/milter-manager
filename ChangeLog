@@ -23,6 +23,8 @@
 
 2010-12-21  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* configure.ac: use script in the source directory.
+
 	* binding/ruby/lib/milter/client/command-line.rb (Milter::Client::CommandLine#run):
 	ignore signals in child processes, while deliver to children in
 	parent process.
