@@ -55,6 +55,12 @@ if test x"$USE_GTK" = x"yes"; then
     CUTTER_ARGS="-u gtk $CUTTER_ARGS"
 fi
 
+if test -z "$RUBY"; then
+    RUBY="`make -s -C $BASE_DIR echo-ruby`"
+fi
+
+export RUBY
+
 ruby_dir=$top_dir/binding/ruby
 MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_dir/lib
 MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_dir/src/toolkit/.libs

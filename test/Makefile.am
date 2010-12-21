@@ -10,7 +10,10 @@ SUBDIRS =		\
 
 if WITH_CUTTER
 TESTS = run-test.sh
-TESTS_ENVIRONMENT = NO_MAKE=yes CUTTER="$(CUTTER)"
+TESTS_ENVIRONMENT =				\
+	NO_MAKE=yes				\
+	CUTTER="$(CUTTER)"			\
+	RUBY="$(RUBY)"
 
 noinst_LTLIBRARIES =			\
 	suite-milter-manager-test.la
@@ -39,3 +42,6 @@ suite_milter_manager_test_la_SOURCES = suite-milter-manager-test.c
 
 echo-cutter:
 	@echo $(CUTTER)
+
+echo-ruby:
+	@echo $(RUBY)
