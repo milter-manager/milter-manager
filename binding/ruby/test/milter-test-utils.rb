@@ -26,3 +26,4 @@ Milter::Logger.default.target_level = Milter::LOG_LEVEL_NONE
 require 'milter-encoder-test-utils'
 require 'milter-manager-encoder-test-utils'
 require 'milter-detector-test-utils'
+require 'milter-parse-test-utils'

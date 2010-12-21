@@ -1,5 +1,8 @@
 2010-12-21  Haruka Yoshihara  <yoshihara@clear-code.com>
 
+	* binding/ruby/test/manager/test-postfix-regexp-table.rb:
+	  changed StringIO.new to create_input.
+
 	* module/configuration/ruby/milter-manager-ruby-configuration.c:
 	added config.h include.
 	(rb_funcall_protect): used RARRAY_LEN/PTR instead RARRY->LEN/PTR for Ruby 1.9.

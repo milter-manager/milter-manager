@@ -14,6 +14,9 @@
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 class TestPostfixCIDRTable < Test::Unit::TestCase
+
+  include MilterParseTestUtils
+
   def setup
     @table = Milter::Manager::PostfixCIDRTable.new
   end
@@ -23,7 +26,7 @@ class TestPostfixCIDRTable < Test::Unit::TestCase
   end
 
   def test_exact_match_ipv4
-    @table.parse(StringIO.new(<<-EOC))
+    @table.parse(create_input(<<-EOC))
 # Rule order matters. Put more specific whitelist entries
 # before more general blacklist entries.
 192.168.1.1             OK
@@ -33,7 +36,7 @@ EOC
   end
 
   def test_network_match_ipv4
-    @table.parse(StringIO.new(<<-EOC))
+    @table.parse(create_input(<<-EOC))
 # Rule order matters. Put more specific whitelist entries
 # before more general blacklist entries.
 192.168.1.1             OK
@@ -43,7 +46,7 @@ EOC
   end
 
   def test_all_match_ipv4
-    @table.parse(StringIO.new(<<-EOC))
+    @table.parse(create_input(<<-EOC))
 # Rule order matters. Put more specific whitelist entries
 # before more general blacklist entries.
 0.0.0.0/0               OK
@@ -54,7 +57,7 @@ EOC
   end
 
   def test_exact_match_ipv6
-    @table.parse(StringIO.new(<<-EOC))
+    @table.parse(create_input(<<-EOC))
 # Rule order matters. Put more specific whitelist entries
 # before more general blacklist entries.
 2001:2f8:c2:201::fff0 OK
@@ -64,7 +67,7 @@ EOC
   end
 
   def test_network_match_ipv6
-    @table.parse(StringIO.new(<<-EOC))
+    @table.parse(create_input(<<-EOC))
 # Rule order matters. Put more specific whitelist entries
 # before more general blacklist entries.
 2001:2f8:c2:201::fff0 OK
@@ -74,7 +77,7 @@ EOC
   end
 
   def test_all_match_ipv6
-    @table.parse(StringIO.new(<<-EOC))
+    @table.parse(create_input(<<-EOC))
 # Rule order matters. Put more specific whitelist entries
 # before more general blacklist entries.
 ::/0                  OK
@@ -85,7 +88,7 @@ EOC
   end
 
   def test_logical_line
-    @table.parse(StringIO.new(<<-EOC))
+    @table.parse(create_input(<<-EOC))
 192.168.1.1
   OK
 EOC
@@ -93,7 +96,7 @@ EOC
   end
 
   def test_logical_line_with_empty_line
-    @table.parse(StringIO.new(<<-EOC))
+    @table.parse(create_input(<<-EOC))
 192.168.1.1
 
   OK
@@ -102,7 +105,7 @@ EOC
   end
 
   def test_logical_line_with_comment_line
-    @table.parse(StringIO.new(<<-EOC))
+    @table.parse(create_input(<<-EOC))
 192.168.1.1
 # comment line
   OK
@@ -117,7 +120,7 @@ EOC
                                 nil,
                                 1)
     assert_raise(error) do
-      @table.parse(StringIO.new(<<-EOC))
+      @table.parse(create_input(<<-EOC))
 192.168.1 OK
 EOC
     end
@@ -131,7 +134,7 @@ EOC
                                 nil,
                                 1)
     assert_raise(error) do
-      @table.parse(StringIO.new(<<-EOC))
+      @table.parse(create_input(<<-EOC))
 f: OK
 EOC
     end
@@ -143,7 +146,7 @@ EOC
                                  nil,
                                  1)
     assert_raise(error) do
-      @table.parse(StringIO.new(<<-EOC))
+      @table.parse(create_input(<<-EOC))
 x:: OK
 EOC
     end
@@ -151,7 +154,7 @@ EOC
   end
 
   def test_result_with_spaces
-    @table.parse(StringIO.new(<<-EOC))
+    @table.parse(create_input(<<-EOC))
 192.168.1.1 550 mail fromo black is rejected
 EOC
     assert_equal("550 mail fromo black is rejected",
@@ -178,4 +181,5 @@ EOC
   def invalid_format_error(line, path, line_no)
     Milter::Manager::ConditionTable::InvalidFormatError.new(line, path, line_no)
   end
+
 end

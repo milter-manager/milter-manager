@@ -14,6 +14,9 @@
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 class TestPostfixRegexpTable < Test::Unit::TestCase
+
+  include MilterParseTestUtils
+
   def setup
     @table = Milter::Manager::PostfixRegexpTable.new
   end
@@ -23,7 +26,7 @@ class TestPostfixRegexpTable < Test::Unit::TestCase
   end
 
   def test_positive_pattern
-    @table.parse(StringIO.new(<<-EOC))
+    @table.parse(create_input(<<-EOC))
 /[%!@].*[%!@]/       550 Sender-specified routing rejected
 /^postmaster@/       OK
 EOC
@@ -31,7 +34,7 @@ EOC
   end
 
   def test_negative_pattern
-    @table.parse(StringIO.new(<<-EOC))
+    @table.parse(create_input(<<-EOC))
 !/^owner-/          OK
 /[%!@].*[%!@]/      550 Sender-specified routing rejected
 EOC
@@ -39,7 +42,7 @@ EOC
   end
 
   def test_expand
-    @table.parse(StringIO.new(<<-EOC))
+    @table.parse(create_input(<<-EOC))
 /^(.*)-outgoing\\+(.*)@(.*)$/   550 Use ${1}+$(2)@$3 $$ instead
 EOC
     assert_equal("550 Use user+ml@example.com $ instead",
@@ -47,7 +50,7 @@ EOC
   end
 
   def test_if_positive_pattern
-    @table.parse(StringIO.new(<<-EOC))
+    @table.parse(create_input(<<-EOC))
 if /^owner/
 /@(.*)$/   OK
 endif
@@ -57,7 +60,7 @@ EOC
   end
 
   def test_else_negative_pattern
-    @table.parse(StringIO.new(<<-EOC))
+    @table.parse(create_input(<<-EOC))
 if !/^owner-/
 /^(.*)-outgoing@(.*)$/   550 Use ${1}@${2} instead
 endif
@@ -74,7 +77,7 @@ EOC
                                 nil,
                                 1)
     assert_raise(error) do
-      @table.parse(StringIO.new(<<-EOC))
+      @table.parse(create_input(<<-EOC))
 /left-(paren only/ REJECT
 /left-paren/ OK
 EOC
@@ -87,7 +90,7 @@ EOC
                                  nil,
                                  1)
     assert_raise(error) do
-      @table.parse(StringIO.new(<<-EOC))
+      @table.parse(create_input(<<-EOC))
 left-paren OK
 EOC
     end
