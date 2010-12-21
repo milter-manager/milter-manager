@@ -8,6 +8,8 @@
 	(milter_client_run_worker, milter_client_run_master): run in
 	single thread.
 	(milter_client_run_worker): run main loop.
+	(milter_client_run_master): use private main loop using default
+	main context.
 
 	* milter/client/Makefile.am (AM_CFLAGS): refer top_srcdir.
 

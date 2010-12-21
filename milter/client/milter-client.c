@@ -1015,10 +1015,9 @@ single_thread_cb_idle_unlock_quit_mutex (gpointer data)
     return FALSE;
 }
 
-static gpointer
-single_thread_accept_thread (gpointer data)
+static void
+single_thread_accept_loop (MilterClient *client, GMainLoop *main_loop)
 {
-    MilterClient *client = data;
     MilterClientPrivate *priv;
     GSource *source;
 
@@ -1029,14 +1028,23 @@ single_thread_accept_thread (gpointer data)
     g_source_set_callback(source,
                           single_thread_cb_idle_unlock_quit_mutex,
                           client, NULL);
-    g_source_attach(source, g_main_loop_get_context(priv->accept_loop));
+    g_source_attach(source, g_main_loop_get_context(main_loop));
     g_source_unref(source);
 
     g_mutex_lock(priv->quit_mutex);
     if (priv->quitting)
         g_mutex_unlock(priv->quit_mutex);
     else
-        g_main_loop_run(priv->accept_loop);
+        g_main_loop_run(main_loop);
+}
+
+static gpointer
+single_thread_accept_thread (gpointer data)
+{
+    MilterClientPrivate *priv;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(data);
+    single_thread_accept_loop(data, priv->accept_loop);
 
     return NULL;
 }
@@ -1480,7 +1488,7 @@ static gboolean milter_client_prepare (MilterClient *client, GSourceFunc func);
 static void milter_client_cleanup (MilterClient *client);
 
 static gboolean
-milter_client_prepare (MilterClient *client, GSourceFunc func)
+milter_client_prepare_loop (MilterClient *client, GMainLoop *loop, GSourceFunc func)
 {
     MilterClientPrivate *priv;
     GError *error = NULL;
@@ -1525,10 +1533,19 @@ milter_client_prepare (MilterClient *client, GSourceFunc func)
 
     priv->server_watch_id =
         g_source_attach(watch_source,
-                        g_main_loop_get_context(priv->accept_loop));
+                        g_main_loop_get_context(loop));
     g_source_unref(watch_source);
 
     return TRUE;
+}
+
+static gboolean
+milter_client_prepare (MilterClient *client, GSourceFunc func)
+{
+    MilterClientPrivate *priv;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    return milter_client_prepare_loop(client, priv->accept_loop, func);
 }
 
 static void
@@ -1591,10 +1608,19 @@ milter_client_main (MilterClient *client)
 gboolean
 milter_client_run_master (MilterClient *client)
 {
-    if (!milter_client_prepare(client, (GSourceFunc)master_server_watch_func))
+    MilterClientPrivate *priv;
+    GMainLoop *main_loop;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+
+    main_loop = g_main_loop_new(NULL, FALSE);
+
+    if (!milter_client_prepare_loop(client, main_loop,
+                                    (GSourceFunc)master_server_watch_func))
         return FALSE;
 
-    single_thread_accept_thread(client);
+    single_thread_accept_loop(client, main_loop);
+    g_main_loop_unref(priv->main_loop);
 
     milter_client_cleanup(client);
 
