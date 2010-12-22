@@ -2,6 +2,7 @@
 
 	* milter/client/milter-client.c (worker_accept_thread): no
 	shutdown here.
+	(worker_accept_thread): should not emit errors from sub thread.
 
 	* binding/ruby/src/toolkit/rb-milter-client.c (rb_io_t): is 1.8.7
 	or later.

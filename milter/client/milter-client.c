@@ -1066,6 +1066,7 @@ worker_accept_thread (gpointer data)
         GIOChannel *client_channel;
 
         if (getpeername(client_fd, &address.address.base, &address_size) != 0) {
+#if 0
             error = g_error_new(MILTER_CLIENT_ERROR,
                                 MILTER_CLIENT_ERROR_IO_ERROR,
                                 "[client][error][getpeername] "
@@ -1074,6 +1075,7 @@ worker_accept_thread (gpointer data)
             milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client),
                                         error);
             g_error_free(error);
+#endif
             memset(&address, 0, sizeof(address));
             address_size = 0;
         }
