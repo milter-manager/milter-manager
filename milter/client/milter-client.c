@@ -1083,8 +1083,6 @@ worker_accept_thread (gpointer data)
         g_io_channel_unref(client_channel);
     }
 
-    milter_client_shutdown(client);
-
     return NULL;
 }
 
