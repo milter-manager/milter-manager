@@ -1,5 +1,7 @@
 2010-12-22  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* configure.ac: Shellwords.split is 1.8.7 or later.
+
 	* binding/ruby/lib/milter/client/command-line.rb
 	(Milter::Client::CommandLine#run_worker): split from run.
 
