@@ -1,5 +1,8 @@
 2010-12-22  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* binding/ruby/src/toolkit/rb-milter-client.c (rb_io_t): is 1.8.7
+	or later.
+
 	* configure.ac: Shellwords.split is 1.8.7 or later.
 
 	* binding/ruby/lib/milter/client/command-line.rb

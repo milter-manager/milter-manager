@@ -23,6 +23,9 @@
 #else
 #  include <rubyio.h>
 #endif
+#ifndef HAVE_RB_IO_T
+typedef OpenFile rb_io_t;
+#endif
 
 #define SELF(self) RVAL2GOBJ(self)
 
