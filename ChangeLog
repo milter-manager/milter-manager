@@ -1,3 +1,10 @@
+2010-12-24  Nobuyoshi Nakada  <nakada@clear-code.com>
+
+	* milter/client/milter-client.c (master_accept_connection)
+	(worker_accept_thread): use GSocket directly to pass socket
+	address too.  getpeername() often fails because of insufficient
+	resources and others.
+
 2010-12-22  Nobuyoshi Nakada  <nakada@clear-code.com>
 
 	* milter/client/milter-client.c (worker_accept_thread): no

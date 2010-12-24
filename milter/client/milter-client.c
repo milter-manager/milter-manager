@@ -31,7 +31,7 @@
 #include <errno.h>
 
 #include <glib/gstdio.h>
-#include <gio/gunixconnection.h>
+#include <gio/gunixfdmessage.h>
 
 #include <milter/core/milter-marshalers.h>
 #include "../client.h"
@@ -109,7 +109,7 @@ struct _MilterClientPrivate
     GThreadPool *worker_threads;
     gboolean multi_process_mode;
     struct {
-        GUnixConnection *control;
+        GSocket *control;
     } workers;
     struct sockaddr *address;
     socklen_t address_size;
@@ -928,9 +928,19 @@ master_accept_connection (MilterClient *client, gint server_fd)
                                      &address, &address_size);
     if (client_fd != -1) {
         GError *error = NULL;
-        result = g_unix_connection_send_fd(priv->workers.control,
-                                           client_fd, NULL, &error);
-        close(client_fd);
+        GUnixFDList *fdlist;
+        GSocketControlMessage *scm;
+        GOutputVector v;
+
+        v.buffer = &address;
+        v.size = address_size;
+        fdlist = g_unix_fd_list_new_from_array(&client_fd, 1);
+        scm = g_unix_fd_message_new_with_fd_list(fdlist);
+        if (g_socket_send_message(priv->workers.control, NULL, &v, 1,
+                                  &scm, 1, 0, NULL, &error) == v.size)
+            result = TRUE;
+        g_object_unref(scm);
+        g_object_unref(fdlist);
         if (!result) {
             milter_error("[client][error][send_fd] %s",
                          error ? error->message : "unknown");
@@ -1055,33 +1065,36 @@ worker_accept_thread (gpointer data)
     MilterClient *client = data;
     MilterClientPrivate *priv;
     GError *error = NULL;
-    gint client_fd;
+    GSocketControlMessage **scms;
+    gint nscm;
+    MilterGenericSocketAddress address;
+    GInputVector v;
+    gssize size;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
-    while ((client_fd = g_unix_connection_receive_fd(priv->workers.control, NULL, &error))
-           != -1) {
-        MilterGenericSocketAddress address;
-        socklen_t address_size;
+    v.buffer = &address;
+    v.size = sizeof(address);
+    while (memset(&address, 0, sizeof(address)),
+           (size = g_socket_receive_message(priv->workers.control, NULL, &v, 1,
+                                            &scms, &nscm, NULL, NULL, &error)) > 0) {
         GIOChannel *client_channel;
+        GUnixFDMessage *fdmsg = NULL;
+        GUnixFDList *fdlist;
+        gint i = 0, client_fd;
 
-        if (getpeername(client_fd, &address.address.base, &address_size) != 0) {
-#if 0
-            error = g_error_new(MILTER_CLIENT_ERROR,
-                                MILTER_CLIENT_ERROR_IO_ERROR,
-                                "[client][error][getpeername] "
-                                "failed to get a peername: %s",
-                                g_strerror(errno));
-            milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client),
-                                        error);
-            g_error_free(error);
-#endif
-            memset(&address, 0, sizeof(address));
-            address_size = 0;
+        if (i < nscm && G_IS_UNIX_FD_MESSAGE(scms[i])) {
+            fdmsg = G_UNIX_FD_MESSAGE(scms[i++]);
         }
+        while (i < nscm)
+            g_object_unref(scms[i++]);
+        g_free(scms);
+        fdlist = g_unix_fd_message_get_fd_list(fdmsg);
+        client_fd = g_unix_fd_list_get(fdlist, 0, &error);
+        g_object_unref(fdmsg);
         client_channel = setup_client_channel(client_fd);
         single_thread_process_client_channel(client, client_channel,
-                                             &address, address_size);
+                                             &address, (socklen_t)size);
         g_io_channel_unref(client_channel);
     }
 
@@ -2021,16 +2034,17 @@ milter_client_get_n_processing_sessions (MilterClient *client)
     return MILTER_CLIENT_GET_PRIVATE(client)->n_processing_sessions;
 }
 
-static GUnixConnection *
-unix_connection_from_fd(gint fd, GError **error)
+static GSocket *
+unix_socket_from_fd(gint fd, GError **error)
 {
     GSocket *socket;
-    GUnixConnection *connection;
     socket = g_socket_new_from_fd(fd, error);
     if (!socket) return FALSE;
-    connection = G_UNIX_CONNECTION(g_socket_connection_factory_create_connection(socket));
-    g_object_unref(socket);
-    return connection;
+    if (g_socket_get_family(socket) != G_SOCKET_FAMILY_UNIX) {
+        g_object_unref(socket);
+        return FALSE;
+    }
+    return socket;
 }
 
 void
@@ -2058,7 +2072,7 @@ milter_client_set_fd_passing_fd (MilterClient *client, gint fd)
         priv->workers.control = NULL;
     }
     if (fd != -1) {
-        priv->workers.control = unix_connection_from_fd(fd, NULL);
+        priv->workers.control = unix_socket_from_fd(fd, NULL);
     }
 }
 
