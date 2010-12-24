@@ -198,7 +198,7 @@ module Milter
       end
 
       def run_worker(client, n)
-        i, o = UNIXSocket.pair
+        i, o = UNIXSocket.pair(Socket::SOCK_DGRAM)
         children = (1..n).map do
           child = fork do
             i.close

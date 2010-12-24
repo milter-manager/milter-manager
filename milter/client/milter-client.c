@@ -2040,7 +2040,8 @@ unix_socket_from_fd(gint fd, GError **error)
     GSocket *socket;
     socket = g_socket_new_from_fd(fd, error);
     if (!socket) return FALSE;
-    if (g_socket_get_family(socket) != G_SOCKET_FAMILY_UNIX) {
+    if (g_socket_get_family(socket) != G_SOCKET_FAMILY_UNIX ||
+        g_socket_get_socket_type(socket) != G_SOCKET_TYPE_DATAGRAM) {
         g_object_unref(socket);
         return FALSE;
     }

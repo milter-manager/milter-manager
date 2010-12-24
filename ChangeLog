@@ -1,5 +1,10 @@
 2010-12-24  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* milter/client/milter-client.c (unix_socket_from_fd),
+	binding/ruby/lib/milter/client/command-line.rb
+	(Milter::Client::CommandLine#run_worker): control socket should be
+	dgram to make address data not to be split.
+
 	* configure.ac (GIO_UNIX): no longer bothered by the bugs of
 	g_socket_details_from_fd and g_unix_fd_message_append_fd.
 
