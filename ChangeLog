@@ -1,5 +1,8 @@
 2010-12-24  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* configure.ac (GIO_UNIX): no longer bothered by the bugs of
+	g_socket_details_from_fd and g_unix_fd_message_append_fd.
+
 	* milter/client/milter-client.c (master_accept_connection)
 	(worker_accept_thread): use GSocket directly to pass socket
 	address too.  getpeername() often fails because of insufficient
