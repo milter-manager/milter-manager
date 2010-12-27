@@ -1,3 +1,8 @@
+2010-12-27  Kouhei Sutou  <kou@cozmixng.org>
+
+	* tool/milter-performance-check: use meaningful name
+	--mail-size -> --n-additional-lines.
+
 2010-12-27  Nobuyoshi Nakada  <nakada@clear-code.com>
 
 	* tool/milter-performance-check (MilterPerformanceTool#parse_options)

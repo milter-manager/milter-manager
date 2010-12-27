@@ -36,7 +36,7 @@ class MilterPerformanceTool
     @force_recipients = nil
     @default_recipients = ["to@example.com"]
     @n_mails = 100
-    @mail_size = nil
+    @n_additional_lines = 0
     @n_concurrent_connections = 1
     @n_workers = nil
     @mails = []
@@ -140,11 +140,11 @@ class MilterPerformanceTool
         @n_mails = n_mails
       end
 
-      opts.on("--mail-size=LINECOUNT", Integer,
+      opts.on("--n-additional-lines=N", Integer,
               "Append N lines to test mails",
               "This option is ignored when mail files are specified",
-              "(#{@mail_size})") do |mail_size|
-        @mail_size = mail_size
+              "(#{@n_additional_lines})") do |n_additional_lines|
+        @n_additional_lines = n_additional_lines
       end
 
       opts.on("--n-concurrent-connections=N", Integer,
@@ -604,10 +604,12 @@ Hello,
 
 This is a test mail.
 EOM
-    if @mail_size
-      mail << "0123456789 abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ\n"*@mail_size
-    end
+    mail << additinal_line * @n_additional_lines
     mail
+  end
+
+  def additinal_line
+    "0123456789 abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ\n"
   end
 
   def generate_id
