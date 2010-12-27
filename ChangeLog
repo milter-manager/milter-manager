@@ -1,5 +1,7 @@
 2010-12-27  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-performance-check: use each instead of map.
+
 	* tool/milter-performance-check: use more meaningful name:
 	'f' -> 'worker'.
 

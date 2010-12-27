@@ -309,7 +309,9 @@ class MilterPerformanceTool
       report_merge(worker)
     end
   ensure
-    workers.map(&:close)
+    workers.each do |worker|
+      worker.close
+    end
   end
 
   def run_single_worker(mails)
