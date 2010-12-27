@@ -296,17 +296,17 @@ class MilterPerformanceTool
   def run_multi_workers(mails)
     workers = []
     @n_workers.times do
-      f = IO.popen("-")
-      if f
-        workers << f
+      worker = IO.popen("-")
+      if worker
+        workers << worker
       else
         run_single_worker(mails)
         report_data(STDOUT)
         exit!
       end
     end
-    workers.each do |f|
-      report_merge(f)
+    workers.each do |worker|
+      report_merge(worker)
     end
   ensure
     workers.map(&:close)
