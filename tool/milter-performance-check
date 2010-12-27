@@ -332,7 +332,7 @@ class MilterPerformanceTool
     end
   end
 
-  def report_data(f)
+  def report_data(output)
     data = [
       @n_processed_mails,
       @max_response_time,
@@ -342,11 +342,11 @@ class MilterPerformanceTool
       @n_reject_mails,
       @n_error_mails,
     ]
-    Marshal.dump(data, f)
+    Marshal.dump(data, output)
   end
 
-  def report_merge(f)
-    data = Marshal.load(f)
+  def report_merge(input)
+    data = Marshal.load(input)
     n_processed_mails, max_response_time, min_response_time, accumulated_response_time,
     n_temporary_failure_mails, n_reject_mails, n_error_mails = *data
 
