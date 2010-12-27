@@ -38,6 +38,7 @@ class MilterPerformanceTool
     @n_mails = 100
     @mail_size = nil
     @n_concurrent_connections = 1
+    @n_workers = nil
     @mails = []
     @period = nil
     @interval = nil
@@ -153,6 +154,12 @@ class MilterPerformanceTool
         @n_concurrent_connections = n_concurrent_connections
       end
 
+      opts.on("--n-workers=N", Integer,
+              "Send test mails with N worker processes",
+              "(#{@n_workers})") do |n_workers|
+        @n_workers = n_workers if n_workers > 1
+      end
+
       opts.on("--period=PERIOD",
               "Send mail files on average in PERIOD seconds/minutes/hours",
               "e.g.: 5s, 5m, 1.5h and so on. Default is seconds",
@@ -229,6 +236,38 @@ class MilterPerformanceTool
     mails = mails.sort_by {rand} if @shuffle
 
     start_time = Time.now
+
+    if @n_workers
+      run_multi(mails)
+    else
+      run_single(mails)
+    end
+
+    @elapsed_time = Time.now - start_time
+
+    @report_file.close if @report_file
+  end
+
+  def run_multi(mails)
+    workers = []
+    (0...@n_workers).each do
+      f = IO.popen("-")
+      if f
+        workers << f
+      else
+        run_single(mails)
+        report_data(STDOUT)
+        exit!
+      end
+    end
+    workers.each do |f|
+      report_merge(f)
+    end
+  ensure
+    workers.map(&:close)
+  end
+
+  def run_single(mails)
     begin
       if @interval
         threads = send_mails_in_interval(mails, @interval)
@@ -244,9 +283,33 @@ class MilterPerformanceTool
       end
     rescue Interrupt
     end
-    @elapsed_time = Time.now - start_time
+  end
 
-    @report_file.close if @report_file
+  def report_data(f)
+    data = [
+      @n_processed_mails,
+      @max_response_time,
+      @min_response_time,
+      @accumulated_response_time,
+      @n_temporary_failure_mails,
+      @n_reject_mails,
+      @n_error_mails,
+    ]
+    Marshal.dump(data, f)
+  end
+
+  def report_merge(f)
+    data = Marshal.load(f)
+    n_processed_mails, max_response_time, min_response_time, accumulated_response_time,
+    n_temporary_failure_mails, n_reject_mails, n_error_mails = *data
+
+    @n_processed_mails += n_processed_mails
+    @max_response_time = [@max_response_time, max_response_time].compact.max
+    @min_response_time = [@min_response_time, min_response_time].compact.min
+    @accumulated_response_time += accumulated_response_time
+    @n_temporary_failure_mails += n_temporary_failure_mails
+    @n_reject_mails += n_reject_mails
+    @n_error_mails += n_error_mails
   end
 
   def report_sources
