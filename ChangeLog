@@ -1,5 +1,7 @@
 2010-12-27  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-performance-check: use Fixnum#times instead of Range#each.
+
 	* tool/milter-performance-check: make internal methods private.
 
 	* tool/milter-performance-check: use more meaningful name: add '_worker'.

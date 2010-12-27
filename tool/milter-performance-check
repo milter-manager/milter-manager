@@ -295,7 +295,7 @@ class MilterPerformanceTool
   private
   def run_multi_workers(mails)
     workers = []
-    (0...@n_workers).each do
+    @n_workers.times do
       f = IO.popen("-")
       if f
         workers << f
