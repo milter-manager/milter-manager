@@ -1,3 +1,8 @@
+2010-12-27  Nobuyoshi Nakada  <nakada@clear-code.com>
+
+	* tool/milter-performance-check (MilterPerformanceTool#parse_options)
+	(MilterPerformanceTool#generate_mail_source): add --mail-size option.
+
 2010-12-24  Nobuyoshi Nakada  <nakada@clear-code.com>
 
 	* milter/client/milter-client.c (unix_socket_from_fd),
