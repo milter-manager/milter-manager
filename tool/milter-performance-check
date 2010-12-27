@@ -38,7 +38,7 @@ class MilterPerformanceTool
     @n_mails = 100
     @n_additional_lines = 0
     @n_concurrent_connections = 1
-    @n_workers = nil
+    @n_workers = 1
     @mails = []
     @period = nil
     @interval = nil
@@ -157,7 +157,10 @@ class MilterPerformanceTool
       opts.on("--n-workers=N", Integer,
               "Send test mails with N worker processes",
               "(#{@n_workers})") do |n_workers|
-        @n_workers = n_workers if n_workers > 1
+        if n_workers < 0
+          raise OptionParser::InvalidOption, "must be positive number."
+        end
+        @n_workers = n_workers
       end
 
       opts.on("--period=PERIOD",
@@ -237,10 +240,10 @@ class MilterPerformanceTool
 
     start_time = Time.now
 
-    if @n_workers
-      run_multi(mails)
+    if @n_workers > 1
+      run_multi_workers(mails)
     else
-      run_single(mails)
+      run_single_worker(mails)
     end
 
     @elapsed_time = Time.now - start_time
@@ -248,14 +251,14 @@ class MilterPerformanceTool
     @report_file.close if @report_file
   end
 
-  def run_multi(mails)
+  def run_multi_workers(mails)
     workers = []
     (0...@n_workers).each do
       f = IO.popen("-")
       if f
         workers << f
       else
-        run_single(mails)
+        run_single_worker(mails)
         report_data(STDOUT)
         exit!
       end
@@ -267,7 +270,7 @@ class MilterPerformanceTool
     workers.map(&:close)
   end
 
-  def run_single(mails)
+  def run_single_worker(mails)
     begin
       if @interval
         threads = send_mails_in_interval(mails, @interval)
