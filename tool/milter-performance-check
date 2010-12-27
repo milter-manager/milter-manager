@@ -251,6 +251,48 @@ class MilterPerformanceTool
     @report_file.close if @report_file
   end
 
+  def report_sources
+    unless @sources.empty?
+      @sources.sort_by do |elapsed_time, source_file|
+        -elapsed_time
+      end[0, 10].each do |elapsed_time, source_file|
+        puts "%#5.2f (sec): %s" % [elapsed_time, source_file]
+      end
+      puts
+    end
+
+    [
+     ["Rejected mails:", @rejected_sources],
+     ["Temporary failed mails:", @temporary_failure_sources],
+    ].each do |label, sources|
+      next if sources.empty?
+      puts label
+      sources.each  do |source_file|
+        puts source_file
+      end
+      puts
+    end
+  end
+
+  def report
+    report_sources
+    puts "Total:"
+    puts "     N mails: %d" % @n_processed_mails
+    puts "Elapsed time: %#5.2f (sec)" % @elapsed_time
+    puts "     Average: %#5.2f (mails/sec)" % average(@elapsed_time)
+    puts
+    puts "Per mail:"
+    puts "         Max: %#5.2f (sec)" % @max_response_time
+    puts "         Min: %#5.2f (sec)" % (@min_response_time || 0)
+    puts "     Average: %#5.2f (sec)" % average_per_mail(@accumulated_response_time)
+    puts
+    puts "Status:"
+    puts statistics_report("Temporary failure", @n_temporary_failure_mails)
+    puts statistics_report("           Reject", @n_reject_mails)
+    puts statistics_report("            Error", @n_error_mails)
+  end
+
+  private
   def run_multi_workers(mails)
     workers = []
     (0...@n_workers).each do
@@ -315,48 +357,6 @@ class MilterPerformanceTool
     @n_error_mails += n_error_mails
   end
 
-  def report_sources
-    unless @sources.empty?
-      @sources.sort_by do |elapsed_time, source_file|
-        -elapsed_time
-      end[0, 10].each do |elapsed_time, source_file|
-        puts "%#5.2f (sec): %s" % [elapsed_time, source_file]
-      end
-      puts
-    end
-
-    [
-     ["Rejected mails:", @rejected_sources],
-     ["Temporary failed mails:", @temporary_failure_sources],
-    ].each do |label, sources|
-      next if sources.empty?
-      puts label
-      sources.each  do |source_file|
-        puts source_file
-      end
-      puts
-    end
-  end
-
-  def report
-    report_sources
-    puts "Total:"
-    puts "     N mails: %d" % @n_processed_mails
-    puts "Elapsed time: %#5.2f (sec)" % @elapsed_time
-    puts "     Average: %#5.2f (mails/sec)" % average(@elapsed_time)
-    puts
-    puts "Per mail:"
-    puts "         Max: %#5.2f (sec)" % @max_response_time
-    puts "         Min: %#5.2f (sec)" % (@min_response_time || 0)
-    puts "     Average: %#5.2f (sec)" % average_per_mail(@accumulated_response_time)
-    puts
-    puts "Status:"
-    puts statistics_report("Temporary failure", @n_temporary_failure_mails)
-    puts statistics_report("           Reject", @n_reject_mails)
-    puts statistics_report("            Error", @n_error_mails)
-  end
-
-  private
   def expand_mails(mails)
     expanded_mails = []
     mails.each do |mail|
