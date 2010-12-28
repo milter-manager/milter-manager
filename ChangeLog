@@ -1,5 +1,8 @@
 2010-12-28  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* milter/core/milter-g-event-loop.c: subclass of MilterEventLoop
+	for GLib.
+
 	* milter/core/milter-event-loop.h (MilterEventLoopClass): add
 	add_watch method.
 
