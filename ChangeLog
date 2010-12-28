@@ -1,5 +1,8 @@
 2010-12-28  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* milter/core/milter-eventloop.c, milter/core/milter-eventloop.h:
+	add empty class.
+
 	* configure.ac: check for libevent.
 
 2010-12-27  Kouhei Sutou  <kou@cozmixng.org>
