@@ -155,11 +155,11 @@ milter_event_loop_error_quark (void)
 }
 
 guint
-milter_event_add_watch (MilterEventLoop *eventloop,
-                        GIOChannel      *channel,
-                        GIOCondition     condition,
-                        GIOFunc          func,
-                        gpointer         user_data)
+milter_event_loop_add_watch (MilterEventLoop *eventloop,
+                             GIOChannel      *channel,
+                             GIOCondition     condition,
+                             GIOFunc          func,
+                             gpointer         user_data)
 {
     MilterEventLoopClass *eventloop_class;
     eventloop_class = MILTER_EVENT_LOOP_GET_CLASS(eventloop);

@@ -60,7 +60,7 @@ struct _MilterEventLoopClass
 GQuark               milter_event_loop_error_quark       (void);
 GType                milter_event_loop_get_type          (void) G_GNUC_CONST;
 
-guint                milter_event_add_watch              (MilterEventLoop *eventloop,
+guint                milter_event_loop_add_watch         (MilterEventLoop *eventloop,
                                                           GIOChannel      *channel,
                                                           GIOCondition     condition,
                                                           GIOFunc          func,
