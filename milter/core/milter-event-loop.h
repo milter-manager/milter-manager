@@ -49,6 +49,12 @@ struct _MilterEventLoop
 struct _MilterEventLoopClass
 {
     GObjectClass parent_class;
+
+    guint (*add_watch)(MilterEventLoop *eventloop,
+                       GIOChannel      *channel,
+                       GIOCondition     condition,
+                       GIOFunc          func,
+                       gpointer         user_data);
 };
 
 GQuark               milter_event_loop_error_quark       (void);

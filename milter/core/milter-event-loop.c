@@ -68,6 +68,8 @@ milter_event_loop_class_init (MilterEventLoopClass *klass)
     gobject_class->set_property = set_property;
     gobject_class->get_property = get_property;
 
+    klass->add_watch = NULL;
+
     g_type_class_add_private(gobject_class, sizeof(MilterEventLoopPrivate));
 }
 
