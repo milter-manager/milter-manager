@@ -46,11 +46,16 @@ static GObject *constructor  (GType                  type,
                               guint                  n_props,
                               GObjectConstructParam *props);
 
-static guint add_watch     (MilterEventLoop *eventloop,
-                            GIOChannel      *channel,
-                            GIOCondition     condition,
-                            GIOFunc          func,
-                            gpointer         user_data);
+static guint add_watch       (MilterEventLoop *eventloop,
+                              GIOChannel      *channel,
+                              GIOCondition     condition,
+                              GIOFunc          func,
+                              gpointer         user_data);
+
+static guint add_timeout     (MilterEventLoop *eventloop,
+                              gdouble interval,
+                              GSourceFunc func,
+                              gpointer user_data);
 
 static void
 milter_g_event_loop_class_init (MilterGEventLoopClass *klass)
@@ -62,6 +67,7 @@ milter_g_event_loop_class_init (MilterGEventLoopClass *klass)
     gobject_class->constructor  = constructor;
 
     klass->parent_class.add_watch = add_watch;
+    klass->parent_class.add_timeout = add_timeout;
 
     g_type_class_add_private(gobject_class, sizeof(MilterGEventLoopPrivate));
 }
@@ -105,6 +111,16 @@ add_watch (MilterEventLoop *eventloop,
            gpointer         user_data)
 {
     return g_io_add_watch(channel, condition, func, user_data);
+}
+
+static guint
+add_timeout (MilterEventLoop *eventloop,
+             gdouble interval,
+             GSourceFunc func,
+             gpointer user_data)
+{
+    return g_timeout_add(interval * 1000,
+                         func, user_data);
 }
 
 /*

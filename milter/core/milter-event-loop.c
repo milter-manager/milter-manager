@@ -69,6 +69,7 @@ milter_event_loop_class_init (MilterEventLoopClass *klass)
     gobject_class->get_property = get_property;
 
     klass->add_watch = NULL;
+    klass->add_timeout = NULL;
 
     g_type_class_add_private(gobject_class, sizeof(MilterEventLoopPrivate));
 }
@@ -168,6 +169,20 @@ milter_event_loop_add_watch (MilterEventLoop *eventloop,
                                       condition,
                                       func,
                                       user_data);
+}
+
+guint
+milter_event_loop_add_timeout (MilterEventLoop *eventloop,
+                               gdouble interval,
+                               GSourceFunc func,
+                               gpointer user_data)
+{
+    MilterEventLoopClass *eventloop_class;
+    eventloop_class = MILTER_EVENT_LOOP_GET_CLASS(eventloop);
+    return eventloop_class->add_timeout(eventloop,
+                                        interval,
+                                        func,
+                                        user_data);
 }
 
 /*

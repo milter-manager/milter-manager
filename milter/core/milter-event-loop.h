@@ -55,6 +55,10 @@ struct _MilterEventLoopClass
                        GIOCondition     condition,
                        GIOFunc          func,
                        gpointer         user_data);
+    guint (*add_timeout)(MilterEventLoop *eventloop,
+                         gdouble interval,
+                         GSourceFunc func,
+                         gpointer user_data);
 };
 
 GQuark               milter_event_loop_error_quark       (void);
@@ -65,6 +69,11 @@ guint                milter_event_loop_add_watch         (MilterEventLoop *event
                                                           GIOCondition     condition,
                                                           GIOFunc          func,
                                                           gpointer         user_data);
+
+guint                milter_event_loop_add_timeout       (MilterEventLoop *eventloop,
+                                                          gdouble interval,
+                                                          GSourceFunc func,
+                                                          gpointer user_data);
 
 G_END_DECLS
 
