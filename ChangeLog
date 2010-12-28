@@ -1,5 +1,8 @@
 2010-12-28  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* milter/core/milter-event-loop.c, milter/core/milter-event-loop.h:
+	insert hyphen between event and loop.
+
 	* milter/core/milter-eventloop.c, milter/core/milter-eventloop.h:
 	add empty class.
 

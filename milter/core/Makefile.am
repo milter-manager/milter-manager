@@ -38,7 +38,7 @@ milter_core_public_headers =		\
 	milter-message-result.h		\
 	milter-session-result.h		\
 	milter-memory-profile.h		\
-	milter-eventloop.h
+	milter-event-loop.h
 
 enum_source_prefix = milter-enum-types
 enum_sources_h =			\
@@ -85,7 +85,7 @@ libmilter_core_la_SOURCES =		\
 	milter-message-result.c		\
 	milter-session-result.c		\
 	milter-memory-profile.c		\
-	milter-eventloop.c
+	milter-event-loop.c
 
 libmilter_core_la_LIBADD =		\
 	$(MILTER_CORE_LIBS)

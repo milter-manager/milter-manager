@@ -27,26 +27,26 @@ G_BEGIN_DECLS
 #define MILTER_EVENTLOOP_ERROR           (milter_eventloop_error_quark())
 
 #define MILTER_TYPE_EVENTLOOP            (milter_eventloop_get_type())
-#define MILTER_EVENTLOOP(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), MILTER_TYPE_EVENTLOOP, MilterEventloop))
-#define MILTER_EVENTLOOP_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), MILTER_TYPE_EVENTLOOP, MilterEventloopClass))
+#define MILTER_EVENTLOOP(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), MILTER_TYPE_EVENTLOOP, MilterEventLoop))
+#define MILTER_EVENTLOOP_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), MILTER_TYPE_EVENTLOOP, MilterEventLoopClass))
 #define MILTER_IS_EVENTLOOP(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), MILTER_TYPE_EVENTLOOP))
 #define MILTER_IS_EVENTLOOP_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), MILTER_TYPE_EVENTLOOP))
-#define MILTER_EVENTLOOP_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MILTER_TYPE_EVENTLOOP, MilterEventloopClass))
+#define MILTER_EVENTLOOP_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MILTER_TYPE_EVENTLOOP, MilterEventLoopClass))
 
 typedef enum
 {
     MILTER_EVENTLOOP_ERROR_MAX
-} MilterEventloopError;
+} MilterEventLoopError;
 
-typedef struct _MilterEventloop         MilterEventloop;
-typedef struct _MilterEventloopClass    MilterEventloopClass;
+typedef struct _MilterEventLoop         MilterEventLoop;
+typedef struct _MilterEventLoopClass    MilterEventLoopClass;
 
-struct _MilterEventloop
+struct _MilterEventLoop
 {
     GObject object;
 };
 
-struct _MilterEventloopClass
+struct _MilterEventLoopClass
 {
     GObjectClass parent_class;
 };
