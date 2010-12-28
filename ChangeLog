@@ -3,6 +3,9 @@
 	* milter/core/milter-event-loop.h (MilterEventLoopClass): add
 	add_watch method.
 
+	* milter/core/milter-event-loop.h (MILTER_IS_EVENT_LOOP)
+	(MILTER_IS_EVENT_LOOP_CLASS): missed to rename.
+
 	* milter/core/milter-event-loop.c, milter/core/milter-event-loop.h:
 	rename macros.
 
