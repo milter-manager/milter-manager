@@ -486,6 +486,15 @@ AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED([GETTEXT_PACKAGE], ["$GETTEXT_PACKAGE"], [Gettext package])
 
 dnl **************************************************************
+dnl Check for libevent.
+dnl **************************************************************
+
+AC_CHECK_HEADERS(event.h)
+if test "x$ac_cv_header_event_h" = x""yes; then
+   AC_CHECK_LIB(event, event_init)
+fi
+
+dnl **************************************************************
 dnl Check for package platform.
 dnl **************************************************************
 

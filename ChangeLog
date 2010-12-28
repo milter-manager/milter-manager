@@ -1,3 +1,7 @@
+2010-12-28  Nobuyoshi Nakada  <nakada@clear-code.com>
+
+	* configure.ac: check for libevent.
+
 2010-12-27  Kouhei Sutou  <kou@cozmixng.org>
 
 	* tool/milter-performance-check: use meaningful name:
