@@ -154,6 +154,22 @@ milter_event_loop_error_quark (void)
     return g_quark_from_static_string("milter-eventloop-error-quark");
 }
 
+guint
+milter_event_add_watch (MilterEventLoop *eventloop,
+                        GIOChannel      *channel,
+                        GIOCondition     condition,
+                        GIOFunc          func,
+                        gpointer         user_data)
+{
+    MilterEventLoopClass *eventloop_class;
+    eventloop_class = MILTER_EVENT_LOOP_GET_CLASS(eventloop);
+    return eventloop_class->add_watch(eventloop,
+                                      channel,
+                                      condition,
+                                      func,
+                                      user_data);
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */
