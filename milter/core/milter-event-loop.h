@@ -17,25 +17,25 @@
  *
  */
 
-#ifndef __MILTER_EVENTLOOP_H__
-#define __MILTER_EVENTLOOP_H__
+#ifndef __MILTER_EVENT_LOOP_H__
+#define __MILTER_EVENT_LOOP_H__
 
 #include <glib-object.h>
 
 G_BEGIN_DECLS
 
-#define MILTER_EVENTLOOP_ERROR           (milter_eventloop_error_quark())
+#define MILTER_EVENT_LOOP_ERROR           (milter_event_loop_error_quark())
 
-#define MILTER_TYPE_EVENTLOOP            (milter_eventloop_get_type())
-#define MILTER_EVENTLOOP(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), MILTER_TYPE_EVENTLOOP, MilterEventLoop))
-#define MILTER_EVENTLOOP_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), MILTER_TYPE_EVENTLOOP, MilterEventLoopClass))
-#define MILTER_IS_EVENTLOOP(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), MILTER_TYPE_EVENTLOOP))
-#define MILTER_IS_EVENTLOOP_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), MILTER_TYPE_EVENTLOOP))
-#define MILTER_EVENTLOOP_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MILTER_TYPE_EVENTLOOP, MilterEventLoopClass))
+#define MILTER_TYPE_EVENT_LOOP            (milter_event_loop_get_type())
+#define MILTER_EVENT_LOOP(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), MILTER_TYPE_EVENT_LOOP, MilterEventLoop))
+#define MILTER_EVENT_LOOP_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), MILTER_TYPE_EVENT_LOOP, MilterEventLoopClass))
+#define MILTER_IS_EVENTLOOP(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), MILTER_TYPE_EVENT_LOOP))
+#define MILTER_IS_EVENTLOOP_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), MILTER_TYPE_EVENT_LOOP))
+#define MILTER_EVENT_LOOP_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MILTER_TYPE_EVENT_LOOP, MilterEventLoopClass))
 
 typedef enum
 {
-    MILTER_EVENTLOOP_ERROR_MAX
+    MILTER_EVENT_LOOP_ERROR_MAX
 } MilterEventLoopError;
 
 typedef struct _MilterEventLoop         MilterEventLoop;
@@ -51,12 +51,13 @@ struct _MilterEventLoopClass
     GObjectClass parent_class;
 };
 
-GQuark               milter_eventloop_error_quark       (void);
-GType                milter_eventloop_get_type          (void) G_GNUC_CONST;
+GQuark               milter_event_loop_error_quark       (void);
+GType                milter_event_loop_get_type          (void) G_GNUC_CONST;
+
 
 G_END_DECLS
 
-#endif /* __MILTER_EVENTLOOP_H__ */
+#endif /* __MILTER_EVENT_LOOP_H__ */
 
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4

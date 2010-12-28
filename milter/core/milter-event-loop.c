@@ -23,12 +23,12 @@
 
 #include "milter-event-loop.h"
 
-#define MILTER_EVENTLOOP_GET_PRIVATE(obj)               \
+#define MILTER_EVENT_LOOP_GET_PRIVATE(obj)              \
   (G_TYPE_INSTANCE_GET_PRIVATE((obj),                   \
-                               MILTER_TYPE_EVENTLOOP,   \
+                               MILTER_TYPE_EVENT_LOOP,  \
                                MilterEventLoopPrivate))
 
-G_DEFINE_ABSTRACT_TYPE(MilterEventLoop, milter_eventloop, G_TYPE_OBJECT)
+G_DEFINE_ABSTRACT_TYPE(MilterEventLoop, milter_event_loop, G_TYPE_OBJECT)
 
 typedef struct _MilterEventLoopPrivate	MilterEventLoopPrivate;
 struct _MilterEventLoopPrivate
@@ -57,7 +57,7 @@ static void get_property   (GObject         *object,
                             GParamSpec      *pspec);
 
 static void
-milter_eventloop_class_init (MilterEventLoopClass *klass)
+milter_event_loop_class_init (MilterEventLoopClass *klass)
 {
     GObjectClass *gobject_class;
 
@@ -80,13 +80,13 @@ constructor (GType type, guint n_props, GObjectConstructParam *props)
     MilterEventLoopClass *eventloop_class;
     MilterEventLoopPrivate *priv;
 
-    klass = G_OBJECT_CLASS(milter_eventloop_parent_class);
+    klass = G_OBJECT_CLASS(milter_event_loop_parent_class);
     object = klass->constructor(type, n_props, props);
 
-    priv = MILTER_EVENTLOOP_GET_PRIVATE(object);
+    priv = MILTER_EVENT_LOOP_GET_PRIVATE(object);
 
-    eventloop = MILTER_EVENTLOOP(object);
-    eventloop_class = MILTER_EVENTLOOP_GET_CLASS(object);
+    eventloop = MILTER_EVENT_LOOP(object);
+    eventloop_class = MILTER_EVENT_LOOP_GET_CLASS(object);
 
     priv->dummy = 0;
 
@@ -94,11 +94,11 @@ constructor (GType type, guint n_props, GObjectConstructParam *props)
 }
 
 static void
-milter_eventloop_init (MilterEventLoop *eventloop)
+milter_event_loop_init (MilterEventLoop *eventloop)
 {
     MilterEventLoopPrivate *priv;
 
-    priv = MILTER_EVENTLOOP_GET_PRIVATE(eventloop);
+    priv = MILTER_EVENT_LOOP_GET_PRIVATE(eventloop);
     priv->dummy = -1;
 }
 
@@ -107,9 +107,9 @@ dispose (GObject *object)
 {
     MilterEventLoopPrivate *priv;
 
-    priv = MILTER_EVENTLOOP_GET_PRIVATE(object);
+    priv = MILTER_EVENT_LOOP_GET_PRIVATE(object);
 
-    G_OBJECT_CLASS(milter_eventloop_parent_class)->dispose(object);
+    G_OBJECT_CLASS(milter_event_loop_parent_class)->dispose(object);
 }
 
 static void
@@ -120,7 +120,7 @@ set_property (GObject      *object,
 {
     MilterEventLoopPrivate *priv;
 
-    priv = MILTER_EVENTLOOP_GET_PRIVATE(object);
+    priv = MILTER_EVENT_LOOP_GET_PRIVATE(object);
     switch (prop_id) {
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -137,8 +137,8 @@ get_property (GObject    *object,
     MilterEventLoop *eventloop;
     MilterEventLoopPrivate *priv;
 
-    eventloop = MILTER_EVENTLOOP(object);
-    priv = MILTER_EVENTLOOP_GET_PRIVATE(eventloop);
+    eventloop = MILTER_EVENT_LOOP(object);
+    priv = MILTER_EVENT_LOOP_GET_PRIVATE(eventloop);
     switch (prop_id) {
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -147,7 +147,7 @@ get_property (GObject    *object,
 }
 
 GQuark
-milter_eventloop_error_quark (void)
+milter_event_loop_error_quark (void)
 {
     return g_quark_from_static_string("milter-eventloop-error-quark");
 }
