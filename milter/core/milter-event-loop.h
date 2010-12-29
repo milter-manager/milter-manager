@@ -72,6 +72,8 @@ struct _MilterEventLoopClass
 GQuark               milter_event_loop_error_quark       (void);
 GType                milter_event_loop_get_type          (void) G_GNUC_CONST;
 
+MilterEventLoop     *milter_event_loop_new               (void);
+
 void                 milter_event_loop_run               (MilterEventLoop *eventloop);
 void                 milter_event_loop_quit              (MilterEventLoop *eventloop);
 
