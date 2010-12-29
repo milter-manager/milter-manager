@@ -67,6 +67,9 @@ static guint add_idle_full (MilterEventLoop *eventloop,
                             gpointer         data,
                             GDestroyNotify   notify);
 
+static gboolean remove_source (MilterEventLoop *eventloop,
+                               guint            tag);
+
 static void
 milter_g_event_loop_class_init (MilterGEventLoopClass *klass)
 {
@@ -82,6 +85,7 @@ milter_g_event_loop_class_init (MilterGEventLoopClass *klass)
     klass->parent_class.add_watch = add_watch;
     klass->parent_class.add_timeout = add_timeout;
     klass->parent_class.add_idle_full = add_idle_full;
+    klass->parent_class.remove_source = remove_source;
 
     g_type_class_add_private(gobject_class, sizeof(MilterGEventLoopPrivate));
 }
@@ -186,6 +190,13 @@ add_idle_full (MilterEventLoop *eventloop,
                             function,
                             data,
                             notify);
+}
+
+static gboolean
+remove_source (MilterEventLoop *eventloop,
+               guint            tag)
+{
+    return g_source_remove(tag);
 }
 
 /*
