@@ -73,7 +73,7 @@ GQuark               milter_event_loop_error_quark       (void);
 GType                milter_event_loop_get_type          (void) G_GNUC_CONST;
 
 void                 milter_event_loop_run               (MilterEventLoop *eventloop);
-void                 milter_event_quit_quit              (MilterEventLoop *eventloop);
+void                 milter_event_loop_quit              (MilterEventLoop *eventloop);
 
 guint                milter_event_loop_add_watch         (MilterEventLoop *eventloop,
                                                           GIOChannel      *channel,
