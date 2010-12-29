@@ -69,6 +69,7 @@ milter_event_loop_class_init (MilterEventLoopClass *klass)
     gobject_class->get_property = get_property;
 
     klass->run_loop = NULL;
+    klass->quit_loop = NULL;
     klass->add_watch = NULL;
     klass->add_timeout = NULL;
     klass->add_idle_full = NULL;
@@ -163,6 +164,14 @@ milter_event_loop_run (MilterEventLoop *eventloop)
     MilterEventLoopClass *eventloop_class;
     eventloop_class = MILTER_EVENT_LOOP_GET_CLASS(eventloop);
     eventloop_class->run_loop(eventloop);
+}
+
+void 
+milter_event_loop_quit (MilterEventLoop *eventloop)
+{
+    MilterEventLoopClass *eventloop_class;
+    eventloop_class = MILTER_EVENT_LOOP_GET_CLASS(eventloop);
+    eventloop_class->quit_loop(eventloop);
 }
 
 guint
