@@ -1,5 +1,7 @@
 2010-12-29  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* milter/core/milter-g-event-loop.c (add_idle_full): implemented.
+
 	* milter/core/milter-event-loop.c (milter_event_loop_add_idle_full):
 	new method.
 

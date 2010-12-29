@@ -57,6 +57,12 @@ static guint add_timeout     (MilterEventLoop *eventloop,
                               GSourceFunc func,
                               gpointer user_data);
 
+static guint add_idle_full (MilterEventLoop *eventloop,
+                            gint             priority,
+                            GSourceFunc      function,
+                            gpointer         data,
+                            GDestroyNotify   notify);
+
 static void
 milter_g_event_loop_class_init (MilterGEventLoopClass *klass)
 {
@@ -121,6 +127,19 @@ add_timeout (MilterEventLoop *eventloop,
 {
     return g_timeout_add(interval * 1000,
                          func, user_data);
+}
+
+static guint
+add_idle_full (MilterEventLoop *eventloop,
+               gint             priority,
+               GSourceFunc      function,
+               gpointer         data,
+               GDestroyNotify   notify)
+{
+    return g_idle_add_full (priority,
+                            function,
+                            data,
+                            notify);
 }
 
 /*
