@@ -175,6 +175,17 @@ milter_event_loop_error_quark (void)
     return g_quark_from_static_string("milter-eventloop-error-quark");
 }
 
+MilterEventLoop *
+milter_event_loop_new (gboolean new_context)
+{
+#define DEFAULT_MILTER_EVENT_LOOP_NAME "MilterGEventLoopClass"
+    GType eventloop_type = g_type_from_name(DEFAULT_MILTER_EVENT_LOOP_NAME);
+
+    return g_object_new(eventloop_type,
+                        "new-context", new_context,
+                        NULL);
+}
+
 void 
 milter_event_loop_run (MilterEventLoop *eventloop)
 {

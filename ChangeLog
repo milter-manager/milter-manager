@@ -2,6 +2,7 @@
 
 	* milter/core/milter-event-loop.c (MilterEventLoop): add
 	new-context constructor property.
+	(milter_event_loop_new): moved from milter-g-event-loop.c.
 
 	* milter/core/milter-g-event-loop.c (remove_source): implemented.
 

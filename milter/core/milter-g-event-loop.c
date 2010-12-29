@@ -33,6 +33,7 @@ G_DEFINE_TYPE(MilterGEventLoop, milter_g_event_loop, MILTER_TYPE_EVENT_LOOP)
 typedef struct _MilterGEventLoopPrivate	MilterGEventLoopPrivate;
 struct _MilterGEventLoopPrivate
 {
+    GMainContext *context;
     GMainLoop *loop;
 };
 
@@ -46,6 +47,9 @@ static GObject *constructor  (GType                  type,
                               guint                  n_props,
                               GObjectConstructParam *props);
 static void     dispose      (GObject         *object);
+
+static void  initialize      (MilterEventLoop *eventloop,
+                              gboolean         new_context);
 
 static void  run_loop        (MilterEventLoop *eventloop);
 static void  quit_loop       (MilterEventLoop *eventloop);
@@ -80,6 +84,7 @@ milter_g_event_loop_class_init (MilterGEventLoopClass *klass)
     gobject_class->constructor  = constructor;
     gobject_class->dispose      = dispose;
 
+    klass->parent_class.initialize = initialize;
     klass->parent_class.run_loop = run_loop;
     klass->parent_class.quit_loop = quit_loop;
     klass->parent_class.add_watch = add_watch;
@@ -115,10 +120,21 @@ constructor (GType type, guint n_props, GObjectConstructParam *props)
 static void
 milter_g_event_loop_init (MilterGEventLoop *eventloop)
 {
+}
+
+static void
+initialize (MilterEventLoop *eventloop, gboolean new_context)
+{
     MilterGEventLoopPrivate *priv;
 
     priv = MILTER_G_EVENT_LOOP_GET_PRIVATE(eventloop);
-    priv->loop = g_main_loop_new(NULL, FALSE);
+    if (new_context) {
+        GMainContext *main_context = g_main_context_new();
+        priv->loop = g_main_loop_new(main_context, FALSE);
+        g_main_context_unref(main_context);
+    } else {
+        priv->loop = g_main_loop_new(NULL, FALSE);
+    }
 }
 
 static void
@@ -131,14 +147,12 @@ dispose (GObject *object)
         g_main_loop_unref(priv->loop);
         priv->loop = NULL;
     }
+    if (priv->context) {
+        g_main_context_unref(priv->context);
+        priv->context = NULL;
+    }
 
     G_OBJECT_CLASS(milter_g_event_loop_parent_class)->dispose(object);
-}
-
-MilterEventLoop *
-milter_event_loop_new (void)
-{
-    return (MilterEventLoop *)g_object_new(MILTER_TYPE_G_EVENT_LOOP, NULL);
 }
 
 static void
