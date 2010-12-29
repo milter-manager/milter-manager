@@ -70,6 +70,7 @@ milter_event_loop_class_init (MilterEventLoopClass *klass)
 
     klass->add_watch = NULL;
     klass->add_timeout = NULL;
+    klass->add_idle_full = NULL;
 
     g_type_class_add_private(gobject_class, sizeof(MilterEventLoopPrivate));
 }
@@ -183,6 +184,22 @@ milter_event_loop_add_timeout (MilterEventLoop *eventloop,
                                         interval,
                                         func,
                                         user_data);
+}
+
+guint
+milter_event_loop_add_idle_full (MilterEventLoop *eventloop,
+                                 gint             priority,
+                                 GSourceFunc      function,
+                                 gpointer         data,
+                                 GDestroyNotify   notify)
+{
+    MilterEventLoopClass *eventloop_class;
+    eventloop_class = MILTER_EVENT_LOOP_GET_CLASS(eventloop);
+    return eventloop_class->add_idle_full(eventloop,
+                                          priority,
+                                          function,
+                                          data,
+                                          notify);
 }
 
 /*

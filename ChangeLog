@@ -1,3 +1,8 @@
+2010-12-29  Nobuyoshi Nakada  <nakada@clear-code.com>
+
+	* milter/core/milter-event-loop.c (milter_event_loop_add_idle_full):
+	new method.
+
 2010-12-28  Nobuyoshi Nakada  <nakada@clear-code.com>
 
 	* milter/core/milter-event-loop.c (milter_event_loop_add_timeout):

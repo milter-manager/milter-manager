@@ -59,6 +59,11 @@ struct _MilterEventLoopClass
                          gdouble interval,
                          GSourceFunc func,
                          gpointer user_data);
+    guint (*add_idle_full)(MilterEventLoop *eventloop,
+                           gint             priority,
+                           GSourceFunc      function,
+                           gpointer         data,
+                           GDestroyNotify   notify);
 };
 
 GQuark               milter_event_loop_error_quark       (void);
@@ -74,6 +79,12 @@ guint                milter_event_loop_add_timeout       (MilterEventLoop *event
                                                           gdouble interval,
                                                           GSourceFunc func,
                                                           gpointer user_data);
+
+guint                milter_event_loop_add_idle_full     (MilterEventLoop *eventloop,
+                                                          gint             priority,
+                                                          GSourceFunc      function,
+                                                          gpointer         data,
+                                                          GDestroyNotify   notify);
 
 G_END_DECLS
 
