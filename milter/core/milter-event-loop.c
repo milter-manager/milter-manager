@@ -73,6 +73,7 @@ milter_event_loop_class_init (MilterEventLoopClass *klass)
     klass->add_watch = NULL;
     klass->add_timeout = NULL;
     klass->add_idle_full = NULL;
+    klass->remove_source = NULL;
 
     g_type_class_add_private(gobject_class, sizeof(MilterEventLoopPrivate));
 }
@@ -218,6 +219,15 @@ milter_event_loop_add_idle_full (MilterEventLoop *eventloop,
                                           function,
                                           data,
                                           notify);
+}
+
+gboolean
+milter_event_loop_remove_source (MilterEventLoop *eventloop,
+                                 guint            tag)
+{
+    MilterEventLoopClass *eventloop_class;
+    eventloop_class = MILTER_EVENT_LOOP_GET_CLASS(eventloop);
+    return eventloop_class->remove_source(eventloop, tag);
 }
 
 /*

@@ -67,6 +67,8 @@ struct _MilterEventLoopClass
                            GSourceFunc      function,
                            gpointer         data,
                            GDestroyNotify   notify);
+    gboolean (*remove_source)(MilterEventLoop *eventloop,
+                              guint            tag);
 };
 
 GQuark               milter_event_loop_error_quark       (void);
@@ -93,6 +95,9 @@ guint                milter_event_loop_add_idle_full     (MilterEventLoop *event
                                                           GSourceFunc      function,
                                                           gpointer         data,
                                                           GDestroyNotify   notify);
+
+gboolean             milter_event_loop_remove_source     (MilterEventLoop *eventloop,
+                                                          guint            tag);
 
 G_END_DECLS
 
