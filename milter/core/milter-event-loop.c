@@ -56,6 +56,7 @@ static void get_property   (GObject         *object,
                             guint            prop_id,
                             GValue          *value,
                             GParamSpec      *pspec);
+static void constructed    (GObject         *object);
 
 static void
 milter_event_loop_class_init (MilterEventLoopClass *klass)
@@ -69,6 +70,7 @@ milter_event_loop_class_init (MilterEventLoopClass *klass)
     gobject_class->dispose      = dispose;
     gobject_class->set_property = set_property;
     gobject_class->get_property = get_property;
+    gobject_class->constructed  = constructed;
 
     klass->run_loop = NULL;
     klass->quit_loop = NULL;
@@ -167,6 +169,19 @@ get_property (GObject    *object,
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
+}
+
+static void
+constructed (GObject *object)
+{
+    MilterEventLoop *eventloop;
+    MilterEventLoopClass *eventloop_class;
+    MilterEventLoopPrivate *priv;
+
+    eventloop = MILTER_EVENT_LOOP(object);
+    eventloop_class = MILTER_EVENT_LOOP_GET_CLASS(object);
+    priv = MILTER_EVENT_LOOP_GET_PRIVATE(eventloop);
+    eventloop_class->initialize(eventloop, priv->new_context);
 }
 
 GQuark

@@ -1,5 +1,8 @@
 2010-12-29  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* milter/core/milter-event-loop.c (constructed): call initialize
+	with new_context flag.
+
 	* milter/manager/milter-manager-process-launcher.c
 	(milter_manager_process_launcher_init): use default context.
 
