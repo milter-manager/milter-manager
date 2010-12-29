@@ -68,6 +68,7 @@ milter_event_loop_class_init (MilterEventLoopClass *klass)
     gobject_class->set_property = set_property;
     gobject_class->get_property = get_property;
 
+    klass->run_loop = NULL;
     klass->add_watch = NULL;
     klass->add_timeout = NULL;
     klass->add_idle_full = NULL;
@@ -154,6 +155,14 @@ GQuark
 milter_event_loop_error_quark (void)
 {
     return g_quark_from_static_string("milter-eventloop-error-quark");
+}
+
+void 
+milter_event_loop_run (MilterEventLoop *eventloop)
+{
+    MilterEventLoopClass *eventloop_class;
+    eventloop_class = MILTER_EVENT_LOOP_GET_CLASS(eventloop);
+    eventloop_class->run_loop(eventloop);
 }
 
 guint
