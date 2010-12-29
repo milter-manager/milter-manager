@@ -1,5 +1,8 @@
 2010-12-29  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* milter/manager/milter-manager-process-launcher.c
+	(milter_manager_process_launcher_init): use default context.
+
 	* milter/core/milter-event-loop.c (MilterEventLoop): add
 	new-context constructor property.
 	(milter_event_loop_new): moved from milter-g-event-loop.c.
