@@ -48,6 +48,7 @@ static GObject *constructor  (GType                  type,
 static void     dispose      (GObject         *object);
 
 static void  run_loop        (MilterEventLoop *eventloop);
+static void  quit_loop       (MilterEventLoop *eventloop);
 
 static guint add_watch       (MilterEventLoop *eventloop,
                               GIOChannel      *channel,
@@ -77,6 +78,7 @@ milter_g_event_loop_class_init (MilterGEventLoopClass *klass)
     gobject_class->dispose      = dispose;
 
     klass->parent_class.run_loop = run_loop;
+    klass->parent_class.quit_loop = quit_loop;
     klass->parent_class.add_watch = add_watch;
     klass->parent_class.add_timeout = add_timeout;
     klass->parent_class.add_idle_full = add_idle_full;
@@ -136,6 +138,15 @@ run_loop (MilterEventLoop *eventloop)
 
     priv = MILTER_G_EVENT_LOOP_GET_PRIVATE(eventloop);
     g_main_loop_run (priv->loop);
+}
+
+static void
+quit_loop (MilterEventLoop *eventloop)
+{
+    MilterGEventLoopPrivate *priv;
+
+    priv = MILTER_G_EVENT_LOOP_GET_PRIVATE(eventloop);
+    g_main_loop_quit (priv->loop);
 }
 
 static guint
