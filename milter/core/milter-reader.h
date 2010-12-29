@@ -26,6 +26,7 @@
 #include <milter/core/milter-option.h>
 #include <milter/core/milter-error-emittable.h>
 #include <milter/core/milter-finished-emittable.h>
+#include <milter/core/milter-event-loop.h>
 
 G_BEGIN_DECLS
 
@@ -68,7 +69,7 @@ GType            milter_reader_get_type       (void) G_GNUC_CONST;
 MilterReader    *milter_reader_io_channel_new (GIOChannel       *channel);
 
 void             milter_reader_start          (MilterReader     *reader,
-                                               GMainContext     *context);
+                                               MilterEventLoop  *eventloop);
 gboolean         milter_reader_is_watching    (MilterReader     *reader);
 void             milter_reader_shutdown       (MilterReader     *reader);
 

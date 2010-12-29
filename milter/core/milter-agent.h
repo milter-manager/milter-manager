@@ -30,6 +30,7 @@
 #include <milter/core/milter-decoder.h>
 #include <milter/core/milter-macros-requests.h>
 #include <milter/core/milter-finished-emittable.h>
+#include <milter/core/milter-event-loop.h>
 
 G_BEGIN_DECLS
 
@@ -83,7 +84,7 @@ gboolean             milter_agent_flush             (MilterAgent *agent,
                                                      GError **error);
 
 void                 milter_agent_start             (MilterAgent *agent,
-                                                     GMainContext *context);
+                                                     MilterEventLoop *eventloop);
 void                 milter_agent_shutdown          (MilterAgent *agent);
 
 guint                milter_agent_get_tag           (MilterAgent *agent);

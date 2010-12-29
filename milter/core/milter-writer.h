@@ -24,6 +24,7 @@
 
 #include <milter/core/milter-protocol.h>
 #include <milter/core/milter-option.h>
+#include <milter/core/milter-event-loop.h>
 
 G_BEGIN_DECLS
 
@@ -71,7 +72,7 @@ gboolean         milter_writer_flush          (MilterWriter     *writer,
                                                GError          **error);
 
 void             milter_writer_start          (MilterWriter     *writer,
-                                               GMainContext     *context);
+                                               MilterEventLoop  *eventloop);
 gboolean         milter_writer_is_watching    (MilterWriter     *writer);
 void             milter_writer_shutdown       (MilterWriter     *writer);
 

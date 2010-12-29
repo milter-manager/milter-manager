@@ -517,7 +517,7 @@ milter_agent_get_decoder (MilterAgent *agent)
 }
 
 void
-milter_agent_start (MilterAgent *agent, GMainContext *context)
+milter_agent_start (MilterAgent *agent, MilterEventLoop *eventloop)
 {
     MilterAgentPrivate *priv;
 
@@ -530,9 +530,9 @@ milter_agent_start (MilterAgent *agent, GMainContext *context)
     }
 
     if (priv->reader)
-        milter_reader_start(priv->reader, context);
+        milter_reader_start(priv->reader, eventloop);
     if (priv->writer)
-        milter_writer_start(priv->writer, context);
+        milter_writer_start(priv->writer, eventloop);
 }
 
 void

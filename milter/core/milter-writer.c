@@ -39,6 +39,7 @@ typedef struct _MilterWriterPrivate	MilterWriterPrivate;
 struct _MilterWriterPrivate
 {
     GIOChannel *io_channel;
+    MilterEventLoop *loop;
     guint channel_watch_id;
     guint tag;
 };
@@ -103,6 +104,7 @@ milter_writer_init (MilterWriter *writer)
 
     priv = MILTER_WRITER_GET_PRIVATE(writer);
     priv->io_channel = NULL;
+    priv->loop = NULL;
     priv->channel_watch_id = 0;
     priv->tag = 0;
 }
@@ -117,13 +119,19 @@ dispose (GObject *object)
     milter_debug("[%u] [writer][dispose]", priv->tag);
 
     if (priv->channel_watch_id > 0) {
-        g_source_remove(priv->channel_watch_id);
+        milter_event_loop_remove_source(priv->loop,
+                                        priv->channel_watch_id);
         priv->channel_watch_id = 0;
     }
 
     if (priv->io_channel) {
         g_io_channel_unref(priv->io_channel);
         priv->io_channel = NULL;
+    }
+
+    if (priv->loop) {
+        g_object_unref(priv->loop);
+        priv->loop = NULL;
     }
 
     G_OBJECT_CLASS(milter_writer_parent_class)->dispose(object);
@@ -328,30 +336,29 @@ channel_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
 }
 
 static void
-watch_io_channel (MilterWriter *writer, GMainContext *context)
+watch_io_channel (MilterWriter *writer, MilterEventLoop *eventloop)
 {
     MilterWriterPrivate *priv;
-    GSource *source;
 
     priv = MILTER_WRITER_GET_PRIVATE(writer);
 
-    source = g_io_create_watch(priv->io_channel,
-                               G_IO_ERR | G_IO_HUP | G_IO_NVAL);
-    g_source_set_callback(source, (GSourceFunc)channel_watch_func, writer,
-                          NULL);
-    priv->channel_watch_id = g_source_attach(source, context);
-    g_source_unref(source);
+    priv->loop = eventloop;
+    priv->channel_watch_id =
+        milter_event_loop_add_watch(eventloop,
+                                    priv->io_channel,
+                                    G_IO_ERR | G_IO_HUP | G_IO_NVAL,
+                                    channel_watch_func, writer);
     milter_debug("[%u] [writer][watch] %u", priv->tag, priv->channel_watch_id);
 }
 
 void
-milter_writer_start (MilterWriter *writer, GMainContext *context)
+milter_writer_start (MilterWriter *writer, MilterEventLoop *eventloop)
 {
     MilterWriterPrivate *priv;
 
     priv = MILTER_WRITER_GET_PRIVATE(writer);
     if (priv->io_channel && priv->channel_watch_id == 0) {
-        watch_io_channel(writer, context);
+        watch_io_channel(writer, eventloop);
     }
 }
 
@@ -372,7 +379,8 @@ milter_writer_shutdown (MilterWriter *writer)
     if (priv->channel_watch_id == 0)
         return;
 
-    g_source_remove(priv->channel_watch_id);
+    milter_event_loop_remove_source(priv->loop,
+                                    priv->channel_watch_id);
     priv->channel_watch_id = 0;
 
     if (!g_io_channel_get_close_on_unref(priv->io_channel))

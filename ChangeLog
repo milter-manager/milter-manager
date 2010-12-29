@@ -1,5 +1,11 @@
 2010-12-29  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* milter/core/milter-agent.c (milter_agent_start),
+	milter/core/milter-writer.c (milter_writer_start),
+	milter/core/milter-reader.c (milter_reader_private)
+	milter/client/milter-client.c (MilterClientPrivate): use
+	MilterEventLoop in place of GMainContext.
+
 	* milter/core/milter-event-loop.c (constructed): call initialize
 	with new_context flag.
 

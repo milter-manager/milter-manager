@@ -40,6 +40,7 @@ typedef struct _MilterReaderPrivate	MilterReaderPrivate;
 struct _MilterReaderPrivate
 {
     GIOChannel *io_channel;
+    MilterEventLoop *loop;
     guint channel_watch_id;
     gboolean processing;
     gboolean shutdown_requested;
@@ -121,6 +122,7 @@ milter_reader_init (MilterReader *reader)
 
     priv = MILTER_READER_GET_PRIVATE(reader);
     priv->io_channel = NULL;
+    priv->loop = NULL;
     priv->channel_watch_id = 0;
     priv->processing = FALSE;
     priv->shutdown_requested = FALSE;
@@ -183,7 +185,8 @@ static void
 clear_watch_id (MilterReaderPrivate *priv)
 {
     if (priv->channel_watch_id) {
-        g_source_remove(priv->channel_watch_id);
+        milter_event_loop_remove_source(priv->loop,
+                                        priv->channel_watch_id);
         priv->channel_watch_id = 0;
     }
 }
@@ -264,20 +267,19 @@ channel_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
 }
 
 static void
-watch_io_channel (MilterReader *reader, GMainContext *context)
+watch_io_channel (MilterReader *reader, MilterEventLoop *eventloop)
 {
     MilterReaderPrivate *priv;
-    GSource *source;
 
     priv = MILTER_READER_GET_PRIVATE(reader);
 
-    source = g_io_create_watch(priv->io_channel,
-                               G_IO_IN | G_IO_PRI |
-                               G_IO_ERR | G_IO_HUP | G_IO_NVAL);
-    g_source_set_callback(source, (GSourceFunc)channel_watch_func, reader,
-                          NULL);
-    priv->channel_watch_id = g_source_attach(source, context);
-    g_source_unref(source);
+    priv->loop = eventloop;
+    priv->channel_watch_id =
+        milter_event_loop_add_watch(eventloop,
+                                    priv->io_channel,
+                                    G_IO_IN | G_IO_PRI |
+                                    G_IO_ERR | G_IO_HUP | G_IO_NVAL,
+                                    channel_watch_func, reader);
     milter_debug("[%u] [reader][watch] %u", priv->tag, priv->channel_watch_id);
 }
 
@@ -295,6 +297,11 @@ dispose (GObject *object)
     if (priv->io_channel) {
         g_io_channel_unref(priv->io_channel);
         priv->io_channel = NULL;
+    }
+
+    if (priv->loop) {
+        g_object_unref(priv->loop);
+        priv->loop = NULL;
     }
 
     G_OBJECT_CLASS(milter_reader_parent_class)->dispose(object);
@@ -361,13 +368,13 @@ milter_reader_io_channel_new (GIOChannel *channel)
 }
 
 void
-milter_reader_start (MilterReader *reader, GMainContext *context)
+milter_reader_start (MilterReader *reader, MilterEventLoop *eventloop)
 {
     MilterReaderPrivate *priv;
 
     priv = MILTER_READER_GET_PRIVATE(reader);
     if (priv->io_channel && priv->channel_watch_id == 0)
-        watch_io_channel(reader, context);
+        watch_io_channel(reader, eventloop);
 }
 
 gboolean
