@@ -45,6 +45,7 @@ enum
 static GObject *constructor  (GType                  type,
                               guint                  n_props,
                               GObjectConstructParam *props);
+static void     dispose      (GObject         *object);
 
 static void  run_loop        (MilterEventLoop *eventloop);
 
