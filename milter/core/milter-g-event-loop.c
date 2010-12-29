@@ -33,7 +33,7 @@ G_DEFINE_TYPE(MilterGEventLoop, milter_g_event_loop, MILTER_TYPE_EVENT_LOOP)
 typedef struct _MilterGEventLoopPrivate	MilterGEventLoopPrivate;
 struct _MilterGEventLoopPrivate
 {
-  gint dummy;
+    GMainLoop *loop;
 };
 
 enum
@@ -45,6 +45,8 @@ enum
 static GObject *constructor  (GType                  type,
                               guint                  n_props,
                               GObjectConstructParam *props);
+
+static void  run_loop        (MilterEventLoop *eventloop);
 
 static guint add_watch       (MilterEventLoop *eventloop,
                               GIOChannel      *channel,
@@ -72,6 +74,7 @@ milter_g_event_loop_class_init (MilterGEventLoopClass *klass)
 
     gobject_class->constructor  = constructor;
 
+    klass->parent_class.run_loop = run_loop;
     klass->parent_class.add_watch = add_watch;
     klass->parent_class.add_timeout = add_timeout;
     klass->parent_class.add_idle_full = add_idle_full;
@@ -96,7 +99,7 @@ constructor (GType type, guint n_props, GObjectConstructParam *props)
     eventloop = MILTER_G_EVENT_LOOP(object);
     eventloop_class = MILTER_G_EVENT_LOOP_GET_CLASS(object);
 
-    priv->dummy = 0;
+    priv->loop = NULL;
 
     return object;
 }
@@ -107,7 +110,16 @@ milter_g_event_loop_init (MilterGEventLoop *eventloop)
     MilterGEventLoopPrivate *priv;
 
     priv = MILTER_G_EVENT_LOOP_GET_PRIVATE(eventloop);
-    priv->dummy = -1;
+    priv->loop = g_main_loop_new(NULL, FALSE);
+}
+
+static void
+run_loop (MilterEventLoop *eventloop)
+{
+    MilterGEventLoopPrivate *priv;
+
+    priv = MILTER_G_EVENT_LOOP_GET_PRIVATE(eventloop);
+    g_main_loop_run (priv->loop);
 }
 
 static guint
