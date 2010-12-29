@@ -74,6 +74,7 @@ milter_g_event_loop_class_init (MilterGEventLoopClass *klass)
 
     klass->parent_class.add_watch = add_watch;
     klass->parent_class.add_timeout = add_timeout;
+    klass->parent_class.add_idle_full = add_idle_full;
 
     g_type_class_add_private(gobject_class, sizeof(MilterGEventLoopPrivate));
 }
