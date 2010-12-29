@@ -1,5 +1,8 @@
 2010-12-29  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* milter/core/milter-g-event-loop.c (milter_event_loop_new):
+	implemented here for the time being.
+
 	* milter/core/milter-event-loop.h (milter_event_loop_new): add.
 
 	* milter/core/milter-g-event-loop.c (quit_loop): implemented.

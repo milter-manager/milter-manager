@@ -131,6 +131,12 @@ dispose (GObject *object)
     G_OBJECT_CLASS(milter_g_event_loop_parent_class)->dispose(object);
 }
 
+MilterEventLoop *
+milter_event_loop_new (void)
+{
+    return (MilterEventLoop *)g_object_new(MILTER_TYPE_G_EVENT_LOOP, NULL);
+}
+
 static void
 run_loop (MilterEventLoop *eventloop)
 {
