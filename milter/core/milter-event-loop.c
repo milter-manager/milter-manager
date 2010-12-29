@@ -33,12 +33,13 @@ G_DEFINE_ABSTRACT_TYPE(MilterEventLoop, milter_event_loop, G_TYPE_OBJECT)
 typedef struct _MilterEventLoopPrivate	MilterEventLoopPrivate;
 struct _MilterEventLoopPrivate
 {
-  gint dummy;
+    gboolean new_context;
 };
 
 enum
 {
     PROP_0,
+    PROP_NEW_CONTEXT,
     PROP_LAST
 };
 
@@ -60,6 +61,7 @@ static void
 milter_event_loop_class_init (MilterEventLoopClass *klass)
 {
     GObjectClass *gobject_class;
+    GParamSpec *spec;
 
     gobject_class = G_OBJECT_CLASS(klass);
 
@@ -74,6 +76,14 @@ milter_event_loop_class_init (MilterEventLoopClass *klass)
     klass->add_timeout = NULL;
     klass->add_idle_full = NULL;
     klass->remove_source = NULL;
+
+    spec = g_param_spec_boolean("new-context",
+                                "New Context",
+                                "Use separate context for the event loop if TRUE",
+                                FALSE,
+                                G_PARAM_READABLE | G_PARAM_WRITABLE |
+                                G_PARAM_CONSTRUCT | G_PARAM_CONSTRUCT_ONLY);
+    g_object_class_install_property(gobject_class, PROP_NEW_CONTEXT, spec);
 
     g_type_class_add_private(gobject_class, sizeof(MilterEventLoopPrivate));
 }
@@ -95,7 +105,7 @@ constructor (GType type, guint n_props, GObjectConstructParam *props)
     eventloop = MILTER_EVENT_LOOP(object);
     eventloop_class = MILTER_EVENT_LOOP_GET_CLASS(object);
 
-    priv->dummy = 0;
+    priv->new_context = FALSE;
 
     return object;
 }
@@ -106,7 +116,7 @@ milter_event_loop_init (MilterEventLoop *eventloop)
     MilterEventLoopPrivate *priv;
 
     priv = MILTER_EVENT_LOOP_GET_PRIVATE(eventloop);
-    priv->dummy = -1;
+    priv->new_context = FALSE;
 }
 
 static void
@@ -129,6 +139,9 @@ set_property (GObject      *object,
 
     priv = MILTER_EVENT_LOOP_GET_PRIVATE(object);
     switch (prop_id) {
+    case PROP_NEW_CONTEXT:
+        priv->new_context = g_value_get_boolean(value);
+        break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -147,6 +160,9 @@ get_property (GObject    *object,
     eventloop = MILTER_EVENT_LOOP(object);
     priv = MILTER_EVENT_LOOP_GET_PRIVATE(eventloop);
     switch (prop_id) {
+    case PROP_NEW_CONTEXT:
+        g_value_set_boolean(value, priv->new_context);
+        break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;

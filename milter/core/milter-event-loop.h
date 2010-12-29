@@ -50,6 +50,9 @@ struct _MilterEventLoopClass
 {
     GObjectClass parent_class;
 
+    void (*initialize) (MilterEventLoop *eventloop,
+                        gboolean         new_context);
+
     void (*run_loop) (MilterEventLoop *eventloop);
     void (*quit_loop) (MilterEventLoop *eventloop);
 
@@ -74,7 +77,7 @@ struct _MilterEventLoopClass
 GQuark               milter_event_loop_error_quark       (void);
 GType                milter_event_loop_get_type          (void) G_GNUC_CONST;
 
-MilterEventLoop     *milter_event_loop_new               (void);
+MilterEventLoop     *milter_event_loop_new               (gboolean new_context);
 
 void                 milter_event_loop_run               (MilterEventLoop *eventloop);
 void                 milter_event_loop_quit              (MilterEventLoop *eventloop);
