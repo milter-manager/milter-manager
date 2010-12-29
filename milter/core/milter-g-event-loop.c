@@ -73,6 +73,7 @@ milter_g_event_loop_class_init (MilterGEventLoopClass *klass)
     gobject_class = G_OBJECT_CLASS(klass);
 
     gobject_class->constructor  = constructor;
+    gobject_class->dispose      = dispose;
 
     klass->parent_class.run_loop = run_loop;
     klass->parent_class.add_watch = add_watch;
@@ -111,6 +112,20 @@ milter_g_event_loop_init (MilterGEventLoop *eventloop)
 
     priv = MILTER_G_EVENT_LOOP_GET_PRIVATE(eventloop);
     priv->loop = g_main_loop_new(NULL, FALSE);
+}
+
+static void
+dispose (GObject *object)
+{
+    MilterGEventLoopPrivate *priv;
+
+    priv = MILTER_G_EVENT_LOOP_GET_PRIVATE(object);
+    if (priv->loop) {
+        g_main_loop_unref(priv->loop);
+        priv->loop = NULL;
+    }
+
+    G_OBJECT_CLASS(milter_g_event_loop_parent_class)->dispose(object);
 }
 
 static void
