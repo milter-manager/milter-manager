@@ -1,5 +1,9 @@
 2010-12-29  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* milter/manager/milter-manager-process-launcher.c
+	(MilterManagerProcessLauncherPrivate): replace main_loop with
+	MilterEventLoop.
+
 	* milter/core/milter-g-event-loop.c (milter_event_loop_new):
 	implemented here for the time being.
 

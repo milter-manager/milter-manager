@@ -43,7 +43,7 @@ typedef struct _MilterManagerProcessLauncherPrivate MilterManagerProcessLauncher
 struct _MilterManagerProcessLauncherPrivate
 {
     GList *processes;
-    GMainLoop *main_loop;
+    MilterEventLoop *main_loop;
 };
 
 enum
@@ -446,7 +446,7 @@ milter_manager_process_launcher_init (MilterManagerProcessLauncher *launcher)
     priv = MILTER_MANAGER_PROCESS_LAUNCHER_GET_PRIVATE(launcher);
 
     priv->processes = NULL;
-    priv->main_loop = g_main_loop_new(NULL, FALSE);
+    priv->main_loop = milter_event_loop_new();
 }
 
 static void
@@ -463,7 +463,7 @@ dispose (GObject *object)
     }
 
     if (priv->main_loop) {
-        g_main_loop_unref(priv->main_loop);
+        g_object_unref(priv->main_loop);
         priv->main_loop = NULL;
     }
 
@@ -510,7 +510,7 @@ finished (MilterFinishedEmittable *emittable)
 
     launcher = MILTER_MANAGER_PROCESS_LAUNCHER(emittable);
     priv = MILTER_MANAGER_PROCESS_LAUNCHER_GET_PRIVATE(launcher);
-    g_main_loop_quit(priv->main_loop);
+    milter_event_loop_quit(priv->main_loop);
 
     if (finished_emittable_parent->finished)
         finished_emittable_parent->finished(emittable);
@@ -535,7 +535,7 @@ milter_manager_process_launcher_run (MilterManagerProcessLauncher *launcher)
     MilterManagerProcessLauncherPrivate *priv;
 
     priv = MILTER_MANAGER_PROCESS_LAUNCHER_GET_PRIVATE(launcher);
-    g_main_loop_run(priv->main_loop);
+    milter_event_loop_run(priv->main_loop);
 }
 
 /*
