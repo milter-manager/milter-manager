@@ -94,9 +94,9 @@ static GObject *
 constructor (GType type, guint n_props, GObjectConstructParam *props)
 {
     GObject *object;
-    MilterEventLoop *eventloop;
+    MilterEventLoop *loop;
     GObjectClass *klass;
-    MilterEventLoopClass *eventloop_class;
+    MilterEventLoopClass *loop_class;
     MilterEventLoopPrivate *priv;
 
     klass = G_OBJECT_CLASS(milter_event_loop_parent_class);
@@ -104,8 +104,8 @@ constructor (GType type, guint n_props, GObjectConstructParam *props)
 
     priv = MILTER_EVENT_LOOP_GET_PRIVATE(object);
 
-    eventloop = MILTER_EVENT_LOOP(object);
-    eventloop_class = MILTER_EVENT_LOOP_GET_CLASS(object);
+    loop = MILTER_EVENT_LOOP(object);
+    loop_class = MILTER_EVENT_LOOP_GET_CLASS(object);
 
     priv->new_context = FALSE;
 
@@ -113,11 +113,11 @@ constructor (GType type, guint n_props, GObjectConstructParam *props)
 }
 
 static void
-milter_event_loop_init (MilterEventLoop *eventloop)
+milter_event_loop_init (MilterEventLoop *loop)
 {
     MilterEventLoopPrivate *priv;
 
-    priv = MILTER_EVENT_LOOP_GET_PRIVATE(eventloop);
+    priv = MILTER_EVENT_LOOP_GET_PRIVATE(loop);
     priv->new_context = FALSE;
 }
 
@@ -156,11 +156,11 @@ get_property (GObject    *object,
               GValue     *value,
               GParamSpec *pspec)
 {
-    MilterEventLoop *eventloop;
+    MilterEventLoop *loop;
     MilterEventLoopPrivate *priv;
 
-    eventloop = MILTER_EVENT_LOOP(object);
-    priv = MILTER_EVENT_LOOP_GET_PRIVATE(eventloop);
+    loop = MILTER_EVENT_LOOP(object);
+    priv = MILTER_EVENT_LOOP_GET_PRIVATE(loop);
     switch (prop_id) {
     case PROP_NEW_CONTEXT:
         g_value_set_boolean(value, priv->new_context);
@@ -174,102 +174,91 @@ get_property (GObject    *object,
 static void
 constructed (GObject *object)
 {
-    MilterEventLoop *eventloop;
-    MilterEventLoopClass *eventloop_class;
+    MilterEventLoop *loop;
+    MilterEventLoopClass *loop_class;
     MilterEventLoopPrivate *priv;
 
-    eventloop = MILTER_EVENT_LOOP(object);
-    eventloop_class = MILTER_EVENT_LOOP_GET_CLASS(object);
-    priv = MILTER_EVENT_LOOP_GET_PRIVATE(eventloop);
-    eventloop_class->initialize(eventloop, priv->new_context);
+    loop = MILTER_EVENT_LOOP(object);
+    loop_class = MILTER_EVENT_LOOP_GET_CLASS(object);
+    priv = MILTER_EVENT_LOOP_GET_PRIVATE(loop);
+    loop_class->initialize(loop, priv->new_context);
 }
 
 GQuark
 milter_event_loop_error_quark (void)
 {
-    return g_quark_from_static_string("milter-eventloop-error-quark");
+    return g_quark_from_static_string("milter-event-loop-error-quark");
 }
 
 MilterEventLoop *
 milter_event_loop_new (gboolean new_context)
 {
 #define DEFAULT_MILTER_EVENT_LOOP_NAME "MilterGEventLoopClass"
-    GType eventloop_type = g_type_from_name(DEFAULT_MILTER_EVENT_LOOP_NAME);
+    GType loop_type = g_type_from_name(DEFAULT_MILTER_EVENT_LOOP_NAME);
 
-    return g_object_new(eventloop_type,
+    return g_object_new(loop_type,
                         "new-context", new_context,
                         NULL);
 }
 
 void 
-milter_event_loop_run (MilterEventLoop *eventloop)
+milter_event_loop_run (MilterEventLoop *loop)
 {
-    MilterEventLoopClass *eventloop_class;
-    eventloop_class = MILTER_EVENT_LOOP_GET_CLASS(eventloop);
-    eventloop_class->run_loop(eventloop);
+    MilterEventLoopClass *loop_class;
+    loop_class = MILTER_EVENT_LOOP_GET_CLASS(loop);
+    loop_class->run_loop(loop);
 }
 
 void 
-milter_event_loop_quit (MilterEventLoop *eventloop)
+milter_event_loop_quit (MilterEventLoop *loop)
 {
-    MilterEventLoopClass *eventloop_class;
-    eventloop_class = MILTER_EVENT_LOOP_GET_CLASS(eventloop);
-    eventloop_class->quit_loop(eventloop);
+    MilterEventLoopClass *loop_class;
+    loop_class = MILTER_EVENT_LOOP_GET_CLASS(loop);
+    loop_class->quit_loop(loop);
 }
 
 guint
-milter_event_loop_add_watch (MilterEventLoop *eventloop,
+milter_event_loop_add_watch (MilterEventLoop *loop,
                              GIOChannel      *channel,
                              GIOCondition     condition,
                              GIOFunc          func,
                              gpointer         user_data)
 {
-    MilterEventLoopClass *eventloop_class;
-    eventloop_class = MILTER_EVENT_LOOP_GET_CLASS(eventloop);
-    return eventloop_class->add_watch(eventloop,
-                                      channel,
-                                      condition,
-                                      func,
-                                      user_data);
+    MilterEventLoopClass *loop_class;
+    loop_class = MILTER_EVENT_LOOP_GET_CLASS(loop);
+    return loop_class->add_watch(loop, channel, condition, func, user_data);
 }
 
 guint
-milter_event_loop_add_timeout (MilterEventLoop *eventloop,
+milter_event_loop_add_timeout (MilterEventLoop *loop,
                                gdouble interval,
                                GSourceFunc func,
                                gpointer user_data)
 {
-    MilterEventLoopClass *eventloop_class;
-    eventloop_class = MILTER_EVENT_LOOP_GET_CLASS(eventloop);
-    return eventloop_class->add_timeout(eventloop,
-                                        interval,
-                                        func,
-                                        user_data);
+    MilterEventLoopClass *loop_class;
+    loop_class = MILTER_EVENT_LOOP_GET_CLASS(loop);
+    return loop_class->add_timeout(loop, interval, func, user_data);
 }
 
 guint
-milter_event_loop_add_idle_full (MilterEventLoop *eventloop,
+milter_event_loop_add_idle_full (MilterEventLoop *loop,
                                  gint             priority,
                                  GSourceFunc      function,
                                  gpointer         data,
                                  GDestroyNotify   notify)
 {
-    MilterEventLoopClass *eventloop_class;
-    eventloop_class = MILTER_EVENT_LOOP_GET_CLASS(eventloop);
-    return eventloop_class->add_idle_full(eventloop,
-                                          priority,
-                                          function,
-                                          data,
-                                          notify);
+    MilterEventLoopClass *loop_class;
+    loop_class = MILTER_EVENT_LOOP_GET_CLASS(loop);
+    return loop_class->add_idle_full(loop, priority, function, data, notify);
 }
 
 gboolean
-milter_event_loop_remove_source (MilterEventLoop *eventloop,
+milter_event_loop_remove_source (MilterEventLoop *loop,
                                  guint            tag)
 {
-    MilterEventLoopClass *eventloop_class;
-    eventloop_class = MILTER_EVENT_LOOP_GET_CLASS(eventloop);
-    return eventloop_class->remove_source(eventloop, tag);
+    MilterEventLoopClass *loop_class;
+    loop_class = MILTER_EVENT_LOOP_GET_CLASS(loop);
+    return loop_class->remove_source(loop, tag);
 }
 
 /*

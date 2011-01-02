@@ -1,5 +1,7 @@
 2011-01-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-event-loop.[ch]: cleanup.
+
 	* milter/client/Makefile.am (INCLUDES): add bundled GIO's include
 	path to INCLUDES instead of AM_CFLAGS to use it not the system GIO.
 

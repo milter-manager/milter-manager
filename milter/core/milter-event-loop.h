@@ -50,27 +50,27 @@ struct _MilterEventLoopClass
 {
     GObjectClass parent_class;
 
-    void (*initialize) (MilterEventLoop *eventloop,
-                        gboolean         new_context);
+    void (*initialize)       (MilterEventLoop *loop,
+                              gboolean         new_context);
 
-    void (*run_loop) (MilterEventLoop *eventloop);
-    void (*quit_loop) (MilterEventLoop *eventloop);
+    void (*run_loop)         (MilterEventLoop *loop);
+    void (*quit_loop)        (MilterEventLoop *loop);
 
-    guint (*add_watch)(MilterEventLoop *eventloop,
-                       GIOChannel      *channel,
-                       GIOCondition     condition,
-                       GIOFunc          func,
-                       gpointer         user_data);
-    guint (*add_timeout)(MilterEventLoop *eventloop,
-                         gdouble interval,
-                         GSourceFunc func,
-                         gpointer user_data);
-    guint (*add_idle_full)(MilterEventLoop *eventloop,
-                           gint             priority,
-                           GSourceFunc      function,
-                           gpointer         data,
-                           GDestroyNotify   notify);
-    gboolean (*remove_source)(MilterEventLoop *eventloop,
+    guint (*add_watch)       (MilterEventLoop *loop,
+                              GIOChannel      *channel,
+                              GIOCondition     condition,
+                              GIOFunc          func,
+                              gpointer         user_data);
+    guint (*add_timeout)     (MilterEventLoop *loop,
+                              gdouble interval,
+                              GSourceFunc func,
+                              gpointer user_data);
+    guint (*add_idle_full)   (MilterEventLoop *loop,
+                              gint             priority,
+                              GSourceFunc      function,
+                              gpointer         data,
+                              GDestroyNotify   notify);
+    gboolean (*remove_source)(MilterEventLoop *loop,
                               guint            tag);
 };
 
@@ -79,27 +79,27 @@ GType                milter_event_loop_get_type          (void) G_GNUC_CONST;
 
 MilterEventLoop     *milter_event_loop_new               (gboolean new_context);
 
-void                 milter_event_loop_run               (MilterEventLoop *eventloop);
-void                 milter_event_loop_quit              (MilterEventLoop *eventloop);
+void                 milter_event_loop_run               (MilterEventLoop *loop);
+void                 milter_event_loop_quit              (MilterEventLoop *loop);
 
-guint                milter_event_loop_add_watch         (MilterEventLoop *eventloop,
+guint                milter_event_loop_add_watch         (MilterEventLoop *loop,
                                                           GIOChannel      *channel,
                                                           GIOCondition     condition,
                                                           GIOFunc          func,
                                                           gpointer         user_data);
 
-guint                milter_event_loop_add_timeout       (MilterEventLoop *eventloop,
+guint                milter_event_loop_add_timeout       (MilterEventLoop *loop,
                                                           gdouble interval,
                                                           GSourceFunc func,
                                                           gpointer user_data);
 
-guint                milter_event_loop_add_idle_full     (MilterEventLoop *eventloop,
+guint                milter_event_loop_add_idle_full     (MilterEventLoop *loop,
                                                           gint             priority,
                                                           GSourceFunc      function,
                                                           gpointer         data,
                                                           GDestroyNotify   notify);
 
-gboolean             milter_event_loop_remove_source     (MilterEventLoop *eventloop,
+gboolean             milter_event_loop_remove_source     (MilterEventLoop *loop,
                                                           guint            tag);
 
 G_END_DECLS
