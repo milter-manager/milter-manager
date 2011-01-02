@@ -1,5 +1,8 @@
 2011-01-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/Makefile.am (INCLUDES): add bundled GIO's include
+	path to INCLUDES instead of AM_CFLAGS to use it not the system GIO.
+
 	* configure.ac: add --with-libevent configure option.
 
 2010-12-29  Nobuyoshi Nakada  <nakada@clear-code.com>

@@ -12,7 +12,7 @@ if GIO_UNIX_2_26
 AM_CFLAGS +=					\
 	$(GIO_UNIX_CFLAGS)
 else
-AM_CFLAGS +=					\
+INCLUDES +=					\
 	-I$(top_srcdir)/gio-unix-compatible
 endif
 
