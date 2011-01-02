@@ -489,10 +489,39 @@ dnl **************************************************************
 dnl Check for libevent.
 dnl **************************************************************
 
-AC_CHECK_HEADERS(event.h)
-if test "x$ac_cv_header_event_h" = x""yes; then
-   AC_CHECK_LIB(event, event_init)
+libevent_available=no
+AC_ARG_WITH(libevent,
+  [AS_HELP_STRING([--with-libevent],
+    [Specify libevent installed prefix. [default=/usr]])],
+  [with_libevent="$withval"],
+  [with_libevent="yes"])
+if test "x$with_libevent" != "xno"; then
+  _SAVE_CFLAGS="$CFLAGS"
+  _SAVE_LDFLAGS="$LDFLAGS"
+  if test "x$with_libevent" = "xyes"; then
+    libevent_prefix="/usr"
+  else
+    libevent_prefix="$with_libevent"
+  fi
+  CFLAGS="$CFLAGS -I$libevent_prefix/include"
+  LDFLAGS="$LDFLAGS -L$libevent_prefix/lib"
+  AC_CHECK_LIB(event, event_init,
+               [libevent_available=yes],
+               [libevent_available=no])
+  CFLAGS="$_SAVE_CFLAGS"
+  LDFLAGS="$_SAVE_LDFLAGS"
+  if test "x$libevent_available" = "xyes"; then
+    AC_DEFINE(HAVE_LIBEVENT, [1], [Define to 1 if libevent is available.])
+    LIBEVENT_CFLAGS="-I$libevent_prefix/include"
+    LIBEVENT_LIBS="-L$libevent_prefix/lib -levent"
+  else
+    if test "x$with_libevent" = "xyes"; then
+      AC_MSG_ERROR("No libevent found")
+    fi
+  fi
 fi
+AC_SUBST(LIBEVENT_CFLAGS)
+AC_SUBST(LIBEVENT_LIBS)
 
 dnl **************************************************************
 dnl Check for package platform.
@@ -778,6 +807,12 @@ AC_OUTPUT
 
 glib_version="$glib_config_major_version.$glib_config_minor_version.$glib_config_micro_version"
 
+if test "$libevent_available" = "yes"; then
+   libevent_configure_result="$libevent_available ($libevent_prefix)"
+else
+   libevent_configure_result="$libevent_available"
+fi
+
 echo
 echo "Configure Result:"
 echo
@@ -791,6 +826,7 @@ echo "  Default Connection Spec : $MILTER_MANAGER_DEFAULT_CONNECTION_SPEC"
 echo "  Default PID File        : $MILTER_MANAGER_DEFAULT_PID_FILE"
 echo
 echo "  GLib                    : $glib_version"
+echo "  libevent                : $libevent_configure_result"
 echo "  Ruby                    : $RUBY"
 echo "  Ruby milter PATH        : $ruby_milterdir"
 echo

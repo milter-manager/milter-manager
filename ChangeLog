@@ -1,3 +1,7 @@
+2011-01-02  Kouhei Sutou  <kou@cozmixng.org>
+
+	* configure.ac: add --with-libevent configure option.
+
 2010-12-29  Nobuyoshi Nakada  <nakada@clear-code.com>
 
 	* milter/core/milter-agent.c (milter_agent_start),
