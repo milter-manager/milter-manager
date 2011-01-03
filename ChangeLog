@@ -1,3 +1,8 @@
+2011-01-04  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/server/milter-server-context.c,
+	test/server/test-server-context.c: use MilterEventLoop.
+
 2011-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
 	* test/manager/test-controller-context.c: use MilterEventLoop.

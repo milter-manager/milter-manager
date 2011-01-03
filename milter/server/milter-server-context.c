@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -472,19 +472,29 @@ milter_server_context_init (MilterServerContext *context)
 }
 
 static void
-disable_timeout (MilterServerContextPrivate *priv)
+disable_timeout (MilterServerContext *context)
 {
+    MilterServerContextPrivate *priv;
+
+    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
     if (priv->timeout_id > 0) {
-        g_source_remove(priv->timeout_id);
+        MilterEventLoop *loop;
+        loop = milter_agent_get_event_loop(MILTER_AGENT(context));
+        milter_event_loop_remove(loop, priv->timeout_id);
         priv->timeout_id = 0;
     }
 }
 
 static void
-dispose_connect_watch (MilterServerContextPrivate *priv)
+dispose_connect_watch (MilterServerContext *context)
 {
+    MilterServerContextPrivate *priv;
+
+    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
     if (priv->connect_watch_id > 0) {
-        g_source_remove(priv->connect_watch_id);
+        MilterEventLoop *loop;
+        loop = milter_agent_get_event_loop(MILTER_AGENT(context));
+        milter_event_loop_remove(loop, priv->connect_watch_id);
         priv->connect_watch_id = 0;
     }
 }
@@ -519,15 +529,17 @@ dispose_message_result (MilterServerContextPrivate *priv)
 static void
 dispose (GObject *object)
 {
+    MilterServerContext *context;
     MilterServerContextPrivate *priv;
 
-    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(object);
+    context = MILTER_SERVER_CONTEXT(object);
+    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
 
     milter_debug("[%u] [server-context][dispose]",
-                 milter_agent_get_tag(MILTER_AGENT(object)));
+                 milter_agent_get_tag(MILTER_AGENT(context)));
 
-    disable_timeout(priv);
-    dispose_connect_watch(priv);
+    disable_timeout(context);
+    dispose_connect_watch(context);
     dispose_client_channel(priv);
 
     if (priv->spec) {
@@ -982,6 +994,7 @@ write_packet (MilterServerContext *context, gchar *packet, gsize packet_size,
     MilterServerContextPrivate *priv;
     GString *packed_packet;
     guint tag;
+    MilterEventLoop *loop;
     const gchar *name;
 
     if (!packet)
@@ -990,6 +1003,7 @@ write_packet (MilterServerContext *context, gchar *packet, gsize packet_size,
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
 
     tag = milter_agent_get_tag(MILTER_AGENT(context));
+    loop = milter_agent_get_event_loop(MILTER_AGENT(context));
     name = milter_server_context_get_name(context);
 
     switch (next_state) {
@@ -1028,10 +1042,11 @@ write_packet (MilterServerContext *context, gchar *packet, gsize packet_size,
                          tag, g_timer_elapsed(priv->elapsed, NULL), name);
             g_timer_continue(priv->elapsed);
         }
-        disable_timeout(priv);
-        priv->timeout_id = milter_utils_timeout_add(priv->writing_timeout,
-                                                    cb_writing_timeout,
-                                                    context);
+        disable_timeout(context);
+        priv->timeout_id = milter_event_loop_add_timeout(loop,
+                                                         priv->writing_timeout,
+                                                         cb_writing_timeout,
+                                                         context);
         break;
     }
 
@@ -1072,7 +1087,7 @@ write_packet (MilterServerContext *context, gchar *packet, gsize packet_size,
     milter_agent_write_packet(MILTER_AGENT(context),
                               packed_packet->str, packed_packet->len,
                               &agent_error);
-    disable_timeout(priv);
+    disable_timeout(context);
     g_string_free(packed_packet, TRUE);
 
     if (agent_error) {
@@ -1102,9 +1117,11 @@ write_packet (MilterServerContext *context, gchar *packet, gsize packet_size,
             milter_server_context_set_state(context, next_state);
         else
             priv->sent_end_of_message = TRUE;
-        priv->timeout_id = milter_utils_timeout_add(priv->end_of_message_timeout,
-                                                    cb_end_of_message_timeout,
-                                                    context);
+        priv->timeout_id =
+            milter_event_loop_add_timeout(loop,
+                                          priv->end_of_message_timeout,
+                                          cb_end_of_message_timeout,
+                                          context);
         break;
     case MILTER_SERVER_CONTEXT_STATE_BODY:
         milter_server_context_set_state(context, next_state);
@@ -1130,9 +1147,11 @@ write_packet (MilterServerContext *context, gchar *packet, gsize packet_size,
     default:
         milter_server_context_set_state(context, next_state);
         if (milter_server_context_need_reply(context, next_state)) {
-            priv->timeout_id = milter_utils_timeout_add(priv->reading_timeout,
-                                                        cb_reading_timeout,
-                                                        context);
+            priv->timeout_id =
+                milter_event_loop_add_timeout(loop,
+                                              priv->reading_timeout,
+                                              cb_reading_timeout,
+                                              context);
         } else {
             g_timer_stop(priv->elapsed);
         }
@@ -1769,9 +1788,12 @@ milter_server_context_body (MilterServerContext *context,
     }
 
     if (milter_server_context_need_reply(context, state)) {
-        priv->timeout_id = milter_utils_timeout_add(priv->reading_timeout,
-                                                    cb_reading_timeout,
-                                                    context);
+        MilterEventLoop *loop;
+        loop = milter_agent_get_event_loop(MILTER_AGENT(context));
+        priv->timeout_id = milter_event_loop_add_timeout(loop,
+                                                         priv->reading_timeout,
+                                                         cb_reading_timeout,
+                                                         context);
     } else {
         g_timer_stop(priv->elapsed);
     }
@@ -1914,16 +1936,17 @@ cb_decoder_negotiate_reply (MilterDecoder *decoder,
                             MilterMacrosRequests *macros_requests,
                             gpointer user_data)
 {
-    MilterServerContext *context = MILTER_SERVER_CONTEXT(user_data);
+    MilterServerContext *context;
     MilterServerContextState state;
     MilterServerContextPrivate *priv;
     guint tag = 0;
     const gchar *name = NULL;
 
+    context = MILTER_SERVER_CONTEXT(user_data);
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
     state = priv->state;
 
-    disable_timeout(priv);
+    disable_timeout(context);
 
     if (milter_need_log(MILTER_LOG_LEVEL_ERROR |
                         MILTER_LOG_LEVEL_DEBUG)) {
@@ -2036,14 +2059,15 @@ decrement_process_body_count (MilterServerContext *context)
 static void
 cb_decoder_continue (MilterReplyDecoder *decoder, gpointer user_data)
 {
-    MilterServerContext *context = user_data;
+    MilterServerContext *context;
     MilterServerContextPrivate *priv;
     guint tag = 0;
     const gchar *name = NULL;
 
+    context = MILTER_SERVER_CONTEXT(user_data);
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
 
-    disable_timeout(priv);
+    disable_timeout(context);
 
     if (milter_need_debug_log()) {
         gchar *state_name;
@@ -2129,7 +2153,7 @@ cb_decoder_reply_code (MilterReplyDecoder *decoder,
         priv->status = status;
     }
 
-    disable_timeout(priv);
+    disable_timeout(context);
 
     milter_debug("[%u] [server][receive][reply-code] <%d %s %s>: %s",
                  tag, code, extended_code, message, name);
@@ -2178,7 +2202,7 @@ cb_decoder_temporary_failure (MilterReplyDecoder *decoder, gpointer user_data)
         priv->status = MILTER_STATUS_TEMPORARY_FAILURE;
     }
 
-    disable_timeout(priv);
+    disable_timeout(context);
     g_timer_stop(priv->elapsed);
 
     if (milter_need_debug_log()) {
@@ -2237,7 +2261,7 @@ cb_decoder_reject (MilterReplyDecoder *decoder, gpointer user_data)
         priv->status = MILTER_STATUS_REJECT;
     }
 
-    disable_timeout(priv);
+    disable_timeout(context);
     g_timer_stop(priv->elapsed);
 
     if (milter_need_debug_log()) {
@@ -2284,7 +2308,7 @@ cb_decoder_accept (MilterReplyDecoder *decoder, gpointer user_data)
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
     priv->status = MILTER_STATUS_ACCEPT;
 
-    disable_timeout(priv);
+    disable_timeout(context);
     g_timer_stop(priv->elapsed);
 
     if (milter_need_debug_log()) {
@@ -2330,7 +2354,7 @@ cb_decoder_discard (MilterReplyDecoder *decoder, gpointer user_data)
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(user_data);
     priv->status = MILTER_STATUS_DISCARD;
 
-    disable_timeout(priv);
+    disable_timeout(context);
     g_timer_stop(priv->elapsed);
 
     if (milter_need_debug_log()) {
@@ -2376,7 +2400,7 @@ cb_decoder_add_header (MilterReplyDecoder *decoder,
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
 
-    disable_timeout(priv);
+    disable_timeout(context);
 
     milter_debug("[%u] [server][receive][add-header] <%s>=<%s>: %s",
                  milter_agent_get_tag(MILTER_AGENT(context)),
@@ -2408,7 +2432,7 @@ cb_decoder_insert_header (MilterReplyDecoder *decoder,
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
 
-    disable_timeout(priv);
+    disable_timeout(context);
 
     milter_debug("[%u] [server][receive][insert-header] [%u]<%s>=<%s>: %s",
                  milter_agent_get_tag(MILTER_AGENT(context)),
@@ -2440,7 +2464,7 @@ cb_decoder_change_header (MilterReplyDecoder *decoder,
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
 
-    disable_timeout(priv);
+    disable_timeout(context);
 
     milter_debug("[%u] [server][receive][change-header] <%s>[%u]=<%s>: %s",
                  milter_agent_get_tag(MILTER_AGENT(context)),
@@ -2471,7 +2495,7 @@ cb_decoder_delete_header (MilterReplyDecoder *decoder,
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
 
-    disable_timeout(priv);
+    disable_timeout(context);
 
     milter_debug("[%u] [server][receive][delete-header] <%s>[%u]: %s",
                  milter_agent_get_tag(MILTER_AGENT(context)),
@@ -2502,7 +2526,7 @@ cb_decoder_change_from (MilterReplyDecoder *decoder,
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
 
-    disable_timeout(priv);
+    disable_timeout(context);
 
     milter_debug("[%u] [server][receive][change-from] <%s>:<%s>: %s",
                  milter_agent_get_tag(MILTER_AGENT(context)),
@@ -2526,7 +2550,7 @@ cb_decoder_add_recipient (MilterReplyDecoder *decoder,
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
 
-    disable_timeout(priv);
+    disable_timeout(context);
 
     milter_debug("[%u] [server][receive][add-recipient] <%s>:<%s>: %s",
                  milter_agent_get_tag(MILTER_AGENT(context)),
@@ -2550,7 +2574,7 @@ cb_decoder_delete_recipient (MilterReplyDecoder *decoder,
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(user_data);
 
-    disable_timeout(priv);
+    disable_timeout(context);
 
     milter_debug("[%u] [server][receive][delete-recipient]: <%s>: %s",
                  milter_agent_get_tag(MILTER_AGENT(context)),
@@ -2576,7 +2600,7 @@ cb_decoder_replace_body (MilterReplyDecoder *decoder,
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
 
-    disable_timeout(priv);
+    disable_timeout(context);
 
     milter_debug("[%u] [server][receive][replace-body] "
                  "body_size=%" G_GSIZE_FORMAT ": %s",
@@ -2598,7 +2622,7 @@ cb_decoder_progress (MilterReplyDecoder *decoder, gpointer user_data)
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(user_data);
 
-    disable_timeout(priv);
+    disable_timeout(context);
 
     milter_debug("[%u] [server][receive][progress] %s",
                  milter_agent_get_tag(MILTER_AGENT(context)),
@@ -2623,7 +2647,7 @@ cb_decoder_quarantine (MilterReplyDecoder *decoder,
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(user_data);
 
-    disable_timeout(priv);
+    disable_timeout(context);
 
     priv->status = MILTER_STATUS_QUARANTINE;
     milter_debug("[%u] [server][receive][quarantine] <%s>: %s",
@@ -2650,7 +2674,7 @@ cb_decoder_connection_failure (MilterReplyDecoder *decoder, gpointer user_data)
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(user_data);
 
-    disable_timeout(priv);
+    disable_timeout(context);
     g_timer_stop(priv->elapsed);
 
     priv->status = MILTER_STATUS_ERROR;
@@ -2679,7 +2703,7 @@ cb_decoder_shutdown (MilterReplyDecoder *decoder, gpointer user_data)
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(user_data);
 
-    disable_timeout(priv);
+    disable_timeout(context);
     g_timer_stop(priv->elapsed);
 
     if (milter_need_debug_log()) {
@@ -2712,7 +2736,7 @@ cb_decoder_skip (MilterReplyDecoder *decoder, gpointer user_data)
         name = milter_server_context_get_name(context);
     }
 
-    disable_timeout(priv);
+    disable_timeout(context);
 
     milter_debug("[%u] [server][receive][skip] %s", tag, name);
 
@@ -2853,7 +2877,7 @@ connect_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
 
-    disable_timeout(priv);
+    disable_timeout(context);
 
     option_length = sizeof(socket_errno);
     if (getsockopt(g_io_channel_unix_get_fd(priv->client_channel),
@@ -2893,6 +2917,7 @@ milter_server_context_establish_connection (MilterServerContext *context,
                                             GError **error)
 {
     MilterServerContextPrivate *priv;
+    MilterEventLoop *loop;
     GError *io_error = NULL;
     gint client_fd;
 
@@ -2947,21 +2972,26 @@ milter_server_context_establish_connection (MilterServerContext *context,
         return FALSE;
     }
 
-    priv->connect_watch_id = g_io_add_watch(priv->client_channel,
-                                            G_IO_OUT |
-                                            G_IO_ERR | G_IO_HUP | G_IO_NVAL,
-                                            connect_watch_func, context);
+    loop = milter_agent_get_event_loop(MILTER_AGENT(context));
+    priv->connect_watch_id =
+        milter_event_loop_watch_io(loop,
+                                   priv->client_channel,
+                                   G_IO_OUT |
+                                   G_IO_ERR | G_IO_HUP | G_IO_NVAL,
+                                   connect_watch_func, context);
 
-    disable_timeout(priv);
-    priv->timeout_id = milter_utils_timeout_add(priv->connection_timeout,
-                                                cb_connection_timeout, context);
+    disable_timeout(context);
+    priv->timeout_id = milter_event_loop_add_timeout(loop,
+                                                     priv->connection_timeout,
+                                                     cb_connection_timeout,
+                                                     context);
 
     if (connect(client_fd, priv->address, priv->address_size) == -1) {
         if (errno == EINPROGRESS)
             return TRUE;
 
-        disable_timeout(priv);
-        dispose_connect_watch(priv);
+        disable_timeout(context);
+        dispose_connect_watch(context);
         dispose_client_channel(priv);
         g_set_error(error,
                     MILTER_SERVER_CONTEXT_ERROR,

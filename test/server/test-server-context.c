@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -234,13 +234,14 @@ setup_command_signals (MilterDecoder *decoder)
 }
 
 void
-setup (void)
+cut_setup (void)
 {
     MilterOption *option;
 
     loop = milter_glib_event_loop_new(NULL);
 
     context = milter_server_context_new();
+    milter_agent_set_event_loop(MILTER_AGENT(context), loop);
     setup_server_context_signals(context);
 
     option = milter_option_new(6,
@@ -275,7 +276,7 @@ setup (void)
 }
 
 void
-teardown (void)
+cut_teardown (void)
 {
     if (packet)
         g_free(packet);
