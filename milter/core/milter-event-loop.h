@@ -54,6 +54,8 @@ struct _MilterEventLoopClass
                               gboolean         new_context);
 
     void (*run)              (MilterEventLoop *loop);
+    gboolean (*iterate)      (MilterEventLoop *loop,
+                              gboolean         may_block);
     void (*quit)             (MilterEventLoop *loop);
 
     guint (*add_watch)       (MilterEventLoop *loop,
@@ -78,6 +80,8 @@ GQuark               milter_event_loop_error_quark       (void);
 GType                milter_event_loop_get_type          (void) G_GNUC_CONST;
 
 void                 milter_event_loop_run               (MilterEventLoop *loop);
+gboolean             milter_event_loop_iterate           (MilterEventLoop *loop,
+                                                          gboolean         may_block);
 void                 milter_event_loop_quit              (MilterEventLoop *loop);
 
 guint                milter_event_loop_add_watch         (MilterEventLoop *loop,

@@ -58,6 +58,8 @@ static void     get_property (GObject         *object,
 static void     constructed  (GObject         *object);
 
 static void     run          (MilterEventLoop *loop);
+static gboolean iterate      (MilterEventLoop *loop,
+                              gboolean         may_block);
 static void     quit         (MilterEventLoop *loop);
 
 static guint    add_watch    (MilterEventLoop *loop,
@@ -94,6 +96,7 @@ milter_glib_event_loop_class_init (MilterGLibEventLoopClass *klass)
     gobject_class->constructed  = constructed;
 
     klass->parent_class.run = run;
+    klass->parent_class.iterate = iterate;
     klass->parent_class.quit = quit;
     klass->parent_class.add_watch = add_watch;
     klass->parent_class.add_timeout = add_timeout;
@@ -210,6 +213,16 @@ run (MilterEventLoop *loop)
 
     priv = MILTER_GLIB_EVENT_LOOP_GET_PRIVATE(loop);
     g_main_loop_run(priv->loop);
+}
+
+static gboolean
+iterate (MilterEventLoop *loop, gboolean may_block)
+{
+    MilterGLibEventLoopPrivate *priv;
+
+    priv = MILTER_GLIB_EVENT_LOOP_GET_PRIVATE(loop);
+    return g_main_context_iteration(g_main_loop_get_context(priv->loop),
+                                    may_block);
 }
 
 static void

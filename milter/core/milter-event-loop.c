@@ -92,6 +92,14 @@ milter_event_loop_run (MilterEventLoop *loop)
     loop_class->run(loop);
 }
 
+gboolean
+milter_event_loop_iterate (MilterEventLoop *loop, gboolean may_block)
+{
+    MilterEventLoopClass *loop_class;
+    loop_class = MILTER_EVENT_LOOP_GET_CLASS(loop);
+    return loop_class->iterate(loop, may_block);
+}
+
 void
 milter_event_loop_quit (MilterEventLoop *loop)
 {
