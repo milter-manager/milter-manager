@@ -51,21 +51,21 @@ struct _MilterEventLoopClass
 {
     GObjectClass parent_class;
 
-    void (*run)              (MilterEventLoop *loop);
+    void     (*run)          (MilterEventLoop *loop);
     gboolean (*iterate)      (MilterEventLoop *loop,
                               gboolean         may_block);
-    void (*quit)             (MilterEventLoop *loop);
+    void     (*quit)         (MilterEventLoop *loop);
 
-    guint (*add_watch)       (MilterEventLoop *loop,
+    guint    (*add_watch)    (MilterEventLoop *loop,
                               GIOChannel      *channel,
                               GIOCondition     condition,
                               GIOFunc          func,
                               gpointer         user_data);
-    guint (*add_timeout)     (MilterEventLoop *loop,
+    guint    (*add_timeout)  (MilterEventLoop *loop,
                               gdouble          interval_in_seconds,
                               GSourceFunc      function,
                               gpointer         user_data);
-    guint (*add_idle_full)   (MilterEventLoop *loop,
+    guint    (*add_idle_full)(MilterEventLoop *loop,
                               gint             priority,
                               GSourceFunc      function,
                               gpointer         data,
