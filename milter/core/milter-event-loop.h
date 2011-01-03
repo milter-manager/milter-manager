@@ -61,6 +61,12 @@ struct _MilterEventLoopClass
                                   GIOCondition     condition,
                                   GIOFunc          function,
                                   gpointer         data);
+    guint    (*watch_child_full) (MilterEventLoop *loop,
+                                  gint             priority,
+                                  GPid             pid,
+                                  GChildWatchFunc  function,
+                                  gpointer         data,
+                                  GDestroyNotify   notify);
     guint    (*add_timeout_full) (MilterEventLoop *loop,
                                   gint             priority,
                                   gdouble          interval_in_seconds,
@@ -89,6 +95,18 @@ guint                milter_event_loop_watch_io          (MilterEventLoop *loop,
                                                           GIOCondition     condition,
                                                           GIOFunc          function,
                                                           gpointer         data);
+
+guint                milter_event_loop_watch_child       (MilterEventLoop *loop,
+                                                          GPid             pid,
+                                                          GChildWatchFunc  function,
+                                                          gpointer         data);
+
+guint                milter_event_loop_watch_child_full  (MilterEventLoop *loop,
+                                                          gint             priority,
+                                                          GPid             pid,
+                                                          GChildWatchFunc  function,
+                                                          gpointer         data,
+                                                          GDestroyNotify   notify);
 
 guint                milter_event_loop_add_timeout       (MilterEventLoop *loop,
                                                           gdouble          interval_in_seconds,

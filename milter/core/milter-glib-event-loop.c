@@ -68,6 +68,13 @@ static guint    watch_io         (MilterEventLoop *loop,
                                   GIOFunc          function,
                                   gpointer         data);
 
+static guint    watch_child_full (MilterEventLoop *loop,
+                                  gint             priority,
+                                  GPid             pid,
+                                  GChildWatchFunc  function,
+                                  gpointer         data,
+                                  GDestroyNotify   notify);
+
 static guint    add_timeout_full (MilterEventLoop *loop,
                                   gint             priority,
                                   gdouble          interval_in_seconds,
@@ -101,6 +108,7 @@ milter_glib_event_loop_class_init (MilterGLibEventLoopClass *klass)
     klass->parent_class.iterate = iterate;
     klass->parent_class.quit = quit;
     klass->parent_class.watch_io = watch_io;
+    klass->parent_class.watch_child_full = watch_child_full;
     klass->parent_class.add_timeout_full = add_timeout_full;
     klass->parent_class.add_idle_full = add_idle_full;
     klass->parent_class.remove = remove;
@@ -254,6 +262,29 @@ watch_io (MilterEventLoop *loop,
     g_source_unref(watch_source);
 
     return watch_tag;
+}
+
+static guint
+watch_child_full (MilterEventLoop *loop,
+                  gint             priority,
+                  GPid             pid,
+                  GChildWatchFunc  function,
+                  gpointer         data,
+                  GDestroyNotify   notify)
+{
+    MilterGLibEventLoopPrivate *priv;
+    guint tag;
+    GSource *source;
+
+    priv = MILTER_GLIB_EVENT_LOOP_GET_PRIVATE(loop);
+    source = g_child_watch_source_new(pid);
+    if (priority != G_PRIORITY_DEFAULT)
+        g_source_set_priority(source, priority);
+    g_source_set_callback(source, (GSourceFunc)function, data, notify);
+    tag = g_source_attach(source, g_main_loop_get_context(priv->loop));
+    g_source_unref(source);
+
+    return tag;
 }
 
 static guint
