@@ -785,8 +785,8 @@ single_thread_client_channel_setup (MilterClient *client,
         g_signal_emit(client, signals[CONNECTION_ESTABLISHED], 0, context);
     } else {
         milter_error("[%u] [client][single-thread][start][error] %s",
-                     mitler_agent_get_tag(agent), error->message);
-        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(agent));
+                     milter_agent_get_tag(agent), error->message);
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(agent), error);
         g_error_free(error);
         milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(context));
     }
