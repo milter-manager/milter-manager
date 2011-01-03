@@ -69,7 +69,7 @@ GType            milter_reader_get_type       (void) G_GNUC_CONST;
 MilterReader    *milter_reader_io_channel_new (GIOChannel       *channel);
 
 void             milter_reader_start          (MilterReader     *reader,
-                                               MilterEventLoop  *eventloop);
+                                               MilterEventLoop  *loop);
 gboolean         milter_reader_is_watching    (MilterReader     *reader);
 void             milter_reader_shutdown       (MilterReader     *reader);
 

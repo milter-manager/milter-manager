@@ -267,15 +267,15 @@ channel_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
 }
 
 static void
-watch_io_channel (MilterReader *reader, MilterEventLoop *eventloop)
+watch_io_channel (MilterReader *reader, MilterEventLoop *loop)
 {
     MilterReaderPrivate *priv;
 
     priv = MILTER_READER_GET_PRIVATE(reader);
 
-    priv->loop = eventloop;
+    priv->loop = loop;
     priv->channel_watch_id =
-        milter_event_loop_add_watch(eventloop,
+        milter_event_loop_add_watch(loop,
                                     priv->io_channel,
                                     G_IO_IN | G_IO_PRI |
                                     G_IO_ERR | G_IO_HUP | G_IO_NVAL,
@@ -368,13 +368,13 @@ milter_reader_io_channel_new (GIOChannel *channel)
 }
 
 void
-milter_reader_start (MilterReader *reader, MilterEventLoop *eventloop)
+milter_reader_start (MilterReader *reader, MilterEventLoop *loop)
 {
     MilterReaderPrivate *priv;
 
     priv = MILTER_READER_GET_PRIVATE(reader);
     if (priv->io_channel && priv->channel_watch_id == 0)
-        watch_io_channel(reader, eventloop);
+        watch_io_channel(reader, loop);
 }
 
 gboolean

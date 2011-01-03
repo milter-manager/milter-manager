@@ -72,7 +72,7 @@ gboolean         milter_writer_flush          (MilterWriter     *writer,
                                                GError          **error);
 
 void             milter_writer_start          (MilterWriter     *writer,
-                                               MilterEventLoop  *eventloop);
+                                               MilterEventLoop  *loop);
 gboolean         milter_writer_is_watching    (MilterWriter     *writer);
 void             milter_writer_shutdown       (MilterWriter     *writer);
 
