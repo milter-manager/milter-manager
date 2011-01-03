@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -38,6 +38,7 @@
 typedef struct _MilterAgentPrivate	MilterAgentPrivate;
 struct _MilterAgentPrivate
 {
+    MilterEventLoop *event_loop;
     MilterEncoder *encoder;
     MilterDecoder *decoder;
     MilterReader *reader;
@@ -53,7 +54,8 @@ enum
     PROP_READER,
     PROP_DECODER,
     PROP_TAG,
-    PROP_ELAPSED
+    PROP_ELAPSED,
+    PROP_EVENT_LOOP
 };
 
 static GStaticMutex auto_tag_mutex = G_STATIC_MUTEX_INIT;
@@ -127,6 +129,13 @@ milter_agent_class_init (MilterAgentClass *klass)
                                G_PARAM_READABLE);
     g_object_class_install_property(gobject_class, PROP_ELAPSED, spec);
 
+    spec = g_param_spec_object("event-loop",
+                               "Event Loop",
+                               "The event loop of the agent",
+                               MILTER_TYPE_EVENT_LOOP,
+                               G_PARAM_READABLE);
+    g_object_class_install_property(gobject_class, PROP_EVENT_LOOP, spec);
+
     g_type_class_add_private(gobject_class, sizeof(MilterAgentPrivate));
 }
 
@@ -188,6 +197,7 @@ milter_agent_init (MilterAgent *agent)
     priv->tag = 0;
     priv->finished = FALSE;
     priv->timer = NULL;
+    priv->event_loop = NULL;
 }
 
 static void
@@ -222,6 +232,11 @@ dispose (GObject *object)
         priv->encoder = NULL;
     }
 
+    if (priv->event_loop) {
+        g_object_unref(priv->event_loop);
+        priv->event_loop = NULL;
+    }
+
     G_OBJECT_CLASS(milter_agent_parent_class)->dispose(object);
 }
 
@@ -231,15 +246,20 @@ set_property (GObject      *object,
               const GValue *value,
               GParamSpec   *pspec)
 {
+    MilterAgent *agent;
     MilterAgentPrivate *priv;
 
+    agent = MILTER_AGENT(object);
     priv = MILTER_AGENT_GET_PRIVATE(object);
     switch (prop_id) {
     case PROP_READER:
-        milter_agent_set_reader(MILTER_AGENT(object), g_value_get_object(value));
+        milter_agent_set_reader(agent, g_value_get_object(value));
         break;
     case PROP_TAG:
-        milter_agent_set_tag(MILTER_AGENT(object), g_value_get_uint(value));
+        milter_agent_set_tag(agent, g_value_get_uint(value));
+        break;
+    case PROP_EVENT_LOOP:
+        milter_agent_set_event_loop(agent, g_value_get_object(value));
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -270,6 +290,9 @@ get_property (GObject    *object,
         break;
     case PROP_ELAPSED:
         g_value_set_double(value, milter_agent_get_elapsed(agent));
+        break;
+    case PROP_EVENT_LOOP:
+        g_value_set_object(value, milter_agent_get_event_loop(agent));
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -566,6 +589,25 @@ milter_agent_set_tag (MilterAgent *agent, guint tag)
     priv = MILTER_AGENT_GET_PRIVATE(agent);
     priv->tag = tag;
     apply_tag(priv);
+}
+
+MilterEventLoop *
+milter_agent_get_event_loop (MilterAgent *agent)
+{
+    return MILTER_AGENT_GET_PRIVATE(agent)->event_loop;
+}
+
+void
+milter_agent_set_event_loop (MilterAgent *agent, MilterEventLoop *loop)
+{
+    MilterAgentPrivate *priv;
+
+    priv = MILTER_AGENT_GET_PRIVATE(agent);
+    if (priv->event_loop)
+        g_object_unref(priv->event_loop);
+    priv->event_loop = loop;
+    if (priv->event_loop)
+        g_object_ref(priv->event_loop);
 }
 
 gdouble
