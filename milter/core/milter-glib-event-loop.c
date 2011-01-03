@@ -106,8 +106,7 @@ milter_glib_event_loop_class_init (MilterGLibEventLoopClass *klass)
     spec = g_param_spec_pointer("context",
                                 "Context",
                                 "Use the GMainContext for the event loop",
-                                G_PARAM_READABLE | G_PARAM_WRITABLE |
-                                G_PARAM_CONSTRUCT | G_PARAM_CONSTRUCT_ONLY);
+                                G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
     g_object_class_install_property(gobject_class, PROP_CONTEXT, spec);
 
     g_type_class_add_private(gobject_class, sizeof(MilterGLibEventLoopPrivate));
