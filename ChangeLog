@@ -1,5 +1,11 @@
 2011-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-g-event-loop.[ch]: rename to ...
+	* milter/core/milter-glib-event-loop.[ch]: ... them.
+
+	* milter/core/Makfile.am, milter/core/milter-event-loop.c: follow
+	the above changes.
+
 	* milter/core/milter-event-loop.c: remove garbages.
 
 	* configure.ac: show event.h check result.

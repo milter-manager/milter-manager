@@ -193,7 +193,7 @@ milter_event_loop_error_quark (void)
 MilterEventLoop *
 milter_event_loop_new (gboolean new_context)
 {
-#define DEFAULT_MILTER_EVENT_LOOP_NAME "MilterGEventLoopClass"
+#define DEFAULT_MILTER_EVENT_LOOP_NAME "MilterGLibEventLoop"
     GType loop_type = g_type_from_name(DEFAULT_MILTER_EVENT_LOOP_NAME);
 
     return g_object_new(loop_type,
