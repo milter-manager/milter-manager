@@ -1,5 +1,7 @@
 2011-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-event-loop.c: remove garbages.
+
 	* configure.ac: show event.h check result.
 
 	* configure.ac: also --with-libevent guesses libevent prefix.

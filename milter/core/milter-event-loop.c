@@ -201,7 +201,7 @@ milter_event_loop_new (gboolean new_context)
                         NULL);
 }
 
-void 
+void
 milter_event_loop_run (MilterEventLoop *loop)
 {
     MilterEventLoopClass *loop_class;
@@ -209,7 +209,7 @@ milter_event_loop_run (MilterEventLoop *loop)
     loop_class->run_loop(loop);
 }
 
-void 
+void
 milter_event_loop_quit (MilterEventLoop *loop)
 {
     MilterEventLoopClass *loop_class;
