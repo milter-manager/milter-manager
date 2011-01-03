@@ -46,7 +46,8 @@ G_BEGIN_DECLS
 typedef enum
 {
     MILTER_AGENT_ERROR_IO_ERROR,
-    MILTER_AGENT_ERROR_DECODE_ERROR
+    MILTER_AGENT_ERROR_DECODE_ERROR,
+    MILTER_AGENT_ERROR_NO_EVENT_LOOP_ERROR
 } MilterAgentError;
 
 typedef struct _MilterAgent         MilterAgent;
@@ -83,8 +84,8 @@ gboolean             milter_agent_write_packet      (MilterAgent *agent,
 gboolean             milter_agent_flush             (MilterAgent *agent,
                                                      GError **error);
 
-void                 milter_agent_start             (MilterAgent *agent,
-                                                     MilterEventLoop *loop);
+gboolean             milter_agent_start             (MilterAgent *agent,
+                                                     GError     **error);
 void                 milter_agent_shutdown          (MilterAgent *agent);
 
 guint                milter_agent_get_tag           (MilterAgent *agent);

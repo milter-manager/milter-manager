@@ -1230,23 +1230,37 @@ multi_threads_cb_finished (MilterClientContext *context, gpointer _data)
 static void
 multi_threads_process_client_channel_thread (gpointer data_, gpointer user_data)
 {
+    MilterAgent *agent;
+    MilterClientContext *context;
     MilterClient *client = data_;
     MilterClientProcessData *data = user_data;
     MilterEventLoop *main_loop;
+    GError *error = NULL;
 
     main_loop = event_loop_new(client, FALSE);
 
-    milter_debug("[%u] [client][start]",
-                 milter_agent_get_tag(MILTER_AGENT(data->context)));
+    context = MILTER_CLIENT_CONTEXT(data->context);
+    agent = MILTER_AGENT(context);
+    milter_debug("[%u] [client][start]", milter_agent_get_tag(agent));
 
     data->finished_handler_id =
         g_signal_connect(data->context, "finished",
                          G_CALLBACK(multi_threads_cb_finished), data);
 
-    milter_agent_start(MILTER_AGENT(data->context), main_loop);
-    g_signal_emit(client, signals[CONNECTION_ESTABLISHED], 0, data->context);
+    milter_agent_set_event_loop(agent, main_loop);
+    if (milter_agent_start(agent, &error)) {
+        g_signal_emit(client, signals[CONNECTION_ESTABLISHED], 0, context);
+        milter_event_loop_run(main_loop);
+    } else {
+        milter_error("[%u] [client][start][error] %s",
+                     milter_agent_get_tag(agent), error->message);
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client),
+                                    error);
+        g_error_free(error);
+        milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(context));
+    }
 
-    milter_event_loop_run(main_loop);
+    g_object_unref(main_loop);
 }
 
 static gboolean

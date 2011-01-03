@@ -1,5 +1,10 @@
 2011-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-agent.[ch],
+	milter/client/milter-client.c,
+	test/server/test-server-context-command.c: milter_agent_start()
+	use internal event loop instead of being passed passed event loop.
+
 	* milter/core/milter-agent.[ch]: add EventLoop to agent.
 
 	* milter/core/milter-event-loop.h: remove needless code.

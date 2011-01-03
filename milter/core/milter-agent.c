@@ -539,12 +539,20 @@ milter_agent_get_decoder (MilterAgent *agent)
     return MILTER_AGENT_GET_PRIVATE(agent)->decoder;
 }
 
-void
-milter_agent_start (MilterAgent *agent, MilterEventLoop *loop)
+gboolean
+milter_agent_start (MilterAgent *agent, GError **error)
 {
     MilterAgentPrivate *priv;
 
     priv = MILTER_AGENT_GET_PRIVATE(agent);
+
+    if (!priv->event_loop) {
+        g_set_error(error,
+                    MILTER_AGENT_ERROR,
+                    MILTER_AGENT_ERROR_NO_EVENT_LOOP_ERROR,
+                    "agent has no event loop");
+        return FALSE;
+    }
 
     if (priv->timer) {
         g_timer_start(priv->timer);
@@ -553,9 +561,11 @@ milter_agent_start (MilterAgent *agent, MilterEventLoop *loop)
     }
 
     if (priv->reader)
-        milter_reader_start(priv->reader, loop);
+        milter_reader_start(priv->reader, priv->event_loop);
     if (priv->writer)
-        milter_writer_start(priv->writer, loop);
+        milter_writer_start(priv->writer, priv->event_loop);
+
+    return TRUE;
 }
 
 void

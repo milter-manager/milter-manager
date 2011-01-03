@@ -108,6 +108,7 @@ void
 setup (void)
 {
     MilterOption *option;
+    GError *error = NULL;
 
     protocol_version = 6;
 
@@ -133,9 +134,11 @@ setup (void)
     g_io_channel_set_encoding(channel, NULL, NULL);
 
     loop = milter_glib_event_loop_new(NULL);
+    milter_agent_set_event_loop(MILTER_AGENT(context), loop);
     writer = milter_writer_io_channel_new(channel);
     milter_agent_set_writer(MILTER_AGENT(context), writer);
-    milter_agent_start(MILTER_AGENT(context), loop);
+    milter_agent_start(MILTER_AGENT(context), &error);
+    gcut_assert_error(error);
 
     decoder = milter_agent_get_decoder(MILTER_AGENT(context));
 
