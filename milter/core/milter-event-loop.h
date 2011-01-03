@@ -51,27 +51,29 @@ struct _MilterEventLoopClass
 {
     GObjectClass parent_class;
 
-    void     (*run)          (MilterEventLoop *loop);
-    gboolean (*iterate)      (MilterEventLoop *loop,
-                              gboolean         may_block);
-    void     (*quit)         (MilterEventLoop *loop);
+    void     (*run)              (MilterEventLoop *loop);
+    gboolean (*iterate)          (MilterEventLoop *loop,
+                                  gboolean         may_block);
+    void     (*quit)             (MilterEventLoop *loop);
 
-    guint    (*add_watch)    (MilterEventLoop *loop,
-                              GIOChannel      *channel,
-                              GIOCondition     condition,
-                              GIOFunc          func,
-                              gpointer         user_data);
-    guint    (*add_timeout)  (MilterEventLoop *loop,
-                              gdouble          interval_in_seconds,
-                              GSourceFunc      function,
-                              gpointer         user_data);
-    guint    (*add_idle_full)(MilterEventLoop *loop,
-                              gint             priority,
-                              GSourceFunc      function,
-                              gpointer         data,
-                              GDestroyNotify   notify);
-    gboolean (*remove)       (MilterEventLoop *loop,
-                              guint            tag);
+    guint    (*add_watch)        (MilterEventLoop *loop,
+                                  GIOChannel      *channel,
+                                  GIOCondition     condition,
+                                  GIOFunc          function,
+                                  gpointer         data);
+    guint    (*add_timeout_full) (MilterEventLoop *loop,
+                                  gint             priority,
+                                  gdouble          interval_in_seconds,
+                                  GSourceFunc      function,
+                                  gpointer         data,
+                                  GDestroyNotify   notify);
+    guint    (*add_idle_full)    (MilterEventLoop *loop,
+                                  gint             priority,
+                                  GSourceFunc      function,
+                                  gpointer         data,
+                                  GDestroyNotify   notify);
+    gboolean (*remove)           (MilterEventLoop *loop,
+                                  guint            tag);
 };
 
 GQuark               milter_event_loop_error_quark       (void);
@@ -85,14 +87,24 @@ void                 milter_event_loop_quit              (MilterEventLoop *loop)
 guint                milter_event_loop_add_watch         (MilterEventLoop *loop,
                                                           GIOChannel      *channel,
                                                           GIOCondition     condition,
-                                                          GIOFunc          func,
-                                                          gpointer         user_data);
+                                                          GIOFunc          function,
+                                                          gpointer         data);
 
 guint                milter_event_loop_add_timeout       (MilterEventLoop *loop,
                                                           gdouble          interval_in_seconds,
                                                           GSourceFunc      function,
-                                                          gpointer         user_data);
+                                                          gpointer         data);
 
+guint                milter_event_loop_add_timeout_full  (MilterEventLoop *loop,
+                                                          gint             priority,
+                                                          gdouble          interval_in_seconds,
+                                                          GSourceFunc      function,
+                                                          gpointer         data,
+                                                          GDestroyNotify   notify);
+
+guint                milter_event_loop_add_idle          (MilterEventLoop *loop,
+                                                          GSourceFunc      function,
+                                                          gpointer         data);
 guint                milter_event_loop_add_idle_full     (MilterEventLoop *loop,
                                                           gint             priority,
                                                           GSourceFunc      function,

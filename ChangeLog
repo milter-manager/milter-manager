@@ -1,5 +1,10 @@
 2011-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-event-loop.[ch],
+	milter/core/milter-glib-event-loop.c
+	(milter_event_loop_add_idle)
+	(milter_event_loop_add_timeout_full): add.
+
 	* test/server/test-server-context-signals.c: use MilterEventLoop.
 
 	* milter/manager/milter-manager-children.[ch]: require event loop.

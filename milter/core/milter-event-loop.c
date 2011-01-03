@@ -57,7 +57,7 @@ milter_event_loop_class_init (MilterEventLoopClass *klass)
     klass->run = NULL;
     klass->quit = NULL;
     klass->add_watch = NULL;
-    klass->add_timeout = NULL;
+    klass->add_timeout_full = NULL;
     klass->add_idle_full = NULL;
     klass->remove = NULL;
 
@@ -113,24 +113,47 @@ guint
 milter_event_loop_add_watch (MilterEventLoop *loop,
                              GIOChannel      *channel,
                              GIOCondition     condition,
-                             GIOFunc          func,
-                             gpointer         user_data)
+                             GIOFunc          function,
+                             gpointer         data)
 {
     MilterEventLoopClass *loop_class;
     loop_class = MILTER_EVENT_LOOP_GET_CLASS(loop);
-    return loop_class->add_watch(loop, channel, condition, func, user_data);
+    return loop_class->add_watch(loop, channel, condition, function, data);
 }
 
 guint
 milter_event_loop_add_timeout (MilterEventLoop *loop,
                                gdouble          interval_in_seconds,
                                GSourceFunc      function,
-                               gpointer         user_data)
+                               gpointer         data)
+{
+    return milter_event_loop_add_timeout_full(loop, G_PRIORITY_DEFAULT,
+                                              interval_in_seconds,
+                                              function, data,
+                                              NULL);
+}
+
+guint
+milter_event_loop_add_timeout_full (MilterEventLoop *loop,
+                                    gint             priority,
+                                    gdouble          interval_in_seconds,
+                                    GSourceFunc      function,
+                                    gpointer         data,
+                                    GDestroyNotify   notify)
 {
     MilterEventLoopClass *loop_class;
     loop_class = MILTER_EVENT_LOOP_GET_CLASS(loop);
-    return loop_class->add_timeout(loop, interval_in_seconds,
-                                   function, user_data);
+    return loop_class->add_timeout_full(loop, priority, interval_in_seconds,
+                                        function, data, notify);
+}
+
+guint
+milter_event_loop_add_idle (MilterEventLoop *loop,
+                            GSourceFunc      function,
+                            gpointer         data)
+{
+    return milter_event_loop_add_idle_full(loop, G_PRIORITY_DEFAULT_IDLE,
+                                           function, data, NULL);
 }
 
 guint
