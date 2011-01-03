@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -144,7 +144,7 @@ cb_flow_output (MilterReader *reader,
 }
 
 static ProcessData *
-process_data_new (GPid pid, guint watch_id,
+process_data_new (MilterEventLoop *loop, GPid pid, guint watch_id,
                   const gchar *command_line, const gchar *user_name,
                   gint standard_output_fd, gint standard_error_fd)
 {
@@ -163,8 +163,8 @@ process_data_new (GPid pid, guint watch_id,
                      G_CALLBACK(cb_flow_output), data);
     g_signal_connect(data->standard_error, "flow",
                      G_CALLBACK(cb_flow_error), data);
-    milter_reader_start(data->standard_output, NULL);
-    milter_reader_start(data->standard_error, NULL);
+    milter_reader_start(data->standard_output, loop);
+    milter_reader_start(data->standard_error, loop);
 
     return data;
 }
@@ -287,6 +287,7 @@ launch (MilterManagerProcessLauncher *launcher,
     gint standard_output_fd;
     gint standard_error_fd;
     guint watch_id;
+    MilterEventLoop *loop;
     MilterManagerProcessLauncherPrivate *priv;
     struct passwd password;
     struct passwd *password_p = NULL;
@@ -358,11 +359,13 @@ launch (MilterManagerProcessLauncher *launcher,
     milter_debug("[launcher][start] <%s>", command_line);
 
     priv = MILTER_MANAGER_PROCESS_LAUNCHER_GET_PRIVATE(launcher);
-    watch_id = g_child_watch_add(pid,
-                                 (GChildWatchFunc)child_watch_func, launcher);
+    loop = milter_agent_get_event_loop(MILTER_AGENT(launcher));
+    watch_id = milter_event_loop_watch_child(loop, pid,
+                                             child_watch_func, launcher);
     priv->processes =
         g_list_prepend(priv->processes,
-                       process_data_new(pid, watch_id, command_line, user_name,
+                       process_data_new(loop,
+                                        pid, watch_id, command_line, user_name,
                                         standard_output_fd, standard_error_fd));
 
     return TRUE;

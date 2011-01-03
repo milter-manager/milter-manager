@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -35,6 +35,8 @@ void test_launch_error (gconstpointer data);
 void data_launch_error (void);
 void test_already_launched (void);
 void test_run (void);
+
+static MilterEventLoop *loop;
 
 static MilterManagerProcessLauncher *launcher;
 static MilterManagerLaunchCommandEncoder *command_encoder;
@@ -84,7 +86,7 @@ setup_input_io (void)
     g_object_unref(input_reader);
 
     writer = milter_writer_io_channel_new(channel);
-    milter_writer_start(writer, NULL);
+    milter_writer_start(writer, loop);
 
     g_io_channel_unref(channel);
 }
@@ -106,17 +108,22 @@ setup_output_io (void)
 static void
 setup_io (void)
 {
+    GError *error = NULL;
+
     setup_input_io();
     setup_output_io();
-    milter_agent_start(MILTER_AGENT(launcher), NULL);
+    milter_agent_start(MILTER_AGENT(launcher), &error);
+    gcut_assert_error(error);
 }
 
 void
-setup (void)
+cut_setup (void)
 {
     MilterEncoder *encoder;
 
+    loop = milter_glib_event_loop_new(NULL);
     launcher = milter_manager_process_launcher_new();
+    milter_agent_set_event_loop(MILTER_AGENT(launcher), loop);
 
     setup_io();
 
@@ -135,7 +142,7 @@ setup (void)
 }
 
 void
-teardown (void)
+cut_teardown (void)
 {
     if (launcher)
         g_object_unref(launcher);
@@ -159,9 +166,12 @@ teardown (void)
         g_free(expected_error_message);
 
     if (idle_id > 0)
-        g_source_remove(idle_id);
+        milter_event_loop_remove(loop, idle_id);
     if (timeout_id > 0)
-        g_source_remove(timeout_id);
+        milter_event_loop_remove(loop, timeout_id);
+
+    if (loop)
+        g_object_unref(loop);
 }
 
 void
@@ -315,8 +325,10 @@ test_run (void)
 {
     gboolean timeout_emitted = FALSE;
 
-    idle_id = g_idle_add(cb_idle_shutdown, launcher);
-    timeout_id = g_timeout_add(100, cb_timeout_mark_emitted, &timeout_emitted);
+    idle_id = milter_event_loop_add_idle(loop, cb_idle_shutdown, launcher);
+    timeout_id = milter_event_loop_add_timeout(loop, 0.1,
+                                               cb_timeout_mark_emitted,
+                                               &timeout_emitted);
 
     milter_manager_process_launcher_run(launcher);
 

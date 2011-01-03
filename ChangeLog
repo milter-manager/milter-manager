@@ -1,5 +1,8 @@
 2011-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-process-launcher.c,
+	test/manager/test-process-launcher.c: use MilterEventLoop.
+
 	* milter/core/milter-event-loop.[ch],
 	milter/core/milter-glib-event-loop.c
 	(milter_event_loop_watch_child, milter_event_loop_watch_child_full): add.
