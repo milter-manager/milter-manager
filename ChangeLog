@@ -1,5 +1,7 @@
 2011-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client.c: use correct names.
+
 	* milter/core/milter-agent.[ch],
 	milter/client/milter-client.c,
 	test/server/test-server-context-command.c: milter_agent_start()

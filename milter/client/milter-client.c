@@ -1017,7 +1017,7 @@ single_thread_server_watch_func (GIOChannel *channel, GIOCondition condition,
 
 static gboolean
 master_server_watch_func (GIOChannel *channel, GIOCondition condition,
-                                 gpointer data)
+                          gpointer data)
 {
     MilterClient *client = data;
 
@@ -1038,21 +1038,23 @@ single_thread_cb_idle_unlock_quit_mutex (gpointer data)
 }
 
 static void
-single_thread_accept_loop (MilterClient *client, MilterEventLoop *main_loop)
+single_thread_accept_loop_run (MilterClient *client,
+                               MilterEventLoop *accept_loop)
 {
     MilterClientPrivate *priv;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
-    milter_event_loop_add_idle_full(main_loop, G_PRIORITY_DEFAULT,
+    milter_event_loop_add_idle_full(accept_loop, G_PRIORITY_DEFAULT,
                                     single_thread_cb_idle_unlock_quit_mutex,
                                     client, NULL);
 
     g_mutex_lock(priv->quit_mutex);
-    if (priv->quitting)
+    if (priv->quitting) {
         g_mutex_unlock(priv->quit_mutex);
-    else
-        milter_event_loop_run(main_loop);
+    } else {
+        milter_event_loop_run(accept_loop);
+    }
 }
 
 static gpointer
@@ -1061,7 +1063,7 @@ single_thread_accept_thread (gpointer data)
     MilterClientPrivate *priv;
 
     priv = MILTER_CLIENT_GET_PRIVATE(data);
-    single_thread_accept_loop(data, priv->accept_loop);
+    single_thread_accept_loop_run(data, priv->accept_loop);
 
     return NULL;
 }
@@ -1675,18 +1677,18 @@ gboolean
 milter_client_run_master (MilterClient *client)
 {
     MilterClientPrivate *priv;
-    MilterEventLoop *main_loop;
+    MilterEventLoop *accept_loop;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
-    main_loop = event_loop_new(client, TRUE);
+    accept_loop = event_loop_new(client, TRUE);
 
-    if (!milter_client_prepare_loop(client, main_loop,
+    if (!milter_client_prepare_loop(client, accept_loop,
                                     master_server_watch_func))
         return FALSE;
 
-    single_thread_accept_loop(client, main_loop);
-    g_object_unref(priv->main_loop);
+    single_thread_accept_loop_run(client, accept_loop);
+    g_object_unref(priv->accept_loop);
 
     milter_client_cleanup(client);
 
