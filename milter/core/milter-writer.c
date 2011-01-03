@@ -348,6 +348,12 @@ watch_io_channel (MilterWriter *writer, MilterEventLoop *loop)
                                     priv->io_channel,
                                     G_IO_ERR | G_IO_HUP | G_IO_NVAL,
                                     channel_watch_func, writer);
+    if (priv->channel_watch_id > 0) {
+        g_object_ref(priv->loop);
+    } else {
+        priv->loop = NULL;
+    }
+
     milter_debug("[%u] [writer][watch] %u", priv->tag, priv->channel_watch_id);
 }
 

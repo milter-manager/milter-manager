@@ -1,5 +1,8 @@
 2011-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-reader.c, milter/core/milter-writer.c: add
+	missing loop reference.
+
 	* test/server/test-server-context-command.c: pass missing event loop.
 
 	* test/server/test-server-context-command.c: remove unused codes.

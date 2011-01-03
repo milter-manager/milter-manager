@@ -188,6 +188,8 @@ clear_watch_id (MilterReaderPrivate *priv)
         milter_event_loop_remove_source(priv->loop,
                                         priv->channel_watch_id);
         priv->channel_watch_id = 0;
+        g_object_unref(priv->loop);
+        priv->loop = NULL;
     }
 }
 
@@ -280,6 +282,12 @@ watch_io_channel (MilterReader *reader, MilterEventLoop *loop)
                                     G_IO_IN | G_IO_PRI |
                                     G_IO_ERR | G_IO_HUP | G_IO_NVAL,
                                     channel_watch_func, reader);
+    if (priv->channel_watch_id > 0) {
+        g_object_ref(priv->loop);
+    } else {
+        priv->loop = NULL;
+    }
+
     milter_debug("[%u] [reader][watch] %u", priv->tag, priv->channel_watch_id);
 }
 
@@ -297,11 +305,6 @@ dispose (GObject *object)
     if (priv->io_channel) {
         g_io_channel_unref(priv->io_channel);
         priv->io_channel = NULL;
-    }
-
-    if (priv->loop) {
-        g_object_unref(priv->loop);
-        priv->loop = NULL;
     }
 
     G_OBJECT_CLASS(milter_reader_parent_class)->dispose(object);
