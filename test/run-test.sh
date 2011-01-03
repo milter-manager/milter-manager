@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (C) 2008-2010  Kouhei Sutou <kou@claer-code.com>
+# Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -19,17 +19,18 @@ export BASE_DIR="`dirname $0`"
 top_dir="$BASE_DIR/.."
 top_dir="`cd $top_dir; pwd`"
 
+if gmake --version > /dev/null 2>&1; then
+    MAKE=${MAKE:-"gmake"}
+else
+    MAKE=${MAKE:-"make"}
+fi
+
 if test x"$NO_MAKE" != x"yes"; then
-    if which gmake > /dev/null; then
-	MAKE=${MAKE:-"gmake"}
-    else
-	MAKE=${MAKE:-"make"}
-    fi
     $MAKE -C $top_dir/ > /dev/null || exit 1
 fi
 
 if test -z "$CUTTER"; then
-    CUTTER="`make -s -C $BASE_DIR echo-cutter`"
+    CUTTER="$(${MAKE} -s -C $BASE_DIR echo-cutter)"
 fi
 
 CUTTER_ARGS=
@@ -56,7 +57,7 @@ if test x"$USE_GTK" = x"yes"; then
 fi
 
 if test -z "$RUBY"; then
-    RUBY="`make -s -C $BASE_DIR echo-ruby`"
+    RUBY="$(${MAKE} -s -C $BASE_DIR echo-ruby)"
 fi
 
 export RUBY

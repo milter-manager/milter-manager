@@ -1,5 +1,7 @@
 2011-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/run-test.sh: cleanup.
+
 	* binding/ruby/src/toolkit/rb-milter-event-loop.c,
 	binding/ruby/src/toolkit/rb-milter-core.c,
 	binding/ruby/src/toolkit/rb-milter-core-private.h,
