@@ -1,5 +1,10 @@
 2011-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/src/toolkit/rb-milter-event-loop.c,
+	binding/ruby/src/toolkit/rb-milter-core.c,
+	binding/ruby/src/toolkit/rb-milter-core-private.h,
+	binding/ruby/src/toolkit/Makefile.am: bind MilterEventLoop.
+
 	* milter/client/milter-client.c: multi threads -> multi thread.
 
 	* milter/client/milter-client.c: use MilterEventLoop on single

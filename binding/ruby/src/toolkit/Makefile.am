@@ -51,4 +51,5 @@ milter_toolkit_la_SOURCES =			\
 	rb-milter-server.c			\
 	rb-milter-compat.c			\
 	rb-milter-memory-profile.c		\
+	rb-milter-event-loop.c			\
 	rb-milter.c

@@ -38,6 +38,7 @@ void Init_milter_decoder (void);
 void Init_milter_error_emittable (void);
 void Init_milter_agent (void);
 void Init_milter_protocol_agent (void);
+void Init_milter_event_loop (void);
 
 #define RVAL2ENCODER(obj)         (MILTER_ENCODER(RVAL2GOBJ(obj)))
 #define RVAL2COMMAND_ENCODER(obj) (MILTER_COMMAND_ENCODER(RVAL2GOBJ(obj)))
@@ -45,6 +46,7 @@ void Init_milter_protocol_agent (void);
 #define RVAL2DECODER(obj)         (MILTER_DECODER(RVAL2GOBJ(obj)))
 #define RVAL2OPTION(obj)          (MILTER_OPTION(RVAL2GOBJ(obj)))
 #define RVAL2MACROS_REQUESTS(obj) (MILTER_MACROS_REQUESTS(RVAL2GOBJ(obj)))
+#define RVAL2EVENT_LOOP(obj)      (MILTER_EVENT_LOOP(RVAL2GOBJ(obj)))
 
 #define RVAL2ACTION_FLAGS(flags) (RVAL2GFLAGS(flags, MILTER_TYPE_ACTION_FLAGS))
 #define ACTION_FLAGS2RVAL(flags) (GFLAGS2RVAL(flags, MILTER_TYPE_ACTION_FLAGS))

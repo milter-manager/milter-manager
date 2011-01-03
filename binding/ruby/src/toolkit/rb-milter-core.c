@@ -43,4 +43,5 @@ Init_milter_core (void)
     Init_milter_error_emittable();
     Init_milter_agent();
     Init_milter_protocol_agent();
+    Init_milter_event_loop();
 }
