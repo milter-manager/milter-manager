@@ -102,3 +102,9 @@ tag:
 	  fi
 	svn cp -m "released $(VERSION)!!!" $(SF_USER_OPTION)	\
 	  $(SF_REPOS)/trunk $(SF_REPOS)/tags/$(VERSION)
+
+echo-abs-top-srcdir:
+	@echo $(abs_top_srcdir)
+
+echo-ruby:
+	@echo $(RUBY)

@@ -1,5 +1,10 @@
 2011-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/test/run-test.sh,
+	Makefile.am,
+	binding/ruby/Makefile.am,
+	binding/ruby/test/Makefile.am: add a test runner for Ruby bindings tests.
+
 	* test/run-test.sh: cleanup.
 
 	* binding/ruby/src/toolkit/rb-milter-event-loop.c,

@@ -5,6 +5,9 @@ SUBDIRS =					\
 	test					\
 	sample
 
+echo-abs-top-builddir:
+	@echo $(abs_top_builddir)
+
 if WITH_BUNDLED_RUBY_GLIB2_0_16_0
 SUBDIRS += glib-0.16.0
 endif
