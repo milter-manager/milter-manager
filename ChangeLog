@@ -1,5 +1,8 @@
 2011-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* gio-unix-compatible/gio/Makefile.am
+	(libgio_unix_compatible_la_LIBADD): remove needless prefix.
+
 	* configure.ac: add dummy distclean target to bundled Ruby/GLib2.
 
 	* binding/ruby/test/run-test.sh,

@@ -81,6 +81,6 @@ libgio_unix_compatible_la_SOURCES =		\
 	gunixfdlist.c				\
 	gunixfdlist.h
 
-libgio_unix_compatible_la_LIBADD =						\
-        $(top_builddir)/gio-unix-compatible/gio/libgio-compatible.la
+libgio_unix_compatible_la_LIBADD =		\
+        libgio-compatible.la
 endif
