@@ -1,5 +1,7 @@
 2011-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/test-controller-context.c: use MilterEventLoop.
+
 	* milter/manager/milter-manager-process-launcher.c,
 	test/manager/test-process-launcher.c: use MilterEventLoop.
 

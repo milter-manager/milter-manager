@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -37,6 +37,8 @@ void test_set_configuration (void);
 void test_set_configuration_failed (void);
 void test_reload (void);
 
+static MilterEventLoop *loop;
+
 static MilterManager *manager;
 static MilterManagerControllerContext *context;
 
@@ -70,7 +72,7 @@ setup_input_io (void)
     g_object_unref(input_reader);
 
     writer = milter_writer_io_channel_new(channel);
-    milter_writer_start(writer, NULL);
+    milter_writer_start(writer, loop);
 
     g_io_channel_unref(channel);
 }
@@ -92,21 +94,27 @@ setup_output_io (void)
 static void
 setup_io (void)
 {
+    GError *error = NULL;
+
     setup_input_io();
     setup_output_io();
-    milter_agent_start(MILTER_AGENT(context), NULL);
+    milter_agent_start(MILTER_AGENT(context), &error);
+    gcut_assert_error(error);
 }
 
 void
-setup (void)
+cut_setup (void)
 {
     MilterManagerConfiguration *config;
     MilterEncoder *encoder;
+
+    loop = milter_glib_event_loop_new(NULL);
 
     config = milter_manager_configuration_new(NULL);
     manager = milter_manager_new(config);
     g_object_unref(config);
     context = milter_manager_controller_context_new(manager);
+    milter_agent_set_event_loop(MILTER_AGENT(context), loop);
 
     setup_io();
 
@@ -150,6 +158,9 @@ teardown (void)
         g_object_unref(command_encoder);
     if (reply_encoder)
         g_object_unref(reply_encoder);
+
+    if (loop)
+        g_object_unref(loop);
 
     if (actual_error)
         g_error_free(actual_error);
