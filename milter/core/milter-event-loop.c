@@ -114,13 +114,14 @@ milter_event_loop_add_watch (MilterEventLoop *loop,
 
 guint
 milter_event_loop_add_timeout (MilterEventLoop *loop,
-                               gdouble interval,
-                               GSourceFunc func,
-                               gpointer user_data)
+                               gdouble          interval_in_seconds,
+                               GSourceFunc      function,
+                               gpointer         user_data)
 {
     MilterEventLoopClass *loop_class;
     loop_class = MILTER_EVENT_LOOP_GET_CLASS(loop);
-    return loop_class->add_timeout(loop, interval, func, user_data);
+    return loop_class->add_timeout(loop, interval_in_seconds,
+                                   function, user_data);
 }
 
 guint

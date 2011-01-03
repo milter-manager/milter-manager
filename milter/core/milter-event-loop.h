@@ -62,9 +62,9 @@ struct _MilterEventLoopClass
                               GIOFunc          func,
                               gpointer         user_data);
     guint (*add_timeout)     (MilterEventLoop *loop,
-                              gdouble interval,
-                              GSourceFunc func,
-                              gpointer user_data);
+                              gdouble          interval_in_seconds,
+                              GSourceFunc      function,
+                              gpointer         user_data);
     guint (*add_idle_full)   (MilterEventLoop *loop,
                               gint             priority,
                               GSourceFunc      function,
@@ -87,9 +87,9 @@ guint                milter_event_loop_add_watch         (MilterEventLoop *loop,
                                                           gpointer         user_data);
 
 guint                milter_event_loop_add_timeout       (MilterEventLoop *loop,
-                                                          gdouble interval,
-                                                          GSourceFunc func,
-                                                          gpointer user_data);
+                                                          gdouble          interval_in_seconds,
+                                                          GSourceFunc      function,
+                                                          gpointer         user_data);
 
 guint                milter_event_loop_add_idle_full     (MilterEventLoop *loop,
                                                           gint             priority,
