@@ -50,30 +50,30 @@ static GObject *constructor  (GType                  type,
                               GObjectConstructParam *props);
 static void     dispose      (GObject         *object);
 
-static void     initialize   (MilterEventLoop *eventloop,
+static void     initialize   (MilterEventLoop *loop,
                               gboolean         new_context);
 
-static void     run_loop     (MilterEventLoop *eventloop);
-static void     quit_loop    (MilterEventLoop *eventloop);
+static void     run_loop     (MilterEventLoop *loop);
+static void     quit_loop    (MilterEventLoop *loop);
 
-static guint    add_watch    (MilterEventLoop *eventloop,
+static guint    add_watch    (MilterEventLoop *loop,
                               GIOChannel      *channel,
                               GIOCondition     condition,
                               GIOFunc          func,
                               gpointer         user_data);
 
-static guint    add_timeout  (MilterEventLoop *eventloop,
+static guint    add_timeout  (MilterEventLoop *loop,
                               gdouble interval,
                               GSourceFunc func,
                               gpointer user_data);
 
-static guint    add_idle_full(MilterEventLoop *eventloop,
+static guint    add_idle_full(MilterEventLoop *loop,
                               gint             priority,
                               GSourceFunc      function,
                               gpointer         data,
                               GDestroyNotify   notify);
 
-static gboolean remove_source(MilterEventLoop *eventloop,
+static gboolean remove_source(MilterEventLoop *loop,
                               guint            tag);
 
 static void
@@ -101,9 +101,9 @@ static GObject *
 constructor (GType type, guint n_props, GObjectConstructParam *props)
 {
     GObject *object;
-    MilterGLibEventLoop *eventloop;
+    MilterGLibEventLoop *loop;
     GObjectClass *klass;
-    MilterGLibEventLoopClass *eventloop_class;
+    MilterGLibEventLoopClass *loop_class;
     MilterGLibEventLoopPrivate *priv;
 
     klass = G_OBJECT_CLASS(milter_glib_event_loop_parent_class);
@@ -111,8 +111,8 @@ constructor (GType type, guint n_props, GObjectConstructParam *props)
 
     priv = MILTER_GLIB_EVENT_LOOP_GET_PRIVATE(object);
 
-    eventloop = MILTER_GLIB_EVENT_LOOP(object);
-    eventloop_class = MILTER_GLIB_EVENT_LOOP_GET_CLASS(object);
+    loop = MILTER_GLIB_EVENT_LOOP(object);
+    loop_class = MILTER_GLIB_EVENT_LOOP_GET_CLASS(object);
 
     priv->loop = NULL;
 
@@ -120,16 +120,16 @@ constructor (GType type, guint n_props, GObjectConstructParam *props)
 }
 
 static void
-milter_glib_event_loop_init (MilterGLibEventLoop *eventloop)
+milter_glib_event_loop_init (MilterGLibEventLoop *loop)
 {
 }
 
 static void
-initialize (MilterEventLoop *eventloop, gboolean new_context)
+initialize (MilterEventLoop *loop, gboolean new_context)
 {
     MilterGLibEventLoopPrivate *priv;
 
-    priv = MILTER_GLIB_EVENT_LOOP_GET_PRIVATE(eventloop);
+    priv = MILTER_GLIB_EVENT_LOOP_GET_PRIVATE(loop);
     if (new_context) {
         GMainContext *main_context = g_main_context_new();
         priv->loop = g_main_loop_new(main_context, FALSE);
@@ -158,25 +158,25 @@ dispose (GObject *object)
 }
 
 static void
-run_loop (MilterEventLoop *eventloop)
+run_loop (MilterEventLoop *loop)
 {
     MilterGLibEventLoopPrivate *priv;
 
-    priv = MILTER_GLIB_EVENT_LOOP_GET_PRIVATE(eventloop);
-    g_main_loop_run (priv->loop);
+    priv = MILTER_GLIB_EVENT_LOOP_GET_PRIVATE(loop);
+    g_main_loop_run(priv->loop);
 }
 
 static void
-quit_loop (MilterEventLoop *eventloop)
+quit_loop (MilterEventLoop *loop)
 {
     MilterGLibEventLoopPrivate *priv;
 
-    priv = MILTER_GLIB_EVENT_LOOP_GET_PRIVATE(eventloop);
-    g_main_loop_quit (priv->loop);
+    priv = MILTER_GLIB_EVENT_LOOP_GET_PRIVATE(loop);
+    g_main_loop_quit(priv->loop);
 }
 
 static guint
-add_watch (MilterEventLoop *eventloop,
+add_watch (MilterEventLoop *loop,
            GIOChannel      *channel,
            GIOCondition     condition,
            GIOFunc          func,
@@ -186,7 +186,7 @@ add_watch (MilterEventLoop *eventloop,
 }
 
 static guint
-add_timeout (MilterEventLoop *eventloop,
+add_timeout (MilterEventLoop *loop,
              gdouble interval,
              GSourceFunc func,
              gpointer user_data)
@@ -196,7 +196,7 @@ add_timeout (MilterEventLoop *eventloop,
 }
 
 static guint
-add_idle_full (MilterEventLoop *eventloop,
+add_idle_full (MilterEventLoop *loop,
                gint             priority,
                GSourceFunc      function,
                gpointer         data,
@@ -206,7 +206,7 @@ add_idle_full (MilterEventLoop *eventloop,
 }
 
 static gboolean
-remove_source (MilterEventLoop *eventloop,
+remove_source (MilterEventLoop *loop,
                guint            tag)
 {
     return g_source_remove(tag);
