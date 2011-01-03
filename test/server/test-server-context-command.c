@@ -64,6 +64,7 @@ static GString *packet_string;
 static GHashTable *macros;
 
 static GIOChannel *channel;
+static MilterEventLoop *loop;
 
 static GError *expected_error, *actual_error;
 
@@ -131,9 +132,10 @@ setup (void)
     channel = gcut_string_io_channel_new(NULL);
     g_io_channel_set_encoding(channel, NULL, NULL);
 
+    loop = milter_glib_event_loop_new(NULL);
     writer = milter_writer_io_channel_new(channel);
     milter_agent_set_writer(MILTER_AGENT(context), writer);
-    milter_agent_start(MILTER_AGENT(context), NULL);
+    milter_agent_start(MILTER_AGENT(context), loop);
 
     decoder = milter_agent_get_decoder(MILTER_AGENT(context));
 
@@ -175,6 +177,9 @@ teardown (void)
 
     if (writer)
         g_object_unref(writer);
+
+    if (loop)
+        g_object_unref(loop);
 
     if (encoder)
         g_object_unref(encoder);
