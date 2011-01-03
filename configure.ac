@@ -492,32 +492,39 @@ dnl **************************************************************
 libevent_available=no
 AC_ARG_WITH(libevent,
   [AS_HELP_STRING([--with-libevent],
-    [Specify libevent installed prefix. [default=/usr]])],
+    [Specify libevent installed prefix. [default=auto]])],
   [with_libevent="$withval"],
-  [with_libevent="yes"])
+  [with_libevent="auto"])
 if test "x$with_libevent" != "xno"; then
   _SAVE_CFLAGS="$CFLAGS"
   _SAVE_LDFLAGS="$LDFLAGS"
-  if test "x$with_libevent" = "xyes"; then
-    libevent_prefix="/usr"
+  if test "x$with_libevent" = "xauto"; then
+    libevent_prefixes="/usr/local /usr"
   else
-    libevent_prefix="$with_libevent"
+    libevent_prefixes="$with_libevent"
   fi
-  CFLAGS="$CFLAGS -I$libevent_prefix/include"
-  LDFLAGS="$LDFLAGS -L$libevent_prefix/lib"
-  AC_CHECK_LIB(event, event_init,
-               [libevent_available=yes],
-               [libevent_available=no])
-  CFLAGS="$_SAVE_CFLAGS"
-  LDFLAGS="$_SAVE_LDFLAGS"
-  if test "x$libevent_available" = "xyes"; then
-    AC_DEFINE(HAVE_LIBEVENT, [1], [Define to 1 if libevent is available.])
-    LIBEVENT_CFLAGS="-I$libevent_prefix/include"
-    LIBEVENT_LIBS="-L$libevent_prefix/lib -levent"
-  else
-    if test "x$with_libevent" = "xyes"; then
-      AC_MSG_ERROR("No libevent found")
+  for libevent_prefix in $libevent_prefixes; do
+    if ! test -r "$libevent_prefix/include/event.h"; then
+      continue
     fi
+    CFLAGS="$CFLAGS -I$libevent_prefix/include"
+    LDFLAGS="$LDFLAGS -L$libevent_prefix/lib"
+    AC_CHECK_HEADERS(event.h,
+                     [AC_CHECK_LIB(event, event_init,
+                                   [libevent_available=yes],
+                                   [libevent_available=no])],
+                     [libevent_available=no])
+    CFLAGS="$_SAVE_CFLAGS"
+    LDFLAGS="$_SAVE_LDFLAGS"
+    if test "x$libevent_available" = "xyes"; then
+      AC_DEFINE(HAVE_LIBEVENT, [1], [Define to 1 if libevent is available.])
+      LIBEVENT_CFLAGS="-I$libevent_prefix/include"
+      LIBEVENT_LIBS="-L$libevent_prefix/lib -levent"
+      break
+    fi
+  done
+  if test "x$libevent_available" = "xno" -a "x$with_libevent" = "xyes"; then
+    AC_MSG_ERROR("No libevent found")
   fi
 fi
 AC_SUBST(LIBEVENT_CFLAGS)

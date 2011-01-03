@@ -1,3 +1,7 @@
+2011-01-03  Kouhei Sutou  <kou@cozmixng.org>
+
+	* configure.ac: also check event.h.
+
 2011-01-02  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/core/milter-event-loop.[ch]: cleanup.
