@@ -1,6 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Nobuyoshi Nakada <nakada@clear-code.com>
+ *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
+ *  Copyright (C) 2011  Kouhei Sutou <nakada@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -72,7 +73,7 @@ struct _MilterEventLoopClass
                               GSourceFunc      function,
                               gpointer         data,
                               GDestroyNotify   notify);
-    gboolean (*remove_source)(MilterEventLoop *loop,
+    gboolean (*remove)       (MilterEventLoop *loop,
                               guint            tag);
 };
 
@@ -101,7 +102,7 @@ guint                milter_event_loop_add_idle_full     (MilterEventLoop *loop,
                                                           gpointer         data,
                                                           GDestroyNotify   notify);
 
-gboolean             milter_event_loop_remove_source     (MilterEventLoop *loop,
+gboolean             milter_event_loop_remove            (MilterEventLoop *loop,
                                                           guint            tag);
 
 G_END_DECLS

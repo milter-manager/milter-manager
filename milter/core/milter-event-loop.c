@@ -1,6 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Nobuyoshi Nakada <nakada@clear-code.com>
+ *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
+ *  Copyright (C) 2011  Kouhei Sutou <nakada@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -58,7 +59,7 @@ milter_event_loop_class_init (MilterEventLoopClass *klass)
     klass->add_watch = NULL;
     klass->add_timeout = NULL;
     klass->add_idle_full = NULL;
-    klass->remove_source = NULL;
+    klass->remove = NULL;
 
     g_type_class_add_private(gobject_class, sizeof(MilterEventLoopPrivate));
 }
@@ -145,12 +146,11 @@ milter_event_loop_add_idle_full (MilterEventLoop *loop,
 }
 
 gboolean
-milter_event_loop_remove_source (MilterEventLoop *loop,
-                                 guint            tag)
+milter_event_loop_remove (MilterEventLoop *loop, guint tag)
 {
     MilterEventLoopClass *loop_class;
     loop_class = MILTER_EVENT_LOOP_GET_CLASS(loop);
-    return loop_class->remove_source(loop, tag);
+    return loop_class->remove(loop, tag);
 }
 
 /*

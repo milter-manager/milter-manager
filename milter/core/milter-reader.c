@@ -185,8 +185,7 @@ static void
 clear_watch_id (MilterReaderPrivate *priv)
 {
     if (priv->channel_watch_id) {
-        milter_event_loop_remove_source(priv->loop,
-                                        priv->channel_watch_id);
+        milter_event_loop_remove(priv->loop, priv->channel_watch_id);
         priv->channel_watch_id = 0;
         g_object_unref(priv->loop);
         priv->loop = NULL;

@@ -1,7 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
  *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
- *  Copyright (C) 2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -79,7 +79,7 @@ static guint    add_idle_full(MilterEventLoop *loop,
                               gpointer         data,
                               GDestroyNotify   notify);
 
-static gboolean remove_source(MilterEventLoop *loop,
+static gboolean remove       (MilterEventLoop *loop,
                               guint            tag);
 
 static void
@@ -101,7 +101,7 @@ milter_glib_event_loop_class_init (MilterGLibEventLoopClass *klass)
     klass->parent_class.add_watch = add_watch;
     klass->parent_class.add_timeout = add_timeout;
     klass->parent_class.add_idle_full = add_idle_full;
-    klass->parent_class.remove_source = remove_source;
+    klass->parent_class.remove = remove;
 
     spec = g_param_spec_pointer("context",
                                 "Context",
@@ -297,8 +297,7 @@ add_idle_full (MilterEventLoop *loop,
 }
 
 static gboolean
-remove_source (MilterEventLoop *loop,
-               guint            tag)
+remove (MilterEventLoop *loop, guint tag)
 {
     MilterGLibEventLoopPrivate *priv;
     GSource *source;

@@ -110,6 +110,17 @@ milter_writer_init (MilterWriter *writer)
 }
 
 static void
+clear_watch_id (MilterWriterPrivate *priv)
+{
+    if (priv->channel_watch_id) {
+        milter_event_loop_remove(priv->loop, priv->channel_watch_id);
+        priv->channel_watch_id = 0;
+        g_object_unref(priv->loop);
+        priv->loop = NULL;
+    }
+}
+
+static void
 dispose (GObject *object)
 {
     MilterWriterPrivate *priv;
@@ -118,20 +129,11 @@ dispose (GObject *object)
 
     milter_debug("[%u] [writer][dispose]", priv->tag);
 
-    if (priv->channel_watch_id > 0) {
-        milter_event_loop_remove_source(priv->loop,
-                                        priv->channel_watch_id);
-        priv->channel_watch_id = 0;
-    }
+    clear_watch_id(priv);
 
     if (priv->io_channel) {
         g_io_channel_unref(priv->io_channel);
         priv->io_channel = NULL;
-    }
-
-    if (priv->loop) {
-        g_object_unref(priv->loop);
-        priv->loop = NULL;
     }
 
     G_OBJECT_CLASS(milter_writer_parent_class)->dispose(object);
@@ -385,9 +387,7 @@ milter_writer_shutdown (MilterWriter *writer)
     if (priv->channel_watch_id == 0)
         return;
 
-    milter_event_loop_remove_source(priv->loop,
-                                    priv->channel_watch_id);
-    priv->channel_watch_id = 0;
+    clear_watch_id(priv);
 
     if (!g_io_channel_get_close_on_unref(priv->io_channel))
         return;

@@ -1,6 +1,12 @@
 2011-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/core/milter-event-loop.[ch],
+	milter/core/milter-glib-event-loop.[ch]: remove_source -> remove.
+
+	* milter/core/milter-reader.c, milter/core/milter-writer.c: follow
+	the above changes.
+
+	* milter/core/milter-event-loop.[ch],
 	milter/core/milter-glib-event-loop.c (milter_event_loop_iterate): add.
 
 	* milter/core/milter-reader.c, milter/core/milter-writer.c: add
