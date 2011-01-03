@@ -5,7 +5,7 @@ AC_PREREQ(2.59)
 
 m4_define([milter_manager_version_major], [1])
 m4_define([milter_manager_version_minor], [6])
-m4_define([milter_manager_version_micro], [3])
+m4_define([milter_manager_version_micro], [2])
 m4_define([milter_manager_version],
           [milter_manager_version_major.milter_manager_version_minor.milter_manager_version_micro])
 
@@ -398,6 +398,7 @@ EOM
     cat <<EOM > binding/ruby/glib-0.16.0/Makefile
 all:
 distdir:
+distclean:
 EOM
   fi
   if test "$ac_use_bundled_ruby_glib2_0_90_5" != "yes"; then
@@ -405,6 +406,7 @@ EOM
     cat <<EOM > binding/ruby/glib-0.90.5/Makefile
 all:
 distdir:
+distclean:
 EOM
   fi
 
