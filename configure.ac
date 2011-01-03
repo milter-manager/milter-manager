@@ -504,9 +504,9 @@ if test "x$with_libevent" != "xno"; then
     libevent_prefixes="$with_libevent"
   fi
   for libevent_prefix in $libevent_prefixes; do
-    if ! test -r "$libevent_prefix/include/event.h"; then
-      continue
-    fi
+    AC_CHECK_FILE("$libevent_prefix/include/event.h",
+                  [],
+                  [continue])
     CFLAGS="$CFLAGS -I$libevent_prefix/include"
     LDFLAGS="$LDFLAGS -L$libevent_prefix/lib"
     AC_CHECK_HEADERS(event.h,

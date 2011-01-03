@@ -1,5 +1,7 @@
 2011-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* configure.ac: show event.h check result.
+
 	* configure.ac: also --with-libevent guesses libevent prefix.
 
 	* configure.ac: also check event.h.
