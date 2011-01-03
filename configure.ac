@@ -498,7 +498,7 @@ AC_ARG_WITH(libevent,
 if test "x$with_libevent" != "xno"; then
   _SAVE_CFLAGS="$CFLAGS"
   _SAVE_LDFLAGS="$LDFLAGS"
-  if test "x$with_libevent" = "xauto"; then
+  if test "x$with_libevent" = "xauto" -o "x$with_libevent" = "xyes"; then
     libevent_prefixes="/usr/local /usr"
   else
     libevent_prefixes="$with_libevent"
