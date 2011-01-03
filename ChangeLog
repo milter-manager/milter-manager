@@ -1,5 +1,8 @@
 2011-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client.c: use MilterEventLoop on single
+	thread mode.
+
 	* milter/core/milter-glib-event-loop.c: remove needless flag.
 
 	* milter/client/milter-client.c: use MilterEventLoop.

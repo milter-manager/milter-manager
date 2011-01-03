@@ -742,20 +742,25 @@ single_thread_client_channel_setup (MilterClient *client,
 {
     MilterClientPrivate *priv;
     MilterClientContext *context;
+    MilterAgent *agent;
     MilterWriter *writer;
     MilterReader *reader;
     MilterClientProcessData *data;
+    GError *error = NULL;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
     context = milter_client_context_new(client);
+    agent = MILTER_AGENT(context);
+
+    milter_agent_set_event_loop(agent, priv->main_loop);
 
     writer = milter_writer_io_channel_new(channel);
-    milter_agent_set_writer(MILTER_AGENT(context), writer);
+    milter_agent_set_writer(agent, writer);
     g_object_unref(writer);
 
     reader = milter_reader_io_channel_new(channel);
-    milter_agent_set_reader(MILTER_AGENT(context), reader);
+    milter_agent_set_reader(agent, reader);
     g_object_unref(reader);
 
     milter_client_context_set_timeout(context, priv->timeout);
@@ -767,8 +772,8 @@ single_thread_client_channel_setup (MilterClient *client,
     data->client = client;
     data->context = context;
 
-    milter_debug("[%u] [client][start]",
-                 milter_agent_get_tag(MILTER_AGENT(data->context)));
+    milter_debug("[%u] [client][single-thread][start]",
+                 milter_agent_get_tag(agent));
 
     data->finished_handler_id =
         g_signal_connect(context, "finished",
@@ -776,8 +781,15 @@ single_thread_client_channel_setup (MilterClient *client,
 
     priv->processing_data = g_list_prepend(priv->processing_data, data);
 
-    milter_agent_start(MILTER_AGENT(context), NULL);
-    g_signal_emit(client, signals[CONNECTION_ESTABLISHED], 0, context);
+    if (milter_agent_start(agent, &error)) {
+        g_signal_emit(client, signals[CONNECTION_ESTABLISHED], 0, context);
+    } else {
+        milter_error("[%u] [client][single-thread][start][error] %s",
+                     mitler_agent_get_tag(agent), error->message);
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(agent));
+        g_error_free(error);
+        milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(context));
+    }
 
     g_io_channel_unref(channel);
 }
@@ -1247,7 +1259,8 @@ multi_threads_process_client_channel_thread (gpointer data_, gpointer user_data)
 
     context = MILTER_CLIENT_CONTEXT(data->context);
     agent = MILTER_AGENT(context);
-    milter_debug("[%u] [client][start]", milter_agent_get_tag(agent));
+    milter_debug("[%u] [client][multi-thread][start]",
+                 milter_agent_get_tag(agent));
 
     data->finished_handler_id =
         g_signal_connect(data->context, "finished",
@@ -1258,7 +1271,7 @@ multi_threads_process_client_channel_thread (gpointer data_, gpointer user_data)
         g_signal_emit(client, signals[CONNECTION_ESTABLISHED], 0, context);
         milter_event_loop_run(main_loop);
     } else {
-        milter_error("[%u] [client][start][error] %s",
+        milter_error("[%u] [client][multi-thread][start][error] %s",
                      milter_agent_get_tag(agent), error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client),
                                     error);
