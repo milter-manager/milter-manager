@@ -1,5 +1,7 @@
 2011-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/server/test-server-context.c: use milter_event_loop_iterate().
+
 	* milter/core/milter-event-loop.[ch],
 	milter/core/milter-glib-event-loop.[ch]: remove_source -> remove.
 

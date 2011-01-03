@@ -48,6 +48,8 @@ void test_last_state (void);
 void test_macro (void);
 void test_macros_hash_table (void);
 
+static MilterEventLoop *loop;
+
 static MilterServerContext *context;
 static MilterTestClient *client;
 
@@ -236,6 +238,8 @@ setup (void)
 {
     MilterOption *option;
 
+    loop = milter_glib_event_loop_new(NULL);
+
     context = milter_server_context_new();
     setup_server_context_signals(context);
 
@@ -293,6 +297,9 @@ teardown (void)
         g_error_free(actual_error);
     if (expected_error)
         g_error_free(expected_error);
+
+    if (loop)
+        g_object_unref(loop);
 }
 
 static void
@@ -319,7 +326,7 @@ wait_ready (void)
     timeout_waiting_id = g_timeout_add_seconds(1, cb_timeout_waiting,
                                                &timeout_waiting);
     while (timeout_waiting && !ready_received) {
-        g_main_context_iteration(NULL, TRUE);
+        milter_event_loop_iterate(loop, TRUE);
     }
     g_source_remove(timeout_waiting_id);
     cut_assert_true(timeout_waiting, cut_message("timeout"));
@@ -334,7 +341,7 @@ wait_error (void)
     timeout_waiting_id = g_timeout_add_seconds(2, cb_timeout_waiting,
                                                &timeout_waiting);
     while (timeout_waiting && !actual_error) {
-        g_main_context_iteration(NULL, TRUE);
+        milter_event_loop_iterate(loop, TRUE);
     }
     g_source_remove(timeout_waiting_id);
     cut_assert_true(timeout_waiting, cut_message("timeout"));
@@ -391,7 +398,7 @@ wait_for_receiving_command (void)
     command_received = FALSE;
 
     while (!command_received) {
-        g_main_context_iteration(NULL, TRUE);
+        milter_event_loop_iterate(loop, TRUE);
     }
 }
 
@@ -399,7 +406,7 @@ static void
 wait_for_receiving_reply (void)
 {
     while (!reply_received) {
-        g_main_context_iteration(NULL, TRUE);
+        milter_event_loop_iterate(loop, TRUE);
     }
 }
 
