@@ -142,7 +142,7 @@ cut_setup (void)
 }
 
 void
-teardown (void)
+cut_teardown (void)
 {
     if (manager)
         g_object_unref(manager);
