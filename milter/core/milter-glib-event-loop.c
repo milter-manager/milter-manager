@@ -1,6 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Nobuyoshi Nakada <nakada@clear-code.com>
+ *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
+ *  Copyright (C) 2010  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -21,17 +22,18 @@
 #  include "../../config.h"
 #endif /* HAVE_CONFIG_H */
 
-#include "milter-g-event-loop.h"
+#include "milter-glib-event-loop.h"
 
-#define MILTER_G_EVENT_LOOP_GET_PRIVATE(obj)              \
-  (G_TYPE_INSTANCE_GET_PRIVATE((obj),                   \
-                               MILTER_TYPE_G_EVENT_LOOP,  \
-                               MilterGEventLoopPrivate))
+#define MILTER_GLIB_EVENT_LOOP_GET_PRIVATE(obj)                 \
+    (G_TYPE_INSTANCE_GET_PRIVATE((obj),                         \
+                                 MILTER_TYPE_GLIB_EVENT_LOOP,   \
+                                 MilterGLibEventLoopPrivate))
 
-G_DEFINE_TYPE(MilterGEventLoop, milter_g_event_loop, MILTER_TYPE_EVENT_LOOP)
+G_DEFINE_TYPE(MilterGLibEventLoop, milter_glib_event_loop,
+              MILTER_TYPE_EVENT_LOOP)
 
-typedef struct _MilterGEventLoopPrivate	MilterGEventLoopPrivate;
-struct _MilterGEventLoopPrivate
+typedef struct _MilterGLibEventLoopPrivate	MilterGLibEventLoopPrivate;
+struct _MilterGLibEventLoopPrivate
 {
     GMainContext *context;
     GMainLoop *loop;
@@ -48,34 +50,34 @@ static GObject *constructor  (GType                  type,
                               GObjectConstructParam *props);
 static void     dispose      (GObject         *object);
 
-static void  initialize      (MilterEventLoop *eventloop,
+static void     initialize   (MilterEventLoop *eventloop,
                               gboolean         new_context);
 
-static void  run_loop        (MilterEventLoop *eventloop);
-static void  quit_loop       (MilterEventLoop *eventloop);
+static void     run_loop     (MilterEventLoop *eventloop);
+static void     quit_loop    (MilterEventLoop *eventloop);
 
-static guint add_watch       (MilterEventLoop *eventloop,
+static guint    add_watch    (MilterEventLoop *eventloop,
                               GIOChannel      *channel,
                               GIOCondition     condition,
                               GIOFunc          func,
                               gpointer         user_data);
 
-static guint add_timeout     (MilterEventLoop *eventloop,
+static guint    add_timeout  (MilterEventLoop *eventloop,
                               gdouble interval,
                               GSourceFunc func,
                               gpointer user_data);
 
-static guint add_idle_full (MilterEventLoop *eventloop,
-                            gint             priority,
-                            GSourceFunc      function,
-                            gpointer         data,
-                            GDestroyNotify   notify);
+static guint    add_idle_full(MilterEventLoop *eventloop,
+                              gint             priority,
+                              GSourceFunc      function,
+                              gpointer         data,
+                              GDestroyNotify   notify);
 
-static gboolean remove_source (MilterEventLoop *eventloop,
-                               guint            tag);
+static gboolean remove_source(MilterEventLoop *eventloop,
+                              guint            tag);
 
 static void
-milter_g_event_loop_class_init (MilterGEventLoopClass *klass)
+milter_glib_event_loop_class_init (MilterGLibEventLoopClass *klass)
 {
     GObjectClass *gobject_class;
 
@@ -92,25 +94,25 @@ milter_g_event_loop_class_init (MilterGEventLoopClass *klass)
     klass->parent_class.add_idle_full = add_idle_full;
     klass->parent_class.remove_source = remove_source;
 
-    g_type_class_add_private(gobject_class, sizeof(MilterGEventLoopPrivate));
+    g_type_class_add_private(gobject_class, sizeof(MilterGLibEventLoopPrivate));
 }
 
 static GObject *
 constructor (GType type, guint n_props, GObjectConstructParam *props)
 {
     GObject *object;
-    MilterGEventLoop *eventloop;
+    MilterGLibEventLoop *eventloop;
     GObjectClass *klass;
-    MilterGEventLoopClass *eventloop_class;
-    MilterGEventLoopPrivate *priv;
+    MilterGLibEventLoopClass *eventloop_class;
+    MilterGLibEventLoopPrivate *priv;
 
-    klass = G_OBJECT_CLASS(milter_g_event_loop_parent_class);
+    klass = G_OBJECT_CLASS(milter_glib_event_loop_parent_class);
     object = klass->constructor(type, n_props, props);
 
-    priv = MILTER_G_EVENT_LOOP_GET_PRIVATE(object);
+    priv = MILTER_GLIB_EVENT_LOOP_GET_PRIVATE(object);
 
-    eventloop = MILTER_G_EVENT_LOOP(object);
-    eventloop_class = MILTER_G_EVENT_LOOP_GET_CLASS(object);
+    eventloop = MILTER_GLIB_EVENT_LOOP(object);
+    eventloop_class = MILTER_GLIB_EVENT_LOOP_GET_CLASS(object);
 
     priv->loop = NULL;
 
@@ -118,16 +120,16 @@ constructor (GType type, guint n_props, GObjectConstructParam *props)
 }
 
 static void
-milter_g_event_loop_init (MilterGEventLoop *eventloop)
+milter_glib_event_loop_init (MilterGLibEventLoop *eventloop)
 {
 }
 
 static void
 initialize (MilterEventLoop *eventloop, gboolean new_context)
 {
-    MilterGEventLoopPrivate *priv;
+    MilterGLibEventLoopPrivate *priv;
 
-    priv = MILTER_G_EVENT_LOOP_GET_PRIVATE(eventloop);
+    priv = MILTER_GLIB_EVENT_LOOP_GET_PRIVATE(eventloop);
     if (new_context) {
         GMainContext *main_context = g_main_context_new();
         priv->loop = g_main_loop_new(main_context, FALSE);
@@ -140,9 +142,9 @@ initialize (MilterEventLoop *eventloop, gboolean new_context)
 static void
 dispose (GObject *object)
 {
-    MilterGEventLoopPrivate *priv;
+    MilterGLibEventLoopPrivate *priv;
 
-    priv = MILTER_G_EVENT_LOOP_GET_PRIVATE(object);
+    priv = MILTER_GLIB_EVENT_LOOP_GET_PRIVATE(object);
     if (priv->loop) {
         g_main_loop_unref(priv->loop);
         priv->loop = NULL;
@@ -152,24 +154,24 @@ dispose (GObject *object)
         priv->context = NULL;
     }
 
-    G_OBJECT_CLASS(milter_g_event_loop_parent_class)->dispose(object);
+    G_OBJECT_CLASS(milter_glib_event_loop_parent_class)->dispose(object);
 }
 
 static void
 run_loop (MilterEventLoop *eventloop)
 {
-    MilterGEventLoopPrivate *priv;
+    MilterGLibEventLoopPrivate *priv;
 
-    priv = MILTER_G_EVENT_LOOP_GET_PRIVATE(eventloop);
+    priv = MILTER_GLIB_EVENT_LOOP_GET_PRIVATE(eventloop);
     g_main_loop_run (priv->loop);
 }
 
 static void
 quit_loop (MilterEventLoop *eventloop)
 {
-    MilterGEventLoopPrivate *priv;
+    MilterGLibEventLoopPrivate *priv;
 
-    priv = MILTER_G_EVENT_LOOP_GET_PRIVATE(eventloop);
+    priv = MILTER_GLIB_EVENT_LOOP_GET_PRIVATE(eventloop);
     g_main_loop_quit (priv->loop);
 }
 
@@ -200,10 +202,7 @@ add_idle_full (MilterEventLoop *eventloop,
                gpointer         data,
                GDestroyNotify   notify)
 {
-    return g_idle_add_full (priority,
-                            function,
-                            data,
-                            notify);
+    return g_idle_add_full(priority, function, data, notify);
 }
 
 static gboolean
