@@ -1,5 +1,13 @@
 2011-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.[ch]: require event loop.
+
+	* milter/manager/milter-manager-leader.c, test/manager/,
+	binding/ruby/src/manager/rb-milter-manager-children.c,
+	binding/ruby/test/manager/test-child-context.rb,
+	binding/ruby/test/manager/test-configuration.rb: follow the above
+	change.
+
 	* binding/ruby/test/run-test.sh: support 'make check'.
 	* binding/ruby/test/run-test.rb: remove needless load path
 	configurations.

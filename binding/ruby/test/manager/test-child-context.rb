@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
+# Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -20,7 +20,8 @@ class TestChildContext < Test::Unit::TestCase
     @spamass = Milter::Manager::Child.new("spamass-milter")
 
     @configuration = Milter::Manager::Configuration.new
-    @children = Milter::Manager::Children.new(@configuration)
+    @loop = Milter::GLibEventLoop.new
+    @children = Milter::Manager::Children.new(@configuration, @loop)
     @children << @clamav
     @children << @greylist
     @children << @spamass

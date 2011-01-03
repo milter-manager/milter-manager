@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -72,6 +72,8 @@ void test_writing_timeout (void);
 
 static gchar *scenario_dir;
 static MilterManagerTestScenario *main_scenario;
+
+static MilterEventLoop *loop;
 
 static MilterManagerConfiguration *config;
 static MilterManagerChildren *children;
@@ -382,8 +384,10 @@ cut_setup (void)
                                     NULL);
     main_scenario = NULL;
 
+    loop = milter_glib_event_loop_new(NULL);
+
     config = milter_manager_configuration_new(NULL);
-    children = milter_manager_children_new(config);
+    children = milter_manager_children_new(config, loop);
     setup_signals(children);
 
     launcher = NULL;
@@ -502,6 +506,9 @@ cut_teardown (void)
 
     if (actual_address)
         g_free(actual_address);
+
+    if (loop)
+        g_object_unref(loop);
 }
 
 static void

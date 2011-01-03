@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -16,6 +16,7 @@
 class TestConfiguration < Test::Unit::TestCase
   def setup
     @configuration = Milter::Manager::Configuration.new
+    @loop = Milter::GLibEventLoop.new
   end
 
   def test_controller_connection_spec
@@ -459,7 +460,7 @@ EOD
 
   private
   def create_children
-    children = Milter::Manager::Children.new(@configuration)
+    children = Milter::Manager::Children.new(@configuration, @loop)
     client_context = Milter::ClientContext.new
     @configuration.setup_children(children, client_context)
     children

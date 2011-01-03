@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -66,6 +66,7 @@ void test_to_xml_signal (void);
 void test_location (void);
 
 static MilterManagerConfiguration *config;
+static MilterEventLoop *loop;
 static MilterManagerEgg *egg;
 static MilterManagerEgg *another_egg;
 static MilterManagerApplicableCondition *condition;
@@ -83,14 +84,16 @@ static gchar *actual_xml;
 static gchar *tmp_dir;
 
 void
-setup (void)
+cut_setup (void)
 {
     config = milter_manager_configuration_new(NULL);
+    loop = milter_glib_event_loop_new(NULL);
+
     egg = NULL;
     another_egg = NULL;
     condition = NULL;
 
-    expected_children = milter_manager_children_new(config);
+    expected_children = milter_manager_children_new(config, loop);
     actual_children = NULL;
 
     expected_load_paths = NULL;
@@ -109,10 +112,12 @@ setup (void)
 }
 
 void
-teardown (void)
+cut_teardown (void)
 {
     if (config)
         g_object_unref(config);
+    if (loop)
+        g_object_unref(loop);
     if (egg)
         g_object_unref(egg);
     if (another_egg)
@@ -201,7 +206,7 @@ test_children (void)
     milter_manager_children_add_child(expected_children, child);
 
     cut_assert_false(attached_to);
-    actual_children = milter_manager_children_new(config);
+    actual_children = milter_manager_children_new(config, loop);
     milter_manager_configuration_setup_children(config, actual_children, NULL);
     milter_assert_equal_children(expected_children, actual_children);
     cut_assert_true(attached_to);
@@ -575,10 +580,10 @@ milter_assert_default_configuration_helper (MilterManagerConfiguration *config)
 
     if (expected_children)
         g_object_unref(expected_children);
-    expected_children = milter_manager_children_new(config);
+    expected_children = milter_manager_children_new(config, loop);
     if (actual_children)
         g_object_unref(actual_children);
-    actual_children = milter_manager_children_new(config);
+    actual_children = milter_manager_children_new(config, loop);
     milter_manager_configuration_setup_children(config, actual_children, NULL);
     milter_assert_equal_children(expected_children, actual_children);
     g_object_unref(actual_children);

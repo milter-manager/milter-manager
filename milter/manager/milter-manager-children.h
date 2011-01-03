@@ -62,7 +62,8 @@ GQuark                 milter_manager_children_error_quark (void);
 
 GType                  milter_manager_children_get_type    (void) G_GNUC_CONST;
 
-MilterManagerChildren *milter_manager_children_new         (MilterManagerConfiguration *configuration);
+MilterManagerChildren *milter_manager_children_new         (MilterManagerConfiguration *configuration,
+                                                            MilterEventLoop            *event_loop);
 
 void                   milter_manager_children_add_child   (MilterManagerChildren *children,
                                                             MilterManagerChild    *child);

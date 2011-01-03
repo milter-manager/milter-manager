@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -83,6 +83,8 @@ struct _MilterManagerChildrenPrivate
     gboolean emitted_reply_for_message_oriented_command;
 
     guint tag;
+
+    MilterEventLoop *event_loop;
 };
 
 typedef struct _NegotiateData NegotiateData;
@@ -101,7 +103,8 @@ enum
 {
     PROP_0,
     PROP_CONFIGURATION,
-    PROP_TAG
+    PROP_TAG,
+    PROP_EVENT_LOOP
 };
 
 static void         finished           (MilterFinishedEmittable *emittable);
@@ -191,7 +194,7 @@ milter_manager_children_class_init (MilterManagerChildrenClass *klass)
                                "Configuration",
                                "The configuration of the milter controller",
                                MILTER_TYPE_MANAGER_CONFIGURATION,
-                               G_PARAM_READWRITE);
+                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
     g_object_class_install_property(gobject_class, PROP_CONFIGURATION, spec);
 
     spec = g_param_spec_uint("tag",
@@ -200,6 +203,13 @@ milter_manager_children_class_init (MilterManagerChildrenClass *klass)
                              0, G_MAXUINT, 0,
                              G_PARAM_READABLE);
     g_object_class_install_property(gobject_class, PROP_TAG, spec);
+
+    spec = g_param_spec_object("event-loop",
+                               "Event Loop",
+                               "The event loop of the milter controller",
+                               MILTER_TYPE_EVENT_LOOP,
+                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
+    g_object_class_install_property(gobject_class, PROP_EVENT_LOOP, spec);
 
     g_type_class_add_private(gobject_class,
                              sizeof(MilterManagerChildrenPrivate));
@@ -273,6 +283,8 @@ milter_manager_children_init (MilterManagerChildren *milter)
     priv->emitted_reply_for_message_oriented_command = FALSE;
 
     priv->tag = 0;
+
+    priv->event_loop = NULL;
 }
 
 static void
@@ -424,6 +436,11 @@ dispose (GObject *object)
     milter_manager_children_set_launcher_channel(MILTER_MANAGER_CHILDREN(object),
                                                  NULL, NULL);
 
+    if (priv->event_loop) {
+        g_object_unref(priv->event_loop);
+        priv->event_loop = NULL;
+    }
+
     G_OBJECT_CLASS(milter_manager_children_parent_class)->dispose(object);
 }
 
@@ -448,6 +465,13 @@ set_property (GObject      *object,
         milter_manager_children_set_tag(MILTER_MANAGER_CHILDREN(object),
                                         g_value_get_uint(value));
         break;
+    case PROP_EVENT_LOOP:
+        if (priv->event_loop)
+            g_object_unref(priv->event_loop);
+        priv->event_loop = g_value_get_object(value);
+        if (priv->event_loop)
+            g_object_ref(priv->event_loop);
+        break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -469,6 +493,9 @@ get_property (GObject    *object,
         break;
     case PROP_TAG:
         g_value_set_uint(value, priv->tag);
+        break;
+    case PROP_EVENT_LOOP:
+        g_value_set_object(value, priv->event_loop);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -495,10 +522,12 @@ milter_manager_children_error_quark (void)
 }
 
 MilterManagerChildren *
-milter_manager_children_new (MilterManagerConfiguration *configuration)
+milter_manager_children_new (MilterManagerConfiguration *configuration,
+                             MilterEventLoop *event_loop)
 {
     return g_object_new(MILTER_TYPE_MANAGER_CHILDREN,
                         "configuration", configuration,
+                        "event-loop", event_loop,
                         NULL);
 }
 

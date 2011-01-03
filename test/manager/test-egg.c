@@ -432,7 +432,7 @@ test_attach_applicable_conditions (void)
     milter_manager_egg_add_applicable_condition(egg, condition);
 
     child = milter_manager_child_new("child-milter");
-    children = milter_manager_children_new(NULL);
+    children = milter_manager_children_new(NULL, NULL);
 
     milter_manager_egg_attach_applicable_conditions(egg, child, children, NULL);
     cut_assert_true(attached_to);

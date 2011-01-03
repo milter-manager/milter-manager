@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -23,9 +23,14 @@
 #define SELF(self) (MILTER_MANAGER_CHILDREN(RVAL2GOBJ(self)))
 
 static VALUE
-initialize (VALUE self, VALUE configuration)
+initialize (VALUE self, VALUE configuration, VALUE event_loop)
 {
-    G_INITIALIZE(self, milter_manager_children_new(RVAL2GOBJ(configuration)));
+    MilterManagerChildren *children;
+
+    children = milter_manager_children_new(RVAL2GOBJ(configuration),
+					   RVAL2GOBJ(event_loop));
+    G_INITIALIZE(self, children);
+
     return Qnil;
 }
 
@@ -96,7 +101,7 @@ Init_milter_manager_children (void)
 	G_DEF_CLASS(MILTER_TYPE_MANAGER_CHILDREN, "Children", rb_mMilterManager);
 
     rb_define_method(rb_cMilterManagerChildren, "initialize",
-                     initialize, 1);
+                     initialize, 2);
     rb_define_method(rb_cMilterManagerChildren, "length", length, 0);
     rb_define_method(rb_cMilterManagerChildren, "add", add_child, 1);
     rb_define_method(rb_cMilterManagerChildren, "<<", add_child_less_than, 1);
