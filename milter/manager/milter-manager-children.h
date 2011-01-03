@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -141,7 +141,7 @@ gboolean               milter_manager_children_get_smtp_client_address
 
 MilterOption          *milter_manager_children_get_option   (MilterManagerChildren *children);
 
-gboolean              milter_manager_children_is_waiting_reply
+gboolean               milter_manager_children_is_waiting_reply
                                                             (MilterManagerChildren *children);
 
 
