@@ -42,16 +42,20 @@ struct _MilterGLibEventLoopPrivate
 enum
 {
     PROP_0,
+    PROP_CONTEXT,
     PROP_LAST
 };
 
-static GObject *constructor  (GType                  type,
-                              guint                  n_props,
-                              GObjectConstructParam *props);
 static void     dispose      (GObject         *object);
-
-static void     initialize   (MilterEventLoop *loop,
-                              gboolean         new_context);
+static void     set_property (GObject         *object,
+                              guint            prop_id,
+                              const GValue    *value,
+                              GParamSpec      *pspec);
+static void     get_property (GObject         *object,
+                              guint            prop_id,
+                              GValue          *value,
+                              GParamSpec      *pspec);
+static void     constructed  (GObject         *object);
 
 static void     run          (MilterEventLoop *loop);
 static void     quit         (MilterEventLoop *loop);
@@ -80,13 +84,15 @@ static void
 milter_glib_event_loop_class_init (MilterGLibEventLoopClass *klass)
 {
     GObjectClass *gobject_class;
+    GParamSpec *spec;
 
     gobject_class = G_OBJECT_CLASS(klass);
 
-    gobject_class->constructor  = constructor;
     gobject_class->dispose      = dispose;
+    gobject_class->set_property = set_property;
+    gobject_class->get_property = get_property;
+    gobject_class->constructed  = constructed;
 
-    klass->parent_class.initialize = initialize;
     klass->parent_class.run = run;
     klass->parent_class.quit = quit;
     klass->parent_class.add_watch = add_watch;
@@ -94,49 +100,24 @@ milter_glib_event_loop_class_init (MilterGLibEventLoopClass *klass)
     klass->parent_class.add_idle_full = add_idle_full;
     klass->parent_class.remove_source = remove_source;
 
+    spec = g_param_spec_pointer("context",
+                                "Context",
+                                "Use the GMainContext for the event loop",
+                                G_PARAM_READABLE | G_PARAM_WRITABLE |
+                                G_PARAM_CONSTRUCT | G_PARAM_CONSTRUCT_ONLY);
+    g_object_class_install_property(gobject_class, PROP_CONTEXT, spec);
+
     g_type_class_add_private(gobject_class, sizeof(MilterGLibEventLoopPrivate));
-}
-
-static GObject *
-constructor (GType type, guint n_props, GObjectConstructParam *props)
-{
-    GObject *object;
-    MilterGLibEventLoop *loop;
-    GObjectClass *klass;
-    MilterGLibEventLoopClass *loop_class;
-    MilterGLibEventLoopPrivate *priv;
-
-    klass = G_OBJECT_CLASS(milter_glib_event_loop_parent_class);
-    object = klass->constructor(type, n_props, props);
-
-    priv = MILTER_GLIB_EVENT_LOOP_GET_PRIVATE(object);
-
-    loop = MILTER_GLIB_EVENT_LOOP(object);
-    loop_class = MILTER_GLIB_EVENT_LOOP_GET_CLASS(object);
-
-    priv->loop = NULL;
-
-    return object;
 }
 
 static void
 milter_glib_event_loop_init (MilterGLibEventLoop *loop)
 {
-}
-
-static void
-initialize (MilterEventLoop *loop, gboolean new_context)
-{
     MilterGLibEventLoopPrivate *priv;
 
     priv = MILTER_GLIB_EVENT_LOOP_GET_PRIVATE(loop);
-    if (new_context) {
-        GMainContext *main_context = g_main_context_new();
-        priv->loop = g_main_loop_new(main_context, FALSE);
-        g_main_context_unref(main_context);
-    } else {
-        priv->loop = g_main_loop_new(NULL, FALSE);
-    }
+    priv->context = NULL;
+    priv->loop = NULL;
 }
 
 static void
@@ -145,16 +126,81 @@ dispose (GObject *object)
     MilterGLibEventLoopPrivate *priv;
 
     priv = MILTER_GLIB_EVENT_LOOP_GET_PRIVATE(object);
+
     if (priv->loop) {
         g_main_loop_unref(priv->loop);
         priv->loop = NULL;
     }
+
     if (priv->context) {
         g_main_context_unref(priv->context);
         priv->context = NULL;
     }
 
     G_OBJECT_CLASS(milter_glib_event_loop_parent_class)->dispose(object);
+}
+
+static void
+set_property (GObject      *object,
+              guint         prop_id,
+              const GValue *value,
+              GParamSpec   *pspec)
+{
+    MilterGLibEventLoopPrivate *priv;
+
+    priv = MILTER_GLIB_EVENT_LOOP_GET_PRIVATE(object);
+    switch (prop_id) {
+    case PROP_CONTEXT:
+        if (priv->context)
+            g_main_context_unref(priv->context);
+        priv->context = g_value_get_pointer(value);
+        if (priv->context)
+            g_main_context_ref(priv->context);
+        break;
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+        break;
+    }
+}
+
+static void
+get_property (GObject    *object,
+              guint       prop_id,
+              GValue     *value,
+              GParamSpec *pspec)
+{
+    MilterGLibEventLoop *loop;
+    MilterGLibEventLoopPrivate *priv;
+
+    loop = MILTER_GLIB_EVENT_LOOP(object);
+    priv = MILTER_GLIB_EVENT_LOOP_GET_PRIVATE(loop);
+    switch (prop_id) {
+    case PROP_CONTEXT:
+        g_value_set_pointer(value, priv->context);
+        break;
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+        break;
+    }
+}
+
+static void
+constructed (GObject *object)
+{
+    MilterGLibEventLoop *loop;
+    MilterGLibEventLoopPrivate *priv;
+
+    loop = MILTER_GLIB_EVENT_LOOP(object);
+    priv = MILTER_GLIB_EVENT_LOOP_GET_PRIVATE(loop);
+    priv->loop = g_main_loop_new(priv->context, FALSE);
+}
+
+MilterEventLoop *
+milter_glib_event_loop_new (GMainContext *context)
+{
+    return g_object_new(MILTER_TYPE_GLIB_EVENT_LOOP,
+                        "context", context,
+                        NULL);
 }
 
 static void

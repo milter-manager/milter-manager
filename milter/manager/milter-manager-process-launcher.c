@@ -446,7 +446,7 @@ milter_manager_process_launcher_init (MilterManagerProcessLauncher *launcher)
     priv = MILTER_MANAGER_PROCESS_LAUNCHER_GET_PRIVATE(launcher);
 
     priv->processes = NULL;
-    priv->main_loop = milter_event_loop_new(FALSE);
+    priv->main_loop = milter_glib_event_loop_new(NULL);
 }
 
 static void

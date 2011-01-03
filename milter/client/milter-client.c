@@ -208,6 +208,23 @@ _milter_client_class_init (MilterClientClass *klass)
     g_type_class_add_private(gobject_class, sizeof(MilterClientPrivate));
 }
 
+static MilterEventLoop *
+event_loop_new (MilterClient *client, gboolean use_default_context)
+{
+    MilterEventLoop *loop;
+
+    if (use_default_context) {
+        loop = milter_glib_event_loop_new(NULL);
+    } else {
+        GMainContext *context;
+        context = g_main_context_new();
+        loop = milter_glib_event_loop_new(context);
+        g_main_context_unref(context);
+    }
+
+    return loop;
+}
+
 static void
 _milter_client_init (MilterClient *client)
 {
@@ -216,9 +233,7 @@ _milter_client_init (MilterClient *client)
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
     priv->listening_channel = NULL;
-
-    priv->accept_loop = milter_event_loop_new(TRUE);
-
+    priv->accept_loop = NULL;
     priv->main_loop = NULL;
 
     priv->server_watch_id = 0;
@@ -1100,7 +1115,7 @@ single_thread_start_accept (MilterClient *client)
     GThread *thread;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
-    priv->main_loop = milter_event_loop_new(FALSE);
+    priv->main_loop = event_loop_new(client, TRUE);
     thread = g_thread_create(single_thread_accept_thread, client, TRUE, NULL);
 
     g_mutex_lock(priv->quit_mutex);
@@ -1219,7 +1234,7 @@ multi_threads_process_client_channel_thread (gpointer data_, gpointer user_data)
     MilterClientProcessData *data = user_data;
     MilterEventLoop *main_loop;
 
-    main_loop = milter_event_loop_new(TRUE);
+    main_loop = event_loop_new(client, FALSE);
 
     milter_debug("[%u] [client][start]",
                  milter_agent_get_tag(MILTER_AGENT(data->context)));
@@ -1581,6 +1596,7 @@ milter_client_prepare (MilterClient *client, GIOFunc func)
     MilterClientPrivate *priv;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
+    priv->accept_loop = event_loop_new(client, FALSE);
     return milter_client_prepare_loop(client, priv->accept_loop, func);
 }
 
@@ -1649,7 +1665,7 @@ milter_client_run_master (MilterClient *client)
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
-    main_loop = milter_event_loop_new(FALSE);
+    main_loop = event_loop_new(client, TRUE);
 
     if (!milter_client_prepare_loop(client, main_loop,
                                     master_server_watch_func))
@@ -1676,11 +1692,12 @@ milter_client_run_worker (MilterClient *client)
     if (priv->quitting) {
         g_mutex_unlock(priv->quit_mutex);
     } else {
-        priv->main_loop = milter_event_loop_new(FALSE);
-        g_idle_add_full(G_PRIORITY_DEFAULT,
-                        single_thread_cb_idle_unlock_quit_mutex,
-                        client,
-                        NULL);
+        priv->main_loop = event_loop_new(client, TRUE);
+        milter_event_loop_add_idle_full(priv->main_loop,
+                                        G_PRIORITY_DEFAULT,
+                                        single_thread_cb_idle_unlock_quit_mutex,
+                                        client,
+                                        NULL);
         milter_event_loop_run(priv->main_loop);
     }
     g_thread_join(thread);

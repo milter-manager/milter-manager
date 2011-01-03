@@ -1,5 +1,13 @@
 2011-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-event-loop.[ch]: move new-context related
+	features to ...
+	* milter/core/milter-glib-event-loop.[ch]: ... here.
+
+	* milter/client/milter-client.c, milter/core.h,
+	milter/manager/milter-manager-process-launcher.c: follow the above
+	chagnes.
+
 	* milter/core/milter-event-loop.c: format.
 
 	* milter/core/milter-glib-event-loop.[ch],

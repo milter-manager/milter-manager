@@ -47,6 +47,8 @@ struct _MilterGLibEventLoopClass
 
 GType                milter_glib_event_loop_get_type     (void) G_GNUC_CONST;
 
+MilterEventLoop     *milter_glib_event_loop_new          (GMainContext *context);
+
 
 G_END_DECLS
 
