@@ -346,10 +346,10 @@ watch_io_channel (MilterWriter *writer, MilterEventLoop *loop)
 
     priv->loop = loop;
     priv->channel_watch_id =
-        milter_event_loop_add_watch(loop,
-                                    priv->io_channel,
-                                    G_IO_ERR | G_IO_HUP | G_IO_NVAL,
-                                    channel_watch_func, writer);
+        milter_event_loop_watch_io(loop,
+                                   priv->io_channel,
+                                   G_IO_ERR | G_IO_HUP | G_IO_NVAL,
+                                   channel_watch_func, writer);
     if (priv->channel_watch_id > 0) {
         g_object_ref(priv->loop);
     } else {

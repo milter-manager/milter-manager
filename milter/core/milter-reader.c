@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -276,11 +276,11 @@ watch_io_channel (MilterReader *reader, MilterEventLoop *loop)
 
     priv->loop = loop;
     priv->channel_watch_id =
-        milter_event_loop_add_watch(loop,
-                                    priv->io_channel,
-                                    G_IO_IN | G_IO_PRI |
-                                    G_IO_ERR | G_IO_HUP | G_IO_NVAL,
-                                    channel_watch_func, reader);
+        milter_event_loop_watch_io(loop,
+                                   priv->io_channel,
+                                   G_IO_IN | G_IO_PRI |
+                                   G_IO_ERR | G_IO_HUP | G_IO_NVAL,
+                                   channel_watch_func, reader);
     if (priv->channel_watch_id > 0) {
         g_object_ref(priv->loop);
     } else {

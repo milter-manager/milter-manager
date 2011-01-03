@@ -56,7 +56,7 @@ struct _MilterEventLoopClass
                                   gboolean         may_block);
     void     (*quit)             (MilterEventLoop *loop);
 
-    guint    (*add_watch)        (MilterEventLoop *loop,
+    guint    (*watch_io)         (MilterEventLoop *loop,
                                   GIOChannel      *channel,
                                   GIOCondition     condition,
                                   GIOFunc          function,
@@ -84,7 +84,7 @@ gboolean             milter_event_loop_iterate           (MilterEventLoop *loop,
                                                           gboolean         may_block);
 void                 milter_event_loop_quit              (MilterEventLoop *loop);
 
-guint                milter_event_loop_add_watch         (MilterEventLoop *loop,
+guint                milter_event_loop_watch_io          (MilterEventLoop *loop,
                                                           GIOChannel      *channel,
                                                           GIOCondition     condition,
                                                           GIOFunc          function,

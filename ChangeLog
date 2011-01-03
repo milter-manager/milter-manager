@@ -1,6 +1,11 @@
 2011-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/core/milter-event-loop.[ch],
+	milter/core/milter-glib-event-loop.c: add_watch -> watch_io.
+	* milter/core/milter-reader.c, milter/core/milter-writer.c,
+	milter/client/milter-client.c: follow the above change.
+
+	* milter/core/milter-event-loop.[ch],
 	milter/core/milter-glib-event-loop.c
 	(milter_event_loop_add_idle)
 	(milter_event_loop_add_timeout_full): add.

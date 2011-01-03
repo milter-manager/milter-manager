@@ -56,7 +56,7 @@ milter_event_loop_class_init (MilterEventLoopClass *klass)
 
     klass->run = NULL;
     klass->quit = NULL;
-    klass->add_watch = NULL;
+    klass->watch_io = NULL;
     klass->add_timeout_full = NULL;
     klass->add_idle_full = NULL;
     klass->remove = NULL;
@@ -110,15 +110,15 @@ milter_event_loop_quit (MilterEventLoop *loop)
 }
 
 guint
-milter_event_loop_add_watch (MilterEventLoop *loop,
-                             GIOChannel      *channel,
-                             GIOCondition     condition,
-                             GIOFunc          function,
-                             gpointer         data)
+milter_event_loop_watch_io (MilterEventLoop *loop,
+                            GIOChannel      *channel,
+                            GIOCondition     condition,
+                            GIOFunc          function,
+                            gpointer         data)
 {
     MilterEventLoopClass *loop_class;
     loop_class = MILTER_EVENT_LOOP_GET_CLASS(loop);
-    return loop_class->add_watch(loop, channel, condition, function, data);
+    return loop_class->watch_io(loop, channel, condition, function, data);
 }
 
 guint

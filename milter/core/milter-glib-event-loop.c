@@ -62,7 +62,7 @@ static gboolean iterate          (MilterEventLoop *loop,
                                   gboolean         may_block);
 static void     quit             (MilterEventLoop *loop);
 
-static guint    add_watch        (MilterEventLoop *loop,
+static guint    watch_io         (MilterEventLoop *loop,
                                   GIOChannel      *channel,
                                   GIOCondition     condition,
                                   GIOFunc          function,
@@ -100,7 +100,7 @@ milter_glib_event_loop_class_init (MilterGLibEventLoopClass *klass)
     klass->parent_class.run = run;
     klass->parent_class.iterate = iterate;
     klass->parent_class.quit = quit;
-    klass->parent_class.add_watch = add_watch;
+    klass->parent_class.watch_io = watch_io;
     klass->parent_class.add_timeout_full = add_timeout_full;
     klass->parent_class.add_idle_full = add_idle_full;
     klass->parent_class.remove = remove;
@@ -236,11 +236,11 @@ quit (MilterEventLoop *loop)
 }
 
 static guint
-add_watch (MilterEventLoop *loop,
-           GIOChannel      *channel,
-           GIOCondition     condition,
-           GIOFunc          function,
-           gpointer         data)
+watch_io (MilterEventLoop *loop,
+          GIOChannel      *channel,
+          GIOCondition     condition,
+          GIOFunc          function,
+          gpointer         data)
 {
     MilterGLibEventLoopPrivate *priv;
     guint watch_tag;

@@ -1614,11 +1614,11 @@ milter_client_prepare_loop (MilterClient *client, MilterEventLoop *loop, GIOFunc
     }
 
     priv->server_watch_id =
-        milter_event_loop_add_watch(loop,
-                                    priv->listening_channel,
-                                    G_IO_IN | G_IO_PRI |
-                                    G_IO_ERR | G_IO_HUP | G_IO_NVAL,
-                                    func, client);
+        milter_event_loop_watch_io(loop,
+                                   priv->listening_channel,
+                                   G_IO_IN | G_IO_PRI |
+                                   G_IO_ERR | G_IO_HUP | G_IO_NVAL,
+                                   func, client);
 
     return TRUE;
 }
