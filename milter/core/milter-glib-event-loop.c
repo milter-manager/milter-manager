@@ -53,8 +53,8 @@ static void     dispose      (GObject         *object);
 static void     initialize   (MilterEventLoop *loop,
                               gboolean         new_context);
 
-static void     run_loop     (MilterEventLoop *loop);
-static void     quit_loop    (MilterEventLoop *loop);
+static void     run          (MilterEventLoop *loop);
+static void     quit         (MilterEventLoop *loop);
 
 static guint    add_watch    (MilterEventLoop *loop,
                               GIOChannel      *channel,
@@ -87,8 +87,8 @@ milter_glib_event_loop_class_init (MilterGLibEventLoopClass *klass)
     gobject_class->dispose      = dispose;
 
     klass->parent_class.initialize = initialize;
-    klass->parent_class.run_loop = run_loop;
-    klass->parent_class.quit_loop = quit_loop;
+    klass->parent_class.run = run;
+    klass->parent_class.quit = quit;
     klass->parent_class.add_watch = add_watch;
     klass->parent_class.add_timeout = add_timeout;
     klass->parent_class.add_idle_full = add_idle_full;
@@ -158,7 +158,7 @@ dispose (GObject *object)
 }
 
 static void
-run_loop (MilterEventLoop *loop)
+run (MilterEventLoop *loop)
 {
     MilterGLibEventLoopPrivate *priv;
 
@@ -167,7 +167,7 @@ run_loop (MilterEventLoop *loop)
 }
 
 static void
-quit_loop (MilterEventLoop *loop)
+quit (MilterEventLoop *loop)
 {
     MilterGLibEventLoopPrivate *priv;
 

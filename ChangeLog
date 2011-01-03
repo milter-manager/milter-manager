@@ -1,5 +1,8 @@
 2011-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-glib-event-loop.[ch],
+	milter/core/milter-event-loop.c: remove needless '_loop'.
+
 	* milter/core/milter-glib-event-loop.c: eventloop -> loop.
 
 	* milter/core/milter-g-event-loop.[ch]: rename to ...

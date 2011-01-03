@@ -53,8 +53,8 @@ struct _MilterEventLoopClass
     void (*initialize)       (MilterEventLoop *loop,
                               gboolean         new_context);
 
-    void (*run_loop)         (MilterEventLoop *loop);
-    void (*quit_loop)        (MilterEventLoop *loop);
+    void (*run)              (MilterEventLoop *loop);
+    void (*quit)             (MilterEventLoop *loop);
 
     guint (*add_watch)       (MilterEventLoop *loop,
                               GIOChannel      *channel,
