@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -105,7 +105,7 @@ struct _MilterClientPrivate
     gboolean remove_unix_socket_on_create;
     guint suspend_time_on_unacceptable;
     guint max_connections;
-    gboolean multi_threads_mode;
+    gboolean multi_thread_mode;
     GThreadPool *worker_threads;
     gboolean multi_process_mode;
     struct {
@@ -256,7 +256,7 @@ _milter_client_init (MilterClient *client)
     priv->suspend_time_on_unacceptable =
         MILTER_CLIENT_DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE;
     priv->max_connections = MILTER_CLIENT_DEFAULT_MAX_CONNECTIONS;
-    priv->multi_threads_mode = FALSE;
+    priv->multi_thread_mode = FALSE;
     priv->worker_threads = NULL;
     priv->multi_process_mode = FALSE;
     priv->workers.control = NULL;
@@ -1154,9 +1154,9 @@ single_thread_start_accept (MilterClient *client)
 }
 
 static void
-multi_threads_process_client_channel (MilterClient *client, GIOChannel *channel,
-                                      MilterGenericSocketAddress *address,
-                                      socklen_t address_size)
+multi_thread_process_client_channel (MilterClient *client, GIOChannel *channel,
+                                     MilterGenericSocketAddress *address,
+                                     socklen_t address_size)
 {
     MilterClientPrivate *priv;
     MilterClientContext *context;
@@ -1207,7 +1207,7 @@ multi_threads_process_client_channel (MilterClient *client, GIOChannel *channel,
 }
 
 static gboolean
-multi_threads_accept_connection (MilterClient *client, gint server_fd)
+multi_thread_accept_connection (MilterClient *client, gint server_fd)
 {
     MilterClientPrivate *priv;
     gboolean accepted;
@@ -1219,8 +1219,8 @@ multi_threads_accept_connection (MilterClient *client, gint server_fd)
     accepted = accept_connection(client, server_fd, &client_channel,
                                  &address, &address_size);
     if (accepted) {
-        multi_threads_process_client_channel(client, client_channel,
-                                             &address, address_size);
+        multi_thread_process_client_channel(client, client_channel,
+                                            &address, address_size);
         g_io_channel_unref(client_channel);
     }
 
@@ -1228,17 +1228,17 @@ multi_threads_accept_connection (MilterClient *client, gint server_fd)
 }
 
 static gboolean
-multi_threads_server_watch_func (GIOChannel *channel, GIOCondition condition,
-                                 gpointer data)
+multi_thread_server_watch_func (GIOChannel *channel, GIOCondition condition,
+                                gpointer data)
 {
     MilterClient *client = data;
 
     return cb_server_status_changed(client, channel, condition,
-                                    multi_threads_accept_connection);
+                                    multi_thread_accept_connection);
 }
 
 static void
-multi_threads_cb_finished (MilterClientContext *context, gpointer _data)
+multi_thread_cb_finished (MilterClientContext *context, gpointer _data)
 {
     MilterClientProcessData *data = _data;
 
@@ -1246,7 +1246,7 @@ multi_threads_cb_finished (MilterClientContext *context, gpointer _data)
 }
 
 static void
-multi_threads_process_client_channel_thread (gpointer data_, gpointer user_data)
+multi_thread_process_client_channel_thread (gpointer data_, gpointer user_data)
 {
     MilterAgent *agent;
     MilterClientContext *context;
@@ -1264,7 +1264,7 @@ multi_threads_process_client_channel_thread (gpointer data_, gpointer user_data)
 
     data->finished_handler_id =
         g_signal_connect(data->context, "finished",
-                         G_CALLBACK(multi_threads_cb_finished), data);
+                         G_CALLBACK(multi_thread_cb_finished), data);
 
     milter_agent_set_event_loop(agent, main_loop);
     if (milter_agent_start(agent, &error)) {
@@ -1283,7 +1283,7 @@ multi_threads_process_client_channel_thread (gpointer data_, gpointer user_data)
 }
 
 static gboolean
-multi_threads_start_accept (MilterClient *client)
+multi_thread_start_accept (MilterClient *client)
 {
     MilterClientPrivate *priv;
     gint max_threads = 10;
@@ -1291,7 +1291,7 @@ multi_threads_start_accept (MilterClient *client)
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
     priv->worker_threads =
-        g_thread_pool_new(multi_threads_process_client_channel_thread,
+        g_thread_pool_new(multi_thread_process_client_channel_thread,
                           client,
                           max_threads,
                           FALSE,
@@ -1675,10 +1675,10 @@ milter_client_main (MilterClient *client)
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
-    if (priv->multi_threads_mode) {
-        if (!milter_client_prepare(client, multi_threads_server_watch_func))
+    if (priv->multi_thread_mode) {
+        if (!milter_client_prepare(client, multi_thread_server_watch_func))
             return FALSE;
-        success = multi_threads_start_accept(client);
+        success = multi_thread_start_accept(client);
     } else {
         if (!milter_client_prepare(client, single_thread_server_watch_func))
             return FALSE;
