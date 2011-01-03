@@ -1,5 +1,7 @@
 2011-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/server/test-server-context-signals.c: use MilterEventLoop.
+
 	* milter/manager/milter-manager-children.[ch]: require event loop.
 
 	* milter/manager/milter-manager-leader.c, test/manager/,

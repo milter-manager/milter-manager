@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -60,6 +60,7 @@ void test_no_busy_on_abort (void);
 void test_decode_error (void);
 void test_write_error (void);
 
+static MilterEventLoop *loop;
 static MilterServerContext *context;
 
 static MilterReader *reader;
@@ -390,9 +391,12 @@ setup_signals (MilterServerContext *context)
 }
 
 void
-setup (void)
+cut_setup (void)
 {
+    loop = milter_glib_event_loop_new(NULL);
+
     context = milter_server_context_new();
+    milter_agent_set_event_loop(MILTER_AGENT(context), loop);
     setup_signals(context);
 
     {
@@ -487,10 +491,10 @@ packet_free (void)
 }
 
 void
-teardown (void)
+cut_teardown (void)
 {
     if (timeout_id > 0)
-        g_source_remove(timeout_id);
+        milter_event_loop_remove(loop, timeout_id);
 
     if (context)
         g_object_unref(context);
@@ -548,6 +552,9 @@ teardown (void)
 
     if (buffer)
         g_string_free(buffer, TRUE);
+
+    if (loop)
+        g_object_unref(loop);
 }
 
 static gboolean
@@ -564,7 +571,7 @@ wait_for_written (void)
     g_idle_add_full(G_PRIORITY_LOW, cb_idle_func, NULL, NULL);
 
     while (!data_written) {
-        g_main_context_iteration(NULL, TRUE);
+        milter_event_loop_iterate(loop, TRUE);
     }
 }
 
@@ -925,10 +932,14 @@ test_reading_timeout (void)
 
     g_signal_connect(context, "reading-timeout",
                      G_CALLBACK(cb_timeout), &timed_out_reading);
-    g_timeout_add(500, cb_timeout_detect, &timed_out_before);
-    timeout_id = g_timeout_add(2000, cb_timeout_detect, &timed_out_after);
+    milter_event_loop_add_timeout(loop, 0.5,
+                                  cb_timeout_detect, &timed_out_before);
+    timeout_id = milter_event_loop_add_timeout(loop,
+                                               2,
+                                               cb_timeout_detect,
+                                               &timed_out_after);
     while (!timed_out_reading && !timed_out_after)
-        g_main_context_iteration(NULL, TRUE);
+        milter_event_loop_iterate(loop, TRUE);
     cut_assert_true(timed_out_before);
     cut_assert_true(timed_out_reading);
     cut_assert_false(timed_out_after);
@@ -952,8 +963,12 @@ test_writing_timeout (void)
     milter_server_context_set_writing_timeout(context, 1);
     g_signal_connect(context, "writing-timeout",
                      G_CALLBACK(cb_timeout), &timed_out_writing);
-    g_timeout_add(500, cb_timeout_detect, &timed_out_before);
-    timeout_id = g_timeout_add(2000, cb_io_timeout_detect, &timed_out_after);
+    milter_event_loop_add_timeout(loop, 0.5,
+                                  cb_timeout_detect, &timed_out_before);
+    timeout_id = milter_event_loop_add_timeout(loop,
+                                               2,
+                                               cb_io_timeout_detect,
+                                               &timed_out_after);
 
     g_io_channel_set_buffered(channel, FALSE);
     gcut_string_io_channel_set_buffer_limit(channel, 1);
@@ -961,7 +976,7 @@ test_writing_timeout (void)
 
     milter_server_context_helo(context, "delian");
     while (!timed_out_writing && !timed_out_after)
-        g_main_context_iteration(NULL, TRUE);
+        milter_event_loop_iterate(loop, TRUE);
     cut_assert_true(timed_out_before);
     cut_assert_true(timed_out_writing);
     cut_assert_false(timed_out_after);
