@@ -800,7 +800,10 @@ single_thread_process_client_channel (MilterClient *client, GIOChannel *channel,
                                       MilterGenericSocketAddress *address,
                                       socklen_t address_size)
 {
+    MilterClientPrivate *priv;
     ClientChannelSetupData *data;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
 
     data = g_new(ClientChannelSetupData, 1);
     data->client = client;
@@ -808,10 +811,11 @@ single_thread_process_client_channel (MilterClient *client, GIOChannel *channel,
     memcpy(&(data->address), address, address_size);
     g_io_channel_ref(channel);
 
-    g_idle_add_full(G_PRIORITY_DEFAULT,
-                    single_thread_cb_idle_client_channel_setup,
-                    data,
-                    NULL);
+    milter_event_loop_add_idle_full(priv->main_loop,
+                                    G_PRIORITY_DEFAULT,
+                                    single_thread_cb_idle_client_channel_setup,
+                                    data,
+                                    NULL);
 }
 
 static gint
