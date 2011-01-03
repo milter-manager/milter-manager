@@ -84,7 +84,7 @@ gboolean             milter_agent_flush             (MilterAgent *agent,
                                                      GError **error);
 
 void                 milter_agent_start             (MilterAgent *agent,
-                                                     MilterEventLoop *eventloop);
+                                                     MilterEventLoop *loop);
 void                 milter_agent_shutdown          (MilterAgent *agent);
 
 guint                milter_agent_get_tag           (MilterAgent *agent);

@@ -1,5 +1,7 @@
 2011-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-agent.[ch]: 'eventloop' -> 'loop'.
+
 	* milter/core/milter-glib-event-loop.c: support loop context.
 
 	* milter/core/milter-event-loop.[ch]: use more meaningful name.
