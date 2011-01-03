@@ -15,6 +15,9 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
+unset MAKELEVEL
+unset MAKEFLAGS
+
 if gmake --version > /dev/null 2>&1; then
     MAKE=${MAKE:-"gmake"}
 else
@@ -26,7 +29,7 @@ if test -z "$abs_top_builddir"; then
 fi
 
 if test -z "$abs_top_srcdir"; then
-    abs_top_srcdir="$(${MAKE} -C "$abs_top_builddir" -s echo-abs-top-srcdir)"
+    abs_top_srcdir="$(${MAKE} -s -C "$abs_top_builddir" echo-abs-top-srcdir)"
 fi
 
 if test x"$NO_MAKE" != x"yes"; then

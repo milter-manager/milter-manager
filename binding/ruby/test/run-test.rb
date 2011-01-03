@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 #
-# Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -19,22 +19,10 @@ require 'pathname'
 
 base = Pathname.new(__FILE__).dirname.expand_path
 top = (base + "..").expand_path
-test_unit_dir = top + "test-unit" + "lib"
 
+test_unit_dir = top + "test-unit" + "lib"
 $LOAD_PATH.unshift(test_unit_dir.to_s)
 require 'test/unit'
-
-if ENV["NO_MAKE"] != "yes"
-  make = "make"
-  make = "gmake" if system("which gmake > /dev/null")
-  system("#{make} -C .. > /dev/null") or exit(1)
-end
-
-$LOAD_PATH.unshift(File.expand_path("../glib-0.90.5/ext/glib2"))
-$LOAD_PATH.unshift((top + "glib-0.90.5" + "lib").to_s)
-$LOAD_PATH.unshift(File.expand_path("../src/toolkit/.libs"))
-$LOAD_PATH.unshift(File.expand_path("../src/manager/.libs"))
-$LOAD_PATH.unshift((top + "lib").to_s)
 
 require 'milter/manager'
 

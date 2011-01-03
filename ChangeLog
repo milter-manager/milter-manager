@@ -1,5 +1,9 @@
 2011-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/test/run-test.sh: support 'make check'.
+	* binding/ruby/test/run-test.rb: remove needless load path
+	configurations.
+
 	* gio-unix-compatible/gio/Makefile.am
 	(libgio_unix_compatible_la_LIBADD): remove needless prefix.
 
