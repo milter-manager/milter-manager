@@ -48,7 +48,6 @@ void test_quit (void);
 void test_quit_after_connect (void);
 void test_abort (void);
 void test_abort_and_quit (void);
-void test_reading_timeout (void);
 
 static guint32 protocol_version;
 
@@ -65,10 +64,6 @@ static GString *packet_string;
 static GHashTable *macros;
 
 static GIOChannel *channel;
-
-static gboolean timed_out_before;
-static gboolean timed_out_after;
-static guint timeout_id;
 
 static GError *expected_error, *actual_error;
 
@@ -149,10 +144,6 @@ setup (void)
     packet_string = NULL;
     macros = NULL;
 
-    timed_out_before = FALSE;
-    timed_out_after = FALSE;
-    timeout_id = 0;
-
     expected_error = NULL;
     actual_error = NULL;
 
@@ -179,9 +170,6 @@ channel_free (void)
 void
 teardown (void)
 {
-    if (timeout_id > 0)
-        g_source_remove(timeout_id);
-
     if (context)
         g_object_unref(context);
 

@@ -1,5 +1,7 @@
 2011-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/server/test-server-context-command.c: remove unused codes.
+
 	* milter/core/milter-agent.[ch]: 'eventloop' -> 'loop'.
 
 	* milter/core/milter-glib-event-loop.c: support loop context.
