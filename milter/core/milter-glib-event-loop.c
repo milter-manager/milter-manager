@@ -225,20 +225,40 @@ static guint
 add_watch (MilterEventLoop *loop,
            GIOChannel      *channel,
            GIOCondition     condition,
-           GIOFunc          func,
+           GIOFunc          function,
            gpointer         user_data)
 {
-    return g_io_add_watch(channel, condition, func, user_data);
+    MilterGLibEventLoopPrivate *priv;
+    guint watch_tag;
+    GSource *watch_source;
+
+    priv = MILTER_GLIB_EVENT_LOOP_GET_PRIVATE(loop);
+    watch_source = g_io_create_watch(channel, condition);
+    g_source_set_callback(watch_source, (GSourceFunc)function, user_data, NULL);
+    watch_tag = g_source_attach(watch_source,
+                                g_main_loop_get_context(priv->loop));
+    g_source_unref(watch_source);
+
+    return watch_tag;
 }
 
 static guint
 add_timeout (MilterEventLoop *loop,
-             gdouble interval,
-             GSourceFunc func,
+             gdouble interval_in_seconds,
+             GSourceFunc function,
              gpointer user_data)
 {
-    return g_timeout_add(interval * 1000,
-                         func, user_data);
+    MilterGLibEventLoopPrivate *priv;
+    guint tag;
+    GSource *source;
+
+    priv = MILTER_GLIB_EVENT_LOOP_GET_PRIVATE(loop);
+    source = g_timeout_source_new(interval_in_seconds * 1000);
+    g_source_set_callback(source, function, user_data, NULL);
+    tag = g_source_attach(source, g_main_loop_get_context(priv->loop));
+    g_source_unref(source);
+
+    return tag;
 }
 
 static guint
@@ -248,14 +268,36 @@ add_idle_full (MilterEventLoop *loop,
                gpointer         data,
                GDestroyNotify   notify)
 {
-    return g_idle_add_full(priority, function, data, notify);
+    MilterGLibEventLoopPrivate *priv;
+    GSource *source;
+    guint tag;
+
+    priv = MILTER_GLIB_EVENT_LOOP_GET_PRIVATE(loop);
+    source = g_idle_source_new();
+    if (priority != G_PRIORITY_DEFAULT_IDLE)
+        g_source_set_priority(source, priority);
+    g_source_set_callback(source, function, data, notify);
+    tag = g_source_attach(source, g_main_loop_get_context(priv->loop));
+    g_source_unref(source);
+
+    return tag;
 }
 
 static gboolean
 remove_source (MilterEventLoop *loop,
                guint            tag)
 {
-    return g_source_remove(tag);
+    MilterGLibEventLoopPrivate *priv;
+    GSource *source;
+    GMainContext *context;
+
+    priv = MILTER_GLIB_EVENT_LOOP_GET_PRIVATE(loop);
+    context = g_main_loop_get_context(priv->loop);
+    source = g_main_context_find_source_by_id(context, tag);
+    if (source)
+        g_source_destroy(source);
+
+    return source != NULL;
 }
 
 /*
