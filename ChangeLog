@@ -1,5 +1,7 @@
 2011-01-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-event-loop.h: remove needless code.
+
 	* test/server/test-server-context.c: use milter_event_loop_iterate().
 
 	* milter/core/milter-event-loop.[ch],
