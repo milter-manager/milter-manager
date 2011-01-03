@@ -43,20 +43,20 @@ enum
     PROP_LAST
 };
 
-static GObject *constructor  (GType                  type,
-                              guint                  n_props,
-                              GObjectConstructParam *props);
+static GObject *constructor    (GType                  type,
+                                guint                  n_props,
+                                GObjectConstructParam *props);
 
-static void dispose        (GObject         *object);
-static void set_property   (GObject         *object,
-                            guint            prop_id,
-                            const GValue    *value,
-                            GParamSpec      *pspec);
-static void get_property   (GObject         *object,
-                            guint            prop_id,
-                            GValue          *value,
-                            GParamSpec      *pspec);
-static void constructed    (GObject         *object);
+static void     dispose        (GObject         *object);
+static void     set_property   (GObject         *object,
+                                guint            prop_id,
+                                const GValue    *value,
+                                GParamSpec      *pspec);
+static void     get_property   (GObject         *object,
+                                guint            prop_id,
+                                GValue          *value,
+                                GParamSpec      *pspec);
+static void     constructed    (GObject         *object);
 
 static void
 milter_event_loop_class_init (MilterEventLoopClass *klass)
