@@ -1,5 +1,7 @@
 2011-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/core/test-logger.c (test_console_output): remove needless code.
+
 	* test/lib/milter-test-utils.[ch] (milter_test_pump_all_events),
 	test/manager/test-controller-context.c,
 	test/manager/test-process-launcher.c: use MilterEventLoop.

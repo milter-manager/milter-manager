@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -220,9 +220,6 @@ test_console_output (void)
     milter_info("end-of-log");
     g_set_print_handler(original_print_hander);
     original_print_hander = NULL;
-
-    while (!end_of_log)
-        g_main_context_iteration(NULL, TRUE);
 
     cut_assert_match("info", stdout_string->str);
 }
