@@ -2802,10 +2802,11 @@ milter_manager_children_negotiate (MilterManagerChildren *children,
 
     if (!priv->milters) {
         priv->negotiated = TRUE;
-        g_idle_add_full(G_PRIORITY_DEFAULT,
-                        cb_idle_reply_negotiate_on_no_child,
-                        children,
-                        NULL);
+        milter_event_loop_add_idle_full(priv->event_loop,
+                                        G_PRIORITY_DEFAULT,
+                                        cb_idle_reply_negotiate_on_no_child,
+                                        children,
+                                        NULL);
         return success;
     }
 
