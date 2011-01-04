@@ -334,7 +334,7 @@ start_client (guint port, GArray *arguments)
     MilterManagerTestClient *client;
     GError *error = NULL;
 
-    client = milter_manager_test_client_new(port, NULL);
+    client = milter_manager_test_client_new(port, NULL, loop);
     milter_manager_test_client_set_arguments(client, arguments);
     test_clients = g_list_append(test_clients, client);
     if (!milter_manager_test_client_run(client, &error)) {
@@ -1115,7 +1115,7 @@ test_scenario (gconstpointer data)
                                                 scenario_name));
     cut_trace(setup_parameters(main_scenario, children));
 
-    cut_trace(milter_manager_test_scenario_start_clients(main_scenario));
+    cut_trace(milter_manager_test_scenario_start_clients(main_scenario, loop));
 
     for (node = milter_manager_test_scenario_get_eggs(main_scenario);
          node;

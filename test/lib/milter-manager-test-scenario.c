@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -226,7 +226,8 @@ add_egg (MilterManagerTestScenarioPrivate *priv,
 
 
 static void
-start_client (MilterManagerTestScenario *scenario, const gchar *group)
+start_client (MilterManagerTestScenario *scenario, const gchar *group,
+              MilterEventLoop *loop)
 {
     MilterManagerTestScenarioPrivate *priv;
     MilterManagerTestClient *client;
@@ -243,7 +244,7 @@ start_client (MilterManagerTestScenario *scenario, const gchar *group)
                 scenario, group, "arguments", &length);
     }
 
-    client = milter_manager_test_client_new(port, group);
+    client = milter_manager_test_client_new(port, group, loop);
     milter_manager_test_client_set_argument_strings(client, arguments);
     priv->started_clients = g_list_append(priv->started_clients, client);
 
@@ -260,7 +261,8 @@ start_client (MilterManagerTestScenario *scenario, const gchar *group)
 }
 
 void
-milter_manager_test_scenario_start_clients (MilterManagerTestScenario *scenario)
+milter_manager_test_scenario_start_clients (MilterManagerTestScenario *scenario,
+                                            MilterEventLoop *loop)
 {
     const gchar **clients;
     gsize length, i;
@@ -268,7 +270,7 @@ milter_manager_test_scenario_start_clients (MilterManagerTestScenario *scenario)
     clients = milter_manager_test_scenario_get_string_list(
         scenario, MILTER_MANAGER_TEST_SCENARIO_GROUP_NAME, "clients", &length);
     for (i = 0; i < length; i++) {
-        cut_trace(start_client(scenario, clients[i]));
+        cut_trace(start_client(scenario, clients[i], loop));
     }
 }
 

@@ -36,6 +36,7 @@ struct _MilterManagerTestClientPrivate
     GCutEgg *egg;
     guint port;
     gchar *name;
+    MilterEventLoop *loop;
     GArray *command;
     GString *output_received;
 
@@ -655,11 +656,17 @@ dispose (GObject *object)
         priv->macros = NULL;
     }
 
+    if (priv->loop) {
+        g_object_unref(priv->loop);
+        priv->loop = NULL;
+    }
+
     G_OBJECT_CLASS(milter_manager_test_client_parent_class)->dispose(object);
 }
 
 MilterManagerTestClient *
-milter_manager_test_client_new (guint port, const gchar *name)
+milter_manager_test_client_new (guint port, const gchar *name,
+                                MilterEventLoop *loop)
 {
     MilterManagerTestClient *client;
     MilterManagerTestClientPrivate *priv;
@@ -668,6 +675,8 @@ milter_manager_test_client_new (guint port, const gchar *name)
     priv = MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client);
     priv->port = port;
     priv->name = g_strdup(name);
+    priv->loop = loop;
+    g_object_ref(priv->loop);
 
     return client;
 }
@@ -700,7 +709,7 @@ milter_manager_test_client_run (MilterManagerTestClient *client, GError **error)
         return FALSE;
 
     while (!priv->ready && !priv->reaped)
-        g_main_context_iteration(NULL, TRUE);
+        milter_event_loop_iterate(priv->loop, TRUE);
 
     return !priv->reaped;
 }
@@ -955,14 +964,17 @@ void
 milter_manager_test_client_wait_reply (MilterManagerTestClient *client,
                                        MilterManagerTestClientGetNReceived getter)
 {
+    MilterManagerTestClientPrivate *priv;
     gboolean timeout_waiting = TRUE;
     guint timeout_waiting_id;
 
-    timeout_waiting_id = g_timeout_add(100, cb_timeout_waiting,
-                                       &timeout_waiting);
+    priv = MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client);
+    timeout_waiting_id = milter_event_loop_add_timeout(priv->loop, 0.1,
+                                                       cb_timeout_waiting,
+                                                       &timeout_waiting);
     while (timeout_waiting && getter(client) == 0)
-        g_main_context_iteration(NULL, TRUE);
-    g_source_remove(timeout_waiting_id);
+        milter_event_loop_iterate(priv->loop, TRUE);
+    milter_event_loop_remove(priv->loop, timeout_waiting_id);
 
     cut_assert_true(timeout_waiting, cut_message("timeout"));
 }
@@ -980,17 +992,20 @@ milter_manager_test_clients_wait_n_replies(const GList *clients,
                                            MilterManagerTestClientGetNReceived getter,
                                            guint n_replies)
 {
+    MilterManagerTestClientPrivate *priv;
     gboolean timeout_waiting = TRUE;
     guint timeout_waiting_id;
 
-    timeout_waiting_id = g_timeout_add(1000, cb_timeout_waiting,
-                                       &timeout_waiting);
+    priv = MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(clients->data);
+    timeout_waiting_id = milter_event_loop_add_timeout(priv->loop, 1,
+                                                       cb_timeout_waiting,
+                                                       &timeout_waiting);
     while (timeout_waiting &&
            n_replies > milter_manager_test_clients_collect_n_received(clients,
                                                                       getter)) {
-        g_main_context_iteration(NULL, TRUE);
+        milter_event_loop_iterate(priv->loop, TRUE);
     }
-    g_source_remove(timeout_waiting_id);
+    milter_event_loop_remove(priv->loop, timeout_waiting_id);
 
     cut_assert_true(timeout_waiting, cut_message("timeout"));
     cut_assert_equal_uint(n_replies,
@@ -1001,16 +1016,19 @@ milter_manager_test_clients_wait_n_replies(const GList *clients,
 void
 milter_manager_test_clients_wait_n_alive(const GList *clients, guint n_alive)
 {
+    MilterManagerTestClientPrivate *priv;
     gboolean timeout_waiting = TRUE;
     guint timeout_waiting_id;
 
-    timeout_waiting_id = g_timeout_add(1000, cb_timeout_waiting,
-                                       &timeout_waiting);
+    priv = MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(clients->data);
+    timeout_waiting_id = milter_event_loop_add_timeout(priv->loop, 1,
+                                                       cb_timeout_waiting,
+                                                       &timeout_waiting);
     while (timeout_waiting &&
            n_alive != milter_manager_test_clients_collect_n_alive(clients)) {
-        g_main_context_iteration(NULL, TRUE);
+        milter_event_loop_iterate(priv->loop, TRUE);
     }
-    g_source_remove(timeout_waiting_id);
+    milter_event_loop_remove(priv->loop, timeout_waiting_id);
 
     cut_assert_true(timeout_waiting, cut_message("timeout"));
     cut_assert_equal_uint(n_alive,
@@ -1026,11 +1044,12 @@ milter_manager_test_client_assert_nothing_output (MilterManagerTestClient *clien
 
     priv = MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client);
     priv->have_output = FALSE;
-    timeout_waiting_id = g_timeout_add(100, cb_timeout_waiting,
-                                       &timeout_waiting);
+    timeout_waiting_id = milter_event_loop_add_timeout(priv->loop, 0.1,
+                                                       cb_timeout_waiting,
+                                                       &timeout_waiting);
     while (timeout_waiting && !priv->have_output)
-        g_main_context_iteration(NULL, TRUE);
-    g_source_remove(timeout_waiting_id);
+        milter_event_loop_iterate(priv->loop, TRUE);
+    milter_event_loop_remove(priv->loop, timeout_waiting_id);
 
     cut_assert_false(timeout_waiting);
     cut_assert_false(priv->have_output);

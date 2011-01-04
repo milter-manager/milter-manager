@@ -1743,7 +1743,7 @@ test_scenario (gconstpointer data)
         gcut_assert_error(error);
     }
 
-    cut_trace(milter_manager_test_scenario_start_clients(main_scenario));
+    cut_trace(milter_manager_test_scenario_start_clients(main_scenario, loop));
     cut_trace(do_actions(main_scenario));
 }
 

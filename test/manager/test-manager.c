@@ -48,6 +48,8 @@ void test_remove_manager_unix_socket_on_close (void);
 void data_scenario (void);
 void test_scenario (gconstpointer data);
 
+static MilterEventLoop *loop;
+
 static gchar *scenario_dir;
 static MilterManagerTestScenario *main_scenario;
 
@@ -168,6 +170,8 @@ cut_setup (void)
 {
     gchar *lt_milter_manager;
 
+    loop = milter_glib_event_loop_new(NULL);
+
     original_lang = g_strdup(g_getenv("LANG"));
     g_setenv("LANG", "C", TRUE);
 
@@ -228,6 +232,9 @@ cut_teardown (void)
     } else {
         g_unsetenv("LANG");
     }
+
+    if (loop)
+        g_object_unref(loop);
 }
 
 static void
@@ -522,7 +529,7 @@ test_scenario (gconstpointer data)
                                   MILTER_MANAGER_TEST_SCENARIO_GROUP_NAME,
                                   omit_key));
 
-    cut_trace(milter_manager_test_scenario_start_clients(main_scenario));
+    cut_trace(milter_manager_test_scenario_start_clients(main_scenario, loop));
 
     start_server();
 

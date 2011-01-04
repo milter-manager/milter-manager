@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -59,7 +59,8 @@ const GList               *milter_manager_test_scenario_get_imported_scenarios
                                               (MilterManagerTestScenario *scenario);
 
 void                       milter_manager_test_scenario_start_clients
-                                              (MilterManagerTestScenario *scenario);
+                                              (MilterManagerTestScenario *scenario,
+                                               MilterEventLoop           *loop);
 const GList               *milter_manager_test_scenario_get_started_clients
                                               (MilterManagerTestScenario *scenario);
 const GList               *milter_manager_test_scenario_get_eggs

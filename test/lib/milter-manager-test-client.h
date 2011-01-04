@@ -55,7 +55,8 @@ GType                    milter_manager_test_client_get_type (void) G_GNUC_CONST
 
 MilterManagerTestClient *milter_manager_test_client_new
                                               (guint port,
-                                               const gchar *name);
+                                               const gchar *name,
+                                               MilterEventLoop *loop);
 
 const gchar             *milter_manager_test_client_get_name
                                               (MilterManagerTestClient *client);
