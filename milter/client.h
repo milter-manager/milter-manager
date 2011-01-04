@@ -685,7 +685,7 @@ gboolean             milter_client_main              (MilterClient  *client);
  * milter_client_run_master:
  * @client: a %MilterClient.
  *
- * Starts main loop in parent process.
+ * Runs main loop in parent process.
  *
  * Returns: %TRUE if main loop is quitted successfully,
  * %FALSE otherwise.
@@ -696,9 +696,12 @@ gboolean             milter_client_run_master        (MilterClient *client);
  * milter_client_run_worker:
  * @client: a %MilterClient.
  *
- * Starts main loop in child process.
+ * Runs main loop in child process.
+ *
+ * Returns: %TRUE if main loop is quitted successfully,
+ * %FALSE otherwise.
  */
-void                 milter_client_run_worker        (MilterClient *client);
+gboolean             milter_client_run_worker        (MilterClient *client);
 
 /**
  * milter_client_shutdown:

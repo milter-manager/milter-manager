@@ -1133,9 +1133,17 @@ single_thread_start_accept (MilterClient *client)
 {
     MilterClientPrivate *priv;
     GThread *thread;
+    GError *error = NULL;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
-    thread = g_thread_create(single_thread_accept_thread, client, TRUE, NULL);
+    thread = g_thread_create(single_thread_accept_thread, client, TRUE, &error);
+    if (!thread) {
+        milter_error("[client][single-thread][accept][start][error] %s",
+                     error->message);
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client), error);
+        g_error_free(error);
+        return FALSE;
+    }
 
     g_mutex_lock(priv->quit_mutex);
     if (priv->quitting) {
@@ -1714,14 +1722,22 @@ milter_client_run_master (MilterClient *client)
     return TRUE;
 }
 
-void
+gboolean
 milter_client_run_worker (MilterClient *client)
 {
     MilterClientPrivate *priv;
     GThread *thread;
+    GError *error = NULL;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
-    thread = g_thread_create(worker_accept_thread, client, TRUE, NULL);
+    thread = g_thread_create(worker_accept_thread, client, TRUE, &error);
+    if (!thread) {
+        milter_error("[client][single-thread][accept][start][error] %s",
+                     error->message);
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client), error);
+        g_error_free(error);
+        return FALSE;
+    }
 
     g_mutex_lock(priv->quit_mutex);
     if (priv->quitting) {
@@ -1737,6 +1753,8 @@ milter_client_run_worker (MilterClient *client)
         milter_event_loop_run(loop);
     }
     g_thread_join(thread);
+
+    return TRUE;
 }
 
 void

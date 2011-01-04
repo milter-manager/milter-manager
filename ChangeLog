@@ -1,5 +1,8 @@
 2011-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client.c (milter_client_run_worker):
+	returns gboolean.
+
 	* milter/client.h, milter/client/milter-client.c: mark
 	milter_client_main() deprecated. use milter_client_run() instead.
 	* binding/ruby/src/toolkit/rb-milter-client.c,
