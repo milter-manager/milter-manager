@@ -494,11 +494,20 @@ cb_reaped (GCutEgg *egg, gint status, gpointer user_data)
 }
 
 static void
+append_argument (const gchar *argument)
+{
+    gchar *dupped_argument;
+
+    dupped_argument = g_strdup(argument);
+    g_array_append_val(command, dupped_argument);
+}
+
+static void
 setup_server (const gchar *spec, const gchar *option_string)
 {
-    g_array_append_val(command, g_strdup("--name"));
-    g_array_append_val(command, g_strdup("milter-test-server"));
-    g_array_append_val(command, g_strdup("-s"));
+    append_argument("--name");
+    append_argument("milter-test-server");
+    append_argument("-s");
     g_array_append_val(command, spec);
 
     if (option_string) {
