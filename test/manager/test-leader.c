@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -41,6 +41,8 @@ void test_configuration (void);
 
 static gchar *scenario_dir;
 static MilterManagerTestScenario *main_scenario;
+
+static MilterEventLoop *loop;
 
 static MilterManagerConfiguration *config;
 static MilterClientContext *client_context;
@@ -246,7 +248,7 @@ setup_client_context_signals (MilterClientContext *context)
 }
 
 void
-setup (void)
+cut_setup (void)
 {
     GIOChannel *channel;
     MilterWriter *writer;
@@ -259,6 +261,8 @@ setup (void)
                                     NULL);
 
     main_scenario = NULL;
+
+    loop = milter_glib_event_loop_new(NULL);
 
     config = milter_manager_configuration_new(NULL);
     milter_manager_configuration_load(config, "milter-manager.conf", &error);
@@ -275,12 +279,16 @@ setup (void)
     client_context = milter_client_context_new(NULL);
     milter_agent_set_writer(MILTER_AGENT(client_context), writer);
     g_object_unref(writer);
-    milter_agent_start(MILTER_AGENT(client_context), NULL);
+    milter_agent_set_event_loop(MILTER_AGENT(client_context), loop);
+    milter_agent_start(MILTER_AGENT(client_context), &error);
+    gcut_assert_error(error);
 
     server = milter_manager_test_server_new();
     milter_agent_set_reader(MILTER_AGENT(server), reader);
     g_object_unref(reader);
-    milter_agent_start(MILTER_AGENT(server), NULL);
+    milter_agent_set_event_loop(MILTER_AGENT(server), loop);
+    milter_agent_start(MILTER_AGENT(server), &error);
+    gcut_assert_error(error);
 
     leader = milter_manager_leader_new(config, client_context);
     actual_error = NULL;
@@ -319,6 +327,9 @@ cut_teardown (void)
 
     if (server)
         g_object_unref(server);
+
+    if (loop)
+        g_object_unref(loop);
 
     if (scenario_dir)
         g_free(scenario_dir);
@@ -415,13 +426,14 @@ assert_have_response_helper (const gchar *name)
     gboolean timeout_emitted = FALSE;
     guint timeout_emitted_id;
 
-    timeout_emitted_id = g_timeout_add(3000, cb_timeout_emitted,
-                                       &timeout_emitted);
+    timeout_emitted_id =
+        milter_event_loop_add_timeout(loop, 3,
+                                      cb_timeout_emitted, &timeout_emitted);
     while (!timeout_emitted &&
            get_response_count(name) == 0) {
-        g_main_context_iteration(NULL, TRUE);
+        milter_event_loop_iterate(loop, TRUE);
     }
-    g_source_remove(timeout_emitted_id);
+    milter_event_loop_remove(loop, timeout_emitted_id);
 
     cut_set_message("<%s>", name);
     cut_assert_false(timeout_emitted);
@@ -453,12 +465,13 @@ wait_finished_helper (void)
     gboolean timeout_emitted = FALSE;
     guint timeout_emitted_id;
 
-    timeout_emitted_id = g_timeout_add(100, cb_timeout_emitted,
-                                       &timeout_emitted);
+    timeout_emitted_id =
+        milter_event_loop_add_timeout(loop, 0.1,
+                                      cb_timeout_emitted, &timeout_emitted);
     while (!timeout_emitted && !finished) {
-        g_main_context_iteration(NULL, TRUE);
+        milter_event_loop_iterate(loop, TRUE);
     }
-    g_source_remove(timeout_emitted_id);
+    milter_event_loop_remove(loop, timeout_emitted_id);
 
     cut_assert_false(timeout_emitted);
     cut_assert_true(finished);
@@ -475,12 +488,13 @@ wait_leader_error_helper (void)
     gboolean timeout_emitted = FALSE;
     guint timeout_emitted_id;
 
-    timeout_emitted_id = g_timeout_add(100, cb_timeout_emitted,
-                                       &timeout_emitted);
+    timeout_emitted_id =
+        milter_event_loop_add_timeout(loop, 0.1,
+                                      cb_timeout_emitted, &timeout_emitted);
     while (!timeout_emitted && !actual_error) {
-        g_main_context_iteration(NULL, TRUE);
+        milter_event_loop_iterate(loop, TRUE);
     }
-    g_source_remove(timeout_emitted_id);
+    milter_event_loop_remove(loop, timeout_emitted_id);
 
     cut_assert_false(timeout_emitted);
     cut_assert_not_null(actual_error);
@@ -691,7 +705,7 @@ assert_response_common (MilterManagerTestScenario *scenario, const gchar *group)
         assert_n_received(scenario, group, "n_abort", "abort");
     }
 
-    g_main_context_iteration(NULL, FALSE);
+    milter_event_loop_iterate(loop, FALSE);
     cut_set_message("[%s]", group);
     gcut_assert_equal_enum(MILTER_TYPE_STATUS, status, response_status);
 

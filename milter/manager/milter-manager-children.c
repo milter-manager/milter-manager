@@ -543,6 +543,7 @@ milter_manager_children_add_child (MilterManagerChildren *children,
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     priv->milters = g_list_append(priv->milters, g_object_ref(child));
+    milter_agent_set_event_loop(MILTER_AGENT(child), priv->event_loop);
 }
 
 guint
