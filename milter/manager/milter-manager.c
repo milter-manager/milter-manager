@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -180,14 +180,19 @@ configuration_set_manager (MilterManagerConfiguration *configuration,
 }
 
 static void
-dispose_periodical_connection_checker (MilterManagerPrivate *priv)
+dispose_periodical_connection_checker (MilterManager *manager)
 {
+    MilterManagerPrivate *priv;
+    MilterEventLoop *loop;
+
+    priv = MILTER_MANAGER_GET_PRIVATE(manager);
     priv->current_periodical_connection_check_interval = 0;
 
     if (priv->periodical_connection_checker_id == 0)
         return;
 
-    g_source_remove(priv->periodical_connection_checker_id);
+    loop = milter_agent_get_event_loop(MILTER_AGENT(manager));
+    milter_event_loop_remove(loop, priv->periodical_connection_checker_id);
     priv->periodical_connection_checker_id = 0;
 }
 
@@ -214,11 +219,13 @@ dispose_finished_leaders (MilterManagerPrivate *priv)
 static void
 dispose (GObject *object)
 {
+    MilterManager *manager;
     MilterManagerPrivate *priv;
 
-    priv = MILTER_MANAGER_GET_PRIVATE(object);
+    manager = MILTER_MANAGER(object);
+    priv = MILTER_MANAGER_GET_PRIVATE(manager);
 
-    dispose_periodical_connection_checker(priv);
+    dispose_periodical_connection_checker(manager);
     dispose_finished_leaders(priv);
 
     if (priv->configuration) {
@@ -351,7 +358,7 @@ start_periodical_connection_checker (MilterManager *manager)
                          interval,
                          priv->periodical_connection_checker_id == 0 ?
                          "initial" : "update");
-            dispose_periodical_connection_checker(priv);
+            dispose_periodical_connection_checker(manager);
             priv->current_periodical_connection_check_interval = interval;
             loop = milter_agent_get_event_loop(MILTER_AGENT(manager));
             priv->periodical_connection_checker_id =
@@ -359,7 +366,7 @@ start_periodical_connection_checker (MilterManager *manager)
                                               connection_check, manager);
         }
     } else {
-        dispose_periodical_connection_checker(priv);
+        dispose_periodical_connection_checker(manager);
     }
 }
 
@@ -692,7 +699,7 @@ cb_leader_finished (MilterFinishedEmittable *emittable, gpointer user_data)
         }
         if (!priv->leaders) {
             milter_debug("[manager][connection-check][dispose] no leaders");
-            dispose_periodical_connection_checker(priv);
+            dispose_periodical_connection_checker(finish_data->manager);
         }
     }
 
