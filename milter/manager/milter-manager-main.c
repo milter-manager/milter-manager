@@ -271,10 +271,16 @@ cb_idle_reload_configuration (gpointer user_data)
 static void
 reload_configuration_request (int signum)
 {
-    g_idle_add_full(G_PRIORITY_DEFAULT,
-                    cb_idle_reload_configuration,
-                    NULL,
-                    NULL);
+    if (the_manager) {
+        MilterEventLoop *loop;
+
+        loop = milter_agent_get_event_loop(MILTER_AGENT(the_manager));
+        milter_event_loop_add_idle_full(loop,
+                                        G_PRIORITY_DEFAULT,
+                                        cb_idle_reload_configuration,
+                                        NULL,
+                                        NULL);
+    }
 }
 
 static void
