@@ -64,6 +64,7 @@ G_DEFINE_TYPE_WITH_CODE(MilterManagerProcessLauncher,
 typedef struct _ProcessData
 {
     GPid pid;
+    MilterEventLoop *loop;
     guint watch_id;
     gchar *command_line;
     gchar *user_name;
@@ -152,6 +153,7 @@ process_data_new (MilterEventLoop *loop, GPid pid, guint watch_id,
 
     data = g_new0(ProcessData, 1);
 
+    data->loop = loop;
     data->pid = pid;
     data->watch_id = watch_id;
     data->command_line = g_strdup(command_line);
@@ -172,7 +174,8 @@ process_data_new (MilterEventLoop *loop, GPid pid, guint watch_id,
 static void
 process_data_free (ProcessData *data)
 {
-    g_source_remove(data->watch_id);
+    milter_event_loop_remove(data->loop, data->watch_id);
+    g_object_unref(data->loop);
     g_object_unref(data->standard_output);
     g_object_unref(data->standard_error);
     g_spawn_close_pid(data->pid);
