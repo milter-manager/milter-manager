@@ -195,7 +195,7 @@ test_set_configuration (void)
         configuration, strlen(configuration));
     milter_writer_write(writer, packet, packet_size, NULL, &error);
     gcut_assert_error(error);
-    milter_test_pump_all_events();
+    milter_test_pump_all_events(loop);
 
     cut_assert_path_exist(custom_config_path);
 
@@ -229,7 +229,7 @@ test_set_configuration_failed (void)
         configuration, strlen(configuration));
     milter_writer_write(writer, packet, packet_size, NULL, &error);
     gcut_assert_error(error);
-    milter_test_pump_all_events();
+    milter_test_pump_all_events(loop);
 
     cut_assert_path_not_exist(custom_config_path);
 
@@ -278,7 +278,7 @@ test_reload (void)
                                                          &packet, &packet_size);
     milter_writer_write(writer, packet, packet_size, NULL, &error);
     gcut_assert_error(error);
-    milter_test_pump_all_events();
+    milter_test_pump_all_events(loop);
     cut_assert_true(milter_manager_configuration_is_privilege_mode(config));
 
     g_free(packet);

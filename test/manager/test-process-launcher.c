@@ -188,7 +188,7 @@ test_launch (void)
                                                         command_line, user_name);
     milter_writer_write(writer, packet, packet_size, NULL, &error);
     gcut_assert_error(error);
-    milter_test_pump_all_events();
+    milter_test_pump_all_events(loop);
 
     g_free(packet);
     milter_manager_reply_encoder_encode_success(reply_encoder,
@@ -214,7 +214,7 @@ test_already_launched (void)
     milter_writer_write(writer, packet, packet_size, NULL, &error);
     milter_writer_write(writer, packet, packet_size, NULL, &error);
     gcut_assert_error(error);
-    milter_test_pump_all_events();
+    milter_test_pump_all_events(loop);
 
     g_free(packet);
     milter_manager_reply_encoder_encode_success(reply_encoder,
@@ -289,7 +289,7 @@ test_launch_error (gconstpointer data)
                                                         command, user_name);
     milter_writer_write(writer, packet, packet_size, NULL, &error);
     gcut_assert_error(error);
-    milter_test_pump_all_events();
+    milter_test_pump_all_events(loop);
 
     g_free(packet);
     milter_manager_reply_encoder_encode_error(reply_encoder,

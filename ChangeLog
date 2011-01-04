@@ -1,5 +1,9 @@
 2011-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/lib/milter-test-utils.[ch] (milter_test_pump_all_events),
+	test/manager/test-controller-context.c,
+	test/manager/test-process-launcher.c: use MilterEventLoop.
+
 	* test/server/test-server-context-signals.c: use MilterEventLoop.
 
 	* test/libmilter/test-libmilter-compatible.c: use MilterEventLoop.

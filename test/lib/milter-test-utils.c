@@ -227,13 +227,13 @@ cb_idle_check (gpointer data)
 }
 
 void
-milter_test_pump_all_events (void)
+milter_test_pump_all_events (MilterEventLoop *loop)
 {
     gboolean idle_emitted = FALSE;
 
-    g_idle_add(cb_idle_check, &idle_emitted);
+    milter_event_loop_add_idle(loop, cb_idle_check, &idle_emitted);
     while (!idle_emitted) {
-        g_main_context_iteration(NULL, TRUE);
+        milter_event_loop_iterate(loop, TRUE);
     }
 }
 
