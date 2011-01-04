@@ -1,5 +1,7 @@
 2011-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* po/POTFILES.skip: add for gio-unix-compatible.
+
 	* milter/core/milter-event-loop.c: add NULL check.
 
 	* binding/ruby/test/toolkit/test-server-context.rb: set event loop.

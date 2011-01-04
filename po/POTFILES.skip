@@ -1,0 +1,17 @@
+gio-unix-compatible/gio/gcancellable.c
+gio-unix-compatible/gio/gcredentials.c
+gio-unix-compatible/gio/ginetaddress.c
+gio-unix-compatible/gio/ginetsocketaddress.c
+gio-unix-compatible/gio/ginputstream.c
+gio-unix-compatible/gio/giostream.c
+gio-unix-compatible/gio/gnetworkaddress.c
+gio-unix-compatible/gio/goutputstream.c
+gio-unix-compatible/gio/gsimpleasyncresult.c
+gio-unix-compatible/gio/gsocket.c
+gio-unix-compatible/gio/gsocketaddress.c
+gio-unix-compatible/gio/gsocketconnection.c
+gio-unix-compatible/gio/gsocketinputstream.c
+gio-unix-compatible/gio/gsocketoutputstream.c
+gio-unix-compatible/gio/gtcpconnection.c
+gio-unix-compatible/gio/gunixconnection.c
+gio-unix-compatible/gio/gunixsocketaddress.c
