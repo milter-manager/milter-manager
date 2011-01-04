@@ -27,10 +27,7 @@
 
 #include <gcutter.h>
 
-void test_add_header (void);
-void test_insert_header (void);
 void test_change_header (void);
-void test_delete_header (void);
 
 static MilterEventLoop *loop;
 
@@ -313,34 +310,6 @@ test_change_header (void)
                                               header_name,
                                               header_index,
                                               header_value);
-    actual_data = gcut_string_io_channel_get_string(channel);
-    cut_assert_equal_memory(packet, packet_size,
-                            actual_data->str, actual_data->len);
-}
-
-void
-test_delete_header (void)
-{
-    GString *actual_data;
-
-    cut_notify("should be implemented in test-client-context-modify.c.");
-
-    set_option();
-
-    delete_header = TRUE;
-
-    header_name = g_strdup("X-Test-Header");
-    header_index = 2;
-    milter_command_encoder_encode_end_of_message(command_encoder,
-                                                 &packet, &packet_size,
-                                                 NULL, 0);
-    gcut_assert_error(feed());
-
-    packet_free();
-    milter_reply_encoder_encode_delete_header(reply_encoder,
-                                              &packet, &packet_size,
-                                              header_name,
-                                              header_index);
     actual_data = gcut_string_io_channel_get_string(channel);
     cut_assert_equal_memory(packet, packet_size,
                             actual_data->str, actual_data->len);

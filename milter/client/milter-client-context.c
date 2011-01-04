@@ -2236,13 +2236,13 @@ milter_client_context_delete_header (MilterClientContext *context,
     }
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
-    if (!validate_state("change-header",
+    if (!validate_state("delete-header",
                         MILTER_CLIENT_CONTEXT_STATE_END_OF_MESSAGE,
                         priv->state,
                         error))
         return FALSE;
 
-    if (!validate_action("change-header",
+    if (!validate_action("delete-header",
                          MILTER_ACTION_CHANGE_HEADERS,
                          priv->option,
                          error))
