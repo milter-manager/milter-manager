@@ -1,5 +1,7 @@
 2011-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/client/test-client-context-body.c: use MilterEventLoop.
+
 	* tool/milter-test-server.c: use MilterEventLoop.
 
 	* test/client/test-client-context-address.c: use MilterEventLoop.
