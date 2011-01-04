@@ -1,5 +1,7 @@
 2011-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/tool/test-server.c: add cut_ prefix.
+
 	* test/tool/test-server.c (append_argument): remove.
 
 	* test/tool/test-server.c: specify server name.

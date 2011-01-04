@@ -388,7 +388,7 @@ setup_server_command (void)
 }
 
 void
-setup (void)
+cut_setup (void)
 {
     client = NULL;
     server = NULL;
@@ -433,7 +433,7 @@ setup (void)
 }
 
 void
-teardown (void)
+cut_teardown (void)
 {
     if (client)
         g_object_unref(client);
