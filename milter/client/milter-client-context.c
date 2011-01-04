@@ -1554,7 +1554,9 @@ disable_timeout (MilterClientContext *context)
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
 
     if (priv->timeout_id > 0) {
-        g_source_remove(priv->timeout_id);
+        MilterEventLoop *loop;
+        loop = milter_agent_get_event_loop(MILTER_AGENT(context));
+        milter_event_loop_remove(loop, priv->timeout_id);
         priv->timeout_id = 0;
     }
 }
@@ -1981,6 +1983,7 @@ static gboolean
 write_packet (MilterClientContext *context, gchar *packet, gsize packet_size)
 {
     MilterClientContextPrivate *priv;
+    MilterEventLoop *loop;
     gboolean success;
     GError *agent_error = NULL;
 
@@ -1990,9 +1993,11 @@ write_packet (MilterClientContext *context, gchar *packet, gsize packet_size)
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
 
     disable_timeout(context);
-    priv->timeout_id = milter_utils_timeout_add(priv->timeout,
-                                                cb_timeout,
-                                                context);
+    loop = milter_agent_get_event_loop(MILTER_AGENT(context));
+    priv->timeout_id = milter_event_loop_add_timeout(loop,
+                                                     priv->timeout,
+                                                     cb_timeout,
+                                                     context);
     success = milter_agent_write_packet(MILTER_AGENT(context),
                                         packet, packet_size,
                                         &agent_error);
