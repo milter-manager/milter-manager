@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -41,6 +41,8 @@ void data_delete_recipient (void);
 void test_delete_recipient (gconstpointer data);
 void data_delete_recipient_error_no_recipient (void);
 void test_delete_recipient_error_no_recipient (gconstpointer data);
+
+static MilterEventLoop *loop;
 
 static MilterClientContext *context;
 static MilterCommandEncoder *command_encoder;
@@ -121,16 +123,22 @@ setup_option (MilterClientContext *context)
 }
 
 void
-setup (void)
+cut_setup (void)
 {
+    GError *error = NULL;
+
+    loop = milter_glib_event_loop_new(NULL);
+
     context = milter_client_context_new(NULL);
+    milter_agent_set_event_loop(MILTER_AGENT(context), loop);
 
     channel = gcut_string_io_channel_new(NULL);
     g_io_channel_set_encoding(channel, NULL, NULL);
     writer = milter_writer_io_channel_new(channel);
 
     milter_agent_set_writer(MILTER_AGENT(context), writer);
-    milter_agent_start(MILTER_AGENT(context), NULL);
+    milter_agent_start(MILTER_AGENT(context), &error);
+    gcut_assert_error(error);
     setup_signals(context);
 
     setup_option(context);
@@ -179,6 +187,9 @@ teardown (void)
 
     if (channel)
         g_io_channel_unref(channel);
+
+    if (loop)
+        g_object_unref(loop);
 
     packet_free();
 

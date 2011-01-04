@@ -1,5 +1,7 @@
 2011-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/client/test-client-context-address.c: use MilterEventLoop.
+
 	* test/libmilter/test-smfi-context.c: use MilterEventLoop.
 
 	* test/core/test-writer.c: use MilterEventLoop.
