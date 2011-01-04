@@ -1,5 +1,7 @@
 2011-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/test-children.c: add missing NULLs.
+
 	* test/tool/test-server.c: add cut_ prefix.
 
 	* test/tool/test-server.c (append_argument): remove.

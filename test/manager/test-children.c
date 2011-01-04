@@ -1099,7 +1099,8 @@ data_scenario (void)
                  g_strdup("envelope-recipient.txt"), g_free,
                  "data", g_strdup("data.txt"), g_free,
                  "header", g_strdup("header.txt"), g_free,
-                 "end-of-header", g_strdup("end-of-header.txt"), g_free);
+                 "end-of-header", g_strdup("end-of-header.txt"), g_free,
+                 NULL);
 }
 
 void
@@ -1655,7 +1656,8 @@ data_important_status (void)
                  label " - temporary failure - discard",                \
                  test_data(state, TEMPORARY_FAILURE, DISCARD), g_free,  \
                  label " - reject - discard",                           \
-                 test_data(state, REJECT, DISCARD), g_free)
+                 test_data(state, REJECT, DISCARD), g_free,             \
+                 NULL)
 
     add_data("connect", CONNECT);
     add_data("envelope from", ENVELOPE_FROM);
@@ -1679,7 +1681,8 @@ data_important_status (void)
                  "body - skip - discard",
                  test_data(BODY, SKIP, DISCARD), g_free,
                  "body - accept - skip",
-                 test_data(BODY, ACCEPT, SKIP), g_free);
+                 test_data(BODY, ACCEPT, SKIP), g_free,
+                 NULL);
     add_data("end of message", END_OF_MESSAGE);
 
 #undef add_data
@@ -1725,7 +1728,8 @@ data_not_important_status (void)
                  label " - discard - accept",                           \
                  test_data(state, DISCARD, ACCEPT), g_free,             \
                  label " - discard - reject",                           \
-                 test_data(state, DISCARD, REJECT), g_free);
+                 test_data(state, DISCARD, REJECT), g_free,             \
+                 NULL);
 
     add_data("connect", CONNECT);
     add_data("envelope from", ENVELOPE_FROM);
@@ -1745,7 +1749,8 @@ data_not_important_status (void)
                  "body - skip - default",
                  test_data(BODY, SKIP, DEFAULT), g_free,
                  "body - skip - not change",
-                 test_data(BODY, SKIP, NOT_CHANGE), g_free);
+                 test_data(BODY, SKIP, NOT_CHANGE), g_free,
+                 NULL);
     add_data("end of message", END_OF_MESSAGE);
 
 #undef add_data
