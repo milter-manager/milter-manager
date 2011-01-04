@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -62,8 +62,8 @@ G_BEGIN_DECLS
  * the passed %MilterClientContext. See %MilterClientContext
  * for available signals.
  *
- * milter_client_main() is mail loop function. You can enter
- * into mail loop after you finish to prepare your
+ * milter_client_run() is running main loop function. You
+ * can enter into main loop after you finish to prepare your
  * %MilterClient.
  *
  * Here is an example codes that uses the milter-client
@@ -102,7 +102,7 @@ G_BEGIN_DECLS
  *     }
  *     g_signal_connect(client, "connection-established",
  *                      G_CALLBACK(cb_connection_established), NULL);
- *     milter_client_main(client);
+ *     milter_client_run(client);
  *
  *     milter_client_quit();
  *     milter_quit();
@@ -656,15 +656,30 @@ void                 milter_client_set_maintenance_interval
                                                       guint          n_sessions);
 
 /**
- * milter_client_main:
+ * milter_client_run:
  * @client: a %MilterClient.
  *
- * Starts main loop.
+ * Runs main loop.
  *
  * Returns: %TRUE if main loop is quitted successfully,
  * %FALSE otherwise.
  */
+gboolean             milter_client_run               (MilterClient  *client);
+
+#ifndef MILTER_DISABLE_DEPRECATED
+/**
+ * milter_client_main:
+ * @client: a %MilterClient.
+ *
+ * Runs main loop.
+ *
+ * Returns: %TRUE if main loop is quitted successfully,
+ * %FALSE otherwise.
+ *
+ * Depracated: 1.6.2: Use milter_client_run() instead.
+ */
 gboolean             milter_client_main              (MilterClient  *client);
+#endif
 
 /**
  * milter_client_run_master:

@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -32,8 +32,17 @@ typedef OpenFile rb_io_t;
 VALUE rb_cMilterClient;
 
 static VALUE
+client_run (VALUE self)
+{
+    milter_client_run(SELF(self));
+    return Qnil;
+}
+
+static VALUE
 client_main (VALUE self)
 {
+    milter_warning("[ruby][client][deprecatd] Milter::Client#run is deprecated. "
+		   "Use Milter::Client#run instead.");
     milter_client_main(SELF(self));
     return Qnil;
 }
@@ -230,6 +239,7 @@ Init_milter_client (void)
 		    "DEFAULT_MAX_CONNECTIONS",
 		    UINT2NUM(MILTER_CLIENT_DEFAULT_MAX_CONNECTIONS));
 
+    rb_define_method(rb_cMilterClient, "run", client_run, 0);
     rb_define_method(rb_cMilterClient, "main", client_main, 0);
     rb_define_method(rb_cMilterClient, "run_master", client_run_master, 0);
     rb_define_method(rb_cMilterClient, "run_worker", client_run_worker, 0);

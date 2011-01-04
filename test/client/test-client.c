@@ -524,7 +524,7 @@ test_negotiate (void)
     idle_id = milter_event_loop_add_idle(loop, cb_idle_negotiate, NULL);
 
     cut_trace(setup_client());
-    if (!milter_client_main(client))
+    if (!milter_client_run(client))
         cut_assert_errno();
 
     milter_assert_equal_option(option, negotiate_option);
@@ -553,7 +553,7 @@ test_helo (void)
     idle_id = milter_event_loop_add_idle(loop, cb_idle_helo, NULL);
 
     cut_trace(setup_client());
-    if (!milter_client_main(client))
+    if (!milter_client_run(client))
         cut_assert_errno();
 
     cut_assert_equal_string(fqdn, helo_fqdn);
@@ -566,7 +566,7 @@ test_listen_started (void)
     gchar actual_address_string[INET6_ADDRSTRLEN];
 
     cut_trace(setup_client());
-    if (!milter_client_main(client))
+    if (!milter_client_run(client))
         cut_assert_errno();
 
     cut_assert_not_null(actual_address);
@@ -649,7 +649,7 @@ test_change_unix_socket_mode (void)
     milter_client_set_default_remove_unix_socket_on_close(client, FALSE);
 
     cut_trace(setup_client());
-    if (!milter_client_main(client))
+    if (!milter_client_run(client))
         cut_assert_errno();
 
     if (stat(path, &stat_buffer) == -1)
@@ -702,7 +702,7 @@ test_change_unix_socket_group (void)
     milter_client_set_default_remove_unix_socket_on_close(client, FALSE);
 
     cut_trace(setup_client());
-    if (!milter_client_main(client))
+    if (!milter_client_run(client))
         cut_assert_errno();
 
     if (stat(path, &stat_buffer) == -1)
@@ -730,7 +730,7 @@ test_remove_unix_socket_on_close (void)
     spec = cut_take_printf("unix:%s", path);
 
     cut_trace(setup_client());
-    cut_assert_true(milter_client_main(client));
+    cut_assert_true(milter_client_run(client));
 
     cut_assert_false(g_file_test(path, G_FILE_TEST_EXISTS));
 }
@@ -756,7 +756,7 @@ test_remove_unix_socket_on_create (void)
     gcut_assert_error(error);
 
     cut_trace(setup_client());
-    cut_assert_true(milter_client_main(client));
+    cut_assert_true(milter_client_run(client));
     cut_assert_null(actual_error);
 }
 
@@ -775,7 +775,7 @@ test_not_remove_unix_socket_on_create (void)
     milter_client_set_remove_unix_socket_on_create(client, FALSE);
 
     cut_trace(setup_client());
-    cut_assert_false(milter_client_main(client));
+    cut_assert_false(milter_client_run(client));
 
     expected_error = g_error_new(MILTER_CONNECTION_ERROR,
                                  MILTER_CONNECTION_ERROR_BIND_FAILURE,

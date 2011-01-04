@@ -509,7 +509,7 @@ main (int argc, char *argv[])
 
         setup_client_signals(client);
         sigint_handler = signal(SIGINT, cb_sigint_shutdown_client);
-        success = milter_client_main(client);
+        success = milter_client_run(client);
         signal(SIGINT, sigint_handler);
     } else {
         g_print("%s\n", error->message);

@@ -1,8 +1,9 @@
 INCLUDES = 				\
 	-I$(top_srcdir)
 
-AM_CFLAGS = 				\
-	$(MILTER_TOOLKIT_CFLAGS)	\
+AM_CFLAGS =					\
+	-DMILTER_LOG_DOMAIN=\""ruby-milter"\"	\
+	$(MILTER_TOOLKIT_CFLAGS)		\
 	$(MILTER_RUBY_CFLAGS)
 
 LIBS =								\

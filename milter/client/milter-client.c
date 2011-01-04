@@ -1670,7 +1670,7 @@ milter_client_cleanup (MilterClient *client)
 }
 
 gboolean
-milter_client_main (MilterClient *client)
+milter_client_run (MilterClient *client)
 {
     MilterClientPrivate *priv;
     gboolean success;
@@ -1690,6 +1690,12 @@ milter_client_main (MilterClient *client)
     milter_client_cleanup(client);
 
     return success;
+}
+
+gboolean
+milter_client_main (MilterClient *client)
+{
+    return milter_client_run(client);
 }
 
 gboolean

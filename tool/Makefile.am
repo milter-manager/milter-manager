@@ -22,7 +22,8 @@ milter_test_client_CFLAGS =				\
 	-DMILTER_LOG_DOMAIN=\""milter-test-client"\"
 
 milter_test_client_libmilter_SOURCE = milter-test-client-libmilter.c
-milter_test_client_libmilter_LDADD =		\
+milter_test_client_libmilter_LDADD =				\
+	$(top_builddir)/milter/client/libmilter-client.la	\
 	$(top_builddir)/libmilter/libmilter.la			\
 	$(GLIB_LIBS)
 milter_test_client_libmilter_CFLAGS =				\

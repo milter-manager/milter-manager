@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -790,7 +790,7 @@ milter_manager_main (void)
     SET_SIGNAL_ACTION(HUP, hup, reload_configuration_request_action);
 #undef SET_SIGNAL_ACTION
 
-    if (!milter_client_main(client))
+    if (!milter_client_run(client))
         milter_manager_error("failed to start milter-manager process.");
 
 #define UNSET_SIGNAL_ACTION(SIGNAL, signal)                             \
