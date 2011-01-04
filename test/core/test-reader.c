@@ -90,6 +90,9 @@ cut_teardown (void)
     if (channel)
         g_io_channel_unref(channel);
 
+    if (loop)
+        g_object_unref(loop);
+
     if (actual_read_string)
         g_string_free(actual_read_string, TRUE);
 
