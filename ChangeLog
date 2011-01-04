@@ -1,5 +1,7 @@
 2011-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/tool/test-server.c: use MilterEventLoop.
+
 	* test/client/Makefile.am: format.
 
 	* test/client/test-client-context-header.c: remove.

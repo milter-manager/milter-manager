@@ -55,6 +55,8 @@ void test_macro (gconstpointer data);
 void data_invalid_spec (void);
 void test_invalid_spec (gconstpointer data);
 
+static MilterEventLoop *loop;
+
 static MilterTestClient *client;
 static MilterDecoder *decoder;
 static MilterReplyEncoder *encoder;
@@ -390,6 +392,8 @@ setup_server_command (void)
 void
 cut_setup (void)
 {
+    loop = milter_glib_event_loop_new(NULL);
+
     client = NULL;
     server = NULL;
     decoder = milter_command_decoder_new();
@@ -557,12 +561,13 @@ wait_for_reaping (gboolean check_success)
     gboolean timeout_waiting = TRUE;
     guint timeout_waiting_id;
 
-    timeout_waiting_id = g_timeout_add_seconds(1, cb_timeout_waiting,
-                                               &timeout_waiting);
+    timeout_waiting_id = milter_event_loop_add_timeout(loop, 1,
+                                                       cb_timeout_waiting,
+                                                       &timeout_waiting);
     while (timeout_waiting && !reaped) {
-        g_main_context_iteration(NULL, TRUE);
+        milter_event_loop_iterate(loop, TRUE);
     }
-    g_source_remove(timeout_waiting_id);
+    milter_event_loop_remove(loop, timeout_waiting_id);
     cut_assert_true(timeout_waiting, cut_message("timeout"));
 
     if (!check_success)
