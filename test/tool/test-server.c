@@ -473,15 +473,6 @@ teardown (void)
 }
 
 static void
-append_argument (GArray *array, const gchar *argument)
-{
-    gchar *dupped_argument;
-
-    dupped_argument = g_strdup(argument);
-    g_array_append_val(array, dupped_argument);
-}
-
-static void
 cb_output_received (GCutEgg *egg, const gchar *chunk, gsize size,
                     gpointer user_data)
 {
@@ -505,9 +496,9 @@ cb_reaped (GCutEgg *egg, gint status, gpointer user_data)
 static void
 setup_server (const gchar *spec, const gchar *option_string)
 {
-    append_argument(command, "--name");
-    append_argument(command, "milter-test-server");
-    append_argument(command, "-s");
+    g_array_append_val(command, g_strdup("--name"));
+    g_array_append_val(command, g_strdup("milter-test-server"));
+    g_array_append_val(command, g_strdup("-s"));
     g_array_append_val(command, spec);
 
     if (option_string) {
