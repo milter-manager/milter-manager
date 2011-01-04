@@ -133,7 +133,7 @@ milter_agent_class_init (MilterAgentClass *klass)
                                "Event Loop",
                                "The event loop of the agent",
                                MILTER_TYPE_EVENT_LOOP,
-                               G_PARAM_READABLE);
+                               G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_EVENT_LOOP, spec);
 
     g_type_class_add_private(gobject_class, sizeof(MilterAgentPrivate));

@@ -1,5 +1,7 @@
 2011-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-agent.c: make event-loop writable.
+
 	* binding/ruby/test/run-test.sh: use command line option isntead
 	of environment varialbe.
 
