@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -235,7 +235,6 @@ test_stop (void)
     idle_id = g_idle_add(cb_idle_stop, &stopped);
 
     milter_assert_success(smfi_main());
-    milter_init();
     cut_assert_true(stopped);
 }
 
