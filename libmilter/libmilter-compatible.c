@@ -569,6 +569,7 @@ int
 smfi_main (void)
 {
     gboolean success;
+    GError *error = NULL;
 
     libmilter_compatible_initialize();
 
@@ -576,7 +577,11 @@ smfi_main (void)
         g_object_unref(client);
     client = milter_client_new();
     setup_milter_client(client);
-    success = milter_client_run(client);
+    success = milter_client_run(client, &error);
+    if (!success) {
+        milter_error("failed to run main loop: %s", error->message);
+        g_error_free(error);
+    }
     g_object_unref(client);
     client = NULL;
 

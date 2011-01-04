@@ -1129,19 +1129,19 @@ worker_accept_thread (gpointer data)
 }
 
 static gboolean
-single_thread_start_accept (MilterClient *client)
+single_thread_start_accept (MilterClient *client, GError **error)
 {
     MilterClientPrivate *priv;
     GThread *thread;
-    GError *error = NULL;
+    GError *local_error = NULL;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
-    thread = g_thread_create(single_thread_accept_thread, client, TRUE, &error);
+    thread = g_thread_create(single_thread_accept_thread, client, TRUE,
+                             &local_error);
     if (!thread) {
         milter_error("[client][single-thread][accept][start][error] %s",
-                     error->message);
-        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client), error);
-        g_error_free(error);
+                     local_error->message);
+        g_propagate_error(error, local_error);
         return FALSE;
     }
 
@@ -1293,11 +1293,11 @@ multi_thread_process_client_channel_thread (gpointer data_, gpointer user_data)
 }
 
 static gboolean
-multi_thread_start_accept (MilterClient *client)
+multi_thread_start_accept (MilterClient *client, GError **error)
 {
     MilterClientPrivate *priv;
     gint max_threads = 10;
-    GError *error = NULL;
+    GError *local_error = NULL;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
     priv->worker_threads =
@@ -1305,19 +1305,18 @@ multi_thread_start_accept (MilterClient *client)
                           client,
                           max_threads,
                           FALSE,
-                          &error);
+                          &local_error);
     if (!priv->worker_threads) {
         GError *client_error;
         client_error = g_error_new(MILTER_CLIENT_ERROR,
                                    MILTER_CLIENT_ERROR_THREAD,
-                                   "[client][error][accept] "
                                    "failed to create a thread pool "
                                    "for processing accepted connection: %s",
-                                   error->message);
-        g_error_free(error);
-        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client),
-                                    client_error);
-        g_error_free(client_error);
+                                   local_error->message);
+        g_error_free(local_error);
+        milter_error("[client][multi-thread][accept][error] %s",
+                     client_error->message);
+        g_propagate_error(error, client_error);
         return FALSE;
     }
 
@@ -1583,27 +1582,22 @@ milter_client_daemonize (MilterClient *client, GError **error)
     return TRUE;
 }
 
-static gboolean milter_client_prepare (MilterClient *client, GIOFunc func);
-static void milter_client_cleanup (MilterClient *client);
-
 static gboolean
-milter_client_prepare_loop (MilterClient *client, MilterEventLoop *loop, GIOFunc func)
+milter_client_prepare (MilterClient *client, GIOFunc func, GError **error)
 {
     MilterClientPrivate *priv;
-    GError *error = NULL;
+    GError *local_error = NULL;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
+    priv->accept_loop = event_loop_new(client, FALSE);
 
     if (priv->listening_channel || priv->n_processing_sessions > 0) {
-        GError *error;
-
-        error = g_error_new(MILTER_CLIENT_ERROR,
-                            MILTER_CLIENT_ERROR_RUNNING,
-                            "The milter client is already running: <%p>",
-                            client);
-        milter_error("[client][error][main] %s", error->message);
-        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client), error);
-        g_error_free(error);
+        local_error = g_error_new(MILTER_CLIENT_ERROR,
+                                  MILTER_CLIENT_ERROR_RUNNING,
+                                  "The milter client is already running: <%p>",
+                                  client);
+        milter_error("[client][prepare][error] %s", local_error->message);
+        g_propagate_error(error, local_error);
         return FALSE;
     }
 
@@ -1613,34 +1607,25 @@ milter_client_prepare_loop (MilterClient *client, MilterEventLoop *loop, GIOFunc
         g_io_channel_ref(priv->listen_channel);
         priv->listening_channel = priv->listen_channel;
     } else {
-        priv->listening_channel = milter_client_listen_channel(client, &error);
+        priv->listening_channel = milter_client_listen_channel(client,
+                                                               &local_error);
     }
 
     if (!priv->listening_channel) {
-        milter_error("[client][error][listen] %s", error->message);
-        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client), error);
-        g_error_free(error);
+        milter_error("[client][prepare][listen][error] %s",
+                     local_error->message);
+        g_propagate_error(error, local_error);
         return FALSE;
     }
 
     priv->server_watch_id =
-        milter_event_loop_watch_io(loop,
+        milter_event_loop_watch_io(priv->accept_loop,
                                    priv->listening_channel,
                                    G_IO_IN | G_IO_PRI |
                                    G_IO_ERR | G_IO_HUP | G_IO_NVAL,
                                    func, client);
 
     return TRUE;
-}
-
-static gboolean
-milter_client_prepare (MilterClient *client, GIOFunc func)
-{
-    MilterClientPrivate *priv;
-
-    priv = MILTER_CLIENT_GET_PRIVATE(client);
-    priv->accept_loop = event_loop_new(client, FALSE);
-    return milter_client_prepare_loop(client, priv->accept_loop, func);
 }
 
 static void
@@ -1678,7 +1663,7 @@ milter_client_cleanup (MilterClient *client)
 }
 
 gboolean
-milter_client_run (MilterClient *client)
+milter_client_run (MilterClient *client, GError **error)
 {
     MilterClientPrivate *priv;
     gboolean success;
@@ -1686,13 +1671,15 @@ milter_client_run (MilterClient *client)
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
     if (priv->multi_thread_mode) {
-        if (!milter_client_prepare(client, multi_thread_server_watch_func))
+        if (!milter_client_prepare(client, multi_thread_server_watch_func,
+                                   error))
             return FALSE;
-        success = multi_thread_start_accept(client);
+        success = multi_thread_start_accept(client, error);
     } else {
-        if (!milter_client_prepare(client, single_thread_server_watch_func))
+        if (!milter_client_prepare(client, single_thread_server_watch_func,
+                                   error))
             return FALSE;
-        success = single_thread_start_accept(client);
+        success = single_thread_start_accept(client, error);
     }
 
     milter_client_cleanup(client);
@@ -1703,17 +1690,17 @@ milter_client_run (MilterClient *client)
 gboolean
 milter_client_main (MilterClient *client)
 {
-    return milter_client_run(client);
+    return milter_client_run(client, NULL);
 }
 
 gboolean
-milter_client_run_master (MilterClient *client)
+milter_client_run_master (MilterClient *client, GError **error)
 {
     MilterClientPrivate *priv;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
-    if (!milter_client_prepare(client, master_server_watch_func))
+    if (!milter_client_prepare(client, master_server_watch_func, error))
         return FALSE;
     single_thread_accept_loop_run(client, priv->accept_loop);
 
@@ -1723,19 +1710,19 @@ milter_client_run_master (MilterClient *client)
 }
 
 gboolean
-milter_client_run_worker (MilterClient *client)
+milter_client_run_worker (MilterClient *client, GError **error)
 {
     MilterClientPrivate *priv;
     GThread *thread;
-    GError *error = NULL;
+    GError *local_error = NULL;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
-    thread = g_thread_create(worker_accept_thread, client, TRUE, &error);
+    thread = g_thread_create(worker_accept_thread, client, TRUE, &local_error);
     if (!thread) {
-        milter_error("[client][single-thread][accept][start][error] %s",
-                     error->message);
-        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client), error);
-        g_error_free(error);
+        milter_error("[client][worker][single-thread][accept][start][error] %s",
+                     local_error->message);
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client), local_error);
+        g_propagate_error(error, local_error);
         return FALSE;
     }
 

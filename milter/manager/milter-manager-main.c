@@ -790,8 +790,11 @@ milter_manager_main (void)
     SET_SIGNAL_ACTION(HUP, hup, reload_configuration_request_action);
 #undef SET_SIGNAL_ACTION
 
-    if (!milter_client_run(client))
-        milter_manager_error("failed to start milter-manager process.");
+    if (!milter_client_run(client, &error)) {
+        milter_manager_error("failed to start milter-manager process: %s",
+                             error->message);
+        g_error_free(error);
+    }
 
 #define UNSET_SIGNAL_ACTION(SIGNAL, signal)                             \
     if (set_sig ## signal ## _action)                                   \

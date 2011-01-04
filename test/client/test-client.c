@@ -503,6 +503,7 @@ test_negotiate (void)
     guint32 version;
     MilterActionFlags action;
     MilterStepFlags step;
+    GError *error = NULL;
 
     version = 2;
     action = MILTER_ACTION_ADD_HEADERS |
@@ -524,8 +525,8 @@ test_negotiate (void)
     idle_id = milter_event_loop_add_idle(loop, cb_idle_negotiate, NULL);
 
     cut_trace(setup_client());
-    if (!milter_client_run(client))
-        cut_assert_errno();
+    milter_client_run(client, &error);
+    gcut_assert_error(error);
 
     milter_assert_equal_option(option, negotiate_option);
 
@@ -550,11 +551,13 @@ cb_idle_helo (gpointer user_data)
 void
 test_helo (void)
 {
+    GError *error = NULL;
+
     idle_id = milter_event_loop_add_idle(loop, cb_idle_helo, NULL);
 
     cut_trace(setup_client());
-    if (!milter_client_run(client))
-        cut_assert_errno();
+    milter_client_run(client, &error);
+    gcut_assert_error(error);
 
     cut_assert_equal_string(fqdn, helo_fqdn);
 }
@@ -564,10 +567,11 @@ test_listen_started (void)
 {
     struct sockaddr_in *address_inet;
     gchar actual_address_string[INET6_ADDRSTRLEN];
+    GError *error = NULL;
 
     cut_trace(setup_client());
-    if (!milter_client_run(client))
-        cut_assert_errno();
+    milter_client_run(client, &error);
+    gcut_assert_error(error);
 
     cut_assert_not_null(actual_address);
 
@@ -641,6 +645,7 @@ test_change_unix_socket_mode (void)
 {
     const gchar *path;
     struct stat stat_buffer;
+    GError *error = NULL;
 
     path = cut_take_printf("%s/milter.sock", tmp_dir);
     spec = cut_take_printf("unix:%s", path);
@@ -649,8 +654,8 @@ test_change_unix_socket_mode (void)
     milter_client_set_default_remove_unix_socket_on_close(client, FALSE);
 
     cut_trace(setup_client());
-    if (!milter_client_run(client))
-        cut_assert_errno();
+    milter_client_run(client, &error);
+    gcut_assert_error(error);
 
     if (stat(path, &stat_buffer) == -1)
         cut_assert_errno();
@@ -666,6 +671,7 @@ test_change_unix_socket_group (void)
     gint i, n_groups, max_n_groups;
     gid_t *groups;
     struct group *group = NULL;
+    GError *error = NULL;
 
     path = cut_take_printf("%s/milter.sock", tmp_dir);
     spec = cut_take_printf("unix:%s", path);
@@ -702,8 +708,8 @@ test_change_unix_socket_group (void)
     milter_client_set_default_remove_unix_socket_on_close(client, FALSE);
 
     cut_trace(setup_client());
-    if (!milter_client_run(client))
-        cut_assert_errno();
+    milter_client_run(client, &error);
+    gcut_assert_error(error);
 
     if (stat(path, &stat_buffer) == -1)
         cut_assert_errno();
@@ -730,7 +736,8 @@ test_remove_unix_socket_on_close (void)
     spec = cut_take_printf("unix:%s", path);
 
     cut_trace(setup_client());
-    cut_assert_true(milter_client_run(client));
+    cut_assert_true(milter_client_run(client, &actual_error));
+    gcut_assert_error(actual_error);
 
     cut_assert_false(g_file_test(path, G_FILE_TEST_EXISTS));
 }
@@ -756,8 +763,9 @@ test_remove_unix_socket_on_create (void)
     gcut_assert_error(error);
 
     cut_trace(setup_client());
-    cut_assert_true(milter_client_run(client));
-    cut_assert_null(actual_error);
+    cut_assert_true(milter_client_run(client, &error));
+    gcut_assert_error(error);
+    gcut_assert_error(actual_error);
 }
 
 void
@@ -775,8 +783,10 @@ test_not_remove_unix_socket_on_create (void)
     milter_client_set_remove_unix_socket_on_create(client, FALSE);
 
     cut_trace(setup_client());
-    cut_assert_false(milter_client_run(client));
+    cut_assert_false(milter_client_run(client, &error));
+    gcut_assert_error(actual_error);
 
+    actual_error = error;
     expected_error = g_error_new(MILTER_CONNECTION_ERROR,
                                  MILTER_CONNECTION_ERROR_BIND_FAILURE,
                                  "failed to bind(): %s: %s",

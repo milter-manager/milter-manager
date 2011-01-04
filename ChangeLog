@@ -1,5 +1,13 @@
 2011-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client.h, milter/client/milter-client.c:
+	milter_client_run() family returns GError on error.
+	* milter/manager/milter-manager-main.c,
+	libmilter/libmilter-compatible.c,
+	binding/ruby/src/toolkit/rb-milter-client.c,
+	test/client/test-client.c,
+	tool/milter-test-client.c: follow the above changes.
+
 	* libmilter/libmilter-compatible.c: use milter_client_run().
 
 	* milter/client/milter-client.c (milter_client_run_worker):

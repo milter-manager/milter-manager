@@ -34,7 +34,11 @@ VALUE rb_cMilterClient;
 static VALUE
 client_run (VALUE self)
 {
-    milter_client_run(SELF(self));
+    GError *error = NULL;
+
+    if (!milter_client_run(SELF(self), &error))
+	RAISE_GERROR(error);
+
     return Qnil;
 }
 
@@ -50,14 +54,22 @@ client_main (VALUE self)
 static VALUE
 client_run_master (VALUE self)
 {
-    milter_client_run_master(SELF(self));
+    GError *error = NULL;
+
+    if (!milter_client_run_master(SELF(self), &error))
+	RAISE_GERROR(error);
+
     return Qnil;
 }
 
 static VALUE
 client_run_worker (VALUE self)
 {
-    milter_client_run_worker(SELF(self));
+    GError *error = NULL;
+
+    if (!milter_client_run_worker(SELF(self), &error))
+	RAISE_GERROR(error);
+
     return Qnil;
 }
 
