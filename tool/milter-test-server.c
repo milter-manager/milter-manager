@@ -86,7 +86,7 @@ typedef struct _Message
 
 typedef struct _ProcessData
 {
-    GMainLoop *main_loop;
+    MilterEventLoop *loop;
     GTimer *timer;
     gboolean success;
     guint reply_code;
@@ -733,7 +733,7 @@ cb_finished (MilterFinishedEmittable *emittable, gpointer user_data)
     ProcessData *data = user_data;
 
     g_timer_stop(data->timer);
-    g_main_loop_quit(data->main_loop);
+    milter_event_loop_quit(data->loop);
 }
 
 static void
@@ -875,7 +875,7 @@ cb_connection_error (MilterErrorEmittable *emittable, GError *error, gpointer us
 
     data->success = FALSE;
     data->error = g_error_copy(error);
-    g_main_loop_quit(data->main_loop);
+    milter_event_loop_quit(data->loop);
 }
 
 static gboolean
@@ -1345,7 +1345,7 @@ free_message (Message *message)
 static void
 init_process_data (ProcessData *data)
 {
-    data->main_loop = g_main_loop_new(NULL, FALSE);
+    data->loop = milter_glib_event_loop_new(NULL);
     data->timer = g_timer_new();
     data->success = TRUE;
     data->quarantine_reason = NULL;
@@ -1364,6 +1364,8 @@ init_process_data (ProcessData *data)
 static void
 free_process_data (ProcessData *data)
 {
+    if (data->loop)
+        g_object_unref(data->loop);
     if (data->timer)
         g_timer_destroy(data->timer);
     if (data->option)
@@ -1655,6 +1657,8 @@ print_result (MilterServerContext *context, ProcessData *data)
 static void
 setup_context (MilterServerContext *context, ProcessData *process_data)
 {
+    milter_agent_set_event_loop(MILTER_AGENT(context), process_data->loop);
+
     milter_server_context_set_name(context, PROGRAM_NAME);
 
     milter_server_context_set_connection_timeout(context, connection_timeout);
@@ -1683,7 +1687,7 @@ start_process (MilterServerContext *context, ProcessData *process_data)
         return FALSE;
     }
 
-    g_main_loop_run(process_data->main_loop);
+    milter_event_loop_run(process_data->loop);
 
     print_result(context, process_data);
 
