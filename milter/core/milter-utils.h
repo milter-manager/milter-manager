@@ -111,10 +111,6 @@ void             milter_utils_set_error_with_sub_error
                                               const gchar *format,
                                               ...);
 
-guint            milter_utils_timeout_add    (gdouble interval,
-                                              GSourceFunc function,
-                                              gpointer data);
-
 guint            milter_utils_flags_from_string
                                              (GType        flags_type,
                                               const gchar *flags_string);

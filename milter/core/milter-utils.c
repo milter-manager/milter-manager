@@ -489,15 +489,6 @@ milter_utils_inspect_list_pointer (const GList *list)
 }
 
 guint
-milter_utils_timeout_add (gdouble interval,
-                          GSourceFunc function,
-                          gpointer data)
-{
-    return g_timeout_add(interval * 1000,
-                         function, data);
-}
-
-guint
 milter_utils_flags_from_string (GType        flags_type,
                                 const gchar *flags_string)
 {
