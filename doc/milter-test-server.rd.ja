@@ -12,7 +12,7 @@ milter-test-server - MTA側のmilterプロトコルを実装したプログラ�
 
 milter-test-serverはMTA側のmilterプロトコルを話します。つまり、
 MTA無しでmilterに接続することができます。現時点では、同様のツー
-ルは存在しないため、mta+milterではなくmilter単体のテストを行
+ルは存在しないため、MTA+milterではなくmilter単体のテストを行
 うためには有用なツールです。例えば、以下のような用途に利用で
 きます。
 
@@ -20,7 +20,7 @@ MTA無しでmilterに接続することができます。現時点では、同�
   * milterの動作確認
 
 milter-test-serverは実行時間を表示するので、簡単な性能計測に
-も利用できます。このとき、mtaとは関係なくmilter単体での実行時
+も利用できます。このとき、MTAとは関係なくmilter単体での実行時
 間を確認できるため、MTA経由で試す場合よりも問題点の発見が容易
 になります。
 
@@ -36,6 +36,13 @@ milter-test-serverはヘッダや本文が変更された場合は、変更さ�
 : --help
 
    利用できるオプションを表示して終了します。
+
+: --name=NAME
+
+   milter-test-serverの名前としてNAMEを使用します。名前は
+   "{daemon_name}"マクロの値などで利用されます。
+
+   デフォルトはmilter-test-server（コマンドファイル名）です。
 
 : --connection-spec=SPEC
 

@@ -37,6 +37,14 @@ automated unit tests.
 
    Shows available options and exits.
 
+: --name=NAME
+
+   Uses NAME as milter-test-server's name. The name is used
+   as a value of "{daemon_name}" macro for example.
+
+   The default value is "milter-test-server" that is the
+   command file name.
+
 : --connection-spec=SPEC
 
    Specifies a socket to connect to milter. SPEC should be
@@ -61,9 +69,9 @@ automated unit tests.
 
 : --negotiate-version=VERSION
 
-    Use VERSION as milter protocol version sent to milter.
+    Uses VERSION as milter protocol version sent to milter.
 
-    Default value is 8. The value is the same as Sendmail
+    The default value is 8. The value is the same as Sendmail
     8.14's default value.
 
 : --connect-host=HOST

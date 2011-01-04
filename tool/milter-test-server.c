@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -61,8 +61,6 @@ static gdouble connection_timeout = MILTER_SERVER_CONTEXT_DEFAULT_CONNECTION_TIM
 static gdouble writing_timeout = MILTER_SERVER_CONTEXT_DEFAULT_WRITING_TIMEOUT;
 static gdouble reading_timeout = MILTER_SERVER_CONTEXT_DEFAULT_READING_TIMEOUT;
 static gdouble end_of_message_timeout = MILTER_SERVER_CONTEXT_DEFAULT_END_OF_MESSAGE_TIMEOUT;
-
-#define PROGRAM_NAME "milter-test-server"
 
 #define MILTER_TEST_SERVER_ERROR                                \
     (g_quark_from_static_string("milter-test-server-error-quark"))
@@ -171,7 +169,7 @@ static void
 set_macros_for_connect (MilterProtocolAgent *agent)
 {
     milter_protocol_agent_set_macros(agent, MILTER_COMMAND_CONNECT,
-                                     "{daemon_name}", PROGRAM_NAME,
+                                     "{daemon_name}", g_get_prgname(),
                                      "{if_name}", "localhost",
                                      "{if_addr}", "127.0.0.1",
                                      "j", "milter-test-server",
@@ -609,7 +607,7 @@ cb_add_recipient (MilterServerContext *context,
     ProcessData *data = user_data;
     MilterHeader *header;
     gchar *old_value;
-    
+
     data->message->recipients = g_list_append(data->message->recipients,
                                               g_strdup(recipient));
     header = milter_headers_lookup_by_name(data->message->headers, "To");
@@ -879,12 +877,22 @@ cb_connection_error (MilterErrorEmittable *emittable, GError *error, gpointer us
 }
 
 static gboolean
+set_name (const gchar *option_name,
+          const gchar *value,
+          gpointer data,
+          GError **error)
+{
+    g_set_prgname(value);
+    return TRUE;
+}
+
+static gboolean
 print_version (const gchar *option_name,
                const gchar *value,
                gpointer data,
                GError **error)
 {
-    g_printf("%s %s\n", PROGRAM_NAME, VERSION);
+    g_printf("%s %s\n", g_get_prgname(), VERSION);
     exit(EXIT_SUCCESS);
     return TRUE;
 }
@@ -1238,6 +1246,8 @@ parse_color_arg (const gchar *option_name, const gchar *value,
 
 static const GOptionEntry option_entries[] =
 {
+    {"name", 0, 0, G_OPTION_ARG_CALLBACK, set_name,
+     N_("Use NAME as the milter server name"), "NAME"},
     {"connection-spec", 's', 0, G_OPTION_ARG_CALLBACK, parse_spec_arg,
      N_("The spec of client socket. "
         "(unix:PATH|inet:PORT[@HOST]|inet6:PORT[@HOST])"),
@@ -1659,7 +1669,7 @@ setup_context (MilterServerContext *context, ProcessData *process_data)
 {
     milter_agent_set_event_loop(MILTER_AGENT(context), process_data->loop);
 
-    milter_server_context_set_name(context, PROGRAM_NAME);
+    milter_server_context_set_name(context, g_get_prgname());
 
     milter_server_context_set_connection_timeout(context, connection_timeout);
     milter_server_context_set_reading_timeout(context, reading_timeout);
