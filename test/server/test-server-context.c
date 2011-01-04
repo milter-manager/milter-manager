@@ -324,12 +324,13 @@ wait_ready (void)
     gboolean timeout_waiting = TRUE;
     guint timeout_waiting_id;
 
-    timeout_waiting_id = g_timeout_add_seconds(1, cb_timeout_waiting,
-                                               &timeout_waiting);
+    timeout_waiting_id = milter_event_loop_add_timeout(loop, 1,
+                                                       cb_timeout_waiting,
+                                                       &timeout_waiting);
     while (timeout_waiting && !ready_received) {
         milter_event_loop_iterate(loop, TRUE);
     }
-    g_source_remove(timeout_waiting_id);
+    milter_event_loop_remove(loop, timeout_waiting_id);
     cut_assert_true(timeout_waiting, cut_message("timeout"));
 }
 
@@ -339,12 +340,13 @@ wait_error (void)
     gboolean timeout_waiting = TRUE;
     guint timeout_waiting_id;
 
-    timeout_waiting_id = g_timeout_add_seconds(2, cb_timeout_waiting,
-                                               &timeout_waiting);
+    timeout_waiting_id = milter_event_loop_add_timeout(loop, 2,
+                                                       cb_timeout_waiting,
+                                                       &timeout_waiting);
     while (timeout_waiting && !actual_error) {
         milter_event_loop_iterate(loop, TRUE);
     }
-    g_source_remove(timeout_waiting_id);
+    milter_event_loop_remove(loop, timeout_waiting_id);
     cut_assert_true(timeout_waiting, cut_message("timeout"));
 }
 

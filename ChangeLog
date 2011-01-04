@@ -1,5 +1,7 @@
 2011-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/server/test-server-context.c: use MilterEventLoop.
+
 	* test/manager/test-manager.c: use MilterEventLoop.
 
 	* test/manager/test-children.c: use MilterEventLoop.
