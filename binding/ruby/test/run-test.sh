@@ -69,6 +69,6 @@ fi
 if [ "$ruby_glib2_ext_dir" != "" ]; then
     MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_glib2_ext_dir
 fi
-RUBYLIB=$MILTER_MANAGER_RUBYLIB:$RUBYLIB
 
-$RUBY_WRAPPER $RUBY "$ruby_source_dir/test/run-test.rb" "$@"
+$RUBY_WRAPPER $RUBY -I "$MILTER_MANAGER_RUBYLIB" \
+    "$ruby_source_dir/test/run-test.rb" "$@"

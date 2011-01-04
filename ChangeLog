@@ -1,5 +1,8 @@
 2011-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/test/run-test.sh: use command line option isntead
+	of environment varialbe.
+
 	* binding/ruby/test/run-test.sh: fix a typo.
 
 	* milter/client/milter-client.c: use meaningful name.
