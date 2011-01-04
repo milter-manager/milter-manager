@@ -303,7 +303,7 @@ static void
 dispose_finisher (MilterClientPrivate *priv)
 {
     if (priv->finisher_id > 0) {
-        g_source_remove(priv->finisher_id);
+        milter_event_loop_remove(priv->process_loop, priv->finisher_id);
         priv->finisher_id = 0;
     }
 }
@@ -437,6 +437,11 @@ dispose (GObject *object)
         priv->listening_channel = NULL;
     }
 
+    if (priv->server_watch_id > 0) {
+        milter_event_loop_remove(priv->accept_loop, priv->server_watch_id);
+        priv->server_watch_id = 0;
+    }
+
     if (priv->accept_loop) {
         g_object_unref(priv->accept_loop);
         priv->accept_loop = NULL;
@@ -445,11 +450,6 @@ dispose (GObject *object)
     if (priv->process_loop) {
         g_object_unref(priv->process_loop);
         priv->process_loop = NULL;
-    }
-
-    if (priv->server_watch_id > 0) {
-        g_source_remove(priv->server_watch_id);
-        priv->server_watch_id = 0;
     }
 
     if (priv->connection_spec) {
@@ -721,7 +721,9 @@ single_thread_cb_finished (MilterClientContext *context, gpointer _data)
     priv = data->priv;
     priv->finished_data = g_list_prepend(priv->finished_data, data);
     if (priv->finisher_id == 0) {
-        priv->finisher_id = g_idle_add_full(G_PRIORITY_DEFAULT,
+        priv->finisher_id =
+            milter_event_loop_add_idle_full(priv->process_loop,
+                                            G_PRIORITY_DEFAULT,
                                             single_thread_finisher,
                                             data,
                                             NULL);
@@ -1139,11 +1141,14 @@ single_thread_start_accept (MilterClient *client)
     if (priv->quitting) {
         g_mutex_unlock(priv->quit_mutex);
     } else {
-        g_idle_add_full(G_PRIORITY_DEFAULT,
-                        single_thread_cb_idle_unlock_quit_mutex,
-                        client,
-                        NULL);
-        milter_event_loop_run(milter_client_get_process_loop(client));
+        MilterEventLoop *loop;
+        loop = milter_client_get_process_loop(client);
+        milter_event_loop_add_idle_full(loop,
+                                        G_PRIORITY_DEFAULT,
+                                        single_thread_cb_idle_unlock_quit_mutex,
+                                        client,
+                                        NULL);
+        milter_event_loop_run(loop);
     }
     g_thread_join(thread);
 
@@ -1691,18 +1696,12 @@ gboolean
 milter_client_run_master (MilterClient *client)
 {
     MilterClientPrivate *priv;
-    MilterEventLoop *accept_loop;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
-    accept_loop = event_loop_new(client, TRUE);
-
-    if (!milter_client_prepare_loop(client, accept_loop,
-                                    master_server_watch_func))
+    if (!milter_client_prepare(client, master_server_watch_func))
         return FALSE;
-
-    single_thread_accept_loop_run(client, accept_loop);
-    g_object_unref(priv->accept_loop);
+    single_thread_accept_loop_run(client, priv->accept_loop);
 
     milter_client_cleanup(client);
 
@@ -1722,17 +1721,16 @@ milter_client_run_worker (MilterClient *client)
     if (priv->quitting) {
         g_mutex_unlock(priv->quit_mutex);
     } else {
-        priv->process_loop = event_loop_new(client, TRUE);
-        milter_event_loop_add_idle_full(priv->process_loop,
+        MilterEventLoop *loop;
+        loop = milter_client_get_process_loop(client);
+        milter_event_loop_add_idle_full(loop,
                                         G_PRIORITY_DEFAULT,
                                         single_thread_cb_idle_unlock_quit_mutex,
                                         client,
                                         NULL);
-        milter_event_loop_run(priv->process_loop);
+        milter_event_loop_run(loop);
     }
     g_thread_join(thread);
-    g_object_unref(priv->process_loop);
-    priv->process_loop = NULL;
 }
 
 void
@@ -1747,7 +1745,7 @@ milter_client_shutdown (MilterClient *client)
         priv->quitting = TRUE;
         milter_event_loop_quit(priv->accept_loop);
         if (priv->server_watch_id > 0) {
-            g_source_remove(priv->server_watch_id);
+            milter_event_loop_remove(priv->accept_loop, priv->server_watch_id);
             priv->server_watch_id = 0;
         }
         g_io_channel_unref(priv->listening_channel);
