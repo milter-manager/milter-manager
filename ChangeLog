@@ -1,5 +1,7 @@
 2011-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/test-children.c: use MilterEventLoop.
+
 	* test/lib/milter-manager-test-client.[ch],
 	test/lib/milter-manager-test-scenario.[ch],
 	test/manager/test-children.c, test/manager/test-leader.c,

@@ -574,12 +574,13 @@ wait_reply_helper (guint expected, guint *actual)
     guint timeout_waiting_id;
 
     cut_assert_true(milter_manager_children_is_waiting_reply(children));
-    timeout_waiting_id = g_timeout_add(500, cb_timeout_waiting,
-                                       &timeout_waiting);
+    timeout_waiting_id = milter_event_loop_add_timeout(loop, 0.5,
+                                                       cb_timeout_waiting,
+                                                       &timeout_waiting);
     while (timeout_waiting && expected > *actual) {
-        g_main_context_iteration(NULL, TRUE);
+        milter_event_loop_iterate(loop, TRUE);
     }
-    g_source_remove(timeout_waiting_id);
+    milter_event_loop_remove(loop, timeout_waiting_id);
 
     cut_assert_true(timeout_waiting);
     cut_assert_equal_uint(expected, *actual);
@@ -631,12 +632,13 @@ wait_finished_helper (void)
     guint timeout_waiting_id;
     guint n_finished_emitted_before = n_finished_emitted;
 
-    timeout_waiting_id = g_timeout_add(500, cb_timeout_waiting,
-                                       &timeout_waiting);
+    timeout_waiting_id = milter_event_loop_add_timeout(loop, 0.5,
+                                                       cb_timeout_waiting,
+                                                       &timeout_waiting);
     while (timeout_waiting && n_finished_emitted == n_finished_emitted_before) {
-        g_main_context_iteration(NULL, TRUE);
+        milter_event_loop_iterate(loop, TRUE);
     }
-    g_source_remove(timeout_waiting_id);
+    milter_event_loop_remove(loop, timeout_waiting_id);
 
     cut_assert_true(timeout_waiting, cut_message("timeout"));
     cut_assert_operator_uint(n_finished_emitted, > , n_finished_emitted_before);
@@ -653,12 +655,13 @@ wait_children_error_helper (void)
     gboolean timeout_waiting = TRUE;
     guint timeout_waiting_id;
 
-    timeout_waiting_id = g_timeout_add(500, cb_timeout_waiting,
-                                       &timeout_waiting);
+    timeout_waiting_id = milter_event_loop_add_timeout(loop, 0.5,
+                                                       cb_timeout_waiting,
+                                                       &timeout_waiting);
     while (timeout_waiting && !actual_error) {
-        g_main_context_iteration(NULL, TRUE);
+        milter_event_loop_iterate(loop, TRUE);
     }
-    g_source_remove(timeout_waiting_id);
+    milter_event_loop_remove(loop, timeout_waiting_id);
 
     cut_assert_true(timeout_waiting, cut_message("timeout"));
     cut_assert_not_null(actual_error);
@@ -889,10 +892,12 @@ assert_response_common (MilterManagerTestScenario *scenario, const gchar *group)
         gboolean timeout_emitted = FALSE;
         guint timeout_id;
 
-        timeout_id = g_timeout_add(100, cb_timeout_emitted, &timeout_emitted);
+        timeout_id = milter_event_loop_add_timeout(loop, 0.1,
+                                                   cb_timeout_emitted,
+                                                   &timeout_emitted);
         while (!timeout_emitted && n_emitted > get_n_emitted(response))
-            g_main_context_iteration(NULL, TRUE);
-        g_source_remove(timeout_id);
+            milter_event_loop_iterate(loop, TRUE);
+        milter_event_loop_remove(loop, timeout_id);
         cut_assert_false(timeout_emitted);
     }
 
