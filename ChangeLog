@@ -1,5 +1,8 @@
 2011-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/lib/milter-manager-test-utils.[ch],
+	test/manager/test-leader.c: use MilterEventLoop.
+
 	* test/tool/test-server.c: use MilterEventLoop.
 
 	* test/client/Makefile.am: format.

@@ -717,7 +717,7 @@ assert_response_reply_code (MilterManagerTestScenario *scenario, const gchar *gr
     const GList *replied_codes;
 
     replied_codes = get_string_g_list(scenario, group, "reply_codes");
-    cut_trace(milter_manager_test_wait_signal(FALSE));
+    cut_trace(milter_manager_test_wait_signal(loop, FALSE));
     gcut_assert_equal_list_string(
         replied_codes,
         milter_manager_test_server_get_received_reply_codes(server));
@@ -1246,7 +1246,7 @@ static void
 do_end_of_message_full (MilterManagerTestScenario *scenario, const gchar *group)
 {
     cut_trace(do_end_of_message(scenario, group));
-    cut_trace(milter_manager_test_wait_signal(FALSE));
+    cut_trace(milter_manager_test_wait_signal(loop, FALSE));
     cut_trace(do_end_of_message_quarantine(scenario, group));
     cut_trace(do_end_of_message_header(scenario, group));
     cut_trace(do_end_of_message_change_from(scenario, group));

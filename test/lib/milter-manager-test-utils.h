@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -23,9 +23,12 @@
 #include <gcutter.h>
 #include "milter-test-compatible.h"
 
+#include <milter/core.h>
+
 G_BEGIN_DECLS
 
-void         milter_manager_test_wait_signal (gboolean should_timeout);
+void         milter_manager_test_wait_signal (MilterEventLoop *loop,
+                                              gboolean         should_timeout);
 
 typedef struct _MilterManagerTestPair
 {

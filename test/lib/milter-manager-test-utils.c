@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -33,22 +33,26 @@ cb_check_emitted (gpointer data)
 }
 
 void
-milter_manager_test_wait_signal (gboolean should_timeout)
+milter_manager_test_wait_signal (MilterEventLoop *loop, gboolean should_timeout)
 {
     gboolean timeout_emitted = FALSE;
     gboolean idle_emitted = FALSE;
     guint timeout_id, idle_id;
 
-    idle_id = g_idle_add_full(G_PRIORITY_DEFAULT,
-                              cb_check_emitted, &idle_emitted, NULL);
+    idle_id = milter_event_loop_add_idle_full(loop,
+                                              G_PRIORITY_DEFAULT,
+                                              cb_check_emitted, &idle_emitted,
+                                              NULL);
 
-    timeout_id = g_timeout_add_seconds(1, cb_check_emitted, &timeout_emitted);
+    timeout_id = milter_event_loop_add_timeout(loop, 1,
+                                               cb_check_emitted,
+                                               &timeout_emitted);
     while (!timeout_emitted && !idle_emitted) {
-        g_main_context_iteration(NULL, TRUE);
+        milter_event_loop_iterate(loop, TRUE);
     }
 
-    g_source_remove(idle_id);
-    g_source_remove(timeout_id);
+    milter_event_loop_remove(loop, idle_id);
+    milter_event_loop_remove(loop, timeout_id);
 
     if (should_timeout)
         cut_assert_true(timeout_emitted, cut_message("should timeout"));
