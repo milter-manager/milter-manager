@@ -1,5 +1,7 @@
 2011-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/client/Makefile.am: format.
+
 	* test/client/test-client-context-header.c: remove.
 	* test/client/test-client-context-modify.c: moved from all tests
 	from test-client-context-header.c.

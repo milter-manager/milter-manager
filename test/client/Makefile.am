@@ -30,11 +30,11 @@ LIBS =								\
 	$(top_builddir)/test/lib/libmilter-test.la		\
 	$(GCUTTER_LIBS)
 
-test_client_context_base_la_SOURCES = test-client-context-base.c
+test_client_context_base_la_SOURCES     = test-client-context-base.c
 test_client_context_callback_la_SOURCES = test-client-context-callback.c
-test_client_context_data_la_SOURCES = test-client-context-data.c
-test_client_context_body_la_SOURCES = test-client-context-body.c
-test_client_context_reply_la_SOURCES = test-client-context-reply.c
-test_client_context_address_la_SOURCES = test-client-context-address.c
-test_client_context_modify_la_SOURCES = test-client-context-modify.c
-test_client_la_SOURCES = test-client.c
+test_client_context_data_la_SOURCES     = test-client-context-data.c
+test_client_context_body_la_SOURCES     = test-client-context-body.c
+test_client_context_reply_la_SOURCES    = test-client-context-reply.c
+test_client_context_address_la_SOURCES  = test-client-context-address.c
+test_client_context_modify_la_SOURCES   = test-client-context-modify.c
+test_client_la_SOURCES                  = test-client.c
