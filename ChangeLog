@@ -1,5 +1,7 @@
 2011-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/libmilter/test-libmilter-compatible.c: use MilterEventLoop.
+
 	* test/libmilter/test-libmilter-compatible.c (test_stop): remove
 	needless milter_init() call.
 

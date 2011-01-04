@@ -45,6 +45,8 @@ void test_mi_stop (void);
 static gchar *tmp_dir;
 static guint idle_id;
 
+static MilterEventLoop *loop;
+
 static MilterLogLevelFlags original_log_level;
 
 static struct smfiDesc smfilter = {
@@ -79,6 +81,8 @@ cut_setup (void)
         cut_assert_errno();
 
     idle_id = 0;
+
+    loop = milter_glib_event_loop_new(NULL);
 }
 
 void
@@ -94,7 +98,10 @@ cut_teardown (void)
     }
 
     if (idle_id > 0)
-        g_source_remove(idle_id);
+        milter_event_loop_remove(loop, idle_id);
+
+    if (loop)
+        g_object_unref(loop);
 }
 
 #define milter_assert_success(expression)               \
@@ -232,7 +239,7 @@ test_stop (void)
     socket_path = cut_take_printf("unix:%s/sock", tmp_dir);
     milter_assert_success(smfi_setconn((gchar *)socket_path));
 
-    idle_id = g_idle_add(cb_idle_stop, &stopped);
+    idle_id = milter_event_loop_add_idle(loop, cb_idle_stop, &stopped);
 
     milter_assert_success(smfi_main());
     cut_assert_true(stopped);
