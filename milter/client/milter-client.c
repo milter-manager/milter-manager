@@ -947,7 +947,7 @@ single_thread_accept_connection (MilterClient *client, gint server_fd)
 static gboolean
 master_accept_connection (MilterClient *client, gint server_fd)
 {
-    gboolean result = FALSE;
+    gboolean success = FALSE;
     gint client_fd;
     MilterGenericSocketAddress address;
     socklen_t address_size;
@@ -958,20 +958,20 @@ master_accept_connection (MilterClient *client, gint server_fd)
                                      &address, &address_size);
     if (client_fd != -1) {
         GError *error = NULL;
-        GUnixFDList *fdlist;
-        GSocketControlMessage *scm;
-        GOutputVector v;
+        GUnixFDList *fd_list;
+        GSocketControlMessage *message;
+        GOutputVector vector;
 
-        v.buffer = &address;
-        v.size = address_size;
-        fdlist = g_unix_fd_list_new_from_array(&client_fd, 1);
-        scm = g_unix_fd_message_new_with_fd_list(fdlist);
-        if (g_socket_send_message(priv->workers.control, NULL, &v, 1,
-                                  &scm, 1, 0, NULL, &error) == v.size)
-            result = TRUE;
-        g_object_unref(scm);
-        g_object_unref(fdlist);
-        if (!result) {
+        vector.buffer = &address;
+        vector.size = address_size;
+        fd_list = g_unix_fd_list_new_from_array(&client_fd, 1);
+        message = g_unix_fd_message_new_with_fd_list(fd_list);
+        if (g_socket_send_message(priv->workers.control, NULL, &vector, 1,
+                                  &message, 1, 0, NULL, &error) == vector.size)
+            success = TRUE;
+        g_object_unref(message);
+        g_object_unref(fd_list);
+        if (!success) {
             milter_error("[client][master][send-fd][error] %s", error->message);
             milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client),
                                         error);
@@ -979,7 +979,7 @@ master_accept_connection (MilterClient *client, gint server_fd)
         }
     }
 
-    return result;
+    return success;
 }
 
 static gboolean

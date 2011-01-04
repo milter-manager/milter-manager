@@ -1,5 +1,7 @@
 2011-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client.c: use meaningful name.
+
 	* milter/client/milter-client.c: cleanup error handling.
 
 	* milter/client.h, milter/client/milter-client.c:
