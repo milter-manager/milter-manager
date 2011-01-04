@@ -153,7 +153,8 @@ accept_server (MilterTestClient *client)
 
     g_io_channel_set_close_on_unref(priv->server_channel, TRUE);
 
-    priv->server_watch_id = milter_test_io_add_decode_watch(priv->server_channel,
+    priv->server_watch_id = milter_test_io_add_decode_watch(priv->loop,
+                                                            priv->server_channel,
                                                             priv->decoder);
 
     return TRUE;

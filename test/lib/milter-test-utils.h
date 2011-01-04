@@ -51,7 +51,8 @@ gboolean       milter_test_decode_io_channel
                                            (MilterDecoder  *decoder,
                                             GIOChannel     *channel);
 guint          milter_test_io_add_decode_watch
-                                           (GIOChannel     *channel,
+                                           (MilterEventLoop *loop,
+                                            GIOChannel     *channel,
                                             MilterDecoder  *decoder);
 
 gboolean       milter_test_equal_symbols_table

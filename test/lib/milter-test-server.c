@@ -149,7 +149,8 @@ milter_test_server_new (const gchar *spec, MilterDecoder *decoder,
         g_object_unref(server);
         gcut_assert_error(error);
     }
-    priv->watch_id = milter_test_io_add_decode_watch(priv->channel,
+    priv->watch_id = milter_test_io_add_decode_watch(priv->loop,
+                                                     priv->channel,
                                                      priv->decoder);
 
     return server;

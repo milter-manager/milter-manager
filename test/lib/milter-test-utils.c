@@ -174,11 +174,14 @@ decode_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
 }
 
 guint
-milter_test_io_add_decode_watch (GIOChannel *channel, MilterDecoder *decoder)
+milter_test_io_add_decode_watch (MilterEventLoop *loop,
+                                 GIOChannel *channel, MilterDecoder *decoder)
 {
-    return g_io_add_watch(channel,
-                          G_IO_IN | G_IO_PRI | G_IO_ERR | G_IO_HUP | G_IO_NVAL,
-                          decode_watch_func, decoder);
+    return milter_event_loop_watch_io(loop,
+                                      channel,
+                                      G_IO_IN | G_IO_PRI | G_IO_ERR |
+                                      G_IO_HUP | G_IO_NVAL,
+                                      decode_watch_func, decoder);
 }
 
 gboolean

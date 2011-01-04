@@ -1,5 +1,9 @@
 2011-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/lib/milter-test-client.c,
+	test/lib/milter-test-server.c,
+	test/lib/milter-test-utils.[ch]: use MilterEventLoop.
+
 	* test/lib/milter-test-client.[ch],
 	test/lib/milter-test-server.[ch],
 	test/lib/milter-test-utils.[ch],
