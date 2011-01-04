@@ -132,10 +132,12 @@ wait_for_reaping (EggData *data, gboolean must)
     gboolean timeout_emitted = FALSE;
     guint timeout_id;
 
-    timeout_id = g_timeout_add(2000, cb_timeout_emitted, &timeout_emitted);
+    timeout_id = milter_event_loop_add_timeout(loop, 2,
+                                               cb_timeout_emitted,
+                                               &timeout_emitted);
     while (!timeout_emitted && !data->reaped)
-        g_main_context_iteration(NULL, TRUE);
-    g_source_remove(timeout_id);
+        milter_event_loop_iterate(loop, TRUE);
+    milter_event_loop_remove(loop, timeout_id);
 
     if (must) {
         cut_set_message("OUTPUT: <%s>\n"
@@ -318,8 +320,9 @@ wait_for_manager_ready (const gchar *spec)
                                  &error);
     gcut_assert_error(error);
 
-    timeout_waiting_id = g_timeout_add(1000, cb_timeout_emitted,
-                                       &timeout_emitted);
+    timeout_waiting_id = milter_event_loop_add_timeout(loop, 1,
+                                                       cb_timeout_emitted,
+                                                       &timeout_emitted);
     do {
         if (socket_fd != -1)
             close(socket_fd);
@@ -333,9 +336,9 @@ wait_for_manager_ready (const gchar *spec)
         } else {
             errno_keep = errno;
         }
-        g_main_context_iteration(NULL, FALSE);
+        milter_event_loop_iterate(loop, FALSE);
     } while (!timeout_emitted);
-    g_source_remove(timeout_waiting_id);
+    milter_event_loop_remove(loop, timeout_waiting_id);
     if (socket_fd != -1)
         close(socket_fd);
 
