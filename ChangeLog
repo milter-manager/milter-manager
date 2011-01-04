@@ -1,5 +1,7 @@
 2011-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* libmilter/libmilter-compatible.c: use milter_client_run().
+
 	* milter/client/milter-client.c (milter_client_run_worker):
 	returns gboolean.
 
