@@ -568,7 +568,8 @@ static void
 wait_for_written (void)
 {
     data_written = FALSE;
-    g_idle_add_full(G_PRIORITY_LOW, cb_idle_func, NULL, NULL);
+    milter_event_loop_add_idle_full(loop, G_PRIORITY_LOW,
+                                    cb_idle_func, NULL, NULL);
 
     while (!data_written) {
         milter_event_loop_iterate(loop, TRUE);

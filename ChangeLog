@@ -1,5 +1,7 @@
 2011-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/server/test-server-context-signals.c: use MilterEventLoop.
+
 	* test/libmilter/test-libmilter-compatible.c: use MilterEventLoop.
 
 	* test/libmilter/test-libmilter-compatible.c (test_stop): remove
