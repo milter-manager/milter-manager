@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -30,6 +30,8 @@ void test_writer_huge_data (void);
 void test_writer_error (void);
 void test_tag (void);
 
+static MilterEventLoop *loop;
+
 static MilterWriter *writer;
 
 static GIOChannel *channel;
@@ -41,6 +43,8 @@ void
 cut_setup (void)
 {
     writer = NULL;
+
+    loop = milter_glib_event_loop_new(NULL);
 
     channel = gcut_string_io_channel_new(NULL);
     g_io_channel_set_encoding(channel, NULL, NULL);
@@ -58,6 +62,9 @@ cut_teardown (void)
     if (writer)
         g_object_unref(writer);
 
+    if (loop)
+        g_object_unref(loop);
+
     if (expected_error)
         g_error_free(expected_error);
     if (actual_error)
@@ -74,7 +81,7 @@ test_writer (void)
     GString *actual_data;
 
     writer = milter_writer_io_channel_new(channel);
-    milter_writer_start(writer, NULL);
+    milter_writer_start(writer, loop);
 
     milter_writer_write(writer, first_chunk, sizeof(first_chunk) - 1,
                         &written_size, &actual_error);
@@ -116,7 +123,7 @@ test_writer_huge_data (void)
     GString *actual_data;
 
     writer = milter_writer_io_channel_new(channel);
-    milter_writer_start(writer, NULL);
+    milter_writer_start(writer, loop);
 
     data_size = 192 * 8192;
     binary_data = g_new(gchar, data_size);
@@ -145,7 +152,7 @@ test_writer_error (void)
     gcut_assert_error(error);
     gcut_string_io_channel_set_limit(channel, 1);
     writer = milter_writer_io_channel_new(channel);
-    milter_writer_start(writer, NULL);
+    milter_writer_start(writer, loop);
 
     expected_error = g_error_new(G_IO_CHANNEL_ERROR,
                                  G_IO_CHANNEL_ERROR_NOSPC,

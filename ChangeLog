@@ -1,5 +1,7 @@
 2011-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/core/test-writer.c: use MilterEventLoop.
+
 	* test/core/test-reader.c: use MilterEventLoop.
 
 	* milter/manager/milter-manager-children.c,
