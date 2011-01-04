@@ -1,10 +1,14 @@
 2011-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/client/test-client-context-header.c: remove.
+	* test/client/test-client-context-modify.c: moved from all tests
+	from test-client-context-header.c.
+
 	* milter/client/milter-client-context.c: fix error message.
 
-	* test/client/test-client-context-modify.c: move delete header
+	* test/client/test-client-context-header.c: move delete header
 	test to ...
-	* test/client/test-client-context-header.c: ... here.
+	* test/client/test-client-context-modify.c: ... here.
 
 	* test/manager/test-children.c: add missing NULLs.
 

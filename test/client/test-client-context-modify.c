@@ -31,6 +31,8 @@ void data_add_header (void);
 void test_add_header (gconstpointer data);
 void data_insert_header (void);
 void test_insert_header (gconstpointer data);
+void data_change_header (void);
+void test_change_header (gconstpointer data);
 void data_delete_header (void);
 void test_delete_header (gconstpointer data);
 
@@ -300,6 +302,103 @@ test_insert_header (gconstpointer data)
     }
 }
 
+void
+data_change_header (void)
+{
+#define ADD(label, name, index, value, state, action_names, error) do   \
+    {                                                                   \
+        MilterActionFlags action;                                       \
+        GError *parse_error = NULL;                                     \
+        gchar *packet = NULL;                                           \
+        gsize packet_size = 0;                                          \
+                                                                        \
+        action = gcut_flags_parse(MILTER_TYPE_ACTION_FLAGS,             \
+                                  action_names, &parse_error);          \
+        gcut_assert_error(parse_error);                                 \
+                                                                        \
+        if (!error) {                                                   \
+            milter_reply_encoder_encode_change_header(reply_encoder,    \
+                                                      &packet,          \
+                                                      &packet_size,     \
+                                                      name, index,      \
+                                                      value);           \
+        }                                                               \
+                                                                        \
+        gcut_add_datum(label,                                           \
+                       "name", G_TYPE_STRING, name,                     \
+                       "index", G_TYPE_UINT, index,                     \
+                       "value", G_TYPE_STRING, value,                   \
+                       "state", MILTER_TYPE_CLIENT_CONTEXT_STATE,       \
+                       MILTER_CLIENT_CONTEXT_STATE_ ## state,           \
+                       "action", MILTER_TYPE_ACTION_FLAGS, action,      \
+                       "error", G_TYPE_POINTER, error, g_error_free,    \
+                       "packet", G_TYPE_POINTER,                        \
+                       g_memdup(packet, packet_size), g_free,           \
+                       "packet-size", G_TYPE_UINT, packet_size,         \
+                       NULL);                                           \
+        if (packet)                                                     \
+            g_free(packet);                                             \
+    } while (0)
+
+    ADD("success",
+        "X-Name", 2, "value", END_OF_MESSAGE, "change-headers", NULL);
+    ADD("NULL name",
+        NULL, 2, "value", END_OF_MESSAGE, "change-headers",
+        g_error_new(MILTER_CLIENT_CONTEXT_ERROR,
+                    MILTER_CLIENT_CONTEXT_ERROR_NULL,
+                    "header name should not be NULL: value=<value>"));
+    ADD("NULL value",
+        "X-Name", 2, NULL, END_OF_MESSAGE, "change-headers", NULL);
+    ADD("invalid state",
+        "X-Name", 0, "value", BODY, "change-headers",
+        g_error_new(MILTER_CLIENT_CONTEXT_ERROR,
+                    MILTER_CLIENT_CONTEXT_ERROR_INVALID_STATE,
+                    "change-header can only be done on end-of-message state: "
+                    "<body>"));
+    ADD("invalid action",
+        "X-Name", 0, "value", END_OF_MESSAGE, "",
+        g_error_new(MILTER_CLIENT_CONTEXT_ERROR,
+                    MILTER_CLIENT_CONTEXT_ERROR_INVALID_ACTION,
+                    "change-header can only be done with "
+                    "<change-headers> action flags: <>"));
+#undef ADD
+}
+
+void
+test_change_header (gconstpointer data)
+{
+    const GError *expected_error;
+    gboolean success;
+    GError *actual_error = NULL;
+
+    milter_client_context_set_state(context,
+                                    gcut_data_get_enum(data, "state"));
+    set_option(2, gcut_data_get_flags(data, "action"), 0);
+
+    success =
+        milter_client_context_change_header(context,
+                                            gcut_data_get_string(data, "name"),
+                                            gcut_data_get_uint(data, "index"),
+                                            gcut_data_get_string(data, "value"),
+                                            &actual_error);
+    expected_error = gcut_data_get_pointer(data, "error");
+    if (expected_error) {
+        gcut_take_error(actual_error);
+        gcut_assert_equal_error(expected_error, actual_error);
+        cut_assert_false(success);
+    } else {
+        GString *actual_data;
+
+        gcut_assert_error(actual_error);
+
+        actual_data = gcut_string_io_channel_get_string(channel);
+        cut_assert_equal_memory(gcut_data_get_pointer(data, "packet"),
+                                gcut_data_get_uint(data, "packet-size"),
+                                actual_data->str,
+                                actual_data->len);
+        cut_assert_true(success);
+    }
+}
 
 void
 data_delete_header (void)
