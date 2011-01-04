@@ -722,6 +722,7 @@ setup_process_launcher (MilterManagerChildren *children)
     MilterWriter *writer;
 
     launcher = milter_manager_process_launcher_new();
+    milter_agent_set_event_loop(MILTER_AGENT(launcher), loop);
 
     read_channel = create_io_channel();
     reader = milter_reader_io_channel_new(read_channel);
@@ -1960,7 +1961,7 @@ test_writing_timeout (void)
     g_io_channel_unref(channel);
     child = milter_manager_children_get_children(children)->next->data;
     milter_agent_set_writer(MILTER_AGENT(child), writer);
-    milter_writer_start(writer, NULL);
+    milter_writer_start(writer, loop);
     g_object_unref(writer);
 
     prepare_timeout_test(child, channel);
