@@ -42,7 +42,7 @@ fi
 
 RUBY_WRAPPER=
 if test x"$RUBY_DEBUG" = x"yes"; then
-    CUTTER_WRAPPER="gdb --args"
+    RUBY_WRAPPER="gdb --args"
 fi
 
 ruby_build_dir=$abs_top_builddir/binding/ruby
