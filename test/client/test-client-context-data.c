@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -31,6 +31,8 @@ void data_set_reply (void);
 void test_set_reply (gconstpointer data);
 void data_format_reply (void);
 void test_format_reply (gconstpointer data);
+
+static MilterEventLoop *loop;
 
 static MilterClientContext *context;
 static MilterCommandEncoder *encoder;
@@ -219,9 +221,12 @@ setup_signals (MilterClientContext *context)
 }
 
 void
-setup (void)
+cut_setup (void)
 {
+    loop = milter_glib_event_loop_new(NULL);
+
     context = milter_client_context_new(NULL);
+    milter_agent_set_event_loop(MILTER_AGENT(context), loop);
     setup_signals(context);
 
     encoder = MILTER_COMMAND_ENCODER(milter_command_encoder_new());
@@ -274,13 +279,16 @@ errors_free (void)
 }
 
 void
-teardown (void)
+cut_teardown (void)
 {
     if (context)
         g_object_unref(context);
 
     if (encoder)
         g_object_unref(encoder);
+
+    if (loop)
+        g_object_unref(loop);
 
     packet_free();
 

@@ -1,5 +1,7 @@
 2011-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/client/test-client-context-data.c: use MilterEventLoop.
+
 	* milter/core/milter-utils.[ch] (milter_utils_timeout_add): remove.
 
 	* milter/client/milter-client-context.c: use MilterEventLoop.
