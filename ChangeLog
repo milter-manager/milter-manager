@@ -1,5 +1,7 @@
 2011-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/client/test-client-context-callback.c: use MilterEventLoop.
+
 	* doc/milter-test-server.rd*, tool/milter-test-server.c: make
 	milter-test-server name customizable. (add --name option.)
 

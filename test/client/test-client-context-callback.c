@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -59,6 +59,8 @@ void test_feed_abort (void);
 void test_feed_abort_outsize_message_processing (void);
 void test_write_error (void);
 void test_timeout (void);
+
+static MilterEventLoop *loop;
 
 static MilterClientContext *context;
 static MilterCommandEncoder *encoder;
@@ -518,9 +520,14 @@ setup_signals (MilterClientContext *context)
 }
 
 void
-setup (void)
+cut_setup (void)
 {
+    GError *error = NULL;
+
+    loop = milter_glib_event_loop_new(NULL);
+
     context = milter_client_context_new(NULL);
+    milter_agent_set_event_loop(MILTER_AGENT(context), loop);
     setup_signals(context);
 
     encoder = MILTER_COMMAND_ENCODER(milter_command_encoder_new());
@@ -532,7 +539,8 @@ setup (void)
     g_io_channel_set_encoding(channel, NULL, NULL);
     writer = milter_writer_io_channel_new(channel);
     milter_agent_set_writer(MILTER_AGENT(context), writer);
-    milter_agent_start(MILTER_AGENT(context), NULL);
+    milter_agent_start(MILTER_AGENT(context), &error);
+    gcut_assert_error(error);
 
     n_negotiates = 0;
     n_negotiate_responses = 0;
@@ -654,13 +662,13 @@ clear_reuse_data (void)
 }
 
 void
-teardown (void)
+cut_teardown (void)
 {
     if (timeout_ids) {
         GList *node;
         for (node = timeout_ids; node; node = g_list_next(node)) {
             guint timeout_id = GPOINTER_TO_UINT(node->data);
-            g_source_remove(timeout_id);
+            milter_event_loop_remove(loop, timeout_id);
         }
         g_list_free(timeout_ids);
     }
@@ -677,6 +685,9 @@ teardown (void)
         g_object_unref(writer);
     if (channel)
         g_io_channel_unref(channel);
+
+    if (loop)
+        g_object_unref(loop);
 
     packet_free();
 
@@ -1612,15 +1623,19 @@ test_timeout (void)
     cut_assert_equal_uint(1, milter_client_context_get_timeout(context));
 
     g_signal_connect(context, "timeout", G_CALLBACK(cb_timeout), &timed_out);
-    timeout_id = g_timeout_add(500, cb_timeout_detect, &timed_out_before);
+    timeout_id = milter_event_loop_add_timeout(loop, 0.5,
+                                               cb_timeout_detect,
+                                               &timed_out_before);
     timeout_ids = g_list_append(timeout_ids, GUINT_TO_POINTER(timeout_id));
-    timeout_id = g_timeout_add(2000, cb_timeout_detect, &timed_out_after);
+    timeout_id = milter_event_loop_add_timeout(loop, 2,
+                                               cb_timeout_detect,
+                                               &timed_out_after);
     timeout_ids = g_list_append(timeout_ids, GUINT_TO_POINTER(timeout_id));
 
     milter_client_context_progress(context);
 
     while (!timed_out && !timed_out_after)
-        g_main_context_iteration(NULL, TRUE);
+        milter_event_loop_iterate(loop, TRUE);
     cut_assert_true(timed_out_before);
     cut_assert_true(timed_out);
     cut_assert_false(timed_out_after);
