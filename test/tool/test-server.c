@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -505,6 +505,8 @@ cb_reaped (GCutEgg *egg, gint status, gpointer user_data)
 static void
 setup_server (const gchar *spec, const gchar *option_string)
 {
+    append_argument(command, "--name");
+    append_argument(command, "milter-test-server");
     append_argument(command, "-s");
     g_array_append_val(command, spec);
 
