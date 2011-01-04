@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -52,7 +52,8 @@ milter_test_get_base_dir (void)
 
 #define BUFFER_SIZE 4096
 void
-milter_test_write_data_to_io_channel (GIOChannel *io_channel,
+milter_test_write_data_to_io_channel (MilterEventLoop *loop,
+                                      GIOChannel *io_channel,
                                       const gchar *data, gsize data_size)
 {
     gsize bytes_written;
@@ -63,7 +64,7 @@ milter_test_write_data_to_io_channel (GIOChannel *io_channel,
         GIOStatus status;
         GError *error = NULL;
 
-        g_main_context_iteration(NULL, FALSE);
+        milter_event_loop_iterate(loop, FALSE);
 
         bytes = MIN(BUFFER_SIZE, rest_bytes);
         status = g_io_channel_write_chars(io_channel,

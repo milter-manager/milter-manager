@@ -306,7 +306,7 @@ cut_teardown (void)
 static void
 setup_test_client (const gchar *spec)
 {
-    cut_trace(client = milter_test_client_new(spec, decoder));
+    cut_trace(client = milter_test_client_new(spec, decoder, loop));
 }
 
 static gboolean

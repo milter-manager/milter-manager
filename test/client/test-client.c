@@ -481,7 +481,7 @@ setup_client (void)
 static void
 setup_test_server (void)
 {
-    cut_trace(server = milter_test_server_new(spec, decoder));
+    cut_trace(server = milter_test_server_new(spec, decoder, loop));
 }
 
 static gboolean

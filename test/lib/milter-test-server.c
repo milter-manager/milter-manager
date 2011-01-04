@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -35,6 +35,7 @@ typedef struct _MilterTestServerPrivate	MilterTestServerPrivate;
 struct _MilterTestServerPrivate
 {
     MilterDecoder *decoder;
+    MilterEventLoop *loop;
 
     GIOChannel *channel;
     gint fd;
@@ -64,7 +65,7 @@ milter_test_server_init (MilterTestServer *server)
 
     priv = MILTER_TEST_SERVER_GET_PRIVATE(server);
 
-    priv->decoder = milter_command_decoder_new();
+    priv->decoder = NULL;
 
     priv->fd = -1;
     priv->channel = NULL;
@@ -78,21 +79,36 @@ dispose (GObject *object)
 
     priv = MILTER_TEST_SERVER_GET_PRIVATE(object);
 
-    if (priv->watch_id > 0)
-        g_source_remove(priv->watch_id);
-    if (priv->channel)
-        g_io_channel_unref(priv->channel);
-    if (priv->fd > 0)
-        close(priv->fd);
+    if (priv->watch_id > 0) {
+        milter_event_loop_remove(priv->loop, priv->watch_id);
+    }
 
-    if (priv->decoder)
+    if (priv->channel) {
+        g_io_channel_unref(priv->channel);
+        priv->channel = NULL;
+    }
+
+    if (priv->fd > 0) {
+        close(priv->fd);
+        priv->fd = 0;
+    }
+
+    if (priv->decoder) {
         g_object_unref(priv->decoder);
+        priv->decoder = NULL;
+    }
+
+    if (priv->loop) {
+        g_object_unref(priv->loop);
+        priv->loop = NULL;
+    }
 
     G_OBJECT_CLASS(milter_test_server_parent_class)->dispose(object);
 }
 
 MilterTestServer *
-milter_test_server_new (const gchar *spec, MilterDecoder *decoder)
+milter_test_server_new (const gchar *spec, MilterDecoder *decoder,
+                        MilterEventLoop *loop)
 {
     MilterTestServerPrivate *priv;
     gint domain;
@@ -117,6 +133,7 @@ milter_test_server_new (const gchar *spec, MilterDecoder *decoder)
     priv = MILTER_TEST_SERVER_GET_PRIVATE(server);
 
     priv->decoder = g_object_ref(decoder);
+    priv->loop = g_object_ref(loop);
 
     priv->fd = fd;
     priv->channel = g_io_channel_unix_new(priv->fd);
@@ -145,7 +162,8 @@ milter_test_server_write_with_error_check (MilterTestServer *server,
     MilterTestServerPrivate *priv;
 
     priv = MILTER_TEST_SERVER_GET_PRIVATE(server);
-    milter_test_write_data_to_io_channel(priv->channel, data, data_size);
+    milter_test_write_data_to_io_channel(priv->loop, priv->channel,
+                                         data, data_size);
 }
 
 /*

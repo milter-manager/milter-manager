@@ -56,7 +56,8 @@ struct _MilterTestClientClass
 GType             milter_test_client_get_type   (void) G_GNUC_CONST;
 
 MilterTestClient *milter_test_client_new        (const gchar       *spec,
-                                                 MilterDecoder     *decoder);
+                                                 MilterDecoder     *decoder,
+                                                 MilterEventLoop   *loop);
 
 void              milter_test_client_write_with_error_check
                                                 (MilterTestClient  *client,

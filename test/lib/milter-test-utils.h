@@ -39,7 +39,8 @@ typedef enum
 const gchar   *milter_test_get_base_dir    (void);
 
 void           milter_test_write_data_to_io_channel
-                                           (GIOChannel  *io_channel,
+                                           (MilterEventLoop *loop,
+                                            GIOChannel  *io_channel,
                                             const gchar *data,
                                             gsize        data_size);
 gboolean       milter_test_read_data_from_io_channel

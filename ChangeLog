@@ -1,5 +1,12 @@
 2011-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/lib/milter-test-client.[ch],
+	test/lib/milter-test-server.[ch],
+	test/lib/milter-test-utils.[ch],
+	test/client/test-client.c,
+	test/server/test-server-context.c,
+	test/tool/test-server.c: use MilterEventLoop.
+
 	* test/manager/test-children.c (test_no_negotiation): use
 	MilterEventLoop.
 

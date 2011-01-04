@@ -56,7 +56,8 @@ struct _MilterTestServerClass
 GType             milter_test_server_get_type   (void) G_GNUC_CONST;
 
 MilterTestServer *milter_test_server_new        (const gchar       *spec,
-                                                 MilterDecoder     *decoder);
+                                                 MilterDecoder     *decoder,
+                                                 MilterEventLoop   *loop);
 
 void              milter_test_server_write_with_error_check
                                                 (MilterTestServer  *server,

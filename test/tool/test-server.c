@@ -539,7 +539,7 @@ setup_server (const gchar *spec, const gchar *option_string)
 static void
 setup_test_client (const gchar *spec, TestData *test_data)
 {
-    cut_trace(client = milter_test_client_new(spec, decoder));
+    cut_trace(client = milter_test_client_new(spec, decoder, loop));
     setup_command_signals(decoder, test_data);
 }
 

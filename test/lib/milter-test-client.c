@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -34,6 +34,7 @@ typedef struct _MilterTestClientPrivate	MilterTestClientPrivate;
 struct _MilterTestClientPrivate
 {
     MilterDecoder *decoder;
+    MilterEventLoop *loop;
 
     GIOChannel *channel;
     GIOChannel *server_channel;
@@ -68,7 +69,7 @@ milter_test_client_init (MilterTestClient *client)
 
     priv = MILTER_TEST_CLIENT_GET_PRIVATE(client);
 
-    priv->decoder = milter_command_decoder_new();
+    priv->decoder = NULL;
 
     priv->server_fd = -1;
     priv->server_channel = NULL;
@@ -87,12 +88,12 @@ dispose (GObject *object)
     priv = MILTER_TEST_CLIENT_GET_PRIVATE(object);
 
     if (priv->server_watch_id > 0) {
-        g_source_remove(priv->server_watch_id);
+        milter_event_loop_remove(priv->loop, priv->server_watch_id);
         priv->server_watch_id = 0;
     }
 
     if (priv->watch_id > 0) {
-        g_source_remove(priv->watch_id);
+        milter_event_loop_remove(priv->loop, priv->watch_id);
         priv->watch_id = 0;
     }
 
@@ -119,6 +120,11 @@ dispose (GObject *object)
     if (priv->decoder) {
         g_object_unref(priv->decoder);
         priv->decoder = NULL;
+    }
+
+    if (priv->loop) {
+        g_object_unref(priv->loop);
+        priv->loop = NULL;
     }
 
     G_OBJECT_CLASS(milter_test_client_parent_class)->dispose(object);
@@ -180,7 +186,8 @@ watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
 
 
 MilterTestClient *
-milter_test_client_new (const gchar *spec, MilterDecoder *decoder)
+milter_test_client_new (const gchar *spec, MilterDecoder *decoder,
+                        MilterEventLoop *loop)
 {
     MilterTestClientPrivate *priv;
     gint domain;
@@ -209,10 +216,7 @@ milter_test_client_new (const gchar *spec, MilterDecoder *decoder)
     priv = MILTER_TEST_CLIENT_GET_PRIVATE(client);
 
     priv->decoder = g_object_ref(decoder);
-
-    priv->server_fd = -1;
-    priv->server_channel = NULL;
-    priv->server_watch_id = -1;
+    priv->loop = g_object_ref(loop);
 
     priv->fd = fd;
     priv->channel = g_io_channel_unix_new(priv->fd);
@@ -226,10 +230,11 @@ milter_test_client_new (const gchar *spec, MilterDecoder *decoder)
         g_object_unref(client);
         gcut_assert_error(error);
     }
-    priv->watch_id = g_io_add_watch(priv->channel,
-                                    G_IO_IN | G_IO_PRI |
-                                    G_IO_ERR | G_IO_HUP | G_IO_NVAL,
-                                    watch_func, client);
+    priv->watch_id = milter_event_loop_watch_io(priv->loop,
+                                                priv->channel,
+                                                G_IO_IN | G_IO_PRI |
+                                                G_IO_ERR | G_IO_HUP | G_IO_NVAL,
+                                                watch_func, client);
 
     return client;
 }
@@ -241,7 +246,8 @@ milter_test_client_write_with_error_check (MilterTestClient *client,
     MilterTestClientPrivate *priv;
 
     priv = MILTER_TEST_CLIENT_GET_PRIVATE(client);
-    milter_test_write_data_to_io_channel(priv->server_channel, data, data_size);
+    milter_test_write_data_to_io_channel(priv->loop, priv->server_channel,
+                                         data, data_size);
 }
 
 /*
