@@ -972,10 +972,10 @@ master_accept_connection (MilterClient *client, gint server_fd)
         g_object_unref(scm);
         g_object_unref(fdlist);
         if (!result) {
-            milter_error("[client][error][send_fd] %s",
-                         error ? error->message : "unknown");
+            milter_error("[client][master][send-fd][error] %s", error->message);
             milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client),
                                         error);
+            g_error_free(error);
         }
     }
 
@@ -1010,7 +1010,7 @@ cb_server_status_changed (MilterClient *client,
                             MILTER_CLIENT_ERROR_IO_ERROR,
                             "IO error on waiting MTA connection socket: %s",
                             message);
-        milter_error("[client][error][watch] %s", error->message);
+        milter_error("[client][watch][error] %s", error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client),
                                     error);
         g_error_free(error);
@@ -1204,10 +1204,12 @@ multi_thread_process_client_channel (MilterClient *client, GIOChannel *channel,
 
         client_error = g_error_new(MILTER_CLIENT_ERROR,
                                    MILTER_CLIENT_ERROR_THREAD,
-                                   "[client][error][thread] "
                                    "failed to push a data to thread pool: %s",
                                    error->message);
         g_error_free(error);
+        milter_error("[%u] [client][multi-thread][error] %s",
+                     milter_agent_get_tag(MILTER_AGENT(context)),
+                     client_error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client),
                                     client_error);
         g_error_free(client_error);
@@ -1653,7 +1655,7 @@ milter_client_cleanup (MilterClient *client)
                                     MILTER_CLIENT_ERROR_UNIX_SOCKET,
                                     "failed to remove used UNIX socket: %s: %s",
                                     address_un->sun_path, g_strerror(errno));
-                milter_error("[client][error][unix] %s", error->message);
+                milter_error("[client][unix][error] %s", error->message);
                 milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client),
                                             error);
                 g_error_free(error);
@@ -1721,7 +1723,6 @@ milter_client_run_worker (MilterClient *client, GError **error)
     if (!thread) {
         milter_error("[client][worker][single-thread][accept][start][error] %s",
                      local_error->message);
-        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client), local_error);
         g_propagate_error(error, local_error);
         return FALSE;
     }
