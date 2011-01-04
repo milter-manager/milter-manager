@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -36,6 +36,8 @@ void test_finished_signal (void);
 void test_shutdown (void);
 void test_tag (void);
 
+static MilterEventLoop *loop;
+
 static MilterReader *reader;
 
 static GIOChannel *channel;
@@ -57,11 +59,13 @@ cut_setup (void)
     signal_id = 0;
     finished_signal_id = 0;
 
+    loop = milter_glib_event_loop_new(NULL);
+
     channel = gcut_string_io_channel_new(NULL);
     g_io_channel_set_encoding(channel, NULL, NULL);
 
     reader = milter_reader_io_channel_new(channel);
-    milter_reader_start(reader, NULL);
+    milter_reader_start(reader, loop);
 
     actual_read_string = g_string_new(NULL);
     actual_read_size = 0;
@@ -128,7 +132,7 @@ write_data (GIOChannel *channel, const gchar *data, gsize size)
     g_io_channel_seek_position(channel, read_offset, G_SEEK_CUR, &error);
     gcut_assert_error(error);
 
-    g_main_context_iteration(NULL, FALSE);
+    milter_event_loop_iterate(loop, FALSE);
 }
 
 void
@@ -171,7 +175,7 @@ test_reader_huge_data (void)
     write_data(channel, binary_data, data_size);
 
     for (i = 0; i < data_size; i += reader_buffer_size)
-        g_main_context_iteration(NULL, FALSE);
+        milter_event_loop_iterate(loop, FALSE);
     cut_assert_equal_memory(binary_data, data_size,
                             actual_read_string->str, actual_read_size);
 }
@@ -213,7 +217,7 @@ test_shutdown (void)
     cut_assert_true(milter_reader_is_watching(reader));
     milter_reader_shutdown(reader);
     cut_assert_true(milter_reader_is_watching(reader));
-    g_main_context_iteration(NULL, FALSE);
+    milter_event_loop_iterate(loop, FALSE);
     cut_assert_false(milter_reader_is_watching(reader));
 }
 
