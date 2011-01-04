@@ -2568,9 +2568,10 @@ prepare_retry_establish_connection (MilterManagerChild *child,
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     negotiate_data = negotiate_data_new(children, child, option, is_retry);
-    timeout_id = g_timeout_add(priv->retry_connect_time * 1000,
-                               retry_establish_connection,
-                               negotiate_data);
+    timeout_id = milter_event_loop_add_timeout(priv->event_loop,
+                                               priv->retry_connect_time,
+                                               retry_establish_connection,
+                                               negotiate_data);
 
     g_hash_table_insert(priv->try_negotiate_ids,
                         negotiate_data, GUINT_TO_POINTER(timeout_id));
