@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -255,8 +255,12 @@ static void
 cb_context_reader_finished (MilterReader *reader, gpointer data)
 {
     MilterManagerControllerContext *context = data;
+    MilterEventLoop *loop;
 
-    g_idle_add_full(G_PRIORITY_DEFAULT, cb_free_context, context, NULL);
+    loop = milter_agent_get_event_loop(MILTER_AGENT(context));
+    milter_event_loop_add_idle_full(loop, G_PRIORITY_DEFAULT,
+                                    cb_free_context, context,
+                                    NULL);
 }
 
 static void
