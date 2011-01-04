@@ -18,6 +18,7 @@ class TestClientContext < Test::Unit::TestCase
 
   def setup
     @context = Milter::ClientContext.new
+    @context.event_loop = Milter::GLibEventLoop.new
   end
 
   def test_feed

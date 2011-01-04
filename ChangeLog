@@ -1,5 +1,7 @@
 2011-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/test/toolkit/test-client-context.rb: set event loop.
+
 	* milter/core/milter-agent.c: make event-loop writable.
 
 	* binding/ruby/test/run-test.sh: use command line option isntead
