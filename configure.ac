@@ -389,6 +389,8 @@ check:
 distdir:
 
 dist:
+
+uninstall:
 EOM
     fi
   fi
@@ -399,6 +401,7 @@ EOM
 all:
 distdir:
 distclean:
+uninstall:
 EOM
   fi
   if test "$ac_use_bundled_ruby_glib2_0_90_5" != "yes"; then
@@ -407,6 +410,7 @@ EOM
 all:
 distdir:
 distclean:
+uninstall:
 EOM
   fi
 

@@ -1,5 +1,15 @@
 2011-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* configure.ac: add dummy uninstall target to bundled Ruby/GLib2.
+
+	* milter/client.h, milter/client/milter-client.c: mark
+	milter_client_main() deprecated. use milter_client_run() instead.
+	* binding/ruby/src/toolkit/rb-milter-client.c,
+	binding/ruby/lib/milter/client/command-line.rb,
+	libmilter/libmilter-compatible.c,
+	milter/manager/milter-manager-main.c,
+	test/client/test-client.c
+
 	* milter/manager/milter-manager-children.c: use MilterEventLoop.
 
 	* milter/manager/milter-manager.c: use MilterEventLoop.
