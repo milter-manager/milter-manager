@@ -464,6 +464,13 @@ dnl **************************************************************
 
 AC_PATH_PROG(RD2, rd2, rd2-not-found)
 AM_CONDITIONAL([WITH_RD2], [test "$RD2" != "rd2-not-found"])
+if test "$RD2" != "rd2-not-found"; then
+    RD2RUBY=`sed -e '1!{' -e 's/.*//' -e q -e '}' -e '/^@%:@! */!d' -e 's///' -e 's|^/usr/bin/env *||' -e q $RD2`
+    if test -z "$RD2RUBY"; then
+	RD2RUBY='$(RUBY)'
+    fi
+    AC_SUBST(RD2RUBY)
+fi
 
 dnl **************************************************************
 dnl Configure for maintainer mode.

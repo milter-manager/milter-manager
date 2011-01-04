@@ -1,5 +1,8 @@
 2011-01-05  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* configure.ac (RD2RUBY), doc/Makefile.am (.rd.man, .rd.jman):
+	use associated version ruby.
+
 	* tool/Makefile.am (milter_test_client_libmilter_LDADD): needs
 	libmilter-core.la.
 
