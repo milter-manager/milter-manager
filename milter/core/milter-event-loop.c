@@ -90,6 +90,9 @@ void
 milter_event_loop_run (MilterEventLoop *loop)
 {
     MilterEventLoopClass *loop_class;
+
+    g_return_if_fail(loop != NULL);
+
     loop_class = MILTER_EVENT_LOOP_GET_CLASS(loop);
     loop_class->run(loop);
 }
@@ -98,6 +101,9 @@ gboolean
 milter_event_loop_iterate (MilterEventLoop *loop, gboolean may_block)
 {
     MilterEventLoopClass *loop_class;
+
+    g_return_val_if_fail(loop != NULL, FALSE);
+
     loop_class = MILTER_EVENT_LOOP_GET_CLASS(loop);
     return loop_class->iterate(loop, may_block);
 }
@@ -106,6 +112,9 @@ void
 milter_event_loop_quit (MilterEventLoop *loop)
 {
     MilterEventLoopClass *loop_class;
+
+    g_return_if_fail(loop != NULL);
+
     loop_class = MILTER_EVENT_LOOP_GET_CLASS(loop);
     loop_class->quit(loop);
 }
@@ -118,6 +127,9 @@ milter_event_loop_watch_io (MilterEventLoop *loop,
                             gpointer         data)
 {
     MilterEventLoopClass *loop_class;
+
+    g_return_val_if_fail(loop != NULL, 0);
+
     loop_class = MILTER_EVENT_LOOP_GET_CLASS(loop);
     return loop_class->watch_io(loop, channel, condition, function, data);
 }
@@ -143,6 +155,9 @@ milter_event_loop_watch_child_full (MilterEventLoop *loop,
                                     GDestroyNotify   notify)
 {
     MilterEventLoopClass *loop_class;
+
+    g_return_val_if_fail(loop != NULL, 0);
+
     loop_class = MILTER_EVENT_LOOP_GET_CLASS(loop);
     return loop_class->watch_child_full(loop, priority, pid,
                                         function, data, notify);
@@ -169,6 +184,9 @@ milter_event_loop_add_timeout_full (MilterEventLoop *loop,
                                     GDestroyNotify   notify)
 {
     MilterEventLoopClass *loop_class;
+
+    g_return_val_if_fail(loop != NULL, 0);
+
     loop_class = MILTER_EVENT_LOOP_GET_CLASS(loop);
     return loop_class->add_timeout_full(loop, priority, interval_in_seconds,
                                         function, data, notify);
@@ -191,6 +209,9 @@ milter_event_loop_add_idle_full (MilterEventLoop *loop,
                                  GDestroyNotify   notify)
 {
     MilterEventLoopClass *loop_class;
+
+    g_return_val_if_fail(loop != NULL, 0);
+
     loop_class = MILTER_EVENT_LOOP_GET_CLASS(loop);
     return loop_class->add_idle_full(loop, priority, function, data, notify);
 }
@@ -199,6 +220,9 @@ gboolean
 milter_event_loop_remove (MilterEventLoop *loop, guint tag)
 {
     MilterEventLoopClass *loop_class;
+
+    g_return_val_if_fail(loop != NULL, FALSE);
+
     loop_class = MILTER_EVENT_LOOP_GET_CLASS(loop);
     return loop_class->remove(loop, tag);
 }

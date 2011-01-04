@@ -1,5 +1,7 @@
 2011-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-event-loop.c: add NULL check.
+
 	* binding/ruby/test/toolkit/test-server-context.rb: set event loop.
 
 	* binding/ruby/test/toolkit/test-client-context.rb: set event loop.
