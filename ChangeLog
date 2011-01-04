@@ -1,5 +1,7 @@
 2011-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/libmilter/test-smfi-context.c: use MilterEventLoop.
+
 	* test/core/test-writer.c: use MilterEventLoop.
 
 	* test/core/test-reader.c: use MilterEventLoop.

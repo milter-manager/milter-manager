@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2009-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2009-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -47,6 +47,8 @@ void test_delrcpt (gconstpointer data);
 void test_progress (void);
 void test_quarantine (void);
 void test_replacebody (void);
+
+static MilterEventLoop *loop;
 
 static SmfiContext *context;
 static MilterClientContext *client_context;
@@ -251,11 +253,16 @@ static struct smfiDesc smfilter = {
 
 
 void
-setup (void)
+cut_setup (void)
 {
+    GError *error = NULL;
+
     smfi_register(smfilter);
 
+    loop = milter_glib_event_loop_new(NULL);
+
     client_context = milter_client_context_new(NULL);
+    milter_agent_set_event_loop(MILTER_AGENT(client_context), loop);
     expected_output = NULL;
 
     context = smfi_context_new(client_context);
@@ -264,7 +271,8 @@ setup (void)
     g_io_channel_set_encoding(channel, NULL, NULL);
     writer = milter_writer_io_channel_new(channel);
     milter_agent_set_writer(MILTER_AGENT(client_context), writer);
-    milter_agent_start(MILTER_AGENT(client_context), NULL);
+    milter_agent_start(MILTER_AGENT(client_context), &error);
+    gcut_assert_error(error);
 
     command_encoder = MILTER_COMMAND_ENCODER(milter_command_encoder_new());
     reply_encoder = MILTER_REPLY_ENCODER(milter_reply_encoder_new());
@@ -321,7 +329,7 @@ packet_free (void)
 }
 
 void
-teardown (void)
+cut_teardown (void)
 {
     if (context)
         g_object_unref(context);
@@ -332,6 +340,8 @@ teardown (void)
         g_io_channel_unref(channel);
     if (writer)
         g_object_unref(writer);
+    if (loop)
+        g_object_unref(loop);
     if (expected_output)
         g_string_free(expected_output, TRUE);
 
