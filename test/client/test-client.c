@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -60,6 +60,8 @@ void test_need_maintain_never (void);
 void test_need_maintain_no_processing_sessions (void);
 void test_need_maintain_no_processing_sessions_below_processed_sessions (void);
 void test_need_maintain_no_processing_sessions_no_interval (void);
+
+static MilterEventLoop *loop;
 
 static MilterClient *client;
 static MilterTestServer *server;
@@ -303,11 +305,12 @@ setup_client_signals (void)
 }
 
 void
-setup (void)
+cut_setup (void)
 {
     spec = "inet:9999@127.0.0.1";
 
     client = milter_client_new();
+    loop = milter_client_get_process_loop(client);
     setup_client_signals();
     server = NULL;
 
@@ -375,12 +378,12 @@ setup (void)
 }
 
 void
-teardown (void)
+cut_teardown (void)
 {
     if (idle_id > 0)
-        g_source_remove(idle_id);
+        milter_event_loop_remove(loop, idle_id);
     if (idle_shutdown_id > 0)
-        g_source_remove(idle_shutdown_id);
+        milter_event_loop_remove(loop, idle_shutdown_id);
 
     if (client)
         g_object_unref(client);
@@ -391,6 +394,9 @@ teardown (void)
         g_object_unref(decoder);
     if (encoder)
         g_object_unref(encoder);
+
+    if (loop)
+        g_object_unref(loop);
 
     if (packet)
         g_free(packet);
@@ -465,8 +471,11 @@ setup_client (void)
     milter_client_set_connection_spec(client, spec, &error);
     gcut_assert_error(error);
 
-    idle_shutdown_id = g_idle_add_full(G_PRIORITY_LOW, cb_idle_shutdown,
-                                       NULL, NULL);
+    idle_shutdown_id = milter_event_loop_add_idle_full(loop,
+                                                       G_PRIORITY_LOW,
+                                                       cb_idle_shutdown,
+                                                       NULL,
+                                                       NULL);
 }
 
 static void
@@ -512,7 +521,7 @@ test_negotiate (void)
         MILTER_STEP_NO_END_OF_HEADER;
     option = milter_option_new(version, action, step);
 
-    idle_id = g_idle_add(cb_idle_negotiate, NULL);
+    idle_id = milter_event_loop_add_idle(loop, cb_idle_negotiate, NULL);
 
     cut_trace(setup_client());
     if (!milter_client_main(client))
@@ -541,7 +550,7 @@ cb_idle_helo (gpointer user_data)
 void
 test_helo (void)
 {
-    idle_id = g_idle_add(cb_idle_helo, NULL);
+    idle_id = milter_event_loop_add_idle(loop, cb_idle_helo, NULL);
 
     cut_trace(setup_client());
     if (!milter_client_main(client))
