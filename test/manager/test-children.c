@@ -1861,7 +1861,7 @@ test_no_negotiation (void)
     child10027 = milter_manager_children_get_children(children)->next->data;
 
     cut_assert_true(milter_manager_children_negotiate(children, option, NULL));
-    g_main_context_iteration(NULL, FALSE);
+    milter_event_loop_iterate(loop, FALSE);
     cut_assert_equal_string(
         cut_take_printf("[%u] [children][error][connection] [%u] "
                         "Failed to connect to inet:10026@localhost: "
