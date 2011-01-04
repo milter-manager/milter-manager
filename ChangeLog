@@ -1,5 +1,9 @@
 2011-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-controller.[ch]: use MilterEventLoop.
+	* milter/manager/milter-manager-main.c,
+	test/manager/test-controller.c: follow the above change.
+
 	* test/lib/milter-test-client.c,
 	test/lib/milter-test-server.c,
 	test/lib/milter-test-utils.[ch]: use MilterEventLoop.

@@ -40,6 +40,7 @@ typedef struct _MilterManagerControllerPrivate MilterManagerControllerPrivate;
 struct _MilterManagerControllerPrivate
 {
     MilterManager *manager;
+    MilterEventLoop *event_loop;
     guint watch_id;
     gchar *spec;
 };
@@ -47,7 +48,8 @@ struct _MilterManagerControllerPrivate
 enum
 {
     PROP_0,
-    PROP_MANAGER
+    PROP_MANAGER,
+    PROP_EVENT_LOOP
 };
 
 G_DEFINE_TYPE(MilterManagerController, milter_manager_controller,
@@ -82,6 +84,13 @@ milter_manager_controller_class_init (MilterManagerControllerClass *klass)
                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_MANAGER, spec);
 
+    spec = g_param_spec_object("event-loop",
+                               "Event Loop",
+                               "The event loop of the milter controller",
+                               MILTER_TYPE_EVENT_LOOP,
+                               G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_EVENT_LOOP, spec);
+
     g_type_class_add_private(gobject_class,
                              sizeof(MilterManagerControllerPrivate));
 }
@@ -93,6 +102,7 @@ milter_manager_controller_init (MilterManagerController *controller)
 
     priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
     priv->manager = NULL;
+    priv->event_loop = NULL;
     priv->watch_id = 0;
     priv->spec = NULL;
 }
@@ -145,7 +155,7 @@ dispose (GObject *object)
     priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(object);
 
     if (priv->watch_id > 0) {
-        g_source_remove(priv->watch_id);
+        milter_event_loop_remove(priv->event_loop, priv->watch_id);
         priv->watch_id = 0;
     }
 
@@ -154,6 +164,11 @@ dispose (GObject *object)
     if (priv->manager) {
         g_object_unref(priv->manager);
         priv->manager = NULL;
+    }
+
+    if (priv->event_loop) {
+        g_object_unref(priv->event_loop);
+        priv->event_loop = NULL;
     }
 
     G_OBJECT_CLASS(milter_manager_controller_parent_class)->dispose(object);
@@ -176,6 +191,13 @@ set_property (GObject      *object,
         if (priv->manager)
             g_object_ref(priv->manager);
         break;
+    case PROP_EVENT_LOOP:
+        if (priv->event_loop)
+            g_object_unref(priv->event_loop);
+        priv->event_loop = g_value_get_object(value);
+        if (priv->event_loop)
+            g_object_ref(priv->event_loop);
+        break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -195,6 +217,9 @@ get_property (GObject    *object,
     case PROP_MANAGER:
         g_value_set_object(value, priv->manager);
         break;
+    case PROP_EVENT_LOOP:
+        g_value_set_object(value, priv->event_loop);
+        break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -208,10 +233,12 @@ milter_manager_controller_error_quark (void)
 }
 
 MilterManagerController *
-milter_manager_controller_new (MilterManager *manager)
+milter_manager_controller_new (MilterManager *manager,
+                               MilterEventLoop *event_loop)
 {
     return g_object_new(MILTER_TYPE_MANAGER_CONTROLLER,
                         "manager", manager,
+                        "event-loop", event_loop,
                         NULL);
 }
 
@@ -240,9 +267,11 @@ process_connection(MilterManagerController *controller,
     MilterManagerControllerContext *context;
     MilterWriter *writer;
     MilterReader *reader;
+    GError *error = NULL;
 
     priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(controller);
     context = milter_manager_controller_context_new(priv->manager);
+    milter_agent_set_event_loop(MILTER_AGENT(context), priv->event_loop);
 
     writer = milter_writer_io_channel_new(agent_channel);
     milter_agent_set_writer(MILTER_AGENT(context), writer);
@@ -255,8 +284,11 @@ process_connection(MilterManagerController *controller,
     g_signal_connect(reader, "finished",
                      G_CALLBACK(cb_context_reader_finished), context);
 
-    /* FIXME: correct GMainContext */
-    milter_agent_start(MILTER_AGENT(context), NULL);
+    if (!milter_agent_start(MILTER_AGENT(context), &error)) {
+        milter_error("[controller][error][start] %s", error->message);
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(context), error);
+        g_error_free(error);
+    }
 }
 
 static gboolean
@@ -447,10 +479,11 @@ milter_manager_controller_listen (MilterManagerController *controller,
     }
 
     priv->spec = g_strdup(spec);
-    priv->watch_id = g_io_add_watch(channel,
-                                    G_IO_IN | G_IO_PRI |
-                                    G_IO_ERR | G_IO_HUP | G_IO_NVAL,
-                                    watch_func, controller);
+    priv->watch_id =
+        milter_event_loop_watch_io(priv->event_loop, channel,
+                                   G_IO_IN | G_IO_PRI |
+                                   G_IO_ERR | G_IO_HUP | G_IO_NVAL,
+                                   watch_func, controller);
     g_io_channel_unref(channel);
 
     return TRUE;

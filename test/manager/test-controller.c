@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -40,6 +40,8 @@ void test_listen_without_remove_on_close (void);
 void test_change_unix_socket_mode (void);
 void test_change_unix_socket_group (void);
 
+static MilterEventLoop *loop;
+
 static MilterManager *manager;
 static MilterManagerConfiguration *config;
 static MilterManagerController *controller;
@@ -51,13 +53,15 @@ static gchar *tmp_dir;
 static gchar *socket_path;
 
 void
-setup (void)
+cut_setup (void)
 {
     gchar *spec;
 
+    loop = milter_glib_event_loop_new(NULL);
+
     config = milter_manager_configuration_new(NULL);
     manager = milter_manager_new(config);
-    controller = milter_manager_controller_new(manager);
+    controller = milter_manager_controller_new(manager, loop);
 
     expected_error = NULL;
     actual_error = NULL;
@@ -76,7 +80,7 @@ setup (void)
 }
 
 void
-teardown (void)
+cut_teardown (void)
 {
     if (config)
         g_object_unref(config);
@@ -84,6 +88,9 @@ teardown (void)
         g_object_unref(manager);
     if (controller)
         g_object_unref(controller);
+
+    if (loop)
+        g_object_unref(loop);
 
     if (actual_error)
         g_error_free(actual_error);

@@ -61,7 +61,8 @@ GQuark                milter_manager_controller_error_quark (void);
 GType                 milter_manager_controller_get_type    (void) G_GNUC_CONST;
 
 MilterManagerController *milter_manager_controller_new
-                                          (MilterManager *manager);
+                                          (MilterManager   *manager,
+                                           MilterEventLoop *event_loop);
 
 gboolean              milter_manager_controller_listen
                                           (MilterManagerController  *controller,

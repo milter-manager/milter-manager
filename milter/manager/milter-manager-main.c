@@ -656,6 +656,7 @@ milter_manager_main (void)
     MilterManager *manager;
     MilterManagerController *controller;
     MilterManagerConfiguration *config;
+    MilterEventLoop *loop;
     gboolean remove_socket, daemon;
     gchar *pid_file = NULL;
     GError *error = NULL;
@@ -719,7 +720,8 @@ milter_manager_main (void)
         return FALSE;
     }
 
-    controller = milter_manager_controller_new(manager);
+    loop = milter_client_get_process_loop(client);
+    controller = milter_manager_controller_new(manager, loop);
     if (controller && !milter_manager_controller_listen(controller, &error)) {
         milter_manager_error("failed to listen controller socket: %s",
                              error->message);
