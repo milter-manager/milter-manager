@@ -1,5 +1,7 @@
 2011-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.c: use MilterEventLoop.
+
 	* milter/manager/milter-manager.c: use MilterEventLoop.
 
 	* milter/manager/milter-manager-process-launcher.c: use MilterEventLoop.

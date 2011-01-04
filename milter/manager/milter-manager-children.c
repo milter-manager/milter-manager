@@ -99,6 +99,13 @@ struct _NegotiateData
     gboolean is_retry;
 };
 
+typedef struct _NegotiateTimeoutID NegotiateTimeoutID;
+struct _NegotiateTimeoutID
+{
+    MilterEventLoop *loop;
+    guint timeout_id;
+};
+
 enum
 {
     PROP_0,
@@ -177,6 +184,11 @@ static NegotiateData *negotiate_data_new  (MilterManagerChildren *children,
                                            gboolean is_retry);
 static void           negotiate_data_free (NegotiateData *data);
 static void           negotiate_data_hash_key_free (gpointer data);
+static NegotiateTimeoutID *
+                      negotiate_timeout_id_new  (MilterEventLoop *loop,
+                                                 guint            timeout_id);
+static void           negotiate_timeout_id_free (NegotiateTimeoutID *id);
+static void           negotiate_timeout_id_hash_value_free (gpointer data);
 
 static void
 milter_manager_children_class_init (MilterManagerChildrenClass *klass)
@@ -216,19 +228,6 @@ milter_manager_children_class_init (MilterManagerChildrenClass *klass)
 }
 
 static void
-remove_retry_negotiate_timeout (gpointer data)
-{
-    guint timeout_id;
-
-    if (!data)
-        return;
-
-    timeout_id = GPOINTER_TO_UINT(data);
-
-    g_source_remove(timeout_id);
-}
-
-static void
 milter_manager_children_init (MilterManagerChildren *milter)
 {
     MilterManagerChildrenPrivate *priv;
@@ -241,7 +240,7 @@ milter_manager_children_init (MilterManagerChildren *milter)
     priv->try_negotiate_ids =
         g_hash_table_new_full(g_direct_hash, g_direct_equal,
                               negotiate_data_hash_key_free,
-                              remove_retry_negotiate_timeout);
+                              negotiate_timeout_id_hash_value_free);
     priv->milters = NULL;
     priv->macros_requests = milter_macros_requests_new();
     priv->option = NULL;
@@ -666,7 +665,7 @@ compile_reply_status (MilterManagerChildren *children,
 static void
 cb_ready (MilterServerContext *context, gpointer user_data)
 {
-    NegotiateData *negotiate_data = (NegotiateData*)user_data;
+    NegotiateData *negotiate_data = (NegotiateData *)user_data;
     MilterManagerChildrenPrivate *priv;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(negotiate_data->children);
@@ -2555,6 +2554,33 @@ negotiate_data_hash_key_free (gpointer data)
     negotiate_data_free(data);
 }
 
+static NegotiateTimeoutID *
+negotiate_timeout_id_new (MilterEventLoop *loop, guint timeout_id)
+{
+    NegotiateTimeoutID *id;
+
+    id = g_new0(NegotiateTimeoutID, 1);
+    id->loop = g_object_ref(loop);
+    id->timeout_id = timeout_id;
+
+    return id;
+}
+
+static void
+negotiate_timeout_id_free (NegotiateTimeoutID *id)
+{
+    milter_event_loop_remove(id->loop, id->timeout_id);
+    g_object_unref(id->loop);
+    g_free(id);
+}
+
+static void
+negotiate_timeout_id_hash_value_free (gpointer data)
+{
+    if (data)
+        negotiate_timeout_id_free(data);
+}
+
 static void
 prepare_retry_establish_connection (MilterManagerChild *child,
                                     MilterOption *option,
@@ -2563,6 +2589,7 @@ prepare_retry_establish_connection (MilterManagerChild *child,
 {
     MilterManagerChildrenPrivate *priv;
     NegotiateData *negotiate_data;
+    NegotiateTimeoutID *negotiate_timeout_id;
     guint timeout_id;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
@@ -2572,9 +2599,11 @@ prepare_retry_establish_connection (MilterManagerChild *child,
                                                priv->retry_connect_time,
                                                retry_establish_connection,
                                                negotiate_data);
+    negotiate_timeout_id =
+        negotiate_timeout_id_new(priv->event_loop, timeout_id);
 
     g_hash_table_insert(priv->try_negotiate_ids,
-                        negotiate_data, GUINT_TO_POINTER(timeout_id));
+                        negotiate_data, negotiate_timeout_id);
 }
 
 static void
@@ -2589,8 +2618,7 @@ prepare_negotiate (MilterManagerChild *child,
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     negotiate_data = negotiate_data_new(children, child, option, is_retry);
-    g_hash_table_insert(priv->try_negotiate_ids,
-                        negotiate_data, NULL);
+    g_hash_table_insert(priv->try_negotiate_ids, negotiate_data, NULL);
 }
 
 static gboolean
