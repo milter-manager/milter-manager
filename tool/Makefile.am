@@ -24,6 +24,7 @@ milter_test_client_CFLAGS =				\
 milter_test_client_libmilter_SOURCE = milter-test-client-libmilter.c
 milter_test_client_libmilter_LDADD =				\
 	$(top_builddir)/milter/client/libmilter-client.la	\
+	$(top_builddir)/milter/core/libmilter-core.la		\
 	$(top_builddir)/libmilter/libmilter.la			\
 	$(GLIB_LIBS)
 milter_test_client_libmilter_CFLAGS =				\

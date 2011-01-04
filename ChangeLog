@@ -1,3 +1,8 @@
+2011-01-05  Nobuyoshi Nakada  <nakada@clear-code.com>
+
+	* tool/Makefile.am (milter_test_client_libmilter_LDADD): needs
+	libmilter-core.la.
+
 2011-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
 	* po/POTFILES.skip: add for gio-unix-compatible.
