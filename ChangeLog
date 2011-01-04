@@ -1,5 +1,9 @@
 2011-01-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client.h, milter/client/milter-client.c
+	(milter_client_get_process_loop): export event loop for processing
+	milter protocol.
+
 	* test/server/test-server-context.c: use MilterEventLoop.
 
 	* test/manager/test-manager.c: use MilterEventLoop.
