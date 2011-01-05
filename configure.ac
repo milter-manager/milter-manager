@@ -517,31 +517,48 @@ if test "x$with_libevent" != "xno"; then
     libevent_prefixes="$with_libevent"
   fi
   for libevent_prefix in $libevent_prefixes; do
-    AC_CHECK_FILE("$libevent_prefix/include/event.h",
-                  [],
-                  [continue])
+    libevent_header=no
+    for header in ev event; do
+      AC_CHECK_FILE("$libevent_prefix/include/$header.h",
+                    [libevent_header=yes; break])
+    done
+    if test "$libevent_header" = no; then
+      continue
+    fi
     CFLAGS="$CFLAGS -I$libevent_prefix/include"
     LDFLAGS="$LDFLAGS -L$libevent_prefix/lib"
-    AC_CHECK_HEADERS(event.h,
-                     [AC_CHECK_LIB(event, event_init,
-                                   [libevent_available=yes],
-                                   [libevent_available=no])],
-                     [libevent_available=no])
+    libevent_available=no
+    AC_CHECK_HEADERS(ev.h,
+                     [AC_CHECK_LIB(ev, ev_loop_new,
+                                   [libevent_available=ev])])
+    if test "x$libevent_available" = "xno"; then
+      AC_CHECK_HEADERS(event.h,
+                       [AC_CHECK_LIB(event, event_init,
+                                     [libevnet_available=event],
+                                     [libevent_available=no])],
+                       [libev_available=no])
+    fi
     CFLAGS="$_SAVE_CFLAGS"
     LDFLAGS="$_SAVE_LDFLAGS"
-    if test "x$libevent_available" = "xyes"; then
-      AC_DEFINE(HAVE_LIBEVENT, [1], [Define to 1 if libevent is available.])
+    if test "x$libevent_available" != "xno"; then
       LIBEVENT_CFLAGS="-I$libevent_prefix/include"
-      LIBEVENT_LIBS="-L$libevent_prefix/lib -levent"
+      LIBEVENT_LIBS="-L$libevent_prefix/lib -l$libevent_available"
       break
     fi
   done
-  if test "x$libevent_available" = "xno" -a "x$with_libevent" = "xyes"; then
+  AS_CASE("$libevent_available",
+  [no], [if test "x$with_libevent" = "xyes"; then
     AC_MSG_ERROR("No libevent found")
-  else
-    AM_CONDITIONAL(WITH_LIBEVENT, true)
-  fi
+  fi],
+  [ev], [
+    AC_DEFINE(HAVE_LIBEV, [1], [Define to 1 if libev is available.])
+  ],
+  [event], [
+    AC_DEFINE(HAVE_LIBEVENT, [1], [Define to 1 if libevent is available.])
+  ])
 fi
+AM_CONDITIONAL(WITH_LIBEV, [test "$libevent_available" = ev])
+AM_CONDITIONAL(WITH_LIBEVENT, [test "$libevent_available" = event])
 AC_SUBST(LIBEVENT_CFLAGS)
 AC_SUBST(LIBEVENT_LIBS)
 

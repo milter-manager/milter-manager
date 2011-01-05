@@ -1,5 +1,7 @@
 2011-01-05  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* configure.ac: check libev before libevent.
+
 	* test/lib/milter-test-utils.c (milter_test_get_tmp_dir): return
 	temporary directory name.
 
