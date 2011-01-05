@@ -1,3 +1,8 @@
+2011-01-05  Kouhei Sutou  <kou@cozmixng.org>
+
+	* configure.ac, milter/core/milter-libev-event-loop.[ch]:
+	libevent -> libev.
+
 2011-01-05  Kouhei Sutou  <kou@clear-code.com>
 
 	* tool/milter-report-statistics: use top instead of ps for

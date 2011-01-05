@@ -499,49 +499,49 @@ AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED([GETTEXT_PACKAGE], ["$GETTEXT_PACKAGE"], [Gettext package])
 
 dnl **************************************************************
-dnl Check for libevent.
+dnl Check for libev.
 dnl **************************************************************
 
-libevent_available=no
-AC_ARG_WITH(libevent,
-  [AS_HELP_STRING([--with-libevent],
-    [Specify libevent installed prefix. [default=auto]])],
-  [with_libevent="$withval"],
-  [with_libevent="auto"])
-if test "x$with_libevent" != "xno"; then
+libev_available=no
+AC_ARG_WITH(libev,
+  [AS_HELP_STRING([--with-libev],
+    [Specify libev installed prefix. [default=auto]])],
+  [with_libev="$withval"],
+  [with_libev="auto"])
+if test "x$with_libev" != "xno"; then
   _SAVE_CFLAGS="$CFLAGS"
   _SAVE_LDFLAGS="$LDFLAGS"
-  if test "x$with_libevent" = "xauto" -o "x$with_libevent" = "xyes"; then
-    libevent_prefixes="/usr/local /usr"
+  if test "x$with_libev" = "xauto" -o "x$with_libev" = "xyes"; then
+    libev_prefixes="/usr/local /usr"
   else
-    libevent_prefixes="$with_libevent"
+    libev_prefixes="$with_libev"
   fi
-  for libevent_prefix in $libevent_prefixes; do
-    CFLAGS="$CFLAGS -I$libevent_prefix/include"
-    LDFLAGS="$LDFLAGS -L$libevent_prefix/lib"
-    libevent_available=no
+  for libev_prefix in $libev_prefixes; do
+    CFLAGS="$CFLAGS -I$libev_prefix/include"
+    LDFLAGS="$LDFLAGS -L$libev_prefix/lib"
+    libev_available=no
     AC_CHECK_HEADERS(ev.h,
                      [AC_CHECK_LIB(ev, ev_loop_new,
-                                   [libevent_available=ev])])
+                                   [libev_available=yes])])
     CFLAGS="$_SAVE_CFLAGS"
     LDFLAGS="$_SAVE_LDFLAGS"
-    if test "x$libevent_available" != "xno"; then
-      LIBEVENT_CFLAGS="-I$libevent_prefix/include"
-      LIBEVENT_LIBS="-L$libevent_prefix/lib -l$libevent_available"
+    if test "x$libev_available" != "xno"; then
+      LIBEV_CFLAGS="-I$libev_prefix/include"
+      LIBEV_LIBS="-L$libev_prefix/lib -l$libev_available"
       break
     fi
   done
-  AS_CASE("$libevent_available",
-  [no], [if test "x$with_libevent" = "xyes"; then
-    AC_MSG_ERROR("No libevent found")
+  AS_CASE("$libev_available",
+  [no], [if test "x$with_libev" = "xyes"; then
+    AC_MSG_ERROR("No libev found")
   fi],
   [ev], [
     AC_DEFINE(HAVE_LIBEV, [1], [Define to 1 if libev is available.])
   ])
 fi
-AM_CONDITIONAL(WITH_LIBEVENT, [test "x$libevent_available" != xno])
-AC_SUBST(LIBEVENT_CFLAGS)
-AC_SUBST(LIBEVENT_LIBS)
+AM_CONDITIONAL(WITH_LIBEV, [test "x$libev_available" != xno])
+AC_SUBST(LIBEV_CFLAGS)
+AC_SUBST(LIBEV_LIBS)
 
 dnl **************************************************************
 dnl Check for package platform.
@@ -827,10 +827,10 @@ AC_OUTPUT
 
 glib_version="$glib_config_major_version.$glib_config_minor_version.$glib_config_micro_version"
 
-if test "$libevent_available" = "yes"; then
-   libevent_configure_result="$libevent_available ($libevent_prefix)"
+if test "$libev_available" = "yes"; then
+   libev_configure_result="$libev_available ($libev_prefix)"
 else
-   libevent_configure_result="$libevent_available"
+   libev_configure_result="$libev_available"
 fi
 
 echo
@@ -846,7 +846,7 @@ echo "  Default Connection Spec : $MILTER_MANAGER_DEFAULT_CONNECTION_SPEC"
 echo "  Default PID File        : $MILTER_MANAGER_DEFAULT_PID_FILE"
 echo
 echo "  GLib                    : $glib_version"
-echo "  libevent                : $libevent_configure_result"
+echo "  libev                   : $libev_configure_result"
 echo "  Ruby                    : $RUBY"
 echo "  Ruby milter PATH        : $ruby_milterdir"
 echo

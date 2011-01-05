@@ -39,7 +39,7 @@ milter_core_public_headers =		\
 	milter-session-result.h		\
 	milter-memory-profile.h		\
 	milter-event-loop.h		\
-	milter-libevent-event-loop.h	\
+	milter-libev-event-loop.h	\
 	milter-glib-event-loop.h
 
 enum_source_prefix = milter-enum-types
@@ -93,10 +93,10 @@ libmilter_core_la_SOURCES =		\
 libmilter_core_la_LIBADD =		\
 	$(MILTER_CORE_LIBS)
 
-if WITH_LIBEVENT
-libmilter_core_la_SOURCES += milter-libevent-event-loop.c
-libmilter_core_la_LIBADD += $(LIBEVENT_LIBS)
-milter_libevent_event_loop_CFLAGS = $(LIBEVENT_CFLAGS)
+if WITH_LIBEV
+libmilter_core_la_SOURCES += milter-libev-event-loop.c
+libmilter_core_la_LIBADD += $(LIBEV_LIBS)
+milter_libev_event_loop_CFLAGS = $(LIBEV_CFLAGS)
 endif
 
 include $(top_srcdir)/build/enum-types.mk

@@ -1,6 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
  *  Copyright (C) 2010, 2011  Nobuyoshi Nakada <nakada@clear-code.com>
+ *  Copyright (C) 2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -21,19 +22,19 @@
 #  include "../../config.h"
 #endif /* HAVE_CONFIG_H */
 
-#include "milter-libevent-event-loop.h"
+#include "milter-libev-event-loop.h"
 #include <math.h>
 #include <ev.h>
 
-#define MILTER_LIBEVENT_EVENT_LOOP_GET_PRIVATE(obj)              \
-  (G_TYPE_INSTANCE_GET_PRIVATE((obj),                   \
-                               MILTER_TYPE_LIBEVENT_EVENT_LOOP,  \
-                               MilterLibeventEventLoopPrivate))
+#define MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(obj)                \
+    (G_TYPE_INSTANCE_GET_PRIVATE((obj),                         \
+                                 MILTER_TYPE_LIBEV_EVENT_LOOP,  \
+                                 MilterLibevEventLoopPrivate))
 
-G_DEFINE_TYPE(MilterLibeventEventLoop, milter_libevent_event_loop, MILTER_TYPE_EVENT_LOOP)
+G_DEFINE_TYPE(MilterLibevEventLoop, milter_libev_event_loop, MILTER_TYPE_EVENT_LOOP)
 
-typedef struct _MilterLibeventEventLoopPrivate	MilterLibeventEventLoopPrivate;
-struct _MilterLibeventEventLoopPrivate
+typedef struct _MilterLibevEventLoopPrivate	MilterLibevEventLoopPrivate;
+struct _MilterLibevEventLoopPrivate
 {
     struct ev_loop *base;
     guint tag;
@@ -86,7 +87,7 @@ static gboolean remove           (MilterEventLoop *loop,
                                   guint            tag);
 
 static void
-milter_libevent_event_loop_class_init (MilterLibeventEventLoopClass *klass)
+milter_libev_event_loop_class_init (MilterLibevEventLoopClass *klass)
 {
     GObjectClass *gobject_class;
 
@@ -104,15 +105,15 @@ milter_libevent_event_loop_class_init (MilterLibeventEventLoopClass *klass)
     klass->parent_class.add_idle_full = add_idle_full;
     klass->parent_class.remove = remove;
 
-    g_type_class_add_private(gobject_class, sizeof(MilterLibeventEventLoopPrivate));
+    g_type_class_add_private(gobject_class, sizeof(MilterLibevEventLoopPrivate));
 }
 
 static void
-milter_libevent_event_loop_init (MilterLibeventEventLoop *loop)
+milter_libev_event_loop_init (MilterLibevEventLoop *loop)
 {
-    MilterLibeventEventLoopPrivate *priv;
+    MilterLibevEventLoopPrivate *priv;
 
-    priv = MILTER_LIBEVENT_EVENT_LOOP_GET_PRIVATE(loop);
+    priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
     priv->base = NULL;
     priv->tag = 0;
     priv->callbacks = NULL;
@@ -121,9 +122,9 @@ milter_libevent_event_loop_init (MilterLibeventEventLoop *loop)
 static void
 dispose (GObject *object)
 {
-    MilterLibeventEventLoopPrivate *priv;
+    MilterLibevEventLoopPrivate *priv;
 
-    priv = MILTER_LIBEVENT_EVENT_LOOP_GET_PRIVATE(object);
+    priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(object);
 
     if (priv->callbacks) {
         g_hash_table_destroy(priv->callbacks);
@@ -134,26 +135,26 @@ dispose (GObject *object)
         priv->base = NULL;
     }
 
-    G_OBJECT_CLASS(milter_libevent_event_loop_parent_class)->dispose(object);
+    G_OBJECT_CLASS(milter_libev_event_loop_parent_class)->dispose(object);
 }
 
 static void
 constructed (GObject *object)
 {
-    MilterLibeventEventLoop *loop;
-    MilterLibeventEventLoopPrivate *priv;
+    MilterLibevEventLoop *loop;
+    MilterLibevEventLoopPrivate *priv;
 
-    loop = MILTER_LIBEVENT_EVENT_LOOP(object);
-    priv = MILTER_LIBEVENT_EVENT_LOOP_GET_PRIVATE(loop);
+    loop = MILTER_LIBEV_EVENT_LOOP(object);
+    priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
     priv->base = ev_default_loop(0);
     priv->callbacks = g_hash_table_new_full(g_int_hash, g_int_equal,
                                             NULL, destroy_callback);
 }
 
 MilterEventLoop *
-milter_libevent_event_loop_new (void)
+milter_libev_event_loop_new (void)
 {
-    return g_object_new(MILTER_TYPE_LIBEVENT_EVENT_LOOP,
+    return g_object_new(MILTER_TYPE_LIBEV_EVENT_LOOP,
                         NULL);
 }
 
@@ -162,12 +163,12 @@ struct callback_funcs {
 };
 
 struct callback_header {
-    MilterLibeventEventLoop *loop;
+    MilterLibevEventLoop *loop;
     const struct callback_funcs *funcs;
 };
 
 static guint
-add_callback (MilterLibeventEventLoopPrivate *priv, gpointer data)
+add_callback (MilterLibevEventLoopPrivate *priv, gpointer data)
 {
     guint tag = ++priv->tag;
     g_hash_table_insert(priv->callbacks, (gpointer)(gsize)tag, data);
@@ -180,7 +181,7 @@ alloc_callback (MilterEventLoop *loop,
                 gsize size)
 {
     struct callback_header *header = g_malloc0(size + sizeof(*header));
-    header->loop = (MilterLibeventEventLoop *)loop;
+    header->loop = (MilterLibevEventLoop *)loop;
     header->funcs = funcs;
     return header + 1;
 }
@@ -193,10 +194,10 @@ static void
 destroy_callback (gpointer data)
 {
     struct callback_header *header = data;
-    MilterLibeventEventLoopPrivate *priv;
+    MilterLibevEventLoopPrivate *priv;
     const struct callback_funcs *funcs;
     --header;
-    priv = MILTER_LIBEVENT_EVENT_LOOP_GET_PRIVATE(header->loop);
+    priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(header->loop);
     funcs = header->funcs;
     funcs->stop(priv->base, data);
     g_free(header);
@@ -205,19 +206,19 @@ destroy_callback (gpointer data)
 static void
 run (MilterEventLoop *loop)
 {
-    MilterLibeventEventLoopPrivate *priv;
+    MilterLibevEventLoopPrivate *priv;
 
-    priv = MILTER_LIBEVENT_EVENT_LOOP_GET_PRIVATE(loop);
+    priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
     ev_loop(priv->base, EVLOOP_NONBLOCK);
 }
 
 static gboolean
 iterate (MilterEventLoop *loop, gboolean may_block)
 {
-    MilterLibeventEventLoopPrivate *priv;
+    MilterLibevEventLoopPrivate *priv;
 
     /* TODO: may_block */
-    priv = MILTER_LIBEVENT_EVENT_LOOP_GET_PRIVATE(loop);
+    priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
     ev_loop(priv->base, EVLOOP_ONESHOT);
     return TRUE;                /* TODO */
 }
@@ -225,9 +226,9 @@ iterate (MilterEventLoop *loop, gboolean may_block)
 static void
 quit (MilterEventLoop *loop)
 {
-    MilterLibeventEventLoopPrivate *priv;
+    MilterLibevEventLoopPrivate *priv;
 
-    priv = MILTER_LIBEVENT_EVENT_LOOP_GET_PRIVATE(loop);
+    priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
     ev_unloop(priv->base, EVUNLOOP_ONE);
 }
 
@@ -288,9 +289,9 @@ watch_io (MilterEventLoop *loop,
 {
     int fd = g_io_channel_unix_get_fd(channel);
     struct io_callback_data *cb;
-    MilterLibeventEventLoopPrivate *priv;
+    MilterLibevEventLoopPrivate *priv;
 
-    priv = MILTER_LIBEVENT_EVENT_LOOP_GET_PRIVATE(loop);
+    priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
     if (fd == -1) return 0;
     cb = new_callback(io);
     cb->channel = channel;
@@ -331,9 +332,9 @@ watch_child_full (MilterEventLoop *loop,
                   GDestroyNotify   notify)
 {
     struct child_callback_data *cb;
-    MilterLibeventEventLoopPrivate *priv;
+    MilterLibevEventLoopPrivate *priv;
 
-    priv = MILTER_LIBEVENT_EVENT_LOOP_GET_PRIVATE(loop);
+    priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
     cb = new_callback(child);
     cb->function = function;
     cb->user_data = data;
@@ -372,9 +373,9 @@ add_timeout_full (MilterEventLoop *loop,
                   GDestroyNotify   notify)
 {
     struct timer_callback_data *cb;
-    MilterLibeventEventLoopPrivate *priv;
+    MilterLibevEventLoopPrivate *priv;
 
-    priv = MILTER_LIBEVENT_EVENT_LOOP_GET_PRIVATE(loop);
+    priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
     if (interval_in_seconds < 0) return 0;
     cb = new_callback(timer);
     cb->function = function;
@@ -412,9 +413,9 @@ add_idle_full (MilterEventLoop *loop,
                GDestroyNotify   notify)
 {
     struct idle_callback_data *cb;
-    MilterLibeventEventLoopPrivate *priv;
+    MilterLibevEventLoopPrivate *priv;
 
-    priv = MILTER_LIBEVENT_EVENT_LOOP_GET_PRIVATE(loop);
+    priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
     cb = new_callback(idle);
     cb->function = function;
     cb->user_data = data;
@@ -427,9 +428,9 @@ static gboolean
 remove (MilterEventLoop *loop,
         guint            tag)
 {
-    MilterLibeventEventLoopPrivate *priv;
+    MilterLibevEventLoopPrivate *priv;
 
-    priv = MILTER_LIBEVENT_EVENT_LOOP_GET_PRIVATE(loop);
+    priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
     return g_hash_table_remove(priv->callbacks, (gconstpointer)(gsize)tag);
 }
 
