@@ -244,6 +244,24 @@ watch_io (MilterEventLoop *loop,
     return ++priv->tag;
 }
 
+struct child_callback_data {
+    ev_child event;
+    MilterLibeventEventLoop *loop;
+    GChildWatchFunc  function;
+    void            *user_data;
+    GDestroyNotify   notify;
+};
+
+static void
+child_func (struct ev_loop *loop, ev_child *w, int revents)
+{
+    struct child_callback_data *cb = (struct chlid_callback_data *)w;
+
+    cb->function((GPid)w->rpid, w->rstatus, cb->user_data);
+    ev_child_stop(loop, w);
+    g_free(cb);
+}
+
 static guint
 watch_child_full (MilterEventLoop *loop,
                   gint             priority,
@@ -252,8 +270,18 @@ watch_child_full (MilterEventLoop *loop,
                   gpointer         data,
                   GDestroyNotify   notify)
 {
-    /* TODO: implement */
-    return 0;
+    struct child_callback_data *cb;
+    MilterLibeventEventLoopPrivate *priv;
+
+    priv = MILTER_LIBEVENT_EVENT_LOOP_GET_PRIVATE(loop);
+    cb = g_malloc0(sizeof(*cb));
+    cb->function = function;
+    cb->user_data = data;
+    cb->notify = notify;
+    cb->loop = MILTER_LIBEVENT_EVENT_LOOP(loop);
+    ev_child_init(&cb->event, child_func, pid, FALSE);
+    ev_child_start(priv->base, &cb->event);
+    return ++priv->tag;
 }
 
 struct timer_callback_data {
