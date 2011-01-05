@@ -1,5 +1,7 @@
 2011-01-05  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-libev-event-loop.c (CallbackFunc): define.
+
 	* configure.ac, milter/core/milter-libev-event-loop.[ch]:
 	libevent -> libev.
 

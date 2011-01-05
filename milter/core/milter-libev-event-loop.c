@@ -130,6 +130,7 @@ dispose (GObject *object)
         g_hash_table_destroy(priv->callbacks);
         priv->callbacks = NULL;
     }
+
     if (priv->base) {
         ev_loop_destroy(priv->base);
         priv->base = NULL;
@@ -158,8 +159,10 @@ milter_libev_event_loop_new (void)
                         NULL);
 }
 
+typedef void (*CallbackFunc) (struct ev_loop *loop, void *data);
+
 struct callback_funcs {
-    void (*stop)(struct ev_loop *, void *);
+    CallbackFunc stop;
 };
 
 struct callback_header {
@@ -277,7 +280,7 @@ io_func (struct ev_loop *loop, ev_io *w, int revents)
 }
 
 static const struct callback_funcs io_callback_funcs = {
-    (void (*)(struct ev_loop *, void *))ev_io_stop,
+    (CallbackFunc)ev_io_stop,
 };
 
 static guint
@@ -361,7 +364,7 @@ timer_func (struct ev_loop *loop, ev_timer *w, int revents)
 }
 
 static const struct callback_funcs timer_callback_funcs = {
-    (void (*)(struct ev_loop *, void *))ev_timer_stop,
+    (CallbackFunc)ev_timer_stop,
 };
 
 static guint
@@ -402,7 +405,7 @@ idle_func (struct ev_loop *loop, ev_idle *w, int revents)
 }
 
 static const struct callback_funcs idle_callback_funcs = {
-    (void (*)(struct ev_loop *, void *))ev_idle_stop,
+    (CallbackFunc)ev_idle_stop,
 };
 
 static guint
