@@ -7,6 +7,7 @@
 	(io_func): renamed.
 	(watch_child_full): add.
 	(MilterLibeventEventLoopPrivate): manage callbacks.
+	(remove): add.
 
 	* configure.ac: check libev before libevent.
 	abandon libevent.

@@ -427,7 +427,7 @@ static gboolean
 remove (MilterEventLoop *loop,
         guint            tag)
 {
-    return FALSE;
+    return g_hash_table_remove(priv->callbacks, (gconstpointer)(gsize)tag);
 }
 
 /*
